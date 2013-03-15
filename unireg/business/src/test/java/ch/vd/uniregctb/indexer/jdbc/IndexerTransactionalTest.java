@@ -30,7 +30,7 @@ public class IndexerTransactionalTest extends BusinessTest {
 
 	private GlobalIndexInterface globalIndex;
 	private static final String TYPE = "perfi";
-	private final List<String> fields = new ArrayList<String>();
+	private final List<String> fields = new ArrayList<>();
 	private int maxHits = 100;
 
 	private static class Data extends IndexableData {

@@ -35,7 +35,7 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 	@Test
 	public void testEmptyList() {
 		List<Long> list = Collections.emptyList();
-		BatchTransactionTemplate<Long, JobResults> template = new BatchTransactionTemplate<Long, JobResults>(list, 100, Behavior.SANS_REPRISE, transactionManager, null, hibernateTemplate);
+		BatchTransactionTemplate<Long, JobResults> template = new BatchTransactionTemplate<>(list, 100, Behavior.SANS_REPRISE, transactionManager, null, hibernateTemplate);
 		template.execute(new BatchCallback<Long, JobResults>() {
 
 			@Override
@@ -76,7 +76,7 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 	@Test
 	public void testSansRepriseSansException() throws Exception {
 
-		List<Long> list = new ArrayList<Long>();
+		List<Long> list = new ArrayList<>();
 		list.add(0L);
 		list.add(1L);
 		list.add(2L);
@@ -85,7 +85,7 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 
 		assertTiersCountHorsTransaction(0);
 
-		BatchTransactionTemplate<Long, JobResults> template = new BatchTransactionTemplate<Long, JobResults>(list, 2, Behavior.SANS_REPRISE, transactionManager, null, hibernateTemplate);
+		BatchTransactionTemplate<Long, JobResults> template = new BatchTransactionTemplate<>(list, 2, Behavior.SANS_REPRISE, transactionManager, null, hibernateTemplate);
 		template.execute(new BatchCallback<Long, JobResults>() {
 
 			@Override
@@ -129,7 +129,7 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 	@Test
 	public void testSansRepriseAvecException() throws Exception {
 
-		List<Long> list = new ArrayList<Long>();
+		List<Long> list = new ArrayList<>();
 		list.add(0L);
 		list.add(1L);
 		list.add(2L);
@@ -138,7 +138,7 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 
 		assertTiersCountHorsTransaction(0);
 
-		BatchTransactionTemplate<Long, JobResults> template = new BatchTransactionTemplate<Long, JobResults>(list, 2, Behavior.SANS_REPRISE, transactionManager, null, hibernateTemplate);
+		BatchTransactionTemplate<Long, JobResults> template = new BatchTransactionTemplate<>(list, 2, Behavior.SANS_REPRISE, transactionManager, null, hibernateTemplate);
 		template.execute(new BatchCallback<Long, JobResults>() {
 
 			@Override
@@ -185,7 +185,7 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 	@Test
 	public void testAvecRepriseSansException() throws Exception {
 
-		List<Long> list = new ArrayList<Long>();
+		List<Long> list = new ArrayList<>();
 		list.add(0L);
 		list.add(1L);
 		list.add(2L);
@@ -194,7 +194,7 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 
 		assertTiersCountHorsTransaction(0);
 
-		BatchTransactionTemplate<Long, JobResults> template = new BatchTransactionTemplate<Long, JobResults>(list, 2, Behavior.REPRISE_AUTOMATIQUE,
+		BatchTransactionTemplate<Long, JobResults> template = new BatchTransactionTemplate<>(list, 2, Behavior.REPRISE_AUTOMATIQUE,
 				transactionManager, null, hibernateTemplate);
 		template.execute(new BatchCallback<Long, JobResults>() {
 
@@ -239,7 +239,7 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 	@Test
 	public void testAvecRepriseAvecException() throws Exception {
 
-		List<Long> list = new ArrayList<Long>();
+		List<Long> list = new ArrayList<>();
 		list.add(0L);
 		list.add(1L);
 		list.add(2L);
@@ -248,7 +248,7 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 
 		assertTiersCountHorsTransaction(0);
 
-		BatchTransactionTemplate<Long, JobResults> template = new BatchTransactionTemplate<Long, JobResults>(list, 2, Behavior.REPRISE_AUTOMATIQUE,
+		BatchTransactionTemplate<Long, JobResults> template = new BatchTransactionTemplate<>(list, 2, Behavior.REPRISE_AUTOMATIQUE,
 				transactionManager, null, hibernateTemplate);
 		template.execute(new BatchCallback<Long, JobResults>() {
 
@@ -314,12 +314,12 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 	@Test
 	public void testRollbackOnException() throws Exception {
 
-		List<Long> list = new ArrayList<Long>();
+		List<Long> list = new ArrayList<>();
 		list.add(1234L);
 
 		assertTiersCountHorsTransaction(0);
 
-		BatchTransactionTemplate<Long, JobResults> template = new BatchTransactionTemplate<Long, JobResults>(list, 2, Behavior.SANS_REPRISE,
+		BatchTransactionTemplate<Long, JobResults> template = new BatchTransactionTemplate<>(list, 2, Behavior.SANS_REPRISE,
 				transactionManager, null, hibernateTemplate);
 		template.execute(new BatchCallback<Long, JobResults>() {
 
@@ -397,14 +397,14 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 
 		final int count = 50;
 
-		final List<Long> list = new ArrayList<Long>();
+		final List<Long> list = new ArrayList<>();
 		for (int i = 0; i < count; ++i) {
 			list.add((long) i);
 		}
 
 		final Rapport rapportFinal = new Rapport();
 
-		BatchTransactionTemplate<Long, Rapport> template = new BatchTransactionTemplate<Long, Rapport>(list, 10, Behavior.REPRISE_AUTOMATIQUE, transactionManager, null, hibernateTemplate);
+		BatchTransactionTemplate<Long, Rapport> template = new BatchTransactionTemplate<>(list, 10, Behavior.REPRISE_AUTOMATIQUE, transactionManager, null, hibernateTemplate);
 		template.execute(rapportFinal, new BatchCallback<Long, Rapport>() {
 
 			@Override
@@ -434,14 +434,14 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 
 		final int count = 50;
 
-		final List<Long> list = new ArrayList<Long>();
+		final List<Long> list = new ArrayList<>();
 		for (int i = 0; i < count; ++i) {
 			list.add((long) i);
 		}
 
 		final Rapport rapportFinal = new Rapport();
 
-		BatchTransactionTemplate<Long, Rapport> template = new BatchTransactionTemplate<Long, Rapport>(list, 10, Behavior.REPRISE_AUTOMATIQUE, transactionManager, null, hibernateTemplate);
+		BatchTransactionTemplate<Long, Rapport> template = new BatchTransactionTemplate<>(list, 10, Behavior.REPRISE_AUTOMATIQUE, transactionManager, null, hibernateTemplate);
 		template.execute(rapportFinal, new BatchCallback<Long, Rapport>() {
 
 			@Override
@@ -471,8 +471,8 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 
 	private static class Rapport implements BatchResults<Long, Rapport> {
 
-		public Set<Long> traites = new HashSet<Long>();
-		public Set<Long> erreurs = new HashSet<Long>();
+		public Set<Long> traites = new HashSet<>();
+		public Set<Long> erreurs = new HashSet<>();
 
 		public void addTraite(Long element) {
 			traites.add(element);

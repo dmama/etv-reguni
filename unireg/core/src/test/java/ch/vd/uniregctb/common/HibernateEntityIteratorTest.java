@@ -88,7 +88,7 @@ public class HibernateEntityIteratorTest extends CoreDAOTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testHibernateEntityIterator() {
 
-		final Iterator<Tiers> iter = new HibernateEntityIterator<Tiers>(hibernateTemplate.<Tiers>iterate("from Tiers", null, null));
+		final Iterator<Tiers> iter = new HibernateEntityIterator<>(hibernateTemplate.<Tiers>iterate("from Tiers", null, null));
 		assertNotNull(iter);
 
 		while (iter.hasNext()) {

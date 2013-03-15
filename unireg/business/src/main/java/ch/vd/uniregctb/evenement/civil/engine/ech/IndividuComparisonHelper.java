@@ -79,7 +79,7 @@ public abstract class IndividuComparisonHelper {
 		}
 	};
 
-	public static final Comparator<Integer> INTEGER_COMPARATOR = new DefaultComparator<Integer>(true);
+	public static final Comparator<Integer> INTEGER_COMPARATOR = new DefaultComparator<>(true);
 
 	/**
 	 * Interface de vérification d'égalité
@@ -161,7 +161,7 @@ public abstract class IndividuComparisonHelper {
 		}
 	};
 
-	public static final Equalator<Integer> INTEGER_EQUALATOR = new DefaultEqualator<Integer>();
+	public static final Equalator<Integer> INTEGER_EQUALATOR = new DefaultEqualator<>();
 
 	/**
 	 * @param c1 collection 1
@@ -183,10 +183,10 @@ public abstract class IndividuComparisonHelper {
 				return false;
 			}
 			else {
-				final List<T> sl1 = new ArrayList<T>(c1 != null ? c1 : Collections.<T>emptyList());
+				final List<T> sl1 = new ArrayList<>(c1 != null ? c1 : Collections.<T>emptyList());
 				Collections.sort(sl1, comparator);
 
-				final List<T> sl2 = new ArrayList<T>(c2 != null ? c2 : Collections.<T>emptyList());
+				final List<T> sl2 = new ArrayList<>(c2 != null ? c2 : Collections.<T>emptyList());
 				Collections.sort(sl2, comparator);
 
 				for (int i = 0 ; i < sl1.size() ; ++ i) {
@@ -209,7 +209,7 @@ public abstract class IndividuComparisonHelper {
 	 * Classe de maintenance des champs (et de leurs sous-champs) modifiés
 	 */
 	public static class FieldMonitor {
-		private final List<String> fields = new LinkedList<String>();
+		private final List<String> fields = new LinkedList<>();
 
 		/**
 		 * Ajoute une indication concernant un champ modifié

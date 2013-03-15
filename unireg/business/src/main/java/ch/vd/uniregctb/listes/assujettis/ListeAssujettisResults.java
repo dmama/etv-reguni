@@ -27,8 +27,8 @@ public class ListeAssujettisResults extends ListesResults<ListeAssujettisResults
 	private final boolean avecSourciersPurs;
 	private final boolean seulementAssujettisFinAnnee;
 
-	private final List<InfoCtbAssujetti> assujettis = new LinkedList<InfoCtbAssujetti>();
-	private final List<InfoCtbIgnore> ignores = new LinkedList<InfoCtbIgnore>();
+	private final List<InfoCtbAssujetti> assujettis = new LinkedList<>();
+	private final List<InfoCtbIgnore> ignores = new LinkedList<>();
 	private int nbCtbAssujettis = 0;
 	private final AssujettissementService assujettissementService;
 

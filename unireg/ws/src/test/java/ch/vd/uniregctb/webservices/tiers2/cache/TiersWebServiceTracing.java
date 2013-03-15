@@ -36,19 +36,19 @@ import ch.vd.uniregctb.webservices.tiers2.params.SetTiersBlocRembAuto;
 public class TiersWebServiceTracing implements TiersWebService {
 
 	private TiersWebService target;
-	public List<SearchTiers> searchTiersCalls = new ArrayList<SearchTiers>();
-	public List<GetTiersType> getTiersTypeCalls = new ArrayList<GetTiersType>();
-	public List<GetTiers> getTiersCalls = new ArrayList<GetTiers>();
-	public List<GetTiersPeriode> getTiersPeriodeCalls = new ArrayList<GetTiersPeriode>();
-	public List<GetTiersHisto> getTiersHistoCalls = new ArrayList<GetTiersHisto>();
-	public List<GetBatchTiers> getBatchTiersCalls = new ArrayList<GetBatchTiers>();
-	public List<GetBatchTiersHisto> getBatchTiersHistoCalls = new ArrayList<GetBatchTiersHisto>();
-	public List<SetTiersBlocRembAuto> setTiersBlocRembAutoCalls = new ArrayList<SetTiersBlocRembAuto>();
-	public List<SearchEvenementsPM> searchEvenementsPMCalls = new ArrayList<SearchEvenementsPM>();
-	public List<GetDebiteurInfo> getDebiteurInfoCalls = new ArrayList<GetDebiteurInfo>();
-	public List<QuittancerDeclarations> quittancerDeclarationsCalls = new ArrayList<QuittancerDeclarations>();
-	public List<GetListeCtbModifies> getListeCtbModifiesCalls = new ArrayList<GetListeCtbModifies>();
-	public List<AllConcreteTiersClasses> doNothingCalls = new ArrayList<AllConcreteTiersClasses>();
+	public List<SearchTiers> searchTiersCalls = new ArrayList<>();
+	public List<GetTiersType> getTiersTypeCalls = new ArrayList<>();
+	public List<GetTiers> getTiersCalls = new ArrayList<>();
+	public List<GetTiersPeriode> getTiersPeriodeCalls = new ArrayList<>();
+	public List<GetTiersHisto> getTiersHistoCalls = new ArrayList<>();
+	public List<GetBatchTiers> getBatchTiersCalls = new ArrayList<>();
+	public List<GetBatchTiersHisto> getBatchTiersHistoCalls = new ArrayList<>();
+	public List<SetTiersBlocRembAuto> setTiersBlocRembAutoCalls = new ArrayList<>();
+	public List<SearchEvenementsPM> searchEvenementsPMCalls = new ArrayList<>();
+	public List<GetDebiteurInfo> getDebiteurInfoCalls = new ArrayList<>();
+	public List<QuittancerDeclarations> quittancerDeclarationsCalls = new ArrayList<>();
+	public List<GetListeCtbModifies> getListeCtbModifiesCalls = new ArrayList<>();
+	public List<AllConcreteTiersClasses> doNothingCalls = new ArrayList<>();
 
 	public TiersWebServiceTracing(TiersWebService target) {
 		this.target = target;

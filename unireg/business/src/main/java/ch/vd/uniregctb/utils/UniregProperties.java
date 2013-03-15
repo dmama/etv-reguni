@@ -38,7 +38,7 @@ public class UniregProperties implements InitializingBean {
 	@SuppressWarnings("unchecked")
 	public Map<String, String> getAllProperties() {
 
-		final Map<String, String> map = new HashMap<String, String>();
+		final Map<String, String> map = new HashMap<>();
 
 		Iterator<String> keys = properties.getKeys();
 		while (keys.hasNext()) {
@@ -74,7 +74,7 @@ public class UniregProperties implements InitializingBean {
 
 	public String dumpProps(boolean hidePasswords) {
 
-		ArrayList<String> list = new ArrayList<String>();
+		ArrayList<String> list = new ArrayList<>();
 		Iterator<?> keys = properties.getKeys();
 		while (keys.hasNext()) {
 			String k = (String) keys.next();

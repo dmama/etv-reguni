@@ -28,7 +28,7 @@ public class ErrorPostProcessingMiseEnAttenteStrategy implements ErrorPostProces
 	@NotNull
 	@Override
 	public List<EvenementCivilEchBasicInfo> doCollectPhase(List<EvenementCivilEchBasicInfo> remainingEvents, Mutable<Object> customData) {
-		final List<EvenementCivilEchBasicInfo> remaining = new ArrayList<EvenementCivilEchBasicInfo>(remainingEvents.size());
+		final List<EvenementCivilEchBasicInfo> remaining = new ArrayList<>(remainingEvents.size());
 		for (EvenementCivilEchBasicInfo info : remainingEvents) {
 			if (info.getEtat() == EtatEvenementCivil.A_TRAITER) {
 				final EvenementCivilEch evt = evtCivilDAO.get(info.getId());

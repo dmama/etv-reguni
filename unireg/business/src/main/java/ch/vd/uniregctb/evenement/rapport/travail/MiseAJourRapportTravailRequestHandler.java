@@ -63,7 +63,7 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 
 		//On retrouve le rapport a modifier.
 		final List<RapportPrestationImposable> rapportsAModifier = findRapportPrestationImposable(dpi, sourcier);
-		final List<RapportPrestationImposable> nouveauxRapports = new ArrayList<RapportPrestationImposable>();
+		final List<RapportPrestationImposable> nouveauxRapports = new ArrayList<>();
 
 		if (rapportsAModifier == null || rapportsAModifier.isEmpty()) {
 			handleRapportPrestationInexistant(dpi, sourcier, request, nouveauxRapports);
@@ -95,7 +95,7 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 	}
 
 	List<RapportPrestationImposable> getRapportPrestation(DebiteurPrestationImposable dpi, PersonnePhysique sourcier) {
-		final List<RapportPrestationImposable> rapports = new ArrayList<RapportPrestationImposable>();
+		final List<RapportPrestationImposable> rapports = new ArrayList<>();
 		for (RapportEntreTiers rapportEntreTiers : dpi.getRapportsObjet()) {
 			if (rapportEntreTiers instanceof RapportPrestationImposable && rapportEntreTiers.getSujetId().equals(sourcier.getId()) && !rapportEntreTiers.isAnnule()) {
 				rapports.add((RapportPrestationImposable) rapportEntreTiers);
@@ -171,7 +171,7 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 		final DateRange periodeDeclaration = new DateRangeHelper.Range(request.getDateDebutPeriodeDeclaration(), request.getDateFinPeriodeDeclaration());
 
 		//final List<RapportPrestationImposable> rapports = tiersService.getAllRapportPrestationImposable(dpi,sourcier, true, true);
-		final List<RapportPrestationImposable> rapportsConcernes = new ArrayList<RapportPrestationImposable>();
+		final List<RapportPrestationImposable> rapportsConcernes = new ArrayList<>();
 		for (RapportPrestationImposable rapport : rapportsAModifier) {
 			if (DateRangeHelper.intersect(periodeDeclaration, rapport)) {
 				rapportsConcernes.add(rapport);

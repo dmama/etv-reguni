@@ -62,23 +62,15 @@ public abstract class WebitTest {
 
 		// Charge les propriétés propre aux tests Web-IT
 		Properties propsWebIT = new Properties();
-		InputStream inStream = getClass().getResourceAsStream("/ut/unireg-webit.properties");
-		try {
+		try (InputStream inStream = getClass().getResourceAsStream("/ut/unireg-webit.properties")) {
 			propsWebIT.load(inStream);
-		}
-		finally {
-			inStream.close();
 		}
 
 		// Charge les propriétés générales pour les tests UT
 		final String uniregUTPropertiesFile = propsWebIT.getProperty("unireg-ut.properties");
 		Properties propsUT = new Properties();
-		inStream = new FileInputStream(uniregUTPropertiesFile);
-		try {
+		try (InputStream inStream = new FileInputStream(uniregUTPropertiesFile)) {
 			propsUT.load(inStream);
-		}
-		finally {
-			inStream.close();
 		}
 
 		// Récupère les valeurs des propriétés 

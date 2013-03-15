@@ -193,7 +193,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 	 */
 	private List<MouvementDetailView> getMouvements(Contribuable contribuable) throws ServiceInfrastructureException {
 
-		final List<MouvementDetailView> mvtsView = new ArrayList<MouvementDetailView>();
+		final List<MouvementDetailView> mvtsView = new ArrayList<>();
 		final Set<MouvementDossier> mvts = contribuable.getMouvementsDossier();
 		for (MouvementDossier mvt : mvts) {
 			if (mvt.getEtat().isTraite()) {
@@ -214,8 +214,8 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 			throw new TiersNotFoundException(noDebiteur);
 		}
 
-		final List<RapportsPrestationView.Rapport> rapports = new ArrayList<RapportsPrestationView.Rapport>();
-		final Map<Long, List<RapportsPrestationView.Rapport>> rapportsByNumero = new HashMap<Long, List<RapportsPrestationView.Rapport>>();
+		final List<RapportsPrestationView.Rapport> rapports = new ArrayList<>();
+		final Map<Long, List<RapportsPrestationView.Rapport>> rapportsByNumero = new HashMap<>();
 
 		final long startRapports = System.nanoTime();
 
@@ -241,7 +241,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 
 			ArrayList<RapportsPrestationView.Rapport> rl = (ArrayList<RapportsPrestationView.Rapport>) rapportsByNumero.get(rapport.noCTB);
 			if (rl == null) {
-				rl = new ArrayList<RapportsPrestationView.Rapport>();
+				rl = new ArrayList<>();
 				rapportsByNumero.put(rapport.noCTB, rl);
 			}
 
@@ -255,7 +255,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 
 		final long startNH = System.nanoTime();
 
-		final Set<Long> pasDeNouveauNosAvs = new HashSet<Long>();
+		final Set<Long> pasDeNouveauNosAvs = new HashSet<>();
 
 		final List infoNonHabitants = hibernateTemplate.find("select pp.numero, pp.prenom, pp.nom, pp.numeroAssureSocial from PersonnePhysique pp, RapportPrestationImposable rpi "
 				                                                     + "where pp.habitant = false and pp.numero = rpi.sujetId and rpi.objetId =  " + noDebiteur, null, null);
@@ -282,7 +282,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 		// Complète les anciens numéros AVS des non-habitants qui n'en possède pas des nouveaux
 
 		if (!pasDeNouveauNosAvs.isEmpty()) {
-			final StandardBatchIterator<Long> it = new StandardBatchIterator<Long>(pasDeNouveauNosAvs, 500);
+			final StandardBatchIterator<Long> it = new StandardBatchIterator<>(pasDeNouveauNosAvs, 500);
 			while (it.hasNext()) {
 				final List<Long> ids = it.next();
 
@@ -318,7 +318,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 
 		final long startH = System.nanoTime();
 
-		final Map<Long, List<RapportsPrestationView.Rapport>> rapportsByNumeroIndividu = new HashMap<Long, List<RapportsPrestationView.Rapport>>();
+		final Map<Long, List<RapportsPrestationView.Rapport>> rapportsByNumeroIndividu = new HashMap<>();
 
 		final List infoHabitants = hibernateTemplate.find("select pp.numero, pp.numeroIndividu from PersonnePhysique pp, RapportPrestationImposable rpi "
 				                                                  + "where pp.habitant = true and pp.numero = rpi.sujetId and rpi.objetId =  " + noDebiteur, null, null);
@@ -329,7 +329,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 
 			ArrayList<RapportsPrestationView.Rapport> rl = (ArrayList<RapportsPrestationView.Rapport>) rapportsByNumeroIndividu.get(numeroIndividu);
 			if (rl == null) {
-				rl = new ArrayList<RapportsPrestationView.Rapport>();
+				rl = new ArrayList<>();
 				rapportsByNumeroIndividu.put(numeroIndividu, rl);
 			}
 
@@ -337,7 +337,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 		}
 
 		final Set<Long> numerosIndividus = rapportsByNumeroIndividu.keySet();
-		final StandardBatchIterator<Long> iterator = new StandardBatchIterator<Long>(numerosIndividus, 500);
+		final StandardBatchIterator<Long> iterator = new StandardBatchIterator<>(numerosIndividus, 500);
 		while (iterator.hasNext()) {
 			final List<Long> batch = iterator.next();
 			try {

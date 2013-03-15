@@ -44,7 +44,7 @@ public class EditiqueListeRecapJobTest extends JobTest {
 	 */
 	public void editiqueListeRecapJob() throws Exception {
 		loadDatabase(DB_UNIT_DATA_FILE);
-		HashMap<String, Object> params = new HashMap<String, Object>();
+		HashMap<String, Object> params = new HashMap<>();
 		params.put(EditiqueListeRecapJob.S_PARAM_DATE_FIN_PERIODE, date(2008, 12, 25));
 		launchJob(params);
 
@@ -61,7 +61,7 @@ public class EditiqueListeRecapJobTest extends JobTest {
 		Thread.sleep(2000);
 
 		//si on lance le batch pour une date à laquelle les DPI n'ont pas de for, aucune LR ne doit être créée
-		HashMap<String, Object> params1 = new HashMap<String, Object>();
+		HashMap<String, Object> params1 = new HashMap<>();
 		params1.put(EditiqueListeRecapJob.S_PARAM_DATE_FIN_PERIODE, date(2007, 12, 31));
 		launchJob(params1);
 		checkLRs();
@@ -106,7 +106,7 @@ public class EditiqueListeRecapJobTest extends JobTest {
 		Assert.assertNotNull(tiers.getDeclarations());
 		Set<Declaration> declarations = tiers.getDeclarations();
 		Assert.assertEquals(12, declarations.size());		// toute l'année
-		final Set<Integer> mensuels = new HashSet<Integer>(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12));
+		final Set<Integer> mensuels = new HashSet<>(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12));
 		for (Declaration decl : declarations) {
 			final DeclarationImpotSource lr = (DeclarationImpotSource) decl;
 			Assert.assertEquals(PeriodiciteDecompte.MENSUEL, lr.getPeriodicite());
@@ -131,7 +131,7 @@ public class EditiqueListeRecapJobTest extends JobTest {
 		Assert.assertNotNull(tiers.getDeclarations());
 		declarations = tiers.getDeclarations();
 		Assert.assertEquals(4, declarations.size());		// toute l'année
-		final Set<Integer> trimestriel = new HashSet<Integer>(Arrays.asList(1, 4, 7, 10));
+		final Set<Integer> trimestriel = new HashSet<>(Arrays.asList(1, 4, 7, 10));
 		for (Declaration decl : declarations) {
 			final DeclarationImpotSource lr = (DeclarationImpotSource) decl;
 			Assert.assertEquals(PeriodiciteDecompte.TRIMESTRIEL, lr.getPeriodicite());
@@ -156,7 +156,7 @@ public class EditiqueListeRecapJobTest extends JobTest {
 		Assert.assertNotNull(tiers.getDeclarations());
 		declarations = tiers.getDeclarations();
 		Assert.assertEquals(2, declarations.size());		// toute l'année
-		final Set<Integer> semestriel = new HashSet<Integer>(Arrays.asList(1, 7));
+		final Set<Integer> semestriel = new HashSet<>(Arrays.asList(1, 7));
 		for (Declaration decl : declarations) {
 			final DeclarationImpotSource lr = (DeclarationImpotSource) decl;
 			Assert.assertEquals(PeriodiciteDecompte.SEMESTRIEL, lr.getPeriodicite());

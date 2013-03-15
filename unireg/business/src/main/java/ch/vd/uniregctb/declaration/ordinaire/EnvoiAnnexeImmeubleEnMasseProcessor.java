@@ -76,7 +76,7 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 			modeleAnnexeImmeuble.setIntituleFeuille(ModeleFeuille.ANNEXE_320.getDescription());
 			modeleAnnexeImmeuble.setNumeroFormulaire(ModeleFeuille.ANNEXE_320.getCode());
 
-			setAnnexeImmeuble = new HashSet<ModeleFeuilleDocument>();
+			setAnnexeImmeuble = new HashSet<>();
 			setAnnexeImmeuble.add(modeleAnnexeImmeuble);
 		}
 	}
@@ -110,7 +110,7 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 
 		// Traite les contribuables par lots
 		final BatchTransactionTemplate<ContribuableAvecImmeuble, EnvoiAnnexeImmeubleResults> template =
-				new BatchTransactionTemplate<ContribuableAvecImmeuble, EnvoiAnnexeImmeubleResults>(listCtbImmo, tailleLot, Behavior.REPRISE_AUTOMATIQUE,
+				new BatchTransactionTemplate<>(listCtbImmo, tailleLot, Behavior.REPRISE_AUTOMATIQUE,
 						transactionManager, status, hibernateTemplate);
 		template.execute(rapportFinal, new BatchCallback<ContribuableAvecImmeuble, EnvoiAnnexeImmeubleResults>() {
 
@@ -317,7 +317,7 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 
 	private List<Long> getIdCtb(List<ContribuableAvecImmeuble> listeCtbImmeuble) {
 
-		final List<Long> idsCtb = new ArrayList<Long>();
+		final List<Long> idsCtb = new ArrayList<>();
 
 		for (ContribuableAvecImmeuble ctbImmeuble : listeCtbImmeuble) {
 

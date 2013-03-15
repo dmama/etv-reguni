@@ -47,7 +47,6 @@ public class ListeNoteProcessor {
 	private final TiersService tiersService;
 	private final AdresseService adresseService;
 	private final ServiceInfrastructureService infraService;
-	private final int batchSize = BATCH_SIZE;
 	private final ThreadLocal<ListeNoteResults> rapport = new ThreadLocal<ListeNoteResults>();
 	private Map<Long, List<ForFiscalSecondaire>> mapInfo;
 
@@ -72,7 +71,7 @@ public class ListeNoteProcessor {
 
 		// Reussi les messages par lots
 		final ParallelBatchTransactionTemplate<Long, ListeNoteResults>
-				template = new ParallelBatchTransactionTemplate<Long, ListeNoteResults>(ids, batchSize, nbThreads, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE,
+				template = new ParallelBatchTransactionTemplate<Long, ListeNoteResults>(ids, BATCH_SIZE, nbThreads, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE,
 																						transactionManager, status, hibernateTemplate);
 		template.execute(rapportFinal, new BatchTransactionTemplate.BatchCallback<Long, ListeNoteResults>() {
 

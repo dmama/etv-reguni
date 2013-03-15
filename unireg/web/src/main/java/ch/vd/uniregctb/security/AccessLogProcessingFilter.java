@@ -43,7 +43,7 @@ public class AccessLogProcessingFilter extends GenericFilterBean implements Deta
 	/**
 	 * Nombre de requêtes en cours en parallèle
 	 */
-	private final DetailedLoadMeter<ServletRequest> loadMeter = new DetailedLoadMeter<ServletRequest>(RENDERER);
+	private final DetailedLoadMeter<ServletRequest> loadMeter = new DetailedLoadMeter<>(RENDERER);
 
 	@Override
 	public int getLoad() {

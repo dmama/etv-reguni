@@ -127,7 +127,7 @@ public class EvenementCivilInterneTest extends WithoutSpringTest {
 
 		checkSetContent(Collections.<Long>emptySet(), dataEventService.getTiersChanged());
 		checkSetContent(Collections.<Long>emptySet(), dataEventService.getDroitsChanged());
-		checkSetContent(new HashSet<Long>(Arrays.asList(noIndMadame, noIndMonsieur)), dataEventService.getIndividusChanged());
+		checkSetContent(new HashSet<>(Arrays.asList(noIndMadame, noIndMonsieur)), dataEventService.getIndividusChanged());
 	}
 
 	private static void checkSetContent(Set<Long> expected, Set<Long> found) {
@@ -148,9 +148,9 @@ public class EvenementCivilInterneTest extends WithoutSpringTest {
 
 	private static final class MyDataEventService implements DataEventService {
 
-		private final Set<Long> tiersChanged = new HashSet<Long>();
-		private final Set<Long> individusChanged = new HashSet<Long>();
-		private final Set<Long> droitsChanged = new HashSet<Long>();
+		private final Set<Long> tiersChanged = new HashSet<>();
+		private final Set<Long> individusChanged = new HashSet<>();
+		private final Set<Long> droitsChanged = new HashSet<>();
 
 		@Override
 		public void register(DataEventListener listener) {

@@ -45,7 +45,7 @@ public class CacheResetJob extends JobDefinition {
 
 		// On construit la liste des paramètres dynamiquement en fonction des caches enregistrés dans le manager
 
-		final List<UniregCacheInterface> caches = new ArrayList<UniregCacheInterface>(manager.getCaches());
+		final List<UniregCacheInterface> caches = new ArrayList<>(manager.getCaches());
 		Collections.sort(caches, new Comparator<UniregCacheInterface>() {
 			@Override
 			public int compare(UniregCacheInterface o1, UniregCacheInterface o2) {
@@ -53,7 +53,7 @@ public class CacheResetJob extends JobDefinition {
 			}
 		});
 
-		final List<JobParam> params = new ArrayList<JobParam>();
+		final List<JobParam> params = new ArrayList<>();
 
 		for (UniregCacheInterface c : caches) {
 			final JobParam param = new JobParam();

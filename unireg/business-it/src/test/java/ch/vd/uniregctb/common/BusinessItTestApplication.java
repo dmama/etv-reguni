@@ -169,11 +169,7 @@ public abstract class BusinessItTestApplication {
 
 		if (filepath.endsWith(".zip")) {
 			// fichier zip -> on assume qu'il n'y a qu'un seul fichier à l'intérieur et que c'est le fichier DBUnit
-			InputStream is = null;
-			ZipInputStream zipstream = null;
-			try {
-				is = new FileInputStream(file);
-				zipstream = new ZipInputStream(is);
+			try (InputStream is = new FileInputStream(file); ZipInputStream zipstream = new ZipInputStream(is)) {
 				zipstream.getNextEntry();
 				loadDataSet(zipstream);
 			}
@@ -181,30 +177,15 @@ public abstract class BusinessItTestApplication {
 				LOGGER.error(e, e);
 				throw e;
 			}
-			finally {
-				if (zipstream != null) {
-					zipstream.close();
-				}
-				if (is != null) {
-					is.close();
-				}
-			}
 		}
 		else {
 			// autre type de fichier -> on assume que c'est le fichier DBUnit
-			InputStream is = null;
-			try {
-				is = new FileInputStream(file);
+			try (InputStream is = new FileInputStream(file)) {
 				loadDataSet(is);
 			}
 			catch (Exception e) {
 				LOGGER.error(e, e);
 				throw e;
-			}
-			finally {
-				if (is != null) {
-					is.close();
-				}
 			}
 		}
 	}

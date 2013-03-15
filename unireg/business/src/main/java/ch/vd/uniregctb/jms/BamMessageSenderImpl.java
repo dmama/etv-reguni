@@ -82,7 +82,7 @@ public class BamMessageSenderImpl implements BamMessageSender {
 
 	private static Map<String, String> mergeHeaderMap(long noCtb, int periodeFiscale, @Nullable Map<String, String> otherHeaders) {
 		final int originalLength = otherHeaders != null ? otherHeaders.size() : 0;
-		final Map<String, String> merged = new HashMap<String, String>(originalLength + 2);
+		final Map<String, String> merged = new HashMap<>(originalLength + 2);
 		if (otherHeaders != null) {
 			merged.putAll(otherHeaders);
 		}

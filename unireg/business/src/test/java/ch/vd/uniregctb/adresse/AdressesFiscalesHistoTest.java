@@ -14,11 +14,11 @@ public class AdressesFiscalesHistoTest {
 	@Test
 	public void testOfType() {
 
-		final List<AdresseGenerique> adressesCourrier = new ArrayList<AdresseGenerique>();
-		final List<AdresseGenerique> adressesRepresentation = new ArrayList<AdresseGenerique>();
-		final List<AdresseGenerique> adressesDomicile = new ArrayList<AdresseGenerique>();
-		final List<AdresseGenerique> adressesPoursuite = new ArrayList<AdresseGenerique>();
-		final List<AdresseGenerique> adressesPoursuiteAutreTiers = new ArrayList<AdresseGenerique>();
+		final List<AdresseGenerique> adressesCourrier = new ArrayList<>();
+		final List<AdresseGenerique> adressesRepresentation = new ArrayList<>();
+		final List<AdresseGenerique> adressesDomicile = new ArrayList<>();
+		final List<AdresseGenerique> adressesPoursuite = new ArrayList<>();
+		final List<AdresseGenerique> adressesPoursuiteAutreTiers = new ArrayList<>();
 
 		AdressesFiscalesHisto adresses = new AdressesFiscalesHisto();
 		adresses.courrier = adressesCourrier;

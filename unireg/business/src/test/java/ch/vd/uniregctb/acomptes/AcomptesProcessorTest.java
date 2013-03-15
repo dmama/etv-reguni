@@ -225,7 +225,7 @@ public class AcomptesProcessorTest extends BusinessTest {
 			@Override
 			public Object doInTransaction(TransactionStatus transactionStatus) {
 				final Iterator<Long> iterator = processor.createIteratorOnIDsOfCtbs(getCurrentSession(), anneeReference);
-				final List<Long> ctbs = new ArrayList<Long>(10);
+				final List<Long> ctbs = new ArrayList<>(10);
 				while (iterator.hasNext()) {
 					ctbs.add(iterator.next());
 				}

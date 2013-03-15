@@ -33,7 +33,7 @@ public class JspTagOut extends BodyTagSupport {
 	private Object value;
 	private String id;
 
-	protected static final Map<Class, Editor> editors = new HashMap<Class, Editor>();
+	protected static final Map<Class, Editor> editors = new HashMap<>();
 
 	static {
 		editors.put(String.class, new StringEditor());

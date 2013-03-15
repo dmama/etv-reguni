@@ -47,7 +47,7 @@ public class ParamModeleDocumentSupprController extends AbstractController {
 		try {
 			manager.deleteModeleDocument(getModeleIdFromRequest(request));
 		} catch (DataIntegrityViolationException e) {
-			Map<Long, String> m = new HashMap<Long, String>(1);
+			Map<Long, String> m = new HashMap<>(1);
 			m.put(getModeleIdFromRequest(request), messageSource.getMessage("error.suppr.impossible", null, "error.suppr.impossible", Locale.getDefault()));
 			request.getSession().setAttribute("error_modele", m);
 		}

@@ -493,7 +493,7 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 	 */
 	private List<AdresseDisponibleView> getAdressesDisponible(Tiers tiers) {
 
-		List<AdresseDisponibleView> adresses = new ArrayList<AdresseDisponibleView>();
+		List<AdresseDisponibleView> adresses = new ArrayList<>();
 
 		if ( tiers instanceof PersonnePhysique) {
 			PersonnePhysique pp = (PersonnePhysique) tiers;

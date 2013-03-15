@@ -181,15 +181,11 @@ public class PartyNumbersRequestEsbHandlerItTest extends PartyRequestEsbHandlerI
 			return Collections.emptyList();
 		}
 
-		final List<Integer> ids = new ArrayList<Integer>();
-		final Scanner scanner = new Scanner(idsAsStream, "UTF-8");
-		try {
+		final List<Integer> ids = new ArrayList<>();
+		try (Scanner scanner = new Scanner(idsAsStream, "UTF-8")) {
 			while (scanner.hasNext()) {
 				ids.add(Integer.parseInt(scanner.next()));
 			}
-		}
-		finally {
-			scanner.close();
 		}
 		return ids;
 	}

@@ -36,10 +36,10 @@ public class ModificationInterceptor extends AbstractLinkedInterceptor {
 	private final ThreadLocal<HashSet<Transaction>> registeredTransactions = new ThreadLocal<HashSet<Transaction>>() {
 		@Override
 		protected HashSet<Transaction> initialValue() {
-			return new HashSet<Transaction>();
+			return new HashSet<>();
 		}
 	};
-	private final List<ModificationSubInterceptor> subInterceptors = new ArrayList<ModificationSubInterceptor>();
+	private final List<ModificationSubInterceptor> subInterceptors = new ArrayList<>();
 
 	public void setTransactionManager(TransactionManager transactionManager) {
 		this.transactionManager = transactionManager;

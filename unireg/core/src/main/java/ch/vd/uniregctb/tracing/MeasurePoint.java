@@ -5,7 +5,7 @@ import java.util.Set;
 
 public class MeasurePoint implements Comparable<MeasurePoint> {
 	
-	private final HashMap<String, MeasurePoint> children = new HashMap<String, MeasurePoint>();
+	private final HashMap<String, MeasurePoint> children = new HashMap<>();
 	
 	private final String description;
 	private int nbCalls = 0;

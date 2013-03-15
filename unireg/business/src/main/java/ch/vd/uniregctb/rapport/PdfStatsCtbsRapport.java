@@ -98,7 +98,7 @@ public class PdfStatsCtbsRapport extends PdfRapport {
 
 		// trie par ordre croissant selon l'ordre naturel de la clé
 		final Set<Map.Entry<StatistiquesCtbs.Key, StatistiquesCtbs.Value>> entrySet = results.stats.entrySet();
-		final List<Map.Entry<StatistiquesCtbs.Key, StatistiquesCtbs.Value>> list = new ArrayList<Map.Entry<StatistiquesCtbs.Key, StatistiquesCtbs.Value>>(entrySet);
+		final List<Map.Entry<StatistiquesCtbs.Key, StatistiquesCtbs.Value>> list = new ArrayList<>(entrySet);
 		Collections.sort(list, new Comparator<Map.Entry<StatistiquesCtbs.Key, StatistiquesCtbs.Value>>() {
 			@Override
 			public int compare(Map.Entry<StatistiquesCtbs.Key, StatistiquesCtbs.Value> o1,

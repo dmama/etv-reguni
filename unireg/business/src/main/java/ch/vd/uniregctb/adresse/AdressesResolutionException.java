@@ -13,12 +13,12 @@ public class AdressesResolutionException extends AdresseException {
 	/**
 	 * Numéros de contribuables touchés par le problème
 	 */
-	private final List<Tiers> tiers = new ArrayList<Tiers>();
+	private final List<Tiers> tiers = new ArrayList<>();
 
 	/**
 	 * Id des adresses fiscales ayant provoqué l'exception
 	 */
-	private final List<AdresseTiers> adresses = new ArrayList<AdresseTiers>();
+	private final List<AdresseTiers> adresses = new ArrayList<>();
 
 	public AdressesResolutionException(String string) {
 		super(string);

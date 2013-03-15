@@ -42,7 +42,7 @@ public class ComparerForFiscalEtCommuneProcessor {
 	private final TiersService tiersService;
 	private final ServiceInfrastructureService serviceInfra;
 	private static final int batchSize = BATCH_SIZE;
-	private final ThreadLocal<ComparerForFiscalEtCommuneResults> rapport = new ThreadLocal<ComparerForFiscalEtCommuneResults>();
+	private final ThreadLocal<ComparerForFiscalEtCommuneResults> rapport = new ThreadLocal<>();
 
 	public ComparerForFiscalEtCommuneProcessor(HibernateTemplate hibernateTemplate, PlatformTransactionManager transactionManager, AdresseService aService,
 	                                           TiersService tiersService, ServiceInfrastructureService serviceInfra) {
@@ -62,7 +62,7 @@ public class ComparerForFiscalEtCommuneProcessor {
 
 		// Reussi les messages par lots
 		final ParallelBatchTransactionTemplate<Long, ComparerForFiscalEtCommuneResults>
-				template = new ParallelBatchTransactionTemplate<Long, ComparerForFiscalEtCommuneResults>(ids, batchSize, nbThreads, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE,
+				template = new ParallelBatchTransactionTemplate<>(ids, batchSize, nbThreads, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE,
 																										 transactionManager, status, hibernateTemplate);
 		template.execute(rapportFinal, new BatchTransactionTemplate.BatchCallback<Long, ComparerForFiscalEtCommuneResults>() {
 

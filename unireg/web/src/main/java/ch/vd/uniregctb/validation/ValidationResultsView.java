@@ -12,11 +12,11 @@ public class ValidationResultsView {
 
 	public ValidationResultsView(ValidationResults res) {
 		if (res.hasErrors()) {
-			this.errors = new ArrayList<String>();
+			this.errors = new ArrayList<>();
 			this.errors.addAll(res.getErrors());
 		}
 		if (res.hasWarnings()) {
-			this.warnings = new ArrayList<String>();
+			this.warnings = new ArrayList<>();
 			this.warnings.addAll(res.getWarnings());
 		}
 	}

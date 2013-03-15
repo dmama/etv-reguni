@@ -13,8 +13,8 @@ import org.jetbrains.annotations.Nullable;
  */
 public class AdresseSandwich {
 
-	private final List<Couche> couches = new ArrayList<Couche>();
-	private final Set<AdresseCouche> types = new HashSet<AdresseCouche>();
+	private final List<Couche> couches = new ArrayList<>();
+	private final Set<AdresseCouche> types = new HashSet<>();
 
 	/**
 	 * Cache de l'emballage
@@ -104,7 +104,7 @@ public class AdresseSandwich {
 			return emballage;
 		}
 
-		this.emballage = new ArrayList<AdresseGenerique>();
+		this.emballage = new ArrayList<>();
 		for (Couche couche : couches) {
 			// on surcharge les adresses courantes avec les adresses de la nouvelle couche
 			emballage = AdresseMixer.override(this.emballage, couche.getAdresses(), couche.getSourceSurcharge(), couche.getDefaultSurcharge());

@@ -54,8 +54,8 @@ public class DatabaseChangeInterceptor implements ModificationSubInterceptor, In
 	 * Ids des tiers changés qui ont déjà été notifiés.
 	 */
 	private static class Data {
-		private final Set<Long> tiersChange = new HashSet<Long>();
-		private final Set<Long> droitsAccesChange = new HashSet<Long>();
+		private final Set<Long> tiersChange = new HashSet<>();
+		private final Set<Long> droitsAccesChange = new HashSet<>();
 
 		public void addTiersChange(Long id) {
 			tiersChange.add(id);

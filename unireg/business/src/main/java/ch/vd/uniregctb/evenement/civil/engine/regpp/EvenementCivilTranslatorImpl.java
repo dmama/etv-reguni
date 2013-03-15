@@ -70,7 +70,7 @@ import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 public class EvenementCivilTranslatorImpl implements EvenementCivilTranslator, InitializingBean {
 
-	private static final Map<TypeEvenementCivil, EvenementCivilTranslationStrategy> strategies = new EnumMap<TypeEvenementCivil, EvenementCivilTranslationStrategy>(TypeEvenementCivil.class);
+	private static final Map<TypeEvenementCivil, EvenementCivilTranslationStrategy> strategies = new EnumMap<>(TypeEvenementCivil.class);
 
 	static {
 		strategies.put(TypeEvenementCivil.ANNUL_ARRIVEE_SECONDAIRE, new AnnulationArriveeTranslationStrategy());

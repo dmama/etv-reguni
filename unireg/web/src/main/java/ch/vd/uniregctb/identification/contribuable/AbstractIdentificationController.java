@@ -85,7 +85,7 @@ public class AbstractIdentificationController extends AbstractSimpleFormControll
 	protected Map<String, Object> referenceData(HttpServletRequest request) throws Exception {
 		// TracePoint tp = TracingManager.begin();
 		// TracingManager.end(tp);
-		Map<String, Object> data = new HashMap<String, Object>();
+		Map<String, Object> data = new HashMap<>();
 		data.put(PERIODE_FISCALE_MAP_NAME,initMapPeriodeFiscale());
 		data.put(EMETTEUR_MAP_NAME, initMapEmetteurId());
 		data.put(ETAT_MESSAGE_MAP_NAME, initMapEtatMessage());
@@ -234,7 +234,7 @@ public class AbstractIdentificationController extends AbstractSimpleFormControll
 	 * @return un tableau (potentiellement vide...) des types autorisés
 	 */
 	protected TypeDemande[] getAllowedTypes() {
-		final Set<TypeDemande> types = new HashSet<TypeDemande>();
+		final Set<TypeDemande> types = new HashSet<>();
 		if (SecurityHelper.isAnyGranted(securityProvider, Role.MW_IDENT_CTB_CELLULE_BO, Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_VISU, Role.MW_IDENT_CTB_GEST_BO)) {
 			types.add(TypeDemande.MELDEWESEN);
 			types.add(TypeDemande.NCS);

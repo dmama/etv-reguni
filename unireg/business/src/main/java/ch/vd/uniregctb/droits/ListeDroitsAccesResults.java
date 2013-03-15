@@ -101,8 +101,8 @@ public class ListeDroitsAccesResults extends JobResults<Number, ListeDroitsAcces
 
 	// Données de processing
 	public boolean interrompu;
-	public final List<InfoDroitAcces> droitsAcces = new ArrayList<InfoDroitAcces>();
-	public final List<Erreur> erreurs = new ArrayList<Erreur>();
+	public final List<InfoDroitAcces> droitsAcces = new ArrayList<>();
+	public final List<Erreur> erreurs = new ArrayList<>();
 
 	public ListeDroitsAccesResults(RegDate dateValeur, TiersService tiersService, AdresseService adresseService) {
 		super(tiersService, adresseService);

@@ -265,7 +265,7 @@ public abstract class RapportEntreTiers extends HibernateEntity implements DateR
 			return null;
 		}
 
-		final List<Object> list = new ArrayList<Object>(2);
+		final List<Object> list = new ArrayList<>(2);
 		if (sujetId != null) {
 			list.add(new EntityKey(Tiers.class, sujetId));
 		}

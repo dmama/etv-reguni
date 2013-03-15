@@ -78,7 +78,7 @@ public class AnnulationSeparationListController extends AbstractTiersListControl
 					}
 					try {
 						final List<TiersIndexedDataView> results = searchTiers(bean);
-						final List<TiersIndexedDataView> filtredResults = new ArrayList<TiersIndexedDataView>();
+						final List<TiersIndexedDataView> filtredResults = new ArrayList<>();
 						for (TiersIndexedDataView tiersIndexedData : results) {
 							if (annulationSeparationRecapManager.isDernierForFiscalPrincipalFermePourSeparation(tiersIndexedData.getNumero())) {
 								filtredResults.add(tiersIndexedData);

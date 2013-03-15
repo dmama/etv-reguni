@@ -26,12 +26,12 @@ public class DestinataireAvecHisto {
 
 	public DestinataireAvecHisto(PayerWithHistory payerWithHistory, long ctbId) {
 		this.ctbId = ctbId;
-		this.historiqueDemandes = new ArrayList<DemandeAvecHisto>();
+		this.historiqueDemandes = new ArrayList<>();
 		List<RegistrationRequestWithHistory> historyOfRequests = payerWithHistory.getHistoryOfRequests().getRequest();
 		for (RegistrationRequestWithHistory registrationRequestHistory : historyOfRequests) {
 			this.historiqueDemandes.add(new DemandeAvecHisto(registrationRequestHistory));
 		}
-		this.historiquesEtats = new ArrayList<EtatDestinataire>();
+		this.historiquesEtats = new ArrayList<>();
 		List<PayerSituationHistoryEntry> historyOfSituations = payerWithHistory.getHistoryOfSituations().getSituation();
 		if (historyOfSituations == null || historyOfSituations.isEmpty()) {
 			if (payerWithHistory.getPayerStatus() == null) {

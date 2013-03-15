@@ -71,7 +71,7 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 	/**
 	 * Moniteur des appels actuellements en cours
 	 */
-	private final DetailedLoadMeter<Request> loadMeter = new DetailedLoadMeter<Request>();
+	private final DetailedLoadMeter<Request> loadMeter = new DetailedLoadMeter<>();
 
 	@Resource
 	private WebServiceContext context;
@@ -618,7 +618,7 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 	private void checkBatchReadAccess(BatchParty batch) {
 		final int size = batch.getEntries().size();
 
-		final List<Long> ids = new ArrayList<Long>();
+		final List<Long> ids = new ArrayList<>();
 		for (BatchPartyEntry e : batch.getEntries()) {
 			if (e.getParty() == null) {
 				ids.add(null);
@@ -705,7 +705,7 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 		for (BatchPartyEntry entry : batch.getEntries()) {
 			if (entry.getExceptionInfo() != null) {
 				if (inError == null) {
-					inError = new ArrayList<BatchPartyEntry>();
+					inError = new ArrayList<>();
 				}
 				inError.add(entry);
 			}
@@ -737,7 +737,7 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 		for (AcknowledgeTaxDeclarationResponse reponse : reponses.getResponses()) {
 			if (reponse.getCode() != TaxDeclarationAcknowledgeCode.OK) {
 				if (inError == null) {
-					inError = new ArrayList<AcknowledgeTaxDeclarationResponse>();
+					inError = new ArrayList<>();
 				}
 				inError.add(reponse);
 			}

@@ -55,7 +55,7 @@ public class AddForPrincipalValidator extends AddForRevenuFortuneValidator {
 		}
 
 		// on établi la liste des périodes des fors fiscaux existants
-		final List<DateRange> fors = new ArrayList<DateRange>();
+		final List<DateRange> fors = new ArrayList<>();
 		for (ForFiscal f : ctb.getForsFiscauxPrincipauxActifsSorted()) {
 			if (f.getDateFin() == null && view.getDateDebut() != null && f.getDateDebut().isBefore(view.getDateDebut())) {
 				// simule la fermeture du for courant à la veille du nouveau for

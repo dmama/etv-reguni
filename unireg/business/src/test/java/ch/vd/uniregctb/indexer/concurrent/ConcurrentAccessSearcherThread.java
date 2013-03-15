@@ -9,8 +9,8 @@ import ch.vd.uniregctb.indexer.SearchCallback;
 
 public class ConcurrentAccessSearcherThread extends AbstractConcurrentAccessThread {
 
-	private final Logger LOGGER = Logger.getLogger(ConcurrentAccessSearcherThread.class);
-	private int maxHits = 100;
+	private static final Logger LOGGER = Logger.getLogger(ConcurrentAccessSearcherThread.class);
+	private static final int maxHits = 100;
 
 	public ConcurrentAccessSearcherThread(GlobalIndexInterface globalIndex) {
 

@@ -51,7 +51,7 @@ public class DatabaseDumpController extends AbstractSimpleFormController {
 	private PlatformTransactionManager transactionManager;
 	private SecurityProviderInterface securityProvider;
 
-	private Map<String, Action> actions = new HashMap<String, Action>();
+	private Map<String, Action> actions = new HashMap<>();
 
 	public DatabaseDumpController() {
 		actions.put("dump", new DownloadAll());
@@ -202,7 +202,7 @@ public class DatabaseDumpController extends AbstractSimpleFormController {
 
 			final Document doc = getDoc(request);
 			if (doc != null) {
-				HashMap<String, Object> params = new HashMap<String, Object>();
+				HashMap<String, Object> params = new HashMap<>();
 				params.put(LoadDatabaseJob.DOC_ID, doc.getId());
 				batchScheduler.startJob(LoadDatabaseJob.NAME, params);
 			}
@@ -223,7 +223,7 @@ public class DatabaseDumpController extends AbstractSimpleFormController {
 
 		@Override
 		public ModelAndView execute(HttpServletRequest request, HttpServletResponse response) throws Exception {
-			final HashMap<String, Object> params = new HashMap<String, Object>();
+			final HashMap<String, Object> params = new HashMap<>();
 			params.put(DumpTiersListJob.PARAM_TIERS_LIST, request.getParameter("tiers"));
 			params.put(DumpTiersListJob.INCLUDE_DECLARATION, true);
 			params.put(DumpTiersListJob.INCLUDE_RET, true);

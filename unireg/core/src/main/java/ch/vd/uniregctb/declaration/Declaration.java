@@ -215,7 +215,7 @@ public abstract class Declaration extends HibernateEntity implements DateRange, 
 		}
 
 		// tri par ordre croissant
-		final List<DelaiDeclaration> list = new ArrayList<DelaiDeclaration>(delais);
+		final List<DelaiDeclaration> list = new ArrayList<>(delais);
 		Collections.sort(list, new DelaiDeclaration.Comparator());
 
 		return list;
@@ -425,7 +425,7 @@ public abstract class Declaration extends HibernateEntity implements DateRange, 
 			return null;
 		}
 
-		final List<DelaiDeclaration> list = new ArrayList<DelaiDeclaration>(delais.size());
+		final List<DelaiDeclaration> list = new ArrayList<>(delais.size());
 		for (DelaiDeclaration delai : delais) {
 			if (!delai.isAnnule()) {
 				list.add(delai);
@@ -478,7 +478,7 @@ public abstract class Declaration extends HibernateEntity implements DateRange, 
 		}
 
 		// tri par ordre croissant
-		final List<EtatDeclaration> list = new ArrayList<EtatDeclaration>(etats);
+		final List<EtatDeclaration> list = new ArrayList<>(etats);
 		Collections.sort(list, new EtatDeclaration.Comparator());
 
 		return list;
@@ -525,7 +525,7 @@ public abstract class Declaration extends HibernateEntity implements DateRange, 
 	public void addEtat(EtatDeclaration etat) {
 
 		if (etats == null) {
-			etats = new HashSet<EtatDeclaration>();
+			etats = new HashSet<>();
 		}
 
 		etat.setDeclaration(this);
@@ -535,7 +535,7 @@ public abstract class Declaration extends HibernateEntity implements DateRange, 
 	public void addDelai(DelaiDeclaration delai) {
 
 		if (delais == null) {
-			delais = new HashSet<DelaiDeclaration>();
+			delais = new HashSet<>();
 		}
 
 		delai.setDeclaration(this);

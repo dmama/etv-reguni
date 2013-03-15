@@ -224,7 +224,7 @@ public class AdresseServiceImpl implements AdresseService {
 		if (tiers instanceof PersonnePhysique) {
 			final RegDate dateDeces = tiersService.getDateDeces((PersonnePhysique) tiers);
 			if (dateDeces != null) {
-				set = new HashSet<RegDate>();
+				set = new HashSet<>();
 				set.add(dateDeces); // [SIFISC-4475] En cas de décès, l'adresse du défunt change déjà le matin même (alors que son for fiscal reste valable jusqu'au soir)
 			}
 			else {
@@ -241,7 +241,7 @@ public class AdresseServiceImpl implements AdresseService {
 			final RegDate dateDecesConjoint = tiersService.getDateDeces(ensemble.getConjoint());
 
 			if (dateDecesPrincipal != null || dateDecesConjoint != null) {
-				set = new HashSet<RegDate>();
+				set = new HashSet<>();
 				if (dateDecesPrincipal != null) {
 					set.add(dateDecesPrincipal); // [SIFISC-4475] En cas de décès, l'adresse du défunt change déjà le matin même (alors que son for fiscal reste valable jusqu'au soir)
 				}
@@ -781,7 +781,7 @@ public class AdresseServiceImpl implements AdresseService {
 		final ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative c = serviceInfra.getCollectivite(collectivite
 				.getNumeroCollectiviteAdministrative());
 
-		final List<String> nomsComplets = new ArrayList<String>(3);
+		final List<String> nomsComplets = new ArrayList<>(3);
 		if (StringUtils.isNotBlank(c.getNomComplet1())) {
 			nomsComplets.add(c.getNomComplet1());
 		}
@@ -1087,7 +1087,7 @@ public class AdresseServiceImpl implements AdresseService {
 		if (adresses == null || adresses.isEmpty()) {
 			return adresses;
 		}
-		final List<AdresseGenerique> list = new ArrayList<AdresseGenerique>(adresses.size());
+		final List<AdresseGenerique> list = new ArrayList<>(adresses.size());
 		for (AdresseGenerique a : adresses) {
 			if (a.getSource().getType() != AdresseGenerique.SourceType.CONJOINT) {
 				list.add(a);
@@ -1217,7 +1217,7 @@ public class AdresseServiceImpl implements AdresseService {
 	 * @return une liste de périodes, qui peut être vide.
 	 */
 	private static List<DateRange> getPeriodesSousRepresentationLegale(PersonnePhysique pp) {
-		final List<DateRange> list = new ArrayList<DateRange>();
+		final List<DateRange> list = new ArrayList<>();
 
 		for (RapportEntreTiers rapport : pp.getRapportsSujet()) {
 			if (!rapport.isAnnule() && rapport instanceof RepresentationLegale) {
@@ -1259,7 +1259,7 @@ public class AdresseServiceImpl implements AdresseService {
 
 		// [UNIREG-1341] on utilise l'adresse courrier *propre* du conjoint (hors représentation) comme adresse de représentation du ménage
 		final List<AdresseGenerique> adressesCourrierConjoint = getAdressesCourrierPropreHistoInRanges(conjoint, DateRangeHelper.collateRange(periodesRepresentation), callDepth, strict);
-		final List<AdresseGenerique> adressesAdaptees = new ArrayList<AdresseGenerique>();
+		final List<AdresseGenerique> adressesAdaptees = new ArrayList<>();
 
 		for (AdresseGenerique adresse : adressesCourrierConjoint) {
 			// [UNIREG-2676] on ignore toutes les adresses où le conjoint est hors-Suisse
@@ -1314,7 +1314,7 @@ public class AdresseServiceImpl implements AdresseService {
 			verifieCoherenceAdresses(adresses.courrier, "Adresse de courrier", tiers);
 		}
 
-		final List<AdresseGenerique> adressesInRange = new ArrayList<AdresseGenerique>();
+		final List<AdresseGenerique> adressesInRange = new ArrayList<>();
 		for (DateRange range : ranges) {
 			final List<AdresseGenerique> adressesRange = AdresseMixer.extract(adresses.courrier, range.getDateDebut(), range.getDateFin());
 			adressesInRange.addAll(adressesRange);
@@ -1336,7 +1336,7 @@ public class AdresseServiceImpl implements AdresseService {
 	private List<AdresseGenerique> getAdressesRepresentantHistoPourTiers(Tiers tiers, TypeAdresseRepresentant type, int callDepth, boolean strict)
 			throws AdresseException {
 
-		List<AdresseGenerique> adresses = new ArrayList<AdresseGenerique>();
+		List<AdresseGenerique> adresses = new ArrayList<>();
 
 		final List<RapportEntreTiers> rapports = TiersHelper.getRapportSujetHistoOfType(tiers, type.getTypeRapport());
 		if (rapports != null) {
@@ -1384,7 +1384,7 @@ public class AdresseServiceImpl implements AdresseService {
 	 */
 	private static void verifieCoherenceAdresses(List<AdresseGenerique> adresses, String descriptionContexte, Tiers tiers) throws AdresseException {
 		// [SIFISC-6523] On retire de la verification de coherence les adresses annulées
-		final List<AdresseGenerique> adressesNonAnnulees = new ArrayList<AdresseGenerique>(adresses.size());
+		final List<AdresseGenerique> adressesNonAnnulees = new ArrayList<>(adresses.size());
 		for (AdresseGenerique adr : adresses) {
 			if (!adr.isAnnule()) {
 				adressesNonAnnulees.add(adr);
@@ -1791,7 +1791,7 @@ public class AdresseServiceImpl implements AdresseService {
 	}
 
 	private List<AdresseGenerique> adapteAdressesCiviles(Tiers tiers, List<Adresse> adressesCiviles, boolean isDefault, boolean strict) throws AdresseDataException {
-		List<AdresseGenerique> adresses = new ArrayList<AdresseGenerique>();
+		List<AdresseGenerique> adresses = new ArrayList<>();
 
 		for (Adresse adresse : adressesCiviles) {
 			try {
@@ -1847,7 +1847,7 @@ public class AdresseServiceImpl implements AdresseService {
 	}
 
 	private List<AdresseGenerique> adapteAdressesPM(Entreprise entreprise, List<AdresseEntreprise> adressesPM, boolean isDefault) {
-		List<AdresseGenerique> adresses = new ArrayList<AdresseGenerique>();
+		List<AdresseGenerique> adresses = new ArrayList<>();
 		for (AdresseEntreprise adresse : adressesPM) {
 			adresses.add(new AdressePMAdapter(adresse, entreprise, isDefault));
 		}
@@ -1874,7 +1874,7 @@ public class AdresseServiceImpl implements AdresseService {
 			return;
 		}
 
-		List<AdresseGenerique> adresseSurchargeesGeneriques = new ArrayList<AdresseGenerique>();
+		List<AdresseGenerique> adresseSurchargeesGeneriques = new ArrayList<>();
 		for (AdresseTiers adresse : adressesSurchargees) {
 			adresseSurchargeesGeneriques.add(resolveAdresseSurchargee(tiers, adresse, callDepth + 1, strict));
 		}
@@ -1959,7 +1959,7 @@ public class AdresseServiceImpl implements AdresseService {
 		 * Cas spécial du débiteur où il est important d'afficher le complément du nom (ligne pour adresse) en plus des noms et prénoms
 		 */
 		if (tiers instanceof DebiteurPrestationImposable && adresse.getPourAdresse() != null) {
-			list = new ArrayList<String>(list);
+			list = new ArrayList<>(list);
 			list.add(adresse.getPourAdresse());
 		}
 
@@ -2015,11 +2015,11 @@ public class AdresseServiceImpl implements AdresseService {
 	public AdressesFiscalesHisto getAdressesTiers(Tiers tiers) throws AdresseException {
 
 		final AdressesFiscalesHisto adressesFiscalesHisto = new AdressesFiscalesHisto();
-		adressesFiscalesHisto.courrier = new ArrayList<AdresseGenerique>();
-		adressesFiscalesHisto.domicile = new ArrayList<AdresseGenerique>();
-		adressesFiscalesHisto.representation = new ArrayList<AdresseGenerique>();
-		adressesFiscalesHisto.poursuite = new ArrayList<AdresseGenerique>();
-		adressesFiscalesHisto.poursuiteAutreTiers = new ArrayList<AdresseGenerique>();
+		adressesFiscalesHisto.courrier = new ArrayList<>();
+		adressesFiscalesHisto.domicile = new ArrayList<>();
+		adressesFiscalesHisto.representation = new ArrayList<>();
+		adressesFiscalesHisto.poursuite = new ArrayList<>();
+		adressesFiscalesHisto.poursuiteAutreTiers = new ArrayList<>();
 
 		final Set<AdresseTiers> adresses = tiers.getAdressesTiers();
 		for (AdresseTiers adresse : adresses) {

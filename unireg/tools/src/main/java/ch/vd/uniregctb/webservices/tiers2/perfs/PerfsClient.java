@@ -117,56 +117,58 @@ public class PerfsClient {
 			}
 
 			final FileWriter outputFile = openOutputFile(outputFilename);
+			try {
+				final Query query;
+				if (dateAsString != null) {
+					Date date = parseDate(dateAsString);
+					query = new DateQuery(date, operateur, oid, outputFile);
+				}
+				else if (periodeAsString != null) {
+					int annee = Integer.valueOf(periodeAsString);
+					query = new PeriodeQuery(annee, operateur, oid, outputFile);
+				}
+				else if (histo) {
+					query = new HistoQuery(operateur, oid, outputFile);
+				}
+				else {
+					query = new SearchQuery(operateur, oid, outputFile);
+				}
 
-			final Query query;
-			if (dateAsString != null) {
-				Date date = parseDate(dateAsString);
-				query = new DateQuery(date, operateur, oid, outputFile);
-			}
-			else if (periodeAsString != null) {
-				int annee = Integer.valueOf(periodeAsString);
-				query = new PeriodeQuery(annee, operateur, oid, outputFile);
-			}
-			else if (histo) {
-				query = new HistoQuery(operateur, oid, outputFile);
-			}
-			else {
-				query = new SearchQuery(operateur, oid, outputFile);
-			}
-
-			if (partsAsString != null) {
-				final Set<TiersPart> parts = new HashSet<TiersPart>();
-				for (String s : partsAsString) {
-					if (s.equals("ALL")) {
-						Collections.addAll(parts, TiersPart.values());
-						break;
+				if (partsAsString != null) {
+					final Set<TiersPart> parts = new HashSet<>();
+					for (String s : partsAsString) {
+						if (s.equals("ALL")) {
+							Collections.addAll(parts, TiersPart.values());
+							break;
+						}
+						TiersPart e = TiersPart.fromValue(s);
+						parts.add(e);
 					}
-					TiersPart e = TiersPart.fromValue(s);
-					parts.add(e);
+					query.setParts(parts);
 				}
-				query.setParts(parts);
-			}
 
-			if (ctbIdAsString != null) {
-				Long id = Long.valueOf(ctbIdAsString);
-				client = new PerfsClient(serviceUrl, username, password, query, queriesCount, threadsCount, id);
-			}
-			else {
-				client = new PerfsClient(serviceUrl, username, password, query, queriesCount, threadsCount, accessFilename, batch);
-			}
-
-			// Enregistre un shutdown hook de manière à afficher les stats même lorsque l'application est interrompue avec un Ctlr-C.
-			Runtime.getRuntime().addShutdownHook(new Thread() {
-				@Override
-				public void run() {
-					shutdown();
+				if (ctbIdAsString != null) {
+					Long id = Long.valueOf(ctbIdAsString);
+					client = new PerfsClient(serviceUrl, username, password, query, queriesCount, threadsCount, id);
 				}
-			});
+				else {
+					client = new PerfsClient(serviceUrl, username, password, query, queriesCount, threadsCount, accessFilename, batch);
+				}
 
-			client.run();
+				// Enregistre un shutdown hook de manière à afficher les stats même lorsque l'application est interrompue avec un Ctlr-C.
+				Runtime.getRuntime().addShutdownHook(new Thread() {
+					@Override
+					public void run() {
+						shutdown();
+					}
+				});
 
-			if (outputFile != null) {
-				outputFile.close();
+				client.run();
+			}
+			finally {
+				if (outputFile != null) {
+					outputFile.close();
+				}
 			}
 		}
 		catch (Exception e) {
@@ -271,7 +273,7 @@ public class PerfsClient {
 		}
 
 		// Crée les threads
-		threads = new ArrayList<PerfsThread>();
+		threads = new ArrayList<>();
 		for (int i = 0; i < threadCount; ++i) {
 			PerfsThread thread = new PerfsThread(service, query, batch, iter);
 			threads.add(thread);

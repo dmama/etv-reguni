@@ -38,7 +38,7 @@ public class ResolutionAdresseProcessor {
 	private final PlatformTransactionManager transactionManager;
 	private final TiersService tiersService;
 	private final HibernateTemplate hibernateTemplate;
-	private final ThreadLocal<ResolutionAdresseResults> rapport = new ThreadLocal<ResolutionAdresseResults>();
+	private final ThreadLocal<ResolutionAdresseResults> rapport = new ThreadLocal<>();
 
 	public ResolutionAdresseProcessor(AdresseService adresseService, ServiceInfrastructureService infraService, PlatformTransactionManager transactionManager,
 	                                  TiersService tiersService, HibernateTemplate hibernateTemplate) {
@@ -58,7 +58,7 @@ public class ResolutionAdresseProcessor {
 
 		// Reussi les messages par lots
 		final ParallelBatchTransactionTemplate<Long, ResolutionAdresseResults>
-				template = new ParallelBatchTransactionTemplate<Long, ResolutionAdresseResults>(ids, BATCH_SIZE, nbThreads, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE,
+				template = new ParallelBatchTransactionTemplate<>(ids, BATCH_SIZE, nbThreads, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE,
 				transactionManager, status, hibernateTemplate);
 		template.execute(rapportFinal, new BatchTransactionTemplate.BatchCallback<Long, ResolutionAdresseResults>() {
 

@@ -181,7 +181,7 @@ public class TiersImportController {
 
 		LOGGER.debug("Getting DBunit files from " + SCRIPTS_LIST_FILES);
 
-		final List<LoadableFileDescription> scriptFileNames = new ArrayList<LoadableFileDescription>();
+		final List<LoadableFileDescription> scriptFileNames = new ArrayList<>();
 		try (InputStream scriptFiles = getClass().getClassLoader().getResourceAsStream(SCRIPTS_LIST_FILES);
 		     InputStreamReader inReader = new InputStreamReader(scriptFiles, "UTF-8");
 		     BufferedReader reader = new BufferedReader(inReader)) {

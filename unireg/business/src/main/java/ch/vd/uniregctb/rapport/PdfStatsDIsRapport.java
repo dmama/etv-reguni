@@ -96,7 +96,7 @@ public class PdfStatsDIsRapport extends PdfRapport {
 		String contenu = null;
 
 		// trie par ordre croissant selon l'ordre naturel de la clé
-		final List<Map.Entry<StatistiquesDIs.Key, StatistiquesDIs.Value>> list = new ArrayList<Map.Entry<StatistiquesDIs.Key, StatistiquesDIs.Value>>(results.stats.entrySet());
+		final List<Map.Entry<StatistiquesDIs.Key, StatistiquesDIs.Value>> list = new ArrayList<>(results.stats.entrySet());
 		Collections.sort(list, new Comparator<Map.Entry<StatistiquesDIs.Key, StatistiquesDIs.Value>>() {
 			@Override
 			public int compare(Map.Entry<StatistiquesDIs.Key, StatistiquesDIs.Value> o1, Map.Entry<StatistiquesDIs.Key, StatistiquesDIs.Value> o2) {

@@ -73,7 +73,7 @@ public class InboxElementTest extends WithoutSpringTest {
 		Thread.sleep(50);
 		final InboxElement elt2 = new InboxElement("Deux", null, buildAttachment(), 0);
 
-		final List<InboxElement> list = new ArrayList<InboxElement>(2);
+		final List<InboxElement> list = new ArrayList<>(2);
 		list.add(elt1);
 		list.add(elt2);
 		Collections.sort(list);

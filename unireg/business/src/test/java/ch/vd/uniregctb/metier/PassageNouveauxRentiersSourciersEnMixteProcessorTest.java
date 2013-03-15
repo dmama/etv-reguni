@@ -43,7 +43,7 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessorTest extends Busine
 		final ServiceCivilCacheWarmer cacheWarmer = getBean(ServiceCivilCacheWarmer.class, "serviceCivilCacheWarmer");
 		final ValidationService validationService = getBean(ValidationService.class, "validationService");
 		paramAppService = getBean(ParametreAppService.class, "parametreAppService");
-		processor = new PassageNouveauxRentiersSourciersEnMixteProcessor(transactionManager, hibernateTemplate, tiersService, tiersDAO,
+		processor = new PassageNouveauxRentiersSourciersEnMixteProcessor(transactionManager, hibernateTemplate, tiersService,
 		                                                                 adresseService, serviceInfra, cacheWarmer, validationService, paramAppService);
 	}
 

@@ -245,7 +245,7 @@ public abstract class AbstractSpringTest implements ApplicationContextAware {
 	protected void setAuthentication(String username, String[] roles) {
 
 		/* crée un objet Authentication */
-		List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
+		List<GrantedAuthority> authorities = new ArrayList<>();
 		authorities.add(new GrantedAuthorityImpl(username));
 		for (String r : roles) {
 			authorities.add(new GrantedAuthorityImpl(r));

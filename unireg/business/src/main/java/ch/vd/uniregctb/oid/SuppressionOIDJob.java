@@ -129,7 +129,7 @@ public class SuppressionOIDJob extends JobDefinition {
 		rapportFinal.total = ids.size();
 
 		final BatchTransactionTemplate<Long, SuppressionOIDResults> template =
-				new BatchTransactionTemplate<Long, SuppressionOIDResults>(ids, 100, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, hibernateTemplate);
+				new BatchTransactionTemplate<>(ids, 100, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, hibernateTemplate);
 		template.execute(rapportFinal, new BatchTransactionTemplate.BatchCallback<Long, SuppressionOIDResults>() {
 
 			@Override
@@ -180,7 +180,7 @@ public class SuppressionOIDJob extends JobDefinition {
 				final Object[] oidParam = new Object[] { oid };
 				final Object[] officeImpotIdParam = new Object[] { officeImpotId };
 
-				final Set<Long> ids = new TreeSet<Long>();
+				final Set<Long> ids = new TreeSet<>();
 
 				// sur le tiers lui-même
 				ids.addAll(hibernateTemplate.<Long>find("select tiers.id from Tiers tiers where tiers.officeImpotId = ?", oidParam, null));
@@ -237,7 +237,7 @@ public class SuppressionOIDJob extends JobDefinition {
 						final String muser = "Fermeture-OID-" + oid + "-" + newOfficeImpot.getNumeroCollectiviteAdministrative();
 
 						// on applique les changements
-						final Set<String> tables = new HashSet<String>();
+						final Set<String> tables = new HashSet<>();
 						for (UpdateOperation operation : operations) {
 							if (operation.execute(id, oid, officeImpotId, newOfficeImpot.getNumeroCollectiviteAdministrative(), newOfficeImpot.getId(), muser) > 0) {
 								tables.add(operation.getTable());

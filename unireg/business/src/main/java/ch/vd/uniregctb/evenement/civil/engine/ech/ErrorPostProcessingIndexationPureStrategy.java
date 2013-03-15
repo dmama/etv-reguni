@@ -35,8 +35,8 @@ public class ErrorPostProcessingIndexationPureStrategy implements ErrorPostProce
 	@Override
 	public List<EvenementCivilEchBasicInfo> doCollectPhase(List<EvenementCivilEchBasicInfo> remainingEvents,
 	                                                       Mutable<List<EvenementCivilEchBasicInfo>> customData) {
-		final List<EvenementCivilEchBasicInfo> traites = new ArrayList<EvenementCivilEchBasicInfo>(remainingEvents.size());
-		final List<EvenementCivilEchBasicInfo> nonTraites = new ArrayList<EvenementCivilEchBasicInfo>(remainingEvents.size());
+		final List<EvenementCivilEchBasicInfo> traites = new ArrayList<>(remainingEvents.size());
+		final List<EvenementCivilEchBasicInfo> nonTraites = new ArrayList<>(remainingEvents.size());
 		for (EvenementCivilEchBasicInfo info : remainingEvents) {
 			if (info.getEtat() == EtatEvenementCivil.A_TRAITER) {
 				final EvenementCivilEch evt = evtCivilDAO.get(info.getId());

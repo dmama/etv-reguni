@@ -13,7 +13,7 @@ import ch.vd.uniregctb.type.TypeMouvement;
  */
 public class MouvementDetailView implements Comparable<MouvementDetailView>, Annulable {
 
-	private static final BaseComparator<MouvementDetailView> comparator = new BaseComparator<MouvementDetailView>(
+	private static final BaseComparator<MouvementDetailView> comparator = new BaseComparator<>(
 			new String[]{"annule", "dateMouvement", "dateExecution"},
 			new Boolean[]{true, false, false});
 

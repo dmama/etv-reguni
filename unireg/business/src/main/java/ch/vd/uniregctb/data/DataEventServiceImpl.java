@@ -9,7 +9,7 @@ public class DataEventServiceImpl implements DataEventService {
 
 	private static final Logger LOGGER = Logger.getLogger(DataEventServiceImpl.class);
 	
-	private final List<DataEventListener> listeners = new ArrayList<DataEventListener>();
+	private final List<DataEventListener> listeners = new ArrayList<>();
 
 	@Override
 	public void register(DataEventListener listener) {

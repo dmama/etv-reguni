@@ -32,7 +32,7 @@ public class DemandeAvecHistoView {
 		if (etats == null || etats.isEmpty()) {
 			throw new IllegalArgumentException("etats ne peut être ni null ni vide");
 		}
-		this.etats = new ArrayList<EtatDemandeView>(etats);
+		this.etats = new ArrayList<>(etats);
 	}
 
 	@SuppressWarnings("UnusedDeclaration")

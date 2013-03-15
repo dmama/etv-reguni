@@ -27,8 +27,8 @@ import org.springframework.web.util.HtmlUtils;
 
 class Analyzer {
 
-	private final List<Analyze> analyzes = new ArrayList<Analyze>();
-	private final Set<String> methods = new HashSet<String>();
+	private final List<Analyze> analyzes = new ArrayList<>();
+	private final Set<String> methods = new HashSet<>();
 
 	public void registerAnalyze(Analyze a) {
 		analyzes.add(a);
@@ -54,7 +54,7 @@ class Analyzer {
 			htmlFile += ".html";
 		}
 
-		final List<String> list = new ArrayList<String>(methods);
+		final List<String> list = new ArrayList<>(methods);
 		Collections.sort(list);
 
 		String content = "<html>\n" +
@@ -90,9 +90,9 @@ class Analyzer {
 				"  </body>\n" +
 				"</html>";
 
-		final FileWriter writer = new FileWriter(htmlFile);
-		writer.write(content);
-		writer.close();
+		try (FileWriter writer = new FileWriter(htmlFile)) {
+			writer.write(content);
+		}
 	}
 
 	public void analyze(String[] args) {
@@ -107,15 +107,15 @@ class Analyzer {
 	}
 
 	private void analyzeFile(String filename) throws IOException {
-		try {
-			BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(filename)));
+		try (FileInputStream fis = new FileInputStream(filename);
+			 InputStreamReader isr = new InputStreamReader(fis);
+			 BufferedReader reader = new BufferedReader(isr)) {
+
 			String line = reader.readLine();
 			while (line != null) {
 				process(line);
 				line = reader.readLine();
 			}
-
-			reader.close();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -147,26 +147,14 @@ class Analyzer {
 
 			// on récupère l'image générée par Google et on la stocke dans le sous-répertoire
 			final String imagename = dirname + '/' + chartName + ".png";
-			InputStream is = null;
-			OutputStream os = null;
-			try {
-				URL u = new URL(chart.getUrl());
-				is = u.openStream();
-				os = new FileOutputStream(imagename, false);
+			URL u = new URL(chart.getUrl());
+			try (OutputStream os = new FileOutputStream(imagename, false); InputStream is = u.openStream()) {
 				FileCopyUtils.copy(is, os);
 			}
 			catch (IOException e) {
 				System.err.println("Exception when connecting to url [" + chart.getUrl() + "] : " + e.getMessage());
 				e.printStackTrace();
 				return HtmlUtils.htmlEscape(e.getMessage());
-			}
-			finally {
-				if (is != null) {
-					is.close();
-				}
-				if (os != null) {
-					os.close();
-				}
 			}
 
 			// on inclut l'image stockée en local

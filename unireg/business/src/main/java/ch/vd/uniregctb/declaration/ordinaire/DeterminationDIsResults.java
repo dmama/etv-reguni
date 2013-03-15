@@ -124,9 +124,9 @@ public class DeterminationDIsResults extends JobResults<Long, DeterminationDIsRe
 	public final int annee;
 	public final RegDate dateTraitement;
 	public int nbCtbsTotal;
-	public final List<Traite> traites = new ArrayList<Traite>();
-	public final List<Ignore> ignores = new ArrayList<Ignore>();
-	public final List<Erreur> erreurs = new ArrayList<Erreur>();
+	public final List<Traite> traites = new ArrayList<>();
+	public final List<Ignore> ignores = new ArrayList<>();
+	public final List<Erreur> erreurs = new ArrayList<>();
 	public boolean interrompu;
 
 	public DeterminationDIsResults(int annee, RegDate dateTraitement, TiersService tiersService, AdresseService adresseService) {

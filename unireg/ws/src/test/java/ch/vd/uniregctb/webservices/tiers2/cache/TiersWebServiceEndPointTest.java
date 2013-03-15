@@ -122,7 +122,7 @@ public class TiersWebServiceEndPointTest extends WebserviceTest {
 		final GetBatchTiers params = new GetBatchTiers();
 		params.login = new UserLogin("iamtestuser", 22);
 		params.date=null;
-		params.tiersNumbers = new HashSet<Long>();
+		params.tiersNumbers = new HashSet<>();
 		params.tiersNumbers.add(ids.a);
 		params.tiersNumbers.add(ids.b);
 		params.tiersNumbers.add(null);

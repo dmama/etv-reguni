@@ -128,8 +128,8 @@ public class StatistiquesDIs extends JobResults<Long, StatistiquesDIs> {
 
 	// Données de processing
 	public int nbDIsTotal = 0;
-	public final List<Erreur> disEnErrors = new ArrayList<Erreur>();
-	public final Map<Key, Value> stats = new HashMap<Key, Value>();
+	public final List<Erreur> disEnErrors = new ArrayList<>();
+	public final Map<Key, Value> stats = new HashMap<>();
 
 	public StatistiquesDIs(int annee, RegDate dateTraitement, TiersService tiersService, AdresseService adresseService) {
 		super(tiersService, adresseService);

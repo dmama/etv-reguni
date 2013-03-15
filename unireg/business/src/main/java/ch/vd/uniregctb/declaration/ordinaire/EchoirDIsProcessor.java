@@ -72,7 +72,7 @@ public class EchoirDIsProcessor {
 
 		status.setMessage("Analyse des déclarations d'impôt...");
 
-		final BatchTransactionTemplate<IdentifiantDeclaration, EchoirDIsResults> template = new BatchTransactionTemplate<IdentifiantDeclaration, EchoirDIsResults>(dis, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, hibernateTemplate);
+		final BatchTransactionTemplate<IdentifiantDeclaration, EchoirDIsResults> template = new BatchTransactionTemplate<>(dis, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, hibernateTemplate);
 		template.execute(rapportFinal, new BatchCallback<IdentifiantDeclaration, EchoirDIsResults>() {
 
 			@Override
@@ -163,7 +163,7 @@ public class EchoirDIsProcessor {
 		return template.execute(new TransactionCallback<List<IdentifiantDeclaration>>() {
 			@Override
 			public List<IdentifiantDeclaration> doInTransaction(TransactionStatus status) {
-				final List<IdentifiantDeclaration> identifiantDi = new ArrayList<IdentifiantDeclaration>();
+				final List<IdentifiantDeclaration> identifiantDi = new ArrayList<>();
 				return hibernateTemplate.execute(new HibernateCallback<List<IdentifiantDeclaration>>() {
 					@Override
 					public List<IdentifiantDeclaration> doInHibernate(Session session) throws HibernateException {

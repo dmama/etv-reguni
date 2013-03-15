@@ -107,7 +107,7 @@ public class TacheListManagerImpl implements TacheListManager {
 	@Override
 	@Transactional(readOnly = true)
 	public List<TacheListView> find(TacheCriteriaView tacheCriteria, ParamPagination paramPagination) throws ServiceInfrastructureException, AdressesResolutionException {
-		final List<TacheListView> tachesView = new ArrayList<TacheListView>();
+		final List<TacheListView> tachesView = new ArrayList<>();
 
 		final TacheCriteria coreCriteria = buildCoreCriteria(tacheCriteria);
 		final List<Tache> taches = tacheDAO.find(coreCriteria, paramPagination);
@@ -194,7 +194,7 @@ public class TacheListManagerImpl implements TacheListManager {
 					collectivites = Collections.emptyList();
 				}
 
-				List<Integer> oids = new ArrayList<Integer>(collectivites.size());
+				List<Integer> oids = new ArrayList<>(collectivites.size());
 
 				for (ch.vd.infrastructure.model.CollectiviteAdministrative c:collectivites) {
 					if (c.isACI()) {
@@ -230,7 +230,7 @@ public class TacheListManagerImpl implements TacheListManager {
 	@Transactional(readOnly = true)
 	public List<NouveauDossierListView> find(NouveauDossierCriteriaView dossierCriteria) throws ServiceInfrastructureException, AdresseException {
 
-		List<NouveauDossierListView> dossiersView = new ArrayList<NouveauDossierListView>();
+		List<NouveauDossierListView> dossiersView = new ArrayList<>();
 
 		dossierCriteria.setTypeTache(TypeTache.TacheNouveauDossier.toString());
 		TacheCriteria coreCriteria = buildCoreCriteria(dossierCriteria);
@@ -271,7 +271,7 @@ public class TacheListManagerImpl implements TacheListManager {
 	@Transactional(readOnly = true)
 	public List<NouveauDossierListView> find(NouveauDossierCriteriaView dossierCriteria, ParamPagination paramPagination) throws ServiceInfrastructureException, AdresseException {
 
-		final List<NouveauDossierListView> nouveauxDossiersView = new ArrayList<NouveauDossierListView>();
+		final List<NouveauDossierListView> nouveauxDossiersView = new ArrayList<>();
 		dossierCriteria.setTypeTache(TypeTache.TacheNouveauDossier.toString());
 		final TacheCriteria coreCriteria = buildCoreCriteria(dossierCriteria);
 		final List<Tache> taches = tacheDAO.find(coreCriteria, paramPagination);
@@ -318,8 +318,8 @@ public class TacheListManagerImpl implements TacheListManager {
 		}
 
 		if (tabIdsDossiers != null && tabIdsDossiers.length > 0) {
-			final List<Contribuable> contribuables = new ArrayList<Contribuable>(tabIdsDossiers.length);
-			final List<Tache> taches = new ArrayList<Tache>(tabIdsDossiers.length);
+			final List<Contribuable> contribuables = new ArrayList<>(tabIdsDossiers.length);
+			final List<Tache> taches = new ArrayList<>(tabIdsDossiers.length);
 				for (int i = 0; i < tabIdsDossiers.length; i++) {
 					final Tache tache = tacheDAO.get(tabIdsDossiers[i]);
 					taches.add(tache);

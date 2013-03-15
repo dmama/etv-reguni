@@ -100,8 +100,8 @@ public class EvenementCivilEchCorrectionDumpJob extends JobDefinition {
 		final boolean testAncienHabitant = getBooleanValue(params, TEST_ANCIEN_HABITANT);
 		final String[] ids = evtsString.split("[^0-9]+");
 		final File file = File.createTempFile("erreurs-correction-", ".csv");
-		final PrintStream out = new PrintStream(new FileOutputStream(file));
-		try {
+		try (FileOutputStream fos = new FileOutputStream(file);
+		     PrintStream out = new PrintStream(fos)) {
 			LOGGER.info("Dump dans le fichier : " + file);
 			for (String id : ids) {
 				if (StringUtils.isNotBlank(id)) {
@@ -125,9 +125,6 @@ public class EvenementCivilEchCorrectionDumpJob extends JobDefinition {
 					}
 				}
 			}
-		}
-		finally {
-			out.close();
 		}
 	}
 
@@ -168,7 +165,7 @@ public class EvenementCivilEchCorrectionDumpJob extends JobDefinition {
 	}
 
 	private static List<IndividuComparisonStrategy> buildStrategies(ServiceInfrastructureService serviceInfrastructureService) {
-		final List<IndividuComparisonStrategy> strategies = new ArrayList<IndividuComparisonStrategy>();
+		final List<IndividuComparisonStrategy> strategies = new ArrayList<>();
 		strategies.add(new AdresseContactComparisonStrategy());
 		strategies.add(new AdresseResidencePrincipaleComparisonStrategy(serviceInfrastructureService));
 		strategies.add(new AdresseResidenceSecondaireComparisonStrategy(serviceInfrastructureService));

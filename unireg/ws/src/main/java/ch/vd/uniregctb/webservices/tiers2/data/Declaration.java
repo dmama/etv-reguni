@@ -60,13 +60,13 @@ public class Declaration implements Range {
 	 * <b>Dans la version 3 du web-service :</b> supprimé.
 	 */
 	@XmlElement(required = true)
-	public final List<DelaiDeclaration> delais = new ArrayList<DelaiDeclaration>();
+	public final List<DelaiDeclaration> delais = new ArrayList<>();
 
 	/**
 	 * <b>Dans la version 3 du web-service :</b> <i>statuses</i>
 	 */
 	@XmlElement(required = true)
-	public final List<EtatDeclaration> etats = new ArrayList<EtatDeclaration>();
+	public final List<EtatDeclaration> etats = new ArrayList<>();
 
 	public Declaration() {
 	}

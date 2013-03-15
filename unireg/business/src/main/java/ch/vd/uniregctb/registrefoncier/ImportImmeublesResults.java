@@ -172,10 +172,10 @@ public class ImportImmeublesResults extends JobResults<String, ImportImmeublesRe
 
 	public final RegDate dateTraitement = RegDate.get();
 	public int nbLignes;
-	public final List<Import> traites = new ArrayList<Import>();
-	public final List<Ignore> ignores = new ArrayList<Ignore>();
-	public final List<AVerifier> averifier = new ArrayList<AVerifier>();
-	public final List<Erreur> erreurs = new ArrayList<Erreur>();
+	public final List<Import> traites = new ArrayList<>();
+	public final List<Ignore> ignores = new ArrayList<>();
+	public final List<AVerifier> averifier = new ArrayList<>();
+	public final List<Erreur> erreurs = new ArrayList<>();
 	public boolean interrompu;
 
 	public ImportImmeublesResults(TiersService tiersService, AdresseService adresseService) {

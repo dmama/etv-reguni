@@ -32,27 +32,23 @@ public class SqlFileExecutor {
 
                 try {
                     final InputStream sqlFile = SqlFileExecutor.class.getResourceAsStream(fileResource);
-                    final BufferedReader input = new BufferedReader(new InputStreamReader(sqlFile));
-	                try {
-	                    String statStr;
-	                    while ((statStr = input.readLine()) != null) {
-	
-	                        if (!statStr.isEmpty() && !statStr.startsWith("#") && !statStr.startsWith("--")) {
-	
-	                            if (statStr.endsWith(";")) {
-	                                statStr = statStr.substring(0, statStr.length()-1);
-	                            }
-	
-	                            if (LOGGER.isTraceEnabled()) {
-									LOGGER.trace("SQL: " + statStr);
-								}
-	                            template.execute(statStr);
-	                        }
-	                    }
+	                try (InputStreamReader isr = new InputStreamReader(sqlFile); BufferedReader input = new BufferedReader(isr)) {
+		                String statStr;
+		                while ((statStr = input.readLine()) != null) {
+
+			                if (!statStr.isEmpty() && !statStr.startsWith("#") && !statStr.startsWith("--")) {
+
+				                if (statStr.endsWith(";")) {
+					                statStr = statStr.substring(0, statStr.length() - 1);
+				                }
+
+				                if (LOGGER.isTraceEnabled()) {
+					                LOGGER.trace("SQL: " + statStr);
+				                }
+				                template.execute(statStr);
+			                }
+		                }
 	                }
-	                finally {
-			            input.close();
-		            }
                 }
                 catch (IOException e) {
                 	LOGGER.error(e, e);

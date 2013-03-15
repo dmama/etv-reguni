@@ -94,7 +94,7 @@ public class EvenementCivilEchRetryProcessorTest extends BusinessTest {
 		}
 
 		final MutableInt pointer = new MutableInt(0);
-		final Map<EvenementCivilEchProcessor.ListenerHandle, EvenementCivilEchProcessor.Listener> listeners = new HashMap<EvenementCivilEchProcessor.ListenerHandle, EvenementCivilEchProcessor.Listener>();
+		final Map<EvenementCivilEchProcessor.ListenerHandle, EvenementCivilEchProcessor.Listener> listeners = new HashMap<>();
 
 		final class IntegratedQueueAndProcessor implements EvenementCivilEchProcessor, EvenementCivilNotificationQueue {
 			@Override
@@ -184,7 +184,7 @@ public class EvenementCivilEchRetryProcessorTest extends BusinessTest {
 		// et maintenant : le test !
 		
 		// Ca, c'est pour vérifier que l'on traite les bons individus
-		final Set<Long> remaining = new HashSet<Long>(Arrays.asList(noIndividuSans, noIndividuAvecAttente, noIndividuAvecErreur, noIndividuAvecAttenteEtErreur));
+		final Set<Long> remaining = new HashSet<>(Arrays.asList(noIndividuSans, noIndividuAvecAttente, noIndividuAvecErreur, noIndividuAvecAttenteEtErreur));
 		final EvenementCivilEchProcessor.ListenerHandle handleRemaining = queueProcessor.registerListener(new EvenementCivilEchProcessor.Listener() {
 			@Override
 			public void onIndividuTraite(long noIndividu) {

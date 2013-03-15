@@ -15,7 +15,7 @@ import ch.vd.uniregctb.type.TexteCasePostale;
 
 public class MockCollectiviteAdministrative implements CollectiviteAdministrative {
 
-	private static final Map<Long, MockCollectiviteAdministrative> all = new HashMap<Long, MockCollectiviteAdministrative>();
+	private static final Map<Long, MockCollectiviteAdministrative> all = new HashMap<>();
 	//Mapping oid District
 	public static final Map<Integer, Integer> districts = initDistrict();
 	//Mapping oid Region
@@ -127,7 +127,7 @@ public class MockCollectiviteAdministrative implements CollectiviteAdministrativ
 	}
 
 	private static Map<Integer, Integer> initDistrict() {
-		final Map<Integer, Integer> districts = new HashMap<Integer, Integer>();
+		final Map<Integer, Integer> districts = new HashMap<>();
 		//Aigle
 		districts.put(1, 1);
 		//Echallens
@@ -163,7 +163,7 @@ public class MockCollectiviteAdministrative implements CollectiviteAdministrativ
 	}
 
 	private static Map<Integer, Integer> initRegions() {
-		final Map<Integer, Integer> regions = new HashMap<Integer, Integer>();
+		final Map<Integer, Integer> regions = new HashMap<>();
 		//Lausanne
 		regions.put(7, 1);
 		//Nyon

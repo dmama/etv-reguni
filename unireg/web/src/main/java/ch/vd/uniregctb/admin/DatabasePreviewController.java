@@ -58,7 +58,7 @@ public class DatabasePreviewController {
 	 */
 	private Map<Class, List<InfoTiers>> buildInfoTiers() {
 
-		final Map<Class, List<InfoTiers>> infoMap = new HashMap<Class, List<InfoTiers>>();
+		final Map<Class, List<InfoTiers>> infoMap = new HashMap<>();
 
 		final Map<Class, List<Tiers>> map = tiersDao.getFirstGroupedByClass(TIERS_COUNT);
 		for (Map.Entry<Class, List<Tiers>> entry : map.entrySet()) {
@@ -78,7 +78,7 @@ public class DatabasePreviewController {
 
 				List<InfoTiers> infoTiers = infoMap.get(entry.getKey());
 				if (infoTiers == null) {
-					infoTiers = new ArrayList<InfoTiers>();
+					infoTiers = new ArrayList<>();
 					infoMap.put(entry.getKey(), infoTiers);
 				}
 

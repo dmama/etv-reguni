@@ -6,6 +6,8 @@ import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
 
+import org.apache.commons.lang.StringUtils;
+
 import ch.vd.uniregctb.stats.ServiceTracing;
 
 public class TracingStatement implements Statement {
@@ -310,15 +312,7 @@ public class TracingStatement implements Statement {
 	 * @return les 100 premiers caractères de la requête
 	 */
 	protected static String cap(String sql) {
-		if (sql == null) {
-			return null;
-		}
-		else if (sql.length() > 100) {
-			return new StringBuilder(110).append(sql.substring(0, 100)).append("...").toString();
-		}
-		else {
-			return sql;
-		}
+		return StringUtils.abbreviate(sql, 100);
 	}
 
 	@Override

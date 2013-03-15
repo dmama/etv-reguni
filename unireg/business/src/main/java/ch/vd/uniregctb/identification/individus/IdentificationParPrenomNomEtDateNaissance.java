@@ -40,7 +40,7 @@ public class IdentificationParPrenomNomEtDateNaissance implements StrategieIdent
 		if (l.getNumberOfResults().intValue() == 0) {
 			return Collections.emptyList();
 		}
-		final List<Long> list = new ArrayList<Long>();
+		final List<Long> list = new ArrayList<>();
 		for (FoundPerson person : l.getListOfResults().getFoundPerson()) {
 			list.add(IndividuRCPers.getNoIndividu(person.getPerson()));
 		}

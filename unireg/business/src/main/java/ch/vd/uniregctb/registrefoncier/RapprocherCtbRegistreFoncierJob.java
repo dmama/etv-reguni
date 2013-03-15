@@ -96,27 +96,26 @@ public class RapprocherCtbRegistreFoncierJob extends JobDefinition {
 	protected static List<ProprietaireFoncier> extractProprioFromCSV(byte[] csv, StatusManager status) throws UnsupportedEncodingException {
 
 
-		final List<ProprietaireFoncier> listeProprio = new LinkedList<ProprietaireFoncier>();
+		final List<ProprietaireFoncier> listeProprio = new LinkedList<>();
         final Pattern p = Pattern.compile("^([0-9]+);(.*?);(.*?);(.*?);(.*)");
 
 		// on parse le fichier
         final String csvString = (csv != null ? new String(csv,"ISO-8859-1") : StringUtils.EMPTY);
-		final Scanner s = new Scanner(csvString);
 
-        final String[] lines = csvString.split("[\n]");
+		final String[] lines = csvString.split("[\n]");
         final int nombreProprio = lines.length;
         int proprietairesLus = 0;
 
-		try {
+		try (Scanner s = new Scanner(csvString)) {
 			while (s.hasNextLine()) {
 
 				final String line = s.nextLine();
 
-                final int percent = (proprietairesLus * 100) / nombreProprio;
-                status.setMessage("Chargement des propriétaires fonciers", percent);
-                if (status.interrupted()) {
-                	break;
-                }
+				final int percent = (proprietairesLus * 100) / nombreProprio;
+				status.setMessage("Chargement des propriétaires fonciers", percent);
+				if (status.interrupted()) {
+					break;
+				}
 
 				final Matcher m = p.matcher(line);
 
@@ -129,26 +128,24 @@ public class RapprocherCtbRegistreFoncierJob extends JobDefinition {
 					String stringDateNaissance = m.group(4);
 					RegDate dateNaissance = null;
 					if (StringUtils.isNotBlank(stringDateNaissance)) {
-						if (stringDateNaissance.contains("/")){
-							stringDateNaissance = stringDateNaissance.replace("/",".");
+						if (stringDateNaissance.contains("/")) {
+							stringDateNaissance = stringDateNaissance.replace("/", ".");
 						}
 						try {
 							dateNaissance = RegDateHelper.displayStringToRegDate(stringDateNaissance, true);
 						}
 						catch (Exception e) {
-					        LOGGER.error(String.format("La date de naissance '%s' pour le propriétaire %d est incorrecte (elle sera ignorée) : %s", stringDateNaissance, numeroRegistreFoncier, e.getMessage()));
+							LOGGER.error(String.format("La date de naissance '%s' pour le propriétaire %d est incorrecte (elle sera ignorée) : %s", stringDateNaissance, numeroRegistreFoncier,
+							                           e.getMessage()));
 						}
 					}
 					final String noCtbString = m.group(5);
 					final Long numeroContribuable = StringUtils.isBlank(noCtbString) ? null : Long.valueOf(noCtbString);
 					listeProprio.add(new ProprietaireFoncier(numeroRegistreFoncier, nom, prenom, dateNaissance, numeroContribuable));
 
-                    ++ proprietairesLus;
+					++proprietairesLus;
 				}
 			}
-		}
-		finally {
-			s.close();
 		}
 
 		// tri de la liste par numéro du registre foncier

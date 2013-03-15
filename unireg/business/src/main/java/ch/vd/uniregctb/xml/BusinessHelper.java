@@ -76,7 +76,7 @@ public class BusinessHelper {
 	public static void warmIndividus(MenageCommun menage, Set<PartyPart> parts, Context context) {
 
 		if (context.serviceCivilService.isWarmable() && parts != null && parts.contains(PartyPart.HOUSEHOLD_MEMBERS)) {
-			final Set<Long> ids = new HashSet<Long>();
+			final Set<Long> ids = new HashSet<>();
 			for (RapportEntreTiers rapport : menage.getRapportsObjet()) {
 				if (!rapport.isAnnule() && rapport instanceof AppartenanceMenage) {
 					final AppartenanceMenage appartenance = (AppartenanceMenage) rapport;

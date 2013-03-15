@@ -97,7 +97,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessor {
 		// différentes périodes utiles (il ne sert à rien de les calculer des milliers de fois...)
 		final RangesUtiles rangesUtiles = new RangesUtiles(dateTraitement);
 
-		final BatchTransactionTemplate<Long, DeterminerMouvementsDossiersEnMasseResults> template = new BatchTransactionTemplate<Long, DeterminerMouvementsDossiersEnMasseResults>(ctbs, BATCH_SIZE, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, hibernateTemplate);
+		final BatchTransactionTemplate<Long, DeterminerMouvementsDossiersEnMasseResults> template = new BatchTransactionTemplate<>(ctbs, BATCH_SIZE, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, hibernateTemplate);
 		template.execute(rapportFinal, new BatchTransactionTemplate.BatchCallback<Long, DeterminerMouvementsDossiersEnMasseResults>() {
 
 			@Override
@@ -116,7 +116,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessor {
 
 				// cache des collectivités administratives (il y a 20 OID, et nous travaillons par
 				// groupes de BATCH_SIZE contribuables, autant essayer de cacher les appels à la base)
-				final Map<Integer, CollectiviteAdministrative> caCache = new HashMap<Integer, CollectiviteAdministrative>(25);
+				final Map<Integer, CollectiviteAdministrative> caCache = new HashMap<>(25);
 				
 				for (Long id : batch) {
 

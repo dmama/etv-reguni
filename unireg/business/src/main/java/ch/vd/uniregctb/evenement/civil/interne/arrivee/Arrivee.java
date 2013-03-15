@@ -251,7 +251,7 @@ public abstract class Arrivee extends Mouvement {
 		// criteria.setDateNaissance(individu.getDateNaissance()); [UNIREG-1603] on ne filtre pas sur la date de naissance ici, pour prendre en compte les dates nulles
 		criteria.setNomRaison(nomPrenom);
 
-		final List<PersonnePhysique> nonHabitants = new ArrayList<PersonnePhysique>();
+		final List<PersonnePhysique> nonHabitants = new ArrayList<>();
 
 		List<TiersIndexedData> results;
 

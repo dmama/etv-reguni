@@ -55,7 +55,7 @@ public class AdresseMixerTest {
 	}
 
 	private static <T> Set<T> newSet(T... val) {
-		Set<T> s = new HashSet<T>();
+		Set<T> s = new HashSet<>();
 		Collections.addAll(s, val);
 		return s;
 	}

@@ -25,7 +25,7 @@ public abstract class CacheValueWithParts<T, P> implements Serializable {
 	private T value;
 
 	public CacheValueWithParts(Set<P> parts, T value) {
-		this.parts = (parts == null ? new HashSet<P>() : new HashSet<P>(parts));
+		this.parts = (parts == null ? new HashSet<P>() : new HashSet<>(parts));
 		this.value = value;
 	}
 
@@ -54,7 +54,7 @@ public abstract class CacheValueWithParts<T, P> implements Serializable {
 			return null;
 		}
 		else {
-			Set<P> missing = new HashSet<P>(newParts);
+			Set<P> missing = new HashSet<>(newParts);
 			missing.removeAll(this.parts);
 			return missing;
 		}

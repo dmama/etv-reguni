@@ -6,7 +6,7 @@ import java.util.Map;
 public class Colors {
 	public final static String DEFAULT_COLORS[] = {"FF0000", "00FF00", "0000FF", "008000", "224499", "49188F", "80C65A", "FF9900", "BBCCED"};
 
-	public final static Map<String, String> USER_COLORS = new HashMap<String, String>();
+	public final static Map<String, String> USER_COLORS = new HashMap<>();
 
 	static {
 		USER_COLORS.put("sipf", "AA0033");

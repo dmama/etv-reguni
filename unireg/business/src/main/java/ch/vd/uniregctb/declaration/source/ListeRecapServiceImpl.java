@@ -203,7 +203,7 @@ public class ListeRecapServiceImpl implements ListeRecapService {
 			// d'abord on cherche les périodes d'activité d'après les fors non-annulés (seulement
 			// la partie d'entre elles qui tient jusqu'à la fin de la période donnée en paramètre)
 			final List<DateRange> periodesBruttesActivite = DateRangeHelper.collateRange(fors);
-			final List<DateRange> periodesActivite = new ArrayList<DateRange>(periodesBruttesActivite.size());
+			final List<DateRange> periodesActivite = new ArrayList<>(periodesBruttesActivite.size());
 			for (DateRange periodeBrutte : periodesBruttesActivite) {
 				if (periodeInteressante.isValidAt(periodeBrutte.getDateDebut())) {
 					if (periodeInteressante.isValidAt(periodeBrutte.getDateFin())) {
@@ -244,7 +244,7 @@ public class ListeRecapServiceImpl implements ListeRecapService {
 					lrManquantes = periodesActivite;
 				}
 				else {
-					lrManquantes = new ArrayList<DateRange>();
+					lrManquantes = new ArrayList<>();
 					for (DateRange periodeActivite : periodesActivite) {
 						lrManquantes.addAll(DateRangeHelper.subtract(periodeActivite, lrTrouveesIn));
 					}
@@ -271,7 +271,7 @@ public class ListeRecapServiceImpl implements ListeRecapService {
 	 * @return liste de ranges dont la couverture est équivalente à celle de la source en ayant introduit des scissions à la Saint Sylvestre de chaque année
 	 */
 	protected static List<DateRange> ajusterSelonPeriodeFiscale(List<DateRange> source) {
-		final List<DateRange> result = new ArrayList<DateRange>();
+		final List<DateRange> result = new ArrayList<>();
 		for (DateRange manquante : source) {
 			final RegDate debut = manquante.getDateDebut();
 			final RegDate fin = manquante.getDateFin();
@@ -311,7 +311,7 @@ public class ListeRecapServiceImpl implements ListeRecapService {
 	 * @return
 	 */
 	protected static List<DateRange> extrairePeriodesAvecPeriodicites(DebiteurPrestationImposable debiteur, List<DateRange> lrManquantes) {
-		final List<DateRange> lr = new ArrayList<DateRange>();
+		final List<DateRange> lr = new ArrayList<>();
 		for (DateRange manquante : lrManquantes) {
 			RegDate date = manquante.getDateDebut();
 

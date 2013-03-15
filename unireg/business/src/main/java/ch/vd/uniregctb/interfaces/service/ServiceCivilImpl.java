@@ -190,7 +190,7 @@ public class ServiceCivilImpl implements ServiceCivilService, ServiceCivilServic
 		if (individu == null) {
 			return null;
 		}
-		final Set<Long> numeros = new HashSet<Long>();
+		final Set<Long> numeros = new HashSet<>();
 		final List<RelationVersIndividu> conjoints = individu.getConjoints();
 		if (conjoints != null) {
 			for (RelationVersIndividu conjoint : conjoints) {
@@ -206,7 +206,7 @@ public class ServiceCivilImpl implements ServiceCivilService, ServiceCivilServic
 		if (individu == null) {
 			return null;
 		}
-		final Set<Long> numeros = new HashSet<Long>();
+		final Set<Long> numeros = new HashSet<>();
 		final List<RelationVersIndividu> filiations = individu.getParents();
 		if (filiations != null) {
 			for (RelationVersIndividu filiation : filiations) {
@@ -257,7 +257,7 @@ public class ServiceCivilImpl implements ServiceCivilService, ServiceCivilServic
 		if (histo == null) {
 			throw new IndividuNotFoundException(noIndividu);
 		}
-		final List<HistoriqueCommune> result = new ArrayList<HistoriqueCommune>();
+		final List<HistoriqueCommune> result = new ArrayList<>();
 		for (Adresse adresse : histo.principales) {
 			if (RegDateHelper.isAfterOrEqual(adresse.getDateFin(), date, NullDateBehavior.LATEST)) {
 				final Commune commune = infraService.getCommuneByAdresse(adresse, date);
@@ -307,7 +307,7 @@ public class ServiceCivilImpl implements ServiceCivilService, ServiceCivilServic
 			return list;
 		}
 		else {
-			final List<Individu> l = new ArrayList<Individu>(list.size());
+			final List<Individu> l = new ArrayList<>(list.size());
 			for (Individu individu : list) {
 				l.add(individu.cloneUpTo(date));
 			}

@@ -83,7 +83,7 @@ public class StandardBatchIterator<E> implements Iterator<List<E>>, BatchIterato
 	}
 
 	private List<E> buildNext() {
-		List<E> list = new ArrayList<E>();
+		List<E> list = new ArrayList<>();
 		for (int i = 0; i < batchSize && sourceIterator.hasNext(); ++i) {
 			E e = sourceIterator.next();
 			list.add(e);

@@ -112,7 +112,7 @@ public class AutoCompleteInfraController {
 		// on ignore les accents
 		term = StringComparator.toLowerCaseWithoutAccent(term);
 
-		final List<Item> list = new ArrayList<Item>();
+		final List<Item> list = new ArrayList<>();
 
 		if (categories.contains(InfraCategory.RUE)) {
 			if (numCommune == null) {
@@ -248,7 +248,7 @@ public class AutoCompleteInfraController {
 		if (localites == null || localites.isEmpty()) {
 			return Collections.emptyMap();
 		}
-		final HashMap<Integer, Localite> map = new HashMap<Integer, Localite>();
+		final HashMap<Integer, Localite> map = new HashMap<>();
 		for (Localite l : localites) {
 			map.put(l.getNoOrdre(), l);
 		}
@@ -256,7 +256,7 @@ public class AutoCompleteInfraController {
 	}
 
 	private static Set<InfraCategory> parseCategories(String category) {
-		final Set<InfraCategory> categories = new HashSet<InfraCategory>();
+		final Set<InfraCategory> categories = new HashSet<>();
 		if ("rue".equalsIgnoreCase(category)) {
 			categories.add(InfraCategory.RUE);
 		}

@@ -92,7 +92,7 @@ public abstract class RangeHelper {
 			for (T r : ranges) {
 				if (isDateInRange(date, r)) {
 					if (list == null) {
-						list = new ArrayList<T>();
+						list = new ArrayList<>();
 					}
 					list.add(r);
 				}
@@ -107,7 +107,7 @@ public abstract class RangeHelper {
 			for (T r : ranges) {
 				if (RangeHelper.intersect(r, periode)) {
 					if (list == null) {
-						list = new ArrayList<T>();
+						list = new ArrayList<>();
 					}
 					list.add(r);
 				}

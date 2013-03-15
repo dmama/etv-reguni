@@ -32,7 +32,7 @@ public class NotifyingExceptionResolver implements HandlerExceptionResolver, Ord
 	private int order = Ordered.LOWEST_PRECEDENCE;
 
 	/** map des exceptions (indexées par leur sha1) déjà envoyées + le nombre d'envois */
-	private final Map<String, Integer> exceptions = new HashMap<String, Integer>();
+	private final Map<String, Integer> exceptions = new HashMap<>();
 
 	protected final Logger LOGGER = Logger.getLogger(NotifyingExceptionResolver.class);
 

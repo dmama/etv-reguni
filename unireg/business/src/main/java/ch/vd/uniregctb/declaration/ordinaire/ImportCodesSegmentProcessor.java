@@ -46,7 +46,7 @@ public class ImportCodesSegmentProcessor {
 		final StatusManager status = (s != null ? s : new LoggingStatusManager(LOGGER));
 
 		final ImportCodesSegmentResults rapportFinal = new ImportCodesSegmentResults(tiersService, adresseService);
-		final BatchTransactionTemplate<ContribuableAvecCodeSegment, ImportCodesSegmentResults> batchTemplate = new BatchTransactionTemplate<ContribuableAvecCodeSegment, ImportCodesSegmentResults>(input, BATCH_SIZE, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, hibernateTemplate);
+		final BatchTransactionTemplate<ContribuableAvecCodeSegment, ImportCodesSegmentResults> batchTemplate = new BatchTransactionTemplate<>(input, BATCH_SIZE, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, hibernateTemplate);
 		batchTemplate.execute(rapportFinal, new BatchTransactionTemplate.BatchCallback<ContribuableAvecCodeSegment, ImportCodesSegmentResults>() {
 			@Override
 			public boolean doInTransaction(List<ContribuableAvecCodeSegment> batch, ImportCodesSegmentResults rapport) throws Exception {

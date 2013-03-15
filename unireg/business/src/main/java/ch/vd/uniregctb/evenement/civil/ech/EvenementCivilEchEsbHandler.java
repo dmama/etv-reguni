@@ -145,7 +145,7 @@ public class EvenementCivilEchEsbHandler implements EsbMessageHandler, Initializ
 	}
 
 	private static void checkValidIncomingEventData(EvenementCivilEch ech) throws EvenementCivilException {
-		final List<String> attributs = new ArrayList<String>();
+		final List<String> attributs = new ArrayList<>();
 		if (ech.getAction() == null) {
 			attributs.add("action");
 		}

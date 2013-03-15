@@ -28,10 +28,6 @@ public class IdentificationMapHelper extends CommonMapHelper {
 
 	private IdentificationContribuableService identCtbService;
 
-	private Map<ErreurMessage, String> mapErreurMessage;
-
-	private Map<Etat, String> mapEtatMessage;
-
 	/**
 	 * Le nom de l'attribut utilise pour la liste des types d'identification
 	 */
@@ -95,10 +91,7 @@ public class IdentificationMapHelper extends CommonMapHelper {
 	 * @return une map
 	 */
 	public Map<Etat, String> initMapEtatMessage() {
-
-		mapEtatMessage = initMapEnum(ApplicationConfig.masterKeyEtatMessage, Etat.class, Etat.RECU, Etat.SUSPENDU);
-
-		return mapEtatMessage;
+		return initMapEnum(ApplicationConfig.masterKeyEtatMessage, Etat.class, Etat.RECU, Etat.SUSPENDU);
 	}
 
 
@@ -239,10 +232,7 @@ public class IdentificationMapHelper extends CommonMapHelper {
 	}
 
 	public Map<ErreurMessage, String> initErreurMessage() {
-
-		mapErreurMessage = initMapEnum(ApplicationConfig.masterKeyErreurMessage, ErreurMessage.class);
-
-		return mapErreurMessage;
+		return initMapEnum(ApplicationConfig.masterKeyErreurMessage, ErreurMessage.class);
 	}
 
 

@@ -62,7 +62,7 @@ public class CopieDroitAccesManagerImpl implements CopieDroitAccesManager {
 		final UtilisateurView utilisateurDestinationView = utilisateurManager.get(noOperateurDestination);
 		confirmCopieView.setUtilisateurDestinationView(utilisateurDestinationView);
 
-		final List<DroitAccesUtilisateurView> views = new ArrayList<DroitAccesUtilisateurView>();
+		final List<DroitAccesUtilisateurView> views = new ArrayList<>();
 		final List<DroitAcces> restrictions = droitAccesDAO.getDroitsAcces(noOperateurReference);
 		for (DroitAcces droitAcces : restrictions) {
 			final DroitAccesUtilisateurView droitAccesView = new DroitAccesUtilisateurView(droitAcces, tiersService, adresseService);

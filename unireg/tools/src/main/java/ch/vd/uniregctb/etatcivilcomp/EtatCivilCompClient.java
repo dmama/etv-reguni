@@ -156,7 +156,7 @@ public class EtatCivilCompClient {
 		final PerfsAccessFileIterator iter = new PerfsAccessFileIterator(accessFile);
 
 		// Crée les threads
-		threads = new ArrayList<EtatCivilCompThread>();
+		threads = new ArrayList<>();
 		for (int i = 0; i < threadCount; ++i) {
 			EtatCivilCompThread thread = new EtatCivilCompThread(service, query, iter);
 			threads.add(thread);

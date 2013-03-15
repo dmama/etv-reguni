@@ -69,7 +69,7 @@ public class RapprocherCtbProcessor {
 
 		final RapprocherCtbResults rapportFinal = new RapprocherCtbResults(dateTraitement, tiersService, adresseService);
 		final ParallelBatchTransactionTemplate<ProprietaireFoncier, RapprocherCtbResults> template =
-				new ParallelBatchTransactionTemplate<ProprietaireFoncier, RapprocherCtbResults>(listeProprietairesFonciers, BATCH_SIZE,
+				new ParallelBatchTransactionTemplate<>(listeProprietairesFonciers, BATCH_SIZE,
 																								nbThreads, Behavior.REPRISE_AUTOMATIQUE, transactionManager, status,
 																								hibernateTemplate);
 		template.setReadonly(true);
@@ -96,14 +96,14 @@ public class RapprocherCtbProcessor {
 	private void traiterBatch(List<ProprietaireFoncier> batch, RapprocherCtbResults rapport) throws AdresseException {
 
 		// pré-chargement des tiers et individus concernés par ce lot
-		final List<Long> idCtbs = new ArrayList<Long>(batch.size());
+		final List<Long> idCtbs = new ArrayList<>(batch.size());
 		for (ProprietaireFoncier p : batch) {
 			if (p.getNumeroContribuable() != null) {
 				idCtbs.add(p.getNumeroContribuable());
 			}
 		}
 
-		final Set<TiersDAO.Parts> parts = new HashSet<TiersDAO.Parts>();
+		final Set<TiersDAO.Parts> parts = new HashSet<>();
 		parts.add(TiersDAO.Parts.ADRESSES);
 		parts.add(TiersDAO.Parts.RAPPORTS_ENTRE_TIERS);
 
@@ -162,7 +162,7 @@ public class RapprocherCtbProcessor {
 	}
 
 	private void preloadIndividus(List<Tiers> tierz, int anneePeriode) {
-		final Map<Long, PersonnePhysique> ppByNoIndividu = new HashMap<Long, PersonnePhysique>(tierz.size() * 2);
+		final Map<Long, PersonnePhysique> ppByNoIndividu = new HashMap<>(tierz.size() * 2);
 		final RegDate date = RegDate.get(anneePeriode, 12, 31);
 		for (Tiers tiers : tierz) {
 			if (tiers instanceof PersonnePhysique) {

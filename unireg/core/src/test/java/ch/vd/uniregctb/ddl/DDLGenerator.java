@@ -40,18 +40,18 @@ public class DDLGenerator {
 
 		final Oracle10gDialect dialect = new Oracle10gDialectWithNVarChar();
 		String[] drops = factory.getConfiguration().generateDropSchemaScript(dialect);
-		FileWriter dropFile = new FileWriter(outFileDrop);
-		for (String d : drops) {
-			dropFile.write(d + ";\n\n");
+		try (FileWriter dropFile = new FileWriter(outFileDrop)) {
+			for (String d : drops) {
+				dropFile.write(d + ";\n\n");
+			}
 		}
-		dropFile.close();
 
 		String[] creations = factory.getConfiguration().generateSchemaCreationScript(dialect);
-		FileWriter createFile = new FileWriter(outFileCreate);
-		for (String d : creations) {
-			createFile.write(d + ";\n\n");
+		try (FileWriter createFile = new FileWriter(outFileCreate)) {
+			for (String d : creations) {
+				createFile.write(d + ";\n\n");
+			}
 		}
-		createFile.close();
 
 		LOGGER.info("Les fichiers SQL sont disponibles ici:\n  - " + outFileCreate + "\n  - " + outFileDrop);
 		LOGGER.info("DDL generated successfully!");

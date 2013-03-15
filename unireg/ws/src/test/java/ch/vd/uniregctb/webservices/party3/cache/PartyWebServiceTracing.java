@@ -33,17 +33,17 @@ import ch.vd.unireg.xml.party.v1.PartyType;
 public class PartyWebServiceTracing implements PartyWebService {
 
 	private PartyWebService target;
-	public List<SearchPartyRequest> searchTiersCalls = new ArrayList<SearchPartyRequest>();
-	public List<GetPartyTypeRequest> getTiersTypeCalls = new ArrayList<GetPartyTypeRequest>();
-	public List<GetPartyRequest> getTiersCalls = new ArrayList<GetPartyRequest>();
-	public List<GetTaxOfficesRequest> getTaxOfficesCalls = new ArrayList<GetTaxOfficesRequest>();
-	public List<GetBatchPartyRequest> getBatchTiersCalls = new ArrayList<GetBatchPartyRequest>();
-	public List<SetAutomaticReimbursementBlockingRequest> setTiersBlocRembAutoCalls = new ArrayList<SetAutomaticReimbursementBlockingRequest>();
-	public List<SearchCorporationEventsRequest> searchEvenementsPMCalls = new ArrayList<SearchCorporationEventsRequest>();
-	public List<GetDebtorInfoRequest> getDebiteurInfoCalls = new ArrayList<GetDebtorInfoRequest>();
-	public List<AcknowledgeTaxDeclarationsRequest> acknowledgeTaxDeclarationsCalls = new ArrayList<AcknowledgeTaxDeclarationsRequest>();
-	public List<ExtendDeadlineRequest> extendDeadlineCalls = new ArrayList<ExtendDeadlineRequest>();
-	public List<GetModifiedTaxpayersRequest> getListeCtbModifiesCalls = new ArrayList<GetModifiedTaxpayersRequest>();
+	public List<SearchPartyRequest> searchTiersCalls = new ArrayList<>();
+	public List<GetPartyTypeRequest> getTiersTypeCalls = new ArrayList<>();
+	public List<GetPartyRequest> getTiersCalls = new ArrayList<>();
+	public List<GetTaxOfficesRequest> getTaxOfficesCalls = new ArrayList<>();
+	public List<GetBatchPartyRequest> getBatchTiersCalls = new ArrayList<>();
+	public List<SetAutomaticReimbursementBlockingRequest> setTiersBlocRembAutoCalls = new ArrayList<>();
+	public List<SearchCorporationEventsRequest> searchEvenementsPMCalls = new ArrayList<>();
+	public List<GetDebtorInfoRequest> getDebiteurInfoCalls = new ArrayList<>();
+	public List<AcknowledgeTaxDeclarationsRequest> acknowledgeTaxDeclarationsCalls = new ArrayList<>();
+	public List<ExtendDeadlineRequest> extendDeadlineCalls = new ArrayList<>();
+	public List<GetModifiedTaxpayersRequest> getListeCtbModifiesCalls = new ArrayList<>();
 
 	public PartyWebServiceTracing(PartyWebService target) {
 		this.target = target;

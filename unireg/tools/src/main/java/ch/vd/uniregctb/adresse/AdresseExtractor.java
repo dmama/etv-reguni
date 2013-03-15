@@ -69,22 +69,23 @@ public class AdresseExtractor {
 		partyRequest.setLogin(login);
 		partyRequest.getParts().add(PartyPart.ADDRESSES);
 
-		final InputStream in = AdresseExtractor.class.getResourceAsStream(nomFichier);
-		final BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-
 		// on lit le contenu du fichier
-		final List<Integer> ctbs = new ArrayList<Integer>();
-		String line = reader.readLine();
-		while (line != null) {
-			final Integer ctb = Integer.valueOf(line);
-		    ctbs.add(ctb);
-			line = reader.readLine();
+		final List<Integer> ctbs = new ArrayList<>();
+		try (InputStream in = AdresseExtractor.class.getResourceAsStream(nomFichier);
+		     InputStreamReader fis = new InputStreamReader(in);
+		     BufferedReader reader = new BufferedReader(fis)) {
+
+			String line = reader.readLine();
+			while (line != null) {
+				final Integer ctb = Integer.valueOf(line);
+			    ctbs.add(ctb);
+				line = reader.readLine();
+			}
 		}
-		reader.close();
 
 		// ensuite, on fait des groupes de TAILLE_LOT
 		final int nbLots = ctbs.size() / TAILLE_LOT + 1;
-		final List<List<Integer>> lots = new ArrayList<List<Integer>>(nbLots);
+		final List<List<Integer>> lots = new ArrayList<>(nbLots);
 		for (int i = 0 ; i < nbLots ; ++ i) {
 			final List<Integer> lot = ctbs.subList(i * TAILLE_LOT, Math.min((i + 1) * TAILLE_LOT, ctbs.size()));
 			if (!lot.isEmpty()) {
@@ -105,34 +106,37 @@ public class AdresseExtractor {
 		}
 
 		// et on boucle sur les lots
-		for (List<Integer> lot : lots) {
-			batchPartyRequest.getPartyNumbers().clear();
-			batchPartyRequest.getPartyNumbers().addAll(lot);
+		try {
+			for (List<Integer> lot : lots) {
+				batchPartyRequest.getPartyNumbers().clear();
+				batchPartyRequest.getPartyNumbers().addAll(lot);
 
-			try {
-				final BatchParty result = service.getBatchParty(batchPartyRequest);
-				for (BatchPartyEntry entry : result.getEntries()) {
-					final Party tiers = entry.getParty();
-					dumpTiers(tiers, entry.getNumber(), entry.getExceptionInfo(), ps);
-				}
-			}
-			catch (WebServiceException e) {
-				// problème... on essaie un par un
-				for (Integer id : lot) {
-					partyRequest.setPartyNumber(id);
-					try {
-						final Party indivResult = service.getParty(partyRequest);
-						dumpTiers(indivResult, id, null, ps);
+				try {
+					final BatchParty result = service.getBatchParty(batchPartyRequest);
+					for (BatchPartyEntry entry : result.getEntries()) {
+						final Party tiers = entry.getParty();
+						dumpTiers(tiers, entry.getNumber(), entry.getExceptionInfo(), ps);
 					}
-					catch (WebServiceException e1) {
-						dumpTiers(null, id, e1.getMessage(), ps);
+				}
+				catch (WebServiceException e) {
+					// problème... on essaie un par un
+					for (Integer id : lot) {
+						partyRequest.setPartyNumber(id);
+						try {
+							final Party indivResult = service.getParty(partyRequest);
+							dumpTiers(indivResult, id, null, ps);
+						}
+						catch (WebServiceException e1) {
+							dumpTiers(null, id, e1.getMessage(), ps);
+						}
 					}
 				}
 			}
 		}
-
-		if (closeStream) {
-			ps.close();
+		finally {
+			if (closeStream) {
+				ps.close();
+			}
 		}
 	}
 

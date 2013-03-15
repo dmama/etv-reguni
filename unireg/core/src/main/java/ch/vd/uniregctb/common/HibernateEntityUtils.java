@@ -172,7 +172,7 @@ public abstract class HibernateEntityUtils {
 	private static void assertSetEquals(Set<HibernateEntity> expected, Set<HibernateEntity> actual, String path, Set<EntityKey> checkedSet) throws Exception {
 		Assert.isEqual(expected.size(), actual.size(), '[' + path + ']');
 
-		final Map<Long, HibernateEntity> actualMap = new HashMap<Long, HibernateEntity>(actual.size());
+		final Map<Long, HibernateEntity> actualMap = new HashMap<>(actual.size());
 		for (HibernateEntity a : actual) {
 			actualMap.put((Long) a.getKey(), a);
 		}

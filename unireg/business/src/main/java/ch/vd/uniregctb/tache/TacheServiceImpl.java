@@ -99,7 +99,7 @@ public class TacheServiceImpl implements TacheService {
 	private PlatformTransactionManager transactionManager;
 	private AssujettissementService assujettissementService;
 	private PeriodeImpositionService periodeImpositionService;
-	private Map<Integer, TacheStats> tacheStatsPerOid = new HashMap<Integer, TacheStats>();
+	private Map<Integer, TacheStats> tacheStatsPerOid = new HashMap<>();
 	private AdresseService adresseService;
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -165,7 +165,7 @@ public class TacheServiceImpl implements TacheService {
 				s.append(" :\n");
 
 				// trie la liste par OID
-				List<Map.Entry<Integer, TacheStats>> list = new ArrayList<Map.Entry<Integer, TacheStats>>(stats.entrySet());
+				List<Map.Entry<Integer, TacheStats>> list = new ArrayList<>(stats.entrySet());
 				Collections.sort(list, new Comparator<Map.Entry<Integer, TacheStats>>() {
 					@Override
 					public int compare(Map.Entry<Integer, TacheStats> o1, Map.Entry<Integer, TacheStats> o2) {
@@ -188,7 +188,7 @@ public class TacheServiceImpl implements TacheService {
     @Override
     public void annuleTachesObsoletes(final Collection<Long> ctbIds) {
 
-        final Map<Long, List<SynchronizeAction>> entityActions = new HashMap<Long, List<SynchronizeAction>>();
+        final Map<Long, List<SynchronizeAction>> entityActions = new HashMap<>();
 
         final TransactionTemplate template = new TransactionTemplate(transactionManager);
         template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
@@ -499,7 +499,7 @@ public class TacheServiceImpl implements TacheService {
 	@Override
 	public void synchronizeTachesDIs(final Collection<Long> ctbIds) {
 
-		final Map<Long, List<SynchronizeAction>> entityActions = new HashMap<Long, List<SynchronizeAction>>();
+		final Map<Long, List<SynchronizeAction>> entityActions = new HashMap<>();
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
@@ -512,7 +512,7 @@ public class TacheServiceImpl implements TacheService {
 
 						// détermine tous les actions à effectuer sur les contribuables
 						final Map<Long, List<SynchronizeAction>> actions = determineAllSynchronizeActionsForDIs(ctbIds);
-						final Map<Long, List<SynchronizeAction>> tacheActions = new HashMap<Long, List<SynchronizeAction>>(actions.size());
+						final Map<Long, List<SynchronizeAction>> tacheActions = new HashMap<>(actions.size());
 						splitActions(actions, tacheActions, entityActions);
 
 						// on exécute toutes les actions sur les tâches dans la transaction courante, car - sauf bug -
@@ -555,7 +555,7 @@ public class TacheServiceImpl implements TacheService {
 		// on exécute toutes les actions en lots de 100. Les actions sont groupées par numéro de contribuable, de telle manière que
 		// toutes les actions d'un contribuable soient exécutées dans une même transaction.
 		final BatchTransactionTemplate<Map.Entry<Long, List<SynchronizeAction>>, BatchResults> batchTemplate =
-				new BatchTransactionTemplate<Map.Entry<Long, List<SynchronizeAction>>, BatchResults>(entityActions.entrySet(), 100, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE,
+				new BatchTransactionTemplate<>(entityActions.entrySet(), 100, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE,
 						transactionManager, null, hibernateTemplate);
 		batchTemplate.execute(new BatchTransactionTemplate.BatchCallback<Map.Entry<Long, List<SynchronizeAction>>, BatchResults>() {
 			@Override
@@ -599,8 +599,8 @@ public class TacheServiceImpl implements TacheService {
 	private static void splitActions(Map<Long, List<SynchronizeAction>> actions, Map<Long, List<SynchronizeAction>> tacheActions, Map<Long, List<SynchronizeAction>> entityActions) {
 		for (Map.Entry<Long, List<SynchronizeAction>> entry : actions.entrySet()) {
 			final List<SynchronizeAction> values = entry.getValue();
-			final List<SynchronizeAction> taches = new ArrayList<SynchronizeAction>(values.size());
-			final List<SynchronizeAction> entites = new ArrayList<SynchronizeAction>(values.size());
+			final List<SynchronizeAction> taches = new ArrayList<>(values.size());
+			final List<SynchronizeAction> entites = new ArrayList<>(values.size());
 			for (SynchronizeAction action : values) {
 				if (action.willChangeEntity()) {
 					entites.add(action);
@@ -619,7 +619,7 @@ public class TacheServiceImpl implements TacheService {
 	}
 
 	private Map<Long, List<SynchronizeAction>> determineAllSynchronizeActionsForDIs(Collection<Long> ctbIds) {
-		final Map<Long, List<SynchronizeAction>> map = new HashMap<Long, List<SynchronizeAction>>();
+		final Map<Long, List<SynchronizeAction>> map = new HashMap<>();
 		for (Long id : ctbIds) {
 			final Tiers tiers = tiersService.getTiers(id);
 			if (tiers instanceof Contribuable) {
@@ -651,10 +651,10 @@ public class TacheServiceImpl implements TacheService {
 		final List<TacheEnvoiDeclarationImpot> tachesEnvoi = getTachesEnvoiEnInstance(contribuable);
 		final List<TacheAnnulationDeclarationImpot> tachesAnnulation = getTachesAnnulationEnInstance(contribuable);
 
-		final List<AddDI> addActions = new ArrayList<AddDI>();
-		final List<UpdateDI> updateActions = new ArrayList<UpdateDI>();
-		final List<DeleteDI> deleteActions = new ArrayList<DeleteDI>();
-		final List<AnnuleTache> annuleActions = new ArrayList<AnnuleTache>();
+		final List<AddDI> addActions = new ArrayList<>();
+		final List<UpdateDI> updateActions = new ArrayList<>();
+		final List<DeleteDI> deleteActions = new ArrayList<>();
+		final List<AnnuleTache> annuleActions = new ArrayList<>();
 
 		final int anneeCourante = RegDate.get().year();
 
@@ -800,7 +800,7 @@ public class TacheServiceImpl implements TacheService {
 			return Collections.emptyList();
 		}
 		else {
-			final List<SynchronizeAction> actions = new ArrayList<SynchronizeAction>(size);
+			final List<SynchronizeAction> actions = new ArrayList<>(size);
 			actions.addAll(addActions);
 			actions.addAll(updateActions);
 			actions.addAll(deleteActions);
@@ -1018,7 +1018,7 @@ public class TacheServiceImpl implements TacheService {
 		final int anneeCourante = dateCourante.year();
 		final int anneeDebut = getPremierePeriodeFiscale();
 
-		final List<PeriodeImposition> periodes = new ArrayList<PeriodeImposition>();
+		final List<PeriodeImposition> periodes = new ArrayList<>();
 		for (int annee = anneeDebut; annee <= anneeCourante; ++annee) {
 			final List<PeriodeImposition> list = periodeImpositionService.determine(contribuable, annee);
 			if (list != null) {
@@ -1034,7 +1034,7 @@ public class TacheServiceImpl implements TacheService {
 		if (declarations == null || declarations.isEmpty()) {
 			return Collections.emptyList();
 		}
-		final List<DeclarationImpotOrdinaire> list = new ArrayList<DeclarationImpotOrdinaire>(declarations.size());
+		final List<DeclarationImpotOrdinaire> list = new ArrayList<>(declarations.size());
 		for (Declaration d : declarations) {
 			if (d.isAnnule()) {
 				continue;
@@ -1058,7 +1058,7 @@ public class TacheServiceImpl implements TacheService {
 				tachesAnnulation = Collections.emptyList();
 			}
 			else {
-				tachesAnnulation = new ArrayList<TacheAnnulationDeclarationImpot>(list.size());
+				tachesAnnulation = new ArrayList<>(list.size());
 				for (Tache t : list) {
 					tachesAnnulation.add((TacheAnnulationDeclarationImpot) t);
 				}
@@ -1080,7 +1080,7 @@ public class TacheServiceImpl implements TacheService {
 				tachesEnvoi = Collections.emptyList();
 			}
 			else {
-				tachesEnvoi = new ArrayList<TacheEnvoiDeclarationImpot>(list.size());
+				tachesEnvoi = new ArrayList<>(list.size());
 				for (Tache t : list) {
 					tachesEnvoi.add((TacheEnvoiDeclarationImpot) t);
 				}
@@ -1109,7 +1109,7 @@ public class TacheServiceImpl implements TacheService {
 		for (T t : dis) {
 			if (DateRangeHelper.intersect(t, range)) {
 				if (result == null) {
-					result = new ArrayList<T>();
+					result = new ArrayList<>();
 				}
 				result.add(t);
 			}

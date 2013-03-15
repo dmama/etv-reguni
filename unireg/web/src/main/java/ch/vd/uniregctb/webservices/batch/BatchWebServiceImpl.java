@@ -62,7 +62,7 @@ public class BatchWebServiceImpl implements BatchWebService {
 			final Map<String, Object> h;
 			if (params.params != null && !params.params.isEmpty()) {
 
-				h = new HashMap<String, Object>();
+				h = new HashMap<>();
 				for (ParamMapEntry entry : params.params.entries) {
 
 					final String key = entry.key;
@@ -138,7 +138,7 @@ public class BatchWebServiceImpl implements BatchWebService {
 
 		AuthenticationHelper.pushPrincipal(BATCH_VISA);
 		try {
-			final List<JobName> listeJobDefinition = new ArrayList<JobName>();
+			final List<JobName> listeJobDefinition = new ArrayList<>();
 			final List<ch.vd.uniregctb.scheduler.JobDefinition> values = batchScheduler.getSortedJobs();
 
 			for (ch.vd.uniregctb.scheduler.JobDefinition jobDefinition : values) {

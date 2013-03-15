@@ -26,7 +26,7 @@ public class DataHelper {
 			return null;
 		}
 
-		Collection<Param> listeParamWeb = new ArrayList<Param>();
+		Collection<Param> listeParamWeb = new ArrayList<>();
 		for (ch.vd.uniregctb.scheduler.JobParam param : job.getParamDefinition()) {
 
 			Param parametre = new Param(job, param);

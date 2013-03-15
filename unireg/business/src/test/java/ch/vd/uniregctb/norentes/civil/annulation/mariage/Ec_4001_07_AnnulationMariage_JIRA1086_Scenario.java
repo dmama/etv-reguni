@@ -78,12 +78,9 @@ public class Ec_4001_07_AnnulationMariage_JIRA1086_Scenario extends EvenementCiv
 		}
 	}
 
-	private DefaultMockServiceCivil serviceCivil;
-
 	@Override
 	protected void initServiceCivil() {
-		serviceCivil = new DefaultMockServiceCivil();
-		serviceCivilService.setUp(serviceCivil);
+		serviceCivilService.setUp(new DefaultMockServiceCivil());
 	}
 
 	private static final long noIndJaime = 2000465; // Jaime

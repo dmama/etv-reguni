@@ -50,14 +50,14 @@ public abstract class BamMessageHelper {
 	}
 
 	private static Map<String, String> buildTaskDefinitionIdsQuittancementFromProcessDefinitionIdMap() {
-		final Map<String, String> map = new HashMap<String, String>(2);
+		final Map<String, String> map = new HashMap<>(2);
 		map.put(PROCESS_DEFINITION_ID_PAPIER, TASK_DEFINITION_ID_QUITTANCEMENT_PAPIER);
 		map.put(PROCESS_DEFINITION_ID_ELECTRONIQUE, TASK_DEFINITION_ID_QUITTANCEMENT_ELECTRONIQUE);
 		return map;
 	}
 
 	private static Map<String, String> buildTaskDefinitionIdsRetourFromProcessDefinitionIdMap() {
-		final Map<String, String> map = new HashMap<String, String>(2);
+		final Map<String, String> map = new HashMap<>(2);
 		map.put(PROCESS_DEFINITION_ID_PAPIER, TASK_DEFINITION_ID_RETOUR_PAPIER);
 		map.put(PROCESS_DEFINITION_ID_ELECTRONIQUE, TASK_DEFINITION_ID_RETOUR_ELECTRONIQUE);
 		return map;
@@ -112,7 +112,7 @@ public abstract class BamMessageHelper {
 			final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) d;
 			final String strNoSeq = buildNoSequence(di);
 			final String strPeriode = buildPeriode(di);
-			map = new HashMap<String, String>(3 + (transmittedAttributes != null ? transmittedAttributes.size() : 0));
+			map = new HashMap<>(3 + (transmittedAttributes != null ? transmittedAttributes.size() : 0));
 			if (transmittedAttributes != null) {
 				map.putAll(transmittedAttributes);
 			}
@@ -120,7 +120,7 @@ public abstract class BamMessageHelper {
 			map.put(PERIODE_IMPOSITION, strPeriode);
 		}
 		else {
-			map = new HashMap<String, String>(1 + (transmittedAttributes != null ? transmittedAttributes.size() : 0));
+			map = new HashMap<>(1 + (transmittedAttributes != null ? transmittedAttributes.size() : 0));
 			if (transmittedAttributes != null) {
 				map.putAll(transmittedAttributes);
 			}
@@ -157,7 +157,7 @@ public abstract class BamMessageHelper {
 		}
 
 		final Map<String, String> transmittedAttributes = extractHeaders(attributesKeysToCopyFromIncomingMessages, incomingMessageHeaders);
-		final Map<String, String> bamHeaders = new HashMap<String, String>(3 + (transmittedAttributes != null ? transmittedAttributes.size() : 0));
+		final Map<String, String> bamHeaders = new HashMap<>(3 + (transmittedAttributes != null ? transmittedAttributes.size() : 0));
 		if (transmittedAttributes != null) {
 			bamHeaders.putAll(transmittedAttributes);
 		}
@@ -179,7 +179,7 @@ public abstract class BamMessageHelper {
 		final Map<String, String> transmittedAttributes = extractHeaders(attributesKeysToCopyFromIncomingMessages, incomingMessageHeaders);
 		final Map<String, String> map;
 		if (transmittedAttributes != null) {
-			map = new HashMap<String, String>(transmittedAttributes);
+			map = new HashMap<>(transmittedAttributes);
 		}
 		else {
 			map = null;
@@ -196,7 +196,7 @@ public abstract class BamMessageHelper {
 	@Nullable
 	private static Map<String, String> extractHeaders(Collection<String> keysToExtract, @Nullable Map<String, String> source) {
 		if (source != null && keysToExtract != null && !source.isEmpty() && !keysToExtract.isEmpty()) {
-			final Map<String, String> dest = new HashMap<String, String>(Math.min(keysToExtract.size(), source.size()));
+			final Map<String, String> dest = new HashMap<>(Math.min(keysToExtract.size(), source.size()));
 			for (String key : keysToExtract) {
 				final String value = source.get(key);
 				if (value != null) {

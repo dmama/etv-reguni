@@ -83,7 +83,7 @@ public class EvenementCediEsbMessageHandlerTest extends EvenementTest {
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
 	public void testReceiveRetourDI() throws Exception {
 
-		final List<EvenementCedi> events = new ArrayList<EvenementCedi>();
+		final List<EvenementCedi> events = new ArrayList<>();
 
 		handler.setHandler(new EvenementCediHandler() {
 			@Override
@@ -125,7 +125,7 @@ public class EvenementCediEsbMessageHandlerTest extends EvenementTest {
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
 	public void testReceiveRetourDIPresqueVide() throws Exception {
 
-		final List<EvenementCedi> events = new ArrayList<EvenementCedi>();
+		final List<EvenementCedi> events = new ArrayList<>();
 
 		handler.setHandler(new EvenementCediHandler() {
 			@Override

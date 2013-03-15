@@ -50,7 +50,7 @@ public class DebiteurView implements Annulable {
 			nomCourrier = adresseService.getNomCourrier(dpi, null, false);
 		}
 		catch (AdresseException e) {
-			nomCourrier = new ArrayList<String>();
+			nomCourrier = new ArrayList<>();
 			nomCourrier.add(e.getMessage());
 		}
 		return nomCourrier;

@@ -213,7 +213,7 @@ public class DebiteurPrestationImposable extends Tiers {
 		if (periodicites == null) {
 			return null;
 		}
-		final List<Periodicite> list = new ArrayList<Periodicite>(periodicites);
+		final List<Periodicite> list = new ArrayList<>(periodicites);
 		Collections.sort(list, new DateRangeComparator<Periodicite>());
 		return list;
 	}
@@ -252,7 +252,7 @@ public class DebiteurPrestationImposable extends Tiers {
 	 */
 	@Transient
 	public List<Periodicite> getPeriodicitesNonAnnules(boolean sort) {
-		List<Periodicite> periodicitesNonAnnulees = new ArrayList<Periodicite>();
+		List<Periodicite> periodicitesNonAnnulees = new ArrayList<>();
 		if (periodicites != null) {
 			for (Periodicite p : periodicites) {
 				if (!p.isAnnule()) {
@@ -289,7 +289,7 @@ public class DebiteurPrestationImposable extends Tiers {
 	 */
 	public void addPeriodicite(Periodicite nouvellePeriodicite) {
 		if (this.periodicites == null) {
-			this.periodicites = new HashSet<Periodicite>();
+			this.periodicites = new HashSet<>();
 		}
 
 		this.periodicites.add(nouvellePeriodicite);
@@ -322,7 +322,7 @@ public class DebiteurPrestationImposable extends Tiers {
 			}
 			//Si aucune périodicité n'est trouvé et que la date spécifé se trouve avant la date de début de validité
 			//de la première periodicité et que celle ci est unique, on la renvoie
-			List<Periodicite> periodicitesTriees = new ArrayList<Periodicite>(periodicites.size());
+			List<Periodicite> periodicitesTriees = new ArrayList<>(periodicites.size());
 			periodicitesTriees.addAll(periodicites);
 			Collections.sort(periodicitesTriees,new DateRangeComparator<Periodicite>());
 			Periodicite premiere = periodicitesTriees.get(0);

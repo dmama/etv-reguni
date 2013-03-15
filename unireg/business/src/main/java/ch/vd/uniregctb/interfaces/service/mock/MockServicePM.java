@@ -33,7 +33,7 @@ import ch.vd.uniregctb.type.TypeAdressePM;
 
 public abstract class MockServicePM extends ServicePersonneMoraleBase {
 
-	private final Map<Long, PersonneMorale> map = new HashMap<Long, PersonneMorale>();
+	private final Map<Long, PersonneMorale> map = new HashMap<>();
 
 	/**
 	 * Constructeur par défaut qui appel init pour initialiser le mock.
@@ -107,7 +107,7 @@ public abstract class MockServicePM extends ServicePersonneMoraleBase {
 
 		Collection<AdresseEntreprise> adresses = pm.getAdresses();
 		if (adresses == null) {
-			adresses = new ArrayList<AdresseEntreprise>();
+			adresses = new ArrayList<>();
 			pm.setAdresses(adresses);
 		}
 		adresses.add(adresse);
@@ -117,7 +117,7 @@ public abstract class MockServicePM extends ServicePersonneMoraleBase {
 
 	@Override
 	public List<Long> getAllIds() {
-		return new ArrayList<Long>(map.keySet());
+		return new ArrayList<>(map.keySet());
 	}
 
 	@Override
@@ -127,7 +127,7 @@ public abstract class MockServicePM extends ServicePersonneMoraleBase {
 
 	@Override
 	public List<PersonneMorale> getPersonnesMorales(List<Long> ids, PartPM... parts) {
-		List<PersonneMorale> list = new ArrayList<PersonneMorale>();
+		List<PersonneMorale> list = new ArrayList<>();
 		for (Long id : ids) {
 			PersonneMorale pm = map.get(id);
 			list.add(pm);

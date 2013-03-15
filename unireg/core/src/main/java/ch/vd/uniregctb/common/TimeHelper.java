@@ -129,7 +129,7 @@ public abstract class TimeHelper {
 	 * @return une string représentant la durée sous forme humaine.
 	 */
 	protected static String formatDuree(int days, int hours, int minutes, int seconds) {
-		final List<String> parts = new ArrayList<String>(4);
+		final List<String> parts = new ArrayList<>(4);
 		if (days > 0) {
 			parts.add(String.format("%d %s", days, pluralize(days, "jour")));
 		}

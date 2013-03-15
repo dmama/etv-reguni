@@ -60,7 +60,7 @@ public class EvenementCivilEchServiceImpl implements EvenementCivilEchService, I
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		if (LOGGER.isInfoEnabled()) {
-			final List<TypeEvenementCivilEch> all = new ArrayList<TypeEvenementCivilEch>(Arrays.asList(TypeEvenementCivilEch.values()));
+			final List<TypeEvenementCivilEch> all = new ArrayList<>(Arrays.asList(TypeEvenementCivilEch.values()));
 			Collections.sort(all, TYPE_PRIORITY_COMPARATOR);
 			StringBuilder b = new StringBuilder("A date égale, les événements civils e-CH seront traités dans l'ordre suivant : ");
 			boolean first = true;
@@ -74,7 +74,7 @@ public class EvenementCivilEchServiceImpl implements EvenementCivilEchService, I
 				}
 			}
 			LOGGER.info(b.toString());
-			final List<ActionEvenementCivilEch> allActions = new ArrayList<ActionEvenementCivilEch>(Arrays.asList(ActionEvenementCivilEch.values()));
+			final List<ActionEvenementCivilEch> allActions = new ArrayList<>(Arrays.asList(ActionEvenementCivilEch.values()));
 			Collections.sort(allActions, ACTION_PRIORITY_COMPARATOR);
 			b = new StringBuilder("A date égale, et priorité de type égale, les événements civils e-CH seront traités dans l'ordre suivant : ");
 			first = true;
@@ -139,7 +139,7 @@ public class EvenementCivilEchServiceImpl implements EvenementCivilEchService, I
 	private List<EvenementCivilEchBasicInfo> buildListeEvenementsCivilsATraiterPourIndividu(long noIndividu) {
 		final List<EvenementCivilEch> evts = evenementCivilEchDAO.getEvenementsCivilsNonTraites(Arrays.asList(noIndividu));
 		if (evts != null && evts.size() > 0) {
-			final List<EvenementCivilEchBasicInfo> liste = new ArrayList<EvenementCivilEchBasicInfo>(evts.size());
+			final List<EvenementCivilEchBasicInfo> liste = new ArrayList<>(evts.size());
 			for (EvenementCivilEch evt : evts) {
 				final EvenementCivilEchBasicInfo info = new EvenementCivilEchBasicInfo(evt);
 				liste.add(info);

@@ -317,7 +317,7 @@ public class PerfsThread extends Thread {
 		if (list == null || list.isEmpty()) {
 			return Collections.emptyList();
 		}
-		final List<Integer> res = new ArrayList<Integer>(list.size());
+		final List<Integer> res = new ArrayList<>(list.size());
 		for (Long l : list) {
 			res.add(l.intValue());
 		}

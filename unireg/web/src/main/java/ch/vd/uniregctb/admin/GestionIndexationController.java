@@ -192,7 +192,7 @@ public class GestionIndexationController extends AbstractSimpleFormController {
 	 */
 	private void executeSearch(HttpSession session, GestionIndexation bean) {
 
-		final List<IndexDocument> listIndexDocument = new ArrayList<IndexDocument>();
+		final List<IndexDocument> listIndexDocument = new ArrayList<>();
 
 		globalIndex.search(bean.getRequete(), maxHits, new SearchCallback() {
 			@Override

@@ -52,8 +52,8 @@ public class RapprocherCtbResults extends JobResults<ProprietaireFoncier, Rappro
 
 	// Données de processing
 	public int nbCtbsTotal = 0;
-	public final List<Erreur> ctbsEnErreur = new LinkedList<Erreur>();
-	public final List<ProprietaireRapproche> listeRapproche = new LinkedList<ProprietaireRapproche>();
+	public final List<Erreur> ctbsEnErreur = new LinkedList<>();
+	public final List<ProprietaireRapproche> listeRapproche = new LinkedList<>();
 	public boolean interrompu;
 
 	public RapprocherCtbResults(RegDate dateTraitement, TiersService tiersService, AdresseService adresseService) {
@@ -114,7 +114,7 @@ public class RapprocherCtbResults extends JobResults<ProprietaireFoncier, Rappro
 		for (ProprietaireRapproche p : listeRapproche) {
 			++ tableau[p.getResultat().ordinal()];
 		}
-		final Map<ProprietaireRapproche.CodeRetour, Integer> map = new HashMap<ProprietaireRapproche.CodeRetour, Integer>(tableau.length);
+		final Map<ProprietaireRapproche.CodeRetour, Integer> map = new HashMap<>(tableau.length);
 		for (ProprietaireRapproche.CodeRetour code : ProprietaireRapproche.CodeRetour.values()) {
 			final int index = code.ordinal();
 			map.put(code, tableau[index]);

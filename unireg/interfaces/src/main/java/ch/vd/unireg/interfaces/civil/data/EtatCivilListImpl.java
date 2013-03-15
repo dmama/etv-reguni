@@ -23,11 +23,11 @@ public class EtatCivilListImpl implements EtatCivilList, Serializable {
 	final private List<EtatCivil> list;
 
 	public EtatCivilListImpl() {
-		this.list = new ArrayList<EtatCivil>();
+		this.list = new ArrayList<>();
 	}
 
 	public EtatCivilListImpl(Collection<EtatCivil> list) {
-		this.list = new ArrayList<EtatCivil>(list);
+		this.list = new ArrayList<>(list);
 		sort();
 	}
 

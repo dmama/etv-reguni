@@ -1,14 +1,13 @@
 package ch.vd.uniregctb.webservices.batch;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Map des paramètres de démarrage d'un batch Unireg.
@@ -24,7 +23,7 @@ import javax.xml.bind.annotation.XmlType;
 public class ParamMap {
 
 	@XmlElement(required = true)
-	public final List<ParamMapEntry> entries = new ArrayList<ParamMapEntry>();
+	public final List<ParamMapEntry> entries = new ArrayList<>();
 
 	public ParamMap() {
 	}

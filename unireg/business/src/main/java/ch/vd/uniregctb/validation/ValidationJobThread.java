@@ -212,7 +212,7 @@ public class ValidationJobThread extends Thread {
 
 			// ce sont les DI déjà utilisées (bonnes dates, ou mauvaises dates à corriger) dans une periode d'imposition
 			// d'une autre itération de la boucle des périodes d'imposition
-			final Set<Declaration> diUtilisees = new HashSet<Declaration>(declarations.size());
+			final Set<Declaration> diUtilisees = new HashSet<>(declarations.size());
 
 			// on va d'abord écarter les DI (et les périodes d'imposition) qui matchent parfaitement
 			for (Declaration di : declarations) {
@@ -229,7 +229,7 @@ public class ValidationJobThread extends Thread {
 			// ensuite, on prend les DI et PI qui s'intersectent
 			final Iterator<PeriodeImposition> iterPeriodes = periodesImposition.iterator();
 			while (iterPeriodes.hasNext()) {
-				final List<Declaration> diCandidates = new ArrayList<Declaration>(declarations.size() - diUtilisees.size());
+				final List<Declaration> diCandidates = new ArrayList<>(declarations.size() - diUtilisees.size());
 				final PeriodeImposition pi = iterPeriodes.next();
 
 				// au cas où plusieurs DI intersectent la période d'imposition sans la recouvrir tout à fait
@@ -262,7 +262,7 @@ public class ValidationJobThread extends Thread {
 			// ensuite, on associe un à un les élements restant dans chacune des collections
 			final int nbDeclarationNonAssociees = declarations.size() - diUtilisees.size();
 			if (nbDeclarationNonAssociees > 0 && !periodesImposition.isEmpty()) {
-				final List<Declaration> diNonUtilisees = new ArrayList<Declaration>(nbDeclarationNonAssociees);
+				final List<Declaration> diNonUtilisees = new ArrayList<>(nbDeclarationNonAssociees);
 				for (Declaration di : declarations) {
 					if (!diUtilisees.contains(di)) {
 						diNonUtilisees.add(di);

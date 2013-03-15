@@ -241,10 +241,10 @@ public class HtmlTextWriter extends TextWriter {
 
     static {
 
-        _tagTable = new InsensitiveCaseHashtable<HtmlTag>(tags.length); // , StringComparer.OrdinalIgnoreCase);
-        _attributeTable = new InsensitiveCaseHashtable<HtmlAttribute>(htmlattrs.length); // ,
+        _tagTable = new InsensitiveCaseHashtable<>(tags.length); // , StringComparer.OrdinalIgnoreCase);
+        _attributeTable = new InsensitiveCaseHashtable<>(htmlattrs.length); // ,
         // StringComparer.OrdinalIgnoreCase);
-        _styleTable = new InsensitiveCaseHashtable<HtmlStyle>(htmlstyles.length); // ,
+        _styleTable = new InsensitiveCaseHashtable<>(htmlstyles.length); // ,
         // StringComparer.OrdinalIgnoreCase);
 
         for (HtmlTag tag : tags)

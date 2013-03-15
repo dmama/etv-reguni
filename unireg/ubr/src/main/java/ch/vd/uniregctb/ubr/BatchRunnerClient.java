@@ -243,7 +243,7 @@ public class BatchRunnerClient {
 			return Collections.emptyList();
 		}
 		final List<JobName> items = array.getItem();
-		List<String> list = new ArrayList<String>(items.size());
+		List<String> list = new ArrayList<>(items.size());
 		for (JobName n : items) {
 			list.add(n.getName());
 		}

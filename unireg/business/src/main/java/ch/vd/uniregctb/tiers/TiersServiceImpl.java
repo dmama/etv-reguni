@@ -405,7 +405,7 @@ public class TiersServiceImpl implements TiersService {
 
 	@Override
     public void setIdentifiantsPersonne(PersonnePhysique nonHabitant, String navs11, String numRce) {
-        final Set<IdentificationPersonne> set = new HashSet<IdentificationPersonne>(2);
+        final Set<IdentificationPersonne> set = new HashSet<>(2);
 
         // numéro avs à 11 positions
         if (StringUtils.isNotEmpty(navs11)) {
@@ -920,7 +920,7 @@ public class TiersServiceImpl implements TiersService {
     public PersonnePhysique getPrincipal(MenageCommun menageCommun) {
         final Set<PersonnePhysique> personnes = getPersonnesPhysiques(menageCommun);
         if (!personnes.isEmpty()) {
-            final List<PersonnePhysique> liste = new ArrayList<PersonnePhysique>(personnes);
+            final List<PersonnePhysique> liste = new ArrayList<>(personnes);
             final PersonnePhysique tiers1 = liste.get(0);
             if (liste.size() > 1) {
                 final PersonnePhysique tiers2 = liste.get(1);
@@ -1606,7 +1606,7 @@ public class TiersServiceImpl implements TiersService {
             throw new IndividuNotFoundException(numeroIndividu);
         }
 
-        final List<PersonnePhysique> parents = new ArrayList<PersonnePhysique>(2);
+        final List<PersonnePhysique> parents = new ArrayList<>(2);
 
         final List<RelationVersIndividu> relParents = individu.getParents();
         if (relParents != null) {
@@ -1635,7 +1635,7 @@ public class TiersServiceImpl implements TiersService {
             throw new IndividuNotFoundException(numeroIndividu);
         }
 
-        final List<PersonnePhysique> enfants = new ArrayList<PersonnePhysique>();
+        final List<PersonnePhysique> enfants = new ArrayList<>();
         if (individu.getEnfants() != null) {
             for (RelationVersIndividu rel : individu.getEnfants()) {
                 final PersonnePhysique enfant = tiersDAO.getPPByNumeroIndividu(rel.getNumeroAutreIndividu(), true);
@@ -1664,13 +1664,13 @@ public class TiersServiceImpl implements TiersService {
     public List<PersonnePhysique> getEnfants(MenageCommun mc, RegDate dateValidite) {
         EnsembleTiersCouple ensembleTiersCouple = getEnsembleTiersCouple(mc, dateValidite);
         PersonnePhysique principal = ensembleTiersCouple.getPrincipal();
-        Set<PersonnePhysique> setEnfantsMenage = new HashSet<PersonnePhysique>();
+        Set<PersonnePhysique> setEnfantsMenage = new HashSet<>();
         PersonnePhysique conjoint = ensembleTiersCouple.getConjoint();
         setEnfantsMenage.addAll(getEnfants(principal, dateValidite));
         if (conjoint != null) {
             setEnfantsMenage.addAll(getEnfants(conjoint, dateValidite));
         }
-        return new ArrayList<PersonnePhysique>(setEnfantsMenage);
+        return new ArrayList<>(setEnfantsMenage);
     }
 
     @Override
@@ -1687,12 +1687,12 @@ public class TiersServiceImpl implements TiersService {
 
     @Override
     public List<PersonnePhysique> getEnfantsForDeclaration(Contribuable ctb, RegDate finPeriodeImposition) {
-        final List<PersonnePhysique> listeEnfants = new ArrayList<PersonnePhysique>();
+        final List<PersonnePhysique> listeEnfants = new ArrayList<>();
         final List<PersonnePhysique> listeRecherche = getEnfants(ctb, finPeriodeImposition);
         if (!listeRecherche.isEmpty()) {
 
             // warm-up du cache individu avec adresses
-            final List<Long> noTiersEnfants = new ArrayList<Long>(listeRecherche.size());
+            final List<Long> noTiersEnfants = new ArrayList<>(listeRecherche.size());
             for (PersonnePhysique enfant : listeRecherche) {
                 noTiersEnfants.add(enfant.getNumero());
             }
@@ -1796,7 +1796,7 @@ public class TiersServiceImpl implements TiersService {
     @Override
     public List<RapportFiliation> getRapportsFiliation(PersonnePhysique personnePhysique) {
 
-        final List<RapportFiliation> filiations = new ArrayList<RapportFiliation>();
+        final List<RapportFiliation> filiations = new ArrayList<>();
         if (!personnePhysique.isConnuAuCivil()) {
             return Collections.emptyList();
         }
@@ -2143,7 +2143,7 @@ public class TiersServiceImpl implements TiersService {
      */
     @Override
     public void reopenRapportsPrestation(DebiteurPrestationImposable debiteur, RegDate dateDesactivation, RegDate dateReactivation) {
-        final List<RapportEntreTiers> nouveaux = new ArrayList<RapportEntreTiers>(debiteur.getRapportsObjet().size());
+        final List<RapportEntreTiers> nouveaux = new ArrayList<>(debiteur.getRapportsObjet().size());
         for (RapportEntreTiers rapport : debiteur.getRapportsObjet()) {
             if (rapport instanceof RapportPrestationImposable && rapport.isValidAt(dateDesactivation) && dateDesactivation.equals(rapport.getDateFin())) {
                 final Tiers sourcier = getTiers(rapport.getSujetId());
@@ -2191,7 +2191,7 @@ public class TiersServiceImpl implements TiersService {
      */
     @Override
     public void reopenForsClosedAt(RegDate date, MotifFor motifFermeture, Tiers tiers) {
-        List<ForFiscal> openFors = new ArrayList<ForFiscal>();
+        List<ForFiscal> openFors = new ArrayList<>();
         for (ForFiscal forFiscal : tiers.getForsFiscaux()) {
             if (!forFiscal.isAnnule() && date.equals(forFiscal.getDateFin())) {
                 /*
@@ -2903,7 +2903,7 @@ public class TiersServiceImpl implements TiersService {
         copieRemarques(nonHabitant, habitant);
 
         // Onglet Fiscal
-        final Set<ForFiscal> forsCible = new HashSet<ForFiscal>();
+        final Set<ForFiscal> forsCible = new HashSet<>();
         for (ForFiscal forFiscalSource : nonHabitant.getForsFiscaux()) {
             if (forFiscalSource instanceof ForFiscalAutreImpot) {
                 ForFiscalAutreImpot forFiscalCible = copieForFiscalAutreImpot((ForFiscalAutreImpot) forFiscalSource);
@@ -3606,7 +3606,7 @@ public class TiersServiceImpl implements TiersService {
             return Collections.emptyList();
         }
 
-        List<ForGestion> results = new ArrayList<ForGestion>();
+        List<ForGestion> results = new ArrayList<>();
 
         final List<ForFiscal> forsFiscaux = tiers.getForsFiscauxSorted();
         if (forsFiscaux == null || forsFiscaux.isEmpty()) {
@@ -3614,7 +3614,7 @@ public class TiersServiceImpl implements TiersService {
         }
 
         // Récupère la liste des dates (triées par ordre croissant) où les fors fiscaux ont changés
-        final SortedSet<RegDate> dates = new TreeSet<RegDate>();
+        final SortedSet<RegDate> dates = new TreeSet<>();
         for (DateRange r : forsFiscaux) {
             final RegDate dateDebut = r.getDateDebut();
             if (dateDebut != null) {
@@ -3627,7 +3627,7 @@ public class TiersServiceImpl implements TiersService {
         }
 
         // En commençant par la date la plus ancienne, collecte tous les fors de gestion
-        List<ForGestion> forsGestion = new ArrayList<ForGestion>();
+        List<ForGestion> forsGestion = new ArrayList<>();
         ForGestion precedent = null;
         for (RegDate debut : dates) {
             final ForGestion f = getForGestionActif(tiers, debut);
@@ -3665,7 +3665,7 @@ public class TiersServiceImpl implements TiersService {
      */
     @Override
     public List<AdresseTiers> fermeAdresseTiersTemporaire(Tiers tiers, RegDate date) {
-        final List<AdresseTiers> listeDesAdressesFermees = new ArrayList<AdresseTiers>();
+        final List<AdresseTiers> listeDesAdressesFermees = new ArrayList<>();
         if (tiers.getAdressesTiers() != null) {
             for (AdresseTiers adr : tiers.getAdressesTiers()) {
                 if (adr instanceof AdresseSupplementaire) {
@@ -3773,7 +3773,7 @@ public class TiersServiceImpl implements TiersService {
                     final Long debiteurId = r.getObjetId();
                     final DebiteurPrestationImposable d = (DebiteurPrestationImposable) tiersDAO.get(debiteurId);
                     if (debiteurs == null) {
-                        debiteurs = new HashSet<DebiteurPrestationImposable>(); // création à la demande
+                        debiteurs = new HashSet<>(); // création à la demande
                     }
                     debiteurs.add(d);
                 }
@@ -3879,7 +3879,7 @@ public class TiersServiceImpl implements TiersService {
      */
     @NotNull
     private Map<PersonnePhysique, RapportEntreTiers> getPersonnesPhysiques(MenageCommun menage, boolean aussiRapportsAnnules) {
-        final Map<PersonnePhysique, RapportEntreTiers> personnes = new HashMap<PersonnePhysique, RapportEntreTiers>(aussiRapportsAnnules ? 4 : 2);
+        final Map<PersonnePhysique, RapportEntreTiers> personnes = new HashMap<>(aussiRapportsAnnules ? 4 : 2);
         final Set<RapportEntreTiers> rapports = menage.getRapportsObjet();
         if (rapports != null) {
             for (RapportEntreTiers r : rapports) {
@@ -3937,7 +3937,7 @@ public class TiersServiceImpl implements TiersService {
             if (referent instanceof PersonnePhysique) {
                 raisonSociale = Arrays.asList(getNomPrenom((PersonnePhysique) referent));
             } else if (referent instanceof MenageCommun) {
-                raisonSociale = new ArrayList<String>(2);
+                raisonSociale = new ArrayList<>(2);
                 final EnsembleTiersCouple couple = getEnsembleTiersCouple((MenageCommun) referent, null);
                 final PersonnePhysique principal = couple.getPrincipal();
                 final PersonnePhysique conjoint = couple.getConjoint();
@@ -3956,7 +3956,7 @@ public class TiersServiceImpl implements TiersService {
             } else if (referent instanceof CollectiviteAdministrative) {
                 try {
                     final ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative ca = serviceInfra.getCollectivite(((CollectiviteAdministrative) referent).getNumeroCollectiviteAdministrative());
-                    raisonSociale = new ArrayList<String>(3);
+                    raisonSociale = new ArrayList<>(3);
                     if (ca != null) {
                         final String ligne1 = ca.getNomComplet1();
                         if (StringUtils.isNotBlank(ligne1)) {
@@ -3979,7 +3979,7 @@ public class TiersServiceImpl implements TiersService {
             }
         } else {
             // pas de tiers référent : on se sert des données connues sur le débiteur
-            raisonSociale = new ArrayList<String>(2);
+            raisonSociale = new ArrayList<>(2);
             if (StringUtils.isNotBlank(debiteur.getNom1())) {
                 raisonSociale.add(debiteur.getNom1().trim());
             }
@@ -4006,7 +4006,7 @@ public class TiersServiceImpl implements TiersService {
         Assert.notNull(numeroEntreprise);
         final PersonneMorale pm = servicePM.getPersonneMorale(numeroEntreprise);
 
-        final List<String> nomsComplets = new ArrayList<String>(3);
+        final List<String> nomsComplets = new ArrayList<>(3);
         if (pm != null) {
             if (StringUtils.isNotBlank(pm.getRaisonSociale1())) {
                 nomsComplets.add(StringUtils.trimToNull(pm.getRaisonSociale1()));
@@ -4038,7 +4038,7 @@ public class TiersServiceImpl implements TiersService {
                 if (date == null || rapport.isValidAt(date)) {
                     if (personnes == null) {
                         // création à la demande
-                        personnes = new HashSet<PersonnePhysique>();
+                        personnes = new HashSet<>();
                     }
                     final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(rapport.getSujetId());
                     personnes.add(pp);
@@ -4068,7 +4068,7 @@ public class TiersServiceImpl implements TiersService {
                 if (DateRangeHelper.intersect(rapport, periode)) {
                     if (personnes == null) {
                         // création à la demande
-                        personnes = new HashSet<PersonnePhysique>();
+                        personnes = new HashSet<>();
                     }
                     final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(rapport.getSujetId());
                     personnes.add(pp);
@@ -4084,7 +4084,7 @@ public class TiersServiceImpl implements TiersService {
 		if (!nosIndividus.isEmpty()) {
 			final List<EvenementCivilRegPP> evts = evenementCivilRegPPDAO.getEvenementsCivilsNonTraites(nosIndividus);
 			if (evts != null && !evts.isEmpty()) {
-				inds = new HashSet<Long>(nosIndividus.size());
+				inds = new HashSet<>(nosIndividus.size());
 				for (EvenementCivilRegPP evt : evts) {
 					if (evt.getNumeroIndividuPrincipal() != null) {
 						inds.add(evt.getNumeroIndividuPrincipal());
@@ -4109,7 +4109,7 @@ public class TiersServiceImpl implements TiersService {
 		if (!nosIndividus.isEmpty()) {
 			final List<EvenementCivilEch> evts = evenementCivilEchDAO.getEvenementsCivilsNonTraites(nosIndividus);
 			if (evts != null && !evts.isEmpty()) {
-				inds = new HashSet<Long>(nosIndividus.size());
+				inds = new HashSet<>(nosIndividus.size());
 				for (EvenementCivilEch evt : evts) {
 					if (evt.getNumeroIndividu() != null) {
 						inds.add(evt.getNumeroIndividu());
@@ -4128,7 +4128,7 @@ public class TiersServiceImpl implements TiersService {
 
 	@Override
 	public EvenementsCivilsNonTraites getIndividusAvecEvenementsCivilsNonTraites(Tiers tiers) {
-		final Set<Long> noTiers = new HashSet<Long>(1);
+		final Set<Long> noTiers = new HashSet<>(1);
 		noTiers.add(tiers.getNumero());
 		final Set<Long> nosIndividus = tiersDAO.getNumerosIndividu(noTiers, true);
 		final EvenementsCivilsNonTraites res = new EvenementsCivilsNonTraites();
@@ -4250,8 +4250,8 @@ public class TiersServiceImpl implements TiersService {
      */
     @Override
     public Set<Tiers> getLinkedTiers(LinkedEntity entity, boolean includeAnnuled) {
-        final Set<Tiers> tiers = new HashSet<Tiers>();
-        final Set<Object> visited = new HashSet<Object>(); // contient les entités et les clés déjà visitées
+        final Set<Tiers> tiers = new HashSet<>();
+        final Set<Object> visited = new HashSet<>(); // contient les entités et les clés déjà visitées
         extractLinkedTiers(entity, includeAnnuled, tiers, visited);
         return tiers;
     }
@@ -4347,7 +4347,7 @@ public class TiersServiceImpl implements TiersService {
 
 		final List<RapportPrestationImposable> allRapports  = rapportEntreTiersDAO.getRapportsPrestationImposable(dpi.getNumero(),sourcier.getNumero(),false, doNotAutoFlush);
 		if (nonAnnuleOnly) {
-			List<RapportPrestationImposable> rapportsNonAnnule = new ArrayList<RapportPrestationImposable>();
+			List<RapportPrestationImposable> rapportsNonAnnule = new ArrayList<>();
 			for (RapportPrestationImposable rapport : allRapports) {
 				if (!rapport.isAnnule()) {
 					rapportsNonAnnule.add(rapport);

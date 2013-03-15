@@ -143,7 +143,7 @@ public abstract class BeanUtils {
 		}
 
 		PropertyDescriptor[]  propertyDescriptors = PropertyUtils.getPropertyDescriptors(beanToCompareFrom);
-		ArrayList<String> listRes = new ArrayList<String>();
+		ArrayList<String> listRes = new ArrayList<>();
 		for (PropertyDescriptor pd : propertyDescriptors) {
 			try {
 				if ( PropertyUtils.getPropertyDescriptor(beanToCheck, pd.getName()) == null) {

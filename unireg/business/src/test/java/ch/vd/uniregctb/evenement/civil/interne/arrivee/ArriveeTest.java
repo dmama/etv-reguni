@@ -487,7 +487,7 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 
 	private void assertListContains(List<PersonnePhysique> list, Long... ids) {
 		assertNotNull(list);
-		final Set<Long> set = new HashSet<Long>();
+		final Set<Long> set = new HashSet<>();
 		for (PersonnePhysique pp : list) {
 			set.add(pp.getId());
 		}

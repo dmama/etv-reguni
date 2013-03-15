@@ -94,7 +94,7 @@ public abstract class DataHelper {
 			return null;
 		}
 
-		List<Address> list = new ArrayList<Address>();
+		List<Address> list = new ArrayList<>();
 		for (AdresseEnvoiDetaillee a : adresses) {
 			if (range == null || DateRangeHelper.intersect(a, range)) {
 				list.add(AddressBuilder.newAddress(a, type));
@@ -109,7 +109,7 @@ public abstract class DataHelper {
 			return null;
 		}
 
-		List<AddressOtherParty> list = new ArrayList<AddressOtherParty>();
+		List<AddressOtherParty> list = new ArrayList<>();
 		for (AdresseEnvoiDetaillee a : adresses) {
 			if (range == null || DateRangeHelper.intersect(a, range)) {
 				list.add(AddressBuilder.newOtherPartyAddress(a, type));
@@ -255,7 +255,7 @@ public abstract class DataHelper {
 			return null;
 		}
 
-		final Set<TiersDAO.Parts> results = new HashSet<TiersDAO.Parts>(parts.size());
+		final Set<TiersDAO.Parts> results = new HashSet<>(parts.size());
 		for (PartyPart p : parts) {
 			switch (p) {
 			case ADDRESSES:
@@ -323,7 +323,7 @@ public abstract class DataHelper {
 			return Collections.emptyList();
 		}
 
-		final List<ForFiscalPrincipal> forsVirtuels = new ArrayList<ForFiscalPrincipal>();
+		final List<ForFiscalPrincipal> forsVirtuels = new ArrayList<>();
 
 		// Extrait les fors principaux du ménage, en les adaptant à la période de validité des appartenances ménages
 		for (AppartenanceMenage a : rapportsMenage) {
@@ -358,7 +358,7 @@ public abstract class DataHelper {
 	}
 
 	public static Set<PartyPart> toSet(List<PartyPart> parts) {
-		return new HashSet<PartyPart>(parts);
+		return new HashSet<>(parts);
 	}
 
 	public static String salutations2MrMrs(String salutations) {
@@ -377,7 +377,7 @@ public abstract class DataHelper {
 		if (list == null) {
 			return null;
 		}
-		final List<NamedPersonId> otherPersonId = new ArrayList<NamedPersonId>(list.size());
+		final List<NamedPersonId> otherPersonId = new ArrayList<>(list.size());
 		for (NamedPersonId namedPersonId : list) {
 			otherPersonId.add(new NamedPersonId(namedPersonId.getPersonIdCategory(), namedPersonId.getPersonId()));
 		}

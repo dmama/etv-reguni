@@ -66,9 +66,9 @@ public class LocaliteInvalideMatcher implements InitializingBean {
 	private static String localitesInvalides;
 	private static String fauxPositifs;
 
-	private static Map<Character, String> conversionSpeciales = new HashMap<Character, String>();
-	private static List<Pattern> patternsLocaliteInvalide = new ArrayList<Pattern>();
-	private static List<Pattern> patternsFauxPositif  = new ArrayList<Pattern>();
+	private static Map<Character, String> conversionSpeciales = new HashMap<>();
+	private static List<Pattern> patternsLocaliteInvalide = new ArrayList<>();
+	private static List<Pattern> patternsFauxPositif  = new ArrayList<>();
 
 	private static boolean initialized = false;
 
@@ -178,9 +178,9 @@ public class LocaliteInvalideMatcher implements InitializingBean {
 	static void reset() {
 		lockInit.writeLock().lock();
 		try {
-			conversionSpeciales = new HashMap<Character, String>();
-			patternsLocaliteInvalide = new ArrayList<Pattern>();
-			patternsFauxPositif  = new ArrayList<Pattern>();
+			conversionSpeciales = new HashMap<>();
+			patternsLocaliteInvalide = new ArrayList<>();
+			patternsFauxPositif  = new ArrayList<>();
 			localitesInvalides = null;
 			fauxPositifs = null;
 			enabled = false;

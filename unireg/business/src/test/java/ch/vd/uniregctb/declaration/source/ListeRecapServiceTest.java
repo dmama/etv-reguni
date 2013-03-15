@@ -52,7 +52,7 @@ public class ListeRecapServiceTest extends BusinessTest {
 
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(12500001L);
 		final RegDate dateFinPeriode = RegDate.get(2010, 12, 31);
-		final List<DateRange> lrTrouvees = new ArrayList<DateRange>();
+		final List<DateRange> lrTrouvees = new ArrayList<>();
 		final List<DateRange> lrManquantes = lrService.findLRsManquantes(dpi, dateFinPeriode, lrTrouvees);
 		Assert.assertEquals(16, lrManquantes.size());
 		Assert.assertEquals(1, lrTrouvees.size());
@@ -82,7 +82,7 @@ public class ListeRecapServiceTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
 				final RegDate dateFinPeriode = RegDate.get(2010, 12, 31);
-				final List<DateRange> lrTrouvees = new ArrayList<DateRange>();
+				final List<DateRange> lrTrouvees = new ArrayList<>();
 				final List<DateRange> lrManquantes = lrService.findLRsManquantes(dpi, dateFinPeriode, lrTrouvees);
 				Assert.assertEquals(6, lrManquantes.size());
 				final DateRange firstRange = lrManquantes.get(0);
@@ -114,7 +114,7 @@ public class ListeRecapServiceTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId2);
 				final RegDate dateFinPeriode = RegDate.get(2010, 12, 31);
-				final List<DateRange> lrTrouvees = new ArrayList<DateRange>();
+				final List<DateRange> lrTrouvees = new ArrayList<>();
 				final List<DateRange> lrManquantes = lrService.findLRsManquantes(dpi, dateFinPeriode, lrTrouvees);
 				Assert.assertEquals(6, lrManquantes.size());
 				final DateRange firstRange = lrManquantes.get(0);
@@ -152,7 +152,7 @@ public class ListeRecapServiceTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId3);
 				final RegDate dateFinPeriode = RegDate.get(2010, 12, 31);
-				final List<DateRange> lrTrouvees = new ArrayList<DateRange>();
+				final List<DateRange> lrTrouvees = new ArrayList<>();
 				final List<DateRange> lrManquantes = lrService.findLRsManquantes(dpi, dateFinPeriode, lrTrouvees);
 				Assert.assertEquals(3, lrManquantes.size());
 				final DateRange firstRange = lrManquantes.get(0);
@@ -184,7 +184,7 @@ public class ListeRecapServiceTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId4);
 				final RegDate dateFinPeriode = RegDate.get(2011, 11, 23);
-				final List<DateRange> lrTrouvees = new ArrayList<DateRange>();
+				final List<DateRange> lrTrouvees = new ArrayList<>();
 				final List<DateRange> lrManquantes = lrService.findLRsManquantes(dpi, dateFinPeriode, lrTrouvees);
 				Assert.assertEquals(4, lrManquantes.size());
 				final DateRange firstRange = lrManquantes.get(0);
@@ -210,7 +210,7 @@ public class ListeRecapServiceTest extends BusinessTest {
 			final List<DateRange> periodesADecouper = Arrays.<DateRange>asList(new DateRangeHelper.Range(date(2009, 2, 1), date(2010, 9, 10)));
 			final List<DateRange> periodesDecoupees = ListeRecapServiceImpl.ajusterSelonPeriodeFiscale(periodesADecouper);
 
-			final List<DateRange> periodeAttendues = new ArrayList<DateRange>();
+			final List<DateRange> periodeAttendues = new ArrayList<>();
 			periodeAttendues.add(new DateRangeHelper.Range(date(2009, 2, 1), date(2009, 12, 31)));
 			periodeAttendues.add(new DateRangeHelper.Range(date(2010, 1, 1), date(2010, 9, 10)));
 
@@ -222,7 +222,7 @@ public class ListeRecapServiceTest extends BusinessTest {
 			final List<DateRange> periodesADecouper = Arrays.<DateRange>asList(new DateRangeHelper.Range(date(2006, 5, 14), date(2010, 9, 10)));
 			final List<DateRange> periodesDecoupees = ListeRecapServiceImpl.ajusterSelonPeriodeFiscale(periodesADecouper);
 
-			final List<DateRange> periodesAttendues = new ArrayList<DateRange>();
+			final List<DateRange> periodesAttendues = new ArrayList<>();
 			periodesAttendues.add(new DateRangeHelper.Range(date(2006, 5, 14), date(2006, 12, 31)));
 			periodesAttendues.add(new DateRangeHelper.Range(date(2007, 1, 1), date(2007, 12, 31)));
 			periodesAttendues.add(new DateRangeHelper.Range(date(2008, 1, 1), date(2008, 12, 31)));
@@ -234,14 +234,14 @@ public class ListeRecapServiceTest extends BusinessTest {
 
 		// cas multi-source
 		{
-			final List<DateRange> periodesADecouper = new ArrayList<DateRange>();
+			final List<DateRange> periodesADecouper = new ArrayList<>();
 			periodesADecouper.add(new DateRangeHelper.Range(date(2006, 5, 14), date(2006, 12, 30)));
 			periodesADecouper.add(new DateRangeHelper.Range(date(2006, 12, 31), date(2007, 3, 1)));
 			periodesADecouper.add(new DateRangeHelper.Range(date(2007, 4, 12), date(2007, 4, 12)));
 			periodesADecouper.add(new DateRangeHelper.Range(date(2008, 5, 24), date(2010, 1, 1)));
 			final List<DateRange> periodesDecoupees = ListeRecapServiceImpl.ajusterSelonPeriodeFiscale(periodesADecouper);
 
-			final List<DateRange> periodesAttendues = new ArrayList<DateRange>();
+			final List<DateRange> periodesAttendues = new ArrayList<>();
 			periodesAttendues.add(new DateRangeHelper.Range(date(2006, 5, 14), date(2006, 12, 30)));
 			periodesAttendues.add(new DateRangeHelper.Range(date(2006, 12, 31), date(2006, 12, 31)));
 			periodesAttendues.add(new DateRangeHelper.Range(date(2007, 1, 1), date(2007, 3, 1)));
@@ -285,7 +285,7 @@ public class ListeRecapServiceTest extends BusinessTest {
 				final List<DateRange> lrTrouvees = ListeRecapServiceImpl.extrairePeriodesAvecPeriodicites(dpi, periodeACompleter);
 
 				// attendues : mensuelles sur 2008, trimestrielles sur 2009
-				final List<DateRange> lrAttendues = new ArrayList<DateRange>();
+				final List<DateRange> lrAttendues = new ArrayList<>();
 				for (int i = 0 ; i < 12 ; ++ i) {
 					final RegDate start = date(2008, i + 1, 1);
 					final RegDate lastDay = start.addMonths(1).addDays(-1);

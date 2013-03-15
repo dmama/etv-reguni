@@ -45,33 +45,17 @@ public class FillHoleGeneratorTest extends CoreDAOTest {
 		String[] drops = generator.sqlDropStrings(dialect);
 		String[] creates = generator.sqlCreateStrings(dialect);
 
-		Connection con = null;
-		try {
-			con = rawDataSource.getConnection();
-
+		try (Connection con = rawDataSource.getConnection()) {
 			for (String d : drops) {
-				final PreparedStatement st = con.prepareStatement(d);
-				try {
+				try (PreparedStatement st = con.prepareStatement(d)) {
 					st.execute();
-				}
-				finally {
-					st.close();
 				}
 			}
 
 			for (String c : creates) {
-				final PreparedStatement st = con.prepareStatement(c);
-				try {
+				try (PreparedStatement st = con.prepareStatement(c)) {
 					st.execute();
 				}
-				finally {
-					st.close();
-				}
-			}
-		}
-		finally {
-			if (con != null) {
-				con.close();
 			}
 		}
 	}

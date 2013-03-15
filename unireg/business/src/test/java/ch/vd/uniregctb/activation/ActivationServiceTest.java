@@ -897,7 +897,7 @@ public class ActivationServiceTest extends BusinessTest {
 				Assert.assertNotNull(fors);
 				Assert.assertEquals(5, fors.size());
 
-				final List<ForFiscal> forsTries = new ArrayList<ForFiscal>(fors);
+				final List<ForFiscal> forsTries = new ArrayList<>(fors);
 				Collections.sort(forsTries, new ForFiscalComparator());
 
 				// ne doit pas être ré-ouvert
@@ -960,7 +960,7 @@ public class ActivationServiceTest extends BusinessTest {
 				Assert.assertNotNull(fors);
 				Assert.assertEquals(7, fors.size());
 
-				final List<ForFiscal> forsTries = new ArrayList<ForFiscal>(fors);
+				final List<ForFiscal> forsTries = new ArrayList<>(fors);
 				Collections.sort(forsTries, new ForFiscalComparator());
 
 				final ForFiscalPrincipal ffDemenagement = (ForFiscalPrincipal) forsTries.get(0);

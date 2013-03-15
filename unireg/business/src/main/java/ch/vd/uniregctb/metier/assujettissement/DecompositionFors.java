@@ -34,17 +34,17 @@ public abstract class DecompositionFors implements DateRange {
 	/**
 	 * Liste des fors principaux valides à la fin de la période considérée
 	 */
-	public final ForsList<ForFiscalSecondaire> secondaires = new ForsList<ForFiscalSecondaire>();
+	public final ForsList<ForFiscalSecondaire> secondaires = new ForsList<>();
 
 	/**
 	 * Liste des fors principaux existants tout au long de la période considérée
 	 */
-	public final ForsList<ForFiscalPrincipal> principauxDansLaPeriode = new ForsList<ForFiscalPrincipal>();
+	public final ForsList<ForFiscalPrincipal> principauxDansLaPeriode = new ForsList<>();
 
 	/**
 	 * Liste des fors secondaires existants tout au long de la période considérée
 	 */
-	public final ForsList<ForFiscalSecondaire> secondairesDansLaPeriode = new ForsList<ForFiscalSecondaire>();
+	public final ForsList<ForFiscalSecondaire> secondairesDansLaPeriode = new ForsList<>();
 
 	/**
 	 * For principal valide immédiatement avant la période considérée
@@ -59,12 +59,12 @@ public abstract class DecompositionFors implements DateRange {
 	/**
 	 * Liste des fors secondaires existants immédiatement avant la période considérée
 	 */
-	public final ForsList<ForFiscalSecondaire> secondairesAvantLaPeriode = new ForsList<ForFiscalSecondaire>();
+	public final ForsList<ForFiscalSecondaire> secondairesAvantLaPeriode = new ForsList<>();
 
 	/**
 	 * Liste des fors secondaires existants immédiatement après la période considérée
 	 */
-	public final ForsList<ForFiscalSecondaire> secondairesApresLaPeriode = new ForsList<ForFiscalSecondaire>();
+	public final ForsList<ForFiscalSecondaire> secondairesApresLaPeriode = new ForsList<>();
 
 	public DecompositionFors(Contribuable contribuable, RegDate debut, RegDate fin) {
 		this.contribuable = contribuable;

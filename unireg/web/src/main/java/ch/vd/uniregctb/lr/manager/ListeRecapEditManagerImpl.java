@@ -209,7 +209,7 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 		ListeRecapListView lrListView = new ListeRecapListView();
 		TiersGeneralView tiersGeneralView = creerDpiLr(numero);
 
-		List<ListeRecapDetailView> lrsView = new ArrayList<ListeRecapDetailView>();
+		List<ListeRecapDetailView> lrsView = new ArrayList<>();
 		List<DeclarationImpotSource> lrs = lrDAO.findByNumero(numero);
 		for (DeclarationImpotSource lr : lrs) {
 			ListeRecapDetailView lrView = new ListeRecapDetailView();
@@ -270,7 +270,7 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 		if (etatPeriode != null) {
 			final DeclarationImpotSource lr = (DeclarationImpotSource) etatPeriode.getDeclaration();
 			dpi = (DebiteurPrestationImposable) lr.getTiers();
-			final List<DateRange> lrTrouvees = new ArrayList<DateRange>();
+			final List<DateRange> lrTrouvees = new ArrayList<>();
 			final List<DateRange> lrManquantes = lrService.findLRsManquantes(dpi, aujourdhui, lrTrouvees);
 			final DateRange periodeInteressante = new DateRangeHelper.Range(null, aujourdhui);
 			//[UNIREG-3120] la LR à ajouter doit recouper au moins une période d'activité du débiteur
@@ -580,7 +580,7 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 	}
 
 	private void setDelais(ListeRecapDetailView lrEditView, DeclarationImpotSource lr) {
-		List<DelaiDeclarationView> delaisView = new ArrayList<DelaiDeclarationView>();
+		List<DelaiDeclarationView> delaisView = new ArrayList<>();
 		for (DelaiDeclaration delai : lr.getDelais()) {
 			DelaiDeclarationView delaiView = new DelaiDeclarationView(delai);
 			delaiView.setFirst(lr.getPremierDelai() == delai.getDelaiAccordeAu());

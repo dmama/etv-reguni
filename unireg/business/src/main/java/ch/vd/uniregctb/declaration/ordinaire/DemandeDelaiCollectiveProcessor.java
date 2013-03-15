@@ -72,7 +72,7 @@ public class DemandeDelaiCollectiveProcessor {
 		checkParams(annee);
 
 		// Traite les contribuables par lots
-		final BatchTransactionTemplate<Long, DemandeDelaiCollectiveResults> template = new BatchTransactionTemplate<Long, DemandeDelaiCollectiveResults>(ids, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE,
+		final BatchTransactionTemplate<Long, DemandeDelaiCollectiveResults> template = new BatchTransactionTemplate<>(ids, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE,
 				transactionManager, status, hibernateTemplate);
 		template.execute(rapportFinal, new BatchCallback<Long, DemandeDelaiCollectiveResults>() {
 

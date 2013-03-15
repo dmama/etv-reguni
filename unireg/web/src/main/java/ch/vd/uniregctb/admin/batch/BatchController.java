@@ -47,7 +47,7 @@ public class BatchController {
 	@ResponseBody
 	public List<BatchView> running() {
 
-		final List<BatchView> list = new ArrayList<BatchView>();
+		final List<BatchView> list = new ArrayList<>();
 
 		final Date limit = DateUtils.addMinutes(DateHelper.getCurrentDate(), -10);
 
@@ -95,7 +95,7 @@ public class BatchController {
 
 	private HashMap<String, Object> parseParams(BatchStartParams startParams, JobDefinition job) {
 
-		final HashMap<String, Object> params = new HashMap<String, Object>();
+		final HashMap<String, Object> params = new HashMap<>();
 
 		final Map<String, Object> sp = startParams.getStartParams();
 		if (sp != null) {

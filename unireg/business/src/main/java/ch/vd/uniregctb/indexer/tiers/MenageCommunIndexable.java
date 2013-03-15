@@ -66,7 +66,7 @@ public class MenageCommunIndexable extends ContribuableIndexable {
 		final Set<PersonnePhysique> personnesPhysiques;
 		final Map<PersonnePhysique, RapportEntreTiers> personnes = tiersService.getToutesPersonnesPhysiquesImpliquees(menage);
 		if (personnes != null && !personnes.isEmpty()) {
-			final Set<PersonnePhysique> nonAnnules = new HashSet<PersonnePhysique>(2);
+			final Set<PersonnePhysique> nonAnnules = new HashSet<>(2);
 			for (Map.Entry<PersonnePhysique, RapportEntreTiers> entry : personnes.entrySet()) {
 				if (!entry.getValue().isAnnule()) {
 					nonAnnules.add(entry.getKey());
@@ -80,7 +80,7 @@ public class MenageCommunIndexable extends ContribuableIndexable {
 			}
 			else {
 				// tous les liens sur ce ménage sont annulés
-				final List<Map.Entry<PersonnePhysique, RapportEntreTiers>> aPrendre = new ArrayList<Map.Entry<PersonnePhysique, RapportEntreTiers>>(personnes.entrySet());
+				final List<Map.Entry<PersonnePhysique, RapportEntreTiers>> aPrendre = new ArrayList<>(personnes.entrySet());
 				if (aPrendre.size() > 1) {
 					Collections.sort(aPrendre, new Comparator<Map.Entry<PersonnePhysique, RapportEntreTiers>>() {
 						@Override
@@ -100,7 +100,7 @@ public class MenageCommunIndexable extends ContribuableIndexable {
 						}
 					});
 				}
-				personnesPhysiques = new HashSet<PersonnePhysique>(2);
+				personnesPhysiques = new HashSet<>(2);
 				for (int i = aPrendre.size() - 1; i >= 0 && i >= aPrendre.size() - 2; --i) {
 					personnesPhysiques.add(aPrendre.get(i).getKey());
 				}

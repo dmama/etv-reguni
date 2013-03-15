@@ -62,13 +62,10 @@ public class ImportImmeublesJob extends JobDefinition {
 
 		final ImportImmeublesResults results;
 
-		final ZipInputStream zipstream = new ZipInputStream(new ByteArrayInputStream(zippedContent));
-		try {
+		try (ByteArrayInputStream bais = new ByteArrayInputStream(zippedContent);
+		     ZipInputStream zipstream = new ZipInputStream(bais)) {
 			zipstream.getNextEntry();
 			results = registreFoncierService.importImmeubles(zipstream, encoding, status);
-		}
-		finally {
-			zipstream.close();
 		}
 
 		final ImportImmeublesRapport rapport = rapportService.generateRapport(results, status);

@@ -164,7 +164,7 @@ public abstract class IndividuDumper {
 			return "null";
 		}
 
-		final List<Origine> list = new ArrayList<Origine>(coll);
+		final List<Origine> list = new ArrayList<>(coll);
 		Collections.sort(list, new Comparator<Origine>() {
 			@Override
 			public int compare(Origine o1, Origine o2) {
@@ -320,7 +320,7 @@ public abstract class IndividuDumper {
 		}
 
 		// on trie les adresses pour pouvoir plus facilement les comparer
-		final ArrayList<Adresse> adresses = new ArrayList<Adresse>(list);
+		final ArrayList<Adresse> adresses = new ArrayList<>(list);
 		Collections.sort(adresses, new Comparator<Adresse>() {
 			@Override
 			public int compare(Adresse o1, Adresse o2) {

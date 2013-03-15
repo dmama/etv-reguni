@@ -3713,7 +3713,7 @@ public class TacheServiceTest extends BusinessTest {
 			long ctb;
 			long ffp1;
 			long ffp2;
-			List<Long> dis = new ArrayList<Long>();
+			List<Long> dis = new ArrayList<>();
 		}
 		final Ids ids = new Ids();
 

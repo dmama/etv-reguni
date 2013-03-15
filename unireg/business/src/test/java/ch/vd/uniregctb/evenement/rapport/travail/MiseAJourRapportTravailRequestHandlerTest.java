@@ -319,7 +319,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		});
 		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
-		List<RapportEntreTiers> rapportPrestations = new ArrayList<RapportEntreTiers>();
+		List<RapportEntreTiers> rapportPrestations = new ArrayList<>();
 		rapportPrestations.addAll(dpi.getRapportsObjet());
 		RapportPrestationImposable rapportPrestationImposable = (RapportPrestationImposable) rapportPrestations.get(0);
 		assertTrue(rapportPrestationImposable.isAnnule());
@@ -372,7 +372,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		});
 		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
-		List<RapportEntreTiers> rapportPrestations = new ArrayList<RapportEntreTiers>();
+		List<RapportEntreTiers> rapportPrestations = new ArrayList<>();
 		rapportPrestations.addAll(dpi.getRapportsObjet());
 		RapportPrestationImposable rapportPrestationImposable = (RapportPrestationImposable) rapportPrestations.get(0);
 		assertEquals(dateFinRapportAttendu, rapportPrestationImposable.getDateFin());
@@ -426,7 +426,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		});
 		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
-		List<RapportEntreTiers> rapportPrestations = new ArrayList<RapportEntreTiers>();
+		List<RapportEntreTiers> rapportPrestations = new ArrayList<>();
 		rapportPrestations.addAll(dpi.getRapportsObjet());
 		RapportPrestationImposable rapportPrestationImposable = (RapportPrestationImposable) rapportPrestations.get(0);
 		assertEquals(dateFinRapportAttendu,rapportPrestationImposable.getDateFin());
@@ -487,7 +487,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		});
 		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
-		List<RapportEntreTiers> rapportPrestations = new ArrayList<RapportEntreTiers>();
+		List<RapportEntreTiers> rapportPrestations = new ArrayList<>();
 		rapportPrestations.addAll(dpi.getRapportsObjet());
 		RapportPrestationImposable rapportPrestationImposable = (RapportPrestationImposable) rapportPrestations.get(0);
 		assertEquals(dateFinCore,rapportPrestationImposable.getDateFin());
@@ -542,7 +542,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		});
 		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
-		List<RapportEntreTiers> rapportPrestations = new ArrayList<RapportEntreTiers>();
+		List<RapportEntreTiers> rapportPrestations = new ArrayList<>();
 		rapportPrestations.addAll(dpi.getRapportsObjet());
 		Collections.sort(rapportPrestations, new DateRangeComparator<RapportEntreTiers>());
 		RapportPrestationImposable rapportPrestationImposable = (RapportPrestationImposable) rapportPrestations.get(1);
@@ -597,7 +597,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		});
 		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
-		List<RapportEntreTiers> rapportPrestations = new ArrayList<RapportEntreTiers>();
+		List<RapportEntreTiers> rapportPrestations = new ArrayList<>();
 		rapportPrestations.addAll(dpi.getRapportsObjet());
 		Collections.sort(rapportPrestations, new DateRangeComparator<RapportEntreTiers>());
 		RapportPrestationImposable rapportPrestationImposable = (RapportPrestationImposable) rapportPrestations.get(0);
@@ -649,7 +649,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		});
 		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
-		List<RapportEntreTiers> rapportPrestations = new ArrayList<RapportEntreTiers>();
+		List<RapportEntreTiers> rapportPrestations = new ArrayList<>();
 		rapportPrestations.addAll(dpi.getRapportsObjet());
 		Collections.sort(rapportPrestations, new DateRangeComparator<RapportEntreTiers>());
 		RapportPrestationImposable rapportPrestationImposable = (RapportPrestationImposable) rapportPrestations.get(1);
@@ -704,7 +704,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		});
 		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
-		List<RapportEntreTiers> rapportPrestations = new ArrayList<RapportEntreTiers>();
+		List<RapportEntreTiers> rapportPrestations = new ArrayList<>();
 		rapportPrestations.addAll(dpi.getRapportsObjet());
 		assertEquals(3,rapportPrestations.size());
 		Collections.sort(rapportPrestations, new DateRangeComparator<RapportEntreTiers>());
@@ -896,7 +896,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		});
 		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
-		List<RapportEntreTiers> rapportPrestations = new ArrayList<RapportEntreTiers>();
+		List<RapportEntreTiers> rapportPrestations = new ArrayList<>();
 		rapportPrestations.addAll(dpi.getRapportsObjet());
 		Collections.sort(rapportPrestations, new DateRangeComparator<RapportEntreTiers>());
 		RapportPrestationImposable rapportPrestationImposable = (RapportPrestationImposable) rapportPrestations.get(1);
@@ -948,7 +948,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		});
 		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
-		List<RapportEntreTiers> rapportPrestations = new ArrayList<RapportEntreTiers>();
+		List<RapportEntreTiers> rapportPrestations = new ArrayList<>();
 		rapportPrestations.addAll(dpi.getRapportsObjet());
 		assertEquals(2, rapportPrestations.size());
 		Collections.sort(rapportPrestations, new DateRangeComparator<RapportEntreTiers>());
@@ -1011,7 +1011,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		});
 		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
-		List<RapportEntreTiers> rapportPrestations = new ArrayList<RapportEntreTiers>();
+		List<RapportEntreTiers> rapportPrestations = new ArrayList<>();
 		rapportPrestations.addAll(dpi.getRapportsObjet());
 		assertEquals(2, rapportPrestations.size());
 		Collections.sort(rapportPrestations, new DateRangeComparator<RapportEntreTiers>());
@@ -1133,7 +1133,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		});
 		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
-		List<RapportEntreTiers> rapportPrestations = new ArrayList<RapportEntreTiers>();
+		List<RapportEntreTiers> rapportPrestations = new ArrayList<>();
 		rapportPrestations.addAll(dpi.getRapportsObjet());
 		Collections.sort(rapportPrestations, new DateRangeComparator<RapportEntreTiers>());
 		RapportPrestationImposable rapportPrestationImposable = (RapportPrestationImposable) rapportPrestations.get(1);

@@ -104,8 +104,8 @@ public class AdresseTimelineController {
 	private void filleTable(AdresseTimelineView bean, AdresseSandwich adresses, String type) {
 
 		// Calcul des différents ranges de l'axe du temps
-		final SortedSet<AdresseCouche> columns = new TreeSet<AdresseCouche>();
-		final List<DateRange> ranges = new ArrayList<DateRange>();
+		final SortedSet<AdresseCouche> columns = new TreeSet<>();
+		final List<DateRange> ranges = new ArrayList<>();
 		for (AdresseSandwich.Couche couche : adresses.decortique()) {
 			final Collection<? extends DateRange> col = removeAdressesAnnulees(couche.getAdresses());
 			if (!col.isEmpty()) {
@@ -116,7 +116,7 @@ public class AdresseTimelineController {
 		ranges.addAll(removeAdressesAnnulees(adresses.emballe()));
 		columns.add(AdresseCouche.RESULTAT);
 
-		final List<DateRange> periodes = new ArrayList<DateRange>();
+		final List<DateRange> periodes = new ArrayList<>();
 		final List<RegDate> boundaries = TimelineHelper.extractBoundaries(ranges);
 		for (int i = 1; i < boundaries.size(); i++) {
 			RegDate previous = boundaries.get(i - 1);
@@ -125,7 +125,7 @@ public class AdresseTimelineController {
 		}
 
 		final Table table = new Table(type);
-		table.setColumns(new ArrayList<AdresseCouche>(columns));
+		table.setColumns(new ArrayList<>(columns));
 		table.setPeriodes(periodes);
 
 		// Renseignement des différentes couches
@@ -149,7 +149,7 @@ public class AdresseTimelineController {
 		if (adresses == null) {
 			return null;
 		}
-		List<AdresseGenerique> list = new ArrayList<AdresseGenerique>(adresses.size());
+		List<AdresseGenerique> list = new ArrayList<>(adresses.size());
 		for (AdresseGenerique a : adresses) {
 			if (!a.isAnnule()) {
 				list.add(a);

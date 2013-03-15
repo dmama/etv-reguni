@@ -37,7 +37,7 @@ public enum TypeUnion {
 	private static final Map<Integer, TypeEvenementCivil> typesByCode;
 
 	static {
-		typesByCode = new HashMap<Integer, TypeEvenementCivil>();
+		typesByCode = new HashMap<>();
 		for (TypeEvenementCivil type : TypeEvenementCivil.values()) {
 			typesByCode.put(type.getId(), type);
 		}

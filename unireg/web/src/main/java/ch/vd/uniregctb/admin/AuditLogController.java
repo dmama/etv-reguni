@@ -34,7 +34,7 @@ public class AuditLogController extends AbstractSimpleFormController {
 	private PlatformTransactionManager transactionManager;
 
 	private List<AuditView> coreToWeb(List<AuditLine> list) {
-		List<AuditView> result = new ArrayList<AuditView>(list.size());
+		List<AuditView> result = new ArrayList<>(list.size());
 		for (AuditLine line : list) {
 			result.add(new AuditView(line, hibernateTemplate));
 		}

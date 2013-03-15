@@ -96,9 +96,9 @@ public class DemandeDelaiCollectiveResults extends JobResults<Long, DemandeDelai
 
 	// données de sortie
 	public int nbCtbsTotal;
-	public final List<Traite> traites = new ArrayList<Traite>();
-	public final List<Ignore> ignores = new ArrayList<Ignore>();
-	public final List<Erreur> errors = new ArrayList<Erreur>();
+	public final List<Traite> traites = new ArrayList<>();
+	public final List<Ignore> ignores = new ArrayList<>();
+	public final List<Erreur> errors = new ArrayList<>();
 	public boolean interrompu;
 
 	public DemandeDelaiCollectiveResults(int annee, RegDate dateDelai, List<Long> ctbsIds, RegDate dateTraitement, TiersService tiersService, AdresseService adresseService) {

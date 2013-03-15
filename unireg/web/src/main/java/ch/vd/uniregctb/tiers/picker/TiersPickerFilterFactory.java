@@ -29,7 +29,7 @@ public class TiersPickerFilterFactory implements SearchTiersFilterFactory {
 			return Collections.emptyMap();
 		}
 
-		final Map<String, String> params = new HashMap<String, String>();
+		final Map<String, String> params = new HashMap<>();
 		final String[] keyValues = paramsString.split("\\+");
 		for (String keyValue : keyValues) {
 			final String[] tokens = keyValue.split(":");

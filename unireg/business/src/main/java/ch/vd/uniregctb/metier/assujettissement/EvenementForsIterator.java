@@ -63,7 +63,7 @@ public class EvenementForsIterator implements Iterator<EvenementFors> {
 	 */
 	private ArrayList<ForFiscal> extractAllFors(DecompositionFors fors) {
 
-		final Set<ForFiscal> forsPeriode = new HashSet<ForFiscal>();
+		final Set<ForFiscal> forsPeriode = new HashSet<>();
 		forsPeriode.addAll(fors.principauxDansLaPeriode);
 		forsPeriode.addAll(fors.secondairesDansLaPeriode);
 
@@ -77,7 +77,7 @@ public class EvenementForsIterator implements Iterator<EvenementFors> {
 		forsPeriode.addAll(fors.secondairesAvantLaPeriode);
 		forsPeriode.addAll(fors.secondairesApresLaPeriode);
 
-		return new ArrayList<ForFiscal>(forsPeriode);
+		return new ArrayList<>(forsPeriode);
 	}
 
 	/**
@@ -89,7 +89,7 @@ public class EvenementForsIterator implements Iterator<EvenementFors> {
 	 */
 	private List<ForFiscal> extractForsQuiSeFerment(List<ForFiscal> forsDansLaPeriode, RegDate finPeriode) {
 
-		List<ForFiscal> fors = new ArrayList<ForFiscal>(forsDansLaPeriode.size());
+		List<ForFiscal> fors = new ArrayList<>(forsDansLaPeriode.size());
 
 		for (ForFiscal f : forsDansLaPeriode) {
 			if (RegDateHelper.isBeforeOrEqual(f.getDateFin(), finPeriode, NullDateBehavior.LATEST)) {
@@ -124,7 +124,7 @@ public class EvenementForsIterator implements Iterator<EvenementFors> {
 	 */
 	private List<ForFiscal> extractForsQuiSOuvrent(List<ForFiscal> forsDansLaPeriode, RegDate debutPeriode) {
 
-		List<ForFiscal> fors = new ArrayList<ForFiscal>(forsDansLaPeriode.size());
+		List<ForFiscal> fors = new ArrayList<>(forsDansLaPeriode.size());
 
 		for (ForFiscal f : forsDansLaPeriode) {
 			if (f.getDateDebut().isAfterOrEqual(debutPeriode)) {
@@ -148,7 +148,7 @@ public class EvenementForsIterator implements Iterator<EvenementFors> {
 	 * @return une liste de fors fiscaux, qui peut être vide.
 	 */
 	private List<ForFiscal> extractForsDansPeriode(DecompositionFors fors) {
-		final List<ForFiscal> forsDansLaPeriode = new ArrayList<ForFiscal>();
+		final List<ForFiscal> forsDansLaPeriode = new ArrayList<>();
 		forsDansLaPeriode.addAll(fors.principauxDansLaPeriode);
 		forsDansLaPeriode.addAll(fors.secondairesDansLaPeriode);
 		return forsDansLaPeriode;
@@ -216,7 +216,7 @@ public class EvenementForsIterator implements Iterator<EvenementFors> {
 				}
 				else {
 					if (secondairesActifs == null) {
-						secondairesActifs = new ArrayList<ForFiscalSecondaire>();
+						secondairesActifs = new ArrayList<>();
 					}
 					secondairesActifs.add((ForFiscalSecondaire) f);
 				}
@@ -245,7 +245,7 @@ public class EvenementForsIterator implements Iterator<EvenementFors> {
 				}
 				else {
 					if (secondairesFermes == null) {
-						secondairesFermes = new ArrayList<ForFiscalSecondaire>();
+						secondairesFermes = new ArrayList<>();
 					}
 					secondairesFermes.add((ForFiscalSecondaire) ff);
 				}
@@ -268,7 +268,7 @@ public class EvenementForsIterator implements Iterator<EvenementFors> {
 				}
 				else {
 					if (secondaires == null) {
-						secondaires = new ArrayList<ForFiscalSecondaire>();
+						secondaires = new ArrayList<>();
 					}
 					secondaires.add((ForFiscalSecondaire) ff);
 				}

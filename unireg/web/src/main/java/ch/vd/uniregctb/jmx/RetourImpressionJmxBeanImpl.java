@@ -86,7 +86,7 @@ public class RetourImpressionJmxBeanImpl implements RetourImpressionJmxBean {
 	@ManagedAttribute
 	public List<String> getAwaitingInboxRedirection() {
 		final Collection<Pair<Long, RetourImpressionTrigger>> triggers = storageService.getTriggersEnregistres();
-		final List<String> logs = new ArrayList<String>(triggers.size());
+		final List<String> logs = new ArrayList<>(triggers.size());
 		final long now = System.nanoTime();
 		for (Pair<Long, RetourImpressionTrigger> trigger : triggers) {
 			if (trigger.getSecond() instanceof RetourImpressionToInboxTrigger) {

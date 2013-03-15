@@ -185,7 +185,7 @@ public class EvenementExterneEsbHandler implements EsbMessageHandler {
 			final SchemaFactory sf = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
 			sf.setResourceResolver(new ClasspathCatalogResolver());
 
-			final List<Source> sources = new ArrayList<Source>();
+			final List<Source> sources = new ArrayList<>();
 
 			// [SIFISC-5275] le nouveau XSD des événements de quittance ou d'annulation des LRs
 			final ClassPathResource evtList1 = new ClassPathResource("event/lr/evtListe-1.xsd");

@@ -44,7 +44,7 @@ public class TiersIndexerHibernateInterceptor implements ModificationSubIntercep
 	private final ThreadLocal<HashSet<Long>> modifiedEntities = new ThreadLocal<HashSet<Long>>() {
 		@Override
 		protected HashSet<Long> initialValue() {
-			return new HashSet<Long>();
+			return new HashSet<>();
 		}
 	};
 
@@ -179,7 +179,7 @@ public class TiersIndexerHibernateInterceptor implements ModificationSubIntercep
 					try {
 						final SQLQuery query = session.createSQLQuery("update TIERS set INDEX_DIRTY = " + dialect.toBooleanValueString(true) + " where NUMERO in (:ids)");
 
-						final BatchIterator<Long> batchIterator = new StandardBatchIterator<Long>(ids, 500);    // n'oublions pas qu'Oracle ne supporte pas plus de 1000 objets dans un IN
+						final BatchIterator<Long> batchIterator = new StandardBatchIterator<>(ids, 500);    // n'oublions pas qu'Oracle ne supporte pas plus de 1000 objets dans un IN
 						while (batchIterator.hasNext()) {
 							final Collection<Long> subSet = batchIterator.next();
 							if (subSet != null && !subSet.isEmpty()) {

@@ -184,7 +184,7 @@ public class TiersHelper {
 			for (RapportEntreTiers rapport : rapports) {
 				if (type == rapport.getType()) {
 					if (results == null) {
-						results = new ArrayList<RapportEntreTiers>(); // création à la demande
+						results = new ArrayList<>(); // création à la demande
 					}
 					results.add(rapport);
 				}
@@ -211,7 +211,7 @@ public class TiersHelper {
 				for (TypeRapportEntreTiers type : types) {
 					if (type == rapport.getType()) {
 						if (results == null) {
-							results = new ArrayList<RapportEntreTiers>(); // création à la demande
+							results = new ArrayList<>(); // création à la demande
 						}
 						results.add(rapport);
 					}
@@ -238,7 +238,7 @@ public class TiersHelper {
 			for (RapportEntreTiers rapport : rapports) {
 				if (type == rapport.getType()) {
 					if (results == null) {
-						results = new ArrayList<RapportEntreTiers>(); // création à la demande
+						results = new ArrayList<>(); // création à la demande
 					}
 					results.add(rapport);
 				}

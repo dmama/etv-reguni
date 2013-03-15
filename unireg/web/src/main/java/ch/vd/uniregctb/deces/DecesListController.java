@@ -79,7 +79,7 @@ public class DecesListController extends  AbstractTiersListController {
 					}
 					try {
 						final List<TiersIndexedDataView> results = searchTiers(bean);
-						final List<TiersIndexedDataView> filtredResults = new ArrayList<TiersIndexedDataView>();
+						final List<TiersIndexedDataView> filtredResults = new ArrayList<>();
 						for (TiersIndexedDataView tiersIndexedData : results) {
 							if (!decesRecapManager.isDecede(tiersIndexedData.getNumero())) {
 								filtredResults.add(tiersIndexedData);

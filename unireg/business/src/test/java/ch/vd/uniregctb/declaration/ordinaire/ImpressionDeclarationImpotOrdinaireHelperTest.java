@@ -658,7 +658,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 	}
 
 	private static List<ModeleFeuilleDocumentEditique> buildDefaultAnnexes(DeclarationImpotOrdinaire di) {
-		final List<ModeleFeuilleDocumentEditique> annexes = new ArrayList<ModeleFeuilleDocumentEditique>();
+		final List<ModeleFeuilleDocumentEditique> annexes = new ArrayList<>();
 		final Set<ModeleFeuilleDocument> listFeuille = di.getModeleDocument().getModelesFeuilleDocument();
 		for (ModeleFeuilleDocument feuille : listFeuille) {
 			ModeleFeuilleDocumentEditique feuilleEditique = new ModeleFeuilleDocumentEditique();
@@ -1061,7 +1061,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 
 		// Endroit où on va récupérer les éventuelles erreurs
 		final XmlOptions validateOptions = new XmlOptions();
-		final List<XmlError> errorList = new ArrayList<XmlError>();
+		final List<XmlError> errorList = new ArrayList<>();
 		validateOptions.setErrorListener(errorList);
 
 		// C'est parti pour la validation !

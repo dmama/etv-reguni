@@ -72,7 +72,7 @@ public abstract class JobResults<E, R extends JobResults> implements BatchResult
 				noms = adresseService.getNomCourrier(tiers, null, false);
 			}
 			catch (Exception e) {
-				noms = new ArrayList<String>(1);
+				noms = new ArrayList<>(1);
 				noms.add(e.getMessage()); // rien de mieux à faire ici
 			}
 		}

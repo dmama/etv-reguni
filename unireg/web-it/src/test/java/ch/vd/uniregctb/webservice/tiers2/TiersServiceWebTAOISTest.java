@@ -335,7 +335,7 @@ public class TiersServiceWebTAOISTest extends AbstractTiersServiceWebTest {
 		assertNotNull(tiers);
 
 		// Récupération de l'historique des rapport de travail entre le sourcier et son (ses) employeur(s)
-		final List<RapportEntreTiers> rapports = new ArrayList<RapportEntreTiers>();
+		final List<RapportEntreTiers> rapports = new ArrayList<>();
 		for (RapportEntreTiers r : tiers.getRapportsEntreTiers()) {
 			if (TypeRapportEntreTiers.PRESTATION_IMPOSABLE == r.getType()) {
 				rapports.add(r);

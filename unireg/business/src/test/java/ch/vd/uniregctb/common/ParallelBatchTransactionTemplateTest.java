@@ -25,7 +25,7 @@ public class ParallelBatchTransactionTemplateTest extends BusinessTest {
 	public void testEmptyList() {
 		List<Long> list = Collections.emptyList();
 		ParallelBatchTransactionTemplate<Long, JobResults> template =
-				new ParallelBatchTransactionTemplate<Long, JobResults>(list, 100, 2, BatchTransactionTemplate.Behavior.SANS_REPRISE, transactionManager, null, hibernateTemplate);
+				new ParallelBatchTransactionTemplate<>(list, 100, 2, BatchTransactionTemplate.Behavior.SANS_REPRISE, transactionManager, null, hibernateTemplate);
 		final boolean completed = template.execute(new BatchTransactionTemplate.BatchCallback<Long, JobResults>() {
 
 			@Override
@@ -57,11 +57,11 @@ public class ParallelBatchTransactionTemplateTest extends BusinessTest {
 	public void testEverythingProcessed() {
 
 		final List<Long> list = generateList(1000);
-		final Set<Long> processed = new HashSet<Long>(1000);
+		final Set<Long> processed = new HashSet<>(1000);
 
 		// processe 1000 longs par lots de 10 en 5 threads différents
 		ParallelBatchTransactionTemplate<Long, JobResults> template =
-				new ParallelBatchTransactionTemplate<Long, JobResults>(list, 10, 5, BatchTransactionTemplate.Behavior.SANS_REPRISE, transactionManager, null, hibernateTemplate);
+				new ParallelBatchTransactionTemplate<>(list, 10, 5, BatchTransactionTemplate.Behavior.SANS_REPRISE, transactionManager, null, hibernateTemplate);
 		final boolean completed = template.execute(new BatchTransactionTemplate.BatchCallback<Long, JobResults>() {
 
 			@Override
@@ -88,7 +88,7 @@ public class ParallelBatchTransactionTemplateTest extends BusinessTest {
 
 		try {
 			ParallelBatchTransactionTemplate<Long, JobResults> template =
-					new ParallelBatchTransactionTemplate<Long, JobResults>(list, 100, 2, BatchTransactionTemplate.Behavior.SANS_REPRISE, transactionManager, null, hibernateTemplate);
+					new ParallelBatchTransactionTemplate<>(list, 100, 2, BatchTransactionTemplate.Behavior.SANS_REPRISE, transactionManager, null, hibernateTemplate);
 			template.execute(new BatchTransactionTemplate.BatchCallback<Long, JobResults>() {
 
 				@Override
@@ -132,9 +132,9 @@ public class ParallelBatchTransactionTemplateTest extends BusinessTest {
 			}
 		};
 
-		final Set<Long> processed = new HashSet<Long>();
+		final Set<Long> processed = new HashSet<>();
 		ParallelBatchTransactionTemplate<Long, JobResults> template =
-				new ParallelBatchTransactionTemplate<Long, JobResults>(list, 100, 2, BatchTransactionTemplate.Behavior.SANS_REPRISE, transactionManager, status, hibernateTemplate);
+				new ParallelBatchTransactionTemplate<>(list, 100, 2, BatchTransactionTemplate.Behavior.SANS_REPRISE, transactionManager, status, hibernateTemplate);
 		final boolean completed = template.execute(new BatchTransactionTemplate.BatchCallback<Long, JobResults>() {
 
 			@Override
@@ -158,9 +158,9 @@ public class ParallelBatchTransactionTemplateTest extends BusinessTest {
 
 		final List<Long> list = generateList(1000);
 
-		final Set<Long> processed = new HashSet<Long>();
+		final Set<Long> processed = new HashSet<>();
 		ParallelBatchTransactionTemplate<Long, JobResults> template =
-				new ParallelBatchTransactionTemplate<Long, JobResults>(list, 100, 2, BatchTransactionTemplate.Behavior.SANS_REPRISE, transactionManager, null, hibernateTemplate);
+				new ParallelBatchTransactionTemplate<>(list, 100, 2, BatchTransactionTemplate.Behavior.SANS_REPRISE, transactionManager, null, hibernateTemplate);
 		final boolean completed = template.execute(new BatchTransactionTemplate.BatchCallback<Long, JobResults>() {
 
 			@Override
@@ -176,7 +176,7 @@ public class ParallelBatchTransactionTemplateTest extends BusinessTest {
 	}
 
 	private static List<Long> generateList(int count) {
-		List<Long> list = new ArrayList<Long>();
+		List<Long> list = new ArrayList<>();
 		for (int i = 0; i < count; i++) {
 			list.add((long) i);
 		}
@@ -193,7 +193,7 @@ public class ParallelBatchTransactionTemplateTest extends BusinessTest {
 		final int count = 5000;
 		final int nbThreads = 10;
 
-		final List<Long> list = new ArrayList<Long>();
+		final List<Long> list = new ArrayList<>();
 		for (int i = 0; i < count; ++i) {
 			list.add((long) i);
 		}
@@ -201,7 +201,7 @@ public class ParallelBatchTransactionTemplateTest extends BusinessTest {
 		final Rapport rapportFinal = new Rapport();
 
 		ParallelBatchTransactionTemplate<Long, Rapport> template =
-				new ParallelBatchTransactionTemplate<Long, Rapport>(list, 10, nbThreads, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE, transactionManager, null, hibernateTemplate);
+				new ParallelBatchTransactionTemplate<>(list, 10, nbThreads, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE, transactionManager, null, hibernateTemplate);
 		template.execute(rapportFinal, new BatchTransactionTemplate.BatchCallback<Long, Rapport>() {
 
 			@Override
@@ -232,7 +232,7 @@ public class ParallelBatchTransactionTemplateTest extends BusinessTest {
 		final int count = 5000;
 		final int nbThreads = 10;
 
-		final List<Long> list = new ArrayList<Long>();
+		final List<Long> list = new ArrayList<>();
 		for (int i = 0; i < count; ++i) {
 			list.add((long) i);
 		}
@@ -240,7 +240,7 @@ public class ParallelBatchTransactionTemplateTest extends BusinessTest {
 		final Rapport rapportFinal = new Rapport();
 
 		ParallelBatchTransactionTemplate<Long, Rapport> template =
-				new ParallelBatchTransactionTemplate<Long, Rapport>(list, 10, nbThreads, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE, transactionManager, null, hibernateTemplate);
+				new ParallelBatchTransactionTemplate<>(list, 10, nbThreads, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE, transactionManager, null, hibernateTemplate);
 		template.execute(rapportFinal, new BatchTransactionTemplate.BatchCallback<Long, Rapport>() {
 
 			@Override
@@ -270,8 +270,8 @@ public class ParallelBatchTransactionTemplateTest extends BusinessTest {
 
 	private static class Rapport implements BatchResults<Long, Rapport> {
 
-		public Set<Long> traites = new HashSet<Long>();
-		public Set<Long> erreurs = new HashSet<Long>();
+		public Set<Long> traites = new HashSet<>();
+		public Set<Long> erreurs = new HashSet<>();
 
 		public void addTraite(Long element) {
 			traites.add(element);

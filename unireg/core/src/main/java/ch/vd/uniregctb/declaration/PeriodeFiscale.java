@@ -69,7 +69,7 @@ public class PeriodeFiscale extends HibernateEntity {
 
 	public void addParametrePeriodeFiscale(ParametrePeriodeFiscale param) {
 		if (parametrePeriodeFiscale == null) {
-			parametrePeriodeFiscale = new HashSet<ParametrePeriodeFiscale>();
+			parametrePeriodeFiscale = new HashSet<>();
 		}
 		param.setPeriodefiscale(this);
 		parametrePeriodeFiscale.add(param);
@@ -87,7 +87,7 @@ public class PeriodeFiscale extends HibernateEntity {
 	 */
 	public boolean addModeleDocument(ModeleDocument modele) {
 		if (modelesDocument == null) {
-			modelesDocument = new HashSet<ModeleDocument>();
+			modelesDocument = new HashSet<>();
 		}
 		return modelesDocument.add(modele);
 	}
@@ -184,7 +184,7 @@ public class PeriodeFiscale extends HibernateEntity {
 	 */
 	public void setAllPeriodeFiscaleParametres(RegDate dateEnvoiMasseDI, RegDate dateTermeGeneralSommationReglementaire, RegDate dateTermeGeneralSommationEffectif) {
 
-		Set<ParametrePeriodeFiscale> setParametrePeriodeFiscale = new HashSet<ParametrePeriodeFiscale>(4);
+		Set<ParametrePeriodeFiscale> setParametrePeriodeFiscale = new HashSet<>(4);
 
 		ParametrePeriodeFiscale ppf = new ParametrePeriodeFiscale();
 		ppf.setTypeContribuable(TypeContribuable.VAUDOIS_ORDINAIRE);

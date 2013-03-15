@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.webservices.tiers2.stats;
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -21,7 +21,7 @@ import ch.vd.registre.base.utils.Assert;
  */
 class DistributionAnalyze extends Analyze {
 
-	private final Map<String, List<DistributionData>> results = new HashMap<String, List<DistributionData>>();
+	private final Map<String, List<DistributionData>> results = new HashMap<>();
 
 	@Override
 	public void addCall(Call call) {
@@ -37,7 +37,7 @@ class DistributionAnalyze extends Analyze {
 
 		List<DistributionData> list = results.get(call.getMethod());
 		if (list == null) {
-			list = new ArrayList<DistributionData>();
+			list = new ArrayList<>();
 			for (TimeRange timeRange : DistributionData.DEFAULT_TIME_RANGES) {
 				list.add(new DistributionData(timeRange));
 			}
@@ -58,7 +58,7 @@ class DistributionAnalyze extends Analyze {
 	@Override
 	public void print() {
 
-		final List<String> methods = new ArrayList<String>(results.keySet());
+		final List<String> methods = new ArrayList<>(results.keySet());
 		Collections.sort(methods);
 
 		final StringBuilder header = new StringBuilder();

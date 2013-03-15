@@ -39,19 +39,19 @@ public class MockPersonneMorale implements PersonneMorale {
 	private String designationAbregee;
 	private RegDate dateBouclementFuture;
 	private String numeroIPMRO;
-	private Collection<AdresseEntreprise> adresses = new ArrayList<AdresseEntreprise>();
-	private List<FormeJuridique> formesJuridiques = new ArrayList<FormeJuridique>();
-	private List<CompteBancaire> comptesBancaires = new ArrayList<CompteBancaire>();
-	private List<Capital> capitaux = new ArrayList<Capital>();
-	private List<EtatPM> etats = new ArrayList<EtatPM>();
-	private List<RegimeFiscal> regimesVD = new ArrayList<RegimeFiscal>();
-	private List<RegimeFiscal> regimesCH = new ArrayList<RegimeFiscal>();
-	private List<Siege> sieges = new ArrayList<Siege>();
-	private List<AssujettissementPM> assujettissementsLIC = new ArrayList<AssujettissementPM>();
-	private List<AssujettissementPM> assujettissementsLIFD = new ArrayList<AssujettissementPM>();
-	private List<ForPM> forsFiscauxPrincipaux = new ArrayList<ForPM>();
-	private List<ForPM> forsFiscauxSecondaires = new ArrayList<ForPM>();
-	private List<Mandat> mandats = new ArrayList<Mandat>();
+	private Collection<AdresseEntreprise> adresses = new ArrayList<>();
+	private List<FormeJuridique> formesJuridiques = new ArrayList<>();
+	private List<CompteBancaire> comptesBancaires = new ArrayList<>();
+	private List<Capital> capitaux = new ArrayList<>();
+	private List<EtatPM> etats = new ArrayList<>();
+	private List<RegimeFiscal> regimesVD = new ArrayList<>();
+	private List<RegimeFiscal> regimesCH = new ArrayList<>();
+	private List<Siege> sieges = new ArrayList<>();
+	private List<AssujettissementPM> assujettissementsLIC = new ArrayList<>();
+	private List<AssujettissementPM> assujettissementsLIFD = new ArrayList<>();
+	private List<ForPM> forsFiscauxPrincipaux = new ArrayList<>();
+	private List<ForPM> forsFiscauxSecondaires = new ArrayList<>();
+	private List<Mandat> mandats = new ArrayList<>();
 
 	public static final MockPersonneMorale NestleSuisse = new MockPersonneMorale(27769, "Nestlé Suisse S.A.", "S.A.", "Myriam Steiner", RegDate.get(1996, 12, 18), null);
 	public static final MockPersonneMorale BCV = new MockPersonneMorale(20222, "Banque Cantonale Vaudoise", "S.A.", "Daniel Kuffer", null, null);
@@ -545,7 +545,7 @@ public class MockPersonneMorale implements PersonneMorale {
 
 	public void addForsFiscalPrincipal(ForPM ffp) {
 		if (this.forsFiscauxPrincipaux == null) {
-			this.forsFiscauxPrincipaux = new ArrayList<ForPM>();
+			this.forsFiscauxPrincipaux = new ArrayList<>();
 		}
 		this.forsFiscauxPrincipaux.add(ffp);
 	}

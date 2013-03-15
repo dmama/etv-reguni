@@ -87,7 +87,7 @@ public class EvenementCediEsbMessageHandler implements EsbMessageHandler {
 
 		// Valide le message
 		final XmlOptions validateOptions = new XmlOptions();
-		final ArrayList<XmlError> errorList = new ArrayList<XmlError>();
+		final ArrayList<XmlError> errorList = new ArrayList<>();
 		validateOptions.setErrorListener(errorList);
 		if (!evt.validate(validateOptions)) {
 			boolean first = true;

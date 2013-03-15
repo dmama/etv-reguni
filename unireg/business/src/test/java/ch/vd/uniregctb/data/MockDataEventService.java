@@ -7,8 +7,8 @@ import ch.vd.registre.base.utils.NotImplementedException;
 
 public class MockDataEventService implements DataEventService {
 
-	public final List<Long> changedTiers = new ArrayList<Long>();
-	public final List<Long> changedPMs = new ArrayList<Long>();
+	public final List<Long> changedTiers = new ArrayList<>();
+	public final List<Long> changedPMs = new ArrayList<>();
 
 	@Override
 	public void register(DataEventListener listener) {

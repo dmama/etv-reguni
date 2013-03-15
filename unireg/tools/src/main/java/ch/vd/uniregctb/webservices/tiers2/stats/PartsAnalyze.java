@@ -15,7 +15,7 @@ class PartsAnalyze extends Analyze {
 	private static class MethodData {
 		private final String name;
 		private int callCount;
-		private final Map<String, PartData> parts = new HashMap<String, PartData>();
+		private final Map<String, PartData> parts = new HashMap<>();
 
 		public MethodData(String name) {
 			this.name = name;
@@ -69,7 +69,7 @@ class PartsAnalyze extends Analyze {
 		}
 	}
 
-	private final Map<String, MethodData> results = new HashMap<String, MethodData>();
+	private final Map<String, MethodData> results = new HashMap<>();
 
 	@Override
 	void addCall(Call call) {
@@ -98,7 +98,7 @@ class PartsAnalyze extends Analyze {
 		}
 
 		final long total = data.getCallCount();
-		final List<PartData> list = new ArrayList<PartData>(data.getParts().values());
+		final List<PartData> list = new ArrayList<>(data.getParts().values());
 
 		//		final String labels = "|ADRESSES|ADRESSES_ENVOI|FORS_FISCAUX|FORS_FISCAUX_VIRTUELS|RAPPORTS_ENTRE_TIERS|SITUATIONS_FAMILLE";
 		//		final String values = "50,30,10,60,65,190";
@@ -130,7 +130,7 @@ class PartsAnalyze extends Analyze {
 		}
 
 		final long total = data.getCallCount();
-		final List<PartData> list = new ArrayList<PartData>(data.getParts().values());
+		final List<PartData> list = new ArrayList<>(data.getParts().values());
 
 		final DefaultPieDataset dataset = new DefaultPieDataset();
 
@@ -150,7 +150,7 @@ class PartsAnalyze extends Analyze {
 
 	@Override
 	void print() {
-		final List<String> methods = new ArrayList<String>(results.keySet());
+		final List<String> methods = new ArrayList<>(results.keySet());
 		Collections.sort(methods);
 
 		final StringBuilder header = new StringBuilder();

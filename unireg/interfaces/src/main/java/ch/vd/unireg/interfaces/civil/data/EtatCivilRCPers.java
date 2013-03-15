@@ -41,7 +41,7 @@ public class EtatCivilRCPers implements EtatCivil, Serializable {
 			return null;
 		}
 
-		final List<EtatCivil> etatsCivils = new ArrayList<EtatCivil>();
+		final List<EtatCivil> etatsCivils = new ArrayList<>();
 
 		// L'état civil principal
 		final RegDate dateDebut = XmlUtils.xmlcal2regdate(maritalStatus.getDateOfMaritalStatus());

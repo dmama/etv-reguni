@@ -66,7 +66,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 	public static final List<Action> actions;
 
 	static {
-		List<Action> list = new ArrayList<Action>();
+		List<Action> list = new ArrayList<>();
 		list.add(new Reindexer());
 		list.add(new Marier());
 		list.add(new Deceder());
@@ -343,7 +343,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		// Actions
 		if (showLinks) {
 
-			final List<Action> actionsToDisplay = new ArrayList<Action>(actions.size());
+			final List<Action> actionsToDisplay = new ArrayList<>(actions.size());
 			for (Action action : actions) {
 				if (action.isGranted() && action.isValide(tiers)) {
 					actionsToDisplay.add(action);

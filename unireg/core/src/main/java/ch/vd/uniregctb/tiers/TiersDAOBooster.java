@@ -33,7 +33,7 @@ public class TiersDAOBooster implements TiersDAO, InitializingBean {
 
 	private TiersDAO target;
 	private String filename;
-	private final Set<Long> boostedIds = new HashSet<Long>();
+	private final Set<Long> boostedIds = new HashSet<>();
 
 	public void setTarget(TiersDAO target) {
 		this.target = target;
@@ -346,8 +346,7 @@ public class TiersDAOBooster implements TiersDAO, InitializingBean {
 		}
 
 		// on parse le fichier
-		Scanner s = new Scanner(file);
-		try {
+		try (Scanner s = new Scanner(file)) {
 			while (s.hasNextLine()) {
 
 				final String line = s.nextLine().trim();
@@ -363,9 +362,6 @@ public class TiersDAOBooster implements TiersDAO, InitializingBean {
 					LOGGER.error("La ligne [" + line + "] ne représente pas un long : " + e.getMessage());
 				}
 			}
-		}
-		finally {
-			s.close();
 		}
 	}
 }

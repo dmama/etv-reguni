@@ -55,18 +55,18 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 
 	// private static final Logger LOGGER = Logger.getLogger(MockServiceInfrastructureService.class);
 
-	protected final List<Pays> pays = new ArrayList<Pays>();
-	protected final List<Canton> cantons = new ArrayList<Canton>();
-	protected final List<Localite> localites = new ArrayList<Localite>();
-	protected final List<Commune> communesVaud = new ArrayList<Commune>();
-	protected final List<Commune> communesHorsCanton = new ArrayList<Commune>();
-	protected final List<Commune> communes = new ArrayList<Commune>();
-	protected final List<Rue> rues = new ArrayList<Rue>();
-	protected final Map<Integer, CollectiviteAdministrative> collectivitesAdministrative = new HashMap<Integer, CollectiviteAdministrative>();
-	protected final Map<Integer, OfficeImpot> oidByNoOfsCommune = new HashMap<Integer, OfficeImpot>();
-	protected final Map<Integer, OfficeImpot> oidByNoColAdm = new HashMap<Integer, OfficeImpot>();
+	protected final List<Pays> pays = new ArrayList<>();
+	protected final List<Canton> cantons = new ArrayList<>();
+	protected final List<Localite> localites = new ArrayList<>();
+	protected final List<Commune> communesVaud = new ArrayList<>();
+	protected final List<Commune> communesHorsCanton = new ArrayList<>();
+	protected final List<Commune> communes = new ArrayList<>();
+	protected final List<Rue> rues = new ArrayList<>();
+	protected final Map<Integer, CollectiviteAdministrative> collectivitesAdministrative = new HashMap<>();
+	protected final Map<Integer, OfficeImpot> oidByNoOfsCommune = new HashMap<>();
+	protected final Map<Integer, OfficeImpot> oidByNoColAdm = new HashMap<>();
 	protected Map<Integer, List<MockLienCommuneBatiment>> batimentsParEgid = null;
-	protected final Map<Integer, InstitutionFinanciere> institutionFinancieres = new HashMap<Integer, InstitutionFinanciere>();
+	protected final Map<Integer, InstitutionFinanciere> institutionFinancieres = new HashMap<>();
 
 	public MockServiceInfrastructureService() {
 		init();
@@ -141,7 +141,7 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 
 	private synchronized void loadBatiments() {
 		if (batimentsParEgid == null) {
-			final HashMap<Integer, List<MockLienCommuneBatiment>> map = new HashMap<Integer, List<MockLienCommuneBatiment>>();
+			final HashMap<Integer, List<MockLienCommuneBatiment>> map = new HashMap<>();
 			for (Commune c : communes) {
 				addLiensBatiments(map, (MockCommune) c);
 			}
@@ -154,7 +154,7 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 			final Integer egid = lien.getBatiment().getEgid();
 			List<MockLienCommuneBatiment> list = map.get(egid);
 			if (list == null) {
-				list = new ArrayList<MockLienCommuneBatiment>();
+				list = new ArrayList<>();
 				map.put(egid, list);
 			}
 			list.add(lien);
@@ -271,7 +271,7 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 
 	@Override
 	public List<Rue> getRues(Localite localite) throws ServiceInfrastructureException {
-		List<Rue> locRues = new ArrayList<Rue>();
+		List<Rue> locRues = new ArrayList<>();
 		for (Rue r : rues) {
 			if (r.getNoLocalite().equals(localite.getNoOrdre())) {
 				locRues.add(r);
@@ -321,7 +321,7 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 
 	@Override
 	public List<Commune> getCommuneHistoByNumeroOfs(int noOfsCommune) throws ServiceInfrastructureException {
-		final List<Commune> list = new ArrayList<Commune>(2);
+		final List<Commune> list = new ArrayList<>(2);
 		for (Commune c : communesVaud) {
 			int no = c.getNoOFS();
 			if (no == noOfsCommune) {
@@ -421,23 +421,23 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 
 	@Override
 	public List<OfficeImpot> getOfficesImpot() throws ServiceInfrastructureException {
-		return new ArrayList<OfficeImpot>(oidByNoOfsCommune.values());
+		return new ArrayList<>(oidByNoOfsCommune.values());
 	}
 
 	@Override
 	public List<CollectiviteAdministrative> getCollectivitesAdministratives() throws ServiceInfrastructureException {
-		return new ArrayList<CollectiviteAdministrative>(collectivitesAdministrative.values());
+		return new ArrayList<>(collectivitesAdministrative.values());
 	}
 
 	@Override
 	public List<CollectiviteAdministrative> getCollectivitesAdministratives(List<EnumTypeCollectivite> typesCollectivite) throws ServiceInfrastructureException {
 
-		final Set<String> sigles = new HashSet<String>();
+		final Set<String> sigles = new HashSet<>();
 		for (EnumTypeCollectivite e : typesCollectivite) {
 			sigles.add(e.getName());
 		}
 
-		final List<CollectiviteAdministrative> list = new ArrayList<CollectiviteAdministrative>();
+		final List<CollectiviteAdministrative> list = new ArrayList<>();
 		for (CollectiviteAdministrative ca : collectivitesAdministrative.values()) {
 			if (sigles.contains(ca.getSigle())) {
 				list.add(ca);

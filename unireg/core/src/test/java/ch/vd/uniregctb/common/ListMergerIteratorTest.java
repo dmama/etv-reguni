@@ -21,7 +21,7 @@ public class ListMergerIteratorTest extends WithoutSpringTest {
 	};
 
 	private static <T> void check(List<T> liste1, List<T> liste2, List<T> resultatAttendu, Comparator<T> comparator) {
-		final ListMergerIterator<T> iter = new ListMergerIterator<T>(liste1, liste2, comparator);
+		final ListMergerIterator<T> iter = new ListMergerIterator<>(liste1, liste2, comparator);
 		int index = 0;
 		while (iter.hasNext()) {
 			if (index >= resultatAttendu.size()) {

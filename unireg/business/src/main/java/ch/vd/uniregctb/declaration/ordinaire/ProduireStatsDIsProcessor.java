@@ -79,7 +79,7 @@ public class ProduireStatsDIsProcessor {
 		status.setMessage(String.format("Début de la production des statistiques des déclaration d'impôts ordinaires : période fiscale = %d.", anneePeriode));
 
 		final List<Long> listeComplete = chargerIdentifiantsDeclarations(anneePeriode);
-		final BatchTransactionTemplate<Long, StatistiquesDIs> template = new BatchTransactionTemplate<Long, StatistiquesDIs>(listeComplete, BATCH_SIZE, Behavior.SANS_REPRISE, transactionManager, status, hibernateTemplate);
+		final BatchTransactionTemplate<Long, StatistiquesDIs> template = new BatchTransactionTemplate<>(listeComplete, BATCH_SIZE, Behavior.SANS_REPRISE, transactionManager, status, hibernateTemplate);
 		template.execute(rapportFinal, new BatchCallback<Long, StatistiquesDIs>() {
 
 			@Override

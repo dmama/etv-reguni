@@ -389,7 +389,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 			// les valeurs
 			for (TypeEvenementCivilEch type : TypeEvenementCivilEch.values()) {
 				for (ActionEvenementCivilEch action : ActionEvenementCivilEch.values()) {
-					final Pair<TypeEvenementCivilEch, ActionEvenementCivilEch> key = new Pair<TypeEvenementCivilEch, ActionEvenementCivilEch>(type, action);
+					final Pair<TypeEvenementCivilEch, ActionEvenementCivilEch> key = new Pair<>(type, action);
 					final Integer total = tous.get(key);
 					final Integer marginal = nouveaux != null ? nouveaux.get(key) : null;
 					if ((total != null && total > 0) || (marginal != null && marginal > 0)) {
@@ -447,8 +447,8 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 			statusManager.setMessage(messageCalcul, 0);
 
 			// première partie : calcul des statistiques
-			final Map<EvtCivilRegPPMsgTypeKey, MutableInt> map = new HashMap<EvtCivilRegPPMsgTypeKey, MutableInt>();
-			final GentilIterator<StatsEvenementsCivilsRegPPResults.EvenementCivilEnErreurInfo> iter = new GentilIterator<StatsEvenementsCivilsRegPPResults.EvenementCivilEnErreurInfo>(toutesErreurs);
+			final Map<EvtCivilRegPPMsgTypeKey, MutableInt> map = new HashMap<>();
+			final GentilIterator<StatsEvenementsCivilsRegPPResults.EvenementCivilEnErreurInfo> iter = new GentilIterator<>(toutesErreurs);
 			while (iter.hasNext()) {
 				if (iter.isAtNewPercent()) {
 					statusManager.setMessage(messageCalcul, iter.getPercent());
@@ -468,7 +468,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 			}
 
 			// tri des lignes dans l'ordre décroissant des nombres d'occurrence
-			final List<Map.Entry<EvtCivilRegPPMsgTypeKey, MutableInt>> stats = new ArrayList<Map.Entry<EvtCivilRegPPMsgTypeKey, MutableInt>>(map.entrySet());
+			final List<Map.Entry<EvtCivilRegPPMsgTypeKey, MutableInt>> stats = new ArrayList<>(map.entrySet());
 			Collections.sort(stats, new Comparator<Map.Entry<EvtCivilRegPPMsgTypeKey, MutableInt>>() {
 				@Override
 				public int compare(Map.Entry<EvtCivilRegPPMsgTypeKey, MutableInt> o1, Map.Entry<EvtCivilRegPPMsgTypeKey, MutableInt> o2) {
@@ -540,8 +540,8 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 			statusManager.setMessage(messageCalcul, 0);
 
 			// première partie : calcul des statistiques
-			final Map<EvtCivilEchMsgTypeKey, MutableInt> map = new HashMap<EvtCivilEchMsgTypeKey, MutableInt>();
-			final GentilIterator<StatsEvenementsCivilsEchResults.EvenementCivilEnErreurInfo> iter = new GentilIterator<StatsEvenementsCivilsEchResults.EvenementCivilEnErreurInfo>(toutesErreurs);
+			final Map<EvtCivilEchMsgTypeKey, MutableInt> map = new HashMap<>();
+			final GentilIterator<StatsEvenementsCivilsEchResults.EvenementCivilEnErreurInfo> iter = new GentilIterator<>(toutesErreurs);
 			while (iter.hasNext()) {
 				if (iter.isAtNewPercent()) {
 					statusManager.setMessage(messageCalcul, iter.getPercent());
@@ -561,7 +561,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 			}
 
 			// tri des lignes dans l'ordre décroissant des nombres d'occurrence
-			final List<Map.Entry<EvtCivilEchMsgTypeKey, MutableInt>> stats = new ArrayList<Map.Entry<EvtCivilEchMsgTypeKey, MutableInt>>(map.entrySet());
+			final List<Map.Entry<EvtCivilEchMsgTypeKey, MutableInt>> stats = new ArrayList<>(map.entrySet());
 			Collections.sort(stats, new Comparator<Map.Entry<EvtCivilEchMsgTypeKey, MutableInt>>() {
 				@Override
 				public int compare(Map.Entry<EvtCivilEchMsgTypeKey, MutableInt> o1, Map.Entry<EvtCivilEchMsgTypeKey, MutableInt> o2) {

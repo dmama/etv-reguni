@@ -228,7 +228,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		final Set<EnumTypeCollectivite> types;
 
 		public KeyGetCollectivitesAdministrativesByTypes(List<EnumTypeCollectivite> types) {
-			this.types = new HashSet<EnumTypeCollectivite>(types);
+			this.types = new HashSet<>(types);
 		}
 
 		@Override

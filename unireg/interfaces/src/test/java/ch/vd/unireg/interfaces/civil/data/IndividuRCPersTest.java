@@ -168,8 +168,8 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		assertNotNull(adresses);
 		assertEquals(5, adresses.size());
 
-		final List<Adresse> principales = new ArrayList<Adresse>();
-		final List<Adresse> secondaires = new ArrayList<Adresse>();
+		final List<Adresse> principales = new ArrayList<>();
+		final List<Adresse> secondaires = new ArrayList<>();
 		for (Adresse a : adresses) {
 			if (a.getTypeAdresse() == TypeAdresseCivil.PRINCIPALE) {
 				principales.add(a);
@@ -220,8 +220,8 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		assertNotNull(adresses);
 		assertEquals(7, adresses.size());
 
-		final List<Adresse> principales = new ArrayList<Adresse>();
-		final List<Adresse> secondaires = new ArrayList<Adresse>();
+		final List<Adresse> principales = new ArrayList<>();
+		final List<Adresse> secondaires = new ArrayList<>();
 		for (Adresse a : adresses) {
 			if (a.getTypeAdresse() == TypeAdresseCivil.PRINCIPALE) {
 				principales.add(a);
@@ -277,9 +277,9 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		assertNotNull(adresses);
 		assertEquals(5, adresses.size());       // 4 principales + une courrier créée depuis le 4.7.2012...
 
-		final List<Adresse> principales = new ArrayList<Adresse>();
-		final List<Adresse> secondaires = new ArrayList<Adresse>();
-		final List<Adresse> contacts = new ArrayList<Adresse>();
+		final List<Adresse> principales = new ArrayList<>();
+		final List<Adresse> secondaires = new ArrayList<>();
+		final List<Adresse> contacts = new ArrayList<>();
 		for (Adresse a : adresses) {
 			if (a.getTypeAdresse() == TypeAdresseCivil.PRINCIPALE) {
 				principales.add(a);
@@ -325,7 +325,7 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		person.getResidencePermitHistory().add(newResidencePermit(date(1965, 3, 12), null, TypePermis.ETABLISSEMENT));
 
 		// les relations
-		final List<Relationship> relations = new ArrayList<Relationship>();
+		final List<Relationship> relations = new ArrayList<>();
 		relations.add(newRelation(date(1989, 5, 1), null, 562841L, TypeRelation.VERS_CONJOINT));
 
 		// on vérifie que les valeurs historisées sont bien lues
@@ -341,8 +341,8 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		assertNotNull(adresses);
 		assertEquals(4, adresses.size());
 
-		final List<Adresse> courriers = new ArrayList<Adresse>();
-		final List<Adresse> principales = new ArrayList<Adresse>();
+		final List<Adresse> courriers = new ArrayList<>();
+		final List<Adresse> principales = new ArrayList<>();
 		for (Adresse a : adresses) {
 			if (a.getTypeAdresse() == TypeAdresseCivil.COURRIER) {
 				courriers.add(a);
@@ -390,7 +390,7 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		person.setCurrentResidencePermit(newResidencePermit(date(1965, 3, 12), null, TypePermis.ETABLISSEMENT));
 
 		// les relations courantes
-		final List<Relationship> relations = new ArrayList<Relationship>();
+		final List<Relationship> relations = new ArrayList<>();
 		relations.add(newRelation(date(1989, 5, 1), null, 562841L, TypeRelation.VERS_CONJOINT));
 
 		// on vérifie que les valeurs courantes sont bien lues
@@ -406,8 +406,8 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		assertNotNull(adresses);
 		assertEquals(2, adresses.size());
 
-		final List<Adresse> courriers = new ArrayList<Adresse>();
-		final List<Adresse> principales = new ArrayList<Adresse>();
+		final List<Adresse> courriers = new ArrayList<>();
+		final List<Adresse> principales = new ArrayList<>();
 		for (Adresse a : adresses) {
 			if (a.getTypeAdresse() == TypeAdresseCivil.COURRIER) {
 				courriers.add(a);
@@ -678,7 +678,7 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 	@Test
 	public void testInitAvecPlusieursResidencesDeTypesDifferentsALaMemeDateSurLaMemeCommune() throws Exception {
 		final RegDate arrival = date(2007, 11, 4);
-		final List<Residence> residences = new ArrayList<Residence>();
+		final List<Residence> residences = new ArrayList<>();
 		final Residence prn = newResidencePrincipale(arrival, null, null, MockRue.Lausanne.AvenueDeBeaulieu);
 		final Residence sec = newResidenceSecondaire(arrival, null, null, MockRue.Lausanne.AvenueDeLaGare);
 		residences.add(prn);
@@ -696,7 +696,7 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 	public void testInitAvecPlusieursResidencesDeTypesDifferentsSurLaMemeCommune() throws Exception {
 		final RegDate arrivalPrn = date(2007, 11, 4);
 		final RegDate arrivalSec = date(2007, 11, 6);
-		final List<Residence> residences = new ArrayList<Residence>();
+		final List<Residence> residences = new ArrayList<>();
 		final Residence prn = newResidencePrincipale(arrivalPrn, null, null, MockRue.Lausanne.AvenueDeBeaulieu);
 		final Residence sec = newResidenceSecondaire(arrivalSec, null, null, MockRue.Lausanne.AvenueDeLaGare);
 		residences.add(prn);

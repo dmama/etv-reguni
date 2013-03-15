@@ -35,7 +35,7 @@ public class DeterminerLRsEchuesResults extends JobResults<DeterminerLRsEchuesRe
 
 	public static class InfoDebiteurAvecLrEchue {
 		public final long idDebiteur;
-		private final List<InfoLrEchue> lrEchues = new LinkedList<InfoLrEchue>();
+		private final List<InfoLrEchue> lrEchues = new LinkedList<>();
 
 		public InfoDebiteurAvecLrEchue(long idDebiteur) {
 			this.idDebiteur = idDebiteur;
@@ -216,9 +216,9 @@ public class DeterminerLRsEchuesResults extends JobResults<DeterminerLRsEchuesRe
 
 	private boolean interrompu;
 	private int nbDebiteursAnalyses = 0;
-	public final List<ResultLrEchue> lrEchues = new ArrayList<ResultLrEchue>();
-	public final List<ResultDebiteurNonTraite> ignores = new ArrayList<ResultDebiteurNonTraite>();
-	public final List<ResultErreurDebiteur> erreurs = new ArrayList<ResultErreurDebiteur>();
+	public final List<ResultLrEchue> lrEchues = new ArrayList<>();
+	public final List<ResultDebiteurNonTraite> ignores = new ArrayList<>();
+	public final List<ResultErreurDebiteur> erreurs = new ArrayList<>();
 
 	public DeterminerLRsEchuesResults(int periodeFiscale, RegDate dateTraitement, TiersService tiersService, AdresseService adresseService) {
 		super(tiersService, adresseService);

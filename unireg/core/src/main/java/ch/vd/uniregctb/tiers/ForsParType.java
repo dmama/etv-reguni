@@ -37,31 +37,31 @@ public class ForsParType {
 
 			if (ff instanceof ForFiscalPrincipal) {
 				if (principaux == Collections.EMPTY_LIST) {
-					principaux = new ArrayList<ForFiscalPrincipal>();
+					principaux = new ArrayList<>();
 				}
 				principaux.add((ForFiscalPrincipal) ff);
 			}
 			else if (ff instanceof ForFiscalSecondaire) {
 				if (secondaires == Collections.EMPTY_LIST) {
-					secondaires = new ArrayList<ForFiscalSecondaire>();
+					secondaires = new ArrayList<>();
 				}
 				secondaires.add((ForFiscalSecondaire) ff);
 			}
 			else if (ff instanceof ForDebiteurPrestationImposable) {
 				if (dpis == Collections.EMPTY_LIST) {
-					dpis = new ArrayList<ForDebiteurPrestationImposable>();
+					dpis = new ArrayList<>();
 				}
 				dpis.add((ForDebiteurPrestationImposable) ff);
 			}
 			else if (ff instanceof ForFiscalAutreElementImposable) {
 				if (autreElementImpot == Collections.EMPTY_LIST) {
-					autreElementImpot = new ArrayList<ForFiscalAutreElementImposable>();
+					autreElementImpot = new ArrayList<>();
 				}
 				autreElementImpot.add((ForFiscalAutreElementImposable) ff);
 			}
 			else if (ff instanceof ForFiscalAutreImpot) {
 				if (autresImpots == Collections.EMPTY_LIST) {
-					autresImpots = new ArrayList<ForFiscalAutreImpot>();
+					autresImpots = new ArrayList<>();
 				}
 				autresImpots.add((ForFiscalAutreImpot) ff);
 			}

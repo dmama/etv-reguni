@@ -256,7 +256,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 			}
 			else if (nombrePersonnes > 1) {
 				LOGGER.debug("Plusieurs contribuables correspondent aux critères suivants: " + criteres.toString());
-				final List<Long> ids = new ArrayList<Long>(listResultat.size());
+				final List<Long> ids = new ArrayList<>(listResultat.size());
 				for (PersonnePhysique pp : listResultat) {
 					ids.add(pp.getNumero());
 				}
@@ -329,7 +329,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	}
 
 	private List<PersonnePhysique> getListePersonneFromIndexedData(List<TiersIndexedData> listIndexedData) {
-		final List<PersonnePhysique> list = new ArrayList<PersonnePhysique>();
+		final List<PersonnePhysique> list = new ArrayList<>();
 		for (TiersIndexedData d : listIndexedData) {
 			final Tiers t = tiersDAO.get(d.getNumero());
 			if (t != null && t instanceof PersonnePhysique) {
@@ -831,7 +831,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 					message.setEtat(Etat.A_TRAITER_MANUELLEMENT);
 
 					if (LOGGER.isDebugEnabled()) {
-						final List<Long> ids = new ArrayList<Long>(list.size());
+						final List<Long> ids = new ArrayList<>(list.size());
 						for (PersonnePhysique pp : list) {
 							ids.add(pp.getNumero());
 						}
@@ -1324,7 +1324,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 
 	@Override
 	public Map<IdentificationContribuable.Etat, Integer> calculerStats(IdentificationContribuableCriteria identificationContribuableCriteria) {
-		final Map<IdentificationContribuable.Etat, Integer> resultatStats = new EnumMap<Etat, Integer>(IdentificationContribuable.Etat.class);
+		final Map<IdentificationContribuable.Etat, Integer> resultatStats = new EnumMap<>(IdentificationContribuable.Etat.class);
 		for (IdentificationContribuable.Etat etat : IdentificationContribuable.Etat.values()) {
 			identificationContribuableCriteria.setEtatMessage(etat.name());
 			final int res = count(identificationContribuableCriteria, IdentificationContribuableEtatFilter.TOUS);

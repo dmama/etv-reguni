@@ -33,7 +33,7 @@ public class ComplementView {
 	private String adresseCourrierElectronique;
 
 	private CompteBancaireView compteBancaire = new CompteBancaireView();
-	private List<CompteBancaireView> autresComptesBancaires = new ArrayList<CompteBancaireView>();
+	private List<CompteBancaireView> autresComptesBancaires = new ArrayList<>();
 
 	private Boolean blocageRemboursementAutomatique;
 

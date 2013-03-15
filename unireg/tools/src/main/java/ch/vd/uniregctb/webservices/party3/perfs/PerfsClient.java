@@ -110,48 +110,50 @@ public class PerfsClient {
 			}
 
 			final FileWriter outputFile = openOutputFile(outputFilename);
+			try {
+				final Query query;
+				if (get) {
+					query = new GetQuery(operateur, oid, outputFile);
+				}
+				else {
+					query = new SearchQuery(operateur, oid, outputFile);
+				}
 
-			final Query query;
-			if (get) {
-				query = new GetQuery(operateur, oid, outputFile);
-			}
-			else {
-				query = new SearchQuery(operateur, oid, outputFile);
-			}
-
-			if (partsAsString != null) {
-				final Set<PartyPart> parts = new HashSet<PartyPart>();
-				for (String s : partsAsString) {
-					if (s.equals("ALL")) {
-						Collections.addAll(parts, PartyPart.values());
-						break;
+				if (partsAsString != null) {
+					final Set<PartyPart> parts = new HashSet<>();
+					for (String s : partsAsString) {
+						if (s.equals("ALL")) {
+							Collections.addAll(parts, PartyPart.values());
+							break;
+						}
+						PartyPart e = PartyPart.fromValue(s);
+						parts.add(e);
 					}
-					PartyPart e = PartyPart.fromValue(s);
-					parts.add(e);
+					query.setParts(parts);
 				}
-				query.setParts(parts);
-			}
 
-			if (ctbIdAsString != null) {
-				Long id = Long.valueOf(ctbIdAsString);
-				client = new PerfsClient(serviceUrl, username, password, query, queriesCount, threadsCount, id);
-			}
-			else {
-				client = new PerfsClient(serviceUrl, username, password, query, queriesCount, threadsCount, accessFilename, batch);
-			}
-
-			// Enregistre un shutdown hook de manière à afficher les stats même lorsque l'application est interrompue avec un Ctlr-C.
-			Runtime.getRuntime().addShutdownHook(new Thread() {
-				@Override
-				public void run() {
-					shutdown();
+				if (ctbIdAsString != null) {
+					Long id = Long.valueOf(ctbIdAsString);
+					client = new PerfsClient(serviceUrl, username, password, query, queriesCount, threadsCount, id);
 				}
-			});
+				else {
+					client = new PerfsClient(serviceUrl, username, password, query, queriesCount, threadsCount, accessFilename, batch);
+				}
 
-			client.run();
+				// Enregistre un shutdown hook de manière à afficher les stats même lorsque l'application est interrompue avec un Ctlr-C.
+				Runtime.getRuntime().addShutdownHook(new Thread() {
+					@Override
+					public void run() {
+						shutdown();
+					}
+				});
 
-			if (outputFile != null) {
-				outputFile.close();
+				client.run();
+			}
+			finally {
+				if (outputFile != null) {
+					outputFile.close();
+				}
 			}
 		}
 		catch (Exception e) {
@@ -244,7 +246,7 @@ public class PerfsClient {
 		}
 
 		// Crée les threads
-		threads = new ArrayList<PerfsThread>();
+		threads = new ArrayList<>();
 		for (int i = 0; i < threadCount; ++i) {
 			PerfsThread thread = new PerfsThread(service, query, batch, iter);
 			threads.add(thread);

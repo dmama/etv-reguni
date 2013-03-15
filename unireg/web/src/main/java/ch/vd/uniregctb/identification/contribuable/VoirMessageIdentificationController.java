@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.identification.contribuable;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.InputStream;
 import java.net.URL;
 
 import org.apache.commons.lang3.StringUtils;
@@ -76,7 +77,9 @@ public class VoirMessageIdentificationController {
 					else {
 						filename = proposedFilename;
 					}
-					servletService.downloadAsFile(filename, document.getContentType(), document.getContent(), document.getContentLength(), response);
+					try (InputStream content = document.getContent()) {
+						servletService.downloadAsFile(filename, document.getContentType(), content, document.getContentLength(), response);
+					}
 					return null;
 				}
 				finally {

@@ -16,7 +16,7 @@ public class PerformanceLogsRepository {
 
 	private static PerformanceLogsRepository instance;
 
-	private final Map<String, Map<String, PerformanceLog>> layers = new HashMap<String, Map<String, PerformanceLog>>();
+	private final Map<String, Map<String, PerformanceLog>> layers = new HashMap<>();
 
 	private PerformanceLogsRepository() {
 	}
@@ -42,7 +42,7 @@ public class PerformanceLogsRepository {
 	public Map<String, PerformanceLog> getLogs(String layer) {
 		Map<String, PerformanceLog> logs = layers.get(layer);
 		if (logs == null) {
-			logs = new HashMap<String, PerformanceLog>();
+			logs = new HashMap<>();
 		}
 		return logs;
 	}

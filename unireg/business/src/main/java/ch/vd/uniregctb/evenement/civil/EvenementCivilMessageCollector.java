@@ -8,8 +8,8 @@ import ch.vd.uniregctb.type.TypeEvenementErreur;
 public class EvenementCivilMessageCollector<T extends EvenementCivilErreur> implements EvenementCivilErreurCollector, EvenementCivilWarningCollector {
 
 	private final EvenementCivilErreurFactory<T> factory;
-	private final List<T> erreurs = new ArrayList<T>();
-	private final List<T> warnings = new ArrayList<T>();
+	private final List<T> erreurs = new ArrayList<>();
+	private final List<T> warnings = new ArrayList<>();
 
 	public EvenementCivilMessageCollector(EvenementCivilErreurFactory<T> factory) {
 		this.factory = factory;

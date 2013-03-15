@@ -28,7 +28,7 @@ public abstract class MimeTypeHelper {
 	private static final Map<String, String> fileSuffixes;
 
 	static {
-		fileSuffixes = new HashMap<String, String>();
+		fileSuffixes = new HashMap<>();
 		fileSuffixes.put(MIME_PCL, ".pcl");
 		fileSuffixes.put(MIME_XPCL, ".pcl");
 		fileSuffixes.put(MIME_HPPCL, ".pcl");

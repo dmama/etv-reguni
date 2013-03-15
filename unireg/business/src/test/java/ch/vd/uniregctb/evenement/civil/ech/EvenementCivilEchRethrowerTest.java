@@ -53,7 +53,7 @@ public class EvenementCivilEchRethrowerTest extends BusinessTest {
 			}
 		});
 
-		final List<EvenementCivilEch> found = new ArrayList<EvenementCivilEch>();
+		final List<EvenementCivilEch> found = new ArrayList<>();
 		final EvenementCivilEchReceptionHandler handler = new EvenementCivilEchReceptionHandler() {
 			@Override
 			public EvenementCivilEch saveIncomingEvent(EvenementCivilEch event) {

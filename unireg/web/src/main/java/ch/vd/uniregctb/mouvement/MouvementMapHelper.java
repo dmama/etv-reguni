@@ -77,7 +77,7 @@ public class MouvementMapHelper extends CommonMapHelper {
 	}
 
 	public Map<String, Object> getMaps() {
-		final Map<String, Object> map = new HashMap<String, Object>(3);
+		final Map<String, Object> map = new HashMap<>(3);
 		map.put(LOCALISATION_MAP_NAME, getMapLocalisations());
 		map.put(ETAT_MOUVEMENT_MAP_NAME, getMapEtatsMouvement());
 		map.put(TYPE_MOUVEMENT_MAP_NAME, getMapTypesMouvement());

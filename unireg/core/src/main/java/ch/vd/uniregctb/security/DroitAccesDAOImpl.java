@@ -129,7 +129,7 @@ public class DroitAccesDAOImpl extends GenericDAOImpl<DroitAcces, Long> implemen
 	@SuppressWarnings("unchecked")
 	public Set<Long> getContribuablesControles() {
 
-		final HashSet<Long> results = new HashSet<Long>();
+		final HashSet<Long> results = new HashSet<>();
 		final Session session = getCurrentSession();
 
 		// récupère les ids des personnes physiques avec droits d'accès

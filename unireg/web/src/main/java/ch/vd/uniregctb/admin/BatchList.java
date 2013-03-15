@@ -16,10 +16,10 @@ public class BatchList {
 
 	private final List<GestionJob> jobs;
 
-	private Map<String, Object> startParams = new HashMap<String, Object>();
+	private Map<String, Object> startParams = new HashMap<>();
 
 	public  BatchList(List<JobDefinition> jobs, MessageSourceAccessor messageSource) {
-		this.jobs = new ArrayList<GestionJob>();
+		this.jobs = new ArrayList<>();
 		for (JobDefinition d : jobs) {
 
 			GestionJob job = new GestionJob(d, messageSource);

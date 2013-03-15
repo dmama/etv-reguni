@@ -95,7 +95,7 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 	@Transactional(readOnly = true)
 	public List<IdentificationMessagesResultView> find(IdentificationContribuableCriteria bean, WebParamPagination pagination,
 	                                                   IdentificationContribuableEtatFilter filter, TypeDemande... typeDemande) throws AdressesResolutionException, ServiceInfrastructureException {
-		List<IdentificationMessagesResultView> identificationsView = new ArrayList<IdentificationMessagesResultView>();
+		List<IdentificationMessagesResultView> identificationsView = new ArrayList<>();
 		List<IdentificationContribuable> identifications = identCtbService.find(bean, pagination, filter, typeDemande);
 		for (IdentificationContribuable identification : identifications) {
 			IdentificationMessagesResultView identificationView = buildView(identification);

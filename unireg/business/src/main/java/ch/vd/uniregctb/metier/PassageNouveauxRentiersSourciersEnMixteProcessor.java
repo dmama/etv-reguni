@@ -34,7 +34,6 @@ import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.IndividuNotFoundException;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.type.ModeImposition;
@@ -51,7 +50,6 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessor {
 	private final PlatformTransactionManager transactionManager;
 	private final HibernateTemplate hibernateTemplate;
 	private final TiersService tiersService;
-	private final TiersDAO tiersDAO;
 	private final AdresseService adresseService;
 	private final ServiceInfrastructureService serviceInfra;
 	private final ServiceCivilCacheWarmer serviceCivilCacheWarmer;
@@ -61,15 +59,14 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessor {
 
 	private PassageNouveauxRentiersSourciersEnMixteResults rapport;
 
-	private Set<Long> conjointAIgnorerGlobal = new HashSet<Long>();
+	private Set<Long> conjointAIgnorerGlobal = new HashSet<>();
 
-	public PassageNouveauxRentiersSourciersEnMixteProcessor(PlatformTransactionManager transactionManager, HibernateTemplate hibernateTemplate, TiersService tiersService, TiersDAO tiersDAO,
+	public PassageNouveauxRentiersSourciersEnMixteProcessor(PlatformTransactionManager transactionManager, HibernateTemplate hibernateTemplate, TiersService tiersService,
 	                                                        AdresseService adresseService, ServiceInfrastructureService serviceInfra, ServiceCivilCacheWarmer serviceCivilCacheWarmer,
 	                                                        ValidationService validationService, ParametreAppService parametreAppService) {
 		this.transactionManager = transactionManager;
 		this.hibernateTemplate = hibernateTemplate;
 		this.tiersService = tiersService;
-		this.tiersDAO = tiersDAO;
 		this.adresseService = adresseService;
 		this.serviceInfra = serviceInfra;
 		this.serviceCivilCacheWarmer = serviceCivilCacheWarmer;
@@ -89,7 +86,7 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessor {
 		final List<Long> list = getListPotentielsNouveauxRentiersSourciers(dateTraitement);
 
 		final BatchTransactionTemplate<Long, PassageNouveauxRentiersSourciersEnMixteResults> template =
-				new BatchTransactionTemplate<Long, PassageNouveauxRentiersSourciersEnMixteResults>(list, BATCH_SIZE, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE,
+				new BatchTransactionTemplate<>(list, BATCH_SIZE, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE,
 						transactionManager, s, hibernateTemplate);
 		template.execute(rapportFinal, new BatchTransactionTemplate.BatchCallback<Long, PassageNouveauxRentiersSourciersEnMixteResults>() {
 
@@ -101,7 +98,7 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessor {
 			@Override
 			public boolean doInTransaction(List<Long> batch, PassageNouveauxRentiersSourciersEnMixteResults r) throws Exception {
 				rapport = r;
-				Set<Long> conjointAIgnorer = new HashSet<Long>();
+				Set<Long> conjointAIgnorer = new HashSet<>();
 				traiteBatch(batch, dateTraitement, s, conjointAIgnorer);
 				conjointAIgnorerGlobal.addAll(conjointAIgnorer);
 				return !s.interrupted();

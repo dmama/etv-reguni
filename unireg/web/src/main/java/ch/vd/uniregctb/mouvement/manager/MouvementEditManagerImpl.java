@@ -45,7 +45,7 @@ public class MouvementEditManagerImpl extends AbstractMouvementManagerImpl imple
 	public MouvementListView findByNumeroDossier(Long numero, boolean seulementTraites) throws ServiceInfrastructureException {
 		final MouvementListView mvtListView = new MouvementListView();
 		mvtListView.setContribuable(creerCtbView(numero));
-		final List<MouvementDetailView> mvtsView = new ArrayList<MouvementDetailView>();
+		final List<MouvementDetailView> mvtsView = new ArrayList<>();
 		final List<MouvementDossier> mvts = getMouvementDossierDAO().findByNumeroDossier(numero, seulementTraites, true);
 		for (MouvementDossier mvt : mvts) {
 			final MouvementDetailView mvtView = getView(mvt, false);

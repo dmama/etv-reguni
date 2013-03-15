@@ -4,11 +4,8 @@ import org.apache.log4j.Logger;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.general.view.RoleView;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -23,28 +20,10 @@ public class TiersGeneralManagerImpl implements TiersGeneralManager{
 
 	private static final Logger LOGGER = Logger.getLogger(TiersGeneralManagerImpl.class);
 
-	private AdresseService adresseService;
-
 	private TiersService tiersService;
-
-	private ServiceCivilService serviceCivilService;
-
-	private ServiceInfrastructureService infraService;
-
-	public void setAdresseService(AdresseService adresseService) {
-		this.adresseService = adresseService;
-	}
 
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
-	}
-
-	public void setServiceCivilService(ServiceCivilService serviceCivilService) {
-		this.serviceCivilService = serviceCivilService;
-	}
-
-	public void setInfraService(ServiceInfrastructureService infraService) {
-		this.infraService = infraService;
 	}
 
 	/**

@@ -18,7 +18,7 @@ public class EtatDeclarationTest extends WithoutSpringTest {
 	@Test
 	public void testComparatorCasNormal() {
 
-		List<EtatDeclaration> list = new ArrayList<EtatDeclaration>();
+		List<EtatDeclaration> list = new ArrayList<>();
 		list.add(new EtatDeclarationEmise(date(2000, 1, 1)));
 		list.add(new EtatDeclarationEchue(date(2000, 3, 3)));
 		list.add(new EtatDeclarationRetournee(date(2000, 4, 4), "TEST"));
@@ -36,7 +36,7 @@ public class EtatDeclarationTest extends WithoutSpringTest {
 	@Test
 	public void testComparatorAvecEtatsSommeeEtRetourneeLeMemeJour() {
 
-		List<EtatDeclaration> list = new ArrayList<EtatDeclaration>();
+		List<EtatDeclaration> list = new ArrayList<>();
 		list.add(new EtatDeclarationEmise(date(2000, 1, 1)));
 		list.add(new EtatDeclarationRetournee(date(2000, 2, 2), "TEST"));
 		list.add(new EtatDeclarationSommee(date(2000, 2, 2),date(2000, 2, 2)));

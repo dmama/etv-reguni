@@ -9,11 +9,11 @@
   	<tiles:put name="head">
   	<script type="text/javascript">
 		$(document).ready(function() {
-			$("#traitementEnCours").hide()
+			$("#traitementEnCours").hide();
 			$("#submit").click( function () {
-				$("#submit").hide()
-				$("#traitementEnCours").show()
-				return true
+				$("#submit").hide();
+				$("#traitementEnCours").show();
+				return true;
 			})		
 		})
   	</script>

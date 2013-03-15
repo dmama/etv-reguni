@@ -64,8 +64,8 @@ public class EchoirDIsResults extends JobResults<IdentifiantDeclaration, EchoirD
 
 	// Données de processing
 	public int nbDIsTotal;
-	public final List<Echue> disEchues = new ArrayList<Echue>();
-	public final List<Erreur> disEnErrors = new ArrayList<Erreur>();
+	public final List<Echue> disEchues = new ArrayList<>();
+	public final List<Erreur> disEnErrors = new ArrayList<>();
 
 	public boolean interrompu;
 

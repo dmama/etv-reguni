@@ -14,7 +14,7 @@ public final class AdresseCivilViewComparator implements Comparator<AdresseCivil
 
 	//UNIREG-1813 la liste des types d'adresse est donnée dans l'ordre suivant: Domicile(P), Courrier(C), Secondaire(S).  P correspondant à Principal
 	private static final Comparator<TypeAdresseCivil> usageComparator =
-			new GentilComparator<TypeAdresseCivil>(Arrays.asList(TypeAdresseCivil.PRINCIPALE, TypeAdresseCivil.COURRIER, TypeAdresseCivil.SECONDAIRE));
+			new GentilComparator<>(Arrays.asList(TypeAdresseCivil.PRINCIPALE, TypeAdresseCivil.COURRIER, TypeAdresseCivil.SECONDAIRE));
 
 	@Override
 	public int compare(AdresseCivilView o1, AdresseCivilView o2) {

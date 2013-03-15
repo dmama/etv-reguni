@@ -374,7 +374,7 @@ public abstract class TiersHisto {
 	private void initComptesBancaires(Context context, ch.vd.uniregctb.tiers.Tiers tiers) {
 		final String numero = tiers.getNumeroCompteBancaire();
 		if (numero != null && !"".equals(numero) && context.ibanValidator.isValidIban(numero)) {
-			this.comptesBancaires = new ArrayList<CompteBancaire>();
+			this.comptesBancaires = new ArrayList<>();
 			comptesBancaires.add(new CompteBancaire(tiers, context));
 		}
 	}
@@ -394,7 +394,7 @@ public abstract class TiersHisto {
 	}
 
 	private void initDeclarations(ch.vd.uniregctb.tiers.Tiers tiers, final Range range, Context context) {
-		this.declarations = new ArrayList<Declaration>();
+		this.declarations = new ArrayList<>();
 		for (ch.vd.uniregctb.declaration.Declaration declaration : tiers.getDeclarationsSorted()) {
 			if (range != null && !DateRangeHelper.intersect(declaration, range)) {
 				continue;
@@ -412,7 +412,7 @@ public abstract class TiersHisto {
 	}
 
 	private void initForsGestion(ch.vd.uniregctb.tiers.Tiers tiers, final Range range, Context context) {
-		this.forsGestions = new ArrayList<ForGestion>();
+		this.forsGestions = new ArrayList<>();
 		for (ch.vd.uniregctb.tiers.ForGestion forGestion : context.tiersService.getForsGestionHisto(tiers)) {
 			if (range != null && !DateRangeHelper.intersect(forGestion, range)) {
 				continue;
@@ -425,8 +425,8 @@ public abstract class TiersHisto {
 	}
 
 	private void initForsFiscaux(ch.vd.uniregctb.tiers.Tiers tiers, Set<TiersPart> parts, final Range range, Context context) {
-		this.forsFiscauxPrincipaux = new ArrayList<ForFiscal>();
-		this.autresForsFiscaux = new ArrayList<ForFiscal>();
+		this.forsFiscauxPrincipaux = new ArrayList<>();
+		this.autresForsFiscaux = new ArrayList<>();
 		for (ch.vd.uniregctb.tiers.ForFiscal forFiscal : tiers.getForsFiscauxSorted()) {
 			if (range != null && !DateRangeHelper.intersect(forFiscal, range)) {
 				continue;
@@ -458,7 +458,7 @@ public abstract class TiersHisto {
 	}
 
 	private void initRapports(ch.vd.uniregctb.tiers.Tiers tiers, final Range range) {
-		this.rapportsEntreTiers = new ArrayList<RapportEntreTiers>();
+		this.rapportsEntreTiers = new ArrayList<>();
 		// Ajoute les rapports dont le tiers est le sujet
 		for (ch.vd.uniregctb.tiers.RapportEntreTiers rapport : tiers.getRapportsSujet()) {
 			if (rapport instanceof ch.vd.uniregctb.tiers.ContactImpotSource
@@ -546,7 +546,7 @@ public abstract class TiersHisto {
 				else {
 					// supprime les éventuels fors virtuels s'ils ne sont pas demandés
 					if (tiers.forsFiscauxPrincipaux != null) {
-						this.forsFiscauxPrincipaux = new ArrayList<ForFiscal>();
+						this.forsFiscauxPrincipaux = new ArrayList<>();
 						for (ForFiscal f : tiers.forsFiscauxPrincipaux) {
 							if (!f.virtuel) {
 								this.forsFiscauxPrincipaux.add(f);

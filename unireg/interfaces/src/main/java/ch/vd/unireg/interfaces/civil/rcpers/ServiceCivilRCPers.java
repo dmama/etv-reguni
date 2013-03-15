@@ -238,7 +238,7 @@ public class ServiceCivilRCPers implements ServiceCivilRaw {
 			return Collections.emptyList();
 		}
 
-		final List<Person> persons = new ArrayList<Person>(list.getNumberOfResults().intValue());
+		final List<Person> persons = new ArrayList<>(list.getNumberOfResults().intValue());
 		for (ListOfPersons.ListOfResults.Result personRes : list.getListOfResults().getResult()) {
 			final Person person = extractPerson(personRes);
 			if (person != null) {
@@ -252,7 +252,7 @@ public class ServiceCivilRCPers implements ServiceCivilRaw {
 		if (withRelations) {
 			final ListOfRelations rel = getRelationsSafely(nosIndividus, null, true);
 			if (rel != null && rel.getListOfResults().getResult() != null) {
-				allRelations = new HashMap<Long, List<Relationship>>();
+				allRelations = new HashMap<>();
 				for (ListOfRelations.ListOfResults.Result relRes : rel.getListOfResults().getResult()) {
 					final List<Relationship> relations = extractRelations(0, relRes);
 					if (relations != null) {
@@ -269,7 +269,7 @@ public class ServiceCivilRCPers implements ServiceCivilRaw {
 		}
 
 		// on peut maintenant construire les individus
-		final List<Individu> individus = new ArrayList<Individu>(nosIndividus.size());
+		final List<Individu> individus = new ArrayList<>(nosIndividus.size());
 		for (Person person : persons) {
 			final List<Relationship> relations = allRelations == null ? null : allRelations.get(IndividuRCPers.getNoIndividu(person));
 			final Individu individu = IndividuRCPers.get(person, relations, true, withRelations, infraService);
@@ -289,7 +289,7 @@ public class ServiceCivilRCPers implements ServiceCivilRaw {
 		}
 		try {
 			ListOfPersons list = null;
-			final BatchIterator<Long> batches = new StandardBatchIterator<Long>(ids, NB_PARAMS_MAX_PAR_GET);
+			final BatchIterator<Long> batches = new StandardBatchIterator<>(ids, NB_PARAMS_MAX_PAR_GET);
 			while (batches.hasNext()) {
 				final ListOfPersons localList = client.getPersons(batches.next(), date, withHistory);
 				if (list == null) {
@@ -322,7 +322,7 @@ public class ServiceCivilRCPers implements ServiceCivilRaw {
 		}
 		try {
 			ListOfRelations list = null;
-			final BatchIterator<Long> batches = new StandardBatchIterator<Long>(nosIndividus, NB_PARAMS_MAX_PAR_GET);
+			final BatchIterator<Long> batches = new StandardBatchIterator<>(nosIndividus, NB_PARAMS_MAX_PAR_GET);
 			while (batches.hasNext()) {
 				final ListOfRelations localList = client.getRelations(batches.next(), date, withHistory);
 				if (list == null) {

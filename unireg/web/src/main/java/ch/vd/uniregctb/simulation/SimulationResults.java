@@ -10,8 +10,8 @@ import ch.vd.uniregctb.tache.sync.SynchronizeAction;
 public class SimulationResults {
 
 	private String exception;
-	private final List<String> errors = new ArrayList<String>();
-	private final List<String> actions = new ArrayList<String>();
+	private final List<String> errors = new ArrayList<>();
+	private final List<String> actions = new ArrayList<>();
 
 	public void addErrors(List<String> errors) {
 		this.errors.addAll(errors);

@@ -97,7 +97,7 @@ public class TiersWebServiceBatchTest extends WebserviceTest {
 		final List<Long> ids = doInNewTransaction(new TxCallback<List<Long>>() {
 			@Override
 			public List<Long> execute(TransactionStatus status) throws Exception {
-				List<Long> ids = new ArrayList<Long>();
+				List<Long> ids = new ArrayList<>();
 				for (int i = 0; i < 40; ++i) {
 					DebiteurPrestationImposable deb = addDebiteur();
 					ids.add(deb.getId());
@@ -109,7 +109,7 @@ public class TiersWebServiceBatchTest extends WebserviceTest {
 		// on exécute une requête batch qui va provoquer le crash du thread de mapping
 		final GetBatchTiers req = new GetBatchTiers();
 		req.login = new UserLogin("[TiersWebServiceCacheTest]", 21);
-		req.parts = new HashSet<TiersPart>();
+		req.parts = new HashSet<>();
 		req.parts.add(TiersPart.ADRESSES);
 		req.parts.add(TiersPart.FORS_FISCAUX);
 		req.parts.add(TiersPart.SITUATIONS_FAMILLE);
@@ -122,7 +122,7 @@ public class TiersWebServiceBatchTest extends WebserviceTest {
 		req.parts.add(TiersPart.FORMES_JURIDIQUES);
 		req.parts.add(TiersPart.REGIMES_FISCAUX);
 		req.parts.add(TiersPart.SIEGES);
-		req.tiersNumbers = new HashSet<Long>(ids);
+		req.tiersNumbers = new HashSet<>(ids);
 
 		try {
 			crashingTiersDAO.setIdToCrash(ids.get(0));
@@ -142,7 +142,7 @@ public class TiersWebServiceBatchTest extends WebserviceTest {
 				for (Long id : ids) {
 					final GetTiers r = new GetTiers();
 					r.login = new UserLogin("[TiersWebServiceCacheTest]", 21);
-					r.parts = new HashSet<TiersPart>();
+					r.parts = new HashSet<>();
 					r.parts.add(TiersPart.FORS_FISCAUX_VIRTUELS);
 					r.parts.add(TiersPart.DECLARATIONS);
 					r.tiersNumber = id;

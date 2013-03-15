@@ -121,7 +121,7 @@ public class EnvoiSommationsDIsProcessor  {
 
 		final List<IdentifiantDeclaration> dis = retrieveListIdDIs(dateTraitement);
 
-		final BatchTransactionTemplate<IdentifiantDeclaration, EnvoiSommationsDIsResults> t = new BatchTransactionTemplate<IdentifiantDeclaration, EnvoiSommationsDIsResults>(dis, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, hibernateTemplate);
+		final BatchTransactionTemplate<IdentifiantDeclaration, EnvoiSommationsDIsResults> t = new BatchTransactionTemplate<>(dis, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, hibernateTemplate);
 		t.execute(rapportFinal, new BatchCallback<IdentifiantDeclaration, EnvoiSommationsDIsResults>() {
 
 			int currentBatch = 0;
@@ -171,7 +171,7 @@ public class EnvoiSommationsDIsProcessor  {
 	}
 
 	private List<Long> getListNumerosDis(List<IdentifiantDeclaration> batch) {
-		List<Long> ids = new ArrayList<Long>();
+		List<Long> ids = new ArrayList<>();
 
 		for (IdentifiantDeclaration identifiantDeclaration : batch) {
 			ids.add(identifiantDeclaration.getIdDeclaration());
@@ -360,7 +360,7 @@ public class EnvoiSommationsDIsProcessor  {
 		return template.execute(new TransactionCallback<List<IdentifiantDeclaration>>() {
 			@Override
 			public List<IdentifiantDeclaration> doInTransaction(TransactionStatus status) {
-				final List<IdentifiantDeclaration> identifiantDi = new ArrayList<IdentifiantDeclaration>();
+				final List<IdentifiantDeclaration> identifiantDi = new ArrayList<>();
 				final List<Object[]> declarationsASommer = hibernateTemplate.execute(new HibernateCallback<List<Object[]>>() {
 					@Override
 					public List<Object[]> doInHibernate(Session session) throws HibernateException {

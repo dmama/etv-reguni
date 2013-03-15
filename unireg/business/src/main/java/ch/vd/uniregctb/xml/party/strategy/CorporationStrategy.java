@@ -171,7 +171,7 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 		// [UNIREG-2106] on ajoute les comptes bancaires des mandats de type 'T'
 		final List<Mandat> mandats = pmHost.getMandats();
 		if (mandats != null && !mandats.isEmpty()) {
-			list = new ArrayList<BankAccount>(list);
+			list = new ArrayList<>(list);
 			for (Mandat m : mandats) {
 				if (m.getCode().equals("T")) { // on ignore tous les autres types de mandataire
 
@@ -301,7 +301,7 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 		if (comptes == null || comptes.isEmpty()) {
 			return Collections.emptyList();
 		}
-		final List<BankAccount> list = new ArrayList<BankAccount>();
+		final List<BankAccount> list = new ArrayList<>();
 		for (ch.vd.uniregctb.interfaces.model.CompteBancaire c : comptes) {
 			BankAccount compte = new BankAccount();
 			compte.setFormat(EnumHelper.coreToXML(c.getFormat()));
@@ -318,7 +318,7 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 		if (sieges == null || sieges.isEmpty()) {
 			return Collections.emptyList();
 		}
-		final ArrayList<LegalSeat> list = new ArrayList<LegalSeat>(sieges.size());
+		final ArrayList<LegalSeat> list = new ArrayList<>(sieges.size());
 		for (ch.vd.uniregctb.interfaces.model.Siege s : sieges) {
 			list.add(host2web(s));
 		}
@@ -351,7 +351,7 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 		if (regimes == null || regimes.isEmpty()) {
 			return Collections.emptyList();
 		}
-		final ArrayList<TaxSystem> list = new ArrayList<TaxSystem>(regimes.size());
+		final ArrayList<TaxSystem> list = new ArrayList<>(regimes.size());
 		for (ch.vd.uniregctb.interfaces.model.RegimeFiscal r : regimes) {
 			list.add(host2web(r));
 		}
@@ -372,7 +372,7 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 		if (fors == null || fors.isEmpty()) {
 			return Collections.emptyList();
 		}
-		final ArrayList<TaxResidence> list = new ArrayList<TaxResidence>(fors.size());
+		final ArrayList<TaxResidence> list = new ArrayList<>(fors.size());
 		for (ch.vd.uniregctb.interfaces.model.ForPM f : fors) {
 			list.add(secondaryTaxResidence2web(f));
 		}
@@ -396,7 +396,7 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 		if (fors == null || fors.isEmpty()) {
 			return Collections.emptyList();
 		}
-		final ArrayList<TaxResidence> list = new ArrayList<TaxResidence>(fors.size());
+		final ArrayList<TaxResidence> list = new ArrayList<>(fors.size());
 		for (ch.vd.uniregctb.interfaces.model.ForPM f : fors) {
 			list.add(mainTaxResidence2web(f, serviceInfra));
 		}
@@ -452,7 +452,7 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 		if (formes == null || formes.isEmpty()) {
 			return Collections.emptyList();
 		}
-		final ArrayList<LegalForm> list = new ArrayList<LegalForm>(formes.size());
+		final ArrayList<LegalForm> list = new ArrayList<>(formes.size());
 		for (ch.vd.uniregctb.interfaces.model.FormeJuridique f : formes) {
 			list.add(legalForm2web(f));
 		}
@@ -473,7 +473,7 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 		if (etats == null || etats.isEmpty()) {
 			return Collections.emptyList();
 		}
-		final ArrayList<CorporationStatus> list = new ArrayList<CorporationStatus>(etats.size());
+		final ArrayList<CorporationStatus> list = new ArrayList<>(etats.size());
 		for (ch.vd.uniregctb.interfaces.model.EtatPM e : etats) {
 			list.add(corporationStatus2web(e));
 		}
@@ -494,7 +494,7 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 		if (capitaux == null || capitaux.isEmpty()) {
 			return Collections.emptyList();
 		}
-		final ArrayList<Capital> list = new ArrayList<Capital>(capitaux.size());
+		final ArrayList<Capital> list = new ArrayList<>(capitaux.size());
 		for (ch.vd.uniregctb.interfaces.model.Capital c : capitaux) {
 			list.add(capital2web(c));
 		}
@@ -522,7 +522,7 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 		if (lic == null || lic.isEmpty()) {
 			return Collections.emptyList();
 		}
-		final ArrayList<SimplifiedTaxLiability> list = new ArrayList<SimplifiedTaxLiability>(lic.size());
+		final ArrayList<SimplifiedTaxLiability> list = new ArrayList<>(lic.size());
 		for (ch.vd.uniregctb.interfaces.model.AssujettissementPM a : lic) {
 			list.add(taxLiability2web(a));
 		}
@@ -544,7 +544,7 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 			return null;
 		}
 
-		final Set<PartPM> set = new HashSet<PartPM>();
+		final Set<PartPM> set = new HashSet<>();
 		if (parts.contains(PartyPart.ADDRESSES)) {
 			set.add(PartPM.ADRESSES);
 		}

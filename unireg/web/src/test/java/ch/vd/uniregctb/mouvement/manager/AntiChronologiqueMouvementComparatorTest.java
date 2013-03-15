@@ -71,7 +71,7 @@ public class AntiChronologiqueMouvementComparatorTest {
 		final MouvementDossier milieu = createMouvement(annule, aujourdhui, modifTimestamp);
 		final MouvementDossier fin = createMouvement(annule, demain, modifTimestamp);
 
-		final List<MouvementDossier> liste = new ArrayList<MouvementDossier>(3);
+		final List<MouvementDossier> liste = new ArrayList<>(3);
 		liste.add(milieu);
 		liste.add(fin);
 		liste.add(debut);
@@ -97,7 +97,7 @@ public class AntiChronologiqueMouvementComparatorTest {
 		final MouvementDossier milieu = createMouvement(annule, aujourdhui, getTimestamp(aujourdhui, 0, 0, 0));
 		final MouvementDossier fin = createMouvement(annule, aujourdhui, getTimestamp(demain, 0, 0, 0));
 
-		final List<MouvementDossier> liste = new ArrayList<MouvementDossier>(3);
+		final List<MouvementDossier> liste = new ArrayList<>(3);
 		liste.add(milieu);
 		liste.add(fin);
 		liste.add(debut);
@@ -113,7 +113,7 @@ public class AntiChronologiqueMouvementComparatorTest {
 		final MouvementDossier nonAnnule = createMouvement(false, aujourdhui, getTimestamp(aujourdhui, 0, 0, 0));
 		final MouvementDossier annule = createMouvement(true, demain, getTimestamp(aujourdhui, 0, 0, 0));
 
-		final List<MouvementDossier> liste = new ArrayList<MouvementDossier>(2);
+		final List<MouvementDossier> liste = new ArrayList<>(2);
 		liste.add(annule);
 		liste.add(nonAnnule);
 		Collections.sort(liste, comparator);
@@ -128,7 +128,7 @@ public class AntiChronologiqueMouvementComparatorTest {
 		final MouvementDossier milieu = createMouvement(false, aujourdhui, getTimestamp(aujourdhui, 0, 0, 0));
 		final MouvementDossier fin = createMouvement(false, aujourdhui, null);      // mouvement tout neuf qui n'a pas encore reçu sa date de modification
 
-		final List<MouvementDossier> liste = new ArrayList<MouvementDossier>(3);
+		final List<MouvementDossier> liste = new ArrayList<>(3);
 		liste.add(milieu);
 		liste.add(fin);
 		liste.add(debut);

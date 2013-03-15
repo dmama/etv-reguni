@@ -137,7 +137,7 @@ public class ForsController {
 		final NatureTiers natureTiers = tiers.getNatureTiers();
 		final MotifsForHelper.TypeFor typeFor = new MotifsForHelper.TypeFor(natureTiers, genreImpot, rattachement);
 
-		final List<MotifForView> list = new ArrayList<MotifForView>();
+		final List<MotifForView> list = new ArrayList<>();
 		for (MotifFor motifFor : MotifsForHelper.getMotifsOuverture(typeFor)) {
 			list.add(new MotifForView(motifFor, getLabelOuverture(motifFor)));
 		}
@@ -165,7 +165,7 @@ public class ForsController {
 		final NatureTiers natureTiers = tiers.getNatureTiers();
 		final MotifsForHelper.TypeFor typeFor = new MotifsForHelper.TypeFor(natureTiers, genreImpot, rattachement);
 
-		final List<MotifForView> list = new ArrayList<MotifForView>();
+		final List<MotifForView> list = new ArrayList<>();
 		for (MotifFor motifFor : MotifsForHelper.getMotifsFermeture(typeFor)) {
 			list.add(new MotifForView(motifFor, getLabelFermeture(motifFor)));
 		}

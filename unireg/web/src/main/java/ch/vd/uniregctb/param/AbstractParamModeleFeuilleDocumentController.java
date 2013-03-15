@@ -22,7 +22,7 @@ public class AbstractParamModeleFeuilleDocumentController extends AbstractSimple
 	@Override
 	protected Map<String, Object> referenceData(HttpServletRequest request) throws Exception {
 		// TracePoint tp = TracingManager.begin();
-		Map<String, Object> data = new HashMap<String, Object>();
+		Map<String, Object> data = new HashMap<>();
 		data.put(MODELE_FEUILLE_NAME_COMPLETE,paramHelper.getMapModeleFeuilleForComplete());
 		data.put(MODELE_FEUILLE_NAME_VAUDTAX,paramHelper.getMapModeleFeuilleForVaudTax());
 		data.put(MODELE_FEUILLE_NAME_DEPENSE,paramHelper.getMapModeleFeuilleForDepense());

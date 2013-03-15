@@ -51,7 +51,7 @@ public class JspTagInfra extends BodyTagSupport {
 		}
 	}
 
-	private static final Map<String, Invocator> invocators = new HashMap<String, Invocator>();
+	private static final Map<String, Invocator> invocators = new HashMap<>();
 
 	static {
 		Class<ServiceInfrastructureService> clazz = ServiceInfrastructureService.class;

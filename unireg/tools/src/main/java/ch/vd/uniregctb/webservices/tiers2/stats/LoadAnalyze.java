@@ -21,7 +21,7 @@ import org.jfree.data.category.DefaultCategoryDataset;
  */
 class LoadAnalyze extends Analyze {
 
-	private final Map<String, LoadData> results = new HashMap<String, LoadData>();
+	private final Map<String, LoadData> results = new HashMap<>();
 
 	@Override
 	public void addCall(Call call) {
@@ -61,7 +61,7 @@ class LoadAnalyze extends Analyze {
 		}
 
 		// On construit les différents lignes (total, empaci, sipf, ...) de valeurs
-		final Map<String, ChartValues> valuesPerUser = new HashMap<String, ChartValues>();
+		final Map<String, ChartValues> valuesPerUser = new HashMap<>();
 		for (String user : data.getUsers()) {
 			valuesPerUser.put(user, new ChartValues(list.size()));
 		}
@@ -100,7 +100,7 @@ class LoadAnalyze extends Analyze {
 		linesWidth.append('2');
 
 		// Trie par ordre décroissant du nombre d'appels les données d'appels par méthode
-		final List<Map.Entry<String, ChartValues>> entries = new ArrayList<Map.Entry<String, ChartValues>>(valuesPerUser.entrySet());
+		final List<Map.Entry<String, ChartValues>> entries = new ArrayList<>(valuesPerUser.entrySet());
 		Collections.sort(entries, new Comparator<Map.Entry<String, ChartValues>>() {
 			@Override
 			public int compare(Map.Entry<String, ChartValues> o1, Map.Entry<String, ChartValues> o2) {
@@ -136,7 +136,7 @@ class LoadAnalyze extends Analyze {
 		final String title = method + " - Load(calls/quarter hour)";
 
 		// On construit les différents lignes (total, empaci, sipf, ...) de valeurs
-		final Map<String, ChartValues> valuesPerUser = new HashMap<String, ChartValues>();
+		final Map<String, ChartValues> valuesPerUser = new HashMap<>();
 		for (String user : data.getUsers()) {
 			valuesPerUser.put(user, new ChartValues(list.size()));
 		}
@@ -160,7 +160,7 @@ class LoadAnalyze extends Analyze {
 		}
 
 		// Trie par ordre décroissant du nombre d'appels les données d'appels par méthode
-		final List<Map.Entry<String, ChartValues>> entries = new ArrayList<Map.Entry<String, ChartValues>>(valuesPerUser.entrySet());
+		final List<Map.Entry<String, ChartValues>> entries = new ArrayList<>(valuesPerUser.entrySet());
 		Collections.sort(entries, new Comparator<Map.Entry<String, ChartValues>>() {
 			@Override
 			public int compare(Map.Entry<String, ChartValues> o1, Map.Entry<String, ChartValues> o2) {
@@ -193,7 +193,7 @@ class LoadAnalyze extends Analyze {
 
 	@Override
 	public void print() {
-		final List<String> methods = new ArrayList<String>(results.keySet());
+		final List<String> methods = new ArrayList<>(results.keySet());
 		Collections.sort(methods);
 
 		final StringBuilder header = new StringBuilder();

@@ -26,7 +26,7 @@ public class EvenementCivilEchTranslatorImplOverride extends EvenementCivilEchTr
 	 */
 	public void overrideStrategy(TypeEvenementCivilEch type, ActionEvenementCivilEch action, EvenementCivilEchTranslationStrategy strategy) {
 		if (testOverride == null) {
-			testOverride = new HashMap<EventTypeKey, EvenementCivilEchTranslationStrategy>();
+			testOverride = new HashMap<>();
 		}
 		testOverride.put(new EventTypeKey(type, action), strategy);
 	}

@@ -127,7 +127,7 @@ public class ModeleFeuilleDocumentController {
 			manager.deleteModeleFeuilleDocument(feuilleId);
 		}
 		catch (DataIntegrityViolationException e) {
-			Map<Long, String> m = new HashMap<Long, String>(1);
+			Map<Long, String> m = new HashMap<>(1);
 			m.put(feuilleId, messageSource.getMessage("error.suppr.impossible", null, "error.suppr.impossible", Locale.getDefault()));
 			model.addAttribute("error_feuille", m);
 		}
@@ -154,7 +154,7 @@ public class ModeleFeuilleDocumentController {
 		Assert.notNull(modele);
 
 		// on construit la liste des feuilles telle qu'ordonnée actuellement
-		final List<ModeleFeuilleDocument> list = new ArrayList<ModeleFeuilleDocument>(modele.getModelesFeuilleDocument());
+		final List<ModeleFeuilleDocument> list = new ArrayList<>(modele.getModelesFeuilleDocument());
 		Collections.sort(list, new ModeleFeuilleDocumentComparator());
 
 		// on décale d'un cran vers le haut ou le bas la feuille spécifiée

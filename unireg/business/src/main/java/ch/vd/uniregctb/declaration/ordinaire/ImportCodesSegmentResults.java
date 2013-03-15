@@ -78,9 +78,9 @@ public class ImportCodesSegmentResults extends JobResults<ContribuableAvecCodeSe
 		}
 	}
 
-	private final List<Traite> traites = new LinkedList<Traite>();
-	private final List<Erreur> erreurs = new LinkedList<Erreur>();
-	private final List<Ignore> ignores = new LinkedList<Ignore>();
+	private final List<Traite> traites = new LinkedList<>();
+	private final List<Erreur> erreurs = new LinkedList<>();
+	private final List<Ignore> ignores = new LinkedList<>();
 	private boolean interrompu = false;
 
 	public ImportCodesSegmentResults(TiersService tiersService, AdresseService adresseService) {

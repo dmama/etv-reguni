@@ -43,7 +43,7 @@ public class MotifsForHelper {
 		// motifs.add(MotifFor.VENTE_IMMOBILIER);
 		// motifs.add(MotifFor.FIN_EXPLOITATION);
 
-		final List<MotifFor> motifs = new ArrayList<MotifFor>();
+		final List<MotifFor> motifs = new ArrayList<>();
 
 		switch (type.rattachement) {
 		case DIPLOMATE_SUISSE:
@@ -112,7 +112,7 @@ public class MotifsForHelper {
 		// motifs.add(MotifFor.DEBUT_EXPLOITATION);
 		// motifs.add(MotifFor.MAJORITE);
 
-		final List<MotifFor> motifs = new ArrayList<MotifFor>();
+		final List<MotifFor> motifs = new ArrayList<>();
 
 		switch (type.rattachement) {
 		case DIPLOMATE_SUISSE:

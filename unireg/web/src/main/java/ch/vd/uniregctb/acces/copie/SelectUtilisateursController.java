@@ -46,7 +46,7 @@ public class SelectUtilisateursController extends AbstractSimpleFormController {
 	@Override
 	protected Map<String, Object> referenceData(HttpServletRequest request) throws Exception {
 
-		Map<String, Object> data = new HashMap<String, Object>();
+		Map<String, Object> data = new HashMap<>();
 
 		data.put(TYPE_OPERATION_MAP_NAME, getTiersMapHelper().getTypeOperation());
 

@@ -148,8 +148,8 @@ public class StatistiquesCtbs extends JobResults<Long, StatistiquesCtbs> {
 
 	// Données de processing
 	public int nbCtbsTotal = 0;
-	public final List<Erreur> ctbsEnErrors = new ArrayList<Erreur>();
-	public final Map<Key, Value> stats = new HashMap<Key, Value>();
+	public final List<Erreur> ctbsEnErrors = new ArrayList<>();
+	public final Map<Key, Value> stats = new HashMap<>();
 
 	public StatistiquesCtbs(int annee, RegDate dateTraitement, TiersService tiersService, AdresseService adresseService) {
 		super(tiersService, adresseService);

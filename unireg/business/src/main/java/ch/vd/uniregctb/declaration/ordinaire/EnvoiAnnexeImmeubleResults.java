@@ -95,10 +95,10 @@ public class EnvoiAnnexeImmeubleResults<R extends EnvoiAnnexeImmeubleResults> ex
 
 	// Données de processing
 	public int nbCtbsTotal;
-	public final List<InfoCtbImmeuble> infoCtbTraites = new ArrayList<InfoCtbImmeuble>();
-	public final List<Long> ctbsTraites = new ArrayList<Long>();
-	public final List<Ignore> ctbsIgnores = new ArrayList<Ignore>();
-	public final List<Erreur> ctbsEnErrors = new ArrayList<Erreur>();
+	public final List<InfoCtbImmeuble> infoCtbTraites = new ArrayList<>();
+	public final List<Long> ctbsTraites = new ArrayList<>();
+	public final List<Ignore> ctbsIgnores = new ArrayList<>();
+	public final List<Erreur> ctbsEnErrors = new ArrayList<>();
 	public boolean interrompu;
 
 	public EnvoiAnnexeImmeubleResults(int annee, RegDate dateTraitement, String nomFichier, int nombreAnnexe, TiersService tiersService, AdresseService adresseService) {

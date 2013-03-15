@@ -74,12 +74,8 @@ public class DumpAssujettissementsJob extends JobDefinition {
 		statusManager.setMessage("Chargement des ids de tous les contribuables...");
 		final List<Long> ids = getCtbIds(statusManager);
 
-		final FileWriter file = new FileWriter(filename);
-		try {
+		try (FileWriter file = new FileWriter(filename)) {
 			processAll(ids, nbThreads, file, statusManager);
-		}
-		finally {
-			file.close();
 		}
 
 		Audit.success("Le batch de dump des assujettissements est terminé");
@@ -88,7 +84,7 @@ public class DumpAssujettissementsJob extends JobDefinition {
 	private void processAll(List<Long> ids, int nbThreads, final FileWriter file, final StatusManager statusManager) {
 
 		final ParallelBatchTransactionTemplate<Long, BatchResults> template =
-				new ParallelBatchTransactionTemplate<Long, BatchResults>(ids, 100, nbThreads, BatchTransactionTemplate.Behavior.SANS_REPRISE, transactionManager, statusManager, hibernateTemplate);
+				new ParallelBatchTransactionTemplate<>(ids, 100, nbThreads, BatchTransactionTemplate.Behavior.SANS_REPRISE, transactionManager, statusManager, hibernateTemplate);
 		template.setReadonly(true);
 		template.execute(new BatchTransactionTemplate.BatchCallback<Long, BatchResults>() {
 			@Override

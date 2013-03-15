@@ -230,7 +230,7 @@ public class SecuriteWebServiceTest extends WebitTest {
 		final LongArray dossiers = service.getDossiersControles(params);
 		assertNotNull(dossiers);
 
-		final Set<Long> ids = new HashSet<Long>(dossiers.getItem());
+		final Set<Long> ids = new HashSet<>(dossiers.getItem());
 		assertEquals(3, ids.size());
 		assertTrue(ids.contains(10149508L)); // Pascal Broulis
 		assertTrue(ids.contains(12300002L)); // Laurent Schmid

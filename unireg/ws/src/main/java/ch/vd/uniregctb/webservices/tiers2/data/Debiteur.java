@@ -116,7 +116,7 @@ public class Debiteur extends Tiers {
 			this.logicielId = debiteur.getLogicielId();
 		}
 		if (parts != null && parts.contains(TiersPart.PERIODICITES)) {
-			this.periodicites = new ArrayList<Periodicite>();
+			this.periodicites = new ArrayList<>();
 			for (ch.vd.uniregctb.declaration.Periodicite periodicite : debiteur.getPeriodicitesNonAnnules(true)) {
 				this.periodicites.add(new Periodicite(periodicite));
 			}

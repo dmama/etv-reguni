@@ -139,7 +139,7 @@ public class PartyRequestEsbHandler implements EsbMessageHandler, InitializingBe
 		if (schemaCache == null) {
 			final SchemaFactory sf = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
 			sf.setResourceResolver(new ClasspathCatalogResolver());
-			final List<Source> sources = new ArrayList<Source>(handlers.size());
+			final List<Source> sources = new ArrayList<>(handlers.size());
 			for (RequestHandler handler : handlers.values()) {
 				final ClassPathResource resource = handler.getRequestXSD();
 				sources.add(new StreamSource(resource.getURL().toExternalForm()));
@@ -215,7 +215,7 @@ public class PartyRequestEsbHandler implements EsbMessageHandler, InitializingBe
 	@Override
 	public void afterPropertiesSet() throws Exception {
 
-		final List<Resource> resources = new ArrayList<Resource>(handlers.size());
+		final List<Resource> resources = new ArrayList<>(handlers.size());
 		for (RequestHandler handler : handlers.values()) {
 			final List<ClassPathResource> resource = handler.getResponseXSD();
 			resources.addAll(resource);

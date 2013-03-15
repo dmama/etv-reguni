@@ -87,7 +87,7 @@ public class NumbersRequestHandler implements RequestHandler<NumbersRequest> {
 		if (types == null || types.isEmpty()) {
 			return null;
 		}
-		final List<TypeTiers> party = new ArrayList<TypeTiers>();
+		final List<TypeTiers> party = new ArrayList<>();
 		for (PartyType type : types) {
 			party.addAll(party2tiers(type));
 		}
@@ -110,7 +110,7 @@ public class NumbersRequestHandler implements RequestHandler<NumbersRequest> {
 	}
 
 	private static List<Integer> long2Int(List<Long> ids) {
-		final List<Integer> list = new ArrayList<Integer>(ids.size());
+		final List<Integer> list = new ArrayList<>(ids.size());
 		for (Long id : ids) {
 			list.add(id.intValue());
 		}

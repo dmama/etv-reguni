@@ -32,7 +32,7 @@ public class DevSecurityBypassProcessingFilter extends GenericFilterBean {
 
 	private static final Logger LOGGER = Logger.getLogger(DevSecurityBypassProcessingFilter.class);
 	
-	private static final Set<String> DEV_ENVS = new HashSet<String>(Arrays.asList("Developpement", "Hudson", "Standalone", "Integration TE"));
+	private static final Set<String> DEV_ENVS = new HashSet<>(Arrays.asList("Developpement", "Hudson", "Standalone", "Integration TE"));
 
 	@Override
 	public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
@@ -65,7 +65,7 @@ public class DevSecurityBypassProcessingFilter extends GenericFilterBean {
 
 				LOGGER.info(String.format("[BYPASS IAM] Ouverture de la session pour l'utilisateur %s %s", firstName, lastName));
 
-				final List<GrantedAuthorityImpl> granted = new ArrayList<GrantedAuthorityImpl>();
+				final List<GrantedAuthorityImpl> granted = new ArrayList<>();
 				granted.add(new GrantedAuthorityImpl(visa));
 
 				if (SecurityDebugConfig.isIfoSecDebug()) {
@@ -102,7 +102,7 @@ public class DevSecurityBypassProcessingFilter extends GenericFilterBean {
 
 		// Les procédures
 		final String procedureStr = SecurityDebugConfig.getIfoSecBypassProcedures(visa);
-		final List<IfoSecProcedure> listProcedure = new ArrayList<IfoSecProcedure>();
+		final List<IfoSecProcedure> listProcedure = new ArrayList<>();
 		for (String procedure : procedureStr.split(", ")) {
 			procedure = procedure.replace("[", "");
 			procedure = procedure.replace("]", "");

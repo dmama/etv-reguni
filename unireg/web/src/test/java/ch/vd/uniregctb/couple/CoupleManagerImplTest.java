@@ -274,7 +274,7 @@ public class CoupleManagerImplTest extends BusinessTest {
 				assertEquals(2, droitsPourOperateurOuvert.size());
 
 				// on trie la liste par numéro de tiers : Arnold a été créé d'abord, il a donc un numéro de tiers plus petit
-				final List<DroitAcces> droits = new ArrayList<DroitAcces>(droitsPourOperateurOuvert);
+				final List<DroitAcces> droits = new ArrayList<>(droitsPourOperateurOuvert);
 				Collections.sort(droits, new Comparator<DroitAcces>() {
 					@Override
 					public int compare(DroitAcces o1, DroitAcces o2) {
@@ -447,7 +447,7 @@ public class CoupleManagerImplTest extends BusinessTest {
 		private final Set<Long> ids;
 
 		public MenageCommunTrapValidator(Long... ids) {
-			this.ids = new HashSet<Long>(Arrays.asList(ids));
+			this.ids = new HashSet<>(Arrays.asList(ids));
 		}
 
 		@Override

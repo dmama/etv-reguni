@@ -38,7 +38,7 @@ public class IdentificationParNoAVS13 implements StrategieIdentification {
 			return Collections.emptyList();
 		}
 
-		final List<Long> list = new ArrayList<Long>();
+		final List<Long> list = new ArrayList<>();
 		for (ListOfPersons.ListOfResults.Result result : l.getListOfResults().getResult()) {
 			if (result.getPerson() != null) {
 				list.add(IndividuRCPers.getNoIndividu(result.getPerson()));

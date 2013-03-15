@@ -73,7 +73,7 @@ public class MouvementMasseCriteriaMutiplesEtatsView extends MouvementMasseCrite
 			return null;
 		}
 		else {
-			final List<EtatMouvementDossier> etats = new ArrayList<EtatMouvementDossier>(EtatMouvementDossier.values().length);
+			final List<EtatMouvementDossier> etats = new ArrayList<>(EtatMouvementDossier.values().length);
 			if (wantAEnvoyer) {
 				etats.add(EtatMouvementDossier.A_ENVOYER);
 			}

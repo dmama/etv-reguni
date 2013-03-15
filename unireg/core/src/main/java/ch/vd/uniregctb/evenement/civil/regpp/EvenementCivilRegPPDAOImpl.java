@@ -24,7 +24,7 @@ public class EvenementCivilRegPPDAOImpl extends AbstractEvenementCivilDAOImpl<Ev
 	private static final List<String> ETATS_NON_TRAITES;
 
 	static {
-		final List<String> etats = new ArrayList<String>(EtatEvenementCivil.values().length);
+		final List<String> etats = new ArrayList<>(EtatEvenementCivil.values().length);
 		for (EtatEvenementCivil etat : EtatEvenementCivil.values()) {
 			if (!etat.isTraite()) {
 				etats.add(etat.name());

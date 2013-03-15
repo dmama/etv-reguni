@@ -73,7 +73,7 @@ public class ValidationInterceptor implements ModificationSubInterceptor, Initia
 	 * @throws ValidationException en cas d'erreur de validation
 	 */
 	private void validate(Object object, boolean isAnnulation) throws ValidationException {
-		final Set<Object> visited = new HashSet<Object>();
+		final Set<Object> visited = new HashSet<>();
 		validate(object, isAnnulation, visited);
 	}
 

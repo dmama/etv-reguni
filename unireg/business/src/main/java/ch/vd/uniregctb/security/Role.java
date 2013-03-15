@@ -129,7 +129,7 @@ public enum Role {
 
 	private static synchronized void initIfoSec2Role() {
 		if (ifoSec2Role == null) {
-			ifoSec2Role = new HashMap<String, Role>();
+			ifoSec2Role = new HashMap<>();
 
 			for (Role role : Role.values()) {
 				if (ifoSec2Role.containsKey(role.getIfosecCode())) {

@@ -23,7 +23,7 @@ public abstract class ListesResults<T extends ListesResults<T>> extends JobResul
 
     protected final TiersService tiersService;
 
-    protected final List<Erreur> tiersErreur = new LinkedList<Erreur>();
+    protected final List<Erreur> tiersErreur = new LinkedList<>();
 
     protected boolean interrompu = false;
 

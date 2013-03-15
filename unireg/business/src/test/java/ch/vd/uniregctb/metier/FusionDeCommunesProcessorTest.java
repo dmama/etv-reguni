@@ -64,7 +64,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 		processor = new FusionDeCommunesProcessor(transactionManager, hibernateTemplate, tiersService, serviceInfra, validationService, validationInterceptor, adresseService);
 
 		// Annexion de Croy et Vaulion par Romainmôtier (scénario prophétique et stimulant)
-		anciensNoOfs = new HashSet<Integer>();
+		anciensNoOfs = new HashSet<>();
 		anciensNoOfs.add(MockCommune.RomainmotierEnvy.getNoOFS());
 		anciensNoOfs.add(MockCommune.Croy.getNoOFS());
 		anciensNoOfs.add(MockCommune.Vaulion.getNoOFS());
@@ -203,7 +203,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 			}
 		});
 
-		final Set<Integer> anciennesCommunes = new HashSet<Integer>(Arrays.asList(MockCommune.Villette.getNoOFS()));
+		final Set<Integer> anciennesCommunes = new HashSet<>(Arrays.asList(MockCommune.Villette.getNoOFS()));
 		final FusionDeCommunesResults rapport = processor.run(anciennesCommunes, MockCommune.BourgEnLavaux.getNoOFS(), dateFusion, dateTraitement, null);
 		assertNotNull(rapport);
 
@@ -644,7 +644,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 	public void testControleCantonsDeCommunes() throws Exception {
 		// Communes vaudoises
 		{
-			final Set<Integer> anciennesCommunes = new HashSet<Integer>(Arrays.asList(MockCommune.Aubonne.getNoOFS(), MockCommune.Bex.getNoOFS()));
+			final Set<Integer> anciennesCommunes = new HashSet<>(Arrays.asList(MockCommune.Aubonne.getNoOFS(), MockCommune.Bex.getNoOFS()));
 			final int nouvelleCommune = MockCommune.Lausanne.getNoOFS();
 			final FusionDeCommunesResults results = processor.run(anciennesCommunes, nouvelleCommune, date(2010, 1, 1), RegDate.get(), null);
 			assertNotNull(results);
@@ -653,7 +653,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 
 		// Communes neuchâteloises
 		{
-			final Set<Integer> anciennesCommunes = new HashSet<Integer>(Arrays.asList(MockCommune.Neuchatel.getNoOFS(), MockCommune.Peseux.getNoOFS()));
+			final Set<Integer> anciennesCommunes = new HashSet<>(Arrays.asList(MockCommune.Neuchatel.getNoOFS(), MockCommune.Peseux.getNoOFS()));
 			final int nouvelleCommune = MockCommune.Neuchatel.getNoOFS();
 			final FusionDeCommunesResults results = processor.run(anciennesCommunes, nouvelleCommune, date(2010, 1, 1), RegDate.get(), null);
 			assertNotNull(results);
@@ -662,7 +662,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 
 		// Communes non-vaudoises réparties sur plusieurs cantons
 		try {
-			final Set<Integer> anciennesCommunes = new HashSet<Integer>(Arrays.asList(MockCommune.Neuchatel.getNoOFS(), MockCommune.Bern.getNoOFS()));
+			final Set<Integer> anciennesCommunes = new HashSet<>(Arrays.asList(MockCommune.Neuchatel.getNoOFS(), MockCommune.Bern.getNoOFS()));
 			final int nouvelleCommune = MockCommune.Bern.getNoOFS();
 			final FusionDeCommunesResults results = processor.run(anciennesCommunes, nouvelleCommune, date(2010, 1, 1), RegDate.get(), null);
 			fail("Une exception aurait dû être levée, puisque Berne n'a pas encore annexé Neuchâtel...");
@@ -676,7 +676,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 
 		// Commune vaudoise annexée par un autre canton
 		try {
-			final Set<Integer> anciennesCommunes = new HashSet<Integer>(Arrays.asList(MockCommune.Prilly.getNoOFS(), MockCommune.Bern.getNoOFS()));
+			final Set<Integer> anciennesCommunes = new HashSet<>(Arrays.asList(MockCommune.Prilly.getNoOFS(), MockCommune.Bern.getNoOFS()));
 			final int nouvelleCommune = MockCommune.Bern.getNoOFS();
 			final FusionDeCommunesResults results = processor.run(anciennesCommunes, nouvelleCommune, date(2010, 1, 1), RegDate.get(), null);
 			fail("Une exception aurait dû être levée, puisque Berne n'a pas encore annexé Prilly...");
@@ -690,7 +690,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 
 		// Commune hors-canton annexée par Vaud
 		try {
-			final Set<Integer> anciennesCommunes = new HashSet<Integer>(Arrays.asList(MockCommune.Prilly.getNoOFS(), MockCommune.Bern.getNoOFS()));
+			final Set<Integer> anciennesCommunes = new HashSet<>(Arrays.asList(MockCommune.Prilly.getNoOFS(), MockCommune.Bern.getNoOFS()));
 			final int nouvelleCommune = MockCommune.Lausanne.getNoOFS();
 			final FusionDeCommunesResults results = processor.run(anciennesCommunes, nouvelleCommune, date(2010, 1, 1), RegDate.get(), null);
 			fail("Une exception aurait dû être levée, puisque Vaud n'a pas encore annexé Berne...");
@@ -724,7 +724,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
-				final Set<Integer> anciennesCommunes = new HashSet<Integer>(Arrays.asList(MockCommune.Cully.getNoOFS()));
+				final Set<Integer> anciennesCommunes = new HashSet<>(Arrays.asList(MockCommune.Cully.getNoOFS()));
 				final int nouvelleCommune = MockCommune.BourgEnLavaux.getNoOFS();
 				final FusionDeCommunesResults results = processor.run(anciennesCommunes, nouvelleCommune, date(2011, 1, 1), RegDate.get(), null);
 				assertNotNull(results);

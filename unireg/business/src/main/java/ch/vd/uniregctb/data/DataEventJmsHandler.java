@@ -44,7 +44,7 @@ public class DataEventJmsHandler implements EsbMessageHandler {
 
 		// Valide le bousin
 		final XmlOptions validateOptions = new XmlOptions();
-		final List<XmlError> errorList = new ArrayList<XmlError>();
+		final List<XmlError> errorList = new ArrayList<>();
 		validateOptions.setErrorListener(errorList);
 		if (!doc.validate(validateOptions)) {
 			final StringBuilder builder = new StringBuilder();

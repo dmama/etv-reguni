@@ -26,7 +26,7 @@ public class DataHelper {
 			return null;
 		}
 
-		final List<TiersCriteria> list = new ArrayList<TiersCriteria>();
+		final List<TiersCriteria> list = new ArrayList<>();
 
 		if (criteria.getNumber() == null || criteria.getNumber().length() == 0) {
 			/*
@@ -90,7 +90,7 @@ public class DataHelper {
 	}
 
 	public static Set<TiersCriteria.TypeTiers> webToCore(List<PartyType> typeTiers) {
-		Set<TiersCriteria.TypeTiers> set = new HashSet<TiersCriteria.TypeTiers>();
+		Set<TiersCriteria.TypeTiers> set = new HashSet<>();
 		for (PartyType t : typeTiers) {
 			set.add(EnumHelper.webToCore(t));
 		}
@@ -131,7 +131,7 @@ public class DataHelper {
 			return null;
 		}
 
-		final Set<Parts> results = new HashSet<Parts>(parts.size());
+		final Set<Parts> results = new HashSet<>(parts.size());
 		for (PartyPart p : parts) {
 			switch (p) {
 			case ADDRESSES:
@@ -183,7 +183,7 @@ public class DataHelper {
 	}
 
 	public static Set<ch.vd.unireg.xml.party.v1.PartyPart> webToXML(Collection<PartyPart> parts) {
-		final HashSet<ch.vd.unireg.xml.party.v1.PartyPart> set = new HashSet<ch.vd.unireg.xml.party.v1.PartyPart>();
+		final HashSet<ch.vd.unireg.xml.party.v1.PartyPart> set = new HashSet<>();
 		for (PartyPart part : parts) {
 			set.add(webToXML(part));
 		}

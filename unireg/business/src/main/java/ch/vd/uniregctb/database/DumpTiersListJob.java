@@ -113,7 +113,7 @@ public class DumpTiersListJob extends JobDefinition {
 			throw new RuntimeException("Les ids des tiers doivent être spécifiés.");
 		}
 
-		final List<Long> ids = new ArrayList<Long>();
+		final List<Long> ids = new ArrayList<>();
 		ids.addAll(extractIds(idsParam));
 		ids.addAll(extractIdsFromCSV(idsFile));
 
@@ -129,14 +129,10 @@ public class DumpTiersListJob extends JobDefinition {
 
 						int count;
 						// Dump la base de donnée dans un fichier zip sur le disque
-						ZipOutputStream zipstream = new ZipOutputStream(os);
-						try {
+						try (ZipOutputStream zipstream = new ZipOutputStream(os)) {
 							ZipEntry e = new ZipEntry(name + ".xml");
 							zipstream.putNextEntry(e);
 							count = dbService.dumpTiersListToDbunitFile(ids, parts, zipstream, status);
-						}
-						finally {
-							zipstream.close();
 						}
 
 						doc.setNbTiers(count);
@@ -149,7 +145,7 @@ public class DumpTiersListJob extends JobDefinition {
 	}
 	
 	private List<Long> extractIds(String idsParam) {
-		final List<Long> ids = new ArrayList<Long>();
+		final List<Long> ids = new ArrayList<>();
 		if (idsParam == null) {
 			return ids;
 		}

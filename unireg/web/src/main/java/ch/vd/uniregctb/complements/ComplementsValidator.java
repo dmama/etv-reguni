@@ -16,7 +16,7 @@ public class ComplementsValidator implements Validator, InitializingBean {
 	private IbanValidator ibanValidator;
 	private HibernateTemplate hibernateTemplate;
 
-	private Map<Class<?>, Validator> subValidators = new HashMap<Class<?>, Validator>();
+	private Map<Class<?>, Validator> subValidators = new HashMap<>();
 
 	public void setIbanValidator(IbanValidator ibanValidator) {
 		this.ibanValidator = ibanValidator;

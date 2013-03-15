@@ -30,7 +30,6 @@ public class TacheMapHelper extends CommonMapHelper {
 	private Map<Integer, String> mapPeriodeFiscale;
 	private Map<TypeEtatTache, String> mapEtatTache;
 	private Map<TypeTache, String> mapTypeTache;
-	private Map<Integer, String> mapOID;
 
 	private PeriodeFiscaleDAO periodeFiscaleDAO;
 
@@ -144,9 +143,7 @@ public class TacheMapHelper extends CommonMapHelper {
 
 		final Map<Integer, String> treeMap = new TreeMap<Integer, String>(new ValueComparator<String>(map));
 		treeMap.putAll(map);
-		mapOID = Collections.unmodifiableMap(treeMap);
-
-		return mapOID;
+		return Collections.unmodifiableMap(treeMap);
 	}
 
 	/**

@@ -17,16 +17,10 @@ import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.editique.EditiqueAbstractHelper;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
-import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.TypeDocument;
 
 public class ImpressionDocumentEfactureHelperImpl extends EditiqueAbstractHelper implements ImpressionDocumentEfactureHelper {
 	private static final String VERSION_XSD = "1.0";
-
-	@Override
-	public String construitIdDocument(Integer annee, Integer numeroDoc, Tiers tiers) {
-		return null;
-	}
 
 	@Override
 	public TypeDocumentEditique getTypeDocumentEditique(TypeDocument typeDoc) {

@@ -74,7 +74,7 @@ public class DroitAccesEditController extends AbstractSimpleFormController {
 	@Override
 	protected Map<String, Object> referenceData(HttpServletRequest request) throws Exception {
 
-		final Map<String, Object> data = new HashMap<String, Object>();
+		final Map<String, Object> data = new HashMap<>();
 		data.put(TYPE_DROIT_ACCES_NOM_MAP_NAME, tiersMapHelper.getDroitAcces());
 
 		return data;

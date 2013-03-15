@@ -78,11 +78,11 @@ public class ServiceInfrastructureCacheTest {
 
 		// plusieurs listes (une par thread) de numéros Ofs de commune à demander
 		final int tailleList = TAILLE_CACHE / NB_THREADS;
-		final List<List<Integer>> lists = new ArrayList<List<Integer>>(NB_THREADS);
+		final List<List<Integer>> lists = new ArrayList<>(NB_THREADS);
 		int c = 0;
 		List<Integer> last = null;
 		for (int i = 0; i < NB_THREADS; ++i) {
-			List<Integer> list = new ArrayList<Integer>(tailleList);
+			List<Integer> list = new ArrayList<>(tailleList);
 			for (int j = 0; j < tailleList; j++) {
 				list.add(c++);
 			}
@@ -104,19 +104,19 @@ public class ServiceInfrastructureCacheTest {
 			//  - appeler la méthode 'getCommuneHistoByNumeroOfs' sur tous les numéros Ofs de la première liste
 			//  - attendre que les autres threads aient fini de processer leurs premières listes
 			//  - appeler la méthode 'getCommuneHistoByNumeroOfs' sur tous les autres numéros Ofs
-			final List<List<Commune>> results = new ArrayList<List<Commune>>(NB_THREADS);
-			final List<GetCommuneHistoByNumeroOfsThread> threads = new ArrayList<GetCommuneHistoByNumeroOfsThread>(NB_THREADS);
+			final List<List<Commune>> results = new ArrayList<>(NB_THREADS);
+			final List<GetCommuneHistoByNumeroOfsThread> threads = new ArrayList<>(NB_THREADS);
 			final MutableInt rendezvous = new MutableInt(NB_THREADS);
 
 			for (int i = 0; i < NB_THREADS; ++i) {
 				final List<Integer> first = lists.get(i);
-				final List<Integer> others = new ArrayList<Integer>();
+				final List<Integer> others = new ArrayList<>();
 				for (int j = 0; j < NB_THREADS; ++j) {
 					if (j != i) {
 						others.addAll(lists.get(j));
 					}
 				}
-				final ArrayList<Commune> res = new ArrayList<Commune>(TAILLE_CACHE);
+				final ArrayList<Commune> res = new ArrayList<>(TAILLE_CACHE);
 				results.add(res);
 				threads.add(new GetCommuneHistoByNumeroOfsThread(first, others, res, rendezvous));
 			}
@@ -305,7 +305,7 @@ public class ServiceInfrastructureCacheTest {
 		public List<Commune> getCommuneHistoByNumeroOfs(int noOfsCommune) throws ServiceInfrastructureException {
 			calls.incrementAndGet();
 //			System.out.println(String.format("[thread %d] getCommuneHistoByNumeroOfs(%d)", Thread.currentThread().getId(), noOfsCommune));
-			List<Commune> list = new ArrayList<Commune>(1);
+			List<Commune> list = new ArrayList<>(1);
 			list.add(new TestCommune(noOfsCommune));
 			return list;
 		}

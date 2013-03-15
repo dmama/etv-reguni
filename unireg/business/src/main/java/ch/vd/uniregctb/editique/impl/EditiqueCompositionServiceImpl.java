@@ -119,7 +119,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	}
 
 	private static List<ModeleFeuilleDocumentEditique> buildDefaultAnnexes(Set<ModeleFeuilleDocument> listFeuille) {
-		final List<ModeleFeuilleDocumentEditique> annexes = new ArrayList<ModeleFeuilleDocumentEditique>();
+		final List<ModeleFeuilleDocumentEditique> annexes = new ArrayList<>();
 		for (ModeleFeuilleDocument feuille : listFeuille) {
 			ModeleFeuilleDocumentEditique feuilleEditique = new ModeleFeuilleDocumentEditique();
 			feuilleEditique.setIntituleFeuille(feuille.getIntituleFeuille());
@@ -132,7 +132,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	}
 
 	private static List<ModeleFeuilleDocumentEditique> buildAnnexesImmeuble(Set<ModeleFeuilleDocument> listFeuille, int nombreAnnexes) {
-		final List<ModeleFeuilleDocumentEditique> annexes = new ArrayList<ModeleFeuilleDocumentEditique>();
+		final List<ModeleFeuilleDocumentEditique> annexes = new ArrayList<>();
 		for (ModeleFeuilleDocument feuille : listFeuille) {
 			if (ModeleFeuille.ANNEXE_320.getCode().equals(feuille.getNumeroFormulaire())) {
 				ModeleFeuilleDocumentEditique feuilleEditique = new ModeleFeuilleDocumentEditique();

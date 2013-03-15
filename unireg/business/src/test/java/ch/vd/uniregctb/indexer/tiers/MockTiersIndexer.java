@@ -10,7 +10,7 @@ import ch.vd.uniregctb.indexer.IndexerException;
 
 public class MockTiersIndexer implements GlobalTiersIndexer {
 
-	public List<Long> scheduled = new ArrayList<Long>();
+	public List<Long> scheduled = new ArrayList<>();
 
 	@Override
 	public void overwriteIndex() {

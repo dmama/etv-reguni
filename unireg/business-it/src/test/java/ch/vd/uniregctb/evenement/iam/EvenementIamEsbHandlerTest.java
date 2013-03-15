@@ -84,7 +84,7 @@ public class EvenementIamEsbHandlerTest extends EvenementTest {
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
 	public void testReceiveEnregistrementEmployeur() throws Exception {
 
-		final List<EvenementIAM> events = new ArrayList<EvenementIAM>();
+		final List<EvenementIAM> events = new ArrayList<>();
 
 		handler.setHandler(new EvenementIAMHandler() {
 			@Override
@@ -98,7 +98,7 @@ public class EvenementIamEsbHandlerTest extends EvenementTest {
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
-		final HashMap<String, String> customAttributes = new HashMap<String, String>();
+		final HashMap<String, String> customAttributes = new HashMap<>();
 		customAttributes.put(EvenementIamEsbHandler.ACTION, EvenementIamEsbHandler.CREATE);
 		sendTextMessage(INPUT_QUEUE, texte, customAttributes);
 
@@ -119,7 +119,7 @@ public class EvenementIamEsbHandlerTest extends EvenementTest {
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
 	public void testReceive2EnregistrementEmployeur() throws Exception {
 
-		final List<EvenementIAM> events = new ArrayList<EvenementIAM>();
+		final List<EvenementIAM> events = new ArrayList<>();
 
 		handler.setHandler(new EvenementIAMHandler() {
 			@Override
@@ -133,7 +133,7 @@ public class EvenementIamEsbHandlerTest extends EvenementTest {
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
-		final HashMap<String, String> customAttributes = new HashMap<String, String>();
+		final HashMap<String, String> customAttributes = new HashMap<>();
 		customAttributes.put(EvenementIamEsbHandler.ACTION, EvenementIamEsbHandler.CREATE);
 		sendTextMessage(INPUT_QUEUE, texte, customAttributes);
 
@@ -159,7 +159,7 @@ public class EvenementIamEsbHandlerTest extends EvenementTest {
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
 	public void testReceiveEnregistrementEmployeurSansIdLogicielSansTypAcces() throws Exception {
 
-		final List<EvenementIAM> events = new ArrayList<EvenementIAM>();
+		final List<EvenementIAM> events = new ArrayList<>();
 
 		handler.setHandler(new EvenementIAMHandler() {
 			@Override
@@ -173,7 +173,7 @@ public class EvenementIamEsbHandlerTest extends EvenementTest {
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
-		final HashMap<String, String> customAttributes = new HashMap<String, String>();
+		final HashMap<String, String> customAttributes = new HashMap<>();
 		customAttributes.put(EvenementIamEsbHandler.ACTION, EvenementIamEsbHandler.CREATE);
 		sendTextMessage(INPUT_QUEUE, texte, customAttributes);
 
@@ -194,7 +194,7 @@ public class EvenementIamEsbHandlerTest extends EvenementTest {
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
 	public void testReceiveEnregistrementMinimal() throws Exception {
 
-		final List<EvenementIAM> events = new ArrayList<EvenementIAM>();
+		final List<EvenementIAM> events = new ArrayList<>();
 
 		handler.setHandler(new EvenementIAMHandler() {
 			@Override
@@ -208,7 +208,7 @@ public class EvenementIamEsbHandlerTest extends EvenementTest {
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
-		final HashMap<String, String> customAttributes = new HashMap<String, String>();
+		final HashMap<String, String> customAttributes = new HashMap<>();
 		customAttributes.put(EvenementIamEsbHandler.ACTION, EvenementIamEsbHandler.UPDATE);
 		sendTextMessage(INPUT_QUEUE, texte, customAttributes);
 
@@ -227,7 +227,7 @@ public class EvenementIamEsbHandlerTest extends EvenementTest {
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
 	public void testReceiveEnregistrementMinimalAvecInfoMetier() throws Exception {
 
-		final List<EvenementIAM> events = new ArrayList<EvenementIAM>();
+		final List<EvenementIAM> events = new ArrayList<>();
 
 		handler.setHandler(new EvenementIAMHandler() {
 			@Override
@@ -241,7 +241,7 @@ public class EvenementIamEsbHandlerTest extends EvenementTest {
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
-		final HashMap<String, String> customAttributes = new HashMap<String, String>();
+		final HashMap<String, String> customAttributes = new HashMap<>();
 		customAttributes.put(EvenementIamEsbHandler.ACTION, EvenementIamEsbHandler.CREATE);
 		sendTextMessage(INPUT_QUEUE, texte, customAttributes);
 
@@ -264,7 +264,7 @@ public class EvenementIamEsbHandlerTest extends EvenementTest {
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
 	public void testReceiveActionCreate() throws Exception {
 
-		final List<EvenementIAM> events = new ArrayList<EvenementIAM>();
+		final List<EvenementIAM> events = new ArrayList<>();
 
 		handler.setHandler(new EvenementIAMHandler() {
 			@Override
@@ -278,7 +278,7 @@ public class EvenementIamEsbHandlerTest extends EvenementTest {
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
-		final HashMap<String, String> customAttributes = new HashMap<String, String>();
+		final HashMap<String, String> customAttributes = new HashMap<>();
 		customAttributes.put(EvenementIamEsbHandler.ACTION, EvenementIamEsbHandler.CREATE);
 		sendTextMessage(INPUT_QUEUE, texte, customAttributes);
 
@@ -300,7 +300,7 @@ public class EvenementIamEsbHandlerTest extends EvenementTest {
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
 	public void testReceiveActionDelete() throws Exception {
 
-		final List<EvenementIAM> events = new ArrayList<EvenementIAM>();
+		final List<EvenementIAM> events = new ArrayList<>();
 
 		handler.setHandler(new EvenementIAMHandler() {
 			@Override
@@ -314,7 +314,7 @@ public class EvenementIamEsbHandlerTest extends EvenementTest {
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
-		final HashMap<String, String> customAttributes = new HashMap<String, String>();
+		final HashMap<String, String> customAttributes = new HashMap<>();
 		customAttributes.put(EvenementIamEsbHandler.ACTION, EvenementIamEsbHandler.DELETE);
 		sendTextMessage(INPUT_QUEUE, texte, customAttributes);
 
@@ -328,7 +328,7 @@ public class EvenementIamEsbHandlerTest extends EvenementTest {
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
 	public void testReceiveActionUpdate() throws Exception {
 
-		final List<EvenementIAM> events = new ArrayList<EvenementIAM>();
+		final List<EvenementIAM> events = new ArrayList<>();
 
 		handler.setHandler(new EvenementIAMHandler() {
 			@Override
@@ -342,7 +342,7 @@ public class EvenementIamEsbHandlerTest extends EvenementTest {
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
-		final HashMap<String, String> customAttributes = new HashMap<String, String>();
+		final HashMap<String, String> customAttributes = new HashMap<>();
 		customAttributes.put(EvenementIamEsbHandler.ACTION, EvenementIamEsbHandler.UPDATE);
 		sendTextMessage(INPUT_QUEUE, texte, customAttributes);
 

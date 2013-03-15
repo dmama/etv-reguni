@@ -312,10 +312,10 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 		// sera mis à "true" si on détecte que tous les threads sont morts prématurément
 		boolean deadThreads = false;
 
-		final BatchIterator<Long> iter = new StandardBatchIterator<Long>(list, 100);
+		final BatchIterator<Long> iter = new StandardBatchIterator<>(list, 100);
 		while (iter.hasNext() && !statusManager.interrupted() && !deadThreads) {
 
-			final Set<Long> ids = new HashSet<Long>(iter.next());
+			final Set<Long> ids = new HashSet<>(iter.next());
 
 			statusManager.setMessage("Indexation du tiers " + i + " sur " + size, (100 * i) / size);
 
@@ -396,8 +396,8 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 		public final List<Long> toRemove ;
 
 		private DeltaIds() {
-			this.toAdd = new ArrayList<Long>();
-			this.toRemove = new ArrayList<Long>();
+			this.toAdd = new ArrayList<>();
+			this.toRemove = new ArrayList<>();
 		}
 
 		private DeltaIds(List<Long> toAdd) {
@@ -411,7 +411,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 	 */
 	private DeltaIds getIncrementalIds() {
 
-		final Set<Long> idsDb = new HashSet<Long>(tiersDAO.getAllIds());
+		final Set<Long> idsDb = new HashSet<>(tiersDAO.getAllIds());
 		final Set<Long> idsIndex = tiersSearcher.getAllIds();
 
 		DeltaIds ids = new DeltaIds();
@@ -447,7 +447,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 
         // construit la liste des indexables
 
-		final List<IndexableData> data = new ArrayList<IndexableData>();
+		final List<IndexableData> data = new ArrayList<>();
         for (Tiers t : tiers) {
             try {
                 final List<TiersIndexable> indexables = buildIndexables(t, followDependents);
@@ -494,7 +494,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 
     private List<TiersIndexable> buildIndexables(Tiers tiers, boolean followDependents) {
 
-        final List<TiersIndexable> indexables = new ArrayList<TiersIndexable>();
+        final List<TiersIndexable> indexables = new ArrayList<>();
 
         if (followDependents) {
             List<Tiers> list = buildDependents(tiers);
@@ -509,7 +509,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 
     private List<Tiers> buildDependents(Tiers tiers) {
 
-        List<Tiers> list = new ArrayList<Tiers>();
+        List<Tiers> list = new ArrayList<>();
 
         // Debiteur prestation imposable
         if (tiers instanceof PersonnePhysique) {

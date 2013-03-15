@@ -23,14 +23,14 @@ public class AdresseTimelineView {
 
 	// données découlant des paramètres
 	private AdresseEnvoi adresseEnvoi;
-	private final List<Table> tables = new ArrayList<Table>();
-	private final List<Exception> exceptions = new ArrayList<Exception>();
+	private final List<Table> tables = new ArrayList<>();
+	private final List<Exception> exceptions = new ArrayList<>();
 
 	/**
 	 * Représente une ligne dans la table
 	 */
 	public static class Row {
-		public Map<AdresseCouche, TimelineCell> columns = new EnumMap<AdresseCouche, TimelineCell>(AdresseCouche.class);
+		public Map<AdresseCouche, TimelineCell> columns = new EnumMap<>(AdresseCouche.class);
 		public final DateRange periode;
 
 		public Row(DateRange periode, List<AdresseCouche> cols) {
@@ -62,7 +62,7 @@ public class AdresseTimelineView {
 	 */
 	public static class Table {
 		public final String nom;
-		public final List<Row> rows = new ArrayList<Row>();
+		public final List<Row> rows = new ArrayList<>();
 		public List<AdresseCouche> columns;
 
 		public Table(String nom) {

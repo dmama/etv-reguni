@@ -26,7 +26,7 @@ import ch.vd.uniregctb.webservices.tiers2.data.TypeRecherche;
 
 public abstract class EnumHelper {
 
-	final static Map<TypePermis, PersonnePhysique.Categorie> typePermis2Categorie = new EnumMap<TypePermis, PersonnePhysique.Categorie>(TypePermis.class);
+	final static Map<TypePermis, PersonnePhysique.Categorie> typePermis2Categorie = new EnumMap<>(TypePermis.class);
 
 	public static EtatCivil coreToWeb(ch.vd.uniregctb.type.EtatCivil etatCivil) {
 		if (etatCivil == null) {

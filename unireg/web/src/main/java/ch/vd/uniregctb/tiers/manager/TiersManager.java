@@ -185,7 +185,7 @@ public class TiersManager implements MessageSourceAware {
 	 */
 	protected Set<DebiteurView> getDebiteurs(Contribuable contribuable) throws AdresseException {
 
-		final Set<DebiteurView> debiteursView = new HashSet<DebiteurView>();
+		final Set<DebiteurView> debiteursView = new HashSet<>();
 
 		final Set<RapportEntreTiers> rapports = contribuable.getRapportsSujet();
 		if (rapports != null) {
@@ -214,7 +214,7 @@ public class TiersManager implements MessageSourceAware {
 	 * Alimente List<RapportView>
 	 */
 	protected List<RapportView> getRapports(Tiers tiers) throws AdresseException {
-		final List<RapportView> rapportsView = new ArrayList<RapportView>();
+		final List<RapportView> rapportsView = new ArrayList<>();
 
 		// Rapport entre tiers Objet
 		for (RapportEntreTiers rapportEntreTiers : tiers.getRapportsObjet()) {
@@ -235,7 +235,7 @@ public class TiersManager implements MessageSourceAware {
 					nomSujet = adresseService.getNomCourrier(tiersSujet, null, false);
 				}
 				catch (Exception e) {
-					nomSujet = new ArrayList<String>();
+					nomSujet = new ArrayList<>();
 					nomSujet.add(e.getMessage());
 				}
 				rapportView.setNomCourrier(nomSujet);
@@ -269,7 +269,7 @@ public class TiersManager implements MessageSourceAware {
 					nomObjet = adresseService.getNomCourrier(tiersObjet, null, false);
 				}
 				catch (Exception e) {
-					nomObjet = new ArrayList<String>();
+					nomObjet = new ArrayList<>();
 					nomObjet.add(e.getMessage());
 				}
 				if (nomObjet != null && !nomObjet.isEmpty()) {
@@ -319,7 +319,7 @@ public class TiersManager implements MessageSourceAware {
 	 * Alimente List<RapportView>
 	 */
 	protected void setContribuablesAssocies(TiersView tiersView, DebiteurPrestationImposable debiteur) throws AdresseException {
-		final List<RapportView> rapportsView = new ArrayList<RapportView>();
+		final List<RapportView> rapportsView = new ArrayList<>();
 
 		// Rapport entre tiers Objet
 		final Set<RapportEntreTiers> rapports = debiteur.getRapportsObjet();
@@ -434,7 +434,7 @@ public class TiersManager implements MessageSourceAware {
 	 */
 	protected List<RapportPrestationView> getRapportsPrestation(DebiteurPrestationImposable dpi, WebParamPagination pagination, boolean rapportsPrestationHisto) throws AdresseException {
 
-		List<RapportPrestationView> rapportPrestationViews = new ArrayList<RapportPrestationView>();
+		List<RapportPrestationView> rapportPrestationViews = new ArrayList<>();
 
 		List<RapportPrestationImposable> rapports = rapportEntreTiersDAO.getRapportsPrestationImposable(dpi.getNumero(), pagination, !rapportsPrestationHisto);
 		for (RapportPrestationImposable rapport : rapports) {
@@ -469,7 +469,7 @@ public class TiersManager implements MessageSourceAware {
 	 */
 	private List<ListeRecapDetailView> getListesRecapitulatives(DebiteurPrestationImposable dpi) {
 
-		List<ListeRecapDetailView> lrsView = new ArrayList<ListeRecapDetailView>();
+		List<ListeRecapDetailView> lrsView = new ArrayList<>();
 		Set<Declaration> declarations = dpi.getDeclarations();
 		for (Declaration declaration : declarations) {
 			if (declaration instanceof DeclarationImpotSource) {
@@ -582,7 +582,7 @@ public class TiersManager implements MessageSourceAware {
 		final ForFiscal forPrincipalActif = contribuable.getForFiscalPrincipalAt(null);
 		final List<ForFiscal> forsFiscaux = contribuable.getForsFiscauxSorted();
 
-		final List<ForFiscalView> forsFiscauxView = new ArrayList<ForFiscalView>();
+		final List<ForFiscalView> forsFiscauxView = new ArrayList<>();
 		if (forsFiscaux != null) {
 			ForFiscalView forPrincipalViewActif = null;
 			for (ForFiscal forFiscal : forsFiscaux) {
@@ -608,7 +608,7 @@ public class TiersManager implements MessageSourceAware {
 	 * Met a jour les fors fiscaux pour le dpi
 	 */
 	protected void setForsFiscauxDebiteur(TiersView tiersView, DebiteurPrestationImposable dpi) {
-		final List<ForFiscalView> forsFiscauxView = new ArrayList<ForFiscalView>();
+		final List<ForFiscalView> forsFiscauxView = new ArrayList<>();
 		final Set<ForFiscal> forsFiscaux = dpi.getForsFiscaux();
 		if (forsFiscaux != null) {
 			for (ForFiscal forFiscal : forsFiscaux) {
@@ -637,7 +637,7 @@ public class TiersManager implements MessageSourceAware {
 	 * Met a jour la vue periodicite avec la periodicites du debiteur
 	 */
 	protected void setPeriodicitesView(TiersView tiersView, DebiteurPrestationImposable dpi) {
-		List<PeriodiciteView> listePeriodicitesView = new ArrayList<PeriodiciteView>();
+		List<PeriodiciteView> listePeriodicitesView = new ArrayList<>();
 		Set<Periodicite> setPeriodicites = dpi.getPeriodicites();
 		if (setPeriodicites != null) {
 			for (Periodicite periodicite : setPeriodicites) {
@@ -714,7 +714,7 @@ public class TiersManager implements MessageSourceAware {
 	 */
 	protected void setSituationsFamille(TiersView tiersView, Contribuable contribuable) throws AdresseException {
 
-		final List<SituationFamilleView> situationsFamilleView = new ArrayList<SituationFamilleView>();
+		final List<SituationFamilleView> situationsFamilleView = new ArrayList<>();
 		final List<VueSituationFamille> situationsFamille = situationFamilleService.getVueHisto(contribuable);
 		Collections.reverse(situationsFamille); // UNIREG-647
 
@@ -825,7 +825,7 @@ public class TiersManager implements MessageSourceAware {
 	public List<AdresseCivilView> getAdressesHistoriquesCiviles(Tiers tiers, boolean adressesHistoCiviles) throws DonneesCivilesException {
 
 		final Long noIndividu = tiersService.extractNumeroIndividuPrincipal(tiers);
-		final List<AdresseCivilView> adresses = new ArrayList<AdresseCivilView>();
+		final List<AdresseCivilView> adresses = new ArrayList<>();
 		if (noIndividu != null) {
 			if (adressesHistoCiviles) {
 				final AdressesCivilesHistoriques adressesCivilesHisto = serviceCivilService.getAdressesHisto(noIndividu, false);
@@ -860,7 +860,7 @@ public class TiersManager implements MessageSourceAware {
 	protected void resolveAdressesHisto(AdressesResolverCallback callback) throws ServiceInfrastructureException {
 
 		try {
-			List<AdresseView> adresses = new ArrayList<AdresseView>();
+			List<AdresseView> adresses = new ArrayList<>();
 
 			final AdressesFiscalesHisto adressesFiscalesHisto = callback.getAdresses(adresseService);
 			if (adressesFiscalesHisto != null) {
@@ -875,7 +875,7 @@ public class TiersManager implements MessageSourceAware {
 		}
 		catch (Exception exception) {
 
-			List<AdresseView> adresses = new ArrayList<AdresseView>();
+			List<AdresseView> adresses = new ArrayList<>();
 
 			if (exception instanceof AdressesResolutionException) {
 				final AdressesResolutionException are = (AdressesResolutionException) exception;
@@ -1055,7 +1055,7 @@ public class TiersManager implements MessageSourceAware {
 	}
 
 	protected List<AdresseView> removeAdresseFromCivil(List<AdresseView> adresses) {
-		List<AdresseView> resultat = new ArrayList<AdresseView>();
+		List<AdresseView> resultat = new ArrayList<>();
 		for (AdresseView view : adresses) {
 			//UNIREG-1813 L'adresse domicile est retiré du bloc fiscal
 			if (TypeAdresseTiers.DOMICILE != view.getUsage()) {
@@ -1069,7 +1069,7 @@ public class TiersManager implements MessageSourceAware {
 	}
 
 	protected List<AdresseView> removeAdresseAnnulee(List<AdresseView> adresses) {
-		List<AdresseView> resultat = new ArrayList<AdresseView>();
+		List<AdresseView> resultat = new ArrayList<>();
 		for (AdresseView view : adresses) {
 			if (!view.isAnnule()) {
 				resultat.add(view);

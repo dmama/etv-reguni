@@ -23,11 +23,11 @@ public class EtatCivilListRCPers implements EtatCivilList, Serializable {
 	final private List<EtatCivil> list;
 
 	public EtatCivilListRCPers() {
-		this.list = new ArrayList<EtatCivil>();
+		this.list = new ArrayList<>();
 	}
 
 	public EtatCivilListRCPers(Collection<EtatCivil> list) {
-		this.list = new ArrayList<EtatCivil>(list);
+		this.list = new ArrayList<>(list);
 		sort();
 	}
 

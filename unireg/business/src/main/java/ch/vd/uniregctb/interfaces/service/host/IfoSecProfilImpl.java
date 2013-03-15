@@ -48,7 +48,7 @@ public class IfoSecProfilImpl implements IfoSecProfil, Serializable {
 		if (procedures == null) {
 			return null;
 		}
-		final List<IfoSecProcedure> list = new ArrayList<IfoSecProcedure>();
+		final List<IfoSecProcedure> list = new ArrayList<>();
 		for (Object p : procedures) {
 			list.add(IfoSecProcedureImpl.get((Procedure) p));
 		}

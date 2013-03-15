@@ -30,9 +30,9 @@ public class NorentesManagerImpl implements NorentesManager, NorentesRegistrar, 
 
 	private static final Logger LOGGER = Logger.getLogger(NorentesManagerImpl.class);
 
-	private final List<String> scenariosBeanNames = new ArrayList<String>();
-	private final Map<String, Collection<EtapeAttribute>> metadata = new HashMap<String, Collection<EtapeAttribute>>();
-	private final ArrayList<TypeEvenementCivil> evenementCivils = new ArrayList<TypeEvenementCivil>();
+	private final List<String> scenariosBeanNames = new ArrayList<>();
+	private final Map<String, Collection<EtapeAttribute>> metadata = new HashMap<>();
+	private final ArrayList<TypeEvenementCivil> evenementCivils = new ArrayList<>();
 	private TypeEvenementCivil[] evenementCivilArray = null;
 	private NorentesContext currentNorentesContext = null;
 	private ApplicationContext applicationContext = null;
@@ -60,7 +60,7 @@ public class NorentesManagerImpl implements NorentesManager, NorentesRegistrar, 
 			return;
 		}
 		Collection<Etape> etapes = findAnnotations(Etape.class, targetClass);
-		ArrayList<EtapeAttribute> list = new ArrayList<EtapeAttribute>(etapes.size());
+		ArrayList<EtapeAttribute> list = new ArrayList<>(etapes.size());
 		metadata.put(scenario.getBeanName(), list);
 		for (Etape etape : etapes) {
 			Check check = findCheck(etape, targetClass);
@@ -161,7 +161,7 @@ public class NorentesManagerImpl implements NorentesManager, NorentesRegistrar, 
 
 
 	private static <A extends Annotation> Collection<A> findAnnotations(Class<A> annotationType, Class<?> targetClass) {
-		ArrayList<A> list = new ArrayList<A>();
+		ArrayList<A> list = new ArrayList<>();
 		if (AopUtils.isAopProxy(targetClass)) {
 			targetClass = AopUtils.getTargetClass(targetClass);
 		}
@@ -198,7 +198,7 @@ public class NorentesManagerImpl implements NorentesManager, NorentesRegistrar, 
 
 	@Override
 	public Collection<NorentesScenario> getScenaries(TypeEvenementCivil evenementCivil) {
-		ArrayList<NorentesScenario> list = new ArrayList<NorentesScenario>();
+		ArrayList<NorentesScenario> list = new ArrayList<>();
 		if (evenementCivil != null) {
 			for (String scenarioName : scenariosBeanNames) {
 				NorentesScenario scenario = (NorentesScenario) this.applicationContext.getBean(scenarioName);

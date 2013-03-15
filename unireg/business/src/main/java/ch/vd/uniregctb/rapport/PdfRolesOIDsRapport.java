@@ -188,7 +188,7 @@ public class PdfRolesOIDsRapport extends PdfRolesRapport<ProduireRolesOIDsResult
 	}
 
 	private List<Integer> getListeCommunesDansOid(List<Commune> communes, int noColOID) throws ServiceInfrastructureException {
-		final List<Integer> ofsCommunesDansOID = new ArrayList<Integer>(communes.size());
+		final List<Integer> ofsCommunesDansOID = new ArrayList<>(communes.size());
 		for (Commune commune : communes) {
 			final OfficeImpot office = getInfraService().getOfficeImpotDeCommune(commune.getNoOFS());
 			if (office != null && office.getNoColAdm() == noColOID) {

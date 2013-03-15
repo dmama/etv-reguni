@@ -73,7 +73,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	 */
 	private static final class TestMessageHandler implements IdentificationContribuableMessageHandler {
 
-		private final List<IdentificationContribuable> sentMessages = new ArrayList<IdentificationContribuable>();
+		private final List<IdentificationContribuable> sentMessages = new ArrayList<>();
 		private boolean throwExceptionOnSend = false;
 
 		private TestMessageHandler() {

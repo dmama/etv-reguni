@@ -132,7 +132,7 @@ public class AnnulationDecesController {
 		final List<TiersIndexedData> results = tiersService.search(criteresEnSession.asCore());
 		Assert.notNull(results);
 
-		final List<TiersIndexedDataView> list = new ArrayList<TiersIndexedDataView>(results.size());
+		final List<TiersIndexedDataView> list = new ArrayList<>(results.size());
 		for (TiersIndexedData d : results) {
 			final Tiers tiers = tiersService.getTiers(d.getNumero());
 			if (tiers instanceof PersonnePhysique) {

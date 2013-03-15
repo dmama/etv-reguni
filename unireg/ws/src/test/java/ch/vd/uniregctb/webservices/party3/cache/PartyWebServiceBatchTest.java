@@ -98,7 +98,7 @@ public class PartyWebServiceBatchTest extends WebserviceTest {
 		final List<Integer> ids = doInNewTransaction(new TxCallback<List<Integer>>() {
 			@Override
 			public List<Integer> execute(TransactionStatus status) throws Exception {
-				List<Integer> ids = new ArrayList<Integer>();
+				List<Integer> ids = new ArrayList<>();
 				for (int i = 0; i < 40; ++i) {
 					DebiteurPrestationImposable deb = addDebiteur();
 					ids.add(deb.getId().intValue());

@@ -924,7 +924,7 @@ public class ForsControllerTest extends WebTestSpring3 {
 		final Tiers tiers = tiersDAO.get(ids.pp);
 		assertNotNull(tiers);
 
-		final List<ForFiscal> forsFiscaux = new ArrayList<ForFiscal>(tiers.getForsFiscaux());
+		final List<ForFiscal> forsFiscaux = new ArrayList<>(tiers.getForsFiscaux());
 		assertEquals(1, forsFiscaux.size());
 
 		final ForFiscalPrincipal for0 = (ForFiscalPrincipal) forsFiscaux.get(0);

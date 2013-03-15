@@ -44,8 +44,8 @@ public class ErrorPostProcessingAnnulationImpactStrategy implements ErrorPostPro
 	@NotNull
 	@Override
 	public List<EvenementCivilEchBasicInfo> doCollectPhase(List<EvenementCivilEchBasicInfo> remainingEvents, Mutable<Object> customData) {
-		final List<EvenementCivilEchBasicInfo> remain = new ArrayList<EvenementCivilEchBasicInfo>(remainingEvents);
-		final List<EvenementCivilEchBasicInfo> traites = new LinkedList<EvenementCivilEchBasicInfo>();
+		final List<EvenementCivilEchBasicInfo> remain = new ArrayList<>(remainingEvents);
+		final List<EvenementCivilEchBasicInfo> traites = new LinkedList<>();
 		for (EvenementCivilEchBasicInfo info : remainingEvents) {
 			if (info.getAction() == ActionEvenementCivilEch.ANNULATION && !info.getEtat().isTraite()) {
 				final Long idEvtRef = info.getIdReference();
@@ -57,13 +57,13 @@ public class ErrorPostProcessingAnnulationImpactStrategy implements ErrorPostPro
 							// l'événement que l'on veut annuler n'est pas encore traité... on peut tout faire sauter !
 
 							// on recherche encore éventuellement des autres événements qui corrigeraient l'événement annulé...
-							final EvenementCivilCriteria<TypeEvenementCivilEch> criterion = new EvenementCivilCriteria<TypeEvenementCivilEch>();
+							final EvenementCivilCriteria<TypeEvenementCivilEch> criterion = new EvenementCivilCriteria<>();
 							criterion.setNumeroIndividu(info.getNoIndividu());
 							criterion.setType(info.getType());      // deux événements qui se corrigent/s'annulent sont forcément du même type
 							final List<EvenementCivilEch> autresEvts = evtCivilDAO.find(criterion, null);
 
 							// on marque redondants tous les événements (l'événement annulé, celui d'annulation et d'éventuels autres qui corrigeaient l'événement annulé)
-							final Set<Long> idsATraiter = new HashSet<Long>(autresEvts.size());
+							final Set<Long> idsATraiter = new HashSet<>(autresEvts.size());
 							idsATraiter.add(info.getId());
 							idsATraiter.add(info.getIdReference());
 							int oldSize = 0;

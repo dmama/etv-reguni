@@ -116,7 +116,7 @@ public class StringComparatorTest extends WithoutSpringTest {
 
 		{
 			final StringComparator nullBefore = new StringComparator(true, true, true, null);
-			final List<String> list = new ArrayList<String>(Arrays.asList("otto", null, "itti"));
+			final List<String> list = new ArrayList<>(Arrays.asList("otto", null, "itti"));
 			Collections.sort(list, nullBefore);
 			Assert.assertEquals(3, list.size());
 			Assert.assertNull(list.get(0));
@@ -126,7 +126,7 @@ public class StringComparatorTest extends WithoutSpringTest {
 
 		{
 			final StringComparator nullAfter = new StringComparator(true, true, false, null);
-			final List<String> list = new ArrayList<String>(Arrays.asList("otto", null, "itti"));
+			final List<String> list = new ArrayList<>(Arrays.asList("otto", null, "itti"));
 			Collections.sort(list, nullAfter);
 			Assert.assertEquals(3, list.size());
 			Assert.assertEquals("itti", list.get(0));

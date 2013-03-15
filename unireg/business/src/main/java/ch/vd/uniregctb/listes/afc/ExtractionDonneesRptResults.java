@@ -169,8 +169,8 @@ public abstract class ExtractionDonneesRptResults extends ListesResults<Extracti
 	public abstract TypeExtractionDonneesRpt getMode();
 
 	private int nbContribuablesAnalyses = 0;
-	private final List<InfoPeriodeImposition> listePeriode = new LinkedList<InfoPeriodeImposition>();
-	private final List<InfoCtbIgnore> listeCtbsIgnores = new LinkedList<InfoCtbIgnore>();
+	private final List<InfoPeriodeImposition> listePeriode = new LinkedList<>();
+	private final List<InfoCtbIgnore> listeCtbsIgnores = new LinkedList<>();
 
 	protected static class ContribuableIgnoreException extends Exception {
 		public ContribuableIgnoreException(String message) {
@@ -348,7 +348,7 @@ public abstract class ExtractionDonneesRptResults extends ListesResults<Extracti
 		}
 
 		// on constuit maintenant la map à renvoyer
-		final Map<ModeImposition, Integer> map = new HashMap<ModeImposition, Integer>(ModeImposition.values().length + 1);
+		final Map<ModeImposition, Integer> map = new HashMap<>(ModeImposition.values().length + 1);
 		for (ModeImposition modeImposition : ModeImposition.values()) {
 			final int index = modeImposition.ordinal();
 			if (array[index] > 0) {

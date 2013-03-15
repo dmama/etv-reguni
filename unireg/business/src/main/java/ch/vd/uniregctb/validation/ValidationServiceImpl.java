@@ -17,7 +17,7 @@ import ch.vd.registre.base.validation.ValidationResults;
  */
 public class ValidationServiceImpl implements ValidationService {
 
-	private final Map<Class, EntityValidator> validatorMap = new HashMap<Class, EntityValidator>();
+	private final Map<Class, EntityValidator> validatorMap = new HashMap<>();
 
 	private final ReadWriteLock rwLock = new ReentrantReadWriteLock();
 	private final ThreadLocal<MutableInt> callDepth = new ThreadLocal<MutableInt>() {
@@ -33,7 +33,7 @@ public class ValidationServiceImpl implements ValidationService {
 	 */
 	private static class ChainingValidator<T> implements EntityValidator<T> {
 
-		private final List<EntityValidator<T>> chainedValidators = new ArrayList<EntityValidator<T>>();
+		private final List<EntityValidator<T>> chainedValidators = new ArrayList<>();
 
 		public void addValidator(EntityValidator<T> validator) {
 			chainedValidators.add(validator);

@@ -38,7 +38,7 @@ public class CacheValueWithPartsTest extends WithoutSpringTest {
 	}
 
 	private void run() throws Exception {
-		final Set<Integer> parts = new HashSet<Integer>();
+		final Set<Integer> parts = new HashSet<>();
 		parts.add(1);
 
 		final CacheValueWithParts<Data, Integer> value = new CacheValueWithParts<Data, Integer>(parts, new Data(5)) {
@@ -61,7 +61,7 @@ public class CacheValueWithPartsTest extends WithoutSpringTest {
 //				LOGGER.warn("-- writer1 starts ---");
 				try {
 					for (int i = 0; i < ITERATIONS; ++i) {
-						final Set<Integer> parts = new HashSet<Integer>();
+						final Set<Integer> parts = new HashSet<>();
 						parts.add(rand.nextInt());
 						value.addParts(parts, new Data(5));
 					}
@@ -80,7 +80,7 @@ public class CacheValueWithPartsTest extends WithoutSpringTest {
 //				LOGGER.warn("-- writer2 starts ---");
 				try {
 					for (int i = 0; i < ITERATIONS; ++i) {
-						final Set<Integer> parts = new HashSet<Integer>();
+						final Set<Integer> parts = new HashSet<>();
 						parts.add(rand.nextInt());
 						value.addParts(parts, new Data(5));
 					}
@@ -99,7 +99,7 @@ public class CacheValueWithPartsTest extends WithoutSpringTest {
 //				LOGGER.warn("-- reader starts ---");
 				try {
 					for (int i = 0; i < ITERATIONS * 10; ++i) {
-						final Set<Integer> parts = new HashSet<Integer>();
+						final Set<Integer> parts = new HashSet<>();
 						parts.add(rand.nextInt());
 						try {
 							assertEquals(5, value.getValueForParts(parts).i);

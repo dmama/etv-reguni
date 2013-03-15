@@ -59,8 +59,8 @@ public class CorrectionEtatDeclarationResults extends JobResults<Long, Correctio
 	public final RegDate dateTraitement = RegDate.get();
 	public int nbDeclarationsTotal;
 	public int nbEtatsTotal;
-	public final List<Doublon> doublons = new ArrayList<Doublon>();
-	public final List<Erreur> erreurs = new ArrayList<Erreur>();
+	public final List<Doublon> doublons = new ArrayList<>();
+	public final List<Erreur> erreurs = new ArrayList<>();
 	public boolean interrompu;
 
 	public CorrectionEtatDeclarationResults(TiersService tiersService, AdresseService adresseService) {

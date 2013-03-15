@@ -85,7 +85,7 @@ public class PersonnePhysiqueValidator extends ContribuableValidator<PersonnePhy
 		 * On n'autorise pas la présence de fors durant la ou les périodes d'appartenance à un couple
 		 */
 		// Détermine les périodes de validités ininterrompues du ménage commun
-		final List<RapportEntreTiers> rapportsMenages = new ArrayList<RapportEntreTiers>();
+		final List<RapportEntreTiers> rapportsMenages = new ArrayList<>();
 		final Set<RapportEntreTiers> rapports = pp.getRapportsSujet();
 		if (rapports != null) {
 			for (RapportEntreTiers r : rapports) {
@@ -148,7 +148,7 @@ public class PersonnePhysiqueValidator extends ContribuableValidator<PersonnePhy
 			for (RapportEntreTiers r : tiers.getRapportsSujet()) {
 				if (!r.isAnnule() && r instanceof RepresentationLegale) {
 					if (mesures == null) {
-						mesures = new ArrayList<RapportEntreTiers>();
+						mesures = new ArrayList<>();
 					}
 					mesures.add(r);
 				}
@@ -170,7 +170,7 @@ public class PersonnePhysiqueValidator extends ContribuableValidator<PersonnePhy
 			for (RapportEntreTiers r : tiers.getRapportsSujet()) {
 				if (!r.isAnnule() && r instanceof AppartenanceMenage) {
 					if (menages == null) {
-						menages = new ArrayList<AppartenanceMenage>();
+						menages = new ArrayList<>();
 					}
 					menages.add((AppartenanceMenage) r);
 				}

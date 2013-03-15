@@ -18,7 +18,7 @@ public class ForsValidator implements Validator, InitializingBean {
 	private AutorisationManager autorisationManager;
 	private HibernateTemplate hibernateTemplate;
 
-	private Map<Class<?>, Validator> subValidators = new HashMap<Class<?>, Validator>();
+	private Map<Class<?>, Validator> subValidators = new HashMap<>();
 
 	public void setInfraService(ServiceInfrastructureService infraService) {
 		this.infraService = infraService;

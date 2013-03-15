@@ -63,7 +63,7 @@ public class SecurityProviderImpl implements SecurityProviderInterface, Initiali
 
 		// bypass pour les tests unitaires
 		if (wantBypassUnitTest(visa)) {
-			final ArrayList<Niveau> list = new ArrayList<Niveau>(ids.size());
+			final ArrayList<Niveau> list = new ArrayList<>(ids.size());
 			for (Long id : ids) {
 				if (id == null) {
 					list.add(null);

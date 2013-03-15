@@ -15,12 +15,12 @@
 
                  $('#rechercher').click( function () {
                  	$('#formRechercheEvenements').attr('action','rechercher.do');
-                 })
+                 });
 
                  $('#effacer').click( function () {
                  	window.location.href = 'effacer.do';
                  	return false;
-                 })
+                 });
 
              });
         </script>

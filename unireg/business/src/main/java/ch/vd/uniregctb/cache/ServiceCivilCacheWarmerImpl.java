@@ -45,7 +45,7 @@ public class ServiceCivilCacheWarmerImpl implements ServiceCivilCacheWarmer {
 				idsTiers = (Set<Long>) noTiers;
 			}
 			else if (noTiers != null && !noTiers.isEmpty()) {
-				idsTiers = new HashSet<Long>(noTiers);
+				idsTiers = new HashSet<>(noTiers);
 			}
 			else {
 				idsTiers = Collections.emptySet();

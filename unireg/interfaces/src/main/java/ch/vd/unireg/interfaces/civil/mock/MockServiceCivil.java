@@ -74,9 +74,9 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 	/**
 	 * Map des individus par numéro.
 	 */
-	private final Map<Long, MockIndividu> individusMap = new HashMap<Long, MockIndividu>();
+	private final Map<Long, MockIndividu> individusMap = new HashMap<>();
 
-	private final Map<Long, IndividuApresEvenement> evenementsMap = new HashMap<Long, IndividuApresEvenement>();
+	private final Map<Long, IndividuApresEvenement> evenementsMap = new HashMap<>();
 
 	/**
 	 * Constructeur qui permet d'injecter le service infrastructure ; appelle init()
@@ -154,15 +154,15 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 		individu.setEtatsCivils(etatsCivils);
 
 		// Adresses
-		final List<Adresse> sdresses = new ArrayList<Adresse>();
+		final List<Adresse> sdresses = new ArrayList<>();
 		individu.setAdresses(sdresses);
 
 		// Enfants
-		final List<RelationVersIndividu> enfants = new ArrayList<RelationVersIndividu>();
+		final List<RelationVersIndividu> enfants = new ArrayList<>();
 		individu.setEnfants(enfants);
 
 		// Adoptions et reconnaissances
-		final List<AdoptionReconnaissance> adoptions = new ArrayList<AdoptionReconnaissance>();
+		final List<AdoptionReconnaissance> adoptions = new ArrayList<>();
 		individu.setAdoptionsReconnaissances(adoptions);
 
 		// Conjoints
@@ -508,7 +508,7 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 		origine.setNomLieu(nomLieu);
 		Collection<Origine> origines = individu.getOrigines();
 		if (origines == null) {
-			origines = new ArrayList<Origine>();
+			origines = new ArrayList<>();
 			individu.setOrigines(origines);
 		}
 		origines.add(origine);
@@ -521,7 +521,7 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 		nationalite.setPays(pays);
 		List<Nationalite> nationalites = individu.getNationalites();
 		if (nationalites == null) {
-			nationalites = new ArrayList<Nationalite>();
+			nationalites = new ArrayList<>();
 			individu.setNationalites(nationalites);
 		}
 		nationalites.add(nationalite);
@@ -583,7 +583,7 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 
 		Collection<Adresse> list = individu.getAdresses();
 		if (list == null) {
-			list = new ArrayList<Adresse>();
+			list = new ArrayList<>();
 			individu.setAdresses(list);
 		}
 		list.add(adresse);
@@ -605,7 +605,7 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 			return null;
 		}
 
-		final Collection<Adresse> adressesActives = new ArrayList<Adresse>();
+		final Collection<Adresse> adressesActives = new ArrayList<>();
 		final Collection<Adresse> adresses = individu.getAdresses();
 		if (adresses != null) {
 			if (date == null) {
@@ -633,7 +633,7 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 				parts = Collections.emptySet();
 			}
 			else {
-				parts = new HashSet<AttributeIndividu>(Arrays.asList(parties));
+				parts = new HashSet<>(Arrays.asList(parties));
 			}
 			return new MockIndividu(individu, parts);
 		}
@@ -644,7 +644,7 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 
 	@Override
 	public List<Individu> getIndividus(Collection<Long> nosIndividus, AttributeIndividu... parties) throws ServiceCivilException {
-		final List<Individu> individus = new ArrayList<Individu>(nosIndividus.size());
+		final List<Individu> individus = new ArrayList<>(nosIndividus.size());
 		for (Long noIndividu : nosIndividus) {
 			final Individu individu = getIndividu(noIndividu, parties);
 			if (individu != null) {

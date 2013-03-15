@@ -166,7 +166,7 @@ public class ImportImmeublesProcessor {
 		final List<String> headers = extractHeaders(csvIterator.next());
 
 		// Processing des lignes de données
-		final BatchTransactionTemplate<String, ImportImmeublesResults> template = new BatchTransactionTemplate<String, ImportImmeublesResults>(csvIterator, BATCH_SIZE,
+		final BatchTransactionTemplate<String, ImportImmeublesResults> template = new BatchTransactionTemplate<>(csvIterator, BATCH_SIZE,
 				BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, hibernateTemplate);
 		template.execute(rapportFinal, new BatchTransactionTemplate.BatchCallback<String, ImportImmeublesResults>() {
 
@@ -239,7 +239,7 @@ public class ImportImmeublesProcessor {
 	private static Map<String, String> parseLine(List<String> headers, String line) throws IOException {
 		final CSVParser parser = new CSVParser(';', '"');
 		final String[] tokens = parser.parseLine(line);
-		final HashMap<String, String> map = new HashMap<String, String>();
+		final HashMap<String, String> map = new HashMap<>();
 		for (int i = 0, tokensLength = tokens.length; i < tokensLength; i++) {
 			if (i < headers.size()) {
 				map.put(headers.get(i), tokens[i]);

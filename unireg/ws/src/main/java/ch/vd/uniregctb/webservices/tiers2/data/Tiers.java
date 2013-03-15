@@ -310,7 +310,7 @@ public abstract class Tiers {
 		if (parts != null && parts.contains(TiersPart.COMPTES_BANCAIRES)) {
 			final String numero = tiers.getNumeroCompteBancaire();
 			if (numero != null && !"".equals(numero) && context.ibanValidator.isValidIban(numero)) {
-				this.comptesBancaires = new ArrayList<CompteBancaire>();
+				this.comptesBancaires = new ArrayList<>();
 				comptesBancaires.add(new CompteBancaire(tiers, context));
 			}
 		}
@@ -350,7 +350,7 @@ public abstract class Tiers {
 		}
 
 		if (parts != null && parts.contains(TiersPart.RAPPORTS_ENTRE_TIERS)) {
-			this.rapportsEntreTiers = new ArrayList<RapportEntreTiers>();
+			this.rapportsEntreTiers = new ArrayList<>();
 			// Ajoute les rapports dont le tiers est le sujet
 			for (ch.vd.uniregctb.tiers.RapportEntreTiers rapport : tiers.getRapportsSujet()) {
 				if (!(rapport instanceof ch.vd.uniregctb.tiers.ContactImpotSource) && rapport.isValidAt(date)) {
@@ -367,7 +367,7 @@ public abstract class Tiers {
 		}
 
 		if (parts != null && (parts.contains(TiersPart.FORS_FISCAUX) || parts.contains(TiersPart.FORS_FISCAUX_VIRTUELS))) {
-			this.autresForsFiscaux = new ArrayList<ForFiscal>();
+			this.autresForsFiscaux = new ArrayList<>();
 			for (ch.vd.uniregctb.tiers.ForFiscal forFiscal : tiers.getForsFiscauxSorted()) {
 				if (forFiscal.isValidAt(date)) {
 					if (forFiscal instanceof ch.vd.uniregctb.tiers.ForFiscalPrincipal

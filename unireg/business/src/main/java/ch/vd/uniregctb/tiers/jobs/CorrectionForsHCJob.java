@@ -84,7 +84,7 @@ public class CorrectionForsHCJob extends JobDefinition {
 			
 		final List<Long> ids = retrieveIdFors();
 		
-		final BatchTransactionTemplate<Long, JobResults> t = new BatchTransactionTemplate<Long, JobResults>(ids, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE, transactionManager, statusManager, hibernateTemplate);
+		final BatchTransactionTemplate<Long, JobResults> t = new BatchTransactionTemplate<>(ids, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE, transactionManager, statusManager, hibernateTemplate);
 		t.execute(null, createProcessor(ids, statusManager));
 		Audit.success("Traitement de correction de fors HC terminé.");
 	}
@@ -132,7 +132,7 @@ public class CorrectionForsHCJob extends JobDefinition {
 
 		});
 		
-		return new HashSet<ForFiscalPrincipal>(list);
+		return new HashSet<>(list);
 	}
 
 	public boolean isForVaudois(ForFiscalPrincipal ffp) {

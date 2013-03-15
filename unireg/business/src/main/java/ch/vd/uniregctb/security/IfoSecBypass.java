@@ -14,7 +14,7 @@ public class IfoSecBypass {
 	private final String user;
 	private final int oid;
 	private final String oidSigle;
-	private final Set<Role> procedures = new HashSet<Role>();
+	private final Set<Role> procedures = new HashSet<>();
 
 	public IfoSecBypass(int oid, String oidSigle, String procedures) {
 		this.user = null;

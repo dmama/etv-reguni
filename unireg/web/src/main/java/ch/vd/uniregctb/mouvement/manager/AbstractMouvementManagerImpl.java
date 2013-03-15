@@ -142,7 +142,7 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 	protected List<MouvementDetailView> getViews(Collection<MouvementDossier> mvts, boolean sortByNoDossier, boolean isExtraction) throws ServiceInfrastructureException {
 		if (mvts != null && !mvts.isEmpty()) {
 			prefetchIndividus(mvts);
-			final List<MouvementDetailView> liste = new ArrayList<MouvementDetailView>(mvts.size());
+			final List<MouvementDetailView> liste = new ArrayList<>(mvts.size());
 			for (MouvementDossier mvt : mvts) {
 				liste.add(getView(mvt, isExtraction));
 			}
@@ -172,19 +172,19 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 		if (serviceCivilCacheWarmer.isServiceWarmable() && mvts != null && mvts.size() > 1) {
 
 			// d'abord on cherche tous les identifiants de tiers
-			final Set<Long> idsTiers = new HashSet<Long>(mvts.size());
+			final Set<Long> idsTiers = new HashSet<>(mvts.size());
 			for (MouvementDossier mvt : mvts) {
 				idsTiers.add(mvt.getContribuable().getNumero());
 			}
 
 			// que l'on découpe ensuite en petits lots pour récupérer les numéros d'individus
 			final int nbLots = idsTiers.size() / TAILLE_LOT + 1;
-			final List<Long> listeIdsTiers = new ArrayList<Long>(idsTiers);
+			final List<Long> listeIdsTiers = new ArrayList<>(idsTiers);
 			for (int i = 0 ; i < nbLots ; ++ i) {
 				final int idxMin = i * TAILLE_LOT;
 				final int idxMax = Math.min((i + 1) * TAILLE_LOT, listeIdsTiers.size());
 				if (idxMin < idxMax) {
-					final Set<Long> lotTiersIds = new HashSet<Long>(listeIdsTiers.subList(idxMin, idxMax));
+					final Set<Long> lotTiersIds = new HashSet<>(listeIdsTiers.subList(idxMin, idxMax));
 					serviceCivilCacheWarmer.warmIndividusPourTiers(lotTiersIds, null, true, AttributeIndividu.ADRESSES);
 				}
 			}

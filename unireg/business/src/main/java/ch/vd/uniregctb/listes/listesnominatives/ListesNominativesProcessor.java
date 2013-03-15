@@ -111,7 +111,7 @@ public class ListesNominativesProcessor extends ListesProcessor<ListesNominative
 		    final String pmPart = "Entreprise";
 		    final String debiteurPart = "DebiteurPrestationImposable";
 
-		    final List<String> whereParts = new ArrayList<String>(3);
+		    final List<String> whereParts = new ArrayList<>(3);
 		    if (avecContribuablesPP) {
 			    whereParts.add(ppPart);
 		    }

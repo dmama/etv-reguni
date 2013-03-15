@@ -1,20 +1,20 @@
 package ch.vd.uniregctb.common;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 public class GentilIteratorTest extends WithoutSpringTest {
 
 	@Test
 	public void testEmptyList() {
-		GentilIterator<Object> iter = new GentilIterator<Object>(Collections.emptyList());
+		GentilIterator<Object> iter = new GentilIterator<>(Collections.emptyList());
 		assertFalse(iter.hasNext());
 		assertFalse(iter.isFirst());
 		assertFalse(iter.isLast());
@@ -23,13 +23,13 @@ public class GentilIteratorTest extends WithoutSpringTest {
 
 	@Test
 	public void testSmallList() {
-		List<Integer> list = new ArrayList<Integer>();
+		List<Integer> list = new ArrayList<>();
 		list.add(0);
 		list.add(1);
 		list.add(2);
 		list.add(3);
 		list.add(4);
-		GentilIterator<Integer> iter = new GentilIterator<Integer>(list);
+		GentilIterator<Integer> iter = new GentilIterator<>(list);
 
 		// 0
 		assertTrue(iter.hasNext());
@@ -89,12 +89,12 @@ public class GentilIteratorTest extends WithoutSpringTest {
 
 		final int size = 454;
 
-		List<Integer> list = new ArrayList<Integer>();
+		List<Integer> list = new ArrayList<>();
 		for (int i = 0; i < size; ++i) {
 			list.add(i);
 		}
 
-		List<Data> expected = new ArrayList<Data>(size);
+		List<Data> expected = new ArrayList<>(size);
 		expected.add(new Data(true, false, 0, true)); // 0
 		expected.add(new Data(false, false, 0, false)); // 1
 		expected.add(new Data(false, false, 0, false)); // 2
@@ -551,7 +551,7 @@ public class GentilIteratorTest extends WithoutSpringTest {
 		expected.add(new Data(false, true, 99, false)); // 453
 		assertEquals(size, expected.size());
 
-		GentilIterator<Integer> iter = new GentilIterator<Integer>(list);
+		GentilIterator<Integer> iter = new GentilIterator<>(list);
 
 		for (int i = 0; i < size; ++i) {
 			Data d = expected.get(i);

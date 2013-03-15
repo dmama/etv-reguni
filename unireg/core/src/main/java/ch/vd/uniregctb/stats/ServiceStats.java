@@ -21,7 +21,7 @@ public class ServiceStats {
 	private final long recentCount;
 	private final Long recentItemsCount;
 	private final Long recentItemsPing;
-	private final Map<String, ServiceStats> detailedData = new HashMap<String, ServiceStats>();
+	private final Map<String, ServiceStats> detailedData = new HashMap<>();
 
 	public ServiceStats(ServiceTracingInterface rawService) {
 		this.lastCallTime = rawService.getLastCallTime();

@@ -96,7 +96,7 @@ public class AutoCompleteSecurityController {
 		// on ignore les accents
 		term = StringComparator.toLowerCaseWithoutAccent(term);
 
-		final List<Item> list = new ArrayList<Item>();
+		final List<Item> list = new ArrayList<>();
 
 		if (categories.contains(Category.USER)) {
 			final List<EnumTypeCollectivite> colls = Arrays.asList(EnumTypeCollectivite.SIGLE_ACI, EnumTypeCollectivite.SIGLE_ACIA, EnumTypeCollectivite.SIGLE_ACIFD,
@@ -120,7 +120,7 @@ public class AutoCompleteSecurityController {
 	}
 
 	private static Set<Category> parseCategories(String category) {
-		final Set<Category> categories = new HashSet<Category>();
+		final Set<Category> categories = new HashSet<>();
 		if ("user".equalsIgnoreCase(category)) {
 			categories.add(Category.USER);
 		}

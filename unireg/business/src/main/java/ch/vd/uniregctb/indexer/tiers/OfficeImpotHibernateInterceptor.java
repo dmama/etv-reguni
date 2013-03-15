@@ -36,7 +36,7 @@ public class OfficeImpotHibernateInterceptor extends AbstractLinkedInterceptor i
 	private final ThreadLocal<HashMap<Long, Tiers>> dirtyEntities = new ThreadLocal<HashMap<Long, Tiers>>() {
 		@Override
 		protected HashMap<Long, Tiers> initialValue() {
-			return new HashMap<Long, Tiers>();
+			return new HashMap<>();
 		}
 	};
 
@@ -46,7 +46,7 @@ public class OfficeImpotHibernateInterceptor extends AbstractLinkedInterceptor i
 	private final ThreadLocal<HashMap<Long, Integer>> toUpdateOids = new ThreadLocal<HashMap<Long, Integer>>() {
 		@Override
 		protected HashMap<Long, Integer> initialValue() {
-			return new HashMap<Long, Integer>();
+			return new HashMap<>();
 		}
 	};
 
@@ -56,7 +56,7 @@ public class OfficeImpotHibernateInterceptor extends AbstractLinkedInterceptor i
 	private final ThreadLocal<HashMap<Long, Integer>> updatedOids = new ThreadLocal<HashMap<Long, Integer>>() {
 		@Override
 		protected HashMap<Long, Integer> initialValue() {
-			return new HashMap<Long, Integer>();
+			return new HashMap<>();
 		}
 	};
 
@@ -217,7 +217,7 @@ public class OfficeImpotHibernateInterceptor extends AbstractLinkedInterceptor i
 	 */
 	public void updateOfficeID(List<Long> list) {
 
-		final HashMap<Long, Integer> todo = new HashMap<Long, Integer>();
+		final HashMap<Long, Integer> todo = new HashMap<>();
 
 		for (Long id : list) {
 			final Tiers tiers = tiersDAO.get(id);

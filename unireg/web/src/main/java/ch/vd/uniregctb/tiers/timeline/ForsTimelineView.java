@@ -18,7 +18,7 @@ public class ForsTimelineView {
 
 	// données découlant des paramètres
 	private final TimelineTable table = new TimelineTable();
-	private final List<AssujettissementException> exceptions = new ArrayList<AssujettissementException>();
+	private final List<AssujettissementException> exceptions = new ArrayList<>();
 
 	private boolean forPrint = false;
 	private String title;

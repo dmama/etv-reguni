@@ -199,7 +199,7 @@ public class PartyWebServiceCacheTest extends WebserviceTest {
 		paramsNoPart.setLogin(new UserLogin("[PartyWebServiceCacheTest]", 21));
 		paramsNoPart.setPartyNumber(ids.eric.intValue());
 
-		final Set<PartyPart> adressesPart = new HashSet<PartyPart>();
+		final Set<PartyPart> adressesPart = new HashSet<>();
 		adressesPart.add(PartyPart.ADDRESSES);
 
 		final GetPartyRequest paramsAdressePart = new GetPartyRequest();
@@ -212,7 +212,7 @@ public class PartyWebServiceCacheTest extends WebserviceTest {
 		paramsForsPart.setPartyNumber(ids.eric.intValue());
 		paramsForsPart.getParts().add(PartyPart.TAX_RESIDENCES);
 
-		final Set<PartyPart> forsEtAdressesParts = new HashSet<PartyPart>();
+		final Set<PartyPart> forsEtAdressesParts = new HashSet<>();
 		forsEtAdressesParts.add(PartyPart.ADDRESSES);
 		forsEtAdressesParts.add(PartyPart.TAX_RESIDENCES);
 

@@ -168,7 +168,7 @@ public class RapportController {
 			throw new TiersNotFoundException(tiersId);
 		}
 
-		final List<FiliationView> views = new ArrayList<FiliationView>();
+		final List<FiliationView> views = new ArrayList<>();
 
 		if (tiers instanceof PersonnePhysique) {
 			final PersonnePhysique pp = (PersonnePhysique) tiers;
@@ -221,7 +221,7 @@ public class RapportController {
 	                                                       TypeRapportEntreTiers typeRapport, ParamPagination pagination) {
 		final boolean visuAll = SecurityHelper.isGranted(securityProvider, Role.VISU_ALL);
 
-		final List<RapportsPage.RapportView> views = new ArrayList<RapportsPage.RapportView>();
+		final List<RapportsPage.RapportView> views = new ArrayList<>();
 
 		final List<RapportEntreTiers> rapports =
 				rapportEntreTiersDAO.findBySujetAndObjet(tiersId, !visuAll, showHisto, typeRapport, pagination, excludeRapportPrestationImposable, excludeContactImpotSource);
@@ -258,7 +258,7 @@ public class RapportController {
 			return null;
 		}
 
-		final List<DebiteurView> views = new ArrayList<DebiteurView>();
+		final List<DebiteurView> views = new ArrayList<>();
 
 		final Contribuable contribuable = (Contribuable) tiers;
 		final Set<RapportEntreTiers> rapports = contribuable.getRapportsSujet();
@@ -284,7 +284,7 @@ public class RapportController {
 
 	private void prechargeIndividus(List<RapportEntreTiers> rapports) {
 		if (cacheWarmer.isServiceWarmable()) {
-			final Set<Long> tiersIds = new HashSet<Long>();
+			final Set<Long> tiersIds = new HashSet<>();
 			for (RapportEntreTiers rapport : rapports) {
 				tiersIds.add(rapport.getSujetId());
 				tiersIds.add(rapport.getObjetId());

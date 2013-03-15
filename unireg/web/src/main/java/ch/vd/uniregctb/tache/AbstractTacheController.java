@@ -37,7 +37,7 @@ public class AbstractTacheController extends AbstractSimpleFormEditiqueAwareCont
 	@Override
 	protected Map<String, Object> referenceData(HttpServletRequest request) throws Exception {
 
-		Map<String, Object> data = new HashMap<String, Object>();
+		Map<String, Object> data = new HashMap<>();
 		data.put(PERIODE_FISCALE_MAP_NAME, tacheMapHelper.initMapPeriodeFiscale());
 		data.put(OFFICE_IMPOT_UTILISATEUR_MAP_NAME, tacheMapHelper.initMapOfficeImpotUtilisateur());
 		data.put(ETAT_TACHE_MAP_NAME, tacheMapHelper.initMapEtatTache());

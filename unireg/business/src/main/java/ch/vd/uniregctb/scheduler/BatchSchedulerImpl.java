@@ -58,7 +58,7 @@ public class BatchSchedulerImpl implements BatchScheduler, InitializingBean, Dis
 	private int timeoutOnStopAll = 5;       // en minutes, le temps d'attente maximal lors d'un appel à stopAllRunningJobs()
 
 	private final AtomicInteger triggerCount = new AtomicInteger(0);
-	private final Map<String, JobDefinition> jobs = new HashMap<String, JobDefinition>();
+	private final Map<String, JobDefinition> jobs = new HashMap<>();
 
 	@Override
 	public boolean isStarted() throws SchedulerException {
@@ -290,7 +290,7 @@ public class BatchSchedulerImpl implements BatchScheduler, InitializingBean, Dis
 	 */
 	@Override
 	public List<JobDefinition> getSortedJobs() {
-		ArrayList<JobDefinition> list = new ArrayList<JobDefinition>(jobs.values());
+		ArrayList<JobDefinition> list = new ArrayList<>(jobs.values());
 		Collections.sort(list);
 		return list;
 	}
@@ -374,7 +374,7 @@ public class BatchSchedulerImpl implements BatchScheduler, InitializingBean, Dis
 		boolean tousMorts = true;
 
 		// demande d'arrêt pour tous ceux qui tournent encore
-		final List<JobDefinition> arretDemande = new LinkedList<JobDefinition>();
+		final List<JobDefinition> arretDemande = new LinkedList<>();
 		for (JobDefinition job : jobs.values()) {
 			try {
 				if (registerInterruptionRequest(job)) {
@@ -538,7 +538,7 @@ public class BatchSchedulerImpl implements BatchScheduler, InitializingBean, Dis
 	@Override
 	public MBeanInfo getMBeanInfo() {
 
-		final List<JobDefinition> shownJobs = new ArrayList<JobDefinition>(jobs.size());
+		final List<JobDefinition> shownJobs = new ArrayList<>(jobs.size());
 		for (JobDefinition job : jobs.values()) {
 			if (job.isVisible()) {
 				shownJobs.add(job);

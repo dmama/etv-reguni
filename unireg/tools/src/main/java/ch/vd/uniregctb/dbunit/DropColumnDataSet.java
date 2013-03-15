@@ -40,7 +40,7 @@ class DropColumnDataSet implements IDataSet {
 
 		final String[] names = dataSet.getTableNames();
 
-		tablesByName = new HashMap<String, ITable>();
+		tablesByName = new HashMap<>();
 		tables = new ITable[names.length];
 
 		for (int i = 0; i < names.length; ++i) {

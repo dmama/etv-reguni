@@ -114,13 +114,13 @@ public class AsyncStorage<K, V> {
 				final Mutable<V> value = map.remove(key);
 				if (value != null) {
 					// fini -> on revient avec la valeur
-					return new RetrievalData<K, V>(key, value.getValue());
+					return new RetrievalData<>(key, value.getValue());
 				}
 
 				final long tempsRestant = tsMaxAttente - System.nanoTime();
 				if (tempsRestant <= 0) {
 					// fini -> le timeout a sonné !
-					return new RetrievalTimeout<K>(key);
+					return new RetrievalTimeout<>(key);
 				}
 
 				awaitNanos(tempsRestant);

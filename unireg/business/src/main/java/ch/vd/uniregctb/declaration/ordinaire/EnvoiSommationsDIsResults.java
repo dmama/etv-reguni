@@ -134,13 +134,13 @@ public class EnvoiSommationsDIsResults extends JobResults<IdentifiantDeclaration
 	private boolean miseSousPliImpossible;
 	private int nombreMaxSommations;
 	private boolean interrompu;
-	private final List<ErrorInfo> sommationsEnErreur = new LinkedList<ErrorInfo>();
-	private final Map<Integer, List<Info>> sommationsParPeriode = new HashMap<Integer, List<Info>>();
-	private final List<Info> disContribuablesNonAssujettis = new LinkedList<Info>();
-	private final List<Info> disContribuablesSourcierPur = new LinkedList<Info>();
-	private final List<Info> disContribuablesIndigents = new LinkedList<Info>();
-	private final List<Info> disOptionnelles = new LinkedList<Info>();
-	private final List<DelaiEffectifNonEchuInfo> disDelaiEffectifNonEchu = new LinkedList<DelaiEffectifNonEchuInfo>();
+	private final List<ErrorInfo> sommationsEnErreur = new LinkedList<>();
+	private final Map<Integer, List<Info>> sommationsParPeriode = new HashMap<>();
+	private final List<Info> disContribuablesNonAssujettis = new LinkedList<>();
+	private final List<Info> disContribuablesSourcierPur = new LinkedList<>();
+	private final List<Info> disContribuablesIndigents = new LinkedList<>();
+	private final List<Info> disOptionnelles = new LinkedList<>();
+	private final List<DelaiEffectifNonEchuInfo> disDelaiEffectifNonEchu = new LinkedList<>();
 
 	public EnvoiSommationsDIsResults(TiersService tiersService, AdresseService adresseService) {
 		super(tiersService, adresseService);
@@ -154,7 +154,7 @@ public class EnvoiSommationsDIsResults extends JobResults<IdentifiantDeclaration
 		this.disContribuablesSourcierPur.addAll(right.disContribuablesSourcierPur);
 		this.disOptionnelles.addAll(right.disOptionnelles);
 		this.disDelaiEffectifNonEchu.addAll(right.disDelaiEffectifNonEchu);
-		List<Integer> annees = new ArrayList<Integer>(sommationsParPeriode.keySet());
+		List<Integer> annees = new ArrayList<>(sommationsParPeriode.keySet());
 		for (Integer annee : annees) {
 			if (right.sommationsParPeriode.containsKey(annee)) {
 				List<Info> list = sommationsParPeriode.get(annee);
@@ -162,7 +162,7 @@ public class EnvoiSommationsDIsResults extends JobResults<IdentifiantDeclaration
 				sommationsParPeriode.put(annee, list);
 			}
 		}
-		annees = new ArrayList<Integer>(right.sommationsParPeriode.keySet());
+		annees = new ArrayList<>(right.sommationsParPeriode.keySet());
 		for (Integer annee : annees) {
 			if (!sommationsParPeriode.containsKey(annee)) {
 				sommationsParPeriode.put(annee, right.sommationsParPeriode.get(annee));
@@ -195,7 +195,7 @@ public class EnvoiSommationsDIsResults extends JobResults<IdentifiantDeclaration
 	public void addDiSommee(Integer periode, DeclarationImpotOrdinaire di) {
 		List<Info> dis = sommationsParPeriode.get(periode);
 		if (dis == null ) {
-			dis = new ArrayList<Info>();
+			dis = new ArrayList<>();
 			sommationsParPeriode.put(periode, dis);			
 		}
 		dis.add(new Info(di));
@@ -218,7 +218,7 @@ public class EnvoiSommationsDIsResults extends JobResults<IdentifiantDeclaration
 	}
 	
 	public List<Integer> getListeAnnees() {
-		List<Integer> annees = new ArrayList<Integer>(sommationsParPeriode.keySet());
+		List<Integer> annees = new ArrayList<>(sommationsParPeriode.keySet());
 		Collections.sort(annees);
 		return annees;
 	}
@@ -322,7 +322,7 @@ public class EnvoiSommationsDIsResults extends JobResults<IdentifiantDeclaration
 	}
 
 	public List<Info> getSommations() {
-		List<Info> ret = new ArrayList<Info>(getTotalDisSommees());
+		List<Info> ret = new ArrayList<>(getTotalDisSommees());
 		for(List<Info> list : sommationsParPeriode.values()) {
 			ret.addAll(list);
 		}

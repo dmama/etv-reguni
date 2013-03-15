@@ -29,7 +29,7 @@ public class TiersWebServiceTracing implements ServiceTracingInterface, Initiali
 	private CounterRepository counterRepository;
 	private int lastRefreshCountersSize = 0;
 	private ResponseTimeTracingCounter globalCounter;
-	private final Map<String, ResponseTimeTracingCounter> counterByOperation = new HashMap<String, ResponseTimeTracingCounter>();
+	private final Map<String, ResponseTimeTracingCounter> counterByOperation = new HashMap<>();
 	private StatsService statsService;
 
 	public void setCounterRepository(CounterRepository counterRepository) {

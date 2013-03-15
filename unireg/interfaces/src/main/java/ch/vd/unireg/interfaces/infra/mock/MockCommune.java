@@ -197,7 +197,7 @@ public class MockCommune extends MockEntityOFS implements Commune {
 	private MockDistrict district;
 
 
-	private final List<MockLienCommuneBatiment> liensBatiments = new ArrayList<MockLienCommuneBatiment>();
+	private final List<MockLienCommuneBatiment> liensBatiments = new ArrayList<>();
 
 	private MockCommune(int noOFS, String nom, String sigleCanton, MockOfficeImpot oid, RegDate dateDebutValidite, RegDate dateFinValidite) {
 		this(noOFS, nom, sigleCanton, oid);
@@ -284,7 +284,7 @@ public class MockCommune extends MockEntityOFS implements Commune {
 	}
 
 	public List<MockBatiment> getBatiments(RegDate date) {
-		final List<MockBatiment> list = new ArrayList<MockBatiment>();
+		final List<MockBatiment> list = new ArrayList<>();
 		for (MockLienCommuneBatiment lien : liensBatiments) {
 			if (lien.isValidAt(date)) {
 				list.add(lien.getBatiment());

@@ -9,7 +9,7 @@ public class MockEvenementFiscalSender implements EvenementFiscalSender {
 
 	public int count;
 
-	private final List<String> trace = new ArrayList<String>();
+	private final List<String> trace = new ArrayList<>();
 
 	public MockEvenementFiscalSender() {
 		this.count = 0;

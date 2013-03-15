@@ -19,9 +19,9 @@ public class IdentificationContribuableCache {
 	private Map<IdentificationContribuableEtatFilter, Collection<Integer>> periodesFiscales;
 	private Map<IdentificationContribuableEtatFilter, Collection<IdentificationContribuable.Etat>> etats;
 
-	private Map<TypeDemande, Map<IdentificationContribuableEtatFilter, Collection<String>>> typesMessagesParTypeDemande = new EnumMap<TypeDemande, Map<IdentificationContribuableEtatFilter, Collection<String>>>(TypeDemande.class);
+	private Map<TypeDemande, Map<IdentificationContribuableEtatFilter, Collection<String>>> typesMessagesParTypeDemande = new EnumMap<>(TypeDemande.class);
 
-	private List<String> listTraitementUsers = new ArrayList<String>();
+	private List<String> listTraitementUsers = new ArrayList<>();
 
 	public IdentificationContribuableCache() {
 		emetteursIds = Collections.emptyMap();
@@ -35,11 +35,11 @@ public class IdentificationContribuableCache {
 	}
 
 	private static <T> Map<IdentificationContribuableEtatFilter, Collection<T>> buildDataStructureFromMap(Map<IdentificationContribuable.Etat, List<T>> map) {
-		final Map<IdentificationContribuableEtatFilter, Collection<T>> ds = new EnumMap<IdentificationContribuableEtatFilter, Collection<T>>(IdentificationContribuableEtatFilter.class);
+		final Map<IdentificationContribuableEtatFilter, Collection<T>> ds = new EnumMap<>(IdentificationContribuableEtatFilter.class);
 		for (IdentificationContribuableEtatFilter filter : IdentificationContribuableEtatFilter.values()) {
 
 			// récupération des valeurs associées à tous les états filtrés
-			final Collection<T> collectionToFill = new LinkedList<T>();
+			final Collection<T> collectionToFill = new LinkedList<>();
 			for (Map.Entry<IdentificationContribuable.Etat, List<T>> entry : map.entrySet()) {
 				final IdentificationContribuable.Etat etat = entry.getKey();
 				if (filter.isIncluded(etat)) {
@@ -48,7 +48,7 @@ public class IdentificationContribuableCache {
 			}
 
 			// suppression des doublons et assignation à la collection
-			ds.put(filter, new HashSet<T>(collectionToFill));
+			ds.put(filter, new HashSet<>(collectionToFill));
 		}
 
 		return ds;
@@ -90,7 +90,7 @@ public class IdentificationContribuableCache {
 			res = findValues(typesMessages, filter);
 		}
 		else {
-			final List<String> accumulator = new LinkedList<String>();
+			final List<String> accumulator = new LinkedList<>();
 			for (TypeDemande type : typesDemande) {
 				final Map<IdentificationContribuableEtatFilter, Collection<String>> typesMessages = typesMessagesParTypeDemande.get(type);
 				if(typesMessages !=null){
@@ -98,7 +98,7 @@ public class IdentificationContribuableCache {
 				}
 
 			}
-			res = new HashSet<String>(accumulator);
+			res = new HashSet<>(accumulator);
 		}
 		return res;
 	}

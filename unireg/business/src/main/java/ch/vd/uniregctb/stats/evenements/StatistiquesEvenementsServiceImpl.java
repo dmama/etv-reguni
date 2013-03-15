@@ -54,7 +54,7 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 		final Map<String, Object> sqlParameters;
 		if (debutActivite != null) {
 			sql = "SELECT ETAT, COUNT(*) FROM EVENEMENT_CIVIL WHERE LOG_CDATE > TO_DATE(:debutActivite, 'YYYYMMDD') GROUP BY ETAT";
-			sqlParameters = new HashMap<String, Object>(1);
+			sqlParameters = new HashMap<>(1);
 			sqlParameters.put("debutActivite", debutActivite.index());
 		}
 		else {
@@ -69,7 +69,7 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 		final Map<String, Object> sqlParameters;
 		if (debutActivite != null) {
 			sql = "SELECT TYPE, COUNT(*) FROM EVENEMENT_CIVIL WHERE ETAT='EN_ERREUR' AND LOG_CDATE > TO_DATE(:debutActivite, 'YYYYMMDD') GROUP BY TYPE";
-			sqlParameters = new HashMap<String, Object>(1);
+			sqlParameters = new HashMap<>(1);
 			sqlParameters.put("debutActivite", debutActivite.index());
 		}
 		else {
@@ -151,7 +151,7 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 		final Map<String, Object> sqlParameters;
 		if (debutActivite != null) {
 			sql = "SELECT ETAT, COUNT(*) FROM EVENEMENT_CIVIL_ECH WHERE LOG_CDATE > TO_DATE(:debutActivite, 'YYYYMMDD') GROUP BY ETAT";
-			sqlParameters = new HashMap<String, Object>(1);
+			sqlParameters = new HashMap<>(1);
 			sqlParameters.put("debutActivite", debutActivite.index());
 		}
 		else {
@@ -166,7 +166,7 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 		final Map<String, Object> sqlParameters;
 		if (debutActivite != null) {
 			sql = "SELECT TYPE, ACTION_EVT, COUNT(*) FROM EVENEMENT_CIVIL_ECH WHERE ETAT='EN_ERREUR' AND LOG_CDATE > TO_DATE(:debutActivite, 'YYYYMMDD') GROUP BY TYPE, ACTION_EVT";
-			sqlParameters = new HashMap<String, Object>(1);
+			sqlParameters = new HashMap<>(1);
 			sqlParameters.put("debutActivite", debutActivite.index());
 		}
 		else {
@@ -178,7 +178,7 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 			public Pair<TypeEvenementCivilEch, ActionEvenementCivilEch> buildKey(Object[] row) {
 				final TypeEvenementCivilEch type = TypeEvenementCivilEch.valueOf((String) row[0]);
 				final ActionEvenementCivilEch action = ActionEvenementCivilEch.valueOf((String) row[1]);
-				return new Pair<TypeEvenementCivilEch, ActionEvenementCivilEch>(type, action);
+				return new Pair<>(type, action);
 			}
 
 			@Override
@@ -300,7 +300,7 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 		final Map<String, Object> sqlParameters;
 		if (debutActivite != null) {
 			sql = "SELECT ETAT, COUNT(*) FROM EVENEMENT_IDENTIFICATION_CTB WHERE LOG_CDATE > TO_DATE(:debutActivite, 'YYYYMMDD') GROUP BY ETAT";
-			sqlParameters = new HashMap<String, Object>(1);
+			sqlParameters = new HashMap<>(1);
 			sqlParameters.put("debutActivite", debutActivite.index());
 		}
 		else {
@@ -392,7 +392,7 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 				final Query query = session.createSQLQuery(sql);
 				final List<Object[]> results = query.list();
 				if (results != null && !results.isEmpty()) {
-					final List<T> liste = new ArrayList<T>(results.size());
+					final List<T> liste = new ArrayList<>(results.size());
 					for (Object[] row : results) {
 						final T element = callback.onRow(row);
 						if (element != null) {
@@ -421,7 +421,7 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 				}
 				final List<Object[]> result = query.list();
 				if (result != null && !result.isEmpty()) {
-					final Map<T, Integer> map = new HashMap<T, Integer>(result.size());
+					final Map<T, Integer> map = new HashMap<>(result.size());
 					for (Object[] row : result) {
 						final T modalite = Enum.valueOf(enumClass, (String) row[0]);
 						final Number nombre = (Number) row[1];
@@ -456,7 +456,7 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 				}
 				final List<Object[]> results = query.list();
 				if (results != null && !results.isEmpty()) {
-					final Map<K, V> map = new HashMap<K, V>(results.size());
+					final Map<K, V> map = new HashMap<>(results.size());
 					for (Object[] row : results) {
 						final K key = callback.buildKey(row);
 						final V value = callback.buildValue(row);

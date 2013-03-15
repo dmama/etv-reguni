@@ -33,7 +33,7 @@ public class DestinataireAvecHistoView {
 		if (etats == null || etats.isEmpty()) {
 		   throw new IllegalArgumentException("etats ne peut être ni null ni vide");
 		}
-		this.etats = new ArrayList<EtatDestinataireView>(etats);
+		this.etats = new ArrayList<>(etats);
 	}
 
 	public List<DemandeAvecHistoView> getDemandes() {
@@ -41,7 +41,7 @@ public class DestinataireAvecHistoView {
 	}
 
 	public void setDemandes(List<DemandeAvecHistoView> demandes) {
-		this.demandes = new ArrayList<DemandeAvecHistoView>(demandes);
+		this.demandes = new ArrayList<>(demandes);
 	}
 
 	public boolean isSuspendable() {

@@ -650,7 +650,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 		assertEquals(errors.length, e.getErreurs().size());
 
-		final Set<String> expected = new HashSet<String>();
+		final Set<String> expected = new HashSet<>();
 		for (EvenementCivilRegPPErreur ee : e.getErreurs()) {
 			expected.add(ee.getMessage());
 		}

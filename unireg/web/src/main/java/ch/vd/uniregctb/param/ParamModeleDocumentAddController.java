@@ -42,7 +42,7 @@ public class ParamModeleDocumentAddController extends AbstractSimpleFormControll
 	@Override
 	@SuppressWarnings("unchecked")
 	protected Map referenceData(HttpServletRequest request) throws Exception {
-		Map<String, Object> data = new HashMap<String, Object>();
+		Map<String, Object> data = new HashMap<>();
 		data.put("typeDocuments", tiersMapHelper.getTypesDeclarationImpotPourParam());
 		return data;
 	}

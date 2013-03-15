@@ -36,7 +36,7 @@ public class CoupleMcPickerFilter implements SearchTiersFilterWithPostFiltering 
 
 	@Override
 	public Set<TiersCriteria.TypeTiers> getTypesTiers() {
-		final Set<TiersCriteria.TypeTiers> set = new HashSet<TiersCriteria.TypeTiers>();
+		final Set<TiersCriteria.TypeTiers> set = new HashSet<>();
 		set.add(TiersCriteria.TypeTiers.NON_HABITANT);
 		set.add(TiersCriteria.TypeTiers.MENAGE_COMMUN);
 		return set;

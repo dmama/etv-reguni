@@ -54,9 +54,9 @@ public class DbUnitFileEditor {
 
 		// Ecrit le fichier de sortie
 		String outputFile = fileName; // on reécrit le fichier d'entrée
-		OutputStream output = new FileOutputStream(outputFile);
-		XmlDataSet.write(outputDataSet, output);
-		output.close();
+		try (OutputStream output = new FileOutputStream(outputFile)) {
+			XmlDataSet.write(outputDataSet, output);
+		}
 
 		System.out.println("done");
 	}
@@ -118,7 +118,7 @@ public class DbUnitFileEditor {
 	}
 	
 	static private List<String> findFile(File rep){
-		List<String> listFile = new ArrayList<String>();
+		List<String> listFile = new ArrayList<>();
 		if (rep.isDirectory()) {
             File[] list = rep.listFiles();
             if (list != null){

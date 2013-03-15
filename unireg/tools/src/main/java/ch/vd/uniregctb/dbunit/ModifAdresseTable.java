@@ -76,7 +76,7 @@ public class ModifAdresseTable implements ITable {
 		}
 		
 		private Column[] addColumns(ITableMetaData metaData) throws DataSetException {
-			List<Column> l = new ArrayList<Column>(Arrays.asList(metaData.getColumns()));
+			List<Column> l = new ArrayList<>(Arrays.asList(metaData.getColumns()));
 			for(Column col : l) {
 				if (col.getColumnName().equals("TYPE")) {
 					l.remove(col);

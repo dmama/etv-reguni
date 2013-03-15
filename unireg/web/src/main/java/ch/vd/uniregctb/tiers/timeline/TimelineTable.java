@@ -13,7 +13,7 @@ import ch.vd.registre.base.date.DateRangeHelper;
  */
 @SuppressWarnings("UnusedDeclaration")
 public class TimelineTable {
-	public final List<TimelineRow> rows = new ArrayList<TimelineRow>();
+	public final List<TimelineRow> rows = new ArrayList<>();
 
 	public List<TimelineRow> getRows() {
 		return rows;

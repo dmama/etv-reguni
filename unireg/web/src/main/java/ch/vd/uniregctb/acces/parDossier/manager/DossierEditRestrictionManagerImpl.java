@@ -68,7 +68,7 @@ public class DossierEditRestrictionManagerImpl implements DossierEditRestriction
 		dossierEditRestrictionView.setDossier(dossier);
 
 		final Set<DroitAcces> droitsAccesAppliques = pp.getDroitsAccesAppliques();
-		final List<DroitAccesView> droitsAccesView =  new ArrayList<DroitAccesView>(droitsAccesAppliques.size());
+		final List<DroitAccesView> droitsAccesView =  new ArrayList<>(droitsAccesAppliques.size());
 		for (DroitAcces droitAcces : droitsAccesAppliques) {
 			final DroitAccesView droitAccesView = new DroitAccesView();
 			droitAccesView.setId(droitAcces.getId());

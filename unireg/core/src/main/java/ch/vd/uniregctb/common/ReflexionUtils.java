@@ -27,7 +27,7 @@ public abstract class ReflexionUtils {
 	 * @return la liste de toutes les annotations de cette classe (en incluant les annotations héritées)
 	 */
 	public static List<Annotation> getAllAnnotations(Class clazz) {
-		List<Annotation> list = new ArrayList<Annotation>();
+		List<Annotation> list = new ArrayList<>();
 		while (clazz != null) {
 			final Annotation[] as = clazz.getAnnotations();
 			if (as != null) {
@@ -49,7 +49,7 @@ public abstract class ReflexionUtils {
 
 		BeanInfo info = Introspector.getBeanInfo(clazz);
 		PropertyDescriptor[] descriptors = info.getPropertyDescriptors();
-		HashMap<String, PropertyDescriptor> pds = new HashMap<String, PropertyDescriptor>();
+		HashMap<String, PropertyDescriptor> pds = new HashMap<>();
 
 		for (PropertyDescriptor descriptor : descriptors) {
 			pds.put(descriptor.getName(), descriptor);
@@ -68,7 +68,7 @@ public abstract class ReflexionUtils {
 	 * @return la représentation string de l'objet spécifié.
 	 */
 	public static String toString(Object o, boolean showNull) {
-		return toString(o, showNull, new HashSet<Object>());
+		return toString(o, showNull, new HashSet<>());
 	}
 
 	private static String toString(Object o, boolean showNull, Set<Object> processed) {
@@ -99,7 +99,7 @@ public abstract class ReflexionUtils {
 		// Cas généraux : on passe par la réflexion java
 		try {
 			final Map<String, PropertyDescriptor> descriptors = getPropertyDescriptors(o.getClass());
-			final List<PropertyDescriptor> list = new ArrayList<PropertyDescriptor>(descriptors.values());
+			final List<PropertyDescriptor> list = new ArrayList<>(descriptors.values());
 			Collections.sort(list, new Comparator<PropertyDescriptor>() {
 				@Override
 				public int compare(PropertyDescriptor o1, PropertyDescriptor o2) {

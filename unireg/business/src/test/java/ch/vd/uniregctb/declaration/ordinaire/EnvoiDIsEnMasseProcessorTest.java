@@ -336,7 +336,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		});
 
 		{
-			List<Long> idsList = new ArrayList<Long>();
+			List<Long> idsList = new ArrayList<>();
 			idsList.add(ids.marcId);
 			idsList.add(ids.jeanId);
 			idsList.add(ids.jacquesId);
@@ -445,7 +445,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 			assertEquals(2, dis.size());
 
 			// tri selon le numéro de séquence
-			final List<DeclarationImpotOrdinaire> diTriees = new ArrayList<DeclarationImpotOrdinaire>(dis);
+			final List<DeclarationImpotOrdinaire> diTriees = new ArrayList<>(dis);
 			Collections.sort(diTriees, new Comparator<DeclarationImpotOrdinaire>() {
 				@Override
 				public int compare(DeclarationImpotOrdinaire o1, DeclarationImpotOrdinaire o2) {
@@ -519,7 +519,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		});
 
 		{
-			final List<Long> idsList = new ArrayList<Long>();
+			final List<Long> idsList = new ArrayList<>();
 			idsList.add(ids.marcId);
 			idsList.add(ids.jeanId);
 			idsList.add(ids.jacquesId);

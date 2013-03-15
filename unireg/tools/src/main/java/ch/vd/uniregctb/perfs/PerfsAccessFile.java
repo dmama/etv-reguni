@@ -50,7 +50,7 @@ public class PerfsAccessFile {
 		}
 	}
 
-	private final ArrayList<Call> calls = new ArrayList<Call>();
+	private final ArrayList<Call> calls = new ArrayList<>();
 
 	/**
 	 * Charge et interprète un fichier de log d'accès de host-interface.
@@ -96,8 +96,7 @@ public class PerfsAccessFile {
 		SimpleDateFormat f = new SimpleDateFormat("yyyy.MM.dd HH:mm");
 
 		// on parse le fichier
-		Scanner s = new Scanner(file);
-		try {
+		try (Scanner s = new Scanner(file)) {
 			while (s.hasNextLine()) {
 
 				final String line = s.nextLine();
@@ -128,9 +127,6 @@ public class PerfsAccessFile {
 
 				calls.add(new Call(time, id));
 			}
-		}
-		finally {
-			s.close();
 		}
 
 		// les temps d'accès dans le fichier ne sont pas forcément triés, on le fait maintenant

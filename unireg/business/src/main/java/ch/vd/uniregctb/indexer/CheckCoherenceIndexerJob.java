@@ -50,7 +50,7 @@ public class CheckCoherenceIndexerJob extends JobDefinition {
 		final Set<Long> existingIds = template.execute(new TransactionCallback<Set<Long>>() {
 			@Override
 			public Set<Long> doInTransaction(TransactionStatus status) {
-				return new HashSet<Long>(tiersDAO.getAllIds());
+				return new HashSet<>(tiersDAO.getAllIds());
 			}
 		});
 

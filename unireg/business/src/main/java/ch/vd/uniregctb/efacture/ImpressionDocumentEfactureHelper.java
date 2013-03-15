@@ -4,22 +4,9 @@ import noNamespace.FichierImpressionDocument;
 
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
-import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.TypeDocument;
 
 public interface ImpressionDocumentEfactureHelper {
-
-
-	/**
-	 * Construit le champ idDocument
-	 *
-	 * @param annee
-	 * @param numeroDoc
-	 * @param tiers
-	 * @return
-	 */
-	public String construitIdDocument(Integer annee, Integer numeroDoc, Tiers tiers);
-
 
 	/**
 	 * @param typeDoc
@@ -46,6 +33,5 @@ public interface ImpressionDocumentEfactureHelper {
 	 * @param params
 	 * @return
 	 */
-
 	String construitIdDocument(ImpressionDocumentEfactureParams params);
 }

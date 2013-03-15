@@ -26,7 +26,7 @@ public class NorentesContext {
 
 	private int currentEtape = 0;
 
-	private final ArrayList<EtapeContext> etapes = new ArrayList<EtapeContext>();
+	private final ArrayList<EtapeContext> etapes = new ArrayList<>();
 
 	public NorentesContext(NorentesScenario scenario) {
 		this.scenario = scenario;
@@ -287,7 +287,7 @@ public class NorentesContext {
 	}
 
 	private List<Method> getAnnotatedMethods(Class<?> fClass, Class<? extends Annotation> annotationClass) {
-		List<Method> results = new ArrayList<Method>();
+		List<Method> results = new ArrayList<>();
 		for (Class<?> eachClass : getSuperClasses(fClass)) {
 			Method[] methods = eachClass.getDeclaredMethods();
 			for (Method eachMethod : methods) {
@@ -339,7 +339,7 @@ public class NorentesContext {
 	}
 
 	private static List<Class<?>> getSuperClasses(Class<?> testClass) {
-		ArrayList<Class<?>> results = new ArrayList<Class<?>>();
+		ArrayList<Class<?>> results = new ArrayList<>();
 		Class<?> current = testClass;
 		while (current != null) {
 			results.add(current);

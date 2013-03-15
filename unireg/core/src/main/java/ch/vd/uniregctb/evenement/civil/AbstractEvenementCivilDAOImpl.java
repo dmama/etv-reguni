@@ -79,7 +79,7 @@ public abstract class AbstractEvenementCivilDAOImpl<EVT, TYP_EVT extends Enum<TY
 
 		Assert.notNull(criterion, "Les critères de recherche peuvent pas être nuls");
 
-		final List<Object> paramsWhere = new ArrayList<Object>();
+		final List<Object> paramsWhere = new ArrayList<>();
 		final String queryWhere = buildCriterion(paramsWhere, criterion);
 		if (queryWhere == null) {
 			return Collections.emptyList();
@@ -109,7 +109,7 @@ public abstract class AbstractEvenementCivilDAOImpl<EVT, TYP_EVT extends Enum<TY
 
 	protected int genericCount(EvenementCivilCriteria<TYP_EVT> criterion){
 		Assert.notNull(criterion, "Les critères de recherche peuvent pas être nuls");
-		List<Object> criteria = new ArrayList<Object>();
+		List<Object> criteria = new ArrayList<>();
 		String queryWhere =buildCriterion(criteria, criterion);
 		String query = String.format(
 				" select count(*) from %s evenement %s where 1=1 %s",

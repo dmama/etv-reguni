@@ -18,9 +18,9 @@ import ch.vd.uniregctb.security.IfoSecProfil;
 
 public abstract class MockServiceSecuriteService implements ServiceSecuriteService {
 
-	private final Map<String, Operateur> operatorsByVisa = new HashMap<String, Operateur>();
-	private final Map<Long, Operateur> operatorsByIndividu = new HashMap<Long, Operateur>();
-	private final Map<String, IfoSecProfil> profilesOperatorByIndividu = new HashMap<String, IfoSecProfil>();
+	private final Map<String, Operateur> operatorsByVisa = new HashMap<>();
+	private final Map<Long, Operateur> operatorsByIndividu = new HashMap<>();
+	private final Map<String, IfoSecProfil> profilesOperatorByIndividu = new HashMap<>();
 
 	public MockServiceSecuriteService() {
 		init();
@@ -64,7 +64,7 @@ public abstract class MockServiceSecuriteService implements ServiceSecuriteServi
 		operatorsByVisa.put(visa, o);
 
 		final IfoSecProfilImpl profile = new IfoSecProfilImpl();
-		final List<IfoSecProcedure> procedures = new ArrayList<IfoSecProcedure>();
+		final List<IfoSecProcedure> procedures = new ArrayList<>();
 		if (roles != null) {
 			for (String r : roles) {
 				IfoSecProcedureImpl p = new IfoSecProcedureImpl();

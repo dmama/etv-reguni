@@ -153,18 +153,9 @@ public class ChangementNomTest extends AbstractEvenementCivilInterneTest {
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				Connection con = dataSource.getConnection();
-				try {
-					final Statement st = con.createStatement();
-					try {
-						st.execute("update TIERS set INDEX_DIRTY=" + dialect.toBooleanValueString(true) + " where NUMERO = 6792");
-					}
-					finally {
-						st.close();
-					}
-				}
-				finally {
-					con.close();
+				try (Connection con = dataSource.getConnection();
+				     Statement st = con.createStatement()) {
+					st.execute("update TIERS set INDEX_DIRTY=" + dialect.toBooleanValueString(true) + " where NUMERO = 6792");
 				}
 				return null;
 			}

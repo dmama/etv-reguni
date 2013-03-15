@@ -36,12 +36,6 @@ public class OnTheFlyTiersIndexer {
 	private final WorkingQueue<Long> queue;
 
 	private final Timer timer = new Timer();
-	private final TimerTask monitoring = new TimerTask() {
-		@Override
-		public void run() {
-			monitor();
-		}
-	};
 
 	public OnTheFlyTiersIndexer(GlobalTiersIndexerImpl indexer, PlatformTransactionManager transactionManager, SessionFactory sessionFactory, Dialect dialect) {
 
@@ -56,6 +50,12 @@ public class OnTheFlyTiersIndexer {
 		this.queue.start();
 
 		// Démarre le monitoring de la queue
+		final TimerTask monitoring = new TimerTask() {
+			@Override
+			public void run() {
+				monitor();
+			}
+		};
 		this.timer.schedule(monitoring, WATCH_PERIODE, WATCH_PERIODE);
 	}
 

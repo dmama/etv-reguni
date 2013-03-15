@@ -144,7 +144,7 @@ public class EvenementImpotSourceTest extends WithoutSpringTest {
 
 		final QName qname = new QName("http://www.vd.ch/fiscalite/taxation/evtQuittanceListe-v1", "evtQuittanceListe");
 		try {
-			marshaller.marshal(new JAXBElement<EvtQuittanceListe>(qname, EvtQuittanceListe.class, null, event), doc);
+			marshaller.marshal(new JAXBElement<>(qname, EvtQuittanceListe.class, null, event), doc);
 			return true;
 		}
 		catch (MarshalException e) {

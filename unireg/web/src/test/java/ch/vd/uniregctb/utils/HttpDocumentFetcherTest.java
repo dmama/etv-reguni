@@ -45,20 +45,15 @@ public class HttpDocumentFetcherTest extends WithoutSpringTest {
 			final Integer contentLength = doc.getContentLength();
 			Assert.assertNotNull(contentLength);
 
-			final InputStream in = doc.getContent();
-			Assert.assertNotNull(in);
-			try {
+			final File file = File.createTempFile("test-recup-doc", null);
+			file.deleteOnExit();
 
-				final File file = File.createTempFile("test-recup-doc", null);
-				file.deleteOnExit();
+			try (InputStream in = doc.getContent()) {
+				Assert.assertNotNull(in);
 				try (FileOutputStream out = new FileOutputStream(file)) {
 					IOUtils.copy(in, out);
 				}
-
 				Assert.assertEquals((long) contentLength, file.length());
-			}
-			finally {
-				in.close();
 			}
 		}
 		finally {

@@ -18,7 +18,7 @@ public class DonneesCivilesException extends Exception {
 
 	public DonneesCivilesException(String error) {
 		this.descriptionContexte = null;
-		this.errors = new ArrayList<String>(1);
+		this.errors = new ArrayList<>(1);
 		this.errors.add(error);
 		this.numeroCtb = null;
 	}

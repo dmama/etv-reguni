@@ -65,7 +65,7 @@ public class CorrectionFlagHabitantProcessor {
 			statusManager.setMessage(messageStatus, 0);
 
 			final ParallelBatchTransactionTemplate<Long, CorrectionFlagHabitantResults> template =
-					new ParallelBatchTransactionTemplate<Long, CorrectionFlagHabitantResults>(ids, TAILLE_LOT, nbThreads, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE, transactionManager,
+					new ParallelBatchTransactionTemplate<>(ids, TAILLE_LOT, nbThreads, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE, transactionManager,
 					                                                                          statusManager, hibernateTemplate);
 			template.execute(rapportFinal, new BatchTransactionTemplate.BatchCallback<Long, CorrectionFlagHabitantResults>() {
 

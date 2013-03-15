@@ -46,7 +46,7 @@ public class EditForPrincipalValidator extends EditForRevenuFortuneValidator {
 		}
 
 		// on établi la liste des périodes des fors fiscaux existants (sans prendre en compte le for en cours de modification)
-		final List<DateRange> fors = new ArrayList<DateRange>();
+		final List<DateRange> fors = new ArrayList<>();
 		for (ForFiscal f : ffp.getTiers().getForsFiscauxPrincipauxActifsSorted()) {
 			if (view.getId() != f.getId()) {
 				fors.add(new DateRangeHelper.Range(f));

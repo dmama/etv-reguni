@@ -34,7 +34,7 @@ class DropColumnTable implements ITable {
 		}
 
 		private Column[] filterColumns(ITableMetaData metaData, String dropColumnName) throws DataSetException {
-			List<Column> l = new ArrayList<Column>(Arrays.asList(metaData.getColumns()));
+			List<Column> l = new ArrayList<>(Arrays.asList(metaData.getColumns()));
 			for (int i = l.size() - 1; i >= 0; --i) {
 				if (dropColumnName.equals(l.get(i).getColumnName())) {
 					l.remove(i);

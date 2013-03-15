@@ -60,7 +60,7 @@ public class ServicePersonneMoraleHostInterfaces extends ServicePersonneMoraleBa
 				return Collections.emptyList();
 			}
 
-			final List<PersonneMorale> personnes = new ArrayList<PersonneMorale>(list.size());
+			final List<PersonneMorale> personnes = new ArrayList<>(list.size());
 			for (Object o : list) {
 				personnes.add(PersonneMoraleImpl.get((ch.vd.registre.pm.model.PersonneMorale) o));
 			}
@@ -90,7 +90,7 @@ public class ServicePersonneMoraleHostInterfaces extends ServicePersonneMoraleBa
 				return Collections.emptyList();
 			}
 
-			final List<Etablissement> personnes = new ArrayList<Etablissement>(list.size());
+			final List<Etablissement> personnes = new ArrayList<>(list.size());
 			for (Object o : list) {
 				personnes.add(EtablissementImpl.get((ch.vd.registre.pm.model.Etablissement) o));
 			}
@@ -110,7 +110,7 @@ public class ServicePersonneMoraleHostInterfaces extends ServicePersonneMoraleBa
 				return Collections.emptyList();
 			}
 
-			final List<EvenementPM> events = new ArrayList<EvenementPM>(list.size());
+			final List<EvenementPM> events = new ArrayList<>(list.size());
 			for (Object e : list) {
 				events.add(EvenementPMImpl.get((ch.vd.registre.pm.model.EvenementPM) e));
 			}

@@ -206,15 +206,11 @@ public class NumbersRequestHandlerTest extends BusinessTest {
 		final InputStream inputStream = attachement.getDataHandler().getInputStream();
 		assertNotNull(inputStream);
 
-		final List<Integer> foundIds = new ArrayList<Integer>();
-		final Scanner scanner = new Scanner(inputStream, "UTF-8");
-		try {
+		final List<Integer> foundIds = new ArrayList<>();
+		try (Scanner scanner = new Scanner(inputStream, "UTF-8")) {
 			while (scanner.hasNext()) {
 				foundIds.add(Integer.parseInt(scanner.next()));
 			}
-		}
-		finally {
-			scanner.close();
 		}
 		return foundIds;
 	}

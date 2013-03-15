@@ -450,7 +450,7 @@ public class TiersCriteria implements Serializable, TiersFilter {
 			this.typesTiers = null;
 		}
 		else {
-			this.typesTiers = new HashSet<TypeTiers>();
+			this.typesTiers = new HashSet<>();
 			this.typesTiers.add(type);
 		}
 	}

@@ -66,7 +66,7 @@ public class ReinitialiserBaremeDoubleGainProcessor {
 
 		final ReinitialiserBaremeDoubleGainResults rapportFinal = new ReinitialiserBaremeDoubleGainResults(dateTraitement, tiersService, adresseService);
 
-		final BatchTransactionTemplate<Long, ReinitialiserBaremeDoubleGainResults> template = new BatchTransactionTemplate<Long, ReinitialiserBaremeDoubleGainResults>(dis, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE,
+		final BatchTransactionTemplate<Long, ReinitialiserBaremeDoubleGainResults> template = new BatchTransactionTemplate<>(dis, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE,
 				transactionManager, status, hibernateTemplate);
 		template.execute(rapportFinal, new BatchCallback<Long, ReinitialiserBaremeDoubleGainResults>() {
 

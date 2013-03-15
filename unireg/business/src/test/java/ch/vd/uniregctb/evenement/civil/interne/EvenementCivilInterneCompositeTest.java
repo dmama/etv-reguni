@@ -329,7 +329,7 @@ public class EvenementCivilInterneCompositeTest extends WithoutSpringTest {
 		//
 		// - Chaque événements possède une part differente le composite devrait en possède 3
 
-		final Set<AttributeIndividu> attrs = new HashSet<AttributeIndividu>();
+		final Set<AttributeIndividu> attrs = new HashSet<>();
 
 		mockEvenementsComposants = new EvenementCivilInterne[] {
 				new EvenementCivilInterneMock(){

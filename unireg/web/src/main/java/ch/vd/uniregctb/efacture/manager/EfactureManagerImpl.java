@@ -132,11 +132,11 @@ public class EfactureManagerImpl implements EfactureManager {
 
 		//On charge l'historique des demandes.
 		final int sizeDemandes = destinataire.getHistoriqueDemandes().size();
-		final List<DemandeAvecHistoView> demandes = new ArrayList<DemandeAvecHistoView>(sizeDemandes);
+		final List<DemandeAvecHistoView> demandes = new ArrayList<>(sizeDemandes);
 		for (ListIterator<DemandeAvecHisto> it = destinataire.getHistoriqueDemandes().listIterator(sizeDemandes); it.hasPrevious(); ) {
 			final DemandeAvecHisto demande = it.previous();
 			final int sizeEtatDemandes = demande.getHistoriqueEtats().size();
-			final List<EtatDemandeView> etatsDemande = new ArrayList<EtatDemandeView>(sizeEtatDemandes);
+			final List<EtatDemandeView> etatsDemande = new ArrayList<>(sizeEtatDemandes);
 			for (ListIterator<EtatDemande> jt = demande.getHistoriqueEtats().listIterator(sizeEtatDemandes); jt.hasPrevious(); ) {
 				final EtatDemandeView etatView = getEtatDemande(jt.previous());
 				etatsDemande.add(etatView);
@@ -149,7 +149,7 @@ public class EfactureManagerImpl implements EfactureManager {
 
 		//Chargement de l'historique des états du destinataire
 		final int sizeEtatDestinataire = destinataire.getHistoriquesEtats().size();
-		final List<EtatDestinataireView> etats = new ArrayList<EtatDestinataireView>(sizeEtatDestinataire);
+		final List<EtatDestinataireView> etats = new ArrayList<>(sizeEtatDestinataire);
 		for (ListIterator<EtatDestinataire> it = destinataire.getHistoriquesEtats().listIterator(sizeEtatDestinataire); it.hasPrevious(); ) {
 			etats.add(getEtatDestinataire(it.previous()));
 		}

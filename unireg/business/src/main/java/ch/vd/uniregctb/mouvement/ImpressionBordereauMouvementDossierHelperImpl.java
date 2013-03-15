@@ -84,7 +84,7 @@ public class ImpressionBordereauMouvementDossierHelperImpl extends EditiqueAbstr
 
 		// d'abord les dossiers
 		final Set<MouvementDossier> contenu = bordereau.getContenu();
-		final List<BordereauEnvoiDocument.BordereauEnvoi.Dossier> dossiers = new ArrayList<BordereauEnvoiDocument.BordereauEnvoi.Dossier>(contenu.size());
+		final List<BordereauEnvoiDocument.BordereauEnvoi.Dossier> dossiers = new ArrayList<>(contenu.size());
 		for (MouvementDossier mvt : contenu) {
 			final BordereauEnvoiDocument.BordereauEnvoi.Dossier dossier =  bordereauEnvoi.addNewDossier();
 

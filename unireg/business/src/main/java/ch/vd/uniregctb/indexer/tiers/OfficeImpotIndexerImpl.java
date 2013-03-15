@@ -72,9 +72,9 @@ public class OfficeImpotIndexerImpl implements OfficeImpotIndexer {
 	 */
 	private List<List<Long>> split(List<Long> ids, int batchSize) {
 
-		List<List<Long>> batches = new ArrayList<List<Long>>();
+		List<List<Long>> batches = new ArrayList<>();
 
-		List<Long> batch = new ArrayList<Long>(batchSize);
+		List<Long> batch = new ArrayList<>(batchSize);
 		batches.add(batch);
 
 		final int size = ids.size();
@@ -82,7 +82,7 @@ public class OfficeImpotIndexerImpl implements OfficeImpotIndexer {
 			batch.add(ids.get(i));
 
 			if (batch.size() == batchSize) {
-				batch = new ArrayList<Long>(batchSize);
+				batch = new ArrayList<>(batchSize);
 				batches.add(batch);
 			}
 		}

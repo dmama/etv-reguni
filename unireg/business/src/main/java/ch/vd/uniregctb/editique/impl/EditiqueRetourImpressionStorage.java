@@ -99,7 +99,7 @@ public class EditiqueRetourImpressionStorage extends AsyncStorageWithPeriodicCle
 	 * Map des triggers enregistrés pour être déclenchés à la réception de nouveaux retours d'impression
 	 * (le Long est le timestamp donné par {@link System#nanoTime()} au moment de l'enregistrement du trigger)
 	 */
-	private final Map<String, Pair<Long, RetourImpressionTrigger>> delayedTriggers = new HashMap<String, Pair<Long, RetourImpressionTrigger>>();
+	private final Map<String, Pair<Long, RetourImpressionTrigger>> delayedTriggers = new HashMap<>();
 
 	/**
 	 * Thread de surveillance du contenu de la map des impressions reçues (voir {@link #map}) et qui

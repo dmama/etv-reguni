@@ -220,7 +220,7 @@ public class UrlEncodedQueryString {
 		// Defensively copy the List<String>'s
 
 		for ( Map.Entry<String, List<String>> entry : parameterMap.entrySet() ) {
-			queryString.queryMap.put( entry.getKey(), new ArrayList<String>( entry.getValue() ) );
+			queryString.queryMap.put( entry.getKey(), new ArrayList<>( entry.getValue() ) );
 		}
 
 		return queryString;
@@ -298,7 +298,7 @@ public class UrlEncodedQueryString {
 
 	// Note: we initialize this Map upon object creation because, realistically, it
 	// is always going to be needed (eg. there is little point lazy-initializing it)
-	private final Map<String, List<String>>	queryMap					= new LinkedHashMap<String, List<String>>();
+	private final Map<String, List<String>>	queryMap					= new LinkedHashMap<>();
 
 	//
 	// Public methods
@@ -390,13 +390,13 @@ public class UrlEncodedQueryString {
 
 	public Map<String, List<String>> getMap() {
 
-		LinkedHashMap<String, List<String>> map = new LinkedHashMap<String, List<String>>();
+		LinkedHashMap<String, List<String>> map = new LinkedHashMap<>();
 
 		// Defensively copy the List<String>'s
 
 		for ( Map.Entry<String, List<String>> entry : this.queryMap.entrySet() ) {
 			List<String> listValues = entry.getValue();
-			map.put( entry.getKey(), new ArrayList<String>( listValues ) );
+			map.put( entry.getKey(), new ArrayList<>( listValues ) );
 		}
 
 		return map;
@@ -839,7 +839,7 @@ public class UrlEncodedQueryString {
 
 		// ...otherwise, create a new one
 
-		List<String> listValues = new ArrayList<String>();
+		List<String> listValues = new ArrayList<>();
 		listValues.add( value );
 
 		this.queryMap.put( name, listValues );
@@ -897,7 +897,7 @@ public class UrlEncodedQueryString {
 
 				if ( !append ) {
 					if ( setAlreadyParsed == null ) {
-						setAlreadyParsed = new HashSet<String>();
+						setAlreadyParsed = new HashSet<>();
 					}
 
 					if ( !setAlreadyParsed.contains( name ) ) {

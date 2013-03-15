@@ -22,7 +22,7 @@ public class StatsServiceGroup implements StatsService, ServiceTracingInterface,
 
 	private StatsService statsService;
 	private String groupName;
-	private final Map<String, ServiceTracingInterface> subServices = new HashMap<String, ServiceTracingInterface>();
+	private final Map<String, ServiceTracingInterface> subServices = new HashMap<>();
 
 	public void setStatsService(StatsService statsService) {
 		this.statsService = statsService;

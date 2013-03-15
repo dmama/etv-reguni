@@ -37,7 +37,6 @@
 	
 	<bean id="identificationMessagesStatsManager" class="ch.vd.uniregctb.identification.contribuable.manager.IdentificationMessagesStatsManagerImpl">
 		<property name="identCtbService" ref="identCtbService" />
-		<property name="identCtbDAO" ref="identCtbDAO" />
 	</bean>
 
 	<bean id="identificationMessagesEditController" class="ch.vd.uniregctb.identification.contribuable.IdentificationMessagesEditController" parent="abstractTiersListController">

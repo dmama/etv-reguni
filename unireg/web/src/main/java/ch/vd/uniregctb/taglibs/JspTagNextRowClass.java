@@ -13,8 +13,8 @@ public class JspTagNextRowClass extends BodyTagSupport {
 
 	private static final long serialVersionUID = 1L;
 
-	private static final ThreadLocal<MutableInt> count = new ThreadLocal<MutableInt>();
-	private static final ThreadLocal<Boolean> justReset = new ThreadLocal<Boolean>();
+	private static final ThreadLocal<MutableInt> count = new ThreadLocal<>();
+	private static final ThreadLocal<Boolean> justReset = new ThreadLocal<>();
 
 	private boolean frozen = false;
 

@@ -216,8 +216,8 @@ public class ServiceCivilCache implements ServiceCivilRaw, UniregCacheInterface,
 
 		final Set<AttributeIndividu> partiesSet = arrayToSet(parties);
 
-		final Map<Long, Individu> map = new HashMap<Long, Individu>(nosIndividus.size());
-		final Set<Long> uncached = new HashSet<Long>(nosIndividus.size());
+		final Map<Long, Individu> map = new HashMap<>(nosIndividus.size());
+		final Set<Long> uncached = new HashSet<>(nosIndividus.size());
 
 		// Récupère les individus dans le cache
 		for (Long no : nosIndividus) {
@@ -257,7 +257,7 @@ public class ServiceCivilCache implements ServiceCivilRaw, UniregCacheInterface,
 		}
 
 		// Retourne les individus ordonnés en utilisant l'ordre des ids
-		final List<Individu> individus = new ArrayList<Individu>(nosIndividus.size());
+		final List<Individu> individus = new ArrayList<>(nosIndividus.size());
 		for (Long no : nosIndividus) {
 			Individu ind = map.get(no);
 			if (ind != null) {
@@ -421,7 +421,7 @@ public class ServiceCivilCache implements ServiceCivilRaw, UniregCacheInterface,
 			return null;
 		}
 
-		return new HashSet<AttributeIndividu>(Arrays.asList(parties));
+		return new HashSet<>(Arrays.asList(parties));
 	}
 
 	@Override

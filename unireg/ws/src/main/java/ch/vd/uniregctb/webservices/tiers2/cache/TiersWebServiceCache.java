@@ -295,11 +295,11 @@ public class TiersWebServiceCache implements UniregCacheInterface, TiersWebServi
 	 * @return l'ensemble des ids non trouvés dans le cache.
 	 */
 	private Set<Long> extractUncachedTiersIds(Set<Long> requestedIds, List<BatchTiersEntry> cachedEntries) {
-		final Set<Long> cachedIds = new HashSet<Long>(cachedEntries.size());
+		final Set<Long> cachedIds = new HashSet<>(cachedEntries.size());
 		for (BatchTiersEntry entry : cachedEntries) {
 			cachedIds.add(entry.number);
 		}
-		final Set<Long> uncached = new HashSet<Long>(requestedIds.size() - cachedIds.size());
+		final Set<Long> uncached = new HashSet<>(requestedIds.size() - cachedIds.size());
 		for (Long id : requestedIds) {
 			if (!cachedIds.contains(id)) {
 				uncached.add(id);
@@ -338,7 +338,7 @@ public class TiersWebServiceCache implements UniregCacheInterface, TiersWebServi
 			}
 
 			if (cachedEntries == null) {
-				cachedEntries = new ArrayList<BatchTiersEntry>();
+				cachedEntries = new ArrayList<>();
 			}
 			final Tiers tiers = value.getValueForParts(params.parts);
 			final BatchTiersEntry entry = new BatchTiersEntry(id, tiers);
@@ -434,11 +434,11 @@ public class TiersWebServiceCache implements UniregCacheInterface, TiersWebServi
 	 * @return l'ensemble des ids non trouvés dans le cache.
 	 */
 	private Set<Long> extractUncachedTiersHistoIds(Set<Long> requestedIds, List<BatchTiersHistoEntry> cachedEntries) {
-		final Set<Long> cachedIds = new HashSet<Long>(cachedEntries.size());
+		final Set<Long> cachedIds = new HashSet<>(cachedEntries.size());
 		for (BatchTiersHistoEntry entry : cachedEntries) {
 			cachedIds.add(entry.number);
 		}
-		final Set<Long> uncached = new HashSet<Long>(requestedIds.size() - cachedIds.size());
+		final Set<Long> uncached = new HashSet<>(requestedIds.size() - cachedIds.size());
 		for (Long id : requestedIds) {
 			if (!cachedIds.contains(id)) {
 				uncached.add(id);
@@ -477,7 +477,7 @@ public class TiersWebServiceCache implements UniregCacheInterface, TiersWebServi
 			}
 
 			if (cachedEntries == null) {
-				cachedEntries = new ArrayList<BatchTiersHistoEntry>();
+				cachedEntries = new ArrayList<>();
 			}
 			final TiersHisto tiers = value.getValueForParts(params.parts);
 			final BatchTiersHistoEntry entry = new BatchTiersHistoEntry(id, tiers);

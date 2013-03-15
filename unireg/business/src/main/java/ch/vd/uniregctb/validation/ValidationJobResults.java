@@ -85,10 +85,10 @@ public class ValidationJobResults extends JobResults<Long, ValidationJobResults>
 	public final boolean modeStrict;
 
 	public int nbTiersTotal;
-	public final List<Erreur> erreursValidation = new ArrayList<Erreur>();
-	public final List<Erreur> erreursPeriodesImposition = new ArrayList<Erreur>();
-	public final List<Erreur> erreursCoherenceDI = new ArrayList<Erreur>();
-	public final List<Erreur> erreursAdresses = new ArrayList<Erreur>();
+	public final List<Erreur> erreursValidation = new ArrayList<>();
+	public final List<Erreur> erreursPeriodesImposition = new ArrayList<>();
+	public final List<Erreur> erreursCoherenceDI = new ArrayList<>();
+	public final List<Erreur> erreursAdresses = new ArrayList<>();
 	public boolean interrompu;
 
 	public ValidationJobResults(RegDate dateTraitement, boolean calculatePeriodesImposition, boolean coherencePeriodesImpositionWrtDIs,

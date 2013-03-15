@@ -127,7 +127,7 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 		final EvenementCivilEchTranslationStrategy cacheCleaningCorrectionStrategy = new TranslationStrategyWithRelationshipCacheCleanup(defaultCorrectionStrategy, context.getServiceCivil(), context.getDataEventService());
 		final TranslationStrategyWithRelationshipCacheCleanup notImplementedWithRelationshipCacheCleanup = new TranslationStrategyWithRelationshipCacheCleanup(NOT_IMPLEMENTED, context.getServiceCivil(), context.getDataEventService());
 
-		final Map<EventTypeKey, EvenementCivilEchTranslationStrategy> strategies = new HashMap<EventTypeKey, EvenementCivilEchTranslationStrategy>();
+		final Map<EventTypeKey, EvenementCivilEchTranslationStrategy> strategies = new HashMap<>();
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON), new NaissanceTranslationStrategy());
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.ANNULATION), NOT_IMPLEMENTED);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.CORRECTION), cacheCleaningCorrectionStrategy);

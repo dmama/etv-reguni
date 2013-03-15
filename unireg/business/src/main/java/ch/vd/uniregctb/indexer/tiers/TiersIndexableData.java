@@ -246,7 +246,7 @@ public class TiersIndexableData extends IndexableData {
 	public void addDateNaissance(RegDate date) {
 		if (date != null) {
 			if (this.datesNaissance == null) {
-				this.datesNaissance = new ArrayList<RegDate>();
+				this.datesNaissance = new ArrayList<>();
 			}
 			this.datesNaissance.add(date);
 		}
@@ -255,7 +255,7 @@ public class TiersIndexableData extends IndexableData {
 	public void addDatesNaissance(List<RegDate> list) {
 		if (list != null && !list.isEmpty()) {
 			if (this.datesNaissance == null) {
-				this.datesNaissance = new ArrayList<RegDate>();
+				this.datesNaissance = new ArrayList<>();
 			}
 			this.datesNaissance.addAll(list);
 		}

@@ -108,7 +108,7 @@ public class PerfsAccessFileIterator {
 
 				if (ids == null) {
 					// création à la demande
-					ids = new ArrayList<Long>(size);
+					ids = new ArrayList<>(size);
 				}
 
 				Call call = calls.get(i);

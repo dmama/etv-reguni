@@ -20,7 +20,7 @@ public abstract class PropertyType {
 	public static final BooleanPropertyType booleanPropType = new BooleanPropertyType();
 	public static final TimestampPropertyType timestampPropType = new TimestampPropertyType();
 
-	public static final Map<Class<?>, PropertyType> byJavaType = new HashMap<Class<?>, PropertyType>();
+	public static final Map<Class<?>, PropertyType> byJavaType = new HashMap<>();
 
 	static {
 		byJavaType.put(longPropType.getJavaType(), longPropType);

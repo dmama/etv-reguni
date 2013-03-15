@@ -291,7 +291,7 @@ public class EvenementCivilRegPP extends HibernateEntity {
 	 */
 	@Transient
 	public Set<EvenementCivilRegPPErreur> getErrors() {
-		Set<EvenementCivilRegPPErreur> list = new LinkedHashSet<EvenementCivilRegPPErreur>();
+		Set<EvenementCivilRegPPErreur> list = new LinkedHashSet<>();
 		for (EvenementCivilRegPPErreur e : getErreurs()) {
 			if (e.getType() == TypeEvenementErreur.ERROR) {
 				list.add(e);
@@ -307,7 +307,7 @@ public class EvenementCivilRegPP extends HibernateEntity {
 	 */
 	@Transient
 	public Set<EvenementCivilRegPPErreur> getWarnings() {
-		Set<EvenementCivilRegPPErreur> list = new LinkedHashSet<EvenementCivilRegPPErreur>();
+		Set<EvenementCivilRegPPErreur> list = new LinkedHashSet<>();
 		for (EvenementCivilRegPPErreur e : getErreurs()) {
 			if (e.getType() == TypeEvenementErreur.WARNING) {
 				list.add(e);
@@ -321,7 +321,7 @@ public class EvenementCivilRegPP extends HibernateEntity {
 	 */
 	public void addErrors(List<EvenementCivilRegPPErreur> errors) {
 		if (erreurs == null) {
-			erreurs = new HashSet<EvenementCivilRegPPErreur>();
+			erreurs = new HashSet<>();
 		}
 		for (EvenementCivilRegPPErreur e : errors) {
 			e.setType(TypeEvenementErreur.ERROR);
@@ -334,7 +334,7 @@ public class EvenementCivilRegPP extends HibernateEntity {
 	 */
 	public void addWarnings(List<EvenementCivilRegPPErreur> warn) {
 		if (erreurs == null) {
-			erreurs = new HashSet<EvenementCivilRegPPErreur>();
+			erreurs = new HashSet<>();
 		}
 		for (EvenementCivilRegPPErreur w : warn) {
 			w.setType(TypeEvenementErreur.WARNING);

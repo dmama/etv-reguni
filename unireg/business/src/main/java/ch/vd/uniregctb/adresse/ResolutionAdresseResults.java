@@ -46,8 +46,8 @@ public class ResolutionAdresseResults extends JobResults<Long, ResolutionAdresse
 
 	public final RegDate dateTraitement;
 	public int nbAdresseTotal;
-	public final List<InfoAdresse> listeAdresseResolues = new ArrayList<InfoAdresse>();
-	public final List<Erreur> erreurs = new ArrayList<Erreur>();
+	public final List<InfoAdresse> listeAdresseResolues = new ArrayList<>();
+	public final List<Erreur> erreurs = new ArrayList<>();
 	public boolean interrompu;
 
 	public ResolutionAdresseResults(RegDate dateTraitement, TiersService tiersService, AdresseService adresseService) {

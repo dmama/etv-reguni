@@ -24,7 +24,7 @@ public class EvenementCivilEchDAOImpl extends AbstractEvenementCivilDAOImpl<Even
 	
 
 	static {
-		final List<String> etats = new ArrayList<String>(EtatEvenementCivil.values().length);
+		final List<String> etats = new ArrayList<>(EtatEvenementCivil.values().length);
 		for (EtatEvenementCivil etat : EtatEvenementCivil.values()) {
 			if (!etat.isTraite()) {
 				etats.add(etat.name());

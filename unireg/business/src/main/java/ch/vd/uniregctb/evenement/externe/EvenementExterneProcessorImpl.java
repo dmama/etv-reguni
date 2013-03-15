@@ -33,7 +33,7 @@ public class EvenementExterneProcessorImpl implements EvenementExterneProcessor 
 	private HibernateTemplate hibernateTemplate;
 	private EvenementExterneService evenementExterneService;
 	private PlatformTransactionManager transactionManager;
-	private final ThreadLocal<TraiterEvenementExterneResult> rapport = new ThreadLocal<TraiterEvenementExterneResult>();
+	private final ThreadLocal<TraiterEvenementExterneResult> rapport = new ThreadLocal<>();
 	private TiersService tiersService;
 	private AdresseService adresseService;
 
@@ -46,7 +46,7 @@ public class EvenementExterneProcessorImpl implements EvenementExterneProcessor 
 
 		// Reussi les messages par lots
 		final ParallelBatchTransactionTemplate<Long, TraiterEvenementExterneResult>
-				template = new ParallelBatchTransactionTemplate<Long, TraiterEvenementExterneResult>(ids, BATCH_SIZE, nbThreads, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE,
+				template = new ParallelBatchTransactionTemplate<>(ids, BATCH_SIZE, nbThreads, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE,
 				                                                                                     transactionManager, status, hibernateTemplate);
 		template.execute(rapportFinal, new BatchTransactionTemplate.BatchCallback<Long, TraiterEvenementExterneResult>() {
 
@@ -126,7 +126,7 @@ public class EvenementExterneProcessorImpl implements EvenementExterneProcessor 
 					@Override
 					public List<Long> doInHibernate(Session session) throws HibernateException {
 						Query queryObject = session.createQuery(queryMessage);
-						List<String> etats = new ArrayList<String>();
+						List<String> etats = new ArrayList<>();
 						etats.add(EtatEvenementExterne.ERREUR.name());
 						etats.add(EtatEvenementExterne.NON_TRAITE.name());
 						queryObject.setParameterList("etats", etats);

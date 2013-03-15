@@ -12,7 +12,6 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.uniregctb.evenement.identification.contribuable.IdentCtbDAO;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableCriteria;
 import ch.vd.uniregctb.identification.contribuable.IdentificationContribuableService;
@@ -26,15 +25,9 @@ public class IdentificationMessagesStatsManagerImpl implements IdentificationMes
 
 	protected static final Logger LOGGER = Logger.getLogger(IdentificationMessagesStatsManagerImpl.class);
 
-	private IdentCtbDAO identCtbDAO;
-
 	private IdentificationContribuableService identCtbService;
 
 	private MessageSourceAccessor messageSourceAccessor;
-
-	public void setIdentCtbDAO(IdentCtbDAO identCtbDAO) {
-		this.identCtbDAO = identCtbDAO;
-	}
 
 	public void setIdentCtbService(IdentificationContribuableService identCtbService) {
 		this.identCtbService = identCtbService;

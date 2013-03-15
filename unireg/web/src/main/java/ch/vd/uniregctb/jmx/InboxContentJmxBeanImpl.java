@@ -26,7 +26,7 @@ public class InboxContentJmxBeanImpl implements InboxContentJmxBean {
 	@Override
 	public List<String> getContent() {
 		final List<InboxElement> elts = getElements();
-		final List<String> descriptions = new ArrayList<String>(elts.size());
+		final List<String> descriptions = new ArrayList<>(elts.size());
 		for (InboxElement elt : elts) {
 			final String expiration;
 			if (elt.isExpired()) {

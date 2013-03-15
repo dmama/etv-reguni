@@ -97,9 +97,9 @@ public class CorrectionFlagHabitantResults extends JobResults<Long, CorrectionFl
 	}
 
 	private int nombrePPInspectees;
-	private final List<ContribuableInfo> nouveauxHabitants = new LinkedList<ContribuableInfo>();
-	private final List<ContribuableInfo> nouveauxNonHabitants = new LinkedList<ContribuableInfo>();
-	private final List<ContribuableErreur> erreurs = new LinkedList<ContribuableErreur>();
+	private final List<ContribuableInfo> nouveauxHabitants = new LinkedList<>();
+	private final List<ContribuableInfo> nouveauxNonHabitants = new LinkedList<>();
+	private final List<ContribuableErreur> erreurs = new LinkedList<>();
 
 	public CorrectionFlagHabitantResults(TiersService tiersService, AdresseService adresseService) {
 		super(tiersService, adresseService);

@@ -19,8 +19,8 @@ public enum EtatMouvementDossier {
 	private static final List<EtatMouvementDossier> etatsEnInstance;
 
 	static {
-		final List<EtatMouvementDossier> traites = new ArrayList<EtatMouvementDossier>(values().length);
-		final List<EtatMouvementDossier> enInstance = new ArrayList<EtatMouvementDossier>(values().length);
+		final List<EtatMouvementDossier> traites = new ArrayList<>(values().length);
+		final List<EtatMouvementDossier> enInstance = new ArrayList<>(values().length);
 		for (EtatMouvementDossier etat : values()) {
 			if (etat.isTraite()) {
 				traites.add(etat);

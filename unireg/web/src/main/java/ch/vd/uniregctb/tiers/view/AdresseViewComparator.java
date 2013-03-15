@@ -23,9 +23,9 @@ public final class AdresseViewComparator implements Comparator<AdresseView> {
 	private static final List<TypeAdresseTiers> ordreUsageAdresseFiscale = Arrays.asList(TypeAdresseTiers.COURRIER,
 			TypeAdresseTiers.REPRESENTATION,
 			TypeAdresseTiers.POURSUITE);
-	private static final Comparator<TypeAdresseCivil> comparatorUsageAdresseCivile = new GentilComparator<TypeAdresseCivil>(ordreUsageAdresseCivile);
+	private static final Comparator<TypeAdresseCivil> comparatorUsageAdresseCivile = new GentilComparator<>(ordreUsageAdresseCivile);
 
-	private static final Comparator<TypeAdresseTiers> comparatorUsageAdresseFiscal = new GentilComparator<TypeAdresseTiers>(ordreUsageAdresseFiscale);
+	private static final Comparator<TypeAdresseTiers> comparatorUsageAdresseFiscal = new GentilComparator<>(ordreUsageAdresseFiscale);
 
 	private static <T extends Comparable<T>> int compareNullable(T o1, T o2, boolean nullAtEnd) {
 		if (o1 == o2) {

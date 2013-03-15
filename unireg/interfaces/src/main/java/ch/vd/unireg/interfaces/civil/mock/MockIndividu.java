@@ -49,7 +49,7 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 	private PermisList permis;
 	private Sexe sexe;
 	private RegDate dateArriveeVD;
-	private final Set<AttributeIndividu> availableParts = new HashSet<AttributeIndividu>();
+	private final Set<AttributeIndividu> availableParts = new HashSet<>();
 	private boolean nonHabitantNonRenvoye = false;
 
 	public MockIndividu() {
@@ -229,7 +229,7 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 			this.parents = null;
 		}
 		else {
-			final List<RelationVersIndividu> list = new ArrayList<RelationVersIndividu>();
+			final List<RelationVersIndividu> list = new ArrayList<>();
 			for (Individu parent : individus) {
 				final TypeRelationVersIndividu type = parent.getSexe() == Sexe.MASCULIN ? TypeRelationVersIndividu.PERE : TypeRelationVersIndividu.MERE;
 				list.add(new RelationVersIndividuImpl(parent.getNoTechnique(), type, parent.getDateNaissance(), parent.getDateDeces()));
@@ -252,7 +252,7 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 			this.enfants = null;
 		}
 		else {
-			final Collection<RelationVersIndividu> list = new ArrayList<RelationVersIndividu>();
+			final Collection<RelationVersIndividu> list = new ArrayList<>();
 			for (Individu enfant : individus) {
 				final TypeRelationVersIndividu type = enfant.getSexe() == Sexe.MASCULIN ? TypeRelationVersIndividu.FILS : TypeRelationVersIndividu.FILLE;
 				list.add(new RelationVersIndividuImpl(enfant.getNoTechnique(), type, enfant.getDateNaissance(), enfant.getDateDeces()));
@@ -581,7 +581,7 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 
 		@Override
 		public Iterator<EtatCivil> iterator() {
-			return new FreezableIterator<Iterator<EtatCivil>>(super.iterator());
+			return new FreezableIterator<>(super.iterator());
 		}
 
 		@Override

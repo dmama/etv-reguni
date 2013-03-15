@@ -594,7 +594,7 @@ public class ErrorPostProcessingAnnulationImpactStrategyTest extends BusinessTes
 				final EvenementCivilEch depart = buildEvent(TypeEvenementCivilEch.DEPART, ActionEvenementCivilEch.PREMIERE_LIVRAISON, noIndividu, idEvtDepart, null, dateMariage, EtatEvenementCivil.EN_ATTENTE);
 				final EvenementCivilEch correctionDepart = buildEvent(TypeEvenementCivilEch.DEPART, ActionEvenementCivilEch.CORRECTION, noIndividu, idEvtCorrectionDepart, idEvtDepart, dateDepart, EtatEvenementCivil.EN_ATTENTE);
 
-				final List<EvenementCivilEchBasicInfo> infos = new ArrayList<EvenementCivilEchBasicInfo>();
+				final List<EvenementCivilEchBasicInfo> infos = new ArrayList<>();
 				infos.add(new EvenementCivilEchBasicInfo(annulDemenagement));
 				infos.add(new EvenementCivilEchBasicInfo(mariage));
 				infos.add(new EvenementCivilEchBasicInfo(annulationMariage));
@@ -763,14 +763,14 @@ public class ErrorPostProcessingAnnulationImpactStrategyTest extends BusinessTes
 				final EvenementCivilEchErreur erreurInit = new EvenementCivilEchErreur();
 				erreurInit.setMessage("Erreur divorce");
 				erreurInit.setType(TypeEvenementErreur.ERROR);
-				init.setErreurs(new HashSet<EvenementCivilEchErreur>(Arrays.asList(erreurInit)));
+				init.setErreurs(new HashSet<>(Arrays.asList(erreurInit)));
 
 				final EvenementCivilEch annulation = buildEvent(TypeEvenementCivilEch.DIVORCE, ActionEvenementCivilEch.ANNULATION, noIndividu, idEvtAnnulation, idEvt, date, EtatEvenementCivil.EN_ATTENTE);
 				final EvenementCivilEch deces = buildEvent(TypeEvenementCivilEch.DECES, ActionEvenementCivilEch.PREMIERE_LIVRAISON, noIndividu, idEvtDeces, null, date, EtatEvenementCivil.EN_ERREUR);
 				final EvenementCivilEchErreur erreurDeces = new EvenementCivilEchErreur();
 				erreurDeces.setMessage("Erreur décès");
 				erreurDeces.setType(TypeEvenementErreur.ERROR);
-				deces.setErreurs(new HashSet<EvenementCivilEchErreur>(Arrays.asList(erreurDeces)));
+				deces.setErreurs(new HashSet<>(Arrays.asList(erreurDeces)));
 
 				return Arrays.asList(new EvenementCivilEchBasicInfo(init), new EvenementCivilEchBasicInfo(annulation), new EvenementCivilEchBasicInfo(deces));
 			}

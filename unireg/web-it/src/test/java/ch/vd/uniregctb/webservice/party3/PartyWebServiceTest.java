@@ -595,7 +595,7 @@ public class PartyWebServiceTest extends AbstractPartyWebServiceTest {
 		assertEquals(2, rapports.size()); // 2 rapports appartenance ménages
 
 		/* Extrait les différents type de rapports */
-		List<RelationBetweenParties> rapportsMenage = new ArrayList<RelationBetweenParties>();
+		List<RelationBetweenParties> rapportsMenage = new ArrayList<>();
 		for (RelationBetweenParties rapport : rapports) {
 			assertNotNull(rapport);
 			if (RelationBetweenPartiesType.HOUSEHOLD_MEMBER == rapport.getType()) {
@@ -1121,7 +1121,7 @@ public class PartyWebServiceTest extends AbstractPartyWebServiceTest {
 		assertNotNull(batch);
 		assertEquals(size, batch.getEntries().size());
 
-		final Set<Integer> ids = new HashSet<Integer>();
+		final Set<Integer> ids = new HashSet<>();
 		for (BatchPartyEntry entry : batch.getEntries()) {
 			ids.add(entry.getNumber());
 			assertNotNull("Le tiers n°" + entry.getNumber() + " est nul !", entry.getParty());

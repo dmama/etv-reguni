@@ -33,8 +33,8 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange {
 	private final Tiers destinataire;
 	private String salutations;
 	private String formuleAppel;
-	private final List<NomPrenom> nomsPrenoms = new ArrayList<NomPrenom>();
-	private final List<String> raisonsSociales = new ArrayList<String>();
+	private final List<NomPrenom> nomsPrenoms = new ArrayList<>();
+	private final List<String> raisonsSociales = new ArrayList<>();
 	private String complement;
 	private String pourAdresse;
 	private String numeroAppartement;
@@ -279,7 +279,7 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange {
 	 */
 	@NotNull
 	public List<String> getNomsPrenomsOuRaisonsSociales() {
-		List<String> list = new ArrayList<String>();
+		List<String> list = new ArrayList<>();
 		for (NomPrenom nomPrenom : nomsPrenoms) {
 			list.add(nomPrenom.getNomPrenom());
 		}

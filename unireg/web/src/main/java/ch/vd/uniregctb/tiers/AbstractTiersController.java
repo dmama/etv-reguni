@@ -33,7 +33,7 @@ public abstract class AbstractTiersController extends AbstractSimpleFormControll
 	@Override
 	protected Map<String, Object> referenceData(HttpServletRequest request) throws Exception {
 
-		Map<String, Object> data = new HashMap<String, Object>();
+		Map<String, Object> data = new HashMap<>();
 		data.put(TYPE_RECHERCHE_NOM_MAP_NAME, tiersMapHelper.getMapTypeRechercheNom());
 		data.put(TYPE_RECHERCHE_LOCALITE_PAYS_MAP_NAME, tiersMapHelper.getMapTypeRechercheLocalitePays());
 		data.put(TYPE_RECHERCHE_FOR_FISCAL, tiersMapHelper.getMapTypeRechercheForFiscal());
@@ -287,7 +287,7 @@ public abstract class AbstractTiersController extends AbstractSimpleFormControll
 		final List<TiersIndexedData> results = tiersService.search(bean.asCore());
 		Assert.notNull(results);
 
-		final List<TiersIndexedDataView> list = new ArrayList<TiersIndexedDataView>(results.size());
+		final List<TiersIndexedDataView> list = new ArrayList<>(results.size());
 		for (TiersIndexedData d : results) {
 			list.add(new TiersIndexedDataView(d));
 		}

@@ -66,7 +66,7 @@ public class InfoIFOSecController {
 	}
 
 	private List<Role> getProceduresIfoSecByPass(IfoSecProfil profile) {
-		final List<Role> list = new ArrayList<Role>(ifoSecService.getBypass(profile.getVisaOperateur()));
+		final List<Role> list = new ArrayList<>(ifoSecService.getBypass(profile.getVisaOperateur()));
 		Collections.sort(list);
 		return list;
 	}

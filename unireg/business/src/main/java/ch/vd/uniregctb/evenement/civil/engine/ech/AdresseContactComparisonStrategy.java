@@ -26,7 +26,7 @@ public class AdresseContactComparisonStrategy implements IndividuComparisonStrat
 		}
 	};
 
-	private static final IndividuComparisonHelper.Equalator<Object> DEFAULT_EQUALATOR = new IndividuComparisonHelper.DefaultEqualator<Object>();
+	private static final IndividuComparisonHelper.Equalator<Object> DEFAULT_EQUALATOR = new IndividuComparisonHelper.DefaultEqualator<>();
 
 	private static final IndividuComparisonHelper.Equalator<Adresse> ADDRESS_EQUALATOR = new IndividuComparisonHelper.NullableEqualator<Adresse>() {
 		@Override
@@ -64,7 +64,7 @@ public class AdresseContactComparisonStrategy implements IndividuComparisonStrat
 
 	private static List<Adresse> filterContact(Collection<Adresse> allAddresses) {
 		if (allAddresses != null && allAddresses.size() > 0) {
-			final List<Adresse> list = new ArrayList<Adresse>(allAddresses.size());
+			final List<Adresse> list = new ArrayList<>(allAddresses.size());
 			for (Adresse adr : allAddresses) {
 				if (adr.getTypeAdresse() == TypeAdresseCivil.COURRIER) {
 					list.add(adr);

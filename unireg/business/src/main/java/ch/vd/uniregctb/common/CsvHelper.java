@@ -144,15 +144,11 @@ public abstract class CsvHelper {
 			// normalement, on l'aura détruit avant, mais...
 			tmpFile.deleteOnExit();
 
-			final FileOutputStream o = new FileOutputStream(tmpFile);
-			final OutputStreamWriter writer = new OutputStreamWriter(o, CHARSET);
-			final BufferedWriter bufferedWriter = new BufferedWriter(writer, 1024 * 1024);
-			try {
+			try (final FileOutputStream o = new FileOutputStream(tmpFile);
+			     final OutputStreamWriter writer = new OutputStreamWriter(o, CHARSET);
+			     final BufferedWriter bufferedWriter = new BufferedWriter(writer, 1024 * 1024)) {
 				final LineFiller lf = new WriterLineFiller(bufferedWriter);
 				buildFileContent(list, fileName, status, filler, lf);
-			}
-			finally {
-				bufferedWriter.close();
 			}
 
 			// le fichier a été écrit -> on le relit maintenant dans la chaîne de caractères à renvoyer
@@ -161,16 +157,13 @@ public abstract class CsvHelper {
 				throw new RuntimeException("Fichier de sortie beaucoup trop gros !");
 			}
 			final byte[] bytes = new byte[(int) fileLength];
-			final BufferedInputStream in = new BufferedInputStream(new FileInputStream(tmpFile), 1024 * 1024);
-			try {
+			try (final FileInputStream fis = new FileInputStream(tmpFile);
+			     final BufferedInputStream in = new BufferedInputStream(fis, 1024 * 1024)) {
 				final int readLength = in.read(bytes);
 				if (readLength != fileLength) {
 					throw new IOException("Impossible de relire l'ensemble du fichier de sortie");
 				}
 				return new String(bytes, CHARSET);
-			}
-			finally {
-				in.close();
 			}
 		}
 		finally {
@@ -187,7 +180,7 @@ public abstract class CsvHelper {
 			status.setMessage(message, 0);
 		}
 
-		final GentilIterator<T> iter = new GentilIterator<T>(list);
+		final GentilIterator<T> iter = new GentilIterator<>(list);
 		while (iter.hasNext()) {
 			final T info = iter.next();
 			if (iter.isAtNewPercent() && status != null) {

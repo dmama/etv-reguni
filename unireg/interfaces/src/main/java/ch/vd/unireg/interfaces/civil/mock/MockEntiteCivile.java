@@ -49,7 +49,7 @@ public abstract class MockEntiteCivile implements EntiteCivile {
 		}
 
 		try {
-			final List<T> newCollection = new ArrayList<T>(original.size());
+			final List<T> newCollection = new ArrayList<>(original.size());
 			for (T elt : original) {
 				//noinspection unchecked
 				newCollection.add((T) ((MockCloneable) elt).clone());

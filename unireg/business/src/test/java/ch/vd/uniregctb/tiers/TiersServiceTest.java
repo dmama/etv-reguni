@@ -603,7 +603,7 @@ public class TiersServiceTest extends BusinessTest {
 
 		serviceCivil.setUp(new DefaultMockServiceCivil());
 
-		final Set<ForFiscal> forsFiscaux = new HashSet<ForFiscal>();
+		final Set<ForFiscal> forsFiscaux = new HashSet<>();
 		PersonnePhysique habitant = new PersonnePhysique(true);
 		habitant.setNumeroIndividu(54321L);
 		habitant.setForsFiscaux(forsFiscaux);
@@ -649,7 +649,7 @@ public class TiersServiceTest extends BusinessTest {
 		final RegDate debutMariage = RegDate.get(2007, 1, 1);
 		final RegDate finMariage = RegDate.get(2009, 6, 12);
 
-		final Set<RapportEntreTiers> rapports = new HashSet<RapportEntreTiers>();
+		final Set<RapportEntreTiers> rapports = new HashSet<>();
 		rapports.add(buildAppartenanceMenage(mc, momo, debutMariage, null, true));
 		rapports.add(buildAppartenanceMenage(mc, bea, debutMariage, null, true));
 		rapports.add(buildAppartenanceMenage(mc, momo, debutMariage, null, false));

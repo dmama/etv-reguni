@@ -46,7 +46,7 @@ public class UNIREG1472 {
 		
 		Assert.isFalse(processor.isIndigent(di,assujettissements));
 
-		assujettissements = new ArrayList<Assujettissement> ( Arrays.asList(
+		assujettissements = new ArrayList<>( Arrays.asList(
 				new Indigent(null,RegDate.get(2008,1,1), RegDate.get(2008,1,31), null, null),
 				new VaudoisOrdinaire(null,RegDate.get(2008,2,1), RegDate.get(2008,12,31), null, null)));
 		

@@ -23,7 +23,7 @@ public class DetailedLoadJmxBeanImpl extends LoadJmxBeanImpl<DetailedLoadMonitor
 	public List<String> getLoadDetails() {
 		final List<LoadDetail> details = service.getLoadDetails();
 		if (details != null && details.size() > 0) {
-			final List<String> strs = new ArrayList<String>(details.size());
+			final List<String> strs = new ArrayList<>(details.size());
 			for (LoadDetail detail : details) {
 				final String duration = TimeHelper.formatDureeShort(detail.getDurationMs());
 				final String str = String.format("Thread %s: %s, %s", detail.getThreadName(), duration, detail.getDescription());

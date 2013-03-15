@@ -17,7 +17,7 @@ public abstract class CommonSimpleFormController extends SimpleFormController {
 	/**
 	 * Cette variable contient la session courante, pour utilisation privée par les méthodes 'flash'.
 	 */
-	private final ThreadLocal<HttpServletRequest> request = new ThreadLocal<HttpServletRequest>();
+	private final ThreadLocal<HttpServletRequest> request = new ThreadLocal<>();
 
 	@Override
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {

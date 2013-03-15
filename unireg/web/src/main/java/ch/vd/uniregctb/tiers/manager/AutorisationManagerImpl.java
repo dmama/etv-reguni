@@ -256,7 +256,7 @@ public class AutorisationManagerImpl implements AutorisationManager {
 				// - pour tous les autres, tous les modes sont admis (donc y compris pour ceux dont on ne connait ni la nationalité ni le permis de séjour)
 				// - [SIFISC-4528] exception pour les non-habitants étrangers, on ne contrôle pas leur permis pour pouvoir eventuellement leur ajouter un for source
 				//   antérieur à leur obtention du permis C,
-				final Set<ModeImposition> autorises = new HashSet<ModeImposition>();
+				final Set<ModeImposition> autorises = new HashSet<>();
 
 				// nationalité suisse ou étrangère ?
 				Boolean isSuisse;
@@ -325,7 +325,7 @@ public class AutorisationManagerImpl implements AutorisationManager {
 	@NotNull
 	private Map<String, Boolean> getAutorisationsMap(@Nullable Tiers tiers, String visa, int oid) {
 
-		final Map<String, Boolean> map = new HashMap<String, Boolean>();
+		final Map<String, Boolean> map = new HashMap<>();
 
 		if (tiers == null) {
 			// cas spécial du tiers nul : le tiers est entrain d'être crée. Les droits ci-dessous sont appliqués dans ce cas-là.
@@ -782,6 +782,6 @@ public class AutorisationManagerImpl implements AutorisationManager {
 		else {
 			typeAutoriteFiscale = null;
 		}
-		return new Pair<TypeImposition, TypeAutoriteFiscale>(typeImposition, typeAutoriteFiscale);
+		return new Pair<>(typeImposition, typeAutoriteFiscale);
 	}
 }

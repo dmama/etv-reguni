@@ -106,7 +106,7 @@ public abstract class ProduireRolesResults extends JobResults<Long, ProduireRole
 	public static class InfoCommune {
 
 		private final int noOfs;
-		private final Map<Long, InfoContribuable> infosContribuables = new HashMap<Long, InfoContribuable>();
+		private final Map<Long, InfoContribuable> infosContribuables = new HashMap<>();
 
 		public InfoCommune(int noOfs) {
 			super();
@@ -190,7 +190,7 @@ public abstract class ProduireRolesResults extends JobResults<Long, ProduireRole
 		private final List<NomPrenom> nomsPrenoms;
 		private final List<String> nosAvs;
 		private final String[] adresseEnvoi;
-		private final List<InfoFor> fors = new ArrayList<InfoFor>();
+		private final List<InfoFor> fors = new ArrayList<>();
 
 		public InfoContribuable(Contribuable ctb, int annee, AdresseService adresseService, TiersService tiersService) {
 			this.noCtb = ctb.getNumero();
@@ -211,8 +211,8 @@ public abstract class ProduireRolesResults extends JobResults<Long, ProduireRole
 				this.adresseEnvoi = null;
 			}
 
-			nomsPrenoms = new ArrayList<NomPrenom>(2);
-			nosAvs = new ArrayList<String>(2);
+			nomsPrenoms = new ArrayList<>(2);
+			nosAvs = new ArrayList<>(2);
 			fillNomsPrenomsEtNosAvs(ctb, annee, tiersService, nomsPrenoms, nosAvs);
 		}
 
@@ -263,7 +263,7 @@ public abstract class ProduireRolesResults extends JobResults<Long, ProduireRole
 		/**
 		 * Comparateur de motifs de rattachement : DOMICILE, ACTIVITE_INDEPENDANTE, IMMEUBLE_PRIVE puis tous les autres de manière indiférenciée
 		 */
-		private static final Comparator<MotifRattachement> COMPARATOR_MOTIF_RATTACHEMENT = new GentilComparator<MotifRattachement>(Arrays.asList(MotifRattachement.DOMICILE, MotifRattachement.ACTIVITE_INDEPENDANTE, MotifRattachement.IMMEUBLE_PRIVE));
+		private static final Comparator<MotifRattachement> COMPARATOR_MOTIF_RATTACHEMENT = new GentilComparator<>(Arrays.asList(MotifRattachement.DOMICILE, MotifRattachement.ACTIVITE_INDEPENDANTE, MotifRattachement.IMMEUBLE_PRIVE));
 
 		/**
 		 * Comparateur par date d'ouverture croissante, puis principal/non-principal, puis motif de rattachement
@@ -325,7 +325,7 @@ public abstract class ProduireRolesResults extends JobResults<Long, ProduireRole
 				infoFor = fors.get(0);
 			}
 			else {
-				final List<InfoFor> aTrier = new ArrayList<InfoFor>(fors);
+				final List<InfoFor> aTrier = new ArrayList<>(fors);
 				Collections.sort(aTrier, comparator);
 				infoFor = aTrier.get(0);
 			}
@@ -341,7 +341,7 @@ public abstract class ProduireRolesResults extends JobResults<Long, ProduireRole
 				return null;
 			}
 			else {
-				return new Pair<RegDate, MotifFor>(forOuverture.dateOuverture, forOuverture.motifOuverture);
+				return new Pair<>(forOuverture.dateOuverture, forOuverture.motifOuverture);
 			}
 		}
 
@@ -354,7 +354,7 @@ public abstract class ProduireRolesResults extends JobResults<Long, ProduireRole
 				return null;
 			}
 			else {
-				return new Pair<RegDate, MotifFor>(forFermeture.dateFermeture, forFermeture.motifFermeture);
+				return new Pair<>(forFermeture.dateFermeture, forFermeture.motifFermeture);
 			}
 		}
 
@@ -501,10 +501,10 @@ public abstract class ProduireRolesResults extends JobResults<Long, ProduireRole
 	public final int nbThreads;
 
 	// données de sortie
-	public final Map<Integer, InfoCommune> infosCommunes = new HashMap<Integer, InfoCommune>();
+	public final Map<Integer, InfoCommune> infosCommunes = new HashMap<>();
 	public int ctbsTraites = 0;
-	public final List<Ignore> ctbsIgnores = new ArrayList<Ignore>();
-	public final List<Erreur> ctbsEnErrors = new ArrayList<Erreur>();
+	public final List<Ignore> ctbsIgnores = new ArrayList<>();
+	public final List<Erreur> ctbsEnErrors = new ArrayList<>();
 	public boolean interrompu;
 
 	public ProduireRolesResults(int anneePeriode, int nbThreads, RegDate dateTraitement, TiersService tiersService, AdresseService adresseService) {
@@ -596,7 +596,7 @@ public abstract class ProduireRolesResults extends JobResults<Long, ProduireRole
 	 */
 	public Map<Long, InfoContribuable> buildInfosPourRegroupementCommunes(Collection<Integer> nosOfsCommunes) {
 
-		final Map<Long, InfoContribuable> map = new HashMap<Long, InfoContribuable>();
+		final Map<Long, InfoContribuable> map = new HashMap<>();
 
 		// boucle sur chacune des communes demandées
 		for (Integer noOfsCommune : nosOfsCommunes) {

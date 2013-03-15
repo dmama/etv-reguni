@@ -72,7 +72,7 @@ public class DeterminationDIsAEmettreProcessor {
 	private final PeriodeImpositionService periodeImpositionService;
 	private final AdresseService adresseService;
 
-	private final ThreadLocal<DeterminationDIsResults> rapport = new ThreadLocal<DeterminationDIsResults>();
+	private final ThreadLocal<DeterminationDIsResults> rapport = new ThreadLocal<>();
 
 	private int batchSize = BATCH_SIZE;
 
@@ -103,7 +103,7 @@ public class DeterminationDIsAEmettreProcessor {
 		final List<Long> ids = createListeIdsContribuables(anneePeriode);
 
 		// Traite les contribuables par lots
-		final ParallelBatchTransactionTemplate<Long, DeterminationDIsResults> template = new ParallelBatchTransactionTemplate<Long, DeterminationDIsResults>(ids, batchSize, nbThreads, Behavior.REPRISE_AUTOMATIQUE,
+		final ParallelBatchTransactionTemplate<Long, DeterminationDIsResults> template = new ParallelBatchTransactionTemplate<>(ids, batchSize, nbThreads, Behavior.REPRISE_AUTOMATIQUE,
 																																							 transactionManager, status, hibernateTemplate);
 		template.execute(rapportFinal, new BatchCallback<Long, DeterminationDIsResults>() {
 
@@ -556,10 +556,10 @@ public class DeterminationDIsAEmettreProcessor {
 			for (PeriodeImposition p : periodes) {
 
 				if (DateRangeHelper.equals(p, range)) {
-					status = new ExistenceResults<PeriodeImposition>(TacheStatus.EXISTE_DEJA, p);
+					status = new ExistenceResults<>(TacheStatus.EXISTE_DEJA, p);
 				}
 				else if (DateRangeHelper.intersect(p, range)) {
-					status = new ExistenceResults<PeriodeImposition>(TacheStatus.INTERSECTE, p);
+					status = new ExistenceResults<>(TacheStatus.INTERSECTE, p);
 					break; // inutile de continuer
 				}
 			}
@@ -587,10 +587,10 @@ public class DeterminationDIsAEmettreProcessor {
 				if (!d.isAnnule()) {
 					final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) d;
 					if (DateRangeHelper.equals(d, periode)) {
-						status = new ExistenceResults<DeclarationImpotOrdinaire>(TacheStatus.EXISTE_DEJA, di);
+						status = new ExistenceResults<>(TacheStatus.EXISTE_DEJA, di);
 					}
 					else if (DateRangeHelper.intersect(d, periode)) {
-						status = new ExistenceResults<DeclarationImpotOrdinaire>(TacheStatus.INTERSECTE, di);
+						status = new ExistenceResults<>(TacheStatus.INTERSECTE, di);
 						break; // inutile de continuer
 					}
 				}
@@ -626,14 +626,14 @@ public class DeterminationDIsAEmettreProcessor {
 					//[UNIREG-1417] une tache trouvée à l'etat TRAITEE indique qu'une di a été emise
 					//mais qu'elle a été annulée par la suite. Il faut de nouveau l'emettre vu  que le contribuable
 					//concerné à été assujetti sur la période fiscale
-					status = new ExistenceResults<TacheEnvoiDeclarationImpot>(TacheStatus.DEJA_TRAITE, tache);
+					status = new ExistenceResults<>(TacheStatus.DEJA_TRAITE, tache);
 				}
 				else {
-					status = new ExistenceResults<TacheEnvoiDeclarationImpot>(TacheStatus.EXISTE_DEJA, tache);
+					status = new ExistenceResults<>(TacheStatus.EXISTE_DEJA, tache);
 				}
 			}
 			else if (DateRangeHelper.intersect(tache, range)) {
-				status = new ExistenceResults<TacheEnvoiDeclarationImpot>(TacheStatus.INTERSECTE, tache);
+				status = new ExistenceResults<>(TacheStatus.INTERSECTE, tache);
 				break; // inutile de continuer
 			}
 		}
@@ -737,12 +737,12 @@ public class DeterminationDIsAEmettreProcessor {
 					}
 				});
 
-				final Set<Long> set = new HashSet<Long>(idsFors.size() + idsTasks.size() + idsDIs.size());
+				final Set<Long> set = new HashSet<>(idsFors.size() + idsTasks.size() + idsDIs.size());
 				set.addAll(idsFors);
 				set.addAll(idsTasks);
 				set.addAll(idsDIs);
 
-				final List<Long> ids = new ArrayList<Long>(set);
+				final List<Long> ids = new ArrayList<>(set);
 				Collections.sort(ids);
 
 				return ids;

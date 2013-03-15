@@ -59,7 +59,7 @@ public class IdentifierContribuableProcessor {
 
 		// Reussi les messages par lots
 		final ParallelBatchTransactionTemplate<Long, IdentifierContribuableResults>
-				template = new ParallelBatchTransactionTemplate<Long, IdentifierContribuableResults>(ids, BATCH_SIZE, nbThreads, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE,
+				template = new ParallelBatchTransactionTemplate<>(ids, BATCH_SIZE, nbThreads, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE,
 				                                                                                     transactionManager, status, hibernateTemplate);
 		template.execute(rapportFinal, new BatchTransactionTemplate.BatchCallback<Long, IdentifierContribuableResults>() {
 
@@ -145,7 +145,7 @@ public class IdentifierContribuableProcessor {
 						@Override
 						public List<Long> doInHibernate(Session session) throws HibernateException {
 							final Query queryObject = session.createQuery(queryMessage);
-							final List<String> etats = new ArrayList<String>();
+							final List<String> etats = new ArrayList<>();
 							etats.add(IdentificationContribuable.Etat.A_EXPERTISER.name());
 							etats.add(IdentificationContribuable.Etat.A_EXPERTISER_SUSPENDU.name());
 							etats.add(IdentificationContribuable.Etat.A_TRAITER_MANUELLEMENT.name());
@@ -164,7 +164,7 @@ public class IdentifierContribuableProcessor {
 			return ids;
 		}
 		else {
-			final List<Long> ids = new ArrayList<Long>();
+			final List<Long> ids = new ArrayList<>();
 			ids.add(idMessage);
 			return ids;
 

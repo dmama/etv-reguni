@@ -42,7 +42,7 @@ public class MassTiersIndexer {
 		// Le flag doit etre setté avant le démarrage des threads sinon elles se terminent tout de suite...
 		isInit = true;
 
-		queue = new WorkingQueue<Long>(queueByThreadSize * nbThreads, nbThreads, worker);
+		queue = new WorkingQueue<>(queueByThreadSize * nbThreads, nbThreads, worker);
 		queue.start();
 	}
 

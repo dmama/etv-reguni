@@ -256,7 +256,7 @@ public class ServiceSecuriteCache implements UniregCacheInterface, ServiceSecuri
 		private final Set<EnumTypeCollectivite> typesCollectivite;
 
 		public KeyGetUtilisateursTypesCollectivite(List<EnumTypeCollectivite> typesCollectivite) {
-			this.typesCollectivite = new HashSet<EnumTypeCollectivite>(typesCollectivite);
+			this.typesCollectivite = new HashSet<>(typesCollectivite);
 		}
 
 		@Override

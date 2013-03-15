@@ -99,7 +99,7 @@ public class EvenementIamEsbHandler implements EsbMessageHandler {
 
 		// Valide le message
 		final XmlOptions validateOptions = new XmlOptions();
-		final ArrayList<XmlError> errorList = new ArrayList<XmlError>();
+		final ArrayList<XmlError> errorList = new ArrayList<>();
 		validateOptions.setErrorListener(errorList);
 		if (!evt.validate(validateOptions)) {
 			boolean first = true;
@@ -121,7 +121,7 @@ public class EvenementIamEsbHandler implements EsbMessageHandler {
 			final EnregistrementEmployeur enregistrementEmployeur = new EnregistrementEmployeur();
 			enregistrementEmployeur.setBusinessId(businessId);
 			enregistrementEmployeur.setDateTraitement(DateHelper.getCurrentDate());
-			final List<InfoEmployeur> employeursAMettreAJour = new ArrayList<InfoEmployeur>();
+			final List<InfoEmployeur> employeursAMettreAJour = new ArrayList<>();
 			final DemandeUtilisateurDocument.DemandeUtilisateur demandeUtilisateur = ((DemandeUtilisateurDocument) evt).getDemandeUtilisateur();
 			final DemandeUtilisateurDocument.DemandeUtilisateur.InfoMetier infoMetier = demandeUtilisateur.getInfoMetier();
 			if (infoMetier != null) {

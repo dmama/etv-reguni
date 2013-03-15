@@ -34,7 +34,7 @@ public class SuppressionOIDResults extends JobResults<Long, SuppressionOIDResult
 		public Traite(long noCtb, Integer officeImpotID, String nomCtb, Set<String> tables) {
 			super(noCtb, officeImpotID, null, nomCtb);
 
-			final List<String> list = new ArrayList<String>(tables);
+			final List<String> list = new ArrayList<>(tables);
 			Collections.sort(list);
 
 			final StringBuilder s = new StringBuilder();
@@ -71,8 +71,8 @@ public class SuppressionOIDResults extends JobResults<Long, SuppressionOIDResult
 	public final int oid;
 	public final RegDate dateTraitement;
 	public int total;
-	public final List<Traite> traites = new ArrayList<Traite>();
-	public final List<Erreur> errors = new ArrayList<Erreur>();
+	public final List<Traite> traites = new ArrayList<>();
+	public final List<Erreur> errors = new ArrayList<>();
 	public boolean interrompu;
 
 	public SuppressionOIDResults(int oid, RegDate dateTraitement, TiersService tiersService, AdresseService adresseService) {

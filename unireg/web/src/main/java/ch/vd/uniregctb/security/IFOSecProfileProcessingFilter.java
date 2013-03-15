@@ -48,7 +48,7 @@ public class IFOSecProfileProcessingFilter extends GenericFilterBean {
 			details.setIfoSecProfil(profil);
 
 			// On ajoute les procédures Ifosec autorisées dans la liste (nécessaire pour que le jsp tag <authz> fonctionne)
-			final List<GrantedAuthorityImpl> granted = new ArrayList<GrantedAuthorityImpl>();
+			final List<GrantedAuthorityImpl> granted = new ArrayList<>();
 			granted.add(new GrantedAuthorityImpl(profil.getVisaOperateur()));
 			granted.addAll(getIfoSecGrantedAuthorities(profil));
 
@@ -70,7 +70,7 @@ public class IFOSecProfileProcessingFilter extends GenericFilterBean {
 
 		final List<IfoSecProcedure> procedures = profil.getProcedures();
 		if (procedures != null) {
-			granted = new ArrayList<GrantedAuthorityImpl>();
+			granted = new ArrayList<>();
 			for (IfoSecProcedure procedure : procedures) {
 				final String ifoSec = procedure.getCode();
 				final Role role = Role.fromIfoSec(ifoSec);

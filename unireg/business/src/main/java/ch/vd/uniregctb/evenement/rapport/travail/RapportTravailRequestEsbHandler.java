@@ -163,7 +163,7 @@ public class RapportTravailRequestEsbHandler implements EsbMessageHandler, Initi
 	@Override
 	public void afterPropertiesSet() throws Exception {
 
-		final List<Resource> resources = new ArrayList<Resource>(1);
+		final List<Resource> resources = new ArrayList<>(1);
 		final List<ClassPathResource> resource = rapportTravailRequestHandler.getResponseXSD();
 		resources.addAll(resource);
 

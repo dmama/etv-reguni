@@ -226,8 +226,8 @@ public class ServicePersonneMoraleCache extends ServicePersonneMoraleBase implem
 
 		final Set<PartPM> partiesSet = arrayToSet(parts);
 
-		final Map<Long, PersonneMorale> map = new HashMap<Long, PersonneMorale>(ids.size());
-		final Set<Long> uncached = new HashSet<Long>(ids.size());
+		final Map<Long, PersonneMorale> map = new HashMap<>(ids.size());
+		final Set<Long> uncached = new HashSet<>(ids.size());
 
 		// Récupère les PMs dans le cache
 		for (Long no : ids) {
@@ -253,7 +253,7 @@ public class ServicePersonneMoraleCache extends ServicePersonneMoraleBase implem
 
 		// Effectue l'appel au service pour les PMs non-cachées
 		if (!uncached.isEmpty()) {
-			final List<PersonneMorale> list = target.getPersonnesMorales(new ArrayList<Long>(uncached), parts);
+			final List<PersonneMorale> list = target.getPersonnesMorales(new ArrayList<>(uncached), parts);
 			for (PersonneMorale pm : list) {
 				final long no = pm.getNumeroEntreprise();
 				map.put(no, pm);
@@ -265,7 +265,7 @@ public class ServicePersonneMoraleCache extends ServicePersonneMoraleBase implem
 		}
 
 		// Retourne les PMs ordonnés en utilisant l'ordre des ids
-		final List<PersonneMorale> pms = new ArrayList<PersonneMorale>(ids.size());
+		final List<PersonneMorale> pms = new ArrayList<>(ids.size());
 		for (Long no : ids) {
 			PersonneMorale pm = map.get(no);
 			if (pm != null) {
@@ -342,7 +342,7 @@ public class ServicePersonneMoraleCache extends ServicePersonneMoraleBase implem
 			return null;
 		}
 
-		final Set<PartPM> set = new HashSet<PartPM>(array.length);
+		final Set<PartPM> set = new HashSet<>(array.length);
 		set.addAll(Arrays.asList(array));
 		return set;
 	}

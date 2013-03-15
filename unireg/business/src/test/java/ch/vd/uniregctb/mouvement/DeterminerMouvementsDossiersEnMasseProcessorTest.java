@@ -92,7 +92,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 		final DeterminerMouvementsDossiersEnMasseResults results = new DeterminerMouvementsDossiersEnMasseResults(dateTraitement, archivesSeulement, tiersService, adresseService);
 
 		final Contribuable ctb = addHabitant(noIndMarieParlotte);
-		final Map<Integer, CollectiviteAdministrative> caCache = new HashMap<Integer, CollectiviteAdministrative>();
+		final Map<Integer, CollectiviteAdministrative> caCache = new HashMap<>();
 		proc.traiterContribuable(ctb, ranges, archivesSeulement, caCache, results);
 
 		// pas de for -> pas de mouvement
@@ -112,7 +112,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 
 		final Contribuable ctb = addHabitant(noIndMarieParlotte);
 		addForPrincipal(ctb, dateMajorite, MotifFor.MAJORITE, MockCommune.Lausanne);
-		final Map<Integer, CollectiviteAdministrative> caCache = new HashMap<Integer, CollectiviteAdministrative>();
+		final Map<Integer, CollectiviteAdministrative> caCache = new HashMap<>();
 		proc.traiterContribuable(ctb, ranges, archivesSeulement, caCache, results);
 
 		// pas de changement de for -> pas de mouvement
@@ -134,7 +134,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 		final RegDate dateDemenagement = RegDate.get(dateTraitement.year() - 1, 6, 30);
 		addForPrincipal(ctb, dateMajorite, MotifFor.MAJORITE, dateDemenagement, MotifFor.DEMENAGEMENT_VD, MockCommune.Croy);
 		addForPrincipal(ctb, dateDemenagement.addDays(1), MotifFor.DEMENAGEMENT_VD, MockCommune.Vaulion);
-		final Map<Integer, CollectiviteAdministrative> caCache = new HashMap<Integer, CollectiviteAdministrative>();
+		final Map<Integer, CollectiviteAdministrative> caCache = new HashMap<>();
 		proc.traiterContribuable(ctb, ranges, archivesSeulement, caCache, results);
 
 		// pas de changement d'OID -> pas de mouvement
@@ -156,7 +156,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 		final RegDate dateDemenagement = RegDate.get(dateTraitement.year() - 2, 6, 30);
 		addForPrincipal(ctb, dateMajorite, MotifFor.MAJORITE, dateDemenagement, MotifFor.DEPART_HS, MockCommune.Croy);
 		addForPrincipal(ctb, dateDemenagement.addDays(1), MotifFor.DEPART_HS, MockPays.PaysInconnu);
-		final Map<Integer, CollectiviteAdministrative> caCache = new HashMap<Integer, CollectiviteAdministrative>();
+		final Map<Integer, CollectiviteAdministrative> caCache = new HashMap<>();
 		proc.traiterContribuable(ctb, ranges, archivesSeulement, caCache, results);
 
 		// vieux départ -> mouvement vers les archives de l'OID d'Orbe
@@ -179,7 +179,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 		final RegDate dateDemenagement = RegDate.get(dateTraitement.year() - 2, 6, 30);
 		addForPrincipal(ctb, dateMajorite, MotifFor.MAJORITE, dateDemenagement, MotifFor.DEPART_HS, MockCommune.Croy);
 		addForPrincipal(ctb, dateDemenagement.addDays(1), MotifFor.DEPART_HS, MockPays.PaysInconnu);
-		final Map<Integer, CollectiviteAdministrative> caCache = new HashMap<Integer, CollectiviteAdministrative>();
+		final Map<Integer, CollectiviteAdministrative> caCache = new HashMap<>();
 		proc.traiterContribuable(ctb, ranges, archivesSeulement, caCache, results);
 
 		// vieux départ -> mouvement vers les archives de l'OID d'Orbe
@@ -201,7 +201,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 		final Contribuable ctb = addHabitant(noIndMarieParlotte);
 		final RegDate dateDemenagement = RegDate.get(dateTraitement.year() - 1, 6, 30);
 		addForPrincipal(ctb, dateDemenagement.addDays(1), MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
-		final Map<Integer, CollectiviteAdministrative> caCache = new HashMap<Integer, CollectiviteAdministrative>();
+		final Map<Integer, CollectiviteAdministrative> caCache = new HashMap<>();
 		proc.traiterContribuable(ctb, ranges, archivesSeulement, caCache, results);
 
 		// pas d'assujettissement n-2 -> pas de mouvement
@@ -222,7 +222,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 		final Contribuable ctb = addHabitant(noIndMarieParlotte);
 		final RegDate dateDemenagement = RegDate.get(dateTraitement.year() - 1, 6, 30);
 		addForPrincipal(ctb, dateMajorite, MotifFor.MAJORITE, dateDemenagement, MotifFor.DEPART_HS, MockCommune.Aubonne);
-		final Map<Integer, CollectiviteAdministrative> caCache = new HashMap<Integer, CollectiviteAdministrative>();
+		final Map<Integer, CollectiviteAdministrative> caCache = new HashMap<>();
 		proc.traiterContribuable(ctb, ranges, archivesSeulement, caCache, results);
 
 		// année juste après le départ -> pas encore de mouvement
@@ -244,7 +244,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 		final RegDate dateDemenagement = RegDate.get(dateTraitement.year() - 1, 6, 30);
 		addForPrincipal(ctb, dateMajorite, MotifFor.MAJORITE, dateDemenagement, MotifFor.DEMENAGEMENT_VD, MockCommune.Aubonne);
 		addForPrincipal(ctb, dateDemenagement.addDays(1), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
-		final Map<Integer, CollectiviteAdministrative> caCache = new HashMap<Integer, CollectiviteAdministrative>();
+		final Map<Integer, CollectiviteAdministrative> caCache = new HashMap<>();
 		proc.traiterContribuable(ctb, ranges, archivesSeulement, caCache, results);
 
 		// mouvement d'envoi de Aubonne à Lausanne
@@ -268,7 +268,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 		final RegDate dateDemenagement = RegDate.get(dateTraitement.year() - 1, 6, 30);
 		addForPrincipal(ctb, dateMajorite, MotifFor.MAJORITE, dateDemenagement, MotifFor.DEMENAGEMENT_VD, MockCommune.Aubonne);
 		addForPrincipal(ctb, dateDemenagement.addDays(1), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
-		final Map<Integer, CollectiviteAdministrative> caCache = new HashMap<Integer, CollectiviteAdministrative>();
+		final Map<Integer, CollectiviteAdministrative> caCache = new HashMap<>();
 		proc.traiterContribuable(ctb, ranges, archivesSeulement, caCache, results);
 
 		// normalement, mouvement d'envoi de Aubonne à Lausanne, mais comme on ne veut que les mouvements vers les archives,
@@ -345,7 +345,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 		final RegDate dateDemenagement = RegDate.get(dateTraitement.year() - 1, 6, 30);
 		addForPrincipal(ctb, dateArrivee, MotifFor.ARRIVEE_HS, dateDemenagement, MotifFor.DEMENAGEMENT_VD, MockCommune.Aubonne);
 		addForPrincipal(ctb, dateDemenagement.addDays(1), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
-		final Map<Integer, CollectiviteAdministrative> caCache = new HashMap<Integer, CollectiviteAdministrative>();
+		final Map<Integer, CollectiviteAdministrative> caCache = new HashMap<>();
 		proc.traiterContribuable(ctb, ranges, archivesSeulement, caCache, results);
 
 		// mouvement d'envoi de Aubonne à Lausanne
@@ -375,7 +375,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 		addForPrincipal(ctb, datePremierDemenagement.addDays(1), MotifFor.DEMENAGEMENT_VD, dateDeuxiemeDemenagement, MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
 		addForPrincipal(ctb, dateDeuxiemeDemenagement.addDays(1), MotifFor.DEMENAGEMENT_VD, MockCommune.Vevey);
 
-		final Map<Integer, CollectiviteAdministrative> caCache = new HashMap<Integer, CollectiviteAdministrative>();
+		final Map<Integer, CollectiviteAdministrative> caCache = new HashMap<>();
 		proc.traiterContribuable(ctb, ranges, archivesSeulement, caCache, results);
 
 		// mouvement d'envoi de Lausanne à Vevey
@@ -405,7 +405,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 		addForPrincipal(ctb, dateDemenagement, MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
 
 		final DeterminerMouvementsDossiersEnMasseProcessor proc = createProcessor();
-		final Map<Integer, CollectiviteAdministrative> caCache = new HashMap<Integer, CollectiviteAdministrative>();
+		final Map<Integer, CollectiviteAdministrative> caCache = new HashMap<>();
 		proc.traiterContribuable(ctb, ranges, archivesSeulement, caCache, results);
 
 		// mouvement d'envoi de Rollo-Aubonne à Lausanne
@@ -436,7 +436,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 		addForSecondaire(ctb, dateAchatImmeuble, MotifFor.ACHAT_IMMOBILIER, null, null, MockCommune.Aubonne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 
 		final DeterminerMouvementsDossiersEnMasseProcessor proc = createProcessor();
-		final Map<Integer, CollectiviteAdministrative> caCache = new HashMap<Integer, CollectiviteAdministrative>();
+		final Map<Integer, CollectiviteAdministrative> caCache = new HashMap<>();
 		proc.traiterContribuable(ctb, ranges, archivesSeulement, caCache, results);
 
 		assertPasDeMouvement(results, ctb);
@@ -471,7 +471,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 		final ForFiscalPrincipal ffp = addForPrincipal(ctb, dateMajorite, MotifFor.MAJORITE, MockCommune.Lausanne);
 		ffp.setModeImposition(ModeImposition.SOURCE);
 
-		final Map<Integer, CollectiviteAdministrative> caCache = new HashMap<Integer, CollectiviteAdministrative>();
+		final Map<Integer, CollectiviteAdministrative> caCache = new HashMap<>();
 		proc.traiterContribuable(ctb, ranges, archivesSeulement, caCache, results);
 
 		// sourcier pur -> devrait être indiqué comme ignoré (et donc pas de mouvement)
@@ -529,7 +529,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 		ffp.setModeImposition(ModeImposition.SOURCE);
 		addForPrincipal(ctb, datePermisC, MotifFor.PERMIS_C_SUISSE, MockCommune.Lausanne);
 
-		final Map<Integer, CollectiviteAdministrative> caCache = new HashMap<Integer, CollectiviteAdministrative>();
+		final Map<Integer, CollectiviteAdministrative> caCache = new HashMap<>();
 		proc.traiterContribuable(ctb, ranges, archivesSeulement, caCache, results);
 
 		assertPasDeMouvement(results, ctb);

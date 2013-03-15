@@ -628,7 +628,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 				this.idDi = idDi;
 			}
 		}
-		final List<Ids> liste = new ArrayList<Ids>();
+		final List<Ids> liste = new ArrayList<>();
 
 		// on désactive la validation pour pouvoir sauver un tiers au moins qui ne valide pas...
 		doInNewTransactionAndSessionWithoutValidation(new TransactionCallback<Object>() {

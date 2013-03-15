@@ -61,15 +61,13 @@ public class RetourImpressionToInboxTriggerTest extends WithoutSpringTest {
 		Assert.assertEquals(MimeTypeHelper.MIME_PLAINTEXT, attachment.getMimeType());
 		Assert.assertEquals("print", attachment.getFilenameRadical());
 
-		final ByteArrayOutputStream out = new ByteArrayOutputStream(100);
-		try (InputStream attachmentContent = attachment.getContent()) {
+
+		final String contenuTrouve;
+		try (InputStream attachmentContent = attachment.getContent(); ByteArrayOutputStream out = new ByteArrayOutputStream(100)) {
 			IOUtils.copy(attachmentContent, out);
-		}
-		finally {
-			out.close();
+			contenuTrouve = out.toString();
 		}
 
-		final String contenuTrouve = out.toString();
 		Assert.assertEquals(CONTENT, contenuTrouve);
 	}
 }

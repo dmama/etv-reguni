@@ -40,10 +40,10 @@ import ch.vd.uniregctb.tiers.Tiers;
 public class DbUnit2Java extends BusinessTest {
 
 	private final static String DB_UNIT_FILE = "/home/msi/projets/registre/unireg/trunk/04-Implementation/unireg/web/src/main/resources/DBUnit4Import/tiers-basic.xml";
-	private final static List<Class> hibernateBaseClasses = new ArrayList<Class>();
-	private final Map<Class, List<Class>> baseClassToConcreteOnes = new HashMap<Class, List<Class>>();
-	private final Map<Class, ClassInfo> concreteClassInfo = new HashMap<Class, ClassInfo>();
-	private final Map<HibernateEntity, String> entityInstanceNames = new HashMap<HibernateEntity, String>();
+	private final static List<Class> hibernateBaseClasses = new ArrayList<>();
+	private final Map<Class, List<Class>> baseClassToConcreteOnes = new HashMap<>();
+	private final Map<Class, ClassInfo> concreteClassInfo = new HashMap<>();
+	private final Map<HibernateEntity, String> entityInstanceNames = new HashMap<>();
 
 	static {
 		hibernateBaseClasses.add(PeriodeFiscale.class);
@@ -146,7 +146,7 @@ public class DbUnit2Java extends BusinessTest {
 	private List<Class> getConcreteClasses(Class baseClass) {
 		List<Class> list = baseClassToConcreteOnes.get(baseClass);
 		if (list == null) {
-			list = new ArrayList<Class>();
+			list = new ArrayList<>();
 			baseClassToConcreteOnes.put(baseClass, list);
 		}
 		return list;

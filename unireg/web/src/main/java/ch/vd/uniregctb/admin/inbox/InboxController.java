@@ -64,7 +64,7 @@ public class InboxController implements InitializingBean {
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		// initialisation de la stratégie associée aux flux PCL
-		final Map<String, ContentDeliveryStrategy> map = new HashMap<String, ContentDeliveryStrategy>();
+		final Map<String, ContentDeliveryStrategy> map = new HashMap<>();
 		final PclContentDeliveryStrategy pclContentDeliveryStrategy = new PclContentDeliveryStrategy(pclManager);
 		map.put(MimeTypeHelper.MIME_PCL, pclContentDeliveryStrategy);
 		map.put(MimeTypeHelper.MIME_XPCL, pclContentDeliveryStrategy);
@@ -73,7 +73,7 @@ public class InboxController implements InitializingBean {
 	}
 
 	private Map<UUID, ExtractionJob> getKnownJobsEnAttenteForVisa(String visa) {
-		final Map<UUID, ExtractionJob> map = new HashMap<UUID, ExtractionJob>();
+		final Map<UUID, ExtractionJob> map = new HashMap<>();
 		fillMap(map, extractionService.getQueueContent(visa));
 		fillMap(map, extractionService.getExtractionsEnCours(visa));
 		return map;
@@ -101,11 +101,9 @@ public class InboxController implements InitializingBean {
 		final InboxElement elt = inboxService.getInboxElement(uuid);
 		if (elt != null) {
 			final InboxAttachment attachment = elt.getAttachment();
-			final InputStream in = attachment.getContent();
-			try {
+			try (InputStream in = attachment.getContent()) {
 				final String mimeType = attachment.getMimeType();
 
-				final ServletOutputStream out = response.getOutputStream();
 				response.reset(); // pour éviter l'exception 'getOutputStream() has already been called for this response'
 
 				final ContentDeliveryStrategy strategy = getStrategy(mimeType);
@@ -117,16 +115,10 @@ public class InboxController implements InitializingBean {
 				response.setHeader("cache-control", "no-cache");
 				response.setHeader("Cache-control", "must-revalidate");
 
-				try {
+				try (ServletOutputStream out = response.getOutputStream()) {
 					strategy.copyToOutputStream(in, out);
 					out.flush();
 				}
-				finally {
-					out.close();
-				}
-			}
-			finally {
-				in.close();
 			}
 
 			elt.setRead(true);
@@ -147,7 +139,7 @@ public class InboxController implements InitializingBean {
 	public String showJobs(Model model) {
 		// on met dans une liste pour trier par date de demande et ainsi avoir les éléments dans l'ordre de leur exécution
 		final String visa = AuthenticationHelper.getCurrentPrincipal();
-		final List<ExtractionJob> jobs = new ArrayList<ExtractionJob>(getKnownJobsEnAttenteForVisa(visa).values());
+		final List<ExtractionJob> jobs = new ArrayList<>(getKnownJobsEnAttenteForVisa(visa).values());
 		Collections.sort(jobs, new Comparator<ExtractionJob>() {
 			@Override
 			public int compare(ExtractionJob o1, ExtractionJob o2) {

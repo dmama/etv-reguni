@@ -81,7 +81,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 	@SuppressWarnings({"unchecked"})
 	public Map<Class, List<Tiers>> getFirstGroupedByClass(final int count) {
 		final Session session = getCurrentSession();
-		final Map<Class, List<Tiers>> map = new HashMap<Class, List<Tiers>>();
+		final Map<Class, List<Tiers>> map = new HashMap<>();
 		for (Class clazz : TIERS_CLASSES) {
 			final Query query = session.createQuery("from Tiers t where t.class = " + clazz.getSimpleName());
 			query.setMaxResults(count);
@@ -96,11 +96,11 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 	@Override
 	public Set<Long> getRelatedIds(final long id, int maxDepth) {
 
-		final Set<Long> ids = new HashSet<Long>();
+		final Set<Long> ids = new HashSet<>();
 		ids.add(id);
 
 		// on démarre avec l'id passé
-		final Set<Long> input = new HashSet<Long>();
+		final Set<Long> input = new HashSet<>();
 		input.add(id);
 
 		for (int i = 0; i < maxDepth; i++) {
@@ -140,7 +140,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 			session.setFlushMode(mode);
 		}
 
-		final Set<Long> output = new HashSet<Long>();
+		final Set<Long> output = new HashSet<>();
 		for (Object[] objects : list) {
 			final Long objetId = (Long) objects[0];
 			final Long sujetId = (Long) objects[1];
@@ -161,14 +161,14 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 
 	private <T extends HibernateEntity> Map<Long, Set<T>> groupByTiersId(Session session, List<T> entities, TiersIdGetter<T> getter) {
 
-		final Map<Long, Set<T>> map = new HashMap<Long, Set<T>>();
+		final Map<Long, Set<T>> map = new HashMap<>();
 
 		for (T e : entities) {
 			session.setReadOnly(e, true);
 			final Long tiersId = getter.getTiersId(e);
 			Set<T> set = map.get(tiersId);
 			if (set == null) {
-				set = new HashSet<T>();
+				set = new HashSet<>();
 				map.put(tiersId, set);
 			}
 			set.add(e);
@@ -181,7 +181,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 		for (Tiers t : tiers) {
 			Set<T> a = map.get(t.getId());
 			if (a == null) {
-				a = new HashSet<T>();
+				a = new HashSet<>();
 			}
 			setter.setEntitySet(t, a);
 		}
@@ -222,8 +222,8 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 		final Session session = getCurrentSession();
 
 		// on complète la liste d'ids avec les tiers liés par rapports
-		final Set<Long> idsDemandes = new HashSet<Long>(ids);
-		final Set<Long> idsLies = new HashSet<Long>();
+		final Set<Long> idsDemandes = new HashSet<>(ids);
+		final Set<Long> idsLies = new HashSet<>();
 
 		// les tiers liés en tant que sujets
 		final String hqlSujets = buildHqlForSujets(excludeContactsImpotSource);
@@ -235,7 +235,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 		final List<Long> idsObjets = queryObjectsByIds(hqlObjets, idsDemandes, session);
 		idsLies.addAll(idsObjets);
 
-		final Set<Long> idsFull = new HashSet<Long>(idsDemandes);
+		final Set<Long> idsFull = new HashSet<>(idsDemandes);
 		idsFull.addAll(idsLies);
 
 		return idsFull;
@@ -257,7 +257,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 			session.setFlushMode(FlushMode.MANUAL); // pour éviter qu'Hibernate essaie de mettre-à-jour les collections des associations one-to-many avec des cascades delete-orphan.
 		}
 		try {
-			return getBatch(new HashSet<Long>(ids), parts, session);
+			return getBatch(new HashSet<>(ids), parts, session);
 		}
 		finally {
 			if (mode != FlushMode.MANUAL) {
@@ -507,7 +507,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 		// [SIFISC-7271] on doit faire en sorte que l'ensemble des IDs ne contient jamais de null (hibernate n'aime pas ça...)
 		if (ids.size() > 0 && ids.contains(null)) {
 			// on crée une nouvelle instance de Set pour se prémunir dans le cas où le Set en entrée serait Read-Only
-			ids = new HashSet<Long>(ids);
+			ids = new HashSet<>(ids);
 			ids.remove(null);
 		}
 
@@ -522,8 +522,8 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 			}
 			else {
 				// on charge les entités par sous lots
-				list = new ArrayList<T>(size);
-				final List<Long> l = new ArrayList<Long>(ids);
+				list = new ArrayList<>(size);
+				final List<Long> l = new ArrayList<>(ids);
 				for (int i = 0; i < size; i += MAX_IN_SIZE) {
 					final List<Long> sub = l.subList(i, Math.min(size, i + MAX_IN_SIZE));
 					query.setParameterList("ids", sub);
@@ -652,9 +652,9 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 	}
 
 	public static Set<Long> getNumerosIndividu(Collection<Long> tiersIds, boolean includesComposantsMenage, Session session) {
-		final Set<Long> numeros = new HashSet<Long>(tiersIds.size());
+		final Set<Long> numeros = new HashSet<>(tiersIds.size());
 
-		final Set<Long> tiersIdSet = new HashSet<Long>(tiersIds);
+		final Set<Long> tiersIdSet = new HashSet<>(tiersIds);
 		if (includesComposantsMenage) {
 			// on récupère les numéros d'individu des composants des ménages
 			final List<Long> nos = queryObjectsByIds(QUERY_GET_NOS_IND_COMPOSANTS, tiersIdSet, session);
@@ -675,7 +675,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 		for (Long id : tiersIds) {
 			if (Entreprise.FIRST_ID <= id && id <= Entreprise.LAST_ID) {
 				if (list == null) {
-					list = new ArrayList<Long>();
+					list = new ArrayList<>();
 				}
 				list.add(id);
 			}
@@ -814,7 +814,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 			// tous les candidats sortent : il faut ensuite filtrer par rapport aux dates d'annulation et de réactivation...
 			final List<Object[]> rows = query.list();
 			if (rows != null && !rows.isEmpty()) {
-				final List<Long> res = new ArrayList<Long>(rows.size());
+				final List<Long> res = new ArrayList<>(rows.size());
 				for (Object[] row : rows) {
 					final Number ppId = (Number) row[0];
 					final Number indexDesactivation = (Number) row[1];
@@ -1044,11 +1044,11 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 	public List<MenageCommun> getMenagesCommuns(final List<Long> ids, Set<Parts> parts) {
 		final Session session = getCurrentSession();
 		final String hql = "select mc.numero from MenageCommun mc where mc.numero in (:ids)";
-		final Set<Long> set = new HashSet<Long>(ids);
+		final Set<Long> set = new HashSet<>(ids);
 		final List<Long> idsMC = queryObjectsByIds(hql, set, session);
 
 		final List<Tiers> tiers = getBatch(idsMC, parts);
-		final List<MenageCommun> menages = new ArrayList<MenageCommun>(tiers.size());
+		final List<MenageCommun> menages = new ArrayList<>(tiers.size());
 		for (Tiers t : tiers) {
 			menages.add((MenageCommun) t);
 		}
@@ -1226,7 +1226,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 				keys = Collections.emptySet();
 			}
 			else {
-				keys = new HashSet<Object>(entities.size());
+				keys = new HashSet<>(entities.size());
 				for (E d : entities) {
 					final Object key = d.getKey();
 					Assert.notNull(key, "Les entités existantes doivent être déjà persistées.");
@@ -1296,7 +1296,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 		queryObject.setTimestamp("fin", dateFinRech);
 
 		final List<Object> listeResultat = queryObject.list();
-		final List<Long> listeCtbModifies = new ArrayList<Long>(listeResultat.size());
+		final List<Long> listeCtbModifies = new ArrayList<>(listeResultat.size());
 		for (Object o : listeResultat) {
 			listeCtbModifies.add(((Number) o).longValue());
 		}

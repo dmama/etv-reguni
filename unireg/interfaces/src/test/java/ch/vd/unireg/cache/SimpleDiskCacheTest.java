@@ -13,7 +13,7 @@ import static org.junit.Assert.assertNull;
 
 public class SimpleDiskCacheTest extends WithoutSpringTest {
 
-	private SimpleDiskCache<Data> store = new SimpleDiskCache<Data>();
+	private SimpleDiskCache<Data> store = new SimpleDiskCache<>();
 
 	@Override
 	public void onSetUp() throws Exception {

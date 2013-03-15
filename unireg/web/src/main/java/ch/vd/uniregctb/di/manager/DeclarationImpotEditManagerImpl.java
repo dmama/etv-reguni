@@ -143,7 +143,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		final int premiereAnnee = parametres.getPremierePeriodeFiscale();
 		final int derniereAnnee = RegDate.get().year();
 
-		final List<PeriodeImposition> ranges = new ArrayList<PeriodeImposition>();
+		final List<PeriodeImposition> ranges = new ArrayList<>();
 		for (int annee = premiereAnnee; annee <= derniereAnnee; ++annee) {
 			final List<PeriodeImposition> r = calculateRangesDIsPourAnnee(contribuable, annee);
 			if (r != null) {
@@ -197,7 +197,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		final Set<Declaration> declarations = contribuable.getDeclarations();
 
 		// On ne retourne que les périodes qui ne sont pas déjà associées avec une déclaration
-		final List<PeriodeImposition> periodesNonAssociees = new ArrayList<PeriodeImposition>();
+		final List<PeriodeImposition> periodesNonAssociees = new ArrayList<>();
 		for (PeriodeImposition a : periodes) {
 			boolean match = false;
 			if (declarations != null) {

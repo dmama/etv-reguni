@@ -12,7 +12,7 @@ import ch.vd.unireg.xml.event.party.v1.Response;
 public class RequestHandlerResult {
 
 	private Response response;
-	private Map<String, EsbDataHandler> attachments = new HashMap<String, EsbDataHandler>();
+	private Map<String, EsbDataHandler> attachments = new HashMap<>();
 
 	public RequestHandlerResult() {
 	}

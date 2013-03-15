@@ -291,7 +291,7 @@ public class PartyWebServiceTAOISTest extends AbstractPartyWebServiceTest {
 		assertNotNull(tiers);
 
 		// Récupération de l'historique des rapport de travail entre le sourcier et son (ses) employeur(s)
-		final List<RelationBetweenParties> rapports = new ArrayList<RelationBetweenParties>();
+		final List<RelationBetweenParties> rapports = new ArrayList<>();
 		for (RelationBetweenParties r : tiers.getRelationsBetweenParties()) {
 			if (RelationBetweenPartiesType.TAXABLE_REVENUE == r.getType()) {
 				rapports.add(r);

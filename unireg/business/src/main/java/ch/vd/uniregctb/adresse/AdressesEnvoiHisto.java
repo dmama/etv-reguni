@@ -56,31 +56,31 @@ public class AdressesEnvoiHisto {
 		switch (type) {
 		case COURRIER:
 			if (courrier == null) {
-				courrier = new ArrayList<AdresseEnvoiDetaillee>();
+				courrier = new ArrayList<>();
 			}
 			courrier.add(adresse);
 			break;
 		case REPRESENTATION:
 			if (representation == null) {
-				representation = new ArrayList<AdresseEnvoiDetaillee>();
+				representation = new ArrayList<>();
 			}
 			representation.add(adresse);
 			break;
 		case DOMICILE:
 			if (domicile == null) {
-				domicile = new ArrayList<AdresseEnvoiDetaillee>();
+				domicile = new ArrayList<>();
 			}
 			domicile.add(adresse);
 			break;
 		case POURSUITE:
 			if (poursuite == null) {
-				poursuite = new ArrayList<AdresseEnvoiDetaillee>();
+				poursuite = new ArrayList<>();
 			}
 			poursuite.add(adresse);
 			break;
 		case POURSUITE_AUTRE_TIERS:
 			if (poursuiteAutreTiers == null) {
-				poursuiteAutreTiers = new ArrayList<AdresseEnvoiDetaillee>();
+				poursuiteAutreTiers = new ArrayList<>();
 			}
 			poursuiteAutreTiers.add(adresse);
 			break;

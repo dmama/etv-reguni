@@ -19,9 +19,9 @@ public class BlockingQueueMixer<T> {
 	private final List<WorkingThread<T>> workers;
 
 	public BlockingQueueMixer(List<BlockingQueue<T>> inputQueues, BlockingQueue<T> outputQueue) {
-		this.input = new ArrayList<BlockingQueue<T>>(inputQueues);
+		this.input = new ArrayList<>(inputQueues);
 		this.output = outputQueue;
-		this.workers = new ArrayList<WorkingThread<T>>(inputQueues.size());
+		this.workers = new ArrayList<>(inputQueues.size());
 	}
 
 	public void start(String threadNamePrefix) {
@@ -33,7 +33,7 @@ public class BlockingQueueMixer<T> {
 			throw new IllegalStateException("Already started!");
 		}
 		for (BlockingQueue<T> in : this.input) {
-			this.workers.add(new WorkingThread<T>(threadNameGenerator.getNewThreadName(), in, this.output));
+			this.workers.add(new WorkingThread<>(threadNameGenerator.getNewThreadName(), in, this.output));
 		}
 		for (Thread th : this.workers) {
 			th.start();

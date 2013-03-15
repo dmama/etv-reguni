@@ -68,7 +68,7 @@ public class ListeDIsNonEmises extends EnvoiDIsResults<ListeDIsNonEmises> {
 	}
 
 
-	private final List<LigneRapport> diNonEmises = new ArrayList<LigneRapport>();
+	private final List<LigneRapport> diNonEmises = new ArrayList<>();
 
 
 	public ListeDIsNonEmises(int anneePeriode, RegDate dateTraitement, TiersService tiersService, AdresseService adresseService) {

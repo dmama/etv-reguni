@@ -141,7 +141,7 @@ public class EnvoiDIsEnMasseProcessor {
 			final List<Long> ids = createListOnContribuableIds(anneePeriode, categorie.getTypeContribuable(), categorie.getTypeDocument(), noCtbMin, noCtbMax);
 
 			// Traite les contribuables par lots
-			final ParallelBatchTransactionTemplate<Long, EnvoiDIsResults> template = new ParallelBatchTransactionTemplate<Long, EnvoiDIsResults>(ids, tailleLot, nbThreads, Behavior.REPRISE_AUTOMATIQUE,
+			final ParallelBatchTransactionTemplate<Long, EnvoiDIsResults> template = new ParallelBatchTransactionTemplate<>(ids, tailleLot, nbThreads, Behavior.REPRISE_AUTOMATIQUE,
 			                                                                                                                                     transactionManager, status, hibernateTemplate);
 			template.execute(rapportFinal, new BatchCallback<Long, EnvoiDIsResults>() {
 
@@ -754,7 +754,7 @@ public class EnvoiDIsEnMasseProcessor {
 	protected class DeclarationsCache {
 
 		private final DateRange baseRange;
-		private final Map<Long, List<DeclarationImpotOrdinaire>> map = new HashMap<Long, List<DeclarationImpotOrdinaire>>();
+		private final Map<Long, List<DeclarationImpotOrdinaire>> map = new HashMap<>();
 
 		public DeclarationsCache(int annee, List<Long> ids) {
 			this.baseRange = new Range(RegDate.get(annee, 1, 1), RegDate.get(annee, 12, 31));
@@ -831,7 +831,7 @@ public class EnvoiDIsEnMasseProcessor {
 
 			List<DeclarationImpotOrdinaire> l = map.get(numero);
 			if (l == null) {
-				l = new ArrayList<DeclarationImpotOrdinaire>();
+				l = new ArrayList<>();
 				map.put(numero, l);
 			}
 
@@ -868,7 +868,7 @@ public class EnvoiDIsEnMasseProcessor {
 			// si le range spécifié ne corresponds pas à celui utilisé pour initialiser le cache, on retrie la liste en conséquence
 			final boolean sameRange = DateRangeHelper.equals(range, baseRange);
 			if (!list.isEmpty() && (!annuleesIncluses || !sameRange)) {
-				final List<DeclarationImpotOrdinaire> listeFiltree = new ArrayList<DeclarationImpotOrdinaire>(list.size());
+				final List<DeclarationImpotOrdinaire> listeFiltree = new ArrayList<>(list.size());
 				for (DeclarationImpotOrdinaire di : list) {
 					if ((annuleesIncluses || !di.isAnnule()) && (sameRange || DateRangeHelper.intersect(di, range))) {
 						listeFiltree.add(di);

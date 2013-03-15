@@ -33,7 +33,6 @@ import static org.junit.Assert.fail;
 public class ImportImmeublesProcessorTest extends BusinessTest {
 
 	private ImportImmeublesProcessor processor;
-	private InputStream is;
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -49,19 +48,10 @@ public class ImportImmeublesProcessorTest extends BusinessTest {
 		});
 	}
 
-	@Override
-	public void onTearDown() throws Exception {
-		if (is != null) {
-			is.close();
-		}
-		super.onTearDown();
-	}
-
 	@Test
 	public void testRunFichierVide() throws Exception {
 
-		is = new ByteArrayInputStream(new byte[0]);
-		try {
+		try (InputStream is = new ByteArrayInputStream(new byte[0])) {
 			processor.run(is, "ISO-8859-15", null);
 			fail();
 		}
@@ -73,51 +63,54 @@ public class ImportImmeublesProcessorTest extends BusinessTest {
 	@Test
 	public void testRunFichierAvecEnteteSeulement() throws Exception {
 
-		is = new FileInputStream(getFile("immeubles_vide.csv"));
-		final ImportImmeublesResults res = processor.run(is, "UTF-8", null);
-		assertNotNull(res);
-		assertEquals(0, res.nbLignes);
-		assertEquals(0, res.traites.size());
-		assertEquals(0, res.ignores.size());
-		assertEquals(0, res.averifier.size());
-		assertEquals(0, res.erreurs.size());
+		try (InputStream is = new FileInputStream(getFile("immeubles_vide.csv"))) {
+			final ImportImmeublesResults res = processor.run(is, "UTF-8", null);
+			assertNotNull(res);
+			assertEquals(0, res.nbLignes);
+			assertEquals(0, res.traites.size());
+			assertEquals(0, res.ignores.size());
+			assertEquals(0, res.averifier.size());
+			assertEquals(0, res.erreurs.size());
+		}
 	}
 
 	@Test
 	public void testRunFichierAvecUnImmeubleContribuableInconnu() throws Exception {
 
-		is = new FileInputStream(getFile("un_immeuble.csv"));
-		final ImportImmeublesResults res = processor.run(is, "UTF-8", null);
-		assertNotNull(res);
-		assertEquals(1, res.nbLignes);
-		assertEquals(0, res.traites.size());
-		assertEquals(0, res.ignores.size());
-		assertEquals(0, res.averifier.size());
-		assertEquals(1, res.erreurs.size());
+		try (InputStream is = new FileInputStream(getFile("un_immeuble.csv"))) {
+			final ImportImmeublesResults res = processor.run(is, "UTF-8", null);
+			assertNotNull(res);
+			assertEquals(1, res.nbLignes);
+			assertEquals(0, res.traites.size());
+			assertEquals(0, res.ignores.size());
+			assertEquals(0, res.averifier.size());
+			assertEquals(1, res.erreurs.size());
 
-		final ImportImmeublesResults.Erreur erreur0 = res.erreurs.get(0);
-		assertNotNull(erreur0);
-		assertEquals("132/3129", erreur0.getNoImmeuble());
-		assertEquals("Le contribuable n'existe pas", erreur0.getDescriptionRaison());
-		assertEquals("Le contribuable n°12345678 n'existe pas.", erreur0.getDetails());
+			final ImportImmeublesResults.Erreur erreur0 = res.erreurs.get(0);
+			assertNotNull(erreur0);
+			assertEquals("132/3129", erreur0.getNoImmeuble());
+			assertEquals("Le contribuable n'existe pas", erreur0.getDescriptionRaison());
+			assertEquals("Le contribuable n°12345678 n'existe pas.", erreur0.getDetails());
+		}
 	}
 
 	@Test
 	public void testRunFichierAvecUnImmeubleContribuableNull() throws Exception {
 
-		is = new FileInputStream(getFile("un_immeuble_ctb_nul.csv"));
-		final ImportImmeublesResults res = processor.run(is, "UTF-8", null);
-		assertNotNull(res);
-		assertEquals(1, res.nbLignes);
-		assertEquals(0, res.traites.size());
-		assertEquals(1, res.ignores.size());
-		assertEquals(0, res.averifier.size());
-		assertEquals(0, res.erreurs.size());
+		try (InputStream is = new FileInputStream(getFile("un_immeuble_ctb_nul.csv"))) {
+			final ImportImmeublesResults res = processor.run(is, "UTF-8", null);
+			assertNotNull(res);
+			assertEquals(1, res.nbLignes);
+			assertEquals(0, res.traites.size());
+			assertEquals(1, res.ignores.size());
+			assertEquals(0, res.averifier.size());
+			assertEquals(0, res.erreurs.size());
 
-		final ImportImmeublesResults.Ignore ignore0 = res.ignores.get(0);
-		assertNotNull(ignore0);
-		assertEquals("132/3129", ignore0.getNoImmeuble());
-		assertEquals("Le contribuable n'est pas renseigné", ignore0.getDescriptionRaison());
+			final ImportImmeublesResults.Ignore ignore0 = res.ignores.get(0);
+			assertNotNull(ignore0);
+			assertEquals("132/3129", ignore0.getNoImmeuble());
+			assertEquals("Le contribuable n'est pas renseigné", ignore0.getDescriptionRaison());
+		}
 	}
 
 	@Test
@@ -131,18 +124,19 @@ public class ImportImmeublesProcessorTest extends BusinessTest {
 			}
 		});
 
-		is = new FileInputStream(getFile("un_immeuble.csv"));
-		final ImportImmeublesResults res = processor.run(is, "UTF-8", null);
-		assertEquals(1, res.nbLignes);
-		assertEquals(0, res.traites.size());
-		assertEquals(0, res.ignores.size());
-		assertEquals(0, res.averifier.size());
-		assertEquals(1, res.erreurs.size());
+		try (InputStream is = new FileInputStream(getFile("un_immeuble.csv"))) {
+			final ImportImmeublesResults res = processor.run(is, "UTF-8", null);
+			assertEquals(1, res.nbLignes);
+			assertEquals(0, res.traites.size());
+			assertEquals(0, res.ignores.size());
+			assertEquals(0, res.averifier.size());
+			assertEquals(1, res.erreurs.size());
 
-		final ImportImmeublesResults.Erreur erreur0 = res.erreurs.get(0);
-		assertNotNull(erreur0);
-		assertEquals("132/3129", erreur0.getNoImmeuble());
-		assertEquals("La personne physique est inconnue au contrôle des habitants", erreur0.getDescriptionRaison());
+			final ImportImmeublesResults.Erreur erreur0 = res.erreurs.get(0);
+			assertNotNull(erreur0);
+			assertEquals("132/3129", erreur0.getNoImmeuble());
+			assertEquals("La personne physique est inconnue au contrôle des habitants", erreur0.getDescriptionRaison());
+		}
 	}
 
 	@Test
@@ -156,19 +150,20 @@ public class ImportImmeublesProcessorTest extends BusinessTest {
 			}
 		});
 
-		is = new FileInputStream(getFile("un_immeuble.csv"));
-		final ImportImmeublesResults res = processor.run(is, "UTF-8", null);
-		assertNotNull(res);
-		assertEquals(1, res.nbLignes);
-		assertEquals(1, res.traites.size());
-		assertEquals(0, res.ignores.size());
-		assertEquals(0, res.averifier.size());
-		assertEquals(0, res.erreurs.size());
+		try (InputStream is = new FileInputStream(getFile("un_immeuble.csv"))) {
+			final ImportImmeublesResults res = processor.run(is, "UTF-8", null);
+			assertNotNull(res);
+			assertEquals(1, res.nbLignes);
+			assertEquals(1, res.traites.size());
+			assertEquals(0, res.ignores.size());
+			assertEquals(0, res.averifier.size());
+			assertEquals(0, res.erreurs.size());
 
-		final ImportImmeublesResults.Import traite0 = res.traites.get(0);
-		assertNotNull(traite0);
-		assertEquals(Long.valueOf(12345678), traite0.getNoContribuable());
-		assertEquals("132/3129", traite0.getNoImmeuble());
+			final ImportImmeublesResults.Import traite0 = res.traites.get(0);
+			assertNotNull(traite0);
+			assertEquals(Long.valueOf(12345678), traite0.getNoContribuable());
+			assertEquals("132/3129", traite0.getNoImmeuble());
+		}
 
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
@@ -210,25 +205,26 @@ public class ImportImmeublesProcessorTest extends BusinessTest {
 			}
 		});
 
-		is = new FileInputStream(getFile("un_immeuble_incoherence.csv"));
-		final ImportImmeublesResults res = processor.run(is, "UTF-8", null);
-		assertNotNull(res);
-		assertEquals(1, res.nbLignes);
-		assertEquals(1, res.traites.size());
-		assertEquals(0, res.ignores.size());
-		assertEquals(1, res.averifier.size());
-		assertEquals(0, res.erreurs.size());
+		try (InputStream is = new FileInputStream(getFile("un_immeuble_incoherence.csv"))) {
+			final ImportImmeublesResults res = processor.run(is, "UTF-8", null);
+			assertNotNull(res);
+			assertEquals(1, res.nbLignes);
+			assertEquals(1, res.traites.size());
+			assertEquals(0, res.ignores.size());
+			assertEquals(1, res.averifier.size());
+			assertEquals(0, res.erreurs.size());
 
-		final ImportImmeublesResults.Import traite0 = res.traites.get(0);
-		assertNotNull(traite0);
-		assertEquals(Long.valueOf(12345678), traite0.getNoContribuable());
-		assertEquals("132/3129", traite0.getNoImmeuble());
+			final ImportImmeublesResults.Import traite0 = res.traites.get(0);
+			assertNotNull(traite0);
+			assertEquals(Long.valueOf(12345678), traite0.getNoContribuable());
+			assertEquals("132/3129", traite0.getNoImmeuble());
 
-		final ImportImmeublesResults.AVerifier averifier0 = res.averifier.get(0);
-		assertNotNull(averifier0);
-		assertEquals("132/3129", averifier0.getNoImmeuble());
-		assertEquals("Incohérence des types de contribuable (traitement effectué).", averifier0.getDescriptionRaison());
-		assertEquals("Type dans le RF = [Entreprise], type dans Unireg = [PersonnePhysique]", averifier0.getDetails());
+			final ImportImmeublesResults.AVerifier averifier0 = res.averifier.get(0);
+			assertNotNull(averifier0);
+			assertEquals("132/3129", averifier0.getNoImmeuble());
+			assertEquals("Incohérence des types de contribuable (traitement effectué).", averifier0.getDescriptionRaison());
+			assertEquals("Type dans le RF = [Entreprise], type dans Unireg = [PersonnePhysique]", averifier0.getDetails());
+		}
 
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
@@ -272,22 +268,23 @@ public class ImportImmeublesProcessorTest extends BusinessTest {
 			}
 		});
 
-		is = new FileInputStream(getFile("un_immeuble.csv"));
-		final ImportImmeublesResults res = processor.run(is, "UTF-8", null);
-		assertNotNull(res);
-		assertEquals(1, res.nbLignes);
-		assertEquals(0, res.traites.size());
-		assertEquals(0, res.ignores.size());
-		assertEquals(0, res.averifier.size());
-		assertEquals(1, res.erreurs.size());
+		try (InputStream is = new FileInputStream(getFile("un_immeuble.csv"))) {
+			final ImportImmeublesResults res = processor.run(is, "UTF-8", null);
+			assertNotNull(res);
+			assertEquals(1, res.nbLignes);
+			assertEquals(0, res.traites.size());
+			assertEquals(0, res.ignores.size());
+			assertEquals(0, res.averifier.size());
+			assertEquals(1, res.erreurs.size());
 
-		final ImportImmeublesResults.Erreur erreur0 = res.erreurs.get(0);
-		assertNotNull(erreur0);
-		assertEquals("132/3129", erreur0.getNoImmeuble());
-		assertEquals("Le contribuable est un ménage commun", erreur0.getDescriptionRaison());
-		assertEquals("Le contribuable n°12345678 est un ménage commun constitué " +
-				"du principal = {numéro=22224444, prénom='Jacques', nom='Chtöpötz', date de naissance=01.01.1945, sexe=masculin} et " +
-				"du conjoint = {numéro=33335555, prénom='Madeleine', nom='Chtöpötz', date de naissance=01.11.1954, sexe=féminin}.", erreur0.getDetails());
+			final ImportImmeublesResults.Erreur erreur0 = res.erreurs.get(0);
+			assertNotNull(erreur0);
+			assertEquals("132/3129", erreur0.getNoImmeuble());
+			assertEquals("Le contribuable est un ménage commun", erreur0.getDescriptionRaison());
+			assertEquals("Le contribuable n°12345678 est un ménage commun constitué " +
+					"du principal = {numéro=22224444, prénom='Jacques', nom='Chtöpötz', date de naissance=01.01.1945, sexe=masculin} et " +
+					"du conjoint = {numéro=33335555, prénom='Madeleine', nom='Chtöpötz', date de naissance=01.11.1954, sexe=féminin}.", erreur0.getDetails());
+		}
 	}
 
 	@Test
@@ -301,19 +298,20 @@ public class ImportImmeublesProcessorTest extends BusinessTest {
 			}
 		});
 
-		is = new FileInputStream(getFile("un_immeuble_pm.csv"));
-		final ImportImmeublesResults res = processor.run(is, "UTF-8", null);
-		assertNotNull(res);
-		assertEquals(1, res.nbLignes);
-		assertEquals(0, res.traites.size());
-		assertEquals(1, res.ignores.size());
-		assertEquals(0, res.averifier.size());
-		assertEquals(0, res.erreurs.size());
+		try (InputStream is = new FileInputStream(getFile("un_immeuble_pm.csv"))) {
+			final ImportImmeublesResults res = processor.run(is, "UTF-8", null);
+			assertNotNull(res);
+			assertEquals(1, res.nbLignes);
+			assertEquals(0, res.traites.size());
+			assertEquals(1, res.ignores.size());
+			assertEquals(0, res.averifier.size());
+			assertEquals(0, res.erreurs.size());
 
-		final ImportImmeublesResults.Ignore ignore0 = res.ignores.get(0);
-		assertNotNull(ignore0);
-		assertEquals("132/3129", ignore0.getNoImmeuble());
-		assertEquals("Le contribuable est une entreprise", ignore0.getDescriptionRaison());
+			final ImportImmeublesResults.Ignore ignore0 = res.ignores.get(0);
+			assertNotNull(ignore0);
+			assertEquals("132/3129", ignore0.getNoImmeuble());
+			assertEquals("Le contribuable est une entreprise", ignore0.getDescriptionRaison());
+		}
 	}
 
 	@Test
@@ -327,25 +325,26 @@ public class ImportImmeublesProcessorTest extends BusinessTest {
 			}
 		});
 
-		is = new FileInputStream(getFile("un_immeuble_pm_incoherence.csv"));
-		final ImportImmeublesResults res = processor.run(is, "UTF-8", null);
-		assertNotNull(res);
-		assertEquals(1, res.nbLignes);
-		assertEquals(0, res.traites.size());
-		assertEquals(1, res.ignores.size());
-		assertEquals(1, res.averifier.size());
-		assertEquals(0, res.erreurs.size());
+		try (InputStream is = new FileInputStream(getFile("un_immeuble_pm_incoherence.csv"))) {
+			final ImportImmeublesResults res = processor.run(is, "UTF-8", null);
+			assertNotNull(res);
+			assertEquals(1, res.nbLignes);
+			assertEquals(0, res.traites.size());
+			assertEquals(1, res.ignores.size());
+			assertEquals(1, res.averifier.size());
+			assertEquals(0, res.erreurs.size());
 
-		final ImportImmeublesResults.Ignore ignore0 = res.ignores.get(0);
-		assertNotNull(ignore0);
-		assertEquals("132/3129", ignore0.getNoImmeuble());
-		assertEquals("Le contribuable est une entreprise", ignore0.getDescriptionRaison());
+			final ImportImmeublesResults.Ignore ignore0 = res.ignores.get(0);
+			assertNotNull(ignore0);
+			assertEquals("132/3129", ignore0.getNoImmeuble());
+			assertEquals("Le contribuable est une entreprise", ignore0.getDescriptionRaison());
 
-		final ImportImmeublesResults.AVerifier averifier0 = res.averifier.get(0);
-		assertNotNull(averifier0);
-		assertEquals("132/3129", averifier0.getNoImmeuble());
-		assertEquals("Incohérence des types de contribuable (traitement non-effectué).", averifier0.getDescriptionRaison());
-		assertEquals("Type dans le RF = [PersonnePhysique], type dans Unireg = [Entreprise]", averifier0.getDetails());
+			final ImportImmeublesResults.AVerifier averifier0 = res.averifier.get(0);
+			assertNotNull(averifier0);
+			assertEquals("132/3129", averifier0.getNoImmeuble());
+			assertEquals("Incohérence des types de contribuable (traitement non-effectué).", averifier0.getDescriptionRaison());
+			assertEquals("Type dans le RF = [PersonnePhysique], type dans Unireg = [Entreprise]", averifier0.getDetails());
+		}
 	}
 
 	@Test
@@ -359,20 +358,21 @@ public class ImportImmeublesProcessorTest extends BusinessTest {
 			}
 		});
 
-		is = new FileInputStream(getFile("un_immeuble_eta.csv"));
-		final ImportImmeublesResults res = processor.run(is, "UTF-8", null);
-		assertNotNull(res);
-		assertEquals(1, res.nbLignes);
-		assertEquals(0, res.traites.size());
-		assertEquals(0, res.ignores.size());
-		assertEquals(0, res.averifier.size());
-		assertEquals(1, res.erreurs.size());
+		try (InputStream is = new FileInputStream(getFile("un_immeuble_eta.csv"))) {
+			final ImportImmeublesResults res = processor.run(is, "UTF-8", null);
+			assertNotNull(res);
+			assertEquals(1, res.nbLignes);
+			assertEquals(0, res.traites.size());
+			assertEquals(0, res.ignores.size());
+			assertEquals(0, res.averifier.size());
+			assertEquals(1, res.erreurs.size());
 
-		final ImportImmeublesResults.Erreur erreur0 = res.erreurs.get(0);
-		assertNotNull(erreur0);
-		assertEquals("132/3129", erreur0.getNoImmeuble());
-		assertEquals("Le type de contribuable est incorrect", erreur0.getDescriptionRaison());
-		assertEquals("Le contribuable n°2000123 est de type [Etablissement].", erreur0.getDetails());
+			final ImportImmeublesResults.Erreur erreur0 = res.erreurs.get(0);
+			assertNotNull(erreur0);
+			assertEquals("132/3129", erreur0.getNoImmeuble());
+			assertEquals("Le type de contribuable est incorrect", erreur0.getDescriptionRaison());
+			assertEquals("Le contribuable n°2000123 est de type [Etablissement].", erreur0.getDetails());
+		}
 	}
 
 	@Test
@@ -386,19 +386,20 @@ public class ImportImmeublesProcessorTest extends BusinessTest {
 			}
 		});
 
-		is = new FileInputStream(getFile("un_immeuble_sans_ef.csv"));
-		final ImportImmeublesResults res = processor.run(is, "UTF-8", null);
-		assertNotNull(res);
-		assertEquals(1, res.nbLignes);
-		assertEquals(1, res.traites.size());
-		assertEquals(0, res.ignores.size());
-		assertEquals(0, res.averifier.size());
-		assertEquals(0, res.erreurs.size());
+		try (InputStream is = new FileInputStream(getFile("un_immeuble_sans_ef.csv"))) {
+			final ImportImmeublesResults res = processor.run(is, "UTF-8", null);
+			assertNotNull(res);
+			assertEquals(1, res.nbLignes);
+			assertEquals(1, res.traites.size());
+			assertEquals(0, res.ignores.size());
+			assertEquals(0, res.averifier.size());
+			assertEquals(0, res.erreurs.size());
 
-		final ImportImmeublesResults.Import traite0 = res.traites.get(0);
-		assertNotNull(traite0);
-		assertEquals(Long.valueOf(12345678), traite0.getNoContribuable());
-		assertEquals("132/3129", traite0.getNoImmeuble());
+			final ImportImmeublesResults.Import traite0 = res.traites.get(0);
+			assertNotNull(traite0);
+			assertEquals(Long.valueOf(12345678), traite0.getNoContribuable());
+			assertEquals("132/3129", traite0.getNoImmeuble());
+		}
 
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
@@ -461,29 +462,30 @@ public class ImportImmeublesProcessorTest extends BusinessTest {
 			}
 		});
 
-		is = new FileInputStream(getFile("trois_immeubles.csv"));
-		final ImportImmeublesResults res = processor.run(is, "UTF-8", null);
-		assertNotNull(res);
-		assertEquals(3, res.nbLignes);
-		assertEquals(3, res.traites.size());
-		assertEquals(0, res.ignores.size());
-		assertEquals(0, res.averifier.size());
-		assertEquals(0, res.erreurs.size());
+		try (InputStream is = new FileInputStream(getFile("trois_immeubles.csv"))) {
+			final ImportImmeublesResults res = processor.run(is, "UTF-8", null);
+			assertNotNull(res);
+			assertEquals(3, res.nbLignes);
+			assertEquals(3, res.traites.size());
+			assertEquals(0, res.ignores.size());
+			assertEquals(0, res.averifier.size());
+			assertEquals(0, res.erreurs.size());
 
-		final ImportImmeublesResults.Import traite0 = res.traites.get(0);
-		assertNotNull(traite0);
-		assertEquals(Long.valueOf(12345678), traite0.getNoContribuable());
-		assertEquals("132/3129", traite0.getNoImmeuble());
+			final ImportImmeublesResults.Import traite0 = res.traites.get(0);
+			assertNotNull(traite0);
+			assertEquals(Long.valueOf(12345678), traite0.getNoContribuable());
+			assertEquals("132/3129", traite0.getNoImmeuble());
 
-		final ImportImmeublesResults.Import traite1 = res.traites.get(1);
-		assertNotNull(traite1);
-		assertEquals(Long.valueOf(12345678), traite1.getNoContribuable());
-		assertEquals("132/3130", traite1.getNoImmeuble());
+			final ImportImmeublesResults.Import traite1 = res.traites.get(1);
+			assertNotNull(traite1);
+			assertEquals(Long.valueOf(12345678), traite1.getNoContribuable());
+			assertEquals("132/3130", traite1.getNoImmeuble());
 
-		final ImportImmeublesResults.Import traite2 = res.traites.get(2);
-		assertNotNull(traite2);
-		assertEquals(Long.valueOf(12345678), traite2.getNoContribuable());
-		assertEquals("132/3131", traite2.getNoImmeuble());
+			final ImportImmeublesResults.Import traite2 = res.traites.get(2);
+			assertNotNull(traite2);
+			assertEquals(Long.valueOf(12345678), traite2.getNoContribuable());
+			assertEquals("132/3131", traite2.getNoImmeuble());
+		}
 
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
@@ -495,7 +497,7 @@ public class ImportImmeublesProcessorTest extends BusinessTest {
 				assertNotNull(immeubles);
 				assertEquals(3, immeubles.size());
 				
-				final List<Immeuble> list = new ArrayList<Immeuble>(immeubles);
+				final List<Immeuble> list = new ArrayList<>(immeubles);
 				Collections.sort(list, new Comparator<Immeuble>() {
 					@Override
 					public int compare(Immeuble o1, Immeuble o2) {

@@ -11,7 +11,7 @@ import ch.vd.registre.base.date.DateRange;
 public class TimelineRow {
 	public final TimelineRange periode;
 	public TimelineCell forPrincipal;
-	public final List<TimelineCell> forsSecondaires = new ArrayList<TimelineCell>(1);
+	public final List<TimelineCell> forsSecondaires = new ArrayList<>(1);
 	public TimelineCell forGestion;
 	public TimelineCell assujettissementSource;
 	public TimelineCell assujettissementRole;

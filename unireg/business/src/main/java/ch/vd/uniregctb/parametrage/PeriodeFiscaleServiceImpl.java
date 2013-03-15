@@ -69,7 +69,7 @@ public class PeriodeFiscaleServiceImpl implements PeriodeFiscaleService, Initial
 
 		// Copie des parametres
 		if (periodeFiscalePrecedente.getParametrePeriodeFiscale() != null) {
-			Set<ParametrePeriodeFiscale> setParametrePeriodeFiscale = new HashSet<ParametrePeriodeFiscale> (periodeFiscalePrecedente.getParametrePeriodeFiscale().size());
+			Set<ParametrePeriodeFiscale> setParametrePeriodeFiscale = new HashSet<>(periodeFiscalePrecedente.getParametrePeriodeFiscale().size());
 			for (ParametrePeriodeFiscale ppf : periodeFiscalePrecedente.getParametrePeriodeFiscale()) {
 				ParametrePeriodeFiscale newPpf = new ParametrePeriodeFiscale();
 				newPpf.setPeriodefiscale(nllePeriodeFiscale);
@@ -86,14 +86,14 @@ public class PeriodeFiscaleServiceImpl implements PeriodeFiscaleService, Initial
 
 		// Copie des modèles de document
 		if (periodeFiscalePrecedente.getModelesDocument() != null) {
-			Set<ModeleDocument> setModeleDocument = new HashSet<ModeleDocument> (periodeFiscalePrecedente.getModelesDocument().size());
+			Set<ModeleDocument> setModeleDocument = new HashSet<>(periodeFiscalePrecedente.getModelesDocument().size());
 			for (ModeleDocument md : periodeFiscalePrecedente.getModelesDocument()) {
 				ModeleDocument newMd = new ModeleDocument();
 				newMd.setPeriodeFiscale(nllePeriodeFiscale);
 				newMd.setTypeDocument(md.getTypeDocument());
 
 				// Copie des modeles de feuille de document
-				Set<ModeleFeuilleDocument> setModeleFeuilleDocument = new HashSet<ModeleFeuilleDocument> (md.getModelesFeuilleDocument().size());
+				Set<ModeleFeuilleDocument> setModeleFeuilleDocument = new HashSet<>(md.getModelesFeuilleDocument().size());
 				for(ModeleFeuilleDocument mfd : md.getModelesFeuilleDocument()) {
 					ModeleFeuilleDocument newMfd = new ModeleFeuilleDocument();
 					newMfd.setModeleDocument(newMd);

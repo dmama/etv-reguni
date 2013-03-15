@@ -68,7 +68,7 @@ public class DeclarationView implements Annulable {
 	}
 
 	private static List<DelaiDeclarationView> initDelais(Set<DelaiDeclaration> delais, RegDate premierDelai) {
-		final List<DelaiDeclarationView> list = new ArrayList<DelaiDeclarationView>();
+		final List<DelaiDeclarationView> list = new ArrayList<>();
 		for (DelaiDeclaration delai : delais) {
 			final DelaiDeclarationView delaiView = new DelaiDeclarationView(delai);
 			delaiView.setFirst(premierDelai == delai.getDelaiAccordeAu());
@@ -79,7 +79,7 @@ public class DeclarationView implements Annulable {
 	}
 
 	private static List<EtatDeclarationView> initEtats(Set<EtatDeclaration> etats, MessageSource messageSource) {
-		final List<EtatDeclarationView> list = new ArrayList<EtatDeclarationView>();
+		final List<EtatDeclarationView> list = new ArrayList<>();
 		for (EtatDeclaration etat : etats) {
 			list.add(new EtatDeclarationView(etat, messageSource));
 		}

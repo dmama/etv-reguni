@@ -69,8 +69,8 @@ public abstract class ListesProcessor<R extends ListesResults<R>, T extends List
 		// n threads (voir paramètre "nbThreads")
 
 		final AtomicInteger compteur = new AtomicInteger(0);
-		final LinkedBlockingQueue<List<Long>> queue = new LinkedBlockingQueue<List<Long>>();
-		final List<T> threads = new ArrayList<T>(nbThreads);
+		final LinkedBlockingQueue<List<Long>> queue = new LinkedBlockingQueue<>();
+		final List<T> threads = new ArrayList<>(nbThreads);
 		for (int i = 0; i < nbThreads; i++) {
 			final T thread = customizer.createThread(queue, dateTraitement, status, compteur, hibernateTemplate);
 			threads.add(thread);
@@ -91,7 +91,7 @@ public abstract class ListesProcessor<R extends ListesResults<R>, T extends List
 				// on bourre dans la queue des lots de "tailleLot" identifiants
 				int size = 0;
 				while (idIterator.hasNext() && !status.interrupted()) {
-					final List<Long> list = new ArrayList<Long>(tailleLot);
+					final List<Long> list = new ArrayList<>(tailleLot);
 					while (idIterator.hasNext() && !status.interrupted() && list.size() < tailleLot) {
 						list.add(idIterator.next());
 					}

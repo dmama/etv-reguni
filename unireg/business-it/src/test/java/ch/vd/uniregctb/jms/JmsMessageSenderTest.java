@@ -44,16 +44,16 @@ public class JmsMessageSenderTest {
 
 		//BufferedReader reader = new BufferedReader(new FileReader("sdiDocTest01.xml"));
 
-		InputStream stream = getClass().getResourceAsStream("/jms/EvtRegCivil-jms-message.xml");
-		InputStreamReader reader = new InputStreamReader(stream);
-
 		final StringBuffer sb = new StringBuffer(1024);
-		char[] chars = new char[1024];
-		int numRead = 0;
-		while ((numRead = reader.read(chars)) > -1) {
-			sb.append(String.valueOf(chars, 0, numRead));
+		try (InputStream stream = getClass().getResourceAsStream("/jms/EvtRegCivil-jms-message.xml");
+		     InputStreamReader reader = new InputStreamReader(stream)) {
+
+			final char[] chars = new char[1024];
+			int numRead;
+			while ((numRead = reader.read(chars)) > -1) {
+				sb.append(String.valueOf(chars, 0, numRead));
+			}
 		}
-		reader.close();
 
 		ActiveMQConnectionFactory jmsConnectionManager = new ActiveMQConnectionFactory();
 		jmsConnectionManager.setBrokerURL("tcp://spip:50900");
@@ -142,20 +142,19 @@ public class JmsMessageSenderTest {
 			throw new FileNotFoundException("Le fichier '" + filename + "' n'est pas lisible.");
 		}
 
-		final List<Long> noInd = new ArrayList<Long>();
+		final List<Long> noInd = new ArrayList<>();
 
-		Scanner s = new Scanner(file);
-		while (s.hasNextLine()) {
-			final String line = s.nextLine();
-			if (StringUtils.isBlank(line)) {
-				continue;
+		try (Scanner s = new Scanner(file)) {
+			while (s.hasNextLine()) {
+				final String line = s.nextLine();
+				if (StringUtils.isBlank(line)) {
+					continue;
+				}
+
+				final Long no = Long.valueOf(line.trim());
+				noInd.add(no);
 			}
-
-			final Long no = Long.valueOf(line.trim());
-			noInd.add(no);
 		}
-		s.close();
 		return noInd;
 	}
-
 }

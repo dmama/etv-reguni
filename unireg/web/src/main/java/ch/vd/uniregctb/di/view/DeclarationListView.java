@@ -26,7 +26,7 @@ public class DeclarationListView {
 		if (declarations == null || declarations.isEmpty()) {
 			return Collections.emptyList();
 		}
-		final List<DeclarationView> views = new ArrayList<DeclarationView>(declarations.size());
+		final List<DeclarationView> views = new ArrayList<>(declarations.size());
 		for (Declaration declaration : declarations) {
 			views.add(new DeclarationView(declaration, messageSource));
 		}

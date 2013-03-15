@@ -223,7 +223,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 
 	@SuppressWarnings("unchecked")
 	public String[] getTableNames(boolean reverse) {
-		ArrayList<String> t = new ArrayList<String>();
+		ArrayList<String> t = new ArrayList<>();
 		Iterator<Table> tables = sessionFactoryBean.getConfiguration().getTableMappings();
 		while (tables.hasNext()) {
 			Table table = tables.next();

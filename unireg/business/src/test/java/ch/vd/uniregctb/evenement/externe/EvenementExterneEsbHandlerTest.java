@@ -554,7 +554,7 @@ public class EvenementExterneEsbHandlerTest extends BusinessTest {
 		Document doc = db.newDocument();
 
 		final QName qname = new QName("http://www.vd.ch/fiscalite/taxation/evtQuittanceListe-v1", "evtQuittanceListe");
-		marshaller.marshal(new JAXBElement<EvtQuittanceListe>(qname, EvtQuittanceListe.class, event), doc);
+		marshaller.marshal(new JAXBElement<>(qname, EvtQuittanceListe.class, event), doc);
 
 		final EsbMessage m = new EsbMessageFactory().createMessage();
 		m.setBody(doc);
@@ -1114,7 +1114,7 @@ public class EvenementExterneEsbHandlerTest extends BusinessTest {
 		Document doc = db.newDocument();
 
 		final QName qname = new QName("http://www.vd.ch/fiscalite/taxation/is/evt-liste/1", "evtListe");
-		marshaller.marshal(new JAXBElement<EvtListe>(qname, EvtListe.class, event), doc);
+		marshaller.marshal(new JAXBElement<>(qname, EvtListe.class, event), doc);
 
 		final EsbMessage m = new EsbMessageFactory().createMessage();
 		m.setBody(doc);

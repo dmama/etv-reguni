@@ -385,7 +385,7 @@ public class TiersTest extends WithoutSpringTest {
 		periode.setAnnee(2011);
 
 		final PersonnePhysique tiers = new PersonnePhysique(true);
-		final HashSet<Declaration> declarations = new HashSet<Declaration>();
+		final HashSet<Declaration> declarations = new HashSet<>();
 		tiers.setDeclarations(declarations);
 
 		// Déclarations préexistantes SANS code de contrôle
@@ -440,7 +440,7 @@ public class TiersTest extends WithoutSpringTest {
 		hab.setNumero(100011010L);
 		hab.setNumeroIndividu(43L);
 
-		Set<ForFiscal> fors = new HashSet<ForFiscal>();
+		Set<ForFiscal> fors = new HashSet<>();
 		{
 			ForFiscalAutreImpot forFiscal = new ForFiscalAutreImpot();
 			forFiscal.setGenreImpot(GenreImpot.DROIT_MUTATION);
@@ -607,7 +607,7 @@ public class TiersTest extends WithoutSpringTest {
 	 */
 	@Test
 	public void testExistForPrincipalListVide() {
-		List<ForFiscalPrincipal> list = new ArrayList<ForFiscalPrincipal>();
+		List<ForFiscalPrincipal> list = new ArrayList<>();
 		Assert.assertFalse(Tiers.existForPrincipal(list, RegDate.get(2000, 1, 1), RegDate.get(2005, 1, 1)));
 		Assert.assertFalse(Tiers.existForPrincipal(list, null, RegDate.get(2005, 1, 1)));
 		Assert.assertFalse(Tiers.existForPrincipal(list, RegDate.get(2000, 1, 1), null));
@@ -619,7 +619,7 @@ public class TiersTest extends WithoutSpringTest {
 	 */
 	@Test
 	public void testExistForPrincipalSurUnFor() {
-		List<ForFiscalPrincipal> list = new ArrayList<ForFiscalPrincipal>();
+		List<ForFiscalPrincipal> list = new ArrayList<>();
 		{
 			final ForFiscalPrincipal f = new ForFiscalPrincipal();
 			f.setDateDebut(RegDate.get(2000, 1, 1));
@@ -645,7 +645,7 @@ public class TiersTest extends WithoutSpringTest {
 	 */
 	@Test
 	public void testExistForPrincipalSurUnForOuvertAGauche() {
-		List<ForFiscalPrincipal> list = new ArrayList<ForFiscalPrincipal>();
+		List<ForFiscalPrincipal> list = new ArrayList<>();
 		{
 			final ForFiscalPrincipal f = new ForFiscalPrincipal();
 			f.setDateDebut(null);
@@ -671,7 +671,7 @@ public class TiersTest extends WithoutSpringTest {
 	 */
 	@Test
 	public void testExistForPrincipalSurUnForOuvertADroite() {
-		List<ForFiscalPrincipal> list = new ArrayList<ForFiscalPrincipal>();
+		List<ForFiscalPrincipal> list = new ArrayList<>();
 		{
 			final ForFiscalPrincipal f = new ForFiscalPrincipal();
 			f.setDateDebut(RegDate.get(2000, 1, 1));
@@ -697,7 +697,7 @@ public class TiersTest extends WithoutSpringTest {
 	 */
 	@Test
 	public void testExistForPrincipalSurUnForOuvertDesDeuxCotes() {
-		List<ForFiscalPrincipal> list = new ArrayList<ForFiscalPrincipal>();
+		List<ForFiscalPrincipal> list = new ArrayList<>();
 		{
 			final ForFiscalPrincipal f = new ForFiscalPrincipal();
 			f.setDateDebut(null);
@@ -723,7 +723,7 @@ public class TiersTest extends WithoutSpringTest {
 	 */
 	@Test
 	public void testExistForPrincipalSurDeuxForsAccoles() {
-		List<ForFiscalPrincipal> list = new ArrayList<ForFiscalPrincipal>();
+		List<ForFiscalPrincipal> list = new ArrayList<>();
 		{
 			final ForFiscalPrincipal f = new ForFiscalPrincipal();
 			f.setDateDebut(RegDate.get(2000, 1, 1));
@@ -755,7 +755,7 @@ public class TiersTest extends WithoutSpringTest {
 	 */
 	@Test
 	public void testExistForPrincipalSurDeuxForsAccolesOuvertsAGauche() {
-		List<ForFiscalPrincipal> list = new ArrayList<ForFiscalPrincipal>();
+		List<ForFiscalPrincipal> list = new ArrayList<>();
 		{
 			final ForFiscalPrincipal f = new ForFiscalPrincipal();
 			f.setDateDebut(null);
@@ -787,7 +787,7 @@ public class TiersTest extends WithoutSpringTest {
 	 */
 	@Test
 	public void testExistForPrincipalSurDeuxForsAccolesOuvertsADroite() {
-		List<ForFiscalPrincipal> list = new ArrayList<ForFiscalPrincipal>();
+		List<ForFiscalPrincipal> list = new ArrayList<>();
 		{
 			final ForFiscalPrincipal f = new ForFiscalPrincipal();
 			f.setDateDebut(RegDate.get(2000, 1, 1));
@@ -819,7 +819,7 @@ public class TiersTest extends WithoutSpringTest {
 	 */
 	@Test
 	public void testExistForPrincipalSurDeuxForsNonAccoles() {
-		List<ForFiscalPrincipal> list = new ArrayList<ForFiscalPrincipal>();
+		List<ForFiscalPrincipal> list = new ArrayList<>();
 		{
 			final ForFiscalPrincipal f = new ForFiscalPrincipal();
 			f.setDateDebut(RegDate.get(2000, 1, 1));
@@ -852,7 +852,7 @@ public class TiersTest extends WithoutSpringTest {
 	 */
 	@Test
 	public void testExistForPrincipalSurDeuxForsNonAccolesOuvertsAGauche() {
-		List<ForFiscalPrincipal> list = new ArrayList<ForFiscalPrincipal>();
+		List<ForFiscalPrincipal> list = new ArrayList<>();
 		{
 			final ForFiscalPrincipal f = new ForFiscalPrincipal();
 			f.setDateDebut(null);
@@ -885,7 +885,7 @@ public class TiersTest extends WithoutSpringTest {
 	 */
 	@Test
 	public void testExistForPrincipalSurDeuxForsNonAccolesOvertsADroite() {
-		List<ForFiscalPrincipal> list = new ArrayList<ForFiscalPrincipal>();
+		List<ForFiscalPrincipal> list = new ArrayList<>();
 		{
 			final ForFiscalPrincipal f = new ForFiscalPrincipal();
 			f.setDateDebut(RegDate.get(2000, 1, 1));

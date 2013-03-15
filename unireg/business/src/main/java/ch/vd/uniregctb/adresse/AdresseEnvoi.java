@@ -35,7 +35,7 @@ public class AdresseEnvoi implements Serializable {
 		}
 	}
 
-	private final List<Data> input = new ArrayList<Data>();
+	private final List<Data> input = new ArrayList<>();
 	private int maxOptionalite;
 
 	private final String[] lignes = new String[MAX_LIGNES];
@@ -50,7 +50,7 @@ public class AdresseEnvoi implements Serializable {
 	 */
 	private void computeLines() {
 
-		List<Data> temp = new ArrayList<Data>(input);
+		List<Data> temp = new ArrayList<>(input);
 		int niveau = maxOptionalite;
 
 		if (temp.size() > MAX_LIGNES) {

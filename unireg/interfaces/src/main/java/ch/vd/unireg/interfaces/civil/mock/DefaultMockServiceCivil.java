@@ -124,7 +124,7 @@ public class DefaultMockServiceCivil extends MockServiceCivil {
 			return super.getAdressesActives(numeroIndividu, date);
 		}
 
-		Collection<Adresse> adresses = new ArrayList<Adresse>();
+		Collection<Adresse> adresses = new ArrayList<>();
 		MockAdresse adresse = new MockAdresse();
 		adresse.setTypeAdresse(TypeAdresseCivil.PRINCIPALE);
 		adresse.setLocalite("Mock Localite " + DateHelper.getCurrentDate());

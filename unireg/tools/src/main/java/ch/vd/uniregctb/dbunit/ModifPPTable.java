@@ -93,7 +93,7 @@ public class ModifPPTable implements ITable {
 		}
 		
 		private Column[] addColumns(ITableMetaData metaData, String addColumnName, DataType addColumnType) throws DataSetException {
-			List<Column> l = new ArrayList<Column>(Arrays.asList(metaData.getColumns()));
+			List<Column> l = new ArrayList<>(Arrays.asList(metaData.getColumns()));
 			for(Column col : l) {
 				if (col.getColumnName().equals(oldColumnName)) {
 					Column newColumn = new Column(newColumnName, col.getDataType());

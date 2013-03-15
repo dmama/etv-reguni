@@ -72,7 +72,7 @@ public class RemarqueController {
 			}
 		});
 
-		final List<RemarqueView> list = new ArrayList<RemarqueView>();
+		final List<RemarqueView> list = new ArrayList<>();
 		for (Remarque remarque : remarques) {
 			list.add(new RemarqueView(remarque));
 		}

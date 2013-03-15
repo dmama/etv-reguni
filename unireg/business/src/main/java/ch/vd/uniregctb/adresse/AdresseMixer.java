@@ -171,9 +171,9 @@ public class AdresseMixer {
 		if (annulee) {
 			// [UNIREG-888] Si on a des adresses annulées, il faut les extraire des listes avant d'appliquer l'override parce que l'adresse
 			// mixer ne connaît la notion d'annulation.
-			final List<AdresseGenerique> nonAnnulees = new ArrayList<AdresseGenerique>();
-			final List<AdresseGenerique> surchargeNonAnnulees = new ArrayList<AdresseGenerique>();
-			final List<AdresseGenerique> annulees = new ArrayList<AdresseGenerique>();
+			final List<AdresseGenerique> nonAnnulees = new ArrayList<>();
+			final List<AdresseGenerique> surchargeNonAnnulees = new ArrayList<>();
+			final List<AdresseGenerique> annulees = new ArrayList<>();
 
 			if (adresses != null) {
 				for (AdresseGenerique a : adresses) {
@@ -275,10 +275,10 @@ public class AdresseMixer {
 		}
 
 		// on calcule la vue à plat de la couche d'adresses par défaut
-		List<AdresseGenerique> adressesDefault = new ArrayList<AdresseGenerique>();
+		List<AdresseGenerique> adressesDefault = new ArrayList<>();
 		for (int i = defaults.length - 1; i >= 0; i--) {
 
-			final List<AdresseGenerique> list = new ArrayList<AdresseGenerique>();
+			final List<AdresseGenerique> list = new ArrayList<>();
 			for (AdresseGenerique a : defaults[i]) {
 				if (a.isAnnule()) {
 					// on ne prend pas en compte les adresses annulées comme défaut
@@ -316,7 +316,7 @@ public class AdresseMixer {
 	 * @return une nouvelle liste qui ne contient que des adresses non-annulées.
 	 */
 	public static List<AdresseGenerique> extractAdressesNonAnnulees(@NotNull List<AdresseGenerique> adresses) {
-		final List<AdresseGenerique> nonAnnulees = new ArrayList<AdresseGenerique>(adresses.size());
+		final List<AdresseGenerique> nonAnnulees = new ArrayList<>(adresses.size());
 		for (AdresseGenerique a : adresses) {
 			if (!a.isAnnule()) {
 				nonAnnulees.add(a);
@@ -339,7 +339,7 @@ public class AdresseMixer {
 			return adresses;
 		}
 
-		final List<AdresseGenerique> list = new ArrayList<AdresseGenerique>(adresses);
+		final List<AdresseGenerique> list = new ArrayList<>(adresses);
 		int count = 0;
 		while (splitOnceAt(list, dates)) {
 			if (++count > 1000) {

@@ -65,17 +65,13 @@ public class LoadDatabaseJob extends JobDefinition {
 			@Override
 			public void readDoc(Document doc, InputStream is) throws Exception {
 
-				ZipInputStream zipstream = new ZipInputStream(is);
-				try {
+				try (ZipInputStream zipstream = new ZipInputStream(is)) {
 					zipstream.getNextEntry();
 
 					status.setMessage("Effacement de la base...");
 					dbService.truncateDatabase();
 					status.setMessage("Import de la base en cours...");
 					dbService.loadFromDbunitFile(zipstream, status, false);
-				}
-				finally {
-					zipstream.close();
 				}
 			}
 		});

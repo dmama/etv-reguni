@@ -137,7 +137,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 		// Demande de retourner les deux tiers en un seul batch
 		final GetBatchTiersHisto params = new GetBatchTiersHisto();
 		params.login = login;
-		params.tiersNumbers = new HashSet<Long>(Arrays.asList(ids.paul, ids.janine));
+		params.tiersNumbers = new HashSet<>(Arrays.asList(ids.paul, ids.janine));
 		params.parts = EnumSet.of(TiersPart.FORS_FISCAUX, TiersPart.FORS_FISCAUX_VIRTUELS, TiersPart.ADRESSES_ENVOI);
 
 		final BatchTiersHisto batch = service.getBatchTiersHisto(params);
@@ -706,7 +706,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 				this.idDi = idDi;
 			}
 		}
-		final List<Ids> liste = new ArrayList<Ids>();
+		final List<Ids> liste = new ArrayList<>();
 
 		// on désactive la validation pour pouvoir sauver un tiers au moins qui ne valide pas...
 		doInNewTransactionAndSessionWithoutValidation(new TransactionCallback<Object>() {
@@ -748,7 +748,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 		});
 
 		// quittancement des DI
-		final List<DemandeQuittancementDeclaration> demandes = new ArrayList<DemandeQuittancementDeclaration>();
+		final List<DemandeQuittancementDeclaration> demandes = new ArrayList<>();
 		for (Ids ids : liste) {
 			final DemandeQuittancementDeclaration demande = new DemandeQuittancementDeclaration();
 			demande.dateRetour = new Date(RegDate.get());
@@ -1176,7 +1176,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 			params.tiersNumber = idPM;
 			params.login = login;
 			params.date = newDate(1995, 1, 1);
-			params.parts = new HashSet<TiersPart>();
+			params.parts = new HashSet<>();
 			params.parts.add(TiersPart.ADRESSES);
 
 			final ch.vd.uniregctb.webservices.tiers2.data.PersonneMorale pm = (PersonneMorale) service.getTiers(params);
@@ -1191,7 +1191,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 			params.tiersNumber = idPM;
 			params.login = login;
 			params.date = newDate(2005, 1, 1);
-			params.parts = new HashSet<TiersPart>();
+			params.parts = new HashSet<>();
 			params.parts.add(TiersPart.ADRESSES);
 
 			final ch.vd.uniregctb.webservices.tiers2.data.PersonneMorale pm = (PersonneMorale) service.getTiers(params);

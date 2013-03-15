@@ -87,10 +87,10 @@ public class EnvoiDIsResults<R extends EnvoiDIsResults> extends JobResults<Long,
 
 	// Données de processing
 	public int nbCtbsTotal;
-	public final List<Long> ctbsAvecDiGeneree = new ArrayList<Long>();
-	public final List<Long> ctbsIndigents = new ArrayList<Long>();
-	public final List<Ignore> ctbsIgnores = new ArrayList<Ignore>();
-	public final List<Erreur> ctbsEnErrors = new ArrayList<Erreur>();
+	public final List<Long> ctbsAvecDiGeneree = new ArrayList<>();
+	public final List<Long> ctbsIndigents = new ArrayList<>();
+	public final List<Ignore> ctbsIgnores = new ArrayList<>();
+	public final List<Erreur> ctbsEnErrors = new ArrayList<>();
 	public boolean interrompu;
 
 	public EnvoiDIsResults(int annee, CategorieEnvoiDI categorie, RegDate dateTraitement, int nbMax, @Nullable Long noCtbMin, @Nullable Long noCtbMax, @Nullable RegDate dateExclureDecede,

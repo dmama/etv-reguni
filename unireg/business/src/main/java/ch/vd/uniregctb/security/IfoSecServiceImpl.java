@@ -12,7 +12,7 @@ public class IfoSecServiceImpl implements IfoSecService {
 
 	private ServiceSecuriteService securiteService;
 	private IfoSecBypass globalBypass = null;
-	private final Map<String, IfoSecBypass> bypassPerUser = new HashMap<String, IfoSecBypass>();
+	private final Map<String, IfoSecBypass> bypassPerUser = new HashMap<>();
 
 	public void setSecuriteService(ServiceSecuriteService securiteService) {
 		this.securiteService = securiteService;
@@ -73,7 +73,7 @@ public class IfoSecServiceImpl implements IfoSecService {
 	@Override
 	public Set<Role> getBypass(String visa) {
 
-		Set<Role> roles = new HashSet<Role>();
+		Set<Role> roles = new HashSet<>();
 
 		if (globalBypass != null) {
 			 roles.addAll(globalBypass.getProcedures());

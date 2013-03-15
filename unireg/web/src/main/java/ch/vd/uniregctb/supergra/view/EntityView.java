@@ -29,8 +29,8 @@ public class EntityView implements Cloneable {
 		this.key = right.key;
 		if (right.attributes != null) {
 			// deep copy
-			this.attributes = new ArrayList<AttributeView>(right.attributes.size());
-			this.attributesMap = new HashMap<String, AttributeView>(right.attributes.size());
+			this.attributes = new ArrayList<>(right.attributes.size());
+			this.attributesMap = new HashMap<>(right.attributes.size());
 			for (AttributeView r : right.attributes) {
 				final AttributeView l = new AttributeView(r);
 				this.attributes.add(l);
@@ -71,7 +71,7 @@ public class EntityView implements Cloneable {
 
 	public void setAttributes(List<AttributeView> attributes) {
 		this.attributes = attributes;
-		this.attributesMap = new HashMap<String, AttributeView>(attributes.size());
+		this.attributesMap = new HashMap<>(attributes.size());
 		for (AttributeView a : attributes) {
 			attributesMap.put(a.getName(), a);
 		}
@@ -107,7 +107,7 @@ public class EntityView implements Cloneable {
 	 */
 	public List<AttributeUpdate> delta(EntityView right) {
 
-		final List<AttributeUpdate> deltas = new ArrayList<AttributeUpdate>();
+		final List<AttributeUpdate> deltas = new ArrayList<>();
 
 		for (AttributeView rightAttribute : right.attributes) {
 			final AttributeView leftAttribute = attributesMap.get(rightAttribute.getName());

@@ -81,7 +81,7 @@ public class DetermineDIsJobTest extends JobTest {
 
 		UniregModeHelper testMode = getBean(UniregModeHelper.class, "uniregModeHelper");
 		testMode.setTestMode("true");//sinon la date de traitement ne sera pas utilisée
-		HashMap<String, Object> params = new HashMap<String, Object>();
+		HashMap<String, Object> params = new HashMap<>();
 		params.put(DeterminerDIsJob.PERIODE_FISCALE, Integer.valueOf(2008));
 		params.put(DeterminerDIsJob.NB_THREADS, 1);
 		params.put(DeterminerDIsJob.DATE_TRAITEMENT, date(2009, 1, 16));

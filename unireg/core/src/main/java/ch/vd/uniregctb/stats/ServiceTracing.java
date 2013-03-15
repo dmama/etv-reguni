@@ -215,7 +215,7 @@ public final class ServiceTracing implements ServiceTracingInterface {
 	/**
 	 * Les données détaillées et cumulées depuis le démarrage de l'application
 	 */
-	private final Map<String, Data> details = new HashMap<String, Data>();
+	private final Map<String, Data> details = new HashMap<>();
 
 	/**
 	 * Le logger utilisé dans les traces détaillées
@@ -465,7 +465,7 @@ public final class ServiceTracing implements ServiceTracingInterface {
 		Map<String, Data> copy;
 		// fait une copie complète des données pour éviter des problèmes d'accès concurrents
 		synchronized (total) {
-			copy = new HashMap<String, Data>(details.size());
+			copy = new HashMap<>(details.size());
 			for (Map.Entry<String, Data> e: details.entrySet()) {
 				copy.put(e.getKey(), new Data(e.getValue()));
 			}

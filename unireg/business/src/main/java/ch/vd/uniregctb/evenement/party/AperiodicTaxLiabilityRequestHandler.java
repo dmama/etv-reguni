@@ -77,7 +77,7 @@ public class AperiodicTaxLiabilityRequestHandler implements RequestHandler<Aperi
 			return new RequestHandlerResult(new AperiodicTaxLiabilityResponse(number, null, ResponseType.TAXPAYER_WITHOUT_TAX_LIABILITY, null));
 		}
 
-		final List<State> states = new ArrayList<State>();
+		final List<State> states = new ArrayList<>();
 
 		// 1) La personne physique identifiée par le "numéro de tiers" doit avoir son for principal dans le canton de Vaud ou être imposée à la source à la "date déterminante".
 		final PersonnePhysique pp = (PersonnePhysique) tiers;
@@ -117,7 +117,7 @@ public class AperiodicTaxLiabilityRequestHandler implements RequestHandler<Aperi
 		// b) Dans le cas où, à la fin de la recherche 3), aucun contribuable n'a été trouvé, mais que la recherche 1), 2) ou 3) a trouvé un contribuable qui répondait aux critères
 		// de la recherche avant la "date déterminante" : la détermination est négative et le service retourne la date de l'événement le plus récent, le type d'événement et le numéro
 		// de contribuable correspondant à cet événement.
-		final List<State> anciensAssujettissements = new ArrayList<State>();
+		final List<State> anciensAssujettissements = new ArrayList<>();
 		for (State state : states) {
 			if (state.wasAssujettiPCAP()) {
 				anciensAssujettissements.add(state);
@@ -174,7 +174,7 @@ public class AperiodicTaxLiabilityRequestHandler implements RequestHandler<Aperi
 			}
 			else {
 				ForFiscalPrincipal current = null;
-				final List<ForFiscalPrincipal> previous = new ArrayList<ForFiscalPrincipal>();
+				final List<ForFiscalPrincipal> previous = new ArrayList<>();
 				for (ForFiscal f : ffps) {
 					if (f.isPrincipal() && !f.isAnnule()) {
 						if (f.isValidAt(date)) {
@@ -188,7 +188,7 @@ public class AperiodicTaxLiabilityRequestHandler implements RequestHandler<Aperi
 				this.ffpPrecedents = previous.isEmpty() ? null : previous;
 			}
 
-			this.ffs = new ArrayList<ForFiscalSecondaire>();
+			this.ffs = new ArrayList<>();
 			for (ForFiscal f : tiers.getForsFiscauxValidAt(date)) {
 				if (f instanceof ForFiscalSecondaire) {
 					ffs.add((ForFiscalSecondaire) f);

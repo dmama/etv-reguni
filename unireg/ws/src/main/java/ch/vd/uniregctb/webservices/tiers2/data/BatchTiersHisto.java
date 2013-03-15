@@ -25,7 +25,7 @@ public class BatchTiersHisto {
 	 * <b>Dans la version 3 du web-service :</b> <i>entries</i>
 	 */
 	@XmlElement(required = true)
-	public final List<BatchTiersHistoEntry> entries = new ArrayList<BatchTiersHistoEntry>();
+	public final List<BatchTiersHistoEntry> entries = new ArrayList<>();
 
 	public BatchTiersHisto() {
 	}

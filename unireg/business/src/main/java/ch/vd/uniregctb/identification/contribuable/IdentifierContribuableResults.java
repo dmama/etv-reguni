@@ -66,9 +66,9 @@ public class IdentifierContribuableResults extends JobResults<Long, IdentifierCo
 
 	public final RegDate dateTraitement;
 	public int nbMessagesTotal;
-	public final List<Identifie> identifies = new ArrayList<Identifie>();
-	public final List<NonIdentifie> nonIdentifies = new ArrayList<NonIdentifie>();
-	public final List<Erreur> erreurs = new ArrayList<Erreur>();
+	public final List<Identifie> identifies = new ArrayList<>();
+	public final List<NonIdentifie> nonIdentifies = new ArrayList<>();
+	public final List<Erreur> erreurs = new ArrayList<>();
 	public boolean interrompu;
 
 	public IdentifierContribuableResults(RegDate dateTraitement, TiersService tiersService, AdresseService adresseService) {

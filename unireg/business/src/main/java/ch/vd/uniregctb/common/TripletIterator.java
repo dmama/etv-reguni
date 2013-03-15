@@ -56,7 +56,7 @@ public class TripletIterator<E> implements Iterator<Triplet<E>> {
 			return null;
 		}
 		else {
-			return new Triplet<E>(pp, p, c, n, nn);
+			return new Triplet<>(pp, p, c, n, nn);
 		}
 	}
 

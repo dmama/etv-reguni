@@ -14,9 +14,9 @@ import ch.vd.uniregctb.tiers.TiersService;
 
 public class ListeContribuablesResidentsSansForVaudoisResults extends ListesResults<ListeContribuablesResidentsSansForVaudoisResults> {
 
-	private final List<Long> contribuablesIdentifies = new LinkedList<Long>();
+	private final List<Long> contribuablesIdentifies = new LinkedList<>();
 
-	private final List<InfoContribuableIgnore> contribuablesIgnores = new LinkedList<InfoContribuableIgnore>();
+	private final List<InfoContribuableIgnore> contribuablesIgnores = new LinkedList<>();
 
 	public enum CauseIgnorance {
 		MENAGE_FERME("Ménage commun non actif"),

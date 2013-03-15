@@ -1,12 +1,11 @@
 package ch.vd.uniregctb.webservices.batch;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
+import java.util.ArrayList;
+import java.util.List;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "param", propOrder = {
@@ -37,7 +36,7 @@ public class Param {
 			// On expose pas les enum tels quels parce que le client ne les connaît pas !
 			// On expose plutôt les enums sous forme de string.
 			type = "enum";
-			enumValues = new ArrayList<String>();
+			enumValues = new ArrayList<>();
 			final Enum<?>[] enums = (Enum<?>[]) clazz.getEnumConstants();
 			for (Enum<?> e : enums) {
 				enumValues.add(e.name());

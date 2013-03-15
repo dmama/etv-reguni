@@ -126,7 +126,7 @@ public class EvenementCivilRegPPManagerImpl extends EvenementCivilManagerImpl im
 	@Override
 	@Transactional(readOnly = true)
 	public List<EvenementCivilRegPPElementListeView> find(EvenementCivilRegPPCriteriaView bean, ParamPagination pagination) throws AdresseException {
-		final List<EvenementCivilRegPPElementListeView> evtsRegPPElementListeView = new ArrayList<EvenementCivilRegPPElementListeView>();
+		final List<EvenementCivilRegPPElementListeView> evtsRegPPElementListeView = new ArrayList<>();
 		final List<EvenementCivilRegPP> evts = evenementDAO.find(bean, pagination);
 		for (EvenementCivilRegPP evt : evts) {
 			final EvenementCivilRegPPElementListeView evtRegPPElementListeView = buildView(evt);

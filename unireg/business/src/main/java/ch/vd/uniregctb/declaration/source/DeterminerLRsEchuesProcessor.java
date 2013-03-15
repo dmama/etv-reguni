@@ -84,7 +84,7 @@ public class DeterminerLRsEchuesProcessor {
 		final List<DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue> list = getListeInfosSurCandidats(periodeFiscale, dateTraitement);
 
 		// passage en revue par groupe transactionnel
-		final BatchTransactionTemplate<DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue, DeterminerLRsEchuesResults> template = new BatchTransactionTemplate<DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue, DeterminerLRsEchuesResults>(list, BATCH_SIZE, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE, transactionManager, s, hibernateTemplate);
+		final BatchTransactionTemplate<DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue, DeterminerLRsEchuesResults> template = new BatchTransactionTemplate<>(list, BATCH_SIZE, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE, transactionManager, s, hibernateTemplate);
 		template.execute(rapportFinal, new BatchTransactionTemplate.BatchCallback<DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue, DeterminerLRsEchuesResults>() {
 			@Override
 			public boolean doInTransaction(List<DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue> batch, DeterminerLRsEchuesResults rapport) throws Exception {
@@ -132,7 +132,7 @@ public class DeterminerLRsEchuesProcessor {
 	 */
 	private void traiteDebiteur(DeterminerLRsEchuesResults rapport, DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue infoDebiteur, DateRange periodeFiscale, RegDate dateTraitement) {
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(infoDebiteur.idDebiteur, true);
-		final List<DateRange> emises = new ArrayList<DateRange>(6);
+		final List<DateRange> emises = new ArrayList<>(6);
 		final List<DateRange> nonEmises = lrService.findLRsManquantes(dpi, periodeFiscale.getDateFin(), emises);
 
 		// on se concentre uniquement sur la période fiscale donnée : si toutes les LR ont été émises
@@ -191,7 +191,7 @@ public class DeterminerLRsEchuesProcessor {
 
 						@SuppressWarnings({"unchecked"}) final List<Object[]> rows = query.list();
 						if (rows != null && !rows.isEmpty()) {
-							final Map<Long, DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue> infos = new HashMap<Long, DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue>(rows.size());
+							final Map<Long, DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue> infos = new HashMap<>(rows.size());
 							for (Object[] row : rows) {
 								final int indexSommation = ((Number) row[4]).intValue();
 								final RegDate sommation = RegDate.fromIndex(indexSommation, false);
@@ -213,7 +213,7 @@ public class DeterminerLRsEchuesProcessor {
 									infoDebiteur.addLrEchue(id, debut, fin, sommation);
 								}
 							}
-							return new ArrayList<DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue>(infos.values());
+							return new ArrayList<>(infos.values());
 						}
 						else {
 							return Collections.emptyList();

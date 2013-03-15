@@ -26,10 +26,10 @@ public class CommonMapHelper extends ApplicationObjectSupport {
 	 * @return une map
 	 */
 	protected <T extends Enum<T>> Map<T, String> initMapEnum(String keyPrefix, Class<T> clazz, T... ignored) {
-		final Map<String, T> mapTmp = new HashMap<String, T>();
-		final Map<T, String> map = new LinkedHashMap<T, String>();
+		final Map<String, T> mapTmp = new HashMap<>();
+		final Map<T, String> map = new LinkedHashMap<>();
 		final T[] constants = clazz.getEnumConstants();
-		final Set<T> ignor = (ignored == null ? null : new HashSet<T>(Arrays.asList(ignored)));
+		final Set<T> ignor = (ignored == null ? null : new HashSet<>(Arrays.asList(ignored)));
 
 		for (T c : constants) {
 			if (ignor == null || !ignor.contains(c)) {
@@ -38,7 +38,7 @@ public class CommonMapHelper extends ApplicationObjectSupport {
 			}
 		}
 
-		final List<String> nomList = new ArrayList<String>(mapTmp.keySet());
+		final List<String> nomList = new ArrayList<>(mapTmp.keySet());
 		Collections.sort(nomList);
 		for (String aNomList : nomList) {
 			final T c = mapTmp.get(aNomList);
@@ -56,15 +56,15 @@ public class CommonMapHelper extends ApplicationObjectSupport {
 	 * @return une map
 	 */
 	protected <T extends Enum<T>> Map<T, String> initMapEnum(String keyPrefix, T... constants) {
-		final Map<String, T> mapTmp = new HashMap<String, T>();
-		final Map<T, String> map = new LinkedHashMap<T, String>();
+		final Map<String, T> mapTmp = new HashMap<>();
+		final Map<T, String> map = new LinkedHashMap<>();
 
 		for (T c : constants) {
 			final String nom = this.getMessageSourceAccessor().getMessage(keyPrefix + c);
 			mapTmp.put(nom, c);
 		}
 
-		final List<String> nomList = new ArrayList<String>(mapTmp.keySet());
+		final List<String> nomList = new ArrayList<>(mapTmp.keySet());
 		Collections.sort(nomList);
 		for (String aNomList : nomList) {
 			final T c = mapTmp.get(aNomList);

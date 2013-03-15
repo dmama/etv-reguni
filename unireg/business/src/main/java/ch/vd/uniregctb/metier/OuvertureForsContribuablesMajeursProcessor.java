@@ -96,7 +96,7 @@ public class OuvertureForsContribuablesMajeursProcessor {
 		// boucle principale sur les habitants à traiter
 		final List<Long> list = getListHabitantsSansForPrincipal(dateReference);
 
-		final BatchTransactionTemplate<Long, OuvertureForsResults> template = new BatchTransactionTemplate<Long, OuvertureForsResults>(list, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE,
+		final BatchTransactionTemplate<Long, OuvertureForsResults> template = new BatchTransactionTemplate<>(list, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE,
 				transactionManager, s, hibernateTemplate);
 		template.execute(rapportFinal, new BatchCallback<Long, OuvertureForsResults>() {
 

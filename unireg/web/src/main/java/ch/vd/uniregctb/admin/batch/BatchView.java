@@ -21,7 +21,7 @@ public class BatchView {
 	private Date lastStart;
 	private Date lastEnd;
 	private Date duration;
-	private final Map<String, String> runningParams = new HashMap<String, String>();
+	private final Map<String, String> runningParams = new HashMap<>();
 
 	public BatchView(JobDefinition batch) {
 		this.name = batch.getName();

@@ -86,7 +86,7 @@ public class EvenementDeclarationEsbHandlerTest extends EvenementTest {
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
 	public void testReceiveQuittancementDI() throws Exception {
 
-		final List<EvenementDeclaration> events = new ArrayList<EvenementDeclaration>();
+		final List<EvenementDeclaration> events = new ArrayList<>();
 
 		handler.setHandler(new EvenementDeclarationHandler() {
 			@Override

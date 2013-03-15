@@ -26,11 +26,11 @@ public class CollectionsUtils extends CollectionUtils {
 	 */
 	public static <T, O> List<O> splitAndProcess(Collection<T> collection, int size, SplitCallback<T, O> callback) {
 
-		List<O> output = new ArrayList<O>();
+		List<O> output = new ArrayList<>();
 
 		Assert.isTrue(size > 0);
 		final Iterator<T> iter = collection.iterator();
-		final List<T> list = new ArrayList<T>();
+		final List<T> list = new ArrayList<>();
 
 		// découpe la collection en sous-listes de taille 'size'
 		while (iter.hasNext()) {
@@ -59,12 +59,12 @@ public class CollectionsUtils extends CollectionUtils {
 	public static <T> List<List<T>> split(Collection<T> collection, int size) {
 		Assert.isTrue(size > 0);
 		final int outputSize = collection.size() / size + 1;
-		final List<List<T>> output = new ArrayList<List<T>>(outputSize);
+		final List<List<T>> output = new ArrayList<>(outputSize);
 
 		List<T> part = null;
 		for (T elt : collection) {
 			if (part == null) {
-				part = new ArrayList<T>(size);
+				part = new ArrayList<>(size);
 			}
 			part.add(elt);
 			if (part.size() == size) {

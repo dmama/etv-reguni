@@ -31,22 +31,22 @@
 					<script>
 					function onClickAnnualtion (master) {
 						var countDroitAAnnuler = 0;
-						$(".slave").each( function(i,elt) { if (elt.checked) ++countDroitAAnnuler; })
+						$(".slave").each( function(i,elt) { if (elt.checked) ++countDroitAAnnuler; });
 						if ( countDroitAAnnuler <= 0 ) {
 							alert("Aucun droit n'a été séléctionné pour l'annulation")
 						} else {
-							var message = "Voulez-vous vraiment annuler le droit d'accès sélectionné ?"
+							var message = "Voulez-vous vraiment annuler le droit d'accès sélectionné ?";
 							if (countDroitAAnnuler > 1) {
 								message = "Voulez-vous vraiment annuler les " + countDroitAAnnuler + " droits d'accès sélectionnés ?"
 							}
-							var confirmation = confirm(message)
+							var confirmation = confirm(message);
 							if(confirmation) {
-								$("#formEditRestriction")[0].submit()
+								$("#formEditRestriction")[0].submit();
 							}
 						}
 					}
 					function onClickToutAnnuler (master) {
-						var confirmation = confirm("Voulez-vous vraiment annuler tous les droits d'accès pour l'utilisateur ${command.utilisateur.prenomNom} (${command.utilisateur.visaOperateur}) ?")
+						var confirmation = confirm("Voulez-vous vraiment annuler tous les droits d'accès pour l'utilisateur ${command.utilisateur.prenomNom} (${command.utilisateur.visaOperateur}) ?");
 						if (confirmation) {
 							$("#annuleTout")[0].value ="true";
 							$("#formEditRestriction")[0].submit()
@@ -74,8 +74,8 @@
 					$(".slave,.master").each( function(i,elt) { elt.checked = masterState })
 				}
 				function onClickSlave () {
-					masterShouldBeChecked = true
-					$(".slave").each( function(i,elt) { if (!elt.checked) masterShouldBeChecked = false; })
+					masterShouldBeChecked = true;
+					$(".slave").each( function(i,elt) { if (!elt.checked) masterShouldBeChecked = false; });
 					$(".master").each( function(i,elt) { elt.checked = masterShouldBeChecked});
 				}
 			</script>

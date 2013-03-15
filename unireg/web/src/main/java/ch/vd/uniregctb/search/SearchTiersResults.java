@@ -107,7 +107,7 @@ public class SearchTiersResults {
 
 	public SearchTiersResults(String summary, TopList<TiersIndexedData> list) {
 		this.summary = summary;
-		this.entries = new ArrayList<Entry>();
+		this.entries = new ArrayList<>();
 		for (TiersIndexedData data : list) {
 			this.entries.add(new Entry(data));
 		}

@@ -97,11 +97,11 @@ public class WorkingQueue<T> {
 	 * @param worker    la définition du worker
 	 */
 	public WorkingQueue(int nbThreads, SimpleWorker<T> worker) {
-		this.queue = new LinkedBlockingQueue<Element<T>>();
-		this.inprocessing = new HashSet<Element<T>>();
-		this.listeners = new ArrayList<Listener<T>>();
+		this.queue = new LinkedBlockingQueue<>();
+		this.inprocessing = new HashSet<>();
+		this.listeners = new ArrayList<>();
 		for (int i = 0; i < nbThreads; ++i) {
-			SimpleListener<T> l = new SimpleListener<T>(this, queue, worker);
+			SimpleListener<T> l = new SimpleListener<>(this, queue, worker);
 			l.setName(worker.getName() + '-' + i);
 			this.listeners.add(l);
 		}
@@ -114,33 +114,33 @@ public class WorkingQueue<T> {
 	 * @param worker    la définition du worker
 	 */
 	public WorkingQueue(int nbThreads, BatchWorker<T> worker) {
-		this.queue = new LinkedBlockingQueue<Element<T>>();
-		this.inprocessing = new HashSet<Element<T>>();
-		this.listeners = new ArrayList<Listener<T>>();
+		this.queue = new LinkedBlockingQueue<>();
+		this.inprocessing = new HashSet<>();
+		this.listeners = new ArrayList<>();
 		for (int i = 0; i < nbThreads; ++i) {
-			BatchListener<T> l = new BatchListener<T>(this, queue, worker);
+			BatchListener<T> l = new BatchListener<>(this, queue, worker);
 			l.setName(worker.getName() + '-' + i);
 			this.listeners.add(l);
 		}
 	}
 
 	public WorkingQueue(int capacity, int nbThreads, SimpleWorker<T> worker) {
-		this.queue = new ArrayBlockingQueue<Element<T>>(capacity);
-		this.inprocessing = new HashSet<Element<T>>(capacity);
-		this.listeners = new ArrayList<Listener<T>>();
+		this.queue = new ArrayBlockingQueue<>(capacity);
+		this.inprocessing = new HashSet<>(capacity);
+		this.listeners = new ArrayList<>();
 		for (int i = 0; i < nbThreads; ++i) {
-			SimpleListener<T> l = new SimpleListener<T>(this, queue, worker);
+			SimpleListener<T> l = new SimpleListener<>(this, queue, worker);
 			l.setName(worker.getName() + '-' + i);
 			this.listeners.add(l);
 		}
 	}
 
 	public WorkingQueue(int capacity, int nbThreads, BatchWorker<T> worker) {
-		this.queue = new ArrayBlockingQueue<Element<T>>(capacity);
-		this.inprocessing = new HashSet<Element<T>>(capacity);
-		this.listeners = new ArrayList<Listener<T>>();
+		this.queue = new ArrayBlockingQueue<>(capacity);
+		this.inprocessing = new HashSet<>(capacity);
+		this.listeners = new ArrayList<>();
 		for (int i = 0; i < nbThreads; ++i) {
-			BatchListener<T> l = new BatchListener<T>(this, queue, worker);
+			BatchListener<T> l = new BatchListener<>(this, queue, worker);
 			l.setName(worker.getName() + '-' + i);
 			this.listeners.add(l);
 		}
@@ -161,7 +161,7 @@ public class WorkingQueue<T> {
 
 	public void put(T data) throws InterruptedException {
 
-		final Element<T> d = new Element<T>(data);
+		final Element<T> d = new Element<>(data);
 
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("inprocessing.add(" + d + ')');
@@ -176,7 +176,7 @@ public class WorkingQueue<T> {
 
 	public boolean offer(T data, long timeout, TimeUnit unit) throws InterruptedException {
 
-		final Element<T> d = new Element<T>(data);
+		final Element<T> d = new Element<>(data);
 
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("inprocessing.add(" + d + ')');
@@ -257,7 +257,7 @@ public class WorkingQueue<T> {
 	 */
 	public String addNewWorker(SimpleWorker<T> worker) {
 		synchronized (listeners) {
-			final SimpleListener<T> l = new SimpleListener<T>(this, queue, worker);
+			final SimpleListener<T> l = new SimpleListener<>(this, queue, worker);
 			final String name = worker.getName() + '-' + listeners.size();
 			l.setName(name);
 			this.listeners.add(l);
@@ -274,7 +274,7 @@ public class WorkingQueue<T> {
 	 */
 	public String addNewWorker(BatchWorker<T> worker) {
 		synchronized (listeners) {
-			final BatchListener<T> l = new BatchListener<T>(this, queue, worker);
+			final BatchListener<T> l = new BatchListener<>(this, queue, worker);
 			final String name = worker.getName() + '-' + listeners.size();
 			l.setName(name);
 			this.listeners.add(l);
@@ -304,7 +304,7 @@ public class WorkingQueue<T> {
 	public void reset() {
 
 		// on vide la queue dans une liste
-		final List<Element<T>> drain = new ArrayList<Element<T>>();
+		final List<Element<T>> drain = new ArrayList<>();
 		queue.drainTo(drain);
 		
 		// on supprime tous les éléments de la liste (les éléments non-présents dans le queue mais présents dans le 'inprocessing' sont ceux en cours de traitement par les listeners)
@@ -315,7 +315,7 @@ public class WorkingQueue<T> {
 		// on travaille sur une copie de la liste pour éviter de partir en dead-lock lors de l'appel du reset()
 		final List<Listener<T>> copy;
 		synchronized (listeners) {
-			copy = new ArrayList<Listener<T>>(listeners);
+			copy = new ArrayList<>(listeners);
 		}
 
 		for (Listener<T> listener : copy) {
@@ -347,7 +347,7 @@ public class WorkingQueue<T> {
 		// on travaille sur une copie de la liste pour éviter de partir en dead-lock lors de l'appel du shutdown()
 		final List<Listener<T>> copy;
 		synchronized (listeners) {
-			copy = new ArrayList<Listener<T>>(listeners);
+			copy = new ArrayList<>(listeners);
 		}
 
 		final WorkStats stats = new WorkStats(copy.size());
@@ -427,7 +427,7 @@ public class WorkingQueue<T> {
 	private void processingFailed(List<Element<T>> list) {
 		// le processing du lot n'a pas fonctionné (peut-être un problème sur un des workers), on le notifie
 		if (failureNotifier != null) {
-			final List<T> l = new ArrayList<T>(list.size());
+			final List<T> l = new ArrayList<>(list.size());
 			for (Element<T> e : list) {
 				l.add(e.data);
 			}
@@ -655,7 +655,7 @@ public class WorkingQueue<T> {
 					continue;
 				}
 				try {
-					List<T> batch = new ArrayList<T>(list.size());
+					List<T> batch = new ArrayList<>(list.size());
 					for (Element<T> e : list) {
 						batch.add(e.data);
 					}
@@ -687,7 +687,7 @@ public class WorkingQueue<T> {
 					break;
 				}
 				if (batch == null) {
-					batch = new ArrayList<Element<T>>(batchSize);
+					batch = new ArrayList<>(batchSize);
 				}
 				batch.add(id);
 			}

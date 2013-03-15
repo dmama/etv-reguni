@@ -92,14 +92,14 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher, Initializin
 		}
 
 		if (criteria.isEmpty()) {
-			return new TopList<TiersIndexedData>();
+			return new TopList<>();
 		}
 
 		final QueryConstructor contructor = new QueryConstructor(criteria);
 		final Query query = contructor.constructQuery();
 
 		// on effectue la recherche
-		final TopList<TiersIndexedData> list = new TopList<TiersIndexedData>();
+		final TopList<TiersIndexedData> list = new TopList<>();
 		final TopCallback callback = new TopCallback(list);
 		globalIndex.search(query, max, callback);
 
@@ -116,7 +116,7 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher, Initializin
 		}
 
 		if (StringUtils.isBlank(keywords)) {
-			return new TopList<TiersIndexedData>();
+			return new TopList<>();
 		}
 
 		keywords = keywords.toLowerCase().replaceAll("\\.", ""); // [SIFISC-6093] on supprime tous les points ('.') dans les critères de recherche.
@@ -139,7 +139,7 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher, Initializin
 		}
 
 		// on effectue la recherche
-		final TopList<TiersIndexedData> list = new TopList<TiersIndexedData>();
+		final TopList<TiersIndexedData> list = new TopList<>();
 		final TopCallback callback = new TopCallback(list);
 		globalIndex.search(query, max, callback);
 
@@ -155,7 +155,7 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher, Initializin
 	 */
 	private List<TiersIndexedData> adaptativeSearch(TiersCriteria criteria) {
 		
-		final List<TiersIndexedData> list = new ArrayList<TiersIndexedData>();
+		final List<TiersIndexedData> list = new ArrayList<>();
 
 		QueryConstructor contructor = new QueryConstructor(criteria);
 		TooManyClausesIndexerException toomany = null;
@@ -333,7 +333,7 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher, Initializin
 	@Override
 	public Set<Long> getAllIds() {
 
-		final Set<Long> ids = new HashSet<Long>(globalIndex.getApproxDocCount());
+		final Set<Long> ids = new HashSet<>(globalIndex.getApproxDocCount());
 
 		// [UNIREG-2597] on veut explicitement tous les ids, sans limite de recherche
 		globalIndex.searchAll(new MatchAllDocsQuery(), new SearchAllCallback() {
@@ -354,7 +354,7 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher, Initializin
 	@Override
 	public void checkCoherenceIndex(final Set<Long> existingIds, final StatusManager statusManager, final CheckCallback callback) {
 
-		final Set<Long> indexedIds = new HashSet<Long>();
+		final Set<Long> indexedIds = new HashSet<>();
 
 		statusManager.setMessage("Vérification que les données de l'indexeur existent dans la base...", 50);
 

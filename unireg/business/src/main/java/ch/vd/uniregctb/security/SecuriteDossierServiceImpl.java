@@ -106,7 +106,7 @@ public class SecuriteDossierServiceImpl implements SecuriteDossierService {
 		final Operateur operateur = serviceSecurite.getOperateur(visa);
 		if (operateur == null) {
 			final int size = ids.size();
-			final ArrayList<Niveau> niveaux = new ArrayList<Niveau>(size);
+			final ArrayList<Niveau> niveaux = new ArrayList<>(size);
 			for (int i = 0; i < size; ++i) {
 				// pas d'opérateur défini -> pas de droit
 				niveaux.add(null);
@@ -144,17 +144,17 @@ public class SecuriteDossierServiceImpl implements SecuriteDossierService {
 	 */
 	private List<Niveau> getAcces(Operateur operateur, List<Long> ids) {
 
-		final List<Niveau> niveaux = new ArrayList<Niveau>(ids.size());
+		final List<Niveau> niveaux = new ArrayList<>(ids.size());
 
 		// Récupère la liste des ménages-commun existant dans la liste d'ids spécifiée.
 		final List<MenageCommun> menages = tiersDAO.getMenagesCommuns(ids, EnumSet.of(Parts.RAPPORTS_ENTRE_TIERS));
-		final Map<Long, MenageCommun> map = new HashMap<Long, MenageCommun>(menages.size());
+		final Map<Long, MenageCommun> map = new HashMap<>(menages.size());
 		for (MenageCommun mc : menages) {
 			map.put(mc.getNumero(), mc);
 		}
 
 		// Calcul la liste des personnes physiques
-		final List<Long> idsPP = new ArrayList<Long>(ids.size() - menages.size());
+		final List<Long> idsPP = new ArrayList<>(ids.size() - menages.size());
 		for (Long id : ids) {
 			if (!map.containsKey(id)) {
 				idsPP.add(id);
@@ -192,7 +192,7 @@ public class SecuriteDossierServiceImpl implements SecuriteDossierService {
 	private Niveau getAccessForMC(Operateur operateur, final MenageCommun mc) {
 
 		// extraction des composants du ménage historique
-		Set<Tiers> composants = new HashSet<Tiers>();
+		Set<Tiers> composants = new HashSet<>();
 		for (RapportEntreTiers r : mc.getRapportsObjet()) {
 			if (!r.isAnnule() && TypeRapportEntreTiers.APPARTENANCE_MENAGE == r.getType()) {
 				final Tiers sujet = tiersDAO.get(r.getSujetId());
@@ -226,12 +226,12 @@ public class SecuriteDossierServiceImpl implements SecuriteDossierService {
 
 	private Map<Long, Niveau> getAccessForMC(Operateur operateur, List<MenageCommun> menages) {
 
-		final Set<Long> idsPP = new HashSet<Long>();
-		final Map<Long, List<Long>> idsPPparMC = new HashMap<Long, List<Long>>();
+		final Set<Long> idsPP = new HashSet<>();
+		final Map<Long, List<Long>> idsPPparMC = new HashMap<>();
 
 		// extraction de tous les ids des personnes physiques composantes de tous les ménages (vue historique)
 		for (MenageCommun mc : menages) {
-			List<Long> idsComposants = new ArrayList<Long>();
+			List<Long> idsComposants = new ArrayList<>();
 			idsPPparMC.put(mc.getNumero(), idsComposants);
 			for (RapportEntreTiers r : mc.getRapportsObjet()) {
 				if (!r.isAnnule() && TypeRapportEntreTiers.APPARTENANCE_MENAGE == r.getType()) {
@@ -243,9 +243,9 @@ public class SecuriteDossierServiceImpl implements SecuriteDossierService {
 		}
 
 		// récupération des niveaux des personnes physiques d'une seule requête
-		final Map<Long, Niveau> niveauxPP = getAccessForPP(operateur, new ArrayList<Long>(idsPP));
+		final Map<Long, Niveau> niveauxPP = getAccessForPP(operateur, new ArrayList<>(idsPP));
 
-		Map<Long, Niveau> results = new HashMap<Long, Niveau>();
+		Map<Long, Niveau> results = new HashMap<>();
 
 		// tri des personnes physiques et calcul du niveau d'accès minimal sur chaque ménage
 		for (MenageCommun mc : menages) {
@@ -285,18 +285,18 @@ public class SecuriteDossierServiceImpl implements SecuriteDossierService {
 		final List<DroitAcces> droitsAll = droitAccesDAO.getDroitsAccessTiers(idsPP, RegDate.get());
 
 		// trie les droits par contribuable
-		final Map<Long, List<DroitAcces>> map = new HashMap<Long, List<DroitAcces>>();
+		final Map<Long, List<DroitAcces>> map = new HashMap<>();
 		for (DroitAcces d : droitsAll) {
 			List<DroitAcces> l = map.get(d.getTiers().getNumero());
 			if (l == null) {
-				l = new ArrayList<DroitAcces>();
+				l = new ArrayList<>();
 				map.put(d.getTiers().getNumero(), l);
 			}
 			l.add(d);
 		}
 
 		// calcule les droits pour chaque contribuable
-		final Map<Long, Niveau> results = new HashMap<Long, Niveau>();
+		final Map<Long, Niveau> results = new HashMap<>();
 		for (Long id : idsPP) {
 			final List<DroitAcces> l = map.get(id);
 			if (l == null) {

@@ -100,7 +100,7 @@ public class ProduireListeDIsNonEmisesProcessor {
 		final List<Long> ids = determinationDIsAEmettreProcessor.createListeIdsContribuables(anneePeriode);
 
 		// Traite les contribuables par lots
-		final BatchTransactionTemplate<Long, ListeDIsNonEmises> template = new BatchTransactionTemplate<Long, ListeDIsNonEmises>(ids, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, hibernateTemplate);
+		final BatchTransactionTemplate<Long, ListeDIsNonEmises> template = new BatchTransactionTemplate<>(ids, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, hibernateTemplate);
 		template.execute(rapportFinal, new BatchCallback<Long, ListeDIsNonEmises>() {
 
 			@Override
@@ -202,7 +202,7 @@ public class ProduireListeDIsNonEmisesProcessor {
 			}
 		}
 
-		final List<Long> ids = new ArrayList<Long>();
+		final List<Long> ids = new ArrayList<>();
 		ids.add(contribuable.getId());
 		final DeclarationsCache dcache = envoiDIsEnMasseProcessor.new DeclarationsCache(periode.getAnnee(), ids);
 

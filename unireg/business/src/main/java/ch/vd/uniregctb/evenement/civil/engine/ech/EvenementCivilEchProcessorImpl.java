@@ -63,7 +63,7 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 	private List<ErrorPostProcessingStrategy> postProcessingStrategies;
 
 	private Processor processor;
-	private final Map<Long, Listener> listeners = new LinkedHashMap<Long, Listener>();      // pour les tests, c'est pratique de conserver l'ordre (pour le reste, cela ne fait pas de mal...)
+	private final Map<Long, Listener> listeners = new LinkedHashMap<>();      // pour les tests, c'est pratique de conserver l'ordre (pour le reste, cela ne fait pas de mal...)
 
 	private static final EvenementCivilEchErreurFactory ERREUR_FACTORY = new EvenementCivilEchErreurFactory();
 
@@ -436,7 +436,7 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 		event.setCommentaireTraitement(null);
 		event.getErreurs().clear();
 
-		final EvenementCivilMessageCollector<EvenementCivilEchErreur> collector = new EvenementCivilMessageCollector<EvenementCivilEchErreur>(ERREUR_FACTORY);
+		final EvenementCivilMessageCollector<EvenementCivilEchErreur> collector = new EvenementCivilMessageCollector<>(ERREUR_FACTORY);
 		final EtatEvenementCivil etat = processEventAndCollectMessages(event, collector, collector);
 
 		// les erreurs et warnings collectés sont maintenant associés à l'événement en base
@@ -568,7 +568,7 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		postProcessingStrategies = new ArrayList<ErrorPostProcessingStrategy>();
+		postProcessingStrategies = new ArrayList<>();
 		postProcessingStrategies.add(new ErrorPostProcessingIndexationPureStrategy(evtCivilDAO, translator, this));
 		postProcessingStrategies.add(new ErrorPostProcessingAnnulationImpactStrategy(evtCivilDAO));
 		postProcessingStrategies.add(new ErrorPostProcessingMiseEnAttenteStrategy(evtCivilDAO));

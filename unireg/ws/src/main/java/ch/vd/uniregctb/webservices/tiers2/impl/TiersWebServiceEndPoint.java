@@ -77,7 +77,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, DetailedLoadMon
 	/**
 	 * Moniteur des appels en cours
 	 */
-	private final DetailedLoadMeter<Object> loadMeter = new DetailedLoadMeter<Object>();
+	private final DetailedLoadMeter<Object> loadMeter = new DetailedLoadMeter<>();
 
 	@Resource
 	private WebServiceContext context;
@@ -838,7 +838,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, DetailedLoadMon
 	private void checkBatchReadAccess(BatchTiers batch) {
 		final int size = batch.entries.size();
 
-		final List<Long> ids = new ArrayList<Long>();
+		final List<Long> ids = new ArrayList<>();
 		for (BatchTiersEntry e : batch.entries) {
 			if (e.tiers == null) {
 				ids.add(null);
@@ -877,7 +877,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, DetailedLoadMon
 	private void checkBatchReadAccess(BatchTiersHisto batch) {
 		final int size = batch.entries.size();
 
-		final List<Long> ids = new ArrayList<Long>();
+		final List<Long> ids = new ArrayList<>();
 		for (BatchTiersHistoEntry e : batch.entries) {
 			if (e.tiers == null) {
 				ids.add(null);
@@ -979,7 +979,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, DetailedLoadMon
 		for (BatchTiersEntry entry : batch.entries) {
 			if (entry.exceptionMessage != null) {
 				if (inError == null) {
-					inError = new ArrayList<BatchTiersEntry>();
+					inError = new ArrayList<>();
 				}
 				inError.add(entry);
 			}
@@ -1010,7 +1010,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, DetailedLoadMon
 		for (BatchTiersHistoEntry entry : batch.entries) {
 			if (entry.exceptionMessage != null) {
 				if (inError == null) {
-					inError = new ArrayList<BatchTiersHistoEntry>();
+					inError = new ArrayList<>();
 				}
 				inError.add(entry);
 			}
@@ -1040,7 +1040,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, DetailedLoadMon
 		for (ReponseQuittancementDeclaration reponse : reponses) {
 			if (reponse.code != CodeQuittancement.OK) {
 				if (inError == null) {
-					inError = new ArrayList<ReponseQuittancementDeclaration>();
+					inError = new ArrayList<>();
 				}
 				inError.add(reponse);
 			}

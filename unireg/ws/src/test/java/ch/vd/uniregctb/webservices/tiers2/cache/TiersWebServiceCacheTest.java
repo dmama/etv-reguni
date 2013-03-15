@@ -172,15 +172,15 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 		paramsNoPart.tiersNumber = ids.eric;
 		paramsNoPart.parts = null;
 
-		final Set<TiersPart> adressesPart = new HashSet<TiersPart>();
+		final Set<TiersPart> adressesPart = new HashSet<>();
 		adressesPart.add(TiersPart.ADRESSES);
 		final GetTiers paramsAdressePart = paramsNoPart.clone(adressesPart);
 
-		final Set<TiersPart> forsPart = new HashSet<TiersPart>();
+		final Set<TiersPart> forsPart = new HashSet<>();
 		forsPart.add(TiersPart.FORS_FISCAUX);
 		final GetTiers paramsForsPart = paramsNoPart.clone(forsPart);
 
-		final Set<TiersPart> forsEtAdressesParts = new HashSet<TiersPart>();
+		final Set<TiersPart> forsEtAdressesParts = new HashSet<>();
 		forsEtAdressesParts.add(TiersPart.ADRESSES);
 		forsEtAdressesParts.add(TiersPart.FORS_FISCAUX);
 		final GetTiers paramsForsEtAdressesParts = paramsNoPart.clone(forsEtAdressesParts);
@@ -229,7 +229,7 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 
 		// on demande tour-à-tour les parties et on vérifie que 1) on les reçoit bien; et 2) qu'on ne reçoit qu'elles.
 		for (TiersPart p : TiersPart.values()) {
-			Set<TiersPart> parts = new HashSet<TiersPart>();
+			Set<TiersPart> parts = new HashSet<>();
 			parts.add(p);
 			final GetTiers params = paramsNoPart.clone(parts);
 			assertOnlyPart(p, cache.getTiers(params));
@@ -237,7 +237,7 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 
 		// maintenant que le cache est chaud, on recommence la manipulation pour vérifier que cela fonctionne toujours
 		for (TiersPart p : TiersPart.values()) {
-			Set<TiersPart> parts = new HashSet<TiersPart>();
+			Set<TiersPart> parts = new HashSet<>();
 			parts.add(p);
 			final GetTiers params = paramsNoPart.clone(parts);
 			assertOnlyPart(p, cache.getTiers(params));
@@ -253,15 +253,15 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 		paramsNoPart.tiersNumber = ids.eric;
 		paramsNoPart.parts = null;
 
-		final Set<TiersPart> adressesPart = new HashSet<TiersPart>();
+		final Set<TiersPart> adressesPart = new HashSet<>();
 		adressesPart.add(TiersPart.ADRESSES);
 		final GetTiersHisto paramsAdressePart = paramsNoPart.clone(adressesPart);
 
-		final Set<TiersPart> forsPart = new HashSet<TiersPart>();
+		final Set<TiersPart> forsPart = new HashSet<>();
 		forsPart.add(TiersPart.FORS_FISCAUX);
 		final GetTiersHisto paramsForsPart = paramsNoPart.clone(forsPart);
 
-		final Set<TiersPart> forsEtAdressesParts = new HashSet<TiersPart>();
+		final Set<TiersPart> forsEtAdressesParts = new HashSet<>();
 		forsEtAdressesParts.add(TiersPart.ADRESSES);
 		forsEtAdressesParts.add(TiersPart.FORS_FISCAUX);
 		final GetTiersHisto paramsForsEtAdressesParts = paramsNoPart.clone(forsEtAdressesParts);
@@ -309,7 +309,7 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 
 		// on demande tour-à-tour les parties et on vérifie que 1) on les reçoit bien; et 2) qu'on ne reçoit qu'elles.
 		for (TiersPart p : TiersPart.values()) {
-			Set<TiersPart> parts = new HashSet<TiersPart>();
+			Set<TiersPart> parts = new HashSet<>();
 			parts.add(p);
 			final GetTiersHisto params = paramsNoPart.clone(parts);
 			assertOnlyPart(p, cache.getTiersHisto(params));
@@ -317,7 +317,7 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 
 		// maintenant que le cache est chaud, on recommence la manipulation pour vérifier que cela fonctionne toujours
 		for (TiersPart p : TiersPart.values()) {
-			Set<TiersPart> parts = new HashSet<TiersPart>();
+			Set<TiersPart> parts = new HashSet<>();
 			parts.add(p);
 			final GetTiersHisto params = paramsNoPart.clone(parts);
 			assertOnlyPart(p, cache.getTiersHisto(params));
@@ -368,7 +368,7 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 		params.login = new UserLogin("[TiersWebServiceCacheTest]", 21);
 		params.tiersNumber = ids.menage;
 		params.date = new Date(2008, 1, 1);
-		params.parts = new HashSet<TiersPart>();
+		params.parts = new HashSet<>();
 		params.parts.add(TiersPart.ADRESSES_ENVOI);
 
 		final MenageCommun menageAvant = (MenageCommun) cache.getTiers(params);
@@ -451,7 +451,7 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testGetTiersInexistant() throws Exception {
 
-		final Set<TiersPart> adressesPart = new HashSet<TiersPart>();
+		final Set<TiersPart> adressesPart = new HashSet<>();
 		adressesPart.add(TiersPart.ADRESSES);
 
 		// Essaie une fois sans part
@@ -474,7 +474,7 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testGetTiersHistoInexistant() throws Exception {
 
-		final Set<TiersPart> adressesPart = new HashSet<TiersPart>();
+		final Set<TiersPart> adressesPart = new HashSet<>();
 		adressesPart.add(TiersPart.ADRESSES);
 
 		// Essaie une fois sans part
@@ -507,7 +507,7 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 		final GetTiers params = new GetTiers();
 		params.login = new UserLogin("[TiersWebServiceCacheTest]", 21);
 		params.tiersNumber = ids.monsieur;
-		params.parts = new HashSet<TiersPart>();
+		params.parts = new HashSet<>();
 
 		// 1. on demande le tiers avec les fors fiscaux virtuels
 		{
@@ -562,7 +562,7 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 		final GetTiersHisto params = new GetTiersHisto();
 		params.login = new UserLogin("[TiersWebServiceCacheTest]", 21);
 		params.tiersNumber = ids.monsieur;
-		params.parts = new HashSet<TiersPart>();
+		params.parts = new HashSet<>();
 
 		// 1. on demande le tiers avec les fors fiscaux virtuels
 		{
@@ -610,10 +610,10 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 
 		GetBatchTiers params = new GetBatchTiers();
 		params.login = new UserLogin("[TiersWebServiceCacheTest]", 21);
-		params.tiersNumbers = new HashSet<Long>();
+		params.tiersNumbers = new HashSet<>();
 		params.tiersNumbers.add(ids.monsieur);
 		params.tiersNumbers.add(ids.madame);
-		params.parts = new HashSet<TiersPart>();
+		params.parts = new HashSet<>();
 
 		// Etat initial : aucun appel au web-service
 		assertEmpty(implementation.getBatchTiersCalls);
@@ -688,7 +688,7 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 			// on vérifie qu'il y a un second appel au web-service, mais qu'il ne concerne que le tiers Eric
 			assertEquals(2, implementation.getBatchTiersCalls.size());
 			assertEquals(params.tiersNumbers, implementation.getBatchTiersCalls.get(0).tiersNumbers);
-			assertEquals(new HashSet<Long>(Arrays.asList(ids.eric)), implementation.getBatchTiersCalls.get(1).tiersNumbers);
+			assertEquals(new HashSet<>(Arrays.asList(ids.eric)), implementation.getBatchTiersCalls.get(1).tiersNumbers);
 		}
 	}
 
@@ -698,10 +698,10 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 
 		GetBatchTiersHisto params = new GetBatchTiersHisto();
 		params.login = new UserLogin("[TiersWebServiceCacheTest]", 21);
-		params.tiersNumbers = new HashSet<Long>();
+		params.tiersNumbers = new HashSet<>();
 		params.tiersNumbers.add(ids.monsieur);
 		params.tiersNumbers.add(ids.madame);
-		params.parts = new HashSet<TiersPart>();
+		params.parts = new HashSet<>();
 
 		// Etat initial : aucun appel au web-service
 		assertEmpty(implementation.getBatchTiersHistoCalls);
@@ -776,7 +776,7 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 			// on vérifie qu'il y a un second appel au web-service, mais qu'il ne concerne que le tiers Eric
 			assertEquals(2, implementation.getBatchTiersHistoCalls.size());
 			assertEquals(params.tiersNumbers, implementation.getBatchTiersHistoCalls.get(0).tiersNumbers);
-			assertEquals(new HashSet<Long>(Arrays.asList(ids.eric)), implementation.getBatchTiersHistoCalls.get(1).tiersNumbers);
+			assertEquals(new HashSet<>(Arrays.asList(ids.eric)), implementation.getBatchTiersHistoCalls.get(1).tiersNumbers);
 		}
 	}
 
@@ -789,10 +789,10 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 
 		GetBatchTiers params = new GetBatchTiers();
 		params.login = new UserLogin("[TiersWebServiceCacheTest]", 21);
-		params.tiersNumbers = new HashSet<Long>();
+		params.tiersNumbers = new HashSet<>();
 		params.tiersNumbers.add(ids.monsieur);
 		params.tiersNumbers.add(ids.madame);
-		params.parts = new HashSet<TiersPart>();
+		params.parts = new HashSet<>();
 
 		// on intercale une implémentation du web-service qui lèvera une exception lors de la récupération de madame
 		cache.setTarget(new TiersWebServiceCrashing(implementation, ids.madame));
@@ -852,7 +852,7 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 		final GetTiers params = new GetTiers();
 		params.login = new UserLogin("[TiersWebServiceCacheTest]", 21);
 		params.tiersNumber = ids.eric;
-		params.parts = new HashSet<TiersPart>();
+		params.parts = new HashSet<>();
 
 		// 1. on demande le tiers une première fois
 		{
@@ -880,10 +880,10 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 
 		GetBatchTiersHisto params = new GetBatchTiersHisto();
 		params.login = new UserLogin("[TiersWebServiceCacheTest]", 21);
-		params.tiersNumbers = new HashSet<Long>();
+		params.tiersNumbers = new HashSet<>();
 		params.tiersNumbers.add(ids.monsieur);
 		params.tiersNumbers.add(ids.madame);
-		params.parts = new HashSet<TiersPart>();
+		params.parts = new HashSet<>();
 
 		// on intercale une implémentation du web-service qui lèvera une exception lors de la récupération de madame
 		cache.setTarget(new TiersWebServiceCrashing(implementation, ids.madame));

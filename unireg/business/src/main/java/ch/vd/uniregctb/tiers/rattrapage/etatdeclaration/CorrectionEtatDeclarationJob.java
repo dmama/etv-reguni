@@ -128,7 +128,7 @@ public class CorrectionEtatDeclarationJob extends JobDefinition {
 		final CorrectionEtatDeclarationResults rapportFinal = new CorrectionEtatDeclarationResults(tiersService, adresseService);
 
 		final BatchTransactionTemplate<Long, CorrectionEtatDeclarationResults> t =
-				new BatchTransactionTemplate<Long, CorrectionEtatDeclarationResults>(ids, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, hibernateTemplate);
+				new BatchTransactionTemplate<>(ids, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, hibernateTemplate);
 		t.execute(rapportFinal, new BatchCallback<Long, CorrectionEtatDeclarationResults>() {
 			@Override
 			public CorrectionEtatDeclarationResults createSubRapport() {
@@ -169,7 +169,7 @@ public class CorrectionEtatDeclarationJob extends JobDefinition {
 				query.setParameterList("ids", batch);
 				final List lines = query.list();
 
-				final Map<Long, List<EtatDeclaration>> map = new HashMap<Long, List<EtatDeclaration>>();
+				final Map<Long, List<EtatDeclaration>> map = new HashMap<>();
 				for (Object line : lines) {
 					final Object[] values = (Object[]) line;
 					final Long diId = (Long) values[0];
@@ -177,7 +177,7 @@ public class CorrectionEtatDeclarationJob extends JobDefinition {
 
 					List<EtatDeclaration> etats = map.get(diId);
 					if (etats == null) {
-						etats = new ArrayList<EtatDeclaration>();
+						etats = new ArrayList<>();
 						map.put(diId, etats);
 					}
 					etats.add(etat);

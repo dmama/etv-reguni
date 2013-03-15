@@ -56,8 +56,8 @@ public class TraiterEvenementExterneResult extends JobResults<Long, TraiterEvene
 
 	public final RegDate dateTraitement;
 	public int nbEvenementTotal;
-	public final List<Traite> traites = new ArrayList<Traite>();
-	public final List<Erreur> erreurs = new ArrayList<Erreur>();
+	public final List<Traite> traites = new ArrayList<>();
+	public final List<Erreur> erreurs = new ArrayList<>();
 	public boolean interrompu;
 
 	public TraiterEvenementExterneResult(RegDate dateTraitement, TiersService tiersService, AdresseService adresseService) {

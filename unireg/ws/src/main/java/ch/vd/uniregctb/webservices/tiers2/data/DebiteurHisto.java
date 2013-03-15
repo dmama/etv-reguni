@@ -103,7 +103,7 @@ public class DebiteurHisto extends TiersHisto {
 	}
 
 	private void initPeriodicites(DebiteurPrestationImposable debiteur) {
-		this.periodicites = new ArrayList<Periodicite>();
+		this.periodicites = new ArrayList<>();
 		for (ch.vd.uniregctb.declaration.Periodicite periodicite : debiteur.getPeriodicitesNonAnnules(true)) {
 			this.periodicites.add(new Periodicite(periodicite));
 		}
@@ -119,7 +119,7 @@ public class DebiteurHisto extends TiersHisto {
 	}
 
 	private void initPeriodicites(DebiteurPrestationImposable debiteur, DateRangeHelper.Range range) {
-		this.periodicites = new ArrayList<Periodicite>();
+		this.periodicites = new ArrayList<>();
 		// Ajoute les périodicités
 		for (ch.vd.uniregctb.declaration.Periodicite periodicite : debiteur.getPeriodicitesNonAnnules(true)) {
 			if (range != null && !DateRangeHelper.intersect(periodicite, range)) {

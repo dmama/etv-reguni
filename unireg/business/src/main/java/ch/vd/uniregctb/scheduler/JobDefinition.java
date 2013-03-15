@@ -51,8 +51,8 @@ public abstract class JobDefinition implements InitializingBean, Comparable<JobD
 	private JobSynchronousMode synchronousMode;
 	final private int sortOrder;
 	final private String description;
-	final private Map<String, JobParam> paramDefinition = new LinkedHashMap<String, JobParam>();        // java.util.LinkedHashMap pour conserver l'ordre d'insertion des paramètres
-	final private Map<String, Object> defaultParamWebValues = new HashMap<String, Object>();
+	final private Map<String, JobParam> paramDefinition = new LinkedHashMap<>();        // java.util.LinkedHashMap pour conserver l'ordre d'insertion des paramètres
+	final private Map<String, Object> defaultParamWebValues = new HashMap<>();
 
 	private boolean logDisabled = false;
 
@@ -375,7 +375,7 @@ public abstract class JobDefinition implements InitializingBean, Comparable<JobD
 	}
 
 	public List<JobParam> getParamDefinition() {
-		return new ArrayList<JobParam>(paramDefinition.values());
+		return new ArrayList<>(paramDefinition.values());
 	}
 
 	/**
@@ -418,7 +418,7 @@ public abstract class JobDefinition implements InitializingBean, Comparable<JobD
 		}
 
 		// linked hash map pour conserver le même ordre des paramètres un peu partout
-		final Map<String, Object> result = new LinkedHashMap<String, Object>();
+		final Map<String, Object> result = new LinkedHashMap<>();
 		for (Map.Entry<String, JobParam> entry : this.paramDefinition.entrySet()) {
 			final Object value = this.currentParameters.get(entry.getKey());
 			if (value != null) {
@@ -712,7 +712,7 @@ public abstract class JobDefinition implements InitializingBean, Comparable<JobD
 		final String s = new String(csv);
 		final String[] lines = s.split("[;,\n]");
 
-		final List<Long> ids = new ArrayList<Long>(lines.length);
+		final List<Long> ids = new ArrayList<>(lines.length);
 		for (String l : lines) {
 			final String idAsString = l.replaceAll("[^0-9]", ""); // supprime tous les caractères non-numériques
 			if (idAsString.length() > 0) {

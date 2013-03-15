@@ -32,7 +32,7 @@ public class AbstractListeRecapController extends AbstractSimpleFormEditiqueAwar
 	protected Map<String, Object> referenceData(HttpServletRequest request) throws Exception {
 
 		// TracePoint tp = TracingManager.begin();
-		Map<String, Object> data = new HashMap<String, Object>();
+		Map<String, Object> data = new HashMap<>();
 		data.put(MODE_COMMUNICATION_MAP_NAME, getTiersMapHelper().getMapModeCommunication());
 		data.put(PERIODICITE_DECOMPTE_MAP_NAME, getTiersMapHelper().getMapPeriodiciteDecompte());
 		data.put(CATEGORIE_IMPOT_SOURCE_MAP_NAME, getTiersMapHelper().getMapCategorieImpotSource());

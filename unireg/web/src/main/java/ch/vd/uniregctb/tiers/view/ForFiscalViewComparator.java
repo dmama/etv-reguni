@@ -21,7 +21,7 @@ public class ForFiscalViewComparator implements Comparator<ForFiscalView> {
 
 	private static final List<String> ordreNatureFor = Arrays.asList("ForFiscalPrincipal", "ForFiscalSecondaire");
 
-	private static final Comparator<String> comparatorNatureFor = new GentilComparator<String>(ordreNatureFor);
+	private static final Comparator<String> comparatorNatureFor = new GentilComparator<>(ordreNatureFor);
 
 	private static <T extends Comparable<T>> int compareNullable(T o1, T o2, boolean nullAtEnd) {
 		if (o1 == o2) {

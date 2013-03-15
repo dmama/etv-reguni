@@ -372,7 +372,7 @@ public class AddDITest extends BusinessTest {
 			public Ids doInTransaction(TransactionStatus status) {
 
 				final PeriodeFiscale pf = addPeriodeFiscale(currentYear);
-				final Set<ParametrePeriodeFiscale> params = new HashSet<ParametrePeriodeFiscale>();
+				final Set<ParametrePeriodeFiscale> params = new HashSet<>();
 				params.add(new ParametrePeriodeFiscale(TypeContribuable.VAUDOIS_ORDINAIRE, dateLimiteOrdinaire, date(currentYear + 1, 3, 15), date(currentYear + 1, 6, 30), pf));
 				params.add(new ParametrePeriodeFiscale(TypeContribuable.VAUDOIS_DEPENSE, dateLimiteICCD, date(currentYear + 1, 3, 15), date(currentYear + 1, 6, 30), pf));
 				pf.setParametrePeriodeFiscale(params);
@@ -522,7 +522,7 @@ public class AddDITest extends BusinessTest {
 			public Ids doInTransaction(TransactionStatus status) {
 
 				final PeriodeFiscale pf = addPeriodeFiscale(currentYear);
-				final Set<ParametrePeriodeFiscale> params = new HashSet<ParametrePeriodeFiscale>();
+				final Set<ParametrePeriodeFiscale> params = new HashSet<>();
 				params.add(new ParametrePeriodeFiscale(TypeContribuable.VAUDOIS_ORDINAIRE, dateLimiteOrdinaire, date(currentYear + 1, 3, 15), date(currentYear + 1, 6, 30), pf));
 				params.add(new ParametrePeriodeFiscale(TypeContribuable.VAUDOIS_DEPENSE, dateLimiteICCD, date(currentYear + 1, 3, 15), date(currentYear + 1, 6, 30), pf));
 				pf.setParametrePeriodeFiscale(params);

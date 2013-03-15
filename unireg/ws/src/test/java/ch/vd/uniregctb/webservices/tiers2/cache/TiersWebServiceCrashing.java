@@ -41,7 +41,7 @@ import ch.vd.uniregctb.webservices.tiers2.params.SetTiersBlocRembAuto;
 public class TiersWebServiceCrashing implements TiersWebService {
 
 	private TiersWebService target;
-	private Set<Long> idsToCrash = new HashSet<Long>();
+	private Set<Long> idsToCrash = new HashSet<>();
 
 	public TiersWebServiceCrashing(TiersWebService target, Long... idsToCrash) {
 		this.target = target;
@@ -83,8 +83,8 @@ public class TiersWebServiceCrashing implements TiersWebService {
 	public BatchTiers getBatchTiers(GetBatchTiers params) throws BusinessException, AccessDeniedException, TechnicalException {
 
 		// on détermine quels sont les ids dont on veut simuler le crash
-		Set<Long> idsOk = new HashSet<Long>();
-		Set<Long> idsKo = new HashSet<Long>();
+		Set<Long> idsOk = new HashSet<>();
+		Set<Long> idsKo = new HashSet<>();
 		for (Long id : params.tiersNumbers) {
 			if (idsToCrash.contains(id)) {
 				idsKo.add(id);
@@ -110,8 +110,8 @@ public class TiersWebServiceCrashing implements TiersWebService {
 	public BatchTiersHisto getBatchTiersHisto(GetBatchTiersHisto params) throws BusinessException, AccessDeniedException, TechnicalException {
 
 		// on détermine quels sont les ids dont on veut simuler le crash
-		Set<Long> idsOk = new HashSet<Long>();
-		Set<Long> idsKo = new HashSet<Long>();
+		Set<Long> idsOk = new HashSet<>();
+		Set<Long> idsKo = new HashSet<>();
 		for (Long id : params.tiersNumbers) {
 			if (idsToCrash.contains(id)) {
 				idsKo.add(id);

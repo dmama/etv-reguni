@@ -82,14 +82,10 @@ public class DumpDatabaseJob extends JobDefinition {
 								public void writeDoc(DatabaseDump doc, OutputStream os) throws Exception {
 
 									// Dump la base de donnée dans un fichier zip sur le disque
-									final ZipOutputStream zipstream = new ZipOutputStream(os);
-									try {
+									try (ZipOutputStream zipstream = new ZipOutputStream(os)) {
 										final ZipEntry e = new ZipEntry(name + ".xml");
 										zipstream.putNextEntry(e);
 										dbService.dumpToDbunitFile(zipstream);
-									}
-									finally {
-										zipstream.close();
 									}
 
 									doc.setNbTiers(count);

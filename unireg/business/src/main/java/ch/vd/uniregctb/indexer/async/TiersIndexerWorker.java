@@ -128,7 +128,7 @@ public class TiersIndexerWorker implements BatchWorker<Long> {
 						if (batch.size() == 1) {
 							final Tiers tiers = (Tiers) session.get(Tiers.class, batch.get(0));
 							if (tiers != null) {
-								list = new ArrayList<Tiers>(1);
+								list = new ArrayList<>(1);
 								list.add(tiers);
 							}
 							else {
@@ -221,10 +221,10 @@ public class TiersIndexerWorker implements BatchWorker<Long> {
 			}
 
 			// la plupart des tiers ont pu être indexés...
-			final Set<Long> indexedIds = new HashSet<Long>(extractIds(tiers));
+			final Set<Long> indexedIds = new HashSet<>(extractIds(tiers));
 
 			// ...sauf ceux-ci
-			final Set<Long> inErrorIds = new HashSet<Long>();
+			final Set<Long> inErrorIds = new HashSet<>();
 			final List<Pair<Long, Exception>> list = e.getExceptions();
 			for (Pair<Long, Exception> p : list) {
 				final Long tiersId = p.getFirst();
@@ -271,7 +271,7 @@ public class TiersIndexerWorker implements BatchWorker<Long> {
 		if (tiers == null || tiers.isEmpty()) {
 			return null;
 		}
-		final List<Long> ids = new ArrayList<Long>(tiers.size());
+		final List<Long> ids = new ArrayList<>(tiers.size());
 		for (Tiers t : tiers) {
 			if (t != null) {
 				ids.add(t.getNumero());

@@ -62,7 +62,7 @@ public class FusionDeCommunesProcessor {
 	private final ValidationInterceptor validationInterceptor;
 	private final AdresseService adresseService;
 
-	private final Map<Class<? extends ForFiscal>, Strategy> strategies = new HashMap<Class<? extends ForFiscal>, Strategy>();
+	private final Map<Class<? extends ForFiscal>, Strategy> strategies = new HashMap<>();
 
 	protected FusionDeCommunesResults rapport;
 
@@ -118,7 +118,7 @@ public class FusionDeCommunesProcessor {
 
 		// boucle principale sur les contribuables à traiter
 		final BatchTransactionTemplate<Long, FusionDeCommunesResults> template =
-				new BatchTransactionTemplate<Long, FusionDeCommunesResults>(list, BATCH_SIZE, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE, transactionManager, s, hibernateTemplate);
+				new BatchTransactionTemplate<>(list, BATCH_SIZE, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE, transactionManager, s, hibernateTemplate);
 		template.execute(rapportFinal, new BatchTransactionTemplate.BatchCallback<Long, FusionDeCommunesResults>() {
 
 			@Override

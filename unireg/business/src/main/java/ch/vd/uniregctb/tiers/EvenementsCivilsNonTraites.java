@@ -23,7 +23,7 @@ public final class EvenementsCivilsNonTraites {
 		}
 	}
 
-	private final Map<Source, Set<Long>> nosIndividus = new HashMap<Source, Set<Long>>(Source.values().length);
+	private final Map<Source, Set<Long>> nosIndividus = new HashMap<>(Source.values().length);
 
 	public void addAll(Source src, Collection<Long> individus) {
 		if (individus != null && individus.size() > 0) {
@@ -32,7 +32,7 @@ public final class EvenementsCivilsNonTraites {
 				toBeFilled = nosIndividus.get(src);
 			}
 			else {
-				toBeFilled = new TreeSet<Long>();
+				toBeFilled = new TreeSet<>();
 				nosIndividus.put(src, toBeFilled);
 			}
 			toBeFilled.addAll(individus);

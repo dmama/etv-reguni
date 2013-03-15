@@ -20,7 +20,7 @@ public class PerformanceFilter implements Filter {
 
 	private final static Logger LOGGER = Logger.getLogger(PerformanceFilter.class);
 
-	private static final List<String> COMPILED_JSP = new ArrayList<String>();
+	private static final List<String> COMPILED_JSP = new ArrayList<>();
 
 	public PerformanceFilter() {
 		super();

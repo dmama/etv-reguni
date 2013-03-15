@@ -596,7 +596,7 @@ public class MetierServiceImpl implements MetierService {
 		if (principalHasFors && conjointHasFors) {
 			// les deux ont des fors secondaires : on va éliminer les doublons
 			final int sumOfSizes = forsSecondairesDuPrincipal.size() + forsSecondairesDuConjoint.size();
-			final Set<ForSecondaireWrapper> set = new HashSet<ForSecondaireWrapper>(sumOfSizes);
+			final Set<ForSecondaireWrapper> set = new HashSet<>(sumOfSizes);
 			for (ForFiscalSecondaire ffs : forsSecondairesDuPrincipal) {
 				set.add(new ForSecondaireWrapper(ffs));
 			}
@@ -609,7 +609,7 @@ public class MetierServiceImpl implements MetierService {
 				createForsSecondaires(date, menage, forsSecondairesDuConjoint, motifOuverture, dateFermeture, motifFermeture);
 			}
 			else {
-				final List<ForFiscalSecondaire> fors = new ArrayList<ForFiscalSecondaire>(set.size());
+				final List<ForFiscalSecondaire> fors = new ArrayList<>(set.size());
 				for (ForSecondaireWrapper wrapper : set) {
 					fors.add(wrapper.forFiscal);
 				}
@@ -2265,8 +2265,8 @@ public class MetierServiceImpl implements MetierService {
 	 */
 	private void reopenRapportsAt(Set<RapportEntreTiers> rapports, RegDate date) {
 
-		final List<RapportEntreTiers> rapportsAOuvrir = new ArrayList<RapportEntreTiers>();
-		final List<RapportEntreTiers> rapportsAAnnuler = new ArrayList<RapportEntreTiers>();
+		final List<RapportEntreTiers> rapportsAOuvrir = new ArrayList<>();
+		final List<RapportEntreTiers> rapportsAAnnuler = new ArrayList<>();
 
 		// On analyse les rapports en question
 		for (RapportEntreTiers rapport : rapports) {
@@ -2654,7 +2654,7 @@ public class MetierServiceImpl implements MetierService {
 	@Override
 	public PassageNouveauxRentiersSourciersEnMixteResults passageSourcierEnMixteNouveauxRentiers(RegDate dateTraitement, StatusManager statusManager) {
 		final PassageNouveauxRentiersSourciersEnMixteProcessor processor = new PassageNouveauxRentiersSourciersEnMixteProcessor(transactionManager,
-				hibernateTemplate, tiersService, tiersDAO, adresseService, serviceInfra, serviceCivilCacheWarmer, validationService, parametreAppService);
+				hibernateTemplate, tiersService, adresseService, serviceInfra, serviceCivilCacheWarmer, validationService, parametreAppService);
 		return processor.run(dateTraitement, statusManager);
 	}
 

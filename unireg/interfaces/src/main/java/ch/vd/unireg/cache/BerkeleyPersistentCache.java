@@ -106,8 +106,8 @@ public class BerkeleyPersistentCache<T extends Serializable> implements Persiste
 
 		// Create a serial binding for key and value objects. Serial bindings can be used to store any Serializable object.
 		StoredClassCatalog catalog = new StoredClassCatalog(catalogDb);
-		keyBinding = new SerialBinding<ObjectKey>(catalog, ObjectKey.class);
-		final SerialBinding<T> valueBinding = new SerialBinding<T>(catalog, clazz);
+		keyBinding = new SerialBinding<>(catalog, ObjectKey.class);
+		final SerialBinding<T> valueBinding = new SerialBinding<>(catalog, clazz);
 
 		// On crée une seconde base de données qui indexe les clés primaires de la première base de données par id.
 		// Cela permet de retrouver rapidemment toutes les données par id (sans tenir compte du complément, donc).
@@ -121,7 +121,7 @@ public class BerkeleyPersistentCache<T extends Serializable> implements Persiste
 
 		txn.commit();
 
-		map = new StoredMap<ObjectKey, T>(mainDb, keyBinding, valueBinding, true);
+		map = new StoredMap<>(mainDb, keyBinding, valueBinding, true);
 	}
 
 	@Override

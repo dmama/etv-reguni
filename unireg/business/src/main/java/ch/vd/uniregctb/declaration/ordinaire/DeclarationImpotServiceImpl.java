@@ -562,7 +562,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 				keys = Collections.emptySet();
 			}
 			else {
-				keys = new HashSet<Object>(entities.size());
+				keys = new HashSet<>(entities.size());
 				for (E d : entities) {
 					final Object key = d.getKey();
 					Assert.notNull(key, "Les entités existantes doivent être déjà persistées.");

@@ -26,7 +26,7 @@ public class InitialContextTest extends WithoutSpringTest {
 
 	private void connect() throws Exception {
 
-		Hashtable<String, String> map = new Hashtable<String, String>();
+		Hashtable<String, String> map = new Hashtable<>();
 		map.put(Context.INITIAL_CONTEXT_FACTORY, "weblogic.jndi.WLInitialContextFactory");
 		map.put(Context.PROVIDER_URL, "t3://solve61v:64910");
 		InitialContext ctx = new InitialContext(map);

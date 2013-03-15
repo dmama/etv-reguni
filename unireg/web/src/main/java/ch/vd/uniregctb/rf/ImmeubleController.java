@@ -84,7 +84,7 @@ public class ImmeubleController {
 
 		final int totalCount = immeubleDAO.count(ctbId);
 
-		final List<ImmeubleView> views = new ArrayList<ImmeubleView>();
+		final List<ImmeubleView> views = new ArrayList<>();
 		final ParamPagination pagination = new ParamPagination(page, pageSize, null, true);
 		final List<Immeuble> list = immeubleDAO.find(ctbId, pagination);
 		for (Immeuble immeuble : list) {

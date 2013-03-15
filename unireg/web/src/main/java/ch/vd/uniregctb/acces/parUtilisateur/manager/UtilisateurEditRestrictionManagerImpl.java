@@ -107,7 +107,7 @@ public class UtilisateurEditRestrictionManagerImpl implements UtilisateurEditRes
 		final UtilisateurView utilisateurView = utilisateurManager.get(noIndividuOperateur);
 		final UtilisateurEditRestrictionView utilisateurEditRestrictionView = new UtilisateurEditRestrictionView();
 		utilisateurEditRestrictionView.setUtilisateur(utilisateurView);
-		final List<DroitAccesUtilisateurView> views = new ArrayList<DroitAccesUtilisateurView>();
+		final List<DroitAccesUtilisateurView> views = new ArrayList<>();
 		final List<DroitAcces> restrictions = droitAccesDAO.getDroitsAcces(noIndividuOperateur, pagination);
 		for (DroitAcces droitAcces : restrictions) {
 			final DroitAccesUtilisateurView droitAccesView = new DroitAccesUtilisateurView(droitAcces, tiersService, adresseService);
@@ -211,7 +211,7 @@ public class UtilisateurEditRestrictionManagerImpl implements UtilisateurEditRes
 		@Override
 		public boolean doBatchExtraction(List<Long> batch, DroitsAccesExtractionResult rapport) throws Exception {
 
-			final List<DroitAccesUtilisateurView> infos = new ArrayList<DroitAccesUtilisateurView>();
+			final List<DroitAccesUtilisateurView> infos = new ArrayList<>();
 			for (Long idDroitAcces : batch) {
 				DroitAcces droitAcces = droitAccesDAO.get(idDroitAcces);
 				if (!droitAcces.isAnnule()) {
@@ -295,7 +295,7 @@ public class UtilisateurEditRestrictionManagerImpl implements UtilisateurEditRes
 
 	public static class DroitsAccesExtractionResult implements BatchResults<Long, DroitsAccesExtractionResult> {
 
-		private final List<DroitAccesUtilisateurView> acces = new LinkedList<DroitAccesUtilisateurView>();
+		private final List<DroitAccesUtilisateurView> acces = new LinkedList<>();
 
 		@Override
 		public void addErrorException(Long element, Exception e) {

@@ -26,7 +26,7 @@ public class DemandeAvecHisto extends Demande {
 	public DemandeAvecHisto(RegistrationRequestWithHistory request) {
 		super(request);
 
-		this.historiqueEtats = new ArrayList<EtatDemande>();
+		this.historiqueEtats = new ArrayList<>();
 		if (request.getRegistrationRequestHistoryEntry() == null || request.getRegistrationRequestHistoryEntry().isEmpty()) {
 			if (request.getRegistrationStatus() == null) {
 				historiqueEtats.add(EtatDemande.newEtatDemandeFactice(TypeEtatDemande.IGNOREE));

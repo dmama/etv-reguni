@@ -39,7 +39,7 @@ import ch.vd.uniregctb.webservices.party3.impl.ExceptionHelper;
 public class PartyWebServiceCrashing implements PartyWebService {
 
 	private PartyWebService target;
-	private Set<Integer> idsToCrash = new HashSet<Integer>();
+	private Set<Integer> idsToCrash = new HashSet<>();
 
 	public PartyWebServiceCrashing(PartyWebService target, Integer... idsToCrash) {
 		this.target = target;
@@ -78,8 +78,8 @@ public class PartyWebServiceCrashing implements PartyWebService {
 	public BatchParty getBatchParty(GetBatchPartyRequest params) throws WebServiceException {
 
 		// on détermine quels sont les ids dont on veut simuler le crash
-		Set<Integer> idsOk = new HashSet<Integer>();
-		Set<Integer> idsKo = new HashSet<Integer>();
+		Set<Integer> idsOk = new HashSet<>();
+		Set<Integer> idsKo = new HashSet<>();
 		for (Integer id : params.getPartyNumbers()) {
 			if (idsToCrash.contains(id)) {
 				idsKo.add(id);
@@ -90,7 +90,7 @@ public class PartyWebServiceCrashing implements PartyWebService {
 		}
 
 		// on effectue l'appel sur les ids non-impactés
-		final GetBatchPartyRequest okParams = new GetBatchPartyRequest(params.getLogin(), new ArrayList<Integer>(idsOk), params.getParts());
+		final GetBatchPartyRequest okParams = new GetBatchPartyRequest(params.getLogin(), new ArrayList<>(idsOk), params.getParts());
 		final BatchParty res = target.getBatchParty(okParams);
 
 		// on complète le résultat avec les ids crashés

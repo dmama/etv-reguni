@@ -65,16 +65,17 @@ public class CopieConformeController {
 	 * @throws IOException en cas d'erreurs lors du streaming du document
 	 */
 	private String getDocumentCopieConforme(HttpServletRequest request, HttpServletResponse response, String filename, String errorMessageIfNoSuchDocument, CopieConformeGetter getter) throws EditiqueException, IOException {
-		final InputStream is = getter.getCopieConforme();
-		if (is != null) {
-			downloadFile(is, filename, response);
-			return null;
-		}
-		else {
-			if (StringUtils.isNotBlank(errorMessageIfNoSuchDocument)) {
-				Flash.error(errorMessageIfNoSuchDocument, errorFadingTimeout);
+		try (final InputStream is = getter.getCopieConforme()) {
+			if (is != null) {
+				downloadFile(is, filename, response);
+				return null;
 			}
-			return getRedirectPagePrecedente(request);
+			else {
+				if (StringUtils.isNotBlank(errorMessageIfNoSuchDocument)) {
+					Flash.error(errorMessageIfNoSuchDocument, errorFadingTimeout);
+				}
+				return getRedirectPagePrecedente(request);
+			}
 		}
 	}
 

@@ -401,7 +401,7 @@ public class PersonnePhysique extends Contribuable {
 
 	public void addIdentificationPersonne(IdentificationPersonne ident) {
 		if (identificationsPersonnes == null) {
-			identificationsPersonnes = new HashSet<IdentificationPersonne>();
+			identificationsPersonnes = new HashSet<>();
 		}
 		ident.setPersonnePhysique(this);
 		identificationsPersonnes.add(ident);

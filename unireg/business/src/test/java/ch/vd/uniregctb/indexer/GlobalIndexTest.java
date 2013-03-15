@@ -582,7 +582,7 @@ public class GlobalIndexTest extends BusinessTest {
 			}
 		};
 
-		final List<Throwable> throwables = new ArrayList<Throwable>();
+		final List<Throwable> throwables = new ArrayList<>();
 
 		UncaughtExceptionHandler handler = new UncaughtExceptionHandler() {
 			@Override

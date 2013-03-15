@@ -430,7 +430,7 @@ public class PartyWebServicePMTest extends WebserviceTest {
 		assertEquals(2, entries.size());
 
 		// vérification qu'on a bien renvoyé les données sur les deux tiers
-		final Set<Long> tiersRendus = new HashSet<Long>();
+		final Set<Long> tiersRendus = new HashSet<>();
 		for (BatchPartyEntry entry : entries) {
 			tiersRendus.add((long) entry.getNumber());
 		}

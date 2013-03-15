@@ -169,10 +169,7 @@
 	<bean id="mouvementVisuManager" class="ch.vd.uniregctb.tiers.manager.MouvementVisuManagerImpl" parent="abstractMouvementManager"/>
 
 	<bean id="tiersGeneralManager" class="ch.vd.uniregctb.general.manager.TiersGeneralManagerImpl">
-		<property name="adresseService" ref="adresseService" />
-		<property name="serviceCivilService" ref="serviceCivilService" />
 		<property name="tiersService" ref="tiersService" />
-		<property name="infraService" ref="serviceInfrastructureService"/>
 	</bean>
 
 	<bean id="utilisateurManager" class="ch.vd.uniregctb.general.manager.UtilisateurManagerImpl">

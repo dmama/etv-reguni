@@ -14,8 +14,8 @@ public class GentilComparatorTest extends WithoutSpringTest {
 	public void testCasTousConnus() throws Exception {
 
 		// on notera que les noms ne sont pas dans l'ordre alphabétique, pour être sûr...
-		final GentilComparator<String> comparator = new GentilComparator<String>(Arrays.asList("Un", "Deux", "Trois"));
-		final List<String> aTrier = new ArrayList<String>(3);
+		final GentilComparator<String> comparator = new GentilComparator<>(Arrays.asList("Un", "Deux", "Trois"));
+		final List<String> aTrier = new ArrayList<>(3);
 		aTrier.add("Deux");
 		aTrier.add("Trois");
 		aTrier.add("Un");
@@ -35,8 +35,8 @@ public class GentilComparatorTest extends WithoutSpringTest {
 	public void testCasInconnus() throws Exception {
 
 		// on notera que les noms ne sont pas dans l'ordre alphabétique, pour être sûr...
-		final GentilComparator<String> comparator = new GentilComparator<String>(Arrays.asList("Un", "Deux", "Trois"));
-		final List<String> aTrier = new ArrayList<String>(3);
+		final GentilComparator<String> comparator = new GentilComparator<>(Arrays.asList("Un", "Deux", "Trois"));
+		final List<String> aTrier = new ArrayList<>(3);
 
 		aTrier.add("Quatre");
 		aTrier.add("Cinq");
@@ -57,8 +57,8 @@ public class GentilComparatorTest extends WithoutSpringTest {
 	public void testCasMixte() throws Exception {
 
 		// on notera que les noms ne sont pas dans l'ordre alphabétique, pour être sûr...
-		final GentilComparator<String> comparator = new GentilComparator<String>(Arrays.asList("Un", "Deux", "Trois"));
-		final List<String> aTrier = new ArrayList<String>(6);
+		final GentilComparator<String> comparator = new GentilComparator<>(Arrays.asList("Un", "Deux", "Trois"));
+		final List<String> aTrier = new ArrayList<>(6);
 
 		aTrier.add("Quatre");
 		aTrier.add("Deux");

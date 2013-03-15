@@ -43,7 +43,7 @@ public class ListesNominativesThread extends ListesThread<ListesNominativesResul
 		    partsFiscales = PARTS_FISCALES;
 	    }
 	    else {
-		    final Set<TiersDAO.Parts> parts = new HashSet<TiersDAO.Parts>(PARTS_FISCALES.size() + 1);
+		    final Set<TiersDAO.Parts> parts = new HashSet<>(PARTS_FISCALES.size() + 1);
 		    parts.addAll(PARTS_FISCALES);
 		    parts.add(TiersDAO.Parts.ADRESSES);
 		    partsFiscales = Collections.unmodifiableSet(parts);

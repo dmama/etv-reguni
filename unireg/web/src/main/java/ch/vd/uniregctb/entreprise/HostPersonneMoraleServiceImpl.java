@@ -82,7 +82,7 @@ public class HostPersonneMoraleServiceImpl implements HostPersonneMoraleService 
 		if (forsFiscauxPrincipaux == null && forsFiscauxSecondaires == null) {
 			return null;
 		}
-		final List<ForFiscalView> list = new ArrayList<ForFiscalView>();
+		final List<ForFiscalView> list = new ArrayList<>();
 		if (forsFiscauxPrincipaux != null) {
 			for (ForPM ffp : forsFiscauxPrincipaux) {
 				ForFiscalView v = new ForFiscalView();
@@ -115,7 +115,7 @@ public class HostPersonneMoraleServiceImpl implements HostPersonneMoraleService 
 		if (sieges == null) {
 			return null;
 		}
-		final List<SiegeView> list = new ArrayList<SiegeView>(sieges.size());
+		final List<SiegeView> list = new ArrayList<>(sieges.size());
 		for (Siege siege : sieges) {
 			list.add(new SiegeView(siege));
 		}
@@ -128,7 +128,7 @@ public class HostPersonneMoraleServiceImpl implements HostPersonneMoraleService 
 		if (formesJuridiques == null) {
 			return null;
 		}
-		final List<FormeJuridiqueView> list = new ArrayList<FormeJuridiqueView>(formesJuridiques.size());
+		final List<FormeJuridiqueView> list = new ArrayList<>(formesJuridiques.size());
 		for (FormeJuridique formeJuridique : formesJuridiques) {
 			list.add(new FormeJuridiqueView(formeJuridique));
 		}
@@ -141,7 +141,7 @@ public class HostPersonneMoraleServiceImpl implements HostPersonneMoraleService 
 		if (capitaux == null) {
 			return null;
 		}
-		final List<CapitalView> list = new ArrayList<CapitalView>(capitaux.size());
+		final List<CapitalView> list = new ArrayList<>(capitaux.size());
 		for (Capital capital : capitaux) {
 			list.add(new CapitalView(capital));
 		}
@@ -154,7 +154,7 @@ public class HostPersonneMoraleServiceImpl implements HostPersonneMoraleService 
 		if (regimes == null) {
 			return null;
 		}
-		final List<RegimeFiscalView> list = new ArrayList<RegimeFiscalView>(regimes.size());
+		final List<RegimeFiscalView> list = new ArrayList<>(regimes.size());
 		for (RegimeFiscal r : regimes) {
 			final RegimeFiscalView v = new RegimeFiscalView();
 			v.setDateDebut(r.getDateDebut());
@@ -175,7 +175,7 @@ public class HostPersonneMoraleServiceImpl implements HostPersonneMoraleService 
 		if (etats == null) {
 			return null;
 		}
-		final List<EtatPMView> list = new ArrayList<EtatPMView>(etats.size());
+		final List<EtatPMView> list = new ArrayList<>(etats.size());
 		for (EtatPM r : etats) {
 			final EtatPMView v = new EtatPMView();
 			v.setDateDebut(r.getDateDebut());

@@ -292,7 +292,7 @@ public abstract class EvenementCivilInterne {
 		 * Récupération des informations sur l'individu depuis le host. En plus des états civils, on peut vouloir les adresses, le conjoint,
 		 * les enfants... (enfin, chaque adapteur d'événement sait ce dont il a besoin en plus...)
 		 */
-		final Set<AttributeIndividu> requiredParts = new HashSet<AttributeIndividu>();
+		final Set<AttributeIndividu> requiredParts = new HashSet<>();
 		fillRequiredParts(requiredParts);
 		parts = requiredParts.toArray(new AttributeIndividu[requiredParts.size()]);
 	}

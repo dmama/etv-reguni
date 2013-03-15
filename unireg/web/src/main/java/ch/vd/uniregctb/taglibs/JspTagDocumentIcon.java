@@ -22,7 +22,7 @@ public class JspTagDocumentIcon extends BodyTagSupport {
 	private static final Map<String, String> typeMapping;
 
 	static {
-		typeMapping = new HashMap<String, String>();
+		typeMapping = new HashMap<>();
 		typeMapping.put(MimeTypeHelper.MIME_CSV, "/images/csv_icon.png");
 		typeMapping.put(MimeTypeHelper.MIME_PLAINTEXT, "/images/txt_icon.png");
 		typeMapping.put(MimeTypeHelper.MIME_PDF, "/images/pdf_icon.png");

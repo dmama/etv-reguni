@@ -174,7 +174,7 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 	public List<BordereauListElementView> getProtoBordereaux(Integer noCollAdmInitiatrice) {
 		final List<ProtoBordereauMouvementDossier> protos = getMouvementDossierDAO().getAllProtoBordereaux(noCollAdmInitiatrice);
 		if (protos != null && !protos.isEmpty()) {
-			final List<BordereauListElementView> list = new ArrayList<BordereauListElementView>(protos.size());
+			final List<BordereauListElementView> list = new ArrayList<>(protos.size());
 			for (ProtoBordereauMouvementDossier proto : protos) {
 				list.add(getView(proto));
 			}
@@ -202,7 +202,7 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 	public List<BordereauEnvoiView> findBordereauxAReceptionner(Integer noCollAdmReceptrice) {
 		final List<BordereauMouvementDossier> bordereaux = bordereauDAO.getBordereauxAReceptionner(noCollAdmReceptrice);
 		if (bordereaux != null && !bordereaux.isEmpty()) {
-			final List<BordereauEnvoiView> liste = new ArrayList<BordereauEnvoiView>(bordereaux.size());
+			final List<BordereauEnvoiView> liste = new ArrayList<>(bordereaux.size());
 			for (BordereauMouvementDossier b : bordereaux) {
 				liste.add(getView(b));
 			}
@@ -386,13 +386,13 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 				// le dao ne garantit pas de retourner les éléments dans l'ordre des ids indiqués
 				// -> afin de garantir l'ordre de tri dans l'extraction, je dois donc repasser par la liste initiale
 				final List<MouvementDossier> mvts = getMouvementDossierDAO().get(ids);
-				final Map<Long, MouvementDossier> map = new HashMap<Long, MouvementDossier>(mvts.size());
+				final Map<Long, MouvementDossier> map = new HashMap<>(mvts.size());
 				for (MouvementDossier mvt : mvts) {
 					map.put(mvt.getId(), mvt);
 				}
 
 				// nouvelle liste des mouvements triés dans le même ordre que la liste initiale des ids
-				final List<MouvementDossier> mvtsTries = new ArrayList<MouvementDossier>(mvts.size());
+				final List<MouvementDossier> mvtsTries = new ArrayList<>(mvts.size());
 				for (Long id : batch) {
 					if (id != null) {
 						final MouvementDossier mvt = map.get(id);
@@ -493,7 +493,7 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 			if (etatsMouvement != null && !etatsMouvement.isEmpty()) {
 				b.append(" dans l'état ");
 				final int size = etatsMouvement.size();
-				final List<EtatMouvementDossier> etats = new ArrayList<EtatMouvementDossier>(etatsMouvement);
+				final List<EtatMouvementDossier> etats = new ArrayList<>(etatsMouvement);
 				for (int i = 0 ; i < size; ++ i) {
 					if (i > 0) {
 						if (i < size - 1) {
@@ -540,7 +540,7 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 
 	public static class MouvementDossierExtractionResult implements BatchResults<Long, MouvementDossierExtractionResult> {
 
-		private final List<MouvementDetailView> mvts = new LinkedList<MouvementDetailView>();
+		private final List<MouvementDetailView> mvts = new LinkedList<>();
 
 		@Override
 		public void addErrorException(Long element, Exception e) {

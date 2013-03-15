@@ -40,9 +40,9 @@ public class AcomptesResults extends ListesResults<AcomptesResults> {
 
     private final Integer anneeFiscale;
 
-    private final List<InfoContribuableAssujetti> contribuablesAssujettis = new LinkedList<InfoContribuableAssujetti>();
+    private final List<InfoContribuableAssujetti> contribuablesAssujettis = new LinkedList<>();
 
-	private final List<InfoContribuableIgnore> contribuablesIgnores = new LinkedList<InfoContribuableIgnore>();
+	private final List<InfoContribuableIgnore> contribuablesIgnores = new LinkedList<>();
 	private AssujettissementService assujettissementService;
 
 	public static class InfoContribuableAssujetti {
@@ -281,7 +281,7 @@ public class AcomptesResults extends ListesResults<AcomptesResults> {
 					// information sur les communes des fors secondaires
 					final ForsList<ForFiscalSecondaire> forsSecondaires = assujettissement.getFors().secondaires;
 					if (!forsSecondaires.isEmpty()) {
-						ofsForsSecondaires = new TreeSet<Integer>();
+						ofsForsSecondaires = new TreeSet<>();
 						for (ForFiscalSecondaire ffs : forsSecondaires) {
 							ofsForsSecondaires.add(ffs.getNumeroOfsAutoriteFiscale());
 						}
@@ -365,10 +365,6 @@ public class AcomptesResults extends ListesResults<AcomptesResults> {
 			    return numero1 == numero2 ? 0 : (numero1 < numero2 ? -1 : 1);
 		    }
 	    });
-    }
-
-    public TiersService getTiersService() {
-        return tiersService;
     }
 
     public List<InfoContribuableAssujetti> getListeContribuablesAssujettis() {

@@ -77,7 +77,7 @@ public class ListeTachesEnInstanceParOID extends TachesResults<Long, ListeTaches
 	}
 
 
-	private final List<LigneTacheInstance> tachesEnIsntancesParOID = new ArrayList<LigneTacheInstance>();
+	private final List<LigneTacheInstance> tachesEnIsntancesParOID = new ArrayList<>();
 
 
 	public void addTypeDeTacheEnInstance(long numeroOID, String nomCollectivite, String typeTache, long nombreTache) {

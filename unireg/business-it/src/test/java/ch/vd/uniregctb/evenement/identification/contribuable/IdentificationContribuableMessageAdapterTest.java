@@ -67,7 +67,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 			}
 		}
 
-		public final List<ErrorDescription> collectedErrors = new ArrayList<ErrorDescription>();
+		public final List<ErrorDescription> collectedErrors = new ArrayList<>();
 
 		@Override
 		public void sendError(EsbMessage esbMessage, String errorMessage, Exception exception, ErrorType errorType, String errorCode) throws Exception {
@@ -313,7 +313,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
 	public void testReceiveDemandeIdentificationCtb() throws Exception {
 
-		final List<IdentificationContribuable> messages = new ArrayList<IdentificationContribuable>();
+		final List<IdentificationContribuable> messages = new ArrayList<>();
 
 		handler.setDemandeHandler(new DemandeHandler() {
 			@Override
@@ -383,7 +383,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
 	public void testDemandeIdentificationAvecUrlDocument() throws Exception {
-		final List<IdentificationContribuable> messages = new ArrayList<IdentificationContribuable>();
+		final List<IdentificationContribuable> messages = new ArrayList<>();
 
 		handler.setDemandeHandler(new DemandeHandler() {
 			@Override
@@ -397,7 +397,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
-		final Map<String, String> customAttributes = new HashMap<String, String>();
+		final Map<String, String> customAttributes = new HashMap<>();
 		final String url = "http://mamachine:3421/mondocument.pdf";
 		customAttributes.put(IdentificationContribuableEsbHandler.DOCUMENT_URL_ATTRIBUTE_NAME, url);
 		sendTextMessage(INPUT_QUEUE, texte, customAttributes);
@@ -420,7 +420,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
 	public void testDemandeIdentificationAvecDateFarfelue() throws Exception {
 
-		final List<IdentificationContribuable> messages = new ArrayList<IdentificationContribuable>();
+		final List<IdentificationContribuable> messages = new ArrayList<>();
 
 		handler.setDemandeHandler(new DemandeHandler() {
 			@Override
@@ -451,7 +451,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
 	public void testDemandeIdentificationErreurMontant() throws Exception {
 
-		final List<IdentificationContribuable> messages = new ArrayList<IdentificationContribuable>();
+		final List<IdentificationContribuable> messages = new ArrayList<>();
 
 		handler.setDemandeHandler(new DemandeHandler() {
 			@Override
@@ -482,7 +482,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
 	public void testDemandeIdentificationNCS() throws Exception {
-		final List<IdentificationContribuable> messages = new ArrayList<IdentificationContribuable>();
+		final List<IdentificationContribuable> messages = new ArrayList<>();
 
 		handler.setDemandeHandler(new DemandeHandler() {
 			@Override
@@ -496,7 +496,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
-		final Map<String, String> customAttributes = new HashMap<String, String>();
+		final Map<String, String> customAttributes = new HashMap<>();
 		final String url = "";
 		customAttributes.put(IdentificationContribuableEsbHandler.DOCUMENT_URL_ATTRIBUTE_NAME, url);
 		sendTextMessage(INPUT_QUEUE, texte, customAttributes);
@@ -514,7 +514,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
 	public void testDemandeIdentificationImpotSource_LISTE_IS() throws Exception {
-		final List<IdentificationContribuable> messages = new ArrayList<IdentificationContribuable>();
+		final List<IdentificationContribuable> messages = new ArrayList<>();
 
 		handler.setDemandeHandler(new DemandeHandler() {
 			@Override
@@ -528,7 +528,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
-		final Map<String, String> customAttributes = new HashMap<String, String>();
+		final Map<String, String> customAttributes = new HashMap<>();
 		final String url = "";
 		customAttributes.put(IdentificationContribuableEsbHandler.DOCUMENT_URL_ATTRIBUTE_NAME, url);
 		sendTextMessage(INPUT_QUEUE, texte, customAttributes);
@@ -546,7 +546,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
 	public void testDemandeIdentificationE_Facture() throws Exception {
-		final List<IdentificationContribuable> messages = new ArrayList<IdentificationContribuable>();
+		final List<IdentificationContribuable> messages = new ArrayList<>();
 
 		handler.setDemandeHandler(new DemandeHandler() {
 			@Override
@@ -560,7 +560,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
-		final Map<String, String> customAttributes = new HashMap<String, String>();
+		final Map<String, String> customAttributes = new HashMap<>();
 		final String url = "";
 		customAttributes.put(IdentificationContribuableEsbHandler.DOCUMENT_URL_ATTRIBUTE_NAME, url);
 		sendTextMessage(INPUT_QUEUE, texte, customAttributes);
@@ -579,7 +579,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
 	public void testDemandeIdentificationAvecMetaDataAdditionnels() throws Exception {
 
-		final List<IdentificationContribuable> messages = new ArrayList<IdentificationContribuable>();
+		final List<IdentificationContribuable> messages = new ArrayList<>();
 		final String url = "http://heaven.com/tables-of-the-law.pdf";
 
 		// Aller
@@ -597,7 +597,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 			final String texte = FileUtils.readFileToString(file);
 
 			// Envoie le message
-			final Map<String, String> customAttributes = new HashMap<String, String>();
+			final Map<String, String> customAttributes = new HashMap<>();
 			customAttributes.put(IdentificationContribuableEsbHandler.DOCUMENT_URL_ATTRIBUTE_NAME, url);
 			customAttributes.put("MySpecialKey", "MySpecialValue");
 			sendTextMessage(INPUT_QUEUE, texte, customAttributes);

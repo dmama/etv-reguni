@@ -70,8 +70,8 @@ public class EnvoiSommationLRsResults extends JobResults<IdentifiantDeclaration,
 	public final RegDate dateTraitement;
 	
 	public int nbLRsTotal;             // nombre de LR analysées
-	public final List<Traite> lrSommees = new ArrayList<Traite>();      // LR sommées
-	public final List<Erreur> sommationLREnErreurs = new ArrayList<Erreur>();   //sommation LR KO
+	public final List<Traite> lrSommees = new ArrayList<>();      // LR sommées
+	public final List<Erreur> sommationLREnErreurs = new ArrayList<>();   //sommation LR KO
 	public boolean interrompu;
 	
 	public EnvoiSommationLRsResults(CategorieImpotSource categorie, RegDate dateFinPeriode, RegDate dateTrait, TiersService tiersService, AdresseService adresseService) {

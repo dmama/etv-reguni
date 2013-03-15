@@ -2,8 +2,6 @@ package ch.vd.uniregctb.declaration;
 
 import java.util.Map;
 
-import org.springframework.transaction.PlatformTransactionManager;
-
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.audit.Audit;
@@ -27,8 +25,6 @@ public class ListeNoteJob extends JobDefinition {
 
 	private RapportService rapportService;
 
-	private PlatformTransactionManager transactionManager;
-
 	public ListeNoteJob(int order, String description) {
 		super(NAME, CATEGORIE, order, description);
 
@@ -50,10 +46,6 @@ public class ListeNoteJob extends JobDefinition {
 
 	public void setRapportService(RapportService rapportService) {
 		this.rapportService = rapportService;
-	}
-
-	public void setTransactionManager(PlatformTransactionManager transactionManager) {
-		this.transactionManager = transactionManager;
 	}
 
 	public void setService(DeclarationImpotService service) {

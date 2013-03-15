@@ -16,7 +16,7 @@ public abstract class EsbMessageHelper {
 	 */
 	public static Map<String, String> extractCustomHeaders(EsbMessage message) {
 		final Set<String> names = message.getCustomHeadersNames();
-		final Map<String, String> map = new HashMap<String, String>(names.size());
+		final Map<String, String> map = new HashMap<>(names.size());
 		for (String name : names) {
 			map.put(name, message.getHeader(name));
 		}

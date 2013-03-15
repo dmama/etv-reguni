@@ -43,16 +43,12 @@ public abstract class InContainerTest {
 		XmlDataSet dataSet = new XmlDataSet(inputStream);
 
 		Assert.notNull(dataSet);
-		Connection connection = dataSource.getConnection();
-		try {
-			DatabaseConnection con = new DatabaseConnection(dataSource.getConnection());
+		try (Connection connection = dataSource.getConnection()) {
+			DatabaseConnection con = new DatabaseConnection(connection);
 			DatabaseConfig config = con.getConfig();
 			config.setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, new OracleDataTypeFactory());
 
 			DatabaseOperation.CLEAN_INSERT.execute(con, dataSet);
-		}
-		finally {
-			connection.close();
 		}
 		globalTiersIndexer.indexAllDatabase();
 	}

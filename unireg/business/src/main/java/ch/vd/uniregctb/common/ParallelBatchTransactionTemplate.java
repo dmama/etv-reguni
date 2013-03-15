@@ -49,7 +49,7 @@ public class ParallelBatchTransactionTemplate<E, R extends BatchResults> {
 		this.statusManager = statusManager;
 		this.hibernateTemplate = hibernateTemplate;
 
-		this.queue = new ArrayBlockingQueue<List<E>>(5);
+		this.queue = new ArrayBlockingQueue<>(5);
 		this.percent = 0;
 	}
 
@@ -99,7 +99,7 @@ public class ParallelBatchTransactionTemplate<E, R extends BatchResults> {
 	private boolean executeParallel(BatchResults<E, R> rapportFinal, BatchTransactionTemplate.BatchCallback<E, R> action) throws InterruptedException {
 
 		// Démarre les threads
-		final List<BatchThread> threads = new ArrayList<BatchThread>(nbThreads);
+		final List<BatchThread> threads = new ArrayList<>(nbThreads);
 		for (int i = 0; i < nbThreads; ++i) {
 			final BatchThread thread = new BatchThread(rapportFinal, action, AuthenticationHelper.getCurrentPrincipal());
 			thread.setName(String.format("%s-%d", Thread.currentThread().getName(), i));
@@ -204,7 +204,7 @@ public class ParallelBatchTransactionTemplate<E, R extends BatchResults> {
 		public void run() {
 			AuthenticationHelper.pushPrincipal(principal);
 			try {
-				final BatchTransactionTemplate<E, R> template = new BatchTransactionTemplate<E, R>(iterator, behavior, transactionManager, statusManager, hibernateTemplate);
+				final BatchTransactionTemplate<E, R> template = new BatchTransactionTemplate<>(iterator, behavior, transactionManager, statusManager, hibernateTemplate);
 				template.setReadonly(readonly);
 				interruptedItself = !template.execute(rapportFinal, action);
 			}

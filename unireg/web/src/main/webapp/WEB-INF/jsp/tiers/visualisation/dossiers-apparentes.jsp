@@ -49,7 +49,7 @@
                     else {
                         html += DossiersApparentes.escape("<fmt:message key="label.dossiers.apparentes.vide"/>");
                     }
-                    html += '</fieldset>\n'
+                    html += '</fieldset>\n';
                     $('#rapportsDiv').html(html);
                     Tooltips.activate_static_tooltips($('#rapportsDiv'));
                 }, 'json')

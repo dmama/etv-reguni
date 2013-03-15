@@ -17,7 +17,7 @@ public class ChainingInterceptor extends EmptyInterceptor implements Switchable 
 
 	private final ThreadSwitch mySwitch = new ThreadSwitch(true);
 
-	private final List<LinkedInterceptor> chain = new ArrayList<LinkedInterceptor>();
+	private final List<LinkedInterceptor> chain = new ArrayList<>();
 
 	@Override
 	public void setEnabled(boolean enabled) {

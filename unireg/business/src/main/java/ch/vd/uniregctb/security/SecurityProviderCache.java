@@ -57,7 +57,7 @@ public class SecurityProviderCache implements UniregCacheInterface, SecurityProv
 	/**
 	 * Ids des tiers créées depuis le démarrage de l'application (l'accès à ce cache doit être synchronisé)
 	 */
-	private final Map<Long, Boolean> tiersExistenceDeltaCache = new HashMap<Long, Boolean>();
+	private final Map<Long, Boolean> tiersExistenceDeltaCache = new HashMap<>();
 
 	/**
 	 * La liste <b>exhaustive</b> des dossiers contrôlés. Si un tiers n'existe pas dans cette liste, c'est qu'il n'est pas protégé.
@@ -183,7 +183,7 @@ public class SecurityProviderCache implements UniregCacheInterface, SecurityProv
 
 		if (!sontControles(ids)) {
 			final int size = ids.size();
-			resultat = new ArrayList<Niveau>(size);
+			resultat = new ArrayList<>(size);
 			for (int i = 0; i < size; ++i) {
 				if (ids.get(i) == null) {
 					resultat.add(null);
@@ -365,7 +365,7 @@ public class SecurityProviderCache implements UniregCacheInterface, SecurityProv
 		 * pour ce tiers.
 		 */
 		synchronized (this) { // les trois lignes de code ci-dessous ne doivent pas être executée par plusieurs threads en même temps
-			final Set<Long> newSet = new HashSet<Long>(dossiersControles);
+			final Set<Long> newSet = new HashSet<>(dossiersControles);
 			newSet.add(tiersId);
 			dossiersControles = newSet; // l'assignement est atomique en java, pas besoin de locking
 		}
@@ -417,7 +417,7 @@ public class SecurityProviderCache implements UniregCacheInterface, SecurityProv
 				}
 			});
 
-			newCache = new HashSet<Long>(ids);
+			newCache = new HashSet<>(ids);
 			LOGGER.info("Préchargement du cache des tiers existant terminé.");
 		}
 		else {

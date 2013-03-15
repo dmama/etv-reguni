@@ -37,10 +37,10 @@ public class StatsServiceImpl implements InitializingBean, DisposableBean, Stats
 	private static final int LOG_PERIODE = 5; // 5 * UNE_MINUTE
 
 	private final Timer timer = new Timer("StatsServiceTicking");
-	private final Map<String, ServiceTracingInterface> rawServices = new HashMap<String, ServiceTracingInterface>();
-	private final Map<String, UniregCacheInterface> cachedServices = new HashMap<String, UniregCacheInterface>();
-	private final Map<String, LoadMonitor> loadMonitors = new HashMap<String, LoadMonitor>();
-	private final Map<String, JobMonitor> jobMonitors = new HashMap<String, JobMonitor>();
+	private final Map<String, ServiceTracingInterface> rawServices = new HashMap<>();
+	private final Map<String, UniregCacheInterface> cachedServices = new HashMap<>();
+	private final Map<String, LoadMonitor> loadMonitors = new HashMap<>();
+	private final Map<String, JobMonitor> jobMonitors = new HashMap<>();
 	private long lastLoggedCallTime = 0;
 
 	private final class TickingTask extends TimerTask {
@@ -203,7 +203,7 @@ public class StatsServiceImpl implements InitializingBean, DisposableBean, Stats
 	private long getLastCallTime() {
 
 		// on récupère les noms des services
-		final Set<String> keys = new HashSet<String>();
+		final Set<String> keys = new HashSet<>();
 		synchronized (rawServices) {
 			keys.addAll(rawServices.keySet());
 		}
@@ -238,19 +238,19 @@ public class StatsServiceImpl implements InitializingBean, DisposableBean, Stats
 	private String buildCacheStats() {
 
 		// on récupère les noms des caches
-		final Set<String> keys = new HashSet<String>();
+		final Set<String> keys = new HashSet<>();
 		synchronized (cachedServices) {
 			keys.addAll(cachedServices.keySet());
 		}
 
 		// construit la table ascii-art qui contiendra les statistiques à afficher
-		final List<Header> headers = new ArrayList<Header>();
+		final List<Header> headers = new ArrayList<>();
 		headers.add(new Header(new Column("Caches", AlignMode.LEFT), new Column("hits percent"), new Column("hits count"), new Column("total count"), new Column("time-to-idle"),
 				new Column("time-to-live"), new Column("max elements")));
 		final Table table = new Table(new Options(false), headers);
 
 		// on trie les clés avant de les afficher
-		final List<String> sortedKeys = new ArrayList<String>(keys);
+		final List<String> sortedKeys = new ArrayList<>(keys);
 		Collections.sort(sortedKeys);
 
 		// extrait et analyse les stats des services
@@ -291,20 +291,20 @@ public class StatsServiceImpl implements InitializingBean, DisposableBean, Stats
 	public String buildServiceStats() {
 
 		// on récupère les noms des services
-		final Set<String> keys = new HashSet<String>();
+		final Set<String> keys = new HashSet<>();
 		synchronized (rawServices) {
 			keys.addAll(rawServices.keySet());
 		}
 
 		// construit la table ascii-art qui contiendra les statistiques à afficher
-		final List<Header> headers = new ArrayList<Header>();
+		final List<Header> headers = new ArrayList<>();
 		headers.add(new Header(new Column(""), new Column("(last 5 minutes)", AlignMode.CENTER, 4), new Column("(since start)", AlignMode.CENTER, 4)));
 		headers.add(new Header(new Column("Services", AlignMode.LEFT), new Column("ping"), new Column("ping/item"), new Column("hits count"), new Column("items count"),
 				new Column("ping"), new Column("ping/item"), new Column("hits count"), new Column("items count")));
 		final Table table = new Table(new Options(false), headers);
 
 		// on trie les clés avant de les afficher
-		List<String> sortedKeys = new ArrayList<String>(keys);
+		List<String> sortedKeys = new ArrayList<>(keys);
 		Collections.sort(sortedKeys);
 
 		// extrait et analyse les stats des services
@@ -356,7 +356,7 @@ public class StatsServiceImpl implements InitializingBean, DisposableBean, Stats
 	private String buildLoadMonitorStats() {
 
 		// on récupère les noms des caches
-		final Set<String> keys = new HashSet<String>();
+		final Set<String> keys = new HashSet<>();
 		synchronized (loadMonitors) {
 			keys.addAll(loadMonitors.keySet());
 		}
@@ -366,12 +366,12 @@ public class StatsServiceImpl implements InitializingBean, DisposableBean, Stats
 		}
 
 		// construit la table ascii-art qui contiendra les statistiques à afficher
-		final List<Header> headers = new ArrayList<Header>();
+		final List<Header> headers = new ArrayList<>();
 		headers.add(new Header(new Column("Load", AlignMode.LEFT), new Column("current"), new Column("5-min average")));
 		final Table table = new Table(new Options(false), headers);
 
 		// on trie les clés avant de les afficher
-		final List<String> sortedKeys = new ArrayList<String>(keys);
+		final List<String> sortedKeys = new ArrayList<>(keys);
 		Collections.sort(sortedKeys);
 
 		// extrait et analyse les stats des services
@@ -412,7 +412,7 @@ public class StatsServiceImpl implements InitializingBean, DisposableBean, Stats
 			}
 		}
 
-		final Map<String, JobData> data = new TreeMap<String, JobData>();
+		final Map<String, JobData> data = new TreeMap<>();
 		synchronized (jobMonitors) {
 			for (Map.Entry<String, JobMonitor> entry : jobMonitors.entrySet()) {
 				final JobMonitor monitor = entry.getValue();
@@ -430,7 +430,7 @@ public class StatsServiceImpl implements InitializingBean, DisposableBean, Stats
 		}
 
 		final long nowts = DateHelper.getCurrentDate().getTime();
-		final List<Header> headers = new ArrayList<Header>();
+		final List<Header> headers = new ArrayList<>();
 		headers.add(new Header(new Column("Running jobs", AlignMode.LEFT), new Column("Start", AlignMode.LEFT), new Column("Duration"), new Column("Progress"), new Column("Status", AlignMode.LEFT)));
 		final Table table = new Table(new Options(false), headers);
 		for (Map.Entry<String, JobData> entry : data.entrySet()) {

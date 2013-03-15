@@ -41,7 +41,7 @@ public class AddForDebiteurValidator extends AddForValidator {
 			final DebiteurPrestationImposable dpi = hibernateTemplate.get(DebiteurPrestationImposable.class, view.getTiersId());
 			if (dpi != null) {
 				// on établi la liste des périodes des fors fiscaux existants
-				final List<DateRange> fors = new ArrayList<DateRange>();
+				final List<DateRange> fors = new ArrayList<>();
 				for (ForFiscal f : dpi.getForsFiscauxNonAnnules(true)) {
 					if (f.getDateFin() == null && (f.getDateDebut() == null || f.getDateDebut().isBefore(view.getDateDebut()))) {
 						// simule la fermeture du for courant à la veille du nouveau for

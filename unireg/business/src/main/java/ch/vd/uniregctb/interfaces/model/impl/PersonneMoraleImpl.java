@@ -149,7 +149,7 @@ public class PersonneMoraleImpl implements PersonneMorale, Serializable {
 	}
 
 	private List<AdresseEntreprise> initAdresses(Collection<?> targetAdresses) {
-		List<AdresseEntreprise> adresses = new ArrayList<AdresseEntreprise>();
+		List<AdresseEntreprise> adresses = new ArrayList<>();
 		if (targetAdresses != null) {
 			for (Object o : targetAdresses) {
 				ch.vd.registre.pm.model.AdresseEntreprise a = (ch.vd.registre.pm.model.AdresseEntreprise) o;
@@ -178,7 +178,7 @@ public class PersonneMoraleImpl implements PersonneMorale, Serializable {
 	}
 
 	private List<FormeJuridique> initFormesJuridiques(List<?> targetFormes) {
-		List<FormeJuridique> formesJuridiques = new ArrayList<FormeJuridique>();
+		List<FormeJuridique> formesJuridiques = new ArrayList<>();
 		if (targetFormes != null) {
 			for (Object o : targetFormes) {
 				ch.vd.registre.pm.model.FormeJuridique f = (ch.vd.registre.pm.model.FormeJuridique) o;
@@ -199,7 +199,7 @@ public class PersonneMoraleImpl implements PersonneMorale, Serializable {
 	}
 
 	private List<CompteBancaire> initComptesBancaires(Collection<?> targetComptes) {
-		List<CompteBancaire> comptesBancaires = new ArrayList<CompteBancaire>();
+		List<CompteBancaire> comptesBancaires = new ArrayList<>();
 		if (targetComptes != null) {
 			for (Object o : targetComptes) {
 				ch.vd.registre.pm.model.CompteBancaire c = (ch.vd.registre.pm.model.CompteBancaire) o;
@@ -270,7 +270,7 @@ public class PersonneMoraleImpl implements PersonneMorale, Serializable {
 	}
 
 	private List<Capital> initCapitaux(Collection<?> targetCapitaux) {
-		List<Capital> capitaux = new ArrayList<Capital>();
+		List<Capital> capitaux = new ArrayList<>();
 		if (targetCapitaux != null) {
 			for (Object o : targetCapitaux) {
 				ch.vd.registre.pm.model.Capital c = (ch.vd.registre.pm.model.Capital) o;
@@ -286,7 +286,7 @@ public class PersonneMoraleImpl implements PersonneMorale, Serializable {
 	}
 
 	private List<EtatPM> initEtats(Collection<?> targetEtats) {
-		List<EtatPM> etats = new ArrayList<EtatPM>();
+		List<EtatPM> etats = new ArrayList<>();
 		if (targetEtats != null) {
 			for (Object o : targetEtats) {
 				ch.vd.registre.pm.model.EtatPM e = (ch.vd.registre.pm.model.EtatPM) o;
@@ -302,7 +302,7 @@ public class PersonneMoraleImpl implements PersonneMorale, Serializable {
 	}
 
 	private List<RegimeFiscal> initRegimesVD(Collection<?> targetRegimes) {
-		List<RegimeFiscal> regimesVD = new ArrayList<RegimeFiscal>();
+		List<RegimeFiscal> regimesVD = new ArrayList<>();
 		if (targetRegimes != null) {
 			for (Object o : targetRegimes) {
 				ch.vd.registre.pm.model.RegimeFiscal r = (ch.vd.registre.pm.model.RegimeFiscal) o;
@@ -318,7 +318,7 @@ public class PersonneMoraleImpl implements PersonneMorale, Serializable {
 	}
 
 	private List<RegimeFiscal> initRegimesCH(Collection<?> targetRegimes) {
-		List<RegimeFiscal> regimesCH = new ArrayList<RegimeFiscal>();
+		List<RegimeFiscal> regimesCH = new ArrayList<>();
 		if (targetRegimes != null) {
 			for (Object o : targetRegimes) {
 				ch.vd.registre.pm.model.RegimeFiscal r = (ch.vd.registre.pm.model.RegimeFiscal) o;
@@ -334,7 +334,7 @@ public class PersonneMoraleImpl implements PersonneMorale, Serializable {
 	}
 
 	private List<Siege> initSieges(Collection<?> targetSieges) {
-		List<Siege> sieges = new ArrayList<Siege>();
+		List<Siege> sieges = new ArrayList<>();
 		if (targetSieges != null) {
 			for (Object o : targetSieges) {
 				ch.vd.registre.pm.model.Siege s = (ch.vd.registre.pm.model.Siege) o;
@@ -350,7 +350,7 @@ public class PersonneMoraleImpl implements PersonneMorale, Serializable {
 	}
 
 	private List<AssujettissementPM> initAssujettissementsLIC(Collection<?> targetAssujettissements) {
-		List<AssujettissementPM> assujettissementsLIC = new ArrayList<AssujettissementPM>();
+		List<AssujettissementPM> assujettissementsLIC = new ArrayList<>();
 		if (targetAssujettissements != null) {
 			for (Object o : targetAssujettissements) {
 				ch.vd.registre.fiscal.model.Assujettissement a = (ch.vd.registre.fiscal.model.Assujettissement) o;
@@ -366,7 +366,7 @@ public class PersonneMoraleImpl implements PersonneMorale, Serializable {
 	}
 
 	private List<AssujettissementPM> initAssujettissementsLIFD(Collection<?> targetAssujettissements) {
-		List<AssujettissementPM> assujettissementsLIFD = new ArrayList<AssujettissementPM>();
+		List<AssujettissementPM> assujettissementsLIFD = new ArrayList<>();
 		if (targetAssujettissements != null) {
 			for (Object o : targetAssujettissements) {
 				ch.vd.registre.fiscal.model.Assujettissement a = (ch.vd.registre.fiscal.model.Assujettissement) o;
@@ -382,7 +382,7 @@ public class PersonneMoraleImpl implements PersonneMorale, Serializable {
 	}
 
 	private List<ForPM> initForsFiscauxPrincipaux(Collection<?> targetFors) {
-		List<ForPM> forsFiscauxPrincipaux = new ArrayList<ForPM>();
+		List<ForPM> forsFiscauxPrincipaux = new ArrayList<>();
 		if (targetFors != null) {
 			for (Object o : targetFors) {
 				ch.vd.registre.pm.model.ForPM a = (ch.vd.registre.pm.model.ForPM) o;
@@ -398,7 +398,7 @@ public class PersonneMoraleImpl implements PersonneMorale, Serializable {
 	}
 
 	private List<ForPM> initForsFiscauxSecondaires(Collection<?> targetFors) {
-		List<ForPM> forsFiscauxSecondaires = new ArrayList<ForPM>();
+		List<ForPM> forsFiscauxSecondaires = new ArrayList<>();
 		if (targetFors != null) {
 			for (Object o : targetFors) {
 				ch.vd.registre.pm.model.ForPM a = (ch.vd.registre.pm.model.ForPM) o;
@@ -414,7 +414,7 @@ public class PersonneMoraleImpl implements PersonneMorale, Serializable {
 	}
 
 	private List<Mandat> initMandats(List<ch.vd.registre.pm.model.Mandat> targetMandats) {
-		List<Mandat> mandats = new ArrayList<Mandat>();
+		List<Mandat> mandats = new ArrayList<>();
 		if (targetMandats != null) {
 			for (Object o : targetMandats) {
 				ch.vd.registre.pm.model.Mandat m = (ch.vd.registre.pm.model.Mandat) o;

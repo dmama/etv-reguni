@@ -35,29 +35,21 @@ public class PrintPCLManagerImpl implements PrintPCLManager {
 	@Override
 	public void openPclStream(HttpServletResponse response, String filenameRadical, byte[] pcl) throws IOException {
 
-		final ServletOutputStream out = response.getOutputStream();
-		try {
+		try (ServletOutputStream out = response.getOutputStream()) {
 			response.reset(); // pour éviter l'exception 'getOutputStream() has already been called for this response'
 
 			final String actualMimeType = getActualMimeType();
 			final String filenameExtension = MimeTypeHelper.getFileExtensionForType(actualMimeType);
 			response.setContentType(actualMimeType);
 			response.setHeader("Content-disposition", String.format("%s; filename=\"%s%s\"", isAttachmentContent() ? "attachment" : "inline", filenameRadical, filenameExtension));
-			response.setHeader( "Pragma", "public" );
+			response.setHeader("Pragma", "public");
 			response.setHeader("cache-control", "no-cache");
 			response.setHeader("Cache-control", "must-revalidate");
 
-			final ByteArrayInputStream in = new ByteArrayInputStream(pcl);
-			try {
+			try (ByteArrayInputStream in = new ByteArrayInputStream(pcl)) {
 				copyToOutputStream(in, out);
 				out.flush();
 			}
-			finally {
-				in.close();
-			}
-		}
-		finally {
-			out.close();
 		}
 	}
 

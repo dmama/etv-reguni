@@ -109,7 +109,7 @@ public class GestionTracingController extends AbstractSimpleFormController {
 		TracingManager.end(tp);
 */
 		List<String> list = TracingManager.getMeasuresAsStringList("&nbsp;");
-		List<String> listTrace = new ArrayList<String>();
+		List<String> listTrace = new ArrayList<>();
 
 		for (String log : list) {
 			//tracing.setLogs(log);

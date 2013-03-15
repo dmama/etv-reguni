@@ -96,57 +96,42 @@ public class FillHoleGenerator implements IdentifierGenerator, PersistentIdentif
 		}
 
 		Long foundId = null;
-		final Connection con = session.connection();
-		try {
-			final Statement stat = con.createStatement();
-			try {
-				
-				// [UNIREG-726] on tient compte des no de ctbs non-migrés comme étant réservés
-				final String query = "SELECT numero FROM " + tableName + " WHERE numero >= " + firstId
-						+ " UNION select NO_CONTRIBUABLE from MIGREG_ERROR WHERE NO_CONTRIBUABLE >= " + firstId + " ORDER BY numero";
+		try (Connection con = session.connection(); Statement stat = con.createStatement()) {
 
-				ResultSet rs = stat.executeQuery(query);
-				try {
-					foundId = firstId;
-					while (rs.next()) {
-						final int noCurrent = rs.getInt(1);
-						final boolean inUse = (noCurrent == foundId);
-		
-						// Si on a un trou, le dernier ID+1 est retourné
-						if (!inUse) {
-							break;
-						}
-		
-						// Prends le prochain ID dans la sequence
-						foundId = (Long) generator.generate(session, object);
-		
-						// Si le numero est trop grand, on wrap
-						if (foundId > maxId) {
-							rs.close();
-							dropAndCreateSequence(session);
-							foundId = (Long) generator.generate(session, object);
-							rs = stat.executeQuery("SELECT numero FROM " + tableName + " WHERE numero >= " + foundId + " ORDER BY numero");
-						}
+			// [UNIREG-726] on tient compte des no de ctbs non-migrés comme étant réservés
+			final String query = "SELECT numero FROM " + tableName + " WHERE numero >= " + firstId
+					+ " UNION select NO_CONTRIBUABLE from MIGREG_ERROR WHERE NO_CONTRIBUABLE >= " + firstId + " ORDER BY numero";
+
+			ResultSet rs = stat.executeQuery(query);
+			try {
+				foundId = firstId;
+				while (rs.next()) {
+					final int noCurrent = rs.getInt(1);
+					final boolean inUse = (noCurrent == foundId);
+
+					// Si on a un trou, le dernier ID+1 est retourné
+					if (!inUse) {
+						break;
 					}
-				}
-				finally {
-					rs.close();
+
+					// Prends le prochain ID dans la sequence
+					foundId = (Long) generator.generate(session, object);
+
+					// Si le numero est trop grand, on wrap
+					if (foundId > maxId) {
+						rs.close();
+						dropAndCreateSequence(session);
+						foundId = (Long) generator.generate(session, object);
+						rs = stat.executeQuery("SELECT numero FROM " + tableName + " WHERE numero >= " + foundId + " ORDER BY numero");
+					}
 				}
 			}
 			finally {
-				stat.close();
+				rs.close();
 			}
 		}
 		catch (Exception e) {
 			throw new RuntimeException(e);
-		}
-		finally {
-			try {
-				con.close();
-			}
-			catch (SQLException e) {
-				// ignorée... ça marche pas...
-			}
 		}
 
 		Assert.isTrue(foundId != null);

@@ -81,7 +81,7 @@ public class AnnulationCoupleListController extends AbstractTiersListController 
 					}
 					try {
 						final List<TiersIndexedDataView> results = searchTiers(bean);
-						final List<TiersIndexedDataView> filtredResults = new ArrayList<TiersIndexedDataView>();
+						final List<TiersIndexedDataView> filtredResults = new ArrayList<>();
 						for (TiersIndexedDataView tiersIndexedData : results) {
 							if (annulationCoupleRecapManager.isMenageCommunAvecPrincipal(tiersIndexedData.getNumero(), null)) {
 								filtredResults.add(tiersIndexedData);

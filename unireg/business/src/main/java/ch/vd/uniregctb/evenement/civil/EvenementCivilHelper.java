@@ -54,7 +54,7 @@ public abstract class EvenementCivilHelper {
 		if (source == null || source.size() < 2) {
 			return source;
 		}
-		final Map<EvenementCivilErreurKey, T> map = new LinkedHashMap<EvenementCivilErreurKey, T>(source.size());
+		final Map<EvenementCivilErreurKey, T> map = new LinkedHashMap<>(source.size());
 		for (T src : source) {
 			final EvenementCivilErreurKey key = new EvenementCivilErreurKey(src);
 			if (!map.containsKey(key)) {
@@ -62,7 +62,7 @@ public abstract class EvenementCivilHelper {
 			}
 		}
 		if (map.size() < source.size()) {
-			return new ArrayList<T>(map.values());
+			return new ArrayList<>(map.values());
 		}
 		else {
 			return source;

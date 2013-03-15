@@ -71,7 +71,7 @@ public class EvenementEditiqueEsbHandlerTest extends EvenementTest {
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
 	public void testRetourImpression() throws Exception {
 
-		final List<EditiqueResultat> events = new ArrayList<EditiqueResultat>();
+		final List<EditiqueResultat> events = new ArrayList<>();
 
 		handler.setStorageService(new EditiqueRetourImpressionStorageService() {
 			@Override

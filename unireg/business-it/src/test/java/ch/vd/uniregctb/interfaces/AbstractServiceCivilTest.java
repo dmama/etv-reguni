@@ -77,8 +77,8 @@ public abstract class AbstractServiceCivilTest extends BusinessItTest {
 		assertNotNull(adresses);
 		assertEquals(4, adresses.size());
 
-		final List<Adresse> principales = new ArrayList<Adresse>();
-		final List<Adresse> courriers = new ArrayList<Adresse>();
+		final List<Adresse> principales = new ArrayList<>();
+		final List<Adresse> courriers = new ArrayList<>();
 		for (Adresse adresse : adresses) {
 			if (adresse.getTypeAdresse() == TypeAdresseCivil.PRINCIPALE) {
 				principales.add(adresse);
@@ -151,7 +151,7 @@ public abstract class AbstractServiceCivilTest extends BusinessItTest {
 		assertNotNull(origines);
 		assertEquals(2, origines.size());
 
-		final List<Origine> originesList = new ArrayList<Origine>(origines);
+		final List<Origine> originesList = new ArrayList<>(origines);
 		Collections.sort(originesList, new Comparator<Origine>() {
 			@Override
 			public int compare(Origine o1, Origine o2) {

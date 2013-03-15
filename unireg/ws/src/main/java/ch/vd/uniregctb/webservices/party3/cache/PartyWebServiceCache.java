@@ -122,7 +122,7 @@ public class PartyWebServiceCache implements UniregCacheInterface, PartyWebServi
 		final Party party;
 
 		final GetPartyKey key = new GetPartyKey(params.getPartyNumber());
-		final HashSet<PartyPart> parts = (params.getParts() == null ? null : new HashSet<PartyPart>(params.getParts()));
+		final HashSet<PartyPart> parts = (params.getParts() == null ? null : new HashSet<>(params.getParts()));
 
 		try {
 			final Element element = cache.get(key);
@@ -137,7 +137,7 @@ public class PartyWebServiceCache implements UniregCacheInterface, PartyWebServi
 					@Override
 					public Party getDeltaValue(Set<PartyPart> delta) throws Exception {
 						// on complète la liste des parts à la volée
-						final GetPartyRequest deltaRequest = new GetPartyRequest(params.getLogin(), params.getPartyNumber(), new ArrayList<PartyPart>(delta));
+						final GetPartyRequest deltaRequest = new GetPartyRequest(params.getLogin(), params.getPartyNumber(), new ArrayList<>(delta));
 						return target.getParty(deltaRequest);
 					}
 				});
@@ -206,7 +206,7 @@ public class PartyWebServiceCache implements UniregCacheInterface, PartyWebServi
 	 * @param params les paramètres demandés correspondant aux données spécifiées.
 	 */
 	private void cacheBatchPartyEntries(BatchParty batch, GetBatchPartyRequest params) {
-		final Set<PartyPart> parts = (params.getParts() == null ? null : new HashSet<PartyPart>(params.getParts()));
+		final Set<PartyPart> parts = (params.getParts() == null ? null : new HashSet<>(params.getParts()));
 		for (BatchPartyEntry entry : batch.getEntries()) {
 			if (entry.getExceptionInfo() != null) {   // [UNIREG-3288] on ignore les tiers qui ont levé une exception
 				continue;
@@ -237,17 +237,17 @@ public class PartyWebServiceCache implements UniregCacheInterface, PartyWebServi
 	 * @return l'ensemble des ids non trouvés dans le cache.
 	 */
 	private List<Integer> extractUncachedTiersHistoIds(List<Integer> requestedIds, List<BatchPartyEntry> cachedEntries) {
-		final Set<Integer> cachedIds = new HashSet<Integer>(cachedEntries.size());
+		final Set<Integer> cachedIds = new HashSet<>(cachedEntries.size());
 		for (BatchPartyEntry entry : cachedEntries) {
 			cachedIds.add(entry.getNumber());
 		}
-		final Set<Integer> uncached = new HashSet<Integer>(requestedIds.size() - cachedIds.size());
+		final Set<Integer> uncached = new HashSet<>(requestedIds.size() - cachedIds.size());
 		for (Integer id : requestedIds) {
 			if (!cachedIds.contains(id)) {
 				uncached.add(id);
 			}
 		}
-		return new ArrayList<Integer>(uncached);
+		return new ArrayList<>(uncached);
 	}
 
 	/**
@@ -261,7 +261,7 @@ public class PartyWebServiceCache implements UniregCacheInterface, PartyWebServi
 
 		List<BatchPartyEntry> cachedEntries = null;
 
-		final Set<PartyPart> parts = (params.getParts() == null ? null : new HashSet<PartyPart>(params.getParts()));
+		final Set<PartyPart> parts = (params.getParts() == null ? null : new HashSet<>(params.getParts()));
 
 		for (Integer id : params.getPartyNumbers()) {
 			final GetPartyKey key = new GetPartyKey(id);
@@ -282,7 +282,7 @@ public class PartyWebServiceCache implements UniregCacheInterface, PartyWebServi
 			}
 
 			if (cachedEntries == null) {
-				cachedEntries = new ArrayList<BatchPartyEntry>();
+				cachedEntries = new ArrayList<>();
 			}
 			final Party party = value.getValueForParts(parts);
 			final BatchPartyEntry entry = new BatchPartyEntry(id, party, null);

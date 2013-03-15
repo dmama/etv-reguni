@@ -9,10 +9,10 @@ import ch.vd.uniregctb.type.TypeAdresseTiers;
  * Contient toutes les adresses surchargées (= spécifiées différemment du registre civil)
  */
 public class AdressesTiersHisto {
-	public final List<AdresseTiers> courrier = new ArrayList<AdresseTiers>();
-	public final List<AdresseTiers> representation = new ArrayList<AdresseTiers>();
-	public final List<AdresseTiers> poursuite = new ArrayList<AdresseTiers>();
-	public final List<AdresseTiers> domicile = new ArrayList<AdresseTiers>();
+	public final List<AdresseTiers> courrier = new ArrayList<>();
+	public final List<AdresseTiers> representation = new ArrayList<>();
+	public final List<AdresseTiers> poursuite = new ArrayList<>();
+	public final List<AdresseTiers> domicile = new ArrayList<>();
 
 	public List<AdresseTiers> ofType(TypeAdresseTiers type) {
 		switch (type) {

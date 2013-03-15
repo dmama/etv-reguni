@@ -57,8 +57,8 @@ public abstract class ExtractionDonneesRptPeriodeImpositionResults extends Extra
 		}
 
 		// les assujettissements sont triés, donc les périodes brutes aussi
-		final Map<PeriodeImposition, List<Assujettissement>> mappingNonRegroupe = new HashMap<PeriodeImposition, List<Assujettissement>>(assujettissements.size());
-		final List<PeriodeImposition> periodesBrutes = new ArrayList<PeriodeImposition>();
+		final Map<PeriodeImposition, List<Assujettissement>> mappingNonRegroupe = new HashMap<>(assujettissements.size());
+		final List<PeriodeImposition> periodesBrutes = new ArrayList<>();
 		for (Assujettissement a : assujettissements) {
 			final PeriodeImposition periode = periodeImpositionService.determinePeriodeImposition(decomposition, a);
 			if (periode != null) {
@@ -75,13 +75,13 @@ public abstract class ExtractionDonneesRptPeriodeImpositionResults extends Extra
 		if (periodesBrutes.size() > 1) {
 			// [UNIREG-1118] On fusionne les périodes qui provoqueraient des déclarations identiques contiguës.
 			periodes = DateRangeHelper.collate(periodesBrutes);
-			mapping = new HashMap<PeriodeImposition, List<Assujettissement>>(periodes.size());
+			mapping = new HashMap<>(periodes.size());
 			for (PeriodeImposition p : periodesBrutes) {
 				final RegDate dateDebut = p.getDateDebut();
 				final PeriodeImposition periodeRegroupee = DateRangeHelper.rangeAt(periodes, dateDebut);
 				List<Assujettissement> assujettissementsMappes = mapping.get(periodeRegroupee);
 				if (assujettissementsMappes == null) {
-					assujettissementsMappes = new ArrayList<Assujettissement>();
+					assujettissementsMappes = new ArrayList<>();
 					mapping.put(periodeRegroupee, assujettissementsMappes);
 				}
 				assujettissementsMappes.addAll(mappingNonRegroupe.get(p));
@@ -110,7 +110,7 @@ public abstract class ExtractionDonneesRptPeriodeImpositionResults extends Extra
 		final InfoIdentificationCtb identification = buildInfoIdentification(ctb, periodes.get(periodes.size() - 1).getDateFin());
 
 		// une entité par période d'imposition restante
-		final List<InfoPeriodeImposition> listeFinale = new ArrayList<InfoPeriodeImposition>(periodes.size());
+		final List<InfoPeriodeImposition> listeFinale = new ArrayList<>(periodes.size());
 		for (PeriodeImposition periode : periodes) {
 			final List<Assujettissement> assujettissementsPourPeriode = mapping.get(periode);
 			final Assujettissement premierAssujettissement = assujettissementsPourPeriode.get(0);

@@ -410,9 +410,9 @@ public class EvenementForsIteratorTest extends WithoutSpringTest {
 		assertEquals(expected.size(), actual.size());
 
 		// on crée des copies des listes triées par ordre chronologique
-		List<T> se = new ArrayList<T>(expected);
-		List<T> sa = new ArrayList<T>(actual);
-		final DateRangeComparator<T> comparator = new DateRangeComparator<T>();
+		List<T> se = new ArrayList<>(expected);
+		List<T> sa = new ArrayList<>(actual);
+		final DateRangeComparator<T> comparator = new DateRangeComparator<>();
 		Collections.sort(se, comparator);
 		Collections.sort(sa, comparator);
 

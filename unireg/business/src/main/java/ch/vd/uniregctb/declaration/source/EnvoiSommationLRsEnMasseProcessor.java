@@ -74,7 +74,7 @@ private final Logger LOGGER = Logger.getLogger(EnvoiLRsEnMasseProcessor.class);
 		// liste de toutes les LR à passer en revue
 		final List<IdentifiantDeclaration> list = getListIdLRs(dateFinPeriode, dateTraitement, categorie);
 
-		final BatchTransactionTemplate<IdentifiantDeclaration, EnvoiSommationLRsResults> template = new BatchTransactionTemplate<IdentifiantDeclaration, EnvoiSommationLRsResults>(list, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE,
+		final BatchTransactionTemplate<IdentifiantDeclaration, EnvoiSommationLRsResults> template = new BatchTransactionTemplate<>(list, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE,
 				transactionManager, s, hibernateTemplate);
 		template.execute(rapportFinal, new BatchCallback<IdentifiantDeclaration, EnvoiSommationLRsResults>() {
 
@@ -192,7 +192,7 @@ private final Logger LOGGER = Logger.getLogger(EnvoiLRsEnMasseProcessor.class);
 
 				final List<IdentifiantDeclaration> ids;
 				if (aSommer != null && !aSommer.isEmpty()) {
-					ids = new ArrayList<IdentifiantDeclaration>(aSommer.size());
+					ids = new ArrayList<>(aSommer.size());
 					for (Object[] elts : aSommer) {
 						final long idLr = ((Number) elts[0]).longValue();
 						final long idDebiteur = ((Number) elts[1]).longValue();

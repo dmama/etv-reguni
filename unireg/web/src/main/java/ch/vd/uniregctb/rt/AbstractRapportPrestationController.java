@@ -6,18 +6,12 @@ import java.util.Map;
 
 import ch.vd.uniregctb.common.AbstractSimpleFormController;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
-import ch.vd.uniregctb.tiers.TiersMapHelper;
 
 public class AbstractRapportPrestationController extends AbstractSimpleFormController {
 
 	public static final String TYPES_ACTIVITE_MAP_NAME = "typesActivite";
 
-	private TiersMapHelper tiersMapHelper;
 	protected SecurityProviderInterface securityProvider;
-
-	public void setTiersMapHelper(TiersMapHelper tiersMapHelper) {
-		this.tiersMapHelper = tiersMapHelper;
-	}
 
 	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
 		this.securityProvider = securityProvider;

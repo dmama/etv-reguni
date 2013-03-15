@@ -48,7 +48,7 @@ public class Demande {
 		if (additionalData != null) {
 			final List<MapEntry> entries = additionalData.getEntry();
 			if (entries != null && entries.size() > 0) {
-				data = new HashMap<String, String>(entries.size());
+				data = new HashMap<>(entries.size());
 				for (MapEntry entry : entries) {
 					data.put(entry.getKey(), entry.getValue());
 				}

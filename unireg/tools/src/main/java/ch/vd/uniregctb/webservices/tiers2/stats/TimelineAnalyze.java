@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.webservices.tiers2.stats;
 
-import java.awt.*;
+import java.awt.BasicStroke;
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -21,7 +22,7 @@ import ch.vd.registre.base.utils.Assert;
  */
 class TimelineAnalyze extends Analyze {
 
-	private final Map<String, List<TimelineData>> results = new HashMap<String, List<TimelineData>>();
+	private final Map<String, List<TimelineData>> results = new HashMap<>();
 
 	private boolean excludeCache;
 	private int lastPeriodeIndex = 0;
@@ -53,7 +54,7 @@ class TimelineAnalyze extends Analyze {
 
 		List<TimelineData> list = results.get(method);
 		if (list == null) {
-			list = new ArrayList<TimelineData>();
+			list = new ArrayList<>();
 			for (Periode periode : Periode.DEFAULT_PERIODES) {
 				list.add(new TimelineData(periode));
 			}
@@ -209,7 +210,7 @@ class TimelineAnalyze extends Analyze {
 
 	@Override
 	public void print() {
-		final List<String> methods = new ArrayList<String>(results.keySet());
+		final List<String> methods = new ArrayList<>(results.keySet());
 		Collections.sort(methods);
 
 		final StringBuilder header = new StringBuilder();

@@ -86,12 +86,12 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 
 
 	private List<String> annotatedClass;
-	private final Map<EntityType, List<Class<? extends HibernateEntity>>> concreteClassByType = new EnumMap<EntityType, List<Class<? extends HibernateEntity>>>(EntityType.class);
+	private final Map<EntityType, List<Class<? extends HibernateEntity>>> concreteClassByType = new EnumMap<>(EntityType.class);
 
 	/**
 	 * Les propriétés qui ne doivent pas être changées, même en mode SuperGra.
 	 */
-	private static final Set<String> readonlyProps = new HashSet<String>();
+	private static final Set<String> readonlyProps = new HashSet<>();
 
 	static {
 		// général
@@ -110,7 +110,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 	/**
 	 * Les propriétés qui représentent des données techniques, non-métier et pas indispensables à afficher en mode condensé.
 	 */
-	private static final Set<String> detailsProps = new HashSet<String>();
+	private static final Set<String> detailsProps = new HashSet<>();
 
 	static {
 		detailsProps.add("annulationDate");
@@ -124,7 +124,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 	/**
 	 * Les builders custom d'attributs qui permettent de spécialiser l'affichage de certains attributs.
 	 */
-	private static final Map<AttributeKey, AttributeBuilder> attributeCustomBuilders = new HashMap<AttributeKey, AttributeBuilder>();
+	private static final Map<AttributeKey, AttributeBuilder> attributeCustomBuilders = new HashMap<>();
 
 	private static interface AttributeBuilder {
 		AttributeView build(Property p, Object value, SuperGraContext context);
@@ -224,7 +224,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 				if (t.getHibernateClass().isAssignableFrom(clazz)) {
 					List<Class<? extends HibernateEntity>> list = concreteClassByType.get(t);
 					if (list == null) {
-						list = new ArrayList<Class<? extends HibernateEntity>>();
+						list = new ArrayList<>();
 						concreteClassByType.put(t, list);
 					}
 					list.add(clazz);
@@ -313,7 +313,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 	private void refreshTiersState(SuperGraSession session, SuperGraContext context) {
 
 		// Récupère tous les tiers impactés par les deltas
-		final Map<Long, Tiers> tiers = new HashMap<Long, Tiers>();
+		final Map<Long, Tiers> tiers = new HashMap<>();
 		final List<Delta> deltas = session.getDeltas();
 		for (Delta d : deltas) {
 			final HibernateEntity entity = context.getEntity(d.getKey());
@@ -334,7 +334,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 		}
 
 		// Détermine la validité de tous les tiers
-		final List<TiersState> tiersStates = new ArrayList<TiersState>(tiers.size());
+		final List<TiersState> tiersStates = new ArrayList<>(tiers.size());
 		for (Tiers t : tiers.values()) {
 			final ValidationResults res = validationService.validate(t);
 			tiersStates.add(new TiersState(new EntityKey(EntityType.Tiers, t.getId()), res));
@@ -369,7 +369,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 
 	private List<AttributeView> buildAttributes(HibernateEntity entity, SuperGraContext context) {
 
-		final List<AttributeView> attributes = new ArrayList<AttributeView>();
+		final List<AttributeView> attributes = new ArrayList<>();
 		try {
 			final MetaEntity meta = MetaEntity.determine(entity.getClass());
 			final List<Property> props = meta.getProperties();
@@ -515,13 +515,13 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 	private CollMetaData analyzeCollection(HibernateEntity entity, String collName, Collection<HibernateEntity> coll, SuperGraSession session) {
 
 		// Détermine les classes concrètes des éléments
-		final Set<Class<? extends HibernateEntity>> classes = new HashSet<Class<? extends HibernateEntity>>();
+		final Set<Class<? extends HibernateEntity>> classes = new HashSet<>();
 		for (HibernateEntity e : coll) {
 			classes.add(e.getClass());
 		}
 
 		// Détermine l'ensemble des attributs existants
-		final Set<String> attributeNames = new HashSet<String>();
+		final Set<String> attributeNames = new HashSet<>();
 		Property discriminator = null;
 		try {
 			for (Class<? extends HibernateEntity> clazz : classes) {
@@ -564,7 +564,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 			attributeNames.removeAll(detailsProps);
 		}
 
-		final List<String> orderedNames = new ArrayList<String>(attributeNames);
+		final List<String> orderedNames = new ArrayList<>(attributeNames);
 		Collections.sort(orderedNames);
 		if (primaryKey != null) {
 			orderedNames.add(0, primaryKey.getName());
@@ -595,7 +595,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 			return Collections.emptyList();
 		}
 
-		final List<EntityView> entities = new ArrayList<EntityView>(coll.size());
+		final List<EntityView> entities = new ArrayList<>(coll.size());
 		for (HibernateEntity e : coll) {
 			final EntityView v = new EntityView();
 			fillView(e, v, context);

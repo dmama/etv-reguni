@@ -62,7 +62,7 @@ public class BatchTransactionTemplate<E, R extends BatchResults> {
 	 */
 	public BatchTransactionTemplate(Iterator<E> iterator, int batchSize, Behavior behavior, PlatformTransactionManager transactionManager,
 	                                StatusManager statusManager, HibernateTemplate hibernateTemplate) {
-		this.iterator = new StandardBatchIterator<E>(iterator, batchSize);
+		this.iterator = new StandardBatchIterator<>(iterator, batchSize);
 		this.behavior = behavior;
 		this.transactionManager = transactionManager;
 		this.statusManager = statusManager;
@@ -79,7 +79,7 @@ public class BatchTransactionTemplate<E, R extends BatchResults> {
 	 */
 	public BatchTransactionTemplate(Collection<E> list, int batchSize, Behavior behavior, PlatformTransactionManager transactionManager,
 	                                StatusManager statusManager, HibernateTemplate hibernateTemplate) {
-		this.iterator = new StandardBatchIterator<E>(list, batchSize);
+		this.iterator = new StandardBatchIterator<>(list, batchSize);
 		this.behavior = behavior;
 		this.transactionManager = transactionManager;
 		this.statusManager = statusManager;
@@ -213,7 +213,7 @@ public class BatchTransactionTemplate<E, R extends BatchResults> {
 						break;
 					}
 
-					final List<E> subbatch = new ArrayList<E>(1);
+					final List<E> subbatch = new ArrayList<>(1);
 					subbatch.add(e);
 
 					final ExecuteInTransactionResult retReprise = executeInTransaction(action, subbatch, false, rapportFinal);

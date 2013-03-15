@@ -100,7 +100,7 @@ public class FusionDeCommunesJob extends JobDefinition {
 	private Set<Integer> getNosOfs(Map<String, Object> params, String key) {
 		final String string = getStringValue(params, key);
 		final String[] split = string.split("[ ,;]");
-		final Set<Integer> numeros = new HashSet<Integer>();
+		final Set<Integer> numeros = new HashSet<>();
 		for (String n : split) {
 			if (StringUtils.isNotEmpty(n)) {
 				final Integer no = Integer.valueOf(n);

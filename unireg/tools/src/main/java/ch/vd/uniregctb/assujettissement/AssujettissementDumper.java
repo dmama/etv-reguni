@@ -72,21 +72,22 @@ public class AssujettissementDumper {
 		soloRequest.setLogin(login);
 		soloRequest.getParts().add(PartyPart.TAX_LIABILITIES);
 
-		final InputStream in = AssujettissementDumper.class.getResourceAsStream(nomFichier);
-		final BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-
 		// on lit le contenu du fichier
-		final List<Integer> ctbs = new ArrayList<Integer>();
-		String line = reader.readLine();
-		while (line != null) {
-			ctbs.add(Integer.parseInt(line));
-			line = reader.readLine();
+		final List<Integer> ctbs = new ArrayList<>();
+		try (InputStream in = AssujettissementDumper.class.getResourceAsStream(nomFichier);
+		     InputStreamReader isr = new InputStreamReader(in);
+			 BufferedReader reader = new BufferedReader(isr)) {
+
+			String line = reader.readLine();
+			while (line != null) {
+				ctbs.add(Integer.parseInt(line));
+				line = reader.readLine();
+			}
 		}
-		reader.close();
 
 		// ensuite, on fait des groupes de TAILLE_LOT
 		final int nbLots = ctbs.size() / TAILLE_LOT + 1;
-		final List<List<Integer>> lots = new ArrayList<List<Integer>>(nbLots);
+		final List<List<Integer>> lots = new ArrayList<>(nbLots);
 		for (int i = 0 ; i < nbLots ; ++ i) {
 			final List<Integer> lot = ctbs.subList(i * TAILLE_LOT, Math.min((i + 1) * TAILLE_LOT, ctbs.size()));
 			if (!lot.isEmpty()) {
@@ -107,33 +108,36 @@ public class AssujettissementDumper {
 		}
 
 		// et on boucle sur les lots
-		for (List<Integer> lot : lots) {
-			batchRequest.getPartyNumbers().clear();
-			batchRequest.getPartyNumbers().addAll(lot);
-			try {
-				final BatchParty response = service.getBatchParty(batchRequest);
-				for (BatchPartyEntry entry : response.getEntries()) {
-					final Party party = entry.getParty();
-					dumpTiers(party, entry.getNumber(), entry.getExceptionInfo(), ps);
-				}
-			}
-			catch (WebServiceException e) {
-				// problème... on essaie un par un
-				for (Integer id : lot) {
-					soloRequest.setPartyNumber(id);
-					try {
-						final Party party = service.getParty(soloRequest);
-						dumpTiers(party, id, null, ps);
+		try {
+			for (List<Integer> lot : lots) {
+				batchRequest.getPartyNumbers().clear();
+				batchRequest.getPartyNumbers().addAll(lot);
+				try {
+					final BatchParty response = service.getBatchParty(batchRequest);
+					for (BatchPartyEntry entry : response.getEntries()) {
+						final Party party = entry.getParty();
+						dumpTiers(party, entry.getNumber(), entry.getExceptionInfo(), ps);
 					}
-					catch (WebServiceException e1) {
-						dumpTiers(null, id, e1.getMessage(), ps);
+				}
+				catch (WebServiceException e) {
+					// problème... on essaie un par un
+					for (Integer id : lot) {
+						soloRequest.setPartyNumber(id);
+						try {
+							final Party party = service.getParty(soloRequest);
+							dumpTiers(party, id, null, ps);
+						}
+						catch (WebServiceException e1) {
+							dumpTiers(null, id, e1.getMessage(), ps);
+						}
 					}
 				}
 			}
 		}
-
-		if (closeStream) {
-			ps.close();
+		finally {
+			if (closeStream) {
+				ps.close();
+			}
 		}
 	}
 

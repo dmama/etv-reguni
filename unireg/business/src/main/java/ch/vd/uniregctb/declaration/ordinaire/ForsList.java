@@ -25,17 +25,17 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 public class ForsList<T extends ForFiscalRevenuFortune> implements List<T> {
 
 	private final List<T> list;
-	private final Set<MotifRattachement> rattachements = new HashSet<MotifRattachement>();
-	private final Set<TypeAutoriteFiscale> typesAutoritesFiscales = new HashSet<TypeAutoriteFiscale>();
+	private final Set<MotifRattachement> rattachements = new HashSet<>();
+	private final Set<TypeAutoriteFiscale> typesAutoritesFiscales = new HashSet<>();
 	private RegDate minDateDebut = RegDateHelper.getLateDate();
 	private RegDate maxDateFin = RegDateHelper.getEarlyDate();
 
 	public ForsList() {
-		this.list = new ArrayList<T>();
+		this.list = new ArrayList<>();
 	}
 
 	public ForsList(int initialCapacity) {
-		this.list = new ArrayList<T>(initialCapacity);
+		this.list = new ArrayList<>(initialCapacity);
 	}
 
 	public ForsList(List<T> subList) {

@@ -104,7 +104,7 @@ public class DataHelper {
 			return null;
 		}
 
-		List<Adresse> list = new ArrayList<Adresse>();
+		List<Adresse> list = new ArrayList<>();
 		for (ch.vd.uniregctb.adresse.AdresseGenerique a : adresses) {
 			if (a.isAnnule()) {
 				continue;
@@ -124,7 +124,7 @@ public class DataHelper {
 			return null;
 		}
 
-		List<AdresseAutreTiers> list = new ArrayList<AdresseAutreTiers>();
+		List<AdresseAutreTiers> list = new ArrayList<>();
 		for (ch.vd.uniregctb.adresse.AdresseGenerique a : adresses) {
 			if (a.isAnnule()) {
 				continue;
@@ -142,7 +142,7 @@ public class DataHelper {
 			return null;
 		}
 
-		final List<ch.vd.uniregctb.tiers.TiersCriteria> list = new ArrayList<ch.vd.uniregctb.tiers.TiersCriteria>();
+		final List<ch.vd.uniregctb.tiers.TiersCriteria> list = new ArrayList<>();
 
 		if (criteria.numero == null || criteria.numero.length() == 0) {
 			/*
@@ -350,7 +350,7 @@ public class DataHelper {
 			return null;
 		}
 
-		final Set<Parts> results = new HashSet<Parts>(parts.size());
+		final Set<Parts> results = new HashSet<>(parts.size());
 		for (TiersPart p : parts) {
 			switch (p) {
 			case ADRESSES:
@@ -411,7 +411,7 @@ public class DataHelper {
 			return Collections.emptyList();
 		}
 
-		final List<ch.vd.uniregctb.tiers.ForFiscalPrincipal> forsVirtuels = new ArrayList<ch.vd.uniregctb.tiers.ForFiscalPrincipal>();
+		final List<ch.vd.uniregctb.tiers.ForFiscalPrincipal> forsVirtuels = new ArrayList<>();
 
 		// Extrait les fors principaux du ménage, en les adaptant à la période de validité des appartenances ménages
 		for (AppartenanceMenage a : rapportsMenage) {
@@ -516,7 +516,7 @@ public class DataHelper {
 		if (events == null || events.isEmpty()) {
 			return null;
 		}
-		final List<EvenementPM> list = new ArrayList<EvenementPM>();
+		final List<EvenementPM> list = new ArrayList<>();
 		for (ch.vd.uniregctb.interfaces.model.EvenementPM e : events) {
 			EvenementPM event = new EvenementPM();
 			event.tiersNumber = e.getNumeroPM();

@@ -51,7 +51,7 @@ public class AjouterEtatDeclarationView {
 	}
 
 	private static List<EtatDeclarationView> initEtats(Set<EtatDeclaration> etats, MessageSource messageSource) {
-		final List<EtatDeclarationView> list = new ArrayList<EtatDeclarationView>();
+		final List<EtatDeclarationView> list = new ArrayList<>();
 		for (EtatDeclaration etat : etats) {
 			list.add(new EtatDeclarationView(etat, messageSource));
 		}

@@ -9,8 +9,8 @@ import ch.vd.registre.base.utils.Assert;
 
 class LoadData {
 
-	private final Set<String> users = new HashSet<String>();
-	private final List<LoadPoint> list = new ArrayList<LoadPoint>();
+	private final Set<String> users = new HashSet<>();
+	private final List<LoadPoint> list = new ArrayList<>();
 	private int lastPeriodeIndex = 0;
 
 	public LoadData() {

@@ -20,7 +20,7 @@ import ch.vd.uniregctb.rf.Immeuble;
 
 public class MockTiersDAO implements TiersDAO {
 	
-	private Map<Long, Tiers> store = new HashMap<Long, Tiers>();
+	private Map<Long, Tiers> store = new HashMap<>();
 
 	public void clear() {
 		store.clear();

@@ -467,7 +467,7 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 		try {
 
 			final int nbIndividus = 10000;
-			final List<Long> nos = new ArrayList<Long>(nbIndividus);
+			final List<Long> nos = new ArrayList<>(nbIndividus);
 			for (long i = 0L ; i < nbIndividus ; ++ i) {
 				nos.add(i);
 			}
@@ -484,7 +484,7 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 				public void run() {
 					LOGGER.info(String.format("Thread %d started", index));
 
-					final List<Long> random = new ArrayList<Long>(nos);
+					final List<Long> random = new ArrayList<>(nos);
 					Collections.shuffle(random);
 					final long start = System.nanoTime();
 					for (Long no : random) {
@@ -518,7 +518,7 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 			}
 
 			final int nbFeedingThreads = 20;
-			final List<Thread> feedingThreads = new ArrayList<Thread>(nbFeedingThreads);
+			final List<Thread> feedingThreads = new ArrayList<>(nbFeedingThreads);
 			for (int i = 0 ; i < nbFeedingThreads ; ++ i) {
 				feedingThreads.add(new FeedingThread(i));
 			}
@@ -581,7 +581,7 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 		});
 		queueThread.start();
 		Thread.sleep(500); // Temporisation pour être sure que les threads de ServingHatch soient démarré
-		final List<Thread> threads = new ArrayList<Thread>();
+		final List<Thread> threads = new ArrayList<>();
 		for (Thread t : Thread.getAllStackTraces().keySet()) {
 			if (t.getName().startsWith("EvtCivilEchMixer-")) {
 				threads.add(t);

@@ -69,8 +69,8 @@ public class PassageNouveauxRentiersSourciersEnMixteResults extends JobResults<L
 	public int nbSourciersHorsSuisse;
 	public int nbSourciersConjointsIgnores;
 
-	public final List<Traite> sourciersConvertis = new ArrayList<Traite>();
-    public final List<Erreur> sourciersEnErreurs = new ArrayList<Erreur>();
+	public final List<Traite> sourciersConvertis = new ArrayList<>();
+    public final List<Erreur> sourciersEnErreurs = new ArrayList<>();
 
 	public boolean interrompu;
 

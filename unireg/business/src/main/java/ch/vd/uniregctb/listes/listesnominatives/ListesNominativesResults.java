@@ -33,7 +33,7 @@ public class ListesNominativesResults extends ListesResults<ListesNominativesRes
 
     private static final String[] LIGNES_ADRESSE_VIDE = {null, null, null, null, null, null};
 
-    private final List<InfoTiers> tiers = new LinkedList<InfoTiers>();
+    private final List<InfoTiers> tiers = new LinkedList<>();
 
     private final TypeAdresse typeAdressesIncluses;
 

@@ -57,7 +57,7 @@ public class AdressesCivilesActives {
 		}
 		else if (adresse.getTypeAdresse() == TypeAdresseCivil.SECONDAIRE) {
 			if (secondaires == null) {
-				secondaires = new ArrayList<Adresse>();
+				secondaires = new ArrayList<>();
 			}
 			secondaires.add(adresse);
 

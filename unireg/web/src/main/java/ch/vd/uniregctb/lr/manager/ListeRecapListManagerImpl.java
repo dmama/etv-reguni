@@ -96,7 +96,7 @@ public class ListeRecapListManagerImpl implements ListeRecapListManager{
 	public List<ListeRecapDetailView> find(ListeRecapCriteria lrCriteria, ParamPagination paramPagination) throws AdresseException {
 
 		final List<DeclarationImpotSource> bos = lrDAO.find(lrCriteria, paramPagination);
-		final List<ListeRecapDetailView> lrViews = new ArrayList<ListeRecapDetailView>(bos.size());
+		final List<ListeRecapDetailView> lrViews = new ArrayList<>(bos.size());
 		for (DeclarationImpotSource lr : bos) {
 				lrViews.add(getView(lr));
 		}

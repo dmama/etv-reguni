@@ -43,7 +43,7 @@ public class ExtractionServiceJmxBeanImpl implements ExtractionServiceJmxBean {
 		final List<ExtractionJob> extraction = extractionService.getQueueContent(null);
 		final List<String> descriptions;
 		if (!extraction.isEmpty()) {
-			descriptions = new ArrayList<String>(extraction.size());
+			descriptions = new ArrayList<>(extraction.size());
 			for (ExtractionJob info : extraction) {
 				descriptions.add(info.toString());
 			}
@@ -71,7 +71,7 @@ public class ExtractionServiceJmxBeanImpl implements ExtractionServiceJmxBean {
 	@Override
 	public List<String> getRunningJobs() {
 		final List<ExtractionJob> liste = extractionService.getExtractionsEnCours(null);
-		final List<String> strs = new ArrayList<String>(liste.size());
+		final List<String> strs = new ArrayList<>(liste.size());
 		for (ExtractionJob enCours : liste) {
 			if (enCours != null) {
 				final Long duree = enCours.getDuration();

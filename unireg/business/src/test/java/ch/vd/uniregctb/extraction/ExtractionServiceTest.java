@@ -94,15 +94,10 @@ public class ExtractionServiceTest extends BusinessTest {
 		Assert.assertEquals("text/plain", attachment.getMimeType());
 		Assert.assertEquals("tip", attachment.getFilenameRadical());
 
-		final InputStream in = attachment.getContent();
-		Assert.assertNotNull(in);
-		try {
+		try (InputStream in = attachment.getContent()) {
 			final byte[] buffer = new byte[MyPlainExtractor.REPONSE.length() * 3];
 			final int read = in.read(buffer);
 			Assert.assertEquals(MyPlainExtractor.REPONSE, new String(buffer, 0, read));
-		}
-		finally {
-			in.close();
 		}
 	}
 
@@ -112,7 +107,7 @@ public class ExtractionServiceTest extends BusinessTest {
 
 		class MyResult implements BatchResults<Long, MyResult> {
 
-			private final List<Long> liste = new LinkedList<Long>();
+			private final List<Long> liste = new LinkedList<>();
 
 			@Override
 			public void addErrorException(Long element, Exception e) {
@@ -138,7 +133,7 @@ public class ExtractionServiceTest extends BusinessTest {
 
 			@Override
 			public List<Long> buildElementList() {
-				final List<Long> liste = new ArrayList<Long>(1000);
+				final List<Long> liste = new ArrayList<>(1000);
 				for (long i = 0 ; i < 1000L ; ++i) {
 					liste.add(i);
 				}
@@ -164,10 +159,9 @@ public class ExtractionServiceTest extends BusinessTest {
 			public InputStream getStreamForExtraction(MyResult rapportFinal) throws IOException {
 				final File tempFile = File.createTempFile("testExtractionService", "dmp");
 				tempFile.deleteOnExit();
-				final FileOutputStream fos = new FileOutputStream(tempFile);
-				final ObjectOutputStream out = new ObjectOutputStream(fos);
-				out.writeObject(rapportFinal.liste);
-				out.close();
+				try (FileOutputStream fos = new FileOutputStream(tempFile); ObjectOutputStream out = new ObjectOutputStream(fos)) {
+					out.writeObject(rapportFinal.liste);
+				}
 				return new FileInputStream(tempFile);
 			}
 
@@ -208,21 +202,15 @@ public class ExtractionServiceTest extends BusinessTest {
 		Assert.assertEquals("application/octet-stream", attachment.getMimeType());
 		Assert.assertEquals("data", attachment.getFilenameRadical());
 
-		final InputStream in = attachment.getContent();
-		Assert.assertNotNull(in);
-		try {
-			final ObjectInputStream oin = new ObjectInputStream(in);
+		try (InputStream in = attachment.getContent(); ObjectInputStream oin = new ObjectInputStream(in)) {
 			final Object array = oin.readObject();
 			Assert.assertTrue(array instanceof List);
 
 			final List<Long> liste = (List<Long>) array;
 			Assert.assertEquals(1000, liste.size());
-			for (int i = 0 ; i < liste.size() ; ++ i) {
+			for (int i = 0; i < liste.size(); ++i) {
 				Assert.assertEquals(i, (long) liste.get(i));
 			}
-		}
-		finally {
-			in.close();
 		}
 	}
 
@@ -232,7 +220,7 @@ public class ExtractionServiceTest extends BusinessTest {
 
 		class MyResult implements BatchResults<Long, MyResult> {
 
-			private final List<Long> liste = new LinkedList<Long>();
+			private final List<Long> liste = new LinkedList<>();
 
 			@Override
 			public void addErrorException(Long element, Exception e) {
@@ -258,7 +246,7 @@ public class ExtractionServiceTest extends BusinessTest {
 
 			@Override
 			public List<Long> buildElementList() {
-				final List<Long> liste = new ArrayList<Long>(1000);
+				final List<Long> liste = new ArrayList<>(1000);
 				for (long i = 0 ; i < 1000L ; ++i) {
 					liste.add(i);
 				}
@@ -290,10 +278,9 @@ public class ExtractionServiceTest extends BusinessTest {
 				Collections.sort(rapportFinal.liste);
 				final File tempFile = File.createTempFile("testExtractionService", "dmp");
 				tempFile.deleteOnExit();
-				final FileOutputStream fos = new FileOutputStream(tempFile);
-				final ObjectOutputStream out = new ObjectOutputStream(fos);
-				out.writeObject(rapportFinal.liste);
-				out.close();
+				try (FileOutputStream fos = new FileOutputStream(tempFile); ObjectOutputStream out = new ObjectOutputStream(fos)) {
+					out.writeObject(rapportFinal.liste);
+				}
 				return new FileInputStream(tempFile);
 			}
 
@@ -334,21 +321,15 @@ public class ExtractionServiceTest extends BusinessTest {
 		Assert.assertEquals("application/octet-stream", attachment.getMimeType());
 		Assert.assertEquals("data", attachment.getFilenameRadical());
 
-		final InputStream in = attachment.getContent();
-		Assert.assertNotNull(in);
-		try {
-			final ObjectInputStream oin = new ObjectInputStream(in);
+		try (InputStream in = attachment.getContent(); ObjectInputStream oin = new ObjectInputStream(in)) {
 			final Object array = oin.readObject();
 			Assert.assertTrue(array instanceof List);
 
 			final List<Long> liste = (List<Long>) array;
 			Assert.assertEquals(1000, liste.size());
-			for (int i = 0 ; i < liste.size() ; ++ i) {
+			for (int i = 0; i < liste.size(); ++i) {
 				Assert.assertEquals(i, (long) liste.get(i));
 			}
-		}
-		finally {
-			in.close();
 		}
 	}
 

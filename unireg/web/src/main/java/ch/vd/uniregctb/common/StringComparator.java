@@ -116,7 +116,7 @@ public final class StringComparator implements Comparator<String> {
 	}
 
 	private static Map<Character, String> initMapping() {
-		final Map<Character, String> map = new HashMap<Character, String>();
+		final Map<Character, String> map = new HashMap<>();
 		fillMap(map, "a", 'á', 'à', 'â', 'ä', 'ã', 'å');
 		fillMap(map, "A", 'Á', 'À', 'Â', 'Ä', 'Ã', 'Å');
 		fillMap(map, "ae", 'æ');

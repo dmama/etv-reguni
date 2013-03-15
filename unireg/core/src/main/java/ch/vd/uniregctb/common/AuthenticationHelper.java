@@ -22,7 +22,7 @@ public class AuthenticationHelper {
 	private static final ThreadLocal<Stack<Authentication>> stackByThread = new ThreadLocal<Stack<Authentication>>() {
 		@Override
 		protected Stack<Authentication> initialValue() {
-			return new Stack<Authentication>();
+			return new Stack<>();
 		}
 	};
 

@@ -27,7 +27,7 @@ public abstract class AdresseResidenceComparisonStrategy implements IndividuComp
 	private static final String LOCALISATION_PRECEDENTE = "localisation précédente";
 	private static final String LOCALISATION_SUIVANTE = "localisation suivante";
 
-	private static final Comparator<LocalisationType> TYPE_LOCALISATION_COMPARATOR = new IndividuComparisonHelper.DefaultComparator<LocalisationType>(true);
+	private static final Comparator<LocalisationType> TYPE_LOCALISATION_COMPARATOR = new IndividuComparisonHelper.DefaultComparator<>(true);
 
 	private static final Comparator<Localisation> LOCALISATION_COMPARATOR = new IndividuComparisonHelper.NullableComparator<Localisation>(true) {
 		@Override
@@ -78,7 +78,7 @@ public abstract class AdresseResidenceComparisonStrategy implements IndividuComp
 		}
 	};
 
-	private static final IndividuComparisonHelper.Equalator<TypeAdresseCivil> TYPE_ADRESSE_EQUALATOR = new IndividuComparisonHelper.DefaultEqualator<TypeAdresseCivil>();
+	private static final IndividuComparisonHelper.Equalator<TypeAdresseCivil> TYPE_ADRESSE_EQUALATOR = new IndividuComparisonHelper.DefaultEqualator<>();
 
 	private final IndividuComparisonHelper.Equalator<Adresse> ADRESSE_EQUALATOR = new IndividuComparisonHelper.NullableEqualator<Adresse>() {
 		@Override
@@ -106,7 +106,7 @@ public abstract class AdresseResidenceComparisonStrategy implements IndividuComp
 	 * @return la liste des adresses de résidence à considérer pour cette stratégie
 	 */
 	private List<Adresse> extractAdressesResidence(Collection<Adresse> src) {
-		final List<Adresse> res = new ArrayList<Adresse>();
+		final List<Adresse> res = new ArrayList<>();
 		if (src != null && src.size() > 0) {
 			for (Adresse adr : src) {
 				if (isTakenIntoAccount(adr)) {

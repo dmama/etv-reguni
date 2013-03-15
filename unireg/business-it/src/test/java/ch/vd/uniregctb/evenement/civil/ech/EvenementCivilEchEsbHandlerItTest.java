@@ -50,7 +50,7 @@ public class EvenementCivilEchEsbHandlerItTest extends EvenementTest {
 
 		clearQueue(INPUT_QUEUE);
 
-		evenementsRecus = new ArrayList<EvenementCivilEch>();
+		evenementsRecus = new ArrayList<>();
 		final EvenementCivilEchReceptionHandler receptionHandler = new EvenementCivilEchReceptionHandler() {
 			@Override
 			public EvenementCivilEch saveIncomingEvent(EvenementCivilEch event) {

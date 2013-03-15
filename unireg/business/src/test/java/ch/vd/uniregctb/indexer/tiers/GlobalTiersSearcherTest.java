@@ -321,7 +321,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 
 		assertEquals(3, list.size());
 
-		List<Long> ids = new ArrayList<Long>();
+		List<Long> ids = new ArrayList<>();
 		for (TiersIndexedData data : list) {
 			ids.add(data.getNumero());
 		}
@@ -575,7 +575,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		final List<Long> ids = doInNewTransactionAndSession(new TransactionCallback<List<Long>>() {
 			@Override
 			public List<Long> doInTransaction(TransactionStatus status) {
-				final List<Long> ids = new ArrayList<Long>(2000);
+				final List<Long> ids = new ArrayList<>(2000);
 				for (long i = 0; i < nbDocs; i++) {
 					final PersonnePhysique pp = addNonHabitant("Bimbo", "Maluna", date(1970, 1, 1), Sexe.MASCULIN);
 					ids.add(pp.getNumero());
@@ -616,7 +616,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		final Set<Long> idsDb = doInNewTransactionAndSession(new TransactionCallback<Set<Long>>() {
 			@Override
 			public Set<Long> doInTransaction(TransactionStatus status) {
-				final Set<Long> ids = new HashSet<Long>();
+				final Set<Long> ids = new HashSet<>();
 				for (long i = 0; i < nbDocs; i++) {
 					PersonnePhysique pp = addNonHabitant("Alfred", "Fodor", date(1970, 1, 1), Sexe.MASCULIN);
 					ids.add(pp.getNumero());
@@ -718,7 +718,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 			@Override
 			public List<Long> doInTransaction(TransactionStatus status) {
 
-				final List<Long> ids = new ArrayList<Long>(2000);
+				final List<Long> ids = new ArrayList<>(2000);
 
 				// Charge 2000 personnes dans l'index. Ces 2000 personnes possèdent toutes un nom de famille commençant par "Du Pont".
 				for (int i = 0; i < 2000; ++i) {

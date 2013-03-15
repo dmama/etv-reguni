@@ -39,7 +39,7 @@ public class EditiqueDownloadServiceImpl implements EditiqueDownloadService, Ini
 		defaultDownloader = new DefaultDownloader(servletService);
 
 		final Downloader pclDownloader = new PclDownloader(printPCLManager);
-		downloaders = new HashMap<String, Downloader>();
+		downloaders = new HashMap<>();
 		downloaders.put(MimeTypeHelper.MIME_HPPCL, pclDownloader);
 		downloaders.put(MimeTypeHelper.MIME_XPCL, pclDownloader);
 		downloaders.put(MimeTypeHelper.MIME_PCL, pclDownloader);

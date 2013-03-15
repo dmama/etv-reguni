@@ -32,7 +32,6 @@ import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPDAO;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPErreur;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPErreurFactory;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -61,7 +60,6 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 	private ServiceCivilService serviceCivil;
 	private TiersDAO tiersDAO;
 	private TiersService tiersService;
-	private HibernateTemplate hibernateTemplate;
 
 	/**
 	 * {@inheritDoc}
@@ -145,7 +143,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 				@Override
 				public Long doInTransaction(TransactionStatus status) throws Exception {
 
-					final EvenementCivilMessageCollector<EvenementCivilRegPPErreur> collector = new EvenementCivilMessageCollector<EvenementCivilRegPPErreur>(ERREUR_FACTORY);
+					final EvenementCivilMessageCollector<EvenementCivilRegPPErreur> collector = new EvenementCivilMessageCollector<>(ERREUR_FACTORY);
 
 					// Charge l'événement
 					final EvenementCivilRegPP evenementCivilExterne = evenementCivilRegPPDAO.get(evenementCivilId);
@@ -194,8 +192,8 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 			public Long doInTransaction(TransactionStatus status) {
 
 				final EvenementCivilRegPP evenementCivilExterne = evenementCivilRegPPDAO.get(evenementCivilId);
-				final List<EvenementCivilRegPPErreur> erreurs = new ArrayList<EvenementCivilRegPPErreur>();
-				final List<EvenementCivilRegPPErreur> warnings = new ArrayList<EvenementCivilRegPPErreur>();
+				final List<EvenementCivilRegPPErreur> erreurs = new ArrayList<>();
+				final List<EvenementCivilRegPPErreur> warnings = new ArrayList<>();
 				erreurs.add(new EvenementCivilRegPPErreur(exception));
 
 				evenementCivilExterne.getErreurs().clear();
@@ -316,7 +314,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 		});
 
 		/* 2 - Iteration sur les ids des événements civils */
-		final List<Long> aRelancer = new ArrayList<Long>(ids);
+		final List<Long> aRelancer = new ArrayList<>(ids);
 		aRelancer.removeAll(evenementsExclus);
 		if (!aRelancer.isEmpty()) {
 			traiteEvenements(aRelancer, false, false, null);
@@ -332,7 +330,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 	 * @param status         un status manager (optionel, peut être nul)
 	 */
 	private void traiteEvenements(final List<Long> ids, boolean forceRecyclage, boolean refreshCache, @Nullable StatusManager status) {
-		final Set<Long> individusTraites = new HashSet<Long>();
+		final Set<Long> individusTraites = new HashSet<>();
 		// Traite les événements spécifiées
 		for (final Long id : ids) {
 			if (status != null && status.interrupted()) {
@@ -407,9 +405,5 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
-	}
-
-	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
-		this.hibernateTemplate = hibernateTemplate;
 	}
 }

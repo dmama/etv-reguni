@@ -38,22 +38,22 @@ public class ImprimerDuplicataDeclarationImpotView {
 		// [UNIREG-2001] si une annexe est dans la partie "LOCAL" mais pas dans la partie "BATCH", on ne la demande pas par défaut
 		// (on stocke ici donc tous les formulaires existants dans la partie "BATCH" pour un contrôle rapide)
 		final ModeleDocument modeleDocumentCompleteBatch = findModeleOfType(modelesDocument, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH);
-		final Set<String> numerosFormulairesBatch = new HashSet<String>();
+		final Set<String> numerosFormulairesBatch = new HashSet<>();
 		if (modeleDocumentCompleteBatch != null) {
 			for (ModeleFeuilleDocument modeleFeuille : modeleDocumentCompleteBatch.getModelesFeuilleDocument()) {
 				numerosFormulairesBatch.add(modeleFeuille.getNumeroFormulaire());
 			}
 		}
 
-		final List<ModeleDocumentView> modelesDocumentView = new ArrayList<ModeleDocumentView>();
+		final List<ModeleDocumentView> modelesDocumentView = new ArrayList<>();
 		for (ModeleDocument modele : modelesDocument) {
 			if (modele.getTypeDocument() != TypeDocument.LISTE_RECAPITULATIVE && modele.getTypeDocument() != TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH) {
 
 				// [SIFISC-2066] on trie les feuilles dans l'ordre spécifié dans la paramétrisation
-				final List<ModeleFeuilleDocument> modelesFeuilleDocument = new ArrayList<ModeleFeuilleDocument>(modele.getModelesFeuilleDocument());
+				final List<ModeleFeuilleDocument> modelesFeuilleDocument = new ArrayList<>(modele.getModelesFeuilleDocument());
 				Collections.sort(modelesFeuilleDocument, new ModeleFeuilleDocumentComparator());
 
-				final List<ModeleFeuilleDocumentEditique> modelesFeuilleDocumentView = new ArrayList<ModeleFeuilleDocumentEditique>();
+				final List<ModeleFeuilleDocumentEditique> modelesFeuilleDocumentView = new ArrayList<>();
 				for (ModeleFeuilleDocument modeleFeuilleDocument : modelesFeuilleDocument) {
 
 					// [UNIREG-2001] si une annexe est dans la partie "LOCAL" mais pas dans la partie "BATCH", on ne la demande pas par défaut

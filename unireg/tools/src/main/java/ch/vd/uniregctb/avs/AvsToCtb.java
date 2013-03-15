@@ -56,17 +56,18 @@ public class AvsToCtb {
 		searchRequest.setLogin(login);
 		searchRequest.getPartyTypes().add(PartyType.NATURAL_PERSON);
 
-		final InputStream in = AvsToCtb.class.getResourceAsStream(nomFichier);
-		final BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-
 		// on lit le contenu du fichier
-		final List<String> avsList = new ArrayList<String>();
-		String line = reader.readLine();
-		while (line != null) {
-			avsList.add(line);
-			line = reader.readLine();
+		final List<String> avsList = new ArrayList<>();
+		try (InputStream in = AvsToCtb.class.getResourceAsStream(nomFichier);
+		     InputStreamReader isr = new InputStreamReader(in);
+			 BufferedReader reader = new BufferedReader(isr)) {
+
+			String line = reader.readLine();
+			while (line != null) {
+				avsList.add(line);
+				line = reader.readLine();
+			}
 		}
-		reader.close();
 
 		final boolean closeStream;
 		final PrintStream ps;
@@ -81,20 +82,23 @@ public class AvsToCtb {
 		}
 
 		// et on boucle sur les lots
-		for (String avs : avsList) {
-			searchRequest.setSocialInsuranceNumber(avs);
-			try {
-				final SearchPartyResponse result = service.searchParty(searchRequest);
-				final List<PartyInfo> items = result.getItems();
-				dumpTiers(avs, items, null, ps);
-			}
-			catch (WebServiceException e) {
-				dumpTiers(avs, null, e, ps);
+		try {
+			for (String avs : avsList) {
+				searchRequest.setSocialInsuranceNumber(avs);
+				try {
+					final SearchPartyResponse result = service.searchParty(searchRequest);
+					final List<PartyInfo> items = result.getItems();
+					dumpTiers(avs, items, null, ps);
+				}
+				catch (WebServiceException e) {
+					dumpTiers(avs, null, e, ps);
+				}
 			}
 		}
-
-		if (closeStream) {
-			ps.close();
+		finally {
+			if (closeStream) {
+				ps.close();
+			}
 		}
 	}
 

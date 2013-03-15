@@ -21,7 +21,7 @@ public class EsbTemplateTracing extends EsbJmsTemplate implements DisposableBean
 
 	private StatsService statsService;
 
-	private final Map<String, ServiceTracing> map = new HashMap<String, ServiceTracing>();
+	private final Map<String, ServiceTracing> map = new HashMap<>();
 
 	public void setStatsService(StatsService statsService) {
 		this.statsService = statsService;

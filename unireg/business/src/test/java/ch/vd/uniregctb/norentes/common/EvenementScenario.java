@@ -171,7 +171,7 @@ public abstract class EvenementScenario extends NorentesScenario {
 		final EtatDeclaration etat = new EtatDeclarationEmise();
 		etat.setDateObtention(dateEmission);
 		etat.setDeclaration(di);
-		final Set<EtatDeclaration> etats = new HashSet<EtatDeclaration>(1);
+		final Set<EtatDeclaration> etats = new HashSet<>(1);
 		etats.add(etat);
 		di.setEtats(etats);
 
@@ -179,7 +179,7 @@ public abstract class EvenementScenario extends NorentesScenario {
 		delai.setDateDemande(dateEmission);
 		delai.setDeclaration(di);
 		delai.setDelaiAccordeAu(dateEmission.addDays(delaiEnJours));
-		final Set<DelaiDeclaration> delais = new HashSet<DelaiDeclaration>(1);
+		final Set<DelaiDeclaration> delais = new HashSet<>(1);
 		di.setDelais(delais);
 
 		PeriodeFiscale periode = new PeriodeFiscale();

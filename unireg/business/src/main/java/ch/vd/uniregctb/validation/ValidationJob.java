@@ -181,10 +181,10 @@ public class ValidationJob extends JobDefinition {
 	private void processAll(final List<Long> ids, final ValidationJobResults results, int nbThreads, final StatusManager statusManager)
 			throws InterruptedException {
 
-		final ArrayBlockingQueue<Long> queue = new ArrayBlockingQueue<Long>(QUEUE_BY_THREAD_SIZE * nbThreads);
+		final ArrayBlockingQueue<Long> queue = new ArrayBlockingQueue<>(QUEUE_BY_THREAD_SIZE * nbThreads);
 
 		// Création des threads de processing
-		final List<ValidationJobThread> threads = new ArrayList<ValidationJobThread>(nbThreads);
+		final List<ValidationJobThread> threads = new ArrayList<>(nbThreads);
 		for (int i = 0; i < nbThreads; i++) {
 			final ValidationJobThread t = new ValidationJobThread(queue, results, tiersDAO, transactionManager, adresseService, paramService, validationService, periodeImpositionService);
 			threads.add(t);

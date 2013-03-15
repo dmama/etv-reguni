@@ -112,7 +112,7 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 				return Collections.emptyList();
 			}
 			else {
-				final List<Pays> pays = new ArrayList<Pays>();
+				final List<Pays> pays = new ArrayList<>();
 				for (Country o : list) {
 					pays.add(PaysImpl.get(o));
 				}
@@ -164,7 +164,7 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 				return Collections.emptyList();
 			}
 
-			final List<Commune> communes = new ArrayList<Commune>();
+			final List<Commune> communes = new ArrayList<>();
 			for (CommuneFiscale commune : list) {
 				communes.add(CommuneImpl.get(commune));
 			}
@@ -183,7 +183,7 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 				return Collections.emptyList();
 			}
 
-			final List<Commune> communes = new ArrayList<Commune>();
+			final List<Commune> communes = new ArrayList<>();
 			for (CommuneFiscale commune : all) {
 				if (!commune.isEstUneCommuneFaitiere() && ServiceInfrastructureRaw.SIGLE_CANTON_VD.equals(commune.getSigleCanton())) {
 					communes.add(CommuneImpl.get(commune));
@@ -204,7 +204,7 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 				return Collections.emptyList();
 			}
 
-			final List<Commune> communes = new ArrayList<Commune>();
+			final List<Commune> communes = new ArrayList<>();
 			for (CommuneFiscale commune : all) {
 				communes.add(CommuneImpl.get(commune));
 			}
@@ -231,7 +231,7 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 		}
 
 		// on détermine le mapping
-		final Map<Integer, Integer> map = new HashMap<Integer, Integer>();
+		final Map<Integer, Integer> map = new HashMap<>();
 		for (ch.vd.fidor.ws.v2.CommuneFiscale commune : communes) {
 			//noinspection deprecation
 			final Integer numeroTechnique = commune.getNoTechnique();
@@ -271,7 +271,7 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 	@Override
 	public List<Commune> getCommuneHistoByNumeroOfs(int noOfsCommune) throws ServiceInfrastructureException {
 		try {
-			final List<Commune> list = new ArrayList<Commune>();
+			final List<Commune> list = new ArrayList<>();
 			final List<CommuneFiscale> l = fidorClient.getCommunesParNoOFS(noOfsCommune);
 			if (l != null) {
 				for (CommuneFiscale c : l) {
@@ -406,7 +406,7 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 					final String patternTaoIS = getUrl("TAOIS", "default");
 					final String patternSipf = getUrl("SIPF", "explorer");
 
-					final Map<ApplicationFiscale, String> map = new EnumMap<ApplicationFiscale, String>(ApplicationFiscale.class);
+					final Map<ApplicationFiscale, String> map = new EnumMap<>(ApplicationFiscale.class);
 					map.put(ApplicationFiscale.TAO_PP, patternTaoPP);
 					map.put(ApplicationFiscale.TAO_BA, patternTaoBA);
 					map.put(ApplicationFiscale.TAO_IS, patternTaoIS);
@@ -456,7 +456,7 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 				return Collections.emptyList();
 			}
 			else {
-				final List<Logiciel> logiciels = new ArrayList<Logiciel>();
+				final List<Logiciel> logiciels = new ArrayList<>();
 				for (ch.vd.evd0012.v1.Logiciel logicielFidor : list) {
 					logiciels.add(LogicielImpl.get(logicielFidor));
 				}

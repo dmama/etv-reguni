@@ -65,7 +65,7 @@ public abstract class PdfRolesRapport<T extends ProduireRolesResults> extends Pd
 	 * @return map d'indexation par numéro OFS
 	 */
 	protected static Map<Integer, String> buildNomsCommunes(List<Commune> communes) {
-		final Map<Integer, String> map = new HashMap<Integer, String>(communes.size());
+		final Map<Integer, String> map = new HashMap<>(communes.size());
 		for (Commune commune : communes) {
 			map.put(commune.getNoOFS(), commune.getNomOfficiel());
 		}
@@ -115,7 +115,7 @@ public abstract class PdfRolesRapport<T extends ProduireRolesResults> extends Pd
 	 */
 	protected final List<Commune> getListeCommunes(final T results, boolean triAlphabetique) {
 
-		final List<Commune> listCommunes = new ArrayList<Commune>(results.infosCommunes.size());
+		final List<Commune> listCommunes = new ArrayList<>(results.infosCommunes.size());
 		for (ProduireRolesResults.InfoCommune infoCommune : results.infosCommunes.values()) {
 			final int noOfs = infoCommune.getNoOfs();
 			final Commune commune = getCommune(noOfs, RegDate.get(results.annee, 12, 31));
@@ -151,7 +151,7 @@ public abstract class PdfRolesRapport<T extends ProduireRolesResults> extends Pd
 			return null;
 		}
 
-		final List<ProduireRolesResults.InfoContribuable> triee = new ArrayList<ProduireRolesResults.InfoContribuable>(col);
+		final List<ProduireRolesResults.InfoContribuable> triee = new ArrayList<>(col);
 
 		Collections.sort(triee, new Comparator<ProduireRolesResults.InfoContribuable>() {
 		    @Override
@@ -194,7 +194,7 @@ public abstract class PdfRolesRapport<T extends ProduireRolesResults> extends Pd
 
 	protected final String[] traiteListeContribuable(final List<ProduireRolesResults.InfoContribuable> infos, final Map<Integer, String> nomsCommunes, final AccesCommune accesCommune) {
 
-		final List<String> fichiers = new ArrayList<String>();
+		final List<String> fichiers = new ArrayList<>();
 		if (infos != null) {
 			final List<List<ProduireRolesResults.InfoContribuable>> decoupage = CollectionsUtils.split(infos, MAX_ROLES_PAR_FICHIER);
 			for (List<ProduireRolesResults.InfoContribuable> portion : decoupage) {
@@ -322,7 +322,7 @@ public abstract class PdfRolesRapport<T extends ProduireRolesResults> extends Pd
 			}
 		}
 
-		final Map<ProduireRolesResults.InfoContribuable.TypeContribuable, Integer> map = new HashMap<ProduireRolesResults.InfoContribuable.TypeContribuable, Integer>(nbTypesContribuables);
+		final Map<ProduireRolesResults.InfoContribuable.TypeContribuable, Integer> map = new HashMap<>(nbTypesContribuables);
 		for (int i = 0 ; i < nbTypesContribuables ; ++ i) {
 			if (nombreParType[i] > 0) {
 				map.put(ProduireRolesResults.InfoContribuable.TypeContribuable.values()[i], nombreParType[i]);

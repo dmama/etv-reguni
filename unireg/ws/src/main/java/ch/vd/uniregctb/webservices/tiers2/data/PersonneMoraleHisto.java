@@ -314,7 +314,7 @@ public class PersonneMoraleHisto extends ContribuableHisto {
 					fillCompteBancaireDepuisMandat(cb, m, context.infraService);
 
 					if (list == null) {
-						list = new ArrayList<CompteBancaire>();
+						list = new ArrayList<>();
 					}
 					list.add(cb);
 				}
@@ -430,7 +430,7 @@ public class PersonneMoraleHisto extends ContribuableHisto {
 		if (comptes == null || comptes.isEmpty()) {
 			return null;
 		}
-		final List<CompteBancaire> list = new ArrayList<CompteBancaire>();
+		final List<CompteBancaire> list = new ArrayList<>();
 		for (ch.vd.uniregctb.interfaces.model.CompteBancaire c : comptes) {
 			CompteBancaire compte = new CompteBancaire();
 			compte.format = CompteBancaire.Format.valueOf(c.getFormat().name());
@@ -445,7 +445,7 @@ public class PersonneMoraleHisto extends ContribuableHisto {
 		if (sieges == null || sieges.isEmpty()) {
 			return null;
 		}
-		final ArrayList<Siege> list = new ArrayList<Siege>(sieges.size());
+		final ArrayList<Siege> list = new ArrayList<>(sieges.size());
 		for (ch.vd.uniregctb.interfaces.model.Siege s : sieges) {
 			list.add(host2web(s, context));
 		}
@@ -477,7 +477,7 @@ public class PersonneMoraleHisto extends ContribuableHisto {
 		if (regimes == null || regimes.isEmpty()) {
 			return null;
 		}
-		final ArrayList<RegimeFiscal> list = new ArrayList<RegimeFiscal>(regimes.size());
+		final ArrayList<RegimeFiscal> list = new ArrayList<>(regimes.size());
 		for (ch.vd.uniregctb.interfaces.model.RegimeFiscal r : regimes) {
 			list.add(host2web(r));
 		}
@@ -497,7 +497,7 @@ public class PersonneMoraleHisto extends ContribuableHisto {
 		if (fors == null || fors.isEmpty()) {
 			return null;
 		}
-		final ArrayList<ForFiscal> list = new ArrayList<ForFiscal>(fors.size());
+		final ArrayList<ForFiscal> list = new ArrayList<>(fors.size());
 		for (ch.vd.uniregctb.interfaces.model.ForPM f : fors) {
 			list.add(secondaire2web(f, context));
 		}
@@ -520,7 +520,7 @@ public class PersonneMoraleHisto extends ContribuableHisto {
 		if (fors == null || fors.isEmpty()) {
 			return null;
 		}
-		final ArrayList<ForFiscal> list = new ArrayList<ForFiscal>(fors.size());
+		final ArrayList<ForFiscal> list = new ArrayList<>(fors.size());
 		for (ch.vd.uniregctb.interfaces.model.ForPM f : fors) {
 			list.add(principal2web(f, context));
 		}
@@ -575,7 +575,7 @@ public class PersonneMoraleHisto extends ContribuableHisto {
 		if (formes == null || formes.isEmpty()) {
 			return null;
 		}
-		final ArrayList<FormeJuridique> list = new ArrayList<FormeJuridique>(formes.size());
+		final ArrayList<FormeJuridique> list = new ArrayList<>(formes.size());
 		for (ch.vd.uniregctb.interfaces.model.FormeJuridique f : formes) {
 			list.add(host2web(f));
 		}
@@ -595,7 +595,7 @@ public class PersonneMoraleHisto extends ContribuableHisto {
 		if (etats == null || etats.isEmpty()) {
 			return null;
 		}
-		final ArrayList<EtatPM> list = new ArrayList<EtatPM>(etats.size());
+		final ArrayList<EtatPM> list = new ArrayList<>(etats.size());
 		for (ch.vd.uniregctb.interfaces.model.EtatPM e : etats) {
 			list.add(host2web(e));
 		}
@@ -615,7 +615,7 @@ public class PersonneMoraleHisto extends ContribuableHisto {
 		if (capitaux == null || capitaux.isEmpty()) {
 			return null;
 		}
-		final ArrayList<Capital> list = new ArrayList<Capital>(capitaux.size());
+		final ArrayList<Capital> list = new ArrayList<>(capitaux.size());
 		for (ch.vd.uniregctb.interfaces.model.Capital c : capitaux) {
 			list.add(DataHelper.host2web(c));
 		}
@@ -626,7 +626,7 @@ public class PersonneMoraleHisto extends ContribuableHisto {
 		if (lic == null || lic.isEmpty()) {
 			return null;
 		}
-		final ArrayList<Assujettissement> list = new ArrayList<Assujettissement>(lic.size());
+		final ArrayList<Assujettissement> list = new ArrayList<>(lic.size());
 		for (ch.vd.uniregctb.interfaces.model.AssujettissementPM a : lic) {
 			list.add(DataHelper.host2web(a));
 		}
@@ -639,7 +639,7 @@ public class PersonneMoraleHisto extends ContribuableHisto {
 			return null;
 		}
 
-		final Set<PartPM> set = new HashSet<PartPM>();
+		final Set<PartPM> set = new HashSet<>();
 		if (parts.contains(TiersPart.ADRESSES) || parts.contains(TiersPart.ADRESSES_ENVOI)) {
 			set.add(PartPM.ADRESSES);
 		}

@@ -129,8 +129,8 @@ public abstract class ContribuableHisto extends TiersHisto {
 	private void initAssujettissements(Context context, ch.vd.uniregctb.tiers.Contribuable contribuable, final Range range)
 			throws BusinessException {
 
-		this.assujettissementsLIC = new ArrayList<Assujettissement>();
-		this.assujettissementsLIFD = new ArrayList<Assujettissement>();
+		this.assujettissementsLIC = new ArrayList<>();
+		this.assujettissementsLIFD = new ArrayList<>();
 
 		/*
 		 * Note: il est nécessaire de calculer l'assujettissement sur TOUTE la période de validité du contribuable pour obtenir un résultat
@@ -170,7 +170,7 @@ public abstract class ContribuableHisto extends TiersHisto {
 			range = new Range(RegDate.get(premierePeriodeFiscale, 1, 1), range.getDateFin());
 		}
 
-		this.periodesImposition = new ArrayList<PeriodeImposition>();
+		this.periodesImposition = new ArrayList<>();
 
 		final List<ch.vd.uniregctb.metier.assujettissement.PeriodeImposition> list;
 		try {
@@ -204,7 +204,7 @@ public abstract class ContribuableHisto extends TiersHisto {
 
 	private void initSituationsFamille(Context context, ch.vd.uniregctb.tiers.Contribuable contribuable, final Range range) {
 
-		this.situationsFamille = new ArrayList<SituationFamille>();
+		this.situationsFamille = new ArrayList<>();
 		final List<ch.vd.uniregctb.situationfamille.VueSituationFamille> situations = context.situationService.getVueHisto(contribuable);
 
 		for (ch.vd.uniregctb.situationfamille.VueSituationFamille situation : situations) {

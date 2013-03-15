@@ -106,14 +106,14 @@ public class MigrationCoquillesPM extends JobDefinition {
 		final List<Long> idsSource = getSourceIds();
 		final Set<Long> idsTarget = getTargetIds();
 
-		final Set<Long> delta = new HashSet<Long>();
+		final Set<Long> delta = new HashSet<>();
 		for (Long id : idsSource) {
 			if (!idsTarget.contains(id)) {
 				delta.add(id);
 			}
 		}
 
-		final List<Long> sorted = new ArrayList<Long>(delta);
+		final List<Long> sorted = new ArrayList<>(delta);
 		Collections.sort(sorted);
 		return sorted;
 	}
@@ -137,7 +137,7 @@ public class MigrationCoquillesPM extends JobDefinition {
 			}
 		});
 
-		return new HashSet<Long>(ids);
+		return new HashSet<>(ids);
 	}
 
 	private List<Long> getSourceIds() {
@@ -149,7 +149,7 @@ public class MigrationCoquillesPM extends JobDefinition {
 		final MigrationResults rapportFinal = new MigrationResults(dateTraitement, tiersService, adresseService);
 
 		final BatchTransactionTemplate<Long, MigrationResults> template =
-				new BatchTransactionTemplate<Long, MigrationResults>(ids, 100, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, hibernateTemplate);
+				new BatchTransactionTemplate<>(ids, 100, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, hibernateTemplate);
 		template.execute(rapportFinal, new BatchTransactionTemplate.BatchCallback<Long, MigrationResults>() {
 
 			@Override
@@ -227,11 +227,11 @@ public class MigrationCoquillesPM extends JobDefinition {
 		/**
 		 * Ids des personnes morales migrées avec succès.
 		 */
-		public final List<Long> traitees = new ArrayList<Long>();
+		public final List<Long> traitees = new ArrayList<>();
 		/**
 		 * Personnes morales n'ayant pas pu être migrées (avec description du problème)
 		 */
-		public final List<Erreur> erreurs = new ArrayList<Erreur>();
+		public final List<Erreur> erreurs = new ArrayList<>();
 		/**
 		 * Vrai si le traitement a été interrompu ou non
 		 */

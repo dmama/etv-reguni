@@ -40,7 +40,7 @@ public class DocumentServiceImpl implements DocumentService {
 	/**
 	 * Contient les types concrets de documents, indexés par leur noms en lettres minuscules
 	 */
-	private final static Map<String, Class<? extends Document>> docType = new HashMap<String, Class<? extends Document>>();
+	private final static Map<String, Class<? extends Document>> docType = new HashMap<>();
 	static {
 		docType.put(DatabaseDump.class.getSimpleName().toLowerCase(), DatabaseDump.class);
 		docType.put(DeterminationDIsRapport.class.getSimpleName().toLowerCase(), DeterminationDIsRapport.class);
@@ -71,7 +71,7 @@ public class DocumentServiceImpl implements DocumentService {
 	 */
 	@Override
 	public Collection<Document> ramasseDocs() {
-		List<Document> docs = new ArrayList<Document>();
+		List<Document> docs = new ArrayList<>();
 		ramasseDir(repository, "", docs);
 		return docs;
 	}
@@ -245,13 +245,9 @@ public class DocumentServiceImpl implements DocumentService {
 			LOGGER.debug("Création du document " + filepath);
 		}
 
-		OutputStream os = new FileOutputStream(file);
-		try {
+		try (OutputStream os = new FileOutputStream(file)) {
 			// Remplissage du document
 			callback.writeDoc(doc, os);
-		}
-		finally {
-			os.close();
 		}
 
 		doc.setFileSize(file.length());
@@ -270,13 +266,9 @@ public class DocumentServiceImpl implements DocumentService {
 			LOGGER.debug("Lecture du document " + path);
 		}
 
-		FileInputStream is = new FileInputStream(path);
-		try {
+		try (FileInputStream is = new FileInputStream(path)) {
 			// Lecture du document
 			callback.readDoc(doc, is);
-		}
-		finally {
-			is.close();
 		}
 	}
 

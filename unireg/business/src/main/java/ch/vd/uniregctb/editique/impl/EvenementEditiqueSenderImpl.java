@@ -106,7 +106,7 @@ public class EvenementEditiqueSenderImpl implements EvenementEditiqueSender {
 
 		// Endroit où on va récupérer les éventuelles erreurs
 		final XmlOptions validateOptions = new XmlOptions();
-		final List<XmlError> errorList = new ArrayList<XmlError>();
+		final List<XmlError> errorList = new ArrayList<>();
 		validateOptions.setErrorListener(errorList);
 
 		// C'est parti pour la validation !

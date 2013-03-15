@@ -465,7 +465,7 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		assertEquals(2, rapports.size()); // 2 rapports appartenance ménages
 
 		/* Extrait les différents type de rapports */
-		List<RapportEntreTiers> rapportsMenage = new ArrayList<RapportEntreTiers>();
+		List<RapportEntreTiers> rapportsMenage = new ArrayList<>();
 		for (RapportEntreTiers rapport : rapports) {
 			assertNotNull(rapport);
 			if (TypeRapportEntreTiers.APPARTENANCE_MENAGE == rapport.getType()) {
@@ -1128,7 +1128,7 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		assertNotNull(batch);
 		assertEquals(size, batch.getEntries().size());
 
-		final Set<Long> ids = new HashSet<Long>();
+		final Set<Long> ids = new HashSet<>();
 		for (BatchTiersEntry entry : batch.getEntries()) {
 			ids.add(entry.getNumber());
 			assertNotNull("Le tiers n°" + entry.getNumber() + " est nul !", entry.getTiers());
@@ -1170,7 +1170,7 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		assertNotNull(batch);
 		assertEquals(size, batch.getEntries().size());
 
-		final Set<Long> ids = new HashSet<Long>();
+		final Set<Long> ids = new HashSet<>();
 		for (BatchTiersHistoEntry entry : batch.getEntries()) {
 			ids.add(entry.getNumber());
 			assertNotNull("Le tiers n°" + entry.getNumber() + " est nul !", entry.getTiers());

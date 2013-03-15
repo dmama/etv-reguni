@@ -90,8 +90,8 @@ public class ListeNoteResults extends JobResults<Long, ListeNoteResults> {
 				this.adresseEnvoi = null;
 			}
 
-			nomsPrenoms = new ArrayList<NomPrenom>(2);
-			nosAvs = new ArrayList<String>(2);
+			nomsPrenoms = new ArrayList<>(2);
+			nosAvs = new ArrayList<>(2);
 			fillNomsPrenomsEtNosAvs(ctb, date.year(), tiersService, nomsPrenoms, nosAvs);
 			fillSituationFiscale(ctb, date, tiersService, infraService);
 
@@ -254,8 +254,8 @@ public class ListeNoteResults extends JobResults<Long, ListeNoteResults> {
 	public int nbContribuable;
 	public int periode;
 
-	public final List<InfoContribuableAvecNote> listeContribuableAvecNote = new ArrayList<InfoContribuableAvecNote>();
-	public final List<Erreur> erreurs = new ArrayList<Erreur>();
+	public final List<InfoContribuableAvecNote> listeContribuableAvecNote = new ArrayList<>();
+	public final List<Erreur> erreurs = new ArrayList<>();
 
 	public ListeNoteResults(RegDate dateTraitement, int periode, TiersService tiersService, AdresseService adresseService) {
 		super(tiersService, adresseService);

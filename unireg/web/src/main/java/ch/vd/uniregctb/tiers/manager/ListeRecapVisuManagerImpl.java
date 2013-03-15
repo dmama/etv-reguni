@@ -13,7 +13,6 @@ import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
-import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.ListeRecapitulativeDAO;
 import ch.vd.uniregctb.di.view.DelaiDeclarationView;
 import ch.vd.uniregctb.general.manager.TiersGeneralManager;
@@ -62,7 +61,7 @@ public class ListeRecapVisuManagerImpl implements ListeRecapVisuManager,MessageS
 		lrView.setDpi(tiersGeneralView);
 		lrView.setDateDebutPeriode(lr.getDateDebut());
 		lrView.setDateFinPeriode(lr.getDateFin());
-		List<DelaiDeclarationView> delaisView = new ArrayList<DelaiDeclarationView>();
+		List<DelaiDeclarationView> delaisView = new ArrayList<>();
 		for (DelaiDeclaration delai : lr.getDelais()) {
 			DelaiDeclarationView delaiView = new DelaiDeclarationView(delai);
 			delaiView.setFirst(lr.getPremierDelai() == delai.getDelaiAccordeAu());
@@ -70,7 +69,7 @@ public class ListeRecapVisuManagerImpl implements ListeRecapVisuManager,MessageS
 		}
 		Collections.sort(delaisView);
 		lrView.setDelais(delaisView);
-		lrView.setEtats(new ArrayList<EtatDeclaration>(lr.getEtats()));
+		lrView.setEtats(new ArrayList<>(lr.getEtats()));
 		Collections.sort(lrView.getEtats());
 		lrView.setId(lr.getId());
 		Tiers tiers = tiersDAO.get(lr.getTiers().getId());

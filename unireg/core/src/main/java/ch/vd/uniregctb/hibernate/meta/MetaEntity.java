@@ -125,7 +125,7 @@ public class MetaEntity {
 		String table = null;
 		String discriminatorValue = null;
 		String discriminatorColumn = null;
-		final List<Property> properties = new ArrayList<Property>();
+		final List<Property> properties = new ArrayList<>();
 
 		final List<Annotation> annotations = ReflexionUtils.getAllAnnotations(clazz);
 		for (Annotation a : annotations) {
@@ -394,7 +394,7 @@ public class MetaEntity {
 
 		// Construit les attributs résultants (notation pointée pour les noms des attributs + éventuellement surcharge du nom de la colonne)
 		final List<Property> embeddedProps = meta.getProperties();
-		final List<Property> results = new ArrayList<Property>(embeddedProps.size());
+		final List<Property> results = new ArrayList<>(embeddedProps.size());
 		for (Property e : embeddedProps) {
 			final AttributeOverride override = getOverride(overrides, e.getName());
 			final String fullName = descriptor.getName() + '.' + e.getName();

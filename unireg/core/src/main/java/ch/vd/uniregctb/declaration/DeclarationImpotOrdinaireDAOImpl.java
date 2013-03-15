@@ -50,7 +50,7 @@ public class DeclarationImpotOrdinaireDAOImpl extends GenericDAOImpl< Declaratio
 		}
 
 		final StringBuilder b = new StringBuilder("SELECT di FROM DeclarationImpotOrdinaire di WHERE 1=1");
-		final List<Object> criteria = new ArrayList<Object>();
+		final List<Object> criteria = new ArrayList<>();
 
 		final Integer annee = criterion.getAnnee();
 		if (annee != null) {
@@ -80,7 +80,7 @@ public class DeclarationImpotOrdinaireDAOImpl extends GenericDAOImpl< Declaratio
 
 		final FlushMode mode = (doNotAutoFlush ? FlushMode.MANUAL : null);
 		final List<DeclarationImpotOrdinaire> list = (List<DeclarationImpotOrdinaire>) find(query, criteria.toArray(), mode);
-		final List<DeclarationImpotOrdinaire> listRtr = new ArrayList<DeclarationImpotOrdinaire>();
+		final List<DeclarationImpotOrdinaire> listRtr = new ArrayList<>();
 
 		if (criterion.getEtat() == null || criterion.getEtat().equals(TOUS)) {
 			for (DeclarationImpotOrdinaire di : list) {

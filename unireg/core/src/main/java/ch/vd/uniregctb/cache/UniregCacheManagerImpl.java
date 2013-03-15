@@ -27,7 +27,7 @@ public class UniregCacheManagerImpl implements UniregCacheManager, DynamicMBean 
 
 	private final Logger LOGGER = Logger.getLogger(UniregCacheManagerImpl.class);
 
-	private final Map<String, UniregCacheInterface> map = new HashMap<String, UniregCacheInterface>();
+	private final Map<String, UniregCacheInterface> map = new HashMap<>();
 
 	@Override
 	public UniregCacheInterface getCache(String name) {
@@ -114,7 +114,7 @@ public class UniregCacheManagerImpl implements UniregCacheManager, DynamicMBean 
 	public MBeanInfo getMBeanInfo() {
 
 		// Récupère la liste des caches, et on la trie pour éviter que l'ordre change entre deux appels
-		final List<UniregCacheInterface> caches = new ArrayList<UniregCacheInterface>(map.values());
+		final List<UniregCacheInterface> caches = new ArrayList<>(map.values());
 		Collections.sort(caches, new Comparator<UniregCacheInterface>() {
 			@Override
 			public int compare(UniregCacheInterface o1, UniregCacheInterface o2) {

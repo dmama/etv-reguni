@@ -116,7 +116,7 @@ public class EnvoiAnnexeImmeubleJob extends JobDefinition {
 	 */
 	protected static List<ContribuableAvecImmeuble> extractCtbFromCSV(byte[] csv, StatusManager status) throws UnsupportedEncodingException {
 
-		final List<ContribuableAvecImmeuble> listeCtb = new ArrayList<ContribuableAvecImmeuble>();
+		final List<ContribuableAvecImmeuble> listeCtb = new ArrayList<>();
 		final Pattern p = Pattern.compile("^([0-9]+);([0-9]+)(;.*)?$");
 
 		status.setMessage("Chargement du fichier d'entrée");
@@ -124,8 +124,7 @@ public class EnvoiAnnexeImmeubleJob extends JobDefinition {
 		// on parse le fichier
 		final String csvString = csv != null ? new String(csv, "ISO-8859-1") : StringUtils.EMPTY;
 		int ctbsLus = 0;
-		final Scanner s = new Scanner(csvString);
-		try {
+		try (Scanner s = new Scanner(csvString)) {
 			while (s.hasNextLine()) {
 
 				final String line = s.nextLine();
@@ -140,15 +139,12 @@ public class EnvoiAnnexeImmeubleJob extends JobDefinition {
 					final Long numeroCtb = Long.valueOf(m.group(1));
 					final int nombreImmeubles = Integer.valueOf(m.group(2));
 					listeCtb.add(new ContribuableAvecImmeuble(numeroCtb, nombreImmeubles));
-					++ ctbsLus;
+					++ctbsLus;
 				}
 				else {
 					LOGGER.warn(String.format("Ligne ignorée dans le fichier d'entrée : '%s'", line));
 				}
 			}
-		}
-		finally {
-			s.close();
 		}
 		Audit.info("Nombre de contribuables lus dans le fichier : " + ctbsLus);
 

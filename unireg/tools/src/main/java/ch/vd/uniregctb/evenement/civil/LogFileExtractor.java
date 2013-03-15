@@ -33,7 +33,7 @@ public class LogFileExtractor {
 		}
 	}
 
-	private final List<EvenementRecu> evenementsRecus = new LinkedList<EvenementRecu>();
+	private final List<EvenementRecu> evenementsRecus = new LinkedList<>();
 
 	public LogFileExtractor(String fileName) throws FileNotFoundException {
 
@@ -63,8 +63,7 @@ public class LogFileExtractor {
 		final Pattern evenementCivilIgnorePattern = Pattern.compile(".*Arrivée d'un message JMS ignoré .id ([0-9]+), code ([0-9]+).*");
 		final Pattern evenementCivilTraitePattern = Pattern.compile(".*id=([0-9]+), type=([A-Z_]+), date=([0-9]{4})-([0-9]{2})-([0-9]{2}), no individu=([0-9]+), OFS commune=([0-9]+).*");
 
-		final Scanner scanner = new Scanner(file);
-		try {
+		try (Scanner scanner = new Scanner(file)) {
 			while (scanner.hasNextLine()) {
 				final String line = scanner.nextLine();
 				final Matcher matcherIgnore = evenementCivilIgnorePattern.matcher(line);
@@ -91,9 +90,6 @@ public class LogFileExtractor {
 					}
 				}
 			}
-		}
-		finally {
-			scanner.close();
 		}
 	}
 

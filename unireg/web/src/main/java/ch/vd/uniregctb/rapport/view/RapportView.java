@@ -42,7 +42,7 @@ public class RapportView implements Comparable<RapportView>, Annulable {
 
 	protected final static Logger LOGGER = Logger.getLogger(RapportView.class);
 
-	private static BaseComparator<RapportView> comparator = new BaseComparator<RapportView>(new String[]{"annule", "dateDebut"}, new Boolean[]{true, true});
+	private static BaseComparator<RapportView> comparator = new BaseComparator<>(new String[]{"annule", "dateDebut"}, new Boolean[]{true, true});
 
 	private RegDate dateDebut;
 
@@ -387,7 +387,7 @@ public class RapportView implements Comparable<RapportView>, Annulable {
 			nomSujet = adresseService.getNomCourrier(tiers, null, false);
 		}
 		catch (Exception e) {
-			nomSujet = new ArrayList<String>();
+			nomSujet = new ArrayList<>();
 			nomSujet.add(e.getMessage());
 		}
 

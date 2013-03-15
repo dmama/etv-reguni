@@ -40,7 +40,7 @@ public class EnvoiDIsJobTest extends JobTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testEnvoiDIsEnMasse() throws Exception {
 
-		final Map<String, Object> params = new HashMap<String, Object>();
+		final Map<String, Object> params = new HashMap<>();
 		params.put(EnvoiDIsJob.PERIODE_FISCALE, RegDate.get().year() -1);
 		params.put(EnvoiDIsJob.CATEGORIE_CTB, CategorieEnvoiDI.VAUDOIS_COMPLETE);
 		params.put(EnvoiDIsJob.EXCLURE_DCD, Boolean.FALSE);

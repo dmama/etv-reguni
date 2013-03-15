@@ -18,12 +18,12 @@ public class ZeroTiersSearcherImpl implements GlobalTiersSearcher {
 
 	@Override
 	public TopList<TiersIndexedData> searchTop(TiersCriteria criteria, int max) throws IndexerException {
-		return new TopList<TiersIndexedData>();
+		return new TopList<>();
 	}
 
 	@Override
 	public TopList<TiersIndexedData> searchTop(String keywords, TiersFilter filter, int max) throws IndexerException {
-		return new TopList<TiersIndexedData>();
+		return new TopList<>();
 	}
 
 	@Override

@@ -148,7 +148,7 @@ public class BatchClientTest extends WebitTest {
 	@Test
 	public void testStartJobWithBatchNameWithArguments() throws Exception {
 
-		final Map<String, Object> args = new HashMap<String, Object>(2);
+		final Map<String, Object> args = new HashMap<>(2);
 		args.put("dateDebut", "2008-03-20");
 		args.put("count", "12");
 		client.startBatch(BATCH_NAME, args);
@@ -161,7 +161,7 @@ public class BatchClientTest extends WebitTest {
 	public void testStopJobWithBatchName() throws Exception {
 
 		// démarre le job avec le paramètre duration = 10 secondes, de telle manière qui'il dure assez longtemps pour qu'on puisse l'arrêter
-		Map<String, Object> args = new HashMap<String, Object>(1);
+		Map<String, Object> args = new HashMap<>(1);
 		args.put("duration", "10");
 		client.startBatch(BATCH_NAME, args);
 
@@ -192,7 +192,7 @@ public class BatchClientTest extends WebitTest {
 		assertParam(params.get(4), "salutations", "enum");
 		assertParam(params.get(5), "attachement", "byte[]");
 
-		List<String> values = new ArrayList<String>(3);
+		List<String> values = new ArrayList<>(3);
 		values.add("HELLO");
 		values.add("COUCOU");
 		values.add("BONJOUR");
@@ -205,7 +205,7 @@ public class BatchClientTest extends WebitTest {
 	@Test
 	public void testRunAndInterruptJob() throws Exception {
 
-		final Map<String, Object> args = new HashMap<String, Object>(2);
+		final Map<String, Object> args = new HashMap<>(2);
 		args.put("dateDebut", "2008-03-20");
 		args.put("duration", "5"); // 5 secondes
 		args.put("shutdown_duration", "20"); // 20 secondes supplémentaires nécessaires en cas d'interruption

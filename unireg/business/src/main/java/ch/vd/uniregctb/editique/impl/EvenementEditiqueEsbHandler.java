@@ -26,7 +26,7 @@ public class EvenementEditiqueEsbHandler implements EsbMessageHandler {
 
 	private static final Map<String, String> mimeTypes;
 	static {
-		mimeTypes = new HashMap<String, String>();
+		mimeTypes = new HashMap<>();
 		mimeTypes.put("pcl", MimeTypeHelper.MIME_XPCL);
 		mimeTypes.put("pdf", MimeTypeHelper.MIME_PDF);
 		mimeTypes.put("tiff", MimeTypeHelper.MIME_TIFF);

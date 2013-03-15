@@ -478,7 +478,7 @@ public class ExtractionServiceImpl implements ExtractionService, InitializingBea
 		return runBatchableExtractor(extractor, new CustomBatchableRun<E, R, BatchableParallelExtractor<E, R>>() {
 			@Override
 			public void run(BatchableParallelExtractor<E, R> extractor, R rapportFinal, List<E> elements) {
-				final ParallelBatchTransactionTemplate<E, R> batch = new ParallelBatchTransactionTemplate<E, R>(elements, extractor.getBatchSize(), extractor.getNbThreads(), extractor.getBatchBehavior(), transactionManager, extractor.getStatusManager(), hibernateTemplate);
+				final ParallelBatchTransactionTemplate<E, R> batch = new ParallelBatchTransactionTemplate<>(elements, extractor.getBatchSize(), extractor.getNbThreads(), extractor.getBatchBehavior(), transactionManager, extractor.getStatusManager(), hibernateTemplate);
 				batch.setReadonly(true);        // ce sont toutes des extractions !
 				batch.execute(rapportFinal, createCallback(extractor, rapportFinal));
 			}
@@ -497,7 +497,7 @@ public class ExtractionServiceImpl implements ExtractionService, InitializingBea
 		return runBatchableExtractor(extractor, new CustomBatchableRun<E, R, BatchableExtractor<E, R>>() {
 			@Override
 			public void run(BatchableExtractor<E, R> extractor, R rapportFinal, List<E> elements) {
-				final BatchTransactionTemplate<E, R> batch = new BatchTransactionTemplate<E, R>(elements, extractor.getBatchSize(), extractor.getBatchBehavior(), transactionManager, extractor.getStatusManager(), hibernateTemplate);
+				final BatchTransactionTemplate<E, R> batch = new BatchTransactionTemplate<>(elements, extractor.getBatchSize(), extractor.getBatchBehavior(), transactionManager, extractor.getStatusManager(), hibernateTemplate);
 				batch.setReadonly(true);        // ce sont toutes des extractions !
 				batch.execute(rapportFinal, createCallback(extractor, rapportFinal));
 			}

@@ -39,7 +39,7 @@ public class ComparerSituationFamilleProcessor {
 	private final HibernateTemplate hibernateTemplate;
 	private final AdresseService adresseService;
 	private final TiersService tiersService;
-	private final ThreadLocal<ComparerSituationFamilleResults> rapport = new ThreadLocal<ComparerSituationFamilleResults>();
+	private final ThreadLocal<ComparerSituationFamilleResults> rapport = new ThreadLocal<>();
 
 	public ComparerSituationFamilleProcessor(ServiceCivilService serviceCivil, HibernateTemplate hibernateTemplate, TiersService tiersService, PlatformTransactionManager transactionManager,
 	                                         AdresseService adresseService) {
@@ -61,7 +61,7 @@ public class ComparerSituationFamilleProcessor {
 
 		// Reussi les messages par lots
 		final ParallelBatchTransactionTemplate<Long, ComparerSituationFamilleResults>
-				template = new ParallelBatchTransactionTemplate<Long, ComparerSituationFamilleResults>(ids, BATCH_SIZE, nbThreads, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE,
+				template = new ParallelBatchTransactionTemplate<>(ids, BATCH_SIZE, nbThreads, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE,
 																									   transactionManager, status, hibernateTemplate);
 		template.execute(rapportFinal, new BatchTransactionTemplate.BatchCallback<Long, ComparerSituationFamilleResults>() {
 

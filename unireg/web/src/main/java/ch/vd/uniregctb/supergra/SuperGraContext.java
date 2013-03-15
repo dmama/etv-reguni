@@ -22,8 +22,8 @@ public class SuperGraContext {
 	private final Session session;
 	private final boolean forCommit;
 	private final ValidationInterceptor validationInterceptor;
-	private final Map<EntityKey, HibernateEntity> newlyCreated = new HashMap<EntityKey, HibernateEntity>();
-	private final Set<RapportEntreTiers> scheduledForSave = new HashSet<RapportEntreTiers>();
+	private final Map<EntityKey, HibernateEntity> newlyCreated = new HashMap<>();
+	private final Set<RapportEntreTiers> scheduledForSave = new HashSet<>();
 
 	/**
 	 * Crée un context SuperGra associé à une session Hibernate.

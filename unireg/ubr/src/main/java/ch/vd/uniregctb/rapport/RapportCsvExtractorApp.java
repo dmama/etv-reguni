@@ -95,7 +95,7 @@ public class RapportCsvExtractorApp {
 			final PdfReader reader = ouvrirFichierPdf(pdffiles);
 
 			// on remplit d'abord la liste des noms
-			final List<PdfString> noms = new ArrayList<PdfString>();
+			final List<PdfString> noms = new ArrayList<>();
 			boucleSurFichiers(PdfDictionary.class, reader, new Traitement<PdfDictionary>() {
 				@Override
 				public void traite(PdfDictionary element) {
@@ -114,7 +114,7 @@ public class RapportCsvExtractorApp {
 				}
 			}
 
-			final Set<String> cvsAExtraire = (cvsfiles == null || cvsfiles.length == 0 ? null : new HashSet<String>(Arrays.asList(cvsfiles)));
+			final Set<String> cvsAExtraire = (cvsfiles == null || cvsfiles.length == 0 ? null : new HashSet<>(Arrays.asList(cvsfiles)));
 			final MutableInt index = new MutableInt(0);
 			boucleSurFichiers(PRStream.class, reader, new Traitement<PRStream>() {
 				@Override
@@ -125,12 +125,8 @@ public class RapportCsvExtractorApp {
 							try {
 								final byte[] content = PdfReader.getStreamBytes(element);
 								final File file = new File(outputdirFile, nomFichierExtrait);
-								final FileOutputStream stream = new FileOutputStream(file);
-								try {
+								try (FileOutputStream stream = new FileOutputStream(file)) {
 									stream.write(content);
-								}
-								finally {
-									stream.close();
 								}
 							}
 							catch (IOException ex) {

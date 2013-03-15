@@ -118,7 +118,7 @@ public abstract class Contribuable extends Tiers {
 	public List<SituationFamille> getSituationsFamilleSorted() {
 		List<SituationFamille> situations = null;
 		if (situationsFamille != null) {
-			situations = new ArrayList<SituationFamille>();
+			situations = new ArrayList<>();
 			for (SituationFamille situation : situationsFamille) {
 				if (!situation.isAnnule())
 					situations.add(situation);
@@ -150,7 +150,7 @@ public abstract class Contribuable extends Tiers {
 	 */
 	public void addSituationFamille(SituationFamille nouvelleSituationFamille) {
 		if (this.situationsFamille == null) {
-			this.situationsFamille = new HashSet<SituationFamille>();
+			this.situationsFamille = new HashSet<>();
 		}
 		nouvelleSituationFamille.setContribuable(this);
 		this.situationsFamille.add(nouvelleSituationFamille);
@@ -164,7 +164,7 @@ public abstract class Contribuable extends Tiers {
 	 */
 	public void addMouvementDossier(MouvementDossier nouveauMouvementDossier) {
 		if (this.mouvementsDossier == null) {
-			this.mouvementsDossier = new HashSet<MouvementDossier>();
+			this.mouvementsDossier = new HashSet<>();
 		}
 		nouveauMouvementDossier.setContribuable(this);
 		this.mouvementsDossier.add(nouveauMouvementDossier);
@@ -177,7 +177,7 @@ public abstract class Contribuable extends Tiers {
 	 */
 	public void addImmeuble(Immeuble immeuble) {
 		if (immeubles == null) {
-			this.immeubles = new HashSet<Immeuble>();
+			this.immeubles = new HashSet<>();
 		}
 		immeuble.setContribuable(this);
 		this.immeubles.add(immeuble);

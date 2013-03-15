@@ -68,10 +68,10 @@ import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchService;
 
 	private static final Logger LOGGER = Logger.getLogger(EvenementCivilNotificationQueueImpl.class);
 
-	private final BlockingQueue<DelayedIndividu> batchQueue = new DelayQueue<DelayedIndividu>();
-	private final BlockingQueue<DelayedIndividu> manualQueue = new DelayQueue<DelayedIndividu>();
-	private final BlockingQueue<DelayedIndividu> immediateQueue = new LinkedBlockingQueue<DelayedIndividu>();
-	private final BlockingQueue<DelayedIndividu> finalQueue = new SynchronousQueue<DelayedIndividu>(true);
+	private final BlockingQueue<DelayedIndividu> batchQueue = new DelayQueue<>();
+	private final BlockingQueue<DelayedIndividu> manualQueue = new DelayQueue<>();
+	private final BlockingQueue<DelayedIndividu> immediateQueue = new LinkedBlockingQueue<>();
+	private final BlockingQueue<DelayedIndividu> finalQueue = new SynchronousQueue<>(true);
 	private final BlockingQueueMixer<DelayedIndividu> mixer;
 	private final ReentrantLock lock = new ReentrantLock();
 
@@ -85,11 +85,11 @@ import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchService;
 		LOGGER.info(String.format("Traitement des événements civils e-CH artificiellement décalé de %d seconde%s.", delayInSeconds, delayInSeconds > 1 ? "s" : ""));
 		delayNs = TimeUnit.SECONDS.toNanos(delayInSeconds);
 
-		final List<BlockingQueue<DelayedIndividu>> input = new ArrayList<BlockingQueue<DelayedIndividu>>(3);
+		final List<BlockingQueue<DelayedIndividu>> input = new ArrayList<>(3);
 		input.add(manualQueue);
 		input.add(immediateQueue);
 		input.add(batchQueue);
-		mixer = new BlockingQueueMixer<DelayedIndividu>(input, finalQueue);
+		mixer = new BlockingQueueMixer<>(input, finalQueue);
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})

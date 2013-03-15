@@ -20,7 +20,7 @@ public class MockSecurityProvider implements SecurityProviderInterface {
 	private Set<Long> dossiersProteges;
 
 	public MockSecurityProvider(Collection<Role> roles) {
-		this.roles = new HashSet<Role>(roles);
+		this.roles = new HashSet<>(roles);
 		this.dossiersProteges = Collections.emptySet();
 	}
 
@@ -33,7 +33,7 @@ public class MockSecurityProvider implements SecurityProviderInterface {
 	}
 
 	public void setDossiersProteges(Long... dossiersProteges) {
-		this.dossiersProteges = new HashSet<Long>(Arrays.<Long>asList(dossiersProteges));
+		this.dossiersProteges = new HashSet<>(Arrays.<Long>asList(dossiersProteges));
 	}
 
 	@Override
@@ -51,7 +51,7 @@ public class MockSecurityProvider implements SecurityProviderInterface {
 
 	@Override
 	public List<Niveau> getDroitsAcces(String visa, List<Long> ids) {
-		final List<Niveau> res = new ArrayList<Niveau>(ids.size());
+		final List<Niveau> res = new ArrayList<>(ids.size());
 		for (Long id : ids) {
 			if (id != null) {
 				res.add(getDroitAcces(visa, id));

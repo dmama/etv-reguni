@@ -154,7 +154,7 @@ public class TiersMultiSequenceGenerator implements Configurable, PersistentIden
 	@Override
 	public String[] sqlDropStrings(Dialect dialect) throws HibernateException {
 
-		List<String> sqlDropStrings = new ArrayList<String>();
+		List<String> sqlDropStrings = new ArrayList<>();
 		sqlDropStrings.addAll(Arrays.asList(pmGenerator.sqlDropStrings(dialect)));
 		sqlDropStrings.addAll(Arrays.asList(dpiGenerator.sqlDropStrings(dialect)));
 		sqlDropStrings.addAll(Arrays.asList(ctbGenerator.sqlDropStrings(dialect)));
@@ -172,7 +172,7 @@ public class TiersMultiSequenceGenerator implements Configurable, PersistentIden
 	@Override
 	public String[] sqlCreateStrings(Dialect dialect) throws HibernateException {
 
-		List<String> sqlCreateStrings = new ArrayList<String>();
+		List<String> sqlCreateStrings = new ArrayList<>();
 		sqlCreateStrings.addAll(Arrays.asList(pmGenerator.sqlCreateStrings(dialect)));
 		sqlCreateStrings.addAll(Arrays.asList(dpiGenerator.sqlCreateStrings(dialect)));
 		sqlCreateStrings.addAll(Arrays.asList(ctbGenerator.sqlCreateStrings(dialect)));

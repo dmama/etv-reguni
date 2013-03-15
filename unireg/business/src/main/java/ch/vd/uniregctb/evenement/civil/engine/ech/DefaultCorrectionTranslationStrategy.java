@@ -45,7 +45,7 @@ public class DefaultCorrectionTranslationStrategy implements EvenementCivilEchTr
 	}
 
 	private static List<IndividuComparisonStrategy> buildStrategies(ServiceInfrastructureService serviceInfrastructureService) {
-		final List<IndividuComparisonStrategy> strategies = new ArrayList<IndividuComparisonStrategy>();
+		final List<IndividuComparisonStrategy> strategies = new ArrayList<>();
 		strategies.add(new AdresseContactComparisonStrategy());
 		strategies.add(new AdresseResidencePrincipaleComparisonStrategy(serviceInfrastructureService));
 		strategies.add(new AdresseResidenceSecondaireComparisonStrategy(serviceInfrastructureService));
@@ -111,7 +111,7 @@ public class DefaultCorrectionTranslationStrategy implements EvenementCivilEchTr
 	}
 
 	private EvenementCivilEchTranslationStrategy getStrategyBasedOnDifferences(EvenementCivilEch event, IndividuApresEvenement originel, IndividuApresEvenement correction) {
-		final List<String> champsModifies = new LinkedList<String>();
+		final List<String> champsModifies = new LinkedList<>();
 		final EvenementCivilEchTranslationStrategy strategieApplicable;
 		if (isFiscalementNeutre(originel, correction, champsModifies)) {
 			strategieApplicable = INDEXATION_PURE;

@@ -691,7 +691,7 @@ public class ArriveePrincipale extends Arrivee {
 				}
 			}
 
-			return commune == null ? null : new Pair<Commune, RegDate>(commune, dateDebutFor);
+			return commune == null ? null : new Pair<>(commune, dateDebutFor);
 		}
 		catch (ServiceInfrastructureException e) {
 			throw new EvenementCivilException(e.getMessage(), e);

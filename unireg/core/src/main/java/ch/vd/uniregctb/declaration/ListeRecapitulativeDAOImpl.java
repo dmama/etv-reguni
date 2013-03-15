@@ -40,7 +40,7 @@ public class ListeRecapitulativeDAOImpl extends GenericDAOImpl< DeclarationImpot
 	public List<DeclarationImpotSource> find(final ListeRecapCriteria criterion, @Nullable final ParamPagination paramPagination) {
 
 		final Session session = getCurrentSession();
-		final List<Object> paramsWhereClause = new ArrayList<Object>();
+		final List<Object> paramsWhereClause = new ArrayList<>();
 		final String whereClause = buildWhereClauseFromCriteria(criterion, paramsWhereClause);
 
 		final QueryFragment fragment = new QueryFragment("SELECT lr FROM DeclarationImpotSource lr WHERE 1=1 " + whereClause, paramsWhereClause);
@@ -73,7 +73,7 @@ public class ListeRecapitulativeDAOImpl extends GenericDAOImpl< DeclarationImpot
 			LOGGER.trace("Start of ListeRecapitulativeDAO : count");
 		}
 
-		final List<Object> parameters = new ArrayList<Object>();
+		final List<Object> parameters = new ArrayList<>();
 		final String query = String.format("SELECT COUNT(lr) FROM DeclarationImpotSource lr WHERE 1=1 %s",
 											buildWhereClauseFromCriteria(criterion, parameters));
 
@@ -127,7 +127,7 @@ public class ListeRecapitulativeDAOImpl extends GenericDAOImpl< DeclarationImpot
 
 			if (etat != TypeEtatDeclaration.RETOURNEE) {
 
-				final List<Class<? extends EtatDeclaration>> classesEtatDeclarationsInterdits = new ArrayList<Class<? extends EtatDeclaration>>(3);
+				final List<Class<? extends EtatDeclaration>> classesEtatDeclarationsInterdits = new ArrayList<>(3);
 				classesEtatDeclarationsInterdits.add(EtatDeclarationRetournee.class);
 				switch (etat) {
 					case EMISE:
@@ -221,7 +221,7 @@ public class ListeRecapitulativeDAOImpl extends GenericDAOImpl< DeclarationImpot
 		final String query = "SELECT lr.dateDebut, lr.dateFin FROM DeclarationImpotSource lr WHERE lr.tiers.numero = ? AND lr.dateDebut <= ? AND lr.dateFin >= ? AND lr.annulationDate IS NULL ORDER BY lr.dateDebut ASC";
 		final Object[] criteres = {numeroDpi, range.getDateFin().index(), range.getDateDebut().index() };
 		final List<Object[]> queryResult = (List<Object[]>) find(query, criteres, null);
-		final List<DateRange> resultat = new ArrayList<DateRange>(queryResult.size());
+		final List<DateRange> resultat = new ArrayList<>(queryResult.size());
 		for (Object[] intersection : queryResult) {
 			resultat.add(new DateRangeHelper.Range((RegDate) intersection[0], (RegDate) intersection[1]));
 		}

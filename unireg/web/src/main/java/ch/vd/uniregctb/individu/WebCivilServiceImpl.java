@@ -117,7 +117,7 @@ public class WebCivilServiceImpl implements WebCivilService, MessageSourceAware 
 	private void traitePermis(Long numeroIndividu, IndividuView view) {
 		final Collection<Permis> permis = serviceCivilService.getPermis(numeroIndividu, null);
 		if (permis != null && !permis.isEmpty()) {
-			final List<PermisView> list = new ArrayList<PermisView>();
+			final List<PermisView> list = new ArrayList<>();
 			for (Permis p : permis) {
 				list.add(new PermisView(p));
 			}

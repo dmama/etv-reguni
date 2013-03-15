@@ -96,13 +96,8 @@ public class BatchRunnerApp {
 		if (config != null) {
 			// [UNIREG-1332] si spécifié, le fichier de configuration contient les paramètres de connexion
 			final Properties props = new Properties();
-
-			final FileInputStream in = new FileInputStream(config);
-			try {
+			try (FileInputStream in = new FileInputStream(config)) {
 				props.load(in);
-			}
-			finally {
-				in.close();
 			}
 
 			serviceUrl = props.getProperty("url");
@@ -252,30 +247,8 @@ public class BatchRunnerApp {
 		// sauve le rapport
 		final String filename = addPath(outputDir, report.getFileName());
 
-		InputStream is = null;
-		FileOutputStream os = null;
-		try {
-			is = report.getContentByteStream().getInputStream();
-			os = new FileOutputStream(filename);
+		try (InputStream is = report.getContentByteStream().getInputStream(); FileOutputStream os = new FileOutputStream(filename)) {
 			FileCopyUtils.copy(is, os);
-		}
-		finally {
-			if (is != null) {
-				try {
-					is.close();
-				}
-				catch (IOException e) {
-					// ignored
-				}
-			}
-			if (os != null) {
-				try {
-					os.close();
-				}
-				catch (IOException e) {
-					// ignored
-				}
-			}
 		}
 
 		System.out.print("name:        ");
@@ -342,7 +315,7 @@ public class BatchRunnerApp {
 		else {
 			System.out.println("");
 
-			final List<ParamLine> lines = new ArrayList<ParamLine>(pl.size() + 1);
+			final List<ParamLine> lines = new ArrayList<>(pl.size() + 1);
 			lines.add(new ParamLine("name", "type", "mandatory", "enum values"));
 
 			int maxName = "name".length();
@@ -400,7 +373,7 @@ public class BatchRunnerApp {
 	 * cas de paramètre de type fichiers, évidemment).
 	 */
 	private static HashMap<String, Object> array2map(final String[] params) {
-		final HashMap<String, Object> map = new HashMap<String, Object>();
+		final HashMap<String, Object> map = new HashMap<>();
 		if (params != null) {
 			for (String param : params) {
 				// on splitte les paramètres "key:value" à la main, pour gérer correctement le cas où la valeur est "file://qqch"

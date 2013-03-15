@@ -442,7 +442,7 @@ public class TacheDAOTest extends CoreDAOTest {
 				assertCollAdm(ca1, ids.transmissionAnnulee);
 
 				// Changement de collectivité administative assignée
-				final HashMap<Long, Integer> tiersOidsMapping = new HashMap<Long, Integer>();
+				final HashMap<Long, Integer> tiersOidsMapping = new HashMap<>();
 				tiersOidsMapping.put(ids.ctb, ca2.getNumeroCollectiviteAdministrative());
 				tacheDAO.updateCollAdmAssignee(tiersOidsMapping);
 				return null;

@@ -305,7 +305,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 		}
 
 		// debugValidationResults(hab.validate());
-		final List<String> erreurs = new ArrayList<String>();
+		final List<String> erreurs = new ArrayList<>();
 		erreurs.add("Le for principal qui commence le 22.01.2007 chevauche le for précédent");
 		erreurs.add("Le for principal qui commence le 01.03.2007 chevauche le for précédent");
 		assertValidation(erreurs, null, validate(hab));
@@ -737,7 +737,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 		hab.setNumero(100011010L);
 		hab.setNumeroIndividu(43L);
 
-		Set<ForFiscal> fors = new HashSet<ForFiscal>();
+		Set<ForFiscal> fors = new HashSet<>();
 		{
 			ForFiscalAutreImpot forFiscal = new ForFiscalAutreImpot();
 			forFiscal.setGenreImpot(GenreImpot.DROIT_MUTATION);

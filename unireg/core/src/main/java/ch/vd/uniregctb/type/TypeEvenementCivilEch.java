@@ -63,7 +63,7 @@ public enum TypeEvenementCivilEch {
 	private static final Map<Integer, TypeEvenementCivilEch> typesByCode;
 
 	static {
-		typesByCode = new HashMap<Integer, TypeEvenementCivilEch>(TypeEvenementCivilEch.values().length);
+		typesByCode = new HashMap<>(TypeEvenementCivilEch.values().length);
 		for (TypeEvenementCivilEch mod : TypeEvenementCivilEch.values()) {
 			final TypeEvenementCivilEch old = typesByCode.put(mod.codeECH, mod);
 			if (old != null) {

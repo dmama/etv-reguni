@@ -74,7 +74,7 @@ public class EvenementCivilEchRetryProcessorImpl implements EvenementCivilEchRet
 		});
 		
 		if (individus != null && individus.size() > 0) {
-			final Set<Long> remaining = new HashSet<Long>(individus);
+			final Set<Long> remaining = new HashSet<>(individus);
 			final MutableBoolean processorStopping = new MutableBoolean(false);
 			final EvenementCivilEchProcessor.ListenerHandle handle = processor.registerListener(new EvenementCivilEchProcessor.Listener() {
 				@Override

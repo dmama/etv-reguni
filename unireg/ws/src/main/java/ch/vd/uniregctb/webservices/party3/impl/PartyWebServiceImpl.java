@@ -207,7 +207,7 @@ public class PartyWebServiceImpl implements PartyWebService {
 	public SearchPartyResponse searchParty(SearchPartyRequest params) throws WebServiceException {
 
 		try {
-			Set<PartyInfo> set = new HashSet<PartyInfo>();
+			Set<PartyInfo> set = new HashSet<>();
 
 			final List<TiersCriteria> criteria = DataHelper.webToCore(params);
 			for (TiersCriteria criterion : criteria) {
@@ -356,7 +356,7 @@ public class PartyWebServiceImpl implements PartyWebService {
 	}
 
 	private static HashSet<Long> toLongSet(List<Integer> partyNumbers) {
-		final HashSet<Long> numbers = new HashSet<Long>(partyNumbers.size());
+		final HashSet<Long> numbers = new HashSet<>(partyNumbers.size());
 		for (Integer n : partyNumbers) {
 			if (n != null) {
 				numbers.add(n.longValue());
@@ -380,7 +380,7 @@ public class PartyWebServiceImpl implements PartyWebService {
 
 		final Set<Long> allIds = trim(partyNumbers);
 
-		final Map<Long, Object> results = new HashMap<Long, Object>();
+		final Map<Long, Object> results = new HashMap<>();
 		long loadTiersTime = 0;
 		long mapTiersTime = 0;
 
@@ -406,7 +406,7 @@ public class PartyWebServiceImpl implements PartyWebService {
 			final List<Set<Long>> list = split(allIds, nbThreads);
 
 			// démarrage des threads
-			final List<MappingThread> threads = new ArrayList<MappingThread>(nbThreads);
+			final List<MappingThread> threads = new ArrayList<>(nbThreads);
 			for (Set<Long> ids : list) {
 				MappingThread t = new MappingThread(ids, date, parts, context, callback);
 				threads.add(t);
@@ -468,10 +468,10 @@ public class PartyWebServiceImpl implements PartyWebService {
 		Iterator<Long> iter = allIds.iterator();
 		int count = allIds.size() / n;
 
-		List<Set<Long>> list = new ArrayList<Set<Long>>();
+		List<Set<Long>> list = new ArrayList<>();
 
 		for (int i = 0; i < n; i++) {
-			Set<Long> ids = new HashSet<Long>();
+			Set<Long> ids = new HashSet<>();
 			for (int j = 0; j < count && iter.hasNext(); j++) {
 				ids.add(iter.next());
 			}
@@ -491,7 +491,7 @@ public class PartyWebServiceImpl implements PartyWebService {
 	 */
 	private static Set<Long> trim(Set<Long> input) {
 		if (input.contains(null)) {
-			HashSet<Long> trimmed = new HashSet<Long>(input);
+			HashSet<Long> trimmed = new HashSet<>(input);
 			trimmed.remove(null);
 			return trimmed;
 		}
@@ -507,7 +507,7 @@ public class PartyWebServiceImpl implements PartyWebService {
 	protected static Set<Parts> xmlToCoreWithForsFiscaux(Set<ch.vd.unireg.xml.party.v1.PartyPart> parts) {
 		Set<Parts> coreParts = ch.vd.uniregctb.xml.DataHelper.xmlToCore(parts);
 		if (coreParts == null) {
-			coreParts = new HashSet<Parts>();
+			coreParts = new HashSet<>();
 		}
 		// les fors fiscaux sont nécessaires pour déterminer les dates de début et de fin d'activité.
 		coreParts.add(Parts.FORS_FISCAUX);
@@ -662,7 +662,7 @@ public class PartyWebServiceImpl implements PartyWebService {
 		try {
 			final List<AcknowledgeTaxDeclarationRequest> requests = params.getRequests();
 			final BatchTransactionTemplate<AcknowledgeTaxDeclarationRequest, AcknowledgeTaxDeclarationResults> template =
-					new BatchTransactionTemplate<AcknowledgeTaxDeclarationRequest, AcknowledgeTaxDeclarationResults>(requests, requests.size(), BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE,
+					new BatchTransactionTemplate<>(requests, requests.size(), BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE,
 							context.transactionManager, null, context.hibernateTemplate);
 			final AcknowledgeTaxDeclarationResults finalReport = new AcknowledgeTaxDeclarationResults();
 			template.execute(finalReport, new BatchTransactionTemplate.BatchCallback<AcknowledgeTaxDeclarationRequest, AcknowledgeTaxDeclarationResults>() {

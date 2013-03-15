@@ -30,7 +30,7 @@ public class BasicTiersPickerFilter implements SearchTiersFilter {
 		value = params.get("typeTiers");
 		if (value != null) {
 			final TiersCriteria.TypeTiers t = TiersCriteria.TypeTiers.valueOf(value);
-			this.typeTiers = new HashSet<TiersCriteria.TypeTiers>();
+			this.typeTiers = new HashSet<>();
 			this.typeTiers.add(t);
 		}
 		value = params.get("inclureI107");
@@ -61,7 +61,7 @@ public class BasicTiersPickerFilter implements SearchTiersFilter {
 		else {
 			s.append("recherche ");
 		}
-		final List<String> list = new ArrayList<String>();
+		final List<String> list = new ArrayList<>();
 		if (typeTiers != null) {
 			list.add("sur les tiers de type " + typeTiers + " uniquement");
 		}

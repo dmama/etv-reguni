@@ -28,7 +28,7 @@ public abstract class AnnulableHelper {
 
 	@NotNull
 	private static <T extends Annulable> List<T> sansElementsAnnules(Iterator<T> iterator, int size) {
-		final List<T> res = new ArrayList<T>(size);
+		final List<T> res = new ArrayList<>(size);
 		while (iterator.hasNext()) {
 			final T elt = iterator.next();
 			if (!elt.isAnnule()) {

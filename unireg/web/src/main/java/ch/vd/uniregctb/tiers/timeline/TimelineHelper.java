@@ -35,7 +35,7 @@ public abstract class TimelineHelper {
 		boolean dateFinNull = false;
 
 		// Détermination de l'ensemble des dates
-		final SortedSet<RegDate> dates = new TreeSet<RegDate>();
+		final SortedSet<RegDate> dates = new TreeSet<>();
 		for (DateRange r : ranges) {
 			final RegDate dateDebut = r.getDateDebut();
 			if (dateDebut == null) {
@@ -54,7 +54,7 @@ public abstract class TimelineHelper {
 		}
 
 		// Transforme l'ensemble en liste + traitement des valeurs nulles
-		List<RegDate> list = new ArrayList<RegDate>(dates);
+		List<RegDate> list = new ArrayList<>(dates);
 		if (dateDebutNull) {
 			list.add(0, null);
 		}

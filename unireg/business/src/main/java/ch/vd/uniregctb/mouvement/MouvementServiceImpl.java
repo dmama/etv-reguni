@@ -100,7 +100,7 @@ public class MouvementServiceImpl implements MouvementService {
 
 		// LinkedHashSet pour conserver l'ordre de la liste originale dans l'itération
 		// qui va mener à l'impression...
-		final Set<MouvementDossier> contenu = new LinkedHashSet<MouvementDossier>(mvts);
+		final Set<MouvementDossier> contenu = new LinkedHashSet<>(mvts);
 		bordereau.setContenu(contenu);
 
 		// demande d'impression éditique synchrone...

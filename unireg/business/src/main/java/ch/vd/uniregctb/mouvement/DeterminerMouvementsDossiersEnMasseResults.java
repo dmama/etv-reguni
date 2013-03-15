@@ -100,11 +100,11 @@ public class DeterminerMouvementsDossiersEnMasseResults extends JobResults<Long,
 		}
 	}
 
-	public final List<NonTraite> erreurs = new LinkedList<NonTraite>();
+	public final List<NonTraite> erreurs = new LinkedList<>();
 
-	public final List<NonTraite> ignores = new LinkedList<NonTraite>();
+	public final List<NonTraite> ignores = new LinkedList<>();
 
-	public final List<Mouvement> mouvements = new LinkedList<Mouvement>();
+	public final List<Mouvement> mouvements = new LinkedList<>();
 
 	public final RegDate dateTraitement;
 

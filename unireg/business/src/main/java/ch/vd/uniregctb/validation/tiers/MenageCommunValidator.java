@@ -30,7 +30,7 @@ public class MenageCommunValidator extends ContribuableValidator<MenageCommun> {
 		// vérifie que le ménage commun ne comporte au plus que 2 personnes physiques distinctes
 		final Set<RapportEntreTiers> rapports = mc.getRapportsObjet();
 		if (rapports != null) {
-		    final Set<Long> idComposants = new HashSet<Long>(4);
+		    final Set<Long> idComposants = new HashSet<>(4);
 		    for (RapportEntreTiers r : rapports) {
 		        if (!r.isAnnule() && TypeRapportEntreTiers.APPARTENANCE_MENAGE == r.getType()) {
 		            final Long id = r.getSujetId();
@@ -56,7 +56,7 @@ public class MenageCommunValidator extends ContribuableValidator<MenageCommun> {
 		 * On n'autorise la présence de fors que durant la ou les périodes de validité du couple.
 		 */
 		// Détermine les périodes de validités ininterrompues du ménage commun
-		final List<RapportEntreTiers> rapportsMenages = new ArrayList<RapportEntreTiers>();
+		final List<RapportEntreTiers> rapportsMenages = new ArrayList<>();
 		final Set<RapportEntreTiers> rapports = mc.getRapportsObjet();
 		if (rapports != null) {
 		    for (RapportEntreTiers r : rapports) {

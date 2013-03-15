@@ -40,7 +40,7 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 			LOGGER.trace("Start of IdentificationContribuableDAO:find");
 		}
 
-		final List<Object> criteria = new ArrayList<Object>();
+		final List<Object> criteria = new ArrayList<>();
 		final String queryWhere = buildCriterion(criteria, identificationContribuableCriteria, nonTraiteOnly, archiveOnly, suspenduOnly);
 		return executeSearch(paramPagination, criteria, queryWhere, typeDemande);
 	}
@@ -51,7 +51,7 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 			LOGGER.trace("Start of IdentificationContribuableDAO:find");
 		}
 
-		final List<Object> criteria = new ArrayList<Object>();
+		final List<Object> criteria = new ArrayList<>();
 		final String queryWhere = buildCriterion(criteria, identificationContribuableCriteria,filter);
 		return executeSearch(paramPagination, criteria, queryWhere, typeDemande);
 	}
@@ -109,7 +109,7 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 			LOGGER.trace("Start of IdentificationContribuableDAO:count");
 		}
 		Assert.notNull(identificationContribuableCriteria, "Les critères de recherche peuvent pas être nuls");
-		final List<Object> criteria = new ArrayList<Object>();
+		final List<Object> criteria = new ArrayList<>();
 		String queryWhere = buildCriterion(criteria, identificationContribuableCriteria, nonTraiteOnly, archiveOnly, suspenduOnly);
 
 		final String selectBase = "select count(*) from IdentificationContribuable identificationContribuable where";
@@ -128,7 +128,7 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 			LOGGER.trace("Start of IdentificationContribuableDAO:count");
 		}
 		Assert.notNull(identificationContribuableCriteria, "Les critères de recherche peuvent pas être nuls");
-		final List<Object> criteria = new ArrayList<Object>();
+		final List<Object> criteria = new ArrayList<>();
 		String queryWhere = buildCriterion(criteria, identificationContribuableCriteria,filter);
 
 		final String selectBase = "select count(*) from IdentificationContribuable identificationContribuable where";
@@ -143,7 +143,7 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 		final Session session = getCurrentSession();
 
 		final Query query = session.createQuery(hql);
-		final Map<TypeDemande, Map<Etat, List<String>>> globalMap = new EnumMap<TypeDemande, Map<Etat, List<String>>>(TypeDemande.class);
+		final Map<TypeDemande, Map<Etat, List<String>>> globalMap = new EnumMap<>(TypeDemande.class);
 		final Iterator<Object[]> iter = query.iterate();
 		while (iter.hasNext()) {
 			final Object[] row = iter.next();
@@ -152,12 +152,12 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 			final Etat etat = (Etat) row[2];
 			Map<Etat, List<String>> mapPourTypeDonne = globalMap.get(typeDemande);
 			if (mapPourTypeDonne == null) {
-				mapPourTypeDonne = new EnumMap<Etat, List<String>>(Etat.class);
+				mapPourTypeDonne = new EnumMap<>(Etat.class);
 				globalMap.put(typeDemande, mapPourTypeDonne);
 			}
 			List<String> typesMessages = mapPourTypeDonne.get(etat);
 			if (typesMessages == null) {
-				typesMessages = new LinkedList<String>();
+				typesMessages = new LinkedList<>();
 				mapPourTypeDonne.put(etat, typesMessages);
 			}
 			typesMessages.add(typeMessage);
@@ -209,7 +209,7 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 		final String hql = "select distinct " + champHql + ", i.etat from IdentificationContribuable i";
 		final Session session = getCurrentSession();
 		final Query query = session.createQuery(hql);
-		final Map<Etat, List<T>> map = new EnumMap<Etat, List<T>>(Etat.class);
+		final Map<Etat, List<T>> map = new EnumMap<>(Etat.class);
 		final Iterator<Object[]> iterator = query.iterate();
 		while (iterator.hasNext()) {
 			final Object[] row = iterator.next();
@@ -217,7 +217,7 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 			final Etat etat = (Etat) row[1];
 			List<T> ids = map.get(etat);
 			if (ids == null) {
-				ids = new LinkedList<T>();
+				ids = new LinkedList<>();
 				map.put(etat, ids);
 			}
 			ids.add(value);

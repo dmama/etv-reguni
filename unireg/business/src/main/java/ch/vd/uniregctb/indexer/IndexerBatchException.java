@@ -17,7 +17,7 @@ public class IndexerBatchException extends RuntimeException {
 
 	private static final long serialVersionUID = -4334630426885016881L;
 
-	private final List<Pair<Long, Exception>> exceptions = new ArrayList<Pair<Long, Exception>>();
+	private final List<Pair<Long, Exception>> exceptions = new ArrayList<>();
 
 	public IndexerBatchException() {
 	}
@@ -27,11 +27,11 @@ public class IndexerBatchException extends RuntimeException {
 	}
 
 	public void addException(Tiers tiers, Exception first) {
-		exceptions.add(new Pair<Long, Exception>(tiers.getId(), first));
+		exceptions.add(new Pair<>(tiers.getId(), first));
 	}
 
 	public void addException(Long tiersId, Exception first) {
-		exceptions.add(new Pair<Long, Exception>(tiersId, first));
+		exceptions.add(new Pair<>(tiersId, first));
 	}
 
 	/**

@@ -54,7 +54,7 @@ public class EvenementIAMServiceTest extends BusinessTest {
 				infoEmployeur.setLogicielId(18L);
 				infoEmployeur.setNoEmployeur(id);
 				infoEmployeur.setModeCommunication(ModeCommunication.ELECTRONIQUE);
-				List<InfoEmployeur> listeEmp = new ArrayList<InfoEmployeur>();
+				List<InfoEmployeur> listeEmp = new ArrayList<>();
 				listeEmp.add(infoEmployeur);
 				final EnregistrementEmployeur enregistrementEmployeur = new EnregistrementEmployeur();
 				enregistrementEmployeur.setEmployeursAMettreAJour(listeEmp);
@@ -98,7 +98,7 @@ public class EvenementIAMServiceTest extends BusinessTest {
 				final InfoEmployeur infoEmployeur = new InfoEmployeur();
 				infoEmployeur.setNoEmployeur(id);
 				infoEmployeur.setModeCommunication(ModeCommunication.ELECTRONIQUE);
-				List<InfoEmployeur> listeEmp = new ArrayList<InfoEmployeur>();
+				List<InfoEmployeur> listeEmp = new ArrayList<>();
 				listeEmp.add(infoEmployeur);
 				final EnregistrementEmployeur enregistrementEmployeur = new EnregistrementEmployeur();
 				enregistrementEmployeur.setEmployeursAMettreAJour(listeEmp);
@@ -156,7 +156,7 @@ public class EvenementIAMServiceTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
-				List<InfoEmployeur> listeEmp = new ArrayList<InfoEmployeur>();
+				List<InfoEmployeur> listeEmp = new ArrayList<>();
 
 				final InfoEmployeur infoEmployeurAirlines = new InfoEmployeur();
 				infoEmployeurAirlines.setLogicielId(18L);
@@ -216,7 +216,7 @@ public class EvenementIAMServiceTest extends BusinessTest {
 		final InfoEmployeur infoEmployeur = new InfoEmployeur();
 		infoEmployeur.setNoEmployeur(id);
 		infoEmployeur.setModeCommunication(ModeCommunication.ELECTRONIQUE);
-		List<InfoEmployeur> listeEmp = new ArrayList<InfoEmployeur>();
+		List<InfoEmployeur> listeEmp = new ArrayList<>();
 		listeEmp.add(infoEmployeur);
 		final EnregistrementEmployeur enregistrementEmployeur = new EnregistrementEmployeur();
 

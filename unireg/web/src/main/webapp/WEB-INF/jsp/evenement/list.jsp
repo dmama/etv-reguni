@@ -9,14 +9,14 @@
             <script type="text/javascript">
                  $(document).ready(function () {
 
-                     $('#rechercher').click( function () {
-                     	$('#formRechercheEvenements').attr('action','rechercher.do');
-                     })
+                     $('#rechercher').click(function () {
+	                     $('#formRechercheEvenements').attr('action', 'rechercher.do');
+                     });
 
                      $('#effacer').click( function () {
                      	window.location.href = 'effacer.do';
                      	return false;
-                     })
+                     });
 
                  });
             </script>

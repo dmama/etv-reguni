@@ -74,7 +74,7 @@ public class IndividuRCPers implements Individu, Serializable {
 	private List<RelationVersIndividu> conjoints;
 	private PermisList permis;
 	private Nationalite derniereNationalite;
-	private final Set<AttributeIndividu> availableParts = new HashSet<AttributeIndividu>();
+	private final Set<AttributeIndividu> availableParts = new HashSet<>();
 
 	public static Individu get(Person target, @Nullable List<Relationship> relations, boolean history, boolean withRelations, ServiceInfrastructureRaw infraService) {
 		if (target == null) {
@@ -331,7 +331,7 @@ public class IndividuRCPers implements Individu, Serializable {
 		if (permis == null) {
 			return null;
 		}
-		final List<Permis> list = new ArrayList<Permis>(permis.size());
+		final List<Permis> list = new ArrayList<>(permis.size());
 		for (ResidencePermit p : permis) {
 			list.add(PermisRCPers.get(p));
 		}
@@ -339,7 +339,7 @@ public class IndividuRCPers implements Individu, Serializable {
 	}
 
 	private static EtatCivilList initEtatsCivils(MaritalData maritalStatus) {
-		final List<EtatCivil> list = new ArrayList<EtatCivil>();
+		final List<EtatCivil> list = new ArrayList<>();
 		if (maritalStatus != null) {
 			list.addAll(EtatCivilRCPers.get(maritalStatus));
 		}
@@ -350,7 +350,7 @@ public class IndividuRCPers implements Individu, Serializable {
 		if (maritalStatus == null) {
 			return null;
 		}
-		final List<EtatCivil> list = new ArrayList<EtatCivil>();
+		final List<EtatCivil> list = new ArrayList<>();
 		for (MaritalData data : maritalStatus) {
 			list.addAll(EtatCivilRCPers.get(data));
 		}
@@ -359,7 +359,7 @@ public class IndividuRCPers implements Individu, Serializable {
 
 	protected static List<Adresse> initAdresses(@Nullable MailAddress currentContact, @Nullable List<HistoryContact> contact, List<Residence> residence, ServiceInfrastructureRaw infraService) {
 
-		final List<Adresse> adresses = new ArrayList<Adresse>();
+		final List<Adresse> adresses = new ArrayList<>();
 
 		if (contact != null) {
 			// l'historique est renseigné
@@ -401,7 +401,7 @@ public class IndividuRCPers implements Individu, Serializable {
 				for (List<Residence> listeTypee : parType.values()) {
 
 					// on crée les adresses au format Unireg
-					final List<AdresseRCPers> res = new ArrayList<AdresseRCPers>();
+					final List<AdresseRCPers> res = new ArrayList<>();
 					for (int i = 0, residenceSize = listeTypee.size(); i < residenceSize; i++) {
 						final Residence r = listeTypee.get(i);
 						final Residence next = i + 1 < residenceSize ? listeTypee.get(i + 1) : null;
@@ -429,7 +429,7 @@ public class IndividuRCPers implements Individu, Serializable {
 		}
 
 		// je garde les adresses de résidence sur le côté, j'en aurai besoin plus tard
-		final List<Adresse> residences = new ArrayList<Adresse>(adresses.size());
+		final List<Adresse> residences = new ArrayList<>(adresses.size());
 
 		// d'abord, on cherche la date de début la plus ancienne
 		RegDate bigBang = RegDateHelper.getLateDate();
@@ -509,13 +509,13 @@ public class IndividuRCPers implements Individu, Serializable {
 
 	private static Map<Integer, List<Residence>> splitParCommune(List<Residence> residence) {
 
-		final Map<Integer, List<Residence>> map = new HashMap<Integer, List<Residence>>(residence.size());
+		final Map<Integer, List<Residence>> map = new HashMap<>(residence.size());
 
 		for (Residence r : residence) {
 			final Integer key = r.getResidenceMunicipality().getMunicipalityId();
 			List<Residence> list = map.get(key);
 			if (list == null) {
-				list = new ArrayList<Residence>();
+				list = new ArrayList<>();
 				map.put(key, list);
 			}
 			list.add(r);
@@ -525,12 +525,12 @@ public class IndividuRCPers implements Individu, Serializable {
 	}
 
 	private static Map<TypeAdresseCivil, List<Residence>> splitParType(List<Residence> residence) {
-		final Map<TypeAdresseCivil, List<Residence>> map = new HashMap<TypeAdresseCivil, List<Residence>>(TypeAdresseCivil.values().length);
+		final Map<TypeAdresseCivil, List<Residence>> map = new HashMap<>(TypeAdresseCivil.values().length);
 		for (Residence r : residence) {
 			final TypeAdresseCivil type = AdresseRCPers.getTypeAdresseResidence(r);
 			List<Residence> list = map.get(type);
 			if (list == null) {
-				list = new ArrayList<Residence>();
+				list = new ArrayList<>();
 				map.put(type, list);
 			}
 			list.add(r);
@@ -542,7 +542,7 @@ public class IndividuRCPers implements Individu, Serializable {
 		if (relationship == null || relationship.isEmpty()) {
 			return null;
 		}
-		final List<RelationVersIndividu> list = new ArrayList<RelationVersIndividu>();
+		final List<RelationVersIndividu> list = new ArrayList<>();
 		for (Relationship r : relationship) {
 			final TypeRelationVersIndividu type = EvdHelper.typeRelationFromEvd1(r.getTypeOfRelationship());
 			if (type != null && type.isEnfant()) {
@@ -559,7 +559,7 @@ public class IndividuRCPers implements Individu, Serializable {
 		if (relationship == null || relationship.isEmpty()) {
 			return null;
 		}
-		final List<RelationVersIndividu> list = new ArrayList<RelationVersIndividu>();
+		final List<RelationVersIndividu> list = new ArrayList<>();
 		for (Relationship r : relationship) {
 			final TypeRelationVersIndividu type = EvdHelper.typeRelationFromEvd1(r.getTypeOfRelationship());
 			if (type != null && type.isParent()) {
@@ -580,7 +580,7 @@ public class IndividuRCPers implements Individu, Serializable {
 		if (relationship == null || relationship.isEmpty()) {
 			return null;
 		}
-		final List<RelationVersIndividu> list = new ArrayList<RelationVersIndividu>();
+		final List<RelationVersIndividu> list = new ArrayList<>();
 		for (Relationship r : relationship) {
 			final TypeRelationVersIndividu type = EvdHelper.typeRelationFromEvd1(r.getTypeOfRelationship());
 			if (type != null && type.isConjointOuPartenaire()) {
@@ -625,7 +625,7 @@ public class IndividuRCPers implements Individu, Serializable {
 		}
 		else {
 			// Contournement du SIREF-2786 qui affiche des doublons d'origines
-			final Set<Origine> set = new LinkedHashSet<Origine>(origins.size());
+			final Set<Origine> set = new LinkedHashSet<>(origins.size());
 			for (PlaceOfOrigin origin : origins) {
 				set.add(OrigineRCPers.get(origin));
 			}

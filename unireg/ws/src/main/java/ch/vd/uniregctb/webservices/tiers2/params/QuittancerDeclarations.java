@@ -32,7 +32,7 @@ public class QuittancerDeclarations {
 	 * <b>Dans la version 3 du web-service :</b> <i>requests</i>.
 	 */
 	@XmlElement(required = true)
-	public List<DemandeQuittancementDeclaration> demandes = new ArrayList<DemandeQuittancementDeclaration>();
+	public List<DemandeQuittancementDeclaration> demandes = new ArrayList<>();
 
 	@Override
 	public String toString() {

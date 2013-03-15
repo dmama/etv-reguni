@@ -68,7 +68,7 @@ public class EnvoiLRsEnMasseProcessor {
 		final List<Long> list = getListDPI();
 
 		final BatchTransactionTemplate<Long, EnvoiLRsResults> template =
-				new BatchTransactionTemplate<Long, EnvoiLRsResults>(list, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE, transactionManager, s, hibernateTemplate);
+				new BatchTransactionTemplate<>(list, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE, transactionManager, s, hibernateTemplate);
 		template.execute(rapportFinal, new BatchCallback<Long, EnvoiLRsResults>() {
 
 			private EnvoiLRsResults rapport;
@@ -132,7 +132,7 @@ public class EnvoiLRsEnMasseProcessor {
 	private void traiteDebiteur(DebiteurPrestationImposable dpi, RegDate dateFinPeriode, EnvoiLRsResults rapport) throws Exception {
 
 		final DateRange periodeInteressante = new DateRangeHelper.Range(null, dateFinPeriode);
-		final List<DateRange> lrTrouvees = new ArrayList<DateRange>();
+		final List<DateRange> lrTrouvees = new ArrayList<>();
 		final List<DateRange> lrPeriodiquesManquantes = lrService.findLRsManquantes(dpi, dateFinPeriode, lrTrouvees);
 		if (lrPeriodiquesManquantes != null) {
 			for (DateRange lrPourCreation : lrPeriodiquesManquantes) {

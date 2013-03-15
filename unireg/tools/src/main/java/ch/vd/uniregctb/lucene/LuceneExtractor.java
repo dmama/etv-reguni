@@ -23,12 +23,12 @@ public class LuceneExtractor {
 	private static final String LuceneDirectory = "/tmp/lucene";
 
 	public static void main(String[] args) throws Exception {
-		final List<String> res = new LinkedList<String>();
+		final List<String> res = new LinkedList<>();
 		final IndexProvider provider = new FSIndexProvider(LuceneDirectory);
 		final GlobalIndex index = new GlobalIndex(provider);
 		index.afterPropertiesSet();
 		try {
-			final Set<String> docTypes = new HashSet<String>(Arrays.asList("nonhabitant", "habitant"));
+			final Set<String> docTypes = new HashSet<>(Arrays.asList("nonhabitant", "habitant"));
 			final Query query = new MatchAllDocsQuery();
 			index.searchAll(query, new SearchAllCallback() {
 				@Override
@@ -47,15 +47,11 @@ public class LuceneExtractor {
 			index.destroy();
 		}
 
-		final FileWriter writer = new FileWriter(LuceneDirectory + ".csv");
-		try {
+		try (FileWriter writer = new FileWriter(LuceneDirectory + ".csv")) {
 			for (String line : res) {
 				writer.write(line);
 				writer.write('\n');
 			}
-		}
-		finally {
-			writer.close();
 		}
 	}
 

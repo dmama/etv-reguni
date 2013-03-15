@@ -27,17 +27,17 @@ public class InboxContainer {
 	/**
 	 * Map des éléments indexés par le visa de l'utilisateur propriétaire
 	 */
-	private final Map<String, Set<InboxElement>> byUser = new HashMap<String, Set<InboxElement>>();
+	private final Map<String, Set<InboxElement>> byUser = new HashMap<>();
 
 	/**
 	 * Map de tous les éléments connus, indexés par leur identifiant
 	 */
-	private final Map<UUID, Pair<String, InboxElement>> byUuid = new HashMap<UUID, Pair<String, InboxElement>>();
+	private final Map<UUID, Pair<String, InboxElement>> byUuid = new HashMap<>();
 
 	/**
 	 * Listeners des opérations de gestion des inboxes
 	 */
-	private final List<InboxManagementListener> listeners = new LinkedList<InboxManagementListener>();
+	private final List<InboxManagementListener> listeners = new LinkedList<>();
 
 	/**
 	 * Ajoute l'élément donné au contenu de l'inbox déterminée par le visa
@@ -49,7 +49,7 @@ public class InboxContainer {
 		if (byUuid.containsKey(element.getUuid())) {
 			throw new IllegalArgumentException("Elément " + element.getUuid() + " déjà présent");
 		}
-		byUuid.put(element.getUuid(), new Pair<String, InboxElement>(visa, element));
+		byUuid.put(element.getUuid(), new Pair<>(visa, element));
 		final Set<InboxElement> set = getUserRelativeSet(visa, true);
 		set.add(element);
 	}
@@ -66,7 +66,7 @@ public class InboxContainer {
 				liste = Collections.emptyList();
 			}
 			else {
-				liste = new ArrayList<InboxElement>(set);
+				liste = new ArrayList<>(set);
 			}
 		}
 		Collections.sort(liste);
@@ -142,7 +142,7 @@ public class InboxContainer {
 	private Set<InboxElement> getUserRelativeSet(String visa, boolean createIfNecessary) {
 		Set<InboxElement> set = byUser.get(visa);
 		if (set == null && createIfNecessary) {
-			set = new HashSet<InboxElement>();
+			set = new HashSet<>();
 			byUser.put(visa, set);
 			notifyListenersOnNewInbox(visa);
 		}

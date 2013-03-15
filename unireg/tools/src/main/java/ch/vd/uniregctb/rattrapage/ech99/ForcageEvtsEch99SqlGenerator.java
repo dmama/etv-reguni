@@ -36,12 +36,14 @@ public class ForcageEvtsEch99SqlGenerator {
 			batchSize = DEFAULT_BATCH_SIZE;
 		}
 
-		BufferedReader input = null;
-		Writer out = null;
-		try {
-			input = new BufferedReader(new InputStreamReader(new FileInputStream(args[0]), CsvHelper.CHARSET));
-			final Map<String, Object> root = new HashMap<String, Object>(4);
-			final List<String> evtIds = new ArrayList<String>();
+		try (FileInputStream fis = new FileInputStream(args[0]);
+		     InputStreamReader isr = new InputStreamReader(fis, CsvHelper.CHARSET);
+		     BufferedReader input = new BufferedReader(isr);
+		     FileOutputStream fos = new FileOutputStream(args[1]);
+		     Writer out = new OutputStreamWriter(fos, CsvHelper.CHARSET)) {
+
+			final Map<String, Object> root = new HashMap<>(4);
+			final List<String> evtIds = new ArrayList<>();
 			root.put("DATE", new Date());
 			root.put("LIST_OF_IDS", evtIds);
 			root.put("USER", USER);
@@ -61,16 +63,8 @@ public class ForcageEvtsEch99SqlGenerator {
 			}
 			root.put("TOTAL", evtTotal);
 			final Template temp = cfg.getTemplate("ch/vd/uniregctb/rattrapage/ech99/forcage-evts.sql.ftl", "UTF-8");
-			out = new OutputStreamWriter(new FileOutputStream(args[1]),CsvHelper.CHARSET);
 			temp.process(root, out);
 			out.flush();
-		} finally {
-			if (input != null) {
-				input.close();
-			}
-			if (out != null) {
-				out.close();
-			}
 		}
 	}
 }

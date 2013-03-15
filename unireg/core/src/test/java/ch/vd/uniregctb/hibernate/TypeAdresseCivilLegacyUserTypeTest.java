@@ -113,8 +113,7 @@ public class TypeAdresseCivilLegacyUserTypeTest extends CoreDAOTest {
 		});
 
 		// vérification de la validité des valeurs dans la base
-		Connection dsCon = dataSource.getConnection();
-		try {
+		try (Connection dsCon = dataSource.getConnection()) {
 			DatabaseConnection connection = createNewConnection(dsCon);
 			IDataSet dataSet = connection.createDataSet();
 			ITable table = dataSet.getTable("ADRESSE_TIERS");
@@ -138,9 +137,6 @@ public class TypeAdresseCivilLegacyUserTypeTest extends CoreDAOTest {
 					assertEquals("T", type);
 				}
 			}
-		}
-		finally {
-			dsCon.close();
 		}
 	}
 

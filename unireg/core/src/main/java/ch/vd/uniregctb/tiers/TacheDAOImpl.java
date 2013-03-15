@@ -44,7 +44,7 @@ public class TacheDAOImpl extends GenericDAOImpl<Tache, Long> implements TacheDA
 	@SuppressWarnings("unchecked")
 	public List<Tache> find(TacheCriteria criterion, boolean doNotAutoFlush) {
 
-		List<Object> params = new ArrayList<Object>();
+		List<Object> params = new ArrayList<>();
 		final String query = "select tache " + buildFromWhereClause(criterion, params) + " order by tache.id asc";
 
 		final FlushMode mode = (doNotAutoFlush ? FlushMode.MANUAL : null);
@@ -75,7 +75,7 @@ public class TacheDAOImpl extends GenericDAOImpl<Tache, Long> implements TacheDA
 	public List<Tache> find(final TacheCriteria criterion, final ParamPagination paramPagination) {
 
 		final Session session = getCurrentSession();
-		final List<Object> paramsWhere = new ArrayList<Object>();
+		final List<Object> paramsWhere = new ArrayList<>();
 		final String whereClause = buildFromWhereClause(criterion, paramsWhere);
 		final QueryFragment fragment = new QueryFragment("select tache " + whereClause, paramsWhere);
 		fragment.add(paramPagination.buildOrderClause("tache", null, true, null));
@@ -112,7 +112,7 @@ public class TacheDAOImpl extends GenericDAOImpl<Tache, Long> implements TacheDA
 	 */
 	@Override
 	public int count(TacheCriteria criterion, boolean doNotAutoFlush) {
-		List<Object> params = new ArrayList<Object>();
+		List<Object> params = new ArrayList<>();
 		final String query = "select count(*) " + buildFromWhereClause(criterion, params);
 
 		final FlushMode mode = (doNotAutoFlush ? FlushMode.MANUAL : null);
@@ -391,7 +391,7 @@ public class TacheDAOImpl extends GenericDAOImpl<Tache, Long> implements TacheDA
 	@Override
 	public Map<Integer, TacheStats> getTacheStats() {
 		
-		final Map<Integer, TacheStats> stats = new HashMap<Integer, TacheStats>();
+		final Map<Integer, TacheStats> stats = new HashMap<>();
 		final Session session = getCurrentSession();
 
 		// récupère les stats des tâches en instance

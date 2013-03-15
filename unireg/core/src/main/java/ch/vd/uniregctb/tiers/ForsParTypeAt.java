@@ -15,10 +15,10 @@ import ch.vd.registre.base.utils.Assert;
 public class ForsParTypeAt {
 
 	public ForFiscalPrincipal principal;
-	public List<ForFiscalSecondaire> secondaires = new ArrayList<ForFiscalSecondaire>();
+	public List<ForFiscalSecondaire> secondaires = new ArrayList<>();
 	public ForDebiteurPrestationImposable dpis;
-	public List<ForFiscalAutreElementImposable> autreElementImpot = new ArrayList<ForFiscalAutreElementImposable>();
-	public List<ForFiscalAutreImpot> autresImpots = new ArrayList<ForFiscalAutreImpot>();
+	public List<ForFiscalAutreElementImposable> autreElementImpot = new ArrayList<>();
+	public List<ForFiscalAutreImpot> autresImpots = new ArrayList<>();
 
 	public ForsParTypeAt(Set<ForFiscal> forsFiscaux, RegDate date, boolean sort) {
 
@@ -43,7 +43,7 @@ public class ForsParTypeAt {
 			}
 			else if (ff instanceof ForFiscalSecondaire) {
 				if (secondaires == Collections.EMPTY_LIST) {
-					secondaires = new ArrayList<ForFiscalSecondaire>();
+					secondaires = new ArrayList<>();
 				}
 				secondaires.add((ForFiscalSecondaire) ff);
 			}
@@ -53,13 +53,13 @@ public class ForsParTypeAt {
 			}
 			else if (ff instanceof ForFiscalAutreElementImposable) {
 				if (autreElementImpot == Collections.EMPTY_LIST) {
-					autreElementImpot = new ArrayList<ForFiscalAutreElementImposable>();
+					autreElementImpot = new ArrayList<>();
 				}
 				autreElementImpot.add((ForFiscalAutreElementImposable) ff);
 			}
 			else if (ff instanceof ForFiscalAutreImpot) {
 				if (autresImpots == Collections.EMPTY_LIST) {
-					autresImpots = new ArrayList<ForFiscalAutreImpot>();
+					autresImpots = new ArrayList<>();
 				}
 				autresImpots.add((ForFiscalAutreImpot) ff);
 			}

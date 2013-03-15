@@ -168,7 +168,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		a.setDateDebut(RegDate.get(2002, 2, 23));
 		a.setNumeroOrdrePoste(283);
 		a.setUsage(TypeAdresseTiers.COURRIER);
-		HashSet<AdresseTiers> adresses = new HashSet<AdresseTiers>();
+		HashSet<AdresseTiers> adresses = new HashSet<>();
 		adresses.add(a);
 		nonHab.setAdressesTiers(adresses);
 
@@ -521,7 +521,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		nonHab.setNom("Poulain");
 
 		// Ajout des adresses
-		Set<AdresseTiers> adrs = new HashSet<AdresseTiers>();
+		Set<AdresseTiers> adrs = new HashSet<>();
 
 		// Adresse domicile
 		{
@@ -596,7 +596,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		nonHab.setNom("Poulain");
 
 		// Ajout des adresses
-		Set<AdresseTiers> adrs = new HashSet<AdresseTiers>();
+		Set<AdresseTiers> adrs = new HashSet<>();
 
 		// Ancienne adresse courrier
 		{
@@ -656,7 +656,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		nonHab.setNom("Poulain");
 
 		// Ajout des adresses
-		Set<AdresseTiers> adrs = new HashSet<AdresseTiers>();
+		Set<AdresseTiers> adrs = new HashSet<>();
 
 		// Adresse domicile
 		{
@@ -711,7 +711,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		hab.setNumeroIndividu(individu.getNoTechnique());
 
 		// Ajout des adresses
-		Set<AdresseTiers> adrs = new HashSet<AdresseTiers>();
+		Set<AdresseTiers> adrs = new HashSet<>();
 		// Ancienne adresse courrier
 		{
 			AdresseCivile adresse = new AdresseCivile();

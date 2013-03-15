@@ -36,7 +36,7 @@ public class ParamPeriodeController extends AbstractController {
 		
 		verifieLesDroits(securityProvider);
 		
-		Map<String, Object> model = new HashMap<String, Object>();
+		Map<String, Object> model = new HashMap<>();
 		List<PeriodeFiscale> periodes = manager.getAllPeriodeFiscale();
 		if (periodes.isEmpty()) {
 			return new ModelAndView("param/aucune-periode");
@@ -49,7 +49,7 @@ public class ParamPeriodeController extends AbstractController {
 		model.put("parametrePeriodeFiscaleHorsCanton", manager.getHorsCantonByPeriodeFiscale(periodeSelectionnee));
 		model.put("parametrePeriodeFiscaleHorsSuisse", manager.getHorsSuisseByPeriodeFiscale(periodeSelectionnee));
 		model.put("parametrePeriodeFiscaleDiplomateSuisse", manager.getDiplomateSuisseByPeriodeFiscale(periodeSelectionnee));
-		List<ModeleDocument> modeles = new ArrayList<ModeleDocument>(periodeSelectionnee.getModelesDocument());
+		List<ModeleDocument> modeles = new ArrayList<>(periodeSelectionnee.getModelesDocument());
 		Collections.sort(modeles, new Comparator<ModeleDocument>() {
 			@Override
 			public int compare(ModeleDocument o1, ModeleDocument o2) {
@@ -70,7 +70,7 @@ public class ParamPeriodeController extends AbstractController {
 		ModeleDocument modeleSelectionne = retrouverModeleSelectionne(request, modeles);
 		model.put("modeleSelectionne", modeleSelectionne);
 		if (modeleSelectionne != null) {
-			List<ModeleFeuilleDocument> feuilles = new ArrayList<ModeleFeuilleDocument>(modeleSelectionne.getModelesFeuilleDocument());
+			List<ModeleFeuilleDocument> feuilles = new ArrayList<>(modeleSelectionne.getModelesFeuilleDocument());
 			Collections.sort(feuilles, new ModeleFeuilleDocumentComparator());
 			model.put("feuilles", feuilles);			
 		} else {

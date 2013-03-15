@@ -214,7 +214,7 @@ public class TiersWebServiceImpl implements TiersWebService {
 	public List<TiersInfo> searchTiers(SearchTiers params) throws BusinessException, AccessDeniedException, TechnicalException {
 
 		try {
-			Set<TiersInfo> set = new HashSet<TiersInfo>();
+			Set<TiersInfo> set = new HashSet<>();
 
 			final List<TiersCriteria> criteria = DataHelper.webToCore(params);
 			for (TiersCriteria criterion : criteria) {
@@ -228,7 +228,7 @@ public class TiersWebServiceImpl implements TiersWebService {
 				}
 			}
 
-			return new ArrayList<TiersInfo>(set);
+			return new ArrayList<>(set);
 		}
 		catch (TooManyResultsIndexerException e) {
 			throw new BusinessException(e);
@@ -523,7 +523,7 @@ public class TiersWebServiceImpl implements TiersWebService {
 
 		final Set<Long> allIds = trim(tiersNumbers);
 
-		final Map<Long, Object> results = new HashMap<Long, Object>();
+		final Map<Long, Object> results = new HashMap<>();
 		long loadTiersTime = 0;
 		long mapTiersTime = 0;
 
@@ -549,7 +549,7 @@ public class TiersWebServiceImpl implements TiersWebService {
 			final List<Set<Long>> list = split(allIds, nbThreads);
 
 			// démarrage des threads
-			final List<MappingThread> threads = new ArrayList<MappingThread>(nbThreads);
+			final List<MappingThread> threads = new ArrayList<>(nbThreads);
 			for (Set<Long> ids : list) {
 				MappingThread t = new MappingThread(ids, date, parts, context, callback);
 				threads.add(t);
@@ -611,10 +611,10 @@ public class TiersWebServiceImpl implements TiersWebService {
 		Iterator<Long> iter = allIds.iterator();
 		int count = allIds.size() / n;
 
-		List<Set<Long>> list = new ArrayList<Set<Long>>();
+		List<Set<Long>> list = new ArrayList<>();
 
 		for (int i = 0; i < n; i++) {
-			Set<Long> ids = new HashSet<Long>();
+			Set<Long> ids = new HashSet<>();
 			for (int j = 0; j < count && iter.hasNext(); j++) {
 				ids.add(iter.next());
 			}
@@ -634,7 +634,7 @@ public class TiersWebServiceImpl implements TiersWebService {
 	 */
 	private static Set<Long> trim(Set<Long> input) {
 		if (input.contains(null)) {
-			HashSet<Long> trimmed = new HashSet<Long>(input);
+			HashSet<Long> trimmed = new HashSet<>(input);
 			trimmed.remove(null);
 			return trimmed;
 		}
@@ -650,7 +650,7 @@ public class TiersWebServiceImpl implements TiersWebService {
 	protected static Set<Parts> webToCoreWithForsFiscaux(Set<TiersPart> parts) {
 		Set<Parts> coreParts = DataHelper.webToCore(parts);
 		if (coreParts == null) {
-			coreParts = new HashSet<Parts>();
+			coreParts = new HashSet<>();
 		}
 		// les fors fiscaux sont nécessaires pour déterminer les dates de début et de fin d'activité.
 		coreParts.add(Parts.FORS_FISCAUX);
@@ -757,7 +757,7 @@ public class TiersWebServiceImpl implements TiersWebService {
 	 */
 	private static class QuittancementResults implements BatchResults<DemandeQuittancementDeclaration, QuittancementResults> {
 
-		private final List<ReponseQuittancementDeclaration> reponses = new ArrayList<ReponseQuittancementDeclaration>();
+		private final List<ReponseQuittancementDeclaration> reponses = new ArrayList<>();
 
 		@Override
 		public void addErrorException(DemandeQuittancementDeclaration element, Exception e) {
@@ -792,7 +792,7 @@ public class TiersWebServiceImpl implements TiersWebService {
 		try {
 			final List<DemandeQuittancementDeclaration> demandes = params.demandes;
 			final BatchTransactionTemplate<DemandeQuittancementDeclaration, QuittancementResults> template =
-					new BatchTransactionTemplate<DemandeQuittancementDeclaration, QuittancementResults>(demandes, demandes.size(), BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE,
+					new BatchTransactionTemplate<>(demandes, demandes.size(), BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE,
 							context.transactionManager, null, context.hibernateTemplate);
 			final QuittancementResults rapportFinal = new QuittancementResults();
 			template.execute(rapportFinal, new BatchTransactionTemplate.BatchCallback<DemandeQuittancementDeclaration, QuittancementResults>() {
@@ -828,7 +828,7 @@ public class TiersWebServiceImpl implements TiersWebService {
 			if (DateHelper.isAfter(params.dateDebutRecherche, params.dateFinRecherche)) {
 				throw new BusinessException("La date de début de recherche " + params.dateDebutRecherche.toString() + " est après la date de fin " + params.dateFinRecherche);
 			}
-			final List<TiersId> listTiersId = new ArrayList<TiersId>();
+			final List<TiersId> listTiersId = new ArrayList<>();
 			final List<Long> listCtb = context.tiersDAO.getListeCtbModifies(params.dateDebutRecherche, params.dateFinRecherche);
 			for (Long numeroTiers : listCtb) {
 				listTiersId.add(new TiersId(numeroTiers));

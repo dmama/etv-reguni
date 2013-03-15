@@ -61,7 +61,7 @@ public class PerformanceListController extends ParameterizableViewController {
 		Map<String, PerformanceLog> logs;
 		if (layer.equals("all")) {
 
-			logs = new HashMap<String, PerformanceLog>();
+			logs = new HashMap<>();
 
 			Map<String, Map<String, PerformanceLog>> layers = repo.getLayers();
 			for (Map.Entry<String, Map<String, PerformanceLog>> stringMapEntry : layers.entrySet()) {

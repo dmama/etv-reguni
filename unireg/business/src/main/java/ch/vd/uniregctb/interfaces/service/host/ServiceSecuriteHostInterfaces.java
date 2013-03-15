@@ -150,7 +150,7 @@ public class ServiceSecuriteHostInterfaces implements ServiceSecuriteService {
 				i++;
 			}
 			Operateur[] operateurs = serviceSecurite.getOperateurs(tabTypesCollectivite);
-			List<Operateur> lOperateurs = new ArrayList<Operateur>();
+			List<Operateur> lOperateurs = new ArrayList<>();
 			for (i = 0; i < operateurs.length; i++) {
 				lOperateurs.add(operateurs[i]);
 			}

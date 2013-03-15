@@ -33,7 +33,7 @@ public class TacheSynchronizerInterceptor implements ModificationSubInterceptor,
 	private final ThreadLocal<HashSet<Long>> modifiedCtbIds = new ThreadLocal<HashSet<Long>>() {
 		@Override
 		protected HashSet<Long> initialValue() {
-			return new HashSet<Long>();
+			return new HashSet<>();
 		}
 	};
 

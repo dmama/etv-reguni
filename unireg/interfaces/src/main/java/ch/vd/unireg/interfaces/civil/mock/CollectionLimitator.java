@@ -59,7 +59,7 @@ public class CollectionLimitator {
 			return Collections.emptyList();
 		}
 		else {
-			final List<T> limited = new ArrayList<T>(original);
+			final List<T> limited = new ArrayList<>(original);
 			if (date != null) {
 				final Iterator<T> iter = limited.iterator();
 				while (iter.hasNext()) {
@@ -69,7 +69,7 @@ public class CollectionLimitator {
 					}
 				}
 			}
-			return Collections.unmodifiableList(limited.size() == original.size() ? new ArrayList<T>(original) : limited);
+			return Collections.unmodifiableList(limited.size() == original.size() ? new ArrayList<>(original) : limited);
 		}
 	}
 

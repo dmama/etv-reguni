@@ -55,7 +55,7 @@ public abstract class ListesThread<T extends ListesResults<T>> extends Thread {
 
 	static {
         // ensemble des parties à récupérer des tiers : les tiers eux-mêmes et les rapports entre tiers
-	    final Set<Parts> parts = new HashSet<Parts>(1);
+	    final Set<Parts> parts = new HashSet<>(1);
         parts.add(Parts.RAPPORTS_ENTRE_TIERS);
 
 	    PARTS_FISCALES = Collections.unmodifiableSet(parts);
@@ -163,7 +163,7 @@ public abstract class ListesThread<T extends ListesResults<T>> extends Thread {
     }
 
 	protected void prefetchDonneesCiviles(List<Long> idsTiers, RegDate date) {
-		final Set<AttributeIndividu> attributes = new HashSet<AttributeIndividu>();
+		final Set<AttributeIndividu> attributes = new HashSet<>();
 		fillAttributesIndividu(attributes);
 		final AttributeIndividu[] attributesArray;
 		if (!attributes.isEmpty()) {

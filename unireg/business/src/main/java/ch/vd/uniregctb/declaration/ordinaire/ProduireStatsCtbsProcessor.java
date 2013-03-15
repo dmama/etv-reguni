@@ -82,7 +82,7 @@ public class ProduireStatsCtbsProcessor {
 		status.setMessage(String.format("Début de la production des statistiques des contribuables assujettis : période fiscale = %d.", anneePeriode));
 
 		final List<Long> listeComplete = chargerIdentifiantsContribuables(anneePeriode);
-		final BatchTransactionTemplate<Long, StatistiquesCtbs> template = new BatchTransactionTemplate<Long, StatistiquesCtbs>(listeComplete, BATCH_SIZE, Behavior.SANS_REPRISE, transactionManager, status, hibernateTemplate);
+		final BatchTransactionTemplate<Long, StatistiquesCtbs> template = new BatchTransactionTemplate<>(listeComplete, BATCH_SIZE, Behavior.SANS_REPRISE, transactionManager, status, hibernateTemplate);
 		template.setReadonly(true);
 		template.execute(rapportFinal, new BatchCallback<Long, StatistiquesCtbs>() {
 

@@ -175,7 +175,7 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 			 * par définition, tous les autres type de contribuables (entreprises, établissement, ...) ne possèdent pas de situation de
 			 * famille
 			 */
-			resultat = new ArrayList<VueSituationFamille>();
+			resultat = new ArrayList<>();
 		}
 		return resultat;
 	}
@@ -189,7 +189,7 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 	 */
 	private List<VueSituationFamille> buildSituationsCivilesHisto(Contribuable contribuable, boolean nullAllowed) {
 
-		final List<VueSituationFamille> list = new ArrayList<VueSituationFamille>();
+		final List<VueSituationFamille> list = new ArrayList<>();
 
 		if (contribuable instanceof MenageCommun) {
 			// aucune information n'est disponible dans le civil
@@ -356,9 +356,9 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 	 */
 	private HashMap<String, List<VueSituationFamille>> buildSituationsFiscalesHisto(Contribuable contribuable) {
 
-		HashMap<String, List<VueSituationFamille>> map_resultat = new HashMap<String, List<VueSituationFamille>>();
-		List<VueSituationFamille> listValide = new ArrayList<VueSituationFamille>();
-		List<VueSituationFamille> listAnnulee = new ArrayList<VueSituationFamille>();
+		HashMap<String, List<VueSituationFamille>> map_resultat = new HashMap<>();
+		List<VueSituationFamille> listValide = new ArrayList<>();
+		List<VueSituationFamille> listAnnulee = new ArrayList<>();
 
 		if (contribuable instanceof PersonnePhysique) {
 			PersonnePhysique personne = (PersonnePhysique) contribuable;
@@ -379,14 +379,14 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 			}
 			Set<RapportEntreTiers> rapportsSujet = personne.getRapportsSujet();
 			if (rapportsSujet != null) {
-				Set<MenageCommun> menages = new HashSet<MenageCommun>();
+				Set<MenageCommun> menages = new HashSet<>();
 				for (RapportEntreTiers rapportSujet : rapportsSujet) {
 					if (TypeRapportEntreTiers.APPARTENANCE_MENAGE == rapportSujet.getType() && !rapportSujet.isAnnule()) {
 						final MenageCommun menage = hibernateTemplate.get(MenageCommun.class, rapportSujet.getObjetId());
 						menages.add(menage);
 					}
 				}
-				List<VueSituationFamille> listCouple = new ArrayList<VueSituationFamille>();
+				List<VueSituationFamille> listCouple = new ArrayList<>();
 
 				for (MenageCommun menage : menages) {
 					situations = menage.getSituationsFamille();

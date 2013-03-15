@@ -455,7 +455,7 @@ public class TiersMapHelper extends CommonMapHelper {
 	public Map<TypeDocument, String> getTypesDeclarationsImpotOrdinaires() {
 
 		if (mapTypesDeclarationImpotOrdinaire == null) {
-			final List<TypeDocument> typesIgnores = new ArrayList<TypeDocument>();
+			final List<TypeDocument> typesIgnores = new ArrayList<>();
 			for (TypeDocument type : TypeDocument.values()) {
 				// doivent être ignorées la version batch de la déclaration complète et toutes les déclarations non-ordinaires
 				if (type == TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH || !type.isOrdinaire()) {
@@ -500,7 +500,7 @@ public class TiersMapHelper extends CommonMapHelper {
 	 */
 	public Map<PeriodeDecompte, String> getPeriodeDecomptes() {
 		if (mapPeriodeDecompte == null) {
-			mapPeriodeDecompte = new EnumMap<PeriodeDecompte, String>(PeriodeDecompte.class);
+			mapPeriodeDecompte = new EnumMap<>(PeriodeDecompte.class);
 			PeriodeDecompte[] periodesDecompte = PeriodeDecompte.values();
 			for (PeriodeDecompte aPeriodesDecompte : periodesDecompte) {
 				String periodeDecompteNom = this.getMessageSourceAccessor().getMessage(ApplicationConfig.masterKeyPeriodeDecompte + aPeriodesDecompte);
@@ -542,7 +542,7 @@ public class TiersMapHelper extends CommonMapHelper {
 	public Map<Long, String> getAllLibellesLogiciels() {
 		try {
 			final List<Logiciel> listeLogiciels = infraService.getLogicielsCertifiesPour(LogicielMetier.EMPACI);
-			final HashMap<Long, String> map = new HashMap<Long, String>();
+			final HashMap<Long, String> map = new HashMap<>();
 			if (listeLogiciels != null && !listeLogiciels.isEmpty()) {
 				for (Logiciel logiciel : listeLogiciels) {
 					map.put(logiciel.getId(), logiciel.getLibelleComplet());

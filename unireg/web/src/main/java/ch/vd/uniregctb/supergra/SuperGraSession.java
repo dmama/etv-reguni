@@ -14,12 +14,12 @@ public class SuperGraSession {
 	/**
 	 * Les deltas (= changements d'attributs, ajout d'entités, ...) déjà enregistrés mais non encore commités
 	 */
-	private List<Delta> deltas = new ArrayList<Delta>();
+	private List<Delta> deltas = new ArrayList<>();
 
 	/**
 	 * Les états des tiers modifiées dans la session courante.
 	 */
-	private List<TiersState> tiersStates = new ArrayList<TiersState>();
+	private List<TiersState> tiersStates = new ArrayList<>();
 
 	private final Options options = new Options();
 
@@ -38,14 +38,14 @@ public class SuperGraSession {
 
 	public void addDelta(Delta delta) {
 		if (this.deltas == null) {
-			this.deltas = new ArrayList<Delta>();
+			this.deltas = new ArrayList<>();
 		}
 		this.deltas.add(delta);
 	}
 
 	public void addDeltas(List<? extends Delta> deltas) {
 		if (this.deltas == null) {
-			this.deltas = new ArrayList<Delta>();
+			this.deltas = new ArrayList<>();
 		}
 		this.deltas.addAll(deltas);
 	}

@@ -1650,10 +1650,10 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 			}
 		});
 
-		final Set<Long> fiscEventEnvoiDI = new HashSet<Long>();
-		final Set<Long> fiscEventAnnulationDI = new HashSet<Long>();
-		final Set<Integer> diEventEmission = new HashSet<Integer>();
-		final Set<Integer> diEventAnnulation = new HashSet<Integer>();
+		final Set<Long> fiscEventEnvoiDI = new HashSet<>();
+		final Set<Long> fiscEventAnnulationDI = new HashSet<>();
+		final Set<Integer> diEventEmission = new HashSet<>();
+		final Set<Integer> diEventAnnulation = new HashSet<>();
 
 		service.setEvenementFiscalService(new MockEvenementFiscalService() {
 			@Override
@@ -1761,10 +1761,10 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 			}
 		});
 
-		final Set<Long> fiscEventEnvoiDI = new HashSet<Long>();
-		final Set<Long> fiscEventAnnulationDI = new HashSet<Long>();
-		final Set<Integer> diEventEmission = new HashSet<Integer>();
-		final Set<Integer> diEventAnnulation = new HashSet<Integer>();
+		final Set<Long> fiscEventEnvoiDI = new HashSet<>();
+		final Set<Long> fiscEventAnnulationDI = new HashSet<>();
+		final Set<Integer> diEventEmission = new HashSet<>();
+		final Set<Integer> diEventAnnulation = new HashSet<>();
 
 		service.setEvenementFiscalService(new MockEvenementFiscalService() {
 			@Override
@@ -1857,10 +1857,10 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 			}
 		});
 
-		final Set<Long> fiscEventEnvoiDI = new HashSet<Long>();
-		final Set<Long> fiscEventAnnulationDI = new HashSet<Long>();
-		final Set<Integer> diEventEmission = new HashSet<Integer>();
-		final Set<Integer> diEventAnnulation = new HashSet<Integer>();
+		final Set<Long> fiscEventEnvoiDI = new HashSet<>();
+		final Set<Long> fiscEventAnnulationDI = new HashSet<>();
+		final Set<Integer> diEventEmission = new HashSet<>();
+		final Set<Integer> diEventAnnulation = new HashSet<>();
 
 		service.setEvenementFiscalService(new MockEvenementFiscalService() {
 			@Override

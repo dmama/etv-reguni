@@ -56,9 +56,9 @@ public class ComparerForFiscalEtCommuneResults extends JobResults<Long, Comparer
 		}
 	}
 
-	public final List<CommunesDifferentes> listeCommunesDifferentes = new ArrayList<CommunesDifferentes>();
+	public final List<CommunesDifferentes> listeCommunesDifferentes = new ArrayList<>();
 	public boolean interrompu;
-	public final List<Erreur> erreurs = new ArrayList<Erreur>();
+	public final List<Erreur> erreurs = new ArrayList<>();
 	public int nbCtbTotal;
 	public final RegDate dateTraitement;
 

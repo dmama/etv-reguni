@@ -245,7 +245,7 @@ public class DatabaseServiceImpl implements DatabaseService {
 				}
 			});
 
-			List<String> list = new ArrayList<String>();
+			List<String> list = new ArrayList<>();
 			for (Map<String, Object> map : rs) {
 				final String name = (String) map.values().iterator().next();
 				list.add(name);
@@ -262,7 +262,7 @@ public class DatabaseServiceImpl implements DatabaseService {
 	@Override
 	@SuppressWarnings("unchecked")
 	public String[] getTableNamesFromHibernate(boolean reverse) {
-		ArrayList<String> t = new ArrayList<String>();
+		ArrayList<String> t = new ArrayList<>();
 		Iterator<Table> tables = sessionFactoryBean.getConfiguration().getTableMappings();
 		while (tables.hasNext()) {
 			Table table = tables.next();
@@ -357,8 +357,8 @@ public class DatabaseServiceImpl implements DatabaseService {
 	public int dumpTiersListToDbunitFile(List<Long> tiersIds, final DumpParts parts, OutputStream outputStream, StatusManager status) throws Exception {
 
 		status.setMessage("Analyse des données...");
-		final Set<Long> allTiersIds = new HashSet<Long>();
-		final Set<Long> allRETIds = new HashSet<Long>();
+		final Set<Long> allTiersIds = new HashSet<>();
+		final Set<Long> allRETIds = new HashSet<>();
 		determineAllRelatedIds(tiersIds, allTiersIds, allRETIds, parts);
 
 		final Connection con = DataSourceUtils.getConnection(dataSource);
@@ -375,7 +375,7 @@ public class DatabaseServiceImpl implements DatabaseService {
 				q.addTable("MODELE_DOCUMENT");
 				q.addTable("MODELE_FEUILLE_DOC");
 
-				otherTables = new ArrayList<ITable>();
+				otherTables = new ArrayList<>();
 
 				final ITableIterator iter = q.iterator();
 				while (iter.next()) {
@@ -416,7 +416,7 @@ public class DatabaseServiceImpl implements DatabaseService {
 				retTables = Collections.emptyList();
 			}
 
-			final List<ITable> allTables = new ArrayList<ITable>(tiersTables.size() + retTables.size());
+			final List<ITable> allTables = new ArrayList<>(tiersTables.size() + retTables.size());
 			allTables.addAll(otherTables);
 			allTables.addAll(tiersTables);
 			allTables.addAll(retTables);
@@ -449,9 +449,9 @@ public class DatabaseServiceImpl implements DatabaseService {
 
 	private List<ITable> queryDataSet(Collection<Long> ids, DatabaseConnection connection, String message, StatusManager status, QueryDataSetCallback callback) throws SQLException, DataSetException {
 
-		final List<ITable> tables = new ArrayList<ITable>();
+		final List<ITable> tables = new ArrayList<>();
 
-		final List<Long> idsList = new ArrayList<Long>(ids);
+		final List<Long> idsList = new ArrayList<>(ids);
 		Collections.sort(idsList);
 
 		if (idsList.size() <= DEFAULT_BATCH_SIZE) {
@@ -503,14 +503,14 @@ public class DatabaseServiceImpl implements DatabaseService {
 
 			NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(dataSource);
 
-			Set<Long> newIds = new HashSet<Long>(inputTiersIds);
+			Set<Long> newIds = new HashSet<>(inputTiersIds);
 
 			// On recherche tous les ids en relation avec ceux spécifié. Pour cela il peut être nécessaire de faire 'n' passes en fonction de la profondeur des relations.
 			for (; ;) {
 
 				if (newIds.size() <= DEFAULT_BATCH_SIZE) {
 
-					final List<Long> foundIds = new ArrayList<Long>();
+					final List<Long> foundIds = new ArrayList<>();
 					template.query(sql, Collections.singletonMap("ids", newIds), new RowCallbackHandler() {
 						@Override
 						public void processRow(ResultSet rs) throws SQLException {
@@ -530,7 +530,7 @@ public class DatabaseServiceImpl implements DatabaseService {
 					}
 
 					// extrait la liste des ids nouvellement trouvés
-					newIds = new HashSet<Long>();
+					newIds = new HashSet<>();
 					for (Long id : foundIds) {
 						if (!relatedTiersIds.contains(id)) {
 							newIds.add(id);
@@ -542,7 +542,7 @@ public class DatabaseServiceImpl implements DatabaseService {
 				}
 				else {
 					// on a trop d'ids pour les traiter d'une seule requête -> découpe par batchs
-					final List<List<Long>> batches = split(new ArrayList<Long>(newIds), DEFAULT_BATCH_SIZE);
+					final List<List<Long>> batches = split(new ArrayList<>(newIds), DEFAULT_BATCH_SIZE);
 					for (List<Long> batch : batches) {
 						determineAllRelatedIds(batch, relatedTiersIds, relatedRETIds, parts); // appel récursif
 					}
@@ -573,7 +573,7 @@ public class DatabaseServiceImpl implements DatabaseService {
 
 	private static <T> List<List<T>> split(List<T> list, int size) {
 
-		List<List<T>> r = new ArrayList<List<T>>();
+		List<List<T>> r = new ArrayList<>();
 
 		for (int i = 0; i < list.size(); i += size) {
 			int j = (i + size <= list.size() ? i + size : list.size());

@@ -27,7 +27,7 @@ public class WorkingQueueTest {
 		final AtomicInteger call = new AtomicInteger(0);
 		final AtomicInteger count = new AtomicInteger(0);
 
-		final WorkingQueue<Integer> queue = new WorkingQueue<Integer>(20, 1, new SimpleWorker<Integer>() {
+		final WorkingQueue<Integer> queue = new WorkingQueue<>(20, 1, new SimpleWorker<Integer>() {
 			@Override
 			public void process(Integer data) throws Exception {
 				call.incrementAndGet();
@@ -66,7 +66,7 @@ public class WorkingQueueTest {
 		final AtomicInteger call = new AtomicInteger(0);
 		final AtomicInteger count = new AtomicInteger(0);
 
-		final WorkingQueue<Integer> queue = new WorkingQueue<Integer>(20, 5, new SimpleWorker<Integer>() {
+		final WorkingQueue<Integer> queue = new WorkingQueue<>(20, 5, new SimpleWorker<Integer>() {
 			@Override
 			public void process(Integer data) throws Exception {
 				call.incrementAndGet();
@@ -107,7 +107,7 @@ public class WorkingQueueTest {
 		final AtomicInteger call = new AtomicInteger(0);
 		final AtomicInteger count = new AtomicInteger(0);
 
-		final WorkingQueue<Integer> queue = new WorkingQueue<Integer>(20, 1, new BatchWorker<Integer>() {
+		final WorkingQueue<Integer> queue = new WorkingQueue<>(20, 1, new BatchWorker<Integer>() {
 			@Override
 			public void process(List<Integer> data) throws Exception {
 				call.incrementAndGet();
@@ -153,7 +153,7 @@ public class WorkingQueueTest {
 		final AtomicInteger call = new AtomicInteger(0);
 		final AtomicInteger count = new AtomicInteger(0);
 
-		final WorkingQueue<Integer> queue = new WorkingQueue<Integer>(20, 5, new BatchWorker<Integer>() {
+		final WorkingQueue<Integer> queue = new WorkingQueue<>(20, 5, new BatchWorker<Integer>() {
 			@Override
 			public void process(List<Integer> data) throws Exception {
 				call.incrementAndGet();
@@ -201,7 +201,7 @@ public class WorkingQueueTest {
 		final AtomicInteger call = new AtomicInteger(0);
 		final AtomicInteger count = new AtomicInteger(0);
 
-		final WorkingQueue<Integer> queue = new WorkingQueue<Integer>(20000, 1, new SimpleWorker<Integer>() {
+		final WorkingQueue<Integer> queue = new WorkingQueue<>(20000, 1, new SimpleWorker<Integer>() {
 			@Override
 			public void process(Integer data) throws Exception {
 				call.incrementAndGet();

@@ -25,7 +25,7 @@ public class ChartValues {
 	}
 
 	public ChartValues(int count) {
-		this.values = new ArrayList<Long>(count);
+		this.values = new ArrayList<>(count);
 		this.max = 0L;
 		this.total = 0L;
 	}

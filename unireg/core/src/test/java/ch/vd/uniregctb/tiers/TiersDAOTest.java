@@ -604,7 +604,7 @@ public class TiersDAOTest extends CoreDAOTest {
 			}
 
 			// Adresses Postales
-			Set<AdresseTiers> adressesPostales = new HashSet<AdresseTiers>();
+			Set<AdresseTiers> adressesPostales = new HashSet<>();
 
 			AdresseSuisse adresseSuisse = new AdresseSuisse();
 			adresseSuisse.setDateDebut(RegDate.get(2005, 2, 1));
@@ -637,7 +637,7 @@ public class TiersDAOTest extends CoreDAOTest {
 			}
 
 			// Fors fiscaux
-			Set<ForFiscal> fors = new HashSet<ForFiscal>();
+			Set<ForFiscal> fors = new HashSet<>();
 
 			{
 				ForFiscalAutreImpot forFiscal = new ForFiscalAutreImpot();
@@ -756,7 +756,7 @@ public class TiersDAOTest extends CoreDAOTest {
 						ctb.setNumeroIndividu(12345L);
 
 						// For fermé
-						HashSet<ForFiscal> fors = new HashSet<ForFiscal>();
+						HashSet<ForFiscal> fors = new HashSet<>();
 						ForFiscalPrincipal forFiscal = new ForFiscalPrincipal();
 						forFiscal.setDateDebut(RegDate.get(2002, 1, 1));
 						forFiscal.setDateFin(RegDate.get(2006, 11, 30));
@@ -782,7 +782,7 @@ public class TiersDAOTest extends CoreDAOTest {
 						ctb.setNumeroIndividu(23456L);
 
 						// For fermé
-						HashSet<ForFiscal> fors = new HashSet<ForFiscal>();
+						HashSet<ForFiscal> fors = new HashSet<>();
 						ForFiscalPrincipal forFiscal = new ForFiscalPrincipal();
 						forFiscal.setDateDebut(RegDate.get(2004, 1, 1));
 						forFiscal.setDateFin(RegDate.get(2006, 11, 30));
@@ -906,7 +906,7 @@ public class TiersDAOTest extends CoreDAOTest {
 					ctb.setNumeroIndividu(12345L);
 
 					// For fermé
-					HashSet<ForFiscal> fors = new HashSet<ForFiscal>();
+					HashSet<ForFiscal> fors = new HashSet<>();
 					ForFiscalPrincipal forFiscal = new ForFiscalPrincipal();
 					forFiscal.setDateDebut(RegDate.get(2002, 1, 1));
 					forFiscal.setDateFin(null);
@@ -929,7 +929,7 @@ public class TiersDAOTest extends CoreDAOTest {
 					ctb.setNumeroIndividu(23456L);
 
 					// For fermé
-					HashSet<ForFiscal> fors = new HashSet<ForFiscal>();
+					HashSet<ForFiscal> fors = new HashSet<>();
 					ForFiscalPrincipal forFiscal = new ForFiscalPrincipal();
 					forFiscal.setDateDebut(RegDate.get(2004, 1, 1));
 					forFiscal.setDateFin(null);
@@ -977,7 +977,7 @@ public class TiersDAOTest extends CoreDAOTest {
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				HashSet<SituationFamille> sit = new HashSet<SituationFamille>();
+				HashSet<SituationFamille> sit = new HashSet<>();
 				SituationFamilleMenageCommun s = new SituationFamilleMenageCommun();
 				s.setDateDebut(RegDate.get(2002, 11, 1));
 				s.setDateFin(RegDate.get(2005, 1, 31));
@@ -1047,7 +1047,7 @@ public class TiersDAOTest extends CoreDAOTest {
 				rapport2 = dao.save(rapport2);
 
 				{
-					HashSet<SituationFamille> sit = new HashSet<SituationFamille>();
+					HashSet<SituationFamille> sit = new HashSet<>();
 					SituationFamilleMenageCommun s = new SituationFamilleMenageCommun();
 					s.setDateDebut(RegDate.get(2002, 11, 1));
 					s.setDateFin(RegDate.get(2005, 1, 31));
@@ -1067,7 +1067,7 @@ public class TiersDAOTest extends CoreDAOTest {
 				}
 
 				{
-					HashSet<SituationFamille> sit = new HashSet<SituationFamille>();
+					HashSet<SituationFamille> sit = new HashSet<>();
 					SituationFamilleMenageCommun s = new SituationFamilleMenageCommun();
 					s.setDateDebut(RegDate.get(2002, 11, 1));
 					s.setDateFin(RegDate.get(2005, 1, 31));
@@ -1231,7 +1231,7 @@ public class TiersDAOTest extends CoreDAOTest {
 		assertEquals(ids.size(), listBatch.size());
 
 		// charge les même tiers en passant par la méthode normale
-		final List<Tiers> listNormal = new ArrayList<Tiers>();
+		final List<Tiers> listNormal = new ArrayList<>();
 		for (Long id : ids) {
 			Tiers tiers = dao.get(id);
 			listNormal.add(tiers);
@@ -1262,11 +1262,11 @@ public class TiersDAOTest extends CoreDAOTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testGetBatchMaximumDepasse() throws Exception {
 		final int size = 1100;          // la limite d'Oracle se situe à 1000
-		final List<Long> ids = new ArrayList<Long>(size);
+		final List<Long> ids = new ArrayList<>(size);
 		for (int i = 0; i < size; ++i) {
 			ids.add((long) i);
 		}
-		final List<Tiers> tiers = dao.getBatch(ids, new HashSet<Parts>(Arrays.asList(Parts.values())));
+		final List<Tiers> tiers = dao.getBatch(ids, new HashSet<>(Arrays.asList(Parts.values())));
 		assertNotNull(tiers);
 		assertEquals(0, tiers.size());      // la base est vide, donc c'est normal, mais l'important c'est qu'il n'y ait pas eu d'explosion
 	}
@@ -1414,7 +1414,7 @@ public class TiersDAOTest extends CoreDAOTest {
 		});
 
 		// charge le débiteur
-		final Set<Parts> parts = new HashSet<Parts>();
+		final Set<Parts> parts = new HashSet<>();
 		parts.add(Parts.RAPPORTS_ENTRE_TIERS);
 		final List<Tiers> tiers = dao.getBatch(Arrays.asList(id), parts);
 		assertEquals(1, tiers.size());
@@ -1451,7 +1451,7 @@ public class TiersDAOTest extends CoreDAOTest {
 				PersonnePhysique pp = new PersonnePhysique(false);
 				pp.setNom("John");
 
-				final Set<IdentificationPersonne> idents = new HashSet<IdentificationPersonne>();
+				final Set<IdentificationPersonne> idents = new HashSet<>();
 				{
 					final IdentificationPersonne ident = new IdentificationPersonne();
 					ident.setCategorieIdentifiant(CategorieIdentifiant.CH_AHV_AVS);
@@ -1828,7 +1828,7 @@ public class TiersDAOTest extends CoreDAOTest {
 		final List<Long> ids = doInNewTransaction(new TxCallback<List<Long>>() {
 			@Override
 			public List<Long> execute(TransactionStatus status) throws Exception {
-				final List<Long> ids = new ArrayList<Long>(SIZE);
+				final List<Long> ids = new ArrayList<>(SIZE);
 				for (int i = 0; i < SIZE; ++i) {
 					PersonnePhysique pp = new PersonnePhysique(i);
 					pp = merge(pp);

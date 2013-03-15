@@ -15,7 +15,7 @@ import ch.vd.uniregctb.common.XmlUtils;
 
 class DemandeAvecHistoBuilderForUnitTests extends DemandeBuilderForUnitTests {
 
-	private List<RegistrationRequestHistoryEntry> listHistoryEntry = new ArrayList<RegistrationRequestHistoryEntry>();
+	private List<RegistrationRequestHistoryEntry> listHistoryEntry = new ArrayList<>();
 
 	@Override
 	DemandeAvecHisto build() {

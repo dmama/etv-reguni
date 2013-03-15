@@ -108,7 +108,7 @@ public class EtatCivilCompThread extends Thread {
 		public CompareQuery(String operateur, int oid, FileWriter outputFilename) {
 			super(operateur, oid, outputFilename);
 
-			final Set<PartyPart> parts = new HashSet<PartyPart>();
+			final Set<PartyPart> parts = new HashSet<>();
 			parts.add(PartyPart.RELATIONS_BETWEEN_PARTIES);
 			parts.add(PartyPart.FAMILY_STATUSES);
 			setParts(parts);

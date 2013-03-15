@@ -23,13 +23,13 @@ public abstract class PermisListBase implements PermisList, Serializable {
 
 	protected PermisListBase(long numeroIndividu, List<Permis> list) {
 		this.numeroIndividu = numeroIndividu;
-		this.list = new ArrayList<Permis>(list);
+		this.list = new ArrayList<>(list);
 		sort(this.list);
 	}
 
 	protected PermisListBase(long noIndividu) {
 		this.numeroIndividu = noIndividu;
-		this.list = new ArrayList<Permis>();
+		this.list = new ArrayList<>();
 		sort(this.list);
 	}
 

@@ -35,7 +35,7 @@ public class MappingThread implements Runnable {
 	private final Context context;
 	private final MapCallback callback;
 
-	private final Map<Long, Object> results = new HashMap<Long, Object>();
+	private final Map<Long, Object> results = new HashMap<>();
 	private final MutableBoolean processingDone = new MutableBoolean(false);
 	private RuntimeException processingException;
 
@@ -117,7 +117,7 @@ public class MappingThread implements Runnable {
 		}
 
 		// on restreint la liste retournée aux tiers demandés
-		final List<Tiers> list = new ArrayList<Tiers>(ids.size());
+		final List<Tiers> list = new ArrayList<>(ids.size());
 		for (Tiers tiers : listFull) {
 			if (ids.contains(tiers.getId())) {
 				list.add(tiers);

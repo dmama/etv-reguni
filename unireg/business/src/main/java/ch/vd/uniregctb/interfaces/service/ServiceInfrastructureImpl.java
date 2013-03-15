@@ -99,7 +99,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	 */
 	@Override
 	public List<Commune> getListeCommunesByOID(int oid) throws ServiceInfrastructureException {
-		List<Commune> communes = new ArrayList<Commune>();
+		List<Commune> communes = new ArrayList<>();
 		for (Commune c : getCommunes()) {
 			if (c.isVaudoise()) {
 				CollectiviteAdministrative oi = getOfficeImpotDeCommune(c.getNoOFS());
@@ -113,7 +113,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 
 	@Override
 	public List<Commune> getCommunesDeVaud() throws ServiceInfrastructureException {
-		final List<Commune> list = new ArrayList<Commune>();
+		final List<Commune> list = new ArrayList<>();
 		for (Commune commune : getCommunes()) {
 			if (commune.isVaudoise()) {
 				list.add(commune);
@@ -124,7 +124,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 
 	@Override
 	public List<Commune> getCommunesHorsCanton() throws ServiceInfrastructureException {
-		final List<Commune> list = new ArrayList<Commune>();
+		final List<Commune> list = new ArrayList<>();
 		for (Commune commune : getCommunes()) {
 			if (!commune.isVaudoise()) {
 				list.add(commune);
@@ -252,11 +252,11 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	@Override
 	public synchronized List<Localite> getLocaliteByCommune(int commune) throws ServiceInfrastructureException {
 		if (allLocaliteCommune == null) {
-			allLocaliteCommune = new HashMap<Integer, List<Localite>>();
+			allLocaliteCommune = new HashMap<>();
 		}
 		List<Localite> list = allLocaliteCommune.get(commune);
 		if (list == null) {
-			list = new ArrayList<Localite>();
+			list = new ArrayList<>();
 			for (Localite loc : getLocalites()) {
 				if (loc.getNoCommune() != null && loc.getNoCommune() == commune) {
 					list.add(loc);
@@ -431,7 +431,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 
 	@Override
 	public List<Rue> getRues(Collection<Localite> localites) throws ServiceInfrastructureException {
-		List<Rue> locRues = new ArrayList<Rue>();
+		List<Rue> locRues = new ArrayList<>();
 		for (Localite localite : localites) {
 			locRues.addAll(getRues(localite));
 		}
@@ -664,7 +664,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	/**
 	 * [UNIREG-2243] liste hard-codée parce que l'infrastructure du host ne possède pas cette info pour l'instant
 	 */
-	private static final Set<Integer> affEurope = new HashSet<Integer>();
+	private static final Set<Integer> affEurope = new HashSet<>();
 
 	static {
 		affEurope.add(8201); // Albanie
@@ -770,7 +770,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 
 	@Override
 	public List<Logiciel> getLogicielsPour(LogicielMetier metier) {
-		final List<Logiciel> list = new ArrayList<Logiciel>();
+		final List<Logiciel> list = new ArrayList<>();
 		for (Logiciel l : getTousLesLogiciels()) {
 			if (l.getMetier() == metier) {
 				list.add(l);
@@ -781,7 +781,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 
 	@Override
 	public List<Logiciel> getLogicielsCertifiesPour(LogicielMetier metier) {
-		final List<Logiciel> list = new ArrayList<Logiciel>();
+		final List<Logiciel> list = new ArrayList<>();
 		for (Logiciel l : getLogicielsPour(metier)) {
 			if (l.isCertifie()) {
 				list.add(l);

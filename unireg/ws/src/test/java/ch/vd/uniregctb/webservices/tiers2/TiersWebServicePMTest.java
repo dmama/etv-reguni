@@ -165,7 +165,7 @@ public class TiersWebServicePMTest extends WebserviceTest {
 		params.date = null;
 		params.login = login;
 		params.tiersNumber = noBCV;
-		params.parts = new HashSet<TiersPart>();
+		params.parts = new HashSet<>();
 		params.parts.add(TiersPart.ADRESSES_ENVOI);
 
 		// on s'assure que la formule d'appel d'une PM est bien renseignée
@@ -209,7 +209,7 @@ public class TiersWebServicePMTest extends WebserviceTest {
 		params.date = null;
 		params.login = login;
 		params.tiersNumber = noJal;
-		params.parts = new HashSet<TiersPart>();
+		params.parts = new HashSet<>();
 		params.parts.add(TiersPart.ADRESSES_ENVOI);
 
 		// on s'assure que la formule d'appel d'une PM est bien renseignée
@@ -253,7 +253,7 @@ public class TiersWebServicePMTest extends WebserviceTest {
 		params.date = null;
 		params.login = login;
 		params.tiersNumber = noEvian;
-		params.parts = new HashSet<TiersPart>();
+		params.parts = new HashSet<>();
 		params.parts.add(TiersPart.ADRESSES_ENVOI);
 
 		// on s'assure que la formule d'appel d'une PM est bien renseignée
@@ -301,7 +301,7 @@ public class TiersWebServicePMTest extends WebserviceTest {
 		params.date = null;
 		params.login = login;
 		params.tiersNumber = noPM;
-		params.parts = new HashSet<TiersPart>();
+		params.parts = new HashSet<>();
 		params.parts.add(TiersPart.FORS_FISCAUX);
 
 		// on s'assure que le type d'autorité fiscale sur le for fiscal est bien hors-canton
@@ -337,7 +337,7 @@ public class TiersWebServicePMTest extends WebserviceTest {
 		params.date = null;
 		params.login = login;
 		params.tiersNumber = noPM;
-		params.parts = new HashSet<TiersPart>();
+		params.parts = new HashSet<>();
 		params.parts.add(TiersPart.FORS_FISCAUX);
 
 		// on s'assure que le type d'autorité fiscale sur le for fiscal est bien hors-canton
@@ -373,7 +373,7 @@ public class TiersWebServicePMTest extends WebserviceTest {
 		params.date = null;
 		params.login = login;
 		params.tiersNumber = noPM;
-		params.parts = new HashSet<TiersPart>();
+		params.parts = new HashSet<>();
 		params.parts.add(TiersPart.FORS_FISCAUX);
 
 		// on s'assure que le type d'autorité fiscale sur le for fiscal est bien hors-canton
@@ -406,10 +406,10 @@ public class TiersWebServicePMTest extends WebserviceTest {
 		final GetBatchTiers params = new GetBatchTiers();
 		params.date = null;
 		params.login = login;
-		params.tiersNumbers = new HashSet<Long>();
+		params.tiersNumbers = new HashSet<>();
 		params.tiersNumbers.add(noPM);
 		params.tiersNumbers.add(ppId);
-		params.parts = new HashSet<TiersPart>();
+		params.parts = new HashSet<>();
 		params.parts.add(TiersPart.FORS_FISCAUX);
 
 		// appel du service
@@ -422,7 +422,7 @@ public class TiersWebServicePMTest extends WebserviceTest {
 		assertEquals(2, entries.size());
 
 		// vérification qu'on a bien renvoyé les données sur les deux tiers
-		final Set<Long> tiersRendus = new HashSet<Long>();
+		final Set<Long> tiersRendus = new HashSet<>();
 		for (BatchTiersEntry entry : entries) {
 			tiersRendus.add(entry.number);
 		}
@@ -448,10 +448,10 @@ public class TiersWebServicePMTest extends WebserviceTest {
 
 		final GetBatchTiersHisto params = new GetBatchTiersHisto();
 		params.login = login;
-		params.tiersNumbers = new HashSet<Long>();
+		params.tiersNumbers = new HashSet<>();
 		params.tiersNumbers.add(noPM);
 		params.tiersNumbers.add(ppId);
-		params.parts = new HashSet<TiersPart>();
+		params.parts = new HashSet<>();
 		params.parts.add(TiersPart.FORS_FISCAUX);
 
 		// appel du service
@@ -464,7 +464,7 @@ public class TiersWebServicePMTest extends WebserviceTest {
 		assertEquals(2, entries.size());
 
 		// vérification qu'on a bien renvoyé les données sur les deux tiers
-		final Set<Long> tiersRendus = new HashSet<Long>();
+		final Set<Long> tiersRendus = new HashSet<>();
 		for (BatchTiersHistoEntry entry : entries) {
 			tiersRendus.add(entry.number);
 		}

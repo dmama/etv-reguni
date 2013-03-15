@@ -28,7 +28,7 @@ public class CouplePpPickerFilter implements SearchTiersFilterWithPostFiltering 
 
 	@Override
 	public Set<TiersCriteria.TypeTiers> getTypesTiers() {
-		final Set<TiersCriteria.TypeTiers> set = new HashSet<TiersCriteria.TypeTiers>();
+		final Set<TiersCriteria.TypeTiers> set = new HashSet<>();
 		set.add(TiersCriteria.TypeTiers.PERSONNE_PHYSIQUE);
 		return set;
 	}

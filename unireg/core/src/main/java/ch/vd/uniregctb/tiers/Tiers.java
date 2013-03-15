@@ -237,7 +237,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 		if (adressesTiers == null) {
 			return null;
 		}
-		List<AdresseTiers> list = new ArrayList<AdresseTiers>();
+		List<AdresseTiers> list = new ArrayList<>();
 		list.addAll(adressesTiers);
 		Collections.sort(list, new DateRangeComparator<AdresseTiers>());
 		return list;
@@ -248,7 +248,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 		if (adressesTiers == null) {
 			return null;
 		}
-		List<AdresseTiers> list = new ArrayList<AdresseTiers>();
+		List<AdresseTiers> list = new ArrayList<>();
 		for (AdresseTiers adr : adressesTiers) {
 			if (adr.getUsage() == type) {
 				list.add(adr);
@@ -275,7 +275,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 		}
 
 		// Construit une collection triée des adresses du type spécifié
-		List<AdresseTiers> list = new ArrayList<AdresseTiers>();
+		List<AdresseTiers> list = new ArrayList<>();
 		for (AdresseTiers a : adressesTiers) {
 			if (!a.isAnnule() && type == a.getUsage()) {
 				list.add(a);
@@ -357,7 +357,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 
 	public void addRapportObjet(RapportEntreTiers rapport) {
 		if (rapportsObjet == null) {
-			rapportsObjet = new HashSet<RapportEntreTiers>();
+			rapportsObjet = new HashSet<>();
 		}
 		for (RapportEntreTiers r : rapportsObjet) {
 			if (r instanceof RapportPrestationImposable) {
@@ -388,7 +388,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 
 	public void addRapportSujet(RapportEntreTiers rapport) {
 		if (rapportsSujet == null) {
-			rapportsSujet = new HashSet<RapportEntreTiers>();
+			rapportsSujet = new HashSet<>();
 		}
 		for (RapportEntreTiers r : rapportsSujet) {
 			if (r instanceof RapportPrestationImposable) {
@@ -525,7 +525,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 		if (declarations == null) {
 			return null;
 		}
-		List<Declaration> list = new ArrayList<Declaration>();
+		List<Declaration> list = new ArrayList<>();
 		list.addAll(declarations);
 		Collections.sort(list, new DateRangeComparator<Declaration>());
 		return list;
@@ -590,7 +590,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 			return null;
 		}
 
-		final List<Declaration> result = new ArrayList<Declaration>();
+		final List<Declaration> result = new ArrayList<>();
 		for (Declaration declaration : getDeclarationsSorted()) {
 			if ((avecAnnulees || !declaration.isAnnule()) && declaration.getPeriode().getAnnee() == annee) {
 				result.add(declaration);
@@ -643,7 +643,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	public List<ForFiscalPrincipal> getForsFiscauxPrincipauxActifsSorted() {
 		List<ForFiscalPrincipal> ffps = null;
 		if (forsFiscaux != null) {
-			ffps = new ArrayList<ForFiscalPrincipal>();
+			ffps = new ArrayList<>();
 			for (ForFiscal ff : forsFiscaux) {
 				if (ff instanceof ForFiscalPrincipal && !ff.isAnnule()) {
 					ffps.add((ForFiscalPrincipal) ff);
@@ -662,7 +662,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	public List<ForFiscal> getForsFiscauxSorted() {
 		List<ForFiscal> fors = null;
 		if (forsFiscaux != null) {
-			fors = new ArrayList<ForFiscal>();
+			fors = new ArrayList<>();
 			fors.addAll(forsFiscaux);
 			Collections.sort(fors, new DateRangeComparator<ForFiscal>() {
 				@Override
@@ -703,7 +703,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	 */
 	public void addForFiscal(ForFiscal nouveauForFiscal) {
 		if (this.forsFiscaux == null) {
-			this.forsFiscaux = new HashSet<ForFiscal>();
+			this.forsFiscaux = new HashSet<>();
 		}
 		this.forsFiscaux.add(nouveauForFiscal);
 		Assert.isTrue(nouveauForFiscal.getTiers() == null || nouveauForFiscal.getTiers() == this);
@@ -745,7 +745,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	@Transient
 	public List<ForFiscal> getForsFiscauxValidAt(@Nullable RegDate date) {
 
-		List<ForFiscal> fors = new ArrayList<ForFiscal>();
+		List<ForFiscal> fors = new ArrayList<>();
 		if (forsFiscaux != null) {
 			for (ForFiscal f : forsFiscaux) {
 				if (f.isValidAt(date)) {
@@ -872,7 +872,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	public void addAdresseTiers(AdresseTiers adresse) {
 		Assert.notNull(adresse);
 		if (adressesTiers == null) {
-			adressesTiers = new HashSet<AdresseTiers>();
+			adressesTiers = new HashSet<>();
 		}
 		adresse.setTiers(this);
 		adressesTiers.add(adresse);
@@ -882,7 +882,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 		Assert.notNull(declaration);
 
 		if (declarations == null) {
-			declarations = new HashSet<Declaration>();
+			declarations = new HashSet<>();
 		}
 
 		if (declaration instanceof DeclarationImpotOrdinaire) {
@@ -947,7 +947,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	public void addAllDeclarations(Collection<Declaration> coll) {
 		Assert.notNull(coll);
 		if (declarations == null) {
-			declarations = new HashSet<Declaration>();
+			declarations = new HashSet<>();
 		}
 		for (Declaration declaration : coll) {
 			if (declaration instanceof DeclarationImpotOrdinaire) {
@@ -1253,7 +1253,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	public List<ForFiscalPrincipal> getForsFiscauxPrincipauxOuvertsApres(RegDate date) {
 
 		Assert.notNull(date);
-		List<ForFiscalPrincipal> fors = new ArrayList<ForFiscalPrincipal>();
+		List<ForFiscalPrincipal> fors = new ArrayList<>();
 		for (ForFiscal ff : getForsFiscauxSorted()) {
 			if (ff.isPrincipal() && date.isBeforeOrEqual(ff.getDateDebut())) {
 				fors.add((ForFiscalPrincipal) ff);

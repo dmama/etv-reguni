@@ -88,7 +88,7 @@ public class EvenementExterneEsbHandlerItTest extends EvenementTest {
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
 	public void testReceiveOldQuittanceLR() throws Exception {
 
-		final List<EvenementExterne> events = new ArrayList<EvenementExterne>();
+		final List<EvenementExterne> events = new ArrayList<>();
 
 		handler.setHandler(new EvenementExterneHandler() {
 			@Override
@@ -122,7 +122,7 @@ public class EvenementExterneEsbHandlerItTest extends EvenementTest {
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
 	public void testReceiveNewQuittanceLR() throws Exception {
 
-		final List<EvenementExterne> events = new ArrayList<EvenementExterne>();
+		final List<EvenementExterne> events = new ArrayList<>();
 
 		handler.setHandler(new EvenementExterneHandler() {
 			@Override

@@ -1,8 +1,5 @@
 package ch.vd.uniregctb.declaration;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,13 +12,14 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Type;
 
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.type.ModeleFeuille;
 import ch.vd.uniregctb.type.TypeDocument;
 
 /**
@@ -110,7 +108,7 @@ public class ModeleDocument extends HibernateEntity {
 	 */
 	public boolean addModeleFeuilleDocument(ModeleFeuilleDocument feuille) {
 		if (modelesFeuilleDocument == null) {
-			modelesFeuilleDocument = new HashSet<ModeleFeuilleDocument>();
+			modelesFeuilleDocument = new HashSet<>();
 		}
 		return modelesFeuilleDocument.add(feuille);
 	}

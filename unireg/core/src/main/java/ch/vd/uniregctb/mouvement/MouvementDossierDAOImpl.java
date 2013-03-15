@@ -216,7 +216,7 @@ public class MouvementDossierDAOImpl extends GenericDAOImpl<MouvementDossier, Lo
 		if (criteria.isSeulementDerniersMouvements()) {
 			// si on doit filtrer sur les derniers mouvements seulement, seuls les mouvements traités doivent revenir
 			if (criteria.getEtatsMouvement() != null && !criteria.getEtatsMouvement().isEmpty()) {
-				final Set<EtatMouvementDossier> temp = new HashSet<EtatMouvementDossier>(criteria.getEtatsMouvement().size());
+				final Set<EtatMouvementDossier> temp = new HashSet<>(criteria.getEtatsMouvement().size());
 				for (EtatMouvementDossier etat : criteria.getEtatsMouvement()) {
 					if (etat.isTraite()) {
 						temp.add(etat);
@@ -315,7 +315,7 @@ public class MouvementDossierDAOImpl extends GenericDAOImpl<MouvementDossier, Lo
 	@SuppressWarnings({"unchecked"})
 	public List<MouvementDossier> find(MouvementDossierCriteria criteria, @Nullable final ParamPagination paramPagination) {
 
-		final List<Object> params = new ArrayList<Object>();
+		final List<Object> params = new ArrayList<>();
 		final String hql = buildFindHql(criteria, false, paramPagination != null ? paramPagination.getSorting() : null, params);
 		final Session session = getCurrentSession();
 		final Query query = session.createQuery(hql);
@@ -334,7 +334,7 @@ public class MouvementDossierDAOImpl extends GenericDAOImpl<MouvementDossier, Lo
 	@Override
 	@SuppressWarnings({"unchecked"})
 	public List<Long> findIds(MouvementDossierCriteria criteria, @Nullable ParamSorting sorting) {
-		final List<Object> params = new ArrayList<Object>();
+		final List<Object> params = new ArrayList<>();
 		final String hql = buildFindHql(criteria, true, sorting, params);
 		final Session session = getCurrentSession();
 		final Query query = session.createQuery(hql);
@@ -346,7 +346,7 @@ public class MouvementDossierDAOImpl extends GenericDAOImpl<MouvementDossier, Lo
 
 	@Override
 	public int count(MouvementDossierCriteria criteria) {
-		final List<Object> params = new ArrayList<Object>();
+		final List<Object> params = new ArrayList<>();
 		final String hql = buildCountHql(criteria, params);
 		final Session session = getCurrentSession();
 		final Query query = session.createQuery(hql);
@@ -388,12 +388,12 @@ public class MouvementDossierDAOImpl extends GenericDAOImpl<MouvementDossier, Lo
 		// [UNIREG-2872] tri dans l'ordre des ids donnés en entrée
 		final List<MouvementDossier> listeFinale;
 		if (found != null && !found.isEmpty()) {
-			final Map<Long, MouvementDossier> map = new HashMap<Long, MouvementDossier>(found.size());
+			final Map<Long, MouvementDossier> map = new HashMap<>(found.size());
 			for (MouvementDossier mvt : found) {
 				map.put(mvt.getId(), mvt);
 			}
 
-			listeFinale = new ArrayList<MouvementDossier>(found.size());
+			listeFinale = new ArrayList<>(found.size());
 
 			//noinspection ConstantConditions
 			for (long id : ids) {
@@ -437,7 +437,7 @@ public class MouvementDossierDAOImpl extends GenericDAOImpl<MouvementDossier, Lo
 		final Query query = session.createSQLQuery(PROTO_BORDEREAUX_SQL);
 		final List<Object[]> rows = (List<Object[]>) query.list();
 		if (rows != null && !rows.isEmpty()) {
-			final List<ProtoBordereauMouvementDossier> liste = new ArrayList<ProtoBordereauMouvementDossier>(rows.size());
+			final List<ProtoBordereauMouvementDossier> liste = new ArrayList<>(rows.size());
 			for (Object[] row : rows) {
 				final String typeStr = (String) row[0];
 				final long idCollAdminInitiatrice = ((Number) row[1]).longValue();

@@ -14,7 +14,7 @@ import static org.junit.Assert.assertNull;
 
 public class BerkeleyPersistentCacheTest extends WithoutSpringTest {
 
-	private BerkeleyPersistentCache<Data> store = new BerkeleyPersistentCache<Data>();
+	private BerkeleyPersistentCache<Data> store = new BerkeleyPersistentCache<>();
 
 	@Override
 	public void onSetUp() throws Exception {

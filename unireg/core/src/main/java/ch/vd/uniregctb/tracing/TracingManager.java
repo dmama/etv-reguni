@@ -17,9 +17,9 @@ public class TracingManager {
 	private static boolean isActive = false;
 
 	// private static boolean isActive = true;
-	private static HashMap<Long, Stack<TracePoint>> threadStacks = new HashMap<Long, Stack<TracePoint>>();
+	private static HashMap<Long, Stack<TracePoint>> threadStacks = new HashMap<>();
 
-	private static HashMap<String, RootMeasurePoint> measures = new HashMap<String, RootMeasurePoint>();
+	private static HashMap<String, RootMeasurePoint> measures = new HashMap<>();
 
 	public static TracePoint begin() {
 		return beginWithPrefix(""); // Pas de prefix par défaut
@@ -56,8 +56,8 @@ public class TracingManager {
 
 	public static synchronized void reset() {
 
-		threadStacks = new HashMap<Long, Stack<TracePoint>>();
-		measures = new HashMap<String, RootMeasurePoint>();
+		threadStacks = new HashMap<>();
+		measures = new HashMap<>();
 	}
 
 	private static void pushPoint(Stack<TracePoint> points, TracePoint tp) {
@@ -116,7 +116,7 @@ public class TracingManager {
 	@SuppressWarnings("unchecked")
 	public static synchronized List<String> getMeasuresAsStringList(String tab) {
 
-		List<String> list = new ArrayList<String>();
+		List<String> list = new ArrayList<>();
 		if (isActive) {
 
 			fillListWithMeasures(list, (HashMap) measures, "", tab);
@@ -146,7 +146,7 @@ public class TracingManager {
 		Collection<MeasurePoint> values = points.values();
 
 		// Sort the entries
-		List<MeasurePoint> sortedValues = new ArrayList<MeasurePoint>(values);
+		List<MeasurePoint> sortedValues = new ArrayList<>(values);
 		Collections.sort(sortedValues);
 
 		/*
@@ -182,7 +182,7 @@ public class TracingManager {
 		long threadId = Thread.currentThread().getId();
 		Stack<TracePoint> points = threadStacks.get(threadId);
 		if (points == null) {
-			points = new Stack<TracePoint>();
+			points = new Stack<>();
 			threadStacks.put(threadId, points);
 		}
 		return points;

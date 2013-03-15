@@ -101,7 +101,7 @@ public class BordereauController {
 			if (matcher.matches()) {
 				final Long noTiers = Long.valueOf(matcher.group(1));
 				final Integer noCa = Integer.valueOf(matcher.group(2));
-				return new Pair<Long, Integer>(noTiers, noCa);
+				return new Pair<>(noTiers, noCa);
 			}
 		}
 		return null;

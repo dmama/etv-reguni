@@ -124,7 +124,7 @@ public class ProduireRolesProcessor {
 
 		@Override
 		public Set<Integer> getCommunes(Integer ofsReference) {
-			return new HashSet<Integer>(Arrays.asList(ofsReference));
+			return new HashSet<>(Arrays.asList(ofsReference));
 		}
 	}
 
@@ -182,7 +182,7 @@ public class ProduireRolesProcessor {
 		final T rapportFinal = variante.creerRapport(anneePeriode, nbThreads, today, true);
 
 		// parties à aller chercher en bloc par groupe de tiers
-		final Set<TiersDAO.Parts> parts = new HashSet<TiersDAO.Parts>();
+		final Set<TiersDAO.Parts> parts = new HashSet<>();
 		parts.add(TiersDAO.Parts.FORS_FISCAUX);
 		parts.add(TiersDAO.Parts.RAPPORTS_ENTRE_TIERS);
 		parts.add(TiersDAO.Parts.ADRESSES);
@@ -198,7 +198,7 @@ public class ProduireRolesProcessor {
 		status.setMessage(msgRechercheContribuables, progressCalculator.getProgressPercentage(0, 0));
 
 		final List<Long> list = variante.getIdsContribuablesConcernes(anneePeriode);
-		final ParallelBatchTransactionTemplate<Long, T> template = new ParallelBatchTransactionTemplate<Long, T>(list, BATCH_SIZE, nbThreads, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, hibernateTemplate);
+		final ParallelBatchTransactionTemplate<Long, T> template = new ParallelBatchTransactionTemplate<>(list, BATCH_SIZE, nbThreads, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, hibernateTemplate);
 		template.setReadonly(true);
 		template.execute(rapportFinal, new BatchTransactionTemplate.BatchCallback<Long, T>() {
 
@@ -258,7 +258,7 @@ public class ProduireRolesProcessor {
 	}
 
 	private void preloadIndividus(List<Tiers> tierz, int anneePeriode) {
-		final Map<Long, PersonnePhysique> ppByNoIndividu = new HashMap<Long, PersonnePhysique>(tierz.size() * 2);
+		final Map<Long, PersonnePhysique> ppByNoIndividu = new HashMap<>(tierz.size() * 2);
 		final RegDate date = RegDate.get(anneePeriode, 12, 31);
 		for (Tiers tiers : tierz) {
 			if (tiers instanceof PersonnePhysique) {
@@ -424,7 +424,7 @@ public class ProduireRolesProcessor {
 		status.setMessage(String.format("%sRécupération des correspondances entre communes et OID.", prefixe), progressCalculator.getProgressPercentage(0, 0));
 
 		// récupère les numéros Ofs des communes gérées par l'office d'impôt spécifié
-		final Set<Integer> nosOfsCommunes = new HashSet<Integer>();
+		final Set<Integer> nosOfsCommunes = new HashSet<>();
 		try {
 			final List<Commune> communes = infraService.getListeCommunesByOID(oid);
 			for (Commune c : communes) {
@@ -474,7 +474,7 @@ public class ProduireRolesProcessor {
 		try {
 			// on va boucler sur tous les OIDs connus dans l'ordre des numéro de collectivité administrative
 			final List<OfficeImpot> oids = infraService.getOfficesImpot();
-			final List<OfficeImpot> oidsTries = new ArrayList<OfficeImpot>(oids);
+			final List<OfficeImpot> oidsTries = new ArrayList<>(oids);
 			Collections.sort(oidsTries, new Comparator<OfficeImpot>() {
 				@Override
 				public int compare(OfficeImpot o1, OfficeImpot o2) {
@@ -485,7 +485,7 @@ public class ProduireRolesProcessor {
 			// on commence enfin la boucle
 			int index = 0;
 			final int nbOids = oidsTries.size();
-			final List<ProduireRolesOIDsResults> liste = new ArrayList<ProduireRolesOIDsResults>(nbOids);
+			final List<ProduireRolesOIDsResults> liste = new ArrayList<>(nbOids);
 			for (OfficeImpot oid : oidsTries) {
 				final int zeroBasedIndex = index;
 				final ProgressCalculator progressCalculator = new DifferenciatingProgressCalculator() {
@@ -628,7 +628,7 @@ public class ProduireRolesProcessor {
 		final List<Assujettissement> assujettissementsAnneePrecedente = assujettissementContainer.getAssujettissementPeriodePrecedente();
 
 		// prenons ensuite les communes des fors de la décomposition
-		final Set<Integer> ofsCommunes = new HashSet<Integer>(fors.principauxDansLaPeriode.size() + fors.secondairesDansLaPeriode.size());
+		final Set<Integer> ofsCommunes = new HashSet<>(fors.principauxDansLaPeriode.size() + fors.secondairesDansLaPeriode.size());
 		for (ForFiscalRevenuFortune ff : fors.principauxDansLaPeriode) {
 			if (ff.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
 				ofsCommunes.add(ff.getNumeroOfsAutoriteFiscale());

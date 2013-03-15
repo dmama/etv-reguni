@@ -83,7 +83,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 	 */
 	@Override
 	public List<Canton> getAllCantons() throws ServiceInfrastructureException {
-		List<Canton> cantons = new ArrayList<Canton>();
+		List<Canton> cantons = new ArrayList<>();
 		try {
 			List<?> list = serviceInfrastructure.getCantons(serviceInfrastructure.getPays(EnumPays.SIGLE_CH));
 			for (Object o : list) {
@@ -107,7 +107,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 	public List<Commune> getListeCommunes(final Canton canton) throws ServiceInfrastructureException {
 		try {
 			final List<?> list = serviceInfrastructure.getCommunes(canton.getSigleOFS());
-			List<Commune> communes = new ArrayList<Commune>();
+			List<Commune> communes = new ArrayList<>();
 			for (Object o : list) {
 				ch.vd.infrastructure.model.Commune co = (ch.vd.infrastructure.model.Commune) o;
 				communes.add(CommuneImpl.get(co));
@@ -135,7 +135,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 	public List<Commune> getListeFractionsCommunes() throws ServiceInfrastructureException {
 		try {
 			final List<ch.vd.infrastructure.model.Commune> list = serviceInfrastructure.getCommunes(ServiceInfrastructureRaw.SIGLE_CANTON_VD);
-			final List<Commune> communes = new ArrayList<Commune>();
+			final List<Commune> communes = new ArrayList<>();
 			for (ch.vd.infrastructure.model.Commune co : list) {
 				if (!co.isPrincipale()) {
 					communes.add(CommuneImpl.get(co));
@@ -156,7 +156,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 	 */
 	@Override
 	public List<Commune> getCommunes() throws ServiceInfrastructureException {
-		List<Commune> communes = new ArrayList<Commune>();
+		List<Commune> communes = new ArrayList<>();
 		for (Canton canton : getAllCantons()) {
 			List<Commune> liste = getListeCommunes(canton);
 			communes.addAll(liste);
@@ -180,7 +180,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 
 	private void initLocaliteByNPA() throws ServiceInfrastructureException {
 		List<Localite> localites = getLocalites();
-		localitesByNPA = new HashMap<Integer, Localite>();
+		localitesByNPA = new HashMap<>();
 		for (Localite localite : localites) {
 			if (localite.getNPA()!=null) {
 				localitesByNPA.put(localite.getNPA(), localite);
@@ -191,7 +191,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 
 	@Override
 	public List<Commune> getCommuneHistoByNumeroOfs(int noOfsCommune) throws ServiceInfrastructureException {
-		final List<Commune> list = new ArrayList<Commune>(2);
+		final List<Commune> list = new ArrayList<>(2);
 		final List<Commune> communes = getCommunes();
 		for (Commune commune : communes) {
 			if (commune.getNoOFS() == noOfsCommune) {
@@ -206,7 +206,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 	 */
 	@Override
 	public List<Pays> getPays() throws ServiceInfrastructureException {
-		List<Pays> pays = new ArrayList<Pays>();
+		List<Pays> pays = new ArrayList<>();
 		try {
 			List<?> list = serviceInfrastructure.getListePays();
 			for (Object o : list) {
@@ -280,7 +280,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 	@Override
 	public List<Localite> getLocalites() throws ServiceInfrastructureException {
 
-		List<Localite> localites = new ArrayList<Localite>();
+		List<Localite> localites = new ArrayList<>();
 		try {
 			for (Canton c : getAllCantons()) {
 				List<?> localitesTmp = serviceInfrastructure.getLocalites(c.getSigleOFS());
@@ -304,7 +304,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 	 */
 	@Override
 	public List<Rue> getRues(Localite localite) throws ServiceInfrastructureException {
-		List<Rue> rues = new ArrayList<Rue>();
+		List<Rue> rues = new ArrayList<>();
 		try {
 			final List<?> list = serviceInfrastructure.getRues(localite.getNoOrdre());
 			for (Object o : list) {
@@ -327,7 +327,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 	@Override
 	public List<Rue> getRues(Canton canton) throws ServiceInfrastructureException {
 		try {
-			ArrayList<Rue> rues = new ArrayList<Rue>();
+			ArrayList<Rue> rues = new ArrayList<>();
 			final List<?> list = serviceInfrastructure.getRues(canton.getSigleOFS());
 			for (Object o : list) {
 				ch.vd.infrastructure.model.Rue r = (ch.vd.infrastructure.model.Rue) o;
@@ -414,7 +414,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 	@Override
 	public List<OfficeImpot> getOfficesImpot() throws ServiceInfrastructureException {
 
-		List<OfficeImpot> offices = new ArrayList<OfficeImpot>();
+		List<OfficeImpot> offices = new ArrayList<>();
 		try {
 			List<?> list = serviceInfrastructure.getCollectivites(TYPE_COLLECTIVITE_OID);
 			for (Object o : list) {
@@ -454,7 +454,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 	@SuppressWarnings({"unchecked"})
 	public List<CollectiviteAdministrative> getCollectivitesAdministratives() throws ServiceInfrastructureException {
 
-		final List<CollectiviteAdministrative> collectivites = new ArrayList<CollectiviteAdministrative>();
+		final List<CollectiviteAdministrative> collectivites = new ArrayList<>();
 		try {
 			final List<ch.vd.infrastructure.model.CollectiviteAdministrative> list = serviceInfrastructure.getCollectivitesAdministratives(ServiceInfrastructureRaw.SIGLE_CANTON_VD);
 			for (ch.vd.infrastructure.model.CollectiviteAdministrative c : list) {
@@ -481,7 +481,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 	public List<CollectiviteAdministrative> getCollectivitesAdministratives(List<EnumTypeCollectivite> typesCollectivite)
 			throws ServiceInfrastructureException {
 
-		final List<CollectiviteAdministrative> collectivites = new ArrayList<CollectiviteAdministrative>();
+		final List<CollectiviteAdministrative> collectivites = new ArrayList<>();
 		try {
 			final EnumTypeCollectivite[] tabTypesCollectivite = typesCollectivite.toArray(new EnumTypeCollectivite[typesCollectivite.size()]);
 			final List<ch.vd.infrastructure.model.CollectiviteAdministrative> list = serviceInfrastructure.getCollectivitesAdministratives(tabTypesCollectivite);
@@ -518,7 +518,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 	public List<InstitutionFinanciere> getInstitutionsFinancieres(String noClearing) throws ServiceInfrastructureException {
 		try {
 			List<?> l = serviceInfrastructure.getInstitutionsFinancieres(noClearing);
-			List<InstitutionFinanciere> list = new ArrayList<InstitutionFinanciere>(l.size());
+			List<InstitutionFinanciere> list = new ArrayList<>(l.size());
 			for (Object o : l) {
 				ch.vd.registre.common.model.InstitutionFinanciere i = (ch.vd.registre.common.model.InstitutionFinanciere) o;
 				list.add(InstitutionFinanciereImpl.get(i));
@@ -537,7 +537,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 	public List<TypeRegimeFiscal> getTypesRegimesFiscaux() throws ServiceInfrastructureException {
 		try {
 			ch.vd.infrastructure.fiscal.model.TypeRegimeFiscal[] types = serviceInfrastructureFiscal.getTypeRegimesFiscaux();
-			List<TypeRegimeFiscal> list = new ArrayList<TypeRegimeFiscal>(types.length);
+			List<TypeRegimeFiscal> list = new ArrayList<>(types.length);
 			for (ch.vd.infrastructure.fiscal.model.TypeRegimeFiscal type : types) {
 				list.add(TypeRegimeFiscalImpl.get(type));
 			}
@@ -568,7 +568,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 	public List<TypeEtatPM> getTypesEtatsPM() throws ServiceInfrastructureException {
 		try {
 			ch.vd.infrastructure.fiscal.model.TypeEtatPM[] types = serviceInfrastructureFiscal.getTypesEtatsPM();
-			List<TypeEtatPM> list = new ArrayList<TypeEtatPM>(types.length);
+			List<TypeEtatPM> list = new ArrayList<>(types.length);
 			for (ch.vd.infrastructure.fiscal.model.TypeEtatPM type : types) {
 				list.add(TypeEtatPMImpl.get(type));
 			}

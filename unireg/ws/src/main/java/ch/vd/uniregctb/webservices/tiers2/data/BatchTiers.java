@@ -27,7 +27,7 @@ public class BatchTiers {
 	 * <b>Dans la version 3 du web-service :</b> <i>entries</i>
 	 */
 	@XmlElement(required = true)
-	public final List<BatchTiersEntry> entries = new ArrayList<BatchTiersEntry>();
+	public final List<BatchTiersEntry> entries = new ArrayList<>();
 
 	public BatchTiers(BatchTiersEntry unique) {
 		entries.add(unique);

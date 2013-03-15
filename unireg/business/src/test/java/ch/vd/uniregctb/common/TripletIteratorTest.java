@@ -1,10 +1,5 @@
 package ch.vd.uniregctb.common;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -12,21 +7,26 @@ import java.util.List;
 
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 public class TripletIteratorTest extends WithoutSpringTest {
 
 	@Test
 	public void testEmptyIterator() {
 		Iterator<Object> empty = Collections.emptyList().iterator();
-		TripletIterator<Object> iter = new TripletIterator<Object>(empty);
+		TripletIterator<Object> iter = new TripletIterator<>(empty);
 		assertFalse(iter.hasNext());
 	}
 
 	@Test
 	public void testOneElementIterator() {
-		List<Integer> list = new ArrayList<Integer>();
+		List<Integer> list = new ArrayList<>();
 		list.add(Integer.valueOf(0));
 
-		TripletIterator<Integer> iter = new TripletIterator<Integer>(list.iterator());
+		TripletIterator<Integer> iter = new TripletIterator<>(list.iterator());
 		assertTrue(iter.hasNext());
 		assertTriplet(null, Integer.valueOf(0), null, iter.next());
 		assertFalse(iter.hasNext());
@@ -34,11 +34,11 @@ public class TripletIteratorTest extends WithoutSpringTest {
 
 	@Test
 	public void testTwoElementsIterator() {
-		List<Integer> list = new ArrayList<Integer>();
+		List<Integer> list = new ArrayList<>();
 		list.add(Integer.valueOf(0));
 		list.add(Integer.valueOf(1));
 
-		TripletIterator<Integer> iter = new TripletIterator<Integer>(list.iterator());
+		TripletIterator<Integer> iter = new TripletIterator<>(list.iterator());
 		assertTrue(iter.hasNext());
 		assertTriplet(null, Integer.valueOf(0), Integer.valueOf(1), iter.next());
 		assertTrue(iter.hasNext());
@@ -48,12 +48,12 @@ public class TripletIteratorTest extends WithoutSpringTest {
 
 	@Test
 	public void testThreeElementsIterator() {
-		List<Integer> list = new ArrayList<Integer>();
+		List<Integer> list = new ArrayList<>();
 		list.add(Integer.valueOf(0));
 		list.add(Integer.valueOf(1));
 		list.add(Integer.valueOf(2));
 
-		TripletIterator<Integer> iter = new TripletIterator<Integer>(list.iterator());
+		TripletIterator<Integer> iter = new TripletIterator<>(list.iterator());
 		assertTrue(iter.hasNext());
 		assertTriplet(null, Integer.valueOf(0), Integer.valueOf(1), iter.next());
 		assertTrue(iter.hasNext());
@@ -65,13 +65,13 @@ public class TripletIteratorTest extends WithoutSpringTest {
 
 	@Test
 	public void testFourElementsIterator() {
-		List<Integer> list = new ArrayList<Integer>();
+		List<Integer> list = new ArrayList<>();
 		list.add(Integer.valueOf(0));
 		list.add(Integer.valueOf(1));
 		list.add(Integer.valueOf(2));
 		list.add(Integer.valueOf(3));
 
-		TripletIterator<Integer> iter = new TripletIterator<Integer>(list.iterator());
+		TripletIterator<Integer> iter = new TripletIterator<>(list.iterator());
 		assertTrue(iter.hasNext());
 		assertTriplet(null, Integer.valueOf(0), Integer.valueOf(1), iter.next());
 		assertTrue(iter.hasNext());

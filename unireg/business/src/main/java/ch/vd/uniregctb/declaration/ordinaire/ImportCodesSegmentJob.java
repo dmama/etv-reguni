@@ -80,7 +80,7 @@ public class ImportCodesSegmentJob extends JobDefinition {
 	 * @throws UnsupportedEncodingException si l'encoding ISO-8859-1 n'est pas supportés par la JVM
 	 */
 	protected static List<ContribuableAvecCodeSegment> buildDataFromInputFile(byte[] csv, StatusManager status, @Nullable MutableInt nbrLignesLues) throws UnsupportedEncodingException {
-		final List<ContribuableAvecCodeSegment> liste = new LinkedList<ContribuableAvecCodeSegment>();
+		final List<ContribuableAvecCodeSegment> liste = new LinkedList<>();
 		final Pattern p = Pattern.compile("^([0-9]+);([0-9]+)(;.*)?$");
 
 		status.setMessage("Chargement du fichier d'entrée");
@@ -88,8 +88,7 @@ public class ImportCodesSegmentJob extends JobDefinition {
 		// on parse le fichier
 		final String csvString = csv != null ? new String(csv, "ISO-8859-1") : StringUtils.EMPTY;
 		int lignesCtbLues = 0;
-		final Scanner s = new Scanner(csvString);
-		try {
+		try (Scanner s = new Scanner(csvString)) {
 			while (s.hasNextLine()) {
 
 				final String line = s.nextLine();
@@ -104,24 +103,21 @@ public class ImportCodesSegmentJob extends JobDefinition {
 					final Long numeroCtb = Long.valueOf(m.group(1));
 					final int codeSegment = Integer.valueOf(m.group(2));
 					liste.add(new ContribuableAvecCodeSegment(numeroCtb, codeSegment));
-					++ lignesCtbLues;
+					++lignesCtbLues;
 				}
 				else {
 					LOGGER.warn(String.format("Ligne ignorée dans le fichier d'entrée : '%s'", line));
 				}
 			}
 		}
-		finally {
-			s.close();
-		}
 		Audit.info("Nombre de contribuables lus dans le fichier : " + lignesCtbLues);
 
 		// élimination des doublons
-		final Set<ContribuableAvecCodeSegment> sansDoublons = new HashSet<ContribuableAvecCodeSegment>(liste);
+		final Set<ContribuableAvecCodeSegment> sansDoublons = new HashSet<>(liste);
 		Audit.info("Nombre de contribuables uniques présents dans le fichier : " + sansDoublons.size());
 
 		// récupération dans une liste et tri dans l'ordre croissant des numéros de contribuables
-		final List<ContribuableAvecCodeSegment> listeSansDoublons = new ArrayList<ContribuableAvecCodeSegment>(sansDoublons);
+		final List<ContribuableAvecCodeSegment> listeSansDoublons = new ArrayList<>(sansDoublons);
 		Collections.sort(listeSansDoublons, new Comparator<ContribuableAvecCodeSegment>() {
 			@Override
 			public int compare(ContribuableAvecCodeSegment o1, ContribuableAvecCodeSegment o2) {

@@ -102,7 +102,7 @@ public class VignetteView {
 				list = Arrays.asList(ApplicationFiscale.TAO_PP, ApplicationFiscale.TAO_BA, ApplicationFiscale.TAO_IS, ApplicationFiscale.SIPF);
 			}
 
-			this.urlsVers = new ArrayList<UrlVersView>();
+			this.urlsVers = new ArrayList<>();
 			for (ApplicationFiscale af : list) {
 				final String label = messageSource.getMessage(af.getMessageKey(), null, WebContextUtils.getDefaultLocale());
 				this.urlsVers.add(new UrlVersView(af.name(), label, af.name()));
@@ -110,7 +110,7 @@ public class VignetteView {
 		}
 
 		if (fillActions) {
-			this.actions = new ArrayList<ActionView>();
+			this.actions = new ArrayList<>();
 			for (JspTagBandeauTiers.Action action : JspTagBandeauTiers.actions) {
 				if (action.isGranted() && action.isValide(tiers)) {
 					this.actions.add(new ActionView(action.getLabel(), action.getActionUrl() + tiers.getNumero()));

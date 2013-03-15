@@ -68,7 +68,7 @@ public class ChooseOIDController {
 		List<CollectiviteAdministrative> list = serviceSecurite.getCollectivitesUtilisateur(AuthenticationHelper.getCurrentPrincipal());
 		if (list != null && list.size() > 1) {
 			// recopie dans une autre liste, au cas où host-interface choisit un jour de nous renvoyer une collection immutable
-			list = new ArrayList<CollectiviteAdministrative>(list);
+			list = new ArrayList<>(list);
 			Collections.sort(list, new Comparator<CollectiviteAdministrative>() {
 				@Override
 				public int compare(CollectiviteAdministrative o1, CollectiviteAdministrative o2) {

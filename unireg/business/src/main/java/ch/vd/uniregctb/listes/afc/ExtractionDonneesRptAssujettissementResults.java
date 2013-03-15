@@ -69,7 +69,7 @@ public abstract class ExtractionDonneesRptAssujettissementResults extends Extrac
 		final InfoIdentificationCtb identification = buildInfoIdentification(ctb, assujettissements.get(assujettissements.size() - 1).getDateFin());
 
 		// on boucle ensuite sur les périodes d'assujettissement pour faire une ligne par période
-		final List<InfoPeriodeImposition> liste = new ArrayList<InfoPeriodeImposition>(assujettissements.size());
+		final List<InfoPeriodeImposition> liste = new ArrayList<>(assujettissements.size());
 		for (Assujettissement a : assujettissements) {
 
 			final TypeAutoriteFiscale autoriteFiscaleForPrincipal;

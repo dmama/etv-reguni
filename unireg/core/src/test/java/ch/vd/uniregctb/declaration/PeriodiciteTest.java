@@ -8,7 +8,6 @@ import org.junit.Test;
 
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
-import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.WithoutSpringTest;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 
@@ -23,7 +22,7 @@ public class PeriodiciteTest extends WithoutSpringTest {
 		Periodicite periodicite2 = new Periodicite(PeriodiciteDecompte.MENSUEL,null,date(2009,6,1),date(2009,6,30));
 		Periodicite periodicite3 = new Periodicite(PeriodiciteDecompte.TRIMESTRIEL,null,date(2009,7,1),null);
 
-		List<Periodicite> listePeriodicite = new ArrayList<Periodicite>();
+		List<Periodicite> listePeriodicite = new ArrayList<>();
 		listePeriodicite.add(periodicite1);
 		listePeriodicite.add(periodicite2);
 		listePeriodicite.add(periodicite3);
@@ -44,7 +43,7 @@ public class PeriodiciteTest extends WithoutSpringTest {
 		Periodicite periodicite2 = new Periodicite(PeriodiciteDecompte.MENSUEL,null,date(2009,7,1),date(2009,7,31));
 		Periodicite periodicite3 = new Periodicite(PeriodiciteDecompte.TRIMESTRIEL,null,date(2009,8,1),null);
 
-		List<Periodicite> listePeriodicite = new ArrayList<Periodicite>();
+		List<Periodicite> listePeriodicite = new ArrayList<>();
 		listePeriodicite.add(periodicite1);
 		listePeriodicite.add(periodicite2);
 		listePeriodicite.add(periodicite3);

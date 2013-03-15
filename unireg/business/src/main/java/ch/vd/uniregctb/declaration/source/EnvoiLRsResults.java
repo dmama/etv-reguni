@@ -68,8 +68,8 @@ public class EnvoiLRsResults extends JobResults<Long, EnvoiLRsResults> {
 	public final RegDate dateTraitement;
 	public final RegDate dateFinPeriode;
 	public int nbDPIsTotal;										// nombre de DPI analysés
-	public final List<Traite> LRTraitees = new ArrayList<Traite>(); 	// LR émises
-	public final List<Erreur> LREnErreur = new ArrayList<Erreur>();	// LR non-émises pour cause d'erreur
+	public final List<Traite> LRTraitees = new ArrayList<>(); 	// LR émises
+	public final List<Erreur> LREnErreur = new ArrayList<>();	// LR non-émises pour cause d'erreur
 	public boolean interrompu;
 	public int nbLrMensuellesTraitees;
 	public int nbLrTrimestriellesTraitees;

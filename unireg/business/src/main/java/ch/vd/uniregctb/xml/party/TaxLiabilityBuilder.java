@@ -27,7 +27,7 @@ public abstract class TaxLiabilityBuilder {
 		TaxLiability instanciate(ch.vd.uniregctb.metier.assujettissement.Assujettissement right);
 	}
 
-	private static Map<Class, Builders> builders = new HashMap<Class, Builders>();
+	private static Map<Class, Builders> builders = new HashMap<>();
 
 	static {
 		builders.put(ch.vd.uniregctb.metier.assujettissement.DiplomateSuisse.class, new Builders() {

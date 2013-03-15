@@ -142,7 +142,7 @@ public class TaxDeclarationBuilder {
 			clonedEtats = null;
 		}
 		else {
-			clonedEtats = new ArrayList<TaxDeclarationStatus>(etats.size());
+			clonedEtats = new ArrayList<>(etats.size());
 			for (TaxDeclarationStatus etat : etats) {
 				clonedEtats.add(clone(etat));
 			}

@@ -27,7 +27,7 @@ public class ActionException extends RuntimeException {
 
 	public ActionException(String error, @Nullable Throwable cause) {
 		super(cause);
-		this.errors = new ArrayList<String>(1);
+		this.errors = new ArrayList<>(1);
 		this.errors.add(error);
 		this.warnings = Collections.emptyList();
 	}

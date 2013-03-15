@@ -88,7 +88,7 @@ public abstract class TiersValidator<T extends Tiers> extends EntityValidatorImp
 				}
 				if (rapport instanceof RepresentationConventionnelle) {
 					if (representations == null) {
-						representations = new ArrayList<RapportEntreTiers>();
+						representations = new ArrayList<>();
 					}
 					representations.add(rapport);
 				}
@@ -198,7 +198,7 @@ public abstract class TiersValidator<T extends Tiers> extends EntityValidatorImp
 
 		// on ignore les adresses annulées
 		// [UNIREG-467] on crée une nouvelle liste pour avoir les indexes corrects
-		List<AdresseTiers> list = new ArrayList<AdresseTiers>(sorted.size());
+		List<AdresseTiers> list = new ArrayList<>(sorted.size());
 		for (AdresseTiers a : sorted) {
 			if (!a.isAnnule()) {
 				list.add(a);

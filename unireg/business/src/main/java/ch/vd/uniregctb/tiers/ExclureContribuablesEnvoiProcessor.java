@@ -48,7 +48,7 @@ public class ExclureContribuablesEnvoiProcessor {
 
 		final ExclureContribuablesEnvoiResults rapportFinal = new ExclureContribuablesEnvoiResults(ctbIds, dateLimite, tiersService, adresseService);
 
-		final BatchTransactionTemplate<Long, ExclureContribuablesEnvoiResults> template = new BatchTransactionTemplate<Long, ExclureContribuablesEnvoiResults>(ctbIds, BATCH_SIZE,
+		final BatchTransactionTemplate<Long, ExclureContribuablesEnvoiResults> template = new BatchTransactionTemplate<>(ctbIds, BATCH_SIZE,
 				Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, hibernateTemplate);
 		template.execute(rapportFinal, new BatchCallback<Long, ExclureContribuablesEnvoiResults>() {
 

@@ -18,12 +18,12 @@ public class BlockingQueueMixerTest extends WithoutSpringTest {
 	@Test
 	public void testOneToOne() throws Exception {
 
-		final BlockingQueue<Integer> input = new LinkedBlockingQueue<Integer>();
-		final BlockingQueue<Integer> output = new LinkedBlockingQueue<Integer>();
-		final List<BlockingQueue<Integer>> inputList = new ArrayList<BlockingQueue<Integer>>();
+		final BlockingQueue<Integer> input = new LinkedBlockingQueue<>();
+		final BlockingQueue<Integer> output = new LinkedBlockingQueue<>();
+		final List<BlockingQueue<Integer>> inputList = new ArrayList<>();
 		inputList.add(input);
 
-		final BlockingQueueMixer<Integer> mixer = new BlockingQueueMixer<Integer>(inputList, output);
+		final BlockingQueueMixer<Integer> mixer = new BlockingQueueMixer<>(inputList, output);
 		mixer.start("Mixer");
 		try {
 			final Random rnd = new Random();
@@ -42,13 +42,13 @@ public class BlockingQueueMixerTest extends WithoutSpringTest {
 	@Test
 	public void testTwoToOne() throws Exception {
 
-		final List<BlockingQueue<Integer>> inputList = new ArrayList<BlockingQueue<Integer>>();
+		final List<BlockingQueue<Integer>> inputList = new ArrayList<>();
 		inputList.add(new LinkedBlockingQueue<Integer>());
 		inputList.add(new LinkedBlockingQueue<Integer>());
 
-		final BlockingQueue<Integer> output = new LinkedBlockingQueue<Integer>();
+		final BlockingQueue<Integer> output = new LinkedBlockingQueue<>();
 
-		final BlockingQueueMixer<Integer> mixer = new BlockingQueueMixer<Integer>(inputList, output);
+		final BlockingQueueMixer<Integer> mixer = new BlockingQueueMixer<>(inputList, output);
 		mixer.start("Mixer");
 		try {
 
@@ -60,7 +60,7 @@ public class BlockingQueueMixerTest extends WithoutSpringTest {
 			}
 
 			// reading from output queues
-			final Set<Integer> gottenElts = new HashSet<Integer>(nbElts);
+			final Set<Integer> gottenElts = new HashSet<>(nbElts);
 			for (int i = 0 ; i < nbElts; ++ i) {
 				final Integer found = output.poll(1000, TimeUnit.MILLISECONDS);
 				Assert.assertNotNull(found);
@@ -80,15 +80,15 @@ public class BlockingQueueMixerTest extends WithoutSpringTest {
 	@Test(timeout = 10000L)
 	public void testPriorisation() throws Exception {
 
-		final BlockingQueue<Integer> autobahn = new LinkedBlockingQueue<Integer>();
-		final BlockingQueue<Integer> landstrasse = new LinkedBlockingQueue<Integer>();
-		final List<BlockingQueue<Integer>> inputList = new ArrayList<BlockingQueue<Integer>>();
+		final BlockingQueue<Integer> autobahn = new LinkedBlockingQueue<>();
+		final BlockingQueue<Integer> landstrasse = new LinkedBlockingQueue<>();
+		final List<BlockingQueue<Integer>> inputList = new ArrayList<>();
 		inputList.add(autobahn);
 		inputList.add(landstrasse);
 
-		final BlockingQueue<Integer> output = new SynchronousQueue<Integer>(true);
+		final BlockingQueue<Integer> output = new SynchronousQueue<>(true);
 
-		final BlockingQueueMixer<Integer> mixer = new BlockingQueueMixer<Integer>(inputList, output);
+		final BlockingQueueMixer<Integer> mixer = new BlockingQueueMixer<>(inputList, output);
 		mixer.start("Mixer");
 		try {
 			final int base = 1000;

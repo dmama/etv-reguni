@@ -16,7 +16,7 @@ public class DataHelperTest extends WithoutSpringTest {
 	 */
 	@Test
 	public void testPartsConversion() {
-		final Set<TiersPart> set = new HashSet<TiersPart>();
+		final Set<TiersPart> set = new HashSet<>();
 		set.addAll(Arrays.asList(TiersPart.values()));
 		DataHelper.webToCore(set);
 	}

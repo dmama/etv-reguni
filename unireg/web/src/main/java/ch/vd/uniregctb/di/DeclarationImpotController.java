@@ -329,7 +329,7 @@ public class DeclarationImpotController {
 		}
 		else {
 			// [UNIREG-889] il y reste plusieurs DIs à créer : on demande à l'utilisateur de choisir
-			final ArrayList<ChoixDeclarationImpotView> views = new ArrayList<ChoixDeclarationImpotView>(ranges.size());
+			final ArrayList<ChoixDeclarationImpotView> views = new ArrayList<>(ranges.size());
 			for (PeriodeImposition r : ranges) {
 				views.add(new ChoixDeclarationImpotView(r, r.isOptionnelle()));
 			}

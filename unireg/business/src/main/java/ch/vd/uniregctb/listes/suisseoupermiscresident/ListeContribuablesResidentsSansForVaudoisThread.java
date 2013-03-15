@@ -39,7 +39,7 @@ public class ListeContribuablesResidentsSansForVaudoisThread extends ListesThrea
 	private static final Set<TiersDAO.Parts> PARTS_FISCALES;
 
 	static {
-		final Set<TiersDAO.Parts> parts = new HashSet<TiersDAO.Parts>(ListesThread.PARTS_FISCALES.size() + 1);
+		final Set<TiersDAO.Parts> parts = new HashSet<>(ListesThread.PARTS_FISCALES.size() + 1);
 		parts.addAll(ListesThread.PARTS_FISCALES);
 		parts.add(TiersDAO.Parts.ADRESSES);
 

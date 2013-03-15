@@ -85,7 +85,7 @@ public class ListeDroitsAccesJob extends JobDefinition {
 
 		// on résoud les noms, prénom, oid, adresses, opérateurs, ... des droits d'accès
 		final BatchTransactionTemplate<Number, ListeDroitsAccesResults> t =
-				new BatchTransactionTemplate<Number, ListeDroitsAccesResults>(daIds, 100, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE, transactionManager, statusManager, hibernateTemplate);
+				new BatchTransactionTemplate<>(daIds, 100, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE, transactionManager, statusManager, hibernateTemplate);
 		t.setReadonly(true);
 		t.execute(rapportFinal, new BatchTransactionTemplate.BatchCallback<Number, ListeDroitsAccesResults>() {
 			@Override

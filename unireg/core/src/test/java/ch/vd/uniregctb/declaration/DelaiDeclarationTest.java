@@ -18,7 +18,7 @@ public class DelaiDeclarationTest extends WithoutSpringTest {
 
 	@Test
 	public void testComparatorListeOrdonnee() throws Exception {
-		List<DelaiDeclaration> list = new ArrayList<DelaiDeclaration>();
+		List<DelaiDeclaration> list = new ArrayList<>();
 		list.add(newDelaiDeclaration(date(2000, 1, 1)));
 		list.add(newDelaiDeclaration(date(2003, 1, 1)));
 		list.add(newDelaiDeclaration(date(2003, 1, 3)));
@@ -31,7 +31,7 @@ public class DelaiDeclarationTest extends WithoutSpringTest {
 
 	@Test
 	public void testComparatorListeDesordonnee() throws Exception {
-		List<DelaiDeclaration> list = new ArrayList<DelaiDeclaration>();
+		List<DelaiDeclaration> list = new ArrayList<>();
 		list.add(newDelaiDeclaration(date(2003, 1, 1)));
 		list.add(newDelaiDeclaration(date(2003, 1, 3)));
 		list.add(newDelaiDeclaration(date(2000, 1, 1)));
@@ -44,7 +44,7 @@ public class DelaiDeclarationTest extends WithoutSpringTest {
 
 	@Test
 	public void testComparatorListeAvecDelaisAnnules() throws Exception {
-		List<DelaiDeclaration> list = new ArrayList<DelaiDeclaration>();
+		List<DelaiDeclaration> list = new ArrayList<>();
 		list.add(newDelaiDeclaration(date(2000, 1, 1)));
 		list.add(newDelaiDeclaration(date(2003, 1, 1)));
 		final DelaiDeclaration d = newDelaiDeclaration(date(2003, 1, 1));
