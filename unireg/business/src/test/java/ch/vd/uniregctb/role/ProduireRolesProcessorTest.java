@@ -478,7 +478,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
-	@Ignore // FIXME (msi) demander à David Radelfinger si un sourcier qui change de commune vaudoise en cours d'année 2008 doit apparaître comme partant fin 2007 ou fin 2008
+	@Ignore // FIXME (jde) demander à David Radelfinger si un sourcier qui change de commune vaudoise en cours d'année 2008 doit apparaître comme partant fin 2007 ou fin 2008
 	public void testRunSourcierPartiHorsSuisseEtRevenuDansAutreCommuneLaMemeAnneePuisRetourPremiereCommuneAnneeSuivante() throws Exception {
 
 		final long noIndividu = 183747L;
