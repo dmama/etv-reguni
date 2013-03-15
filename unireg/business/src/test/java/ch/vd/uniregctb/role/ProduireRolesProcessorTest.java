@@ -7,7 +7,6 @@ import java.util.Map;
 
 import junit.framework.Assert;
 import org.jetbrains.annotations.Nullable;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
@@ -478,7 +477,6 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
-	@Ignore // FIXME (jde) demander à David Radelfinger si un sourcier qui change de commune vaudoise en cours d'année 2008 doit apparaître comme partant fin 2007 ou fin 2008
 	public void testRunSourcierPartiHorsSuisseEtRevenuDansAutreCommuneLaMemeAnneePuisRetourPremiereCommuneAnneeSuivante() throws Exception {
 
 		final long noIndividu = 183747L;
@@ -524,7 +522,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 
 			final InfoContribuable infoCtb = infoBussigny.getInfoPourContribuable(idMarie);
 
-			assertInfo(idMarie, TypeContribuable.SOURCE, MockCommune.Bussigny.getNoOFS(), date(2007, 10, 1), date(2008, 5, 15), MotifFor.ARRIVEE_HS, MotifFor.DEMENAGEMENT_VD, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, infoCtb);
+			assertInfo(idMarie, TypeContribuable.SOURCE, MockCommune.Bussigny.getNoOFS(), date(2007, 10, 1), null, MotifFor.ARRIVEE_HS, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoCtb);
 
 			assertEquals(1, infoBussigny.getInfosContribuables().size());
 		}
