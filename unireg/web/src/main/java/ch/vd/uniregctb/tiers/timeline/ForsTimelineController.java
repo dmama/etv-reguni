@@ -65,6 +65,11 @@ public class ForsTimelineController {
 	                    @RequestParam(value = TITLE, required = false) String title,
 	                    @RequestParam(value = DESCRIPTION, required = false) String description) throws AccessDeniedException {
 
+		if (forPrint != null && forPrint) { // on veut voir tous les assujettissements dans la vue pour impression
+			showAssujettissementsSource = true;
+			showAssujettissementsRole = true;
+		}
+
 		final ForsTimelineView bean = new ForsTimelineView(showForsGestion, showAssujettissementsSource, showAssujettissementsRole, showAssujettissements, showPeriodesImposition);
 		controllerUtils.checkAccesDossierEnLecture(id);
 		bean.setTiersId(id);
