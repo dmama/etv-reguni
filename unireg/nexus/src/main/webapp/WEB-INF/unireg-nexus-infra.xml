@@ -32,6 +32,10 @@
 		<property name="statsService" ref="statsService" />
 	</bean>
 
-	<alias alias="serviceInfrastructureRaw" name="serviceInfrastructureCache"/>
+	<bean id="serviceInfrastructureEndPoint" class="ch.vd.unireg.interfaces.infra.ServiceInfrastructureEndPoint">
+		<property name="target" ref="serviceInfrastructureCache"/>
+	</bean>
+
+	<alias alias="serviceInfrastructureRaw" name="serviceInfrastructureEndPoint"/>
 
 </beans>

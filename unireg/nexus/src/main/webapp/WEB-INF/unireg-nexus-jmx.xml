@@ -75,4 +75,16 @@
 		</constructor-arg>
 	</bean>
 
+	<bean name="accessLoadJmxBean" class="ch.vd.uniregctb.jmx.ServiceLoadJmxBeanContainer">
+		<property name="statsService" ref="statsService"/>
+		<property name="exporter" ref="jmxExporter"/>
+		<property name="objectNamePrefix" value="ch.vd.uniregctb-nexus:type=Monitoring,resourceName=AccessLoad,name="/>
+		<property name="services">
+			<map>
+				<entry key="ServiceCivil" value-ref="serviceCivilEndPoint"/>
+				<entry key="ServiceInfra" value-ref="serviceInfrastructureEndPoint"/>
+			</map>
+		</property>
+	</bean>
+
 </beans>
