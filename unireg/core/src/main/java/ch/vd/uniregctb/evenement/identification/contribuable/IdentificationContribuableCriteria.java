@@ -155,4 +155,23 @@ public class IdentificationContribuableCriteria {
 	public void setDateTraitementFin(Date dateTraitementFin) {
 		this.dateTraitementFin = dateTraitementFin;
 	}
+	public boolean isEmpty(){
+		return dateMessageDebut==null &&
+				dateMessageFin==null &&
+				dateNaissance == null &&
+				dateTraitementDebut == null &&
+				dateTraitementFin == null &&
+				emetteurId == null &&
+				NAVS11 == null &&
+				etatMessage ==null &&
+				NAVS13 == null &&
+				nom == null &&
+				periodeFiscale == null &&
+				prenoms == null &&
+				etatMessage == null &&
+				prioriteEmetteur == null&&
+				typeMessage == null &&
+				traitementUser == null;
+
+	}
 }

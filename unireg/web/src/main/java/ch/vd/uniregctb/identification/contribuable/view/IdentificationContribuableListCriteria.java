@@ -25,6 +25,8 @@ public class IdentificationContribuableListCriteria extends IdentificationContri
 		this.tabIdsMessages = tabIdsMessages;
 	}
 
-
+	public boolean isEmpty() {
+		return super.isEmpty();
+	}
 
 }

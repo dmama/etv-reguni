@@ -164,7 +164,9 @@ public class IdentificationController {
 
 	@RequestMapping(value = {"/gestion-messages/demandeEdit.do"}, method = RequestMethod.POST)
 	@SecurityCheck(rolesToCheck = {Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_GEST_BO}, accessDeniedMessage = ACCESS_DENIED_UNLOCK_MESSAGE)
-	protected ModelAndView demanderEditionMessage(HttpServletRequest request, @RequestParam(value = "id", required = true) Long idMessage,  @RequestParam(value = "source", required = true) String source,ModelMap model) throws Exception {
+	protected ModelAndView demanderEditionMessage(HttpServletRequest request,
+	                                              @ModelAttribute("identificationCriteria") IdentificationContribuableListCriteria identCriteria,
+	                                              @RequestParam(value = "id", required = true) Long idMessage,  @RequestParam(value = "source", required = true) String source,ModelMap model) throws Exception {
 
 		if (!identificationMessagesEditManager.isMessageVerouille(idMessage)) {
 			return new ModelAndView("redirect:edit.do?id=" + idMessage+"&source="+source);
@@ -188,9 +190,29 @@ public class IdentificationController {
 	protected ModelAndView listerEncours(HttpServletRequest request,
 	                              @ModelAttribute("identificationCriteria") IdentificationContribuableListCriteria criteria,
 	                              BindingResult bindingResult,
+	                              @RequestParam(value = "keepCriteria", required = false) String keepCriteria,
 	                              ModelMap model) throws AdressesResolutionException {
 
+		criteria = manageCriteria(request, criteria, "identificationCriteriaEnCours", keepCriteria);
 		return buildResponseForMessageEnCours(request, criteria, model);
+	}
+
+	/**Permet de conserver les critères sélectionneées des messages dans la session
+	 *
+	 * @param request
+	 * @param criteria
+	 * @param criteriaName
+	 * @param keepCriteria
+	 */
+	private IdentificationContribuableListCriteria manageCriteria(HttpServletRequest request, IdentificationContribuableListCriteria criteria, String criteriaName, String keepCriteria) {
+		if (criteria.isEmpty()) {
+			IdentificationContribuableListCriteria savedCriteria = (IdentificationContribuableListCriteria) request.getSession().getAttribute(criteriaName);
+			if (savedCriteria != null && !savedCriteria.isEmpty() && keepCriteria!=null) {
+				criteria = savedCriteria;
+			}
+		}
+		request.getSession().setAttribute(criteriaName,criteria);
+		return criteria;
 	}
 
 	@RequestMapping(value = {"/gestion-messages/listSuspendu.do"}, method = {RequestMethod.POST, RequestMethod.GET})
@@ -198,8 +220,10 @@ public class IdentificationController {
 	protected ModelAndView listerSuspendu(HttpServletRequest request,
 	                                     @ModelAttribute("identificationCriteria") IdentificationContribuableListCriteria criteria,
 	                                     BindingResult bindingResult,
+	                                     @RequestParam(value = "keepCriteria", required = false) String keepCriteria,
 	                                     ModelMap model) throws AdressesResolutionException {
 
+		criteria = manageCriteria(request, criteria, "identificationCriteriaEnCours", keepCriteria);
 		return buildResponseForMessageSuspendu(request, criteria, model);
 	}
 
@@ -224,7 +248,7 @@ public class IdentificationController {
 		IdentificationContribuableListCriteria criteria = identificationMessagesListManager.getView(typeMessage, periode, etat);
 		model.put("identificationCriteria", criteria);
 		construireModelMessageEnCours(request, model, criteria);
-
+		criteria = manageCriteria(request, criteria, "identificationCriteriaEnCours", null);
 		return new ModelAndView("identification/gestion-messages/list", model);
 	}
 
@@ -241,7 +265,7 @@ public class IdentificationController {
 		IdentificationContribuableListCriteria criteria = identificationMessagesListManager.getView(typeMessage, periode, etat);
 		model.put("identificationCriteria", criteria);
 		construireModelMessageSuspendu(request, model, criteria);
-
+		criteria = manageCriteria(request, criteria, "identificationCriteriaEnCours", null);
 		return new ModelAndView("identification/gestion-messages/list", model);
 	}
 
@@ -251,8 +275,10 @@ public class IdentificationController {
 	protected ModelAndView listerTraite(HttpServletRequest request,
 	                              @ModelAttribute("identificationCriteria") IdentificationContribuableListCriteria criteria,
 	                              BindingResult bindingResult,
+	                              @RequestParam(value = "keepCriteria", required = false) String keepCriteria,
 	                              ModelMap model) throws AdressesResolutionException {
 
+		criteria = manageCriteria(request, criteria, "identificationCriteriaTraite", keepCriteria);
 		return buildReponseForMessageTraite(request, model, criteria);
 	}
 
@@ -271,7 +297,7 @@ public class IdentificationController {
 		IdentificationContribuableListCriteria criteria = identificationMessagesListManager.getView(typeMessage, periode, etat);
 		model.put("identificationCriteria", criteria);
 		construireModelMessageTraite(request, model, criteria);
-
+		criteria = manageCriteria(request, criteria, "identificationCriteriaTraite", null);
 		return new ModelAndView("identification/gestion-messages/list", model);
 	}
 

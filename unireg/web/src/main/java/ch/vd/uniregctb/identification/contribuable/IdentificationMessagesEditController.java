@@ -124,12 +124,12 @@ public class IdentificationMessagesEditController extends AbstractTiersListContr
 	private void calculerView(HttpServletRequest request, ModelAndView mav) {
 		final String source = (String) request.getSession().getAttribute(SOURCE_PARAMETER);
 		if ("enCours".equals(source)) {
-			mav.setView(new RedirectView("listEnCours.do"));
+			mav.setView(new RedirectView("listEnCours.do?keepCriteria=true"));
 		}
 
 
 		if ("suspendu".equals(source)) {
-			mav.setView(new RedirectView("listSuspendu.do"));
+			mav.setView(new RedirectView("listSuspendu.do?keepCriteria=true"));
 		}
 	}
 
