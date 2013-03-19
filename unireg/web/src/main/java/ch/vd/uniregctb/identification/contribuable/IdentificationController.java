@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
@@ -566,6 +567,17 @@ public class IdentificationController {
 			for (int i = 0; i < tabIdsMessages.length; i++) {
 				identificationMessagesEditManager.verouillerMessage(tabIdsMessages[i]);
 			}
+		}
+	}
+	public static void  calculerView(HttpServletRequest request, ModelAndView mav,String source_param) {
+		final String source = (String) request.getSession().getAttribute(source_param);
+		if ("enCours".equals(source)) {
+			mav.setView(new RedirectView("listEnCours.do?keepCriteria=true"));
+		}
+
+
+		if ("suspendu".equals(source)) {
+			mav.setView(new RedirectView("listSuspendu.do?keepCriteria=true"));
 		}
 	}
 }

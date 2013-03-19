@@ -105,29 +105,19 @@ public class IdentificationMessagesNonIdentifieController extends AbstractIdenti
 				identificationMessagesEditManager.impossibleAIdentifier(bean);
 				identificationMessagesEditManager.deVerouillerMessage(idMessage, false);
 
-				calculerView(request,mav);
+				IdentificationController.calculerView(request, mav,SOURCE_PARAMETER);
 
 			}
 		}
 		else {
 			//Le message est déjà traité, l'utilisateur s'amuse avec le bouton back
 			Flash.warning(String.format("Ce message a déjà été traité, vous avez été redirigé vers la liste de messages en cours"));
-			calculerView(request,mav);
+			IdentificationController.calculerView(request, mav,SOURCE_PARAMETER);
 		}
 
 		return mav;
 	}
-	private void calculerView(HttpServletRequest request, ModelAndView mav) {
-		final String source = (String) request.getSession().getAttribute(SOURCE_PARAMETER);
-		if ("enCours".equals(source)) {
-			mav.setView(new RedirectView("listEnCours.do?keepCriteria=true"));
-		}
 
-
-		if ("suspendu".equals(source)) {
-			mav.setView(new RedirectView("listSuspendu.do?keepCriteria=true"));
-		}
-	}
 
 
 }

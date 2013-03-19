@@ -115,23 +115,13 @@ public class IdentificationMessagesEditController extends AbstractTiersListContr
 			identificationMessagesEditManager.deVerouillerMessage(bean.getDemandeIdentificationView().getId(), false);
 			removeModuleFromSession(request, PP_CRITERIA_NAME);
 
-			calculerView(request, mav);
+			IdentificationController.calculerView(request, mav,SOURCE_PARAMETER);
 
 		}
 		return mav;
 	}
 
-	private void calculerView(HttpServletRequest request, ModelAndView mav) {
-		final String source = (String) request.getSession().getAttribute(SOURCE_PARAMETER);
-		if ("enCours".equals(source)) {
-			mav.setView(new RedirectView("listEnCours.do?keepCriteria=true"));
-		}
 
-
-		if ("suspendu".equals(source)) {
-			mav.setView(new RedirectView("listSuspendu.do?keepCriteria=true"));
-		}
-	}
 
 	/**
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object,
@@ -170,7 +160,7 @@ public class IdentificationMessagesEditController extends AbstractTiersListContr
 
 					identificationMessagesEditManager.deVerouillerMessage(bean.getDemandeIdentificationView().getId(), false);
 
-					calculerView(request, mav);
+					IdentificationController.calculerView(request, mav,SOURCE_PARAMETER);
 
 					return mav;
 				}
@@ -182,7 +172,7 @@ public class IdentificationMessagesEditController extends AbstractTiersListContr
 				// permettre que la vu soit recharger après modif
 				removeModuleFromSession(request, PP_CRITERIA_NAME);
 
-				calculerView(request, mav);
+				IdentificationController.calculerView(request, mav,SOURCE_PARAMETER);
 
 				return mav;
 			}
@@ -191,7 +181,7 @@ public class IdentificationMessagesEditController extends AbstractTiersListContr
 				identificationMessagesEditManager.impossibleAIdentifier(null);
 				identificationMessagesEditManager.deVerouillerMessage(bean.getDemandeIdentificationView().getId(), false);
 
-				calculerView(request, mav);
+				IdentificationController.calculerView(request, mav,SOURCE_PARAMETER);
 
 				return mav;
 			}
@@ -208,7 +198,7 @@ public class IdentificationMessagesEditController extends AbstractTiersListContr
 		else {
 			//Le message est déjà traité, l'utilisateur s'amuse avec le bouton back
 			Flash.warning(String.format("Ce message a déjà été traité, vous avez été redirigé vers la liste de messages en cours"));
-			calculerView(request, mav);
+			IdentificationController.calculerView(request, mav,SOURCE_PARAMETER);
 		}
 
 		return mav;
