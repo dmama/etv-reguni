@@ -126,9 +126,8 @@ public class ServiceInfrastructureMarshaller implements ServiceInfrastructureRaw
 	}
 
 	@Override
-	public List<CollectiviteAdministrative> getCollectivitesAdministratives(List<EnumTypeCollectivite> typesCollectivite)
-			throws ServiceInfrastructureException {
-		return hostService.getCollectivitesAdministratives();
+	public List<CollectiviteAdministrative> getCollectivitesAdministratives(List<EnumTypeCollectivite> typesCollectivite) throws ServiceInfrastructureException {
+		return hostService.getCollectivitesAdministratives(typesCollectivite);
 	}
 
 	@Override
