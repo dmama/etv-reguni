@@ -45,7 +45,7 @@
 
 	<tiles:put name="body">
 		<div class="about">
-			<div>Unireg est le registre des contribuables de l'Etat de Vaud. Copyright (c) 2012, Etat-de-Vaud.</div>
+			<div>Unireg est le registre des contribuables de l'Etat de Vaud. Copyright (c) 2013, Etat-de-Vaud.</div>
 			<div>
 				<fieldset>
 					<table>
@@ -69,40 +69,40 @@
 
 				<h4>Spécifications :</h4>
 				<ul>
-					<li>Andréa Osmani</li>
 					<li>Christophe Ollivier</li>
 				</ul>
 
 				<h4>Développement :</h4>
 				<ul>
 					<li>Baba Issa Ngom</li>
-					<li>Frédéric Noguier</li>
 					<li>Jacob Deker (chef de projet)</li>
-					<li>Manuel Siggen</li>
 				</ul>
 
 				<h4>Assurance qualité :</h4>
 				<ul>
 					<li>Jérome Jacques</li>
-					<li>Laurent Perret</li>
-					<li>Smita Roy</li>
 				</ul>
 
 				<h3>Personnes ayant contribué à Unireg par le passé</h3>
 				<ul>
 					<li>Akram Ben Aissi</li>
+					<li>Andréa Osmani</li>
 					<li>Annie Ourliac</li>
 					<li>Christophe Friederich</li>
 					<li>Claudio Parnenzini</li>
 					<li>Céline Grand</li>
 					<li>David Dublancher</li>
 					<li>François Dardare</li>
+					<li>Frédéric Noguier</li>
 					<li>Gilles Dubey</li>
 					<li>Jean-Eric Cuendet</li>
 					<li>Kamel Chabane</li>
+					<li>Laurent Perret</li>
 					<li>Ludovic Bertin</li>
+					<li>Manuel Siggen</li>
 					<li>Pavel Blanco</li>
 					<li>Raphaël Carbo</li>
+					<li>Smita Roy</li>
 					<li>Thierry Declercq</li>
 				</ul>
 			</div>
