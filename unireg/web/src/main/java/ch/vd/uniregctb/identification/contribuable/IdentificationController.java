@@ -182,8 +182,10 @@ public class IdentificationController {
 	protected ModelAndView listerEncours(HttpServletRequest request,
 	                              @ModelAttribute("identificationCriteria") IdentificationContribuableListCriteria criteria,
 	                              BindingResult bindingResult,
+	                              @RequestParam(value = "keepCriteria", required = false) String keepCriteria,
 	                              ModelMap model) throws AdressesResolutionException {
 
+		criteria = manageCriteria(request, criteria, "identificationCriteriaEnCours", keepCriteria);
 		return buildResponseForMessageEnCours(request, criteria, model);
 	}
 
@@ -202,6 +204,7 @@ public class IdentificationController {
 		IdentificationContribuableListCriteria criteria = identificationMessagesListManager.getView(typeMessage, periode, etat);
 		model.put("identificationCriteria", criteria);
 		construireModelMessageEnCours(request, model, criteria);
+		criteria = manageCriteria(request, criteria, "identificationCriteriaEnCours", null);
 
 		return new ModelAndView("identification/gestion-messages/list", model);
 	}
@@ -212,8 +215,10 @@ public class IdentificationController {
 	protected ModelAndView listerTraite(HttpServletRequest request,
 	                              @ModelAttribute("identificationCriteria") IdentificationContribuableListCriteria criteria,
 	                              BindingResult bindingResult,
+	                              @RequestParam(value = "keepCriteria", required = false) String keepCriteria,
 	                              ModelMap model) throws AdressesResolutionException {
 
+		criteria = manageCriteria(request, criteria, "identificationCriteriaTraite", keepCriteria);
 		return buildReponseForMessageTraite(request, model, criteria);
 	}
 
@@ -232,7 +237,7 @@ public class IdentificationController {
 		IdentificationContribuableListCriteria criteria = identificationMessagesListManager.getView(typeMessage, periode, etat);
 		model.put("identificationCriteria", criteria);
 		construireModelMessageTraite(request, model, criteria);
-
+		criteria = manageCriteria(request, criteria, "identificationCriteriaTraite", null);
 		return new ModelAndView("identification/gestion-messages/list", model);
 	}
 
@@ -452,5 +457,34 @@ public class IdentificationController {
 				identificationMessagesEditManager.verouillerMessage(tabIdsMessages[i]);
 			}
 		}
+	}
+
+	/**
+	 * Permet de conserver les critères sélectionneées des messages dans la session
+	 *
+	 * @param request
+	 * @param criteria
+	 * @param criteriaName
+	 * @param keepCriteria
+	 */
+
+	private IdentificationContribuableListCriteria manageCriteria(HttpServletRequest request, IdentificationContribuableListCriteria criteria, String criteriaName, String keepCriteria) {
+
+		if (criteria.isEmpty()) {
+
+			IdentificationContribuableListCriteria savedCriteria = (IdentificationContribuableListCriteria) request.getSession().getAttribute(criteriaName);
+
+			if (savedCriteria != null && !savedCriteria.isEmpty() && keepCriteria != null) {
+
+				criteria = savedCriteria;
+
+			}
+
+		}
+
+		request.getSession().setAttribute(criteriaName, criteria);
+
+		return criteria;
+
 	}
 }

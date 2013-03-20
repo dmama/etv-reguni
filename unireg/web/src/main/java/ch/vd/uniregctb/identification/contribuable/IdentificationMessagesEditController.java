@@ -115,7 +115,7 @@ public class IdentificationMessagesEditController extends AbstractTiersListContr
 			identificationMessagesEditManager.deVerouillerMessage(bean.getDemandeIdentificationView().getId(), false);
 			removeModuleFromSession(request, PP_CRITERIA_NAME);
 
-			mav.setView(new RedirectView("listEnCours.do"));
+			mav.setView(new RedirectView("listEnCours.do?keepCriteria=true"));
 		}
 		return mav;
 	}
@@ -157,7 +157,7 @@ public class IdentificationMessagesEditController extends AbstractTiersListContr
 
 					identificationMessagesEditManager.deVerouillerMessage(bean.getDemandeIdentificationView().getId(), false);
 
-					mav.setView(new RedirectView("listEnCours.do"));
+					mav.setView(new RedirectView("listEnCours.do?keepCriteria=true"));
 
 					return mav;
 				}
@@ -169,7 +169,7 @@ public class IdentificationMessagesEditController extends AbstractTiersListContr
 				// permettre que la vu soit recharger après modif
 				removeModuleFromSession(request, PP_CRITERIA_NAME);
 
-				mav.setView(new RedirectView("listEnCours.do"));
+				mav.setView(new RedirectView("listEnCours.do?keepCriteria=true"));
 
 				return mav;
 			}
@@ -178,7 +178,7 @@ public class IdentificationMessagesEditController extends AbstractTiersListContr
 				identificationMessagesEditManager.impossibleAIdentifier(null);
 				identificationMessagesEditManager.deVerouillerMessage(bean.getDemandeIdentificationView().getId(), false);
 
-				mav.setView(new RedirectView("listEnCours.do"));
+				mav.setView(new RedirectView("listEnCours.do?keepCriteria=true"));
 
 				return mav;
 			}
@@ -195,7 +195,7 @@ public class IdentificationMessagesEditController extends AbstractTiersListContr
 		else {
 			//Le message est déjà traité, l'utilisateur s'amuse avec le bouton back
 			Flash.warning(String.format("Ce message a déjà été traité, vous avez été redirigé vers la liste de messages en cours"));
-			mav.setView(new RedirectView("listEnCours.do"));
+			mav.setView(new RedirectView("listEnCours.do?keepCriteria=true"));
 		}
 
 		return mav;

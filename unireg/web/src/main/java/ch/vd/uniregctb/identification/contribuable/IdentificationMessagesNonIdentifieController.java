@@ -105,14 +105,14 @@ public class IdentificationMessagesNonIdentifieController extends AbstractIdenti
 				identificationMessagesEditManager.impossibleAIdentifier(bean);
 				identificationMessagesEditManager.deVerouillerMessage(idMessage, false);
 
-				mav.setView(new RedirectView("listEnCours.do"));
+				mav.setView(new RedirectView("listEnCours.do?keepCriteria=true"));
 
 			}
 		}
 		else {
 			//Le message est déjà traité, l'utilisateur s'amuse avec le bouton back
 			Flash.warning(String.format("Ce message a déjà été traité, vous avez été redirigé vers la liste de messages en cours"));
-			mav.setView(new RedirectView("listEnCours.do"));
+			mav.setView(new RedirectView("listEnCours.do?keepCriteria=true"));
 		}
 
 		return mav;
