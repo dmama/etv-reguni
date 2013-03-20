@@ -3,11 +3,9 @@
 # et sort des lignes pour les temps d'accès aux service civil (getIndividu et getIndividus) - moyenne des cinq dernières minutes
 
 echo "TIMESTAMP;getIndividu;getIndividus"
-sed -e '/Statistiques des caches et services/,/ - getIndividus/ !D' -- "$@" | grep "\(INFO\|Individu\)" | awk ' /INFO/ { print $3 " " $4; } / - getIndividu/ { print $2 " " $4; }' | sed -e '/:/ N;/:/ N' -e 's/\n/;/g' -e 's/[^a-zA-Z0-9:;. -]//g' | while IFS=";" read TS INFO1 INFO2; do
 
-	IND=$(echo -e "$INFO1\n$INFO2" | grep "^getIndividu\b")
-	INDS=$(echo -e "$INFO1\n$INFO2" | grep "^getIndividus\b")
-	IFS=";" read IND INDS < <(echo "$IND;$INDS" | sed -e 's/[^0-9;]//g')
-	echo "$TS;$IND;$INDS"
+sed -e '/Statistiques des caches et services/,/nexus/{!d;$d}' -- "$@" | awk '/logStats/ { print $3 " " $4; } / - getIndividus/ { print $2 " " $7; } / - getIndividu / { print $2 " " $4; }' | sed -e '/getIndividu/ s/[^0-9a-zA-Z ]//g' -e '/[0-9]/ !D' | tac | sed -e '/get/ N;s/\n/;/' -e '/get.*[0-9]$/ N;s/\n/;/' | sed -e '/get/!D' | tac | sed -e 's/[^0-9a-zA-Z :.;-]//g' -e '/get.*get/! s/^/;/' -e 's/getIndividu[s ]\+//g' | sed -e 's/;0;/;;/' -e 's/;0$/;/' | while IFS=";" read PL SG TS; do
+
+	echo "$TS;$SG;$PL"
 
 done
