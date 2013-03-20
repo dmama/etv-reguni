@@ -1,51 +1,35 @@
 package ch.vd.uniregctb.iban;
 
 import junit.framework.Assert;
-import org.apache.log4j.Logger;
 import org.junit.Test;
-import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.common.WithoutSpringTest;
 
-public class IbanHelperTest extends BusinessTest {
-
-	private static final Logger LOGGER = Logger.getLogger(IbanHelperTest.class);
-
+public class IbanHelperTest extends WithoutSpringTest {
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
-	public void testRemoveSpaceAndDoUpperCase() {
-
-		LOGGER.debug("Début de test removeSpaceAndDoUpperCase");
-
-
-		final String ibanATraiter = " ch 93084 407174 2729 019 8";
-		final String ibanCorrect = "CH9308440717427290198";
-		String newIban = IbanHelper.removeSpaceAndDoUpperCase(ibanATraiter);
-		Assert.assertEquals(newIban, ibanCorrect);
-
-		String ibanNull=null;
-		Assert.assertNull(IbanHelper.removeSpaceAndDoUpperCase(ibanNull));
+	public void testNormalize() {
+		Assert.assertNull(IbanHelper.normalize(null));
+		Assert.assertNull(IbanHelper.normalize("    --/"));
+		Assert.assertEquals("CH9308440717427290198", IbanHelper.normalize(" ch 93084 407174 2729 019 8"));
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
-	public void testPerfRemoveSpaceAndDoUpperCase() {
-
-		LOGGER.debug("Début de test removeSpaceAndDoUpperCase");
-
-
-		final String ibanATraiter = " ch 93084 407174 2729 019 8";
-		final String ibanCorrect = "CH9308440717427290198";
-		long startTime = System.currentTimeMillis();
-		String newIban = IbanHelper.removeSpaceAndDoUpperCase(ibanATraiter);
-		long time = System.currentTimeMillis() - startTime;
-		LOGGER.info("Temps d'execution removeSpaceUpperCase: " + time+" ms");
-		Assert.assertEquals(newIban, ibanCorrect);
-
-		String ibanNull=null;
-		Assert.assertNull(IbanHelper.removeSpaceAndDoUpperCase(ibanNull));
+	public void testToDisplayString() {
+		Assert.assertEquals(null, IbanHelper.toDisplayString(null));
+		Assert.assertEquals("TORTILLA", IbanHelper.toDisplayString("TORTILLA"));
+		Assert.assertEquals("CH93084407174272901983", IbanHelper.toDisplayString("CH93084407174272901983"));    // invalide : un caractère en trop
+		Assert.assertEquals("CH93 0844 0717 4272 9019 8", IbanHelper.toDisplayString("CH9308440717427290198"));
 	}
 
+	@Test
+	public void testAreSame() {
+		Assert.assertTrue(IbanHelper.areSame(null, null));
+		Assert.assertTrue(IbanHelper.areSame("   ", null));
+		Assert.assertTrue(IbanHelper.areSame("CH9308440717427290198", " ch 93084 407174 2729 019 8"));
+		Assert.assertTrue(IbanHelper.areSame("CH93084407174272901983", " ch 93084 407174 2729 019 83"));       // même invalide, on normalize
 
+		Assert.assertFalse(IbanHelper.areSame("CH9308440717427290198", null));
+		Assert.assertFalse(IbanHelper.areSame("CH93084407174272901983", " ch 93084 407174 2729 019 8"));
+	}
 }

@@ -14,6 +14,7 @@ import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.entreprise.EntrepriseView;
+import ch.vd.uniregctb.iban.IbanHelper;
 import ch.vd.uniregctb.interfaces.InterfaceDataException;
 import ch.vd.uniregctb.tiers.AutreCommunaute;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -405,8 +406,7 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 		// compte bancaire
 		final CompteBancaireView compteBancaire = complement.getCompteBancaire();
 		if (compteBancaire != null) {
-			final String ibanSaisi = FormatNumeroHelper.removeSpaceAndDash(compteBancaire.getIban());
-			tiers.setNumeroCompteBancaire(StringUtils.trimToNull(StringUtils.upperCase(ibanSaisi)));
+			tiers.setNumeroCompteBancaire(IbanHelper.normalize(compteBancaire.getIban()));
 			tiers.setTitulaireCompteBancaire(StringUtils.trimToNull(compteBancaire.getTitulaireCompteBancaire()));
 			tiers.setAdresseBicSwift(StringUtils.trimToNull(FormatNumeroHelper.removeSpaceAndDash(compteBancaire.getAdresseBicSwift())));
 		}
