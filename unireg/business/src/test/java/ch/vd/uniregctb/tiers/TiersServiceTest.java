@@ -5672,7 +5672,7 @@ public class TiersServiceTest extends BusinessTest {
 
 				tiersService.annuleForFiscal(ffp);
 				// l'update du flag habitant est maintenant découplée des fors fiscaux -> ajouté l'appel explicitement dans le test
-				tiersService.updateHabitantFlag(pp, pp.getNumeroIndividu(), dateFinResidenceVD, null);
+				tiersService.updateHabitantStatus(pp, pp.getNumeroIndividu(), dateFinResidenceVD, null);
 				return null;
 			}
 		});

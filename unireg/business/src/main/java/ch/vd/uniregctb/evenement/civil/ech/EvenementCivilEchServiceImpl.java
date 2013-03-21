@@ -239,7 +239,7 @@ public class EvenementCivilEchServiceImpl implements EvenementCivilEchService, I
 	    try {
 		    final PersonnePhysique pp = tiersDAO.getPPByNumeroIndividu(numeroIndividu);
 		    if (pp != null) {
-			    tiersService.updateHabitantFlag(pp, numeroIndividu, evt.getDateEvenement(), id);
+			    tiersService.updateHabitantFlag(pp, numeroIndividu, id);
 		    }
 	    }
 	    catch (RuntimeException e) {

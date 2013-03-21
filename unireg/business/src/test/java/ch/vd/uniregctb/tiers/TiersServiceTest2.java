@@ -56,31 +56,31 @@ public class TiersServiceTest2 extends BusinessTest {
 		final MockIndividu individu = holder.getValue();
 
 		// un individu sans adresse => non-habitant
-		assertEquals(TiersService.UpdateHabitantFlagResultat.CHANGE_EN_NONHABITANT, tiersService.updateHabitantFlag(pp, noIndividu, null, null));
+		assertEquals(TiersService.UpdateHabitantFlagResultat.CHANGE_EN_NONHABITANT, tiersService.updateHabitantFlag(pp, noIndividu, null));
 		assertFalse(pp.isHabitantVD());
 
 		// un individu à Lausanne en résidence principale => habitant
 		individu.addAdresse(new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, date(1970, 1, 1), null));
-		assertEquals(TiersService.UpdateHabitantFlagResultat.CHANGE_EN_HABITANT, tiersService.updateHabitantFlag(pp, noIndividu, null, null));
+		assertEquals(TiersService.UpdateHabitantFlagResultat.CHANGE_EN_HABITANT, tiersService.updateHabitantFlag(pp, noIndividu, null));
 		assertTrue(pp.isHabitantVD());
 
 		// un individu à Lausanne en résidence secondaire => habitant
 		individu.getAdresses().clear();
 		individu.addAdresse(new MockAdresse(TypeAdresseCivil.SECONDAIRE, MockRue.Lausanne.AvenueDeMarcelin, null, date(1970, 1, 1), null));
-		assertEquals(TiersService.UpdateHabitantFlagResultat.PAS_DE_CHANGEMENT, tiersService.updateHabitantFlag(pp, noIndividu, null, null));
+		assertEquals(TiersService.UpdateHabitantFlagResultat.PAS_DE_CHANGEMENT, tiersService.updateHabitantFlag(pp, noIndividu, null));
 		assertTrue(pp.isHabitantVD());
 
 		// un individu à Genève en résidence principale => non-habitant
 		individu.getAdresses().clear();
 		individu.addAdresse(new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Geneve.AvenueGuiseppeMotta, null, date(1970, 1, 1), null));
-		assertEquals(TiersService.UpdateHabitantFlagResultat.CHANGE_EN_NONHABITANT, tiersService.updateHabitantFlag(pp, noIndividu, null, null));
+		assertEquals(TiersService.UpdateHabitantFlagResultat.CHANGE_EN_NONHABITANT, tiersService.updateHabitantFlag(pp, noIndividu, null));
 		assertFalse(pp.isHabitantVD());
 
 		// un individu à Genève en résidence principale et à Lausanne en résidence secondaire => habitant
 		individu.getAdresses().clear();
 		individu.addAdresse(new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Geneve.AvenueGuiseppeMotta, null, date(1970, 1, 1), null));
 		individu.addAdresse(new MockAdresse(TypeAdresseCivil.SECONDAIRE, MockRue.Lausanne.AvenueDeMarcelin, null, date(1970, 1, 1), null));
-		assertEquals(TiersService.UpdateHabitantFlagResultat.CHANGE_EN_HABITANT, tiersService.updateHabitantFlag(pp, noIndividu, null, null));
+		assertEquals(TiersService.UpdateHabitantFlagResultat.CHANGE_EN_HABITANT, tiersService.updateHabitantFlag(pp, noIndividu, null));
 		assertTrue(pp.isHabitantVD());
 
 		// un individu parti de Lausanne à destination vaudoise => habitant
@@ -89,7 +89,7 @@ public class TiersServiceTest2 extends BusinessTest {
 			final MockAdresse lausanne = new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, date(1970, 1, 1), date(1999, 12, 31));
 			lausanne.setLocalisationSuivante(new Localisation(LocalisationType.CANTON_VD, MockCommune.Morges.getNoOFS(), null));
 			individu.addAdresse(lausanne);
-			assertEquals(TiersService.UpdateHabitantFlagResultat.PAS_DE_CHANGEMENT, tiersService.updateHabitantFlag(pp, noIndividu, null, null));
+			assertEquals(TiersService.UpdateHabitantFlagResultat.PAS_DE_CHANGEMENT, tiersService.updateHabitantFlag(pp, noIndividu, null));
 			assertTrue(pp.isHabitantVD());
 		}
 
@@ -99,7 +99,7 @@ public class TiersServiceTest2 extends BusinessTest {
 			final MockAdresse lausanne = new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, date(1970, 1, 1), date(1999, 12, 31));
 			lausanne.setLocalisationSuivante(new Localisation(LocalisationType.HORS_CANTON, MockCommune.Neuchatel.getNoOFS(), null));
 			individu.addAdresse(lausanne);
-			assertEquals(TiersService.UpdateHabitantFlagResultat.CHANGE_EN_NONHABITANT, tiersService.updateHabitantFlag(pp, noIndividu, null, null));
+			assertEquals(TiersService.UpdateHabitantFlagResultat.CHANGE_EN_NONHABITANT, tiersService.updateHabitantFlag(pp, noIndividu, null));
 			assertFalse(pp.isHabitantVD());
 		}
 
@@ -109,7 +109,7 @@ public class TiersServiceTest2 extends BusinessTest {
 			final MockAdresse lausanne = new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, date(1970, 1, 1), date(1999, 12, 31));
 			lausanne.setLocalisationSuivante(new Localisation(LocalisationType.HORS_SUISSE, MockPays.France.getNoOFS(), null));
 			individu.addAdresse(lausanne);
-			assertEquals(TiersService.UpdateHabitantFlagResultat.PAS_DE_CHANGEMENT, tiersService.updateHabitantFlag(pp, noIndividu, null, null));
+			assertEquals(TiersService.UpdateHabitantFlagResultat.PAS_DE_CHANGEMENT, tiersService.updateHabitantFlag(pp, noIndividu, null));
 			assertFalse(pp.isHabitantVD());
 		}
 
@@ -120,7 +120,7 @@ public class TiersServiceTest2 extends BusinessTest {
 			final MockAdresse lausanne = new MockAdresse(TypeAdresseCivil.SECONDAIRE, MockRue.Lausanne.AvenueDeMarcelin, null, date(1970, 1, 1), date(1999, 12, 31));
 			lausanne.setLocalisationSuivante(new Localisation(LocalisationType.CANTON_VD, MockCommune.Morges.getNoOFS(), null));
 			individu.addAdresse(lausanne);
-			assertEquals(TiersService.UpdateHabitantFlagResultat.CHANGE_EN_HABITANT, tiersService.updateHabitantFlag(pp, noIndividu, null, null));
+			assertEquals(TiersService.UpdateHabitantFlagResultat.CHANGE_EN_HABITANT, tiersService.updateHabitantFlag(pp, noIndividu, null));
 			assertTrue(pp.isHabitantVD());
 		}
 
@@ -131,7 +131,7 @@ public class TiersServiceTest2 extends BusinessTest {
 			final MockAdresse lausanne = new MockAdresse(TypeAdresseCivil.SECONDAIRE, MockRue.Lausanne.AvenueDeMarcelin, null, date(1970, 1, 1), date(1999, 12, 31));
 			lausanne.setLocalisationSuivante(new Localisation(LocalisationType.HORS_CANTON, MockCommune.Neuchatel.getNoOFS(), null));
 			individu.addAdresse(lausanne);
-			assertEquals(TiersService.UpdateHabitantFlagResultat.CHANGE_EN_NONHABITANT, tiersService.updateHabitantFlag(pp, noIndividu, null, null));
+			assertEquals(TiersService.UpdateHabitantFlagResultat.CHANGE_EN_NONHABITANT, tiersService.updateHabitantFlag(pp, noIndividu, null));
 			assertFalse(pp.isHabitantVD());
 		}
 
@@ -142,7 +142,7 @@ public class TiersServiceTest2 extends BusinessTest {
 			final MockAdresse lausanne = new MockAdresse(TypeAdresseCivil.SECONDAIRE, MockRue.Lausanne.AvenueDeMarcelin, null, date(1970, 1, 1), date(1999, 12, 31));
 			lausanne.setLocalisationSuivante(new Localisation(LocalisationType.HORS_SUISSE, MockPays.France.getNoOFS(), null));
 			individu.addAdresse(lausanne);
-			assertEquals(TiersService.UpdateHabitantFlagResultat.PAS_DE_CHANGEMENT, tiersService.updateHabitantFlag(pp, noIndividu, null, null));
+			assertEquals(TiersService.UpdateHabitantFlagResultat.PAS_DE_CHANGEMENT, tiersService.updateHabitantFlag(pp, noIndividu, null));
 			assertFalse(pp.isHabitantVD());
 		}
 	}

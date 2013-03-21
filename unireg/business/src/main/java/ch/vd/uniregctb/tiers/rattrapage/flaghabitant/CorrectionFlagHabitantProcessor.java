@@ -86,7 +86,7 @@ public class CorrectionFlagHabitantProcessor {
 							throw new IllegalArgumentException("Le personne physique n°" + id + " ne possède pas de numéro d'individu, elle n'aurait pas dû être traitée.");
 						}
 
-						final TiersService.UpdateHabitantFlagResultat res = tiersService.updateHabitantFlag(pp, numeroIndividu, null, null);
+						final TiersService.UpdateHabitantFlagResultat res = tiersService.updateHabitantFlag(pp, numeroIndividu, null);
 						switch (res) {
 						case CHANGE_EN_HABITANT:
 							rapport.addNonHabitantChangeEnHabitant(pp);

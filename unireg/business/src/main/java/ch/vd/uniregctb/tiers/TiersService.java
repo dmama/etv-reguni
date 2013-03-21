@@ -107,13 +107,26 @@ public interface TiersService {
 
 	/**
 	 * Mis-à-jour le flag habitant en fonction de l'état de l'individu dans le registre civil.
+	 * Seul le flag est mis à jour (et les éventuelles données civiles de l'individu qui doivent être recopiées chez nous pour un non-habitant).
+	 * Il s'agit en effet d'un simple recalcul.
+	 *
+	 * @param pp              la personne physique à mettre-à-jour
+	 * @param noInd           le numéro d'individu correspondant
+	 * @param numeroEvenement le numéro de l'événement civil qui a provoqué ce recalcul
+	 */
+	public UpdateHabitantFlagResultat updateHabitantFlag(@NotNull PersonnePhysique pp, long noInd, @Nullable Long numeroEvenement);
+
+	/**
+	 * Changement de statut habitant/non-habitant (et vice-versa) à une date donnée en fonction de l'état de l'individu dans le registre civil
+	 * à cette date. Notons que le flag habitant (voir {@link #updateHabitantFlag(PersonnePhysique, long, Long)}) est re-calculé à partir
+	 * des adresses actuelles du contribuable
 	 *
 	 * @param pp              la personne physique à mettre-à-jour
 	 * @param noInd           le numéro d'individu correspondant
 	 * @param date            la date de valeur à utiliser
 	 * @param numeroEvenement le numéro de l'événement civil qui a provoqué ce changement
 	 */
-	public UpdateHabitantFlagResultat updateHabitantFlag(@NotNull PersonnePhysique pp, long noInd, @Nullable RegDate date, @Nullable Long numeroEvenement);
+	public UpdateHabitantFlagResultat updateHabitantStatus(@NotNull PersonnePhysique pp, long noInd, @Nullable RegDate date, @Nullable Long numeroEvenement);
 
 	/**
      * @param pp   personne physique dont on veut connaître la localisation du domicile

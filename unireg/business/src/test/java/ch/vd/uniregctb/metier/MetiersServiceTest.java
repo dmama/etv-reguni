@@ -2017,7 +2017,7 @@ public class MetiersServiceTest extends BusinessTest {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				Assert.assertTrue(pp.isHabitantVD());
 				metierService.deces(pp, dateDeces, "Décédé", null);
-				tiersService.updateHabitantFlag(pp, noInd, null, null);
+				tiersService.updateHabitantStatus(pp, noInd, dateDeces, null);
 				return null;
 			}
 		});
@@ -2078,7 +2078,7 @@ public class MetiersServiceTest extends BusinessTest {
 				Assert.assertTrue(pp.isHabitantVD());
 
 				metierService.deces(pp, dateDeces, "Décédé", 1L);
-				tiersService.updateHabitantFlag(pp, noIndDecede, null, null);
+				tiersService.updateHabitantStatus(pp, noIndDecede, dateDeces, null);
 				return null;
 			}
 		});
@@ -2108,7 +2108,7 @@ public class MetiersServiceTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				metierService.annuleDeces(pp, dateDeces);
-				tiersService.updateHabitantFlag(pp, noIndDecede, null, null); // [SIFISC-6841] la gestion du flag habitant est désormais séparée de la gestion des fors fiscaux
+				tiersService.updateHabitantStatus(pp, noIndDecede, dateDeces, null); // [SIFISC-6841] la gestion du flag habitant est désormais séparée de la gestion des fors fiscaux
 				return null;
 			}
 		});
@@ -2258,7 +2258,7 @@ public class MetiersServiceTest extends BusinessTest {
 				Assert.assertTrue(pp.isHabitantVD());
 
 				metierService.deces(pp, dateDeces, "Décédé", 1L);
-				tiersService.updateHabitantFlag(pp, noIndDecede, null, null);
+				tiersService.updateHabitantStatus(pp, noIndDecede, dateDeces, null);
 				return null;
 			}
 		});
@@ -2272,7 +2272,7 @@ public class MetiersServiceTest extends BusinessTest {
 				Assert.assertEquals(dateDeces, tiersService.getDateDeces(pp));
 
 				metierService.annuleDeces(pp, dateDeces);
-				tiersService.updateHabitantFlag(pp, noIndDecede, null, null);
+				tiersService.updateHabitantStatus(pp, noIndDecede, dateDeces, null);
 				return null;
 			}
 		});

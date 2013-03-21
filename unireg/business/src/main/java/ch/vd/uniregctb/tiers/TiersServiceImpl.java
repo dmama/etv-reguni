@@ -267,41 +267,41 @@ public class TiersServiceImpl implements TiersService {
         nonHabitant.setDateDebutValiditeAutorisation(null);
         nonHabitant.setIdentificationsPersonnes(null);
 
-	    if (date == null) {
-		    date = RegDate.get();
-	    }
+		// si on a donné une date de référence, on s'attaque aux situations de famille et aux adresses surchargées non-permanentes
+	    if (date != null) {
+	        //fermeture de la situation de famille si nbEnfant = 0 ou etatCivil != du civil
+	        final SituationFamille sitFam = nonHabitant.getSituationFamilleActive();
+	        if (sitFam != null) {
+	            Individu ind = getIndividu(nonHabitant);
+	            if (ind != null) {
+	                ch.vd.unireg.interfaces.civil.data.EtatCivil dernierEtatCivil = ind.getEtatCivilCourant();
+	                TypeEtatCivil etatCivilDuCivil = dernierEtatCivil == null ? null : dernierEtatCivil.getTypeEtatCivil();
+	                if (etatCivilDuCivil != null && (
+	                        sitFam.getEtatCivil() != EtatCivilHelper.civil2core(etatCivilDuCivil) ||
+	                                sitFam.getNombreEnfants() == 0)) {
+	                    situationFamilleService.closeSituationFamille(nonHabitant, date);
+	                }
+	            }
+	        }
 
-        //fermeture de la situation de famille si nbEnfant = 0 ou etatCivil != du civil
-        final SituationFamille sitFam = nonHabitant.getSituationFamilleActive();
-        if (sitFam != null) {
-            Individu ind = getIndividu(nonHabitant);
-            if (ind != null) {
-                ch.vd.unireg.interfaces.civil.data.EtatCivil dernierEtatCivil = ind.getEtatCivilCourant();
-                TypeEtatCivil etatCivilDuCivil = dernierEtatCivil == null ? null : dernierEtatCivil.getTypeEtatCivil();
-                if (etatCivilDuCivil != null && (
-                        sitFam.getEtatCivil() != EtatCivilHelper.civil2core(etatCivilDuCivil) ||
-                                sitFam.getNombreEnfants() == 0)) {
-                    situationFamilleService.closeSituationFamille(nonHabitant, date);
-                }
-            }
-        }
-        //fermeture des adresses fiscales temporaires
-        if (nonHabitant.getAdressesTiers() != null) {
-            for (AdresseTiers adr : nonHabitant.getAdressesTiers()) {
-                boolean permanente = false;
-                if (adr instanceof AdresseSupplementaire) {
-                    final AdresseSupplementaire adrSup = (AdresseSupplementaire) adr;
-                    if (adrSup.isPermanente()) {
-                        permanente = true;
-                    }
-                }
-                if (!adr.isAnnule() && adr.getDateDebut().isAfterOrEqual(date) && !permanente) {
-                    adr.setAnnule(true);
-                } else if (!adr.isAnnule() && adr.getDateFin() == null && !permanente) {
-                    adr.setDateFin(date);
-                }
-            }
-        }
+	        //fermeture des adresses fiscales temporaires
+	        if (nonHabitant.getAdressesTiers() != null) {
+	            for (AdresseTiers adr : nonHabitant.getAdressesTiers()) {
+	                boolean permanente = false;
+	                if (adr instanceof AdresseSupplementaire) {
+	                    final AdresseSupplementaire adrSup = (AdresseSupplementaire) adr;
+	                    if (adrSup.isPermanente()) {
+	                        permanente = true;
+	                    }
+	                }
+	                if (!adr.isAnnule() && adr.getDateDebut().isAfterOrEqual(date) && !permanente) {
+	                    adr.setAnnule(true);
+	                } else if (!adr.isAnnule() && adr.getDateFin() == null && !permanente) {
+	                    adr.setDateFin(date);
+	                }
+	            }
+	        }
+	    }
 
         nonHabitant.setHabitant(true);
         return nonHabitant;
@@ -370,20 +370,17 @@ public class TiersServiceImpl implements TiersService {
 
 		final PersonnePhysique pp = (PersonnePhysique) tiersDAO.save(new PersonnePhysique(numeroIndividu));
 		changeHabitantenNH(pp);
-
 		return pp;
 	}
 
-	@Override
-	public UpdateHabitantFlagResultat updateHabitantFlag(@NotNull PersonnePhysique pp, long noInd, @Nullable RegDate date, Long numeroEvenement) {
-
-		final Individu individu = serviceCivilService.getIndividu(noInd, date, AttributeIndividu.ADRESSES);
+	private UpdateHabitantFlagResultat getFlagHabitantChangementNecessaire(@NotNull PersonnePhysique pp, long noInd) {
+		final Individu individu = serviceCivilService.getIndividu(noInd, null, AttributeIndividu.ADRESSES);
 		if (individu == null) {
 			throw new IndividuNotFoundException(noInd);
 		}
 
 		// on détermine si la personne physique devrait être habitante ou non
-		final boolean dansLeCanton = (individu.getDateDeces() == null && isDomicileVaudois(pp, date));
+		final boolean dansLeCanton = (individu.getDateDeces() == null && isDomicileVaudois(pp, null));
 
 		// on met-à-jour le flag si nécessaire
 		if (dansLeCanton && pp.isHabitantVD() || (!dansLeCanton && !pp.isHabitantVD())) {
@@ -391,16 +388,41 @@ public class TiersServiceImpl implements TiersService {
 			return UpdateHabitantFlagResultat.PAS_DE_CHANGEMENT;
 		}
 
-		if (dansLeCanton) {
-			changeNHenHabitant(pp, noInd, date);
+		return dansLeCanton ? UpdateHabitantFlagResultat.CHANGE_EN_HABITANT : UpdateHabitantFlagResultat.CHANGE_EN_NONHABITANT;
+	}
+
+	/**
+	 * Gère un éventuel changement de la valeur de l'état habitant d'une personne physique. Le flag lui-même dépend de l'adresse de résidence courante
+	 * de l'individu civil, et si une date de référence est données, on considèrera qu'il s'agit d'une réelle transition à une date donnée (et pas d'une
+	 * correction de données) et cela pourra avoir une influence sur les situations de famille et les surcharges d'adresses non-permanentes valides après
+	 * cette date
+	 * @param pp la personne physique
+	 * @param noInd le numéro d'individu correspondant
+	 * @param numeroEvenement un éventuel numéro d'événement civil (pour l'audit)
+	 * @param dateReferenceDonnees une éventuelle date de référence pour la manipulation des adresses
+	 * @return un indicateur de ce qui a été fait
+	 */
+	private UpdateHabitantFlagResultat manageHabitantStatus(@NotNull PersonnePhysique pp, long noInd, @Nullable Long numeroEvenement, @Nullable RegDate dateReferenceDonnees) {
+		final UpdateHabitantFlagResultat changement = getFlagHabitantChangementNecessaire(pp, noInd);
+		if (changement == UpdateHabitantFlagResultat.CHANGE_EN_HABITANT) {
+			changeNHenHabitant(pp, noInd, dateReferenceDonnees);
 			Audit.info(numeroEvenement, "La personne physique n°" + pp.getNumero() + " a été passée habitante.");
-			return UpdateHabitantFlagResultat.CHANGE_EN_HABITANT;
 		}
-		else {
+		else if (changement == UpdateHabitantFlagResultat.CHANGE_EN_NONHABITANT) {
 			changeHabitantenNH(pp);
 			Audit.info(numeroEvenement, "La personne physique n°" + pp.getNumero() + " a été passée non-habitante.");
-			return UpdateHabitantFlagResultat.CHANGE_EN_NONHABITANT;
 		}
+		return changement;
+	}
+
+	@Override
+	public UpdateHabitantFlagResultat updateHabitantFlag(@NotNull PersonnePhysique pp, long noInd, Long numeroEvenement) {
+		return manageHabitantStatus(pp, noInd, numeroEvenement, null);
+	}
+
+	@Override
+	public UpdateHabitantFlagResultat updateHabitantStatus(@NotNull PersonnePhysique pp, long noInd, @Nullable RegDate date, Long numeroEvenement) {
+		return manageHabitantStatus(pp, noInd, numeroEvenement, date == null ? RegDate.get() : date);
 	}
 
 	@Override

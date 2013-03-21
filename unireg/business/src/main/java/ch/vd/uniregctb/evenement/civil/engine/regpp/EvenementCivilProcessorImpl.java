@@ -111,7 +111,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 		try {
 			final PersonnePhysique pp = tiersDAO.getPPByNumeroIndividu(numeroIndividu);
 			if (pp != null) {
-				tiersService.updateHabitantFlag(pp, numeroIndividu, evenementCivilExterne.getDateEvenement(), evenementCivilExterne.getId());
+				tiersService.updateHabitantFlag(pp, numeroIndividu, evenementCivilExterne.getId());
 			}
 		}
 		catch (RuntimeException e) {

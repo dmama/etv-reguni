@@ -5,7 +5,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import junit.framework.Assert;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
@@ -45,7 +44,6 @@ import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
@@ -549,10 +547,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				final TiersService.UpdateHabitantFlagResultat res = tiersService.updateHabitantFlag(pp, noIndividu, null, null);
-				Assert.assertEquals(TiersService.UpdateHabitantFlagResultat.CHANGE_EN_NONHABITANT, res);
-
+				final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
 				addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, dateDepartHc, MotifFor.DEPART_HC, MockCommune.Cossonay, ModeImposition.SOURCE);
 				addForPrincipal(pp, dateDepartHc.getOneDayAfter(), MotifFor.DEPART_HC, MockCommune.Neuchatel, ModeImposition.SOURCE);
 				return pp.getNumero();

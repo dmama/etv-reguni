@@ -5,6 +5,7 @@ import java.util.List;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
@@ -71,7 +72,6 @@ public class Ec_18000_08_Depart_HS_Arrivee_HC_Meme_Periode_Scenario extends Even
 				indAlain = addIndividu(noIndAlain, dateNaissanceAlain, "Martin", "Alain", true);
 				addNationalite(indAlain, MockPays.Suisse, dateNaissanceAlain, null);
 				addAdresse(indAlain, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateNaissanceAlain, dateDepartHS.getOneDayBefore());
-				addAdresse(indAlain, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateRetourHC, null);
 			}
 
 		});
@@ -88,7 +88,7 @@ public class Ec_18000_08_Depart_HS_Arrivee_HC_Meme_Periode_Scenario extends Even
 		final PersonnePhysique alain = addHabitant(noIndAlain);
 		addForFiscalPrincipal(alain, MockCommune.Lausanne, dateMajorite, dateDepartHS.getOneDayBefore(), MotifFor.MAJORITE, MotifFor.DEPART_HS);
 		tiersService.openForFiscalPrincipal(alain, dateDepartHS, MotifRattachement.DOMICILE, MockPays.PaysInconnu.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, ModeImposition.ORDINAIRE, MotifFor.DEPART_HS);
-		tiersService.updateHabitantFlag(alain, noIndAlain, dateDepartHS, null);
+		tiersService.updateHabitantFlag(alain, noIndAlain, null);
 		addDeclarationImpot(alain, RegDate.get(dateDepartHS.year(),1,1), dateDepartHS.getOneDayBefore(), dateDepartHS, 60);
 	}
 
@@ -120,6 +120,14 @@ public class Ec_18000_08_Depart_HS_Arrivee_HC_Meme_Periode_Scenario extends Even
 	@Etape(id=2, descr="Envoi de l'événement d'arrivée HC")
 	public void etape2() throws Exception {
 
+		// le retour, changement d'adresse
+		doModificationIndividu(noIndAlain, new IndividuModification() {
+			@Override
+			public void modifyIndividu(MockIndividu individu) {
+				individu.addAdresse(new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateRetourHC, null));
+			}
+		});
+
 		final long id = addEvenementCivil(TypeEvenementCivil.ARRIVEE_PRINCIPALE_HC, noIndAlain, dateRetourHC, MockCommune.Bex.getNoOFS());
 		commitAndStartTransaction();
 
@@ -131,6 +139,8 @@ public class Ec_18000_08_Depart_HS_Arrivee_HC_Meme_Periode_Scenario extends Even
 	public void check2() throws Exception {
 
 		final PersonnePhysique alain = tiersDAO.getPPByNumeroIndividu(noIndAlain);
+		assertTrue(alain.isHabitantVD(),"Alain aurait dû redevenir habitant suite à son retour");
+
 		final ForFiscalPrincipal f = alain.getDernierForFiscalPrincipal();
 		assertNotNull(f, "For fiscal principal null");
 		assertEquals(MotifFor.ARRIVEE_HC, f.getMotifOuverture(), "Dernier for ouvert pour mauvais motif");
