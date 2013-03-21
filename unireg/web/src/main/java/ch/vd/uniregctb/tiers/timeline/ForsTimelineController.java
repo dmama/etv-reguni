@@ -52,26 +52,50 @@ public class ForsTimelineController {
 	private PeriodeImpositionService periodeImpositionService;
 	private ControllerUtils controllerUtils;
 
-	@RequestMapping(value = "/fors/timeline.do", method = RequestMethod.GET)
+	@RequestMapping(value = "/fors/timeline-debug.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
-	public String index(Model mav,
-	                    @RequestParam(ID_PARAMETER) Long id,
-	                    @RequestParam(value = "showForsGestion", required = false, defaultValue = "true") boolean showForsGestion,
-	                    @RequestParam(value = "showAssujettissementsSource", required = false, defaultValue = "false") boolean showAssujettissementsSource,
-	                    @RequestParam(value = "showAssujettissementsRole", required = false, defaultValue = "false") boolean showAssujettissementsRole,
-	                    @RequestParam(value = "showAssujettissements", required = false, defaultValue = "true") boolean showAssujettissements,
-	                    @RequestParam(value = "showPeriodesImposition", required = false, defaultValue = "false") boolean showPeriodesImposition,
-	                    @RequestParam(value = FOR_PRINT, required = false) Boolean forPrint,
-	                    @RequestParam(value = TITLE, required = false) String title,
-	                    @RequestParam(value = DESCRIPTION, required = false) String description) throws AccessDeniedException {
+	public String indexDebug(Model mav,
+	                         @RequestParam(ID_PARAMETER) Long id,
+	                         @RequestParam(value = "showForsGestion", required = false, defaultValue = "true") boolean showForsGestion,
+	                         @RequestParam(value = "showAssujettissementsSource", required = false, defaultValue = "false") boolean showAssujettissementsSource,
+	                         @RequestParam(value = "showAssujettissementsRole", required = false, defaultValue = "false") boolean showAssujettissementsRole,
+	                         @RequestParam(value = "showAssujettissements", required = false, defaultValue = "true") boolean showAssujettissements,
+	                         @RequestParam(value = "showPeriodesImposition", required = false, defaultValue = "false") boolean showPeriodesImposition,
+	                         @RequestParam(value = FOR_PRINT, required = false) Boolean forPrint,
+	                         @RequestParam(value = TITLE, required = false) String title,
+	                         @RequestParam(value = DESCRIPTION, required = false) String description) throws AccessDeniedException {
 
 		if (forPrint != null && forPrint) { // on veut voir tous les assujettissements dans la vue pour impression
 			showAssujettissementsSource = true;
 			showAssujettissementsRole = true;
 		}
 
-		final ForsTimelineView bean = new ForsTimelineView(showForsGestion, showAssujettissementsSource, showAssujettissementsRole, showAssujettissements, showPeriodesImposition);
+		return commonTimeline(mav, id, showForsGestion, showAssujettissementsSource, showAssujettissementsRole, showAssujettissements, showPeriodesImposition, forPrint, title, description, true);
+	}
+
+	@RequestMapping(value = "/fors/timeline.do", method = RequestMethod.GET)
+	@Transactional(readOnly = true, rollbackFor = Throwable.class)
+	public String index(Model mav,
+	                    @RequestParam(ID_PARAMETER) Long id,
+	                    @RequestParam(value = "showForsGestion", required = false, defaultValue = "true") boolean showForsGestion,
+	                    @RequestParam(value = "showAssujettissements", required = false, defaultValue = "true") boolean showAssujettissements,
+	                    @RequestParam(value = "showPeriodesImposition", required = false, defaultValue = "false") boolean showPeriodesImposition,
+	                    @RequestParam(value = FOR_PRINT, required = false) Boolean forPrint,
+	                    @RequestParam(value = TITLE, required = false) String title,
+	                    @RequestParam(value = DESCRIPTION, required = false) String description) throws AccessDeniedException {
+
+		return commonTimeline(mav, id, showForsGestion, false, false, showAssujettissements, showPeriodesImposition, forPrint, title, description, false);
+	}
+
+	private String commonTimeline(Model mav, Long id, boolean showForsGestion,
+	                              boolean showAssujettissementsSource, boolean showAssujettissementsRole,
+	                              boolean showAssujettissements, boolean showPeriodesImposition,
+	                              Boolean forPrint, String title,  String description,
+	                              boolean debugMode) throws AccessDeniedException {
+
 		controllerUtils.checkAccesDossierEnLecture(id);
+
+		final ForsTimelineView bean = new ForsTimelineView(showForsGestion, showAssujettissementsSource, showAssujettissementsRole, showAssujettissements, showPeriodesImposition);
 		bean.setTiersId(id);
 
 		if (forPrint != null) {
@@ -88,6 +112,7 @@ public class ForsTimelineController {
 
 		fillTimeline(bean);
 		mav.addAttribute("command", bean);
+		mav.addAttribute("debugAssujettissement", debugMode);
 
 		return "tiers/visualisation/fiscal/timeline";
 	}
