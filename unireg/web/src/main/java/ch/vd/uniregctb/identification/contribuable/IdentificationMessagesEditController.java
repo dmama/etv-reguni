@@ -176,7 +176,7 @@ public class IdentificationMessagesEditController extends AbstractTiersListContr
 
 				return mav;
 			}
-
+				//TODO xsibnm   code mort, à supprimer
 			if (request.getParameter(BOUTON_IMPOSSIBLE_A_IDENTIFIER) != null) {
 				identificationMessagesEditManager.impossibleAIdentifier(null);
 				identificationMessagesEditManager.deVerouillerMessage(bean.getDemandeIdentificationView().getId(), false);
