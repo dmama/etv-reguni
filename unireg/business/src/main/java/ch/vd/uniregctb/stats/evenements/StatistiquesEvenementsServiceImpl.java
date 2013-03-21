@@ -140,10 +140,13 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 		final Map<EtatEvenementCivil, Integer> etatsNouveaux = getEtatsEvenementsCivilsEch(debutActivite);
 		final Map<Pair<TypeEvenementCivilEch, ActionEvenementCivilEch>, Integer> erreursParType = getNombreEvenementsCivilsEnErreurParTypeEch(null);
 		final Map<Pair<TypeEvenementCivilEch, ActionEvenementCivilEch>, Integer> erreursParTypeNouveaux = getNombreEvenementsCivilsEnErreurParTypeEch(debutActivite);
+		final Map<Pair<TypeEvenementCivilEch, ActionEvenementCivilEch>, Integer> forcesParType = getNombreEvenementsForcesParTypeEch(null);
+		final Map<Pair<TypeEvenementCivilEch, ActionEvenementCivilEch>, Integer> forcesRecemmentParType = getNombreEvenementsForcesParTypeEch(debutActivite);
 		final List<StatsEvenementsCivilsEchResults.EvenementCivilEnErreurInfo> toutesErreurs = getToutesErreursEvenementsCivilsEch();
 		final List<StatsEvenementsCivilsEchResults.EvenementCivilTraiteManuellementInfo> manipulationsManuelles = getManipulationsManuellesEch(debutActivite);
 		final List<StatsEvenementsCivilsEchResults.QueueAttenteInfo> queuesAttente = getQueuesAttente();
-		return new StatsEvenementsCivilsEchResults(etats, etatsNouveaux, erreursParType, erreursParTypeNouveaux, toutesErreurs, manipulationsManuelles, queuesAttente);
+		return new StatsEvenementsCivilsEchResults(etats, etatsNouveaux, erreursParType, erreursParTypeNouveaux, toutesErreurs,
+		                                           manipulationsManuelles, forcesParType, forcesRecemmentParType, queuesAttente);
 	}
 	
 	private Map<EtatEvenementCivil, Integer> getEtatsEvenementsCivilsEch(@Nullable RegDate debutActivite) {
@@ -171,6 +174,37 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 		}
 		else {
 			sql = "SELECT TYPE, ACTION_EVT, COUNT(*) FROM EVENEMENT_CIVIL_ECH WHERE ETAT='EN_ERREUR' GROUP BY TYPE, ACTION_EVT";
+			sqlParameters = null;
+		}
+		return buildMapFromSql(sql, sqlParameters, new MapSelectCallback<Pair<TypeEvenementCivilEch, ActionEvenementCivilEch>, Integer>() {
+			@Override
+			public Pair<TypeEvenementCivilEch, ActionEvenementCivilEch> buildKey(Object[] row) {
+				final TypeEvenementCivilEch type = TypeEvenementCivilEch.valueOf((String) row[0]);
+				final ActionEvenementCivilEch action = ActionEvenementCivilEch.valueOf((String) row[1]);
+				return new Pair<>(type, action);
+			}
+
+			@Override
+			public Integer buildValue(Object[] row) {
+				return ((Number) row[2]).intValue();
+			}
+		});
+	}
+
+	/**
+	 * @param debutActivite le seuil relatif à la date de modification
+	 * @return la répartition des événements civils forcés depuis une date donnée (ou depuis toujours si aucune date n'est donnée)
+	 */
+	private Map<Pair<TypeEvenementCivilEch, ActionEvenementCivilEch>, Integer> getNombreEvenementsForcesParTypeEch(@Nullable RegDate debutActivite) {
+		final String sql;
+		final Map<String, Object> sqlParameters;
+		if (debutActivite != null) {
+			sql = "SELECT TYPE, ACTION_EVT, COUNT(*) FROM EVENEMENT_CIVIL_ECH WHERE ETAT='FORCE' AND LOG_MDATE > TO_DATE(:debutActivite, 'YYYYMMDD') GROUP BY TYPE, ACTION_EVT";
+			sqlParameters = new HashMap<>(1);
+			sqlParameters.put("debutActivite", debutActivite.index());
+		}
+		else {
+			sql = "SELECT TYPE, ACTION_EVT, COUNT(*) FROM EVENEMENT_CIVIL_ECH WHERE ETAT='FORCE' GROUP BY TYPE, ACTION_EVT";
 			sqlParameters = null;
 		}
 		return buildMapFromSql(sql, sqlParameters, new MapSelectCallback<Pair<TypeEvenementCivilEch, ActionEvenementCivilEch>, Integer>() {

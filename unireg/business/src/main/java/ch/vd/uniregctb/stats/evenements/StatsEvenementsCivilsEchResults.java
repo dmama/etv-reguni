@@ -116,9 +116,11 @@ public class StatsEvenementsCivilsEchResults {
 	}
 	
 	private final Map<EtatEvenementCivil, Integer> etats;
-	private final Map<EtatEvenementCivil, Integer> etatsNouveaux;
+	private final Map<EtatEvenementCivil, Integer> etatsNouveaux;   // <-- sur les événements reçus récemment
 	private final Map<Pair<TypeEvenementCivilEch, ActionEvenementCivilEch>, Integer> erreursParType;
-	private final Map<Pair<TypeEvenementCivilEch, ActionEvenementCivilEch>, Integer> erreursParTypeNouveaux;
+	private final Map<Pair<TypeEvenementCivilEch, ActionEvenementCivilEch>, Integer> erreursParTypeNouveaux;        // <-- sur les événements reçus récemment
+	private final Map<Pair<TypeEvenementCivilEch, ActionEvenementCivilEch>, Integer> forcesParType;
+	private final Map<Pair<TypeEvenementCivilEch, ActionEvenementCivilEch>, Integer> forcesRecemmentParType;        // <-- forçages récents
 	private final List<EvenementCivilEnErreurInfo> toutesErreurs;
 	private final List<EvenementCivilTraiteManuellementInfo> manipulationsManuelles;
 	private final List<QueueAttenteInfo> queuesAttente;
@@ -126,13 +128,16 @@ public class StatsEvenementsCivilsEchResults {
 	public StatsEvenementsCivilsEchResults(Map<EtatEvenementCivil, Integer> etats, Map<EtatEvenementCivil, Integer> etatsNouveaux,
 	                                       Map<Pair<TypeEvenementCivilEch, ActionEvenementCivilEch>, Integer> erreursParType,
 	                                       Map<Pair<TypeEvenementCivilEch, ActionEvenementCivilEch>, Integer> erreursParTypeNouveaux, List<EvenementCivilEnErreurInfo> toutesErreurs,
-	                                       List<EvenementCivilTraiteManuellementInfo> manipulationsManuelles, List<QueueAttenteInfo> queuesAttente) {
+	                                       List<EvenementCivilTraiteManuellementInfo> manipulationsManuelles, Map<Pair<TypeEvenementCivilEch, ActionEvenementCivilEch>, Integer> forcesParType,
+	                                       Map<Pair<TypeEvenementCivilEch, ActionEvenementCivilEch>, Integer> forcesRecemmentParType, List<QueueAttenteInfo> queuesAttente) {
 		this.etats = etats != null ? Collections.unmodifiableMap(etats) : Collections.<EtatEvenementCivil, Integer>emptyMap();
 		this.etatsNouveaux = etatsNouveaux != null ? Collections.unmodifiableMap(etatsNouveaux) : Collections.<EtatEvenementCivil, Integer>emptyMap();
 		this.erreursParType = erreursParType != null ? Collections.unmodifiableMap(erreursParType) : Collections.<Pair<TypeEvenementCivilEch, ActionEvenementCivilEch>, Integer>emptyMap();
 		this.erreursParTypeNouveaux = erreursParTypeNouveaux != null ? Collections.unmodifiableMap(erreursParTypeNouveaux) : Collections.<Pair<TypeEvenementCivilEch, ActionEvenementCivilEch>, Integer>emptyMap();
 		this.toutesErreurs = toutesErreurs != null ? Collections.unmodifiableList(toutesErreurs) : Collections.<EvenementCivilEnErreurInfo>emptyList();
 		this.manipulationsManuelles = manipulationsManuelles != null ? Collections.unmodifiableList(manipulationsManuelles) : Collections.<EvenementCivilTraiteManuellementInfo>emptyList();
+		this.forcesParType = forcesParType != null ? Collections.unmodifiableMap(forcesParType) : Collections.<Pair<TypeEvenementCivilEch, ActionEvenementCivilEch>, Integer>emptyMap();
+		this.forcesRecemmentParType = forcesRecemmentParType != null ? Collections.unmodifiableMap(forcesRecemmentParType) : Collections.<Pair<TypeEvenementCivilEch, ActionEvenementCivilEch>, Integer>emptyMap();
 		this.queuesAttente = queuesAttente != null ? Collections.unmodifiableList(queuesAttente) : Collections.<QueueAttenteInfo>emptyList();
 	}
 
@@ -158,6 +163,14 @@ public class StatsEvenementsCivilsEchResults {
 
 	public List<EvenementCivilTraiteManuellementInfo> getManipulationsManuelles() {
 		return manipulationsManuelles;
+	}
+
+	public Map<Pair<TypeEvenementCivilEch, ActionEvenementCivilEch>, Integer> getForcesParType() {
+		return forcesParType;
+	}
+
+	public Map<Pair<TypeEvenementCivilEch, ActionEvenementCivilEch>, Integer> getForcesRecemmentParType() {
+		return forcesRecemmentParType;
 	}
 
 	public List<QueueAttenteInfo> getQueuesAttente() {

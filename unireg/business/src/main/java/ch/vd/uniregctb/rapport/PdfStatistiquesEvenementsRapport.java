@@ -107,7 +107,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 			// événements civils : types en erreur
 			{
 				final String filename = "erreurs_evts_civils_regpp_par_type.csv";
-				final String contenu = asCsvFile(civilsRegPP.getErreursParType(), null, dateReference, TypeEvenementCivil.class, filename, status);
+				final String contenu = asCsvFile(civilsRegPP.getErreursParType(), null, null, dateReference, TypeEvenementCivil.class, filename, status);
 				final String titre = "Erreurs des événements civils RegPP par type d'événement";
 				final String listVide = "(aucune)";
 				addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -153,7 +153,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 					@Override
 					public void fillTable(PdfTableSimple table) throws DocumentException {
 
-						table.addLigne("Etat", "Total", "Depuis " + RegDateHelper.dateToDisplayString(dateReference));
+						table.addLigne("Etat", "Total", "Reçus depuis " + RegDateHelper.dateToDisplayString(dateReference));
 						table.setHeaderRows(1);
 
 						final Map<EtatEvenementCivil, Integer> etats = civilsEch.getEtats();
@@ -173,7 +173,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 			// événements civils : types en erreur
 			{
 				final String filename = "erreurs_evts_civils_ech_par_type.csv";
-				final String contenu = asCsvFile(civilsEch.getErreursParType(), civilsEch.getErreursParTypeNouveaux(), dateReference, filename, status);
+				final String contenu = asCsvFile(civilsEch.getErreursParType(), civilsEch.getErreursParTypeNouveaux(), "RECUS", dateReference, filename, status);
 				final String titre = "Erreurs des événements civils e-CH par type d'événement";
 				final String listVide = "(aucune)";
 				addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -205,7 +205,16 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 				final String listVide = "(aucune)";
 				addListeDetaillee(writer, titre, listVide, filename, contenu);
 			}
-			
+
+			// forçages par type
+			{
+				final String filename = "evts_civils_forces_ech.csv";
+				final String contenu = asCsvFile(civilsEch.getForcesParType(), civilsEch.getForcesRecemmentParType(), "FORCES", dateReference, filename, status);
+				final String titre = "Evénements civils e-CH forcés par type d'événement";
+				final String listVide = "(aucun)";
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
+
 			// taille des queues d'attente
 			{
 				final String filename = "queues_attente_ech.csv";
@@ -264,7 +273,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 					@Override
 					public void fillTable(PdfTableSimple table) throws DocumentException {
 
-						table.addLigne("Etat", "Total", "Depuis " + RegDateHelper.dateToDisplayString(dateReference));
+						table.addLigne("Etat", "Total", "Reçus depuis " + RegDateHelper.dateToDisplayString(dateReference));
 						table.setHeaderRows(1);
 
 						final Map<IdentificationContribuable.Etat, Integer> etats = identCtb.getEtats();
@@ -339,7 +348,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 		return contenu;
 	}
 
-	private static <T extends Enum<T>> String asCsvFile(Map<T, Integer> tous, @Nullable Map<T, Integer> nouveaux, RegDate dateReference, Class<T> enumClass, String fileName, StatusManager statusManager) {
+	private static <T extends Enum<T>> String asCsvFile(Map<T, Integer> tous, @Nullable Map<T, Integer> nouveaux, String prefixeNouveaux, RegDate dateReference, Class<T> enumClass, String fileName, StatusManager statusManager) {
 		String contenu = null;
 		if (tous != null && !tous.isEmpty()) {
 			final String message = String.format("Génération du fichier %s", fileName);
@@ -349,7 +358,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 			// les noms des colonnes
 			b.append("VALEUR").append(COMMA).append("TOTAL");
 			if (nouveaux != null) {
-				b.append(COMMA).append("NOUVEAUX_DEPUIS_").append(RegDateHelper.dateToDisplayString(dateReference));
+				b.append(COMMA).append(prefixeNouveaux).append("_DEPUIS_").append(RegDateHelper.dateToDisplayString(dateReference));
 			}
 			b.append('\n');
 
@@ -372,7 +381,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 		return contenu;
 	}
 
-	private static String asCsvFile(Map<Pair<TypeEvenementCivilEch, ActionEvenementCivilEch>, Integer> tous, @Nullable Map<Pair<TypeEvenementCivilEch, ActionEvenementCivilEch>, Integer> nouveaux, RegDate dateReference, String fileName, StatusManager statusManager) {
+	private static String asCsvFile(Map<Pair<TypeEvenementCivilEch, ActionEvenementCivilEch>, Integer> tous, @Nullable Map<Pair<TypeEvenementCivilEch, ActionEvenementCivilEch>, Integer> nouveaux, @Nullable String prefixeNouveaux, RegDate dateReference, String fileName, StatusManager statusManager) {
 		String contenu = null;
 		if (tous != null && !tous.isEmpty()) {
 			final String message = String.format("Génération du fichier %s", fileName);
@@ -382,7 +391,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 			// les noms des colonnes
 			b.append("TYPE").append(COMMA).append("ACTION").append(COMMA).append("TOTAL");
 			if (nouveaux != null) {
-				b.append(COMMA).append("NOUVEAUX_DEPUIS_").append(RegDateHelper.dateToDisplayString(dateReference));
+				b.append(COMMA).append(prefixeNouveaux).append("_DEPUIS_").append(RegDateHelper.dateToDisplayString(dateReference));
 			}
 			b.append('\n');
 
