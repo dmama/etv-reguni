@@ -21,6 +21,7 @@ public class ImprimerDuplicataDeclarationImpotView {
 	private Long idDI;
 	private TypeDocument selectedTypeDocument;
 	private List<ModeleDocumentView> modelesDocumentView;
+	private Boolean toSave;
 
 	public ImprimerDuplicataDeclarationImpotView() {
 	}
@@ -29,6 +30,7 @@ public class ImprimerDuplicataDeclarationImpotView {
 		this.idDI = di.getId();
 		this.selectedTypeDocument = initTypeDocument(di);
 		this.setModelesDocumentView(initModelesDocuments(di, modeleDocumentDAO));
+		this.toSave = null;
 	}
 
 	private static List<ModeleDocumentView> initModelesDocuments(DeclarationImpotOrdinaire di, ModeleDocumentDAO modeleDocumentDAO) {
@@ -137,6 +139,13 @@ public class ImprimerDuplicataDeclarationImpotView {
 		this.modelesDocumentView = modelesDocumentView;
 	}
 
+	public Boolean getToSave() {
+		return toSave;
+	}
+
+	public void setToSave(Boolean toSave) {
+		this.toSave = toSave;
+	}
 
 	public List<ModeleFeuilleDocumentEditique> getSelectedAnnexes() {
 		List<ModeleFeuilleDocumentEditique> annexes = null;

@@ -172,7 +172,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 			documents[1] = document;
 		}
 		editiqueDI.setDocumentArray(documents);
-		final TypeDocumentEditique typeDocumentMessage = impressionDIHelper.getTypeDocumentEditique(declaration);
+		final TypeDocumentEditique typeDocumentMessage = impressionDIHelper.getTypeDocumentEditique(typeDocument);
 		final String nomDocument = impressionDIHelper.construitIdDocument(declaration);
 
 		final String description = String.format("Document '%s %d' du contribuable %s", typeDocument.getDescription(), declaration.getPeriode().getAnnee(),

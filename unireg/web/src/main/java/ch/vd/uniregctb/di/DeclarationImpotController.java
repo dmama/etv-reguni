@@ -683,6 +683,7 @@ public class DeclarationImpotController {
 		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
 
 		model.addAttribute("command", new ImprimerDuplicataDeclarationImpotView(di, modeleDocumentDAO));
+		model.addAttribute("typesDeclarationImpot", tiersMapHelper.getTypesDeclarationImpot());
 		return "di/duplicata";
 	}
 
@@ -729,9 +730,12 @@ public class DeclarationImpotController {
 			return redirect;
 		}
 
+
+		//Si la valeur de toSave est nulle c'est que nous sommes sur le même type de document, on a pas besoin de le sauvegarder
+		final boolean saveTypeDoc = (view.getToSave()==null?false:view.getToSave());
 		// On imprime le duplicata
 
-		final EditiqueResultat resultat = manager.envoieImpressionLocalDuplicataDI(view.getIdDI(), view.getSelectedTypeDocument(), view.getSelectedAnnexes());
+		final EditiqueResultat resultat = manager.envoieImpressionLocalDuplicataDI(view.getIdDI(), view.getSelectedTypeDocument(), view.getSelectedAnnexes(), saveTypeDoc);
 
 		final RedirectEditDI inbox = new RedirectEditDI(id);
 		final RedirectEditDIApresErreur erreur = new RedirectEditDIApresErreur(id, messageSource);

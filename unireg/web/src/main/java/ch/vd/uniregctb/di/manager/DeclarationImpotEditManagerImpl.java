@@ -279,20 +279,31 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	}
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
-	public EditiqueResultat envoieImpressionLocalDuplicataDI(Long id, TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes) throws DeclarationException {
+	public EditiqueResultat envoieImpressionLocalDuplicataDI(Long id, TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes, boolean saveModele) throws DeclarationException {
 		final DeclarationImpotOrdinaire declaration = diDAO.get(id);
 
 		if (tiersService.getOfficeImpotId(declaration.getTiers()) == null) {
 			throw new DeclarationException("Le contribuable ne possède pas de for de gestion");
 		}
+
 		final PeriodeFiscale periode = periodeFiscaleDAO.getPeriodeFiscaleByYear(declaration.getPeriode().getAnnee());
 		final ModeleDocument modele = modeleDocumentDAO.getModelePourDeclarationImpotOrdinaire(periode, typeDocument);
-		declaration.setModeleDocument(modele);
+		//SIFISC-8176 On ne sauve le nouveau type de document sur la DI qu'à la demande explicite de l'utilisateur
+		if (saveModele) {
+
+			declaration.setModeleDocument(modele);
+
+		}
 
 
-		Audit.info(String.format("Impression (%s/%s) d'un duplicata de DI (%s) pour le contribuable %d et la période [%s ; %s]",
-		                         AuthenticationHelper.getCurrentPrincipal(), AuthenticationHelper.getCurrentOIDSigle(), modele.getTypeDocument(), declaration.getTiers().getNumero(),
-		                         RegDateHelper.dateToDashString(declaration.getDateDebut()), RegDateHelper.dateToDashString(declaration.getDateFin())));
+		 String messageInfoImpression = String.format("Impression (%s/%s) d'un duplicata de DI (%s) pour le contribuable %d et la période [%s ; %s]",
+				AuthenticationHelper.getCurrentPrincipal(), AuthenticationHelper.getCurrentOIDSigle(), modele.getTypeDocument(), declaration.getTiers().getNumero(),
+				RegDateHelper.dateToDashString(declaration.getDateDebut()), RegDateHelper.dateToDashString(declaration.getDateFin()));
+
+		if (saveModele) {
+			messageInfoImpression = new StringBuilder().append(messageInfoImpression).append( ". Sauvegarde du nouveau type de document sur la DI").toString();
+		}
+		Audit.info(messageInfoImpression);
 
 		return diService.envoiDuplicataDIOnline(declaration, RegDate.get(), typeDocument, annexes);
 	}

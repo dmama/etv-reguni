@@ -66,22 +66,35 @@
 
 							dialog.dialog({
 								title: "Impression d'un duplicata",
-								height: 440,
-								width: 500,
+								height: 350,
+								width:  500,
 								modal: true,
 								buttons: {
 									"Imprimer": function() {
 										// les boutons ne font pas partie de la boîte de dialogue (au niveau du DOM), on peut donc utiliser le sélecteur jQuery normal
-										var buttons = $('.ui-button');
-										buttons.each(function() {
-											if ($(this).text() == 'Imprimer') {
-												$(this).addClass('ui-state-disabled');
-												$(this).attr('disabled', true);
-											}
-										});
-										var form = dialog.find('#formImpression');
-										form.attr('action', App.curl('/di/duplicata.do'));
-										form.submit();
+
+                                        var form = dialog.find('#formImpression');
+                                        var radiosave = form.find('input[id=radio-save]:checked').val();
+                                        var ischangetype = form.find('#changerType');
+                                        //si aucun bouton radio sélèctionné avec changement de type , on lève un message d'erreur
+                                        if (radiosave == null && ischangetype.attr("value") == 'true') {
+                                            alert('Veuillez préciser votre choix concernant la sauvegarde de type de document');
+                                        }
+                                        else {
+
+                                            var buttons = $('.ui-button');
+                                            buttons.each(function () {
+                                                if ($(this).text() == 'Imprimer') {
+                                                    $(this).addClass('ui-state-disabled');
+                                                    $(this).attr('disabled', true);
+                                                }
+                                            });
+
+
+                                            form.attr('action', App.curl('/di/duplicata.do'));
+                                            form.submit();
+                                        }
+
 									},
 									"Fermer": function() {
 										dialog.dialog("close");
