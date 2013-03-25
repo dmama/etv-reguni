@@ -41,7 +41,7 @@
 					<fmt:message key="label.adresse.civiles" />
 				</c:when>
 				<c:when test="${command.natureTiers == 'MenageCommun'}" >
-					<fmt:message key="label.adresse.civiles.membre.couple" /> ${command.nomPrenomPrincipal}
+					<fmt:message key="label.adresse.civiles.membre.couple" /><c:out value=" ${command.nomPrenomPrincipal}"/>
 				</c:when>
 			</c:choose>
 		</span>
@@ -57,7 +57,7 @@
 
 <%-- Les adresses civiles du conjoint --%>
 <fieldset id="adrCivConjointFieldset" <c:if test="${command.tiersConjoint == null}">style="display:none"</c:if> >
-	<legend><span><fmt:message key="label.adresse.civiles.membre.couple" /> ${command.nomPrenomConjoint}</span></legend>
+	<legend><span><fmt:message key="label.adresse.civiles.membre.couple" /><c:out value=" ${command.nomPrenomConjoint}"/></span></legend>
 
 	<input class="noprint" name="adrHistoCivilesConjoint" type="checkbox" <c:if test="${command.adressesHistoCivilesConjoint}">checked</c:if> onclick="Histo.toggleRowsIsHisto('adresseCivileConjoint','isAdrHistoCivilesConjoint',3);" id="isAdrHistoCivilesConjoint" />
 	<label class="noprint" for="isAdrHistoCivilesConjoint"><fmt:message key="label.historique" /></label>
