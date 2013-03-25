@@ -36,6 +36,7 @@
 		<property name="application" value="unireg" />
 		<property name="domain" value="fiscalite"/>
 		<property name="sessionTransacted" value="true"/>
+		<property name="defaultErrorDestination" value="${extprop.jms.error.queue}"/>
 	</bean>
 
 	<!-- Versions 'hors-transaction' de l'ESB template + JMS template -->
@@ -57,6 +58,7 @@
 		<property name="statsService" ref="jmsStatsService" />
 		<property name="application" value="unireg" />
 		<property name="domain" value="fiscalite"/>
+		<property name="defaultErrorDestination" value="${extprop.jms.error.queue}"/>
 	</bean>
 
 	<bean id="raftEsbStore" class="ch.vd.technical.esb.store.raft.RaftEsbStore">
