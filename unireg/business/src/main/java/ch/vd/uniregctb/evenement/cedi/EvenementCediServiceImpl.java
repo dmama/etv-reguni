@@ -158,7 +158,7 @@ public class EvenementCediServiceImpl implements EvenementCediService, Evenement
 		}
 
 		if (StringUtils.isNotBlank(scan.getIban())) {
-			ctb.setNumeroCompteBancaire(LengthConstants.streamlineField(IbanHelper.removeSpaceAndDoUpperCase(scan.getIban()), LengthConstants.TIERS_NUMCOMPTE, false));
+			ctb.setNumeroCompteBancaire(LengthConstants.streamlineField(IbanHelper.normalize(scan.getIban()), LengthConstants.TIERS_NUMCOMPTE, false));
 		}
 
 		if (StringUtils.isNotBlank(scan.getNoTelephone())) {

@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.complements;
 
+import ch.vd.uniregctb.iban.IbanHelper;
 import ch.vd.uniregctb.tiers.Tiers;
 
 @SuppressWarnings("UnusedDeclaration")
@@ -18,7 +19,7 @@ public class ComplementsEditCoordonneesFinancieresView {
 	public ComplementsEditCoordonneesFinancieresView(Tiers tiers) {
 		initReadOnlyData(tiers);
 
-		this.iban = tiers.getNumeroCompteBancaire();
+		this.iban = IbanHelper.normalize(tiers.getNumeroCompteBancaire());
 		this.titulaireCompteBancaire = tiers.getTitulaireCompteBancaire();
 		this.adresseBicSwift = tiers.getAdresseBicSwift();
 	}
@@ -36,11 +37,11 @@ public class ComplementsEditCoordonneesFinancieresView {
 	}
 
 	public String getIban() {
-		return iban;
+		return IbanHelper.toDisplayString(iban);
 	}
 
 	public void setIban(String iban) {
-		this.iban = iban;
+		this.iban = IbanHelper.normalize(iban);
 	}
 
 	public String getTitulaireCompteBancaire() {

@@ -7,6 +7,7 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 import ch.vd.uniregctb.common.TiersNotFoundException;
+import ch.vd.uniregctb.iban.IbanHelper;
 import ch.vd.uniregctb.iban.IbanValidationException;
 import ch.vd.uniregctb.iban.IbanValidator;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -41,7 +42,7 @@ public class ComplementsEditCoordonneesFinancieresValidator implements Validator
 		final String iban = view.getIban();
 		if (StringUtils.isNotBlank(iban)) {
 			//[UNIREG-1449] il ne faudrait pas bloquer la sauvegarde de la page des "compléments" si l'IBAN, inchangé, est invalide.
-			if (!iban.equals(tiers.getNumeroCompteBancaire())) {
+			if (!IbanHelper.areSame(iban, tiers.getNumeroCompteBancaire())) {
 				try {
 					ibanValidator.validate(iban);
 				}
