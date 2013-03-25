@@ -20,6 +20,7 @@ import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.iban.IbanHelper;
 import ch.vd.uniregctb.jms.BamMessageHelper;
 import ch.vd.uniregctb.jms.BamMessageSender;
+import ch.vd.uniregctb.jms.EsbBusinessCode;
 import ch.vd.uniregctb.jms.EsbMessageHelper;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -53,29 +54,29 @@ public class EvenementCediServiceImpl implements EvenementCediService, Evenement
 		final long ctbId = scan.getNoContribuable();
 		final Contribuable ctb = (Contribuable) tiersDAO.get(ctbId);
 		if (ctb == null) {
-			throw new EvenementCediException("Le contribuable n°" + ctbId + " n'existe pas.");
+			throw new EvenementCediException(EsbBusinessCode.CTB_INEXISTANT, "Le contribuable n°" + ctbId + " n'existe pas.");
 		}
 
 		final ValidationResults results = validationService.validate(ctb);
 		if (results.hasErrors()) {
-			throw new EvenementCediException("Le contribuable n°" + ctbId + " ne valide pas (" + results.toString() + ").");
+			throw new EvenementCediException(EsbBusinessCode.TIERS_INVALIDE, "Le contribuable n°" + ctbId + " ne valide pas (" + results.toString() + ").");
 		}
 
 		// On s'assure que l'on est bien cohérent avec les données en base
 		if (ctb.isDebiteurInactif()) {
-			throw new EvenementCediException("Le contribuable n°" + ctbId + " est un débiteur inactif, il n'aurait pas dû recevoir de déclaration d'impôt.");
+			throw new EvenementCediException(EsbBusinessCode.CTB_DEBITEUR_INACTIF, "Le contribuable n°" + ctbId + " est un débiteur inactif, il n'aurait pas dû recevoir de déclaration d'impôt.");
 		}
 
 		final int annee = scan.getPeriodeFiscale();
 		final List<Declaration> declarations = ctb.getDeclarationsForPeriode(annee, false);
 		if (declarations == null || declarations.isEmpty()) {
-			throw new EvenementCediException("Le contribuable n°" + ctbId + " ne possède pas de déclaration pour la période fiscale " + annee + '.');
+			throw new EvenementCediException(EsbBusinessCode.DECLARATION_ABSENTE, "Le contribuable n°" + ctbId + " ne possède pas de déclaration pour la période fiscale " + annee + '.');
 		}
 
 		final int noSequenceDI = scan.getNoSequenceDI();
 		final DeclarationImpotOrdinaire declaration = findDeclaration(noSequenceDI, declarations);
 		if (declaration == null) {
-			throw new EvenementCediException("Le contribuable n°" + ctbId + " ne possède pas de déclaration pour la période fiscale " + annee + " avec le numéro de séquence " + noSequenceDI + '.');
+			throw new EvenementCediException(EsbBusinessCode.DECLARATION_ABSENTE, "Le contribuable n°" + ctbId + " ne possède pas de déclaration pour la période fiscale " + annee + " avec le numéro de séquence " + noSequenceDI + '.');
 		}
 
 		// on envoie l'information au BAM
@@ -101,7 +102,7 @@ public class EvenementCediServiceImpl implements EvenementCediService, Evenement
 				throw e;
 			}
 			catch (Exception e) {
-				throw new EvenementCediException(String.format("Erreur à la notification au BAM du retour de la DI %d du contribuable %d", annee, ctbId), e);
+				throw new EvenementCediException(EsbBusinessCode.BAM, String.format("Erreur à la notification au BAM du retour de la DI %d du contribuable %d", annee, ctbId), e);
 			}
 		}
 		else {

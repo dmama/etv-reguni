@@ -110,7 +110,7 @@ public class GentilEsbMessageEndpointListener extends EsbMessageEndpointListener
 				msg = e.getCause().getClass().getName();
 			}
 			else {
-				msg = "Erreur générique";
+				msg = e.getLibelle();
 			}
 		}
 		else {
@@ -133,13 +133,21 @@ public class GentilEsbMessageEndpointListener extends EsbMessageEndpointListener
 	 * C'est ici qu'aterrisent tous les messages à renvoyer en queue d'erreur
 	 * @param message le message entrant
 	 * @param description la description de l'erreur métier
-	 * @param exception l'exception à la source de cette erreur, si applicable
+	 * @param throwable l'exception à la source de cette erreur, si applicable
 	 * @param errorType le type d'erreur
 	 * @param errorCode un code d'erreur
 	 * @throws Exception en cas de souci (si une exception saute ici, le message sera envoyé en DLQ)
 	 */
-	protected void onBusinessError(EsbMessage message, String description, @Nullable Exception exception, ErrorType errorType, String errorCode) throws Exception {
-		getEsbTemplate().sendError(message, description, exception, errorType, errorCode);
+	protected void onBusinessError(EsbMessage message, String description, @Nullable Throwable throwable, ErrorType errorType, String errorCode) throws Exception {
+		final Exception ex;
+		if (!(throwable instanceof Exception)) {
+			// wrapping...
+			ex = new Exception(throwable);
+		}
+		else {
+			ex = (Exception) throwable;
+		}
+		getEsbTemplate().sendError(message, description, ex, errorType, errorCode);
 	}
 
 	@Override

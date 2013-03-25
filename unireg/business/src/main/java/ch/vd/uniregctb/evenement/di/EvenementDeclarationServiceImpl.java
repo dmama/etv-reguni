@@ -16,6 +16,7 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.jms.BamMessageHelper;
 import ch.vd.uniregctb.jms.BamMessageSender;
+import ch.vd.uniregctb.jms.EsbBusinessCode;
 import ch.vd.uniregctb.jms.EsbMessageHelper;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -45,23 +46,23 @@ public class EvenementDeclarationServiceImpl implements EvenementDeclarationServ
 		final long ctbId = quittance.getNumeroContribuable();
 		final Contribuable ctb = (Contribuable) tiersDAO.get(ctbId);
 		if (ctb == null) {
-			throw new EvenementDeclarationException("Le contribuable n°" + ctbId + " n'existe pas.");
+			throw new EvenementDeclarationException(EsbBusinessCode.CTB_INEXISTANT, "Le contribuable n°" + ctbId + " n'existe pas.");
 		}
 
 		final ValidationResults results = validationService.validate(ctb);
 		if (results.hasErrors()) {
-			throw new EvenementDeclarationException("Le contribuable n°" + ctbId + " ne valide pas (" + results.toString() + ").");
+			throw new EvenementDeclarationException(EsbBusinessCode.TIERS_INVALIDE, "Le contribuable n°" + ctbId + " ne valide pas (" + results.toString() + ").");
 		}
 
 		// On s'assure que l'on est bien cohérent avec les données en base
 		if (ctb.isDebiteurInactif()) {
-			throw new EvenementDeclarationException("Le contribuable n°" + ctbId + " est un débiteur inactif, il n'aurait pas dû recevoir de déclaration d'impôt.");
+			throw new EvenementDeclarationException(EsbBusinessCode.CTB_DEBITEUR_INACTIF, "Le contribuable n°" + ctbId + " est un débiteur inactif, il n'aurait pas dû recevoir de déclaration d'impôt.");
 		}
 
 		final int annee = quittance.getPeriodeFiscale();
 		final List<Declaration> declarations = ctb.getDeclarationsForPeriode(annee, false);
 		if (declarations == null || declarations.isEmpty()) {
-			throw new EvenementDeclarationException("Le contribuable n°" + ctbId + " ne possède pas de déclaration pour la période fiscale " + annee + '.');
+			throw new EvenementDeclarationException(EsbBusinessCode.DECLARATION_ABSENTE, "Le contribuable n°" + ctbId + " ne possède pas de déclaration pour la période fiscale " + annee + '.');
 		}
 
 		// on envoie l'information au BAM
@@ -84,7 +85,7 @@ public class EvenementDeclarationServiceImpl implements EvenementDeclarationServ
 				throw e;
 			}
 			catch (Exception e) {
-				throw new EvenementDeclarationException(String.format("Erreur à la notification au BAM du quittancement de la DI %d du contribuable %d", annee, ctbId), e);
+				throw new EvenementDeclarationException(EsbBusinessCode.BAM, String.format("Erreur à la notification au BAM du quittancement de la DI %d du contribuable %d", annee, ctbId), e);
 			}
 		}
 		else {

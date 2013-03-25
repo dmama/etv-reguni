@@ -20,6 +20,7 @@ import ch.vd.unireg.xml.event.di.output.v1.EvenementDeclarationImpotOutput;
 import ch.vd.unireg.xml.event.di.output.v1.EvenementEmissionDeclarationImpot;
 import ch.vd.unireg.xml.event.di.output.v1.ObjectFactory;
 import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.jms.EsbBusinessCode;
 
 public class EvenementDeclarationSenderImpl implements EvenementDeclarationSender {
 
@@ -115,7 +116,7 @@ public class EvenementDeclarationSenderImpl implements EvenementDeclarationSende
 			esbTemplate.send(m);
 		}
 		catch (Exception e) {
-			throw new EvenementDeclarationException(e);
+			throw new EvenementDeclarationException(EsbBusinessCode.REPONSE_IMPOSSIBLE, e);
 		}
 
 		// Note : code pour unmarshaller un événement

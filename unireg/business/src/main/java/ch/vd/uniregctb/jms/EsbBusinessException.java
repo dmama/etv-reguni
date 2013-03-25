@@ -8,25 +8,29 @@ import ch.vd.technical.esb.ErrorType;
  */
 public class EsbBusinessException extends Exception {
 
-	private final ErrorType errorType;
-	private final String errorCode;
+	private static final long serialVersionUID = 6575212985364728595L;
 
-	public EsbBusinessException(String description, Exception cause, ErrorType errorType, String errorCode) {
+	private final EsbBusinessCode code;
+
+	public EsbBusinessException(EsbBusinessCode code, String description, Throwable cause) {
 		super(description, cause);
-		this.errorType = errorType;
-		this.errorCode = errorCode;
+		this.code = code;
 	}
 
-	@Override
-	public Exception getCause() {
-		return (Exception) super.getCause();
+	public EsbBusinessException(EsbBusinessCode code, Throwable cause) {
+		super(cause);
+		this.code = code;
 	}
 
 	public ErrorType getErrorType() {
-		return errorType;
+		return code.getType();
 	}
 
 	public String getErrorCode() {
-		return errorCode;
+		return code.getCode();
+	}
+
+	public String getLibelle() {
+		return code.getLibelle();
 	}
 }

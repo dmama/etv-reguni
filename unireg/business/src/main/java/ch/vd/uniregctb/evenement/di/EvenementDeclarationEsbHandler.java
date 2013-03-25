@@ -12,12 +12,10 @@ import java.io.IOException;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.apache.xmlbeans.XmlException;
 import org.springframework.core.io.ClassPathResource;
 import org.xml.sax.SAXException;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.technical.esb.ErrorType;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.unireg.xml.event.di.common.v1.EvenementDeclarationImpotContext;
 import ch.vd.unireg.xml.event.di.input.v1.ObjectFactory;
@@ -25,6 +23,7 @@ import ch.vd.unireg.xml.event.di.input.v1.QuittancementDeclarationImpot;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
+import ch.vd.uniregctb.jms.EsbBusinessCode;
 import ch.vd.uniregctb.jms.EsbBusinessException;
 import ch.vd.uniregctb.jms.EsbMessageHandler;
 import ch.vd.uniregctb.jms.EsbMessageHelper;
@@ -50,7 +49,7 @@ public class EvenementDeclarationEsbHandler implements EsbMessageHandler {
 	}
 
 	@Override
-	public void onEsbMessage(EsbMessage message) throws Exception {
+	public void onEsbMessage(EsbMessage message) throws EsbBusinessException {
 
 		AuthenticationHelper.pushPrincipal("JMS-EvtDeclaration");
 
@@ -67,26 +66,21 @@ public class EvenementDeclarationEsbHandler implements EsbMessageHandler {
 			// mais aussi envoyer l'erreur dans une queue spécifique
 			LOGGER.error(e.getMessage(), e);
 			hibernateTemplate.flush(); // on s'assure que la session soit flushée avant de resetter l'autentification
-			throw new EsbBusinessException(e.getMessage(), e, ErrorType.BUSINESS, "");
+			throw e;
 		}
-		catch (XmlException | JAXBException | SAXException e) {
+		catch (JAXBException | SAXException | IOException e) {
 			// apparemment, l'XML est invalide... On va essayer de renvoyer une erreur propre quand même
 			LOGGER.error(e.getMessage(), e);
 			hibernateTemplate.flush(); // on s'assure que la session soit flushée avant de resetter l'autentification
-			throw new EsbBusinessException(e.getMessage(), e, ErrorType.TECHNICAL, "");
+			throw new EsbBusinessException(EsbBusinessCode.XML_INVALIDE, e.getMessage(), e);
 		}
-		catch (Exception e) {
+		catch (RuntimeException e) {
 			LOGGER.error(e, e);
 			throw e;
 		}
 		finally {
 			AuthenticationHelper.popPrincipal();
 		}
-	}
-
-	private void onMessage(EsbMessage message, Map<String, String> incomingHeaders) throws Exception {
-		final EvenementDeclaration event = parse(message.getBodyAsSource(), message.getBusinessId());
-		handler.onEvent(event, incomingHeaders);
 	}
 
 	private EvenementDeclaration parse(Source message, String businessId) throws JAXBException, SAXException, IOException {
@@ -119,6 +113,11 @@ public class EvenementDeclarationEsbHandler implements EsbMessageHandler {
 		else {
 			throw new IllegalArgumentException("Type d'événement inconnu = " + event.getClass());
 		}
+	}
+
+	private void onMessage(EsbMessage message, Map<String, String> incomingHeaders) throws IOException, JAXBException, SAXException, EvenementDeclarationException {
+		final EvenementDeclaration event = parse(message.getBodyAsSource(), message.getBusinessId());
+		handler.onEvent(event, incomingHeaders);
 	}
 
 	private Schema getRequestSchema() throws SAXException, IOException {

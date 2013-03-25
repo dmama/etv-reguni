@@ -12,10 +12,10 @@ import org.apache.xmlbeans.XmlOptions;
 
 import ch.vd.fiscalite.empaci.demandeUtilisateurV2.DemandeUtilisateurDocument;
 import ch.vd.registre.base.date.DateHelper;
-import ch.vd.technical.esb.ErrorType;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
+import ch.vd.uniregctb.jms.EsbBusinessCode;
 import ch.vd.uniregctb.jms.EsbBusinessException;
 import ch.vd.uniregctb.jms.EsbMessageHandler;
 
@@ -68,13 +68,13 @@ public class EvenementIamEsbHandler implements EsbMessageHandler {
 			// mais aussi envoyer l'erreur dans une queue spécifique
 			LOGGER.error(e.getMessage(), e);
 			hibernateTemplate.flush(); // on s'assure que la session soit flushée avant de resetter l'autentification
-			throw new EsbBusinessException(e.getMessage(), e, ErrorType.UNKNOWN, "");
+			throw new EsbBusinessException(e.getBusinessCode(), e.getMessage(), e);
 		}
 		catch (XmlException e) {
 			// apparemment, l'XML est invalide... On va essayer de renvoyer une erreur propre quand même
 			LOGGER.error(e.getMessage(), e);
 			hibernateTemplate.flush(); // on s'assure que la session soit flushée avant de resetter l'autentification
-			throw new EsbBusinessException(e.getMessage(), e, ErrorType.TECHNICAL, "");
+			throw new EsbBusinessException(EsbBusinessCode.XML_INVALIDE, e.getMessage(), e);
 		}
 		catch (Exception e) {
 			LOGGER.error(e, e);

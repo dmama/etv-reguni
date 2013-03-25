@@ -17,12 +17,12 @@ import org.xml.sax.SAXException;
 
 import ch.vd.evd0025.v1.ObjectFactory;
 import ch.vd.evd0025.v1.RegistrationRequestValidationRequest;
-import ch.vd.technical.esb.ErrorType;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.unireg.interfaces.efacture.data.Demande;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
+import ch.vd.uniregctb.jms.EsbBusinessCode;
 import ch.vd.uniregctb.jms.EsbBusinessException;
 import ch.vd.uniregctb.jms.EsbMessageHandler;
 import ch.vd.uniregctb.jms.EsbMessageHelper;
@@ -58,7 +58,7 @@ public class EFactureMessageHandler implements EsbMessageHandler {
 			// apparemment, l'XML est invalide... On va essayer de renvoyer une erreur propre quand même
 			LOGGER.error(e.getMessage(), e);
 			hibernateTemplate.flush();  // Flush la session hibernate avant de poper le principal (sinon NullPointerException dans ModificationLogInterceptor)
-			throw new EsbBusinessException(e.getMessage(), e, ErrorType.TECHNICAL, "");
+			throw new EsbBusinessException(EsbBusinessCode.XML_INVALIDE, e.getMessage(), e);
 		}
 		catch (Exception e) {
 			LOGGER.error(e, e);

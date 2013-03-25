@@ -14,9 +14,9 @@ import ch.vd.fiscalite.registre.databaseEvent.DataType;
 import ch.vd.fiscalite.registre.databaseEvent.DataType.Enum;
 import ch.vd.fiscalite.registre.databaseEvent.DatabaseLoadEventDocument;
 import ch.vd.fiscalite.registre.databaseEvent.DatabaseTruncateEventDocument;
-import ch.vd.technical.esb.ErrorType;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.jms.EsbBusinessCode;
 import ch.vd.uniregctb.jms.EsbBusinessException;
 import ch.vd.uniregctb.jms.EsbMessageHandler;
 
@@ -56,7 +56,7 @@ public class DataEventJmsHandler implements EsbMessageHandler {
 
 			final String errorMsg = builder.toString();
 			LOGGER.error(errorMsg);
-			throw new EsbBusinessException(errorMsg, null, ErrorType.TECHNICAL, "");
+			throw new EsbBusinessException(EsbBusinessCode.XML_INVALIDE, errorMsg, null);
 		}
 		else {
 

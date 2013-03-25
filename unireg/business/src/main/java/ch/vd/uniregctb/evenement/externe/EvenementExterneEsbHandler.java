@@ -18,7 +18,6 @@ import org.springframework.core.io.ClassPathResource;
 import org.xml.sax.SAXException;
 
 import ch.vd.registre.base.date.DateHelper;
-import ch.vd.technical.esb.ErrorType;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.unireg.xml.event.lr.event.v1.Evenement;
 import ch.vd.unireg.xml.event.lr.event.v1.EvtListe;
@@ -28,6 +27,7 @@ import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
+import ch.vd.uniregctb.jms.EsbBusinessCode;
 import ch.vd.uniregctb.jms.EsbBusinessException;
 import ch.vd.uniregctb.jms.EsbMessageHandler;
 
@@ -69,7 +69,7 @@ public class EvenementExterneEsbHandler implements EsbMessageHandler {
 		}
 		catch (EvenementExterneException e) {
 			LOGGER.error(e.getMessage(), e);
-			throw new EsbBusinessException(e.getMessage(), e, ErrorType.BUSINESS, "");
+			throw new EsbBusinessException(EsbBusinessCode.EVT_EXTERNE, e.getMessage(), e);
 		}
 		catch (RuntimeException e) {
 			LOGGER.error(e, e);

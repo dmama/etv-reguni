@@ -12,13 +12,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import ch.vd.fiscalite.registre.identificationContribuable.IdentificationCTBDocument;
-import ch.vd.technical.esb.ErrorType;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
+import ch.vd.uniregctb.jms.EsbBusinessCode;
 import ch.vd.uniregctb.jms.EsbBusinessException;
 import ch.vd.uniregctb.jms.EsbMessageHandler;
 import ch.vd.uniregctb.jms.EsbMessageHelper;
@@ -101,7 +101,7 @@ public class IdentificationContribuableEsbHandler implements IdentificationContr
 
 			final String errorMessage = builder.toString();
 			LOGGER.error(errorMessage);
-			throw new EsbBusinessException(errorMessage, null, ErrorType.TECHNICAL, "");
+			throw new EsbBusinessException(EsbBusinessCode.XML_INVALIDE, errorMessage, null);
 		}
 		else {
 
@@ -131,7 +131,7 @@ public class IdentificationContribuableEsbHandler implements IdentificationContr
 			catch (XmlException | MontantInvalideException e) {
 				// problème au moment de la conversion de l'XML en entité
 				LOGGER.error("Erreur dans le message XML reçu", e);
-				throw new EsbBusinessException(e.getMessage(), e, ErrorType.BUSINESS, "");
+				throw new EsbBusinessException(EsbBusinessCode.IDENTIFICATION_DONNEES_INVALIDES, e.getMessage(), e);
 			}
 			catch (RuntimeException e) {
 				// Départ en DLQ, mais on log avant...

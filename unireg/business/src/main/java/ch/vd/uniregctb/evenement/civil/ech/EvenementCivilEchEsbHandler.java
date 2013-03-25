@@ -24,12 +24,11 @@ import ch.vd.evd0006.v1.EventIdentification;
 import ch.vd.evd0006.v1.EventNotification;
 import ch.vd.evd0006.v1.ObjectFactory;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.technical.esb.ErrorType;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
+import ch.vd.uniregctb.jms.EsbBusinessCode;
 import ch.vd.uniregctb.jms.EsbBusinessException;
 import ch.vd.uniregctb.jms.EsbMessageHandler;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
@@ -77,7 +76,7 @@ public class EvenementCivilEchEsbHandler implements EsbMessageHandler, Initializ
 	}
 
 	@Override
-	public void onEsbMessage(EsbMessage message) throws Exception {
+	public void onEsbMessage(EsbMessage message) throws EsbBusinessException {
 
 		final String businessId = message.getBusinessId();
 		if (LOGGER.isInfoEnabled()) {
@@ -95,12 +94,12 @@ public class EvenementCivilEchEsbHandler implements EsbMessageHandler, Initializ
 				AuthenticationHelper.popPrincipal();
 			}
 		}
-		catch (EvenementCivilException e) {
+		catch (EvenementCivilEchEsbException e) {
 			// on a un truc qui a sauté au moment de l'arrivée de l'événement (test métier)
 			// non seulement il faut committer la transaction de réception du message entrant,
 			// mais aussi envoyer l'erreur dans une queue spécifique
 			LOGGER.error(e.getMessage(), e);
-			throw new EsbBusinessException(e.getMessage(), e, ErrorType.UNKNOWN, "");
+			throw e;
 		}
 		catch (RuntimeException e) {
 			// boom technique (bug ou problème avec la DB) -> départ dans la DLQ
@@ -126,9 +125,9 @@ public class EvenementCivilEchEsbHandler implements EsbMessageHandler, Initializ
 	 *     <li>Notification du moteur de traitement de l'arrivée d'un nouvel événement pour l'individu</li>
 	 * </ol>
 	 * @param xml le contenu XML du message envoyé par le registre civil
-	 * @throws EvenementCivilException en cas de problème <i>métier</i>
+	 * @throws EvenementCivilEchEsbException en cas de problème <i>métier</i>
 	 */
-	private void onEvenementCivil(Source xml) throws EvenementCivilException {
+	private void onEvenementCivil(Source xml) throws EvenementCivilEchEsbException {
 		final EvenementCivilEch event = decodeEvenementCivil(xml);
 		if (event != null) {
 
@@ -144,7 +143,7 @@ public class EvenementCivilEchEsbHandler implements EsbMessageHandler, Initializ
 		}
 	}
 
-	private static void checkValidIncomingEventData(EvenementCivilEch ech) throws EvenementCivilException {
+	private static void checkValidIncomingEventData(EvenementCivilEch ech) throws EvenementCivilEchEsbException {
 		final List<String> attributs = new ArrayList<>();
 		if (ech.getAction() == null) {
 			attributs.add("action");
@@ -182,11 +181,11 @@ public class EvenementCivilEchEsbHandler implements EsbMessageHandler, Initializ
 				b.append(" sont obligatoires pour un événement civil à l'entrée dans Unireg");
 				msg = b.toString();
 			}
-			throw new EvenementCivilException(msg);
+			throw new EvenementCivilEchEsbException(EsbBusinessCode.EVT_CIVIL, msg);
 		}
 	}
 
-	private EvenementCivilEch decodeEvenementCivil(Source xml) throws EvenementCivilException {
+	private EvenementCivilEch decodeEvenementCivil(Source xml) throws EvenementCivilEchEsbException {
 
 		try {
 			// 1. décodage de l'événement reçu
@@ -198,7 +197,7 @@ public class EvenementCivilEchEsbHandler implements EsbMessageHandler, Initializ
 				ech = new EvenementCivilEch(evt);
 			}
 			catch (IllegalArgumentException e) {
-				throw new EvenementCivilException(e);
+				throw new EvenementCivilEchEsbException(EsbBusinessCode.EVT_CIVIL, e);
 			}
 
 			// 1'. validation des données de base
@@ -216,10 +215,10 @@ public class EvenementCivilEchEsbHandler implements EsbMessageHandler, Initializ
 		}
 		catch (JAXBException e) {
 			final Throwable src = e.getLinkedException();
-			throw new EvenementCivilException(src != null ? src : e);
+			throw new EvenementCivilEchEsbException(EsbBusinessCode.XML_INVALIDE, src != null ? src : e);
 		}
 		catch (SAXException | IOException e) {
-			throw new EvenementCivilException(e);
+			throw new EvenementCivilEchEsbException(EsbBusinessCode.XML_INVALIDE, e);
 		}
 	}
 

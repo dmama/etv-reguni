@@ -9,12 +9,12 @@ import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.XmlOptions;
 
 import ch.vd.fiscalite.registre.entrepriseEvent.EvtEntrepriseDocument;
-import ch.vd.technical.esb.ErrorType;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
+import ch.vd.uniregctb.jms.EsbBusinessCode;
 import ch.vd.uniregctb.jms.EsbBusinessException;
 import ch.vd.uniregctb.jms.EsbMessageHandler;
 import ch.vd.uniregctb.tiers.Entreprise;
@@ -66,7 +66,7 @@ public class EntrepriseEventHandler implements EsbMessageHandler {
 
 			final String errorMessage = builder.toString();
 			LOGGER.error(errorMessage);
-			throw new EsbBusinessException(errorMessage, null, ErrorType.TECHNICAL, "");
+			throw new EsbBusinessException(EsbBusinessCode.XML_INVALIDE, errorMessage, null);
 		}
 		else {
 
