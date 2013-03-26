@@ -9,16 +9,16 @@
 	<groupId>ch.vd.uniregctb</groupId>
 	<artifactId>unireg-wsclient-rcpers</artifactId>
 	<packaging>jar</packaging>
-	<version>2.5-SNAPSHOT</version>
+	<version>2.5</version>
 
-	<name>Unireg - Client WS RCPers v2</name>
-	<description>Unireg - Client Java pour le web-service d'échange de données v2 de RCPers</description>
+	<name>Unireg - Client WS RCPers v3</name>
+	<description>Unireg - Client Java pour le web-service d'échange de données v3 de RCPers</description>
 	
 	<dependencies>
 		<dependency>
 			<groupId>ch.vd.uniregctb</groupId>
 			<artifactId>unireg-jaxb2-rcpers</artifactId>
-			<version>1.6-SNAPSHOT</version>
+			<version>1.8</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.vd.registre</groupId>
