@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.evenement.civil.interne.deces;
 
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
@@ -9,7 +11,9 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.unireg.interfaces.civil.data.EtatCivil;
 import ch.vd.unireg.interfaces.civil.data.Individu;
+import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.EtatCivilHelper;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
@@ -20,7 +24,9 @@ import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.metier.MetierServiceException;
+import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
+import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -164,9 +170,8 @@ public class Deces extends EvenementCivilInterne {
 	@NotNull
 	@Override
 	public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
-
 		try {
-			return handleDeces();
+			return handleDeces(warnings);
 		}
 		finally {
 			// [SIFISC-6841] on met-à-jour le flag habitant en fonction de ses adresses de résidence civiles
@@ -174,7 +179,7 @@ public class Deces extends EvenementCivilInterne {
 		}
 	}
 
-	private HandleStatus handleDeces() throws EvenementCivilException {
+	private HandleStatus handleDeces(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
 		if (isRedondant) {
 			return HandleStatus.REDONDANT;
@@ -191,6 +196,8 @@ public class Deces extends EvenementCivilInterne {
 
 			if (dateDecesUnireg.equals(getDate())) {
 				// si l'evt civil de Décès est identique à la date de décès dans UNIREG : OK (evt traité sans modif dans UNIREG)
+				Audit.info(getNumeroEvenement(), "Date de décès déjà enregistrée dans le fiscal, rien à faire");
+				checkForsFermesAvecPassageToutDroit(warnings);
 				return HandleStatus.TRAITE;
 			}
 			else {
@@ -198,6 +205,8 @@ public class Deces extends EvenementCivilInterne {
 				final boolean unJourDifference = RegDateHelper.isBetween(getDate(), dateDecesUnireg.getOneDayBefore(), dateDecesUnireg.getOneDayAfter(), NullDateBehavior.EARLIEST);
 				if (unJourDifference && dateDecesUnireg.year() == getDate().year()) {
 					// si 1 jour de différence dans la même Période Fiscale (même année) : OK (evt traité sans modif dans UNIREG)
+					Audit.info(getNumeroEvenement(), "Date de décès déjà enregistrée dans le fiscal avec un jour de différence (" + RegDateHelper.dateToDisplayString(dateDecesUnireg) + "), rien à faire");
+					checkForsFermesAvecPassageToutDroit(warnings);
 					return HandleStatus.TRAITE;
 				}
 				else if (!unJourDifference || dateDecesUnireg.year() != getDate().year()) {
@@ -216,4 +225,28 @@ public class Deces extends EvenementCivilInterne {
 		return HandleStatus.TRAITE;
 	}
 
+	/**
+	 * On vérifie que les fors fiscaux sont bien fermés (ce qui n'est que justice pour une personne décédée) même dans le cas où Unireg ne fait rien pour l'événement civil de décès
+	 * (car il est supposé déjà avoir été pris en compte, puisque la date de décès est déjà renseignée)
+	 * @param warnings collection à remplir d'éventuels warnings
+	 * @throws EvenementCivilException en cas de grave problème qui sera transcrit en erreur sur l'événement civil
+	 */
+	private void checkForsFermesAvecPassageToutDroit(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+		final PersonnePhysique defunt = getPrincipalPP();
+		final EnsembleTiersCouple couple = getService().getEnsembleTiersCouple(defunt, getDate());
+		final Contribuable ctbPourFors;
+		if (couple != null && couple.getMenage() != null) {
+			ctbPourFors = couple.getMenage();
+		}
+		else {
+			ctbPourFors = defunt;
+		}
+
+		final List<ForFiscal> forsFiscauxOuverts = ctbPourFors.getForsFiscauxValidAt(null);
+		if (forsFiscauxOuverts != null && forsFiscauxOuverts.size() > 0) {
+			// visiblement, il y a encore des fors fiscaux ouverts, ce qui fait un peu tâche sur un décédé
+			warnings.addWarning(String.format("Il reste au moins un for fiscal ouvert sur le contribuable %s malgré la date de décès déjà renseignée sur la personne physique %s.",
+			                                  FormatNumeroHelper.numeroCTBToDisplay(ctbPourFors.getNumero()), FormatNumeroHelper.numeroCTBToDisplay(defunt.getNumero())));
+		}
+	}
 }

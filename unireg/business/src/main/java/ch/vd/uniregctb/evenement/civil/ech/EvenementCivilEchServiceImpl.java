@@ -16,9 +16,11 @@ import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
+import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilCriteria;
@@ -225,25 +227,29 @@ public class EvenementCivilEchServiceImpl implements EvenementCivilEchService, I
 
     @Override
     public void forceEvenement(Long id) {
-        EvenementCivilEch evt = evenementCivilEchDAO.get(id);
-        if (evt==null) {
-            throw new ObjectNotFoundException("evenement ech " + id);
+	    final EvenementCivilEch evt = evenementCivilEchDAO.get(id);
+        if (evt == null) {
+            throw new ObjectNotFoundException("Evénement ech " + id);
         }
-        if (evt.getEtat().isTraite() && evt.getEtat() != EtatEvenementCivil.A_VERIFIER) {
-            throw new IllegalArgumentException("l'état de l'événement " + id + " ne lui permet pas d'être forcé");
+	    if (evt.getEtat().isTraite() && evt.getEtat() != EtatEvenementCivil.A_VERIFIER) {
+            throw new IllegalArgumentException("L'état de l'événement " + id + " ne lui permet pas d'être forcé");
         }
         evt.setEtat(EtatEvenementCivil.FORCE);
 
+	    Audit.info(id, String.format("Forçage manuel de l'événement civil %d de type %s/%s au %s sur l'individu %d", id, evt.getType(), evt.getAction(), RegDateHelper.dateToDisplayString(evt.getDateEvenement()), evt.getNumeroIndividu()));
+
 	    // [SIFISC-6908] En cas de forçage de l'événement, on essaie au moins de mettre-à-jour le flag habitant, pour que les droits d'édition corrects s'appliquent sur la personne physiques.
 	    final Long numeroIndividu = evt.getNumeroIndividu();
-	    try {
-		    final PersonnePhysique pp = tiersDAO.getPPByNumeroIndividu(numeroIndividu);
-		    if (pp != null) {
-			    tiersService.updateHabitantFlag(pp, numeroIndividu, id);
+	    if (numeroIndividu != null) {
+		    try {
+			    final PersonnePhysique pp = tiersDAO.getPPByNumeroIndividu(numeroIndividu);
+			    if (pp != null) {
+				    tiersService.updateHabitantFlag(pp, numeroIndividu, id);
+			    }
 		    }
-	    }
-	    catch (RuntimeException e) {
-		    LOGGER.error("Impossible de recalculer le flag 'habitant' sur l'individu n°" + numeroIndividu, e);
+		    catch (RuntimeException e) {
+			    LOGGER.error("Impossible de recalculer le flag 'habitant' sur l'individu n°" + numeroIndividu, e);
+		    }
 	    }
     }
 }

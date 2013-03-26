@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.evenement.civil.engine.ech;
 
+import java.util.Set;
+
 import junit.framework.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
@@ -12,7 +14,9 @@ import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchErreur;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -20,12 +24,18 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
+import ch.vd.uniregctb.type.TypeEvenementErreur;
+import ch.vd.uniregctb.type.TypePermis;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class DecesEchProcessorTest extends AbstractEvenementCivilEchProcessorTest {
 
@@ -258,7 +268,7 @@ public class DecesEchProcessorTest extends AbstractEvenementCivilEchProcessorTes
 				MockIndividu madame = addIndividu(noMadame, date(1924, 8, 1), "Lisette", "Bouton", false);
 				addNationalite(monsieur, MockPays.Suisse, date(1923, 2, 12), null);
 				addNationalite(madame, MockPays.Suisse, date(1924, 8, 1), null);
-				marieIndividus(monsieur, madame, RegDate.get(1947,7,14));
+				marieIndividus(monsieur, madame, RegDate.get(1947, 7, 14));
 			}
 		});
 
@@ -392,5 +402,179 @@ public class DecesEchProcessorTest extends AbstractEvenementCivilEchProcessorTes
 	@Test(timeout = 10000L)
 	public void testDecesDes2ConjointsLeMemeJourAvecVeuvage () throws Exception {
 
+	}
+
+	/**
+	 * Cas du jira SIFISC-8279 : événement de décès mis en attente par événement de correction de divorce en erreur, événement qui est ensuite forcé manuellement ; lors de la relance
+	 * de l'événement civil de décès, le for fiscal du contribuable ne se ferme pas... (car le forçage de l'événement de correction de divorce a provoqué le re-calcul du flag habitant
+	 * et la recopie des données civiles dans Unireg, y compris la date de décès, ce qui fait que le décès est supposé déjà pris en compte fiscalement au moment du retraitement de
+	 * l'événement civil de décès, pour lequel on se dit donc qu'il n'y a plus rien à faire...)
+	 */
+	@Test(timeout = 10000L)
+	public void testDecesSansFermetureDeFor() throws Exception {
+
+		final long noIndividu = 167267234L;
+		final RegDate dateDivorceAvantCorrection = date(1989, 7, 4);
+		final RegDate dateDivorce = date(1990, 5, 28);
+		final RegDate dateDeces = date(2013, 2, 18);
+
+		final long evtDivorceId = 342678325172L;
+		final long evtCorrectionDivorceId = 67457242L;
+		final long evtDecesId = 3564283462L;
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final RegDate dateNaissance = date(1930, 3, 16);
+				final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Colin", "Marguerite", Sexe.FEMININ);
+				divorceIndividu(individu, dateDivorce);
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Pully.CheminDesRoches, null, date(2009, 7, 12), dateDeces);
+				addAdresse(individu, TypeAdresseCivil.COURRIER, MockRue.Pully.CheminDesRoches, null, date(2009, 7, 12), null);
+				addNationalite(individu, MockPays.Danemark, dateNaissance, null);
+				addPermis(individu, TypePermis.ETABLISSEMENT, date(2003, 1, 1), null, false);
+				individu.setDateDeces(dateDeces);
+
+				final MockIndividu avantCorrection = createIndividu(noIndividu, dateNaissance, "Colin", "Marguerite", Sexe.FEMININ);
+				divorceIndividu(avantCorrection, dateDivorceAvantCorrection);
+				addAdresse(avantCorrection, TypeAdresseCivil.PRINCIPALE, MockRue.Pully.CheminDesRoches, null, date(2009, 7, 12), null);
+				addAdresse(avantCorrection, TypeAdresseCivil.COURRIER, MockRue.Pully.CheminDesRoches, null, date(2009, 7, 12), null);
+				addNationalite(avantCorrection, MockPays.Danemark, dateNaissance, null);
+				addPermis(avantCorrection, TypePermis.ETABLISSEMENT, date(2003, 1, 1), null, false);
+
+				final MockIndividu apresCorrection = createIndividu(noIndividu, dateNaissance, "Colin", "Marguerite", Sexe.FEMININ);
+				divorceIndividu(apresCorrection, dateDivorce);
+				addAdresse(apresCorrection, TypeAdresseCivil.PRINCIPALE, MockRue.Pully.CheminDesRoches, null, date(2009, 7, 12), null);
+				addAdresse(apresCorrection, TypeAdresseCivil.COURRIER, MockRue.Pully.CheminDesRoches, null, date(2009, 7, 12), null);
+				addNationalite(apresCorrection, MockPays.Danemark, dateNaissance, null);
+				addPermis(apresCorrection, TypePermis.ETABLISSEMENT, date(2003, 1, 1), null, false);
+
+				addIndividuAfterEvent(evtDivorceId, avantCorrection, dateDivorceAvantCorrection, TypeEvenementCivilEch.DIVORCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, null);
+				addIndividuAfterEvent(evtCorrectionDivorceId, apresCorrection, dateDivorce, TypeEvenementCivilEch.DIVORCE, ActionEvenementCivilEch.CORRECTION, evtDivorceId);
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				pp.setDateDeces(null);
+				addForPrincipal(pp, dateDivorceAvantCorrection, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Pully);
+				return pp.getNumero();
+			}
+		});
+
+		// petite vérification intermédiaire : habitante avec for ouvert
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				assertNotNull(pp);
+				assertNull(pp.getDateDeces());
+				assertTrue(pp.isHabitantVD());
+
+				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+				assertNotNull(ffp);
+				assertEquals(dateDivorceAvantCorrection, ffp.getDateDebut());
+				assertEquals(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, ffp.getMotifOuverture());
+				assertNull(ffp.getDateFin());
+				assertNull(ffp.getMotifFermeture());
+				return null;
+			}
+		});
+
+		// création des événements civils
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch correctionDivorce = new EvenementCivilEch();
+				correctionDivorce.setId(evtCorrectionDivorceId);
+				correctionDivorce.setAction(ActionEvenementCivilEch.CORRECTION);
+				correctionDivorce.setDateEvenement(dateDivorce);
+				correctionDivorce.setEtat(EtatEvenementCivil.A_TRAITER);
+				correctionDivorce.setNumeroIndividu(noIndividu);
+				correctionDivorce.setType(TypeEvenementCivilEch.DIVORCE);
+				hibernateTemplate.merge(correctionDivorce);
+
+				final EvenementCivilEch deces = new EvenementCivilEch();
+				deces.setId(evtDecesId);
+				deces.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				deces.setDateEvenement(dateDeces);
+				deces.setEtat(EtatEvenementCivil.A_TRAITER);
+				deces.setNumeroIndividu(noIndividu);
+				deces.setType(TypeEvenementCivilEch.DECES);
+				hibernateTemplate.merge(deces);
+
+				return null;
+			}
+		});
+
+		// traitement des événements reçus
+		traiterEvenements(noIndividu);
+
+		// résultat après traitement
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch correctionDivorce = evtCivilDAO.get(evtCorrectionDivorceId);
+				assertNotNull(correctionDivorce);
+				assertEquals(EtatEvenementCivil.EN_ERREUR, correctionDivorce.getEtat());
+				assertEquals("L'élément suivant a été modifié par la correction : état civil (dates).", correctionDivorce.getCommentaireTraitement());
+
+				final EvenementCivilEch deces = evtCivilDAO.get(evtDecesId);
+				assertNotNull(deces);
+				assertEquals(EtatEvenementCivil.EN_ATTENTE, deces.getEtat());
+				return null;
+			}
+		});
+
+		// on force l'événement en erreur
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				evtCivilService.forceEvenement(evtCorrectionDivorceId);
+				return null;
+			}
+		});
+
+		// et on relance le traitement du seul événement qui reste : le décès
+		traiterEvenements(noIndividu);
+
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch deces = evtCivilDAO.get(evtDecesId);
+				assertNotNull(deces);
+				assertEquals(EtatEvenementCivil.A_VERIFIER, deces.getEtat());
+
+				final Set<EvenementCivilEchErreur> erreurs = deces.getErreurs();
+				assertNotNull(erreurs);
+				assertEquals(1, erreurs.size());
+
+				final EvenementCivilEchErreur warning = erreurs.iterator().next();
+				assertNotNull(warning);
+				assertEquals(TypeEvenementErreur.WARNING, warning.getType());
+				final String expectedWarning = String.format("Il reste au moins un for fiscal ouvert sur le contribuable %s malgré la date de décès déjà renseignée sur la personne physique %s.",
+				                                             FormatNumeroHelper.numeroCTBToDisplay(ppId), FormatNumeroHelper.numeroCTBToDisplay(ppId));
+				assertEquals(expectedWarning, warning.getMessage());
+
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				assertNotNull(pp);
+				assertFalse(pp.isHabitantVD());
+				assertEquals(dateDeces, pp.getDateDeces());
+
+				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+				assertNotNull(ffp);
+				assertEquals(dateDivorceAvantCorrection, ffp.getDateDebut());
+				assertEquals(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, ffp.getMotifOuverture());
+
+				// le for fiscal n'est pas fermé !!
+				assertNull(ffp.getDateFin());
+				assertNull(ffp.getMotifFermeture());
+
+				return null;
+			}
+		});
 	}
 }
