@@ -140,7 +140,7 @@ public class GentilEsbMessageEndpointListener extends EsbMessageEndpointListener
 	 */
 	protected void onBusinessError(EsbMessage message, String description, @Nullable Throwable throwable, ErrorType errorType, String errorCode) throws Exception {
 		final Exception ex;
-		if (!(throwable instanceof Exception)) {
+		if (throwable != null && !(throwable instanceof Exception)) {
 			// wrapping...
 			ex = new Exception(throwable);
 		}
