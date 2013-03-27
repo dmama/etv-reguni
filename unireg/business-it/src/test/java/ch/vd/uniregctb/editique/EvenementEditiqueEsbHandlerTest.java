@@ -62,9 +62,6 @@ public class EvenementEditiqueEsbHandlerTest extends EvenementTest {
 		listener.setEsbTemplate(esbTemplate);
 		listener.setTransactionManager(new JmsTransactionManager(jmsConnectionFactory));
 
-		esbMessageFactory = new EsbMessageFactory();
-		esbMessageFactory.setValidator(null);
-
 		initEndpointManager(INPUT_QUEUE, listener);
 	}
 
@@ -139,13 +136,17 @@ public class EvenementEditiqueEsbHandlerTest extends EvenementTest {
 	}
 
 	private void sendDiMessage(String queueName, String texte, String idDocument) throws Exception {
-		final EsbMessage m = esbMessageFactory.createMessage();
+		final EsbMessage m = EsbMessageFactory.createMessage();
 		m.setBusinessUser("EvenementTest");
 		m.setBusinessId(String.valueOf(m.hashCode()));
 		m.setContext("test");
 		m.setServiceDestination(queueName);
 		m.setBody(texte);
 		m.addHeader(EditiqueHelper.DI_ID, idDocument);
+
+		// pas de validation car pas de namespace dans la XSD
+		// esbValidator.validate(m);
+
 		esbTemplate.send(m);
 	}
 }

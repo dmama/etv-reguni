@@ -18,7 +18,7 @@ import org.springframework.test.context.ContextConfiguration;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
-import ch.vd.technical.esb.util.ESBXMLValidator;
+import ch.vd.technical.esb.validation.EsbXmlValidation;
 import ch.vd.unireg.xml.event.party.v1.ExceptionResponse;
 import ch.vd.unireg.xml.event.party.v1.ObjectFactory;
 import ch.vd.unireg.xml.event.party.v1.Request;
@@ -43,7 +43,7 @@ abstract class PartyRequestEsbHandlerItTest extends BusinessItTest {
 	private EsbJmsTemplate esbTemplate;
 	private String inputQueue;
 	private String OutputQueue;
-	private EsbMessageFactory esbMessageFactory;
+	private EsbXmlValidation esbValidator;
 
 	protected static String requestToString(Request request) throws JAXBException {
 		JAXBContext context = JAXBContext.newInstance(ObjectFactory.class.getPackage().getName());
@@ -59,11 +59,9 @@ abstract class PartyRequestEsbHandlerItTest extends BusinessItTest {
 
 		esbTemplate = getBean(EsbJmsTemplate.class, "esbJmsTemplate");
 
-		final ESBXMLValidator esbValidator = new ESBXMLValidator();
+		esbValidator = new EsbXmlValidation();
 		esbValidator.setResourceResolver(new ClasspathCatalogResolver());
 		esbValidator.setSources(new Resource[]{new ClassPathResource(getRequestXSD()), new ClassPathResource(getResponseXSD())});
-		esbMessageFactory = new EsbMessageFactory();
-		esbMessageFactory.setValidator(esbValidator);
 
 		inputQueue = uniregProperties.getProperty("testprop.jms.queue.party.service");
 		OutputQueue = inputQueue + ".response";
@@ -72,29 +70,28 @@ abstract class PartyRequestEsbHandlerItTest extends BusinessItTest {
 		EvenementHelper.clearQueue(esbTemplate, OutputQueue);
 	}
 
-	abstract String getResponseXSD();
+	protected abstract String getResponseXSD();
 
-	abstract String getRequestXSD();
+	protected abstract String getRequestXSD();
 
+	protected void deactivateEsbValidator() {
+		esbValidator = null;
+	}
 
-	EsbJmsTemplate getEsbTemplate() {
+	protected EsbJmsTemplate getEsbTemplate() {
 		return esbTemplate;
 	}
 
-	String getInputQueue() {
+	protected String getInputQueue() {
 		return inputQueue;
 	}
 
-	String getOutputQueue() {
+	protected String getOutputQueue() {
 		return OutputQueue;
 	}
 
-	EsbMessageFactory getEsbMessageFactory() {
-		return esbMessageFactory;
-	}
-
-	EsbMessage buildTextMessage(String queueName, String texte, String replyTo) throws Exception {
-		final EsbMessage m = getEsbMessageFactory().createMessage();
+	protected EsbMessage buildTextMessage(String queueName, String texte, String replyTo) throws Exception {
+		final EsbMessage m = EsbMessageFactory.createMessage();
 		m.setBusinessUser("EvenementTest");
 		m.setBusinessId(String.valueOf(m.hashCode()));
 		m.setContext("test");
@@ -104,9 +101,16 @@ abstract class PartyRequestEsbHandlerItTest extends BusinessItTest {
 		return m;
 	}
 
-	void sendTextMessage(String queueName, String texte, String replyTo) throws Exception {
+	protected void sendTextMessage(String queueName, String texte, String replyTo) throws Exception {
 		final EsbMessage m = buildTextMessage(queueName, texte, replyTo);
+		validateMessage(m);
 		getEsbTemplate().send(m);
+	}
+
+	protected void validateMessage(EsbMessage msg) throws Exception {
+		if (esbValidator != null) {
+			esbValidator.validate(msg);
+		}
 	}
 
 	protected EsbMessage getEsbMessage(String queue) throws Exception {
@@ -116,7 +120,7 @@ abstract class PartyRequestEsbHandlerItTest extends BusinessItTest {
 		return msg;
 	}
 
-	Response parseResponse(EsbMessage message) throws Exception {
+	protected Response parseResponse(EsbMessage message) throws Exception {
 
 		final JAXBContext context = JAXBContext.newInstance(ObjectFactory.class.getPackage().getName());
 		final Unmarshaller u = context.createUnmarshaller();

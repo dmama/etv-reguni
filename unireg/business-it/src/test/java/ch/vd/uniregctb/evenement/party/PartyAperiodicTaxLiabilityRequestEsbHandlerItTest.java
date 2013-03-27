@@ -48,12 +48,12 @@ public class PartyAperiodicTaxLiabilityRequestEsbHandlerItTest extends PartyRequ
 	}
 
 	@Override
-	String getRequestXSD() {
+	protected String getRequestXSD() {
 		return "event/party/aperiodic-taxliab-request-1.xsd";
 	}
 
 	@Override
-	String getResponseXSD() {
+	protected String getResponseXSD() {
 		return "event/party/aperiodic-taxliab-response-1.xsd";
 	}
 
@@ -168,6 +168,7 @@ public class PartyAperiodicTaxLiabilityRequestEsbHandlerItTest extends PartyRequ
 			public Object execute(TransactionStatus status) throws Exception {
 				final EsbMessage m = buildTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
 				m.addHeader(headerName, headerValue);
+				validateMessage(m);
 				getEsbTemplate().send(m);
 				return null;
 			}

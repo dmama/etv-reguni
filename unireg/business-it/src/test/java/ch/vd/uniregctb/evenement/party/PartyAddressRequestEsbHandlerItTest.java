@@ -63,12 +63,12 @@ public class PartyAddressRequestEsbHandlerItTest extends PartyRequestEsbHandlerI
 	}
 
 	@Override
-	String getResponseXSD() {
+	protected String getResponseXSD() {
 		return "event/party/address-response-1.xsd";
 	}
 
 	@Override
-	String getRequestXSD() {
+	protected String getRequestXSD() {
 		return "event/party/address-request-1.xsd";
 	}
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
@@ -268,6 +268,7 @@ public class PartyAddressRequestEsbHandlerItTest extends PartyRequestEsbHandlerI
 			public Object execute(TransactionStatus status) throws Exception {
 				final EsbMessage m = buildTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
 				m.addHeader(headerName, headerValue);
+				validateMessage(m);
 				getEsbTemplate().send(m);
 				return null;
 			}

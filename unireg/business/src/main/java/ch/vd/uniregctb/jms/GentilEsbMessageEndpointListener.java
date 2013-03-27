@@ -47,41 +47,42 @@ public class GentilEsbMessageEndpointListener extends EsbMessageEndpointListener
 	private final AtomicInteger nbMessagesEnErreur = new AtomicInteger(0);
 
 	private EsbMessageHandler handler;
-	private EsbBusinessErrorHandler errorHandler;
+	private EsbBusinessErrorHandler esbErrorHandler;
 
 	public void setHandler(EsbMessageHandler handler) {
 		this.handler = handler;
 	}
 
-	public void setErrorHandler(EsbBusinessErrorHandler errorHandler) {
-		this.errorHandler = errorHandler;
+	public void setEsbErrorHandler(EsbBusinessErrorHandler esbErrorHandler) {
+		this.esbErrorHandler = esbErrorHandler;
 	}
 
 	@Override
-	public void onEsbMessage(EsbMessage message) throws Exception {
+	public void onEsbMessage(EsbMessage message) {
 		final long start = loadMeter.start(message);
 		Throwable t = null;
 		String businessError = null;
 		final String displayedValue = RENDERER.toString(message);       // on est obligé de le faire tout de suite car l'envoi en queue d'erreur, par exemple, modifie le message en place...
 		try {
-			nbMessagesRecus.incrementAndGet();
-			handle(message);
-		}
-		catch (EsbBusinessException e) {
 			try {
-				onBusinessError(message, e.getMessage(), e.getCause(), e.getCode());
+				nbMessagesRecus.incrementAndGet();
+				handle(message);
+			}
+			catch (EsbBusinessException e) {
+				businessError = e.getMessage();
+				onBusinessError(message, businessError, e.getCause(), e.getCode());
 				nbMessagesEnErreur.incrementAndGet();
 			}
-			catch (Throwable throwable) {
-				nbMessagesEnException.incrementAndGet();
-				t = throwable;
-				throw throwable;
-			}
 		}
-		catch (Throwable throwable) {
+		catch (RuntimeException | Error e) {
 			nbMessagesEnException.incrementAndGet();
-			t = throwable;
-			throw throwable;
+			t = e;
+			throw e;
+		}
+		catch (Exception e) {
+			nbMessagesEnException.incrementAndGet();
+			t = e;
+			throw new RuntimeException(e);      // wrapping
 		}
 		finally {
 			final long end = loadMeter.end();
@@ -118,7 +119,7 @@ public class GentilEsbMessageEndpointListener extends EsbMessageEndpointListener
 	 * @throws Exception en cas de souci (si une exception saute ici, le message sera envoyé en DLQ)
 	 */
 	private void onBusinessError(EsbMessage message, String description, @Nullable Throwable throwable, EsbBusinessCode errorCode) throws Exception {
-		errorHandler.onBusinessError(message, description, throwable, errorCode);
+		esbErrorHandler.onBusinessError(message, description, throwable, errorCode);
 	}
 
 	@Override
@@ -126,8 +127,8 @@ public class GentilEsbMessageEndpointListener extends EsbMessageEndpointListener
 		if (handler == null) {
 			throw new IllegalArgumentException("Handler must be set");
 		}
-		if (errorHandler == null) {
-			throw new IllegalArgumentException("ErrorHandler must be set");
+		if (esbErrorHandler == null) {
+			throw new IllegalArgumentException("EsbErrorHandler must be set");
 		}
 	}
 

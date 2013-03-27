@@ -38,8 +38,8 @@ import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
-import ch.vd.technical.esb.util.ESBXMLValidator;
 import ch.vd.technical.esb.util.exception.ESBValidationException;
+import ch.vd.technical.esb.validation.EsbXmlValidation;
 import ch.vd.unireg.xml.event.rt.request.v1.MiseAJourRapportTravailRequest;
 import ch.vd.unireg.xml.event.rt.response.v1.MiseAJourRapportTravailResponse;
 import ch.vd.unireg.xml.event.rt.response.v1.ObjectFactory;
@@ -57,7 +57,7 @@ public class RapportTravailRequestEsbHandler implements EsbMessageHandler, Initi
 
 	private static final Logger LOGGER = Logger.getLogger(RapportTravailRequestEsbHandler.class);
 
-	private EsbMessageFactory esbMessageFactory;
+	private EsbXmlValidation esbValidator;
 	private final ObjectFactory objectFactory = new ObjectFactory();
 
 	private PlatformTransactionManager transactionManager;
@@ -167,12 +167,9 @@ public class RapportTravailRequestEsbHandler implements EsbMessageHandler, Initi
 		final List<ClassPathResource> resource = rapportTravailRequestHandler.getResponseXSD();
 		resources.addAll(resource);
 
-		final ESBXMLValidator esbValidator = new ESBXMLValidator();
+		esbValidator = new EsbXmlValidation();
 		esbValidator.setResourceResolver(new ClasspathCatalogResolver());
 		esbValidator.setSources(resources.toArray(new Resource[resources.size()]));
-
-		esbMessageFactory = new EsbMessageFactory();
-		esbMessageFactory.setValidator(esbValidator);
 	}
 
 	private MiseAJourRapportTravailRequest parse(Source message) throws JAXBException, SAXException, IOException {
@@ -221,12 +218,13 @@ public class RapportTravailRequestEsbHandler implements EsbMessageHandler, Initi
 				LOGGER.debug("Response body = [" + buffer.toString() + "]");
 			}
 
-			final EsbMessage m = esbMessageFactory.createMessage(query);
+			final EsbMessage m = EsbMessageFactory.createMessage(query);
 			m.setBusinessId(query.getBusinessId() + "-answer");
 			m.setBusinessUser("unireg");
 			m.setContext("rapportTravail");
 			m.setBody(doc);
 
+			esbValidator.validate(m);
 			esbTemplate.send(m);
 		}
 		catch (ESBValidationException e) {

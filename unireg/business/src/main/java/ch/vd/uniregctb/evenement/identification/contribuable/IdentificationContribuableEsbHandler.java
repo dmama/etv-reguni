@@ -15,6 +15,7 @@ import ch.vd.fiscalite.registre.identificationContribuable.IdentificationCTBDocu
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
+import ch.vd.technical.esb.validation.EsbXmlValidation;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
@@ -38,7 +39,7 @@ public class IdentificationContribuableEsbHandler implements IdentificationContr
 	protected static final String DOCUMENT_URL_ATTRIBUTE_NAME = "documentUrl";
 
 	private String outputQueue;
-	private EsbMessageFactory esbMessageFactory;
+	private EsbXmlValidation esbValidator;
 	private HibernateTemplate hibernateTemplate;
 	private EsbJmsTemplate esbTemplate;
 
@@ -51,8 +52,8 @@ public class IdentificationContribuableEsbHandler implements IdentificationContr
 		this.outputQueue = outputQueue;
 	}
 
-	public void setEsbMessageFactory(EsbMessageFactory esbMessageFactory) {
-		this.esbMessageFactory = esbMessageFactory;
+	public void setEsbValidator(EsbXmlValidation esbValidator) {
+		this.esbValidator = esbValidator;
 	}
 
 	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
@@ -168,7 +169,7 @@ public class IdentificationContribuableEsbHandler implements IdentificationContr
 
 		final IdentificationCTBDocument identificationCtb = XmlEntityAdapter.entity2xml(message);
 
-		final EsbMessage m = esbMessageFactory.createMessage();
+		final EsbMessage m = EsbMessageFactory.createMessage();
 		m.setBusinessId(String.valueOf(message.getId()));
 		m.setBusinessUser(businessUser);
 		m.setBusinessCorrelationId(businessId);
@@ -184,6 +185,8 @@ public class IdentificationContribuableEsbHandler implements IdentificationContr
 		if (outputQueue != null) {
 			m.setServiceDestination(outputQueue); // for testing only
 		}
+
+		esbValidator.validate(m);
 		esbTemplate.send(m);
 	}
 }

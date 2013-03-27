@@ -5,7 +5,7 @@
 
 	<!-- Demandes d'identification de contribuable, handler général -->
 	<bean id="identCtbMessageHandler" class="ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableEsbHandler">
-		<property name="esbMessageFactory" ref="esbMessageFactory" />
+		<property name="esbValidator" ref="esbMessageValidator"/>
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 		<property name="demandeHandler" ref="identCtbService" />
 		<property name="esbTemplate" ref="esbJmsTemplate" />

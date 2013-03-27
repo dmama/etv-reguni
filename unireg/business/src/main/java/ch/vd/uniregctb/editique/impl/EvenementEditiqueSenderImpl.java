@@ -33,7 +33,6 @@ public class EvenementEditiqueSenderImpl implements EvenementEditiqueSender {
 
 	private EsbJmsTemplate esbTemplate; // ESB template standard
 	private EsbJmsTemplate noTxEsbTemplate; // ESB template non-rattaché au transaction manager
-	private EsbMessageFactory esbMessageFactory;
 	private String serviceDestination;
 	private String serviceReplyTo;
 
@@ -57,7 +56,7 @@ public class EvenementEditiqueSenderImpl implements EvenementEditiqueSender {
 		validate(document);
 
 		try {
-			final EsbMessage m = esbMessageFactory.createMessage();
+			final EsbMessage m = EsbMessageFactory.createMessage();
 			
 			// meta-info requis par l'ESB
 			m.setBusinessId(nomDocument);
@@ -137,10 +136,6 @@ public class EvenementEditiqueSenderImpl implements EvenementEditiqueSender {
 
 	public void setNoTxEsbTemplate(EsbJmsTemplate noTxEsbTemplate) {
 		this.noTxEsbTemplate = noTxEsbTemplate;
-	}
-
-	public void setEsbMessageFactory(EsbMessageFactory esbMessageFactory) {
-		this.esbMessageFactory = esbMessageFactory;
 	}
 
 	public void setServiceDestination(String serviceDestination) {

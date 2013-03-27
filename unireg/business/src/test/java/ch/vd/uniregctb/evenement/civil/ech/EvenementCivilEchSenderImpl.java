@@ -16,7 +16,7 @@ import ch.vd.evd0006.v1.ObjectFactory;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.AbstractEsbJmsTemplate;
-import ch.vd.technical.esb.util.ESBXMLValidator;
+import ch.vd.technical.esb.validation.EsbXmlValidation;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.uniregctb.common.XmlUtils;
 
@@ -26,7 +26,7 @@ import ch.vd.uniregctb.common.XmlUtils;
 public class EvenementCivilEchSenderImpl implements EvenementCivilEchSender, InitializingBean {
 
 	private final ObjectFactory objectFactory = new ObjectFactory();
-	private EsbMessageFactory esbMessageFactory;
+	private EsbXmlValidation esbValidator;
 
 	private AbstractEsbJmsTemplate esbTemplate;
 	private String outputQueue;
@@ -49,11 +49,9 @@ public class EvenementCivilEchSenderImpl implements EvenementCivilEchSender, Ini
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		final ESBXMLValidator esbValidator = new ESBXMLValidator();
+		esbValidator = new EsbXmlValidation();
 		esbValidator.setResourceResolver(new ClasspathCatalogResolver());
 		esbValidator.setSources(new Resource[]{new ClassPathResource("eVD-0009-1-0.xsd"), new ClassPathResource("eVD-0004-2-0.xsd"), new ClassPathResource("eVD-0001-3-0.xsd"), new ClassPathResource("eVD-0006-1-0.xsd")});
-		esbMessageFactory = new EsbMessageFactory();
-		esbMessageFactory.setValidator(esbValidator);
 	}
 
 	@Override
@@ -79,7 +77,7 @@ public class EvenementCivilEchSenderImpl implements EvenementCivilEchSender, Ini
 
 		marshaller.marshal(message, doc);
 
-		final EsbMessage m = esbMessageFactory.createMessage();
+		final EsbMessage m = EsbMessageFactory.createMessage();
 		m.setServiceDestination(serviceDestination);
 		m.setBusinessId(String.valueOf(evt.getId()));
 		m.setBusinessUser(businessUser);
@@ -92,6 +90,7 @@ public class EvenementCivilEchSenderImpl implements EvenementCivilEchSender, Ini
 
 //		System.err.println("Message envoyé : " + m.getBodyAsString());
 
+		esbValidator.validate(m);
 		esbTemplate.send(m);
 	}
 }

@@ -13,6 +13,7 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
+import ch.vd.technical.esb.validation.EsbXmlValidation;
 import ch.vd.unireg.xml.common.v1.Date;
 import ch.vd.unireg.xml.event.di.common.v1.EvenementDeclarationImpotContext;
 import ch.vd.unireg.xml.event.di.output.v1.EvenementAnnulationDeclarationImpot;
@@ -27,7 +28,7 @@ public class EvenementDeclarationSenderImpl implements EvenementDeclarationSende
 	private static final Logger LOGGER = Logger.getLogger(EvenementDeclarationSenderImpl.class);
 
 	private EsbJmsTemplate esbTemplate;
-	private EsbMessageFactory esbMessageFactory;
+	private EsbXmlValidation esbValidator;
 	private String serviceDestination;
 
 	/**
@@ -47,9 +48,8 @@ public class EvenementDeclarationSenderImpl implements EvenementDeclarationSende
 		this.esbTemplate = esbTemplate;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setEsbMessageFactory(EsbMessageFactory esbMessageFactory) {
-		this.esbMessageFactory = esbMessageFactory;
+	public void setEsbValidator(EsbXmlValidation esbValidator) {
+		this.esbValidator = esbValidator;
 	}
 
 	public void setEnabled(boolean enabled) {
@@ -106,13 +106,14 @@ public class EvenementDeclarationSenderImpl implements EvenementDeclarationSende
 
 			marshaller.marshal(objectFactory.createEvenement(evenement), doc);
 
-			final EsbMessage m = esbMessageFactory.createMessage();
+			final EsbMessage m = EsbMessageFactory.createMessage();
 			m.setBusinessId(String.format("%d-%d", evenement.getContext().getNumeroContribuable(), evenement.getContext().getPeriodeFiscale()));
 			m.setBusinessUser(principal);
 			m.setServiceDestination(serviceDestination);
 			m.setContext("declarationEvent");
 			m.setBody(doc);
 
+			esbValidator.validate(m);
 			esbTemplate.send(m);
 		}
 		catch (Exception e) {

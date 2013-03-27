@@ -26,15 +26,9 @@ public class EditiqueCopieConformeServiceImpl implements EditiqueCopieConformeSe
 
 	private static final String PDF = "pdf";
 
-	private EsbMessageFactory esbMessageFactory;
 	private EsbHttpTemplate esbHttpTemplate;
 	private String serviceDestination;
 	private EditiqueHelper editiqueHelper;
-
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setEsbMessageFactory(EsbMessageFactory esbMessageFactory) {
-		this.esbMessageFactory = esbMessageFactory;
-	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setEsbHttpTemplate(EsbHttpTemplate esbHttpTemplate) {
@@ -90,7 +84,7 @@ public class EditiqueCopieConformeServiceImpl implements EditiqueCopieConformeSe
 		}
 
 		final String user = AuthenticationHelper.getCurrentPrincipal();
-		final EsbMessage m = esbMessageFactory.createMessage();
+		final EsbMessage m = EsbMessageFactory.createMessage();
 
 		m.setContext(typeDocument.getContexteImpression());
 		m.setBusinessId(nomDocument);

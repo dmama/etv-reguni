@@ -9,7 +9,6 @@ import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.jms.EsbMessageEndpointManager;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
@@ -65,14 +64,12 @@ public class EditiqueServiceTest extends BusinessItTest {
 		final ServiceInfrastructureService infraService = getBean(ServiceInfrastructureService.class, "serviceInfrastructureService");
 		final SituationFamilleService sfService = getBean(SituationFamilleService.class, "situationFamilleService");
 		final EsbJmsTemplate noTxEsbTemplate = getBean(EsbJmsTemplate.class, "noTxEsbJmsTemplate");
-		final EsbMessageFactory esbMessageFactory = getBean(EsbMessageFactory.class, "esbMessageFactory");
 		final StatsService statsService = getBean(StatsService.class, "statsService");
 
 		// On setup à la main le reste (= le mininum de beans pour faire passer le test)
 		final String INPUT_QUEUE = uniregProperties.getProperty("testprop.jms.queue.editique.input");
 
 		final EvenementEditiqueSenderImpl sender = new EvenementEditiqueSenderImpl();
-		sender.setEsbMessageFactory(esbMessageFactory);
 		sender.setEsbTemplate(esbTemplate);
 		sender.setNoTxEsbTemplate(noTxEsbTemplate);
 		sender.setServiceDestination(OUTPUT_QUEUE);

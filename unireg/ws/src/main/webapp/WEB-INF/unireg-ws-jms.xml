@@ -45,7 +45,7 @@
 	<bean id="esbMessageListener" abstract="true" class="ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener">
 		<property name="esbTemplate" ref="esbJmsTemplate"/>
 		<property name="transactionManager" ref="transactionManager"/>
-		<property name="errorHandler" ref="esbErrorHandler"/>
+		<property name="esbErrorHandler" ref="esbErrorHandler"/>
 	</bean>
 
 	<bean id="esbErrorHandler" class="ch.vd.uniregctb.jms.EsbBusinessErrorHandlerImpl">
@@ -53,11 +53,7 @@
 		<property name="destinationQueue" value="${extprop.jms.error.queue}"/>
 	</bean>
 
-	<bean id="esbMessageFactory" class="ch.vd.technical.esb.EsbMessageFactory" lazy-init="true">
-		<property name="validator" ref="esbMessageFactoryValidator"/>
-	</bean>
-
-	<bean id="esbMessageFactoryValidator" class="ch.vd.technical.esb.util.ESBXMLValidator" lazy-init="true">
+	<bean id="esbMessageValidator" class="ch.vd.technical.esb.validation.EsbXmlValidation" lazy-init="true">
 		<property name="resourceResolver"><bean class="ch.vd.unireg.xml.tools.ClasspathCatalogResolver"/></property>
 		<property name="sources">
 			<list>

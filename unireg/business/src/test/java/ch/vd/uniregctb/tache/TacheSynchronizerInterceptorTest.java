@@ -47,7 +47,6 @@ import static org.junit.Assert.assertTrue;
 })
 public class TacheSynchronizerInterceptorTest extends BusinessTest {
 
-	private EsbMessageFactory esbMessageFactory;
 	private TacheService tacheService;
 	private TacheDAO tacheDAO;
 
@@ -57,7 +56,6 @@ public class TacheSynchronizerInterceptorTest extends BusinessTest {
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 		final EvenementCediHandler cediHandler = getBean(EvenementCediHandler.class, "evenementCediService");
-		esbMessageFactory = new EsbMessageFactory();
 		tacheService = getBean(TacheService.class, "tacheService");
 		tacheDAO = getBean(TacheDAO.class, "tacheDAO");
 
@@ -143,7 +141,7 @@ public class TacheSynchronizerInterceptorTest extends BusinessTest {
 				@Override
 				public Object doInTransaction(TransactionStatus status) {
 					try {
-						final EsbMessage message = esbMessageFactory.createMessage();
+						final EsbMessage message = EsbMessageFactory.createMessage();
 						message.setBody(texte);
 						cediListener.onEsbMessage(message);
 					}

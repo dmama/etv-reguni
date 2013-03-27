@@ -99,8 +99,13 @@
 		</dependency>
 		<dependency>
 			<groupId>ch.vd.technical.esb</groupId>
-			<artifactId>EsbClient</artifactId>
-			<version>3.2.9</version>
+			<artifactId>esb-client</artifactId>
+			<version>4.0</version>
+		</dependency>
+		<dependency>
+			<groupId>ch.vd.technical.esb</groupId>
+			<artifactId>esb-validation</artifactId>
+			<version>1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-codec</groupId>

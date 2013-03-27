@@ -13,6 +13,7 @@ import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.jms.EsbMessageEndpointManager;
+import ch.vd.technical.esb.validation.EsbXmlValidation;
 import ch.vd.uniregctb.jms.EsbMessageHelper;
 import ch.vd.uniregctb.utils.UniregProperties;
 
@@ -26,8 +27,8 @@ import static org.junit.Assert.assertNull;
 public abstract class EvenementTest {
 
 	protected EsbJmsTemplate esbTemplate;
+	protected EsbXmlValidation esbValidator;
 
-	protected EsbMessageFactory esbMessageFactory;
 	protected UniregProperties uniregProperties;
 	protected ConnectionFactory jmsConnectionFactory;
 	protected ActiveMQResourceAdapter resourceAdapter;
@@ -46,6 +47,7 @@ public abstract class EvenementTest {
 			manager.destroy();
 			manager = null;
 		}
+		esbValidator = null;
 	}
 
 	protected void initEndpointManager(String queueName, MessageListener listener) {
@@ -75,7 +77,7 @@ public abstract class EvenementTest {
 
 
 	protected void sendTextMessage(String queueName, String texte, String businessId, @Nullable Map<String, String> customAttributes) throws Exception {
-		final EsbMessage m = esbMessageFactory.createMessage();
+		final EsbMessage m = EsbMessageFactory.createMessage();
 		final String myBusinessId = businessId==null ? String.valueOf(m.hashCode()):businessId;
 		m.setBusinessUser("EvenementTest");
 		m.setBusinessId(myBusinessId);
@@ -85,8 +87,10 @@ public abstract class EvenementTest {
 		if (customAttributes != null) {
 			EsbMessageHelper.setHeaders(m, customAttributes, true);
 		}
+		esbValidator.validate(m);
 		esbTemplate.send(m);
 	}
+
 	protected void sendTextMessage(String queueName, String texte) throws Exception {
 		sendTextMessage(queueName, texte, (Map<String, String>) null);
 	}

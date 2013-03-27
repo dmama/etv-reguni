@@ -45,12 +45,12 @@ public class PartyCreateNonresidentRequestEsbHandlerItTest extends PartyRequestE
 	}
 
 	@Override
-	String getRequestXSD() {
+	protected String getRequestXSD() {
 		return "event/party/create-nonresident-request-1.xsd";
 	}
 
 	@Override
-	String getResponseXSD() {
+	protected String getResponseXSD() {
 		return "event/party/create-nonresident-response-1.xsd";
 	}
 
@@ -157,18 +157,18 @@ public class PartyCreateNonresidentRequestEsbHandlerItTest extends PartyRequestE
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				getEsbMessageFactory().setValidator(null); // desactivation du validateur, c'est le but du test d'envoyer un truc pourri
+				deactivateEsbValidator(); // desactivation du validateur, c'est le but du test d'envoyer un truc pourri
 				sendTextMessage(getInputQueue(), xmlRequeteSansBaliseLogin, getOutputQueue());
 				return null;
 			}
 		});
 		try {
 			parseResponse(getEsbMessage(getOutputQueue()));
-		} catch (ServiceException e) {
-			assertContains("UnmarshalException", e.getMessage());
-			return;
+			fail();
 		}
-		fail();
+		catch (ServiceException e) {
+			assertContains("UnmarshalException", e.getMessage());
+		}
 	}
 
 	private CreateNonresidentRequest createRequest(boolean avecPrenom, boolean avecAvs13, boolean avecAvs11) {

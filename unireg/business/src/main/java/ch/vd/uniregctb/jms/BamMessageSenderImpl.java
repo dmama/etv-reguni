@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.technical.esb.BamMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
+import ch.vd.technical.esb.validation.EsbXmlValidation;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 
 public class BamMessageSenderImpl implements BamMessageSender {
@@ -27,15 +28,15 @@ public class BamMessageSenderImpl implements BamMessageSender {
 	private static final String BODY = null;
 
 	private EsbJmsTemplate esbTemplate;
-	private EsbMessageFactory esbMessageFactory;
+	private EsbXmlValidation esbValidator;
 	private boolean enabled = true;
 
 	public void setEsbTemplate(EsbJmsTemplate esbTemplate) {
 		this.esbTemplate = esbTemplate;
 	}
 
-	public void setEsbMessageFactory(EsbMessageFactory esbMessageFactory) {
-		this.esbMessageFactory = esbMessageFactory;
+	public void setEsbValidator(EsbXmlValidation esbValidator) {
+		this.esbValidator = esbValidator;
 	}
 
 	public void setEnabled(boolean enabled) {
@@ -47,7 +48,7 @@ public class BamMessageSenderImpl implements BamMessageSender {
 	                            @Nullable Map<String, String> additionalHeaders) throws Exception {
 
 		if (enabled) {
-			final BamMessage msg = esbMessageFactory.createBamMessage();
+			final BamMessage msg = EsbMessageFactory.createBamMessage();
 
 			msg.setEventType(eventType);
 			msg.setProcessDefinitionId(processDefinitionId);
@@ -64,6 +65,7 @@ public class BamMessageSenderImpl implements BamMessageSender {
 				EsbMessageHelper.setHeaders(msg, additionalHeaders, false);
 			}
 
+			esbValidator.validate(msg);
 			esbTemplate.sendBam(msg);
 		}
 		else if (LOGGER.isInfoEnabled()) {

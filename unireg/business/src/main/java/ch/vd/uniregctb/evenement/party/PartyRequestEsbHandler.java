@@ -33,9 +33,9 @@ import org.xml.sax.SAXException;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
-import ch.vd.technical.esb.util.ESBXMLValidator;
 import ch.vd.technical.esb.util.EsbDataHandler;
 import ch.vd.technical.esb.util.exception.ESBValidationException;
+import ch.vd.technical.esb.validation.EsbXmlValidation;
 import ch.vd.unireg.xml.event.party.v1.ExceptionResponse;
 import ch.vd.unireg.xml.event.party.v1.ObjectFactory;
 import ch.vd.unireg.xml.event.party.v1.Request;
@@ -55,7 +55,7 @@ public class PartyRequestEsbHandler implements EsbMessageHandler, InitializingBe
 
 	private static final Logger LOGGER = Logger.getLogger(PartyRequestEsbHandler.class);
 
-	private EsbMessageFactory esbMessageFactory;
+	private EsbXmlValidation esbValidator;
 	private EsbJmsTemplate esbTemplate;
 	private final ObjectFactory objectFactory = new ObjectFactory();
 
@@ -180,7 +180,7 @@ public class PartyRequestEsbHandler implements EsbMessageHandler, InitializingBe
 				LOGGER.debug("Response body = [" + buffer.toString() + "]");
 			}
 
-			final EsbMessage m = esbMessageFactory.createMessage(query);
+			final EsbMessage m = EsbMessageFactory.createMessage(query);
 			m.setBusinessId(query.getBusinessId() + "-answer");
 			m.setBusinessUser("unireg");
 			m.setContext("party");
@@ -193,6 +193,7 @@ public class PartyRequestEsbHandler implements EsbMessageHandler, InitializingBe
 				}
 			}
 
+			esbValidator.validate(m);
 			esbTemplate.send(m);
 		}
 		catch (ESBValidationException e) {
@@ -221,11 +222,8 @@ public class PartyRequestEsbHandler implements EsbMessageHandler, InitializingBe
 			resources.addAll(resource);
 		}
 
-		final ESBXMLValidator esbValidator = new ESBXMLValidator();
+		esbValidator = new EsbXmlValidation();
 		esbValidator.setResourceResolver(new ClasspathCatalogResolver());
 		esbValidator.setSources(resources.toArray(new Resource[resources.size()]));
-
-		esbMessageFactory = new EsbMessageFactory();
-		esbMessageFactory.setValidator(esbValidator);
 	}
 }

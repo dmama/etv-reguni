@@ -6,10 +6,9 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.store.raft.RaftEsbStore;
-import ch.vd.technical.esb.util.ESBXMLValidator;
+import ch.vd.technical.esb.validation.EsbXmlValidation;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.evenement.EvenementTest;
 
@@ -43,16 +42,13 @@ public class EvenementDeclarationSenderTest extends EvenementTest {
 
 		clearQueue(OUTPUT_QUEUE);
 
-		final ESBXMLValidator esbValidator = new ESBXMLValidator();
+		esbValidator = new EsbXmlValidation();
 		esbValidator.setSources(new Resource[]{new ClassPathResource("unireg-common-1.xsd"), new ClassPathResource("event/di/evenementDeclarationImpot-common-1.xsd"),
 				new ClassPathResource("event/di/evenementDeclarationImpot-output-1.xsd")});
 
-		esbMessageFactory = new EsbMessageFactory();
-		esbMessageFactory.setValidator(esbValidator);
-
 		sender = new EvenementDeclarationSenderImpl();
 		sender.setEsbTemplate(esbTemplate);
-		sender.setEsbMessageFactory(esbMessageFactory);
+		sender.setEsbValidator(esbValidator);
 		sender.setServiceDestination(OUTPUT_QUEUE);
 
 		AuthenticationHelper.pushPrincipal("EvenementTest");

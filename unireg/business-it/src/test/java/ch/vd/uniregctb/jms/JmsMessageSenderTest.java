@@ -101,8 +101,6 @@ public class JmsMessageSenderTest {
 		esbTemplate.setApplication("unireg");
 		esbTemplate.setDomain("fiscalite");
 
-		EsbMessageFactory esbMessageFactory = new EsbMessageFactory();
-
 		final List<Long> ids = getIndividuIds();
 		final int size = ids.size();
 		
@@ -118,7 +116,7 @@ public class JmsMessageSenderTest {
 					"  <NumeroOFS>5264</NumeroOFS>\n" +
 					"</EvtRegCivil>";
 
-			final EsbMessage m = esbMessageFactory.createMessage();
+			final EsbMessage m = EsbMessageFactory.createMessage();
 			m.setBusinessId(String.valueOf(eventId));
 			m.setBusinessUser("sendCorrectionDateNaissanceMessages");
 			m.setServiceDestination("ch.vd.registre.evtCivil.zsimsn");

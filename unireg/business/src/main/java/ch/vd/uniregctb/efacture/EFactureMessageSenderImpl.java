@@ -22,13 +22,14 @@ import ch.vd.registre.base.utils.ThreadSafeSimpleDateFormat;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
+import ch.vd.technical.esb.validation.EsbXmlValidation;
 import ch.vd.unireg.interfaces.efacture.data.TypeAttenteDemande;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 
 public class EFactureMessageSenderImpl implements EFactureMessageSender {
 
 	private EsbJmsTemplate esbTemplate;
-	private EsbMessageFactory esbMessageFactory;
+	private EsbXmlValidation esbValidator;
 	private boolean enabled = true;
 	private String serviceDestinationDemande;
 	private String serviceDestinationDestinataire;
@@ -42,8 +43,8 @@ public class EFactureMessageSenderImpl implements EFactureMessageSender {
 		this.esbTemplate = esbTemplate;
 	}
 
-	public void setEsbMessageFactory(EsbMessageFactory esbMessageFactory) {
-		this.esbMessageFactory = esbMessageFactory;
+	public void setEsbValidator(EsbXmlValidation esbValidator) {
+		this.esbValidator = esbValidator;
 	}
 
 	public void setEnabled(boolean enabled) {
@@ -159,7 +160,7 @@ public class EFactureMessageSenderImpl implements EFactureMessageSender {
 				final Document doc = db.newDocument();
 				customMarshaller.marshall(marshaller, doc);
 
-				final EsbMessage m = esbMessageFactory.createMessage();
+				final EsbMessage m = EsbMessageFactory.createMessage();
 				m.setBusinessId(businessId);
 				m.setBusinessUser(principal);
 				m.setServiceDestination(serviceDestination);
@@ -170,6 +171,7 @@ public class EFactureMessageSenderImpl implements EFactureMessageSender {
 					m.setServiceReplyTo(serviceReplyTo);
 				}
 
+				esbValidator.validate(m);
 				esbTemplate.send(m);
 			}
 			catch (Exception e) {

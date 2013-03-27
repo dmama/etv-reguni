@@ -17,10 +17,9 @@ import org.springframework.util.ResourceUtils;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.store.raft.RaftEsbStore;
-import ch.vd.technical.esb.util.ESBXMLValidator;
+import ch.vd.technical.esb.validation.EsbXmlValidation;
 import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.evenement.EvenementTest;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
@@ -76,11 +75,8 @@ public class EvenementExterneEsbHandlerItTest extends EvenementTest {
 		listener.setTransactionManager(new JmsTransactionManager(jmsConnectionFactory));
 		listener.setHandler(handler);
 
-		final ESBXMLValidator esbValidator = new ESBXMLValidator();
+		esbValidator = new EsbXmlValidation();
 		esbValidator.setSources(new Resource[]{new ClassPathResource("event/lr/evtQuittanceListe-v1.xsd"), new ClassPathResource("event/lr/evtListe-1.xsd")});
-
-		esbMessageFactory = new EsbMessageFactory();
-		esbMessageFactory.setValidator(esbValidator);
 
 		initEndpointManager(INPUT_QUEUE, listener);
 	}

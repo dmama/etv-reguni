@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
+import org.jetbrains.annotations.Nullable;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
@@ -19,16 +19,17 @@ import org.springframework.util.ResourceUtils;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.ErrorType;
 import ch.vd.technical.esb.EsbMessage;
-import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.store.raft.RaftEsbStore;
-import ch.vd.technical.esb.util.ESBXMLValidator;
+import ch.vd.technical.esb.validation.EsbXmlValidation;
 import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.evenement.EvenementTest;
 import ch.vd.uniregctb.evenement.identification.contribuable.Demande.PrioriteEmetteur;
 import ch.vd.uniregctb.evenement.identification.contribuable.Erreur.TypeErreur;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.hibernate.HibernateTemplateImpl;
+import ch.vd.uniregctb.jms.EsbBusinessCode;
+import ch.vd.uniregctb.jms.EsbBusinessErrorHandler;
 import ch.vd.uniregctb.jms.EsbMessageHelper;
 import ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener;
 import ch.vd.uniregctb.type.Sexe;
@@ -47,18 +48,18 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 	private String INPUT_QUEUE;
 	private String OUTPUT_QUEUE;
 	private IdentificationContribuableEsbHandler handler;
-	private EsbTemplateWithErrorCollector esbTemplateWithErrorCollector;
+	private MyErrorHandler myErrorHandler;
 
-	private static class EsbTemplateWithErrorCollector extends EsbJmsTemplate {
+	private static class MyErrorHandler implements EsbBusinessErrorHandler {
 
 		private static final class ErrorDescription {
 			public final EsbMessage msg;
 			public final String errorMessage;
-			public final Exception exception;
+			public final Throwable exception;
 			public final ErrorType errorType;
 			public final String errorCode;
 
-			private ErrorDescription(EsbMessage msg, String errorMessage, Exception exception, ErrorType errorType, String errorCode) {
+			private ErrorDescription(EsbMessage msg, String errorMessage, Throwable exception, ErrorType errorType, String errorCode) {
 				this.msg = msg;
 				this.errorMessage = errorMessage;
 				this.exception = exception;
@@ -70,8 +71,8 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		public final List<ErrorDescription> collectedErrors = new ArrayList<>();
 
 		@Override
-		public void sendError(EsbMessage esbMessage, String errorMessage, Exception exception, ErrorType errorType, String errorCode) throws Exception {
-			collectedErrors.add(new ErrorDescription(esbMessage, errorMessage, exception, errorType, errorCode));
+		public void onBusinessError(EsbMessage esbMessage, String errorDescription, @Nullable Throwable throwable, EsbBusinessCode errorCode) throws Exception {
+			collectedErrors.add(new ErrorDescription(esbMessage, errorDescription, throwable, errorCode.getType(), errorCode.getCode()));
 		}
 	}
 
@@ -84,25 +85,19 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		final RaftEsbStore esbStore = new RaftEsbStore();
 		esbStore.setEndpoint("TestRaftStore");
 
-		esbTemplateWithErrorCollector = new EsbTemplateWithErrorCollector();
-		esbTemplate = esbTemplateWithErrorCollector;
+		esbTemplate = new EsbJmsTemplate();
 		esbTemplate.setConnectionFactory(jmsConnectionFactory);
 		esbTemplate.setEsbStore(esbStore);
 		esbTemplate.setReceiveTimeout(200);
 		esbTemplate.setApplication("unireg");
 		esbTemplate.setDomain("fiscalite");
-		if (esbTemplate instanceof InitializingBean) {
-			((InitializingBean) esbTemplate).afterPropertiesSet();
-		}
+		esbTemplate.setSessionTransacted(true);
 
 		clearQueue(OUTPUT_QUEUE);
 		clearQueue(INPUT_QUEUE);
 
-		final ESBXMLValidator esbValidator = new ESBXMLValidator();
+		esbValidator = new EsbXmlValidation();
 		esbValidator.setSources(new Resource[]{new ClassPathResource("xsd/identification/serviceIdentificationCTBAsynchrone_1-7.2.xsd")});
-
-		esbMessageFactory = new EsbMessageFactory();
-		esbMessageFactory.setValidator(esbValidator);
 
 		// flush est vraiment la seule méthode appelée...
 		final HibernateTemplate hibernateTemplate = new HibernateTemplateImpl() {
@@ -114,13 +109,16 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		handler = new IdentificationContribuableEsbHandler();
 		handler.setOutputQueue(OUTPUT_QUEUE);
 		handler.setEsbTemplate(esbTemplate);
-		handler.setEsbMessageFactory(esbMessageFactory);
+		handler.setEsbValidator(esbValidator);
 		handler.setHibernateTemplate(hibernateTemplate);
+
+		myErrorHandler = new MyErrorHandler();
 
 		final GentilEsbMessageEndpointListener listener = new GentilEsbMessageEndpointListener();
 		listener.setHandler(handler);
 		listener.setTransactionManager(new JmsTransactionManager(jmsConnectionFactory));
 		listener.setEsbTemplate(esbTemplate);
+		listener.setEsbErrorHandler(myErrorHandler);
 
 		initEndpointManager(INPUT_QUEUE, listener);
 	}
@@ -441,7 +439,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 			Thread.sleep(100);
 		}
 		assertEquals(1, messages.size());
-		assertEquals(0, esbTemplateWithErrorCollector.collectedErrors.size());
+		assertEquals(0, myErrorHandler.collectedErrors.size());
 
 		final IdentificationContribuable m = messages.get(0);
 		assertNotNull(m);
@@ -468,13 +466,13 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		sendTextMessage(INPUT_QUEUE, texte,"12543717");
 
 		// On attend le message
-		while (esbTemplateWithErrorCollector.collectedErrors.isEmpty()) {
+		while (myErrorHandler.collectedErrors.isEmpty()) {
 			Thread.sleep(100);
 		}
 		assertEquals(0, messages.size());
-		assertEquals(1, esbTemplateWithErrorCollector.collectedErrors.size());
+		assertEquals(1, myErrorHandler.collectedErrors.size());
 
-		final EsbTemplateWithErrorCollector.ErrorDescription errorDescription= esbTemplateWithErrorCollector.collectedErrors.get(0);
+		final MyErrorHandler.ErrorDescription errorDescription= myErrorHandler.collectedErrors.get(0);
 		assertNotNull(errorDescription);
 		String cause = "La demande d'identification ayant le business id 12543717 a un montant d'une valeur de 44444445448 qui n'est pas acceptée. Elle sera mise en queue d'erreur.";
 		assertEquals(ErrorType.BUSINESS,errorDescription.errorType);

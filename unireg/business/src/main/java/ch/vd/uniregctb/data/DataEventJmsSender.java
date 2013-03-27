@@ -24,7 +24,6 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 
 	private String outputQueue;
 	private EsbJmsTemplate esbTemplate;
-	private EsbMessageFactory esbMessageFactory;
 	private DataEventService dataEventService;
 	private String serviceDestination;
 	private String businessUser;
@@ -50,11 +49,6 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setEsbTemplate(EsbJmsTemplate esbTemplate) {
 		this.esbTemplate = esbTemplate;
-	}
-
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setEsbMessageFactory(EsbMessageFactory esbMessageFactory) {
-		this.esbMessageFactory = esbMessageFactory;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -181,7 +175,7 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 			throw new IllegalArgumentException("Type de tiers inconnu = [" + type + ']');
 		}
 
-		final EsbMessage m = esbMessageFactory.createMessage();
+		final EsbMessage m = EsbMessageFactory.createMessage();
 		m.setBusinessId(String.valueOf(id));
 		m.setBusinessUser(businessUser);
 		m.setServiceDestination(serviceDestination);
@@ -199,7 +193,7 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 		final DatabaseTruncateEventDocument doc = DatabaseTruncateEventDocument.Factory.newInstance();
 		doc.addNewDatabaseTruncateEvent();
 
-		final EsbMessage m = esbMessageFactory.createMessage();
+		final EsbMessage m = EsbMessageFactory.createMessage();
 		m.setBusinessId(String.valueOf(m.hashCode()));
 		m.setBusinessUser(businessUser);
 		m.setServiceDestination(serviceDestination);
@@ -217,7 +211,7 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 		final DatabaseLoadEventDocument doc = DatabaseLoadEventDocument.Factory.newInstance();
 		doc.addNewDatabaseLoadEvent();
 
-		final EsbMessage m = esbMessageFactory.createMessage();
+		final EsbMessage m = EsbMessageFactory.createMessage();
 		m.setBusinessId(String.valueOf(m.hashCode()));
 		m.setBusinessUser(businessUser);
 		m.setServiceDestination(serviceDestination);

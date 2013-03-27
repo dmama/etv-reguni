@@ -12,10 +12,9 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jms.connection.JmsTransactionManager;
 import org.springframework.util.ResourceUtils;
 
-import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.store.raft.RaftEsbStore;
-import ch.vd.technical.esb.util.ESBXMLValidator;
+import ch.vd.technical.esb.validation.EsbXmlValidation;
 import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.data.MockDataEventService;
 import ch.vd.uniregctb.evenement.EvenementTest;
@@ -86,11 +85,8 @@ public class EntrepriseEventHandlerItTest extends EvenementTest {
 		listener.setEsbTemplate(esbTemplate);
 		listener.setHandler(handler);
 
-		final ESBXMLValidator esbValidator = new ESBXMLValidator();
-		esbValidator.setSources(new Resource[] {new ClassPathResource("xsd/pm/EvenementEntreprise.xsd")});
-
-		esbMessageFactory = new EsbMessageFactory();
-		esbMessageFactory.setValidator(esbValidator);
+		esbValidator = new EsbXmlValidation();
+		esbValidator.setSources(new Resource[]{new ClassPathResource("xsd/pm/EvenementEntreprise.xsd")});
 
 		initEndpointManager(INPUT_QUEUE, listener);
 	}

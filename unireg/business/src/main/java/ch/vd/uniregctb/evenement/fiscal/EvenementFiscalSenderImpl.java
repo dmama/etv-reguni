@@ -29,6 +29,7 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
+import ch.vd.technical.esb.validation.EsbXmlValidation;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.evenement.EvenementFiscal;
@@ -51,7 +52,7 @@ public final class EvenementFiscalSenderImpl implements EvenementFiscalSender {
 
 	private String outputQueue;
 	private EsbJmsTemplate esbTemplate;
-	private EsbMessageFactory esbMessageFactory;
+	private EsbXmlValidation esbValidator;
 	private String serviceDestination;
 
 	/**
@@ -85,7 +86,7 @@ public final class EvenementFiscalSenderImpl implements EvenementFiscalSender {
 
 		// Envoi l'événement sous forme de message JMS à travers l'ESB
 		try {
-			final EsbMessage m = esbMessageFactory.createMessage();
+			final EsbMessage m = EsbMessageFactory.createMessage();
 			m.setBusinessId(String.valueOf(evenement.getId()));
 			m.setBusinessUser(principal);
 			m.setServiceDestination(serviceDestination);
@@ -96,6 +97,8 @@ public final class EvenementFiscalSenderImpl implements EvenementFiscalSender {
 			if (outputQueue != null) {
 				m.setServiceDestination(outputQueue); // for testing only
 			}
+
+			esbValidator.validate(m);
 			esbTemplate.send(m);
 		}
 		catch (Exception e) {
@@ -244,8 +247,8 @@ public final class EvenementFiscalSenderImpl implements EvenementFiscalSender {
 		this.esbTemplate = esbTemplate;
 	}
 
-	public void setEsbMessageFactory(EsbMessageFactory esbMessageFactory) {
-		this.esbMessageFactory = esbMessageFactory;
+	public void setEsbValidator(EsbXmlValidation esbValidator) {
+		this.esbValidator = esbValidator;
 	}
 
 	public void setServiceDestination(String serviceDestination) {

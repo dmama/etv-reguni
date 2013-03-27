@@ -66,21 +66,13 @@
 	<bean id="esbMessageListener" abstract="true" class="ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener">
 		<property name="esbTemplate" ref="esbJmsTemplate"/>
 		<property name="transactionManager" ref="transactionManager"/>
-		<property name="errorHandler" ref="esbErrorHandler"/>
+		<property name="esbErrorHandler" ref="esbErrorHandler"/>
 	</bean>
 
 	<bean id="esbErrorHandler" class="ch.vd.uniregctb.jms.EsbBusinessErrorHandlerImpl">
 		<property name="esbTemplate" ref="esbJmsTemplate"/>
 		<property name="destinationQueue" value="${extprop.jms.error.queue}"/>
 	</bean>
-
-	<bean id="esbMessageFactory" class="ch.vd.technical.esb.EsbMessageFactory" lazy-init="true">
-		<property name="validator" ref="esbMessageFactoryValidator"/>
-	</bean>
-
-	<!-- Version sans validation parce que les XSDs de éditique n'ont pas de namespace et que ça bloque à la validation automatique -->
-	<!-- Egalement utilisé dans les cas - événements internes - où la validation prend trop de temps par rapport au traitement métier un-->
-	<bean id="esbMessageFactorySansValidation" class="ch.vd.technical.esb.EsbMessageFactory"/>
 
 	<bean id="esbHttpTemplate" class="ch.vd.technical.esb.http.EsbHttpTemplate">
 		<property name="username" value="${extprop.esb.http.username}" />
@@ -93,7 +85,7 @@
 		<property name="domain" value="fiscalite"/>
 	</bean>
 
-	<bean id="esbMessageFactoryValidator" class="ch.vd.technical.esb.util.ESBXMLValidator" lazy-init="true">
+	<bean id="esbMessageValidator" class="ch.vd.technical.esb.validation.EsbXmlValidation" lazy-init="true">
 		<property name="resourceResolver"><bean class="ch.vd.unireg.xml.tools.ClasspathCatalogResolver"/></property>
 		<property name="sources">
 			<list>

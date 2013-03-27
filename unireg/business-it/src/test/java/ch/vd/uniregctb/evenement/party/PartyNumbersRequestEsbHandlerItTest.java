@@ -50,12 +50,12 @@ public class PartyNumbersRequestEsbHandlerItTest extends PartyRequestEsbHandlerI
 	}
 
 	@Override
-	String getRequestXSD() {
+	protected String getRequestXSD() {
 		return "event/party/numbers-request-1.xsd";
 	}
 
 	@Override
-	String getResponseXSD() {
+	protected String getResponseXSD() {
 		return "event/party/numbers-response-1.xsd";
 	}
 
@@ -163,6 +163,7 @@ public class PartyNumbersRequestEsbHandlerItTest extends PartyRequestEsbHandlerI
 			public Object execute(TransactionStatus status) throws Exception {
 				final EsbMessage m = buildTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
 				m.addHeader(headerName, headerValue);
+				validateMessage(m);
 				getEsbTemplate().send(m);
 				return null;
 			}
