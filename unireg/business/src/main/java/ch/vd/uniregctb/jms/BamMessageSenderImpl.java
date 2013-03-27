@@ -69,7 +69,7 @@ public class BamMessageSenderImpl implements BamMessageSender {
 			esbTemplate.sendBam(msg);
 		}
 		else if (LOGGER.isInfoEnabled()) {
-			LOGGER.info(String.format("Envois vers le BAM désactivé : l'événement %s n'a pas été envoyé.",
+			LOGGER.info(String.format("Envois vers le BAM désactivés : l'événement %s n'a pas été envoyé.",
 			                          buildBamMsgDisplayString(eventType, processDefinitionId, processInstanceId, taskDefinitionId, taskInstanceId)));
 		}
 	}
