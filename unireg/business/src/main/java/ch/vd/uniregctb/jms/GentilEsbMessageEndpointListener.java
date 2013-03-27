@@ -9,7 +9,6 @@ import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.InitializingBean;
 
-import ch.vd.technical.esb.ErrorType;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.jms.EsbMessageEndpointListener;
 import ch.vd.uniregctb.load.DetailedLoadMeter;
@@ -48,9 +47,14 @@ public class GentilEsbMessageEndpointListener extends EsbMessageEndpointListener
 	private final AtomicInteger nbMessagesEnErreur = new AtomicInteger(0);
 
 	private EsbMessageHandler handler;
+	private EsbBusinessErrorHandler errorHandler;
 
 	public void setHandler(EsbMessageHandler handler) {
 		this.handler = handler;
+	}
+
+	public void setErrorHandler(EsbBusinessErrorHandler errorHandler) {
+		this.errorHandler = errorHandler;
 	}
 
 	@Override
@@ -65,8 +69,7 @@ public class GentilEsbMessageEndpointListener extends EsbMessageEndpointListener
 		}
 		catch (EsbBusinessException e) {
 			try {
-				businessError = buildErrorMessage(e);
-				onBusinessError(message, businessError, e.getCause(), e.getErrorType(), e.getErrorCode());
+				onBusinessError(message, e.getMessage(), e.getCause(), e.getCode());
 				nbMessagesEnErreur.incrementAndGet();
 			}
 			catch (Throwable throwable) {
@@ -96,36 +99,13 @@ public class GentilEsbMessageEndpointListener extends EsbMessageEndpointListener
 		}
 	}
 
-	private static String buildErrorMessage(EsbBusinessException e) {
-		final String msg;
-		if (StringUtils.isBlank(e.getMessage())) {
-			Throwable causeWithMessage = e.getCause();
-			while (causeWithMessage != null && StringUtils.isBlank(causeWithMessage.getMessage())) {
-				causeWithMessage = causeWithMessage.getCause();
-			}
-			if (causeWithMessage != null) {
-				msg = causeWithMessage.getMessage();
-			}
-			else if (e.getCause() != null) {
-				msg = e.getCause().getClass().getName();
-			}
-			else {
-				msg = e.getLibelle();
-			}
-		}
-		else {
-			msg = e.getMessage();
-		}
-		return msg;
-	}
-
 	/**
-	 * Méthode surchargeable pour appeler le handler
+	 * Appel du handler
 	 * @param message message à traiter
 	 * @throws EsbBusinessException en cas de problème métier à envoyer en queue d'erreur
 	 * @throws Exception en cas de souci... causera un renvoi en DLQ
 	 */
-	protected void handle(EsbMessage message) throws Exception {
+	private void handle(EsbMessage message) throws Exception {
 		handler.onEsbMessage(message);
 	}
 
@@ -134,26 +114,20 @@ public class GentilEsbMessageEndpointListener extends EsbMessageEndpointListener
 	 * @param message le message entrant
 	 * @param description la description de l'erreur métier
 	 * @param throwable l'exception à la source de cette erreur, si applicable
-	 * @param errorType le type d'erreur
 	 * @param errorCode un code d'erreur
 	 * @throws Exception en cas de souci (si une exception saute ici, le message sera envoyé en DLQ)
 	 */
-	protected void onBusinessError(EsbMessage message, String description, @Nullable Throwable throwable, ErrorType errorType, String errorCode) throws Exception {
-		final Exception ex;
-		if (throwable != null && !(throwable instanceof Exception)) {
-			// wrapping...
-			ex = new Exception(throwable);
-		}
-		else {
-			ex = (Exception) throwable;
-		}
-		getEsbTemplate().sendError(message, description, ex, errorType, errorCode);
+	private void onBusinessError(EsbMessage message, String description, @Nullable Throwable throwable, EsbBusinessCode errorCode) throws Exception {
+		errorHandler.onBusinessError(message, description, throwable, errorCode);
 	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		if (handler == null) {
 			throw new IllegalArgumentException("Handler must be set");
+		}
+		if (errorHandler == null) {
+			throw new IllegalArgumentException("ErrorHandler must be set");
 		}
 	}
 

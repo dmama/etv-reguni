@@ -36,16 +36,21 @@
 		<property name="application" value="unireg" />
 		<property name="domain" value="fiscalite"/>
 		<property name="sessionTransacted" value="true"/>
-		<property name="defaultErrorDestination" value="${extprop.jms.error.queue}"/>
 	</bean>
 
 	<bean id="raftEsbStore" class="ch.vd.technical.esb.store.raft.RaftEsbStore">
 		<property name="endpoint" value="${extprop.esb.raft.store}" />
 	</bean>
 
-	<bean id="esbMessageListener" abstract="true" class="ch.vd.technical.esb.jms.EsbMessageEndpointListener">
+	<bean id="esbMessageListener" abstract="true" class="ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener">
 		<property name="esbTemplate" ref="esbJmsTemplate"/>
 		<property name="transactionManager" ref="transactionManager"/>
+		<property name="errorHandler" ref="esbErrorHandler"/>
+	</bean>
+
+	<bean id="esbErrorHandler" class="ch.vd.uniregctb.jms.EsbBusinessErrorHandlerImpl">
+		<property name="esbTemplate" ref="esbJmsTemplate"/>
+		<property name="destinationQueue" value="${extprop.jms.error.queue}"/>
 	</bean>
 
 	<bean id="esbMessageFactory" class="ch.vd.technical.esb.EsbMessageFactory" lazy-init="true">

@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.jms;
 
-import ch.vd.technical.esb.ErrorType;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Exception lancée par un {@link EsbMessageHandler} dans le cas où l'erreur est une erreur métier
@@ -8,7 +8,7 @@ import ch.vd.technical.esb.ErrorType;
  */
 public class EsbBusinessException extends Exception {
 
-	private static final long serialVersionUID = 6575212985364728595L;
+	private static final long serialVersionUID = 4877221114973071143L;
 
 	private final EsbBusinessCode code;
 
@@ -22,15 +22,31 @@ public class EsbBusinessException extends Exception {
 		this.code = code;
 	}
 
-	public ErrorType getErrorType() {
-		return code.getType();
+	@Override
+	public String getMessage() {
+		final String defaultMessage = super.getMessage();
+		if (StringUtils.isNotBlank(defaultMessage)) {
+			return defaultMessage;
+		}
+
+		final String msg;
+		Throwable causeWithMessage = getCause();
+		while (causeWithMessage != null && StringUtils.isBlank(causeWithMessage.getMessage())) {
+			causeWithMessage = causeWithMessage.getCause();
+		}
+		if (causeWithMessage != null) {
+			msg = causeWithMessage.getMessage();
+		}
+		else if (getCause() != null) {
+			msg = getCause().getClass().getName();
+		}
+		else {
+			msg = code.getLibelle();
+		}
+		return msg;
 	}
 
-	public String getErrorCode() {
-		return code.getCode();
-	}
-
-	public String getLibelle() {
-		return code.getLibelle();
+	public EsbBusinessCode getCode() {
+		return code;
 	}
 }

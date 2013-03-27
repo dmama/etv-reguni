@@ -10,12 +10,17 @@
 		<property name="application" value="unireg" />
 		<property name="domain" value="fiscalite"/>
 		<property name="sessionTransacted" value="true"/>
-		<property name="defaultErrorDestination" value="${testprop.jms.error.queue}"/>
 	</bean>
 
-	<bean id="esbMessageListener" abstract="true" class="ch.vd.technical.esb.jms.EsbMessageEndpointListener">
+	<bean id="esbMessageListener" abstract="true" class="ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener">
 		<property name="esbTemplate" ref="esbJmsTemplate"/>
 		<property name="transactionManager" ref="transactionManager"/>
+		<property name="errorHandler" ref="esbErrorHandler"/>
+	</bean>
+
+	<bean id="esbErrorHandler" class="ch.vd.uniregctb.jms.EsbBusinessErrorHandlerImpl">
+		<property name="esbTemplate" ref="esbJmsTemplate"/>
+		<property name="destinationQueue" value="${testprop.jms.error.queue}"/>
 	</bean>
 
 	<bean id="jmsConnectionFactory" class="org.apache.activemq.pool.XaPooledConnectionFactory" init-method="start" destroy-method="stop">
@@ -57,7 +62,6 @@
 		<property name="statsService" ref="jmsStatsService" />
 		<property name="application" value="unireg" />
 		<property name="domain" value="fiscalite"/>
-		<property name="defaultErrorDestination" value="${testprop.jms.error.queue}"/>
 	</bean>
 
 	<bean id="raftEsbStore" class="ch.vd.technical.esb.store.raft.RaftEsbStore">
