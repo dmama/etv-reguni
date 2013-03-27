@@ -29,12 +29,12 @@ public class GentilEsbMessageEndpointListener extends EsbMessageEndpointListener
 		@Override
 		public String toString(EsbMessage msg) {
 			if (StringUtils.isBlank(msg.getBusinessCorrelationId())) {
-				return String.format("queue=%s, sender=%s, businessUser=%s, businessId='%s'",
+				return String.format("queue=%s, sender='%s', businessUser='%s', businessId='%s'",
 				                     msg.getServiceDestination(), msg.getApplication(), msg.getBusinessUser(),
 				                     msg.getBusinessId());
 			}
 			else {
-				return String.format("queue=%s, sender=%s, businessUser=%s, businessId='%s', businessCorrelationId='%s'",
+				return String.format("queue=%s, sender='%s', businessUser='%s', businessId='%s', businessCorrelationId='%s'",
 				                     msg.getServiceDestination(), msg.getApplication(), msg.getBusinessUser(),
 				                     msg.getBusinessId(), msg.getBusinessCorrelationId());
 			}
