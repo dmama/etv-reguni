@@ -33,6 +33,8 @@ public class StatsServiceImpl implements InitializingBean, DisposableBean, Stats
 
 	private static final Logger LOGGER = Logger.getLogger(StatsServiceImpl.class);
 
+	private static final String CR = System.lineSeparator();
+
 	private static final long UNE_MINUTE = 60000L;
 	private static final int LOG_PERIODE = 5; // 5 * UNE_MINUTE
 
@@ -223,16 +225,24 @@ public class StatsServiceImpl implements InitializingBean, DisposableBean, Stats
 	@Override
 	public String buildStats() {
 
-		final StringBuilder b = new StringBuilder("Statistiques des caches et services:\n\n");
-		b.append(buildCacheStats());
-		b.append('\n');
-		b.append(buildServiceStats());
-		b.append('\n');
-		b.append(buildLoadMonitorStats());
-		b.append('\n');
-		b.append(buildJobMonitorStats());
+		// calcul des affichages des statistiques
+		final String[] stats = {
+				buildCacheStats(),
+				buildServiceStats(),
+				buildLoadMonitorStats(),
+				buildJobMonitorStats()
+		};
 
-		return b.toString();
+		// concaténation des affichages des statistiques non-vides
+		boolean atLeastOne = false;
+		final StringBuilder b = new StringBuilder("Statistiques des caches et services:").append(CR).append(CR);
+		for (String stat : stats) {
+			if (StringUtils.isNotBlank(stat)) {
+				b.append(stat).append(CR);
+				atLeastOne = true;
+			}
+		}
+		return atLeastOne ? b.append("----").toString() : StringUtils.EMPTY;
 	}
 
 	private String buildCacheStats() {
@@ -259,7 +269,7 @@ public class StatsServiceImpl implements InitializingBean, DisposableBean, Stats
 			table.addRow(buildRow(k, data));
 		}
 
-		return table.toString() + "\n";
+		return table.toString() + CR;
 	}
 
 	private static Row buildRow(String key, CacheStats data) {
@@ -318,7 +328,7 @@ public class StatsServiceImpl implements InitializingBean, DisposableBean, Stats
 			}
 		}
 
-		return table.toString() + "\n";
+		return table.toString() + CR;
 	}
 
 	private static Row buildRow(String key, ServiceStats data) {
@@ -380,7 +390,7 @@ public class StatsServiceImpl implements InitializingBean, DisposableBean, Stats
 			table.addRow(buildRow(k, data));
 		}
 
-		return table.toString() + "\n";
+		return table.toString() + CR;
 	}
 
 	private static Row buildRow(String key, LoadMonitorStats data) {
@@ -445,7 +455,7 @@ public class StatsServiceImpl implements InitializingBean, DisposableBean, Stats
 			table.addRow(row);
 		}
 
-		return table.toString() + "\n";
+		return table.toString() + CR;
 	}
 
 	@Override
