@@ -83,7 +83,11 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 			}
 			else {
 				// le permis actif courant
-				to.setCategory(EnumHelper.coreToXML(list.getPermisActif(null).getTypePermis()));
+				// [SIFISC-8366] tous les permis sont peut-être terminés, il n'y aurait donc pas de permis actif
+				final Permis permisActif = list.getPermisActif(null);
+				if (permisActif != null) {
+					to.setCategory(EnumHelper.coreToXML(permisActif.getTypePermis()));
+				}
 
 				// l'historique des permis (SIFISC-8072)
 				for (Permis permis : list) {
