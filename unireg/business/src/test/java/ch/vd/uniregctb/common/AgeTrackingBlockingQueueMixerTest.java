@@ -173,10 +173,10 @@ public class AgeTrackingBlockingQueueMixerTest extends WithoutSpringTest {
 		final AgeTrackingBlockingQueueMixer<DatedElement> mixer = new AgeTrackingBlockingQueueMixer<>(inputQueues, output, 1, 5);
 		try {
 			mixer.onElementOffered(new DatedElement(3, TimeUnit.SECONDS), output);
-			Assert.fail();
+			Assert.fail("Ce n'est pas une queue d'entrée !");
 		}
 		catch (IllegalArgumentException e) {
-			Assert.assertEquals("Queue should have been already known as an input queue at creation time...", e.getMessage());
+			Assert.assertEquals("Unknown input queue", e.getMessage());
 		}
 
 		try {

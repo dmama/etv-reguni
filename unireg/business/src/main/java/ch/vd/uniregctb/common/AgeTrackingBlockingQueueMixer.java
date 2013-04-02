@@ -118,11 +118,7 @@ public class AgeTrackingBlockingQueueMixer<T extends Dated> extends BlockingQueu
 		super.onElementOffered(element, fromQueue);
 
 		final long age = element.getAge(TimeUnit.MICROSECONDS);
-		final IdentityKey<BlockingQueue<T>> key = new IdentityKey<>(fromQueue);
-		final QueueData data = queueMap.get(key);
-		if (data == null) {
-			throw new IllegalArgumentException("Queue should have been already known as an input queue at creation time...");
-		}
+		final QueueData data = getQueueData(fromQueue);
 		data.incomingElement(age);
 	}
 
