@@ -152,12 +152,42 @@ public class EvenementCivilEchRetryProcessorTest extends BusinessTest {
 			}
 
 			@Override
+			public Long getBatchQueueSlidingAverageAge() {
+				throw new NotImplementedException();
+			}
+
+			@Override
+			public Long getBatchQueueGlobalAverageAge() {
+				throw new NotImplementedException();
+			}
+
+			@Override
 			public int getInManualQueueCount() {
 				throw new NotImplementedException();
 			}
 
 			@Override
+			public Long getManualQueueGlobalAverageAge() {
+				throw new NotImplementedException();
+			}
+
+			@Override
+			public Long getManualQueueSlidingAverageAge() {
+				throw new NotImplementedException();
+			}
+
+			@Override
 			public int getInImmediateQueueCount() {
+				throw new NotImplementedException();
+			}
+
+			@Override
+			public Long getImmediateQueueSlidingAverageAge() {
+				throw new NotImplementedException();
+			}
+
+			@Override
+			public Long getImmediateQueueGlobalAverageAge() {
 				throw new NotImplementedException();
 			}
 

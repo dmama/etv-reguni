@@ -7,6 +7,10 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
+/**
+ * Active object which takes elements from several input queues and transfers them into a single ouput queue
+ * @param <T> type of the managed elements
+ */
 public class BlockingQueueMixer<T> {
 
 	private static final int POLL_TIMEOUT = 100;    // ms
@@ -16,7 +20,7 @@ public class BlockingQueueMixer<T> {
 
 	private final List<BlockingQueue<T>> input;
 	private final BlockingQueue<T> output;
-	private final List<WorkingThread<T>> workers;
+	private final List<WorkingThread> workers;
 
 	public BlockingQueueMixer(List<BlockingQueue<T>> inputQueues, BlockingQueue<T> outputQueue) {
 		this.input = new ArrayList<>(inputQueues);
@@ -33,7 +37,7 @@ public class BlockingQueueMixer<T> {
 			throw new IllegalStateException("Already started!");
 		}
 		for (BlockingQueue<T> in : this.input) {
-			this.workers.add(new WorkingThread<>(threadNameGenerator.getNewThreadName(), in, this.output));
+			this.workers.add(new WorkingThread(threadNameGenerator.getNewThreadName(), in, this.output));
 		}
 		for (Thread th : this.workers) {
 			th.start();
@@ -41,11 +45,11 @@ public class BlockingQueueMixer<T> {
 	}
 
 	public synchronized void stop() {
-		for (WorkingThread<T> th : this.workers) {
+		for (WorkingThread th : this.workers) {
 			th.stopIt();
 		}
 		try {
-			for (WorkingThread<T> th : this.workers) {
+			for (WorkingThread th : this.workers) {
 				th.join();
 			}
 		}
@@ -60,7 +64,7 @@ public class BlockingQueueMixer<T> {
 	public int size() {
 		int nb = 0;
 		for (int i = 0 ; i < this.input.size() ; ++ i) {
-			final WorkingThread<T> worker = this.workers.isEmpty() ? null : this.workers.get(i);
+			final WorkingThread worker = this.workers.isEmpty() ? null : this.workers.get(i);
 			nb += this.input.get(i).size() + (worker != null && worker.isAlive() && worker.hasElementInTransit() ? 1 : 0);
 		}
 		nb += this.output.size();
@@ -70,13 +74,24 @@ public class BlockingQueueMixer<T> {
 	public int sizeInTransit() {
 		int nb = 0;
 		for (int i = 0 ; i < this.input.size() ; ++ i) {
-			final WorkingThread<T> worker = this.workers.isEmpty() ? null : this.workers.get(i);
+			final WorkingThread worker = this.workers.isEmpty() ? null : this.workers.get(i);
 			nb += (worker != null && worker.isAlive() && worker.hasElementInTransit() ? 1 : 0);
 		}
 		return nb;
 	}
 
-	private static class WorkingThread<T> extends Thread {
+	/**
+	 * @param element some element which just made it from one of the input queue to the output queue
+	 * @param fromQueue the input queue the element originally came from
+	 * @throws IllegalArgumentException if the given input queue is not one of the original input queues
+	 */
+	protected void onElementOffered(T element, BlockingQueue<T> fromQueue) {
+	}
+
+	/**
+	 * Dispatching thread
+	 */
+	private class WorkingThread extends Thread {
 
 		private final BlockingQueue<T> input;
 		private final BlockingQueue<T> output;
@@ -98,7 +113,9 @@ public class BlockingQueueMixer<T> {
 					if (transitting != null) {
 						while (!stopping) {
 							if (output.offer(transitting, OFFER_TIMEOUT, TimeUnit.MILLISECONDS)) {
+								final T newlyOffered = transitting;
 								transitting = null;
+								notifyElementOffered(newlyOffered);
 								break;
 							}
 						}
@@ -116,6 +133,15 @@ public class BlockingQueueMixer<T> {
 				if (transitting != null) {
 					LOGGER.warn("Element " + transitting + " was taken from the input queue and never made it to the output queue");
 				}
+			}
+		}
+
+		private void notifyElementOffered(T newlyOffered) {
+			try {
+				onElementOffered(newlyOffered, input);
+			}
+			catch (Throwable t) {
+				LOGGER.warn("Exception raised while notifing offered element " + newlyOffered, t);
 			}
 		}
 

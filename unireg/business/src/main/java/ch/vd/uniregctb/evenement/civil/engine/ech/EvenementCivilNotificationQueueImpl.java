@@ -12,12 +12,14 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.common.BlockingQueueMixer;
+import ch.vd.uniregctb.common.AgeTrackingBlockingQueueMixer;
+import ch.vd.uniregctb.common.Dated;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchBasicInfo;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchProcessingMode;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchService;
@@ -72,7 +74,7 @@ import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchService;
 	private final BlockingQueue<DelayedIndividu> manualQueue = new DelayQueue<>();
 	private final BlockingQueue<DelayedIndividu> immediateQueue = new LinkedBlockingQueue<>();
 	private final BlockingQueue<DelayedIndividu> finalQueue = new SynchronousQueue<>(true);
-	private final BlockingQueueMixer<DelayedIndividu> mixer;
+	private final AgeTrackingBlockingQueueMixer<DelayedIndividu> mixer;
 	private final ReentrantLock lock = new ReentrantLock();
 
 	private EvenementCivilEchService evtCivilService;
@@ -86,10 +88,10 @@ import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchService;
 		delayNs = TimeUnit.SECONDS.toNanos(delayInSeconds);
 
 		final List<BlockingQueue<DelayedIndividu>> input = new ArrayList<>(3);
-		input.add(manualQueue);
 		input.add(immediateQueue);
+		input.add(manualQueue);
 		input.add(batchQueue);
-		mixer = new BlockingQueueMixer<>(input, finalQueue);
+		mixer = new AgeTrackingBlockingQueueMixer<>(input, finalQueue, 5, 30);  // 5 minutes en 30 intervales -> intervales de 10 secondes
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -111,7 +113,7 @@ import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchService;
 		mixer.stop();
 	}
 
-	private class DelayedIndividu implements Delayed {
+	private class DelayedIndividu implements Delayed, Dated {
 
 		private final long noIndividu;
 		private final long startTimestamp;
@@ -126,7 +128,7 @@ import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchService;
 		}
 
 		@Override
-		public long getDelay(TimeUnit unit) {
+		public long getDelay(@NotNull TimeUnit unit) {
 			return getDelay(unit, getTimestamp());
 		}
 
@@ -155,6 +157,12 @@ import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchService;
 		@Override
 		public String toString() {
 			return "Individu{no=" + noIndividu + '}';
+		}
+
+		@Override
+		public long getAge(@NotNull TimeUnit unit) {
+			final long now = getTimestamp();
+			return unit.convert(now - startTimestamp, TimeUnit.NANOSECONDS);
 		}
 	}
 
@@ -260,13 +268,43 @@ import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchService;
 	}
 
 	@Override
+	public Long getBatchQueueSlidingAverageAge() {
+		return mixer.getSlidingAverageAge(batchQueue);
+	}
+
+	@Override
+	public Long getBatchQueueGlobalAverageAge() {
+		return mixer.getGlobalAverageAge(batchQueue);
+	}
+
+	@Override
 	public int getInManualQueueCount() {
 		return manualQueue.size();
 	}
 
 	@Override
+	public Long getManualQueueSlidingAverageAge() {
+		return mixer.getSlidingAverageAge(manualQueue);
+	}
+
+	@Override
+	public Long getManualQueueGlobalAverageAge() {
+		return mixer.getGlobalAverageAge(manualQueue);
+	}
+
+	@Override
 	public int getInImmediateQueueCount() {
 		return immediateQueue.size();
+	}
+
+	@Override
+	public Long getImmediateQueueSlidingAverageAge() {
+		return mixer.getSlidingAverageAge(immediateQueue);
+	}
+
+	@Override
+	public Long getImmediateQueueGlobalAverageAge() {
+		return mixer.getGlobalAverageAge(immediateQueue);
 	}
 
 	@Override

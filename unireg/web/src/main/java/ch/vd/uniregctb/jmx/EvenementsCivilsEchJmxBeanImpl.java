@@ -71,6 +71,36 @@ public class EvenementsCivilsEchJmxBeanImpl implements EvenementsCivilsEchJmxBea
 	}
 
 	@Override
+	public Long getSlidingAverageWaitingTimeInBatchQueue() {
+		return monitor.getMoyenneGlissanteDureeAttenteDansLaQueueBatch();
+	}
+
+	@Override
+	public Long getAverageWaitingTimeInBatchQueue() {
+		return monitor.getMoyenneTotaleDureeAttenteDansLaQueueBatch();
+	}
+
+	@Override
+	public Long getSlidingAverageWaitingTimeInManualQueue() {
+		return monitor.getMoyenneGlissanteDureeAttenteDansLaQueueManuelle();
+	}
+
+	@Override
+	public Long getAverageWaitingTimeInManualQueue() {
+		return monitor.getMoyenneTotaleDureeAttenteDansLaQueueManuelle();
+	}
+
+	@Override
+	public Long getSlidingAverageWaitingTimeInImmediateQueue() {
+		return monitor.getMoyenneGlissanteDureeAttenteDansLaQueueImmediate();
+	}
+
+	@Override
+	public Long getAverageWaitingTimeInImmediateQueue() {
+		return monitor.getMoyenneTotaleDureeAttenteDansLaQueueImmediate();
+	}
+
+	@Override
 	@ManagedOperation
 	public void treatPersonsEvents(long noIndividu) {
 		LOGGER.info("Demande de relance des événements civils de l'individu " + noIndividu + " par JMX");

@@ -76,13 +76,43 @@ public class EvenementCivilEchReceptionHandlerImpl implements EvenementCivilEchR
 	}
 
 	@Override
+	public Long getMoyenneGlissanteDureeAttenteDansLaQueueBatch() {
+		return notificationQueue.getBatchQueueSlidingAverageAge();
+	}
+
+	@Override
+	public Long getMoyenneTotaleDureeAttenteDansLaQueueBatch() {
+		return notificationQueue.getBatchQueueGlobalAverageAge();
+	}
+
+	@Override
 	public int getNombreIndividusEnAttenteDansLaQueueManuelle() {
 		return notificationQueue.getInManualQueueCount();
 	}
 
 	@Override
+	public Long getMoyenneGlissanteDureeAttenteDansLaQueueManuelle() {
+		return notificationQueue.getManualQueueSlidingAverageAge();
+	}
+
+	@Override
+	public Long getMoyenneTotaleDureeAttenteDansLaQueueManuelle() {
+		return notificationQueue.getManualQueueGlobalAverageAge();
+	}
+
+	@Override
 	public int getNombreIndividusEnAttenteDansLaQueueImmediate() {
 		return notificationQueue.getInImmediateQueueCount();
+	}
+
+	@Override
+	public Long getMoyenneGlissanteDureeAttenteDansLaQueueImmediate() {
+		return notificationQueue.getImmediateQueueSlidingAverageAge();
+	}
+
+	@Override
+	public Long getMoyenneTotaleDureeAttenteDansLaQueueImmediate() {
+		return notificationQueue.getImmediateQueueGlobalAverageAge();
 	}
 
 	@Override

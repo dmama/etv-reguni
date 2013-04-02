@@ -80,14 +80,44 @@ public interface EvenementCivilNotificationQueue {
 	int getInBatchQueueCount();
 
 	/**
+	 * @return l'âge moyen (en millisecondes) d'un élément lorsqu'il passe de la queue interne "batch" à la queue finale sur les 5 dernières minutes
+	 */
+	Long getBatchQueueSlidingAverageAge();
+
+	/**
+	 * @return l'âge moyen (en millisecondes) d'un élément lorsqu'il passe de la queue interne "batch" à la queue finale depuis le démarrage du service
+	 */
+	Long getBatchQueueGlobalAverageAge();
+
+	/**
 	 * @return le nombre d'éléments actuellement en attente de traitement dans la queue interne "manual"
 	 */
 	int getInManualQueueCount();
 
 	/**
+	 * @return l'âge moyen (en millisecondes) d'un élément lorsqu'il passe de la queue interne "manual" à la queue finale sur les 5 dernières minutes
+	 */
+	Long getManualQueueSlidingAverageAge();
+
+	/**
+	 * @return l'âge moyen (en millisecondes) d'un élément lorsqu'il passe de la queue interne "manual" à la queue finale depuis le démarrage du service
+	 */
+	Long getManualQueueGlobalAverageAge();
+
+	/**
 	 * @return le nombre d'éléments actuellement en attente de traitement dans la queue interne "immediate"
 	 */
 	int getInImmediateQueueCount();
+
+	/**
+	 * @return l'âge moyen (en millisecondes) d'un élément lorsqu'il passe de la queue interne "immediate" à la queue finale sur les 5 dernières minutes
+	 */
+	Long getImmediateQueueSlidingAverageAge();
+
+	/**
+	 * @return l'âge moyen (en millisecondes) d'un élément lorsqu'il passe de la queue interne "immediate" à la queue finale depuis le démarrage du service
+	 */
+	Long getImmediateQueueGlobalAverageAge();
 
 	/**
 	 * @return le nombre d'éléments actuellement en attente de traitement dans la queue interne "final"

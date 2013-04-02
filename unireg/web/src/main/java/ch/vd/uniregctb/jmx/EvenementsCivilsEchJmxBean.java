@@ -28,6 +28,24 @@ public interface EvenementsCivilsEchJmxBean {
 	@ManagedAttribute(description = "Total number of individuals currently waiting in the final queue")
 	int getNbIndividualsAwaitingInFinalQueue();
 
+	@ManagedAttribute(description = "Average waiting time (ms) in the batch queue during the last 5 minutes")
+	Long getSlidingAverageWaitingTimeInBatchQueue();
+
+	@ManagedAttribute(description = "Average waiting time (ms) in the manual queue during the last 5 minutes")
+	Long getSlidingAverageWaitingTimeInManualQueue();
+
+	@ManagedAttribute(description = "Average waiting time (ms) in the immediate queue during the last 5 minutes")
+	Long getSlidingAverageWaitingTimeInImmediateQueue();
+
+	@ManagedAttribute(description = "Overall average waiting time (ms) in the batch queue since application start")
+	Long getAverageWaitingTimeInBatchQueue();
+
+	@ManagedAttribute(description = "Overall average waiting time (ms) in the manual queue since application start")
+	Long getAverageWaitingTimeInManualQueue();
+
+	@ManagedAttribute(description = "Overall average waiting time (ms) in the immediate queue since application start")
+	Long getAverageWaitingTimeInImmediateQueue();
+
 	@ManagedOperation(description = "Ask for (re-)treatment of the individual's event queue")
 	@ManagedOperationParameters(value = {@ManagedOperationParameter(name = "idPerson", description = "ID of the individual whose events should be treated")})
 	void treatPersonsEvents(long idPerson);

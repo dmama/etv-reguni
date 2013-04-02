@@ -32,4 +32,16 @@ public interface EvenementCivilEchReceptionMonitor {
 	int getNombreIndividusEnTransitionVersLaQueueFinale();
 
 	int getNombreIndividusEnAttenteDansLaQueueFinale();
+
+	Long getMoyenneGlissanteDureeAttenteDansLaQueueManuelle();
+
+	Long getMoyenneGlissanteDureeAttenteDansLaQueueImmediate();
+
+	Long getMoyenneGlissanteDureeAttenteDansLaQueueBatch();
+
+	Long getMoyenneTotaleDureeAttenteDansLaQueueManuelle();
+
+	Long getMoyenneTotaleDureeAttenteDansLaQueueImmediate();
+
+	Long getMoyenneTotaleDureeAttenteDansLaQueueBatch();
 }

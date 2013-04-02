@@ -33,13 +33,43 @@ public class MockEvenementCivilNotificationQueue implements EvenementCivilNotifi
 	}
 
 	@Override
+	public Long getBatchQueueSlidingAverageAge() {
+		return null;
+	}
+
+	@Override
+	public Long getBatchQueueGlobalAverageAge() {
+		return null;
+	}
+
+	@Override
 	public int getInManualQueueCount() {
 		return 0;
 	}
 
 	@Override
+	public Long getManualQueueSlidingAverageAge() {
+		return null;
+	}
+
+	@Override
+	public Long getManualQueueGlobalAverageAge() {
+		return null;
+	}
+
+	@Override
 	public int getInImmediateQueueCount() {
 		return 0;
+	}
+
+	@Override
+	public Long getImmediateQueueSlidingAverageAge() {
+		return null;
+	}
+
+	@Override
+	public Long getImmediateQueueGlobalAverageAge() {
+		return null;
 	}
 
 	@Override
