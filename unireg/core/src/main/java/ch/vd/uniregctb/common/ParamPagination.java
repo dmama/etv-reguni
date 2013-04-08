@@ -66,7 +66,6 @@ public class ParamPagination {
 
 	public static interface CustomOrderByGenerator {
 		public boolean supports(String fieldName);
-
 		public QueryFragment generate(String fieldName, ParamPagination pagination);
 	}
 
@@ -76,9 +75,6 @@ public class ParamPagination {
 		if (champ != null) {
 			if (customGenerator != null && customGenerator.supports(champ)) {
 				clauseOrder.add("order by ").add(customGenerator.generate(champ, this));
-			}
-			else if (champ.equals("type")) {
-				clauseOrder.add(" order by " + tableAlias + ".class");
 			}
 			else {
 				// check that the field name does not contain anything except allowed characters
