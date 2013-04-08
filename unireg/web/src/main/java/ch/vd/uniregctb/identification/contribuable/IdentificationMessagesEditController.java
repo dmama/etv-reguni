@@ -115,7 +115,7 @@ public class IdentificationMessagesEditController extends AbstractTiersListContr
 			identificationMessagesEditManager.deVerouillerMessage(bean.getDemandeIdentificationView().getId(), false);
 			removeModuleFromSession(request, PP_CRITERIA_NAME);
 
-			IdentificationController.calculerView(request, mav,SOURCE_PARAMETER);
+			IdentificationController.calculerView(request, mav, SOURCE_PARAMETER);
 
 		}
 		return mav;
@@ -160,7 +160,7 @@ public class IdentificationMessagesEditController extends AbstractTiersListContr
 
 					identificationMessagesEditManager.deVerouillerMessage(bean.getDemandeIdentificationView().getId(), false);
 
-					IdentificationController.calculerView(request, mav,SOURCE_PARAMETER);
+					IdentificationController.calculerView(request, mav, SOURCE_PARAMETER);
 
 					return mav;
 				}
@@ -172,7 +172,7 @@ public class IdentificationMessagesEditController extends AbstractTiersListContr
 				// permettre que la vu soit recharger après modif
 				removeModuleFromSession(request, PP_CRITERIA_NAME);
 
-				IdentificationController.calculerView(request, mav,SOURCE_PARAMETER);
+				IdentificationController.calculerView(request, mav, SOURCE_PARAMETER);
 
 				return mav;
 			}
@@ -181,7 +181,7 @@ public class IdentificationMessagesEditController extends AbstractTiersListContr
 				identificationMessagesEditManager.impossibleAIdentifier(null);
 				identificationMessagesEditManager.deVerouillerMessage(bean.getDemandeIdentificationView().getId(), false);
 
-				IdentificationController.calculerView(request, mav,SOURCE_PARAMETER);
+				IdentificationController.calculerView(request, mav, SOURCE_PARAMETER);
 
 				return mav;
 			}
@@ -198,7 +198,7 @@ public class IdentificationMessagesEditController extends AbstractTiersListContr
 		else {
 			//Le message est déjà traité, l'utilisateur s'amuse avec le bouton back
 			Flash.warning(String.format("Ce message a déjà été traité, vous avez été redirigé vers la liste de messages en cours"));
-			IdentificationController.calculerView(request, mav,SOURCE_PARAMETER);
+			IdentificationController.calculerView(request, mav, SOURCE_PARAMETER);
 		}
 
 		return mav;

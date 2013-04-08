@@ -2,34 +2,21 @@
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 
 <c:choose>		
-		<c:when test="${messageEnCours}">
-			<c:set var="myAction" value="listEnCours.do" />
-		</c:when>
-		
-		<c:when test="${messageTraite}">
-			<c:set var="myAction" value="listTraite.do" />
-		</c:when>
+	<c:when test="${messageEnCours}">
+		<c:set var="myAction" value="listEnCours.do" />
+		<c:set var="mySource" value="enCours" />
+		<c:set var="titrePage" value="title.messages.en.cours" />
+	</c:when>
+	<c:when test="${messageTraite}">
+		<c:set var="myAction" value="listTraite.do" />
+		<c:set var="titrePage" value="title.messages.archive" />
+	</c:when>
     <c:when test="${messageSuspendu}">
         <c:set var="myAction" value="listSuspendu.do" />
+	    <c:set var="mySource" value="suspendu"/>
+	    <c:set var="titrePage" value="title.messages.suspendu" />
     </c:when>
 </c:choose>
-
-<c:set var="mySource" value="enCours" />
-
-<c:set var="titrePage" value="title.messages.en.cours" />
-
-<c:if test="${messageTraite}">
-	<c:set var="titrePage" value="title.messages.archive" />
-</c:if>
-
-<c:if test="${messageSuspendu}">
-    <c:set var="titrePage" value="title.messages.suspendu" />
-    <c:set var="mySource" value="suspendu"/>
-</c:if>
-
-
-
-
 
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 
@@ -54,8 +41,6 @@
                     form.appendTo('body');
                     form.submit();
                 }
-
-
             </script>
 
 			<display:table name="identifications" id="message" pagesize="25" size="identificationsSize" requestURI="/identification/gestion-messages/${myAction}"
@@ -153,6 +138,7 @@
                             <td width="25%">&nbsp;</td>
                             <td width="50%">
                                 <div class="navigation-action" id="actions-masse-messages">
+	                                <input type="hidden" name="source" value="${mySource}"/>
                                     <authz:authorize ifAnyGranted="ROLE_MW_IDENT_CTB_ADMIN">
                                         <c:if test="${messageEnCours}">
                                             <input type="button" name="suspendre" value="<fmt:message key="label.bouton.suspendre" />" onClick="javascript:IdentificationCtb.confirmeSuspensionMessage();"/>&nbsp;

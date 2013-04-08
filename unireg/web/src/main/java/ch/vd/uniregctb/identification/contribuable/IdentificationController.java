@@ -53,7 +53,13 @@ import ch.vd.uniregctb.utils.RegDateEditor;
 @RequestMapping(value = "/identification")
 public class IdentificationController {
 
+	public static enum Source {
+		enCours,
+		suspendu
+	}
+
 	private static final String ACCESS_DENIED_MESSAGE = "Vous ne possédez aucun droit IfoSec pour la gestion de l'identification de contribuable";
+	private static final String ACCESS_DENIED_ACTION_MESSAGE = "Vous ne possédez aucun droit IfoSec procéder à cette action sur un message d'identification de contribuable";
 	private static final String ACCESS_DENIED_UNLOCK_MESSAGE = "Vous ne possédez aucun droit IfoSec pour déverouiller un message d'identification de contribuable";
 	private static final String ACCESS_DENIED_VISU_MESSAGE = "Vous ne possédez aucun droit IfoSec pour visualiser les messages d'identification de contribuable";
 	private IdentificationMessagesStatsManager identificationMessagesStatsManager;
@@ -112,9 +118,6 @@ public class IdentificationController {
 		return buildReponseForMessageTraite(request, model, criteria);
 	}
 
-
-
-
 	@RequestMapping(value = {"/tableau-bord/stats.do"}, method = RequestMethod.GET)
 	@SecurityCheck(rolesToCheck = {Role.MW_IDENT_CTB_ADMIN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	protected String getStats(HttpServletRequest request,
@@ -130,44 +133,54 @@ public class IdentificationController {
 		return "identification/tableau-bord/stats";
 	}
 
-
 	@RequestMapping(value = {"/gestion-messages/unlock.do"}, method = RequestMethod.POST)
 	@SecurityCheck(rolesToCheck = {Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_GEST_BO}, accessDeniedMessage = ACCESS_DENIED_UNLOCK_MESSAGE)
 	protected ModelAndView deverouillerMessage(HttpServletRequest request,
-	                                           @ModelAttribute("identificationCriteria") IdentificationContribuableListCriteria criteria, ModelMap model) throws Exception {
+	                                           @RequestParam(value = "source", required = true) Source source,
+	                                           @ModelAttribute("identificationCriteria") IdentificationContribuableListCriteria criteria,
+	                                           ModelMap model) throws Exception {
 		deverouillerMessage(criteria);
-		return buildResponseForMessageEnCours(request, criteria, model);
+		return buildResponseFromSource(request, source, criteria, model);
 	}
 
 	@RequestMapping(value = {"/gestion-messages/lock.do"}, method = RequestMethod.POST)
-	@SecurityCheck(rolesToCheck = {Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_GEST_BO}, accessDeniedMessage = ACCESS_DENIED_UNLOCK_MESSAGE)
-	protected ModelAndView verouillerMessage(HttpServletRequest request,@ModelAttribute("identificationCriteria") IdentificationContribuableListCriteria criteria, ModelMap model) throws Exception {
-
+	@SecurityCheck(rolesToCheck = {Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_GEST_BO}, accessDeniedMessage = ACCESS_DENIED_ACTION_MESSAGE)
+	protected ModelAndView verouillerMessage(HttpServletRequest request,
+	                                         @RequestParam(value = "source", required = true) Source source,
+	                                         @ModelAttribute("identificationCriteria") IdentificationContribuableListCriteria criteria,
+	                                         ModelMap model) throws Exception {
 		verouillerMessage(criteria);
-		return buildResponseForMessageEnCours(request, criteria, model);
+		return buildResponseFromSource(request, source, criteria, model);
 	}
+
 	@RequestMapping(value = {"/gestion-messages/suspendre.do"}, method = RequestMethod.POST)
-	@SecurityCheck(rolesToCheck = {Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_GEST_BO}, accessDeniedMessage = ACCESS_DENIED_UNLOCK_MESSAGE)
-	protected ModelAndView suspendreMessage(HttpServletRequest request,@ModelAttribute("identificationCriteria") IdentificationContribuableListCriteria criteria, ModelMap model) throws Exception {
-
+	@SecurityCheck(rolesToCheck = {Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_GEST_BO}, accessDeniedMessage = ACCESS_DENIED_ACTION_MESSAGE)
+	protected ModelAndView suspendreMessage(HttpServletRequest request,
+	                                        @RequestParam(value = "source", required = true) Source source,
+	                                        @ModelAttribute("identificationCriteria") IdentificationContribuableListCriteria criteria,
+	                                        ModelMap model) throws Exception {
 		identificationMessagesListManager.suspendreIdentificationMessages(criteria);
-		return buildResponseForMessageEnCours(request, criteria, model);
+		return buildResponseFromSource(request, source, criteria, model);
 	}
+
 	@RequestMapping(value = {"/gestion-messages/resoumettre.do"}, method = RequestMethod.POST)
-	@SecurityCheck(rolesToCheck = {Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_GEST_BO}, accessDeniedMessage = ACCESS_DENIED_UNLOCK_MESSAGE)
-	protected ModelAndView reSoumettreMessage(HttpServletRequest request, @ModelAttribute("identificationCriteria") IdentificationContribuableListCriteria criteria, ModelMap model) throws Exception {
-
-
+	@SecurityCheck(rolesToCheck = {Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_GEST_BO}, accessDeniedMessage = ACCESS_DENIED_ACTION_MESSAGE)
+	protected ModelAndView reSoumettreMessage(HttpServletRequest request,
+	                                          @RequestParam(value = "source", required = true) Source source,
+	                                          @ModelAttribute("identificationCriteria") IdentificationContribuableListCriteria criteria,
+	                                          ModelMap model) throws Exception {
 		identificationMessagesListManager.reSoumettreIdentificationMessages(criteria);
-		return buildResponseForMessageEnCours(request, criteria, model);
+		return buildResponseFromSource(request, source, criteria, model);
 	}
 
 
 	@RequestMapping(value = {"/gestion-messages/demandeEdit.do"}, method = RequestMethod.POST)
-	@SecurityCheck(rolesToCheck = {Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_GEST_BO}, accessDeniedMessage = ACCESS_DENIED_UNLOCK_MESSAGE)
+	@SecurityCheck(rolesToCheck = {Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_GEST_BO}, accessDeniedMessage = ACCESS_DENIED_ACTION_MESSAGE)
 	protected ModelAndView demanderEditionMessage(HttpServletRequest request,
 	                                              @ModelAttribute("identificationCriteria") IdentificationContribuableListCriteria identCriteria,
-	                                              @RequestParam(value = "id", required = true) Long idMessage,  @RequestParam(value = "source", required = true) String source,ModelMap model) throws Exception {
+	                                              @RequestParam(value = "id", required = true) Long idMessage,
+	                                              @RequestParam(value = "source", required = true) Source source,
+	                                              ModelMap model) throws Exception {
 
 		if (!identificationMessagesEditManager.isMessageVerouille(idMessage)) {
 			return new ModelAndView("redirect:edit.do?id=" + idMessage+"&source="+source);
@@ -175,15 +188,21 @@ public class IdentificationController {
 		else {
 			Flash.warning("le message sélectionné est en cours de traitement par un autre utilisateur");
 		}
-		IdentificationContribuableListCriteria criteria = identificationMessagesListManager.getView(null,null,null);
-		if ("enCours".equals(source)) {
+		final IdentificationContribuableListCriteria criteria = identificationMessagesListManager.getView(null,null,null);
+		return buildResponseFromSource(request, source, criteria, model);
+	}
+
+	private ModelAndView buildResponseFromSource(HttpServletRequest request, Source source, IdentificationContribuableListCriteria criteria, ModelMap model) throws AdressesResolutionException {
+		if (source == Source.enCours) {
 			return buildResponseForMessageEnCours(request, criteria, model);
 		}
-		else{
+		else if (source == Source.suspendu) {
 			return buildResponseForMessageSuspendu(request,criteria,model);
 		}
 
+		throw new IllegalArgumentException("Invalid value for source parameter");
 	}
+
 
 	@RequestMapping(value = {"/gestion-messages/listEnCours.do"}, method = {RequestMethod.POST, RequestMethod.GET})
 	@SecurityCheck(rolesToCheck = {Role.MW_IDENT_CTB_VISU, Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_CELLULE_BO,
@@ -338,7 +357,6 @@ public class IdentificationController {
 		construireModelMessageEnCours(request, model, criteria);
 		return new ModelAndView("identification/gestion-messages/list", model);
 	}
-
 
 	/**
 	 * Construit le model est retourne le modelAndView de réponse des messagesSuspendu
@@ -513,8 +531,6 @@ public class IdentificationController {
 		return identificationMapHelper.initMapPrioriteEmetteur();
 	}
 
-
-
 	protected Map<String, String> initMapEmetteurIdTraite() {
 		return identificationMapHelper.initMapEmetteurId(IdentificationContribuableEtatFilter.SEULEMENT_TRAITES);
 	}
@@ -526,13 +542,11 @@ public class IdentificationController {
 
 	protected Map<Integer, String> initMapPeriodeFiscaleTraite() {
 		return identificationMapHelper.initMapPeriodeFiscale(IdentificationContribuableEtatFilter.SEULEMENT_TRAITES);
-
 	}
 
 	protected Map<Demande.PrioriteEmetteur, String> initMapPrioriteEmetteurTraite() {
 		return identificationMapHelper.initMapPrioriteEmetteur();
 	}
-
 
 	@InitBinder
 	protected void initBinder(HttpServletRequest request, WebDataBinder binder) {
@@ -569,15 +583,17 @@ public class IdentificationController {
 			}
 		}
 	}
-	public static void  calculerView(HttpServletRequest request, ModelAndView mav,String source_param) {
+
+	public static void calculerView(HttpServletRequest request, ModelAndView mav, String source_param) {
 		final String source = (String) request.getSession().getAttribute(source_param);
-		if ("enCours".equals(source)) {
-			mav.setView(new RedirectView("listEnCours.do?keepCriteria=true"));
-		}
-
-
-		if ("suspendu".equals(source)) {
-			mav.setView(new RedirectView("listSuspendu.do?keepCriteria=true"));
+		final Source src = Source.valueOf(source);
+		switch (src) {
+			case enCours:
+				mav.setView(new RedirectView("listEnCours.do?keepCriteria=true"));
+				break;
+			case suspendu:
+				mav.setView(new RedirectView("listSuspendu.do?keepCriteria=true"));
+				break;
 		}
 	}
 }
