@@ -69,8 +69,7 @@ public class EvenementCivilEchDAOImpl extends AbstractEvenementCivilDAOImpl<Even
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public List<EvenementCivilEch> find(final EvenementCivilCriteria criterion, @Nullable final ParamPagination paramPagination) {
+	public List<EvenementCivilEch> find(final EvenementCivilCriteria<TypeEvenementCivilEch> criterion, @Nullable final ParamPagination paramPagination) {
 		return genericFind(criterion, paramPagination);
 	}
 

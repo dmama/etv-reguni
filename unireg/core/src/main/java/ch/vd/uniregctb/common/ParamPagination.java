@@ -1,5 +1,8 @@
 package ch.vd.uniregctb.common;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.uniregctb.dbutils.QueryFragment;
@@ -8,6 +11,8 @@ import ch.vd.uniregctb.dbutils.QueryFragment;
  * Classe pour definir les paramètres de la pagination
  */
 public class ParamPagination {
+
+	private static final Pattern FIELD_ALLOWED_CHARS = Pattern.compile("^[a-zA-Z0-9_]+$");
 
 	private final ParamSorting sorting;
 
@@ -76,7 +81,12 @@ public class ParamPagination {
 				clauseOrder.add(" order by " + tableAlias + ".class");
 			}
 			else {
-				clauseOrder.add(" order by ?", champ);
+				// check that the field name does not contain anything except allowed characters
+				final Matcher matcher = FIELD_ALLOWED_CHARS.matcher(champ);
+				if (!matcher.matches()) {
+					throw new IllegalArgumentException("Field name '" + champ + "' not supported as sorting criterion");
+				}
+				clauseOrder.add(" order by " + tableAlias + "." + champ);
 			}
 
 			if (sorting.isAscending()) {
