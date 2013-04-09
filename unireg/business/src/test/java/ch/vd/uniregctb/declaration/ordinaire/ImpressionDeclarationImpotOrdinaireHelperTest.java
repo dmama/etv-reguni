@@ -11,6 +11,7 @@ import noNamespace.DIBase;
 import noNamespace.DIDocument.DI;
 import noNamespace.DIHCDocument;
 import noNamespace.DIRetour;
+import noNamespace.FichierImpressionDocument;
 import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument;
 import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument.Destinataire;
 import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument.Expediteur;
@@ -460,6 +461,46 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 			final String formuleAppel = di2009.getFormuleAppel();
 			assertEquals("Monsieur", formuleAppel);
 
+
+		}
+
+
+	}
+
+	//SIFISC-8417
+	//type de document imprimé est différent du type de document attendu.
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testImpressionLocaleTypeDI() throws Exception {
+		LOGGER.debug("EditiqueHelperTest - testImpressionTypeDI SIFISC-8417");
+
+
+		final CollectiviteAdministrative cedi = tiersService.getOrCreateCollectiviteAdministrative(ServiceInfrastructureService.noCEDI);
+		final CollectiviteAdministrative nyon = tiersService.getOrCreateCollectiviteAdministrative(MockOfficeImpot.OID_NYON.getNoColAdm());
+
+		final int anneeCourante = RegDate.get().year();
+		// Crée une personne physique (ctb ordinaire vaudois) qui a déménagé mi 2010 de Morges à Paris
+		final PersonnePhysique pp = addNonHabitant("Maelle", "André", date(1980, 6, 23), Sexe.MASCULIN);
+		addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(2009, 6, 14), null, MockRue.Aubonne.CheminCurzilles);
+		addForPrincipal(pp, date(2008, 6, 15), MotifFor.ARRIVEE_HS, date(2009, 6, 13), MotifFor.DEMENAGEMENT_VD, MockCommune.Aigle);
+		addForPrincipal(pp, date(2009, 6, 14), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Nyon);
+
+		final PeriodeFiscale periode2009 = addPeriodeFiscale(2009);
+
+		final ModeleDocument modele2009 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL, periode2009);
+		final DeclarationImpotOrdinaire declaration2009 = addDeclarationImpot(pp, periode2009, date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2009);
+
+		declaration2009.setNumeroOfsForGestion(MockCommune.Nyon.getNoOFS());
+		declaration2009.setRetourCollectiviteAdministrativeId(cedi.getId());
+		{
+
+			final FichierImpressionDocument mainDocument = noNamespace.FichierImpressionDocument.Factory.newInstance();
+			final TypFichierImpression editiqueDI = mainDocument.addNewFichierImpression();
+			//Impression local de la DI mais avec un type de document vautax
+			//on doit obtenir une DI de type vautax et non une DI du type sauvegardé(COMPLETE)
+			final TypFichierImpression.Document di2009 = impressionDIHelper.remplitEditiqueSpecifiqueDI(declaration2009, editiqueDI, TypeDocument.DECLARATION_IMPOT_VAUDTAX, null, false);
+			assertNull(di2009.getDI());
+			assertNotNull(di2009.getDIVDTAX());
 
 		}
 

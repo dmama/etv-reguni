@@ -17,7 +17,7 @@ public class InformationsDocumentAdapter {
 	public final Long collId;
 	public final Qualification qualification;
 	public final Integer codeSegment;
-	public final TypeDocument typeDocument;
+	public TypeDocument typeDocument;
 	public final String codeControle;
 
 	public InformationsDocumentAdapter(Tiers tiers, Integer idDocument, int annee, RegDate delaiRetourImprime, RegDate delaiAccorde, RegDate dateReference, int noOfsCommune, Long collId,

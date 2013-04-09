@@ -244,6 +244,12 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl extends EditiqueAbstr
 	                                            TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes, boolean isFromBatch) throws EditiqueException {
 
 		final InformationsDocumentAdapter infoAdapter = new InformationsDocumentAdapter(declaration);
+		//SIFISC-8417
+		//Dans le cas d'une impression locale, il faut prendre en compte le type de document passer en paramètre pour l'impression.
+		//et non le type porté par la déclaration
+		if (!isFromBatch) {
+			infoAdapter.typeDocument = typeDocument;
+		}
 		return remplitEditiqueSpecifiqueDI(infoAdapter, typeFichierImpression, annexes, isFromBatch);
 	}
 
