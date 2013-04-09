@@ -162,7 +162,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		final TypFichierImpression editiqueDI = mainDocument.addNewFichierImpression();
 		final TypFichierImpression.Document document = impressionDIHelper.remplitEditiqueSpecifiqueDI(declaration, editiqueDI, typeDocument, annexes, false);
 		final TypFichierImpression.Document[] documents;
-		if (isDuplicata || declaration.getTypeDeclaration() == TypeDocument.DECLARATION_IMPOT_VAUDTAX) {
+		if (isDuplicata || typeDocument == TypeDocument.DECLARATION_IMPOT_VAUDTAX) {
 			documents = new TypFichierImpression.Document[1];
 			documents[0] = document;
 		}
