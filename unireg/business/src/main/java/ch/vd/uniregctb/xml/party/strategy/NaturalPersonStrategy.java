@@ -60,7 +60,7 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 
 			final NaturalPersonCategory category = EnumHelper.coreToXML(personne.getCategorieEtranger());
 			to.setCategory(category);
-			to.getCategories().add(new NaturalPersonCategoryPeriod(null, null, category, null));
+			to.getCategories().add(new NaturalPersonCategoryPeriod(DataHelper.coreToXML(personne.getDateDebutValiditeAutorisation()), null, category, null));
 		}
 		else {
 			final Individu individu = context.serviceCivilService.getIndividu(personne.getNumeroIndividu(), null, AttributeIndividu.PERMIS);

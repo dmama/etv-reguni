@@ -115,6 +115,7 @@ import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypePermis;
+import ch.vd.uniregctb.xml.DataHelper;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -2492,11 +2493,13 @@ public class PartyWebServiceTest extends WebserviceTest {
 	@Test
 	public void testGetNaturalPersonneCategoryNonHabitantPermisB() throws Exception {
 
+		final RegDate dateDebutPermis = date(2009, 9, 22);
 		final Long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = addNonHabitant("Eva", "Gourt", date(1983, 3, 31), Sexe.FEMININ);
 				pp.setCategorieEtranger(CategorieEtranger._02_PERMIS_SEJOUR_B);
+				pp.setDateDebutValiditeAutorisation(dateDebutPermis);
 				return pp.getId();
 			}
 		});
@@ -2512,7 +2515,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 		final List<NaturalPersonCategoryPeriod> permis = pp.getCategories();
 		assertNotNull(permis);
 		assertEquals(1, permis.size());
-		assertPermis(null, null, NaturalPersonCategory.C_02_B_PERMIT, permis.get(0));
+		assertPermis(DataHelper.coreToXML(dateDebutPermis), null, NaturalPersonCategory.C_02_B_PERMIT, permis.get(0));
 
 		// l'attribut 'category' contient le type du dernier permis
 		assertEquals(NaturalPersonCategory.C_02_B_PERMIT, pp.getCategory());

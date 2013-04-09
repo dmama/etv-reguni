@@ -64,4 +64,13 @@ public class MockPermis implements Permis {
 		this.typePermis = typePermis;
 	}
 
+	@Override
+	public String toString() {
+		return "MockPermis{" +
+				"dateDebutValidite=" + dateDebutValidite +
+				", dateFinValidite=" + dateFinValidite +
+				", dateAnnulation=" + dateAnnulation +
+				", typePermis=" + typePermis +
+				'}';
+	}
 }

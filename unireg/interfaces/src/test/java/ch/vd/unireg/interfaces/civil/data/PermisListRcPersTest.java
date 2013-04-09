@@ -3,11 +3,11 @@ package ch.vd.unireg.interfaces.civil.data;
 import java.util.Arrays;
 
 import org.junit.Test;
-import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.mock.MockPermis;
 import ch.vd.uniregctb.common.WithoutSpringTest;
+import ch.vd.uniregctb.type.TypePermis;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -16,7 +16,6 @@ import static org.junit.Assert.assertSame;
 public class PermisListRcPersTest extends WithoutSpringTest {
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testGetPermisActifAucunPermis() {
 
 		final long noIndividu = 1;
@@ -32,7 +31,6 @@ public class PermisListRcPersTest extends WithoutSpringTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testGetPermisActifUnSeulPermisOuvert() {
 
 		final long noIndividu = 1;
@@ -55,7 +53,6 @@ public class PermisListRcPersTest extends WithoutSpringTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testGetPermisActifUnSeulPermisFerme() {
 
 		final long noIndividu = 1;
@@ -78,7 +75,6 @@ public class PermisListRcPersTest extends WithoutSpringTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testGetPermisActifListDesordonnees() {
 
 		final long noIndividu = 1;
@@ -116,7 +112,6 @@ public class PermisListRcPersTest extends WithoutSpringTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testGetPermisActifAdresseDebutNulle() {
 
 		final long noIndividu = 1;
@@ -138,5 +133,27 @@ public class PermisListRcPersTest extends WithoutSpringTest {
 		Permis p3 = list.getPermisActif(RegDate.get(1989, 11, 20));
 		assertNotNull(p3);
 		assertSame(permis1, p3);
+	}
+
+	@Test
+	public void testGetPermisActifSiVieuxPermisSansDateFin() throws Exception {
+		final MockPermis vieux = new MockPermis(date(2011, 1, 1), null, null, TypePermis.SEJOUR);
+		final MockPermis nouveau = new MockPermis(date(2013, 4, 1), date(2018, 3, 31), null, TypePermis.ETABLISSEMENT);
+
+		final PermisListRcPers list = new PermisListRcPers(1L, Arrays.<Permis>asList(vieux, nouveau));
+		final Permis actif = list.getPermisActif(null);
+		assertNotNull(actif);
+		assertSame(nouveau, actif);
+
+		final Permis actif2013 = list.getPermisActif(date(2013, 4, 4));
+		assertNotNull(actif2013);
+		assertSame(nouveau, actif2013);
+
+		final Permis actif2012 = list.getPermisActif(date(2012, 5, 12));
+		assertNotNull(actif2012);
+		assertSame(vieux, actif2012);
+
+		final Permis actif2010 = list.getPermisActif(date(2010, 1, 1));
+		assertNull(actif2010);
 	}
 }

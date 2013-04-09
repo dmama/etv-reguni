@@ -157,16 +157,19 @@ public abstract class PermisListBase implements PermisList, Serializable {
 		return list.size();
 	}
 
+	@NotNull
 	@Override
 	public List<Permis> subList(int fromIndex, int toIndex) {
 		return list.subList(fromIndex, toIndex);
 	}
 
+	@NotNull
 	@Override
 	public Object[] toArray() {
 		return list.toArray();
 	}
 
+	@NotNull
 	@Override
 	public <T> T[] toArray(T[] a) {
 		return list.toArray(a);
@@ -177,10 +180,16 @@ public abstract class PermisListBase implements PermisList, Serializable {
 
 		Permis permis = null;
 
+		// null -> date du jour
+		if (date == null) {
+			date = RegDate.get();
+		}
+
 		// itération sur la liste des permis, dans l'ordre inverse de l'obtention
 		// (on s'arrête sur le premier pour lequel les dates sont bonnes - et on ne prends pas en compte les permis annulés)
-		for (int i = list.size() - 1; i >= 0; --i) {
-			final Permis p = list.get(i);
+		final ListIterator<Permis> iter = list.listIterator(list.size());
+		while (iter.hasPrevious()) {
+			final Permis p = iter.previous();
 			if (p.getDateAnnulation() != null) {
 				continue;
 			}
