@@ -74,6 +74,7 @@ import ch.vd.unireg.xml.party.taxdeclaration.v1.TaxDeclarationKey;
 import ch.vd.unireg.xml.party.taxdeclaration.v1.TaxDeclarationStatus;
 import ch.vd.unireg.xml.party.taxdeclaration.v1.TaxDeclarationStatusType;
 import ch.vd.unireg.xml.party.taxresidence.v1.LiabilityChangeReason;
+import ch.vd.unireg.xml.party.taxresidence.v1.SimplifiedTaxLiability;
 import ch.vd.unireg.xml.party.taxresidence.v1.TaxLiabilityReason;
 import ch.vd.unireg.xml.party.taxresidence.v1.TaxResidence;
 import ch.vd.unireg.xml.party.taxresidence.v1.TaxType;
@@ -103,6 +104,7 @@ import ch.vd.uniregctb.type.CategorieEtranger;
 import ch.vd.uniregctb.type.CategorieIdentifiant;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.ModeCommunication;
+import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
@@ -1184,6 +1186,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 	@Test
 	public void testSearchPartyByDebtorCategory() throws Exception {
 
+		removeIndexData();
 		setWantIndexation(true);
 
 		final Long id = doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Long>() {
@@ -1579,7 +1582,6 @@ public class PartyWebServiceTest extends WebserviceTest {
 	@Test
 	public void testSearchPartyByOldWithholdingNumber() throws Exception {
 
-		setWantIndexation(true);
 
 		class Ids {
 			long marcel;
@@ -1587,6 +1589,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 		}
 		final Ids ids = new Ids();
 
+		removeIndexData();
 		setWantIndexation(true);
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
@@ -2513,6 +2516,45 @@ public class PartyWebServiceTest extends WebserviceTest {
 
 		// l'attribut 'category' contient le type du dernier permis
 		assertEquals(NaturalPersonCategory.C_02_B_PERMIT, pp.getCategory());
+	}
+
+	@Test
+	public void testNonNullSimplifiedTaxLiabilities() throws Exception {
+
+		final int year = RegDate.get().year();
+
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Ava", "Gardner", date(1922, 12, 24), Sexe.FEMININ);
+				pp.setCategorieEtranger(CategorieEtranger._02_PERMIS_SEJOUR_B);
+				addForPrincipal(pp, date(year - 3, 1, 1), MotifFor.ARRIVEE_HS, date(year - 2, 5, 12), MotifFor.DEPART_HS, MockCommune.Aigle, ModeImposition.MIXTE_137_1);
+				addForPrincipal(pp, date(year - 2, 5, 13), MotifFor.DEPART_HS, null, null, MockPays.EtatsUnis, ModeImposition.SOURCE);
+				return pp.getNumero();
+			}
+		});
+
+		final GetPartyRequest params = new GetPartyRequest();
+		params.setLogin(login);
+		params.setPartyNumber((int) ppId);
+		params.getParts().add(PartyPart.SIMPLIFIED_TAX_LIABILITIES);
+
+		final NaturalPerson pp = (NaturalPerson) service.getParty(params);
+		assertNotNull(pp);
+
+		// les collections de tax liabilities ne doivent pas contenir de valeurs nulles
+		final List<SimplifiedTaxLiability> ch = pp.getSimplifiedTaxLiabilityCH();
+		assertNotNull(ch);
+		assertEquals(1, ch.size());
+		for (int i = 0 ; i < ch.size() ; ++ i) {
+			assertNotNull(Integer.toString(i), ch.get(i));
+		}
+		final List<SimplifiedTaxLiability> vd = pp.getSimplifiedTaxLiabilityVD();
+		assertNotNull(vd);
+		assertEquals(1, vd.size());
+		for (int i = 0 ; i < vd.size() ; ++ i) {
+			assertNotNull(Integer.toString(i), vd.get(i));
+		}
 	}
 
 	private static void assertPermis(Date dateFrom, Date dateTo, NaturalPersonCategory category, NaturalPersonCategoryPeriod permis) {

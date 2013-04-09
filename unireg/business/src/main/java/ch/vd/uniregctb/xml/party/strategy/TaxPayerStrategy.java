@@ -10,6 +10,7 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
 import ch.vd.unireg.xml.party.taxpayer.v1.Taxpayer;
+import ch.vd.unireg.xml.party.taxresidence.v1.SimplifiedTaxLiability;
 import ch.vd.unireg.xml.party.taxresidence.v1.TaxationPeriod;
 import ch.vd.unireg.xml.party.v1.PartyPart;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
@@ -112,8 +113,16 @@ public abstract class TaxPayerStrategy<T extends Taxpayer> extends PartyStrategy
 					left.getTaxLiabilities().add(TaxLiabilityBuilder.newTaxLiability(a));
 				}
 				if (wantPeriodes) {
-					left.getSimplifiedTaxLiabilityVD().add(SimplifiedTaxLiabilityBuilder.toVD(a));
-					left.getSimplifiedTaxLiabilityCH().add(SimplifiedTaxLiabilityBuilder.toCH(a));
+					final SimplifiedTaxLiability vd = SimplifiedTaxLiabilityBuilder.toVD(a);
+					if (vd != null) {
+						left.getSimplifiedTaxLiabilityVD().add(vd);
+					}
+					final SimplifiedTaxLiability ch = SimplifiedTaxLiabilityBuilder.toCH(a);
+					if (ch != null) {
+						left.getSimplifiedTaxLiabilityCH().add(ch);
+					}
+//					left.getSimplifiedTaxLiabilityVD().add(SimplifiedTaxLiabilityBuilder.toVD(a));
+//					left.getSimplifiedTaxLiabilityCH().add(SimplifiedTaxLiabilityBuilder.toCH(a));
 				}
 			}
 		}
