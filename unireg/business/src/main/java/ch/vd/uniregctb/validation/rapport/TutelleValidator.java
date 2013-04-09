@@ -14,23 +14,16 @@ public class TutelleValidator extends RepresentationLegaleValidator<Tutelle> {
 	}
 
 	@Override
-	public ValidationResults validate(Tutelle ret) {
-
-		final ValidationResults vr = super.validate(ret);
-
-		if (!ret.isAnnule()) {
-			final Tiers objet = tiersDAO.get(ret.getObjetId());
-			if (objet == null) {
-				vr.addError("Le tuteur n'existe pas");
-			}
-			else if (objet instanceof PersonnePhysique || objet instanceof CollectiviteAdministrative) { // [SIFISC-719]
-				// ok
-			}
-			else {
-				vr.addError("Un tuteur ne peut être qu'une personne physique ou une collectivité administrative");
-			}
+	protected void verificationClasseObjet(ValidationResults vr, Tiers objet) {
+		super.verificationClasseObjet(vr, objet);
+		if (objet == null) {
+			vr.addError("Le tuteur n'existe pas");
 		}
-
-		return vr;
+		else if (objet instanceof PersonnePhysique || objet instanceof CollectiviteAdministrative) { // [SIFISC-719]
+			// ok
+		}
+		else {
+			vr.addError("Un tuteur ne peut être qu'une personne physique ou une collectivité administrative");
+		}
 	}
 }

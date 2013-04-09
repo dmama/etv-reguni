@@ -14,23 +14,16 @@ public class CuratelleValidator extends RepresentationLegaleValidator<Curatelle>
 	}
 
 	@Override
-	public ValidationResults validate(Curatelle ret) {
-
-		final ValidationResults vr = super.validate(ret);
-
-		if (!ret.isAnnule()) {
-			final Tiers objet = tiersDAO.get(ret.getObjetId());
-			if (objet == null) {
-				vr.addError("Le curateur n'existe pas");
-			}
-			else if (objet instanceof PersonnePhysique || objet instanceof CollectiviteAdministrative) { // [SIFISC-2483]
-				// ok
-			}
-			else {
-				vr.addError("Un curateur ne peut être qu'une personne physique ou une collectivité administrative");
-			}
+	protected void verificationClasseObjet(ValidationResults vr, Tiers objet) {
+		super.verificationClasseObjet(vr, objet);
+		if (objet == null) {
+			vr.addError("Le curateur n'existe pas");
 		}
-
-		return vr;
+		else if (objet instanceof PersonnePhysique || objet instanceof CollectiviteAdministrative) { // [SIFISC-2483]
+			// ok
+		}
+		else {
+			vr.addError("Un curateur ne peut être qu'une personne physique ou une collectivité administrative");
+		}
 	}
 }

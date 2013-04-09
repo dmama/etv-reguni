@@ -14,23 +14,16 @@ public class ConseilLegalValidator extends RepresentationLegaleValidator<Conseil
 	}
 
 	@Override
-	public ValidationResults validate(ConseilLegal ret) {
-
-		final ValidationResults vr = super.validate(ret);
-
-		if (!ret.isAnnule()) {
-			final Tiers objet = tiersDAO.get(ret.getObjetId());
-			if (objet == null) {
-				vr.addError("Le conseiller légal n'existe pas");
-			}
-			else if (objet instanceof PersonnePhysique || objet instanceof CollectiviteAdministrative) { // [SIFISC-2483]
-				// ok
-			}
-			else {
-				vr.addError("Un conseiller légal ne peut être qu'une personne physique ou une collectivité administrative");
-			}
+	protected void verificationClasseObjet(ValidationResults vr, Tiers objet) {
+		super.verificationClasseObjet(vr, objet);
+		if (objet == null) {
+			vr.addError("Le conseiller légal n'existe pas");
 		}
-
-		return vr;
+		else if (objet instanceof PersonnePhysique || objet instanceof CollectiviteAdministrative) { // [SIFISC-2483]
+			// ok
+		}
+		else {
+			vr.addError("Un conseiller légal ne peut être qu'une personne physique ou une collectivité administrative");
+		}
 	}
 }

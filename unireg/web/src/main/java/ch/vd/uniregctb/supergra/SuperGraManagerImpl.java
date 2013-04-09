@@ -259,9 +259,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 	 * @return la valeur retournée par le callback.
 	 */
 	private <T> T execute(final HibernateCallback<T> action) {
-
-		final String principal = AuthenticationHelper.getCurrentPrincipal();
-		AuthenticationHelper.pushPrincipal(String.format("%s-SuperGra", principal));
+		AuthenticationHelper.pushPrincipal(getSuperGraPrincipalName());
 		try {
 			final TransactionTemplate template = new TransactionTemplate(transactionManager);
 			return template.execute(new TransactionCallback<T>() {
@@ -664,11 +662,11 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 	@Override
 	public void transformPp2Mc(final long ppId, final RegDate dateDebut, @Nullable final RegDate dateFin, final long idPrincipal, @Nullable final Long idSecondaire) {
 
-		final String user = AuthenticationHelper.getCurrentPrincipal() + "-SuperGra";
-
 		execute(new HibernateCallback<Object>() {
 			@Override
 			public Object doInHibernate(Session session) throws HibernateException, SQLException {
+
+				final String user = AuthenticationHelper.getCurrentPrincipal();
 
 				// Transformation de la personne physique en ménage commun
 				final SQLQuery query0 = session.createSQLQuery("UPDATE TIERS SET TIERS_TYPE='MenageCommun', LOG_MDATE=CURRENT_DATE, LOG_MUSER=:muser, " +
@@ -708,15 +706,15 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 				query4.executeUpdate();
 
 				// Création des rapports entre tiers de type 'appartenance ménage'
-				addRapportAppartenanceMenage(ppId, idPrincipal, dateDebut, dateFin, session);
+				addRapportAppartenanceMenage(ppId, idPrincipal, dateDebut, dateFin, session, user);
 				if (idSecondaire != null) {
-					addRapportAppartenanceMenage(ppId, idSecondaire, dateDebut, dateFin, session);
+					addRapportAppartenanceMenage(ppId, idSecondaire, dateDebut, dateFin, session, user);
 				}
 
 				return null;
 			}
 
-			private void addRapportAppartenanceMenage(long menageId, Long ppId, RegDate dateDebut, RegDate dateFin, Session session) {
+			private void addRapportAppartenanceMenage(long menageId, Long ppId, RegDate dateDebut, RegDate dateFin, Session session, String user) {
 				final String sql =
 						"INSERT INTO RAPPORT_ENTRE_TIERS (RAPPORT_ENTRE_TIERS_TYPE, ID, LOG_CDATE, LOG_CUSER, LOG_MDATE, LOG_MUSER, DATE_DEBUT, DATE_FIN, TIERS_SUJET_ID, TIERS_OBJET_ID)" +
 								"VALUES ('AppartenanceMenage', " + dialect.getSelectSequenceNextValString("hibernate_sequence") + ", CURRENT_DATE, :muser, CURRENT_DATE, :muser, :dateDebut, :dateFin, :idPrincipal, :id)";
@@ -737,11 +735,11 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 	@Override
 	public void transformMc2Pp(final long mcId, final long indNo) {
 
-		final String user = AuthenticationHelper.getCurrentPrincipal() + "-SuperGra";
-
 		execute(new HibernateCallback<Object>() {
 			@Override
 			public Object doInHibernate(Session session) throws HibernateException, SQLException {
+
+				final String user = AuthenticationHelper.getCurrentPrincipal();
 
 				// Transformation du ménage commun en personne physique
 				final SQLQuery query0 = session.createSQLQuery("UPDATE TIERS SET TIERS_TYPE='PersonnePhysique', LOG_MDATE=CURRENT_DATE, LOG_MUSER=:muser, INDEX_DIRTY=" +
@@ -773,6 +771,10 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 
 		// on demande une réindexation du tiers modifié (+ réindexation implicite des tiers liés)
 		globalTiersIndexer.schedule(mcId);
+	}
+
+	private static String getSuperGraPrincipalName() {
+		return String.format("%s-SuperGra", AuthenticationHelper.getCurrentPrincipal());
 	}
 
 	/**

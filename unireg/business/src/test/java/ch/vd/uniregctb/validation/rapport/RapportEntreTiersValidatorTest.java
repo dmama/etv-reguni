@@ -7,7 +7,9 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.registre.base.validation.ValidationException;
+import ch.vd.uniregctb.tiers.AppartenanceMenage;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
+import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.Tutelle;
@@ -17,6 +19,7 @@ import ch.vd.uniregctb.validation.AbstractValidatorTest;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 
 @SuppressWarnings({"JavaDoc"})
@@ -72,11 +75,9 @@ public class RapportEntreTiersValidatorTest extends AbstractValidatorTest<Rappor
 	 * [SIFISC-719] Vérifie que l'infrastructure de validation des rapports-entre-tiers est bien en place.
 	 */
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testInfrastructureValidationRapports() throws Exception {
 
 		final long idMenage = 10851795;
-
 		try {
 			doInNewTransactionAndSession(new TransactionCallback<Object>() {
 				@Override
@@ -99,6 +100,28 @@ public class RapportEntreTiersValidatorTest extends AbstractValidatorTest<Rappor
 		catch (ValidationException e) {
 			assertEquals("MenageCommun #" + idMenage + " - 1 erreur(s) - 0 avertissement(s):\n" +
 					" [E] Une représentation légale ne peut s'appliquer que sur une personne physique\n", e.getMessage());
+		}
+	}
+
+	@Test
+	public void testRapportSurMemeTiers() throws Exception {
+		try {
+			doInNewTransactionAndSession(new TransactionCallback<Object>() {
+				@Override
+				public Object doInTransaction(TransactionStatus status) {
+					final MenageCommun mc = hibernateTemplate.merge(new MenageCommun());
+					final RapportEntreTiers ret = new AppartenanceMenage();
+					ret.setDateDebut(date(2000, 1, 1));
+					ret.setObjetId(mc.getNumero());
+					ret.setSujetId(mc.getNumero());
+					hibernateTemplate.merge(ret);
+					return null;
+				}
+			});
+			fail();
+		}
+		catch (ValidationException e) {
+			assertTrue(e.getMessage(), e.getMessage().contains("est présent aux deux extrêmités du rapport entre tiers"));
 		}
 	}
 }

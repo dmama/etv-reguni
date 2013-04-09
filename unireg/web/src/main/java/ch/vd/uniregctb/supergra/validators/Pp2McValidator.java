@@ -71,5 +71,16 @@ public class Pp2McValidator implements Validator {
 				errors.rejectValue("idSecondaire", "error.tiers.doit.etre.personne.physique");
 			}
 		}
+
+		// détection des doublons d'identifiants donnés
+		if (view.getIdPrincipal() != null && view.getIdPrincipal() == view.getId()) {
+			errors.rejectValue("idPrincipal", "error.tiers.identique.source");
+		}
+		if (view.getIdSecondaire() != null && view.getIdSecondaire() == view.getId()) {
+			errors.rejectValue("idSecondaire", "error.tiers.identique.source");
+		}
+		if (view.getIdSecondaire() != null && view.getIdSecondaire().equals(view.getIdPrincipal())) {
+			errors.rejectValue("idSecondaire", "error.tiers.identique.principal");
+		}
 	}
 }

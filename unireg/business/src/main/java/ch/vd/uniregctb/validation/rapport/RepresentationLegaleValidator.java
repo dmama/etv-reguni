@@ -1,34 +1,33 @@
 package ch.vd.uniregctb.validation.rapport;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RepresentationLegale;
 import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersDAO;
 
 public abstract class RepresentationLegaleValidator<T extends RepresentationLegale> extends RapportEntreTiersValidator<T> {
 
-	protected TiersDAO tiersDAO;
+	@Override
+	protected void verificationClasses(ValidationResults vr, T ret) {
+		super.verificationClasses(vr, ret);
+		final Tiers autorite = ret.getAutoriteTutelaireId() != null ? tiersDAO.get(ret.getAutoriteTutelaireId()) : null;
+		verificationClasseAutoriteTutelaire(vr, autorite);
+	}
 
-	public void setTiersDAO(TiersDAO tiersDAO) {
-		this.tiersDAO = tiersDAO;
+	protected void verificationClasseAutoriteTutelaire(ValidationResults vr, @Nullable Tiers autoriteTutelaire) {
+		// peut-être devrait-on tester quelque chose, ici, non ?
 	}
 
 	@Override
-	public ValidationResults validate(T ret) {
-
-		final ValidationResults vr = super.validate(ret);
-
-		if (!ret.isAnnule()) {
-			final Tiers sujet = tiersDAO.get(ret.getSujetId());
-			if (sujet == null) {
-				vr.addError("Le tiers sous représentation légale n'existe pas");
-			}
-			else if (!(sujet instanceof PersonnePhysique)) { // [SIFISC-719]
-				vr.addError("Une représentation légale ne peut s'appliquer que sur une personne physique");
-			}
+	protected void verificationClasseSujet(ValidationResults vr, Tiers sujet) {
+		super.verificationClasseSujet(vr, sujet);
+		if (sujet == null) {
+			vr.addError("Le tiers sous représentation légale n'existe pas");
 		}
-
-		return vr;
+		else if (!(sujet instanceof PersonnePhysique)) { // [SIFISC-719]
+			vr.addError("Une représentation légale ne peut s'appliquer que sur une personne physique");
+		}
 	}
 }

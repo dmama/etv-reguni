@@ -2,9 +2,9 @@ package ch.vd.uniregctb.validation.tiers;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -30,7 +30,7 @@ public class MenageCommunValidator extends ContribuableValidator<MenageCommun> {
 		// vérifie que le ménage commun ne comporte au plus que 2 personnes physiques distinctes
 		final Set<RapportEntreTiers> rapports = mc.getRapportsObjet();
 		if (rapports != null) {
-		    final Set<Long> idComposants = new HashSet<>(4);
+		    final Set<Long> idComposants = new TreeSet<>();
 		    for (RapportEntreTiers r : rapports) {
 		        if (!r.isAnnule() && TypeRapportEntreTiers.APPARTENANCE_MENAGE == r.getType()) {
 		            final Long id = r.getSujetId();
