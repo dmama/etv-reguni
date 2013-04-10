@@ -12,7 +12,7 @@ import ch.vd.uniregctb.dbutils.QueryFragment;
  */
 public class ParamPagination {
 
-	private static final Pattern FIELD_ALLOWED_CHARS = Pattern.compile("^[a-zA-Z0-9_]+$");
+	private static final Pattern FIELD_ALLOWED_CHARS = Pattern.compile("^[a-zA-Z0-9_.]+$");
 
 	private final ParamSorting sorting;
 
