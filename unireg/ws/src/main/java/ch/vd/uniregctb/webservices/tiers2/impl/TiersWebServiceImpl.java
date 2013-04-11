@@ -902,7 +902,7 @@ public class TiersWebServiceImpl implements TiersWebService {
 
 		// La déclaration est correcte, on la quittance
 		final String source = StringUtils.isBlank(demande.source) ? EtatDeclarationRetournee.SOURCE_CEDI : demande.source; // [SIFISC-1782] historiquement, seul le CEDI quittance par le web-service.
-		context.diService.quittancementDI(ctb, declaration, dateRetour, source);
+		context.diService.quittancementDI(ctb, declaration, dateRetour, source, true);
 		Assert.isEqual(TypeEtatDeclaration.RETOURNEE, declaration.getDernierEtat().getEtat());
 
 		return new ReponseQuittancementDeclaration(demande.key, CodeQuittancement.OK);

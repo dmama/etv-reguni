@@ -9,4 +9,7 @@
 		<property name="efactureEnabled" value="false" />
 	</bean>
 
+	<!-- empty in the NEXUS environment -->
+	<bean id="sourcesMonoQuittancementDi" class="ch.vd.uniregctb.common.TokenSetFactoryBean$StringSet"/>
+
 </beans>

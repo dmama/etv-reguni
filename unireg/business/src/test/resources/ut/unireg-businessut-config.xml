@@ -11,4 +11,6 @@
 		<property name="efactureEnabled" value="false" />
 	</bean>
 
+	<bean id="sourcesMonoQuittancementDi" class="ch.vd.uniregctb.common.TokenSetFactoryBean$StringSet"/>
+
 </beans>

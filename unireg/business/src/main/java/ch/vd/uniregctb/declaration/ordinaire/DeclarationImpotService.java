@@ -144,18 +144,20 @@ public interface DeclarationImpotService {
 	void echoirDI(DeclarationImpotOrdinaire declaration, RegDate dateTraitement);
 
 	/**
-	 * Quittance une déclaration d'impôt ordinaire. C'est-à-dire : ajoute un état 'retourné' sur la déclaration.
+	 * Quittance une déclaration d'impôt ordinaire. C'est-à-dire : ajoute un état 'retourné' sur la déclaration et envoi un événement fiscal.
 	 * <p/>
 	 * <b>Note:</b> plusieurs états 'retournés' non-annulés peuvent coexister en parallèle depuis la version 12R4 (voir SIFISC-5208). Lorsque plusieurs états 'retourné' existent, le dernier état
-	 * (= le plus récent) est utilisé. Finalement, la déclaration est considérée quittancée dès qu'un seul état 'retourné' existe.
+	 * (= le plus récent) est utilisé. Finalement, la déclaration est considérée quittancée dès qu'au moins un état 'retourné' existe.
+	 *
 	 *
 	 * @param contribuable  un contribuable
 	 * @param di            la déclaration qui doit être quittancée
 	 * @param dateEvenement la date de quittancement de la déclaration d'impôt
 	 * @param source        la source (= le nom de l'application) de quittancement
+	 * @param evtFiscal     <code>true</code> s'il faut envoyer un événement fiscal de quittancement de DI
 	 * @return la déclaration nouvellement quittancée
 	 */
-	DeclarationImpotOrdinaire quittancementDI(Contribuable contribuable, DeclarationImpotOrdinaire di, RegDate dateEvenement, String source);
+	DeclarationImpotOrdinaire quittancementDI(Contribuable contribuable, DeclarationImpotOrdinaire di, RegDate dateEvenement, String source, boolean evtFiscal);
 
 	/**
 	 * Annulation d'une DI

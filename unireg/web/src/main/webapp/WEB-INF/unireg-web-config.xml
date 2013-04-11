@@ -17,4 +17,8 @@
 		</property>
 	</bean>
 
+	<bean id="sourcesMonoQuittancementDi" class="ch.vd.uniregctb.common.TokenSetFactoryBean$StringSet">
+		<property name="elements" value="${extprop.sources.quittancement.di.annule.et.remplace}"/>
+	</bean>
+
 </beans>

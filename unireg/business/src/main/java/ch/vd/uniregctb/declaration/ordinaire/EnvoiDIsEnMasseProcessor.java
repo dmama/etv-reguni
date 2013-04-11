@@ -482,8 +482,7 @@ public class EnvoiDIsEnMasseProcessor {
 		ajouterDelaisDeRetourInitial(di, dateTraitement, dateExpedition);
 
 		// Les déclarations d'indigent sont marquées comme déjà retournées
-		final EtatDeclaration etatRetour = new EtatDeclarationRetournee(dateExpedition, EtatDeclarationRetournee.SOURCE_INDIGENT);
-		di.addEtat(etatRetour);
+		diService.quittancementDI(tache.getContribuable(), di, dateExpedition, EtatDeclarationRetournee.SOURCE_INDIGENT, false);
 
 		rapport.addCtbIndigent(tache.getContribuable().getNumero());
 		return true;

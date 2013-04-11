@@ -341,14 +341,8 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 			}
 		}
 
-		// [SIFISC-5208] Dorénavant, on stocke scrupuleusement tous les états de quittancement de type 'retournés', *sans* annuler les états précédents.
-		// if (di.getDateRetour() != null) {
-		// 	final EtatDeclaration etatRetournePrecedent = di.getDernierEtatOfType(TypeEtatDeclaration.RETOURNEE);
-		// 	etatRetournePrecedent.setAnnule(true);
-		// }
-		final EtatDeclaration etat = new EtatDeclarationRetournee(dateRetour, EtatDeclarationRetournee.SOURCE_WEB);
-		di.addEtat(etat);
-		evenementFiscalService.publierEvenementFiscalRetourDI((Contribuable) di.getTiers(), di, dateRetour);
+		// quittancement de la DI avec envoi d'événement fiscal
+		diService.quittancementDI((Contribuable) di.getTiers(), di, dateRetour, EtatDeclarationRetournee.SOURCE_WEB, true);
 
 		// Envoi du message de quittance au BAM
 		sendQuittancementToBam(di, dateRetour);
@@ -454,8 +448,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 				throw new ActionException("La date de retour d'une DI émise aujourd'hui ne peut pas être dans le passé");
 			}
 
-			final EtatDeclaration retour = new EtatDeclarationRetournee(dateRetour, EtatDeclarationRetournee.SOURCE_WEB);
-			di.addEtat(retour);
+			diService.quittancementDI(ctb, di, dateRetour, EtatDeclarationRetournee.SOURCE_WEB, false);
 		}
 
 		final DelaiDeclaration delai = new DelaiDeclaration();

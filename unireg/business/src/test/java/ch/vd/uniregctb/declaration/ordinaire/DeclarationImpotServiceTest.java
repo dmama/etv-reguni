@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.declaration.ordinaire;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -121,7 +122,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 
 		/*
 		 * création du service à la main de manière à pouvoir appeler les méthodes protégées (= en passant par Spring on se prend un proxy
-		 * et seul l'interface publique est accessible)
+		 * et seule l'interface publique est accessible)
 		 */
 		service = new DeclarationImpotServiceImpl(editiqueService, hibernateTemplate, periodeDAO, tacheDAO, modeleDAO, delaisService, infraService, tiersService, impressionDIHelper,
 				transactionManager, parametres, cacheWarmer, validationService, evenementFiscalService, evenementDeclarationSender, periodeImpositionService, assujettissementService);
@@ -428,7 +429,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				final RegDate dateEvenement = date(2007, 5, 12);
 				assertTrue(eric.getDeclarationsForPeriode(2006, false).size() == 1);
 				DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) eric.getDeclarationsForPeriode(2006, false).get(0);
-				assertNotNull(service.quittancementDI(eric, di, dateEvenement, "TEST"));
+				assertNotNull(service.quittancementDI(eric, di, dateEvenement, "TEST", false));
 				return null;
 			}
 		});
@@ -462,7 +463,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				final RegDate dateEvenement = date(2007, 8, 8);
 				assertTrue(eric.getDeclarationsForPeriode(2006, false).size() == 1);
 				DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) eric.getDeclarationsForPeriode(2006, false).get(0);
-				assertNotNull(service.quittancementDI(eric, di, dateEvenement, "TEST2"));
+				assertNotNull(service.quittancementDI(eric, di, dateEvenement, "TEST2", false));
 				return null;
 			}
 		});
@@ -1966,7 +1967,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId); // ordinaire
 				assertTrue(eric.getDeclarationsForPeriode(2006, false).size() == 1);
 				final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) eric.getDeclarationsForPeriode(2006, false).get(0);
-				assertNotNull(service.quittancementDI(eric, di, date(2007, 5, 12), "TEST0"));
+				assertNotNull(service.quittancementDI(eric, di, date(2007, 5, 12), "TEST0", true));
 				return null;
 			}
 		});
@@ -2008,7 +2009,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId); // ordinaire
 				assertTrue(eric.getDeclarationsForPeriode(2006, false).size() == 1);
 				final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) eric.getDeclarationsForPeriode(2006, false).get(0);
-				assertNotNull(service.quittancementDI(eric, di, date(2007, 10, 28), "TEST1"));
+				assertNotNull(service.quittancementDI(eric, di, date(2007, 10, 28), "TEST1", true));
 				return null;
 			}
 		});
@@ -2046,5 +2047,155 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				return null;
 			}
 		});
+	}
+
+	@Test
+	public void testMonoQuittancements() throws Exception {
+
+		class Ids {
+			public long ericId;
+		}
+		final Ids ids = new Ids();
+
+		// les quittancements avec cette source ne doivent pas être multiples
+		final String SOURCE = "FAR_FAR_AWAY";
+		service.setSourcesMonoQuittancement(new HashSet<>(Arrays.asList(SOURCE)));
+
+		// Création d'un contribuable ordinaire et de sa DI
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				PeriodeFiscale periode2006 = addPeriodeFiscale(2006);
+				ModeleDocument declarationComplete2006 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2006);
+				addModeleFeuilleDocument("Déclaration", "210", declarationComplete2006);
+				addModeleFeuilleDocument("Annexe 1", "220", declarationComplete2006);
+				addModeleFeuilleDocument("Annexe 2-3", "230", declarationComplete2006);
+				addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete2006);
+
+				PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
+				ModeleDocument declarationComplete2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
+				addModeleFeuilleDocument("Déclaration", "210", declarationComplete2007);
+				addModeleFeuilleDocument("Annexe 1", "220", declarationComplete2007);
+				addModeleFeuilleDocument("Annexe 2-3", "230", declarationComplete2007);
+				addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete2007);
+
+				// Un tiers tout ce quil y a de plus ordinaire
+				Contribuable eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+				ids.ericId = eric.getNumero();
+				addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
+				addDeclarationImpot(eric, periode2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
+				                    declarationComplete2006);
+
+				return null;
+			}
+		});
+
+		// 1er quittance de la declaration
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId);
+				assertTrue(eric.getDeclarationsForPeriode(2006, false).size() == 1);
+				final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) eric.getDeclarationsForPeriode(2006, false).get(0);
+				assertNotNull(service.quittancementDI(eric, di, date(2007, 5, 12), SOURCE, true));
+				return null;
+			}
+		});
+
+		// On s'assure que l'état retourné est bien enregistré
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId);
+				assertTrue(eric.getDeclarationsForPeriode(2006, false).size() == 1);
+
+				final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) eric.getDeclarationsForPeriode(2006, false).get(0);
+				assertNotNull(di);
+				assertEquals(date(2007, 5, 12), di.getDateRetour());
+
+				final Set<EtatDeclaration> etats = di.getEtats();
+				assertNotNull(etats);
+				assertEquals(1, etats.size());
+
+				final Iterator<EtatDeclaration> iterator = etats.iterator();
+
+				final EtatDeclarationRetournee etat0 = (EtatDeclarationRetournee) iterator.next();
+				assertEquals(TypeEtatDeclaration.RETOURNEE, etat0.getEtat());
+				assertEquals(date(2007, 5, 12), etat0.getDateObtention());
+				assertEquals(SOURCE, etat0.getSource());
+				assertFalse(etat0.isAnnule());
+
+				// l'état retourné est le dernier, comme il se doit
+				assertSame(etat0, di.getDernierEtat());
+				assertSame(etat0, di.getDernierEtatOfType(TypeEtatDeclaration.RETOURNEE));
+				return null;
+			}
+		});
+
+		// 2ème quittance de la declaration, source différence
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId);
+				assertTrue(eric.getDeclarationsForPeriode(2006, false).size() == 1);
+				final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) eric.getDeclarationsForPeriode(2006, false).get(0);
+				assertNotNull(service.quittancementDI(eric, di, date(2007, 10, 25), "TEST", true));
+				return null;
+			}
+		});
+
+		// 2ème quittance de la declaration, source initiale qui ne supporte pas le multi-quittancement
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId);
+				assertTrue(eric.getDeclarationsForPeriode(2006, false).size() == 1);
+				final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) eric.getDeclarationsForPeriode(2006, false).get(0);
+				assertNotNull(service.quittancementDI(eric, di, date(2007, 10, 28), SOURCE, true));
+				return null;
+			}
+		});
+
+		// on s'assure maintenant que premier quittancement de la source est bien annulé au profit du second, mais que les quittancements de sources annexes n'ont pas été touchés
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId);
+				assertTrue(eric.getDeclarationsForPeriode(2006, false).size() == 1);
+
+				final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) eric.getDeclarationsForPeriode(2006, false).get(0);
+				assertNotNull(di);
+				assertEquals(date(2007, 10, 28), di.getDateRetour());
+
+				final List<EtatDeclaration> etats = di.getEtatsSorted();
+				assertNotNull(etats);
+				assertEquals(3, etats.size());
+
+				final EtatDeclarationRetournee etat0 = (EtatDeclarationRetournee) etats.get(0);
+				assertEquals(TypeEtatDeclaration.RETOURNEE, etat0.getEtat());
+				assertEquals(date(2007, 5, 12), etat0.getDateObtention());
+				assertEquals(SOURCE, etat0.getSource());
+				assertTrue(etat0.isAnnule());
+
+				final EtatDeclarationRetournee etat1 = (EtatDeclarationRetournee) etats.get(1);
+				assertEquals(TypeEtatDeclaration.RETOURNEE, etat1.getEtat());
+				assertEquals(date(2007, 10, 25), etat1.getDateObtention());
+				assertEquals("TEST", etat1.getSource());
+				assertFalse(etat1.isAnnule());
+
+				final EtatDeclarationRetournee etat2 = (EtatDeclarationRetournee) etats.get(2);
+				assertEquals(TypeEtatDeclaration.RETOURNEE, etat2.getEtat());
+				assertEquals(date(2007, 10, 28), etat2.getDateObtention());
+				assertEquals(SOURCE, etat2.getSource());
+				assertFalse(etat2.isAnnule());
+
+				// le nouvel état retourné doit être le dernier
+				assertSame(etat2, di.getDernierEtat());
+				assertSame(etat2, di.getDernierEtatOfType(TypeEtatDeclaration.RETOURNEE));
+				return null;
+			}
+		});
+
 	}
 }

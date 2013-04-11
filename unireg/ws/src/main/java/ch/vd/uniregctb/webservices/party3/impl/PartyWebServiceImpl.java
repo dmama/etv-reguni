@@ -855,7 +855,7 @@ public class PartyWebServiceImpl implements PartyWebService {
 		sendQuittancementToBam(declaration, dateRetour);
 
 		// La déclaration est correcte, on la quittance
-		context.diService.quittancementDI(ctb, declaration, dateRetour, demande.getSource());
+		context.diService.quittancementDI(ctb, declaration, dateRetour, demande.getSource(), true);
 		Assert.isEqual(TypeEtatDeclaration.RETOURNEE, declaration.getDernierEtat().getEtat());
 
 		return AcknowledgeTaxDeclarationBuilder.newAcknowledgeTaxDeclarationResponse(demande.getKey(), TaxDeclarationAcknowledgeCode.OK);

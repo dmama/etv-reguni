@@ -144,6 +144,7 @@
 		<property name="impressionConfirmationDelaiHelper" ref="impressionConfirmationDelaiHelper" />
 		<property name="assujettissementService" ref="assujettissementService" />
 		<property name="periodeImpositionService" ref="periodeImpositionService" />
+		<property name="sourcesMonoQuittancement" ref="sourcesMonoQuittancementDi"/>
 	</bean>
 
 	<bean id="statsService" class="ch.vd.uniregctb.stats.StatsServiceImpl" />

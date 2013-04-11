@@ -97,7 +97,7 @@ public class EvenementDeclarationServiceImpl implements EvenementDeclarationServ
 	private void quittancerDeclarations(Contribuable ctb, List<Declaration> declarations, QuittancementDI quittance, String source) {
 		for (Declaration declaration : declarations) {
 			if (!declaration.isAnnule()) {
-				diService.quittancementDI(ctb, (DeclarationImpotOrdinaire) declaration, quittance.getDate(), source);
+				diService.quittancementDI(ctb, (DeclarationImpotOrdinaire) declaration, quittance.getDate(), source, true);
 			}
 		}
 	}
