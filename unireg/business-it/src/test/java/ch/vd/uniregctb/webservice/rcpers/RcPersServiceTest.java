@@ -14,6 +14,7 @@ import ch.vd.evd0006.v1.Event;
 import ch.vd.unireg.interfaces.civil.data.IndividuRCPers;
 import ch.vd.unireg.wsclient.rcpers.RcPersClientImpl;
 import ch.vd.uniregctb.utils.UniregProperties;
+import ch.vd.uniregctb.utils.UniregPropertiesImpl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -24,9 +25,10 @@ public class RcPersServiceTest {
 
 	public RcPersServiceTest() {
 		try {
-			uniregProperties = new UniregProperties();
-			uniregProperties.setFilename("../base/unireg-ut.properties");
-			uniregProperties.afterPropertiesSet();
+			final UniregPropertiesImpl impl = new UniregPropertiesImpl();
+			impl.setFilename("../base/unireg-ut.properties");
+			impl.afterPropertiesSet();
+			uniregProperties = impl;
 		}
 		catch (Exception e) {
 			throw new RuntimeException(e);

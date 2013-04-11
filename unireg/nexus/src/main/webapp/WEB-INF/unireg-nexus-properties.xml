@@ -22,7 +22,7 @@
 	</bean>
 
 	<!-- Ce bean offre la possibilité d'accéder directement aux propriétés externes depuis le code java -->	
-	<bean id="uniregExternalProperties" class="ch.vd.uniregctb.utils.UniregProperties">
+	<bean id="uniregExternalProperties" class="ch.vd.uniregctb.utils.UniregPropertiesImpl">
 		<property name ="filename" value="${unireg-nexus.properties.path}" />
 	</bean>
 

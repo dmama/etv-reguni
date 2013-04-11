@@ -17,6 +17,7 @@ import org.springframework.util.Log4jConfigurer;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.jms.EsbMessageEndpointManager;
 import ch.vd.uniregctb.utils.UniregProperties;
+import ch.vd.uniregctb.utils.UniregPropertiesImpl;
 
 /**
  * @author Manuel Siggen <manuel.siggen@vd.ch>
@@ -34,10 +35,10 @@ public abstract class EvenementHelper {
 
 	public static UniregProperties initProps() {
 		try {
-			final UniregProperties uniregProperties = new UniregProperties();
-			uniregProperties.setFilename("../base/unireg-ut.properties");
-			uniregProperties.afterPropertiesSet();
-			return uniregProperties;
+			final UniregPropertiesImpl impl = new UniregPropertiesImpl();
+			impl.setFilename("../base/unireg-ut.properties");
+			impl.afterPropertiesSet();
+			return impl;
 		}
 		catch (Exception e) {
 			throw new RuntimeException(e);

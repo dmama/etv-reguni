@@ -6,6 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.test.context.ContextConfiguration;
 
 import ch.vd.uniregctb.utils.UniregProperties;
+import ch.vd.uniregctb.utils.UniregPropertiesImpl;
 
 @ContextConfiguration(locations = {
 		BusinessItTestingConstants.UNIREG_BUSINESSIT_INTERFACES,
@@ -34,9 +35,10 @@ public abstract class BusinessItTest extends AbstractBusinessTest {
 
 	private void initProps() {
 		try {
-			uniregProperties = new UniregProperties();
-			uniregProperties.setFilename("../base/unireg-ut.properties");
-			uniregProperties.afterPropertiesSet();
+			final UniregPropertiesImpl impl = new UniregPropertiesImpl();
+			impl.setFilename("../base/unireg-ut.properties");
+			impl.afterPropertiesSet();
+			uniregProperties = impl;
 		}
 		catch (Exception e) {
 			throw new RuntimeException(e);

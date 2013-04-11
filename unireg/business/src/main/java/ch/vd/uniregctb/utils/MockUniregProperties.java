@@ -2,7 +2,7 @@ package ch.vd.uniregctb.utils;
 
 import org.apache.commons.configuration.PropertiesConfiguration;
 
-public class MockUniregProperties extends UniregProperties {
+public class MockUniregProperties extends UniregPropertiesImpl {
 
 	private final PropertiesConfiguration props = new PropertiesConfiguration();
 
