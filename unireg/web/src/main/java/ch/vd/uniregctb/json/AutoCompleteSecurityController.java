@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.securite.model.Operateur;
+import ch.vd.uniregctb.common.EncodingFixHelper;
 import ch.vd.uniregctb.common.StringComparator;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
 
@@ -90,8 +91,7 @@ public class AutoCompleteSecurityController {
 		final Set<Category> categories = parseCategories(category);
 
 		// les urls sont envoyées en UTF-8 par jQuery mais interprétées en ISO-8859-1 par Tomcat
-		final byte[] bytes = term.getBytes("ISO-8859-1");
-		term = new String(bytes, "UTF-8");
+		term = EncodingFixHelper.fixFromIso(term);
 
 		// on ignore les accents
 		term = StringComparator.toLowerCaseWithoutAccent(term);

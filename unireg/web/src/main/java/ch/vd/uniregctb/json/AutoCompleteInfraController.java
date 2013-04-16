@@ -23,6 +23,7 @@ import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.Localite;
 import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
 import ch.vd.unireg.interfaces.infra.data.Rue;
+import ch.vd.uniregctb.common.EncodingFixHelper;
 import ch.vd.uniregctb.common.StringComparator;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 
@@ -106,8 +107,7 @@ public class AutoCompleteInfraController {
 		final Set<InfraCategory> categories = parseCategories(category);
 
 		// les urls sont envoyées en UTF-8 par jQuery mais interprétées en ISO-8859-1 par Tomcat
-		final byte[] bytes = term.getBytes("ISO-8859-1");
-		term = new String(bytes, "UTF-8");
+		term = EncodingFixHelper.fixFromIso(term);
 
 		// on ignore les accents
 		term = StringComparator.toLowerCaseWithoutAccent(term);

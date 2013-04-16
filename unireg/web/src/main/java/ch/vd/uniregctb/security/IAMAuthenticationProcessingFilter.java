@@ -6,7 +6,6 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -21,6 +20,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.filter.GenericFilterBean;
 
 import ch.vd.registre.web.filter.IAMUtil;
+import ch.vd.uniregctb.common.EncodingFixHelper;
 
 /**
  * Ce filtre permet de récupérer les informations d'autentification renseignées par IAM : le visa, prénom/nom et les rôles. Il vérifie ensuite que l'utilisateur possède bien un des rôles nécessaires
@@ -137,16 +137,7 @@ public class IAMAuthenticationProcessingFilter extends GenericFilterBean {
 	 * @return la même string décodée en UTF-8.
 	 */
 	private static String decodeHeaderString(String string) {
-		if (string != null) {
-			try {
-				final byte[] bytes = string.getBytes("ISO-8859-1");
-				string = new String(bytes, "UTF-8");
-			}
-			catch (UnsupportedEncodingException e) {
-				throw new RuntimeException(e);
-			}
-		}
-		return string;
+		return EncodingFixHelper.fixFromIso(string);
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})

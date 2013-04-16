@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import ch.vd.registre.base.date.DateHelper;
+import ch.vd.uniregctb.common.EncodingFixHelper;
 import ch.vd.uniregctb.scheduler.BatchScheduler;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
@@ -89,7 +90,7 @@ public class BatchController {
 			return null;
 		}
 		catch (Exception e) {
-			return e.getMessage();
+			return EncodingFixHelper.breakToIso(e.getMessage());
 		}
 	}
 
@@ -148,7 +149,7 @@ public class BatchController {
 			return null;
 		}
 		catch (Exception e) {
-			return e.getMessage();
+			return EncodingFixHelper.breakToIso(e.getMessage());
 		}
 	}
 }

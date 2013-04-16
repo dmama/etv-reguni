@@ -1,10 +1,10 @@
 package ch.vd.uniregctb.security;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 import org.springframework.beans.factory.InitializingBean;
 
+import ch.vd.uniregctb.common.EncodingFixHelper;
 import ch.vd.uniregctb.utils.UniregProperties;
 
 /**
@@ -125,16 +125,8 @@ public class SecurityDebugConfig implements InitializingBean {
 			return "";
 		}
 
-		// les fichiers de propriétés sont toujours lus en ISO-8859-1 
-		try {
-			final byte[] bytes = value.getBytes("ISO-8859-1");
-			value = new String(bytes, "UTF-8");
-		}
-		catch (UnsupportedEncodingException e) {
-			throw new RuntimeException(e);
-		}
-
-		return value;
+		// les fichiers de propriétés sont toujours lus en ISO-8859-1
+		return EncodingFixHelper.fixFromIso(value);
 	}
 
 	private boolean getBooleanProp(String key) {
