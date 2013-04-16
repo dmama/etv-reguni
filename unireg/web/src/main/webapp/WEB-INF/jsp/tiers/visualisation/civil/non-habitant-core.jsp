@@ -127,7 +127,7 @@
 	</tr>
 
 	<tr class="<unireg:nextRowClass/>" >
-	<td width="50%"><fmt:message key="label.pays.origine"/>&nbsp;:</td>
+	<td width="50%"><fmt:message key="label.nationalite"/>&nbsp;:</td>
 		<td>
 			<!-- (msi/fde) on a pas trouvé mieux... -->
 			<c:choose>
