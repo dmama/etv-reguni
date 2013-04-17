@@ -9,6 +9,7 @@
 	</c:when>
 	<c:when test="${messageTraite}">
 		<c:set var="myAction" value="listTraite.do" />
+		<c:set var="mySource" value="traite" />
 		<c:set var="titrePage" value="title.messages.archive" />
 	</c:when>
     <c:when test="${messageSuspendu}">
@@ -29,7 +30,9 @@
 			<fieldset>
 				<legend><span><fmt:message key="label.criteres.recherche.messages"/></span></legend>
 				<form:errors cssClass="error"/>
-				<jsp:include page="form.jsp" />
+				<jsp:include page="form.jsp" >
+					<jsp:param name="source" value="${mySource}" />
+				</jsp:include>
 			</fieldset>
 			
 			<div id="desynchro" style="display:none;">

@@ -122,6 +122,13 @@ public class IdentificationController {
 		return buildReponseForMessageTraite(request, model, criteria);
 	}
 
+	@RequestMapping(value = "/gestion-messages/effacerSuspendu.do")
+	protected ModelAndView effacerFormulaireDeRechercheSuspendu(HttpServletRequest request,ModelMap model) throws Exception {
+		IdentificationContribuableListCriteria criteria = identificationMessagesListManager.getView(null,null,null);
+		removeFromSession(request,CRITERIA_EN_COURS_NAME);
+		return buildReponseForMessageSuspendu(request, criteria, model);
+	}
+
 	@RequestMapping(value = {"/tableau-bord/stats.do"}, method = RequestMethod.GET)
 	@SecurityCheck(rolesToCheck = {Role.MW_IDENT_CTB_ADMIN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	protected String getStats(HttpServletRequest request,
@@ -201,7 +208,7 @@ public class IdentificationController {
 			return buildResponseForMessageEnCours(request, criteria, model);
 		}
 		else if (source == Source.suspendu) {
-			return buildResponseForMessageSuspendu(request,criteria,model);
+			return buildReponseForMessageSuspendu(request, criteria, model);
 		}
 
 		throw new IllegalArgumentException("Invalid value for source parameter");
@@ -247,8 +254,8 @@ public class IdentificationController {
 	                                     @RequestParam(value = "keepCriteria", required = false) String keepCriteria,
 	                                     ModelMap model) throws AdressesResolutionException {
 
-		criteria = manageCriteria(request, criteria, "identificationCriteriaEnCours", keepCriteria);
-		return buildResponseForMessageSuspendu(request, criteria, model);
+		criteria = manageCriteria(request, criteria, CRITERIA_EN_COURS_NAME, keepCriteria);
+		return buildReponseForMessageSuspendu(request, criteria, model);
 	}
 
 
@@ -272,7 +279,7 @@ public class IdentificationController {
 		IdentificationContribuableListCriteria criteria = identificationMessagesListManager.getView(typeMessage, periode, etat);
 		model.put("identificationCriteria", criteria);
 		construireModelMessageEnCours(request, model, criteria);
-		criteria = manageCriteria(request, criteria, "identificationCriteriaEnCours", null);
+		criteria = manageCriteria(request, criteria, CRITERIA_EN_COURS_NAME, null);
 		return new ModelAndView("identification/gestion-messages/list", model);
 	}
 
@@ -370,7 +377,7 @@ public class IdentificationController {
 	 * @return
 	 * @throws AdressesResolutionException
 	 */
-	private ModelAndView buildResponseForMessageSuspendu(HttpServletRequest request, IdentificationContribuableListCriteria criteria, ModelMap model) throws AdressesResolutionException {
+	private ModelAndView buildReponseForMessageSuspendu(HttpServletRequest request, IdentificationContribuableListCriteria criteria, ModelMap model) throws AdressesResolutionException {
 		setUpModelForListMessageSuspendu(model);
 		model.put("identificationCriteria", criteria);
 		// Récupération de la pagination

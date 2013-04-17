@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
+<c:set var="mySource" value="${param.source}"/>
 <table>
 	<tr class="<unireg:nextRowClass/>" >
 		<td width="25%">
@@ -190,7 +191,7 @@
 			<div class="navigation-action"><input type="submit" value="<fmt:message key="label.bouton.rechercher"/>" name="rechercher"/></div>
 		</td>
 		<td width="25%">
-            <div class="navigation-action"><input type="button" value="<fmt:message key="label.bouton.effacer"/>" name="effacer" onClick="javascript:IdentificationCtb.effacerFormulaire(${messageEnCours});"/></div>
+            <div class="navigation-action"><input type="button" value="<fmt:message key="label.bouton.effacer"/>" name="effacer" onClick="javascript:IdentificationCtb.effacerFormulaire('${mySource}');"/></div>
 		</td>
 		<td width="25%">&nbsp;</td>
 	</tr>

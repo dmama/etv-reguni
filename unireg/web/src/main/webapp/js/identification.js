@@ -84,13 +84,16 @@ var IdentificationCtb = {
         }
     },
 
-    effacerFormulaire:function (messageEnCours) {
+    effacerFormulaire:function (mySource) {
         var form = $("#formRechercheMessage");
-        if(messageEnCours){
+        if(mySource == 'enCours'){
             form.attr('action', 'effacerEnCours.do');
         }
-        else{
+        else if(mySource == 'traite'){
             form.attr('action', 'effacerTraite.do');
+        }
+        else if(mySource == 'suspendu'){
+            form.attr('action', 'effacerSuspendu.do');
         }
 
         form.submit();
