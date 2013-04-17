@@ -62,6 +62,8 @@ public class IdentificationController {
 	private static final String ACCESS_DENIED_ACTION_MESSAGE = "Vous ne possédez aucun droit IfoSec procéder à cette action sur un message d'identification de contribuable";
 	private static final String ACCESS_DENIED_UNLOCK_MESSAGE = "Vous ne possédez aucun droit IfoSec pour déverouiller un message d'identification de contribuable";
 	private static final String ACCESS_DENIED_VISU_MESSAGE = "Vous ne possédez aucun droit IfoSec pour visualiser les messages d'identification de contribuable";
+	private static final String CRITERIA_EN_COURS_NAME = "identificationCriteriaEnCours";
+	private static final String CRITERIA_TRAITE_NAME = "identificationCriteriaTraite";
 	private IdentificationMessagesStatsManager identificationMessagesStatsManager;
 	private IdentificationMapHelper identificationMapHelper;
 	private IdentificationMessagesEditManager identificationMessagesEditManager;
@@ -109,12 +111,14 @@ public class IdentificationController {
 	@RequestMapping(value = "/gestion-messages/effacerEnCours.do")
 	protected ModelAndView effacerFormulaireDeRechercheEnCours(HttpServletRequest request,ModelMap model) throws Exception {
 		IdentificationContribuableListCriteria criteria = identificationMessagesListManager.getView(null,null,null);
+		removeFromSession(request,CRITERIA_EN_COURS_NAME);
 		return buildResponseForMessageEnCours(request, criteria, model);
 	}
 
 	@RequestMapping(value = "/gestion-messages/effacerTraite.do")
 	protected ModelAndView effacerFormulaireDeRechercheTraite(HttpServletRequest request,ModelMap model) throws Exception {
 		IdentificationContribuableListCriteria criteria = identificationMessagesListManager.getView(null,null,null);
+		removeFromSession(request,CRITERIA_TRAITE_NAME);
 		return buildReponseForMessageTraite(request, model, criteria);
 	}
 
@@ -213,7 +217,7 @@ public class IdentificationController {
 	                              @RequestParam(value = "keepCriteria", required = false) String keepCriteria,
 	                              ModelMap model) throws AdressesResolutionException {
 
-		criteria = manageCriteria(request, criteria, "identificationCriteriaEnCours", keepCriteria);
+		criteria = manageCriteria(request, criteria, CRITERIA_EN_COURS_NAME, keepCriteria);
 		return buildResponseForMessageEnCours(request, criteria, model);
 	}
 
@@ -298,7 +302,7 @@ public class IdentificationController {
 	                              @RequestParam(value = "keepCriteria", required = false) String keepCriteria,
 	                              ModelMap model) throws AdressesResolutionException {
 
-		criteria = manageCriteria(request, criteria, "identificationCriteriaTraite", keepCriteria);
+		criteria = manageCriteria(request, criteria, CRITERIA_TRAITE_NAME, keepCriteria);
 		return buildReponseForMessageTraite(request, model, criteria);
 	}
 
@@ -317,7 +321,7 @@ public class IdentificationController {
 		IdentificationContribuableListCriteria criteria = identificationMessagesListManager.getView(typeMessage, periode, etat);
 		model.put("identificationCriteria", criteria);
 		construireModelMessageTraite(request, model, criteria);
-		criteria = manageCriteria(request, criteria, "identificationCriteriaTraite", null);
+		criteria = manageCriteria(request, criteria, CRITERIA_TRAITE_NAME, null);
 		return new ModelAndView("identification/gestion-messages/list", model);
 	}
 
@@ -595,5 +599,9 @@ public class IdentificationController {
 				mav.setView(new RedirectView("listSuspendu.do?keepCriteria=true"));
 				break;
 		}
+	}
+
+	private void removeFromSession(HttpServletRequest request,String moduleName){
+		request.getSession().removeAttribute(moduleName);
 	}
 }
