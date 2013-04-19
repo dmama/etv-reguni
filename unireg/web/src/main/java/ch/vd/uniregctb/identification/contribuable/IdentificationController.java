@@ -247,7 +247,7 @@ public class IdentificationController {
 	}
 
 	@RequestMapping(value = {"/gestion-messages/listSuspendu.do"}, method = {RequestMethod.POST, RequestMethod.GET})
-	@SecurityCheck(rolesToCheck = {Role.MW_IDENT_CTB_VISU, Role.MW_IDENT_CTB_ADMIN}, accessDeniedMessage = ACCESS_DENIED_VISU_MESSAGE)
+	@SecurityCheck(rolesToCheck = {Role.MW_IDENT_CTB_GEST_BO, Role.MW_IDENT_CTB_ADMIN}, accessDeniedMessage = ACCESS_DENIED_VISU_MESSAGE)
 	protected ModelAndView listerSuspendu(HttpServletRequest request,
 	                                     @ModelAttribute("identificationCriteria") IdentificationContribuableListCriteria criteria,
 	                                     BindingResult bindingResult,
@@ -284,7 +284,7 @@ public class IdentificationController {
 	}
 
 	@RequestMapping(value = {"/gestion-messages/listSuspenduFromStats.do"}, method = {RequestMethod.POST, RequestMethod.GET})
-	@SecurityCheck(rolesToCheck = {Role.MW_IDENT_CTB_VISU, Role.MW_IDENT_CTB_ADMIN}, accessDeniedMessage = ACCESS_DENIED_VISU_MESSAGE)
+	@SecurityCheck(rolesToCheck = {Role.MW_IDENT_CTB_CELLULE_BO, Role.MW_IDENT_CTB_ADMIN}, accessDeniedMessage = ACCESS_DENIED_VISU_MESSAGE)
 	protected ModelAndView listerSuspenduFromStats(HttpServletRequest request,
 	                                              @RequestParam(value = "etat", required = true) String etat,
 	                                              @RequestParam(value = "periode", required = true) String periode,
@@ -394,7 +394,8 @@ public class IdentificationController {
 		if (SecurityHelper.isGranted(securityProvider, Role.MW_IDENT_CTB_ADMIN)) {
 			listIdentifications = identificationMessagesListManager.find(criteria, pagination, IdentificationContribuableEtatFilter.SEULEMENT_NON_TRAITES_ET_EN_EXEPTION);
 			nombreElements = identificationMessagesListManager.count(criteria, IdentificationContribuableEtatFilter.SEULEMENT_NON_TRAITES_ET_EN_EXEPTION);
-		}else if (SecurityHelper.isAnyGranted(securityProvider, Role.MW_IDENT_CTB_VISU,Role.MW_IDENT_CTB_GEST_BO)) {
+		}
+		else if (SecurityHelper.isAnyGranted(securityProvider, Role.MW_IDENT_CTB_VISU,Role.MW_IDENT_CTB_GEST_BO)) {
 			listIdentifications = identificationMessagesListManager.find(criteria, pagination, IdentificationContribuableEtatFilter.SEULEMENT_NON_TRAITES);
 			nombreElements = identificationMessagesListManager.count(criteria, IdentificationContribuableEtatFilter.SEULEMENT_NON_TRAITES);
 		}
@@ -420,7 +421,6 @@ public class IdentificationController {
 		listIdentifications = identificationMessagesListManager.find(criteria, pagination, IdentificationContribuableEtatFilter.SEULEMENT_SUSPENDUS);
 		nombreElements = identificationMessagesListManager.count(criteria, IdentificationContribuableEtatFilter.SEULEMENT_SUSPENDUS);
 
-
 		model.put("identifications", listIdentifications);
 		model.put("identificationsSize", nombreElements);
 		model.put("messageEnCours", false);
@@ -435,11 +435,9 @@ public class IdentificationController {
 		final List<IdentificationMessagesResultView> listIdentifications;
 		int nombreElements;
 
-
 		final TypeDemande types[] = getAllowedTypes();
 		listIdentifications = identificationMessagesListManager.find(criteria, pagination, IdentificationContribuableEtatFilter.SEULEMENT_TRAITES, types);
 		nombreElements = identificationMessagesListManager.count(criteria, IdentificationContribuableEtatFilter.SEULEMENT_TRAITES, types);
-
 
 		model.put("identifications", listIdentifications);
 		model.put("identificationsSize", nombreElements);
