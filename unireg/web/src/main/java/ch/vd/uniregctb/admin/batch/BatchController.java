@@ -54,8 +54,8 @@ public class BatchController {
 
 		final Collection<JobDefinition> jobs = batchScheduler.getJobs().values();
 		for (JobDefinition job : jobs) {
-			final Date lastStart = job.getLastStart();
-			if (job.isRunning() || (lastStart != null && limit.before(lastStart))) {
+			final Date lastEnd = job.getLastEnd();
+			if (job.isRunning() || (lastEnd != null && limit.before(lastEnd))) {
 				list.add(new BatchView(job));
 			}
 		}
