@@ -13,6 +13,7 @@ import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.registre.base.date.CollatableDateRange;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
@@ -1345,7 +1346,7 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 	/**
 	 * Représente les données brutes d'une période d'assujettissement
 	 */
-	private static class Data implements DateRange {
+	private static class Data implements CollatableDateRange {
 
 		RegDate debut;
 		RegDate fin;
@@ -1409,6 +1410,18 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 		@Override
 		public RegDate getDateFin() {
 			return fin;
+		}
+
+		@Override
+		public boolean isCollatable(DateRange next) {
+			final Data nextData = (Data) next;
+			return fin == nextData.debut.getOneDayBefore() && motifFin == nextData.motifDebut && type == nextData.type && typeAut == nextData.typeAut;
+		}
+
+		@Override
+		public DateRange collate(DateRange next) {
+			final Data nextData = (Data) next;
+			return new Data(debut, nextData.fin, motifDebut, nextData.motifFin, type, typeAut);
 		}
 
 		/**
@@ -1963,7 +1976,7 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 		 * @return la liste fusionnée des non-assujettissments
 		 */
 		private List<Data> fusionnerNonAssujettissements(List<Data> list, final boolean forRolesCommunes) {
-			return DateRangeHelper.merge(list, DateRangeHelper.MergeMode.INTERSECTING, new DateRangeHelper.MergeCallback<Data>() {
+			final List<Data> merged = DateRangeHelper.merge(list, DateRangeHelper.MergeMode.INTERSECTING, new DateRangeHelper.MergeCallback<Data>() {
 				@Override
 				public Data merge(Data left, Data right) {
 					final RegDate debut = RegDateHelper.minimum(left.getDateDebut(), right.getDateDebut(), NullDateBehavior.EARLIEST);
@@ -1977,6 +1990,7 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 					return new Data(range);
 				}
 			});
+			return DateRangeHelper.collate(merged);
 		}
 
 		private static TypeAutoriteFiscale fusionnerTypeAutPourNonAssujettissements(Data left, Data right, boolean forRolesCommunes) {

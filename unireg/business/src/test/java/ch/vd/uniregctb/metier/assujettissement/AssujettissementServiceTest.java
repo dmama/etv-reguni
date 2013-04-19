@@ -4046,6 +4046,24 @@ public class AssujettissementServiceTest extends MetierTest {
 		                  MotifFor.ARRIVEE_HS, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(2));
 	}
 
+	@WebScreenshot(urls = "/fiscalite/unireg/web/fors/timeline.do?id=10763698&print=true&title=${methodName}&description=${docDescription}")
+	@WebScreenshotDoc(
+			description = "Cas du contribuable n°107.636.98 : on vérifie que malgré un for principal qui change au 31.12 de l'année de vente de son dernier immeuble, le contribuable HC " +
+				"a toujours sa DI remplacée par une note l'année de la vente.")
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testDetermineHcVenteDernierImmeublePuisDemenagementFinAnnee() throws Exception {
+
+		final Contribuable ctb = createContribuableSansFor(10763698L);
+		addForPrincipal(ctb, date(2010, 10, 20), MotifFor.ACHAT_IMMOBILIER, date(2012, 12, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Neuchatel);
+		addForPrincipal(ctb, date(2013, 1, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Bern);
+		addForSecondaire(ctb, date(2010, 10, 20), MotifFor.ACHAT_IMMOBILIER, date(2012, 5, 8), MotifFor.VENTE_IMMOBILIER, MockCommune.Bussigny.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+
+		final List<Assujettissement> liste = service.determine(ctb);
+		assertEquals(1, liste.size());
+		assertHorsCanton(date(2010, 1, 1), date(2012, 12, 31), MotifFor.ACHAT_IMMOBILIER, MotifFor.VENTE_IMMOBILIER, liste.get(0));
+	}
+
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDeterminePourCommuneNonAssujetti() throws Exception {

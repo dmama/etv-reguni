@@ -1177,4 +1177,42 @@ public class PeriodeImpositionServiceTest extends MetierTest {
 			}
 		});
 	}
+
+	/**
+	 * Cas SIFISC-8490: cas de vente du dernier immeuble avec changement de for principal HC en fin d'année
+	 */
+	@Test
+	public void testHcVenteDernierImmeubleAvecDemenagementPrincipalEnFinAnnee() throws Exception {
+
+		// mise en place des fors
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Mélina", "Dostoïevskaïa", null, Sexe.FEMININ);
+				addForPrincipal(pp, date(2008, 12, 18), MotifFor.ACHAT_IMMOBILIER, date(2009, 12, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Sierre);
+				addForPrincipal(pp, date(2010, 1, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Bern);
+				addForSecondaire(pp, date(2008, 12, 18), MotifFor.ACHAT_IMMOBILIER, date(2009, 4, 15), MotifFor.VENTE_IMMOBILIER, MockCommune.Aubonne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				return pp.getNumero();
+			}
+		});
+
+		// calcul de la période d'imposition 2009 qui devrait être "remplacée par note"
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				final List<PeriodeImposition> pis = service.determine(pp, 2009);
+				assertNotNull(pis);
+				assertEquals(1, pis.size());
+
+				final PeriodeImposition pi = pis.get(0);
+				assertNotNull(pi);
+				assertEquals(date(2009, 1, 1), pi.getDateDebut());
+				assertEquals(date(2009, 12, 31), pi.getDateFin());
+				assertTrue(pi.isRemplaceeParNote());
+				return null;
+			}
+		});
+
+	}
 }
