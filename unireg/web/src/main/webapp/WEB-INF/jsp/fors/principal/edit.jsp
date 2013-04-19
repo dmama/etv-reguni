@@ -59,7 +59,11 @@
 						</tr>
 						<tr class="<unireg:nextRowClass/>" >
 							<td><fmt:message key="label.motif.ouverture" />&nbsp;:</td>
-							<td><fmt:message key="option.motif.ouverture.${command.motifDebut}" /></td>
+							<td>
+								<c:if test="${command.motifDebut != null}">
+									<fmt:message key="option.motif.ouverture.${command.motifDebut}" />
+								</c:if>
+							</td>
 							<td><fmt:message key="label.motif.fermeture" />&nbsp;:</td>
 							<td>
 								<form:select path="motifFin" cssStyle="width:30ex" onchange="updateSyncActions();" onkeyup="updateSyncActions();"/>
