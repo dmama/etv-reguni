@@ -60,15 +60,17 @@ public interface FidorClient {
 
 	/**
 	 * @param ofsId identifiant d'un pays
-	 * @return les information d'un pays
+	 * @param date une date de référence
+	 * @return les informations d'un pays
 	 */
-	Country getPaysDetail(long ofsId);
+	Country getPaysDetail(long ofsId, RegDate date);
 
 	/**
 	 * @param iso2Id l'identifiant ISO sur deux positions d'un pays (e.g. 'ch')
-	 * @return les information d'un pays
+	 * @param date une date de référence
+	 * @return les informations d'un pays
 	 */
-	Country getPaysDetail(String iso2Id);
+	Country getPaysDetail(String iso2Id, RegDate date);
 
 	/**
 	 * Retourne la liste de tous les pays

@@ -197,27 +197,26 @@ public class FidorClientImpl implements FidorClient {
 	}
 
 	@Override
-	public Country getPaysDetail(long ofsId) {
+	public Country getPaysDetail(long ofsId, RegDate date) {
 		final WebClient wc = createWebClient(600000); // 10 minutes
 		wc.path(paysPath);
 
 		// l'id
 		wc.query("id", ofsId);
 
+		// la date de référence
+		if (date == null) {
+			date = RegDate.get();
+		}
+		wc.query("referenceDate", RegDateHelper.dateToDisplayString(date));
+
 		try {
 			final ListOfPoliticalEntities list = wc.get(ListOfPoliticalEntities.class);
 			if (list == null || list.getNumberOfResults().intValue() == 0) {
 				return null;
 			}
-			if (ofsId == 8100) { // TODO (msi) workaround pour bug SIFISC-6794
-				for (Country country : list.getListOfResults().getListOfStateTerritories().getStateTerritory()) {
-					if (country.getCountry().getId() == 8100) {
-						return country;
-					}
-				}
-			}
 			if (list.getNumberOfResults().intValue() > 1) {
-				throw new IllegalArgumentException("Plusieurs pays retournés pour le numéro Ofs = " + ofsId);
+				throw new IllegalArgumentException("Plusieurs pays retournés pour le numéro Ofs = " + ofsId + " et date " + RegDateHelper.dateToDisplayString(date));
 			}
 			return list.getListOfResults().getListOfStateTerritories().getStateTerritory().get(0);
 		}
@@ -227,27 +226,26 @@ public class FidorClientImpl implements FidorClient {
 	}
 
 	@Override
-	public Country getPaysDetail(String iso2Id) {
+	public Country getPaysDetail(String iso2Id, RegDate date) {
 		final WebClient wc = createWebClient(600000); // 10 minutes
 		wc.path(paysPath);
 
 		// l'id
 		wc.query("iso2Id", iso2Id);
 
+		// la date de référence
+		if (date == null) {
+			date = RegDate.get();
+		}
+		wc.query("referenceDate", RegDateHelper.dateToDisplayString(date));
+
 		try {
 			final ListOfPoliticalEntities list = wc.get(ListOfPoliticalEntities.class);
 			if (list == null || list.getNumberOfResults().intValue() == 0) {
 				return null;
 			}
-			if (iso2Id.equalsIgnoreCase("CH")) { // TODO (msi) workaround pour bug SIFISC-6794
-				for (Country country : list.getListOfResults().getListOfStateTerritories().getStateTerritory()) {
-					if (country.getCountry().getId() == 8100) {
-						return country;
-					}
-				}
-			}
 			if (list.getNumberOfResults().intValue() > 1) {
-				throw new IllegalArgumentException("Plusieurs pays retournés pour le code ISO 2 = " + iso2Id);
+				throw new IllegalArgumentException("Plusieurs pays retournés pour le code ISO2 = " + iso2Id + " et date " + RegDateHelper.dateToDisplayString(date));
 			}
 			return list.getListOfResults().getListOfStateTerritories().getStateTerritory().get(0);
 		}
