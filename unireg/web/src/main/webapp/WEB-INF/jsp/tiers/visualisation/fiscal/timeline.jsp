@@ -183,7 +183,7 @@
 								</c:when>
 								<c:when test="${fp.typeAutoriteFiscale == 'PAYS_HS'}">
 									<td class="principal_hs tooltip_cell" id="ffp-${fp.id}" rowspan="<c:out value="${ligne.forPrincipal.longueurAffichage}" />">
-                                        <unireg:infra entityId="${fp.numeroOfsAutoriteFiscale}" entityType="pays" entityPropertyName="nomCourt"></unireg:infra>
+                                        <unireg:pays ofs="${fp.numeroOfsAutoriteFiscale}" displayProperty="nomCourt" date="${fp.dateDebut}"/>
 										<div id="ffp-${fp.id}-tooltip" style="display:none;">
 										    For fiscal principal <b>#${fp.id}</b><br/>
 										    Ouverture : <b><unireg:date date="${fp.dateDebut}"/></b> - <b><fmt:message key="option.motif.ouverture.${fp.motifOuverture}"/></b><br/>

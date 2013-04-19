@@ -861,7 +861,7 @@ public class AdresseServiceImpl implements AdresseService {
 		if (noOfsPays == null) {
 			return null;
 		}
-		return serviceInfra.getPays(noOfsPays);
+		return serviceInfra.getPays(noOfsPays, adresse.getDateDebut());
 	}
 
 	/**

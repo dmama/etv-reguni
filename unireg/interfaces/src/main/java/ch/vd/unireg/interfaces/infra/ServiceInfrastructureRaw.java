@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.registre.base.date.RegDate;
@@ -55,19 +56,21 @@ public interface ServiceInfrastructureRaw {
 
 	/**
 	 * @param numeroOFS un numéro Ofs de pays.
+	 * @param date la date de référence, ou <b>null</b> pour la date du jour
 	 * @return le pays avec le numéro Ofs spécifié; ou <b>null</b> si aucun pays ne corresponds.
 	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
-	Pays getPays(int numeroOFS) throws ServiceInfrastructureException;
+	Pays getPays(int numeroOFS, @Nullable RegDate date) throws ServiceInfrastructureException;
 
 	/**
 	 * Recherche un pays à partir de son code ('CH', 'FR', 'BE', ...). Voir la documentation de la méthode {@link ch.vd.infrastructure.model.Pays#getCodePays()}.
 	 *
 	 * @param codePays un code de pays ('CH', 'FR', 'BE', ...)
+	 * @param date la date de référence, ou <b>null</b> pour la date du jour
 	 * @return le pays avec le code pays spécifié; ou <b>null</b> si aucun pays ne corresponds.
 	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
-	Pays getPays(@NotNull String codePays) throws ServiceInfrastructureException;
+	Pays getPays(@NotNull String codePays, @Nullable RegDate date) throws ServiceInfrastructureException;
 
 	/**
 	 * @param noColAdm le numéro technique de la collectivité

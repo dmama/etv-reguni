@@ -66,7 +66,7 @@
 					(<unireg:commune ofs="${sieges.noOfsSiege}" displayProperty="sigleCanton" date="${sieges.dateFin}"/>)
 				</c:when>
 				<c:when test="${sieges.type == 'PAYS_HS' }">
-					<unireg:infra entityId="${sieges.noOfsSiege}" entityType="pays" entityPropertyName="nomCourt"></unireg:infra>
+					<unireg:pays ofs="${sieges.noOfsSiege}" displayProperty="nomCourt" date="${sieges.dateFin}"/>
 				</c:when>
 			</c:choose>
 		</display:column>

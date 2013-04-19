@@ -232,6 +232,43 @@
 	</tag>
 
 	<tag>
+		<name>pays</name>
+		<tag-class>ch.vd.uniregctb.taglibs.JspTagPays</tag-class>
+		<body-content>JSP</body-content>
+		<description>Interface sur les communes du service infrastructure</description>
+		<attribute>
+			<name>ofs</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>le numéro OFS du pays</description>
+		</attribute>
+		<attribute>
+			<name>date</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>la date de référence de validité du pays</description>
+		</attribute>
+		<attribute>
+			<name>displayProperty</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>nom de la propriété à afficher dans l'élément</description>
+		</attribute>
+		<attribute>
+			<name>titleProperty</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>nom de la propriété à afficher dans un tooltip au survol de l'élément</description>
+		</attribute>
+		<attribute>
+			<name>escapeMode</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Le type d'escaping à appliquer ('none', 'html' ou 'javascript'). Par défaut, c'est 'html'.</description>
+		</attribute>
+	</tag>
+
+	<tag>
 		<name>localisation</name>
 		<tag-class>ch.vd.uniregctb.taglibs.JspTagLocalisation</tag-class>
 		<body-content>JSP</body-content>

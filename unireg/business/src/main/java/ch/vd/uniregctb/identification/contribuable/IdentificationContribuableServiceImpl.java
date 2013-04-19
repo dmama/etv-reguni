@@ -1302,7 +1302,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 
 		final Pays pays;
 		try {
-			pays = infraService.getPays(noOfsPays);
+			pays = infraService.getPays(noOfsPays, null);
 		}
 		catch (ServiceInfrastructureException e) {
 			LOGGER.warn("Impossible de trouver le pays avec le numéro OFS " + noOfsPays + ": on l'ignore.", e);

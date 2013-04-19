@@ -60,7 +60,7 @@
 												(<unireg:commune ofs="${command.noAutoriteFiscale}" displayProperty="sigleCanton" date="${command.dateDebut}"/>)
 											</c:when>
 											<c:when test="${command.typeAutoriteFiscale == 'PAYS_HS' }">
-												<unireg:infra entityId="${command.noAutoriteFiscale}" entityType="pays" entityPropertyName="nomCourt"/>
+												<unireg:pays ofs="${command.noAutoriteFiscale}" displayProperty="nomCourt" date="${command.dateDebut}"/>
 											</c:when>
 										</c:choose>
 									</td>

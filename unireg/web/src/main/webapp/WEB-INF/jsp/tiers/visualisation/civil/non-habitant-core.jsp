@@ -132,13 +132,13 @@
 			<!-- (msi/fde) on a pas trouvé mieux... -->
 			<c:choose>
 				<c:when test="${param.path == 'tiersPrincipal'}">
-					<unireg:infra entityId="${command.tiersPrincipal.numeroOfsNationalite}" entityType="pays" entityPropertyName="nomCourt"/>
+					<unireg:pays ofs="${command.tiersPrincipal.numeroOfsNationalite}" displayProperty="nomCourt"/>
 				</c:when>
 				<c:when test="${param.path == 'tiersConjoint'}">
-					<unireg:infra entityId="${command.tiersConjoint.numeroOfsNationalite}" entityType="pays" entityPropertyName="nomCourt"/>
+					<unireg:pays ofs="${command.tiersConjoint.numeroOfsNationalite}" displayProperty="nomCourt"/>
 				</c:when>
 				<c:when test="${param.path == 'tiers'}">
-					<unireg:infra entityId="${command.tiers.numeroOfsNationalite}" entityType="pays" entityPropertyName="nomCourt"/>
+					<unireg:pays ofs="${command.tiers.numeroOfsNationalite}" displayProperty="nomCourt"/>
 				</c:when>
 			</c:choose>
 		</td>

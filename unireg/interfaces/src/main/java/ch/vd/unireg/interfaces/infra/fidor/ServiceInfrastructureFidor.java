@@ -10,6 +10,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
@@ -125,9 +126,9 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 	}
 
 	@Override
-	public Pays getPays(int numeroOFS) throws ServiceInfrastructureException {
+	public Pays getPays(int numeroOFS, @Nullable RegDate date) throws ServiceInfrastructureException {
 		try {
-			final Country p = fidorClient.getPaysDetail(numeroOFS);
+			final Country p = fidorClient.getPaysDetail(numeroOFS, date);
 			return PaysImpl.get(p);
 		}
 		catch (FidorClientException e) {
@@ -136,9 +137,9 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 	}
 
 	@Override
-	public Pays getPays(@NotNull String codePays) throws ServiceInfrastructureException {
+	public Pays getPays(@NotNull String codePays, @Nullable RegDate date) throws ServiceInfrastructureException {
 		try {
-			final Country p = fidorClient.getPaysDetail(codePays);
+			final Country p = fidorClient.getPaysDetail(codePays, date);
 			return PaysImpl.get(p);
 		}
 		catch (FidorClientException e) {

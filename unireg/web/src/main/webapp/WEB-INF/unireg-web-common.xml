@@ -104,6 +104,10 @@
 		<property name="service" ref="serviceInfrastructureService" />
 	</bean>
 
+	<bean id="jspTagDatedInfra" class="ch.vd.uniregctb.taglibs.JspTagDatedInfraBean">
+		<property name="service" ref="serviceInfrastructureService" />
+	</bean>
+
 	<bean id="jspTagBatchForm" class="ch.vd.uniregctb.taglibs.JspTagBatchForm">
 		<property name="securityProvider" ref="securityProviderInterface" />
 	</bean>
@@ -112,10 +116,6 @@
 		<constructor-arg>
 			<null />
 		</constructor-arg>
-		<property name="service" ref="serviceInfrastructureService" />
-	</bean>
-
-	<bean id="jspTagCommune" class="ch.vd.uniregctb.taglibs.JspTagCommune">
 		<property name="service" ref="serviceInfrastructureService" />
 	</bean>
 

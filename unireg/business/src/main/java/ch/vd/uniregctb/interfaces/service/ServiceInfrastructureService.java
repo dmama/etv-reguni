@@ -60,10 +60,11 @@ public interface ServiceInfrastructureService {
 
 	/**
 	 * @param numeroOFS un numéro Ofs de pays.
+	 * @param date date de référence pour la validité du pays
 	 * @return le pays avec le numéro Ofs spécifié; ou <b>null</b> si aucun pays ne corresponds.
 	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
-	Pays getPays(int numeroOFS) throws ServiceInfrastructureException;
+	Pays getPays(int numeroOFS, @Nullable RegDate date) throws ServiceInfrastructureException;
 
 	/**
 	 * @param noColAdm le numéro technique de la collectivité
@@ -232,10 +233,11 @@ public interface ServiceInfrastructureService {
 	 * Recherche un pays à partir de son code ('CH', 'FR', 'BE', ...). Voir la documentation de la méthode {@link ch.vd.infrastructure.model.Pays#getCodePays()}.
 	 *
 	 * @param codePays un code de pays ('CH', 'FR', 'BE', ...)
+	 * @param date une date de référence pour la validité du pays
 	 * @return le pays avec le code pays spécifié; ou <b>null</b> si aucun pays ne corresponds.
 	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
-	Pays getPays(String codePays) throws ServiceInfrastructureException;
+	Pays getPays(String codePays, @Nullable RegDate date) throws ServiceInfrastructureException;
 
 	/**
 	 * @return la collectivite administrative de l'ACI

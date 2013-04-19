@@ -81,7 +81,7 @@ abstract public class EvenementCivilManagerImpl implements MessageSourceAware {
 		if (adresseCourrier != null) {
 			Integer noOfsPays = adresseCourrier.getNoOfsPays();
 			Pays pays;
-			pays = (noOfsPays == null ? null : serviceInfrastructureService.getPays(noOfsPays));
+			pays = (noOfsPays == null ? null : serviceInfrastructureService.getPays(noOfsPays, adresseCourrier.getDateDebut()));
 			if (pays != null && !pays.isSuisse()) {
 				localiteOuPays = pays.getNomCourt();
 			}

@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.infrastructure.fiscal.service.ServiceInfrastructureFiscal;
 import ch.vd.infrastructure.model.EnumPays;
@@ -224,12 +225,12 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 	}
 
 	@Override
-	public Pays getPays(int numeroOFS) throws ServiceInfrastructureException {
+	public Pays getPays(int numeroOFS, @Nullable RegDate date) throws ServiceInfrastructureException {
 		throw new NotImplementedException("La méthode 'getPays' ne doit pas être appelée sur le service host-interfaces.");
 	}
 
 	@Override
-	public Pays getPays(@NotNull String codePays) throws ServiceInfrastructureException {
+	public Pays getPays(@NotNull String codePays, @Nullable RegDate date) throws ServiceInfrastructureException {
 		throw new NotImplementedException("La méthode 'getPays' ne doit pas être appelée sur le service host-interfaces.");
 	}
 

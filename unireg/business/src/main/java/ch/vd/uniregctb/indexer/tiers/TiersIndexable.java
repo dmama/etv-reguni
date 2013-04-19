@@ -91,7 +91,7 @@ public abstract class TiersIndexable {
 				localite = courrier.getLocalite(); // [UNIREG-2142] on prend la localité abrégée
 
 				final Integer noOfsPays = courrier.getNoOfsPays();
-				final Pays p = (noOfsPays == null ? null : serviceInfra.getPays(noOfsPays));
+				final Pays p = (noOfsPays == null ? null : serviceInfra.getPays(noOfsPays, null));
 				if (p == null) {
 					pays = "";
 					localitePays = localite;
@@ -166,9 +166,9 @@ public abstract class TiersIndexable {
 			}
 			// Pays
 			else if (typeForFiscal == TypeAutoriteFiscale.PAYS_HS) {
-					Pays p = serviceInfra.getPays(forF.getNumeroOfsAutoriteFiscale());
+					Pays p = serviceInfra.getPays(forF.getNumeroOfsAutoriteFiscale(), forF.getDateDebut());
 					if (p == null) {
-						throw new IndexerException("Pays pas trouvé: noOfs=" + forF.getNumeroOfsAutoriteFiscale());
+						throw new IndexerException("Pays pas trouvé: noOfs=" + forF.getNumeroOfsAutoriteFiscale() + " à la date " + forF.getDateDebut());
 					}
 					forStr = p.getNomCourt();
 			}

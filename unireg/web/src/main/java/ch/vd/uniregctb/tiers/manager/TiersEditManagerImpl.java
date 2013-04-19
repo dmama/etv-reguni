@@ -240,7 +240,7 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 
 		final Integer numeroOfsNationalite = nonHabitant.getNumeroOfsNationalite();
 		if (numeroOfsNationalite != null) {
-			tiersEditView.setLibelleOfsPaysOrigine(getServiceInfrastructureService().getPays(numeroOfsNationalite).getNomCourt());
+			tiersEditView.setLibelleOfsPaysOrigine(getServiceInfrastructureService().getPays(numeroOfsNationalite, null).getNomCourt());
 		}
 
 		tiersEditView.setIdentificationPersonne(idPersonneView);

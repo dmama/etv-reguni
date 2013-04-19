@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.registre.base.date.RegDate;
@@ -76,13 +77,13 @@ public class ServiceInfrastructureMarshaller implements ServiceInfrastructureRaw
 	}
 
 	@Override
-	public Pays getPays(int numeroOFS) throws ServiceInfrastructureException {
-		return fidorService.getPays(numeroOFS);
+	public Pays getPays(int numeroOFS, @Nullable RegDate date) throws ServiceInfrastructureException {
+		return fidorService.getPays(numeroOFS, date);
 	}
 
 	@Override
-	public Pays getPays(@NotNull String codePays) throws ServiceInfrastructureException {
-		return fidorService.getPays(codePays);
+	public Pays getPays(@NotNull String codePays, @Nullable RegDate date) throws ServiceInfrastructureException {
+		return fidorService.getPays(codePays, date);
 	}
 
 	@Override

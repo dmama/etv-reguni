@@ -60,7 +60,6 @@ public class JspTagInfra extends BodyTagSupport {
 			invocators.put("collectivite", new MethodInvocator(clazz.getMethod("getCollectivite", int.class)));
 			invocators.put("localite", new MethodInvocator(clazz.getMethod("getLocaliteByONRP", int.class)));
 			invocators.put("officeImpot", new MethodInvocator(clazz.getMethod("getOfficeImpot", int.class)));
-			invocators.put("pays", new MethodInvocator(clazz.getMethod("getPays", int.class)));
 			invocators.put("rue", new MethodInvocator(clazz.getMethod("getRueByNumero", int.class)));
 		}
 		catch (Exception e) {

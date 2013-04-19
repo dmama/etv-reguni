@@ -143,7 +143,7 @@ public class ListeNoteResults extends JobResults<Long, ListeNoteResults> {
 					this.communeFinPeriode = infraService.getCommuneByNumeroOfs(ofsCommune, date);
 
 					if (communeFinPeriode == null) {
-						this.paysFinPeriode = infraService.getPays(ofsCommune);
+						this.paysFinPeriode = infraService.getPays(ofsCommune, date);
 
 					}
 					else{

@@ -9,6 +9,7 @@ import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -734,12 +735,14 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		return resultat;
 	}
 
-	private static class KeyGetPaysByNoOfs {
+	private static class KeyGetPaysByNoOfsAndDate {
 
 		private final int numeroOFS;
+		private final RegDate date;
 
-		private KeyGetPaysByNoOfs(int numeroOFS) {
+		private KeyGetPaysByNoOfsAndDate(int numeroOFS, RegDate date) {
 			this.numeroOFS = numeroOFS;
+			this.date = date;
 		}
 
 		@Override
@@ -747,24 +750,30 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 			if (this == o) return true;
 			if (o == null || getClass() != o.getClass()) return false;
 
-			final KeyGetPaysByNoOfs that = (KeyGetPaysByNoOfs) o;
-			return numeroOFS == that.numeroOFS;
+			final KeyGetPaysByNoOfsAndDate that = (KeyGetPaysByNoOfsAndDate) o;
+
+			if (numeroOFS != that.numeroOFS) return false;
+			if (date != null ? !date.equals(that.date) : that.date != null) return false;
+
+			return true;
 		}
 
 		@Override
 		public int hashCode() {
-			return numeroOFS;
+			int result = numeroOFS;
+			result = 31 * result + (date != null ? date.hashCode() : 0);
+			return result;
 		}
 	}
 
 	@Override
-	public Pays getPays(int numeroOFS) throws ServiceInfrastructureException {
+	public Pays getPays(int numeroOFS, @Nullable RegDate date) throws ServiceInfrastructureException {
 		final Pays resultat;
 
-		final KeyGetPaysByNoOfs key = new KeyGetPaysByNoOfs(numeroOFS);
+		final KeyGetPaysByNoOfsAndDate key = new KeyGetPaysByNoOfsAndDate(numeroOFS, date);
 		final Element element = cache.get(key);
 		if (element == null) {
-			resultat = target.getPays(numeroOFS);
+			resultat = target.getPays(numeroOFS, date);
 			cache.put(new Element(key, resultat));
 		}
 		else {
@@ -774,13 +783,15 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		return resultat;
 	}
 
-	private static class KeyGetPaysByCodeIso {
+	private static class KeyGetPaysByCodeIsoAndDate {
 
 		@NotNull
 		private final String codePays;
+		private final RegDate date;
 
-		private KeyGetPaysByCodeIso(@NotNull String codePays) {
+		private KeyGetPaysByCodeIsoAndDate(@NotNull String codePays, RegDate date) {
 			this.codePays = codePays;
+			this.date = date;
 		}
 
 		@Override
@@ -788,24 +799,30 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 			if (this == o) return true;
 			if (o == null || getClass() != o.getClass()) return false;
 
-			final KeyGetPaysByCodeIso that = (KeyGetPaysByCodeIso) o;
-			return codePays.equals(that.codePays);
+			final KeyGetPaysByCodeIsoAndDate that = (KeyGetPaysByCodeIsoAndDate) o;
+
+			if (!codePays.equals(that.codePays)) return false;
+			if (date != null ? !date.equals(that.date) : that.date != null) return false;
+
+			return true;
 		}
 
 		@Override
 		public int hashCode() {
-			return codePays.hashCode();
+			int result = codePays.hashCode();
+			result = 31 * result + (date != null ? date.hashCode() : 0);
+			return result;
 		}
 	}
 
 	@Override
-	public Pays getPays(@NotNull String codePays) throws ServiceInfrastructureException {
+	public Pays getPays(@NotNull String codePays, @Nullable RegDate date) throws ServiceInfrastructureException {
 		final Pays resultat;
 
-		final KeyGetPaysByCodeIso key = new KeyGetPaysByCodeIso(codePays);
+		final KeyGetPaysByCodeIsoAndDate key = new KeyGetPaysByCodeIsoAndDate(codePays, date);
 		final Element element = cache.get(key);
 		if (element == null) {
-			resultat = target.getPays(codePays);
+			resultat = target.getPays(codePays, date);
 			cache.put(new Element(key, resultat));
 		}
 		else {

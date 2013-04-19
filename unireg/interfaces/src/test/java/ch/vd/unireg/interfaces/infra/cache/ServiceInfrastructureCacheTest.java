@@ -10,6 +10,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import net.sf.ehcache.CacheManager;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.util.ResourceUtils;
@@ -237,12 +238,12 @@ public class ServiceInfrastructureCacheTest {
 		}
 
 		@Override
-		public Pays getPays(int numeroOFS) throws ServiceInfrastructureException {
+		public Pays getPays(int numeroOFS, @Nullable RegDate date) throws ServiceInfrastructureException {
 			throw new NotImplementedException();
 		}
 
 		@Override
-		public Pays getPays(@NotNull String codePays) throws ServiceInfrastructureException {
+		public Pays getPays(@NotNull String codePays, @Nullable RegDate date) throws ServiceInfrastructureException {
 			throw new NotImplementedException();
 		}
 

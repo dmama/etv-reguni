@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -440,11 +441,11 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 	}
 
 	@Override
-	public Pays getPays(final int numeroOFS) throws ServiceInfrastructureException {
+	public Pays getPays(final int numeroOFS, @Nullable final RegDate date) throws ServiceInfrastructureException {
 		Throwable t = null;
 		final long time = tracing.start();
 		try {
-			return target.getPays(numeroOFS);
+			return target.getPays(numeroOFS, date);
 		}
 		catch (ServiceInfrastructureException e) {
 			t = e;
@@ -458,18 +459,18 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			tracing.end(time, t, "getPays", new Object() {
 				@Override
 				public String toString() {
-					return String.format("numeroOFS=%d", numeroOFS);
+					return String.format("numeroOFS=%d, date=%s", numeroOFS, ServiceTracing.toString(date));
 				}
 			});
 		}
 	}
 
 	@Override
-	public Pays getPays(@NotNull final String codePays) throws ServiceInfrastructureException {
+	public Pays getPays(@NotNull final String codePays, @Nullable final RegDate date) throws ServiceInfrastructureException {
 		Throwable t = null;
 		final long time = tracing.start();
 		try {
-			return target.getPays(codePays);
+			return target.getPays(codePays, date);
 		}
 		catch (ServiceInfrastructureException e) {
 			t = e;
@@ -483,7 +484,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			tracing.end(time, t, "getPays", new Object() {
 				@Override
 				public String toString() {
-					return String.format("codePays=%s", codePays);
+					return String.format("codePays=%s, date=%s", codePays, ServiceTracing.toString(date));
 				}
 			});
 		}

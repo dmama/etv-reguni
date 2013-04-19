@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.Adresse;
@@ -125,13 +127,13 @@ public class ProxyServiceInfrastructureService implements ServiceInfrastructureS
 	}
 
 	@Override
-	public Pays getPays(int numeroOFS) throws ServiceInfrastructureException {
-		return target.getPays(numeroOFS);
+	public Pays getPays(int numeroOFS, @Nullable RegDate date) throws ServiceInfrastructureException {
+		return target.getPays(numeroOFS, date);
 	}
 
 	@Override
-	public Pays getPays(String codePays) throws ServiceInfrastructureException {
-		return target.getPays(codePays);
+	public Pays getPays(String codePays, @Nullable RegDate date) throws ServiceInfrastructureException {
+		return target.getPays(codePays, date);
 	}
 
 	@Override
@@ -282,7 +284,7 @@ public class ProxyServiceInfrastructureService implements ServiceInfrastructureS
 
 	@Override
 	public Pays getPaysInconnu() throws ServiceInfrastructureException {
-		return target.getPays(8999);
+		return target.getPays(noPaysInconnu, null);
 	}
 
 	@Override

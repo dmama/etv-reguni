@@ -113,15 +113,15 @@ public class ServiceInfrastructureServiceTest extends BusinessItTest {
 	@Test
 	public void testGetPaysByCode() throws Exception {
 
-		final Pays ch = service.getPays("CH");
+		final Pays ch = service.getPays("CH", null);
 		assertEquals("CH", ch.getSigleOFS());
 		assertEquals("Suisse", ch.getNomCourt());
 
-		final Pays fr = service.getPays("FR");
+		final Pays fr = service.getPays("FR", null);
 		assertEquals("FR", fr.getSigleOFS());
 		assertEquals("France", fr.getNomCourt());
 
-		final Pays be = service.getPays("BE");
+		final Pays be = service.getPays("BE", null);
 		assertEquals("BE", be.getSigleOFS());
 		assertEquals("Belgique", be.getNomCourt());
 	}

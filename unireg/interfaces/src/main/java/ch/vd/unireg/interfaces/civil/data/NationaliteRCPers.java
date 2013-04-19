@@ -29,16 +29,16 @@ public class NationaliteRCPers implements Nationalite, Serializable {
 		final String status = nationality.getNationalityStatus();
 		if ("0".equals(status)) {
 			// inconnu
-			p = infraService.getPays(ServiceInfrastructureRaw.noPaysInconnu);
+			p = infraService.getPays(ServiceInfrastructureRaw.noPaysInconnu, null);
 		}
 		else if ("1".equals(status)) {
 			// apatride
-			p = infraService.getPays(ServiceInfrastructureRaw.noPaysApatride);
+			p = infraService.getPays(ServiceInfrastructureRaw.noPaysApatride, null);
 		}
 		else if ("2".equals(status)) {
 			// ok
 			Integer noOfsPays = nationality.getCountry().getCountryId();
-			p = infraService.getPays(noOfsPays);
+			p = infraService.getPays(noOfsPays, null);      // TODO jde vérifier que nous utilisons ici la bonne date
 		}
 		else {
 			throw new IllegalArgumentException("Code nationality status inconnu = [" + status + ']');

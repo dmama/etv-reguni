@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.registre.base.date.RegDate;
@@ -245,7 +246,7 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 	}
 
 	@Override
-	public Pays getPays(int numeroOFS) throws ServiceInfrastructureException {
+	public Pays getPays(int numeroOFS, @Nullable RegDate date) throws ServiceInfrastructureException {
 		for (Pays p : pays) {
 			if (p.getNoOFS() == numeroOFS) {
 				return p;
@@ -255,7 +256,7 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 	}
 
 	@Override
-	public Pays getPays(@NotNull String codePays) throws ServiceInfrastructureException {
+	public Pays getPays(@NotNull String codePays, @Nullable RegDate date) throws ServiceInfrastructureException {
 		for (Pays p : pays) {
 			if (p.getCodeIso2() != null && p.getCodeIso2().equals(codePays)) {
 				return p;

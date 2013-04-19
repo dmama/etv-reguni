@@ -51,7 +51,7 @@
 					(<unireg:commune ofs="${forFiscal.numeroForFiscalCommuneHorsCanton}" displayProperty="sigleCanton" date="${forFiscal.regDateOuverture}"/>)
 				</c:when>
 				<c:when test="${forFiscal.typeAutoriteFiscale == 'PAYS_HS' }">
-					<unireg:infra entityId="${forFiscal.numeroForFiscalPays}" entityType="pays" entityPropertyName="nomCourt" entityPropertyTitle="noOFS"></unireg:infra>
+					<unireg:pays ofs="${forFiscal.numeroForFiscalPays}" displayProperty="nomCourt" titleProperty="noOFS" date="${forFiscal.regDateOuverture}"/>
 				</c:when>
 			</c:choose>
 	</display:column>

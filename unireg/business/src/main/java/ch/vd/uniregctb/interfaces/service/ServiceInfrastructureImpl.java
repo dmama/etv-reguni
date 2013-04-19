@@ -154,16 +154,16 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	}
 
 	@Override
-	public Pays getPays(int numeroOFS) throws ServiceInfrastructureException {
-		return rawService.getPays(numeroOFS);
+	public Pays getPays(int numeroOFS, @Nullable RegDate date) throws ServiceInfrastructureException {
+		return rawService.getPays(numeroOFS, date);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Pays getPays(String codePays) throws ServiceInfrastructureException {
-		return rawService.getPays(codePays);
+	public Pays getPays(String codePays, @Nullable RegDate date) throws ServiceInfrastructureException {
+		return rawService.getPays(codePays, date);
 	}
 
 	@Override
@@ -451,7 +451,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	@Override
 	public Pays getSuisse() throws ServiceInfrastructureException {
 		if (suisse == null) {
-			suisse = getPays(ServiceInfrastructureService.noOfsSuisse);
+			suisse = getPays(ServiceInfrastructureService.noOfsSuisse, null);
 		}
 		return suisse;
 	}
@@ -643,7 +643,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 
 	@Override
 	public Pays getPaysInconnu() throws ServiceInfrastructureException {
-		return getPays(ServiceInfrastructureService.noPaysInconnu);
+		return getPays(ServiceInfrastructureService.noPaysInconnu, null);
 	}
 
 	@Override
@@ -662,7 +662,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	}
 
 	/**
-	 * [UNIREG-2243] liste hard-codée parce que l'infrastructure du host ne possède pas cette info pour l'instant
+	 * [UNIREG-2243] liste hard-codée parce que l'infrastructure ne possède pas cette info pour l'instant
 	 */
 	private static final Set<Integer> affEurope = new HashSet<>();
 

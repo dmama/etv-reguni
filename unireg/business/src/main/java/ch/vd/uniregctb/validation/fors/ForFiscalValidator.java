@@ -150,7 +150,7 @@ public abstract class ForFiscalValidator<T extends ForFiscal> extends EntityVali
 			}
 			else if (typeAutoriteFiscale == TypeAutoriteFiscale.PAYS_HS) {
 				try {
-					final Pays pays = serviceInfra.getPays(numeroOfsAutoriteFiscale);
+					final Pays pays = serviceInfra.getPays(numeroOfsAutoriteFiscale, dateDebut);
 					if (pays == null) {
 						results.addError(String.format("Le pays du for fiscal %s (%d) est inconnu dans l'infrastructure", ff, ff.getNumeroOfsAutoriteFiscale()));
 					}

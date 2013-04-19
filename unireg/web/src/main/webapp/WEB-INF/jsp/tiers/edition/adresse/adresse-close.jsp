@@ -46,7 +46,7 @@
 					<tr class="<unireg:nextRowClass/>" >
 						<td><fmt:message key="label.pays"/>&nbsp;:</td>
 						<td>
-							<unireg:infra entityId="${command.paysOFS}" entityType="pays" entityPropertyName="nomCourt"></unireg:infra>
+							<unireg:pays ofs="${command.paysOFS}" displayProperty="nomCourt" date="${command.regDateDebut}"/>
 						<td>
 					</tr>
 				</c:if>

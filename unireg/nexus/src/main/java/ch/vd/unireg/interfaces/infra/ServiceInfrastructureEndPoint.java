@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.registre.base.date.RegDate;
@@ -48,10 +49,10 @@ public class ServiceInfrastructureEndPoint implements ServiceInfrastructureRaw, 
 	}
 
 	@Override
-	public Pays getPays(int numeroOFS) throws ServiceInfrastructureException {
-		loadMeter.start(new MethodCallDescriptor("getPays", "numeroOfs", numeroOFS));
+	public Pays getPays(int numeroOFS, @Nullable RegDate date) throws ServiceInfrastructureException {
+		loadMeter.start(new MethodCallDescriptor("getPays", "numeroOfs", numeroOFS, "date", date));
 		try {
-			return target.getPays(numeroOFS);
+			return target.getPays(numeroOFS, date);
 		}
 		finally {
 			loadMeter.end();
@@ -59,10 +60,10 @@ public class ServiceInfrastructureEndPoint implements ServiceInfrastructureRaw, 
 	}
 
 	@Override
-	public Pays getPays(@NotNull String codePays) throws ServiceInfrastructureException {
-		loadMeter.start(new MethodCallDescriptor("getPays", "codePays", codePays));
+	public Pays getPays(@NotNull String codePays, @Nullable RegDate date) throws ServiceInfrastructureException {
+		loadMeter.start(new MethodCallDescriptor("getPays", "codePays", codePays, "date", date));
 		try {
-			return target.getPays(codePays);
+			return target.getPays(codePays, date);
 		}
 		finally {
 			loadMeter.end();

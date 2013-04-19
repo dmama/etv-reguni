@@ -166,7 +166,7 @@ public class Adresse implements Range {
 		if (noOfsPays != null) {
 			Pays p;
 			try {
-				p = serviceInfra.getPays(noOfsPays);
+				p = serviceInfra.getPays(noOfsPays, adresse.getDateDebut());
 			}
 			catch (ServiceInfrastructureException e) {
 				LOGGER.error(e, e);

@@ -113,7 +113,7 @@ public class JspTagLocalisation extends BodyTagSupport {
 	}
 
 	private String getPays(int noOfs) {
-		final Pays pays = service.getPays(noOfs);
+		final Pays pays = service.getPays(noOfs, null);
 		if (pays == null) {
 			return "Pays inconnu";
 		}

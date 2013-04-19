@@ -51,7 +51,7 @@ public abstract class AddForValidator implements Validator {
 		// [UNIREG-3338] en cas de création d'un nouveau for fiscal, le pays doit être valide
 		if (view.getId() == null && view.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS && view.getNoAutoriteFiscale() != null) {
 			final Integer noOfsPays = view.getNoAutoriteFiscale();
-			final Pays pays = infraService.getPays(noOfsPays);
+			final Pays pays = infraService.getPays(noOfsPays, dateDebut);
 			if (pays == null) {
 				errors.rejectValue("noAutoriteFiscale", "error.pays.inconnu");
 			}

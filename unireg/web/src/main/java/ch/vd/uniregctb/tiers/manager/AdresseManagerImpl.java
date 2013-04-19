@@ -482,10 +482,8 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 	 * Recupere le pays
 	 */
 	public Pays getPays(AdresseEtrangere adresseEtrangere) {
-
 		Assert.notNull(adresseEtrangere);
-		return getServiceInfrastructureService().getPays(adresseEtrangere.getNumeroOfsPays());
-
+		return getServiceInfrastructureService().getPays(adresseEtrangere.getNumeroOfsPays(), adresseEtrangere.getDateDebut());
 	}
 
 	/**
@@ -567,7 +565,7 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 
 		Integer noOfsPays = addIndividu.getNoOfsPays();
 		if (noOfsPays != null) {
-			Pays pays = getServiceInfrastructureService().getPays(noOfsPays);
+			Pays pays = getServiceInfrastructureService().getPays(noOfsPays, addIndividu.getDateDebut());
 			if (pays != null) {
 				addDispoView.setPaysNpa(pays.getNomCourt());
 			}
@@ -601,7 +599,7 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 
 		Integer noOfsPays = adresse.getNoOfsPays();
 		if (noOfsPays != null) {
-			Pays pays = getServiceInfrastructureService().getPays(noOfsPays);
+			Pays pays = getServiceInfrastructureService().getPays(noOfsPays, adresse.getDateDebut());
 			if (pays != null) {
 				addDispoView.setPaysNpa(pays.getNomCourt());
 			}

@@ -205,7 +205,7 @@ public class InfrastructureEditor implements Editor {
 			}
 		case ETAT:
 		case TERRITOIRE:
-			final Pays pays = infraService.getPays(id.intValue());
+			final Pays pays = infraService.getPays(id.intValue(), null);
 			return pays == null ? "?" : pays.getNomCourt();
 		case LOCALITE:
 			final Localite localite = infraService.getLocaliteByONRP(id.intValue());

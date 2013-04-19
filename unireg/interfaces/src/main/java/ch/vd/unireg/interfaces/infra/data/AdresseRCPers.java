@@ -100,7 +100,7 @@ public class AdresseRCPers implements Adresse, Serializable {
 		this.numeroOrdrePostal = addressInfo.getSwissZipCodeId() == null ? 0 : addressInfo.getSwissZipCodeId();
 		this.numeroPostal = initNPA(addressInfo);
 		this.numeroPostalComplementaire = addressInfo.getSwissZipCodeAddOn();
-		this.noOfsPays = initNoOfsPays(addressInfo.getCountry(), infraService);
+		this.noOfsPays = initNoOfsPays(dateDebut, addressInfo.getCountry(), infraService);
 		this.rue = addressInfo.getStreet();
 		this.titre = addressInfo.getAddressLine1(); // TODO (rcpers) que faire d'addressLine2 ?
 		this.typeAdresse = TypeAdresseCivil.COURRIER;
@@ -138,15 +138,23 @@ public class AdresseRCPers implements Adresse, Serializable {
 			this.localisationPrecedente = null; // [SIFISC-4833] en cas de déménagement à l'intérieur de la commune, la localisation précédente doit être nulle
 		}
 		else {
-			this.localisationPrecedente = initLocalisation(residence.getComesFrom(), infraService);
+			this.localisationPrecedente = initLocalisation(getVeille(dateDebut), residence.getComesFrom(), infraService);
 		}
 
 		if (next != null && next.getDwellingAddress().getMovingDate() != null) {
 			this.localisationSuivante = null; // [SIFISC-4833] en cas de déménagement à l'intérieur de la commune, la localisation suivante doit être nulle
 		}
 		else {
-			this.localisationSuivante = initLocalisation(residence.getGoesTo(), infraService);
+			this.localisationSuivante = initLocalisation(getLendemain(dateFin), residence.getGoesTo(), infraService);
 		}
+	}
+
+	private static RegDate getVeille(@Nullable RegDate date) {
+		return date == null ? date : date.getOneDayBefore();
+	}
+
+	private static RegDate getLendemain(@Nullable RegDate date) {
+		return date == null ? date : date.getOneDayAfter();
 	}
 
 	private AdresseRCPers(String localite, int noOfsPays) {
@@ -216,7 +224,7 @@ public class AdresseRCPers implements Adresse, Serializable {
 				XmlUtils.xmlcal2regdate(current.getArrivalDate()) == XmlUtils.xmlcal2regdate(next.getArrivalDate());
 	}
 
-	protected static Localisation initLocalisation(Destination location, ServiceInfrastructureRaw infraService) {
+	protected static Localisation initLocalisation(RegDate date, Destination location, ServiceInfrastructureRaw infraService) {
 
 		if (location == null) {
 			return null;
@@ -234,7 +242,7 @@ public class AdresseRCPers implements Adresse, Serializable {
 
 			// [SIFISC-977] attention, ce pays peut n'être qu'un territoire et pas un état souverain !
 			// si c'est le cas, passer à l'état souverain (c'est ce qui nous intéresse pour les fors)
-			final Pays pays = infraService.getPays(countryId);
+			final Pays pays = infraService.getPays(countryId, date);
 			final int ofsEtatSouverain = pays != null ? pays.getNoOfsEtatSouverain() : ServiceInfrastructureRaw.noPaysInconnu;
 
 			if (adresseCourrier == null && StringUtils.isNotBlank(foreignCountry.getTown())) {
@@ -266,14 +274,14 @@ public class AdresseRCPers implements Adresse, Serializable {
 		return addressInfo.getForeignZipCode();
 	}
 
-	private static int initNoOfsPays(String countryCode, ServiceInfrastructureRaw infraService) {
+	private static int initNoOfsPays(RegDate date, String countryCode, ServiceInfrastructureRaw infraService) {
 
 		if ("CH".equals(countryCode)) {
 			// short path : 90% des adresses sont en Suisse
 			return ServiceInfrastructureRaw.noOfsSuisse;
 		}
 
-		final Pays pays = infraService.getPays(countryCode);
+		final Pays pays = infraService.getPays(countryCode, date);
 		if (pays == null) {
 			return 0;
 		}

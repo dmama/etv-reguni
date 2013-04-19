@@ -32,7 +32,7 @@
 						(<unireg:commune ofs="${forsFiscauxPM.numeroForFiscalCommuneHorsCanton}" displayProperty="sigleCanton" date="${forsFiscauxPM.dateDebut}"/>)
 					</c:when>
 					<c:when test="${forsFiscauxPM.typeAutoriteFiscale == 'PAYS_HS' }">
-						<unireg:infra entityId="${forsFiscauxPM.numeroForFiscalPays}" entityType="pays" entityPropertyName="nomCourt"></unireg:infra>
+						<unireg:pays ofs="${forsFiscauxPM.numeroForFiscalPays}" displayProperty="nomCourt" date="${forsFiscauxPM.dateDebut}"/>
 					</c:when>
 				</c:choose>
 			</display:column>
