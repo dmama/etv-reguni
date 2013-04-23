@@ -357,8 +357,11 @@
 							<c:when test="${!ligne.periodeImposition.span && !ligne.periodeImposition.filler}">
 								<c:set var="pi" value="${ligne.periodeImposition.range}" />
 								<td class="periodeImposition tooltip_cell" id="pi-<unireg:regdate regdate="${pi.dateDebut}" format="yyyyMMdd"/>" rowspan="<c:out value="${ligne.periodeImposition.longueurAffichage}" />">
-	                                <fmt:message key="option.type.contribuable.${pi.typeContribuable}"/> /
-	                                <fmt:message key="option.type.document.${pi.typeDocument}"/>
+	                                <fmt:message key="option.type.contribuable.${pi.typeContribuable}"/>
+									<c:if test="${pi.typeDocument != null}">
+										/
+	                                    <fmt:message key="option.type.document.${pi.typeDocument}"/>
+									</c:if>
                                     <c:if test="${pi.optionnelle}">
                                         (optionnelle)
                                     </c:if>
@@ -372,9 +375,9 @@
 	                                    Début : <b><unireg:date date="${pi.dateDebut}"/></b><br/>
 	                                    Fin : <b><unireg:date date="${pi.dateFin}"/></b><br/>
 	                                    Type de contribuable : <b><fmt:message key="option.type.contribuable.${pi.typeContribuable}"/></b><br/>
-	                                    Type de document : <b><fmt:message key="option.type.document.${pi.typeDocument}"/></b><br/>
-	                                    Qualification : <c:if test="${pi.qualification} != null"><b><fmt:message key="option.qualification.${pi.qualification}"/></b></c:if><br/>
-	                                    Adresse de retour : <b><fmt:message key="option.type.adresse.retour.${pi.adresseRetour}"/></b><br/>
+	                                    Type de document : <c:if test="${pi.typeDocument != null}"><b><fmt:message key="option.type.document.${pi.typeDocument}"/></b></c:if><br/>
+	                                    Qualification : <c:if test="${pi.qualification != null}"><b><fmt:message key="option.qualification.${pi.qualification}"/></b></c:if><br/>
+	                                    Adresse de retour : <c:if test="${pi.adresseRetour != null}"><b><fmt:message key="option.type.adresse.retour.${pi.adresseRetour}"/></b></c:if><br/>
 	                                    Optionnelle : <b><fmt:message key="option.ouinon.${pi.optionnelle}"/></b><br/>
 	                                    Remplacée par note : <b><fmt:message key="option.ouinon.${pi.remplaceeParNote}"/></b>
 	                                </div>
