@@ -38,6 +38,7 @@ public class EFactureController implements MessageSourceAware {
 	private static final String ACTION_URL = "actionUrl";
 	private static final String LIBELLE_ACTION = "libelleAction";
 	private static final String COMMAND = "command";
+	private static final String MAXLEN = "maxlen";
 	private EfactureManager efactureManager;
 	private SecurityProviderInterface securityProvider;
 	private MessageSource messageSource;
@@ -83,6 +84,10 @@ public class EFactureController implements MessageSourceAware {
 
 		model.addAttribute("histo", histo);
 		return "tiers/edition/efacture/edit";
+	}
+
+	private int getMaxLengthForManualComment() {
+		return efactureManager.getMaxLengthForManualComment();
 	}
 
 	@RequestMapping(value = "/suspend.do", method = RequestMethod.POST)
@@ -204,6 +209,7 @@ public class EFactureController implements MessageSourceAware {
 		model.addAttribute(ACTION_URL, String.format("%s?%s=%d", action.url, CTB, noCtb));
 		model.addAttribute(LIBELLE_ACTION, messageSource.getMessage(action.labelKey, null, WebContextUtils.getDefaultLocale()));
 		model.addAttribute(COMMAND, new FreeCommentView());
+		model.addAttribute(MAXLEN, getMaxLengthForManualComment());
 		return "tiers/edition/efacture/add-comment";
 	}
 }

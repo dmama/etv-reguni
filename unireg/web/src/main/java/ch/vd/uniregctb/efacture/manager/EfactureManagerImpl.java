@@ -60,8 +60,22 @@ public class EfactureManagerImpl implements EfactureManager {
 		}
 		else {
 			final String user = AuthenticationHelper.getCurrentPrincipal();
-			return String.format("[%s] %s", user, StringUtils.abbreviate(comment, 252 - user.length()));
+			return String.format("[%s] %s", user, StringUtils.abbreviate(comment, getMaxLengthForManualComment(user)));
 		}
+	}
+
+	/**
+	 * @param user le visa utilisé
+	 * @return taille maximale du commentaire manuel autorisé avec le visa donné
+	 */
+	private static int getMaxLengthForManualComment(String user) {
+		return 252 - user.length();     // 255 - ('[' + visa + ']' + ' ')
+	}
+
+	@Override
+	public int getMaxLengthForManualComment() {
+		final String user = AuthenticationHelper.getCurrentPrincipal();
+		return getMaxLengthForManualComment(user);
 	}
 
 	@Override

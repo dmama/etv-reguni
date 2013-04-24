@@ -80,4 +80,9 @@ public interface EfactureManager {
 	ResultatQuittancement quittancer(Long noCtb) throws EvenementEfactureException;
 
 	String getMessageQuittancement(ResultatQuittancement resultatQuittancement, long noCtb);
+
+	/**
+	 * @return la longueur maximale autorisée pour un commentaire saisi manuellement à l'activation ou la suspension d'un contribuable
+	 */
+	int getMaxLengthForManualComment();
 }
