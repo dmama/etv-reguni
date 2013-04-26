@@ -63,6 +63,7 @@
 								<c:if test="${command.motifDebut != null}">
 									<fmt:message key="option.motif.ouverture.${command.motifDebut}" />
 								</c:if>
+								<form:errors path="motifDebut" cssClass="error" />
 							</td>
 							<td><fmt:message key="label.motif.fermeture" />&nbsp;:</td>
 							<td>

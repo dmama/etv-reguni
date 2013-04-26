@@ -31,7 +31,10 @@ public abstract class EditForRevenuFortuneValidator extends EditForValidator {
 		// validation du motif de debut
 		if (view.getDateDebut() != null) {
 			if (view.getMotifDebut() == null) {
-				errors.rejectValue("motifDebut", "error.motif.ouverture.vide");
+				// [SIFISC-8563] On ne valide la non-nullité du motif d'ouverture que s'il n'était pas null avant
+				if (ffrf.getMotifOuverture() != null) {
+					errors.rejectValue("motifDebut", "error.motif.ouverture.vide");
+				}
 			}
 			else if (ffrf.getMotifOuverture() != view.getMotifDebut()) { // [SIFISC-7909] on ne valide le motif d'ouverture que s'il a changé
 				final NatureTiers natureTiers = ffrf.getTiers().getNatureTiers();
