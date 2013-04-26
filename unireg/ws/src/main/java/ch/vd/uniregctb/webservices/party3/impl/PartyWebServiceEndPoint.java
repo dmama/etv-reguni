@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.cxf.interceptor.InInterceptors;
 import org.apache.cxf.transport.http.AbstractHTTPDestination;
 import org.apache.log4j.Logger;
 import org.springframework.util.Assert;
@@ -60,6 +61,7 @@ import ch.vd.uniregctb.type.Niveau;
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
+@InInterceptors(interceptors = {"ch.vd.uniregctb.webservices.common.SoapActionRemovalInterceptor"})
 @WebService(targetNamespace = "http://www.vd.ch/fiscalite/unireg/webservices/party3", serviceName = "PartyWebServiceFactory", portName = "Service",
 		endpointInterface = "ch.vd.unireg.webservices.party3.PartyWebService")
 public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMonitorable {
