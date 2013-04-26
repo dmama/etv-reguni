@@ -367,29 +367,30 @@ public abstract class Depart extends Mouvement {
 		}
 		else if (isSourcierMixte(modeImpositionAncien)) {
 			// [UNIREG-1849] passe à l'ordinaire si for secondaire, sinon à la source
-			final List<ForFiscal> ffs = contribuable.getForsFiscauxValidAt(dateFermeture);
-			boolean hasForSecondaire = false;
-			for (ForFiscal ff : ffs) {
-				if (ff instanceof ForFiscalSecondaire) {
-					hasForSecondaire = true;
-					break;
-				}
-			}
-			if (hasForSecondaire) {
-				modeImposition = ModeImposition.ORDINAIRE;
-			}
-			else {
-				modeImposition = ModeImposition.SOURCE;
-			}
+			modeImposition = determineOrdinaireOuSourceSelonPresenceForSecondaire(contribuable, dateFermeture.getOneDayAfter());
 		}
 		else if (modeImpositionAncien == ModeImposition.DEPENSE && isEtrangerSansPermisC(contribuable, dateFermeture.getOneDayAfter(), tiersService)) {
-			modeImposition = ModeImposition.SOURCE;
+			// [SIFISC-7965] passe à l'ordinaire si for secondaire, sinon à la source
+			modeImposition = determineOrdinaireOuSourceSelonPresenceForSecondaire(contribuable, dateFermeture.getOneDayAfter());
 		}
 		else {
 			// tous les autres cas passent à l'ordinaire (ordinaire, dépense avec permis C, indigent...)
 			modeImposition = ModeImposition.ORDINAIRE;
 		}
 		return modeImposition;
+	}
+
+	private static ModeImposition determineOrdinaireOuSourceSelonPresenceForSecondaire(Contribuable ctb, RegDate dateReference) {
+		// [UNIREG-1849] passe à l'ordinaire si for secondaire, sinon à la source
+		final List<ForFiscal> ffs = ctb.getForsFiscauxValidAt(dateReference);
+		boolean hasForSecondaire = false;
+		for (ForFiscal ff : ffs) {
+			if (ff instanceof ForFiscalSecondaire) {
+				hasForSecondaire = true;
+				break;
+			}
+		}
+		return hasForSecondaire ? ModeImposition.ORDINAIRE : ModeImposition.SOURCE;
 	}
 
 	private static boolean isSourcierPur(ModeImposition modeImposition) {
