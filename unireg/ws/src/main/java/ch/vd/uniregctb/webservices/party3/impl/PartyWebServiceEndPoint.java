@@ -504,9 +504,21 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 		}
 	}
 
+	/**
+	 * Juste une instance un peu bidon pour pouvoir logguer les appels à la méthode "ping"
+	 * sans avoir à créer un nouvel objet à chaque fois...
+	 */
+	private static final Object PING_REQUEST = new Object() {
+		@Override
+		public String toString() {
+			return "PingRequest{}";
+		}
+	};
+
 	@Override
 	public void ping() {
 		// rien à faire
+		logReadAccess(PING_REQUEST, 0L, 0, null);
 	}
 
 	@Override
