@@ -1,0 +1,2 @@
+
+mvn -Peclipse-developer install

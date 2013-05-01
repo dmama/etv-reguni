@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<DemandeUtilisateur xmlns="http://www.vd.ch/fiscalite/empaci/DemandeUtilisateur-v2">
+	<InfoIAM>
+		<RoleApplicatif>fiscalite - empaci - employeur</RoleApplicatif>
+		<AccountId>xvdaesi2</AccountId>
+		<Chvdiamuniquekey>AB8B4DD34A59A8B</Chvdiamuniquekey>
+	</InfoIAM>
+</DemandeUtilisateur>

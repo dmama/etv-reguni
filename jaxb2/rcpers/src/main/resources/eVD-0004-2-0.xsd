@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+			xmlns:eVD-0004="http://evd.vd.ch/xmlns/eVD-0004/2"
+			targetNamespace="http://evd.vd.ch/xmlns/eVD-0004/2"
+			elementFormDefault="qualified"
+			attributeFormDefault="unqualified"
+			version="1.0">
+
+	<xs:annotation>
+		<xs:documentation xml:lang="fr">
+
+			Types et éléments servants communs aux schemas RCPers.
+
+		</xs:documentation>
+	</xs:annotation>
+
+	<xs:annotation>
+		<xs:documentation xml:lang="fr">
+		******************************************************************************************
+		***
+		*** Types pour les erreurs
+		***
+		******************************************************************************************
+		</xs:documentation>
+	</xs:annotation>
+	<xs:element name="errors">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="error" type="eVD-0004:errorType" minOccurs="1" maxOccurs="unbounded" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:complexType name="errorType">
+		<xs:sequence>
+			<xs:element name="code" type="xs:int" minOccurs="0" />
+			<xs:element name="message" type="xs:string" minOccurs="0" />
+		</xs:sequence>
+	</xs:complexType>
+
+</xs:schema>

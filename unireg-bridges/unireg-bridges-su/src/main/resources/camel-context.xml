@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:camel="http://activemq.apache.org/camel/schema/spring"
+	xsi:schemaLocation="
+          http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+          http://activemq.apache.org/camel/schema/spring http://activemq.apache.org/camel/schema/spring/camel-spring.xsd">
+
+	<bean id="configurer"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath:servicemix.properties
+				</value>
+				<value>classpath:unireg-bridges.properties
+				</value>
+			</list>
+		</property>
+	</bean>
+
+
+	<camelContext id="camelContext"
+		xmlns="http://activemq.apache.org/camel/schema/spring"
+		errorHandlerRef="noErrorHandler">
+
+		<endpoint id="EvtRegCivilTopic" uri="jmsEvtCivil:topic:${evtCivil.topic.jndi}" />
+		<endpoint id="EvtRegFiscalTopic" uri="jmsEvtFiscal:topic:${evtFiscal.topic.jndi}" />
+		<endpoint id="EditiqueOutputQueue"
+			uri="jmsEditique:${editique.queue.output.jndi}?selector=documentType LIKE 'RG%25' and printMode='D'" />
+		<endpoint id="EditiqueInputTopic" uri="jmsEditique:topic:${editique.topic.input.jndi}" />
+		<endpoint id="TaoIsEvtExterneQueue" uri="jmsTaoIs:${taoIs.queue.evtExterne.jndi}" />
+
+		<route>
+			<from ref="EvtRegCivilTopic" />
+			<policy ref="PROPAGATION_REQUIRED" />
+			<to uri="activemq:ch.vd.registre.evtCivil" />
+		</route>
+
+		<route>
+			<from uri="activemq:ch.vd.registre.evtFiscal" />
+			<policy ref="PROPAGATION_REQUIRED" />
+			<to ref="EvtRegFiscalTopic" />
+		</route>
+
+		<route>
+			<from uri="activemq:ch.vd.editique.output" />
+			<policy ref="PROPAGATION_REQUIRED" />
+			<to ref="EditiqueInputTopic" />
+		</route>
+
+		<route>
+			<from ref="EditiqueOutputQueue" />
+			<policy ref="PROPAGATION_REQUIRED" />
+			<to uri="activemq:ch.vd.editique.input" />
+		</route>
+
+		<route>
+			<from ref="TaoIsEvtExterneQueue" />
+			<policy ref="PROPAGATION_REQUIRED" />
+			<to uri="activemq:ch.vd.unireg.evtExterne" />
+		</route>
+
+	</camelContext>
+
+	<!-- noErrorHandler -->
+
+	<bean id="noErrorHandler" class="org.apache.camel.builder.NoErrorHandlerBuilder"/>
+
+	<!-- transaction -->
+
+	<bean id="transactionManager" class="org.springframework.jndi.JndiObjectFactoryBean">
+		<property name="jndiName" value="javax.transaction.TransactionManager" />
+	</bean>
+
+	<bean id="PROPAGATION_REQUIRED" class="org.apache.camel.spring.spi.SpringTransactionPolicy">
+		<property name="transactionManager" ref="transactionManager" />
+	</bean>
+
+	<!-- activemq jms connection -->
+
+	<bean id="activemq" class="org.apache.camel.component.jms.JmsComponent">
+		<property name="configuration" ref="jmsConfig" />
+	</bean>
+
+	<bean id="jmsConfig" class="org.apache.camel.component.jms.JmsConfiguration">
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="transacted" value="true" />
+		<property name="transactedInOut" value="true" />
+		<property name="concurrentConsumers" value="1" />
+		<property name="connectionFactory">
+			<bean class="org.jencks.amqpool.JcaPooledConnectionFactory">
+				<property name="connectionFactory">
+					<bean class="org.apache.activemq.spring.ActiveMQConnectionFactory">
+						<property name="brokerURL"
+							value="${activemq.url}?jms.redeliveryPolicy.maximumRedeliveries=-1&amp;jms.redeliveryPolicy.initialRedeliveryDelay=5000" />
+						<property name="userName" value="${activemq.username}" />
+						<property name="password" value="${activemq.password}" />
+					</bean>
+				</property>
+			</bean>
+		</property>
+	</bean>
+
+
+	<!-- EvtCivil jms connection -->
+
+	<bean id="jmsEvtCivil" class="org.apache.camel.component.jms.JmsComponent">
+		<property name="configuration" ref="configJmsEvtCivil" />
+	</bean>
+
+	<bean id="configJmsEvtCivil" class="org.apache.camel.component.jms.JmsConfiguration">
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="transacted" value="true" />
+		<property name="transactedInOut" value="true" />
+		<property name="concurrentConsumers" value="1" />
+		<property name="clientId" value="UniregBridgeClient" />
+		<property name="durableSubscriptionName" value="UniregBridgeSubscription" />
+		<property name="connectionFactory">
+			<bean class="org.springframework.jndi.JndiObjectFactoryBean">
+				<property name="lookupOnStartup" value="false" />
+				<property name="expectedType" value="javax.jms.ConnectionFactory" />
+				<property name="jndiName" value="weblogic.jms.XAConnectionFactory" />
+				<property name="jndiTemplate" ref="evtCivil" />
+				<property name="cache" value="false" />
+			</bean>
+		</property>
+		<property name="destinationResolver">
+			<bean
+				class="org.springframework.jms.support.destination.JndiDestinationResolver">
+				<property name="jndiTemplate" ref="evtCivil" />
+				<property name="cache" value="false" />
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="evtCivil" class="org.springframework.jndi.JndiTemplate">
+		<property name="environment">
+			<props>
+				<prop key="java.naming.factory.initial">weblogic.jndi.WLInitialContextFactory
+				</prop>
+				<prop key="java.naming.provider.url">${evtCivil.server.jndi}
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<!-- EvtFiscal jms connection -->
+
+	<bean id="jmsEvtFiscal" class="org.apache.camel.component.jms.JmsComponent">
+		<property name="configuration" ref="configJmsEvtFiscal" />
+	</bean>
+
+	<bean id="configJmsEvtFiscal" class="org.apache.camel.component.jms.JmsConfiguration">
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="transacted" value="true" />
+		<property name="transactedInOut" value="true" />
+		<property name="concurrentConsumers" value="1" />
+		<property name="connectionFactory">
+			<bean class="org.springframework.jndi.JndiObjectFactoryBean">
+				<property name="lookupOnStartup" value="false" />
+				<property name="expectedType" value="javax.jms.ConnectionFactory" />
+				<property name="jndiName" value="weblogic.jms.XAConnectionFactory" />
+				<property name="jndiTemplate" ref="evtFiscal" />
+				<property name="cache" value="false" />
+			</bean>
+		</property>
+		<property name="destinationResolver">
+			<bean
+				class="org.springframework.jms.support.destination.JndiDestinationResolver">
+				<property name="jndiTemplate" ref="evtFiscal" />
+				<property name="cache" value="false" />
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="evtFiscal" class="org.springframework.jndi.JndiTemplate">
+		<property name="environment">
+			<props>
+				<prop key="java.naming.factory.initial">weblogic.jndi.WLInitialContextFactory
+				</prop>
+				<prop key="java.naming.provider.url">${evtFiscal.server.jndi}
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<!-- Editique jms connection -->
+
+	<bean id="jmsEditique" class="org.apache.camel.component.jms.JmsComponent">
+		<property name="configuration" ref="configJmsEditique" />
+	</bean>
+
+	<bean id="configJmsEditique" class="org.apache.camel.component.jms.JmsConfiguration">
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="transacted" value="true" />
+		<property name="transactedInOut" value="true" />
+		<property name="concurrentConsumers" value="1" />
+		<property name="connectionFactory">
+			<bean class="org.springframework.jndi.JndiObjectFactoryBean">
+				<property name="lookupOnStartup" value="false" />
+				<property name="expectedType" value="javax.jms.ConnectionFactory" />
+				<property name="jndiName" value="weblogic.jms.XAConnectionFactory" />
+				<property name="jndiTemplate" ref="editique" />
+				<property name="cache" value="false" />
+			</bean>
+		</property>
+		<property name="destinationResolver">
+			<bean
+				class="org.springframework.jms.support.destination.JndiDestinationResolver">
+				<property name="jndiTemplate" ref="editique" />
+				<property name="cache" value="false" />
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="editique" class="org.springframework.jndi.JndiTemplate">
+		<property name="environment">
+			<props>
+				<prop key="java.naming.factory.initial">weblogic.jndi.WLInitialContextFactory
+				</prop>
+				<prop key="java.naming.provider.url">${editique.server.jndi}
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+
+	<!-- TAOIS jms connection -->
+
+	<bean id="jmsTaoIs" class="org.apache.camel.component.jms.JmsComponent">
+		<property name="configuration" ref="configJmsTaoIs" />
+	</bean>
+
+	<bean id="configJmsTaoIs" class="org.apache.camel.component.jms.JmsConfiguration">
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="transacted" value="true" />
+		<property name="transactedInOut" value="true" />
+		<property name="concurrentConsumers" value="1" />
+		<property name="connectionFactory">
+			<bean class="org.springframework.jndi.JndiObjectFactoryBean">
+				<property name="lookupOnStartup" value="false" />
+				<property name="expectedType" value="javax.jms.ConnectionFactory" />
+				<property name="jndiName" value="weblogic.jms.XAConnectionFactory" />
+				<property name="jndiTemplate" ref="taoIs" />
+				<property name="cache" value="false" />
+			</bean>
+		</property>
+		<property name="destinationResolver">
+			<bean
+				class="org.springframework.jms.support.destination.JndiDestinationResolver">
+				<property name="jndiTemplate" ref="taoIs" />
+				<property name="cache" value="false" />
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="taoIs" class="org.springframework.jndi.JndiTemplate">
+		<property name="environment">
+			<props>
+				<prop key="java.naming.factory.initial">weblogic.jndi.WLInitialContextFactory
+				</prop>
+				<prop key="java.naming.provider.url">${taoIs.server.jndi}</prop>
+			</props>
+		</property>
+	</bean>
+
+</beans>
