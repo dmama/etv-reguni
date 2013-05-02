@@ -41,21 +41,29 @@ public class RapportFiliation {
 	private RegDate dateDebut;
 	private RegDate dateFin;
 
-	public RapportFiliation(Individu individu, PersonnePhysique personnePhysique, Individu autreIndividu, @Nullable PersonnePhysique autrePersonnePhysique, Type type) {
+	public RapportFiliation(Individu individu, PersonnePhysique personnePhysique, Individu autreIndividu, @Nullable PersonnePhysique autrePersonnePhysique,
+	                        RegDate dateDebut, RegDate dateFin, Type type) {
 		this.individu = individu;
 		this.personnePhysique = personnePhysique;
 		this.autreIndividu = autreIndividu;
 		this.autrePersonnePhysique = autrePersonnePhysique;
 		this.type = type;
 
-		// le rapport est terminé au décès de l'un des membres
-		if (individu.getDateDeces() != null || autreIndividu.getDateDeces() != null) {
+		// le rapport est terminé au plus tard au décès de l'un des membres
+		if (dateFin != null) {
+			this.dateFin = dateFin;
+		}
+		else if (individu.getDateDeces() != null || autreIndividu.getDateDeces() != null) {
 			this.dateFin = RegDateHelper.minimum(individu.getDateDeces(), autreIndividu.getDateDeces(), NullDateBehavior.LATEST);
 		}
 
 		// le rapport démarre à la naissance du dernier membre
-		this.dateDebut = RegDateHelper.maximum(individu.getDateNaissance(), autreIndividu.getDateNaissance(), NullDateBehavior.EARLIEST);
-
+		if (dateDebut != null) {
+			this.dateDebut = dateDebut;
+		}
+		else {
+			this.dateDebut = RegDateHelper.maximum(individu.getDateNaissance(), autreIndividu.getDateNaissance(), NullDateBehavior.EARLIEST);
+		}
 	}
 
 	public Individu getIndividu() {

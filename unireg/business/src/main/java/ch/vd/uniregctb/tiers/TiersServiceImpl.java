@@ -1895,7 +1895,7 @@ public class TiersServiceImpl implements TiersService {
             throw new IndividuNotFoundException(noIndEnfant);
         }
 
-        return new RapportFiliation(individu, personnePhysique, enfant, ppEnfant, RapportFiliation.Type.ENFANT);
+        return new RapportFiliation(individu, personnePhysique, enfant, ppEnfant, relationEnfant.getDateDebut(), relationEnfant.getDateFin(), RapportFiliation.Type.ENFANT);
     }
 
     @Nullable
@@ -1908,17 +1908,9 @@ public class TiersServiceImpl implements TiersService {
 	        LOGGER.warn("Impossible de trouver la personne physique qui correspond à l'individu enfant n°" + enfant.getNoTechnique());
         }
 
-        final RapportFiliation rapportView = new RapportFiliation(individu, personnePhysique, enfant, ppEnfant, RapportFiliation.Type.ENFANT);
-
-        final RegDate dateDebut = RegDateHelper.maximum(ar.getDateAdoption(), ar.getDateReconnaissance(), NullDateBehavior.EARLIEST);
-        if (dateDebut != null) {
-            rapportView.setDateDebut(dateDebut);
-        }
-        if (ar.getDateDesaveu() != null) {
-            rapportView.setDateFin(ar.getDateDesaveu());
-        }
-
-        return rapportView;
+	    final RegDate dateDebut = RegDateHelper.maximum(ar.getDateAdoption(), ar.getDateReconnaissance(), NullDateBehavior.EARLIEST);
+	    final RegDate dateFin = ar.getDateDesaveu();
+        return new RapportFiliation(individu, personnePhysique, enfant, ppEnfant, dateDebut, dateFin, RapportFiliation.Type.ENFANT);
     }
 
     @Nullable
@@ -1929,7 +1921,6 @@ public class TiersServiceImpl implements TiersService {
         final PersonnePhysique ppParent = tiersDAO.getPPByNumeroIndividu(noIndParent);
         if (ppParent == null) {
 	        LOGGER.warn("Impossible de trouver la personne physique qui correspond à l'individu parent n°" + noIndParent);
-            return null;
         }
 
         final Individu parent = serviceCivilService.getIndividu(noIndParent, date, AttributeIndividu.ADOPTIONS);
@@ -1937,20 +1928,34 @@ public class TiersServiceImpl implements TiersService {
             throw new IndividuNotFoundException(noIndParent);
         }
 
-        final RapportFiliation rapportView = new RapportFiliation(individu, personnePhysique, parent, ppParent, RapportFiliation.Type.PARENT);
+	    final RegDate dateDebut;
+	    final RegDate dateFin;
+	    if (relationParent.getDateDebut() != null) {
+		    dateDebut = relationParent.getDateDebut();
+	    }
+	    else {
+		    final AdoptionReconnaissance ar = getAdoptionPourEnfant(parent.getAdoptionsReconnaissances(), personnePhysique.getNumeroIndividu());
+		    if (ar != null) {
+			    dateDebut = RegDateHelper.maximum(ar.getDateAdoption(), ar.getDateReconnaissance(), NullDateBehavior.EARLIEST);
+		    }
+		    else {
+			    dateDebut = null;
+		    }
+	    }
+	    if (relationParent.getDateFin() != null) {
+		    dateFin = relationParent.getDateFin();
+	    }
+	    else {
+		    final AdoptionReconnaissance ar = getAdoptionPourEnfant(parent.getAdoptionsReconnaissances(), personnePhysique.getNumeroIndividu());
+		    if (ar != null) {
+			    dateFin = ar.getDateDesaveu();
+		    }
+		    else {
+			    dateFin = null;
+		    }
+	    }
 
-        final AdoptionReconnaissance ar = getAdoptionPourEnfant(parent.getAdoptionsReconnaissances(), personnePhysique.getNumeroIndividu());
-        if (ar != null) {
-            final RegDate dateDebut = RegDateHelper.maximum(ar.getDateAdoption(), ar.getDateReconnaissance(), NullDateBehavior.EARLIEST);
-            if (dateDebut != null) {
-                rapportView.setDateDebut(dateDebut);
-            }
-            if (ar.getDateDesaveu() != null && (rapportView.getDateFin() == null || ar.getDateDesaveu().isBefore(rapportView.getDateFin()))) {
-                rapportView.setDateFin(ar.getDateDesaveu());
-            }
-        }
-
-        return rapportView;
+        return new RapportFiliation(individu, personnePhysique, parent, ppParent, dateDebut, dateFin, RapportFiliation.Type.PARENT);
     }
 
     private static AdoptionReconnaissance getAdoptionPourEnfant(Collection<AdoptionReconnaissance> adoptions, long noIndEnfant) {
