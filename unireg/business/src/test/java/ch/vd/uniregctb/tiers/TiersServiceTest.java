@@ -6401,8 +6401,103 @@ public class TiersServiceTest extends BusinessTest {
 				return null;
 			}
 		});
+	}
 
+	@Test
+	public void testGetRapportsFiliation() throws Exception {
 
+		final long noIndividuEnfant = 43784328L;
+		final long noIndividuPapa = 224243L;
+		final long noIndividuMaman1 = 23474236L;
+		final long noIndividuMaman2 = 3474328523L;
+		final RegDate dateAdoptionMaman2 = date(2012, 5, 12);
+		final RegDate dateNaissanceEnfant = date(2010, 1, 1);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu enfant = addIndividu(noIndividuEnfant, dateNaissanceEnfant, "Flintstone", "Junior", Sexe.MASCULIN);
+				final MockIndividu papa = addIndividu(noIndividuPapa, null, "Flintstone", "Senior", Sexe.MASCULIN);
+				final MockIndividu maman1 = addIndividu(noIndividuMaman1, null, "Flintstone", "Mama-One", Sexe.FEMININ);
+				final MockIndividu maman2 = addIndividu(noIndividuMaman2, null, "Flintstone", "Mama-Two", Sexe.FEMININ);
+
+				addLiensFiliation(papa, enfant, dateNaissanceEnfant, null);
+				addLiensFiliation(maman1, enfant, dateNaissanceEnfant, dateAdoptionMaman2.addDays(-1));
+				addLiensFiliation(maman2, enfant, dateAdoptionMaman2, null);
+			}
+		});
+
+		final class Ids {
+			long enfant;
+			long papa;
+			long maman1;
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique enfant = addHabitant(noIndividuEnfant);
+				final PersonnePhysique papa = addHabitant(noIndividuPapa);
+				final PersonnePhysique maman1 = addHabitant(noIndividuMaman1);
+				final Ids ids = new Ids();
+				ids.enfant = enfant.getNumero();
+				ids.papa = papa.getNumero();
+				ids.maman1 = maman1.getNumero();
+				return ids;
+			}
+		});
+
+		// interrogation des relations de l'enfant
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique enfant = (PersonnePhysique) tiersDAO.get(ids.enfant);
+				final List<RapportFiliation> rapports = tiersService.getRapportsFiliation(enfant);
+				Assert.assertNotNull(rapports);
+				Assert.assertEquals(3, rapports.size());
+
+				boolean vuPapa = false;
+				boolean vuMaman1 = false;
+				boolean vuMaman2 = false;
+
+				for (RapportFiliation rapport : rapports) {
+					Assert.assertNotNull(rapport);
+					Assert.assertEquals(RapportFiliation.Type.PARENT, rapport.getType());
+					Assert.assertEquals(noIndividuEnfant, rapport.getIndividu().getNoTechnique());
+					Assert.assertEquals((Long) ids.enfant, rapport.getPersonnePhysique().getNumero());
+					Assert.assertNotNull(rapport.getAutreIndividu());
+					if (rapport.getAutreIndividu().getNoTechnique() == noIndividuPapa) {
+						Assert.assertFalse(vuPapa);
+						Assert.assertEquals((Long) ids.papa, rapport.getAutrePersonnePhysique().getNumero());
+						Assert.assertEquals(dateNaissanceEnfant, rapport.getDateDebut());
+						Assert.assertNull(rapport.getDateFin());
+						vuPapa = true;
+					}
+					else if (rapport.getAutreIndividu().getNoTechnique() == noIndividuMaman1) {
+						Assert.assertFalse(vuMaman1);
+						Assert.assertEquals((Long) ids.maman1, rapport.getAutrePersonnePhysique().getNumero());
+						Assert.assertEquals(dateNaissanceEnfant, rapport.getDateDebut());
+						Assert.assertEquals(dateAdoptionMaman2.addDays(-1), rapport.getDateFin());
+						vuMaman1 = true;
+					}
+					else if (rapport.getAutreIndividu().getNoTechnique() == noIndividuMaman2) {
+						Assert.assertFalse(vuMaman2);
+						Assert.assertNull(rapport.getAutrePersonnePhysique());
+						Assert.assertEquals(dateAdoptionMaman2, rapport.getDateDebut());
+						Assert.assertNull(rapport.getDateFin());
+						vuMaman2 = true;
+					}
+				}
+
+				Assert.assertTrue(vuPapa);
+				Assert.assertTrue(vuMaman1);
+				Assert.assertTrue(vuMaman2);
+
+				return null;
+			}
+		});
 	}
 
 }

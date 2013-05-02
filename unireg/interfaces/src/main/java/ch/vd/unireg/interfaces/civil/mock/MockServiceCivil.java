@@ -311,6 +311,27 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 		return adresse;
 	}
 
+	public static void addLienVersEnfant(MockIndividu parent, MockIndividu enfant, RegDate dateDebut, @Nullable RegDate dateFin) {
+		if (enfant.getSexe() == null) {
+			throw new IllegalArgumentException("Le sexe de l'enfant doit être connu");
+		}
+		final TypeRelationVersIndividu typeRelation = enfant.getSexe() == Sexe.FEMININ ? TypeRelationVersIndividu.FILLE : TypeRelationVersIndividu.FILS;
+		parent.getEnfants().add(new RelationVersIndividuImpl(enfant.getNoTechnique(), typeRelation, dateDebut, dateFin));
+	}
+
+	public static void addLienVersParent(MockIndividu enfant, MockIndividu parent, RegDate dateDebut, @Nullable RegDate dateFin) {
+		if (parent.getSexe() == null) {
+			throw new IllegalArgumentException("Le sexe du parent doit être connu");
+		}
+		final TypeRelationVersIndividu typeRelation = parent.getSexe() == Sexe.FEMININ ? TypeRelationVersIndividu.MERE : TypeRelationVersIndividu.PERE;
+		enfant.getParents().add(new RelationVersIndividuImpl(parent.getNoTechnique(), typeRelation, dateDebut, dateFin));
+	}
+
+	public static void addLiensFiliation(MockIndividu parent, MockIndividu enfant, RegDate dateDebut, @Nullable RegDate dateFin) {
+		addLienVersEnfant(parent, enfant, dateDebut, dateFin);
+		addLienVersParent(enfant, parent, dateDebut, dateFin);
+	}
+
 	/**
 	 * Unit les deux individus par le mariage. Si les individus sont du même sexe, l'état-civil est PACS; et dans le cas normal,
 	 * l'état-civil est MARIE.
