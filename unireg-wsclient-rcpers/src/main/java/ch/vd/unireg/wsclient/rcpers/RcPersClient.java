@@ -2,10 +2,10 @@ package ch.vd.unireg.wsclient.rcpers;
 
 import java.util.Collection;
 
-import ch.vd.evd0001.v3.ListOfFoundPersons;
-import ch.vd.evd0001.v3.ListOfPersons;
-import ch.vd.evd0001.v3.ListOfRelations;
-import ch.vd.evd0006.v1.Event;
+import ch.vd.evd0001.v4.ListOfFoundPersons;
+import ch.vd.evd0001.v4.ListOfPersons;
+import ch.vd.evd0001.v4.ListOfRelations;
+import ch.vd.evd0001.v4.Event;
 import ch.vd.registre.base.date.RegDate;
 
 @SuppressWarnings("UnusedDeclaration")
