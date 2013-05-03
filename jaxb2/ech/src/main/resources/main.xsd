@@ -8,6 +8,8 @@
 	<xs:import namespace="http://www.ech.ch/xmlns/eCH-0021/4" schemaLocation="http://www.ech.ch/xmlns/eCH-0021/4/eCH-0021-4-0.xsd" />
 	<xs:import namespace="http://www.ech.ch/xmlns/eCH-0044/3" schemaLocation="http://www.ech.ch/xmlns/eCH-0044/3/eCH-0044-3-0.xsd" />
 	<xs:import namespace="http://www.ech.ch/xmlns/eCH-0046/2" schemaLocation="http://www.ech.ch/xmlns/eCH-0046/2/eCH-0046-2-1.xsd" />
+	<xs:import namespace="http://www.ech.ch/xmlns/eCH-0058/2" schemaLocation="http://www.ech.ch/xmlns/eCH-0058/2/eCH-0058-2-0.xsd" />
 	<xs:import namespace="http://www.ech.ch/xmlns/eCH-0084/1" schemaLocation="http://www.ech.ch/xmlns/eCH-0084/1/eCH-0084-commons-1-0.xsd" />
+	<xs:import namespace="http://www.ech.ch/xmlns/eCH-0090/1" schemaLocation="http://www.ech.ch/xmlns/eCH-0090/1/eCH-0090-1-0.xsd" />
 
 </xs:schema>
