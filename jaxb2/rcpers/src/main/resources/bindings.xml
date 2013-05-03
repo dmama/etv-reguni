@@ -17,12 +17,12 @@
 		</jxb:bindings>
 	</jxb:bindings>
 
-	<jxb:bindings schemaLocation="http://evd.vd.ch/xmlns/eVD-0004/2/eVD-0004-2-0.xsd">
+	<jxb:bindings schemaLocation="http://evd.vd.ch/xmlns/eVD-0004/3/eVD-0004-3-0.xsd">
 		<jxb:schemaBindings>
-			<jxb:package name="ch.vd.evd0004.v2" />
+			<jxb:package name="ch.vd.evd0004.v3" />
 		</jxb:schemaBindings>
 		<jxb:bindings>
-			<namespace:prefix name="eVD-0004-2" />
+			<namespace:prefix name="eVD-0004-3" />
 		</jxb:bindings>
 	</jxb:bindings>
 
