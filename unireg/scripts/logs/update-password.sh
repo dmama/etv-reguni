@@ -20,11 +20,13 @@ PWD=$(grep "^password=" "$CRED_FILE" | sed -e 's/^password=//')
 
 # modification de ~/.netrc
 NETRC_FILE=~/.netrc
-MACHINE=logapp.etat-de-vaud.ch
-sed -i -e "/machine $MACHINE/,+2 D" "$NETRC_FILE"
-touch "$NETRC_FILE"
-chmod 600 "$NETRC_FILE"
-echo -e "machine $MACHINE\n\tlogin $USR\n\tpassword $PWD" >> "$NETRC_FILE"
+MACHINES="logapp.etat-de-vaud.ch subversion.etat-de-vaud.ch"
+for MACHINE in $MACHINES; do
+	sed -i -e "/machine $MACHINE/,+2 D" "$NETRC_FILE"
+	touch "$NETRC_FILE"
+	chmod 600 "$NETRC_FILE"
+	echo -e "machine $MACHINE\n\tlogin $USR\n\tpassword $PWD" >> "$NETRC_FILE"
+done
 
 ## modification de ~/.wgetrc (proxy authentication)
 #WGETRC_FILE=~/.wgetrc
