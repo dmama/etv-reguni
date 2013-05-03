@@ -12,6 +12,11 @@ import ch.vd.uniregctb.type.Sexe;
 public interface Individu extends EntiteCivile {
 
 	/**
+	 * @return le statut (actif, inactif, remplacé par...) de l'individu
+	 */
+	StatutIndividu getStatut();
+
+	/**
 	 * @return le prénom de l'individu
 	 */
 	String getPrenom();

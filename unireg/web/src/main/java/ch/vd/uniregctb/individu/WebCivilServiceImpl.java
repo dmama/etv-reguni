@@ -8,12 +8,15 @@ import java.util.List;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 
+import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.EtatCivil;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
 import ch.vd.unireg.interfaces.civil.data.Nationalite;
 import ch.vd.unireg.interfaces.civil.data.Origine;
 import ch.vd.unireg.interfaces.civil.data.Permis;
+import ch.vd.unireg.interfaces.civil.data.PermisList;
+import ch.vd.unireg.interfaces.civil.data.StatutIndividu;
 import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.common.NationaliteHelper;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
@@ -46,7 +49,7 @@ public class WebCivilServiceImpl implements WebCivilService, MessageSourceAware 
 	 */
 	@Override
 	public IndividuView getIndividu(Long numeroIndividu) {
-		final Individu indSource = serviceCivilService.getIndividu(numeroIndividu, null);
+		final Individu indSource = serviceCivilService.getIndividu(numeroIndividu, null, AttributeIndividu.NATIONALITES, AttributeIndividu.PERMIS, AttributeIndividu.ORIGINE);
 		if (indSource == null) {
 			throw new ObjectNotFoundException(this.messageSource.getMessage("error.individu.inexistant", new Object[] {Long.toString(numeroIndividu)},  WebContextUtils.getDefaultLocale()));
 		}
@@ -90,11 +93,12 @@ public class WebCivilServiceImpl implements WebCivilService, MessageSourceAware 
 		indCible.setDateNaissance(indSource.getDateNaissance());
 		indCible.setAncienNumeroAVS(indSource.getNoAVS11());
 		indCible.setNumeroAssureSocial(indSource.getNouveauNoAVS());
-		indCible.setNumeroRCE( indSource.getNumeroRCE() );
+		indCible.setNumeroRCE(indSource.getNumeroRCE());
+		traiteStatut(indSource.getStatut(), indCible);
 		traiteSexe(indSource, indCible);
-		traitePermis(indSource.getNoTechnique(), indCible);
+		traitePermis(indSource.getPermis(), indCible);
 		traiteEtatCivil(indSource, indCible);
-		traiteOrigine(indSource.getNoTechnique(), indCible);
+		traiteOrigine(indSource.getOrigines(), indCible);
 		traiteNationalite(indSource, indCible);
 		return indCible;
 	}
@@ -110,23 +114,38 @@ public class WebCivilServiceImpl implements WebCivilService, MessageSourceAware 
 	}
 
 	/**
+	 * Traitement du statut RCPers
+	 * @param statut statut connu dans le civil
+	 * @param indCible vue de destination pour affichage dans Unireg
+	 */
+	private void traiteStatut(StatutIndividu statut, IndividuView indCible) {
+		if (statut != null) {
+			indCible.setCanceled(!statut.isActive());
+			indCible.setNumeroIndividuRemplacant(statut.getNoIndividuRemplacant());
+		}
+		else {
+			indCible.setCanceled(false);
+			indCible.setNumeroIndividuRemplacant(null);
+		}
+	}
+
+	/**
 	 * Traitement du permis de travail
 	 *
-	 * @param numeroIndividu un numéro d'individu
-	 * @param view           la vue à compléter
+	 * @param permis    la liste des permis de l'individu
+	 * @param indCible  la vue à compléter
 	 */
-	private void traitePermis(Long numeroIndividu, IndividuView view) {
-		final Collection<Permis> permis = serviceCivilService.getPermis(numeroIndividu, null);
+	private void traitePermis(PermisList permis, IndividuView indCible) {
 		if (permis != null && !permis.isEmpty()) {
 			final List<PermisView> list = new ArrayList<>();
 			for (Permis p : permis) {
 				list.add(new PermisView(p));
 			}
 			Collections.sort(list, new PermisViewComparator());
-			view.setPermisView(list);
+			indCible.setPermisView(list);
 		}
 		else {
-			view.setPermisView(Collections.<PermisView>emptyList());
+			indCible.setPermisView(Collections.<PermisView>emptyList());
 		}
 	}
 
@@ -157,8 +176,7 @@ public class WebCivilServiceImpl implements WebCivilService, MessageSourceAware 
 	/**
 	 * Origine
 	 */
-	private void traiteOrigine(Long numeroIndividu, IndividuView indCible) {
-		final Collection<Origine> origines = serviceCivilService.getOrigines(numeroIndividu, null);
+	private void traiteOrigine(Collection<Origine> origines, IndividuView indCible) {
 		if (origines != null && !origines.isEmpty()) {
 			final StringBuilder b = new StringBuilder();
 			for (Origine origine : origines) {

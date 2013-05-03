@@ -51,12 +51,13 @@ import ch.vd.uniregctb.type.TypeAdresseCivil;
 
 public class IndividuRCPers implements Individu, Serializable {
 
-	private static final long serialVersionUID = 4388869302797702662L;
+	private static final long serialVersionUID = -6880076724313597935L;
 
 	private static final EnumSet<AttributeIndividu> RELATION_RELATED = EnumSet.of(AttributeIndividu.CONJOINTS, AttributeIndividu.ENFANTS, AttributeIndividu.PARENTS);
 	private static final EnumSet<AttributeIndividu> NON_RELATION_RELATED = EnumSet.complementOf(RELATION_RELATED);
 
 	private long noTechnique;
+	private StatutIndividu statut;
 	private String prenom;
 	private String autresPrenoms;
 	private String nom;
@@ -89,6 +90,7 @@ public class IndividuRCPers implements Individu, Serializable {
 
 	public IndividuRCPers(Person person, @Nullable List<Relationship> relations, boolean history, boolean withRelations, ServiceInfrastructureRaw infraService) {
 		this.noTechnique = getNoIndividu(person);
+		this.statut = initStatut(person.getStatus());
 
 		final Identity identity = person.getIdentity();
 		final PersonIdentification identification = identity.getPersonIdentification();
@@ -153,6 +155,7 @@ public class IndividuRCPers implements Individu, Serializable {
 
 	public IndividuRCPers(IndividuRCPers right, Set<AttributeIndividu> parts) {
 		this.noTechnique = right.noTechnique;
+		this.statut = right.statut;
 		this.prenom = right.getPrenom();
 		this.autresPrenoms = right.getAutresPrenoms();
 		this.nom = right.getNom();
@@ -198,6 +201,7 @@ public class IndividuRCPers implements Individu, Serializable {
 
 	public IndividuRCPers(IndividuRCPers right, @NotNull RegDate date) {
 		this.noTechnique = right.noTechnique;
+		this.statut = right.statut;
 		this.prenom = right.getPrenom();
 		this.autresPrenoms = right.getAutresPrenoms();
 		this.nom = right.getNom();
@@ -297,6 +301,28 @@ public class IndividuRCPers implements Individu, Serializable {
 			}
 		}
 		return numeroRCE;
+	}
+
+	private static StatutIndividu initStatut(Person.Status status) {
+		if (status == null) {
+			return null;
+		}
+
+		if (status.getActive() != null) {
+			return StatutIndividu.active();
+		}
+		else if (status.getCanceled() != null) {
+			final PersonIdentificationPartner replacedBy = status.getCanceled().getReplacedBy();
+			if (replacedBy == null) {
+				return StatutIndividu.inactiveWithoutReplacement();
+			}
+			else {
+				return StatutIndividu.replaced(getNoIndividu(replacedBy.getLocalPersonId()));
+			}
+		}
+		else {
+			throw new IllegalArgumentException("Valeur de Status non-supportée : " + status);
+		}
 	}
 
 	/**
@@ -669,6 +695,11 @@ public class IndividuRCPers implements Individu, Serializable {
 			dateArrivee = RegDateHelper.minimum(dateArrivee, XmlUtils.xmlcal2regdate(residence.getArrivalDate()), NullDateBehavior.EARLIEST);
 		}
 		return dateArrivee == RegDateHelper.getLateDate() ? null : dateArrivee;
+	}
+
+	@Override
+	public StatutIndividu getStatut() {
+		return statut;
 	}
 
 	@Override

@@ -13,6 +13,7 @@ import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.civil.data.AdoptionReconnaissance;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.EtatCivil;
@@ -25,11 +26,13 @@ import ch.vd.unireg.interfaces.civil.data.Permis;
 import ch.vd.unireg.interfaces.civil.data.PermisList;
 import ch.vd.unireg.interfaces.civil.data.RelationVersIndividu;
 import ch.vd.unireg.interfaces.civil.data.RelationVersIndividuImpl;
+import ch.vd.unireg.interfaces.civil.data.StatutIndividu;
 import ch.vd.unireg.interfaces.civil.data.TypeRelationVersIndividu;
 import ch.vd.uniregctb.type.Sexe;
 
 public class MockIndividu extends MockEntiteCivile implements Individu {
 
+	private StatutIndividu statut;
 	private String prenom;
 	private String autresPrenoms;
 	private String nom;
@@ -56,10 +59,12 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 	public MockIndividu() {
 		// à priori, toutes les parts *peuvent* être renseignées
 		Collections.addAll(this.availableParts, AttributeIndividu.values());
+		statut = StatutIndividu.active();
 	}
 
 	public MockIndividu(MockIndividu right, @NotNull RegDate upTo) {
 		super(right, right.availableParts);
+		this.statut = right.statut;
 		this.prenom = right.prenom;
 		this.autresPrenoms = right.autresPrenoms;
 		this.nom = right.nom;
@@ -116,6 +121,7 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 
 	public MockIndividu(MockIndividu right, Set<AttributeIndividu> parts) {
 		super(right, parts);
+		this.statut = right.statut;
 		this.prenom = right.prenom;
 		this.autresPrenoms = right.autresPrenoms;
 		this.nom = right.nom;
@@ -137,6 +143,16 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 		if (parts != null) {
 			this.availableParts.addAll(parts);
 		}
+	}
+
+	@Override
+	public StatutIndividu getStatut() {
+		return statut;
+	}
+
+	public void setStatut(StatutIndividu statut) {
+		Assert.notNull(statut);
+		this.statut = statut;
 	}
 
 	@Override

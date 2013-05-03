@@ -5,9 +5,23 @@
 	<tr class="<unireg:nextRowClass/>" >
 		<td width="50%"><fmt:message key="label.numero.registre.habitant" />&nbsp;:</td>
 		<td>
-			<c:set var="bind" value="command.${param.path}.numeroIndividuFormatte" scope="request"/>
-			<spring:bind path="${bind}" >
-				<c:out value="${status.value}"/>
+			<c:set var="bind" value="command.${param.path}" scope="request"/>
+			<spring:bind path="${bind}">
+				<c:out value="${status.value.numeroIndividuFormatte}"/>
+				<c:if test="${status.value.canceled}">
+					<span class="warn">
+						<c:choose>
+							<c:when test="${status.value.numeroIndividuRemplacant != null}">
+								<fmt:message key="label.individu.annule.remplace">
+									<fmt:param value="${status.value.numeroIndividuRemplacantFormatte}"/>
+								</fmt:message>
+							</c:when>
+							<c:otherwise>
+								<fmt:message key="label.individu.annule"/>
+							</c:otherwise>
+						</c:choose>
+					</span>
+				</c:if>
 			</spring:bind>
 		</td>
 	</tr>

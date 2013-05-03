@@ -12,7 +12,7 @@ import ch.vd.uniregctb.type.Sexe;
  */
 public class IndividuView implements Serializable {
 
-	private static final long serialVersionUID = -8546729172585485365L;
+	private static final long serialVersionUID = -1081194593151099282L;
 
 	private Long numeroIndividu;
 	private String nom;
@@ -29,6 +29,8 @@ public class IndividuView implements Serializable {
 	private String origine;
 	private String nationalite;
 
+	private boolean canceled;
+	private Long numeroIndividuRemplacant;
 
 	private List<PermisView> permisView;
 
@@ -168,6 +170,29 @@ public class IndividuView implements Serializable {
 		this.permisView = permisView;
 	}
 
+	@SuppressWarnings("UnusedDeclaration")
+	public boolean isCanceled() {
+		return canceled;
+	}
+
+	public void setCanceled(boolean canceled) {
+		this.canceled = canceled;
+	}
+
+	@SuppressWarnings("UnusedDeclaration")
+	public Long getNumeroIndividuRemplacant() {
+		return numeroIndividuRemplacant;
+	}
+
+	@SuppressWarnings("UnusedDeclaration")
+	public String getNumeroIndividuRemplacantFormatte() {
+		return FormatNumeroHelper.numeroIndividuToDisplay(numeroIndividuRemplacant);
+	}
+
+	public void setNumeroIndividuRemplacant(Long numeroIndividuRemplacant) {
+		this.numeroIndividuRemplacant = numeroIndividuRemplacant;
+	}
+
 	/**
 	 * Redefinition de la methode equals pour gerer les ajout/suppression d'objets dans une collection
 	 */
@@ -187,13 +212,10 @@ public class IndividuView implements Serializable {
 	 * dans une collection
 	 */
 	@Override
-	public int hashCode()
-	{
+	public int hashCode() {
 		int hash = 7;
 		hash = 31 * hash ;
 		hash = 31 * hash + (null == numeroIndividu ? 0 : numeroIndividu.hashCode());
 		return hash;
 	}
-
-
 }
