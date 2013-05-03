@@ -6,13 +6,10 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.jetbrains.annotations.Nullable;
 
-import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
-import ch.vd.unireg.interfaces.civil.data.Nationalite;
 import ch.vd.uniregctb.load.DetailedLoadMeter;
 import ch.vd.uniregctb.load.DetailedLoadMonitorable;
 import ch.vd.uniregctb.load.LoadDetail;
@@ -93,22 +90,6 @@ public class ServiceCivilEndPoint implements ServiceCivilRaw, ServiceCivilServic
 		}
 		catch (RuntimeException e) {
 			LOGGER.error("Exception dans getIndividuAfterEvent(eventId=" + eventId + ") : " + getMessage(e), e);
-			// on ne transmet que le message, pour éviter de transmettre des éléments non-sérializable
-			throw new ServiceCivilException(getMessage(e));
-		}
-		finally {
-			loadMeter.end();
-		}
-	}
-
-	@Override
-	public Nationalite getNationaliteAt(long noIndividu, @Nullable RegDate date) {
-		loadMeter.start(new MethodCallDescriptor("getNationaliteAt", "noIndividu", noIndividu, "date", date));
-		try {
-			return target.getNationaliteAt(noIndividu, date);
-		}
-		catch (RuntimeException e) {
-			LOGGER.error("Exception dans getNationaliteAt(noIndividu=" + noIndividu + ",date=" + date + ") : " + getMessage(e), e);
 			// on ne transmet que le message, pour éviter de transmettre des éléments non-sérializable
 			throw new ServiceCivilException(getMessage(e));
 		}

@@ -72,7 +72,7 @@ public class RcPersServiceTest {
 		assertNotNull(result);
 		assertEquals("476228", result.getLocalPersonId().getPersonId()); // c'est bien les relations de la personne demandée
 
-		final List<Relationship> historique = result.getRelation();
+		final List<Relationship> historique = result.getRelationHistory();
 		assertNotNull(historique);
 		assertEquals(2, historique.size());
 

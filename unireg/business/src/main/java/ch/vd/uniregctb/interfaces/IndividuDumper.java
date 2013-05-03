@@ -10,6 +10,7 @@ import gnu.trove.TIntObjectHashMap;
 
 import ch.vd.registre.base.avs.AvsHelper;
 import ch.vd.registre.base.date.DateRangeComparator;
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.AdoptionReconnaissance;
 import ch.vd.unireg.interfaces.civil.data.Adresse;
@@ -95,7 +96,7 @@ public abstract class IndividuDumper {
 		s.append(tab(depth + 1)).append("enfants=").append(dumpRelationsVersIndividus(individu.getEnfants(), ignoreBugs, depth + 1)).append(", \n");
 		s.append(tab(depth + 1)).append("etatsCivils=").append(dumpEtatsCivils(individu.getEtatsCivils(), depth + 1)).append(", \n");
 		if (!ignoreSpecific) {
-			s.append(tab(depth + 1)).append("derniereNationalite=").append(IndividuDumper.dumpNationalite(individu.getDerniereNationalite(), ignoreSpecific, depth + 1)).append(", \n");
+			s.append(tab(depth + 1)).append("derniereNationalite=").append(IndividuDumper.dumpNationalites(individu.getNationalites(), ignoreSpecific, depth + 1)).append(", \n");
 		}
 		s.append(tab(depth + 1)).append("noAvs11=").append(dumpAVS11(individu.getNoAVS11(), validateAVS, individu.getDateNaissance(), individu.getSexe() == Sexe.MASCULIN)).append(", \n");
 		s.append(tab(depth + 1)).append("noTechnique=").append(individu.getNoTechnique()).append(", \n");
@@ -200,6 +201,40 @@ public abstract class IndividuDumper {
 		s.append(tab(depth)).append("}");
 
 		return s.toString();
+	}
+
+	private static String dumpNationalites(Collection<Nationalite> coll, boolean ignoreSpecific, int depth) {
+		if (coll == null) {
+			return "null";
+		}
+
+		final List<Nationalite> list = new ArrayList<>(coll);
+		Collections.sort(list, new Comparator<Nationalite>() {
+			@Override
+			public int compare(Nationalite o1, Nationalite o2) {
+				int compare = NullDateBehavior.EARLIEST.compare(o1.getDateDebut(), o2.getDateDebut());
+				if (compare == 0) {
+					compare = Integer.compare(o1.getPays().getNoOFS(), o2.getPays().getNoOFS());
+				}
+				return compare;
+			}
+		});
+
+		final StringBuilder b = new StringBuilder();
+		b.append("[");
+		boolean first = true;
+		for (Nationalite nat : list) {
+			if (first) {
+				first = false;
+			}
+			else {
+				b.append(", ");
+			}
+			b.append(dumpNationalite(nat, ignoreSpecific, depth + 1));
+		}
+		b.append("]");
+
+		return b.toString();
 	}
 
 	private static String dumpNationalite(Nationalite nationalite, boolean ignoreSpecific, int depth) {

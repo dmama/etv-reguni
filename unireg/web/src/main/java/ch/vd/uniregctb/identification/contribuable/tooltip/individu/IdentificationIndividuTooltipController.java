@@ -52,7 +52,7 @@ public class IdentificationIndividuTooltipController extends AbstractCommandCont
 		}
 
 		if (noInd != null) {
-			final Individu individu = civilService.getIndividu(noInd, null, AttributeIndividu.NATIONALITE);
+			final Individu individu = civilService.getIndividu(noInd, null, AttributeIndividu.NATIONALITES);
 			view.init(individu);
 		}
 		return new ModelAndView("/identification/tooltip/individu", errors.getModel());

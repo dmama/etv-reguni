@@ -11,18 +11,15 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
-import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.civil.ServiceCivilRaw;
 import ch.vd.unireg.interfaces.civil.ServiceCivilServiceWrapper;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
-import ch.vd.unireg.interfaces.civil.data.Nationalite;
 import ch.vd.uniregctb.cache.CacheStats;
 import ch.vd.uniregctb.cache.CompletePartsCallback;
 import ch.vd.uniregctb.cache.ObjectKey;
@@ -251,12 +248,6 @@ public class ServiceCivilPersistentCache implements ServiceCivilRaw, UniregCache
 	public Individu getIndividuByEvent(long evtId, AttributeIndividu... parties) throws ServiceCivilException {
 		// on ne cache pas ce genre d'info
 		return target.getIndividuByEvent(evtId, parties);
-	}
-
-	@Override
-	public Nationalite getNationaliteAt(long noIndividu, @Nullable RegDate date) {
-		// on ne cache pas ce genre d'info
-		return target.getNationaliteAt(noIndividu, date);
 	}
 
 	@Override

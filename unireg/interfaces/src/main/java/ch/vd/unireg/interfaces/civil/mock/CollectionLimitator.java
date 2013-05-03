@@ -10,6 +10,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.AdoptionReconnaissance;
 import ch.vd.unireg.interfaces.civil.data.Adresse;
 import ch.vd.unireg.interfaces.civil.data.EtatCivil;
+import ch.vd.unireg.interfaces.civil.data.Nationalite;
 import ch.vd.unireg.interfaces.civil.data.Permis;
 import ch.vd.unireg.interfaces.civil.data.RelationVersIndividu;
 
@@ -47,6 +48,13 @@ public class CollectionLimitator {
 	public static final Limitator<EtatCivil> ETAT_CIVIL_LIMITATOR = new Limitator<EtatCivil>() {
 		@Override
 		public boolean keep(EtatCivil element, RegDate date) {
+			return element.getDateDebut() == null || element.getDateDebut().isBeforeOrEqual(date);
+		}
+	};
+
+	public static final Limitator<Nationalite> NATIONALITE_LIMITATOR = new Limitator<Nationalite>() {
+		@Override
+		public boolean keep(Nationalite element, RegDate date) {
 			return element.getDateDebut() == null || element.getDateDebut().isBeforeOrEqual(date);
 		}
 	};

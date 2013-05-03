@@ -130,9 +130,9 @@ public class ProxyServiceCivil implements ServiceCivilService, ServiceCivilServi
 	}
 
 	@Override
-	public Nationalite getNationaliteAt(long noIndividu, @Nullable RegDate date) {
+	public Collection<Nationalite> getNationalites(long noIndividu, @Nullable RegDate date) {
 		assertTargetNotNull();
-		return service.getNationaliteAt(noIndividu, date);
+		return service.getNationalites(noIndividu, date);
 	}
 
 	@Override

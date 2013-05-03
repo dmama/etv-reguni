@@ -9,14 +9,14 @@ import ch.vd.registre.base.date.NullDateBehavior;
 
 public class PermisListRcPers extends PermisListBase implements Serializable {
 
-	private static final long serialVersionUID = 4776065381997664389L;
+	private static final long serialVersionUID = 7001930116163643695L;
 
-	public PermisListRcPers(long noIndividu) {
-		super(noIndividu);
+	public PermisListRcPers() {
+		super();
 	}
 
-	public PermisListRcPers(long numeroIndividu, List<Permis> list) {
-		super(numeroIndividu, list);
+	public PermisListRcPers(List<Permis> list) {
+		super(list);
 	}
 
 	protected void sort(List<Permis> list) {

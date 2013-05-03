@@ -15,7 +15,6 @@ import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -27,7 +26,6 @@ import ch.vd.unireg.interfaces.civil.ServiceCivilServiceWrapper;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
-import ch.vd.unireg.interfaces.civil.data.Nationalite;
 import ch.vd.uniregctb.cache.CacheStats;
 import ch.vd.uniregctb.cache.CompletePartsCallback;
 import ch.vd.uniregctb.cache.EhCacheStats;
@@ -312,26 +310,6 @@ public class ServiceCivilCache implements ServiceCivilRaw, UniregCacheInterface,
 			result = 31 * result + (date != null ? date.hashCode() : 0);
 			return result;
 		}
-	}
-
-	@Override
-	public Nationalite getNationaliteAt(long noIndividu, @Nullable RegDate date) {
-
-		final Nationalite nationalite;
-
-		final GetNationaliteAtKey key = new GetNationaliteAtKey(noIndividu, date);
-		final Element element = cache.get(key);
-		if (element == null) {
-			// l'élément n'est pas en cache, on le récupère et on l'insère
-			nationalite = target.getNationaliteAt(noIndividu, date);
-			cache.put(new Element(key, nationalite));
-		}
-		else {
-			// l'élément est en cache
-			nationalite = (Nationalite) element.getValue();
-		}
-
-		return nationalite;
 	}
 
 	@Override

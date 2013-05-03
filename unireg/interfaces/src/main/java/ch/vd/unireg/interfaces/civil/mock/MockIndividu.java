@@ -1,6 +1,7 @@
 package ch.vd.unireg.interfaces.civil.mock;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -109,7 +110,7 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 		}
 		if (permis != null) {
 			final List<Permis> limited = CollectionLimitator.limit(permis, date, CollectionLimitator.PERMIS_LIMITATOR);
-			permis = (limited == null ? null : new MockPermisList(permis.getNumeroIndividu(), limited));
+			permis = (limited == null ? null : new MockPermisList(limited));
 		}
 	}
 
@@ -299,14 +300,6 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 		this.nationalites.add(nationalite);
 	}
 
-	@Override
-	public Nationalite getDerniereNationalite() {
-		if (nationalites != null && !nationalites.isEmpty()) {
-			return nationalites.get(nationalites.size() - 1);
-		}
-		return null;
-	}
-
 	public List<Nationalite> getNationalites() {
 		return nationalites;
 	}
@@ -370,10 +363,7 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 	}
 
 	public void setPermis(Permis... permis) {
-		this.permis = new MockPermisList(getNoTechnique());
-		for (Permis p : permis) {
-			this.permis.add(p);
-		}
+		this.permis = new MockPermisList(Arrays.asList(permis));
 	}
 
 	@Override

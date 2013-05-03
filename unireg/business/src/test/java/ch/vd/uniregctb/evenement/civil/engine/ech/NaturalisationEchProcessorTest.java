@@ -53,7 +53,7 @@ public class NaturalisationEchProcessorTest extends AbstractEvenementCivilEchPro
 		doModificationIndividu(noIndividu, new IndividuModification() {
 			@Override
 			public void modifyIndividu(MockIndividu individu) {
-				individu.setNationalites(Arrays.asList((Nationalite) new MockNationalite(dateNaturalisation, null, MockPays.Suisse, 1)));
+				individu.setNationalites(Arrays.asList((Nationalite) new MockNationalite(dateNaturalisation, null, MockPays.Suisse)));
 			}
 		});
 

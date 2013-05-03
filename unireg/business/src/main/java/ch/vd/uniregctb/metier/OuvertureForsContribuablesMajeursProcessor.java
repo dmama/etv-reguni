@@ -142,7 +142,7 @@ public class OuvertureForsContribuablesMajeursProcessor {
 		if (serviceCivilCacheWarmer.isServiceWarmable()) {
 			final Set<Long> numeroIndividus = tiersDAO.getNumerosIndividu(batch, false);
 			if (!numeroIndividus.isEmpty()) {
-				serviceCivilCacheWarmer.warmIndividus(numeroIndividus, dateReference, AttributeIndividu.PERMIS, AttributeIndividu.NATIONALITE, AttributeIndividu.PARENTS);
+				serviceCivilCacheWarmer.warmIndividus(numeroIndividus, dateReference, AttributeIndividu.PERMIS, AttributeIndividu.NATIONALITES, AttributeIndividu.PARENTS);
 				serviceCivilCacheWarmer.warmIndividus(numeroIndividus, null, AttributeIndividu.ADRESSES);
 			}
 		}
@@ -359,7 +359,7 @@ public class OuvertureForsContribuablesMajeursProcessor {
 		// on fait appel à host-interface
 		Individu individu;
 		try {
-			individu = tiersService.getIndividu(habitant, dateReference, AttributeIndividu.PERMIS, AttributeIndividu.NATIONALITE);
+			individu = tiersService.getIndividu(habitant, dateReference, AttributeIndividu.PERMIS, AttributeIndividu.NATIONALITES);
 		}
 		catch (ServiceCivilException e) {
 			LOGGER.error("Impossible de récupérer l'habitant n° " + habitant.getNumero(), e);

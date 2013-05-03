@@ -3,6 +3,7 @@ package ch.vd.unireg.interfaces.civil.data;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -16,29 +17,20 @@ import ch.vd.registre.base.date.RegDateHelper;
 
 public abstract class PermisListBase implements PermisList, Serializable {
 
-	private static final long serialVersionUID = 1959569064393468810L;
+	private static final long serialVersionUID = 7962307714373650485L;
 
-	final private long numeroIndividu; // pour le logging
 	final private List<Permis> list;
 
-	protected PermisListBase(long numeroIndividu, List<Permis> list) {
-		this.numeroIndividu = numeroIndividu;
+	protected PermisListBase(List<Permis> list) {
 		this.list = new ArrayList<>(list);
 		sort(this.list);
 	}
 
-	protected PermisListBase(long noIndividu) {
-		this.numeroIndividu = noIndividu;
-		this.list = new ArrayList<>();
-		sort(this.list);
+	protected PermisListBase() {
+		this(Collections.<Permis>emptyList());
 	}
 
 	protected abstract void sort(List<Permis> list);
-
-	@Override
-	public long getNumeroIndividu() {
-		return numeroIndividu;
-	}
 
 	@Override
 	public boolean add(Permis o) {

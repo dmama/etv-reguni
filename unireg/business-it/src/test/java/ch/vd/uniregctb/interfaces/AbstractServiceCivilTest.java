@@ -51,7 +51,7 @@ public abstract class AbstractServiceCivilTest extends BusinessItTest {
 	public void testGetIndividuComplet() throws Exception {
 
 		final Individu individu =
-				service.getIndividu(692185, null, AttributeIndividu.ADRESSES, AttributeIndividu.ORIGINE, AttributeIndividu.NATIONALITE, AttributeIndividu.ADOPTIONS, AttributeIndividu.ENFANTS,
+				service.getIndividu(692185, null, AttributeIndividu.ADRESSES, AttributeIndividu.ORIGINE, AttributeIndividu.NATIONALITES, AttributeIndividu.ADOPTIONS, AttributeIndividu.ENFANTS,
 						AttributeIndividu.PARENTS, AttributeIndividu.PERMIS);
 		assertNotNull(individu);
 		assertEquals("Jean-Marc", individu.getPrenom());
@@ -168,10 +168,13 @@ public abstract class AbstractServiceCivilTest extends BusinessItTest {
 		assertEquals("Yvorne", origine1.getNomLieu());
 
 		// On vérifie la nationalité
-		final Nationalite nationalite = individu.getDerniereNationalite();
-		assertNotNull(nationalite);
-		// RCPers n'expose pas les dates de début/fin sur les nationalités : assertEquals(date(1974, 3, 22), nationalite.getDateDebutValidite());
-		// RCPers n'expose pas les dates de début/fin sur les nationalités : assertNull(nationalite.getDateFinValidite());
+		final Collection<Nationalite> nationalites = individu.getNationalites();
+		assertNotNull(nationalites);
+		assertEquals(1, nationalites.size());
+
+		final Nationalite nationalite = nationalites.iterator().next();
+		assertEquals(date(1982, 2, 18), nationalite.getDateDebut());
+		assertNull(nationalite.getDateFin());
 		assertEquals("CH", nationalite.getPays().getSigleOFS());
 	}
 

@@ -12,5 +12,5 @@ public enum AttributeIndividu {
 	ADRESSES,
 	PARENTS,
 	PERMIS,
-	NATIONALITE
+	NATIONALITES
 }

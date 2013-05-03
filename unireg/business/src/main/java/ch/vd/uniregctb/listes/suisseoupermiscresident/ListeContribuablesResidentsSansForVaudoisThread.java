@@ -65,7 +65,7 @@ public class ListeContribuablesResidentsSansForVaudoisThread extends ListesThrea
 	protected void fillAttributesIndividu(Set<AttributeIndividu> attributes) {
 		super.fillAttributesIndividu(attributes);
 		attributes.add(AttributeIndividu.ADRESSES);
-		attributes.add(AttributeIndividu.NATIONALITE);
+		attributes.add(AttributeIndividu.NATIONALITES);
 		attributes.add(AttributeIndividu.PERMIS);
 	}
 

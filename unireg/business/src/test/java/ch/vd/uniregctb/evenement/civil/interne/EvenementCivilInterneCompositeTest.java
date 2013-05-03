@@ -347,7 +347,7 @@ public class EvenementCivilInterneCompositeTest extends WithoutSpringTest {
 				new EvenementCivilInterneMock(){
 					@Override
 					protected void fillRequiredParts(Set<AttributeIndividu> parts) {
-						parts.add(AttributeIndividu.NATIONALITE);
+						parts.add(AttributeIndividu.NATIONALITES);
 					}
 				}
 		};

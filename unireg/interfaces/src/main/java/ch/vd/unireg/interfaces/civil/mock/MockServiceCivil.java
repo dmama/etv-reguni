@@ -31,6 +31,7 @@ import ch.vd.unireg.interfaces.civil.data.Nationalite;
 import ch.vd.unireg.interfaces.civil.data.Origine;
 import ch.vd.unireg.interfaces.civil.data.Pays;
 import ch.vd.unireg.interfaces.civil.data.Permis;
+import ch.vd.unireg.interfaces.civil.data.PermisList;
 import ch.vd.unireg.interfaces.civil.data.RelationVersIndividu;
 import ch.vd.unireg.interfaces.civil.data.RelationVersIndividuImpl;
 import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
@@ -172,7 +173,7 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 		individu.setParents(new ArrayList<RelationVersIndividu>());
 
 		// Permis
-		individu.setPermis(new MockPermisList(numero));
+		individu.setPermis(new MockPermisList());
 
 		return individu;
 	}
@@ -513,10 +514,13 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 		if (permisAnnule) {
 			permis.setDateAnnulation(RegDate.get());
 		}
-		if (individu.getPermis() == null) {
-			individu.setPermis(new MockPermisList(individu.getNoTechnique()));
+		final PermisList permisList = individu.getPermis();
+		if (permisList == null) {
+			individu.setPermis(permis);
 		}
-		individu.getPermis().add(permis);
+		else {
+			permisList.add(permis);
+		}
 		return permis;
 	}
 
@@ -684,26 +688,6 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 	public Individu getIndividuByEvent(long evtId, AttributeIndividu... parties) throws ServiceCivilException {
 		final IndividuApresEvenement ind = evenementsMap.get(evtId);
 		return ind != null ? getIndividu(ind.getIndividu().getNoTechnique(), parties) : null;
-	}
-
-	@Override
-	public Nationalite getNationaliteAt(long noIndividu, @Nullable RegDate date) {
-		final MockIndividu ind = individusMap.get(noIndividu);
-		if (ind == null) {
-			return null;
-		}
-		final List<Nationalite> nationalites = ind.getNationalites();
-		if (nationalites == null || nationalites.isEmpty()) {
-			return null;
-		}
-		// plusieurs nationalités peuvent être valides en même temps. On prend la plus récente dans ce cas-là.
-		for (int i = nationalites.size() - 1; i >= 0; --i) {
-			final Nationalite n = nationalites.get(i);
-			if (n.isValidAt(date)) {
-				return n;
-			}
-		}
-		return null;
 	}
 
 	@Override

@@ -18,10 +18,8 @@ public class PermisListRcPersTest extends WithoutSpringTest {
 	@Test
 	public void testGetPermisActifAucunPermis() {
 
-		final long noIndividu = 1;
-
 		// Aucun permis
-		final PermisListRcPers list = new PermisListRcPers(noIndividu);
+		final PermisListRcPers list = new PermisListRcPers();
 
 		final Permis permis1 = list.getPermisActif(null);
 		assertNull(permis1);
@@ -33,12 +31,10 @@ public class PermisListRcPersTest extends WithoutSpringTest {
 	@Test
 	public void testGetPermisActifUnSeulPermisOuvert() {
 
-		final long noIndividu = 1;
-
 		// Un seul permis = [1.3.1960..fin-des-temps]
 		final MockPermis permis1 = new MockPermis();
 		permis1.setDateDebutValidite(RegDate.get(1960, 3, 1));
-		final PermisListRcPers list = new PermisListRcPers(noIndividu, Arrays.<Permis>asList(permis1));
+		final PermisListRcPers list = new PermisListRcPers(Arrays.<Permis>asList(permis1));
 
 		final Permis p1 = list.getPermisActif(null);
 		assertNotNull(p1);
@@ -55,13 +51,11 @@ public class PermisListRcPersTest extends WithoutSpringTest {
 	@Test
 	public void testGetPermisActifUnSeulPermisFerme() {
 
-		final long noIndividu = 1;
-
 		// Un seul permis = [1.3.1960..1.1.1990]
 		final MockPermis permis1 = new MockPermis();
 		permis1.setDateDebutValidite(RegDate.get(1960, 3, 1));
 		permis1.setDateFinValidite(RegDate.get(1990, 1, 1));
-		final PermisListRcPers list = new PermisListRcPers(noIndividu, Arrays.<Permis>asList(permis1));
+		final PermisListRcPers list = new PermisListRcPers(Arrays.<Permis>asList(permis1));
 
 		final Permis p1 = list.getPermisActif(null);
 		assertNull(p1);
@@ -77,8 +71,6 @@ public class PermisListRcPersTest extends WithoutSpringTest {
 	@Test
 	public void testGetPermisActifListDesordonnees() {
 
-		final long noIndividu = 1;
-
 		// Une liste de permis (désordonnés) :
 		// 1. -> [ 1.3.1930..fin-des-temps]
 		// 2. -> [21.4.1985..fin-des-temps]
@@ -89,7 +81,7 @@ public class PermisListRcPersTest extends WithoutSpringTest {
 		permis1.setDateDebutValidite(RegDate.get(1930, 3, 1));
 		permis2.setDateDebutValidite(RegDate.get(1985, 4, 21));
 		permis3.setDateDebutValidite(RegDate.get(1973, 1, 8));
-		final PermisListRcPers list = new PermisListRcPers(noIndividu, Arrays.<Permis>asList(permis1, permis2, permis3));
+		final PermisListRcPers list = new PermisListRcPers(Arrays.<Permis>asList(permis1, permis2, permis3));
 
 		final Permis p1 = list.getPermisActif(null);
 		assertNotNull(p1);
@@ -114,13 +106,11 @@ public class PermisListRcPersTest extends WithoutSpringTest {
 	@Test
 	public void testGetPermisActifAdresseDebutNulle() {
 
-		final long noIndividu = 1;
-
 		// Un seul permis avec adresse de début nulle = [null..fin-des-temps]
 		// (ceci est un cas réel existant sur le host)
 		final MockPermis permis1 = new MockPermis();
 		permis1.setDateDebutValidite(null);
-		final PermisListRcPers list = new PermisListRcPers(noIndividu, Arrays.<Permis>asList(permis1));
+		final PermisListRcPers list = new PermisListRcPers(Arrays.<Permis>asList(permis1));
 
 		Permis p1 = list.getPermisActif(null);
 		assertNotNull(p1);
@@ -140,7 +130,7 @@ public class PermisListRcPersTest extends WithoutSpringTest {
 		final MockPermis vieux = new MockPermis(date(2011, 1, 1), null, null, TypePermis.SEJOUR);
 		final MockPermis nouveau = new MockPermis(date(2013, 4, 1), date(2018, 3, 31), null, TypePermis.ETABLISSEMENT);
 
-		final PermisListRcPers list = new PermisListRcPers(1L, Arrays.<Permis>asList(vieux, nouveau));
+		final PermisListRcPers list = new PermisListRcPers(Arrays.<Permis>asList(vieux, nouveau));
 		final Permis actif = list.getPermisActif(null);
 		assertNotNull(actif);
 		assertSame(nouveau, actif);

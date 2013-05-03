@@ -166,15 +166,13 @@ public interface ServiceCivilService {
 	List<Individu> getIndividus(Collection<Long> nosIndividus, @Nullable RegDate date, AttributeIndividu... parties) throws ServiceCivilException;
 
 	/**
-	 * Retourne la nationalité d'un individu à une date donnée.
-	 * <p/>
-	 * <b>Note:</b> la nationalité est une des rares informations non-historisée sur les individus exposés par RcPers. C'est pourquoi cette méthode existe.
+	 * Retourne les nationalités d'un individu à une date donnée.
 	 *
 	 * @param noIndividu le numéro technique de l'individu.
 	 * @param date       la date de référence
-	 * @return la nationalité de l'individu à la date demandée; ou <b>null</b> si l'individu n'existe pas.
+	 * @return les nationalités de l'individu à la date demandée; ou <b>null</b> si l'individu n'existe pas.
 	 */
-	Nationalite getNationaliteAt(long noIndividu, @Nullable RegDate date);
+	Collection<Nationalite> getNationalites(long noIndividu, @Nullable RegDate date);
 
 	/**
 	 * Retourne les origines, valides <b>jusqu'à</b> la date en paramètre, d'un individu identifié par le numéro en paramètre.

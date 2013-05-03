@@ -15,7 +15,7 @@ public class MockNationalite implements Nationalite {
 	public MockNationalite() {
 	}
 
-	public MockNationalite(RegDate dateDebutValidite, RegDate dateFinValidite, Pays pays, int noSequence) {
+	public MockNationalite(RegDate dateDebutValidite, RegDate dateFinValidite, Pays pays) {
 		this.dateDebutValidite = dateDebutValidite;
 		this.dateFinValidite = dateFinValidite;
 		this.pays = pays;
@@ -51,5 +51,36 @@ public class MockNationalite implements Nationalite {
 
 	public void setPays(Pays pays) {
 		this.pays = pays;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		final MockNationalite that = (MockNationalite) o;
+
+		if (dateDebutValidite != null ? !dateDebutValidite.equals(that.dateDebutValidite) : that.dateDebutValidite != null) return false;
+		if (dateFinValidite != null ? !dateFinValidite.equals(that.dateFinValidite) : that.dateFinValidite != null) return false;
+		if (pays != null ? !pays.equals(that.pays) : that.pays != null) return false;
+
+		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = dateDebutValidite != null ? dateDebutValidite.hashCode() : 0;
+		result = 31 * result + (dateFinValidite != null ? dateFinValidite.hashCode() : 0);
+		result = 31 * result + (pays != null ? pays.hashCode() : 0);
+		return result;
+	}
+
+	@Override
+	public String toString() {
+		return "MockNationalite{" +
+				"dateDebutValidite=" + dateDebutValidite +
+				", dateFinValidite=" + dateFinValidite +
+				", pays=" + pays +
+				'}';
 	}
 }

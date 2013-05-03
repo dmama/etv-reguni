@@ -16,7 +16,7 @@ import ch.vd.evd0001.v4.ListOfPersons;
 import ch.vd.evd0001.v4.ListOfRelations;
 import ch.vd.evd0001.v4.Person;
 import ch.vd.evd0001.v4.Relationship;
-import ch.vd.evd0004.v2.Error;
+import ch.vd.evd0004.v3.Error;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.civil.ServiceCivilInterceptor;
@@ -25,8 +25,6 @@ import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
 import ch.vd.unireg.interfaces.civil.data.IndividuRCPers;
-import ch.vd.unireg.interfaces.civil.data.Nationalite;
-import ch.vd.unireg.interfaces.civil.data.NationaliteRCPers;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.wsclient.rcpers.RcPersClient;
 import ch.vd.uniregctb.common.BatchIterator;
@@ -110,7 +108,7 @@ public class ServiceCivilRCPers implements ServiceCivilRaw {
 			if (rel.getListOfResults().getResult().size() > 1) {
 				throw new ServiceCivilException("Plusieurs relations d'individu trouvés avec le même numéro d'individu = " + noIndividu);
 			}
-			relations = extractRelations(noIndividu, rel.getListOfResults().getResult().get(0));
+			relations = extractRelations(noIndividu, rel.getListOfResults().getResult().get(0), true);
 		}
 		else {
 			relations = null;
@@ -189,7 +187,7 @@ public class ServiceCivilRCPers implements ServiceCivilRaw {
 	 * @throws ServiceCivilException si RcPers à retourné un code d'erreur qui correspond à une erreur chez eux.
 	 */
 	@Nullable
-	private static List<Relationship> extractRelations(long noIndividu, ListOfRelations.ListOfResults.Result result) throws ServiceCivilException {
+	private static List<Relationship> extractRelations(long noIndividu, ListOfRelations.ListOfResults.Result result, boolean withHistory) throws ServiceCivilException {
 
 		// [SIFISC-6685] on détecte les cas où on ne reçoit rien parce qu'il y a un bug dans RcPers
 		final Error notReturnedRelation = result.getNotReturnedRelationReason();
@@ -203,7 +201,7 @@ public class ServiceCivilRCPers implements ServiceCivilRaw {
 			}
 		}
 
-		return result.getRelation();
+		return withHistory ? result.getRelationHistory() : result.getCurrentRelation();
 	}
 
 	private static boolean containsAny(AttributeIndividu[] container, AttributeIndividu... values) {
@@ -242,7 +240,7 @@ public class ServiceCivilRCPers implements ServiceCivilRaw {
 			if (rel != null && rel.getListOfResults().getResult() != null) {
 				allRelations = new HashMap<>();
 				for (ListOfRelations.ListOfResults.Result relRes : rel.getListOfResults().getResult()) {
-					final List<Relationship> relations = extractRelations(0, relRes);
+					final List<Relationship> relations = extractRelations(0, relRes, true);
 					if (relations != null) {
 						allRelations.put(IndividuRCPers.getNoIndividu(relRes.getLocalPersonId()), relations);
 					}
@@ -342,28 +340,6 @@ public class ServiceCivilRCPers implements ServiceCivilRaw {
 			return new IndividuApresEvenement(individu, dateEvt, type, action, refMessageId);
 		}
 		return null;
-	}
-
-	@Override
-	public Nationalite getNationaliteAt(long noIndividu, @Nullable RegDate date) {
-
-		final ListOfPersons list = getPersonsSafely(Arrays.asList(noIndividu), date, false);
-		if (list == null || list.getNumberOfResults().intValue() == 0) {
-			return null;
-		}
-
-		if (list.getNumberOfResults().intValue() > 1) {
-			throw new ServiceCivilException("Plusieurs individus trouvés avec le même numéro d'individu = " + noIndividu);
-		}
-
-		Nationalite nationalite = null;
-
-		final Person person = list.getListOfResults().getResult().get(0).getPerson();
-		if (person != null) {
-			nationalite = NationaliteRCPers.get(person, infraService);
-		}
-
-		return nationalite;
 	}
 
 	@Override

@@ -15,6 +15,7 @@ import ch.vd.unireg.interfaces.civil.data.Nationalite;
 import ch.vd.unireg.interfaces.civil.data.Origine;
 import ch.vd.unireg.interfaces.civil.data.Permis;
 import ch.vd.uniregctb.common.EtatCivilHelper;
+import ch.vd.uniregctb.common.NationaliteHelper;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.utils.WebContextUtils;
@@ -174,10 +175,16 @@ public class WebCivilServiceImpl implements WebCivilService, MessageSourceAware 
 	 * Nationalite
 	 */
 	private void traiteNationalite(Individu individu, IndividuView indCible) {
-		final Nationalite nationalite = individu.getDerniereNationalite();
-		if (nationalite != null) {
-			indCible.setNationalite(nationalite.getPays().getNomCourt());
+		final List<Nationalite> nationalites = NationaliteHelper.validAt(individu.getNationalites(), null);
+		if (nationalites.size() > 0) {
+			final StringBuilder b = new StringBuilder();
+			for (Nationalite nat : nationalites) {
+				if (b.length() > 0) {
+					b.append(", ");
+				}
+				b.append(nat.getPays().getNomCourt());
+			}
+			indCible.setNationalite(b.toString());
 		}
 	}
-
 }

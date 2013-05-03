@@ -8,7 +8,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +23,7 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.evd0001.v4.Contact;
 import ch.vd.evd0001.v4.Identity;
 import ch.vd.evd0001.v4.MaritalData;
+import ch.vd.evd0001.v4.Nationality;
 import ch.vd.evd0001.v4.Person;
 import ch.vd.evd0001.v4.PersonIdentification;
 import ch.vd.evd0001.v4.Relationship;
@@ -51,7 +51,10 @@ import ch.vd.uniregctb.type.TypeAdresseCivil;
 
 public class IndividuRCPers implements Individu, Serializable {
 
-	private static final long serialVersionUID = -7314061209614017705L;
+	private static final long serialVersionUID = 4388869302797702662L;
+
+	private static final EnumSet<AttributeIndividu> RELATION_RELATED = EnumSet.of(AttributeIndividu.CONJOINTS, AttributeIndividu.ENFANTS, AttributeIndividu.PARENTS);
+	private static final EnumSet<AttributeIndividu> NON_RELATION_RELATED = EnumSet.complementOf(RELATION_RELATED);
 
 	private long noTechnique;
 	private String prenom;
@@ -73,8 +76,8 @@ public class IndividuRCPers implements Individu, Serializable {
 	private List<RelationVersIndividu> parents;
 	private List<RelationVersIndividu> conjoints;
 	private PermisList permis;
-	private Nationalite derniereNationalite;
-	private final Set<AttributeIndividu> availableParts = new HashSet<>();
+	private Collection<Nationalite> nationalites;
+	private final Set<AttributeIndividu> availableParts = EnumSet.noneOf(AttributeIndividu.class);
 
 	public static Individu get(Person target, @Nullable List<Relationship> relations, boolean history, boolean withRelations, ServiceInfrastructureRaw infraService) {
 		if (target == null) {
@@ -133,20 +136,18 @@ public class IndividuRCPers implements Individu, Serializable {
 		}
 
 		if (history) {
-			this.permis = initPermis(this.noTechnique, person.getResidencePermitHistory());
+			this.permis = initPermis(person.getResidencePermitHistory());
+			this.nationalites = initNationalites(person.getNationalityHistory(), infraService);
 		}
 		else { // [SIFISC-5181] prise en compte des valeurs courantes
-			this.permis = initPermis(this.noTechnique, person.getCurrentResidencePermit());
+			this.permis = initPermis(person.getCurrentResidencePermit());
+			this.nationalites = initNationalites(person.getCurrentNationality(), infraService);
 		}
 
-		this.derniereNationalite = initNationalite(person, infraService);
-
 		// avec RcPers, toutes les parts sont systématiquement retournées, à l'exception des relations qui doivent être demandées explicitement
-		Collections.addAll(this.availableParts, AttributeIndividu.values());
-		if (!withRelations) {
-			this.availableParts.remove(AttributeIndividu.CONJOINTS);
-			this.availableParts.remove(AttributeIndividu.ENFANTS);
-			this.availableParts.remove(AttributeIndividu.PARENTS);
+		this.availableParts.addAll(NON_RELATION_RELATED);
+		if (withRelations) {
+			this.availableParts.addAll(RELATION_RELATED);
 		}
 	}
 
@@ -164,7 +165,6 @@ public class IndividuRCPers implements Individu, Serializable {
 		this.naissance = right.naissance;
 		this.dateArriveeVD = right.dateArriveeVD;
 		this.etatsCivils = right.etatsCivils;
-		this.derniereNationalite = right.derniereNationalite;
 
 		if (parts != null && parts.contains(AttributeIndividu.ADRESSES)) {
 			this.adresses = right.adresses;
@@ -187,6 +187,9 @@ public class IndividuRCPers implements Individu, Serializable {
 		if (parts != null && parts.contains(AttributeIndividu.PERMIS)) {
 			permis = right.permis;
 		}
+		if (parts != null && parts.contains(AttributeIndividu.NATIONALITES)) {
+			nationalites = right.nationalites;
+		}
 
 		if (parts != null) {
 			this.availableParts.addAll(parts);
@@ -207,7 +210,7 @@ public class IndividuRCPers implements Individu, Serializable {
 		this.naissance = right.naissance;
 		this.dateArriveeVD = right.dateArriveeVD;
 		this.origines = right.origines;
-		this.derniereNationalite = right.derniereNationalite;
+		this.nationalites = right.nationalites;
 
 		this.adresses = right.adresses;
 		this.adoptions = right.adoptions;
@@ -243,7 +246,10 @@ public class IndividuRCPers implements Individu, Serializable {
 		}
 		if (permis != null) {
 			final List<Permis> limited = CollectionLimitator.limit(permis, date, CollectionLimitator.PERMIS_LIMITATOR);
-			permis = (limited == null ? null : new PermisListRcPers(permis.getNumeroIndividu(), limited));
+			permis = (limited == null ? null : new PermisListRcPers(limited));
+		}
+		if (nationalites != null) {
+			nationalites = CollectionLimitator.limit(nationalites, date, CollectionLimitator.NATIONALITE_LIMITATOR);
 		}
 	}
 
@@ -313,21 +319,33 @@ public class IndividuRCPers implements Individu, Serializable {
 		return null;
 	}
 
-	private static Nationalite initNationalite(Person person, ServiceInfrastructureRaw infraService) {
-		if (person == null) {
-			return null;
-		}
-		return NationaliteRCPers.get(person, infraService);
+	protected static List<Nationalite> initNationalites(Nationality nationalite, ServiceInfrastructureRaw infraService) {
+		return initNationalites(Arrays.asList(nationalite), infraService);
 	}
 
-	private static PermisListRcPers initPermis(long numeroIndividu, ResidencePermit permis) {
+	protected static List<Nationalite> initNationalites(List<Nationality> nationalities, ServiceInfrastructureRaw infraService) {
+		if (nationalities == null || nationalities.size() == 0) {
+			return Collections.emptyList();
+		}
+
+		final List<Nationalite> list = new ArrayList<>(nationalities.size());
+		for (Nationality nat : nationalities) {
+			final Nationalite nationalite = NationaliteRCPers.get(nat, infraService);
+			if (nationalite != null) {
+				list.add(nationalite);
+			}
+		}
+		return list;
+	}
+
+	private static PermisListRcPers initPermis(ResidencePermit permis) {
 		if (permis == null) {
 			return null;
 		}
-		return new PermisListRcPers(numeroIndividu, Arrays.asList(PermisRCPers.get(permis)));
+		return new PermisListRcPers(Arrays.asList(PermisRCPers.get(permis)));
 	}
 
-	private static PermisListRcPers initPermis(long numeroIndividu, List<ResidencePermit> permis) {
+	private static PermisListRcPers initPermis(List<ResidencePermit> permis) {
 		if (permis == null) {
 			return null;
 		}
@@ -335,7 +353,7 @@ public class IndividuRCPers implements Individu, Serializable {
 		for (ResidencePermit p : permis) {
 			list.add(PermisRCPers.get(p));
 		}
-		return new PermisListRcPers(numeroIndividu, list);
+		return new PermisListRcPers(list);
 	}
 
 	private static EtatCivilList initEtatsCivils(MaritalData maritalStatus) {
@@ -737,8 +755,8 @@ public class IndividuRCPers implements Individu, Serializable {
 	}
 
 	@Override
-	public Nationalite getDerniereNationalite() {
-		return derniereNationalite;
+	public Collection<Nationalite> getNationalites() {
+		return nationalites;
 	}
 
 	@Override
@@ -793,6 +811,9 @@ public class IndividuRCPers implements Individu, Serializable {
 		}
 		if (parts != null && parts.contains(AttributeIndividu.PERMIS)) {
 			permis = individu.getPermis();
+		}
+		if (parts != null && parts.contains(AttributeIndividu.NATIONALITES)) {
+			nationalites = individu.getNationalites();
 		}
 
 		if (parts != null) {

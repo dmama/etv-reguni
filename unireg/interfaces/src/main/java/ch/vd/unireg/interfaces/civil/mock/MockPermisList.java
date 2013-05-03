@@ -10,12 +10,12 @@ import ch.vd.unireg.interfaces.civil.data.PermisListBase;
 
 public class MockPermisList extends PermisListBase {
 
-	public MockPermisList(long numeroIndividu) {
-		super(numeroIndividu, Collections.<Permis>emptyList());
+	public MockPermisList() {
+		super();
 	}
 
-	public MockPermisList(long numeroIndividu, List<Permis> list) {
-		super(numeroIndividu, list);
+	public MockPermisList(List<Permis> list) {
+		super(list);
 	}
 
 	protected void sort(List<Permis> list) {

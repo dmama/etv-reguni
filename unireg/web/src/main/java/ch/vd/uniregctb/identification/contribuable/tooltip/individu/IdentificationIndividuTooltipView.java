@@ -1,9 +1,12 @@
 package ch.vd.uniregctb.identification.contribuable.tooltip.individu;
 
+import java.util.List;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.data.Nationalite;
 import ch.vd.uniregctb.common.EtatCivilHelper;
+import ch.vd.uniregctb.common.NationaliteHelper;
 import ch.vd.uniregctb.type.EtatCivil;
 import ch.vd.uniregctb.type.Sexe;
 
@@ -39,12 +42,19 @@ public class IdentificationIndividuTooltipView {
 			this.ancienNumeroAVS = individu.getNoAVS11();
 			this.numeroRCE = individu.getNumeroRCE();
 
-			final Nationalite nationalite = individu.getDerniereNationalite();
-			if (nationalite == null) {
-				this.nationalite = null;
+			final List<Nationalite> nationalites = NationaliteHelper.validAt(individu.getNationalites(), null);
+			if (nationalites.size() > 0) {
+				final StringBuilder b = new StringBuilder();
+				for (Nationalite nat : nationalites) {
+					if (b.length() > 0) {
+						b.append(", ");
+					}
+					b.append(nat.getPays().getNomCourt());
+				}
+				this.nationalite = b.toString();
 			}
 			else {
-				this.nationalite = nationalite.getPays().getNomCourt();
+				this.nationalite = null;
 			}
 		}
 	}

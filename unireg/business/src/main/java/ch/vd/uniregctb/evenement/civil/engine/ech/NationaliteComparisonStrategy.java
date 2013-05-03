@@ -6,6 +6,7 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
 import ch.vd.unireg.interfaces.civil.data.Nationalite;
+import ch.vd.uniregctb.common.NationaliteHelper;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 
 /**
@@ -50,8 +51,8 @@ public class NationaliteComparisonStrategy implements IndividuComparisonStrategy
 
 		// La spécification dit qu'il faut détecter le passage de "nationalité inconnue" à "nationalité connue" et vice-versa (= statut de la nationalité),
 		// et que dans le cas où les nationalités existaient et changent, seuls les changements sur la nationalité suisse sont importants
-		final Nationalite origNationalite = originel.getIndividu().getDerniereNationalite();
-		final Nationalite corNationalite = corrige.getIndividu().getDerniereNationalite();
+		final Nationalite origNationalite = NationaliteHelper.refAt(originel.getIndividu().getNationalites(), originel.getDateEvenement());
+		final Nationalite corNationalite = NationaliteHelper.refAt(corrige.getIndividu().getNationalites(), corrige.getDateEvenement());
 		final StatutNationalite origStatus = getNationalityStatus(origNationalite);
 		final StatutNationalite corStatus = getNationalityStatus(corNationalite);
 		final IndividuComparisonHelper.FieldMonitor monitor = new IndividuComparisonHelper.FieldMonitor();

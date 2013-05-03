@@ -9,8 +9,6 @@ import ch.vd.registre.base.date.RegDate;
 
 public interface PermisList extends List<Permis> {
 
-	long getNumeroIndividu();
-
 	/**
 	 * Détermine et retourne le permis valide à la date spécifiée.
 	 *

@@ -2288,14 +2288,14 @@ public class TiersServiceTest extends BusinessTest {
 		// individu avec nationalité suisse
 		{
 			MockIndividu ind = new MockIndividu();
-			ind.setNationalites(Arrays.<Nationalite>asList(new MockNationalite(null, null, MockPays.Suisse, 1)));
+			ind.setNationalites(Arrays.<Nationalite>asList(new MockNationalite(null, null, MockPays.Suisse)));
 			assertTrue(tiersService.isSuisse(ind, null));
 		}
 
 		// individu avec nationalité française
 		{
 			MockIndividu ind = new MockIndividu();
-			ind.setNationalites(Arrays.<Nationalite>asList(new MockNationalite(null, null, MockPays.France, 1)));
+			ind.setNationalites(Arrays.<Nationalite>asList(new MockNationalite(null, null, MockPays.France)));
 			assertFalse(tiersService.isSuisse(ind, null));
 		}
 

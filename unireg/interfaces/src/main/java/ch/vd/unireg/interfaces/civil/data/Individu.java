@@ -108,11 +108,9 @@ public interface Individu extends EntiteCivile {
 	PermisList getPermis();
 
 	/**
-	 * <b>Note:</b> pour obtenir une nationalité antérieure, il faut passer par la méthode 'getNationaliteAt' du service civil.
-	 *
-	 * @return la dernière nationalité connue de l'individu; c'est-à-dire la nationalité actuellement connue dans le registre civil.
+	 * @return la liste des nationalités connues de l'individu
 	 */
-	Nationalite getDerniereNationalite();
+	Collection<Nationalite> getNationalites();
 
 	/**
 	 * @return le sexe de l'individu

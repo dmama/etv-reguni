@@ -66,6 +66,7 @@ import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
+import ch.vd.uniregctb.common.NationaliteHelper;
 import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.Declaration;
@@ -324,13 +325,13 @@ public class TiersServiceImpl implements TiersService {
         habitant.setDateDeces(ind.getDateDeces());
 	    habitant.setSexe(ind.getSexe());
 
-	    final Individu individu = serviceCivilService.getIndividu(habitant.getNumeroIndividu(), null, AttributeIndividu.NATIONALITE, AttributeIndividu.PERMIS, AttributeIndividu.ORIGINE);
+	    final Individu individu = serviceCivilService.getIndividu(habitant.getNumeroIndividu(), null, AttributeIndividu.NATIONALITES, AttributeIndividu.PERMIS, AttributeIndividu.ORIGINE);
 	    if (individu == null) {
 		    throw new IndividuNotFoundException(habitant.getNumeroIndividu());
 	    }
 
 	    // nationalité
-	    final Nationalite nationalite = individu.getDerniereNationalite();
+	    final Nationalite nationalite = NationaliteHelper.refAt(individu.getNationalites(), null);
 	    if (nationalite != null) {
 		    habitant.setNumeroOfsNationalite(nationalite.getPays().getNoOFS());
 	    }
@@ -681,17 +682,10 @@ public class TiersServiceImpl implements TiersService {
 
         /* Récupération de l'individu avec ses permis, ses nationalités et son origine */
         final Individu individu = serviceCivilService.getIndividu(habitant.getNumeroIndividu(), date,
-                AttributeIndividu.NATIONALITE, AttributeIndividu.PERMIS, AttributeIndividu.ORIGINE);
+                AttributeIndividu.NATIONALITES, AttributeIndividu.PERMIS, AttributeIndividu.ORIGINE);
 
         // A-t-il une nationalité suisse en cours et/ou des nationalites étrangères ?
-	    final Nationalite nationalite;
-	    if (date == null)  {
-		    nationalite = individu.getDerniereNationalite();
-	    }
-	    else {
-		    nationalite = serviceCivilService.getNationaliteAt(individu.getNoTechnique(), date);
-	    }
-
+	    final Nationalite nationalite = NationaliteHelper.refAt(individu.getNationalites(), date);
 	    boolean nationaliteSuisse = false;
 	    boolean nationalitesEtrangeres = false;
 	    if (nationalite != null) {
@@ -762,12 +756,15 @@ public class TiersServiceImpl implements TiersService {
 	public boolean isSuisse(PersonnePhysique pp, RegDate date) throws TiersException {
 
 		if (pp.isHabitantVD()) {
-			final long numeroIndividu = pp.getNumeroIndividu();
-			final Nationalite nationalite = serviceCivilService.getNationaliteAt(numeroIndividu, date);
-			if (nationalite == null) {
-				throw new TiersException("Impossible de déterminer la nationalité de l'individu n°" + numeroIndividu);
+			final Individu individu = getIndividu(pp, date, AttributeIndividu.NATIONALITES);
+			if (individu == null) {
+				throw new IndividuNotFoundException(pp.getNumeroIndividu());
 			}
-			return nationalite.getPays().getNoOFS() == ServiceInfrastructureService.noOfsSuisse;
+			final Nationalite nationalite = NationaliteHelper.refAt(individu.getNationalites(), date);
+			if (nationalite == null) {
+				throw new TiersException("Impossible de déterminer la nationalité de l'individu n°" + pp.getNumeroIndividu());
+			}
+			return nationalite.getPays().isSuisse();
 		}
 		else {
 			final Integer numeroOfsNationalite = pp.getNumeroOfsNationalite();
@@ -791,13 +788,7 @@ public class TiersServiceImpl implements TiersService {
      */
     @Override
     public boolean isSuisse(Individu individu, @Nullable RegDate date) throws TiersException {
-	    final Nationalite nationalite;
-        if (date == null)  {
-	        nationalite = individu.getDerniereNationalite();
-        }
-	    else {
-	        nationalite = serviceCivilService.getNationaliteAt(individu.getNoTechnique(), date);
-        }
+	    final Nationalite nationalite = NationaliteHelper.refAt(individu.getNationalites(), date);
         if (nationalite == null) {
             throw new TiersException("Impossible de déterminer la nationalité de l'individu n°" + individu.getNoTechnique());
         }

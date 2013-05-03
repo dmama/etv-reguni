@@ -54,7 +54,7 @@ public class ChangementNationaliteEtrangereEchProcessorTest extends AbstractEven
 		doModificationIndividu(noIndividu, new IndividuModification() {
 			@Override
 			public void modifyIndividu(MockIndividu individu) {
-				individu.setNationalites(Arrays.asList((Nationalite) new MockNationalite(dateChangement, null, MockPays.Albanie, 1)));
+				individu.setNationalites(Arrays.asList((Nationalite) new MockNationalite(dateChangement, null, MockPays.Albanie)));
 			}
 		});
 
