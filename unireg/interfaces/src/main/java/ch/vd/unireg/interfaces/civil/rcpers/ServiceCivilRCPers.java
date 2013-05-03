@@ -10,16 +10,13 @@ import java.util.Map;
 
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.evd0001.v3.ListOfPersons;
-import ch.vd.evd0001.v3.ListOfRelations;
-import ch.vd.evd0001.v3.NotReturnedPerson;
-import ch.vd.evd0001.v3.NotReturnedRelation;
-import ch.vd.evd0001.v3.Person;
-import ch.vd.evd0001.v3.Relations;
-import ch.vd.evd0001.v3.Relationship;
+import ch.vd.evd0001.v4.Event;
+import ch.vd.evd0001.v4.EventIdentification;
+import ch.vd.evd0001.v4.ListOfPersons;
+import ch.vd.evd0001.v4.ListOfRelations;
+import ch.vd.evd0001.v4.Person;
+import ch.vd.evd0001.v4.Relationship;
 import ch.vd.evd0004.v2.Error;
-import ch.vd.evd0006.v1.Event;
-import ch.vd.evd0006.v1.EventIdentification;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.civil.ServiceCivilInterceptor;
@@ -168,20 +165,16 @@ public class ServiceCivilRCPers implements ServiceCivilRaw {
 	private static Person extractPerson(ListOfPersons.ListOfResults.Result result) throws ServiceCivilException {
 
 		// [SIFISC-6685] on détecte les cas où on ne reçoit rien parce qu'il y a un bug dans RcPers
-		final NotReturnedPerson notReturnedPerson = result.getNotReturnedPerson();
-		if (notReturnedPerson != null) {
-			final String noIndividu = notReturnedPerson.getLocalPersonId().getPersonId();
-			final String category = notReturnedPerson.getLocalPersonId().getPersonIdCategory();
-			final List<Error> reasons = notReturnedPerson.getReason();
-			if (reasons.size() != 1) {
-				throw new IllegalArgumentException("Plusieurs raisons codes d'erreur retournés par RcPers sur l'appel à l'individu = " + category + "/" + noIndividu);
-			}
-			final Integer code = reasons.get(0).getCode();
+		final Error notReturnedPersonError = result.getNotReturnedPersonReason();
+		if (notReturnedPersonError != null) {
+			final String noIndividu = result.getLocalPersonId().getPersonId();
+			final String category = result.getLocalPersonId().getPersonIdCategory();
+			final Integer code = notReturnedPersonError.getCode();
 			if (code.equals(NOT_FOUND_PERSON)) {
 				return null; // le seul cas où la personne n'est pas retournée parce qu'elle n'existe simplement pas
 			}
 			else {
-				throw new ServiceCivilException("RcPers a retourné le code d'erreur " + code + " (" + reasons.get(0).getMessage() + ") sur l'appel à l'individu = " + category + "/" + noIndividu);
+				throw new ServiceCivilException("RcPers a retourné le code d'erreur " + code + " (" + notReturnedPersonError.getMessage() + ") sur l'appel à l'individu = " + category + "/" + noIndividu);
 			}
 		}
 
@@ -199,23 +192,18 @@ public class ServiceCivilRCPers implements ServiceCivilRaw {
 	private static List<Relationship> extractRelations(long noIndividu, ListOfRelations.ListOfResults.Result result) throws ServiceCivilException {
 
 		// [SIFISC-6685] on détecte les cas où on ne reçoit rien parce qu'il y a un bug dans RcPers
-		final NotReturnedRelation notReturnedRelation = result.getNotReturnedRelation();
+		final Error notReturnedRelation = result.getNotReturnedRelationReason();
 		if (notReturnedRelation != null) {
-			final List<Error> reasons = notReturnedRelation.getReason();
-			if (reasons.size() != 1) {
-				throw new IllegalArgumentException("Plusieurs raisons codes d'erreur retournés par RcPers sur l'appel aux relations de l'individu = " + noIndividu);
-			}
-			final Integer code = reasons.get(0).getCode();
+			final Integer code = notReturnedRelation.getCode();
 			if (code.equals(NOT_FOUND_PERSON)) {
 				return null; // le seul cas où les relations de la personne nesont pas retournée parce qu'elles n'existent simplement pas
 			}
 			else {
-				throw new ServiceCivilException("RcPers a retourné le code d'erreur " + code + " (" + reasons.get(0).getMessage() + ") sur l'appel aux relations de l'individu = " + noIndividu);
+				throw new ServiceCivilException("RcPers a retourné le code d'erreur " + code + " (" + notReturnedRelation.getMessage() + ") sur l'appel aux relations de l'individu = " + noIndividu);
 			}
 		}
 
-		final Relations r = result.getRelation();
-		return (r == null ? null : r.getRelationshipHistory());
+		return result.getRelation();
 	}
 
 	private static boolean containsAny(AttributeIndividu[] container, AttributeIndividu... values) {
@@ -256,7 +244,7 @@ public class ServiceCivilRCPers implements ServiceCivilRaw {
 				for (ListOfRelations.ListOfResults.Result relRes : rel.getListOfResults().getResult()) {
 					final List<Relationship> relations = extractRelations(0, relRes);
 					if (relations != null) {
-						allRelations.put(IndividuRCPers.getNoIndividu(relRes.getRelation().getLocalPersonId()), relations);
+						allRelations.put(IndividuRCPers.getNoIndividu(relRes.getLocalPersonId()), relations);
 					}
 				}
 			}
@@ -348,8 +336,8 @@ public class ServiceCivilRCPers implements ServiceCivilRaw {
 			final Individu individu = IndividuRCPers.get(personAfterEvent.getPerson(), personAfterEvent.getRelations(), false, true, infraService);
 			final EventIdentification idtf = ref.getIdentification();
 			final Long refMessageId = idtf.getReferenceMessageId();
-			final RegDate dateEvt = XmlUtils.xmlcal2regdate(idtf.getDate());
-			final TypeEvenementCivilEch type = TypeEvenementCivilEch.fromEchCode(idtf.getType());
+			final RegDate dateEvt = XmlUtils.xmlcal2regdate(idtf.getEventDate());
+			final TypeEvenementCivilEch type = TypeEvenementCivilEch.fromEchCode(idtf.getEventType());
 			final ActionEvenementCivilEch action = ActionEvenementCivilEch.fromEchCode(idtf.getAction());
 			return new IndividuApresEvenement(individu, dateEvt, type, action, refMessageId);
 		}

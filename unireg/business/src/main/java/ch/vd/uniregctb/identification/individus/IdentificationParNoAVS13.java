@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
-import ch.vd.evd0001.v3.ListOfPersons;
+import ch.vd.evd0001.v4.ListOfPersons;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.data.IndividuRCPers;
 import ch.vd.unireg.wsclient.rcpers.RcPersClient;

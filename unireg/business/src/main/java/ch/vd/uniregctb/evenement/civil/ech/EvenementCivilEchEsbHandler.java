@@ -20,9 +20,9 @@ import org.springframework.context.SmartLifecycle;
 import org.springframework.core.io.ClassPathResource;
 import org.xml.sax.SAXException;
 
-import ch.vd.evd0006.v1.EventIdentification;
-import ch.vd.evd0006.v1.EventNotification;
-import ch.vd.evd0006.v1.ObjectFactory;
+import ch.vd.evd0001.v4.EventIdentification;
+import ch.vd.evd0001.v4.EventNotification;
+import ch.vd.evd0001.v4.ObjectFactory;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
@@ -205,7 +205,7 @@ public class EvenementCivilEchEsbHandler implements EsbMessageHandler, Initializ
 
 			// 2. événement ignoré ?
 			if (isIgnored(ech)) {
-				Audit.info(evt.getMessageId(), String.format("Evénement civil ignoré (id=%d, type=%s/%s)", evt.getMessageId(), evt.getType(), evt.getAction()));
+				Audit.info(evt.getMessageId(), String.format("Evénement civil ignoré (id=%d, type=%s/%s)", evt.getMessageId(), evt.getEventType(), evt.getAction()));
 				return null;
 			}
 			else {

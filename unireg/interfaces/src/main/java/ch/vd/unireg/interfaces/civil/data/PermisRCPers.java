@@ -2,7 +2,7 @@ package ch.vd.unireg.interfaces.civil.data;
 
 import java.io.Serializable;
 
-import ch.vd.evd0001.v3.ResidencePermit;
+import ch.vd.evd0001.v4.ResidencePermit;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
@@ -13,7 +13,7 @@ import ch.vd.uniregctb.type.TypePermis;
 
 public class PermisRCPers implements Permis, Serializable {
 
-	private static final long serialVersionUID = -5355717389317471235L;
+	private static final long serialVersionUID = 1260068664890921320L;
 
 	private final RegDate dateDebut;
 	private final RegDate dateFin;

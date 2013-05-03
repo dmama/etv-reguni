@@ -14,22 +14,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import ch.ech.ech0010.v4.MailAddress;
 import ch.ech.ech0011.v5.PlaceOfOrigin;
 import ch.ech.ech0044.v2.NamedPersonId;
+import ch.ech.ech0044.v2.PersonIdentificationPartner;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.evd0001.v3.HistoryContact;
-import ch.vd.evd0001.v3.Identity;
-import ch.vd.evd0001.v3.MaritalData;
-import ch.vd.evd0001.v3.Person;
-import ch.vd.evd0001.v3.PersonIdentification;
-import ch.vd.evd0001.v3.Relationship;
-import ch.vd.evd0001.v3.Residence;
-import ch.vd.evd0001.v3.ResidencePermit;
-import ch.vd.evd0001.v3.UpiPerson;
+import ch.vd.evd0001.v4.Contact;
+import ch.vd.evd0001.v4.Identity;
+import ch.vd.evd0001.v4.MaritalData;
+import ch.vd.evd0001.v4.Person;
+import ch.vd.evd0001.v4.PersonIdentification;
+import ch.vd.evd0001.v4.Relationship;
+import ch.vd.evd0001.v4.Residence;
+import ch.vd.evd0001.v4.ResidencePermit;
+import ch.vd.evd0001.v4.UpiPerson;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeAdapterCallback;
 import ch.vd.registre.base.date.DateRangeComparator;
@@ -51,7 +51,7 @@ import ch.vd.uniregctb.type.TypeAdresseCivil;
 
 public class IndividuRCPers implements Individu, Serializable {
 
-	private static final long serialVersionUID = -5634728139412585597L;
+	private static final long serialVersionUID = -7314061209614017705L;
 
 	private long noTechnique;
 	private String prenom;
@@ -357,13 +357,13 @@ public class IndividuRCPers implements Individu, Serializable {
 		return new EtatCivilListRCPers(list);
 	}
 
-	protected static List<Adresse> initAdresses(@Nullable MailAddress currentContact, @Nullable List<HistoryContact> contact, List<Residence> residence, ServiceInfrastructureRaw infraService) {
+	protected static List<Adresse> initAdresses(@Nullable Contact currentContact, @Nullable List<Contact> contact, List<Residence> residence, ServiceInfrastructureRaw infraService) {
 
 		final List<Adresse> adresses = new ArrayList<>();
 
 		if (contact != null) {
 			// l'historique est renseigné
-			for (HistoryContact hc : contact) {
+			for (Contact hc : contact) {
 				adresses.add(AdresseRCPers.get(hc, infraService));
 			}
 		}
@@ -544,12 +544,15 @@ public class IndividuRCPers implements Individu, Serializable {
 		}
 		final List<RelationVersIndividu> list = new ArrayList<>();
 		for (Relationship r : relationship) {
-			final TypeRelationVersIndividu type = EvdHelper.typeRelationFromEvd1(r.getTypeOfRelationship());
-			if (type != null && type.isEnfant()) {
-				final Long numeroInd = getNoIndividu(r.getLocalPersonId());
-				final RegDate validFrom = XmlUtils.xmlcal2regdate(r.getRelationValidFrom());
-				final RegDate validTill = fixRelationEndDate(validFrom, XmlUtils.xmlcal2regdate(r.getRelationValidTill()));
-				list.add(new RelationVersIndividuImpl(numeroInd, type, validFrom, validTill));
+			final PersonIdentificationPartner partnerIdentification = r.getPersonIdentificationPartner();
+			if (partnerIdentification != null) {
+				final TypeRelationVersIndividu type = EvdHelper.typeRelationFromEvd1(r.getTypeOfRelationship());
+				if (type != null && type.isEnfant()) {
+					final Long numeroInd = getNoIndividu(partnerIdentification.getLocalPersonId());
+					final RegDate validFrom = XmlUtils.xmlcal2regdate(r.getRelationValidFrom());
+					final RegDate validTill = fixRelationEndDate(validFrom, XmlUtils.xmlcal2regdate(r.getRelationValidTill()));
+					list.add(new RelationVersIndividuImpl(numeroInd, type, validFrom, validTill));
+				}
 			}
 		}
 		return list.isEmpty() ? null : list;
@@ -561,16 +564,19 @@ public class IndividuRCPers implements Individu, Serializable {
 		}
 		final List<RelationVersIndividu> list = new ArrayList<>();
 		for (Relationship r : relationship) {
-			final TypeRelationVersIndividu type = EvdHelper.typeRelationFromEvd1(r.getTypeOfRelationship());
-			if (type != null && type.isParent()) {
-				final Long numeroInd = getNoIndividu(r.getLocalPersonId());
-				RegDate validFrom = XmlUtils.xmlcal2regdate(r.getRelationValidFrom());
-				if (validFrom == null) {
-					// à défaut de mieux, on considère que la relation s'établit à la naissance de l'enfant
-					validFrom = dateNaissance;
+			final PersonIdentificationPartner partnerIdentification = r.getPersonIdentificationPartner();
+			if (partnerIdentification != null) {
+				final TypeRelationVersIndividu type = EvdHelper.typeRelationFromEvd1(r.getTypeOfRelationship());
+				if (type != null && type.isParent()) {
+					final Long numeroInd = getNoIndividu(partnerIdentification.getLocalPersonId());
+					RegDate validFrom = XmlUtils.xmlcal2regdate(r.getRelationValidFrom());
+					if (validFrom == null) {
+						// à défaut de mieux, on considère que la relation s'établit à la naissance de l'enfant
+						validFrom = dateNaissance;
+					}
+					final RegDate validTill = fixRelationEndDate(validFrom, XmlUtils.xmlcal2regdate(r.getRelationValidTill()));
+					list.add(new RelationVersIndividuImpl(numeroInd, type, validFrom, validTill));
 				}
-				final RegDate validTill = fixRelationEndDate(validFrom, XmlUtils.xmlcal2regdate(r.getRelationValidTill()));
-				list.add(new RelationVersIndividuImpl(numeroInd, type, validFrom, validTill));
 			}
 		}
 		return list.isEmpty() ? null : list;
@@ -582,12 +588,15 @@ public class IndividuRCPers implements Individu, Serializable {
 		}
 		final List<RelationVersIndividu> list = new ArrayList<>();
 		for (Relationship r : relationship) {
-			final TypeRelationVersIndividu type = EvdHelper.typeRelationFromEvd1(r.getTypeOfRelationship());
-			if (type != null && type.isConjointOuPartenaire()) {
-				final Long numeroInd = getNoIndividu(r.getLocalPersonId());
-				final RegDate validFrom = XmlUtils.xmlcal2regdate(r.getRelationValidFrom());
-				final RegDate validTill = fixRelationEndDate(validFrom, XmlUtils.xmlcal2regdate(r.getRelationValidTill()));
-				list.add(new RelationVersIndividuImpl(numeroInd, type, validFrom, validTill));
+			final PersonIdentificationPartner partnerIdentification = r.getPersonIdentificationPartner();
+			if (partnerIdentification != null) {
+				final TypeRelationVersIndividu type = EvdHelper.typeRelationFromEvd1(r.getTypeOfRelationship());
+				if (type != null && type.isConjointOuPartenaire()) {
+					final Long numeroInd = getNoIndividu(partnerIdentification.getLocalPersonId());
+					final RegDate validFrom = XmlUtils.xmlcal2regdate(r.getRelationValidFrom());
+					final RegDate validTill = fixRelationEndDate(validFrom, XmlUtils.xmlcal2regdate(r.getRelationValidTill()));
+					list.add(new RelationVersIndividuImpl(numeroInd, type, validFrom, validTill));
+				}
 			}
 		}
 		return list.isEmpty() ? null : list;

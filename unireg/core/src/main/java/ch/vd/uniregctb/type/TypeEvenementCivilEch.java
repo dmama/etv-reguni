@@ -55,6 +55,8 @@ public enum TypeEvenementCivilEch {
 	ATTRIBUTION_DONNEES_UPI(1001, null),
 	CORR_DONNEES_UPI(1002, null),
 	ANNULATION_DONNEES_UPI(1003, null),
+	INACTIVATION(1004, null),
+	REACTIVATION(1005, null),
 	TESTING(499999, null);
 
 	private final int codeECH;

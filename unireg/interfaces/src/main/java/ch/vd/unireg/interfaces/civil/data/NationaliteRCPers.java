@@ -2,9 +2,8 @@ package ch.vd.unireg.interfaces.civil.data;
 
 import java.io.Serializable;
 
-import ch.ech.ech0011.v5.Nationality;
-
-import ch.vd.evd0001.v3.Person;
+import ch.vd.evd0001.v4.Nationality;
+import ch.vd.evd0001.v4.Person;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -12,7 +11,7 @@ import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 
 public class NationaliteRCPers implements Nationalite, Serializable {
 
-	private static final long serialVersionUID = -6746367590570055398L;
+	private static final long serialVersionUID = 6762464522148787485L;
 
 	private final RegDate dateDebut;
 	private final RegDate dateFin;
@@ -47,10 +46,10 @@ public class NationaliteRCPers implements Nationalite, Serializable {
 	}
 
 	public static Nationalite get(Person person, ServiceInfrastructureRaw infraService) {
-		if (person == null || person.getNationality() == null) {
+		if (person == null || person.getCurrentNationality() == null) {
 			return null;
 		}
-		return new NationaliteRCPers(person.getNationality(), infraService);
+		return new NationaliteRCPers(person.getCurrentNationality(), infraService);
 	}
 
 	@Override

@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import ch.vd.evd0001.v3.FoundPerson;
-import ch.vd.evd0001.v3.ListOfFoundPersons;
+import ch.vd.evd0001.v4.FoundPerson;
+import ch.vd.evd0001.v4.ListOfFoundPersons;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.data.IndividuRCPers;

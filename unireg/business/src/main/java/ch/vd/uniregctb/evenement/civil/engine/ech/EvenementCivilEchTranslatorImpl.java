@@ -254,6 +254,12 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.ANNULATION_DONNEES_UPI, ActionEvenementCivilEch.PREMIERE_LIVRAISON), new DonneesUpiTranslationStrategy());
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.ANNULATION_DONNEES_UPI, ActionEvenementCivilEch.ANNULATION), new DonneesUpiTranslationStrategy());
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.ANNULATION_DONNEES_UPI, ActionEvenementCivilEch.CORRECTION), new DonneesUpiTranslationStrategy());
+		strategies.put(new EventTypeKey(TypeEvenementCivilEch.INACTIVATION, ActionEvenementCivilEch.PREMIERE_LIVRAISON), NOT_IMPLEMENTED);
+		strategies.put(new EventTypeKey(TypeEvenementCivilEch.INACTIVATION, ActionEvenementCivilEch.ANNULATION), NOT_IMPLEMENTED);
+		strategies.put(new EventTypeKey(TypeEvenementCivilEch.INACTIVATION, ActionEvenementCivilEch.CORRECTION), NOT_IMPLEMENTED);
+		strategies.put(new EventTypeKey(TypeEvenementCivilEch.REACTIVATION, ActionEvenementCivilEch.PREMIERE_LIVRAISON), NOT_IMPLEMENTED);
+		strategies.put(new EventTypeKey(TypeEvenementCivilEch.REACTIVATION, ActionEvenementCivilEch.ANNULATION), NOT_IMPLEMENTED);
+		strategies.put(new EventTypeKey(TypeEvenementCivilEch.REACTIVATION, ActionEvenementCivilEch.CORRECTION), NOT_IMPLEMENTED);
 
 		// pour les tests uniquement
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.PREMIERE_LIVRAISON), new TestingTranslationStrategy());

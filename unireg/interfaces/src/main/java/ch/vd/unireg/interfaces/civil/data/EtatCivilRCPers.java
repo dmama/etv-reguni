@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.evd0001.v3.MaritalData;
+import ch.vd.evd0001.v4.MaritalData;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
@@ -17,7 +17,7 @@ import ch.vd.uniregctb.common.XmlUtils;
 
 public class EtatCivilRCPers implements EtatCivil, Serializable {
 
-	private static final long serialVersionUID = -7795031275101386970L;
+	private static final long serialVersionUID = -7614825259930350637L;
 
 	private final RegDate dateDebut;
 	private RegDate dateFin;

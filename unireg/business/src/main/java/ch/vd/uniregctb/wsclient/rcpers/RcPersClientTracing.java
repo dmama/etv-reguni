@@ -5,10 +5,10 @@ import java.util.Collection;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
-import ch.vd.evd0001.v3.ListOfFoundPersons;
-import ch.vd.evd0001.v3.ListOfPersons;
-import ch.vd.evd0001.v3.ListOfRelations;
-import ch.vd.evd0006.v1.Event;
+import ch.vd.evd0001.v4.Event;
+import ch.vd.evd0001.v4.ListOfFoundPersons;
+import ch.vd.evd0001.v4.ListOfPersons;
+import ch.vd.evd0001.v4.ListOfRelations;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.wsclient.rcpers.RcPersClient;

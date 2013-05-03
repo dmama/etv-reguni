@@ -5,7 +5,7 @@ import java.util.List;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
 
-import ch.vd.evd0001.v3.MaritalData;
+import ch.vd.evd0001.v4.MaritalData;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.WithoutSpringTest;
 import ch.vd.uniregctb.common.XmlUtils;

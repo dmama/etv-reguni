@@ -13,19 +13,20 @@ import ch.ech.ech0010.v4.MailAddress;
 import ch.ech.ech0010.v4.SwissAddressInformation;
 import ch.ech.ech0011.v5.Destination;
 import ch.ech.ech0044.v2.NamedPersonId;
+import ch.ech.ech0044.v2.PersonIdentificationPartner;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
 
-import ch.vd.evd0001.v3.DwellingAddress;
-import ch.vd.evd0001.v3.HistoryContact;
-import ch.vd.evd0001.v3.Identity;
-import ch.vd.evd0001.v3.MaritalData;
-import ch.vd.evd0001.v3.Person;
-import ch.vd.evd0001.v3.PersonIdentification;
-import ch.vd.evd0001.v3.Relationship;
-import ch.vd.evd0001.v3.Residence;
-import ch.vd.evd0001.v3.ResidencePermit;
+import ch.vd.evd0001.v4.Contact;
+import ch.vd.evd0001.v4.DwellingAddress;
+import ch.vd.evd0001.v4.Identity;
+import ch.vd.evd0001.v4.MaritalData;
+import ch.vd.evd0001.v4.Person;
+import ch.vd.evd0001.v4.PersonIdentification;
+import ch.vd.evd0001.v4.Relationship;
+import ch.vd.evd0001.v4.Residence;
+import ch.vd.evd0001.v4.ResidencePermit;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.rcpers.EchHelper;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
@@ -164,7 +165,7 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 
 		// initialisation des adresses
 		final Collection<Adresse> adresses =
-				IndividuRCPers.initAdresses(null, Collections.<HistoryContact>emptyList(), Arrays.asList(p1, p2, p3, s1, s2), infraService);
+				IndividuRCPers.initAdresses(null, Collections.<Contact>emptyList(), Arrays.asList(p1, p2, p3, s1, s2), infraService);
 		assertNotNull(adresses);
 		assertEquals(5, adresses.size());
 
@@ -216,7 +217,7 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 
 		// initialisation des adresses
 		final Collection<Adresse> adresses =
-				IndividuRCPers.initAdresses(null, Collections.<HistoryContact>emptyList(), Arrays.asList(p1, p2, p3, s1, s2, z1, z2), infraService);
+				IndividuRCPers.initAdresses(null, Collections.<Contact>emptyList(), Arrays.asList(p1, p2, p3, s1, s2, z1, z2), infraService);
 		assertNotNull(adresses);
 		assertEquals(7, adresses.size());
 
@@ -273,7 +274,7 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 
 		// initialisation des adresses
 		final Collection<Adresse> adresses =
-				IndividuRCPers.initAdresses(null, Collections.<HistoryContact>emptyList(), Arrays.asList(r1, r2, r3, r4), infraService);
+				IndividuRCPers.initAdresses(null, Collections.<Contact>emptyList(), Arrays.asList(r1, r2, r3, r4), infraService);
 		assertNotNull(adresses);
 		assertEquals(5, adresses.size());       // 4 principales + une courrier créée depuis le 4.7.2012...
 
@@ -312,8 +313,8 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 
 		final Person person = newPerson(123345L, "Jean", "Rucher", date(1965, 3, 12), Sexe.MASCULIN);
 		// les adresses
-		person.getContactHistory().add(newHistoryContact(date(1965, 3, 12), date(1983, 7, 4), MockRue.Cully.ChDesColombaires));
-		person.getContactHistory().add(newHistoryContact(date(1983, 7, 5), null, MockRue.Chamblon.RueDesUttins));
+		person.getContactHistory().add(newContact(date(1965, 3, 12), date(1983, 7, 4), MockRue.Cully.ChDesColombaires));
+		person.getContactHistory().add(newContact(date(1983, 7, 5), null, MockRue.Chamblon.RueDesUttins));
 		person.getResidenceHistory().add(newResidencePrincipale(date(1965, 3, 12), null, date(1983, 7, 4), MockRue.Cully.ChDesColombaires));
 		person.getResidenceHistory().add(newResidencePrincipale(date(1983, 7, 5), null, null, MockRue.Chamblon.RueDesUttins));
 
@@ -380,7 +381,7 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 
 		final Person person = newPerson(123345L, "Jean", "Rucher", date(1965, 3, 12), Sexe.MASCULIN);
 		// les adresses courantes
-		person.setCurrentContact(newMailAddress(MockRue.Chamblon.RueDesUttins));
+		person.setCurrentContact(newContact(null, null, MockRue.Chamblon.RueDesUttins));
 		person.getCurrentResidence().add(newResidencePrincipale(date(1983, 7, 5), null, null, MockRue.Chamblon.RueDesUttins));
 
 		// l'état-civil courant
@@ -465,7 +466,11 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		final Relationship relation = new Relationship();
 		relation.setRelationValidFrom(XmlUtils.regdate2xmlcal(dateDebut));
 		relation.setRelationValidFrom(XmlUtils.regdate2xmlcal(dateFin));
-		relation.setLocalPersonId(new NamedPersonId("ct.vd.rcpers", String.valueOf(noIndividuLie)));
+
+		final PersonIdentificationPartner pip = new PersonIdentificationPartner();
+		pip.setLocalPersonId(new NamedPersonId("ct.vd.rcpers", String.valueOf(noIndividuLie)));
+
+		relation.setPersonIdentificationPartner(pip);
 		relation.setTypeOfRelationship(typeRelation.getEchCode());
 		return relation;
 	}
@@ -478,13 +483,13 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		return permit;
 	}
 
-	private static HistoryContact newHistoryContact(RegDate dateDebut, @Nullable RegDate dateFin, MockRue rue) {
-		final HistoryContact contactHistory = new HistoryContact();
+	private static Contact newContact(RegDate dateDebut, @Nullable RegDate dateFin, MockRue rue) {
+		final Contact contact = new Contact();
 		final MailAddress mailAddress = newMailAddress(rue);
-		contactHistory.setContact(mailAddress);
-		contactHistory.setContactValidFrom(XmlUtils.regdate2xmlcal(dateDebut));
-		contactHistory.setContactValidTill(XmlUtils.regdate2xmlcal(dateFin));
-		return contactHistory;
+		contact.setContact(mailAddress);
+		contact.setContactValidFrom(XmlUtils.regdate2xmlcal(dateDebut));
+		contact.setContactValidTill(XmlUtils.regdate2xmlcal(dateFin));
+		return contact;
 	}
 
 	private static MailAddress newMailAddress(MockRue rue) {
@@ -716,7 +721,7 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		final Residence res = newResidencePrincipale(arrivee, null, depart, MockRue.Lausanne.AvenueDeBeaulieu);
 
 		final List<Residence> residences = Arrays.asList(res);
-		final List<Adresse> adresses = IndividuRCPers.initAdresses(null, Collections.<HistoryContact>emptyList(), residences, infraService);
+		final List<Adresse> adresses = IndividuRCPers.initAdresses(null, Collections.<Contact>emptyList(), residences, infraService);
 		assertNotNull(adresses);
 		assertEquals(2, adresses.size());
 
@@ -752,7 +757,7 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		res.setGoesTo(new Destination(StringUtils.EMPTY, null, null, null));    // <-- unknown
 
 		final List<Residence> residences = Arrays.asList(res);
-		final List<Adresse> adresses = IndividuRCPers.initAdresses(null, Collections.<HistoryContact>emptyList(), residences, infraService);
+		final List<Adresse> adresses = IndividuRCPers.initAdresses(null, Collections.<Contact>emptyList(), residences, infraService);
 		assertNotNull(adresses);
 		assertEquals(2, adresses.size());
 
@@ -795,7 +800,7 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		res.setGoesTo(new Destination(null, null, new Destination.ForeignCountry(newCountry(pays), ville), null));
 
 		final List<Residence> residences = Arrays.asList(res);
-		final List<Adresse> adresses = IndividuRCPers.initAdresses(null, Collections.<HistoryContact>emptyList(), residences, infraService);
+		final List<Adresse> adresses = IndividuRCPers.initAdresses(null, Collections.<Contact>emptyList(), residences, infraService);
 		assertNotNull(adresses);
 		assertEquals(2, adresses.size());
 
@@ -846,7 +851,7 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		res.setGoesTo(new Destination(null, null, new Destination.ForeignCountry(newCountry(pays), ville), newAddressInformation(MockRue.Echallens.GrandRue)));
 
 		final List<Residence> residences = Arrays.asList(res);
-		final List<Adresse> adresses = IndividuRCPers.initAdresses(null, Collections.<HistoryContact>emptyList(), residences, infraService);
+		final List<Adresse> adresses = IndividuRCPers.initAdresses(null, Collections.<Contact>emptyList(), residences, infraService);
 		assertNotNull(adresses);
 		assertEquals(2, adresses.size());
 
@@ -896,7 +901,7 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		res.setGoesTo(newDestination(commune));
 
 		final List<Residence> residences = Arrays.asList(res);
-		final List<Adresse> adresses = IndividuRCPers.initAdresses(null, Collections.<HistoryContact>emptyList(), residences, infraService);
+		final List<Adresse> adresses = IndividuRCPers.initAdresses(null, Collections.<Contact>emptyList(), residences, infraService);
 		assertNotNull(adresses);
 		assertEquals(2, adresses.size());
 
@@ -942,7 +947,7 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		res.setGoesTo(destination);
 
 		final List<Residence> residences = Arrays.asList(res);
-		final List<Adresse> adresses = IndividuRCPers.initAdresses(null, Collections.<HistoryContact>emptyList(), residences, infraService);
+		final List<Adresse> adresses = IndividuRCPers.initAdresses(null, Collections.<Contact>emptyList(), residences, infraService);
 		assertNotNull(adresses);
 		assertEquals(2, adresses.size());
 
@@ -988,10 +993,10 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		final RegDate arrivee = date(2001, 1, 1);
 		final RegDate depart = date(2008, 12, 3);
 		final Residence res = newResidencePrincipale(arrivee, null, depart, MockRue.Lausanne.AvenueDeBeaulieu);
-		final HistoryContact ctct = newHistoryContact(depart.getOneDayAfter(), null, MockRue.Bussigny.RueDeLIndustrie);
+		final Contact ctct = newContact(depart.getOneDayAfter(), null, MockRue.Bussigny.RueDeLIndustrie);
 
 		final List<Residence> residences = Arrays.asList(res);
-		final List<HistoryContact> contacts = Arrays.asList(ctct);
+		final List<Contact> contacts = Arrays.asList(ctct);
 		final List<Adresse> adresses = IndividuRCPers.initAdresses(null, contacts, residences, infraService);
 		assertNotNull(adresses);
 		assertEquals(2, adresses.size());
@@ -1029,7 +1034,7 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		final Residence res2 = newResidencePrincipale(nouvelleArrivee, null, null, MockRue.Echallens.GrandRue);
 
 		final List<Residence> residences = Arrays.asList(res1, res2);
-		final List<Adresse> adresses = IndividuRCPers.initAdresses(null, Collections.<HistoryContact>emptyList(), residences, infraService);
+		final List<Adresse> adresses = IndividuRCPers.initAdresses(null, Collections.<Contact>emptyList(), residences, infraService);
 		assertNotNull(adresses);
 		assertEquals(3, adresses.size());
 
@@ -1078,7 +1083,7 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		final Residence res2 = newResidenceSecondaire(nouvelleArrivee, null, null, MockRue.Echallens.GrandRue);
 
 		final List<Residence> residences = Arrays.asList(res1, res2);
-		final List<Adresse> adresses = IndividuRCPers.initAdresses(null, Collections.<HistoryContact>emptyList(), residences, infraService);
+		final List<Adresse> adresses = IndividuRCPers.initAdresses(null, Collections.<Contact>emptyList(), residences, infraService);
 		assertNotNull(adresses);
 		assertEquals(3, adresses.size());
 
@@ -1131,10 +1136,10 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		destination.getForeignCountry().setTown("Paris");
 		res1.setGoesTo(destination);
 		final Residence res2 = newResidencePrincipale(nouvelleArrivee, null, null, MockRue.Echallens.GrandRue);
-		final HistoryContact ctct = newHistoryContact(depart.addMonths(-1), depart.addMonths(1), MockRue.Bussigny.RueDeLIndustrie);
+		final Contact ctct = newContact(depart.addMonths(-1), depart.addMonths(1), MockRue.Bussigny.RueDeLIndustrie);
 
 		final List<Residence> residences = Arrays.asList(res1, res2);
-		final List<HistoryContact> contacts = Arrays.asList(ctct);
+		final List<Contact> contacts = Arrays.asList(ctct);
 		final List<Adresse> adresses = IndividuRCPers.initAdresses(null, contacts, residences, infraService);
 		assertNotNull(adresses);
 		assertEquals(4, adresses.size());

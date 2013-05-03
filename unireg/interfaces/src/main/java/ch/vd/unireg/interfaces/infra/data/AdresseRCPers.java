@@ -11,9 +11,9 @@ import ch.ech.ech0011.v5.Destination;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.evd0001.v3.DwellingAddress;
-import ch.vd.evd0001.v3.HistoryContact;
-import ch.vd.evd0001.v3.Residence;
+import ch.vd.evd0001.v4.Contact;
+import ch.vd.evd0001.v4.DwellingAddress;
+import ch.vd.evd0001.v4.Residence;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
@@ -30,8 +30,8 @@ import ch.vd.uniregctb.type.TypeAdresseCivil;
 
 public class AdresseRCPers implements Adresse, Serializable {
 
-	private static final long serialVersionUID = 8531777934600620271L;
-	
+	private static final long serialVersionUID = 2196435166615767555L;
+
 	private final RegDate dateDebut;
 	private RegDate dateFin;
 	private final CasePostale casePostale;
@@ -52,18 +52,11 @@ public class AdresseRCPers implements Adresse, Serializable {
 	private final Localisation localisationPrecedente;
 	private final Localisation localisationSuivante;
 
-	public static Adresse get(HistoryContact contact, ServiceInfrastructureRaw infraService) {
+	public static Adresse get(Contact contact, ServiceInfrastructureRaw infraService) {
 		if (contact == null) {
 			return null;
 		}
 		return new AdresseRCPers(contact, infraService);
-	}
-
-	public static AdresseRCPers get(MailAddress address, ServiceInfrastructureRaw infraService) {
-		if (address == null) {
-			return null;
-		}
-		return new AdresseRCPers(address, null, null, infraService);
 	}
 
 	private static AdresseRCPers get(AddressInformation addressInfo, ServiceInfrastructureRaw infraService) {
@@ -80,7 +73,7 @@ public class AdresseRCPers implements Adresse, Serializable {
 		return new AdresseRCPers(residence, next, infraService);
 	}
 
-	public AdresseRCPers(HistoryContact contact, ServiceInfrastructureRaw infraService) {
+	public AdresseRCPers(Contact contact, ServiceInfrastructureRaw infraService) {
 		this(contact.getContact(), XmlUtils.xmlcal2regdate(contact.getContactValidFrom()), XmlUtils.xmlcal2regdate(contact.getContactValidTill()), infraService);
 	}
 
@@ -114,6 +107,7 @@ public class AdresseRCPers implements Adresse, Serializable {
 	public AdresseRCPers(Residence residence, @Nullable Residence next, ServiceInfrastructureRaw infraService) {
 		final DwellingAddress dwellingAddress = residence.getDwellingAddress();
 		final SwissAddressInformation addressInfo = dwellingAddress.getAddress();
+		final DwellingAddress.Dwelling dwelling = dwellingAddress.getDwelling();
 
 		this.dateDebut = initDateDebut(residence); // voir SIREF-1617
 		this.dateFin = initDateFin(residence, next); // voir SIREF-1794
@@ -131,8 +125,8 @@ public class AdresseRCPers implements Adresse, Serializable {
 		this.titre = addressInfo.getAddressLine1(); // TODO (rcpers) que faire d'addressLine2 ?
 		this.typeAdresse = initTypeAdresseResidence(residence);
 		this.noOfsCommuneAdresse = residence.getResidenceMunicipality().getMunicipalityId();
-		this.egid = dwellingAddress.getEGID() == null ? null : dwellingAddress.getEGID().intValue();
-		this.ewid = dwellingAddress.getEWID() == null ? null : dwellingAddress.getEWID().intValue();
+		this.egid = dwelling == null || dwelling.getEGID() == null ? null : dwelling.getEGID().intValue();
+		this.ewid = dwelling == null || dwelling.getEWID() == null ? null : dwelling.getEWID().intValue();
 
 		if (residence.getDwellingAddress().getMovingDate() != null) {
 			this.localisationPrecedente = null; // [SIFISC-4833] en cas de déménagement à l'intérieur de la commune, la localisation précédente doit être nulle

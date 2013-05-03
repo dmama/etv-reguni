@@ -43,12 +43,12 @@ public class EvenementCivilEch extends HibernateEntity {
 	public EvenementCivilEch() {
 	}
 
-	public EvenementCivilEch(ch.vd.evd0006.v1.EventIdentification bean) {
+	public EvenementCivilEch(ch.vd.evd0001.v4.EventIdentification bean) {
 		this.id = bean.getMessageId();
 		this.refMessageId = bean.getReferenceMessageId();
-		this.dateEvenement = XmlUtils.xmlcal2regdate(bean.getDate());
+		this.dateEvenement = XmlUtils.xmlcal2regdate(bean.getEventDate());
 		this.etat = EtatEvenementCivil.A_TRAITER;
-		this.type = TypeEvenementCivilEch.fromEchCode(bean.getType());
+		this.type = TypeEvenementCivilEch.fromEchCode(bean.getEventType());
 		this.action = ActionEvenementCivilEch.fromEchCode(bean.getAction());
 		this.dateTraitement = null;
 		this.numeroIndividu = null;

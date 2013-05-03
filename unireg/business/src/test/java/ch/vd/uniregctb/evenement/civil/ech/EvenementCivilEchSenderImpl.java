@@ -10,9 +10,9 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.w3c.dom.Document;
 
-import ch.vd.evd0006.v1.EventIdentification;
-import ch.vd.evd0006.v1.EventNotification;
-import ch.vd.evd0006.v1.ObjectFactory;
+import ch.vd.evd0001.v4.EventIdentification;
+import ch.vd.evd0001.v4.EventNotification;
+import ch.vd.evd0001.v4.ObjectFactory;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.AbstractEsbJmsTemplate;
@@ -67,10 +67,10 @@ public class EvenementCivilEchSenderImpl implements EvenementCivilEchSender, Ini
 
 		final EventIdentification eventIdentification = objectFactory.createEventIdentificationType();
 		eventIdentification.setAction(String.valueOf(evt.getAction().getEchCode()));
-		eventIdentification.setDate(XmlUtils.regdate2xmlcal(evt.getDateEvenement()));
+		eventIdentification.setEventDate(XmlUtils.regdate2xmlcal(evt.getDateEvenement()));
 		eventIdentification.setMessageId(evt.getId());
 		eventIdentification.setReferenceMessageId(evt.getRefMessageId());
-		eventIdentification.setType(String.valueOf(evt.getType().getCodeECH()));
+		eventIdentification.setEventType(String.valueOf(evt.getType().getCodeECH()));
 
 		final EventNotification message = objectFactory.createEventNotification();
 		message.setIdentification(eventIdentification);
