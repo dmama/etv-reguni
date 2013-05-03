@@ -9,10 +9,10 @@
 	<groupId>ch.vd.uniregctb</groupId>
 	<artifactId>unireg-wsclient-rcpers</artifactId>
 	<packaging>jar</packaging>
-	<version>2.5</version>
+	<version>4.0-SNAPSHOT</version>
 
-	<name>Unireg - Client WS RCPers v3</name>
-	<description>Unireg - Client Java pour le web-service d'échange de données v3 de RCPers</description>
+	<name>Unireg - Client WS RCPers v4</name>
+	<description>Unireg - Client Java pour le web-service d'échange de données v4 de RCPers</description>
 	
 	<dependencies>
 		<dependency>
@@ -105,7 +105,7 @@
 	
 	<properties>
 		<!-- Application settings -->
-		<copyright.year>2012</copyright.year>
+		<copyright.year>2013</copyright.year>
 		<amp.genericCore>true</amp.genericCore>
 		<amp.fullSource>false</amp.fullSource>
 		<spring.version>3.1.4.RELEASE</spring.version>
