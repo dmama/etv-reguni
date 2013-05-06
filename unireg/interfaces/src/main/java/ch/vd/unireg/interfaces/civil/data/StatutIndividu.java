@@ -1,5 +1,6 @@
 package ch.vd.unireg.interfaces.civil.data;
 
+import java.io.ObjectStreamException;
 import java.io.Serializable;
 
 public class StatutIndividu implements Serializable {
@@ -63,5 +64,20 @@ public class StatutIndividu implements Serializable {
 				"active=" + active +
 				", noIndividuRemplacant=" + noIndividuRemplacant +
 				'}';
+	}
+
+	/**
+	 * Cette méthode permet de ne pas surcharger la mémoire avec des zillions d'instances de StatutIndividu tous identiques
+	 * @return le résultat de la dé-sérialisation à propager plus loin
+	 * @throws ObjectStreamException en cas de souci
+	 * @see java.io.Serializable
+	 */
+	private Object readResolve() throws ObjectStreamException {
+		if (noIndividuRemplacant == null) {
+			return active ? ACTIVE : INACTIVE;
+		}
+		else {
+			return this;
+		}
 	}
 }
