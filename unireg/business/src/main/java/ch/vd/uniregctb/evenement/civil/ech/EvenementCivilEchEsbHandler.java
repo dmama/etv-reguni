@@ -205,7 +205,7 @@ public class EvenementCivilEchEsbHandler implements EsbMessageHandler, Initializ
 
 			// 2. événement ignoré ?
 			if (isIgnored(ech)) {
-				Audit.info(evt.getMessageId(), String.format("Evénement civil ignoré (id=%d, type=%s/%s)", evt.getMessageId(), evt.getType(), evt.getAction()));
+				Audit.info(evt.getMessageId(), String.format("Evénement civil ignoré (id=%d, type=%s/%s)", evt.getMessageId(), ech.getType(), ech.getAction()));
 				return null;
 			}
 			else {
