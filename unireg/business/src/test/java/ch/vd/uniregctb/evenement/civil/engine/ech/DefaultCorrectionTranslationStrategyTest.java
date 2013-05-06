@@ -69,17 +69,16 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 		final long noIndividu = 4684263L;
 		final long idEvtCorrige = 464735292L;
 		final long idEvtCorrection = 4326478256242L;
-		final RegDate dateEvtOrig = RegDate.get();
-		final RegDate dateEvtCorrection = dateEvtOrig.addDays(-2);
+		final RegDate dateEvt = RegDate.get();
 
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Zweisteinen", "Robert", true);
-				addIndividuAfterEvent(idEvtCorrige, ind, dateEvtOrig, TypeEvenementCivilEch.TESTING);
+				addIndividuAfterEvent(idEvtCorrige, ind, dateEvt, TypeEvenementCivilEch.TESTING);
 
 				final MockIndividu ind2 = createIndividu(noIndividu, null, "Dreisteinen", "Albert", true);
-				addIndividuAfterEvent(idEvtCorrection, ind2, dateEvtCorrection, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, idEvtCorrige);
+				addIndividuAfterEvent(idEvtCorrection, ind2, dateEvt, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, idEvtCorrige);
 			}
 		});
 
@@ -92,7 +91,7 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 				evt.setNumeroIndividu(noIndividu);
 				evt.setType(TypeEvenementCivilEch.TESTING);
 				evt.setAction(ActionEvenementCivilEch.CORRECTION);
-				evt.setDateEvenement(dateEvtCorrection);
+				evt.setDateEvenement(dateEvt);
 				evt.setEtat(EtatEvenementCivil.A_TRAITER);
 				evt.setRefMessageId(idEvtCorrige);
 				hibernateTemplate.merge(evt);
@@ -129,19 +128,18 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 		final long noIndividu = 4684263L;
 		final long idEvtCorrige = 464735292L;
 		final long idEvtCorrection = 4326478256242L;
-		final RegDate dateEvtOrig = RegDate.get();
-		final RegDate dateEvtCorrection = dateEvtOrig.addDays(-2);
+		final RegDate dateEvt = RegDate.get();
 
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Zweisteinen", "Robert", true);
 				marieIndividu(ind, date(1955, 12, 1));
-				addIndividuAfterEvent(idEvtCorrige, ind, dateEvtOrig, TypeEvenementCivilEch.TESTING);
+				addIndividuAfterEvent(idEvtCorrige, ind, dateEvt, TypeEvenementCivilEch.TESTING);
 
 				final MockIndividu ind2 = createIndividu(noIndividu, date(1934, 2, 12), "Dreisteinen", "Albert", true);
 				marieIndividu(ind2, date(1955, 12, 1));
-				addIndividuAfterEvent(idEvtCorrection, ind2, dateEvtCorrection, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, idEvtCorrige);
+				addIndividuAfterEvent(idEvtCorrection, ind2, dateEvt, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, idEvtCorrige);
 			}
 		});
 
@@ -154,7 +152,7 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 				evt.setNumeroIndividu(noIndividu);
 				evt.setType(TypeEvenementCivilEch.TESTING);
 				evt.setAction(ActionEvenementCivilEch.CORRECTION);
-				evt.setDateEvenement(dateEvtCorrection);
+				evt.setDateEvenement(dateEvt);
 				evt.setEtat(EtatEvenementCivil.A_TRAITER);
 				evt.setRefMessageId(idEvtCorrige);
 				hibernateTemplate.merge(evt);
@@ -198,19 +196,18 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 		final long noIndividu = 4684263L;
 		final long idEvtCorrige = 464735292L;
 		final long idEvtCorrection = 4326478256242L;
-		final RegDate dateEvtOrig = RegDate.get();
-		final RegDate dateEvtCorrection = dateEvtOrig.addDays(-2);
+		final RegDate dateEvt = RegDate.get();
 
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Zweisteinen", "Michel", true);
 				marieIndividu(ind, date(1955, 12, 1));
-				addIndividuAfterEvent(idEvtCorrige, ind, dateEvtOrig, TypeEvenementCivilEch.TESTING);
+				addIndividuAfterEvent(idEvtCorrige, ind, dateEvt, TypeEvenementCivilEch.TESTING);
 
 				final MockIndividu ind2 = createIndividu(noIndividu, null, "Zweisteinen", "Michèle", false);
 				marieIndividu(ind2, date(1955, 12, 1));
-				addIndividuAfterEvent(idEvtCorrection, ind2, dateEvtCorrection, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, idEvtCorrige);
+				addIndividuAfterEvent(idEvtCorrection, ind2, dateEvt, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, idEvtCorrige);
 			}
 		});
 
@@ -223,7 +220,7 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 				evt.setNumeroIndividu(noIndividu);
 				evt.setType(TypeEvenementCivilEch.TESTING);
 				evt.setAction(ActionEvenementCivilEch.CORRECTION);
-				evt.setDateEvenement(dateEvtCorrection);
+				evt.setDateEvenement(dateEvt);
 				evt.setEtat(EtatEvenementCivil.A_TRAITER);
 				evt.setRefMessageId(idEvtCorrige);
 				hibernateTemplate.merge(evt);
@@ -260,20 +257,19 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 		final long noIndividu = 4684263L;
 		final long idEvtCorrige = 464735292L;
 		final long idEvtCorrection = 4326478256242L;
-		final RegDate dateEvtOrig = RegDate.get();
-		final RegDate dateEvtCorrection = dateEvtOrig.addDays(-2);
+		final RegDate dateEvt = RegDate.get();
 
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Zweisteinen", "Robert", true);
 				marieIndividu(ind, date(1955, 12, 1));
-				addIndividuAfterEvent(idEvtCorrige, ind, dateEvtOrig, TypeEvenementCivilEch.TESTING);
+				addIndividuAfterEvent(idEvtCorrige, ind, dateEvt, TypeEvenementCivilEch.TESTING);
 
 				final MockIndividu ind2 = createIndividu(noIndividu, null, "Dreisteinen", "Albert", true);
 				marieIndividu(ind2, date(1955, 12, 1));
 				ind2.setDateDeces(RegDate.get().addMonths(-1));
-				addIndividuAfterEvent(idEvtCorrection, ind2, dateEvtCorrection, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, idEvtCorrige);
+				addIndividuAfterEvent(idEvtCorrection, ind2, dateEvt, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, idEvtCorrige);
 			}
 		});
 
@@ -286,7 +282,7 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 				evt.setNumeroIndividu(noIndividu);
 				evt.setType(TypeEvenementCivilEch.TESTING);
 				evt.setAction(ActionEvenementCivilEch.CORRECTION);
-				evt.setDateEvenement(dateEvtCorrection);
+				evt.setDateEvenement(dateEvt);
 				evt.setEtat(EtatEvenementCivil.A_TRAITER);
 				evt.setRefMessageId(idEvtCorrige);
 				hibernateTemplate.merge(evt);
@@ -330,20 +326,19 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 		final long noIndividu = 4684263L;
 		final long idEvtCorrige = 464735292L;
 		final long idEvtCorrection = 4326478256242L;
-		final RegDate dateEvtOrig = RegDate.get();
-		final RegDate dateEvtCorrection = dateEvtOrig.addDays(-2);
+		final RegDate dateEvt = RegDate.get();
 
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Zweisteinen", "Robert", true);
 				marieIndividu(ind, date(1955, 12, 1));
-				addIndividuAfterEvent(idEvtCorrige, ind, dateEvtOrig, TypeEvenementCivilEch.TESTING);
+				addIndividuAfterEvent(idEvtCorrige, ind, dateEvt, TypeEvenementCivilEch.TESTING);
 
 				final MockIndividu ind2 = createIndividu(noIndividu, null, "Dreisteinen", "Albert", true);
 				marieIndividu(ind2, date(1955, 12, 1));
 				addNationalite(ind2, MockPays.Suisse, date(2000, 1, 1), null);
-				addIndividuAfterEvent(idEvtCorrection, ind2, dateEvtCorrection, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, idEvtCorrige);
+				addIndividuAfterEvent(idEvtCorrection, ind2, dateEvt, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, idEvtCorrige);
 			}
 		});
 
@@ -356,7 +351,7 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 				evt.setNumeroIndividu(noIndividu);
 				evt.setType(TypeEvenementCivilEch.TESTING);
 				evt.setAction(ActionEvenementCivilEch.CORRECTION);
-				evt.setDateEvenement(dateEvtCorrection);
+				evt.setDateEvenement(dateEvt);
 				evt.setEtat(EtatEvenementCivil.A_TRAITER);
 				evt.setRefMessageId(idEvtCorrige);
 				hibernateTemplate.merge(evt);
@@ -400,20 +395,19 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 		final long noIndividu = 4684263L;
 		final long idEvtCorrige = 464735292L;
 		final long idEvtCorrection = 4326478256242L;
-		final RegDate dateEvtOrig = RegDate.get();
-		final RegDate dateEvtCorrection = dateEvtOrig.addDays(-2);
+		final RegDate dateEvt = RegDate.get();
 
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Zweisteinen", "Robert", true);
 				marieIndividu(ind, date(1955, 12, 1));
-				addIndividuAfterEvent(idEvtCorrige, ind, dateEvtOrig, TypeEvenementCivilEch.TESTING);
+				addIndividuAfterEvent(idEvtCorrige, ind, dateEvt, TypeEvenementCivilEch.TESTING);
 
 				final MockIndividu ind2 = createIndividu(noIndividu, null, "Dreisteinen", "Albert", true);
 				marieIndividu(ind2, date(1955, 12, 1));
 				addPermis(ind2, TypePermis.ETABLISSEMENT, date(2008, 2, 20), null, false);
-				addIndividuAfterEvent(idEvtCorrection, ind2, dateEvtCorrection, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, idEvtCorrige);
+				addIndividuAfterEvent(idEvtCorrection, ind2, dateEvt, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, idEvtCorrige);
 			}
 		});
 
@@ -426,7 +420,7 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 				evt.setNumeroIndividu(noIndividu);
 				evt.setType(TypeEvenementCivilEch.TESTING);
 				evt.setAction(ActionEvenementCivilEch.CORRECTION);
-				evt.setDateEvenement(dateEvtCorrection);
+				evt.setDateEvenement(dateEvt);
 				evt.setEtat(EtatEvenementCivil.A_TRAITER);
 				evt.setRefMessageId(idEvtCorrige);
 				hibernateTemplate.merge(evt);
@@ -470,20 +464,19 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 		final long noIndividu = 4684263L;
 		final long idEvtCorrige = 464735292L;
 		final long idEvtCorrection = 4326478256242L;
-		final RegDate dateEvtOrig = RegDate.get();
-		final RegDate dateEvtCorrection = dateEvtOrig.addDays(-2);
+		final RegDate dateEvt = RegDate.get();
 
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Zweisteinen", "Robert", true);
 				marieIndividu(ind, date(1955, 12, 1));
-				addIndividuAfterEvent(idEvtCorrige, ind, dateEvtOrig, TypeEvenementCivilEch.TESTING);
+				addIndividuAfterEvent(idEvtCorrige, ind, dateEvt, TypeEvenementCivilEch.TESTING);
 
 				final MockIndividu ind2 = createIndividu(noIndividu, null, "Dreisteinen", "Albert", true);
 				marieIndividu(ind2, date(1955, 12, 1));
 				addAdresse(ind2, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, null, null, null);
-				addIndividuAfterEvent(idEvtCorrection, ind2, dateEvtCorrection, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, idEvtCorrige);
+				addIndividuAfterEvent(idEvtCorrection, ind2, dateEvt, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, idEvtCorrige);
 			}
 		});
 
@@ -496,7 +489,7 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 				evt.setNumeroIndividu(noIndividu);
 				evt.setType(TypeEvenementCivilEch.TESTING);
 				evt.setAction(ActionEvenementCivilEch.CORRECTION);
-				evt.setDateEvenement(dateEvtCorrection);
+				evt.setDateEvenement(dateEvt);
 				evt.setEtat(EtatEvenementCivil.A_TRAITER);
 				evt.setRefMessageId(idEvtCorrige);
 				hibernateTemplate.merge(evt);
@@ -541,20 +534,19 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 		final long noIndividu = 4684263L;
 		final long idEvtCorrige = 464735292L;
 		final long idEvtCorrection = 4326478256242L;
-		final RegDate dateEvtOrig = RegDate.get();
-		final RegDate dateEvtCorrection = dateEvtOrig.addDays(-2);
+		final RegDate dateEvt = RegDate.get();
 
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Zweisteinen", "Robert", true);
 				marieIndividu(ind, date(1955, 12, 1));
-				addIndividuAfterEvent(idEvtCorrige, ind, dateEvtOrig, TypeEvenementCivilEch.TESTING);
+				addIndividuAfterEvent(idEvtCorrige, ind, dateEvt, TypeEvenementCivilEch.TESTING);
 
 				final MockIndividu ind2 = createIndividu(noIndividu, null, "Dreisteinen", "Albert", true);
 				marieIndividu(ind2, date(1955, 12, 1));
 				addAdresse(ind2, TypeAdresseCivil.SECONDAIRE, MockRue.CossonayVille.AvenueDuFuniculaire, null, null, null);
-				addIndividuAfterEvent(idEvtCorrection, ind2, dateEvtCorrection, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, idEvtCorrige);
+				addIndividuAfterEvent(idEvtCorrection, ind2, dateEvt, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, idEvtCorrige);
 			}
 		});
 
@@ -567,7 +559,7 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 				evt.setNumeroIndividu(noIndividu);
 				evt.setType(TypeEvenementCivilEch.TESTING);
 				evt.setAction(ActionEvenementCivilEch.CORRECTION);
-				evt.setDateEvenement(dateEvtCorrection);
+				evt.setDateEvenement(dateEvt);
 				evt.setEtat(EtatEvenementCivil.A_TRAITER);
 				evt.setRefMessageId(idEvtCorrige);
 				hibernateTemplate.merge(evt);
@@ -612,8 +604,7 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 		final long noIndividuConjoint = 2567315623L;
 		final long idEvtCorrige = 464735292L;
 		final long idEvtCorrection = 4326478256242L;
-		final RegDate dateEvtOrig = RegDate.get();
-		final RegDate dateEvtCorrection = dateEvtOrig.addDays(-2);
+		final RegDate dateEvt = RegDate.get();
 		final RegDate dateMariage = date(1955, 12, 1);
 
 		serviceCivil.setUp(new MockServiceCivil() {
@@ -621,12 +612,12 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Zweisteinen", "Robert", true);
 				marieIndividu(ind, dateMariage);
-				addIndividuAfterEvent(idEvtCorrige, ind, dateEvtOrig, TypeEvenementCivilEch.TESTING);
+				addIndividuAfterEvent(idEvtCorrige, ind, dateEvt, TypeEvenementCivilEch.TESTING);
 
 				final MockIndividu conjoint = addIndividu(noIndividuConjoint, null, "Viersteinen", "Beate", false);
 				final MockIndividu ind2 = createIndividu(noIndividu, null, "Dreisteinen", "Albert", true);
 				marieIndividus(ind2, conjoint, dateMariage);
-				addIndividuAfterEvent(idEvtCorrection, ind2, dateEvtCorrection, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, idEvtCorrige);
+				addIndividuAfterEvent(idEvtCorrection, ind2, dateEvt, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, idEvtCorrige);
 			}
 		});
 
@@ -639,7 +630,7 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 				evt.setNumeroIndividu(noIndividu);
 				evt.setType(TypeEvenementCivilEch.TESTING);
 				evt.setAction(ActionEvenementCivilEch.CORRECTION);
-				evt.setDateEvenement(dateEvtCorrection);
+				evt.setDateEvenement(dateEvt);
 				evt.setEtat(EtatEvenementCivil.A_TRAITER);
 				evt.setRefMessageId(idEvtCorrige);
 				hibernateTemplate.merge(evt);
@@ -684,8 +675,7 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 		final long noIndividuConjoint = 2567315623L;
 		final long idEvtCorrige = 464735292L;
 		final long idEvtCorrection = 4326478256242L;
-		final RegDate dateEvtOrig = RegDate.get();
-		final RegDate dateEvtCorrection = dateEvtOrig.addDays(-2);
+		final RegDate dateEvt = RegDate.get();
 		final RegDate dateMariage = date(1955, 12, 1);
 
 		serviceCivil.setUp(new MockServiceCivil() {
@@ -693,12 +683,12 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Zweisteinen", "Robert", true);
 				marieIndividu(ind, dateMariage.addDays(1));     // <-- état civil différent par la date
-				addIndividuAfterEvent(idEvtCorrige, ind, dateEvtOrig, TypeEvenementCivilEch.TESTING);
+				addIndividuAfterEvent(idEvtCorrige, ind, dateEvt, TypeEvenementCivilEch.TESTING);
 
 				final MockIndividu conjoint = addIndividu(noIndividuConjoint, null, "Viersteinen", "Beate", false);
 				final MockIndividu ind2 = createIndividu(noIndividu, date(1930, 5, 12), "Dreisteinen", "Albert", true); // <-- date de naissance différente
 				marieIndividus(ind2, conjoint, dateMariage);    // <-- conjoint différent
-				addIndividuAfterEvent(idEvtCorrection, ind2, dateEvtCorrection, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, idEvtCorrige);
+				addIndividuAfterEvent(idEvtCorrection, ind2, dateEvt, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, idEvtCorrige);
 			}
 		});
 
@@ -711,7 +701,7 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 				evt.setNumeroIndividu(noIndividu);
 				evt.setType(TypeEvenementCivilEch.TESTING);
 				evt.setAction(ActionEvenementCivilEch.CORRECTION);
-				evt.setDateEvenement(dateEvtCorrection);
+				evt.setDateEvenement(dateEvt);
 				evt.setEtat(EtatEvenementCivil.A_TRAITER);
 				evt.setRefMessageId(idEvtCorrige);
 				hibernateTemplate.merge(evt);
@@ -758,17 +748,16 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 		final long noIndividu = 4684263L;
 		final long idEvtCorrige = 464735292L;
 		final long idEvtCorrection = 4326478256242L;
-		final RegDate dateEvtOrig = RegDate.get();
-		final RegDate dateEvtCorrection = dateEvtOrig.addDays(-2);
+		final RegDate dateEvt = RegDate.get();
 
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Zweisteinen", "Robert", true);
-				addIndividuAfterEvent(idEvtCorrige, ind, dateEvtOrig, TypeEvenementCivilEch.TESTING);
+				addIndividuAfterEvent(idEvtCorrige, ind, dateEvt, TypeEvenementCivilEch.TESTING);
 
 				final MockIndividu ind2 = createIndividu(noIndividu, null, "Dreisteinen", "Albert", true);
-				addIndividuAfterEvent(idEvtCorrection, ind2, dateEvtCorrection, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, idEvtCorrige);
+				addIndividuAfterEvent(idEvtCorrection, ind2, dateEvt, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, idEvtCorrige);
 			}
 		});
 
@@ -790,7 +779,7 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 				evt.setNumeroIndividu(noIndividu);
 				evt.setType(TypeEvenementCivilEch.TESTING);
 				evt.setAction(ActionEvenementCivilEch.CORRECTION);
-				evt.setDateEvenement(dateEvtCorrection);
+				evt.setDateEvenement(dateEvt);
 				evt.setEtat(EtatEvenementCivil.A_TRAITER);
 				evt.setRefMessageId(idEvtCorrige);
 				hibernateTemplate.merge(evt);
@@ -903,20 +892,19 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 		final long noIndividu = 4684263L;
 		final long idEvtCorrige = 464735292L;
 		final long idEvtCorrection = 4326478256242L;
-		final RegDate dateEvtOrig = RegDate.get();
-		final RegDate dateEvtCorrection = dateEvtOrig.addDays(-2);
+		final RegDate dateEvt = RegDate.get();
 
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Zweisteinen", "Robert", true);
 				marieIndividu(ind, date(1955, 12, 1));
-				addIndividuAfterEvent(idEvtCorrige, ind, dateEvtOrig, TypeEvenementCivilEch.TESTING);
+				addIndividuAfterEvent(idEvtCorrige, ind, dateEvt, TypeEvenementCivilEch.TESTING);
 
 				final MockIndividu ind2 = createIndividu(noIndividu, null, "Dreisteinen", "Albert", true);
 				marieIndividu(ind2, date(1955, 12, 1));
 				addAdresse(ind2, TypeAdresseCivil.COURRIER, MockRue.CossonayVille.AvenueDuFuniculaire, null, null, null);
-				addIndividuAfterEvent(idEvtCorrection, ind2, dateEvtCorrection, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, idEvtCorrige);
+				addIndividuAfterEvent(idEvtCorrection, ind2, dateEvt, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, idEvtCorrige);
 			}
 		});
 
@@ -929,7 +917,7 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 				evt.setNumeroIndividu(noIndividu);
 				evt.setType(TypeEvenementCivilEch.TESTING);
 				evt.setAction(ActionEvenementCivilEch.CORRECTION);
-				evt.setDateEvenement(dateEvtCorrection);
+				evt.setDateEvenement(dateEvt);
 				evt.setEtat(EtatEvenementCivil.A_TRAITER);
 				evt.setRefMessageId(idEvtCorrige);
 				hibernateTemplate.merge(evt);
@@ -973,17 +961,16 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 		final long noIndividu = 4684263L;
 		final long idEvtCorrige = 464735292L;
 		final long idEvtCorrection = 4326478256242L;
-		final RegDate dateEvtOrig = RegDate.get();
-		final RegDate dateEvtCorrection = dateEvtOrig.addDays(-2);
+		final RegDate dateEvt = RegDate.get();
 
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Zweisteinen", "Robert", true);
-				addIndividuAfterEvent(idEvtCorrige, ind, dateEvtOrig, TypeEvenementCivilEch.TESTING);
+				addIndividuAfterEvent(idEvtCorrige, ind, dateEvt, TypeEvenementCivilEch.TESTING);
 
 				final MockIndividu ind2 = createIndividu(noIndividu, null, "Dreisteinen", "Albert", true);
-				addIndividuAfterEvent(idEvtCorrection, ind2, dateEvtCorrection, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, idEvtCorrige);
+				addIndividuAfterEvent(idEvtCorrection, ind2, dateEvt, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, idEvtCorrige);
 			}
 		});
 
@@ -996,7 +983,7 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 				evt.setNumeroIndividu(noIndividu);
 				evt.setType(TypeEvenementCivilEch.TESTING);
 				evt.setAction(ActionEvenementCivilEch.CORRECTION);
-				evt.setDateEvenement(dateEvtCorrection);
+				evt.setDateEvenement(dateEvt);
 				evt.setEtat(EtatEvenementCivil.A_TRAITER);
 				evt.setRefMessageId(null);      // <<-- c'est ici : aucune donnée reçue par le canal JMS
 				hibernateTemplate.merge(evt);
@@ -1020,5 +1007,74 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 			}
 		});
 
+	}
+
+	@Test
+	public void testModificationDateEvenementSeule() throws Exception {
+
+		buildStrategyOverridingTranslatorAndProcessor(true, new StrategyOverridingCallback() {
+			@Override
+			public void overrideStrategies(EvenementCivilEchTranslatorImplOverride translator) {
+				translator.overrideStrategy(TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, strategy);
+			}
+		});
+
+		final long noIndividu = 4684263L;
+		final long idEvtCorrige = 464735292L;
+		final long idEvtCorrection = 4326478256242L;
+		final RegDate dateEvtOrig = RegDate.get();
+		final RegDate dateEvtCorrection = dateEvtOrig.addDays(-2);
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noIndividu, null, "Zweisteinen", "Robert", true);
+				marieIndividu(ind, date(1955, 12, 1));
+				addIndividuAfterEvent(idEvtCorrige, ind, dateEvtOrig, TypeEvenementCivilEch.TESTING);
+
+				final MockIndividu ind2 = createIndividu(noIndividu, null, "Zweisteinen", "Albert", true);
+				marieIndividu(ind2, date(1955, 12, 1));
+				addIndividuAfterEvent(idEvtCorrection, ind2, dateEvtCorrection, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, idEvtCorrige);
+			}
+		});
+
+		// construction de l'événement de correction
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(idEvtCorrection);
+				evt.setNumeroIndividu(noIndividu);
+				evt.setType(TypeEvenementCivilEch.TESTING);
+				evt.setAction(ActionEvenementCivilEch.CORRECTION);
+				evt.setDateEvenement(dateEvtCorrection);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setRefMessageId(idEvtCorrige);
+				hibernateTemplate.merge(evt);
+				return null;
+			}
+		});
+
+		// traitement de l'événement de correction
+		traiterEvenements(noIndividu);
+
+		// vérification du traitement
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = evtCivilDAO.get(idEvtCorrection);
+				Assert.assertNotNull(evt);
+				Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
+				Assert.assertEquals("L'élément suivant a été modifié par la correction : date de l'événement.", evt.getCommentaireTraitement());
+
+				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
+				Assert.assertNotNull(erreurs);
+				Assert.assertEquals(1, erreurs.size());
+
+				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
+				Assert.assertEquals("Traitement automatique non implémenté. Veuillez effectuer cette opération manuellement.", erreur.getMessage());
+				return null;
+			}
+		});
 	}
 }

@@ -50,6 +50,7 @@ public class DefaultCorrectionTranslationStrategy implements EvenementCivilEchTr
 		strategies.add(new AdresseResidencePrincipaleComparisonStrategy(serviceInfrastructureService));
 		strategies.add(new AdresseResidenceSecondaireComparisonStrategy(serviceInfrastructureService));
 		strategies.add(new DateDecesComparisonStrategy());
+		strategies.add(new DateEvenementComparisonStrategy());
 		strategies.add(new DateNaissanceComparisonStrategy());
 		strategies.add(new EtatCivilComparisonStrategy());
 		strategies.add(new NationaliteComparisonStrategy());

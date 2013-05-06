@@ -495,6 +495,7 @@ public class DecesEchProcessorTest extends AbstractEvenementCivilEchProcessorTes
 				correctionDivorce.setEtat(EtatEvenementCivil.A_TRAITER);
 				correctionDivorce.setNumeroIndividu(noIndividu);
 				correctionDivorce.setType(TypeEvenementCivilEch.DIVORCE);
+				correctionDivorce.setRefMessageId(evtDivorceId);
 				hibernateTemplate.merge(correctionDivorce);
 
 				final EvenementCivilEch deces = new EvenementCivilEch();
@@ -520,7 +521,7 @@ public class DecesEchProcessorTest extends AbstractEvenementCivilEchProcessorTes
 				final EvenementCivilEch correctionDivorce = evtCivilDAO.get(evtCorrectionDivorceId);
 				assertNotNull(correctionDivorce);
 				assertEquals(EtatEvenementCivil.EN_ERREUR, correctionDivorce.getEtat());
-				assertEquals("L'élément suivant a été modifié par la correction : état civil (dates).", correctionDivorce.getCommentaireTraitement());
+				assertEquals("Les éléments suivants ont été modifiés par la correction : date de l'événement, état civil (dates).", correctionDivorce.getCommentaireTraitement());
 
 				final EvenementCivilEch deces = evtCivilDAO.get(evtDecesId);
 				assertNotNull(deces);
