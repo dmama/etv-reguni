@@ -1,5 +1,8 @@
 package ch.vd.unireg.interfaces.infra.mock;
 
+import ch.vd.registre.base.date.DateRange;
+import ch.vd.registre.base.date.DateRangeHelper;
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.Pays;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 
@@ -40,10 +43,13 @@ public class MockPays extends MockEntityOFS implements Pays {
 	public static final MockPays Apatridie = new MockPays(ServiceInfrastructureRaw.noPaysApatride, "Apatridie", "---", true, null, null, ServiceInfrastructureRaw.noPaysApatride);     // <-- à n'utiliser que pour les nationalités!
 	public static final MockPays RDA = new MockPays(8208, "République démocratique allemande", "", false, null, null);
 
+	private static final DateRange ETERNITY = new DateRangeHelper.Range(null, null);
+
 	private final boolean valide;
 	private final int ofsEtatSouverain;
 	private final String codeIso2;
 	private final String codeIso3;
+	private final DateRange validityRange;
 
 	public MockPays(int numeroOFS, String nom, String codeIso2, String codeIso3) {
 		super(numeroOFS, null, nom, nom);
@@ -51,6 +57,7 @@ public class MockPays extends MockEntityOFS implements Pays {
 		this.codeIso3 = codeIso3;
 		this.valide = true;
 		this.ofsEtatSouverain = numeroOFS;
+		this.validityRange = ETERNITY;
 		DefaultMockServiceInfrastructureService.addPays(this);
 	}
 
@@ -60,6 +67,7 @@ public class MockPays extends MockEntityOFS implements Pays {
 		this.codeIso3 = codeIso3;
 		this.valide = true;
 		this.ofsEtatSouverain = numeroOFS;
+		this.validityRange = ETERNITY;
 		DefaultMockServiceInfrastructureService.addPays(this);
 	}
 
@@ -69,6 +77,17 @@ public class MockPays extends MockEntityOFS implements Pays {
 		this.codeIso2 = codeIso2;
 		this.codeIso3 = codeIso3;
 		this.ofsEtatSouverain = numeroOFS;
+		this.validityRange = ETERNITY;
+		DefaultMockServiceInfrastructureService.addPays(this);
+	}
+
+	public MockPays(int numeroOFS, String nom, String sigleOFS, boolean valide, String codeIso2, String codeIso3, RegDate dateDebut, RegDate dateFin) {
+		super(numeroOFS, sigleOFS, nom, nom);
+		this.valide = valide;
+		this.codeIso2 = codeIso2;
+		this.codeIso3 = codeIso3;
+		this.ofsEtatSouverain = numeroOFS;
+		this.validityRange = new DateRangeHelper.Range(dateDebut, dateFin);
 		DefaultMockServiceInfrastructureService.addPays(this);
 	}
 
@@ -81,6 +100,7 @@ public class MockPays extends MockEntityOFS implements Pays {
 		this.codeIso2 = codeIso2;
 		this.codeIso3 = codeIso3;
 		this.ofsEtatSouverain = ofsEtatSouverainParent;
+		this.validityRange = ETERNITY;
 		DefaultMockServiceInfrastructureService.addPays(this);
 	}
 
@@ -112,5 +132,20 @@ public class MockPays extends MockEntityOFS implements Pays {
 	@Override
 	public int getNoOfsEtatSouverain() {
 		return ofsEtatSouverain;
+	}
+
+	@Override
+	public boolean isValidAt(RegDate date) {
+		return valide && validityRange.isValidAt(date);
+	}
+
+	@Override
+	public RegDate getDateDebut() {
+		return validityRange.getDateDebut();
+	}
+
+	@Override
+	public RegDate getDateFin() {
+		return validityRange.getDateFin();
 	}
 }

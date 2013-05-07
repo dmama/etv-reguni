@@ -14,6 +14,8 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.infrastructure.model.EnumTypeCollectivite;
+import ch.vd.registre.base.date.DateRange;
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.civil.data.Pays;
@@ -735,34 +737,144 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		return resultat;
 	}
 
-	private static class KeyGetPaysByNoOfsAndDate {
+	/**
+	 * Classe abstraite des clés utilisées pour le stockage des informations de pays
+	 */
+	private static abstract class KeyGetPaysByPeriod {
+		private final DateRange validityRange;
 
-		private final int numeroOFS;
+		protected KeyGetPaysByPeriod(DateRange validityRange) {
+			this.validityRange = validityRange;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (o == null) {
+				return false;
+			}
+			else if (o instanceof KeyGetPaysByPeriod) {
+				return DateRangeHelper.equals(validityRange, ((KeyGetPaysByPeriod) o).validityRange);
+			}
+			else if (o instanceof KeyGetPaysByDate) {
+				return validityRange.isValidAt(((KeyGetPaysByDate) o).date);
+			}
+			else {
+				return false;
+			}
+		}
+
+		@Override
+		public abstract int hashCode();
+	}
+
+	private static interface KeyGetPaysByNoOfs {
+		int getNoOfs();
+
+		/**
+		 * Il est impératif que ce calcul de hash soit le même dans toutes les sous-classes
+		 * @return la valeur de {@link #getNoOfs()}
+		 */
+		@Override
+		int hashCode();
+	}
+
+	private static final class KeyGetPaysByNoOfsAndPeriod extends KeyGetPaysByPeriod implements KeyGetPaysByNoOfs {
+		private final int noOfs;
+
+		private KeyGetPaysByNoOfsAndPeriod(int noOfs, DateRange validityRange) {
+			super(validityRange);
+			this.noOfs = noOfs;
+		}
+
+		@Override
+		public int getNoOfs() {
+			return noOfs;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (o == this) {
+				return true;
+			}
+			else if (o == null) {
+				return false;
+			}
+			else if (o instanceof KeyGetPaysByNoOfs) {
+				return ((KeyGetPaysByNoOfs) o).getNoOfs() == noOfs && super.equals(o);
+			}
+			else {
+				return false;
+			}
+		}
+
+		@Override
+		public int hashCode() {
+			return getNoOfs();
+		}
+	}
+
+	/**
+	 * Classe abstraite parente des clés utilisées pour la recherche dans le cache des informations de pays
+	 */
+	private static abstract class KeyGetPaysByDate {
 		private final RegDate date;
 
-		private KeyGetPaysByNoOfsAndDate(int numeroOFS, RegDate date) {
-			this.numeroOFS = numeroOFS;
+		protected KeyGetPaysByDate(RegDate date) {
 			this.date = date;
 		}
 
 		@Override
 		public boolean equals(Object o) {
-			if (this == o) return true;
-			if (o == null || getClass() != o.getClass()) return false;
+			if (o == null) {
+				return false;
+			}
+			else if (o instanceof KeyGetPaysByDate) {
+				return date == ((KeyGetPaysByDate) o).date;
+			}
+			else if (o instanceof KeyGetPaysByPeriod) {
+				return ((KeyGetPaysByPeriod) o).validityRange.isValidAt(date);
+			}
+			else {
+				return false;
+			}
+		}
 
-			final KeyGetPaysByNoOfsAndDate that = (KeyGetPaysByNoOfsAndDate) o;
+		@Override
+		public abstract int hashCode();
+	}
 
-			if (numeroOFS != that.numeroOFS) return false;
-			if (date != null ? !date.equals(that.date) : that.date != null) return false;
+	private static final class KeyGetPaysByNoOfsAndDate extends KeyGetPaysByDate implements KeyGetPaysByNoOfs {
+		private final int noOfs;
 
-			return true;
+		private KeyGetPaysByNoOfsAndDate(int noOfs, RegDate date) {
+			super(date);
+			this.noOfs = noOfs;
+		}
+
+		@Override
+		public int getNoOfs() {
+			return noOfs;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (o == this) {
+				return true;
+			}
+			else if (o == null) {
+				return false;
+			}
+			else if (o instanceof KeyGetPaysByNoOfs) {
+				return ((KeyGetPaysByNoOfs) o).getNoOfs() == noOfs && super.equals(o);
+			}
+			else {
+				return false;
+			}
 		}
 
 		@Override
 		public int hashCode() {
-			int result = numeroOFS;
-			result = 31 * result + (date != null ? date.hashCode() : 0);
-			return result;
+			return getNoOfs();
 		}
 	}
 
@@ -770,11 +882,14 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 	public Pays getPays(int numeroOFS, @Nullable RegDate date) throws ServiceInfrastructureException {
 		final Pays resultat;
 
-		final KeyGetPaysByNoOfsAndDate key = new KeyGetPaysByNoOfsAndDate(numeroOFS, date);
-		final Element element = cache.get(key);
+		final KeyGetPaysByNoOfsAndDate lookupKey = new KeyGetPaysByNoOfsAndDate(numeroOFS, date);
+		final Element element = cache.get(lookupKey);
 		if (element == null) {
 			resultat = target.getPays(numeroOFS, date);
-			cache.put(new Element(key, resultat));
+			if (resultat != null) {
+				final KeyGetPaysByNoOfsAndPeriod storageKey = new KeyGetPaysByNoOfsAndPeriod(numeroOFS, new DateRangeHelper.Range(resultat));
+				cache.put(new Element(storageKey, resultat));
+			}
 		}
 		else {
 			resultat = (Pays) element.getObjectValue();
@@ -783,47 +898,98 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		return resultat;
 	}
 
-	private static class KeyGetPaysByCodeIsoAndDate {
+	private static interface KeyGetPaysByCodeIso {
+		@NotNull String getCodeIso();
+		int hashCode();
+	}
+
+	private static final class KeyGetPaysByCodeIsoAndPeriod extends KeyGetPaysByPeriod implements KeyGetPaysByCodeIso {
 
 		@NotNull
-		private final String codePays;
-		private final RegDate date;
+		private final String codeIso;
 
-		private KeyGetPaysByCodeIsoAndDate(@NotNull String codePays, RegDate date) {
-			this.codePays = codePays;
-			this.date = date;
+		private KeyGetPaysByCodeIsoAndPeriod(@NotNull String codeIso, DateRange validityRange) {
+			super(validityRange);
+			this.codeIso = codeIso;
 		}
 
 		@Override
 		public boolean equals(Object o) {
-			if (this == o) return true;
-			if (o == null || getClass() != o.getClass()) return false;
+			if (o == this) {
+				return true;
+			}
+			else if (o == null) {
+				return false;
+			}
+			else if (o instanceof KeyGetPaysByCodeIso) {
+				return codeIso.equals(((KeyGetPaysByCodeIso) o).getCodeIso()) && super.equals(o);
+			}
+			else {
+				return false;
+			}
+		}
 
-			final KeyGetPaysByCodeIsoAndDate that = (KeyGetPaysByCodeIsoAndDate) o;
-
-			if (!codePays.equals(that.codePays)) return false;
-			if (date != null ? !date.equals(that.date) : that.date != null) return false;
-
-			return true;
+		@Override
+		@NotNull
+		public String getCodeIso() {
+			return codeIso;
 		}
 
 		@Override
 		public int hashCode() {
-			int result = codePays.hashCode();
-			result = 31 * result + (date != null ? date.hashCode() : 0);
-			return result;
+			return codeIso.hashCode();
+		}
+	}
+
+	private static final class KeyGetPaysByCodeIsoAndDate extends KeyGetPaysByDate implements KeyGetPaysByCodeIso {
+
+		@NotNull
+		private final String codeIso;
+
+		private KeyGetPaysByCodeIsoAndDate(@NotNull String codeIso, RegDate date) {
+			super(date);
+			this.codeIso = codeIso;
+		}
+
+		@NotNull
+		@Override
+		public String getCodeIso() {
+			return codeIso;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (o == this) {
+				return true;
+			}
+			else if (o == null) {
+				return false;
+			}
+			else if (o instanceof KeyGetPaysByCodeIso) {
+				return codeIso.equals(((KeyGetPaysByCodeIso) o).getCodeIso()) && super.equals(o);
+			}
+			else {
+				return false;
+			}
+		}
+
+		@Override
+		public int hashCode() {
+			return codeIso.hashCode();
 		}
 	}
 
 	@Override
 	public Pays getPays(@NotNull String codePays, @Nullable RegDate date) throws ServiceInfrastructureException {
 		final Pays resultat;
-
-		final KeyGetPaysByCodeIsoAndDate key = new KeyGetPaysByCodeIsoAndDate(codePays, date);
-		final Element element = cache.get(key);
+		final KeyGetPaysByCodeIsoAndDate lookupKey = new KeyGetPaysByCodeIsoAndDate(codePays, date);
+		final Element element = cache.get(lookupKey);
 		if (element == null) {
 			resultat = target.getPays(codePays, date);
-			cache.put(new Element(key, resultat));
+			if (resultat != null) {
+				final KeyGetPaysByCodeIsoAndPeriod storageKey = new KeyGetPaysByCodeIsoAndPeriod(codePays, new DateRangeHelper.Range(resultat));
+				cache.put(new Element(storageKey, resultat));
+			}
 		}
 		else {
 			resultat = (Pays) element.getObjectValue();
