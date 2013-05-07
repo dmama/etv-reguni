@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import ch.vd.infrastructure.model.EnumTypeCollectivite;
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.Pays;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.Commune;
@@ -195,7 +196,9 @@ public class AutoCompleteInfraController {
 			if (pays != null) {
 				final boolean etatsOnly = !categories.contains(InfraCategory.TERRITOIRE);
 				for (Pays p : pays) {
-					if (p.isValide() && (!etatsOnly || p.isEtatSouverain())) { // [UNIREG-3338] on ne permet de sélectionner que les pays valides
+					// [UNIREG-3338] on ne permet de sélectionner que les pays valides
+					// [SIFISC-8603] seuls les versions des pays valides MAINTENANT sont proposés
+					if (p.isValidAt(RegDate.get()) && (!etatsOnly || p.isEtatSouverain())) {
 						if (StringComparator.toLowerCaseWithoutAccent(p.getNomCourt()).startsWith(term)) {
 							final String description = p.getNomCourt() + " (" + p.getNoOFS() + ')';
 							list.add(new Item(p.getNomCourt(), description, String.valueOf(p.getNoOFS())));
