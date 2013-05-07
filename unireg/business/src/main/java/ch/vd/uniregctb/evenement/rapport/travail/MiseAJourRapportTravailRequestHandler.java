@@ -451,17 +451,16 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 		final RegDate dateFermeture = request.getDateDebutPeriodeDeclaration().getOneDayBefore();
 		final RegDate dateFinDeclaration = request.getDateFinPeriodeDeclaration();
 
-		//cas 16 et cas 15
-		final RegDate dateFinRapport = rapportAModifier.getDateFin();
-		if (dateFinRapport == null || dateFinRapport.isBeforeOrEqual(dateFinDeclaration)) {
-			fermerRapportTravail(rapportAModifier, dateFermeture);
-		}
 		//cas 17
+		final RegDate dateFinRapport = rapportAModifier.getDateFin();
 		if (dateFinRapport != null && dateFinRapport.isBefore(request.getDateDebutPeriodeDeclaration())) {
 			final String cause = "Date de fin du rapport avant la date de début de la période";
 			aucunTraitement(cause, rapportAModifier, request);
 		}
-
+		//cas 16 et cas 15
+		else if (dateFinRapport == null || dateFinRapport.isBeforeOrEqual(dateFinDeclaration)) {
+			fermerRapportTravail(rapportAModifier, dateFermeture);
+		}
 	}
 
 	/**
