@@ -594,7 +594,7 @@ public class IndividuRCPers implements Individu, Serializable {
 				if (type != null && type.isEnfant()) {
 					final Long numeroInd = getNoIndividu(partnerIdentification.getLocalPersonId());
 					final RegDate validFrom = XmlUtils.xmlcal2regdate(r.getRelationValidFrom());
-					final RegDate validTill = fixRelationEndDate(validFrom, XmlUtils.xmlcal2regdate(r.getRelationValidTill()));
+					final RegDate validTill = XmlUtils.xmlcal2regdate(r.getRelationValidTill());
 					list.add(new RelationVersIndividuImpl(numeroInd, type, validFrom, validTill));
 				}
 			}
@@ -618,7 +618,7 @@ public class IndividuRCPers implements Individu, Serializable {
 						// à défaut de mieux, on considère que la relation s'établit à la naissance de l'enfant
 						validFrom = dateNaissance;
 					}
-					final RegDate validTill = fixRelationEndDate(validFrom, XmlUtils.xmlcal2regdate(r.getRelationValidTill()));
+					final RegDate validTill = XmlUtils.xmlcal2regdate(r.getRelationValidTill());
 					list.add(new RelationVersIndividuImpl(numeroInd, type, validFrom, validTill));
 				}
 			}
