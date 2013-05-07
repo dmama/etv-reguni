@@ -1,6 +1,8 @@
 package ch.vd.unireg.interfaces.civil.data;
 
-public interface Pays extends EntiteOFS {
+import ch.vd.registre.base.date.DateRange;
+
+public interface Pays extends EntiteOFS, DateRange {
 
 	/**
 	 * @return <b>vrai</b> si le pays courant est la Suisse, <b>faux</b> autrement.
