@@ -386,26 +386,25 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 				final String cause = "Rapport sans date de fin, aucun evenement de fermeture ou de fin de rapport dans la demande";
 				aucunTraitement(cause, rapportAModifier, request);
 			}
-
 		}
 		else {
-			if (dateFin.isAfter(dateFinPeriodeDeclaration)) {
-				final String cause = "le Rapport a une date de fin, postérieur à la date de fin de la période de déclaration:";
+			if (dateFin.isAfterOrEqual(dateFinPeriodeDeclaration)) {
+				final String cause = "le rapport a une date de fin, postérieure ou égale à la date de fin de la période de déclaration :";
 				aucunTraitement(cause, rapportAModifier, request);
-
 			}
-			else if (dateFin.isAfterOrEqual(dateDebutPeriodeDeclaration) && dateFin.isBefore(dateFinPeriodeDeclaration)) {
+			else if (dateFin.isAfterOrEqual(dateDebutPeriodeDeclaration)) {
 				if (isEvenementFinRapportTravail(request)) {
-					final String cause = "le Rapport a déjà une date de fin au %S :";
+					final String cause = "le rapport a déjà une date de fin au %S :";
 					aucunTraitement(cause, rapportAModifier, request);
-
 				}
 				else {
 					reouvrirRapportTravail(rapportAModifier, request, nouveauxRapports);
 				}
 			}
+			else  {
+				throw new IllegalStateException("Que fait-on ici ? Le cas où la date de fin du rapport existant est antérieure à la date de début de la période de déclaration devrait être géré ailleurs...");
+			}
 		}
-
 	}
 
 	private void reouvrirRapportTravail(RapportPrestationImposable rapportAModifier, MiseAjourRapportTravail request, List<RapportPrestationImposable> nouveauxRapports) {
