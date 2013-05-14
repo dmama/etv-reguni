@@ -6,7 +6,7 @@ import ch.vd.unireg.webservices.party3.PartyPart;
 import ch.vd.unireg.xml.party.v1.Party;
 import ch.vd.uniregctb.cache.CacheValueWithParts;
 import ch.vd.uniregctb.webservices.party3.impl.DataHelper;
-import ch.vd.uniregctb.xml.party.PartyBuilder;
+import ch.vd.uniregctb.xml.party.v1.PartyBuilder;
 
 class GetPartyValue extends CacheValueWithParts<Party, PartyPart> {
 

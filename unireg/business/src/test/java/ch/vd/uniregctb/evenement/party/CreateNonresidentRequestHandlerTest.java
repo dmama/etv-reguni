@@ -99,7 +99,7 @@ public class CreateNonresidentRequestHandlerTest extends BusinessTest {
 				if (category == NaturalPersonCategory.SWISS) {
 					assertNull("Le non-habitant crée est suisse, sa catégorie d'étranger doit être null", pp.getCategorieEtranger());
 				} else {
-					assertEquals("Le non-habitant crée n'est pas de la bonne catégorie d'étranger ", category, EnumHelper.coreToXML(pp.getCategorieEtranger()));
+					assertEquals("Le non-habitant crée n'est pas de la bonne catégorie d'étranger ", category, EnumHelper.coreToXMLv1(pp.getCategorieEtranger()));
 				}
 				assertEquals("Le numéro AVS du non-habitant ne correspond pas à celui de la demande de création", "7561111111111", pp.getNumeroAssureSocial());
 				return null;

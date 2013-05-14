@@ -46,6 +46,11 @@
 		</dependency>
 		<dependency>
 			<groupId>${pom.parent.groupId}</groupId>
+			<artifactId>unireg-ws-party4</artifactId>
+			<version>${wsparty4.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${pom.parent.groupId}</groupId>
 			<artifactId>uniregctb-wsclient-batch</artifactId>
 			<version>1.2.5</version>
 		</dependency>

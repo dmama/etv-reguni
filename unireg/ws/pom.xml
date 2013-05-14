@@ -72,6 +72,11 @@
 			<version>${wsparty3.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>ch.vd.uniregctb</groupId>
+			<artifactId>unireg-ws-party4</artifactId>
+			<version>${wsparty4.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>${pom.parent.groupId}</groupId>
 			<artifactId>uniregctb-core</artifactId>
 			<version>${pom.parent.version}</version>

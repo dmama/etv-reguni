@@ -35,7 +35,7 @@ import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.xml.DataHelper;
 import ch.vd.uniregctb.xml.ServiceException;
-import ch.vd.uniregctb.xml.party.TaxResidenceBuilder;
+import ch.vd.uniregctb.xml.party.v1.TaxResidenceBuilder;
 
 public class AperiodicTaxLiabilityRequestHandler implements RequestHandler<AperiodicTaxLiabilityRequest> {
 

@@ -41,7 +41,7 @@ import ch.vd.uniregctb.xml.BusinessHelper;
 import ch.vd.uniregctb.xml.Context;
 import ch.vd.uniregctb.xml.DataHelper;
 import ch.vd.uniregctb.xml.ServiceException;
-import ch.vd.uniregctb.xml.party.PartyBuilder;
+import ch.vd.uniregctb.xml.party.v1.PartyBuilder;
 
 public class PartyRequestHandler implements RequestHandler<PartyRequest> {
 
@@ -160,12 +160,12 @@ public class PartyRequestHandler implements RequestHandler<PartyRequest> {
 			final Set<PartyPart> parts = DataHelper.toSet(request.getParts());
 			if (tiers instanceof ch.vd.uniregctb.tiers.PersonnePhysique) {
 				final ch.vd.uniregctb.tiers.PersonnePhysique personne = (ch.vd.uniregctb.tiers.PersonnePhysique) tiers;
-				BusinessHelper.warmIndividus(personne, parts, context);
+				BusinessHelper.warmIndividusV1(personne, parts, context);
 				data = PartyBuilder.newNaturalPerson(personne, parts, context);
 			}
 			else if (tiers instanceof ch.vd.uniregctb.tiers.MenageCommun) {
 				final ch.vd.uniregctb.tiers.MenageCommun menage = (ch.vd.uniregctb.tiers.MenageCommun) tiers;
-				BusinessHelper.warmIndividus(menage, parts, context);
+				BusinessHelper.warmIndividusV1(menage, parts, context);
 				data = PartyBuilder.newCommonHousehold(menage, parts, context);
 			}
 			else if (tiers instanceof Entreprise) {

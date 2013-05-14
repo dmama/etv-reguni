@@ -74,7 +74,7 @@ public class TiersWebServiceBatchTest extends WebserviceTest {
 		webService.setServiceCivil(serviceCivil);
 		webService.setServicePM(servicePM);
 		webService.setSituationService(getBean(SituationFamilleService.class, "situationFamilleService"));
-		webService.setThreadPool(getBean(ExecutorService.class, "wsThreadPool"));
+		webService.setThreadPool(getBean(ExecutorService.class, "wsThreadPoolTiers2"));
 		webService.setTiersDAO(crashingTiersDAO);
 		webService.setTiersSearcher(globalTiersSearcher);
 		webService.setTiersService(tiersService);

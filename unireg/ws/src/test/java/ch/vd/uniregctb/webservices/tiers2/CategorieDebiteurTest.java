@@ -1,7 +1,8 @@
 package ch.vd.uniregctb.webservices.tiers2;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNull;
+import java.util.EnumSet;
+import java.util.Iterator;
+import java.util.Set;
 
 import org.junit.Test;
 
@@ -9,12 +10,28 @@ import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.webservices.tiers2.data.CategorieDebiteur;
 import ch.vd.uniregctb.webservices.tiers2.impl.EnumHelper;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNull;
+
 public class CategorieDebiteurTest extends EnumTest {
 
 	@Test
 	public void testCoherence() {
-		assertEnumLengthEquals(CategorieDebiteur.class, CategorieImpotSource.class);
-		assertEnumConstantsEqual(CategorieDebiteur.class, CategorieImpotSource.class);
+		final Set<CategorieImpotSource> cisSet = EnumSet.complementOf(EnumSet.of(CategorieImpotSource.PARTICIPATIONS_HORS_SUISSE, CategorieImpotSource.EFFEUILLEUSES));
+		final Set<CategorieDebiteur> cdSet = EnumSet.allOf(CategorieDebiteur.class);
+
+		assertEquals(cisSet.size(), cdSet.size());
+		final Iterator<CategorieImpotSource> cisIterator = cisSet.iterator();
+		final Iterator<CategorieDebiteur> cdIterator = cdSet.iterator();
+		while (cisIterator.hasNext() && cdIterator.hasNext()) {
+			final CategorieImpotSource cis = cisIterator.next();
+			final CategorieDebiteur cd = cdIterator.next();
+
+			assertEquals(cis.name(), cd.name());
+		}
+		assertFalse(cisIterator.hasNext());
+		assertFalse(cdIterator.hasNext());
 	}
 
 	@Test

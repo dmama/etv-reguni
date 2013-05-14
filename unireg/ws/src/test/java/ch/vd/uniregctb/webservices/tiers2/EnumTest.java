@@ -1,8 +1,9 @@
 package ch.vd.uniregctb.webservices.tiers2;
 
+import ch.vd.uniregctb.common.WithoutSpringTest;
+
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.failNotEquals;
-import ch.vd.uniregctb.common.WithoutSpringTest;
 
 public abstract class EnumTest extends WithoutSpringTest {
 

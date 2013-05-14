@@ -28,9 +28,6 @@ import ch.vd.unireg.xml.party.address.v1.Address;
 import ch.vd.unireg.xml.party.address.v1.AddressOtherParty;
 import ch.vd.unireg.xml.party.address.v1.AddressType;
 import ch.vd.unireg.xml.party.address.v1.TariffZone;
-import ch.vd.unireg.xml.party.v1.PartyInfo;
-import ch.vd.unireg.xml.party.v1.PartyPart;
-import ch.vd.unireg.xml.party.v1.PartyType;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
@@ -165,12 +162,12 @@ public abstract class DataHelper {
 		return valeur;
 	}
 
-	public static PartyInfo coreToXML(ch.vd.uniregctb.indexer.tiers.TiersIndexedData value) {
+	public static ch.vd.unireg.xml.party.v1.PartyInfo coreToXMLv1(ch.vd.uniregctb.indexer.tiers.TiersIndexedData value) {
 		if (value == null) {
 			return null;
 		}
 
-		final PartyInfo i = new PartyInfo();
+		final ch.vd.unireg.xml.party.v1.PartyInfo i = new ch.vd.unireg.xml.party.v1.PartyInfo();
 		i.setNumber(value.getNumero().intValue());
 		i.setName1(value.getNom1());
 		i.setName2(value.getNom2());
@@ -179,9 +176,29 @@ public abstract class DataHelper {
 		i.setTown(value.getLocalite());
 		i.setCountry(value.getPays());
 		i.setDateOfBirth(DataHelper.coreToXML(value.getRegDateNaissance()));
-		i.setType(DataHelper.getPartyType(value));
-		i.setDebtorCategory(EnumHelper.coreToXML(value.getCategorieImpotSource()));
-		i.setDebtorCommunicationMode(EnumHelper.coreToXML(value.getModeCommunication()));
+		i.setType(DataHelper.getPartyTypeV1(value));
+		i.setDebtorCategory(EnumHelper.coreToXMLv1(value.getCategorieImpotSource()));
+		i.setDebtorCommunicationMode(EnumHelper.coreToXMLv1(value.getModeCommunication()));
+		return i;
+	}
+
+	public static ch.vd.unireg.xml.party.v2.PartyInfo coreToXMLv2(ch.vd.uniregctb.indexer.tiers.TiersIndexedData value) {
+		if (value == null) {
+			return null;
+		}
+
+		final ch.vd.unireg.xml.party.v2.PartyInfo i = new ch.vd.unireg.xml.party.v2.PartyInfo();
+		i.setNumber(value.getNumero().intValue());
+		i.setName1(value.getNom1());
+		i.setName2(value.getNom2());
+		i.setStreet(value.getRue());
+		i.setZipCode(value.getNpa());
+		i.setTown(value.getLocalite());
+		i.setCountry(value.getPays());
+		i.setDateOfBirth(DataHelper.coreToXML(value.getRegDateNaissance()));
+		i.setType(DataHelper.getPartyTypeV2(value));
+		i.setDebtorCategory(EnumHelper.coreToXMLv2(value.getCategorieImpotSource()));
+		i.setDebtorCommunicationMode(EnumHelper.coreToXMLv2(value.getModeCommunication()));
 		return i;
 	}
 
@@ -218,17 +235,31 @@ public abstract class DataHelper {
 		return idDi;
 	}
 
-	private static final Map<String, PartyType> indexedData2Type = new HashMap<String, PartyType>() {
+	private static final Map<String, ch.vd.unireg.xml.party.v1.PartyType> indexedData2TypeV1 = new HashMap<String, ch.vd.unireg.xml.party.v1.PartyType>() {
 		private static final long serialVersionUID = -6977238534201838137L;
 
 		{
-			put(HabitantIndexable.SUB_TYPE, PartyType.NATURAL_PERSON);
-			put(NonHabitantIndexable.SUB_TYPE, PartyType.NATURAL_PERSON);
-			put(EntrepriseIndexable.SUB_TYPE, PartyType.CORPORATION);
-			put(MenageCommunIndexable.SUB_TYPE, PartyType.HOUSEHOLD);
-			put(AutreCommunauteIndexable.SUB_TYPE, PartyType.CORPORATION);
-			put(EntrepriseIndexable.SUB_TYPE, PartyType.CORPORATION);
-			put(DebiteurPrestationImposableIndexable.SUB_TYPE, PartyType.DEBTOR);
+			put(HabitantIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v1.PartyType.NATURAL_PERSON);
+			put(NonHabitantIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v1.PartyType.NATURAL_PERSON);
+			put(EntrepriseIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v1.PartyType.CORPORATION);
+			put(MenageCommunIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v1.PartyType.HOUSEHOLD);
+			put(AutreCommunauteIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v1.PartyType.CORPORATION);
+			put(EntrepriseIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v1.PartyType.CORPORATION);
+			put(DebiteurPrestationImposableIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v1.PartyType.DEBTOR);
+		}
+	};
+
+	private static final Map<String, ch.vd.unireg.xml.party.v2.PartyType> indexedData2TypeV2 = new HashMap<String, ch.vd.unireg.xml.party.v2.PartyType>() {
+		private static final long serialVersionUID = -6977238534201838137L;
+
+		{
+			put(HabitantIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v2.PartyType.NATURAL_PERSON);
+			put(NonHabitantIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v2.PartyType.NATURAL_PERSON);
+			put(EntrepriseIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v2.PartyType.CORPORATION);
+			put(MenageCommunIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v2.PartyType.HOUSEHOLD);
+			put(AutreCommunauteIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v2.PartyType.CORPORATION);
+			put(EntrepriseIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v2.PartyType.CORPORATION);
+			put(DebiteurPrestationImposableIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v2.PartyType.DEBTOR);
 		}
 	};
 
@@ -238,7 +269,7 @@ public abstract class DataHelper {
 	 * @param tiers les données indexés du tiers
 	 * @return le type du tiers; ou <b>null</b> si le type de tiers n'est pas connu.
 	 */
-	public static PartyType getPartyType(ch.vd.uniregctb.indexer.tiers.TiersIndexedData tiers) {
+	public static ch.vd.unireg.xml.party.v1.PartyType getPartyTypeV1(ch.vd.uniregctb.indexer.tiers.TiersIndexedData tiers) {
 
 		final String typeAsString = tiers.getTiersType();
 
@@ -246,17 +277,91 @@ public abstract class DataHelper {
 			return null;
 		}
 
-		return indexedData2Type.get(typeAsString);
+		return indexedData2TypeV1.get(typeAsString);
 	}
 
-	public static Set<TiersDAO.Parts> xmlToCore(Set<PartyPart> parts) {
+	/**
+	 * Détermine le type d'un tiers à partir de ses données indexées.
+	 *
+	 * @param tiers les données indexés du tiers
+	 * @return le type du tiers; ou <b>null</b> si le type de tiers n'est pas connu.
+	 */
+	public static ch.vd.unireg.xml.party.v2.PartyType getPartyTypeV2(ch.vd.uniregctb.indexer.tiers.TiersIndexedData tiers) {
+
+		final String typeAsString = tiers.getTiersType();
+
+		if (StringUtils.isEmpty(typeAsString)) {
+			return null;
+		}
+
+		return indexedData2TypeV2.get(typeAsString);
+	}
+
+	public static Set<TiersDAO.Parts> xmlToCoreV1(Set<ch.vd.unireg.xml.party.v1.PartyPart> parts) {
 
 		if (parts == null) {
 			return null;
 		}
 
 		final Set<TiersDAO.Parts> results = new HashSet<>(parts.size());
-		for (PartyPart p : parts) {
+		for (ch.vd.unireg.xml.party.v1.PartyPart p : parts) {
+			switch (p) {
+			case ADDRESSES:
+				results.add(TiersDAO.Parts.ADRESSES);
+				results.add(TiersDAO.Parts.RAPPORTS_ENTRE_TIERS);
+				break;
+			case TAX_DECLARATIONS:
+			case TAX_DECLARATIONS_STATUSES:
+			case TAX_DECLARATIONS_DEADLINES:
+				results.add(TiersDAO.Parts.DECLARATIONS);
+				break;
+			case TAX_RESIDENCES:
+			case VIRTUAL_TAX_RESIDENCES:
+			case MANAGING_TAX_RESIDENCES:
+			case TAX_LIABILITIES:
+			case SIMPLIFIED_TAX_LIABILITIES:
+			case TAXATION_PERIODS:
+				results.add(TiersDAO.Parts.FORS_FISCAUX);
+				break;
+			case RELATIONS_BETWEEN_PARTIES:
+			case HOUSEHOLD_MEMBERS:
+				results.add(TiersDAO.Parts.RAPPORTS_ENTRE_TIERS);
+				break;
+			case FAMILY_STATUSES:
+				results.add(TiersDAO.Parts.SITUATIONS_FAMILLE);
+				break;
+			case DEBTOR_PERIODICITIES:
+				results.add(TiersDAO.Parts.PERIODICITES);
+				break;
+			case IMMOVABLE_PROPERTIES:
+				results.add(TiersDAO.Parts.IMMEUBLES);
+				break;
+			case BANK_ACCOUNTS:
+			case CAPITALS:
+			case CORPORATION_STATUSES:
+			case LEGAL_FORMS:
+			case TAX_SYSTEMS:
+			case LEGAL_SEATS:
+			case CHILDREN:
+			case PARENTS:
+				// rien à faire
+				break;
+			default:
+				throw new IllegalArgumentException("Type de parts inconnue = [" + p + ']');
+			}
+		}
+
+		return results;
+	}
+
+	public static Set<TiersDAO.Parts> xmlToCoreV2(Set<ch.vd.unireg.xml.party.v2.PartyPart> parts) {
+
+		if (parts == null) {
+			return null;
+		}
+
+		final Set<TiersDAO.Parts> results = new HashSet<>(parts.size());
+		for (ch.vd.unireg.xml.party.v2.PartyPart p : parts) {
 			switch (p) {
 			case ADDRESSES:
 				results.add(TiersDAO.Parts.ADRESSES);
@@ -357,7 +462,7 @@ public abstract class DataHelper {
 		return coreToXML(RegDateHelper.dashStringToDate(s));
 	}
 
-	public static Set<PartyPart> toSet(List<PartyPart> parts) {
+	public static <T extends Enum<T>> Set<T> toSet(List<T> parts) {
 		return new HashSet<>(parts);
 	}
 

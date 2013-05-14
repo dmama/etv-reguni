@@ -66,6 +66,7 @@
 			<map>
 				<entry key="TiersWebService2" value-ref="tiersService2EndPoint"/>
 				<entry key="PartyWebService3" value-ref="partyService3EndPoint"/>
+				<entry key="PartyWebService4" value-ref="partyService4EndPoint"/>
 				<entry key="ServiceSecurite" value-ref="securiteServiceBean"/>
 			</map>
 		</property>

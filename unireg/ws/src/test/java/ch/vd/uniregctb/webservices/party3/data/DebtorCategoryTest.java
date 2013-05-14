@@ -1,5 +1,8 @@
 package ch.vd.uniregctb.webservices.party3.data;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 import org.junit.Test;
 
 import ch.vd.unireg.xml.party.debtor.v1.DebtorCategory;
@@ -14,7 +17,9 @@ public class DebtorCategoryTest extends EnumTest {
 
 	@Test
 	public void testCoherence() {
-		assertEnumLengthEquals(DebtorCategory.class, CategorieImpotSource.class);
+		final Set<DebtorCategory> dcSet = EnumSet.allOf(DebtorCategory.class);
+		final Set<CategorieImpotSource> cisSet = EnumSet.complementOf(EnumSet.of(CategorieImpotSource.PARTICIPATIONS_HORS_SUISSE, CategorieImpotSource.EFFEUILLEUSES));
+		assertEquals(dcSet.size(), cisSet.size());
 	}
 
 	@Test

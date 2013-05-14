@@ -75,7 +75,7 @@ public class PartyWebServiceBatchTest extends WebserviceTest {
 		webService.setServiceCivil(serviceCivil);
 		webService.setServicePM(servicePM);
 		webService.setSituationService(getBean(SituationFamilleService.class, "situationFamilleService"));
-		webService.setThreadPool(getBean(ExecutorService.class, "wsThreadPool"));
+		webService.setThreadPool(getBean(ExecutorService.class, "wsThreadPoolParty3"));
 		webService.setTiersDAO(crashingTiersDAO);
 		webService.setTiersSearcher(globalTiersSearcher);
 		webService.setTiersService(tiersService);

@@ -20,7 +20,6 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.NotImplementedException;
 
 public class UniregCacheManagerImpl implements UniregCacheManager, DynamicMBean {
@@ -41,7 +40,9 @@ public class UniregCacheManagerImpl implements UniregCacheManager, DynamicMBean 
 
 	@Override
 	public void register(UniregCacheInterface cache) {
-		Assert.isFalse(map.containsKey(cache.getName()));
+		if (map.containsKey(cache.getName())) {
+			throw new IllegalArgumentException(String.format("Cache " + cache.getName() + " déjà enregistré"));
+		}
 		map.put(cache.getName(), cache);
 	}
 

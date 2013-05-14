@@ -98,7 +98,7 @@ import ch.vd.uniregctb.webservices.party3.exception.TaxDeclarationAcknowledgeErr
 import ch.vd.uniregctb.xml.BusinessHelper;
 import ch.vd.uniregctb.xml.Context;
 import ch.vd.uniregctb.xml.ServiceException;
-import ch.vd.uniregctb.xml.party.PartyBuilder;
+import ch.vd.uniregctb.xml.party.v1.PartyBuilder;
 
 public class PartyWebServiceImpl implements PartyWebService {
 
@@ -216,7 +216,7 @@ public class PartyWebServiceImpl implements PartyWebService {
 				}
 				final List<TiersIndexedData> values = tiersSearcher.search(criterion);
 				for (TiersIndexedData value : values) {
-					final PartyInfo info = ch.vd.uniregctb.xml.DataHelper.coreToXML(value);
+					final PartyInfo info = ch.vd.uniregctb.xml.DataHelper.coreToXMLv1(value);
 					set.add(info);
 				}
 			}
@@ -255,12 +255,12 @@ public class PartyWebServiceImpl implements PartyWebService {
 			final Set<ch.vd.unireg.xml.party.v1.PartyPart> parts = DataHelper.webToXML(params.getParts());
 			if (tiers instanceof ch.vd.uniregctb.tiers.PersonnePhysique) {
 				final ch.vd.uniregctb.tiers.PersonnePhysique personne = (ch.vd.uniregctb.tiers.PersonnePhysique) tiers;
-				BusinessHelper.warmIndividus(personne, parts, context);
+				BusinessHelper.warmIndividusV1(personne, parts, context);
 				data = PartyBuilder.newNaturalPerson(personne, parts, context);
 			}
 			else if (tiers instanceof ch.vd.uniregctb.tiers.MenageCommun) {
 				final ch.vd.uniregctb.tiers.MenageCommun menage = (ch.vd.uniregctb.tiers.MenageCommun) tiers;
-				BusinessHelper.warmIndividus(menage, parts, context);
+				BusinessHelper.warmIndividusV1(menage, parts, context);
 				data = PartyBuilder.newCommonHousehold(menage, parts, context);
 			}
 			else if (tiers instanceof Entreprise) {
@@ -505,7 +505,7 @@ public class PartyWebServiceImpl implements PartyWebService {
 	 * @return les parties de la couche business.
 	 */
 	protected static Set<Parts> xmlToCoreWithForsFiscaux(Set<ch.vd.unireg.xml.party.v1.PartyPart> parts) {
-		Set<Parts> coreParts = ch.vd.uniregctb.xml.DataHelper.xmlToCore(parts);
+		Set<Parts> coreParts = ch.vd.uniregctb.xml.DataHelper.xmlToCoreV1(parts);
 		if (coreParts == null) {
 			coreParts = new HashSet<>();
 		}
