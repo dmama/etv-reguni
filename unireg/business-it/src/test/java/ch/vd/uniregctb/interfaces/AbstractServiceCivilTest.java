@@ -140,11 +140,23 @@ public abstract class AbstractServiceCivilTest extends BusinessItTest {
 		// On vérifie les enfants
 		final Collection<RelationVersIndividu> enfants = individu.getEnfants();
 		assertNotNull(enfants);
-		assertEquals(1, enfants.size());
+		assertEquals(2, enfants.size());
 
-		final RelationVersIndividu enfant0 = enfants.iterator().next();
+		final List<RelationVersIndividu> listeEnfants = new ArrayList<>(enfants);
+		Collections.sort(listeEnfants, new Comparator<RelationVersIndividu>() {
+			@Override
+			public int compare(RelationVersIndividu o1, RelationVersIndividu o2) {
+				return Long.compare(o1.getNumeroAutreIndividu(), o2.getNumeroAutreIndividu());
+			}
+		});
+
+		final RelationVersIndividu enfant0 = listeEnfants.get(0);
 		assertNotNull(enfant0);
 		assertEquals(1031455, enfant0.getNumeroAutreIndividu());
+
+		final RelationVersIndividu enfant1 = listeEnfants.get(1);
+		assertNotNull(enfant1);
+		assertEquals(2034197, enfant1.getNumeroAutreIndividu());
 
 		// On vérifie les origines
 		final Collection<Origine> origines = individu.getOrigines();
