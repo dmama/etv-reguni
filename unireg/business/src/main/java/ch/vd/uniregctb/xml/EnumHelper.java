@@ -1,5 +1,9 @@
 package ch.vd.uniregctb.xml;
 
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.Set;
+
 import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
 import ch.vd.unireg.xml.party.address.v1.TariffZone;
 import ch.vd.unireg.xml.party.immovableproperty.v1.ImmovablePropertyType;
@@ -144,10 +148,27 @@ public abstract class EnumHelper {
 		}
 	}
 
+	public static final Set<CategorieImpotSource> CIS_SUPPORTEES_V1 = Collections.unmodifiableSet(EnumSet.of(CategorieImpotSource.ADMINISTRATEURS, CategorieImpotSource.CONFERENCIERS_ARTISTES_SPORTIFS,
+	                                                                                                         CategorieImpotSource.CREANCIERS_HYPOTHECAIRES, CategorieImpotSource.LOI_TRAVAIL_AU_NOIR,
+	                                                                                                         CategorieImpotSource.PRESTATIONS_PREVOYANCE, CategorieImpotSource.REGULIERS));
+
+	public static final Set<CategorieImpotSource> CIS_SUPPORTEES_V2 = Collections.unmodifiableSet(EnumSet.of(CategorieImpotSource.ADMINISTRATEURS, CategorieImpotSource.CONFERENCIERS_ARTISTES_SPORTIFS,
+	                                                                                                         CategorieImpotSource.CREANCIERS_HYPOTHECAIRES, CategorieImpotSource.LOI_TRAVAIL_AU_NOIR,
+	                                                                                                         CategorieImpotSource.PRESTATIONS_PREVOYANCE, CategorieImpotSource.REGULIERS,
+	                                                                                                         CategorieImpotSource.PARTICIPATIONS_HORS_SUISSE, CategorieImpotSource.EFFEUILLEUSES));
+
+	private static void checkCategorieImpotSourceSupportee(Set<CategorieImpotSource> allowed, CategorieImpotSource candidate) {
+		if (!allowed.contains(candidate)) {
+			throw new IllegalArgumentException("Type de catégorie impôt source non supporté dans cette version du service");
+		}
+	}
+
 	public static ch.vd.unireg.xml.party.debtor.v1.DebtorCategory coreToXMLv1(CategorieImpotSource categorieImpotSource) {
 		if (categorieImpotSource == null) {
 			return null;
 		}
+
+		checkCategorieImpotSourceSupportee(CIS_SUPPORTEES_V1, categorieImpotSource);
 
 		switch (categorieImpotSource) {
 		case ADMINISTRATEURS:
@@ -162,9 +183,6 @@ public abstract class EnumHelper {
 			return ch.vd.unireg.xml.party.debtor.v1.DebtorCategory.PENSION_FUND;
 		case REGULIERS:
 			return ch.vd.unireg.xml.party.debtor.v1.DebtorCategory.REGULAR;
-		case PARTICIPATIONS_HORS_SUISSE:
-		case EFFEUILLEUSES:
-			throw new IllegalArgumentException("Type de catégorie impôt source non supporté dans cette version du service");
 		default:
 			throw new IllegalArgumentException("Type de catégorie impôt source inconnu = [" + categorieImpotSource + ']');
 		}
@@ -174,6 +192,8 @@ public abstract class EnumHelper {
 		if (categorieImpotSource == null) {
 			return null;
 		}
+
+		checkCategorieImpotSourceSupportee(CIS_SUPPORTEES_V2, categorieImpotSource);
 
 		switch (categorieImpotSource) {
 		case ADMINISTRATEURS:

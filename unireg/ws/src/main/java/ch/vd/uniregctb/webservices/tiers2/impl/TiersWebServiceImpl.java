@@ -54,6 +54,7 @@ import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersDAO.Parts;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.webservices.common.NoOfsTranslator;
 import ch.vd.uniregctb.webservices.tiers2.TiersWebService;
@@ -105,6 +106,8 @@ public class TiersWebServiceImpl implements TiersWebService {
 
 	private static final int MAX_BATCH_SIZE = 500;
 	// la limite Oracle est à 1'000, mais comme on peut recevoir des ménages communs, il faut garder une bonne marge pour charger les personnes physiques associées.
+
+	private static final Set<CategorieImpotSource> CIS_SUPPORTEES = EnumHelper.getCategoriesImpotSourceAutorisees();
 
 	private final Context context = new Context();
 
@@ -223,8 +226,10 @@ public class TiersWebServiceImpl implements TiersWebService {
 				}
 				final List<TiersIndexedData> values = tiersSearcher.search(criterion);
 				for (TiersIndexedData value : values) {
-					final TiersInfo info = DataHelper.coreToWeb(value);
-					set.add(info);
+					if (value != null && (value.getCategorieImpotSource() == null || CIS_SUPPORTEES.contains(value.getCategorieImpotSource()))) {
+						final TiersInfo info = DataHelper.coreToWeb(value);
+						set.add(info);
+					}
 				}
 			}
 

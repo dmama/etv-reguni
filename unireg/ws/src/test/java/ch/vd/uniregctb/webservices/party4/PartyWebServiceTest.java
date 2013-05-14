@@ -2617,4 +2617,85 @@ public class PartyWebServiceTest extends WebserviceTest {
 		assertInstanceOf(Debtor.class, party);
 		assertEquals(DebtorCategory.SEASONAL_WORKERS, ((Debtor) party).getCategory());
 	}
+
+	/**
+	 * Types de débiteur non-supportés par les versions précédentes du service
+	 */
+	@Test
+	public void testSearchDebiteurAvecTypeNonSupporte() throws Exception {
+
+		final class Ids {
+			long phs;
+			long eff;
+			long reg;
+		}
+
+		// pour être certain de ne rien récupérer d'autre que ce que je vais créer maintenant
+		globalTiersIndexer.overwriteIndex();
+
+		final boolean otfi = globalTiersIndexer.isOnTheFlyIndexation();
+		globalTiersIndexer.setOnTheFlyIndexation(true);
+		try {
+			// mise en place des débiteurs
+			final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+				@Override
+				public Ids doInTransaction(TransactionStatus status) {
+					final DebiteurPrestationImposable reg = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+					reg.setNom1("Toto");        // pour la recherche
+
+					final DebiteurPrestationImposable eff = addDebiteur(CategorieImpotSource.EFFEUILLEUSES, PeriodiciteDecompte.MENSUEL, date(2013, 1, 1));
+					eff.setNom1("Toto");        // pour la recherche
+
+					final DebiteurPrestationImposable phs = addDebiteur(CategorieImpotSource.PARTICIPATIONS_HORS_SUISSE, PeriodiciteDecompte.MENSUEL, date(2013, 1, 1));
+					phs.setNom1("Toto");        // pour la recherche
+
+					final Ids ids = new Ids();
+					ids.phs = phs.getNumero();
+					ids.eff = eff.getNumero();
+					ids.reg = reg.getNumero();
+					return ids;
+				}
+			});
+
+			// on attend que l'indexation des trois nouveaux débiteurs soit terminée
+			globalTiersIndexer.sync();
+
+			// recherche par nom
+			final SearchPartyRequest params = new SearchPartyRequest();
+			params.setLogin(login);
+			params.setContactName("Toto");
+
+			final SearchPartyResponse found = service.searchParty(params);
+			assertNotNull(found);
+			assertNotNull(found.getItems());
+			assertEquals(3, found.getItems().size());
+
+			final List<PartyInfo> allFound = new ArrayList<>(found.getItems());
+			Collections.sort(allFound, new Comparator<PartyInfo>() {
+				@Override
+				public int compare(PartyInfo o1, PartyInfo o2) {
+					return o1.getNumber() - o2.getNumber();
+				}
+			});
+
+			{
+				final PartyInfo info = allFound.get(0);
+				assertNotNull(info);
+				assertEquals(ids.reg, info.getNumber());
+			}
+			{
+				final PartyInfo info = allFound.get(1);
+				assertNotNull(info);
+				assertEquals(ids.eff, info.getNumber());
+			}
+			{
+				final PartyInfo info = allFound.get(2);
+				assertNotNull(info);
+				assertEquals(ids.phs, info.getNumber());
+			}
+		}
+		finally {
+			globalTiersIndexer.setOnTheFlyIndexation(otfi);
+		}
+	}
 }

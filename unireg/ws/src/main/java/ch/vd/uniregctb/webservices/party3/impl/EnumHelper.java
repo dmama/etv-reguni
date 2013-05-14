@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.webservices.party3.impl;
 
+import java.util.Set;
+
 import ch.vd.unireg.webservices.party3.SearchMode;
 import ch.vd.unireg.xml.party.address.v1.TariffZone;
 import ch.vd.unireg.xml.party.debtor.v1.CommunicationMode;
@@ -32,6 +34,10 @@ import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.TypePermis;
 
 public abstract class EnumHelper {
+
+	public static Set<CategorieImpotSource> getCategoriesImpotSourceAutorisees() {
+		return ch.vd.uniregctb.xml.EnumHelper.CIS_SUPPORTEES_V1;
+	}
 
 	public static MaritalStatus coreToWeb(ch.vd.uniregctb.type.EtatCivil etatCivil) {
 		return ch.vd.uniregctb.xml.EnumHelper.coreToXMLv1(etatCivil);

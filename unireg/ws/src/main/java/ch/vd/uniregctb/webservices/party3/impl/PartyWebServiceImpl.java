@@ -88,6 +88,7 @@ import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersDAO.Parts;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.webservices.party3.data.AcknowledgeTaxDeclarationBuilder;
 import ch.vd.uniregctb.webservices.party3.data.BatchPartyBuilder;
@@ -106,6 +107,8 @@ public class PartyWebServiceImpl implements PartyWebService {
 
 	private static final int MAX_BATCH_SIZE = 500;
 	// la limite Oracle est à 1'000, mais comme on peut recevoir des ménages communs, il faut garder une bonne marge pour charger les personnes physiques associées.
+
+	private static final Set<CategorieImpotSource> CIS_SUPPORTEES = EnumHelper.getCategoriesImpotSourceAutorisees();
 
 	private final Context context = new Context();
 
@@ -216,8 +219,10 @@ public class PartyWebServiceImpl implements PartyWebService {
 				}
 				final List<TiersIndexedData> values = tiersSearcher.search(criterion);
 				for (TiersIndexedData value : values) {
-					final PartyInfo info = ch.vd.uniregctb.xml.DataHelper.coreToXMLv1(value);
-					set.add(info);
+					if (value != null && (value.getCategorieImpotSource() == null || CIS_SUPPORTEES.contains(value.getCategorieImpotSource()))) {
+						final PartyInfo info = ch.vd.uniregctb.xml.DataHelper.coreToXMLv1(value);
+						set.add(info);
+					}
 				}
 			}
 

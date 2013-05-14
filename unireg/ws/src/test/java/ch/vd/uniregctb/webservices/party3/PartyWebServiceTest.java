@@ -2624,4 +2624,65 @@ public class PartyWebServiceTest extends WebserviceTest {
 			assertEquals("Type de catégorie impôt source non supporté dans cette version du service", e.getFaultInfo().getMessage());
 		}
 	}
+
+	/**
+	 * Types de débiteur non-supportés par cette version du service
+	 */
+	@Test
+	public void testSearchDebiteurAvecTypeNonSupporte() throws Exception {
+
+		final class Ids {
+			long phs;
+			long eff;
+			long reg;
+		}
+
+		// pour être certain de ne rien récupérer d'autre que ce que je vais créer maintenant
+		globalTiersIndexer.overwriteIndex();
+
+		final boolean otfi = globalTiersIndexer.isOnTheFlyIndexation();
+		globalTiersIndexer.setOnTheFlyIndexation(true);
+		try {
+			// mise en place des débiteurs
+			final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+				@Override
+				public Ids doInTransaction(TransactionStatus status) {
+					final DebiteurPrestationImposable reg = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+					reg.setNom1("Toto");        // pour la recherche
+
+					final DebiteurPrestationImposable eff = addDebiteur(CategorieImpotSource.EFFEUILLEUSES, PeriodiciteDecompte.MENSUEL, date(2013, 1, 1));
+					eff.setNom1("Toto");        // pour la recherche
+
+					final DebiteurPrestationImposable phs = addDebiteur(CategorieImpotSource.PARTICIPATIONS_HORS_SUISSE, PeriodiciteDecompte.MENSUEL, date(2013, 1, 1));
+					phs.setNom1("Toto");        // pour la recherche
+
+					final Ids ids = new Ids();
+					ids.phs = phs.getNumero();
+					ids.eff = eff.getNumero();
+					ids.reg = reg.getNumero();
+					return ids;
+				}
+			});
+
+			// on attend que l'indexation des trois nouveaux débiteurs soit terminée
+			globalTiersIndexer.sync();
+
+			// recherche par nom
+			final SearchPartyRequest params = new SearchPartyRequest();
+			params.setLogin(login);
+			params.setContactName("Toto");
+
+			final SearchPartyResponse found = service.searchParty(params);
+			assertNotNull(found);
+			assertNotNull(found.getItems());
+			assertEquals(1, found.getItems().size());
+
+			final PartyInfo singleton = found.getItems().get(0);
+			assertNotNull(singleton);
+			assertEquals(ids.reg, singleton.getNumber());
+		}
+		finally {
+			globalTiersIndexer.setOnTheFlyIndexation(otfi);
+		}
+	}
 }

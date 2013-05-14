@@ -67,6 +67,7 @@ import ch.vd.uniregctb.webservices.tiers2.data.MenageCommunHisto;
 import ch.vd.uniregctb.webservices.tiers2.data.PersonneMorale;
 import ch.vd.uniregctb.webservices.tiers2.data.PersonnePhysiqueHisto;
 import ch.vd.uniregctb.webservices.tiers2.data.ReponseQuittancementDeclaration;
+import ch.vd.uniregctb.webservices.tiers2.data.TiersInfo;
 import ch.vd.uniregctb.webservices.tiers2.data.TiersPart;
 import ch.vd.uniregctb.webservices.tiers2.data.TypeAdresseAutreTiers;
 import ch.vd.uniregctb.webservices.tiers2.exception.BusinessException;
@@ -75,6 +76,7 @@ import ch.vd.uniregctb.webservices.tiers2.params.GetBatchTiersHisto;
 import ch.vd.uniregctb.webservices.tiers2.params.GetTiers;
 import ch.vd.uniregctb.webservices.tiers2.params.GetTiersHisto;
 import ch.vd.uniregctb.webservices.tiers2.params.QuittancerDeclarations;
+import ch.vd.uniregctb.webservices.tiers2.params.SearchTiers;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -1257,6 +1259,66 @@ public class TiersWebServiceTest extends WebserviceTest {
 		}
 		catch (BusinessException e) {
 			assertEquals("Type de catégorie impôt source non supporté dans cette version du service", e.getMessage());
+		}
+	}
+
+	/**
+	 * Types de débiteur non-supportés par cette version du service
+	 */
+	@Test
+	public void testSearchDebiteurAvecTypeNonSupporte() throws Exception {
+
+		final class Ids {
+			long phs;
+			long eff;
+			long reg;
+		}
+
+		// pour être certain de ne rien récupérer d'autre que ce que je vais créer maintenant
+		globalTiersIndexer.overwriteIndex();
+
+		final boolean otfi = globalTiersIndexer.isOnTheFlyIndexation();
+		globalTiersIndexer.setOnTheFlyIndexation(true);
+		try {
+			// mise en place des débiteurs
+			final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+				@Override
+				public Ids doInTransaction(TransactionStatus status) {
+					final DebiteurPrestationImposable reg = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+					reg.setNom1("Toto");        // pour la recherche
+
+					final DebiteurPrestationImposable eff = addDebiteur(CategorieImpotSource.EFFEUILLEUSES, PeriodiciteDecompte.MENSUEL, date(2013, 1, 1));
+					eff.setNom1("Toto");        // pour la recherche
+
+					final DebiteurPrestationImposable phs = addDebiteur(CategorieImpotSource.PARTICIPATIONS_HORS_SUISSE, PeriodiciteDecompte.MENSUEL, date(2013, 1, 1));
+					phs.setNom1("Toto");        // pour la recherche
+
+					final Ids ids = new Ids();
+					ids.phs = phs.getNumero();
+					ids.eff = eff.getNumero();
+					ids.reg = reg.getNumero();
+					return ids;
+				}
+			});
+
+			// on attend que l'indexation des trois nouveaux débiteurs soit terminée
+			globalTiersIndexer.sync();
+
+			// recherche par nom
+			final SearchTiers params = new SearchTiers();
+			params.login = login;
+			params.nomCourrier = "Toto";
+
+			final List<TiersInfo> found = service.searchTiers(params);
+			assertNotNull(found);
+			assertEquals(1, found.size());
+
+			final TiersInfo singleton = found.get(0);
+			assertNotNull(singleton);
+			assertEquals(ids.reg, singleton.numero);
+		}
+		finally {
+			globalTiersIndexer.setOnTheFlyIndexation(otfi);
 		}
 	}
 }
