@@ -34,7 +34,7 @@ public abstract class AbstractPartyWebServiceTest extends WebitTest {
 		if (service == null) {
 			LOGGER.info("Connecting to: " + party3Url + " with user = " + username);
 
-			URL wsdlUrl = ResourceUtils.getURL("classpath:PartyService3.wsdl");
+			URL wsdlUrl = ResourceUtils.getURL("classpath:PartyService4.wsdl");
 			PartyWebServiceFactory s = new PartyWebServiceFactory(wsdlUrl);
 			service = s.getService();
 
