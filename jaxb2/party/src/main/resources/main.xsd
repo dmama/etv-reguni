@@ -8,7 +8,10 @@
 		Cette manière de faire indirecte permet de réutiliser les fichiers bindings.xml entre les différents projets -->
 
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/person/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-person-1.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/person/2" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-person-2.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/corporation/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-corporation-1.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/corporation/2" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-corporation-2.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/adminauth/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-administrativeauthority-1.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/adminauth/2" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-administrativeauthority-2.xsd" />
 
 </xs:schema>
