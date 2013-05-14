@@ -8,14 +8,14 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.unireg.xml.common.v1.UserLogin;
-import ch.vd.unireg.xml.event.party.party.v1.PartyRequest;
-import ch.vd.unireg.xml.event.party.party.v1.PartyResponse;
+import ch.vd.unireg.xml.event.party.party.v2.PartyRequest;
+import ch.vd.unireg.xml.event.party.party.v2.PartyResponse;
 import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
 import ch.vd.unireg.xml.exception.v1.TechnicalExceptionInfo;
-import ch.vd.unireg.xml.party.v1.Party;
-import ch.vd.unireg.xml.party.v1.PartyPart;
+import ch.vd.unireg.xml.party.v2.Party;
+import ch.vd.unireg.xml.party.v2.PartyPart;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.declaration.source.ListeRecapService;
@@ -41,9 +41,9 @@ import ch.vd.uniregctb.xml.BusinessHelper;
 import ch.vd.uniregctb.xml.Context;
 import ch.vd.uniregctb.xml.DataHelper;
 import ch.vd.uniregctb.xml.ServiceException;
-import ch.vd.uniregctb.xml.party.v1.PartyBuilder;
+import ch.vd.uniregctb.xml.party.v2.PartyBuilder;
 
-public class PartyRequestHandler implements RequestHandler<PartyRequest> {
+public class PartyRequestHandlerV2 implements RequestHandler<PartyRequest> {
 
 	private final Context context = new Context();
 
@@ -160,12 +160,12 @@ public class PartyRequestHandler implements RequestHandler<PartyRequest> {
 			final Set<PartyPart> parts = DataHelper.toSet(request.getParts());
 			if (tiers instanceof ch.vd.uniregctb.tiers.PersonnePhysique) {
 				final ch.vd.uniregctb.tiers.PersonnePhysique personne = (ch.vd.uniregctb.tiers.PersonnePhysique) tiers;
-				BusinessHelper.warmIndividusV1(personne, parts, context);
+				BusinessHelper.warmIndividusV2(personne, parts, context);
 				data = PartyBuilder.newNaturalPerson(personne, parts, context);
 			}
 			else if (tiers instanceof ch.vd.uniregctb.tiers.MenageCommun) {
 				final ch.vd.uniregctb.tiers.MenageCommun menage = (ch.vd.uniregctb.tiers.MenageCommun) tiers;
-				BusinessHelper.warmIndividusV1(menage, parts, context);
+				BusinessHelper.warmIndividusV2(menage, parts, context);
 				data = PartyBuilder.newCommonHousehold(menage, parts, context);
 			}
 			else if (tiers instanceof Entreprise) {

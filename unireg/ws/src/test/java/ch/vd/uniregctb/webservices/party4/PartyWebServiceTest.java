@@ -61,6 +61,7 @@ import ch.vd.unireg.xml.party.address.v1.TariffZone;
 import ch.vd.unireg.xml.party.adminauth.v2.AdministrativeAuthority;
 import ch.vd.unireg.xml.party.corporation.v2.Corporation;
 import ch.vd.unireg.xml.party.debtor.v2.CommunicationMode;
+import ch.vd.unireg.xml.party.debtor.v2.Debtor;
 import ch.vd.unireg.xml.party.debtor.v2.DebtorCategory;
 import ch.vd.unireg.xml.party.person.v2.CommonHousehold;
 import ch.vd.unireg.xml.party.person.v2.CommonHouseholdStatus;
@@ -2565,5 +2566,55 @@ public class PartyWebServiceTest extends WebserviceTest {
 		assertEquals(category, permis.getCategory());
 		assertEquals(dateFrom, permis.getDateFrom());
 		assertEquals(dateTo, permis.getDateTo());
+	}
+
+	/**
+	 * Type de débiteur non-supporté par les versions précédentes du service
+	 */
+	@Test
+	public void testGetDebiteurParticipationsHorsSuisse() throws Exception {
+
+		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.PARTICIPATIONS_HORS_SUISSE, PeriodiciteDecompte.MENSUEL, date(2013, 1, 1));
+				return dpi.getNumero();
+			}
+		});
+
+		final GetPartyRequest params = new GetPartyRequest();
+		params.setLogin(login);
+		params.setPartyNumber((int) dpiId);
+		params.getParts().add(PartyPart.DEBTOR_PERIODICITIES);
+
+		final Party party = service.getParty(params);
+		assertNotNull(party);
+		assertInstanceOf(Debtor.class, party);
+		assertEquals(DebtorCategory.PROFIT_SHARING_FOREIGN_COUNTRY_TAXPAYERS, ((Debtor) party).getCategory());
+	}
+
+	/**
+	 * Type de débiteur non-supporté par les versions précédentes du service
+	 */
+	@Test
+	public void testGetDebiteurEffeuilleuses() throws Exception {
+
+		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.EFFEUILLEUSES, PeriodiciteDecompte.MENSUEL, date(2013, 1, 1));
+				return dpi.getNumero();
+			}
+		});
+
+		final GetPartyRequest params = new GetPartyRequest();
+		params.setLogin(login);
+		params.setPartyNumber((int) dpiId);
+		params.getParts().add(PartyPart.DEBTOR_PERIODICITIES);
+
+		final Party party = service.getParty(params);
+		assertNotNull(party);
+		assertInstanceOf(Debtor.class, party);
+		assertEquals(DebtorCategory.SEASONAL_WORKERS, ((Debtor) party).getCategory());
 	}
 }

@@ -5,6 +5,7 @@ import java.util.List;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.xml.common.v1.Date;
@@ -30,7 +31,10 @@ import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.security.MockSecurityProvider;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.situationfamille.SituationFamilleService;
+import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.type.CategorieImpotSource;
+import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.xml.ServiceException;
@@ -41,15 +45,15 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-public class PartyRequestHandlerTest extends BusinessTest {
+public class PartyRequestHandlerV1Test extends BusinessTest {
 
-	private PartyRequestHandler handler;
+	private PartyRequestHandlerV1 handler;
 
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 
-		handler = new PartyRequestHandler();
+		handler = new PartyRequestHandlerV1();
 		handler.setAdresseService(getBean(AdresseService.class, "adresseService"));
 		handler.setAssujettissementService(getBean(AssujettissementService.class, "assujettissementService"));
 		handler.setDiService(getBean(DeclarationImpotService.class, "diService"));
@@ -233,6 +237,92 @@ public class PartyRequestHandlerTest extends BusinessTest {
 			assertEquals("Rue des Uttins", formatted.getLine3());
 			assertEquals("1436 Chamblon", formatted.getLine4());
 			assertNull(formatted.getLine5());
+		}
+		finally {
+			handler.setSecurityProvider(null);
+		}
+	}
+
+	/**
+	 * Type de débiteur non-supporté par cette version du service
+	 */
+	@Test
+	public void testGetDebiteurParticipationsHorsSuisse() throws Exception {
+
+		final Role[] roles = {Role.VISU_ALL};
+		final MockSecurityProvider provider = new MockSecurityProvider(roles);
+
+		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.PARTICIPATIONS_HORS_SUISSE, PeriodiciteDecompte.MENSUEL, date(2013, 1, 1));
+				return dpi.getNumero();
+			}
+		});
+
+		handler.setSecurityProvider(provider);
+		try {
+			final PartyRequest request = new PartyRequest();
+			final UserLogin login = new UserLogin("xxxxx", 22);
+			request.setLogin(login);
+			request.setPartyNumber((int) dpiId);
+			request.getParts().add(PartyPart.ADDRESSES);
+
+			// web-service call
+			final PartyResponse response = doInNewTransactionAndSession(new TxCallback<PartyResponse>() {
+				@Override
+				public PartyResponse execute(TransactionStatus status) throws Exception {
+					return (PartyResponse) handler.handle(request).getResponse();
+				}
+			});
+
+			fail("Ca aurait dû pêter");
+		}
+		catch (ServiceException e) {
+			assertEquals("Type de catégorie impôt source non supporté dans cette version du service", e.getInfo().getMessage());
+		}
+		finally {
+			handler.setSecurityProvider(null);
+		}
+	}
+
+	/**
+	 * Type de débiteur non-supporté par cette version du service
+	 */
+	@Test
+	public void testGetDebiteurEffeuilleuses() throws Exception {
+
+		final Role[] roles = {Role.VISU_ALL};
+		final MockSecurityProvider provider = new MockSecurityProvider(roles);
+
+		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.EFFEUILLEUSES, PeriodiciteDecompte.MENSUEL, date(2013, 1, 1));
+				return dpi.getNumero();
+			}
+		});
+
+		handler.setSecurityProvider(provider);
+		try {
+			final PartyRequest request = new PartyRequest();
+			final UserLogin login = new UserLogin("xxxxx", 22);
+			request.setLogin(login);
+			request.setPartyNumber((int) dpiId);
+			request.getParts().add(PartyPart.ADDRESSES);
+
+			// web-service call
+			final PartyResponse response = doInNewTransactionAndSession(new TxCallback<PartyResponse>() {
+				@Override
+				public PartyResponse execute(TransactionStatus status) throws Exception {
+					return (PartyResponse) handler.handle(request).getResponse();
+				}
+			});
+
+			fail("Ca aurait dû pêter");
+		}
+		catch (ServiceException e) {
+			assertEquals("Type de catégorie impôt source non supporté dans cette version du service", e.getInfo().getMessage());
 		}
 		finally {
 			handler.setSecurityProvider(null);

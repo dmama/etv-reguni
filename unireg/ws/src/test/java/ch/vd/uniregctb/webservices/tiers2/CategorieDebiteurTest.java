@@ -8,11 +8,13 @@ import org.junit.Test;
 
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.webservices.tiers2.data.CategorieDebiteur;
+import ch.vd.uniregctb.webservices.tiers2.exception.BusinessException;
 import ch.vd.uniregctb.webservices.tiers2.impl.EnumHelper;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.fail;
 
 public class CategorieDebiteurTest extends EnumTest {
 
@@ -35,7 +37,7 @@ public class CategorieDebiteurTest extends EnumTest {
 	}
 
 	@Test
-	public void testFromValue() {
+	public void testFromValue() throws Exception {
 		assertNull(EnumHelper.coreToWeb((CategorieImpotSource) null));
 		assertEquals(CategorieDebiteur.ADMINISTRATEURS, EnumHelper.coreToWeb(CategorieImpotSource.ADMINISTRATEURS));
 		assertEquals(CategorieDebiteur.CONFERENCIERS_ARTISTES_SPORTIFS, EnumHelper.coreToWeb(CategorieImpotSource.CONFERENCIERS_ARTISTES_SPORTIFS));
@@ -43,5 +45,20 @@ public class CategorieDebiteurTest extends EnumTest {
 		assertEquals(CategorieDebiteur.PRESTATIONS_PREVOYANCE, EnumHelper.coreToWeb(CategorieImpotSource.PRESTATIONS_PREVOYANCE));
 		assertEquals(CategorieDebiteur.REGULIERS, EnumHelper.coreToWeb(CategorieImpotSource.REGULIERS));
 		assertEquals(CategorieDebiteur.LOI_TRAVAIL_AU_NOIR, EnumHelper.coreToWeb(CategorieImpotSource.LOI_TRAVAIL_AU_NOIR));
+
+		try {
+			EnumHelper.coreToWeb(CategorieImpotSource.PARTICIPATIONS_HORS_SUISSE);
+			fail();
+		}
+		catch (BusinessException e) {
+			assertEquals("Type de catégorie impôt source non supporté dans cette version du service", e.getMessage());
+		}
+		try {
+			EnumHelper.coreToWeb(CategorieImpotSource.EFFEUILLEUSES);
+			fail();
+		}
+		catch (BusinessException e) {
+			assertEquals("Type de catégorie impôt source non supporté dans cette version du service", e.getMessage());
+		}
 	}
 }

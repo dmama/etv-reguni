@@ -69,6 +69,7 @@ import ch.vd.uniregctb.webservices.tiers2.data.PersonnePhysiqueHisto;
 import ch.vd.uniregctb.webservices.tiers2.data.ReponseQuittancementDeclaration;
 import ch.vd.uniregctb.webservices.tiers2.data.TiersPart;
 import ch.vd.uniregctb.webservices.tiers2.data.TypeAdresseAutreTiers;
+import ch.vd.uniregctb.webservices.tiers2.exception.BusinessException;
 import ch.vd.uniregctb.webservices.tiers2.exception.WebServiceExceptionType;
 import ch.vd.uniregctb.webservices.tiers2.params.GetBatchTiersHisto;
 import ch.vd.uniregctb.webservices.tiers2.params.GetTiers;
@@ -80,6 +81,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 @SuppressWarnings({"JavaDoc"})
 public class TiersWebServiceTest extends WebserviceTest {
@@ -1197,6 +1199,64 @@ public class TiersWebServiceTest extends WebserviceTest {
 			final ch.vd.uniregctb.webservices.tiers2.data.PersonneMorale pm = (PersonneMorale) service.getTiers(params);
 			assertNotNull(pm);
 			assertAdresse(newDate(2000, 1, 1), null, "Avenue du Funiculaire", "3bis", "Cossonay-Ville", pm.adresseCourrier);
+		}
+	}
+
+	/**
+	 * Type de débiteur non-supporté par cette version du service
+	 */
+	@Test
+	public void testGetDebiteurParticipationsHorsSuisse() throws Exception {
+
+		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.PARTICIPATIONS_HORS_SUISSE, PeriodiciteDecompte.MENSUEL, date(2013, 1, 1));
+				return dpi.getNumero();
+			}
+		});
+
+		final GetTiers params = new GetTiers();
+		params.login = login;
+		params.tiersNumber = dpiId;
+		params.parts = new HashSet<>();
+		params.parts.add(TiersPart.PERIODICITES);
+
+		try {
+			ch.vd.uniregctb.webservices.tiers2.data.Tiers tiers = service.getTiers(params);
+			fail("Ca aurait dû exploser");
+		}
+		catch (BusinessException e) {
+			assertEquals("Type de catégorie impôt source non supporté dans cette version du service", e.getMessage());
+		}
+	}
+
+	/**
+	 * Type de débiteur non-supporté par cette version du service
+	 */
+	@Test
+	public void testGetDebiteurEffeuilleuses() throws Exception {
+
+		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.EFFEUILLEUSES, PeriodiciteDecompte.MENSUEL, date(2013, 1, 1));
+				return dpi.getNumero();
+			}
+		});
+
+		final GetTiers params = new GetTiers();
+		params.login = login;
+		params.tiersNumber = dpiId;
+		params.parts = new HashSet<>();
+		params.parts.add(TiersPart.PERIODICITES);
+
+		try {
+			ch.vd.uniregctb.webservices.tiers2.data.Tiers tiers = service.getTiers(params);
+			fail("Ca aurait dû exploser");
+		}
+		catch (BusinessException e) {
+			assertEquals("Type de catégorie impôt source non supporté dans cette version du service", e.getMessage());
 		}
 	}
 }

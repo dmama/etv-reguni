@@ -61,6 +61,7 @@ public class PartyRequestEsbHandler implements EsbMessageHandler, InitializingBe
 
 	private Map<Class<? extends Request>, RequestHandler> handlers;
 	private Schema schemaCache;
+	private Class<? extends Request>[] supportedRequestClasses;
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setHandlers(Map<Class<? extends Request>, RequestHandler> handlers) {
@@ -121,7 +122,7 @@ public class PartyRequestEsbHandler implements EsbMessageHandler, InitializingBe
 	}
 
 	private Request parse(Source message) throws JAXBException, SAXException, IOException {
-		final JAXBContext context = JAXBContext.newInstance(ObjectFactory.class.getPackage().getName());
+		final JAXBContext context = JAXBContext.newInstance(supportedRequestClasses);
 		final Unmarshaller u = context.createUnmarshaller();
 		u.setSchema(getRequestSchema());
 		final JAXBElement element = (JAXBElement) u.unmarshal(message);
@@ -221,6 +222,8 @@ public class PartyRequestEsbHandler implements EsbMessageHandler, InitializingBe
 			final List<ClassPathResource> resource = handler.getResponseXSD();
 			resources.addAll(resource);
 		}
+
+		supportedRequestClasses = handlers.keySet().toArray(new Class[handlers.size()]);
 
 		esbValidator = new EsbXmlValidation();
 		esbValidator.setResourceResolver(new ClasspathCatalogResolver());

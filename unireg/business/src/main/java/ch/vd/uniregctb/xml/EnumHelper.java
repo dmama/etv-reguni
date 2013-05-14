@@ -164,7 +164,7 @@ public abstract class EnumHelper {
 			return ch.vd.unireg.xml.party.debtor.v1.DebtorCategory.REGULAR;
 		case PARTICIPATIONS_HORS_SUISSE:
 		case EFFEUILLEUSES:
-			throw new IllegalArgumentException("Type de catégorie impôt source non supportée dans cette version du service");
+			throw new IllegalArgumentException("Type de catégorie impôt source non supporté dans cette version du service");
 		default:
 			throw new IllegalArgumentException("Type de catégorie impôt source inconnu = [" + categorieImpotSource + ']');
 		}

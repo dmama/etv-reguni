@@ -46,6 +46,7 @@ import ch.vd.unireg.webservices.party3.PartyWebService;
 import ch.vd.unireg.webservices.party3.SearchPartyRequest;
 import ch.vd.unireg.webservices.party3.SearchPartyResponse;
 import ch.vd.unireg.webservices.party3.TaxDeclarationAcknowledgeCode;
+import ch.vd.unireg.webservices.party3.WebServiceException;
 import ch.vd.unireg.xml.common.v1.Date;
 import ch.vd.unireg.xml.common.v1.UserLogin;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
@@ -122,6 +123,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 @SuppressWarnings({"JavaDoc"})
 public class PartyWebServiceTest extends WebserviceTest {
@@ -2565,5 +2567,61 @@ public class PartyWebServiceTest extends WebserviceTest {
 		assertEquals(category, permis.getCategory());
 		assertEquals(dateFrom, permis.getDateFrom());
 		assertEquals(dateTo, permis.getDateTo());
+	}
+
+	/**
+	 * Type de débiteur non-supporté par cette version du service
+	 */
+	@Test
+	public void testGetDebiteurParticipationsHorsSuisse() throws Exception {
+
+		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.PARTICIPATIONS_HORS_SUISSE, PeriodiciteDecompte.MENSUEL, date(2013, 1, 1));
+				return dpi.getNumero();
+			}
+		});
+
+		final GetPartyRequest params = new GetPartyRequest();
+		params.setLogin(login);
+		params.setPartyNumber((int) dpiId);
+		params.getParts().add(PartyPart.DEBTOR_PERIODICITIES);
+
+		try {
+			final Party party = service.getParty(params);
+			fail("Ca aurait dû exploser");
+		}
+		catch (WebServiceException e) {
+			assertEquals("Type de catégorie impôt source non supporté dans cette version du service", e.getFaultInfo().getMessage());
+		}
+	}
+
+	/**
+	 * Type de débiteur non-supporté par cette version du service
+	 */
+	@Test
+	public void testGetDebiteurEffeuilleuses() throws Exception {
+
+		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.EFFEUILLEUSES, PeriodiciteDecompte.MENSUEL, date(2013, 1, 1));
+				return dpi.getNumero();
+			}
+		});
+
+		final GetPartyRequest params = new GetPartyRequest();
+		params.setLogin(login);
+		params.setPartyNumber((int) dpiId);
+		params.getParts().add(PartyPart.DEBTOR_PERIODICITIES);
+
+		try {
+			final Party party = service.getParty(params);
+			fail("Ca aurait dû exploser");
+		}
+		catch (WebServiceException e) {
+			assertEquals("Type de catégorie impôt source non supporté dans cette version du service", e.getFaultInfo().getMessage());
+		}
 	}
 }

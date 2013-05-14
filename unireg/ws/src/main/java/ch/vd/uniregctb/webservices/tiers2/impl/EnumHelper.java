@@ -1,11 +1,14 @@
 package ch.vd.uniregctb.webservices.tiers2.impl;
 
 import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.Map;
+import java.util.Set;
 
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
 import ch.vd.uniregctb.tiers.TiersDAO.Parts;
+import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.TypePermis;
 import ch.vd.uniregctb.webservices.tiers2.data.CategorieDebiteur;
 import ch.vd.uniregctb.webservices.tiers2.data.EtatCivil;
@@ -23,10 +26,13 @@ import ch.vd.uniregctb.webservices.tiers2.data.TiersPart;
 import ch.vd.uniregctb.webservices.tiers2.data.TypeAffranchissement;
 import ch.vd.uniregctb.webservices.tiers2.data.TypeDocument;
 import ch.vd.uniregctb.webservices.tiers2.data.TypeRecherche;
+import ch.vd.uniregctb.webservices.tiers2.exception.BusinessException;
 
 public abstract class EnumHelper {
 
 	final static Map<TypePermis, PersonnePhysique.Categorie> typePermis2Categorie = new EnumMap<>(TypePermis.class);
+
+	private static final Set<CategorieImpotSource> CIS_NON_SUPPORTES = EnumSet.of(CategorieImpotSource.PARTICIPATIONS_HORS_SUISSE, CategorieImpotSource.EFFEUILLEUSES);
 
 	public static EtatCivil coreToWeb(ch.vd.uniregctb.type.EtatCivil etatCivil) {
 		if (etatCivil == null) {
@@ -72,9 +78,13 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static CategorieDebiteur coreToWeb(ch.vd.uniregctb.type.CategorieImpotSource categorieImpotSource) {
+	public static CategorieDebiteur coreToWeb(ch.vd.uniregctb.type.CategorieImpotSource categorieImpotSource) throws BusinessException {
 		if (categorieImpotSource == null) {
 			return null;
+		}
+
+		if (CIS_NON_SUPPORTES.contains(categorieImpotSource)) {
+			throw new BusinessException("Type de catégorie impôt source non supporté dans cette version du service");
 		}
 
 		final CategorieDebiteur value = CategorieDebiteur.fromValue(categorieImpotSource.toString());

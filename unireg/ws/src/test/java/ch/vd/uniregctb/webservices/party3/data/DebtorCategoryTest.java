@@ -12,6 +12,7 @@ import ch.vd.uniregctb.webservices.party3.impl.EnumHelper;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.fail;
 
 public class DebtorCategoryTest extends EnumTest {
 
@@ -31,5 +32,20 @@ public class DebtorCategoryTest extends EnumTest {
 		assertEquals(DebtorCategory.PENSION_FUND, EnumHelper.coreToWeb(CategorieImpotSource.PRESTATIONS_PREVOYANCE));
 		assertEquals(DebtorCategory.REGULAR, EnumHelper.coreToWeb(CategorieImpotSource.REGULIERS));
 		assertEquals(DebtorCategory.LAW_ON_UNDECLARED_WORK, EnumHelper.coreToWeb(CategorieImpotSource.LOI_TRAVAIL_AU_NOIR));
+
+		try {
+			EnumHelper.coreToWeb(CategorieImpotSource.PARTICIPATIONS_HORS_SUISSE);
+			fail();
+		}
+		catch (IllegalArgumentException e) {
+			assertEquals("Type de catégorie impôt source non supporté dans cette version du service", e.getMessage());
+		}
+		try {
+			EnumHelper.coreToWeb(CategorieImpotSource.EFFEUILLEUSES);
+			fail();
+		}
+		catch (IllegalArgumentException e) {
+			assertEquals("Type de catégorie impôt source non supporté dans cette version du service", e.getMessage());
+		}
 	}
 }

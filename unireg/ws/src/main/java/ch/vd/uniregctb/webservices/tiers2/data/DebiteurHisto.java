@@ -144,7 +144,7 @@ public class DebiteurHisto extends TiersHisto {
 		this.logicielId = debiteur.logicielId;
 	}
 
-	private void setBase(Context context, ch.vd.uniregctb.tiers.DebiteurPrestationImposable debiteur) {
+	private void setBase(Context context, ch.vd.uniregctb.tiers.DebiteurPrestationImposable debiteur) throws BusinessException {
 		this.raisonSociale = BusinessHelper.getRaisonSociale(debiteur, null, context.adresseService);
 		this.categorie = EnumHelper.coreToWeb(debiteur.getCategorieImpotSource());
 
