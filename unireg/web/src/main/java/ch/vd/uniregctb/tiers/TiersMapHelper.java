@@ -251,12 +251,12 @@ public class TiersMapHelper extends CommonMapHelper {
 
 	/**
 	 * Initialise la map des categories d'impot a la source
-	 *
+	 * [SIFISC-8625] Pour le moment, on ne peut pas créer de débiteur IS de catégorie "Effeuilleuses"
 	 * @return une map
 	 */
 	public Map<CategorieImpotSource, String> getMapCategorieImpotSource() {
 		if (mapCategorieImpotSource == null) {
-			mapCategorieImpotSource = initMapEnum(ApplicationConfig.masterKeyCategorieImpotSource, CategorieImpotSource.class);
+			mapCategorieImpotSource = initMapEnum(ApplicationConfig.masterKeyCategorieImpotSource, CategorieImpotSource.class, CategorieImpotSource.EFFEUILLEUSES);
 		}
 		return mapCategorieImpotSource;
 	}
