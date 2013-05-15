@@ -62,9 +62,9 @@
 
 				<h4>Cellule registre :</h4>
 				<ul>
-					<li>Alain Langel</li>
 					<li>Antonio Rollo</li>
 					<li>David Radelfinger</li>
+					<li>Raphaël Carbo</li>
 				</ul>
 
 				<h4>Spécifications :</h4>
@@ -86,6 +86,7 @@
 				<h3>Personnes ayant contribué à Unireg par le passé</h3>
 				<ul>
 					<li>Akram Ben Aissi</li>
+					<li>Alain Langel</li>
 					<li>Andréa Osmani</li>
 					<li>Annie Ourliac</li>
 					<li>Christophe Friederich</li>
@@ -101,7 +102,6 @@
 					<li>Ludovic Bertin</li>
 					<li>Manuel Siggen</li>
 					<li>Pavel Blanco</li>
-					<li>Raphaël Carbo</li>
 					<li>Smita Roy</li>
 					<li>Thierry Declercq</li>
 				</ul>
