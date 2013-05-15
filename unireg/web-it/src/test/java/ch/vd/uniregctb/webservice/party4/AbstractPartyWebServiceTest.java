@@ -32,7 +32,7 @@ public abstract class AbstractPartyWebServiceTest extends WebitTest {
 		super.onSetUp();
 
 		if (service == null) {
-			LOGGER.info("Connecting to: " + party3Url + " with user = " + username);
+			LOGGER.info("Connecting to: " + party4Url + " with user = " + username);
 
 			URL wsdlUrl = ResourceUtils.getURL("classpath:PartyService4.wsdl");
 			PartyWebServiceFactory s = new PartyWebServiceFactory(wsdlUrl);
@@ -43,7 +43,7 @@ public abstract class AbstractPartyWebServiceTest extends WebitTest {
 				context.put(BindingProvider.USERNAME_PROPERTY, username);
 				context.put(BindingProvider.PASSWORD_PROPERTY, password);
 			}
-			context.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, party3Url);
+			context.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, party4Url);
 
 			// Désactive la validation du schéma (= ignore silencieusement les éléments inconnus), de manière à permettre l'évolution ascendante-compatible du WSDL.
 			context.put(Message.SCHEMA_VALIDATION_ENABLED, false);
