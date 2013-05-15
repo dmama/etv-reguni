@@ -195,15 +195,15 @@ public class PartyRequestHandlerV2 implements RequestHandler<PartyRequest> {
 
 	@Override
 	public ClassPathResource getRequestXSD() {
-		return new ClassPathResource("event/party/party-request-1.xsd");
+		return new ClassPathResource("event/party/party-request-2.xsd");
 	}
 
 	@Override
 	public List<ClassPathResource> getResponseXSD() {
-		return Arrays.asList(new ClassPathResource("event/party/party-response-1.xsd"),
-				new ClassPathResource("party/unireg-party-administrativeauthority-1.xsd"),
-				new ClassPathResource("party/unireg-party-corporation-1.xsd"),
-				new ClassPathResource("party/unireg-party-debtor-1.xsd"),
-				new ClassPathResource("party/unireg-party-person-1.xsd"));
+		return Arrays.asList(new ClassPathResource("event/party/party-response-2.xsd"),
+				new ClassPathResource("party/unireg-party-administrativeauthority-2.xsd"),
+				new ClassPathResource("party/unireg-party-corporation-2.xsd"),
+				new ClassPathResource("party/unireg-party-debtor-2.xsd"),
+				new ClassPathResource("party/unireg-party-person-2.xsd"));
 	}
 }
