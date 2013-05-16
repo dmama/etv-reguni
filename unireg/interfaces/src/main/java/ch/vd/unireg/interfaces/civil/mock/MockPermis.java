@@ -1,5 +1,7 @@
 package ch.vd.unireg.interfaces.civil.mock;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -11,16 +13,22 @@ public class MockPermis implements Permis {
 	private RegDate dateDebutValidite;
 	private RegDate dateFinValidite;
 	private RegDate dateAnnulation;
+	private RegDate dateValeur;
 	private TypePermis typePermis;
 
 	public MockPermis() {
 	}
 
-	public MockPermis(RegDate dateDebutValidite, RegDate dateFinValidite, RegDate dateAnnulation, TypePermis typePermis) {
+	public MockPermis(RegDate dateDebutValidite, RegDate dateFinValidite, RegDate dateAnnulation, @NotNull RegDate dateValeur, TypePermis typePermis) {
 		this.dateDebutValidite = dateDebutValidite;
 		this.dateFinValidite = dateFinValidite;
 		this.dateAnnulation = dateAnnulation;
+		this.dateValeur = dateValeur;
 		this.typePermis = typePermis;
+	}
+
+	public MockPermis(@NotNull RegDate dateDebutValidite, RegDate dateFinValidite, RegDate dateAnnulation, TypePermis typePermis) {
+		this(dateDebutValidite, dateFinValidite, dateAnnulation, dateDebutValidite, typePermis);
 	}
 
 	@Override
@@ -35,6 +43,9 @@ public class MockPermis implements Permis {
 
 	public void setDateDebutValidite(RegDate dateDebutValidite) {
 		this.dateDebutValidite = dateDebutValidite;
+		if (dateValeur == null) {
+			this.dateValeur = dateDebutValidite;
+		}
 	}
 
 	@Override
@@ -44,6 +55,19 @@ public class MockPermis implements Permis {
 
 	public void setDateFinValidite(RegDate dateFinValidite) {
 		this.dateFinValidite = dateFinValidite;
+	}
+
+	@Override
+	@NotNull
+	public RegDate getDateValeur() {
+		if (dateValeur == null) {
+			throw new NullPointerException("DateValeur should always be set");
+		}
+		return dateValeur;
+	}
+
+	public void setDateValeur(@NotNull RegDate dateValeur) {
+		this.dateValeur = dateValeur;
 	}
 
 	@Override

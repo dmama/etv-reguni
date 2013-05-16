@@ -2,6 +2,8 @@ package ch.vd.unireg.interfaces.civil.data;
 
 import java.io.Serializable;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.evd0001.v4.ResidencePermit;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
@@ -13,16 +15,18 @@ import ch.vd.uniregctb.type.TypePermis;
 
 public class PermisRCPers implements Permis, Serializable {
 
-	private static final long serialVersionUID = 1260068664890921320L;
+	private static final long serialVersionUID = 5956110285776856223L;
 
 	private final RegDate dateDebut;
 	private final RegDate dateFin;
 	private final RegDate dateAnnulation;
+	private final RegDate dateValeur;
 	private final TypePermis typePermis;
 
 	public PermisRCPers(ResidencePermit permit) {
 		this.dateDebut = XmlUtils.xmlcal2regdate(permit.getResidencePermitValidFrom());
 		this.dateFin = XmlUtils.xmlcal2regdate(permit.getResidencePermitTill());
+		this.dateValeur = XmlUtils.xmlcal2regdate(permit.getReportingDate());
 		DateRangeHelper.assertValidRange(dateDebut, dateFin, ServiceCivilException.class);
 		this.dateAnnulation = null; // les permis annulés ne sont pas exposés par RCPers
 		this.typePermis = TypePermis.getFromEvd(permit.getResidencePermit());
@@ -48,6 +52,12 @@ public class PermisRCPers implements Permis, Serializable {
 	@Override
 	public RegDate getDateFin() {
 		return dateFin;
+	}
+
+	@NotNull
+	@Override
+	public RegDate getDateValeur() {
+		return dateValeur;
 	}
 
 	@Override

@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -15,22 +16,31 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 
-public abstract class PermisListBase implements PermisList, Serializable {
+public class PermisListImpl implements PermisList, Serializable {
 
-	private static final long serialVersionUID = 7962307714373650485L;
+	private static final long serialVersionUID = 5377477549461551838L;
+
+	protected static final Comparator<Permis> COMPARATOR_PERMIS = new Comparator<Permis>() {
+		@Override
+		public int compare(Permis o1, Permis o2) {
+			return NullDateBehavior.EARLIEST.compare(o1.getDateValeur(), o2.getDateValeur());
+		}
+	};
 
 	final private List<Permis> list;
 
-	protected PermisListBase(List<Permis> list) {
+	public PermisListImpl(List<Permis> list) {
 		this.list = new ArrayList<>(list);
 		sort(this.list);
 	}
 
-	protected PermisListBase() {
+	public PermisListImpl() {
 		this(Collections.<Permis>emptyList());
 	}
 
-	protected abstract void sort(List<Permis> list);
+	protected void sort(List<Permis> list) {
+		Collections.sort(list, COMPARATOR_PERMIS);
+	}
 
 	@Override
 	public boolean add(Permis o) {
@@ -46,14 +56,14 @@ public abstract class PermisListBase implements PermisList, Serializable {
 	}
 
 	@Override
-	public boolean addAll(Collection<? extends Permis> c) {
+	public boolean addAll(@NotNull Collection<? extends Permis> c) {
 		boolean res = list.addAll(c);
 		sort(list);
 		return res;
 	}
 
 	@Override
-	public boolean addAll(int index, Collection<? extends Permis> c) {
+	public boolean addAll(int index, @NotNull Collection<? extends Permis> c) {
 		boolean res = list.addAll(index, c);
 		sort(list);
 		return res;
@@ -70,7 +80,7 @@ public abstract class PermisListBase implements PermisList, Serializable {
 	}
 
 	@Override
-	public boolean containsAll(Collection<?> c) {
+	public boolean containsAll(@NotNull Collection<?> c) {
 		return list.containsAll(c);
 	}
 
@@ -89,6 +99,7 @@ public abstract class PermisListBase implements PermisList, Serializable {
 		return list.isEmpty();
 	}
 
+	@NotNull
 	@Override
 	public Iterator<Permis> iterator() {
 		return list.iterator();
@@ -99,11 +110,13 @@ public abstract class PermisListBase implements PermisList, Serializable {
 		return list.lastIndexOf(o);
 	}
 
+	@NotNull
 	@Override
 	public ListIterator<Permis> listIterator() {
 		return list.listIterator();
 	}
 
+	@NotNull
 	@Override
 	public ListIterator<Permis> listIterator(int index) {
 		return list.listIterator(index);
@@ -124,14 +137,14 @@ public abstract class PermisListBase implements PermisList, Serializable {
 	}
 
 	@Override
-	public boolean removeAll(Collection<?> c) {
+	public boolean removeAll(@NotNull Collection<?> c) {
 		boolean res = list.removeAll(c);
 		sort(list);
 		return res;
 	}
 
 	@Override
-	public boolean retainAll(Collection<?> c) {
+	public boolean retainAll(@NotNull Collection<?> c) {
 		boolean res = list.retainAll(c);
 		sort(list);
 		return res;
@@ -163,7 +176,7 @@ public abstract class PermisListBase implements PermisList, Serializable {
 
 	@NotNull
 	@Override
-	public <T> T[] toArray(T[] a) {
+	public <T> T[] toArray(@NotNull T[] a) {
 		return list.toArray(a);
 	}
 

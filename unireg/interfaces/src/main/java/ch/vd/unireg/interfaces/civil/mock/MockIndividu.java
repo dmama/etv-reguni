@@ -24,6 +24,7 @@ import ch.vd.unireg.interfaces.civil.data.Nationalite;
 import ch.vd.unireg.interfaces.civil.data.Origine;
 import ch.vd.unireg.interfaces.civil.data.Permis;
 import ch.vd.unireg.interfaces.civil.data.PermisList;
+import ch.vd.unireg.interfaces.civil.data.PermisListImpl;
 import ch.vd.unireg.interfaces.civil.data.RelationVersIndividu;
 import ch.vd.unireg.interfaces.civil.data.RelationVersIndividuImpl;
 import ch.vd.unireg.interfaces.civil.data.StatutIndividu;
@@ -115,7 +116,7 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 		}
 		if (permis != null) {
 			final List<Permis> limited = CollectionLimitator.limit(permis, date, CollectionLimitator.PERMIS_LIMITATOR);
-			permis = (limited == null ? null : new MockPermisList(limited));
+			permis = (limited == null ? null : new PermisListImpl(limited));
 		}
 	}
 
@@ -379,7 +380,7 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 	}
 
 	public void setPermis(Permis... permis) {
-		this.permis = new MockPermisList(Arrays.asList(permis));
+		this.permis = new PermisListImpl(Arrays.asList(permis));
 	}
 
 	@Override

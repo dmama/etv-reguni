@@ -250,7 +250,7 @@ public class IndividuRCPers implements Individu, Serializable {
 		}
 		if (permis != null) {
 			final List<Permis> limited = CollectionLimitator.limit(permis, date, CollectionLimitator.PERMIS_LIMITATOR);
-			permis = (limited == null ? null : new PermisListRcPers(limited));
+			permis = (limited == null ? null : new PermisListImpl(limited));
 		}
 		if (nationalites != null) {
 			nationalites = CollectionLimitator.limit(nationalites, date, CollectionLimitator.NATIONALITE_LIMITATOR);
@@ -364,14 +364,14 @@ public class IndividuRCPers implements Individu, Serializable {
 		return list;
 	}
 
-	private static PermisListRcPers initPermis(ResidencePermit permis) {
+	private static PermisList initPermis(ResidencePermit permis) {
 		if (permis == null) {
 			return null;
 		}
-		return new PermisListRcPers(Arrays.asList(PermisRCPers.get(permis)));
+		return new PermisListImpl(Arrays.asList(PermisRCPers.get(permis)));
 	}
 
-	private static PermisListRcPers initPermis(List<ResidencePermit> permis) {
+	private static PermisList initPermis(List<ResidencePermit> permis) {
 		if (permis == null) {
 			return null;
 		}
@@ -379,7 +379,7 @@ public class IndividuRCPers implements Individu, Serializable {
 		for (ResidencePermit p : permis) {
 			list.add(PermisRCPers.get(p));
 		}
-		return new PermisListRcPers(list);
+		return new PermisListImpl(list);
 	}
 
 	private static EtatCivilList initEtatsCivils(MaritalData maritalStatus) {

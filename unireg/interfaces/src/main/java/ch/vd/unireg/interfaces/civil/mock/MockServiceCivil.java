@@ -32,6 +32,7 @@ import ch.vd.unireg.interfaces.civil.data.Origine;
 import ch.vd.unireg.interfaces.civil.data.Pays;
 import ch.vd.unireg.interfaces.civil.data.Permis;
 import ch.vd.unireg.interfaces.civil.data.PermisList;
+import ch.vd.unireg.interfaces.civil.data.PermisListImpl;
 import ch.vd.unireg.interfaces.civil.data.RelationVersIndividu;
 import ch.vd.unireg.interfaces.civil.data.RelationVersIndividuImpl;
 import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
@@ -173,7 +174,7 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 		individu.setParents(new ArrayList<RelationVersIndividu>());
 
 		// Permis
-		individu.setPermis(new MockPermisList());
+		individu.setPermis(new PermisListImpl());
 
 		return individu;
 	}
