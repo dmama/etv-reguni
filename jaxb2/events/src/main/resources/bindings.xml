@@ -224,6 +224,15 @@
 		</jxb:bindings>
 	</jxb:bindings>
 
+	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/creation-nonhabitant-request-2.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.xml.event.party.nonresident.v2" />
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="cnr-req-2" />
+		</jxb:bindings>
+	</jxb:bindings>
+
 	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/creation-nonhabitant-reponse-1.xsd">
 		<jxb:schemaBindings>
 			<jxb:package name="ch.vd.unireg.xml.event.party.nonresident.v1" />
