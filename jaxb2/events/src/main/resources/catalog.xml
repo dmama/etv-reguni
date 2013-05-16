@@ -21,6 +21,7 @@
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/creation-nonhabitant-request-1.xsd" uri="event/party/create-nonresident-request-1.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/creation-nonhabitant-request-2.xsd" uri="event/party/create-nonresident-request-2.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/creation-nonhabitant-reponse-1.xsd" uri="event/party/create-nonresident-response-1.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/creation-nonhabitant-reponse-2.xsd" uri="event/party/create-nonresident-response-2.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/taxliab-common-1.xsd" uri="event/party/taxliab-common-1.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/aperiodic-taxliab-request-1.xsd" uri="event/party/aperiodic-taxliab-request-1.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/aperiodic-taxliab-response-1.xsd" uri="event/party/aperiodic-taxliab-response-1.xsd"/>
