@@ -7,8 +7,8 @@ import org.springframework.core.io.ClassPathResource;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.unireg.xml.common.v1.UserLogin;
-import ch.vd.unireg.xml.event.party.nonresident.v1.CreateNonresidentResponse;
 import ch.vd.unireg.xml.event.party.nonresident.v2.CreateNonresidentRequest;
+import ch.vd.unireg.xml.event.party.nonresident.v2.CreateNonresidentResponse;
 import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
 import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
@@ -75,6 +75,6 @@ public class CreateNonresidentRequestHandlerV2 implements RequestHandler<CreateN
 
 	@Override
 	public List<ClassPathResource> getResponseXSD() {
-		return Arrays.asList(new ClassPathResource("event/party/create-nonresident-response-1.xsd"));
+		return Arrays.asList(new ClassPathResource("event/party/create-nonresident-response-2.xsd"));
 	}
 }
