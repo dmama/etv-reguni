@@ -30,12 +30,12 @@ import static org.junit.Assert.fail;
  */
 public class PartyCreateNonresidentRequestEsbHandlerItTest extends PartyRequestEsbHandlerItTest {
 
-	private CreateNonresidentRequestHandler handler;
+	private CreateNonresidentRequestHandlerV1 handler;
 
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
-		handler = getBean(CreateNonresidentRequestHandler.class, "createNonresidentRequestHandler");
+		handler = getBean(CreateNonresidentRequestHandlerV1.class, "createNonresidentRequestHandler");
 	}
 
 	@Override

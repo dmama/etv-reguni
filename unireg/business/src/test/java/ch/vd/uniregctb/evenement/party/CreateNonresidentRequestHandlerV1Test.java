@@ -28,16 +28,16 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-public class CreateNonresidentRequestHandlerTest extends BusinessTest {
+public class CreateNonresidentRequestHandlerV1Test extends BusinessTest {
 	
-	private CreateNonresidentRequestHandler handler;
+	private CreateNonresidentRequestHandlerV1 handler;
 	private static final UserLogin USER_LOGIN = new UserLogin("USER", 22);
 
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 
-		handler = new CreateNonresidentRequestHandler();
+		handler = new CreateNonresidentRequestHandlerV1();
 		handler.setHibernateTemplate(hibernateTemplate);
 	}
 

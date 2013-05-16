@@ -86,7 +86,7 @@
 		<property name="periodeImpositionService" ref="periodeImpositionService" />
 	</bean>
 
-	<bean id="createNonresidentRequestHandler" class="ch.vd.uniregctb.evenement.party.CreateNonresidentRequestHandler">
+	<bean id="createNonresidentRequestHandler" class="ch.vd.uniregctb.evenement.party.CreateNonresidentRequestHandlerV1">
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 	</bean>
 

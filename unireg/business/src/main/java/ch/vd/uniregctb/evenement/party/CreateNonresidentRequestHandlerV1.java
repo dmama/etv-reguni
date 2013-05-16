@@ -21,7 +21,7 @@ import ch.vd.uniregctb.xml.DataHelper;
 import ch.vd.uniregctb.xml.EnumHelper;
 import ch.vd.uniregctb.xml.ServiceException;
 
-public class CreateNonresidentRequestHandler implements RequestHandler<CreateNonresidentRequest> {
+public class CreateNonresidentRequestHandlerV1 implements RequestHandler<CreateNonresidentRequest> {
 
 	private HibernateTemplate hibernateTemplate;
 
