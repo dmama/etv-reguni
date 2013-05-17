@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- edited with XMLSpy v2005 sp1 U (http://www.xmlspy.com) by Christophe Ollivier (Etat de Vaud) -->
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.vd.ch/fiscalite/registre/identification/contribuable/2"
-		   targetNamespace="http://www.vd.ch/fiscalite/registre/identification/contribuable/2"
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.vd.ch/fiscalite/registre/identification/contribuable/request/2"
+		   targetNamespace="http://www.vd.ch/fiscalite/registre/identification/contribuable/request/2"
 		   elementFormDefault="qualified" attributeFormDefault="unqualified">
 
 	<xs:element name="identificationContribuableRequest" type="identificationContribuableRequestType" />
