@@ -25,12 +25,18 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
-import org.quartz.CronTrigger;
+import org.quartz.CronScheduleBuilder;
+import org.quartz.JobBuilder;
+import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
+import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
+import org.quartz.SimpleScheduleBuilder;
 import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
+import org.quartz.TriggerBuilder;
+import org.quartz.TriggerKey;
 import org.quartz.UnableToInterruptJobException;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -70,6 +76,7 @@ public class BatchSchedulerImpl implements BatchScheduler, InitializingBean, Dis
 		if (timeoutOnStopAll <= 0) {
 			throw new IllegalArgumentException("La valeur du timeout (minutes) doit être strictement positive");
 		}
+		scheduler.getListenerManager().addJobListener(UniregJobListener.INSTANCE);
 	}
 
 	public void setStatsService(StatsService statsService) {
@@ -120,7 +127,6 @@ public class BatchSchedulerImpl implements BatchScheduler, InitializingBean, Dis
 		}
 
 		jobs.put(jobName, job);
-		scheduler.addJobListener(new UniregJobListener(job));
 		statsService.registerJobMonitor(jobName, new JobMonitorImpl(job));
 		LOGGER.info("Job <" + jobName +"> added.");
 	}
@@ -152,7 +158,11 @@ public class BatchSchedulerImpl implements BatchScheduler, InitializingBean, Dis
 
 		AuthenticationHelper.pushPrincipal("[cron]");
 		try {
-			final Trigger trigger = new CronTrigger("CronTrigger-" + job.getName(), Scheduler.DEFAULT_GROUP, cronExpression);
+			final Trigger trigger = TriggerBuilder.newTrigger()
+					.withSchedule(CronScheduleBuilder.cronSchedule(cronExpression))
+					.withIdentity(new TriggerKey("CronTrigger-" + job.getName(), Scheduler.DEFAULT_GROUP))
+					.forJob(new JobKey(job.getName(), Scheduler.DEFAULT_GROUP))
+					.build();
 			scheduleJob(job, params, trigger);
 		}
 		finally {
@@ -163,10 +173,10 @@ public class BatchSchedulerImpl implements BatchScheduler, InitializingBean, Dis
 	@Override
 	public void destroy() throws Exception {
 		for (String jobName : jobs.keySet()) {
-			scheduler.removeJobListener(jobName);
 			statsService.unregisterJobMonitor(jobName);
 		}
 		jobs.clear();
+		scheduler.getListenerManager().removeJobListener(UniregJobListener.INSTANCE.getName());
 	}
 
 	/**
@@ -198,8 +208,6 @@ public class BatchSchedulerImpl implements BatchScheduler, InitializingBean, Dis
 
 		// Création du lien entre le trigger et le détails du job
 		registerJobDetailsIfNeeded(job);
-		trigger.setJobName(job.getName());
-		trigger.setJobGroup(Scheduler.DEFAULT_GROUP);
 
 		// Ajout du trigger
 		scheduler.scheduleJob(trigger);
@@ -207,17 +215,20 @@ public class BatchSchedulerImpl implements BatchScheduler, InitializingBean, Dis
 
 	private void registerJobDetailsIfNeeded(JobDefinition job) throws SchedulerException {
 
-		JobDetail jobDetail = scheduler.getJobDetail(job.getName(), Scheduler.DEFAULT_GROUP);
+		final JobKey jobKey = new JobKey(job.getName(), Scheduler.DEFAULT_GROUP);
+		JobDetail jobDetail = scheduler.getJobDetail(jobKey);
 		if (jobDetail == null) {
-
-			jobDetail = new JobDetail(job.getName(), Scheduler.DEFAULT_GROUP, JobStarter.class);
-			jobDetail.setDurability(true); // garde les détails du job après exécution
 
 			final Authentication auth = AuthenticationHelper.getAuthentication();
 			Assert.notNull(auth);
 
-			jobDetail.getJobDataMap().put(JobDefinition.KEY_JOB, job);
-			jobDetail.addJobListener(job.getName());
+			final JobDataMap map = new JobDataMap();
+			map.put(JobDefinition.KEY_JOB, job);
+			jobDetail = JobBuilder.newJob(JobStarter.class)
+					.withIdentity(jobKey)
+					.storeDurably(true)
+					.usingJobData(map)
+					.build();
 
 			scheduler.addJob(jobDetail, false);
 		}
@@ -233,8 +244,13 @@ public class BatchSchedulerImpl implements BatchScheduler, InitializingBean, Dis
 			throw new JobAlreadyStartedException();
 		}
 
-		// Construction d'un trigger qui se déclanche tout de suite
-		final SimpleTrigger trigger = new SimpleTrigger(String.format("%s-%s-%d", IMMEDIATE_TRIGGER, job.getName(), triggerCount.incrementAndGet()), Scheduler.DEFAULT_GROUP);
+		// Construction d'un trigger qui se déclenche tout de suite
+		final SimpleTrigger trigger = TriggerBuilder.newTrigger()
+				.withIdentity(new TriggerKey(String.format("%s-%s-%d", IMMEDIATE_TRIGGER, job.getName(), triggerCount.incrementAndGet()), Scheduler.DEFAULT_GROUP))
+				.withSchedule(SimpleScheduleBuilder.simpleSchedule())
+				.forJob(new JobKey(job.getName(), Scheduler.DEFAULT_GROUP))
+				.startNow()
+				.build();
 		final Date scheduledDate = new Date();
 		scheduleJob(job, params, trigger);
 
@@ -355,10 +371,10 @@ public class BatchSchedulerImpl implements BatchScheduler, InitializingBean, Dis
 			final String name = job.getName();
 			LOGGER.info("Job <" + name + "> will be interrupted...");
 			try {
-				scheduler.interrupt(name, Scheduler.DEFAULT_GROUP);
+				scheduler.interrupt(new JobKey(name, Scheduler.DEFAULT_GROUP));
 			}
 			catch (UnableToInterruptJobException e) {
-				throw new SchedulerException("Unable to interrup job", e);
+				throw new SchedulerException("Unable to interrupt job", e);
 			}
 
 		}

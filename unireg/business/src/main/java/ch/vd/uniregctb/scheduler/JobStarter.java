@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.scheduler;
 
-import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.quartz.InterruptableJob;
@@ -11,46 +11,36 @@ import org.quartz.JobExecutionException;
 import org.quartz.UnableToInterruptJobException;
 import org.springframework.security.core.Authentication;
 
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 
 public class JobStarter implements Job, InterruptableJob {
 
 	private final Logger LOGGER = Logger.getLogger(JobStarter.class);
 
-	private Authentication authentication;
-	private JobDefinition job;
-
-	/**
-	 * Initialise le context de sécurité avec les rôles donnés en paramètres
-	 */
-	private void initializeSecurityContext() {
-		Assert.notNull(authentication, "L'authentification en peut pas être nulle");
-		AuthenticationHelper.setAuthentication(authentication);
-	}
-
-	protected void terminate() throws Exception {
-		AuthenticationHelper.resetAuthentication();
-	}
+	private volatile JobDefinition job;
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public void execute(JobExecutionContext ctxt) throws JobExecutionException {
 
-		final JobDataMap jobData = ctxt.getJobDetail().getJobDataMap();
-		final JobDataMap triggerData = ctxt.getTrigger().getJobDataMap();
+		final JobDataMap dataMap = ctxt.getMergedJobDataMap();
+		final Authentication authentication = (Authentication) dataMap.get(JobDefinition.KEY_AUTH);
+		final Map<String, Object> params = (Map<String, Object>) dataMap.get(JobDefinition.KEY_PARAMS);
 
-		job = (JobDefinition) jobData.get(JobDefinition.KEY_JOB);
-		authentication = (Authentication) triggerData.get(JobDefinition.KEY_AUTH);
-		final HashMap<String, Object> params = (HashMap<String, Object>) triggerData.get(JobDefinition.KEY_PARAMS);
+		job = (JobDefinition) dataMap.get(JobDefinition.KEY_JOB);
+		try {
+			executeJob(authentication, params);
+		}
+		finally {
+			job = null;
+		}
+	}
 
+	private void executeJob(Authentication authentication, Map<String, Object> params) {
 		final String initialThreadName = Thread.currentThread().getName();
-
 		try {
 			// on donne le nom du job au thread d'exécution, de manière à le repérer plus facilement
 			Thread.currentThread().setName(job.getName());
-
-			job.initialize();
 
 			if (!job.isLogDisabled()) {
 				if (params == null || params.isEmpty()) {
@@ -60,16 +50,20 @@ public class JobStarter implements Job, InterruptableJob {
 					LOGGER.info("Démarrage du job <" + job.getName() + "> avec les paramètres " + params.toString());
 				}
 			}
-			initializeSecurityContext();
 
+			AuthenticationHelper.setAuthentication(authentication);
 			try {
-				job.execute(params);
+				job.initialize();
+				try {
+					job.execute(params);
+				}
+				finally {
+					job.terminate();
+				}
 			}
 			finally {
-				job.terminate();
+				AuthenticationHelper.resetAuthentication();
 			}
-
-			terminate();
 		}
 		catch (Exception e) {
 			LOGGER.error("Job <" + job.getName() + "> exception: " + e.getMessage(), e);

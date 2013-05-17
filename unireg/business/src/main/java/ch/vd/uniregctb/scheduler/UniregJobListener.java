@@ -7,21 +7,19 @@ import org.quartz.JobListener;
 
 public class UniregJobListener implements JobListener {
 
+	public static final UniregJobListener INSTANCE = new UniregJobListener();
+
+	private static final String NAME = "JobListener";
 	private static final Logger LOGGER = Logger.getLogger(UniregJobListener.class);
-
-	private final JobDefinition job;
-
-	public UniregJobListener(JobDefinition job) {
-		this.job = job;
-	}
 
 	@Override
 	public String getName() {
-		return job.getName();
+		return NAME;
 	}
 
 	@Override
 	public void jobExecutionVetoed(JobExecutionContext context) {
+		final JobDefinition job = getJobDefinition(context);
 		if (!job.isLogDisabled()) {
 			LOGGER.info("Job <" + getName() + "> execution is VETOED");
 		}
@@ -30,6 +28,7 @@ public class UniregJobListener implements JobListener {
 
 	@Override
 	public void jobToBeExecuted(JobExecutionContext context) {
+		final JobDefinition job = getJobDefinition(context);
 		if (!job.isLogDisabled()) {
 			LOGGER.info("Job <" + getName() + "> is to be executed");
 		}
@@ -38,10 +37,14 @@ public class UniregJobListener implements JobListener {
 
 	@Override
 	public void jobWasExecuted(JobExecutionContext context, JobExecutionException jobException) {
+		final JobDefinition job = getJobDefinition(context);
 		job.wasExecuted();
 		if (!job.isLogDisabled()) {
 			LOGGER.info("Job <" + getName() + "> is now stopped with status " + job.getStatut());
 		}
 	}
 
+	private static JobDefinition getJobDefinition(JobExecutionContext context) {
+		return (JobDefinition) context.getMergedJobDataMap().get(JobDefinition.KEY_JOB);
+	}
 }
