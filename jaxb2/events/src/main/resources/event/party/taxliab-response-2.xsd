@@ -4,15 +4,10 @@
 		   xmlns="http://www.vd.ch/fiscalite/unireg/event/party/taxliab-response/2" xmlns:xs="http://www.w3.org/2001/XMLSchema"
 		   xmlns:response="http://www.vd.ch/fiscalite/unireg/event/party/response/1"
 		   xmlns:common="http://www.vd.ch/fiscalite/unireg/common/1"
-		   xmlns:taxresidence="http://www.vd.ch/fiscalite/unireg/party/taxresidence/1"
-		   xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0"
-		   xmlns:taxliab-common="http://www.vd.ch/fiscalite/unireg/event/party/taxliab-common/2">
+		   xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0">
 
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/party/response/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/response-1.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/unireg-common-1.xsd" />
-	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/taxresidence/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-taxresidence-1.xsd" />
-	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/party/taxliab-common/2"
-			   schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/taxliab-common-2.xsd" />
 
 	<xs:element name="taxLiabilityResponse" type="taxLiabilityResponseType"/>
 
@@ -64,17 +59,17 @@
 					<xs:documentation>Tiers non assujetti sans ménage commun</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="noTaxLiableCommonHouseholds" type="failureWithInfoType">
+			<xs:element name="noTaxLiableCommonHouseholds" type="commonHouseholdInfoType">
 				<xs:annotation>
 					<xs:documentation>Tiers non assujetti avec ménages communs non assujettis.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="taxLiableCommonHouseholds" type="failureWithInfoType">
+			<xs:element name="multipleTaxLiableCommonHouseholds" type="commonHouseholdInfoType">
 				<xs:annotation>
 					<xs:documentation>Tiers non assujetti avec plusieurs ménages communs assujettis sur la période.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="minorTaxPayer" type="failureWithInfoType">
+			<xs:element name="noTaxLiableMinorTaxPayer" type="minorInfoType">
 				<xs:annotation>
 					<xs:documentation>Tiers mineur non assujetti sans parents assujettis.</xs:documentation>
 				</xs:annotation>
@@ -82,18 +77,17 @@
 		</xs:choice>
 	</xs:complexType>
 
-	<xs:complexType name="failureWithInfoType">
+	<xs:complexType name="commonHouseholdInfoType">
 		<xs:annotation>
 			<xs:appinfo>
 				<jxb:class>
-					<jxb:javadoc>Cas d'échec devant retourner une information comme les numéros de ménages communs trouvés ou les numéros de
-						parents dans le cas de tiers mineur.
+					<jxb:javadoc>Cas d'échec devant retourner une information sur les numéros de ménages communs trouvés pour le tiers qui est analysé.
 					</jxb:javadoc>
 				</jxb:class>
 			</xs:appinfo>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="commonHouseholdPartyNumber" type="common:partyNumberType" minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="commonHouseholdPartyNumber" type="common:partyNumberType" minOccurs="1" maxOccurs="unbounded">
 				<xs:annotation>
 					<xs:appinfo>
 						<jxb:property>
@@ -102,11 +96,34 @@
 					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="minorInfoType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Cas d'échec devant retourner une information comme les numéros de ménages communs des parents trouvés ou les numéros de
+						parents.
+					</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="commonHouseholdParentPartyNumber" type="common:partyNumberType" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Le numéro de tiers du ménage commun des parents</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
 			<xs:element name="parentPartyNumber" type="common:partyNumberType" minOccurs="0" maxOccurs="unbounded">
 				<xs:annotation>
 					<xs:appinfo>
 						<jxb:property>
-							<jxb:javadoc>Le numéro de tiers des parents trouvé</jxb:javadoc>
+							<jxb:javadoc>Le numéro de tiers des parents </jxb:javadoc>
 						</jxb:property>
 					</xs:appinfo>
 				</xs:annotation>
