@@ -9,7 +9,7 @@
 
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/party/request/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/request-1.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/unireg-common-1.xsd" />
-	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/party/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-1.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/party/2" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-2.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/party/taxliab-common/2"
 			   schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/taxliab-common-2.xsd" />
 
@@ -35,20 +35,20 @@
 							</xs:appinfo>
 						</xs:annotation>
 					</xs:element>
-					<xs:element name="searchCommonHouseHold" type="xs:boolean">
+					<xs:element name="searchCommonHouseHolds" type="xs:boolean">
 						<xs:annotation>
 							<xs:appinfo>
 								<jxb:property>
-									<jxb:javadoc>Recherche du ménage commun.</jxb:javadoc>
+									<jxb:javadoc>Recherche de ménages communs.</jxb:javadoc>
 								</jxb:property>
 							</xs:appinfo>
 						</xs:annotation>
 					</xs:element>
-					<xs:element name="searchParent" type="xs:boolean">
+					<xs:element name="searchParents" type="xs:boolean">
 						<xs:annotation>
 							<xs:appinfo>
 								<jxb:property>
-									<jxb:javadoc>Recherche du parent.</jxb:javadoc>
+									<jxb:javadoc>Recherche de parents.</jxb:javadoc>
 								</jxb:property>
 							</xs:appinfo>
 						</xs:annotation>

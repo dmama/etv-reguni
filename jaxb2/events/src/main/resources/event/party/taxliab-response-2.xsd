@@ -36,7 +36,7 @@
 							</xs:appinfo>
 						</xs:annotation>
 					</xs:element>
-					<xs:element name="echec" type="echecType">
+					<xs:element name="failure" type="failureType">
 						<xs:annotation>
 							<xs:appinfo>
 								<jxb:property>
@@ -52,9 +52,9 @@
 	</xs:complexType>
 
 
-	<xs:complexType name="echecType">
+	<xs:complexType name="failureType">
 		<xs:choice>
-			<xs:element name="noTaxLiabitity">
+			<xs:element name="noTaxLiability">
 				<xs:annotation>
 					<xs:documentation>Numéro de tiers fourni non assujetti.</xs:documentation>
 				</xs:annotation>
@@ -64,30 +64,30 @@
 					<xs:documentation>Tiers non assujetti sans ménage commun</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="commonHouseholdNoTax" type="echecWithInfoType">
+			<xs:element name="noTaxLiableCommonHouseholds" type="failureWithInfoType">
 				<xs:annotation>
-					<xs:documentation>Tiers non assujetti avec ménage(s) commun(s) non assujetti(s).</xs:documentation>
+					<xs:documentation>Tiers non assujetti avec ménages communs non assujettis.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="commonHouseholdWithTax" type="echecWithInfoType">
+			<xs:element name="taxLiableCommonHouseholds" type="failureWithInfoType">
 				<xs:annotation>
-					<xs:documentation>Tiers non assujetti avec plusieurs MC assujettis sur la période.</xs:documentation>
+					<xs:documentation>Tiers non assujetti avec plusieurs ménages communs assujettis sur la période.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="minorPayer" type="echecWithInfoType">
+			<xs:element name="minorTaxPayer" type="failureWithInfoType">
 				<xs:annotation>
-					<xs:documentation>Tiers mineur non assujetti sans parent(s) assujetti(s).</xs:documentation>
+					<xs:documentation>Tiers mineur non assujetti sans parents assujettis.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 		</xs:choice>
 	</xs:complexType>
 
-	<xs:complexType name="echecWithInfoType">
+	<xs:complexType name="failureWithInfoType">
 		<xs:annotation>
 			<xs:appinfo>
 				<jxb:class>
-					<jxb:javadoc>Cas d'échec devant retourner une information comme les numéros de ménage commun trouvés ou les numéros de
-						parent dans le cas de tiers mineur.
+					<jxb:javadoc>Cas d'échec devant retourner une information comme les numéros de ménages communs trouvés ou les numéros de
+						parents dans le cas de tiers mineur.
 					</jxb:javadoc>
 				</jxb:class>
 			</xs:appinfo>

@@ -7,7 +7,7 @@
 		   xmlns:taxliab-request= "http://www.vd.ch/fiscalite/unireg/event/party/taxliab-request/2">
 
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/unireg-common-1.xsd" />
-	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/party/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-1.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/party/2" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-2.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/party/taxliab-request/2"
 			   schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/taxliab-request-2.xsd" />
 

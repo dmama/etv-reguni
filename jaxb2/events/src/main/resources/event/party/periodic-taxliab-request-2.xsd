@@ -9,7 +9,7 @@
 
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/party/request/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/request-1.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/unireg-common-1.xsd" />
-	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/party/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-1.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/party/2" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-2.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/party/taxliab-common/2"
 			   schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/taxliab-common-2.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/party/taxliab-request/2"
@@ -30,7 +30,7 @@
 		<xs:complexContent>
 			<xs:extension base="taxliab-request:taxLiabilityRequestType">
 				<xs:sequence>
-						<xs:element name="range" type="common:rangeType">
+						<xs:element name="fiscalPeriod" type="common:yearType">
 							<xs:annotation>
 								<xs:appinfo>
 									<jxb:property>
