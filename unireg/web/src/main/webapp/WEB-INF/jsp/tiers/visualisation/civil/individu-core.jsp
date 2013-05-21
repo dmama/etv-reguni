@@ -133,11 +133,25 @@
 		</td>
 	</tr>
 	<tr class="<unireg:nextRowClass/>" >
-		<td><fmt:message key="label.nationalite" />&nbsp;:</td>
+		<td><fmt:message key="label.nationalites" />&nbsp;:</td>
 		<td>
-			<c:set var="bind" value="command.${param.path}.nationalite" scope="request"/>
-			<spring:bind path="${bind}" >		
-				<c:out value="${status.value}"/>
+			<c:set var="bind" value="command.${param.path}.nationalites" scope="request"/>
+			<spring:bind path="${bind}" >
+				<c:if test="${not empty status.value}">
+					<display:table 	name="${status.value}" id="row" pagesize="10">
+						<display:column titleKey="label.pays" >
+							<c:out value="${row.pays}"/>
+						</display:column>
+						<display:column titleKey="label.date.debut.validite" >
+							<unireg:regdate regdate="${row.dateDebut}" />
+						</display:column>
+						<display:column titleKey="label.date.fin.validite" >
+							<unireg:regdate regdate="${row.dateFin}" />
+						</display:column>
+						<display:setProperty name="paging.banner.all_items_found" value=""/>
+						<display:setProperty name="paging.banner.one_item_found" value=""/>
+					</display:table>
+				</c:if>
 			</spring:bind>
 		</td>
 	</tr>
@@ -151,10 +165,10 @@
 						<display:column titleKey="label.type" >
 							<fmt:message key="option.type.permis.${row.typePermis}"/>
 						</display:column>
-						<display:column titleKey="label.date.debut.validite.permis" >
+						<display:column titleKey="label.date.debut.validite" >
 							<unireg:regdate regdate="${row.dateDebutValidite}" />
 						</display:column>
-						<display:column titleKey="label.date.fin.validite.permis" >
+						<display:column titleKey="label.date.fin.validite" >
 							<unireg:regdate regdate="${row.dateFinValidite}" />
 						</display:column>
 						<display:setProperty name="paging.banner.all_items_found" value=""/>

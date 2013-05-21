@@ -23,7 +23,7 @@ public class IdentificationIndividuTooltipView {
 	private String numeroAssureSocial;
 	private String ancienNumeroAVS;
 	private String numeroRCE;
-	private String nationalite;
+	private String nationalites;
 
 	public IdentificationIndividuTooltipView() {
 	}
@@ -51,10 +51,10 @@ public class IdentificationIndividuTooltipView {
 					}
 					b.append(nat.getPays().getNomCourt());
 				}
-				this.nationalite = b.toString();
+				this.nationalites = b.toString();
 			}
 			else {
-				this.nationalite = null;
+				this.nationalites = null;
 			}
 		}
 	}
@@ -103,7 +103,7 @@ public class IdentificationIndividuTooltipView {
 		return numeroRCE;
 	}
 
-	public String getNationalite() {
-		return nationalite;
+	public String getNationalites() {
+		return nationalites;
 	}
 }
