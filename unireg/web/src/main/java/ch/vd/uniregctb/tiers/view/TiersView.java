@@ -182,6 +182,14 @@ public class TiersView {
 		this.individuConjoint = individuConjoint;
 	}
 
+	public boolean isWithCanceledIndividu() {
+		return isCanceledIndividu(individu) || isCanceledIndividu(individuConjoint);
+	}
+
+	private static boolean isCanceledIndividu(IndividuView view) {
+		return view != null && view.isCanceled();
+	}
+
 	public List<AdresseView> getHistoriqueAdresses() {
 		return historiqueAdresses;
 	}

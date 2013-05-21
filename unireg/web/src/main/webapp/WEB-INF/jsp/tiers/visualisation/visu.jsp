@@ -74,7 +74,14 @@
 				<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
 					<c:if test="${command.natureTiers != 'DebiteurPrestationImposable'}">
 						<li id="civilTab">
-							<a href="#tabContent_civilTab"><fmt:message key="label.civil" /></a>
+							<a href="#tabContent_civilTab">
+								<fmt:message key="label.civil"/>
+								<authz:authorize ifAnyGranted="ROLE_MODIF_VD_ORD">
+									<c:if test="${command.withCanceledIndividu}">
+										<span class="ongletCivilAvecIndividuAnnule" title="<fmt:message key="label.individu.annule.tooltip"/>">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+									</c:if>
+								</authz:authorize>
+							</a>
 						</li>
 					</c:if>
 				</authz:authorize>
