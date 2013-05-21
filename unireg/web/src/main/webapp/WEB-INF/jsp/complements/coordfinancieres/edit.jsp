@@ -29,7 +29,7 @@
 					<tr class="<unireg:nextRowClass/>" >
 						<td width="30%"><fmt:message key="label.complement.numeroCompteBancaire" />&nbsp;:</td>
 						<td width="70%">
-							<form:input path="iban" cssErrorClass="input-with-errors" size ="${lengthnumcompte}" maxlength="${lengthnumcompte}"/>
+							<form:input path="iban" cssErrorClass="input-with-errors" size ="${lengthnumcompte}" tabindex="1" maxlength="${lengthnumcompte}"/>
 							<span class="jTip formInfo" title="<c:url value="/htm/iban.htm?width=375"/>" id="tipIban">?</span>
 							<form:errors path="iban" cssClass="error"/>
 						</td>
@@ -37,7 +37,7 @@
 					<tr class="<unireg:nextRowClass/>" >
 						<td><fmt:message key="label.complement.titulaireCompte" />&nbsp;:</td>
 						<td>
-							<form:input path="titulaireCompteBancaire" cssErrorClass="input-with-errors" size ="30" maxlength="${lengthpersonne}" />
+							<form:input path="titulaireCompteBancaire" cssErrorClass="input-with-errors" size ="30" tabindex="2" maxlength="${lengthpersonne}" />
 							<span class="jTip formInfo" title="<c:url value="/htm/titulaireCompte.htm?width=375"/>" id="titulaireCompte">?</span>
 							<form:errors path="titulaireCompteBancaire" cssClass="error"/>
 						</td>
@@ -45,7 +45,7 @@
 					<tr class="<unireg:nextRowClass/>" >
 						<td><fmt:message key="label.complement.bicSwift" />&nbsp;:</td>
 						<td>
-							<form:input path="adresseBicSwift" cssErrorClass="input-with-errors" size ="26" maxlength="${lengthbic}" />
+							<form:input path="adresseBicSwift" cssErrorClass="input-with-errors" size ="26" tabindex="3" maxlength="${lengthbic}" />
 							<span class="jTip formInfo" title="<c:url value="/htm/bic.htm?width=375"/>" id="bic">?</span>
 							<form:errors path="adresseBicSwift" cssClass="error"/>
 						</td>

@@ -60,7 +60,7 @@
 					<tr class="<unireg:nextRowClass/>" >
 						<td><fmt:message key="label.complement.numeroTelFixe" />&nbsp;:</td>
 						<td>
-							<form:input path="numeroTelephonePrive" cssErrorClass="input-with-errors" size ="20" maxlength="${lengthnumTel}" />
+							<form:input path="numeroTelephonePrive" cssErrorClass="input-with-errors" size ="20" tabindex="5" maxlength="${lengthnumTel}" />
 							<span class="jTip formInfo" title="<c:url value="/htm/numeroTelephone.htm?width=375"/>" id="telPrive">?</span>
 							<form:errors path="numeroTelephonePrive" cssClass="error"/>
 						</td>
@@ -68,7 +68,7 @@
 					<tr class="<unireg:nextRowClass/>" >
 						<td><fmt:message key="label.complement.numeroTelPortable" />&nbsp;:</td>
 						<td>
-							<form:input path="numeroTelephonePortable" cssErrorClass="input-with-errors" size ="20" maxlength="${lengthnumTel}" />
+							<form:input path="numeroTelephonePortable" cssErrorClass="input-with-errors" size ="20" tabindex="6" maxlength="${lengthnumTel}" />
 							<span class="jTip formInfo" title="<c:url value="/htm/numeroTelephone.htm?width=375"/>" id="telPortable">?</span>
 							<form:errors path="numeroTelephonePortable" cssClass="error"/>
 						</td>
@@ -76,7 +76,7 @@
 					<tr class="<unireg:nextRowClass/>" >
 						<td><fmt:message key="label.complement.numeroTelProfessionnel" />&nbsp;:</td>
 						<td>
-							<form:input path="numeroTelephoneProfessionnel" cssErrorClass="input-with-errors" size ="20" maxlength="${lengthnumTel}" />
+							<form:input path="numeroTelephoneProfessionnel" cssErrorClass="input-with-errors" size ="20" tabindex="7" maxlength="${lengthnumTel}" />
 							<span class="jTip formInfo" title="<c:url value="/htm/numeroTelephone.htm?width=375"/>" id="telProfessionnel">?</span>
 							<form:errors path="numeroTelephoneProfessionnel" cssClass="error"/>
 						</td>
@@ -84,7 +84,7 @@
 					<tr class="<unireg:nextRowClass/>" >
 						<td><fmt:message key="label.complement.numeroFax" />&nbsp;:</td>
 						<td>
-							<form:input path="numeroTelecopie" cssErrorClass="input-with-errors" size ="20" maxlength="${lengthnumTel}" />
+							<form:input path="numeroTelecopie" cssErrorClass="input-with-errors" size ="20" tabindex="8" maxlength="${lengthnumTel}" />
 							<span class="jTip formInfo" title="<c:url value="/htm/numeroTelephone.htm?width=375"/>" id="fax">?</span>
 							<form:errors path="numeroTelecopie" cssClass="error"/>
 						</td>
@@ -92,7 +92,7 @@
 					<tr class="<unireg:nextRowClass/>" >
 						<td><fmt:message key="label.complement.email" />&nbsp;:</td>
 						<td>
-							<form:input path="adresseCourrierElectronique" cssErrorClass="input-with-errors" size ="35" maxlength="${lengthpersonne}" />
+							<form:input path="adresseCourrierElectronique" cssErrorClass="input-with-errors" size ="35" tabindex="9" maxlength="${lengthpersonne}" />
 							<span class="jTip formInfo" title="<c:url value="/htm/email.htm?width=375"/>" id="email">?</span>
 							<form:errors path="adresseCourrierElectronique" cssClass="error"/>
 						</td>
