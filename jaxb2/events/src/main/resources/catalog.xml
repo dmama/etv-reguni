@@ -26,9 +26,14 @@
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/creation-nonhabitant-reponse-1.xsd" uri="event/party/create-nonresident-response-1.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/creation-nonhabitant-reponse-2.xsd" uri="event/party/create-nonresident-response-2.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/taxliab-common-1.xsd" uri="event/party/taxliab-common-1.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/taxliab-common-2.xsd" uri="event/party/taxliab-common-2.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/taxliab-request-2.xsd" uri="event/party/taxliab-request-2.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/aperiodic-taxliab-request-1.xsd" uri="event/party/aperiodic-taxliab-request-1.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/aperiodic-taxliab-request-2.xsd" uri="event/party/aperiodic-taxliab-request-2.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/aperiodic-taxliab-response-1.xsd" uri="event/party/aperiodic-taxliab-response-1.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/taxliab-response-2.xsd" uri="event/party/taxliab-response-2.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/periodic-taxliab-request-1.xsd" uri="event/party/periodic-taxliab-request-1.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/periodic-taxliab-request-2.xsd" uri="event/party/periodic-taxliab-request-2.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/periodic-taxliab-response-1.xsd" uri="event/party/periodic-taxliab-response-1.xsd"/>
 
 	<system systemId="http://www.vd.ch/fiscalite/taxation/is/evtliste-1.xsd" uri="event/lr/evtListe-1.xsd"/>

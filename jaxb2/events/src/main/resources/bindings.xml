@@ -106,6 +106,23 @@
 			<namespace:prefix name="ev-party-taxliab-common-1" />
 		</jxb:bindings>
 	</jxb:bindings>
+	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/taxliab-common-2.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.xml.event.party.taxliab.common.v2" />
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="ev-party-taxliab-common-2" />
+		</jxb:bindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/taxliab-request-2.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.xml.event.party.taxliab.v2" />
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="ev-party-aperiodic-taxliab-2" />
+		</jxb:bindings>
+	</jxb:bindings>
 
 	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/aperiodic-taxliab-request-1.xsd">
 		<jxb:schemaBindings>
@@ -113,6 +130,15 @@
 		</jxb:schemaBindings>
 		<jxb:bindings>
 			<namespace:prefix name="ev-party-aperiodic-taxliab-1" />
+		</jxb:bindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/aperiodic-taxliab-request-2.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.xml.event.party.taxliab.aperiodic.v2" />
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="ev-party-aperiodic-taxliab-2" />
 		</jxb:bindings>
 	</jxb:bindings>
 
@@ -134,12 +160,30 @@
 		</jxb:bindings>
 	</jxb:bindings>
 
+	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/periodic-taxliab-request-2.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.xml.event.party.taxliab.periodic.v2" />
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="ev-party-periodic-taxliab-2" />
+		</jxb:bindings>
+	</jxb:bindings>
+
 	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/periodic-taxliab-response-1.xsd">
 		<jxb:schemaBindings>
 			<jxb:package name="ch.vd.unireg.xml.event.party.taxliab.periodic.v1" />
 		</jxb:schemaBindings>
 		<jxb:bindings>
 			<namespace:prefix name="ev-party-periodic-taxliab-1" />
+		</jxb:bindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/taxliab-response-2.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.xml.event.party.taxliab.v2" />
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="ev-party-periodic-taxliab-2" />
 		</jxb:bindings>
 	</jxb:bindings>
 

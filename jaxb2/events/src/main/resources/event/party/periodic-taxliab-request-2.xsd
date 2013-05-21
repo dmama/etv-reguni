@@ -15,6 +15,9 @@
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/party/taxliab-request/2"
 			   schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/taxliab-request-2.xsd" />
 
+
+	<xs:element name="periodicTaxLiabilityRequest" type="periodicTaxLiabilityRequestType"/>
+
 	<xs:complexType name="periodicTaxLiabilityRequestType">
 		<xs:annotation>
 			<xs:appinfo>

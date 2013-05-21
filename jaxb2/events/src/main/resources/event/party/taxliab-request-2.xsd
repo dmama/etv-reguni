@@ -4,7 +4,6 @@
 		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0"
 		   xmlns="http://www.vd.ch/fiscalite/unireg/event/party/taxliab-request/2"
 		   xmlns:request="http://www.vd.ch/fiscalite/unireg/event/party/request/1" xmlns:common="http://www.vd.ch/fiscalite/unireg/common/1"
-		   xmlns:taxliab-common="http://www.vd.ch/fiscalite/unireg/event/party/taxliab-common/2"
 		   xmlns:taxliab-request= "http://www.vd.ch/fiscalite/unireg/event/party/taxliab-request/2">
 
 
@@ -50,15 +49,6 @@
 							<xs:appinfo>
 								<jxb:property>
 									<jxb:javadoc>Recherche du parent.</jxb:javadoc>
-								</jxb:property>
-							</xs:appinfo>
-						</xs:annotation>
-					</xs:element>
-					<xs:element name="scope" type="taxliab-common:scopeType">
-						<xs:annotation>
-							<xs:appinfo>
-								<jxb:property>
-									<jxb:javadoc>Le domaine de recherche à considérer.</jxb:javadoc>
 								</jxb:property>
 							</xs:appinfo>
 						</xs:annotation>
