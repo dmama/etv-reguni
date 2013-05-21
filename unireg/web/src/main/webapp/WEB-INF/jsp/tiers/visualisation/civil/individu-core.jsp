@@ -8,20 +8,22 @@
 			<c:set var="bind" value="command.${param.path}" scope="request"/>
 			<spring:bind path="${bind}">
 				<c:out value="${status.value.numeroIndividuFormatte}"/>
-				<c:if test="${status.value.canceled}">
-					<span class="warn">
-						<c:choose>
-							<c:when test="${status.value.numeroIndividuRemplacant != null}">
-								<fmt:message key="label.individu.annule.remplace">
-									<fmt:param value="${status.value.numeroIndividuRemplacantFormatte}"/>
-								</fmt:message>
-							</c:when>
-							<c:otherwise>
-								<fmt:message key="label.individu.annule"/>
-							</c:otherwise>
-						</c:choose>
-					</span>
-				</c:if>
+				<authz:authorize ifAnyGranted="ROLE_MODIF_VD_ORD">
+					<c:if test="${status.value.canceled}">
+						<span class="warn">
+							<c:choose>
+								<c:when test="${status.value.numeroIndividuRemplacant != null}">
+									<fmt:message key="label.individu.annule.remplace">
+										<fmt:param value="${status.value.numeroIndividuRemplacantFormatte}"/>
+									</fmt:message>
+								</c:when>
+								<c:otherwise>
+									<fmt:message key="label.individu.annule"/>
+								</c:otherwise>
+							</c:choose>
+						</span>
+					</c:if>
+				</authz:authorize>
 			</spring:bind>
 		</td>
 	</tr>
