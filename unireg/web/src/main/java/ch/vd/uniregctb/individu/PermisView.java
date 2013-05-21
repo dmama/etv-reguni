@@ -7,10 +7,11 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.civil.data.Permis;
+import ch.vd.uniregctb.common.Annulable;
 
-public class PermisView implements DateRange, Serializable {
+public class PermisView implements DateRange, Serializable, Annulable {
 
-	private static final long serialVersionUID = -7158428280315582937L;
+	private static final long serialVersionUID = 9105407033764552575L;
 
 	private RegDate dateDebutValidite;
 	private RegDate dateFinValidite;
@@ -58,19 +59,22 @@ public class PermisView implements DateRange, Serializable {
 	public RegDate getDateDebut() {
 		return dateDebutValidite;
 	}
+
 	@Override
 	public RegDate getDateFin() {
 		return dateFinValidite;
 	}
+
 	public boolean isAnnule() {
 		return annule;
 	}
+
 	public void setAnnule(boolean annule) {
 		this.annule = annule;
 	}
+
 	@Override
 	public boolean isValidAt(RegDate date) {
-		return RegDateHelper.isBetween(date, dateDebutValidite, dateFinValidite, NullDateBehavior.LATEST);
+		return !annule && RegDateHelper.isBetween(date, dateDebutValidite, dateFinValidite, NullDateBehavior.LATEST);
 	}
-
 }

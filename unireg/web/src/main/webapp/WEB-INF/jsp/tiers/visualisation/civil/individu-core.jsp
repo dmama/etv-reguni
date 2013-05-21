@@ -147,21 +147,15 @@
 			<c:set var="bind" value="command.${param.path}.permisView" scope="request"/>
 			<spring:bind path="${bind}" >
 				<c:if test="${not empty status.value}">
-					<display:table 	name="${status.value}" id="row" pagesize="10">
+					<display:table 	name="${status.value}" id="row" pagesize="10" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
 						<display:column titleKey="label.type" >
-							<c:if test="${row.annule}"><strike></c:if>
-								<fmt:message key="option.type.permis.${row.typePermis}"/>
-							<c:if test="${row.annule}"></strike></c:if>
+							<fmt:message key="option.type.permis.${row.typePermis}"/>
 						</display:column>
 						<display:column titleKey="label.date.debut.validite.permis" >
-							<c:if test="${row.annule}"><strike></c:if>
-								<unireg:regdate regdate="${row.dateDebutValidite}" />
-							<c:if test="${row.annule}"></strike></c:if>
+							<unireg:regdate regdate="${row.dateDebutValidite}" />
 						</display:column>
 						<display:column titleKey="label.date.fin.validite.permis" >
-							<c:if test="${row.annule}"><strike></c:if>
-								<unireg:regdate regdate="${row.dateFinValidite}" />
-							<c:if test="${row.annule}"></strike></c:if>
+							<unireg:regdate regdate="${row.dateFinValidite}" />
 						</display:column>
 						<display:setProperty name="paging.banner.all_items_found" value=""/>
 						<display:setProperty name="paging.banner.one_item_found" value=""/>
