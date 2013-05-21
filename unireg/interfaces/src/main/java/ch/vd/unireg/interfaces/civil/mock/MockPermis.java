@@ -58,11 +58,7 @@ public class MockPermis implements Permis {
 	}
 
 	@Override
-	@NotNull
 	public RegDate getDateValeur() {
-		if (dateValeur == null) {
-			throw new NullPointerException("DateValeur should always be set");
-		}
 		return dateValeur;
 	}
 
@@ -91,7 +87,8 @@ public class MockPermis implements Permis {
 	@Override
 	public String toString() {
 		return "MockPermis{" +
-				"dateDebutValidite=" + dateDebutValidite +
+				"dateValeur=" + dateValeur +
+				", dateDebutValidite=" + dateDebutValidite +
 				", dateFinValidite=" + dateFinValidite +
 				", dateAnnulation=" + dateAnnulation +
 				", typePermis=" + typePermis +

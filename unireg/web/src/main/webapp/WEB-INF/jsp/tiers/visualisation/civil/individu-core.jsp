@@ -139,13 +139,13 @@
 			<spring:bind path="${bind}" >
 				<c:if test="${not empty status.value}">
 					<display:table 	name="${status.value}" id="row" pagesize="10">
-						<display:column titleKey="label.pays" >
+						<display:column titleKey="label.pays" style="width: 33%">
 							<c:out value="${row.pays}"/>
 						</display:column>
-						<display:column titleKey="label.date.debut.validite" >
+						<display:column titleKey="label.date.debut.validite" style="width: 33%">
 							<unireg:regdate regdate="${row.dateDebut}" />
 						</display:column>
-						<display:column titleKey="label.date.fin.validite" >
+						<display:column titleKey="label.date.fin.validite" style="width: 33%">
 							<unireg:regdate regdate="${row.dateFin}" />
 						</display:column>
 						<display:setProperty name="paging.banner.all_items_found" value=""/>
@@ -162,13 +162,13 @@
 			<spring:bind path="${bind}" >
 				<c:if test="${not empty status.value}">
 					<display:table 	name="${status.value}" id="row" pagesize="10" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
-						<display:column titleKey="label.type" >
+						<display:column titleKey="label.type" style="width: 33%">
 							<fmt:message key="option.type.permis.${row.typePermis}"/>
 						</display:column>
-						<display:column titleKey="label.date.debut.validite" >
+						<display:column titleKey="label.date.debut.validite" style="width: 33%">
 							<unireg:regdate regdate="${row.dateDebutValidite}" />
 						</display:column>
-						<display:column titleKey="label.date.fin.validite" >
+						<display:column titleKey="label.date.fin.validite" style="width: 33%">
 							<unireg:regdate regdate="${row.dateFinValidite}" />
 						</display:column>
 						<display:setProperty name="paging.banner.all_items_found" value=""/>
