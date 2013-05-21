@@ -926,6 +926,12 @@ public class ProduireRolesProcessor {
 			// (en fait, on prend le premier jour du mois suivant à cause des assujettissements source dont la fin est arrondie à la fin d'un mois)
 			// -> il faut le re-calculer !
 			final List<Assujettissement> assujettissementsCommune = assujettissementService.determinePourCommunes(assujettissement.getContribuable(), communes);
+			if (assujettissementsCommune == null) {
+				// bizarre : on a au moins une commune de l'ensemble qui est "active" (voir communeActive plus haut) mais on ne trouve pas
+				// d'assujettissement... on a eu le cas une fois avec un sourcier pur vaudois qui avait aussi un for secondaire sur une autre commune (les rôles
+				// de cette autre commune posent problème) - SIFISC-8671
+				throw new AssujettissementException("Assujettissement non calculable pour les rôles (incohérence de fors ?)");
+			}
 			final Assujettissement assujettissementApres = DateRangeHelper.rangeAt(assujettissementsCommune, RegDateHelper.getFirstDayOfNextMonth(assujettissement.getDateFin()));
 			if (assujettissementApres == null) {
 				typeAssujettissement = TypeAssujettissement.TERMINE_DANS_PF;

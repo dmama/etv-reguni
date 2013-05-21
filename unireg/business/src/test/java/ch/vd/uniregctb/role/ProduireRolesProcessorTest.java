@@ -50,6 +50,7 @@ import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.uniregctb.type.TypePermis;
 import ch.vd.uniregctb.validation.ValidationService;
 
 import static junit.framework.Assert.assertEquals;
@@ -1628,5 +1629,64 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 		}
 	}
 
+	/**
+	 * SIFISC-8671
+	 */
+	@Test
+	public void testSourcierPurVaudoisAvecForSecondaire() throws Exception {
+
+		final long noIndividu = 32372567L;
+		final RegDate dateArrivee = date(2000, 4, 1);
+		final RegDate dateAchat = date(2010, 6, 12);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noIndividu, date(1976, 3, 11), "Dantès", "Edmond", true);
+				addNationalite(ind, MockPays.France, date(1976, 3, 11), null);
+				addPermis(ind, TypePermis.SEJOUR, dateArrivee, null, false);
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Bussigny, ModeImposition.SOURCE);
+				addForSecondaire(pp, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Aigle.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				return pp.getNumero();
+			}
+		});
+
+		final ProduireRolesResults results = processor.runPourToutesCommunes(2012, 1, null);
+		assertNotNull(results);
+		assertEquals(1, results.ctbsTraites);
+		assertEquals(1, results.ctbsEnErrors.size());
+		assertEquals(0, results.ctbsIgnores.size());
+		assertEquals(1, results.infosCommunes.size());
+
+		{
+			final InfoCommune infos = results.infosCommunes.get(MockCommune.Bussigny.getNoOFS());
+			assertNotNull(infos);
+
+			final InfoContribuable info = infos.getInfoPourContribuable(ppId);
+			assertNotNull(info);
+
+			assertInfo(ppId, TypeContribuable.SOURCE, MockCommune.Bussigny.getNoOFS(), dateArrivee, null, MotifFor.ARRIVEE_HS, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
+		}
+
+		{
+			final List<Erreur> erreurs = results.ctbsEnErrors;
+			assertNotNull(erreurs);
+			assertEquals(1, erreurs.size());
+
+			final Erreur erreur = erreurs.get(0);
+			assertNotNull(erreur);
+			assertEquals(ProduireRolesResults.ErreurType.ASSUJETTISSEMENT, erreur.raison);
+			assertEquals("Assujettissement non calculable pour les rôles (incohérence de fors ?)", erreur.details);
+		}
+	}
 
 }
