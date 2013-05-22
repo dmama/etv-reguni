@@ -22,20 +22,21 @@ import ch.vd.uniregctb.load.LoadDetailRenderer;
  */
 public class GentilEsbMessageEndpointListener extends EsbMessageEndpointListener implements InitializingBean, DetailedLoadMonitorable, MonitorableMessageListener {
 
-	private static final Logger LOGGER = Logger.getLogger("unireg.jms");
+	private static final Logger APP_LOGGER = Logger.getLogger(GentilEsbMessageEndpointListener.class);
+	private static final Logger JMS_LOGGER = Logger.getLogger("unireg.jms");
 
 	private static final LoadDetailRenderer<EsbMessage> RENDERER = new LoadDetailRenderer<EsbMessage>() {
 		@Override
 		public String toString(EsbMessage msg) {
 			if (StringUtils.isBlank(msg.getBusinessCorrelationId())) {
-				return String.format("queue=%s, sender='%s', businessUser='%s', businessId='%s'",
+				return String.format("queue='%s', sender='%s', businessUser='%s', businessId='%s', ns='%s'",
 				                     msg.getServiceDestination(), msg.getApplication(), msg.getBusinessUser(),
-				                     msg.getBusinessId());
+				                     msg.getBusinessId(), extractNamespaceURI(msg));
 			}
 			else {
-				return String.format("queue=%s, sender='%s', businessUser='%s', businessId='%s', businessCorrelationId='%s'",
+				return String.format("queue='%s', sender='%s', businessUser='%s', businessId='%s', businessCorrelationId='%s', ns='%s'",
 				                     msg.getServiceDestination(), msg.getApplication(), msg.getBusinessUser(),
-				                     msg.getBusinessId(), msg.getBusinessCorrelationId());
+				                     msg.getBusinessId(), msg.getBusinessCorrelationId(), extractNamespaceURI(msg));
 			}
 		}
 	};
@@ -55,6 +56,21 @@ public class GentilEsbMessageEndpointListener extends EsbMessageEndpointListener
 
 	public void setEsbErrorHandler(EsbBusinessErrorHandler esbErrorHandler) {
 		this.esbErrorHandler = esbErrorHandler;
+	}
+
+	/**
+	 * Essaie d'extraire le <i>namespace</i> du <i>root element</i> du message passé en paramètre. S'il n'existe pas, une chaîne vide est retournée.
+	 * @param msg message ESB dont on veut connaître le <i>namespace</i>
+	 * @return l'URI du <i>namespace</i> extrait, une chaîne vide en absence de <i>namespace</i> et "???" en cas d'erreur à l'extraction
+	 */
+	private static String extractNamespaceURI(EsbMessage msg) {
+		try {
+			return StringUtils.trimToEmpty(msg.getBodyAsDocument().getDocumentElement().getNamespaceURI());
+		}
+		catch (Exception e) {
+			APP_LOGGER.warn(String.format("Exception lors de l'extraction du namespace du message '%s'", msg.getBusinessId()), e);
+			return "???";
+		}
 	}
 
 	@Override
@@ -86,7 +102,7 @@ public class GentilEsbMessageEndpointListener extends EsbMessageEndpointListener
 		}
 		finally {
 			final long end = loadMeter.end();
-			if (LOGGER.isInfoEnabled()) {
+			if (JMS_LOGGER.isInfoEnabled()) {
 				final String exceptMsg = t != null ? String.format(", %s thrown", t.getClass().getName()) : StringUtils.EMPTY;
 				final String businessErrorMsg = StringUtils.isNotBlank(businessError) ? String.format(", error='%s'", StringUtils.abbreviate(businessError, 100)) : StringUtils.EMPTY;
 				final String msg = String.format("[load=%d] (%d ms) %s%s%s",
@@ -95,7 +111,7 @@ public class GentilEsbMessageEndpointListener extends EsbMessageEndpointListener
 				                                 displayedValue,
 				                                 businessErrorMsg,
 				                                 exceptMsg);
-				LOGGER.info(msg);
+				JMS_LOGGER.info(msg);
 			}
 		}
 	}
