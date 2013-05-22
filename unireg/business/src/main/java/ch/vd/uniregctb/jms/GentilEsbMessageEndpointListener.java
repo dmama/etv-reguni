@@ -140,6 +140,7 @@ public class GentilEsbMessageEndpointListener extends EsbMessageEndpointListener
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
+		super.afterPropertiesSet();
 		if (handler == null) {
 			throw new IllegalArgumentException("Handler must be set");
 		}
