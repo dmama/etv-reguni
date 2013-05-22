@@ -54,12 +54,12 @@
 	<xs:complexType name="NPAType">
 		<xs:choice>
 			<xs:sequence>
-				<xs:element name="NPASuisse" type="NPASuisseType" minOccurs="0" />
+				<xs:element name="NPASuisse" type="NPASuisseType" />
 				<xs:element name="ChiffreComplementaire" type="ChiffreComplementaireType" minOccurs="0" />
 				<xs:element name="NPASuisseId" type="NPASuisseIdType" minOccurs="0" />
 			</xs:sequence>
 			<xs:sequence>
-				<xs:element name="NPAEtranger" type="NPAEtrangerType" minOccurs="0" />
+				<xs:element name="NPAEtranger" type="NPAEtrangerType" />
 				<xs:element name="Pays" type="PaysType" minOccurs="0" />
 			</xs:sequence>
 		</xs:choice>
