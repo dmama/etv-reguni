@@ -2,7 +2,7 @@ package ch.vd.unireg.interfaces.infra.mock;
 
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.unireg.interfaces.civil.data.EntiteOFS;
+import ch.vd.unireg.interfaces.infra.data.EntiteOFS;
 
 public abstract class MockEntityOFS implements EntiteOFS {
 

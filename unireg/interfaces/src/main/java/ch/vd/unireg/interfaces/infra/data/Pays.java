@@ -1,4 +1,4 @@
-package ch.vd.unireg.interfaces.civil.data;
+package ch.vd.unireg.interfaces.infra.data;
 
 import ch.vd.registre.base.date.DateRange;
 

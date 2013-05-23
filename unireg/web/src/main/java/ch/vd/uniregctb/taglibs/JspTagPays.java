@@ -1,8 +1,8 @@
 package ch.vd.uniregctb.taglibs;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.civil.data.Pays;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 
 public class JspTagPays extends JspTagDatedInfra<Pays> {

@@ -3,8 +3,8 @@ package ch.vd.unireg.interfaces.infra.mock;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.civil.data.Pays;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
+import ch.vd.unireg.interfaces.infra.data.Pays;
 
 
 public class MockPays extends MockEntityOFS implements Pays {

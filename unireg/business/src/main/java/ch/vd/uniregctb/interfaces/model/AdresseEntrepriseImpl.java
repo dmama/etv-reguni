@@ -7,7 +7,7 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.pm.model.EnumTypeAdresseEntreprise;
-import ch.vd.unireg.interfaces.civil.data.Pays;
+import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.infra.data.PaysImpl;
 import ch.vd.uniregctb.interfaces.model.helper.EntrepriseHelper;
 import ch.vd.uniregctb.type.TypeAdressePM;

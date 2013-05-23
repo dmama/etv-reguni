@@ -5,7 +5,6 @@ import java.io.Serializable;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.civil.data.Pays;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.uniregctb.common.XmlUtils;
 
@@ -13,7 +12,7 @@ public class PaysImpl extends EntiteOFSImpl implements Pays, Serializable {
 
 	private static final DateRange ETERNITY = new DateRangeHelper.Range(null, null);
 
-	private static final long serialVersionUID = -4995521737879037655L;
+	private static final long serialVersionUID = -2492428068671784907L;
 
 	private final boolean valide;
 	private final DateRange validityRange;

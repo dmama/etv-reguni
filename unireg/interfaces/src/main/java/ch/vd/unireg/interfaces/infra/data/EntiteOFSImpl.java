@@ -4,11 +4,9 @@ import java.io.Serializable;
 
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.unireg.interfaces.civil.data.EntiteOFS;
-
 public abstract class EntiteOFSImpl implements EntiteOFS, Serializable {
 
-	private static final long serialVersionUID = -8262770098305127500L;
+	private static final long serialVersionUID = -7802594307578576973L;
 
 	private final int noOFS;
 	private final String nomCourt;

@@ -16,7 +16,7 @@ import ch.vd.uniregctb.common.XmlUtils;
 
 public class CommuneImpl extends EntiteOFSImpl implements Commune, Serializable {
 
-	private static final long serialVersionUID = 2669596718922942191L;
+	private static final long serialVersionUID = 861289905065121600L;
 
 	private final RegDate dateDebut;
 	private final RegDate dateFin;

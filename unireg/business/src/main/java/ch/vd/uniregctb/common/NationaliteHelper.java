@@ -10,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.Nationalite;
-import ch.vd.unireg.interfaces.civil.data.Pays;
+import ch.vd.unireg.interfaces.infra.data.Pays;
 
 /**
  * Classe utilitaire de méthodes pratiques autour de la gestion des nationalités

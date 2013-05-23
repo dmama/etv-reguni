@@ -2,6 +2,7 @@ package ch.vd.unireg.interfaces.civil.data;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.infra.data.Pays;
 
 public interface Nationalite extends DateRange {
 

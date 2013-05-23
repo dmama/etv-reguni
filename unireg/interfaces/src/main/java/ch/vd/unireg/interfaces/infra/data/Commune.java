@@ -1,7 +1,6 @@
 package ch.vd.unireg.interfaces.infra.data;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.civil.data.EntiteOFS;
 
 public interface Commune extends EntiteOFS {
 
