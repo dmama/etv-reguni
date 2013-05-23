@@ -1719,4 +1719,82 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 			}
 		});
 	}
+
+	/**
+	 * SIFISC-8741
+	 */
+	@Test
+	public void testDepartSecondaireMemeJourQueDemenagementDansCommuneVaudoise() throws Exception {
+
+		final long noIndividu = 234732L;
+		final RegDate dateDepart = date(2012, 4, 30);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final RegDate dateNaissance = date(1980, 10, 25);
+				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Alambic", "Ernest", Sexe.MASCULIN);
+				addNationalite(ind, MockPays.Suisse, dateNaissance, null);
+
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.BoulevardGrancy, null, dateNaissance, dateDepart);
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.CheminDeMornex, null, dateDepart.getOneDayAfter(), null);
+
+				final MockAdresse adrSecondaire = addAdresse(ind, TypeAdresseCivil.SECONDAIRE, MockRue.Echallens.GrandRue, null, dateDepart.addYears(-3), dateDepart);
+				adrSecondaire.setLocalisationSuivante(new Localisation(LocalisationType.HORS_SUISSE, MockPays.PaysInconnu.getNoOFS(), null));
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				addForPrincipal(pp, date(2000, 1, 1), MotifFor.INDETERMINE, MockCommune.Lausanne);
+				return pp.getNumero();
+			}
+		});
+
+		// création de l'individu de départ
+		final long evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(4454544L);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(dateDepart);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noIndividu);
+				evt.setType(TypeEvenementCivilEch.DEPART);
+				return hibernateTemplate.merge(evt).getId();
+			}
+		});
+
+		// traitement de l'événement civil
+		traiterEvenements(noIndividu);
+
+		// vérification des résultats
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch ech = evtCivilDAO.get(evtId);
+				Assert.assertNotNull(ech);
+				Assert.assertEquals(EtatEvenementCivil.TRAITE, ech.getEtat());
+
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertNotNull(pp);
+
+				// il s'agit d'un départ secondaire, donc le for principal ne devrait pas changer
+				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+				Assert.assertNotNull(ffp);
+				Assert.assertEquals(date(2000, 1, 1), ffp.getDateDebut());
+				Assert.assertNull(ffp.getDateFin());
+				Assert.assertNull(ffp.getMotifFermeture());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
+
+				return null;
+			}
+		});
+	}
 }

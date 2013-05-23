@@ -8,7 +8,10 @@ import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.Adresse;
+import ch.vd.unireg.interfaces.civil.data.Localisation;
+import ch.vd.unireg.interfaces.civil.data.LocalisationType;
 import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
+import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.uniregctb.adresse.AdressesCivilesHisto;
 import ch.vd.uniregctb.common.WithoutSpringTest;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
@@ -225,5 +228,62 @@ public class DepartDecaleHelperTest extends WithoutSpringTest {
 		Assert.assertNull(DepartDecaleHelper.getAdresseResidenceTerminee(dateEvenement, 1, adresses));
 		Assert.assertNull(DepartDecaleHelper.getAdresseResidenceTerminee(dateEvenement, 10, adresses));
 		Assert.assertNull(DepartDecaleHelper.getAdresseResidenceTerminee(dateEvenement, 100, adresses));
+	}
+
+	@Test
+	public void testPrimautePresenceGoesToSansDecalage() throws Exception {
+		final RegDate date = date(2012, 5, 23);
+		final AdressesCivilesHisto adresses = new AdressesCivilesHisto();
+		final Adresse avant = buildAdresse(date(2000, 1, 1), date.addDays(-1), TypeAdresseCivil.PRINCIPALE, "Rue du bourg", "12", "9999", "Loin");
+		final Adresse pendant = buildAdresse(date, date, TypeAdresseCivil.PRINCIPALE, "Rue du bourg", "13", "9999", "Loin");
+		final Adresse apres = buildAdresse(date.addDays(1), null, TypeAdresseCivil.PRINCIPALE, "Rue du bourg", "14", "9999", "Loin");
+		adresses.principales = Arrays.asList(avant, pendant, apres);
+
+		final MockAdresse sec = buildAdresse(date(2000, 1, 1), date, TypeAdresseCivil.SECONDAIRE, "Rue de la liberté", "56", "8888", "Là");
+		sec.setLocalisationSuivante(new Localisation(LocalisationType.HORS_SUISSE, MockPays.PaysInconnu.getNoOFS(), null));
+		adresses.secondaires = Arrays.<Adresse>asList(sec);
+
+		final Adresse found = DepartDecaleHelper.getAdresseResidenceTerminee(date, 0, adresses);
+		Assert.assertNotNull(found);
+		Assert.assertEquals("56", found.getNumero());
+		Assert.assertEquals(TypeAdresseCivil.SECONDAIRE, found.getTypeAdresse());
+	}
+
+	@Test
+	public void testPrimautePresenceGoesToAvecDecalage() throws Exception {
+		final RegDate date = date(2012, 5, 23);
+		final AdressesCivilesHisto adresses = new AdressesCivilesHisto();
+		final Adresse avant = buildAdresse(date(2000, 1, 1), date.addDays(-1), TypeAdresseCivil.PRINCIPALE, "Rue du bourg", "12", "9999", "Loin");
+		final Adresse pendant = buildAdresse(date, date, TypeAdresseCivil.PRINCIPALE, "Rue du bourg", "13", "9999", "Loin");
+		final Adresse apres = buildAdresse(date.addDays(1), null, TypeAdresseCivil.PRINCIPALE, "Rue du bourg", "14", "9999", "Loin");
+		adresses.principales = Arrays.asList(avant, pendant, apres);
+
+		final MockAdresse sec = buildAdresse(date(2000, 1, 1), date, TypeAdresseCivil.SECONDAIRE, "Rue de la liberté", "56", "8888", "Là");
+		sec.setLocalisationSuivante(new Localisation(LocalisationType.HORS_SUISSE, MockPays.PaysInconnu.getNoOFS(), null));
+		adresses.secondaires = Arrays.<Adresse>asList(sec);
+
+		final Adresse found = DepartDecaleHelper.getAdresseResidenceTerminee(date.getOneDayAfter(), 1, adresses);
+		Assert.assertNotNull(found);
+		Assert.assertEquals("56", found.getNumero());
+		Assert.assertEquals(TypeAdresseCivil.SECONDAIRE, found.getTypeAdresse());
+	}
+
+	@Test
+	public void testPrimauteDateExacteSurPresenceGoesTo() throws Exception {
+		final RegDate date = date(2012, 5, 23);
+		final AdressesCivilesHisto adresses = new AdressesCivilesHisto();
+		final Adresse avant = buildAdresse(date(2000, 1, 1), date.addDays(-1), TypeAdresseCivil.PRINCIPALE, "Rue du bourg", "12", "9999", "Loin");
+		final Adresse pendant = buildAdresse(date, date, TypeAdresseCivil.PRINCIPALE, "Rue du bourg", "13", "9999", "Loin");
+		final Adresse apres = buildAdresse(date.addDays(1), null, TypeAdresseCivil.PRINCIPALE, "Rue du bourg", "14", "9999", "Loin");
+		adresses.principales = Arrays.asList(avant, pendant, apres);
+
+		final MockAdresse sec = buildAdresse(date(2000, 1, 1), date.getOneDayBefore(), TypeAdresseCivil.SECONDAIRE, "Rue de la liberté", "56", "8888", "Là");
+		sec.setLocalisationSuivante(new Localisation(LocalisationType.HORS_SUISSE, MockPays.PaysInconnu.getNoOFS(), null));
+		adresses.secondaires = Arrays.<Adresse>asList(sec);
+
+		final Adresse found = DepartDecaleHelper.getAdresseResidenceTerminee(date, 0, adresses);
+		Assert.assertNotNull(found);
+		Assert.assertEquals("13", found.getNumero());
+		Assert.assertEquals(TypeAdresseCivil.PRINCIPALE, found.getTypeAdresse());
 	}
 }
