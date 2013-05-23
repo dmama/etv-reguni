@@ -24,9 +24,11 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 import ch.vd.uniregctb.type.TypeEvenementErreur;
 import ch.vd.uniregctb.type.TypePermis;
@@ -573,6 +575,114 @@ public class DecesEchProcessorTest extends AbstractEvenementCivilEchProcessorTes
 				// le for fiscal n'est pas fermé !!
 				assertNull(ffp.getDateFin());
 				assertNull(ffp.getMotifFermeture());
+
+				return null;
+			}
+		});
+	}
+
+	/**
+	 * SIFISC-8740 / UNIREG-2143
+	 */
+	@Test(timeout = 10000L)
+	public void testDecesHorsCantonAvecAdresseCourrierVaudoise() throws Exception {
+
+		final long noIndividuMonsieur = 437846327L;
+		final long noIndividuMadame = 3743564L;
+		final RegDate dateMariage = date(1995, 12, 2);
+		final RegDate dateAchat = date(2000, 1, 3);
+		final RegDate dateNaissances = date(1948, 9, 4);
+		final RegDate dateDeces = date(2013, 3, 12);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu m = addIndividu(noIndividuMonsieur, dateNaissances, "Curie", "Pierre", Sexe.MASCULIN);
+				final MockIndividu mme = addIndividu(noIndividuMadame, dateNaissances, "Curie", "Marie", Sexe.FEMININ);
+				marieIndividus(m, mme, dateMariage);
+
+				addAdresse(m, TypeAdresseCivil.COURRIER, MockRue.Vevey.RueDesMoulins, null, dateAchat, null);
+				addAdresse(mme, TypeAdresseCivil.COURRIER, MockRue.Vevey.RueDesMoulins, null, dateAchat, null);
+
+				addNationalite(m, MockPays.Suisse, dateNaissances, null);
+				addNationalite(mme, MockPays.Suisse, dateNaissances, null);
+			}
+		});
+
+		class Ids {
+			long m;
+			long mme;
+			long mc;
+		}
+
+		// mise en place fiscale : résidents hors-canton avec for immeuble à Vevey
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique m = addHabitant(noIndividuMonsieur);
+				final PersonnePhysique mme = addHabitant(noIndividuMadame);
+
+				final EnsembleTiersCouple couple = addEnsembleTiersCouple(m, mme, dateMariage, null);
+				final MenageCommun mc = couple.getMenage();
+
+				addForPrincipal(mc, dateAchat, MotifFor.INDETERMINE, MockCommune.Sierre);
+				addForSecondaire(mc, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Vevey.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+
+				final Ids ids = new Ids();
+				ids.m = m.getNumero();
+				ids.mme = mme.getNumero();
+				ids.mc = mc.getNumero();
+				return ids;
+			}
+		});
+
+		// création d'un événement civil de décès sur Madame
+		final long evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch deces = new EvenementCivilEch();
+				deces.setId(45455L);
+				deces.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				deces.setDateEvenement(dateDeces);
+				deces.setEtat(EtatEvenementCivil.A_TRAITER);
+				deces.setNumeroIndividu(noIndividuMadame);
+				deces.setType(TypeEvenementCivilEch.DECES);
+				return hibernateTemplate.merge(deces).getId();
+			}
+		});
+
+		// traitement de l'événement civil
+		traiterEvenements(noIndividuMadame);
+
+		// vérification de l'état final
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch ech = evtCivilDAO.get(evtId);
+				assertNotNull(ech);
+				assertEquals(EtatEvenementCivil.TRAITE, ech.getEtat());
+
+				final PersonnePhysique m = (PersonnePhysique) tiersDAO.get(ids.m);
+				final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(m, dateMariage);
+				assertNotNull(couple);
+
+				final MenageCommun mc = couple.getMenage();
+				assertNotNull(mc);
+
+				final ForFiscalPrincipal ffpMc = mc.getDernierForFiscalPrincipal();
+				assertNotNull(ffpMc);
+				assertEquals(dateDeces, ffpMc.getDateFin());
+				assertEquals(MotifFor.VEUVAGE_DECES, ffpMc.getMotifFermeture());
+
+				final ForFiscalPrincipal ffpM = m.getDernierForFiscalPrincipal();
+				assertNotNull(ffpM);
+				assertEquals(dateDeces.getOneDayAfter(), ffpM.getDateDebut());
+				assertEquals(MotifFor.VEUVAGE_DECES, ffpM.getMotifOuverture());
+
+				// d'après UNIREG-2143, en l'absence d'adresse de domicile, un défaut "courrier" peut être déterminant pour le for : ici -> Vevey, VD
+				assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffpM.getTypeAutoriteFiscale());
+				assertEquals((Integer) MockCommune.Vevey.getNoOFS(), ffpM.getNumeroOfsAutoriteFiscale());
 
 				return null;
 			}
