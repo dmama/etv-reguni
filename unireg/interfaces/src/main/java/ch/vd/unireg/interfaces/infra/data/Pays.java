@@ -34,4 +34,9 @@ public interface Pays extends EntiteOFS, DateRange {
 	 * @return le code ISO du pays sur trois positions.
 	 */
 	String getCodeIso3();
+
+	/**
+	 * @return le type d'affranchissement postal applicable pour un envoi vers le pays
+	 */
+	TypeAffranchissement getTypeAffranchissement();
 }

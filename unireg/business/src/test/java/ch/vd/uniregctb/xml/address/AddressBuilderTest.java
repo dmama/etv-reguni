@@ -13,7 +13,6 @@ import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.common.NpaEtLocalite;
 import ch.vd.uniregctb.common.RueEtNumero;
 import ch.vd.uniregctb.common.WithoutSpringTest;
-import ch.vd.uniregctb.interfaces.model.TypeAffranchissement;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -32,7 +31,7 @@ public class AddressBuilderTest extends WithoutSpringTest {
 		// l'adresse bizarre
 		final AdresseEnvoiDetaillee from =
 				new AdresseEnvoiDetaillee(RegDate.get(2011, 10, 1), null, "Monsieur", "Monsieur", new NomPrenom("Porte", "Jean-Claude"), new RueEtNumero("Rue Aimé Pinel", "42"),
-						new NpaEtLocalite("1110", "38230"), MockPays.France, TypeAffranchissement.EUROPE, 254, 0, AdresseGenerique.SourceType.CIVILE);
+						new NpaEtLocalite("1110", "38230"), MockPays.France, 254, 0, AdresseGenerique.SourceType.CIVILE);
 		
 		final Address to = new Address();
 		AddressBuilder.fillDestination(to, from);

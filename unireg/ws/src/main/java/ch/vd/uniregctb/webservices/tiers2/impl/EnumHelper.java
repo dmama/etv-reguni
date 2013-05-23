@@ -334,7 +334,7 @@ public abstract class EnumHelper {
 		return part;
 	}
 
-	public static TypeAffranchissement coreToWeb(ch.vd.uniregctb.interfaces.model.TypeAffranchissement t) {
+	public static TypeAffranchissement coreToWeb(ch.vd.unireg.interfaces.infra.data.TypeAffranchissement t) {
 		if (t == null) {
 			return null;
 		}

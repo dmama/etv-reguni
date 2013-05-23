@@ -17,6 +17,7 @@ import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.infra.data.Pays;
+import ch.vd.unireg.interfaces.infra.data.TypeAffranchissement;
 import ch.vd.uniregctb.cache.UniregCacheManagerImpl;
 
 public class ServiceInfrastructurePaysCacheTest {
@@ -114,6 +115,11 @@ public class ServiceInfrastructurePaysCacheTest {
 
 		@Override
 		public String getSigleOFS() {
+			throw new NotImplementedException();
+		}
+
+		@Override
+		public TypeAffranchissement getTypeAffranchissement() {
 			throw new NotImplementedException();
 		}
 	}

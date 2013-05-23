@@ -13,10 +13,10 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.civil.data.CasePostale;
 import ch.vd.unireg.interfaces.infra.data.Pays;
+import ch.vd.unireg.interfaces.infra.data.TypeAffranchissement;
 import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.common.NpaEtLocalite;
 import ch.vd.uniregctb.common.RueEtNumero;
-import ch.vd.uniregctb.interfaces.model.TypeAffranchissement;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.FormulePolitesse;
@@ -42,7 +42,6 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange {
 	private CasePostale casePostale;
 	private NpaEtLocalite npaEtLocalite;
 	private Pays pays;
-	private TypeAffranchissement typeAffranchissement = TypeAffranchissement.SUISSE;
 	private Integer numeroOrdrePostal;
 	private Integer numeroTechniqueRue;
 	private Integer egid;
@@ -65,7 +64,7 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange {
 
 	// pour le testing uniquement !
 	public AdresseEnvoiDetaillee(RegDate dateDebut, RegDate dateFin, String salutations, String formuleAppel, NomPrenom nomPrenom, RueEtNumero rueEtNumero, NpaEtLocalite npaEtLocalite, Pays pays,
-	                             TypeAffranchissement typeAffranchissement, Integer numeroOrdrePostal, Integer numeroTechniqueRue, AdresseGenerique.SourceType source) {
+	                             Integer numeroOrdrePostal, Integer numeroTechniqueRue, AdresseGenerique.SourceType source) {
 		this.dateDebut = dateDebut;
 		this.dateFin = dateFin;
 		this.destinataire = null;
@@ -74,7 +73,6 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange {
 		this.rueEtNumero = rueEtNumero;
 		this.npaEtLocalite = npaEtLocalite;
 		this.pays = pays;
-		this.typeAffranchissement = typeAffranchissement;
 		this.numeroOrdrePostal = numeroOrdrePostal;
 		this.numeroTechniqueRue = numeroTechniqueRue;
 		this.nomsPrenoms.add(nomPrenom);
@@ -195,18 +193,16 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange {
 		addLine(ligne.toString(), optionalite);
 	}
 
-	public void addPays(Pays pays, TypeAffranchissement typeAffranchissement) {
+	public void addPays(Pays pays) {
 		this.pays = pays;
-		this.typeAffranchissement = typeAffranchissement;
-		if (!pays.isSuisse()) {
+		if (pays != null && !pays.isSuisse()) {
 			addLine(pays.getNomCourt());
 		}
 	}
 
-	public void addPays(Pays pays, TypeAffranchissement typeAffranchissement, int optionalite) {
+	public void addPays(Pays pays, int optionalite) {
 		this.pays = pays;
-		this.typeAffranchissement = typeAffranchissement;
-		if (!pays.isSuisse()) {
+		if (pays != null && !pays.isSuisse()) {
 			addLine(pays.getNomCourt(), optionalite);
 		}
 	}
@@ -318,14 +314,14 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange {
 	}
 
 	public TypeAffranchissement getTypeAffranchissement() {
-		return typeAffranchissement;
+		return pays == null ? TypeAffranchissement.SUISSE : pays.getTypeAffranchissement();
 	}
 
 	/**
 	 * @return <code>vrai</code> si l'adresse est en Suisse; <code>faux</code> autrement.
 	 */
 	public boolean isSuisse() {
-		return typeAffranchissement == TypeAffranchissement.SUISSE;
+		return getTypeAffranchissement() == TypeAffranchissement.SUISSE;
 	}
 
 	public Integer getNumeroOrdrePostal() {
@@ -399,8 +395,6 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange {
 		if (rueEtNumero != null ? !rueEtNumero.equals(that.rueEtNumero) : that.rueEtNumero != null) return false;
 		if (salutations != null ? !salutations.equals(that.salutations) : that.salutations != null) return false;
 		if (source != that.source) return false;
-		if (typeAffranchissement != that.typeAffranchissement) return false;
-
 		return true;
 	}
 
@@ -421,7 +415,6 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange {
 		result = 31 * result + (casePostale != null ? casePostale.hashCode() : 0);
 		result = 31 * result + (npaEtLocalite != null ? npaEtLocalite.hashCode() : 0);
 		result = 31 * result + (pays != null ? pays.hashCode() : 0);
-		result = 31 * result + (typeAffranchissement != null ? typeAffranchissement.hashCode() : 0);
 		result = 31 * result + (numeroOrdrePostal != null ? numeroOrdrePostal.hashCode() : 0);
 		result = 31 * result + (numeroTechniqueRue != null ? numeroTechniqueRue.hashCode() : 0);
 		result = 31 * result + (egid != null ? egid.hashCode() : 0);
@@ -449,7 +442,6 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange {
 		sb.append(", casePostale=").append(casePostale);
 		sb.append(", npaEtLocalite=").append(npaEtLocalite);
 		sb.append(", pays=").append(pays);
-		sb.append(", typeAffranchissement=").append(typeAffranchissement);
 		sb.append(", numeroOrdrePostal=").append(numeroOrdrePostal);
 		sb.append(", numeroTechniqueRue=").append(numeroTechniqueRue);
 		sb.append(", egid=").append(egid);

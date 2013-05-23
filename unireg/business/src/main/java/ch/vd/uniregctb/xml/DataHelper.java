@@ -23,6 +23,7 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationException;
+import ch.vd.unireg.interfaces.infra.data.TypeAffranchissement;
 import ch.vd.unireg.xml.common.v1.Date;
 import ch.vd.unireg.xml.party.address.v1.Address;
 import ch.vd.unireg.xml.party.address.v1.AddressOtherParty;
@@ -116,7 +117,7 @@ public abstract class DataHelper {
 		return list.isEmpty() ? null : list;
 	}
 
-	public static TariffZone coreToXML(ch.vd.uniregctb.interfaces.model.TypeAffranchissement t) {
+	public static TariffZone coreToXML(TypeAffranchissement t) {
 		if (t == null) {
 			return null;
 		}

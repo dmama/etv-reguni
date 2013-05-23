@@ -2,6 +2,7 @@ package ch.vd.unireg.interfaces.infra.data;
 
 import java.io.Serializable;
 
+import ch.vd.fidor.ws.v2.Continent;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
@@ -12,7 +13,7 @@ public class PaysImpl extends EntiteOFSImpl implements Pays, Serializable {
 
 	private static final DateRange ETERNITY = new DateRangeHelper.Range(null, null);
 
-	private static final long serialVersionUID = -2492428068671784907L;
+	private static final long serialVersionUID = -2920444137353232870L;
 
 	private final boolean valide;
 	private final DateRange validityRange;
@@ -20,6 +21,7 @@ public class PaysImpl extends EntiteOFSImpl implements Pays, Serializable {
 	private final Integer ofsEtatSouverainParent;
 	private final String codeIso2;
 	private final String codeIso3;
+	private final TypeAffranchissement typeAffranchissement;
 
 	public static PaysImpl get(ch.vd.infrastructure.model.Pays target) {
 		if (target == null) {
@@ -50,6 +52,7 @@ public class PaysImpl extends EntiteOFSImpl implements Pays, Serializable {
 		this.ofsEtatSouverainParent = null; // cette information n'est pas disponible dans host-interface
 		this.codeIso2 = null; // cette information n'est pas disponible dans host-interface
 		this.codeIso3 = null; // cette information n'est pas disponible dans host-interface
+		this.typeAffranchissement = null;
 	}
 
 	private PaysImpl(ch.vd.fidor.ws.v2.Pays target) {
@@ -60,6 +63,11 @@ public class PaysImpl extends EntiteOFSImpl implements Pays, Serializable {
 		this.ofsEtatSouverainParent = target.getEtatSuperieur();
 		this.codeIso2 = target.getIso2Id();
 		this.codeIso3 = target.getIso3Id();
+
+		// l'information n'est pas présente dans cette version du service... on se base sur de simple considérations géographiques...
+		this.typeAffranchissement = target.getContinent() == Continent.E_1_EUROPE
+				? (isSuisse(target.getOfsId()) ? TypeAffranchissement.SUISSE : TypeAffranchissement.EUROPE)
+				: TypeAffranchissement.MONDE;
 	}
 
 	public PaysImpl(ch.ech.ech0072.v1.Country target, ch.vd.evd0007.v1.CountryAddOn addOn, ch.vd.evd0007.v1.ValidityDate validityDates) {
@@ -84,11 +92,30 @@ public class PaysImpl extends EntiteOFSImpl implements Pays, Serializable {
 		this.ofsEtatSouverainParent = target.getAreaState();
 		this.codeIso2 = target.getIso2Id();
 		this.codeIso3 = target.getIso3Id();
+
+		switch (addOn.getSwissPostPriceZone()) {
+			case 1:
+				this.typeAffranchissement = TypeAffranchissement.SUISSE;
+				break;
+			case 2:
+				this.typeAffranchissement = TypeAffranchissement.EUROPE;
+				break;
+			case 0:     // utilisé apparemment par FiDoR pour les pays bidons ajoutés ("Apatridie" et "Pays Inconnu"), voir SIFISC-8754
+			case 3:
+				this.typeAffranchissement = TypeAffranchissement.MONDE;
+				break;
+			default:
+				throw new IllegalArgumentException("Unsupported swiss post price zone : " + addOn.getSwissPostPriceZone() + " for country " + getNoOFS() + " (" + getNomCourt() + ")");
+		}
 	}
 
 	@Override
 	public boolean isSuisse() {
-		return getNoOFS() == ServiceInfrastructureRaw.noOfsSuisse;
+		return isSuisse(getNoOFS());
+	}
+
+	private static boolean isSuisse(int noOfs) {
+		return noOfs == ServiceInfrastructureRaw.noOfsSuisse;
 	}
 
 	@Override
@@ -129,5 +156,10 @@ public class PaysImpl extends EntiteOFSImpl implements Pays, Serializable {
 	@Override
 	public RegDate getDateFin() {
 		return validityRange.getDateFin();
+	}
+
+	@Override
+	public TypeAffranchissement getTypeAffranchissement() {
+		return typeAffranchissement;
 	}
 }

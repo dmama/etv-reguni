@@ -5,6 +5,7 @@ import java.util.EnumSet;
 import java.util.Set;
 
 import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
+import ch.vd.unireg.interfaces.infra.data.TypeAffranchissement;
 import ch.vd.unireg.xml.party.address.v1.TariffZone;
 import ch.vd.unireg.xml.party.immovableproperty.v1.ImmovablePropertyType;
 import ch.vd.unireg.xml.party.immovableproperty.v1.MutationType;
@@ -906,7 +907,7 @@ public abstract class EnumHelper {
 //		return part;
 //	}
 
-	public static TariffZone coreToXML(ch.vd.uniregctb.interfaces.model.TypeAffranchissement t) {
+	public static TariffZone coreToXML(TypeAffranchissement t) {
 		if (t == null) {
 			return null;
 		}

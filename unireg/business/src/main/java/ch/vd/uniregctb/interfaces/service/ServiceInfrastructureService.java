@@ -25,7 +25,6 @@ import ch.vd.unireg.interfaces.infra.data.Rue;
 import ch.vd.unireg.interfaces.infra.data.TypeEtatPM;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
-import ch.vd.uniregctb.interfaces.model.TypeAffranchissement;
 
 public interface ServiceInfrastructureService {
 
@@ -452,14 +451,6 @@ public interface ServiceInfrastructureService {
 	 * @throws ServiceInfrastructureException en cas de problème
 	 */
 	Pays getPaysInconnu() throws ServiceInfrastructureException;
-
-	/**
-	 * Calcule et retourne le type d'affranchissement demandé par la poste pour envoyer un courrier dans un pays particulier.
-	 *
-	 * @param noOfsPays le numéro Ofs du pays de destination.
-	 * @return le type d'affranchissement du courrier.
-	 */
-	TypeAffranchissement getTypeAffranchissement(int noOfsPays);
 
 	/**
 	 * @param metier un domaine métier

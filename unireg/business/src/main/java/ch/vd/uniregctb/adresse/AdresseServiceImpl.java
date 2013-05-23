@@ -38,7 +38,6 @@ import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.model.AdresseEntreprise;
 import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
-import ch.vd.uniregctb.interfaces.model.TypeAffranchissement;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
@@ -896,10 +895,7 @@ public class AdresseServiceImpl implements AdresseService {
 		}
 
 		final Pays pays = buildPays(adresse);
-		if (pays != null) {
-			final TypeAffranchissement typeAffranchissement = getTypeAffranchissement(adresse);
-			adresseEnvoi.addPays(pays, typeAffranchissement);
-		}
+		adresseEnvoi.addPays(pays);
 
 		adresseEnvoi.setNumeroTechniqueRue(adresse.getNumeroRue());
 		adresseEnvoi.setNumeroOrdrePostal(adresse.getNumeroOrdrePostal() == 0 ? null : adresse.getNumeroOrdrePostal());
@@ -2051,22 +2047,6 @@ public class AdresseServiceImpl implements AdresseService {
 		}
 
 		return callDepth + 1;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public TypeAffranchissement getTypeAffranchissement(AdresseGenerique adresse) {
-		Assert.notNull(adresse);
-
-		final Integer noPays = adresse.getNoOfsPays();
-		if (noPays == null) {
-			// adresse suisse
-			return TypeAffranchissement.SUISSE;
-		}
-
-		return serviceInfra.getTypeAffranchissement(noPays);
 	}
 
 	@Override

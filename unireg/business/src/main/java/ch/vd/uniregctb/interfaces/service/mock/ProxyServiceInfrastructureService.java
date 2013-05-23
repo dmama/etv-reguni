@@ -26,7 +26,6 @@ import ch.vd.unireg.interfaces.infra.data.TypeEtatPM;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
-import ch.vd.uniregctb.interfaces.model.TypeAffranchissement;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureImpl;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 
@@ -316,11 +315,6 @@ public class ProxyServiceInfrastructureService implements ServiceInfrastructureS
 	@Override
 	public Localite getLocaliteByNPA(int npa) throws ServiceInfrastructureException {
 		return target.getLocaliteByNPA(npa);
-	}
-
-	@Override
-	public TypeAffranchissement getTypeAffranchissement(int noOfsPays) {
-		return target.getTypeAffranchissement(noOfsPays);
 	}
 
 	@Override

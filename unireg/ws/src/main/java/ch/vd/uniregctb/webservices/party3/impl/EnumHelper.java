@@ -2,6 +2,7 @@ package ch.vd.uniregctb.webservices.party3.impl;
 
 import java.util.Set;
 
+import ch.vd.unireg.interfaces.infra.data.TypeAffranchissement;
 import ch.vd.unireg.webservices.party3.SearchMode;
 import ch.vd.unireg.xml.party.address.v1.TariffZone;
 import ch.vd.unireg.xml.party.debtor.v1.CommunicationMode;
@@ -141,7 +142,7 @@ public abstract class EnumHelper {
 		return ch.vd.uniregctb.xml.EnumHelper.coreToXMLv1(sexe);
 	}
 
-	public static TariffZone coreToWeb(ch.vd.uniregctb.interfaces.model.TypeAffranchissement t) {
+	public static TariffZone coreToWeb(TypeAffranchissement t) {
 		return ch.vd.uniregctb.xml.EnumHelper.coreToXML(t);
 	}
 

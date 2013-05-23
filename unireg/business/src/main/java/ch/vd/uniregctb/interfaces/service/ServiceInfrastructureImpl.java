@@ -4,10 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -35,7 +33,6 @@ import ch.vd.unireg.interfaces.infra.data.TypeEtatPM;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.interfaces.model.TypeAffranchissement;
 
 /**
  * Service d'infrastructure utilisée par le code métier. Ce service expose toutes les méthodes du service d'infrastructure <i>raw</i> en y ajoutant des méthodes utilitaires.
@@ -659,78 +656,6 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	@Override
 	public Localite getLocaliteByNPA(int npa) throws ServiceInfrastructureException {
 		return rawService.getLocaliteByNPA(npa);
-	}
-
-	/**
-	 * [UNIREG-2243] liste hard-codée parce que l'infrastructure ne possède pas cette info pour l'instant
-	 */
-	private static final Set<Integer> affEurope = new HashSet<>();
-
-	static {
-		affEurope.add(8201); // Albanie
-		affEurope.add(8207); // Allemagne
-		affEurope.add(8202); // Andorre
-		affEurope.add(8229); // Autriche
-		affEurope.add(8266); // Bélarus
-		affEurope.add(8204); // Belgique
-		affEurope.add(8252); // Bosnie-Herzégovine
-		affEurope.add(8205); // Bulgarie
-		affEurope.add(8242); // Chypre
-		affEurope.add(8250); // Croatie
-		affEurope.add(8206); // Danemark
-		affEurope.add(8236); // Espagne
-		affEurope.add(8260); // Estonie
-		affEurope.add(8210); // Féroé
-		affEurope.add(8211); // Finlande
-		affEurope.add(8212); // France
-		affEurope.add(8213); // Gibraltar
-		affEurope.add(8215); // Grande-Bretagne
-		affEurope.add(8214); // Grèce
-		affEurope.add(8413); // Groenland
-		affEurope.add(8240); // Hongrie
-		affEurope.add(8216); // Irlande
-		affEurope.add(8217); // Islande
-		affEurope.add(8218); // Italie
-		affEurope.add(8261); // Lettonie
-		affEurope.add(8262); // Lituanie
-		affEurope.add(8223); // Luxembourg
-		affEurope.add(8255); // Macédoine
-		affEurope.add(8224); // Malte
-		affEurope.add(8263); // Moldavie, République
-		affEurope.add(8226); // Monaco
-		affEurope.add(8254); // Monténégro, République
-		affEurope.add(8228); // Norvège
-		affEurope.add(8227); // Pays-Bas
-		affEurope.add(8230); // Pologne
-		affEurope.add(8231); // Portugal
-		affEurope.add(8232); // Roumanie
-		affEurope.add(8264); // Russie, Fédération de
-		affEurope.add(8233); // St-Marin
-		affEurope.add(8248); // Serbie, République
-		affEurope.add(8243); // Slovaque, République
-		affEurope.add(8251); // Slovénie
-		affEurope.add(8234); // Suède
-		affEurope.add(8244); // Tchèque, République
-		affEurope.add(8239); // Turquie
-		affEurope.add(8265); // Ukraine
-		affEurope.add(8241); // Vatican
-	}
-
-	@Override
-	public TypeAffranchissement getTypeAffranchissement(int noOfsPays) {
-
-		if (noOfsPays == noOfsSuisse) {
-			// là haut sur nos montagnes, était un beau chalet
-			return TypeAffranchissement.SUISSE;
-		}
-
-		if (affEurope.contains(Integer.valueOf(noOfsPays))) {
-			// ich bin ein berliner
-			return TypeAffranchissement.EUROPE;
-		}
-
-		// here be dragons
-		return TypeAffranchissement.MONDE;
 	}
 
 	@Override
