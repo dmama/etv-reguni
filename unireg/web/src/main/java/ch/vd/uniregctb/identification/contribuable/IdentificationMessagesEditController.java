@@ -82,9 +82,10 @@ public class IdentificationMessagesEditController extends AbstractTiersListContr
 					}
 				}
 			}
-
-			session.setAttribute(PP_CRITERIA_NAME, bean);
 		}
+
+		// [SIFISC-8691] Quel que soit le cas (effacement ou recherche), il faut remettre le bean en session
+		session.setAttribute(PP_CRITERIA_NAME, bean);
 
 		//Permet de savoir si l'on vient de listEnCours
 		String parameter = request.getParameter(SOURCE_PARAMETER);
