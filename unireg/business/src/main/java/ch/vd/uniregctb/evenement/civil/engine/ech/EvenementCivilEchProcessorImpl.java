@@ -556,7 +556,7 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 					evt.setEtat(etatReferrers);
 				}
 				evt.setCommentaireTraitement(COMMENTAIRE_CORRECTION_GROUPEE);
-				Audit.info(evt.getId(), String.format("Evénement %d (%s/%s) traité (-> %s) avec son événement référencé (%d)", evt.getId(), evt.getType(), evt.getAction(), etatReferrers, idEvtPrincipal));
+				Audit.info(evt.getId(), String.format("Evénement %d (%s/%s) traité (-> %s) avec son événement référencé (%d)", evt.getId(), evt.getType(), evt.getAction(), evt.getEtat(), idEvtPrincipal));
 			}
 		}
 	}
