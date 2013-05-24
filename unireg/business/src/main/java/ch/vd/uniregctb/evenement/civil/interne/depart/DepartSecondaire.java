@@ -14,7 +14,7 @@ import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
@@ -59,7 +59,7 @@ public class DepartSecondaire extends Depart {
 		this.nouvelleLocalisation = computeNouvelleLocalisation(ancienneAdresse, adresseSecondaire, nouvelleCommune);
 	}
 
-	public DepartSecondaire(EvenementCivilEch event, EvenementCivilContext context, EvenementCivilOptions options, Adresse ancienneAdresse) throws EvenementCivilException {
+	public DepartSecondaire(EvenementCivilEchFacade event, EvenementCivilContext context, EvenementCivilOptions options, Adresse ancienneAdresse) throws EvenementCivilException {
 		super(event, context, options);
 
 		final RegDate dateDepart = getDate();

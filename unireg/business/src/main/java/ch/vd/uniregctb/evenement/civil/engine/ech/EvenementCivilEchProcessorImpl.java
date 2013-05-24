@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.evenement.civil.engine.ech;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.SmartLifecycle;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -19,9 +21,11 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.DateHelper;
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilHelper;
@@ -34,12 +38,15 @@ import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchBasicInfo;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchDAO;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchErreur;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchErreurFactory;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchWrappingFacade;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
+import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 
 /**
@@ -49,6 +56,10 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 
 	private static final Logger LOGGER = Logger.getLogger(EvenementCivilEchProcessorImpl.class);
 	private static final Logger EVT_INTERNE_LOGGER = Logger.getLogger(EvenementCivilInterne.class);
+
+	private static final String COMMENTAIRE_ANNULATION_GROUPEE = "Groupe d'événements annulés alors qu'ils étaient encore en attente.";
+	private static final String COMMENTAIRE_CORRECTION_GROUPEE = "Evénement directement pris en compte dans le traitement de l'événement référencé.";
+	private static final String COMMENTAIRE_ACTION_CORRECTIVE_GROUPEE = "Evénement et correction(s) pris en compte ensemble.";
 
 	private EvenementCivilNotificationQueue notificationQueue;
 	private PlatformTransactionManager transactionManager;
@@ -316,9 +327,10 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 						LOGGER.info(String.format("Evénement %d déjà dans l'état %s, on ne le re-traite pas", info.getId(), evt.getEtat()));
 						return Boolean.TRUE;
 					}
-					
+
 					try {
-						return processEvent(evt);
+						final List<EvenementCivilEch> referingEvts = buildEventList(info.getSortedReferrers());
+						return processEvent(evt, referingEvts, info.getDate());
 					}
 					catch (EvenementCivilException e) {
 						throw new EvenementCivilWrappingException(e);
@@ -338,6 +350,29 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 		}
 	}
 
+	@NotNull
+	private List<EvenementCivilEch> buildEventList(List<EvenementCivilEchBasicInfo> infos) {
+		final List<EvenementCivilEch> evts;
+		if (infos != null && infos.size() > 0) {
+			evts = new ArrayList<>(infos.size());
+			for (EvenementCivilEchBasicInfo refInfo : infos) {
+				final EvenementCivilEch ref = evtCivilDAO.get(refInfo.getId());
+				if (ref != null) {
+					if (ref.getNumeroIndividu() == null) {
+						// c'est possible dans le cas où on a récupéré des événements encore à l'état "à traiter" par le biais des relations de référencement
+						// (cette information sera sauvegardée au commit final de la transaction)
+						ref.setNumeroIndividu(refInfo.getNoIndividu());
+					}
+					evts.add(ref);
+				}
+			}
+		}
+		else {
+			evts = Collections.emptyList();
+		}
+		return evts;
+	}
+
 	/**
 	 * Assigne le message d'erreur à l'événement en fonction de l'exception
 	 * @param info description de l'événement en cours de traitement
@@ -349,12 +384,12 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 			public Object doInTransaction(TransactionStatus status) {
 				final EvenementCivilEchErreur erreur = ERREUR_FACTORY.createErreur(e);
 				final EvenementCivilEch evt = evtCivilDAO.get(info.getId());
-				evt.setCommentaireTraitement(null);
-				evt.getErreurs().clear();
+				final List<EvenementCivilEch> referrers = buildEventList(info.getSortedReferrers());
+				final EvenementCivilGroup group = buildGroup(evt, referrers);
+				group.forEach(CLEANUP_AVANT_TRAITEMENT);
+				group.forEach(DATE_TRAITEMENT);
 				evt.getErreurs().add(erreur);
-				evt.setEtat(EtatEvenementCivil.EN_ERREUR);
-				evt.setDateTraitement(DateHelper.getCurrentDate());
-				Audit.error(info.getId(), "Statut de l'événement passé à 'EN_ERREUR'");
+				assignerEtatApresTraitement(EtatEvenementCivil.EN_ERREUR, group);
 				return null;
 			}
 		});
@@ -423,63 +458,222 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 		return template.execute(action);
 	}
 
+	private static interface GroupAction {
+		void execute(boolean principal, boolean hasReferrers, EvenementCivilEch evt);
+	}
+
+	private static class EvenementCivilGroup {
+
+		private final EvenementCivilEch eventPrincipal;
+		private final List<EvenementCivilEch> referrers;
+
+		private EvenementCivilGroup(EvenementCivilEch eventPrincipal, List<EvenementCivilEch> referrers) {
+			this.eventPrincipal = eventPrincipal;
+			this.referrers = referrers;
+		}
+
+		public void forEach(GroupAction action) {
+			action.execute(true, referrers.size() > 0, eventPrincipal);
+			for (EvenementCivilEch ref : referrers) {
+				action.execute(false, true, ref);
+			}
+		}
+	}
+
+	private static final GroupAction CLEANUP_AVANT_TRAITEMENT = new GroupAction() {
+		@Override
+		public void execute(boolean principal, boolean hasReferrers, EvenementCivilEch evt) {
+			if (!evt.getEtat().isTraite()) {
+				evt.setCommentaireTraitement(null);
+				evt.getErreurs().clear();
+			}
+		}
+	};
+
+	private static final GroupAction TRAITEMENT_ANNULATION = new GroupAction() {
+		@Override
+		public void execute(boolean principal, boolean hasReferrers, EvenementCivilEch evt) {
+			if (!evt.getEtat().isTraite()) {
+				evt.setDateTraitement(DateHelper.getCurrentDate());
+				evt.setCommentaireTraitement(COMMENTAIRE_ANNULATION_GROUPEE);
+				evt.setEtat(EtatEvenementCivil.REDONDANT);
+				Audit.info(evt.getId(), String.format("Marquage de l'événement %d (%s/%s) comme redondant (groupe d'événements annulés avant d'avoir été traités)", evt.getId(), evt.getType(), evt.getAction()));
+			}
+		}
+	};
+
+	private static final GroupAction DATE_TRAITEMENT = new GroupAction() {
+		@Override
+		public void execute(boolean principal, boolean hasReferrers, EvenementCivilEch evt) {
+			if (!evt.getEtat().isTraite()) {
+				evt.setDateTraitement(DateHelper.getCurrentDate());
+			}
+		}
+	};
+
+	private static class CorrectionGroupeeAction implements GroupAction {
+
+		private final EvenementCivilEch evtPrincipal;
+		private final EtatEvenementCivil etatReferrers;
+
+		private CorrectionGroupeeAction(EvenementCivilEch evtPrincipal, EtatEvenementCivil etatReferrers) {
+			this.evtPrincipal = evtPrincipal;
+			this.etatReferrers = etatReferrers;
+		}
+
+		@Override
+		public void execute(boolean principal, boolean hasReferrers, EvenementCivilEch evt) {
+			if (principal && hasReferrers) {
+				final String commentaireExistant = evt.getCommentaireTraitement();
+				final String nouveauCommentaire;
+				if (StringUtils.isBlank(commentaireExistant)) {
+					nouveauCommentaire = COMMENTAIRE_ACTION_CORRECTIVE_GROUPEE;
+				}
+				else {
+					nouveauCommentaire = StringUtils.abbreviate(String.format("%s %s", commentaireExistant, COMMENTAIRE_ACTION_CORRECTIVE_GROUPEE), LengthConstants.EVTCIVILECH_COMMENT);
+				}
+				evt.setCommentaireTraitement(nouveauCommentaire);
+			}
+			else if (!principal && !evt.getEtat().isTraite()) {
+				evt.setEtat(etatReferrers);
+				evt.setCommentaireTraitement(COMMENTAIRE_CORRECTION_GROUPEE);
+				Audit.info(evt.getId(), String.format("Evénement %d (%s/%s) traité (-> %s) avec son événement référencé (%d)", evt.getId(), evt.getType(), evt.getAction(), etatReferrers, evtPrincipal.getId()));
+			}
+		}
+	}
+
 	/**
 	 * Appelé dans une transaction pour lancer le traitement de l'événement civil
 	 * @param event événement à traiter
+	 * @param referrers la liste des événements à traiter en même temps car tous forment un groupe
+	 * @param refDate date effective de validité de l'événement (en cas de groupe, cette date peut varier de la date de l'événement principal)
 	 * @return <code>true</code> si tout s'est bien passé, <code>false</code> si l'événement a été mis en erreur
 	 * @throws ch.vd.uniregctb.evenement.civil.common.EvenementCivilException en cas de problème métier
 	 */
-	private boolean processEvent(EvenementCivilEch event) throws EvenementCivilException {
+	private boolean processEvent(EvenementCivilEch event, List<EvenementCivilEch> referrers, RegDate refDate) throws EvenementCivilException {
 		Audit.info(event.getId(), String.format("Début du traitement de l'événement civil %d de type %s/%s au %s sur l'individu %d", event.getId(), event.getType(), event.getAction(), RegDateHelper.dateToDisplayString(event.getDateEvenement()), event.getNumeroIndividu()));
 
-		// élimination des erreurs en cas de retraitement
-		event.setCommentaireTraitement(null);
-		event.getErreurs().clear();
+		// construction d'une liste de tous les événements traités ensemble
+		final EvenementCivilGroup group = buildGroup(event, referrers);
 
-		final EvenementCivilMessageCollector<EvenementCivilEchErreur> collector = new EvenementCivilMessageCollector<>(ERREUR_FACTORY);
-		final EtatEvenementCivil etat = processEventAndCollectMessages(event, collector, collector);
+		// élimination des erreurs et du commentaire de traitement en cas de retraitement
+		group.forEach(CLEANUP_AVANT_TRAITEMENT);
 
-		// les erreurs et warnings collectés sont maintenant associés à l'événement en base
-		final List<EvenementCivilEchErreur> erreurs = EvenementCivilHelper.eliminerDoublons(collector.getErreurs());
-		final List<EvenementCivilEchErreur> warnings = EvenementCivilHelper.eliminerDoublons(collector.getWarnings());
-		event.getErreurs().addAll(erreurs);
-		event.getErreurs().addAll(warnings);
-		event.setDateTraitement(DateHelper.getCurrentDate());
+		// cas facile où il faut tout annuler
+		if (isAnnulationTotale(event, referrers)) {
 
-		for (EvenementCivilEchErreur e : erreurs) {
-			Audit.error(event.getId(), e.getMessage());
-		}
-		for (EvenementCivilEchErreur w : warnings) {
-			Audit.warn(event.getId(), w.getMessage());
-		}
-
-		final boolean hasErrors = collector.hasErreurs();
-		if (hasErrors || etat == EtatEvenementCivil.EN_ERREUR) {
-			event.setEtat(EtatEvenementCivil.EN_ERREUR);
-			Audit.error(event.getId(), "Statut de l'événement passé à 'EN_ERREUR'");
-		}
-		else if (collector.hasWarnings() || etat == EtatEvenementCivil.A_VERIFIER) {
-			event.setEtat(EtatEvenementCivil.A_VERIFIER);
-			Audit.warn(event.getId(), "Statut de l'événement passé à 'A_VERIFIER'");
-		}
-		else {
-			event.setEtat(etat);
-			Audit.success(event.getId(), String.format("Statut de l'événement passé à '%s'", etat.name()));
+			group.forEach(TRAITEMENT_ANNULATION);
 
 			// dans les cas "redondants", on n'a touché à rien, mais il est peut-être utile de forcer une ré-indexation quand-même, non ?
-			if (etat == EtatEvenementCivil.REDONDANT) {
+			scheduleIndexation(event.getNumeroIndividu());
+			return true;
+		}
+		else {
+			final EvenementCivilMessageCollector<EvenementCivilEchErreur> collector = new EvenementCivilMessageCollector<>(ERREUR_FACTORY);
+			final EvenementCivilEchFacade eventFacade = buildFacade(event, refDate);
+			final EtatEvenementCivil etat = processEventAndCollectMessages(eventFacade, collector, collector);
+
+			group.forEach(DATE_TRAITEMENT);
+
+			// les erreurs et warnings collectés sont maintenant associés à l'événement en base
+			final List<EvenementCivilEchErreur> erreurs = EvenementCivilHelper.eliminerDoublons(collector.getErreurs());
+			final List<EvenementCivilEchErreur> warnings = EvenementCivilHelper.eliminerDoublons(collector.getWarnings());
+			event.getErreurs().addAll(erreurs);
+			event.getErreurs().addAll(warnings);
+
+			for (EvenementCivilEchErreur e : erreurs) {
+				Audit.error(event.getId(), e.getMessage());
+			}
+			for (EvenementCivilEchErreur w : warnings) {
+				Audit.warn(event.getId(), w.getMessage());
+			}
+
+			final boolean hasErrors = collector.hasErreurs();
+			final EtatEvenementCivil etatEffectif = hasErrors ? EtatEvenementCivil.EN_ERREUR : (collector.hasWarnings() ? EtatEvenementCivil.A_VERIFIER : etat);
+			assignerEtatApresTraitement(etatEffectif, group);
+
+			// dans les cas "redondants", on n'a touché à rien, mais il est peut-être utile de forcer une ré-indexation quand-même, non ?
+			if (etatEffectif == EtatEvenementCivil.REDONDANT) {
 				scheduleIndexation(event.getNumeroIndividu());
 			}
-		}
 
-		return !hasErrors;
+			return !hasErrors;
+		}
 	}
 
-	private EtatEvenementCivil processEventAndCollectMessages(EvenementCivilEch event, EvenementCivilErreurCollector erreurs, EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+	private static EvenementCivilGroup buildGroup(EvenementCivilEch eventPrincipal, List<EvenementCivilEch> referrers) {
+		return new EvenementCivilGroup(eventPrincipal, referrers);
+	}
+
+	private static void assignerEtatApresTraitement(EtatEvenementCivil etat, EvenementCivilGroup group) {
+		final EvenementCivilEch eventPrincipal = group.eventPrincipal;
+		eventPrincipal.setEtat(etat);
+
+		final String messageAudit = String.format("Statut de l'événement passé à '%s'", etat);
+		if (etat == EtatEvenementCivil.EN_ERREUR) {
+			Audit.error(eventPrincipal.getId(), messageAudit);
+		}
+		else if (etat == EtatEvenementCivil.A_VERIFIER) {
+			Audit.warn(eventPrincipal.getId(), messageAudit);
+		}
+		else {
+			Audit.success(eventPrincipal.getId(), messageAudit);
+		}
+
+		// tous les éléments du groupe sont passés au même état de traitement avec un commentaire
+		// spécifique pour les événements autres que l'événement principal
+		final EtatEvenementCivil etatDependances = (etat == EtatEvenementCivil.EN_ERREUR ? EtatEvenementCivil.EN_ATTENTE : etat);
+		group.forEach(new CorrectionGroupeeAction(eventPrincipal, etatDependances));
+	}
+
+	/**
+	 * Dans le cas des événements groupés, la date de l'événement peut avoir été modifiée par une correction ultérieure
+	 * @param event l'événement principal du groupe
+	 * @param refDate date effective de validité de l'événement (en cas de groupe, cette date peut varier de la date de l'événement principal)
+	 * @return une façade qui peut être utilisée pour le traitement du groupe dans son ensemble
+	 */
+	private EvenementCivilEchFacade buildFacade(EvenementCivilEch event, final RegDate refDate) {
+		if (refDate == event.getDateEvenement()) {
+			return event;
+		}
+
+		return new EvenementCivilEchWrappingFacade(event) {
+			@NotNull
+			@Override
+			public RegDate getDateEvenement() {
+				return refDate;
+			}
+		};
+	}
+
+	/**
+	 * Les annulations sont un cas spécial : actuellement, d'après les dernières analyses faites vis-à-vis de l'équipe RCPers,
+	 * la seule présence d'une annulation dans une chaîne de dépendances signifie en fait l'annulation de l'entièreté de la chaîne
+	 * (jusqu'à l'annonce initiale, donc).
+	 * <p/>
+	 * Dans l'immédiat, on ne va pas traiter ce cas, mais seulement celui où l'annulation pointe directement vers l'élément initial
+	 * (j'ai en effet la conviction assez forte que ce raccourci est une décision RCPers-iènne qui ne résistera pas à la confrontation avec les
+	 * fournisseurs de logiciels communaux qui auront leur propre interprétation des dépendances dans les eCH-0020...)
+	 *
+	 * @return <code>true</code> si la collection des <i>referrers</i> est un événement d'annulation non-traité de l'événement principal
+	 */
+	private static boolean isAnnulationTotale(EvenementCivilEch event, List<EvenementCivilEch> referrers) {
+		boolean isAnnulationTotale = false;
+		if (referrers.size() == 1) {
+			final EvenementCivilEch referrer = referrers.get(0);
+			isAnnulationTotale = event.getAction() == ActionEvenementCivilEch.PREMIERE_LIVRAISON
+					&& referrer.getAction() == ActionEvenementCivilEch.ANNULATION
+					&& !referrer.getEtat().isTraite()
+					&& event.getId().equals(referrer.getRefMessageId());
+		}
+		return isAnnulationTotale;
+	}
+
+	private EtatEvenementCivil processEventAndCollectMessages(EvenementCivilEchFacade event, EvenementCivilErreurCollector erreurs, EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 		final EvenementCivilInterne evtInterne = buildInterne(event);
 		if (evtInterne == null) {
 			LOGGER.error(String.format("Aucun code de traitement trouvé pour l'événement %d", event.getId()));
-			erreurs.addErreur("Aucun code de traitement trouvé");
+			erreurs.addErreur("Aucun code de traitement trouvé.");
 			return EtatEvenementCivil.EN_ERREUR;
 		}
 		else {
@@ -499,7 +693,7 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 		}
 	}
 
-	private EvenementCivilInterne buildInterne(EvenementCivilEch event) throws EvenementCivilException {
+	private EvenementCivilInterne buildInterne(EvenementCivilEchFacade event) throws EvenementCivilException {
 		final EvenementCivilOptions options = new EvenementCivilOptions(true);
 		return translator.toInterne(event, options);
 	}
@@ -570,7 +764,6 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 	public void afterPropertiesSet() throws Exception {
 		postProcessingStrategies = new ArrayList<>();
 		postProcessingStrategies.add(new ErrorPostProcessingIndexationPureStrategy(evtCivilDAO, translator, this));
-//		postProcessingStrategies.add(new ErrorPostProcessingAnnulationImpactStrategy(evtCivilDAO));
 		postProcessingStrategies.add(new ErrorPostProcessingMiseEnAttenteStrategy(evtCivilDAO));
 	}
 }

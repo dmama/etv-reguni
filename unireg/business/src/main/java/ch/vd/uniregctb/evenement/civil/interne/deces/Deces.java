@@ -19,7 +19,7 @@ import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
@@ -56,7 +56,7 @@ public class Deces extends EvenementCivilInterne {
 		this.fromRcpers = false;
 	}
 
-	protected Deces(EvenementCivilEch evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
+	protected Deces(EvenementCivilEchFacade evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		super(evenement, context, options);
 		conjointSurvivant = context.getServiceCivil().getConjoint(evenement.getNumeroIndividu(), evenement.getDateEvenement().getOneDayBefore());
 		this.fromRcpers = true;

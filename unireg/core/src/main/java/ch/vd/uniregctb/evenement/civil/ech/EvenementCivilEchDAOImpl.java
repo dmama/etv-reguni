@@ -61,7 +61,7 @@ public class EvenementCivilEchDAOImpl extends AbstractEvenementCivilDAOImpl<Even
 		}
 		final List<EvenementCivilEch> primaryList = query.list();
 		final List<EvenementCivilEch> listToReturn;
-		if (followLinks) {
+		if (followLinks && primaryList.size() > 0) {
 			listToReturn = new LinkedList<>(primaryList);
 
 			// on rajoute les événements civils qui ne sont pas encore assignés à un individu et qui dépendent des événements déjà pris en compte

@@ -13,13 +13,14 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
 import ch.vd.uniregctb.evenement.civil.engine.ech.EvenementCivilEchTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 
 public class CorrectionRelationTranslationStrategy implements  EvenementCivilEchTranslationStrategy {
 
 	@Override
-	public EvenementCivilInterne create(EvenementCivilEch event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
+	public EvenementCivilInterne create(EvenementCivilEchFacade event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 
 		throw new EvenementCivilException("Evenement à traiter manuellement");
 	}
@@ -70,7 +71,7 @@ public class CorrectionRelationTranslationStrategy implements  EvenementCivilEch
 
 
 	@Override
-	public boolean isPrincipalementIndexation(EvenementCivilEch event, EvenementCivilContext context) throws EvenementCivilException {
+	public boolean isPrincipalementIndexation(EvenementCivilEchFacade event, EvenementCivilContext context) throws EvenementCivilException {
 		return false;
 	}
 

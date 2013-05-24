@@ -36,7 +36,7 @@ public class EvenementCivilEchSourceHelper {
 	 * @param ech l'événement civil à tester
 	 * @return <code>true</code> si on sait avec certitude que l'événement civil est issu d'un ech99
 	 */
-	public static boolean isFromEch99(EvenementCivilEch ech) {
+	public static boolean isFromEch99(EvenementCivilEchFacade ech) {
 		return ECH99.equals(ech.getLogCreationUser());
 	}
 

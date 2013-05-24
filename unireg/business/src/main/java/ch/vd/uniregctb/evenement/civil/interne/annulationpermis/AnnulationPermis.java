@@ -15,7 +15,7 @@ import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
 import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.type.TypePermis;
@@ -49,7 +49,7 @@ public class AnnulationPermis extends AnnulationPermisCOuNationaliteSuisse {
 		}
 	}
 
-	protected AnnulationPermis(EvenementCivilEch evenement, EvenementCivilContext context, EvenementCivilOptions options, TypePermis typePermis) throws EvenementCivilException {
+	protected AnnulationPermis(EvenementCivilEchFacade evenement, EvenementCivilContext context, EvenementCivilOptions options, TypePermis typePermis) throws EvenementCivilException {
 		super(evenement, context, options);
 		this.typePermis = typePermis;
 	}

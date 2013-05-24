@@ -12,7 +12,7 @@ import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
 import ch.vd.uniregctb.evenement.civil.engine.ech.EvenementCivilEchTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.engine.regpp.EvenementCivilTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
@@ -65,7 +65,7 @@ public class DemenagementTranslationStrategy implements EvenementCivilTranslatio
 	}
 
 	@Override
-	public EvenementCivilInterne create(EvenementCivilEch event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
+	public EvenementCivilInterne create(EvenementCivilEchFacade event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 
 		if (isDemenagementPrincipal(event, context)) {
 			final Communes communes = determineCommunesAvantEtApres(event, context);
@@ -104,7 +104,7 @@ public class DemenagementTranslationStrategy implements EvenementCivilTranslatio
 	}
 
 	@Override
-	public boolean isPrincipalementIndexation(EvenementCivilEch event, EvenementCivilContext context) throws EvenementCivilException {
+	public boolean isPrincipalementIndexation(EvenementCivilEchFacade event, EvenementCivilContext context) throws EvenementCivilException {
 		final Communes communes = determineCommunesAvantEtApres(event, context);
 		return (communes.avant == null || communes.apres == null || communes.avant.getNoOFS() == communes.apres.getNoOFS());
 	}
@@ -142,7 +142,7 @@ public class DemenagementTranslationStrategy implements EvenementCivilTranslatio
 	 * @return les communes trouvées (qui peuvent être nulles)
 	 * @throws EvenementCivilException un cas de problème
 	 */
-	private Communes determineCommunesAvantEtApres(EvenementCivilEch event, EvenementCivilContext context) throws EvenementCivilException {
+	private Communes determineCommunesAvantEtApres(EvenementCivilEchFacade event, EvenementCivilContext context) throws EvenementCivilException {
 		final Long principal = event.getNumeroIndividu();
 		final RegDate jourDemenagement = event.getDateEvenement();
 		return determineCommmunesAvantApres(context, principal, jourDemenagement);
@@ -227,7 +227,7 @@ public class DemenagementTranslationStrategy implements EvenementCivilTranslatio
 	 * @return true si l'adresse principale a une date de début qui correspond au jour du déménagement
 	 * @throws EvenementCivilException
 	 */
-	private boolean isDemenagementPrincipal(EvenementCivilEch event, EvenementCivilContext context) throws
+	private boolean isDemenagementPrincipal(EvenementCivilEchFacade event, EvenementCivilContext context) throws
 			EvenementCivilException {
 		final RegDate jourDemenagement = event.getDateEvenement();
 		final long principal = event.getNumeroIndividu();
@@ -257,7 +257,7 @@ public class DemenagementTranslationStrategy implements EvenementCivilTranslatio
 	 * @return true si au moins une adresse secondaire a une date de début qui correspond au jour du déménagement
 	 * @throws EvenementCivilException
 	 */
-	private boolean isDemenagementSecondaire(EvenementCivilEch event, EvenementCivilContext context) throws
+	private boolean isDemenagementSecondaire(EvenementCivilEchFacade event, EvenementCivilContext context) throws
 			EvenementCivilException {
 		final RegDate jourDemenagement = event.getDateEvenement();
 		final long principal = event.getNumeroIndividu();

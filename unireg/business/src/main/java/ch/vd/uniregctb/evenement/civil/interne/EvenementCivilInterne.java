@@ -18,7 +18,7 @@ import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
@@ -83,7 +83,7 @@ public abstract class EvenementCivilInterne {
 		}
 	}
 
-	protected EvenementCivilInterne(EvenementCivilEch evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
+	protected EvenementCivilInterne(EvenementCivilEchFacade evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		this.context = context;
 
 		/* récupération des informations liés à l'événement civil */

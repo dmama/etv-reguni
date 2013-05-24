@@ -9,7 +9,7 @@ import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 
@@ -30,7 +30,7 @@ public class TranslationStrategyWithRelationshipCacheCleanup implements Evenemen
 	}
 
 	@Override
-	public EvenementCivilInterne create(EvenementCivilEch event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
+	public EvenementCivilInterne create(EvenementCivilEchFacade event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 
 		// invalidation du cache de tous les individus en relation avec celui de l'événement
 		final long noIndividu = event.getNumeroIndividu();
@@ -44,7 +44,7 @@ public class TranslationStrategyWithRelationshipCacheCleanup implements Evenemen
 	}
 
 	@Override
-	public boolean isPrincipalementIndexation(EvenementCivilEch event, EvenementCivilContext context) throws EvenementCivilException {
+	public boolean isPrincipalementIndexation(EvenementCivilEchFacade event, EvenementCivilContext context) throws EvenementCivilException {
 		return target.isPrincipalementIndexation(event, context);
 	}
 

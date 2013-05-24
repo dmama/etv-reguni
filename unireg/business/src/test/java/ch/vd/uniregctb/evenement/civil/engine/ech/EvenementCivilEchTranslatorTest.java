@@ -16,6 +16,7 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.metier.MetierService;
@@ -69,13 +70,13 @@ public class EvenementCivilEchTranslatorTest extends BusinessTest {
 		final MutableBoolean appel = new MutableBoolean(false);
 		translator.overrideStrategy(TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.ANNULATION, new EvenementCivilEchTranslationStrategy() {
 			@Override
-			public EvenementCivilInterne create(EvenementCivilEch event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
+			public EvenementCivilInterne create(EvenementCivilEchFacade event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 				appel.setValue(true);
 				return null;
 			}
 
 			@Override
-			public boolean isPrincipalementIndexation(EvenementCivilEch event, EvenementCivilContext context) throws EvenementCivilException {
+			public boolean isPrincipalementIndexation(EvenementCivilEchFacade event, EvenementCivilContext context) throws EvenementCivilException {
 				return false;
 			}
 		});

@@ -309,6 +309,89 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 	}
 
 	@Test
+	public void testConstitutionGroupePourIndividuSansEvenement() throws Exception {
+
+		final long noIndividu = 4236784567L;
+		final RegDate dateNaissance = date(1980, 3, 12);
+
+		final EvenementCivilEchServiceImpl service = buildService(true);
+
+		// création de l'individu
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				createIndividu(noIndividu, dateNaissance, "Dupont", "Albert", Sexe.MASCULIN);
+			}
+		});
+
+		// vérification du comportement du service
+		final List<EvenementCivilEchBasicInfo> infos = service.buildLotEvenementsCivils(noIndividu);
+		Assert.assertNotNull(infos);
+		Assert.assertEquals(0, infos.size());
+	}
+
+	@Test
+	public void testConstitutionGroupeAvecDateCorrectionAnterieure() throws Exception {
+
+		final long noIndividu = 4236784567L;
+		final RegDate dateNaissance = date(1980, 3, 12);
+		final RegDate dateArrivee = date(1998, 3, 12);
+		final RegDate dateArriveeCorrigee = dateArrivee.addDays(-10);
+		final RegDate dateMariage = dateArriveeCorrigee.addDays(5);     // le mariage est donc avant l'arrivée initiale, mais après l'arrivée corrigée
+
+		final EvenementCivilEchServiceImpl service = buildService(true);
+
+		// création de l'individu
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				createIndividu(noIndividu, dateNaissance, "Dupont", "Albert", Sexe.MASCULIN);
+			}
+		});
+
+		// mise en place des données
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				createEvent(dateArrivee, noIndividu, 1L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.EN_ERREUR, null);
+				createEvent(dateArriveeCorrigee, noIndividu, 2L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.CORRECTION, EtatEvenementCivil.EN_ATTENTE, 1L);
+				createEvent(dateMariage, noIndividu, 3L, TypeEvenementCivilEch.MARIAGE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.EN_ATTENTE, null);
+				return null;
+			}
+		});
+
+		// vérification du comportement du service
+		final List<EvenementCivilEchBasicInfo> infos = service.buildLotEvenementsCivils(noIndividu);
+		Assert.assertNotNull(infos);
+		Assert.assertEquals(2, infos.size());
+
+		// on vérifie ici que le mariage est considéré comme devant être traité après l'arrivée
+		// (car l'arrivée a été corrigée avec une date antérieure à celle du mariage)
+		{
+			final EvenementCivilEchBasicInfo info = infos.get(0);
+			Assert.assertNotNull(info);
+			Assert.assertEquals(1L, info.getId());
+
+			final List<EvenementCivilEchBasicInfo> referrers = info.getReferrers();
+			Assert.assertNotNull(referrers);
+			Assert.assertEquals(1, referrers.size());
+
+			final EvenementCivilEchBasicInfo ref = referrers.get(0);
+			Assert.assertNotNull(ref);
+			Assert.assertEquals(2L, ref.getId());
+		}
+		{
+			final EvenementCivilEchBasicInfo info = infos.get(1);
+			Assert.assertNotNull(info);
+			Assert.assertEquals(3L, info.getId());
+
+			final List<EvenementCivilEchBasicInfo> referrers = info.getReferrers();
+			Assert.assertNotNull(referrers);
+			Assert.assertEquals(0, referrers.size());
+		}
+	}
+
+	@Test
 	public void testConstitutionGroupeReferencesCorrections() throws Exception {
 
 		final long noIndividu = 4236784567L;
@@ -370,7 +453,7 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 			final EvenementCivilEchBasicInfo info = infos.get(0);
 			Assert.assertNotNull(info);
 			Assert.assertEquals(2L, info.getId());
-			Assert.assertEquals(0, info.getReferers().size());
+			Assert.assertEquals(0, info.getReferrers().size());
 		}
 
 		// naturalisation (un événement et sa correction tous deux en erreur)
@@ -379,11 +462,11 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 			Assert.assertNotNull(info);
 			Assert.assertEquals(3L, info.getId());
 
-			final List<EvenementCivilEchBasicInfo> referers = info.getSortedReferers();
-			Assert.assertNotNull(referers);
-			Assert.assertEquals(1, referers.size());
+			final List<EvenementCivilEchBasicInfo> referrers = info.getSortedReferrers();
+			Assert.assertNotNull(referrers);
+			Assert.assertEquals(1, referrers.size());
 			{
-				final EvenementCivilEchBasicInfo refInfo = referers.get(0);
+				final EvenementCivilEchBasicInfo refInfo = referrers.get(0);
 				Assert.assertNotNull(refInfo);
 				Assert.assertEquals(4L, refInfo.getId());
 			}
@@ -394,7 +477,7 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 			final EvenementCivilEchBasicInfo info = infos.get(2);
 			Assert.assertNotNull(info);
 			Assert.assertEquals(13L, info.getId());
-			Assert.assertEquals(0, info.getReferers().size());
+			Assert.assertEquals(0, info.getReferrers().size());
 		}
 
 		// mariage (seule la correction est non-traitée)
@@ -402,7 +485,7 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 			final EvenementCivilEchBasicInfo info = infos.get(3);
 			Assert.assertNotNull(info);
 			Assert.assertEquals(6L, info.getId());
-			Assert.assertEquals(0, info.getReferers().size());
+			Assert.assertEquals(0, info.getReferrers().size());
 		}
 
 		// changement de relation d'annonce (récupération des numéros d'individu d'après les dépendances)
@@ -411,11 +494,11 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 			Assert.assertNotNull(info);
 			Assert.assertEquals(8L, info.getId());
 
-			final List<EvenementCivilEchBasicInfo> referers = info.getSortedReferers();
-			Assert.assertNotNull(referers);
-			Assert.assertEquals(1, referers.size());
+			final List<EvenementCivilEchBasicInfo> referrers = info.getSortedReferrers();
+			Assert.assertNotNull(referrers);
+			Assert.assertEquals(1, referrers.size());
 			{
-				final EvenementCivilEchBasicInfo refInfo = referers.get(0);
+				final EvenementCivilEchBasicInfo refInfo = referrers.get(0);
 				Assert.assertNotNull(refInfo);
 				Assert.assertEquals(9L, refInfo.getId());
 				Assert.assertEquals(noIndividu, refInfo.getNoIndividu());
@@ -428,18 +511,20 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 			Assert.assertNotNull(info);
 			Assert.assertEquals(10L, info.getId());
 
-			final List<EvenementCivilEchBasicInfo> referers = info.getSortedReferers();
-			Assert.assertNotNull(referers);
-			Assert.assertEquals(2, referers.size());
+			final List<EvenementCivilEchBasicInfo> referrers = info.getSortedReferrers();
+			Assert.assertNotNull(referrers);
+			Assert.assertEquals(2, referrers.size());
 			{
-				final EvenementCivilEchBasicInfo refInfo = referers.get(0);
+				final EvenementCivilEchBasicInfo refInfo = referrers.get(0);
 				Assert.assertNotNull(refInfo);
 				Assert.assertEquals(11L, refInfo.getId());
+				Assert.assertEquals(EtatEvenementCivil.TRAITE, refInfo.getEtat());
 			}
 			{
-				final EvenementCivilEchBasicInfo refInfo = referers.get(1);
+				final EvenementCivilEchBasicInfo refInfo = referrers.get(1);
 				Assert.assertNotNull(refInfo);
 				Assert.assertEquals(12L, refInfo.getId());
+				Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, refInfo.getEtat());
 			}
 		}
 	}
@@ -472,21 +557,21 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 				createEvent(dateArrivee, noIndividu, 2L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.TRAITE, null);
 				createEvent(dateArrivee, noIndividu, 3L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.ANNULATION, EtatEvenementCivil.A_TRAITER, 2L);
 
-				// arrivée en erreur annulée
+				// arrivée en erreur annulée (= annulation totale)
 				createEvent(dateArrivee.addDays(1), noIndividu, 4L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.EN_ERREUR, null);
 				createEvent(dateArrivee.addDays(1), noIndividu, 5L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.ANNULATION, EtatEvenementCivil.A_TRAITER, 4L);
 
-				// arrivée corrigée et annulée
+				// arrivée corrigée et annulée (correction et annulation seront séparées)
 				createEvent(dateArrivee.addDays(2), noIndividu, 6L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.EN_ERREUR, null);
 				createEvent(dateArrivee.addDays(2), noIndividu, 7L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.CORRECTION, EtatEvenementCivil.A_TRAITER, 6L);
 				createEvent(dateArrivee.addDays(2), noIndividu, 8L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.ANNULATION, EtatEvenementCivil.A_TRAITER, 6L);
 
-				// arrivée corrigée, correction annulée
+				// arrivée corrigée, correction annulée (correction et annulation seront séparées)
 				createEvent(dateArrivee.addDays(3), noIndividu, 9L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.EN_ERREUR, null);
 				createEvent(dateArrivee.addDays(3), noIndividu, 10L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.CORRECTION, EtatEvenementCivil.A_TRAITER, 9L);
 				createEvent(dateArrivee.addDays(3), noIndividu, 11L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.ANNULATION, EtatEvenementCivil.A_TRAITER, 10L);
 
-				// arrivée traitée, correction et annulation de l'arrivée en erreur
+				// arrivée traitée, correction et annulation de l'arrivée en erreur (correction et annulation seront séparées)
 				createEvent(dateArrivee.addDays(4), noIndividu, 12L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.TRAITE, null);
 				createEvent(dateArrivee.addDays(4), noIndividu, 13L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.CORRECTION, EtatEvenementCivil.A_TRAITER, 12L);
 				createEvent(dateArrivee.addDays(4), noIndividu, 14L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.ANNULATION, EtatEvenementCivil.A_TRAITER, 12L);
@@ -498,14 +583,14 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 		// vérification du comportement du service
 		final List<EvenementCivilEchBasicInfo> infos = service.buildLotEvenementsCivils(noIndividu);
 		Assert.assertNotNull(infos);
-		Assert.assertEquals(7, infos.size());
+		Assert.assertEquals(8, infos.size());
 
 		// l'annulation d'arrivée traitée
 		{
 			final EvenementCivilEchBasicInfo info = infos.get(0);
 			Assert.assertNotNull(info);
 			Assert.assertEquals(3L, info.getId());
-			Assert.assertEquals(0, info.getReferers().size());
+			Assert.assertEquals(0, info.getReferrers().size());
 		}
 
 		// arrivée en erreur et annulée
@@ -514,75 +599,84 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 			Assert.assertNotNull(info);
 			Assert.assertEquals(4L, info.getId());
 
-			final List<EvenementCivilEchBasicInfo> referers = info.getSortedReferers();
-			Assert.assertNotNull(referers);
-			Assert.assertEquals(1, referers.size());
+			final List<EvenementCivilEchBasicInfo> referrers = info.getSortedReferrers();
+			Assert.assertNotNull(referrers);
+			Assert.assertEquals(1, referrers.size());
 			{
-				final EvenementCivilEchBasicInfo refInfo = referers.get(0);
+				final EvenementCivilEchBasicInfo refInfo = referrers.get(0);
 				Assert.assertNotNull(refInfo);
 				Assert.assertEquals(5L, refInfo.getId());
 			}
 		}
 
-		// arrivée corrigée puis annulée
+		// arrivée corrigée puis annulée, l'annulation doit être mise à part
 		{
 			final EvenementCivilEchBasicInfo info = infos.get(2);
 			Assert.assertNotNull(info);
 			Assert.assertEquals(6L, info.getId());
 
-			final List<EvenementCivilEchBasicInfo> referers = info.getSortedReferers();
-			Assert.assertNotNull(referers);
-			Assert.assertEquals(2, referers.size());
+			final List<EvenementCivilEchBasicInfo> referrers = info.getSortedReferrers();
+			Assert.assertNotNull(referrers);
+			Assert.assertEquals(1, referrers.size());
 			{
-				final EvenementCivilEchBasicInfo refInfo = referers.get(0);
+				final EvenementCivilEchBasicInfo refInfo = referrers.get(0);
 				Assert.assertNotNull(refInfo);
 				Assert.assertEquals(7L, refInfo.getId());
 			}
-			{
-				final EvenementCivilEchBasicInfo refInfo = referers.get(1);
-				Assert.assertNotNull(refInfo);
-				Assert.assertEquals(8L, refInfo.getId());
-			}
 		}
 
-		// arrivée corrigée, correction annulée -> partie arrivée seule
+		// arrivée corrigée puis annulée, voici l'annulation mise à part
 		{
 			final EvenementCivilEchBasicInfo info = infos.get(3);
 			Assert.assertNotNull(info);
-			Assert.assertEquals(9L, info.getId());
-			Assert.assertEquals(0, info.getReferers().size());
+			Assert.assertEquals(8L, info.getId());
+
+			final List<EvenementCivilEchBasicInfo> referrers = info.getSortedReferrers();
+			Assert.assertNotNull(referrers);
+			Assert.assertEquals(0, referrers.size());
 		}
 
-		// arrivée corrigée, correction annulée -> partie correction annulée
+		// arrivée corrigée, correction annulée, arrivée et correction ensemble
 		{
 			final EvenementCivilEchBasicInfo info = infos.get(4);
 			Assert.assertNotNull(info);
-			Assert.assertEquals(10L, info.getId());
+			Assert.assertEquals(9L, info.getId());
 
-			final List<EvenementCivilEchBasicInfo> referers = info.getSortedReferers();
-			Assert.assertNotNull(referers);
-			Assert.assertEquals(1, referers.size());
+			final List<EvenementCivilEchBasicInfo> referrers = info.getSortedReferrers();
+			Assert.assertNotNull(referrers);
+			Assert.assertEquals(1, referrers.size());
 			{
-				final EvenementCivilEchBasicInfo refInfo = referers.get(0);
+				final EvenementCivilEchBasicInfo refInfo = referrers.get(0);
 				Assert.assertNotNull(refInfo);
-				Assert.assertEquals(11L, refInfo.getId());
+				Assert.assertEquals(10L, refInfo.getId());
 			}
+		}
+
+		// arrivée corrigée, correction annulée, anulation seule
+		{
+			final EvenementCivilEchBasicInfo info = infos.get(5);
+			Assert.assertNotNull(info);
+			Assert.assertEquals(11L, info.getId());
+
+			final List<EvenementCivilEchBasicInfo> referrers = info.getSortedReferrers();
+			Assert.assertNotNull(referrers);
+			Assert.assertEquals(0, referrers.size());
 		}
 
 		// arrivée traitée, correction et annulation de l'arrivée en erreur -> partie correction seule
 		{
-			final EvenementCivilEchBasicInfo info = infos.get(5);
+			final EvenementCivilEchBasicInfo info = infos.get(6);
 			Assert.assertNotNull(info);
 			Assert.assertEquals(13L, info.getId());
-			Assert.assertEquals(0, info.getReferers().size());
+			Assert.assertEquals(0, info.getReferrers().size());
 		}
 
 		// arrivée traitée, correction et annulation de l'arrivée en erreur -> partie annulation seule
 		{
-			final EvenementCivilEchBasicInfo info = infos.get(6);
+			final EvenementCivilEchBasicInfo info = infos.get(7);
 			Assert.assertNotNull(info);
 			Assert.assertEquals(14L, info.getId());
-			Assert.assertEquals(0, info.getReferers().size());
+			Assert.assertEquals(0, info.getReferrers().size());
 		}
 	}
 }

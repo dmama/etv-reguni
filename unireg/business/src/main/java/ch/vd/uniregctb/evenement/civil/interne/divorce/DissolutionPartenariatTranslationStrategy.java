@@ -11,7 +11,7 @@ import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
@@ -28,7 +28,7 @@ public class DissolutionPartenariatTranslationStrategy extends DivorceTranslatio
 	}
 
 	@Override
-	public EvenementCivilInterne create(EvenementCivilEch event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
+	public EvenementCivilInterne create(EvenementCivilEchFacade event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 
 		// [SIFISC-66234]
 		// Verification de l'état-civil de l'individu derrière l'évenement

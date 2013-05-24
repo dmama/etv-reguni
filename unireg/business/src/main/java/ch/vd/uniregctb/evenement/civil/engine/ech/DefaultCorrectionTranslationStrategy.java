@@ -14,7 +14,7 @@ import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -61,7 +61,7 @@ public class DefaultCorrectionTranslationStrategy implements EvenementCivilEchTr
 	}
 
 	@Override
-	public EvenementCivilInterne create(EvenementCivilEch event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
+	public EvenementCivilInterne create(EvenementCivilEchFacade event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 
 		if (event.getAction() != ActionEvenementCivilEch.CORRECTION) {
 			throw new IllegalArgumentException("Stratégie applicable aux seuls événements civils de correction.");
@@ -111,7 +111,7 @@ public class DefaultCorrectionTranslationStrategy implements EvenementCivilEchTr
 		return pp != null && !pp.isHabitantVD();
 	}
 
-	private EvenementCivilEchTranslationStrategy getStrategyBasedOnDifferences(EvenementCivilEch event, IndividuApresEvenement originel, IndividuApresEvenement correction) {
+	private EvenementCivilEchTranslationStrategy getStrategyBasedOnDifferences(EvenementCivilEchFacade event, IndividuApresEvenement originel, IndividuApresEvenement correction) {
 		final List<String> champsModifies = new LinkedList<>();
 		final EvenementCivilEchTranslationStrategy strategieApplicable;
 		if (isFiscalementNeutre(originel, correction, champsModifies)) {
@@ -149,7 +149,7 @@ public class DefaultCorrectionTranslationStrategy implements EvenementCivilEchTr
 	}
 
 	@Override
-	public boolean isPrincipalementIndexation(EvenementCivilEch event, EvenementCivilContext context) throws EvenementCivilException {
+	public boolean isPrincipalementIndexation(EvenementCivilEchFacade event, EvenementCivilContext context) throws EvenementCivilException {
 		return false;
 	}
 

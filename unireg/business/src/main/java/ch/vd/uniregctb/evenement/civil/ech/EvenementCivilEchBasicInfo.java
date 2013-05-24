@@ -4,8 +4,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -16,10 +19,11 @@ import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 
 /**
  * Informations de base sur un événement civil.
+ * <p/><b>Note: </b> cette classe n'est pas <i>thread-safe</i>.
  */
 public final class EvenementCivilEchBasicInfo implements Serializable {
 
-	private static final long serialVersionUID = -8328617338785565663L;
+	private static final long serialVersionUID = 396438041113830368L;
 
 	private final long id;
 	private final long noIndividu;
@@ -28,10 +32,10 @@ public final class EvenementCivilEchBasicInfo implements Serializable {
 	private final ActionEvenementCivilEch action;
 	private final Long idReference;
 	private final RegDate date;
-	private final List<EvenementCivilEchBasicInfo> referers = new LinkedList<>();
+	private List<EvenementCivilEchBasicInfo> referrers = new LinkedList<>();
+	private transient List<EvenementCivilEchBasicInfo> sortedReferrers;
 
-	public EvenementCivilEchBasicInfo(long id, long noIndividu, EtatEvenementCivil etat, TypeEvenementCivilEch type, ActionEvenementCivilEch action, @Nullable Long idReference,
-	                                  RegDate date) {
+	public EvenementCivilEchBasicInfo(long id, long noIndividu, EtatEvenementCivil etat, TypeEvenementCivilEch type, ActionEvenementCivilEch action, @Nullable Long idReference, RegDate date) {
 		this.id = id;
 		this.noIndividu = noIndividu;
 		this.etat = etat;
@@ -115,27 +119,72 @@ public final class EvenementCivilEchBasicInfo implements Serializable {
 	}
 
 	public RegDate getDate() {
-		return date;
-	}
-
-	public void addReferer(EvenementCivilEchBasicInfo referer) {
-		referers.add(referer);
-	}
-
-	public List<EvenementCivilEchBasicInfo> getReferers() {
-		return referers;
-	}
-
-	public List<EvenementCivilEchBasicInfo> getSortedReferers() {
-		final List<EvenementCivilEchBasicInfo> liste = new ArrayList<>(referers);
-		if (liste.size() > 1) {
-			Collections.sort(liste, new Comparator<EvenementCivilEchBasicInfo>() {
-				@Override
-				public int compare(EvenementCivilEchBasicInfo o1, EvenementCivilEchBasicInfo o2) {
-					return Long.compare(o1.getId(), o2.getId());
-				}
-			});
+		if (referrers.size() == 0) {
+			return date;
 		}
-		return liste;
+
+		final List<EvenementCivilEchBasicInfo> sortedReferrers = getSortedReferrers();
+		final EvenementCivilEchBasicInfo lastReferrer = sortedReferrers.get(sortedReferrers.size() - 1);
+		return lastReferrer.getDate();
+	}
+
+	public void addReferrer(EvenementCivilEchBasicInfo referrer) {
+		referrers.add(referrer);
+		sortedReferrers = null;
+	}
+
+	public void setReferrers(List<EvenementCivilEchBasicInfo> referrers) {
+		this.referrers = new LinkedList<>(referrers);
+		sortedReferrers = null;
+	}
+
+	public List<EvenementCivilEchBasicInfo> getReferrers() {
+		return Collections.unmodifiableList(referrers);
+	}
+
+	public List<EvenementCivilEchBasicInfo> getSortedReferrers() {
+		if (sortedReferrers == null) {
+			buildSortedReferrers();
+		}
+		return sortedReferrers;
+	}
+
+	private void buildSortedReferrers() {
+		if (sortedReferrers == null) {
+			if (referrers.size() < 2) {
+				sortedReferrers = getReferrers();
+			}
+	        else {
+				final Set<Long> taken = new HashSet<>(referrers.size() + 1);
+				taken.add(id);
+
+				final List<EvenementCivilEchBasicInfo> remaining = new LinkedList<>(referrers);
+				Collections.sort(remaining, new Comparator<EvenementCivilEchBasicInfo>() {
+					@Override
+					public int compare(EvenementCivilEchBasicInfo o1, EvenementCivilEchBasicInfo o2) {
+						return Long.compare(o1.getId(), o2.getId());
+					}
+				});
+
+				final List<EvenementCivilEchBasicInfo> sorted = new ArrayList<>(referrers.size());
+				while (remaining.size() > 0) {
+					final Iterator<EvenementCivilEchBasicInfo> iter = remaining.iterator();
+					final Set<Long> locallyTaken = new HashSet<>(referrers.size());
+					while (iter.hasNext()) {
+						final EvenementCivilEchBasicInfo referrer = iter.next();
+						if (taken.contains(referrer.getIdReference())) {
+							locallyTaken.add(referrer.getId());
+							sorted.add(referrer);
+							iter.remove();
+						}
+					}
+					taken.addAll(locallyTaken);
+					if (locallyTaken.size() == 0 && remaining.size() > 0) {
+						throw new RuntimeException("Faulty algorithm in event group sorting...");
+					}
+				}
+				sortedReferrers = Collections.unmodifiableList(sorted);
+			}
+		}
 	}
 }

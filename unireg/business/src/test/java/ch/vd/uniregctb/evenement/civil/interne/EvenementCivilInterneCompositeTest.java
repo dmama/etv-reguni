@@ -42,6 +42,7 @@ public class EvenementCivilInterneCompositeTest extends WithoutSpringTest {
 				new EvenementCivilInterneMock()
 		};
 		mockEvenementCivilEch = new EvenementCivilEch() {
+			@NotNull
 			@Override
 			public RegDate getDateEvenement() {
 				return RegDate.get(2011, 1, 1);

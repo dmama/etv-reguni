@@ -3,6 +3,7 @@ package ch.vd.uniregctb.evenement.civil.engine.ech;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 
 /**
@@ -18,7 +19,7 @@ public interface EvenementCivilEchTranslator {
 	 * @return l'événement civil interne correspondant.
 	 * @throws ch.vd.uniregctb.evenement.civil.common.EvenementCivilException en cas de problème
 	 */
-	EvenementCivilInterne toInterne(EvenementCivilEch event, EvenementCivilOptions options) throws EvenementCivilException;
+	EvenementCivilInterne toInterne(EvenementCivilEchFacade event, EvenementCivilOptions options) throws EvenementCivilException;
 
 	/**
 	 * @param event un événement civil externe

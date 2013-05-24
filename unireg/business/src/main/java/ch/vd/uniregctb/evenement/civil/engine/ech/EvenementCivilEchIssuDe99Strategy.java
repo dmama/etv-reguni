@@ -4,7 +4,7 @@ import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneComposite;
 import ch.vd.uniregctb.evenement.civil.interne.changement.nom.ChangementNom;
@@ -23,7 +23,7 @@ public class EvenementCivilEchIssuDe99Strategy implements EvenementCivilEchTrans
 	}
 
 	@Override
-	public EvenementCivilInterne create(EvenementCivilEch event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
+	public EvenementCivilInterne create(EvenementCivilEchFacade event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 
 		// sur le principe, un eCH-99 ne devrait pas avoir d'impact fiscal -> une simple
 		// ré-indexation suffit... SAUF pour ce qui concerne les anciens habitants pour lesquels certaines
@@ -45,7 +45,7 @@ public class EvenementCivilEchIssuDe99Strategy implements EvenementCivilEchTrans
 	}
 
 	@Override
-	public boolean isPrincipalementIndexation(EvenementCivilEch event, EvenementCivilContext context) throws EvenementCivilException {
+	public boolean isPrincipalementIndexation(EvenementCivilEchFacade event, EvenementCivilContext context) throws EvenementCivilException {
 		return true;
 	}
 }

@@ -8,7 +8,7 @@ import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -21,7 +21,7 @@ public class IndexationPureTranslationStrategy implements EvenementCivilEchTrans
 	private static final String MESSAGE_INDEXATION_PURE = "Événemement traité sans modification Unireg.";
 
 	@Override
-	public EvenementCivilInterne create(final EvenementCivilEch event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
+	public EvenementCivilInterne create(final EvenementCivilEchFacade event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		return new EvenementCivilInterne(event, context, options) {
 			@NotNull
 			@Override
@@ -51,7 +51,7 @@ public class IndexationPureTranslationStrategy implements EvenementCivilEchTrans
 	}
 
 	@Override
-	public boolean isPrincipalementIndexation(EvenementCivilEch event, EvenementCivilContext context) {
+	public boolean isPrincipalementIndexation(EvenementCivilEchFacade event, EvenementCivilContext context) {
 		return true;
 	}
 }

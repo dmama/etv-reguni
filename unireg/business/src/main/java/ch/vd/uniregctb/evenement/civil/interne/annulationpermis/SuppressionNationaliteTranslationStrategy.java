@@ -4,7 +4,7 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.type.ActionEvenementCivilEch;
@@ -35,7 +35,7 @@ public class SuppressionNationaliteTranslationStrategy extends AnnulationPermisO
 	}
 
 	@Override
-	public EvenementCivilInterne create(EvenementCivilEch event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
+	public EvenementCivilInterne create(EvenementCivilEchFacade event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		Assert.isEqual(ActionEvenementCivilEch.ANNULATION, event.getAction());
 
 		final EvenementCivilInterne interne;
@@ -53,7 +53,7 @@ public class SuppressionNationaliteTranslationStrategy extends AnnulationPermisO
 	}
 
 	@Override
-	public boolean isPrincipalementIndexation(EvenementCivilEch event, EvenementCivilContext context) throws EvenementCivilException {
+	public boolean isPrincipalementIndexation(EvenementCivilEchFacade event, EvenementCivilContext context) throws EvenementCivilException {
 		return event.getType() == TypeEvenementCivilEch.CHGT_NATIONALITE_ETRANGERE;
 	}
 }

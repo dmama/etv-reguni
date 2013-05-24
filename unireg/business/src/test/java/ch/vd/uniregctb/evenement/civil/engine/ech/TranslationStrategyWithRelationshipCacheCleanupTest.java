@@ -21,6 +21,7 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -35,7 +36,7 @@ public class TranslationStrategyWithRelationshipCacheCleanupTest extends Abstrac
 	public void testNettoyageCacheCivilSurEvenementTraite() throws Exception {
 		final EvenementCivilEchTranslationStrategy noOpStrategy = new EvenementCivilEchTranslationStrategy() {
 			@Override
-			public EvenementCivilInterne create(EvenementCivilEch event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
+			public EvenementCivilInterne create(EvenementCivilEchFacade event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 				return new EvenementCivilInterne(event, context, options) {
 					@NotNull
 					@Override
@@ -50,7 +51,7 @@ public class TranslationStrategyWithRelationshipCacheCleanupTest extends Abstrac
 			}
 
 			@Override
-			public boolean isPrincipalementIndexation(EvenementCivilEch event, EvenementCivilContext context) throws EvenementCivilException {
+			public boolean isPrincipalementIndexation(EvenementCivilEchFacade event, EvenementCivilContext context) throws EvenementCivilException {
 				return false;
 			}
 		};
@@ -62,12 +63,12 @@ public class TranslationStrategyWithRelationshipCacheCleanupTest extends Abstrac
 	public void testNettoyageCacheCivilAvecExceptionDansStrategy() throws Exception {
 		final EvenementCivilEchTranslationStrategy explodingStrategy = new EvenementCivilEchTranslationStrategy() {
 			@Override
-			public EvenementCivilInterne create(EvenementCivilEch event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
+			public EvenementCivilInterne create(EvenementCivilEchFacade event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 				throw new EvenementCivilException("Boom!");
 			}
 
 			@Override
-			public boolean isPrincipalementIndexation(EvenementCivilEch event, EvenementCivilContext context) throws EvenementCivilException {
+			public boolean isPrincipalementIndexation(EvenementCivilEchFacade event, EvenementCivilContext context) throws EvenementCivilException {
 				return false;
 			}
 		};
@@ -79,7 +80,7 @@ public class TranslationStrategyWithRelationshipCacheCleanupTest extends Abstrac
 	public void testNettoyageCacheCivilAvecExceptionDansTraitement() throws Exception {
 		final EvenementCivilEchTranslationStrategy explodingStrategy = new EvenementCivilEchTranslationStrategy() {
 			@Override
-			public EvenementCivilInterne create(EvenementCivilEch event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
+			public EvenementCivilInterne create(EvenementCivilEchFacade event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 				return new EvenementCivilInterne(event, context, options) {
 					@NotNull
 					@Override
@@ -94,7 +95,7 @@ public class TranslationStrategyWithRelationshipCacheCleanupTest extends Abstrac
 			}
 
 			@Override
-			public boolean isPrincipalementIndexation(EvenementCivilEch event, EvenementCivilContext context) throws EvenementCivilException {
+			public boolean isPrincipalementIndexation(EvenementCivilEchFacade event, EvenementCivilContext context) throws EvenementCivilException {
 				return false;
 			}
 		};

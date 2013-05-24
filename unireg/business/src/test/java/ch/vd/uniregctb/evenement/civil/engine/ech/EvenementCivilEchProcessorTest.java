@@ -19,6 +19,7 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchErreur;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneComposite;
 import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
@@ -348,7 +349,7 @@ public class EvenementCivilEchProcessorTest extends AbstractEvenementCivilEchPro
 		// après avoir créé un nouveau contribuable sur le premier
 		final EvenementCivilEchTranslationStrategy strategy = new EvenementCivilEchTranslationStrategy() {
 			@Override
-			public EvenementCivilInterne create(EvenementCivilEch event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
+			public EvenementCivilInterne create(EvenementCivilEchFacade event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 
 				// un événement qui crée un truc en base
 				final EvenementCivilInterne naissance = new EvenementCivilInterne(event, context, options) {
@@ -393,7 +394,7 @@ public class EvenementCivilEchProcessorTest extends AbstractEvenementCivilEchPro
 			}
 
 			@Override
-			public boolean isPrincipalementIndexation(EvenementCivilEch event, EvenementCivilContext context) throws EvenementCivilException {
+			public boolean isPrincipalementIndexation(EvenementCivilEchFacade event, EvenementCivilContext context) throws EvenementCivilException {
 				return false;
 			}
 		};
@@ -579,7 +580,7 @@ public class EvenementCivilEchProcessorTest extends AbstractEvenementCivilEchPro
 		
 		// notre listener n'a rien reçu
 		assertFalse(recu.booleanValue());
-		
+
 		// après insertion du listener, il devrait recevoir les nouveaux événements
 		final EvenementCivilEchProcessor.ListenerHandle handle = processor.registerListener(listener);
 		assertFalse(recu.booleanValue());

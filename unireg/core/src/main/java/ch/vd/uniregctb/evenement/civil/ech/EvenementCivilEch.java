@@ -27,7 +27,7 @@ import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 
 @Entity
 @Table(name = "EVENEMENT_CIVIL_ECH")
-public class EvenementCivilEch extends HibernateEntity {
+public class EvenementCivilEch extends HibernateEntity implements EvenementCivilEchFacade {
 
 	private Long id;
 	private Long refMessageId;

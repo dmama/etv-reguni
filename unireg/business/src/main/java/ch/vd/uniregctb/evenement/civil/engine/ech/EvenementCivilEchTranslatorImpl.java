@@ -13,6 +13,7 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchSourceHelper;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.evenement.civil.interne.annulation.arrivee.AnnulationArriveeTranslationStrategy;
@@ -69,7 +70,7 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 		public final TypeEvenementCivilEch type;
 		public final ActionEvenementCivilEch action;
 
-		protected EventTypeKey(EvenementCivilEch evt) {
+		protected EventTypeKey(EvenementCivilEchFacade evt) {
 			this(evt.getType(), evt.getAction());
 		}
 
@@ -281,7 +282,7 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 	private EvenementCivilContext context;
 	
 	@Override
-	public EvenementCivilInterne toInterne(EvenementCivilEch event, EvenementCivilOptions options) throws EvenementCivilException {
+	public EvenementCivilInterne toInterne(EvenementCivilEchFacade event, EvenementCivilOptions options) throws EvenementCivilException {
 		return getStrategy(event).create(event, context, options);
 	}
 
@@ -296,7 +297,7 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 	}
 
 	@NotNull
-	private EvenementCivilEchTranslationStrategy getStrategy(EvenementCivilEch event) throws EvenementCivilException {
+	private EvenementCivilEchTranslationStrategy getStrategy(EvenementCivilEchFacade event) throws EvenementCivilException {
 
 		// TODO [ech99] jde : à enlever dès que possible...
 		if (EvenementCivilEchSourceHelper.isFromEch99(event)) {

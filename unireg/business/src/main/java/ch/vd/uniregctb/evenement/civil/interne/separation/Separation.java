@@ -5,7 +5,7 @@ import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 
 /**
@@ -19,7 +19,7 @@ public class Separation extends SeparationOuDivorce {
 		super(evenement, context, options);
 	}
 
-	protected Separation(EvenementCivilEch event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
+	protected Separation(EvenementCivilEchFacade event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		super(event, context, options);
 	}
 

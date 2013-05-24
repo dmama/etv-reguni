@@ -835,7 +835,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 				final EvenementCivilEchErreur warning = warnings.iterator().next();
 				assertNotNull(warning);
 				assertEquals(TypeEvenementErreur.WARNING, warning.getType());
-				assertEquals("Ancienne adresse avant l'arrivée inconnue : veuillez indiquer le motif d'ouverture du for principal", warning.getMessage());
+				assertEquals("Ancienne adresse avant l'arrivée inconnue : veuillez indiquer le motif d'ouverture du for principal.", warning.getMessage());
 				return null;
 			}
 		});

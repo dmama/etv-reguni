@@ -13,7 +13,7 @@ import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
@@ -44,8 +44,8 @@ public class Veuvage extends EvenementCivilInterne {
 		super(individu, conjoint, date, numeroOfsCommuneAnnonce, context);
 	}
 
-	public Veuvage(EvenementCivilEch event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
-		super(event, context, options);    //To change body of overridden methods use File | Settings | File Templates.
+	protected Veuvage(EvenementCivilEchFacade event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
+		super(event, context, options);
 	}
 
 	public RegDate getDateVeuvage() {

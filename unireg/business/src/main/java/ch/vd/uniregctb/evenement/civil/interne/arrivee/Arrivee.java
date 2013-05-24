@@ -25,7 +25,7 @@ import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
 import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.interne.mouvement.Mouvement;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
@@ -56,7 +56,7 @@ public abstract class Arrivee extends Mouvement {
 		Assert.isTrue(isEvenementArrivee(evenement.getType()));
 	}
 
-	protected Arrivee(EvenementCivilEch evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
+	protected Arrivee(EvenementCivilEchFacade evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		super(evenement, context, options);
 	}
 

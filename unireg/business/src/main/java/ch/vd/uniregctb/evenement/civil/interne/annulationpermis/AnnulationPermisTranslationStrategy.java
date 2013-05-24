@@ -7,7 +7,7 @@ import ch.vd.unireg.interfaces.civil.data.PermisList;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.type.TypePermis;
@@ -26,20 +26,20 @@ public class AnnulationPermisTranslationStrategy extends AnnulationPermisOuNatio
 	}
 
 	@Override
-	public EvenementCivilInterne create(EvenementCivilEch event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
+	public EvenementCivilInterne create(EvenementCivilEchFacade event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		return new AnnulationPermis(event, context, options, getTypePermisAnnule(event, context));
 	}
 
 	@Override
-	public boolean isPrincipalementIndexation(EvenementCivilEch event, EvenementCivilContext context) throws EvenementCivilException {
+	public boolean isPrincipalementIndexation(EvenementCivilEchFacade event, EvenementCivilContext context) throws EvenementCivilException {
 		return !isPermisC(event, context);
 	}
 	
-	private static boolean isPermisC(EvenementCivilEch event, EvenementCivilContext context) throws EvenementCivilException {
+	private static boolean isPermisC(EvenementCivilEchFacade event, EvenementCivilContext context) throws EvenementCivilException {
 		return getTypePermisAnnule(event, context) == TypePermis.ETABLISSEMENT;
 	}
 
-	private static TypePermis getTypePermisAnnule(EvenementCivilEch event, EvenementCivilContext context) throws EvenementCivilException {
+	private static TypePermis getTypePermisAnnule(EvenementCivilEchFacade event, EvenementCivilContext context) throws EvenementCivilException {
 		final Individu individu = getIndividuAvant(event, context);
 		final PermisList permisList = individu.getPermis();
 		final Permis permis = permisList == null ? null : permisList.getPermisActif(event.getDateEvenement());

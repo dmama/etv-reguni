@@ -10,7 +10,7 @@ import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
 
 /**
  * Classe utile pour les evenements eCH donnant lieu a la creation de plusieurs
@@ -20,7 +20,7 @@ public class EvenementCivilInterneComposite extends EvenementCivilInterne {
 
 	private EvenementCivilInterne[] listEvtEch;
 
-	public EvenementCivilInterneComposite(EvenementCivilEch evenement, EvenementCivilContext context, EvenementCivilOptions options, EvenementCivilInterne... listEvtEch) throws EvenementCivilException {
+	public EvenementCivilInterneComposite(EvenementCivilEchFacade evenement, EvenementCivilContext context, EvenementCivilOptions options, EvenementCivilInterne... listEvtEch) throws EvenementCivilException {
 		super(evenement, context, options);
 		if (listEvtEch == null) {
 			throw new NullPointerException("Impossible de construire un événement composite sans une liste d'événements le composant");

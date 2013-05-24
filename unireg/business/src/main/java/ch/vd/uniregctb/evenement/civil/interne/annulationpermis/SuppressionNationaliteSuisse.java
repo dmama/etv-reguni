@@ -5,7 +5,7 @@ import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 
 public class SuppressionNationaliteSuisse extends SuppressionNationalite {
@@ -14,7 +14,7 @@ public class SuppressionNationaliteSuisse extends SuppressionNationalite {
 		super(evenement, context, options);
 	}
 
-	protected SuppressionNationaliteSuisse(EvenementCivilEch evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
+	protected SuppressionNationaliteSuisse(EvenementCivilEchFacade evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		super(evenement, context, options);
 	}
 

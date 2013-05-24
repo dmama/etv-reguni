@@ -25,7 +25,7 @@ import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
@@ -72,7 +72,7 @@ public class ArriveePrincipale extends Arrivee {
 		previousLocation = computePreviousLocation(evenement.getType());
 	}
 
-	public ArriveePrincipale(EvenementCivilEch evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
+	public ArriveePrincipale(EvenementCivilEchFacade evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		super(evenement, context, options);
 
 		final RegDate dateArrivee = getDate();
@@ -419,7 +419,7 @@ public class ArriveePrincipale extends Arrivee {
 			if (modeImposition != null) {
 				if (motifOuverture == null) {
 					motifOuverture = MotifFor.ARRIVEE_HS;
-					warnings.addWarning("Ancienne adresse avant l'arrivée inconnue : veuillez indiquer le motif d'ouverture du for principal");
+					warnings.addWarning("Ancienne adresse avant l'arrivée inconnue : veuillez indiquer le motif d'ouverture du for principal.");
 				}
 				if (forFiscal == null) {
 					Audit.info(getNumeroEvenement(), "Création d'un for fiscal ordinaire avec mode d'imposition [" + modeImposition + ']');
@@ -551,7 +551,7 @@ public class ArriveePrincipale extends Arrivee {
 			if (modeImposition != null) {
 				if (motifOuverture == null) {
 					motifOuverture = MotifFor.ARRIVEE_HS;
-					warnings.addWarning("Ancienne adresse avant l'arrivée inconnue : veuillez indiquer le motif d'ouverture du for principal");
+					warnings.addWarning("Ancienne adresse avant l'arrivée inconnue : veuillez indiquer le motif d'ouverture du for principal.");
 				}
 				if (ffpMenage == null) {
 					Audit.info(getNumeroEvenement(), "Création d'un for fiscal principal sur le ménage commun avec mode d'imposition [" + modeImposition + ']');
