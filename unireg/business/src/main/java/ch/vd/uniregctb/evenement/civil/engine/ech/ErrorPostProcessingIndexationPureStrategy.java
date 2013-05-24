@@ -47,6 +47,9 @@ public class ErrorPostProcessingIndexationPureStrategy implements ErrorPostProce
 					nonTraites.add(info);
 				}
 			}
+			else {
+				nonTraites.add(info);
+			}
 		}
 
 		customData.setValue(traites);

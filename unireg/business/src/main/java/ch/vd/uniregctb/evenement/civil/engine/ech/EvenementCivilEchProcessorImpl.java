@@ -2,9 +2,11 @@ package ch.vd.uniregctb.evenement.civil.engine.ech;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -523,11 +525,13 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 
 	private static class CorrectionGroupeeAction implements GroupAction {
 
-		private final EvenementCivilEch evtPrincipal;
+		private final long idEvtPrincipal;
 		private final EtatEvenementCivil etatReferrers;
 
-		private CorrectionGroupeeAction(EvenementCivilEch evtPrincipal, EtatEvenementCivil etatReferrers) {
-			this.evtPrincipal = evtPrincipal;
+		private static final Set<EtatEvenementCivil> PASSER_EN_ATTENTE_SI_ERREUR = EnumSet.of(EtatEvenementCivil.A_TRAITER, EtatEvenementCivil.EN_ATTENTE);
+
+		private CorrectionGroupeeAction(long idEvtPrincipal, EtatEvenementCivil etatReferrers) {
+			this.idEvtPrincipal = idEvtPrincipal;
 			this.etatReferrers = etatReferrers;
 		}
 
@@ -545,9 +549,14 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 				evt.setCommentaireTraitement(nouveauCommentaire);
 			}
 			else if (!principal && !evt.getEtat().isTraite()) {
-				evt.setEtat(etatReferrers);
+				if (etatReferrers == EtatEvenementCivil.EN_ERREUR && PASSER_EN_ATTENTE_SI_ERREUR.contains(evt.getEtat())) {
+					evt.setEtat(EtatEvenementCivil.EN_ATTENTE);
+				}
+				else {
+					evt.setEtat(etatReferrers);
+				}
 				evt.setCommentaireTraitement(COMMENTAIRE_CORRECTION_GROUPEE);
-				Audit.info(evt.getId(), String.format("Evénement %d (%s/%s) traité (-> %s) avec son événement référencé (%d)", evt.getId(), evt.getType(), evt.getAction(), etatReferrers, evtPrincipal.getId()));
+				Audit.info(evt.getId(), String.format("Evénement %d (%s/%s) traité (-> %s) avec son événement référencé (%d)", evt.getId(), evt.getType(), evt.getAction(), etatReferrers, idEvtPrincipal));
 			}
 		}
 	}
@@ -639,8 +648,7 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 
 		// tous les éléments du groupe sont passés au même état de traitement avec un commentaire
 		// spécifique pour les événements autres que l'événement principal
-		final EtatEvenementCivil etatDependances = (etat == EtatEvenementCivil.EN_ERREUR ? EtatEvenementCivil.EN_ATTENTE : etat);
-		group.forEach(new CorrectionGroupeeAction(eventPrincipal, etatDependances));
+		group.forEach(new CorrectionGroupeeAction(eventPrincipal.getId(), etat));
 	}
 
 	/**

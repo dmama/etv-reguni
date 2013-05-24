@@ -244,12 +244,12 @@ public class EvenementCivilEchServiceImpl implements EvenementCivilEchService, I
 		dealWithAnnulationsInReferences(liste);
 
 		// dans le cas d'un événement principal issu d'un eCH-0099, il faut aussi faire attention afin que ses éventuels dépendants ne soient
-		// pas traités implicitement
+		// pas traités implicitement (à cause du raccourci actuellement implémenté pour cette catégorie d'événements)
 		// TODO [ech99] jde : à enlever dès que possible...
 		dealWithEch99(liste);
 	}
 
-	private void dealWithAnnulationsInReferences(List<EvenementCivilEchBasicInfo> liste) {
+	private static void dealWithAnnulationsInReferences(List<EvenementCivilEchBasicInfo> liste) {
 		final List<EvenementCivilEchBasicInfo> toAdd = new LinkedList<>();
 		for (EvenementCivilEchBasicInfo info : liste) {
 			final List<EvenementCivilEchBasicInfo> referrers = new ArrayList<>(info.getReferrers());
@@ -293,7 +293,7 @@ public class EvenementCivilEchServiceImpl implements EvenementCivilEchService, I
 	 * nous allons donc nous assurer que de tels événements n'ont pas de dépendances
 	 * @param liste liste des événements civils à traiter pour un individus
 	 */
-	private void dealWithEch99(List<EvenementCivilEchBasicInfo> liste) {
+	private static void dealWithEch99(List<EvenementCivilEchBasicInfo> liste) {
 		final List<EvenementCivilEchBasicInfo> toAdd = new LinkedList<>();
 		for (EvenementCivilEchBasicInfo info : liste) {
 			if (info.getReferrers().size() > 0) {

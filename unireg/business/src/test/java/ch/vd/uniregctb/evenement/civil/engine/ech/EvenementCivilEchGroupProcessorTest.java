@@ -739,4 +739,359 @@ public class EvenementCivilEchGroupProcessorTest extends AbstractEvenementCivilE
 			}
 		});
 	}
+
+	@Test(timeout = 10000L)
+	public void testTraitementDerriereErreur() throws Exception {
+
+		// arrivée en erreur (ancien habitant qui revient, donc toujours non-habitant)
+		// correction d'arrivée qui change le nom (-> pas d'impact fiscal)
+		// comme la correction d'arrivée n'est pas un événement "principalement indexateur", il doit passer en attente sans reprise de données du civil
+
+		final long noIndividu = 42784723L;
+		final RegDate dateDebutAdresse = date(2012, 5, 30);
+		final RegDate dateArrivee = dateDebutAdresse.addDays(2);        // afin de mettre l'arrivée en erreur
+		final String ancienNom = "Tartempion";
+		final String nouveauNom = "Tourtenpièce";
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu individu = addIndividu(noIndividu, null, ancienNom, "Gudule", Sexe.FEMININ);
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Bussigny.RueDeLIndustrie, null, dateDebutAdresse, null);
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
+				addForPrincipal(pp, date(2000, 1, 1), MotifFor.DEPART_HS, MockPays.Allemagne);
+				return pp.getNumero();
+			}
+		});
+
+		// changement de nom
+		doModificationIndividu(noIndividu, new IndividuModification() {
+			@Override
+			public void modifyIndividu(MockIndividu individu) {
+				individu.setNom(nouveauNom);
+			}
+		});
+
+		final class Ids {
+			long idAnnonce;
+			long idCorrection;
+		}
+
+		// événement civil d'arrivée
+		final Ids evtIds = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertNotNull(pp);
+				Assert.assertFalse(pp.isHabitantVD());
+				Assert.assertEquals(ancienNom, pp.getNom());
+
+				final Ids ids = new Ids();
+				{
+					final EvenementCivilEch ech = new EvenementCivilEch();
+					ech.setId(4378423L);
+					ech.setType(TypeEvenementCivilEch.ARRIVEE);
+					ech.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+					ech.setDateEvenement(dateArrivee);
+					ech.setEtat(EtatEvenementCivil.A_TRAITER);
+					ech.setNumeroIndividu(noIndividu);
+					ids.idAnnonce = hibernateTemplate.merge(ech).getId();
+				}
+				{
+					final EvenementCivilEch ech = new EvenementCivilEch();
+					ech.setId(4524734323L);
+					ech.setType(TypeEvenementCivilEch.ARRIVEE);
+					ech.setAction(ActionEvenementCivilEch.CORRECTION);
+					ech.setDateEvenement(dateArrivee);
+					ech.setEtat(EtatEvenementCivil.A_TRAITER);
+					ech.setNumeroIndividu(noIndividu);
+					ech.setRefMessageId(ids.idAnnonce);
+					ids.idCorrection= hibernateTemplate.merge(ech).getId();
+				}
+
+				return ids;
+			}
+		});
+
+		// traitement des événements civils de l'individu
+		traiterEvenements(noIndividu);
+
+		// vérification de l'état après traitement
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertNotNull(pp);
+				Assert.assertFalse(pp.isHabitantVD());
+				Assert.assertEquals(ancienNom, pp.getNom());
+
+				final EvenementCivilEch annonce = evtCivilDAO.get(evtIds.idAnnonce);
+				Assert.assertNotNull(annonce);
+				Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, annonce.getEtat());
+
+				final EvenementCivilEch correction = evtCivilDAO.get(evtIds.idCorrection);
+				Assert.assertNotNull(correction);
+				Assert.assertEquals(EtatEvenementCivil.EN_ATTENTE, correction.getEtat());
+				return null;
+			}
+		});
+	}
+
+	@Test(timeout = 10000L)
+	public void testTraitementIndexation99DerriereErreur() throws Exception {
+
+		// arrivée en erreur (ancien habitant qui revient, donc toujours non-habitant)
+		// correction d'arrivée eCH99 qui change le nom (-> pas d'impact fiscal)
+		// mais on s'attend à ce que le nom soit également modifié dans la base Unireg (car non-habitant)
+
+		final long noIndividu = 42784723L;
+		final RegDate dateDebutAdresse = date(2012, 5, 30);
+		final RegDate dateArrivee = dateDebutAdresse.addDays(2);        // afin de mettre l'arrivée en erreur
+		final String ancienNom = "Tartempion";
+		final String nouveauNom = "Tourtenpièce";
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu individu = addIndividu(noIndividu, null, ancienNom, "Gudule", Sexe.FEMININ);
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Bussigny.RueDeLIndustrie, null, dateDebutAdresse, null);
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
+				addForPrincipal(pp, date(2000, 1, 1), MotifFor.DEPART_HS, MockPays.Allemagne);
+				return pp.getNumero();
+			}
+		});
+
+		// changement de nom
+		doModificationIndividu(noIndividu, new IndividuModification() {
+			@Override
+			public void modifyIndividu(MockIndividu individu) {
+				individu.setNom(nouveauNom);
+			}
+		});
+
+		final class Ids {
+			long idAnnonce;
+			long idCorrection;
+		}
+
+		// événement civil d'arrivée
+		final Ids evtIds = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertNotNull(pp);
+				Assert.assertFalse(pp.isHabitantVD());
+				Assert.assertEquals(ancienNom, pp.getNom());
+
+				final Ids ids = new Ids();
+				{
+					final EvenementCivilEch ech = new EvenementCivilEch();
+					ech.setId(4378423L);
+					ech.setType(TypeEvenementCivilEch.ARRIVEE);
+					ech.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+					ech.setDateEvenement(dateArrivee);
+					ech.setEtat(EtatEvenementCivil.A_TRAITER);
+					ech.setNumeroIndividu(noIndividu);
+					ids.idAnnonce = hibernateTemplate.merge(ech).getId();
+				}
+
+				AuthenticationHelper.pushPrincipal(EvenementCivilEchSourceHelper.getVisaForEch99());
+				try {
+					final EvenementCivilEch ech = new EvenementCivilEch();
+					ech.setId(4524734323L);
+					ech.setType(TypeEvenementCivilEch.ARRIVEE);
+					ech.setAction(ActionEvenementCivilEch.CORRECTION);
+					ech.setDateEvenement(dateArrivee);
+					ech.setEtat(EtatEvenementCivil.A_TRAITER);
+					ech.setNumeroIndividu(noIndividu);
+					ech.setRefMessageId(ids.idAnnonce);
+					ids.idCorrection= hibernateTemplate.merge(ech).getId();
+				}
+				finally {
+					AuthenticationHelper.popPrincipal();
+				}
+
+				return ids;
+			}
+		});
+
+		// traitement des événements civils de l'individu
+		traiterEvenements(noIndividu);
+
+		// vérification de l'état après traitement
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertNotNull(pp);
+				Assert.assertFalse(pp.isHabitantVD());
+				Assert.assertEquals(nouveauNom, pp.getNom());
+
+				final EvenementCivilEch annonce = evtCivilDAO.get(evtIds.idAnnonce);
+				Assert.assertNotNull(annonce);
+				Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, annonce.getEtat());
+
+				final EvenementCivilEch correction = evtCivilDAO.get(evtIds.idCorrection);
+				Assert.assertNotNull(correction);
+				Assert.assertEquals(EtatEvenementCivil.TRAITE, correction.getEtat());
+				return null;
+			}
+		});
+	}
+
+	@Test(timeout = 10000L)
+	public void testPassageEnAttenteDesReferrersDesEvenementsMisEnAttente() throws Exception {
+
+		final long noIndividu = 42784723L;
+		final RegDate dateArrivee = date(2012, 5, 30);
+		final RegDate dateDepart = dateArrivee.addMonths(5);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu individu = addIndividu(noIndividu, null, "Tatempion", "Gudule", Sexe.FEMININ);
+				addAdresse(individu, TypeAdresseCivil.COURRIER, MockRue.Geneve.AvenueGuiseppeMotta, null, date(2000, 1, 1), null);
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
+				addForPrincipal(pp, date(2000, 1, 1), MotifFor.DEPART_HS, MockPays.Allemagne);
+				return pp.getNumero();
+			}
+		});
+
+		final long idAnnonceArrivee = 367432436L;
+		final long idCorrectionArriveeDejaTraitee = 437846734L;
+		final long idCorrectionArrivee = 247224362L;
+		final long idAnnonceDepart = 56785437L;
+		final long idCorrectionDepartDejaTraitee = 467653453L;
+		final long idCorrectionDepart = 4567432L;
+
+		// événements civils
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				// arivée à mettre en erreur
+				{
+					final EvenementCivilEch ech = new EvenementCivilEch();
+					ech.setId(idAnnonceArrivee);
+					ech.setType(TypeEvenementCivilEch.ARRIVEE);
+					ech.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+					ech.setDateEvenement(dateArrivee);
+					ech.setEtat(EtatEvenementCivil.EN_ERREUR);
+					ech.setNumeroIndividu(noIndividu);
+					hibernateTemplate.merge(ech);
+				}
+				// correction de l'arrivée déjà traitée
+				{
+					final EvenementCivilEch ech = new EvenementCivilEch();
+					ech.setId(idCorrectionArriveeDejaTraitee);
+					ech.setType(TypeEvenementCivilEch.ARRIVEE);
+					ech.setAction(ActionEvenementCivilEch.CORRECTION);
+					ech.setDateEvenement(dateArrivee);
+					ech.setEtat(EtatEvenementCivil.EN_ERREUR);
+					ech.setNumeroIndividu(noIndividu);
+					ech.setRefMessageId(idAnnonceArrivee);
+					hibernateTemplate.merge(ech);
+				}
+				// correction de l'arrivée à mettre en attente
+				{
+					final EvenementCivilEch ech = new EvenementCivilEch();
+					ech.setId(idCorrectionArrivee);
+					ech.setType(TypeEvenementCivilEch.ARRIVEE);
+					ech.setAction(ActionEvenementCivilEch.CORRECTION);
+					ech.setDateEvenement(dateArrivee);
+					ech.setEtat(EtatEvenementCivil.A_TRAITER);
+					ech.setNumeroIndividu(noIndividu);
+					ech.setRefMessageId(idCorrectionArriveeDejaTraitee);
+					hibernateTemplate.merge(ech);
+				}
+
+				// départ en erreur
+				{
+					final EvenementCivilEch ech = new EvenementCivilEch();
+					ech.setId(idAnnonceDepart);
+					ech.setType(TypeEvenementCivilEch.DEPART);
+					ech.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+					ech.setDateEvenement(dateDepart);
+					ech.setEtat(EtatEvenementCivil.EN_ERREUR);
+					ech.setNumeroIndividu(noIndividu);
+					hibernateTemplate.merge(ech);
+				}
+				// correction de départ déjà traitée
+				{
+					final EvenementCivilEch ech = new EvenementCivilEch();
+					ech.setId(idCorrectionDepartDejaTraitee);
+					ech.setType(TypeEvenementCivilEch.DEPART);
+					ech.setAction(ActionEvenementCivilEch.CORRECTION);
+					ech.setDateEvenement(dateDepart);
+					ech.setEtat(EtatEvenementCivil.EN_ERREUR);
+					ech.setNumeroIndividu(noIndividu);
+					ech.setRefMessageId(idAnnonceDepart);
+					hibernateTemplate.merge(ech);
+				}
+				// correction de départ à mettre en attente
+				{
+					final EvenementCivilEch ech = new EvenementCivilEch();
+					ech.setId(idCorrectionDepart);
+					ech.setType(TypeEvenementCivilEch.DEPART);
+					ech.setAction(ActionEvenementCivilEch.CORRECTION);
+					ech.setDateEvenement(dateDepart);
+					ech.setEtat(EtatEvenementCivil.A_TRAITER);
+					ech.setNumeroIndividu(noIndividu);
+					ech.setRefMessageId(idCorrectionDepartDejaTraitee);
+					hibernateTemplate.merge(ech);
+				}
+
+				return null;
+			}
+		});
+
+		// traitement des événements civils de l'individu
+		traiterEvenements(noIndividu);
+
+		final class Checker {
+			void check(long idEvt, EtatEvenementCivil etatAttendu) {
+				final EvenementCivilEch ech = evtCivilDAO.get(idEvt);
+				Assert.assertNotNull(ech);
+				Assert.assertEquals(etatAttendu, ech.getEtat());
+			}
+		}
+
+		// vérification de l'état après traitement
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final Checker checker = new Checker();
+				checker.check(idAnnonceArrivee, EtatEvenementCivil.EN_ERREUR);
+				checker.check(idCorrectionArriveeDejaTraitee, EtatEvenementCivil.EN_ERREUR);
+				checker.check(idCorrectionArrivee, EtatEvenementCivil.EN_ATTENTE);
+				checker.check(idAnnonceDepart, EtatEvenementCivil.EN_ERREUR);
+				checker.check(idCorrectionDepartDejaTraitee, EtatEvenementCivil.EN_ERREUR);
+				checker.check(idCorrectionDepart, EtatEvenementCivil.EN_ATTENTE);
+				return null;
+			}
+		});
+	}
 }

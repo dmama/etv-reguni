@@ -33,15 +33,29 @@ public class ErrorPostProcessingMiseEnAttenteStrategy implements ErrorPostProces
 			if (info.getEtat() == EtatEvenementCivil.A_TRAITER) {
 				final EvenementCivilEch evt = evtCivilDAO.get(info.getId());
 				if (evt.getEtat() == EtatEvenementCivil.A_TRAITER) {        // re-test pour vérifier que l'information dans le descripteur est toujours à jour
-					evt.setEtat(EtatEvenementCivil.EN_ATTENTE);
-					Audit.info(evt.getId(), String.format("Mise en attente de l'événement %d", evt.getId()));
+					setEnAttente(evt);
 				}
 				else {
 					remaining.add(info);
 				}
 			}
+
+			// pour la complétude de la chose, on met également les événements <i>referrers</i> en attente s'ils sont encore "à traiter"
+			for (EvenementCivilEchBasicInfo ref : info.getSortedReferrers()) {
+				if (ref.getEtat() == EtatEvenementCivil.A_TRAITER) {
+					final EvenementCivilEch evt = evtCivilDAO.get(ref.getId());
+					if (evt.getEtat() == EtatEvenementCivil.A_TRAITER) {        // re-test pour vérifier que l'information dans le descripteur est toujours à jour
+						setEnAttente(evt);
+					}
+				}
+			}
 		}
 		return remaining;
+	}
+
+	private static void setEnAttente(EvenementCivilEch evt) {
+		evt.setEtat(EtatEvenementCivil.EN_ATTENTE);
+		Audit.info(evt.getId(), String.format("Mise en attente de l'événement %d", evt.getId()));
 	}
 
 	@Override
