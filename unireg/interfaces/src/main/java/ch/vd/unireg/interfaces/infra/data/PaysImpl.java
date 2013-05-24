@@ -93,19 +93,25 @@ public class PaysImpl extends EntiteOFSImpl implements Pays, Serializable {
 		this.codeIso2 = target.getIso2Id();
 		this.codeIso3 = target.getIso3Id();
 
-		switch (addOn.getSwissPostPriceZone()) {
-			case 1:
-				this.typeAffranchissement = TypeAffranchissement.SUISSE;
-				break;
-			case 2:
-				this.typeAffranchissement = TypeAffranchissement.EUROPE;
-				break;
-			case 0:     // utilisé apparemment par FiDoR pour les pays bidons ajoutés ("Apatridie" et "Pays Inconnu"), voir SIFISC-8754
-			case 3:
-				this.typeAffranchissement = TypeAffranchissement.MONDE;
-				break;
-			default:
-				throw new IllegalArgumentException("Unsupported swiss post price zone : " + addOn.getSwissPostPriceZone() + " for country " + getNoOFS() + " (" + getNomCourt() + ")");
+		if (addOn != null) {
+			switch (addOn.getSwissPostPriceZone()) {
+				case 1:
+					this.typeAffranchissement = TypeAffranchissement.SUISSE;
+					break;
+				case 2:
+					this.typeAffranchissement = TypeAffranchissement.EUROPE;
+					break;
+				case 0:     // utilisé apparemment par FiDoR pour les pays bidons ajoutés ("Apatridie" et "Pays Inconnu"), voir SIFISC-8754
+				case 3:
+					this.typeAffranchissement = TypeAffranchissement.MONDE;
+					break;
+				default:
+					throw new IllegalArgumentException("Unsupported swiss post price zone : " + addOn.getSwissPostPriceZone() + " for country " + getNoOFS() + " (" + getNomCourt() + ")");
+			}
+		}
+		else {
+			// dans le doute, on paie le prix fort !
+			this.typeAffranchissement = TypeAffranchissement.MONDE;
 		}
 	}
 
