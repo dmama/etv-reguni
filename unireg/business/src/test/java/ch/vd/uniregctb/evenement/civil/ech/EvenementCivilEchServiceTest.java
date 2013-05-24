@@ -31,7 +31,7 @@ import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 
 public class EvenementCivilEchServiceTest extends BusinessTest {
 
-	protected EvenementCivilEchServiceImpl buildService(boolean collapseReferences) throws Exception {
+	protected EvenementCivilEchServiceImpl buildService() throws Exception {
 		final EvenementCivilEchServiceImpl service = new EvenementCivilEchServiceImpl();
 		service.setEvenementCivilEchDAO(getBean(EvenementCivilEchDAO.class, "evenementCivilEchDAO"));
 		service.setHibernateTemplate(hibernateTemplate);
@@ -39,7 +39,6 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 		service.setTiersDAO(tiersDAO);
 		service.setTiersService(tiersService);
 		service.setTransactionManager(transactionManager);
-		service.setCollapseReferringEvents(collapseReferences);
 		service.afterPropertiesSet();
 		return service;
 	}
@@ -71,7 +70,7 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 			}
 		});
 
-		final EvenementCivilEchServiceImpl service = buildService(false);
+		final EvenementCivilEchServiceImpl service = buildService();
 		final EvenementCivilEch evt = new EvenementCivilEch();
 		evt.setId(noEvt);
 		evt.setAction(actionEvt);
@@ -116,7 +115,7 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 			}
 		});
 
-		final EvenementCivilEchServiceImpl service = buildService(false);
+		final EvenementCivilEchServiceImpl service = buildService();
 		final EvenementCivilEch evt = new EvenementCivilEch();
 		evt.setId(noEvt);
 		evt.setAction(actionEvt);
@@ -162,7 +161,7 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 			}
 		});
 
-		final EvenementCivilEchServiceImpl service = buildService(false);
+		final EvenementCivilEchServiceImpl service = buildService();
 		final EvenementCivilEch evt = new EvenementCivilEch();
 		evt.setId(noEvt);
 		evt.setAction(actionEvt);
@@ -207,7 +206,7 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 			}
 		});
 
-		final EvenementCivilEchServiceImpl service = buildService(false);
+		final EvenementCivilEchServiceImpl service = buildService();
 		final EvenementCivilEch evt = new EvenementCivilEch();
 		evt.setId(noEvt);
 		evt.setAction(actionEvt);
@@ -272,7 +271,7 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 			}
 		});
 
-		final EvenementCivilEchServiceImpl service = buildService(false);
+		final EvenementCivilEchServiceImpl service = buildService();
 
 		// forçage de l'événement civil de correction de mariage
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
@@ -326,7 +325,7 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 		final long noIndividu = 4236784567L;
 		final RegDate dateNaissance = date(1980, 3, 12);
 
-		final EvenementCivilEchServiceImpl service = buildService(true);
+		final EvenementCivilEchServiceImpl service = buildService();
 
 		// création de l'individu
 		serviceCivil.setUp(new MockServiceCivil() {
@@ -351,7 +350,7 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 		final RegDate dateArriveeCorrigee = dateArrivee.addDays(-10);
 		final RegDate dateMariage = dateArriveeCorrigee.addDays(5);     // le mariage est donc avant l'arrivée initiale, mais après l'arrivée corrigée
 
-		final EvenementCivilEchServiceImpl service = buildService(true);
+		final EvenementCivilEchServiceImpl service = buildService();
 
 		// création de l'individu
 		serviceCivil.setUp(new MockServiceCivil() {
@@ -411,7 +410,7 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 		final RegDate dateNaturalisation = date(1998, 3, 12);
 		final RegDate dateMariage = date(2000, 5, 31);
 
-		final EvenementCivilEchServiceImpl service = buildService(true);
+		final EvenementCivilEchServiceImpl service = buildService();
 
 		// création de l'individu
 		serviceCivil.setUp(new MockServiceCivil() {
@@ -548,7 +547,7 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 		final RegDate dateNaissance = date(1980, 10, 25);
 		final RegDate dateArrivee = date(2000, 7, 12);
 
-		final EvenementCivilEchServiceImpl service = buildService(true);
+		final EvenementCivilEchServiceImpl service = buildService();
 
 		// création de l'individu
 		serviceCivil.setUp(new MockServiceCivil() {
@@ -699,7 +698,7 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 		final RegDate dateNaissance = date(1980, 10, 25);
 		final RegDate dateArrivee = date(2000, 7, 12);
 
-		final EvenementCivilEchServiceImpl service = buildService(true);
+		final EvenementCivilEchServiceImpl service = buildService();
 
 		// création de l'individu
 		serviceCivil.setUp(new MockServiceCivil() {
@@ -771,7 +770,7 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 		final RegDate dateNaissance = date(1980, 10, 25);
 		final RegDate dateArrivee = date(2000, 7, 12);
 
-		final EvenementCivilEchServiceImpl service = buildService(true);
+		final EvenementCivilEchServiceImpl service = buildService();
 
 		// création de l'individu
 		serviceCivil.setUp(new MockServiceCivil() {

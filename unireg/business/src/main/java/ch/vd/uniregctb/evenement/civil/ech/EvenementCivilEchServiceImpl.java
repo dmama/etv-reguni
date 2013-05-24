@@ -62,7 +62,6 @@ public class EvenementCivilEchServiceImpl implements EvenementCivilEchService, I
 	private HibernateTemplate hibernateTemplate;
 	private TiersDAO tiersDAO;
 	private TiersService tiersService;
-	private boolean collapseReferringEvents;
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
@@ -120,10 +119,6 @@ public class EvenementCivilEchServiceImpl implements EvenementCivilEchService, I
 		this.tiersService = tiersService;
 	}
 
-	public void setCollapseReferringEvents(boolean collapseReferringEvents) {
-		this.collapseReferringEvents = collapseReferringEvents;
-	}
-
 	@Override
 	public List<EvenementCivilEchBasicInfo> buildLotEvenementsCivils(final long noIndividu) {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
@@ -148,17 +143,7 @@ public class EvenementCivilEchServiceImpl implements EvenementCivilEchService, I
 	}
 
 	private List<EvenementCivilEchBasicInfo> buildListeEvenementsCivilsATraiterPourIndividu(long noIndividu) {
-		if (collapseReferringEvents) {
-			return buildListeEvenementsCivilsATraiterPourIndividuAvecReferences(noIndividu);
-		}
-		else {
-			return buildListeBasiqueEvenementsCivilsATraiterPourIndividu(noIndividu);
-		}
-	}
-
-	private List<EvenementCivilEchBasicInfo> buildListeBasiqueEvenementsCivilsATraiterPourIndividu(long noIndividu) {
-		final List<EvenementCivilEch> evts = evenementCivilEchDAO.getEvenementsCivilsNonTraites(Arrays.asList(noIndividu));
-		return buildInfos(evts, noIndividu);
+		return buildListeEvenementsCivilsATraiterPourIndividuAvecReferences(noIndividu);
 	}
 
 	private List<EvenementCivilEchBasicInfo> buildInfos(List<EvenementCivilEch> evts, long noIndividu) {
@@ -189,7 +174,7 @@ public class EvenementCivilEchServiceImpl implements EvenementCivilEchService, I
 		}
 	}
 
-	private void buildReferenceAwareInformation(List<EvenementCivilEchBasicInfo> liste) {
+	private static void buildReferenceAwareInformation(List<EvenementCivilEchBasicInfo> liste) {
 
 		// si la liste est vide, pas la peine de faire quoi que ce soit, il ne peut pas y avoir de référence à utiliser
 		if (liste == null || liste.size() == 0) {
