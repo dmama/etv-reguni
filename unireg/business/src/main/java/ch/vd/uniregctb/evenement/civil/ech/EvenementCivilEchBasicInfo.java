@@ -23,7 +23,7 @@ import ch.vd.uniregctb.type.TypeEvenementCivilEch;
  */
 public final class EvenementCivilEchBasicInfo implements Serializable {
 
-	private static final long serialVersionUID = -142350935880494320L;
+	private static final long serialVersionUID = 1938897088268813429L;
 
 	private final long id;
 	private final long noIndividu;
@@ -140,6 +140,11 @@ public final class EvenementCivilEchBasicInfo implements Serializable {
 		}
 
 		return getLastReferrer().getDate();
+	}
+
+	@SuppressWarnings("UnusedDeclaration")
+	public RegDate getDateOriginale() {
+		return date;
 	}
 
 	private EvenementCivilEchBasicInfo getLastReferrer() {

@@ -328,18 +328,23 @@ public class ServiceCivilRCPers implements ServiceCivilRaw {
 
 	@Override
 	public IndividuApresEvenement getIndividuAfterEvent(long eventId) {
-		final Event ref = client.getEvent(eventId);
-		if (ref != null) {
-			final Event.PersonAfterEvent personAfterEvent = ref.getPersonAfterEvent();
-			final Individu individu = IndividuRCPers.get(personAfterEvent.getPerson(), personAfterEvent.getRelations(), false, true, infraService);
-			final EventIdentification idtf = ref.getIdentification();
-			final Long refMessageId = idtf.getReferenceMessageId();
-			final RegDate dateEvt = XmlUtils.xmlcal2regdate(idtf.getEventDate());
-			final TypeEvenementCivilEch type = TypeEvenementCivilEch.fromEchCode(idtf.getEventType());
-			final ActionEvenementCivilEch action = ActionEvenementCivilEch.fromEchCode(idtf.getAction());
-			return new IndividuApresEvenement(individu, dateEvt, type, action, refMessageId);
+		try {
+			final Event ref = client.getEvent(eventId);
+			if (ref != null) {
+				final Event.PersonAfterEvent personAfterEvent = ref.getPersonAfterEvent();
+				final Individu individu = IndividuRCPers.get(personAfterEvent.getPerson(), personAfterEvent.getRelations(), false, true, infraService);
+				final EventIdentification idtf = ref.getIdentification();
+				final Long refMessageId = idtf.getReferenceMessageId();
+				final RegDate dateEvt = XmlUtils.xmlcal2regdate(idtf.getEventDate());
+				final TypeEvenementCivilEch type = TypeEvenementCivilEch.fromEchCode(idtf.getEventType());
+				final ActionEvenementCivilEch action = ActionEvenementCivilEch.fromEchCode(idtf.getAction());
+				return new IndividuApresEvenement(individu, dateEvt, type, action, refMessageId);
+			}
+			return null;
 		}
-		return null;
+		catch (Exception e) {
+			throw new ServiceCivilException(e);
+		}
 	}
 
 	@Override

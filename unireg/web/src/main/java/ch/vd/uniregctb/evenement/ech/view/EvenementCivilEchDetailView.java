@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.evenement.ech.view;
 
 import java.io.Serializable;
+import java.util.List;
 
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchBasicInfo;
 import ch.vd.uniregctb.evenement.common.view.EvenementCivilDetailView;
@@ -12,15 +13,14 @@ import ch.vd.uniregctb.type.TypeEvenementCivilEch;
  */
 public class EvenementCivilEchDetailView extends EvenementCivilDetailView implements Serializable {
 
-	private static final long serialVersionUID = -3808938637037369019L;
+	private static final long serialVersionUID = -3670349543387092473L;
 
 	private TypeEvenementCivilEch evtType;
 	private ActionEvenementCivilEch evtAction;
 	private Long refEvtId;
 	private boolean recyclable;
-	private EvenementCivilEchBasicInfo evtPrioritaire;
-	private int totalAutresEvenementsAssocies;
 	private EvenementCivilEchGrappeView grappeComplete;
+	private List<EvenementCivilEchBasicInfo> nonTraitesSurMemeIndividu;
 
 	@SuppressWarnings("unused")
 	public TypeEvenementCivilEch getEvtType() {
@@ -38,24 +38,6 @@ public class EvenementCivilEchDetailView extends EvenementCivilDetailView implem
 
 	public void setRecyclable(boolean recyclable) {
 		this.recyclable = recyclable;
-	}
-
-	@SuppressWarnings("unused")
-	public EvenementCivilEchBasicInfo getEvtPrioritaire() {
-		return evtPrioritaire;
-	}
-
-	public void setEvtPrioritaire(EvenementCivilEchBasicInfo evt) {
-		this.evtPrioritaire = evt;
-	}
-
-	public void setTotalAutresEvenementsAssocies(int totalAutresEvenementsAssocies) {
-		this.totalAutresEvenementsAssocies = totalAutresEvenementsAssocies;
-	}
-
-	@SuppressWarnings("unused")
-	public int getTotalAutresEvenementsAssocies() {
-		return totalAutresEvenementsAssocies;
 	}
 
 	@SuppressWarnings("unused")
@@ -83,5 +65,14 @@ public class EvenementCivilEchDetailView extends EvenementCivilDetailView implem
 
 	public void setGrappeComplete(EvenementCivilEchGrappeView grappeComplete) {
 		this.grappeComplete = grappeComplete;
+	}
+
+	@SuppressWarnings("UnusedDeclaration")
+	public List<EvenementCivilEchBasicInfo> getNonTraitesSurMemeIndividu() {
+		return nonTraitesSurMemeIndividu;
+	}
+
+	public void setNonTraitesSurMemeIndividu(List<EvenementCivilEchBasicInfo> nonTraitesSurMemeIndividu) {
+		this.nonTraitesSurMemeIndividu = nonTraitesSurMemeIndividu;
 	}
 }

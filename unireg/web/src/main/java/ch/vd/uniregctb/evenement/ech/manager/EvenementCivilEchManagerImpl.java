@@ -107,10 +107,9 @@ public class EvenementCivilEchManagerImpl extends EvenementCivilManagerImpl impl
 
 			try {
 				final List<EvenementCivilEchBasicInfo> list = evenementService.buildLotEvenementsCivilsNonTraites(numeroIndividu);
+				evtView.setNonTraitesSurMemeIndividu(list);
 				if (list != null && list.size() > 0) {
 					final EvenementCivilEchBasicInfo evtPrioritaire = list.get(0);
-					evtView.setEvtPrioritaire(evtPrioritaire);
-					evtView.setTotalAutresEvenementsAssocies(list.size() - 1);
 					if (evtView.getEvtId() == evtPrioritaire.getId()) {
 						evtView.setRecyclable(true);
 					}
@@ -128,24 +127,31 @@ public class EvenementCivilEchManagerImpl extends EvenementCivilManagerImpl impl
 	}
 
 	private EvenementCivilEchGrappeView buildGrappeView(EvenementCivilEch evt) throws EvenementCivilException {
-		final List<EvenementCivilEchBasicInfo> list = evenementService.buildGrappe(evt);
-		return new EvenementCivilEchGrappeView(list);
+		try {
+			final List<EvenementCivilEchBasicInfo> list = evenementService.buildGrappe(evt);
+			return new EvenementCivilEchGrappeView(list);
+		}
+		catch (EvenementCivilException e) {
+			throw e;
+		}
+		catch (Exception e) {
+			throw new EvenementCivilException(e);
+		}
 	}
-
 
 	@Override
 	@Transactional
 	public boolean recycleEvenementCivil(Long id) throws EvenementCivilException {
 		EvenementCivilEch evt = evenementService.get(id);
-		if (evt==null) {
+		if (evt == null) {
 			throw newObjectNotFoundException(id);
 		}
         if (evt.getNumeroIndividu() == null) {
             return recycleEvenementCivilSansNumeroIndividu(evt);
-        } else {
+        }
+        else {
             return recycleEvenementCivil(evt);
         }
-
 	}
 
     private boolean recycleEvenementCivilSansNumeroIndividu(EvenementCivilEch evt) throws EvenementCivilException {

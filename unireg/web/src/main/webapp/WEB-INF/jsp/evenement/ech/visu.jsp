@@ -22,9 +22,15 @@
             </td>
             <td width="25%"><fmt:message key="label.date.evenement"/> :</td>
             <td width="25%">
-	            <unireg:regdate regdate="${command.evtDate}"/>
-	            <c:if test="${command.grappeComplete.effectiveDate != command.evtDate}">
-		            <img src="<c:url value='/images/right-arrow.png'/>" height="16px">&nbsp;<unireg:regdate regdate="${command.grappeComplete.effectiveDate}"/>
+	            <c:if test="${command.grappeComplete.effectiveDate == null || command.grappeComplete.effectiveDate == command.evtDate}">
+		            <unireg:regdate regdate="${command.evtDate}"/>
+	            </c:if>
+	            <c:if test="${command.grappeComplete.effectiveDate != null && command.grappeComplete.effectiveDate != command.evtDate}">
+		            <span title="<fmt:message key='label.modification.date.par.correction'/>">
+			            <unireg:regdate regdate="${command.evtDate}"/>
+			            <img src="<c:url value='/images/right-arrow.png'/>" alt="<fmt:message key='label.modification.date.par.correction'/>" height="16px"/>
+			            <unireg:regdate regdate="${command.grappeComplete.effectiveDate}"/>
+				    </span>
 	            </c:if>
             </td>
 
@@ -200,49 +206,53 @@
 </c:if>
 <!-- Fin List tiers -->
 
-<!-- Debut List evenement associes -->
-<c:if test="${command.totalAutresEvenementsAssocies > 0}">
-    <fieldset>
-        <legend><span>Événements Associés</span></legend>
-
-        <c:if test="${!command.recyclable}">
-            <h4>
-                Événement Prioritaire
-            </h4>
-            <table>
-                <tr>
-                    <th>Id</th>
-                    <th>Type</th>
-                    <th>Etat</th>
-                    <th>Date</th>
-                </tr>
-                <tr>
-                    <td>
-                        <a href="visu.do?id=${command.evtPrioritaire.id}">${command.evtPrioritaire.id}</a>
-                    </td>
-                    <td>
-                        <fmt:message key="option.type.evenement.ech.${command.evtPrioritaire.type}"/>
-                    </td>
-                    <td>
-                        <fmt:message key="option.etat.evenement.${command.evtPrioritaire.etat}"/>
-                    </td>
-                    <td>
-                        <unireg:regdate regdate="${command.evtPrioritaire.date}"/>
-                    </td>
-                <tr>
-            </table>
-        </c:if>
-        <div>
-        <c:if test="${command.totalAutresEvenementsAssocies > 1}">
-            <a href='rechercher.do?numeroIndividuFormatte=${command.noIndividu}&modeLotEvenement=true'>${command.totalAutresEvenementsAssocies} autres événements</a>
-        </c:if>
-        <c:if test="${command.totalAutresEvenementsAssocies == 1}">
-            <a href='rechercher.do?numeroIndividuFormatte=${command.noIndividu}&modeLotEvenement=true'>1 autre événement</a>
-        </c:if>
-         dans le lot associé à cet individu.
-        </div>
-    </fieldset>
+<!-- Début de la liste des événements dans un état non final sur ce même individu -->
+<c:if test="${fn:length(command.nonTraitesSurMemeIndividu) > 0}">
+	<fieldset>
+		<legend><span><fmt:message key="label.evenements.non.traites"/></span></legend>
+		<display:table name="command.nonTraitesSurMemeIndividu" id="aTraiter">
+			<display:column style="width: 3em; text-align: center;">
+				<c:if test="${aTraiter.id == command.evtId}">
+					<img src="<c:url value='/images/pin.png'/>"/>
+				</c:if>
+			</display:column>
+			<display:column titleKey="label.numero.evenement">
+				<c:if test="${aTraiter.id == command.evtId}">
+					<c:out value="${aTraiter.id}"/>
+				</c:if>
+				<c:if test="${aTraiter.id != command.evtId}">
+					<a href="visu.do?id=<c:out value='${aTraiter.id}'/>"><c:out value="${aTraiter.id}"/></a>
+				</c:if>
+			</display:column>
+			<display:column titleKey="label.type.evenement">
+				<fmt:message key="option.type.evenement.ech.${aTraiter.type}"/>
+			</display:column>
+			<display:column titleKey="label.action.evenement">
+				<fmt:message key="option.action.evenement.ech.${aTraiter.action}"/>
+			</display:column>
+			<display:column titleKey="label.etat.evenement">
+				<fmt:message key="option.etat.evenement.${aTraiter.etat}"/>
+			</display:column>
+			<display:column titleKey="label.date.evenement">
+				<c:if test="${aTraiter.date == aTraiter.dateOriginale}">
+					<unireg:regdate regdate="${aTraiter.dateOriginale}"/>
+				</c:if>
+				<c:if test="${aTraiter.date != aTraiter.dateOriginale}">
+					<span title="<fmt:message key='label.modification.date.par.correction'/>">
+						<unireg:regdate regdate="${aTraiter.dateOriginale}"/>
+						<img src="<c:url value='/images/right-arrow.png'/>" alt="<fmt:message key='label.modification.date.par.correction'/>" height="16px"/>
+						<unireg:regdate regdate="${aTraiter.date}"/>
+					</span>
+				</c:if>
+			</display:column>
+			<display:column titleKey="label.taille.grappe.traitement.associee">
+				<c:out value="${fn:length(aTraiter.referrers) + 1}"/>
+			</display:column>
+		</display:table>
+	</fieldset>
 </c:if>
+<!-- Fin de la liste des événements dans un état non final sur ce même individu -->
+
 <!-- Debut Boutons -->
 <input type="button" value="<fmt:message key='label.bouton.retour'/>" onClick="document.location='list.do';"/>
 
