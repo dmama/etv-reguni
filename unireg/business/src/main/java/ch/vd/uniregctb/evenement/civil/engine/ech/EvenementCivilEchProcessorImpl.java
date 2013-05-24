@@ -397,11 +397,11 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 				final EvenementCivilEchErreur erreur = ERREUR_FACTORY.createErreur(e);
 				final EvenementCivilEch evt = evtCivilDAO.get(info.getId());
 				final List<EvenementCivilEch> referrers = buildEventList(info.getSortedReferrers());
-				final EvenementCivilGroup group = buildGroup(evt, referrers);
-				group.forEach(CLEANUP_AVANT_TRAITEMENT);
-				group.forEach(DATE_TRAITEMENT);
+				final EvenementCivilGrappe grappe = buildGrappe(evt, referrers);
+				grappe.forEach(CLEANUP_AVANT_TRAITEMENT);
+				grappe.forEach(DATE_TRAITEMENT);
 				evt.getErreurs().add(erreur);
-				assignerEtatApresTraitement(EtatEvenementCivil.EN_ERREUR, group);
+				assignerEtatApresTraitement(EtatEvenementCivil.EN_ERREUR, grappe);
 				return null;
 			}
 		});
@@ -474,12 +474,12 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 		void execute(boolean principal, boolean hasReferrers, EvenementCivilEch evt);
 	}
 
-	private static class EvenementCivilGroup {
+	private static class EvenementCivilGrappe {
 
 		private final EvenementCivilEch eventPrincipal;
 		private final List<EvenementCivilEch> referrers;
 
-		private EvenementCivilGroup(EvenementCivilEch eventPrincipal, List<EvenementCivilEch> referrers) {
+		private EvenementCivilGrappe(EvenementCivilEch eventPrincipal, List<EvenementCivilEch> referrers) {
 			this.eventPrincipal = eventPrincipal;
 			this.referrers = referrers;
 		}
@@ -523,14 +523,14 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 		}
 	};
 
-	private static class CorrectionGroupeeAction implements GroupAction {
+	private static class CorrectionGrappeAction implements GroupAction {
 
 		private final long idEvtPrincipal;
 		private final EtatEvenementCivil etatReferrers;
 
 		private static final Set<EtatEvenementCivil> PASSER_EN_ATTENTE_SI_ERREUR = EnumSet.of(EtatEvenementCivil.A_TRAITER, EtatEvenementCivil.EN_ATTENTE);
 
-		private CorrectionGroupeeAction(long idEvtPrincipal, EtatEvenementCivil etatReferrers) {
+		private CorrectionGrappeAction(long idEvtPrincipal, EtatEvenementCivil etatReferrers) {
 			this.idEvtPrincipal = idEvtPrincipal;
 			this.etatReferrers = etatReferrers;
 		}
@@ -580,15 +580,15 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 		                                        event.getNumeroIndividu()));
 
 		// construction d'une liste de tous les événements traités ensemble
-		final EvenementCivilGroup group = buildGroup(event, referrers);
+		final EvenementCivilGrappe grappe = buildGrappe(event, referrers);
 
 		// élimination des erreurs et du commentaire de traitement en cas de retraitement
-		group.forEach(CLEANUP_AVANT_TRAITEMENT);
+		grappe.forEach(CLEANUP_AVANT_TRAITEMENT);
 
 		// cas facile où il faut tout annuler
 		if (isAnnulationTotale(event, referrers)) {
 
-			group.forEach(TRAITEMENT_ANNULATION);
+			grappe.forEach(TRAITEMENT_ANNULATION);
 
 			// dans les cas "redondants", on n'a touché à rien, mais il est peut-être utile de forcer une ré-indexation quand-même, non ?
 			scheduleIndexation(event.getNumeroIndividu());
@@ -599,7 +599,7 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 			final EvenementCivilEchFacade eventFacade = buildFacade(event, refDate, evtIdForDataAfterEvent);
 			final EtatEvenementCivil etat = processEventAndCollectMessages(eventFacade, collector, collector);
 
-			group.forEach(DATE_TRAITEMENT);
+			grappe.forEach(DATE_TRAITEMENT);
 
 			// les erreurs et warnings collectés sont maintenant associés à l'événement en base
 			final List<EvenementCivilEchErreur> erreurs = EvenementCivilHelper.eliminerDoublons(collector.getErreurs());
@@ -616,7 +616,7 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 
 			final boolean hasErrors = collector.hasErreurs();
 			final EtatEvenementCivil etatEffectif = hasErrors ? EtatEvenementCivil.EN_ERREUR : (collector.hasWarnings() ? EtatEvenementCivil.A_VERIFIER : etat);
-			assignerEtatApresTraitement(etatEffectif, group);
+			assignerEtatApresTraitement(etatEffectif, grappe);
 
 			// dans les cas "redondants", on n'a touché à rien, mais il est peut-être utile de forcer une ré-indexation quand-même, non ?
 			if (etatEffectif == EtatEvenementCivil.REDONDANT) {
@@ -627,12 +627,12 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 		}
 	}
 
-	private static EvenementCivilGroup buildGroup(EvenementCivilEch eventPrincipal, List<EvenementCivilEch> referrers) {
-		return new EvenementCivilGroup(eventPrincipal, referrers);
+	private static EvenementCivilGrappe buildGrappe(EvenementCivilEch eventPrincipal, List<EvenementCivilEch> referrers) {
+		return new EvenementCivilGrappe(eventPrincipal, referrers);
 	}
 
-	private static void assignerEtatApresTraitement(EtatEvenementCivil etat, EvenementCivilGroup group) {
-		final EvenementCivilEch eventPrincipal = group.eventPrincipal;
+	private static void assignerEtatApresTraitement(EtatEvenementCivil etat, EvenementCivilGrappe grappe) {
+		final EvenementCivilEch eventPrincipal = grappe.eventPrincipal;
 		eventPrincipal.setEtat(etat);
 
 		final String messageAudit = String.format("Statut de l'événement passé à '%s'", etat);
@@ -648,7 +648,7 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 
 		// tous les éléments du groupe sont passés au même état de traitement avec un commentaire
 		// spécifique pour les événements autres que l'événement principal
-		group.forEach(new CorrectionGroupeeAction(eventPrincipal.getId(), etat));
+		grappe.forEach(new CorrectionGrappeAction(eventPrincipal.getId(), etat));
 	}
 
 	/**
@@ -657,7 +657,7 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 	 * @param refDate date effective de validité de l'événement (en cas de groupe, cette date peut varier de la date de l'événement principal)
 	 * @return une façade qui peut être utilisée pour le traitement du groupe dans son ensemble
 	 */
-	private EvenementCivilEchFacade buildFacade(EvenementCivilEch event, final RegDate refDate, final long idEvtForDataAfterEvent) {
+	private static EvenementCivilEchFacade buildFacade(EvenementCivilEch event, final RegDate refDate, final long idEvtForDataAfterEvent) {
 		if (refDate == event.getDateEvenement() && event.getId() == idEvtForDataAfterEvent) {
 			return event;
 		}

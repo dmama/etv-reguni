@@ -35,7 +35,7 @@ import ch.vd.uniregctb.type.TypeEvenementErreur;
 import ch.vd.uniregctb.type.TypePermis;
 
 @SuppressWarnings("JavaDoc")
-public class EvenementCivilEchGroupProcessorTest extends AbstractEvenementCivilEchProcessorTest {
+public class EvenementCivilEchGrappeProcessorTest extends AbstractEvenementCivilEchProcessorTest {
 
 	@Test(timeout = 10000L)
 	public void testAnnulationTotale() throws Exception {
