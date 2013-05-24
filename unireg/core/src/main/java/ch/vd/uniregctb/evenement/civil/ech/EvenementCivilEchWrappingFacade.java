@@ -30,6 +30,11 @@ public class EvenementCivilEchWrappingFacade implements EvenementCivilEchFacade 
 	}
 
 	@Override
+	public Long getIdForDataAfterEvent() {
+		return target.getIdForDataAfterEvent();
+	}
+
+	@Override
 	public Long getRefMessageId() {
 		return target.getRefMessageId();
 	}

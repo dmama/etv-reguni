@@ -76,12 +76,30 @@ public class DefaultCorrectionTranslationStrategy implements EvenementCivilEchTr
 		else {
 
 			// on va comparer les individus avant et après correction,
-			final IndividuApresEvenement correction = serviceCivil.getIndividuAfterEvent(event.getId());
+			final Long idForDataAfterEvent = event.getIdForDataAfterEvent();
+			final IndividuApresEvenement correction = serviceCivil.getIndividuAfterEvent(idForDataAfterEvent);
 			if (correction == null) {
-				throw new EvenementCivilException(String.format("Impossible d'obtenir les données de l'événement civil %d de correction", event.getId()));
+				throw new EvenementCivilException(String.format("Impossible d'obtenir les données de l'événement civil %d de correction", idForDataAfterEvent));
 			}
 
-			final Long idEvtOriginel = event.getRefMessageId() != null ? event.getRefMessageId() : correction.getIdEvenementRef();
+			final Long idEvtOriginel;
+			if (event.getRefMessageId() != null) {
+				idEvtOriginel = event.getRefMessageId();
+			}
+			else if (event.getId().equals(idForDataAfterEvent)) {
+				idEvtOriginel = correction.getIdEvenementRef();
+			}
+			else {
+				// on arrive ici si :
+				// - l'événement de correction connu en base n'a pas de refMessageId assigné
+				// - l'événement de correction en cours de traitement n'est pas le dernier de son groupe
+				// --> il faut bien faire attention à aller chercher le bon état de l'individu "avant"
+				final IndividuApresEvenement fromCivil = serviceCivil.getIndividuAfterEvent(event.getId());
+				if (fromCivil == null) {
+					throw new EvenementCivilException(String.format("Impossible d'obtenir les données de l'événement civil %d de correction", idForDataAfterEvent));
+				}
+				idEvtOriginel = fromCivil.getIdEvenementRef();
+			}
 			if (idEvtOriginel == null) {
 				throw new EvenementCivilException("Impossible de traiter un événement civil de correction sans lien vers l'événement originel.");
 			}

@@ -98,6 +98,14 @@ public final class EvenementCivilEchBasicInfo implements Serializable {
 		return id;
 	}
 
+	public long getIdForDataAfterEvent() {
+		if (referrers.size() == 0) {
+			return id;
+		}
+
+		return getLastReferrer().getId();
+	}
+
 	public long getNoIndividu() {
 		return noIndividu;
 	}
@@ -123,9 +131,12 @@ public final class EvenementCivilEchBasicInfo implements Serializable {
 			return date;
 		}
 
+		return getLastReferrer().getDate();
+	}
+
+	private EvenementCivilEchBasicInfo getLastReferrer() {
 		final List<EvenementCivilEchBasicInfo> sortedReferrers = getSortedReferrers();
-		final EvenementCivilEchBasicInfo lastReferrer = sortedReferrers.get(sortedReferrers.size() - 1);
-		return lastReferrer.getDate();
+		return sortedReferrers.get(sortedReferrers.size() - 1);
 	}
 
 	public void addReferrer(EvenementCivilEchBasicInfo referrer) {

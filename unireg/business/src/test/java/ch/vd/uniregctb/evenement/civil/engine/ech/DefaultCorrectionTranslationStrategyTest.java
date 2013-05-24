@@ -1006,7 +1006,224 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 				return null;
 			}
 		});
+	}
 
+	@Test(timeout = 10000L)
+	public void testDoubleCorrectionQuiSAnnulent() throws Exception {
+
+		buildStrategyOverridingTranslatorAndProcessor(true, new StrategyOverridingCallback() {
+			@Override
+			public void overrideStrategies(EvenementCivilEchTranslatorImplOverride translator) {
+				translator.overrideStrategy(TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, strategy);
+			}
+		});
+
+		final long noIndividu = 4684263L;
+		final long idEvtCorrige = 464735292L;
+		final long idEvtCorrection = 4326478256242L;
+		final long idEvtDoubleCorrection = 45454548545L;
+		final RegDate dateEvt = RegDate.get();
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noIndividu, null, "Zweisteinen", "Robert", true);
+				marieIndividu(ind, date(1955, 12, 1));
+				addIndividuAfterEvent(idEvtCorrige, ind, dateEvt, TypeEvenementCivilEch.TESTING);
+
+				final MockIndividu ind2 = createIndividu(noIndividu, null, "Zweisteinen", "Albert", true);
+				marieIndividu(ind2, date(1955, 12, 18));
+				addIndividuAfterEvent(idEvtCorrection, ind2, dateEvt, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, idEvtCorrige);
+
+				final MockIndividu ind3 = createIndividu(noIndividu, null, "Zweisteinen", "Albert", true);
+				marieIndividu(ind3, date(1955, 12, 1));
+				addIndividuAfterEvent(idEvtDoubleCorrection, ind3, dateEvt, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, idEvtCorrection);
+			}
+		});
+
+		// construction de l'événement de correction
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(idEvtCorrection);
+				evt.setNumeroIndividu(noIndividu);
+				evt.setType(TypeEvenementCivilEch.TESTING);
+				evt.setAction(ActionEvenementCivilEch.CORRECTION);
+				evt.setDateEvenement(dateEvt);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setRefMessageId(idEvtCorrige);
+				hibernateTemplate.merge(evt);
+				return null;
+			}
+		});
+
+		// traitement de l'événement de correction -> la date de mariage est différente -> pas traitable automatiquement
+		traiterEvenements(noIndividu);
+
+		// vérification du traitement
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = evtCivilDAO.get(idEvtCorrection);
+				Assert.assertNotNull(evt);
+				Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
+				Assert.assertEquals("L'élément suivant a été modifié par la correction : état civil (dates).", evt.getCommentaireTraitement());
+
+				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
+				Assert.assertNotNull(erreurs);
+				Assert.assertEquals(1, erreurs.size());
+
+				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
+				Assert.assertEquals("Traitement automatique non implémenté. Veuillez effectuer cette opération manuellement.", erreur.getMessage());
+				return null;
+			}
+		});
+
+		// construction de l'événement de correction de correction
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(idEvtDoubleCorrection);
+				evt.setNumeroIndividu(noIndividu);
+				evt.setType(TypeEvenementCivilEch.TESTING);
+				evt.setAction(ActionEvenementCivilEch.CORRECTION);
+				evt.setDateEvenement(dateEvt);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setRefMessageId(idEvtCorrection);
+				hibernateTemplate.merge(evt);
+				return null;
+			}
+		});
+
+		// traitement de l'événement de correction -> la date de mariage maintenant redevenue identique -> traitable automatiquement
+		traiterEvenements(noIndividu);
+
+		// vérification du traitement
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				{
+					final EvenementCivilEch evt = evtCivilDAO.get(idEvtCorrection);
+					Assert.assertNotNull(evt);
+					Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+					Assert.assertEquals("Événemement traité sans modification Unireg. Evénement et correction(s) pris en compte ensemble.", evt.getCommentaireTraitement());
+
+					final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
+					Assert.assertNotNull(erreurs);
+					Assert.assertEquals(0, erreurs.size());
+				}
+				{
+					final EvenementCivilEch evt = evtCivilDAO.get(idEvtDoubleCorrection);
+					Assert.assertNotNull(evt);
+					Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+					Assert.assertEquals("Evénement directement pris en compte dans le traitement de l'événement référencé.", evt.getCommentaireTraitement());
+
+					final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
+					Assert.assertNotNull(erreurs);
+					Assert.assertEquals(0, erreurs.size());
+				}
+				return null;
+			}
+		});
+	}
+
+	@Test(timeout = 10000L)
+	public void testRattrapageRefMessageIdAvecDoubleCorrection() throws Exception {
+
+		buildStrategyOverridingTranslatorAndProcessor(true, new StrategyOverridingCallback() {
+			@Override
+			public void overrideStrategies(EvenementCivilEchTranslatorImplOverride translator) {
+				translator.overrideStrategy(TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, strategy);
+			}
+		});
+
+		final long noIndividu = 4684263L;
+		final long idEvtCorrige = 464735292L;
+		final long idEvtCorrection = 4326478256242L;
+		final long idEvtDoubleCorrection = 45454548545L;
+		final RegDate dateEvt = RegDate.get();
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noIndividu, null, "Zweisteinen", "Robert", true);
+				marieIndividu(ind, date(1955, 12, 1));
+				addIndividuAfterEvent(idEvtCorrige, ind, dateEvt, TypeEvenementCivilEch.TESTING);
+
+				final MockIndividu ind2 = createIndividu(noIndividu, null, "Zweisteinen", "Albert", true);
+				marieIndividu(ind2, date(1955, 12, 18));
+				addIndividuAfterEvent(idEvtCorrection, ind2, dateEvt, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, idEvtCorrige);
+
+				final MockIndividu ind3 = createIndividu(noIndividu, null, "Zweisteinen", "Albert", true);
+				marieIndividu(ind3, date(1955, 12, 1));
+				addIndividuAfterEvent(idEvtDoubleCorrection, ind3, dateEvt, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, idEvtCorrection);
+			}
+		});
+
+		// construction des événements de correction
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				{
+					final EvenementCivilEch evt = new EvenementCivilEch();
+					evt.setId(idEvtCorrection);
+					evt.setNumeroIndividu(noIndividu);
+					evt.setType(TypeEvenementCivilEch.TESTING);
+					evt.setAction(ActionEvenementCivilEch.CORRECTION);
+					evt.setDateEvenement(dateEvt);
+					evt.setEtat(EtatEvenementCivil.A_TRAITER);
+					evt.setRefMessageId(null);
+					hibernateTemplate.merge(evt);
+				}
+				{
+					final EvenementCivilEch evt = new EvenementCivilEch();
+					evt.setId(idEvtDoubleCorrection);
+					evt.setNumeroIndividu(noIndividu);
+					evt.setType(TypeEvenementCivilEch.TESTING);
+					evt.setAction(ActionEvenementCivilEch.CORRECTION);
+					evt.setDateEvenement(dateEvt);
+					evt.setEtat(EtatEvenementCivil.A_TRAITER);
+					evt.setRefMessageId(idEvtCorrection);
+					hibernateTemplate.merge(evt);
+				}
+				return null;
+			}
+		});
+
+		// traitement de l'événement de correction -> la date de mariage maintenant redevenue identique -> traitable automatiquement
+		traiterEvenements(noIndividu);
+
+		// vérification du traitement
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				{
+					final EvenementCivilEch evt = evtCivilDAO.get(idEvtCorrection);
+					Assert.assertNotNull(evt);
+					Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+					Assert.assertEquals("Événemement traité sans modification Unireg. Evénement et correction(s) pris en compte ensemble.", evt.getCommentaireTraitement());
+					Assert.assertEquals((Long) idEvtCorrige, evt.getRefMessageId());       // doit avoir été rattrapé lors du traitement
+
+					final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
+					Assert.assertNotNull(erreurs);
+					Assert.assertEquals(0, erreurs.size());
+				}
+				{
+					final EvenementCivilEch evt = evtCivilDAO.get(idEvtDoubleCorrection);
+					Assert.assertNotNull(evt);
+					Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+					Assert.assertEquals("Evénement directement pris en compte dans le traitement de l'événement référencé.", evt.getCommentaireTraitement());
+					Assert.assertEquals((Long) idEvtCorrection, evt.getRefMessageId());     // pas de rattrapage nécessaire, mais pas de modification non plus...
+
+					final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
+					Assert.assertNotNull(erreurs);
+					Assert.assertEquals(0, erreurs.size());
+				}
+				return null;
+			}
+		});
 	}
 
 	@Test

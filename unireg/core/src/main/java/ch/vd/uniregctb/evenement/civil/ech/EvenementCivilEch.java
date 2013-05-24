@@ -66,6 +66,12 @@ public class EvenementCivilEch extends HibernateEntity implements EvenementCivil
 		return id;
 	}
 
+	@Transient
+	@Override
+	public Long getIdForDataAfterEvent() {
+		return getId();
+	}
+
 	public void setId(Long id) {
 		this.id = id;
 	}

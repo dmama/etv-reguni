@@ -23,6 +23,13 @@ public interface EvenementCivilEchFacade {
 	Long getId();
 
 	/**
+	 * Fournit l'identifiant technique de l'événement civil à considérer pour retrouver les données après correction (différent de l'identifiant
+	 * de l'événement lui-même ({@link #getId()}) dans le cas d'une grape de corrections traitée en bloc)
+	 * @return l'identifiant d'événement à utiliser
+	 */
+	Long getIdForDataAfterEvent();
+
+	/**
 	 * @return l'identifiant technique de l'événement civil référencé par celui-ci, obligatoire dans le cas d'une annulation ou d'une correction
 	 */
 	Long getRefMessageId();

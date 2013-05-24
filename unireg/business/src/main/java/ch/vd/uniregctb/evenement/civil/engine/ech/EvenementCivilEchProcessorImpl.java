@@ -330,7 +330,7 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 
 					try {
 						final List<EvenementCivilEch> referingEvts = buildEventList(info.getSortedReferrers());
-						return processEvent(evt, referingEvts, info.getDate());
+						return processEvent(evt, referingEvts, info.getDate(), info.getIdForDataAfterEvent());
 					}
 					catch (EvenementCivilException e) {
 						throw new EvenementCivilWrappingException(e);
@@ -550,7 +550,7 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 	 * @return <code>true</code> si tout s'est bien passé, <code>false</code> si l'événement a été mis en erreur
 	 * @throws ch.vd.uniregctb.evenement.civil.common.EvenementCivilException en cas de problème métier
 	 */
-	private boolean processEvent(EvenementCivilEch event, List<EvenementCivilEch> referrers, RegDate refDate) throws EvenementCivilException {
+	private boolean processEvent(EvenementCivilEch event, List<EvenementCivilEch> referrers, RegDate refDate, long evtIdForDataAfterEvent) throws EvenementCivilException {
 		Audit.info(event.getId(), String.format("Début du traitement de l'événement civil %d de type %s/%s au %s sur l'individu %d", event.getId(), event.getType(), event.getAction(), RegDateHelper.dateToDisplayString(event.getDateEvenement()), event.getNumeroIndividu()));
 
 		// construction d'une liste de tous les événements traités ensemble
@@ -570,7 +570,7 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 		}
 		else {
 			final EvenementCivilMessageCollector<EvenementCivilEchErreur> collector = new EvenementCivilMessageCollector<>(ERREUR_FACTORY);
-			final EvenementCivilEchFacade eventFacade = buildFacade(event, refDate);
+			final EvenementCivilEchFacade eventFacade = buildFacade(event, refDate, evtIdForDataAfterEvent);
 			final EtatEvenementCivil etat = processEventAndCollectMessages(eventFacade, collector, collector);
 
 			group.forEach(DATE_TRAITEMENT);
@@ -632,8 +632,8 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 	 * @param refDate date effective de validité de l'événement (en cas de groupe, cette date peut varier de la date de l'événement principal)
 	 * @return une façade qui peut être utilisée pour le traitement du groupe dans son ensemble
 	 */
-	private EvenementCivilEchFacade buildFacade(EvenementCivilEch event, final RegDate refDate) {
-		if (refDate == event.getDateEvenement()) {
+	private EvenementCivilEchFacade buildFacade(EvenementCivilEch event, final RegDate refDate, final long idEvtForDataAfterEvent) {
+		if (refDate == event.getDateEvenement() && event.getId() == idEvtForDataAfterEvent) {
 			return event;
 		}
 
@@ -642,6 +642,11 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 			@Override
 			public RegDate getDateEvenement() {
 				return refDate;
+			}
+
+			@Override
+			public Long getIdForDataAfterEvent() {
+				return idEvtForDataAfterEvent;
 			}
 		};
 	}
