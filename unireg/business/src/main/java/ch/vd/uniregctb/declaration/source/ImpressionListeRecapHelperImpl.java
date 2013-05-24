@@ -64,17 +64,23 @@ public class ImpressionListeRecapHelperImpl extends EditiqueAbstractHelper imple
 	private static final String CODE_DOC_LR_PRE = "LR_SPRE";
 	private static final String CODE_DOC_LR_HYP = "LR_SHYP";
 	private static final String CODE_DOC_LR_LTN = "LR_SLTN";
+	private static final String CODE_DOC_LR_PHS = "LR_SPHS";
+	private static final String CODE_DOC_LR_EFF = "LR_SEFF";
 
 	private static final String HYP_MIN = "concernant l'impôt à la source perçu sur les intérêts hypothécaires";
 	private static final String PRE_MIN = "pour les prestations de prévoyance";
 	private static final String ADM_MIN = "pour les prestations versées aux administrateurs domiciliés à l'étranger";
 	private static final String CAS_MIN = "pour les artistes, sportifs et conférenciers domiciliés à l'étranger";
+	private static final String PHS_MIN = "pour les participations de personnes domiciliées à l'étranger";
+	private static final String EFF_MIN = "pour les effeuilleuses";
 	private static final String DECOMPTE_LR_MIN = "Décompte liste récapitulative";
 
 	private static final String HYP_MAJ = "CREANCIERS HYPOTHECAIRES";
 	private static final String PRE_MAJ = "PRESTATION PREVOYANCE";
 	private static final String CAS_MAJ = "CONFERENCIERS ARTISTES SPORTIFS";
 	private static final String ADM_MAJ = "ADMINISTRATEURS";
+	private static final String PHS_MAJ = "PARTICIPATIONS HORS-SUISSE";
+	private static final String EFF_MAJ = "EFFEUILLEUSES";
 
 	private static final String VERSION = "1.0";
 
@@ -94,6 +100,13 @@ public class ImpressionListeRecapHelperImpl extends EditiqueAbstractHelper imple
 	 */
 	@Override
 	public FichierImpressionDocument remplitListeRecap(DeclarationImpotSource lr, String traitePar) throws EditiqueException {
+
+		// Certaines catégories de débiteur ne devraient pas être utilisées... on fait donc attention à ce que rien ne sorte !
+		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) lr.getTiers();
+		if (!dpi.getCategorieImpotSource().isAllowed()) {
+			throw new EditiqueException("Type de débiteur non autorisé : " + dpi.getCategorieImpotSource());
+		}
+
 		final FichierImpressionDocument mainDocument = FichierImpressionDocument.Factory.newInstance();
 		TypFichierImpression impressionIS = mainDocument.addNewFichierImpression();
 		Document[] documents = new Document[1];
@@ -162,6 +175,14 @@ public class ImpressionListeRecapHelperImpl extends EditiqueAbstractHelper imple
 
 			case LOI_TRAVAIL_AU_NOIR:
 				codeDoc = CODE_DOC_LR_LTN;
+				break;
+
+			case PARTICIPATIONS_HORS_SUISSE:
+				codeDoc = CODE_DOC_LR_PHS;
+				break;
+
+			case EFFEUILLEUSES:
+				codeDoc = CODE_DOC_LR_EFF;
 				break;
 
 			default:
@@ -254,6 +275,12 @@ public class ImpressionListeRecapHelperImpl extends EditiqueAbstractHelper imple
 		else if (dpi.getCategorieImpotSource() == CategorieImpotSource.CREANCIERS_HYPOTHECAIRES) {
 			libTit = libTit + ' ' + HYP_MAJ ;
 		}
+		else if (dpi.getCategorieImpotSource() == CategorieImpotSource.PARTICIPATIONS_HORS_SUISSE) {
+			libTit = libTit + ' ' + PHS_MAJ ;
+		}
+		else if (dpi.getCategorieImpotSource() == CategorieImpotSource.EFFEUILLEUSES) {
+			libTit = libTit + ' ' + EFF_MAJ ;
+		}
 		libTit = libTit + ' ' + lr.getPeriode().getAnnee().toString();
 		tit.setLibTit(libTit);
 		final Tit[] tits = new Tit[1];
@@ -290,6 +317,12 @@ public class ImpressionListeRecapHelperImpl extends EditiqueAbstractHelper imple
 		}
 		else if (dpi.getCategorieImpotSource() == CategorieImpotSource.CREANCIERS_HYPOTHECAIRES) {
 			titreDoc.setLibelle2(HYP_MIN);
+		}
+		else if (dpi.getCategorieImpotSource() == CategorieImpotSource.PARTICIPATIONS_HORS_SUISSE) {
+			titreDoc.setLibelle2(PHS_MIN);
+		}
+		else if (dpi.getCategorieImpotSource() == CategorieImpotSource.EFFEUILLEUSES) {
+			titreDoc.setLibelle2(EFF_MIN);
 		}
 		lrlc.setNoRef(FormatNumeroHelper.numeroCTBToDisplay(dpi.getNumero()));
 		lrlc.setPeriodeDu(String.valueOf(lr.getDateDebut().index()));

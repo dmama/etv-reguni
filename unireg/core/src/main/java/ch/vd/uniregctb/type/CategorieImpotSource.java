@@ -21,7 +21,13 @@ public enum CategorieImpotSource {
 	PRESTATIONS_PREVOYANCE("Prestations de prévoyance"),
 	REGULIERS("Réguliers"),
 	LOI_TRAVAIL_AU_NOIR("Loi sur le travail au noir"),
+	/**
+	 * @since 5.5.x - 13R3
+	 */
 	PARTICIPATIONS_HORS_SUISSE("Participations hors-Suisse"),
+	/**
+	 * @since 5.5.x - 13R3
+	 */
 	EFFEUILLEUSES("Effeuilleuses");
 
 	private final String texte;
@@ -34,4 +40,8 @@ public enum CategorieImpotSource {
 		return texte;
 	}
 
+	public boolean isAllowed() {
+		// [SIFISC-8625] Pour le moment, on ne peut pas utiliser les débiteurs IS de catégorie "Effeuilleuses"
+		return this != EFFEUILLEUSES;
+	}
 }

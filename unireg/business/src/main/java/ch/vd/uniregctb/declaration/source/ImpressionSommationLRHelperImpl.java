@@ -64,12 +64,16 @@ public class ImpressionSommationLRHelperImpl extends EditiqueAbstractHelper impl
 	private static final String PRE_MIN = "pour les prestations de prévoyance";
 	private static final String ADM_MIN = "pour les prestations versées aux administrateurs domiciliés à l'étranger";
 	private static final String CAS_MIN = "pour les artistes, sportifs et conférenciers domiciliés à l'étranger";
+	private static final String PHS_MIN = "pour les participations de personnes domiciliées à l'étranger";
+	private static final String EFF_MIN = "pour les effeuilleuses";
 	private static final String DECOMPTE_LR_MIN = "Décompte liste récapitulative";
 
 	private static final String HYP_MAJ = "CREANCIERS HYPOTHECAIRES";
 	private static final String PRE_MAJ = "PRESTATION PREVOYANCE";
 	private static final String CAS_MAJ = "CONFERENCIERS ARTISTES SPORTIFS";
 	private static final String ADM_MAJ = "ADMINISTRATEURS";
+	private static final String PHS_MAJ = "PARTICIPATIONS HORS-SUISSE";
+	private static final String EFF_MAJ = "EFFEUILLEUSES";
 
 	private static final String CODE_DOC_SOMMATION_LR_REG = "SLR_SREG";
 	private static final String CODE_DOC_SOMMATION_LR_REG_SANS_PREIMP = "SLR_SREG_NO_PRE";
@@ -78,6 +82,8 @@ public class ImpressionSommationLRHelperImpl extends EditiqueAbstractHelper impl
 	private static final String CODE_DOC_SOMMATION_LR_PRE = "SLR_SPRE";
 	private static final String CODE_DOC_SOMMATION_LR_HYP = "SLR_SHYP";
 	private static final String CODE_DOC_SOMMATION_LR_LTN = "SLR_SLTN";
+	private static final String CODE_DOC_SOMMATION_LR_PHS = "SLR_SPHS";
+	private static final String CODE_DOC_SOMMATION_LR_EFF = "SLR_SEFF";
 
 	private BVRPlusClient bvrPlusClient;
 
@@ -125,6 +131,13 @@ public class ImpressionSommationLRHelperImpl extends EditiqueAbstractHelper impl
 	 */
 	@Override
 	public FichierImpressionDocument remplitSommationLR(DeclarationImpotSource lr, RegDate dateTraitement) throws EditiqueException {
+
+		// Certaines catégories de débiteur ne devraient pas être utilisées... on fait donc attention à ce que rien ne sorte !
+		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) lr.getTiers();
+		if (!dpi.getCategorieImpotSource().isAllowed()) {
+			throw new EditiqueException("Type de débiteur non autorisé : " + dpi.getCategorieImpotSource());
+		}
+
 		final FichierImpressionDocument mainDocument = FichierImpressionDocument.Factory.newInstance();
 		TypFichierImpression impressionIS = mainDocument.addNewFichierImpression();
 		Document[] documents = new Document[1];
@@ -195,6 +208,14 @@ public class ImpressionSommationLRHelperImpl extends EditiqueAbstractHelper impl
 
 			case LOI_TRAVAIL_AU_NOIR:
 				codeDoc = CODE_DOC_SOMMATION_LR_LTN;
+				break;
+
+			case PARTICIPATIONS_HORS_SUISSE:
+				codeDoc = CODE_DOC_SOMMATION_LR_PHS;
+				break;
+
+			case EFFEUILLEUSES:
+				codeDoc = CODE_DOC_SOMMATION_LR_EFF;
 				break;
 
 			default:
@@ -272,6 +293,12 @@ public class ImpressionSommationLRHelperImpl extends EditiqueAbstractHelper impl
 		else if (dpi.getCategorieImpotSource() == CategorieImpotSource.CREANCIERS_HYPOTHECAIRES) {
 			libTit = libTit + ' ' + HYP_MAJ ;
 		}
+		else if (dpi.getCategorieImpotSource() == CategorieImpotSource.PARTICIPATIONS_HORS_SUISSE) {
+			libTit = libTit + ' ' + PHS_MAJ ;
+		}
+		else if (dpi.getCategorieImpotSource() == CategorieImpotSource.EFFEUILLEUSES) {
+			libTit = libTit + ' ' + EFF_MAJ ;
+		}
 		libTit = libTit + ' ' + lr.getPeriode().getAnnee().toString();
 		tit.setLibTit(libTit);
 		final Tit[] tits = new Tit[1];
@@ -308,6 +335,12 @@ public class ImpressionSommationLRHelperImpl extends EditiqueAbstractHelper impl
 		}
 		else if (dpi.getCategorieImpotSource() == CategorieImpotSource.CREANCIERS_HYPOTHECAIRES) {
 			titreDoc.setLibelle2(HYP_MIN);
+		}
+		else if (dpi.getCategorieImpotSource() == CategorieImpotSource.PARTICIPATIONS_HORS_SUISSE) {
+			titreDoc.setLibelle2(PHS_MIN);
+		}
+		else if (dpi.getCategorieImpotSource() == CategorieImpotSource.EFFEUILLEUSES) {
+			titreDoc.setLibelle2(EFF_MIN);
 		}
 
 		slrlc.setNoRef(FormatNumeroHelper.numeroCTBToDisplay(dpi.getNumero()));

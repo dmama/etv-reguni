@@ -3,9 +3,11 @@ package ch.vd.uniregctb.tiers;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -251,12 +253,18 @@ public class TiersMapHelper extends CommonMapHelper {
 
 	/**
 	 * Initialise la map des categories d'impot a la source
-	 * [SIFISC-8625] Pour le moment, on ne peut pas créer de débiteur IS de catégorie "Effeuilleuses"
 	 * @return une map
 	 */
 	public Map<CategorieImpotSource, String> getMapCategorieImpotSource() {
 		if (mapCategorieImpotSource == null) {
-			mapCategorieImpotSource = initMapEnum(ApplicationConfig.masterKeyCategorieImpotSource, CategorieImpotSource.class, CategorieImpotSource.EFFEUILLEUSES);
+			final Set<CategorieImpotSource> notAllowed = EnumSet.noneOf(CategorieImpotSource.class);
+			for (CategorieImpotSource cis : CategorieImpotSource.values()) {
+				if (!cis.isAllowed()) {
+					notAllowed.add(cis);
+				}
+			}
+			final CategorieImpotSource[] ignored = notAllowed.toArray(new CategorieImpotSource[notAllowed.size()]);
+			mapCategorieImpotSource = initMapEnum(ApplicationConfig.masterKeyCategorieImpotSource, CategorieImpotSource.class, ignored);
 		}
 		return mapCategorieImpotSource;
 	}
