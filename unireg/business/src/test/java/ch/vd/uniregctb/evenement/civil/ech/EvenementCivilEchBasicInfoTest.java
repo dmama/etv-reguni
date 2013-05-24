@@ -17,7 +17,7 @@ public class EvenementCivilEchBasicInfoTest extends WithoutSpringTest {
 
 	private static EvenementCivilEchBasicInfo buildBasicInfo(long id, long noIndividu, EtatEvenementCivil etat, TypeEvenementCivilEch type, ActionEvenementCivilEch action,
 	                                                         @Nullable Long idReference, RegDate date, EvenementCivilEchBasicInfo... referrers) {
-		final EvenementCivilEchBasicInfo info = new EvenementCivilEchBasicInfo(id, noIndividu, etat, type, action, idReference, date);
+		final EvenementCivilEchBasicInfo info = new EvenementCivilEchBasicInfo(id, noIndividu, etat, type, action, idReference, date, "UT");
 		if (referrers != null && referrers.length > 0) {
 			info.setReferrers(Arrays.asList(referrers));
 		}

@@ -19,6 +19,7 @@ import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
+import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.ActionEvenementCivilEch;
@@ -306,6 +307,17 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 		evt.setAction(action);
 		evt.setRefMessageId(refMessageId);
 		return hibernateTemplate.merge(evt).getId();
+	}
+
+	private Long createEventFromEch99(RegDate dateEvt, Long noIndividu, long evtId, TypeEvenementCivilEch type,
+	                                  ActionEvenementCivilEch action, EtatEvenementCivil etat, @Nullable Long refMessageId) {
+		AuthenticationHelper.pushPrincipal(EvenementCivilEchSourceHelper.getVisaForEch99());
+		try {
+			return createEvent(dateEvt, noIndividu, evtId, type, action, etat, refMessageId);
+		}
+		finally {
+			AuthenticationHelper.popPrincipal();
+		}
 	}
 
 	@Test
@@ -677,6 +689,134 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 			Assert.assertNotNull(info);
 			Assert.assertEquals(14L, info.getId());
 			Assert.assertEquals(0, info.getReferrers().size());
+		}
+	}
+
+	@Test
+	public void testConstitutionGroupReferencesAvecEch99EnPrincipal() throws Exception {
+
+		final long noIndividu = 21745624L;
+		final RegDate dateNaissance = date(1980, 10, 25);
+		final RegDate dateArrivee = date(2000, 7, 12);
+
+		final EvenementCivilEchServiceImpl service = buildService(true);
+
+		// création de l'individu
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				createIndividu(noIndividu, dateNaissance, "Dupont", "Albert", Sexe.MASCULIN);
+			}
+		});
+
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				createEventFromEch99(dateArrivee, noIndividu, 1L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.CORRECTION, EtatEvenementCivil.A_TRAITER, -1L);
+				createEventFromEch99(dateArrivee, noIndividu, 2L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.CORRECTION, EtatEvenementCivil.A_TRAITER, 1L);
+				createEvent(dateArrivee.addDays(1), noIndividu, 3L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.CORRECTION, EtatEvenementCivil.A_TRAITER, 2L);
+				createEventFromEch99(dateArrivee.addDays(1), noIndividu, 4L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.CORRECTION, EtatEvenementCivil.A_TRAITER, 3L);
+				return null;
+			}
+		});
+
+		// vérification du comportement du service
+		final List<EvenementCivilEchBasicInfo> infos = service.buildLotEvenementsCivils(noIndividu);
+		Assert.assertNotNull(infos);
+		Assert.assertEquals(3, infos.size());
+
+		{
+			final EvenementCivilEchBasicInfo info = infos.get(0);
+			Assert.assertNotNull(info);
+			Assert.assertEquals(1L, info.getId());
+
+			final List<EvenementCivilEchBasicInfo> referrers = info.getSortedReferrers();
+			Assert.assertNotNull(referrers);
+			Assert.assertEquals(1, referrers.size());
+			{
+				final EvenementCivilEchBasicInfo refInfo = referrers.get(0);
+				Assert.assertNotNull(refInfo);
+				Assert.assertEquals(2L, refInfo.getId());
+			}
+		}
+		{
+			final EvenementCivilEchBasicInfo info = infos.get(1);
+			Assert.assertNotNull(info);
+			Assert.assertEquals(3L, info.getId());
+
+			final List<EvenementCivilEchBasicInfo> referrers = info.getSortedReferrers();
+			Assert.assertNotNull(referrers);
+			Assert.assertEquals(1, referrers.size());
+			{
+				final EvenementCivilEchBasicInfo refInfo = referrers.get(0);
+				Assert.assertNotNull(refInfo);
+				Assert.assertEquals(4L, refInfo.getId());
+			}
+		}
+		{
+			final EvenementCivilEchBasicInfo info = infos.get(2);
+			Assert.assertNotNull(info);
+			Assert.assertEquals(4L, info.getId());
+
+			final List<EvenementCivilEchBasicInfo> referrers = info.getSortedReferrers();
+			Assert.assertNotNull(referrers);
+			Assert.assertEquals(0, referrers.size());
+		}
+	}
+
+	@Test
+	public void testConstitutionGroupReferencesAvecEch99EnDependantSeulement() throws Exception {
+
+		final long noIndividu = 21745624L;
+		final RegDate dateNaissance = date(1980, 10, 25);
+		final RegDate dateArrivee = date(2000, 7, 12);
+
+		final EvenementCivilEchServiceImpl service = buildService(true);
+
+		// création de l'individu
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				createIndividu(noIndividu, dateNaissance, "Dupont", "Albert", Sexe.MASCULIN);
+			}
+		});
+
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				createEvent(dateArrivee, noIndividu, 1L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.CORRECTION, EtatEvenementCivil.A_TRAITER, -1L);
+				createEventFromEch99(dateArrivee, noIndividu, 2L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.CORRECTION, EtatEvenementCivil.A_TRAITER, 1L);
+				return null;
+			}
+		});
+
+		// vérification du comportement du service
+		final List<EvenementCivilEchBasicInfo> infos = service.buildLotEvenementsCivils(noIndividu);
+		Assert.assertNotNull(infos);
+		Assert.assertEquals(2, infos.size());
+
+		{
+			final EvenementCivilEchBasicInfo info = infos.get(0);
+			Assert.assertNotNull(info);
+			Assert.assertEquals(1L, info.getId());
+
+			final List<EvenementCivilEchBasicInfo> referrers = info.getSortedReferrers();
+			Assert.assertNotNull(referrers);
+			Assert.assertEquals(1, referrers.size());
+			{
+				final EvenementCivilEchBasicInfo refInfo = referrers.get(0);
+				Assert.assertNotNull(refInfo);
+				Assert.assertEquals(2L, refInfo.getId());
+			}
+		}
+		{
+			final EvenementCivilEchBasicInfo info = infos.get(1);
+			Assert.assertNotNull(info);
+			Assert.assertEquals(2L, info.getId());
+
+			final List<EvenementCivilEchBasicInfo> referrers = info.getSortedReferrers();
+			Assert.assertNotNull(referrers);
+			Assert.assertEquals(0, referrers.size());
 		}
 	}
 }

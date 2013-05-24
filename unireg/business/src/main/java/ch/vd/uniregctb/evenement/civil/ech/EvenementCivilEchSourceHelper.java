@@ -41,6 +41,15 @@ public class EvenementCivilEchSourceHelper {
 	}
 
 	/**
+	 * Temporaire, afin de détecter les événements civils ECH qui sont issus de 99
+	 * @param info l'événement civil à tester
+	 * @return <code>true</code> si on sait avec certitude que l'événement civil est issu d'un ech99
+	 */
+	public static boolean isFromEch99(EvenementCivilEchBasicInfo info) {
+		return ECH99.equals(info.getCreationUser());
+	}
+
+	/**
 	 * Temporaire, visa de création à assigner à un événement dont on veut signifier qu'il est issu d'un ech99
 	 */
 	public static String getVisaForEch99() {

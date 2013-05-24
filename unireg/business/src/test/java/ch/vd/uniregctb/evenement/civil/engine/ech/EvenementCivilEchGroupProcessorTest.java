@@ -18,8 +18,10 @@ import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
+import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchErreur;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchSourceHelper;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.ActionEvenementCivilEch;
@@ -635,6 +637,99 @@ public class EvenementCivilEchGroupProcessorTest extends AbstractEvenementCivilE
 					Assert.assertNotNull(ech);
 					Assert.assertEquals(EtatEvenementCivil.EN_ATTENTE, ech.getEtat());
 					Assert.assertEquals("Evénement directement pris en compte dans le traitement de l'événement référencé.", ech.getCommentaireTraitement());
+
+					final Set<EvenementCivilEchErreur> erreurs = ech.getErreurs();
+					Assert.assertNotNull(erreurs);
+					Assert.assertEquals(0, erreurs.size());
+				}
+				return null;
+			}
+		});
+	}
+
+	@Test(timeout = 10000L)
+	public void testTraitementEch99DerriereErreur() throws Exception {
+
+		final long noIndividu = 282364L;
+		final RegDate dateNaissance = date(1990, 9, 4);
+		final RegDate dateDepartOriginelle = date(2012, 5, 23);
+		final RegDate dateDepartCorrecte = date(2012, 6, 3);
+		final RegDate dateArrivee = dateDepartCorrecte.addDays(1);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Piccolino", "Antonio", Sexe.MASCULIN);
+				addNationalite(individu, MockPays.Suisse, null, null);
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Bussigny.RueDeLIndustrie, null, dateArrivee, null);
+			}
+		});
+
+		final long noEvtDepartOriginel = 8181513L;
+		final long noEvtCorrectionDepart = 4215152L;
+
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				{
+					final EvenementCivilEch evt = new EvenementCivilEch();
+					evt.setId(noEvtDepartOriginel);
+					evt.setType(TypeEvenementCivilEch.DEPART);
+					evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+					evt.setDateEvenement(dateDepartOriginelle);
+					evt.setEtat(EtatEvenementCivil.A_TRAITER);
+					evt.setNumeroIndividu(noIndividu);
+					evt.setRefMessageId(null);
+					hibernateTemplate.merge(evt);
+				}
+
+				AuthenticationHelper.pushPrincipal(EvenementCivilEchSourceHelper.getVisaForEch99());
+				try {
+					final EvenementCivilEch evt = new EvenementCivilEch();
+					evt.setId(noEvtCorrectionDepart);
+					evt.setType(TypeEvenementCivilEch.DEPART);
+					evt.setAction(ActionEvenementCivilEch.CORRECTION);
+					evt.setDateEvenement(dateDepartOriginelle);
+					evt.setEtat(EtatEvenementCivil.A_TRAITER);
+					evt.setNumeroIndividu(noIndividu);
+					evt.setRefMessageId(noEvtDepartOriginel);
+					hibernateTemplate.merge(evt);
+				}
+				finally {
+					AuthenticationHelper.popPrincipal();
+				}
+				return null;
+			}
+		});
+
+		// traitement de l'événement civil d'arrivée et de sa correction issue de eCH-99
+		traiterEvenements(noIndividu);
+
+		// vérification de l'état des événements civils après traitement
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				{
+					final EvenementCivilEch ech = evtCivilDAO.get(noEvtDepartOriginel);
+					Assert.assertNotNull(ech);
+					Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, ech.getEtat());
+					Assert.assertEquals("Evénement et correction(s) pris en compte ensemble.", ech.getCommentaireTraitement());
+
+					final Set<EvenementCivilEchErreur> erreurs = ech.getErreurs();
+					Assert.assertNotNull(erreurs);
+					Assert.assertEquals(1, erreurs.size());
+
+					final EvenementCivilEchErreur erreur = erreurs.iterator().next();
+					Assert.assertNotNull(erreur);
+					Assert.assertEquals(TypeEvenementErreur.ERROR, erreur.getType());
+					Assert.assertEquals("Aucune adresse principale ou secondaire ne se termine à la date de l'événement.", erreur.getMessage());
+				}
+				{
+					final EvenementCivilEch ech = evtCivilDAO.get(noEvtCorrectionDepart);
+					Assert.assertNotNull(ech);
+					Assert.assertEquals(EtatEvenementCivil.TRAITE, ech.getEtat());
+					Assert.assertEquals("Evénement civil issu d'un eCH-0099 de commune. Événemement traité sans modification Unireg.", ech.getCommentaireTraitement());
 
 					final Set<EvenementCivilEchErreur> erreurs = ech.getErreurs();
 					Assert.assertNotNull(erreurs);

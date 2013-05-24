@@ -23,10 +23,11 @@ import ch.vd.uniregctb.type.TypeEvenementCivilEch;
  */
 public final class EvenementCivilEchBasicInfo implements Serializable {
 
-	private static final long serialVersionUID = 396438041113830368L;
+	private static final long serialVersionUID = -142350935880494320L;
 
 	private final long id;
 	private final long noIndividu;
+	private final String creationUser;
 	private final EtatEvenementCivil etat;
 	private final TypeEvenementCivilEch type;
 	private final ActionEvenementCivilEch action;
@@ -35,7 +36,7 @@ public final class EvenementCivilEchBasicInfo implements Serializable {
 	private List<EvenementCivilEchBasicInfo> referrers = new LinkedList<>();
 	private transient List<EvenementCivilEchBasicInfo> sortedReferrers;
 
-	public EvenementCivilEchBasicInfo(long id, long noIndividu, EtatEvenementCivil etat, TypeEvenementCivilEch type, ActionEvenementCivilEch action, @Nullable Long idReference, RegDate date) {
+	public EvenementCivilEchBasicInfo(long id, long noIndividu, EtatEvenementCivil etat, TypeEvenementCivilEch type, ActionEvenementCivilEch action, @Nullable Long idReference, RegDate date, String creationUser) {
 		this.id = id;
 		this.noIndividu = noIndividu;
 		this.etat = etat;
@@ -43,6 +44,7 @@ public final class EvenementCivilEchBasicInfo implements Serializable {
 		this.action = action;
 		this.idReference = idReference;
 		this.date = date;
+		this.creationUser = creationUser;
 
 		if (this.date == null) {
 			throw new IllegalArgumentException("La date de l'événement ne doit pas être nulle");
@@ -53,11 +55,11 @@ public final class EvenementCivilEchBasicInfo implements Serializable {
 	}
 
 	public EvenementCivilEchBasicInfo(EvenementCivilEch evt) {
-		this(evt.getId(), evt.getNumeroIndividu(), evt.getEtat(), evt.getType(), evt.getAction(), evt.getRefMessageId(), evt.getDateEvenement());
+		this(evt.getId(), evt.getNumeroIndividu(), evt.getEtat(), evt.getType(), evt.getAction(), evt.getRefMessageId(), evt.getDateEvenement(), evt.getLogCreationUser());
 	}
 
 	public EvenementCivilEchBasicInfo(EvenementCivilEch evt, long noIndividu) {
-		this(evt.getId(), noIndividu, evt.getEtat(), evt.getType(), evt.getAction(), evt.getRefMessageId(), evt.getDateEvenement());
+		this(evt.getId(), noIndividu, evt.getEtat(), evt.getType(), evt.getAction(), evt.getRefMessageId(), evt.getDateEvenement(), evt.getLogCreationUser());
 		if (evt.getNumeroIndividu() != null && noIndividu != evt.getNumeroIndividu()) {
 			// ce serait un gros bug... mais on n'est jamais trop sûr...
 			throw new IllegalArgumentException("Numéros d'individus différents : l'événement avait " + evt.getNumeroIndividu() + " mais on veut le traiter avec " + noIndividu);
@@ -74,6 +76,7 @@ public final class EvenementCivilEchBasicInfo implements Serializable {
 		if (id != that.id) return false;
 		if (noIndividu != that.noIndividu) return false;
 		if (action != that.action) return false;
+		if (!creationUser.equals(that.creationUser)) return false;
 		if (!date.equals(that.date)) return false;
 		if (etat != that.etat) return false;
 		if (idReference != null ? !idReference.equals(that.idReference) : that.idReference != null) return false;
@@ -86,6 +89,7 @@ public final class EvenementCivilEchBasicInfo implements Serializable {
 	public int hashCode() {
 		int result = (int) (id ^ (id >>> 32));
 		result = 31 * result + (int) (noIndividu ^ (noIndividu >>> 32));
+		result = 31 * result + creationUser.hashCode();
 		result = 31 * result + etat.hashCode();
 		result = 31 * result + type.hashCode();
 		result = 31 * result + action.hashCode();
@@ -108,6 +112,10 @@ public final class EvenementCivilEchBasicInfo implements Serializable {
 
 	public long getNoIndividu() {
 		return noIndividu;
+	}
+
+	public String getCreationUser() {
+		return creationUser;
 	}
 
 	public EtatEvenementCivil getEtat() {
@@ -191,7 +199,9 @@ public final class EvenementCivilEchBasicInfo implements Serializable {
 					}
 					taken.addAll(locallyTaken);
 					if (locallyTaken.size() == 0 && remaining.size() > 0) {
-						throw new RuntimeException("Faulty algorithm in event group sorting...");
+						// la chaîne est brisée, on prend tous les éléments restants dans l'ordre croissant de leur identifiant
+						sorted.addAll(remaining);
+						remaining.clear();
 					}
 				}
 				sortedReferrers = Collections.unmodifiableList(sorted);

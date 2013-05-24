@@ -242,6 +242,11 @@ public class EvenementCivilEchServiceImpl implements EvenementCivilEchService, I
 		// maintenant, on a une liste d'éléments racines de corrections/annulations ;
 		// dans le cas où il y a des annulations il faut faire un peu plus attention, selon que c'est l'élément racine qui est annulé ou un autre...
 		dealWithAnnulationsInReferences(liste);
+
+		// dans le cas d'un événement principal issu d'un eCH-0099, il faut aussi faire attention afin que ses éventuels dépendants ne soient
+		// pas traités implicitement
+		// TODO [ech99] jde : à enlever dès que possible...
+		dealWithEch99(liste);
 	}
 
 	private void dealWithAnnulationsInReferences(List<EvenementCivilEchBasicInfo> liste) {
@@ -280,6 +285,66 @@ public class EvenementCivilEchServiceImpl implements EvenementCivilEchService, I
 			info.setReferrers(referrers);
 		}
 
+		liste.addAll(toAdd);
+	}
+
+	/**
+	 * Dans le cas d'un événement principal issu d'un eCH-0099, il faut aussi faire attention afin que ses éventuels dépendants ne soient pas traités implicitement ;
+	 * nous allons donc nous assurer que de tels événements n'ont pas de dépendances
+	 * @param liste liste des événements civils à traiter pour un individus
+	 */
+	private void dealWithEch99(List<EvenementCivilEchBasicInfo> liste) {
+		final List<EvenementCivilEchBasicInfo> toAdd = new LinkedList<>();
+		for (EvenementCivilEchBasicInfo info : liste) {
+			if (info.getReferrers().size() > 0) {
+				if (EvenementCivilEchSourceHelper.isFromEch99(info)) {
+
+					// cherchons le premier élément de la liste des referrers qui ne soit pas issu de eCH-99
+					final List<EvenementCivilEchBasicInfo> referrers = info.getSortedReferrers();
+					EvenementCivilEchBasicInfo firstNonEch99 = null;
+					int indexFirstNonEch99 = 0;
+					for (EvenementCivilEchBasicInfo candidate : referrers) {
+						if (!EvenementCivilEchSourceHelper.isFromEch99(candidate)) {
+							firstNonEch99 = candidate;
+							break;
+						}
+						++ indexFirstNonEch99;
+					}
+
+					// tous sont issus de eCH-99 ? -> rien à faire, un traitement implicite va très bien
+					if (firstNonEch99 != null) {
+
+						// il y en a un qui n'est pas issu de 99 -> les éléments précédents peuvent rester là
+						final List<EvenementCivilEchBasicInfo> remainingReferrers = referrers.subList(0, indexFirstNonEch99);
+						info.setReferrers(remainingReferrers);
+
+						// et le non-issu de eCH-99 devient un élément principal dans la liste des événements
+						final List<EvenementCivilEchBasicInfo> newReferrers = remainingReferrers.size() == referrers.size() - 1
+								? Collections.<EvenementCivilEchBasicInfo>emptyList()
+								: referrers.subList(indexFirstNonEch99 + 1, referrers.size());
+						firstNonEch99.setReferrers(newReferrers);
+						toAdd.add(firstNonEch99);
+
+						// les eCH-99 doivent également apparaître individuellement afin d'être pris en compte, le cas échéant, par la mécanique de post
+						// processing des "indexations pures"
+						for (EvenementCivilEchBasicInfo newRef : newReferrers) {
+							if (EvenementCivilEchSourceHelper.isFromEch99(newRef)) {
+								toAdd.add(newRef);
+							}
+						}
+					}
+				}
+				else {
+					// les eCH-99 doivent également apparaître individuellement afin d'être pris en compte, le cas échéant, par la mécanique de post
+					// processing des "indexations pures"
+					for (EvenementCivilEchBasicInfo ref : info.getReferrers()) {
+						if (EvenementCivilEchSourceHelper.isFromEch99(ref)) {
+							toAdd.add(ref);
+						}
+					}
+				}
+			}
+		}
 		liste.addAll(toAdd);
 	}
 
