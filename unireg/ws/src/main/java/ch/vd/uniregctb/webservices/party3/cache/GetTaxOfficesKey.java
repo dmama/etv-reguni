@@ -32,4 +32,12 @@ public class GetTaxOfficesKey {
 		result = 31 * result + (date != null ? date.hashCode() : 0);
 		return result;
 	}
+
+	@Override
+	public String toString() {
+		return "GetTaxOfficesKey{" +
+				"municipalityFSOId=" + municipalityFSOId +
+				", date=" + date +
+				'}';
+	}
 }

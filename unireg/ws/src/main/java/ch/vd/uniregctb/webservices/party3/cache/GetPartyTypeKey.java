@@ -30,4 +30,11 @@ public class GetPartyTypeKey {
 	public int hashCode() {
 		return (int) (partyId ^ (partyId >>> 32));
 	}
+
+	@Override
+	public String toString() {
+		return "GetPartyTypeKey{" +
+				"partyId=" + partyId +
+				'}';
+	}
 }

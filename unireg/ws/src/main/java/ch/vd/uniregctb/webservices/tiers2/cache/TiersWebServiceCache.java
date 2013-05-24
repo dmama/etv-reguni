@@ -13,6 +13,7 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.cache.CacheHelper;
 import ch.vd.uniregctb.cache.CacheStats;
 import ch.vd.uniregctb.cache.CompletePartsCallbackWithException;
 import ch.vd.uniregctb.cache.EhCacheStats;
@@ -713,5 +714,11 @@ public class TiersWebServiceCache implements UniregCacheInterface, TiersWebServi
 	@Override
 	public void reset() {
 		cache.removeAll();
+	}
+
+	@Override
+	public String dump() {
+		@SuppressWarnings("unchecked") final List<Object> keys = cache.getKeys();
+		return CacheHelper.dumpKeys(keys);
 	}
 }

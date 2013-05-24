@@ -33,4 +33,9 @@ class GetTiersPeriodeKey extends CacheKey {
 			return false;
 		return true;
 	}
+
+	@Override
+	protected String toStringPart() {
+		return ", periode=" + periode;
+	}
 }

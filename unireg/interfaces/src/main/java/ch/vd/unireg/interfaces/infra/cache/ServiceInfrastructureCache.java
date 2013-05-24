@@ -1,5 +1,7 @@
 package ch.vd.unireg.interfaces.infra.cache;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +36,7 @@ import ch.vd.unireg.interfaces.infra.data.Region;
 import ch.vd.unireg.interfaces.infra.data.Rue;
 import ch.vd.unireg.interfaces.infra.data.TypeEtatPM;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
+import ch.vd.uniregctb.cache.CacheHelper;
 import ch.vd.uniregctb.cache.CacheStats;
 import ch.vd.uniregctb.cache.EhCacheStats;
 import ch.vd.uniregctb.cache.UniregCacheInterface;
@@ -125,6 +128,11 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 				return false;
 			return getClass() == obj.getClass();
 		}
+
+		@Override
+		public String toString() {
+			return getClass().getSimpleName() + "{}";
+		}
 	}
 
 	@Override
@@ -172,6 +180,12 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 			return noColAdm == other.noColAdm;
 		}
 
+		@Override
+		public String toString() {
+			return "KeyGetCollectivite{" +
+					"noColAdm=" + noColAdm +
+					'}';
+		}
 	}
 
 	@Override
@@ -205,6 +219,11 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 			if (obj == null)
 				return false;
 			return getClass() == obj.getClass();
+		}
+
+		@Override
+		public String toString() {
+			return getClass().getSimpleName() + "{}";
 		}
 	}
 
@@ -260,6 +279,12 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 			return true;
 		}
 
+		@Override
+		public String toString() {
+			return "KeyGetCollectivitesAdministrativesByTypes{" +
+					"types=" + Arrays.toString(types.toArray(new EnumTypeCollectivite[types.size()])) +
+					'}';
+		}
 	}
 
 	@Override
@@ -312,6 +337,13 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 			return numOrdre == other.numOrdre;
 		}
 
+		@Override
+		public String toString() {
+			return "KeyGetCommuneByLocalite{" +
+					"numOrdre=" + numOrdre +
+					", noCommune=" + noCommune +
+					'}';
+		}
 	}
 
 	@Override
@@ -350,6 +382,13 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		@Override
 		public int hashCode() {
 			return noOfsCommune;
+		}
+
+		@Override
+		public String toString() {
+			return "KeyGetCommuneHistoByNumeroOfs{" +
+					"noOfsCommune=" + noOfsCommune +
+					'}';
 		}
 	}
 
@@ -397,6 +436,14 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 			result = 31 * result + (date != null ? date.hashCode() : 0);
 			return result;
 		}
+
+		@Override
+		public String toString() {
+			return "KeyGetCommunesByEgid{" +
+					"egid=" + egid +
+					", date=" + date +
+					'}';
+		}
 	}
 
 	@Override
@@ -430,6 +477,11 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 			if (obj == null)
 				return false;
 			return getClass() == obj.getClass();
+		}
+
+		@Override
+		public String toString() {
+			return getClass().getSimpleName() + "{}";
 		}
 	}
 
@@ -484,6 +536,12 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 			return noOfsCanton == other.noOfsCanton;
 		}
 
+		@Override
+		public String toString() {
+			return "KeyGetListeCommunes{" +
+					"noOfsCanton=" + noOfsCanton +
+					'}';
+		}
 	}
 
 	@Override
@@ -519,6 +577,11 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 			if (obj == null)
 				return false;
 			return getClass() == obj.getClass();
+		}
+
+		@Override
+		public String toString() {
+			return getClass().getSimpleName() + "{}";
 		}
 	}
 
@@ -568,6 +631,12 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 			return onrp == other.onrp;
 		}
 
+		@Override
+		public String toString() {
+			return "KeyGetLocaliteByONRP{" +
+					"onrp=" + onrp +
+					'}';
+		}
 	}
 
 	@Override
@@ -601,6 +670,11 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 			if (obj == null)
 				return false;
 			return getClass() == obj.getClass();
+		}
+
+		@Override
+		public String toString() {
+			return getClass().getSimpleName() + "{}";
 		}
 	}
 
@@ -648,6 +722,13 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 			KeyGetOfficeImpotDeCommune other = (KeyGetOfficeImpotDeCommune) obj;
 			return noCommune == other.noCommune;
 		}
+
+		@Override
+		public String toString() {
+			return "KeyGetOfficeImpotDeCommune{" +
+					"noCommune=" + noCommune +
+					'}';
+		}
 	}
 
 	@Override
@@ -681,6 +762,11 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 			if (obj == null)
 				return false;
 			return getClass() == obj.getClass();
+		}
+
+		@Override
+		public String toString() {
+			return getClass().getSimpleName() + "{}";
 		}
 	}
 
@@ -716,6 +802,11 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 			if (obj == null)
 				return false;
 			return getClass() == obj.getClass();
+		}
+
+		@Override
+		public String toString() {
+			return getClass().getSimpleName() + "{}";
 		}
 	}
 
@@ -765,6 +856,16 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 
 		@Override
 		public abstract int hashCode();
+
+		@Override
+		public final String toString() {
+			return getClass().getSimpleName() + "{" +
+					"validityRange=" + DateRangeHelper.toString(validityRange) +
+					toStringPart() +
+					'}';
+		}
+
+		protected abstract String toStringPart();
 	}
 
 	private static interface KeyGetPaysByNoOfs {
@@ -811,6 +912,11 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		public int hashCode() {
 			return getNoOfs();
 		}
+
+		@Override
+		protected String toStringPart() {
+			return ", noOfs=" + noOfs;
+		}
 	}
 
 	/**
@@ -841,6 +947,16 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 
 		@Override
 		public abstract int hashCode();
+
+		@Override
+		public final String toString() {
+			return getClass().getSimpleName() + "{" +
+					"date=" + date +
+					toStringPart() +
+					'}';
+		}
+
+		protected abstract String toStringPart();
 	}
 
 	private static final class KeyGetPaysByNoOfsAndDate extends KeyGetPaysByDate implements KeyGetPaysByNoOfs {
@@ -875,6 +991,11 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		@Override
 		public int hashCode() {
 			return getNoOfs();
+		}
+
+		@Override
+		protected String toStringPart() {
+			return ", noOfs=" + noOfs;
 		}
 	}
 
@@ -939,6 +1060,11 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		public int hashCode() {
 			return codeIso.hashCode();
 		}
+
+		@Override
+		protected String toStringPart() {
+			return ", codeIso='" + codeIso + '\'';
+		}
 	}
 
 	private static final class KeyGetPaysByCodeIsoAndDate extends KeyGetPaysByDate implements KeyGetPaysByCodeIso {
@@ -976,6 +1102,11 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		@Override
 		public int hashCode() {
 			return codeIso.hashCode();
+		}
+
+		@Override
+		protected String toStringPart() {
+			return ", codeIso='" + codeIso + '\'';
 		}
 	}
 
@@ -1024,6 +1155,13 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 			KeyGetRueByNumero other = (KeyGetRueByNumero) obj;
 			return numero == other.numero;
 		}
+
+		@Override
+		public String toString() {
+			return "KeyGetRueByNumero{" +
+					"numero=" + numero +
+					'}';
+		}
 	}
 
 	@Override
@@ -1068,6 +1206,13 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 				return false;
 			KeyGetRueByLocalite other = (KeyGetRueByLocalite) obj;
 			return noOrdre == other.noOrdre;
+		}
+
+		@Override
+		public String toString() {
+			return "KeyGetRueByLocalite{" +
+					"noOrdre=" + noOrdre +
+					'}';
 		}
 	}
 
@@ -1115,6 +1260,13 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 			KeyGetRueByCanton other = (KeyGetRueByCanton) obj;
 			return noOfs == other.noOfs;
 		}
+
+		@Override
+		public String toString() {
+			return "KeyGetRueByCanton{" +
+					"noOfs=" + noOfs +
+					'}';
+		}
 	}
 
 	@Override
@@ -1161,6 +1313,13 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 				return false;
 			KeyGetInstitutionFinanciere other = (KeyGetInstitutionFinanciere) obj;
 			return id == other.id;
+		}
+
+		@Override
+		public String toString() {
+			return "KeyGetInstitutionFinanciere{" +
+					"id=" + id +
+					'}';
 		}
 	}
 
@@ -1215,6 +1374,13 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 				return false;
 			return true;
 		}
+
+		@Override
+		public String toString() {
+			return "KeyGetInstitutionsFinancieres{" +
+					"noClearing='" + noClearing + '\'' +
+					'}';
+		}
 	}
 
 	@Override
@@ -1247,6 +1413,11 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		@Override
 		public int hashCode() {
 			return 5874894;
+		}
+
+		@Override
+		public String toString() {
+			return getClass().getSimpleName() + "{}";
 		}
 	}
 
@@ -1291,6 +1462,13 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		public int hashCode() {
 			return code.hashCode();
 		}
+
+		@Override
+		public String toString() {
+			return "KeyGetTypeRegimeFiscal{" +
+					"code='" + code + '\'' +
+					'}';
+		}
 	}
 
 	@Override
@@ -1322,6 +1500,11 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		@Override
 		public int hashCode() {
 			return 333211;
+		}
+
+		@Override
+		public String toString() {
+			return getClass().getSimpleName() + "{}";
 		}
 	}
 
@@ -1365,6 +1548,13 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		@Override
 		public int hashCode() {
 			return code.hashCode();
+		}
+
+		@Override
+		public String toString() {
+			return "KeyGetTypeEtatPM{" +
+					"code='" + code + '\'' +
+					'}';
 		}
 	}
 
@@ -1445,6 +1635,13 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		public int hashCode() {
 			return id.hashCode();
 		}
+
+		@Override
+		public String toString() {
+			return "KeyGetLogiciel{" +
+					"id=" + id +
+					'}';
+		}
 	}
 
 	@Override
@@ -1474,6 +1671,11 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		@Override
 		public int hashCode() {
 			return 5308472;
+		}
+
+		@Override
+		public String toString() {
+			return getClass().getSimpleName() + "{}";
 		}
 	}
 
@@ -1517,6 +1719,13 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		public int hashCode() {
 			return code;
 		}
+
+		@Override
+		public String toString() {
+			return "KeyGetDistrict{" +
+					"code=" + code +
+					'}';
+		}
 	}
 
 	@Override
@@ -1558,6 +1767,13 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		public int hashCode() {
 			return code;
 		}
+
+		@Override
+		public String toString() {
+			return "KeyGetRegion{" +
+					"code=" + code +
+					'}';
+		}
 	}
 
 	@Override
@@ -1575,5 +1791,16 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		}
 
 		return resultat;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public String dump() {
+		final List<Object> cacheKeys = cache.getKeys();
+		final List<Object> shortLivedCacheKeys = shortLivedCache.getKeys();
+		final List<Object> keys = new ArrayList<>(cacheKeys.size() + shortLivedCacheKeys.size());
+		keys.addAll(cacheKeys);
+		keys.addAll(shortLivedCacheKeys);
+		return CacheHelper.dumpKeys(keys);
 	}
 }

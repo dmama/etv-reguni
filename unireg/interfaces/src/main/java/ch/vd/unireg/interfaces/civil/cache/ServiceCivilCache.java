@@ -18,7 +18,6 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
-import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.civil.ServiceCivilRaw;
@@ -26,6 +25,7 @@ import ch.vd.unireg.interfaces.civil.ServiceCivilServiceWrapper;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
+import ch.vd.uniregctb.cache.CacheHelper;
 import ch.vd.uniregctb.cache.CacheStats;
 import ch.vd.uniregctb.cache.CompletePartsCallback;
 import ch.vd.uniregctb.cache.EhCacheStats;
@@ -138,7 +138,7 @@ public class ServiceCivilCache implements ServiceCivilRaw, UniregCacheInterface,
 
 	private static class GetIndividuKey implements Serializable {
 
-		private static final long serialVersionUID = -5800763396635503970L;
+		private static final long serialVersionUID = -4126333789362012191L;
 
 		private final long noIndividu;
 
@@ -159,6 +159,13 @@ public class ServiceCivilCache implements ServiceCivilRaw, UniregCacheInterface,
 		@Override
 		public int hashCode() {
 			return (int) (noIndividu ^ (noIndividu >>> 32));
+		}
+
+		@Override
+		public String toString() {
+			return "GetIndividuKey{" +
+					"noIndividu=" + noIndividu +
+					'}';
 		}
 	}
 
@@ -278,40 +285,6 @@ public class ServiceCivilCache implements ServiceCivilRaw, UniregCacheInterface,
 		return target.getIndividuByEvent(evtId, parties);
 	}
 
-	private static class GetNationaliteAtKey implements Serializable {
-
-		private static final long serialVersionUID = -8330033881804405010L;
-
-		private final long noIndividu;
-		private final RegDate date;
-
-		private GetNationaliteAtKey(long noIndividu, RegDate date) {
-			this.noIndividu = noIndividu;
-			this.date = date;
-		}
-
-		@Override
-		public boolean equals(Object o) {
-			if (this == o) return true;
-			if (o == null || getClass() != o.getClass()) return false;
-
-			final GetNationaliteAtKey that = (GetNationaliteAtKey) o;
-
-			if (noIndividu != that.noIndividu) return false;
-			//noinspection RedundantIfStatement
-			if (date != null ? !date.equals(that.date) : that.date != null) return false;
-
-			return true;
-		}
-
-		@Override
-		public int hashCode() {
-			int result = (int) (noIndividu ^ (noIndividu >>> 32));
-			result = 31 * result + (date != null ? date.hashCode() : 0);
-			return result;
-		}
-	}
-
 	@Override
 	public void ping() throws ServiceCivilException {
 		target.ping();
@@ -346,10 +319,6 @@ public class ServiceCivilCache implements ServiceCivilRaw, UniregCacheInterface,
 			if (k instanceof GetIndividuKey) {
 				GetIndividuKey ki = (GetIndividuKey) k;
 				remove = (ki.noIndividu == numero);
-			}
-			else if (k instanceof GetNationaliteAtKey) {
-				GetNationaliteAtKey kn = (GetNationaliteAtKey) k;
-				remove = (kn.noIndividu == numero);
 			}
 			if (remove) {
 				cache.remove(k);
@@ -415,5 +384,11 @@ public class ServiceCivilCache implements ServiceCivilRaw, UniregCacheInterface,
 		else {
 			return target;
 		}
+	}
+
+	@Override
+	public String dump() {
+		@SuppressWarnings("unchecked") final List<Object> keys = cache.getKeys();
+		return CacheHelper.dumpKeys(keys);
 	}
 }

@@ -18,6 +18,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.cache.CacheHelper;
 import ch.vd.uniregctb.cache.CacheStats;
 import ch.vd.uniregctb.cache.EhCacheStats;
 import ch.vd.uniregctb.cache.UniregCacheInterface;
@@ -145,6 +146,14 @@ public class SecurityProviderCache implements UniregCacheInterface, SecurityProv
 			else if (!visaOperateur.equals(other.visaOperateur))
 				return false;
 			return true;
+		}
+
+		@Override
+		public String toString() {
+			return "KeyGetDroitAcces{" +
+					"visaOperateur='" + visaOperateur + '\'' +
+					", tiersId=" + tiersId +
+					'}';
 		}
 	}
 
@@ -303,6 +312,15 @@ public class SecurityProviderCache implements UniregCacheInterface, SecurityProv
 			else if (!visaOperateur.equals(other.visaOperateur))
 				return false;
 			return true;
+		}
+
+		@Override
+		public String toString() {
+			return "KeyIsGranted{" +
+					"role=" + role +
+					", visaOperateur='" + visaOperateur + '\'' +
+					", codeCollectivite=" + codeCollectivite +
+					'}';
 		}
 	}
 
@@ -499,5 +517,11 @@ public class SecurityProviderCache implements UniregCacheInterface, SecurityProv
 	@Override
 	public void reset() {
 		resetCaches();
+	}
+
+	@Override
+	public String dump() {
+		@SuppressWarnings("unchecked") final List<Object> keys = cache.getKeys();
+		return CacheHelper.dumpKeys(keys);
 	}
 }

@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import ch.vd.registre.base.utils.NotImplementedException;
@@ -102,6 +103,21 @@ public class UniregCacheManagerImpl implements UniregCacheManager, DynamicMBean 
 				}
 				return null;
 			}
+			else if (actionName.startsWith("dump")) {
+				final String cacheName = actionName.substring(4);
+				final UniregCacheInterface cache = map.get(cacheName);
+				if (cache == null) {
+					throw new NoSuchMethodException(actionName);
+				}
+				final String dump = cache.dump();
+				if (StringUtils.isBlank(dump)) {
+					LOGGER.info("Clés disponibles dans le cache " + cacheName + " : aucune");
+				}
+				else {
+					LOGGER.info("Clés disponibles dans le cache " + cacheName + " :\n" + dump);
+				}
+				return null;
+			}
 			else {
 				throw new NoSuchMethodException(actionName);
 			}
@@ -124,7 +140,7 @@ public class UniregCacheManagerImpl implements UniregCacheManager, DynamicMBean 
 		});
 
 		final MBeanAttributeInfo[] atts = new MBeanAttributeInfo[caches.size()];
-		final MBeanOperationInfo[] ops = new MBeanOperationInfo[caches.size() + 1];
+		final MBeanOperationInfo[] ops = new MBeanOperationInfo[2 * caches.size() + 1];
 
 		ops[0] = new MBeanOperationInfo("resetALL", "Vide et réinitialise tous les cache pour retrouver leurs états tel qu'au démarrage de l'application", null, "void", MBeanOperationInfo.ACTION);
 
@@ -133,6 +149,7 @@ public class UniregCacheManagerImpl implements UniregCacheManager, DynamicMBean 
 			final UniregCacheInterface c = caches.get(i);
 			atts[i] = new MBeanAttributeInfo(c.getName(), c.getClass().getName(), c.getDescription(), true, false, false);
 			ops[i + 1] = new MBeanOperationInfo("reset" + c.getName(), "Vide et réinitialise le cache pour retrouver son état au démarrage de l'application", null, "void", MBeanOperationInfo.ACTION);
+			ops[caches.size() + i + 1] = new MBeanOperationInfo("dump" + c.getName(), "Produit une liste des clés du cache dans les logs applicatifs", null, "void", MBeanOperationInfo.ACTION);
 		}
 
 		return new MBeanInfo(getClass().getName(), "Cache Manager d'Unireg", atts, null, ops, null);

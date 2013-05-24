@@ -39,4 +39,9 @@ class GetTiersKey extends CacheKey {
 			return false;
 		return true;
 	}
+
+	@Override
+	protected String toStringPart() {
+		return ", date=" + date;
+	}
 }

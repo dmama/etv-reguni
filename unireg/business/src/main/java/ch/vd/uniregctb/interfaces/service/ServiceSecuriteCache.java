@@ -15,6 +15,7 @@ import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.securite.model.Operateur;
 import ch.vd.securite.model.ProfilOperateur;
+import ch.vd.uniregctb.cache.CacheHelper;
 import ch.vd.uniregctb.cache.CacheStats;
 import ch.vd.uniregctb.cache.EhCacheStats;
 import ch.vd.uniregctb.cache.UniregCacheInterface;
@@ -117,6 +118,12 @@ public class ServiceSecuriteCache implements UniregCacheInterface, ServiceSecuri
 			return true;
 		}
 
+		@Override
+		public String toString() {
+			return "KeyGetCollectivitesUtilisateurVisaOperateur{" +
+					"visaOperateur='" + visaOperateur + '\'' +
+					'}';
+		}
 	}
 
 	@Override
@@ -172,6 +179,14 @@ public class ServiceSecuriteCache implements UniregCacheInterface, ServiceSecuri
 			else if (!codeFonction.equals(other.codeFonction))
 				return false;
 			return noCollectivite == other.noCollectivite;
+		}
+
+		@Override
+		public String toString() {
+			return "KeyGetListeOperateursPourFonctionCollectivite{" +
+					"codeFonction='" + codeFonction + '\'' +
+					", noCollectivite=" + noCollectivite +
+					'}';
 		}
 	}
 
@@ -232,6 +247,13 @@ public class ServiceSecuriteCache implements UniregCacheInterface, ServiceSecuri
 			return true;
 		}
 
+		@Override
+		public String toString() {
+			return "KeyGetProfileUtilisateurVisaOperateurCodeCollectivite{" +
+					"visaOperateur='" + visaOperateur + '\'' +
+					", codeCollectivite=" + codeCollectivite +
+					'}';
+		}
 	}
 
 	@Override
@@ -285,6 +307,12 @@ public class ServiceSecuriteCache implements UniregCacheInterface, ServiceSecuri
 			return true;
 		}
 
+		@Override
+		public String toString() {
+			return "KeyGetUtilisateursTypesCollectivite{" +
+					"typesCollectivite=" + typesCollectivite +
+					'}';
+		}
 	}
 
 	@Override
@@ -333,6 +361,12 @@ public class ServiceSecuriteCache implements UniregCacheInterface, ServiceSecuri
 			return noIndividu == other.noIndividu;
 		}
 
+		@Override
+		public String toString() {
+			return "KeyGetOperateurByNoIndividu{" +
+					"noIndividu=" + noIndividu +
+					'}';
+		}
 	}
 
 	@Override
@@ -385,6 +419,13 @@ public class ServiceSecuriteCache implements UniregCacheInterface, ServiceSecuri
 				return false;
 			return true;
 		}
+
+		@Override
+		public String toString() {
+			return "KeyGetOperateurByVisa{" +
+					"visa='" + visa + '\'' +
+					'}';
+		}
 	}
 
 	@Override
@@ -426,5 +467,11 @@ public class ServiceSecuriteCache implements UniregCacheInterface, ServiceSecuri
 	@Override
 	public void reset() {
 		cache.removeAll();
+	}
+
+	@Override
+	public String dump() {
+		@SuppressWarnings("unchecked") final List<Object> keys = cache.getKeys();
+		return CacheHelper.dumpKeys(keys);
 	}
 }

@@ -29,4 +29,14 @@ public abstract class CacheKey {
 			return false;
 		return true;
 	}
+
+	@Override
+	public final String toString() {
+		return getClass().getSimpleName() + "{" +
+				"tiersNumber=" + tiersNumber +
+				toStringPart() +
+				'}';
+	}
+
+	protected abstract String toStringPart();
 }

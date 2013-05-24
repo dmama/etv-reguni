@@ -38,6 +38,7 @@ import ch.vd.unireg.webservices.party4.WebServiceException;
 import ch.vd.unireg.xml.party.debtor.v2.DebtorInfo;
 import ch.vd.unireg.xml.party.v2.Party;
 import ch.vd.unireg.xml.party.v2.PartyType;
+import ch.vd.uniregctb.cache.CacheHelper;
 import ch.vd.uniregctb.cache.CacheStats;
 import ch.vd.uniregctb.cache.CompletePartsCallbackWithException;
 import ch.vd.uniregctb.cache.EhCacheStats;
@@ -454,5 +455,11 @@ public class PartyWebServiceCache implements UniregCacheInterface, PartyWebServi
 	@Override
 	public void reset() {
 		cache.removeAll();
+	}
+
+	@Override
+	public String dump() {
+		@SuppressWarnings("unchecked") final List<Object> keys = cache.getKeys();
+		return CacheHelper.dumpKeys(keys);
 	}
 }

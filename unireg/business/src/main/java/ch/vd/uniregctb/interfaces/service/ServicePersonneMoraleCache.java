@@ -18,6 +18,7 @@ import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.cache.CacheHelper;
 import ch.vd.uniregctb.cache.CacheStats;
 import ch.vd.uniregctb.cache.CompletePartsCallback;
 import ch.vd.uniregctb.cache.EhCacheStats;
@@ -119,6 +120,12 @@ public class ServicePersonneMoraleCache extends ServicePersonneMoraleBase implem
 		cache.removeAll();
 	}
 
+	@Override
+	public String dump() {
+		@SuppressWarnings("unchecked") final List<Object> keys = cache.getKeys();
+		return CacheHelper.dumpKeys(keys);
+	}
+
 	private static class GetAllIdsKey {
 
 		@Override
@@ -129,6 +136,11 @@ public class ServicePersonneMoraleCache extends ServicePersonneMoraleBase implem
 		@Override
 		public int hashCode() {
 			return super.hashCode();
+		}
+
+		@Override
+		public String toString() {
+			return getClass().getSimpleName() + "{}";
 		}
 	}
 
@@ -173,6 +185,13 @@ public class ServicePersonneMoraleCache extends ServicePersonneMoraleBase implem
 		@Override
 		public int hashCode() {
 			return (int) (id ^ (id >>> 32));
+		}
+
+		@Override
+		public String toString() {
+			return "GetPersonneMoraleByIdKey{" +
+					"id=" + id +
+					'}';
 		}
 	}
 
@@ -297,6 +316,13 @@ public class ServicePersonneMoraleCache extends ServicePersonneMoraleBase implem
 		@Override
 		public int hashCode() {
 			return (int) (id ^ (id >>> 32));
+		}
+
+		@Override
+		public String toString() {
+			return "GetEtablissementByIdKey{" +
+					"id=" + id +
+					'}';
 		}
 	}
 

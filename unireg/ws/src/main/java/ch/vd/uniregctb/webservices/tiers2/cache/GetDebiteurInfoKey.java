@@ -26,4 +26,9 @@ class GetDebiteurInfoKey extends CacheKey {
 		result = 31 * result + periodeFiscale;
 		return result;
 	}
+
+	@Override
+	protected String toStringPart() {
+		return ", periodeFiscale=" + periodeFiscale;
+	}
 }

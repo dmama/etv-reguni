@@ -15,6 +15,7 @@ import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.tx.TxCallback;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.cache.CacheHelper;
 import ch.vd.uniregctb.cache.CacheStats;
 import ch.vd.uniregctb.cache.EhCacheStats;
 import ch.vd.uniregctb.cache.UniregCacheInterface;
@@ -31,7 +32,7 @@ public class AutorisationCacheImpl implements AutorisationCache, DataEventListen
 
 	private static class AutorisationKey implements Serializable {
 
-		private static final long serialVersionUID = -199626698177798362L;
+		private static final long serialVersionUID = -760486881677996440L;
 
 		private final String visa;
 		private final int oid;
@@ -68,6 +69,15 @@ public class AutorisationCacheImpl implements AutorisationCache, DataEventListen
 			result = 31 * result + oid;
 			result = 31 * result + (tiersId != null ? tiersId.hashCode() : 0);
 			return result;
+		}
+
+		@Override
+		public String toString() {
+			return "AutorisationKey{" +
+					"visa='" + visa + '\'' +
+					", oid=" + oid +
+					", tiersId=" + tiersId +
+					'}';
 		}
 	}
 
@@ -216,5 +226,11 @@ public class AutorisationCacheImpl implements AutorisationCache, DataEventListen
 	@Override
 	public void reset() {
 		cache.removeAll();
+	}
+
+	@Override
+	public String dump() {
+		@SuppressWarnings("unchecked") final List<Object> keys = cache.getKeys();
+		return CacheHelper.dumpKeys(keys);
 	}
 }
