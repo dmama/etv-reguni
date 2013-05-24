@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 import junit.framework.Assert;
 import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
@@ -29,13 +30,16 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 	private static class QueueTemplate {
 
 		private final EvenementCivilEchService serviceCivil;
+		private final PlatformTransactionManager transactionManager;
 
-		private QueueTemplate(EvenementCivilEchService evtCivilEchService) {
+		private QueueTemplate(EvenementCivilEchService evtCivilEchService, PlatformTransactionManager transactionManager) {
 			this.serviceCivil = evtCivilEchService;
+			this.transactionManager = transactionManager;
 		}
 
 		public void doWithNewQueueDelayedBy(int delayedBy, Callback cb) throws Exception {
 			final EvenementCivilNotificationQueueImpl queue = new EvenementCivilNotificationQueueImpl(delayedBy);
+			queue.setTransactionManager(transactionManager);
 			queue.setEvtCivilService(serviceCivil);
 			queue.afterPropertiesSet();
 			try {
@@ -56,7 +60,8 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 	@Override
 	protected void runOnSetUp() throws Exception {
 		super.runOnSetUp();
-		queueTemplate = new QueueTemplate(getBean(EvenementCivilEchService.class, "evtCivilEchService"));
+		final EvenementCivilEchService evtCivilEchService = getBean(EvenementCivilEchService.class, "evtCivilEchService");
+		queueTemplate = new QueueTemplate(evtCivilEchService, transactionManager);
 	}
 
 	private EvenementCivilEch addEvenementCivil(Long id, long noIndividu, RegDate date, TypeEvenementCivilEch type, ActionEvenementCivilEch action, EtatEvenementCivil etat) {

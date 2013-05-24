@@ -30,6 +30,7 @@ public abstract class AbstractEvenementCivilEchProcessorTest extends BusinessTes
 		final EvenementCivilEchTranslator translator = getBean(EvenementCivilEchTranslator.class, "evenementCivilEchTranslator");
 
 		queue = new EvenementCivilNotificationQueueImpl(0);
+		queue.setTransactionManager(transactionManager);
 		queue.setEvtCivilService(evtCivilService);
 		if (buildProcessorOnSetup()) {
 			buildProcessor(translator, false);

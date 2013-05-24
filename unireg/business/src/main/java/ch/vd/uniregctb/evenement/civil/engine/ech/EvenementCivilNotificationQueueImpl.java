@@ -16,6 +16,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.AgeTrackingBlockingQueueMixer;
@@ -23,6 +27,7 @@ import ch.vd.uniregctb.common.Dated;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchBasicInfo;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchProcessingMode;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchService;
+import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 /**
  * Classe utilitaire qui joue le rôle d'une queue bloquante pour le traitement des événements civils reçus de RCPers
@@ -77,6 +82,7 @@ import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchService;
 	private final AgeTrackingBlockingQueueMixer<DelayedIndividu> mixer;
 	private final ReentrantLock lock = new ReentrantLock();
 
+	private PlatformTransactionManager transactionManager;
 	private EvenementCivilEchService evtCivilService;
 	private final long delayNs;
 
@@ -97,6 +103,11 @@ import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchService;
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setEvtCivilService(EvenementCivilEchService evtCivilService) {
 		this.evtCivilService = evtCivilService;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setTransactionManager(PlatformTransactionManager transactionManager) {
+		this.transactionManager = transactionManager;
 	}
 
 	private static long getTimestamp() {
@@ -253,8 +264,16 @@ import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchService;
 	}
 
 	@Nullable
-	protected List<EvenementCivilEchBasicInfo> buildLotsEvenementsCivils(long noIndividu) {
-		return evtCivilService.buildLotEvenementsCivils(noIndividu);
+	protected List<EvenementCivilEchBasicInfo> buildLotsEvenementsCivils(final long noIndividu) {
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+		template.setReadOnly(true);
+		return template.execute(new TransactionCallback<List<EvenementCivilEchBasicInfo>>() {
+			@Override
+			public List<EvenementCivilEchBasicInfo> doInTransaction(TransactionStatus status) {
+				return evtCivilService.buildLotEvenementsCivilsNonTraites(noIndividu);
+			}
+		});
 	}
 
 	@Override

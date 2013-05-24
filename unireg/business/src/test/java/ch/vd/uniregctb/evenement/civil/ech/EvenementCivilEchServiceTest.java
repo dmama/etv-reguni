@@ -31,9 +31,11 @@ import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 
 public class EvenementCivilEchServiceTest extends BusinessTest {
 
+	private EvenementCivilEchDAO evenementCivilEchDAO;
+
 	protected EvenementCivilEchServiceImpl buildService() throws Exception {
 		final EvenementCivilEchServiceImpl service = new EvenementCivilEchServiceImpl();
-		service.setEvenementCivilEchDAO(getBean(EvenementCivilEchDAO.class, "evenementCivilEchDAO"));
+		service.setEvenementCivilEchDAO(evenementCivilEchDAO);
 		service.setHibernateTemplate(hibernateTemplate);
 		service.setServiceCivil(serviceCivil);
 		service.setTiersDAO(tiersDAO);
@@ -41,6 +43,12 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 		service.setTransactionManager(transactionManager);
 		service.afterPropertiesSet();
 		return service;
+	}
+
+	@Override
+	protected void runOnSetUp() throws Exception {
+		super.runOnSetUp();
+		evenementCivilEchDAO = getBean(EvenementCivilEchDAO.class, "evenementCivilEchDAO");
 	}
 
 	@Test
@@ -336,7 +344,12 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 		});
 
 		// vérification du comportement du service
-		final List<EvenementCivilEchBasicInfo> infos = service.buildLotEvenementsCivils(noIndividu);
+		final List<EvenementCivilEchBasicInfo> infos = doInNewTransactionAndSession(new TransactionCallback<List<EvenementCivilEchBasicInfo>>() {
+			@Override
+			public List<EvenementCivilEchBasicInfo> doInTransaction(TransactionStatus status) {
+				return service.buildLotEvenementsCivilsNonTraites(noIndividu);
+			}
+		});
 		Assert.assertNotNull(infos);
 		Assert.assertEquals(0, infos.size());
 	}
@@ -372,7 +385,12 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 		});
 
 		// vérification du comportement du service
-		final List<EvenementCivilEchBasicInfo> infos = service.buildLotEvenementsCivils(noIndividu);
+		final List<EvenementCivilEchBasicInfo> infos = doInNewTransactionAndSession(new TransactionCallback<List<EvenementCivilEchBasicInfo>>() {
+			@Override
+			public List<EvenementCivilEchBasicInfo> doInTransaction(TransactionStatus status) {
+				return service.buildLotEvenementsCivilsNonTraites(noIndividu);
+			}
+		});
 		Assert.assertNotNull(infos);
 		Assert.assertEquals(2, infos.size());
 
@@ -455,7 +473,12 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 		});
 
 		// vérification du comportement du service
-		final List<EvenementCivilEchBasicInfo> infos = service.buildLotEvenementsCivils(noIndividu);
+		final List<EvenementCivilEchBasicInfo> infos = doInNewTransactionAndSession(new TransactionCallback<List<EvenementCivilEchBasicInfo>>() {
+			@Override
+			public List<EvenementCivilEchBasicInfo> doInTransaction(TransactionStatus status) {
+				return service.buildLotEvenementsCivilsNonTraites(noIndividu);
+			}
+		});
 		Assert.assertNotNull(infos);
 		Assert.assertEquals(6, infos.size());
 
@@ -592,7 +615,12 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 		});
 
 		// vérification du comportement du service
-		final List<EvenementCivilEchBasicInfo> infos = service.buildLotEvenementsCivils(noIndividu);
+		final List<EvenementCivilEchBasicInfo> infos = doInNewTransactionAndSession(new TransactionCallback<List<EvenementCivilEchBasicInfo>>() {
+			@Override
+			public List<EvenementCivilEchBasicInfo> doInTransaction(TransactionStatus status) {
+				return service.buildLotEvenementsCivilsNonTraites(noIndividu);
+			}
+		});
 		Assert.assertNotNull(infos);
 		Assert.assertEquals(8, infos.size());
 
@@ -692,7 +720,7 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 	}
 
 	@Test
-	public void testConstitutionGroupReferencesAvecEch99EnPrincipal() throws Exception {
+	public void testConstitutionGroupeReferencesAvecEch99EnPrincipal() throws Exception {
 
 		final long noIndividu = 21745624L;
 		final RegDate dateNaissance = date(1980, 10, 25);
@@ -720,7 +748,12 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 		});
 
 		// vérification du comportement du service
-		final List<EvenementCivilEchBasicInfo> infos = service.buildLotEvenementsCivils(noIndividu);
+		final List<EvenementCivilEchBasicInfo> infos = doInNewTransactionAndSession(new TransactionCallback<List<EvenementCivilEchBasicInfo>>() {
+			@Override
+			public List<EvenementCivilEchBasicInfo> doInTransaction(TransactionStatus status) {
+				return service.buildLotEvenementsCivilsNonTraites(noIndividu);
+			}
+		});
 		Assert.assertNotNull(infos);
 		Assert.assertEquals(3, infos.size());
 
@@ -764,7 +797,7 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 	}
 
 	@Test
-	public void testConstitutionGroupReferencesAvecEch99EnDependantSeulement() throws Exception {
+	public void testConstitutionGroupeReferencesAvecEch99EnDependantSeulement() throws Exception {
 
 		final long noIndividu = 21745624L;
 		final RegDate dateNaissance = date(1980, 10, 25);
@@ -790,7 +823,12 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 		});
 
 		// vérification du comportement du service
-		final List<EvenementCivilEchBasicInfo> infos = service.buildLotEvenementsCivils(noIndividu);
+		final List<EvenementCivilEchBasicInfo> infos = doInNewTransactionAndSession(new TransactionCallback<List<EvenementCivilEchBasicInfo>>() {
+			@Override
+			public List<EvenementCivilEchBasicInfo> doInTransaction(TransactionStatus status) {
+				return service.buildLotEvenementsCivilsNonTraites(noIndividu);
+			}
+		});
 		Assert.assertNotNull(infos);
 		Assert.assertEquals(2, infos.size());
 
@@ -816,6 +854,173 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 			final List<EvenementCivilEchBasicInfo> referrers = info.getSortedReferrers();
 			Assert.assertNotNull(referrers);
 			Assert.assertEquals(0, referrers.size());
+		}
+	}
+
+	@Test
+	public void testBuildGrappe() throws Exception {
+
+		final long noIndividu = 21745624L;
+
+		final EvenementCivilEchServiceImpl service = buildService();
+
+		// création d'un individu (cela sert-il vraiment à quelque chose ?)
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				addIndividu(noIndividu, null, "Tartempion", "Bidule", Sexe.MASCULIN);
+			}
+		});
+
+		// création des événements civils
+		// 1 <- 2 (tous non traités)
+		// 5 (tout seul)
+		// 3 <- 7 (3 traité, pas 7)
+		// 4 <- 8 <- 9 (8 traité, pas les autres)
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				// 1 <- 2
+				createEvent(date(2000, 4, 3), noIndividu, 1L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.A_TRAITER, null);
+				createEvent(date(2000, 4, 1), noIndividu, 2L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.CORRECTION, EtatEvenementCivil.A_TRAITER, 1L);
+
+				// 5
+				createEvent(date(2000, 5, 1), noIndividu, 5L, TypeEvenementCivilEch.CHGT_NOM, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.TRAITE, null);
+
+				// 3 <- 7
+				createEvent(date(2000, 6, 3), noIndividu, 3L, TypeEvenementCivilEch.MARIAGE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.TRAITE, null);
+				createEvent(date(2000, 6, 8), noIndividu, 7L, TypeEvenementCivilEch.MARIAGE, ActionEvenementCivilEch.CORRECTION, EtatEvenementCivil.A_TRAITER, 3L);
+
+				// 4 <- 8 <- 9
+				createEvent(date(2000, 7, 3), noIndividu, 4L, TypeEvenementCivilEch.DEPART, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.A_TRAITER, null);
+				createEvent(date(2000, 7, 12), noIndividu, 8L, TypeEvenementCivilEch.DEPART, ActionEvenementCivilEch.CORRECTION, EtatEvenementCivil.FORCE, 4L);
+				createEvent(date(2000, 7, 2), noIndividu, 9L, TypeEvenementCivilEch.DEPART, ActionEvenementCivilEch.CORRECTION, EtatEvenementCivil.A_TRAITER, 8L);
+
+				return null;
+			}
+		});
+
+		// vérifications de ce que renvoie la méthode d'extraction des grappes
+		// 1 <- 2
+		{
+			final List<EvenementCivilEchBasicInfo> grappe = doInNewTransactionAndSession(new TxCallback<List<EvenementCivilEchBasicInfo>>() {
+				@Override
+				public List<EvenementCivilEchBasicInfo> execute(TransactionStatus status) throws Exception {
+					final EvenementCivilEch ech = evenementCivilEchDAO.get(1L);
+					return service.buildGrappe(ech);
+				}
+			});
+
+			Assert.assertNotNull(grappe);
+			Assert.assertEquals(2, grappe.size());
+			Assert.assertEquals(1L, grappe.get(0).getId());
+			Assert.assertEquals(2L, grappe.get(1).getId());
+		}
+		{
+			final List<EvenementCivilEchBasicInfo> grappe = doInNewTransactionAndSession(new TxCallback<List<EvenementCivilEchBasicInfo>>() {
+				@Override
+				public List<EvenementCivilEchBasicInfo> execute(TransactionStatus status) throws Exception {
+					final EvenementCivilEch ech = evenementCivilEchDAO.get(2L);
+					return service.buildGrappe(ech);
+				}
+			});
+
+			Assert.assertNotNull(grappe);
+			Assert.assertEquals(2, grappe.size());
+			Assert.assertEquals(1L, grappe.get(0).getId());
+			Assert.assertEquals(2L, grappe.get(1).getId());
+		}
+
+		// 5
+		{
+			final List<EvenementCivilEchBasicInfo> grappe = doInNewTransactionAndSession(new TxCallback<List<EvenementCivilEchBasicInfo>>() {
+				@Override
+				public List<EvenementCivilEchBasicInfo> execute(TransactionStatus status) throws Exception {
+					final EvenementCivilEch ech = evenementCivilEchDAO.get(5L);
+					return service.buildGrappe(ech);
+				}
+			});
+
+			Assert.assertNotNull(grappe);
+			Assert.assertEquals(1, grappe.size());
+			Assert.assertEquals(5L, grappe.get(0).getId());
+		}
+
+		// 3 <- 7
+		{
+			final List<EvenementCivilEchBasicInfo> grappe = doInNewTransactionAndSession(new TxCallback<List<EvenementCivilEchBasicInfo>>() {
+				@Override
+				public List<EvenementCivilEchBasicInfo> execute(TransactionStatus status) throws Exception {
+					final EvenementCivilEch ech = evenementCivilEchDAO.get(3L);
+					return service.buildGrappe(ech);
+				}
+			});
+
+			Assert.assertNotNull(grappe);
+			Assert.assertEquals(2, grappe.size());
+			Assert.assertEquals(3L, grappe.get(0).getId());
+			Assert.assertEquals(7L, grappe.get(1).getId());
+		}
+		{
+			final List<EvenementCivilEchBasicInfo> grappe = doInNewTransactionAndSession(new TxCallback<List<EvenementCivilEchBasicInfo>>() {
+				@Override
+				public List<EvenementCivilEchBasicInfo> execute(TransactionStatus status) throws Exception {
+					final EvenementCivilEch ech = evenementCivilEchDAO.get(7L);
+					return service.buildGrappe(ech);
+				}
+			});
+
+			Assert.assertNotNull(grappe);
+			Assert.assertEquals(2, grappe.size());
+			Assert.assertEquals(3L, grappe.get(0).getId());
+			Assert.assertEquals(7L, grappe.get(1).getId());
+		}
+
+		// 4 <- 8 <- 9
+		{
+			final List<EvenementCivilEchBasicInfo> grappe = doInNewTransactionAndSession(new TxCallback<List<EvenementCivilEchBasicInfo>>() {
+				@Override
+				public List<EvenementCivilEchBasicInfo> execute(TransactionStatus status) throws Exception {
+					final EvenementCivilEch ech = evenementCivilEchDAO.get(4L);
+					return service.buildGrappe(ech);
+				}
+			});
+
+			Assert.assertNotNull(grappe);
+			Assert.assertEquals(3, grappe.size());
+			Assert.assertEquals(4L, grappe.get(0).getId());
+			Assert.assertEquals(8L, grappe.get(1).getId());
+			Assert.assertEquals(9L, grappe.get(2).getId());
+		}
+		{
+			final List<EvenementCivilEchBasicInfo> grappe = doInNewTransactionAndSession(new TxCallback<List<EvenementCivilEchBasicInfo>>() {
+				@Override
+				public List<EvenementCivilEchBasicInfo> execute(TransactionStatus status) throws Exception {
+					final EvenementCivilEch ech = evenementCivilEchDAO.get(8L);
+					return service.buildGrappe(ech);
+				}
+			});
+
+			Assert.assertNotNull(grappe);
+			Assert.assertEquals(3, grappe.size());
+			Assert.assertEquals(4L, grappe.get(0).getId());
+			Assert.assertEquals(8L, grappe.get(1).getId());
+			Assert.assertEquals(9L, grappe.get(2).getId());
+		}
+		{
+			final List<EvenementCivilEchBasicInfo> grappe = doInNewTransactionAndSession(new TxCallback<List<EvenementCivilEchBasicInfo>>() {
+				@Override
+				public List<EvenementCivilEchBasicInfo> execute(TransactionStatus status) throws Exception {
+					final EvenementCivilEch ech = evenementCivilEchDAO.get(9L);
+					return service.buildGrappe(ech);
+				}
+			});
+
+			Assert.assertNotNull(grappe);
+			Assert.assertEquals(3, grappe.size());
+			Assert.assertEquals(4L, grappe.get(0).getId());
+			Assert.assertEquals(8L, grappe.get(1).getId());
+			Assert.assertEquals(9L, grappe.get(2).getId());
 		}
 	}
 }

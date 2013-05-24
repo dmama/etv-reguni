@@ -163,7 +163,17 @@ public class EvenementCivilEchReceptionHandlerImpl implements EvenementCivilEchR
 		final long noIndividu = evtCivilService.getNumeroIndividuPourEvent(event);
 
 		// sauvegarde de l'individu dans l'événement
-        event = evtCivilService.assigneNumeroIndividu(event, noIndividu);
+		if (event.getNumeroIndividu() == null || event.getNumeroIndividu() != noIndividu) {
+			final TransactionTemplate template = new TransactionTemplate(transactionManager);
+			template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+			final EvenementCivilEch oldEvent = event;
+			event = template.execute(new TransactionCallback<EvenementCivilEch>() {
+				@Override
+				public EvenementCivilEch doInTransaction(TransactionStatus status) {
+					return evtCivilService.assigneNumeroIndividu(oldEvent, noIndividu);
+				}
+			});
+		}
 
 		// notification du moteur de traitement
 		demanderTraitementQueue(noIndividu, mode);

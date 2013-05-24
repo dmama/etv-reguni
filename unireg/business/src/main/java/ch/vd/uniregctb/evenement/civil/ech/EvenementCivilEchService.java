@@ -1,11 +1,11 @@
 package ch.vd.uniregctb.evenement.civil.ech;
 
+import java.util.List;
+
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilCriteria;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
-
-import java.util.List;
 
 public interface EvenementCivilEchService {
 
@@ -16,7 +16,13 @@ public interface EvenementCivilEchService {
      *
 	 * @return une liste des informations autour des événements à traiter
 	 */
-	List<EvenementCivilEchBasicInfo> buildLotEvenementsCivils(long noIndividu);
+	List<EvenementCivilEchBasicInfo> buildLotEvenementsCivilsNonTraites(long noIndividu);
+
+	/**
+	 * @param event événement civil dont on veut contruire la grappe complète de dépendances
+	 * @return la liste (ordonnée du moins dépendant au plus dépendant) des constituants de la grappe
+	 */
+	List<EvenementCivilEchBasicInfo> buildGrappe(EvenementCivilEch event) throws EvenementCivilException;
 
     /**
      * retrouve dans le civil le numéro d'individu concerné par l'événement

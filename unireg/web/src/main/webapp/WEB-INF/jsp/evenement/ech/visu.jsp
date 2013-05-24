@@ -21,7 +21,12 @@
                 <unireg:consulterLog entityNature="EvenementEch" entityId="${command.evtId}"/>
             </td>
             <td width="25%"><fmt:message key="label.date.evenement"/> :</td>
-            <td width="25%"><unireg:regdate regdate="${command.evtDate}"/></td>
+            <td width="25%">
+	            <unireg:regdate regdate="${command.evtDate}"/>
+	            <c:if test="${command.grappeComplete.effectiveDate != command.evtDate}">
+		            <img src="<c:url value='/images/right-arrow.png'/>" height="16px">&nbsp;<unireg:regdate regdate="${command.grappeComplete.effectiveDate}"/>
+	            </c:if>
+            </td>
 
         </tr>
         <tr class="<unireg:nextRowClass/>">
@@ -62,6 +67,38 @@
 
 </fieldset>
 <!-- Fin Caracteristiques generales -->
+
+<!-- Début visualisation grappe -->
+<c:if test="${command.grappeComplete.multiElement}">
+	<fieldset>
+		<legend><span><fmt:message key="label.grappe"/></span></legend>
+		<display:table name="command.grappeComplete" id="elt">
+			<display:column style="width: 3em; text-align: center;">
+				<c:if test="${elt.id == command.evtId}">
+					<img src="<c:url value='/images/pin.png'/>"/>
+				</c:if>
+			</display:column>
+			<display:column titleKey="label.numero.evenement">
+				<c:if test="${elt.id == command.evtId}">
+					<c:out value="${elt.id}"/>
+				</c:if>
+				<c:if test="${elt.id != command.evtId}">
+					<a href="visu.do?id=<c:out value='${elt.id}'/>"><c:out value="${elt.id}"/></a>
+				</c:if>
+			</display:column>
+			<display:column titleKey="label.action.evenement">
+				<fmt:message key="option.action.evenement.ech.${elt.action}"/>
+			</display:column>
+			<display:column titleKey="label.etat.evenement">
+				<fmt:message key="option.etat.evenement.${elt.etat}"/>
+			</display:column>
+			<display:column titleKey="label.date.evenement">
+				<unireg:regdate regdate="${elt.date}"/>
+			</display:column>
+		</display:table>
+	</fieldset>
+</c:if>
+<!-- Fin visualisation grappe -->
 
 <!-- Debut Individu -->
 <fieldset>

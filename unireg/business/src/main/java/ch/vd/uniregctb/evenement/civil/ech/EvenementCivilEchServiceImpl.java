@@ -1,24 +1,20 @@
 package ch.vd.uniregctb.evenement.civil.ech;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.hibernate.HibernateException;
-import org.hibernate.Session;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.civil.ServiceCivilException;
@@ -29,13 +25,11 @@ import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilCriteria;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
-import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
@@ -120,30 +114,77 @@ public class EvenementCivilEchServiceImpl implements EvenementCivilEchService, I
 	}
 
 	@Override
-	public List<EvenementCivilEchBasicInfo> buildLotEvenementsCivils(final long noIndividu) {
-		final TransactionTemplate template = new TransactionTemplate(transactionManager);
-		template.setReadOnly(true);
-		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-		final List<EvenementCivilEchBasicInfo> infos = template.execute(new TransactionCallback<List<EvenementCivilEchBasicInfo>>() {
-			@Override
-			public List<EvenementCivilEchBasicInfo> doInTransaction(TransactionStatus status) {
-				return hibernateTemplate.executeWithNewSession(new HibernateCallback<List<EvenementCivilEchBasicInfo>>() {
-					@Override
-					public List<EvenementCivilEchBasicInfo> doInHibernate(Session session) throws HibernateException, SQLException {
-						return buildListeEvenementsCivilsATraiterPourIndividu(noIndividu);
-					}
-				});
-			}
-		});
-
+	public List<EvenementCivilEchBasicInfo> buildLotEvenementsCivilsNonTraites(long noIndividu) {
+		final List<EvenementCivilEchBasicInfo> infos = buildListeEvenementsCivilsNonTraitesPourIndividuAvecReferences(noIndividu);
 		if (infos != null && infos.size() > 1) {
 			Collections.sort(infos, EVT_CIVIL_COMPARATOR);
 		}
 		return infos;
 	}
 
-	private List<EvenementCivilEchBasicInfo> buildListeEvenementsCivilsATraiterPourIndividu(long noIndividu) {
-		return buildListeEvenementsCivilsATraiterPourIndividuAvecReferences(noIndividu);
+	/**
+	 * @param source événement civil dont on veut contruire la grappe complète de dépendances
+	 * @return la liste (ordonnée du moins dépendant au plus dépendant) des constituants de la grappe
+	 */
+	@Override
+	public List<EvenementCivilEchBasicInfo> buildGrappe(EvenementCivilEch source) throws EvenementCivilException {
+		// récupération du numéro d'individu
+		final long noIndividu;
+		if (source.getNumeroIndividu() != null) {
+			noIndividu = source.getNumeroIndividu();
+		}
+		else {
+			noIndividu = getNumeroIndividuPourEvent(source);
+		}
+
+		// récupération de tous les événements liés à cet individu
+		final List<EvenementCivilEch> allEvents = evenementCivilEchDAO.getEvenementsCivilsPourIndividu(noIndividu, true);
+
+		// indexation de tout ce petit monde
+		final Map<Long, EvenementCivilEch> idMap = new HashMap<>(allEvents.size());
+		for (EvenementCivilEch evt : allEvents) {
+			idMap.put(evt.getId(), evt);
+		}
+
+		// récupération des éléments dont notre source dépend
+		final Set<Long> taken = new HashSet<>(idMap.size());
+		final List<EvenementCivilEch> list = new LinkedList<>();
+		EvenementCivilEch referenced = source;
+		while (referenced != null) {
+			if (!taken.add(referenced.getId())) {
+				// on l'a déjà vu, celui-là, pas la peine de continuer (boucle ?)
+				break;
+			}
+			list.add(0, referenced);       // insertion en début de liste
+			referenced = idMap.get(referenced.getRefMessageId());
+		}
+
+		// dans l'autre sens, maintenant, les éléments qui dépendent de notre source
+		final List<EvenementCivilEch> notTakenYet = new LinkedList<>(allEvents);
+		notTakenYet.removeAll(list);
+		while (true) {
+			final List<EvenementCivilEch> referencer = new ArrayList<>();
+			final Iterator<EvenementCivilEch> notTakenYetIterator = notTakenYet.iterator();
+			while (notTakenYetIterator.hasNext()) {
+				final EvenementCivilEch elt = notTakenYetIterator.next();
+				if (taken.contains(elt.getRefMessageId())) {
+					referencer.add(elt);
+					notTakenYetIterator.remove();
+				}
+			}
+
+			// on ne trouve plus personne
+			if (referencer.size() == 0) {
+				break;
+			}
+
+			list.addAll(referencer);
+			for (EvenementCivilEch ref : referencer) {
+				taken.add(ref.getId());
+			}
+		}
+
+        return buildInfos(list, noIndividu);
 	}
 
 	private List<EvenementCivilEchBasicInfo> buildInfos(List<EvenementCivilEch> evts, long noIndividu) {
@@ -160,7 +201,7 @@ public class EvenementCivilEchServiceImpl implements EvenementCivilEchService, I
 		}
 	}
 
-	private List<EvenementCivilEchBasicInfo> buildListeEvenementsCivilsATraiterPourIndividuAvecReferences(long noIndividu) {
+	private List<EvenementCivilEchBasicInfo> buildListeEvenementsCivilsNonTraitesPourIndividuAvecReferences(long noIndividu) {
 		// on récupère tous les événements civils attribuables à l'individu donné (= ceux qui ont le numéro d'individu assigné ceux qui n'ont pas de numéros d'individus assignés mais qui font référence, directement ou
 		// pas, à un événement civil qui est assigné à cet individu)
 		final List<EvenementCivilEch> evts = evenementCivilEchDAO.getEvenementsCivilsPourIndividu(noIndividu, true);
@@ -372,28 +413,15 @@ public class EvenementCivilEchServiceImpl implements EvenementCivilEchService, I
 
     @Override
     public EvenementCivilEch assigneNumeroIndividu(final EvenementCivilEch event, final long numeroIndividu) {
-        if (event.getNumeroIndividu() == null || event.getNumeroIndividu() != numeroIndividu) {
-            final TransactionTemplate template = new TransactionTemplate(transactionManager);
-            template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-            return template.execute(new TransactionCallback<EvenementCivilEch>() {
-                @Override
-                public EvenementCivilEch doInTransaction(TransactionStatus status) {
-                    final EvenementCivilEch evt = evenementCivilEchDAO.get(event.getId());
-                    evt.setNumeroIndividu(numeroIndividu);
-                    return evenementCivilEchDAO.save(evt);
-                }
-            });
-        }
-        else {
-            return event;
-        }
+        final EvenementCivilEch evt = evenementCivilEchDAO.get(event.getId());
+        evt.setNumeroIndividu(numeroIndividu);
+        return evenementCivilEchDAO.save(evt);
     }
 
     @Override
     public EvenementCivilEch get(Long id) {
         return evenementCivilEchDAO.get(id);
     }
-
 
     @Override
     public List<EvenementCivilEch> find(EvenementCivilCriteria<TypeEvenementCivilEch> criterion, ParamPagination pagination) {

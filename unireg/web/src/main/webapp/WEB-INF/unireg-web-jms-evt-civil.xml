@@ -79,6 +79,7 @@
 	<bean id="evtCivilEchNotificationQueue" class="ch.vd.uniregctb.evenement.civil.engine.ech.EvenementCivilNotificationQueueImpl">
 		<constructor-arg name="delayInSeconds" value="${extprop.evtCivil.acknowledgementDelay}"/>
 		<property name="evtCivilService" ref="evtCivilEchService"/>
+		<property name="transactionManager" ref="transactionManager"/>
 	</bean>
 
 	<bean id="evtCivilEchReceptionHandler" class="ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchReceptionHandlerImpl">

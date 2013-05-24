@@ -22,6 +22,7 @@ import ch.vd.uniregctb.evenement.common.view.ErreurEvenementCivilView;
 import ch.vd.uniregctb.evenement.ech.view.EvenementCivilEchCriteriaView;
 import ch.vd.uniregctb.evenement.ech.view.EvenementCivilEchDetailView;
 import ch.vd.uniregctb.evenement.ech.view.EvenementCivilEchElementListeRechercheView;
+import ch.vd.uniregctb.evenement.ech.view.EvenementCivilEchGrappeView;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.IndividuNotFoundException;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -55,12 +56,42 @@ public class EvenementCivilEchManagerImpl extends EvenementCivilManagerImpl impl
 	@Override
     @Transactional(readOnly = true)
 	public EvenementCivilEchDetailView get(Long id) throws AdresseException, ServiceInfrastructureException {
-		final EvenementCivilEchDetailView evtView = new EvenementCivilEchDetailView();
 		final EvenementCivilEch evt = evenementService.get(id);
 		if (evt == null) {
 			throw newObjectNotFoundException(id);
 		}
-		fill(evt, evtView);
+		return buildDetailView(evt);
+	}
+
+	private EvenementCivilEchDetailView buildDetailView(EvenementCivilEch evt) {
+		final EvenementCivilEchDetailView evtView = new EvenementCivilEchDetailView();
+
+		evtView.setEvtAction(evt.getAction());
+		evtView.setEvtCommentaireTraitement(evt.getCommentaireTraitement());
+		evtView.setEvtDate(evt.getDateEvenement());
+		evtView.setEvtDateTraitement(evt.getDateTraitement());
+		evtView.setEvtEtat(evt.getEtat());
+		evtView.setEvtId(evt.getId());
+		evtView.setEvtType(evt.getType());
+		if (evt.getRefMessageId() != null) {
+			// l'événement référencé peut exister dans la base... ou pas (cas des corrections des événements créés pendant la migration RCPers, par exemple)
+			final EvenementCivilEch ref = evenementService.get(evt.getRefMessageId());
+			if (ref != null) {
+				evtView.setRefEvtId(ref.getId());
+			}
+		}
+		for (EvenementCivilEchErreur err : evt.getErreurs() ) {
+			evtView.addEvtErreur(new ErreurEvenementCivilView(err.getMessage(), err.getCallstack()));
+		}
+
+		// récupération de la grappe
+		try {
+			evtView.setGrappeComplete(buildGrappeView(evt));
+		}
+		catch (EvenementCivilException e) {
+			evtView.setIndividuError(e.getMessage());
+		}
+
 		final Long numeroIndividu = evt.getNumeroIndividu();
 		evtView.setNoIndividu(numeroIndividu);
 		if (numeroIndividu != null) {
@@ -73,17 +104,32 @@ public class EvenementCivilEchManagerImpl extends EvenementCivilManagerImpl impl
 			catch (Exception e) {
 				evtView.setIndividuError(e.getMessage());
 			}
+
 			try {
-				retrieveEvenementAssocie(numeroIndividu, evtView);
-			} catch (Exception e) {
-					evtView.setIndividuError(e.getMessage());
+				final List<EvenementCivilEchBasicInfo> list = evenementService.buildLotEvenementsCivilsNonTraites(numeroIndividu);
+				if (list != null && list.size() > 0) {
+					final EvenementCivilEchBasicInfo evtPrioritaire = list.get(0);
+					evtView.setEvtPrioritaire(evtPrioritaire);
+					evtView.setTotalAutresEvenementsAssocies(list.size() - 1);
+					if (evtView.getEvtId() == evtPrioritaire.getId()) {
+						evtView.setRecyclable(true);
+					}
+				}
 			}
-		} else {
-            if (!evt.isAnnule() && !evt.getEtat().isTraite()) {
-                evtView.setRecyclable(true);
-            }
+			catch (Exception e) {
+				evtView.setIndividuError(e.getMessage());
+			}
+		}
+		else if (!evt.isAnnule() && !evt.getEtat().isTraite()) {
+            evtView.setRecyclable(true);
         }
+
 		return evtView;
+	}
+
+	private EvenementCivilEchGrappeView buildGrappeView(EvenementCivilEch evt) throws EvenementCivilException {
+		final List<EvenementCivilEchBasicInfo> list = evenementService.buildGrappe(evt);
+		return new EvenementCivilEchGrappeView(list);
 	}
 
 
@@ -117,20 +163,20 @@ public class EvenementCivilEchManagerImpl extends EvenementCivilManagerImpl impl
 
     private boolean recycleEvenementCivil(EvenementCivilEch evt) {
         boolean individuRecycle = false;
-        List<EvenementCivilEchBasicInfo> list = evenementService.buildLotEvenementsCivils(evt.getNumeroIndividu());
+        final List<EvenementCivilEchBasicInfo> list = evenementService.buildLotEvenementsCivilsNonTraites(evt.getNumeroIndividu());
         if (list == null || list.isEmpty()) {
             throw new RuntimeException("La liste devrait toujours avoir au moins un élément");
         }
         if (list.get(0).getId() == evt.getId()) {
             // L'evenement est recyclable
             final EvenementCivilEchProcessorListener processorListener = new EvenementCivilEchProcessorListener(evt.getNumeroIndividu(), TIMEOUT_RECYCLAGE);
-            final EvenementCivilEchProcessor.ListenerHandle listnerHandle =  evenementProcessor.registerListener(processorListener);
+            final EvenementCivilEchProcessor.ListenerHandle handle =  evenementProcessor.registerListener(processorListener);
             try {
                 evenementNotificationQueue.post(evt.getNumeroIndividu(), EvenementCivilEchProcessingMode.IMMEDIATE);
                 individuRecycle = processorListener.donneUneChanceAuTraitementDeSeTerminer();
             }
             finally {
-                evenementProcessor.unregisterListener(listnerHandle);
+                evenementProcessor.unregisterListener(handle);
             }
         }
         else {
@@ -151,18 +197,18 @@ public class EvenementCivilEchManagerImpl extends EvenementCivilManagerImpl impl
 		final List<EvenementCivilEchElementListeRechercheView> evtsElementListeRechercheView = new ArrayList<>();
 		if (bean.isModeLotEvenement()) {
 			// cas spécial, on veut la liste des evenements en attente pour un individu
-			List<EvenementCivilEchBasicInfo> list = evenementService.buildLotEvenementsCivils(bean.getNumeroIndividu());
+			List<EvenementCivilEchBasicInfo> list = evenementService.buildLotEvenementsCivilsNonTraites(bean.getNumeroIndividu());
 			for (int i = (pagination.getNumeroPage() - 1) * pagination.getTaillePage();
 			     i < list.size() && i < (pagination.getNumeroPage()) * pagination.getTaillePage(); ++i) {
 				EvenementCivilEchBasicInfo evt = list.get(i);
-				final EvenementCivilEchElementListeRechercheView evtElementListeRechercheView = buildView(evt);
+				final EvenementCivilEchElementListeRechercheView evtElementListeRechercheView = buildElementRechercheView(evt);
 				evtsElementListeRechercheView.add(evtElementListeRechercheView);
 			}
 		}
 		else {
 			final List<EvenementCivilEch> evts = evenementService.find(bean, pagination);
 			for (EvenementCivilEch evt : evts) {
-				final EvenementCivilEchElementListeRechercheView evtElementListeRechercheView = buildView(evt);
+				final EvenementCivilEchElementListeRechercheView evtElementListeRechercheView = buildElementRechercheView(evt);
 				evtsElementListeRechercheView.add(evtElementListeRechercheView);
 			}
 		}
@@ -173,17 +219,17 @@ public class EvenementCivilEchManagerImpl extends EvenementCivilManagerImpl impl
 	@Transactional(readOnly = true)
 	public int count(EvenementCivilEchCriteriaView bean) {
 		if (bean.isModeLotEvenement()) {
-			return evenementService.buildLotEvenementsCivils(bean.getNumeroIndividu()).size();
+			return evenementService.buildLotEvenementsCivilsNonTraites(bean.getNumeroIndividu()).size();
 		} else {
 			return evenementService.count(bean);
 		}
 	}
 
-	private EvenementCivilEchElementListeRechercheView buildView(EvenementCivilEchBasicInfo evt) throws AdresseException {
-		return buildView(evenementService.get(evt.getId()));
+	private EvenementCivilEchElementListeRechercheView buildElementRechercheView(EvenementCivilEchBasicInfo evt) throws AdresseException {
+		return buildElementRechercheView(evenementService.get(evt.getId()));
 	}
 
-	private EvenementCivilEchElementListeRechercheView buildView(EvenementCivilEch evt) throws AdresseException {
+	private EvenementCivilEchElementListeRechercheView buildElementRechercheView(EvenementCivilEch evt) throws AdresseException {
 		final EvenementCivilEchElementListeRechercheView view = new EvenementCivilEchElementListeRechercheView(evt);
 		if (evt.getNumeroIndividu() != null) {
 			final long numeroIndividu = evt.getNumeroIndividu();
@@ -225,38 +271,6 @@ public class EvenementCivilEchManagerImpl extends EvenementCivilManagerImpl impl
 		return noCtb;
 	}
 
-	private void retrieveEvenementAssocie(Long numeroIndividu, EvenementCivilEchDetailView evtView) {
-		List<EvenementCivilEchBasicInfo> list = evenementService.buildLotEvenementsCivils(numeroIndividu);
-		if (list!=null && list.size() > 0) {
-			EvenementCivilEchBasicInfo evtPrioritaire = list.get(0);
-			evtView.setEvtPrioritaire(evtPrioritaire);
-			evtView.setTotalAutresEvenementsAssocies(list.size() - 1);
-			if (evtView.getEvtId() == evtPrioritaire.getId()) {
-				evtView.setRecyclable(true);
-			}
-		}
-	}
-
-	private void fill(EvenementCivilEch source, EvenementCivilEchDetailView target) {
-		target.setEvtAction(source.getAction());
-		target.setEvtCommentaireTraitement(source.getCommentaireTraitement());
-		target.setEvtDate(source.getDateEvenement());
-		target.setEvtDateTraitement(source.getDateTraitement());
-		target.setEvtEtat(source.getEtat());
-		target.setEvtId(source.getId());
-		target.setEvtType(source.getType());
-		if (source.getRefMessageId() != null) {
-			// l'événement référencé peut exister dans la base... ou pas (cas des corrections des événements créés pendant la migration RCPers, par exemple)
-			final EvenementCivilEch ref = evenementService.get(source.getRefMessageId());
-			if (ref != null) {
-				target.setRefEvtId(ref.getId());
-			}
-		}
-		for (EvenementCivilEchErreur err : source.getErreurs() ) {
-			target.addEvtErreur(new ErreurEvenementCivilView(err.getMessage(), err.getCallstack()));
-		}
-	}
-
 	private static class EvenementCivilEchProcessorListener implements EvenementCivilEchProcessor.Listener {
 
 		private final long dureeTimeout;
@@ -268,7 +282,7 @@ public class EvenementCivilEchManagerImpl extends EvenementCivilManagerImpl impl
 				throw new NullPointerException("l'individu attendu ne peut être null");
 			}
 			if (dureeTimeout < 10) {
-				throw new IllegalArgumentException("la durée du timeout doit être supérieur à 10");
+				throw new IllegalArgumentException("la durée du timeout doit être supérieure à 10");
 			}
 			this.dureeTimeout = dureeTimeout;
 			this.individuAttendu = individuAttendu;

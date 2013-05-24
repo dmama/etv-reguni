@@ -12,7 +12,7 @@ import ch.vd.uniregctb.type.TypeEvenementCivilEch;
  */
 public class EvenementCivilEchDetailView extends EvenementCivilDetailView implements Serializable {
 
-	private static final long serialVersionUID = 7000273271978471047L;
+	private static final long serialVersionUID = -3808938637037369019L;
 
 	private TypeEvenementCivilEch evtType;
 	private ActionEvenementCivilEch evtAction;
@@ -20,6 +20,7 @@ public class EvenementCivilEchDetailView extends EvenementCivilDetailView implem
 	private boolean recyclable;
 	private EvenementCivilEchBasicInfo evtPrioritaire;
 	private int totalAutresEvenementsAssocies;
+	private EvenementCivilEchGrappeView grappeComplete;
 
 	@SuppressWarnings("unused")
 	public TypeEvenementCivilEch getEvtType() {
@@ -73,5 +74,14 @@ public class EvenementCivilEchDetailView extends EvenementCivilDetailView implem
 
 	public void setRefEvtId(Long refEvtId) {
 		this.refEvtId = refEvtId;
+	}
+
+	@SuppressWarnings("UnusedDeclaration")
+	public EvenementCivilEchGrappeView getGrappeComplete() {
+		return grappeComplete;
+	}
+
+	public void setGrappeComplete(EvenementCivilEchGrappeView grappeComplete) {
+		this.grappeComplete = grappeComplete;
 	}
 }
