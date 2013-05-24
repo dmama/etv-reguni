@@ -456,6 +456,126 @@ public class EvenementCivilEchGrappeProcessorTest extends AbstractEvenementCivil
 		});
 	}
 
+	/**
+	 * Le but ici est de tester le cas sorti de l'immagination de R. Carbo :
+	 * <ul>
+	 *     <li>arrivée en erreur au 1.1.2011</li>
+	 *     <li>correction de cette arrivée (en attente) au 1.1.2012</li>
+	 *     <li>correction encore (forcée par erreur) au 1.5.2011</li>
+	 * </ul>
+	 * <p/> --> une fois le traitement en grappes activé, quelle est la date du for créé ? Le 1.5.2011 bien-sûr, même si elle vient d'un événement dans un état final
+	 */
+	@Test(timeout = 10000L)
+	public void testDateTraitementSiDernierElementDansGrappeEstForce() throws Exception {
+
+		final long noIndividu = 2674325324L;
+		final RegDate dateArriveeInitiale = date(2011, 1, 1);
+		final RegDate datePremiereCorrection = date(2012, 1, 1);
+		final RegDate dateCorrectionForcee = date(2011, 5, 1);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noIndividu, date(1970, 5, 3), "Piccolina", "Antonia", Sexe.FEMININ);
+				addNationalite(ind, MockPays.Suisse, null, null);
+
+				final MockAdresse adr = addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Bussigny.RueDeLIndustrie, null, dateCorrectionForcee, null);
+				adr.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_SUISSE, MockPays.Danemark.getNoOFS(), null));
+			}
+		});
+
+		final long idArriveeInitiale = 23725L;
+		final long idPremiereCorrection = 26253343L;
+		final long idCorrectionForcee = 423637252L;
+
+		// mise en place fiscale -> les événements civils
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				{
+					final EvenementCivilEch ech = new EvenementCivilEch();
+					ech.setId(idArriveeInitiale);
+					ech.setType(TypeEvenementCivilEch.ARRIVEE);
+					ech.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+					ech.setDateEvenement(dateArriveeInitiale);
+					ech.setEtat(EtatEvenementCivil.EN_ERREUR);
+					ech.setNumeroIndividu(noIndividu);
+					ech.setRefMessageId(null);
+					hibernateTemplate.merge(ech);
+				}
+				{
+					final EvenementCivilEch ech = new EvenementCivilEch();
+					ech.setId(idPremiereCorrection);
+					ech.setType(TypeEvenementCivilEch.ARRIVEE);
+					ech.setAction(ActionEvenementCivilEch.CORRECTION);
+					ech.setDateEvenement(datePremiereCorrection);
+					ech.setEtat(EtatEvenementCivil.EN_ATTENTE);
+					ech.setNumeroIndividu(noIndividu);
+					ech.setRefMessageId(idArriveeInitiale);
+					hibernateTemplate.merge(ech);
+				}
+				{
+					final EvenementCivilEch ech = new EvenementCivilEch();
+					ech.setId(idCorrectionForcee);
+					ech.setType(TypeEvenementCivilEch.ARRIVEE);
+					ech.setAction(ActionEvenementCivilEch.CORRECTION);
+					ech.setDateEvenement(dateCorrectionForcee);
+					ech.setEtat(EtatEvenementCivil.FORCE);
+					ech.setNumeroIndividu(noIndividu);
+					ech.setRefMessageId(idPremiereCorrection);
+					hibernateTemplate.merge(ech);
+				}
+				return null;
+			}
+		});
+
+		// traitement des événements civils
+		traiterEvenements(noIndividu);
+
+		// vérification du for créé pour le nouveau contribuable
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+
+				// d'abord on vérifie l'état des événements civils (TRAITE, sauf pour le FORCE qui le reste)
+				{
+					final EvenementCivilEch ech = evtCivilDAO.get(idArriveeInitiale);
+					Assert.assertNotNull(ech);
+					Assert.assertEquals(EtatEvenementCivil.TRAITE, ech.getEtat());
+					Assert.assertEquals("Evénement et correction(s) pris en compte ensemble.", ech.getCommentaireTraitement());
+				}
+				{
+					final EvenementCivilEch ech = evtCivilDAO.get(idPremiereCorrection);
+					Assert.assertNotNull(ech);
+					Assert.assertEquals(EtatEvenementCivil.TRAITE, ech.getEtat());
+					Assert.assertEquals("Evénement directement pris en compte dans le traitement de l'événement référencé.", ech.getCommentaireTraitement());
+				}
+				{
+					final EvenementCivilEch ech = evtCivilDAO.get(idCorrectionForcee);
+					Assert.assertNotNull(ech);
+					Assert.assertEquals(EtatEvenementCivil.FORCE, ech.getEtat());
+					Assert.assertNull(ech.getCommentaireTraitement());
+				}
+
+				// le contribuable ?
+				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
+				Assert.assertNotNull(pp);
+
+				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+				Assert.assertNotNull(ffp);
+				Assert.assertEquals(dateCorrectionForcee, ffp.getDateDebut());
+				Assert.assertEquals(MotifFor.ARRIVEE_HS, ffp.getMotifOuverture());
+				Assert.assertNull(ffp.getDateFin());
+				Assert.assertNull(ffp.getMotifFermeture());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) MockCommune.Bussigny.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
+
+				return null;
+			}
+		});
+	}
+
 	@Test(timeout = 10000L)
 	public void testTraitementAVerifier() throws Exception {
 
