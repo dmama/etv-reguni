@@ -5,7 +5,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
@@ -58,6 +64,7 @@ public class EvenementCivilEchServiceImpl implements EvenementCivilEchService, I
 	private HibernateTemplate hibernateTemplate;
 	private TiersDAO tiersDAO;
 	private TiersService tiersService;
+	private boolean collapseReferringEvents;
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
@@ -115,6 +122,10 @@ public class EvenementCivilEchServiceImpl implements EvenementCivilEchService, I
 		this.tiersService = tiersService;
 	}
 
+	public void setCollapseReferringEvents(boolean collapseReferringEvents) {
+		this.collapseReferringEvents = collapseReferringEvents;
+	}
+
 	@Override
 	public List<EvenementCivilEchBasicInfo> buildLotEvenementsCivils(final long noIndividu) {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
@@ -139,11 +150,24 @@ public class EvenementCivilEchServiceImpl implements EvenementCivilEchService, I
 	}
 
 	private List<EvenementCivilEchBasicInfo> buildListeEvenementsCivilsATraiterPourIndividu(long noIndividu) {
+		if (collapseReferringEvents) {
+			return buildListeEvenementsCivilsATraiterPourIndividuAvecReferences(noIndividu);
+		}
+		else {
+			return buildListeBasiqueEvenementsCivilsATraiterPourIndividu(noIndividu);
+		}
+	}
+
+	private List<EvenementCivilEchBasicInfo> buildListeBasiqueEvenementsCivilsATraiterPourIndividu(long noIndividu) {
 		final List<EvenementCivilEch> evts = evenementCivilEchDAO.getEvenementsCivilsNonTraites(Arrays.asList(noIndividu));
+		return buildInfos(evts, noIndividu);
+	}
+
+	private List<EvenementCivilEchBasicInfo> buildInfos(List<EvenementCivilEch> evts, long noIndividu) {
 		if (evts != null && evts.size() > 0) {
 			final List<EvenementCivilEchBasicInfo> liste = new ArrayList<>(evts.size());
 			for (EvenementCivilEch evt : evts) {
-				final EvenementCivilEchBasicInfo info = new EvenementCivilEchBasicInfo(evt);
+				final EvenementCivilEchBasicInfo info = new EvenementCivilEchBasicInfo(evt, noIndividu);
 				liste.add(info);
 			}
 			return liste;
@@ -153,7 +177,139 @@ public class EvenementCivilEchServiceImpl implements EvenementCivilEchService, I
 		}
 	}
 
-    @Override
+	private List<EvenementCivilEchBasicInfo> buildListeEvenementsCivilsATraiterPourIndividuAvecReferences(long noIndividu) {
+		// on récupère tous les événements civils attribuables à l'individu donné (= ceux qui ont le numéro d'individu assigné ceux qui n'ont pas de numéros d'individus assignés mais qui font référence, directement ou
+		// pas, à un événement civil qui est assigné à cet individu)
+		final List<EvenementCivilEch> evts = evenementCivilEchDAO.getEvenementsCivilsPourIndividu(noIndividu, collapseReferringEvents);
+		if (evts != null && evts.size() > 0) {
+			final List<EvenementCivilEchBasicInfo> liste = buildInfos(evts, noIndividu);
+			buildReferenceAwareInformation(liste);
+			return liste.size() > 0 ? liste : Collections.<EvenementCivilEchBasicInfo>emptyList();
+		}
+		else {
+			return Collections.emptyList();
+		}
+	}
+
+	private void buildReferenceAwareInformation(List<EvenementCivilEchBasicInfo> liste) {
+
+		// si la liste est vide, pas la peine de faire quoi que ce soit, il ne peut pas y avoir de référence à utiliser
+		if (liste == null || liste.size() == 0) {
+			return;
+		}
+
+		// on construit d'abord un index des données fournies
+		final Map<Long, EvenementCivilEchBasicInfo> map = new HashMap<>(liste.size());
+		for (EvenementCivilEchBasicInfo info : liste) {
+			map.put(info.getId(), info);
+		}
+
+		// on élimine les éléments de la liste qui font référence à d'autres éléments de la liste
+		// (ceux-là seront présents dans la collection des <i>referers</i> de leur référence ultime
+		// présente dans la liste)
+		final Iterator<EvenementCivilEchBasicInfo> iterator = liste.iterator();
+		while (iterator.hasNext()) {
+			final EvenementCivilEchBasicInfo info = iterator.next();
+			boolean toRemove = false;
+			if (info.getEtat().isTraite()) {
+				toRemove = true;
+			}
+			if (info.getIdReference() != null) {
+				// il faut trouver l'élément non-traité le plus profond dans la chaîne de dépendances pour attacher (ce sera le point d'ancrage de tout le monde)
+				EvenementCivilEchBasicInfo ref = map.get(info.getIdReference());
+				EvenementCivilEchBasicInfo refNonTraite = ref != null && !ref.getEtat().isTraite() ? ref : null;
+				while (ref != null && ref.getIdReference() != null) {
+					final EvenementCivilEchBasicInfo newRef = map.get(ref.getIdReference());
+					if (newRef != null) {
+						ref = newRef;
+						if (!ref.getEtat().isTraite()) {
+							refNonTraite = ref;
+						}
+					}
+					else {
+						break;
+					}
+				}
+				if (refNonTraite != null) {
+					refNonTraite.addReferer(info);
+					toRemove = true;
+				}
+			}
+
+			if (toRemove) {
+				iterator.remove();
+			}
+		}
+
+		// maintenant, on a une liste d'éléments racines de corrections/annulations ;
+		// dans le cas où il y a des annulations il faut faire un peu plus attention, selon que c'est l'élément racine qui est annulé ou un autre...
+		dealWithAnnulationsInReferences(map, liste);
+	}
+
+	private void dealWithAnnulationsInReferences(Map<Long, EvenementCivilEchBasicInfo> map, List<EvenementCivilEchBasicInfo> liste) {
+		final List<EvenementCivilEchBasicInfo> toAdd = new LinkedList<>();
+		for (EvenementCivilEchBasicInfo info : liste) {
+			final List<EvenementCivilEchBasicInfo> referers = info.getReferers();
+			if (referers != null && referers.size() > 0) {
+				// on cherche les éventuelles annulations à traiter
+				final List<EvenementCivilEchBasicInfo> annulations = new LinkedList<>();
+				for (EvenementCivilEchBasicInfo referer : referers) {
+					if (referer.getAction() == ActionEvenementCivilEch.ANNULATION && !referer.getEtat().isTraite()) {
+						//noinspection ConstantConditions
+						if (info.getId() == referer.getIdReference()) {
+							// c'est tout bon, pas la peine d'aller plus loin, la totalité du groupe doit être annulé
+							// (parce que l'on suppose que même si des éléments ont été traités entre deux, ils n'ont pas eu d'impact fiscal)
+							annulations.clear();
+							break;
+						}
+						annulations.add(referer);
+					}
+				}
+
+				// si pas d'annulation trouvée, pas de souci, mais s'il en reste, c'est qu'il va falloir scinder un peu tout ça...
+				if (annulations.size() > 0) {
+					for (EvenementCivilEchBasicInfo ann : annulations) {
+						// ah, voilà une annulation... mais une annulation de quoi ?
+						// ce n'est pas une annulation de l'ensemble (on l'aurait vu plus haut), donc il n'y a qu'un petit groupe à séparer,
+						// groupe qu'il convient maintenant d'identifier
+						final EvenementCivilEchBasicInfo eltAnnule = map.get(ann.getIdReference());
+						final Set<Long> repris = new HashSet<>();
+						repris.add(eltAnnule.getId());
+						repris.add(ann.getId());
+						while (true) {
+							boolean trouveNouveau = false;
+							final Iterator<EvenementCivilEchBasicInfo> iterator = referers.iterator();
+							while (iterator.hasNext()) {
+								final EvenementCivilEchBasicInfo ref = iterator.next();
+								if (ref.getId() == eltAnnule.getId() || ref.getId() == ann.getId()) {
+									iterator.remove();
+								}
+								else if (repris.contains(ref.getIdReference())) {
+									repris.add(ref.getId());
+									iterator.remove();
+									trouveNouveau = true;
+								}
+							}
+							if (!trouveNouveau) {
+								break;
+							}
+						}
+						for (long reprisId : repris) {
+							if (reprisId != eltAnnule.getId()) {
+								final EvenementCivilEchBasicInfo i = map.get(reprisId);
+								eltAnnule.addReferer(i);
+							}
+						}
+						toAdd.add(eltAnnule);
+					}
+				}
+			}
+		}
+
+		liste.addAll(toAdd);
+	}
+
+	@Override
     public long getNumeroIndividuPourEvent(EvenementCivilEch event) throws EvenementCivilException {
         if (event.getNumeroIndividu() != null) {
             return event.getNumeroIndividu();

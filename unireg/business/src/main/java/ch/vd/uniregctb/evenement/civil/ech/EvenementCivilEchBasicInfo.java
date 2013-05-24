@@ -1,6 +1,11 @@
 package ch.vd.uniregctb.evenement.civil.ech;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -23,6 +28,7 @@ public final class EvenementCivilEchBasicInfo implements Serializable {
 	private final ActionEvenementCivilEch action;
 	private final Long idReference;
 	private final RegDate date;
+	private final List<EvenementCivilEchBasicInfo> referers = new LinkedList<>();
 
 	public EvenementCivilEchBasicInfo(long id, long noIndividu, EtatEvenementCivil etat, TypeEvenementCivilEch type, ActionEvenementCivilEch action, @Nullable Long idReference,
 	                                  RegDate date) {
@@ -44,6 +50,14 @@ public final class EvenementCivilEchBasicInfo implements Serializable {
 
 	public EvenementCivilEchBasicInfo(EvenementCivilEch evt) {
 		this(evt.getId(), evt.getNumeroIndividu(), evt.getEtat(), evt.getType(), evt.getAction(), evt.getRefMessageId(), evt.getDateEvenement());
+	}
+
+	public EvenementCivilEchBasicInfo(EvenementCivilEch evt, long noIndividu) {
+		this(evt.getId(), noIndividu, evt.getEtat(), evt.getType(), evt.getAction(), evt.getRefMessageId(), evt.getDateEvenement());
+		if (evt.getNumeroIndividu() != null && noIndividu != evt.getNumeroIndividu()) {
+			// ce serait un gros bug... mais on n'est jamais trop sûr...
+			throw new IllegalArgumentException("Numéros d'individus différents : l'événement avait " + evt.getNumeroIndividu() + " mais on veut le traiter avec " + noIndividu);
+		}
 	}
 
 	@Override
@@ -102,5 +116,26 @@ public final class EvenementCivilEchBasicInfo implements Serializable {
 
 	public RegDate getDate() {
 		return date;
+	}
+
+	public void addReferer(EvenementCivilEchBasicInfo referer) {
+		referers.add(referer);
+	}
+
+	public List<EvenementCivilEchBasicInfo> getReferers() {
+		return referers;
+	}
+
+	public List<EvenementCivilEchBasicInfo> getSortedReferers() {
+		final List<EvenementCivilEchBasicInfo> liste = new ArrayList<>(referers);
+		if (liste.size() > 1) {
+			Collections.sort(liste, new Comparator<EvenementCivilEchBasicInfo>() {
+				@Override
+				public int compare(EvenementCivilEchBasicInfo o1, EvenementCivilEchBasicInfo o2) {
+					return Long.compare(o1.getId(), o2.getId());
+				}
+			});
+		}
+		return liste;
 	}
 }

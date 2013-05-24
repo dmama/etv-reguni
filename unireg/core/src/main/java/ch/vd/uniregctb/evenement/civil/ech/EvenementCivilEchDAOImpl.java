@@ -1,12 +1,15 @@
 package ch.vd.uniregctb.evenement.civil.ech;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.jetbrains.annotations.Nullable;
@@ -37,15 +40,56 @@ public class EvenementCivilEchDAOImpl extends AbstractEvenementCivilDAOImpl<Even
 		super(EvenementCivilEch.class);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public List<EvenementCivilEch> getEvenementsCivilsNonTraites(final Collection<Long> nosIndividus) {
-		final String hql = "from EvenementCivilEch as ec where ec.annulationDate is null and ec.numeroIndividu in (:nosIndividus) and ec.etat in (:etats)";
+	public List<EvenementCivilEch> getEvenementsCivilsNonTraites(Collection<Long> nosIndividus) {
+		return getEvenementsCivilsNonTraites(nosIndividus, true, false);
+	}
+
+	@Override
+	public List<EvenementCivilEch> getEvenementsCivilsPourIndividu(long noIndividu, boolean followLinks) {
+		return getEvenementsCivilsNonTraites(Arrays.asList(noIndividu), false, followLinks);
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<EvenementCivilEch> getEvenementsCivilsNonTraites(Collection<Long> nosIndividus, boolean nonTraitesSeulement, boolean followLinks) {
+		final String hql = "from EvenementCivilEch as ec where ec.annulationDate is null and ec.numeroIndividu in (:nosIndividus)" + (nonTraitesSeulement ? " and ec.etat in (:etats)" : StringUtils.EMPTY);
 		final Session session = getCurrentSession();
 		final Query query = session.createQuery(hql);
 		query.setParameterList("nosIndividus", nosIndividus);
-		query.setParameterList("etats", ETATS_NON_TRAITES);
-		return query.list();
+		if (nonTraitesSeulement) {
+			query.setParameterList("etats", ETATS_NON_TRAITES);
+		}
+		final List<EvenementCivilEch> primaryList = query.list();
+		final List<EvenementCivilEch> listToReturn;
+		if (followLinks) {
+			listToReturn = new LinkedList<>(primaryList);
+
+			// on rajoute les événements civils qui ne sont pas encore assignés à un individu et qui dépendent des événements déjà pris en compte
+			final String hqlLinks = "from EvenementCivilEch as ec where ec.annulationDate is null and ec.numeroIndividu is null and ec.refMessageId in (:refs)" + (nonTraitesSeulement ? " and ec.etat in (:etats)" : StringUtils.EMPTY);
+			final Query queryLinks = session.createQuery(hqlLinks);
+			List<EvenementCivilEch> src = primaryList;
+			while (true) {
+				final List<Long> refIds = new ArrayList<>(src.size());
+				for (EvenementCivilEch ref : src) {
+					refIds.add(ref.getId());
+				}
+				queryLinks.setParameterList("refs", refIds);
+				if (nonTraitesSeulement) {
+					queryLinks.setParameterList("etats", ETATS_NON_TRAITES);
+				}
+				final List<EvenementCivilEch> refs = queryLinks.list();
+				listToReturn.addAll(refs);
+				if (refs.size() == 0) {
+					// boucle jusqu'à ce qu'on ne trouve plus personne
+					break;
+				}
+				src = refs;
+			}
+		}
+		else {
+			listToReturn = primaryList;
+		}
+		return listToReturn;
 	}
 
 	@SuppressWarnings("unchecked")
