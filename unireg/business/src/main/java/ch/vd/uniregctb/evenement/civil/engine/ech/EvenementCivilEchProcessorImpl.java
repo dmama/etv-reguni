@@ -329,7 +329,17 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 					}
 
 					try {
-						final List<EvenementCivilEch> referingEvts = buildEventList(info.getSortedReferrers());
+						final List<EvenementCivilEchBasicInfo> sortedReferrers = info.getSortedReferrers();
+						if (LOGGER.isDebugEnabled() && sortedReferrers.size() > 0) {
+							final StringBuilder b = new StringBuilder();
+							b.append("Evénement principal : ").append(evt.getId());
+							b.append(", événements dépendants :");
+							for (EvenementCivilEchBasicInfo ref : sortedReferrers) {
+								b.append(' ').append(ref.getId());
+							}
+							LOGGER.debug(b.toString());
+						}
+						final List<EvenementCivilEch> referingEvts = buildEventList(sortedReferrers);
 						return processEvent(evt, referingEvts, info.getDate(), info.getIdForDataAfterEvent());
 					}
 					catch (EvenementCivilException e) {
@@ -551,7 +561,14 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 	 * @throws ch.vd.uniregctb.evenement.civil.common.EvenementCivilException en cas de problème métier
 	 */
 	private boolean processEvent(EvenementCivilEch event, List<EvenementCivilEch> referrers, RegDate refDate, long evtIdForDataAfterEvent) throws EvenementCivilException {
-		Audit.info(event.getId(), String.format("Début du traitement de l'événement civil %d de type %s/%s au %s sur l'individu %d", event.getId(), event.getType(), event.getAction(), RegDateHelper.dateToDisplayString(event.getDateEvenement()), event.getNumeroIndividu()));
+		String dateMove = StringUtils.EMPTY;
+		if (refDate != event.getDateEvenement()) {
+			dateMove = String.format(" (-> %s)", RegDateHelper.dateToDisplayString(refDate));
+		}
+		Audit.info(event.getId(), String.format("Début du traitement de l'événement civil %d de type %s/%s au %s%s sur l'individu %d",
+		                                        event.getId(), event.getType(), event.getAction(),
+		                                        RegDateHelper.dateToDisplayString(event.getDateEvenement()), dateMove,
+		                                        event.getNumeroIndividu()));
 
 		// construction d'une liste de tous les événements traités ensemble
 		final EvenementCivilGroup group = buildGroup(event, referrers);
