@@ -41,13 +41,13 @@ import ch.vd.unireg.xml.party.v2.PartyType;
 import ch.vd.uniregctb.cache.CacheHelper;
 import ch.vd.uniregctb.cache.CacheStats;
 import ch.vd.uniregctb.cache.CompletePartsCallbackWithException;
+import ch.vd.uniregctb.cache.DumpableUniregCache;
 import ch.vd.uniregctb.cache.EhCacheStats;
-import ch.vd.uniregctb.cache.UniregCacheInterface;
 import ch.vd.uniregctb.cache.UniregCacheManager;
 import ch.vd.uniregctb.stats.StatsService;
 import ch.vd.uniregctb.webservices.party4.impl.ExceptionHelper;
 
-public class PartyWebServiceCache implements UniregCacheInterface, PartyWebService, InitializingBean, DisposableBean {
+public class PartyWebServiceCache implements DumpableUniregCache, PartyWebService, InitializingBean, DisposableBean {
 
 	private static final String SERVICE_NAME = "PartyWebService4";
 
@@ -458,7 +458,7 @@ public class PartyWebServiceCache implements UniregCacheInterface, PartyWebServi
 	}
 
 	@Override
-	public String dump() {
+	public String dumpCacheKeys() {
 		@SuppressWarnings("unchecked") final List<Object> keys = cache.getKeys();
 		return CacheHelper.dumpKeys(keys);
 	}

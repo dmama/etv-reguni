@@ -17,13 +17,13 @@ import ch.vd.securite.model.Operateur;
 import ch.vd.securite.model.ProfilOperateur;
 import ch.vd.uniregctb.cache.CacheHelper;
 import ch.vd.uniregctb.cache.CacheStats;
+import ch.vd.uniregctb.cache.DumpableUniregCache;
 import ch.vd.uniregctb.cache.EhCacheStats;
-import ch.vd.uniregctb.cache.UniregCacheInterface;
 import ch.vd.uniregctb.cache.UniregCacheManager;
 import ch.vd.uniregctb.security.IfoSecProfil;
 import ch.vd.uniregctb.stats.StatsService;
 
-public class ServiceSecuriteCache implements UniregCacheInterface, ServiceSecuriteService, InitializingBean, DisposableBean {
+public class ServiceSecuriteCache implements DumpableUniregCache, ServiceSecuriteService, InitializingBean, DisposableBean {
 
 	//private static final Logger LOGGER = Logger.getLogger(ServiceSecuriteCache.class);
 
@@ -470,7 +470,7 @@ public class ServiceSecuriteCache implements UniregCacheInterface, ServiceSecuri
 	}
 
 	@Override
-	public String dump() {
+	public String dumpCacheKeys() {
 		@SuppressWarnings("unchecked") final List<Object> keys = cache.getKeys();
 		return CacheHelper.dumpKeys(keys);
 	}

@@ -21,8 +21,8 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.cache.CacheHelper;
 import ch.vd.uniregctb.cache.CacheStats;
 import ch.vd.uniregctb.cache.CompletePartsCallback;
+import ch.vd.uniregctb.cache.DumpableUniregCache;
 import ch.vd.uniregctb.cache.EhCacheStats;
-import ch.vd.uniregctb.cache.UniregCacheInterface;
 import ch.vd.uniregctb.cache.UniregCacheManager;
 import ch.vd.uniregctb.data.DataEventListener;
 import ch.vd.uniregctb.data.DataEventService;
@@ -35,7 +35,7 @@ import ch.vd.uniregctb.stats.StatsService;
 /**
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class ServicePersonneMoraleCache extends ServicePersonneMoraleBase implements UniregCacheInterface, InitializingBean, DisposableBean, DataEventListener {
+public class ServicePersonneMoraleCache extends ServicePersonneMoraleBase implements DumpableUniregCache, InitializingBean, DisposableBean, DataEventListener {
 
 	private static final Logger LOGGER = Logger.getLogger(ServicePersonneMoraleCache.class);
 
@@ -121,7 +121,7 @@ public class ServicePersonneMoraleCache extends ServicePersonneMoraleBase implem
 	}
 
 	@Override
-	public String dump() {
+	public String dumpCacheKeys() {
 		@SuppressWarnings("unchecked") final List<Object> keys = cache.getKeys();
 		return CacheHelper.dumpKeys(keys);
 	}

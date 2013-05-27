@@ -340,9 +340,4 @@ public class ServiceCivilPersistentCache implements ServiceCivilRaw, UniregCache
 			return target;
 		}
 	}
-
-	@Override
-	public String dump() {
-		throw new RuntimeException("Operation not supported on this cache");
-	}
 }

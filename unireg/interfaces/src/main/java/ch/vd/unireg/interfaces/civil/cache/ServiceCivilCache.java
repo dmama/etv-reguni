@@ -28,8 +28,8 @@ import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
 import ch.vd.uniregctb.cache.CacheHelper;
 import ch.vd.uniregctb.cache.CacheStats;
 import ch.vd.uniregctb.cache.CompletePartsCallback;
+import ch.vd.uniregctb.cache.DumpableUniregCache;
 import ch.vd.uniregctb.cache.EhCacheStats;
-import ch.vd.uniregctb.cache.UniregCacheInterface;
 import ch.vd.uniregctb.cache.UniregCacheManager;
 import ch.vd.uniregctb.common.ProgrammingException;
 import ch.vd.uniregctb.data.DataEventListener;
@@ -39,7 +39,7 @@ import ch.vd.uniregctb.stats.StatsService;
 /**
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class ServiceCivilCache implements ServiceCivilRaw, UniregCacheInterface, DataEventListener, InitializingBean, DisposableBean, ServiceCivilServiceWrapper {
+public class ServiceCivilCache implements ServiceCivilRaw, DumpableUniregCache, DataEventListener, InitializingBean, DisposableBean, ServiceCivilServiceWrapper {
 
 	private static final Logger LOGGER = Logger.getLogger(ServiceCivilCache.class);
 
@@ -387,7 +387,7 @@ public class ServiceCivilCache implements ServiceCivilRaw, UniregCacheInterface,
 	}
 
 	@Override
-	public String dump() {
+	public String dumpCacheKeys() {
 		@SuppressWarnings("unchecked") final List<Object> keys = cache.getKeys();
 		return CacheHelper.dumpKeys(keys);
 	}

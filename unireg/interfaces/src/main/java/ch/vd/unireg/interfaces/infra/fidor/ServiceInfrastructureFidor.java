@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -99,11 +98,6 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 	@Override
 	public void reset() {
 		urlsApplication = null;
-	}
-
-	@Override
-	public String dump() {
-		return urlsApplication != null ? "UrlApplications{}" : StringUtils.EMPTY;
 	}
 
 	@Override

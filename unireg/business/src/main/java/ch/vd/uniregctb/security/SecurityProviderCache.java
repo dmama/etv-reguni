@@ -20,8 +20,8 @@ import org.springframework.transaction.support.TransactionCallback;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.cache.CacheHelper;
 import ch.vd.uniregctb.cache.CacheStats;
+import ch.vd.uniregctb.cache.DumpableUniregCache;
 import ch.vd.uniregctb.cache.EhCacheStats;
-import ch.vd.uniregctb.cache.UniregCacheInterface;
 import ch.vd.uniregctb.cache.UniregCacheManager;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.TiersNotFoundException;
@@ -31,7 +31,7 @@ import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.type.Niveau;
 
-public class SecurityProviderCache implements UniregCacheInterface, SecurityProviderInterface, DataEventListener, InitializingBean {
+public class SecurityProviderCache implements DumpableUniregCache, SecurityProviderInterface, DataEventListener, InitializingBean {
 
 	private static final Logger LOGGER = Logger.getLogger(SecurityProviderCache.class);
 
@@ -520,7 +520,7 @@ public class SecurityProviderCache implements UniregCacheInterface, SecurityProv
 	}
 
 	@Override
-	public String dump() {
+	public String dumpCacheKeys() {
 		@SuppressWarnings("unchecked") final List<Object> keys = cache.getKeys();
 		return CacheHelper.dumpKeys(keys);
 	}

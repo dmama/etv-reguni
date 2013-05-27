@@ -106,10 +106,10 @@ public class UniregCacheManagerImpl implements UniregCacheManager, DynamicMBean 
 			else if (actionName.startsWith("dump")) {
 				final String cacheName = actionName.substring(4);
 				final UniregCacheInterface cache = map.get(cacheName);
-				if (cache == null) {
+				if (cache == null || !(cache instanceof DumpableUniregCache)) {
 					throw new NoSuchMethodException(actionName);
 				}
-				final String dump = cache.dump();
+				final String dump = ((DumpableUniregCache) cache).dumpCacheKeys();
 				if (StringUtils.isBlank(dump)) {
 					LOGGER.info("Clés disponibles dans le cache " + cacheName + " : aucune");
 				}
@@ -140,18 +140,25 @@ public class UniregCacheManagerImpl implements UniregCacheManager, DynamicMBean 
 		});
 
 		final MBeanAttributeInfo[] atts = new MBeanAttributeInfo[caches.size()];
-		final MBeanOperationInfo[] ops = new MBeanOperationInfo[2 * caches.size() + 1];
 
-		ops[0] = new MBeanOperationInfo("resetALL", "Vide et réinitialise tous les cache pour retrouver leurs états tel qu'au démarrage de l'application", null, "void", MBeanOperationInfo.ACTION);
+		final List<MBeanOperationInfo> resets = new ArrayList<>(caches.size() + 1);
+		final List<MBeanOperationInfo> dumps = new ArrayList<>(caches.size());
 
 		// Pour chacun des cache, on créé un attribut virtuel qui expose les statistiques du cache, ainsi qu'une méthode virtuelle qui permet de resetter le cache
+		resets.add(new MBeanOperationInfo("resetALL", "Vide et réinitialise tous les cache pour retrouver leurs états tel qu'au démarrage de l'application", null, "void", MBeanOperationInfo.ACTION));
 		for (int i = 0, cachesSize = caches.size(); i < cachesSize; i++) {
 			final UniregCacheInterface c = caches.get(i);
 			atts[i] = new MBeanAttributeInfo(c.getName(), c.getClass().getName(), c.getDescription(), true, false, false);
-			ops[i + 1] = new MBeanOperationInfo("reset" + c.getName(), "Vide et réinitialise le cache pour retrouver son état au démarrage de l'application", null, "void", MBeanOperationInfo.ACTION);
-			ops[caches.size() + i + 1] = new MBeanOperationInfo("dump" + c.getName(), "Produit une liste des clés du cache dans les logs applicatifs", null, "void", MBeanOperationInfo.ACTION);
+			resets.add(new MBeanOperationInfo("reset" + c.getName(), "Vide et réinitialise le cache pour retrouver son état au démarrage de l'application", null, "void", MBeanOperationInfo.ACTION));
+			if (c instanceof DumpableUniregCache) {
+				dumps.add(new MBeanOperationInfo("dump" + c.getName(), "Produit une liste des clés du cache dans les logs applicatifs", null, "void", MBeanOperationInfo.ACTION));
+			}
 		}
 
+		final List<MBeanOperationInfo> allOps = new ArrayList<>(resets.size() + dumps.size());
+		allOps.addAll(resets);
+		allOps.addAll(dumps);
+		final MBeanOperationInfo ops[] = allOps.toArray(new MBeanOperationInfo[allOps.size()]);
 		return new MBeanInfo(getClass().getName(), "Cache Manager d'Unireg", atts, null, ops, null);
 	}
 }

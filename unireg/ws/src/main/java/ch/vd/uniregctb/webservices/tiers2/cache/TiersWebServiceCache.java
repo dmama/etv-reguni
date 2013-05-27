@@ -16,8 +16,8 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.cache.CacheHelper;
 import ch.vd.uniregctb.cache.CacheStats;
 import ch.vd.uniregctb.cache.CompletePartsCallbackWithException;
+import ch.vd.uniregctb.cache.DumpableUniregCache;
 import ch.vd.uniregctb.cache.EhCacheStats;
-import ch.vd.uniregctb.cache.UniregCacheInterface;
 import ch.vd.uniregctb.cache.UniregCacheManager;
 import ch.vd.uniregctb.stats.StatsService;
 import ch.vd.uniregctb.webservices.tiers2.TiersWebService;
@@ -51,7 +51,7 @@ import ch.vd.uniregctb.webservices.tiers2.params.SearchEvenementsPM;
 import ch.vd.uniregctb.webservices.tiers2.params.SearchTiers;
 import ch.vd.uniregctb.webservices.tiers2.params.SetTiersBlocRembAuto;
 
-public class TiersWebServiceCache implements UniregCacheInterface, TiersWebService, InitializingBean, DisposableBean {
+public class TiersWebServiceCache implements DumpableUniregCache, TiersWebService, InitializingBean, DisposableBean {
 
 	private static final String SERVICE_NAME = "TiersWebService2";
 
@@ -717,7 +717,7 @@ public class TiersWebServiceCache implements UniregCacheInterface, TiersWebServi
 	}
 
 	@Override
-	public String dump() {
+	public String dumpCacheKeys() {
 		@SuppressWarnings("unchecked") final List<Object> keys = cache.getKeys();
 		return CacheHelper.dumpKeys(keys);
 	}

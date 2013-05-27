@@ -38,13 +38,13 @@ import ch.vd.unireg.interfaces.infra.data.TypeEtatPM;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.uniregctb.cache.CacheHelper;
 import ch.vd.uniregctb.cache.CacheStats;
+import ch.vd.uniregctb.cache.DumpableUniregCache;
 import ch.vd.uniregctb.cache.EhCacheStats;
-import ch.vd.uniregctb.cache.UniregCacheInterface;
 import ch.vd.uniregctb.cache.UniregCacheManager;
 import ch.vd.uniregctb.stats.StatsService;
 
 @SuppressWarnings({"SimplifiableIfStatement"})
-public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, UniregCacheInterface, InitializingBean, DisposableBean {
+public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, DumpableUniregCache, InitializingBean, DisposableBean {
 
 	//private static final Logger LOGGER = Logger.getLogger(ServiceInfrastructureCache.class);
 
@@ -1798,7 +1798,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public String dump() {
+	public String dumpCacheKeys() {
 		final List<Object> cacheKeys = cache.getKeys();
 		final List<Object> shortLivedCacheKeys = shortLivedCache.getKeys();
 		final List<Object> keys = new ArrayList<>(cacheKeys.size() + shortLivedCacheKeys.size());

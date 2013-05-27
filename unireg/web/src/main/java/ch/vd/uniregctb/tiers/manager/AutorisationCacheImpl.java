@@ -17,8 +17,8 @@ import ch.vd.registre.base.tx.TxCallback;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.cache.CacheHelper;
 import ch.vd.uniregctb.cache.CacheStats;
+import ch.vd.uniregctb.cache.DumpableUniregCache;
 import ch.vd.uniregctb.cache.EhCacheStats;
-import ch.vd.uniregctb.cache.UniregCacheInterface;
 import ch.vd.uniregctb.cache.UniregCacheManager;
 import ch.vd.uniregctb.data.DataEventListener;
 import ch.vd.uniregctb.data.DataEventService;
@@ -26,7 +26,7 @@ import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 
-public class AutorisationCacheImpl implements AutorisationCache, DataEventListener, InitializingBean, UniregCacheInterface {
+public class AutorisationCacheImpl implements AutorisationCache, DataEventListener, InitializingBean, DumpableUniregCache {
 
 	private static final Logger LOGGER = Logger.getLogger(AutorisationCacheImpl.class);
 
@@ -229,7 +229,7 @@ public class AutorisationCacheImpl implements AutorisationCache, DataEventListen
 	}
 
 	@Override
-	public String dump() {
+	public String dumpCacheKeys() {
 		@SuppressWarnings("unchecked") final List<Object> keys = cache.getKeys();
 		return CacheHelper.dumpKeys(keys);
 	}
