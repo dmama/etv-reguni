@@ -926,7 +926,10 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		private final RegDate date;
 
 		protected KeyGetPaysByDate(RegDate date) {
-			this.date = date;
+			// la valeur nulle dans la recherche signifie "date du jour" (c'est un comportement connu du service infrastructure),
+			// mais si on conserve "null" ici, et que la date de fin du pays est dans le futur, alors le cache ne sera pas efficace
+			// car "null" n'est dans aucun intervalle de temps fermé à droite.
+			this.date = (date != null ? date : RegDate.get());
 		}
 
 		@Override
