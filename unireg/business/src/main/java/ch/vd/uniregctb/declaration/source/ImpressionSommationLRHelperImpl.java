@@ -64,7 +64,7 @@ public class ImpressionSommationLRHelperImpl extends EditiqueAbstractHelper impl
 	private static final String PRE_MIN = "pour les prestations de prévoyance";
 	private static final String ADM_MIN = "pour les prestations versées aux administrateurs domiciliés à l'étranger";
 	private static final String CAS_MIN = "pour les artistes, sportifs et conférenciers domiciliés à l'étranger";
-	private static final String PHS_MIN = "pour les participations de personnes domiciliées à l'étranger";
+	private static final String PHS_MIN = "pour les participations de collaborateur réalisées lorsque les bénéficiaires sont domiciliés à l'étranger";
 	private static final String EFF_MIN = "pour les effeuilleuses";
 	private static final String DECOMPTE_LR_MIN = "Décompte liste récapitulative";
 
