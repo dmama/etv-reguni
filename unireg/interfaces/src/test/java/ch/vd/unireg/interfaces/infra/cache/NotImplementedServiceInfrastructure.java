@@ -192,4 +192,9 @@ public class NotImplementedServiceInfrastructure implements ServiceInfrastructur
 	public Region getRegion(int code) {
 		throw new NotImplementedException();
 	}
+
+	@Override
+	public void ping() throws ServiceInfrastructureException {
+		throw new NotImplementedException();
+	}
 }

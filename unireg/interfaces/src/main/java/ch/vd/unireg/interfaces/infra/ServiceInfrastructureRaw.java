@@ -291,4 +291,11 @@ public interface ServiceInfrastructureRaw {
 	 * @return une région ou <b>null</b> si le code passé ne correspond à aucune région.
 	 */
 	Region getRegion(int code);
+
+	/**
+	 * Méthode qui permet de tester que le service infrastructure répond bien. Cette méthode est insensible aux caches.
+	 *
+	 * @throws ServiceInfrastructureException en cas de non-fonctionnement du service infrastructure
+	 */
+	void ping() throws ServiceInfrastructureException;
 }

@@ -494,4 +494,15 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 			throw new ServiceInfrastructureException(e);
 		}
 	}
+
+	@Override
+	public void ping() throws ServiceInfrastructureException {
+		try {
+			// appel vers la Suisse...
+			fidorClient.getPaysDetail(ServiceInfrastructureRaw.noOfsSuisse, null);
+		}
+		catch (Exception e) {
+			throw new ServiceInfrastructureException(e);
+		}
+	}
 }

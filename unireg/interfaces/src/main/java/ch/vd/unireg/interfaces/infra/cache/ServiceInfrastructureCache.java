@@ -1806,4 +1806,10 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		keys.addAll(shortLivedCacheKeys);
 		return CacheHelper.dumpKeys(keys);
 	}
+
+	@Override
+	public void ping() throws ServiceInfrastructureException {
+		// on ne cache bien-sûr pas cet appel...
+		target.ping();
+	}
 }

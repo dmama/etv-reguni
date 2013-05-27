@@ -881,4 +881,20 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			});
 		}
 	}
+
+	@Override
+	public void ping() throws ServiceInfrastructureException {
+		Throwable t = null;
+		final long time = tracing.start();
+		try {
+			target.ping();
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
+		}
+		finally {
+			tracing.end(time, t, "ping", null);
+		}
+	}
 }

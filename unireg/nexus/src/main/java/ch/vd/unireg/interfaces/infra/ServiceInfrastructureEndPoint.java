@@ -409,4 +409,15 @@ public class ServiceInfrastructureEndPoint implements ServiceInfrastructureRaw, 
 	public int getLoad() {
 		return loadMeter.getLoad();
 	}
+
+	@Override
+	public void ping() throws ServiceInfrastructureException {
+		loadMeter.start(new MethodCallDescriptor("ping"));
+		try {
+			target.ping();
+		}
+		finally {
+			loadMeter.end();
+		}
+	}
 }

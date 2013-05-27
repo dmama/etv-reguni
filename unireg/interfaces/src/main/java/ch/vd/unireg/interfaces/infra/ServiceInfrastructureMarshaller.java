@@ -205,4 +205,10 @@ public class ServiceInfrastructureMarshaller implements ServiceInfrastructureRaw
 	public Region getRegion(int code) {
 		return fidorService.getRegion(code);
 	}
+
+	@Override
+	public void ping() throws ServiceInfrastructureException {
+		hostService.ping();
+		fidorService.ping();
+	}
 }

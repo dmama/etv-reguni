@@ -505,4 +505,8 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 	public Region getRegion(int code) {
 		return null;
 	}
+
+	@Override
+	public void ping() throws ServiceInfrastructureException {
+	}
 }

@@ -1,9 +1,7 @@
 package ch.vd.uniregctb.checker;
 
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.ExceptionUtils;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
-import ch.vd.unireg.interfaces.infra.data.Logiciel;
 
 public class ServiceInfraChecker implements ServiceChecker {
 
@@ -13,8 +11,7 @@ public class ServiceInfraChecker implements ServiceChecker {
 	@Override
 	public Status getStatus() {
 		try {
-			final Logiciel logiciel = serviceInfraRaw.getLogiciel(1L);
-			Assert.isEqual("Epsitec SA", logiciel.getFournisseur());
+			serviceInfraRaw.ping();
 			details = null;
 			return Status.OK;
 		}

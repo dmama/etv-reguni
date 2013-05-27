@@ -620,4 +620,14 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 	public Region getRegion(int code) {
 		throw new NotImplementedException("La méthode 'getRegion' ne doit pas être appelée sur le service host-interfaces.");
 	}
+
+	@Override
+	public void ping() throws ServiceInfrastructureException {
+		try {
+			serviceInfrastructure.ping();
+		}
+		catch (Exception e) {
+			throw new ServiceInfrastructureException(e);
+		}
+	}
 }
