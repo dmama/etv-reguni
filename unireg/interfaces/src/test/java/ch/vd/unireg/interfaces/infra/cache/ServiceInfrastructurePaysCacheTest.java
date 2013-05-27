@@ -440,7 +440,7 @@ public class ServiceInfrastructurePaysCacheTest {
 			}
 		}
 
-		// test sur le pays qui change de nom au cours de son existence
+		// test sur le pays qui change de nom au cours de son existence (dans le passé)
 		{
 			{
 				// premier appel
@@ -508,31 +508,31 @@ public class ServiceInfrastructurePaysCacheTest {
 				Assert.assertEquals(DATE_DEBUT_PAYS_MERVEILLEUX, pays.getDateDebut());
 				Assert.assertNull(pays.getDateFin());
 			}
+		}
 
-			// test sur le pays qui change de nom au cours de son existence (dans le futur)
+		// test sur le pays qui change de nom au cours de son existence (dans le futur)
+		{
 			{
-				{
-					// premier appel
-					final Pays pays = cache.getPays(isoPaysTriste, RegDate.get());
-					Assert.assertNotNull(pays);
-					Assert.assertEquals(0, target.getCallsOfs());
-					Assert.assertEquals(4, target.getCallsIso());
-					Assert.assertEquals(isoPaysTriste, pays.getCodeIso2());
-					Assert.assertEquals("Pays triste", pays.getNomCourt());
-					Assert.assertNull(pays.getDateDebut());
-					Assert.assertEquals(DATE_FIN_PAYS_TRISTE, pays.getDateFin());
-				}
-				{
-					// appel avec date nulle = date du jour, qui devrait être dans le cache
-					final Pays pays = cache.getPays(isoPaysTriste, null);
-					Assert.assertNotNull(pays);
-					Assert.assertEquals(0, target.getCallsOfs());
-					Assert.assertEquals(4, target.getCallsIso());
-					Assert.assertEquals(isoPaysTriste, pays.getCodeIso2());
-					Assert.assertEquals("Pays triste", pays.getNomCourt());
-					Assert.assertNull(pays.getDateDebut());
-					Assert.assertEquals(DATE_FIN_PAYS_TRISTE, pays.getDateFin());
-				}
+				// premier appel
+				final Pays pays = cache.getPays(isoPaysTriste, RegDate.get());
+				Assert.assertNotNull(pays);
+				Assert.assertEquals(0, target.getCallsOfs());
+				Assert.assertEquals(4, target.getCallsIso());
+				Assert.assertEquals(isoPaysTriste, pays.getCodeIso2());
+				Assert.assertEquals("Pays triste", pays.getNomCourt());
+				Assert.assertNull(pays.getDateDebut());
+				Assert.assertEquals(DATE_FIN_PAYS_TRISTE, pays.getDateFin());
+			}
+			{
+				// appel avec date nulle = date du jour, qui devrait être dans le cache
+				final Pays pays = cache.getPays(isoPaysTriste, null);
+				Assert.assertNotNull(pays);
+				Assert.assertEquals(0, target.getCallsOfs());
+				Assert.assertEquals(4, target.getCallsIso());
+				Assert.assertEquals(isoPaysTriste, pays.getCodeIso2());
+				Assert.assertEquals("Pays triste", pays.getNomCourt());
+				Assert.assertNull(pays.getDateDebut());
+				Assert.assertEquals(DATE_FIN_PAYS_TRISTE, pays.getDateFin());
 			}
 		}
 	}
