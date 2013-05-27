@@ -52,8 +52,9 @@ public class AddressBuilder {
 		a.setIncomplete(adresse.isIncomplete());
 
 		fillRecipient(a, adresse);
-		//SIFISC-8148 ne pas remplir pour des adresses de courrier artificielles car ne respecte plus la xsd eCH-0010
-		if (!adresse.isArtificelle()) {
+		//SIFISC-8148 ne pas remplir pour des adresses de courrier pour lesquelle il manque le pays,
+		// la ville ou le type d'affranchissement car ne respecte plus la xsd eCH-0010
+		if (isCompleteForAddressInformation(adresse)) {
 			fillDestination(a, adresse);
 		}
 
@@ -124,6 +125,10 @@ public class AddressBuilder {
 			organisationInfo.setFormalGreeting(adresse.getFormuleAppel());
 			a.setOrganisation(organisationInfo);
 		}
+	}
+	protected static boolean isCompleteForAddressInformation(AdresseEnvoiDetaillee adresse){
+		return adresse.getPays()!=null && adresse.getNpaEtLocalite()!=null && adresse.getTypeAffranchissement()!=null;
+
 	}
 
 	protected static void fillDestination(Address to, AdresseEnvoiDetaillee from) {

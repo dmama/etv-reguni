@@ -232,7 +232,7 @@ public class AddressRequestHandlerTest extends BusinessTest {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = addNonHabitant("Michel", "Mabelle", date(1950, 3, 14), Sexe.MASCULIN);
-				addAdresseEtrangere(pp,TypeAdresseTiers.DOMICILE,date(1950, 3, 14), null,null,null, MockPays.PaysInconnu);
+				addAdresseEtrangere(pp,TypeAdresseTiers.DOMICILE,date(1950, 3, 14), null,null,"1234 Glasgow", MockPays.PaysInconnu);
 				return pp.getNumero();
 			}
 		});
@@ -280,7 +280,7 @@ public class AddressRequestHandlerTest extends BusinessTest {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = addNonHabitant("Michel", "Mabelle", date(1950, 3, 14), Sexe.MASCULIN);
-				addAdresseEtrangere(pp,TypeAdresseTiers.DOMICILE,date(1950, 3, 14), null,null,null, MockPays.France);
+				addAdresseEtrangere(pp,TypeAdresseTiers.DOMICILE,date(1950, 3, 14), null,null,"xxx", MockPays.France);
 				return pp.getNumero();
 			}
 		});
