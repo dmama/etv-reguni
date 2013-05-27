@@ -1513,7 +1513,7 @@ var DateUtils = {
 			}
 		}
 		else {
-			duration = days + 'd ' + hours + 'h ' + StringUtils.leftpad(minutes, 2, '0') + 'm ' + StringUtils.leftpad(seconds, 2, '0') + 's';
+			duration = days + 'j ' + hours + 'h ' + StringUtils.leftpad(minutes, 2, '0') + 'm ' + StringUtils.leftpad(seconds, 2, '0') + 's';
 		}
 
 		return duration;
