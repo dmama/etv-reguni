@@ -24,8 +24,14 @@ public class ServiceInfrastructurePaysCacheTest {
 	private static final RegDate DATE_FIN_PAYS_ENCHANTE = RegDate.get(1999, 12, 31);
 	private static final RegDate DATE_DEBUT_PAYS_MERVEILLEUX = DATE_FIN_PAYS_ENCHANTE.getOneDayAfter();
 
+	private static final RegDate DATE_FIN_PAYS_TRISTE = RegDate.get(RegDate.get().year() + 1, 12, 31);  // demain, tout ira mieux...
+	private static final RegDate DATE_DEBUT_PAYS_HEUREUX = DATE_FIN_PAYS_TRISTE.getOneDayAfter();
+
 	private static final int noOfsPaysEnchante = 8888;
 	private static final String isoPaysEnchante = "PE";
+
+	private static final int noOfsPaysTriste = 8889;
+	private static final String isoPaysTriste = "PT";
 
 	private ServiceInfrastructureCache cache;
 	private TestService target;
@@ -35,6 +41,8 @@ public class ServiceInfrastructurePaysCacheTest {
 		public static final MockPays Suisse = new MockPays(ServiceInfrastructureRaw.noOfsSuisse, "CH", "Suisse");
 		public static final MockPays PaysEnchante = new MockPays(noOfsPaysEnchante, isoPaysEnchante, "Pays enchanté", null, DATE_FIN_PAYS_ENCHANTE);
 		public static final MockPays PaysMerveilleux = new MockPays(noOfsPaysEnchante, isoPaysEnchante, "Pays merveilleux", DATE_DEBUT_PAYS_MERVEILLEUX, null);
+		public static final MockPays PaysTriste = new MockPays(noOfsPaysTriste, isoPaysTriste, "Pays triste", null, DATE_FIN_PAYS_TRISTE);
+		public static final MockPays PaysHeureux = new MockPays(noOfsPaysTriste, isoPaysTriste, "Pays heureux", DATE_DEBUT_PAYS_HEUREUX, null);
 
 		private final int noOfs;
 		private final String codeIso;
@@ -141,12 +149,18 @@ public class ServiceInfrastructurePaysCacheTest {
 
 		@Override
 		public Pays getPays(int numeroOFS, @Nullable RegDate date) throws ServiceInfrastructureException {
+
+			// "null" = date du jour
+			if (date == null) {
+				date = RegDate.get();
+			}
+
 			callsOfs.incrementAndGet();
 			if (numeroOFS == MockPays.Suisse.getNoOFS()) {
 				return MockPays.Suisse;
 			}
 
-			if (numeroOFS == MockPays.PaysEnchante.getNoOFS()) {
+			if (numeroOFS == noOfsPaysEnchante) {
 				if (MockPays.PaysEnchante.isValidAt(date)) {
 					return MockPays.PaysEnchante;
 				}
@@ -156,17 +170,34 @@ public class ServiceInfrastructurePaysCacheTest {
 					return MockPays.PaysMerveilleux;
 				}
 			}
+
+			if (numeroOFS == noOfsPaysTriste) {
+				if (MockPays.PaysTriste.isValidAt(date)) {
+					return MockPays.PaysTriste;
+				}
+				else {
+					Assert.assertTrue(MockPays.PaysHeureux.isValidAt(date));
+					Assert.assertEquals(numeroOFS, MockPays.PaysHeureux.getNoOFS());
+					return MockPays.PaysHeureux;
+				}
+			}
 			return null;
 		}
 
 		@Override
 		public Pays getPays(@NotNull String codePays, @Nullable RegDate date) throws ServiceInfrastructureException {
+
+			// "null" = date du jour
+			if (date == null) {
+				date = RegDate.get();
+			}
+
 			callsIso.incrementAndGet();
 			if (codePays.equals(MockPays.Suisse.getCodeIso2())) {
 				return MockPays.Suisse;
 			}
 
-			if (codePays.equals(MockPays.PaysEnchante.getCodeIso2())) {
+			if (codePays.equals(isoPaysEnchante)) {
 				if (MockPays.PaysEnchante.isValidAt(date)) {
 					return MockPays.PaysEnchante;
 				}
@@ -174,6 +205,17 @@ public class ServiceInfrastructurePaysCacheTest {
 					Assert.assertTrue(MockPays.PaysMerveilleux.isValidAt(date));
 					Assert.assertEquals(codePays, MockPays.PaysMerveilleux.getCodeIso2());
 					return MockPays.PaysMerveilleux;
+				}
+			}
+
+			if (codePays.equals(isoPaysTriste)) {
+				if (MockPays.PaysTriste.isValidAt(date)) {
+					return MockPays.PaysTriste;
+				}
+				else {
+					Assert.assertTrue(MockPays.PaysHeureux.isValidAt(date));
+					Assert.assertEquals(codePays, MockPays.PaysHeureux.getCodeIso2());
+					return MockPays.PaysHeureux;
 				}
 			}
 			return null;
@@ -244,7 +286,7 @@ public class ServiceInfrastructurePaysCacheTest {
 			}
 		}
 
-		// test sur le pays qui change de nom au cours de son existence
+		// test sur le pays qui change de nom au cours de son existence (dans le passé)
 		{
 			{
 				// premier appel
@@ -311,6 +353,32 @@ public class ServiceInfrastructurePaysCacheTest {
 				Assert.assertEquals("Pays merveilleux", pays.getNomCourt());
 				Assert.assertEquals(DATE_DEBUT_PAYS_MERVEILLEUX, pays.getDateDebut());
 				Assert.assertNull(pays.getDateFin());
+			}
+		}
+
+		// test sur le pays qui change de nom au cours de son existence (dans le futur)
+		{
+			{
+				// premier appel
+				final Pays pays = cache.getPays(noOfsPaysTriste, RegDate.get());
+				Assert.assertNotNull(pays);
+				Assert.assertEquals(4, target.getCallsOfs());
+				Assert.assertEquals(0, target.getCallsIso());
+				Assert.assertEquals(isoPaysTriste, pays.getCodeIso2());
+				Assert.assertEquals("Pays triste", pays.getNomCourt());
+				Assert.assertNull(pays.getDateDebut());
+				Assert.assertEquals(DATE_FIN_PAYS_TRISTE, pays.getDateFin());
+			}
+			{
+				// appel avec date nulle = date du jour, qui devrait être dans le cache
+				final Pays pays = cache.getPays(noOfsPaysTriste, null);
+				Assert.assertNotNull(pays);
+				Assert.assertEquals(4, target.getCallsOfs());
+				Assert.assertEquals(0, target.getCallsIso());
+				Assert.assertEquals(isoPaysTriste, pays.getCodeIso2());
+				Assert.assertEquals("Pays triste", pays.getNomCourt());
+				Assert.assertNull(pays.getDateDebut());
+				Assert.assertEquals(DATE_FIN_PAYS_TRISTE, pays.getDateFin());
 			}
 		}
 	}
@@ -433,6 +501,32 @@ public class ServiceInfrastructurePaysCacheTest {
 				Assert.assertEquals("Pays merveilleux", pays.getNomCourt());
 				Assert.assertEquals(DATE_DEBUT_PAYS_MERVEILLEUX, pays.getDateDebut());
 				Assert.assertNull(pays.getDateFin());
+			}
+
+			// test sur le pays qui change de nom au cours de son existence (dans le futur)
+			{
+				{
+					// premier appel
+					final Pays pays = cache.getPays(isoPaysTriste, RegDate.get());
+					Assert.assertNotNull(pays);
+					Assert.assertEquals(0, target.getCallsOfs());
+					Assert.assertEquals(4, target.getCallsIso());
+					Assert.assertEquals(isoPaysTriste, pays.getCodeIso2());
+					Assert.assertEquals("Pays triste", pays.getNomCourt());
+					Assert.assertNull(pays.getDateDebut());
+					Assert.assertEquals(DATE_FIN_PAYS_TRISTE, pays.getDateFin());
+				}
+				{
+					// appel avec date nulle = date du jour, qui devrait être dans le cache
+					final Pays pays = cache.getPays(isoPaysTriste, null);
+					Assert.assertNotNull(pays);
+					Assert.assertEquals(0, target.getCallsOfs());
+					Assert.assertEquals(4, target.getCallsIso());
+					Assert.assertEquals(isoPaysTriste, pays.getCodeIso2());
+					Assert.assertEquals("Pays triste", pays.getNomCourt());
+					Assert.assertNull(pays.getDateDebut());
+					Assert.assertEquals(DATE_FIN_PAYS_TRISTE, pays.getDateFin());
+				}
 			}
 		}
 	}
