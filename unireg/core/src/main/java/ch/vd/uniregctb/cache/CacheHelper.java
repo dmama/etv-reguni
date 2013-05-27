@@ -2,9 +2,8 @@ package ch.vd.uniregctb.cache;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
-
-import edu.emory.mathcs.backport.java.util.Collections;
 
 /**
  * Ensemble de méthodes disponibles pour la gestion des données en cache
