@@ -11,6 +11,11 @@
 		<property name="esbTemplate" ref="esbJmsTemplate" />
 	</bean>
 
+	<bean id="identificationContribuableRequestHandler" class="ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableRequestHandler">
+		<property name="esbTemplate" ref="esbJmsTemplate" />
+		<property name="identCtbService" ref="identCtbService" />
+	</bean>
+
 
 	<!-- Demandes d'identification de contribuable, cannal "normal" -->
 	<bean id="identCtbMessageListener" class="ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener" parent="esbMessageListener">
@@ -52,6 +57,27 @@
 		<property name="messageListener" ref="identCtbMessageListenerOnline" />
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="autoStartup" value="${extprop.jms.queue.ident.ctb.online.enabled}" />
+	</bean>
+
+	<!-- Demandes d'identification de contribuable, cannal avec réponse automatique (D-PERM) -->
+
+	<bean id="identCtbMessageListenerAutomatique" class="ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener" parent="esbMessageListener">
+		<property name="handler" ref="identificationContribuableRequestHandler"/>
+	</bean>
+
+	<bean id="jmsIdentCtbEndpointManagerAutomatique" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">
+		<property name="resourceAdapter" ref="jmsResourceAdapter" />
+		<property name="activationSpec">
+			<bean class="org.apache.activemq.ra.ActiveMQActivationSpec">
+				<property name="destination" value="${extprop.jms.queue.ident.ctb.auto.input}" />
+				<property name="destinationType" value="javax.jms.Queue" />
+				<property name="maxSessions" value="${extprop.jms.queue.ident.ctb.auto.consumers}" />
+				<property name="maxMessagesPerSessions" value="10" />
+			</bean>
+		</property>
+		<property name="messageListener" ref="identCtbMessageListenerAutomatique" />
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="autoStartup" value="${extprop.jms.queue.ident.ctb.auto.enabled}" />
 	</bean>
 
 </beans>

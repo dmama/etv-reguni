@@ -65,6 +65,7 @@ testprop.jms.queue.party.service=unireg.test.partyService-${testprop.jdbc.userna
 testprop.jms.queue.evtDeclaration=unireg.test.evtDeclaration-${testprop.jdbc.username}
 testprop.jms.queue.evtCivilEch=unireg.test.evtRegCivilEch-${testprop.jdbc.username}
 testprop.jms.queue.rapportTravail.service=unireg.test.rapportTravailService-${testprop.jdbc.username}
+testprop.jms.queue.ident.ctb.auto=unireg.test.identification.contribuable.auto-${testprop.jdbc.username}
 
 testprop.jms.error.queue=taoadmin.message.erreur
 
