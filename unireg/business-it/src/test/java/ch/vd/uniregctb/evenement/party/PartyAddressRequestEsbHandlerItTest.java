@@ -328,7 +328,7 @@ public class PartyAddressRequestEsbHandlerItTest extends PartyRequestEsbHandlerI
 	}
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
-	public void testAddressRequestFakeResponse() throws Exception {
+	public void testAddressRequestSansAddressInfoPaysInconnu() throws Exception {
 
 		final MockSecurityProvider provider = new MockSecurityProvider(Role.VISU_ALL);
 		handler.setSecurityProvider(provider);
@@ -339,12 +339,11 @@ public class PartyAddressRequestEsbHandlerItTest extends PartyRequestEsbHandlerI
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noInd, date(1976, 5, 12), "Dffru", "Rhoo", true);
-				addAdresse(ind, TypeAdresseCivil.SECONDAIRE,null,"toto street","tttt",MockPays.RoyaumeUni,date(1950, 3, 1),null);
+				addAdresse(ind, TypeAdresseCivil.SECONDAIRE,null,"toto street","tttt",MockPays.PaysInconnu,date(1950, 3, 1),null);
 			}
 		});
 
 
-		// créé une personne physique avec une adresse au Kosovo qui ne possède pas de code iso et qui provoque une erreur de validation de l'adresse eCH-0010-4.
 		final Long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
@@ -374,6 +373,56 @@ public class PartyAddressRequestEsbHandlerItTest extends PartyRequestEsbHandlerI
 		}
 		catch (ServiceException e) {
 		fail("la réponse ne respecte pas la xsd eCH-0010");
+		}
+
+	}
+
+	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
+	public void testAddressRequestSansAddressInfoPasDeVille() throws Exception {
+
+		final MockSecurityProvider provider = new MockSecurityProvider(Role.VISU_ALL);
+		handler.setSecurityProvider(provider);
+
+		final long noInd = 12345L;
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noInd, date(1976, 5, 12), "Dffru", "Rhoo", true);
+				addAdresse(ind, TypeAdresseCivil.COURRIER,null,"toto street",null,MockPays.RoyaumeUni,date(1950, 3, 1),null);
+			}
+		});
+
+
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = addHabitant(noInd);
+				return pp.getNumero();
+			}
+		});
+
+		final AddressRequest request = new AddressRequest();
+		final UserLogin login = new UserLogin("xxxxx", 22);
+		request.setLogin(login);
+		request.setPartyNumber(id.intValue());
+		request.getTypes().add(AddressType.MAIL);
+
+		// Envoie le message
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				sendTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
+				return null;
+			}
+		});
+		try {
+			AddressResponse adressResponse = (AddressResponse) parseResponse(getEsbMessage(getOutputQueue()));
+			Address adress =adressResponse.getAddresses().get(0);
+			assertNull(adress.getAddressInformation());
+		}
+		catch (ServiceException e) {
+			fail("la réponse ne respecte pas la xsd eCH-0010");
 		}
 
 	}
