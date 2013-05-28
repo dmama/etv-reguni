@@ -31,7 +31,7 @@ public abstract class WatchDogTest {
 
 	private static final Logger LOGGER = Logger.getLogger(WatchDogTest.class);
 
-	private static final String IAM_USERNAME = "usrfis06";
+	private static final String IAM_USERNAME = "usrreg06";
 	private static final String IAM_PASSWORD = "welc0me"; // please don't look
 
 	protected WebClient webClient;

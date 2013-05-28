@@ -22,7 +22,7 @@ public class WatchDogUniregIntegrationTest extends WatchDogTest {
 		HtmlPage page = (HtmlPage) webClient.getPage(new URL("https://validation.portail.etat-de-vaud.ch/fiscalite/int-unireg/web/"));
 		assertNotNull(page);
 		String titre = page.getTitleText();
-		assertTrue(titre.equalsIgnoreCase("Recherche des tiers") || titre.equalsIgnoreCase("Sélection de l'OID de travail"));
+		assertTrue(titre, titre.equalsIgnoreCase("Recherche des tiers") || titre.equalsIgnoreCase("Sélection de l'OID de travail"));
 	}
 
 	@Test(timeout = WatchDogTest.TIMEOUT)

@@ -27,6 +27,6 @@ public class WatchDogUniregPreproductionTest extends WatchDogTest {
 		HtmlPage page = (HtmlPage) webClient.getPage(new URL("https://validation.portail.etat-de-vaud.ch/fiscalite/unireg/"));
 		assertNotNull(page);
 		String titre = page.getTitleText();
-		assertTrue(titre.equalsIgnoreCase("Recherche des tiers") || titre.equalsIgnoreCase("Choisissez votre OID de travail"));
+		assertTrue(titre, titre.equalsIgnoreCase("Recherche des tiers") || titre.equalsIgnoreCase("Choisissez votre OID de travail"));
 	}
 }

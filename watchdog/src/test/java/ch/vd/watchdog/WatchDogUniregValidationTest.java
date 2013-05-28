@@ -27,7 +27,7 @@ public class WatchDogUniregValidationTest extends WatchDogTest {
 		HtmlPage page = (HtmlPage) webClient.getPage(new URL("https://validation.portail.etat-de-vaud.ch/fiscalite/val-unireg/"));
 		assertNotNull(page);
 		String titre = page.getTitleText();
-		assertTrue(titre.equalsIgnoreCase("Recherche des tiers") || titre.equalsIgnoreCase("Sélection de l'OID de travail"));
+		assertTrue(titre, titre.equalsIgnoreCase("Recherche des tiers") || titre.equalsIgnoreCase("Sélection de l'OID de travail"));
 	}
 
 	// @Test(timeout = WatchDogTest.TIMEOUT) Désactivé parce que y en a marre de se faire spammer par la validation qui est down tous les lundis matins
