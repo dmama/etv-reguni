@@ -596,7 +596,7 @@ public class MetiersServiceTest extends BusinessTest {
 		assertNotNull(fors);
 		assertEquals(1, fors.principaux.size());
 		assertForPrincipal(date(2008, 11, 24), MotifFor.VEUVAGE_DECES, TypeAutoriteFiscale.PAYS_HS, MockPays.Allemagne.getNoOFS(),
-				MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, fors.principaux.get(0));
+		                   MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, fors.principaux.get(0));
 	}
 
 	/**
@@ -810,8 +810,120 @@ public class MetiersServiceTest extends BusinessTest {
 	 * Teste que la séparation d'un ménage pour lequel les adresses des membres du couple sont différentes crée bien les fors au bon endroit
 	 */
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
-	public void testSeparationAdresseDomicileOuCourrierHorsSuisseDepuisMemePf() throws Exception {
+	public void testSeparationPartiHorsSuisseDepuisMemePf() throws Exception {
+
+		final long noIndFabrice = 12541L;
+		final long noIndGeorgette = 12542L;
+		final RegDate naissanceFabrice = date(1970, 1, 1);
+		final RegDate naissanceGeorgette = date(1975, 1, 1);
+		final RegDate dateMariage = date(1995, 1, 1);
+		final RegDate dateSeparation = date(2008, 10, 2);
+
+		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+			@Override
+			protected void init() {
+				final MockIndividu fabrice = addIndividu(noIndFabrice, naissanceFabrice, "Dunant", "Fabrice", true);
+				final Nationalite nationaliteFabrice = new MockNationalite(naissanceFabrice, null, MockPays.Suisse);
+				fabrice.setNationalites(Arrays.asList(nationaliteFabrice));
+				addAdresse(fabrice, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, dateMariage, null);
+
+				final MockIndividu georgette = addIndividu(noIndGeorgette, naissanceGeorgette, "Dunant", "Georgette", false);
+				final Nationalite nationaliteGeorgette = new MockNationalite(naissanceGeorgette, null, MockPays.Suisse);
+				georgette.setNationalites(Arrays.asList(nationaliteGeorgette));
+				addAdresse(georgette, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, dateMariage, null);
+
+				marieIndividus(fabrice, georgette, dateMariage);
+			}
+		});
+
+		class Ids {
+			long fabrice;
+			long georgette;
+			long menage;
+		}
+		final Ids ids = new Ids();
+
+		// Crée un couple avec un contribuable à Lausanne
+		doInTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique fabrice = addHabitant(noIndFabrice);
+				final PersonnePhysique georgette = addHabitant(noIndGeorgette);
+				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(fabrice, georgette, dateMariage, null);
+				final MenageCommun menage = ensemble.getMenage();
+
+				ids.fabrice = fabrice.getNumero();
+				ids.georgette = georgette.getNumero();
+				ids.menage = menage.getNumero();
+
+				addForPrincipal(menage, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
+				return null;
+			}
+		});
+
+		// Sépare fiscalement les époux après avoir changé les adresses
+		doInTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				// changement d'adresse de Fabrice
+				doModificationIndividu(noIndFabrice, new IndividuModification() {
+					@Override
+					public void modifyIndividu(MockIndividu individu) {
+						assertNotNull(individu);
+						assertNotNull(individu.getAdresses());
+						assertEquals(1, individu.getAdresses().size());
+
+						final MockAdresse adresse = (MockAdresse) individu.getAdresses().iterator().next();
+						assertNull(adresse.getDateFin());
+						assertEquals(dateMariage, adresse.getDateDebut());
+						adresse.setDateFinValidite(dateSeparation.getOneDayBefore());
+
+						// domicile passe à Bex -> le for devra s'ouvrir là
+						individu.getAdresses().add(new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateSeparation, null));
+					}
+				});
+
+				// changement d'adresse de Georgette, mais seulement sur l'adresse COURRIER
+				doModificationIndividu(noIndGeorgette, new IndividuModification() {
+					@Override
+					public void modifyIndividu(MockIndividu individu) {
+						assertNotNull(individu);
+						assertNotNull(individu.getAdresses());
+						assertEquals(1, individu.getAdresses().size());
+
+						final RegDate dateDepart = dateSeparation.addDays(-20);
+
+						final MockAdresse vieilleAdresse = (MockAdresse) individu.getAdresses().iterator().next();
+						vieilleAdresse.setDateFinValidite(dateDepart);
+						vieilleAdresse.setLocalisationSuivante(new Localisation(LocalisationType.HORS_SUISSE, MockPays.France.getNoOFS(), null));
+					}
+				});
+
+				final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.menage);
+				assertNotNull(mc);
+
+				try {
+					metierService.separe(mc, dateSeparation, "test", null, null);
+					fail("La séparation aurait dû partir en erreur puisque l'on passe pour Georgette d'un couple vaudois à un for hors-Suisse");
+				}
+				catch (MetierServiceException e) {
+					final String attendu = String.format(
+							"D'après son adresse de domicile, on devrait ouvrir un for hors-Suisse pour le contribuable %s (apparemment parti avant la clôture du ménage, mais dans la même période fiscale) alors que le for du ménage %s était vaudois",
+							FormatNumeroHelper.numeroCTBToDisplay(ids.georgette), FormatNumeroHelper.numeroCTBToDisplay(ids.menage));
+					assertEquals(attendu, e.getMessage());
+				}
+				return null;
+			}
+		});
+
+	}
+
+	/**
+	 * Teste que la séparation d'un ménage pour lequel les adresses des membres du couple sont différentes crée bien les fors au bon endroit
+	 */
+	@Test
+	public void testSeparationAdresseDomicileInconnueMaisForSurMenage() throws Exception {
 
 		final long noIndFabrice = 12541L;
 		final long noIndGeorgette = 12542L;
@@ -881,7 +993,6 @@ public class MetiersServiceTest extends BusinessTest {
 
 						// domicile passe à Bex -> le for devra s'ouvrir là
 						individu.getAdresses().add(new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateSeparation, null));
-						individu.getAdresses().add(new MockAdresse(TypeAdresseCivil.COURRIER, MockRue.Bussigny.RueDeLIndustrie, null, dateSeparation, null));
 					}
 				});
 
@@ -895,29 +1006,46 @@ public class MetiersServiceTest extends BusinessTest {
 
 						final RegDate dateDepart = dateSeparation.addDays(-20);
 
-						// on ne connait que l'adresse courrier à Paris (= prise par défaut pour l'adresse de domicile)
-						individu.getAdresses()
-								.add(new MockAdresse(TypeAdresseCivil.COURRIER, "5 Avenue des Champs-Elysées", null, "75017 Paris", MockPays.France, dateDepart.addDays(1), null));
+						// on ne connait que l'adresse courrier à Paris (= non prise par défaut pour l'adresse de domicile)
+						individu.getAdresses().add(new MockAdresse(TypeAdresseCivil.COURRIER, "5 Avenue des Champs-Elysées", null, "75017 Paris", MockPays.France, dateDepart.addDays(1), null));
 					}
 				});
 
 				final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.menage);
 				assertNotNull(mc);
 
-				try {
-					metierService.separe(mc, dateSeparation, "test", null, null);
-					fail("La séparation aurait dû partir en erreur puisque l'on passe pour Georgette d'un couple vaudois à un for hors-Suisse");
-				}
-				catch (MetierServiceException e) {
-					final String attendu = String.format(
-							"D'après son adresse de domicile, on devrait ouvrir un for hors-Suisse pour le contribuable %s (apparemment parti avant la clôture du ménage, mais dans la même période fiscale) alors que le for du ménage %s était vaudois",
-							FormatNumeroHelper.numeroCTBToDisplay(ids.georgette), FormatNumeroHelper.numeroCTBToDisplay(ids.menage));
-					assertEquals(attendu, e.getMessage());
-				}
+				metierService.separe(mc, dateSeparation, "test", null, null);
 				return null;
 			}
 		});
 
+		// vérification des fors fiscaux
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.menage);
+				assertNotNull(mc);
+
+				final ForFiscalPrincipal ffpMc = mc.getDernierForFiscalPrincipal();
+				assertNotNull(ffpMc);
+				assertEquals(dateSeparation.getOneDayBefore(), ffpMc.getDateFin());
+				assertEquals(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, ffpMc.getMotifFermeture());
+
+				// pas d'adresse principale connue -> on reprend le for du couple
+				{
+					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.georgette);
+					assertNotNull(pp);
+
+					final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+					assertNotNull(ffp);
+					assertEquals(dateSeparation, ffp.getDateDebut());
+					assertEquals(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, ffp.getMotifOuverture());
+					assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+					assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
+				}
+				return null;
+			}
+		});
 	}
 
 	/**
@@ -945,6 +1073,7 @@ public class MetiersServiceTest extends BusinessTest {
 				final MockIndividu georgette = addIndividu(noIndGeorgette, naissanceGeorgette, "Dunant", "Georgette", false);
 				final Nationalite nationaliteGeorgette = new MockNationalite(naissanceGeorgette, null, MockPays.Suisse);
 				georgette.setNationalites(Arrays.asList(nationaliteGeorgette));
+				addAdresse(georgette, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, dateMariage, null);
 
 				marieIndividus(fabrice, georgette, dateMariage);
 			}
@@ -1006,12 +1135,11 @@ public class MetiersServiceTest extends BusinessTest {
 					public void modifyIndividu(MockIndividu individu) {
 						assertNotNull(individu);
 						assertNotNull(individu.getAdresses());
-						assertEquals(0, individu.getAdresses().size());
+						assertEquals(1, individu.getAdresses().size());
 
-						// on ne connait que l'adresse courrier à Paris (= prise par défaut pour l'adresse de domicile)
-						RegDate debutValidite = dateSeparation.addYears(-1);
-						individu.getAdresses()
-								.add(new MockAdresse(TypeAdresseCivil.COURRIER, "5 Avenue des Champs-Elysées", null, "75017 Paris", MockPays.France, debutValidite, null));
+						final MockAdresse vieilleAdresse = (MockAdresse) individu.getAdresses().iterator().next();
+						vieilleAdresse.setDateFinValidite(dateSeparation.addYears(-1));
+						vieilleAdresse.setLocalisationSuivante(new Localisation(LocalisationType.HORS_SUISSE, MockPays.France.getNoOFS(), null));
 					}
 				});
 
@@ -1053,7 +1181,7 @@ public class MetiersServiceTest extends BusinessTest {
 			assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
 		}
 
-		// For ouvert sur Georgette : à Paris, car l'adresse courrier est utilisée en lieu et place de l'adresse de domicile, inconnue
+		// For ouvert sur Georgette : à Paris, car le goes-to de sa dernière adresse de domicile connue est utilisée -> France
 		{
 			final PersonnePhysique georgette = (PersonnePhysique) tiersDAO.get(ids.georgette);
 			assertNotNull(georgette);
@@ -1073,7 +1201,7 @@ public class MetiersServiceTest extends BusinessTest {
 	 */
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
-	public void testSeparationAdresseInconnue() throws Exception {
+	public void testSeparationAdresseInconnueSansForSurMenage() throws Exception {
 
 		final long noIndFabrice = 12541L;
 		final long noIndGeorgette = 12542L;
@@ -1119,7 +1247,6 @@ public class MetiersServiceTest extends BusinessTest {
 				ids.georgette = georgette.getNumero();
 				ids.menage = menage.getNumero();
 
-				addForPrincipal(menage, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
 				return null;
 			}
 		});
@@ -1171,29 +1298,19 @@ public class MetiersServiceTest extends BusinessTest {
 			assertNotNull(mc);
 
 			final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
-			assertNotNull(ffp);
-			assertEquals(dateMariage, ffp.getDateDebut());
-			assertEquals(dateSeparation.getOneDayBefore(), ffp.getDateFin());
-			assertEquals(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, ffp.getMotifFermeture());
-			assertEquals(MockCommune.Lausanne.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
-			assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+			assertNull(ffp);
 		}
 
-		// For ouvert sur Fabrice : à Bex, car son adresse de domicile est là-bas
+		// For ouvert sur Fabrice : aucun, car aucun for n'existait sur le ménage commun
 		{
 			final PersonnePhysique fabrice = (PersonnePhysique) tiersDAO.get(ids.fabrice);
 			assertNotNull(fabrice);
 
 			final ForFiscalPrincipal ffp = fabrice.getDernierForFiscalPrincipal();
-			assertNotNull(ffp);
-			assertEquals(dateSeparation, ffp.getDateDebut());
-			assertNull(ffp.getDateFin());
-			assertEquals(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, ffp.getMotifOuverture());
-			assertEquals(MockCommune.Bex.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
-			assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+			assertNull(ffp);
 		}
 
-		// For ouvert sur Georgette : aucun, car son adresse de domicile est inconnue
+		// For ouvert sur Georgette : aucun, car son adresse de domicile est inconnue, et aucun for n'existe sur le ménage commun
 		{
 			final PersonnePhysique georgette = (PersonnePhysique) tiersDAO.get(ids.georgette);
 			assertNotNull(georgette);

@@ -680,9 +680,9 @@ public class DecesEchProcessorTest extends AbstractEvenementCivilEchProcessorTes
 				assertEquals(dateDeces.getOneDayAfter(), ffpM.getDateDebut());
 				assertEquals(MotifFor.VEUVAGE_DECES, ffpM.getMotifOuverture());
 
-				// d'après UNIREG-2143, en l'absence d'adresse de domicile, un défaut "courrier" peut être déterminant pour le for : ici -> Vevey, VD
-				assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffpM.getTypeAutoriteFiscale());
-				assertEquals((Integer) MockCommune.Vevey.getNoOFS(), ffpM.getNumeroOfsAutoriteFiscale());
+				// d'après SIFISC-8740, en l'absence d'adresse de domicile, on reprend le for du ménage
+				assertEquals(TypeAutoriteFiscale.COMMUNE_HC, ffpM.getTypeAutoriteFiscale());
+				assertEquals((Integer) MockCommune.Sierre.getNoOFS(), ffpM.getNumeroOfsAutoriteFiscale());
 
 				return null;
 			}

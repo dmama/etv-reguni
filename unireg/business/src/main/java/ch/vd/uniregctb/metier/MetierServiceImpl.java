@@ -28,7 +28,6 @@ import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdressesCivilesHisto;
-import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.EtatCivilHelper;
@@ -1862,11 +1861,6 @@ public class MetierServiceImpl implements MetierService {
 		}
 	}
 
-	private LocalisationFor getLocalisationForFromAdressesFiscales(RegDate date, PersonnePhysique pp) throws AdresseException, LocalisationException {
-		final AdresseGenerique adrFiscale = adresseService.getAdresseFiscale(pp, TypeAdresseFiscale.DOMICILE, date, false);
-		return adrFiscale != null ? new LocalisationFor(adrFiscale, date, serviceInfra) : null;
-	}
-
 	private LocalisationFor getLocalisationFor(RegDate date, PersonnePhysique pp) throws AdresseException, LocalisationException {
 		final AdressesCivilesHisto adrCiviles = adresseService.getAdressesCivilesHisto(pp, false);
 		if (adrCiviles != null && adrCiviles.principales != null && adrCiviles.principales.size() > 0) {
@@ -1879,7 +1873,7 @@ public class MetierServiceImpl implements MetierService {
 			// adresse précédente ?
 			final List<DateRange> past = DateRangeHelper.intersections(new DateRangeHelper.Range(null, date), adrCiviles.principales);
 			if (past == null || past.size() == 0) {
-				return getLocalisationForFromAdressesFiscales(date, pp);
+				return null;
 			}
 
 			// on prend la dernière adresse connue et on va chercher sa "localisation suivante"
@@ -1897,8 +1891,7 @@ public class MetierServiceImpl implements MetierService {
 			}
 		}
 		else {
-			// aucune adresse civile, voyons les fiscales (pour jouer les défauts, par exemple)
-			return getLocalisationForFromAdressesFiscales(date, pp);
+			return null;
 		}
 	}
 
@@ -1923,13 +1916,21 @@ public class MetierServiceImpl implements MetierService {
 			final Integer noOfs;
 			final TypeAutoriteFiscale typeAutoriteFiscale;
 			if (localisationFor == null) {
-				// pas d'adresse de domicile connue -> on n'ouvre aucun for
-				final String message = String.format("Adresse de domicile du contribuable %s inconnue au %s : pas d'ouverture de for", FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()),
-						RegDateHelper.dateToDisplayString(date));
-				Audit.warn(numeroEvenement, message);
+				// UNIREG-2143 : pas d'adresse de domicile connue -> on n'ouvre aucun for
+				// SIFISC-8740 : changement de règle : pas d'adresse de domicile connue -> on reprend les données du for du ménage
+				if (forMenage != null) {
+					noOfs = forMenage.getNumeroOfsAutoriteFiscale();
+					typeAutoriteFiscale = forMenage.getTypeAutoriteFiscale();
+				}
+				else {
+					// pas d'adresse de domicile connue -> on n'ouvre aucun for
+					final String message = String.format("Adresse de domicile du contribuable %s inconnue au %s et pas de for principal sur le ménage : pas d'ouverture de for",
+					                                     FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()), RegDateHelper.dateToDisplayString(date));
+					Audit.warn(numeroEvenement, message);
 
-				noOfs = null;
-				typeAutoriteFiscale = null;
+					noOfs = null;
+					typeAutoriteFiscale = null;
+				}
 			}
 			else {
 				noOfs = localisationFor.getNoOfs();
