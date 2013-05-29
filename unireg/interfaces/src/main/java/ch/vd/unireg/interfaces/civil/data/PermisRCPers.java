@@ -26,7 +26,20 @@ public class PermisRCPers implements Permis, Serializable {
 		final RegDate validTill = XmlUtils.xmlcal2regdate(permit.getResidencePermitTill());
 		final RegDate reportingDate = XmlUtils.xmlcal2regdate(permit.getReportingDate());
 
-		this.dateDebut = validFrom != null ? validFrom : reportingDate;
+		// si validFrom est présent, il fait référence
+		// sinon, si validFrom est absent,
+		//      - si validTill est absent, on prend reportingDate comme validFrom
+		//      - si validTill est présent et après reportingDate, on prend reportingDate comme validFrom
+		//      - si validTill est présent et avant reportingDate, validFrom reste nulle
+		if (validFrom != null) {
+			this.dateDebut = validFrom;
+		}
+		else if (validTill == null || RegDateHelper.isAfter(validTill, reportingDate, NullDateBehavior.LATEST)) {
+			this.dateDebut = reportingDate;
+		}
+		else {
+			this.dateDebut = null;
+		}
 		this.dateFin = validTill;
 		this.dateValeur = reportingDate;
 		DateRangeHelper.assertValidRange(dateDebut, dateFin, ServiceCivilException.class);
