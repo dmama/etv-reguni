@@ -97,6 +97,7 @@ public class IdentificationContribuableRequestListenerItTest extends BusinessItT
 			}
 		});
 		globalTiersIndexer.schedule(id);
+		globalTiersIndexer.sync();
 
 		final IdentificationContribuableRequest request = new IdentificationContribuableRequest();
 		request.setNAVS13(7569396525489L);
@@ -148,6 +149,8 @@ public class IdentificationContribuableRequestListenerItTest extends BusinessItT
 		globalTiersIndexer.schedule(id1);
 		globalTiersIndexer.schedule(id2);
 
+		globalTiersIndexer.sync();
+
 		final IdentificationContribuableRequest request = new IdentificationContribuableRequest();
 		request.setNom("Monnier");
 		request.setPrenoms("Christophe");
@@ -187,6 +190,7 @@ public class IdentificationContribuableRequestListenerItTest extends BusinessItT
 		});
 
 		globalTiersIndexer.schedule(id);
+		globalTiersIndexer.sync();
 
 		final IdentificationContribuableRequest request = new IdentificationContribuableRequest();
 		request.setNom("Adam");
