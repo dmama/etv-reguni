@@ -351,20 +351,20 @@ public class EvenementCivilEchServiceImpl implements EvenementCivilEchService, I
 						firstNonEch99.setReferrers(newReferrers);
 						toAdd.add(firstNonEch99);
 
-						// les eCH-99 doivent également apparaître individuellement afin d'être pris en compte, le cas échéant, par la mécanique de post
+						// les eCH-99 non traités doivent également apparaître individuellement afin d'être pris en compte, le cas échéant, par la mécanique de post
 						// processing des "indexations pures"
 						for (EvenementCivilEchBasicInfo newRef : newReferrers) {
-							if (EvenementCivilEchSourceHelper.isFromEch99(newRef)) {
+							if (EvenementCivilEchSourceHelper.isFromEch99(newRef) && !newRef.getEtat().isTraite()) {
 								toAdd.add(newRef);
 							}
 						}
 					}
 				}
 				else {
-					// les eCH-99 doivent également apparaître individuellement afin d'être pris en compte, le cas échéant, par la mécanique de post
+					// les eCH-99 non traités doivent également apparaître individuellement afin d'être pris en compte, le cas échéant, par la mécanique de post
 					// processing des "indexations pures"
 					for (EvenementCivilEchBasicInfo ref : info.getReferrers()) {
-						if (EvenementCivilEchSourceHelper.isFromEch99(ref)) {
+						if (EvenementCivilEchSourceHelper.isFromEch99(ref) && !ref.getEtat().isTraite()) {
 							toAdd.add(ref);
 						}
 					}

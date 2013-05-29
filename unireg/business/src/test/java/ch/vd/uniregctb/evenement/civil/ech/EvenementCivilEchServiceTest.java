@@ -797,7 +797,7 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 	}
 
 	@Test
-	public void testConstitutionGroupeReferencesAvecEch99EnDependantSeulement() throws Exception {
+	public void testConstitutionGroupeReferencesAvecEch99NonTraiteEnDependantSeulement() throws Exception {
 
 		final long noIndividu = 21745624L;
 		final RegDate dateNaissance = date(1980, 10, 25);
@@ -854,6 +854,58 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 			final List<EvenementCivilEchBasicInfo> referrers = info.getSortedReferrers();
 			Assert.assertNotNull(referrers);
 			Assert.assertEquals(0, referrers.size());
+		}
+	}
+
+	@Test
+	public void testConstitutionGroupeReferencesAvecEch99TraiteEnDependantSeulement() throws Exception {
+
+		final long noIndividu = 21745624L;
+		final RegDate dateNaissance = date(1980, 10, 25);
+		final RegDate dateArrivee = date(2000, 7, 12);
+
+		final EvenementCivilEchServiceImpl service = buildService();
+
+		// création de l'individu
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				createIndividu(noIndividu, dateNaissance, "Dupont", "Albert", Sexe.MASCULIN);
+			}
+		});
+
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				createEvent(dateArrivee, noIndividu, 1L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.CORRECTION, EtatEvenementCivil.A_TRAITER, -1L);
+				createEventFromEch99(dateArrivee, noIndividu, 2L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.CORRECTION, EtatEvenementCivil.TRAITE, 1L);
+				return null;
+			}
+		});
+
+		// vérification du comportement du service
+		final List<EvenementCivilEchBasicInfo> infos = doInNewTransactionAndSession(new TransactionCallback<List<EvenementCivilEchBasicInfo>>() {
+			@Override
+			public List<EvenementCivilEchBasicInfo> doInTransaction(TransactionStatus status) {
+				return service.buildLotEvenementsCivilsNonTraites(noIndividu);
+			}
+		});
+		Assert.assertNotNull(infos);
+		Assert.assertEquals(1, infos.size());
+
+		{
+			final EvenementCivilEchBasicInfo info = infos.get(0);
+			Assert.assertNotNull(info);
+			Assert.assertEquals(1L, info.getId());
+
+			final List<EvenementCivilEchBasicInfo> referrers = info.getSortedReferrers();
+			Assert.assertNotNull(referrers);
+			Assert.assertEquals(1, referrers.size());
+			{
+				final EvenementCivilEchBasicInfo refInfo = referrers.get(0);
+				Assert.assertNotNull(refInfo);
+				Assert.assertEquals(2L, refInfo.getId());
+			}
 		}
 	}
 
