@@ -7,6 +7,8 @@ import javax.xml.bind.annotation.XmlType;
 import java.util.ArrayList;
 import java.util.List;
 
+import ch.vd.uniregctb.type.RestrictedAccess;
+
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "param", propOrder = {
 		"name", "type", "enumValues", "isMandatory"
@@ -39,7 +41,9 @@ public class Param {
 			enumValues = new ArrayList<>();
 			final Enum<?>[] enums = (Enum<?>[]) clazz.getEnumConstants();
 			for (Enum<?> e : enums) {
-				enumValues.add(e.name());
+				if (!(e instanceof RestrictedAccess) || ((RestrictedAccess) e).isAllowed()) {
+					enumValues.add(e.name());
+				}
 			}
 		}
 		else {

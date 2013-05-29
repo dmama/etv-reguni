@@ -20,6 +20,7 @@ import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.document.Document;
+import ch.vd.uniregctb.type.RestrictedAccess;
 import ch.vd.uniregctb.utils.UniregModeHelper;
 
 /**
@@ -651,6 +652,9 @@ public abstract class JobDefinition implements InitializingBean, Comparable<JobD
 		}
 		if (value == null && parameterDefinition.isMandatory()) {
 			throw new IllegalArgumentException(String.format("Paramètre obligatoire non renseigné : %s", key));
+		}
+		if (value instanceof RestrictedAccess && !((RestrictedAccess) value).isAllowed()) {
+			throw new IllegalArgumentException(String.format("Valeur invalide pour le paramètre %s : '%s'", key, value));
 		}
 		return value;
 	}

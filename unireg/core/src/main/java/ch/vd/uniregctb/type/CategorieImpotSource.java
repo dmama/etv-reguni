@@ -14,7 +14,8 @@ package ch.vd.uniregctb.type;
  * - Bénéficiaires de prestations de prévoyance découlant de rapports de travail de droit public
  * - Bénéficiaires de prestations de prévoyance découlant du droit privé
  */
-public enum CategorieImpotSource {
+public enum CategorieImpotSource implements RestrictedAccess {
+
 	ADMINISTRATEURS("Administrateurs"),
 	CONFERENCIERS_ARTISTES_SPORTIFS("Conférenciers, artistes, sportifs"),
 	CREANCIERS_HYPOTHECAIRES("Créanciers hypothécaires"),

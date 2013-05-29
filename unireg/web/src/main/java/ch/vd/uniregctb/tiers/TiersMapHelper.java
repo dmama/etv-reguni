@@ -3,11 +3,9 @@ package ch.vd.uniregctb.tiers;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -257,14 +255,7 @@ public class TiersMapHelper extends CommonMapHelper {
 	 */
 	public Map<CategorieImpotSource, String> getMapCategorieImpotSource() {
 		if (mapCategorieImpotSource == null) {
-			final Set<CategorieImpotSource> notAllowed = EnumSet.noneOf(CategorieImpotSource.class);
-			for (CategorieImpotSource cis : CategorieImpotSource.values()) {
-				if (!cis.isAllowed()) {
-					notAllowed.add(cis);
-				}
-			}
-			final CategorieImpotSource[] ignored = notAllowed.toArray(new CategorieImpotSource[notAllowed.size()]);
-			mapCategorieImpotSource = initMapEnum(ApplicationConfig.masterKeyCategorieImpotSource, CategorieImpotSource.class, ignored);
+			mapCategorieImpotSource = initMapEnum(ApplicationConfig.masterKeyCategorieImpotSource, CategorieImpotSource.class);
 		}
 		return mapCategorieImpotSource;
 	}
