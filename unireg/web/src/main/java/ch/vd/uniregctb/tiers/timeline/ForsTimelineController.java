@@ -56,6 +56,7 @@ public class ForsTimelineController {
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public String indexDebug(Model mav,
 	                         @RequestParam(ID_PARAMETER) Long id,
+	                         @RequestParam(value = "invertedTime", required = false, defaultValue = "true") boolean invertedTime,
 	                         @RequestParam(value = "showForsGestion", required = false, defaultValue = "true") boolean showForsGestion,
 	                         @RequestParam(value = "showAssujettissementsSource", required = false, defaultValue = "false") boolean showAssujettissementsSource,
 	                         @RequestParam(value = "showAssujettissementsRole", required = false, defaultValue = "false") boolean showAssujettissementsRole,
@@ -70,13 +71,14 @@ public class ForsTimelineController {
 			showAssujettissementsRole = true;
 		}
 
-		return commonTimeline(mav, id, showForsGestion, showAssujettissementsSource, showAssujettissementsRole, showAssujettissements, showPeriodesImposition, forPrint, title, description, true);
+		return commonTimeline(mav, id, invertedTime, showForsGestion, showAssujettissementsSource, showAssujettissementsRole, showAssujettissements, showPeriodesImposition, forPrint, title, description, true);
 	}
 
 	@RequestMapping(value = "/fors/timeline.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public String index(Model mav,
 	                    @RequestParam(ID_PARAMETER) Long id,
+	                    @RequestParam(value = "invertedTime", required = false, defaultValue = "true") boolean invertedTime,
 	                    @RequestParam(value = "showForsGestion", required = false, defaultValue = "true") boolean showForsGestion,
 	                    @RequestParam(value = "showAssujettissements", required = false, defaultValue = "true") boolean showAssujettissements,
 	                    @RequestParam(value = "showPeriodesImposition", required = false, defaultValue = "false") boolean showPeriodesImposition,
@@ -84,10 +86,10 @@ public class ForsTimelineController {
 	                    @RequestParam(value = TITLE, required = false) String title,
 	                    @RequestParam(value = DESCRIPTION, required = false) String description) throws AccessDeniedException {
 
-		return commonTimeline(mav, id, showForsGestion, false, false, showAssujettissements, showPeriodesImposition, forPrint, title, description, false);
+		return commonTimeline(mav, id, invertedTime, showForsGestion, false, false, showAssujettissements, showPeriodesImposition, forPrint, title, description, false);
 	}
 
-	private String commonTimeline(Model mav, Long id, boolean showForsGestion,
+	private String commonTimeline(Model mav, Long id, boolean invertedTime, boolean showForsGestion,
 	                              boolean showAssujettissementsSource, boolean showAssujettissementsRole,
 	                              boolean showAssujettissements, boolean showPeriodesImposition,
 	                              Boolean forPrint, String title,  String description,
@@ -95,7 +97,7 @@ public class ForsTimelineController {
 
 		controllerUtils.checkAccesDossierEnLecture(id);
 
-		final ForsTimelineView bean = new ForsTimelineView(showForsGestion, showAssujettissementsSource, showAssujettissementsRole, showAssujettissements, showPeriodesImposition);
+		final ForsTimelineView bean = new ForsTimelineView(invertedTime, showForsGestion, showAssujettissementsSource, showAssujettissementsRole, showAssujettissements, showPeriodesImposition);
 		bean.setTiersId(id);
 
 		if (forPrint != null) {

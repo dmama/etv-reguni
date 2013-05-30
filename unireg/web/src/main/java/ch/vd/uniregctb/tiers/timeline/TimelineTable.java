@@ -1,11 +1,14 @@
 package ch.vd.uniregctb.tiers.timeline;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.DateRange;
+import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 
 /**
@@ -13,7 +16,16 @@ import ch.vd.registre.base.date.DateRangeHelper;
  */
 @SuppressWarnings("UnusedDeclaration")
 public class TimelineTable {
+
+	public final boolean invertedTime;
 	public final List<TimelineRow> rows = new ArrayList<>();
+
+	/**
+	 * @param invertedTime <code>true</code> si les {@link #rows} doivent être affichées de la plus récente à la plus vieille (anti-chronologique), et <code>false</code> pour l'ordre "naturel" (chronologique)
+	 */
+	public TimelineTable(boolean invertedTime) {
+		this.invertedTime = invertedTime;
+	}
 
 	public List<TimelineRow> getRows() {
 		return rows;
@@ -37,6 +49,14 @@ public class TimelineTable {
 			rows.add(new TimelineRow(new TimelineRange(p)));
 		}
 
+		// tri des lignes selon l'ordre qui va bien
+		Collections.sort(rows, new Comparator<TimelineRow>() {
+			@Override
+			public int compare(TimelineRow o1, TimelineRow o2) {
+				return DateRangeComparator.compareRanges(o1.getPeriode(), o2.getPeriode()) * (invertedTime ? -1 : 1);
+			}
+		});
+
 		// on calcule les yearspans
 		int year = -1;
 		TimelineRange head = null;
@@ -59,6 +79,22 @@ public class TimelineTable {
 		}
 	}
 
+	private static boolean isSameEndDate(TimelineRow row, DateRange range) {
+		return range.getDateFin() == row.periode.getDateFin();
+	}
+
+	private static boolean isSameBeginDate(TimelineRow row, DateRange range) {
+		return range.getDateDebut() == row.periode.getDateDebut();
+	}
+
+	private boolean isFirstRowForRange(TimelineRow row, DateRange range) {
+		return invertedTime ? isSameEndDate(row, range) : isSameBeginDate(row, range);
+	}
+
+	private boolean isLastRowForRange(TimelineRow row, DateRange range) {
+		return invertedTime ? isSameBeginDate(row, range) : isSameEndDate(row, range);
+	}
+
 	/**
 	 * Ajoute un range dans la colonne "fors principaux"
 	 */
@@ -66,7 +102,7 @@ public class TimelineTable {
 		TimelineCell c = new TimelineCell(range);
 		int longueur = 0;
 		for (TimelineRow r : rows) {
-			if (range.getDateDebut() == r.periode.getDateDebut()) {
+			if (isFirstRowForRange(r, range)) {
 				Assert.isTrue(r.forPrincipal == TimelineCell.FILLER);
 				r.forPrincipal = c;
 				longueur++;
@@ -87,7 +123,7 @@ public class TimelineTable {
 		TimelineCell c = new TimelineCell(range);
 		int longueur = 0;
 		for (TimelineRow r : rows) {
-			if (range.getDateDebut() == r.periode.getDateDebut()) {
+			if (isFirstRowForRange(r, range)) {
 				Assert.isTrue(r.forGestion == TimelineCell.FILLER);
 				r.forGestion = c;
 				longueur++;
@@ -108,7 +144,7 @@ public class TimelineTable {
 		TimelineCell c = new TimelineCell(range);
 		int longueur = 0;
 		for (TimelineRow r : rows) {
-			if (range.getDateDebut() == r.periode.getDateDebut()) {
+			if (isFirstRowForRange(r, range)) {
 				Assert.isTrue(r.assujettissementSource == TimelineCell.FILLER);
 				r.assujettissementSource = c;
 				longueur++;
@@ -129,7 +165,7 @@ public class TimelineTable {
 		TimelineCell c = new TimelineCell(range);
 		int longueur = 0;
 		for (TimelineRow r : rows) {
-			if (range.getDateDebut() == r.periode.getDateDebut()) {
+			if (isFirstRowForRange(r, range)) {
 				Assert.isTrue(r.assujettissementRole == TimelineCell.FILLER);
 				r.assujettissementRole = c;
 				longueur++;
@@ -150,7 +186,7 @@ public class TimelineTable {
 		TimelineCell c = new TimelineCell(range);
 		int longueur = 0;
 		for (TimelineRow r : rows) {
-			if (range.getDateDebut() == r.periode.getDateDebut()) {
+			if (isFirstRowForRange(r, range)) {
 				Assert.isTrue(r.assujettissement == TimelineCell.FILLER);
 				r.assujettissement = c;
 				longueur++;
@@ -171,7 +207,7 @@ public class TimelineTable {
 		TimelineCell c = new TimelineCell(range);
 		int longueur = 0;
 		for (TimelineRow r : rows) {
-			if (range.getDateDebut() == r.periode.getDateDebut()) {
+			if (isFirstRowForRange(r, range)) {
 				Assert.isTrue(r.periodeImposition == TimelineCell.FILLER);
 				r.periodeImposition = c;
 				longueur++;
@@ -198,11 +234,11 @@ public class TimelineTable {
 		for (int i = 0; i < rows.size(); ++i) {
 			TimelineRow r = rows.get(i);
 			levels = r.forsSecondaires.size();
-			if (range.getDateDebut() == r.periode.getDateDebut()) {
+			if (isFirstRowForRange(r, range)) {
 				debut = i;
 				fin = i;
 			}
-			else if (range.getDateFin() == r.periode.getDateFin()) {
+			else if (isLastRowForRange(r, range)) {
 				fin = i;
 				break;
 			}

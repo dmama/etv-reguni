@@ -17,7 +17,7 @@ public class ForsTimelineView {
 	private Long tiersId = null;
 
 	// données découlant des paramètres
-	private final TimelineTable table = new TimelineTable();
+	private final TimelineTable table;
 	private final List<AssujettissementException> exceptions = new ArrayList<>();
 
 	private boolean forPrint = false;
@@ -30,12 +30,13 @@ public class ForsTimelineView {
 	private final boolean showAssujettissements;
 	private final boolean showPeriodesImposition;
 
-	public ForsTimelineView(boolean showForsGestion, boolean showAssujettissementsSource, boolean showAssujettissementsRole, boolean showAssujettissements, boolean showPeriodesImposition) {
+	public ForsTimelineView(boolean invertedTime, boolean showForsGestion, boolean showAssujettissementsSource, boolean showAssujettissementsRole, boolean showAssujettissements, boolean showPeriodesImposition) {
 		this.showForsGestion = showForsGestion;
 		this.showAssujettissementsSource = showAssujettissementsSource;
 		this.showAssujettissementsRole = showAssujettissementsRole;
 		this.showAssujettissements = showAssujettissements;
 		this.showPeriodesImposition = showPeriodesImposition;
+		this.table = new TimelineTable(invertedTime);
 	}
 
 	public Long getTiersId() {
@@ -100,5 +101,9 @@ public class ForsTimelineView {
 
 	public boolean isShowPeriodesImposition() {
 		return showPeriodesImposition;
+	}
+
+	public boolean isInvertedTime() {
+		return table.invertedTime;
 	}
 }

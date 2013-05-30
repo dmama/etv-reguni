@@ -120,14 +120,26 @@
 					<%-- les périodes --%>
 					<c:if test="${ligne.periode.multiYears}">
 						<td class="periodeFull" colspan="2">
-							<unireg:regdate regdate="${ligne.periode.dateDebut}" format="dd.MM.yyyy"/><br/>
-							<unireg:regdate regdate="${ligne.periode.dateFin}" format="dd.MM.yyyy" defaultValue="..."/>
+							<c:if test="${command.invertedTime}">
+								<unireg:regdate regdate="${ligne.periode.dateFin}" format="dd.MM.yyyy" defaultValue="..."/><br/>
+								<unireg:regdate regdate="${ligne.periode.dateDebut}" format="dd.MM.yyyy"/>
+							</c:if>
+							<c:if test="${!command.invertedTime}">
+								<unireg:regdate regdate="${ligne.periode.dateDebut}" format="dd.MM.yyyy"/><br/>
+								<unireg:regdate regdate="${ligne.periode.dateFin}" format="dd.MM.yyyy" defaultValue="..."/>
+							</c:if>
 						</td>
 					</c:if>
 					<c:if test="${!ligne.periode.multiYears}">
 						<td class="periode">
-							<unireg:regdate regdate="${ligne.periode.dateDebut}" format="dd.MM"/><br/>
-							<unireg:regdate regdate="${ligne.periode.dateFin}" format="dd.MM"/>
+							<c:if test="${command.invertedTime}">
+								<unireg:regdate regdate="${ligne.periode.dateFin}" format="dd.MM"/><br/>
+								<unireg:regdate regdate="${ligne.periode.dateDebut}" format="dd.MM"/>
+							</c:if>
+							<c:if test="${!command.invertedTime}">
+								<unireg:regdate regdate="${ligne.periode.dateDebut}" format="dd.MM"/><br/>
+								<unireg:regdate regdate="${ligne.periode.dateFin}" format="dd.MM"/>
+							</c:if>
 						</td>
 						<c:choose>
 							<c:when test="${ligne.periode.yearSpan == 1}">
