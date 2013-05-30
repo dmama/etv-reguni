@@ -3279,8 +3279,9 @@ public class TiersServiceImpl implements TiersService {
             if (office != null) {
                 oid = office.getNoColAdm();
             }
-        } catch (ServiceInfrastructureException e) {
-            throw new RuntimeException("Impossible de déterminer l'office d'impôt de la commune avec le numéro Ofs = " + noOfsCommune);
+        }
+        catch (ServiceInfrastructureException e) {
+            throw new RuntimeException("Impossible de déterminer l'office d'impôt de la commune avec le numéro Ofs = " + noOfsCommune, e);
         }
         return oid;
     }
