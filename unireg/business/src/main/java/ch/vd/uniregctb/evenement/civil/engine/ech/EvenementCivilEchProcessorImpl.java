@@ -320,12 +320,8 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 			return doInNewTransaction(new TransactionCallback<Boolean>() {
 				@Override
 				public Boolean doInTransaction(TransactionStatus status) {
-					final EvenementCivilEch evt = evtCivilDAO.get(info.getId());
-					if (evt == null) {
-						LOGGER.warn(String.format("Pas d'événement trouvé correspondant à l'identifiant %d", info.getId()));
-						return Boolean.TRUE;
-					}
-					else if (evt.getEtat().isTraite()) {
+					final EvenementCivilEch evt = fetchDatabaseEvent(info);
+					if (evt.getEtat().isTraite()) {
 						LOGGER.info(String.format("Evénement %d déjà dans l'état %s, on ne le re-traite pas", info.getId(), evt.getEtat()));
 						return Boolean.TRUE;
 					}
@@ -368,21 +364,31 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 		if (infos != null && infos.size() > 0) {
 			evts = new ArrayList<>(infos.size());
 			for (EvenementCivilEchBasicInfo refInfo : infos) {
-				final EvenementCivilEch ref = evtCivilDAO.get(refInfo.getId());
-				if (ref != null) {
-					if (ref.getNumeroIndividu() == null) {
-						// c'est possible dans le cas où on a récupéré des événements encore à l'état "à traiter" par le biais des relations de référencement
-						// (cette information sera sauvegardée au commit final de la transaction)
-						ref.setNumeroIndividu(refInfo.getNoIndividu());
-					}
-					evts.add(ref);
-				}
+				final EvenementCivilEch ref = fetchDatabaseEvent(refInfo);
+				evts.add(ref);
 			}
 		}
 		else {
 			evts = Collections.emptyList();
 		}
 		return evts;
+	}
+
+	/**
+	 * Récupère l'événement civil depuis la DB, et rattrappe éventuellement le numéro d'individu absent
+	 * @param info information sur l'événement civil à récupérer
+	 * @return événement civil tiré de la DB
+	 */
+	@NotNull
+	private EvenementCivilEch fetchDatabaseEvent(EvenementCivilEchBasicInfo info) {
+		final EvenementCivilEch evt = evtCivilDAO.get(info.getId());
+		if (evt == null) {
+			throw new IllegalArgumentException("Pas d'événement civil trouvé avec le numéro " + info.getId());
+		}
+		if (evt.getNumeroIndividu() == null) {
+			evt.setNumeroIndividu(info.getNoIndividu());
+		}
+		return evt;
 	}
 
 	/**
@@ -395,7 +401,7 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final EvenementCivilEchErreur erreur = ERREUR_FACTORY.createErreur(e);
-				final EvenementCivilEch evt = evtCivilDAO.get(info.getId());
+				final EvenementCivilEch evt = fetchDatabaseEvent(info);
 				final List<EvenementCivilEch> referrers = buildEventList(info.getSortedReferrers());
 				final EvenementCivilGrappe grappe = buildGrappe(evt, referrers);
 				grappe.forEach(CLEANUP_AVANT_TRAITEMENT);

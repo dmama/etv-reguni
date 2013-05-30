@@ -327,4 +327,81 @@ public class EvenementCivilEchIssuDe99ProcessorTest extends AbstractEvenementCiv
 
 	}
 
+	@Test
+	public void testNoIndividuAbsentSurEch99PremierDeGrappeDeTraitement() throws Exception {
+
+		final long noIndividu = 2723567L;
+		final RegDate dateNaissance = date(1989, 10, 3);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Bouliokova", "Tatiana", Sexe.FEMININ);
+				addNationalite(ind, MockPays.Russie, dateNaissance, null);
+				addOrigine(ind, MockCommune.Orbe);
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				return pp.getNumero();
+			}
+		});
+
+		final long evtId;
+		AuthenticationHelper.pushPrincipal(EvenementCivilEchSourceHelper.getVisaForEch99());
+		try {
+			// et on envoie l'événement issu de 99
+			evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+				@Override
+				public Long doInTransaction(TransactionStatus status) {
+					final long evtIdTraite = 14532L;
+					{
+						final EvenementCivilEch evt = new EvenementCivilEch();
+						evt.setId(evtIdTraite);
+						evt.setAction(ActionEvenementCivilEch.CORRECTION);
+						evt.setDateEvenement(RegDate.get());
+						evt.setEtat(EtatEvenementCivil.TRAITE);
+						evt.setNumeroIndividu(noIndividu);
+						evt.setType(TypeEvenementCivilEch.TESTING);
+						hibernateTemplate.merge(evt);
+					}
+
+					{
+						final EvenementCivilEch evt = new EvenementCivilEch();
+						evt.setId(4545121L);
+						evt.setAction(ActionEvenementCivilEch.CORRECTION);
+						evt.setDateEvenement(RegDate.get());
+						evt.setEtat(EtatEvenementCivil.A_TRAITER);
+						evt.setNumeroIndividu(null);
+						evt.setType(TypeEvenementCivilEch.TESTING);
+						evt.setRefMessageId(evtIdTraite);
+						return hibernateTemplate.merge(evt).getId();
+					}
+				}
+			});
+		}
+		finally {
+			AuthenticationHelper.popPrincipal();
+		}
+
+		// traitement de l'événement civil
+		traiterEvenements(noIndividu);
+
+		// vérification du bon traitement de l'événement encore à traiter
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = evtCivilDAO.get(evtId);
+				Assert.assertNotNull(evt);
+				Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());      // événement traité
+				Assert.assertEquals((Long) noIndividu, evt.getNumeroIndividu());    // numéro individu récupéré par la grappe
+				return null;
+			}
+		});
+	}
 }

@@ -54,10 +54,6 @@ public final class EvenementCivilEchBasicInfo implements Serializable {
 		}
 	}
 
-	public EvenementCivilEchBasicInfo(EvenementCivilEch evt) {
-		this(evt.getId(), evt.getNumeroIndividu(), evt.getEtat(), evt.getType(), evt.getAction(), evt.getRefMessageId(), evt.getDateEvenement(), evt.getLogCreationUser());
-	}
-
 	public EvenementCivilEchBasicInfo(EvenementCivilEch evt, long noIndividu) {
 		this(evt.getId(), noIndividu, evt.getEtat(), evt.getType(), evt.getAction(), evt.getRefMessageId(), evt.getDateEvenement(), evt.getLogCreationUser());
 		if (evt.getNumeroIndividu() != null && noIndividu != evt.getNumeroIndividu()) {
