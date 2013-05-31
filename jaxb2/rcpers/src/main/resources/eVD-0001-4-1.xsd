@@ -1,6 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- edited with XMLSpy v2012 sp1 (http://www.altova.com) by Gabrielle Déal (DIRECTION DES SYSTEMS D'INFORMATION) -->
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:eVD-0001="http://evd.vd.ch/xmlns/eVD-0001/4" xmlns:eVD-0004="http://evd.vd.ch/xmlns/eVD-0004/3" xmlns:eVD-0009="http://evd.vd.ch/xmlns/eVD-0009/1" xmlns:eCH-0006="http://www.ech.ch/xmlns/eCH-0006/2" xmlns:eCH-0007="http://www.ech.ch/xmlns/eCH-0007/4" xmlns:eCH-0008="http://www.ech.ch/xmlns/eCH-0008/2" xmlns:eCH-0010="http://www.ech.ch/xmlns/eCH-0010/4" xmlns:eCH-0011="http://www.ech.ch/xmlns/eCH-0011/5" xmlns:eCH-0021="http://www.ech.ch/xmlns/eCH-0021/4" xmlns:eCH-0044="http://www.ech.ch/xmlns/eCH-0044/2" xmlns:eCH-0058="http://www.ech.ch/xmlns/eCH-0058/2" xmlns:eCH-0084="http://www.ech.ch/xmlns/eCH-0084/1" xmlns:eCH-0090="http://www.ech.ch/xmlns/eCH-0090/1" targetNamespace="http://evd.vd.ch/xmlns/eVD-0001/4" elementFormDefault="qualified" attributeFormDefault="unqualified" version="4.0">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		   targetNamespace="http://evd.vd.ch/xmlns/eVD-0001/4" elementFormDefault="qualified" attributeFormDefault="unqualified" version="4.0"
+		   xmlns:eVD-0001="http://evd.vd.ch/xmlns/eVD-0001/4"
+		   xmlns:eVD-0004="http://evd.vd.ch/xmlns/eVD-0004/3"
+		   xmlns:eVD-0009="http://evd.vd.ch/xmlns/eVD-0009/1"
+		   xmlns:eCH-0006="http://www.ech.ch/xmlns/eCH-0006/2"
+		   xmlns:eCH-0007="http://www.ech.ch/xmlns/eCH-0007/4"
+		   xmlns:eCH-0008="http://www.ech.ch/xmlns/eCH-0008/2"
+		   xmlns:eCH-0010="http://www.ech.ch/xmlns/eCH-0010/4"
+		   xmlns:eCH-0011="http://www.ech.ch/xmlns/eCH-0011/5"
+		   xmlns:eCH-0021="http://www.ech.ch/xmlns/eCH-0021/4"
+		   xmlns:eCH-0044="http://www.ech.ch/xmlns/eCH-0044/2"
+		   xmlns:eCH-0058="http://www.ech.ch/xmlns/eCH-0058/2"
+		   xmlns:eCH-0084="http://www.ech.ch/xmlns/eCH-0084/1"
+		   xmlns:eCH-0090="http://www.ech.ch/xmlns/eCH-0090/1">
 
 	<xs:import namespace="http://www.ech.ch/xmlns/eCH-0006/2" schemaLocation="http://www.ech.ch/xmlns/eCH-0006/2/eCH-0006-2-0.xsd"/>
 	<xs:import namespace="http://www.ech.ch/xmlns/eCH-0007/4" schemaLocation="http://www.ech.ch/xmlns/eCH-0007/4/eCH-0007-4-0.xsd"/>
@@ -979,4 +993,105 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+
+	<xs:complexType name="searchCriteriaType">
+		<xs:sequence>
+			<xs:annotation>
+				<xs:documentation>Critères de recherche. Voir la spécification de la recherche de personnes.</xs:documentation>
+			</xs:annotation>
+			<xs:element name="officialName" type="xs:string" minOccurs="0"/>
+			<xs:element name="originalName" type="xs:string" minOccurs="0" />
+			<xs:element name="passportName" type="xs:string" minOccurs="0" />
+			<xs:element name="alliancePartnershipName" type="xs:string" minOccurs="0" />
+			<xs:element name="aliasName" type="xs:string" minOccurs="0" />
+			<xs:element name="otherNames" type="xs:string" minOccurs="0" />
+			<xs:element name="firstNames" type="xs:string" minOccurs="0" />
+			<xs:element name="dateOfBirth" type="eCH-0044:datePartiallyKnownType" minOccurs="0" />
+			<xs:element name="dateOfBirthFrom" type="xs:date" minOccurs="0" />
+			<xs:element name="dateOfBirthTo" type="xs:date" minOccurs="0" />
+			<xs:element name="dateOfDeath" type="xs:date" minOccurs="0" />
+			<xs:element name="dateOfDeathFrom" type="xs:date" minOccurs="0" />
+			<xs:element name="dateOfDeathTo" type="xs:date" minOccurs="0" />
+			<xs:element name="sex" type="eCH-0044:sexType" minOccurs="0"/>
+			<xs:element name="nationalityStatus" type="eCH-0011:nationalityStatusType" minOccurs="0"/>
+			<xs:element name="nationalityCountryId" type="xs:integer" minOccurs="0" />
+			<xs:element name="town" type="xs:string" minOccurs="0" />
+			<xs:element name="swissZipCode" type="xs:integer" minOccurs="0" />
+			<xs:element name="municipalityId" type="xs:integer" minOccurs="0" />
+			<xs:element name="typeOfReportingRelationship" type="eVD-0009:typeOfReportingRelationshipCodeType" minOccurs="0" />
+			<xs:element name="residencePermit" type="eCH-0006:residencePermitType" minOccurs="0"/>
+			<xs:element name="street" type="xs:string" minOccurs="0" />
+			<xs:element name="searchInDeadPerson" type="xs:boolean" minOccurs="0" />
+			<xs:element name="searchInCanceledPerson" type="xs:boolean" minOccurs="0" />
+			<xs:element name="dataSource" minOccurs="0" >
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+					  <xs:enumeration value="ALL"/>
+					  <xs:enumeration value="FEDERAL"/>
+					  <xs:enumeration value="MUNICIPAL"/>
+					</xs:restriction>
+  				</xs:simpleType>
+ 				</xs:element>
+			<xs:element name="contains" type="xs:boolean" minOccurs="0" />
+			<xs:element name="history" type="xs:boolean" minOccurs="0" />
+			<xs:element name="maxHits" type="xs:integer" minOccurs="0" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:element name="asynchronousSearchRequest">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="criteria" type="eVD-0001:searchCriteriaType" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Critères de recherche. Renvoie la totalité des personnes si non précisé.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="referenceDate" type="xs:date" minOccurs="0" >
+					<xs:annotation>
+						<xs:documentation>Date de reference pour les données des personnes. Défaut: date du jour de l'extraction</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="outputHistory" type="xs:boolean" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Demande l'historique des personnes. Défaut: false</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="maxPersonsByResponse" type="xs:integer" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Nombre maximum de personnes renvoyées par fichier</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="asynchronousSearchResponse">
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element name="totalResponsesCount" type="xs:integer">
+						<xs:annotation>
+							<xs:documentation>Nombre total de fichiers renvoyés par cette recherche</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="indexOfThisResponse" type="xs:integer">
+						<xs:annotation>
+							<xs:documentation>Index du fichier par rapport au total</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="person" type="eVD-0001:personType" maxOccurs="unbounded">
+						<xs:annotation>
+							<xs:documentation>Liste des personnes retournées par cette recherche</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+				<xs:element name="error" type="eVD-0004:errorType">
+					<xs:annotation>
+						<xs:documentation>Type d'erreur dans la request (membre du criteria en erreur)</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+
 </xs:schema>
