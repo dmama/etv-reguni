@@ -374,14 +374,24 @@ public class TiersServiceImpl implements TiersService {
 		return pp;
 	}
 
-	private UpdateHabitantFlagResultat getFlagHabitantChangementNecessaire(@NotNull PersonnePhysique pp, long noInd) {
+	private UpdateHabitantFlagResultat getFlagHabitantChangementNecessaire(@NotNull PersonnePhysique pp, long noInd) throws TiersException {
 		final Individu individu = serviceCivilService.getIndividu(noInd, null, AttributeIndividu.ADRESSES);
 		if (individu == null) {
 			throw new IndividuNotFoundException(noInd);
 		}
 
-		// on détermine si la personne physique devrait être habitante ou non
-		final boolean dansLeCanton = (individu.getDateDeces() == null && isDomicileVaudois(pp, null));
+		final boolean dansLeCanton;
+		if (individu.getDateDeces() == null) {
+			final Boolean isVaudois = isDomicileDansLeCanton(pp, null);
+			if (isVaudois == null) {
+				throw new TiersException("Impossible de déterminer si le domicile du contribuable " + pp.getNumero() + " est vaudois ou pas");
+			}
+			dansLeCanton = isVaudois;
+		}
+		else {
+			// les décédés civils sont toujours non-habitants
+			dansLeCanton = false;
+		}
 
 		// on met-à-jour le flag si nécessaire
 		if (dansLeCanton && pp.isHabitantVD() || (!dansLeCanton && !pp.isHabitantVD())) {
@@ -402,8 +412,9 @@ public class TiersServiceImpl implements TiersService {
 	 * @param numeroEvenement un éventuel numéro d'événement civil (pour l'audit)
 	 * @param dateReferenceDonnees une éventuelle date de référence pour la manipulation des adresses
 	 * @return un indicateur de ce qui a été fait
+	 * @throws TiersException s'il n'est pas possible de déterminer si le domicile du contribuable est vaudois ou pas
 	 */
-	private UpdateHabitantFlagResultat manageHabitantStatus(@NotNull PersonnePhysique pp, long noInd, @Nullable Long numeroEvenement, @Nullable RegDate dateReferenceDonnees) {
+	private UpdateHabitantFlagResultat manageHabitantStatus(@NotNull PersonnePhysique pp, long noInd, @Nullable Long numeroEvenement, @Nullable RegDate dateReferenceDonnees) throws TiersException {
 		final UpdateHabitantFlagResultat changement = getFlagHabitantChangementNecessaire(pp, noInd);
 		if (changement == UpdateHabitantFlagResultat.CHANGE_EN_HABITANT) {
 			changeNHenHabitant(pp, noInd, dateReferenceDonnees);
@@ -417,12 +428,12 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Override
-	public UpdateHabitantFlagResultat updateHabitantFlag(@NotNull PersonnePhysique pp, long noInd, Long numeroEvenement) {
+	public UpdateHabitantFlagResultat updateHabitantFlag(@NotNull PersonnePhysique pp, long noInd, Long numeroEvenement) throws TiersException {
 		return manageHabitantStatus(pp, noInd, numeroEvenement, null);
 	}
 
 	@Override
-	public UpdateHabitantFlagResultat updateHabitantStatus(@NotNull PersonnePhysique pp, long noInd, @Nullable RegDate date, Long numeroEvenement) {
+	public UpdateHabitantFlagResultat updateHabitantStatus(@NotNull PersonnePhysique pp, long noInd, @Nullable RegDate date, Long numeroEvenement) throws TiersException {
 		return manageHabitantStatus(pp, noInd, numeroEvenement, date == null ? RegDate.get() : date);
 	}
 
@@ -1467,12 +1478,6 @@ public class TiersServiceImpl implements TiersService {
         Assert.notNull(nouveauForFiscal);
         nouveauForFiscal = closeForDebiteurPrestationImposable(debiteur, nouveauForFiscal, dateFermeture, true);
         return nouveauForFiscal;
-    }
-
-    @Override
-    public boolean isDomicileVaudois(PersonnePhysique pp, @Nullable RegDate date) {
-        final Boolean isVaudois = isDomicileDansLeCanton(pp, date);
-        return isVaudois != null && isVaudois;
     }
 
 	/**

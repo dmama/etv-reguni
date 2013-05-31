@@ -143,10 +143,9 @@ public abstract class Depart extends Mouvement {
 		doHandleFermetureFors(pp, contribuable, dateFermeture, motifFermeture);
 
 		// [SIFISC-6841] on met-à-jour le flag habitant en fonction de ses adresses de résidence civiles
-		context.getTiersService().updateHabitantStatus(pp, getNoIndividu(), dateFermeture.getOneDayAfter(), getNumeroEvenement());
-
+		updateHabitantStatus(pp, dateFermeture.getOneDayAfter());
 		if (isAncienTypeDepart) {
-			context.getTiersService().updateHabitantStatus(getConjointPP(), getNoIndividuConjoint(), dateFermeture.getOneDayAfter(), getNumeroEvenement());
+			updateHabitantStatus(getConjointPP(), getNoIndividuConjoint(), dateFermeture.getOneDayAfter());
 		}
 
 		return HandleStatus.TRAITE;

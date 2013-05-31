@@ -175,7 +175,7 @@ public class Deces extends EvenementCivilInterne {
 		}
 		finally {
 			// [SIFISC-6841] on met-à-jour le flag habitant en fonction de ses adresses de résidence civiles
-			context.getTiersService().updateHabitantStatus(getPrincipalPP(), getNoIndividu(), getDate(), getNumeroEvenement());
+			updateHabitantStatus(getPrincipalPP(), getDate());
 		}
 	}
 

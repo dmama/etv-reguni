@@ -30,10 +30,13 @@ import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockNationalite;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService;
 import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.infra.mock.MockBatiment;
 import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
@@ -5651,9 +5654,9 @@ public class TiersServiceTest extends BusinessTest {
 		});
 
 		// annulation du for source...
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
-			public Object doInTransaction(TransactionStatus status) {
+			public Object execute(TransactionStatus status) throws Exception {
 
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				assertNotNull(pp);
@@ -6500,5 +6503,55 @@ public class TiersServiceTest extends BusinessTest {
 		});
 	}
 
+	/**
+	 * SIFISC-8597
+	 */
+	@Test
+	public void testMiseAJourFlagHabitantSurCommuneNonIdentifiable() throws Exception {
+
+		// service infrastructure piégé
+		serviceInfra.setUp(new DefaultMockServiceInfrastructureService() {
+			@Override
+			public Integer getNoOfsCommuneByEgid(int egid, RegDate date) throws ServiceInfrastructureException {
+				throw new ServiceInfrastructureException("Boom pour le test!!");
+			}
+		});
+
+		final long noIndividu = 437843687L;
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu individu = addIndividu(noIndividu, date(1980, 8, 23), "Cardamonne", "Perlette", Sexe.FEMININ);
+				final MockAdresse adresse = addAdresse(individu, TypeAdresseCivil.PRINCIPALE, "Rue des champs", "19b", 1098, MockLocalite.Epesses, null, date(1980, 8, 23), null);
+				adresse.setEgid(MockBatiment.Epesses.BatimentLaPlace.getEgid());
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				return pp.getNumero();
+			}
+		});
+
+		// re-calcul du flag habitant
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				try {
+					tiersService.updateHabitantStatus(pp, noIndividu, null, null);
+					Assert.fail();
+				}
+				catch (TiersException e) {
+					Assert.assertEquals("Impossible de déterminer si le domicile du contribuable " + pp.getNumero() + " est vaudois ou pas", e.getMessage());
+				}
+				return null;
+			}
+		});
+	}
 }
 

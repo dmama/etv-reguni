@@ -81,7 +81,7 @@ public class AnnulationArrivee extends EvenementCivilInterne {
 		}
 
 		// [SIFISC-6841] on met-à-jour le flag habitant en fonction de ses adresses de résidence civiles
-		context.getTiersService().updateHabitantStatus(pp, getNoIndividu(), getDate(), getNumeroEvenement());
+		updateHabitantStatus(pp, getDate());
 
 		return HandleStatus.TRAITE;
 	}

@@ -150,7 +150,7 @@ public abstract class Arrivee extends Mouvement {
 			final PersonnePhysique habitant = getOrCreatePersonnePhysique(individu, numeroEvenement, FindBehavior.ASSUJETTISSEMENT_OBLIGATOIRE_ERROR_IF_SEVERAL);
 
 			// [SIFISC-6841] on met-à-jour le flag habitant en fonction de ses adresses de résidence civiles
-			context.getTiersService().updateHabitantStatus(habitant, getNoIndividu(), dateArrivee, getNumeroEvenement());
+			updateHabitantStatus(habitant, dateArrivee);
 
 			/*
 			 * Mise-à-jour des adresses
@@ -434,7 +434,7 @@ public abstract class Arrivee extends Mouvement {
 
 		if (isArriveeRedondantePosterieurPourIndividuEnMenage() || isArriveeRedondantePourIndividuEnMenage()) {
 			Audit.info(getNumeroEvenement(), "Arrivée considérée comme redondante fiscalement, ré-évaluation du flag habitant");
-			context.getTiersService().updateHabitantStatus(getPrincipalPP(), getNoIndividu(), dateEvenement, getNumeroEvenement());
+			updateHabitantStatus(getPrincipalPP(), dateEvenement);
 			return HandleStatus.REDONDANT;
 		}
 
@@ -444,7 +444,7 @@ public abstract class Arrivee extends Mouvement {
 		final PersonnePhysique arrivant = getOrCreatePersonnePhysique(individu, numeroEvenement, FindBehavior.ASSUJETTISSEMENT_NON_OBLIGATOIRE_NO_ERROR_IF_SEVERAL);
 
 		// [SIFISC-6841] on met-à-jour le flag habitant en fonction de ses adresses de résidence civiles
-		context.getTiersService().updateHabitantStatus(arrivant, getNoIndividu(), dateEvenement, getNumeroEvenement());
+		updateHabitantStatus(arrivant, dateEvenement);
 
 		final PersonnePhysique conjointDeLArrivant;
 		if (conjoint != null) {

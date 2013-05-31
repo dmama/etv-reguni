@@ -113,8 +113,9 @@ public interface TiersService {
 	 * @param pp              la personne physique à mettre-à-jour
 	 * @param noInd           le numéro d'individu correspondant
 	 * @param numeroEvenement le numéro de l'événement civil qui a provoqué ce recalcul
+	 * @throws TiersException s'il n'est pas possible de déterminer si le domicile du contribuable est vaudois ou pas
 	 */
-	public UpdateHabitantFlagResultat updateHabitantFlag(@NotNull PersonnePhysique pp, long noInd, @Nullable Long numeroEvenement);
+	public UpdateHabitantFlagResultat updateHabitantFlag(@NotNull PersonnePhysique pp, long noInd, @Nullable Long numeroEvenement) throws TiersException;
 
 	/**
 	 * Changement de statut habitant/non-habitant (et vice-versa) à une date donnée en fonction de l'état de l'individu dans le registre civil
@@ -125,15 +126,9 @@ public interface TiersService {
 	 * @param noInd           le numéro d'individu correspondant
 	 * @param date            la date de valeur à utiliser
 	 * @param numeroEvenement le numéro de l'événement civil qui a provoqué ce changement
+	 * @throws TiersException s'il n'est pas possible de déterminer si le domicile du contribuable est vaudois ou pas
 	 */
-	public UpdateHabitantFlagResultat updateHabitantStatus(@NotNull PersonnePhysique pp, long noInd, @Nullable RegDate date, @Nullable Long numeroEvenement);
-
-	/**
-     * @param pp   personne physique dont on veut connaître la localisation du domicile
-     * @param date date de référence pour le domicile du contribuable
-     * @return <code>true</code> si l'adresse de domicile associée à la personne physique donnée est sur le canton de vaud, false sinon
-     */
-    public boolean isDomicileVaudois(PersonnePhysique pp, RegDate date);
+	public UpdateHabitantFlagResultat updateHabitantStatus(@NotNull PersonnePhysique pp, long noInd, @Nullable RegDate date, @Nullable Long numeroEvenement) throws TiersException;
 
     /**
      * Retourne le contribuable <i>père</i> (au sens civil du terme) du contribuable spécifié.

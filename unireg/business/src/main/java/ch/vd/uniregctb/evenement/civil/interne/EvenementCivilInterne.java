@@ -25,6 +25,7 @@ import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.IndividuNotFoundException;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.TiersException;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.ModeImposition;
@@ -501,6 +502,19 @@ public abstract class EvenementCivilInterne {
 			for (String warning : resultat.getWarnings()) {
 				warnings.addWarning(warning);
 			}
+		}
+	}
+
+	protected void updateHabitantStatus(PersonnePhysique pp, RegDate date) throws EvenementCivilException {
+		updateHabitantStatus(pp, getNoIndividu(), date);
+	}
+
+	protected void updateHabitantStatus(PersonnePhysique pp, long noIndividu, RegDate date) throws EvenementCivilException {
+		try {
+			context.getTiersService().updateHabitantStatus(pp, noIndividu, date, getNumeroEvenement());
+		}
+		catch (TiersException e) {
+			throw new EvenementCivilException("Impossible de mettre à jour le flag 'habitant' de l'individu " + noIndividu, e);
 		}
 	}
 }

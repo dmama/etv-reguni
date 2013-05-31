@@ -114,7 +114,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 				tiersService.updateHabitantFlag(pp, numeroIndividu, evenementCivilExterne.getId());
 			}
 		}
-		catch (RuntimeException e) {
+		catch (Exception e) {
 			LOGGER.error("Impossible de recalculer le flag 'habitant' sur l'individu n°" + numeroIndividu, e);
 		}
 	}
