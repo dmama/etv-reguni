@@ -13,7 +13,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.acls.domain.PrincipalSid;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.GrantedAuthorityImpl;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.filter.GenericFilterBean;
@@ -48,8 +49,8 @@ public class IFOSecProfileProcessingFilter extends GenericFilterBean {
 			details.setIfoSecProfil(profil);
 
 			// On ajoute les procédures Ifosec autorisées dans la liste (nécessaire pour que le jsp tag <authz> fonctionne)
-			final List<GrantedAuthorityImpl> granted = new ArrayList<>();
-			granted.add(new GrantedAuthorityImpl(profil.getVisaOperateur()));
+			final List<GrantedAuthority> granted = new ArrayList<>();
+			granted.add(new SimpleGrantedAuthority(profil.getVisaOperateur()));
 			granted.addAll(getIfoSecGrantedAuthorities(profil));
 
 			// Pour mettre-à-jour la liste des procédures autorisées, il faut créer un nouvel object 'user'
@@ -64,9 +65,9 @@ public class IFOSecProfileProcessingFilter extends GenericFilterBean {
 	}
 
 	@SuppressWarnings({"unchecked"})
-	protected static List<GrantedAuthorityImpl> getIfoSecGrantedAuthorities(IfoSecProfil profil) {
+	protected static List<GrantedAuthority> getIfoSecGrantedAuthorities(IfoSecProfil profil) {
 
-		final List<GrantedAuthorityImpl> granted;
+		final List<GrantedAuthority> granted;
 
 		final List<IfoSecProcedure> procedures = profil.getProcedures();
 		if (procedures != null) {
@@ -75,7 +76,7 @@ public class IFOSecProfileProcessingFilter extends GenericFilterBean {
 				final String ifoSec = procedure.getCode();
 				final Role role = Role.fromIfoSec(ifoSec);
 				if (role != null) {
-					granted.add(new GrantedAuthorityImpl(role.getCode()));
+					granted.add(new SimpleGrantedAuthority(role.getCode()));
 				}
 			}
 		}

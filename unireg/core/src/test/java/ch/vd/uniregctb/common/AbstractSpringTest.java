@@ -16,7 +16,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.GrantedAuthorityImpl;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.test.context.TestExecutionListeners;
@@ -234,7 +234,7 @@ public abstract class AbstractSpringTest implements ApplicationContextAware {
 	protected void setAuthentication(String username) {
 
 		/* crée un objet Authentication */
-		GrantedAuthority auth = new GrantedAuthorityImpl(username);
+		GrantedAuthority auth = new SimpleGrantedAuthority(username);
 		User user = new User(username, "noPwd", true, true, true, true, Arrays.asList(auth));
 		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user, "noPwd");
 
@@ -246,9 +246,9 @@ public abstract class AbstractSpringTest implements ApplicationContextAware {
 
 		/* crée un objet Authentication */
 		List<GrantedAuthority> authorities = new ArrayList<>();
-		authorities.add(new GrantedAuthorityImpl(username));
+		authorities.add(new SimpleGrantedAuthority(username));
 		for (String r : roles) {
-			authorities.add(new GrantedAuthorityImpl(r));
+			authorities.add(new SimpleGrantedAuthority(r));
 		}
 		User user = new User(username, "noPwd", true, true, true, true, authorities);
 		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user, "noPwd", authorities);

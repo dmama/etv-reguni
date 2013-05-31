@@ -7,7 +7,7 @@ import org.springframework.security.acls.domain.PrincipalSid;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.GrantedAuthorityImpl;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 
@@ -37,7 +37,7 @@ public class AuthenticationHelper {
 	 * @return un objet Authentication
 	 */
 	private static UsernamePasswordAuthenticationToken createAuthentication(String username) {
-		final User user = new User(username, "noPwd", true, true, true, true, Arrays.asList(new GrantedAuthorityImpl(username)));
+		final User user = new User(username, "noPwd", true, true, true, true, Arrays.asList(new SimpleGrantedAuthority(username)));
 		return new UsernamePasswordAuthenticationToken(user, "noPwd");
 	}
 

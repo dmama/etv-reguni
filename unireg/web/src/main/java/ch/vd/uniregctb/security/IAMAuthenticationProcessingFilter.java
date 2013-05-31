@@ -13,7 +13,8 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.GrantedAuthorityImpl;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -77,7 +78,7 @@ public class IAMAuthenticationProcessingFilter extends GenericFilterBean {
 
 			LOGGER.info(String.format("Ouverture de la session pour l'utilisateur %s %s (%s)", firstName, lastName, visa));
 
-			final List<GrantedAuthorityImpl> granted = Arrays.asList(new GrantedAuthorityImpl(visa));
+			final List<GrantedAuthority> granted = Arrays.<GrantedAuthority>asList(new SimpleGrantedAuthority(visa));
 			final User user = new User(visa, "noPwd", true, true, true, true, granted);
 			final UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user, "noPwd", granted);
 			authentication.setDetails(details);

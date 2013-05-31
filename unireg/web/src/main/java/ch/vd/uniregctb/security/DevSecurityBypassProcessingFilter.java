@@ -14,7 +14,8 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.GrantedAuthorityImpl;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -65,15 +66,15 @@ public class DevSecurityBypassProcessingFilter extends GenericFilterBean {
 
 				LOGGER.info(String.format("[BYPASS IAM] Ouverture de la session pour l'utilisateur %s %s", firstName, lastName));
 
-				final List<GrantedAuthorityImpl> granted = new ArrayList<>();
-				granted.add(new GrantedAuthorityImpl(visa));
+				final List<GrantedAuthority> granted = new ArrayList<>();
+				granted.add(new SimpleGrantedAuthority(visa));
 
 				if (SecurityDebugConfig.isIfoSecDebug()) {
 					// Récupération des infos de bypass IFOSec
 					final Integer oid = Integer.valueOf(SecurityDebugConfig.getIfoSecBypassOID());
 					final String oidSigle = SecurityDebugConfig.getIfoSecBypassOIDSigle();
 					final IfoSecProfil profil = getBypassProfil(visa, oid, oidSigle);
-					final List<GrantedAuthorityImpl> ifoSecGranted = IFOSecProfileProcessingFilter.getIfoSecGrantedAuthorities(profil);
+					final List<GrantedAuthority> ifoSecGranted = IFOSecProfileProcessingFilter.getIfoSecGrantedAuthorities(profil);
 
 					details.setIfoSecOID(oid);
 					details.setIfoSecOIDSigle(oidSigle);
