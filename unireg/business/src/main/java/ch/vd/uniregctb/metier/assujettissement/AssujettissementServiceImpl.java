@@ -50,8 +50,6 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 		this.validationService = validationService;
 	}
 
-	private static final Adapter adapter = new Adapter();
-
 	@Override
 	public List<Assujettissement> determine(Contribuable ctb) throws AssujettissementException {
 
@@ -510,18 +508,15 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 
 	@Override
 	public List<Assujettissement> determine(Contribuable contribuable, int annee) throws AssujettissementException {
-
-		List<Assujettissement> list = determine(contribuable);
+		final List<Assujettissement> list = determine(contribuable);
 		if (list == null) {
 			return null;
 		}
-
-		list = DateRangeHelper.extract(list, RegDate.get(annee, 1, 1), RegDate.get(annee, 12, 31), adapter);
-		if (list.isEmpty()) {
-			list = null;
+		final List<Assujettissement> yearly = AssujettissementHelper.extractYear(list, annee);
+		if (yearly.isEmpty()) {
+			return null;
 		}
-
-		return list;
+		return yearly;
 	}
 
 	@Override
@@ -536,12 +531,15 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 			if (range == null) {
 				throw new IllegalArgumentException("Le range doit être spécifié si collate=false");
 			}
-			list = split(list, range.getDateDebut().year(), range.getDateFin().year());
+			list = AssujettissementHelper.split(list, range.getDateDebut().year(), range.getDateFin().year());
+		}
+		else {
+			list = DateRangeHelper.collate(list);
 		}
 
 		if (range != null) {
 			// Limitation des assujettissements au range demandé
-			list = DateRangeHelper.extract(list, range.getDateDebut(), range.getDateFin(), adapter);
+			list = AssujettissementHelper.extract(list, range.getDateDebut(), range.getDateFin());
 		}
 
 		if (list.isEmpty()) {
@@ -953,27 +951,6 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 			}
 		}
 		return economique;
-	}
-
-	/**
-	 * Découpe les assujettissements spécifié année par année pour les années spécifiées
-	 *
-	 * @param list      les assujettissements à découper
-	 * @param startYear l'année de départ (comprise)
-	 * @param endYear   l'année de fin (comprise
-	 * @return une liste d'assujettissements découpés année par année
-	 */
-	private static List<Assujettissement> split(List<Assujettissement> list, int startYear, int endYear) {
-
-		List<Assujettissement> splitted = new ArrayList<>();
-
-		// split des assujettissement par années
-		for (int year = startYear; year <= endYear; ++year) {
-			List<Assujettissement> extracted = DateRangeHelper.extract(list, RegDate.get(year, 1, 1), RegDate.get(year, 12, 31), adapter);
-			splitted.addAll(extracted);
-		}
-
-		return splitted;
 	}
 
 	private static boolean isDepartOuArriveeHorsSuisse(MotifFor motif) {
@@ -1773,21 +1750,6 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 			throw new AssujettissementException("Mode d'imposition inconnu : " + modeImposition);
 		}
 		return type;
-	}
-
-	private static class Adapter implements DateRangeHelper.AdapterCallback<Assujettissement> {
-		@Override
-		public Assujettissement adapt(Assujettissement assujettissement, RegDate debut, RegDate fin) {
-			if (debut != null && assujettissement.getDateDebut() != debut) {
-				assujettissement.setDateDebut(debut);
-				assujettissement.setMotifDebut(null);
-			}
-			if (fin != null && assujettissement.getDateFin() != fin) {
-				assujettissement.setDateFin(fin);
-				assujettissement.setMotifFin(null);
-			}
-			return assujettissement;
-		}
 	}
 
 	/**

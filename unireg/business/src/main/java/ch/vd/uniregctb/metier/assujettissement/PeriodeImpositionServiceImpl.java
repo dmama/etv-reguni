@@ -73,10 +73,15 @@ public class PeriodeImpositionServiceImpl implements PeriodeImpositionService {
 				anneeFin = range.getDateFin().year();
 			}
 
+			// assujettissement global (calculé une seule fois)
+			final List<Assujettissement> asjt = assujettissementService.determine(contribuable);
+
 			// Détermination des périodes d'imposition sur toutes les années considérées
 			List<PeriodeImposition> list = new ArrayList<>();
 			for (int annee = anneeDebut; annee <= anneeFin; annee++) {
-				List<PeriodeImposition> l = determine(contribuable, annee);
+				final DecompositionForsAnneeComplete fors = new DecompositionForsAnneeComplete(contribuable, annee);
+				final List<Assujettissement> asjtAnnee = AssujettissementHelper.extractYear(asjt, annee);
+				final List<PeriodeImposition> l = determine(fors, asjtAnnee);
 				if (l != null) {
 					list.addAll(l);
 				}
@@ -84,7 +89,7 @@ public class PeriodeImpositionServiceImpl implements PeriodeImpositionService {
 
 			// Réduction au range spécifié
 			if (range != null) {
-				List<PeriodeImposition> results = new ArrayList<>();
+				final List<PeriodeImposition> results = new ArrayList<>();
 				for (PeriodeImposition a : list) {
 					if (DateRangeHelper.intersect(a, range)) {
 						results.add(a);
@@ -105,10 +110,17 @@ public class PeriodeImpositionServiceImpl implements PeriodeImpositionService {
 
 	@Override
 	public List<PeriodeImposition> determine(DecompositionForsAnneeComplete fors) throws AssujettissementException {
-
-		// on calcul l'assujettissement complet du contribuable
+		// on calcule l'assujettissement complet du contribuable sur cette année
 		final List<Assujettissement> assujettissements = assujettissementService.determine(fors.contribuable, fors.annee);
+		return determine(fors, assujettissements);
+	}
 
+	/**
+	 * @param fors les fors d'une année fiscale
+	 * @param assujettissements l'assujettissement réduit à cette même année fiscale
+	 * @return les périodes d'imposition pour l'année des fors donnés
+	 */
+	private List<PeriodeImposition> determine(DecompositionForsAnneeComplete fors, List<Assujettissement> assujettissements) {
 		// le contribuable n'est pas assujetti cette année-là
 		if (assujettissements == null || assujettissements.isEmpty()) {
 			return null;

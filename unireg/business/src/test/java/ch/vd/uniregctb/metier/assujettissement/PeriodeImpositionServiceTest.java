@@ -1,7 +1,12 @@
 package ch.vd.uniregctb.metier.assujettissement;
 
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.List;
 
+import org.apache.commons.lang3.mutable.MutableInt;
+import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,12 +22,14 @@ import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseRetour;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
+import ch.vd.uniregctb.validation.ValidationService;
 
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
@@ -1213,6 +1220,58 @@ public class PeriodeImpositionServiceTest extends MetierTest {
 				return null;
 			}
 		});
+	}
 
+	@Test
+	public void testNombreCalculsAssujettissementPourCalculDesPeriodesImposition() throws Exception {
+
+		final ValidationService vs = getBean(ValidationService.class, "validationService");
+		final AssujettissementServiceImpl assImpl = new AssujettissementServiceImpl();
+		assImpl.setValidationService(vs);
+
+		// construction d'un service d'assujettissement qui compte le nombre d'appels effectués aux méthodes "determineXXX"
+		final MutableInt compteurAppels = new MutableInt(0);
+		final AssujettissementService assProxy = (AssujettissementService) Proxy.newProxyInstance(getClass().getClassLoader(), new Class[]{AssujettissementService.class}, new InvocationHandler() {
+			@Override
+			public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+				if (method.getName().startsWith("determine")) {
+					compteurAppels.increment();
+				}
+				return method.invoke(assImpl, args);
+			}
+		});
+
+		final PeriodeImpositionServiceImpl pis = new PeriodeImpositionServiceImpl();
+		pis.setAssujettissementService(assProxy);
+
+		// 2 pf actives pour avoir au moins 2 périodes d'impositions à calculer (et vérifier que le service d'assujettissement n'est bien appelé qu'une fois)
+		final int firstYear = 2010;
+		Assert.assertTrue("Il faudrait au moins deux pf actives", RegDate.get().year() - firstYear > 1);
+
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Piotr", "Pietrovitch", null, Sexe.MASCULIN);
+
+				// j'ai pris le mode d'imposition "DEPENSE" afin de ne pas avoir d'effet de bord sur le calcul du type de DI (VAUDTAX vs. COMPLETE)
+				// (qui doit parfois recalculer l'assujettissement de l'année précédente)
+				addForPrincipal(pp, date(firstYear, 3, 1), MotifFor.ARRIVEE_HS, MockCommune.Aigle, ModeImposition.DEPENSE);
+
+				return pp.getNumero();
+			}
+		});
+
+		// calcul des périodes d'imposition
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				final List<PeriodeImposition> piList = pis.determine(pp, new DateRangeHelper.Range(date(firstYear + 1, 1, 1), RegDate.get()));
+				assertNotNull(piList);
+				assertEquals(RegDate.get().year() - firstYear, piList.size());      // qui est plus grand que 1, je le rappelle (voir plus haut)
+				assertEquals(1, compteurAppels.intValue());                         // un seul appel pour plusieurs PF -> optim réussie !
+				return null;
+			}
+		});
 	}
 }
