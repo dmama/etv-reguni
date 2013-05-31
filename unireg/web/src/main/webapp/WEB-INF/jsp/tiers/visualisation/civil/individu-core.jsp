@@ -91,7 +91,7 @@
 				<spring:bind path="${bind}" >
 					<c:set var="etatCivil" value="${status.value}"  scope="request"/>
 				</spring:bind>
-				<c:if test="${etatCivil != ''}">
+				<c:if test="${etatCivil != null}">
 					<fmt:message key="option.etat.civil.${etatCivil}"/>
 				</c:if>
 			</td>
