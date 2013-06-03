@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- edited with XMLSpy v2005 sp1 U (http://www.xmlspy.com) by Christophe Ollivier (Etat de Vaud) -->
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.vd.ch/fiscalite/registre/identification/contribuable/request/2"
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns="http://www.vd.ch/fiscalite/registre/identification/contribuable/request/2"
+           xmlns:common="http://www.vd.ch/fiscalite/unireg/common/1"
 		   targetNamespace="http://www.vd.ch/fiscalite/registre/identification/contribuable/request/2"
 		   elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/unireg-common-1.xsd" />
 
 	<xs:element name="identificationContribuableRequest" type="identificationContribuableRequestType" />
 
@@ -15,10 +19,9 @@
 			<xs:element name="NAVS11" type="navs11Type" minOccurs="0" />
 			<xs:element name="nom" type="nomType" minOccurs="0" />
 			<xs:element name="prenoms" type="nomType" minOccurs="0" />
-			<xs:element name="dateNaissance" type="datePartielleType" minOccurs="0" />
+			<xs:element name="dateNaissance" type="common:partialDateType" minOccurs="0" />
 			<xs:element name="NPA" type="NPAType" minOccurs="0" />
 		</xs:sequence>
-
 	</xs:complexType>
 
 	<xs:simpleType name="navs13Type">
@@ -44,13 +47,6 @@
 			<xs:enumeration value="2" />
 		</xs:restriction>
 	</xs:simpleType>
-	<xs:complexType name="datePartielleType">
-		<xs:choice>
-			<xs:element name="anneeMoisJour" type="xs:date" />
-			<xs:element name="anneeMois" type="xs:gYearMonth" />
-			<xs:element name="annee" type="xs:gYear" />
-		</xs:choice>
-	</xs:complexType>
 	<xs:complexType name="NPAType">
 		<xs:choice>
 			<xs:sequence>
