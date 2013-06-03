@@ -17,20 +17,20 @@ import org.springframework.core.io.Resource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.TransactionStatus;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.validation.EsbXmlValidation;
-import ch.vd.unireg.xml.event.identification.request.v2.DatePartielle;
 import ch.vd.unireg.xml.event.identification.request.v2.IdentificationContribuableRequest;
 import ch.vd.unireg.xml.event.identification.request.v2.ObjectFactory;
 import ch.vd.unireg.xml.event.identification.response.v2.IdentificationContribuableResponse;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.uniregctb.common.BusinessItTest;
-import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.evenement.EvenementHelper;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.xml.DataHelper;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -84,15 +84,16 @@ public class IdentificationContribuableRequestListenerItTest extends BusinessItT
 		return "event/identification/identification-contribuable-response-2.xsd";
 	}
 
-
-
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
+//	@Test
 	public void testDemandeIdentificationAutomatiqueOK() throws Exception {
 
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
+		final RegDate dateNaissance = RegDate.get(1982, 6);     // date partielle, pour le faire au moins une fois
+
+		final long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique christophe = addNonHabitant("Christophe","Monnier",date(1982,6,29), Sexe.MASCULIN);
+				final PersonnePhysique christophe = addNonHabitant("Christophe", "Monnier Vallard", dateNaissance, Sexe.MASCULIN);
 				return christophe.getNumero();
 			}
 		});
@@ -103,10 +104,6 @@ public class IdentificationContribuableRequestListenerItTest extends BusinessItT
 		request.setNAVS13(7569396525489L);
 		request.setNom("Monnier");
 		request.setPrenoms("Christophe");
-		final DatePartielle  dateNaissance = new DatePartielle(XmlUtils.regdate2xmlcal(date(1982, 6, 29)),null,null);
-
-		request.setDateNaissance(dateNaissance);
-
 
 		// Envoie le message
 		doInNewTransaction(new TxCallback<Object>() {
@@ -121,13 +118,15 @@ public class IdentificationContribuableRequestListenerItTest extends BusinessItT
 		assertNotNull(message);
 		IdentificationContribuableResponse response = parseResponse(message);
 		assertNull(response.getErreur());
-		assertNotNull(response.getNumeroContribuableIndividuel());
-		assertEquals(id.intValue(),response.getNumeroContribuableIndividuel().intValue());
 
-
-
-
+		final IdentificationContribuableResponse.Contribuable infoCtb = response.getContribuable();
+		assertNotNull(infoCtb);
+		assertEquals(id, infoCtb.getNumeroContribuableIndividuel());
+		assertEquals("Monnier Vallard", infoCtb.getNom());
+		assertEquals("Christophe", infoCtb.getPrenom());
+		assertEquals(dateNaissance, DataHelper.xmlToCore(infoCtb.getDateNaissance()));
 	}
+
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
 	public void testDemandeIdentificationAutomatiquePlusieurs() throws Exception {
 
@@ -155,8 +154,6 @@ public class IdentificationContribuableRequestListenerItTest extends BusinessItT
 		request.setNom("Monnier");
 		request.setPrenoms("Christophe");
 
-
-
 		// Envoie le message
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
@@ -170,12 +167,8 @@ public class IdentificationContribuableRequestListenerItTest extends BusinessItT
 		assertNotNull(message);
 		IdentificationContribuableResponse response = parseResponse(message);
 		assertNotNull(response.getErreur());
-		assertNull(response.getNumeroContribuableIndividuel());
+		assertNull(response.getContribuable());
 		assertNotNull(response.getErreur().getPlusieurs());
-
-
-
-
 	}
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
@@ -196,8 +189,6 @@ public class IdentificationContribuableRequestListenerItTest extends BusinessItT
 		request.setNom("Adam");
 		request.setPrenoms("Raphaël");
 
-
-
 		// Envoie le message
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
@@ -211,12 +202,8 @@ public class IdentificationContribuableRequestListenerItTest extends BusinessItT
 		assertNotNull(message);
 		IdentificationContribuableResponse response = parseResponse(message);
 		assertNotNull(response.getErreur());
-		assertNull(response.getNumeroContribuableIndividuel());
+		assertNull(response.getContribuable());
 		assertNotNull(response.getErreur().getAucun());
-
-
-
-
 	}
 
 	EsbJmsTemplate getEsbTemplate() {
@@ -270,6 +257,4 @@ public class IdentificationContribuableRequestListenerItTest extends BusinessItT
 		final IdentificationContribuableResponse reponse = (IdentificationContribuableResponse)element.getValue();
 		return reponse;
 	}
-
-
 }

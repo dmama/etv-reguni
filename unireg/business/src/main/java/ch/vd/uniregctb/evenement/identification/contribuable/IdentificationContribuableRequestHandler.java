@@ -41,11 +41,13 @@ import ch.vd.unireg.xml.event.identification.response.v2.IdentificationContribua
 import ch.vd.unireg.xml.event.identification.response.v2.ObjectFactory;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.identification.contribuable.IdentificationContribuableService;
 import ch.vd.uniregctb.jms.EsbBusinessCode;
 import ch.vd.uniregctb.jms.EsbBusinessException;
 import ch.vd.uniregctb.jms.EsbMessageHandler;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.xml.DataHelper;
 
 public class IdentificationContribuableRequestHandler implements EsbMessageHandler, InitializingBean {
@@ -57,6 +59,7 @@ public class IdentificationContribuableRequestHandler implements EsbMessageHandl
 	private final ObjectFactory objectFactory = new ObjectFactory();
 	private Schema schemaCache;
 	private IdentificationContribuableService identCtbService;
+	private TiersService tiersService;
 
 	@Override
 	public void onEsbMessage(EsbMessage message) throws Exception {
@@ -77,6 +80,14 @@ public class IdentificationContribuableRequestHandler implements EsbMessageHandl
 
 	public void setEsbTemplate(EsbJmsTemplate esbTemplate) {
 		this.esbTemplate = esbTemplate;
+	}
+
+	public void setTiersService(TiersService tiersService) {
+		this.tiersService = tiersService;
+	}
+
+	public void setIdentCtbService(IdentificationContribuableService identCtbService) {
+		this.identCtbService = identCtbService;
 	}
 
 	private void onMessage(EsbMessage message) throws Exception {
@@ -135,37 +146,40 @@ public class IdentificationContribuableRequestHandler implements EsbMessageHandl
 
 	private IdentificationContribuableResponse handle(IdentificationContribuableRequest request, String businessId) {
 
-
 		final IdentificationContribuableResponse response = new IdentificationContribuableResponse();
 		final CriteresPersonne criteresPersonne = createCriteresPersonne(request);
 
 		final List<PersonnePhysique> list = identCtbService.identifie(criteresPersonne);
 		if (list.isEmpty()) {
-			final String message = String.format("Aucun contribuable trouvé avec ces critères pour le message %s",businessId);
-			Erreur aucun = new Erreur(message, null);
+			final String message = String.format("Aucun contribuable trouvé avec ces critères pour le message %s", businessId);
+			final Erreur aucun = new Erreur(message, null);
 			response.setErreur(aucun);
 			LOGGER.info(message);
-
 		}
 
 		if (list.size()> 1) {
-			String message = String.format("Plusieurs contribuables trouvés avec ces critères: %d pour le message %s" , list.size(),businessId);
-			Erreur plusieurs = new Erreur(null,message);
+			final String message = String.format("Plusieurs contribuables trouvés avec ces critères: %d pour le message %s", list.size(), businessId);
+			final Erreur plusieurs = new Erreur(null, message);
 			response.setErreur(plusieurs);
 			LOGGER.info(message);
 		}
 
 		if (list.size() == 1) {
 			// on a trouvé un et un seul contribuable:
-			PersonnePhysique personne = list.get(0);
+			final PersonnePhysique personne = list.get(0);
+			final IdentificationContribuableResponse.Contribuable ctb = new IdentificationContribuableResponse.Contribuable();
+
 			final Long idCtb = personne.getId();
-			response.setNumeroContribuableIndividuel(idCtb.intValue());
-			String message = String.format("un contribuable a été trouvé : %d pour le message %s" ,idCtb,businessId);
-			LOGGER.info(message);
+			ctb.setNumeroContribuableIndividuel(idCtb.intValue());
 
+			final NomPrenom nomPrenom = tiersService.getDecompositionNomPrenom(personne);
+			ctb.setNom(nomPrenom.getNom());
+			ctb.setPrenom(nomPrenom.getPrenom());
+			ctb.setDateNaissance(DataHelper.coreToPartialDateXml(tiersService.getDateNaissance(personne)));
 
+			response.setContribuable(ctb);
+			LOGGER.info(String.format("un contribuable a été trouvé : %d pour le message '%s'", idCtb, businessId));
 		}
-
 
 		return response;
 	}
@@ -263,9 +277,5 @@ public class IdentificationContribuableRequestHandler implements EsbMessageHandl
 		esbValidator = new EsbXmlValidation();
 		esbValidator.setResourceResolver(new ClasspathCatalogResolver());
 		esbValidator.setSources(resources.toArray(new Resource[resources.size()]));
-	}
-
-	public void setIdentCtbService(IdentificationContribuableService identCtbService) {
-		this.identCtbService = identCtbService;
 	}
 }

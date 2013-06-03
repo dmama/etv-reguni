@@ -25,14 +25,13 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.unireg.interfaces.infra.data.TypeAffranchissement;
 import ch.vd.unireg.xml.common.v1.Date;
-import ch.vd.unireg.xml.event.identification.request.v2.DatePartielle;
+import ch.vd.unireg.xml.common.v1.PartialDate;
 import ch.vd.unireg.xml.party.address.v1.Address;
 import ch.vd.unireg.xml.party.address.v1.AddressOtherParty;
 import ch.vd.unireg.xml.party.address.v1.AddressType;
 import ch.vd.unireg.xml.party.address.v1.TariffZone;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
-import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.indexer.tiers.AutreCommunauteIndexable;
 import ch.vd.uniregctb.indexer.tiers.DebiteurPrestationImposableIndexable;
@@ -89,20 +88,31 @@ public abstract class DataHelper {
 		return RegDateHelper.get(date.getYear(), date.getMonth(), date.getDay(), DateConstants.EXTENDED_VALIDITY_RANGE);
 	}
 
-	public static RegDate xmlToCore(DatePartielle date) {
+	public static PartialDate coreToPartialDateXml(RegDate date) {
 		if (date == null) {
 			return null;
 		}
-		if (date.getAnneeMoisJour()!=null) {
-			return XmlUtils.xmlcal2regdate(date.getAnneeMoisJour());
+		else {
+			return new PartialDate(date.year(), date.month() == RegDate.UNDEFINED ? null : date.month(), date.day() == RegDate.UNDEFINED ? null : date.day());
 		}
-		if (date.getAnneeMois()!=null) {
-			return XmlUtils.xmlcal2regdate(date.getAnneeMois());
+	}
+
+	public static RegDate xmlToCore(PartialDate date) {
+		if (date == null) {
+			return null;
 		}
-		if (date.getAnnee()!=null) {
-			return XmlUtils.xmlcal2regdate(date.getAnnee());
+		final int year = date.getYear();
+		final Integer month = date.getMonth();
+		final Integer day = date.getDay();
+		if (day == null && month == null) {
+			return RegDateHelper.get(year, DateConstants.EXTENDED_VALIDITY_RANGE);
 		}
-		return null;
+		else if (day == null) {
+			return RegDateHelper.get(year, month, DateConstants.EXTENDED_VALIDITY_RANGE);
+		}
+		else {
+			return RegDateHelper.get(year, month, day, DateConstants.EXTENDED_VALIDITY_RANGE);
+		}
 	}
 
 	public static List<Address> coreToXML(List<AdresseEnvoiDetaillee> adresses, @Nullable DateRangeHelper.Range range, AddressType type) throws ServiceException {

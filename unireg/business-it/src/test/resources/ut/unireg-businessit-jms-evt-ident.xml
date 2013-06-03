@@ -4,10 +4,9 @@
 							http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
 	<bean id="identificationContribuableRequestHandler" class="ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableRequestHandler">
-
-		<property name="identCtbService" ref="identCtbService" />
 		<property name="esbTemplate" ref="esbJmsTemplate" />
-
+		<property name="identCtbService" ref="identCtbService" />
+		<property name="tiersService" ref="tiersService" />
 	</bean>
 
 
