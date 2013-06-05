@@ -97,7 +97,15 @@ public class RapprocherCtbRegistreFoncierJob extends JobDefinition {
 
 
 		final List<ProprietaireFoncier> listeProprio = new LinkedList<>();
-        final Pattern p = Pattern.compile("^([0-9]+);(.*?);(.*?);(.*?);(.*)");
+
+		// On attend les colonnes suivantes (seule la première est réellement obligatoire dans le fichier, les autres colonnes sont parfois vides) :
+		// 1. numéro RF -> chiffres
+		// 2. nom
+		// 3. prénom (celui-ci contient parfois un point-virgule mais pas de chiffres - comme dans "André; en liquidation" - donc on s'assure qu'il est bien inclu ici et pas dans le nom ni la date de naissance
+		// 4. date de naissance au format DD.MM.YYYY ou DD/MM/YYYY (dates partielles autorisées)
+		// 5. numéro de contribuable
+		// 6. données ignorées...
+        final Pattern p = Pattern.compile("^([0-9]+);([^;]*)?;([^0-9]*)?;([0-9./]+)?;([0-9]+)?(;.*)?");
 
 		// on parse le fichier
         final String csvString = (csv != null ? new String(csv,"ISO-8859-1") : StringUtils.EMPTY);
@@ -144,6 +152,9 @@ public class RapprocherCtbRegistreFoncierJob extends JobDefinition {
 					listeProprio.add(new ProprietaireFoncier(numeroRegistreFoncier, nom, prenom, dateNaissance, numeroContribuable));
 
 					++proprietairesLus;
+				}
+				else {
+					LOGGER.error(String.format("La ligne '%s' ne correspond pas au format attendu, elle sera ignorée", line));
 				}
 			}
 		}

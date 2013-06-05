@@ -77,6 +77,38 @@ public class RapprocherCtbRegistreFoncierJobTest extends BusinessTest {
 	}
 
 	@Test
+	public void testExtractWithTrailingSemicolon() throws Exception {
+		final byte[] csv = "1234;Tartempion;Amédée;12.4.1976;10000247;".getBytes(ENCODING);
+		final List<ProprietaireFoncier> proprios = RapprocherCtbRegistreFoncierJob.extractProprioFromCSV(csv, new LoggingStatusManager(LOGGER));
+		Assert.assertNotNull(proprios);
+		Assert.assertEquals(1, proprios.size());
+
+		final ProprietaireFoncier p = proprios.get(0);
+		Assert.assertNotNull(p);
+		Assert.assertEquals(1234L, p.getNumeroRegistreFoncier());
+		Assert.assertEquals("Tartempion", p.getNom());
+		Assert.assertEquals("Amédée", p.getPrenom());
+		Assert.assertEquals(date(1976, 4, 12), p.getDateNaissance());
+		Assert.assertEquals((Long) 10000247L, p.getNumeroContribuable());
+	}
+
+	@Test
+	public void testExtractWithSemicolonInFirstname() throws Exception {
+		final byte[] csv = "1234;Tartempion;Amédée; en liquidation;12.4.1976;10000247".getBytes(ENCODING);
+		final List<ProprietaireFoncier> proprios = RapprocherCtbRegistreFoncierJob.extractProprioFromCSV(csv, new LoggingStatusManager(LOGGER));
+		Assert.assertNotNull(proprios);
+		Assert.assertEquals(1, proprios.size());
+
+		final ProprietaireFoncier p = proprios.get(0);
+		Assert.assertNotNull(p);
+		Assert.assertEquals(1234L, p.getNumeroRegistreFoncier());
+		Assert.assertEquals("Tartempion", p.getNom());
+		Assert.assertEquals("Amédée; en liquidation", p.getPrenom());
+		Assert.assertEquals(date(1976, 4, 12), p.getDateNaissance());
+		Assert.assertEquals((Long) 10000247L, p.getNumeroContribuable());
+	}
+
+	@Test
 	public void testExtractWithInvalidDateOfBirth() throws Exception {
 		final byte[] csv = "1234;Tartempion;Amédée;12.4.1076;12345678".getBytes(ENCODING);
 		final List<ProprietaireFoncier> proprios = RapprocherCtbRegistreFoncierJob.extractProprioFromCSV(csv, new LoggingStatusManager(LOGGER));
