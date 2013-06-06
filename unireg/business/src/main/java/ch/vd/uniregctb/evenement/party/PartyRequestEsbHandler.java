@@ -113,7 +113,7 @@ public class PartyRequestEsbHandler implements EsbMessageHandler, InitializingBe
 
 		// on répond
 		try {
-			answer(result.getResponse(), result.getAttachments(), message);
+			answer(result.isValidable(), result.getResponse(), result.getAttachments(), message);
 		}
 		catch (ESBValidationException e) {
 			LOGGER.error(e, e);
@@ -160,7 +160,7 @@ public class PartyRequestEsbHandler implements EsbMessageHandler, InitializingBe
 		return handler.handle(request);
 	}
 
-	private void answer(Response response, Map<String, EsbDataHandler> attachments, EsbMessage query) throws ESBValidationException {
+	private void answer(boolean validateResponse, Response response, Map<String, EsbDataHandler> attachments, EsbMessage query) throws ESBValidationException {
 
 		try {
 			final JAXBContext context = JAXBContext.newInstance(ObjectFactory.class.getPackage().getName());
@@ -194,7 +194,9 @@ public class PartyRequestEsbHandler implements EsbMessageHandler, InitializingBe
 				}
 			}
 
-			esbValidator.validate(m);
+			if (validateResponse) {
+				esbValidator.validate(m);
+			}
 			esbTemplate.send(m);
 		}
 		catch (ESBValidationException e) {
@@ -203,7 +205,6 @@ public class PartyRequestEsbHandler implements EsbMessageHandler, InitializingBe
 		catch (Exception e) {
 			throw new RuntimeException(e);
 		}
-
 	}
 
 	private void answerValidationException(ESBValidationException exception, Map<String, EsbDataHandler> attachments, EsbMessage message) throws ESBValidationException {
@@ -211,7 +212,7 @@ public class PartyRequestEsbHandler implements EsbMessageHandler, InitializingBe
 		final ExceptionResponse er = new ExceptionResponse();
 		er.setExceptionInfo(new BusinessExceptionInfo(exception.getMessage(), BusinessExceptionCode.INVALID_RESPONSE.name(), null));
 
-		answer(er, attachments, message);
+		answer(true, er, attachments, message);
 	}
 
 	@Override
