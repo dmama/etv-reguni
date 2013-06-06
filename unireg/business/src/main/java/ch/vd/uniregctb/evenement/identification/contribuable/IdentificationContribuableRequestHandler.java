@@ -103,10 +103,9 @@ public class IdentificationContribuableRequestHandler implements EsbMessageHandl
 		catch (UnmarshalException e) {
 			String msg = String.format("UnmarshalException raised in Unireg. XML message {businessId: %s} is not readable", businessId);
 			LOGGER.error(msg, e);
-			final String description = String.format("La lecture du message d'identification auto %s a échoué ", businessId);
+			final String description = String.format("La lecture du message d'identification auto %s a échoué", businessId);
 			throw new EsbBusinessException(EsbBusinessCode.XML_INVALIDE, description, e);
 		}
-
 
 		// on répond
 		try {
