@@ -190,7 +190,8 @@ public class PartyRequestHandler implements RequestHandler<PartyRequest> {
 			throw new ServiceException(new TechnicalExceptionInfo(e.getMessage(), null));
 		}
 
-		return new RequestHandlerResult(response);
+		// on ne valide pas la donnée en sortie (voir cas SIFISC-8901)
+		return new RequestHandlerResult.NotValidatedResult(response);
 	}
 
 	@Override
