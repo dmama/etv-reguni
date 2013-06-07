@@ -202,7 +202,7 @@
 								<jxb:property>
 									<jxb:javadoc>Le 'pour adresse'.
 										Attention ! Cette donnée est exposée pour permettre un affichage spécialisé dans les applications fiscales. Elle ne doit pas être utilisé pour reconstruire une
-										adresse qui serait utilisée pour envoyer du courrier par le poste !
+										adresse qui serait utilisée pour envoyer du courrier par la poste !
 									</jxb:javadoc>
 								</jxb:property>
 							</xs:appinfo>
@@ -214,7 +214,7 @@
 								<jxb:property>
 									<jxb:javadoc>Le pays en toutes lettres (non-renseigné sur les adresses suisse). Exemples : "France", "Albanie", "Japon".
 										Attention ! Cette donnée est exposée pour permettre un affichage spécialisé dans les applications fiscales. Elle ne doit pas être utilisé pour reconstruire une
-										adresse qui serait utilisée pour envoyer du courrier par le poste !
+										adresse qui serait utilisée pour envoyer du courrier par la poste !
 									</jxb:javadoc>
 								</jxb:property>
 							</xs:appinfo>
@@ -226,7 +226,7 @@
 								<jxb:property>
 									<jxb:javadoc>[Technique] numéro technique de la rue.
 										Attention ! Cette donnée est exposée pour permettre un affichage spécialisé dans les applications fiscales. Elle ne doit pas être utilisé pour reconstruire une
-										adresse qui serait utilisée pour envoyer du courrier par le poste !
+										adresse qui serait utilisée pour envoyer du courrier par la poste !
 									</jxb:javadoc>
 								</jxb:property>
 							</xs:appinfo>
@@ -238,7 +238,7 @@
 								<jxb:property>
 									<jxb:javadoc>[Technique] numéro OFS du pays.
 										Attention ! Cette donnée est exposée pour permettre un affichage spécialisé dans les applications fiscales. Elle ne doit pas être utilisé pour reconstruire une
-										adresse qui serait utilisée pour envoyer du courrier par le poste !
+										adresse qui serait utilisée pour envoyer du courrier par la poste !
 									</jxb:javadoc>
 								</jxb:property>
 							</xs:appinfo>
@@ -250,7 +250,7 @@
 								<jxb:property>
 									<jxb:javadoc>Le type d'affranchissement demandé par la poste pour envoyer un courrier à cette adresse.
 										Attention ! Cette donnée est exposée pour permettre un affichage spécialisé dans les applications fiscales. Elle ne doit pas être utilisé pour reconstruire une
-										adresse qui serait utilisée pour envoyer du courrier par le poste !
+										adresse qui serait utilisée pour envoyer du courrier par la poste !
 									</jxb:javadoc>
 								</jxb:property>
 							</xs:appinfo>
@@ -263,7 +263,7 @@
 									<jxb:javadoc>[Technique] Le numéro de bâtiment suisse. Cette information n'est disponible que sur les adresses domiciles (et même sur les adresses domiciles elle
 										n'est pas connue dans tous les cas).
 										Attention ! Cette donnée est exposée pour permettre un affichage spécialisé dans les applications fiscales. Elle ne doit pas être utilisé pour reconstruire une
-										adresse qui serait utilisée pour envoyer du courrier par le poste !
+										adresse qui serait utilisée pour envoyer du courrier par la poste !
 									</jxb:javadoc>
 								</jxb:property>
 							</xs:appinfo>
@@ -276,13 +276,35 @@
 									<jxb:javadoc>[Technique] Le numéro d'appartement dans le bâtiment. Cette information n'est disponible que sur les adresses domiciles (et même sur les adresses
 										domiciles elle n'est pas connue dans tous les cas).
 										Attention ! Cette donnée est exposée pour permettre un affichage spécialisé dans les applications fiscales. Elle ne doit pas être utilisé pour reconstruire une
-										adresse qui serait utilisée pour envoyer du courrier par le poste !
+										adresse qui serait utilisée pour envoyer du courrier par la poste !
 									</jxb:javadoc>
 								</jxb:property>
 							</xs:appinfo>
 						</xs:annotation>
 					</xs:element>
 					<xs:element name="padding" type="xs:int">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Padding pour supporter l'élément xs:any ci-dessous. A ignorer.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element minOccurs="0" name="municipalityId" type="xs:int">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>[Technique] Numéro OFS de la commune rattachée à cette adresse. Cette information n'est disponible que sur les adresses domiciles (et même sur les adresses
+										domiciles elle n'est pas connue dans tous les cas).
+										Attention ! Cette donnée est exposée pour permettre un affichage spécialisé dans les applications fiscales. Elle ne doit pas être utilisé pour reconstruire une
+										adresse qui serait utilisée pour envoyer du courrier par la poste !
+									</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="padding2" type="xs:int">
 						<xs:annotation>
 							<xs:appinfo>
 								<jxb:property>

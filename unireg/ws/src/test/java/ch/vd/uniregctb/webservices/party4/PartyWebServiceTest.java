@@ -2791,4 +2791,45 @@ public class PartyWebServiceTest extends WebserviceTest {
 		    globalTiersIndexer.setOnTheFlyIndexation(otfi);
 		}
 	}
+
+	@Test
+	public void testMunicipalityOnResidenceAddress() throws Exception {
+
+		final long noIndividu = 2387432376L;
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noIndividu, null, "de Montaigne", "Michel", Sexe.MASCULIN);
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.BoulevardGrancy, null, date(2000, 1, 1), null);
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				return pp.getNumero();
+			}
+		});
+
+		final GetPartyRequest params = new GetPartyRequest();
+		params.setLogin(login);
+		params.setPartyNumber((int) ppId);
+		params.getParts().add(PartyPart.ADDRESSES);
+
+		final Party party = service.getParty(params);
+		assertNotNull(party);
+		assertInstanceOf(NaturalPerson.class, party);
+
+		final List<Address> residences = party.getResidenceAddresses();
+		assertNotNull(residences);
+		assertEquals(1, residences.size());
+
+		final Address residence = residences.get(0);
+		assertNotNull(residence);
+		assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), residence.getAddressInformation().getMunicipalityId());
+	}
 }

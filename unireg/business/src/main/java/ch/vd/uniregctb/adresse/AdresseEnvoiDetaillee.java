@@ -6,11 +6,13 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.unireg.interfaces.civil.data.AdresseAvecCommune;
 import ch.vd.unireg.interfaces.civil.data.CasePostale;
 import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.infra.data.TypeAffranchissement;
@@ -24,9 +26,9 @@ import ch.vd.uniregctb.type.FormulePolitesse;
 /**
  * Adresse d'envoi du courrier avec détail des valeurs.
  */
-public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange {
+public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange, AdresseAvecCommune {
 
-	private static final long serialVersionUID = 8557039282754715615L;
+	private static final long serialVersionUID = -2532045347930123406L;
 
 	private RegDate dateDebut;
 	private RegDate dateFin;
@@ -46,6 +48,7 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange {
 	private Integer numeroTechniqueRue;
 	private Integer egid;
 	private Integer ewid;
+	private Integer noOfsCommune;
 	private final AdresseGenerique.SourceType source;
 
 	/**
@@ -227,6 +230,10 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange {
 		this.ewid = ewid;
 	}
 
+	public void setNoOfsCommune(Integer noOfsCommune) {
+		this.noOfsCommune = noOfsCommune;
+	}
+
 	public AdresseGenerique.SourceType getSource() {
 		return source;
 	}
@@ -332,12 +339,20 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange {
 		return numeroTechniqueRue;
 	}
 
+	@Override
 	public Integer getEgid() {
 		return egid;
 	}
 
+	@Override
 	public Integer getEwid() {
 		return ewid;
+	}
+
+	@Nullable
+	@Override
+	public Integer getNoOfsCommuneAdresse() {
+		return noOfsCommune;
 	}
 
 	public boolean isArtificelle() {
@@ -363,8 +378,6 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange {
 		}
 
 		return (rueVideOuInconnue && casePostaleInconnue && complementVideOuInconnu) || localiteVideOuInconnue || paysVideOuInconnu || localiteInvalide;
-
-
 	}
 
 	@Override
@@ -383,6 +396,7 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange {
 		if (destinataire != null ? !destinataire.equals(that.destinataire) : that.destinataire != null) return false;
 		if (egid != null ? !egid.equals(that.egid) : that.egid != null) return false;
 		if (ewid != null ? !ewid.equals(that.ewid) : that.ewid != null) return false;
+		if (noOfsCommune != null ? !noOfsCommune.equals(that.noOfsCommune) : that.noOfsCommune != null) return false;
 		if (formuleAppel != null ? !formuleAppel.equals(that.formuleAppel) : that.formuleAppel != null) return false;
 		if (nomsPrenoms != null ? !nomsPrenoms.equals(that.nomsPrenoms) : that.nomsPrenoms != null) return false;
 		if (npaEtLocalite != null ? !npaEtLocalite.equals(that.npaEtLocalite) : that.npaEtLocalite != null) return false;
@@ -419,6 +433,7 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange {
 		result = 31 * result + (numeroTechniqueRue != null ? numeroTechniqueRue.hashCode() : 0);
 		result = 31 * result + (egid != null ? egid.hashCode() : 0);
 		result = 31 * result + (ewid != null ? ewid.hashCode() : 0);
+		result = 31 * result + (noOfsCommune != null ? noOfsCommune.hashCode() : 0);
 		result = 31 * result + (source != null ? source.hashCode() : 0);
 		result = 31 * result + (artificelle ? 1 : 0);
 		return result;
@@ -446,6 +461,7 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange {
 		sb.append(", numeroTechniqueRue=").append(numeroTechniqueRue);
 		sb.append(", egid=").append(egid);
 		sb.append(", ewid=").append(ewid);
+		sb.append(", noOfsCommune=").append(noOfsCommune);
 		sb.append(", source=").append(source);
 		sb.append(", artificelle=").append(artificelle);
 		sb.append('}');

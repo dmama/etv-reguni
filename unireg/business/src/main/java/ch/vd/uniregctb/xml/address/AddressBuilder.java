@@ -175,6 +175,7 @@ public class AddressBuilder {
 		info.setTariffZone(DataHelper.coreToXML(from.getTypeAffranchissement()));
 		info.setEgid(from.getEgid() == null ? null : from.getEgid().longValue());
 		info.setEwid(from.getEwid() == null ? null : from.getEwid().longValue());
+		info.setMunicipalityId(from.getNoOfsCommuneAdresse());
 
 		to.setAddressInformation(info);
 	}

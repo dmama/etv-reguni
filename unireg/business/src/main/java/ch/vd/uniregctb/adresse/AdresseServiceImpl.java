@@ -901,6 +901,7 @@ public class AdresseServiceImpl implements AdresseService {
 		adresseEnvoi.setNumeroOrdrePostal(adresse.getNumeroOrdrePostal() == 0 ? null : adresse.getNumeroOrdrePostal());
 		adresseEnvoi.setEgid(adresse.getEgid());
 		adresseEnvoi.setEwid(adresse.getEwid());
+		adresseEnvoi.setNoOfsCommune(adresse.getNoOfsCommuneAdresse());
 	}
 
 	/**
