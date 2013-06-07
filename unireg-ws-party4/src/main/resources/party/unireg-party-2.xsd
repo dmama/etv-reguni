@@ -541,6 +541,35 @@
 					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
+			<xs:sequence minOccurs="0">
+				<xs:element name="lastTaxResidenceBeginDate" type="common:dateType">
+					<xs:annotation>
+						<xs:appinfo>
+							<jxb:property>
+								<jxb:javadoc>La date d'ouverture du dernier for fiscal principal du contribuable (ou du dernier for fiscal tout court pour les débiteurs IS).</jxb:javadoc>
+							</jxb:property>
+						</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
+				<xs:element minOccurs="0" name="lastTaxResidenceEndDate" type="common:dateType">
+					<xs:annotation>
+						<xs:appinfo>
+							<jxb:property>
+								<jxb:javadoc>La date de fermeture du dernier for fiscal principal du contribuable (ou du dernier for fiscal tout court pour les débiteurs IS).</jxb:javadoc>
+							</jxb:property>
+						</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+			<xs:element name="padding2" type="xs:int">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Padding pour supporter l'élément xs:any ci-dessous. A ignorer.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
 			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
 		</xs:sequence>
 	</xs:complexType>

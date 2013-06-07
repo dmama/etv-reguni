@@ -100,6 +100,7 @@ import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.CategorieEtranger;
 import ch.vd.uniregctb.type.CategorieIdentifiant;
@@ -2622,7 +2623,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 	 * Types de débiteur non-supportés par les versions précédentes du service
 	 */
 	@Test
-	public void testSearchDebiteurAvecTypeNonSupporte() throws Exception {
+	public void testSearchDebiteurAvecTypeNonSupporteAvant() throws Exception {
 
 		final class Ids {
 			long phs;
@@ -2696,6 +2697,98 @@ public class PartyWebServiceTest extends WebserviceTest {
 		}
 		finally {
 			globalTiersIndexer.setOnTheFlyIndexation(otfi);
+		}
+	}
+
+	/**
+	 * SIFISC-8801 : dates de fors fournies dans les résultats de recherche
+	 */
+	@Test
+	public void testSearchPartyDatesFor() throws Exception {
+
+		// cleanup avant d'ajouter des données
+		globalTiersIndexer.overwriteIndex();
+
+		final RegDate dateMariage = date(2010, 5, 1);
+		final RegDate dateDeces = date(2013, 3, 12);
+
+		final boolean otfi = globalTiersIndexer.isOnTheFlyIndexation();
+		globalTiersIndexer.setOnTheFlyIndexation(true);
+		try {
+
+			class Ids {
+				long elle;
+				long lui;
+				long eux;
+			}
+
+			final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+				@Override
+				public Ids doInTransaction(TransactionStatus status) {
+					final PersonnePhysique lui = addNonHabitant("Arthur", "Pendragon", null, Sexe.MASCULIN);
+					lui.setDateDeces(dateDeces);
+
+					final PersonnePhysique elle = addNonHabitant("Guenièvre", "Pendragon", null, Sexe.FEMININ);
+
+					final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, dateMariage, dateDeces);
+					final MenageCommun eux = couple.getMenage();
+
+					addForPrincipal(eux, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Vallorbe);
+					addForPrincipal(elle, dateDeces.getOneDayAfter(), MotifFor.VEUVAGE_DECES, MockCommune.Vallorbe);
+
+					final Ids ids = new Ids();
+					ids.elle = elle.getNumero();
+					ids.lui = lui.getNumero();
+					ids.eux = eux.getNumero();
+					return ids;
+				}
+			});
+
+			// pour être bien sûr que tout est indexé avant de faire la recherche
+			globalTiersIndexer.sync();
+
+			// recherche par nom
+			final SearchPartyRequest params = new SearchPartyRequest();
+			params.setLogin(login);
+			params.setContactName("Pendragon");
+
+			final SearchPartyResponse found = service.searchParty(params);
+			assertNotNull(found);
+			assertNotNull(found.getItems());
+			assertEquals(3, found.getItems().size());
+
+			final List<PartyInfo> allFound = new ArrayList<>(found.getItems());
+			Collections.sort(allFound, new Comparator<PartyInfo>() {
+				@Override
+				public int compare(PartyInfo o1, PartyInfo o2) {
+					return o1.getNumber() - o2.getNumber();
+				}
+			});
+
+			{
+				final PartyInfo info = allFound.get(0);
+				assertNotNull(info);
+				assertEquals(ids.lui, info.getNumber());
+				assertNull(info.getLastTaxResidenceBeginDate());
+				assertNull(info.getLastTaxResidenceEndDate());
+			}
+			{
+				final PartyInfo info = allFound.get(1);
+				assertNotNull(info);
+				assertEquals(ids.elle, info.getNumber());
+				assertEquals(dateDeces.getOneDayAfter(), DataHelper.xmlToCore(info.getLastTaxResidenceBeginDate()));
+				assertNull(info.getLastTaxResidenceEndDate());
+			}
+			{
+				final PartyInfo info = allFound.get(2);
+				assertNotNull(info);
+				assertEquals(ids.eux, info.getNumber());
+				assertEquals(dateMariage, DataHelper.xmlToCore(info.getLastTaxResidenceBeginDate()));
+				assertEquals(dateDeces, DataHelper.xmlToCore(info.getLastTaxResidenceEndDate()));
+			}
+		}
+		finally {
+		    globalTiersIndexer.setOnTheFlyIndexation(otfi);
 		}
 	}
 }
