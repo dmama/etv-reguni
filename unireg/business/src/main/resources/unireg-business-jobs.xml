@@ -167,7 +167,7 @@
 
 	<bean id="determinerLRsEchuesJob" parent="schedulerJob" class="ch.vd.uniregctb.declaration.source.DeterminerLRsEchuesJob">
 		<constructor-arg value="303"/>
-		<constructor-arg value="Produire la liste des listes récapitulatives à échoir"/>
+		<constructor-arg value="Faire passer à l'état 'échue' les LR sommées dont le délai de retour est dépassé"/>
 		<property name="lrService" ref="lrService"/>
 		<property name="rapportService" ref="rapportService"/>
 		<property name="transactionManager" ref="transactionManager"/>
