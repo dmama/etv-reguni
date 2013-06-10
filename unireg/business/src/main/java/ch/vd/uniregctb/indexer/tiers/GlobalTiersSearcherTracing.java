@@ -45,9 +45,14 @@ public class GlobalTiersSearcherTracing implements GlobalTiersSearcher, Initiali
 	@Override
 	public List<TiersIndexedData> search(final TiersCriteria criteria) throws IndexerException {
 		Throwable t = null;
+		int size = 0;
 		final long time = tracing.start();
 		try {
-			return target.search(criteria);
+			final List<TiersIndexedData> res = target.search(criteria);
+			if (res != null) {
+				size = res.size();
+			}
+			return res;
 		}
 		catch (IndexerException e) {
 			t = e;
@@ -58,7 +63,37 @@ public class GlobalTiersSearcherTracing implements GlobalTiersSearcher, Initiali
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "search", new Object() {
+			tracing.end(time, t, "search", size, new Object() {
+				@Override
+				public String toString() {
+					return String.format("criteria={%s}", criteria);
+				}
+			});
+		}
+	}
+
+	@Override
+	public List<TiersIndexedData> searchAll(final TiersCriteria criteria) throws IndexerException {
+		Throwable t = null;
+		int size = 0;
+		final long time = tracing.start();
+		try {
+			final List<TiersIndexedData> res = target.searchAll(criteria);
+			if (res != null) {
+				size = res.size();
+			}
+			return res;
+		}
+		catch (IndexerException e) {
+			t = e;
+			throw e;
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
+		}
+		finally {
+			tracing.end(time, t, "searchAll", size, new Object() {
 				@Override
 				public String toString() {
 					return String.format("criteria={%s}", criteria);
@@ -70,9 +105,14 @@ public class GlobalTiersSearcherTracing implements GlobalTiersSearcher, Initiali
 	@Override
 	public TopList<TiersIndexedData> searchTop(final TiersCriteria criteria, final int max) throws IndexerException {
 		Throwable t = null;
+		int size = 0;
 		final long time = tracing.start();
 		try {
-			return target.searchTop(criteria, max);
+			final TopList<TiersIndexedData> res = target.searchTop(criteria, max);
+			if (res != null) {
+				size = res.size();
+			}
+			return res;
 		}
 		catch (IndexerException e) {
 			t = e;
@@ -83,7 +123,7 @@ public class GlobalTiersSearcherTracing implements GlobalTiersSearcher, Initiali
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "searchTop", new Object() {
+			tracing.end(time, t, "searchTop", size, new Object() {
 				@Override
 				public String toString() {
 					return String.format("criteria={%s}, max=%d", criteria, max);
@@ -95,9 +135,14 @@ public class GlobalTiersSearcherTracing implements GlobalTiersSearcher, Initiali
 	@Override
 	public TopList<TiersIndexedData> searchTop(final String keywords, final TiersFilter filter, final int max) throws IndexerException {
 		Throwable t = null;
+		int size = 0;
 		final long time = tracing.start();
 		try {
-			return target.searchTop(keywords, filter, max);
+			final TopList<TiersIndexedData> res = target.searchTop(keywords, filter, max);
+			if (res != null) {
+				size = res.size();
+			}
+			return res;
 		}
 		catch (IndexerException e) {
 			t = e;
@@ -108,7 +153,7 @@ public class GlobalTiersSearcherTracing implements GlobalTiersSearcher, Initiali
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "searchTop", new Object() {
+			tracing.end(time, t, "searchTop", size, new Object() {
 				@Override
 				public String toString() {
 					return String.format("keywords='%s', max=%d", keywords, max);

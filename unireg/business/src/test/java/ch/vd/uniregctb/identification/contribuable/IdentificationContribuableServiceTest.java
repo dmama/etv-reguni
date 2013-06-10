@@ -963,63 +963,6 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 	}
 
-
-	@Test
-	@Transactional(rollbackFor = Throwable.class)
-	public void testTooManyResultsExceptions() throws Exception {
-
-
-		final long noIndividuAlbert = 1234;
-		final long noIndividuAnne = 2345;
-
-		serviceCivil.setUp(new MockServiceCivil() {
-			@Override
-			protected void init() {
-				addIndividu(noIndividuAlbert, date(1953, 4, 3), "Zweisteinen", "Albert", true);
-				addIndividu(noIndividuAnne, date(1965, 8, 13), "Zweisteinen", "Anne", false);
-			}
-		});
-
-		class Ids {
-			Long albert;
-			Long anne;
-		}
-		final Ids ids = new Ids();
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-
-				// Albert, le seul, le vrai
-				final PersonnePhysique albert = addHabitant(noIndividuAlbert);
-				ids.albert = albert.getNumero();
-
-				// même nom de famille qu'Albert
-				final PersonnePhysique anne = addHabitant(noIndividuAnne);
-				ids.anne = anne.getNumero();
-
-				for (int i = 0; i < 150; i++) {
-					addNonHabitant("Alberto", "Fujimori", date(1953, 12, 3), Sexe.MASCULIN);
-				}
-
-				return null;
-			}
-		});
-
-		globalTiersIndexer.sync();
-
-		// Albert
-		{
-			CriteresPersonne criteres = new CriteresPersonne();
-			criteres.setPrenoms("Alberto");
-
-			final List<PersonnePhysique> list = service.identifie(criteres);
-			assertEmpty(list);
-
-		}
-
-
-	}
-
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testGetNomCantonFromMessage() throws Exception {
@@ -2822,5 +2765,49 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		final IdentificationContribuable ident = createDemandeWithEmetteurId(personne, "2-BE-3");
 
 		Assert.assertFalse(service.isAdresseFromCantonEmetteur(ident));
+	}
+
+	/**
+	 * Le principe est d'avoir plus de 100 contribuables avec le même nom de famille, mais un seul qui a la bonne date de naissance
+	 */
+	@Test
+	public void testGrandNombreResultatsPremierePhase() throws Exception {
+
+		final int nbCtb = 150;
+
+		// création des contribuables avec le même nom et une date de naissance différente à chaque fois
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				for (int i = 0 ; i < nbCtb ; ++ i) {
+					addNonHabitant(null, "Pittet", date(1980, 1, 1).addDays(i), Sexe.MASCULIN);
+				}
+				return null;
+			}
+		});
+
+		// attente de la fin de l'indexation
+		globalTiersIndexer.sync();
+
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				// recherche par nom et date de naissance
+				final CriteresPersonne criteres = new CriteresPersonne();
+				criteres.setNom("Pittet");
+				criteres.setDateNaissance(date(1980, 2 ,24));
+
+				final IdentificationContribuable demande = createDemandeMeldewesen(criteres, Demande.ModeIdentificationType.SANS_MANUEL, 2013);
+				service.handleDemande(demande);
+				return null;
+			}
+		});
+
+		assertNotNull(messageHandler.getSentMessages());
+		assertEquals(1, messageHandler.getSentMessages().size());
+
+		final IdentificationContribuable msg = messageHandler.getSentMessages().get(0);
+		assertNotNull(msg);
+		assertEquals(Etat.TRAITE_AUTOMATIQUEMENT, msg.getEtat());
 	}
 }

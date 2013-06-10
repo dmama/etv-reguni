@@ -21,13 +21,23 @@ public interface GlobalTiersSearcher {
 	public static final String SERVICE_NAME = "GlobalTiersSearcher";
 
 	/**
-	 * Methode principale de recherche des tiers
+	 * Methode principale de recherche des tiers.
 	 *
-	 * @param criteria
+	 * @param criteria les critères de recherche
 	 * @return la liste des tiers repondant aux criteres de recherche
-	 * @throws IndexerException
+	 * @throws ch.vd.uniregctb.indexer.TooManyResultsIndexerException si la recherche fournit plus de 100 résultats
+	 * @throws IndexerException en cas de problème
 	 */
-	public List<TiersIndexedData> search(TiersCriteria criteria) throws IndexerException;
+	List<TiersIndexedData> search(TiersCriteria criteria) throws IndexerException;
+
+	/**
+	 * Méthode de recherche des tiers. Le nombre de résultats retournés n'est limité que par la taille mémoire...
+	 *
+	 * @param criteria les critères de recherche
+	 * @return la liste des tiers répondans aux critères
+	 * @throws IndexerException en cas ce souci
+	 */
+	List<TiersIndexedData> searchAll(TiersCriteria criteria) throws IndexerException;
 
 	/**
 	 * Recherche et retourne les tiers qui correspondent le mieux aux critères spécifiés
@@ -37,7 +47,7 @@ public interface GlobalTiersSearcher {
 	 * @return une liste de données de tiers
 	 * @throws IndexerException en cas d'erreur levée dans l'indexeur
 	 */
-	public TopList<TiersIndexedData> searchTop(TiersCriteria criteria, int max) throws IndexerException;
+	TopList<TiersIndexedData> searchTop(TiersCriteria criteria, int max) throws IndexerException;
 
 	/**
 	 * Recherche et retourne les tiers qui correspondent le mieux aux mot-clés spécifiés.
@@ -48,7 +58,7 @@ public interface GlobalTiersSearcher {
 	 * @throws IndexerException en cas d'erreur levée dans l'indexeur
 	 * @return une liste de données de tiers
 	 */
-	public TopList<TiersIndexedData> searchTop(String keywords, @Nullable TiersFilter filter, int max) throws IndexerException;
+	TopList<TiersIndexedData> searchTop(String keywords, @Nullable TiersFilter filter, int max) throws IndexerException;
 
 	/**
 	 * Vérifie si un tiers est indexé ou non.
@@ -57,7 +67,7 @@ public interface GlobalTiersSearcher {
 	 *            le numéro du tiers à tester.
 	 * @return <b>vrai</b> si le tiers spécifié est indexé.
 	 */
-	public boolean exists(Long numero) throws IndexerException;
+	boolean exists(Long numero) throws IndexerException;
 
 	/**
 	 * Retourne les informations indexées pour le tiers spécifié.
@@ -66,12 +76,12 @@ public interface GlobalTiersSearcher {
 	 *            le numéro du tiers
 	 * @return les informations indexées, ou <b>null</b> si le tiers n'existe pas ou n'est pas indexé
 	 */
-	public TiersIndexedData get(Long numero) throws IndexerException;
+	TiersIndexedData get(Long numero) throws IndexerException;
 
 	/**
 	 * @return la liste de tous les IDs des tiers indexés
 	 */
-	public Set<Long> getAllIds();
+	Set<Long> getAllIds();
 
 	/**
 	 * Vérifie la cohérence des données de l'indexeur. L'indexeur n'est pas modifié.
@@ -85,7 +95,7 @@ public interface GlobalTiersSearcher {
 	 *
 	 * @return le résultat de la validation
 	 */
-	public void checkCoherenceIndex(Set<Long> existingIds, StatusManager statusManager, CheckCallback callback);
+	void checkCoherenceIndex(Set<Long> existingIds, StatusManager statusManager, CheckCallback callback);
 
 	/**
 	 * Interface de callback de la méthode {@link GlobalTiersSearcher#checkCoherenceIndex(Set, StatusManager, CheckCallback)}.

@@ -55,8 +55,6 @@ import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContr
 import ch.vd.uniregctb.evenement.identification.contribuable.Reponse;
 import ch.vd.uniregctb.evenement.identification.contribuable.TypeDemande;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.indexer.IndexerException;
-import ch.vd.uniregctb.indexer.TooManyResultsIndexerException;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -360,22 +358,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	public List<TiersIndexedData> findByNavs13(CriteresPersonne criteres) {
 		final TiersCriteria criteria = asTiersCriteriaNAVS13(criteres);
 		if (!criteria.isEmpty()) {
-
-			try {
-				final List<TiersIndexedData> indexedData = searcher.search(criteria);
-				return indexedData;
-			}
-			catch (IndexerException e) {
-				if (e instanceof TooManyResultsIndexerException) {
-					return Collections.emptyList();
-				}
-				else {
-					throw new RuntimeException(e);
-				}
-
-
-			}
-
+			return searcher.searchAll(criteria);
 		}
 		return Collections.emptyList();
 	}
@@ -383,31 +366,15 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	public List<TiersIndexedData> findByNomPrenom(CriteresPersonne criteres) {
 
 		List<TiersIndexedData> indexedData = null;
-		PhaseRechercheSurNomPrenom phaseSucces = null;
 
-		// [SIFISC-147] effectue la recherche sur les nom et prénoms en plusieurs phase
+		// [SIFISC-147] effectue la recherche sur les nom et prénoms en plusieurs phases
 		for (PhaseRechercheSurNomPrenom phase : PhaseRechercheSurNomPrenom.values()) {
 			final TiersCriteria criteria = asTiersCriteriaForNomPrenom(criteres, phase);
 			if (!criteria.isEmpty()) {
-
-				try {
-					indexedData = searcher.search(criteria);
-				}
-				catch (IndexerException e) {
-					if (e instanceof TooManyResultsIndexerException) {
-						return Collections.emptyList();
-					}
-					else {
-						throw new RuntimeException(e);
-					}
-
-
-				}
-
+				indexedData = searcher.searchAll(criteria);
 			}
 
 			if (indexedData != null && !indexedData.isEmpty()) {
-				phaseSucces = phase;
 				break;
 			}
 		}

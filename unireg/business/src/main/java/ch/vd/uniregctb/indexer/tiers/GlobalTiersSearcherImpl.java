@@ -70,11 +70,33 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher, Initializin
 
 		final List<TiersIndexedData> list;
 		try {
-			list = adaptativeSearch(criteria);
+			list = adaptativeSearch(criteria, true);
 		}
 		catch (TooManyResultsIndexerException e) {
 			LOGGER.warn("Trop de résultats retournés avec la requête = [" + criteria + "] : " + e.getMessage());
 			throw e;
+		}
+		catch (RuntimeException e) {
+			LOGGER.error("Problème avec la requête = [" + criteria + ']', e);
+			throw e;
+		}
+
+		return list;
+	}
+
+	@Override
+	public List<TiersIndexedData> searchAll(TiersCriteria criteria) throws IndexerException {
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("Recherche de tous les tiers correspondant aux criteres=" + criteria);
+		}
+
+		if (criteria.isEmpty()) {
+			throw new EmptySearchCriteriaException("Les critères de recherche sont vides");
+		}
+
+		final List<TiersIndexedData> list;
+		try {
+			list = adaptativeSearch(criteria, false);
 		}
 		catch (RuntimeException e) {
 			LOGGER.error("Problème avec la requête = [" + criteria + ']', e);
@@ -151,9 +173,10 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher, Initializin
 	 * [UNIREG-1386] exécute la requête, et si une exception BooleanQuery.TooManyClause est levée par lucene, adapte la requête en supprimant les termes les plus courts.
 	 *
 	 * @param criteria les critères de recherche
+	 * @param hardLimit <code>true</code> si la limite de 100 doit être imposée
 	 * @return la liste des données trouvées
 	 */
-	private List<TiersIndexedData> adaptativeSearch(TiersCriteria criteria) {
+	private List<TiersIndexedData> adaptativeSearch(TiersCriteria criteria, boolean hardLimit) {
 		
 		final List<TiersIndexedData> list = new ArrayList<>();
 
@@ -178,7 +201,9 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher, Initializin
 
 			try {
 				++essais;
-				globalIndex.search(query, maxHits, new Callback(list));
+				globalIndex.search(query,
+				                   hardLimit ? maxHits : Integer.MAX_VALUE,
+				                   new Callback(list, hardLimit ? maxHits : null));
 				break;
 			}
 			catch (TooManyClausesIndexerException e) {
@@ -198,14 +223,16 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher, Initializin
 
 	private final class Callback implements SearchCallback {
 		private final List<TiersIndexedData> list;
+		private final Integer maxHits;
 
-		private Callback(List<TiersIndexedData> list) {
+		private Callback(List<TiersIndexedData> list, Integer maxHits) {
 			this.list = list;
+			this.maxHits = maxHits;
 		}
 
 		@Override
 		public void handle(TopDocs hits, DocGetter docGetter) throws Exception {
-			if (hits.totalHits > maxHits) {
+			if (maxHits != null && hits.totalHits > maxHits) {
 				throw new TooManyResultsIndexerException("Le nombre max de résultats ne peut pas excéder "
 						+ maxHits + ". Hits: " + hits.totalHits, hits.totalHits);
 			}
