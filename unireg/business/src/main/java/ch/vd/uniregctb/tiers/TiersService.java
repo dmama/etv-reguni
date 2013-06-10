@@ -391,6 +391,14 @@ public interface TiersService {
      */
     public EnsembleTiersCouple getEnsembleTiersCouple(PersonnePhysique personne, @Nullable RegDate date);
 
+	/**Construit la liste des ensembleTiersCouple à partir du tiers ménage-commun.
+	 *
+	 * @param personne le tiers membre du menage
+	 * @param anneePeriode la période fiscale considérée pour déterminer les composants du couple. Chacun des composants du couple est pris en compte pour autant qu'il soit valide durant la période
+	 * @return la liste des ensembleTiersCouple valide sur la période donnée
+	 */
+	public List<EnsembleTiersCouple> getEnsembleTiersCouple(PersonnePhysique personne, int anneePeriode);
+
     /**
      * Ajoute l'individu spécifié en tant que tiers du ménage commun, à partir de la date spécifiée.
      * <b>Attention : le menage et le tiers spécifiés seront automatiques sauvés !</b>

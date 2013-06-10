@@ -2,6 +2,7 @@ package ch.vd.uniregctb.tiers;
 
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -10,7 +11,7 @@ import ch.vd.unireg.interfaces.civil.data.Individu;
 /**
  * Contient les caractéristiques d'un rapport de filiation entre une personne physique/individu et une autre personne physique/individu.
  */
-public class RapportFiliation {
+public class RapportFiliation  implements DateRange{
 
 	public enum Type {
 		ENFANT,
@@ -93,6 +94,11 @@ public class RapportFiliation {
 
 	public void setDateFin(RegDate dateFin) {
 		this.dateFin = dateFin;
+	}
+
+	@Override
+	public boolean isValidAt(RegDate date) {
+		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
 
 	public RegDate getDateDebut() {

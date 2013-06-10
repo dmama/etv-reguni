@@ -18,7 +18,9 @@
 				<entry key="ch.vd.unireg.xml.event.party.party.v1.PartyRequest" value-ref="partyRequestHandlerV1" />
 				<entry key="ch.vd.unireg.xml.event.party.party.v2.PartyRequest" value-ref="partyRequestHandlerV2" />
 				<entry key="ch.vd.unireg.xml.event.party.nonresident.v1.CreateNonresidentRequest" value-ref="createNonresidentRequestHandler" />
-				<entry key="ch.vd.unireg.xml.event.party.taxliab.aperiodic.v1.AperiodicTaxLiabilityRequest" value-ref="aperiodicTaxLiabilityRequestHandler" />
+				<entry key="ch.vd.unireg.xml.event.party.taxliab.aperiodic.v1.AperiodicTaxLiabilityRequest" value-ref="aperiodicTaxLiabilityRequestHandlerV1" />
+				<entry key="ch.vd.unireg.xml.event.party.taxliab.aperiodic.v2.AperiodicTaxLiabilityRequest" value-ref="aperiodicTaxLiabilityRequestHandlerV2" />
+				<entry key="ch.vd.unireg.xml.event.party.taxliab.periodic.v2.PeriodicTaxLiabilityRequest" value-ref="periodicTaxLiabilityRequestHandler" />
 			</util:map>
 		</property>
 		<property name="esbTemplate" ref="esbJmsTemplate"/>
@@ -90,9 +92,21 @@
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 	</bean>
 
-	<bean id="aperiodicTaxLiabilityRequestHandler" class="ch.vd.uniregctb.evenement.party.AperiodicTaxLiabilityRequestHandler">
+	<bean id="aperiodicTaxLiabilityRequestHandlerV1" class="ch.vd.uniregctb.evenement.party.AperiodicTaxLiabilityRequestHandler">
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="tiersService" ref="tiersService" />
+	</bean>
+
+	<bean id="aperiodicTaxLiabilityRequestHandlerV2" class="ch.vd.uniregctb.evenement.party.AperiodicTaxLiabilityRequestHandlerV2">
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="tiersService" ref="tiersService" />
+		<property name="assujettissementService" ref="assujettissementService" />
+	</bean>
+
+	<bean id="periodicTaxLiabilityRequestHandler" class="ch.vd.uniregctb.evenement.party.PeriodicTaxLiabilityRequestHandlerV2">
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="tiersService" ref="tiersService" />
+		<property name="assujettissementService" ref="assujettissementService" />
 	</bean>
 
 </beans>

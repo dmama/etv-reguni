@@ -7,13 +7,9 @@ import ch.vd.technical.esb.EsbMessage;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.xml.common.v1.Date;
 import ch.vd.unireg.xml.common.v1.UserLogin;
-import ch.vd.unireg.xml.event.party.taxliab.aperiodic.v1.AperiodicTaxLiabilityRequest;
-import ch.vd.unireg.xml.event.party.taxliab.aperiodic.v1.AperiodicTaxLiabilityResponse;
-import ch.vd.unireg.xml.event.party.taxliab.common.v1.ResponseType;
-import ch.vd.unireg.xml.event.party.taxliab.common.v1.Scope;
+import ch.vd.unireg.xml.event.party.taxliab.aperiodic.v2.AperiodicTaxLiabilityRequest;
+import ch.vd.unireg.xml.event.party.taxliab.v2.TaxLiabilityResponse;
 import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
-import ch.vd.unireg.xml.party.taxresidence.v1.TaxResidence;
-import ch.vd.unireg.xml.party.taxresidence.v1.TaxationAuthorityType;
 import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.security.MockSecurityProvider;
 import ch.vd.uniregctb.security.Role;
@@ -24,6 +20,7 @@ import ch.vd.uniregctb.xml.ServiceException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 /**
@@ -31,13 +28,13 @@ import static org.junit.Assert.fail;
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class PartyAperiodicTaxLiabilityRequestEsbHandlerItTest extends PartyRequestEsbHandlerItTest {
+public class PartyAperiodicTaxLiabilityRequestV2EsbHandlerItTest extends PartyRequestEsbHandlerItTest {
 
-	private AperiodicTaxLiabilityRequestHandler handler;
+	private AperiodicTaxLiabilityRequestHandlerV2 handler;
 
 	@Override
 	public void onSetUp() throws Exception {
-		handler = getBean(AperiodicTaxLiabilityRequestHandler.class, "aperiodicTaxLiabilityRequestHandler");
+		handler = getBean(AperiodicTaxLiabilityRequestHandlerV2.class, "aperiodicTaxLiabilityRequestHandlerV2");
 		super.onSetUp();
 	}
 
@@ -49,12 +46,12 @@ public class PartyAperiodicTaxLiabilityRequestEsbHandlerItTest extends PartyRequ
 
 	@Override
 	protected String getRequestXSD() {
-		return "event/party/aperiodic-taxliab-request-1.xsd";
+		return "event/party/aperiodic-taxliab-request-2.xsd";
 	}
 
 	@Override
 	protected String getResponseXSD() {
-		return "event/party/aperiodic-taxliab-response-1.xsd";
+		return "event/party/taxliab-response-2.xsd";
 	}
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
@@ -68,7 +65,6 @@ public class PartyAperiodicTaxLiabilityRequestEsbHandlerItTest extends PartyRequ
 		request.setLogin(login);
 		request.setDate(new Date(2000, 1, 1));
 		request.setPartyNumber(12345678);
-		request.setScope(Scope.VD_RESIDENT_AND_WITHHOLDING);
 
 		// Envoie le message
 		doInNewTransaction(new TxCallback<Object>() {
@@ -89,7 +85,7 @@ public class PartyAperiodicTaxLiabilityRequestEsbHandlerItTest extends PartyRequ
 		}
 	}
 
-	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
+	@Test//(timeout = BusinessItTest.JMS_TIMEOUT)
 	public void testRequestOK() throws Exception {
 
 		final MockSecurityProvider provider = new MockSecurityProvider(Role.VISU_ALL);
@@ -110,7 +106,8 @@ public class PartyAperiodicTaxLiabilityRequestEsbHandlerItTest extends PartyRequ
 		request.setLogin(login);
 		request.setPartyNumber(idPP.intValue());
 		request.setDate(new Date(2013, 2, 8));
-		request.setScope(Scope.VD_RESIDENT_AND_WITHHOLDING);
+		request.setSearchCommonHouseHolds(false);
+		request.setSearchParents(false);
 
 		// Envoie le message
 		doInNewTransaction(new TxCallback<Object>() {
@@ -125,19 +122,13 @@ public class PartyAperiodicTaxLiabilityRequestEsbHandlerItTest extends PartyRequ
 		assertNotNull(message);
 
 		// on s'assure que la réponse est bien positive
-		final AperiodicTaxLiabilityResponse response = (AperiodicTaxLiabilityResponse) parseResponse(message);
+		final TaxLiabilityResponse response = (TaxLiabilityResponse) parseResponse(message);
 		assertNotNull(response);
 		assertEquals(idPP.intValue(), response.getPartyNumber().intValue());
-		assertEquals(ResponseType.OK_TAXPAYER_FOUND, response.getType());
-
-		final TaxResidence mainTaxResidence = response.getMainTaxResidence();
-		assertNotNull(mainTaxResidence);
-		assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, mainTaxResidence.getTaxationAuthorityType());
-		assertEquals(MockCommune.Vevey.getNoOFS(), mainTaxResidence.getTaxationAuthorityFSOId());
 	}
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
-	public void testRequestOkWithCustomHeader() throws Exception {
+	public void testRequestNotOk() throws Exception {
 
 		final MockSecurityProvider provider = new MockSecurityProvider(Role.VISU_ALL);
 		handler.setSecurityProvider(provider);
@@ -147,7 +138,6 @@ public class PartyAperiodicTaxLiabilityRequestEsbHandlerItTest extends PartyRequ
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = addNonHabitant("Jacques", "Ramaldadji", date(1965, 3, 12), Sexe.MASCULIN);
-				addForPrincipal(pp, date(1986, 3, 12), MotifFor.MAJORITE, MockCommune.Vevey);
 				return pp.getNumero();
 			}
 		});
@@ -157,27 +147,28 @@ public class PartyAperiodicTaxLiabilityRequestEsbHandlerItTest extends PartyRequ
 		request.setLogin(login);
 		request.setPartyNumber(idPP.intValue());
 		request.setDate(new Date(2013, 2, 8));
-		request.setScope(Scope.VD_RESIDENT_AND_WITHHOLDING);
-
-		final String headerName = "spiritualFather";
-		final String headerValue = "John Lanonne";
+		request.setSearchCommonHouseHolds(false);
+		request.setSearchParents(false);
 
 		// Envoie le message
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final EsbMessage m = buildTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
-				m.addHeader(headerName, headerValue);
-				validateMessage(m);
-				getEsbTemplate().send(m);
+				sendTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
 				return null;
 			}
 		});
 
-		final EsbMessage answer = getEsbMessage(getOutputQueue());
-		assertNotNull(answer);
+		final EsbMessage message = getEsbMessage(getOutputQueue());
+		assertNotNull(message);
 
-		final String foundHeaderValue = answer.getHeader(headerName);
-		assertEquals(headerValue, foundHeaderValue);
+		// on s'assure que la réponse est bien positive
+		final TaxLiabilityResponse response = (TaxLiabilityResponse) parseResponse(message);
+		assertNotNull(response);
+		assertNull(response.getPartyNumber());
+		assertNotNull(response.getFailure());
+		assertNotNull(response.getFailure().getNoTaxLiability());
 	}
+
+
 }

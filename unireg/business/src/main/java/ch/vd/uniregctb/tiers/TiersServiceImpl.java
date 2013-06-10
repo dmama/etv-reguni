@@ -1049,7 +1049,37 @@ public class TiersServiceImpl implements TiersService {
         return getEnsembleTiersCouple(menageCommun, date);
     }
 
-    /**
+	@Override
+	public List<EnsembleTiersCouple> getEnsembleTiersCouple(PersonnePhysique personne, int anneePeriode) {
+		if (personne == null) {
+			return null;
+		}
+
+		final Set<RapportEntreTiers> rapportsEntreTiers = personne.getRapportsSujet();
+		if (rapportsEntreTiers == null) {
+			return null;
+		}
+
+		final DateRangeHelper.Range periode = new DateRangeHelper.Range(RegDate.get(anneePeriode, 1, 1), RegDate.get(anneePeriode, 12, 31));
+
+		List<EnsembleTiersCouple> listeEnsemble =null;
+		for (RapportEntreTiers rapport : rapportsEntreTiers) {
+			if (!rapport.isAnnule() && TypeRapportEntreTiers.APPARTENANCE_MENAGE == rapport.getType()) {
+				if (DateRangeHelper.intersect(rapport, periode)) {
+					if (listeEnsemble == null) {
+						// création à la demande
+						listeEnsemble =  new ArrayList<EnsembleTiersCouple>();
+					}
+					final MenageCommun menageCommun = (MenageCommun) tiersDAO.get(rapport.getObjetId());
+					listeEnsemble.add(getEnsembleTiersCouple(menageCommun,anneePeriode));
+				}
+			}
+		}
+
+		return listeEnsemble;
+	}
+
+	/**
      * Recherche le ménage commun d'une personne physique à une date donnée.
      *
      * @param personne la personne dont on recherche le ménage.
