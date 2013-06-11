@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.technical.esb.EsbMessage;
@@ -59,5 +61,21 @@ public abstract class EsbMessageHelper {
 	@Nullable
 	public static String getProcessInstanceId(Map<String, String> headers) {
 		return headers.get(EsbMessage.PROCESS_INSTANCE_ID);
+	}
+
+	/**
+	 * Essaie d'extraire le <i>namespace</i> du <i>root element</i> du message passé en paramètre. S'il n'existe pas, une chaîne vide est retournée.
+	 * @param msg message ESB dont on veut connaître le <i>namespace</i>
+	 * @param logger logger sur lequel sera envoyé (en WARN) un éventuel problème à l'extraction du <i>namespace</i>
+	 * @return l'URI du <i>namespace</i> extrait, une chaîne vide en absence de <i>namespace</i> et "???" en cas d'erreur à l'extraction
+	 */
+	public static String extractNamespaceURI(EsbMessage msg, Logger logger) {
+		try {
+			return StringUtils.trimToEmpty(msg.getBodyAsDocument().getDocumentElement().getNamespaceURI());
+		}
+		catch (Exception e) {
+			logger.warn(String.format("Exception lors de l'extraction du namespace du message '%s'", msg.getBusinessId()), e);
+			return "???";
+		}
 	}
 }

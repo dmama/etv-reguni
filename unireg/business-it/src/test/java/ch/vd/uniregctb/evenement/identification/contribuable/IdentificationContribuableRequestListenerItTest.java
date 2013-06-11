@@ -12,6 +12,7 @@ import javax.xml.validation.SchemaFactory;
 import java.io.ByteArrayOutputStream;
 
 import org.junit.Test;
+import org.springframework.context.SmartLifecycle;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.test.context.ContextConfiguration;
@@ -36,9 +37,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-/**
- * Factorise le code commun pour les autres classes concrètes du package
- */
 @SuppressWarnings({"JavaDoc"})
 @ContextConfiguration(locations = {
 		"classpath:ut/unireg-businessit-jms.xml",
@@ -50,6 +48,7 @@ public class IdentificationContribuableRequestListenerItTest extends BusinessItT
 	private String inputQueue;
 	private String OutputQueue;
 	private EsbXmlValidation esbValidator;
+	private SmartLifecycle endpointManager;
 
 	protected static String requestToString(IdentificationContribuableRequest request) throws JAXBException {
 		JAXBContext context = JAXBContext.newInstance(ObjectFactory.class.getPackage().getName());
@@ -69,11 +68,20 @@ public class IdentificationContribuableRequestListenerItTest extends BusinessItT
 		esbValidator.setResourceResolver(new ClasspathCatalogResolver());
 		esbValidator.setSources(new Resource[]{new ClassPathResource(getRequestXSD()), new ClassPathResource(getResponseXSD())});
 
-		inputQueue = uniregProperties.getProperty("testprop.jms.queue.ident.ctb.auto");
+		inputQueue = uniregProperties.getProperty("testprop.jms.queue.ident.ctb.input");
 		OutputQueue = inputQueue + ".response";
 
 		EvenementHelper.clearQueue(esbTemplate, inputQueue);
 		EvenementHelper.clearQueue(esbTemplate, OutputQueue);
+
+		endpointManager = getBean(SmartLifecycle.class, "jmsIdentCtbEndpointManagerAutomatique");
+		endpointManager.start();
+	}
+
+	@Override
+	public void onTearDown() throws Exception {
+		endpointManager.stop();
+		super.onTearDown();
 	}
 
 	String getRequestXSD() {

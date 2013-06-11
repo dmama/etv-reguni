@@ -123,7 +123,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		initEndpointManager(INPUT_QUEUE, listener);
 	}
 
-	@Test
+	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
 	public void testSendReponseContribuableTrouve() throws Exception {
 
 		// Création du message
@@ -147,7 +147,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		assertTextMessage(OUTPUT_QUEUE, texte);
 	}
 
-	@Test
+	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
 	public void testSendReponseContribuableNonTrouve() throws Exception {
 
 		// Création du message
@@ -179,7 +179,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		assertTextMessage(OUTPUT_QUEUE, texte);
 	}
 
-	@Test
+	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
 	public void testSendReponseContribuableSansManuel() throws Exception {
 
 		// Création du message
@@ -214,8 +214,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		assertTextMessage(OUTPUT_QUEUE, texte);
 	}
 
-
-	@Test
+	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
 	public void testSendReponseContribuableManuelAveckAck() throws Exception {
 
 		// Création du message
@@ -250,32 +249,32 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 
 	private static final String EXPECTED_XML_TEMPLATE = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><iden:identificationCTB xmlns:iden=\"http://www.vd.ch/fiscalite/registre/identificationContribuable-v1.7\"><iden:reponse><iden:date>2008-03-23T00:00:00.000+01:00</iden:date><iden:erreur><iden:type>%s</iden:type><iden:code>%s</iden:code><iden:message>%s</iden:message></iden:erreur></iden:reponse></iden:identificationCTB>";
 
-	@Test
+	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
 	public void testSendReponseErreurTechnique() throws Exception {
 		testSendReponseErreur(TypeErreur.TECHNIQUE,	"TestErreurTechnique",	"Erreur technique de test");
 	}
 
-	@Test
+	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
 	public void testSendReponseErreurContribuableInconnu() throws Exception {
 		testSendReponseErreur(IdentificationContribuable.ErreurMessage.AUCUNE_CORRESPONDANCE);
 	}
 
-	@Test
+	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
 	public void testSendReponseErreurVersACI() throws Exception {
 		testSendReponseErreur(IdentificationContribuable.ErreurMessage.ACI_AUTRE_CANTON);
 	}
 
-	@Test
+	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
 	public void testSendReponseErreurVersIs() throws Exception {
 		testSendReponseErreur(IdentificationContribuable.ErreurMessage.SECTION_IMPOT_SOURCE);
 	}
 
-	@Test
+	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
 	public void testSendReponseErreurVersOMPI() throws Exception {
 		testSendReponseErreur(IdentificationContribuable.ErreurMessage.OIPM);
 	}
 
-	@Test
+	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
 	public void testSendReponseErreurFrontalier() throws Exception {
 		testSendReponseErreur(IdentificationContribuable.ErreurMessage.FRONTALIER);
 	}

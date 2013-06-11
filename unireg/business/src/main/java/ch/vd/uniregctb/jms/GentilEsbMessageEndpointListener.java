@@ -31,12 +31,12 @@ public class GentilEsbMessageEndpointListener extends EsbMessageEndpointListener
 			if (StringUtils.isBlank(msg.getBusinessCorrelationId())) {
 				return String.format("queue='%s', sender='%s', businessUser='%s', businessId='%s', ns='%s'",
 				                     msg.getServiceDestination(), msg.getApplication(), msg.getBusinessUser(),
-				                     msg.getBusinessId(), extractNamespaceURI(msg));
+				                     msg.getBusinessId(), EsbMessageHelper.extractNamespaceURI(msg, APP_LOGGER));
 			}
 			else {
 				return String.format("queue='%s', sender='%s', businessUser='%s', businessId='%s', businessCorrelationId='%s', ns='%s'",
 				                     msg.getServiceDestination(), msg.getApplication(), msg.getBusinessUser(),
-				                     msg.getBusinessId(), msg.getBusinessCorrelationId(), extractNamespaceURI(msg));
+				                     msg.getBusinessId(), msg.getBusinessCorrelationId(), EsbMessageHelper.extractNamespaceURI(msg, APP_LOGGER));
 			}
 		}
 	};
@@ -56,21 +56,6 @@ public class GentilEsbMessageEndpointListener extends EsbMessageEndpointListener
 
 	public void setEsbErrorHandler(EsbBusinessErrorHandler esbErrorHandler) {
 		this.esbErrorHandler = esbErrorHandler;
-	}
-
-	/**
-	 * Essaie d'extraire le <i>namespace</i> du <i>root element</i> du message passé en paramètre. S'il n'existe pas, une chaîne vide est retournée.
-	 * @param msg message ESB dont on veut connaître le <i>namespace</i>
-	 * @return l'URI du <i>namespace</i> extrait, une chaîne vide en absence de <i>namespace</i> et "???" en cas d'erreur à l'extraction
-	 */
-	private static String extractNamespaceURI(EsbMessage msg) {
-		try {
-			return StringUtils.trimToEmpty(msg.getBodyAsDocument().getDocumentElement().getNamespaceURI());
-		}
-		catch (Exception e) {
-			APP_LOGGER.warn(String.format("Exception lors de l'extraction du namespace du message '%s'", msg.getBusinessId()), e);
-			return "???";
-		}
 	}
 
 	@Override
