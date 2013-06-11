@@ -10,7 +10,7 @@
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/party/request/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/request-1.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/unireg-common-1.xsd" />
 
-	<xs:complexType name="taxLiabilityRequestType">
+	<xs:complexType name="taxLiabilityRequestType"  abstract="true">
 		<xs:annotation>
 			<xs:appinfo>
 				<jxb:class>

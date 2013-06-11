@@ -9,8 +9,6 @@
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/party/response/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/response-1.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/unireg-common-1.xsd" />
 
-	<xs:element name="taxLiabilityResponse" type="taxLiabilityResponseType"/>
-
 	<xs:complexType name="taxLiabilityResponseType">
 		<xs:annotation>
 			<xs:appinfo>

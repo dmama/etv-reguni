@@ -112,7 +112,7 @@
 			<jxb:package name="ch.vd.unireg.xml.event.party.taxliab.v2" />
 		</jxb:schemaBindings>
 		<jxb:bindings>
-			<namespace:prefix name="ev-party-aperiodic-taxliab-2" />
+			<namespace:prefix name="ev-party-taxliab-2" />
 		</jxb:bindings>
 	</jxb:bindings>
 
