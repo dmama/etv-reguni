@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.evenement.identification.contribuable;
 
+import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -11,8 +12,10 @@ import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.identification.contribuable.IdentificationContribuableService;
 import ch.vd.uniregctb.type.Sexe;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class IdentificationContribuableRequestHandlerTest extends BusinessTest {
 
@@ -106,6 +109,47 @@ public class IdentificationContribuableRequestHandlerTest extends BusinessTest {
 				assertNotNull(response);
 				assertNull(response.getErreur());
 				assertNotNull(response.getContribuable());
+				return null;
+			}
+		});
+	}
+
+	/**
+	 * Les champs très grands, s'ils ne sont pas traités correctement, pourraient causer l'invalidité du message de réponse
+	 */
+	@Test
+	public void testNomTresGrand() throws Exception {
+
+		final String prenom = "Marie-Madeleine Albertine Françoise Blandine Catherine Raphaëlle Renée Céline Charlotte Nicole Lisa Laetitia";
+		final String nom = "De la sublime croix comme on n'en voit    plus du tout depuis beaucoup trop longtemps par chez nous et ailleurs";
+		assertTrue(prenom.length() > 100);
+		assertTrue(nom.length() > 100);
+
+		// création du contribuable
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				addNonHabitant(prenom, nom, null, Sexe.FEMININ);
+				return null;
+			}
+		});
+
+		// attente de la fin de l'indexation
+		globalTiersIndexer.sync();
+
+		// identification
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final IdentificationContribuableRequest request = new IdentificationContribuableRequest(null, null, nom, prenom, null, null);
+				final IdentificationContribuableResponse response = handler.handle(request, "toto");
+				assertNotNull(response);
+				assertNull(response.getErreur());
+
+				final IdentificationContribuableResponse.Contribuable ctb = response.getContribuable();
+				assertNotNull(ctb);
+				assertEquals(StringUtils.abbreviate(prenom, 100), ctb.getPrenom());
+				assertEquals(StringUtils.abbreviate(nom.replaceAll("\\s+", " "), 100), ctb.getNom());
 				return null;
 			}
 		});

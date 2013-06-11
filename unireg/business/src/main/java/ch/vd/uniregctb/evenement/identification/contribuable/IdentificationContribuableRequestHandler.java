@@ -22,6 +22,7 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.ClassPathResource;
@@ -53,6 +54,8 @@ import ch.vd.uniregctb.xml.DataHelper;
 public class IdentificationContribuableRequestHandler implements EsbMessageHandler, InitializingBean {
 
 	private static final Logger LOGGER = Logger.getLogger(IdentificationContribuableRequestHandler.class);
+
+	private static final int MAX_NAME_LENGTH = 100;
 
 	private EsbXmlValidation esbValidator;
 	private EsbJmsTemplate esbTemplate;
@@ -172,8 +175,8 @@ public class IdentificationContribuableRequestHandler implements EsbMessageHandl
 			ctb.setNumeroContribuableIndividuel(idCtb.intValue());
 
 			final NomPrenom nomPrenom = tiersService.getDecompositionNomPrenom(personne);
-			ctb.setNom(nomPrenom.getNom());
-			ctb.setPrenom(nomPrenom.getPrenom());
+			ctb.setNom(tokenize(nomPrenom.getNom(), MAX_NAME_LENGTH));
+			ctb.setPrenom(tokenize(nomPrenom.getPrenom(), MAX_NAME_LENGTH));
 			ctb.setDateNaissance(DataHelper.coreToPartialDateXml(tiersService.getDateNaissance(personne)));
 
 			response.setContribuable(ctb);
@@ -181,6 +184,13 @@ public class IdentificationContribuableRequestHandler implements EsbMessageHandl
 		}
 
 		return response;
+	}
+
+	private static String tokenize(String src, int maxLength) {
+		if (src == null) {
+			return null;
+		}
+		return StringUtils.abbreviate(src.replaceAll("\\s+", " "), maxLength);
 	}
 
 	private CriteresPersonne createCriteresPersonne(IdentificationContribuableRequest request) {
