@@ -16,7 +16,7 @@ import ch.vd.uniregctb.jms.EsbMessageHelper;
 public class IdentificationContribuableMessageDispatcher implements EsbMessageHandler {
 
 	private static final Logger LOGGER = Logger.getLogger(IdentificationContribuableMessageDispatcher.class);
-	private static final Pattern VERSION_EXTRACTING_PATTERN = Pattern.compile("^.*[^0-9.]([0-9]+)(\\.[0-9]+)*$");
+	private static final Pattern VERSION_EXTRACTING_PATTERN = Pattern.compile("[^0-9.]([0-9]+)(\\.[0-9]+)*$");
 
 	private EsbMessageHandler v1Handler;
 	private EsbMessageHandler laterVersionsHandler;
@@ -51,7 +51,7 @@ public class IdentificationContribuableMessageDispatcher implements EsbMessageHa
 	protected static boolean isForV1(String ns) {
 		final Matcher matcher = VERSION_EXTRACTING_PATTERN.matcher(ns);
 		final boolean forV1;
-		if (matcher.matches()) {
+		if (matcher.find()) {
 			final int major = Integer.parseInt(matcher.group(1));
 			forV1 = major == 1;
 		}
