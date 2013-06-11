@@ -5,7 +5,7 @@
 
 	<!-- Demandes d'identification de contribuable, handler général -->
 
-	<bean id="identCtbMessageMarshaller" class="ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableMessageMarshaller">
+	<bean id="identCtbMessageDispatcher" class="ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableMessageDispatcher">
 		<property name="v1Handler" ref="identCtbMessageV1Handler"/>
 		<property name="laterVersionsHandler" ref="identificationContribuableRequestHandler"/>
 	</bean>
@@ -26,7 +26,7 @@
 	<!-- Demandes d'identification de contribuable, cannal "normal" -->
 
 	<bean id="identCtbMessageListener" class="ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener" parent="esbMessageListener">
-		<property name="handler" ref="identCtbMessageMarshaller"/>
+		<property name="handler" ref="identCtbMessageDispatcher"/>
 	</bean>
 
 	<bean id="jmsIdentCtbEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">
@@ -48,7 +48,7 @@
 	<!-- Le listener est également dupliqué afin de séparer les statistiques d'événements reçus au niveau JMX -->
 
 	<bean id="identCtbMessageListenerOnline" class="ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener" parent="esbMessageListener">
-		<property name="handler" ref="identCtbMessageMarshaller"/>
+		<property name="handler" ref="identCtbMessageDispatcher"/>
 	</bean>
 
 	<bean id="jmsIdentCtbEndpointManagerOnline" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">

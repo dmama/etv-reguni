@@ -13,9 +13,9 @@ import ch.vd.uniregctb.jms.EsbMessageHelper;
  * Handler de messages ESB d'identification capable de déterminer s'il faut utiliser la version xmlbeans ou la version jaxb2
  * pour traiter le message entrant en se basant sur le numéro de version du namespace (= derniers caractères [0-9.]+ du namespace)
  */
-public class IdentificationContribuableMessageMarshaller implements EsbMessageHandler {
+public class IdentificationContribuableMessageDispatcher implements EsbMessageHandler {
 
-	private static final Logger LOGGER = Logger.getLogger(IdentificationContribuableMessageMarshaller.class);
+	private static final Logger LOGGER = Logger.getLogger(IdentificationContribuableMessageDispatcher.class);
 	private static final Pattern VERSION_EXTRACTING_PATTERN = Pattern.compile("^.*[^0-9.]([0-9]+)(\\.[0-9]+)*$");
 
 	private EsbMessageHandler v1Handler;
