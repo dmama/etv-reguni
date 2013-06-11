@@ -28,16 +28,29 @@ public class GentilEsbMessageEndpointListener extends EsbMessageEndpointListener
 	private static final LoadDetailRenderer<EsbMessage> RENDERER = new LoadDetailRenderer<EsbMessage>() {
 		@Override
 		public String toString(EsbMessage msg) {
+			final String typePart = getRootElementTypePart(msg);
 			if (StringUtils.isBlank(msg.getBusinessCorrelationId())) {
-				return String.format("queue='%s', sender='%s', businessUser='%s', businessId='%s', ns='%s'",
+				return String.format("queue='%s', sender='%s', businessUser='%s', businessId='%s', ns='%s'%s",
 				                     msg.getServiceDestination(), msg.getApplication(), msg.getBusinessUser(),
-				                     msg.getBusinessId(), EsbMessageHelper.extractNamespaceURI(msg, APP_LOGGER));
+				                     msg.getBusinessId(), EsbMessageHelper.extractNamespaceURI(msg, APP_LOGGER), typePart);
 			}
 			else {
-				return String.format("queue='%s', sender='%s', businessUser='%s', businessId='%s', businessCorrelationId='%s', ns='%s'",
+				return String.format("queue='%s', sender='%s', businessUser='%s', businessId='%s', businessCorrelationId='%s', ns='%s'%s",
 				                     msg.getServiceDestination(), msg.getApplication(), msg.getBusinessUser(),
-				                     msg.getBusinessId(), msg.getBusinessCorrelationId(), EsbMessageHelper.extractNamespaceURI(msg, APP_LOGGER));
+				                     msg.getBusinessId(), msg.getBusinessCorrelationId(), EsbMessageHelper.extractNamespaceURI(msg, APP_LOGGER), typePart);
 			}
+		}
+
+		private String getRootElementTypePart(EsbMessage msg) {
+			final String typePart;
+			final String type = EsbMessageHelper.extractRootElementType(msg, APP_LOGGER);
+			if (StringUtils.isNotBlank(type)) {
+				typePart = String.format(", type='%s'", type);
+			}
+			else {
+				typePart = StringUtils.EMPTY;
+			}
+			return typePart;
 		}
 	};
 

@@ -1,12 +1,16 @@
 package ch.vd.uniregctb.jms;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
 
 import ch.vd.technical.esb.EsbMessage;
 
@@ -63,6 +67,8 @@ public abstract class EsbMessageHelper {
 		return headers.get(EsbMessage.PROCESS_INSTANCE_ID);
 	}
 
+	private static final String ERROR_VALUE = "???";
+
 	/**
 	 * Essaie d'extraire le <i>namespace</i> du <i>root element</i> du message passé en paramètre. S'il n'existe pas, une chaîne vide est retournée.
 	 * @param msg message ESB dont on veut connaître le <i>namespace</i>
@@ -75,7 +81,63 @@ public abstract class EsbMessageHelper {
 		}
 		catch (Exception e) {
 			logger.warn(String.format("Exception lors de l'extraction du namespace du message '%s'", msg.getBusinessId()), e);
-			return "???";
+			return ERROR_VALUE;
+		}
+	}
+
+	private static final char SEPARATOR = ':';
+	private static final String XMLNS_PREFIX = "xmlns" + SEPARATOR;
+	private static final String SCHEMA_INSTANCE_NS = "http://www.w3.org/2001/XMLSchema-instance";
+	private static final String TYPE_SUFFIX = SEPARATOR + "type";
+
+	/**
+	 * Essaie d'extraire le type de l'élément racine d'après l'attribut xsi:type, si xsi représente bien http://www.w3.org/2001/XMLSchema-instance
+	 * @param msg message ESB dont on veut connaître le type de l'élément racine
+	 * @param logger logger sur lequel sera envoyé (en WARN) un éventuel problème à l'extraction de la donnée>
+	 * @return type de l'élément racine si l'information xsi:type est disponible, <code>null</code> si cette information est indisponible et "???" en cas de problème
+	 */
+	public static String extractRootElementType(EsbMessage msg, Logger logger) {
+		try {
+			// parsing des attributs de l'élément racine
+			final Element rootElement = msg.getBodyAsDocument().getDocumentElement();
+			final NamedNodeMap attributeMap = rootElement.getAttributes();
+			final int nbAttributes = attributeMap.getLength();
+			final Map<String, String> attributes = new LinkedHashMap<>(nbAttributes);
+			for (int i = 0 ; i < nbAttributes ; ++ i) {
+				final Node node = attributeMap.item(i);
+				final String fullName = node.getNodeName();
+				final String key = fullName.startsWith(XMLNS_PREFIX) ? node.getLocalName() : node.getNodeName();
+				attributes.put(key, node.getNodeValue());
+			}
+
+			// quel est le namespace de XMLSchema-instance ?
+			for (Map.Entry<String, String> entry : attributes.entrySet()) {
+				if (SCHEMA_INSTANCE_NS.equals(entry.getValue())) {
+					// namespace possible -> y a-t-il un attribut "type" qui utilise ce namespace ?
+					final String typeFullName = attributes.get(entry.getKey() + TYPE_SUFFIX);
+					if (typeFullName != null) {
+						// voilà le type qui nous intéresse, reste maintenant à le formatter correctement
+						// (résolution de namespace)
+						final int indexSemiColon = typeFullName.indexOf(SEPARATOR);
+						if (indexSemiColon >= 0) {
+							final String typeNs = typeFullName.substring(0, indexSemiColon);
+							final String fullNs = attributes.get(typeNs);
+							if (fullNs == null) {
+								return typeFullName;
+							}
+							else {
+								final String localTypeName = typeFullName.substring(indexSemiColon);
+								return fullNs + localTypeName;
+							}
+						}
+					}
+				}
+			}
+			return null;
+		}
+		catch (Exception e) {
+			logger.warn(String.format("Exception lors de l'extraction du type de l'élément racine du message '%s'", msg.getBusinessId()), e);
+			return ERROR_VALUE;
 		}
 	}
 }
