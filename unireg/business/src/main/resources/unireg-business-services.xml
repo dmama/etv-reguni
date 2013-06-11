@@ -162,7 +162,7 @@
 		<property name="tiersService" ref="tiersService" />
 		<property name="adresseService" ref="adresseService" />
 		<property name="infraService" ref="serviceInfrastructureService" />
-		<property name="messageHandler" ref="identCtbMessageHandler" />
+		<property name="messageHandler" ref="identCtbMessageV1Handler" />
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="serviceSecuriteService" ref="serviceSecuriteService" />
 		<property name="identificationContribuableHelper" ref="identificationContribuableHelper" />
