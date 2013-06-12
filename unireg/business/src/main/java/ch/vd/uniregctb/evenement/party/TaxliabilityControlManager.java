@@ -41,11 +41,11 @@ public class TaxliabilityControlManager {
 
 
 	public TaxliabilityControlResult runControlOnDate(Long tiersId, RegDate date, boolean rechercheMenageCommun, boolean rechercheParent) throws ControlRuleException {
-		return runControl(tiersId,null,date,false,rechercheMenageCommun,rechercheParent);
+		return runControl(tiersId, null, date, false, rechercheMenageCommun, rechercheParent);
 	}
 
 	public TaxliabilityControlResult runControlOnPeriode(Long tiersId, Integer periode, boolean rechercheMenageCommun, boolean rechercheParent) throws ControlRuleException {
-		return runControl(tiersId,periode,null,true,rechercheMenageCommun,rechercheParent);
+		return runControl(tiersId, periode, null, true, rechercheMenageCommun, rechercheParent);
 	}
 
 
@@ -56,16 +56,18 @@ public class TaxliabilityControlManager {
 		if (periodic) {
 			if (LOGGER.isDebugEnabled()) {
 				String message = String.format("Controle d'assujetissement sur periode => :Numéro de tiers %d," +
-						" periode: %d, Rechercche de menage: %b, Recherche de parent: %b",tiersId.intValue(),periode,rechercheMenageCommun,rechercheParent);
+						" periode: %d, Rechercche de menage: %b, Recherche de parent: %b", tiersId.intValue(), periode, rechercheMenageCommun, rechercheParent);
 				LOGGER.debug(message);
 			}
 
 			loadControlRulesForPeriode(tiersId, periode);
 		}
 		else {
-			String message = String.format("Controle d'assujetissement à une date => :Numéro de tiers %d," +
-					" Date de contrôle: %s, Rechercche de menage: %b, Recherche de parent: %b",tiersId.intValue(), RegDateHelper.dateToDashString(date),rechercheMenageCommun,rechercheParent);
-			LOGGER.debug(message);
+			if (LOGGER.isDebugEnabled()) {
+				String message = String.format("Controle d'assujetissement à une date => :Numéro de tiers %d," +
+						" Date de contrôle: %s, Rechercche de menage: %b, Recherche de parent: %b", tiersId.intValue(), RegDateHelper.dateToDashString(date), rechercheMenageCommun, rechercheParent);
+				LOGGER.debug(message);
+			}
 			loadControlRulesForDate(tiersId, date);
 		}
 
@@ -88,8 +90,10 @@ public class TaxliabilityControlManager {
 
 		//MI.0 MI.1 MI.2
 		if (!(tiers instanceof MenageCommun) && rechercheParent && controlRuleForTiers.isMineur(tiersId)) {
-			String message = "Règle de recherche sur les parents chargée";
-			LOGGER.debug(message);
+			if (LOGGER.isDebugEnabled()) {
+				String message = "Règle de recherche sur les parents chargée";
+				LOGGER.debug(message);
+			}
 			listeExecution.add(controlRuleForParent);
 
 		}
