@@ -3,6 +3,7 @@ package ch.vd.uniregctb.tiers.timeline;
 import java.util.ArrayList;
 import java.util.List;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 
 /**
@@ -30,13 +31,13 @@ public class ForsTimelineView {
 	private final boolean showAssujettissements;
 	private final boolean showPeriodesImposition;
 
-	public ForsTimelineView(boolean invertedTime, boolean showForsGestion, boolean showAssujettissementsSource, boolean showAssujettissementsRole, boolean showAssujettissements, boolean showPeriodesImposition) {
+	public ForsTimelineView(boolean invertedTime, boolean showForsGestion, boolean showAssujettissementsSource, boolean showAssujettissementsRole, boolean showAssujettissements, boolean showPeriodesImposition, RegDate bigBang) {
 		this.showForsGestion = showForsGestion;
 		this.showAssujettissementsSource = showAssujettissementsSource;
 		this.showAssujettissementsRole = showAssujettissementsRole;
 		this.showAssujettissements = showAssujettissements;
 		this.showPeriodesImposition = showPeriodesImposition;
-		this.table = new TimelineTable(invertedTime);
+		this.table = new TimelineTable(invertedTime, bigBang);
 	}
 
 	public Long getTiersId() {

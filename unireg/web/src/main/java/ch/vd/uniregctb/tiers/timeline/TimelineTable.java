@@ -10,6 +10,9 @@ import org.springframework.util.Assert;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
+import ch.vd.registre.base.date.NullDateBehavior;
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 
 /**
  * Représente la table contenant la "timeline"
@@ -18,13 +21,16 @@ import ch.vd.registre.base.date.DateRangeHelper;
 public class TimelineTable {
 
 	public final boolean invertedTime;
+	public final RegDate bigBang;
 	public final List<TimelineRow> rows = new ArrayList<>();
 
 	/**
 	 * @param invertedTime <code>true</code> si les {@link #rows} doivent être affichées de la plus récente à la plus vieille (anti-chronologique), et <code>false</code> pour l'ordre "naturel" (chronologique)
+	 * @param bigBang première date de visualisation des données (1.1.2003 en principe, date de passage à la taxation annuelle pré-numerando)
 	 */
-	public TimelineTable(boolean invertedTime) {
+	public TimelineTable(boolean invertedTime, RegDate bigBang) {
 		this.invertedTime = invertedTime;
+		this.bigBang = bigBang;
 	}
 
 	public List<TimelineRow> getRows() {
@@ -83,16 +89,16 @@ public class TimelineTable {
 		return range.getDateFin() == row.periode.getDateFin();
 	}
 
-	private static boolean isSameBeginDate(TimelineRow row, DateRange range) {
-		return range.getDateDebut() == row.periode.getDateDebut();
+	private static boolean isSameBeginDate(TimelineRow row, DateRange range, RegDate bigBang) {
+		return range.getDateDebut() == row.periode.getDateDebut() || (row.periode.getDateDebut() == bigBang && RegDateHelper.isBeforeOrEqual(range.getDateDebut(), bigBang, NullDateBehavior.EARLIEST));
 	}
 
-	private boolean isFirstRowForRange(TimelineRow row, DateRange range) {
-		return invertedTime ? isSameEndDate(row, range) : isSameBeginDate(row, range);
+	private boolean isFirstRowForRange(TimelineRow row, DateRange range, RegDate bigBang) {
+		return invertedTime ? isSameEndDate(row, range) : isSameBeginDate(row, range, bigBang);
 	}
 
-	private boolean isLastRowForRange(TimelineRow row, DateRange range) {
-		return invertedTime ? isSameBeginDate(row, range) : isSameEndDate(row, range);
+	private boolean isLastRowForRange(TimelineRow row, DateRange range, RegDate bigBang) {
+		return invertedTime ? isSameBeginDate(row, range, bigBang) : isSameEndDate(row, range);
 	}
 
 	/**
@@ -102,7 +108,7 @@ public class TimelineTable {
 		TimelineCell c = new TimelineCell(range);
 		int longueur = 0;
 		for (TimelineRow r : rows) {
-			if (isFirstRowForRange(r, range)) {
+			if (isFirstRowForRange(r, range, bigBang)) {
 				Assert.isTrue(r.forPrincipal == TimelineCell.FILLER);
 				r.forPrincipal = c;
 				longueur++;
@@ -123,7 +129,7 @@ public class TimelineTable {
 		TimelineCell c = new TimelineCell(range);
 		int longueur = 0;
 		for (TimelineRow r : rows) {
-			if (isFirstRowForRange(r, range)) {
+			if (isFirstRowForRange(r, range, bigBang)) {
 				Assert.isTrue(r.forGestion == TimelineCell.FILLER);
 				r.forGestion = c;
 				longueur++;
@@ -144,7 +150,7 @@ public class TimelineTable {
 		TimelineCell c = new TimelineCell(range);
 		int longueur = 0;
 		for (TimelineRow r : rows) {
-			if (isFirstRowForRange(r, range)) {
+			if (isFirstRowForRange(r, range, bigBang)) {
 				Assert.isTrue(r.assujettissementSource == TimelineCell.FILLER);
 				r.assujettissementSource = c;
 				longueur++;
@@ -165,7 +171,7 @@ public class TimelineTable {
 		TimelineCell c = new TimelineCell(range);
 		int longueur = 0;
 		for (TimelineRow r : rows) {
-			if (isFirstRowForRange(r, range)) {
+			if (isFirstRowForRange(r, range, bigBang)) {
 				Assert.isTrue(r.assujettissementRole == TimelineCell.FILLER);
 				r.assujettissementRole = c;
 				longueur++;
@@ -186,7 +192,7 @@ public class TimelineTable {
 		TimelineCell c = new TimelineCell(range);
 		int longueur = 0;
 		for (TimelineRow r : rows) {
-			if (isFirstRowForRange(r, range)) {
+			if (isFirstRowForRange(r, range, bigBang)) {
 				Assert.isTrue(r.assujettissement == TimelineCell.FILLER);
 				r.assujettissement = c;
 				longueur++;
@@ -207,7 +213,7 @@ public class TimelineTable {
 		TimelineCell c = new TimelineCell(range);
 		int longueur = 0;
 		for (TimelineRow r : rows) {
-			if (isFirstRowForRange(r, range)) {
+			if (isFirstRowForRange(r, range, bigBang)) {
 				Assert.isTrue(r.periodeImposition == TimelineCell.FILLER);
 				r.periodeImposition = c;
 				longueur++;
@@ -234,11 +240,11 @@ public class TimelineTable {
 		for (int i = 0; i < rows.size(); ++i) {
 			TimelineRow r = rows.get(i);
 			levels = r.forsSecondaires.size();
-			if (isFirstRowForRange(r, range)) {
+			if (isFirstRowForRange(r, range, bigBang)) {
 				debut = i;
 				fin = i;
 			}
-			else if (isLastRowForRange(r, range)) {
+			else if (isLastRowForRange(r, range, bigBang)) {
 				fin = i;
 				break;
 			}

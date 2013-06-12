@@ -193,6 +193,7 @@
 
 	<bean id="assujettissementService" class="ch.vd.uniregctb.metier.assujettissement.AssujettissementServiceImpl">
 		<property name="validationService" ref="validationService" />
+		<property name="parametreAppService" ref="parametreAppService" />
 	</bean>
 
 	<bean id="periodeImpositionService" class="ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionServiceImpl">

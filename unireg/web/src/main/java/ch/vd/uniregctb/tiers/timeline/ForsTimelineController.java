@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.ControllerUtils;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
@@ -21,10 +23,10 @@ import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.metier.assujettissement.SourcierPur;
+import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscal;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalRevenuFortune;
 import ch.vd.uniregctb.tiers.ForGestion;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -51,6 +53,7 @@ public class ForsTimelineController {
 	private AssujettissementService assujettissementService;
 	private PeriodeImpositionService periodeImpositionService;
 	private ControllerUtils controllerUtils;
+	private RegDate bigBang;
 
 	@RequestMapping(value = "/fors/timeline-debug.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
@@ -97,7 +100,7 @@ public class ForsTimelineController {
 
 		controllerUtils.checkAccesDossierEnLecture(id);
 
-		final ForsTimelineView bean = new ForsTimelineView(invertedTime, showForsGestion, showAssujettissementsSource, showAssujettissementsRole, showAssujettissements, showPeriodesImposition);
+		final ForsTimelineView bean = new ForsTimelineView(invertedTime, showForsGestion, showAssujettissementsSource, showAssujettissementsRole, showAssujettissements, showPeriodesImposition, bigBang);
 		bean.setTiersId(id);
 
 		if (forPrint != null) {
@@ -212,12 +215,12 @@ public class ForsTimelineController {
 
 		// Calcul des différents ranges de l'axe du temps
 		final List<DateRange> ranges = new ArrayList<>();
-		ranges.addAll(forsFiscaux);
-		ranges.addAll(forsGestion);
-		ranges.addAll(assujettissementsSource);
-		ranges.addAll(assujettissementsRole);
-		ranges.addAll(assujettissements);
-		ranges.addAll(periodesImposition);
+		ranges.addAll(filter(forsFiscaux, bigBang));
+		ranges.addAll(filter(forsGestion, bigBang));
+		ranges.addAll(filter(assujettissementsSource, bigBang));
+		ranges.addAll(filter(assujettissementsRole, bigBang));
+		ranges.addAll(filter(assujettissements, bigBang));
+		ranges.addAll(filter(periodesImposition, bigBang));
 
 		final List<DateRange> periodes = buildPeriodes(ranges);
 
@@ -226,49 +229,96 @@ public class ForsTimelineController {
 
 		// Renseignement des fors fiscaux
 		for (ForFiscal f : forsFiscaux) {
-			if (f.isPrincipal()) {
-				final ForFiscalPrincipal fp = (ForFiscalPrincipal) f;
-				table.addForPrincipal(fp);
-			}
-			else if (f instanceof ForFiscalRevenuFortune) {
-				final ForFiscalRevenuFortune fs = (ForFiscalRevenuFortune) f;
-				table.addForSecondaire(fs);
+			if (compare(f, bigBang) >= 0) {
+				if (f.isPrincipal()) {
+					table.addForPrincipal(f);
+				}
+				else if (f instanceof ForFiscalRevenuFortune) {
+					table.addForSecondaire(f);
+				}
 			}
 		}
 
 		// Renseignement des fors de gestion
 		if (bean.isShowForsGestion()) {
 			for (ForGestion fg : forsGestion) {
-				table.addForGestion(fg);
+				if (compare(fg, bigBang) >= 0) {
+					table.addForGestion(fg);
+				}
 			}
 		}
 
 		// Renseignement des assujettissements source
 		if (bean.isShowAssujettissementsSource()) {
 			for (Assujettissement a : assujettissementsSource) {
-				table.addAssujettissementSource(a);
+				if (compare(a, bigBang) >= 0) {
+					table.addAssujettissementSource(a);
+				}
 			}
 		}
 
 		// Renseignement des assujettissements rôle
 		if (bean.isShowAssujettissementsRole()) {
 			for (Assujettissement a : assujettissementsRole) {
-				table.addAssujettissementRole(a);
+				if (compare(a, bigBang) >= 0) {
+					table.addAssujettissementRole(a);
+				}
 			}
 		}
 
 		// Renseignement des assujettissements
 		if (bean.isShowAssujettissements()) {
 			for (Assujettissement a : assujettissements) {
-				table.addAssujettissement(a);
+				if (compare(a, bigBang) >= 0) {
+					table.addAssujettissement(a);
+				}
 			}
 		}
 
 		// Renseignement des périodes d'imposition
 		if (bean.isShowPeriodesImposition()) {
 			for (PeriodeImposition p : periodesImposition) {
-				table.addPeriodeImposition(p);
+				if (compare(p, bigBang) >= 0) {
+					table.addPeriodeImposition(p);
+				}
 			}
+		}
+	}
+
+	private static List<DateRange> filter(List<? extends DateRange> source, RegDate bigBang) {
+		if (source == null || source.isEmpty()) {
+			return Collections.emptyList();
+		}
+		final List<DateRange> result = new ArrayList<>(source.size());
+		for (DateRange range : source) {
+			final int comparison = compare(range, bigBang);
+			if (comparison == 0) {
+				result.add(new DateRangeHelper.Range(bigBang, range.getDateFin()));
+			}
+			else if (comparison == 1) {
+				result.add(range);
+			}
+		}
+		return result;
+	}
+
+	/**
+	 *
+	 * @param range range to locate relatively to the bigBang date
+	 * @param bigBang reference date
+	 * @return -1 if the range is completely before the bigBang date, 0 if the bigBang date lies within the range (but does not start it), and +1 if the range is complelety after the bigBang date
+	 */
+	private static int compare(DateRange range, RegDate bigBang) {
+		if (RegDateHelper.isBefore(range.getDateDebut(), bigBang, NullDateBehavior.EARLIEST)) {
+			if (RegDateHelper.isAfterOrEqual(range.getDateFin(), bigBang, NullDateBehavior.LATEST)) {
+				return 0;
+			}
+			else {
+				return -1;
+			}
+		}
+		else {
+			return 1;
 		}
 	}
 
@@ -276,11 +326,13 @@ public class ForsTimelineController {
 		final List<DateRange> periodes = new ArrayList<>();
 		final List<RegDate> boundaries = TimelineHelper.extractBoundaries(ranges);
 		RegDate previous = null;
+		boolean secondLoopOrLater = false;
 		for (RegDate current : boundaries) {
-			if (previous != null) {
+			if (secondLoopOrLater) {
 				periodes.add(new Periode(previous, (current == null ? null : current.getOneDayBefore())));
 			}
 			previous = current;
+			secondLoopOrLater = true;
 		}
 		return periodes;
 	}
@@ -327,5 +379,9 @@ public class ForsTimelineController {
 
 	public void setControllerUtils(ControllerUtils controllerUtils) {
 		this.controllerUtils = controllerUtils;
+	}
+
+	public void setParametreAppService(ParametreAppService params) {
+		this.bigBang = RegDate.get(params.getPremierePeriodeFiscale(), 1, 1);
 	}
 }
