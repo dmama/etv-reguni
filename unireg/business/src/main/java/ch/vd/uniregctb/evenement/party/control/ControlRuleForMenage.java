@@ -21,11 +21,6 @@ public abstract class ControlRuleForMenage extends AbstractControlRule {
 	public TaxliabilityControlResult check() throws ControlRuleException {
 		TaxliabilityControlResult result = new TaxliabilityControlResult();
 		PersonnePhysique pp = (PersonnePhysique) context.tiersDAO.get(tiersId);
-		if (pp == null) {
-			final String message = String.format("Le tiers %d n'existe pas", tiersId);
-			throw new ControlRuleException(message);
-		}
-
 		final List<EnsembleTiersCouple> listeCouples = getEnsembleTiersCouple(pp);
 		if (listeCouples != null && !listeCouples.isEmpty()) {
 			//recherche des menages communs assujettis sur la période

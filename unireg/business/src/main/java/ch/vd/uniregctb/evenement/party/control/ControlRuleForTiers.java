@@ -21,11 +21,6 @@ public abstract class ControlRuleForTiers extends AbstractControlRule {
 	public TaxliabilityControlResult check() throws ControlRuleException {
 		TaxliabilityControlResult result = new TaxliabilityControlResult();
 		Tiers tiers =  context.tiersDAO.get(tiersId);
-		if (tiers == null) {
-			final String message = String.format("Le tiers %d n'existe pas",tiersId);
-			throw new ControlRuleException(message);
-		}
-
 		//S'il y a un assujettissement sur tout ou partie de la PF (au moins 1 jour) -> CTRL OK
 		if (isAssujetti(tiersId)) {
 			result.setIdTiersAssujetti(tiersId);

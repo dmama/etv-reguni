@@ -20,10 +20,6 @@ public abstract class ControlRuleForParent extends AbstractControlRule {
 
 		//Recherche des parents:
 		PersonnePhysique personne = (PersonnePhysique) context.tiersDAO.get(tiersId);
-		if (personne == null) {
-			final String message = String.format("Le tiers %d n'existe pas", tiersId);
-			throw new ControlRuleException(message);
-		}
 		List<RapportFiliation> filiations = context.tiersService.getRapportsFiliation(personne);
 		List<RapportFiliation> filiationParents = extractParents(filiations);
 		if (filiationParents.isEmpty()) {
