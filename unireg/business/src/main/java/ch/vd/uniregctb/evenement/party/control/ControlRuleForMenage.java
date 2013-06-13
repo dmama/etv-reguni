@@ -13,14 +13,14 @@ import ch.vd.uniregctb.xml.Context;
 
 public abstract class ControlRuleForMenage extends AbstractControlRule {
 
-	public ControlRuleForMenage(Context contex, Long tiersId) {
-		super(contex, tiersId);
+	public ControlRuleForMenage(Context context, long tiersId) {
+		super(context, tiersId);
 	}
 
 	@Override
 	public TaxliabilityControlResult check() throws ControlRuleException {
-		TaxliabilityControlResult result = new TaxliabilityControlResult();
-		PersonnePhysique pp = (PersonnePhysique) context.tiersDAO.get(tiersId);
+		final TaxliabilityControlResult result = new TaxliabilityControlResult();
+		final PersonnePhysique pp = (PersonnePhysique) context.tiersDAO.get(tiersId);
 		final List<EnsembleTiersCouple> listeCouples = getEnsembleTiersCouple(pp);
 		if (listeCouples != null && !listeCouples.isEmpty()) {
 			//recherche des menages communs assujettis sur la période
@@ -43,7 +43,7 @@ public abstract class ControlRuleForMenage extends AbstractControlRule {
 			}
 			//Si plusieurs numéros de couples sont assujettis >> CTRL KO
 			else if (menageCommunsAssujettis.size() > 1) {
-				TaxliabilityControlEchec echec = new TaxliabilityControlEchec(TaxliabilityControlEchecType.PLUSIEURS_MC_ASSUJETTI_TROUVES);
+				final TaxliabilityControlEchec echec = new TaxliabilityControlEchec(TaxliabilityControlEchecType.PLUSIEURS_MC_ASSUJETTI_TROUVES);
 				echec.setMenageCommunIds(menageCommunsAssujettis);
 				result.setEchec(echec);
 
@@ -53,7 +53,8 @@ public abstract class ControlRuleForMenage extends AbstractControlRule {
 				//Dans le cas de ménage trouvé non assujetti, on doit en renvoyer la liste
 				if (!menageCommunsNonAssujettis.isEmpty()) {
 					setErreur(result,TaxliabilityControlEchecType.UN_PLUSIEURS_MC_NON_ASSUJETTI_TROUVES,menageCommunsNonAssujettis,null,null);
-				}else{
+				}
+				else {
 					setErreur(result, TaxliabilityControlEchecType.AUCUN_MC_ASSOCIE_TROUVE, null, null, null);
 				}
 

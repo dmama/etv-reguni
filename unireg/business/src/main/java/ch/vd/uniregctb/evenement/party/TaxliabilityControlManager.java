@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.evenement.party;
 
 import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -26,100 +27,88 @@ public class TaxliabilityControlManager {
 	private static final Logger LOGGER = Logger.getLogger(TaxliabilityControlManager.class);
 	private Context context;
 
-
-	private ControlRuleForTiers controlRuleForTiers;
-	private ControlRuleForMenage controlRuleForMenage;
-	private ControlRuleForParent controlRuleForParent;
-
-	LinkedList<TaxliabilityControlRule> listeExecution;
-
-
 	public TaxliabilityControlManager(Context context) {
 		this.context = context;
-		this.listeExecution = new LinkedList<TaxliabilityControlRule>();
 	}
 
-
-	public TaxliabilityControlResult runControlOnDate(Long tiersId, RegDate date, boolean rechercheMenageCommun, boolean rechercheParent) throws ControlRuleException {
-		return runControl(tiersId, null, date, false, rechercheMenageCommun, rechercheParent);
+	public TaxliabilityControlResult runControlOnDate(long tiersId, RegDate date, boolean rechercheMenageCommun, boolean rechercheParent) throws ControlRuleException {
+		if (LOGGER.isDebugEnabled()) {
+			final String message = String.format("Contrôle d'assujettissement à une date => tiers %d, date %s, menage? %b, parent? %b",
+			                                     tiersId, RegDateHelper.dateToDashString(date), rechercheMenageCommun, rechercheParent);
+			LOGGER.debug(message);
+		}
+		final List<TaxliabilityControlRule> listeExecution = loadControlRulesForDate(tiersId, date, rechercheMenageCommun, rechercheParent);
+		return runControl(listeExecution);
 	}
 
-	public TaxliabilityControlResult runControlOnPeriode(Long tiersId, Integer periode, boolean rechercheMenageCommun, boolean rechercheParent) throws ControlRuleException {
-		return runControl(tiersId, periode, null, true, rechercheMenageCommun, rechercheParent);
+	public TaxliabilityControlResult runControlOnPeriode(long tiersId, int periode, boolean rechercheMenageCommun, boolean rechercheParent) throws ControlRuleException {
+		if (LOGGER.isDebugEnabled()) {
+			final String message = String.format("Contrôle d'assujettissement sur periode => tiers %d, periode %d, menage? %b, parent? %b",
+			                                     tiersId, periode, rechercheMenageCommun, rechercheParent);
+			LOGGER.debug(message);
+		}
+		final List<TaxliabilityControlRule> listeExecution = loadControlRulesForPeriode(tiersId, periode, rechercheMenageCommun, rechercheParent);
+		return runControl(listeExecution);
 	}
 
-
-	public TaxliabilityControlResult runControl(Long tiersId, Integer periode, RegDate date, boolean periodic, boolean rechercheMenageCommun, boolean rechercheParent) throws ControlRuleException {
+	private TaxliabilityControlResult runControl(List<TaxliabilityControlRule> listeExecution) throws ControlRuleException {
 		TaxliabilityControlResult result = null;
-
-
-		if (periodic) {
-			if (LOGGER.isDebugEnabled()) {
-				String message = String.format("Controle d'assujetissement sur periode => :Numéro de tiers %d," +
-						" periode: %d, Rechercche de menage: %b, Recherche de parent: %b", tiersId.intValue(), periode, rechercheMenageCommun, rechercheParent);
-				LOGGER.debug(message);
-			}
-
-			loadControlRulesForPeriode(tiersId, periode);
-		}
-		else {
-			if (LOGGER.isDebugEnabled()) {
-				String message = String.format("Controle d'assujetissement à une date => :Numéro de tiers %d," +
-						" Date de contrôle: %s, Rechercche de menage: %b, Recherche de parent: %b", tiersId.intValue(), RegDateHelper.dateToDashString(date), rechercheMenageCommun, rechercheParent);
-				LOGGER.debug(message);
-			}
-			loadControlRulesForDate(tiersId, date);
-		}
-
-		//On Récupère le tiers
-		Tiers tiers = context.tiersDAO.get(tiersId);
-
-		//Construction de la liste d'exécution
-
-		//Contrôle d'assujetissement sur le tiers en entrée
-		listeExecution.add(controlRuleForTiers);
-		//MC.0 si le tiers n'est pas un ménage commun  et que la recherche de ménage commun est demandée,
-		//on rajoute la règle de contôle des ménage à l'exécution
-		if (!(tiers instanceof MenageCommun) && rechercheMenageCommun) {
-			if (LOGGER.isDebugEnabled()) {
-				String message = "Règle de recherche sur les ménages communs chargée";
-				LOGGER.debug(message);
-			}
-			listeExecution.add(controlRuleForMenage);
-		}
-
-		//MI.0 MI.1 MI.2
-		if (!(tiers instanceof MenageCommun) && rechercheParent && controlRuleForTiers.isMineur(tiersId)) {
-			if (LOGGER.isDebugEnabled()) {
-				String message = "Règle de recherche sur les parents chargée";
-				LOGGER.debug(message);
-			}
-			listeExecution.add(controlRuleForParent);
-
-		}
-
 		for (TaxliabilityControlRule taxliabilityControlRule : listeExecution) {
 			result = taxliabilityControlRule.check();
 			if (result.getIdTiersAssujetti() != null) {
 				// on a trouvé un controle OK on retourne le résultat
 				return result;
 			}
-
 		}
+
 		//On a un controle Ko
 		return result;
-
 	}
 
-	private void loadControlRulesForPeriode(Long idPP, Integer periode) {
-		this.controlRuleForTiers = new ControlRuleForTiersPeriode(context, idPP, periode);
-		this.controlRuleForMenage = new ControlRuleForMenagePeriode(context, idPP, periode);
-		this.controlRuleForParent = new ControlRuleForParentPeriode(context, idPP, periode);
+	private List<TaxliabilityControlRule> buildRuleList(long tiersId, ControlRuleForTiers ruleTiers, ControlRuleForMenage ruleMenage, ControlRuleForParent ruleParents) {
+
+		//On Récupère le tiers
+		Tiers tiers = context.tiersDAO.get(tiersId);
+
+		//Construction de la liste d'exécution
+		final List<TaxliabilityControlRule> listeExecution = new LinkedList<>();
+
+		//Contrôle d'assujetissement sur le tiers en entrée
+		listeExecution.add(ruleTiers);
+
+		//MC.0 si le tiers n'est pas un ménage commun  et que la recherche de ménage commun est demandée,
+		//on rajoute la règle de contôle des ménage à l'exécution
+		if (ruleMenage != null && !(tiers instanceof MenageCommun)) {
+			if (LOGGER.isDebugEnabled()) {
+				String message = "Règle de recherche sur les ménages communs chargée";
+				LOGGER.debug(message);
+			}
+			listeExecution.add(ruleMenage);
+		}
+
+		//MI.0 MI.1 MI.2
+		if (ruleParents != null && !(tiers instanceof MenageCommun) && ruleTiers.isMineur(tiersId)) {
+			if (LOGGER.isDebugEnabled()) {
+				String message = "Règle de recherche sur les parents chargée";
+				LOGGER.debug(message);
+			}
+			listeExecution.add(ruleParents);
+		}
+
+		return listeExecution;
 	}
 
-	private void loadControlRulesForDate(Long idPP, RegDate date) {
-		this.controlRuleForTiers = new ControlRuleForTiersDate(context, idPP, date);
-		this.controlRuleForMenage = new ControleRuleForMenageDate(context, idPP, date);
-		this.controlRuleForParent = new ControlRuleForParentDate(context, idPP, date);
+	private List<TaxliabilityControlRule> loadControlRulesForPeriode(long tiersId, Integer periode, boolean rechercheMenageCommun, boolean rechercheParent) {
+		final ControlRuleForTiersPeriode controlRuleForTiers = new ControlRuleForTiersPeriode(context, tiersId, periode);
+		final ControlRuleForMenagePeriode controlRuleForMenage = rechercheMenageCommun ? new ControlRuleForMenagePeriode(context, tiersId, periode) : null;
+		final ControlRuleForParentPeriode controlRuleForParent = rechercheParent ? new ControlRuleForParentPeriode(context, tiersId, periode) : null;
+		return buildRuleList(tiersId, controlRuleForTiers, controlRuleForMenage, controlRuleForParent);
+	}
+
+	private List<TaxliabilityControlRule> loadControlRulesForDate(long tiersId, RegDate date, boolean rechercheMenageCommun, boolean rechercheParent) {
+		final ControlRuleForTiersDate controlRuleForTiers = new ControlRuleForTiersDate(context, tiersId, date);
+		final ControleRuleForMenageDate controlRuleForMenage = rechercheMenageCommun ? new ControleRuleForMenageDate(context, tiersId, date) : null;
+		final ControlRuleForParentDate controlRuleForParent = rechercheParent ? new ControlRuleForParentDate(context, tiersId, date) : null;
+		return buildRuleList(tiersId, controlRuleForTiers, controlRuleForMenage, controlRuleForParent);
 	}
 }

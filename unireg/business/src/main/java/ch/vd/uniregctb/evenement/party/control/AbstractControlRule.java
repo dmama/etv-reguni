@@ -14,26 +14,23 @@ import ch.vd.uniregctb.xml.Context;
  */
 public abstract class AbstractControlRule implements TaxliabilityControlRule {
 
+	protected final Context context;
+	protected final long tiersId;
 
-	protected Context context;
-	protected Long tiersId;
-
-
-	public AbstractControlRule(Context nouveauContext, Long tiersId) {
-		this.context = nouveauContext;
+	public AbstractControlRule(Context context, long tiersId) {
+		this.context = context;
 		this.tiersId = tiersId;
-
 	}
 
-	protected void setErreur(TaxliabilityControlResult result, TaxliabilityControlEchecType type,
-	                         @Nullable List<Long> menageCommunsIds, @Nullable List<Long> mcParentsIds, @Nullable List<Long> parentsIds) {
-		TaxliabilityControlEchec echec = new TaxliabilityControlEchec(type);
+	protected static void setErreur(TaxliabilityControlResult result, TaxliabilityControlEchecType type,
+	                                @Nullable List<Long> menageCommunsIds, @Nullable List<Long> mcParentsIds, @Nullable List<Long> parentsIds) {
+		final TaxliabilityControlEchec echec = new TaxliabilityControlEchec(type);
 		echec.setMenageCommunIds(menageCommunsIds);
 		echec.setMenageCommunParentsIds(mcParentsIds);
 		echec.setParentsIds(parentsIds);
 		result.setEchec(echec);
 	}
 
-	public abstract boolean isAssujetti(Long tiersId) throws ControlRuleException;
+	public abstract boolean isAssujetti(long tiersId) throws ControlRuleException;
 
 }

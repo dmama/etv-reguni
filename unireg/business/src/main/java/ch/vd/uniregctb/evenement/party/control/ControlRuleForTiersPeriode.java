@@ -14,23 +14,19 @@ import ch.vd.uniregctb.xml.Context;
  */
 public class ControlRuleForTiersPeriode extends ControlRuleForTiers {
 
+	private final int periode;
 
-	private Integer periode;
-
-
-	public ControlRuleForTiersPeriode(Context contex, Long tiersId, Integer periode) {
-		super(contex, tiersId);
+	public ControlRuleForTiersPeriode(Context context, long tiersId, int periode) {
+		super(context, tiersId);
 		this.periode = periode;
-
 	}
 
 	@Override
-	public boolean isAssujetti(Long tiersId) {
-		return isAssujettiSurPeriode(tiersId, periode);
+	public boolean isAssujetti(long tiersId) {
+		return isAssujettiSurPeriode(tiersId);
 	}
 
-
-	protected boolean isAssujettiSurPeriode(Long tiersId,Integer periode) {
+	private boolean isAssujettiSurPeriode(long tiersId) {
 		final Contribuable contribuable= context.tiersDAO.getContribuableByNumero(tiersId);
 		//TODO lever une exception si le contribuable n'existe pas ou faire la verification avant
 		List<Assujettissement> assujetissements=null;
@@ -40,8 +36,6 @@ public class ControlRuleForTiersPeriode extends ControlRuleForTiers {
 		catch (AssujettissementException e) {
 			e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
 		}
-
-
 
 		//return vrai si le contribuable est assutti sur la periode
 		return (assujetissements!=null && !assujetissements.isEmpty());

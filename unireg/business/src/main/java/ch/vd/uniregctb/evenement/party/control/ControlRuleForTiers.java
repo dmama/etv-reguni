@@ -12,9 +12,8 @@ import ch.vd.uniregctb.xml.Context;
  */
 public abstract class ControlRuleForTiers extends AbstractControlRule {
 
-
-	public ControlRuleForTiers(Context contex, Long tiersId) {
-		super(contex,tiersId);
+	public ControlRuleForTiers(Context context, Long tiersId) {
+		super(context, tiersId);
 	}
 
 	@Override
@@ -34,8 +33,8 @@ public abstract class ControlRuleForTiers extends AbstractControlRule {
 	}
 
 
-	public  boolean isMineur(long tiersId){
-		PersonnePhysique personne = (PersonnePhysique)context.tiersService.getTiers(tiersId);
+	public boolean isMineur(long tiersId) {
+		final PersonnePhysique personne = (PersonnePhysique) context.tiersService.getTiers(tiersId);
 		return isMineur(personne);
 	}
 

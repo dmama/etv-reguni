@@ -10,12 +10,10 @@ import ch.vd.uniregctb.xml.DataHelper;
 
 public class AperiodicTaxLiabilityRequestHandlerV2 extends TaxLiabilityRequestHandler {
 
-
 	@Override
 	public ClassPathResource getRequestXSD() {
 		return new ClassPathResource("event/party/aperiodic-taxliab-request-2.xsd");
 	}
-
 
 	@Override
 	public TaxliabilityControlResult runControl(TaxliabilityControlManager controlManager, TaxLiabilityRequest request) throws ControlRuleException {
@@ -24,9 +22,6 @@ public class AperiodicTaxLiabilityRequestHandlerV2 extends TaxLiabilityRequestHa
 		final long tiersId = request.getPartyNumber();
 		final boolean rechercheMenageCommun = request.isSearchCommonHouseHolds();
 		final boolean rechercheParents = request.isSearchParents();
-		TaxliabilityControlResult result =  controlManager.runControlOnDate(tiersId, dateControle, rechercheMenageCommun, rechercheParents);
-		return result;
+		return controlManager.runControlOnDate(tiersId, dateControle, rechercheMenageCommun, rechercheParents);
 	}
-
-
 }

@@ -5,8 +5,6 @@ import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.party.TaxliabilityControlResult;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportFiliation;
 import ch.vd.uniregctb.xml.Context;
 
@@ -16,22 +14,17 @@ import ch.vd.uniregctb.xml.Context;
  */
 public class ControlRuleForParentDate extends ControlRuleForParent {
 
+	private final RegDate date;
 
-	private RegDate date;
-
-
-	public ControlRuleForParentDate(Context contex, Long tiersId, RegDate date) {
-		super(contex, tiersId);
+	public ControlRuleForParentDate(Context context, long tiersId, RegDate date) {
+		super(context, tiersId);
 		this.date = date;
-
 	}
-
-
 
 	@Override
 	public List<RapportFiliation> extractParents(List<RapportFiliation> filiations) {
 
-		List<RapportFiliation> filiationsParents = new ArrayList<RapportFiliation>();
+		List<RapportFiliation> filiationsParents = new ArrayList<>();
 		for (RapportFiliation filiation : filiations) {
 			final boolean isValide = filiation.isValidAt(date);
 			if (filiation.getType() == RapportFiliation.Type.PARENT && isValide) {
@@ -43,27 +36,15 @@ public class ControlRuleForParentDate extends ControlRuleForParent {
 
 	//vérification du for en vigueur à la date (règle A1.3) sur ce numéro de tiers
 	@Override
-	public boolean isAssujetti(Long idTiers) throws ControlRuleException {
-		ControlRuleForTiersDate controlRuleForTiersDate = new ControlRuleForTiersDate(context,idTiers,date);
-		TaxliabilityControlResult result = controlRuleForTiersDate.check();
-		return result.getIdTiersAssujetti()!=null;
-	}
-
-	@Override
-	public TaxliabilityControlResult rechercheAssujettisementSurMenageParent(Long parentId) throws ControlRuleException {
-		ControleRuleForMenageDate controleMenageParent = new ControleRuleForMenageDate(context, parentId,date );
-		return controleMenageParent.check();
+	public boolean isAssujetti(long idTiers) throws ControlRuleException {
+		final ControlRuleForTiersDate controlRuleForTiersDate = new ControlRuleForTiersDate(context, idTiers, date);
+		final TaxliabilityControlResult result = controlRuleForTiersDate.check();
+		return result.getIdTiersAssujetti() != null;
 	}
 
 	@Override
 	public TaxliabilityControlResult rechercheAssujettisementSurMenage(Long parentId) throws ControlRuleException {
 		return new ControleRuleForMenageDate(context, parentId,date).check();
-	}
-
-	@Override
-	protected boolean isEnMenage(PersonnePhysique parent) {
-		EnsembleTiersCouple ensemble = context.tiersService.getEnsembleTiersCouple(parent,date);
-		return ensemble!=null;
 	}
 
 }

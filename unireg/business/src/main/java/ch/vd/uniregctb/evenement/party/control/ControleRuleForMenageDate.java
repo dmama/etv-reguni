@@ -13,20 +13,19 @@ import ch.vd.uniregctb.xml.Context;
  * Règle MC.2 - Recherche de l'appartenance à un ménage commun (CTB couple) pour le numéro d'individu à la date déterminante :
  */
 public class ControleRuleForMenageDate extends ControlRuleForMenage {
-	private Long tiersId;
-	private RegDate date;
 
+	private final RegDate date;
 
-	public ControleRuleForMenageDate(Context context, Long tiersId, RegDate date) {
+	public ControleRuleForMenageDate(Context context, long tiersId, RegDate date) {
 		super(context, tiersId);
 		this.date = date;
-
 	}
+
 	//Si un num CTB couple est en vigueur à la date déterminante, lancement du contrôle d'assujettissement sur ce numéro (A1.3)
 	@Override
-	public boolean isAssujetti(Long tiersId) throws ControlRuleException {
-		ControlRuleForTiersDate controlRuleForTiersDate = new ControlRuleForTiersDate(context,tiersId,date);
-		TaxliabilityControlResult result = controlRuleForTiersDate.check();
+	public boolean isAssujetti(long tiersId) throws ControlRuleException {
+		final ControlRuleForTiersDate controlRuleForTiersDate = new ControlRuleForTiersDate(context,tiersId,date);
+		final TaxliabilityControlResult result = controlRuleForTiersDate.check();
 		return result.getIdTiersAssujetti()!=null;
 	}
 
