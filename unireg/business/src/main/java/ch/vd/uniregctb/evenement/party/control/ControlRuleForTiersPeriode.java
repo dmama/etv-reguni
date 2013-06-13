@@ -22,19 +22,18 @@ public class ControlRuleForTiersPeriode extends ControlRuleForTiers {
 	}
 
 	@Override
-	public boolean isAssujetti(long tiersId) {
+	public boolean isAssujetti(long tiersId) throws ControlRuleException {
 		return isAssujettiSurPeriode(tiersId);
 	}
 
-	private boolean isAssujettiSurPeriode(long tiersId) {
+	private boolean isAssujettiSurPeriode(long tiersId) throws ControlRuleException {
 		final Contribuable contribuable= context.tiersDAO.getContribuableByNumero(tiersId);
-		//TODO lever une exception si le contribuable n'existe pas ou faire la verification avant
 		List<Assujettissement> assujetissements=null;
 		try {
 			assujetissements= context.assujettissementService.determine(contribuable,periode);
 		}
 		catch (AssujettissementException e) {
-			e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+			throw  new ControlRuleException(e.getMessage());
 		}
 
 		//return vrai si le contribuable est assutti sur la periode
