@@ -111,7 +111,7 @@ public class DatabaseServiceImpl implements DatabaseService {
 		final JdbcTemplate template = new JdbcTemplate(dataSource);
 		template.setIgnoreWarnings(false);
 
-		long startId = template.queryForLong(sql);
+		long startId = template.queryForObject(sql, Long.class);
 
 		if (dialect instanceof Oracle8iDialect) {
 			if (startId < maxId) {
@@ -123,7 +123,7 @@ public class DatabaseServiceImpl implements DatabaseService {
 
 				// on demande le prochain id pour mettre-à-jour la séquence
 				String select = "select " + sequenceName + ".nextval from dual";
-				long id = template.queryForLong(select);
+				long id = template.queryForObject(select, Long.class);
 				Assert.isTrue(id > maxId);
 
 				// on reset l'incrément à 1
@@ -134,11 +134,11 @@ public class DatabaseServiceImpl implements DatabaseService {
 		else {
 			long id;
 			do {
-				id = template.queryForLong(sql);
+				id = template.queryForObject(sql, Long.class);
 			} while (id < maxId);
 		}
 
-		long newId = template.queryForLong(sql);
+		long newId = template.queryForObject(sql, Long.class);
 		Assert.isTrue(newId > maxId);
 	}
 
@@ -172,7 +172,7 @@ public class DatabaseServiceImpl implements DatabaseService {
 			final Column identifier = (Column) table.getIdentifierValue().getColumnIterator().next();
 			final String sql = "select max(" + identifier.getName() + ") from " + table.getName();
 
-			long id = template.queryForLong(sql);
+			long id = template.queryForObject(sql, Long.class);
 			max = (id > max ? id : max);
 		}
 
@@ -188,7 +188,7 @@ public class DatabaseServiceImpl implements DatabaseService {
 
 		final String sql = "select max(NUMERO) from TIERS where TIERS_TYPE in (" + listeEntite + ')';
 
-		long id = template.queryForLong(sql);
+		long id = template.queryForObject(sql, Long.class);
 		max = (id > max ? id : max);
 
 		return max;
