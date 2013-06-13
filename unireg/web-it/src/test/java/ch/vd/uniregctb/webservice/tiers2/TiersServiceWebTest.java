@@ -921,14 +921,14 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		assertNotNull(periodes);
 
 		final int size = periodes.size();
-		assertEquals(anneeCourante - 2002 + 1, size);
+		assertEquals(anneeCourante - 2003 + 1, size);
 
-		// année 2002 à année courante - 1
+		// année 2003 à année courante - 1
 		for (int i = 0; i < size - 1; ++i) {
 			final PeriodeImposition p = periodes.get(i);
 			assertNotNull(p);
-			assertSameDay(newDate(i + 2002, 1, 1), p.getDateDebut());
-			assertSameDay(newDate(i + 2002, 12, 31), p.getDateFin());
+			assertSameDay(newDate(i + 2003, 1, 1), p.getDateDebut());
+			assertSameDay(newDate(i + 2003, 12, 31), p.getDateFin());
 		}
 
 		// année courante
@@ -1442,24 +1442,6 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		params.setTiersNumber(87654321); // Alfred Dupneu
 		params.getParts().add(TiersPart.ASSUJETTISSEMENTS);
 
-		{ // assujettissement passé
-			params.setDate(newDate(1987, 7, 1));
-			final PersonnePhysique pp = (PersonnePhysique) service.getTiers(params);
-			assertNotNull(pp);
-
-			final Assujettissement lic = pp.getAssujettissementLIC();
-			assertNotNull(lic);
-			assertSameDay(newDate(1985, 9, 1), lic.getDateDebut());
-			assertSameDay(newDate(1990, 2, 15), lic.getDateFin());
-			assertEquals(TypeAssujettissement.LIMITE, lic.getType()); // Hors-Suisse
-
-			final Assujettissement lifd = pp.getAssujettissementLIFD();
-			assertNotNull(lifd);
-			assertSameDay(newDate(1985, 9, 1), lifd.getDateDebut());
-			assertSameDay(newDate(1990, 2, 15), lifd.getDateFin());
-			assertEquals(TypeAssujettissement.LIMITE, lifd.getType()); // Hors-Suisse
-		}
-
 		{ // assujettissement courant
 			params.setDate(newDate(2006, 7, 1));
 			final PersonnePhysique pp = (PersonnePhysique) service.getTiers(params);
@@ -1494,20 +1476,11 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		assertNotNull(pp);
 
 		final List<Assujettissement> lic = pp.getAssujettissementsLIC();
-		assertEquals(2, lic.size());
-
-		{ // assujettissement passé
-
-			final Assujettissement a = lic.get(0);
-			assertNotNull(a);
-			assertSameDay(newDate(1985, 9, 1), a.getDateDebut());
-			assertSameDay(newDate(1990, 2, 15), a.getDateFin());
-			assertEquals(TypeAssujettissement.LIMITE, a.getType()); // Hors-Suisse
-		}
+		assertEquals(1, lic.size());
 
 		{ // assujettissement courant
 
-			final Assujettissement a = lic.get(1);
+			final Assujettissement a = lic.get(0);
 			assertNotNull(a);
 			assertSameDay(newDate(2003, 7, 12), a.getDateDebut());
 			assertNull(a.getDateFin());
@@ -1515,20 +1488,11 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		}
 
 		final List<Assujettissement> lifd = pp.getAssujettissementsLIFD();
-		assertEquals(2, lifd.size());
-
-		{ // assujettissement passé
-
-			final Assujettissement a = lifd.get(0);
-			assertNotNull(a);
-			assertSameDay(newDate(1985, 9, 1), a.getDateDebut());
-			assertSameDay(newDate(1990, 2, 15), a.getDateFin());
-			assertEquals(TypeAssujettissement.LIMITE, a.getType()); // Hors-Suisse
-		}
+		assertEquals(1, lifd.size());
 
 		{ // assujettissement courant
 
-			final Assujettissement a = lifd.get(1);
+			final Assujettissement a = lifd.get(0);
 			assertNotNull(a);
 			assertSameDay(newDate(2003, 7, 12), a.getDateDebut());
 			assertNull(a.getDateFin());
