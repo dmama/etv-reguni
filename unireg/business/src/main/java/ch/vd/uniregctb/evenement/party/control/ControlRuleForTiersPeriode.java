@@ -33,7 +33,8 @@ public class ControlRuleForTiersPeriode extends ControlRuleForTiers {
 			assujetissements= context.assujettissementService.determine(contribuable,periode);
 		}
 		catch (AssujettissementException e) {
-			throw  new ControlRuleException(e.getMessage());
+			final String message = String.format("Exception lors du calcul d'assujetissement pour le tiers %d",tiersId);
+			throw  new ControlRuleException(message, e);
 		}
 
 		//return vrai si le contribuable est assutti sur la periode
