@@ -59,7 +59,7 @@ public class TaxliabilityControlManagerTest extends AbstractControlTaxliabilityT
 			@Override
 			public TaxliabilityControlResult execute(TransactionStatus status) throws Exception {
 
-				return controlManager.runControl(idPP, periode, date, periodic, rechercheMenageCommun, rechercheParent);
+				return controlManager.runControlOnPeriode(idPP, periode,rechercheMenageCommun, rechercheParent);
 			}
 		});
 
@@ -100,7 +100,7 @@ public class TaxliabilityControlManagerTest extends AbstractControlTaxliabilityT
 		TaxliabilityControlResult result = doInNewTransaction(new TxCallback<TaxliabilityControlResult>() {
 			@Override
 			public TaxliabilityControlResult execute(TransactionStatus status) throws Exception {
-				return controlManager.runControl(idPP, periode, date, periodic, rechercheMenageCommun, rechercheParent);
+				return controlManager.runControlOnPeriode(idPP, periode, rechercheMenageCommun, rechercheParent);
 			}
 		});
 
@@ -155,7 +155,7 @@ public class TaxliabilityControlManagerTest extends AbstractControlTaxliabilityT
 			@Override
 			public TaxliabilityControlResult execute(TransactionStatus status) throws Exception {
 
-				return controlManager.runControl(ids.idpp, periode, date, periodic, rechercheMenageCommun, rechercheParent);
+				return controlManager.runControlOnPeriode(ids.idpp, periode, rechercheMenageCommun, rechercheParent);
 			}
 		});
 
@@ -209,7 +209,7 @@ public class TaxliabilityControlManagerTest extends AbstractControlTaxliabilityT
 			@Override
 			public TaxliabilityControlResult execute(TransactionStatus status) throws Exception {
 
-				return controlManager.runControl(ids.idpp, periode, date, periodic, rechercheMenageCommun, rechercheParent);
+				return controlManager.runControlOnPeriode(ids.idpp, periode, rechercheMenageCommun, rechercheParent);
 			}
 		});
 
@@ -259,7 +259,7 @@ public class TaxliabilityControlManagerTest extends AbstractControlTaxliabilityT
 			@Override
 			public TaxliabilityControlResult execute(TransactionStatus status) throws Exception {
 
-				return controlManager.runControl(ids.idpp, periode, date, periodic, rechercheMenageCommun, rechercheParent);
+				return controlManager.runControlOnPeriode(ids.idpp, periode, rechercheMenageCommun, rechercheParent);
 			}
 		});
 
@@ -300,7 +300,7 @@ public class TaxliabilityControlManagerTest extends AbstractControlTaxliabilityT
 		TaxliabilityControlResult result = doInNewTransaction(new TxCallback<TaxliabilityControlResult>() {
 			@Override
 			public TaxliabilityControlResult execute(TransactionStatus status) throws Exception {
-				return controlManager.runControl(idPP, periode, date, periodic, rechercheMenageCommun, rechercheParent);
+				return controlManager.runControlOnPeriode(idPP, periode, rechercheMenageCommun, rechercheParent);
 			}
 		});
 
@@ -359,7 +359,7 @@ public class TaxliabilityControlManagerTest extends AbstractControlTaxliabilityT
 		TaxliabilityControlResult result = doInNewTransaction(new TxCallback<TaxliabilityControlResult>() {
 			@Override
 			public TaxliabilityControlResult execute(TransactionStatus status) throws Exception {
-				return controlManager.runControl(ids.idFille, periode, date, periodic, rechercheMenageCommun, rechercheParent);
+				return controlManager.runControlOnPeriode(ids.idFille, periode, rechercheMenageCommun, rechercheParent);
 			}
 		});
 
@@ -373,7 +373,7 @@ public class TaxliabilityControlManagerTest extends AbstractControlTaxliabilityT
 		 result = doInNewTransaction(new TxCallback<TaxliabilityControlResult>() {
 			@Override
 			public TaxliabilityControlResult execute(TransactionStatus status) throws Exception {
-				return controlManager.runControl(ids.idFille, periode, date, periodic, rechercheMenageCommun, false);
+				return controlManager.runControlOnPeriode(ids.idFille, periode, rechercheMenageCommun, false);
 			}
 		});
 
