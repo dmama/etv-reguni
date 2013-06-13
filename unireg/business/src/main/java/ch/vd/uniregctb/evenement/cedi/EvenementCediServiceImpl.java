@@ -18,6 +18,7 @@ import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.iban.IbanHelper;
+import ch.vd.uniregctb.iban.IbanValidator;
 import ch.vd.uniregctb.jms.BamMessageHelper;
 import ch.vd.uniregctb.jms.BamMessageSender;
 import ch.vd.uniregctb.jms.EsbBusinessCode;
@@ -35,6 +36,7 @@ public class EvenementCediServiceImpl implements EvenementCediService, Evenement
 	private PeriodeFiscaleDAO periodeFiscaleDAO;
 	private ModeleDocumentDAO modeleDocumentDAO;
 	private ValidationService validationService;
+	private IbanValidator ibanValidator;
 	private BamMessageSender bamMessageSender;
 
 	@Override
@@ -158,8 +160,16 @@ public class EvenementCediServiceImpl implements EvenementCediService, Evenement
 			ctb.setTitulaireCompteBancaire(LengthConstants.streamlineField(scan.getTitulaireCompte(), LengthConstants.TIERS_PERSONNE, true));
 		}
 
-		if (StringUtils.isNotBlank(scan.getIban())) {
-			ctb.setNumeroCompteBancaire(LengthConstants.streamlineField(IbanHelper.normalize(scan.getIban()), LengthConstants.TIERS_NUMCOMPTE, false));
+		// [SIFISC-8936] Un IBAN vide (ou juste "CH") ne doit jamais être pris en compte
+		if (StringUtils.isNotBlank(scan.getIban()) && !"CH".equals(StringUtils.trim(scan.getIban()))) {
+			final boolean newIbanValid = ibanValidator.isValidIban(scan.getIban());
+			boolean replaceIban = newIbanValid;
+			if (!newIbanValid) {
+				replaceIban = !ibanValidator.isValidIban(ctb.getNumeroCompteBancaire());
+			}
+			if (replaceIban) {
+				ctb.setNumeroCompteBancaire(LengthConstants.streamlineField(IbanHelper.normalize(scan.getIban()), LengthConstants.TIERS_NUMCOMPTE, false));
+			}
 		}
 
 		if (StringUtils.isNotBlank(scan.getNoTelephone())) {
@@ -223,5 +233,9 @@ public class EvenementCediServiceImpl implements EvenementCediService, Evenement
 
 	public void setBamMessageSender(BamMessageSender bamMessageSender) {
 		this.bamMessageSender = bamMessageSender;
+	}
+
+	public void setIbanValidator(IbanValidator ibanValidator) {
+		this.ibanValidator = ibanValidator;
 	}
 }

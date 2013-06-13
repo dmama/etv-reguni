@@ -6,6 +6,7 @@ import java.util.List;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.uniregctb.common.BusinessTest;
@@ -16,6 +17,7 @@ import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
+import ch.vd.uniregctb.iban.IbanValidator;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.jms.BamMessageSender;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -28,21 +30,28 @@ import ch.vd.uniregctb.validation.ValidationService;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 public class EvenementCediServiceTest extends BusinessTest {
 
 	private EvenementCediServiceImpl service;
+	private PeriodeFiscaleDAO pfDao;
+	private ModeleDocumentDAO modeleDocumentDAO;
 
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 
+		pfDao = getBean(PeriodeFiscaleDAO.class, "periodeFiscaleDAO");
+		modeleDocumentDAO = getBean(ModeleDocumentDAO.class, "modeleDocumentDAO");
+
 		service = new EvenementCediServiceImpl();
 		service.setTiersDAO(getBean(TiersDAO.class, "tiersDAO"));
-		service.setModeleDocumentDAO(getBean(ModeleDocumentDAO.class, "modeleDocumentDAO"));
-		service.setPeriodeFiscaleDAO(getBean(PeriodeFiscaleDAO.class, "periodeFiscaleDAO"));
+		service.setModeleDocumentDAO(modeleDocumentDAO);
+		service.setPeriodeFiscaleDAO(pfDao);
 		service.setValidationService(getBean(ValidationService.class, "validationService"));
 		service.setBamMessageSender(getBean(BamMessageSender.class, "bamMessageSender"));
+		service.setIbanValidator(getBean(IbanValidator.class, "ibanValidator"));
 	}
 
 	@Test
@@ -188,6 +197,97 @@ public class EvenementCediServiceTest extends BusinessTest {
 				final DeclarationImpotOrdinaire declaration = (DeclarationImpotOrdinaire) list.get(0);
 				assertEquals(TypeDocument.DECLARATION_IMPOT_VAUDTAX, declaration.getModeleDocument().getTypeDocument());
 
+				return null;
+			}
+		});
+	}
+
+	@Test
+	public void testModificationsIban() throws Exception {
+
+		// mise en place des données de base
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				addCollAdm(ServiceInfrastructureService.noCEDI);
+				final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
+				final ModeleDocument declarationComplete2008 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
+				addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2008);
+				addModeleFeuilleDocument("Déclaration", "210", declarationComplete2008);
+				addModeleFeuilleDocument("Annexe 1", "220", declarationComplete2008);
+				addModeleFeuilleDocument("Annexe 2-3", "230", declarationComplete2008);
+				addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete2008);
+				return null;
+			}
+		});
+
+		doTestModificationIban("CH452365", null, false);                        // null ignoré sur IBAN invalide
+		doTestModificationIban("CH9308440717427290198", null, false);           // null ignoré sur IBAN valide
+
+		doTestModificationIban(null, "CH", false);                      // CH ignoré
+		doTestModificationIban(null, "CH547458", true);                 // valeur vide remplacée, même par donnée invalide
+		doTestModificationIban(null, "CH9308440717427290198", true);    // IBAN valide
+
+		doTestModificationIban("CH443", null, false);                       // null ignoré
+		doTestModificationIban("CH443", "CH", false);                       // CH ignoré
+		doTestModificationIban("CH443", "CH547458", true);                  // valeur invalide remplacée par autre valeur invalide
+		doTestModificationIban("CH443", "CH9308440717427290198", true);     // IBAN valide
+
+		doTestModificationIban("CH690023000123456789A", null, false);                       // null ignoré
+		doTestModificationIban("CH690023000123456789A", "CH", false);                       // CH ignoré
+		doTestModificationIban("CH690023000123456789A", "CH547458", false);                 // valeur valide non-remplacée par valeur invalide
+		doTestModificationIban("CH690023000123456789A", "CH9308440717427290198", true);     // IBAN valide
+	}
+
+	private void doTestModificationIban(final String ibanInitial, final String nouvelIban, final boolean replacementExpected) throws Exception {
+
+		// Création d'un contribuable ordinaire et de sa DI
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+
+				final PeriodeFiscale periode2008 = pfDao.getPeriodeFiscaleByYear(2008);
+				final ModeleDocument declarationComplete2008 = modeleDocumentDAO.getModelePourDeclarationImpotOrdinaire(periode2008, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH);
+
+				// Un tiers tout ce quil y a de plus ordinaire
+				final PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+				addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
+				addDeclarationImpot(eric, periode2008, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
+				                    declarationComplete2008);
+
+				// le numéro présent en base avant réception du nouveau
+				eric.setNumeroCompteBancaire(ibanInitial);
+
+				return eric.getNumero();
+			}
+		});
+
+		// Simule la réception d'un événement de scan de DI
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final RetourDI scan = new RetourDI();
+				scan.setNoContribuable(id.intValue());
+				scan.setIban(nouvelIban);
+				scan.setTypeDocument(RetourDI.TypeDocument.VAUDTAX);
+				scan.setPeriodeFiscale(2008);
+				scan.setNoSequenceDI(1);
+				service.onRetourDI(scan, Collections.<String, String>emptyMap());
+				return null;
+			}
+		});
+
+		// Vérifie que les informations personnelles ainsi que le type de DI ont bien été mis-à-jour
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique eric = hibernateTemplate.get(PersonnePhysique.class, id);
+				if ((!replacementExpected && ibanInitial == null) || (replacementExpected && nouvelIban == null)) {
+					assertNull(eric.getNumeroCompteBancaire());
+				}
+				else {
+					assertEquals(replacementExpected ? nouvelIban : ibanInitial, eric.getNumeroCompteBancaire());
+				}
 				return null;
 			}
 		});

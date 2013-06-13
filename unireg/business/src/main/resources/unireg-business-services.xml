@@ -118,6 +118,7 @@
 		<property name="modeleDocumentDAO" ref="modeleDocumentDAO"/>
 		<property name="validationService" ref="validationService"/>
 		<property name="bamMessageSender" ref="bamMessageSender"/>
+		<property name="ibanValidator" ref="ibanValidator"/>
 	</bean>
 
 	<bean id="evenementIAMService" class="ch.vd.uniregctb.evenement.iam.EvenementIAMServiceImpl">
