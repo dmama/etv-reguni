@@ -6,11 +6,11 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.unireg.xml.common.v1.Date;
 import ch.vd.unireg.xml.common.v1.UserLogin;
-import ch.vd.unireg.xml.event.party.nonresident.v1.CreateNonresidentRequest;
-import ch.vd.unireg.xml.event.party.nonresident.v1.CreateNonresidentResponse;
+import ch.vd.unireg.xml.event.party.nonresident.v2.CreateNonresidentRequest;
+import ch.vd.unireg.xml.event.party.nonresident.v2.CreateNonresidentResponse;
 import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
-import ch.vd.unireg.xml.party.person.v1.NaturalPersonCategory;
-import ch.vd.unireg.xml.party.person.v1.Sex;
+import ch.vd.unireg.xml.party.person.v2.NaturalPersonCategory;
+import ch.vd.unireg.xml.party.person.v2.Sex;
 import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.security.MockSecurityProvider;
 import ch.vd.uniregctb.security.Role;
@@ -28,14 +28,14 @@ import static org.junit.Assert.fail;
  * Classe de test du listener de requêtes de création de non-habitant. Cette classe nécessite une connexion à l'ESB de développement pour fonctionner.
  *
  */
-public class PartyCreateNonresidentRequestEsbHandlerItTest extends PartyRequestEsbHandlerItTest {
+public class PartyCreateNonresidentRequestV2EsbHandlerItTest extends PartyRequestEsbHandlerItTest {
 
-	private CreateNonresidentRequestHandlerV1 handler;
+	private CreateNonresidentRequestHandlerV2 handler;
 
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
-		handler = getBean(CreateNonresidentRequestHandlerV1.class, "createNonresidentRequestHandler");
+		handler = getBean(CreateNonresidentRequestHandlerV2.class, "createNonresidentRequestHandlerV2");
 	}
 
 	@Override
@@ -46,12 +46,12 @@ public class PartyCreateNonresidentRequestEsbHandlerItTest extends PartyRequestE
 
 	@Override
 	protected String getRequestXSD() {
-		return "event/party/create-nonresident-request-1.xsd";
+		return "event/party/create-nonresident-request-2.xsd";
 	}
 
 	@Override
 	protected String getResponseXSD() {
-		return "event/party/create-nonresident-response-1.xsd";
+		return "event/party/create-nonresident-response-2.xsd";
 	}
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)

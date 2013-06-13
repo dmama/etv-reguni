@@ -17,7 +17,8 @@
 				<entry key="ch.vd.unireg.xml.event.party.numbers.v1.NumbersRequest" value-ref="numberRequestHandler" />
 				<entry key="ch.vd.unireg.xml.event.party.party.v1.PartyRequest" value-ref="partyRequestHandlerV1" />
 				<entry key="ch.vd.unireg.xml.event.party.party.v2.PartyRequest" value-ref="partyRequestHandlerV2" />
-				<entry key="ch.vd.unireg.xml.event.party.nonresident.v1.CreateNonresidentRequest" value-ref="createNonresidentRequestHandler" />
+				<entry key="ch.vd.unireg.xml.event.party.nonresident.v1.CreateNonresidentRequest" value-ref="createNonresidentRequestHandlerV1" />
+				<entry key="ch.vd.unireg.xml.event.party.nonresident.v2.CreateNonresidentRequest" value-ref="createNonresidentRequestHandlerV2" />
 				<entry key="ch.vd.unireg.xml.event.party.taxliab.aperiodic.v1.AperiodicTaxLiabilityRequest" value-ref="aperiodicTaxLiabilityRequestHandlerV1" />
 				<entry key="ch.vd.unireg.xml.event.party.taxliab.aperiodic.v2.AperiodicTaxLiabilityRequest" value-ref="aperiodicTaxLiabilityRequestHandlerV2" />
 				<entry key="ch.vd.unireg.xml.event.party.taxliab.periodic.v2.PeriodicTaxLiabilityRequest" value-ref="periodicTaxLiabilityRequestHandler" />
@@ -88,7 +89,11 @@
 		<property name="periodeImpositionService" ref="periodeImpositionService" />
 	</bean>
 
-	<bean id="createNonresidentRequestHandler" class="ch.vd.uniregctb.evenement.party.CreateNonresidentRequestHandlerV1">
+	<bean id="createNonresidentRequestHandlerV1" class="ch.vd.uniregctb.evenement.party.CreateNonresidentRequestHandlerV1">
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
+	</bean>
+
+	<bean id="createNonresidentRequestHandlerV2" class="ch.vd.uniregctb.evenement.party.CreateNonresidentRequestHandlerV2">
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 	</bean>
 
