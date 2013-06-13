@@ -8,7 +8,7 @@
 
 	<groupId>ch.vd.watchdog</groupId>
 	<artifactId>watchdog</artifactId>
-	<version>0.2</version>
+	<version>0.3</version>
 	
 	<packaging>jar</packaging>
 
@@ -27,8 +27,8 @@
 				<version>2.0.2</version>
 				<configuration>
 					<encoding>UTF-8</encoding>
-					<source>1.6</source>
-					<target>1.6</target>
+					<source>1.7</source>
+					<target>1.7</target>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -38,17 +38,18 @@
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
-			<version>1.2.14</version>
+			<version>1.2.17</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.vd.uniregctb</groupId>
 			<artifactId>unireg-wsclient-fidor</artifactId>
-			<version>2.3.3</version>
+			<version>5.2</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.5</version>
+			<version>4.10</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 
@@ -90,7 +91,7 @@
 	<properties>
 
 		<!-- Application settings -->
-		<copyright.year>2011</copyright.year>
+		<copyright.year>2013</copyright.year>
 		<amp.genericCore>true</amp.genericCore>
 		<amp.fullSource>false</amp.fullSource>
 

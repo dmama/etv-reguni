@@ -5,11 +5,11 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import ch.vd.fidor.ws.v2.CommuneFiscale;
-import ch.vd.fidor.ws.v2.FidorDate;
-import ch.vd.fidor.ws.v2.Logiciel;
-import ch.vd.fidor.ws.v2.Pays;
-import ch.vd.uniregctb.webservice.fidor.FidorClient;
+import ch.vd.evd0007.v1.Country;
+import ch.vd.evd0012.v1.CommuneFiscale;
+import ch.vd.evd0012.v1.Logiciel;
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.webservice.fidor.v5.FidorClient;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -31,9 +31,9 @@ public abstract class FidorWatchDogTest {
 
 	@Test
 	public void testGetPays() {
-		final Pays suisse = fidorClient.getPaysDetail(8100);
+		final Country suisse = fidorClient.getPaysDetail(8100, RegDate.get());
 		assertNotNull(suisse);
-		assertEquals("Suisse", suisse.getNomCourtFr());
+		assertEquals("Suisse", suisse.getCountry().getShortNameFr());
 	}
 
 	@Test
@@ -45,7 +45,7 @@ public abstract class FidorWatchDogTest {
 
 	@Test
 	public void testGetCommuneParNoOFS() throws Exception {
-		final CommuneFiscale commune = fidorClient.getCommuneParNoOFS(5586, newDate(2000, 1, 1));
+		final CommuneFiscale commune = fidorClient.getCommuneParNoOFS(5586, RegDate.get(2000, 1, 1));
 		assertNotNull(commune);
 		assertEquals("Lausanne", commune.getNomOfficiel());
 	}
@@ -62,7 +62,7 @@ public abstract class FidorWatchDogTest {
 
 	@Test
 	public void testGetCommuneParBatiment() throws Exception {
-		final CommuneFiscale commune = fidorClient.getCommuneParBatiment(280011227, newDate(2000, 1, 1));
+		final CommuneFiscale commune = fidorClient.getCommuneParBatiment(280011227, RegDate.get(2000, 1, 1));
 		assertNotNull(commune);
 		assertEquals("Riex", commune.getNomOfficiel());
 	}
@@ -72,13 +72,5 @@ public abstract class FidorWatchDogTest {
 		final List<CommuneFiscale> communes = fidorClient.getToutesLesCommunes();
 		assertNotNull(communes);
 		assertTrue(communes.size() > 3000);
-	}
-
-	private static FidorDate newDate(int year, int month, int day) {
-		FidorDate date = new FidorDate();
-		date.setYear(year);
-		date.setMonth(month);
-		date.setDay(day);
-		return date;
 	}
 }
