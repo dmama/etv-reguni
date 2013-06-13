@@ -10,7 +10,7 @@ public class RcPersWatchDogIntegrationTest extends RcPersWatchDogTest {
 	@Override
 	protected RcPersClientImpl buildClient() throws Exception {
 		final RcPersClientImpl client = new RcPersClientImpl();
-		client.setBaseUrl("http://rp-ws-va.etat-de-vaud.ch/registres/int-rcpers/west/ws/v3");
+		client.setBaseUrl("http://rp-ws-va.etat-de-vaud.ch/registres/int-rcpers/west/ws/v4");
 		client.setPeoplePath("persons/ct.vd.rcpers");
 		client.setEventPath("event");
 		client.setRelationsPath("relations/ct.vd.rcpers");

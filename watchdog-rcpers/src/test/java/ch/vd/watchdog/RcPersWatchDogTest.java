@@ -7,12 +7,11 @@ import ch.ech.ech0044.v2.NamedPersonId;
 import org.junit.Before;
 import org.junit.Test;
 
-import ch.vd.evd0001.v3.ListOfPersons;
-import ch.vd.evd0001.v3.ListOfRelations;
-import ch.vd.evd0001.v3.Person;
-import ch.vd.evd0001.v3.Relations;
-import ch.vd.evd0001.v3.Relationship;
-import ch.vd.evd0006.v1.Event;
+import ch.vd.evd0001.v4.Event;
+import ch.vd.evd0001.v4.ListOfPersons;
+import ch.vd.evd0001.v4.ListOfRelations;
+import ch.vd.evd0001.v4.Person;
+import ch.vd.evd0001.v4.Relationship;
 import ch.vd.unireg.wsclient.rcpers.RcPersClient;
 import ch.vd.unireg.wsclient.rcpers.RcPersClientImpl;
 
@@ -81,11 +80,11 @@ public abstract class RcPersWatchDogTest {
 		assertNotNull(allRelations);
 		assertEquals(1, allRelations.size()); // on n'a demandé qu'une seule personne
 
-		final Relations relations = allRelations.get(0).getRelation();
+		final ListOfRelations.ListOfResults.Result relations = allRelations.get(0);
 		assertNotNull("Les relations de la personne n°476228 sont introuvables !", relations);
 		assertEquals("476228", relations.getLocalPersonId().getPersonId()); // c'est bien les relations de la personne demandée
 
-		final List<Relationship> historique = relations.getRelationshipHistory();
+		final List<Relationship> historique = relations.getRelationHistory();
 		assertNotNull(historique);
 		assertEquals(2, historique.size());
 
@@ -93,13 +92,15 @@ public abstract class RcPersWatchDogTest {
 		final Relationship histo0 = historique.get(0);
 		assertNotNull(histo0);
 		assertEquals("1", histo0.getTypeOfRelationship());
-		assertEquals("476229", histo0.getLocalPersonId().getPersonId());
+		assertNotNull(histo0.getPersonIdentificationPartner());
+		assertEquals("476229", histo0.getPersonIdentificationPartner().getLocalPersonId().getPersonId());
 
 		// la fille
 		final Relationship histo1 = historique.get(1);
 		assertNotNull(histo1);
 		assertEquals("102", histo1.getTypeOfRelationship());
-		assertEquals("476232", histo1.getLocalPersonId().getPersonId());
+		assertNotNull(histo1.getPersonIdentificationPartner());
+		assertEquals("476232", histo1.getPersonIdentificationPartner().getLocalPersonId().getPersonId());
 	}
 
 	@Test(timeout = 10000)
