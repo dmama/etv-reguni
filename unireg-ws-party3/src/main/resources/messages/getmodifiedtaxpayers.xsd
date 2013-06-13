@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/webservices/party3" elementFormDefault="qualified"
+		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ws="http://www.vd.ch/fiscalite/unireg/webservices/party3"
+		   xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0">
+
+	<xs:include schemaLocation="base.xsd" />
+	<xs:complexType name="getModifiedTaxpayersRequestType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Requête qui demande la liste des contribuables modifiés dans Unireg dans une période (pas forcément fiscale) donnée.</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="ws:requestType">
+				<xs:sequence>
+					<xs:element name="searchBeginDate" type="xs:dateTime">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Critère sur la date de début de recherche.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="searchEndDate" type="xs:dateTime">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Critère sur la date de fin de recherche.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+</xs:schema>

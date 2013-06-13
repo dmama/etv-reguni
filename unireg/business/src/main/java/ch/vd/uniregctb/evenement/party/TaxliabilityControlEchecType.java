@@ -1,0 +1,9 @@
+package ch.vd.uniregctb.evenement.party;
+
+public enum TaxliabilityControlEchecType {
+	CONTROLE_NUMERO_KO,
+	AUCUN_MC_ASSOCIE_TROUVE,
+	UN_PLUSIEURS_MC_NON_ASSUJETTI_TROUVES,
+	PLUSIEURS_MC_ASSUJETTI_TROUVES,
+	CONTROLE_SUR_PARENTS_KO
+}

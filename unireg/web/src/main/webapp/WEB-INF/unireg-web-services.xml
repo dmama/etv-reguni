@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<!-- File based -->
+	<bean id="fileGlobalIndexDirectory" class="ch.vd.uniregctb.indexer.lucene.FSIndexProvider" lazy-init="true">
+		<constructor-arg value="${extprop.indexer.globalIndexPath}" />
+	</bean>
+
+	<bean id="docService" class="ch.vd.uniregctb.document.DocumentServiceImpl">
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
+		<property name="repository" value="${extprop.documents.repository}" />
+	</bean>
+
+	<bean id="servletService" class="ch.vd.uniregctb.servlet.ServletServiceImpl">
+	</bean>
+
+	<bean id="extractionService" class="ch.vd.uniregctb.extraction.ExtractionServiceImpl">
+		<property name="expiration" value="${extprop.async.extractions.expiration.days}"/>
+		<property name="threadPoolSize" value="${extprop.async.extractions.poolSize}"/>
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="inboxService" ref="inboxService"/>
+	</bean>
+
+	<bean id="inboxService" class="ch.vd.uniregctb.inbox.InboxServiceImpl"/>
+
+	<bean id="editiqueDownloadService" class="ch.vd.uniregctb.common.EditiqueDownloadServiceImpl">
+		<property name="servletService" ref="servletService"/>
+		<property name="printPCLManager" ref="printPCLManager"/>
+	</bean>
+
+</beans>
