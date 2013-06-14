@@ -247,8 +247,7 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 			throw new ServiceException(new BusinessExceptionInfo(msg, BusinessExceptionCode.INVALID_PARTY_TYPE.name(), null));
 		}
 
-		final PersonnePhysique sourcier = (PersonnePhysique) tiers;
-		return sourcier;
+		return (PersonnePhysique) tiers;
 	}
 
 	private DebiteurPrestationImposable getDebiteur(MiseAjourRapportTravail request) throws ServiceException {
@@ -267,8 +266,7 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 			throw new ServiceException(new BusinessExceptionInfo(msg, BusinessExceptionCode.INVALID_PARTY_TYPE.name(), null));
 		}
 
-		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiers;
-		return dpi;
+		return (DebiteurPrestationImposable) tiers;
 	}
 
 	private void handleRapportPrestationExistant(DebiteurPrestationImposable dpi, PersonnePhysique sourcier, RapportPrestationImposable rapportAModifier, MiseAjourRapportTravail request,
@@ -321,9 +319,10 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 	}
 
 	private boolean isEcartInferieurEgalAUnJour(RegDate dateDebutPeriode, RegDate dateFin) {
+		// [SIFISC-8945] l'avant veille (même au soir, puisqu'il s'agit d'une date de fin...) a un décalage de plus d'un jour avec le (matin du) jour courant
+		// -> s'il y a un jour (= 24 heures) d'absence de RT, on ne ré-ouvre pas le RT
 		final RegDate veille = dateDebutPeriode == null ? null : dateDebutPeriode.getOneDayBefore();
-		final RegDate avantVeille = veille == null ? null : veille.getOneDayBefore();
-		return dateFin == veille || dateFin == avantVeille;
+		return dateFin == veille;
 	}
 
 	private void handleRapportOuvertApresPeriode(RapportPrestationImposable rapportAModifier, MiseAjourRapportTravail request, List<RapportPrestationImposable> nouveauxRapports) {
