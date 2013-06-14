@@ -14,7 +14,6 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.civil.ServiceCivilException;
@@ -25,7 +24,6 @@ import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilCriteria;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -52,8 +50,6 @@ public class EvenementCivilEchServiceImpl implements EvenementCivilEchService, I
 
 	private ServiceCivilService serviceCivil;
     private EvenementCivilEchDAO evenementCivilEchDAO;
-	private PlatformTransactionManager transactionManager;
-	private HibernateTemplate hibernateTemplate;
 	private TiersDAO tiersDAO;
 	private TiersService tiersService;
 
@@ -87,14 +83,6 @@ public class EvenementCivilEchServiceImpl implements EvenementCivilEchService, I
 			}
 			LOGGER.info(b.toString());
 		}
-	}
-
-	public void setTransactionManager(PlatformTransactionManager transactionManager) {
-		this.transactionManager = transactionManager;
-	}
-
-	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
-		this.hibernateTemplate = hibernateTemplate;
 	}
 
 	public void setEvenementCivilEchDAO(EvenementCivilEchDAO evenementCivilEchDAO) {

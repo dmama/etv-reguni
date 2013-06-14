@@ -44,8 +44,6 @@
 	</bean>
 
 	<bean id="evtCivilEchService" class="ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchServiceImpl">
-		<property name="transactionManager" ref="transactionManager"/>
-		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 		<property name="evenementCivilEchDAO" ref="evenementCivilEchDAO"/>
 		<property name="serviceCivil" ref="serviceCivilService" />
 		<property name="tiersDAO" ref="tiersDAO"/>
