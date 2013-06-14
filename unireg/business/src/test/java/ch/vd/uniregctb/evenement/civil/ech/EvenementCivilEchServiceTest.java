@@ -36,11 +36,9 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 	protected EvenementCivilEchServiceImpl buildService() throws Exception {
 		final EvenementCivilEchServiceImpl service = new EvenementCivilEchServiceImpl();
 		service.setEvenementCivilEchDAO(evenementCivilEchDAO);
-		service.setHibernateTemplate(hibernateTemplate);
 		service.setServiceCivil(serviceCivil);
 		service.setTiersDAO(tiersDAO);
 		service.setTiersService(tiersService);
-		service.setTransactionManager(transactionManager);
 		service.afterPropertiesSet();
 		return service;
 	}
