@@ -1,15 +1,23 @@
-package ch.vd.uniregctb.evenement.party;
+package ch.vd.uniregctb.evenement.party.control;
 
 import java.util.List;
 
-public class TaxliabilityControlEchec {
-	private TaxliabilityControlEchecType type;
+public class TaxLiabilityControlEchec {
+
+	public static enum EchecType {
+		CONTROLE_NUMERO_KO,
+		AUCUN_MC_ASSOCIE_TROUVE,
+		UN_PLUSIEURS_MC_NON_ASSUJETTI_TROUVES,
+		PLUSIEURS_MC_ASSUJETTI_TROUVES,
+		CONTROLE_SUR_PARENTS_KO
+	}
+
+	private EchecType type;
 	private List<Long> MenageCommunIds;
 	private List<Long> parentsIds;
 	private List<Long> MenageCommunParentsIds;
 
-
-	public TaxliabilityControlEchec(TaxliabilityControlEchecType type) {
+	public TaxLiabilityControlEchec(EchecType type) {
 		this.type = type;
 	}
 
@@ -37,11 +45,11 @@ public class TaxliabilityControlEchec {
 		MenageCommunParentsIds = menageCommunParentsIds;
 	}
 
-	public TaxliabilityControlEchecType getType() {
+	public EchecType getType() {
 		return type;
 	}
 
-	public void setType(TaxliabilityControlEchecType type) {
+	public void setType(EchecType type) {
 		this.type = type;
 	}
 }

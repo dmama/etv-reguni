@@ -1,12 +1,14 @@
 package ch.vd.uniregctb.evenement.party;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.core.io.ClassPathResource;
 
 import ch.vd.unireg.xml.event.party.taxliab.periodic.v2.PeriodicTaxLiabilityRequest;
-import ch.vd.unireg.xml.event.party.taxliab.v2.TaxLiabilityRequest;
 import ch.vd.uniregctb.evenement.party.control.ControlRuleException;
+import ch.vd.uniregctb.evenement.party.control.TaxLiabilityControlResult;
+import ch.vd.uniregctb.tiers.Tiers;
 
-public class PeriodicTaxLiabilityRequestHandlerV2 extends TaxLiabilityRequestHandler {
+public class PeriodicTaxLiabilityRequestHandlerV2 extends TaxLiabilityRequestHandler<PeriodicTaxLiabilityRequest> {
 
 	@Override
 	public ClassPathResource getRequestXSD() {
@@ -14,12 +16,10 @@ public class PeriodicTaxLiabilityRequestHandlerV2 extends TaxLiabilityRequestHan
 	}
 
 	@Override
-	public TaxliabilityControlResult runControl(TaxliabilityControlManager controlManager, TaxLiabilityRequest request) throws ControlRuleException {
-		final PeriodicTaxLiabilityRequest periodicRequest = (PeriodicTaxLiabilityRequest) request;
-		final int periode = periodicRequest.getFiscalPeriod();
-		final long tiersId = request.getPartyNumber();
+	public TaxLiabilityControlResult doControl(PeriodicTaxLiabilityRequest request, @NotNull Tiers tiers) throws ControlRuleException {
+		final int periode = request.getFiscalPeriod();
 		final boolean rechercheMenageCommun = request.isSearchCommonHouseHolds();
 		final boolean rechercheParents = request.isSearchParents();
-		return controlManager.runControlOnPeriode(tiersId, periode, rechercheMenageCommun, rechercheParents);
+		return getTaxliabilityControlService().doControlOnPeriod(tiers, periode, rechercheMenageCommun, rechercheParents);
 	}
 }

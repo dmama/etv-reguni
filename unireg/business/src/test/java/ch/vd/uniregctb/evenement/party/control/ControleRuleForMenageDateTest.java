@@ -6,8 +6,6 @@ import org.springframework.transaction.TransactionStatus;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.uniregctb.evenement.party.TaxliabilityControlEchecType;
-import ch.vd.uniregctb.evenement.party.TaxliabilityControlResult;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -40,18 +38,19 @@ public class ControleRuleForMenageDateTest extends AbstractControlTaxliabilityTe
 		});
 
 		final RegDate dateControle = RegDate.get(2010,12,3);
-		final ControleRuleForMenageDate controleRuleForMenageDate = new ControleRuleForMenageDate(context,idPP,dateControle);
-		final TaxliabilityControlResult result = doInNewTransaction(new TxCallback<TaxliabilityControlResult>() {
+		final ControleRuleForMenageDate controleRuleForMenageDate = new ControleRuleForMenageDate(dateControle, tiersService);
+		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
 			@Override
-			public TaxliabilityControlResult execute(TransactionStatus status) throws Exception {
-				return controleRuleForMenageDate.check();
+			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idPP);
+				return controleRuleForMenageDate.check(pp);
 			}
 		});
 
 		final Long idTiersAssujetti = result.getIdTiersAssujetti();
 		assertNull(idTiersAssujetti);
 		assertNotNull(result.getEchec());
-		assertEquals(TaxliabilityControlEchecType.AUCUN_MC_ASSOCIE_TROUVE, result.getEchec().getType());
+		assertEquals(TaxLiabilityControlEchec.EchecType.AUCUN_MC_ASSOCIE_TROUVE, result.getEchec().getType());
 
 	}
 
@@ -92,20 +91,20 @@ public class ControleRuleForMenageDateTest extends AbstractControlTaxliabilityTe
 
 		final RegDate dateControle = RegDate.get(2012,12,3);
 
-		final ControleRuleForMenageDate controleRuleForMenageDate = new ControleRuleForMenageDate(context,ids.idpp,dateControle);
-		final TaxliabilityControlResult result = doInNewTransaction(new TxCallback<TaxliabilityControlResult>() {
+		final ControleRuleForMenageDate controleRuleForMenageDate = new ControleRuleForMenageDate(dateControle, tiersService);
+		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
 			@Override
-			public TaxliabilityControlResult execute(TransactionStatus status) throws Exception {
-				return controleRuleForMenageDate.check();
+			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idpp);
+				return controleRuleForMenageDate.check(pp);
 			}
 		});
 
 		final Long idTiersAssujetti = result.getIdTiersAssujetti();
 		assertNull(idTiersAssujetti);
 		assertNotNull(result.getEchec());
-		assertEquals(TaxliabilityControlEchecType.UN_PLUSIEURS_MC_NON_ASSUJETTI_TROUVES, result.getEchec().getType());
+		assertEquals(TaxLiabilityControlEchec.EchecType.UN_PLUSIEURS_MC_NON_ASSUJETTI_TROUVES, result.getEchec().getType());
 		assertEquals(ids.idMc, result.getEchec().getMenageCommunIds().get(0));
-
 	}
 
 
@@ -145,17 +144,15 @@ public class ControleRuleForMenageDateTest extends AbstractControlTaxliabilityTe
 
 		final RegDate dateControle = RegDate.get(2012,12,3);
 
-		final ControleRuleForMenageDate controleRuleForMenageDate = new ControleRuleForMenageDate(context,ids.idpp,dateControle);
-		final TaxliabilityControlResult result = doInNewTransaction(new TxCallback<TaxliabilityControlResult>() {
+		final ControleRuleForMenageDate controleRuleForMenageDate = new ControleRuleForMenageDate(dateControle, tiersService);
+		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
 			@Override
-			public TaxliabilityControlResult execute(TransactionStatus status) throws Exception {
-				return controleRuleForMenageDate.check();
+			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idpp);
+				return controleRuleForMenageDate.check(pp);
 			}
 		});
 
-		assertTiersAssujetti(ids.idMc, result);;
-
+		assertTiersAssujetti(ids.idMc, result);
 	}
-
-
 }

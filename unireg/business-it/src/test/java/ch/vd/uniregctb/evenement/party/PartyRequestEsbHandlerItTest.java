@@ -36,7 +36,8 @@ import static org.junit.Assert.assertNotNull;
 @SuppressWarnings({"JavaDoc"})
 @ContextConfiguration(locations = {
 		"classpath:ut/unireg-businessit-jms.xml",
-		"classpath:ut/unireg-businessit-jms-evt-party.xml"
+		"classpath:ut/unireg-businessit-jms-evt-party.xml",
+		"classpath:ut/unireg-businessit-security.xml"
 })
 abstract class PartyRequestEsbHandlerItTest extends BusinessItTest {
 

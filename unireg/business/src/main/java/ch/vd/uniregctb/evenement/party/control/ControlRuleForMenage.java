@@ -3,25 +3,24 @@ package ch.vd.uniregctb.evenement.party.control;
 import java.util.ArrayList;
 import java.util.List;
 
-import ch.vd.uniregctb.evenement.party.TaxliabilityControlEchec;
-import ch.vd.uniregctb.evenement.party.TaxliabilityControlEchecType;
-import ch.vd.uniregctb.evenement.party.TaxliabilityControlResult;
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.xml.Context;
+import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.TiersService;
 
 public abstract class ControlRuleForMenage extends AbstractControlRule {
 
-	public ControlRuleForMenage(Context context, long tiersId) {
-		super(context, tiersId);
+	protected ControlRuleForMenage(TiersService tiersService) {
+		super(tiersService);
 	}
 
 	@Override
-	public TaxliabilityControlResult check() throws ControlRuleException {
-		final TaxliabilityControlResult result = new TaxliabilityControlResult();
-		final PersonnePhysique pp = (PersonnePhysique) context.tiersDAO.get(tiersId);
-		final List<EnsembleTiersCouple> listeCouples = getEnsembleTiersCouple(pp);
+	public TaxLiabilityControlResult check(@NotNull Tiers tiers) throws ControlRuleException {
+		final TaxLiabilityControlResult result = new TaxLiabilityControlResult();
+		final List<EnsembleTiersCouple> listeCouples = tiers instanceof PersonnePhysique ? getEnsembleTiersCouple((PersonnePhysique) tiers) : null;
 		if (listeCouples != null && !listeCouples.isEmpty()) {
 			//recherche des menages communs assujettis sur la période
 			final List<Long> menageCommunsAssujettis = new ArrayList<Long>();
@@ -29,10 +28,10 @@ public abstract class ControlRuleForMenage extends AbstractControlRule {
 			final List<Long> menageCommunsNonAssujettis = new ArrayList<Long>();
 			for (EnsembleTiersCouple couple : listeCouples) {
 				final MenageCommun menageCommun = couple.getMenage();
-				if (isAssujetti(menageCommun.getId())) {
+				if (isAssujetti(menageCommun)) {
 					menageCommunsAssujettis.add(menageCommun.getId());
 				}
-				else{
+				else {
 					menageCommunsNonAssujettis.add(menageCommun.getId());
 				}
 
@@ -43,7 +42,7 @@ public abstract class ControlRuleForMenage extends AbstractControlRule {
 			}
 			//Si plusieurs numéros de couples sont assujettis >> CTRL KO
 			else if (menageCommunsAssujettis.size() > 1) {
-				final TaxliabilityControlEchec echec = new TaxliabilityControlEchec(TaxliabilityControlEchecType.PLUSIEURS_MC_ASSUJETTI_TROUVES);
+				final TaxLiabilityControlEchec echec = new TaxLiabilityControlEchec(TaxLiabilityControlEchec.EchecType.PLUSIEURS_MC_ASSUJETTI_TROUVES);
 				echec.setMenageCommunIds(menageCommunsAssujettis);
 				result.setEchec(echec);
 
@@ -52,17 +51,15 @@ public abstract class ControlRuleForMenage extends AbstractControlRule {
 			else if (menageCommunsAssujettis.isEmpty()) {
 				//Dans le cas de ménage trouvé non assujetti, on doit en renvoyer la liste
 				if (!menageCommunsNonAssujettis.isEmpty()) {
-					setErreur(result,TaxliabilityControlEchecType.UN_PLUSIEURS_MC_NON_ASSUJETTI_TROUVES,menageCommunsNonAssujettis,null,null);
+					setErreur(result, TaxLiabilityControlEchec.EchecType.UN_PLUSIEURS_MC_NON_ASSUJETTI_TROUVES,menageCommunsNonAssujettis,null,null);
 				}
 				else {
-					setErreur(result, TaxliabilityControlEchecType.AUCUN_MC_ASSOCIE_TROUVE, null, null, null);
+					setErreur(result, TaxLiabilityControlEchec.EchecType.AUCUN_MC_ASSOCIE_TROUVE, null, null, null);
 				}
-
-
 			}
 		}
 		else {
-			setErreur(result, TaxliabilityControlEchecType.AUCUN_MC_ASSOCIE_TROUVE, null, null, null);
+			setErreur(result, TaxLiabilityControlEchec.EchecType.AUCUN_MC_ASSOCIE_TROUVE, null, null, null);
 		}
 
 		return result;

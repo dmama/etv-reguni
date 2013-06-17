@@ -3,34 +3,31 @@ package ch.vd.uniregctb.evenement.party.control;
 import java.util.List;
 
 import com.sun.istack.Nullable;
+import org.jetbrains.annotations.NotNull;
 
-import ch.vd.uniregctb.evenement.party.TaxliabilityControlEchec;
-import ch.vd.uniregctb.evenement.party.TaxliabilityControlEchecType;
-import ch.vd.uniregctb.evenement.party.TaxliabilityControlResult;
-import ch.vd.uniregctb.xml.Context;
+import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.TiersService;
 
 /**
  * Régle A1.1: Utilisation de l'algorithme Unireg de détermination des assujettissements d'un numéro de tiers sur la PF
  */
-public abstract class AbstractControlRule implements TaxliabilityControlRule {
+public abstract class AbstractControlRule implements TaxLiabilityControlRule {
 
-	protected final Context context;
-	protected final long tiersId;
+	protected final TiersService tiersService;
 
-	public AbstractControlRule(Context context, long tiersId) {
-		this.context = context;
-		this.tiersId = tiersId;
+	protected AbstractControlRule(TiersService tiersService) {
+		this.tiersService = tiersService;
 	}
 
-	protected static void setErreur(TaxliabilityControlResult result, TaxliabilityControlEchecType type,
+	protected static void setErreur(TaxLiabilityControlResult result, TaxLiabilityControlEchec.EchecType type,
 	                                @Nullable List<Long> menageCommunsIds, @Nullable List<Long> mcParentsIds, @Nullable List<Long> parentsIds) {
-		final TaxliabilityControlEchec echec = new TaxliabilityControlEchec(type);
+		final TaxLiabilityControlEchec echec = new TaxLiabilityControlEchec(type);
 		echec.setMenageCommunIds(menageCommunsIds);
 		echec.setMenageCommunParentsIds(mcParentsIds);
 		echec.setParentsIds(parentsIds);
 		result.setEchec(echec);
 	}
 
-	public abstract boolean isAssujetti(long tiersId) throws ControlRuleException;
+	public abstract boolean isAssujetti(@NotNull Tiers tiersId) throws ControlRuleException;
 
 }

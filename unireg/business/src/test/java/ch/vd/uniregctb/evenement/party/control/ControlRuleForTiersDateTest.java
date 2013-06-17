@@ -6,7 +6,6 @@ import org.springframework.transaction.TransactionStatus;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.uniregctb.evenement.party.TaxliabilityControlResult;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Sexe;
@@ -41,11 +40,12 @@ public class ControlRuleForTiersDateTest extends AbstractControlTaxliabilityTest
 		});
 
 		final RegDate dateControle = RegDate.get(2010,12,3);
-		final ControlRuleForTiersDate controlRuleForTiersDate = new ControlRuleForTiersDate(context,idPP,dateControle);
-		final TaxliabilityControlResult result = doInNewTransaction(new TxCallback<TaxliabilityControlResult>() {
+		final ControlRuleForTiersDate controlRuleForTiersDate = new ControlRuleForTiersDate(dateControle, tiersService);
+		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
 			@Override
-			public TaxliabilityControlResult execute(TransactionStatus status) throws Exception {
-				return controlRuleForTiersDate.check();
+			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+			    final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idPP);
+				return controlRuleForTiersDate.check(pp);
 			}
 		});
 
@@ -73,16 +73,16 @@ public class ControlRuleForTiersDateTest extends AbstractControlTaxliabilityTest
 		});
 
 		final RegDate dateControle = RegDate.get(2010,12,3);
-		final ControlRuleForTiersDate controlRuleForTiersDate = new ControlRuleForTiersDate(context,idPP,dateControle);
-		final TaxliabilityControlResult result = doInNewTransaction(new TxCallback<TaxliabilityControlResult>() {
+		final ControlRuleForTiersDate controlRuleForTiersDate = new ControlRuleForTiersDate(dateControle, tiersService);
+		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
 			@Override
-			public TaxliabilityControlResult execute(TransactionStatus status) throws Exception {
-				return controlRuleForTiersDate.check();
+			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idPP);
+				return controlRuleForTiersDate.check(pp);
 			}
 		});
 
 		assertControlNumeroKO(result);
-
 	}
 
 	@Test
@@ -107,18 +107,15 @@ public class ControlRuleForTiersDateTest extends AbstractControlTaxliabilityTest
 		});
 
 		final RegDate dateControle = RegDate.get(2010,12,3);
-		final ControlRuleForTiersDate controlRuleForTiersDate = new ControlRuleForTiersDate(context,idPP,dateControle);
-		final TaxliabilityControlResult result = doInNewTransaction(new TxCallback<TaxliabilityControlResult>() {
+		final ControlRuleForTiersDate controlRuleForTiersDate = new ControlRuleForTiersDate(dateControle, tiersService);
+		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
 			@Override
-			public TaxliabilityControlResult execute(TransactionStatus status) throws Exception {
-				return controlRuleForTiersDate.check();
+			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+		        final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idPP);
+				return controlRuleForTiersDate.check(pp);
 			}
 		});
 
 		assertControlNumeroKO(result);
 	}
-
-
-
-
 }

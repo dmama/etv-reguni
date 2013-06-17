@@ -7,7 +7,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.uniregctb.evenement.party.TaxliabilityControlResult;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -15,6 +14,7 @@ import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Sexe;
 
 public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTest {
+
 	@Test
 	public void testCheckTiersWithAucunParent() throws Exception {
 		final long noInd = 1244;
@@ -37,20 +37,18 @@ public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTes
 		});
 
 		final RegDate dateDemande = RegDate.get(2012,2,2);
-		final ControlRuleForParentDate controlRuleForParentDate = new ControlRuleForParentDate(context, idPP, dateDemande);
-		final TaxliabilityControlResult result = doInNewTransaction(new TxCallback<TaxliabilityControlResult>() {
+		final ControlRuleForParentDate controlRuleForParentDate = new ControlRuleForParentDate(dateDemande, tiersService);
+		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
 			@Override
-			public TaxliabilityControlResult execute(TransactionStatus status) throws Exception {
-				return controlRuleForParentDate.check();
+			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idPP);
+				return controlRuleForParentDate.check(pp);
 			}
 		});
 
 		assertPasDeParent(result);
 
 	}
-
-
-
 
 	@Test
 	public void testCheckTiersWithParentNonAsujetti() throws Exception {
@@ -88,20 +86,17 @@ public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTes
 		});
 
 		final RegDate dateDemande = RegDate.get(2012,2,2);
-		final ControlRuleForParentDate controlRuleForParentDate = new ControlRuleForParentDate(context, ids.idFille, dateDemande);
-		final TaxliabilityControlResult result = doInNewTransaction(new TxCallback<TaxliabilityControlResult>() {
+		final ControlRuleForParentDate controlRuleForParentDate = new ControlRuleForParentDate(dateDemande, tiersService);
+		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
 			@Override
-			public TaxliabilityControlResult execute(TransactionStatus status) throws Exception {
-				return controlRuleForParentDate.check();
+			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
+				return controlRuleForParentDate.check(pp);
 			}
 		});
 
 		assertUnParentNonAssujetti(ids.idPere, result);
-
 	}
-
-
-
 
 	@Test
 	public void testCheckTiersWithParentAsujetti() throws Exception {
@@ -140,19 +135,17 @@ public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTes
 		});
 
 		final RegDate dateDemande = RegDate.get(2012,2,2);
-		final ControlRuleForParentDate controlRuleForParentDate = new ControlRuleForParentDate(context, ids.idFille, dateDemande);
-		final TaxliabilityControlResult result = doInNewTransaction(new TxCallback<TaxliabilityControlResult>() {
+		final ControlRuleForParentDate controlRuleForParentDate = new ControlRuleForParentDate(dateDemande, tiersService);
+		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
 			@Override
-			public TaxliabilityControlResult execute(TransactionStatus status) throws Exception {
-				return controlRuleForParentDate.check();
+			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
+				return controlRuleForParentDate.check(pp);
 			}
 		});
 
 		assertTiersAssujetti(ids.idPere, result);
-
 	}
-
-
 
 	@Test
 	public void testCheckTiersWithParentWithMenageCommunNonAsujetti() throws Exception {
@@ -195,20 +188,17 @@ public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTes
 		});
 
 		final RegDate dateDemande = RegDate.get(2012,2,2);
-		final ControlRuleForParentDate controlRuleForParentDate = new ControlRuleForParentDate(context, ids.idFille, dateDemande);
-		final TaxliabilityControlResult result = doInNewTransaction(new TxCallback<TaxliabilityControlResult>() {
+		final ControlRuleForParentDate controlRuleForParentDate = new ControlRuleForParentDate(dateDemande, tiersService);
+		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
 			@Override
-			public TaxliabilityControlResult execute(TransactionStatus status) throws Exception {
-				return controlRuleForParentDate.check();
+			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
+				return controlRuleForParentDate.check(pp);
 			}
 		});
 
 		assertUnParentWithMCNonAssujetti(ids.idPere,ids.idMenagePere, result);
-
 	}
-
-
-
 
 	@Test
 	public void testCheckTiersWithParentWithMenageCommunAsujetti() throws Exception {
@@ -252,19 +242,17 @@ public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTes
 		});
 
 		final RegDate dateDemande = RegDate.get(2012,2,2);
-		final ControlRuleForParentDate controlRuleForParentDate = new ControlRuleForParentDate(context, ids.idFille, dateDemande);
-		final TaxliabilityControlResult result = doInNewTransaction(new TxCallback<TaxliabilityControlResult>() {
+		final ControlRuleForParentDate controlRuleForParentDate = new ControlRuleForParentDate(dateDemande, tiersService);
+		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
 			@Override
-			public TaxliabilityControlResult execute(TransactionStatus status) throws Exception {
-				return controlRuleForParentDate.check();
+			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
+				return controlRuleForParentDate.check(pp);
 			}
 		});
 
 		assertTiersAssujetti(ids.idMenagePere, result);
-
 	}
-
-
 
 	@Test
 	public void testCheckTiersWithDeuxParentNonAsujetti() throws Exception {
@@ -288,8 +276,6 @@ public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTes
 				MockIndividu mere = addIndividu(noIndMere, date(1978, 10, 19), "RuppertDate", "MereJeroma", Sexe.FEMININ);
 				addLiensFiliation(pere, fille, dateNaissance, null);
 				addLiensFiliation(mere, fille, dateNaissance, null);
-
-
 			}
 		});
 
@@ -307,18 +293,17 @@ public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTes
 			}
 		});
 		final RegDate dateDemande = RegDate.get(2012,2,2);
-		final ControlRuleForParentDate controlRuleForParentDate = new ControlRuleForParentDate(context, ids.idFille, dateDemande);
-		final TaxliabilityControlResult result = doInNewTransaction(new TxCallback<TaxliabilityControlResult>() {
+		final ControlRuleForParentDate controlRuleForParentDate = new ControlRuleForParentDate(dateDemande, tiersService);
+		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
 			@Override
-			public TaxliabilityControlResult execute(TransactionStatus status) throws Exception {
-				return controlRuleForParentDate.check();
+			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
+				return controlRuleForParentDate.check(pp);
 			}
 		});
 
 		assertDeuxParentsNonAssujettis(ids.idPere,ids.idMere, result);
-
 	}
-
 
 	@Test
 	public void testCheckTiersWithDeuxParentUnMCNonAsujetti() throws Exception {
@@ -365,19 +350,17 @@ public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTes
 			}
 		});
 		final RegDate dateDemande = RegDate.get(2012,2,2);
-		final ControlRuleForParentDate controlRuleForParentDate = new ControlRuleForParentDate(context, ids.idFille, dateDemande);
-		final TaxliabilityControlResult result = doInNewTransaction(new TxCallback<TaxliabilityControlResult>() {
+		final ControlRuleForParentDate controlRuleForParentDate = new ControlRuleForParentDate(dateDemande, tiersService);
+		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
 			@Override
-			public TaxliabilityControlResult execute(TransactionStatus status) throws Exception {
-				return controlRuleForParentDate.check();
+			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
+				return controlRuleForParentDate.check(pp);
 			}
 		});
 
 		assertDeuxParentUnMCNonAssujetti(ids.idPere,ids.idMere,ids.idMenagePere, result);
-
 	}
-
-
 
 	@Test
 	public void testCheckTiersWithDeuxParentDeuxMCNonAsujetti() throws Exception {
@@ -429,11 +412,12 @@ public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTes
 			}
 		});
 		final RegDate dateDemande = RegDate.get(2012,2,2);
-		final ControlRuleForParentDate controlRuleForParentDate = new ControlRuleForParentDate(context, ids.idFille, dateDemande);
-		final TaxliabilityControlResult result = doInNewTransaction(new TxCallback<TaxliabilityControlResult>() {
+		final ControlRuleForParentDate controlRuleForParentDate = new ControlRuleForParentDate(dateDemande, tiersService);
+		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
 			@Override
-			public TaxliabilityControlResult execute(TransactionStatus status) throws Exception {
-				return controlRuleForParentDate.check();
+			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
+				return controlRuleForParentDate.check(pp);
 			}
 		});
 
@@ -494,11 +478,12 @@ public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTes
 			}
 		});
 		final RegDate dateDemande = RegDate.get(2012,2,2);
-		final ControlRuleForParentDate controlRuleForParentDate = new ControlRuleForParentDate(context, ids.idFille, dateDemande);
-		final TaxliabilityControlResult result = doInNewTransaction(new TxCallback<TaxliabilityControlResult>() {
+		final ControlRuleForParentDate controlRuleForParentDate = new ControlRuleForParentDate(dateDemande, tiersService);
+		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
 			@Override
-			public TaxliabilityControlResult execute(TransactionStatus status) throws Exception {
-				return controlRuleForParentDate.check();
+			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
+				return controlRuleForParentDate.check(pp);
 			}
 		});
 
@@ -552,11 +537,12 @@ public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTes
 			}
 		});
 		final RegDate dateDemande = RegDate.get(2012,2,2);
-		final ControlRuleForParentDate controlRuleForParentDate = new ControlRuleForParentDate(context, ids.idFille, dateDemande);
-		final TaxliabilityControlResult result = doInNewTransaction(new TxCallback<TaxliabilityControlResult>() {
+		final ControlRuleForParentDate controlRuleForParentDate = new ControlRuleForParentDate(dateDemande, tiersService);
+		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
 			@Override
-			public TaxliabilityControlResult execute(TransactionStatus status) throws Exception {
-				return controlRuleForParentDate.check();
+			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
+				return controlRuleForParentDate.check(pp);
 			}
 		});
 
@@ -610,11 +596,12 @@ public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTes
 			}
 		});
 		final RegDate dateDemande = RegDate.get(2012,2,2);
-		final ControlRuleForParentDate controlRuleForParentDate = new ControlRuleForParentDate(context, ids.idFille, dateDemande);
-		final TaxliabilityControlResult result = doInNewTransaction(new TxCallback<TaxliabilityControlResult>() {
+		final ControlRuleForParentDate controlRuleForParentDate = new ControlRuleForParentDate(dateDemande, tiersService);
+		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
 			@Override
-			public TaxliabilityControlResult execute(TransactionStatus status) throws Exception {
-				return controlRuleForParentDate.check();
+			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
+				return controlRuleForParentDate.check(pp);
 			}
 		});
 
