@@ -460,7 +460,7 @@ public class IdentificationController {
 	}
 
 	private void setUpModelForListMessageEnCoursAvecException(ModelMap model) {
-		model.put("typesMessage", initMapTypeMessageEncours());
+		model.put("typesMessage", initMapTypeMessageEncoursEtException());
 		model.put("emetteurs", identificationMapHelper.initMapEmetteurId(IdentificationContribuableEtatFilter.SEULEMENT_NON_TRAITES_ET_EN_EXEPTION));
 		model.put("priorites", identificationMapHelper.initMapPrioriteEmetteur());
 		model.put("periodesFiscales",identificationMapHelper.initMapPeriodeFiscale(IdentificationContribuableEtatFilter.SEULEMENT_NON_TRAITES_ET_EN_EXEPTION));
@@ -525,6 +525,11 @@ public class IdentificationController {
 	protected Map<String, String> initMapTypeMessageEncours() {
 		final TypeDemande[] types = getAllowedTypes();
 		return identificationMapHelper.initMapTypeMessage(IdentificationContribuableEtatFilter.SEULEMENT_NON_TRAITES, types);
+	}
+
+	protected Map<String, String> initMapTypeMessageEncoursEtException() {
+		final TypeDemande[] types = getAllowedTypes();
+		return identificationMapHelper.initMapTypeMessage(IdentificationContribuableEtatFilter.SEULEMENT_NON_TRAITES_ET_EN_EXEPTION, types);
 	}
 
 	protected Map<String, String> initMapTypeMessageSuspendu() {
