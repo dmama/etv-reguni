@@ -3,36 +3,43 @@ package ch.vd.uniregctb.evenement.party.control;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.party.TaxliabilityControlResult;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportFiliation;
-import ch.vd.uniregctb.xml.Context;
+import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.TiersService;
 
 /**
  * Régle PA.1: Recherche d’un parent assujetti sur la PF (ARI) : Détermination de toutes les relations parentales en vigueur sur la PF concernée
  */
 public class ControlRuleForParentPeriode extends ControlRuleForParent {
 
-	private int periode;
+	private final int periode;
+	private final AbstractControlRule ruleForTiers;
+	private final AbstractControlRule ruleForMenage;
 
-	public ControlRuleForParentPeriode(Context context, long tiersId, int periode) {
-		super(context, tiersId);
+	public ControlRuleForParentPeriode(int periode, TiersService tiersService, AssujettissementService assService) {
+		super(tiersService);
 		this.periode = periode;
+		this.ruleForTiers = new ControlRuleForTiersPeriode(periode, tiersService, assService);
+		this.ruleForMenage = new ControlRuleForMenagePeriode(periode, tiersService, assService);
 	}
 
 	//Si une seule relation parentale trouvée sur la période : vérification de l'assujettisse-ment sur la PF (règle A1.1) sur ce numéro de tiers.
 	@Override
-	public boolean isAssujetti(long idTiers) throws ControlRuleException {
-		ControlRuleForTiersPeriode controlRuleForTiersPeriode = new ControlRuleForTiersPeriode(context,idTiers,periode);
-		TaxliabilityControlResult result = controlRuleForTiersPeriode.check();
-		return result.getIdTiersAssujetti()!=null;
+	public boolean isAssujetti(@NotNull Tiers tiers) throws ControlRuleException {
+		final TaxLiabilityControlResult result = ruleForTiers.check(tiers);
+		return result.getIdTiersAssujetti() != null;
 	}
 
 	@Override
-	public TaxliabilityControlResult rechercheAssujettisementSurMenage(Long parentId) throws ControlRuleException {
-		return new ControlRuleForMenagePeriode(context, parentId, periode).check();
+	public TaxLiabilityControlResult rechercheAssujettisementSurMenage(@NotNull PersonnePhysique parent) throws ControlRuleException {
+		return ruleForMenage.check(parent);
 	}
 
 	@Override
@@ -48,5 +55,4 @@ public class ControlRuleForParentPeriode extends ControlRuleForParent {
 		}
 		return filiationsParents;  //To change body of created methods use File | Settings | File Templates.
 	}
-
 }

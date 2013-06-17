@@ -2,12 +2,16 @@ package ch.vd.uniregctb.evenement.party.control;
 
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.xml.Context;
+import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.TiersService;
 
 /**
  * Régle A1.1: Utilisation de l'algorithme Unireg de détermination des assujettissements d'un numéro de tiers sur la PF
@@ -15,35 +19,35 @@ import ch.vd.uniregctb.xml.Context;
 public class ControlRuleForTiersPeriode extends ControlRuleForTiers {
 
 	private final int periode;
+	private final AssujettissementService assService;
 
-	public ControlRuleForTiersPeriode(Context context, long tiersId, int periode) {
-		super(context, tiersId);
+	public ControlRuleForTiersPeriode(int periode, TiersService tiersService, AssujettissementService assService) {
+		super(tiersService);
 		this.periode = periode;
+		this.assService = assService;
 	}
 
 	@Override
-	public boolean isAssujetti(long tiersId) throws ControlRuleException {
-		return isAssujettiSurPeriode(tiersId);
+	public boolean isAssujetti(@NotNull Tiers tiers) throws ControlRuleException {
+		return isAssujettiSurPeriode(tiers);
 	}
 
-	private boolean isAssujettiSurPeriode(long tiersId) throws ControlRuleException {
-		final Contribuable contribuable= context.tiersDAO.getContribuableByNumero(tiersId);
-		List<Assujettissement> assujetissements=null;
+	private boolean isAssujettiSurPeriode(@NotNull Tiers tiers) throws ControlRuleException {
+		final List<Assujettissement> assujetissements;
 		try {
-			assujetissements= context.assujettissementService.determine(contribuable,periode);
+			assujetissements = tiers instanceof Contribuable ? assService.determine((Contribuable) tiers, periode) : null;
 		}
 		catch (AssujettissementException e) {
-			final String message = String.format("Exception lors du calcul d'assujetissement pour le tiers %d",tiersId);
-			throw  new ControlRuleException(message, e);
+			final String message = String.format("Exception lors du calcul d'assujetissement pour le tiers %d", tiers.getId());
+			throw new ControlRuleException(message, e);
 		}
 
 		//return vrai si le contribuable est assutti sur la periode
-		return (assujetissements!=null && !assujetissements.isEmpty());
+		return (assujetissements != null && !assujetissements.isEmpty());
 	}
 
 	@Override
 	public boolean isMineur(PersonnePhysique personne ) {
-		return context.tiersService.isMineur(personne, RegDate.get(periode, 12, 31));
+		return tiersService.isMineur(personne, RegDate.get(periode, 12, 31));
 	}
-
 }

@@ -5,18 +5,11 @@ import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.uniregctb.evenement.party.TaxliabilityControlResult;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Sexe;
 
 public class ControlRuleForTiersPeriodeTest extends AbstractControlTaxliabilityTest {
-
-	@Override
-	public void onSetUp() throws Exception {
-		super.onSetUp();
-	}
-
 
 	@Test
 	public void testCheckAssujetissementStandard() throws Exception {
@@ -40,11 +33,12 @@ public class ControlRuleForTiersPeriodeTest extends AbstractControlTaxliabilityT
 		});
 
 		final Integer periode = 2012;
-		final ControlRuleForTiersPeriode controlRuleForTiersPeriode = new ControlRuleForTiersPeriode(context,idPP,periode);
-		final TaxliabilityControlResult result = doInNewTransaction(new TxCallback<TaxliabilityControlResult>() {
+		final ControlRuleForTiersPeriode controlRuleForTiersPeriode = new ControlRuleForTiersPeriode(periode, tiersService, assujettissementService);
+		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
 			@Override
-			public TaxliabilityControlResult execute(TransactionStatus status) throws Exception {
-				return controlRuleForTiersPeriode.check();
+			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idPP);
+				return controlRuleForTiersPeriode.check(pp);
 			}
 		});
 		assertTiersAssujetti(idPP, result);
@@ -72,11 +66,12 @@ public class ControlRuleForTiersPeriodeTest extends AbstractControlTaxliabilityT
 		});
 
 		final Integer periode = 2012;
-		final ControlRuleForTiersPeriode controlRuleForTiersPeriode = new ControlRuleForTiersPeriode(context,idPP,periode);
-		final TaxliabilityControlResult result = doInNewTransaction(new TxCallback<TaxliabilityControlResult>() {
+		final ControlRuleForTiersPeriode controlRuleForTiersPeriode = new ControlRuleForTiersPeriode(periode, tiersService, assujettissementService);
+		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
 			@Override
-			public TaxliabilityControlResult execute(TransactionStatus status) throws Exception {
-				return controlRuleForTiersPeriode.check();
+			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idPP);
+				return controlRuleForTiersPeriode.check(pp);
 			}
 		});
 
@@ -105,11 +100,12 @@ public class ControlRuleForTiersPeriodeTest extends AbstractControlTaxliabilityT
 		});
 
 		final Integer periode = 2012;
-		final ControlRuleForTiersPeriode controlRuleForTiersPeriode = new ControlRuleForTiersPeriode(context,idPP,periode);
-		final TaxliabilityControlResult result = doInNewTransaction(new TxCallback<TaxliabilityControlResult>() {
+		final ControlRuleForTiersPeriode controlRuleForTiersPeriode = new ControlRuleForTiersPeriode(periode, tiersService, assujettissementService);
+		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
 			@Override
-			public TaxliabilityControlResult execute(TransactionStatus status) throws Exception {
-				return controlRuleForTiersPeriode.check();
+			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idPP);
+				return controlRuleForTiersPeriode.check(pp);
 			}
 		});
 

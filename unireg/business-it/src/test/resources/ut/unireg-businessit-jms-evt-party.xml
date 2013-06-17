@@ -21,7 +21,7 @@
 				<entry key="ch.vd.unireg.xml.event.party.nonresident.v2.CreateNonresidentRequest" value-ref="createNonresidentRequestHandlerV2" />
 				<entry key="ch.vd.unireg.xml.event.party.taxliab.aperiodic.v1.AperiodicTaxLiabilityRequest" value-ref="aperiodicTaxLiabilityRequestHandlerV1" />
 				<entry key="ch.vd.unireg.xml.event.party.taxliab.aperiodic.v2.AperiodicTaxLiabilityRequest" value-ref="aperiodicTaxLiabilityRequestHandlerV2" />
-				<entry key="ch.vd.unireg.xml.event.party.taxliab.periodic.v2.PeriodicTaxLiabilityRequest" value-ref="periodicTaxLiabilityRequestHandler" />
+				<entry key="ch.vd.unireg.xml.event.party.taxliab.periodic.v2.PeriodicTaxLiabilityRequest" value-ref="periodicTaxLiabilityRequestHandlerV2" />
 			</util:map>
 		</property>
 		<property name="esbTemplate" ref="esbJmsTemplate"/>
@@ -104,14 +104,14 @@
 
 	<bean id="aperiodicTaxLiabilityRequestHandlerV2" class="ch.vd.uniregctb.evenement.party.AperiodicTaxLiabilityRequestHandlerV2">
 		<property name="tiersDAO" ref="tiersDAO" />
-		<property name="tiersService" ref="tiersService" />
-		<property name="assujettissementService" ref="assujettissementService" />
+		<property name="securityProvider" ref="securityProviderInterface"/>
+		<property name="taxliabilityControlService" ref="taxLiabilityControlService"/>
 	</bean>
 
-	<bean id="periodicTaxLiabilityRequestHandler" class="ch.vd.uniregctb.evenement.party.PeriodicTaxLiabilityRequestHandlerV2">
+	<bean id="periodicTaxLiabilityRequestHandlerV2" class="ch.vd.uniregctb.evenement.party.PeriodicTaxLiabilityRequestHandlerV2">
 		<property name="tiersDAO" ref="tiersDAO" />
-		<property name="tiersService" ref="tiersService" />
-		<property name="assujettissementService" ref="assujettissementService" />
+		<property name="securityProvider" ref="securityProviderInterface"/>
+		<property name="taxliabilityControlService" ref="taxLiabilityControlService"/>
 	</bean>
 
 </beans>

@@ -1,8 +1,9 @@
-package ch.vd.uniregctb.evenement.party;
+package ch.vd.uniregctb.evenement.party.control;
 
-public class TaxliabilityControlResult {
+public class TaxLiabilityControlResult {
+
 	private Long idTiersAssujetti;
-	private TaxliabilityControlEchec echec;
+	private TaxLiabilityControlEchec echec;
 
 	public Long getIdTiersAssujetti() {
 		return idTiersAssujetti;
@@ -12,11 +13,11 @@ public class TaxliabilityControlResult {
 		this.idTiersAssujetti = idTiersAssujetti;
 	}
 
-	public TaxliabilityControlEchec getEchec() {
+	public TaxLiabilityControlEchec getEchec() {
 		return echec;
 	}
 
-	public void setEchec(TaxliabilityControlEchec echec) {
+	public void setEchec(TaxLiabilityControlEchec echec) {
 		this.echec = echec;
 	}
 }

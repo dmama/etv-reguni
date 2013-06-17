@@ -7,7 +7,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.uniregctb.evenement.party.TaxliabilityControlResult;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -15,6 +14,7 @@ import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Sexe;
 
 public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliabilityTest {
+
 	@Test
 	public void testCheckTiersWithAucunParent() throws Exception {
 		final long noInd = 1244;
@@ -37,11 +37,12 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 		});
 
 		final Integer periode = 2012;
-		final ControlRuleForParentPeriode controlRuleForParentPeriode = new ControlRuleForParentPeriode(context, idPP, periode);
-		final TaxliabilityControlResult result = doInNewTransaction(new TxCallback<TaxliabilityControlResult>() {
+		final ControlRuleForParentPeriode controlRuleForParentPeriode = new ControlRuleForParentPeriode(periode, tiersService, assujettissementService);
+		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
 			@Override
-			public TaxliabilityControlResult execute(TransactionStatus status) throws Exception {
-				return controlRuleForParentPeriode.check();
+			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idPP);
+				return controlRuleForParentPeriode.check(pp);
 			}
 		});
 
@@ -86,11 +87,12 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 		});
 
 		final Integer periode = 2012;
-		final ControlRuleForParentPeriode controlRuleForParentPeriode = new ControlRuleForParentPeriode(context, ids.idFille, periode);
-		final TaxliabilityControlResult result = doInNewTransaction(new TxCallback<TaxliabilityControlResult>() {
+		final ControlRuleForParentPeriode controlRuleForParentPeriode = new ControlRuleForParentPeriode(periode, tiersService, assujettissementService);
+		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
 			@Override
-			public TaxliabilityControlResult execute(TransactionStatus status) throws Exception {
-				return controlRuleForParentPeriode.check();
+			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
+				return controlRuleForParentPeriode.check(pp);
 			}
 		});
 
@@ -136,11 +138,12 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 		});
 
 		final Integer periode = 2012;
-		final ControlRuleForParentPeriode controlRuleForParentPeriode = new ControlRuleForParentPeriode(context, ids.idFille, periode);
-		final TaxliabilityControlResult result = doInNewTransaction(new TxCallback<TaxliabilityControlResult>() {
+		final ControlRuleForParentPeriode controlRuleForParentPeriode = new ControlRuleForParentPeriode(periode, tiersService, assujettissementService);
+		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
 			@Override
-			public TaxliabilityControlResult execute(TransactionStatus status) throws Exception {
-				return controlRuleForParentPeriode.check();
+			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
+				return controlRuleForParentPeriode.check(pp);
 			}
 		});
 
@@ -189,11 +192,12 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 		});
 
 		final Integer periode = 2012;
-		final ControlRuleForParentPeriode controlRuleForParentPeriode = new ControlRuleForParentPeriode(context, ids.idFille, periode);
-		final TaxliabilityControlResult result = doInNewTransaction(new TxCallback<TaxliabilityControlResult>() {
+		final ControlRuleForParentPeriode controlRuleForParentPeriode = new ControlRuleForParentPeriode(periode, tiersService, assujettissementService);
+		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
 			@Override
-			public TaxliabilityControlResult execute(TransactionStatus status) throws Exception {
-				return controlRuleForParentPeriode.check();
+			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
+				return controlRuleForParentPeriode.check(pp);
 			}
 		});
 
@@ -244,11 +248,12 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 		});
 
 		final Integer periode = 2012;
-		final ControlRuleForParentPeriode controlRuleForParentPeriode = new ControlRuleForParentPeriode(context, ids.idFille, periode);
-		final TaxliabilityControlResult result = doInNewTransaction(new TxCallback<TaxliabilityControlResult>() {
+		final ControlRuleForParentPeriode controlRuleForParentPeriode = new ControlRuleForParentPeriode(periode, tiersService, assujettissementService);
+		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
 			@Override
-			public TaxliabilityControlResult execute(TransactionStatus status) throws Exception {
-				return controlRuleForParentPeriode.check();
+			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
+				return controlRuleForParentPeriode.check(pp);
 			}
 		});
 
@@ -297,11 +302,12 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 			}
 		});
 		final Integer periode = 2012;
-		final ControlRuleForParentPeriode controlRuleForParentPeriode = new ControlRuleForParentPeriode(context, ids.idFille, periode);
-		final TaxliabilityControlResult result = doInNewTransaction(new TxCallback<TaxliabilityControlResult>() {
+		final ControlRuleForParentPeriode controlRuleForParentPeriode = new ControlRuleForParentPeriode(periode, tiersService, assujettissementService);
+		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
 			@Override
-			public TaxliabilityControlResult execute(TransactionStatus status) throws Exception {
-				return controlRuleForParentPeriode.check();
+			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
+				return controlRuleForParentPeriode.check(pp);
 			}
 		});
 
@@ -354,11 +360,12 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 			}
 		});
 		final Integer periode = 2012;
-		final ControlRuleForParentPeriode controlRuleForParentPeriode = new ControlRuleForParentPeriode(context, ids.idFille, periode);
-		final TaxliabilityControlResult result = doInNewTransaction(new TxCallback<TaxliabilityControlResult>() {
+		final ControlRuleForParentPeriode controlRuleForParentPeriode = new ControlRuleForParentPeriode(periode, tiersService, assujettissementService);
+		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
 			@Override
-			public TaxliabilityControlResult execute(TransactionStatus status) throws Exception {
-				return controlRuleForParentPeriode.check();
+			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
+				return controlRuleForParentPeriode.check(pp);
 			}
 		});
 
@@ -416,11 +423,12 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 			}
 		});
 		final Integer periode = 2012;
-		final ControlRuleForParentPeriode controlRuleForParentPeriode = new ControlRuleForParentPeriode(context, ids.idFille, periode);
-		final TaxliabilityControlResult result = doInNewTransaction(new TxCallback<TaxliabilityControlResult>() {
+		final ControlRuleForParentPeriode controlRuleForParentPeriode = new ControlRuleForParentPeriode(periode, tiersService, assujettissementService);
+		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
 			@Override
-			public TaxliabilityControlResult execute(TransactionStatus status) throws Exception {
-				return controlRuleForParentPeriode.check();
+			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
+				return controlRuleForParentPeriode.check(pp);
 			}
 		});
 
@@ -479,11 +487,12 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 			}
 		});
 		final Integer periode = 2012;
-		final ControlRuleForParentPeriode controlRuleForParentPeriode = new ControlRuleForParentPeriode(context, ids.idFille, periode);
-		final TaxliabilityControlResult result = doInNewTransaction(new TxCallback<TaxliabilityControlResult>() {
+		final ControlRuleForParentPeriode controlRuleForParentPeriode = new ControlRuleForParentPeriode(periode, tiersService, assujettissementService);
+		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
 			@Override
-			public TaxliabilityControlResult execute(TransactionStatus status) throws Exception {
-				return controlRuleForParentPeriode.check();
+			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
+				return controlRuleForParentPeriode.check(pp);
 			}
 		});
 
@@ -538,11 +547,12 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 			}
 		});
 		final Integer periode = 2012;
-		final ControlRuleForParentPeriode controlRuleForParentPeriode = new ControlRuleForParentPeriode(context, ids.idFille, periode);
-		final TaxliabilityControlResult result = doInNewTransaction(new TxCallback<TaxliabilityControlResult>() {
+		final ControlRuleForParentPeriode controlRuleForParentPeriode = new ControlRuleForParentPeriode(periode, tiersService, assujettissementService);
+		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
 			@Override
-			public TaxliabilityControlResult execute(TransactionStatus status) throws Exception {
-				return controlRuleForParentPeriode.check();
+			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
+				return controlRuleForParentPeriode.check(pp);
 			}
 		});
 
@@ -596,11 +606,12 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 			}
 		});
 		final Integer periode = 2012;
-		final ControlRuleForParentPeriode controlRuleForParentPeriode = new ControlRuleForParentPeriode(context, ids.idFille, periode);
-		final TaxliabilityControlResult result = doInNewTransaction(new TxCallback<TaxliabilityControlResult>() {
+		final ControlRuleForParentPeriode controlRuleForParentPeriode = new ControlRuleForParentPeriode(periode, tiersService, assujettissementService);
+		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
 			@Override
-			public TaxliabilityControlResult execute(TransactionStatus status) throws Exception {
-				return controlRuleForParentPeriode.check();
+			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
+				return controlRuleForParentPeriode.check(pp);
 			}
 		});
 

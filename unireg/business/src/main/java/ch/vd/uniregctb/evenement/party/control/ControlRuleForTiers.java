@@ -1,10 +1,10 @@
 package ch.vd.uniregctb.evenement.party.control;
 
-import ch.vd.uniregctb.evenement.party.TaxliabilityControlEchecType;
-import ch.vd.uniregctb.evenement.party.TaxliabilityControlResult;
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.xml.Context;
+import ch.vd.uniregctb.tiers.TiersService;
 
 /**
  * Régle A1.3:Déclenchée si demande porte sur date déterminante.
@@ -12,30 +12,22 @@ import ch.vd.uniregctb.xml.Context;
  */
 public abstract class ControlRuleForTiers extends AbstractControlRule {
 
-	public ControlRuleForTiers(Context context, Long tiersId) {
-		super(context, tiersId);
+	protected ControlRuleForTiers(TiersService tiersService) {
+		super(tiersService);
 	}
 
 	@Override
-	public TaxliabilityControlResult check() throws ControlRuleException {
-		TaxliabilityControlResult result = new TaxliabilityControlResult();
-		Tiers tiers =  context.tiersDAO.get(tiersId);
+	public TaxLiabilityControlResult check(@NotNull Tiers tiers) throws ControlRuleException {
+		final TaxLiabilityControlResult result = new TaxLiabilityControlResult();
 		//S'il y a un assujettissement sur tout ou partie de la PF (au moins 1 jour) -> CTRL OK
-		if (isAssujetti(tiersId)) {
-			result.setIdTiersAssujetti(tiersId);
+		if (isAssujetti(tiers)) {
+			result.setIdTiersAssujetti(tiers.getId());
 		}
 		//	Dans le cas contraire (pas un seul jour d'assujettissement)-> CTRL KO
 		else {
-			setErreur(result, TaxliabilityControlEchecType.CONTROLE_NUMERO_KO, null, null, null);
+			setErreur(result, TaxLiabilityControlEchec.EchecType.CONTROLE_NUMERO_KO, null, null, null);
 		}
-
 		return result;
-	}
-
-
-	public boolean isMineur(long tiersId) {
-		final PersonnePhysique personne = (PersonnePhysique) context.tiersService.getTiers(tiersId);
-		return isMineur(personne);
 	}
 
 	public abstract boolean isMineur(PersonnePhysique personne);

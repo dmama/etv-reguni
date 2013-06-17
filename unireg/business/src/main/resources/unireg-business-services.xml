@@ -268,4 +268,9 @@
 		<property name="uniregModeHelper" ref="uniregModeHelper" />		<!-- juste pour introduire une dépendence qui fera que le afterPropertiesSet du service est garanti d'être appelé alors que le modeHelper est configuré -->
 	</bean>
 
+	<bean id="taxLiabilityControlService" class="ch.vd.uniregctb.evenement.party.control.TaxLiabilityControlServiceImpl">
+		<property name="tiersService" ref="tiersService"/>
+		<property name="assujettissementService" ref="assujettissementService"/>
+	</bean>
+
 </beans>

@@ -1,25 +1,14 @@
 package ch.vd.uniregctb.evenement.party.control;
 
-public class ControlRuleException extends Exception{
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = -4809515869211116599L;
+public class ControlRuleException extends Exception {
 
-	/**
-	 * @param message
-	 * @param t
-	 */
+	private static final long serialVersionUID = -720263702768091438L;
+
 	public ControlRuleException(String message, Throwable t) {
 		super(message, t);
 	}
 
-	/**
-	 *
-	 * @param message
-	 */
 	public ControlRuleException(String message) {
 		super(message);
 	}
-
 }

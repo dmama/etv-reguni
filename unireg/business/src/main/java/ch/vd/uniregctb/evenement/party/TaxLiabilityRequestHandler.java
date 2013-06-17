@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.core.io.ClassPathResource;
 
 import ch.vd.unireg.xml.common.v1.UserLogin;
@@ -16,111 +17,131 @@ import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
 import ch.vd.uniregctb.evenement.party.control.ControlRuleException;
-import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
+import ch.vd.uniregctb.evenement.party.control.TaxLiabilityControlEchec;
+import ch.vd.uniregctb.evenement.party.control.TaxLiabilityControlResult;
+import ch.vd.uniregctb.evenement.party.control.TaxLiabilityControlService;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.xml.Context;
 import ch.vd.uniregctb.xml.ServiceException;
 
-public abstract class TaxLiabilityRequestHandler  implements RequestHandler<TaxLiabilityRequest> {
+public abstract class TaxLiabilityRequestHandler<T extends TaxLiabilityRequest> implements RequestHandler<T> {
 
-	private final Context context = new Context();
+	private TiersDAO tiersDAO;
+	private SecurityProviderInterface securityProvider;
+	private TaxLiabilityControlService taxliabilityControlService;
 
 	public void setTiersDAO(TiersDAO tiersDAO) {
-		context.tiersDAO = tiersDAO;
-	}
-
-	public void setTiersService(TiersService tiersService) {
-		context.tiersService = tiersService;
+		this.tiersDAO = tiersDAO;
 	}
 
 	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
-		context.securityProvider = securityProvider;
+		this.securityProvider = securityProvider;
 	}
 
-	public void setAssujettissementService(AssujettissementService assujettissementService) {
-		context.assujettissementService = assujettissementService;
+	public void setTaxliabilityControlService(TaxLiabilityControlService taxliabilityControlService) {
+		this.taxliabilityControlService = taxliabilityControlService;
+	}
+
+	protected final TaxLiabilityControlService getTaxliabilityControlService() {
+		return taxliabilityControlService;
 	}
 
 	@Override
-	public RequestHandlerResult handle(TaxLiabilityRequest request) throws ServiceException {
+	public RequestHandlerResult handle(T request) throws ServiceException {
 		// Vérification des droits d'accès
 		final UserLogin login = request.getLogin();
-		if (!context.securityProvider.isGranted(Role.VISU_ALL, login.getUserId(), login.getOid())) {
+		if (!securityProvider.isGranted(Role.VISU_ALL, login.getUserId(), login.getOid())) {
 			throw new ServiceException(
 					new AccessDeniedExceptionInfo("L'utilisateur spécifié (" + login.getUserId() + '/' + login.getOid() + ") n'a pas les droits d'accès en lecture complète sur l'application.", null));
 		}
 
 		final int number = request.getPartyNumber();
 
-		final Tiers tiers = context.tiersDAO.get(number, true);
+		final Tiers tiers = tiersDAO.get(number, true);
 		if (tiers == null) {
 			throw new ServiceException(new BusinessExceptionInfo("Le tiers n°" + number + " n'existe pas.", BusinessExceptionCode.UNKNOWN_PARTY.name(), null));
 		}
-		TaxliabilityControlManager controlManager = new TaxliabilityControlManager(context);
-		TaxliabilityControlResult result = null;
+
 		try {
-			result = runControl(controlManager, request);
+			final TaxLiabilityControlResult result = doControl(request, tiers);
+			return builtRequestHandler(result);
 		}
 		catch (ControlRuleException e) {
-			//TODO a finaliser
-			//ServiceExceptionInfo infoException = new BusinessExceptionInfo(e.getMessage())
-			//throw  new ServiceException(e.getMessage());
+			throw new ServiceException(new BusinessExceptionInfo(e.getMessage(), BusinessExceptionCode.TAX_LIABILITY.name(), null));
 		}
-		return getHandlerResult(result);
-
 	}
 
-	public abstract TaxliabilityControlResult runControl(TaxliabilityControlManager controlManager,TaxLiabilityRequest request) throws ControlRuleException;
+	/**
+	 * Le vrai travail de contrôle se passe ici...
+	 * @param request la requête en entrée
+	 * @param tiers le tiers concerné en premier lieu
+	 * @return le résultat du contrôle
+	 * @throws ControlRuleException en cas de souci
+	 */
+	protected abstract TaxLiabilityControlResult doControl(T request, @NotNull Tiers tiers) throws ControlRuleException;
 
+	private RequestHandlerResult builtRequestHandler(TaxLiabilityControlResult result) {
 
-	protected RequestHandlerResult getHandlerResult(TaxliabilityControlResult result) {
 		Integer partyNumber = null;
 		Failure failure = null;
-		final TaxliabilityControlEchec echec = result.getEchec();
+
+		final TaxLiabilityControlEchec echec = result.getEchec();
 		if (echec != null) {
 			failure = new Failure();
-			if (TaxliabilityControlEchecType.CONTROLE_NUMERO_KO == echec.getType()) {
-				failure.setNoTaxLiability("Tiers non assujetti");
-			}
-			if (TaxliabilityControlEchecType.AUCUN_MC_ASSOCIE_TROUVE == echec.getType()) {
-				failure.setNoCommonHousehold("Tiers non assujetti sans ménage commun");
-			}
-			if (TaxliabilityControlEchecType.UN_PLUSIEURS_MC_NON_ASSUJETTI_TROUVES == echec.getType()) {
-				List<Integer> menageCommunsIds = getListOfInteger(echec.getMenageCommunIds());
-				CommonHouseholdInfo commonHouseholdInfo = new CommonHouseholdInfo(menageCommunsIds);
-				failure.setNoTaxLiableCommonHouseholds(commonHouseholdInfo);
-			}
-			if (TaxliabilityControlEchecType.PLUSIEURS_MC_ASSUJETTI_TROUVES == echec.getType()) {
-				List<Integer> menageCommunsIds = getListOfInteger(echec.getMenageCommunIds());
-				CommonHouseholdInfo commonHouseholdInfo = new CommonHouseholdInfo(menageCommunsIds);
-				failure.setMultipleTaxLiableCommonHouseholds(commonHouseholdInfo);
-			}
-			if (TaxliabilityControlEchecType.CONTROLE_SUR_PARENTS_KO == echec.getType()) {
 
-				List<Integer> menageCommunsParentIds = null;
-				List<Integer> parentIds = null;
-				final List<Long> parentsIdsFromCore = echec.getParentsIds();
-				final List<Long> menageParentIdFromCore = echec.getMenageCommunParentsIds();
-				if (parentsIdsFromCore != null) {
-					parentIds = getListOfInteger(parentsIdsFromCore);
+			switch (echec.getType()) {
+				case CONTROLE_NUMERO_KO:
+					failure.setNoTaxLiability("Tiers non-assujetti");
+					break;
+
+				case AUCUN_MC_ASSOCIE_TROUVE:
+					failure.setNoCommonHousehold("Tiers non-assujetti sans ménage commun");
+					break;
+
+				case UN_PLUSIEURS_MC_NON_ASSUJETTI_TROUVES:
+				{
+					final List<Integer> menageCommunsIds = getListOfInteger(echec.getMenageCommunIds());
+					failure.setNoTaxLiableCommonHouseholds(new CommonHouseholdInfo(menageCommunsIds));
+					break;
 				}
 
-				if (menageParentIdFromCore != null) {
-					menageCommunsParentIds = getListOfInteger(menageParentIdFromCore);
+				case PLUSIEURS_MC_ASSUJETTI_TROUVES:
+				{
+					final List<Integer> menageCommunsIds = getListOfInteger(echec.getMenageCommunIds());
+					failure.setMultipleTaxLiableCommonHouseholds(new CommonHouseholdInfo(menageCommunsIds));
+					break;
 				}
-				MinorInfo minorInfo = new MinorInfo(menageCommunsParentIds,parentIds);
-				failure.setNoTaxLiableMinorTaxPayer(minorInfo);
+
+				case CONTROLE_SUR_PARENTS_KO:
+				{
+					List<Integer> menageCommunsParentIds = null;
+					List<Integer> parentIds = null;
+					final List<Long> parentsIdsFromCore = echec.getParentsIds();
+					final List<Long> menageParentIdFromCore = echec.getMenageCommunParentsIds();
+					if (parentsIdsFromCore != null) {
+						parentIds = getListOfInteger(parentsIdsFromCore);
+					}
+					if (menageParentIdFromCore != null) {
+						menageCommunsParentIds = getListOfInteger(menageParentIdFromCore);
+					}
+					final MinorInfo minorInfo = new MinorInfo(menageCommunsParentIds,parentIds);
+					failure.setNoTaxLiableMinorTaxPayer(minorInfo);
+				}
+
+				default:
+					throw new IllegalArgumentException("Value not supported : " + echec.getType());
 			}
 		}
 		else if (result.getIdTiersAssujetti() != null) {
 			partyNumber = result.getIdTiersAssujetti().intValue();
 		}
-		TaxLiabilityResponse response = new TaxLiabilityResponse(partyNumber,failure);
+		else {
+			throw new IllegalArgumentException("Ni échec ni réussite... Cas bizarre, non ?");
+		}
 
+		final TaxLiabilityResponse response = new TaxLiabilityResponse(partyNumber, failure);
 		return new RequestHandlerResult(response);
 	}
 
@@ -130,7 +151,6 @@ public abstract class TaxLiabilityRequestHandler  implements RequestHandler<TaxL
 			result.add(menageCommunId.intValue());
 		}
 		return result;
-
 	}
 
 	@Override

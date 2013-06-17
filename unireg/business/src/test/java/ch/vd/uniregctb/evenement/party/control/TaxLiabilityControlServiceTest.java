@@ -7,9 +7,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.uniregctb.evenement.party.TaxliabilityControlEchecType;
-import ch.vd.uniregctb.evenement.party.TaxliabilityControlManager;
-import ch.vd.uniregctb.evenement.party.TaxliabilityControlResult;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -18,11 +16,17 @@ import ch.vd.uniregctb.type.Sexe;
 
 import static org.junit.Assert.assertEquals;
 
-public class TaxliabilityControlManagerTest extends AbstractControlTaxliabilityTest {
+public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityTest {
+
+	private TaxLiabilityControlServiceImpl controlService;
 
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
+
+		controlService = new TaxLiabilityControlServiceImpl();
+		controlService.setAssujettissementService(getBean(AssujettissementService.class, "assujettissementService"));
+		controlService.setTiersService(tiersService);
 	}
 
 	//N0A1.1 - OK
@@ -48,24 +52,18 @@ public class TaxliabilityControlManagerTest extends AbstractControlTaxliabilityT
 			}
 		});
 		final Integer periode = 2012;
-		final RegDate date = null;
-		final boolean periodic = true;
 		final boolean rechercheMenageCommun = false;
 		final boolean rechercheParent = false;
 
-		final TaxliabilityControlManager controlManager = new TaxliabilityControlManager(context);
-
-		TaxliabilityControlResult result = doInNewTransaction(new TxCallback<TaxliabilityControlResult>() {
+		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
 			@Override
-			public TaxliabilityControlResult execute(TransactionStatus status) throws Exception {
-
-				return controlManager.runControlOnPeriode(idPP, periode,rechercheMenageCommun, rechercheParent);
+			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idPP);
+				return controlService.doControlOnPeriod(pp, periode, rechercheMenageCommun, rechercheParent);
 			}
 		});
 
-
 		assertTiersAssujetti(idPP, result);
-
 	}
 
 	//N0A1.1 - KO
@@ -90,23 +88,18 @@ public class TaxliabilityControlManagerTest extends AbstractControlTaxliabilityT
 			}
 		});
 		final Integer periode = 2012;
-		final RegDate date = null;
-		final boolean periodic = true;
 		final boolean rechercheMenageCommun = false;
 		final boolean rechercheParent = false;
 
-		final TaxliabilityControlManager controlManager = new TaxliabilityControlManager(context);
-
-		TaxliabilityControlResult result = doInNewTransaction(new TxCallback<TaxliabilityControlResult>() {
+		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
 			@Override
-			public TaxliabilityControlResult execute(TransactionStatus status) throws Exception {
-				return controlManager.runControlOnPeriode(idPP, periode, rechercheMenageCommun, rechercheParent);
+			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idPP);
+				return controlService.doControlOnPeriod(pp, periode, rechercheMenageCommun, rechercheParent);
 			}
 		});
 
-
 		assertControlNumeroKO(result);
-
 	}
 
 	//N0A1.2a - OK
@@ -140,28 +133,22 @@ public class TaxliabilityControlManagerTest extends AbstractControlTaxliabilityT
 				addForPrincipal(menage, date(2000, 5, 5), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Moudon);
 
 				return null;
-
 			}
 		});
 		final Integer periode = 2012;
-		final RegDate date = null;
-		final boolean periodic = true;
 		final boolean rechercheMenageCommun = true;
 		final boolean rechercheParent = false;
 
-		final TaxliabilityControlManager controlManager = new TaxliabilityControlManager(context);
-
-		TaxliabilityControlResult result = doInNewTransaction(new TxCallback<TaxliabilityControlResult>() {
+		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
 			@Override
-			public TaxliabilityControlResult execute(TransactionStatus status) throws Exception {
-
-				return controlManager.runControlOnPeriode(ids.idpp, periode, rechercheMenageCommun, rechercheParent);
+			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idpp);
+				return controlService.doControlOnPeriod(pp, periode, rechercheMenageCommun, rechercheParent);
 			}
 		});
 
 
 		assertTiersAssujetti(ids.idMc, result);
-
 	}
 
 	//N0A1.2a - KO
@@ -198,23 +185,18 @@ public class TaxliabilityControlManagerTest extends AbstractControlTaxliabilityT
 			}
 		});
 		final Integer periode = 2012;
-		final RegDate date = null;
-		final boolean periodic = true;
 		final boolean rechercheMenageCommun = true;
 		final boolean rechercheParent = false;
 
-		final TaxliabilityControlManager controlManager = new TaxliabilityControlManager(context);
-
-		TaxliabilityControlResult result = doInNewTransaction(new TxCallback<TaxliabilityControlResult>() {
+		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
 			@Override
-			public TaxliabilityControlResult execute(TransactionStatus status) throws Exception {
-
-				return controlManager.runControlOnPeriode(ids.idpp, periode, rechercheMenageCommun, rechercheParent);
+			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idpp);
+				return controlService.doControlOnPeriod(pp, periode, rechercheMenageCommun, rechercheParent);
 			}
 		});
 
-
-		assertEquals(TaxliabilityControlEchecType.UN_PLUSIEURS_MC_NON_ASSUJETTI_TROUVES, result.getEchec().getType());
+		assertEquals(TaxLiabilityControlEchec.EchecType.UN_PLUSIEURS_MC_NON_ASSUJETTI_TROUVES, result.getEchec().getType());
 		assertEquals(ids.idMc, result.getEchec().getMenageCommunIds().get(0));
 	}
 
@@ -223,10 +205,6 @@ public class TaxliabilityControlManagerTest extends AbstractControlTaxliabilityT
 	public void testRunControlAssujettissementTiersSansMenageKO() throws Exception {
 
 		final long noInd = 1244;
-		class Ids {
-			Long idpp;
-		}
-		final Ids ids = new Ids();
 
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
@@ -236,35 +214,26 @@ public class TaxliabilityControlManagerTest extends AbstractControlTaxliabilityT
 		});
 
 		// on crée un habitant vaudois ordinaire
-		doInNewTransaction(new TxCallback<Object>() {
+		final long ppId = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = addHabitant(noInd);
-				ids.idpp = pp.getId();
-
-
-				return null;
-
+				return pp.getNumero();
 			}
 		});
 		final Integer periode = 2012;
-		final RegDate date = null;
-		final boolean periodic = true;
 		final boolean rechercheMenageCommun = true;
 		final boolean rechercheParent = false;
 
-		final TaxliabilityControlManager controlManager = new TaxliabilityControlManager(context);
-
-		TaxliabilityControlResult result = doInNewTransaction(new TxCallback<TaxliabilityControlResult>() {
+		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
 			@Override
-			public TaxliabilityControlResult execute(TransactionStatus status) throws Exception {
-
-				return controlManager.runControlOnPeriode(ids.idpp, periode, rechercheMenageCommun, rechercheParent);
+			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				return controlService.doControlOnPeriod(pp, periode, rechercheMenageCommun, rechercheParent);
 			}
 		});
 
-
-		assertEquals(TaxliabilityControlEchecType.AUCUN_MC_ASSOCIE_TROUVE, result.getEchec().getType());
+		assertEquals(TaxLiabilityControlEchec.EchecType.AUCUN_MC_ASSOCIE_TROUVE, result.getEchec().getType());
 	}
 
 	//N0A1.2b - KO
@@ -290,24 +259,20 @@ public class TaxliabilityControlManagerTest extends AbstractControlTaxliabilityT
 			}
 		});
 		final Integer periode = 2012;
-		final RegDate date = null;
-		final boolean periodic = true;
 		final boolean rechercheMenageCommun = true;
 		final boolean rechercheParent = true;
 
-		final TaxliabilityControlManager controlManager = new TaxliabilityControlManager(context);
-
-		TaxliabilityControlResult result = doInNewTransaction(new TxCallback<TaxliabilityControlResult>() {
+		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
 			@Override
-			public TaxliabilityControlResult execute(TransactionStatus status) throws Exception {
-				return controlManager.runControlOnPeriode(idPP, periode, rechercheMenageCommun, rechercheParent);
+			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idPP);
+				return controlService.doControlOnPeriod(pp, periode, rechercheMenageCommun, rechercheParent);
 			}
 		});
 
 		// le controle sur le tiers est ko, par les règles sur le tiers et sur le ménage, la règle sur les parents n'a pas été chargées
 		//car la personne est majeur sans méange commun
-		assertEquals(TaxliabilityControlEchecType.AUCUN_MC_ASSOCIE_TROUVE,result.getEchec().getType());
-
+		assertEquals(TaxLiabilityControlEchec.EchecType.AUCUN_MC_ASSOCIE_TROUVE,result.getEchec().getType());
 	}
 
 	//N0A1.2b - KO
@@ -348,38 +313,31 @@ public class TaxliabilityControlManagerTest extends AbstractControlTaxliabilityT
 				return null;
 			}
 		});
+
 		final Integer periode = 2012;
-		final RegDate date = null;
-		final boolean periodic = true;
-		final boolean rechercheMenageCommun = true;
-		final boolean rechercheParent = true;
-
-		final TaxliabilityControlManager controlManager = new TaxliabilityControlManager(context);
-
-		TaxliabilityControlResult result = doInNewTransaction(new TxCallback<TaxliabilityControlResult>() {
+		TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
 			@Override
-			public TaxliabilityControlResult execute(TransactionStatus status) throws Exception {
-				return controlManager.runControlOnPeriode(ids.idFille, periode, rechercheMenageCommun, rechercheParent);
+			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
+				return controlService.doControlOnPeriod(pp, periode, true, true);
 			}
 		});
 
 		// le controle sur le tiers est ko, par les règles sur le tiers et sur le ménage, la règle sur les parents n'a pas été chargées
 		//car la personne est majeur sans méange commun
-		assertEquals(TaxliabilityControlEchecType.CONTROLE_SUR_PARENTS_KO,result.getEchec().getType());
+		assertEquals(TaxLiabilityControlEchec.EchecType.CONTROLE_SUR_PARENTS_KO,result.getEchec().getType());
 		assertEquals(ids.idPere,result.getEchec().getParentsIds().get(0));
 
-
 		//On ne demande pas le parent mais que le menage commun
-		 result = doInNewTransaction(new TxCallback<TaxliabilityControlResult>() {
+		result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
 			@Override
-			public TaxliabilityControlResult execute(TransactionStatus status) throws Exception {
-				return controlManager.runControlOnPeriode(ids.idFille, periode, rechercheMenageCommun, false);
+			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
+				return controlService.doControlOnPeriod(pp, periode, true, false);
 			}
 		});
 
 		//Meme si le tiers assujetti est mineur, on fait quand même une recherche sur les ménages communs tel que demandé dans le controle.
-		assertEquals(TaxliabilityControlEchecType.AUCUN_MC_ASSOCIE_TROUVE,result.getEchec().getType());
-
-
+		assertEquals(TaxLiabilityControlEchec.EchecType.AUCUN_MC_ASSOCIE_TROUVE, result.getEchec().getType());
 	}
 }
