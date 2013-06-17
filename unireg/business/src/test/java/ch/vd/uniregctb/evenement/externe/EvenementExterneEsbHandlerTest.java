@@ -7,6 +7,7 @@ import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -68,6 +69,9 @@ public class EvenementExterneEsbHandlerTest extends BusinessTest {
 
 		handler = new EvenementExterneEsbHandler();
 		handler.setHandler(service);
+
+		final List<EvenementExterneConnector> connectors = Arrays.<EvenementExterneConnector>asList(new EvtQuittanceListeV1Connector(), new EvtListeV1Connector(), new EvtListeV2Connector());
+		handler.setConnectors(connectors);
 	}
 
 	@Test
@@ -1116,7 +1120,7 @@ public class EvenementExterneEsbHandlerTest extends BusinessTest {
 		final QName qname = new QName("http://www.vd.ch/fiscalite/taxation/is/evt-liste/1", "evtListe");
 		marshaller.marshal(new JAXBElement<>(qname, EvtListe.class, event), doc);
 
-		final EsbMessage m = new EsbMessageFactory().createMessage();
+		final EsbMessage m = EsbMessageFactory.createMessage();
 		m.setBody(doc);
 
 		return m;
