@@ -17,11 +17,6 @@ public class ZeroTiersSearcherImpl implements GlobalTiersSearcher {
 	}
 
 	@Override
-	public List<TiersIndexedData> searchAll(TiersCriteria criteria) throws IndexerException {
-		return Collections.emptyList();
-	}
-
-	@Override
 	public TopList<TiersIndexedData> searchTop(TiersCriteria criteria, int max) throws IndexerException {
 		return new TopList<>();
 	}

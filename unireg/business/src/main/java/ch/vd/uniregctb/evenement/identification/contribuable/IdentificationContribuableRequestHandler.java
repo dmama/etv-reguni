@@ -146,7 +146,7 @@ public class IdentificationContribuableRequestHandler implements EsbMessageHandl
 		}
 	}
 
-	protected IdentificationContribuableResponse handle(IdentificationContribuableRequest request, String businessId) {
+	private IdentificationContribuableResponse handle(IdentificationContribuableRequest request, String businessId) {
 
 		final IdentificationContribuableResponse response = new IdentificationContribuableResponse();
 		final CriteresPersonne criteresPersonne = createCriteresPersonne(request);
