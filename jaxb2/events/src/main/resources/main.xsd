@@ -40,7 +40,8 @@
 	<xs:import namespace="http://www.vd.ch/fiscalite/registre/identification/contribuable/request/2" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/identification/identification-contribuable-request-2.xsd"/>
 	<xs:import namespace="http://www.vd.ch/fiscalite/registre/identification/contribuable/response/2" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/identification/identification-contribuable-response-2.xsd"/>
 
-	<xs:import namespace="http://www.vd.ch/fiscalite/taxation/is/evt-liste/1" schemaLocation="http://www.vd.ch/fiscalite/taxation/is/evtliste-1.xsd"/>
 	<xs:import namespace="http://www.vd.ch/fiscalite/taxation/evtQuittanceListe-v1" schemaLocation="http://www.vd.ch/fiscalite/taxation/is/evtquittanceListe-v1.xsd"/>
+	<xs:import namespace="http://www.vd.ch/fiscalite/taxation/is/evt-liste/1" schemaLocation="http://www.vd.ch/fiscalite/taxation/is/evtliste-1.xsd"/>
+	<xs:import namespace="http://www.vd.ch/fiscalite/taxation/is/evt-liste/2" schemaLocation="http://www.vd.ch/fiscalite/taxation/is/evtliste-2.xsd"/>
 
 </xs:schema>
