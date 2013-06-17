@@ -4,28 +4,23 @@ package ch.vd.uniregctb.evenement.externe;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.springframework.core.io.ClassPathResource;
 import org.xml.sax.SAXException;
 
-import ch.vd.registre.base.date.DateHelper;
 import ch.vd.technical.esb.EsbMessage;
-import ch.vd.unireg.xml.event.lr.event.v1.Evenement;
-import ch.vd.unireg.xml.event.lr.event.v1.EvtListe;
-import ch.vd.unireg.xml.event.lr.quittance.v1.EvtQuittanceListe;
-import ch.vd.unireg.xml.event.lr.quittance.v1.Liste;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.jms.EsbBusinessCode;
 import ch.vd.uniregctb.jms.EsbBusinessException;
@@ -43,6 +38,8 @@ public class EvenementExterneEsbHandler implements EsbMessageHandler {
 	private EvenementExterneHandler handler;
 	private HibernateTemplate hibernateTemplate;
 	private Schema schemaCache;
+	private Map<Class<?>, EvenementExterneConnector> connectorMap;
+	private Class<?>[] supportedConnectorClasses;
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setHandler(EvenementExterneHandler handler) {
@@ -52,6 +49,24 @@ public class EvenementExterneEsbHandler implements EsbMessageHandler {
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
 		this.hibernateTemplate = hibernateTemplate;
+	}
+
+	public void setConnectors(List<EvenementExterneConnector> connectors) {
+		if (connectors != null && !connectors.isEmpty()) {
+			this.connectorMap = new HashMap<>(connectors.size());
+			for (EvenementExterneConnector connector : connectors) {
+				final Class supportedClass = connector.getSupportedClass();
+				final EvenementExterneConnector previous = this.connectorMap.put(supportedClass, connector);
+				if (previous != null) {
+					throw new IllegalArgumentException("Plusieurs connecteurs pour la même classe : " + supportedClass);
+				}
+			}
+			this.supportedConnectorClasses = connectorMap.keySet().toArray(new Class[connectors.size()]);
+		}
+		else {
+			this.connectorMap = Collections.emptyMap();
+			this.supportedConnectorClasses = new Class[0];
+		}
 	}
 
 	@Override
@@ -99,78 +114,34 @@ public class EvenementExterneEsbHandler implements EsbMessageHandler {
 		}
 	}
 
-	protected EvenementExterne parse(Source source, String bodyAsString, String businessId) throws JAXBException, IOException, SAXException {
+	protected EvenementExterne parse(Source source, String bodyAsString, String businessId) throws IOException, EsbBusinessException {
 
-		final JAXBContext context = JAXBContext.newInstance(EvtQuittanceListe.class, EvtListe.class);
-		final Unmarshaller u = context.createUnmarshaller();
-		u.setSchema(getRequestSchema());
+		try {
+			final JAXBContext context = JAXBContext.newInstance(supportedConnectorClasses);
+			final Unmarshaller u = context.createUnmarshaller();
+			u.setSchema(getRequestSchema());
 
-		final Object event = u.unmarshal(source);
-		if (event == null) {
-			return null;
-		}
-
-		// Crée l'événement correspondant
-		if (event instanceof EvtQuittanceListe) {
-			final EvtQuittanceListe eq = (EvtQuittanceListe) event;
-			if (isEvenementLR(eq)) {
-				final QuittanceLR quittance = new QuittanceLR();
-				quittance.setMessage(bodyAsString);
-				quittance.setBusinessId(businessId);
-				quittance.setDateEvenement(XmlUtils.xmlcal2date(eq.getTimestampEvtQuittance()));
-				quittance.setDateTraitement(DateHelper.getCurrentDate());
-				final XMLGregorianCalendar dateDebut = eq.getIdentificationListe().getPeriodeDeclaration().getDateDebut();
-				quittance.setDateDebut(XmlUtils.xmlcal2regdate(dateDebut));
-				final XMLGregorianCalendar dateFin = eq.getIdentificationListe().getPeriodeDeclaration().getDateFin();
-				quittance.setDateFin(XmlUtils.xmlcal2regdate(dateFin));
-				quittance.setType(TypeQuittance.valueOf(eq.getTypeEvtQuittance().toString()));
-				final int numeroDebiteur = eq.getIdentificationListe().getNumeroDebiteur();
-				quittance.setTiersId((long) numeroDebiteur);
-				return quittance;
-			}
-			else {
+			final Object xml = u.unmarshal(source);
+			if (xml == null) {
 				return null;
 			}
-		}
-		else if (event instanceof EvtListe) {
-			final EvtListe el = (EvtListe) event;
-			if (isEvenementLR(el) && isEvenementQuittanceOuAnnulation(el)) {
-				final QuittanceLR quittance = new QuittanceLR();
-				quittance.setMessage(bodyAsString);
-				quittance.setBusinessId(businessId);
-				quittance.setDateEvenement(XmlUtils.xmlcal2date(el.getDateEvenement()));
-				quittance.setDateTraitement(DateHelper.getCurrentDate());
-				final XMLGregorianCalendar dateDebut = el.getCaracteristiquesListe().getPeriodeDeclaration().getDateDebut();
-				quittance.setDateDebut(XmlUtils.xmlcal2regdate(dateDebut));
-				final XMLGregorianCalendar dateFin = el.getCaracteristiquesListe().getPeriodeDeclaration().getDateFin();
-				quittance.setDateFin(XmlUtils.xmlcal2regdate(dateFin));
-				quittance.setType(jms2core(el.getTypeEvenement()));
-				final int numeroDebiteur = el.getCaracteristiquesDebiteur().getNumeroDebiteur();
-				quittance.setTiersId((long) numeroDebiteur);
-				return quittance;
-			}
-			else {
-				return null;
-			}
-		}
-		else {
-			throw new IllegalArgumentException("Type d'événement inconnu = " + event.getClass());
-		}
-	}
 
-	private static TypeQuittance jms2core(Evenement typeEvenement) {
-		switch (typeEvenement) {
-		case ANNULATION:
-			return TypeQuittance.ANNULATION;
-		case QUITTANCE:
-			return TypeQuittance.QUITTANCEMENT;
-		default:
-			throw new IllegalArgumentException("Type d'événement non supporté = [" + typeEvenement + "]");
-		}
-	}
+			final EvenementExterneConnector connector = connectorMap.get(xml.getClass());
+			if (connector == null) {
+				throw new EsbBusinessException(EsbBusinessCode.EVT_EXTERNE, "Evénement non supporté", null);
+			}
 
-	private static boolean isEvenementQuittanceOuAnnulation(EvtListe el) {
-		return el.getTypeEvenement() == Evenement.QUITTANCE || el.getTypeEvenement() == Evenement.ANNULATION;
+			//noinspection unchecked
+			final EvenementExterne event = connector.parse(xml);
+			if (event != null) {
+				event.setBusinessId(businessId);
+				event.setMessage(bodyAsString);
+			}
+			return event;
+		}
+		catch (JAXBException | SAXException e) {
+			throw new EsbBusinessException(EsbBusinessCode.XML_INVALIDE, e.getMessage(), e);
+		}
 	}
 
 	private Schema getRequestSchema() throws SAXException, IOException {
@@ -185,26 +156,11 @@ public class EvenementExterneEsbHandler implements EsbMessageHandler {
 			final SchemaFactory sf = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
 			sf.setResourceResolver(new ClasspathCatalogResolver());
 
-			final List<Source> sources = new ArrayList<>();
-
-			// [SIFISC-5275] le nouveau XSD des événements de quittance ou d'annulation des LRs
-			final ClassPathResource evtList1 = new ClassPathResource("event/lr/evtListe-1.xsd");
-			sources.add(new StreamSource(evtList1.getURL().toExternalForm()));
-
-			// l'ancien XSD, à garder jusqu'à la 13R1 au moins
-			final ClassPathResource evtQuittanceListe1 = new ClassPathResource("event/lr/evtQuittanceListe-v1.xsd");
-			sources.add(new StreamSource(evtQuittanceListe1.getURL().toExternalForm()));
-
+			final List<Source> sources = new ArrayList<>(connectorMap.size());
+			for (EvenementExterneConnector connector : connectorMap.values()) {
+				sources.add(new StreamSource(connector.getRequestXSD().getURL().toExternalForm()));
+			}
 			schemaCache = sf.newSchema(sources.toArray(new Source[sources.size()]));
 		}
-	}
-
-	private static boolean isEvenementLR(EvtQuittanceListe event) {
-		final Liste type = event.getIdentificationListe().getTypeListe();
-		return type == Liste.LR;
-	}
-
-	private static boolean isEvenementLR(EvtListe el) {
-		return el.getCaracteristiquesListe().getTypeListe() == ch.vd.unireg.xml.event.lr.event.v1.Liste.LR;
 	}
 }
