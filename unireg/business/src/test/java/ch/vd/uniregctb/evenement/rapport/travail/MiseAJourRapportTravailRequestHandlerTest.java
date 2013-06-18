@@ -1527,4 +1527,195 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 			}
 		});
 	}
+
+
+
+
+
+
+	//SIFISC 8135
+	@Test
+	public void testFermetureSurDoublon() throws Exception {
+
+		final long noIndividu = 323263L;
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noIndividu, null, "Plantagenet", "Pierre-Henri", Sexe.MASCULIN);
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Aubonne.CheminCurzilles, null, date(2000, 1, 1), null);
+				addNationalite(ind, MockPays.RoyaumeUni, date(2000, 1, 1), null);
+				addPermis(ind, TypePermis.SEJOUR, date(2000, 1, 1), null, false);
+			}
+		});
+
+		final class Ids {
+			long idSourcier;
+			long idDebiteur;
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique sourcier = addHabitant(noIndividu);
+				addForPrincipal(sourcier, date(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aubonne, ModeImposition.SOURCE);
+
+				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2005, 1, 1));
+				addForDebiteur(dpi, date(2005, 1, 1), null, MockCommune.Bussigny);
+
+				addRapportPrestationImposable(dpi, sourcier, date(2011, 1, 1), null, false);
+				addRapportPrestationImposable(dpi, sourcier, date(2011, 1, 1), null, false);
+
+				final Ids ids = new Ids();
+				ids.idDebiteur = dpi.getNumero();
+				ids.idSourcier = sourcier.getNumero();
+				return ids;
+			}
+		});
+
+		final MiseAJourRapportTravailRequest req = createMiseAJourRapportTravailRequest(ids.idDebiteur, ids.idSourcier, new DateRangeHelper.Range(date(2013, 1, 1), date(2013, 1, 31)), null, null);
+		req.setFinRapportTravail(new FinRapportTravail(FinRapportTravailType.SORTIE, DataHelper.coreToXML(date(2013, 1, 20))));
+		req.setCreationProlongationRapportTravail(new CreationProlongationRapportTravail());
+		req.setDateDebutVersementSalaire(DataHelper.coreToXML(date(2013, 1, 10)));
+		req.setDateFinVersementSalaire(DataHelper.coreToXML(date(2013, 1, 20)));
+		final MiseAJourRapportTravailResponse response =  doInNewTransaction(new TxCallback<MiseAJourRapportTravailResponse>() {
+			@Override
+			public MiseAJourRapportTravailResponse execute(TransactionStatus status) throws Exception {
+				return handler.handle(MiseAjourRapportTravail.get(req, null));
+			}
+		});
+		assertEquals(DataHelper.coreToXML(RegDate.get()), response.getDatePriseEnCompte());
+		assertNull(response.getExceptionInfo());
+
+		// vérification du résultat...
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(ids.idDebiteur);
+				final PersonnePhysique sourcier = (PersonnePhysique) tiersDAO.get(ids.idSourcier);
+
+				final List<RapportPrestationImposable> rapports = tiersService.getAllRapportPrestationImposable(dpi, sourcier, false, true);
+				assertEquals(2,rapports.size());
+
+				Collections.sort(rapports, new DateRangeComparator<RapportPrestationImposable>());
+				{
+					final RapportPrestationImposable rapport = rapports.get(0);
+					assertNotNull(rapport);
+					assertEquals(date(2011, 1, 1), rapport.getDateDebut());
+					assertEquals(date(2013, 1, 20), rapport.getDateFin());
+					assertFalse(rapport.isAnnule());
+				}
+				{
+					final RapportPrestationImposable rapport = rapports.get(1);
+					assertNotNull(rapport);
+					assertEquals(date(2011, 1, 1), rapport.getDateDebut());
+					assertEquals(null, rapport.getDateFin());
+					assertTrue(rapport.isAnnule());
+				}
+				return null;
+			}
+		});
+	}
+
+	//SIFISC 8135
+	@Test
+	public void testFermetureSurMultiple() throws Exception {
+
+		final long noIndividu = 323263L;
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noIndividu, null, "Plantagenet", "Pierre-Henri", Sexe.MASCULIN);
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Aubonne.CheminCurzilles, null, date(2000, 1, 1), null);
+				addNationalite(ind, MockPays.RoyaumeUni, date(2000, 1, 1), null);
+				addPermis(ind, TypePermis.SEJOUR, date(2000, 1, 1), null, false);
+			}
+		});
+
+		final class Ids {
+			long idSourcier;
+			long idDebiteur;
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique sourcier = addHabitant(noIndividu);
+				addForPrincipal(sourcier, date(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aubonne, ModeImposition.SOURCE);
+
+				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2005, 1, 1));
+				addForDebiteur(dpi, date(2005, 1, 1), null, MockCommune.Bussigny);
+
+				addRapportPrestationImposable(dpi, sourcier, date(2011, 1, 1), null, false);
+				addRapportPrestationImposable(dpi, sourcier, date(2010, 1, 1), null, false);
+				addRapportPrestationImposable(dpi, sourcier, date(2012, 3, 1), null, false);
+
+				final Ids ids = new Ids();
+				ids.idDebiteur = dpi.getNumero();
+				ids.idSourcier = sourcier.getNumero();
+				return ids;
+			}
+		});
+
+		final MiseAJourRapportTravailRequest req = createMiseAJourRapportTravailRequest(ids.idDebiteur, ids.idSourcier, new DateRangeHelper.Range(date(2013, 1, 1), date(2013, 1, 31)), null, null);
+		req.setFinRapportTravail(new FinRapportTravail(FinRapportTravailType.SORTIE, DataHelper.coreToXML(date(2013, 1, 20))));
+		req.setCreationProlongationRapportTravail(new CreationProlongationRapportTravail());
+		req.setDateDebutVersementSalaire(DataHelper.coreToXML(date(2013, 1, 10)));
+		req.setDateFinVersementSalaire(DataHelper.coreToXML(date(2013, 1, 20)));
+		final MiseAJourRapportTravailResponse response =  doInNewTransaction(new TxCallback<MiseAJourRapportTravailResponse>() {
+			@Override
+			public MiseAJourRapportTravailResponse execute(TransactionStatus status) throws Exception {
+				return handler.handle(MiseAjourRapportTravail.get(req, null));
+			}
+		});
+		assertEquals(DataHelper.coreToXML(RegDate.get()), response.getDatePriseEnCompte());
+		assertNull(response.getExceptionInfo());
+
+		// vérification du résultat...
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(ids.idDebiteur);
+				final PersonnePhysique sourcier = (PersonnePhysique) tiersDAO.get(ids.idSourcier);
+
+				final List<RapportPrestationImposable> rapports = tiersService.getAllRapportPrestationImposable(dpi, sourcier, false, true);
+				assertEquals(3,rapports.size());
+
+				Collections.sort(rapports, new DateRangeComparator<RapportPrestationImposable>());
+				{
+					final RapportPrestationImposable rapport = rapports.get(0);
+					assertNotNull(rapport);
+					assertEquals(date(2010, 1, 1), rapport.getDateDebut());
+					assertEquals(date(2013, 1, 20), rapport.getDateFin());
+					assertFalse(rapport.isAnnule());
+				}
+
+				{
+					final RapportPrestationImposable rapport = rapports.get(1);
+					assertNotNull(rapport);
+					assertEquals(date(2011, 1, 1), rapport.getDateDebut());
+					assertEquals(null, rapport.getDateFin());
+					assertTrue(rapport.isAnnule());
+				}
+				{
+					final RapportPrestationImposable rapport = rapports.get(2);
+					assertNotNull(rapport);
+					assertEquals(date(2012, 3, 1), rapport.getDateDebut());
+					assertEquals(null, rapport.getDateFin());
+					assertTrue(rapport.isAnnule());
+				}
+
+				return null;
+			}
+		});
+	}
+
+
+
+
 }

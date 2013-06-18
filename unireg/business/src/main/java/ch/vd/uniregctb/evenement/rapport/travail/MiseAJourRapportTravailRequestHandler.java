@@ -62,7 +62,8 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 
 
 		//On retrouve le rapport a modifier.
-		final List<RapportPrestationImposable> rapportsAModifier = findRapportPrestationImposable(dpi, sourcier);
+		annulerRapportMultiple(dpi,sourcier);
+		final List<RapportPrestationImposable> rapportsAModifier = findRapportPrestationImposable(dpi,sourcier);
 		final List<RapportPrestationImposable> nouveauxRapports = new ArrayList<>();
 
 		if (rapportsAModifier == null || rapportsAModifier.isEmpty()) {
@@ -629,4 +630,52 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 		final DateRangeHelper.Range periodeDeclaration = new DateRangeHelper.Range(request.getDateDebutPeriodeDeclaration(), request.getDateFinPeriodeDeclaration());
 		return DateRangeHelper.intersect(rapport, periodeDeclaration);
 	}
+
+	/**
+	 * Annule les rapports de travail multiples ouvert qu'il nous faut enlever du traitement
+	 *
+	 * @param dpi le debiteur
+	 * @param sourcier Le sourcier lié
+	 */
+	private void annulerRapportMultiple(DebiteurPrestationImposable dpi, PersonnePhysique sourcier) {
+
+		List<RapportPrestationImposable> rapportsAModifier = findRapportPrestationImposable(dpi, sourcier);
+		final List<RapportPrestationImposable> rapportMultiples = new ArrayList<>();
+
+		final List<RapportPrestationImposable> rapportsOuverts = new ArrayList<>();
+
+
+		for (RapportPrestationImposable rapportAModifier : rapportsAModifier) {
+			if (rapportAModifier.getDateFin() == null) {
+				rapportsOuverts.add(rapportAModifier);
+			}
+		}
+		if (!rapportsOuverts.isEmpty() && rapportsOuverts.size()>1) {
+			//Rapport qui devra être traiter donc ne devra pas être annulé
+			RapportPrestationImposable rapportAConserver = null;
+
+				for (RapportPrestationImposable rapportOuvert : rapportsOuverts) {
+					if (rapportAConserver == null || rapportAConserver.getDateDebut().isAfter(rapportOuvert.getDateDebut())) {
+
+						if (rapportAConserver != null) {
+							//Le rapport courant est à mettre dans les rapports multiples à annuler
+							rapportMultiples.add(rapportAConserver);
+						}
+						rapportAConserver = rapportOuvert;
+
+					}
+					else{
+						rapportMultiples.add(rapportOuvert);
+					}
+				}
+
+		}
+
+
+		for (RapportPrestationImposable rapportMultiple : rapportMultiples) {
+			rapportMultiple.setAnnule(true);
+		}
+
+	}
+
 }
