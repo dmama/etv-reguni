@@ -471,6 +471,709 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
+	public void testContribuableSurDateNaissance() throws Exception {
+		final long noIndividuClaude = 151658;
+		final long noIndividuAnne = 2345;
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu indClaude = addIndividu(noIndividuClaude, date(1978,5,6), "Rosat", "Claude", true);
+			}
+		});
+
+		class Ids {
+			Long claude;
+
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				final PersonnePhysique habClaude = addHabitant(noIndividuClaude);
+				ids.claude = habClaude.getNumero();
+				return null;
+			}
+		});
+
+		globalTiersIndexer.sync();
+
+		assertCountDemandes(0);
+
+		// création et traitement du message d'identification
+		CriteresPersonne criteres = new CriteresPersonne();
+		criteres.setPrenoms("Claude");
+		criteres.setNom("Rosat");
+
+		criteres.setDateNaissance(date(1978,5,6));
+
+		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
+		message.setLogCreationDate(RegDate.get().asJavaDate());
+		doInTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				service.handleDemande(message);
+				return null;
+			}
+		});
+
+		// zanolari doit avoir été trouvée, et traitée automatiquement
+		final List<IdentificationContribuable> list = identCtbDAO.getAll();
+		assertEquals(1, list.size());
+
+		final IdentificationContribuable ic = list.get(0);
+		assertNotNull(ic);
+		assertEquals(Etat.TRAITE_AUTOMATIQUEMENT, ic.getEtat());
+		assertEquals(Integer.valueOf(1), ic.getNbContribuablesTrouves());
+
+		final Reponse reponse = ic.getReponse();
+		assertNotNull(reponse);
+		assertNull(reponse.getErreur());
+		assertEquals(ids.claude, reponse.getNoContribuable());
+
+		// La demande doit avoir reçu une réponse automatiquement
+		assertEquals(1, messageHandler.getSentMessages().size());
+		final IdentificationContribuable sent = messageHandler.getSentMessages().get(0);
+		assertEquals(ic.getId(), sent.getId());
+
+
+	}
+
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testContribuableSurDateNaissanceVide() throws Exception {
+		final long noIndividuClaude = 151658;
+		final long noIndividuAnne = 2345;
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu indClaude = addIndividu(noIndividuClaude, null, "Rosat", "Claude", true);
+			}
+		});
+
+		class Ids {
+			Long claude;
+
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				final PersonnePhysique habClaude = addHabitant(noIndividuClaude);
+				ids.claude = habClaude.getNumero();
+				return null;
+			}
+		});
+
+		globalTiersIndexer.sync();
+
+		assertCountDemandes(0);
+
+		// création et traitement du message d'identification
+		CriteresPersonne criteres = new CriteresPersonne();
+		criteres.setPrenoms("Claude");
+		criteres.setNom("Rosat");
+
+		criteres.setDateNaissance(null);
+
+		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
+		message.setLogCreationDate(RegDate.get().asJavaDate());
+		doInTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				service.handleDemande(message);
+				return null;
+			}
+		});
+
+		// zanolari doit avoir été trouvée, et traitée automatiquement
+		final List<IdentificationContribuable> list = identCtbDAO.getAll();
+		assertEquals(1, list.size());
+
+		final IdentificationContribuable ic = list.get(0);
+		assertNotNull(ic);
+		assertEquals(Etat.TRAITE_AUTOMATIQUEMENT, ic.getEtat());
+		assertEquals(Integer.valueOf(1), ic.getNbContribuablesTrouves());
+
+		final Reponse reponse = ic.getReponse();
+		assertNotNull(reponse);
+		assertNull(reponse.getErreur());
+		assertEquals(ids.claude, reponse.getNoContribuable());
+
+		// La demande doit avoir reçu une réponse automatiquement
+		assertEquals(1, messageHandler.getSentMessages().size());
+		final IdentificationContribuable sent = messageHandler.getSentMessages().get(0);
+		assertEquals(ic.getId(), sent.getId());
+
+
+	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testContribuableSurDateNaissanceMessageVide() throws Exception {
+		final long noIndividuClaude = 151658;
+		final long noIndividuAnne = 2345;
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu indClaude = addIndividu(noIndividuClaude, (date(1979,10,4)), "Rosat", "Claude", true);
+			}
+		});
+
+		class Ids {
+			Long claude;
+
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				final PersonnePhysique habClaude = addHabitant(noIndividuClaude);
+				ids.claude = habClaude.getNumero();
+				return null;
+			}
+		});
+
+		globalTiersIndexer.sync();
+
+		assertCountDemandes(0);
+
+		// création et traitement du message d'identification
+		CriteresPersonne criteres = new CriteresPersonne();
+		criteres.setPrenoms("Claude");
+		criteres.setNom("Rosat");
+
+		criteres.setDateNaissance(null);
+
+		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
+		message.setLogCreationDate(RegDate.get().asJavaDate());
+		doInTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				service.handleDemande(message);
+				return null;
+			}
+		});
+
+		// zanolari doit avoir été trouvée, et traitée automatiquement
+		final List<IdentificationContribuable> list = identCtbDAO.getAll();
+		assertEquals(1, list.size());
+
+		final IdentificationContribuable ic = list.get(0);
+		assertNotNull(ic);
+		assertEquals(Etat.TRAITE_AUTOMATIQUEMENT, ic.getEtat());
+		assertEquals(Integer.valueOf(1), ic.getNbContribuablesTrouves());
+
+		final Reponse reponse = ic.getReponse();
+		assertNotNull(reponse);
+		assertNull(reponse.getErreur());
+		assertEquals(ids.claude, reponse.getNoContribuable());
+
+		// La demande doit avoir reçu une réponse automatiquement
+		assertEquals(1, messageHandler.getSentMessages().size());
+		final IdentificationContribuable sent = messageHandler.getSentMessages().get(0);
+		assertEquals(ic.getId(), sent.getId());
+
+
+	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testContribuableSurDateNaissanceCompletesDifferentes() throws Exception {
+		final long noIndividuClaude = 151658;
+		final long noIndividuAnne = 2345;
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu indClaude = addIndividu(noIndividuClaude, (date(1979,10,3)), "Rosat", "Claude", true);
+			}
+		});
+
+		class Ids {
+			Long claude;
+
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				final PersonnePhysique habClaude = addHabitant(noIndividuClaude);
+				ids.claude = habClaude.getNumero();
+				return null;
+			}
+		});
+
+		globalTiersIndexer.sync();
+
+		assertCountDemandes(0);
+
+		// création et traitement du message d'identification
+		CriteresPersonne criteres = new CriteresPersonne();
+		criteres.setPrenoms("Claude");
+		criteres.setNom("Rosat");
+
+		criteres.setDateNaissance(date(1979,10,4));
+
+		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
+		message.setLogCreationDate(RegDate.get().asJavaDate());
+		doInTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				service.handleDemande(message);
+				return null;
+			}
+		});
+
+		// zanolari doit avoir été trouvée, et traitée automatiquement
+		final List<IdentificationContribuable> list = identCtbDAO.getAll();
+		assertEquals(1, list.size());
+
+		final IdentificationContribuable ic = list.get(0);
+		assertNotNull(ic);
+		assertEquals(Etat.A_TRAITER_MANUELLEMENT, ic.getEtat());
+		assertEquals(Integer.valueOf(0), ic.getNbContribuablesTrouves());
+
+
+	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testContribuableSurDateNaissancePartielesDifferentes() throws Exception {
+		final long noIndividuClaude = 151658;
+		final long noIndividuAnne = 2345;
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu indClaude = addIndividu(noIndividuClaude, (date(1979,10,3)), "Rosat", "Claude", true);
+			}
+		});
+
+		class Ids {
+			Long claude;
+
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				final PersonnePhysique habClaude = addHabitant(noIndividuClaude);
+				ids.claude = habClaude.getNumero();
+				return null;
+			}
+		});
+
+		globalTiersIndexer.sync();
+
+		assertCountDemandes(0);
+
+		// création et traitement du message d'identification
+		CriteresPersonne criteres = new CriteresPersonne();
+		criteres.setPrenoms("Claude");
+		criteres.setNom("Rosat");
+
+		criteres.setDateNaissance(RegDate.get(1979,11));
+
+		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
+		message.setLogCreationDate(RegDate.get().asJavaDate());
+		doInTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				service.handleDemande(message);
+				return null;
+			}
+		});
+
+		// zanolari doit avoir été trouvée, et traitée automatiquement
+		final List<IdentificationContribuable> list = identCtbDAO.getAll();
+		assertEquals(1, list.size());
+
+		final IdentificationContribuable ic = list.get(0);
+		assertNotNull(ic);
+		assertEquals(Etat.A_TRAITER_MANUELLEMENT, ic.getEtat());
+		assertEquals(Integer.valueOf(0), ic.getNbContribuablesTrouves());
+
+
+	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testContribuableSurDateNaissanceRegistreVide() throws Exception {
+		final long noIndividuClaude = 151658;
+		final long noIndividuAnne = 2345;
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu indClaude = addIndividu(noIndividuClaude, null, "Rosat", "Claude", true);
+			}
+		});
+
+		class Ids {
+			Long claude;
+
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				final PersonnePhysique habClaude = addHabitant(noIndividuClaude);
+				ids.claude = habClaude.getNumero();
+				return null;
+			}
+		});
+
+		globalTiersIndexer.sync();
+
+		assertCountDemandes(0);
+
+		// création et traitement du message d'identification
+		CriteresPersonne criteres = new CriteresPersonne();
+		criteres.setPrenoms("Claude");
+		criteres.setNom("Rosat");
+
+		criteres.setDateNaissance(date(1979,10,4));
+
+		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
+		message.setLogCreationDate(RegDate.get().asJavaDate());
+		doInTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				service.handleDemande(message);
+				return null;
+			}
+		});
+
+		// zanolari doit avoir été trouvée, et traitée automatiquement
+		final List<IdentificationContribuable> list = identCtbDAO.getAll();
+		assertEquals(1, list.size());
+
+		final IdentificationContribuable ic = list.get(0);
+		assertNotNull(ic);
+		assertEquals(Etat.TRAITE_AUTOMATIQUEMENT, ic.getEtat());
+		assertEquals(Integer.valueOf(1), ic.getNbContribuablesTrouves());
+
+		final Reponse reponse = ic.getReponse();
+		assertNotNull(reponse);
+		assertNull(reponse.getErreur());
+		assertEquals(ids.claude, reponse.getNoContribuable());
+
+		// La demande doit avoir reçu une réponse automatiquement
+		assertEquals(1, messageHandler.getSentMessages().size());
+		final IdentificationContribuable sent = messageHandler.getSentMessages().get(0);
+		assertEquals(ic.getId(), sent.getId());
+
+
+	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testContribuableSurDateNaissancePartielAnneeMessage() throws Exception {
+		final long noIndividuClaude = 151658;
+		final long noIndividuAnne = 2345;
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu indClaude = addIndividu(noIndividuClaude, (date(1979,10,4)), "Rosat", "Claude", true);
+			}
+		});
+
+		class Ids {
+			Long claude;
+
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				final PersonnePhysique habClaude = addHabitant(noIndividuClaude);
+				ids.claude = habClaude.getNumero();
+				return null;
+			}
+		});
+
+		globalTiersIndexer.sync();
+
+		assertCountDemandes(0);
+
+		// création et traitement du message d'identification
+		CriteresPersonne criteres = new CriteresPersonne();
+		criteres.setPrenoms("Claude");
+		criteres.setNom("Rosat");
+
+		criteres.setDateNaissance(RegDate.get(1979));
+
+		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
+		message.setLogCreationDate(RegDate.get().asJavaDate());
+		doInTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				service.handleDemande(message);
+				return null;
+			}
+		});
+
+		// zanolari doit avoir été trouvée, et traitée automatiquement
+		final List<IdentificationContribuable> list = identCtbDAO.getAll();
+		assertEquals(1, list.size());
+
+		final IdentificationContribuable ic = list.get(0);
+		assertNotNull(ic);
+		assertEquals(Etat.TRAITE_AUTOMATIQUEMENT, ic.getEtat());
+		assertEquals(Integer.valueOf(1), ic.getNbContribuablesTrouves());
+
+		final Reponse reponse = ic.getReponse();
+		assertNotNull(reponse);
+		assertNull(reponse.getErreur());
+		assertEquals(ids.claude, reponse.getNoContribuable());
+
+		// La demande doit avoir reçu une réponse automatiquement
+		assertEquals(1, messageHandler.getSentMessages().size());
+		final IdentificationContribuable sent = messageHandler.getSentMessages().get(0);
+		assertEquals(ic.getId(), sent.getId());
+
+
+	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testContribuableSurDateNaissancePartielAnneeRegistre() throws Exception {
+		final long noIndividuClaude = 151658;
+		final long noIndividuAnne = 2345;
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu indClaude = addIndividu(noIndividuClaude, (RegDate.get(1979)), "Rosat", "Claude", true);
+			}
+		});
+
+		class Ids {
+			Long claude;
+
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				final PersonnePhysique habClaude = addHabitant(noIndividuClaude);
+				ids.claude = habClaude.getNumero();
+				return null;
+			}
+		});
+
+		globalTiersIndexer.sync();
+
+		assertCountDemandes(0);
+
+		// création et traitement du message d'identification
+		CriteresPersonne criteres = new CriteresPersonne();
+		criteres.setPrenoms("Claude");
+		criteres.setNom("Rosat");
+
+		criteres.setDateNaissance(date(1979,10,4));
+
+		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
+		message.setLogCreationDate(RegDate.get().asJavaDate());
+		doInTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				service.handleDemande(message);
+				return null;
+			}
+		});
+
+		// zanolari doit avoir été trouvée, et traitée automatiquement
+		final List<IdentificationContribuable> list = identCtbDAO.getAll();
+		assertEquals(1, list.size());
+
+		final IdentificationContribuable ic = list.get(0);
+		assertNotNull(ic);
+		assertEquals(Etat.TRAITE_AUTOMATIQUEMENT, ic.getEtat());
+		assertEquals(Integer.valueOf(1), ic.getNbContribuablesTrouves());
+
+		final Reponse reponse = ic.getReponse();
+		assertNotNull(reponse);
+		assertNull(reponse.getErreur());
+		assertEquals(ids.claude, reponse.getNoContribuable());
+
+		// La demande doit avoir reçu une réponse automatiquement
+		assertEquals(1, messageHandler.getSentMessages().size());
+		final IdentificationContribuable sent = messageHandler.getSentMessages().get(0);
+		assertEquals(ic.getId(), sent.getId());
+
+
+	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testContribuableSurDateNaissancePartielAnneeMoisMessage() throws Exception {
+		final long noIndividuClaude = 151658;
+		final long noIndividuAnne = 2345;
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu indClaude = addIndividu(noIndividuClaude, (date(1979,10,4)), "Rosat", "Claude", true);
+			}
+		});
+
+		class Ids {
+			Long claude;
+
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				final PersonnePhysique habClaude = addHabitant(noIndividuClaude);
+				ids.claude = habClaude.getNumero();
+				return null;
+			}
+		});
+
+		globalTiersIndexer.sync();
+
+		assertCountDemandes(0);
+
+		// création et traitement du message d'identification
+		CriteresPersonne criteres = new CriteresPersonne();
+		criteres.setPrenoms("Claude");
+		criteres.setNom("Rosat");
+
+		criteres.setDateNaissance(RegDate.get(1979,10));
+
+		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
+		message.setLogCreationDate(RegDate.get().asJavaDate());
+		doInTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				service.handleDemande(message);
+				return null;
+			}
+		});
+
+		// zanolari doit avoir été trouvée, et traitée automatiquement
+		final List<IdentificationContribuable> list = identCtbDAO.getAll();
+		assertEquals(1, list.size());
+
+		final IdentificationContribuable ic = list.get(0);
+		assertNotNull(ic);
+		assertEquals(Etat.TRAITE_AUTOMATIQUEMENT, ic.getEtat());
+		assertEquals(Integer.valueOf(1), ic.getNbContribuablesTrouves());
+
+		final Reponse reponse = ic.getReponse();
+		assertNotNull(reponse);
+		assertNull(reponse.getErreur());
+		assertEquals(ids.claude, reponse.getNoContribuable());
+
+		// La demande doit avoir reçu une réponse automatiquement
+		assertEquals(1, messageHandler.getSentMessages().size());
+		final IdentificationContribuable sent = messageHandler.getSentMessages().get(0);
+		assertEquals(ic.getId(), sent.getId());
+
+
+	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testContribuableSurDateNaissancePartielAnneeMoisRegistre() throws Exception {
+		final long noIndividuClaude = 151658;
+		final long noIndividuAnne = 2345;
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu indClaude = addIndividu(noIndividuClaude, (RegDate.get(1979,10)), "Rosat", "Claude", true);
+			}
+		});
+
+		class Ids {
+			Long claude;
+
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				final PersonnePhysique habClaude = addHabitant(noIndividuClaude);
+				ids.claude = habClaude.getNumero();
+				return null;
+			}
+		});
+
+		globalTiersIndexer.sync();
+
+		assertCountDemandes(0);
+
+		// création et traitement du message d'identification
+		CriteresPersonne criteres = new CriteresPersonne();
+		criteres.setPrenoms("Claude");
+		criteres.setNom("Rosat");
+
+		criteres.setDateNaissance(date(1979,10,4));
+
+		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
+		message.setLogCreationDate(RegDate.get().asJavaDate());
+		doInTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				service.handleDemande(message);
+				return null;
+			}
+		});
+
+		// zanolari doit avoir été trouvée, et traitée automatiquement
+		final List<IdentificationContribuable> list = identCtbDAO.getAll();
+		assertEquals(1, list.size());
+
+		final IdentificationContribuable ic = list.get(0);
+		assertNotNull(ic);
+		assertEquals(Etat.TRAITE_AUTOMATIQUEMENT, ic.getEtat());
+		assertEquals(Integer.valueOf(1), ic.getNbContribuablesTrouves());
+
+		final Reponse reponse = ic.getReponse();
+		assertNotNull(reponse);
+		assertNull(reponse.getErreur());
+		assertEquals(ids.claude, reponse.getNoContribuable());
+
+		// La demande doit avoir reçu une réponse automatiquement
+		assertEquals(1, messageHandler.getSentMessages().size());
+		final IdentificationContribuable sent = messageHandler.getSentMessages().get(0);
+		assertEquals(ic.getId(), sent.getId());
+
+
+	}
+
+
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testContribuableSurNAVS11Habitant() throws Exception {
 		final long noIndividuClaude = 151658;
 		final long noIndividuAnne = 2345;

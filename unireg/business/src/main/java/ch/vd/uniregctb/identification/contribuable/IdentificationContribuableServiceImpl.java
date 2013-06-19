@@ -1171,7 +1171,8 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		final RegDate dateNaissance = tiersService.getDateNaissance(pp);
 		final RegDate dateLimite = RegDate.get(1901, 1, 1);
 		if (dateNaissance != null && critereDateNaissance.isAfterOrEqual(dateLimite)) {
-			return dateNaissance.equals(critereDateNaissance);
+			//SIFISC-9006 les dates partiels doivent être prises en compte et comparées
+			return dateNaissance.compareTo(critereDateNaissance)==0;
 		}
 		else {
 			return true;
