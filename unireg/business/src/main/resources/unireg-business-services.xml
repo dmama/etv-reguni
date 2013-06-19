@@ -260,13 +260,12 @@
 		<property name="adresseService" ref="adresseService" />
 	</bean>
 
-	<bean id="efactureService" class="ch.vd.uniregctb.efacture.EFactureServiceImpl">
+	<bean id="efactureService" class="ch.vd.uniregctb.efacture.EFactureServiceImpl" depends-on="uniregModeHelper">
 		<property name="tiersService" ref="tiersService" />
 		<property name="adresseService" ref="adresseService" />
 		<property name="editiqueCompositionService" ref="editiqueCompositionService" />
 		<property name="eFactureMessageSender" ref="eFactureMessageSender" />
 		<property name="eFactureClient" ref="eFactureClient" />
-		<property name="uniregModeHelper" ref="uniregModeHelper" />		<!-- juste pour introduire une dépendence qui fera que le afterPropertiesSet du service est garanti d'être appelé alors que le modeHelper est configuré -->
 	</bean>
 
 	<bean id="taxLiabilityControlService" class="ch.vd.uniregctb.evenement.party.control.TaxLiabilityControlServiceImpl">

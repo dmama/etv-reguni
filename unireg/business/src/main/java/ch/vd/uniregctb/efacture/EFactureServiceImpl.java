@@ -280,11 +280,6 @@ public class EFactureServiceImpl implements EFactureService, InitializingBean {
 		this.adresseService = adresseService;
 	}
 
-	public void setUniregModeHelper(UniregModeHelper helper) {
-		// rien à faire, les méthodes sont de toute façon statiques sur cet objet, qui n'a été introduit ici que pour forcer la dépendance,
-		// de telle sorte que lors de l'appel à la méthode afterPropertiesSet(), on soit sûr que le mode est dans un état complètement configuré
-	}
-
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		// tout ça pour ne logguer cette information que dans les web-app où elle a un sens (qu'est ce que cela veut dire dans NEXUS ou WS ?)
