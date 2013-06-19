@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.jetbrains.annotations.Nullable;
@@ -228,21 +229,21 @@ public class TiersCriteria implements Serializable, TiersFilter {
 	 *         autrement.
 	 */
 	public boolean isEmpty() {
-		return (numero == null)
-				&& (nomRaison == null || "".equals(nomRaison))
-				&& (dateNaissance == null)
-				&& (numeroEtranger == null || "".equals(numeroEtranger))
-				&& (numeroAVS == null || "".equals(numeroAVS))
-				&& (localiteOuPays == null || "".equals(localiteOuPays))
-				&& (npa == null || "".equals(npa))
-				&& (natureJuridique == null || "".equals(natureJuridique))
-				&& (noOfsFor == null || "".equals(noOfsFor))
-				&& (noSymic == null || "".equals(noSymic))
-				&& (formeJuridique == null || "".equals(formeJuridique))
-				&& (modeImposition == null)
-				&& (categorieDebiteurIs == null)
-				&& (tiersActif == null)
-				&& (ancienNumeroSourcier == null);
+		return numero == null
+				&& StringUtils.isBlank(nomRaison)
+				&& dateNaissance == null
+				&& StringUtils.isBlank(numeroEtranger)
+				&& StringUtils.isBlank(numeroAVS)
+				&& StringUtils.isBlank(localiteOuPays)
+				&& StringUtils.isBlank(npa)
+				&& StringUtils.isBlank(natureJuridique)
+				&& StringUtils.isBlank(noOfsFor)
+				&& StringUtils.isBlank(noSymic)
+				&& StringUtils.isBlank(formeJuridique)
+				&& modeImposition == null
+				&& categorieDebiteurIs == null
+				&& tiersActif == null
+				&& ancienNumeroSourcier == null;
 	}
 
 	/**

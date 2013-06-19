@@ -25,58 +25,64 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 public interface IdentificationContribuableService {
 
 	/**
+	 * Au delà de 5 résultats positifs d'identification pour une demande, on ne donne plus le détail...
+	 */
+	static final int NB_MAX_RESULTS_POUR_LISTE_IDENTIFICATION = 5;
+
+	/**
 	 * Effectue une recherche des contribuables (= personnes physiques) en utilisant les critères spécifiés. Toutes les critères spécifiés
 	 * sont déterminants (c'est-à-dire qu'ils sont combinés en utilisant l'opérateur booléen ET).
 	 *
-	 * @param criteres
-	 *            les critères de recherche du contribuable
-	 * @return une liste contenant 0 ou plus contribuables.
+	 * @param criteres les critères de recherche du contribuable
+	 * @return une liste contenant 0 ou plus numéros de contribuable.
+	 * @throws TooManyIdentificationPossibilitesException si le nombre de résultats de l'identification dépasse le seuil {@link #NB_MAX_RESULTS_POUR_LISTE_IDENTIFICATION}
+	 * @see #NB_MAX_RESULTS_POUR_LISTE_IDENTIFICATION
 	 */
-	List<PersonnePhysique> identifie(CriteresPersonne criteres);
+	List<Long> identifie(CriteresPersonne criteres) throws TooManyIdentificationPossibilitesException;
 
 	/**
 	 * Recherche une liste d'IdentificationContribuable en fonction de critères
 	 */
-	public List<IdentificationContribuable> find(IdentificationContribuableCriteria identificationContribuableCriteria, ParamPagination paramPagination,
+	List<IdentificationContribuable> find(IdentificationContribuableCriteria identificationContribuableCriteria, ParamPagination paramPagination,
 	                                             IdentificationContribuableEtatFilter filter, TypeDemande... typeDemande);
 
 	/**
 	 * Nombre d'IdentificationContribuable en fonction de critères
 	 */
-	public int count(IdentificationContribuableCriteria identificationContribuableCriteria,
+	int count(IdentificationContribuableCriteria identificationContribuableCriteria,
 	                 IdentificationContribuableEtatFilter filter, TypeDemande... typeDemande);
 
 	/**
 	 * Force l'identification du contribuable
 	 */
-	public void forceIdentification(IdentificationContribuable identificationContribuable, PersonnePhysique personne, Etat etat) throws Exception;
+	void forceIdentification(IdentificationContribuable identificationContribuable, PersonnePhysique personne, Etat etat) throws Exception;
 
 	/**
 	 * Impossible à identifier
 	 */
-	public void impossibleAIdentifier(IdentificationContribuable identificationContribuable, Erreur erreur) throws Exception;
+	void impossibleAIdentifier(IdentificationContribuable identificationContribuable, Erreur erreur) throws Exception;
 
 	/**
 	 * Soumet le message à l'identification
 	 */
-	public void soumettre(IdentificationContribuable message);
+	void soumettre(IdentificationContribuable message);
 
 	/**
 	 * Calcule et retourne les statistiques  par type de message par période et pour chaque état possible
 	 */
-	public Map<IdentificationContribuable.Etat, Integer> calculerStats(IdentificationContribuableCriteria identificationContribuableCriteria);
+	Map<IdentificationContribuable.Etat, Integer> calculerStats(IdentificationContribuableCriteria identificationContribuableCriteria);
 
 	/**
 	 * Retourn le nom complet du canton emetteur du message
 	 */
-	public String getNomCantonFromEmetteurId(String emetteurId) throws ServiceInfrastructureException;
+	String getNomCantonFromEmetteurId(String emetteurId) throws ServiceInfrastructureException;
 
 	/**
 	 * Retourne le nom d'un utilisateur traitant en fonction de sa nature
 	 *
 	 * @return le nom et le visa utilisateur modifié si besoin
 	 */
-	public IdentifiantUtilisateur getNomUtilisateurFromVisaUser(String visaUser);
+	IdentifiantUtilisateur getNomUtilisateurFromVisaUser(String visaUser);
 
 	/**
 	 * Retente une identification automatique sur les messages present en base
@@ -84,7 +90,7 @@ public interface IdentificationContribuableService {
 	 * @return 1 si l 'identification a réussi, 0 Sinon
 	 */
 
-	public boolean tenterIdentificationAutomatiqueContribuable(IdentificationContribuable message) throws Exception;
+	boolean tenterIdentificationAutomatiqueContribuable(IdentificationContribuable message) throws Exception;
 
 	/**
 	 * Relance l'identification automatique sur les messages en etat intermediaire: A TRAITER, A EXPERTISER, SUSPENDU
@@ -95,21 +101,21 @@ public interface IdentificationContribuableService {
 	/**
 	 * Permet de mettre à jour les caches des critères de recherche
 	 */
-	public void updateCriteres();
+	void updateCriteres();
 
 	/**
 	 * Récupère les valeurs des id emetteurs
 	 * @param filter filtre qui permet de ne renvoyer que les valeurs référencées par des demandes dans certains états seulement
 	 * @return emetteurs ids
 	 */
-	public Collection<String> getEmetteursId(IdentificationContribuableEtatFilter filter);
+	Collection<String> getEmetteursId(IdentificationContribuableEtatFilter filter);
 
 	/**
 	 * Récupère les valeurs des types de messages
 	 * @param filter filtre qui permet de ne renvoyer que les valeurs référencées par des demandes dans certains états seulement
 	 * @return emetteurs ids
 	 */
-	public Collection<String> getTypesMessages(IdentificationContribuableEtatFilter filter);
+	Collection<String> getTypesMessages(IdentificationContribuableEtatFilter filter);
 
 	/**
 	 * Récupère les valeurs des types de messages en fonction des types de demande
@@ -117,25 +123,25 @@ public interface IdentificationContribuableService {
 	 * @param typesDemande MELDEWESEN, NCS, IMPOT_SOURCE
 	 * @return emetteurs ids
 	 */
-	public Collection<String> getTypeMessages(IdentificationContribuableEtatFilter filter, TypeDemande... typesDemande);
+	Collection<String> getTypeMessages(IdentificationContribuableEtatFilter filter, TypeDemande... typesDemande);
 
 	/**
 	 * Récupère les valeurs des Périodes fiscales
 	 * @param filter filtre qui permet de ne renvoyer que les valeurs référencées par des demandes dans certains états seulement
 	 * @return periodes fiscales
 	 */
-	public Collection<Integer> getPeriodesFiscales(IdentificationContribuableEtatFilter filter);
+	Collection<Integer> getPeriodesFiscales(IdentificationContribuableEtatFilter filter);
 
 	/**
 	 * Récupère les ids des users ayant traiter des messages
 	 * @return id des users
 	 */
-	public List<String> getTraitementUser();
+	List<String> getTraitementUser();
 
 	/**
 	 * Récupère les états des messages
 	 * @param filter filtre qui permet de ne renvoyer que les valeurs référencées par des demandes dans certains états seulement
 	 * @return liste des états
 	 */
-	public Collection<Etat> getEtats(IdentificationContribuableEtatFilter filter);
+	Collection<Etat> getEtats(IdentificationContribuableEtatFilter filter);
 }

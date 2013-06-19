@@ -3,7 +3,9 @@ package ch.vd.uniregctb.indexer.tiers;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.BlockingQueue;
 
+import ch.vd.uniregctb.common.Fuse;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.tiers.TiersCriteria;
@@ -24,6 +26,10 @@ public class ZeroTiersSearcherImpl implements GlobalTiersSearcher {
 	@Override
 	public TopList<TiersIndexedData> searchTop(String keywords, TiersFilter filter, int max) throws IndexerException {
 		return new TopList<>();
+	}
+
+	@Override
+	public void flowSearch(TiersCriteria criteria, BlockingQueue<TiersIndexedData> queue, Fuse fusible) throws IndexerException {
 	}
 
 	@Override

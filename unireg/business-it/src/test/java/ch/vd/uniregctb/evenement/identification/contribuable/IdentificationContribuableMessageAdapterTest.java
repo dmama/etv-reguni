@@ -47,7 +47,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 
 	private String INPUT_QUEUE;
 	private String OUTPUT_QUEUE;
-	private IdentificationContribuableEsbHandler handler;
+	private IdentificationContribuableV1EsbHandler handler;
 	private MyErrorHandler myErrorHandler;
 
 	private static class MyErrorHandler implements EsbBusinessErrorHandler {
@@ -106,7 +106,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 			}
 		};
 
-		handler = new IdentificationContribuableEsbHandler();
+		handler = new IdentificationContribuableV1EsbHandler();
 		handler.setOutputQueue(OUTPUT_QUEUE);
 		handler.setEsbTemplate(esbTemplate);
 		handler.setEsbValidator(esbValidator);
@@ -396,7 +396,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		// Envoie le message
 		final Map<String, String> customAttributes = new HashMap<>();
 		final String url = "http://mamachine:3421/mondocument.pdf";
-		customAttributes.put(IdentificationContribuableEsbHandler.DOCUMENT_URL_ATTRIBUTE_NAME, url);
+		customAttributes.put(IdentificationContribuableV1EsbHandler.DOCUMENT_URL_ATTRIBUTE_NAME, url);
 		sendTextMessage(INPUT_QUEUE, texte, customAttributes);
 
 		// On attend le message
@@ -495,7 +495,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		// Envoie le message
 		final Map<String, String> customAttributes = new HashMap<>();
 		final String url = "";
-		customAttributes.put(IdentificationContribuableEsbHandler.DOCUMENT_URL_ATTRIBUTE_NAME, url);
+		customAttributes.put(IdentificationContribuableV1EsbHandler.DOCUMENT_URL_ATTRIBUTE_NAME, url);
 		sendTextMessage(INPUT_QUEUE, texte, customAttributes);
 
 		// On attend le message
@@ -527,7 +527,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		// Envoie le message
 		final Map<String, String> customAttributes = new HashMap<>();
 		final String url = "";
-		customAttributes.put(IdentificationContribuableEsbHandler.DOCUMENT_URL_ATTRIBUTE_NAME, url);
+		customAttributes.put(IdentificationContribuableV1EsbHandler.DOCUMENT_URL_ATTRIBUTE_NAME, url);
 		sendTextMessage(INPUT_QUEUE, texte, customAttributes);
 
 		// On attend le message
@@ -559,7 +559,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		// Envoie le message
 		final Map<String, String> customAttributes = new HashMap<>();
 		final String url = "";
-		customAttributes.put(IdentificationContribuableEsbHandler.DOCUMENT_URL_ATTRIBUTE_NAME, url);
+		customAttributes.put(IdentificationContribuableV1EsbHandler.DOCUMENT_URL_ATTRIBUTE_NAME, url);
 		sendTextMessage(INPUT_QUEUE, texte, customAttributes);
 
 		// On attend le message
@@ -595,7 +595,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 
 			// Envoie le message
 			final Map<String, String> customAttributes = new HashMap<>();
-			customAttributes.put(IdentificationContribuableEsbHandler.DOCUMENT_URL_ATTRIBUTE_NAME, url);
+			customAttributes.put(IdentificationContribuableV1EsbHandler.DOCUMENT_URL_ATTRIBUTE_NAME, url);
 			customAttributes.put("MySpecialKey", "MySpecialValue");
 			sendTextMessage(INPUT_QUEUE, texte, customAttributes);
 
@@ -612,7 +612,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 			final Map<String, String> metadata = m.getHeader().getMetadata();
 			assertNotNull(metadata);
 			assertEquals(2, metadata.size());
-			assertEquals(url, metadata.get(IdentificationContribuableEsbHandler.DOCUMENT_URL_ATTRIBUTE_NAME));
+			assertEquals(url, metadata.get(IdentificationContribuableV1EsbHandler.DOCUMENT_URL_ATTRIBUTE_NAME));
 			assertEquals("MySpecialValue", metadata.get("MySpecialKey"));
 		}
 
@@ -636,7 +636,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 
 			final Map<String, String> retourMetadata = EsbMessageHelper.extractCustomHeaders(msg);
 			assertNotNull(retourMetadata);
-			assertEquals(url, retourMetadata.get(IdentificationContribuableEsbHandler.DOCUMENT_URL_ATTRIBUTE_NAME));
+			assertEquals(url, retourMetadata.get(IdentificationContribuableV1EsbHandler.DOCUMENT_URL_ATTRIBUTE_NAME));
 			assertEquals("MySpecialValue", retourMetadata.get("MySpecialKey"));
 		}
 	}

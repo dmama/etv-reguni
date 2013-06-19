@@ -6,6 +6,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -20,6 +22,7 @@ import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.registre.simpleindexer.DocGetter;
+import ch.vd.uniregctb.common.Fuse;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.indexer.EmptySearchCriteriaException;
 import ch.vd.uniregctb.indexer.GlobalIndexInterface;
@@ -428,4 +431,29 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher, Initializin
 	public void afterPropertiesSet() throws Exception {
 		maxHits = parametreAppService.getNbMaxParListe();
 	}
+
+	public void flowSearch(TiersCriteria criteria, final BlockingQueue<TiersIndexedData> queue, final Fuse fusible) throws IndexerException {
+		if (fusible.isNotBlown()) {
+			final QueryConstructor queryConstructor = new QueryConstructor(criteria);
+			final Query query = queryConstructor.constructQuery();
+			globalIndex.search(query, Integer.MAX_VALUE, new SearchCallback() {
+				@Override
+				public void handle(TopDocs hits, DocGetter docGetter) throws Exception {
+					if (fusible.isNotBlown()) {
+						for (ScoreDoc h : hits.scoreDocs) {
+							final Document doc = docGetter.get(h.doc);
+							final TiersIndexedData data = new TiersIndexedData(doc);
+							while (fusible.isNotBlown() && !queue.offer(data, 100, TimeUnit.MILLISECONDS)) {
+								// on ré-essaie tant que le fusible n'est pas grillé (= demande externe d'arrêt) et que la queue bloque
+							}
+							if (fusible.isBlown()) {
+								break;
+							}
+						}
+					}
+				}
+			});
+		}
+	}
+
 }

@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.BlockingQueue;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
@@ -20,6 +22,7 @@ import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.common.Fuse;
 import ch.vd.uniregctb.evenement.identification.contribuable.CriteresAdresse;
 import ch.vd.uniregctb.evenement.identification.contribuable.CriteresAdresse.TypeAdresse;
 import ch.vd.uniregctb.evenement.identification.contribuable.CriteresPersonne;
@@ -34,6 +37,7 @@ import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContr
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableMessageHandler;
 import ch.vd.uniregctb.evenement.identification.contribuable.Reponse;
 import ch.vd.uniregctb.evenement.identification.contribuable.TypeDemande;
+import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcherImpl;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
@@ -53,6 +57,7 @@ import ch.vd.uniregctb.type.TypeAdresseTiers;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 /**
  * Tests du service (qu'attendiez-vous d'autre ?).
@@ -101,13 +106,6 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		}
 	}
 
-	private static final class PPComparator implements Comparator<PersonnePhysique> {
-		@Override
-		public int compare(PersonnePhysique o1, PersonnePhysique o2) {
-			return o1.getNumero().compareTo(o2.getNumero());
-		}
-	}
-
 	private GlobalTiersSearcher searcher;
 	private TiersDAO tiersDAO;
 	private TiersService tiersService;
@@ -131,22 +129,37 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		identCtbDAO = getBean(IdentCtbDAO.class, "identCtbDAO");
 		helper = getBean(IdentificationContribuableHelper.class, "identificationContribuableHelper");
 
-		service = new IdentificationContribuableServiceImpl();
+		service = new IdentificationContribuableServiceImpl() {
+			@Override
+			protected boolean isUpdateCriteresOnStartup() {
+				// en test, ce n'est pas la peine...
+				return false;
+			}
+		};
 		service.setSearcher(searcher);
 		service.setTiersDAO(tiersDAO);
 		service.setTiersService(tiersService);
 		service.setAdresseService(adresseService);
 		service.setInfraService(infraService);
 		service.setIdentCtbDAO(identCtbDAO);
+		service.setTransactionManager(transactionManager);
 
 		messageHandler = new TestMessageHandler();
 		service.setMessageHandler(messageHandler);
 		service.setIdentificationContribuableHelper(helper);
+
+		service.afterPropertiesSet();
+	}
+
+	@Override
+	public void onTearDown() throws Exception {
+		service.destroy();
+		super.onTearDown();
 	}
 
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
-	public void testIdentifieBaseVide() {
+	public void testIdentifieBaseVide() throws Exception {
 
 		{
 			CriteresPersonne criteres = new CriteresPersonne();
@@ -205,7 +218,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		assertAlbertZweisteinenSeul(id);
 	}
 
-	private void assertAlbertZweisteinenSeul(final Long albertId) {
+	private void assertAlbertZweisteinenSeul(final Long albertId) throws Exception {
 		{
 			CriteresPersonne criteres = new CriteresPersonne();
 			criteres.setNom("Planck");
@@ -241,32 +254,31 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		{
 			CriteresPersonne criteres = new CriteresPersonne();
 			criteres.setNom("Zweisteinen");
-			final List<PersonnePhysique> list = service.identifie(criteres);
+			final List<Long> list = service.identifie(criteres);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 
-			final PersonnePhysique pp = list.get(0);
-			assertEquals(albertId, pp.getNumero());
+			final Long pp = list.get(0);
+			assertEquals(albertId, pp);
 		}
 
 		{
 			CriteresPersonne criteres = new CriteresPersonne();
 			criteres.setPrenoms("Albert");
-			final List<PersonnePhysique> list = service.identifie(criteres);
+			final List<Long> list = service.identifie(criteres);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 
-			final PersonnePhysique pp = list.get(0);
-			assertEquals(albertId, pp.getNumero());
+			final Long pp = list.get(0);
+			assertEquals(albertId, pp);
 		}
 
 		{
 			CriteresPersonne criteres = new CriteresPersonne();
 			criteres.setDateNaissance(date(1953, 4, 3));
-			final List<PersonnePhysique> list = service.identifie(criteres);
+			final List<Long> list = service.identifie(criteres);
 			assertNotNull(list);
 			assertEquals(0, list.size());
-
 		}
 
 		{
@@ -275,12 +287,12 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			criteres.setNom("Zweisteinen");
 			criteres.setSexe(Sexe.MASCULIN);
 			criteres.setDateNaissance(date(1953, 4, 3));
-			final List<PersonnePhysique> list = service.identifie(criteres);
+			final List<Long> list = service.identifie(criteres);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 
-			final PersonnePhysique pp = list.get(0);
-			assertEquals(albertId, pp.getNumero());
+			final Long pp = list.get(0);
+			assertEquals(albertId, pp);
 		}
 	}
 
@@ -923,12 +935,12 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		{
 			CriteresPersonne criteres = new CriteresPersonne();
 			criteres.setPrenoms("Albert");
-			final List<PersonnePhysique> list = service.identifie(criteres);
+			final List<Long> list = service.identifie(criteres);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 
-			final PersonnePhysique pp = list.get(0);
-			assertEquals(ids.albert, pp.getNumero());
+			final Long pp = list.get(0);
+			assertEquals(ids.albert, pp);
 		}
 
 		// Albert toujours
@@ -936,37 +948,35 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			CriteresPersonne criteres = new CriteresPersonne();
 			criteres.setNom("Zweisteinen");
 			criteres.setSexe(Sexe.MASCULIN);
-			final List<PersonnePhysique> list = service.identifie(criteres);
+			final List<Long> list = service.identifie(criteres);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 
-			final PersonnePhysique pp = list.get(0);
-			assertEquals(ids.albert, pp.getNumero());
+			final Long pp = list.get(0);
+			assertEquals(ids.albert, pp);
 		}
 
 		// Les deux Zweisteinen
 		{
 			CriteresPersonne criteres = new CriteresPersonne();
 			criteres.setNom("Zweisteinen");
-			final List<PersonnePhysique> list = service.identifie(criteres);
+			final List<Long> list = service.identifie(criteres);
 			assertNotNull(list);
 			assertEquals(2, list.size());
-			Collections.sort(list, new PPComparator());
+			Collections.sort(list);
 
-			final PersonnePhysique pp0 = list.get(0);
-			assertEquals(ids.albert, pp0.getNumero());
+			final Long pp0 = list.get(0);
+			assertEquals(ids.albert, pp0);
 
-			final PersonnePhysique pp1 = list.get(1);
-			assertEquals(ids.anne, pp1.getNumero());
+			final Long pp1 = list.get(1);
+			assertEquals(ids.anne, pp1);
 		}
-
-
 	}
 
 
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
-	public void testTooManyResultsExceptions() throws Exception {
+	public void testManyResults() throws Exception {
 
 
 		final long noIndividuAlbert = 1234;
@@ -1009,15 +1019,17 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		// Albert
 		{
-			CriteresPersonne criteres = new CriteresPersonne();
+			final CriteresPersonne criteres = new CriteresPersonne();
 			criteres.setPrenoms("Alberto");
 
-			final List<PersonnePhysique> list = service.identifie(criteres);
-			assertEmpty(list);
-
+			try {
+				final List<Long> list = service.identifie(criteres);
+				fail(ArrayUtils.toString(list.toArray()));
+			}
+			catch (TooManyIdentificationPossibilitesException e) {
+				// ok, tout va bien...
+			}
 		}
-
-
 	}
 
 	@Test
@@ -1096,16 +1108,16 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			adresse.setNpaSuisse(1000);
 			criteres.setAdresse(adresse);
 
-			final List<PersonnePhysique> list = service.identifie(criteres);
+			final List<Long> list = service.identifie(criteres);
 			assertNotNull(list);
 			assertEquals(2, list.size());
-			Collections.sort(list, new PPComparator());
+			Collections.sort(list);
 
-			final PersonnePhysique pp0 = list.get(0);
-			assertEquals(ids.robert, pp0.getNumero());
+			final Long pp0 = list.get(0);
+			assertEquals(ids.robert, pp0);
 
-			final PersonnePhysique pp1 = list.get(1);
-			assertEquals(ids.jeanne, pp1.getNumero());
+			final Long pp1 = list.get(1);
+			assertEquals(ids.jeanne, pp1);
 		}
 
 		// Robert
@@ -1116,11 +1128,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			adresse.setNpaSuisse(1000);
 			criteres.setAdresse(adresse);
 
-			final List<PersonnePhysique> list = service.identifie(criteres);
+			final List<Long> list = service.identifie(criteres);
 			assertNotNull(list);
 			assertEquals(2, list.size());
-
-
 		}
 
 		// Jeanne
@@ -1132,12 +1142,12 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			adresse.setNpaSuisse(1000);
 			criteres.setAdresse(adresse);
 
-			final List<PersonnePhysique> list = service.identifie(criteres);
+			final List<Long> list = service.identifie(criteres);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 
-			final PersonnePhysique pp0 = list.get(0);
-			assertEquals(ids.jeanne, pp0.getNumero());
+			final Long pp0 = list.get(0);
+			assertEquals(ids.jeanne, pp0);
 		}
 
 		// Luc et Michel
@@ -1145,16 +1155,16 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			CriteresPersonne criteres = new CriteresPersonne();
 			criteres.setNom("Haddoque");
 
-			final List<PersonnePhysique> list = service.identifie(criteres);
+			final List<Long> list = service.identifie(criteres);
 			assertNotNull(list);
 			assertEquals(2, list.size());
-			Collections.sort(list, new PPComparator());
+			Collections.sort(list);
 
-			final PersonnePhysique pp0 = list.get(0);
-			assertEquals(ids.luc, pp0.getNumero());
+			final Long pp0 = list.get(0);
+			assertEquals(ids.luc, pp0);
 
-			final PersonnePhysique pp1 = list.get(1);
-			assertEquals(ids.michel, pp1.getNumero());
+			final Long pp1 = list.get(1);
+			assertEquals(ids.michel, pp1);
 		}
 
 		// Luc et Michel, encore mais c'est luc qui gagne
@@ -1165,15 +1175,12 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			adresse.setNpaSuisse(1350);
 			criteres.setAdresse(adresse);
 
-			final List<PersonnePhysique> list = service.identifie(criteres);
+			final List<Long> list = service.identifie(criteres);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			Collections.sort(list, new PPComparator());
 
-			final PersonnePhysique pp0 = list.get(0);
-			assertEquals(ids.luc, pp0.getNumero());
-
-
+			final Long pp0 = list.get(0);
+			assertEquals(ids.luc, pp0);
 		}
 
 
@@ -1185,12 +1192,12 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			adresse.setNpaSuisse(1337);
 			criteres.setAdresse(adresse);
 
-			final List<PersonnePhysique> list = service.identifie(criteres);
+			final List<Long> list = service.identifie(criteres);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 
-			final PersonnePhysique pp0 = list.get(0);
-			assertEquals(ids.michel, pp0.getNumero());
+			final Long pp0 = list.get(0);
+			assertEquals(ids.michel, pp0);
 		}
 	}
 
@@ -1224,18 +1231,14 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			adresse.setNpaSuisse(1000);
 			criteres.setAdresse(adresse);
 
-			final List<PersonnePhysique> list = service.identifie(criteres);
+			final List<Long> list = service.identifie(criteres);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			Collections.sort(list, new PPComparator());
+			Collections.sort(list);
 
-			final PersonnePhysique pp0 = list.get(0);
-			assertEquals(ids.robert, pp0.getNumero());
-
-
+			final Long pp0 = list.get(0);
+			assertEquals(ids.robert, pp0);
 		}
-
-
 	}
 
 	@Test
@@ -1451,12 +1454,10 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 		searcher = new GlobalTiersSearcherImpl() {
-
 			@Override
-			public List<TiersIndexedData> search(TiersCriteria criteria) {
+			public void flowSearch(TiersCriteria criteria, BlockingQueue<TiersIndexedData> queue, Fuse fusible) throws IndexerException {
 				throw new RuntimeException("Exception de test");
 			}
-
 		};
 		service.setSearcher(searcher);
 
@@ -2137,12 +2138,12 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			criteres.setNom("MUELLER");
 			criteres.setPrenoms("Maya");
 			criteres.setNAVS11("67142770412");
-			final List<PersonnePhysique> list = service.identifie(criteres);
+			final List<Long> list = service.identifie(criteres);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 
-			final PersonnePhysique pp = list.get(0);
-			assertEquals(id, pp.getNumero());
+			final Long pp = list.get(0);
+			assertEquals(id, pp);
 		}
 
 	}
@@ -2177,12 +2178,12 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			criteres.setNom("OHLENSCHLAEGER");
 			criteres.setPrenoms("Alex");
 			criteres.setNAVS11("69447258153");
-			final List<PersonnePhysique> list = service.identifie(criteres);
+			final List<Long> list = service.identifie(criteres);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 
-			final PersonnePhysique pp = list.get(0);
-			assertEquals(id, pp.getNumero());
+			final Long pp = list.get(0);
+			assertEquals(id, pp);
 		}
 
 	}
@@ -2216,12 +2217,12 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			criteres.setNom("Schoenenberg");
 			criteres.setPrenoms("Peter");
 			criteres.setNAVS11("83143380117");
-			final List<PersonnePhysique> list = service.identifie(criteres);
+			final List<Long> list = service.identifie(criteres);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 
-			final PersonnePhysique pp = list.get(0);
-			assertEquals(id, pp.getNumero());
+			final Long pp = list.get(0);
+			assertEquals(id, pp);
 		}
 
 	}
@@ -2255,12 +2256,12 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			criteres.setNom("STEVENSON");
 			criteres.setPrenoms("Hugh-Clark");
 			criteres.setNAVS11("85948265155");
-			final List<PersonnePhysique> list = service.identifie(criteres);
+			final List<Long> list = service.identifie(criteres);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 
-			final PersonnePhysique pp = list.get(0);
-			assertEquals(id, pp.getNumero());
+			final Long pp = list.get(0);
+			assertEquals(id, pp);
 		}
 
 	}
@@ -2294,12 +2295,12 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			criteres.setNom("RICHOZ-VINCENT");
 			criteres.setPrenoms("Jean-Pierre");
 			criteres.setNAVS11("74150388116");
-			final List<PersonnePhysique> list = service.identifie(criteres);
+			final List<Long> list = service.identifie(criteres);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 
-			final PersonnePhysique pp = list.get(0);
-			assertEquals(id, pp.getNumero());
+			final Long pp = list.get(0);
+			assertEquals(id, pp);
 		}
 
 	}
@@ -2333,12 +2334,12 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			criteres.setNom("Schoenenberg");
 			criteres.setPrenoms("Peter-Hanz");
 			criteres.setNAVS11("83143380117");
-			final List<PersonnePhysique> list = service.identifie(criteres);
+			final List<Long> list = service.identifie(criteres);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 
-			final PersonnePhysique pp = list.get(0);
-			assertEquals(id, pp.getNumero());
+			final Long pp = list.get(0);
+			assertEquals(id, pp);
 		}
 
 	}
@@ -2372,14 +2373,13 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			criteres.setNom("Schoenenberg-Mueller");
 			criteres.setPrenoms("Peter");
 			criteres.setNAVS11("83143380117");
-			final List<PersonnePhysique> list = service.identifie(criteres);
+			final List<Long> list = service.identifie(criteres);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 
-			final PersonnePhysique pp = list.get(0);
-			assertEquals(id, pp.getNumero());
+			final Long pp = list.get(0);
+			assertEquals(id, pp);
 		}
-
 	}
 
 
@@ -2412,12 +2412,12 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			criteres.setNom("Schoenenberg-Mueller");
 			criteres.setPrenoms("Ülrich");
 			criteres.setNAVS11("83143380117");
-			final List<PersonnePhysique> list = service.identifie(criteres);
+			final List<Long> list = service.identifie(criteres);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 
-			final PersonnePhysique pp = list.get(0);
-			assertEquals(id, pp.getNumero());
+			final Long pp = list.get(0);
+			assertEquals(id, pp);
 		}
 
 	}

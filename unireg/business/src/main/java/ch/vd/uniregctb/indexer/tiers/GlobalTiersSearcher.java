@@ -2,9 +2,11 @@ package ch.vd.uniregctb.indexer.tiers;
 
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.BlockingQueue;
 
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.uniregctb.common.Fuse;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.tiers.TiersCriteria;
@@ -49,6 +51,15 @@ public interface GlobalTiersSearcher {
 	 * @return une liste de données de tiers
 	 */
 	public TopList<TiersIndexedData> searchTop(String keywords, @Nullable TiersFilter filter, int max) throws IndexerException;
+
+	/**
+	 * Recherche "en flux" selon les critères donnés : les résultats sont postés dans la queue un par un.
+	 * @param criteria les critères de recherche
+	 * @param queue la queue dans laquelle les résultats seront postés
+	 * @param fusible permet de stopper le postage des résultats restant (quand il grille)
+	 * @throws IndexerException en cas d'erreur levée dans l'indexeur
+	 */
+	public void flowSearch(TiersCriteria criteria, BlockingQueue<TiersIndexedData> queue, Fuse fusible) throws IndexerException;
 
 	/**
 	 * Vérifie si un tiers est indexé ou non.

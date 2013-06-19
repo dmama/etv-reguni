@@ -4,7 +4,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public final class DefaultThreadNameGenerator implements ThreadNameGenerator {
 
-	private AtomicInteger sequence = new AtomicInteger(0);
+	private final AtomicInteger sequence = new AtomicInteger(0);
 	private final String prefixe;
 
 	public DefaultThreadNameGenerator(String prefixe) {

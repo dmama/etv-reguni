@@ -20,8 +20,10 @@ import javax.xml.validation.SchemaFactory;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
@@ -44,6 +46,7 @@ import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.identification.contribuable.IdentificationContribuableService;
+import ch.vd.uniregctb.identification.contribuable.TooManyIdentificationPossibilitesException;
 import ch.vd.uniregctb.jms.EsbBusinessCode;
 import ch.vd.uniregctb.jms.EsbBusinessException;
 import ch.vd.uniregctb.jms.EsbMessageHandler;
@@ -146,41 +149,72 @@ public class IdentificationContribuableRequestHandler implements EsbMessageHandl
 		}
 	}
 
-	private IdentificationContribuableResponse handle(IdentificationContribuableRequest request, String businessId) {
+	private static enum IdentificationResult {
+		FOUND_ONE,
+		FOUND_NONE,
+		FOUND_SEVERAL
+	}
+
+	protected IdentificationContribuableResponse handle(IdentificationContribuableRequest request, String businessId) {
 
 		final IdentificationContribuableResponse response = new IdentificationContribuableResponse();
 		final CriteresPersonne criteresPersonne = createCriteresPersonne(request);
 
-		final List<PersonnePhysique> list = identCtbService.identifie(criteresPersonne);
-		if (list.isEmpty()) {
-			final String message = String.format("Aucun contribuable trouvé avec ces critères pour le message %s", businessId);
+		IdentificationResult status;
+		List<Long> found;
+		try {
+			found = identCtbService.identifie(criteresPersonne);
+			switch (found.size()) {
+				case 0:
+					status = IdentificationResult.FOUND_NONE;
+					break;
+				case 1:
+					status = IdentificationResult.FOUND_ONE;
+					break;
+				default:
+					status = IdentificationResult.FOUND_SEVERAL;
+					break;
+			}
+		}
+		catch (TooManyIdentificationPossibilitesException e) {
+			found = Collections.emptyList();
+			status = IdentificationResult.FOUND_SEVERAL;
+		}
+
+		if (status == IdentificationResult.FOUND_NONE) {
+			final String message = String.format("Aucun contribuable trouvé pour le message '%s'.", businessId);
 			final Erreur aucun = new Erreur(message, null);
 			response.setErreur(aucun);
 			LOGGER.info(message);
 		}
-
-		if (list.size()> 1) {
-			final String message = String.format("Plusieurs contribuables trouvés avec ces critères: %d pour le message %s", list.size(), businessId);
+		else if (status == IdentificationResult.FOUND_SEVERAL) {
+			final String detail;
+			if (found.size() > 0) {
+				detail = String.format(" (%s)", ArrayUtils.toString(found.toArray(new Long[found.size()])));
+			}
+			else {
+				detail = StringUtils.EMPTY;
+			}
+			final String message = String.format("Plusieurs contribuables trouvés pour le message '%s'%s.", businessId, detail);
 			final Erreur plusieurs = new Erreur(null, message);
 			response.setErreur(plusieurs);
 			LOGGER.info(message);
 		}
-
-		if (list.size() == 1) {
+		else {
 			// on a trouvé un et un seul contribuable:
-			final PersonnePhysique personne = list.get(0);
+			final Long idCtb = found.get(0);
 			final IdentificationContribuableResponse.Contribuable ctb = new IdentificationContribuableResponse.Contribuable();
 
-			final Long idCtb = personne.getId();
 			ctb.setNumeroContribuableIndividuel(idCtb.intValue());
 
-			final NomPrenom nomPrenom = tiersService.getDecompositionNomPrenom(personne);
+			final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(idCtb);
+			final NomPrenom nomPrenom = tiersService.getDecompositionNomPrenom(pp);
 			ctb.setNom(tokenize(nomPrenom.getNom(), MAX_NAME_LENGTH));
 			ctb.setPrenom(tokenize(nomPrenom.getPrenom(), MAX_NAME_LENGTH));
-			ctb.setDateNaissance(DataHelper.coreToPartialDateXml(tiersService.getDateNaissance(personne)));
+			ctb.setDateNaissance(DataHelper.coreToPartialDateXml(tiersService.getDateNaissance(pp)));
 
 			response.setContribuable(ctb);
-			LOGGER.info(String.format("un contribuable a été trouvé : %d pour le message '%s'", idCtb, businessId));
+			LOGGER.info(String.format("Un contribuable trouvé pour le message '%s' : %d.", businessId, idCtb));
 		}
 
 		return response;

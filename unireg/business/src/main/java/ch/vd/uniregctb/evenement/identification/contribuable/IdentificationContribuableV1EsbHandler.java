@@ -32,9 +32,9 @@ import ch.vd.uniregctb.jms.EsbMessageHelper;
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class IdentificationContribuableEsbHandler implements IdentificationContribuableMessageHandler, EsbMessageHandler {
+public class IdentificationContribuableV1EsbHandler implements IdentificationContribuableMessageHandler, EsbMessageHandler {
 
-	private static final Logger LOGGER = Logger.getLogger(IdentificationContribuableEsbHandler.class);
+	private static final Logger LOGGER = Logger.getLogger(IdentificationContribuableV1EsbHandler.class);
 
 	protected static final String DOCUMENT_URL_ATTRIBUTE_NAME = "documentUrl";
 

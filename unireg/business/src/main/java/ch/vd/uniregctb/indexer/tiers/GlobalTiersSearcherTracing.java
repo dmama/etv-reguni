@@ -2,10 +2,12 @@ package ch.vd.uniregctb.indexer.tiers;
 
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.BlockingQueue;
 
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
+import ch.vd.uniregctb.common.Fuse;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.stats.ServiceTracing;
@@ -228,6 +230,31 @@ public class GlobalTiersSearcherTracing implements GlobalTiersSearcher, Initiali
 		}
 		finally {
 			tracing.end(time, t, "getExactDocCount", null);
+		}
+	}
+
+	@Override
+	public void flowSearch(final TiersCriteria criteria, BlockingQueue<TiersIndexedData> queue, Fuse fusible) throws IndexerException {
+		Throwable t = null;
+		final long time = tracing.start();
+		try {
+			target.flowSearch(criteria, queue, fusible);
+		}
+		catch (IndexerException e) {
+			t = e;
+			throw e;
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
+		}
+		finally {
+			tracing.end(time, t, "flowSearch", new Object() {
+				@Override
+				public String toString() {
+					return String.format("criteria={%s}", criteria);
+				}
+			});
 		}
 	}
 }

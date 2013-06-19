@@ -6,6 +6,9 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
@@ -21,6 +24,8 @@ import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.common.Fuse;
+import ch.vd.uniregctb.indexer.EmptySearchCriteriaException;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServicePM;
 import ch.vd.uniregctb.parametrage.ParametreEnum;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -95,9 +100,9 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 			@SuppressWarnings("deprecation")
 			private void addDefaultAdressesTo(MockIndividu individu) {
 				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, null, null, MockLocalite.Bex.getNPA(), MockLocalite.Bex, new CasePostale(TexteCasePostale.CASE_POSTALE, 4848),
-						RegDate.get(1980, 11, 2), null);
+				           RegDate.get(1980, 11, 2), null);
 				addAdresse(individu, TypeAdresseCivil.COURRIER, null, null, MockLocalite.Renens.getNPA(), MockLocalite.Renens, new CasePostale(TexteCasePostale.CASE_POSTALE, 5252),
-						RegDate.get(1980, 11, 2), null);
+				           RegDate.get(1980, 11, 2), null);
 			}
 		});
 	}
@@ -643,7 +648,14 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 
 		final TiersCriteria criteria = new TiersCriteria();
 		criteria.setNomRaison(" ");
-		globalTiersSearcher.search(criteria);
+
+		try {
+			globalTiersSearcher.search(criteria);
+			fail("Les critères de recherche sont comme vides...");
+		}
+		catch (EmptySearchCriteriaException e) {
+			// ok...
+		}
 	}
 
 	/**
@@ -862,5 +874,114 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 			final TiersIndexedData d = list.get(0);
 			assertEquals(ids.jules, d.getNumero().longValue());
 		}
+	}
+
+	@Test(timeout = 10000)
+	public void testFlowSearchFusibleAvecResultats() throws Exception {
+		final BlockingQueue<TiersIndexedData> queue = new SynchronousQueue<>();
+		final Fuse fusible = new Fuse();
+
+		assertTrue(fusible.isNotBlown());
+
+		loadDatabase(DB_UNIT_DATA_FILE);
+
+		final TiersCriteria criteria = new TiersCriteria();
+		criteria.setNomRaison("Alain Dupont");
+
+		final Thread fuseBlowingThread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					Thread.sleep(2000);
+					fusible.blow();
+				}
+				catch (InterruptedException e) {
+					// on sort... de toute façon, si le <i>sleep</i> a sauté, le fusible va rester et le test partira en timeout
+				}
+			}
+		});
+
+		final long start = System.nanoTime();
+		fuseBlowingThread.start();
+		try {
+			globalTiersSearcher.flowSearch(criteria, queue, fusible);
+		}
+		finally {
+			final long end = System.nanoTime();
+			assertTrue(end - start > TimeUnit.MILLISECONDS.toNanos(2000));
+		}
+
+		fuseBlowingThread.join();
+	}
+
+	@Test(timeout = 10000)
+	public void testFlowSearchFusibleDejaGrilleAvecResultats() throws Exception {
+		final BlockingQueue<TiersIndexedData> queue = new SynchronousQueue<>();
+		final Fuse fusible = new Fuse();
+
+		assertTrue(fusible.isNotBlown());
+		fusible.blow();
+		assertTrue(fusible.isBlown());
+
+		loadDatabase(DB_UNIT_DATA_FILE);
+
+		final TiersCriteria criteria = new TiersCriteria();
+		criteria.setNomRaison("Alain Dupont");
+
+		// fusible grillé, donc même s'il y a des résulats, on n'est pas bloqué
+		globalTiersSearcher.flowSearch(criteria, queue, fusible);
+	}
+
+	@Test(timeout = 10000)
+	public void testFlowSearchFusibleSansResultats() throws Exception {
+		final BlockingQueue<TiersIndexedData> queue = new SynchronousQueue<>();
+		final Fuse fusible = new Fuse();
+
+		assertTrue(fusible.isNotBlown());
+
+		loadDatabase(DB_UNIT_DATA_FILE);
+
+		final TiersCriteria criteria = new TiersCriteria();
+		criteria.setNomRaison("Robert Pittet");
+
+		// pas de résultat, pas de blocage, même si la queue de sortie n'est pas consommée
+		globalTiersSearcher.flowSearch(criteria, queue, fusible);
+	}
+
+	@Test(timeout = 10000)
+	public void testFlowSearchAvecResultats() throws Exception {
+		final BlockingQueue<TiersIndexedData> queue = new SynchronousQueue<>();
+		final Fuse fusible = new Fuse();
+
+		loadDatabase(DB_UNIT_DATA_FILE);
+
+		final List<TiersIndexedData> found = new ArrayList<>();
+		final Fuse done = new Fuse();
+		final Thread listener = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					while (done.isNotBlown()) {
+						final TiersIndexedData data = queue.poll(10, TimeUnit.MILLISECONDS);
+						if (data != null) {
+							found.add(data);
+						}
+					}
+				}
+				catch (InterruptedException e) {
+					// on sort...
+				}
+			}
+		});
+		listener.start();
+
+		final TiersCriteria criteria = new TiersCriteria();
+		criteria.setNomRaison("Alain Dupont");
+
+		globalTiersSearcher.flowSearch(criteria, queue, fusible);
+		done.blow();
+		listener.join();
+
+		assertEquals(2, found.size());      // une PP et un DPI
 	}
 }

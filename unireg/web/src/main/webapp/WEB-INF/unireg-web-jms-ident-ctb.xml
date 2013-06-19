@@ -10,7 +10,7 @@
 		<property name="laterVersionsHandler" ref="identificationContribuableRequestHandler"/>
 	</bean>
 
-	<bean id="identCtbMessageV1Handler" class="ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableEsbHandler">
+	<bean id="identCtbMessageV1Handler" class="ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableV1EsbHandler">
 		<property name="esbValidator" ref="esbMessageValidator"/>
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 		<property name="demandeHandler" ref="identCtbService" />
