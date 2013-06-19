@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -363,9 +364,18 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 			template.execute(new TransactionCallbackWithoutResult() {
 				@Override
 				protected void doInTransactionWithoutResult(TransactionStatus status) {
-					final List<PersonnePhysique> ppList = new ArrayList<>(candidates.size());
+					final Set<Long> ids = new HashSet<>(candidates.size());
 					for (TiersIndexedData data : candidates) {
-						ppList.add((PersonnePhysique) tiersDAO.get(data.getNumero()));
+						ids.add(data.getNumero());
+					}
+
+					// récupération des données en une requête
+					final List<Tiers> tiers = tiersDAO.getBatch(ids, EnumSet.of(TiersDAO.Parts.ADRESSES));
+					final List<PersonnePhysique> ppList = new ArrayList<>(tiers.size());
+					for (Tiers t : tiers) {
+						if (t instanceof PersonnePhysique) {
+							ppList.add((PersonnePhysique) t);
+						}
 					}
 
 					// filtrage selon les autres critères

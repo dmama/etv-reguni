@@ -1258,6 +1258,53 @@ public class TiersDAOTest extends CoreDAOTest {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testGetBatchWithIdsAsSet() throws Exception {
+		loadDatabase();
+
+		final Set<Long> ids = new HashSet<>(Arrays.asList(10006789L, 1001234L, 9876L, 10007890L, 10008901L, 10001111L, 2002222L, 10000010L, 10000001L, 10000002L, 10000004L, 10000005L));
+		final Set<Parts> parts = EnumSet.of(Parts.ADRESSES, Parts.DECLARATIONS, Parts.FORS_FISCAUX, Parts.RAPPORTS_ENTRE_TIERS, Parts.SITUATIONS_FAMILLE);
+
+		// charge les tiers en passant par la méthode batch (dans une transaction séparée pour éviter de partager la session hibernate)
+		final List<Tiers> listBatch = doInNewReadOnlyTransaction(new TxCallback<List<Tiers>>() {
+			@Override
+			public List<Tiers> execute(TransactionStatus status) throws Exception {
+				return dao.getBatch(ids, parts);
+			}
+		});
+		assertNotNull(listBatch);
+		assertEquals(ids.size(), listBatch.size());
+
+		// charge les même tiers en passant par la méthode normale
+		final List<Tiers> listNormal = new ArrayList<>();
+		for (Long id : ids) {
+			Tiers tiers = dao.get(id);
+			listNormal.add(tiers);
+		}
+		assertNotNull(listNormal);
+		assertEquals(ids.size(), listNormal.size());
+
+		Comparator<Tiers> c = new Comparator<Tiers>() {
+			@Override
+			public int compare(Tiers o1, Tiers o2) {
+				return o1.getId().compareTo(o2.getId());
+			}
+		};
+		Collections.sort(listNormal, c);
+		Collections.sort(listBatch, c);
+
+		// vérifie que les tiers des deux listes sont égaux
+		final int count = ids.size();
+		for (int i = 0; i < count; ++i) {
+			final Tiers normal = listNormal.get(i);
+			final Tiers batch = listBatch.get(i);
+			assertNotSame(batch, normal); // autrement, il y a un problème de session hibernate et le test ne rime à rien
+			assertTiersEquals(normal, batch);
+		}
+	}
+
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testGetBatchMaximumDepasse() throws Exception {

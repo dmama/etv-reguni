@@ -257,7 +257,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 			session.setFlushMode(FlushMode.MANUAL); // pour éviter qu'Hibernate essaie de mettre-à-jour les collections des associations one-to-many avec des cascades delete-orphan.
 		}
 		try {
-			return getBatch(new HashSet<>(ids), parts, session);
+			return getBatch(ids instanceof Set ? (Set) ids : new HashSet<>(ids), parts, session);
 		}
 		finally {
 			if (mode != FlushMode.MANUAL) {
