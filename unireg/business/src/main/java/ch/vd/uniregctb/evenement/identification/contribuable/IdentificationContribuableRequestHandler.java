@@ -46,7 +46,7 @@ import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.identification.contribuable.IdentificationContribuableService;
-import ch.vd.uniregctb.identification.contribuable.TooManyIdentificationPossibilitesException;
+import ch.vd.uniregctb.identification.contribuable.TooManyIdentificationPossibilitiesException;
 import ch.vd.uniregctb.jms.EsbBusinessCode;
 import ch.vd.uniregctb.jms.EsbBusinessException;
 import ch.vd.uniregctb.jms.EsbMessageHandler;
@@ -176,7 +176,7 @@ public class IdentificationContribuableRequestHandler implements EsbMessageHandl
 					break;
 			}
 		}
-		catch (TooManyIdentificationPossibilitesException e) {
+		catch (TooManyIdentificationPossibilitiesException e) {
 			found = Collections.emptyList();
 			status = IdentificationResult.FOUND_SEVERAL;
 		}

@@ -35,10 +35,10 @@ public interface IdentificationContribuableService {
 	 *
 	 * @param criteres les critères de recherche du contribuable
 	 * @return une liste contenant 0 ou plus numéros de contribuable.
-	 * @throws TooManyIdentificationPossibilitesException si le nombre de résultats de l'identification dépasse le seuil {@link #NB_MAX_RESULTS_POUR_LISTE_IDENTIFICATION}
+	 * @throws TooManyIdentificationPossibilitiesException si le nombre de résultats de l'identification dépasse le seuil {@link #NB_MAX_RESULTS_POUR_LISTE_IDENTIFICATION}
 	 * @see #NB_MAX_RESULTS_POUR_LISTE_IDENTIFICATION
 	 */
-	List<Long> identifie(CriteresPersonne criteres) throws TooManyIdentificationPossibilitesException;
+	List<Long> identifie(CriteresPersonne criteres) throws TooManyIdentificationPossibilitiesException;
 
 	/**
 	 * Recherche une liste d'IdentificationContribuable en fonction de critères

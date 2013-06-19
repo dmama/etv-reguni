@@ -147,6 +147,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		messageHandler = new TestMessageHandler();
 		service.setMessageHandler(messageHandler);
 		service.setIdentificationContribuableHelper(helper);
+		service.setFlowSearchThreadPoolSize(1);
 
 		service.afterPropertiesSet();
 	}
@@ -1026,7 +1027,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 				final List<Long> list = service.identifie(criteres);
 				fail(ArrayUtils.toString(list.toArray()));
 			}
-			catch (TooManyIdentificationPossibilitesException e) {
+			catch (TooManyIdentificationPossibilitiesException e) {
 				// ok, tout va bien...
 			}
 		}

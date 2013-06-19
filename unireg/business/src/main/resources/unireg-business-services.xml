@@ -168,6 +168,7 @@
 		<property name="serviceSecuriteService" ref="serviceSecuriteService" />
 		<property name="identificationContribuableHelper" ref="identificationContribuableHelper" />
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
+		<property name="flowSearchThreadPoolSize" value="10"/>
 	</bean>
 
 	<!-- Helpers de toutes sortes et de tous lieux (Dieu y retrouvera les siens) -->

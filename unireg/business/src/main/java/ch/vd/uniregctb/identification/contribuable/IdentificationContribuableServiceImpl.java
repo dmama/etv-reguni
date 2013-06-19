@@ -104,6 +104,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	private ServiceSecuriteService serviceSecuriteService;
 	private IdentificationContribuableHelper identificationContribuableHelper;
 	private HibernateTemplate hibernateTemplate;
+	private int flowSearchThreadPoolSize;
 
 	private IdentificationContribuableCache identificationContribuableCache = new IdentificationContribuableCache();        // cache vide à l'initialisation
 	private ExecutorService asynchronousFlowSearchExecutor;
@@ -152,8 +153,16 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		this.hibernateTemplate = hibernateTemplate;
 	}
 
+	public void setFlowSearchThreadPoolSize(int flowSearchThreadPoolSize) {
+		this.flowSearchThreadPoolSize = flowSearchThreadPoolSize;
+	}
+
 	@Override
 	public void afterPropertiesSet() throws Exception {
+		if (flowSearchThreadPoolSize < 1) {
+			throw new IllegalArgumentException("Invalid value for the flowSearchThreadPoolSize property : " + flowSearchThreadPoolSize);
+		}
+
 		if (isUpdateCriteresOnStartup()) {
 			// en fonction du nombre de demandes d'identification en base, le chargement des valeurs possibles des critères de
 			// recherche peut prendre quelques secondes (minutes ?), donc on met ça dans un thread séparés afin de ne pas
@@ -170,7 +179,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 			thread.start();
 		}
 
-		asynchronousFlowSearchExecutor = Executors.newFixedThreadPool(10, new DefaultThreadFactory(new DefaultThreadNameGenerator("Identification")));
+		asynchronousFlowSearchExecutor = Executors.newFixedThreadPool(flowSearchThreadPoolSize, new DefaultThreadFactory(new DefaultThreadNameGenerator("Identification")));
 	}
 
 	protected boolean isUpdateCriteresOnStartup() {
@@ -255,7 +264,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<Long> identifie(CriteresPersonne criteres) throws TooManyIdentificationPossibilitesException {
+	public List<Long> identifie(CriteresPersonne criteres) throws TooManyIdentificationPossibilitiesException {
 
 		// 1. phase AVS13
 		final List<TiersIndexedData> indexedAvs13 = findByNavs13(criteres);
@@ -417,10 +426,10 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		/**
 		 * Ecoute sur la queue de versement des résultats
 		 * @return la liste des cas identifiés (tant que sa taille est plus petite que le seuil)
-		 * @throws TooManyIdentificationPossibilitesException si la liste des cas identifiés a une taille plus grande que celle du seuil
+		 * @throws TooManyIdentificationPossibilitiesException si la liste des cas identifiés a une taille plus grande que celle du seuil
 		 */
 		@Override
-		public List<TiersIndexedData> call() throws TooManyIdentificationPossibilitesException {
+		public List<TiersIndexedData> call() throws TooManyIdentificationPossibilitiesException {
 
 			final List<TiersIndexedData> list = new LinkedList<>();
 			final List<TiersIndexedData> subset = new ArrayList<>(batchSize);
@@ -450,13 +459,13 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 			}
 			if (list.size() > maxListSize) {
 				stop.blow();    // je n'en veux plus... c'est trop !
-				throw new TooManyIdentificationPossibilitesException(maxListSize);
+				throw new TooManyIdentificationPossibilitiesException(maxListSize);
 			}
 			return list;
 		}
 	}
 
-	private List<TiersIndexedData> findAvecCriteresComplets(CriteresPersonne criteres, int maxNumberForList) throws TooManyIdentificationPossibilitesException {
+	private List<TiersIndexedData> findAvecCriteresComplets(CriteresPersonne criteres, int maxNumberForList) throws TooManyIdentificationPossibilitiesException {
 
 		List<TiersIndexedData> indexedData = null;
 
@@ -486,7 +495,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 						throw e.getCause();
 					}
 				}
-				catch (TooManyIdentificationPossibilitesException | RuntimeException | Error e) {
+				catch (TooManyIdentificationPossibilitiesException | RuntimeException | Error e) {
 					throw e;
 				}
 				catch (Throwable e) {
@@ -889,7 +898,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 				found = identifie(criteresPersonne);
 				foundSize = found.size();
 			}
-			catch (TooManyIdentificationPossibilitesException e) {
+			catch (TooManyIdentificationPossibilitiesException e) {
 				found = Collections.emptyList();
 				foundSize = null;
 			}
@@ -1280,7 +1289,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 			try {
 				found = identifie(criteresPersonne);
 			}
-			catch (TooManyIdentificationPossibilitesException e) {
+			catch (TooManyIdentificationPossibilitiesException e) {
 				found = Collections.emptyList();
 			}
 			if (found.size() == 1) {
