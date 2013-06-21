@@ -33,7 +33,7 @@ public class ErrorPostProcessingMiseEnAttenteStrategy implements ErrorPostProces
 			if (info.getEtat() == EtatEvenementCivil.A_TRAITER) {
 				final EvenementCivilEch evt = evtCivilDAO.get(info.getId());
 				if (evt.getEtat() == EtatEvenementCivil.A_TRAITER) {        // re-test pour vérifier que l'information dans le descripteur est toujours à jour
-					setEnAttente(evt);
+					setEnAttente(evt, info.getNoIndividu());
 				}
 				else {
 					remaining.add(info);
@@ -45,7 +45,7 @@ public class ErrorPostProcessingMiseEnAttenteStrategy implements ErrorPostProces
 				if (ref.getEtat() == EtatEvenementCivil.A_TRAITER) {
 					final EvenementCivilEch evt = evtCivilDAO.get(ref.getId());
 					if (evt.getEtat() == EtatEvenementCivil.A_TRAITER) {        // re-test pour vérifier que l'information dans le descripteur est toujours à jour
-						setEnAttente(evt);
+						setEnAttente(evt, ref.getNoIndividu());
 					}
 				}
 			}
@@ -53,7 +53,11 @@ public class ErrorPostProcessingMiseEnAttenteStrategy implements ErrorPostProces
 		return remaining;
 	}
 
-	private static void setEnAttente(EvenementCivilEch evt) {
+	private static void setEnAttente(EvenementCivilEch evt, long noIndividu) {
+		// [SIFISC-9031] Rattrapage du numéro d'individu si traitement mis en branle par le biais des relations entre événements
+		if (evt.getNumeroIndividu() == null) {
+			evt.setNumeroIndividu(noIndividu);
+		}
 		evt.setEtat(EtatEvenementCivil.EN_ATTENTE);
 		Audit.info(evt.getId(), String.format("Mise en attente de l'événement %d", evt.getId()));
 	}
