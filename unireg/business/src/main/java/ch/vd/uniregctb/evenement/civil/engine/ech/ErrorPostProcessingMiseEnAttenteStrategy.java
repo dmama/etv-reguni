@@ -30,34 +30,36 @@ public class ErrorPostProcessingMiseEnAttenteStrategy implements ErrorPostProces
 	public List<EvenementCivilEchBasicInfo> doCollectPhase(List<EvenementCivilEchBasicInfo> remainingEvents, Mutable<Object> customData) {
 		final List<EvenementCivilEchBasicInfo> remaining = new ArrayList<>(remainingEvents.size());
 		for (EvenementCivilEchBasicInfo info : remainingEvents) {
-			if (info.getEtat() == EtatEvenementCivil.A_TRAITER) {
-				final EvenementCivilEch evt = evtCivilDAO.get(info.getId());
-				if (evt.getEtat() == EtatEvenementCivil.A_TRAITER) {        // re-test pour vérifier que l'information dans le descripteur est toujours à jour
-					setEnAttente(evt, info.getNoIndividu());
-				}
-				else {
-					remaining.add(info);
-				}
+			final EvenementCivilEch evt = evtCivilDAO.get(info.getId());
+			if (evt.getEtat() == EtatEvenementCivil.A_TRAITER) {
+				setEnAttente(evt);
+			}
+			else {
+				remaining.add(info);
+			}
+
+			// [SIFISC-9031] Rattrapage du numéro d'individu si traitement mis en branle par le biais des relations entre événements
+			if (evt.getNumeroIndividu() == null) {
+				evt.setNumeroIndividu(info.getNoIndividu());
 			}
 
 			// pour la complétude de la chose, on met également les événements <i>referrers</i> en attente s'ils sont encore "à traiter"
 			for (EvenementCivilEchBasicInfo ref : info.getSortedReferrers()) {
-				if (ref.getEtat() == EtatEvenementCivil.A_TRAITER) {
-					final EvenementCivilEch evt = evtCivilDAO.get(ref.getId());
-					if (evt.getEtat() == EtatEvenementCivil.A_TRAITER) {        // re-test pour vérifier que l'information dans le descripteur est toujours à jour
-						setEnAttente(evt, ref.getNoIndividu());
-					}
+				final EvenementCivilEch refEvent = evtCivilDAO.get(ref.getId());
+				if (refEvent.getEtat() == EtatEvenementCivil.A_TRAITER) {
+					setEnAttente(refEvent);
+				}
+
+				// [SIFISC-9031] Rattrapage du numéro d'individu si traitement mis en branle par le biais des relations entre événements
+				if (refEvent.getNumeroIndividu() == null) {
+					refEvent.setNumeroIndividu(info.getNoIndividu());
 				}
 			}
 		}
 		return remaining;
 	}
 
-	private static void setEnAttente(EvenementCivilEch evt, long noIndividu) {
-		// [SIFISC-9031] Rattrapage du numéro d'individu si traitement mis en branle par le biais des relations entre événements
-		if (evt.getNumeroIndividu() == null) {
-			evt.setNumeroIndividu(noIndividu);
-		}
+	private static void setEnAttente(EvenementCivilEch evt) {
 		evt.setEtat(EtatEvenementCivil.EN_ATTENTE);
 		Audit.info(evt.getId(), String.format("Mise en attente de l'événement %d", evt.getId()));
 	}

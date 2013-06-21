@@ -338,6 +338,84 @@ public class EvenementCivilEchProcessorTest extends AbstractEvenementCivilEchPro
 		});
 	}
 
+	/**
+	 * Cas du SIFISC-9031 : une annulation qui n'a pas de numéro d'individu est passée en attente sans se voir assigner de numéro d'individu
+	 */
+	@Test
+	public void testAffectationNumeroIndividuSurEvenementDejaMisEnAttente() throws Exception {
+
+		final long noIndividu = 544515L;
+		final RegDate dateFinAdresse = date(2010, 5, 12);
+		final RegDate dateEvtDepart = dateFinAdresse.addMonths(1);      // pour être sûr que l'événement de départ part en erreur
+		final long evtErreurId = 78541L;
+		final long evtAttenteId = 484212L;
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu individu = addIndividu(noIndividu, null, "Tartempion", "Pê", Sexe.MASCULIN);
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, null, null, dateFinAdresse);
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Echallens.GrandRue, null, dateFinAdresse.getOneDayAfter(), null);
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				addForPrincipal(pp, date(2000, 1, 1), MotifFor.INDETERMINE, MockCommune.Cossonay);
+				return pp.getNumero();
+			}
+		});
+
+		// création des événements civils
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evtErreur = new EvenementCivilEch();
+				evtErreur.setId(evtErreurId);
+				evtErreur.setAction(ActionEvenementCivilEch.CORRECTION);
+				evtErreur.setDateEvenement(dateEvtDepart);
+				evtErreur.setEtat(EtatEvenementCivil.EN_ERREUR);
+				evtErreur.setNumeroIndividu(noIndividu);
+				evtErreur.setType(TypeEvenementCivilEch.DEPART);
+				hibernateTemplate.merge(evtErreur);
+
+				final EvenementCivilEch evtEnAttente = new EvenementCivilEch();
+				evtEnAttente.setId(evtAttenteId);
+				evtEnAttente.setAction(ActionEvenementCivilEch.ANNULATION);
+				evtEnAttente.setDateEvenement(dateEvtDepart);
+				evtEnAttente.setEtat(EtatEvenementCivil.EN_ATTENTE);
+				evtEnAttente.setNumeroIndividu(null);               // pas encore assigné
+				evtEnAttente.setType(TypeEvenementCivilEch.DEPART);
+				evtEnAttente.setRefMessageId(evtErreurId);          // pour faire le lien quand-même
+				hibernateTemplate.merge(evtEnAttente);
+				return null;
+			}
+		});
+
+		// traitement des événements civils
+		traiterEvenements(noIndividu);
+
+		// vérification des résultats
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch enErreur = evtCivilDAO.get(evtErreurId);
+				assertNotNull(enErreur);
+				assertEquals(EtatEvenementCivil.EN_ERREUR, enErreur.getEtat());
+
+				final EvenementCivilEch enAttente = evtCivilDAO.get(evtAttenteId);
+				assertNotNull(enAttente);
+				assertEquals(EtatEvenementCivil.EN_ATTENTE, enAttente.getEtat());
+				assertEquals((Long) noIndividu, enAttente.getNumeroIndividu());
+				return null;
+			}
+		});
+	}
+
 	private interface AfterHandleCallback {
 		void checkEvent(EvenementCivilEch evt);
 	}
