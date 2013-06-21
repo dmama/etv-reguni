@@ -108,24 +108,22 @@ public class IdentificationController {
 		return "identification/tableau-bord/stats";
 	}
 
-	@RequestMapping(value = "/gestion-messages/effacerEnCours.do")
-	protected ModelAndView effacerFormulaireDeRechercheEnCours(HttpServletRequest request,ModelMap model) throws Exception {
-		IdentificationContribuableListCriteria criteria = identificationMessagesListManager.getView(null,null,null);
-		removeFromSession(request,CRITERIA_EN_COURS_NAME);
+	@RequestMapping(value = "/gestion-messages/effacerEnCours.do",  method = RequestMethod.POST)
+	protected ModelAndView effacerFormulaireDeRechercheEnCours(HttpServletRequest request,
+	                                                           ModelMap model) throws Exception {
+		IdentificationContribuableListCriteria criteria = manageCriteria(request, identificationMessagesListManager.getView(null, null, null), "identificationCriteria", false);
 		return buildResponseForMessageEnCours(request, criteria, model);
 	}
 
-	@RequestMapping(value = "/gestion-messages/effacerTraite.do")
+	@RequestMapping(value = "/gestion-messages/effacerTraite.do", method = RequestMethod.POST)
 	protected ModelAndView effacerFormulaireDeRechercheTraite(HttpServletRequest request,ModelMap model) throws Exception {
-		IdentificationContribuableListCriteria criteria = identificationMessagesListManager.getView(null,null,null);
-		removeFromSession(request,CRITERIA_TRAITE_NAME);
+		IdentificationContribuableListCriteria criteria = manageCriteria(request, identificationMessagesListManager.getView(null, null, null), "identificationCriteria", false);
 		return buildReponseForMessageTraite(request, model, criteria);
 	}
 
-	@RequestMapping(value = "/gestion-messages/effacerSuspendu.do")
+	@RequestMapping(value = "/gestion-messages/effacerSuspendu.do", method = RequestMethod.POST)
 	protected ModelAndView effacerFormulaireDeRechercheSuspendu(HttpServletRequest request,ModelMap model) throws Exception {
-		IdentificationContribuableListCriteria criteria = identificationMessagesListManager.getView(null,null,null);
-		removeFromSession(request,CRITERIA_EN_COURS_NAME);
+		IdentificationContribuableListCriteria  criteria = manageCriteria(request, identificationMessagesListManager.getView(null, null, null), "identificationCriteria", false);
 		return buildReponseForMessageSuspendu(request, criteria, model);
 	}
 
@@ -221,10 +219,9 @@ public class IdentificationController {
 	protected ModelAndView listerEncours(HttpServletRequest request,
 	                              @ModelAttribute("identificationCriteria") IdentificationContribuableListCriteria criteria,
 	                              BindingResult bindingResult,
-	                              @RequestParam(value = "keepCriteria", required = false) String keepCriteria,
 	                              ModelMap model) throws AdressesResolutionException {
 
-		criteria = manageCriteria(request, criteria, CRITERIA_EN_COURS_NAME, keepCriteria);
+		criteria = manageCriteria(request, criteria, "identificationCriteria", true);
 		return buildResponseForMessageEnCours(request, criteria, model);
 	}
 
@@ -235,10 +232,10 @@ public class IdentificationController {
 	 * @param criteriaName
 	 * @param keepCriteria
 	 */
-	private IdentificationContribuableListCriteria manageCriteria(HttpServletRequest request, IdentificationContribuableListCriteria criteria, String criteriaName, String keepCriteria) {
+	private IdentificationContribuableListCriteria manageCriteria(HttpServletRequest request, IdentificationContribuableListCriteria criteria, String criteriaName, boolean keepCriteria) {
 		if (criteria.isEmpty()) {
 			IdentificationContribuableListCriteria savedCriteria = (IdentificationContribuableListCriteria) request.getSession().getAttribute(criteriaName);
-			if (savedCriteria != null && !savedCriteria.isEmpty() && keepCriteria!=null) {
+			if (savedCriteria != null && !savedCriteria.isEmpty() && keepCriteria) {
 				criteria = savedCriteria;
 			}
 		}
@@ -251,10 +248,9 @@ public class IdentificationController {
 	protected ModelAndView listerSuspendu(HttpServletRequest request,
 	                                     @ModelAttribute("identificationCriteria") IdentificationContribuableListCriteria criteria,
 	                                     BindingResult bindingResult,
-	                                     @RequestParam(value = "keepCriteria", required = false) String keepCriteria,
 	                                     ModelMap model) throws AdressesResolutionException {
 
-		criteria = manageCriteria(request, criteria, CRITERIA_EN_COURS_NAME, keepCriteria);
+		criteria = manageCriteria(request, criteria, "identificationCriteria", true);
 		return buildReponseForMessageSuspendu(request, criteria, model);
 	}
 
@@ -279,7 +275,7 @@ public class IdentificationController {
 		IdentificationContribuableListCriteria criteria = identificationMessagesListManager.getView(typeMessage, periode, etat);
 		model.put("identificationCriteria", criteria);
 		construireModelMessageEnCours(request, model, criteria);
-		criteria = manageCriteria(request, criteria, CRITERIA_EN_COURS_NAME, null);
+		criteria = manageCriteria(request, criteria, "identificationCriteria", true);
 		return new ModelAndView("identification/gestion-messages/list", model);
 	}
 
@@ -296,7 +292,7 @@ public class IdentificationController {
 		IdentificationContribuableListCriteria criteria = identificationMessagesListManager.getView(typeMessage, periode, etat);
 		model.put("identificationCriteria", criteria);
 		construireModelMessageSuspendu(request, model, criteria);
-		criteria = manageCriteria(request, criteria, "identificationCriteriaEnCours", null);
+		criteria = manageCriteria(request, criteria, "identificationCriteria", true);
 		return new ModelAndView("identification/gestion-messages/list", model);
 	}
 
@@ -306,10 +302,9 @@ public class IdentificationController {
 	protected ModelAndView listerTraite(HttpServletRequest request,
 	                              @ModelAttribute("identificationCriteria") IdentificationContribuableListCriteria criteria,
 	                              BindingResult bindingResult,
-	                              @RequestParam(value = "keepCriteria", required = false) String keepCriteria,
 	                              ModelMap model) throws AdressesResolutionException {
 
-		criteria = manageCriteria(request, criteria, CRITERIA_TRAITE_NAME, keepCriteria);
+		criteria = manageCriteria(request, criteria, "identificationCriteria", true);
 		return buildReponseForMessageTraite(request, model, criteria);
 	}
 
@@ -328,7 +323,7 @@ public class IdentificationController {
 		IdentificationContribuableListCriteria criteria = identificationMessagesListManager.getView(typeMessage, periode, etat);
 		model.put("identificationCriteria", criteria);
 		construireModelMessageTraite(request, model, criteria);
-		criteria = manageCriteria(request, criteria, CRITERIA_TRAITE_NAME, null);
+		criteria = manageCriteria(request, criteria, "identificationCriteria", true);
 		return new ModelAndView("identification/gestion-messages/list", model);
 	}
 
