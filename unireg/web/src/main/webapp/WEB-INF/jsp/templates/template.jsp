@@ -157,15 +157,15 @@
 					<authz:authorize ifAnyGranted="ROLE_MW_IDENT_CTB_VISU,ROLE_MW_IDENT_CTB_CELLULE_BO,ROLE_MW_IDENT_CTB_GEST_BO,ROLE_MW_IDENT_CTB_ADMIN,ROLE_NCS_IDENT_CTB_CELLULE_BO,ROLE_LISTE_IS_IDENT_CTB_CELLULE_BO">
 						<li><fmt:message key="label.identification.ctb" />
 							<ul>
-								<li><a href="<c:url value='/identification/gestion-messages/listEnCours.do'/>"><fmt:message key="label.demande.en.cours" /></a></li>
+								<li><a href="<c:url value='/identification/gestion-messages/nav-listEnCours.do?wipeCriteria=yes'/>"><fmt:message key="label.demande.en.cours" /></a></li>
 								<authz:authorize ifAnyGranted="ROLE_MW_IDENT_CTB_ADMIN,ROLE_MW_IDENT_CTB_GEST_BO">
-									<li><a href="<c:url value='/identification/gestion-messages/listSuspendu.do'/>"><fmt:message key="label.demande.suspendu" /></a></li>
+									<li><a href="<c:url value='/identification/gestion-messages/nav-listSuspendu.do?wipeCriteria=yes'/>"><fmt:message key="label.demande.suspendu" /></a></li>
 								</authz:authorize>
 								<authz:authorize ifAnyGranted="ROLE_MW_IDENT_CTB_ADMIN">
 									<li><a href="<c:url value='/identification/tableau-bord/stats.do'/>"><fmt:message key="label.tableau.bord" /></a></li>
 								</authz:authorize>
 							     <authz:authorize ifAnyGranted="ROLE_MW_IDENT_CTB_VISU,ROLE_MW_IDENT_CTB_CELLULE_BO,ROLE_MW_IDENT_CTB_GEST_BO,ROLE_MW_IDENT_CTB_ADMIN,ROLE_NCS_IDENT_CTB_CELLULE_BO,ROLE_LISTE_IS_IDENT_CTB_CELLULE_BO">
-									<li><a href="<c:url value='/identification/gestion-messages/listTraite.do'/>"><fmt:message key="label.demande.archives" /></a></li>
+									<li><a href="<c:url value='/identification/gestion-messages/nav-listTraite.do?wipeCriteria=yes'/>"><fmt:message key="label.demande.archives" /></a></li>
 								</authz:authorize>
 							</ul>
 						</li>

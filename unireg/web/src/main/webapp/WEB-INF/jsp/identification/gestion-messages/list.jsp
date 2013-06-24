@@ -3,17 +3,17 @@
 
 <c:choose>		
 	<c:when test="${messageEnCours}">
-		<c:set var="myAction" value="listEnCours.do" />
+		<c:set var="myAction" value="nav-listEnCours.do" />
 		<c:set var="mySource" value="enCours" />
 		<c:set var="titrePage" value="title.messages.en.cours" />
 	</c:when>
 	<c:when test="${messageTraite}">
-		<c:set var="myAction" value="listTraite.do" />
+		<c:set var="myAction" value="nav-listTraite.do" />
 		<c:set var="mySource" value="traite" />
 		<c:set var="titrePage" value="title.messages.archive" />
 	</c:when>
     <c:when test="${messageSuspendu}">
-        <c:set var="myAction" value="listSuspendu.do" />
+        <c:set var="myAction" value="nav-listSuspendu.do" />
 	    <c:set var="mySource" value="suspendu"/>
 	    <c:set var="titrePage" value="title.messages.suspendu" />
     </c:when>

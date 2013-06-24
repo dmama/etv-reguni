@@ -31,6 +31,7 @@
 		<property name="securityProvider" ref="securityProviderCache" />
 		<property name="identificationMessagesListManager" ref="identificationMessagesListManager" />
 		<property name="validator" ref="identificationMessageValidator" />
+		<property name="controllerUtils" ref="controllerUtils" />
 
 
 	</bean>
