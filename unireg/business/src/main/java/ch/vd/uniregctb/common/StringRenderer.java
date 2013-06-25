@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.load;
+package ch.vd.uniregctb.common;
 
 /**
  * Interface qui permet de customiser la conversion d'un objet en chaîne de caractère
  * @param <T> type de l'objet à convertir
  */
-public interface LoadDetailRenderer<T> {
+public interface StringRenderer<T> {
 
 	/**
 	 * @param object objet à convertir

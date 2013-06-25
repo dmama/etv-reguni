@@ -6,18 +6,20 @@ import java.util.Date;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.document.Document;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.Constants;
+import ch.vd.uniregctb.indexer.IndexerFormatHelper;
 import ch.vd.uniregctb.indexer.lucene.LuceneHelper;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.ModeCommunication;
 
 public class TiersIndexedData implements Serializable {
 
-	private static final long serialVersionUID = 3618708307365700475L;
+	private static final long serialVersionUID = 3102867183859739055L;
 
 	//private static final Logger LOGGER = Logger.getLogger(TiersIndexableData.class);
 
@@ -49,7 +51,7 @@ public class TiersIndexedData implements Serializable {
 	public TiersIndexedData(Document doc) {
 		tiersType = getDocValue(LuceneHelper.F_DOCSUBTYPE, doc);
 		numero = getDocValue(LuceneHelper.F_ENTITYID, doc);
-		dateNaissance = getDocValue(TiersIndexableData.DATE_NAISSANCE, doc);
+		dateNaissance = getDocValue(TiersIndexableData.D_DATE_NAISSANCE, doc);
 		regDateNaissance = indexStringToDateNaissance(dateNaissance, tiersType);
 		dateDeces = getDocValue(TiersIndexableData.DATE_DECES, doc);
 		nom1 = getDocValue(TiersIndexableData.NOM1, doc);
@@ -59,46 +61,22 @@ public class TiersIndexedData implements Serializable {
 		dateOuvertureFor = DateHelper.indexStringToDate(getDocValue(TiersIndexableData.DATE_OUVERTURE_FOR, doc));
 		dateFermetureFor = DateHelper.indexStringToDate(getDocValue(TiersIndexableData.DATE_FERMETURE_FOR, doc));
 		rue = getDocValue(TiersIndexableData.RUE, doc);
-		npa = getDocValue(TiersIndexableData.NPA, doc);
+		npa = getDocValue(TiersIndexableData.NPA_COURRIER, doc);
 		localite = getDocValue(TiersIndexableData.LOCALITE, doc);
 		pays = getDocValue(TiersIndexableData.PAYS, doc);
 		localiteOuPays = getDocValue(TiersIndexableData.LOCALITE_PAYS, doc);
 		forPrincipal = getDocValue(TiersIndexableData.FOR_PRINCIPAL, doc);
-		annule = Constants.OUI.equals(getDocValue(TiersIndexableData.ANNULE, doc));
-		debiteurInactif = Constants.OUI.equals(getDocValue(TiersIndexableData.DEBITEUR_INACTIF, doc));
+		annule = getBooleanValue(TiersIndexableData.ANNULE, doc, Boolean.FALSE);
+		debiteurInactif = getBooleanValue(TiersIndexableData.DEBITEUR_INACTIF, doc, Boolean.FALSE);
 		ancienNumeroSourcier = getLongValue(TiersIndexableData.ANCIEN_NUMERO_SOURCIER, doc);
+		dansLeCanton = getBooleanValue(TiersIndexableData.DOMICILE_VD, doc, null);
+		noOfsCommuneDomicile = getIntegerValue(TiersIndexableData.NO_OFS_DOMICILE_VD, doc);
+		categorieImpotSource = getEnumValue(TiersIndexableData.CATEGORIE_DEBITEUR_IS, doc, CategorieImpotSource.class);
+		modeCommunication = getEnumValue(TiersIndexableData.MODE_COMMUNICATION, doc, ModeCommunication.class);
+	}
 
-		final String estDansLeCanton = getDocValue(TiersIndexableData.DOMICILE_VD, doc);
-		if (StringUtils.isBlank(estDansLeCanton)) {
-			dansLeCanton = null;
-		}
-		else {
-			dansLeCanton = Constants.OUI.equals(estDansLeCanton);
-		}
-
-		final String noOfs = getDocValue(TiersIndexableData.NO_OFS_DOMICILE_VD, doc);
-		if (StringUtils.isBlank(noOfs)) {
-			noOfsCommuneDomicile = null;
-		}
-		else {
-			noOfsCommuneDomicile = Integer.valueOf(noOfs);
-		}
-
-		final String cat = doc.get(TiersIndexableData.CATEGORIE_DEBITEUR_IS);
-		if (StringUtils.isBlank(cat)) {
-			this.categorieImpotSource = null;
-		}
-		else {
-			this.categorieImpotSource = CategorieImpotSource.valueOf(cat);
-		}
-
-		final String mode = doc.get(TiersIndexableData.MODE_COMMUNICATION);
-		if (StringUtils.isBlank(mode)) {
-			this.modeCommunication = null;
-		}
-		else {
-			this.modeCommunication = ModeCommunication.valueOf(mode);
-		}
+	private static boolean isBlank(String value) {
+		return IndexerFormatHelper.isBlank(value);
 	}
 
 	private static RegDate indexStringToDateNaissance(String dateNaissance, String tiersType) {
@@ -236,12 +214,8 @@ public class TiersIndexedData implements Serializable {
 	 * @return la valeur du document Lucene
 	 */
 	private static String getDocValue(String key, Document document) {
-
-		String str = document.get(key);
-		if (str == null) {
-			str = "";
-		}
-		return str;
+		final String str = document.get(key);
+		return isBlank(str) ? StringUtils.EMPTY : str;
 	}
 
 	/**
@@ -252,10 +226,27 @@ public class TiersIndexedData implements Serializable {
 	 * @return la valeur du document Lucene
 	 */
 	private static Long getLongValue(String key, Document document) {
-		String str = document.get(key);
-		if (str == null || StringUtils.isBlank(str)) {
-			return null;
+		final String str = document.get(key);
+		return isBlank(str) ? null : Long.valueOf(str);
+	}
+
+	private static Boolean getBooleanValue(String key, Document document, @Nullable Boolean defaultValue) {
+		final String str = document.get(key);
+		if (isBlank(str)) {
+			return defaultValue;
 		}
-		return Long.valueOf(str);
+		else {
+			return Constants.OUI.equals(str);
+		}
+	}
+
+	private static Integer getIntegerValue(String key, Document document) {
+		final String str = document.get(key);
+		return isBlank(str) ? null : Integer.valueOf(str);
+	}
+
+	private static <T extends Enum<T>> T getEnumValue(String key, Document document, Class<T> clazz) {
+		final String str = document.get(key);
+		return isBlank(str) ? null : Enum.valueOf(clazz, str);
 	}
 }

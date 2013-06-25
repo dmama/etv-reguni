@@ -52,8 +52,8 @@ public class TiersIndexableDataTest extends WithoutSpringTest {
 
 	private static TiersIndexableData newIndexableData() {
 		final TiersIndexableData data = new TiersIndexableData(ID, "test", "test");
-		data.setAnnule(IndexerFormatHelper.objectToString(false));
-		data.setDebiteurInactif(IndexerFormatHelper.objectToString(false));
+		data.setAnnule(IndexerFormatHelper.booleanToString(false));
+		data.setDebiteurInactif(IndexerFormatHelper.booleanToString(false));
 		return data;
 	}
 
@@ -89,8 +89,8 @@ public class TiersIndexableDataTest extends WithoutSpringTest {
 		// création et indexation des données
 		final TiersIndexableData data = new TiersIndexableData(10760550L, "test", "test");
 		data.setNumeros("10760550");
-		data.setAnnule(IndexerFormatHelper.objectToString(false));
-		data.setDebiteurInactif(IndexerFormatHelper.objectToString(false));
+		data.setAnnule(IndexerFormatHelper.booleanToString(false));
+		data.setDebiteurInactif(IndexerFormatHelper.booleanToString(false));
 		globalIndex.indexEntity(data);
 
 		// recherche avec numéro non-formatté
@@ -229,7 +229,7 @@ public class TiersIndexableDataTest extends WithoutSpringTest {
 
 		// création et indexation des données
 		final TiersIndexableData data = newIndexableData();
-		data.setNoOfsForPrincipal(IndexerFormatHelper.objectToString(333L));
+		data.setNoOfsForPrincipal(IndexerFormatHelper.numberToString(333L));
 		globalIndex.indexEntity(data);
 
 		// recherche des données (OK)
@@ -320,12 +320,12 @@ public class TiersIndexableDataTest extends WithoutSpringTest {
 
 		// création et indexation des données
 		final TiersIndexableData data = newIndexableData();
-		data.setNpa("1323");
+		data.setNpaCourrier("1323");
 		globalIndex.indexEntity(data);
 
 		// recherche des données (OK)
 		final TiersCriteria criteria = new TiersCriteria();
-		criteria.setNpa("1323");
+		criteria.setNpaCourrier("1323");
 
 		final List<TiersIndexedData> resultats = globalTiersSearcher.search(criteria);
 		assertNotNull(resultats);
@@ -336,7 +336,7 @@ public class TiersIndexableDataTest extends WithoutSpringTest {
 		assertEquals("1323", indexed.getNpa());
 
 		// recherche des données (KO)
-		criteria.setNpa("1322");
+		criteria.setNpaCourrier("1322");
 		assertEmpty(globalTiersSearcher.search(criteria));
 	}
 
@@ -390,11 +390,11 @@ public class TiersIndexableDataTest extends WithoutSpringTest {
 	}
 
 	@Test
-	public void testIndexationNumeroAssureSocial() throws Exception {
+	public void testIndexationNumeroAssureSocial11() throws Exception {
 
 		// création et indexation des données
 		final TiersIndexableData data = newIndexableData();
-		data.setNumeroAssureSocial("123456789");
+		data.setNavs11("123456789");
 		globalIndex.indexEntity(data);
 
 		// recherche des données (OK)
@@ -410,6 +410,30 @@ public class TiersIndexableDataTest extends WithoutSpringTest {
 
 		// recherche des données (KO)
 		criteria.setNumeroAVS("9898989898");
+		assertEmpty(globalTiersSearcher.search(criteria));
+	}
+
+	@Test
+	public void testIndexationNumeroAssureSocial13() throws Exception {
+
+		// création et indexation des données
+		final TiersIndexableData data = newIndexableData();
+		data.setNavs13("7560000000001");
+		globalIndex.indexEntity(data);
+
+		// recherche des données (OK)
+		final TiersCriteria criteria = new TiersCriteria();
+		criteria.setNumeroAVS("7560000000001");
+
+		final List<TiersIndexedData> resultats = globalTiersSearcher.search(criteria);
+		assertNotNull(resultats);
+		assertEquals(1, resultats.size());
+
+		final TiersIndexedData indexed = resultats.get(0);
+		assertEquals((Long) ID, indexed.getNumero());
+
+		// recherche des données (KO)
+		criteria.setNumeroAVS("7560000000002");
 		assertEmpty(globalTiersSearcher.search(criteria));
 	}
 
@@ -513,7 +537,7 @@ public class TiersIndexableDataTest extends WithoutSpringTest {
 
 		// création et indexation des données
 		final TiersIndexableData data = newIndexableData();
-		data.setTiersActif(IndexerFormatHelper.objectToString(false));
+		data.setTiersActif(IndexerFormatHelper.booleanToString(false));
 		globalIndex.indexEntity(data);
 
 		// recherche des données (OK)
@@ -537,7 +561,7 @@ public class TiersIndexableDataTest extends WithoutSpringTest {
 
 		// création et indexation des données
 		final TiersIndexableData data = newIndexableData();
-		data.setAnnule(IndexerFormatHelper.objectToString(true));
+		data.setAnnule(IndexerFormatHelper.booleanToString(true));
 		data.setNomRaison("bouh");
 		globalIndex.indexEntity(data);
 
@@ -582,7 +606,7 @@ public class TiersIndexableDataTest extends WithoutSpringTest {
 
 		// création et indexation des données
 		final TiersIndexableData data = newIndexableData();
-		data.setDebiteurInactif(IndexerFormatHelper.objectToString(true));
+		data.setDebiteurInactif(IndexerFormatHelper.booleanToString(true));
 		data.setNomRaison("bouh");
 		globalIndex.indexEntity(data);
 

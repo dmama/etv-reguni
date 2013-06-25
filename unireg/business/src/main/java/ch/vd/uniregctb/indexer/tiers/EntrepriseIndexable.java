@@ -42,7 +42,7 @@ public class EntrepriseIndexable extends ContribuableIndexable {
 	@Override
 	protected void fillBaseData(TiersIndexableData data) {
 		super.fillBaseData(data);
-		data.setNatureJuridique(IndexerFormatHelper.objectToString(NatureJuridique.PM));
+		data.setNatureJuridique(IndexerFormatHelper.enumToString(NatureJuridique.PM));
 		data.addNomRaison(pm.getRaisonSociale1());
 		data.addNomRaison(pm.getRaisonSociale2());
 		data.addNomRaison(pm.getRaisonSociale3());
@@ -114,13 +114,13 @@ public class EntrepriseIndexable extends ContribuableIndexable {
 			}
 		}
 
-		data.setTiersActif(IndexerFormatHelper.objectToString(isActif));
+		data.setTiersActif(IndexerFormatHelper.booleanToString(isActif));
 		data.setNoOfsForPrincipal(noOfsFfpActif);
 		data.setTypeOfsForPrincipal(typeAutFfpActif);
 		data.setNosOfsAutresFors(noOfsAutresFors.toString());
 		data.setForPrincipal(communeDernierFfp);
-		data.setDateOuvertureFor(IndexerFormatHelper.objectToString(dateOuvertureFor));
-		data.setDateFermtureFor(IndexerFormatHelper.objectToString(dateFermetureFor));
+		data.setDateOuvertureFor(IndexerFormatHelper.dateToString(dateOuvertureFor, IndexerFormatHelper.DateStringMode.STORAGE));
+		data.setDateFermtureFor(IndexerFormatHelper.dateToString(dateFermetureFor, IndexerFormatHelper.DateStringMode.STORAGE));
 	}
 
 	private TypeAutoriteFiscale getTypeAutoriteFiscaleForPM(ForPM ffp) {

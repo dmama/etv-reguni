@@ -98,7 +98,7 @@ public class DebiteurPrestationImposableIndexable extends TiersIndexable {
 
 		final List<String> raisonSociale = tiersService.getRaisonSociale(dpi);
 		data.setNomRaison(concat(raisonSociale, " "));
-		data.setCategorieDebiteurIs(IndexerFormatHelper.objectToString(dpi.getCategorieImpotSource()));
+		data.setCategorieDebiteurIs(IndexerFormatHelper.enumToString(dpi.getCategorieImpotSource()));
 		data.setModeCommunication(dpi.getModeCommunication());
 		data.addNomRaison(dpi.getComplementNom());
 
@@ -122,7 +122,7 @@ public class DebiteurPrestationImposableIndexable extends TiersIndexable {
 
 		final ForDebiteurPrestationImposable fdpi = dpi.getDernierForDebiteur();
 		final boolean isActif = (fdpi != null && fdpi.isValidAt(null));
-		data.setTiersActif(IndexerFormatHelper.objectToString(isActif));
+		data.setTiersActif(IndexerFormatHelper.booleanToString(isActif));
 	}
 
 	@Override
@@ -162,7 +162,7 @@ public class DebiteurPrestationImposableIndexable extends TiersIndexable {
 		data.setTypeOfsForPrincipal(typeAutFfpActif);
 		data.setNosOfsAutresFors(noOfsAutresFors.toString());
 		data.setForPrincipal(communeDernierFfp);
-		data.setDateOuvertureFor(IndexerFormatHelper.objectToString(dateOuvertureFor));
-		data.setDateFermtureFor(IndexerFormatHelper.objectToString(dateFermetureFor));
+		data.setDateOuvertureFor(IndexerFormatHelper.dateToString(dateOuvertureFor, IndexerFormatHelper.DateStringMode.STORAGE));
+		data.setDateFermtureFor(IndexerFormatHelper.dateToString(dateFermetureFor, IndexerFormatHelper.DateStringMode.STORAGE));
 	}
 }

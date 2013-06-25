@@ -2,14 +2,16 @@ package ch.vd.uniregctb.load;
 
 import java.util.concurrent.TimeUnit;
 
+import ch.vd.uniregctb.common.StringRenderer;
+
 public class LoadDetailImpl<T> implements LoadDetail {
 	
 	private final T descriptor;
 	private final long nanoStart;
 	private final String threadName;
-	private final LoadDetailRenderer<T> renderer;
+	private final StringRenderer<T> renderer;
 	
-	public LoadDetailImpl(T descriptor, long nanoStart, String threadName, LoadDetailRenderer<T> renderer) {
+	public LoadDetailImpl(T descriptor, long nanoStart, String threadName, StringRenderer<T> renderer) {
 		this.descriptor = descriptor;
 		this.nanoStart = nanoStart;
 		this.threadName = threadName;

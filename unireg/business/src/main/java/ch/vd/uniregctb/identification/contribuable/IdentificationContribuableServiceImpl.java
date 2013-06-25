@@ -4,21 +4,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.SynchronousQueue;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -30,14 +19,11 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.util.Assert;
 
-import ch.vd.registre.base.avs.AvsHelper;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -46,15 +32,11 @@ import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Canton;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.Localite;
-import ch.vd.uniregctb.adresse.AdresseException;
-import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
-import ch.vd.uniregctb.adresse.AdressesFiscales;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.DefaultThreadFactory;
 import ch.vd.uniregctb.common.DefaultThreadNameGenerator;
-import ch.vd.uniregctb.common.Fuse;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.evenement.identification.contribuable.CriteresAdresse;
@@ -282,24 +264,6 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		return buildIdListFromIndex(indexedComplets);
 	}
 
-	/**
-	 * Permet de vérifier que le ctb trouvé a un numero avs 13 qui est égal au numero 13 de la demande si celui ci est renseigné
-	 *
-	 * @param list     Liste des contribuables trouvées suceptible de correspondre aux critères de recherches
-	 * @param criteres les critères d'identification
-	 */
-	private void filterSelonCoherenceAvecAvs13Demande(List<PersonnePhysique> list, CriteresPersonne criteres) {
-		final String criteresNAVS13 = criteres.getNAVS13();
-		if (criteresNAVS13 != null) {
-			CollectionUtils.filter(list, new Predicate() {
-				@Override
-				public boolean evaluate(Object object) {
-					return matchNavs13((PersonnePhysique) object, criteresNAVS13);
-				}
-			});
-		}
-	}
-
 	private List<PersonnePhysique> filterCoherenceAfterIdentificationAvs13(List<PersonnePhysique> list, CriteresPersonne criteres) {
 		//Contrôle des résultats avec le sexe et la date de naissance
 		filterSexe(list, criteres);
@@ -356,125 +320,6 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		return Collections.emptyList();
 	}
 
-	private void filter(final List<TiersIndexedData> candidates, final CriteresPersonne criteres) {
-		if (candidates != null && !candidates.isEmpty()) {
-			final TransactionTemplate template = new TransactionTemplate(transactionManager);
-			template.setReadOnly(true);
-			template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-			template.execute(new TransactionCallbackWithoutResult() {
-				@Override
-				protected void doInTransactionWithoutResult(TransactionStatus status) {
-					final Set<Long> ids = new HashSet<>(candidates.size());
-					for (TiersIndexedData data : candidates) {
-						ids.add(data.getNumero());
-					}
-
-					// récupération des données en une requête
-					final List<Tiers> tiers = tiersDAO.getBatch(ids, EnumSet.of(TiersDAO.Parts.ADRESSES));
-					final List<PersonnePhysique> ppList = new ArrayList<>(tiers.size());
-					for (Tiers t : tiers) {
-						if (t instanceof PersonnePhysique) {
-							ppList.add((PersonnePhysique) t);
-						}
-					}
-
-					// filtrage selon les autres critères
-					filterNavs11(ppList, criteres);
-					filterSexe(ppList, criteres);
-					filterDateNaissance(ppList, criteres);
-					filterAdresse(ppList, criteres);
-					filterSelonCoherenceAvecAvs13Demande(ppList, criteres);
-
-					// rapporte le filtrage dans la liste des données indexées
-					if (ppList.isEmpty()) {
-						candidates.clear();
-					}
-					else if (ppList.size() < candidates.size()) {
-						final Set<Long> toKeep = new HashSet<>(ppList.size());
-						for (PersonnePhysique pp : ppList) {
-							toKeep.add(pp.getNumero());
-						}
-
-						final Iterator<TiersIndexedData> iterCandidates = candidates.iterator();
-						while (iterCandidates.hasNext()) {
-							final TiersIndexedData data = iterCandidates.next();
-							if (!toKeep.contains(data.getNumero())) {
-								iterCandidates.remove();
-							}
-						}
-					}
-				}
-			});
-		}
-	}
-
-	/**
-	 * Classe du thread qui gère le flux d'arrivée des résultats de recherche par nom (afin de n'avoir jamais en mémoire plus de x résultats à un moment donné)
-	 */
-	private class AsynchronousFlowSearchListenerTask implements Callable<List<TiersIndexedData>> {
-
-		private final Fuse stop;
-		private final Fuse done;
-		private final BlockingQueue<TiersIndexedData> queue;
-		private final CriteresPersonne criteres;
-		private final int batchSize;
-		private final int maxListSize;
-
-		private AsynchronousFlowSearchListenerTask(Fuse stop, Fuse done, BlockingQueue<TiersIndexedData> queue, CriteresPersonne criteres, int batchSize, int maxListSize) {
-			if (maxListSize < 1) {
-				throw new IllegalArgumentException("maxListSize should be 1 or more");
-			}
-
-			this.stop = stop;
-			this.done = done;
-			this.queue = queue;
-			this.criteres = criteres;
-			this.batchSize = batchSize;
-			this.maxListSize = maxListSize;
-		}
-
-		/**
-		 * Ecoute sur la queue de versement des résultats
-		 * @return la liste des cas identifiés (tant que sa taille est plus petite que le seuil)
-		 * @throws TooManyIdentificationPossibilitiesException si la liste des cas identifiés a une taille plus grande que celle du seuil
-		 */
-		@Override
-		public List<TiersIndexedData> call() throws TooManyIdentificationPossibilitiesException {
-
-			final List<TiersIndexedData> list = new LinkedList<>();
-			final List<TiersIndexedData> subset = new ArrayList<>(batchSize);
-			while (stop.isNotBlown() && list.size() <= maxListSize) {
-				try {
-					final TiersIndexedData data = queue.poll(100, TimeUnit.MILLISECONDS);
-					if (data != null && stop.isNotBlown()) {
-						subset.add(data);
-						if (subset.size() == batchSize) {
-							filter(subset, criteres);
-							list.addAll(subset);
-							subset.clear();
-						}
-					}
-					else if (done.isBlown()) {
-						if (subset.size() > 0) {
-							filter(subset, criteres);
-							list.addAll(subset);
-						}
-						break;
-					}
-				}
-				catch (InterruptedException e) {
-					LOGGER.error("Thread interrompu", e);
-					stop.blow();
-				}
-			}
-			if (list.size() > maxListSize) {
-				stop.blow();    // je n'en veux plus... c'est trop !
-				throw new TooManyIdentificationPossibilitiesException(maxListSize);
-			}
-			return list;
-		}
-	}
-
 	private List<TiersIndexedData> findAvecCriteresComplets(CriteresPersonne criteres, int maxNumberForList) throws TooManyIdentificationPossibilitiesException {
 
 		List<TiersIndexedData> indexedData = null;
@@ -482,40 +327,33 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		// [SIFISC-147] effectue la recherche sur les nom et prénoms en plusieurs phase
 		for (PhaseRechercheSurNomPrenom phase : PhaseRechercheSurNomPrenom.values()) {
 			final TiersCriteria criteria = asTiersCriteriaForNomPrenom(criteres, phase);
-			if (!criteria.isEmpty()) {
-				try {
-					final Fuse stop = new Fuse();
-					final Fuse done = new Fuse();
-					final BlockingQueue<TiersIndexedData> queue = new SynchronousQueue<>();
-
-					final AsynchronousFlowSearchListenerTask task = new AsynchronousFlowSearchListenerTask(stop, done, queue, criteres, 20, maxNumberForList);
-					final Future<List<TiersIndexedData>> future = asynchronousFlowSearchExecutor.submit(task);
-					try {
-						searcher.flowSearch(criteria, queue, stop);
-					}
-					finally {
-						done.blow();
-					}
-
-					try {
-						// export de la liste trouvée
-						indexedData = future.get();
-					}
-					catch (ExecutionException e) {
-						throw e.getCause();
-					}
-				}
-				catch (TooManyIdentificationPossibilitiesException | RuntimeException | Error e) {
-					throw e;
-				}
-				catch (Throwable e) {
-					// wrapping... normally only an InterruptedException should arise here...
-					throw new RuntimeException(e);
-				}
+			if (criteres.getNAVS11() != null) {
+				// on ne compare que les 8 premiers caractères
+				criteria.setNavs11OrNull(StringUtils.left(criteres.getNAVS11(), 8));
+			}
+			if (criteres.getSexe() != null) {
+				criteria.setSexeOrNull(criteres.getSexe());
+			}
+			if (criteres.getDateNaissance() != null) {
+				criteria.setDateNaissanceOrNull(criteres.getDateNaissance());
+			}
+			if (criteres.getAdresse() != null) {
+				final CriteresAdresse adresse = criteres.getAdresse();
+				final String npa = adresse.getNpaSuisse() == null ? StringUtils.trimToNull(adresse.getNpaEtranger()) : Integer.toString(adresse.getNpaSuisse());
+				criteria.setNpaTousOrNull(npa);
+			}
+			if (criteres.getNAVS13() != null) {
+				criteria.setNavs13OrNull(criteres.getNAVS13());
 			}
 
-			if (indexedData != null && !indexedData.isEmpty()) {
-				break;
+			if (!criteria.isEmpty()) {
+				indexedData = searcher.searchTop(criteria, maxNumberForList + 1);
+				if (indexedData != null && !indexedData.isEmpty()) {
+					if (indexedData.size() > maxNumberForList) {
+						throw new TooManyIdentificationPossibilitiesException(maxNumberForList);
+					}
+					break;
+				}
 			}
 		}
 
@@ -630,45 +468,6 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 			if (criteres.getNAVS13() != null) {
 				personne.setNumeroAssureSocial(criteres.getNAVS13());
 			}
-		}
-
-	}
-
-	/**
-	 * Permet de mettre a jour si besoin les adresses du non non habitant avec le contenu de l'adresse inclu dans le message
-	 *
-	 * @param message
-	 * @param personne
-	 * @throws ServiceInfrastructureException
-	 */
-	private void mettreAJourAdresseNonHabitant(IdentificationContribuable message, PersonnePhysique personne)
-			throws ServiceInfrastructureException {
-		CriteresAdresse criteresAdresse = message.getDemande().getPersonne().getAdresse();
-		if (criteresAdresse != null) {
-			// Calcul de l'ONRP
-			Integer onrp = criteresAdresse.getNoOrdrePosteSuisse();
-			if (onrp == null) {
-				Localite localite = infraService.getLocaliteByNPA(criteresAdresse.getNpaSuisse());
-				if (localite != null) {
-					onrp = localite.getNoOrdre();
-				}
-			}
-			//On a trouvé l'onrp, Oh Joie !!!! on peut tenter de mettre à jour l'adresse
-			if (onrp != null) {
-				// on verifie les adresses du non Habitant
-				AdresseSuisse adresseCourrier = (AdresseSuisse) personne.getAdresseActive(TypeAdresseTiers.COURRIER, null);
-				if (adresseCourrier == null) {
-					adresseCourrier = new AdresseSuisse();
-					setUpAdresse(message, criteresAdresse, onrp, adresseCourrier);
-					personne.addAdresseTiers(adresseCourrier);
-				}
-				else {
-					//l'adresse est juste mis a jour
-					setUpAdresse(message, criteresAdresse, onrp, adresseCourrier);
-				}
-
-			}
-
 		}
 
 	}
@@ -823,7 +622,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	@Override
 	public int count(IdentificationContribuableCriteria identificationContribuableCriteria,
 	                 IdentificationContribuableEtatFilter filter, TypeDemande... typeDemande) {
-		return identCtbDAO.count(identificationContribuableCriteria,filter, typeDemande);
+		return identCtbDAO.count(identificationContribuableCriteria, filter, typeDemande);
 	}
 
 	/**
@@ -1087,61 +886,6 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	}
 
 	/**
-	 * Supprime toutes les personnes dont les adresses ne correspondent pas avec l'adresse spécifiée
-	 *
-	 * @param list     la liste des personnes à fitrer
-	 * @param criteres les critères de filtre
-	 */
-	private void filterAdresse(List<PersonnePhysique> list, CriteresPersonne criteres) {
-		final CriteresAdresse adresseCritere = criteres.getAdresse();
-		if (adresseCritere != null) {
-			CollectionUtils.filter(list, new Predicate() {
-				@Override
-				public boolean evaluate(Object object) {
-					return matchAdresses((PersonnePhysique) object, adresseCritere);
-				}
-			});
-		}
-	}
-
-	/**
-	 * Supprime toutes les personnes dont le navs11 ne correspond pas avec celle spécifié dans le message
-	 *
-	 * @param list     la liste des personnes à fitrer
-	 * @param criteres les critères de filtre
-	 */
-	private void filterNavs11(List<PersonnePhysique> list, CriteresPersonne criteres) {
-		final String criteresNAVS11 = criteres.getNAVS11();
-		if (criteresNAVS11 != null) {
-			CollectionUtils.filter(list, new Predicate() {
-				@Override
-				public boolean evaluate(Object object) {
-					return matchNavs11((PersonnePhysique) object, criteresNAVS11);
-				}
-
-			});
-		}
-	}
-
-	private boolean matchNavs11(PersonnePhysique object, String criteresNAVS11) {
-		final String navs11 = tiersService.getAncienNumeroAssureSocial(object);
-		if (navs11 != null) {
-			// SIFISC-790
-			// On ne considère que les 8 premiers chiffres du navs11 sans les points
-			final String debutNavs11 = navs11.substring(0, 8);
-			final String debutCritere = criteresNAVS11.substring(0, 8);
-			return debutCritere.equals(debutNavs11);
-		}
-		return true;  //SIFISC-6394 Si le contribuable ne possède pas un navs11 on considère le critère ok
-	}
-
-	private boolean matchNavs13(PersonnePhysique object, String criteresNAVS13) {
-		final String navs13 = tiersService.getNumeroAssureSocial(object);
-		return navs13 == null || AvsHelper.formatNouveauNumAVS(criteresNAVS13).equals(AvsHelper.formatNouveauNumAVS(navs13));
-	}
-
-
-	/**
 	 * Supprime toutes les personnes dont la date de naissances ne correspond pas avec celle spécifié dans le message
 	 *
 	 * @param list     la liste des personnes à fitrer
@@ -1177,58 +921,6 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		else {
 			return true;
 		}
-	}
-
-	/**
-	 * Vérifie les adresses fiscales d'une personne physique en fonction de critères, et détermine si elles correspondent.
-	 *
-	 * @param pp             la personne physique dont on veut vérifier les adresses fiscales.
-	 * @param adresseCritere les critères d'adresse
-	 * @return <b>vrai</b> si une des adresses fiscales (courrier, représentation, domicile, poursuite) correspond aux critères d'adresse spécifié.
-	 */
-	protected boolean matchAdresses(PersonnePhysique pp, CriteresAdresse adresseCritere) {
-
-		final AdressesFiscales adresses;
-		try {
-			adresses = adresseService.getAdressesFiscales(pp, null, false);
-		}
-		catch (AdresseException e) {
-			LOGGER.warn("Impossible de calculer les adresses du contribuable n°" + pp.getNumero() + ": on l'ignore.", e);
-			return false;
-		}
-
-		return matchAdresseGenerique(adresses.courrier, adresseCritere) || matchAdresseGenerique(adresses.domicile, adresseCritere)
-				|| matchAdresseGenerique(adresses.representation, adresseCritere)
-				|| matchAdresseGenerique(adresses.poursuite, adresseCritere);
-	}
-
-	/**
-	 * @param adresse        l'adresse générique à vérifier
-	 * @param adresseCritere les critères de vérification de l'adresse
-	 * @return <b>vrai</b> si l'adresse générique corresponds aux critères d'adresse spécifié.
-	 */
-	private boolean matchAdresseGenerique(AdresseGenerique adresse, CriteresAdresse adresseCritere) {
-
-		//On ne matche plus que sur le NPA
-		// test des différents critères en commençant par les plus déterminants
-		return adresse == null || matchNpa(adresse, adresseCritere);
-	}
-
-	private boolean matchNpa(AdresseGenerique adresse, CriteresAdresse adresseCritere) {
-
-		final String npaEtranger = adresseCritere.getNpaEtranger();
-		final Integer npaSuisse = adresseCritere.getNpaSuisse();
-		if (StringUtils.isEmpty(npaEtranger) && npaSuisse == null) {
-			return true; // pas de critère valable
-		}
-
-		final String npa = adresse.getNumeroPostal();
-		if (StringUtils.isEmpty(npa)) {
-			return true; // critère non respecté
-		}
-
-		final String critereNpa = (npaSuisse == null ? npaEtranger : String.valueOf(npaSuisse));
-		return npa.equalsIgnoreCase(critereNpa);
 	}
 
 	@Override

@@ -246,7 +246,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 
 	private void rechercheParTypeTiers(String nom, TypeTiers type, int expected) throws Exception {
 
-		TiersCriteria criteria = new TiersCriteria() {
+		final TiersCriteria criteria = new TiersCriteria() {
 			@Override
 			public boolean isEmpty() {
 				// on veut pouvoir exécuter les recherches sans limitation
@@ -321,7 +321,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		assertEquals(8, c);
 
 		TiersCriteria criteria = new TiersCriteria();
-		criteria.setNpa(String.valueOf(MockLocalite.Renens.getNPA()));
+		criteria.setNpaCourrier(String.valueOf(MockLocalite.Renens.getNPA()));
 		List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
 
 		assertEquals(3, list.size());
@@ -408,10 +408,10 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		assertEquals(8, c);
 
 		// Recherche sur la date de naissance
-		TiersCriteria criteria = new TiersCriteria();
+		final TiersCriteria criteria = new TiersCriteria();
 		criteria.setDateNaissance(RegDateHelper.indexStringToDate("19421207"));
-		List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
-		//dumpResults(list);
+
+		final List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
 		assertEquals(1, list.size());
 		TiersIndexedData proxy1 = list.get(0);
 		String date1 = proxy1.getDateNaissance();
@@ -824,8 +824,6 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		setWantIndexation(true);
-
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
@@ -984,4 +982,189 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 
 		assertEquals(2, found.size());      // une PP et un DPI
 	}
+
+	@Test
+	public void testRechercheSexe() throws Exception {
+
+		class Ids {
+			long lui;
+			long elle;
+		}
+
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique elle = addNonHabitant("Albertine", "Cochin", null, Sexe.FEMININ);
+				final PersonnePhysique lui = addNonHabitant("Robert", "Cochin", null, Sexe.MASCULIN);
+				final Ids ids = new Ids();
+				ids.elle = elle.getNumero();
+				ids.lui = lui.getNumero();
+				return ids;
+			}
+		});
+
+		globalTiersIndexer.sync();
+
+		// recherche elle
+		{
+			final TiersCriteria criteria = new TiersCriteria();
+			criteria.setNomRaison("Cochin");
+			criteria.setSexe(Sexe.FEMININ);
+			final List<TiersIndexedData> res = globalTiersSearcher.search(criteria);
+			assertEquals(1, res.size());
+			assertEquals((Long) ids.elle, res.get(0).getNumero());
+		}
+
+		// recherche lui
+		{
+			final TiersCriteria criteria = new TiersCriteria();
+			criteria.setNomRaison("Cochin");
+			criteria.setSexe(Sexe.MASCULIN);
+			final List<TiersIndexedData> res = globalTiersSearcher.search(criteria);
+			assertEquals(1, res.size());
+			assertEquals((Long) ids.lui, res.get(0).getNumero());
+		}
+
+		// recherche les deux
+		{
+			final TiersCriteria criteria = new TiersCriteria();
+			criteria.setNomRaison("Cochin");
+			final List<TiersIndexedData> res = globalTiersSearcher.search(criteria);
+			assertEquals(2, res.size());
+			Collections.sort(res, new Comparator<TiersIndexedData>() {
+				@Override
+				public int compare(TiersIndexedData o1, TiersIndexedData o2) {
+					return Long.compare(o1.getNumero(), o2.getNumero());
+				}
+			});
+			assertEquals((Long) ids.elle, res.get(0).getNumero());
+			assertEquals((Long) ids.lui, res.get(1).getNumero());
+		}
+	}
+
+	@Test
+	public void testRechercheDateNaissancePartielle() throws Exception {
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				// personne...
+			}
+		});
+
+		class Ids {
+			long pp1;
+			long pp2;
+			long pp3;
+			long pp4;
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp1 = addNonHabitant("Albert", "Tartempion", RegDate.get(1965), Sexe.MASCULIN);
+				final PersonnePhysique pp2 = addNonHabitant("Albert", "Tartempion", RegDate.get(1965,2), Sexe.MASCULIN);
+				final PersonnePhysique pp3 = addNonHabitant("Albert", "Tartempion", RegDate.get(1965,2,21), Sexe.MASCULIN);
+				final PersonnePhysique pp4 = addNonHabitant("Albert", "Tartempion", RegDate.get(1965,3), Sexe.MASCULIN);
+
+				final Ids ids = new Ids();
+				ids.pp1 = pp1.getNumero();
+				ids.pp2 = pp2.getNumero();
+				ids.pp3 = pp3.getNumero();
+				ids.pp4 = pp4.getNumero();
+				return ids;
+			}
+		});
+
+		final Comparator<TiersIndexedData> comparator = new Comparator<TiersIndexedData>() {
+			@Override
+			public int compare(TiersIndexedData o1, TiersIndexedData o2) {
+				return Long.compare(o1.getNumero(), o2.getNumero());
+			}
+		};
+
+		// on attend la fin de l'indexation des bonshommes
+		globalTiersIndexer.sync();
+
+		{
+			final TiersCriteria criteria = new TiersCriteria();
+			criteria.setNomRaison("Tartempion");
+			criteria.setDateNaissance(RegDate.get(1965, 4, 12));
+			final List<TiersIndexedData> res = globalTiersSearcher.search(criteria);
+			assertEquals(1, res.size());
+			assertEquals((Long) ids.pp1, res.get(0).getNumero());
+		}
+		{
+			final TiersCriteria criteria = new TiersCriteria();
+			criteria.setNomRaison("Tartempion");
+			criteria.setDateNaissance(RegDate.get(1965, 2, 12));
+			final List<TiersIndexedData> res = globalTiersSearcher.search(criteria);
+			assertEquals(2, res.size());
+			Collections.sort(res, comparator);
+			assertEquals((Long) ids.pp1, res.get(0).getNumero());
+			assertEquals((Long) ids.pp2, res.get(1).getNumero());
+		}
+		{
+			final TiersCriteria criteria = new TiersCriteria();
+			criteria.setNomRaison("Tartempion");
+			criteria.setDateNaissance(RegDate.get(1965, 2, 21));
+			final List<TiersIndexedData> res = globalTiersSearcher.search(criteria);
+			assertEquals(3, res.size());
+			Collections.sort(res, comparator);
+			assertEquals((Long) ids.pp1, res.get(0).getNumero());
+			assertEquals((Long) ids.pp2, res.get(1).getNumero());
+			assertEquals((Long) ids.pp3, res.get(2).getNumero());
+		}
+		{
+			final TiersCriteria criteria = new TiersCriteria();
+			criteria.setNomRaison("Tartempion");
+			criteria.setDateNaissance(RegDate.get(1965, 4));
+			final List<TiersIndexedData> res = globalTiersSearcher.search(criteria);
+			assertEquals(1, res.size());
+			assertEquals((Long) ids.pp1, res.get(0).getNumero());
+		}
+		{
+			final TiersCriteria criteria = new TiersCriteria();
+			criteria.setNomRaison("Tartempion");
+			criteria.setDateNaissance(RegDate.get(1965, 3));
+			final List<TiersIndexedData> res = globalTiersSearcher.search(criteria);
+			assertEquals(2, res.size());
+			Collections.sort(res, comparator);
+			assertEquals((Long) ids.pp1, res.get(0).getNumero());
+			assertEquals((Long) ids.pp4, res.get(1).getNumero());
+		}
+		{
+			final TiersCriteria criteria = new TiersCriteria();
+			criteria.setNomRaison("Tartempion");
+			criteria.setDateNaissance(RegDate.get(1965, 2));
+			final List<TiersIndexedData> res = globalTiersSearcher.search(criteria);
+			assertEquals(3, res.size());
+			Collections.sort(res, comparator);
+			assertEquals((Long) ids.pp1, res.get(0).getNumero());
+			assertEquals((Long) ids.pp2, res.get(1).getNumero());
+			assertEquals((Long) ids.pp3, res.get(2).getNumero());
+		}
+		{
+			final TiersCriteria criteria = new TiersCriteria();
+			criteria.setNomRaison("Tartempion");
+			criteria.setDateNaissance(RegDate.get(1965));
+			final List<TiersIndexedData> res = globalTiersSearcher.search(criteria);
+			assertEquals(4, res.size());
+			Collections.sort(res, comparator);
+			assertEquals((Long) ids.pp1, res.get(0).getNumero());
+			assertEquals((Long) ids.pp2, res.get(1).getNumero());
+			assertEquals((Long) ids.pp3, res.get(2).getNumero());
+			assertEquals((Long) ids.pp4, res.get(3).getNumero());
+		}
+		{
+			final TiersCriteria criteria = new TiersCriteria();
+			criteria.setNomRaison("Tartempion");
+			criteria.setDateNaissance(RegDate.get(1966));
+			final List<TiersIndexedData> res = globalTiersSearcher.search(criteria);
+			assertEquals(0, res.size());
+		}
+	}
+
 }

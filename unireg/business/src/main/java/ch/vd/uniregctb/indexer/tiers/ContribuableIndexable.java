@@ -26,12 +26,12 @@ public abstract class ContribuableIndexable extends TiersIndexable {
 
 		final ForFiscalPrincipal ffp = tiers.getDernierForFiscalPrincipal();
 		if (ffp != null) {
-			final boolean isActif = (ffp.isValidAt(null));
-			data.setModeImposition(IndexerFormatHelper.objectToString(ffp.getModeImposition()));
-			data.setTiersActif(IndexerFormatHelper.objectToString(isActif));
+			final boolean isActif = ffp.isValidAt(null);
+			data.setModeImposition(IndexerFormatHelper.enumToString(ffp.getModeImposition()));
+			data.setTiersActif(IndexerFormatHelper.booleanToString(isActif));
 		}
 		else {
-			data.setTiersActif(IndexerFormatHelper.objectToString(false));
+			data.setTiersActif(IndexerFormatHelper.booleanToString(false));
 		}
 	}
 
@@ -72,8 +72,8 @@ public abstract class ContribuableIndexable extends TiersIndexable {
 		data.setTypeOfsForPrincipal(typeAutFfpActif);
 		data.setNosOfsAutresFors(noOfsAutresFors.toString());
 		data.setForPrincipal(communeDernierFfp);
-		data.setDateOuvertureFor(IndexerFormatHelper.objectToString(dateOuvertureFor));
-		data.setDateFermtureFor(IndexerFormatHelper.objectToString(dateFermetureFor));
+		data.setDateOuvertureFor(IndexerFormatHelper.dateToString(dateOuvertureFor, IndexerFormatHelper.DateStringMode.STORAGE));
+		data.setDateFermtureFor(IndexerFormatHelper.dateToString(dateFermetureFor, IndexerFormatHelper.DateStringMode.STORAGE));
 	}
 }
 

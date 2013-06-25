@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.indexer.tiers;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.Assert;
 
 import ch.vd.unireg.interfaces.civil.data.Individu;
@@ -40,18 +41,19 @@ public class HabitantIndexable extends PersonnePhysiqueIndexable {
 		data.addAutresNom(individu.getNom());
 		data.addAutresNom(individu.getNomNaissance());
 		data.addDateNaissance(individu.getDateNaissance());
+		data.addSexe(individu.getSexe());
 		data.setNomRaison(individu.getNom());
-		data.addNumeroAssureSocial(individu.getNouveauNoAVS());
-		data.addNumeroAssureSocial(individu.getNoAVS11());
+		data.addNavs13(StringUtils.trimToNull(individu.getNouveauNoAVS()));
+		data.addNavs11(StringUtils.trimToNull(individu.getNoAVS11()));
 		data.setNoSymic(individu.getNumeroRCE());
 		data.addNom1(individu.getPrenom());
 		data.addNom1(individu.getNom());
 
 		if (pp.getDateDeces() != null) { //surcharge de la date de décès
-			data.setDateDeces(IndexerFormatHelper.objectToString(pp.getDateDeces()));
+			data.setDateDeces(IndexerFormatHelper.dateToString(pp.getDateDeces(), IndexerFormatHelper.DateStringMode.STORAGE));
 		}
 		else {
-			data.setDateDeces(IndexerFormatHelper.objectToString(individu.getDateDeces()));
+			data.setDateDeces(IndexerFormatHelper.dateToString(individu.getDateDeces(), IndexerFormatHelper.DateStringMode.STORAGE));
 		}
 	}
 }

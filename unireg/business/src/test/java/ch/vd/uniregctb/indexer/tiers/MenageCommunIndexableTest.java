@@ -334,7 +334,7 @@ public class MenageCommunIndexableTest extends BusinessTest {
 	}
 
 	private void assertIndexData(String nom1, String nom2, RegDate dateNaissance, long ctbId) {
-		assertIndexData(nom1, nom2, IndexerFormatHelper.objectToString(dateNaissance), ctbId);
+		assertIndexData(nom1, nom2, IndexerFormatHelper.dateToString(dateNaissance, IndexerFormatHelper.DateStringMode.STORAGE), ctbId);
 	}
 
 	private void assertIndexData(String nom1, String nom2, String dateNaissance, long ctbId) {

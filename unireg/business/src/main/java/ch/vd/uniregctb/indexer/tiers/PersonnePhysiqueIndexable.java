@@ -17,9 +17,9 @@ public abstract class PersonnePhysiqueIndexable extends ContribuableIndexable {
 	@Override
 	protected void fillBaseData(TiersIndexableData data) {
 		super.fillBaseData(data);
-		data.setNatureJuridique(IndexerFormatHelper.objectToString(NatureJuridique.PP));
+		data.setNatureJuridique(IndexerFormatHelper.enumToString(NatureJuridique.PP));
 
 		final PersonnePhysique pp = (PersonnePhysique) tiers;
-		data.setAncienNumeroSourcier(IndexerFormatHelper.objectToString(pp.getAncienNumeroSourcier()));
+		data.setAncienNumeroSourcier(IndexerFormatHelper.numberToString(pp.getAncienNumeroSourcier()));
 	}
 }

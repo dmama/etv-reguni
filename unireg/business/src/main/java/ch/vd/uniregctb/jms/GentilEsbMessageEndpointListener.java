@@ -11,10 +11,10 @@ import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.jms.EsbMessageEndpointListener;
+import ch.vd.uniregctb.common.StringRenderer;
 import ch.vd.uniregctb.load.DetailedLoadMeter;
 import ch.vd.uniregctb.load.DetailedLoadMonitorable;
 import ch.vd.uniregctb.load.LoadDetail;
-import ch.vd.uniregctb.load.LoadDetailRenderer;
 
 /**
  * Classe d'entrée des messages JMS de l'ESB dans Unireg, et qui loggue les appels et les
@@ -25,7 +25,7 @@ public class GentilEsbMessageEndpointListener extends EsbMessageEndpointListener
 	private static final Logger APP_LOGGER = Logger.getLogger(GentilEsbMessageEndpointListener.class);
 	private static final Logger JMS_LOGGER = Logger.getLogger("unireg.jms");
 
-	private static final LoadDetailRenderer<EsbMessage> RENDERER = new LoadDetailRenderer<EsbMessage>() {
+	private static final StringRenderer<EsbMessage> RENDERER = new StringRenderer<EsbMessage>() {
 		@Override
 		public String toString(EsbMessage msg) {
 			final String typePart = getRootElementTypePart(msg);

@@ -81,13 +81,11 @@ public class IdentificationContribuableHelper {
 		final String criteresPrenom = getPremierMot(criteresPrenomSansE);
 		final String criteresNom = getMotSansE(criteres.getNom());
 		criteria.setNomRaison(concatCriteres(criteresPrenom, criteresNom));
-
 	}
 
 
 	public void setUpCriteria(TiersCriteria criteria) {
 		criteria.setTypeRechercheDuNom(TiersCriteria.TypeRecherche.EST_EXACTEMENT);
-
 
 		// critères statiques
 		criteria.setInclureI107(false);

@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.indexer.tiers;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.util.Assert;
 
@@ -8,9 +9,8 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.Pays;
-import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
+import ch.vd.uniregctb.adresse.AdressesFiscales;
 import ch.vd.uniregctb.common.RueEtNumero;
 import ch.vd.uniregctb.indexer.IndexableData;
 import ch.vd.uniregctb.indexer.IndexerException;
@@ -60,14 +60,14 @@ public abstract class TiersIndexable {
 
 	protected void fillBaseData(TiersIndexableData data) {
 
-		data.setNumeros(IndexerFormatHelper.objectToString(tiers.getNumero()));
-		data.setDebiteurInactif(IndexerFormatHelper.objectToString(tiers.isDebiteurInactif()));
-		data.setAnnule(IndexerFormatHelper.objectToString(tiers.isDesactive(null)));
+		data.setNumeros(IndexerFormatHelper.numberToString(tiers.getNumero()));
+		data.setDebiteurInactif(IndexerFormatHelper.booleanToString(tiers.isDebiteurInactif()));
+		data.setAnnule(IndexerFormatHelper.booleanToString(tiers.isDesactive(null)));
 		data.setRoleLigne1(tiers.getRoleLigne1());
 		data.setRoleLigne2(tiersService.getRoleAssujettissement(tiers, RegDate.get()));
 
 		final Long millisecondes = DateHelper.getCurrentDate().getTime();
-		data.setIndexationDate(IndexerFormatHelper.objectToString(millisecondes));
+		data.setIndexationDate(IndexerFormatHelper.numberToString(millisecondes));
 	}
 
 	protected abstract void fillForsData(TiersIndexableData data);
@@ -75,7 +75,7 @@ public abstract class TiersIndexable {
 	private void fillAdresseData(TiersIndexableData data) {
 
 		String rue = "";
-		String npa = "";
+		String npaCourrier = null;
 		String localite = "";
 		String localitePays = "";
 		String pays = "";
@@ -83,62 +83,63 @@ public abstract class TiersIndexable {
 		Integer noOfsCommuneVD = null;
 
 		try {
-			// Défaut => adresse courrier
-			AdresseGenerique courrier = adresseService.getAdresseFiscale(tiers, TypeAdresseFiscale.COURRIER, null, false);
-			if (courrier != null) {
-                rue = new RueEtNumero(courrier.getRue(), courrier.getNumero()).getRueEtNumero();
-                npa = courrier.getNumeroPostal();
-				localite = courrier.getLocalite(); // [UNIREG-2142] on prend la localité abrégée
+			final AdressesFiscales adrs = adresseService.getAdressesFiscales(tiers, null, false);
+			if (adrs != null && !adrs.isEmpty()) {
+				if (adrs.courrier != null) {
+					rue = new RueEtNumero(adrs.courrier.getRue(), adrs.courrier.getNumero()).getRueEtNumero();
+					npaCourrier = adrs.courrier.getNumeroPostal();
+					data.addNpaTous(npaCourrier);
+					localite = adrs.courrier.getLocalite(); // [UNIREG-2142] on prend la localité abrégée
 
-				final Integer noOfsPays = courrier.getNoOfsPays();
-				final Pays p = (noOfsPays == null ? null : serviceInfra.getPays(noOfsPays, null));
-				if (p == null) {
-					pays = "";
-					localitePays = localite;
-				}
-				else {
-					pays = p.getNomCourt();
-					if (p.isSuisse()) {
+					final Integer noOfsPays = adrs.courrier.getNoOfsPays();
+					final Pays p = (noOfsPays == null ? null : serviceInfra.getPays(noOfsPays, null));
+					if (p == null) {
+						pays = "";
 						localitePays = localite;
 					}
 					else {
-						localitePays = pays;
+						pays = p.getNomCourt();
+						if (p.isSuisse()) {
+							localitePays = localite;
+						}
+						else {
+							localitePays = pays;
+						}
 					}
 				}
+				if (adrs.domicile != null && !adrs.domicile.isDefault()) {
+					data.addNpaTous(adrs.domicile.getNumeroPostal());
+					estDansLeCanton = serviceInfra.estDansLeCanton(adrs.domicile);
+					if (estDansLeCanton) {
+						final Commune c = serviceInfra.getCommuneByAdresse(adrs.domicile, null);
+						if (c != null) {
+							noOfsCommuneVD = c.getNoOFS();
+						}
+					}
+				}
+				if (adrs.poursuite != null && !adrs.poursuite.isDefault()) {
+					data.addNpaTous(adrs.poursuite.getNumeroPostal());
+				}
+				if (adrs.representation != null && !adrs.representation.isDefault()) {
+					data.addNpaTous(adrs.representation.getNumeroPostal());
+				}
+			}
+
+			if (StringUtils.isBlank(data.getNpaTous())) {
+				data.setNpaTous(null);
 			}
 		}
 		catch (Exception e) {
 			throw new IndexerException(tiers, e);
 		}
 
-		try {
-			final AdresseGenerique domicile = adresseService.getAdresseFiscale(tiers, TypeAdresseFiscale.DOMICILE, null, false);
-			// msi/tdq 3.6.09 : on ne doit pas tenir compte des adresses de domicile par défaut car elles n'ont pas de valeur pour
-			// déterminer si un contribuable est dans le canton
-			if (domicile != null && !domicile.isDefault()) {
-				estDansLeCanton = serviceInfra.estDansLeCanton(domicile);
-				if (estDansLeCanton) {
-					final Commune c = serviceInfra.getCommuneByAdresse(domicile, null);
-					if (c != null) {
-						noOfsCommuneVD = c.getNoOFS();
-					}
-				}
-			}
-		}
-		catch (Exception e) {
-			LOGGER.warn("L'adresse de domicile du tiers n°" + tiers.getNumero() + " ne peut être indexée à cause de l'erreur suivante: "
-					+ e.getMessage());
-			// il y a beaucoup de tiers qui pètent des exceptions sur l'adresse domicile -> on stocke null dans l'indexeur pour l'instant
-			//throw new IndexerException(e);
-		}
-
 		data.setRue(rue);
-		data.setNpa(npa);
+		data.setNpaCourrier(npaCourrier);
 		data.setLocalite(localite);
 		data.addLocaliteEtPays(localitePays);
 		data.setPays(pays);
-		data.setDomicileVd(IndexerFormatHelper.objectToString(estDansLeCanton));
-		data.setNoOfsDomicileVd(IndexerFormatHelper.objectToString(noOfsCommuneVD));
+		data.setDomicileVd(IndexerFormatHelper.booleanToString(estDansLeCanton));
+		data.setNoOfsDomicileVd(IndexerFormatHelper.numberToString(noOfsCommuneVD));
 	}
 
 	protected String getForCommuneAsString(ForFiscal forF) throws IndexerException {

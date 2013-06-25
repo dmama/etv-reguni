@@ -2,6 +2,8 @@ package ch.vd.uniregctb.indexer.tiers;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.document.Document;
@@ -16,6 +18,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.indexer.IndexableData;
 import ch.vd.uniregctb.indexer.IndexerFormatHelper;
 import ch.vd.uniregctb.type.ModeCommunication;
+import ch.vd.uniregctb.type.Sexe;
 
 @SuppressWarnings({"UnusedDeclaration"})
 public class TiersIndexableData extends IndexableData {
@@ -28,10 +31,13 @@ public class TiersIndexableData extends IndexableData {
 	public static final String TYPE_OFS_FOR_PRINCIPAL = "S_TYPE_OFS_FOR_PRINCIPAL";
 	public static final String NOS_OFS_AUTRES_FORS = "S_NOS_OFS_AUTRES_FORS";
 	public static final String LOCALITE_PAYS = "S_LOCALITE_PAYS";
-	public static final String NPA = "S_NPA";
+	public static final String NPA_COURRIER = "S_NPA_COURRIER";
+	public static final String NPA_TOUS = "S_NPA_TOUS";
 	public static final String NATURE_JURIDIQUE = "S_NATURE_JURIDIQUE"; // (PP ou PM)
-	public static final String DATE_NAISSANCE = "S_DATE_NAISSANCE";
-	public static final String NUMERO_ASSURE_SOCIAL = "S_NUMERO_ASSURE_SOCIAL";
+	public static final String S_DATE_NAISSANCE = "S_DATE_NAISSANCE";
+	public static final String SEXE = "S_SEXE";
+	public static final String NAVS11 = "S_NAVS11";
+	public static final String NAVS13 = "S_NAVS13";
 	public static final String ANCIEN_NUMERO_SOURCIER = "S_ANCIEN_NUMERO_SOURCIER";
 	public static final String ANNULE = "S_ANNULE";
 	public static final String DEBITEUR_INACTIF = "S_DEBITEUR_INACTIF";
@@ -57,19 +63,23 @@ public class TiersIndexableData extends IndexableData {
 	public static final String NO_OFS_DOMICILE_VD = "D_NO_OFS_DOMICILE_VD";
 	public static final String INDEXATION_DATE = "D_INDEXATION_DATE";
 	public static final String MODE_COMMUNICATION = "D_MODE_COMMUNICATION";
+	public static final String D_DATE_NAISSANCE = "D_DATE_NAISSANCE";
 
 	// champs de recherche
 	private String numeros;
 	private String nomRaison;
 	private String autresNom;
-	private List<RegDate> datesNaissance;
+	private List<RegDate> datesNaissance;       // valeurs utilisées pour la recherche (calculées à partir de la date connue)
+	private String sexe;
 	private String noOfsForPrincipal;
 	private String typeOfsForPrincipal;
 	private String nosOfsAutresFors;
-	private String npa;
+	private String npaCourrier;
+	private String npaTous;
 	private String localiteEtPays;
 	private String natureJuridique;
-	private String numeroAssureSocial;
+	private String navs11;
+	private String navs13;
 	private String ancienNumeroSourcier;
 	private String categorieDebiteurIs;
 	private String modeImposition;
@@ -93,7 +103,7 @@ public class TiersIndexableData extends IndexableData {
 	private String domicileVd;
 	private String noOfsDomicileVd;
 	private String indexationDate;
-	private String modeCommunication; // uniquement renseigné sur les débiteurs (SIFISC-6587)
+	private String modeCommunication;   // uniquement renseigné sur les débiteurs (SIFISC-6587)
 
 	public TiersIndexableData(Long id, String type, String subType) {
 		super(id, type, subType);
@@ -102,7 +112,7 @@ public class TiersIndexableData extends IndexableData {
 	@Override
 	public Document asDoc() {
 
-		Document d = super.asDoc();
+		final Document d = super.asDoc();
 
 		// Note : pour des raisons de performance de l'index Lucene, il est important que l'ordre des champs soit constant
 
@@ -110,14 +120,17 @@ public class TiersIndexableData extends IndexableData {
 		addNotAnalyzedValue(d, TiersIndexableData.NUMEROS, numeros);
 		addAnalyzedValue(d, TiersIndexableData.NOM_RAISON, nomRaison);
 		addAnalyzedValue(d, TiersIndexableData.AUTRES_NOM, autresNom);
-		addAnalyzedValue(d, TiersIndexableData.DATE_NAISSANCE, IndexerFormatHelper.objectToString(datesNaissance));
+		addAnalyzedValue(d, TiersIndexableData.S_DATE_NAISSANCE, IndexerFormatHelper.dateCollectionToString(datesNaissance, IndexerFormatHelper.DateStringMode.INDEXATION));
+		addAnalyzedValue(d, TiersIndexableData.SEXE, sexe);
 		addNotAnalyzedValue(d, TiersIndexableData.NO_OFS_FOR_PRINCIPAL, noOfsForPrincipal);
 		addNotAnalyzedValue(d, TiersIndexableData.TYPE_OFS_FOR_PRINCIPAL, typeOfsForPrincipal);
 		addNotAnalyzedValue(d, TiersIndexableData.NOS_OFS_AUTRES_FORS, nosOfsAutresFors);
-		addNotAnalyzedValue(d, TiersIndexableData.NPA, npa);
+		addNotAnalyzedValue(d, TiersIndexableData.NPA_COURRIER, npaCourrier);
+		addAnalyzedValue(d, TiersIndexableData.NPA_TOUS, npaTous);
 		addAnalyzedValue(d, TiersIndexableData.LOCALITE_PAYS, localiteEtPays);
 		addNotAnalyzedValue(d, TiersIndexableData.NATURE_JURIDIQUE, natureJuridique);
-		addAnalyzedValue(d, TiersIndexableData.NUMERO_ASSURE_SOCIAL, numeroAssureSocial);
+		addAnalyzedValue(d, TiersIndexableData.NAVS11, navs11);
+		addAnalyzedValue(d, TiersIndexableData.NAVS13, navs13);
 		addNotAnalyzedValue(d, TiersIndexableData.ANCIEN_NUMERO_SOURCIER, ancienNumeroSourcier);
 		addNotAnalyzedValue(d, TiersIndexableData.CATEGORIE_DEBITEUR_IS, categorieDebiteurIs);
 		addNotAnalyzedValue(d, TiersIndexableData.MODE_IMPOSITION, modeImposition);
@@ -127,7 +140,7 @@ public class TiersIndexableData extends IndexableData {
 		addNotAnalyzedValue(d, TiersIndexableData.DEBITEUR_INACTIF, debiteurInactif);
 
 		// on aggrège tous les valeurs utiles dans un seul champ pour une recherche de type google
-		addToutValues(d, numeros, nomRaison, autresNom, toSearchString(datesNaissance), forPrincipal, rue, npa, localiteEtPays, natureJuridique, numeroAssureSocial, ancienNumeroSourcier, categorieDebiteurIs, noSymic);
+		addToutValues(d, numeros, nomRaison, autresNom, toSearchString(datesNaissance), forPrincipal, rue, npaCourrier, localiteEtPays, natureJuridique, navs11, navs13, ancienNumeroSourcier, categorieDebiteurIs, noSymic);
 
 		// champs de stockage (pas recherchables)
 		addStoredValue(d, TiersIndexableData.NOM1, nom1);
@@ -145,6 +158,7 @@ public class TiersIndexableData extends IndexableData {
 		addStoredValue(d, TiersIndexableData.NO_OFS_DOMICILE_VD, noOfsDomicileVd);
 		addStoredValue(d, TiersIndexableData.INDEXATION_DATE, indexationDate);
 		addStoredValue(d, TiersIndexableData.MODE_COMMUNICATION, modeCommunication);
+		addStoredValue(d, TiersIndexableData.D_DATE_NAISSANCE, IndexerFormatHelper.dateCollectionToString(datesNaissance, IndexerFormatHelper.DateStringMode.STORAGE));
 
 		return d;
 	}
@@ -176,9 +190,15 @@ public class TiersIndexableData extends IndexableData {
 		d.add(new StringField(name, toString(value), Field.Store.YES));
 	}
 
+	private static final Pattern NULL_VALUE_PATTERN = Pattern.compile("\\b" + IndexerFormatHelper.nullValue() + "\\b");
+
 	private void addToutValues(Document d, String... values) {
 		final StringBuilder sb = new StringBuilder();
 		for (String value : values) {
+			if (value != null) {
+				final Matcher matcher = NULL_VALUE_PATTERN.matcher(value);
+				value = matcher.replaceAll(StringUtils.EMPTY);
+			}
 			if (StringUtils.isNotBlank(value)) {
 				if (sb.length() > 0) {
 					sb.append(' ');
@@ -186,7 +206,7 @@ public class TiersIndexableData extends IndexableData {
 				sb.append(value);
 			}
 		}
-		d.add(new TextField(TiersIndexableData.TOUT, sb.toString(), Field.Store.YES));
+		d.add(new TextField(TiersIndexableData.TOUT, sb.toString().replaceAll("\\s+", " "), Field.Store.YES));
 	}
 
 	private String toString(String value) {
@@ -244,12 +264,10 @@ public class TiersIndexableData extends IndexableData {
 	}
 
 	public void addDateNaissance(RegDate date) {
-		if (date != null) {
-			if (this.datesNaissance == null) {
-				this.datesNaissance = new ArrayList<>();
-			}
-			this.datesNaissance.add(date);
+		if (this.datesNaissance == null) {
+			this.datesNaissance = new ArrayList<>();
 		}
+		this.datesNaissance.add(date);
 	}
 
 	public void addDatesNaissance(List<RegDate> list) {
@@ -259,6 +277,14 @@ public class TiersIndexableData extends IndexableData {
 			}
 			this.datesNaissance.addAll(list);
 		}
+	}
+
+	public void setSexe(Sexe sexe) {
+		this.sexe = IndexerFormatHelper.enumToString(sexe);
+	}
+
+	public void addSexe(Sexe sexe) {
+		this.sexe = add(this.sexe, IndexerFormatHelper.enumToString(sexe));
 	}
 
 	public String getNoOfsForPrincipal() {
@@ -285,12 +311,24 @@ public class TiersIndexableData extends IndexableData {
 		this.nosOfsAutresFors = nosOfsAutresFors;
 	}
 
-	public String getNpa() {
-		return npa;
+	public String getNpaCourrier() {
+		return npaCourrier;
 	}
 
-	public void setNpa(String npa) {
-		this.npa = npa;
+	public void setNpaCourrier(String npaCourrier) {
+		this.npaCourrier = npaCourrier;
+	}
+
+	public String getNpaTous() {
+		return npaTous;
+	}
+
+	public void setNpaTous(String npaTous) {
+		this.npaTous = IndexerFormatHelper.nullableStringToString(npaTous);
+	}
+
+	public void addNpaTous(String npa) {
+		this.npaTous = add(this.npaTous, npa);
 	}
 
 	public String getLocaliteEtPays() {
@@ -313,16 +351,28 @@ public class TiersIndexableData extends IndexableData {
 		this.natureJuridique = natureJuridique;
 	}
 
-	public String getNumeroAssureSocial() {
-		return numeroAssureSocial;
+	public String getNavs11() {
+		return navs11;
 	}
 
-	public void setNumeroAssureSocial(String numeroAssureSocial) {
-		this.numeroAssureSocial = numeroAssureSocial;
+	public void setNavs11(String navs11) {
+		this.navs11 = navs11;
+	}
+	
+	public void addNavs11(String navs11) {
+		this.navs11 = add(this.navs11, IndexerFormatHelper.nullableStringToString(navs11));
 	}
 
-	public void addNumeroAssureSocial(String numeroAssureSocial) {
-		this.numeroAssureSocial = add(this.numeroAssureSocial, numeroAssureSocial);
+	public String getNavs13() {
+		return navs13;
+	}
+
+	public void setNavs13(String navs13) {
+		this.navs13 = navs13;
+	}
+	
+	public void addNavs13(String navs13) {
+		this.navs13 = add(this.navs13, IndexerFormatHelper.nullableStringToString(navs13));
 	}
 
 	public String getAncienNumeroSourcier() {

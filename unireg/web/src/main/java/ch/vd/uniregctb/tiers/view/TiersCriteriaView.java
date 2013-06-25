@@ -134,7 +134,7 @@ public class TiersCriteriaView {
 	}
 
 	public RegDate getDateNaissance() {
-		return criteria.getDateNaissance();
+		return criteria.getDateNaissance() != null ? criteria.getDateNaissance().value : null;
 	}
 
 	public void setDateNaissance(RegDate dateNaissance) {
@@ -242,11 +242,11 @@ public class TiersCriteriaView {
 	}
 
 	public String getNpa() {
-		return criteria.getNpa();
+		return criteria.getNpaCourrier();
 	}
 
 	public void setNpa(String npa) {
-		criteria.setNpa(npa);
+		criteria.setNpaCourrier(npa);
 	}
 
 	public ModeImposition getModeImposition() {

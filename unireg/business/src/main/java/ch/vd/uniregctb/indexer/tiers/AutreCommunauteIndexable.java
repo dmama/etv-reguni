@@ -37,6 +37,6 @@ public class AutreCommunauteIndexable extends ContribuableIndexable {
 		data.addNomRaison(ac.getComplementNom());
 		data.setNom1(ac.getNom());
 		data.setNom2(ac.getComplementNom());
-		data.setNatureJuridique(IndexerFormatHelper.objectToString(NatureJuridique.PM));
+		data.setNatureJuridique(IndexerFormatHelper.enumToString(NatureJuridique.PM));
 	}
 }

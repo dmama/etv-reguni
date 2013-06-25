@@ -2,6 +2,8 @@ package ch.vd.uniregctb.indexer.tiers;
 
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
+
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.IndexerFormatHelper;
@@ -44,10 +46,11 @@ public class NonHabitantIndexable extends PersonnePhysiqueIndexable {
 		data.addAutresNom(pp.getPrenom());
 		data.addAutresNom(pp.getNom());
 		data.addDateNaissance(pp.getDateNaissance());
-		data.addNumeroAssureSocial(pp.getNumeroAssureSocial());
-		data.addNumeroAssureSocial(ancienNumAVS);
+		data.addSexe(pp.getSexe());
+		data.addNavs13(StringUtils.trimToNull(pp.getNumeroAssureSocial()));
+		data.addNavs11(StringUtils.trimToNull(ancienNumAVS));
 		data.addNom1(pp.getPrenom());
 		data.addNom1(pp.getNom());
-		data.setDateDeces(IndexerFormatHelper.objectToString(pp.getDateDeces()));
+		data.setDateDeces(IndexerFormatHelper.dateToString(pp.getDateDeces(), IndexerFormatHelper.DateStringMode.STORAGE));
 	}
 }

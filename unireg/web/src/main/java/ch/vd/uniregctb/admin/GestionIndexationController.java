@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.search.ScoreDoc;
@@ -198,7 +199,7 @@ public class GestionIndexationController extends AbstractSimpleFormController {
 			@Override
 			public void handle(TopDocs hits, DocGetter docGetter) throws Exception {
 				for (ScoreDoc h : hits.scoreDocs) {
-					Document doc;
+					final Document doc;
 					try {
 						doc = docGetter.get(h.doc);
 					}
@@ -206,13 +207,14 @@ public class GestionIndexationController extends AbstractSimpleFormController {
 						LOGGER.error(e);
 						continue; // rien de mieux à faire
 					}
-					IndexDocument indexDocument = new IndexDocument();
+					final IndexDocument indexDocument = new IndexDocument();
 					indexDocument.setEntityId(doc.get(LuceneHelper.F_ENTITYID));
 					indexDocument.setNomCourrier1(doc.get(TiersIndexableData.NOM1));
 					indexDocument.setNomCourrier2(doc.get(TiersIndexableData.NOM2));
-					indexDocument.setDateNaissance(doc.get(TiersIndexableData.DATE_NAISSANCE));
-					indexDocument.setNumeroAvs(doc.get(TiersIndexableData.NUMERO_ASSURE_SOCIAL));
+					indexDocument.setDateNaissance(doc.get(TiersIndexableData.D_DATE_NAISSANCE));
+					indexDocument.setNumeroAvs(concat(doc.get(TiersIndexableData.NAVS13), doc.get(TiersIndexableData.NAVS11)));
 					indexDocument.setNomFor(doc.get(TiersIndexableData.FOR_PRINCIPAL));
+					indexDocument.setNpa(doc.get(TiersIndexableData.NPA_COURRIER));
 					indexDocument.setLocalite(doc.get(TiersIndexableData.LOCALITE));
 					listIndexDocument.add(indexDocument);
 				}
@@ -221,6 +223,25 @@ public class GestionIndexationController extends AbstractSimpleFormController {
 
 		session.setAttribute(INDEX_LIST_ATTRIBUTE_NAME, listIndexDocument);
 		session.setAttribute(GESTION_INDEXATION_NAME, bean);
+	}
+
+	private static String concat(String... strs) {
+		if (strs == null || strs.length == 0) {
+			return StringUtils.EMPTY;
+		}
+		else if (strs.length == 1) {
+			return StringUtils.trimToEmpty(strs[0]);
+		}
+		else {
+			final StringBuilder b = new StringBuilder();
+			for (String str : strs) {
+				if (b.length() > 0) {
+					b.append(' ');
+				}
+				b.append(StringUtils.trimToEmpty(str));
+			}
+			return b.toString();
+		}
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})

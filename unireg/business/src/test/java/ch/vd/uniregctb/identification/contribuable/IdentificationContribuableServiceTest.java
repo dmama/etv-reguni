@@ -279,7 +279,10 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			criteres.setDateNaissance(date(1953, 4, 3));
 			final List<Long> list = service.identifie(criteres);
 			assertNotNull(list);
-			assertEquals(0, list.size());
+			assertEquals(1, list.size());
+
+			final Long pp = list.get(0);
+			assertEquals(albertId, pp);
 		}
 
 		{
@@ -1454,7 +1457,6 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-
 				final PersonnePhysique habClaude = addNonHabitant("Jean-Pierre", "ZANOLARI", date(1954, 1, 1), Sexe.MASCULIN);
 				ids.claude = habClaude.getNumero();
 				return null;

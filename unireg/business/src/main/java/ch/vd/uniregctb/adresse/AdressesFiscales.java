@@ -84,4 +84,8 @@ public class AdressesFiscales {
 					+ ']');
 		}
 	}
+
+	public boolean isEmpty() {
+		return courrier == null && representation == null && domicile == null && poursuite == null && poursuiteAutreTiers == null;
+	}
 }

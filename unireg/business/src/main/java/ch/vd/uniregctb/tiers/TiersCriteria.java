@@ -12,13 +12,35 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.ModeImposition;
+import ch.vd.uniregctb.type.Sexe;
 
 /**
  * Critères de recherche pour les tiers.
  */
 public class TiersCriteria implements Serializable, TiersFilter {
 
-	private static final long serialVersionUID = 4798896788504617011L;
+	public static class ValueOrNull<T extends Serializable> implements Serializable {
+
+		private static final long serialVersionUID = -5550274478312973053L;
+
+		public final T value;
+		public final boolean orNull;
+
+		private ValueOrNull(T value, boolean orNull) {
+			this.value = value;
+			this.orNull = orNull;
+		}
+
+		@Override
+		public String toString() {
+			return "ValueOrNull{" +
+					"value=" + value +
+					", orNull=" + orNull +
+					'}';
+		}
+	}
+
+	private static final long serialVersionUID = -932640814088778277L;
 
 	public enum TypeRecherche {
 		CONTIENT,
@@ -117,10 +139,16 @@ public class TiersCriteria implements Serializable, TiersFilter {
 	 * La localite ou le pays
 	 */
 	private String localiteOuPays;
+
 	/**
-	 * Le NPA pour une adresse en suisse
+	 * Le NPA pour une adresse courrier en suisse
 	 */
-	private String npa;
+	private String npaCourrier;
+
+	/**
+	 * Le NPA sur toutes les adresses (y.c. domicile, représentation et poursuite)
+	 */
+	private ValueOrNull<String> npaTous;
 
 	/**
 	 * La nature juridique
@@ -130,12 +158,27 @@ public class TiersCriteria implements Serializable, TiersFilter {
 	/**
 	 * La date de naissance
 	 */
-	private SerializableDate dateNaissance;
+	private ValueOrNull<RegDate> dateNaissance;
 
 	/**
-	 * Le numéro AVS
+	 * Le sexe
+	 */
+	private ValueOrNull<Sexe> sexe;
+
+	/**
+	 * Le numéro AVS (11 ou 13, on ne sait pas...)
 	 */
 	private String numeroAVS;
+
+	/**
+	 * Le numéro AVS 11
+	 */
+	private ValueOrNull<String> navs11;
+
+	/**
+	 * Le numéro AVS 13
+	 */
+	private ValueOrNull<String> navs13;
 
 	/**
 	 * Le numéro étranger
@@ -194,36 +237,6 @@ public class TiersCriteria implements Serializable, TiersFilter {
 
 	private Long ancienNumeroSourcier;
 
-	private static class SerializableDate implements Serializable {
-
-		private static final long serialVersionUID = 1L;
-
-		private int year;
-		private int month;
-		private int day;
-
-		SerializableDate() {
-		}
-
-		SerializableDate(RegDate date) {
-			this.year = date.year();
-			this.month = date.month();
-			this.day = date.day();
-		}
-
-		private RegDate asRegDate() {
-			if (month == RegDate.UNDEFINED) {
-				return RegDate.get(year);
-			}
-			else if (day == RegDate.UNDEFINED) {
-				return RegDate.get(year, month);
-			}
-			else {
-				return RegDate.get(year, month, day);
-			}
-		}
-	}
-
 	/**
 	 * @return true si aucun paramétre de recherche n'est renseigné. false
 	 *         autrement.
@@ -232,10 +245,14 @@ public class TiersCriteria implements Serializable, TiersFilter {
 		return numero == null
 				&& StringUtils.isBlank(nomRaison)
 				&& dateNaissance == null
+				&& sexe == null
 				&& StringUtils.isBlank(numeroEtranger)
 				&& StringUtils.isBlank(numeroAVS)
+				&& navs11 == null
+				&& navs13 == null
 				&& StringUtils.isBlank(localiteOuPays)
-				&& StringUtils.isBlank(npa)
+				&& StringUtils.isBlank(npaCourrier)
+				&& npaTous == null
 				&& StringUtils.isBlank(natureJuridique)
 				&& StringUtils.isBlank(noOfsFor)
 				&& StringUtils.isBlank(noSymic)
@@ -315,12 +332,11 @@ public class TiersCriteria implements Serializable, TiersFilter {
 		this.natureJuridique = natureJuridique;
 	}
 
-
 	/**
 	 * @return the dateNaissance
 	 */
-	public RegDate getDateNaissance() {
-		return dateNaissance == null ? null : dateNaissance.asRegDate();
+	public ValueOrNull<RegDate> getDateNaissance() {
+		return dateNaissance;
 	}
 
 	/**
@@ -332,8 +348,63 @@ public class TiersCriteria implements Serializable, TiersFilter {
 			this.dateNaissance = null;
 		}
 		else {
-			this.dateNaissance = new SerializableDate(dateNaissance);
+			this.dateNaissance = new ValueOrNull<>(dateNaissance, false);
 		}
+	}
+
+	public void setDateNaissanceOrNull(RegDate dateNaissance) {
+		this.dateNaissance = new ValueOrNull<>(dateNaissance, true);
+	}
+
+	public ValueOrNull<Sexe> getSexe() {
+		return sexe;
+	}
+
+	public void setSexe(Sexe sexe) {
+		if (sexe == null) {
+			this.sexe = null;
+		}
+		else {
+			this.sexe = new ValueOrNull<>(sexe, false);
+		}
+	}
+
+	public void setSexeOrNull(Sexe sexe) {
+		this.sexe = new ValueOrNull<>(sexe, true);
+	}
+
+	public ValueOrNull<String> getNavs11() {
+		return navs11;
+	}
+
+	public void setNavs11(String navs11) {
+		if (StringUtils.isBlank(navs11)) {
+			this.navs11 = null;
+		}
+		else {
+			this.navs11 = new ValueOrNull<>(navs11, false);
+		}
+	}
+
+	public void setNavs11OrNull(String navs11) {
+		this.navs11 = new ValueOrNull<>(navs11, true);
+	}
+
+	public ValueOrNull<String> getNavs13() {
+		return navs13;
+	}
+
+	public void setNavs13(String navs13) {
+		if (StringUtils.isBlank(navs13)) {
+			this.navs13 = null;
+		}
+		else {
+			this.navs13 = new ValueOrNull<>(navs13, false);
+		}
+	}
+
+	public void setNavs13OrNull(String navs13) {
+		this.navs13 = new ValueOrNull<>(navs13, true);
 	}
 
 	/**
@@ -348,7 +419,7 @@ public class TiersCriteria implements Serializable, TiersFilter {
 	 *            the numeroAVS to set
 	 */
 	public void setNumeroAVS(String numeroAVS) {
-		this.numeroAVS = numeroAVS;
+		this.numeroAVS = StringUtils.isBlank(numeroAVS) ? null : numeroAVS;
 	}
 
 	/**
@@ -483,12 +554,29 @@ public class TiersCriteria implements Serializable, TiersFilter {
 		this.tiersAnnulesSeulement = tiersAnnulesSeulement;
 	}
 
-	public String getNpa() {
-		return npa;
+	public String getNpaCourrier() {
+		return npaCourrier;
 	}
 
-	public void setNpa(String npa) {
-		this.npa = npa;
+	public void setNpaCourrier(String npaCourrier) {
+		this.npaCourrier = npaCourrier;
+	}
+
+	public ValueOrNull<String> getNpaTous() {
+		return npaTous;
+	}
+
+	public void setNpaTous(String npaTous) {
+		if (StringUtils.isBlank(npaTous)) {
+			this.npaTous = null;
+		}
+		else {
+			this.npaTous = new ValueOrNull<>(npaTous, false);
+		}
+	}
+
+	public void setNpaTousOrNull(String npaTous) {
+		this.npaTous = new ValueOrNull<>(npaTous, true);
 	}
 
 	public ModeImposition getModeImposition() {

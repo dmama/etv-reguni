@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.indexer.tiers;
 
+import java.io.Serializable;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -9,8 +10,8 @@ import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.Constants;
+import ch.vd.uniregctb.common.StringRenderer;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.IndexerFormatHelper;
 import ch.vd.uniregctb.indexer.lucene.LuceneHelper;
@@ -224,33 +225,108 @@ public class QueryConstructor {
 	private void addNpa(BooleanQuery fullQuery) throws IndexerException {
 
 		// Localite ou Pays
-		if (StringUtils.isNotBlank(criteria.getNpa())) { // [UNIREG-2592]
-			final String npa = criteria.getNpa();
-			final Query q = LuceneHelper.getTermsCommence(TiersIndexableData.NPA, npa, 0);
+		if (StringUtils.isNotBlank(criteria.getNpaCourrier())) { // [UNIREG-2592]
+			final String npa = criteria.getNpaCourrier();
+			final Query q = LuceneHelper.getTermsCommence(TiersIndexableData.NPA_COURRIER, npa, 0);
 			if (q != null) {
 				fullQuery.add(q, must);
 			}
 		}
+
+		//noinspection unchecked
+		addCriterionCommence(fullQuery, TiersIndexableData.NPA_TOUS, 0, criteria.getNpaTous(), IndexerFormatHelper.DEFAULT_RENDERER);
 	}
 
 	private void addNumeroAVS(BooleanQuery fullQuery) throws IndexerException {
+		// Numero AVS (11 ou 13, indifféremment)
+		if (StringUtils.isNotBlank(criteria.getNumeroAVS())) {
+			final BooleanQuery boolQuery = new BooleanQuery();
+			boolQuery.add(LuceneHelper.getTermsCommence(TiersIndexableData.NAVS11, IndexerFormatHelper.noAvsToString(criteria.getNumeroAVS()), 0), should);
+			boolQuery.add(LuceneHelper.getTermsExact(TiersIndexableData.NAVS13, IndexerFormatHelper.noAvsToString(criteria.getNumeroAVS())), should);
+			fullQuery.add(boolQuery, must);
+		}
 
-		// Numero AVS
-		if (StringUtils.isNotBlank(criteria.getNumeroAVS())) { // [UNIREG-2592]
-			final String noAVS = IndexerFormatHelper.formatNumeroAVS(criteria.getNumeroAVS());
-			final Query q = LuceneHelper.getTermsCommence(TiersIndexableData.NUMERO_ASSURE_SOCIAL, noAVS, 0);
-			if (q != null) {
-				fullQuery.add(q, must);
+		// Numéro AVS 11 précisément
+		addCriterionCommence(fullQuery, TiersIndexableData.NAVS11, 0, criteria.getNavs11(), IndexerFormatHelper.AVS_RENDERER);
+
+		// Numéro AVS 13 précisément
+		addCriterionExact(fullQuery, TiersIndexableData.NAVS13, criteria.getNavs13(), IndexerFormatHelper.AVS_RENDERER);
+	}
+
+	private void addDateNaissance(BooleanQuery fullQuery) throws IndexerException {
+		// Date de naissance
+		addCriterionCommence(fullQuery, TiersIndexableData.S_DATE_NAISSANCE, 0, criteria.getDateNaissance(), IndexerFormatHelper.STORAGE_REGDATE_RENDERER);
+	}
+
+	private void addSexe(BooleanQuery fullQuery) throws IndexerException {
+		// Sexe
+		//noinspection unchecked
+		addCriterionExact(fullQuery, TiersIndexableData.SEXE, criteria.getSexe(), IndexerFormatHelper.DEFAULT_RENDERER);
+	}
+
+	private static <T extends Serializable> void addCriterionExact(BooleanQuery fullQuery, String field, TiersCriteria.ValueOrNull<T> criterionValue, StringRenderer<T> renderer) {
+		if (criterionValue != null) {
+			if (criterionValue.orNull) {
+				final Query bNull = LuceneHelper.getTermsExact(field, IndexerFormatHelper.nullValue());
+				if (criterionValue.value == null) {
+					// value MUST be null
+					fullQuery.add(bNull, must);
+				}
+				else {
+					final Query bValue = LuceneHelper.getTermsExact(field, renderer.toString(criterionValue.value));
+					if (bValue != null) {
+						final BooleanQuery b = new BooleanQuery();
+						b.add(bValue, should);
+						b.add(bNull, should);
+						fullQuery.add(b, must);
+					}
+					else {
+						fullQuery.add(bNull, must);
+					}
+				}
+			}
+			else {
+				if (criterionValue.value == null) {
+					throw new IllegalArgumentException("On ne devrait pas pouvoir avoir orNull à false et une valeur cible nulle... : " + field);
+				}
+				final Query q = LuceneHelper.getTermsExact(field, renderer.toString(criterionValue.value));
+				if (q != null) {
+					fullQuery.add(q, must);
+				}
 			}
 		}
 	}
 
-	private void addDateNaissance(BooleanQuery fullQuery) throws IndexerException {
-
-		// Date de naissance
-		if (criteria.getDateNaissance() != null) {
-			final Query q = LuceneHelper.getTermsCommence(TiersIndexableData.DATE_NAISSANCE, RegDateHelper.toIndexString(criteria.getDateNaissance()), 0);
-			fullQuery.add(q, must);
+	private static <T extends Serializable> void addCriterionCommence(BooleanQuery fullQuery, String field, int minLength, TiersCriteria.ValueOrNull<T> criterionValue, StringRenderer<T> renderer) {
+		if (criterionValue != null) {
+			if (criterionValue.orNull) {
+				final Query bNull = LuceneHelper.getTermsExact(field, IndexerFormatHelper.nullValue());
+				if (criterionValue.value == null) {
+					// value MUST be null
+					fullQuery.add(bNull, must);
+				}
+				else {
+					final Query bValue = LuceneHelper.getTermsCommence(field, renderer.toString(criterionValue.value), minLength);
+					if (bValue != null) {
+						final BooleanQuery b = new BooleanQuery();
+						b.add(bValue, should);
+						b.add(bNull, should);
+						fullQuery.add(b, must);
+					}
+					else {
+						fullQuery.add(bNull, must);
+					}
+				}
+			}
+			else {
+				if (criterionValue.value == null) {
+					throw new IllegalArgumentException("On ne devrait pas pouvoir avoir orNull à false et une valeur cible nulle... : " + field);
+				}
+				final Query q = LuceneHelper.getTermsCommence(field, renderer.toString(criterionValue.value), minLength);
+				if (q != null) {
+					fullQuery.add(q, must);
+				}
+			}
 		}
 	}
 
@@ -363,6 +439,7 @@ public class QueryConstructor {
 			addNpa(fullQuery);
 			addNumeroAVS(fullQuery);
 			addDateNaissance(fullQuery);
+			addSexe(fullQuery);
 			addNatureJuridique(fullQuery);
 			addAnnule(fullQuery, criteria);
 			addActif(fullQuery, criteria);

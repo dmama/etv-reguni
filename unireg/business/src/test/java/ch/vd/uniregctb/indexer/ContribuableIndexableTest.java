@@ -146,7 +146,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		//assertContains(numCtb1.toString(), values.get(TiersIndexableData.NUMEROS));
 		assertContains("Maillard", values.getNomRaison());
 		assertEquals(Arrays.asList(date(1956, 1, 21)), values.getDatesNaissance()); // [UNIREG-2633]
-		assertContains(FormatNumeroHelper.formatAncienNumAVS("123.45.678"), values.getNumeroAssureSocial());
+		assertContains(FormatNumeroHelper.formatAncienNumAVS("123.45.678"), values.getNavs11());
 		// Display
 		assertContains("Maillard", values.getNom1());
 		assertContains("Philippe", values.getNom1());
@@ -181,7 +181,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		assertEquals(Arrays.asList(nonHab.getDateNaissance()), values.getDatesNaissance());
 		assertEquals("Suisse", values.getPays());
 		assertEquals(Arrays.asList(date(1965, 3, 12)), values.getDatesNaissance());
-		assertEquals("", values.getDateDeces());
+		assertEquals(IndexerFormatHelper.nullValue(), values.getDateDeces());
 	}
 
 	@Test
@@ -205,7 +205,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		// Individu
 		assertEquals(Arrays.asList(individu.getDateNaissance()), values.getDatesNaissance());
 		assertEquals(String.format("%s %s", individu.getPrenom(), individu.getNom()), values.getNom1());
-		assertContains(IndexerFormatHelper.formatNumeroAVS(individu.getNouveauNoAVS()), values.getNumeroAssureSocial());
+		assertContains(IndexerFormatHelper.noAvsToString(individu.getNouveauNoAVS()), values.getNavs13());
 	}
 
 	@Test
@@ -238,7 +238,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		// Individu
 		assertEquals(Arrays.asList(individu.getDateNaissance()), values.getDatesNaissance());
 		assertEquals(String.format("%s %s", individu.getPrenom(), individu.getNom()), values.getNom1());
-		assertContains(IndexerFormatHelper.formatNumeroAVS(individu.getNouveauNoAVS()), values.getNumeroAssureSocial());
+		assertContains(IndexerFormatHelper.noAvsToString(individu.getNouveauNoAVS()), values.getNavs13());
 	}
 
 	@Test
@@ -471,7 +471,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		// Display
 		assertEquals("Le Brassus", values.getForPrincipal());
 		assertEquals(RegDateHelper.toIndexString(dateOuverture), values.getDateOuvertureFor());
-		assertEquals("", values.getDateFermtureFor());
+		assertEquals(IndexerFormatHelper.nullValue(), values.getDateFermtureFor());
 	}
 
 	@Test
@@ -577,7 +577,8 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 
 		final TiersIndexableData values = (TiersIndexableData) indexable.getIndexableData();
 
-		assertEquals("1000", values.getNpa());
+		assertEquals("1000", values.getNpaCourrier());
+		assertEquals("1000 1304", values.getNpaTous());      // courrier, domicile, poursuite (absent car étranger), représentation (absent car défaut)
 		assertContains("Lausanne", values.getLocaliteEtPays());
 		assertContains("Lausanne", values.getLocalite());
 		assertContains(Constants.OUI, values.getDomicileVd());
@@ -641,10 +642,11 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 
 		final TiersIndexableData values = (TiersIndexableData) indexable.getIndexableData();
 
-		assertEquals("1000", values.getNpa());
+		assertEquals("1000", values.getNpaCourrier());
+		assertEquals("1000", values.getNpaTous());      // courrier, domicile (absent car défaut), poursuite (absent car étranger), représentation (absent car défaut)
 		assertContains("Lausanne", values.getLocaliteEtPays());
 		assertContains("Lausanne", values.getLocalite());
-		assertEquals("", values.getDomicileVd()); // adresse de domicile par défaut -> pas de détermination possible
+		assertEquals(IndexerFormatHelper.nullValue(), values.getDomicileVd()); // adresse de domicile par défaut -> pas de détermination possible
 
 	}
 
@@ -692,7 +694,8 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 
 		//String s1 = values.getLocaliteEtPays();
 		assertContains("abeilles", values.getRue());
-		assertEquals("", values.getNpa());
+		assertEquals("", values.getNpaCourrier());
+		assertEquals("NULL", values.getNpaTous());      // courrier (absent car étranger), domicile (absent car étranger), poursuite (absent car défaut), représentation (absent car défaut)
 		assertContains("France", values.getLocaliteEtPays());
 		assertContains("France", values.getLocaliteEtPays());
 		assertContains("Paris", values.getLocalite());
@@ -729,7 +732,8 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		final TiersIndexableData values = (TiersIndexableData) indexable.getIndexableData();
 
 		//String s1 = values.getLocaliteEtPays();
-		assertEquals("1880", values.getNpa());
+		assertEquals("1880", values.getNpaCourrier());
+		assertEquals("1880 1880 1880 1880", values.getNpaTous());      // courrier, domicile, poursuite, représentation
 		assertContains("Bex", values.getLocaliteEtPays());
 		assertContains("Bex", values.getLocalite());
 		assertContains(Constants.OUI, values.getDomicileVd());
@@ -762,8 +766,8 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		assertContains("Maillard", values.getNomRaison());
 		assertContains("Gallet", values.getNomRaison());
 		assertEquals(Arrays.asList(date(1956, 1, 21), date(1967, 12, 3)), values.getDatesNaissance()); // [UNIREG-2633]
-		assertContains(FormatNumeroHelper.formatAncienNumAVS("123.45.678"), values.getNumeroAssureSocial());
-		assertContains(FormatNumeroHelper.formatAncienNumAVS("987.65.432"), values.getNumeroAssureSocial());
+		assertContains(FormatNumeroHelper.formatAncienNumAVS("123.45.678"), values.getNavs11());
+		assertContains(FormatNumeroHelper.formatAncienNumAVS("987.65.432"), values.getNavs11());
 		// Display
 		assertContains("Maillard", values.getNom1());
 		assertContains("Philippe", values.getNom1());
@@ -778,8 +782,8 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 
 		RegDate dateN1 = RegDate.get(1956, 1, 21);
 		RegDate dateN2 = RegDate.get(1967, 12, 3);
-		String noAVS1 = "123.45.678";
-		String noAVS2 = "987.65.432";
+		String noAVS1 = "7560000000001";
+		String noAVS2 = "7560000000002";
 		Long numCtb1 = 123L;
 		Long numCtb2 = 456L;
 
@@ -813,8 +817,8 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		assertContains("Maillard", values.getNomRaison());
 		assertContains("Gallet", values.getNomRaison());
 		assertEquals(Arrays.asList(dateN1, dateN2), values.getDatesNaissance()); // [UNIREG-2633]
-		assertContains(FormatNumeroHelper.formatAncienNumAVS(noAVS1), values.getNumeroAssureSocial());
-		assertContains(FormatNumeroHelper.formatAncienNumAVS(noAVS2), values.getNumeroAssureSocial());
+		assertContains(noAVS1, values.getNavs13());
+		assertContains(noAVS2, values.getNavs13());
 		// Display
 		assertContains("Maillard", values.getNom1());
 		assertContains("Philippe", values.getNom1());
@@ -845,7 +849,8 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 
 		final NonHabitantIndexable indexable = new NonHabitantIndexable(adresseService, tiersService, serviceInfra, pp);
 		final TiersIndexableData values = (TiersIndexableData) indexable.getIndexableData();
-		assertEquals("1032", values.getNpa());
+		assertEquals("1032", values.getNpaCourrier());
+		assertEquals("1032", values.getNpaTous());      // courrier, domicile (absent car défaut), poursuite (absent car défaut), représentation (absent car défaut)
 		assertEquals("Romanel-s-Lausanne", values.getLocaliteEtPays());
 		assertEquals("Romanel-s-Lausanne", values.getLocalite());
 		assertEquals("Suisse", values.getPays());

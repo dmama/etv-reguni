@@ -13,11 +13,11 @@ import org.apache.log4j.Logger;
 import org.springframework.web.filter.GenericFilterBean;
 
 import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.common.StringRenderer;
 import ch.vd.uniregctb.common.URLHelper;
 import ch.vd.uniregctb.load.DetailedLoadMeter;
 import ch.vd.uniregctb.load.DetailedLoadMonitorable;
 import ch.vd.uniregctb.load.LoadDetail;
-import ch.vd.uniregctb.load.LoadDetailRenderer;
 
 /**
  * Ce filtre permet de récupérer de logger les accès aux page web de l'application (voir SIFISC-3085).
@@ -33,7 +33,7 @@ public class AccessLogProcessingFilter extends GenericFilterBean implements Deta
 	/**
 	 * Les requêtes doivent être affichées par leur URL
 	 */
-	private static final LoadDetailRenderer<ServletRequest> RENDERER = new LoadDetailRenderer<ServletRequest>() {
+	private static final StringRenderer<ServletRequest> RENDERER = new StringRenderer<ServletRequest>() {
 		@Override
 		public String toString(ServletRequest object) {
 			return String.format("%s:%s", getMethod(object), getUrl(object));

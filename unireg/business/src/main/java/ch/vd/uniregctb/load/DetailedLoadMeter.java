@@ -11,6 +11,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.commons.lang3.mutable.MutableObject;
 
+import ch.vd.uniregctb.common.StringRenderer;
+
 public class DetailedLoadMeter<T> implements DetailedLoadMonitorable {
 
 	/**
@@ -57,7 +59,7 @@ public class DetailedLoadMeter<T> implements DetailedLoadMonitorable {
 	/**
 	 * Convertisseur en chaîne de caractères
 	 */
-	private final LoadDetailRenderer<T> renderer;
+	private final StringRenderer<T> renderer;
 	
 	/**
 	 * Container du descripteur de la charge en cours : chacune des instances par thread ne nécessite aucune synchronisation
@@ -80,7 +82,7 @@ public class DetailedLoadMeter<T> implements DetailedLoadMonitorable {
 		}
 	};
 
-	private static final LoadDetailRenderer DEFAULT_RENDERER = new LoadDetailRenderer<Object>() {
+	private static final StringRenderer DEFAULT_RENDERER = new StringRenderer<Object>() {
 		@Override
 		public String toString(Object object) {
 			return object != null ? object.toString() : null;
@@ -92,7 +94,7 @@ public class DetailedLoadMeter<T> implements DetailedLoadMonitorable {
 		this(DEFAULT_RENDERER);
 	}
 	
-	public DetailedLoadMeter(LoadDetailRenderer<T> renderer) {
+	public DetailedLoadMeter(StringRenderer<T> renderer) {
 		this.renderer = renderer;
 	}
 
