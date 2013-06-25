@@ -128,6 +128,7 @@ public abstract class TaxLiabilityRequestHandler<T extends TaxLiabilityRequest> 
 					}
 					final MinorInfo minorInfo = new MinorInfo(menageCommunsParentIds,parentIds);
 					failure.setNoTaxLiableMinorTaxPayer(minorInfo);
+					break;
 				}
 
 				default:
