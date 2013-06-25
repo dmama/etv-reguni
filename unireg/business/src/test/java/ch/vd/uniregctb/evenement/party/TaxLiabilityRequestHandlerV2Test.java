@@ -37,7 +37,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-public class TaxLiabilityRequestHandlerTest extends BusinessTest {
+public class TaxLiabilityRequestHandlerV2Test extends BusinessTest {
 
 	private AperiodicTaxLiabilityRequestHandlerV2 handler;
 
