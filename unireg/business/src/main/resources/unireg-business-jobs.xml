@@ -118,7 +118,6 @@
     <bean id="evenementHandlerJob" parent="schedulerJob" class="ch.vd.uniregctb.evenement.civil.engine.EvenementCivilHandlerJob">
         <constructor-arg value="200"/>
         <constructor-arg value="Traitement (ou retraitement) des événements civils"/>
-        <property name="processorRegPP" ref="evenementCivilProcessor"/>
 		<property name="processorEch" ref="evtCivilEchProcessorRetry"/>
     </bean>
 
