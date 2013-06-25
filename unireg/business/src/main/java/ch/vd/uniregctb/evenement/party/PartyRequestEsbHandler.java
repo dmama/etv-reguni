@@ -42,9 +42,10 @@ import ch.vd.unireg.xml.event.party.v1.Request;
 import ch.vd.unireg.xml.event.party.v1.Response;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
-import ch.vd.unireg.xml.exception.v1.TechnicalExceptionInfo;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.jms.EsbBusinessCode;
+import ch.vd.uniregctb.jms.EsbBusinessException;
 import ch.vd.uniregctb.jms.EsbMessageHandler;
 import ch.vd.uniregctb.xml.ServiceException;
 
@@ -105,10 +106,7 @@ public class PartyRequestEsbHandler implements EsbMessageHandler, InitializingBe
 			result = new RequestHandlerResult(r);
 		}
 		catch (UnmarshalException e) {
-			String msg = String.format("UnmarshalException raised in Unireg. XML message {businessId: %s} is not valid", message.getBusinessId());
-			LOGGER.error(msg, e);
-			final ExceptionResponse r = new ExceptionResponse(new TechnicalExceptionInfo(msg, null));
-			result = new RequestHandlerResult(r);
+			throw new EsbBusinessException(EsbBusinessCode.XML_INVALIDE, e.getMessage(), e);
 		}
 
 		// on répond

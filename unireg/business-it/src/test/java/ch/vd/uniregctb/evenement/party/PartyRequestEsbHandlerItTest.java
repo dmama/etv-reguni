@@ -26,6 +26,7 @@ import ch.vd.unireg.xml.event.party.v1.Response;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.evenement.EvenementHelper;
+import ch.vd.uniregctb.jms.EsbBusinessErrorCollector;
 import ch.vd.uniregctb.xml.ServiceException;
 
 import static org.junit.Assert.assertNotNull;
@@ -45,6 +46,7 @@ abstract class PartyRequestEsbHandlerItTest extends BusinessItTest {
 	private String inputQueue;
 	private String OutputQueue;
 	private EsbXmlValidation esbValidator;
+	private EsbBusinessErrorCollector errorCollector;
 
 	protected static String requestToString(Request request) throws JAXBException {
 		JAXBContext context = JAXBContext.newInstance(ObjectFactory.class.getPackage().getName());
@@ -59,6 +61,8 @@ abstract class PartyRequestEsbHandlerItTest extends BusinessItTest {
 		super.onSetUp();
 
 		esbTemplate = getBean(EsbJmsTemplate.class, "esbJmsTemplate");
+		errorCollector = getBean(EsbBusinessErrorCollector.class, "partyRequestErrorCollector");
+		errorCollector.clear();
 
 		esbValidator = new EsbXmlValidation();
 		esbValidator.setResourceResolver(new ClasspathCatalogResolver());
@@ -91,6 +95,10 @@ abstract class PartyRequestEsbHandlerItTest extends BusinessItTest {
 		return OutputQueue;
 	}
 
+	protected EsbBusinessErrorCollector getErrorCollector() {
+		return errorCollector;
+	}
+
 	protected EsbMessage buildTextMessage(String queueName, String texte, String replyTo) throws Exception {
 		final EsbMessage m = EsbMessageFactory.createMessage();
 		m.setBusinessUser("EvenementTest");
@@ -102,10 +110,14 @@ abstract class PartyRequestEsbHandlerItTest extends BusinessItTest {
 		return m;
 	}
 
-	protected void sendTextMessage(String queueName, String texte, String replyTo) throws Exception {
+	/**
+	 * @return le businessId du message envoyé
+	 */
+	protected String sendTextMessage(String queueName, String texte, String replyTo) throws Exception {
 		final EsbMessage m = buildTextMessage(queueName, texte, replyTo);
 		validateMessage(m);
 		getEsbTemplate().send(m);
+		return m.getBusinessId();
 	}
 
 	protected void validateMessage(EsbMessage msg) throws Exception {

@@ -1,9 +1,12 @@
 package ch.vd.uniregctb.evenement.party;
 
+import java.util.List;
+
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
+import ch.vd.technical.esb.EsbMessage;
 import ch.vd.unireg.xml.common.v1.Date;
 import ch.vd.unireg.xml.common.v1.UserLogin;
 import ch.vd.unireg.xml.event.party.nonresident.v2.CreateNonresidentRequest;
@@ -12,6 +15,7 @@ import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
 import ch.vd.unireg.xml.party.person.v2.NaturalPersonCategory;
 import ch.vd.unireg.xml.party.person.v2.Sex;
 import ch.vd.uniregctb.common.BusinessItTest;
+import ch.vd.uniregctb.jms.EsbBusinessCode;
 import ch.vd.uniregctb.security.MockSecurityProvider;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -154,21 +158,22 @@ public class PartyCreateNonresidentRequestV2EsbHandlerItTest extends PartyReques
 		final CreateNonresidentRequest request = createRequest(true, true, false);
 		final String xmlRequeteSansBaliseLogin = requestToString(request).replaceAll("^(.*)(<[^<]*login>.*</[^<]*login>)(.*)$", "$1$3");
 		// Envoie le message
-		doInNewTransaction(new TxCallback<Object>() {
+		final String businessId = doInNewTransaction(new TxCallback<String>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public String execute(TransactionStatus status) throws Exception {
 				deactivateEsbValidator(); // desactivation du validateur, c'est le but du test d'envoyer un truc pourri
-				sendTextMessage(getInputQueue(), xmlRequeteSansBaliseLogin, getOutputQueue());
-				return null;
+				return sendTextMessage(getInputQueue(), xmlRequeteSansBaliseLogin, getOutputQueue());
 			}
 		});
-		try {
-			parseResponse(getEsbMessage(getOutputQueue()));
-			fail();
-		}
-		catch (ServiceException e) {
-			assertContains("UnmarshalException", e.getMessage());
-		}
+
+		final List<EsbMessage> errors = getErrorCollector().waitForIncomingMessages(1, BusinessItTest.JMS_TIMEOUT);
+		assertNotNull(errors);
+		assertEquals(1, errors.size());
+
+		final EsbMessage msg = errors.get(0);
+		assertNotNull(msg);
+		assertEquals(businessId, msg.getBusinessId());
+		assertEquals(EsbBusinessCode.XML_INVALIDE.getCode(), msg.getHeader(EsbMessage.ERROR_CODE));
 	}
 
 	private CreateNonresidentRequest createRequest(boolean avecPrenom, boolean avecAvs13, boolean avecAvs11) {

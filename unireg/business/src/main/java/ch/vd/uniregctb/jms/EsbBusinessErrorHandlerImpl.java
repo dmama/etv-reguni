@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.jms;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -29,6 +30,12 @@ public class EsbBusinessErrorHandlerImpl implements EsbBusinessErrorHandler {
 
 	@Override
 	public void onBusinessError(EsbMessage esbMessage, String errorDescription, @Nullable Throwable throwable, EsbBusinessCode errorCode) throws Exception {
+		final EsbMessageImpl m = buildEsbErrorMessage(esbMessage, errorDescription, throwable, errorCode);
+		m.setServiceDestination(destinationQueue);
+		esbTemplate.send(esbMessage);
+	}
+
+	protected EsbMessageImpl buildEsbErrorMessage(EsbMessage esbMessage, String errorDescription, Throwable throwable, EsbBusinessCode errorCode) throws IOException {
 		final EsbMessageImpl m = (EsbMessageImpl) esbMessage;
 
 		if (throwable != null) {
@@ -49,8 +56,6 @@ public class EsbBusinessErrorHandlerImpl implements EsbBusinessErrorHandler {
 		m.addHeaderInternal(EsbMessageImpl.ESB_ORIG_CONTEXT, esbMessage.getContext());
 		m.addHeaderInternal(EsbMessageImpl.ESB_ORIG_DOMAIN, esbMessage.getDomain());
 		m.addHeaderInternal(EsbMessageImpl.ESB_ORIG_DESTINATION, esbMessage.getServiceDestination());
-
-		m.setServiceDestination(destinationQueue);
-		esbTemplate.send(esbMessage);
+		return m;
 	}
 }
