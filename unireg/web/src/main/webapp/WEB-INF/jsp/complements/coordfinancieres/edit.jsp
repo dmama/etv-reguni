@@ -62,8 +62,8 @@
 
 			<!-- Debut Boutons -->
 			<div style="margin-top: 1em;">
-				<unireg:RetourButton link="../../tiers/visu.do?id=${command.id}" checkIfModified="true"/>
-				<input type="submit" name="save" value="<fmt:message key="label.bouton.sauver" />"/>
+				<unireg:RetourButton link="../../tiers/visu.do?id=${command.id}" checkIfModified="true" tabIndex="4"/>
+				<input type="submit" name="save" value="<fmt:message key="label.bouton.sauver"/>" tabindex="5"/>
 			</div>
 			<!-- Fin Boutons -->
 

@@ -1066,33 +1066,39 @@
 	</tag>
 
 	<tag>
+		<description>Permet de quitter la page d'edition et de retourner à la page de visualisation</description>
 		<name>RetourButton</name>
 		<tag-class>ch.vd.uniregctb.taglibs.JspTagRetourButton</tag-class>
 		<body-content>JSP</body-content>
-		<description>Permet de quitter la page d'edition et de retourner à la page de visualisation</description>
 		<attribute>
+			<description>lien de retour</description>
 			<name>link</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>lien de retour</description>
 		</attribute>
 		<attribute>
+			<description>le texte du bouton ('Retour' par défaut)</description>
 			<name>text</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>le texte du bouton ('Retour' par défaut)</description>
 		</attribute>
 		<attribute>
+			<description>le texte à afficher dans la boite de dialogue</description>
 			<name>message</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>le texte à afficher dans la boite de dialogue</description>
 		</attribute>
 		<attribute>
+			<description>s'il faut vérifier l'état du Modifier avant d'afficher le message de confirmation</description>
 			<name>checkIfModified</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>s'il faut vérifier l'état du Modifier avant d'afficher le message de confirmation</description>
+		</attribute>
+		<attribute>
+			<description>La valeur du tabIndex à associer au bouton généré</description>
+			<name>tabIndex</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 	</tag>
 
