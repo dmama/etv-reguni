@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.BlockingQueue;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.junit.Assert;
@@ -22,7 +21,6 @@ import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.common.Fuse;
 import ch.vd.uniregctb.evenement.identification.contribuable.CriteresAdresse;
 import ch.vd.uniregctb.evenement.identification.contribuable.CriteresAdresse.TypeAdresse;
 import ch.vd.uniregctb.evenement.identification.contribuable.CriteresPersonne;
@@ -41,6 +39,7 @@ import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcherImpl;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
+import ch.vd.uniregctb.indexer.tiers.TopList;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -2156,12 +2155,12 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
-				MockIndividu indClaude = addIndividu(noIndividu, date(1953, 1, 1), "Zora", "Larousse", true);
+				addIndividu(noIndividu, date(1953, 1, 1), "Zora", "Larousse", true);
 			}
 		});
 		searcher = new GlobalTiersSearcherImpl() {
 			@Override
-			public void flowSearch(TiersCriteria criteria, BlockingQueue<TiersIndexedData> queue, Fuse fusible) throws IndexerException {
+			public TopList<TiersIndexedData> searchTop(TiersCriteria criteria, int max) throws IndexerException {
 				throw new RuntimeException("Exception de test");
 			}
 		};
