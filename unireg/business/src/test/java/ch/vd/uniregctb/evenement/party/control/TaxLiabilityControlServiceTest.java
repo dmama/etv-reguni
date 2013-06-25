@@ -2,19 +2,24 @@ package ch.vd.uniregctb.evenement.party.control;
 
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.uniregctb.interfaces.model.mock.MockPersonneMorale;
+import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServicePM;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
+import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Sexe;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityTest {
 
@@ -339,5 +344,34 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 
 		//Meme si le tiers assujetti est mineur, on fait quand même une recherche sur les ménages communs tel que demandé dans le controle.
 		assertEquals(TaxLiabilityControlEchec.EchecType.AUCUN_MC_ASSOCIE_TROUVE, result.getEchec().getType());
+	}
+
+	@Test
+	public void testControleAssujettissementPersonneMorale() throws Exception {
+
+		// mise en place service PM
+		servicePM.setUp(new DefaultMockServicePM());
+
+		// mise en place fiscale
+		final long idPm = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final Entreprise pm = addEntreprise(MockPersonneMorale.BCV.getNumeroEntreprise());
+				return pm.getNumero();
+			}
+		});
+
+		final int periode = 2012;
+		final TaxLiabilityControlResult res = doInNewTransactionAndSession(new TxCallback<TaxLiabilityControlResult>() {
+			@Override
+			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+				final Entreprise pm = (Entreprise) tiersDAO.get(idPm);
+				return controlService.doControlOnPeriod(pm, periode, true, true);
+			}
+		});
+
+		assertNotNull(res);
+		assertNotNull(res.getEchec());
+		assertEquals(TaxLiabilityControlEchec.EchecType.CONTROLE_NUMERO_KO, res.getEchec().getType());
 	}
 }

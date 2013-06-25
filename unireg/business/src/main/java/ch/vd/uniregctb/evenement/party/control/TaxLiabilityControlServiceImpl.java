@@ -9,7 +9,6 @@ import org.jetbrains.annotations.NotNull;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
-import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -73,7 +72,8 @@ public class TaxLiabilityControlServiceImpl implements TaxLiabilityControlServic
 
 		//MC.0 si le tiers n'est pas un ménage commun  et que la recherche de ménage commun est demandée,
 		//on rajoute la règle de contôle des ménage à l'exécution
-		if (ruleMenage != null && !(tiers instanceof MenageCommun)) {
+		// [SIFISC-9064] : en fait, il fallait lire "si le tiers est une personne physique et que la recherche de ménage commun est demandée"...
+		if (ruleMenage != null && tiers instanceof PersonnePhysique) {
 			if (LOGGER.isDebugEnabled()) {
 				LOGGER.debug("Règle de recherche sur les ménages communs chargée");
 			}
