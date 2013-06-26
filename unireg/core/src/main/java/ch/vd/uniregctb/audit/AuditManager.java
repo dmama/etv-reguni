@@ -3,8 +3,6 @@ package ch.vd.uniregctb.audit;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
-import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 
 public class AuditManager implements InitializingBean, DisposableBean {
@@ -37,14 +35,6 @@ public class AuditManager implements InitializingBean, DisposableBean {
 		AuthenticationHelper.pushPrincipal(AuthenticationHelper.SYSTEM_USER);
 		try {
 			Audit.info(String.format("Démarrage de l'application %s.", appName));
-
-			// purge des anciennes lignes de l'audit
-			if (delaiPurge > 0) {
-				final RegDate seuilPurge = RegDate.get().addDays(- delaiPurge);
-				Audit.info(String.format("Purge des lignes d'audit plus vieilles que %d jour(s) - %s.", delaiPurge, RegDateHelper.dateToDisplayString(seuilPurge)));
-				final int nbLignesPurgees = dao.purge(seuilPurge);
-				Audit.info(String.format("Purge de l'audit terminée : %d ligne(s) effacée(s)", nbLignesPurgees));
-			}
 		}
 		finally {
 			AuthenticationHelper.popPrincipal();

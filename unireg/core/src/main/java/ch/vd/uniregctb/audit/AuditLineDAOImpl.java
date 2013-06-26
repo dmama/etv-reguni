@@ -18,7 +18,6 @@ import org.springframework.transaction.support.TransactionCallback;
 import ch.vd.registre.base.dao.GenericDAOImpl;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.dbutils.QueryFragment;
@@ -149,18 +148,10 @@ public class AuditLineDAOImpl extends GenericDAOImpl<AuditLine, Long> implements
 	}
 
 	@Override
-	public int purge(final RegDate seuilPurge) {
-		Assert.notNull(seuilPurge);
-
-		final TransactionTemplate template = new TransactionTemplate(transactionManager);
-		return template.execute(new TransactionCallback<Integer>() {
-			@Override
-			public Integer doInTransaction(TransactionStatus status) {
-				final Timestamp seuilTimestamp = new Timestamp(seuilPurge.asJavaDate().getTime());
-				final Query query = getCurrentSession().createSQLQuery("delete from AUDIT_LOG WHERE LOG_DATE < ?");
-				query.setTimestamp(0, seuilTimestamp);
-				return query.executeUpdate();
-			}
-		});
+	public int purge(RegDate seuilPurge) {
+		final Timestamp seuilTimestamp = new Timestamp(seuilPurge.asJavaDate().getTime());
+		final Query query = getCurrentSession().createSQLQuery("delete from AUDIT_LOG WHERE LOG_DATE < ?");
+		query.setTimestamp(0, seuilTimestamp);
+		return query.executeUpdate();
 	}
 }

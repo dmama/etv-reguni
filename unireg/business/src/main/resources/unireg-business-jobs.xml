@@ -468,6 +468,13 @@
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="tiersDAO" ref="tiersDAO" />
 	</bean>
+	
+	<bean id="auditPurgeJob" parent="schedulerJob" class="ch.vd.uniregctb.database.AuditLogPurgeJob">
+		<constructor-arg value="710"/>
+		<constructor-arg value="Purger les vieilles entrées dans le log d'audit"/>
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="auditLineDAO" ref="auditLineDAO"/>
+	</bean>
 
     <bean id="cacheResetJob" parent="schedulerJob" class="ch.vd.uniregctb.cache.CacheResetJob">
         <constructor-arg value="801"/>
