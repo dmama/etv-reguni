@@ -469,7 +469,7 @@ public class PartyWebServiceSIPFTest extends AbstractPartyWebServiceTest {
 		assertNull(compteMandataire.getClearing());
 		assertNull(compteMandataire.getBicAddress());
 		assertEquals(AccountNumberFormat.IBAN, compteMandataire.getFormat());
-		assertEquals("ALCAP", trimValiPattern(compteMandataire.getOwnerName()));
+		assertEquals("Deloitte AG", trimValiPattern(compteMandataire.getOwnerName()));
 		assertEquals("Credit Suisse AG", trimValiPattern(compteMandataire.getBankName()));
 	}
 
@@ -734,7 +734,7 @@ public class PartyWebServiceSIPFTest extends AbstractPartyWebServiceTest {
 
 		final FormattedAddress adressePoursuiteFormattee = addressPoursuite.getFormattedAddress();
 		assertNotNull(adressePoursuiteFormattee);
-		assertEquals("Fiber Seal (Romandie)", trimValiPattern(adressePoursuiteFormattee.getLine1()));
+		assertEquals("Fiber Seal (Romandie) SA", trimValiPattern(adressePoursuiteFormattee.getLine1()));
 		assertEquals("en liquidation", trimValiPattern(adressePoursuiteFormattee.getLine2()));
 		assertEquals("Quai du Seujet 28A", trimValiPattern(adressePoursuiteFormattee.getLine3()));
 		assertEquals("1201 Genève", trimValiPattern(adressePoursuiteFormattee.getLine4()));
@@ -968,7 +968,7 @@ public class PartyWebServiceSIPFTest extends AbstractPartyWebServiceTest {
 			assertNotNull(destinataire);
 			assertEquals("Madame, Monsieur", destinataire.getFormalGreeting());
 			assertEquals("Jal holding S.A.", trimValiPattern(destinataire.getOrganisationName()));
-			assertNull(trimValiPattern(destinataire.getOrganisationNameAddOn1()));
+			assertEquals("", trimValiPattern(destinataire.getOrganisationNameAddOn1()));
 			assertEquals("en liquidation", trimValiPattern(destinataire.getOrganisationNameAddOn2()));
 
 			final AddressInformation destination = adresse.getAddressInformation();
@@ -999,7 +999,7 @@ public class PartyWebServiceSIPFTest extends AbstractPartyWebServiceTest {
 			assertNotNull(destinataire);
 			assertEquals("Madame, Monsieur", destinataire.getFormalGreeting());
 			assertEquals("Jal holding S.A.", trimValiPattern(destinataire.getOrganisationName()));
-			assertNull(trimValiPattern(destinataire.getOrganisationNameAddOn1()));
+			assertEquals("", trimValiPattern(destinataire.getOrganisationNameAddOn1()));
 			assertEquals("en liquidation", trimValiPattern(destinataire.getOrganisationNameAddOn2()));
 
 			final AddressInformation destination = adresse.getAddressInformation();

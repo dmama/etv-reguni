@@ -463,7 +463,7 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		assertNull(compteMandataire.getClearing());
 		assertNull(compteMandataire.getAdresseBicSwift());
 		assertEquals(FormatNumeroCompte.IBAN, compteMandataire.getFormat());
-		assertEquals("ALCAP", trimValiPattern(compteMandataire.getTitulaire()));
+		assertEquals("Deloitte AG", trimValiPattern(compteMandataire.getTitulaire()));
 		assertEquals("Credit Suisse AG", trimValiPattern(compteMandataire.getNomInstitution()));
 	}
 
@@ -663,7 +663,7 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 
 		final AdresseEnvoi adressePoursuiteFormattee = pm.getAdressePoursuiteFormattee();
 		assertNotNull(adressePoursuiteFormattee);
-		assertEquals("Fiber Seal (Romandie)", trimValiPattern(adressePoursuiteFormattee.getLigne1()));
+		assertEquals("Fiber Seal (Romandie) SA", trimValiPattern(adressePoursuiteFormattee.getLigne1()));
 		assertEquals("en liquidation", trimValiPattern(adressePoursuiteFormattee.getLigne2()));
 		assertEquals("Quai du Seujet 28A", trimValiPattern(adressePoursuiteFormattee.getLigne3()));
 		assertEquals("1201 Genève", trimValiPattern(adressePoursuiteFormattee.getLigne4()));
@@ -838,10 +838,9 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		assertEquals("Madame, Monsieur", adresseCourrier.getFormuleAppel());
 		{
 			final List<String> nomsPrenoms = adresseCourrier.getNomsPrenoms();
-			assertEquals(3, nomsPrenoms.size());
+			assertEquals(2, nomsPrenoms.size());
 			assertEquals("Jal holding S.A.", trimValiPattern(nomsPrenoms.get(0)));
-			assertNull(trimValiPattern(nomsPrenoms.get(1)));
-			assertEquals("en liquidation", trimValiPattern(nomsPrenoms.get(2)));
+			assertEquals("en liquidation", trimValiPattern(nomsPrenoms.get(1)));
 		}
 		assertEquals("pa Fidu. Commerce & Industrie", adresseCourrier.getComplement());
 		assertNull(adresseCourrier.getPourAdresse());
@@ -863,10 +862,9 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		assertEquals("Madame, Monsieur", adresseDomicile.getFormuleAppel());
 		{
 			final List<String> nomsPrenoms = adresseDomicile.getNomsPrenoms();
-			assertEquals(3, nomsPrenoms.size());
+			assertEquals(2, nomsPrenoms.size());
 			assertEquals("Jal holding S.A.", trimValiPattern(nomsPrenoms.get(0)));
-			assertNull(trimValiPattern(nomsPrenoms.get(1)));
-			assertEquals("en liquidation", trimValiPattern(nomsPrenoms.get(2)));
+			assertEquals("en liquidation", trimValiPattern(nomsPrenoms.get(1)));
 		}
 		assertEquals("Fid.Commerce & Industrie S.A.", adresseDomicile.getComplement());
 		assertNull(adresseDomicile.getPourAdresse());
