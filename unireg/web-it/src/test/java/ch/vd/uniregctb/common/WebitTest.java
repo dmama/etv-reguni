@@ -52,7 +52,7 @@ public abstract class WebitTest {
 	 */
 	public static String trimValiPattern(String string) {
 		if (string == null) {
-			return StringUtils.EMPTY;
+			return null;
 		}
 		else {
 			return StringUtils.trimToEmpty(valiPattern.matcher(string).replaceAll(""));
