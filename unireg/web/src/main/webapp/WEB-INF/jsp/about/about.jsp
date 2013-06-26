@@ -86,7 +86,6 @@
 				<h3>Personnes ayant contribué à Unireg par le passé</h3>
 				<ul>
 					<li>Akram Ben Aissi</li>
-					<li>Alain Langel</li>
 					<li>Andréa Osmani</li>
 					<li>Annie Ourliac</li>
 					<li>Christophe Friederich</li>
