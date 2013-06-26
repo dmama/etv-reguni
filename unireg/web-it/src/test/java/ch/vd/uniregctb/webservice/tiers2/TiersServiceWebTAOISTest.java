@@ -1075,7 +1075,7 @@ public class TiersServiceWebTAOISTest extends AbstractTiersServiceWebTest {
 
 		// l'adresse d'envoi n'a pas de salutations
 		assertNull(adresseEnvoi.getSalutations());
-		assertEquals("Banque Cantonale Vaudoise.", trimValiPattern(adresseEnvoi.getLigne1()));
+		assertEquals("Banque Cantonale Vaudoise", trimValiPattern(adresseEnvoi.getLigne1()));
 		assertEquals("pa Comptabilité financière", trimValiPattern(adresseEnvoi.getLigne2()));
 		assertEquals("M. Daniel Küffer / CP 300", trimValiPattern(adresseEnvoi.getLigne3()));
 		assertEquals("1001 Lausanne", adresseEnvoi.getLigne4());
@@ -1085,7 +1085,7 @@ public class TiersServiceWebTAOISTest extends AbstractTiersServiceWebTest {
 		{
 			final List<String> nomsPrenoms = adresseEnvoi.getNomsPrenoms();
 			assertEquals(1, nomsPrenoms.size());
-			assertEquals("Banque Cantonale Vaudoise.", trimValiPattern(nomsPrenoms.get(0)));
+			assertEquals("Banque Cantonale Vaudoise", trimValiPattern(nomsPrenoms.get(0)));
 		}
 		assertEquals("pa Comptabilité financière", adresseEnvoi.getComplement());
 		assertNull(adresseEnvoi.getPourAdresse());

@@ -184,12 +184,12 @@ public class TiersServiceWebPoursuiteTest extends AbstractTiersServiceWebTest {
 		final AdresseEnvoi domicile = tiers.getAdresseDomicileFormattee();
 		assertAdresseEnvoi(domicile, "Madame", "Anabela Lopes Magalhaes", "Avenue de Marcelin 8", "1110 Morges");
 		assertEquals(TypeAffranchissement.SUISSE, domicile.getTypeAffranchissement());
-		assertAdresseEnvoi(tiers.getAdresseEnvoi(), "Madame", "Anabela Lopes Magalhaes", "p.a. TUTEUR GENERAL VD", "Chemin de Mornex 32", "1014 Lausanne Adm cant");
+		assertAdresseEnvoi(tiers.getAdresseEnvoi(), "Madame", "Anabela Lopes Magalhaes", "p.a. OFF.CURATELLES & TUTELLES", "Chemin de Mornex 32", "1014 Lausanne Adm cant");
 
 		// devrait être ci-après mais l'info n'est pas à jour dans le host : assertAdresseEnvoi(tiers.getAdressePoursuiteFormattee(), "Justice de Paix des districts du Jura-Nord vaudois et du Gros-de-Vaud", "Case Postale 693", "Rue du Pré 2", "1400 Yverdon-les-Bains");
 		assertAdresseEnvoi(tiers.getAdressePoursuiteFormattee(), "Monsieur le Juge de Paix de Belmont/Conc", "ise/Champvent/Grandson/Ste-Croix/Yverdon", "Rue du Lac", "1400 Yverdon-les-Bains");
 
-		assertAdresseEnvoiAutreTiers(tiers.getAdressePoursuiteAutreTiersFormattee(), TypeAdressePoursuiteAutreTiers.TUTELLE, "Office du tuteur général", "du Canton de Vaud", "Chemin de Mornex 32",
+		assertAdresseEnvoiAutreTiers(tiers.getAdressePoursuiteAutreTiersFormattee(), TypeAdressePoursuiteAutreTiers.TUTELLE, "Office des curatelles et tutelles", "professionnelles du canton de Vaud", "Chemin de Mornex 32",
 				"1014 Lausanne Adm cant");
 	}
 
@@ -211,10 +211,10 @@ public class TiersServiceWebPoursuiteTest extends AbstractTiersServiceWebTest {
 
 		// Teste les adresses formattées
 		assertAdresseEnvoi(tiers.getAdresseDomicileFormattee(), "Monsieur", "Claude-Alain Proz", "Izmir", "Turquie");
-		assertAdresseEnvoi(tiers.getAdresseEnvoi(), "Monsieur", "Claude-Alain Proz", "p.a. KPMG AG (KPMG SA) (KPMG Ltd)", "Badenerstr. 172 - Postfach", "8026 Zürich");
-		assertAdresseEnvoi(tiers.getAdressePoursuiteFormattee(), "KPMG AG", "(KPMG SA)", "(KPMG Ltd)", "Badenerstr. 172 - Postfach", "8026 Zürich");
-		assertAdresseEnvoiAutreTiers(tiers.getAdressePoursuiteAutreTiersFormattee(), TypeAdressePoursuiteAutreTiers.MANDATAIRE, "KPMG AG", "(KPMG SA)", "(KPMG Ltd)", "Badenerstr. 172 - Postfach",
-				"8026 Zürich");
+		assertAdresseEnvoi(tiers.getAdresseEnvoi(), "Monsieur", "Claude-Alain Proz", "p.a. KPMG AG (KPMG SA) (KPMG Ltd)", "Badenerstrasse 172", "8004 Zürich");
+		assertAdresseEnvoi(tiers.getAdressePoursuiteFormattee(), "KPMG AG", "(KPMG SA)", "(KPMG Ltd)", "Badenerstrasse 172", "8004 Zürich");
+		assertAdresseEnvoiAutreTiers(tiers.getAdressePoursuiteAutreTiersFormattee(), TypeAdressePoursuiteAutreTiers.MANDATAIRE, "KPMG AG", "(KPMG SA)", "(KPMG Ltd)", "Badenerstrasse 172",
+				"8004 Zürich");
 	}
 
 	@Test
