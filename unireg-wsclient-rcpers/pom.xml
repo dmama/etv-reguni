@@ -9,7 +9,7 @@
 	<groupId>ch.vd.uniregctb</groupId>
 	<artifactId>unireg-wsclient-rcpers</artifactId>
 	<packaging>jar</packaging>
-	<version>4.0</version>
+	<version>4.1</version>
 
 	<name>Unireg - Client WS RCPers v4</name>
 	<description>Unireg - Client Java pour le web-service d'échange de données v4 de RCPers</description>
@@ -18,12 +18,12 @@
 		<dependency>
 			<groupId>ch.vd.uniregctb</groupId>
 			<artifactId>unireg-jaxb2-rcpers</artifactId>
-			<version>2.0</version>
+			<version>2.2</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.vd.registre</groupId>
 			<artifactId>shared-date</artifactId>
-			<version>1.6.1</version>
+			<version>2.0.7</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.cxf</groupId>
@@ -70,8 +70,8 @@
 				<version>2.0.2</version>
 				<configuration>
 					<encoding>UTF-8</encoding>
-					<source>1.6</source>
-					<target>1.6</target>
+					<source>1.7</source>
+					<target>1.7</target>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -108,7 +108,7 @@
 		<copyright.year>2013</copyright.year>
 		<amp.genericCore>true</amp.genericCore>
 		<amp.fullSource>false</amp.fullSource>
-		<spring.version>3.1.4.RELEASE</spring.version>
+		<spring.version>3.2.3.RELEASE</spring.version>
 		<cxf.version>2.6.0.fuse-71-047</cxf.version>
 		<log4j.version>1.2.17</log4j.version>
 		<junit.version>4.10</junit.version>
