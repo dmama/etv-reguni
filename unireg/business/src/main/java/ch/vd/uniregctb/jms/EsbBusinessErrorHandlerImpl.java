@@ -35,7 +35,7 @@ public class EsbBusinessErrorHandlerImpl implements EsbBusinessErrorHandler {
 		esbTemplate.send(esbMessage);
 	}
 
-	protected EsbMessageImpl buildEsbErrorMessage(EsbMessage esbMessage, String errorDescription, Throwable throwable, EsbBusinessCode errorCode) throws IOException {
+	protected static EsbMessageImpl buildEsbErrorMessage(EsbMessage esbMessage, String errorDescription, Throwable throwable, EsbBusinessCode errorCode) throws IOException {
 		final EsbMessageImpl m = (EsbMessageImpl) esbMessage;
 
 		if (throwable != null) {

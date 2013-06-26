@@ -12,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.technical.esb.EsbMessage;
 
-public class EsbBusinessErrorCollector extends EsbBusinessErrorHandlerImpl {
+public class EsbBusinessErrorCollector implements EsbBusinessErrorHandler {
 
 	private final Lock lock = new ReentrantLock();
 	private final Condition newElementCondition = lock.newCondition();
@@ -20,7 +20,7 @@ public class EsbBusinessErrorCollector extends EsbBusinessErrorHandlerImpl {
 
 	@Override
 	public void onBusinessError(EsbMessage esbMessage, String errorDescription, @Nullable Throwable throwable, EsbBusinessCode errorCode) throws Exception {
-		final EsbMessage err = buildEsbErrorMessage(esbMessage, errorDescription, throwable, errorCode);
+		final EsbMessage err = EsbBusinessErrorHandlerImpl.buildEsbErrorMessage(esbMessage, errorDescription, throwable, errorCode);
 		lock.lock();
 		try {
 			collectedItems.add(err);
