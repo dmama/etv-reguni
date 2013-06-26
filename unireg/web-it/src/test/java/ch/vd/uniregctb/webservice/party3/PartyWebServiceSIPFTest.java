@@ -968,8 +968,8 @@ public class PartyWebServiceSIPFTest extends AbstractPartyWebServiceTest {
 			assertNotNull(destinataire);
 			assertEquals("Madame, Monsieur", destinataire.getFormalGreeting());
 			assertEquals("Jal holding S.A.", trimValiPattern(destinataire.getOrganisationName()));
-			assertEquals("", trimValiPattern(destinataire.getOrganisationNameAddOn1()));
-			assertEquals("en liquidation", trimValiPattern(destinataire.getOrganisationNameAddOn2()));
+			assertEquals("en liquidation", trimValiPattern(destinataire.getOrganisationNameAddOn1()));
+			assertNull(destinataire.getOrganisationNameAddOn2());
 
 			final AddressInformation destination = adresse.getAddressInformation();
 			assertEquals(TariffZone.SWITZERLAND, destination.getTariffZone());
@@ -999,8 +999,8 @@ public class PartyWebServiceSIPFTest extends AbstractPartyWebServiceTest {
 			assertNotNull(destinataire);
 			assertEquals("Madame, Monsieur", destinataire.getFormalGreeting());
 			assertEquals("Jal holding S.A.", trimValiPattern(destinataire.getOrganisationName()));
-			assertEquals("", trimValiPattern(destinataire.getOrganisationNameAddOn1()));
-			assertEquals("en liquidation", trimValiPattern(destinataire.getOrganisationNameAddOn2()));
+			assertEquals("en liquidation", trimValiPattern(destinataire.getOrganisationNameAddOn1()));
+			assertNull(destinataire.getOrganisationNameAddOn2());
 
 			final AddressInformation destination = adresse.getAddressInformation();
 			assertEquals(TariffZone.SWITZERLAND, destination.getTariffZone());

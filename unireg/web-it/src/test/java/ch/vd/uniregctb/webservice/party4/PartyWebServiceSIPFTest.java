@@ -540,10 +540,10 @@ public class PartyWebServiceSIPFTest extends AbstractPartyWebServiceTest {
 		final FormattedAddress adresseEnvoi = addressCourrier1.getFormattedAddress();
 		assertNotNull(adresseEnvoi);
 		assertEquals("Kalesa S.A.", trimValiPattern(adresseEnvoi.getLine1()));
-		assertNull(trimValiPattern(adresseEnvoi.getLine2()));
-		assertEquals("en liquidation", trimValiPattern(adresseEnvoi.getLine3()));
-		assertEquals("p.a. Office des faillites", trimValiPattern(adresseEnvoi.getLine4()));
-		assertEquals("1860 Aigle", trimValiPattern(adresseEnvoi.getLine5()));
+		assertEquals("en liquidation", trimValiPattern(adresseEnvoi.getLine2()));
+		assertEquals("p.a. Office des faillites", trimValiPattern(adresseEnvoi.getLine3()));
+		assertEquals("1860 Aigle", trimValiPattern(adresseEnvoi.getLine4()));
+		assertNull(adresseEnvoi.getLine5());
 		assertNull(adresseEnvoi.getLine6());
 	}
 
@@ -968,8 +968,8 @@ public class PartyWebServiceSIPFTest extends AbstractPartyWebServiceTest {
 			assertNotNull(destinataire);
 			assertEquals("Madame, Monsieur", destinataire.getFormalGreeting());
 			assertEquals("Jal holding S.A.", trimValiPattern(destinataire.getOrganisationName()));
-			assertEquals("", trimValiPattern(destinataire.getOrganisationNameAddOn1()));
-			assertEquals("en liquidation", trimValiPattern(destinataire.getOrganisationNameAddOn2()));
+			assertEquals("en liquidation", trimValiPattern(destinataire.getOrganisationNameAddOn1()));
+			assertNull(destinataire.getOrganisationNameAddOn2());
 
 			final AddressInformation destination = adresse.getAddressInformation();
 			assertEquals(TariffZone.SWITZERLAND, destination.getTariffZone());
@@ -999,8 +999,8 @@ public class PartyWebServiceSIPFTest extends AbstractPartyWebServiceTest {
 			assertNotNull(destinataire);
 			assertEquals("Madame, Monsieur", destinataire.getFormalGreeting());
 			assertEquals("Jal holding S.A.", trimValiPattern(destinataire.getOrganisationName()));
-			assertEquals("", trimValiPattern(destinataire.getOrganisationNameAddOn1()));
-			assertEquals("en liquidation", trimValiPattern(destinataire.getOrganisationNameAddOn2()));
+			assertEquals("en liquidation", trimValiPattern(destinataire.getOrganisationNameAddOn1()));
+			assertNull(destinataire.getOrganisationNameAddOn2());
 
 			final AddressInformation destination = adresse.getAddressInformation();
 			assertEquals(TariffZone.SWITZERLAND, destination.getTariffZone());
