@@ -10,22 +10,12 @@ public class AuditManager implements InitializingBean, DisposableBean {
 	private AuditLineDAO dao;
 	private String appName;
 
-	/**
-	 * Délai (en jours) au delà duquel les vieilles lignes d'audit doivent
-	 * être effacées au démarrage de l'application (0 = pas de purge)
-	 */
-	private int delaiPurge = 0;
-
 	public void setAuditLineDAO(AuditLineDAO dao) {
 		this.dao = dao;
 	}
 
 	public void setAppName(String appName) {
 		this.appName = appName;
-	}
-
-	public void setDelaiPurge(int delaiPurge) {
-		this.delaiPurge = delaiPurge;
 	}
 
 	@Override
