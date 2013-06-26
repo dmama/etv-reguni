@@ -465,12 +465,12 @@ public class PartyWebServiceSIPFTest extends AbstractPartyWebServiceTest {
 		final BankAccount compteMandataire = comptes.get(0);
 		assertNotNull(compteMandataire);
 		assertEquals(426, compteMandataire.getOwnerPartyNumber());
-		assertEquals("230-575.013.03", compteMandataire.getAccountNumber());
+		assertEquals("CH6304835128860881000", compteMandataire.getAccountNumber());
 		assertNull(compteMandataire.getClearing());
 		assertNull(compteMandataire.getBicAddress());
-		assertEquals(AccountNumberFormat.SWISS_SPECIFIC, compteMandataire.getFormat());
-		assertEquals("Deloitte AG", trimValiPattern(compteMandataire.getOwnerName()));
-		assertEquals("UBS AG", trimValiPattern(compteMandataire.getBankName()));
+		assertEquals(AccountNumberFormat.IBAN, compteMandataire.getFormat());
+		assertEquals("ALCAP", trimValiPattern(compteMandataire.getOwnerName()));
+		assertEquals("Credit Suisse AG", trimValiPattern(compteMandataire.getBankName()));
 	}
 
 	@Test
@@ -645,9 +645,9 @@ public class PartyWebServiceSIPFTest extends AbstractPartyWebServiceTest {
 		final Address courrier = courriers.get(courriers.size() - 1);
 		final FormattedAddress adresseEnvoi = courrier.getFormattedAddress();
 		assertNotNull(adresseEnvoi);
-		assertEquals("Fonds prévoyance en fa", trimValiPattern(adresseEnvoi.getLine1()));
-		assertEquals("personnel Sté électriq", trimValiPattern(adresseEnvoi.getLine2()));
-		assertEquals("intercommunale de la C", trimValiPattern(adresseEnvoi.getLine3()));
+		assertEquals("Fonds prévoyance en faveur du", trimValiPattern(adresseEnvoi.getLine1()));
+		assertEquals("personnel Sté électrique", trimValiPattern(adresseEnvoi.getLine2()));
+		assertEquals("intercommunale de la Côte", trimValiPattern(adresseEnvoi.getLine3()));
 		assertEquals("Rte des Avouillons 2 / CP 321", trimValiPattern(adresseEnvoi.getLine4()));
 		assertEquals("1196 Gland", trimValiPattern(adresseEnvoi.getLine5()));
 		assertNull(adresseEnvoi.getLine6());
@@ -667,7 +667,7 @@ public class PartyWebServiceSIPFTest extends AbstractPartyWebServiceTest {
 		assertEquals(37L, pm.getNumber());
 		assertEquals("Fiduciaire Pierre Terrier", trimValiPattern(pm.getContactPerson()));
 		assertEquals("FIBER SEAL ROMANDIE", trimValiPattern(pm.getShortName()));
-		assertEquals("Fiber Seal (Romandie)", trimValiPattern(pm.getName1()));
+		assertEquals("Fiber Seal (Romandie) SA", trimValiPattern(pm.getName1()));
 		assertEquals("", trimValiPattern(pm.getName2()));
 		assertEquals("en liquidation", trimValiPattern(pm.getName3()));
 
@@ -699,11 +699,11 @@ public class PartyWebServiceSIPFTest extends AbstractPartyWebServiceTest {
 
 		final FormattedAddress adresseDomicileFormattee = addressDomicile.getFormattedAddress();
 		assertNotNull(adresseDomicileFormattee);
-		assertEquals("Fiber Seal (Romandie)", trimValiPattern(adresseDomicileFormattee.getLine1()));
-		assertEquals("", trimValiPattern(adresseDomicileFormattee.getLine2()));
-		assertEquals("en liquidation", trimValiPattern(adresseDomicileFormattee.getLine3()));
-		assertEquals("Quai du Seujet 28A", trimValiPattern(adresseDomicileFormattee.getLine4()));
-		assertEquals("1201 Genève", trimValiPattern(adresseDomicileFormattee.getLine5()));
+		assertEquals("Fiber Seal (Romandie) SA", trimValiPattern(adresseDomicileFormattee.getLine1()));
+		assertEquals("en liquidation", trimValiPattern(adresseDomicileFormattee.getLine2()));
+		assertEquals("Quai du Seujet 28A", trimValiPattern(adresseDomicileFormattee.getLine3()));
+		assertEquals("1201 Genève", trimValiPattern(adresseDomicileFormattee.getLine4()));
+		assertNull(adresseDomicileFormattee.getLine5());
 		assertNull(adresseDomicileFormattee.getLine6());
 
 		// Récupération des adresses de poursuite
@@ -958,11 +958,11 @@ public class PartyWebServiceSIPFTest extends AbstractPartyWebServiceTest {
 			final FormattedAddress adresseFormatteee = adresse.getFormattedAddress();
 			assertNotNull(adresseFormatteee);
 			assertEquals("Jal holding S.A.", trimValiPattern(adresseFormatteee.getLine1())); // <-- raison sociale ligne 1
-			assertEquals("", trimValiPattern(adresseFormatteee.getLine2())); // <-- raison sociale ligne 2
-			assertEquals("en liquidation", trimValiPattern(adresseFormatteee.getLine3())); // <-- raison sociale ligne 3
-			assertEquals("pa Fidu. Commerce & Industrie", adresseFormatteee.getLine4());
-			assertEquals("Avenue de la Gare 10", adresseFormatteee.getLine5());
-			assertEquals("1003 Lausanne", adresseFormatteee.getLine6());
+			assertEquals("en liquidation", trimValiPattern(adresseFormatteee.getLine2())); // <-- raison sociale ligne 2
+			assertEquals("pa Fidu. Commerce & Industrie", adresseFormatteee.getLine3());
+			assertEquals("Avenue de la Gare 10", adresseFormatteee.getLine4());
+			assertEquals("1003 Lausanne", adresseFormatteee.getLine5());
+			assertNull(adresseFormatteee.getLine6());
 
 			final OrganisationMailAddressInfo destinataire = adresse.getOrganisation();
 			assertNotNull(destinataire);
@@ -989,11 +989,11 @@ public class PartyWebServiceSIPFTest extends AbstractPartyWebServiceTest {
 			final FormattedAddress adresseFormattee = adresse.getFormattedAddress();
 			assertNotNull(adresseFormattee);
 			assertEquals("Jal holding S.A.", trimValiPattern(adresseFormattee.getLine1())); // <-- raison sociale ligne 1
-			assertEquals("", trimValiPattern(adresseFormattee.getLine2())); // <-- raison sociale ligne 2
-			assertEquals("en liquidation", trimValiPattern(adresseFormattee.getLine3())); // <-- raison sociale ligne 3
-			assertEquals("Fid.Commerce & Industrie S.A.", adresseFormattee.getLine4());
-			assertEquals("Chemin Messidor 5", adresseFormattee.getLine5());
-			assertEquals("1006 Lausanne", adresseFormattee.getLine6());
+			assertEquals("en liquidation", trimValiPattern(adresseFormattee.getLine2())); // <-- raison sociale ligne 2
+			assertEquals("Fid.Commerce & Industrie S.A.", adresseFormattee.getLine3());
+			assertEquals("Chemin Messidor 5", adresseFormattee.getLine4());
+			assertEquals("1006 Lausanne", adresseFormattee.getLine5());
+			assertNull(adresseFormattee.getLine6());
 
 			final OrganisationMailAddressInfo destinataire = adresse.getOrganisation();
 			assertNotNull(destinataire);

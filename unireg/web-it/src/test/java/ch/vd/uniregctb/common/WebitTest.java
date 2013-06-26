@@ -16,6 +16,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlFileInput;
 import com.gargoylesoftware.htmlunit.html.HtmlInput;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.Before;
@@ -51,10 +52,10 @@ public abstract class WebitTest {
 	 */
 	public static String trimValiPattern(String string) {
 		if (string == null) {
-			return null;
+			return StringUtils.EMPTY;
 		}
 		else {
-			return valiPattern.matcher(string).replaceAll("").trim();
+			return StringUtils.trimToEmpty(valiPattern.matcher(string).replaceAll(""));
 		}
 	}
 

@@ -1318,8 +1318,8 @@ public class PartyWebServiceTest extends AbstractPartyWebServiceTest {
 		final List<Address> adresses = pm.getMailAddresses();
 		final FormattedAddress adresse = adresses.get(adresses.size() - 1).getFormattedAddress();
 		assertNotNull(adresse);
-		assertEquals("Société immobilière de", trimValiPattern(adresse.getLine1()));
-		assertEquals("Place centrale S.A. Pe", trimValiPattern(adresse.getLine2()));
+		assertEquals("Société immobilière de la", trimValiPattern(adresse.getLine1()));
+		assertEquals("Place centrale S.A. Penthalaz", trimValiPattern(adresse.getLine2()));
 		assertEquals("en liquidation", trimValiPattern(adresse.getLine3()));
 		assertEquals("c/o Mme Hugette Grisel", trimValiPattern(adresse.getLine4()));
 		assertEquals("Rue du Chêne 9", trimValiPattern(adresse.getLine5()));
@@ -1344,11 +1344,11 @@ public class PartyWebServiceTest extends AbstractPartyWebServiceTest {
 		final FormattedAddress adresse = adresses.get(adresses.size() - 1).getFormattedAddress();
 		assertNotNull(adresse);
 		assertEquals("Jal holding S.A.", trimValiPattern(adresse.getLine1()));
-		assertEquals("", trimValiPattern(adresse.getLine2()));
-		assertEquals("en liquidation", trimValiPattern(adresse.getLine3()));
-		assertEquals("pa Fidu. Commerce & Industrie", trimValiPattern(adresse.getLine4()));
-		assertEquals("Avenue de la Gare 10", trimValiPattern(adresse.getLine5()));
-		assertEquals("1003 Lausanne", trimValiPattern(adresse.getLine6()));
+		assertEquals("en liquidation", trimValiPattern(adresse.getLine2()));
+		assertEquals("pa Fidu. Commerce & Industrie", trimValiPattern(adresse.getLine3()));
+		assertEquals("Avenue de la Gare 10", trimValiPattern(adresse.getLine4()));
+		assertEquals("1003 Lausanne", trimValiPattern(adresse.getLine5()));
+		assertNull(adresse.getLine6());
 	}
 
 	// [SIFISC-2057]

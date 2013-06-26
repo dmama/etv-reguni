@@ -459,12 +459,12 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		final CompteBancaire compteMandataire = comptes.get(0);
 		assertNotNull(compteMandataire);
 		assertEquals(426, compteMandataire.getNumeroTiersTitulaire());
-		assertEquals("230-575.013.03", compteMandataire.getNumero());
+		assertEquals("CH6304835128860881000", compteMandataire.getNumero());
 		assertNull(compteMandataire.getClearing());
 		assertNull(compteMandataire.getAdresseBicSwift());
-		assertEquals(FormatNumeroCompte.SPECIFIQUE_CH, compteMandataire.getFormat());
-		assertEquals("Deloitte AG", trimValiPattern(compteMandataire.getTitulaire()));
-		assertEquals("UBS AG", trimValiPattern(compteMandataire.getNomInstitution()));
+		assertEquals(FormatNumeroCompte.IBAN, compteMandataire.getFormat());
+		assertEquals("ALCAP", trimValiPattern(compteMandataire.getTitulaire()));
+		assertEquals("Credit Suisse AG", trimValiPattern(compteMandataire.getNomInstitution()));
 	}
 
 	@Test
@@ -587,9 +587,9 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 
 		final AdresseEnvoi adresseEnvoi = pm.getAdresseEnvoi();
 		assertNotNull(adresseEnvoi);
-		assertEquals("Fonds prévoyance en fa", trimValiPattern(adresseEnvoi.getLigne1()));
-		assertEquals("personnel Sté électriq", trimValiPattern(adresseEnvoi.getLigne2()));
-		assertEquals("intercommunale de la C", trimValiPattern(adresseEnvoi.getLigne3()));
+		assertEquals("Fonds prévoyance en faveur du", trimValiPattern(adresseEnvoi.getLigne1()));
+		assertEquals("personnel Sté électrique", trimValiPattern(adresseEnvoi.getLigne2()));
+		assertEquals("intercommunale de la Côte", trimValiPattern(adresseEnvoi.getLigne3()));
 		assertEquals("Rte des Avouillons 2 / CP 321", trimValiPattern(adresseEnvoi.getLigne4()));
 		assertEquals("1196 Gland", trimValiPattern(adresseEnvoi.getLigne5()));
 		assertNull(adresseEnvoi.getLigne6());
@@ -612,7 +612,7 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		assertEquals(37L, pm.getNumero());
 		assertEquals("Fiduciaire Pierre Terrier", trimValiPattern(pm.getPersonneContact()));
 		assertEquals("FIBER SEAL ROMANDIE", trimValiPattern(pm.getDesignationAbregee()));
-		assertEquals("Fiber Seal (Romandie)", trimValiPattern(pm.getRaisonSociale1()));
+		assertEquals("Fiber Seal (Romandie) SA", trimValiPattern(pm.getRaisonSociale1()));
 		assertEquals("", trimValiPattern(pm.getRaisonSociale2()));
 		assertEquals("en liquidation", trimValiPattern(pm.getRaisonSociale3()));
 
@@ -635,11 +635,11 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 
 		final AdresseEnvoi adresseDomicileFormattee = pm.getAdresseDomicileFormattee();
 		assertNotNull(adresseDomicileFormattee);
-		assertEquals("Fiber Seal (Romandie)", trimValiPattern(adresseDomicileFormattee.getLigne1()));
-		assertEquals("", trimValiPattern(adresseDomicileFormattee.getLigne2()));
-		assertEquals("en liquidation", trimValiPattern(adresseDomicileFormattee.getLigne3()));
-		assertEquals("Quai du Seujet 28A", trimValiPattern(adresseDomicileFormattee.getLigne4()));
-		assertEquals("1201 Genève", trimValiPattern(adresseDomicileFormattee.getLigne5()));
+		assertEquals("Fiber Seal (Romandie) SA", trimValiPattern(adresseDomicileFormattee.getLigne1()));
+		assertEquals("en liquidation", trimValiPattern(adresseDomicileFormattee.getLigne2()));
+		assertEquals("Quai du Seujet 28A", trimValiPattern(adresseDomicileFormattee.getLigne3()));
+		assertEquals("1201 Genève", trimValiPattern(adresseDomicileFormattee.getLigne4()));
+		assertNull(adresseDomicileFormattee.getLigne5());
 		assertNull(adresseDomicileFormattee.getLigne6());
 		assertTrue(adresseDomicileFormattee.isIsSuisse());
 		assertEquals(TypeAffranchissement.SUISSE, adresseDomicileFormattee.getTypeAffranchissement());
@@ -827,11 +827,11 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		final AdresseEnvoi adresseCourrier = pm.getAdresseEnvoi();
 		assertNotNull(adresseCourrier);
 		assertEquals("Jal holding S.A.", trimValiPattern(adresseCourrier.getLigne1())); // <-- raison sociale ligne 1
-		assertEquals("", trimValiPattern(adresseCourrier.getLigne2())); // <-- raison sociale ligne 2
-		assertEquals("en liquidation", trimValiPattern(adresseCourrier.getLigne3())); // <-- raison sociale ligne 3
-		assertEquals("pa Fidu. Commerce & Industrie", adresseCourrier.getLigne4());
-		assertEquals("Avenue de la Gare 10", adresseCourrier.getLigne5());
-		assertEquals("1003 Lausanne", adresseCourrier.getLigne6());
+		assertEquals("en liquidation", trimValiPattern(adresseCourrier.getLigne2())); // <-- raison sociale ligne 2
+		assertEquals("pa Fidu. Commerce & Industrie", adresseCourrier.getLigne3());
+		assertEquals("Avenue de la Gare 10", adresseCourrier.getLigne4());
+		assertEquals("1003 Lausanne", adresseCourrier.getLigne5());
+		assertNull(adresseCourrier.getLigne6());
 		assertTrue(adresseCourrier.isIsSuisse());
 		assertEquals(TypeAffranchissement.SUISSE, adresseCourrier.getTypeAffranchissement());
 		assertNull(adresseCourrier.getSalutations());
@@ -853,11 +853,11 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		final AdresseEnvoi adresseDomicile = pm.getAdresseDomicileFormattee();
 		assertNotNull(adresseDomicile);
 		assertEquals("Jal holding S.A.", trimValiPattern(adresseDomicile.getLigne1())); // <-- raison sociale ligne 1
-		assertEquals("", trimValiPattern(adresseDomicile.getLigne2())); // <-- raison sociale ligne 2
-		assertEquals("en liquidation", trimValiPattern(adresseDomicile.getLigne3())); // <-- raison sociale ligne 3
-		assertEquals("Fid.Commerce & Industrie S.A.", adresseDomicile.getLigne4());
-		assertEquals("Chemin Messidor 5", adresseDomicile.getLigne5());
-		assertEquals("1006 Lausanne", adresseDomicile.getLigne6());
+		assertEquals("en liquidation", trimValiPattern(adresseDomicile.getLigne2())); // <-- raison sociale ligne 2
+		assertEquals("Fid.Commerce & Industrie S.A.", adresseDomicile.getLigne3());
+		assertEquals("Chemin Messidor 5", adresseDomicile.getLigne4());
+		assertEquals("1006 Lausanne", adresseDomicile.getLigne5());
+		assertNull(adresseCourrier.getLigne6());
 		assertTrue(adresseDomicile.isIsSuisse());
 		assertNull(adresseDomicile.getSalutations());
 		assertEquals("Madame, Monsieur", adresseDomicile.getFormuleAppel());

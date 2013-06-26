@@ -975,7 +975,7 @@ public class PartyWebServiceTAOISTest extends AbstractPartyWebServiceTest {
 		final Address courrier = courriers.get(courriers.size() - 1);
 		final FormattedAddress adresseEnvoi = courrier.getFormattedAddress();
 		assertNotNull(adresseEnvoi);
-		assertEquals("Banque Cantonale Vaudoise.", trimValiPattern(adresseEnvoi.getLine1()));
+		assertEquals("Banque Cantonale Vaudoise", trimValiPattern(adresseEnvoi.getLine1()));
 		assertEquals("pa Comptabilité financière", trimValiPattern(adresseEnvoi.getLine2()));
 		assertEquals("M. Daniel Küffer / CP 300", trimValiPattern(adresseEnvoi.getLine3()));
 		assertEquals("1001 Lausanne", adresseEnvoi.getLine4());
@@ -985,7 +985,7 @@ public class PartyWebServiceTAOISTest extends AbstractPartyWebServiceTest {
 		final OrganisationMailAddressInfo organisation = courrier.getOrganisation();
 		assertNotNull(organisation);
 		assertEquals("Madame, Monsieur", organisation.getFormalGreeting());
-		assertEquals("Banque Cantonale Vaudoise.", trimValiPattern(organisation.getOrganisationName()));
+		assertEquals("Banque Cantonale Vaudoise", trimValiPattern(organisation.getOrganisationName()));
 		assertNull(organisation.getOrganisationNameAddOn1());
 		assertNull(organisation.getOrganisationNameAddOn2());
 
