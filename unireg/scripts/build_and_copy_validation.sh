@@ -45,7 +45,9 @@ if [ -n "$SNAPSHOT_PRESENT" ]; then
 	exit 1
 fi
 
-(cd unireg/base && mvn $MVN_OPTS clean deploy)
+# JDE 27.06.2013 : on ne publie plus dans NEXUS (pour gagner de la place...), seulement dans le m2 local
+#(cd unireg/base && mvn $MVN_OPTS clean deploy)
+(cd unireg/base && mvn $MVN_OPTS clean install)
 if [ $? != 0 ]; then
 	echo "!!! Erreur lors du build"
 	exit 1
