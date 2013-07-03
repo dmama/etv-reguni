@@ -9,9 +9,11 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -33,14 +35,13 @@ import ch.vd.unireg.interfaces.civil.data.Adresse;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.data.RelationVersIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
+import ch.vd.unireg.interfaces.civil.data.TypeRelationVersIndividu;
 import ch.vd.unireg.interfaces.civil.rcpers.ServiceCivilRCPers;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureTracing;
 import ch.vd.unireg.interfaces.infra.fidor.ServiceInfrastructureFidor;
 import ch.vd.unireg.wsclient.rcpers.RcPersClientImpl;
 import ch.vd.uniregctb.common.StandardBatchIterator;
-import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.webservice.fidor.v5.FidorClientImpl;
 
@@ -64,7 +65,8 @@ public class TableFillerWithCivilValues {
 	private static final String TABLE_NAME = "DUMP_CIVIL";
 	private static final int NB_THREADS = 8;
 	private static final int BATCH_SIZE = 20;
-	private static final String SQL_INSERT = buildInsertSql();
+	private static final String SQL_INSERT_INDIVIDU = buildInsertIndividuSql();
+	private static final String SQL_INSERT_EXCEPTION = buildInsertExceptionSql();
 
 	private static final Logger LOGGER = Logger.getLogger(TableFillerWithCivilValues.class);
 
@@ -254,6 +256,38 @@ public class TableFillerWithCivilValues {
 		});
 	}
 
+	private static class CollectedData {
+		public final long noIndividu;
+		public final Individu individu;
+		public final Exception exception;
+
+		private CollectedData(long noIndividu, Individu individu) {
+			this.noIndividu = noIndividu;
+			this.individu = individu;
+			this.exception = null;
+		}
+
+		private CollectedData(long noIndividu, Exception exception) {
+			this.noIndividu = noIndividu;
+			this.individu = null;
+			this.exception = exception;
+		}
+	}
+
+	private static CollectedData findByNoIndividu(Collection<CollectedData> col, Long noIndividu) {
+		if (col == null || col.isEmpty() || noIndividu == null) {
+			return null;
+		}
+		else {
+			for (CollectedData candidate : col) {
+				if (candidate.noIndividu == noIndividu) {
+					return candidate;
+				}
+			}
+			return null;
+		}
+	}
+
 	private class DataCollector implements Runnable {
 
 		private final List<Long> nosIndividus;
@@ -267,8 +301,8 @@ public class TableFillerWithCivilValues {
 		@Override
 		public void run() {
 			try {
-				final List<Individu> individus = getIndividus(nosIndividus, AttributeIndividu.PARENTS, AttributeIndividu.ADRESSES);
-				dumpIndividus(individus, dbConnectionPool, null);
+				final List<CollectedData> data = getIndividus(nosIndividus, AttributeIndividu.PARENTS, AttributeIndividu.ADRESSES);
+				dumpIndividus(data, dbConnectionPool, null);
 			}
 			catch (Exception e) {
 				throw new RuntimeException("Erreur avec l'un des individus " + Arrays.toString(nosIndividus.toArray()), e);
@@ -276,22 +310,30 @@ public class TableFillerWithCivilValues {
 		}
 	}
 
-	private void dumpIndividus(final List<Individu> individus, ConnectionPool dbConnectionPool, String erreur) throws Exception {
+	private void dumpIndividus(final List<CollectedData> data, ConnectionPool dbConnectionPool, Object loopDetector) throws Exception {
 		try {
 			doInNewConnection(dbConnectionPool, new ConnectionCallback<Object>() {
 				@Override
 				public Object doInConnection(Connection con) throws SQLException {
-					try (final PreparedStatement ps = preparedStatementInsert(con)) {
-						for (Individu ind : individus) {
-							final List<Long> idsParents = new ArrayList<>(2);
-							if (ind.getParents() != null) {
-								for (RelationVersIndividu rel : ind.getParents()) {
-									idsParents.add(rel.getNumeroAutreIndividu());
+					try (final PreparedStatement psIndividu = preparedStatementInsertIndividu(con);
+						 final PreparedStatement psException = preparedStatementInsertException(con)) {
+						for (CollectedData ind : data) {
+							if (ind.individu != null) {
+								final Map<TypeRelationVersIndividu, Long> idsParents = new HashMap<>(2);
+								if (ind.individu.getParents() != null) {
+									for (RelationVersIndividu rel : ind.individu.getParents()) {
+										idsParents.put(rel.getTypeRelation(), rel.getNumeroAutreIndividu());
+									}
 								}
-							}
 
-							final List<Individu> parents = idsParents.isEmpty() ? null : getIndividus(idsParents);
-							insertData(ind, parents, ps);
+								final List<CollectedData> parents = idsParents.isEmpty() ? null : getIndividus(idsParents.values());
+								final CollectedData pere = findByNoIndividu(parents, idsParents.get(TypeRelationVersIndividu.PERE));
+								final CollectedData mere = findByNoIndividu(parents, idsParents.get(TypeRelationVersIndividu.MERE));
+								insertDataIndividu(ind.individu, pere, mere, psIndividu);
+							}
+							else if (ind.exception != null) {
+								insertDataException(ind.noIndividu, ind.exception, psException);
+							}
 						}
 					}
 					return null;
@@ -299,19 +341,19 @@ public class TableFillerWithCivilValues {
 			});
 		}
 		catch (Exception e) {
-			if (individus.size() == 1) {
+			if (data.size() == 1) {
 				// rien à faire de plus, ça pête, ça pête !
-				if (erreur != null) {
+				if (loopDetector != null) {
 					// on part en boucle -> il vaut mieux s'arrêter là... ?
 					throw e;
 				}
 				else {
-					dumpIndividus(Arrays.asList(buildMockIndividu(individus.get(0).getNoTechnique(), e.getMessage())), dbConnectionPool, e.getClass().getName());
+					dumpIndividus(Arrays.asList(new CollectedData(data.get(0).noIndividu, e)), dbConnectionPool, this);
 				}
 			}
 			else {
 				// un par un
-				for (Individu ind : individus) {
+				for (CollectedData ind : data) {
 					dumpIndividus(Arrays.asList(ind), dbConnectionPool, null);
 				}
 			}
@@ -322,19 +364,25 @@ public class TableFillerWithCivilValues {
 		return INCREMENTAL_MODE;
 	}
 
-	private List<Individu> getIndividus(List<Long> nosIndividus, AttributeIndividu... parts) {
+	private List<CollectedData> getIndividus(Collection<Long> nosIndividus, AttributeIndividu... parts) {
 		final long start = System.nanoTime();
 		try {
-			return serviceCivil.getIndividus(nosIndividus, parts);
+			final List<Individu> individus = serviceCivil.getIndividus(nosIndividus, parts);
+			final List<CollectedData> data = new ArrayList<>(individus.size());
+			for (Individu individu : individus) {
+				data.add(new CollectedData(individu.getNoTechnique(), individu));
+			}
+			return data;
 		}
 		catch (Exception e) {
 			if (nosIndividus.size() == 1) {
 				// rien à faire de plus, ça pête déjà pour lui,,,
-				return Arrays.asList(buildMockIndividu(nosIndividus.get(0), e.getMessage()));
+				final Long noIndividu = nosIndividus instanceof List<?> ? ((List<Long>) nosIndividus).get(0) : nosIndividus.iterator().next();
+				return Arrays.asList(new CollectedData(noIndividu, e));
 			}
 			else {
 				// un par un
-				final List<Individu> res = new ArrayList<>(nosIndividus.size());
+				final List<CollectedData> res = new ArrayList<>(nosIndividus.size());
 				for (Long noIndividu : nosIndividus) {
 					res.addAll(getIndividus(Arrays.asList(noIndividu), parts));
 				}
@@ -346,17 +394,11 @@ public class TableFillerWithCivilValues {
 		}
 	}
 
-	private static Individu buildMockIndividu(long noIndividu, String erreur) {
-		final MockIndividu ind = new MockIndividu();
-		ind.setNoTechnique(noIndividu);
-		ind.setNom(StringUtils.abbreviate(erreur, 100));
-		return ind;
-	}
-
 	private static String buildCreateTableSql() {
 		final StringBuilder b = new StringBuilder();
 		b.append("CREATE TABLE ").append(TABLE_NAME).append(" (");
 		b.append("NO_INDIVIDU NUMBER(19) NOT NULL, ");
+		b.append("EXCEPTION NVARCHAR2(255), ");
 		b.append("NOM NVARCHAR2(100), ");
 		b.append("PRENOM NVARCHAR2(100), ");
 		b.append("DATE_NAISSANCE NUMBER(10), ");
@@ -372,6 +414,7 @@ public class TableFillerWithCivilValues {
 		b.append("NPA_ETR_RESIDENCE NVARCHAR2(50), ");
 		b.append("OFS_PAYS_RESIDENCE NUMBER(10), ");
 		b.append("NO_INDIVIDU_PERE NUMBER(19), ");
+		b.append("EXCEPTION_PERE NVARCHAR2(255), ");
 		b.append("NOM_PERE NVARCHAR2(100), ");
 		b.append("PRENOM_PERE NVARCHAR2(100), ");
 		b.append("DATE_NAISSANCE_PERE NUMBER(10), ");
@@ -379,6 +422,7 @@ public class TableFillerWithCivilValues {
 		b.append("AVS13_PERE NVARCHAR2(13), ");
 		b.append("AVS11_PERE NVARCHAR2(11), ");
 		b.append("NO_INDIVIDU_MERE NUMBER(19), ");
+		b.append("EXCEPTION_MERE NVARCHAR2(255), ");
 		b.append("NOM_MERE NVARCHAR2(100), ");
 		b.append("PRENOM_MERE NVARCHAR2(100), ");
 		b.append("DATE_NAISSANCE_MERE NUMBER(10), ");
@@ -389,7 +433,7 @@ public class TableFillerWithCivilValues {
 		return b.toString();
 	}
 
-	private static String buildInsertSql() {
+	private static String buildInsertIndividuSql() {
 		final StringBuilder b = new StringBuilder();
 		b.append("INSERT INTO ").append(TABLE_NAME).append(" (");
 		b.append("NO_INDIVIDU, ");
@@ -408,6 +452,7 @@ public class TableFillerWithCivilValues {
 		b.append("NPA_ETR_RESIDENCE, ");
 		b.append("OFS_PAYS_RESIDENCE, ");
 		b.append("NO_INDIVIDU_PERE, ");
+		b.append("EXCEPTION_PERE, ");
 		b.append("NOM_PERE, ");
 		b.append("PRENOM_PERE, ");
 		b.append("DATE_NAISSANCE_PERE, ");
@@ -415,21 +460,39 @@ public class TableFillerWithCivilValues {
 		b.append("AVS13_PERE, ");
 		b.append("AVS11_PERE, ");
 		b.append("NO_INDIVIDU_MERE, ");
+		b.append("EXCEPTION_MERE, ");
 		b.append("NOM_MERE, ");
 		b.append("PRENOM_MERE, ");
 		b.append("DATE_NAISSANCE_MERE, ");
 		b.append("SEXE_MERE, ");
 		b.append("AVS13_MERE, ");
 		b.append("AVS11_MERE");
-		b.append(") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+		b.append(") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 		return b.toString();
 	}
 
-	private static PreparedStatement preparedStatementInsert(Connection con) throws SQLException {
-		return con.prepareStatement(SQL_INSERT);
+	private static String buildInsertExceptionSql() {
+		final StringBuilder b = new StringBuilder();
+		b.append("INSERT INTO ").append(TABLE_NAME).append(" (NO_INDIVIDU, EXCEPTION) VALUES (?, ?)");
+		return b.toString();
 	}
 
-	private static int insertData(Individu ind, List<Individu> parents, PreparedStatement ps) throws SQLException {
+	private static PreparedStatement preparedStatementInsertIndividu(Connection con) throws SQLException {
+		return con.prepareStatement(SQL_INSERT_INDIVIDU);
+	}
+
+	private static PreparedStatement preparedStatementInsertException(Connection con) throws SQLException {
+		return con.prepareStatement(SQL_INSERT_EXCEPTION);
+	}
+
+	private static int insertDataException(long noIndividu, Exception e, PreparedStatement ps) throws SQLException {
+		ps.setLong(1, noIndividu);
+		ps.setString(2, buildExceptionMessage(e));
+		return ps.executeUpdate();
+	}
+
+	private static int insertDataIndividu(Individu ind, CollectedData pere, CollectedData mere, PreparedStatement ps) throws SQLException {
+
 		// l'individu lui-même
 		ps.setLong(1, ind.getNoTechnique());
 		ps.setString(2, ind.getNom());
@@ -508,58 +571,64 @@ public class TableFillerWithCivilValues {
 		}
 
 		// le père de l'individu
-		final Individu pere = getIndividuSexue(parents, Sexe.MASCULIN);
-		if (pere != null) {
-			ps.setLong(16, pere.getNoTechnique());
-			ps.setString(17, pere.getNom());
-			ps.setString(18, pere.getPrenom());
-			setRegDateParam(19, ps, pere.getDateNaissance());
-			setEnumParam(20, ps, pere.getSexe());
-			ps.setString(21, pere.getNouveauNoAVS());
-			ps.setString(22, pere.getNoAVS11());
+		if (pere != null && pere.individu != null) {
+			ps.setLong(16, pere.individu.getNoTechnique());
+			ps.setNull(17, Types.NVARCHAR);
+			ps.setString(18, pere.individu.getNom());
+			ps.setString(19, pere.individu.getPrenom());
+			setRegDateParam(20, ps, pere.individu.getDateNaissance());
+			setEnumParam(21, ps, pere.individu.getSexe());
+			ps.setString(22, pere.individu.getNouveauNoAVS());
+			ps.setString(23, pere.individu.getNoAVS11());
 		}
 		else {
 			ps.setNull(16, Types.INTEGER);
-			ps.setNull(17, Types.NVARCHAR);
+			if (pere != null && pere.exception != null) {
+				ps.setString(17, buildExceptionMessage(pere.exception));
+			}
+			else {
+				ps.setNull(17, Types.NVARCHAR);
+			}
 			ps.setNull(18, Types.NVARCHAR);
-			ps.setNull(19, Types.INTEGER);
-			ps.setNull(20, Types.NVARCHAR);
+			ps.setNull(19, Types.NVARCHAR);
+			ps.setNull(20, Types.INTEGER);
 			ps.setNull(21, Types.NVARCHAR);
 			ps.setNull(22, Types.NVARCHAR);
+			ps.setNull(23, Types.NVARCHAR);
 		}
 
 		// là mère de l'individu
-		final Individu mere = getIndividuSexue(parents, Sexe.FEMININ);
-		if (mere != null) {
-			ps.setLong(23, mere.getNoTechnique());
-			ps.setString(24, mere.getNom());
-			ps.setString(25, mere.getPrenom());
-			setRegDateParam(26, ps, mere.getDateNaissance());
-			setEnumParam(27, ps, mere.getSexe());
-			ps.setString(28, mere.getNouveauNoAVS());
-			ps.setString(29, mere.getNoAVS11());
+		if (mere != null && mere.individu != null) {
+			ps.setLong(24, mere.individu.getNoTechnique());
+			ps.setNull(25, Types.NVARCHAR);
+			ps.setString(26, mere.individu.getNom());
+			ps.setString(27, mere.individu.getPrenom());
+			setRegDateParam(28, ps, mere.individu.getDateNaissance());
+			setEnumParam(29, ps, mere.individu.getSexe());
+			ps.setString(30, mere.individu.getNouveauNoAVS());
+			ps.setString(31, mere.individu.getNoAVS11());
 		}
 		else {
-			ps.setNull(23, Types.INTEGER);
-			ps.setNull(24, Types.NVARCHAR);
-			ps.setNull(25, Types.NVARCHAR);
-			ps.setNull(26, Types.INTEGER);
+			ps.setNull(24, Types.INTEGER);
+			if (mere != null && mere.exception != null) {
+				ps.setString(25, buildExceptionMessage(mere.exception));
+			}
+			else {
+				ps.setNull(25, Types.NVARCHAR);
+			}
+			ps.setNull(26, Types.NVARCHAR);
 			ps.setNull(27, Types.NVARCHAR);
-			ps.setNull(28, Types.NVARCHAR);
+			ps.setNull(28, Types.INTEGER);
 			ps.setNull(29, Types.NVARCHAR);
+			ps.setNull(30, Types.NVARCHAR);
+			ps.setNull(31, Types.NVARCHAR);
 		}
 		return ps.executeUpdate();
 	}
 
-	private static Individu getIndividuSexue(Collection<Individu> candidats, Sexe sexe) {
-		if (candidats != null && !candidats.isEmpty()) {
-		    for (Individu candidat : candidats) {
-			    if (candidat.getSexe() == sexe) {
-				    return candidat;
-			    }
-		    }
-		}
-		return null;
+	private static String buildExceptionMessage(Exception e) {
+		final String msg = String.format("%s: %s", e.getClass().getName(), e.getMessage());
+		return StringUtils.abbreviate(msg, 255);
 	}
 
 	private static enum TypeAdresse { CONTACT, RESIDENCE }
