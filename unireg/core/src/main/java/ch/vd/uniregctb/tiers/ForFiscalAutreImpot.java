@@ -15,8 +15,6 @@ import javax.persistence.Entity;
 @DiscriminatorValue("ForFiscalAutreImpot")
 public class ForFiscalAutreImpot extends ForFiscal {
 
-	private static final long serialVersionUID = 2472800148068209440L;
-
 	public ForFiscalAutreImpot() {
 	}
 

@@ -31,8 +31,6 @@ public class ConseilLegal extends RepresentationLegale {
 
 	private static final String CONSEILLER_LEGAL = "conseiller légal";
 
-	private static final long serialVersionUID = 4695352371610248334L;
-
 	public ConseilLegal() {
 		// vide, nécessaire pour la persistence
 	}

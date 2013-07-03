@@ -15,8 +15,6 @@ import javax.persistence.Entity;
 @DiscriminatorValue("ForFiscalAutreElementImposable")
 public class ForFiscalAutreElementImposable extends ForFiscalRevenuFortune {
 
-	private static final long serialVersionUID = -2847235949313474922L;
-
 	public ForFiscalAutreElementImposable() {
 	}
 

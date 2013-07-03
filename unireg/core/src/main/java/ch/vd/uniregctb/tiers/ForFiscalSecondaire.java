@@ -20,8 +20,6 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 @DiscriminatorValue("ForFiscalSecondaire")
 public class ForFiscalSecondaire extends ForFiscalRevenuFortune {
 
-	private static final long serialVersionUID = -2008360913032572211L;
-
 	public ForFiscalSecondaire() {
 	}
 

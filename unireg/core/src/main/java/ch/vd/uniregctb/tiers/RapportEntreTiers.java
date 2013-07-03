@@ -43,8 +43,6 @@ import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 @DiscriminatorColumn(name = "RAPPORT_ENTRE_TIERS_TYPE", discriminatorType = DiscriminatorType.STRING)
 public abstract class RapportEntreTiers extends HibernateEntity implements DateRange, Duplicable<RapportEntreTiers>, LinkedEntity {
 
-	private static final long serialVersionUID = 956676848057330463L;
-
 	/**
 	 * The ID
 	 */

@@ -27,8 +27,6 @@ import ch.vd.uniregctb.type.TarifImpotSource;
 @DiscriminatorValue("SituationFamilleMenageCommun")
 public class SituationFamilleMenageCommun extends SituationFamille {
 
-	private static final long serialVersionUID = 552273853607746105L;
-
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

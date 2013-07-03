@@ -44,8 +44,6 @@ import ch.vd.uniregctb.type.EtatCivil;
 @DiscriminatorColumn(name = "SITUATION_FAMILLE_TYPE", discriminatorType = DiscriminatorType.STRING)
 public abstract class SituationFamille extends HibernateEntity implements DateRange, Duplicable<SituationFamille>, LinkedEntity {
 
-	private static final long serialVersionUID = 2322061257210000162L;
-
 	/**
 	 * La primary key
 	 */

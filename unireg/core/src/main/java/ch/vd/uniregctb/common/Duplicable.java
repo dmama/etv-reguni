@@ -1,8 +1,6 @@
 package ch.vd.uniregctb.common;
 
-import java.io.Serializable;
-
-public interface Duplicable<T> extends Serializable {
+public interface Duplicable<T> {
 
 	/**
 	 * Crée et renvoie une copie de cet objet.
@@ -10,5 +8,4 @@ public interface Duplicable<T> extends Serializable {
 	 * @return un duplicata de cette instance. 
 	 */
 	T duplicate();
-	
 }

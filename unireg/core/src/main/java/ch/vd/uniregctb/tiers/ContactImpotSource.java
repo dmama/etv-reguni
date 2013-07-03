@@ -32,8 +32,6 @@ public class ContactImpotSource extends RapportEntreTiers {
 	private static final String DPI = "débiteur de prestations imposables";
 	private static final String CTB = "référent";
 
-	private static final long serialVersionUID = -5845209265638768969L;
-
 	public ContactImpotSource() {
 		// empty
 	}

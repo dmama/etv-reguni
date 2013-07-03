@@ -32,8 +32,6 @@ import ch.vd.uniregctb.type.TypeContribuable;
 @Table(name = "PARAMETRE_PERIODE_FISCALE")
 public class ParametrePeriodeFiscale extends HibernateEntity implements Duplicable<ParametrePeriodeFiscale> {
 
-	private static final long serialVersionUID = 8321336807671103230L;
-
 	private Long id;
 	private TypeContribuable typeContribuable;
 	private RegDate dateFinEnvoiMasseDI;

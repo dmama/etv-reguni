@@ -32,8 +32,6 @@ public class AppartenanceMenage extends RapportEntreTiers {
 	private static final String PERSONNE_PHYSIQUE = "personne physique";
 	private static final String MENAGE_COMMUN = "ménage commun";
 
-	private static final long serialVersionUID = 7917054720448439223L;
-
 	public AppartenanceMenage() {
 		// empty
 	}

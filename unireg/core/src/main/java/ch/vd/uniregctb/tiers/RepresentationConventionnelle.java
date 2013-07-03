@@ -35,8 +35,6 @@ public class RepresentationConventionnelle extends RapportEntreTiers {
 	private static final String REPRESENTE = "représenté";
 	private static final String REPRESENTANT = "représentant";
 
-	private static final long serialVersionUID = 7957450690807693403L;
-
 	public RepresentationConventionnelle() {
 		// empty
 	}

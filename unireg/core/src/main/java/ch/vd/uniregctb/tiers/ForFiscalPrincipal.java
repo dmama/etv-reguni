@@ -26,8 +26,6 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 @DiscriminatorValue("ForFiscalPrincipal")
 public class ForFiscalPrincipal extends ForFiscalRevenuFortune {
 
-	private static final long serialVersionUID = -4854391097242110206L;
-
 	protected static final String[] VALIDATION_ERROR_CODES =  new String[] {
 			"[ERR_VALIDATE_FOR_FISCAL_PRINCIPAL_0]",
 			"[ERR_VALIDATE_FOR_FISCAL_PRINCIPAL_1]"

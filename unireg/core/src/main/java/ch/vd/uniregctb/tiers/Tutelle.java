@@ -31,8 +31,6 @@ public class Tutelle extends RepresentationLegale {
 
 	private static final String TUTEUR = "tuteur";
 
-	private static final long serialVersionUID = 8255992899554760735L;
-
 	public Tutelle() {
 		// vide, nécessaire pour la persistence
 	}

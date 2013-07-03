@@ -29,8 +29,6 @@ public abstract class RepresentationLegale extends RapportEntreTiers {
 
 	private static final String PUPILLE = "pupille";
 
-	private static final long serialVersionUID = -8038494520739506010L;
-
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

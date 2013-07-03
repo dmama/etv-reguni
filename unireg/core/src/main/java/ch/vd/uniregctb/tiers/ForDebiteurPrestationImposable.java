@@ -19,8 +19,6 @@ import ch.vd.uniregctb.type.GenreImpot;
 @DiscriminatorValue("ForDebiteurPrestationImposable")
 public class ForDebiteurPrestationImposable extends ForFiscal {
 
-	private static final long serialVersionUID = -6011848231879692380L;
-
 	public ForDebiteurPrestationImposable() {
 		setGenreImpot(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE);
 	}

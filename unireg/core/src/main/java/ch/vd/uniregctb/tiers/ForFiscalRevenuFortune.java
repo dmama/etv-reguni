@@ -24,8 +24,6 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 @Entity
 public abstract class ForFiscalRevenuFortune extends ForFiscal {
 
-	private static final long serialVersionUID = 6699182098456063372L;
-
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 *

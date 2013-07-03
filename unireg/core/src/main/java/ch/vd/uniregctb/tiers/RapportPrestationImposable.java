@@ -35,8 +35,6 @@ public class RapportPrestationImposable extends RapportEntreTiers {
 	private static final String EMPLOYEUR = "employeur";
 	private static final String SOURCIER = "sourcier";
 
-	private static final long serialVersionUID = 6015152795899259734L;
-
 	public RapportPrestationImposable() {
 		// empty
 	}

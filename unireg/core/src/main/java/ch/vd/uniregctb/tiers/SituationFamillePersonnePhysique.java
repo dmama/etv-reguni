@@ -7,8 +7,6 @@ import javax.persistence.Entity;
 @DiscriminatorValue("SituationFamille")
 public class SituationFamillePersonnePhysique extends SituationFamille {
 
-	private static final long serialVersionUID = 474627638437L;
-
 	public SituationFamillePersonnePhysique() {
 	}
 

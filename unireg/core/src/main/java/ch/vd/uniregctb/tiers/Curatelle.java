@@ -31,8 +31,6 @@ public class Curatelle extends RepresentationLegale {
 
 	private static final String CURATEUR = "curateur";
 
-	private static final long serialVersionUID = -1357290304664777417L;
-
 	public Curatelle() {
 		// vide, nécessaire pour la persistence
 	}
