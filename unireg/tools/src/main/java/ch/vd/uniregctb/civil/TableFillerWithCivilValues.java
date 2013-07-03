@@ -9,7 +9,7 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -319,7 +319,7 @@ public class TableFillerWithCivilValues {
 						 final PreparedStatement psException = preparedStatementInsertException(con)) {
 						for (CollectedData ind : data) {
 							if (ind.individu != null) {
-								final Map<TypeRelationVersIndividu, Long> idsParents = new HashMap<>(2);
+								final Map<TypeRelationVersIndividu, Long> idsParents = new EnumMap<>(TypeRelationVersIndividu.class);
 								if (ind.individu.getParents() != null) {
 									for (RelationVersIndividu rel : ind.individu.getParents()) {
 										idsParents.put(rel.getTypeRelation(), rel.getNumeroAutreIndividu());
