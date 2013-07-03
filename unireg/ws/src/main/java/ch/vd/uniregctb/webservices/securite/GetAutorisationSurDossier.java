@@ -20,4 +20,12 @@ public class GetAutorisationSurDossier {
 	 */
 	@XmlElement(required = true)
 	public long numeroTiers;
+
+	@Override
+	public String toString() {
+		return "GetAutorisationSurDossier{" +
+				"login=" + login +
+				", numeroTiers=" + numeroTiers +
+				'}';
+	}
 }

@@ -12,4 +12,11 @@ public class GetDossiersControles {
 	/** Le token d'autentification de l'applicaiton appelante */
 	@XmlElement(required = true)
 	public String authenticationToken;
+
+	@Override
+	public String toString() {
+		return "GetDossiersControles{" +
+				"authenticationToken='" + authenticationToken + '\'' +
+				'}';
+	}
 }
