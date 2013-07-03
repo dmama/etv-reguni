@@ -9,18 +9,26 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.pool.BasePoolableObjectFactory;
+import org.apache.commons.pool.ObjectPool;
+import org.apache.commons.pool.impl.GenericObjectPool;
+import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.springframework.util.Log4jConfigurer;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.ServiceCivilRaw;
+import ch.vd.unireg.interfaces.civil.ServiceCivilTracing;
 import ch.vd.unireg.interfaces.civil.data.Adresse;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
@@ -28,6 +36,7 @@ import ch.vd.unireg.interfaces.civil.data.RelationVersIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.rcpers.ServiceCivilRCPers;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureTracing;
 import ch.vd.unireg.interfaces.infra.fidor.ServiceInfrastructureFidor;
 import ch.vd.unireg.wsclient.rcpers.RcPersClientImpl;
 import ch.vd.uniregctb.common.StandardBatchIterator;
@@ -51,16 +60,25 @@ public class TableFillerWithCivilValues {
 	private static final String FIDOR_USER = "gvd0unireg";
 	private static final String FIDOR_PWD = "Welc0me_";
 
+	private static final boolean INCREMENTAL_MODE = true;
 	private static final String TABLE_NAME = "DUMP_CIVIL";
-	private static final int NB_TREADS = 8;
+	private static final int NB_THREADS = 8;
 	private static final int BATCH_SIZE = 20;
 	private static final String SQL_INSERT = buildInsertSql();
+
+	private static final Logger LOGGER = Logger.getLogger(TableFillerWithCivilValues.class);
 
 	private final ServiceCivilRaw serviceCivil;
 
 	public static void main(String[] args) throws Exception {
-		Class.forName(dbDriverClassName);
-		new TableFillerWithCivilValues().run();
+		Log4jConfigurer.initLogging("classpath:" + TableFillerWithCivilValues.class.getPackage().getName().replaceAll("\\.", "/") + "/" + TableFillerWithCivilValues.class.getSimpleName() + "-log4j.xml", 30000);
+		try {
+			Class.forName(dbDriverClassName);
+			new TableFillerWithCivilValues().run();
+		}
+		finally {
+			Log4jConfigurer.shutdownLogging();
+		}
 	}
 
 	public TableFillerWithCivilValues() throws Exception {
@@ -78,84 +96,152 @@ public class TableFillerWithCivilValues {
 		fidorClient.setUsername(FIDOR_USER);
 		fidorClient.setPassword(FIDOR_PWD);
 
-		final ServiceInfrastructureFidor infraService = new ServiceInfrastructureFidor();
-		infraService.setFidorClientv5(fidorClient);
+		final ServiceInfrastructureFidor infraServiceFiDor = new ServiceInfrastructureFidor();
+		infraServiceFiDor.setFidorClientv5(fidorClient);
+
+		final ServiceInfrastructureTracing infraServiceTracing = new ServiceInfrastructureTracing();
+		infraServiceTracing.setTarget(infraServiceFiDor);
+
+		final ServiceInfrastructureRaw infraServiceCache = new ServiceInfraGetPaysSimpleCache(infraServiceTracing);
 
 		final ServiceCivilRCPers serviceCivilRCPers = new ServiceCivilRCPers();
 		serviceCivilRCPers.setClient(rcpersClient);
-		serviceCivilRCPers.setInfraService(infraService);
-		serviceCivil = serviceCivilRCPers;
+		serviceCivilRCPers.setInfraService(infraServiceCache);
+
+		final ServiceCivilTracing serviceCivilTracing = new ServiceCivilTracing();
+		serviceCivilTracing.setTarget(serviceCivilRCPers);
+
+		serviceCivil = serviceCivilTracing;
 	}
 
 	private static interface ConnectionCallback<T> {
 		T doInConnection(Connection con) throws SQLException;
 	}
 
-	private static <T> T doInNewConnection(ConnectionCallback<T> callback) throws SQLException {
-		try (Connection con = DriverManager.getConnection(dbUrl, dbUser, dbPassword)) {
-			con.setAutoCommit(false);
+	private <T> T doInNewConnection(ObjectPool<Connection> pool, ConnectionCallback<T> callback) throws SQLException {
+		try {
+			Connection con = pool.borrowObject();
 			try {
-				final T result = callback.doInConnection(con);
-				con.commit();
-				return result;
+				con.setAutoCommit(false);
+				try {
+					final T result = callback.doInConnection(con);
+					con.commit();
+					return result;
+				}
+				catch (RuntimeException | SQLException e) {
+					con.rollback();
+					throw e;
+				}
 			}
-			catch (RuntimeException | SQLException e) {
-				con.rollback();
-				throw e;
+			finally {
+				pool.returnObject(con);
 			}
+		}
+		catch (RuntimeException | SQLException e) {
+			throw e;
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	private static final class ConnectionFactory extends BasePoolableObjectFactory<Connection> {
+		private final String dbUrl;
+		private final String dbUser;
+		private final String dbPwd;
+
+		public ConnectionFactory(String dbUrl, String dbUser, String dbPwd) {
+			this.dbUrl = dbUrl;
+			this.dbUser = dbUser;
+			this.dbPwd = dbPwd;
+		}
+
+		@Override
+		public Connection makeObject() throws SQLException {
+			return DriverManager.getConnection(dbUrl, dbUser, dbPwd);
+		}
+
+		@Override
+		public void destroyObject(Connection obj) throws SQLException {
+			obj.close();
+		}
+	}
+
+	private static final class ConnectionPool extends GenericObjectPool<Connection> implements AutoCloseable {
+		private ConnectionPool(String url, String dbUser, String dbPwd) {
+			super(new ConnectionFactory(url, dbUser, dbPwd), NB_THREADS);
 		}
 	}
 
 	public void run() throws Exception {
 
-		// récupérons tous les numéros d'individus
-		final List<Long> nosIndividus = getNumerosIndividus();
+		try (final ConnectionPool dbConnectionPool = new ConnectionPool(dbUrl, dbUser, dbPassword)) {
 
-		// un peu de log...
-		System.err.println("Trouvé " + nosIndividus.size() + " individus distincts");
+			// récupérons tous les numéros d'individus
+			final List<Long> nosIndividus = getNumerosIndividus(dbConnectionPool);
 
-		// creation de la table
-		doInNewConnection(new ConnectionCallback<Object>() {
-			@Override
-			public Object doInConnection(Connection con) throws SQLException {
-				final String sql = buildCreateTableSql();
-				try (final PreparedStatement ps = con.prepareCall(sql)) {
-					ps.executeUpdate();
+			// un peu de log...
+			LOGGER.info("Trouvé " + nosIndividus.size() + " individus distincts à charger");
+
+			if (!isIncrementalMode()) {
+				// creation de la table
+				doInNewConnection(dbConnectionPool, new ConnectionCallback<Object>() {
+					@Override
+					public Object doInConnection(Connection con) throws SQLException {
+						final String sql = buildCreateTableSql();
+						try (final PreparedStatement ps = con.prepareCall(sql)) {
+							ps.executeUpdate();
+						}
+						return null;
+					}
+				});
+			}
+
+			final ExecutorService executorService = Executors.newFixedThreadPool(NB_THREADS);
+
+			// faisons des groupes, allons chercher les données et remplissons les infos...
+			final List<Future<?>> futures = new LinkedList<>();
+			final StandardBatchIterator<Long> iter = new StandardBatchIterator<>(nosIndividus, BATCH_SIZE);
+			while (iter.hasNext()) {
+				futures.add(executorService.submit(new DataCollector(iter.next(), dbConnectionPool)));
+			}
+
+			// c'est la fin...
+			executorService.shutdown();
+
+			// récupération des éventuelles erreurs et attente de la fin
+			final Iterator<Future<?>> futureIterator = futures.iterator();
+			while (futureIterator.hasNext()) {
+				final Future<?> future = futureIterator.next();
+				try {
+					future.get();
 				}
-				return null;
-			}
-		});
-
-		final ExecutorService executorService = Executors.newFixedThreadPool(NB_TREADS);
-
-		// faisons des groupes, allons chercher les données et remplissons les infos...
-		final List<Future<?>> futures = new LinkedList<>();
-		final StandardBatchIterator<Long> iter = new StandardBatchIterator<>(nosIndividus, BATCH_SIZE);
-		while (iter.hasNext()) {
-			futures.add(executorService.submit(new DataCollector(iter.next())));
-		}
-
-		// c'est la fin...
-		executorService.shutdown();
-
-		// récupération des éventuelles erreurs et attente de la fin
-		for (Future<?> future : futures) {
-			try {
-				future.get();
-			}
-			catch (ExecutionException e) {
-				final Throwable cause = e.getCause();
-				System.err.println("Exception recue: " + cause.getMessage());
-				cause.printStackTrace(System.err);
+				catch (ExecutionException e) {
+					final Throwable cause = e.getCause();
+					System.err.println("Exception recue: " + cause.getMessage());
+					cause.printStackTrace(System.err);
+				}
+				finally {
+					futureIterator.remove();
+				}
 			}
 		}
 	}
 
-	private List<Long> getNumerosIndividus() throws SQLException {
-		return doInNewConnection(new ConnectionCallback<List<Long>>() {
+	private List<Long> getNumerosIndividus(ConnectionPool dbConnectionPool) throws SQLException {
+		final StringBuilder b = new StringBuilder();
+		b.append("SELECT DISTINCT NUMERO_INDIVIDU FROM TIERS WHERE NUMERO_INDIVIDU IS NOT NULL");
+		if (isIncrementalMode()) {
+			b.append(" AND NUMERO_INDIVIDU NOT IN (SELECT NO_INDIVIDU FROM ");
+			b.append(TABLE_NAME);
+			b.append(")");
+		}
+		final String sql = b.toString();
+
+		return doInNewConnection(dbConnectionPool, new ConnectionCallback<List<Long>>() {
 			@Override
 			public List<Long> doInConnection(Connection con) throws SQLException {
-				try (final PreparedStatement ps = con.prepareStatement("SELECT DISTINCT NUMERO_INDIVIDU FROM TIERS WHERE NUMERO_INDIVIDU IS NOT NULL")) {
+				try (final PreparedStatement ps = con.prepareStatement(sql)) {
 					final List<Long> noInds = new LinkedList<>();
 					final ResultSet rs = ps.executeQuery();
 					while (rs.next()) {
@@ -171,8 +257,10 @@ public class TableFillerWithCivilValues {
 	private class DataCollector implements Runnable {
 
 		private final List<Long> nosIndividus;
+		private final ConnectionPool dbConnectionPool;
 
-		private DataCollector(List<Long> nosIndividus) {
+		private DataCollector(List<Long> nosIndividus, ConnectionPool dbConnectionPool) {
+			this.dbConnectionPool = dbConnectionPool;
 			this.nosIndividus = new ArrayList<>(nosIndividus);
 		}
 
@@ -180,7 +268,7 @@ public class TableFillerWithCivilValues {
 		public void run() {
 			try {
 				final List<Individu> individus = getIndividus(nosIndividus, AttributeIndividu.PARENTS, AttributeIndividu.ADRESSES);
-				dumpIndividus(individus, null);
+				dumpIndividus(individus, dbConnectionPool, null);
 			}
 			catch (Exception e) {
 				throw new RuntimeException("Erreur avec l'un des individus " + Arrays.toString(nosIndividus.toArray()), e);
@@ -188,9 +276,9 @@ public class TableFillerWithCivilValues {
 		}
 	}
 
-	private void dumpIndividus(final List<Individu> individus, String erreur) throws Exception {
+	private void dumpIndividus(final List<Individu> individus, ConnectionPool dbConnectionPool, String erreur) throws Exception {
 		try {
-			doInNewConnection(new ConnectionCallback<Object>() {
+			doInNewConnection(dbConnectionPool, new ConnectionCallback<Object>() {
 				@Override
 				public Object doInConnection(Connection con) throws SQLException {
 					try (final PreparedStatement ps = preparedStatementInsert(con)) {
@@ -202,7 +290,7 @@ public class TableFillerWithCivilValues {
 								}
 							}
 
-							final List<Individu> parents = getIndividus(idsParents);
+							final List<Individu> parents = idsParents.isEmpty() ? null : getIndividus(idsParents);
 							insertData(ind, parents, ps);
 						}
 					}
@@ -218,19 +306,24 @@ public class TableFillerWithCivilValues {
 					throw e;
 				}
 				else {
-					dumpIndividus(Arrays.asList(buildMockIndividu(individus.get(0).getNoTechnique(), e.getMessage())), e.getMessage());
+					dumpIndividus(Arrays.asList(buildMockIndividu(individus.get(0).getNoTechnique(), e.getMessage())), dbConnectionPool, e.getClass().getName());
 				}
 			}
 			else {
 				// un par un
 				for (Individu ind : individus) {
-					dumpIndividus(Arrays.asList(ind), null);
+					dumpIndividus(Arrays.asList(ind), dbConnectionPool, null);
 				}
 			}
 		}
 	}
 
+	private boolean isIncrementalMode() {
+		return INCREMENTAL_MODE;
+	}
+
 	private List<Individu> getIndividus(List<Long> nosIndividus, AttributeIndividu... parts) {
+		final long start = System.nanoTime();
 		try {
 			return serviceCivil.getIndividus(nosIndividus, parts);
 		}
@@ -247,6 +340,9 @@ public class TableFillerWithCivilValues {
 				}
 				return res;
 			}
+		}
+		finally {
+			LOGGER.info(String.format("%d individu(s) (%d ms)", nosIndividus.size(), TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start)));
 		}
 	}
 
