@@ -116,7 +116,7 @@ public class SecuriteWebServiceImpl implements SecuriteWebService, DetailedLoadM
 			}
 			return dao.getContribuablesControles();
 		}
-		catch (RuntimeException e) {
+		catch (WebServiceException | RuntimeException e) {
 			t = e;
 			throw e;
 		}
