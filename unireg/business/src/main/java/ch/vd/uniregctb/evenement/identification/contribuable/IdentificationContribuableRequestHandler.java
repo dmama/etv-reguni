@@ -155,10 +155,18 @@ public class IdentificationContribuableRequestHandler implements EsbMessageHandl
 		FOUND_SEVERAL
 	}
 
-	protected IdentificationContribuableResponse handle(IdentificationContribuableRequest request, String businessId) {
+	protected IdentificationContribuableResponse handle(IdentificationContribuableRequest request, String businessId) throws EsbBusinessException {
 
 		final IdentificationContribuableResponse response = new IdentificationContribuableResponse();
-		final CriteresPersonne criteresPersonne = createCriteresPersonne(request);
+		final CriteresPersonne criteresPersonne;
+		try {
+			criteresPersonne = createCriteresPersonne(request);
+		}
+		catch (IllegalArgumentException e) {
+			// techniquement, la XSD est bien respectée (on aurait vu un vrai souci à ce niveau avant d'arriver ici),
+			// mais on va dire que c'est équivalent si les données sont pourries...
+			throw new EsbBusinessException(EsbBusinessCode.XML_INVALIDE, e);
+		}
 
 		IdentificationResult status;
 		List<Long> found;
@@ -227,7 +235,12 @@ public class IdentificationContribuableRequestHandler implements EsbMessageHandl
 		return StringUtils.abbreviate(src.replaceAll("\\s+", " "), maxLength);
 	}
 
-	private CriteresPersonne createCriteresPersonne(IdentificationContribuableRequest request) {
+	/**
+	 * @param request la requête d'identification entrante
+	 * @return une structure de données représentant les critères de recherche
+	 * @throws IllegalArgumentException en cas de souci de conversion des données de la requête vers la donnée structurée (notamment sur la date de naissance)
+	 */
+	private CriteresPersonne createCriteresPersonne(IdentificationContribuableRequest request) throws IllegalArgumentException {
 		CriteresPersonne criteresPersonne = new CriteresPersonne();
 		final Long navs13 = request.getNAVS13();
 		if (navs13 != null) {
@@ -244,7 +257,7 @@ public class IdentificationContribuableRequestHandler implements EsbMessageHandl
 		criteresPersonne.setDateNaissance(DataHelper.xmlToCore(request.getDateNaissance()));
 		final NPA requestNPA = request.getNPA();
 		if (requestNPA != null) {
-			CriteresAdresse criteresAdresse = new CriteresAdresse();
+			final CriteresAdresse criteresAdresse = new CriteresAdresse();
 			final Long npaSuisse = requestNPA.getNPASuisse();
 			final String npaEtranger = requestNPA.getNPAEtranger();
 			if (npaSuisse != null) {
@@ -257,7 +270,6 @@ public class IdentificationContribuableRequestHandler implements EsbMessageHandl
 			criteresAdresse.setCodePays(requestNPA.getPays());
 			criteresAdresse.setNoOrdrePosteSuisse(requestNPA.getNPASuisseId());
 			criteresPersonne.setAdresse(criteresAdresse);
-
 		}
 		return criteresPersonne;
 	}

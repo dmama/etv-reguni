@@ -97,7 +97,12 @@ public abstract class DataHelper {
 		}
 	}
 
-	public static RegDate xmlToCore(PartialDate date) {
+	/**
+	 * @param date une date partielle à convertir en {@link RegDate}
+	 * @return la date convertie
+	 * @throws IllegalArgumentException en cas de souci à la conversion (date résultante invalide, mauvais type de "date partielle" dont le mois  est inconnu mais pas le jour, par exemple...)
+	 */
+	public static RegDate xmlToCore(PartialDate date) throws IllegalArgumentException {
 		if (date == null) {
 			return null;
 		}
@@ -109,6 +114,9 @@ public abstract class DataHelper {
 		}
 		else if (day == null) {
 			return RegDateHelper.get(year, month, DateConstants.EXTENDED_VALIDITY_RANGE);
+		}
+		else if (month == null) {
+			throw new IllegalArgumentException("Date partielle avec jour connu mais pas le mois : " + date);
 		}
 		else {
 			return RegDateHelper.get(year, month, day, DateConstants.EXTENDED_VALIDITY_RANGE);

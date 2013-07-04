@@ -3,6 +3,7 @@ package ch.vd.uniregctb.evenement.identification.contribuable;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.unireg.xml.common.v1.PartialDate;
@@ -10,12 +11,15 @@ import ch.vd.unireg.xml.event.identification.request.v2.IdentificationContribuab
 import ch.vd.unireg.xml.event.identification.response.v2.IdentificationContribuableResponse;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.identification.contribuable.IdentificationContribuableService;
+import ch.vd.uniregctb.jms.EsbBusinessCode;
+import ch.vd.uniregctb.jms.EsbBusinessException;
 import ch.vd.uniregctb.type.Sexe;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class IdentificationContribuableRequestHandlerTest extends BusinessTest {
 
@@ -58,9 +62,9 @@ public class IdentificationContribuableRequestHandlerTest extends BusinessTest {
 		// attente de la fin de l'indexation
 		globalTiersIndexer.sync();
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
-			public Object doInTransaction(TransactionStatus status) {
+			public Object execute(TransactionStatus status) throws Exception {
 				final IdentificationContribuableRequest request = new IdentificationContribuableRequest();
 				request.setNom("Pittet");
 				request.setDateNaissance(new PartialDate(1980, 1, 24));
@@ -98,9 +102,9 @@ public class IdentificationContribuableRequestHandlerTest extends BusinessTest {
 		// attente de la fin de l'indexation
 		globalTiersIndexer.sync();
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
-			public Object doInTransaction(TransactionStatus status) {
+			public Object execute(TransactionStatus status) throws Exception {
 				final IdentificationContribuableRequest request = new IdentificationContribuableRequest();
 				request.setNom("Pittet");
 				request.setDateNaissance(new PartialDate(1980, 1, 24));
@@ -138,9 +142,9 @@ public class IdentificationContribuableRequestHandlerTest extends BusinessTest {
 		globalTiersIndexer.sync();
 
 		// identification
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
-			public Object doInTransaction(TransactionStatus status) {
+			public Object execute(TransactionStatus status) throws Exception {
 				final IdentificationContribuableRequest request = new IdentificationContribuableRequest(null, null, nom, prenom, null, null);
 				final IdentificationContribuableResponse response = handler.handle(request, "toto");
 				assertNotNull(response);
@@ -153,5 +157,20 @@ public class IdentificationContribuableRequestHandlerTest extends BusinessTest {
 				return null;
 			}
 		});
+	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testDateNaissancePartielleInvalide() throws Exception {
+		final PartialDate dateNaissanceBidon = new PartialDate(2000, null, 20);     // cette date ne devrait pas être acceptée... notre XSD est trop lâche...
+		final IdentificationContribuableRequest request = new IdentificationContribuableRequest(null, null, "Tartempion", null, dateNaissanceBidon, null);
+		try {
+			handler.handle(request, "toto");
+			fail("Aurait dû se plaindre de la date partielle pourrie");
+		}
+		catch (EsbBusinessException e) {
+			assertEquals(EsbBusinessCode.XML_INVALIDE, e.getCode());
+			assertTrue(e.getMessage(), e.getMessage().endsWith("Date partielle avec jour connu mais pas le mois : " + dateNaissanceBidon));
+		}
 	}
 }
