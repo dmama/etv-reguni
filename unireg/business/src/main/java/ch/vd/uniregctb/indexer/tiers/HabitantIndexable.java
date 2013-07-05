@@ -48,6 +48,7 @@ public class HabitantIndexable extends PersonnePhysiqueIndexable {
 		data.setNoSymic(individu.getNumeroRCE());
 		data.addNom1(individu.getPrenom());
 		data.addNom1(individu.getNom());
+		data.setNavs13_1(individu.getNouveauNoAVS());
 
 		if (pp.getDateDeces() != null) { //surcharge de la date de décès
 			data.setDateDeces(IndexerFormatHelper.dateToString(pp.getDateDeces(), IndexerFormatHelper.DateStringMode.STORAGE));

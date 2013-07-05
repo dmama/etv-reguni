@@ -30,6 +30,8 @@ public class TiersIndexedData implements Serializable {
 	private final String dateDeces;
 	private final String nom1;
 	private final String nom2;
+	private final String navs13_1;
+	private final String navs13_2;
 	private final String roleLigne1;
 	private final String roleLigne2;
 	private final Date dateOuvertureFor;
@@ -56,6 +58,8 @@ public class TiersIndexedData implements Serializable {
 		dateDeces = getDocValue(TiersIndexableData.DATE_DECES, doc);
 		nom1 = getDocValue(TiersIndexableData.NOM1, doc);
 		nom2 = getDocValue(TiersIndexableData.NOM2, doc);
+		navs13_1 = getDocValue(TiersIndexableData.NAVS13_1, doc);
+		navs13_2 = getDocValue(TiersIndexableData.NAVS13_2, doc);
 		roleLigne1 = getDocValue(TiersIndexableData.ROLE_LIGNE1, doc);
 		roleLigne2 = getDocValue(TiersIndexableData.ROLE_LIGNE2, doc);
 		dateOuvertureFor = DateHelper.indexStringToDate(getDocValue(TiersIndexableData.DATE_OUVERTURE_FOR, doc));
@@ -127,6 +131,14 @@ public class TiersIndexedData implements Serializable {
 
 	public String getNom2() {
 		return nom2;
+	}
+
+	public String getNavs13_1() {
+		return navs13_1;
+	}
+
+	public String getNavs13_2() {
+		return navs13_2;
 	}
 
 	public String getRoleLigne1() {

@@ -592,7 +592,7 @@
 		<activemq.version>5.7.0.fuse-71-047</activemq.version>
 		<jencks.version>2.2</jencks.version>
 		<wsparty3.version>3.8</wsparty3.version>
-		<wsparty4.version>4.0</wsparty4.version>
+		<wsparty4.version>4.1-SNAPSHOT</wsparty4.version>
 
 		<!-- Testing dependency versions -->
 		<junit.version>4.10</junit.version>

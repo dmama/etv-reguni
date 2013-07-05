@@ -50,6 +50,8 @@ public class TiersIndexableData extends IndexableData {
 	// champs de stockage (pas recherchables)
 	public static final String NOM1 = "D_NOM1";
 	public static final String NOM2 = "D_NOM2";
+	public static final String NAVS13_1 = "D_AVS13_1";
+	public static final String NAVS13_2 = "D_AVS13_2";
 	public static final String ROLE_LIGNE1 = "D_ROLE1";
 	public static final String ROLE_LIGNE2 = "D_ROLE2";
 	public static final String DATE_DECES = "D_DATE_DECES";
@@ -91,6 +93,8 @@ public class TiersIndexableData extends IndexableData {
 	// champs de stockage (pas recherchables)
 	private String nom1;
 	private String nom2;
+	private String navs13_1;
+	private String navs13_2;
 	private String roleLigne1;
 	private String roleLigne2;
 	private String dateDeces;
@@ -145,6 +149,8 @@ public class TiersIndexableData extends IndexableData {
 		// champs de stockage (pas recherchables)
 		addStoredValue(d, TiersIndexableData.NOM1, nom1);
 		addStoredValue(d, TiersIndexableData.NOM2, nom2);
+		addStoredValue(d, TiersIndexableData.NAVS13_1, navs13_1);
+		addStoredValue(d, TiersIndexableData.NAVS13_2, navs13_2);
 		addStoredValue(d, TiersIndexableData.ROLE_LIGNE1, roleLigne1);
 		addStoredValue(d, TiersIndexableData.ROLE_LIGNE2, roleLigne2);
 		addStoredValue(d, TiersIndexableData.DATE_DECES, dateDeces);
@@ -449,6 +455,22 @@ public class TiersIndexableData extends IndexableData {
 
 	public void setNom2(String nom2) {
 		this.nom2 = nom2;
+	}
+
+	public String getNavs13_1() {
+		return navs13_1;
+	}
+
+	public void setNavs13_1(String navs13_1) {
+		this.navs13_1 = navs13_1;
+	}
+
+	public String getNavs13_2() {
+		return navs13_2;
+	}
+
+	public void setNavs13_2(String navs13_2) {
+		this.navs13_2 = navs13_2;
 	}
 
 	public String getRoleLigne1() {

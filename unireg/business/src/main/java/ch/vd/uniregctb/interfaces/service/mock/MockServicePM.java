@@ -71,6 +71,7 @@ public abstract class MockServicePM extends ServicePersonneMoraleBase {
 		MockPersonneMorale pm = new MockPersonneMorale();
 		pm.setNumeroEntreprise(numero);
 		pm.setRaisonSociale(raisonSociale);
+		pm.setRaisonSociale1(raisonSociale);
 		pm.getFormesJuridiques().add(new MockFormeJuridique(null, null, codeFormeJuridique));
 		pm.setDateConstitution(debut);
 		pm.setDateFinActivite(fin);

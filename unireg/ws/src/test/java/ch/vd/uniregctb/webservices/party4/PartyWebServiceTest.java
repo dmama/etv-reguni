@@ -2832,4 +2832,119 @@ public class PartyWebServiceTest extends WebserviceTest {
 		assertNotNull(residence);
 		assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), residence.getAddressInformation().getMunicipalityId());
 	}
+
+	@Test
+	public void testNumerosAvsRenvoyesSearchTiers() throws Exception {
+
+		final long noIndividu = 32678243527L;
+		final long noPM = 234567L;
+		final RegDate dateMariage = date(2000, 1, 1);
+		final String nom = "Hotzenplotz";
+		final String navsHabitant = "7560377871977";
+		final String navsNonHabitant = "7568771239515";
+
+		// cleanup avant d'ajouter des données
+		globalTiersIndexer.overwriteIndex();
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noIndividu, null, nom, "Räuber", Sexe.MASCULIN);
+				ind.setNouveauNoAVS(navsHabitant);
+				marieIndividu(ind, dateMariage);
+			}
+		});
+
+		// mise en place entreprise (histoire d'avoir un cas sans NAVS13 du tout)
+		servicePM.setUp(new MockServicePM() {
+			@Override
+			protected void init() {
+				addPM(noPM, nom, "SA", date(2000, 1, 1), null);
+			}
+		});
+
+		final boolean otfi = globalTiersIndexer.isOnTheFlyIndexation();
+		globalTiersIndexer.setOnTheFlyIndexation(true);
+		try {
+			// mise en place fiscale
+			final class Ids {
+				long idHabitant;
+				long idNonHabitant;
+				long idMC;
+				long idPM;
+			}
+			final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+				@Override
+				public Ids doInTransaction(TransactionStatus status) {
+					final PersonnePhysique hab = addHabitant(noIndividu);
+					final PersonnePhysique nonHab = addNonHabitant("Räuberin", nom, null, Sexe.FEMININ);
+					nonHab.setNumeroAssureSocial(navsNonHabitant);
+					final EnsembleTiersCouple couple = addEnsembleTiersCouple(hab, nonHab, dateMariage, null);
+
+					final Entreprise pm = addEntreprise(noPM);
+
+					final Ids ids = new Ids();
+					ids.idHabitant = hab.getNumero();
+					ids.idNonHabitant = nonHab.getNumero();
+					ids.idMC = couple.getMenage().getNumero();
+					ids.idPM = pm.getNumero();
+					return ids;
+				}
+			});
+
+			// pour être bien sûr que tout est indexé avant de faire la recherche
+			globalTiersIndexer.sync();
+
+			// recherche par nom
+			final SearchPartyRequest params = new SearchPartyRequest();
+			params.setLogin(login);
+			params.setContactName(nom);
+
+			final SearchPartyResponse found = service.searchParty(params);
+			assertNotNull(found);
+			assertNotNull(found.getItems());
+			assertEquals(4, found.getItems().size());
+
+			final List<PartyInfo> allFound = new ArrayList<>(found.getItems());
+			Collections.sort(allFound, new Comparator<PartyInfo>() {
+				@Override
+				public int compare(PartyInfo o1, PartyInfo o2) {
+					return o1.getNumber() - o2.getNumber();
+				}
+			});
+
+			{
+				final PartyInfo info = allFound.get(0);
+				assertNotNull(info);
+				assertEquals(ids.idPM, info.getNumber());
+				assertNull(info.getVn1());
+				assertNull(info.getVn2());
+			}
+			{
+				final PartyInfo info = allFound.get(1);
+				assertNotNull(info);
+				assertEquals(ids.idHabitant, info.getNumber());
+				assertEquals(Long.valueOf(navsHabitant), info.getVn1());
+				assertNull(info.getVn2());
+			}
+			{
+				final PartyInfo info = allFound.get(2);
+				assertNotNull(info);
+				assertEquals(ids.idNonHabitant, info.getNumber());
+				assertEquals(Long.valueOf(navsNonHabitant), info.getVn1());
+				assertNull(info.getVn2());
+			}
+			{
+				final PartyInfo info = allFound.get(3);
+				assertNotNull(info);
+				assertEquals(ids.idMC, info.getNumber());
+				assertEquals(Long.valueOf(navsHabitant), info.getVn1());
+				assertEquals(Long.valueOf(navsNonHabitant), info.getVn2());
+			}
+		}
+		finally {
+			globalTiersIndexer.setOnTheFlyIndexation(otfi);
+		}
+	}
 }

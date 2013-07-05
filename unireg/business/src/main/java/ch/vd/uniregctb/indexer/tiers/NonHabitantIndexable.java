@@ -51,6 +51,7 @@ public class NonHabitantIndexable extends PersonnePhysiqueIndexable {
 		data.addNavs11(StringUtils.trimToNull(ancienNumAVS));
 		data.addNom1(pp.getPrenom());
 		data.addNom1(pp.getNom());
+		data.setNavs13_1(pp.getNumeroAssureSocial());
 		data.setDateDeces(IndexerFormatHelper.dateToString(pp.getDateDeces(), IndexerFormatHelper.DateStringMode.STORAGE));
 	}
 }

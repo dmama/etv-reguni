@@ -178,6 +178,7 @@ public class MenageCommunIndexable extends ContribuableIndexable {
 			data.addNavs11(ppData.getNavs11());
 			data.addNavs13(ppData.getNavs13());
 			data.setNom1(ppData.getNom1());
+			data.setNavs13_1(ppData.getNavs13_1());
 		}
 
 		if (ppIndexable2 != null) {
@@ -189,6 +190,7 @@ public class MenageCommunIndexable extends ContribuableIndexable {
 			data.addNavs11(ppData.getNavs11());
 			data.addNavs13(ppData.getNavs13());
 			data.setNom2(ppData.getNom1());
+			data.setNavs13_2(ppData.getNavs13_1());
 		}
 	}
 }

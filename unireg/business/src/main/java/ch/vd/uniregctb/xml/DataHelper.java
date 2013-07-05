@@ -238,6 +238,12 @@ public abstract class DataHelper {
 		i.setDebtorCommunicationMode(EnumHelper.coreToXMLv2(value.getModeCommunication()));
 		i.setLastTaxResidenceBeginDate(DataHelper.coreToXML(value.getDateOuvertureFor()));
 		i.setLastTaxResidenceEndDate(DataHelper.coreToXML(value.getDateFermetureFor()));
+		if (StringUtils.isNotBlank(value.getNavs13_1())) {
+			i.setVn1(Long.valueOf(value.getNavs13_1()));
+		}
+		if (StringUtils.isNotBlank(value.getNavs13_2())) {
+			i.setVn2(Long.valueOf(value.getNavs13_2()));
+		}
 		return i;
 	}
 
