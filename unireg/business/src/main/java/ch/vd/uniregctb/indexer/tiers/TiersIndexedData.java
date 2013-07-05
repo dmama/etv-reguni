@@ -19,7 +19,7 @@ import ch.vd.uniregctb.type.ModeCommunication;
 
 public class TiersIndexedData implements Serializable {
 
-	private static final long serialVersionUID = 3102867183859739055L;
+	private static final long serialVersionUID = -6570908488594414646L;
 
 	//private static final Logger LOGGER = Logger.getLogger(TiersIndexableData.class);
 
