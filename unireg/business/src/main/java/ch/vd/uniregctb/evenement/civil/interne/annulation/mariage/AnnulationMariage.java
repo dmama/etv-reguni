@@ -63,7 +63,7 @@ public class AnnulationMariage extends EvenementCivilInterne {
 	public void validateSpecific(EvenementCivilErreurCollector erreurs, EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
 		// Cas d'annulation de mariage
-		final ServiceCivilService serviceCivil = context.getTiersService().getServiceCivilService();
+		final ServiceCivilService serviceCivil = context.getServiceCivil();
 
 		final EtatCivil ec = serviceCivil.getEtatCivilActif(getNoIndividu(), getDate());
 		if (EtatCivilHelper.estMarieOuPacse(ec)) {

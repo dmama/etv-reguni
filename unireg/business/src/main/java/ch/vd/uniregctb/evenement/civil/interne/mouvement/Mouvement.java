@@ -75,7 +75,7 @@ public abstract class Mouvement extends EvenementCivilInterneAvecAdresses {
 		/*
 		 * Vérifie les individus
 		 */
-		final ServiceCivilService serviceCivil = getService().getServiceCivilService();
+		final ServiceCivilService serviceCivil = context.getServiceCivil();
 		final Individu individuPrincipal = mouvement.getIndividu();
 
 		if (individuPrincipal == null) {

@@ -204,7 +204,7 @@ public class CorrectionForsHCJob extends JobDefinition {
 								nouveauFor.setNumeroOfsAutoriteFiscale(ffpConjoint.getNumeroOfsAutoriteFiscale());
 								
 								menage.addForFiscal(nouveauFor);
-								menage = (MenageCommun) tiersService.getTiersDAO().save(menage);
+								menage = hibernateTemplate.merge(menage);
 								rouverts++;
 							}
 							else {

@@ -157,27 +157,12 @@ public class TiersServiceImpl implements TiersService {
         this.tiersSearcher = searcher;
     }
 
-    @Override
-    public TiersDAO getTiersDAO() {
-        return tiersDAO;
-    }
-
     public void setTiersDAO(TiersDAO tiersDAO) {
         this.tiersDAO = tiersDAO;
     }
 
-    @Override
-    public ServiceInfrastructureService getServiceInfra() {
-        return serviceInfra;
-    }
-
     public void setServiceInfra(ServiceInfrastructureService serviceInfra) {
         this.serviceInfra = serviceInfra;
-    }
-
-    @Override
-    public ServiceCivilService getServiceCivilService() {
-        return serviceCivilService;
     }
 
     public void setServiceCivilCacheWarmer(ServiceCivilCacheWarmer serviceCivilCacheWarmer) {
@@ -1376,7 +1361,7 @@ public class TiersServiceImpl implements TiersService {
             Individu individu = null;
             Long noIndividu = personne.getNumeroIndividu();
             if (noIndividu != null) {
-                individu = getServiceCivilService().getIndividu(noIndividu, date, attributes);
+                individu = serviceCivilService.getIndividu(noIndividu, date, attributes);
             }
             return individu;
         }

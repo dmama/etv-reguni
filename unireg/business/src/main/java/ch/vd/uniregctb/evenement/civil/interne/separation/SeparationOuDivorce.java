@@ -98,7 +98,7 @@ public abstract class SeparationOuDivorce extends EvenementCivilInterne {
 		 */
 		long noIndividuPrincipal = individu.getNoTechnique();
 
-		final ServiceCivilService serviceCivil = context.getTiersService().getServiceCivilService();
+		final ServiceCivilService serviceCivil = context.getServiceCivil();
 		EtatCivil etatCivilTiersPrincipal =  serviceCivil.getEtatCivilActif(noIndividuPrincipal, date);
 		if (etatCivilTiersPrincipal == null) {
 			erreurs.addErreur(String.format("L'individu %d ne possède pas d'état civil à la date de l'événement", noIndividuPrincipal));
@@ -209,7 +209,7 @@ public abstract class SeparationOuDivorce extends EvenementCivilInterne {
 		RegDate dateEvenement = getDate();
 
 		// Récupération de l'état civil de l'individu
-		final ServiceCivilService serviceCivil = context.getTiersService().getServiceCivilService();
+		final ServiceCivilService serviceCivil = context.getServiceCivil();
 
 		// état civil au moment de l'événement
 		final EtatCivil etatCivil = serviceCivil.getEtatCivilActif(numeroIndividu, dateEvenement);
@@ -243,7 +243,7 @@ public abstract class SeparationOuDivorce extends EvenementCivilInterne {
 		if (numeroIndividu ==null){
 			numeroIndividu = principal.getNumeroIndividu();
 		}
-		final EtatCivil etatCivil = getService().getServiceCivilService().getEtatCivilActif(numeroIndividu, dateEvt);
+		final EtatCivil etatCivil = context.getServiceCivil().getEtatCivilActif(numeroIndividu, dateEvt);
 		final ch.vd.uniregctb.type.EtatCivil etatCivilUnireg = EtatCivilHelper.civil2core(etatCivil.getTypeEtatCivil());
 		// traitement de la séparation
 		try {

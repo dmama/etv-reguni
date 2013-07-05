@@ -714,7 +714,7 @@ public class ArriveePrincipale extends Arrivee {
 		if (pp != null && pp.getNumeroIndividu() != null && pp.getNumeroIndividu() > 0) {
 			final AdressesCiviles adresseDomicile = new AdressesCiviles(context.getServiceCivil().getAdresses(pp.getNumeroIndividu(), date, false));
 			if (adresseDomicile.principale != null) {
-				commune = getService().getServiceInfra().getCommuneByAdresse(adresseDomicile.principale, date);
+				commune = context.getServiceInfra().getCommuneByAdresse(adresseDomicile.principale, date);
 			}
 			else {
 				commune = null;

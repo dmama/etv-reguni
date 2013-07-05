@@ -101,7 +101,7 @@ public class Reconciliation extends EvenementCivilInterne {
 
 	private void validateEtatCivil(PersonnePhysique habitant, RegDate date, EvenementCivilErreurCollector erreurs) {
 
-		final ServiceCivilService serviceCivil = context.getTiersService().getServiceCivilService();
+		final ServiceCivilService serviceCivil = context.getServiceCivil();
 		EtatCivil etatCivil = serviceCivil.getEtatCivilActif(habitant.getNumeroIndividu(), date);
 		if (etatCivil == null) {
 			erreurs.addErreur("L'individu n°" + habitant.getNumeroIndividu() + " ne possède pas d'état civil à la date de l'événement");
