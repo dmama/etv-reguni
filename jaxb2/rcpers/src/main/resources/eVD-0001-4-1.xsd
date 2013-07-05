@@ -1038,59 +1038,66 @@
 		</xs:sequence>
 	</xs:complexType>
 
-	<xs:element name="asynchronousSearchRequest">
+	<xs:complexType name="asynchronousSearchRequestType">
+		<xs:sequence>
+			<xs:element name="criteria" type="eVD-0001:searchCriteriaType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Critères de recherche. Renvoie la totalité des personnes si non précisé.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="referenceDate" type="xs:date" minOccurs="0" >
+				<xs:annotation>
+					<xs:documentation>Date de reference pour les données des personnes. Défaut: date du jour de l'extraction</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="outputHistory" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Demande l'historique des personnes. Défaut: false</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="maxPersonsByResponse" type="xs:integer" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Nombre maximum de personnes renvoyées par fichier</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:element name="asynchronousSearchRequest" type="eVD-0001:asynchronousSearchRequestType"/>
+
+	<xs:element name="asynchronousSearchResponse">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="criteria" type="eVD-0001:searchCriteriaType" minOccurs="0">
+				<xs:element name="request" type="eVD-0001:asynchronousSearchRequestType">
 					<xs:annotation>
 						<xs:documentation>Critères de recherche. Renvoie la totalité des personnes si non précisé.</xs:documentation>
 					</xs:annotation>
 				</xs:element>
-				<xs:element name="referenceDate" type="xs:date" minOccurs="0" >
-					<xs:annotation>
-						<xs:documentation>Date de reference pour les données des personnes. Défaut: date du jour de l'extraction</xs:documentation>
-					</xs:annotation>
-				</xs:element>
-				<xs:element name="outputHistory" type="xs:boolean" minOccurs="0">
-					<xs:annotation>
-						<xs:documentation>Demande l'historique des personnes. Défaut: false</xs:documentation>
-					</xs:annotation>
-				</xs:element>
-				<xs:element name="maxPersonsByResponse" type="xs:integer" minOccurs="0">
-					<xs:annotation>
-						<xs:documentation>Nombre maximum de personnes renvoyées par fichier</xs:documentation>
-					</xs:annotation>
-				</xs:element>
+				<xs:choice>
+					<xs:sequence>
+						<xs:element name="totalResponsesCount" type="xs:integer">
+							<xs:annotation>
+								<xs:documentation>Nombre total de fichiers renvoyés par cette recherche</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="indexOfThisResponse" type="xs:integer">
+							<xs:annotation>
+								<xs:documentation>Index du fichier par rapport au total</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="person" type="eVD-0001:personType" maxOccurs="unbounded">
+							<xs:annotation>
+								<xs:documentation>Liste des personnes retournées par cette recherche</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+					<xs:element name="error" type="eVD-0004:errorType">
+						<xs:annotation>
+							<xs:documentation>Type d'erreur dans la request (membre du criteria en erreur)</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:choice>
 			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
-
-	<xs:element name="asynchronousSearchResponse">
-		<xs:complexType>
-			<xs:choice>
-				<xs:sequence>
-					<xs:element name="totalResponsesCount" type="xs:integer">
-						<xs:annotation>
-							<xs:documentation>Nombre total de fichiers renvoyés par cette recherche</xs:documentation>
-						</xs:annotation>
-					</xs:element>
-					<xs:element name="indexOfThisResponse" type="xs:integer">
-						<xs:annotation>
-							<xs:documentation>Index du fichier par rapport au total</xs:documentation>
-						</xs:annotation>
-					</xs:element>
-					<xs:element name="person" type="eVD-0001:personType" maxOccurs="unbounded">
-						<xs:annotation>
-							<xs:documentation>Liste des personnes retournées par cette recherche</xs:documentation>
-						</xs:annotation>
-					</xs:element>
-				</xs:sequence>
-				<xs:element name="error" type="eVD-0004:errorType">
-					<xs:annotation>
-						<xs:documentation>Type d'erreur dans la request (membre du criteria en erreur)</xs:documentation>
-					</xs:annotation>
-				</xs:element>
-			</xs:choice>
 		</xs:complexType>
 	</xs:element>
 
