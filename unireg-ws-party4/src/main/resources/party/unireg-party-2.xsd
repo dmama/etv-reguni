@@ -12,8 +12,9 @@
 		   xmlns:common="http://www.vd.ch/fiscalite/unireg/common/1" xmlns:address="http://www.vd.ch/fiscalite/unireg/party/address/1"
 		   xmlns:relation="http://www.vd.ch/fiscalite/unireg/party/relation/1" xmlns:taxdeclaration="http://www.vd.ch/fiscalite/unireg/party/taxdeclaration/2"
 		   xmlns:taxresidence="http://www.vd.ch/fiscalite/unireg/party/taxresidence/1" xmlns:debtor="http://www.vd.ch/fiscalite/unireg/party/debtor/2"
-		   xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0">
+		   xmlns:eCH-0044="http://www.ech.ch/xmlns/eCH-0044/2" xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0">
 
+	<xs:import namespace="http://www.ech.ch/xmlns/eCH-0044/2" schemaLocation="../eCH-0044-2-0.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/1" schemaLocation="../unireg-common-1.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/address/1" schemaLocation="unireg-party-address-1.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/relation/1" schemaLocation="unireg-party-relation-1.xsd" />
@@ -562,6 +563,33 @@
 				</xs:element>
 			</xs:sequence>
 			<xs:element name="padding2" type="xs:int">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Padding pour supporter l'élément xs:any ci-dessous. A ignorer.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="vn1" type="eCH-0044:vnType">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Le numéro AVS13 de la personne physique contribuable (dans le cas d'un ménage commun, il s'agit du numéro AVS13 du contribuable principal), s'il est connu</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="vn2" type="eCH-0044:vnType">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Le numéro AVS13 du contribuable conjoint dans le cas d'un ménage commun, s'il est connu</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="padding3" type="xs:int">
 				<xs:annotation>
 					<xs:appinfo>
 						<jxb:property>

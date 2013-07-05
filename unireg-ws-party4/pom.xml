@@ -10,7 +10,7 @@
 	<artifactId>unireg-ws-party4</artifactId>
 	<packaging>jar</packaging>
 	<!-- BEGIN_LVERSION -->
-	<version>4.0</version> <!-- Attention ! Changer cette version en utilisant le script change_version.pl dans le répertoire /unireg -->
+	<version>4.1-SNAPSHOT</version> <!-- Attention ! Changer cette version en utilisant le script change_version.pl dans le répertoire /unireg -->
 	<!-- END_LVERSION -->
 
 	<name>Unireg - WS Party v4</name>
@@ -20,7 +20,7 @@
 		<dependency>
 			<artifactId>unireg-jaxb2-party</artifactId>
 			<groupId>ch.vd.uniregctb</groupId>
-			<version>2.0</version>
+			<version>2.3-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-lang</groupId>
@@ -171,7 +171,7 @@
 									author="true"
 									classpath="${compile_classpath}"
 									destdir="target/ws.javadoc"
-									doctitle="Unireg - Documentation du web service Party v4 (4.0)"
+									doctitle="Unireg - Documentation du web service Party v4 (4.1-SNAPSHOT)"
 									nodeprecated="false"
 									nodeprecatedlist="false"
 									noindex="false"
