@@ -16,7 +16,7 @@ import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 
-public class EvenementCivilEchRethrowerTest extends BusinessTest {
+public class EvenementCivilEchRecuperateurTest extends BusinessTest {
 
 	private EvenementCivilEch addEvent(@Nullable Long noIndividu, long id, TypeEvenementCivilEch type, ActionEvenementCivilEch action, RegDate date, EtatEvenementCivil etat) {
 		final EvenementCivilEch event = new EvenementCivilEch();
@@ -29,13 +29,13 @@ public class EvenementCivilEchRethrowerTest extends BusinessTest {
 		return hibernateTemplate.merge(event);
 	}
 
-	private EvenementCivilEchRethrower buildRethrower(EvenementCivilEchReceptionHandler handler) {
+	private EvenementCivilEchRecuperateur buildRecuperateur(EvenementCivilEchReceptionHandler handler) {
 		final EvenementCivilEchDAO evtCivilDAO = getBean(EvenementCivilEchDAO.class, "evenementCivilEchDAO");
-		final EvenementCivilEchRethrowerImpl rethrower = new EvenementCivilEchRethrowerImpl();
-		rethrower.setEvtCivilDAO(evtCivilDAO);
-		rethrower.setReceptionHandler(handler);
-		rethrower.setTransactionManager(transactionManager);
-		return rethrower;
+		final EvenementCivilEchRecuperateurImpl recuperateur = new EvenementCivilEchRecuperateurImpl();
+		recuperateur.setEvtCivilDAO(evtCivilDAO);
+		recuperateur.setReceptionHandler(handler);
+		recuperateur.setTransactionManager(transactionManager);
+		return recuperateur;
 	}
 
 	@Test
@@ -67,8 +67,8 @@ public class EvenementCivilEchRethrowerTest extends BusinessTest {
 			}
 		};
 
-		final EvenementCivilEchRethrower rethrower = buildRethrower(handler);
-		rethrower.fetchAndRethrowEvents();
+		final EvenementCivilEchRecuperateur recuperateur = buildRecuperateur(handler);
+		recuperateur.recupererEvenementsCivil();
 
 		Assert.assertEquals(2, found.size());
 

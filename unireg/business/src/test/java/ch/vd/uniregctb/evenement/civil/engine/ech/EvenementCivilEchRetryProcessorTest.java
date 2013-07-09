@@ -21,7 +21,7 @@ import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchDAO;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchProcessingMode;
-import ch.vd.uniregctb.evenement.civil.ech.MockEvenementCivilEchRethrower;
+import ch.vd.uniregctb.evenement.civil.ech.MockEvenementCivilEchRecuperateur;
 import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
@@ -206,7 +206,7 @@ public class EvenementCivilEchRetryProcessorTest extends BusinessTest {
 		final IntegratedQueueAndProcessor queueProcessor = new IntegratedQueueAndProcessor();
 		final EvenementCivilEchRetryProcessorImpl retry = new EvenementCivilEchRetryProcessorImpl();
 		retry.setEvtCivilDAO(getBean(EvenementCivilEchDAO.class, "evenementCivilEchDAO"));
-		retry.setRethrower(new MockEvenementCivilEchRethrower());
+		retry.setRecuperateur(new MockEvenementCivilEchRecuperateur());
 		retry.setTransactionManager(transactionManager);
 		retry.setProcessor(queueProcessor);
 		retry.setNotificationQueue(queueProcessor);

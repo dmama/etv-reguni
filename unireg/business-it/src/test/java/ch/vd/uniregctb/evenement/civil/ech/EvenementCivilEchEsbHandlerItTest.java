@@ -66,7 +66,7 @@ public class EvenementCivilEchEsbHandlerItTest extends EvenementTest {
 		};
 
 		esbHandler = new EvenementCivilEchEsbHandler();
-		esbHandler.setRethrower(null);
+		esbHandler.setRecuperateur(null);
 		esbHandler.setIgnoredEventTypes(null);
 		esbHandler.setReceptionHandler(receptionHandler);
 		esbHandler.afterPropertiesSet();

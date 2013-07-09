@@ -10,9 +10,9 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 
-public class EvenementCivilEchRethrowerImpl implements EvenementCivilEchRethrower {
+public class EvenementCivilEchRecuperateurImpl implements EvenementCivilEchRecuperateur {
 
-	private static final Logger LOGGER = Logger.getLogger(EvenementCivilEchRethrowerImpl.class);
+	private static final Logger LOGGER = Logger.getLogger(EvenementCivilEchRecuperateurImpl.class);
 
 	private PlatformTransactionManager transactionManager;
 	private EvenementCivilEchDAO evtCivilDAO;
@@ -31,7 +31,7 @@ public class EvenementCivilEchRethrowerImpl implements EvenementCivilEchRethrowe
 	}
 
 	@Override
-	public void fetchAndRethrowEvents() {
+	public void recupererEvenementsCivil() {
 		if (LOGGER.isInfoEnabled()) {
 			LOGGER.info("Récupération des événements civils e-CH à relancer");
 		}
@@ -52,7 +52,8 @@ public class EvenementCivilEchRethrowerImpl implements EvenementCivilEchRethrowe
 		if (relanceables != null && relanceables.size() > 0) {
 			for (EvenementCivilEch evt : relanceables) {
 				try {
-					receptionHandler.handleEvent(evt, EvenementCivilEchProcessingMode.BATCH);
+					// [SIFISC-9181] ici on ne demande que la récupération du numéro d'invidu, d'où le <code>null</code>
+					receptionHandler.handleEvent(evt, null);
 				}
 				catch (Exception e) {
 					LOGGER.error(String.format("Erreur lors de la relance de l'événement civil %d", evt.getId()), e);

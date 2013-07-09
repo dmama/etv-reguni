@@ -158,7 +158,7 @@ public class EvenementCivilEchReceptionHandlerImpl implements EvenementCivilEchR
 	}
 
 	@Override
-	public EvenementCivilEch handleEvent(EvenementCivilEch event, EvenementCivilEchProcessingMode mode) throws EvenementCivilException {
+	public EvenementCivilEch handleEvent(EvenementCivilEch event, @Nullable EvenementCivilEchProcessingMode mode) throws EvenementCivilException {
 		// récupération de l'individu
 		final long noIndividu = evtCivilService.getNumeroIndividuPourEvent(event);
 
@@ -176,7 +176,9 @@ public class EvenementCivilEchReceptionHandlerImpl implements EvenementCivilEchR
 		}
 
 		// notification du moteur de traitement
-		demanderTraitementQueue(noIndividu, mode);
+		if (mode != null) {
+			demanderTraitementQueue(noIndividu, mode);
+		}
 		return event;
 	}
 

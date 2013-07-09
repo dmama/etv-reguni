@@ -14,7 +14,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchDAO;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchRethrower;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchRecuperateur;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 public class EvenementCivilEchRetryProcessorImpl implements EvenementCivilEchRetryProcessor {
@@ -25,7 +25,7 @@ public class EvenementCivilEchRetryProcessorImpl implements EvenementCivilEchRet
 	private EvenementCivilEchDAO evtCivilDAO;
 	private PlatformTransactionManager transactionManager;
 	private EvenementCivilEchProcessor processor;
-	private EvenementCivilEchRethrower rethrower;
+	private EvenementCivilEchRecuperateur recuperateur;
 
 	@SuppressWarnings("UnusedDeclaration")
 	public void setNotificationQueue(EvenementCivilNotificationQueue notificationQueue) {
@@ -48,8 +48,8 @@ public class EvenementCivilEchRetryProcessorImpl implements EvenementCivilEchRet
 	}
 
 	@SuppressWarnings("UnusedDeclaration")
-	public void setRethrower(EvenementCivilEchRethrower rethrower) {
-		this.rethrower = rethrower;
+	public void setRecuperateur(EvenementCivilEchRecuperateur recuperateur) {
+		this.recuperateur = recuperateur;
 	}
 
 	@Override
@@ -59,8 +59,8 @@ public class EvenementCivilEchRetryProcessorImpl implements EvenementCivilEchRet
 			status = new LoggingStatusManager(LOGGER);
 		}
 
-		// dans un premier temps, on essaie de relancer les événements civils "à traiter"
-		rethrower.fetchAndRethrowEvents();
+		// dans un premier temps, on essaie de récupérer les événements civils "à traiter"
+		recuperateur.recupererEvenementsCivil();
 		
 		// ensuite, allons rechercher les numéros d'individus qui sont concernés (ce sont ces numéros qu'il faudra poster dans la queue)
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);

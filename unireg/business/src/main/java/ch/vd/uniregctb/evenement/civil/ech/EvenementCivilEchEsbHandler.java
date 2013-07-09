@@ -43,9 +43,9 @@ public class EvenementCivilEchEsbHandler implements EsbMessageHandler, Initializ
 	private Schema schemaCache;
 
 	private EvenementCivilEchReceptionHandler receptionHandler;
-	private EvenementCivilEchRethrower rethrower;
-	private int rethrowDelayMinutes = 0;
-	private RethrowerThread rethrowerThread;
+	private EvenementCivilEchRecuperateur recuperateur;
+	private int delaiRecuperationMinutes = 0;
+	private RecuperationThread recuperationThread;
 	private Set<TypeEvenementCivilEch> ignoredEventTypes;
 	private EvenementCivilEchProcessingMode processingMode;
 	private boolean running;
@@ -61,13 +61,13 @@ public class EvenementCivilEchEsbHandler implements EsbMessageHandler, Initializ
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setRethrower(EvenementCivilEchRethrower rethrower) {
-		this.rethrower = rethrower;
+	public void setRecuperateur(EvenementCivilEchRecuperateur recuperateur) {
+		this.recuperateur = recuperateur;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setRethrowDelayMinutes(int rethrowDelayMinutes) {
-		this.rethrowDelayMinutes = rethrowDelayMinutes;
+	public void setDelaiRecuperationMinutes(int delaiRecuperationMinutes) {
+		this.delaiRecuperationMinutes = delaiRecuperationMinutes;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -280,25 +280,25 @@ public class EvenementCivilEchEsbHandler implements EsbMessageHandler, Initializ
 	 * de laisser le temps à la web-app NEXUS de se mettre en place (la relance de ces événements fait essentiellement
 	 * des appels à RCPers pour récupérer des données sur les individus / les événements, et tout cela passe par NEXUS)
 	 */
-	private final class RethrowerThread extends Thread {
+	private final class RecuperationThread extends Thread {
 
 		private volatile boolean stopping = false;
 
-		private RethrowerThread() {
-			super("EvtCivilEchRethrower");
+		private RecuperationThread() {
+			super("EvtCivilEchRecup");
 		}
 
 		@Override
 		public void run() {
-			AuthenticationHelper.pushPrincipal("Relance-démarrage");
+			AuthenticationHelper.pushPrincipal("Récupération-démarrage");
 			try {
 				waitDelay();
 				if (!stopping) {
-					rethrower.fetchAndRethrowEvents();
+					recuperateur.recupererEvenementsCivil();
 				}
 			}
 			catch (InterruptedException e) {
-				LOGGER.error("Erreur pendant l'attente préalable à la relance des événements civils à traiter", e);
+				LOGGER.error("Erreur pendant l'attente préalable à la récupération des événements civils à traiter", e);
 			}
 			finally {
 				AuthenticationHelper.popPrincipal();
@@ -306,15 +306,16 @@ public class EvenementCivilEchEsbHandler implements EsbMessageHandler, Initializ
 		}
 
 		private void waitDelay() throws InterruptedException {
-			if (rethrowDelayMinutes > 0) {
-				LOGGER.info(String.format("On attend %d minute%s avant de démarrer la relance des événements civils à traiter", rethrowDelayMinutes, rethrowDelayMinutes > 1 ? "s" : StringUtils.EMPTY));
-				final long rethrowDelayMillis = TimeUnit.MINUTES.toMillis(rethrowDelayMinutes);
+			if (delaiRecuperationMinutes > 0) {
+				LOGGER.info(String.format("On attend %d minute%s avant de démarrer la récupération des événements civils à traiter",
+				                          delaiRecuperationMinutes, delaiRecuperationMinutes > 1 ? "s" : StringUtils.EMPTY));
+				final long recupDelayMillis = TimeUnit.MINUTES.toMillis(delaiRecuperationMinutes);
 				final long start = System.currentTimeMillis();
 				synchronized (this) {
 					while (!stopping) {
 						final long now = System.currentTimeMillis();
-						if (now - start < rethrowDelayMillis) {
-							wait(rethrowDelayMillis - (now - start));
+						if (now - start < recupDelayMillis) {
+							wait(recupDelayMillis - (now - start));
 						}
 						else {
 							// l'attente est finie !
@@ -340,12 +341,12 @@ public class EvenementCivilEchEsbHandler implements EsbMessageHandler, Initializ
 	@Override
 	public void start() {
 		// si on doit récupérer les anciens événements au démarrage, faisons-le maintenant
-		if (rethrower != null) {
+		if (recuperateur != null) {
 			// msi (24.05.2012) : on le fait dans un thread séparé pour éviter le deadlock suivant : l'application web est
 			// en cours de démarrage et a besoin des individus stockés dans nexus, mais nexus ne peut pas répondre
 			// à la moindre requête tant que toutes les webapps ne sont pas démarrées.
-			rethrowerThread = new RethrowerThread();
-			rethrowerThread.start();
+			recuperationThread = new RecuperationThread();
+			recuperationThread.start();
 		}
 		running = true;
 	}
@@ -353,8 +354,8 @@ public class EvenementCivilEchEsbHandler implements EsbMessageHandler, Initializ
 	@Override
 	public void stop() {
 		running = false;
-		if (rethrowerThread != null && rethrowerThread.isAlive()) {
-			rethrowerThread.stopNow();
+		if (recuperationThread != null && recuperationThread.isAlive()) {
+			recuperationThread.stopNow();
 		}
 	}
 
@@ -388,8 +389,8 @@ public class EvenementCivilEchEsbHandler implements EsbMessageHandler, Initializ
 			}
 		}
 
-		if (rethrower != null && rethrowDelayMinutes < 0) {
-			throw new IllegalArgumentException("La propriété 'rethrowDelayMinutes' devrait être positive ou nulle");
+		if (recuperateur != null && delaiRecuperationMinutes < 0) {
+			throw new IllegalArgumentException("La propriété 'delaiRecuperationMinutes' devrait être positive ou nulle");
 		}
 	}
 }

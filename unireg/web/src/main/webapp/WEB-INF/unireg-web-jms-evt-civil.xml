@@ -13,11 +13,11 @@
 
 	<bean id="evtCivilEchMasseEsbHandler" class="ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchEsbHandler" parent="evtCivilEchEsbHandler">
 		<property name="processingMode" value="BATCH"/>
-		<property name="rethrower" ref="evtCivilEchRethrower"/>
-		<property name="rethrowDelayMinutes" value="${extprop.evtCivil.rethrowDelayOnStartup}"/>
+		<property name="recuperateur" ref="evtCivilEchRecuperateur"/>
+		<property name="delaiRecuperationMinutes" value="${extprop.evtCivil.rethrowDelayOnStartup}"/>
 	</bean>
 
-	<bean id="evtCivilEchRethrower" class="ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchRethrowerImpl">
+	<bean id="evtCivilEchRecuperateur" class="ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchRecuperateurImpl">
 		<property name="evtCivilDAO" ref="evenementCivilEchDAO"/>
 		<property name="receptionHandler" ref="evtCivilEchReceptionHandler"/>
 		<property name="transactionManager" ref="transactionManager"/>
@@ -106,7 +106,7 @@
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="evtCivilDAO" ref="evenementCivilEchDAO"/>
 		<property name="processor" ref="evtCivilEchProcessor"/>
-		<property name="rethrower" ref="evtCivilEchRethrower"/>
+		<property name="recuperateur" ref="evtCivilEchRecuperateur"/>
 	</bean>
 
 	<bean id="evenementCivilEchStrategyParameters" class="ch.vd.uniregctb.evenement.civil.engine.ech.EvenementCivilEchStrategyParametersImpl">
