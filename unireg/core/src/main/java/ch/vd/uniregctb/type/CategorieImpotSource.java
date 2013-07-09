@@ -25,7 +25,7 @@ public enum CategorieImpotSource implements RestrictedAccess {
 	/**
 	 * @since 5.5.x - 13R3
 	 */
-	PARTICIPATIONS_HORS_SUISSE("Participations hors-Suisse"),
+	PARTICIPATIONS_HORS_SUISSE("Participations Hors-Suisse"),
 	/**
 	 * @since 5.5.x - 13R3
 	 */
