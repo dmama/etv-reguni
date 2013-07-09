@@ -1727,4 +1727,91 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			}
 		});
 	}
+
+	/**
+	 * SIFISC-9180 : le motif de rattachement "DIPLOMATE_ETRANGER" était conservé sur le for de domicile vaudois après l'arrivée
+	 */
+	@Test
+	public void testArriveeDiplomateEtranger() throws Exception {
+
+		final long noIndividuLui = 5738964L;
+		final long noIndividuElle = 4378562L;
+		final RegDate dateMariage = date(1999, 9, 21);
+		final RegDate dateAchat = date(2008, 2, 5);
+		final RegDate dateArrivee = date(2013, 5, 12);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu lui = addIndividu(noIndividuLui, date(1971, 11, 7), "Tabernacle", "John", Sexe.MASCULIN);
+				final MockIndividu elle = addIndividu(noIndividuElle, date(1972, 11, 1), "Tabernacle", "Vanessa", Sexe.FEMININ);
+				addNationalite(lui, MockPays.EtatsUnis, date(1971, 11, 7), null);
+				addNationalite(elle, MockPays.EtatsUnis, date(1972, 11, 1), null);
+				addPermis(lui, TypePermis.PAS_ATTRIBUE, dateArrivee, null, false);
+				addPermis(elle, TypePermis.PAS_ATTRIBUE, dateArrivee, null, false);
+				marieIndividus(lui, elle, dateMariage);
+
+				final MockAdresse adresse = addAdresse(lui, TypeAdresseCivil.PRINCIPALE, MockRue.Echallens.GrandRue, null, dateArrivee, null);
+				adresse.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_CANTON, MockCommune.Geneve.getNoOFS(), null));
+			}
+		});
+
+		// mise en place fiscale : ils possédaient un immeuble avant d'arriver
+		final long ppMenage = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique lui = addHabitant(noIndividuLui);
+				final PersonnePhysique elle = addHabitant(noIndividuElle);
+				final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, dateMariage, null);
+				final MenageCommun mc = couple.getMenage();
+
+				addForPrincipal(mc, dateAchat, null, null, null, MockPays.EtatsUnis.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, MotifRattachement.DIPLOMATE_ETRANGER);
+				addForSecondaire(mc, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+
+				return mc.getNumero();
+			}
+		});
+
+		// événement civil d'arrivée
+		final long evtArrivee = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(3273426L);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(dateArrivee);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noIndividuLui);
+				evt.setType(TypeEvenementCivilEch.ARRIVEE);
+				return hibernateTemplate.merge(evt).getId();
+			}
+		});
+
+		// traitement de l'événement civil
+		traiterEvenements(noIndividuLui);
+
+		// vérification du for principal vaudois suite à l'arrivée
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch ech = evtCivilDAO.get(evtArrivee);
+				assertNotNull(ech);
+				assertEquals(EtatEvenementCivil.TRAITE, ech.getEtat());
+
+				final MenageCommun mc = (MenageCommun) tiersDAO.get(ppMenage);
+				assertNotNull(mc);
+
+				final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
+				assertNotNull(ffp);
+				assertEquals(dateArrivee, ffp.getDateDebut());
+				assertEquals(MotifFor.ARRIVEE_HC, ffp.getMotifOuverture());
+				assertEquals(ModeImposition.MIXTE_137_1, ffp.getModeImposition());
+				assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+				assertEquals((Integer) MockCommune.Echallens.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
+				assertEquals(MotifRattachement.DOMICILE, ffp.getMotifRattachement());
+				return null;
+			}
+		});
+	}
 }

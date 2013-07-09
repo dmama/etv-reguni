@@ -436,27 +436,30 @@ public abstract class EvenementCivilInterne {
 	 *
 	 * @param contribuable             le contribuable en question.
 	 * @param dateChangement           la date de début de validité du nouveau for.
-	 * @param numeroOfsAutoriteFiscale le numéro OFS de l'autorité fiscale du nouveau for.
-	 * @param motifFermetureOuverture  le motif de fermeture du for existant et le motif d'ouverture du nouveau for
 	 * @param typeAutorite             le type d'autorité fiscale
+	 * @param numeroOfsAutoriteFiscale le numéro OFS de l'autorité fiscale du nouveau for.
+	 * @param motifRattachement        le motif de rattachement du nouveau for. Peut être <b>null</b> auquel cas le motif de rattachement de l'ancien for est utilisé.
+	 * @param motifFermetureOuverture  le motif de fermeture du for existant et le motif d'ouverture du nouveau for
 	 * @param modeImposition           le mode d'imposition du nouveau for. Peut être <b>null</b> auquel cas le mode d'imposition de l'ancien for est utilisé.
 	 * @return le nouveau for fiscal principal
 	 */
-	protected ForFiscalPrincipal updateForFiscalPrincipal(Contribuable contribuable, final RegDate dateChangement, int numeroOfsAutoriteFiscale, MotifFor motifFermetureOuverture,
-	                                                      TypeAutoriteFiscale typeAutorite, ModeImposition modeImposition) {
+	protected ForFiscalPrincipal updateForFiscalPrincipal(Contribuable contribuable, final RegDate dateChangement, TypeAutoriteFiscale typeAutorite, int numeroOfsAutoriteFiscale,
+	                                                      @Nullable MotifRattachement motifRattachement, MotifFor motifFermetureOuverture, @Nullable ModeImposition modeImposition) {
 
 		ForFiscalPrincipal forFiscalPrincipal = contribuable.getForFiscalPrincipalAt(null);
 		Assert.notNull(forFiscalPrincipal);
 		final Integer numeroOfsActuel = forFiscalPrincipal.getNumeroOfsAutoriteFiscale();
 
 		// On ne ferme et ouvre les fors que si nécessaire
-		if (numeroOfsActuel == null || !numeroOfsActuel.equals(numeroOfsAutoriteFiscale)) {
+		if (numeroOfsActuel == null || !numeroOfsActuel.equals(numeroOfsAutoriteFiscale) || typeAutorite != forFiscalPrincipal.getTypeAutoriteFiscale()) {
 			closeForFiscalPrincipal(contribuable, dateChangement.getOneDayBefore(), motifFermetureOuverture);
 			if (modeImposition == null) {
 				modeImposition = forFiscalPrincipal.getModeImposition();
 			}
-			forFiscalPrincipal = openForFiscalPrincipal(contribuable, dateChangement, typeAutorite, numeroOfsAutoriteFiscale, forFiscalPrincipal.getMotifRattachement(), motifFermetureOuverture,
-			                                            modeImposition);
+			if (motifRattachement == null) {
+				motifRattachement = forFiscalPrincipal.getMotifRattachement();
+			}
+			forFiscalPrincipal = openForFiscalPrincipal(contribuable, dateChangement, typeAutorite, numeroOfsAutoriteFiscale, motifRattachement, motifFermetureOuverture, modeImposition);
 		}
 		return forFiscalPrincipal;
 	}

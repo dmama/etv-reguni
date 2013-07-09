@@ -104,7 +104,7 @@ public class EvenementCivilInterne2Test extends BusinessTest {
 		 */
 		{
 			assertEquals(1, habitant.getForsFiscaux().size());
-			dummyEvent.updateForFiscalPrincipal(habitant, dateChangement, MockCommune.Cossonay.getNoOFS(), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null);
+			dummyEvent.updateForFiscalPrincipal(habitant, dateChangement, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Cossonay.getNoOFS(), null, MotifFor.DEMENAGEMENT_VD, null);
 			assertEquals(1, habitant.getForsFiscaux().size());
 			assertNull(forInitial.getDateFin());
 		}
@@ -114,7 +114,7 @@ public class EvenementCivilInterne2Test extends BusinessTest {
 		 */
 		{
 			assertEquals(1, habitant.getForsFiscaux().size());
-			dummyEvent.updateForFiscalPrincipal(habitant, dateChangement, MockCommune.LesClees.getNoOFS(), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null);
+			dummyEvent.updateForFiscalPrincipal(habitant, dateChangement, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.LesClees.getNoOFS(), null, MotifFor.DEMENAGEMENT_VD, null);
 			assertEquals(2, habitant.getForsFiscaux().size());
 			assertEquals(veilleChangement, forInitial.getDateFin());
 
@@ -142,7 +142,7 @@ public class EvenementCivilInterne2Test extends BusinessTest {
 		habitant = (PersonnePhysique)tiersDAO.save(habitant);
 
 		// déménagement sur Lausanne
-		dummyEvent.updateForFiscalPrincipal(habitant, RegDate.get(2004,7,1), MockCommune.Lausanne.getNoOFS(), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null);
+		dummyEvent.updateForFiscalPrincipal(habitant, RegDate.get(2004,7,1), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), null, MotifFor.DEMENAGEMENT_VD, null);
 
 		// on vérifie que le type d'autorité fiscale, le motif de rattachement et le mode d'imposition restent inchangés
 		final List<ForFiscal> fors = habitant.getForsFiscauxSorted();

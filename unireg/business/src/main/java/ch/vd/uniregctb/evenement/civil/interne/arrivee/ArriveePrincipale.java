@@ -427,7 +427,7 @@ public class ArriveePrincipale extends Arrivee {
 				}
 				else {
 					Audit.info(getNumeroEvenement(), "Mise-à-jour du fors fiscal avec mode d'imposition [" + modeImposition + ']');
-					updateForFiscalPrincipal(habitant, dateOuverture, numeroOfsNouveau, motifOuverture, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, modeImposition);
+					updateForFiscalPrincipal(habitant, dateOuverture, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, numeroOfsNouveau, MotifRattachement.DOMICILE, motifOuverture, modeImposition);
 				}
 			}
 		}
@@ -559,7 +559,7 @@ public class ArriveePrincipale extends Arrivee {
 				}
 				else {
 					Audit.info(getNumeroEvenement(), "Mise-à-jour de la commune du for fiscal principal sur le ménage commun avec mode d'imposition [" + modeImposition + ']');
-					updateForFiscalPrincipal(menageCommun, dateOuvertureFor, numeroOfsNouveau, motifOuverture, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, modeImposition);
+					updateForFiscalPrincipal(menageCommun, dateOuvertureFor, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, numeroOfsNouveau, MotifRattachement.DOMICILE, motifOuverture, modeImposition);
 				}
 			}
 		}
