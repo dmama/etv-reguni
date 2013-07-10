@@ -60,6 +60,7 @@ import ch.vd.uniregctb.document.MajoriteRapport;
 import ch.vd.uniregctb.document.MigrationCoquillesPMRapport;
 import ch.vd.uniregctb.document.PassageNouveauxRentiersSourciersEnMixteRapport;
 import ch.vd.uniregctb.document.RapprocherCtbRapport;
+import ch.vd.uniregctb.document.RecalculTachesRapport;
 import ch.vd.uniregctb.document.ReinitialiserBaremeDoubleGainRapport;
 import ch.vd.uniregctb.document.ResolutionAdresseRapport;
 import ch.vd.uniregctb.document.RolesCommunesRapport;
@@ -95,6 +96,7 @@ import ch.vd.uniregctb.stats.evenements.StatsEvenementsCivilsRegPPResults;
 import ch.vd.uniregctb.stats.evenements.StatsEvenementsExternesResults;
 import ch.vd.uniregctb.stats.evenements.StatsEvenementsIdentificationContribuableResults;
 import ch.vd.uniregctb.tache.ListeTachesEnInstanceParOID;
+import ch.vd.uniregctb.tache.TacheSyncResults;
 import ch.vd.uniregctb.tiers.ExclureContribuablesEnvoiResults;
 import ch.vd.uniregctb.tiers.rattrapage.etatdeclaration.CorrectionEtatDeclarationResults;
 import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantResults;
@@ -1098,4 +1100,25 @@ public class RapportServiceImpl implements RapportService {
 		}
 	}
 
+	@Override
+	public RecalculTachesRapport generateRapport(final TacheSyncResults results, StatusManager s) {
+		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
+
+		final String nom = "RapportRecalculTaches";
+		final String description = "Rapport d'exécution du job de recalcul des tâches d'envoi et d'annulation de déclaration d'impôt";
+		final Date dateGeneration = DateHelper.getCurrentDate();
+
+		try {
+			return docService.newDoc(RecalculTachesRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<RecalculTachesRapport>() {
+				@Override
+				public void writeDoc(RecalculTachesRapport doc, OutputStream os) throws Exception {
+					final PdfRecalculTachesRapport document = new PdfRecalculTachesRapport();
+					document.write(results, nom, description, dateGeneration, os, status);
+				}
+			});
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
 }

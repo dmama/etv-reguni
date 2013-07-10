@@ -51,6 +51,7 @@ import ch.vd.uniregctb.document.MajoriteRapport;
 import ch.vd.uniregctb.document.MigrationCoquillesPMRapport;
 import ch.vd.uniregctb.document.PassageNouveauxRentiersSourciersEnMixteRapport;
 import ch.vd.uniregctb.document.RapprocherCtbRapport;
+import ch.vd.uniregctb.document.RecalculTachesRapport;
 import ch.vd.uniregctb.document.ReinitialiserBaremeDoubleGainRapport;
 import ch.vd.uniregctb.document.ResolutionAdresseRapport;
 import ch.vd.uniregctb.document.RolesCommunesRapport;
@@ -85,6 +86,7 @@ import ch.vd.uniregctb.stats.evenements.StatsEvenementsCivilsRegPPResults;
 import ch.vd.uniregctb.stats.evenements.StatsEvenementsExternesResults;
 import ch.vd.uniregctb.stats.evenements.StatsEvenementsIdentificationContribuableResults;
 import ch.vd.uniregctb.tache.ListeTachesEnInstanceParOID;
+import ch.vd.uniregctb.tache.TacheSyncResults;
 import ch.vd.uniregctb.tiers.ExclureContribuablesEnvoiResults;
 import ch.vd.uniregctb.tiers.rattrapage.etatdeclaration.CorrectionEtatDeclarationResults;
 import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantResults;
@@ -446,4 +448,12 @@ public interface RapportService {
 	 * @return le rapport
 	 */
 	SuppressionOIDRapport generateRapport(SuppressionOIDResults results, StatusManager status);
+
+	/**
+	 * Génère le rapport d'exécution du batch de recalcul des tâches
+	 * @param results le résultat du batch
+	 * @param status le status manager
+	 * @return le rapport
+	 */
+	RecalculTachesRapport generateRapport(TacheSyncResults results, StatusManager status);
 }

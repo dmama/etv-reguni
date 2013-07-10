@@ -11,6 +11,7 @@ import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.HibernateEntity;
+import ch.vd.uniregctb.common.Switchable;
 import ch.vd.uniregctb.common.ThreadSwitch;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationInterceptor;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationSubInterceptor;
@@ -22,7 +23,7 @@ import ch.vd.uniregctb.tiers.TiersService;
 /**
  * [UNIREG-2305] Cet interceptor recalcul automatiquement les tâches d'envoi et d'annulation de DIs sur les contribuables modifiées après le commit de chaque transaction.
  */
-public class TacheSynchronizerInterceptor implements ModificationSubInterceptor, InitializingBean {
+public class TacheSynchronizerInterceptor implements ModificationSubInterceptor, InitializingBean, Switchable {
 
 	private static final Logger LOGGER = Logger.getLogger(TacheSynchronizerInterceptor.class);
 
@@ -37,12 +38,12 @@ public class TacheSynchronizerInterceptor implements ModificationSubInterceptor,
 		}
 	};
 
-	private ThreadSwitch activationSwitch = new ThreadSwitch(true);
+	private final ThreadSwitch activationSwitch = new ThreadSwitch(true);
 
 	@Override
 	public boolean onChange(HibernateEntity entity, Serializable id, Object[] currentState, Object[] previousState, String[] propertyNames, Type[] types, boolean isAnnulation) throws CallbackException {
 
-		if (isDisabled()) {
+		if (!isEnabled()) {
 			return false;
 		}
 
@@ -119,11 +120,17 @@ public class TacheSynchronizerInterceptor implements ModificationSubInterceptor,
 	}
 
 	public void setOnTheFlySynchronization(boolean value) {
-		activationSwitch.setEnabled(value);
+		setEnabled(value);
 	}
 
-	private boolean isDisabled() {
-		return !activationSwitch.isEnabled();
+	@Override
+	public void setEnabled(boolean enabled) {
+		activationSwitch.setEnabled(enabled);
+	}
+
+	@Override
+	public boolean isEnabled() {
+		return activationSwitch.isEnabled();
 	}
 
 	/**

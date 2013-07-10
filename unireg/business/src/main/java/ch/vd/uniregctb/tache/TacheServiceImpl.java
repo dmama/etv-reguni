@@ -31,7 +31,6 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.common.BatchResults;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.common.StatusManager;
@@ -497,10 +496,10 @@ public class TacheServiceImpl implements TacheService {
 	}
 
 	@Override
-	public void synchronizeTachesDIs(final Collection<Long> ctbIds) {
+	public TacheSyncResults synchronizeTachesDIs(final Collection<Long> ctbIds) {
 
 		final Map<Long, List<SynchronizeAction>> entityActions = new HashMap<>();
-
+		final TacheSyncResults results = new TacheSyncResults(false);
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
 		template.execute(new TransactionCallback<Object>() {
@@ -518,7 +517,7 @@ public class TacheServiceImpl implements TacheService {
 						// on exécute toutes les actions sur les tâches dans la transaction courante, car - sauf bug -
 						// elles ne peuvent pas provoquer d'erreurs de validation.
 						if (!tacheActions.isEmpty()) {
-							executeTacheActions(tacheActions);
+							results.addAll(executeTacheActions(tacheActions));
 						}
 						return null;
 					}
@@ -529,8 +528,9 @@ public class TacheServiceImpl implements TacheService {
 
 		// finalement, on exécute toutes les actions sur les entités dans une ou plusieurs transactions additionnelles (SIFISC-3141)
 		if (!entityActions.isEmpty()) {
-			executeEntityActions(entityActions);
+			results.addAll(executeEntityActions(entityActions));
 		}
+		return results;
 	}
 
 	/**
@@ -538,10 +538,12 @@ public class TacheServiceImpl implements TacheService {
 	 *
 	 * @param tacheActions la liste des actions de type 'tache' à effectuer
 	 */
-	private void executeTacheActions(Map<Long, List<SynchronizeAction>> tacheActions) {
+	private TacheSyncResults executeTacheActions(Map<Long, List<SynchronizeAction>> tacheActions) {
+		final TacheSyncResults results = new TacheSyncResults(false);
 		for (Map.Entry<Long, List<SynchronizeAction>> entry : tacheActions.entrySet()) {
-			executeActions(entry.getKey(), entry.getValue());
+			executeActions(entry.getKey(), entry.getValue(), results);
 		}
+		return results;
 	}
 
 	/**
@@ -550,32 +552,33 @@ public class TacheServiceImpl implements TacheService {
 	 *
 	 * @param entityActions la liste des actions de type 'entité' à effectuer.
 	 */
-	private void executeEntityActions(Map<Long, List<SynchronizeAction>> entityActions) {
+	private TacheSyncResults executeEntityActions(final Map<Long, List<SynchronizeAction>> entityActions) {
 
 		// on exécute toutes les actions en lots de 100. Les actions sont groupées par numéro de contribuable, de telle manière que
 		// toutes les actions d'un contribuable soient exécutées dans une même transaction.
-		final BatchTransactionTemplate<Map.Entry<Long, List<SynchronizeAction>>, BatchResults> batchTemplate =
-				new BatchTransactionTemplate<>(entityActions.entrySet(), 100, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE,
-						transactionManager, null, hibernateTemplate);
-		batchTemplate.execute(new BatchTransactionTemplate.BatchCallback<Map.Entry<Long, List<SynchronizeAction>>, BatchResults>() {
+		final TacheSyncResults results = new TacheSyncResults(false);
+
+		final BatchTransactionTemplate<Long, TacheSyncResults> batchTemplate =
+				new BatchTransactionTemplate<>(entityActions.keySet(), 100, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE, transactionManager, null, hibernateTemplate);
+		batchTemplate.execute(results, new BatchTransactionTemplate.BatchCallback<Long, TacheSyncResults>() {
 			@Override
-			public boolean doInTransaction(List<Map.Entry<Long, List<SynchronizeAction>>> batch, BatchResults rapport) throws Exception {
-				for (Map.Entry<Long, List<SynchronizeAction>> entry : batch) {
-					executeActions(entry.getKey(), entry.getValue());
+			public boolean doInTransaction(List<Long> batch, TacheSyncResults rapport) throws Exception {
+				for (Long id : batch) {
+					executeActions(id, entityActions.get(id), rapport);
 				}
-				return false;
+				return true;
 			}
 
 			@Override
-			public void afterTransactionRollback(Exception e, boolean willRetry) {
-				if (!willRetry) {
-					LOGGER.error(e, e);
-				}
+			public TacheSyncResults createSubRapport() {
+				return new TacheSyncResults(false);
 			}
 		});
+
+		return results;
 	}
 
-	private void executeActions(Long ctbId, List<SynchronizeAction> actions) {
+	private void executeActions(Long ctbId, List<SynchronizeAction> actions, TacheSyncResults results) {
 		//TODO (BNM) Appeler la méthode getCollectiviteAdministrative et asserter que la collectivité existe + corriger les tests qui ne passent plus
 		final CollectiviteAdministrative officeSuccessions = tiersService.getOrCreateCollectiviteAdministrative(ServiceInfrastructureService.noACISuccessions, true);
 		if (officeSuccessions == null) {
@@ -592,30 +595,45 @@ public class TacheServiceImpl implements TacheService {
 
 			for (SynchronizeAction action : actions) {
 				action.execute(context);
+				results.addAction(ctbId, action);
 			}
 		}
 	}
 
 	private static void splitActions(Map<Long, List<SynchronizeAction>> actions, Map<Long, List<SynchronizeAction>> tacheActions, Map<Long, List<SynchronizeAction>> entityActions) {
 		for (Map.Entry<Long, List<SynchronizeAction>> entry : actions.entrySet()) {
-			final List<SynchronizeAction> values = entry.getValue();
-			final List<SynchronizeAction> taches = new ArrayList<>(values.size());
-			final List<SynchronizeAction> entites = new ArrayList<>(values.size());
-			for (SynchronizeAction action : values) {
-				if (action.willChangeEntity()) {
-					entites.add(action);
-				}
-				else {
-					taches.add(action);
-				}
+			final SplittedActions splittedActions = splitBetweenTaskAndEntityActions(entry.getValue());
+			if (!splittedActions.taskActions.isEmpty()) {
+				tacheActions.put(entry.getKey(), splittedActions.taskActions);
 			}
-			if (!taches.isEmpty()) {
-				tacheActions.put(entry.getKey(), taches);
-			}
-			if (!entites.isEmpty()) {
-				entityActions.put(entry.getKey(), entites);
+			if (!splittedActions.entityActions.isEmpty()) {
+				entityActions.put(entry.getKey(), splittedActions.entityActions);
 			}
 		}
+	}
+
+	private static final class SplittedActions {
+		public final List<SynchronizeAction> taskActions;
+		public final List<SynchronizeAction> entityActions;
+
+		private SplittedActions(List<SynchronizeAction> taskActions, List<SynchronizeAction> entityActions) {
+			this.taskActions = taskActions;
+			this.entityActions = entityActions;
+		}
+	}
+
+	private static SplittedActions splitBetweenTaskAndEntityActions(List<SynchronizeAction> actions) {
+		final List<SynchronizeAction> taches = new ArrayList<>(actions.size());
+		final List<SynchronizeAction> entites = new ArrayList<>(actions.size());
+		for (SynchronizeAction action : actions) {
+			if (action.willChangeEntity()) {
+				entites.add(action);
+			}
+			else {
+				taches.add(action);
+			}
+		}
+		return new SplittedActions(taches, entites);
 	}
 
 	private Map<Long, List<SynchronizeAction>> determineAllSynchronizeActionsForDIs(Collection<Long> ctbIds) {

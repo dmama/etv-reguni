@@ -1,5 +1,11 @@
 package ch.vd.uniregctb.tache;
 
+import java.util.Collection;
+import java.util.List;
+
+import org.jetbrains.annotations.Nullable;
+import org.springframework.transaction.annotation.Transactional;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
@@ -8,11 +14,6 @@ import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.type.ModeImposition;
-import org.jetbrains.annotations.Nullable;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Collection;
-import java.util.List;
 
 /**
  * Service permettant la génération de tâches à la suite d'événements fiscaux
@@ -111,9 +112,9 @@ public interface TacheService {
 	 * <b>Attention !</b> Ne pas appeler cette méthode manuellement : elle est appelée automatiquement depuis un intercepteur après le commit de la transaction.
 	 *
 	 * @param ctbIds les ids des contribuables dont les tâches doivent être synchronisées.
-
+	 * @return une indication des opérations effectuées
 	 */
-	void synchronizeTachesDIs(Collection<Long> ctbIds);
+	TacheSyncResults synchronizeTachesDIs(Collection<Long> ctbIds);
 
     /**
      * Annule les tâches obsolètes suite à la modification d'un contribuable

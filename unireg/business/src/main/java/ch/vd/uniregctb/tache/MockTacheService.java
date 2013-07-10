@@ -61,7 +61,8 @@ public class MockTacheService implements TacheService {
 	}
 
 	@Override
-	public void synchronizeTachesDIs(Collection<Long> ctbIds) {
+	public TacheSyncResults synchronizeTachesDIs(Collection<Long> ctbIds) {
+		return new TacheSyncResults(false);
 	}
 
     @Override

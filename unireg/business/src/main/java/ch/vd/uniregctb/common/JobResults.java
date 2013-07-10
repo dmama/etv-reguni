@@ -15,7 +15,7 @@ import ch.vd.uniregctb.tiers.TiersService;
 /**
  * Classe de base des containers de résultats pour les rapports d'exécution des batchs
  */
-public abstract class JobResults<E, R extends JobResults> implements BatchResults<E, R> {
+public abstract class JobResults<E, R extends JobResults> extends AbstractJobResults<E, R> {
 
 	public static final String EXCEPTION_DESCRIPTION = "Une exception est apparue pendant le traitement du tiers, veuillez en informer le chef de projet Unireg";
 
@@ -116,23 +116,8 @@ public abstract class JobResults<E, R extends JobResults> implements BatchResult
 		return StringUtils.trimToEmpty(nom);
 	}
 
-	/**
-	 * Heure de démarrage du job (à la milliseconde près).
-	 */
-	public final long startTime;
-
-	/**
-	 * Heure d'arrêt du job (à la milliseconde près).
-	 */
-	public long endTime = 0;
-
 	protected JobResults(TiersService tiersService, AdresseService adresseService) {
 		this.tiersService = tiersService;
 		this.adresseService = adresseService;
-		this.startTime = System.currentTimeMillis();
-	}
-
-	public void end() {
-		this.endTime = System.currentTimeMillis();
 	}
 }

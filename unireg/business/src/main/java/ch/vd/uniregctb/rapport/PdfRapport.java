@@ -25,6 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.common.AbstractJobResults;
 import ch.vd.uniregctb.common.ApplicationInfo;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.CsvHelper;
@@ -327,7 +328,7 @@ public abstract class PdfRapport extends Document {
 	 * @param results le résultat d'exécution du rapport.
 	 * @return une string représentant la durée sous forme humaine.
 	 */
-	protected static String formatDureeExecution(JobResults results) {
+	protected static String formatDureeExecution(AbstractJobResults results) {
 		final long milliseconds = getDureeExecution(results);
 		return formatDureeExecution(milliseconds);
 	}
@@ -337,7 +338,7 @@ public abstract class PdfRapport extends Document {
 	 * @param results le résultat d'exécution du job
 	 * @return la durée d'exécution, en millisecondes
 	 */
-	protected static long getDureeExecution(JobResults results) {
+	protected static long getDureeExecution(AbstractJobResults results) {
 		final long start = results.startTime;
 		final long end = results.endTime == 0 ? System.currentTimeMillis() : results.endTime;
 		return end - start;

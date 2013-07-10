@@ -8,6 +8,7 @@ import ch.vd.uniregctb.tiers.TacheControleDossier;
 import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
 import ch.vd.uniregctb.tiers.TacheNouveauDossier;
 import ch.vd.uniregctb.tiers.TacheTransmissionDossier;
+import ch.vd.uniregctb.type.TypeContribuable;
 
 /**
  * Action permettant d'annuler une tâche devenue obsolète.
@@ -29,19 +30,25 @@ public class AnnuleTache extends SynchronizeAction {
 		return false;
 	}
 
+	private static String toString(TypeContribuable typeContribuable) {
+		if (typeContribuable == null) {
+			return "de type inconnu";
+		}
+		return typeContribuable.description();
+	}
+
 	@Override
 	public String toString() {
-		String tacheDetail;
-
+		final String tacheDetail;
 		if (tache instanceof TacheAnnulationDeclarationImpot) {
 			final TacheAnnulationDeclarationImpot annule = (TacheAnnulationDeclarationImpot) tache;
 			final DeclarationImpotOrdinaire di = annule.getDeclarationImpotOrdinaire();
-			tacheDetail = String.format("d'annulation de la déclaration d'impôt %s couvrant la période du %s au %s", di.getTypeContribuable().description(),
+			tacheDetail = String.format("d'annulation de la déclaration d'impôt %s couvrant la période du %s au %s", toString(di.getTypeContribuable()),
 					RegDateHelper.dateToDisplayString(di.getDateDebut()), RegDateHelper.dateToDisplayString(di.getDateFin()));
 		}
 		else if (tache instanceof TacheEnvoiDeclarationImpot) {
 			final TacheEnvoiDeclarationImpot envoi = (TacheEnvoiDeclarationImpot) tache;
-			tacheDetail = String.format("d'envoi de la déclaration d'impôt %s couvrant la période du %s au %s", envoi.getTypeContribuable().description(),
+			tacheDetail = String.format("d'envoi de la déclaration d'impôt %s couvrant la période du %s au %s", toString(envoi.getTypeContribuable()),
 					RegDateHelper.dateToDisplayString(envoi.getDateDebut()), RegDateHelper.dateToDisplayString(envoi.getDateFin()));
 		}
 		else if (tache instanceof TacheControleDossier) {

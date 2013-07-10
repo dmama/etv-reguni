@@ -202,15 +202,20 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
      * @return l'objet retourné par l'action
      * @throws Exception en case d'exception
      */
-    protected <T> T doWithoutValidation(final ExecuteCallback<T> action) throws Exception {
-        validationInterceptor.setEnabled(false);
-        try {
-            return action.execute();
-        }
-        finally {
-            validationInterceptor.setEnabled(true);
-        }
+    protected <T> T doWithoutValidation(ExecuteCallback<T> action) throws Exception {
+	    return doUnderSwitch(validationInterceptor, false, action);
     }
+
+	protected <T> T doUnderSwitch(Switchable switchable, boolean switchValue, ExecuteCallback<T> action) throws Exception {
+		final boolean oldSwitchValue = switchable.isEnabled();
+		switchable.setEnabled(switchValue);
+		try {
+			return action.execute();
+		}
+		finally {
+			switchable.setEnabled(oldSwitchValue);
+		}
+	}
 
     /**
      * Exécute une portion de code dans une nouvelle transaction et une nouvelle session hibernate tout en désactivant la validation des objets métiers. Cette méthode combine donc les méthodes
@@ -229,6 +234,15 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		    }
 	    });
     }
+
+	protected <T> T doInNewTransactionAndSessionUnderSwitch(Switchable switchable, boolean switchValue, final TransactionCallback<T> action) throws Exception {
+		return doUnderSwitch(switchable, switchValue, new ExecuteCallback<T>() {
+			@Override
+			public T execute() throws Exception {
+				return doInNewTransactionAndSession(action);
+			}
+		});
+	}
 
     protected static void assertForPrincipal(RegDate debut, MotifFor motifOuverture, Commune commune, MotifRattachement motif, ModeImposition modeImposition, ForFiscalPrincipal forPrincipal) {
         assertNotNull(forPrincipal);
