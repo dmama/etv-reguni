@@ -34,14 +34,14 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 
 	private RecalculTachesProcessor processor;
 	private TacheDAO tacheDAO;
-	private TacheService tacheService;
 
 	@Override
 	protected void runOnSetUp() throws Exception {
 		super.runOnSetUp();
 
 		tacheDAO = getBean(TacheDAO.class, "tacheDAO");
-		tacheService = getBean(TacheService.class, "tacheService");
+
+		final TacheService tacheService = getBean(TacheService.class, "tacheService");
 		processor = new RecalculTachesProcessor(transactionManager, hibernateTemplate, tacheService, tacheSynchronizer);
 
 		doInNewTransactionAndSession(new TxCallback<Object>() {
@@ -323,5 +323,71 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 				return null;
 			}
 		});
+	}
+
+	@Test
+	public void testTacheDejaAnnulee() throws Exception {
+
+		final int year = RegDate.get().year();
+		final RegDate dateArrivee = date(year - 1, 3, 12);
+
+		// mise en place civile -> personne !
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				// un monde vierge...
+			}
+		});
+
+		// mise en place fiscale en générant la tâche qui va bien
+		final long ppId = doInNewTransactionAndSessionUnderSwitch(tacheSynchronizer, true, new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Guillaume", "Le Conquérant", date(1966, 4, 12), Sexe.MASCULIN);
+				addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Bex);
+				return pp.getNumero();
+			}
+		});
+
+		// vérification que la tâche d'envoi de DI est bien là -> on l'annule
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final List<Tache> taches = tacheDAO.find(ppId);
+				assertNotNull(taches);
+				assertEquals(1, taches.size());
+
+				final Tache tache = taches.get(0);
+				assertNotNull(tache);
+				assertEquals(TypeTache.TacheEnvoiDeclarationImpot, tache.getTypeTache());
+				assertFalse(tache.isAnnule());
+				tache.setAnnule(true);
+				return null;
+			}
+		});
+
+		// vérification que la tâche d'envoi de DI est bien annulée
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final List<Tache> taches = tacheDAO.find(ppId);
+				assertNotNull(taches);
+				assertEquals(1, taches.size());
+
+				final Tache tache = taches.get(0);
+				assertNotNull(tache);
+				assertEquals(TypeTache.TacheEnvoiDeclarationImpot, tache.getTypeTache());
+				assertTrue(tache.isAnnule());
+				return null;
+			}
+		});
+
+		// utilisation du processeur (mode cleanup) : rien ne doit être traité car toutes les tâches du contribuable sont annulées
+		{
+			final TacheSyncResults res = processor.run(true, null);
+			assertNotNull(res);
+			assertEquals(0, res.getExceptions().size());
+			assertEquals(0, res.getActions().size());
+		}
 	}
 }

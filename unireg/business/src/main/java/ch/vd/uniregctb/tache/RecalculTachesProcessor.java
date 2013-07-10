@@ -103,7 +103,7 @@ public class RecalculTachesProcessor {
 	private List<Long> extractCtbIds(boolean existingTasksCleanup) {
 		final String hql;
 		if (existingTasksCleanup) {
-			hql = "select distinct t.contribuable.id from Tache as t where etat = '" + TypeEtatTache.EN_INSTANCE.name() + "' order by t.contribuable.id";
+			hql = "select distinct t.contribuable.id from Tache as t where etat = '" + TypeEtatTache.EN_INSTANCE.name() + "' and t.annulationDate is null order by t.contribuable.id";
 		}
 		else {
 			hql = "select distinct ctb.id from Contribuable as ctb inner join ctb.forsFiscaux as for where for.class in (ForFiscalPrincipal, ForFiscalSecondaire) and for.typeAutoriteFiscale = 'COMMUNE_OU_FRACTION_VD' order by ctb.id";
