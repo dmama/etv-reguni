@@ -2,7 +2,14 @@ package ch.vd.uniregctb.tache;
 
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
@@ -14,7 +21,10 @@ import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
+import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.BatchIterator;
+import ch.vd.uniregctb.common.DefaultThreadFactory;
+import ch.vd.uniregctb.common.DefaultThreadNameGenerator;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.StandardBatchIterator;
 import ch.vd.uniregctb.common.StatusManager;
@@ -32,6 +42,40 @@ public class RecalculTachesProcessor {
 	private final HibernateTemplate hibernateTemplate;
 	private final TacheService tacheService;
 	private final TacheSynchronizerInterceptor tacheSynchronizerInterceptor;
+	
+	private class SyncTask implements Callable<TacheSyncResults> {
+		
+		private final List<Long> ids;
+		private final int percent;
+		private final String principal;
+		private final StatusManager statusManager;
+
+		private SyncTask(List<Long> ids, int percent, String principal, StatusManager statusManager) {
+			this.ids = ids;
+			this.percent = percent;
+			this.principal = principal;
+			this.statusManager = statusManager;
+		}
+
+		@Override
+		public TacheSyncResults call() {
+			AuthenticationHelper.pushPrincipal(principal);
+			try {
+				final boolean wasEnabled = tacheSynchronizerInterceptor.isEnabled();
+				tacheSynchronizerInterceptor.setEnabled(false);
+				try {
+					statusManager.setMessage("Recalcul en cours...", percent);
+					return doRunWithRetry(ids);
+				}
+				finally {
+					tacheSynchronizerInterceptor.setEnabled(wasEnabled);
+				}
+			}
+			finally {
+				AuthenticationHelper.popPrincipal();
+			}
+		}
+	}
 
 	public RecalculTachesProcessor(PlatformTransactionManager transactionManager, HibernateTemplate hibernateTemplate, TacheService tacheService,
 	                               TacheSynchronizerInterceptor tacheSynchronizerInterceptor) {
@@ -41,39 +85,61 @@ public class RecalculTachesProcessor {
 		this.tacheSynchronizerInterceptor = tacheSynchronizerInterceptor;
 	}
 
-	public TacheSyncResults run(boolean existingTasksCleanup, @Nullable StatusManager s) {
+	public TacheSyncResults run(boolean existingTasksCleanup, int nbThreads, @Nullable StatusManager s) {
 		final StatusManager status = s != null ? s : new LoggingStatusManager(LOGGER);
+		final TacheSyncResults finalResults = new TacheSyncResults(existingTasksCleanup);
+
 		final List<Long> ctbIds = getCtbIds(existingTasksCleanup);
 		LOGGER.info(String.format("%d contribuable(s) concernés par le traitement de recalcul de tâche", ctbIds.size()));
 
 		final BatchIterator<Long> iterator = new StandardBatchIterator<>(ctbIds, BATCH_SIZE);
-		final TacheSyncResults results = new TacheSyncResults(existingTasksCleanup);
+		final LinkedList<Future<TacheSyncResults>> tasks = new LinkedList<>(); 
+		final ExecutorService executorService = Executors.newFixedThreadPool(nbThreads, new DefaultThreadFactory(new DefaultThreadNameGenerator(Thread.currentThread().getName())));
+		while (iterator.hasNext() && !status.interrupted()) {
+			final List<Long> ids = iterator.next();
+			final int percent = iterator.getPercent();
+			tasks.add(executorService.submit(new SyncTask(ids, percent, AuthenticationHelper.getCurrentPrincipal(), status)));
+		}
 
-		final boolean wasEnabled = tacheSynchronizerInterceptor.isEnabled();
-		tacheSynchronizerInterceptor.setEnabled(false);
-		try {
-			while (iterator.hasNext()) {
-				final List<Long> ids = iterator.next();
-				status.setMessage("Recalcul en cours...", iterator.getPercent());
-				doRunWithRetry(results, ids);
-				if (status.interrupted()) {
-					break;
-				}
+		boolean interrupted = false;
+		final Iterator<Future<TacheSyncResults>> taskIterator = tasks.iterator();
+		while (taskIterator.hasNext() && !status.interrupted()) {
+			final Future<TacheSyncResults> future = taskIterator.next();
+			try {
+				finalResults.addAll(future.get());
+			}
+			catch (ExecutionException e) {
+				LOGGER.error("Exception lancée par une des sous-tâches de recalcul des tâches", e.getCause());
+			}
+			catch (InterruptedException e) {
+				interrupted = true;
+				break;
+			}
+			finally {
+				taskIterator.remove();
 			}
 		}
-		finally {
-			tacheSynchronizerInterceptor.setEnabled(wasEnabled);
+
+		// il faut arrêter tous les traitements qui restent en attente
+		if (status.interrupted() && !tasks.isEmpty()) {
+			tasks.clear();
+			executorService.shutdownNow();
 		}
-		results.end();
-		results.setInterrupted(status.interrupted());
-		return results;
+		else {
+			executorService.shutdown();
+		}
+
+		finalResults.end();
+		finalResults.setInterrupted(status.interrupted() || interrupted);
+		return finalResults;
 	}
 
-	private void doRunWithRetry(TacheSyncResults results, List<Long> ids) {
+	private TacheSyncResults doRunWithRetry(List<Long> ids) {
 		try {
-			results.addAll(tacheService.synchronizeTachesDIs(ids));
+			return tacheService.synchronizeTachesDIs(ids);
 		}
 		catch (RuntimeException e) {
+			final TacheSyncResults results = new TacheSyncResults(false);
 			if (ids.size() == 1) {
 				// on ne peut rien faire de plus...
 				results.addErrorException(ids.get(0), e);
@@ -82,9 +148,10 @@ public class RecalculTachesProcessor {
 			else {
 				// on essaie un par un
 				for (Long id : ids) {
-					doRunWithRetry(results, Arrays.asList(id));
+					results.addAll(doRunWithRetry(Arrays.asList(id)));
 				}
 			}
+			return results;
 		}
 	}
 

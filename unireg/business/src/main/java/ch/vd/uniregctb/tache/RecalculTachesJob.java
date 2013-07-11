@@ -11,6 +11,7 @@ import ch.vd.uniregctb.rapport.RapportService;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamBoolean;
+import ch.vd.uniregctb.scheduler.JobParamInteger;
 
 public class RecalculTachesJob extends JobDefinition {
 
@@ -18,6 +19,7 @@ public class RecalculTachesJob extends JobDefinition {
 	private static final String CATEGORIE = "Tache";
 
 	private static final String CLEANUP_ONLY = "NETTOYAGE_SEUL";
+	private static final String NB_THREADS = "NB_THREADS";
 
 	private PlatformTransactionManager transactionManager;
 	private HibernateTemplate hibernateTemplate;
@@ -28,12 +30,22 @@ public class RecalculTachesJob extends JobDefinition {
 	public RecalculTachesJob(int sortOrder, String description) {
 		super(NAME, CATEGORIE, sortOrder, description);
 
-		final JobParam param = new JobParam();
-		param.setMandatory(true);
-		param.setName(CLEANUP_ONLY);
-		param.setDescription("Nettoyage seul");
-		param.setType(new JobParamBoolean());
-		addParameterDefinition(param, false);
+		{
+			final JobParam param = new JobParam();
+			param.setMandatory(true);
+			param.setName(CLEANUP_ONLY);
+			param.setDescription("Nettoyage seul");
+			param.setType(new JobParamBoolean());
+			addParameterDefinition(param, false);
+		}
+		{
+			final JobParam param = new JobParam();
+			param.setMandatory(true);
+			param.setName(NB_THREADS);
+			param.setDescription("Nombre de threads");
+			param.setType(new JobParamInteger());
+			addParameterDefinition(param, 4);
+		}
 	}
 
 	public void setTransactionManager(PlatformTransactionManager transactionManager) {
@@ -59,8 +71,9 @@ public class RecalculTachesJob extends JobDefinition {
 	@Override
 	protected void doExecute(Map<String, Object> params) throws Exception {
 		final boolean cleanup = getBooleanValue(params, CLEANUP_ONLY);
+		final int nbThreads = getStrictlyPositiveIntegerValue(params, NB_THREADS);
 		final RecalculTachesProcessor processor = new RecalculTachesProcessor(transactionManager, hibernateTemplate, tacheService, tacheSynchronizerInterceptor);
-		final TacheSyncResults results = processor.run(cleanup, getStatusManager());
+		final TacheSyncResults results = processor.run(cleanup, nbThreads, getStatusManager());
 		final RecalculTachesRapport rapport = rapportService.generateRapport(results, getStatusManager());
 		setLastRunReport(rapport);
 		Audit.success("Recalcul des tâches d'envoi et d'annulation de déclaration d'impôt terminé.");

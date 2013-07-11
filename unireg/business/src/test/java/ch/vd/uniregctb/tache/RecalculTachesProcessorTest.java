@@ -95,7 +95,7 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 
 		// utilisation du processeur (mode cleanup)
 		{
-			final TacheSyncResults resCleanup = processor.run(true, null);
+			final TacheSyncResults resCleanup = processor.run(true, 1, null);
 			assertNotNull(resCleanup);
 			assertEquals(0, resCleanup.getActions().size());
 			assertEquals(0, resCleanup.getExceptions().size());
@@ -103,7 +103,7 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 
 		// utilisation du processeur (mode full)
 		{
-			final TacheSyncResults resFull = processor.run(false, null);
+			final TacheSyncResults resFull = processor.run(false, 1, null);
 			assertNotNull(resFull);
 			assertEquals(0, resFull.getExceptions().size());
 			assertEquals(1, resFull.getActions().size());
@@ -200,7 +200,7 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 
 		// utilisation du processeur (mode cleanup)
 		{
-			final TacheSyncResults res = processor.run(true, null);
+			final TacheSyncResults res = processor.run(true, 1, null);
 			assertNotNull(res);
 			assertEquals(0, res.getExceptions().size());
 			assertEquals(1, res.getActions().size());
@@ -297,7 +297,7 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 
 		// utilisation du processeur (mode full)
 		{
-			final TacheSyncResults res = processor.run(false, null);
+			final TacheSyncResults res = processor.run(false, 1, null);
 			assertNotNull(res);
 			assertEquals(0, res.getExceptions().size());
 			assertEquals(1, res.getActions().size());
@@ -384,7 +384,7 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 
 		// utilisation du processeur (mode cleanup) : rien ne doit être traité car toutes les tâches du contribuable sont annulées
 		{
-			final TacheSyncResults res = processor.run(true, null);
+			final TacheSyncResults res = processor.run(true, 1, null);
 			assertNotNull(res);
 			assertEquals(0, res.getExceptions().size());
 			assertEquals(0, res.getActions().size());
