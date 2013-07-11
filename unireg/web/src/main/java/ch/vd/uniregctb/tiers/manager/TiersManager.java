@@ -530,7 +530,7 @@ public class TiersManager implements MessageSourceAware {
 			tiersView.setTiersPrincipal(tiersPrincipal);
 			tiersView.setNomPrenomPrincipal(tiersService.getNomPrenom(tiersPrincipal));
 
-			if (tiersPrincipal.isHabitantVD()) {
+			if (tiersPrincipal.isConnuAuCivil()) {
 				IndividuView individu = getIndividuView(tiersPrincipal);
 				tiersView.setIndividu(individu);
 			}
@@ -541,7 +541,7 @@ public class TiersManager implements MessageSourceAware {
 			tiersView.setTiersConjoint(tiersConjoint);
 			tiersView.setNomPrenomConjoint(tiersService.getNomPrenom(tiersConjoint));
 
-			if (tiersConjoint.isHabitantVD()) {
+			if (tiersConjoint.isConnuAuCivil()) {
 				IndividuView individu = getIndividuView(tiersConjoint);
 				tiersView.setIndividuConjoint(individu);
 			}

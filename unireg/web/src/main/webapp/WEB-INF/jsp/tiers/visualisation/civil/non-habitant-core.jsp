@@ -9,6 +9,25 @@
 			<spring:bind path="${bind}" >
 				<c:out value="${status.value}"/>
 			</spring:bind>
+			<authz:authorize ifAnyGranted="ROLE_MODIF_VD_ORD">
+				<c:set var="bindIndividu" value="command.${param.pathIndividu}" scope="request"/>
+				<spring:bind path="${bindIndividu}">
+					<c:if test="${status.value != null && status.value.canceled}">
+						<span class="warn">
+							<c:choose>
+								<c:when test="${status.value.numeroIndividuRemplacant != null}">
+									<fmt:message key="label.individu.annule.remplace">
+										<fmt:param value="${status.value.numeroIndividuRemplacantFormatte}"/>
+									</fmt:message>
+								</c:when>
+								<c:otherwise>
+									<fmt:message key="label.individu.annule"/>
+								</c:otherwise>
+							</c:choose>
+						</span>
+					</c:if>
+				</spring:bind>
+			</authz:authorize>
 		</td>
 	</tr>
 

@@ -13,6 +13,7 @@
 				<c:when test="${command.natureMembrePrincipal == 'NonHabitant'}">
 					<jsp:include page="non-habitant-core.jsp">
 						<jsp:param name="path" value="tiersPrincipal" />
+						<jsp:param name="pathIndividu" value="individu" />
 					</jsp:include>
 				</c:when>
 			</c:choose>
@@ -31,6 +32,7 @@
 				<c:when test="${command.natureMembreConjoint == 'NonHabitant'}">
 					<jsp:include page="non-habitant-core.jsp">
 						<jsp:param name="path" value="tiersConjoint" />
+						<jsp:param name="pathIndividu" value="individuConjoint"/>
 					</jsp:include>
 				</c:when>
 			</c:choose>
