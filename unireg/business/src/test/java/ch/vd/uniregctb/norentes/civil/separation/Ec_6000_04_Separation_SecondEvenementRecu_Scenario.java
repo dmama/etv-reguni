@@ -194,7 +194,7 @@ public class Ec_6000_04_Separation_SecondEvenementRecu_Scenario extends Evenemen
 
 		// comme il y a fermeture d'un for secondaire, l'événement doit être dans l'état "A_VERIFIER"
 		final EvenementCivilRegPP evt = getEvenementCivilRegoupeForHabitant(noHabBea);
-		assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "");
+		assertEquals(EtatEvenementCivil.A_VERIFIER, evt.getEtat(), "Etat 'à vérifier' pour cause de présence d'un for secondaire");
 
 		{
 			final MenageCommun mc = (MenageCommun)tiersDAO.get(noMenage);
@@ -259,7 +259,7 @@ public class Ec_6000_04_Separation_SecondEvenementRecu_Scenario extends Evenemen
 		// l'événement envoyé pour Béa est toujours dans l'état "à vérifier"
 		{
 			final EvenementCivilRegPP evt = getEvenementCivilRegoupeForHabitant(noHabBea);
-			assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "");
+			assertEquals(EtatEvenementCivil.A_VERIFIER, evt.getEtat(), "");
 		}
 
 		// l'événement envoyé pour Momo est redondant (en fait, il n'avait rien à faire!)

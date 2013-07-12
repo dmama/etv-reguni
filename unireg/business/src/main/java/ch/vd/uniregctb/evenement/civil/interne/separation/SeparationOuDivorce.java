@@ -1,8 +1,12 @@
 package ch.vd.uniregctb.evenement.civil.interne.separation;
 
+import java.util.List;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.registre.base.date.DateRange;
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
@@ -24,6 +28,8 @@ import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.metier.MetierServiceException;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
+import ch.vd.uniregctb.tiers.ForsParType;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 
@@ -218,11 +224,10 @@ public abstract class SeparationOuDivorce extends EvenementCivilInterne {
 		if (!EtatCivilHelper.estSepare(etatCivil) && !EtatCivilHelper.estDivorce(etatCivil)) {
 			throw new EvenementCivilException("L'individu " + numeroIndividu + " n'est ni séparé ni divorcé dans le civil");
 		}
-
-		return handleSeparation();
+		return handleSeparation(warnings);
 	}
 
-	private HandleStatus handleSeparation() throws EvenementCivilException {
+	private HandleStatus handleSeparation(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
 		// Obtention du premier tiers.
 		final PersonnePhysique principal = getPrincipalPP();
@@ -235,14 +240,30 @@ public abstract class SeparationOuDivorce extends EvenementCivilInterne {
 
 		// récupération de l'ensemble tiers-couple
 		final EnsembleTiersCouple menageComplet = getService().getEnsembleTiersCouple(principal, dateEvt);
+
 		// Récupération du ménage du tiers
 		final MenageCommun menageCommun = menageComplet.getMenage();
+
 		// état civil pour traitement
+		// [SIFISC-5524] Le principal du couple peut être un non habitant sans numéro d'individu, dans ce cas on prend le numéro du conjoint
 		Long numeroIndividu = menageComplet.getPrincipal().getNumeroIndividu();
-		//[SIFISC-5524] Le principal du couple peut être un non habitant sans numéro d'individu, dans ce cas on prend le numéro du conjoint
-		if (numeroIndividu ==null){
+		if (numeroIndividu == null) {
 			numeroIndividu = principal.getNumeroIndividu();
 		}
+
+		// [SIFISC-9250] s'il y a un for secondaire sur le couple au moment de la séparation/du divorce, il faut mettre l'événement civil en "à vérifier" au mieux
+		final ForsParType forsMenage = menageCommun.getForsParType(true);
+		final List<ForFiscalSecondaire> forsSecondaires = forsMenage.secondaires;
+		if (forsSecondaires.size() > 0) {
+			final DateRange rangeSeparation = new DateRangeHelper.Range(dateEvt, null);
+			for (ForFiscalSecondaire fs : forsSecondaires) {
+				if (!fs.isAnnule() && DateRangeHelper.intersect(fs, rangeSeparation)) {
+					warnings.addWarning("Il restait au moins un for secondaire ouvert sur le ménage commun au moment de la séparation / du divorce (ou après).");
+					break;
+				}
+			}
+		}
+
 		final EtatCivil etatCivil = context.getServiceCivil().getEtatCivilActif(numeroIndividu, dateEvt);
 		final ch.vd.uniregctb.type.EtatCivil etatCivilUnireg = EtatCivilHelper.civil2core(etatCivil.getTypeEtatCivil());
 		// traitement de la séparation
