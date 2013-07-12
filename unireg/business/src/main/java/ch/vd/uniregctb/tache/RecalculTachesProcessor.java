@@ -10,6 +10,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
@@ -93,40 +94,56 @@ public class RecalculTachesProcessor {
 		LOGGER.info(String.format("%d contribuable(s) concernés par le traitement de recalcul de tâche", ctbIds.size()));
 
 		final BatchIterator<Long> iterator = new StandardBatchIterator<>(ctbIds, BATCH_SIZE);
-		final LinkedList<Future<TacheSyncResults>> tasks = new LinkedList<>(); 
-		final ExecutorService executorService = Executors.newFixedThreadPool(nbThreads, new DefaultThreadFactory(new DefaultThreadNameGenerator(Thread.currentThread().getName())));
-		while (iterator.hasNext() && !status.interrupted()) {
-			final List<Long> ids = iterator.next();
-			final int percent = iterator.getPercent();
-			tasks.add(executorService.submit(new SyncTask(ids, percent, AuthenticationHelper.getCurrentPrincipal(), status)));
-		}
-
 		boolean interrupted = false;
-		final Iterator<Future<TacheSyncResults>> taskIterator = tasks.iterator();
-		while (taskIterator.hasNext() && !status.interrupted()) {
-			final Future<TacheSyncResults> future = taskIterator.next();
+		final ExecutorService executorService = Executors.newFixedThreadPool(nbThreads, new DefaultThreadFactory(new DefaultThreadNameGenerator(Thread.currentThread().getName())));
+		try {
+			final LinkedList<Future<TacheSyncResults>> tasks = new LinkedList<>();
+			while (iterator.hasNext() && !status.interrupted()) {
+				final List<Long> ids = iterator.next();
+				final int percent = iterator.getPercent();
+				tasks.add(executorService.submit(new SyncTask(ids, percent, AuthenticationHelper.getCurrentPrincipal(), status)));
+			}
+
 			try {
-				finalResults.addAll(future.get());
-			}
-			catch (ExecutionException e) {
-				LOGGER.error("Exception lancée par une des sous-tâches de recalcul des tâches", e.getCause());
-			}
-			catch (InterruptedException e) {
-				interrupted = true;
-				break;
+				final Iterator<Future<TacheSyncResults>> taskIterator = tasks.iterator();
+				while (taskIterator.hasNext() && !status.interrupted()) {
+					final Future<TacheSyncResults> future = taskIterator.next();
+					try {
+						finalResults.addAll(future.get());
+					}
+					catch (ExecutionException e) {
+						LOGGER.error("Exception lancée par une des sous-tâches de recalcul des tâches", e.getCause());
+					}
+					catch (InterruptedException e) {
+						LOGGER.warn("Thread interrompu", e);
+						interrupted = true;
+						break;
+					}
+					finally {
+						taskIterator.remove();
+					}
+				}
 			}
 			finally {
-				taskIterator.remove();
+				// il faut arrêter tous les traitements qui restent en attente
+				if (!tasks.isEmpty()) {
+					tasks.clear();
+					executorService.shutdownNow();
+				}
 			}
 		}
-
-		// il faut arrêter tous les traitements qui restent en attente
-		if (status.interrupted() && !tasks.isEmpty()) {
-			tasks.clear();
-			executorService.shutdownNow();
-		}
-		else {
+		finally {
 			executorService.shutdown();
+
+			// on attend que tout s'arrête
+			try {
+				//noinspection StatementWithEmptyBody
+				while (!executorService.awaitTermination(1, TimeUnit.SECONDS));
+			}
+			catch (InterruptedException e) {
+				LOGGER.warn("Thread interrompu", e);
+				interrupted = true;
+			}
 		}
 
 		finalResults.end();
