@@ -86,26 +86,20 @@ public class ParallelBatchTransactionTemplateTest extends BusinessTest {
 
 		final List<Long> list = generateList(1000);
 
-		try {
-			ParallelBatchTransactionTemplate<Long, JobResults> template =
-					new ParallelBatchTransactionTemplate<>(list, 100, 2, BatchTransactionTemplate.Behavior.SANS_REPRISE, transactionManager, null, hibernateTemplate);
-			template.execute(new BatchTransactionTemplate.BatchCallback<Long, JobResults>() {
+		final ParallelBatchTransactionTemplate<Long, JobResults> template =
+				new ParallelBatchTransactionTemplate<>(list, 100, 2, BatchTransactionTemplate.Behavior.SANS_REPRISE, transactionManager, null, hibernateTemplate);
+		template.execute(new BatchTransactionTemplate.BatchCallback<Long, JobResults>() {
 
-				@Override
-				public boolean doInTransaction(List<Long> batch, JobResults rapport) throws Exception {
-					return true;
-				}
+			@Override
+			public boolean doInTransaction(List<Long> batch, JobResults rapport) throws Exception {
+				return true;
+			}
 
-				@Override
-				public void afterTransactionCommit() {
-					throw new RuntimeException("forced halt");
-				}
-			});
-			fail();
-		}
-		catch (RuntimeException e) {
-			assertEquals("Tous les threads de processing sont morts avant de finir le traitement.", e.getMessage());
-		}
+			@Override
+			public void afterTransactionCommit() {
+				throw new RuntimeException("forced halt");
+			}
+		});
 	}
 
 	/**

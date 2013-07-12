@@ -1,8 +1,13 @@
 package ch.vd.uniregctb.common;
 
-import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
@@ -27,9 +32,7 @@ public class ParallelBatchTransactionTemplate<E, R extends BatchResults> {
 	private final StatusManager statusManager;
 	private final HibernateTemplate hibernateTemplate;
 
-	private boolean readonly;
-	private final ArrayBlockingQueue<List<E>> queue;
-	private int percent;
+	private boolean readonly = false;
 
 	/**
 	 * @param elements           les éléments à traiter par lots et en parallèle
@@ -48,9 +51,6 @@ public class ParallelBatchTransactionTemplate<E, R extends BatchResults> {
 		this.behavior = behavior;
 		this.statusManager = statusManager;
 		this.hibernateTemplate = hibernateTemplate;
-
-		this.queue = new ArrayBlockingQueue<>(5);
-		this.percent = 0;
 	}
 
 	/**
@@ -96,117 +96,119 @@ public class ParallelBatchTransactionTemplate<E, R extends BatchResults> {
 		}
 	}
 
+	private static final class TaskMonitor<E> {
+		final List<E> inputData;
+		final Future<Boolean> future;
+
+		private TaskMonitor(List<E> inputData, Future<Boolean> future) {
+			this.inputData = inputData;
+			this.future = future;
+		}
+	}
+
 	private boolean executeParallel(BatchResults<E, R> rapportFinal, BatchTransactionTemplate.BatchCallback<E, R> action) throws InterruptedException {
 
-		// Démarre les threads
-		final List<BatchThread> threads = new ArrayList<>(nbThreads);
-		for (int i = 0; i < nbThreads; ++i) {
-			final BatchThread thread = new BatchThread(rapportFinal, action, AuthenticationHelper.getCurrentPrincipal());
-			thread.setName(String.format("%s-%d", Thread.currentThread().getName(), i));
-			thread.start();
-			threads.add(thread);
-		}
+		final ExecutorService executorService = Executors.newFixedThreadPool(nbThreads, new DefaultThreadFactory(new DefaultThreadNameGenerator(Thread.currentThread().getName())));
+		try {
 
-		// Transmet les éléments à processer
-		final int size = elements.size();
-		for (int i = 0; i < size; ++i) {
-			percent = (i - queue.size()) * 100 / size;
-			final List<E> element = elements.get(i);
-			while (!queue.offer(element, 2, TimeUnit.SECONDS) && !interrupted(threads)) { // on ne bloque pas complétement de manière à détecter si les threads sont morts
-				assertThreadsAlives(threads);
+			boolean stop = false;
+
+			// liste des tâches à surveiller
+			final List<TaskMonitor<E>> tasks = new LinkedList<>();
+
+			// Transmet les éléments à processer
+			final int size = elements.size();
+			for (int i = 0; i < size; ++i) {
+				final int percent = i * 100 / size;
+				final List<E> inputData = elements.get(i);
+				if (!interrupted()) {
+					tasks.add(new TaskMonitor<>(inputData, executorService.submit(new ParallelTask(inputData, percent, rapportFinal, action, AuthenticationHelper.getCurrentPrincipal()))));
+				}
 			}
-			if (interrupted(threads)) {
-				break;
+
+			// maintenant, on attend la fin
+			try {
+				final Iterator<TaskMonitor<E>> iterator = tasks.iterator();
+				while (iterator.hasNext() && !interrupted()) {
+					final TaskMonitor<E> task = iterator.next();
+					try {
+						final Boolean shouldContinue = task.future.get();
+						if (shouldContinue != null && !shouldContinue) {
+							stop = true;
+							break;
+						}
+					}
+					catch (ExecutionException e) {
+						final String dataString = buildInputDataString(task.inputData);
+						LOGGER.error(String.format("Exception lancée par un des sous-traitements parallélisés : %s", dataString), e.getCause());
+					}
+					finally {
+						iterator.remove();
+					}
+				}
+
+				return !(stop || interrupted());
 			}
-		}
-
-		// Attend la fin du processing
-		while (!queue.isEmpty() && !interrupted(threads)) {
-			assertThreadsAlives(threads);
-			Thread.sleep(200);
-		}
-
-		// Termine les threads.
-		for (BatchThread thread : threads) {
-			thread.done();
-		}
-		for (BatchThread thread : threads) {
-			thread.join();
-		}
-
-		return !interrupted(threads);
-	}
-
-	/**
-	 * @param threads les threads de traitement
-	 * @return <i>vrai</i> si le traitement a été interrompu (par le status manager, ou si tous les threads ont interrompu eux-mêmes leurs traitements).
-	 */
-	private boolean interrupted(List<BatchThread> threads) {
-		return (statusManager != null && statusManager.interrupted()) || allInterrupted(threads);
-	}
-
-	/**
-	 * @param threads les threads de traitement
-	 * @return <i>vrai</i> si tous les threads ont interrompu eux-mêmes leurs traitements.
-	 */
-	private boolean allInterrupted(List<BatchThread> threads) {
-		for (BatchThread t : threads) {
-			if (!t.interruptedItself) {
-				return false;
+			finally {
+				// en cas d'interruption, on arrête tout
+				if (!tasks.isEmpty()) {
+					tasks.clear();
+					executorService.shutdownNow();
+				}
 			}
 		}
-		return true;
-	}
+		finally {
+			executorService.shutdown();
 
-	/**
-	 * Vérifie que - au minimum - un thread est toujours vivant; autrement lève une exception.
-	 *
-	 * @param threads les threads à tester
-	 */
-	private static void assertThreadsAlives(List<? extends Thread> threads) {
-		boolean alive = false;
-		for (Thread t : threads) {
-			alive = alive || t.isAlive();
-		}
-		if (!alive) {
-			throw new RuntimeException("Tous les threads de processing sont morts avant de finir le traitement.");
+			// on attend que tout s'arrête
+			//noinspection StatementWithEmptyBody
+			while (!executorService.awaitTermination(1, TimeUnit.SECONDS));
 		}
 	}
 
-	/**
-	 * Thread utilisé pour le traitement des lots.
-	 * <p/>
-	 * Ce thread lit les lots à processer dans la queue, et travaille tant que la méthode {@link #done()} n'a pas été appelée.
-	 */
-	private class BatchThread extends Thread {
+	private static <E> String buildInputDataString(List<E> data) {
+		final StringBuilder b = new StringBuilder("{");
+		for (E elt : data) {
+			if (b.length() > 1) {
+				b.append(", ");
+			}
+			b.append(elt == null ? "null" : elt.toString());
+		}
+		b.append("}");
+		return b.toString();
+	}
 
+	/**
+	 * @return <i>vrai</i> si le traitement a été interrompu (par le status manager).
+	 */
+	private boolean interrupted() {
+		return statusManager != null && statusManager.interrupted();
+	}
+
+	private class ParallelTask implements Callable<Boolean> {
+
+		private final List<E> input;
+		private final int taskPercent;
 		private final String principal;
 		private final BatchResults<E, R> rapportFinal;
 		private final BatchTransactionTemplate.BatchCallback<E, R> action;
-		private final BlockingQueueIterator iterator = new BlockingQueueIterator();
 
-		private boolean interruptedItself = false;
-
-		private BatchThread(BatchResults<E, R> rapportFinal, BatchTransactionTemplate.BatchCallback<E, R> action, String principal) {
+		private ParallelTask(List<E> input, int taskPercent, BatchResults<E, R> rapportFinal, BatchTransactionTemplate.BatchCallback<E, R> action, String principal) {
+			this.input = input;
+			this.taskPercent = taskPercent;
+			this.principal = principal;
 			this.rapportFinal = rapportFinal;
 			this.action = action;
-			this.principal = principal;
-		}
-
-		/**
-		 * Interrompt le travail du thread, qui va encore finir de processer le lot courant avant de s'arrêter.
-		 */
-		public void done() {
-			iterator.done();
 		}
 
 		@Override
-		public void run() {
+		public Boolean call() throws Exception {
+			action.percent = taskPercent;
 			AuthenticationHelper.pushPrincipal(principal);
 			try {
-				final BatchTransactionTemplate<E, R> template = new BatchTransactionTemplate<>(iterator, behavior, transactionManager, statusManager, hibernateTemplate);
+				final BatchTransactionTemplate<E, R> template = new BatchTransactionTemplate<>(input, input.size(), behavior, transactionManager, statusManager, hibernateTemplate);
 				template.setReadonly(readonly);
-				interruptedItself = !template.execute(rapportFinal, action);
+				return template.execute(rapportFinal, action);
 			}
 			finally {
 				AuthenticationHelper.popPrincipal();
@@ -214,48 +216,6 @@ public class ParallelBatchTransactionTemplate<E, R extends BatchResults> {
 		}
 	}
 
-	/**
-	 * Itérateur spécialisé qui extrait les données à partir de la queue (bloquante) des lots à traiter.
-	 */
-	private class BlockingQueueIterator implements BatchIterator<E> {
-
-		private boolean done = false;
-
-		/**
-		 * Provoque l'arrêt de la lecture de la queue, et retourne <i>null</i> au prochain appel de {@link #next()}.
-		 */
-		public void done() {
-			done = true;
-		}
-
-		@Override
-		public boolean hasNext() {
-			// on ne peut pas deviner à l'avance s'il restera des données dans la queue, on retourne oui ici et on retournera null dans 'next' s'il n'y a plus de données
-			return !done;
-		}
-
-		@Override
-		public List<E> next() {
-			try {
-				List<E> list = null;
-				while (!done && list == null) {
-					list = queue.poll(1, TimeUnit.SECONDS);
-				}
-				return list;
-			}
-			catch (InterruptedException e) {
-				// plus de données
-				return null;
-			}
-		}
-
-		@Override
-		public int getPercent() {
-			return percent;
-		}
-	}
-
-	@SuppressWarnings({"UnusedDeclaration"})
 	public void setReadonly(boolean readonly) {
 		this.readonly = readonly;
 	}
