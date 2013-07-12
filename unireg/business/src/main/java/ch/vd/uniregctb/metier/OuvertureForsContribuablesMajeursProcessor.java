@@ -302,7 +302,8 @@ public class OuvertureForsContribuablesMajeursProcessor {
 		}
 		Assert.notNull(data.getNumeroOfsAutoriteFiscale());
 
-		fillEtatCivilPermisEtNationalite(habitant, data, dateReference);
+		final RegDate dateMajorite = FiscalDateHelper.getDateMajorite(data.getDateNaissance());
+		fillEtatCivilPermisEtNationalite(habitant, data, dateMajorite);
 
 		// Vérification de cohérence sur l'état civil
 		final TypeEtatCivil etatCivil = data.getEtatCivil();
@@ -313,8 +314,6 @@ public class OuvertureForsContribuablesMajeursProcessor {
 					+ " Traitement automatique impossible.";
 			throw new OuvertureForsException(habitant, ErreurType.INCOHERENCE_ETAT_CIVIL, message);
 		}
-
-		final RegDate dateMajorite = FiscalDateHelper.getDateMajorite(data.getDateNaissance());
 
 		// Vérification de cohérence sur le for principal
 		final ForFiscalPrincipal dernierForFiscalPrincipal = habitant.getDernierForFiscalPrincipal();
@@ -470,7 +469,7 @@ public class OuvertureForsContribuablesMajeursProcessor {
 			+ "    hab.habitant = true                                             "
 			+ "	   AND hab.annulationDate IS null                                  "
 			+ "	   AND hab.dateDeces IS null                                       "
-			+ "	   AND (hab.majoriteTraitee IS null OR hab.majoriteTraitee = 0)    "
+			+ "	   AND (hab.majoriteTraitee IS null OR hab.majoriteTraitee = false)"
 			+ "	   AND (hab.dateNaissance IS null OR hab.dateNaissance <= :pivot)  "
 			+ "    AND NOT EXISTS (                                                "
 			+ "        SELECT                                                      "

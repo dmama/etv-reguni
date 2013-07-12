@@ -6,6 +6,7 @@ import java.util.List;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.Nationalite;
@@ -28,7 +29,9 @@ import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
+import ch.vd.uniregctb.type.TypePermis;
 import ch.vd.uniregctb.validation.ValidationService;
 import ch.vd.uniregctb.validation.fors.ForFiscalValidator;
 
@@ -609,5 +612,47 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 
 		final ForFiscalPrincipal fp = principaux.get(0);
 		assertForPrincipal(dateNaissance.addYears(18), MotifFor.MAJORITE, MockCommune.YverdonLesBains, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, fp);
+	}
+
+	@Test
+	public void testHabitantMajeurLaVeilleDeSaNationaliteSuisse() throws Exception {
+
+		final RegDate dateNaissance = date(1990, 7, 23);
+		final RegDate dateMajorite = dateNaissance.addYears(18);
+		final RegDate dateArrivee = dateMajorite.addYears(-2);
+		final RegDate dateNationalite = dateMajorite.addDays(1);
+		final long noIndividu = 32784326L;
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Potter", "Harry", Sexe.MASCULIN);
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Echallens.GrandRue, null, dateArrivee, null);
+				addNationalite(ind, MockPays.RoyaumeUni, dateNaissance, null);
+				addNationalite(ind, MockPays.Suisse, dateNationalite, null);
+				addPermis(ind, TypePermis.SEJOUR, dateArrivee, null, false);
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				return pp.getNumero();
+			}
+		});
+
+		// majorisation  !
+		final OuvertureForsResults rapport = processor.run(RegDate.get(), null);
+		assertNotNull(rapport);
+		assertEquals(1, rapport.habitantTraites.size());
+		assertEquals(0, rapport.habitantEnErrors.size());
+
+		final Traite traite = rapport.habitantTraites.get(0);
+		assertNotNull(traite);
+		assertEquals(ppId, traite.noCtb);
+		assertEquals(ModeImposition.SOURCE, traite.modeImposition);
 	}
 }
