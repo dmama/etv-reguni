@@ -48,19 +48,19 @@ public class DecesModeImpositionResolverTest extends BusinessTest {
 		pp.setNumeroOfsNationalite(MockPays.Suisse.getNoOFS());
 
 		{
-			final ModeImpositionResolver.Imposition res = resolver.resolve(pp, date, ModeImposition.ORDINAIRE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+			final ModeImpositionResolver.Imposition res = resolver.resolve(pp, date, ModeImposition.ORDINAIRE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, false);
 			Assert.assertNotNull(res);
 			Assert.assertEquals(date, res.getDateDebut());
 			Assert.assertEquals(ModeImposition.ORDINAIRE, res.getModeImposition());
 		}
 		{
-			final ModeImpositionResolver.Imposition res = resolver.resolve(pp, date, ModeImposition.ORDINAIRE, TypeAutoriteFiscale.COMMUNE_HC);
+			final ModeImpositionResolver.Imposition res = resolver.resolve(pp, date, ModeImposition.ORDINAIRE, TypeAutoriteFiscale.COMMUNE_HC, false);
 			Assert.assertNotNull(res);
 			Assert.assertEquals(date, res.getDateDebut());
 			Assert.assertEquals(ModeImposition.ORDINAIRE, res.getModeImposition());
 		}
 		{
-			final ModeImpositionResolver.Imposition res = resolver.resolve(pp, date, ModeImposition.ORDINAIRE, TypeAutoriteFiscale.PAYS_HS);
+			final ModeImpositionResolver.Imposition res = resolver.resolve(pp, date, ModeImposition.ORDINAIRE, TypeAutoriteFiscale.PAYS_HS, false);
 			Assert.assertNotNull(res);
 			Assert.assertEquals(date, res.getDateDebut());
 			Assert.assertEquals(ModeImposition.ORDINAIRE, res.getModeImposition());
@@ -78,19 +78,19 @@ public class DecesModeImpositionResolverTest extends BusinessTest {
 		pp.setCategorieEtranger(CategorieEtranger._03_ETABLI_C);
 
 		{
-			final ModeImpositionResolver.Imposition res = resolver.resolve(pp, date, ModeImposition.ORDINAIRE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+			final ModeImpositionResolver.Imposition res = resolver.resolve(pp, date, ModeImposition.ORDINAIRE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, false);
 			Assert.assertNotNull(res);
 			Assert.assertEquals(date, res.getDateDebut());
 			Assert.assertEquals(ModeImposition.ORDINAIRE, res.getModeImposition());
 		}
 		{
-			final ModeImpositionResolver.Imposition res = resolver.resolve(pp, date, ModeImposition.ORDINAIRE, TypeAutoriteFiscale.COMMUNE_HC);
+			final ModeImpositionResolver.Imposition res = resolver.resolve(pp, date, ModeImposition.ORDINAIRE, TypeAutoriteFiscale.COMMUNE_HC, false);
 			Assert.assertNotNull(res);
 			Assert.assertEquals(date, res.getDateDebut());
 			Assert.assertEquals(ModeImposition.ORDINAIRE, res.getModeImposition());
 		}
 		{
-			final ModeImpositionResolver.Imposition res = resolver.resolve(pp, date, ModeImposition.ORDINAIRE, TypeAutoriteFiscale.PAYS_HS);
+			final ModeImpositionResolver.Imposition res = resolver.resolve(pp, date, ModeImposition.ORDINAIRE, TypeAutoriteFiscale.PAYS_HS, false);
 			Assert.assertNotNull(res);
 			Assert.assertEquals(date, res.getDateDebut());
 			Assert.assertEquals(ModeImposition.ORDINAIRE, res.getModeImposition());
@@ -109,21 +109,21 @@ public class DecesModeImpositionResolverTest extends BusinessTest {
 
 		// passe mixte-1 dans le canton...
 		{
-			final ModeImpositionResolver.Imposition res = resolver.resolve(pp, date, ModeImposition.ORDINAIRE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+			final ModeImpositionResolver.Imposition res = resolver.resolve(pp, date, ModeImposition.ORDINAIRE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, false);
 			Assert.assertNotNull(res);
 			Assert.assertEquals(date, res.getDateDebut());
 			Assert.assertEquals(ModeImposition.MIXTE_137_1, res.getModeImposition());
 		}
 		// ... mais source hors-canton ...
 		{
-			final ModeImpositionResolver.Imposition res = resolver.resolve(pp, date, ModeImposition.ORDINAIRE, TypeAutoriteFiscale.COMMUNE_HC);
+			final ModeImpositionResolver.Imposition res = resolver.resolve(pp, date, ModeImposition.ORDINAIRE, TypeAutoriteFiscale.COMMUNE_HC, false);
 			Assert.assertNotNull(res);
 			Assert.assertEquals(date, res.getDateDebut());
 			Assert.assertEquals(ModeImposition.SOURCE, res.getModeImposition());
 		}
 		// .. ou hors-Suisse
 		{
-			final ModeImpositionResolver.Imposition res = resolver.resolve(pp, date, ModeImposition.ORDINAIRE, TypeAutoriteFiscale.PAYS_HS);
+			final ModeImpositionResolver.Imposition res = resolver.resolve(pp, date, ModeImposition.ORDINAIRE, TypeAutoriteFiscale.PAYS_HS, false);
 			Assert.assertNotNull(res);
 			Assert.assertEquals(date, res.getDateDebut());
 			Assert.assertEquals(ModeImposition.SOURCE, res.getModeImposition());
@@ -147,19 +147,19 @@ public class DecesModeImpositionResolverTest extends BusinessTest {
 		final ModeImposition[] modes = { ModeImposition.DEPENSE, ModeImposition.INDIGENT, ModeImposition.MIXTE_137_1, ModeImposition.MIXTE_137_2, ModeImposition.SOURCE };
 		for (ModeImposition mode : modes) {
 			{
-				final ModeImpositionResolver.Imposition res = resolver.resolve(pp, date, mode, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+				final ModeImpositionResolver.Imposition res = resolver.resolve(pp, date, mode, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, false);
 				Assert.assertNotNull("Mode " + mode, res);
 				Assert.assertEquals("Mode " + mode, date, res.getDateDebut());
 				Assert.assertEquals("Mode " + mode, mode, res.getModeImposition());
 			}
 			{
-				final ModeImpositionResolver.Imposition res = resolver.resolve(pp, date, mode, TypeAutoriteFiscale.COMMUNE_HC);
+				final ModeImpositionResolver.Imposition res = resolver.resolve(pp, date, mode, TypeAutoriteFiscale.COMMUNE_HC, false);
 				Assert.assertNotNull("Mode " + mode, res);
 				Assert.assertEquals("Mode " + mode, date, res.getDateDebut());
 				Assert.assertEquals("Mode " + mode, isMixte(mode) ? ModeImposition.SOURCE : mode, res.getModeImposition());
 			}
 			{
-				final ModeImpositionResolver.Imposition res = resolver.resolve(pp, date, mode, TypeAutoriteFiscale.PAYS_HS);
+				final ModeImpositionResolver.Imposition res = resolver.resolve(pp, date, mode, TypeAutoriteFiscale.PAYS_HS, false);
 				Assert.assertNotNull("Mode " + mode, res);
 				Assert.assertEquals("Mode " + mode, date, res.getDateDebut());
 				Assert.assertEquals("Mode " + mode, isMixte(mode) ? ModeImposition.SOURCE : mode, res.getModeImposition());
@@ -179,22 +179,55 @@ public class DecesModeImpositionResolverTest extends BusinessTest {
 		final ModeImposition[] modes = { ModeImposition.DEPENSE, ModeImposition.INDIGENT, ModeImposition.MIXTE_137_1, ModeImposition.MIXTE_137_2, ModeImposition.SOURCE };
 		for (ModeImposition mode : modes) {
 			{
-				final ModeImpositionResolver.Imposition res = resolver.resolve(pp, date, mode, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+				final ModeImpositionResolver.Imposition res = resolver.resolve(pp, date, mode, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, false);
 				Assert.assertNotNull("Mode " + mode, res);
 				Assert.assertEquals("Mode " + mode, date, res.getDateDebut());
 				Assert.assertEquals("Mode " + mode, mode, res.getModeImposition());
 			}
 			{
-				final ModeImpositionResolver.Imposition res = resolver.resolve(pp, date, mode, TypeAutoriteFiscale.COMMUNE_HC);
+				final ModeImpositionResolver.Imposition res = resolver.resolve(pp, date, mode, TypeAutoriteFiscale.COMMUNE_HC, false);
 				Assert.assertNotNull("Mode " + mode, res);
 				Assert.assertEquals("Mode " + mode, date, res.getDateDebut());
 				Assert.assertEquals("Mode " + mode, isMixte(mode) ? ModeImposition.SOURCE : mode, res.getModeImposition());
 			}
 			{
-				final ModeImpositionResolver.Imposition res = resolver.resolve(pp, date, mode, TypeAutoriteFiscale.PAYS_HS);
+				final ModeImpositionResolver.Imposition res = resolver.resolve(pp, date, mode, TypeAutoriteFiscale.PAYS_HS, false);
 				Assert.assertNotNull("Mode " + mode, res);
 				Assert.assertEquals("Mode " + mode, date, res.getDateDebut());
 				Assert.assertEquals("Mode " + mode, isMixte(mode) ? ModeImposition.SOURCE : mode, res.getModeImposition());
+			}
+		}
+	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testAvecForSecondaire() throws Exception {
+
+		final RegDate date = RegDate.get();
+
+		final PersonnePhysique pp = addNonHabitant("Achille", "Talon", date(1956, 3, 5), Sexe.MASCULIN);
+		pp.setNumeroOfsNationalite(MockPays.France.getNoOFS());
+		pp.setCategorieEtranger(CategorieEtranger._02_PERMIS_SEJOUR_B);
+
+		final ModeImposition[] modes = { ModeImposition.DEPENSE, ModeImposition.INDIGENT, ModeImposition.MIXTE_137_1, ModeImposition.MIXTE_137_2, ModeImposition.SOURCE };
+		for (ModeImposition mode : modes) {
+			{
+				final ModeImpositionResolver.Imposition res = resolver.resolve(pp, date, mode, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, true);
+				Assert.assertNotNull("Mode " + mode, res);
+				Assert.assertEquals("Mode " + mode, date, res.getDateDebut());
+				Assert.assertEquals("Mode " + mode, mode, res.getModeImposition());
+			}
+			{
+				final ModeImpositionResolver.Imposition res = resolver.resolve(pp, date, mode, TypeAutoriteFiscale.COMMUNE_HC, true);
+				Assert.assertNotNull("Mode " + mode, res);
+				Assert.assertEquals("Mode " + mode, date, res.getDateDebut());
+				Assert.assertEquals("Mode " + mode, isMixte(mode) ? ModeImposition.ORDINAIRE : mode, res.getModeImposition());
+			}
+			{
+				final ModeImpositionResolver.Imposition res = resolver.resolve(pp, date, mode, TypeAutoriteFiscale.PAYS_HS, true);
+				Assert.assertNotNull("Mode " + mode, res);
+				Assert.assertEquals("Mode " + mode, date, res.getDateDebut());
+				Assert.assertEquals("Mode " + mode, isMixte(mode) ? ModeImposition.ORDINAIRE : mode, res.getModeImposition());
 			}
 		}
 	}

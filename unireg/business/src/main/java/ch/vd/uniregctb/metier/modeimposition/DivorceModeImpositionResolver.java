@@ -28,7 +28,7 @@ public class DivorceModeImpositionResolver extends TerminaisonCoupleModeImpositi
 	}
 
 	@Override
-	public Imposition resolve(Contribuable contribuable, RegDate date, ModeImposition ancienModeImposition, TypeAutoriteFiscale futurTypeAutoriteFiscale) throws ModeImpositionResolverException {
+	public Imposition resolve(Contribuable contribuable, RegDate date, ModeImposition ancienModeImposition, TypeAutoriteFiscale futurTypeAutoriteFiscale, boolean hadForSecondaire) throws ModeImpositionResolverException {
 
 		Assert.isTrue(contribuable instanceof PersonnePhysique);
 		
@@ -64,7 +64,7 @@ public class DivorceModeImpositionResolver extends TerminaisonCoupleModeImpositi
 			switch (ancienModeImposition) {
 				case ORDINAIRE:
 					if (getTiersService().isEtrangerSansPermisC(contribuablePP, date)) {
-						final ModeImposition nveauMode = normaliseModeImpositionMixte(ModeImposition.MIXTE_137_1, futurTypeAutoriteFiscale, numeroEvenement,
+						final ModeImposition nveauMode = normaliseModeImpositionMixte(ModeImposition.MIXTE_137_1, futurTypeAutoriteFiscale, hadForSecondaire, numeroEvenement,
 						                                                              String.format("Couple ordinaire : contribuable %s, étranger", FormatNumeroHelper.numeroCTBToDisplay(contribuablePP.getNumero())));
 						result.setModeImposition(nveauMode);
 					}
@@ -84,7 +84,7 @@ public class DivorceModeImpositionResolver extends TerminaisonCoupleModeImpositi
 				case MIXTE_137_1:
 				case MIXTE_137_2:
 					{
-						final ModeImposition nveauMode = normaliseModeImpositionMixte(ancienModeImposition, futurTypeAutoriteFiscale, numeroEvenement,
+						final ModeImposition nveauMode = normaliseModeImpositionMixte(ancienModeImposition, futurTypeAutoriteFiscale, hadForSecondaire, numeroEvenement,
 						                                                              String.format("Couple %s : contribuable %s", ancienModeImposition.texte(), FormatNumeroHelper.numeroCTBToDisplay(contribuablePP.getNumero())));
 						result.setModeImposition(nveauMode);
 					}
@@ -103,11 +103,13 @@ public class DivorceModeImpositionResolver extends TerminaisonCoupleModeImpositi
 		return result;
 	}
 
-	private static ModeImposition normaliseModeImpositionMixte(ModeImposition modeImposition, TypeAutoriteFiscale typeAutoriteFiscale, Long numeroEvenement, String auditPrefixe) {
+	private static ModeImposition normaliseModeImpositionMixte(ModeImposition modeImposition, TypeAutoriteFiscale typeAutoriteFiscale, boolean hasForSecondaire, Long numeroEvenement, String auditPrefixe) {
 		if (modeImposition != ModeImposition.MIXTE_137_1 && modeImposition != ModeImposition.MIXTE_137_2) {
 			throw new IllegalArgumentException("Mode d'imposition non mixte : " + modeImposition);
 		}
-		final ModeImposition normalise = typeAutoriteFiscale == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD ? modeImposition : ModeImposition.SOURCE;
+		final ModeImposition normalise = typeAutoriteFiscale == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD
+				? modeImposition
+				: (hasForSecondaire ? ModeImposition.ORDINAIRE : ModeImposition.SOURCE);
 		Audit.info(numeroEvenement, String.format("%s (%s) -> %s", auditPrefixe, typeAutoriteFiscale, normalise.texte()));
 		return normalise;
 	}

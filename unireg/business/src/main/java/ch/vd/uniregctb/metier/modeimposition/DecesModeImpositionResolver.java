@@ -22,8 +22,8 @@ public class DecesModeImpositionResolver extends TerminaisonCoupleModeImposition
 	}
 
 	@Override
-	public Imposition resolve(Contribuable survivant, RegDate date, ModeImposition impositionCouple, TypeAutoriteFiscale futurTypeAutoriteFiscale) throws ModeImpositionResolverException {
+	public Imposition resolve(Contribuable survivant, RegDate date, ModeImposition impositionCouple, TypeAutoriteFiscale futurTypeAutoriteFiscale, boolean hadForSecondaire) throws ModeImpositionResolverException {
 		// la spec dit "comme séparation/divorce"
-		return resolver.resolve(survivant, date, impositionCouple, futurTypeAutoriteFiscale);
+		return resolver.resolve(survivant, date, impositionCouple, futurTypeAutoriteFiscale, hadForSecondaire);
 	}
 }

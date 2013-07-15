@@ -8,9 +8,12 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.civil.data.Localisation;
+import ch.vd.unireg.interfaces.civil.data.LocalisationType;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
@@ -23,6 +26,7 @@ import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
+import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.Sexe;
@@ -684,6 +688,95 @@ public class DecesEchProcessorTest extends AbstractEvenementCivilEchProcessorTes
 				assertEquals(TypeAutoriteFiscale.COMMUNE_HC, ffpM.getTypeAutoriteFiscale());
 				assertEquals((Integer) MockCommune.Sierre.getNoOFS(), ffpM.getNumeroOfsAutoriteFiscale());
 
+				return null;
+			}
+		});
+	}
+
+	/**
+	 * SIFISC-9244
+	 */
+	@Test
+	public void testVeuvageSurEtrangerHorsCantonAvecImmeuble() throws Exception {
+
+		final RegDate dateMariage = date(1986, 2, 12);
+		final RegDate dateAchat = date(2000, 5, 7);
+		final RegDate dateDepartHC = date(2006, 9, 12);
+		final RegDate dateDeces = date(2013, 6, 1);
+		final long noIndividuSurvivant = 474257L;
+		final long noInvididuDecede = 4784365L;
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu decede = addIndividu(noInvididuDecede, null, "Arthur", "Jacques", Sexe.MASCULIN);
+				decede.setDateDeces(dateDeces);
+
+				final MockIndividu survivant = addIndividu(noIndividuSurvivant, null, "Arthur", "Marceline", Sexe.FEMININ);
+				addNationalite(survivant, MockPays.RoyaumeUni, dateMariage, null);
+				addPermis(survivant, TypePermis.SEJOUR, dateMariage, null, false);
+				marieIndividus(decede, survivant, dateMariage);
+
+				final MockAdresse adresse = addAdresse(survivant, TypeAdresseCivil.PRINCIPALE, MockRue.Bussigny.RueDeLIndustrie, null, dateMariage, dateDepartHC);
+				adresse.setLocalisationSuivante(new Localisation(LocalisationType.HORS_CANTON, MockCommune.Neuchatel.getNoOFS(), null));
+			}
+		});
+
+		// mise en place fiscale
+		final long survivantId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique decede = addHabitant(noInvididuDecede);
+				final PersonnePhysique survivant = addHabitant(noIndividuSurvivant);
+				final EnsembleTiersCouple couple = addEnsembleTiersCouple(decede, survivant, dateMariage, null);
+				final MenageCommun mc = couple.getMenage();
+				addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateAchat.getOneDayBefore(), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Aubonne, ModeImposition.SOURCE);
+				addForPrincipal(mc, dateAchat, MotifFor.CHGT_MODE_IMPOSITION, dateDepartHC, MotifFor.DEPART_HC, MockCommune.Aubonne, ModeImposition.MIXTE_137_1);
+				addForPrincipal(mc, dateDepartHC.getOneDayAfter(), MotifFor.DEPART_HC, MockCommune.Neuchatel);
+				addForSecondaire(mc, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				return survivant.getNumero();
+			}
+		});
+
+		// arrivée du décès de monsieur
+		final long evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch deces = new EvenementCivilEch();
+				deces.setId(45455L);
+				deces.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				deces.setDateEvenement(dateDeces);
+				deces.setEtat(EtatEvenementCivil.A_TRAITER);
+				deces.setNumeroIndividu(noInvididuDecede);
+				deces.setType(TypeEvenementCivilEch.DECES);
+				return hibernateTemplate.merge(deces).getId();
+			}
+		});
+
+		// traitement de l'événement civil
+		traiterEvenements(noInvididuDecede);
+
+		// résultat
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch ech = evtCivilDAO.get(evtId);
+				assertNotNull(ech);
+				assertEquals(EtatEvenementCivil.TRAITE, ech.getEtat());
+
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(survivantId);
+				assertNotNull(pp);
+
+				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+				assertNotNull(ffp);
+				assertEquals(dateDeces.getOneDayAfter(), ffp.getDateDebut());
+				assertEquals(MotifFor.VEUVAGE_DECES, ffp.getMotifOuverture());
+				assertNull(ffp.getDateFin());
+				assertNull(ffp.getMotifFermeture());
+				assertEquals((Integer) MockCommune.Neuchatel.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
+				assertEquals(TypeAutoriteFiscale.COMMUNE_HC, ffp.getTypeAutoriteFiscale());
+				assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition());
 				return null;
 			}
 		});

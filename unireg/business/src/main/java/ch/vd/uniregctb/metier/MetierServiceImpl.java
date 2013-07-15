@@ -1511,6 +1511,18 @@ public class MetierServiceImpl implements MetierService {
 		return results;
 	}
 
+	private static boolean hasForSecondaireOuvert(Contribuable ctb, RegDate date) {
+		final List<ForFiscal> forFiscaux = ctb.getForsFiscauxValidAt(date);
+		if (forFiscaux != null && forFiscaux.size() > 0) {
+			for (ForFiscal ff : forFiscaux) {
+				if (ff instanceof ForFiscalSecondaire) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
 	@Override
 	public void separe(MenageCommun menage, RegDate date, String remarque, ch.vd.uniregctb.type.EtatCivil etatCivilFamille, Long numeroEvenement) throws
 			MetierServiceException {
@@ -1526,6 +1538,7 @@ public class MetierServiceImpl implements MetierService {
 		if (!separesFiscalement) {
 			// Recupération du for principal du menage
 			final ForFiscalPrincipal forMenage = menage.getForFiscalPrincipalAt(null);
+			final boolean hadForSecondaire = hasForSecondaireOuvert(menage, date);
 
 			// Fermeture des fors du MenageCommun
 			tiersService.closeAllForsFiscaux(menage, date.getOneDayBefore(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT);
@@ -1546,10 +1559,10 @@ public class MetierServiceImpl implements MetierService {
 				final DivorceModeImpositionResolver divorceResolver = new DivorceModeImpositionResolver(tiersService, numeroEvenement);
 
 				// on ouvre un nouveau for fiscal pour chaque tiers
-				createForFiscalPrincipalApresFermetureMenage(date, principal, forMenage, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, divorceResolver, numeroEvenement, false);
+				createForFiscalPrincipalApresFermetureMenage(date, principal, forMenage, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, divorceResolver, hadForSecondaire, numeroEvenement, false);
 				if (conjoint != null) {
 					// null si marié seul
-					createForFiscalPrincipalApresFermetureMenage(date, conjoint, forMenage, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, divorceResolver, numeroEvenement, false);
+					createForFiscalPrincipalApresFermetureMenage(date, conjoint, forMenage, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, divorceResolver, hadForSecondaire, numeroEvenement, false);
 				}
 			}
 
@@ -1906,7 +1919,7 @@ public class MetierServiceImpl implements MetierService {
 	 * @return le for créé.
 	 */
 	private ForFiscalPrincipal createForFiscalPrincipalApresFermetureMenage(RegDate date, PersonnePhysique pp, ForFiscalPrincipal forMenage, MotifFor motifOuverture,
-	                                                                        TerminaisonCoupleModeImpositionResolver modeImpositionResolver, Long numeroEvenement,
+	                                                                        TerminaisonCoupleModeImpositionResolver modeImpositionResolver, boolean hadForSecondaire, Long numeroEvenement,
 	                                                                        boolean autoriseSortieDuCantonVersEtranger) throws MetierServiceException {
 
 		try {
@@ -1954,7 +1967,7 @@ public class MetierServiceImpl implements MetierService {
 			}
 
 			if (noOfs != null) {
-				final ModeImpositionResolver.Imposition nouveauMode = modeImpositionResolver.resolve(pp, date, forMenage.getModeImposition(), typeAutoriteFiscale);
+				final ModeImpositionResolver.Imposition nouveauMode = modeImpositionResolver.resolve(pp, date, forMenage.getModeImposition(), typeAutoriteFiscale, hadForSecondaire);
 				return tiersService.openForFiscalPrincipal(pp, nouveauMode.getDateDebut(), MotifRattachement.DOMICILE, noOfs, typeAutoriteFiscale, nouveauMode.getModeImposition(), motifOuverture);
 			}
 			else {
@@ -2456,7 +2469,7 @@ public class MetierServiceImpl implements MetierService {
 		if (menageComplet != null) {
 			final MenageCommun menage = menageComplet.getMenage();
 			final ForFiscalPrincipal forMenage = menage.getForFiscalPrincipalAt(null);
-
+			final boolean hadForSecondaire = hasForSecondaireOuvert(menage, date.getOneDayAfter());
 			//
 			// Sauvegarde des fors secondaires et autres éléments imposables du ménage
 			// pour ré-ouverture potentielle sur le veuf
@@ -2503,8 +2516,7 @@ public class MetierServiceImpl implements MetierService {
 						final DecesModeImpositionResolver decesResolver = new DecesModeImpositionResolver(tiersService, numeroEvenement);
 
 						// d'abord le for fiscal principal
-						final ForFiscalPrincipal ffp =
-								createForFiscalPrincipalApresFermetureMenage(date.getOneDayAfter(), veuf, forMenage, MotifFor.VEUVAGE_DECES, decesResolver, numeroEvenement, true);
+						final ForFiscalPrincipal ffp = createForFiscalPrincipalApresFermetureMenage(date.getOneDayAfter(), veuf, forMenage, MotifFor.VEUVAGE_DECES, decesResolver, hadForSecondaire, numeroEvenement, true);
 						final MotifFor motifFermeture;
 						if (dateDecesVeuf != null) {
 							motifFermeture = MotifFor.VEUVAGE_DECES;
