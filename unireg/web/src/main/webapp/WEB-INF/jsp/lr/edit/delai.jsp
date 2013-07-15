@@ -41,15 +41,6 @@
 					<FONT COLOR="#FF0000">*</FONT>
 				</td>
 			</tr>
-			<unireg:nextRowClass reset="0"/>
-			<tr class="<unireg:nextRowClass/>" >
-				<td><fmt:message key="label.confirmation.ecrite"/>&nbsp;:</td>
-				<td>
-					<form:checkbox path="confirmationEcrite" />
-				</td>
-				<td>&nbsp;</td>
-				<td>&nbsp;</td>
-			</tr>
 		</table>
 		</fieldset>
 		<table>
