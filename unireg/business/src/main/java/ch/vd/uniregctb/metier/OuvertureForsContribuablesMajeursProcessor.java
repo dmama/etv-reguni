@@ -292,7 +292,8 @@ public class OuvertureForsContribuablesMajeursProcessor {
 			return;
 		}
 
-		fillInfoDomicile(habitant, data, dateReference);
+		final RegDate dateMajorite = FiscalDateHelper.getDateMajorite(data.getDateNaissance());
+		fillInfoDomicile(habitant, data, dateMajorite);
 
 		if (!data.isDomicilieDansLeCanton()) {
 			// l'individu domicilié hors-Canton/hors-Suisse => rien à faire
@@ -302,7 +303,6 @@ public class OuvertureForsContribuablesMajeursProcessor {
 		}
 		Assert.notNull(data.getNumeroOfsAutoriteFiscale());
 
-		final RegDate dateMajorite = FiscalDateHelper.getDateMajorite(data.getDateNaissance());
 		fillEtatCivilPermisEtNationalite(habitant, data, dateMajorite);
 
 		// Vérification de cohérence sur l'état civil

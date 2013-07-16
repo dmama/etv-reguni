@@ -31,6 +31,7 @@ import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypePermis;
 import ch.vd.uniregctb.validation.ValidationService;
 import ch.vd.uniregctb.validation.fors.ForFiscalValidator;
@@ -614,6 +615,9 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 		assertForPrincipal(dateNaissance.addYears(18), MotifFor.MAJORITE, MockCommune.YverdonLesBains, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, fp);
 	}
 
+	/**
+	 * [SIFISC-9238] C'est la nationalité à la date de la majorité qui doit déterminer le for créé
+	 */
 	@Test
 	public void testHabitantMajeurLaVeilleDeSaNationaliteSuisse() throws Exception {
 
@@ -654,5 +658,84 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 		assertNotNull(traite);
 		assertEquals(ppId, traite.noCtb);
 		assertEquals(ModeImposition.SOURCE, traite.modeImposition);
+
+		// vérification du for créé
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+				assertNotNull(ffp);
+				assertEquals(dateMajorite, ffp.getDateDebut());
+				assertEquals(MotifFor.MAJORITE, ffp.getMotifOuverture());
+				assertNull(ffp.getDateFin());
+				assertNull(ffp.getMotifFermeture());
+				assertEquals(ModeImposition.SOURCE, ffp.getModeImposition());
+				assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+				assertEquals((Integer) MockCommune.Echallens.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
+				return null;
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-9238] C'est l'adresse de résidence à la date de la majorité qui doit déterminer le for créé
+	 */
+	@Test
+	public void testHabitantMajeurLaVeilleDunDemenagement() throws Exception {
+
+		final RegDate dateNaissance = date(1990, 7, 23);
+		final RegDate dateMajorite = dateNaissance.addYears(18);
+		final RegDate dateDemenagement = dateMajorite.addDays(1);
+		final long noIndividu = 32784326L;
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Tell", "William", Sexe.MASCULIN);
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Echallens.GrandRue, null, dateNaissance, dateDemenagement);
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, null, dateDemenagement.getOneDayAfter(), null);
+				addNationalite(ind, MockPays.Suisse, dateNaissance, null);
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				return pp.getNumero();
+			}
+		});
+
+		// majorisation  !
+		final OuvertureForsResults rapport = processor.run(RegDate.get(), null);
+		assertNotNull(rapport);
+		assertEquals(1, rapport.habitantTraites.size());
+		assertEquals(0, rapport.habitantEnErrors.size());
+
+		final Traite traite = rapport.habitantTraites.get(0);
+		assertNotNull(traite);
+		assertEquals(ppId, traite.noCtb);
+		assertEquals(ModeImposition.ORDINAIRE, traite.modeImposition);
+
+		// vérification du for créé
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+				assertNotNull(ffp);
+				assertEquals(dateMajorite, ffp.getDateDebut());
+				assertEquals(MotifFor.MAJORITE, ffp.getMotifOuverture());
+				assertNull(ffp.getDateFin());
+				assertNull(ffp.getMotifFermeture());
+				assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition());
+				assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+				assertEquals((Integer) MockCommune.Echallens.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());    // <-- il était à Echallens pour son anniversaire, même s'il est parti juste après
+				return null;
+			}
+		});
 	}
 }
