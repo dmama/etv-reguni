@@ -40,7 +40,7 @@ public class BatchSchedulerTest extends JobTest {
 		LOGGER.debug("Begin testJob method.");
 
 		final JobDefinition job = batchScheduler.getJob(LoggingJob.NAME);
-		assertEquals(JobStatut.JOB_OK, job.getStatut());
+		assertNotRunning(job);
 
 		// Démarrage du job
 		final Date statTime = new Date();
