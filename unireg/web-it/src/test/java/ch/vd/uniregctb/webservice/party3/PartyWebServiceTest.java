@@ -1277,11 +1277,20 @@ public class PartyWebServiceTest extends AbstractPartyWebServiceTest {
 		assertNotNull(pp);
 
 		final List<SimplifiedTaxLiability> lic = pp.getSimplifiedTaxLiabilityVD();
-		assertEquals(1, lic.size());
+		assertEquals(2, lic.size());
+
+		{ // assujettissement passé
+
+			final SimplifiedTaxLiability a = lic.get(0);
+			assertNotNull(a);
+			assertSameDay(newDate(1985, 9, 1), a.getDateFrom());
+			assertSameDay(newDate(1990, 2, 15), a.getDateTo());
+			assertEquals(SimplifiedTaxLiabilityType.LIMITED, a.getType()); // Hors-Suisse
+		}
 
 		{ // assujettissement courant
 
-			final SimplifiedTaxLiability a = lic.get(0);
+			final SimplifiedTaxLiability a = lic.get(1);
 			assertNotNull(a);
 			assertSameDay(newDate(2003, 7, 12), a.getDateFrom());
 			assertNull(a.getDateTo());
@@ -1289,11 +1298,20 @@ public class PartyWebServiceTest extends AbstractPartyWebServiceTest {
 		}
 
 		final List<SimplifiedTaxLiability> lifd = pp.getSimplifiedTaxLiabilityCH();
-		assertEquals(1, lifd.size());
+		assertEquals(2, lifd.size());
+
+		{ // assujettissement passé
+
+			final SimplifiedTaxLiability a = lifd.get(0);
+			assertNotNull(a);
+			assertSameDay(newDate(1985, 9, 1), a.getDateFrom());
+			assertSameDay(newDate(1990, 2, 15), a.getDateTo());
+			assertEquals(SimplifiedTaxLiabilityType.LIMITED, a.getType()); // Hors-Suisse
+		}
 
 		{ // assujettissement courant
 
-			final SimplifiedTaxLiability a = lifd.get(0);
+			final SimplifiedTaxLiability a = lifd.get(1);
 			assertNotNull(a);
 			assertSameDay(newDate(2003, 7, 12), a.getDateFrom());
 			assertNull(a.getDateTo());
@@ -1353,7 +1371,7 @@ public class PartyWebServiceTest extends AbstractPartyWebServiceTest {
 
 	// [SIFISC-2057]
 	@Test
-	public void testGetPartyTaxLiabilities() throws Exception {
+	public void testGetPartyTaxLiaibilities() throws Exception {
 
 		final GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(login);
@@ -1372,15 +1390,15 @@ public class PartyWebServiceTest extends AbstractPartyWebServiceTest {
 		assertTrue(t0 instanceof PureWithholding);
 
 		final PureWithholding p0 = (PureWithholding) t0;
-		assertEquals(newDate(2004, 2, 1), p0.getDateFrom()); // [SIFISC-8095] l'assujettissement source est arrondi au mois, d'où le 1 février 2004
-		assertEquals(newDate(2005, 12, 31), p0.getDateTo());
+		assertEquals(newDate(2000, 2, 1), p0.getDateFrom()); // [SIFISC-8095] l'assujettissement source est arrondi au mois, d'où le 1 février 2000
+		assertEquals(newDate(2001, 12, 31), p0.getDateTo());
 
 		final TaxLiability t1 = list.get(1);
 		assertNotNull(t1);
 		assertTrue(t1 instanceof OtherCanton); // [SIFISC-8095] un hors-canton est soit ordinaire soit sourcier pur, il ne peut pas être mixte
 
 		final OtherCanton o1 = (OtherCanton) t1;
-		assertEquals(newDate(2006, 1, 1), o1.getDateFrom());
+		assertEquals(newDate(2002, 1, 1), o1.getDateFrom());
 		assertNull(o1.getDateTo());
 	}
 

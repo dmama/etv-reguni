@@ -91,8 +91,8 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 
 		// le contribuable n'est pas assujetti, il ne doit pas être possible d'ajouter une DI
 		final PersonnePhysique paul = addNonHabitant("Paul", "Duruz", date(1977, 3, 15), Sexe.MASCULIN);
-		assertInValidRangeDi(paul, fullYear(2003));
-		assertInValidRangeDi(paul, fullYear(2010));
+		assertInValidRangeDi(paul, fullYear(1980));
+		assertInValidRangeDi(paul, fullYear(2000));
 		assertInValidRangeDi(paul, fullYear(2040));
 	}
 
@@ -120,20 +120,20 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 
 		addCollAdm(MockCollectiviteAdministrative.CEDI);
 
-		final PeriodeFiscale periode2010 = addPeriodeFiscale(2010);
+		final PeriodeFiscale periode2000 = addPeriodeFiscale(2000);
 		final PeriodeFiscale periode2040 = addPeriodeFiscale(2040);
-		final ModeleDocument modele2010 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2010);
+		final ModeleDocument modele2000 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2000);
 		final ModeleDocument modele2040 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2040);
 
-		// le contribuable est assujetti depuis 2005, il doit être possible d'ajouter une DI et une seule pour chaque année
-		PersonnePhysique paul = addNonHabitant("Paul", "Duruz", date(1987, 3, 15), Sexe.MASCULIN);
-		addForPrincipal(paul, date(2005, 3, 15), MotifFor.MAJORITE, MockCommune.Lausanne);
+		// le contribuable est assujetti depuis 1995, il doit être possible d'ajouter une DI et une seule pour chaque année
+		PersonnePhysique paul = addNonHabitant("Paul", "Duruz", date(1977, 3, 15), Sexe.MASCULIN);
+		addForPrincipal(paul, date(1995, 3, 15), MotifFor.MAJORITE, MockCommune.Lausanne);
 
-		assertInValidRangeDi(paul, fullYear(2004));
+		assertInValidRangeDi(paul, fullYear(1980));
 
-		assertValidRangeDi(paul, fullYear(2010));
-		addDeclarationImpot(paul, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2010);
-		assertInValidRangeDi(paul, fullYear(2010)); // la déclaration existe maintenant !
+		assertValidRangeDi(paul, fullYear(2000));
+		addDeclarationImpot(paul, periode2000, date(2000, 1, 1), date(2000, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2000);
+		assertInValidRangeDi(paul, fullYear(2000)); // la déclaration existe maintenant !
 
 		assertValidRangeDi(paul, fullYear(2040));
 		addDeclarationImpot(paul, periode2040, date(2040, 1, 1), date(2040, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2040);
@@ -151,13 +151,13 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 		final ModeleDocument modele2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
 		final ModeleDocument modele2008 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
 
-		// le contribuable est assujetti depuis 2003 et il part au milieu de l'année 2008 : il doit être possible d'ajouter une DI et une
+		// le contribuable est assujetti depuis 1995 et il part au milieu de l'année 2008 : il doit être possible d'ajouter une DI et une
 		// seule pour chaque année
-		PersonnePhysique paul = addNonHabitant("Paul", "Duruz", date(1986, 3, 15), Sexe.MASCULIN);
-		addForPrincipal(paul, date(2004, 3, 15), MotifFor.MAJORITE, date(2008, 6, 30), MotifFor.DEPART_HS, MockCommune.Lausanne);
+		PersonnePhysique paul = addNonHabitant("Paul", "Duruz", date(1977, 3, 15), Sexe.MASCULIN);
+		addForPrincipal(paul, date(1995, 3, 15), MotifFor.MAJORITE, date(2008, 6, 30), MotifFor.DEPART_HS, MockCommune.Lausanne);
 
 		// pas encore assujetti
-		assertInValidRangeDi(paul, fullYear(2003));
+		assertInValidRangeDi(paul, fullYear(1980));
 
 		// assujetti sur toute l'année
 		assertValidRangeDi(paul, fullYear(2007));

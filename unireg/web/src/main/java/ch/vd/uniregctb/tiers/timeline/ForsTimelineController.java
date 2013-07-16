@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import ch.vd.registre.base.date.DateConstants;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
@@ -74,7 +75,8 @@ public class ForsTimelineController {
 			showAssujettissementsRole = true;
 		}
 
-		return commonTimeline(mav, id, invertedTime, showForsGestion, showAssujettissementsSource, showAssujettissementsRole, showAssujettissements, showPeriodesImposition, forPrint, title, description, true);
+		return commonTimeline(mav, id, invertedTime, showForsGestion, showAssujettissementsSource, showAssujettissementsRole, showAssujettissements, showPeriodesImposition,
+		                      forPrint, title, description, true, DateConstants.DEFAULT_VALIDITY_RANGE.getDateDebut());
 	}
 
 	@RequestMapping(value = "/fors/timeline.do", method = RequestMethod.GET)
@@ -89,14 +91,14 @@ public class ForsTimelineController {
 	                    @RequestParam(value = TITLE, required = false) String title,
 	                    @RequestParam(value = DESCRIPTION, required = false) String description) throws AccessDeniedException {
 
-		return commonTimeline(mav, id, invertedTime, showForsGestion, false, false, showAssujettissements, showPeriodesImposition, forPrint, title, description, false);
+		return commonTimeline(mav, id, invertedTime, showForsGestion, false, false, showAssujettissements, showPeriodesImposition, forPrint, title, description, false, bigBang);
 	}
 
 	private String commonTimeline(Model mav, Long id, boolean invertedTime, boolean showForsGestion,
 	                              boolean showAssujettissementsSource, boolean showAssujettissementsRole,
 	                              boolean showAssujettissements, boolean showPeriodesImposition,
-	                              Boolean forPrint, String title,  String description,
-	                              boolean debugMode) throws AccessDeniedException {
+	                              Boolean forPrint, String title, String description,
+	                              boolean debugMode, RegDate bigBang) throws AccessDeniedException {
 
 		controllerUtils.checkAccesDossierEnLecture(id);
 
@@ -115,7 +117,7 @@ public class ForsTimelineController {
 			bean.setDescription(description);
 		}
 
-		fillTimeline(bean);
+		fillTimeline(bean, bigBang);
 		mav.addAttribute("command", bean);
 		mav.addAttribute("debugAssujettissement", debugMode);
 
@@ -125,7 +127,7 @@ public class ForsTimelineController {
 	/**
 	 * Remplit les structures de données nécessaire à l'affichage de l'historique des fors d'un tiers
 	 */
-	private void fillTimeline(ForsTimelineView bean) {
+	private void fillTimeline(ForsTimelineView bean, RegDate bigBang) {
 
 		Long id = bean.getTiersId();
 		if (id == null) {

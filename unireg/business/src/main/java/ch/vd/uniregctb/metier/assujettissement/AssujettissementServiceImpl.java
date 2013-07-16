@@ -24,7 +24,6 @@ import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.Triplet;
 import ch.vd.uniregctb.common.TripletIterator;
-import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
@@ -46,14 +45,9 @@ import ch.vd.uniregctb.validation.ValidationService;
 public class AssujettissementServiceImpl implements AssujettissementService {
 
 	private ValidationService validationService = null;
-	private RegDate bigBangAssujettissement;
 
 	public void setValidationService(ValidationService validationService) {
 		this.validationService = validationService;
-	}
-
-	public void setParametreAppService(ParametreAppService params) {
-		this.bigBangAssujettissement = RegDate.get(params.getPremierePeriodeFiscale(), 1, 1);
 	}
 
 	@Override
@@ -218,7 +212,7 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 			final List<Assujettissement> role = determineRole(ctb, fors, noOfsCommunesVaudoises);
 			final List<SourcierPur> source = determineSource(ctb, fors, noOfsCommunesVaudoises);
 
-			final List<Assujettissement> assujettissements = AssujettissementHelper.extract(fusionneAssujettissements(role, source), bigBangAssujettissement, null);
+			final List<Assujettissement> assujettissements = fusionneAssujettissements(role, source);
 			assertCoherenceRanges(assujettissements);
 
 			return assujettissements.isEmpty() ? null : assujettissements;

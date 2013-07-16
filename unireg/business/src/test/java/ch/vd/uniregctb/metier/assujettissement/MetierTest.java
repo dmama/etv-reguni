@@ -466,9 +466,9 @@ public abstract class MetierTest extends BusinessTest {
 
 	protected Contribuable createArriveeHorsSuisseAvecImmeuble(@Nullable Long noTiers, RegDate dateArrivee) throws Exception {
 		Contribuable paul = createContribuableSansFor(noTiers);
-		addForPrincipal(paul, date(2003, 1, 1), MotifFor.ACHAT_IMMOBILIER, dateArrivee.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockPays.Danemark);
+		addForPrincipal(paul, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, dateArrivee.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockPays.Danemark);
 		addForPrincipal(paul, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
-		addForSecondaire(paul, date(2003, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(paul, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 		return paul;
 	}
 
@@ -482,10 +482,10 @@ public abstract class MetierTest extends BusinessTest {
 
 	protected Contribuable createArriveeHorsSuisseEtDepartHCAvecImmeuble(long ctbId, RegDate dateArriveeHS, RegDate dateDepartHC) throws Exception {
 		Contribuable paul = createContribuableSansFor(ctbId);
-		addForPrincipal(paul, date(2003, 1, 1), MotifFor.ACHAT_IMMOBILIER, dateArriveeHS.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockPays.Danemark);
+		addForPrincipal(paul, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, dateArriveeHS.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockPays.Danemark);
 		addForPrincipal(paul, dateArriveeHS, MotifFor.ARRIVEE_HS, dateDepartHC, MotifFor.DEPART_HC, MockCommune.Lausanne);
 		addForPrincipal(paul, dateDepartHC.getOneDayAfter(), MotifFor.DEPART_HC, MockCommune.Zurich);
-		addForSecondaire(paul, date(2003, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(paul, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 		return paul;
 	}
 
@@ -529,10 +529,10 @@ public abstract class MetierTest extends BusinessTest {
 
 	protected Contribuable createArriveeHorsSuisseEtVenteImmeuble(@Nullable Long noTiers, RegDate dateArrivee, RegDate dateVente) throws Exception {
 		Contribuable paul = createContribuableSansFor(noTiers);
-		addForPrincipal(paul, date(2003, 1, 1), MotifFor.ACHAT_IMMOBILIER, dateArrivee.getOneDayBefore(), MotifFor.ARRIVEE_HS,
+		addForPrincipal(paul, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, dateArrivee.getOneDayBefore(), MotifFor.ARRIVEE_HS,
 				MockPays.Danemark);
 		addForPrincipal(paul, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
-		addForSecondaire(paul, date(2003, 1, 1), MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Lausanne
+		addForSecondaire(paul, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Lausanne
 				.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 		return paul;
 	}

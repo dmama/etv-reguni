@@ -3133,7 +3133,7 @@
       <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
       <value>tiers-basic</value>
-      <value>20060212</value>
+      <value>20020212</value>
       <null/>
       <value>REVENU_FORTUNE</value>
       <value>6412</value>
@@ -3153,8 +3153,8 @@
       <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
       <value>tiers-basic</value>
-      <value>20060212</value>
-      <value>20111231</value>
+      <value>20020212</value>
+      <value>20071231</value>
       <value>REVENU_FORTUNE</value>
       <value>5407</value>
       <value>COMMUNE_OU_FRACTION_VD</value>
@@ -3173,7 +3173,7 @@
       <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
       <value>tiers-basic</value>
-      <value>20080701</value>
+      <value>20040701</value>
       <null/>
       <value>REVENU_FORTUNE</value>
       <value>5890</value>
@@ -3193,8 +3193,8 @@
       <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
       <value>tiers-basic</value>
-      <value>20050212</value>
-      <value>20060211</value>
+      <value>20010212</value>
+      <value>20020211</value>
       <value>REVENU_FORTUNE</value>
       <value>5591</value>
       <value>COMMUNE_HC</value>
@@ -3213,8 +3213,8 @@
       <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
       <value>tiers-basic</value>
-      <value>20040212</value>
-      <value>20050211</value>
+      <value>20000212</value>
+      <value>20010211</value>
       <value>REVENU_FORTUNE</value>
       <value>6412</value>
       <value>COMMUNE_HC</value>
