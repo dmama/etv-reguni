@@ -228,7 +228,7 @@ public abstract class Arrivee extends Mouvement {
 	protected abstract void doHandleCreationForMenage(PersonnePhysique arrivant, MenageCommun menageCommun, EvenementCivilWarningCollector warnings) throws EvenementCivilException;
 
 	private List<PersonnePhysique> findNonHabitants(Individu individu, boolean assujettissementObligatoire) throws EvenementCivilException {
-		return findNonHabitants(getService(), individu, assujettissementObligatoire);
+		return findNonHabitants(getService(), individu, assujettissementObligatoire, getNumeroEvenement());
 	}
 
 	/**
@@ -238,7 +238,7 @@ public abstract class Arrivee extends Mouvement {
 	 * @param assujettissementObligatoire <b>vrai</b> s'il les non-habitants recherchés doivent posséder un for principal actif.
 	 * @return une liste de non-habitants qui correspondent aux critères.
 	 */
-	protected static List<PersonnePhysique> findNonHabitants(TiersService tiersService, Individu individu, boolean assujettissementObligatoire) throws EvenementCivilException {
+	protected static List<PersonnePhysique> findNonHabitants(TiersService tiersService, Individu individu, boolean assujettissementObligatoire, @Nullable Long numeroEvenement) throws EvenementCivilException {
 
 		// les critères de recherche
 		final String nomPrenom = tiersService.getNomPrenom(individu);
@@ -248,39 +248,30 @@ public abstract class Arrivee extends Mouvement {
 		final TiersCriteria criteria = new TiersCriteria();
 		criteria.setTypeTiers(TiersCriteria.TypeTiers.NON_HABITANT);
 		criteria.setTypeRechercheDuNom(TiersCriteria.TypeRecherche.EST_EXACTEMENT);
-		// criteria.setDateNaissance(individu.getDateNaissance()); [UNIREG-1603] on ne filtre pas sur la date de naissance ici, pour prendre en compte les dates nulles
 		criteria.setNomRaison(nomPrenom);
+		criteria.setSexeOrNull(sexe);
+		criteria.setDateNaissanceOrNull(dateNaissance);
 
-		final List<PersonnePhysique> nonHabitants = new ArrayList<>();
-
-		List<TiersIndexedData> results;
-
+		final List<TiersIndexedData> results;
         try {
             results = tiersService.search(criteria);
-        } catch (TooManyResultsIndexerException e) {
+        }
+        catch (TooManyResultsIndexerException e) {
             // [SIFISC-4876] On catch cette runtime exception de l'indexeur pour fournir à l'utilisateur un message plus parlant
-            throw new EvenementCivilException (
-                    String.format("Trop de non-habitants (%d au total) correspondent à: %s", e.getNbResults(), nomPrenom),
-                    e
-            );
+            throw new EvenementCivilException (String.format("Trop de non-habitants (%d au total) correspondent à: %s", e.getNbResults(), nomPrenom), e);
         }
 
+		final List<PersonnePhysique> nonHabitants = new ArrayList<>();
 		for (final TiersIndexedData tiersIndexedData : results) {
 			final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(tiersIndexedData.getNumero());
 			// [UNIREG-770] le non habitant doit être assujetti
 			if (assujettissementObligatoire && pp.getForFiscalPrincipalAt(null) == null) {
-				continue;
-			}
-			// [UNIREG-1603] on filtre les dates naissance en laissant passer les dates nulles
-			if (pp.getDateNaissance() != null && pp.getDateNaissance() != dateNaissance) {
-				continue;
-			}
-			// [UNIREG-1603] on filtre le sexe en laissant passer les sexes non renseignés
-			if (pp.getSexe() != null && sexe != null && pp.getSexe() != sexe) {
+				Audit.warn(numeroEvenement, "Candidat " + pp.getNumero() + " écarté en l'absence de for principal valide");
 				continue;
 			}
 			// [UNIREG-1603] on filtre les non habitants qui possèdent un numéro d'individu
 			if (pp.getNumeroIndividu() != null) {
+				Audit.warn(numeroEvenement, "Candidat " + pp.getNumero() + " écarté en raison de la présence d'un autre numéro d'individu");
 				continue;
 			}
 			nonHabitants.add(pp);

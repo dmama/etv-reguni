@@ -7,7 +7,6 @@ import java.util.Set;
 
 import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
-import org.springframework.test.annotation.ExpectedException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
@@ -342,7 +341,6 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 	 */
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
-    @ExpectedException(EvenementCivilException.class)
 	public void testFindNonHabitants() throws Exception {
 
 		class Ids {
@@ -364,6 +362,30 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 
 		setWantIndexation(true);
 		removeIndexData();
+
+		class ServiceCivil extends MockServiceCivil {
+
+			private MockIndividu jean;
+			private MockIndividu jacques;
+			private MockIndividu roger;
+			private MockIndividu cedric;
+			private MockIndividu pierreJean;
+
+			@Override
+			protected void init() {
+				jean = addIndividu(343434, date(1960, 1, 1), "Jean", "Dupneu", true);
+				jacques = addIndividu(747474, date(1960, 1, 1), "Jacques", "Dupneu", true);
+				roger = addIndividu(585858, date(1960, 1, 1), "Roger", "Dupneu", true);
+				cedric = addIndividu(9191919, date(1960, 1, 1), "Cédric", "Dupneu", true);
+				pierreJean = addIndividu(9191918, date(1960, 1, 1), "Pierre", "Jean", true);
+
+				// autre cédric homonyme
+				addIndividu(375342, date(1960, 1, 1), "Cédric", "Dupneu", true);
+			}
+		}
+
+		final ServiceCivil civil = new ServiceCivil();
+		serviceCivil.setUp(new ServiceCivil());
 
 		doInNewTransaction(new TransactionCallback<Object>() {
 			@Nullable
@@ -424,47 +446,24 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 
 		globalTiersIndexer.sync();
 
-		class ServiceCivil extends MockServiceCivil {
-
-			private MockIndividu jean;
-			private MockIndividu jacques;
-			private MockIndividu roger;
-			private MockIndividu cedric;
-            private MockIndividu pierreJean;
-
-			@Override
-			protected void init() {
-				jean = addIndividu(343434, date(1960, 1, 1), "Jean", "Dupneu", true);
-				jacques = addIndividu(747474, date(1960, 1, 1), "Jacques", "Dupneu", true);
-				roger = addIndividu(585858, date(1960, 1, 1), "Roger", "Dupneu", true);
-				cedric = addIndividu(9191919, date(1960, 1, 1), "Cédric", "Dupneu", true);
-                pierreJean = addIndividu(9191918, date(1960, 1, 1), "Pierre", "Jean", true);
-
-			}
-		}
-
-		final ServiceCivil civil = new ServiceCivil();
-		serviceCivil.setUp(civil);
-
-
 		// Si on recherche un Jean Dupneu né le 1er janvier 1960 et de sexe masculin, on doit trouver tous les Jean Dupneu assujettis nés un 1er janvier 1960 <b>ou</b>
 		// de date de naissance inconnue et de sexe masculin <b>ou</b> de sexe inconnu. On ne doit pas trouver les Jean Dupneu nés un autre jour ou avec un autre sexe.
 		{
-			final List<PersonnePhysique> list = Arrivee.findNonHabitants(context.getTiersService(), civil.jean, true);
+			final List<PersonnePhysique> list = Arrivee.findNonHabitants(context.getTiersService(), civil.jean, true, null);
 			assertEquals(4, list.size());
 			assertListContains(list, ids.jeanNomPrenomAssujetti, ids.jeanNomPrenomDateAssujetti, ids.jeanNomPrenomDateSexeAssujetti, ids.jeanNomPrenomSexeAssujetti);
 		}
 
 		// Si on recherche un Jaques Dupneu né le 1er janvier 1960 et de sexe masculin, on doit le trouver puisqu'il y en a qu'un et qu'il est complet.
 		{
-			final List<PersonnePhysique> list = Arrivee.findNonHabitants(context.getTiersService(), civil.jacques, true);
+			final List<PersonnePhysique> list = Arrivee.findNonHabitants(context.getTiersService(), civil.jacques, true, null);
 			assertEquals(1, list.size());
 			assertListContains(list, ids.jacquesNomPrenomDateSexeAssujetti);
 		}
 
 		// [UNIREG-3073] Si on recherche un Roger Dupneu né le 1er janvier 1960 et de sexe masculin, on doit trouver le seul candidat malgré le fait qu'il ne possède pas de date de naissance
 		{
-			final List<PersonnePhysique> list = Arrivee.findNonHabitants(context.getTiersService(), civil.roger, true);
+			final List<PersonnePhysique> list = Arrivee.findNonHabitants(context.getTiersService(), civil.roger, true, null);
 			assertEquals(1, list.size());
 			assertListContains(list, ids.rogerNomPrenomSexeAssujetti);
 		}
@@ -472,17 +471,19 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 		// Si on recherche un Cédric Dupneu né le 1er janvier 1960 et de sexe masculin, on ne doit pas le trouver parce que
 		// le candidat possède un numéro d'individu (malgré le fait que tous les critères de recherche correspondent bien)
 		{
-			final List<PersonnePhysique> list = Arrivee.findNonHabitants(context.getTiersService(), civil.cedric, true);
+			final List<PersonnePhysique> list = Arrivee.findNonHabitants(context.getTiersService(), civil.cedric, true, null);
 			assertEmpty(list);
 		}
 
         // [SIFISC-4876] Si on recherche Jean Pierre, il y en a bcp trop pour l'indexeur; qui doit lever une exception catchée et réemballée dans
         // dans une EvenementCivilException avec un joli message compréhensible pour l'utilisateur
-        {
-            Arrivee.findNonHabitants(context.getTiersService(), civil.pierreJean, true);
+		try {
+            Arrivee.findNonHabitants(context.getTiersService(), civil.pierreJean, true, null);
             fail("Le dernier appel doit lever une exception");
         }
-
+		catch (EvenementCivilException e) {
+			assertEquals("Trop de non-habitants (110 au total) correspondent à: Jean Pierre", e.getMessage());
+		}
     }
 
 	private void assertListContains(List<PersonnePhysique> list, Long... ids) {

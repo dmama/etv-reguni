@@ -915,7 +915,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 				@Override
 				protected void init() {
 					final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Chollet", "Ignacio", true);
-					MockAdresse adresse = addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Echallens.GrandRue, null, dateArrivee, null);
+					final MockAdresse adresse = addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Echallens.GrandRue, null, dateArrivee, null);
 					adresse.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_CANTON, MockCommune.Geneve.getNoOFS(), null));
 					addNationalite(ind, MockPays.Suisse, dateNaissance, null);
 					marieIndividu(ind, dateMariage);
@@ -923,16 +923,13 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			});
 
 			// Mise en place du fiscal
-			doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 				@Override
 				public Long doInTransaction(TransactionStatus status) {
-					PersonnePhysique pp = addNonHabitant("Ignacio", "Chollet", dateNaissance, Sexe.MASCULIN);
-					addForPrincipal(
-							pp, dateArrivee.addYears(-5), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Geneve,
-							MotifRattachement.DOMICILE, ModeImposition.SOURCE);
+					final PersonnePhysique pp = addNonHabitant("Ignacio", "Chollet", dateNaissance, Sexe.MASCULIN);
+					addForPrincipal(pp, dateArrivee.addYears(-5), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Geneve, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
 					addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, dateArrivee.addYears(-5), null, MockRue.Geneve.AvenueGuiseppeMotta);
-
-					return null;
+					return pp.getNumero();
 				}
 			});
 
@@ -965,6 +962,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 					assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
 					final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
 					assertNotNull(pp);
+					assertEquals((Long) ppId, pp.getNumero());
 					final EnsembleTiersCouple etc = tiersService.getEnsembleTiersCouple(pp, null);
 					assertNotNull(etc);
 					final ForFiscalPrincipal ffpMenage = etc.getMenage().getForFiscalPrincipalAt(null);
