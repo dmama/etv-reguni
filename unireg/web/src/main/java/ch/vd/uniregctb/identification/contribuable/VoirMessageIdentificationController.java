@@ -66,8 +66,7 @@ public class VoirMessageIdentificationController {
 		if (documentUrl != null) {
 			final URL url = new URL(documentUrl);
 			try {
-				final HttpDocumentFetcher.HttpDocument document = HttpDocumentFetcher.fetch(url, GET_TIMEOUT);
-				try {
+				try (HttpDocumentFetcher.HttpDocument document = HttpDocumentFetcher.fetch(url, GET_TIMEOUT)) {
 					final String proposedFilename = document.getProposedContentFilename();
 					final String filename;
 					if (proposedFilename == null) {
@@ -81,9 +80,6 @@ public class VoirMessageIdentificationController {
 						servletService.downloadAsFile(filename, document.getContentType(), content, document.getContentLength(), response);
 					}
 					return null;
-				}
-				finally {
-					document.release();
 				}
 			}
 			catch (HttpDocumentFetcher.HttpDocumentException e) {

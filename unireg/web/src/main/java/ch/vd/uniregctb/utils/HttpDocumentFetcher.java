@@ -30,9 +30,9 @@ public abstract class HttpDocumentFetcher {
 
 	/**
 	 * Document renvoyé par la méthode {@link #fetch}<br/>
-	 * <b>Ne pas oublier d'appeler la méthode {@link #release} après utilisation</b>
+	 * <b>Ne pas oublier d'appeler la méthode {@link #close} après utilisation</b>
 	 */
-	public static final class HttpDocument {
+	public static final class HttpDocument implements AutoCloseable {
 
 		/**
 		 * Type du contenu
@@ -87,7 +87,8 @@ public abstract class HttpDocumentFetcher {
 		/**
 		 * Libère les ressources allouées pour le document
 		 */
-		public void release() {
+		@Override
+		public void close() {
 			content.close();
 		}
 	}

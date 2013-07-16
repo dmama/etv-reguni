@@ -16,7 +16,7 @@ public class HttpDocumentFetcherTest extends WithoutSpringTest {
 
 	@Test
 	public void testCodeRetour404() throws Exception {
-		final URL bidon = new URL("http://calimero/tubidu");
+		final URL bidon = new URL("http://spip/tubidu");
 		try {
 			HttpDocumentFetcher.fetch(bidon, null);
 			Assert.fail("Cette URL existe mainenant ?");
@@ -29,7 +29,7 @@ public class HttpDocumentFetcherTest extends WithoutSpringTest {
 
 	@Test
 	public void testCodeRetour200() throws Exception {
-		final URL blog = new URL("http://calimero/blog");
+		final URL blog = new URL("http://spip");
 		final HttpDocumentFetcher.HttpDocument doc = HttpDocumentFetcher.fetch(blog, null);
 		Assert.assertEquals("text/html; charset=UTF-8", doc.getContentType());
 		Assert.assertNotNull(doc.getContent());
@@ -38,8 +38,7 @@ public class HttpDocumentFetcherTest extends WithoutSpringTest {
 	@Test
 	public void testRecupDocument() throws Exception {
 		final URL docUrl = new URL("http://www.vd.ch/fileadmin/user_upload/themes/etat_droit/democratie/fichiers_pdf/Demande_d_acc%C3%A8s_guide_succinct_pour_particuliers.pdf");
-		final HttpDocumentFetcher.HttpDocument doc = HttpDocumentFetcher.fetch(docUrl, null);
-		try {
+		try (HttpDocumentFetcher.HttpDocument doc = HttpDocumentFetcher.fetch(docUrl, null)) {
 			Assert.assertEquals("application/pdf", doc.getContentType());
 
 			final Integer contentLength = doc.getContentLength();
@@ -55,9 +54,6 @@ public class HttpDocumentFetcherTest extends WithoutSpringTest {
 				}
 				Assert.assertEquals((long) contentLength, file.length());
 			}
-		}
-		finally {
-			doc.release();
 		}
 	}
 
