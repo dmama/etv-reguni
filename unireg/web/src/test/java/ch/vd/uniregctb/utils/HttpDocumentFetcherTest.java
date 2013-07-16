@@ -17,8 +17,7 @@ public class HttpDocumentFetcherTest extends WithoutSpringTest {
 	@Test
 	public void testCodeRetour404() throws Exception {
 		final URL bidon = new URL("http://spip/tubidu");
-		try {
-			HttpDocumentFetcher.fetch(bidon, null);
+		try (HttpDocumentFetcher.HttpDocument doc = HttpDocumentFetcher.fetch(bidon, null)) {
 			Assert.fail("Cette URL existe mainenant ?");
 		}
 		catch (HttpDocumentFetcher.HttpDocumentClientException e) {
@@ -30,9 +29,10 @@ public class HttpDocumentFetcherTest extends WithoutSpringTest {
 	@Test
 	public void testCodeRetour200() throws Exception {
 		final URL blog = new URL("http://spip");
-		final HttpDocumentFetcher.HttpDocument doc = HttpDocumentFetcher.fetch(blog, null);
-		Assert.assertEquals("text/html; charset=UTF-8", doc.getContentType());
-		Assert.assertNotNull(doc.getContent());
+		try (HttpDocumentFetcher.HttpDocument doc = HttpDocumentFetcher.fetch(blog, null)) {
+			Assert.assertEquals("text/html; charset=UTF-8", doc.getContentType());
+			Assert.assertNotNull(doc.getContent());
+		}
 	}
 
 	@Test
@@ -60,8 +60,7 @@ public class HttpDocumentFetcherTest extends WithoutSpringTest {
 	@Test
 	public void testMauvaisProtocole() throws Exception {
 		final URL ftp = new URL("ftp://toto.edu");
-		try {
-			HttpDocumentFetcher.fetch(ftp, null);
+		try (HttpDocumentFetcher.HttpDocument doc = HttpDocumentFetcher.fetch(ftp, null)) {
 			Assert.fail("Le protocole FTP ne devrait pas être supporté...");
 		}
 		catch (IllegalArgumentException e) {
@@ -72,8 +71,7 @@ public class HttpDocumentFetcherTest extends WithoutSpringTest {
 	@Test
 	public void testConnectionRefused() throws Exception {
 		final URL url = new URL("http://localhost:53");
-		try {
-			HttpDocumentFetcher.fetch(url, null);
+		try (HttpDocumentFetcher.HttpDocument doc = HttpDocumentFetcher.fetch(url, null)) {
 			Assert.fail("La machine locale a son port 53 - serveur DNS - ouvert?");
 		}
 		catch (ConnectException e) {
