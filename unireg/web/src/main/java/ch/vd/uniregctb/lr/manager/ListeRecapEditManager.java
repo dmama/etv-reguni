@@ -63,14 +63,6 @@ public interface ListeRecapEditManager {
 	DeclarationImpotSource save(ListeRecapDetailView lrEditView);
 
 	/**
-	 * Annule un delai
-	 *
-	 * @param lrEditView
-	 */
-	@Transactional(rollbackFor = Throwable.class)
-	void annulerDelai(ListeRecapDetailView lrEditView, Long idDelai);
-
-	/**
 	 * Persiste en base et indexe le tiers modifie
 	 */
 	@Transactional(rollbackFor = Throwable.class)

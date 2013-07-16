@@ -163,6 +163,13 @@
 		<property name="downloadService" ref="editiqueDownloadService"/>
 	</bean>
 
+	<bean id="delaiController" class="ch.vd.uniregctb.delai.DelaiController">
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
+		<property name="controllerUtils" ref="controllerUtils"/>
+		<property name="securityProvider" ref="securityProviderInterface"/>
+		<property name="messageSource" ref="messageSource"/>
+	</bean>
+
 	<bean id="copieConformeController" class="ch.vd.uniregctb.copieConforme.CopieConformeController">
 		<property name="servletService" ref="servletService" />
 		<property name="copieConformeManager" ref="copieConformeManager" />

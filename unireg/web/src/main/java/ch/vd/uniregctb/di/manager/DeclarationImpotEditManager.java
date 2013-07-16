@@ -56,10 +56,6 @@ public interface DeclarationImpotEditManager {
 	@Transactional(rollbackFor = Throwable.class)
 	EditiqueResultat envoieImpressionLocalDI(Long ctbId, @Nullable Long id, RegDate dateDebut, RegDate dateFin, TypeDocument typeDocument, TypeAdresseRetour adresseRetour,
 	                                         RegDate delaiAccorde, @Nullable RegDate dateRetour) throws Exception;
-	/**
-	 * Annule un delai
-	 */
-	void annulerDelai(Long idDI, Long idDelai);
 
 	/**
 	 * Persiste en base le delai

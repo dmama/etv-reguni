@@ -107,13 +107,7 @@ public class ListeRecapEditController extends AbstractListeRecapController {
 		ListeRecapDetailView bean = (ListeRecapDetailView) command;
 
 		if (getTarget() != null) {
-			if (TARGET_ANNULER_DELAI.equals(getTarget())) {
-				String delai = getEventArgument();
-				Long idDelai = Long.parseLong(delai);
-				lrEditManager.annulerDelai(bean, idDelai);
-			}
-			else if (BUTTON_IMPRIMER_LR.equals(getTarget())) {
-
+			if (BUTTON_IMPRIMER_LR.equals(getTarget())) {
 				final TraitementRetourEditique erreur = new TraitementRetourEditique() {
 					@Override
 					public ModelAndView doJob(EditiqueResultat resultat) {

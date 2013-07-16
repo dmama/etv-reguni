@@ -98,25 +98,6 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	private PeriodeImpositionService periodeImpositionService;
 
 	/**
-	 * Annule un delai
-	 */
-	@Override
-	public void annulerDelai(Long idDI, Long idDelai) {
-		DeclarationImpotOrdinaire di = diDAO.get(idDI);
-		if (di == null) {
-			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
-		}
-
-		Set<DelaiDeclaration> delais = di.getDelais();
-		for (DelaiDeclaration delai : delais) {
-			if (delai.getId().equals(idDelai)) {
-				delai.setAnnule(true);
-			}
-		}
-
-	}
-
-	/**
 	 * {@inheritDoc}
 	 */
 	@Override

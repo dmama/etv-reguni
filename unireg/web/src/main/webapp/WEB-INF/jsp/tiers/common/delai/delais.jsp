@@ -37,7 +37,7 @@
 			<c:if test="${depuisTache == null && command.allowedDelai && page == 'edit'}">
 				<c:if test="${(!delai.annule) && (!delai.first)}">
 					<unireg:linkTo name="" title="Annuler le délai"  confirm="Voulez-vous vraiment annuler ce delai ?"
-					               action="/di/delai/annuler.do" method="post" params="{id:${delai.id}}" link_class="delete"/>
+					               action="/declaration/delai/annuler.do" method="post" params="{id:${delai.id}}" link_class="delete"/>
 				</c:if>
 			</c:if>
 		</display:column>

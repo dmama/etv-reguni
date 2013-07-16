@@ -4,7 +4,6 @@ import javax.jms.JMSException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.springframework.context.MessageSource;
@@ -530,23 +529,6 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 		}
 
 		return lr;
-	}
-
-	/**
-	 * Annule un delai
-	 *
-	 * @param lrEditView
-	 */
-	@Override
-	@Transactional(rollbackFor = Throwable.class)
-	public void annulerDelai (ListeRecapDetailView lrEditView, Long idDelai) {
-		DeclarationImpotSource lr = lrDAO.get(lrEditView.getId());
-		Set<DelaiDeclaration> delais = lr.getDelais();
-		for (DelaiDeclaration delai : delais) {
-			if (delai.getId().equals(idDelai)) {
-				delai.setAnnule(true);
-			}
-		}
 	}
 
 	/**

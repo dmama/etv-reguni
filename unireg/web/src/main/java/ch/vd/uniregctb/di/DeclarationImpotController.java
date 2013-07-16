@@ -41,7 +41,6 @@ import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotCriteria;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
-import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
@@ -155,7 +154,7 @@ public class DeclarationImpotController {
 	protected void initBinder(WebDataBinder binder) {
 		binder.setValidator(validator);
 		binder.registerCustomEditor(RegDate.class, new RegDateEditor(true, false, false, RegDateHelper.StringFormat.INDEX));
-		// champs du formulaire de création d'un nouvelle déclaration
+		// champs du formulaire de création d'une nouvelle déclaration
 		binder.registerCustomEditor(RegDate.class, "delaiAccorde", new RegDateEditor(true, false, false, RegDateHelper.StringFormat.DISPLAY));
 		binder.registerCustomEditor(RegDate.class, "dateDebutPeriodeImposition", new RegDateEditor(true, false, false, RegDateHelper.StringFormat.DISPLAY));
 		binder.registerCustomEditor(RegDate.class, "dateFinPeriodeImposition", new RegDateEditor(true, false, false, RegDateHelper.StringFormat.DISPLAY));
@@ -740,40 +739,6 @@ public class DeclarationImpotController {
 		final RedirectEditDI inbox = new RedirectEditDI(id);
 		final RedirectEditDIApresErreur erreur = new RedirectEditDIApresErreur(id, messageSource);
 		return retourEditiqueControllerHelper.traiteRetourEditique(resultat, response, "di", inbox, erreur, erreur);
-	}
-
-	/**
-	 * Annuler le délai spécifié.
-	 */
-	@Transactional(rollbackFor = Throwable.class)
-	@RequestMapping(value = "/di/delai/annuler.do", method = RequestMethod.POST)
-	public String annulerDelai(@RequestParam("id") final long id, HttpServletResponse response) throws Exception {
-
-		if (!SecurityHelper.isGranted(securityProvider, Role.DI_DELAI_PP)) {
-			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec d'édition des délais sur les déclarations d'impôt des personnes physiques.");
-		}
-
-		// Vérifie les paramètres
-		final DelaiDeclaration delai = hibernateTemplate.get(DelaiDeclaration.class, id);
-		if (delai == null) {
-			throw new ObjectNotFoundException(messageSource.getMessage("error.delai.inexistant", null, WebContextUtils.getDefaultLocale()));
-		}
-
-		final Declaration di = delai.getDeclaration();
-		final RegDate premier = di.getPremierDelai();
-		if (di.getDelaiAccordeAu() == premier) {
-			throw new IllegalArgumentException("Le premier délai accordé ne peut pas être annulé.");
-		}
-
-		final Contribuable ctb = (Contribuable) di.getTiers();
-		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
-
-		// On annule le délai
-
-		manager.annulerDelai(di.getId(), delai.getId());
-
-		Flash.message("Le délai a été annulé.");
-		return "redirect:/di/editer.do?id=" + di.getId();
 	}
 
 	/**
