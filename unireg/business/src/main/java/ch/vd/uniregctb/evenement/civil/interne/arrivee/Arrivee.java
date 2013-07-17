@@ -147,7 +147,7 @@ public abstract class Arrivee extends Mouvement {
 			 * Création à la demande de l'habitant
 			 */
 			// [UNIREG-770] rechercher si un Non-Habitant assujetti existe (avec Nom - Prénom)
-			final PersonnePhysique habitant = getOrCreatePersonnePhysique(individu, numeroEvenement, FindBehavior.ASSUJETTISSEMENT_OBLIGATOIRE_ERROR_IF_SEVERAL);
+			final PersonnePhysique habitant = getOrCreatePersonnePhysique(individu, numeroEvenement);
 
 			// [SIFISC-6841] on met-à-jour le flag habitant en fonction de ses adresses de résidence civiles
 			updateHabitantStatus(habitant, dateArrivee);
@@ -227,18 +227,19 @@ public abstract class Arrivee extends Mouvement {
 	 */
 	protected abstract void doHandleCreationForMenage(PersonnePhysique arrivant, MenageCommun menageCommun, EvenementCivilWarningCollector warnings) throws EvenementCivilException;
 
-	private List<PersonnePhysique> findNonHabitants(Individu individu, boolean assujettissementObligatoire) throws EvenementCivilException {
-		return findNonHabitants(getService(), individu, assujettissementObligatoire, getNumeroEvenement());
+	private List<PersonnePhysique> findNonHabitants(Individu individu) throws EvenementCivilException {
+		return findNonHabitants(getService(), individu, getNumeroEvenement());
 	}
 
 	/**
 	 * [UNIREG-3073] Recherche un ou plusieurs non-habitants à partir du prénom, du nom, de la date de naissance et du sexe d'un individu.
+	 * [UNIREG-770] le non habitant doit être assujetti
+	 * [SIFISC-9279] on abandonne cette histoire d'assujettissement mais il faut filtrer les annulés, désactivés et i107...
 	 *
 	 * @param individu                    un individu
-	 * @param assujettissementObligatoire <b>vrai</b> s'il les non-habitants recherchés doivent posséder un for principal actif.
 	 * @return une liste de non-habitants qui correspondent aux critères.
 	 */
-	protected static List<PersonnePhysique> findNonHabitants(TiersService tiersService, Individu individu, boolean assujettissementObligatoire, @Nullable Long numeroEvenement) throws EvenementCivilException {
+	protected static List<PersonnePhysique> findNonHabitants(TiersService tiersService, Individu individu, @Nullable Long numeroEvenement) throws EvenementCivilException {
 
 		// les critères de recherche
 		final String nomPrenom = tiersService.getNomPrenom(individu);
@@ -251,6 +252,8 @@ public abstract class Arrivee extends Mouvement {
 		criteria.setNomRaison(nomPrenom);
 		criteria.setSexeOrNull(sexe);
 		criteria.setDateNaissanceOrNull(dateNaissance);
+		criteria.setInclureI107(false);
+		criteria.setInclureTiersAnnules(false);
 
 		final List<TiersIndexedData> results;
         try {
@@ -264,11 +267,6 @@ public abstract class Arrivee extends Mouvement {
 		final List<PersonnePhysique> nonHabitants = new ArrayList<>();
 		for (final TiersIndexedData tiersIndexedData : results) {
 			final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(tiersIndexedData.getNumero());
-			// [UNIREG-770] le non habitant doit être assujetti
-			if (assujettissementObligatoire && pp.getForFiscalPrincipalAt(null) == null) {
-				Audit.warn(numeroEvenement, "Candidat " + pp.getNumero() + " écarté en l'absence de for principal valide");
-				continue;
-			}
 			// [UNIREG-1603] on filtre les non habitants qui possèdent un numéro d'individu
 			if (pp.getNumeroIndividu() != null) {
 				Audit.warn(numeroEvenement, "Candidat " + pp.getNumero() + " écarté en raison de la présence d'un autre numéro d'individu");
@@ -280,33 +278,8 @@ public abstract class Arrivee extends Mouvement {
 		return nonHabitants;
 	}
 
-	private enum FindBehavior {
-		ASSUJETTISSEMENT_OBLIGATOIRE_ERROR_IF_SEVERAL(true, true),
-		ASSUJETTISSEMENT_OBLIGATOIRE_NO_ERROR_IF_SEVERAL(true, false),
-		ASSUJETTISSEMENT_NON_OBLIGATOIRE_ERROR_IF_SEVERAL(false, true),
-		ASSUJETTISSEMENT_NON_OBLIGATOIRE_NO_ERROR_IF_SEVERAL(false, false)
-		;
-
-		private final boolean assujettissementObligatoire;
-
-		private final boolean errorOnMultiples;
-
-		private FindBehavior(boolean assujettissementObligatoire, boolean errorOnMultiples) {
-			this.assujettissementObligatoire = assujettissementObligatoire;
-			this.errorOnMultiples = errorOnMultiples;
-		}
-
-		public boolean isAssujettissementObligatoire() {
-			return assujettissementObligatoire;
-		}
-
-		public boolean isErrorOnMultiples() {
-			return errorOnMultiples;
-		}
-	}
-
 	@NotNull
-	private PersonnePhysique getOrCreatePersonnePhysique(Individu individu, long evenementId, FindBehavior behavior) throws EvenementCivilException {
+	private PersonnePhysique getOrCreatePersonnePhysique(Individu individu, long evenementId) throws EvenementCivilException {
 
 		final PersonnePhysique pp = context.getTiersDAO().getPPByNumeroIndividu(individu.getNoTechnique());
 		final PersonnePhysique personnePhysiqueResultante;
@@ -314,7 +287,7 @@ public abstract class Arrivee extends Mouvement {
 			personnePhysiqueResultante = pp;
 		}
 		else {
-			final List<PersonnePhysique> nonHabitants = findNonHabitants(individu, behavior.isAssujettissementObligatoire());
+			final List<PersonnePhysique> nonHabitants = findNonHabitants(individu);
 			if (nonHabitants.size() == 1) {
 				final PersonnePhysique candidat = nonHabitants.get(0);
 				if (candidat.getDateNaissance() == null || candidat.getSexe() == null) {
@@ -340,7 +313,7 @@ public abstract class Arrivee extends Mouvement {
 					personnePhysiqueResultante.setNumeroIndividu(individu.getNoTechnique());
 				}
 			}
-			else if (nonHabitants.isEmpty() || !behavior.isErrorOnMultiples()) {
+			else if (nonHabitants.isEmpty()) {
 				// Ici on créé un non-habitant et on l'initialise avec les données connues de son individu. C'est un peu spécial mais le problème c'est qu'on
 				// est entrain de traiter l'arrivée du principal, et que l'on ne veut pas aussi traiter l'arrivée du conjoint. La solution, c'est de créer le
 				// conjoint non-habitant.
@@ -432,14 +405,14 @@ public abstract class Arrivee extends Mouvement {
 		/*
 		 * Récupération/création des habitants
 		 */
-		final PersonnePhysique arrivant = getOrCreatePersonnePhysique(individu, numeroEvenement, FindBehavior.ASSUJETTISSEMENT_NON_OBLIGATOIRE_NO_ERROR_IF_SEVERAL);
+		final PersonnePhysique arrivant = getOrCreatePersonnePhysique(individu, numeroEvenement);
 
 		// [SIFISC-6841] on met-à-jour le flag habitant en fonction de ses adresses de résidence civiles
 		updateHabitantStatus(arrivant, dateEvenement);
 
 		final PersonnePhysique conjointDeLArrivant;
 		if (conjoint != null) {
-			conjointDeLArrivant = getOrCreatePersonnePhysique(conjoint, numeroEvenement, FindBehavior.ASSUJETTISSEMENT_NON_OBLIGATOIRE_NO_ERROR_IF_SEVERAL);
+			conjointDeLArrivant = getOrCreatePersonnePhysique(conjoint, numeroEvenement);
 		}
 		else {
 			conjointDeLArrivant = null;

@@ -344,6 +344,8 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 	public void testFindNonHabitants() throws Exception {
 
 		class Ids {
+			Long jeanNomPrenomAnnule;
+			Long jeanNomPrenomDesactive;
 			Long jeanNomPrenom;
 			Long jeanNomPrenomDate;
 			Long jeanNomPrenomDateSexe;
@@ -391,6 +393,12 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 			@Nullable
             @Override
 			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique jeanNomPrenomAnnule = addNonHabitant("Jean", "Dupneu", null, null);
+				jeanNomPrenomAnnule.setAnnule(true);
+
+				final PersonnePhysique jeanNomPrenomDesactive = addNonHabitant("Jean", "Dupneu", null, null);
+				addForPrincipal(jeanNomPrenomDesactive, date(1980, 1, 1), MotifFor.MAJORITE, date(2012, 12, 31), MotifFor.ANNULATION, MockCommune.Renens);
+
 				final PersonnePhysique jeanNomPrenom = addNonHabitant("Jean", "Dupneu", null, null);
 				final PersonnePhysique jeanNomPrenomDate = addNonHabitant("Jean", "Dupneu", date(1960, 1, 1), null);
 				final PersonnePhysique jeanNomPrenomDateSexe = addNonHabitant("Jean", "Dupneu", date(1960, 1, 1), Sexe.MASCULIN);
@@ -421,6 +429,8 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 				cedricNonHabitantAvecNoIndividu.setNumeroIndividu(375342L);
 				addForPrincipal(cedricNonHabitantAvecNoIndividu, date(1980, 1, 1), MotifFor.MAJORITE, MockCommune.Renens);
 
+				ids.jeanNomPrenomAnnule = jeanNomPrenomAnnule.getId();
+				ids.jeanNomPrenomDesactive = jeanNomPrenomDesactive.getId();
 				ids.jeanNomPrenom = jeanNomPrenom.getId();
 				ids.jeanNomPrenomDate = jeanNomPrenomDate.getId();
 				ids.jeanNomPrenomDateSexe = jeanNomPrenomDateSexe.getId();
@@ -449,21 +459,22 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 		// Si on recherche un Jean Dupneu né le 1er janvier 1960 et de sexe masculin, on doit trouver tous les Jean Dupneu assujettis nés un 1er janvier 1960 <b>ou</b>
 		// de date de naissance inconnue et de sexe masculin <b>ou</b> de sexe inconnu. On ne doit pas trouver les Jean Dupneu nés un autre jour ou avec un autre sexe.
 		{
-			final List<PersonnePhysique> list = Arrivee.findNonHabitants(context.getTiersService(), civil.jean, true, null);
-			assertEquals(4, list.size());
-			assertListContains(list, ids.jeanNomPrenomAssujetti, ids.jeanNomPrenomDateAssujetti, ids.jeanNomPrenomDateSexeAssujetti, ids.jeanNomPrenomSexeAssujetti);
+			final List<PersonnePhysique> list = Arrivee.findNonHabitants(context.getTiersService(), civil.jean, null);
+			assertEquals(8, list.size());
+			assertListContains(list, ids.jeanNomPrenomAssujetti, ids.jeanNomPrenomDateAssujetti, ids.jeanNomPrenomDateSexeAssujetti, ids.jeanNomPrenomSexeAssujetti,
+			                         ids.jeanNomPrenom, ids.jeanNomPrenomDate, ids.jeanNomPrenomDateSexe, ids.jeanNomPrenomSexe);
 		}
 
 		// Si on recherche un Jaques Dupneu né le 1er janvier 1960 et de sexe masculin, on doit le trouver puisqu'il y en a qu'un et qu'il est complet.
 		{
-			final List<PersonnePhysique> list = Arrivee.findNonHabitants(context.getTiersService(), civil.jacques, true, null);
+			final List<PersonnePhysique> list = Arrivee.findNonHabitants(context.getTiersService(), civil.jacques, null);
 			assertEquals(1, list.size());
 			assertListContains(list, ids.jacquesNomPrenomDateSexeAssujetti);
 		}
 
 		// [UNIREG-3073] Si on recherche un Roger Dupneu né le 1er janvier 1960 et de sexe masculin, on doit trouver le seul candidat malgré le fait qu'il ne possède pas de date de naissance
 		{
-			final List<PersonnePhysique> list = Arrivee.findNonHabitants(context.getTiersService(), civil.roger, true, null);
+			final List<PersonnePhysique> list = Arrivee.findNonHabitants(context.getTiersService(), civil.roger, null);
 			assertEquals(1, list.size());
 			assertListContains(list, ids.rogerNomPrenomSexeAssujetti);
 		}
@@ -471,14 +482,14 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 		// Si on recherche un Cédric Dupneu né le 1er janvier 1960 et de sexe masculin, on ne doit pas le trouver parce que
 		// le candidat possède un numéro d'individu (malgré le fait que tous les critères de recherche correspondent bien)
 		{
-			final List<PersonnePhysique> list = Arrivee.findNonHabitants(context.getTiersService(), civil.cedric, true, null);
+			final List<PersonnePhysique> list = Arrivee.findNonHabitants(context.getTiersService(), civil.cedric, null);
 			assertEmpty(list);
 		}
 
         // [SIFISC-4876] Si on recherche Jean Pierre, il y en a bcp trop pour l'indexeur; qui doit lever une exception catchée et réemballée dans
         // dans une EvenementCivilException avec un joli message compréhensible pour l'utilisateur
 		try {
-            Arrivee.findNonHabitants(context.getTiersService(), civil.pierreJean, true, null);
+            Arrivee.findNonHabitants(context.getTiersService(), civil.pierreJean, null);
             fail("Le dernier appel doit lever une exception");
         }
 		catch (EvenementCivilException e) {
