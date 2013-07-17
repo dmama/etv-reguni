@@ -5,7 +5,7 @@
 ENVIRONMENT=$1
 DEST_FILE=$2
 if [ -z "$ENVIRONMENT" ]; then
-        echo "Syntaxe : $(basename "$0") <env> <dest-file>.tar.lzma avec <env> l'un de PR, PO, VA, PP, FO" >&2
+        echo "Syntaxe : $(basename "$0") <env> <dest-file>.tar.xz avec <env> l'un de PR, PO, VA, PP, FO" >&2
         exit 1
 elif [[ ! "$ENVIRONMENT" =~ ^(PR|PO|VA|PP|FO)$ ]]; then
         echo "Pour l'environnement, seuls PR, PO, VA, PP et FO sont acceptés (trouvé : '$ENVIRONMENT')" >&2
@@ -13,8 +13,8 @@ elif [[ ! "$ENVIRONMENT" =~ ^(PR|PO|VA|PP|FO)$ ]]; then
 elif [ -z "$DEST_FILE" ]; then
 	echo "Le fichier de destination doit être donné en paramètre" >&2
 	exit 1
-elif [[ ! "$DEST_FILE" =~ \.tar\.lzma$ ]]; then
-	echo "Le nom du fichier de destination doit se terminer en .tar.lzma" >&2
+elif [[ ! "$DEST_FILE" =~ \.tar\.xz$ ]]; then
+	echo "Le nom du fichier de destination doit se terminer en .tar.xz" >&2
 	exit 1
 elif [ -e "$DEST_FILE" ]; then
 	echo "Le fichier de destination existe déjà. Abandon." >&2
@@ -36,5 +36,5 @@ wget --no-proxy --no-check-certificate "$URL" -O - | grep "<a href=" | grep -v "
 done
 
 echo "Génération du fichier d'archive $DEST_FILE..." >&2
-(cd "$TMP_DIR" && tar --create --use-compress-program /usr/bin/lzma --verbose --file "$DEST_FILE" .)
+(cd "$TMP_DIR" && tar --create --use-compress-program /usr/bin/xz --verbose --file "$DEST_FILE" .)
 rm -rf "$TMP_DIR"

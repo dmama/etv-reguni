@@ -25,8 +25,8 @@ fi
 
 function cat_file {
 	FILE="$1"
-	if [[ "$FILE" =~ lzma$ ]]; then
-		lzcat "$FILE"
+	if [[ "$FILE" =~ \.lzma$ ]] || [[ "$FILE" =~ \.xz$ ]]; then
+		xzcat "$FILE"
 	else
 		cat "$FILE"
 	fi

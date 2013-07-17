@@ -36,8 +36,8 @@ else
 fi
 
 function cat_file {
-        if [[ "$1" =~ \.lzma$ ]]; then
-                lzcat "$1"
+        if [[ "$1" =~ \.lzma$ ]] || [[ "$1" =~ \.xz$ ]]; then
+                xzcat "$1"
         else
                 cat "$1"
         fi

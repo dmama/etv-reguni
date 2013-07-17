@@ -1,6 +1,6 @@
 #! /bin/bash -
 # Sorte d'équivalent de la commande grep (en très limité quand-même !) qui fonctionne
-# à la fois sur les fichiers compressés en lzma et les fichiers non-compressés
+# à la fois sur les fichiers compressés en lzma/xz et les fichiers non-compressés
 #
 # Les variables d'environnement suivantes sont utilisées :
 #	- AFTER : sera transcrit par le paramètre -A de grep
@@ -22,8 +22,8 @@ fi
 
 function dumpfile() {
 	FILE_TO_DUMP="$1"
-	if [[ "$FILE_TO_DUMP" =~ \.lzma$ ]]; then
-		lzcat "$FILE_TO_DUMP"
+	if [[ "$FILE_TO_DUMP" =~ \.lzma$ ]] || [[ "$FILE_TO_DUMP" =~ \.xz$ ]]; then
+		xzcat "$FILE_TO_DUMP"
 	else
 		cat "$FILE_TO_DUMP"
 	fi

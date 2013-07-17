@@ -31,7 +31,7 @@ function fetch-logs() {
 		DATE_COURANTE_SEC=$(date --date "$DATE_COURANTE" +"%s")
 		SUFFIXE_DATE_COURANTE=$(echo $DATE_COURANTE | sed -e 's/^\([[:digit:]]\{4\}\)\([[:digit:]]\{2\}\)\([[:digit:]]\{2\}\)$/\1-\2-\3/')
 		FILE=$PREFIXE_FILE$SUFFIXE_DATE_COURANTE
-		if [ ! -e "$FILE" -a ! -e "$FILE.lzma" ]; then
+		if [ ! -e "$FILE" -a ! -e "$FILE.lzma" -a ! -e "$FILE.xz" ]; then
 			echo "Fichier $FILE n'existe pas encore, allons le chercher"
 			wget --no-proxy --no-check-certificate $PREFIXE_URL$FILE -O "$FILE"
 			if [ "$?" -ne 0 ]; then
@@ -40,7 +40,7 @@ function fetch-logs() {
 		fi
 		if [ -e "$FILE" -a $(($TODAY_SEC - $DATE_COURANTE_SEC)) -gt 864000 ]; then
 			echo "Compression de vieux fichier $FILE"
-			lzma "$FILE"
+			xz "$FILE"
 		fi
 
 		DATE_COURANTE=$(date --date "$DATE_COURANTE + 1 day" +"%Y%m%d")
