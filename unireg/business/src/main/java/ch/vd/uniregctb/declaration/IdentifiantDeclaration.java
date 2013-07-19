@@ -43,4 +43,13 @@ public final class IdentifiantDeclaration {
 	public Integer getNumeroOID() {
 		return numeroOID;
 	}
+
+	@Override
+	public String toString() {
+		return "IdentifiantDeclaration{" +
+				"idDeclaration=" + idDeclaration +
+				", numeroTiers=" + numeroTiers +
+				", numeroOID=" + numeroOID +
+				'}';
+	}
 }
