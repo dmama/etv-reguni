@@ -1,25 +1,19 @@
 package ch.vd.unireg.interfaces.civil.mock;
 
-import org.jetbrains.annotations.Nullable;
-
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.civil.data.EtatCivil;
 import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
 
 public class MockEtatCivil implements EtatCivil {
 
 	private RegDate dateDebut;
-	private RegDate dateFin;
 	private TypeEtatCivil typeEtatCivil;
 
 	public MockEtatCivil() {
 	}
 
-	public MockEtatCivil(RegDate dateDebut, @Nullable RegDate dateFin, TypeEtatCivil typeEtatCivil) {
+	public MockEtatCivil(RegDate dateDebut, TypeEtatCivil typeEtatCivil) {
 		this.dateDebut = dateDebut;
-		this.dateFin = dateFin;
 		this.typeEtatCivil = typeEtatCivil;
 	}
 
@@ -33,15 +27,6 @@ public class MockEtatCivil implements EtatCivil {
 	}
 
 	@Override
-	public RegDate getDateFin() {
-		return dateFin;
-	}
-
-	public void setDateFin(RegDate dateFin) {
-		this.dateFin = dateFin;
-	}
-
-	@Override
 	public TypeEtatCivil getTypeEtatCivil() {
 		return typeEtatCivil;
 	}
@@ -51,7 +36,10 @@ public class MockEtatCivil implements EtatCivil {
 	}
 
 	@Override
-	public boolean isValidAt(RegDate date) {
-		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
+	public String toString() {
+		return "MockEtatCivil{" +
+				"dateDebut=" + dateDebut +
+				", typeEtatCivil=" + typeEtatCivil +
+				'}';
 	}
 }

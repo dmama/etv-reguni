@@ -8,9 +8,10 @@ import org.springframework.transaction.annotation.Transactional;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.Adresse;
 import ch.vd.unireg.interfaces.civil.data.EtatCivil;
-import ch.vd.unireg.interfaces.civil.data.EtatCivilListImpl;
 import ch.vd.unireg.interfaces.civil.data.Individu;
+import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockEtatCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockEtatCivilList;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
@@ -31,7 +32,6 @@ import static org.junit.Assert.fail;
 public class ServiceCivilServiceImplTest extends BusinessTest {
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testGetEtatCivilActifAucunEtatCivil() {
 
 		// Aucun état civil
@@ -41,7 +41,7 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 			@Override
 			protected void init() {
 				MockIndividu momo = addIndividu(noIndividu, RegDate.get(1961, 3, 12), "Durant", "Maurice", true);
-				momo.setEtatsCivils(new EtatCivilListImpl());
+				momo.setEtatsCivils(new MockEtatCivilList());
 			}
 		});
 
@@ -49,11 +49,9 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 		assertNull(etatCivil1);
 		EtatCivil etatCivil2 = serviceCivil.getEtatCivilActif(noIndividu, RegDate.get(2000, 1, 13));
 		assertNull(etatCivil2);
-
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testGetEtatCivilActifUnSeulEtatCivil() {
 
 		final long noIndividu = 1;
@@ -67,7 +65,7 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 			protected void init() {
 				MockIndividu momo = addIndividu(noIndividu, RegDate.get(1961, 3, 12), "Durant", "Maurice", true);
 
-				final EtatCivilListImpl etatsCivils = new EtatCivilListImpl();
+				final MockEtatCivilList etatsCivils = new MockEtatCivilList();
 				etatsCivils.add(ec1);
 				momo.setEtatsCivils(etatsCivils);
 			}
@@ -85,13 +83,15 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 		assertSame(ec1, etatCivil3);
 	}
 
+	/**
+	 * on ne trie plus les états civils qui nous viennent du registre civil
+	 */
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testGetEtatCivilActifListeEtatsCivils() {
 
 		final long noIndividu = 1;
 
-		// Une liste d'état civil (désordonnés) :
+		// Une liste d'états civils (désordonnée) :
 		// 1. -> [ 1.3.1930..fin-des-temps]
 		// 2. -> [21.4.1985..fin-des-temps]
 		// 3. -> [ 8.1.1973..fin-des-temps]
@@ -107,7 +107,7 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 			protected void init() {
 				MockIndividu momo = addIndividu(noIndividu, RegDate.get(1961, 3, 12), "Durant", "Maurice", true);
 
-				final EtatCivilListImpl etatsCivils = new EtatCivilListImpl();
+				final MockEtatCivilList etatsCivils = new MockEtatCivilList();
 				etatsCivils.add(ec1);
 				etatsCivils.add(ec2);
 				etatsCivils.add(ec3);
@@ -117,7 +117,7 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 
 		EtatCivil etatCivil1 = serviceCivil.getEtatCivilActif(noIndividu, null);
 		assertNotNull(etatCivil1);
-		assertSame(ec2, etatCivil1);
+		assertSame(ec3, etatCivil1);            // c'est ici qu'on voit que la liste n'est plus re-triée
 
 		EtatCivil etatCivil2 = serviceCivil.getEtatCivilActif(noIndividu, RegDate.get(1903, 1, 13));
 		assertNull(etatCivil2);
@@ -132,17 +132,65 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 
 		EtatCivil etatCivil5 = serviceCivil.getEtatCivilActif(noIndividu, RegDate.get(1988, 1, 2));
 		assertNotNull(etatCivil5);
-		assertSame(ec2, etatCivil5);
+		assertSame(ec3, etatCivil5);        // comme les états civils ne sont pas re-triés, c'est le mauvais qui sort
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
-	public void testGetEtatCivilActifAdresseDebutNulle() {
+	public void testGetEtatCivilActifListeEtatsCivilsDejaTries() {
+
+		final long noIndividu = 1;
+
+		// Une liste d'états civils (ordonnée) :
+		// 1. -> [ 1.3.1930..fin-des-temps]
+		// 2. -> [ 8.1.1973..fin-des-temps]
+		// 3. -> [21.4.1985..fin-des-temps]
+		final MockEtatCivil ec1 = new MockEtatCivil();
+		final MockEtatCivil ec2 = new MockEtatCivil();
+		final MockEtatCivil ec3 = new MockEtatCivil();
+		ec1.setDateDebut(RegDate.get(1930, 3, 1));
+		ec2.setDateDebut(RegDate.get(1973, 1, 8));
+		ec3.setDateDebut(RegDate.get(1985, 4, 21));
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu momo = addIndividu(noIndividu, RegDate.get(1961, 3, 12), "Durant", "Maurice", true);
+
+				final MockEtatCivilList etatsCivils = new MockEtatCivilList();
+				etatsCivils.add(ec1);
+				etatsCivils.add(ec2);
+				etatsCivils.add(ec3);
+				momo.setEtatsCivils(etatsCivils);
+			}
+		});
+
+		EtatCivil etatCivil1 = serviceCivil.getEtatCivilActif(noIndividu, null);
+		assertNotNull(etatCivil1);
+		assertSame(ec3, etatCivil1);
+
+		EtatCivil etatCivil2 = serviceCivil.getEtatCivilActif(noIndividu, RegDate.get(1903, 1, 13));
+		assertNull(etatCivil2);
+
+		EtatCivil etatCivil3 = serviceCivil.getEtatCivilActif(noIndividu, RegDate.get(1940, 11, 20));
+		assertNotNull(etatCivil3);
+		assertSame(ec1, etatCivil3);
+
+		EtatCivil etatCivil4 = serviceCivil.getEtatCivilActif(noIndividu, RegDate.get(1975, 12, 25));
+		assertNotNull(etatCivil4);
+		assertSame(ec2, etatCivil4);
+
+		EtatCivil etatCivil5 = serviceCivil.getEtatCivilActif(noIndividu, RegDate.get(1988, 1, 2));
+		assertNotNull(etatCivil5);
+		assertSame(ec3, etatCivil5);
+	}
+
+	@Test
+	public void testGetEtatCivilActifDateDebutNulle() {
 
 		final long noIndividu = 1;
 
 		/*
-		 * Un seul état civil avec adresse de début nulle = [null..fin-des-temps] (ceci est un cas réel existant sur le host)
+		 * Un seul état civil avec date de début nulle = [null..fin-des-temps] (ceci est un cas réel existant sur le host)
 		 */
 		final MockEtatCivil ec1 = new MockEtatCivil();
 		ec1.setDateDebut(null);
@@ -152,7 +200,7 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 			protected void init() {
 				MockIndividu momo = addIndividu(noIndividu, RegDate.get(1961, 3, 12), "Durant", "Maurice", true);
 
-				final EtatCivilListImpl etatsCivils = new EtatCivilListImpl();
+				final MockEtatCivilList etatsCivils = new MockEtatCivilList();
 				etatsCivils.add(ec1);
 				momo.setEtatsCivils(etatsCivils);
 			}
@@ -171,11 +219,51 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 		assertSame(ec1, etatCivil3);
 	}
 
+	@Test
+	public void testGetEtatCivilActifDontUnAvecDateDebutNulle() {
+
+		final long noIndividu = 1;
+
+		/*
+		 * trois états civils dont l'un (celui du milieu, pour le test) avec date de début nulle = [null..fin-des-temps] (ceci est un cas réel existant dans le registre)
+		 */
+		final MockEtatCivil ec1 = new MockEtatCivil(date(1988, 6, 12), TypeEtatCivil.CELIBATAIRE);
+		final MockEtatCivil ec2 = new MockEtatCivil(null, TypeEtatCivil.MARIE);
+		final MockEtatCivil ec3 = new MockEtatCivil(date(2012, 1, 1), TypeEtatCivil.SEPARE);
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu momo = addIndividu(noIndividu, RegDate.get(1961, 3, 12), "Durant", "Maurice", true);
+				final MockEtatCivilList etatsCivils = new MockEtatCivilList();
+				etatsCivils.add(ec1);
+				etatsCivils.add(ec2);
+				etatsCivils.add(ec3);
+				momo.setEtatsCivils(etatsCivils);
+			}
+		});
+
+		final EtatCivil etatCivil1 = serviceCivil.getEtatCivilActif(noIndividu, null);
+		assertNotNull(etatCivil1);
+		assertSame(ec3, etatCivil1);
+
+		final EtatCivil etatCivil2 = serviceCivil.getEtatCivilActif(noIndividu, RegDate.get(2011, 1, 13));
+		assertNotNull(etatCivil2);
+		assertSame(ec2, etatCivil2);
+
+		final EtatCivil etatCivil3 = serviceCivil.getEtatCivilActif(noIndividu, RegDate.get(1989, 11, 20));
+		assertNotNull(etatCivil3);
+		assertSame(ec2, etatCivil3);
+
+		final EtatCivil etatCivil4 = serviceCivil.getEtatCivilActif(noIndividu, RegDate.get(1987, 11, 20));
+		assertNotNull(etatCivil4);
+		assertSame(ec2, etatCivil4);        // l'état civil d'avant celui qui a une date de début nulle est complètement caché
+	}
+
 	/**
 	 * Vérifie que getAdresses détecte bien des incohérences de données lorsque le mode stricte est activé.
 	 */
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesStrict() {
 
 		final long noIndividu = 1;
@@ -233,7 +321,6 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testHistoriqueDomicilesToutesCommunes() throws Exception {
 
 		final long noIndividu = 1L;
@@ -299,7 +386,6 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testHistoriqueDomicilesCommunesVaudoises() throws Exception {
 
 		final long noIndividu = 1L;
@@ -358,7 +444,6 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testHistoriqueDomicilesAvecTrous() throws Exception {
 
 		final long noIndividu = 1L;

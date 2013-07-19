@@ -2,8 +2,6 @@ package ch.vd.uniregctb.evenement.civil.engine.ech;
 
 import org.junit.Test;
 
-import ch.vd.registre.base.date.DateRange;
-import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
@@ -21,22 +19,22 @@ public class EtatCivilComparisonStrategyTest extends AbstractIndividuComparisonS
 		strategy = new EtatCivilComparisonStrategy();
 	}
 
-	private void setupCivil(final long noIndividu, final long noEvt1, final DateRange range1, final TypeEtatCivil etat1,
-	                        final long noEvt2, final DateRange range2, final TypeEtatCivil etat2) {
+	private void setupCivil(final long noIndividu, final long noEvt1, final RegDate debut1, final TypeEtatCivil etat1,
+	                        final long noEvt2, final RegDate debut2, final TypeEtatCivil etat2) {
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, null, "Leblanc", "Juste", true);
 				individu.getEtatsCivils().clear();
 				if (etat1 != null) {
-					addEtatCivil(individu, range1.getDateDebut(), range1.getDateFin(), etat1);
+					addEtatCivil(individu, debut1, etat1);
 				}
 				addIndividuAfterEvent(noEvt1, individu, RegDate.get(), TypeEvenementCivilEch.ARRIVEE);
 
 				final MockIndividu individuCorrige = createIndividu(noIndividu, null, "Leblenc", "Justin", true);
 				individuCorrige.getEtatsCivils().clear();
 				if (etat2 != null) {
-					addEtatCivil(individuCorrige, range2.getDateDebut(), range2.getDateFin(), etat2);
+					addEtatCivil(individuCorrige, debut2, etat2);
 				}
 				addIndividuAfterEvent(noEvt2, individuCorrige, RegDate.get(), TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.CORRECTION, noEvt2);
 			}
@@ -48,12 +46,11 @@ public class EtatCivilComparisonStrategyTest extends AbstractIndividuComparisonS
 
 		final long noIndividu = 367315L;
 		final RegDate debut = date(2000, 1, 1);
-		final RegDate fin = date(2012, 8, 3);
 		final TypeEtatCivil type = TypeEtatCivil.PACS_TERMINE;
 		final long noEvt1 = 4326784234L;
 		final long noEvt2 = 54378436574L;
 
-		setupCivil(noIndividu, noEvt1, new DateRangeHelper.Range(debut, fin), type, noEvt2, new DateRangeHelper.Range(debut, fin), type);
+		setupCivil(noIndividu, noEvt1, debut, type, noEvt2, debut, type);
 		assertNeutre(strategy, noEvt1, noEvt2);
 	}
 
@@ -73,12 +70,11 @@ public class EtatCivilComparisonStrategyTest extends AbstractIndividuComparisonS
 
 		final long noIndividu = 367315L;
 		final RegDate debut = date(2000, 1, 1);
-		final RegDate fin = date(2012, 8, 3);
 		final TypeEtatCivil type = TypeEtatCivil.PACS_TERMINE;
 		final long noEvt1 = 4326784234L;
 		final long noEvt2 = 54378436574L;
 
-		setupCivil(noIndividu, noEvt1, new DateRangeHelper.Range(debut, fin), type, noEvt2, null, null);
+		setupCivil(noIndividu, noEvt1, debut, type, noEvt2, null, null);
 		assertNonNeutre(strategy, noEvt1, noEvt2, "état civil (disparition)");
 	}
 
@@ -87,12 +83,11 @@ public class EtatCivilComparisonStrategyTest extends AbstractIndividuComparisonS
 
 		final long noIndividu = 367315L;
 		final RegDate debut = date(2000, 1, 1);
-		final RegDate fin = date(2012, 8, 3);
 		final TypeEtatCivil type = TypeEtatCivil.PACS_TERMINE;
 		final long noEvt1 = 4326784234L;
 		final long noEvt2 = 54378436574L;
 
-		setupCivil(noIndividu, noEvt1, null, null, noEvt2, new DateRangeHelper.Range(debut, fin), type);
+		setupCivil(noIndividu, noEvt1, null, null, noEvt2, debut, type);
 		assertNonNeutre(strategy, noEvt1, noEvt2, "état civil (apparition)");
 	}
 
@@ -101,13 +96,12 @@ public class EtatCivilComparisonStrategyTest extends AbstractIndividuComparisonS
 
 		final long noIndividu = 367315L;
 		final RegDate debut = date(2000, 1, 1);
-		final RegDate fin = date(2012, 8, 3);
 		final TypeEtatCivil type1 = TypeEtatCivil.PACS_TERMINE;
 		final TypeEtatCivil type2 = TypeEtatCivil.PACS_SEPARE;
 		final long noEvt1 = 4326784234L;
 		final long noEvt2 = 54378436574L;
 
-		setupCivil(noIndividu, noEvt1, new DateRangeHelper.Range(debut, fin), type1, noEvt2, new DateRangeHelper.Range(debut, fin), type2);
+		setupCivil(noIndividu, noEvt1, debut, type1, noEvt2, debut, type2);
 		assertNonNeutre(strategy, noEvt1, noEvt2, "état civil");
 	}
 
@@ -117,27 +111,11 @@ public class EtatCivilComparisonStrategyTest extends AbstractIndividuComparisonS
 		final long noIndividu = 367315L;
 		final RegDate debut1 = date(2000, 1, 1);
 		final RegDate debut2 = date(2000, 2, 1);
-		final RegDate fin = date(2012, 8, 3);
 		final TypeEtatCivil type = TypeEtatCivil.PACS_TERMINE;
 		final long noEvt1 = 4326784234L;
 		final long noEvt2 = 54378436574L;
 
-		setupCivil(noIndividu, noEvt1, new DateRangeHelper.Range(debut1, fin), type, noEvt2, new DateRangeHelper.Range(debut2, fin), type);
-		assertNonNeutre(strategy, noEvt1, noEvt2, "état civil (dates)");
-	}
-
-	@Test(timeout = 10000L)
-	public void testEtatCivilDatesFinDifferentes() throws Exception {
-
-		final long noIndividu = 367315L;
-		final RegDate debut = date(2000, 2, 1);
-		final RegDate fin1 = date(2012, 8, 3);
-		final RegDate fin2 = null;
-		final TypeEtatCivil type = TypeEtatCivil.PACS_TERMINE;
-		final long noEvt1 = 4326784234L;
-		final long noEvt2 = 54378436574L;
-
-		setupCivil(noIndividu, noEvt1, new DateRangeHelper.Range(debut, fin1), type, noEvt2, new DateRangeHelper.Range(debut, fin2), type);
+		setupCivil(noIndividu, noEvt1, debut1, type, noEvt2, debut2, type);
 		assertNonNeutre(strategy, noEvt1, noEvt2, "état civil (dates)");
 	}
 }

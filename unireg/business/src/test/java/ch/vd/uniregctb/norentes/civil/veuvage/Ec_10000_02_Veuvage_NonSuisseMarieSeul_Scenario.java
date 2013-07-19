@@ -1,9 +1,9 @@
 package ch.vd.uniregctb.norentes.civil.veuvage;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.civil.data.EtatCivilList;
 import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockEtatCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockEtatCivilList;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.data.Commune;
@@ -131,7 +131,7 @@ public class Ec_10000_02_Veuvage_NonSuisseMarieSeul_Scenario extends EvenementCi
 		doModificationIndividu(noIndMikkel, new IndividuModification() {
 			@Override
 			public void modifyIndividu(MockIndividu individu) {
-				final EtatCivilList etatsCivils = individu.getEtatsCivils();
+				final MockEtatCivilList etatsCivils = individu.getEtatsCivils();
 				final MockEtatCivil etatCivil = new MockEtatCivil();
 				etatCivil.setDateDebut(dateVeuvage);
 				etatCivil.setTypeEtatCivil(TypeEtatCivil.VEUF);

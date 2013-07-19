@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.situationfamille;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -17,6 +16,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.unireg.interfaces.civil.data.EtatCivil;
+import ch.vd.unireg.interfaces.civil.data.EtatCivilList;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
 import ch.vd.uniregctb.adresse.AdresseService;
@@ -208,14 +208,15 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 			throw new IndividuNotFoundException(pp);
 		}
 
-		final Collection<EtatCivil> coll = individu.getEtatsCivils();
-		if (coll == null || coll.isEmpty()) {
+		final EtatCivilList coll = individu.getEtatsCivils();
+		final List<EtatCivil> ecList = coll != null ? coll.asList() : null;
+		if (ecList == null || ecList.isEmpty()) {
 			return list;
 		}
 		// traitement du cas particulier où l'individu ne possède pas d'état civil
 		// host-interface renvoie quand même un état civil avec date début nulle, type nul et no sequence = 0
-		if (coll.size() == 1) {
-			EtatCivil etat = coll.iterator().next();
+		if (ecList.size() == 1) {
+			final EtatCivil etat = ecList.get(0);
 			if (etat == null || etat.getTypeEtatCivil() == null) {
 				return list;
 			}
@@ -225,7 +226,7 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 		RegDate dateDebutEtatPrecedent = null;
 
 		// la date de fin n'est pas définie au niveau de l'état civil -> on doit la déduire à partir de la date de début suivante
-		for (EtatCivil etatCourant : coll) {
+		for (EtatCivil etatCourant : ecList) {
 
 			RegDate dateDebutEtatCourant;
 			if (etatCourant.getDateDebut() == null) {

@@ -57,10 +57,13 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		final MaritalData celibataire = newMaritalData(date(1960, 1, 1), "1");
 		final List<MaritalData> statuses = Arrays.asList(celibataire);
 
-		final List<EtatCivil> list = IndividuRCPers.initEtatsCivils(statuses);
+		final EtatCivilList ecList = IndividuRCPers.initEtatsCivils(statuses);
+		assertNotNull(ecList);
+
+		final List<EtatCivil> list = ecList.asList();
 		assertNotNull(list);
 		assertEquals(1, list.size());
-		assertEtatCivil(date(1960, 1, 1), null, TypeEtatCivil.CELIBATAIRE, list.get(0));
+		assertEtatCivil(date(1960, 1, 1), TypeEtatCivil.CELIBATAIRE, list.get(0));
 	}
 
 	@Test
@@ -69,11 +72,14 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		final MaritalData marie = newMaritalData(date(2000, 1, 1), "2");
 		final List<MaritalData> statuses = Arrays.asList(celibataire, marie);
 
-		final List<EtatCivil> list = IndividuRCPers.initEtatsCivils(statuses);
+		final EtatCivilList ecList = IndividuRCPers.initEtatsCivils(statuses);
+		assertNotNull(ecList);
+
+		final List<EtatCivil> list = ecList.asList();
 		assertNotNull(list);
 		assertEquals(2, list.size());
-		assertEtatCivil(date(1960, 1, 1), date(1999, 12, 31), TypeEtatCivil.CELIBATAIRE, list.get(0));
-		assertEtatCivil(date(2000, 1, 1), null, TypeEtatCivil.MARIE, list.get(1));
+		assertEtatCivil(date(1960, 1, 1), TypeEtatCivil.CELIBATAIRE, list.get(0));
+		assertEtatCivil(date(2000, 1, 1), TypeEtatCivil.MARIE, list.get(1));
 	}
 
 	@Test
@@ -82,12 +88,15 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		final MaritalData marie = newMaritalData(date(2000, 1, 1), "2", date(2005, 5, 29));
 		final List<MaritalData> statuses = Arrays.asList(celibataire, marie);
 
-		final List<EtatCivil> list = IndividuRCPers.initEtatsCivils(statuses);
+		final EtatCivilList ecList = IndividuRCPers.initEtatsCivils(statuses);
+		assertNotNull(ecList);
+
+		final List<EtatCivil> list = ecList.asList();
 		assertNotNull(list);
 		assertEquals(3, list.size());
-		assertEtatCivil(date(1960, 1, 1), date(1999, 12, 31), TypeEtatCivil.CELIBATAIRE, list.get(0));
-		assertEtatCivil(date(2000, 1, 1), date(2005, 5, 28), TypeEtatCivil.MARIE, list.get(1));
-		assertEtatCivil(date(2005, 5, 29), null, TypeEtatCivil.SEPARE, list.get(2));
+		assertEtatCivil(date(1960, 1, 1), TypeEtatCivil.CELIBATAIRE, list.get(0));
+		assertEtatCivil(date(2000, 1, 1), TypeEtatCivil.MARIE, list.get(1));
+		assertEtatCivil(date(2005, 5, 29), TypeEtatCivil.SEPARE, list.get(2));
 	}
 
 	@Test
@@ -96,13 +105,16 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		final MaritalData marie = newMaritalData(date(2000, 1, 1), "2", date(2005, 5, 29), date(2005, 10, 4));
 		final List<MaritalData> statuses = Arrays.asList(celibataire, marie);
 
-		final List<EtatCivil> list = IndividuRCPers.initEtatsCivils(statuses);
+		final EtatCivilList ecList = IndividuRCPers.initEtatsCivils(statuses);
+		assertNotNull(ecList);
+
+		final List<EtatCivil> list = ecList.asList();
 		assertNotNull(list);
 		assertEquals(4, list.size());
-		assertEtatCivil(date(1960, 1, 1), date(1999, 12, 31), TypeEtatCivil.CELIBATAIRE, list.get(0));
-		assertEtatCivil(date(2000, 1, 1), date(2005, 5, 28), TypeEtatCivil.MARIE, list.get(1));
-		assertEtatCivil(date(2005, 5, 29), date(2005, 10, 3), TypeEtatCivil.SEPARE, list.get(2));
-		assertEtatCivil(date(2005, 10, 4), null, TypeEtatCivil.MARIE, list.get(3));
+		assertEtatCivil(date(1960, 1, 1), TypeEtatCivil.CELIBATAIRE, list.get(0));
+		assertEtatCivil(date(2000, 1, 1), TypeEtatCivil.MARIE, list.get(1));
+		assertEtatCivil(date(2005, 5, 29), TypeEtatCivil.SEPARE, list.get(2));
+		assertEtatCivil(date(2005, 10, 4), TypeEtatCivil.MARIE, list.get(3));
 	}
 
 	@Test
@@ -111,11 +123,14 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		final MaritalData pacse = newMaritalData(date(2000, 1, 1), "6");
 		final List<MaritalData> statuses = Arrays.asList(celibataire, pacse);
 
-		final List<EtatCivil> list = IndividuRCPers.initEtatsCivils(statuses);
+		final EtatCivilList ecList = IndividuRCPers.initEtatsCivils(statuses);
+		assertNotNull(ecList);
+
+		final List<EtatCivil> list = ecList.asList();
 		assertNotNull(list);
 		assertEquals(2, list.size());
-		assertEtatCivil(date(1960, 1, 1), date(1999, 12, 31), TypeEtatCivil.CELIBATAIRE, list.get(0));
-		assertEtatCivil(date(2000, 1, 1), null, TypeEtatCivil.PACS, list.get(1));
+		assertEtatCivil(date(1960, 1, 1), TypeEtatCivil.CELIBATAIRE, list.get(0));
+		assertEtatCivil(date(2000, 1, 1), TypeEtatCivil.PACS, list.get(1));
 	}
 
 	@Test
@@ -124,12 +139,15 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		final MaritalData pacse = newMaritalData(date(2000, 1, 1), "6", date(2005, 5, 29));
 		final List<MaritalData> statuses = Arrays.asList(celibataire, pacse);
 
-		final List<EtatCivil> list = IndividuRCPers.initEtatsCivils(statuses);
+		final EtatCivilList ecList = IndividuRCPers.initEtatsCivils(statuses);
+		assertNotNull(ecList);
+
+		final List<EtatCivil> list = ecList.asList();
 		assertNotNull(list);
 		assertEquals(3, list.size());
-		assertEtatCivil(date(1960, 1, 1), date(1999, 12, 31), TypeEtatCivil.CELIBATAIRE, list.get(0));
-		assertEtatCivil(date(2000, 1, 1), date(2005, 5, 28), TypeEtatCivil.PACS, list.get(1));
-		assertEtatCivil(date(2005, 5, 29), null, TypeEtatCivil.PACS_SEPARE, list.get(2));
+		assertEtatCivil(date(1960, 1, 1), TypeEtatCivil.CELIBATAIRE, list.get(0));
+		assertEtatCivil(date(2000, 1, 1), TypeEtatCivil.PACS, list.get(1));
+		assertEtatCivil(date(2005, 5, 29), TypeEtatCivil.PACS_SEPARE, list.get(2));
 	}
 
 	@Test
@@ -138,13 +156,16 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		final MaritalData pacse = newMaritalData(date(2000, 1, 1), "6", date(2005, 5, 29), date(2005, 10, 4));
 		final List<MaritalData> statuses = Arrays.asList(celibataire, pacse);
 
-		final List<EtatCivil> list = IndividuRCPers.initEtatsCivils(statuses);
+		final EtatCivilList ecList = IndividuRCPers.initEtatsCivils(statuses);
+		assertNotNull(ecList);
+
+		final List<EtatCivil> list = ecList.asList();
 		assertNotNull(list);
 		assertEquals(4, list.size());
-		assertEtatCivil(date(1960, 1, 1), date(1999, 12, 31), TypeEtatCivil.CELIBATAIRE, list.get(0));
-		assertEtatCivil(date(2000, 1, 1), date(2005, 5, 28), TypeEtatCivil.PACS, list.get(1));
-		assertEtatCivil(date(2005, 5, 29), date(2005, 10, 3), TypeEtatCivil.PACS_SEPARE, list.get(2));
-		assertEtatCivil(date(2005, 10, 4), null, TypeEtatCivil.PACS, list.get(3));
+		assertEtatCivil(date(1960, 1, 1), TypeEtatCivil.CELIBATAIRE, list.get(0));
+		assertEtatCivil(date(2000, 1, 1), TypeEtatCivil.PACS, list.get(1));
+		assertEtatCivil(date(2005, 5, 29), TypeEtatCivil.PACS_SEPARE, list.get(2));
+		assertEtatCivil(date(2005, 10, 4), TypeEtatCivil.PACS, list.get(3));
 	}
 
 	/**
@@ -361,11 +382,14 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		assertAdresse(date(1965, 3, 12), date(1983, 7, 4), "Ch. des Colombaires", "Cully", principales.get(0));
 		assertAdresse(date(1983, 7, 5), null, "Rue des Uttins", "Chamblon", principales.get(1));
 
-		final EtatCivilList etatCivils = ind.getEtatsCivils();
-		assertNotNull(etatCivils);
-		assertEquals(2, etatCivils.size());
-		assertEtatCivil(date(1965, 3, 12), date(1989, 4, 30), TypeEtatCivil.CELIBATAIRE, etatCivils.get(0));
-		assertEtatCivil(date(1989, 5, 1), null, TypeEtatCivil.MARIE, etatCivils.get(1));
+		final EtatCivilList ecList = ind.getEtatsCivils();
+		assertNotNull(ecList);
+
+		final List<EtatCivil> list = ecList.asList();
+		assertNotNull(list);
+		assertEquals(2, list.size());
+		assertEtatCivil(date(1965, 3, 12), TypeEtatCivil.CELIBATAIRE, list.get(0));
+		assertEtatCivil(date(1989, 5, 1), TypeEtatCivil.MARIE, list.get(1));
 
 		final PermisList permis = ind.getPermis();
 		assertNotNull(permis);
@@ -424,10 +448,12 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		assertEquals(1, principales.size());
 		assertAdresse(date(1983, 7, 5), null, "Rue des Uttins", "Chamblon", principales.get(0));
 
-		final EtatCivilList etatCivils = ind.getEtatsCivils();
-		assertNotNull(etatCivils);
-		assertEquals(1, etatCivils.size());
-		assertEtatCivil(date(1989, 5, 1), null, TypeEtatCivil.MARIE, etatCivils.get(0));
+		final EtatCivilList ecList = ind.getEtatsCivils();
+		assertNotNull(ecList);
+
+		final List<EtatCivil> list = ecList.asList();
+		assertEquals(1, list.size());
+		assertEtatCivil(date(1989, 5, 1), TypeEtatCivil.MARIE, list.get(0));
 
 		final PermisList permis = ind.getPermis();
 		assertNotNull(permis);
@@ -615,10 +641,9 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		return info;
 	}
 
-	private static void assertEtatCivil(RegDate dateDebut, @Nullable RegDate dateFin, TypeEtatCivil type, EtatCivil etat) {
+	private static void assertEtatCivil(RegDate dateDebut, TypeEtatCivil type, EtatCivil etat) {
 		assertNotNull(etat);
 		assertEquals(dateDebut, etat.getDateDebut());
-		assertEquals(dateFin, etat.getDateFin());
 		assertEquals(type, etat.getTypeEtatCivil());
 	}
 

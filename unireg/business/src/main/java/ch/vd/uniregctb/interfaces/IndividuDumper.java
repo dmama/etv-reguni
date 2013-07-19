@@ -16,6 +16,7 @@ import ch.vd.unireg.interfaces.civil.data.AdoptionReconnaissance;
 import ch.vd.unireg.interfaces.civil.data.Adresse;
 import ch.vd.unireg.interfaces.civil.data.CasePostale;
 import ch.vd.unireg.interfaces.civil.data.EtatCivil;
+import ch.vd.unireg.interfaces.civil.data.EtatCivilList;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.data.Localisation;
 import ch.vd.unireg.interfaces.civil.data.Nationalite;
@@ -274,7 +275,7 @@ public abstract class IndividuDumper {
 		return s.toString();
 	}
 
-	private static String dumpEtatsCivils(List<EtatCivil> list, int depth) {
+	private static String dumpEtatsCivils(EtatCivilList list, int depth) {
 		if (list == null) {
 			return "null";
 		}
@@ -282,7 +283,7 @@ public abstract class IndividuDumper {
 		StringBuilder s = new StringBuilder();
 		s.append("[");
 		boolean first = true;
-		for (EtatCivil etatCivil : list) {
+		for (EtatCivil etatCivil : list.asList()) {
 			if (first) {
 				first = false;
 			}
@@ -304,7 +305,6 @@ public abstract class IndividuDumper {
 		StringBuilder s = new StringBuilder();
 		s.append("EtatCivil{\n");
 		s.append(tab(depth + 1)).append("dateDebut=").append(etatCivil.getDateDebut()).append(", \n");
-		s.append(tab(depth + 1)).append("dateFin=").append(etatCivil.getDateFin()).append(", \n");
 		s.append(tab(depth + 1)).append("type=").append(etatCivil.getTypeEtatCivil()).append(", \n");
 		s.append(tab(depth)).append("}");
 

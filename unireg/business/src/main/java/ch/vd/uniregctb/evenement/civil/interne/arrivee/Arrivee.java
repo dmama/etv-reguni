@@ -342,9 +342,10 @@ public abstract class Arrivee extends Mouvement {
 
 	private static RegDate findDateDebutMenageAvant(Individu individu, RegDate limiteSuperieureEtDefaut) {
 		final EtatCivilList etatsCivils = individu.getEtatsCivils();
+		final List<EtatCivil> ecList = etatsCivils != null ? etatsCivils.asList() : null;
 		final RegDate dateDebutMenage;
-		if (etatsCivils != null && !etatsCivils.isEmpty()) {
-			final ListIterator<EtatCivil> iterator = etatsCivils.listIterator(etatsCivils.size());
+		if (ecList != null && !ecList.isEmpty()) {
+			final ListIterator<EtatCivil> iterator = ecList.listIterator(ecList.size());
 			RegDate candidate = limiteSuperieureEtDefaut;
 			while (iterator.hasPrevious()) {
 				final EtatCivil etatCivil = iterator.previous();

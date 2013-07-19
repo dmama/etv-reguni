@@ -9,9 +9,9 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.EtatCivil;
-import ch.vd.unireg.interfaces.civil.data.EtatCivilList;
 import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockEtatCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockEtatCivilList;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
@@ -162,15 +162,14 @@ public class AnnulationDivorceEchProcessorTest extends AbstractEvenementCivilEch
 		doModificationIndividu(noIndividuLui, new IndividuModification() {
 			@Override
 			public void modifyIndividu(MockIndividu individu) {
-				final EtatCivilList list = individu.getEtatsCivils();
+				final MockEtatCivilList list = individu.getEtatsCivils();
 
-				final EtatCivil separe = list.get(list.size() - 1);
+				final EtatCivil separe = list.getEtatCivilAt(null);
 				Assert.assertEquals(TypeEtatCivil.DIVORCE, separe.getTypeEtatCivil());
 				list.remove(separe);
 
-				final MockEtatCivil marie = (MockEtatCivil) list.get(list.size() - 1);
+				final MockEtatCivil marie = (MockEtatCivil) list.getEtatCivilAt(null);
 				Assert.assertEquals(TypeEtatCivil.MARIE, marie.getTypeEtatCivil());
-				marie.setDateFin(null);
 			}
 		});
 		final long evtIdLui = doInNewTransactionAndSession(new TransactionCallback<Long>() {
@@ -216,15 +215,14 @@ public class AnnulationDivorceEchProcessorTest extends AbstractEvenementCivilEch
 		doModificationIndividu(noIndividuElle, new IndividuModification() {
 			@Override
 			public void modifyIndividu(MockIndividu individu) {
-				final EtatCivilList list = individu.getEtatsCivils();
+				final MockEtatCivilList list = individu.getEtatsCivils();
 
-				final EtatCivil separe = list.get(list.size() - 1);
+				final EtatCivil separe = list.getEtatCivilAt(null);
 				Assert.assertEquals(TypeEtatCivil.DIVORCE, separe.getTypeEtatCivil());
 				list.remove(separe);
 
-				final MockEtatCivil marie = (MockEtatCivil) list.get(list.size() - 1);
+				final MockEtatCivil marie = (MockEtatCivil) list.getEtatCivilAt(null);
 				Assert.assertEquals(TypeEtatCivil.MARIE, marie.getTypeEtatCivil());
-				marie.setDateFin(null);
 			}
 		});
 		final long evtIdElle = doInNewTransactionAndSession(new TransactionCallback<Long>() {

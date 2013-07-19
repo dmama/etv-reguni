@@ -5,9 +5,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
@@ -17,8 +15,6 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.civil.data.AdoptionReconnaissance;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.EtatCivil;
-import ch.vd.unireg.interfaces.civil.data.EtatCivilList;
-import ch.vd.unireg.interfaces.civil.data.EtatCivilListImpl;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.data.Nationalite;
 import ch.vd.unireg.interfaces.civil.data.Origine;
@@ -44,7 +40,7 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 	private List<RelationVersIndividu> parents;
 	private List<RelationVersIndividu> conjoints;
 	private Collection<RelationVersIndividu> enfants;
-	private EtatCivilList etatsCivils;
+	private MockEtatCivilList etatsCivils;
 	private List<Nationalite> nationalites;
 	private long noTechnique;
 	private String noAVS11;
@@ -112,7 +108,7 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 			conjoints = CollectionLimitator.limit(conjoints, date, CollectionLimitator.RELATION_LIMITATOR);
 		}
 		if (etatsCivils != null) {
-			etatsCivils = new FreezableEtatCivilList(CollectionLimitator.limit(etatsCivils, date, CollectionLimitator.ETAT_CIVIL_LIMITATOR), true);
+			etatsCivils = new MockEtatCivilList(CollectionLimitator.limit(etatsCivils.asList(), date, CollectionLimitator.ETAT_CIVIL_LIMITATOR), true);
 		}
 		if (permis != null) {
 			final List<Permis> limited = CollectionLimitator.limit(permis, date, CollectionLimitator.PERMIS_LIMITATOR);
@@ -289,16 +285,13 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 	}
 
 	@Override
-	public EtatCivilList getEtatsCivils() {
+	public MockEtatCivilList getEtatsCivils() {
 		return etatsCivils;
 	}
 
 	@Override
 	public EtatCivil getEtatCivilCourant() {
-		if (etatsCivils == null || etatsCivils.isEmpty()) {
-			return null;
-		}
-		return etatsCivils.get(etatsCivils.size() - 1);
+		return getEtatCivil(null);
 	}
 
 	@Override
@@ -309,7 +302,7 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 		return etatsCivils.getEtatCivilAt(date);
 	}
 
-	public void setEtatsCivils(EtatCivilList etatsCivils) {
+	public void setEtatsCivils(MockEtatCivilList etatsCivils) {
 		this.etatsCivils = etatsCivils;
 	}
 
@@ -437,168 +430,5 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 	@Override
 	public Individu cloneUpTo(@NotNull RegDate date) {
 		return new MockIndividu(this, date);
-	}
-
-	private static final class FreezableEtatCivilList extends EtatCivilListImpl {
-
-		private boolean frozen;
-
-		private class FreezableIterator<T extends Iterator<EtatCivil>> implements Iterator<EtatCivil> {
-
-			protected final T iterator;
-
-			protected FreezableIterator(T iterator) {
-				this.iterator = iterator;
-			}
-
-			@Override
-			public boolean hasNext() {
-				return iterator.hasNext();
-			}
-
-			@Override
-			public EtatCivil next() {
-				return iterator.next();
-			}
-
-			@Override
-			public void remove() {
-				checkNotFrozen();
-				iterator.remove();
-			}
-		}
-
-		private class FreezableListIterator extends FreezableIterator<ListIterator<EtatCivil>> implements ListIterator<EtatCivil> {
-
-			protected FreezableListIterator(ListIterator<EtatCivil> iterator) {
-				super(iterator);
-			}
-
-			@Override
-			public boolean hasPrevious() {
-				return iterator.hasPrevious();
-			}
-
-			@Override
-			public EtatCivil previous() {
-				return iterator.previous();
-			}
-
-			@Override
-			public int nextIndex() {
-				return iterator.nextIndex();
-			}
-
-			@Override
-			public int previousIndex() {
-				return iterator.previousIndex();
-			}
-
-			@Override
-			public void set(EtatCivil o) {
-				checkNotFrozen();
-				iterator.set(o);
-			}
-
-			@Override
-			public void add(EtatCivil o) {
-				checkNotFrozen();
-				iterator.add(o);
-			}
-		}
-
-		public FreezableEtatCivilList(Collection<EtatCivil> listHost, boolean frozen) {
-			super(listHost);
-			this.frozen = frozen;
-		}
-
-		public void freeze() {
-			frozen = true;
-		}
-
-		public boolean isFrozen() {
-			return frozen;
-		}
-
-		private void checkNotFrozen() {
-			if (frozen) {
-				throw new UnsupportedOperationException("List is frozen!");
-			}
-		}
-
-		@Override
-		public boolean add(EtatCivil o) {
-			checkNotFrozen();
-			return super.add(o);
-		}
-
-		@Override
-		public void add(int index, EtatCivil element) {
-			checkNotFrozen();
-			super.add(index, element);
-		}
-
-		@Override
-		public boolean addAll(Collection<? extends EtatCivil> c) {
-			checkNotFrozen();
-			return super.addAll(c);
-		}
-
-		@Override
-		public boolean addAll(int index, Collection<? extends EtatCivil> c) {
-			checkNotFrozen();
-			return super.addAll(index, c);
-		}
-
-		@Override
-		public void clear() {
-			checkNotFrozen();
-			super.clear();
-		}
-
-		@Override
-		public boolean remove(Object o) {
-			checkNotFrozen();
-			return super.remove(o);
-		}
-
-		@Override
-		public EtatCivil remove(int index) {
-			checkNotFrozen();
-			return super.remove(index);
-		}
-
-		@Override
-		public boolean removeAll(Collection<?> c) {
-			checkNotFrozen();
-			return super.removeAll(c);
-		}
-
-		@Override
-		public boolean retainAll(Collection<?> c) {
-			checkNotFrozen();
-			return super.retainAll(c);
-		}
-
-		@Override
-		public EtatCivil set(int index, EtatCivil element) {
-			checkNotFrozen();
-			return super.set(index, element);
-		}
-
-		@Override
-		public Iterator<EtatCivil> iterator() {
-			return new FreezableIterator<>(super.iterator());
-		}
-
-		@Override
-		public ListIterator<EtatCivil> listIterator() {
-			return new FreezableListIterator(super.listIterator());
-		}
-
-		@Override
-		public ListIterator<EtatCivil> listIterator(int index) {
-			return new FreezableListIterator(super.listIterator(index));
-		}
 	}
 }

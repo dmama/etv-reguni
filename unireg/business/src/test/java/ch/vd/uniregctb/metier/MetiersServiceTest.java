@@ -3266,7 +3266,7 @@ public class MetiersServiceTest extends BusinessTest {
 			@Override
 			protected void init() {
 				MockIndividu georges = addIndividu(noIndiv, dateNaissance, "Georges", "Michael", true);
-				addEtatCivil(georges, dateNaissance, datePartenariat.getOneDayBefore(), TypeEtatCivil.CELIBATAIRE);
+				addEtatCivil(georges, dateNaissance, TypeEtatCivil.CELIBATAIRE);
 				addEtatCivil(georges, datePartenariat, TypeEtatCivil.PACS);
 			}
 		});

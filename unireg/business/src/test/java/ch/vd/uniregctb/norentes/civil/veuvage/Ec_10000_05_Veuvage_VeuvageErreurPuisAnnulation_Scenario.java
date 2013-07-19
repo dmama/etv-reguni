@@ -5,8 +5,8 @@ import java.util.Set;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.EtatCivil;
-import ch.vd.unireg.interfaces.civil.data.EtatCivilList;
 import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockEtatCivilList;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.data.Commune;
@@ -154,7 +154,7 @@ public class Ec_10000_05_Veuvage_VeuvageErreurPuisAnnulation_Scenario extends Ev
 	@Etape(id=3, descr="Envoi de l'événenent d'annulation de veuvage")
 	public void step3() throws Exception {
 
-		final EtatCivilList ecs = indPierre.getEtatsCivils();
+		final MockEtatCivilList ecs = indPierre.getEtatsCivils();
 		assertNotNull(ecs, "Pas d'états civils du tout?");
 
 		final EtatCivil ecVeuf = ecs.getEtatCivilAt(dateVeuvage);

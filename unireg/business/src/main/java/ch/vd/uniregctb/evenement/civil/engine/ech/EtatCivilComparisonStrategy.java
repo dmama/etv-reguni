@@ -24,7 +24,7 @@ public class EtatCivilComparisonStrategy implements IndividuComparisonStrategy {
 	    boolean neutre = true;
 	    if (ecOriginel != null && ecCorrige != null) {
 		    neutre = ecOriginel.getTypeEtatCivil() == ecCorrige.getTypeEtatCivil() &&
-				     IndividuComparisonHelper.RANGE_EQUALATOR.areEqual(ecOriginel, ecCorrige, monitor, DATES);
+				     IndividuComparisonHelper.DATE_EQUALATOR.areEqual(ecOriginel.getDateDebut(), ecCorrige.getDateDebut(), monitor, DATES);
 		    if (!neutre) {
 			    IndividuComparisonHelper.fillMonitor(monitor, ATTRIBUT);
 		    }

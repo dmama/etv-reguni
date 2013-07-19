@@ -11,6 +11,7 @@ import org.junit.Test;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.unireg.interfaces.civil.data.Adresse;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
+import ch.vd.unireg.interfaces.civil.data.EtatCivil;
 import ch.vd.unireg.interfaces.civil.data.EtatCivilList;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.data.LocalisationType;
@@ -68,9 +69,12 @@ public abstract class AbstractServiceCivilTest extends BusinessItTest {
 		// On vérifie les états-civils
 		final EtatCivilList etatsCivils = individu.getEtatsCivils();
 		assertNotNull(etatsCivils);
-		assertEquals(2, etatsCivils.size());
-		assertEtatCivil(date(1982, 2, 18), date(2009, 9, 11), TypeEtatCivil.CELIBATAIRE, etatsCivils.get(0));
-		assertEtatCivil(date(2009, 9, 12), null, TypeEtatCivil.MARIE, etatsCivils.get(1));
+
+		final List<EtatCivil> ecList = etatsCivils.asList();
+		assertNotNull(ecList);
+		assertEquals(2, ecList.size());
+		assertEtatCivil(date(1982, 2, 18), TypeEtatCivil.CELIBATAIRE, ecList.get(0));
+		assertEtatCivil(date(2009, 9, 12), TypeEtatCivil.MARIE, ecList.get(1));
 
 		// On vérifie les adresses
 		final Collection<Adresse> adresses = individu.getAdresses();

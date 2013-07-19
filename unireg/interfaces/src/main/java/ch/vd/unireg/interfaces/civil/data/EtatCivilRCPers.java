@@ -7,11 +7,7 @@ import java.util.List;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.evd0001.v4.MaritalData;
-import ch.vd.registre.base.date.DateRangeHelper;
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.civil.rcpers.EchHelper;
 import ch.vd.uniregctb.common.XmlUtils;
 
@@ -20,13 +16,10 @@ public class EtatCivilRCPers implements EtatCivil, Serializable {
 	private static final long serialVersionUID = -7614825259930350637L;
 
 	private final RegDate dateDebut;
-	private RegDate dateFin;
 	private final TypeEtatCivil typeEtatCivil;
 
 	private EtatCivilRCPers(RegDate dateDebut, TypeEtatCivil typeEtatCivil) {
 		this.dateDebut = dateDebut;
-		this.dateFin = null;
-		DateRangeHelper.assertValidRange(dateDebut, dateFin, ServiceCivilException.class);
 		this.typeEtatCivil = typeEtatCivil;
 	}
 
@@ -46,9 +39,7 @@ public class EtatCivilRCPers implements EtatCivil, Serializable {
 		// L'état civil principal
 		final RegDate dateDebut = XmlUtils.xmlcal2regdate(maritalStatus.getDateOfMaritalStatus());
 		final TypeEtatCivil type = EchHelper.etatCivilFromEch11(maritalStatus.getMaritalStatus(), maritalStatus.getCancelationReason());
-		if (dateDebut != null) { // [SIFISC-4995] on ignore les états 'marié' sans date de mariage
-			etatsCivils.add(new EtatCivilRCPers(dateDebut, type));
-		}
+		etatsCivils.add(new EtatCivilRCPers(dateDebut, type));
 
 		if (type == TypeEtatCivil.MARIE || type == TypeEtatCivil.PACS) {
 			
@@ -80,22 +71,7 @@ public class EtatCivilRCPers implements EtatCivil, Serializable {
 	}
 
 	@Override
-	public RegDate getDateFin() {
-		return dateFin;
-	}
-
-	public void setDateFin(RegDate dateFin) {
-		this.dateFin = dateFin;
-		DateRangeHelper.assertValidRange(dateDebut, dateFin, ServiceCivilException.class);
-	}
-
-	@Override
 	public TypeEtatCivil getTypeEtatCivil() {
 		return typeEtatCivil;
-	}
-
-	@Override
-	public boolean isValidAt(RegDate date) {
-		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
 }

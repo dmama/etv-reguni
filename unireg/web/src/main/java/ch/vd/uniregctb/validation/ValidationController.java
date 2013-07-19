@@ -84,11 +84,13 @@ public class ValidationController {
 				if (ind == null) {
 					throw new IndividuNotFoundException(pp);
 				}
-				for (EtatCivil etatCivil : ind.getEtatsCivils()) {
-					if (etatCivil.getDateDebut() == null) {
-						final String message = String.format("Le contribuable possède un état civil (%s) sans date de début. Dans la mesure du possible, cette date a été estimée.",
-								EtatCivilHelper.civil2core(etatCivil.getTypeEtatCivil()));
-						validationResults.addWarning(message);
+				if (ind.getEtatsCivils() != null) {
+					for (EtatCivil etatCivil : ind.getEtatsCivils().asList()) {
+						if (etatCivil.getDateDebut() == null) {
+							final String message = String.format("Le contribuable possède un état civil (%s) sans date de début. Dans la mesure du possible, cette date a été estimée.",
+									EtatCivilHelper.civil2core(etatCivil.getTypeEtatCivil()));
+							validationResults.addWarning(message);
+						}
 					}
 				}
 			}

@@ -24,7 +24,6 @@ import ch.vd.unireg.interfaces.civil.data.Adresse;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.CasePostale;
 import ch.vd.unireg.interfaces.civil.data.EtatCivil;
-import ch.vd.unireg.interfaces.civil.data.EtatCivilListImpl;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
 import ch.vd.unireg.interfaces.civil.data.Nationalite;
@@ -151,8 +150,8 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 		individu.setNom(nom);
 
 		// Etats civils
-		final EtatCivilListImpl etatsCivils = new EtatCivilListImpl();
-		etatsCivils.add(new MockEtatCivil(dateNaissance, null, TypeEtatCivil.CELIBATAIRE));
+		final MockEtatCivilList etatsCivils = new MockEtatCivilList();
+		etatsCivils.add(new MockEtatCivil(dateNaissance, TypeEtatCivil.CELIBATAIRE));
 		individu.setEtatsCivils(etatsCivils);
 
 		// Adresses
@@ -203,15 +202,8 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 	}
 
 	protected EtatCivil addEtatCivil(MockIndividu individu, @Nullable RegDate dateDebut, TypeEtatCivil type) {
-		final Collection<EtatCivil> etats = individu.getEtatsCivils();
+		final MockEtatCivilList etats = individu.getEtatsCivils();
 		final EtatCivil etat = creeEtatCivil(dateDebut, type);
-		etats.add(etat);
-		return etat;
-	}
-
-	protected EtatCivil addEtatCivil(MockIndividu individu, @Nullable RegDate dateDebut, @Nullable RegDate dateFin, TypeEtatCivil type) {
-		final Collection<EtatCivil> etats = individu.getEtatsCivils();
-		final EtatCivil etat = creeEtatCivil(dateDebut, dateFin, type);
 		etats.add(etat);
 		return etat;
 	}
@@ -342,12 +334,12 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 
 		final TypeEtatCivil etatCivil = (individu.getSexe() == conjoint.getSexe() ? TypeEtatCivil.PACS : TypeEtatCivil.MARIE);
 
-		final List<EtatCivil> etatsCivilIndividu = individu.getEtatsCivils();
+		final MockEtatCivilList etatsCivilIndividu = individu.getEtatsCivils();
 		final EtatCivil etatCivilIndividu = creeEtatCivil(dateMariage, etatCivil);
 		etatsCivilIndividu.add(etatCivilIndividu);
 		addRelationConjoint(individu, conjoint, dateMariage);
 
-		final List<EtatCivil> etatsCivilConjoint = conjoint.getEtatsCivils();
+		final MockEtatCivilList etatsCivilConjoint = conjoint.getEtatsCivils();
 		final EtatCivil etatCivilConjoint = creeEtatCivil(dateMariage, etatCivil);
 		etatsCivilConjoint.add(etatCivilConjoint);
 		addRelationConjoint(conjoint, individu, dateMariage);
@@ -370,7 +362,7 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 	 */
 	private static void lieIndividu(MockIndividu individu, RegDate date, TypeEtatCivil etatCivil) {
 
-		final List<EtatCivil> etatsCivilIndividu = individu.getEtatsCivils();
+		final MockEtatCivilList etatsCivilIndividu = individu.getEtatsCivils();
 		final EtatCivil etatCivilIndividu = creeEtatCivil(date, etatCivil);
 		etatsCivilIndividu.add(etatCivilIndividu);
 	}
@@ -396,8 +388,7 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 	}
 
 	public static void separeIndividu(MockIndividu individu, RegDate dateSeparation) {
-		final List<EtatCivil> etatsCivilIndividu = individu.getEtatsCivils();
-
+		final MockEtatCivilList etatsCivilIndividu = individu.getEtatsCivils();
 		final EtatCivil etatCivilIndividu = creeEtatCivil(dateSeparation, TypeEtatCivil.SEPARE);
 		etatsCivilIndividu.add(etatCivilIndividu);
 	}
@@ -424,7 +415,7 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 	}
 
 	private static void delieIndividu(MockIndividu individu, RegDate dateSeparation, TypeEtatCivil etatCivilResultant) {
-		final List<EtatCivil> etatsCivilIndividu = individu.getEtatsCivils();
+		final MockEtatCivilList etatsCivilIndividu = individu.getEtatsCivils();
 		final EtatCivil etatCivilIndividu = creeEtatCivil(dateSeparation, etatCivilResultant);
 		etatsCivilIndividu.add(etatCivilIndividu);
 
@@ -449,7 +440,7 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 	 * @param partenariat <code>true</code> s'il s'agit d'un partenariat enregistré, <code>false</code> s'il s'agit d'un mariage
 	 */
 	public static void veuvifieIndividu(MockIndividu individu, RegDate dateVeuvage, boolean partenariat) {
-		final List<EtatCivil> etatsCivilIndividu = individu.getEtatsCivils();
+		final MockEtatCivilList etatsCivilIndividu = individu.getEtatsCivils();
 		final EtatCivil etatCivilIndividu = creeEtatCivil(dateVeuvage, partenariat ? TypeEtatCivil.PACS_VEUF : TypeEtatCivil.VEUF);
 		etatsCivilIndividu.add(etatCivilIndividu);
 
@@ -575,14 +566,6 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 	private static EtatCivil creeEtatCivil(RegDate date, TypeEtatCivil typeEtatCivil) {
 		final MockEtatCivil etatCivil = new MockEtatCivil();
 		etatCivil.setDateDebut(date);
-		etatCivil.setTypeEtatCivil(typeEtatCivil);
-		return etatCivil;
-	}
-
-	private static EtatCivil creeEtatCivil(@Nullable RegDate dateDebut, @Nullable RegDate dateFin, TypeEtatCivil typeEtatCivil) {
-		final MockEtatCivil etatCivil = new MockEtatCivil();
-		etatCivil.setDateDebut(dateDebut);
-		etatCivil.setDateFin(dateFin);
 		etatCivil.setTypeEtatCivil(typeEtatCivil);
 		return etatCivil;
 	}

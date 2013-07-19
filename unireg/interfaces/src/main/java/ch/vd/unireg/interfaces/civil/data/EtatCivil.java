@@ -1,21 +1,13 @@
 package ch.vd.unireg.interfaces.civil.data;
 
-import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 
-public interface EtatCivil extends DateRange {
+public interface EtatCivil {
 
     /**
      * @return la date de début de l'état civil.
      */
-    @Override
     RegDate getDateDebut();
-
-	/**
-	 * @return la date de fin de l'état civil.
-	 */
-	@Override
-	RegDate getDateFin();
 
 	/**
      * Retourne le type de l'état civil.

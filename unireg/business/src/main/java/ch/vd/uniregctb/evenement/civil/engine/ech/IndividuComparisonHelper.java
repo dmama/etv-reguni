@@ -15,6 +15,7 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
+import ch.vd.registre.base.date.RegDate;
 
 /**
  * Classe qui regroupe quelques classes et méthodes utiles dans la comparaison d'invididus civils
@@ -149,6 +150,8 @@ public abstract class IndividuComparisonHelper {
 			return false;
 		}
 	}
+
+	public static final Equalator<RegDate> DATE_EQUALATOR = new DefaultEqualator<>();
 
 	public static final Equalator<DateRange> RANGE_EQUALATOR = new NullableEqualator<DateRange>() {
 		@Override

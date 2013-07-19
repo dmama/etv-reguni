@@ -246,7 +246,7 @@ public class IndividuRCPers implements Individu, Serializable {
 			conjoints = CollectionLimitator.limit(conjoints, date, CollectionLimitator.RELATION_LIMITATOR);
 		}
 		if (etatsCivils != null) {
-			etatsCivils = new EtatCivilListRCPers(CollectionLimitator.limit(etatsCivils, date, CollectionLimitator.ETAT_CIVIL_LIMITATOR));
+			etatsCivils = new EtatCivilListRCPers(CollectionLimitator.limit(etatsCivils.asList(), date, CollectionLimitator.ETAT_CIVIL_LIMITATOR));
 		}
 		if (permis != null) {
 			final List<Permis> limited = CollectionLimitator.limit(permis, date, CollectionLimitator.PERMIS_LIMITATOR);
@@ -783,10 +783,7 @@ public class IndividuRCPers implements Individu, Serializable {
 
 	@Override
 	public EtatCivil getEtatCivilCourant() {
-		if (etatsCivils == null || etatsCivils.isEmpty()) {
-			return null;
-		}
-		return etatsCivils.get(etatsCivils.size() - 1);
+		return getEtatCivil(null);
 	}
 
 	@Override

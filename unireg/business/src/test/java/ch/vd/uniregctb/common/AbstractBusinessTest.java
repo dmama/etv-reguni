@@ -288,10 +288,9 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
         Assert.assertEquals(rattachement, forFiscal.getMotifRattachement());
     }
 
-    protected static void assertEtatCivil(RegDate debut, @Nullable RegDate fin, TypeEtatCivil type, EtatCivil etatCivil) {
+    protected static void assertEtatCivil(RegDate debut, TypeEtatCivil type, EtatCivil etatCivil) {
         assertNotNull(etatCivil);
         assertEquals(debut, etatCivil.getDateDebut());
-        assertEquals(fin, etatCivil.getDateFin());
         assertEquals(type, etatCivil.getTypeEtatCivil());
     }
 

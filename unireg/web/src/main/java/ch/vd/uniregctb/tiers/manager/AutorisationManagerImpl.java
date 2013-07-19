@@ -408,16 +408,18 @@ public class AutorisationManagerImpl implements AutorisationManager {
 			}
 			if ((tiers instanceof PersonnePhysique || tiers instanceof MenageCommun)) {
 				if (SecurityHelper.isGranted(securityProvider, Role.SIT_FAM, visa, oid)) {
-					Contribuable contribuable = (Contribuable) tiers;
-					boolean isSitFamActive = isSituationFamilleActive(contribuable);
+					final Contribuable contribuable = (Contribuable) tiers;
+					final boolean isSitFamActive = isSituationFamilleActive(contribuable);
 					boolean civilOK = true;
 					if (tiers instanceof PersonnePhysique) {
-						PersonnePhysique pp = (PersonnePhysique) tiers;
+						final PersonnePhysique pp = (PersonnePhysique) tiers;
 						if (pp.isHabitantVD()) {
-							Individu ind = serviceCivil.getIndividu(pp.getNumeroIndividu(), null);
-							for (EtatCivil etatCivil : ind.getEtatsCivils()) {
-								if (etatCivil.getDateDebut() == null) {
-									civilOK = false;
+							final Individu ind = serviceCivil.getIndividu(pp.getNumeroIndividu(), null);
+							if (ind.getEtatsCivils() != null) {
+								for (EtatCivil etatCivil : ind.getEtatsCivils().asList()) {
+									if (etatCivil.getDateDebut() == null) {
+										civilOK = false;
+									}
 								}
 							}
 						}
