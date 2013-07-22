@@ -9,6 +9,7 @@ import org.hibernate.SessionFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionException;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
@@ -44,6 +45,7 @@ import ch.vd.uniregctb.tiers.SituationFamillePersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.type.EtatCivil;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
@@ -79,6 +81,8 @@ public abstract class EvenementScenario extends NorentesScenario {
 
 		truncateDatabase();
 		globalIndexer.indexAllDatabase();
+
+		createAllPfs();
 	}
 
 	@Override
@@ -119,6 +123,25 @@ public abstract class EvenementScenario extends NorentesScenario {
 		catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	private void createAllPfs() {
+		final int firstPf = 2003;
+		final int lastPf = RegDate.get().year();
+
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.execute(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				for (int pf = firstPf ; pf <= lastPf ; ++ pf) {
+					final PeriodeFiscale periode = new PeriodeFiscale();
+					periode.setAnnee(pf);
+					periode.setAllPeriodeFiscaleParametres(RegDate.get(pf + 1, 1, 31), RegDate.get(pf + 1, 3, 31), RegDate.get(pf + 1, 6, 30));
+					periodeFiscaleDAO.save(periode);
+				}
+				return null;
+			}
+		});
 	}
 
 	protected ForFiscalPrincipal addForFiscalPrincipal(Tiers tiers, Commune commune, RegDate debut, RegDate fin, MotifFor motifDebut, MotifFor motifFin) {
@@ -182,9 +205,7 @@ public abstract class EvenementScenario extends NorentesScenario {
 		final Set<DelaiDeclaration> delais = new HashSet<>(1);
 		di.setDelais(delais);
 
-		PeriodeFiscale periode = new PeriodeFiscale();
-		periode.setAnnee(debut.year());
-		periode = periodeFiscaleDAO.save(periode);
+		final PeriodeFiscale periode = periodeFiscaleDAO.getPeriodeFiscaleByYear(debut.year());
 		di.setPeriode(periode);
 
 		ModeleDocument modeleDocument = new ModeleDocument();

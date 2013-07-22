@@ -113,13 +113,6 @@ public class Ec_19000_04_Depart_JIRA1262_Scenario extends DepartScenario {
 		}
 
 		addDeclarationImpot(sebastien, date(2008, 1, 1), date(2008, 12, 31), date(2009, 1, 13), 90);
-
-		// nécessaire pour le calcul des tâches d'envoi de DI
-		for (int i = 2009 ; i < RegDate.get().year() ; ++i ) {
-			final PeriodeFiscale periode = new PeriodeFiscale();
-			periode.setAnnee(i);
-			periodeFiscaleDAO.save(periode);
-		}
 	}
 
 	private void addEtat(DeclarationImpotOrdinaire di, RegDate dateObtention, TypeEtatDeclaration typeEtat) {
