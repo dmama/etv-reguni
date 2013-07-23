@@ -68,6 +68,8 @@
 		<property name="validator" ref="lrEditDelaiValidator" />
 	</bean>
 
-	<bean id="lrEditDelaiValidator" class="ch.vd.uniregctb.lr.validator.ListeRecapEditDelaiValidator" />
+	<bean id="lrEditDelaiValidator" class="ch.vd.uniregctb.lr.validator.ListeRecapEditDelaiValidator">
+		<property name="lrDAO" ref="lrDAO"/>
+	</bean>
 
 </beans>
