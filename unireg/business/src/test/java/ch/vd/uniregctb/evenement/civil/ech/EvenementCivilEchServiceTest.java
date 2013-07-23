@@ -1073,4 +1073,46 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 			Assert.assertEquals(9L, grappe.get(2).getId());
 		}
 	}
+
+	/**
+	 * Retour sur le cas SIFISC-8805
+	 */
+	@Test
+	public void testRecyclageCorrectionSansNumeroIndividuQuiPointeVersEvenementDejaTraite() throws Exception {
+
+		final long noIndividu = 43623L;
+		final long noEvtTraite = 43874237L;
+		final long noEvtATraiter = 6783256734L;
+
+		final EvenementCivilEchService service = buildService();
+
+		// création d'un individu support
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				addIndividu(noIndividu, null, "Titi", "Banh", Sexe.MASCULIN);
+			}
+		});
+
+		// création des événements civils en base
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				createEvent(RegDate.get(), noIndividu, noEvtTraite, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.TRAITE, null);
+				createEvent(RegDate.get(), null, noEvtATraiter, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, EtatEvenementCivil.A_TRAITER, noEvtTraite);
+				return null;
+			}
+		});
+
+		final long noIndividuRetrouve = doInNewTransactionAndSession(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final EvenementCivilEch evt = evenementCivilEchDAO.get(noEvtATraiter);
+				Assert.assertNull(evt.getNumeroIndividu());
+				return service.getNumeroIndividuPourEvent(evt);
+			}
+		});
+
+		Assert.assertEquals(noIndividu, noIndividuRetrouve);
+	}
 }

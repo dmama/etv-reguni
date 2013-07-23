@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.registre.base.date.RegDateHelper;
@@ -368,38 +369,62 @@ public class EvenementCivilEchServiceImpl implements EvenementCivilEchService, I
             return event.getNumeroIndividu();
         }
         else {
-	        Long noIndividu = null;
-	        try {
-	            final IndividuApresEvenement apresEvenement = serviceCivil.getIndividuAfterEvent(event.getId());
-	            if (apresEvenement != null) {
-		            final Individu individu = apresEvenement.getIndividu();
-		            if (individu != null) {
-			            noIndividu = individu.getNoTechnique();
-		            }
-	            }
-
-		        if (noIndividu == null && LOGGER.isDebugEnabled()) {
-		            LOGGER.debug("Aucune information exploitable fournie par le GetIndividuAfterEvent, essayons le GetIndividuByEvent");
-		        }
-	        }
-	        catch (ServiceCivilException e) {
-		        if (LOGGER.isDebugEnabled()) {
-		            LOGGER.debug("Exception lancée par le GetIndividuAfterEvent, essayons le GetIndividuByEvent...", e);
-		        }
-	        }
-
-	        if (noIndividu == null) {
-	            final Individu individu = serviceCivil.getIndividuByEvent(event.getId(), null);
-	            if (individu == null) {
-                    throw new EvenementCivilException(String.format("Impossible de trouver l'individu lié à l'événement civil %d", event.getId()));
-	            }
-	            noIndividu = individu.getNoTechnique();
-            }
-	        return noIndividu;
+	        return getNumeroIndividuPourEvent(event.getId(), event, new HashSet<Long>());
         }
     }
 
-    @Override
+	private long getNumeroIndividuPourEvent(long eventId, @Nullable EvenementCivilEch event, Set<Long> loopPreventer) throws EvenementCivilException {
+
+		if (event != null && event.getNumeroIndividu() != null) {
+			return event.getNumeroIndividu();
+		}
+
+		Long noIndividu = null;
+		try {
+		    final IndividuApresEvenement apresEvenement = serviceCivil.getIndividuAfterEvent(eventId);
+		    if (apresEvenement != null) {
+			    final Individu individu = apresEvenement.getIndividu();
+			    if (individu != null) {
+				    noIndividu = individu.getNoTechnique();
+			    }
+		    }
+
+			if (noIndividu == null && LOGGER.isDebugEnabled()) {
+			    LOGGER.debug("Aucune information exploitable fournie par le GetIndividuAfterEvent, essayons le GetIndividuByEvent");
+			}
+		}
+		catch (ServiceCivilException e) {
+			if (LOGGER.isDebugEnabled()) {
+			    LOGGER.debug("Exception lancée par le GetIndividuAfterEvent, essayons le GetIndividuByEvent...", e);
+			}
+		}
+
+		if (noIndividu == null) {
+		    final Individu individu = serviceCivil.getIndividuByEvent(eventId, null);
+		    if (individu == null) {
+			    if (event == null || event.getRefMessageId() == null || loopPreventer.contains(event.getRefMessageId())) {
+	                throw new EvenementCivilException(String.format("Impossible de trouver l'individu lié à l'événement civil %d", eventId));
+			    }
+			    else {
+				    final Long refMessageId = event.getRefMessageId();
+				    loopPreventer.add(refMessageId);
+				    try {
+					    final EvenementCivilEch refEvent = get(refMessageId);
+	                    noIndividu = getNumeroIndividuPourEvent(refMessageId, refEvent, loopPreventer);
+				    }
+				    catch (EvenementCivilException e) {
+					    throw new EvenementCivilException(String.format("Impossible de trouver l'individu lié à l'événement civil %d", eventId), e);
+				    }
+			    }
+		    }
+			else {
+		        noIndividu = individu.getNoTechnique();
+		    }
+	    }
+		return noIndividu;
+	}
+
+	@Override
     public EvenementCivilEch assigneNumeroIndividu(final EvenementCivilEch event, final long numeroIndividu) {
         final EvenementCivilEch evt = evenementCivilEchDAO.get(event.getId());
         evt.setNumeroIndividu(numeroIndividu);
