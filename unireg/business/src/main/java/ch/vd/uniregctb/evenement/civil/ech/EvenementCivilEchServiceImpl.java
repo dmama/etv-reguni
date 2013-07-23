@@ -390,17 +390,30 @@ public class EvenementCivilEchServiceImpl implements EvenementCivilEchService, I
 		    }
 
 			if (noIndividu == null && LOGGER.isDebugEnabled()) {
-			    LOGGER.debug("Aucune information exploitable fournie par le GetIndividuAfterEvent, essayons le GetIndividuByEvent");
+			    LOGGER.debug(String.format("Aucune information exploitable fournie par le GetIndividuAfterEvent(%d), essayons le GetIndividuByEvent", eventId));
 			}
 		}
 		catch (ServiceCivilException e) {
 			if (LOGGER.isDebugEnabled()) {
-			    LOGGER.debug("Exception lancée par le GetIndividuAfterEvent, essayons le GetIndividuByEvent...", e);
+			    LOGGER.debug(String.format("Exception lancée par le GetIndividuAfterEvent(%d), essayons le GetIndividuByEvent...", eventId), e);
 			}
 		}
 
 		if (noIndividu == null) {
-		    final Individu individu = serviceCivil.getIndividuByEvent(eventId, null);
+			Individu individu;
+			try {
+				individu = serviceCivil.getIndividuByEvent(eventId, null);
+				if (individu == null && LOGGER.isDebugEnabled()) {
+					LOGGER.debug(String.format("Aucune information exploitable fournie par le GetIndividuByEvent(%d), essayons les dépendances (grappe)", eventId));
+				}
+			}
+			catch (ServiceCivilException e) {
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug(String.format("Exception lancée par le GetIndividuByEvent(%d), essayons les dépendances (grappe)...", eventId), e);
+				}
+				individu = null;
+			}
+
 		    if (individu == null) {
 			    if (event == null || event.getRefMessageId() == null || loopPreventer.contains(event.getRefMessageId())) {
 	                throw new EvenementCivilException(String.format("Impossible de trouver l'individu lié à l'événement civil %d", eventId));
