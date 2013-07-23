@@ -38,6 +38,8 @@ import ch.vd.uniregctb.evenement.identification.contribuable.TypeDemande;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcherImpl;
+import ch.vd.uniregctb.indexer.tiers.MenageCommunIndexable;
+import ch.vd.uniregctb.indexer.tiers.NonHabitantIndexable;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.indexer.tiers.TopList;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -3527,5 +3529,79 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		final IdentificationContribuable ident = createDemandeWithEmetteurId(personne, "2-BE-3");
 
 		Assert.assertFalse(service.isAdresseFromCantonEmetteur(ident));
+	}
+
+	/**
+	 * [SIFISC-9328] Dans le cas où l'identification de contribuable est demandée avec un numéro AVS11 seul, l'auteur du cas jira pensait
+	 * que le contribuable ayant ce numéro AVS11 assigné devait être identifié. Mais, d'après la spécification "paragraphe 2.4.3 du document
+	 * SCU-IdentificationCTB_Automatique.doc", cette identification échoue forcément, car "Si le NAVS11 est renseigné dans la demande et qu'il
+	 * n'existe pas dans Unireg, cette étape est considérée comme OK. Et inversement." Autrement dit, la recherche doit également retourner
+	 * tous les contribuables personnes physiques qui répondent aux autres critères (= tous!) et qui n'ont pas de NAVS11.
+	 */
+	@Test
+	public void testIdentificationAvecNavs11Seul() throws Exception {
+
+		final String navs11 = "78674361253";
+
+		// rien au civil
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+			}
+		});
+
+		// au fiscal, un non-habitant marié
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Albert", "Foldingue", null, Sexe.MASCULIN);
+				addIdentificationPersonne(pp, CategorieIdentifiant.CH_AHV_AVS, navs11);
+				addEnsembleTiersCouple(pp, null, date(2012, 5, 1), null);
+
+				// on crée aussi plein d'autres personnes (> 100), parce que c'est le problème (tant que ces personnes n'ont pas de NAVS11...)
+				for (int i = 0 ; i < 130 ; ++ i) {
+					addNonHabitant("Clone-" + i, "Foldingue", RegDate.get().addDays(-i), Sexe.MASCULIN);
+				}
+
+				return pp.getNumero();
+			}
+		});
+
+		// on indexe tout ça
+		globalTiersIndexer.sync();
+
+		// première étape -> si on recherche simplement par ce numéro AVS11 (comme dans l'IHM), on doit trouver deux tiers (PP + MC)
+		{
+			final TiersCriteria criteria = new TiersCriteria();
+			criteria.setNumeroAVS(navs11);
+			final List<TiersIndexedData> resultSearch = globalTiersSearcher.search(criteria);
+			assertNotNull(resultSearch);
+			assertEquals(2, resultSearch.size());
+
+			final List<TiersIndexedData> sortedResultSearch = new ArrayList<>(resultSearch);
+			Collections.sort(sortedResultSearch, new Comparator<TiersIndexedData>() {
+				@Override
+				public int compare(TiersIndexedData o1, TiersIndexedData o2) {
+					return o1.getTiersType().compareTo(o2.getTiersType());          // Ménage Commun d'abord, puis Non Habitant
+				}
+			});
+
+			assertEquals(MenageCommunIndexable.SUB_TYPE, sortedResultSearch.get(0).getTiersType());
+			assertEquals(NonHabitantIndexable.SUB_TYPE, sortedResultSearch.get(1).getTiersType());
+		}
+
+		// deuxième étape -> on tente d'identifier avec ce numéro AVS11 seul
+		{
+			final CriteresPersonne critere = new CriteresPersonne();
+			critere.setNAVS11(navs11);
+
+			try {
+				final List<Long> res = service.identifie(critere);
+				fail("D'après l'agorithme de la spécification, on aurait dû récupérer toutes les personnes physiques sans navs11 également, donc beaucoup!");
+			}
+			catch (TooManyIdentificationPossibilitiesException e) {
+				// tout va bien, il y en a effectivement beaucoup...
+			}
+		}
 	}
 }
