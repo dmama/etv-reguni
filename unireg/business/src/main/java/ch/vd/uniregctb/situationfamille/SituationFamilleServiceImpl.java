@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Set;
 
 import org.springframework.transaction.PlatformTransactionManager;
@@ -21,11 +22,9 @@ import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.EtatCivilHelper;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.interfaces.InterfaceDataException;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
@@ -154,13 +153,7 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 			final List<VueSituationFamille> situationsFiscalesAnnulees = map.get(annulee);
 
 			// Construit la vue finale en surchargeant les situations civiles avec les situations fiscales
-
-			// nullAllowed -> s'il n'y a pas de surcharge au niveau fiscal, on tolère les situations de familles avec des dates nulles
-			// présentes au niveau civil. Dans le case contraire, on ne peut pas les tolérer pour être capable d'effectuer la surcharge
-			// correctement
-			final boolean nullAllowed = (situationsFiscales == null || situationsFiscales.isEmpty());
-
-			final List<VueSituationFamille> situationsCiviles = buildSituationsCivilesHisto(contribuable, nullAllowed);
+			final List<VueSituationFamille> situationsCiviles = buildSituationsCivilesHisto(contribuable);
 			resultat = DateRangeHelper.override(situationsCiviles, situationsFiscales, new VueSituationFamilleAdapterCallback());
 
 			// si besoin on rajoute les situations de familles fiscales annulées. la liste ainsi obtenue est utilisées dans l'affichage
@@ -175,7 +168,7 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 			 * par définition, tous les autres type de contribuables (entreprises, établissement, ...) ne possèdent pas de situation de
 			 * famille
 			 */
-			resultat = new ArrayList<>();
+			resultat = Collections.emptyList();
 		}
 		return resultat;
 	}
@@ -187,7 +180,7 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 	 *            le contribuable considéré
 	 * @return une liste de situations de famille.
 	 */
-	private List<VueSituationFamille> buildSituationsCivilesHisto(Contribuable contribuable, boolean nullAllowed) {
+	private List<VueSituationFamille> buildSituationsCivilesHisto(Contribuable contribuable) {
 
 		final List<VueSituationFamille> list = new ArrayList<>();
 
@@ -202,6 +195,7 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 			// aucune information n'est disponible dans le civil
 			return list;
 		}
+
 		// else habitant
 		final Individu individu = tiersService.getIndividu(pp);
 		if (individu == null) {
@@ -213,93 +207,26 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 		if (ecList == null || ecList.isEmpty()) {
 			return list;
 		}
-		// traitement du cas particulier où l'individu ne possède pas d'état civil
-		// host-interface renvoie quand même un état civil avec date début nulle, type nul et no sequence = 0
-		if (ecList.size() == 1) {
-			final EtatCivil etat = ecList.get(0);
-			if (etat == null || etat.getTypeEtatCivil() == null) {
-				return list;
-			}
-		}
-
-		EtatCivil etatPrecedent = null;
-		RegDate dateDebutEtatPrecedent = null;
-
-		// la date de fin n'est pas définie au niveau de l'état civil -> on doit la déduire à partir de la date de début suivante
-		for (EtatCivil etatCourant : ecList) {
-
-			RegDate dateDebutEtatCourant;
-			if (etatCourant.getDateDebut() == null) {
-				dateDebutEtatCourant = findDateDebutEtatCivil(etatCourant, pp, individu);
-			}
-			else {
-				dateDebutEtatCourant = etatCourant.getDateDebut();
-			}
-
-			if (etatPrecedent != null) {
-				if (etatPrecedent.getDateDebut() == null) {
-					if (etatCourant.getDateDebut() == null
-							|| (dateDebutEtatPrecedent != null && dateDebutEtatPrecedent.isAfterOrEqual(etatCourant.getDateDebut()))) {
-						dateDebutEtatPrecedent = null;
-					}
-					if (!nullAllowed && dateDebutEtatPrecedent == null) {
-						throw new InterfaceDataException(buildExceptionMessage(pp, etatPrecedent));
-					}
-				}
-				if (etatCourant.getDateDebut() == null) {
-					if (dateDebutEtatCourant != null && dateDebutEtatPrecedent != null && dateDebutEtatPrecedent.isAfterOrEqual(dateDebutEtatCourant)) {
-						// la date de début de l'état-civil est nulle, on a pu déterminer une date de début à partir d'autres sources
-						// mais on se rend compte que cette date est invalide => on laisse tomber la date nouvelle déterminée
-						dateDebutEtatCourant = null;
-					}
-					if (!nullAllowed && dateDebutEtatCourant == null) {
-						throw new InterfaceDataException(buildExceptionMessage(pp, etatCourant));
-					}
-				}
-				RegDate dateFinEtatPrecedent = null;
-				if (dateDebutEtatCourant != null) {
-					dateFinEtatPrecedent = dateDebutEtatCourant.getOneDayBefore();
-				}
-				VueSituationFamille vue = new VueSituationFamillePersonnePhysiqueCivilAdapter(etatPrecedent, dateDebutEtatPrecedent,
-						dateFinEtatPrecedent);
-				list.add(vue);
-			}
-			etatPrecedent = etatCourant;
-			dateDebutEtatPrecedent = dateDebutEtatCourant;
-		}
-
-		if (etatPrecedent != null) {
-			if (etatPrecedent.getDateDebut() == null) {
-				if (!nullAllowed && dateDebutEtatPrecedent == null) {
-					throw new InterfaceDataException(buildExceptionMessage(pp, etatPrecedent));
-				}
-			}
-			VueSituationFamille vue = new VueSituationFamillePersonnePhysiqueCivilAdapter(etatPrecedent, dateDebutEtatPrecedent, null);
-			list.add(vue);
-		}
 
 		// [UNIREG-823] Dans le cas d'un individu décédé, on doit fermer la dernière situation retournée par le civil à date décès
-		final RegDate dateDeces = tiersService.getDateDeces(pp);
-		if (dateDeces != null) {
-			if (!list.isEmpty()) {
-				final int last = list.size() - 1;
-				VueSituationFamille vue = list.get(last);
-				vue = new VueSituationFamillePersonnePhysiqueCivilAdapter(vue.getEtatCivil(), vue.getDateDebut(), dateDeces);
-				list.set(last, vue);
+		RegDate dateFin = tiersService.getDateDeces(pp);
+
+		// on parcourt la liste à l'envers et on prend les états civils connus
+		final ListIterator<EtatCivil> iterator = ecList.listIterator(ecList.size());
+		while (iterator.hasPrevious()) {
+			final EtatCivil ec = iterator.previous();
+			final RegDate dateDebutCivile = ec.getDateDebut();
+			final RegDate dateDebut = dateDebutCivile == null ? findDateDebutEtatCivil(ec, pp, individu) : dateDebutCivile;
+			final VueSituationFamille vue = new VueSituationFamillePersonnePhysiqueCivilAdapter(ec, dateDebut, dateFin);
+			list.add(0, vue);
+			if (dateDebut == null) {
+				// c'est fini, on sort, tous les autres états civils sont ignorés
+				break;
 			}
+			dateFin = dateDebut.getOneDayBefore();
 		}
 
 		return list;
-	}
-
-	/**
-	 * Construit le message de l'exception levée lorsqu'un état civil possède une date de début nulle
-	 */
-	private static String buildExceptionMessage(PersonnePhysique habitant, EtatCivil etat) {
-		return String.format("Contribuable %s / Individu n°%d: l'état civil %s n'a pas de date de début !",
-							FormatNumeroHelper.numeroCTBToDisplay(habitant.getNumero()),
-							habitant.getNumeroIndividu(),
-				EtatCivilHelper.civil2core(etat.getTypeEtatCivil()));
 	}
 
 	private RegDate findDateDebutEtatCivil(EtatCivil etatCivil, PersonnePhysique habitant, Individu individu) {
