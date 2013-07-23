@@ -36,6 +36,7 @@ import ch.vd.uniregctb.xml.DataHelper;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 @SuppressWarnings({"JavaDoc"})
 @ContextConfiguration(locations = {
@@ -124,8 +125,10 @@ public class IdentificationContribuableRequestListenerItTest extends BusinessItT
 
 		final EsbMessage message = getEsbMessage(getOutputQueue());
 		assertNotNull(message);
-		IdentificationContribuableResponse response = parseResponse(message);
-		assertNull(response.getErreur());
+		final IdentificationContribuableResponse response = parseResponse(message);
+		if (response.getErreur() != null) {
+			fail(response.getErreur().toString());
+		}
 
 		final IdentificationContribuableResponse.Contribuable infoCtb = response.getContribuable();
 		assertNotNull(infoCtb);
