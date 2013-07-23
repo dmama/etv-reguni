@@ -66,7 +66,7 @@ public class ListeRecapEditDelaiControllerTest extends AbstractLrControllerTest 
 		request.addParameter("idLR", idLR1.toString());
 		request.addParameter("dateDemande", RegDateHelper.dateToDisplayString(RegDate.get(2008, 1, 1)));
 		request.addParameter("dateTraitement", RegDateHelper.dateToDisplayString(RegDate.get(2008, 1, 1)));
-		request.addParameter("delaiAccordeAu", RegDateHelper.dateToDisplayString(RegDate.get(2008, 1, 1)));
+		request.addParameter("delaiAccordeAu", RegDateHelper.dateToDisplayString(RegDate.get().addMonths(1)));
 		request.addParameter("confirmationEcrite", "0");
 		ModelAndView mav = controller.handleRequest(request, response);
 		Map<?, ?> model = mav.getModel();
