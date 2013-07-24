@@ -51,6 +51,10 @@ public class IdentificationContribuableRequestListenerItTest extends BusinessItT
 	private EsbXmlValidation esbValidator;
 	private SmartLifecycle endpointManager;
 
+	public IdentificationContribuableRequestListenerItTest() {
+		setWantIndexation(true);
+	}
+
 	protected static String requestToString(IdentificationContribuableRequest request) throws JAXBException {
 		JAXBContext context = JAXBContext.newInstance(ObjectFactory.class.getPackage().getName());
 		Marshaller marshaller = context.createMarshaller();
