@@ -217,13 +217,15 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 			final EtatCivil ec = iterator.previous();
 			final RegDate dateDebutCivile = ec.getDateDebut();
 			final RegDate dateDebut = dateDebutCivile == null ? findDateDebutEtatCivil(ec, pp, individu) : dateDebutCivile;
-			final VueSituationFamille vue = new VueSituationFamillePersonnePhysiqueCivilAdapter(ec, dateDebut, dateFin);
-			list.add(0, vue);
-			if (dateDebut == null) {
-				// c'est fini, on sort, tous les autres états civils sont ignorés
-				break;
+			if (dateDebut == null || dateFin == null || dateDebut.compareTo(dateFin) <= 0) {
+				final VueSituationFamille vue = new VueSituationFamillePersonnePhysiqueCivilAdapter(ec, dateDebut, dateFin);
+				list.add(0, vue);
+				if (dateDebut == null) {
+					// c'est fini, on sort, tous les autres états civils sont ignorés
+					break;
+				}
+				dateFin = dateDebut.getOneDayBefore();
 			}
-			dateFin = dateDebut.getOneDayBefore();
 		}
 
 		return list;
