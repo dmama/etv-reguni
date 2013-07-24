@@ -1891,6 +1891,32 @@ public class TiersServiceImpl implements TiersService {
 		return coll == null ? 0 : coll.size();
 	}
 
+	/**
+	 * @param dateDebut date candidate pour le début du range
+	 * @param dateFin date candidate pour la fin du range
+	 * @param parent personne physique parente dans la relation à limiter
+	 * @param enfant personne physique enfant dans la relation à limiter
+	 * @return le range limité par les dates de naissance/décès des deux personnes physiques données (ou <code>null</code> si les dates début/fin seraient dans le mauvais ordre suite à cette limitation)
+	 * (cas du père qui décède avant la naissance de son enfant)
+	 */
+	@Nullable
+	private DateRange limitRangeAccordingToBirthAndDeathDates(RegDate dateDebut, RegDate dateFin, PersonnePhysique parent, PersonnePhysique enfant) {
+		// recherche de la date de début après limitation avec les dates de naissance des personnes concernées
+		dateDebut = RegDateHelper.maximum(dateDebut, getDateNaissance(parent), NullDateBehavior.EARLIEST);
+		dateDebut = RegDateHelper.maximum(dateDebut, getDateNaissance(enfant), NullDateBehavior.EARLIEST);
+
+		// recherche de la date de début après limitation avec les dates de naissance des personnes concernées
+		dateFin = RegDateHelper.minimum(dateFin, getDateDeces(parent), NullDateBehavior.LATEST);
+		dateFin = RegDateHelper.minimum(dateFin, getDateDeces(enfant), NullDateBehavior.LATEST);
+
+		if (dateDebut == null || dateFin == null || dateDebut.isBeforeOrEqual(dateFin)) {
+			return new DateRangeHelper.Range(dateDebut, dateFin);
+		}
+		else {
+			return null;
+		}
+	}
+
 	@Nullable
 	private RapportFiliation createRapportPourEnfant(PersonnePhysique personnePhysique, Individu individu, RelationVersIndividu relationEnfant) {
 
@@ -1906,7 +1932,13 @@ public class TiersServiceImpl implements TiersService {
             throw new IndividuNotFoundException(noIndEnfant);
         }
 
-        return new RapportFiliation(individu, personnePhysique, enfant, ppEnfant, relationEnfant.getDateDebut(), relationEnfant.getDateFin(), RapportFiliation.Type.ENFANT);
+		final DateRange limitedRange = limitRangeAccordingToBirthAndDeathDates(relationEnfant.getDateDebut(), relationEnfant.getDateFin(), personnePhysique, ppEnfant);
+		if (limitedRange != null) {
+            return new RapportFiliation(individu, personnePhysique, enfant, ppEnfant, limitedRange.getDateDebut(), limitedRange.getDateFin(), RapportFiliation.Type.ENFANT);
+		}
+		else {
+			return null;
+		}
     }
 
     @Nullable
@@ -1921,7 +1953,14 @@ public class TiersServiceImpl implements TiersService {
 
 	    final RegDate dateDebut = RegDateHelper.maximum(ar.getDateAdoption(), ar.getDateReconnaissance(), NullDateBehavior.EARLIEST);
 	    final RegDate dateFin = ar.getDateDesaveu();
-        return new RapportFiliation(individu, personnePhysique, enfant, ppEnfant, dateDebut, dateFin, RapportFiliation.Type.ENFANT);
+
+	    final DateRange limitedRange = limitRangeAccordingToBirthAndDeathDates(dateDebut, dateFin, personnePhysique, ppEnfant);
+	    if (limitedRange != null) {
+	        return new RapportFiliation(individu, personnePhysique, enfant, ppEnfant, limitedRange.getDateDebut(), limitedRange.getDateFin(), RapportFiliation.Type.ENFANT);
+	    }
+	    else {
+		    return null;
+	    }
     }
 
     @Nullable
@@ -1966,7 +2005,13 @@ public class TiersServiceImpl implements TiersService {
 		    }
 	    }
 
-        return new RapportFiliation(individu, personnePhysique, parent, ppParent, dateDebut, dateFin, RapportFiliation.Type.PARENT);
+	    final DateRange limitedRange = limitRangeAccordingToBirthAndDeathDates(dateDebut, dateFin, ppParent, personnePhysique);
+	    if (limitedRange != null) {
+            return new RapportFiliation(individu, personnePhysique, parent, ppParent, limitedRange.getDateDebut(), limitedRange.getDateFin(), RapportFiliation.Type.PARENT);
+	    }
+	    else {
+		    return null;
+	    }
     }
 
     private static AdoptionReconnaissance getAdoptionPourEnfant(Collection<AdoptionReconnaissance> adoptions, long noIndEnfant) {

@@ -20,6 +20,7 @@ import ch.vd.uniregctb.type.Sexe;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityTest {
 
@@ -373,5 +374,86 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 		assertNotNull(res);
 		assertNotNull(res.getEchec());
 		assertEquals(TaxLiabilityControlEchec.EchecType.CONTROLE_NUMERO_KO, res.getEchec().getType());
+	}
+
+	/**
+	 * Cas du SIFISC-9339 : demande de contrôle d'assujettissement à une date postérieure au décès FISCAL du père d'un mineur,
+	 * sachant que ces parents avaient déjà divorcé dans l'année.
+	 * L'auteur du cas s'attendait à trouver la mère comme seule réponse du contrôle d'assujettissement mais le service
+	 * a renvoyé une incertitude entre les deux parents
+	 */
+	@Test
+	public void testControleAssujettissementMineurAvecParentSeparesPuisPereDecede() throws Exception {
+
+		final long noIndPapa = 874841L;
+		final long noIndMaman = 46451L;
+		final long noIndMineur = 4512154L;
+		final RegDate dateMariage = date(2000, 1, 1);
+		final RegDate dateNaissanceMineur = date(2001, 9, 12);
+		final RegDate dateDivorce = date(2012, 6, 23);
+		final RegDate dateDecesPapa = date(2012, 8, 4);
+		final RegDate dateDemandeControle = date(2012, 8, 15);
+
+		// mise ne place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu papa = addIndividu(noIndPapa, null, "Potter", "James", Sexe.MASCULIN);
+				final MockIndividu maman = addIndividu(noIndMaman, null, "Potter", "Lilly", Sexe.FEMININ);
+				final MockIndividu mineur = addIndividu(noIndMineur, dateNaissanceMineur, "Potter", "Harry", Sexe.MASCULIN);
+
+				marieIndividus(papa, maman, dateMariage);
+				divorceIndividus(papa, maman, dateDivorce);
+
+				addLiensFiliation(papa, mineur, dateNaissanceMineur, null);
+				addLiensFiliation(maman, mineur, dateNaissanceMineur, null);
+			}
+		});
+
+		final class Ids {
+			long idPapa;
+			long idMaman;
+			long idMenage;
+			long idMineur;
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique papa = addHabitant(noIndPapa);
+				papa.setDateDeces(dateDecesPapa);
+
+				final PersonnePhysique maman = addHabitant(noIndMaman);
+				final EnsembleTiersCouple couple = addEnsembleTiersCouple(papa, maman, dateMariage, dateDivorce.getOneDayBefore());
+				final MenageCommun mc = couple.getMenage();
+
+				addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateDivorce.getOneDayBefore(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Aubonne);
+				addForPrincipal(papa, dateDivorce, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, dateDecesPapa, MotifFor.VEUVAGE_DECES, MockCommune.Aigle);
+				addForPrincipal(maman, dateDivorce, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Aubonne);
+
+				final PersonnePhysique mineur = addHabitant(noIndMineur);
+
+				final Ids ids = new Ids();
+				ids.idPapa = papa.getNumero();
+				ids.idMaman = maman.getNumero();
+				ids.idMenage = mc.getNumero();
+				ids.idMineur = mineur.getNumero();
+				return ids;
+			}
+		});
+
+		// demande de contrôle
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique mineur = (PersonnePhysique) tiersDAO.get(ids.idMineur);
+				final TaxLiabilityControlResult res = controlService.doControlOnDate(mineur, dateDemandeControle, true, true);
+				assertNotNull(res);
+				assertNull(res.getEchec());
+				assertEquals((Long) ids.idMaman, res.getIdTiersAssujetti());
+				return null;
+			}
+		});
 	}
 }

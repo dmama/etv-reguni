@@ -11,9 +11,9 @@ import ch.vd.unireg.interfaces.civil.data.Individu;
 /**
  * Contient les caractéristiques d'un rapport de filiation entre une personne physique/individu et une autre personne physique/individu.
  */
-public class RapportFiliation  implements DateRange{
+public class RapportFiliation implements DateRange {
 
-	public enum Type {
+	public static enum Type {
 		ENFANT,
 		PARENT
 	}
@@ -21,26 +21,26 @@ public class RapportFiliation  implements DateRange{
 	/**
 	 * L'individu de référence
 	 */
-	private Individu individu;
+	private final Individu individu;
 
 	/**
 	 * La personne physique de référence
 	 */
-	private PersonnePhysique personnePhysique;
+	private final PersonnePhysique personnePhysique;
 
 	/**
 	 * L'autre individu (enfant ou parent)
 	 */
-	private Individu autreIndividu;
+	private final Individu autreIndividu;
 
 	/**
 	 * L'autre personne physique (enfant ou parent)
 	 */
-	private PersonnePhysique autrePersonnePhysique;
+	private final PersonnePhysique autrePersonnePhysique;
 
 	private final Type type;
-	private RegDate dateDebut;
-	private RegDate dateFin;
+	private final RegDate dateDebut;
+	private final RegDate dateFin;
 
 	public RapportFiliation(Individu individu, PersonnePhysique personnePhysique, Individu autreIndividu, @Nullable PersonnePhysique autrePersonnePhysique,
 	                        RegDate dateDebut, RegDate dateFin, Type type) {
@@ -48,23 +48,9 @@ public class RapportFiliation  implements DateRange{
 		this.personnePhysique = personnePhysique;
 		this.autreIndividu = autreIndividu;
 		this.autrePersonnePhysique = autrePersonnePhysique;
+		this.dateDebut = dateDebut;
+		this.dateFin = dateFin;
 		this.type = type;
-
-		// le rapport est terminé au plus tard au décès de l'un des membres
-		if (dateFin != null) {
-			this.dateFin = dateFin;
-		}
-		else if (individu.getDateDeces() != null || autreIndividu.getDateDeces() != null) {
-			this.dateFin = RegDateHelper.minimum(individu.getDateDeces(), autreIndividu.getDateDeces(), NullDateBehavior.LATEST);
-		}
-
-		// le rapport démarre à la naissance du dernier membre
-		if (dateDebut != null) {
-			this.dateDebut = dateDebut;
-		}
-		else {
-			this.dateDebut = RegDateHelper.maximum(individu.getDateNaissance(), autreIndividu.getDateNaissance(), NullDateBehavior.EARLIEST);
-		}
 	}
 
 	public Individu getIndividu() {
@@ -86,14 +72,6 @@ public class RapportFiliation  implements DateRange{
 
 	public Type getType() {
 		return type;
-	}
-
-	public void setDateDebut(RegDate dateDebut) {
-		this.dateDebut = dateDebut;
-	}
-
-	public void setDateFin(RegDate dateFin) {
-		this.dateFin = dateFin;
 	}
 
 	@Override
