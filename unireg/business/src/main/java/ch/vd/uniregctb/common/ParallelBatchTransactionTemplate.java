@@ -13,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.log4j.Logger;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionException;
+import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 
@@ -185,6 +186,44 @@ public class ParallelBatchTransactionTemplate<E, R extends BatchResults> {
 		return statusManager != null && statusManager.interrupted();
 	}
 
+	private static class DelegatingBatchCallback<E, R extends BatchResults<E, R>> extends BatchTransactionTemplate.BatchCallback<E, R> {
+
+		private final BatchTransactionTemplate.BatchCallback<E, R> target;
+
+		private DelegatingBatchCallback(BatchTransactionTemplate.BatchCallback<E, R> target) {
+			this.target = target;
+		}
+
+		@Override
+		public void beforeTransaction() {
+			target.beforeTransaction();
+		}
+
+		@Override
+		public void afterTransactionStart(TransactionStatus status) {
+			target.afterTransactionStart(status);
+		}
+
+		public boolean doInTransaction(List<E> batch, R rapport) throws Exception {
+			return target.doInTransaction(batch, rapport);
+		}
+
+		@Override
+		public void afterTransactionCommit() {
+			target.afterTransactionCommit();
+		}
+
+		@Override
+		public void afterTransactionRollback(Exception e, boolean willRetry) {
+			target.afterTransactionRollback(e, willRetry);
+		}
+
+		@Override
+		public R createSubRapport() {
+			return target.createSubRapport();
+		}
+	}
+
 	private class ParallelTask implements Callable<Boolean> {
 
 		private final List<E> input;
@@ -208,7 +247,7 @@ public class ParallelBatchTransactionTemplate<E, R extends BatchResults> {
 			try {
 				final BatchTransactionTemplate<E, R> template = new BatchTransactionTemplate<>(input, input.size(), behavior, transactionManager, statusManager, hibernateTemplate);
 				template.setReadonly(readonly);
-				return template.execute(rapportFinal, action);
+				return template.execute(rapportFinal, new DelegatingBatchCallback<>(action));
 			}
 			finally {
 				AuthenticationHelper.popPrincipal();

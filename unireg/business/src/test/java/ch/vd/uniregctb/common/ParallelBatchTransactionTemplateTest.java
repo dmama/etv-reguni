@@ -1,11 +1,16 @@
 package ch.vd.uniregctb.common;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.TreeSet;
 
+import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
@@ -280,6 +285,60 @@ public class ParallelBatchTransactionTemplateTest extends BusinessTest {
 		public void addAll(Rapport right) {
 			this.traites.addAll(right.traites);
 			this.erreurs.addAll(right.erreurs);
+		}
+	}
+
+	@Test
+	public void testProgressMonitoring() throws Exception {
+
+		final BatchTransactionTemplate.BatchCallback<Integer, BatchResults> callback = new BatchTransactionTemplate.BatchCallback<Integer, BatchResults>() {
+			@Override
+			public boolean doInTransaction(List<Integer> batch, BatchResults rapport) throws Exception {
+				Thread.sleep(10);
+				return true;
+			}
+		};
+
+		final Set<Integer> collector = new TreeSet<>(Arrays.asList(0, 100));
+		final Mutable<Boolean> started = new MutableBoolean(false);
+		final TimerTask samplingTask = new TimerTask() {
+			@Override
+			public void run() {
+				final int percent = callback.percent;
+				collector.add(percent);
+				started.setValue(true);
+			}
+		};
+
+		// on envoie la sauce... 50 étapes
+		final int TOTAL = 100;
+		final int BATCH_SIZE = 2;
+		final int NB_THREADS = 5;
+
+		final Timer timer = new Timer();
+		timer.schedule(samplingTask, 1, 1);     // chaque milliseconde...
+		try {
+			while (!started.getValue()) {
+				Thread.sleep(15);
+			}
+
+			final List<Integer> data = new ArrayList<>(TOTAL);
+			for (int i = 0 ; i < TOTAL ; ++ i) {
+				data.add(i);
+			}
+
+			final ParallelBatchTransactionTemplate<Integer, BatchResults> template = new ParallelBatchTransactionTemplate<>(data, BATCH_SIZE, NB_THREADS, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE, transactionManager, null, hibernateTemplate);
+			template.execute(callback);
+		}
+		finally {
+			timer.cancel();
+		}
+
+		// compte tenu de la méthode de mesure, on compte sur 70% de remplissable comme seuil accepté
+		final int expectedSetSize = TOTAL / BATCH_SIZE + 1;
+		assertTrue(expectedSetSize > 10);
+		if (collector.size() > expectedSetSize || collector.size() < expectedSetSize * 7 / 10) {
+			fail("Expected size of " + expectedSetSize + ", got " + collector.size() + " (" + Arrays.toString(collector.toArray(new Integer[collector.size()])) + ")");
 		}
 	}
 }
