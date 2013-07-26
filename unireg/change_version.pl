@@ -49,7 +49,7 @@ exit(0);
 
 sub get_files
 {
-	my $files = `find . -type f | grep -v ".svn" | grep -v "\/target\/"`;
+	my $files = `find . ! -name "*.log" -type f | grep -v ".svn" | grep -v "\/target\/"`;
 	return $files;
 }
 
