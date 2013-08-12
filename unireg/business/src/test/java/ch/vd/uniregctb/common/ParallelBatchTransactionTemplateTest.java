@@ -334,10 +334,10 @@ public class ParallelBatchTransactionTemplateTest extends BusinessTest {
 			timer.cancel();
 		}
 
-		// compte tenu de la méthode de mesure, on compte sur 70% de remplissable comme seuil accepté
+		// compte tenu de la méthode de mesure, on compte sur 50% de remplissable comme seuil accepté
 		final int expectedSetSize = TOTAL / BATCH_SIZE + 1;
 		assertTrue(expectedSetSize > 10);
-		if (collector.size() > expectedSetSize || collector.size() < expectedSetSize * 7 / 10) {
+		if (collector.size() > expectedSetSize || collector.size() < expectedSetSize * 5 / 10) {
 			fail("Expected size of " + expectedSetSize + ", got " + collector.size() + " (" + Arrays.toString(collector.toArray(new Integer[collector.size()])) + ")");
 		}
 	}
