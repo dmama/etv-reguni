@@ -849,7 +849,7 @@ public class EvenementCivilEchGrappeProcessorTest extends AbstractEvenementCivil
 					final EvenementCivilEch ech = evtCivilDAO.get(noEvtCorrectionDepart);
 					Assert.assertNotNull(ech);
 					Assert.assertEquals(EtatEvenementCivil.TRAITE, ech.getEtat());
-					Assert.assertEquals("Evénement civil issu d'un eCH-0099 de commune. Événemement traité sans modification Unireg.", ech.getCommentaireTraitement());
+					Assert.assertEquals("Evénement civil issu d'un eCH-0099 de commune. Événement traité sans modification Unireg.", ech.getCommentaireTraitement());
 
 					final Set<EvenementCivilEchErreur> erreurs = ech.getErreurs();
 					Assert.assertNotNull(erreurs);

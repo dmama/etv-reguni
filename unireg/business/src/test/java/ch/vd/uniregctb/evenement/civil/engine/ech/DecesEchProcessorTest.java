@@ -220,7 +220,7 @@ public class DecesEchProcessorTest extends AbstractEvenementCivilEchProcessorTes
 			}
 		});
 
-		// 5. Création d'un évenemement "Décés" pour Monsieur (paix à son âme)
+		// 5. Création d'un évenement "Décés" pour Monsieur (paix à son âme)
 		final long decesId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
@@ -357,7 +357,7 @@ public class DecesEchProcessorTest extends AbstractEvenementCivilEchProcessorTes
 			}
 		});
 
-		// 5. Création d'un évenemement "Décés" pour le deuxième membre du couple: monsieur
+		// 5. Création d'un évenement "Décés" pour le deuxième membre du couple: monsieur
 		final long decesMonsieurId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
