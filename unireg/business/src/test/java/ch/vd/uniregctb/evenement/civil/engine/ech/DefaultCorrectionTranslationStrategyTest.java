@@ -109,7 +109,7 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 				final EvenementCivilEch evt = evtCivilDAO.get(idEvtCorrection);
 				Assert.assertNotNull(evt);
 				Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
-				Assert.assertEquals("Événemement traité sans modification Unireg.", evt.getCommentaireTraitement());
+				Assert.assertEquals("Événement traité sans modification Unireg.", evt.getCommentaireTraitement());
 				return null;
 			}
 		});
@@ -238,7 +238,7 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 				final EvenementCivilEch evt = evtCivilDAO.get(idEvtCorrection);
 				Assert.assertNotNull(evt);
 				Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
-				Assert.assertEquals("Événemement traité sans modification Unireg.", evt.getCommentaireTraitement());
+				Assert.assertEquals("Événement traité sans modification Unireg.", evt.getCommentaireTraitement());
 				return null;
 			}
 		});
@@ -797,7 +797,7 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 				final EvenementCivilEch evt = evtCivilDAO.get(idEvtCorrection);
 				Assert.assertNotNull(evt);
 				Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
-				Assert.assertEquals("Événemement traité sans modification Unireg.", evt.getCommentaireTraitement());
+				Assert.assertEquals("Événement traité sans modification Unireg.", evt.getCommentaireTraitement());
 				return null;
 			}
 		});
@@ -1001,7 +1001,7 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 				final EvenementCivilEch evt = evtCivilDAO.get(idEvtCorrection);
 				Assert.assertNotNull(evt);
 				Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
-				Assert.assertEquals("Événemement traité sans modification Unireg.", evt.getCommentaireTraitement());
+				Assert.assertEquals("Événement traité sans modification Unireg.", evt.getCommentaireTraitement());
 				Assert.assertEquals((Long) idEvtCorrige, evt.getRefMessageId());
 				return null;
 			}
@@ -1108,7 +1108,7 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 					final EvenementCivilEch evt = evtCivilDAO.get(idEvtCorrection);
 					Assert.assertNotNull(evt);
 					Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
-					Assert.assertEquals("Événemement traité sans modification Unireg. Evénement et correction(s) pris en compte ensemble.", evt.getCommentaireTraitement());
+					Assert.assertEquals("Événement traité sans modification Unireg. Evénement et correction(s) pris en compte ensemble.", evt.getCommentaireTraitement());
 
 					final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
 					Assert.assertNotNull(erreurs);
@@ -1203,7 +1203,7 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 					final EvenementCivilEch evt = evtCivilDAO.get(idEvtCorrection);
 					Assert.assertNotNull(evt);
 					Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
-					Assert.assertEquals("Événemement traité sans modification Unireg. Evénement et correction(s) pris en compte ensemble.", evt.getCommentaireTraitement());
+					Assert.assertEquals("Événement traité sans modification Unireg. Evénement et correction(s) pris en compte ensemble.", evt.getCommentaireTraitement());
 					Assert.assertEquals((Long) idEvtCorrige, evt.getRefMessageId());       // doit avoir été rattrapé lors du traitement
 
 					final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();

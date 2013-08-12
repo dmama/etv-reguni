@@ -115,7 +115,7 @@ public class EvenementCivilEchIssuDe99ProcessorTest extends AbstractEvenementCiv
 				final EvenementCivilEch evt = evtCivilDAO.get(evtId);
 				Assert.assertNotNull(evt);
 				Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
-				Assert.assertEquals("Evénement civil issu d'un eCH-0099 de commune. Événemement traité sans modification Unireg.", evt.getCommentaireTraitement());
+				Assert.assertEquals("Evénement civil issu d'un eCH-0099 de commune. Événement traité sans modification Unireg.", evt.getCommentaireTraitement());
 				return null;
 			}
 		});

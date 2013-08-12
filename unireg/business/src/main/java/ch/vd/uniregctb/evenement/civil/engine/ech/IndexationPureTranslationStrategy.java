@@ -18,7 +18,7 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
  */
 public class IndexationPureTranslationStrategy implements EvenementCivilEchTranslationStrategy {
 
-	private static final String MESSAGE_INDEXATION_PURE = "Événemement traité sans modification Unireg.";
+	private static final String MESSAGE_INDEXATION_PURE = "Événement traité sans modification Unireg.";
 
 	@Override
 	public EvenementCivilInterne create(final EvenementCivilEchFacade event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
