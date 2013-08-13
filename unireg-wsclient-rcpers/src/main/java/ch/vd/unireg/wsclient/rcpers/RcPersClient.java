@@ -2,10 +2,9 @@ package ch.vd.unireg.wsclient.rcpers;
 
 import java.util.Collection;
 
-import ch.vd.evd0001.v4.ListOfFoundPersons;
-import ch.vd.evd0001.v4.ListOfPersons;
-import ch.vd.evd0001.v4.ListOfRelations;
-import ch.vd.evd0001.v4.Event;
+import ch.vd.evd0001.v5.ListOfFoundPersons;
+import ch.vd.evd0001.v5.ListOfPersons;
+import ch.vd.evd0001.v5.Event;
 import ch.vd.registre.base.date.RegDate;
 
 @SuppressWarnings("UnusedDeclaration")
@@ -40,16 +39,6 @@ public interface RcPersClient {
 	 * @return une liste de personnes
 	 */
 	ListOfPersons getPersonByEvent(long evtId, RegDate date, boolean withHistory);
-
-	/**
-	 * Récupère les relations vers d'autres personnes (parents, enfants, conjoints, ...) d'une ou plusieurs <i>personnes</i>.
-	 *
-	 * @param ids         les ids des personnes à retourner
-	 * @param date        une date de validité (peut être nulle)
-	 * @param withHistory <b>vrai</b> si les collections historisées doivent être renseignée; <b>faux</b> autrement.
-	 * @return une liste de relations entre personnes
-	 */
-	ListOfRelations getRelations(Collection<Long> ids, RegDate date, boolean withHistory);
 
 	/**
 	 * Récupère l'événement civil (+ l'état de la personne juste après l'événement) dont l'identifiant est donné

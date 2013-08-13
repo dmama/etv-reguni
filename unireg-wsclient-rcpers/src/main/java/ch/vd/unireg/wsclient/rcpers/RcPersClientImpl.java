@@ -6,10 +6,9 @@ import org.apache.cxf.jaxrs.client.ServerWebApplicationException;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.springframework.beans.factory.InitializingBean;
 
-import ch.vd.evd0001.v4.ListOfFoundPersons;
-import ch.vd.evd0001.v4.ListOfPersons;
-import ch.vd.evd0001.v4.ListOfRelations;
-import ch.vd.evd0001.v4.Event;
+import ch.vd.evd0001.v5.ListOfFoundPersons;
+import ch.vd.evd0001.v5.ListOfPersons;
+import ch.vd.evd0001.v5.Event;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 
@@ -23,7 +22,6 @@ public class RcPersClientImpl implements RcPersClient, InitializingBean {
 	private String peoplePath;
 	private String peopleBySocialNumberPath;
 	private String peopleByEventIdPath;
-	private String relationsPath;
 	private String eventPath;
 	private String searchPath;
 
@@ -41,10 +39,6 @@ public class RcPersClientImpl implements RcPersClient, InitializingBean {
 
 	public void setPeopleByEventIdPath(String peopleByEventIdPath) {
 		this.peopleByEventIdPath = peopleByEventIdPath;
-	}
-
-	public void setRelationsPath(String relationsPath) {
-		this.relationsPath = relationsPath;
 	}
 
 	public void setEventPath(String eventPath) {
@@ -169,46 +163,6 @@ public class RcPersClientImpl implements RcPersClient, InitializingBean {
 
 			try {
 				return wc.get(ListOfPersons.class);
-			}
-			catch (ServerWebApplicationException e) {
-				throw new RcPersClientException(e);
-			}
-		}
-		finally {
-			wcPool.returnClient(wc);
-		}
-	}
-
-	@Override
-	public ListOfRelations getRelations(Collection<Long> ids, RegDate date, boolean withHistory) {
-
-		final WebClient wc = wcPool.borrowClient(600000); // 10 minutes
-		try {
-			wc.path(relationsPath);
-
-			// les ids
-			final StringBuilder param = new StringBuilder();
-			int i = 0;
-			for (Long id : ids) {
-				if (i++ > 0) {
-					param.append(",");
-				}
-				param.append(String.valueOf(id));
-			}
-			wc.path(param.toString());
-
-			// l'historique
-			if (withHistory) {
-				wc.query("history", "true");
-			}
-
-			// la date
-			if (date != null) {
-				wc.query("date", RegDateHelper.dateToDisplayString(date));
-			}
-
-			try {
-				return wc.get(ListOfRelations.class);
 			}
 			catch (ServerWebApplicationException e) {
 				throw new RcPersClientException(e);
