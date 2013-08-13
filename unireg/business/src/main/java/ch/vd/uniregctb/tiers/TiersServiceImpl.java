@@ -47,6 +47,7 @@ import ch.vd.unireg.interfaces.civil.data.LocalisationType;
 import ch.vd.unireg.interfaces.civil.data.Nationalite;
 import ch.vd.unireg.interfaces.civil.data.Origine;
 import ch.vd.unireg.interfaces.civil.data.Permis;
+import ch.vd.unireg.interfaces.civil.data.RelationVersIndividu;
 import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
@@ -1749,7 +1750,139 @@ public class TiersServiceImpl implements TiersService {
 		return parentes;
 	}
 
-    private void afterForFiscalPrincipalAdded(Contribuable contribuable, ForFiscalPrincipal forFiscalPrincipal) {
+	@Override
+	public void refreshParentesDepuisNumeroIndividu(long noIndividu) {
+		final PersonnePhysique pp = getPersonnePhysiqueByNumeroIndividu(noIndividu);
+		if (pp != null) {
+			refreshParentesSurPersonnePhysique(pp);
+		}
+	}
+
+	@Override
+	public void refreshParentesSurPersonnePhysique(PersonnePhysique pp) {
+		refreshParentesSurPersonnePhysique(pp, true);
+	}
+
+	@Override
+	public List<Parente> initParentesDepuisFiliationsCiviles(PersonnePhysique pp) {
+		final List<Parente> creees = new LinkedList<>();
+		final long noIndividu = pp.getNumeroIndividu();
+		final Individu individu = serviceCivilService.getIndividu(noIndividu, null, AttributeIndividu.PARENTS);
+		final List<RelationVersIndividu> parentRel = individu.getParents();
+		if (parentRel != null && !parentRel.isEmpty()) {
+			for (RelationVersIndividu rel : parentRel) {
+				final Parente parente = createParente(pp, rel);
+				if (parente != null) {
+					final Parente merged = hibernateTemplate.merge(parente);
+					pp.getRapportsSujet().add(merged);
+					creees.add(merged);
+				}
+			}
+		}
+		return creees;
+	}
+
+	private Parente createParente(PersonnePhysique enfant, RelationVersIndividu filiation) {
+		final RegDate dateNaissanceEnfant = getDateNaissance(enfant);
+		final RegDate dateDecesEnfant = getDateDeces(enfant);
+
+		final PersonnePhysique parent = getPersonnePhysiqueByNumeroIndividu(filiation.getNumeroAutreIndividu());
+		if (parent != null) {
+			final RegDate dateDecesParent = getDateDeces(parent);
+			final RegDate dateFin = RegDateHelper.minimum(dateDecesEnfant, dateDecesParent, NullDateBehavior.LATEST);
+			if (RegDateHelper.isAfterOrEqual(dateFin, dateNaissanceEnfant, NullDateBehavior.LATEST)) {
+				return new Parente(dateNaissanceEnfant, dateFin, parent, enfant);
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * @return <code>true</code> si les deux parentés ont des données métier équivalentes (dates + parent + enfant)
+	 */
+	private static boolean areEqualBusinesswise(Parente p1, Parente p2) {
+		if (p1 == p2) {
+			return true;
+		}
+		else if (p1 == null || p2 == null) {
+			return false;
+		}
+		else {
+			return DateRangeHelper.equals(p1, p2) && areLongEqual(p1.getObjetId(), p2.getObjetId()) && areLongEqual(p1.getSujetId(), p2.getSujetId());
+		}
+	}
+
+	private static boolean areLongEqual(Long l1, Long l2) {
+		if (l1 == l2) {
+			return true;
+		}
+		else if (l1 == null || l2 == null) {
+			return false;
+		}
+		else {
+			return l1.longValue() == l2.longValue();
+		}
+	}
+
+	private void refreshParentesSurPersonnePhysique(PersonnePhysique pp, boolean enfantsAussi) {
+		if (pp != null) {
+			final Long noIndividu = pp.getNumeroIndividu();
+			if (noIndividu != null) {
+				// 1. on retrouve les parents depuis les données civiles
+				final Individu individu = serviceCivilService.getIndividu(noIndividu, null, AttributeIndividu.PARENTS);
+				final List<RelationVersIndividu> parents = individu.getParents();
+
+				// 1.1. on récupère les données "en tiers"
+				final Set<RapportEntreTiers> sujetsConnus = pp.getRapportsSujet();
+				final Map<Long, Parente> filiationsCiviles;         // parenté indexée par le numéro de tiers du parent
+				if (parents != null && !parents.isEmpty()) {
+					filiationsCiviles = new HashMap<>(parents.size());
+					for (RelationVersIndividu filiation : parents) {
+						final Parente parente = createParente(pp, filiation);
+						if (parente != null) {
+							filiationsCiviles.put(parente.getObjetId(), parente);
+						}
+					}
+				}
+				else {
+					filiationsCiviles = Collections.emptyMap();
+				}
+
+				// 1.2. on passe d'abord en revue les parentés (-> parents) connues pour voir celles qui doivent disparaître
+				for (RapportEntreTiers sujet : sujetsConnus) {
+					if (!sujet.isAnnule() && sujet.getType() == TypeRapportEntreTiers.PARENTE) {
+						// y a-t-il une relation civile avec le même parent ?
+						final Parente filiation = filiationsCiviles.get(sujet.getObjetId());
+						if (filiation != null && areEqualBusinesswise(filiation, (Parente) sujet)) {
+							// tout correspond, on l'enlève de la liste de ceux qu'il faudra ensuite ajouter...
+							filiationsCiviles.remove(sujet.getObjetId());
+						}
+						else {
+							// non, pas de relation avec cet individu ou la relation ne correspond pas (dates ?)
+							// -> il faut annuler l'ancienne
+							sujet.setAnnule(true);
+						}
+					}
+				}
+
+				// 1.3. puis on ajoute les filiations civiles qui n'ont pas été reconnues (et que l'on peut maintenant persister)
+				for (Parente civile : filiationsCiviles.values()) {
+					sujetsConnus.add(hibernateTemplate.merge(civile));
+				}
+
+				// 2. si nécessaire, on fait pareil sur les enfants connus
+				if (enfantsAussi) {
+					final List<Parente> enfants = getEnfants(pp, false);
+					for (Parente versEnfant : enfants) {
+						final PersonnePhysique enfant = (PersonnePhysique) tiersDAO.get(versEnfant.getSujetId());
+						refreshParentesSurPersonnePhysique(enfant, false);
+					}
+				}
+			}
+		}
+	}
+
+	private void afterForFiscalPrincipalAdded(Contribuable contribuable, ForFiscalPrincipal forFiscalPrincipal) {
         final MotifFor motifOuverture = forFiscalPrincipal.getMotifOuverture();
         final TypeAutoriteFiscale typeAutoriteFiscale = forFiscalPrincipal.getTypeAutoriteFiscale();
         final RegDate dateOuverture = forFiscalPrincipal.getDateDebut();

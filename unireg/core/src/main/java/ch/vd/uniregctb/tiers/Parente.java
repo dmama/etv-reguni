@@ -34,7 +34,7 @@ public class Parente extends RapportEntreTiers {
 		super(dateDebut, dateFin, enfant, parent);
 	}
 
-	public Parente(RapportEntreTiers rapport) {
+	private Parente(Parente rapport) {
 		super(rapport);
 	}
 

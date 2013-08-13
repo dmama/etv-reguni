@@ -7,13 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 
-import ch.vd.registre.base.date.NullDateBehavior;
-import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.tx.TxCallback;
-import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
-import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.unireg.interfaces.civil.data.RelationVersIndividu;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplate;
@@ -87,29 +81,12 @@ public class InitialisationParentesProcessor {
 		template.execute(rapportFinal, new BatchTransactionTemplate.BatchCallback<Long, InitialisationParentesResults>() {
 			@Override
 			public boolean doInTransaction(List<Long> batch, InitialisationParentesResults rapport) throws Exception {
-				// TODO jde préchauffer le cache (avec part PARENT) civil ?
-
 				status.setMessage(msg, percent);
 				for (Long idTiers : batch) {
 					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idTiers);
-					final long noIndividu = pp.getNumeroIndividu();
-					final Individu individu = serviceCivil.getIndividu(noIndividu, null, AttributeIndividu.PARENTS);
-					final List<RelationVersIndividu> parentRel = individu.getParents();
-					if (parentRel != null && !parentRel.isEmpty()) {
-						final RegDate dateDebut = individu.getDateNaissance();
-						final RegDate dateDecesEnfant = tiersService.getDateDeces(pp);
-
-						for (RelationVersIndividu rel : parentRel) {
-							final PersonnePhysique parent = tiersService.getPersonnePhysiqueByNumeroIndividu(rel.getNumeroAutreIndividu());
-							if (parent != null) {
-								final RegDate dateDecesParent = tiersService.getDateDeces(parent);
-								final RegDate dateFin = RegDateHelper.minimum(dateDecesEnfant, dateDecesParent, NullDateBehavior.LATEST);
-
-								final Parente parente = new Parente(dateDebut, dateFin, parent, pp);
-								rapport.addParente(parente);
-								hibernateTemplate.merge(parente);
-							}
-						}
+					final List<Parente> creees = tiersService.initParentesDepuisFiliationsCiviles(pp);
+					for (Parente creee : creees) {
+						rapport.addParente(creee);
 					}
 
 					if (status.interrupted()) {

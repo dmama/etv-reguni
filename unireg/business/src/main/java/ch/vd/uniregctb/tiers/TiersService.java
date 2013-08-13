@@ -1183,6 +1183,42 @@ public interface TiersService {
 	@NotNull
 	List<Parente> getEnfants(PersonnePhysique parent, boolean yComprisRelationsAnnulees);
 
+	/**
+	 * Rafraîchissement des parentés fiscales depuis les données civiles de l'individu indiqué.
+	 * <ul>
+	 *     <li>les parentés vers les parents de l'individu sont de toute façon rafraîchies&nbsp;;</li>
+	 *     <li>les parentés déjà connues vers les enfants de l'individu sont rafraîchies (on ne crée donc jamais de parenté vers un enfant ici !)&nbsp;;</li>
+	 *     <li>on ne fait rien du tout si l'individu ne correspond à aucune personne physique.</li>
+	 * </ul>
+	 * @param noIndividu numéro technique de l'individu civil
+	 * @throws PlusieursPersonnesPhysiquesAvecMemeNumeroIndividuException si le numéro d'individu correspond à plusieurs personnes physiques non annulées/désactivées
+	 */
+	void refreshParentesDepuisNumeroIndividu(long noIndividu);
+
+	/**
+	 * Rafraîchissement des parentés fiscales depuis les données civiles de l'individu derrière la personne physique donnée
+	 * <ul>
+	 *     <li>les parentés vers les parents de l'individu sont de toute façon rafraîchies&nbsp;;</li>
+	 *     <li>les parentés déjà connues vers les enfants de l'individu sont rafraîchies (on ne crée donc jamais de parenté vers un enfant ici !)&nbsp;;</li>
+	 *     <li>on ne fait rien du tout si la personne physique est <code>null</code> ou si elle n'a pas de numéro d'individu civil.</li>
+	 * </ul>
+	 * @param pp personne physique dont les parentés doivent être rafraîchies
+	 * @throws PlusieursPersonnesPhysiquesAvecMemeNumeroIndividuException si on se heurte à un numéro d'individu partagé par plusieurs personnes physiques non annulées/désactivées durant le processus
+	 */
+	void refreshParentesSurPersonnePhysique(PersonnePhysique pp);
+
+	/**
+	 * Rafraîchissement des parentés fiscales depuis les données civiles de l'individu derrière la personne physique donnée
+	 * <ul>
+	 *     <li>seules les filiations (<i>i.e.</i> parentés vers les parents) sont mises à jour sur la personne physique donnée&nbsp;;</li>
+	 *     <li>on ne fait rien du tout si la personne physique est <code>null</code> ou si elle n'a pas de numéro d'individu civil.</li>
+	 * </ul>
+	 * @param pp personne physique dont les parentés doivent être rafraîchies
+	 * @return les relations de parenté créées
+	 * @throws PlusieursPersonnesPhysiquesAvecMemeNumeroIndividuException si on se heurte à un numéro d'individu partagé par plusieurs personnes physiques non annulées/désactivées durant le processus
+	 */
+	List<Parente> initParentesDepuisFiliationsCiviles(PersonnePhysique pp);
+
     /**
      * Permet de traiter la éouverture d'un for fiscal d'un débiteur. Entraine également la réouverture
      * de tous les rapports de travail fermés à la même date que le for.
