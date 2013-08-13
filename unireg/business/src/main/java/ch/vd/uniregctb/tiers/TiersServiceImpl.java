@@ -1845,25 +1845,33 @@ public class TiersServiceImpl implements TiersService {
 				}
 
 				// 1.2. on passe d'abord en revue les parentés (-> parents) connues pour voir celles qui doivent disparaître
-				for (RapportEntreTiers sujet : sujetsConnus) {
-					if (!sujet.isAnnule() && sujet.getType() == TypeRapportEntreTiers.PARENTE) {
-						// y a-t-il une relation civile avec le même parent ?
-						final Parente filiation = filiationsCiviles.get(sujet.getObjetId());
-						if (filiation != null && areEqualBusinesswise(filiation, (Parente) sujet)) {
-							// tout correspond, on l'enlève de la liste de ceux qu'il faudra ensuite ajouter...
-							filiationsCiviles.remove(sujet.getObjetId());
-						}
-						else {
-							// non, pas de relation avec cet individu ou la relation ne correspond pas (dates ?)
-							// -> il faut annuler l'ancienne
-							sujet.setAnnule(true);
+				final Set<RapportEntreTiers> sujets;
+				if (sujetsConnus != null) {
+					sujets = sujetsConnus;
+					for (RapportEntreTiers sujet : sujetsConnus) {
+						if (!sujet.isAnnule() && sujet.getType() == TypeRapportEntreTiers.PARENTE) {
+							// y a-t-il une relation civile avec le même parent ?
+							final Parente filiation = filiationsCiviles.get(sujet.getObjetId());
+							if (filiation != null && areEqualBusinesswise(filiation, (Parente) sujet)) {
+								// tout correspond, on l'enlève de la liste de ceux qu'il faudra ensuite ajouter...
+								filiationsCiviles.remove(sujet.getObjetId());
+							}
+							else {
+								// non, pas de relation avec cet individu ou la relation ne correspond pas (dates ?)
+								// -> il faut annuler l'ancienne
+								sujet.setAnnule(true);
+							}
 						}
 					}
+				}
+				else {
+					sujets = new HashSet<>();
+					pp.setRapportsSujet(sujets);
 				}
 
 				// 1.3. puis on ajoute les filiations civiles qui n'ont pas été reconnues (et que l'on peut maintenant persister)
 				for (Parente civile : filiationsCiviles.values()) {
-					sujetsConnus.add(hibernateTemplate.merge(civile));
+					sujets.add(hibernateTemplate.merge(civile));
 				}
 
 				// 2. si nécessaire, on fait pareil sur les enfants connus

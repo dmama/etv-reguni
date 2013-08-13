@@ -123,6 +123,8 @@ public class Naissance extends EvenementCivilInterne {
 			Audit.info(getNumeroEvenement(), "Création d'un nouveau tiers habitant (numéro: " + bebe.getNumero() + ')');
 		}
 
+		context.getTiersService().refreshParentesSurPersonnePhysique(bebe, false);
+
 		context.getEvenementFiscalService().publierEvenementFiscalChangementSituation(bebe, dateEvenement, bebe.getId());
 
 		// [UNIREG-3244] on envoie les faire-parts de naissance

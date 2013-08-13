@@ -52,6 +52,10 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 	private CacheManager cacheManager;
 	private UniregCacheManager uniregCacheManager;
 
+	public NaissanceTest() {
+		setWantSynchroParentes(true);
+	}
+
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
@@ -233,7 +237,7 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 				// on vérifie les événements fiscaux (qui doivent quand-même avoir été envoyés)
 				// on vérifie que il y a eu :
 				// - un événement de changement de situation de famille
-				// - un événement de naissane
+				// - un événement de naissance
 				final List<EvenementFiscal> events = evenementFiscalDAO.getAll();
 				assertNotNull(events);
 				assertEquals(2, events.size());
@@ -397,8 +401,8 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 			Long mere;
 		}
 
-		// On crée le père et la mère
-		final Ids ids = doInNewTransactionAndSession(new TxCallback<Ids>() {
+		// On crée le père et la mère (sans synchro pour les parentés... c'est l'événement civil de naissance qui doit faire le boulot)
+		final Ids ids = doInNewTransactionAndSessionUnderSwitch(parentesSynchronizer, false, new TxCallback<Ids>() {
 			@Override
 			public Ids execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pere = addHabitant(indPere);
@@ -432,8 +436,14 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// On vérifie que la mère et le père sont trouvés dans le cache et qu'ils possèdent bien un enfant
-		assertParent(indPere, ids.pere, idFils, dateNaissance);
-		assertParent(indMere, ids.mere, idFils, dateNaissance);
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				assertParent(indPere, ids.pere, idFils, dateNaissance);
+				assertParent(indMere, ids.mere, idFils, dateNaissance);
+				return null;
+			}
+		});
 	}
 
 	private void assertParent(long indParent, Long idParent, Long idFils, RegDate dateNaissance) {
