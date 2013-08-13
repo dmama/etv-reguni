@@ -60,6 +60,7 @@
 		<value>ch.vd.uniregctb.tiers.PersonnePhysique</value>
 		<value>ch.vd.uniregctb.tiers.RapportEntreTiers</value>
 		<value>ch.vd.uniregctb.tiers.AppartenanceMenage</value>
+		<value>ch.vd.uniregctb.tiers.Filiation</value>
 		<value>ch.vd.uniregctb.tiers.RapportPrestationImposable</value>
 		<value>ch.vd.uniregctb.tiers.RepresentationConventionnelle</value>
 		<value>ch.vd.uniregctb.tiers.RepresentationLegale</value>

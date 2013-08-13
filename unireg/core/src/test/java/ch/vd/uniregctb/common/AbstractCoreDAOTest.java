@@ -81,6 +81,7 @@ import ch.vd.uniregctb.tiers.DroitAcces;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
+import ch.vd.uniregctb.tiers.Filiation;
 import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.ForFiscalAutreImpot;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
@@ -882,6 +883,13 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		menage.setNumero(noTiers);
 		menage = merge(menage);
 		return menage;
+	}
+
+	protected Filiation addFiliation(PersonnePhysique parent, PersonnePhysique enfant, RegDate dateDebut, @Nullable RegDate dateFin) {
+		final Filiation filiation = merge(new Filiation(dateDebut, dateFin, parent, enfant));
+		parent.addRapportSujet(filiation);
+		enfant.addRapportObjet(filiation);
+		return filiation;
 	}
 
 	protected Tutelle addTutelle(PersonnePhysique pupille, Tiers tuteur, @Nullable CollectiviteAdministrative autoriteTutelaire, RegDate dateDebut, @Nullable RegDate dateFin) {
