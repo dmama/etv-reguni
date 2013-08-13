@@ -2726,4 +2726,92 @@ public class PartyWebServiceTest extends WebserviceTest {
 		assertNotNull(residence);
 		assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), residence.getAddressInformation().getMunicipalityId());
 	}
+
+	@Test
+	public void testFiliationsFiscalesNonRenvoyeesCommeRapportEntreTiers() throws Exception {
+
+		final long noIndPapa = 7856487345L;
+		final long noIndFiston = 438953683L;
+		final RegDate dateNaissanceFiston = date(1975, 10, 22);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu papa = addIndividu(noIndPapa, date(1950, 8, 26), "Smith", "John Senior", Sexe.MASCULIN);
+				final MockIndividu fiston = addIndividu(noIndFiston, dateNaissanceFiston, "Smith", "Johnny Baby", Sexe.MASCULIN);
+				addLiensFiliation(papa, fiston, dateNaissanceFiston, null);
+			}
+		});
+
+		// mise en place fiscale
+		final class Ids {
+			long idPapa;
+			long idFiston;
+		}
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique papa = addHabitant(noIndPapa);
+				final PersonnePhysique fiston = addHabitant(noIndFiston);
+				addFiliation(papa, fiston, dateNaissanceFiston, null);
+				final Ids ids = new Ids();
+				ids.idPapa = papa.getNumero();
+				ids.idFiston = fiston.getNumero();
+				return ids;
+			}
+		});
+
+		// vue depuis le père, en ne demandant que les relations -> pas d'enfants
+		{
+			final GetPartyRequest params = new GetPartyRequest();
+			params.setLogin(login);
+			params.setPartyNumber((int) ids.idPapa);
+			params.getParts().add(PartyPart.RELATIONS_BETWEEN_PARTIES);
+
+			final Party party = service.getParty(params);
+			assertNotNull(party);
+			assertInstanceOf(NaturalPerson.class, party);
+			assertEmpty(party.getRelationsBetweenParties());
+		}
+
+		// vue depuis le père, en ne demandant que les enfants -> un enfant
+		{
+			final GetPartyRequest params = new GetPartyRequest();
+			params.setLogin(login);
+			params.setPartyNumber((int) ids.idPapa);
+			params.getParts().add(PartyPart.CHILDREN);
+
+			final Party party = service.getParty(params);
+			assertNotNull(party);
+			assertInstanceOf(NaturalPerson.class, party);
+			assertEquals(1, party.getRelationsBetweenParties().size());
+		}
+
+		// vue depuis l'enfant, en ne demandant que les relations -> pas de papa
+		{
+			final GetPartyRequest params = new GetPartyRequest();
+			params.setLogin(login);
+			params.setPartyNumber((int) ids.idFiston);
+			params.getParts().add(PartyPart.RELATIONS_BETWEEN_PARTIES);
+
+			final Party party = service.getParty(params);
+			assertNotNull(party);
+			assertInstanceOf(NaturalPerson.class, party);
+			assertEmpty(party.getRelationsBetweenParties());
+		}
+
+		// vue depuis le père, en ne demandant que les parents -> un enfant
+		{
+			final GetPartyRequest params = new GetPartyRequest();
+			params.setLogin(login);
+			params.setPartyNumber((int) ids.idFiston);
+			params.getParts().add(PartyPart.PARENTS);
+
+			final Party party = service.getParty(params);
+			assertNotNull(party);
+			assertInstanceOf(NaturalPerson.class, party);
+			assertEquals(1, party.getRelationsBetweenParties().size());
+		}
+	}
 }

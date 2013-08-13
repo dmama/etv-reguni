@@ -6,6 +6,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlType;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
@@ -14,6 +15,7 @@ import org.apache.log4j.Logger;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
+import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 import ch.vd.uniregctb.webservices.tiers2.exception.BusinessException;
 import ch.vd.uniregctb.webservices.tiers2.impl.Context;
 import ch.vd.uniregctb.webservices.tiers2.impl.CopyMode;
@@ -36,6 +38,11 @@ import ch.vd.uniregctb.webservices.tiers2.impl.DataHelper;
 public abstract class Tiers {
 
 	private static final Logger LOGGER = Logger.getLogger(Tiers.class);
+
+	/**
+	 * Les filiations (fiscales) et les contacts impôt source ne sortent pas par ce service
+ 	 */
+	private static final Set<TypeRapportEntreTiers> RAPPORT_EXPOSES = EnumSet.complementOf(EnumSet.of(TypeRapportEntreTiers.CONTACT_IMPOT_SOURCE, TypeRapportEntreTiers.FILIATION));
 
 	/**
 	 * <b>Dans la version 3 du web-service :</b> <i>partyTypeType</i> (xml) / <i>PartyType</i> (client java)
@@ -353,14 +360,14 @@ public abstract class Tiers {
 			this.rapportsEntreTiers = new ArrayList<>();
 			// Ajoute les rapports dont le tiers est le sujet
 			for (ch.vd.uniregctb.tiers.RapportEntreTiers rapport : tiers.getRapportsSujet()) {
-				if (!(rapport instanceof ch.vd.uniregctb.tiers.ContactImpotSource) && rapport.isValidAt(date)) {
+				if (rapport.isValidAt(date) && RAPPORT_EXPOSES.contains(rapport.getType())) {
 					this.rapportsEntreTiers.add(new RapportEntreTiers(rapport, rapport.getObjetId()));
 				}
 			}
 
 			// Ajoute les rapports dont le tiers est l'objet
 			for (ch.vd.uniregctb.tiers.RapportEntreTiers rapport : tiers.getRapportsObjet()) {
-				if (!(rapport instanceof ch.vd.uniregctb.tiers.ContactImpotSource) && rapport.isValidAt(date)) {
+				if (rapport.isValidAt(date) && RAPPORT_EXPOSES.contains(rapport.getType())) {
 					this.rapportsEntreTiers.add(new RapportEntreTiers(rapport, rapport.getSujetId()));
 				}
 			}

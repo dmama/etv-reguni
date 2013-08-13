@@ -6,6 +6,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
@@ -18,6 +19,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
+import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 import ch.vd.uniregctb.webservices.tiers2.exception.BusinessException;
 import ch.vd.uniregctb.webservices.tiers2.impl.Context;
 import ch.vd.uniregctb.webservices.tiers2.impl.CopyMode;
@@ -41,6 +43,12 @@ import ch.vd.uniregctb.webservices.tiers2.impl.ForFiscalComparator;
 public abstract class TiersHisto {
 
 	private static final Logger LOGGER = Logger.getLogger(TiersHisto.class);
+
+	/**
+	 * Les filiations (fiscales) et les contacts impôt source ne sortent pas par ce service
+	 */
+	private static final Set<TypeRapportEntreTiers> RAPPORT_EXPOSES = EnumSet.complementOf(EnumSet.of(TypeRapportEntreTiers.CONTACT_IMPOT_SOURCE, TypeRapportEntreTiers.FILIATION));
+
 
 	/**
 	 * Numéro de contribuable.
@@ -461,21 +469,16 @@ public abstract class TiersHisto {
 		this.rapportsEntreTiers = new ArrayList<>();
 		// Ajoute les rapports dont le tiers est le sujet
 		for (ch.vd.uniregctb.tiers.RapportEntreTiers rapport : tiers.getRapportsSujet()) {
-			if (rapport instanceof ch.vd.uniregctb.tiers.ContactImpotSource
-					|| (range != null && !DateRangeHelper.intersect(rapport, range))) {
-				continue;
+			if (RAPPORT_EXPOSES.contains(rapport.getType()) && (range == null || DateRangeHelper.intersect(rapport, range))) {
+				this.rapportsEntreTiers.add(new RapportEntreTiers(rapport, rapport.getObjetId()));
 			}
-
-			this.rapportsEntreTiers.add(new RapportEntreTiers(rapport, rapport.getObjetId()));
 		}
 
 		// Ajoute les rapports dont le tiers est l'objet
 		for (ch.vd.uniregctb.tiers.RapportEntreTiers rapport : tiers.getRapportsObjet()) {
-			if (rapport instanceof ch.vd.uniregctb.tiers.ContactImpotSource
-					|| (range != null && !DateRangeHelper.intersect(rapport, range))) {
-				continue;
+			if (RAPPORT_EXPOSES.contains(rapport.getType()) && (range == null || DateRangeHelper.intersect(rapport, range))) {
+				this.rapportsEntreTiers.add(new RapportEntreTiers(rapport, rapport.getSujetId()));
 			}
-			this.rapportsEntreTiers.add(new RapportEntreTiers(rapport, rapport.getSujetId()));
 		}
 		if (this.rapportsEntreTiers.isEmpty()) {
 			this.rapportsEntreTiers = null;

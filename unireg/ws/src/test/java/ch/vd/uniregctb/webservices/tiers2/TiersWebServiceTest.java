@@ -1321,4 +1321,88 @@ public class TiersWebServiceTest extends WebserviceTest {
 			globalTiersIndexer.setOnTheFlyIndexation(otfi);
 		}
 	}
+
+	@Test
+	public void testFiliationsFiscalesNonRenvoyeesCommeRapportEntreTiers() throws Exception {
+
+		final long noIndPapa = 7856487345L;
+		final long noIndFiston = 438953683L;
+		final RegDate dateNaissanceFiston = date(1975, 10, 22);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu papa = addIndividu(noIndPapa, date(1950, 8, 26), "Smith", "John Senior", Sexe.MASCULIN);
+				final MockIndividu fiston = addIndividu(noIndFiston, dateNaissanceFiston, "Smith", "Johnny Baby", Sexe.MASCULIN);
+				addLiensFiliation(papa, fiston, dateNaissanceFiston, null);
+			}
+		});
+
+		// mise en place fiscale
+		final class Ids {
+			long idPapa;
+			long idFiston;
+		}
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique papa = addHabitant(noIndPapa);
+				final PersonnePhysique fiston = addHabitant(noIndFiston);
+				addFiliation(papa, fiston, dateNaissanceFiston, null);
+				final Ids ids = new Ids();
+				ids.idPapa = papa.getNumero();
+				ids.idFiston = fiston.getNumero();
+				return ids;
+			}
+		});
+
+		// vue depuis le père, en demandant les relations historiques -> pas d'enfants
+		{
+			final GetTiersHisto params = new GetTiersHisto();
+			params.tiersNumber = ids.idPapa;
+			params.login = login;
+			params.parts = EnumSet.of(TiersPart.RAPPORTS_ENTRE_TIERS);
+
+			final PersonnePhysiqueHisto pp = (PersonnePhysiqueHisto) service.getTiersHisto(params);
+			assertNotNull(pp);
+			assertEmpty(pp.rapportsEntreTiers);
+		}
+
+		// vue depuis le père, en demandant les relations maintenant -> pas d'enfants
+		{
+			final GetTiers params = new GetTiers();
+			params.tiersNumber = ids.idPapa;
+			params.login = login;
+			params.parts = EnumSet.of(TiersPart.RAPPORTS_ENTRE_TIERS);
+
+			final ch.vd.uniregctb.webservices.tiers2.data.Tiers pp = service.getTiers(params);
+			assertNotNull(pp);
+			assertEmpty(pp.rapportsEntreTiers);
+		}
+
+		// vue depuis l'enfant, en demandant les relations historiques -> pas de papa
+		{
+			final GetTiersHisto params = new GetTiersHisto();
+			params.tiersNumber = ids.idFiston;
+			params.login = login;
+			params.parts = EnumSet.of(TiersPart.RAPPORTS_ENTRE_TIERS);
+
+			final PersonnePhysiqueHisto pp = (PersonnePhysiqueHisto) service.getTiersHisto(params);
+			assertNotNull(pp);
+			assertEmpty(pp.rapportsEntreTiers);
+		}
+
+		// vue depuis l'enfant, en demandant les relations maintenant -> pas de papa
+		{
+			final GetTiers params = new GetTiers();
+			params.tiersNumber = ids.idFiston;
+			params.login = login;
+			params.parts = EnumSet.of(TiersPart.RAPPORTS_ENTRE_TIERS);
+
+			final ch.vd.uniregctb.webservices.tiers2.data.Tiers pp = service.getTiers(params);
+			assertNotNull(pp);
+			assertEmpty(pp.rapportsEntreTiers);
+		}
+	}
 }

@@ -1,7 +1,11 @@
 package ch.vd.uniregctb.webservices.tiers2.data;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 import org.junit.Test;
 
+import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 import ch.vd.uniregctb.webservices.tiers2.EnumTest;
 import ch.vd.uniregctb.webservices.tiers2.impl.EnumHelper;
 
@@ -14,8 +18,13 @@ public class TypeRapportEntreTiersTest extends EnumTest {
 
 	@Test
 	public void testCoherence() {
-		assertEnumLengthEquals(RapportEntreTiers.Type.class, ch.vd.uniregctb.type.TypeRapportEntreTiers.class);
-		assertEnumConstantsEqual(RapportEntreTiers.Type.class, ch.vd.uniregctb.type.TypeRapportEntreTiers.class);
+		// les rapports de filiation ne peuvent pas sortir par la v2 du web-service tiers
+		final Set<TypeRapportEntreTiers> coreEnumSet = EnumSet.complementOf(EnumSet.of(TypeRapportEntreTiers.FILIATION));
+		final TypeRapportEntreTiers[] coreEnums = coreEnumSet.toArray(new TypeRapportEntreTiers[coreEnumSet.size()]);
+		final RapportEntreTiers.Type[] wsEnums = RapportEntreTiers.Type.values();
+
+		assertEnumLengthEquals(wsEnums, coreEnums);
+		assertEnumConstantsEqual(wsEnums, coreEnums);
 	}
 
 	@Test

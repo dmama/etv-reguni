@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.xml.party.v1.strategy;
 
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
@@ -20,6 +21,7 @@ import ch.vd.unireg.xml.party.v1.PartyPart;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportFiliation;
 import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 import ch.vd.uniregctb.xml.Context;
 import ch.vd.uniregctb.xml.DataHelper;
 import ch.vd.uniregctb.xml.ExceptionHelper;
@@ -220,23 +222,22 @@ public abstract class PartyStrategy<T extends Party> {
 		copyColl(to.getDebtProsecutionAddressesOfOtherParty(), from.getDebtProsecutionAddressesOfOtherParty());
 	}
 
+	private static final Set<TypeRapportEntreTiers> EXPOSED_RELATIONS_BETWEEN_PARTIES = EnumSet.complementOf(EnumSet.of(TypeRapportEntreTiers.CONTACT_IMPOT_SOURCE, TypeRapportEntreTiers.FILIATION));
+
 	private static void initRelationsBetweenParties(Party tiers, final Tiers right, Set<PartyPart> parts, Context context) {
 		if (parts.contains(PartyPart.RELATIONS_BETWEEN_PARTIES)) {
 			// Ajoute les rapports dont le tiers est le sujet
 			for (ch.vd.uniregctb.tiers.RapportEntreTiers rapport : right.getRapportsSujet()) {
-				if (rapport instanceof ch.vd.uniregctb.tiers.ContactImpotSource) {
-					continue;
+				if (EXPOSED_RELATIONS_BETWEEN_PARTIES.contains(rapport.getType())) {
+					tiers.getRelationsBetweenParties().add(RelationBetweenPartiesBuilder.newRelationBetweenParties(rapport, rapport.getObjetId()));
 				}
-
-				tiers.getRelationsBetweenParties().add(RelationBetweenPartiesBuilder.newRelationBetweenParties(rapport, rapport.getObjetId()));
 			}
 
 			// Ajoute les rapports dont le tiers est l'objet
 			for (ch.vd.uniregctb.tiers.RapportEntreTiers rapport : right.getRapportsObjet()) {
-				if (rapport instanceof ch.vd.uniregctb.tiers.ContactImpotSource) {
-					continue;
+				if (EXPOSED_RELATIONS_BETWEEN_PARTIES.contains(rapport.getType())) {
+					tiers.getRelationsBetweenParties().add(RelationBetweenPartiesBuilder.newRelationBetweenParties(rapport, rapport.getSujetId()));
 				}
-				tiers.getRelationsBetweenParties().add(RelationBetweenPartiesBuilder.newRelationBetweenParties(rapport, rapport.getSujetId()));
 			}
 		}
 
