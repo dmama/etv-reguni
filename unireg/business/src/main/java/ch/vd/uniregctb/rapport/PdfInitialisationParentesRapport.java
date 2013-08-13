@@ -11,7 +11,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.tiers.jobs.InitialisationParentesResults;
+import ch.vd.uniregctb.parentes.InitialisationParentesResults;
 
 public class PdfInitialisationParentesRapport extends PdfRapport {
 

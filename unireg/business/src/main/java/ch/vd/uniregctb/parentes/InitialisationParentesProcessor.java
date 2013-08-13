@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers.jobs;
+package ch.vd.uniregctb.parentes;
 
 import java.util.List;
 
@@ -12,8 +12,8 @@ import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplate;
 import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.uniregctb.common.Switchable;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.tiers.Parente;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiersDAO;
@@ -31,16 +31,16 @@ public class InitialisationParentesProcessor {
 	private final TiersDAO tiersDAO;
 	private final PlatformTransactionManager transactionManager;
 	private final HibernateTemplate hibernateTemplate;
-	private final ServiceCivilService serviceCivil;
+	private final Switchable parentesSynchronizerInterceptor;
 	private final TiersService tiersService;
 
 	public InitialisationParentesProcessor(RapportEntreTiersDAO rapportDAO, TiersDAO tiersDAO, PlatformTransactionManager transactionManager, HibernateTemplate hibernateTemplate,
-	                                       ServiceCivilService serviceCivil, TiersService tiersService) {
+	                                       Switchable parentesSynchronizerInterceptor, TiersService tiersService) {
 		this.rapportDAO = rapportDAO;
 		this.tiersDAO = tiersDAO;
 		this.transactionManager = transactionManager;
 		this.hibernateTemplate = hibernateTemplate;
-		this.serviceCivil = serviceCivil;
+		this.parentesSynchronizerInterceptor = parentesSynchronizerInterceptor;
 		this.tiersService = tiersService;
 	}
 
@@ -81,19 +81,26 @@ public class InitialisationParentesProcessor {
 		template.execute(rapportFinal, new BatchTransactionTemplate.BatchCallback<Long, InitialisationParentesResults>() {
 			@Override
 			public boolean doInTransaction(List<Long> batch, InitialisationParentesResults rapport) throws Exception {
-				status.setMessage(msg, percent);
-				for (Long idTiers : batch) {
-					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idTiers);
-					final List<Parente> creees = tiersService.initParentesDepuisFiliationsCiviles(pp);
-					for (Parente creee : creees) {
-						rapport.addParente(creee);
-					}
+				final boolean interceptorEnabled = parentesSynchronizerInterceptor.isEnabled();
+				parentesSynchronizerInterceptor.setEnabled(false);
+				try {
+					status.setMessage(msg, percent);
+					for (Long idTiers : batch) {
+						final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idTiers);
+						final List<Parente> creees = tiersService.initParentesDepuisFiliationsCiviles(pp);
+						for (Parente creee : creees) {
+							rapport.addParente(creee);
+						}
 
-					if (status.interrupted()) {
-						break;
+						if (status.interrupted()) {
+							break;
+						}
 					}
+					return !status.interrupted();
 				}
-				return !status.interrupted();
+				finally {
+					parentesSynchronizerInterceptor.setEnabled(interceptorEnabled);
+				}
 			}
 
 			@Override

@@ -1,5 +1,4 @@
-
-package ch.vd.uniregctb.tiers.jobs;
+package ch.vd.uniregctb.parentes;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,7 +31,7 @@ public class InitialisationParentesProcessorTest extends BusinessTest {
 		super.runOnSetUp();
 
 		final RapportEntreTiersDAO rapportDAO = getBean(RapportEntreTiersDAO.class, "rapportEntreTiersDAO");
-		processor = new InitialisationParentesProcessor(rapportDAO, tiersDAO, transactionManager, hibernateTemplate, serviceCivil, tiersService);
+		processor = new InitialisationParentesProcessor(rapportDAO, tiersDAO, transactionManager, hibernateTemplate, parentesSynchronizer, tiersService);
 	}
 
 	@Test

@@ -487,7 +487,7 @@
 		<property name="auditLineDAO" ref="auditLineDAO"/>
 	</bean>
 
-	<bean id="initialisationParentesJob" parent="schedulerJob" class="ch.vd.uniregctb.tiers.jobs.InitialisationParentesJob">
+	<bean id="initialisationParentesJob" parent="schedulerJob" class="ch.vd.uniregctb.parentes.InitialisationParentesJob">
 		<constructor-arg value="711"/>
 		<constructor-arg value="(Ré-)initialiser les relations de parentés"/>
 		<property name="tiersService" ref="tiersService"/>
@@ -495,8 +495,8 @@
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="rapportEntreTiersDAO" ref="rapportEntreTiersDAO"/>
-		<property name="serviceCivil" ref="serviceCivilService"/>
 		<property name="rapportService" ref="rapportService"/>
+		<property name="parentesSynchronizerInterceptor" ref="parentesSynchronizerInterceptor"/>
 	</bean>
 
     <bean id="cacheResetJob" parent="schedulerJob" class="ch.vd.uniregctb.cache.CacheResetJob">

@@ -44,6 +44,12 @@
 		<property name="validationService" ref="validationService" />
 	</bean>
 
+	<bean id="parentesSynchronizerInterceptor" class="ch.vd.uniregctb.parentes.ParentesSynchronizerInterceptor">
+		<property name="parent" ref="modificationInterceptor"/>
+		<property name="tiersService" ref="tiersService"/>
+		<property name="transactionManager" ref="transactionManager"/>
+	</bean>
+
 	<bean id="tiersService" class="ch.vd.uniregctb.tiers.TiersServiceImpl">
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="evenementCivilRegPPDAO" ref="evenementCivilRegPPDAO" />

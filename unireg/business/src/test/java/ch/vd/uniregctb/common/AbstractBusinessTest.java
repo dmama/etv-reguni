@@ -40,6 +40,7 @@ import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.parentes.ParentesSynchronizerInterceptor;
 import ch.vd.uniregctb.tache.TacheSynchronizerInterceptor;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -101,11 +102,13 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 
     protected boolean wantIndexation = false;
     protected boolean wantSynchroTache = false;
+	protected boolean wantSynchroParentes = false;
     protected TiersService tiersService;
     protected GlobalTiersIndexer globalTiersIndexer;
     protected GlobalTiersSearcher globalTiersSearcher;
     protected TacheSynchronizerInterceptor tacheSynchronizer;
     protected ValidationInterceptor validationInterceptor;
+	protected ParentesSynchronizerInterceptor parentesSynchronizer;
 
     @Override
     protected void runOnSetUp() throws Exception {
@@ -116,6 +119,8 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
         tacheSynchronizer = getBean(TacheSynchronizerInterceptor.class, "tacheSynchronizerInterceptor");
         tacheSynchronizer.setOnTheFlySynchronization(wantSynchroTache);
         validationInterceptor = getBean(ValidationInterceptor.class, "validationInterceptor");
+	    parentesSynchronizer = getBean(ParentesSynchronizerInterceptor.class, "parentesSynchronizerInterceptor");
+	    parentesSynchronizer.setEnabled(wantSynchroParentes);
         super.runOnSetUp();
     }
 
@@ -150,6 +155,14 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 
         if (tacheSynchronizer != null) {
             tacheSynchronizer.setOnTheFlySynchronization(wantSynchroTache);
+        }
+    }
+
+    public void setWantSynchroParentes(boolean wantSynchroParentes) {
+        this.wantSynchroParentes = wantSynchroParentes;
+
+        if (parentesSynchronizer != null) {
+            parentesSynchronizer.setEnabled(wantSynchroParentes);
         }
     }
 

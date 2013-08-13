@@ -76,6 +76,7 @@ import ch.vd.uniregctb.metier.OuvertureForsResults;
 import ch.vd.uniregctb.metier.PassageNouveauxRentiersSourciersEnMixteResults;
 import ch.vd.uniregctb.mouvement.DeterminerMouvementsDossiersEnMasseResults;
 import ch.vd.uniregctb.oid.SuppressionOIDResults;
+import ch.vd.uniregctb.parentes.InitialisationParentesResults;
 import ch.vd.uniregctb.registrefoncier.ImportImmeublesResults;
 import ch.vd.uniregctb.registrefoncier.RapprocherCtbResults;
 import ch.vd.uniregctb.role.ProduireRolesCommunesResults;
@@ -89,7 +90,6 @@ import ch.vd.uniregctb.stats.evenements.StatsEvenementsIdentificationContribuabl
 import ch.vd.uniregctb.tache.ListeTachesEnInstanceParOID;
 import ch.vd.uniregctb.tache.TacheSyncResults;
 import ch.vd.uniregctb.tiers.ExclureContribuablesEnvoiResults;
-import ch.vd.uniregctb.tiers.jobs.InitialisationParentesResults;
 import ch.vd.uniregctb.tiers.rattrapage.etatdeclaration.CorrectionEtatDeclarationResults;
 import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantResults;
 import ch.vd.uniregctb.tiers.rattrapage.pm.MigrationCoquillesPM;

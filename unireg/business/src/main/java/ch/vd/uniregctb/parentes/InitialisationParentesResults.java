@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers.jobs;
+package ch.vd.uniregctb.parentes;
 
 import java.util.LinkedList;
 import java.util.List;
