@@ -24,6 +24,7 @@ import java.util.TreeSet;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
+import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.jetbrains.annotations.NotNull;
@@ -1764,32 +1765,86 @@ public class TiersServiceImpl implements TiersService {
 		final long noIndividu = pp.getNumeroIndividu();
 		final Individu individu = serviceCivilService.getIndividu(noIndividu, null, AttributeIndividu.PARENTS);
 		final List<RelationVersIndividu> parentRel = individu.getParents();
+		boolean parenteDirty = false;
 		if (parentRel != null && !parentRel.isEmpty()) {
 			for (RelationVersIndividu rel : parentRel) {
-				final Parente parente = createParente(pp, rel);
-				if (parente != null) {
-					final Parente merged = hibernateTemplate.merge(parente);
-					pp.getRapportsSujet().add(merged);
-					creees.add(merged);
+				try {
+					final Parente parente = createParente(pp, rel);
+					if (parente != null) {
+						final Parente merged = hibernateTemplate.merge(parente);
+						pp.getRapportsSujet().add(merged);
+						creees.add(merged);
+					}
+				}
+				catch (CreationParenteImpossibleCarTiersParentInconnuAuFiscal | PlusieursPersonnesPhysiquesAvecMemeNumeroIndividuException e) {
+					LOGGER.warn(e.getMessage(), e);
+					parenteDirty = true;
 				}
 			}
+		}
+		if (parenteDirty != pp.isParenteDirty()) {
+			setParenteDirtyFlag(pp, parenteDirty);
 		}
 		return creees;
 	}
 
-	private Parente createParente(PersonnePhysique enfant, RelationVersIndividu filiation) {
+	private void setParenteDirtyFlag(final PersonnePhysique pp, final boolean flag) {
+		final String sql = "UPDATE TIERS SET PP_PARENTE_DIRTY=:flag WHERE NUMERO=:id";
+		final int nbChanged = hibernateTemplate.execute(new HibernateCallback<Integer>() {
+			@Override
+			public Integer doInHibernate(Session session) throws HibernateException, SQLException {
+				final Query query = session.createSQLQuery(sql);
+				query.setBoolean("flag", flag);
+				query.setLong("id", pp.getNumero());
+				return query.executeUpdate();
+			}
+		});
+		if (LOGGER.isDebugEnabled() && nbChanged > 0) {
+			LOGGER.debug(String.format("Flag 'parenté dirty' passé à %s sur la personne physique %d", flag, pp.getNumero()));
+		}
+	}
+
+	private static class CreationParenteImpossibleCarTiersParentInconnuAuFiscal extends Exception {
+		public final PersonnePhysique enfant;
+		public final long noIndividuParent;
+
+		public CreationParenteImpossibleCarTiersParentInconnuAuFiscal(PersonnePhysique enfant, long noIndividuParent) {
+			this.enfant = enfant;
+			this.noIndividuParent = noIndividuParent;
+		}
+
+		@Override
+		public String getMessage() {
+			return String.format("Impossible de créer une parenté depuis l'enfant %s vers son parent car aucun tiers n'existe dans le registre avec le numéro d'individu %d.",
+			                     enfant.getNumero(), noIndividuParent);
+		}
+	}
+
+	/**
+	 * Création d'un objet "parenté" ascendante depuis l'enfant donné vers le contribuable derrière l'individu donné par la filiation
+	 * @param enfant enfant à qui on rajoute une parenté ascendante
+	 * @param filiation la filiation civile dont on doit s'inspirer
+	 * @return la parenté qui va bien (nouvel objet non inscrit dans aucune session hibernate)
+	 * @throws CreationParenteImpossibleCarTiersParentInconnuAuFiscal si la filiation nous donne un numéro d'individu pour lequel il n'existe aucun tiers dans le registre
+	 * @throws PlusieursPersonnesPhysiquesAvecMemeNumeroIndividuException si la filiation nous donne un numéro d'individu pour lequel il y a plusieurs tiers acitfs dans le registre
+	 */
+	private Parente createParente(PersonnePhysique enfant, RelationVersIndividu filiation) throws CreationParenteImpossibleCarTiersParentInconnuAuFiscal {
 		final RegDate dateNaissanceEnfant = getDateNaissance(enfant);
 		final RegDate dateDecesEnfant = getDateDeces(enfant);
 
-		final PersonnePhysique parent = getPersonnePhysiqueByNumeroIndividu(filiation.getNumeroAutreIndividu());
+		final long noIndividuParent = filiation.getNumeroAutreIndividu();
+		final PersonnePhysique parent = getPersonnePhysiqueByNumeroIndividu(noIndividuParent);
 		if (parent != null) {
 			final RegDate dateDecesParent = getDateDeces(parent);
 			final RegDate dateFin = RegDateHelper.minimum(dateDecesEnfant, dateDecesParent, NullDateBehavior.LATEST);
 			if (RegDateHelper.isAfterOrEqual(dateFin, dateNaissanceEnfant, NullDateBehavior.LATEST)) {
 				return new Parente(dateNaissanceEnfant, dateFin, parent, enfant);
 			}
+			return null;
 		}
-		return null;
+		else {
+			throw new CreationParenteImpossibleCarTiersParentInconnuAuFiscal(enfant, noIndividuParent);
+		}
 	}
 
 	/**
@@ -1828,20 +1883,31 @@ public class TiersServiceImpl implements TiersService {
 				final Individu individu = serviceCivilService.getIndividu(noIndividu, null, AttributeIndividu.PARENTS);
 				final List<RelationVersIndividu> parents = individu.getParents();
 
+				boolean parenteDirty = false;
+
 				// 1.1. on récupère les données "en tiers"
 				final Set<RapportEntreTiers> sujetsConnus = pp.getRapportsSujet();
 				final Map<Long, Parente> filiationsCiviles;         // parenté indexée par le numéro de tiers du parent
 				if (parents != null && !parents.isEmpty()) {
 					filiationsCiviles = new HashMap<>(parents.size());
 					for (RelationVersIndividu filiation : parents) {
-						final Parente parente = createParente(pp, filiation);
-						if (parente != null) {
-							filiationsCiviles.put(parente.getObjetId(), parente);
+						try {
+							final Parente parente = createParente(pp, filiation);
+							if (parente != null) {
+								filiationsCiviles.put(parente.getObjetId(), parente);
+							}
+						}
+						catch (CreationParenteImpossibleCarTiersParentInconnuAuFiscal | PlusieursPersonnesPhysiquesAvecMemeNumeroIndividuException e) {
+							LOGGER.warn(e.getMessage(), e);
+							parenteDirty = true;
 						}
 					}
 				}
 				else {
 					filiationsCiviles = Collections.emptyMap();
+				}
+				if (parenteDirty != pp.isParenteDirty()) {
+					setParenteDirtyFlag(pp, parenteDirty);
 				}
 
 				// 1.2. on passe d'abord en revue les parentés (-> parents) connues pour voir celles qui doivent disparaître

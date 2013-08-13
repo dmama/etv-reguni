@@ -1,5 +1,9 @@
 package ch.vd.uniregctb.evenement.civil.engine.ech;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
@@ -25,6 +29,7 @@ import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 import ch.vd.uniregctb.type.EtatCivil;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
@@ -38,6 +43,7 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 import ch.vd.uniregctb.type.TypeEvenementErreur;
 import ch.vd.uniregctb.type.TypePermis;
+import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
@@ -1808,6 +1814,219 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 				assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
 				assertEquals((Integer) MockCommune.Echallens.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
 				assertEquals(MotifRattachement.DOMICILE, ffp.getMotifRattachement());
+				return null;
+			}
+		});
+	}
+
+	/**
+	 * Une petite famille est arrivée sur le canton, et les événements sont traités dans l'ordre : maman, bébé puis papa.<p/>
+	 * Nous nous plaçons au moment du traitement de l'arrivée de bébé... (maman et papa ne sont pas mariés, donc seule
+	 * maman existe dans le registre fiscal à ce moment).
+	 */
+	@Test
+	public void testCalculParentesSiArriveeEnfantAvantParent() throws Exception {
+
+		final long indPapa = 4367436L;
+		final long indMaman = 347357L;
+		final long indBebe = 4378243526L;
+		final RegDate dateNaissanceBebe = date(2007, 1, 5);
+		final RegDate dateArrivee = RegDate.get().addYears(-2);     // comme ça l'enfant reste mineur et on ne lui crée pas de for
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu papa = addIndividu(indPapa, null, "Chollet", "Ignacio", Sexe.MASCULIN);
+				final MockIndividu maman = addIndividu(indMaman, null, "Chollet", "Mireille", Sexe.FEMININ);
+				final MockIndividu bebe = addIndividu(indBebe, dateNaissanceBebe, "Chollet", "Sigourney", Sexe.FEMININ);
+				addLiensFiliation(bebe, papa, maman, dateNaissanceBebe, null);
+
+				addAdresse(papa, TypeAdresseCivil.PRINCIPALE, MockRue.Bussigny.RueDeLIndustrie, null, dateArrivee, null);
+				addAdresse(maman, TypeAdresseCivil.PRINCIPALE, MockRue.Bussigny.RueDeLIndustrie, null, dateArrivee, null);
+
+				final MockAdresse adresseBebe = addAdresse(bebe, TypeAdresseCivil.PRINCIPALE, MockRue.Bussigny.RueDeLIndustrie, null, dateArrivee, null);
+				adresseBebe.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_SUISSE, MockPays.France.getNoOFS(), null));
+				addNationalite(bebe, MockPays.France, dateNaissanceBebe, null);
+				addPermis(bebe, TypePermis.SEJOUR, dateArrivee, null, false);
+			}
+		});
+
+		// mise en place fiscale (sans calcul des parentés, siouplait...)
+		final long idMaman = doInNewTransactionAndSessionUnderSwitch(parentesSynchronizer, false, new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique maman = addHabitant(indMaman);
+				addForPrincipal(maman, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Bussigny, ModeImposition.SOURCE);
+				return maman.getNumero();
+			}
+		});
+
+		// création de l'événement d'arrivée du bébé
+		final long evtArrivee = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(3273426L);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(dateArrivee);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(indBebe);
+				evt.setType(TypeEvenementCivilEch.ARRIVEE);
+				return hibernateTemplate.merge(evt).getId();
+			}
+		});
+
+		// traitement de l'événement civil
+		traiterEvenements(indBebe);
+
+		// vérification de l'état des flags parenteDirty sur les tiers existants
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = evtCivilDAO.get(evtArrivee);
+				assertNotNull(evt);
+				assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+
+				final PersonnePhysique maman = tiersService.getPersonnePhysiqueByNumeroIndividu(indMaman);
+				assertNotNull(maman);
+				assertEquals((Long) idMaman, maman.getNumero());
+
+				final PersonnePhysique bebe = tiersService.getPersonnePhysiqueByNumeroIndividu(indBebe);
+				assertNotNull(bebe);
+
+				// les relations depuis maman
+				{
+					final Set<RapportEntreTiers> relEnfants = maman.getRapportsObjet();
+					assertNotNull(relEnfants);
+					assertEquals(1, relEnfants.size());
+
+					final RapportEntreTiers relEnfant = relEnfants.iterator().next();
+					assertNotNull(relEnfant);
+					assertEquals(TypeRapportEntreTiers.PARENTE, relEnfant.getType());
+					assertEquals((Long) idMaman, relEnfant.getObjetId());
+					assertEquals(bebe.getNumero(), relEnfant.getSujetId());
+					assertEquals(dateNaissanceBebe, relEnfant.getDateDebut());
+					assertNull(relEnfant.getDateFin());
+					assertFalse(relEnfant.isAnnule());
+
+					assertFalse(maman.isParenteDirty());
+				}
+
+				// les relations depuis bébé
+				{
+					final Set<RapportEntreTiers> relParents = bebe.getRapportsSujet();
+					assertNotNull(relParents);
+					assertEquals(1, relParents.size());
+
+					final RapportEntreTiers relParent = relParents.iterator().next();
+					assertNotNull(relParent);
+					assertEquals(TypeRapportEntreTiers.PARENTE, relParent.getType());
+					assertEquals((Long) idMaman, relParent.getObjetId());
+					assertEquals(bebe.getNumero(), relParent.getSujetId());
+					assertEquals(dateNaissanceBebe, relParent.getDateDebut());
+					assertNull(relParent.getDateFin());
+					assertFalse(relParent.isAnnule());
+
+					assertTrue(bebe.isParenteDirty());      // il manque la relation vers papa qui n'existe pas encore au fiscal
+				}
+
+				return null;
+			}
+		});
+
+		// arrivée de papa (en raccourci -> on crée directement le gars en base)
+		// le recalcul des parentés est activé mais ne devrait rien changer (car la liaison entre bébé et papa est inconnue fiscalement pour le moment)
+		final long idPapa = doInNewTransactionAndSessionUnderSwitch(parentesSynchronizer, true, new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique papa = addHabitant(indPapa);
+				addForPrincipal(papa, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Bussigny, ModeImposition.SOURCE);
+				return papa.getNumero();
+			}
+		});
+
+		// vérification des relations depuis bébé (-> rien n'a changé)
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique bebe = tiersService.getPersonnePhysiqueByNumeroIndividu(indBebe);
+				assertNotNull(bebe);
+
+				// les relations depuis bébé
+				{
+					final Set<RapportEntreTiers> relParents = bebe.getRapportsSujet();
+					assertNotNull(relParents);
+					assertEquals(1, relParents.size());
+
+					final RapportEntreTiers relParent = relParents.iterator().next();
+					assertNotNull(relParent);
+					assertEquals(TypeRapportEntreTiers.PARENTE, relParent.getType());
+					assertEquals((Long) idMaman, relParent.getObjetId());
+					assertEquals(bebe.getNumero(), relParent.getSujetId());
+					assertEquals(dateNaissanceBebe, relParent.getDateDebut());
+					assertNull(relParent.getDateFin());
+					assertFalse(relParent.isAnnule());
+
+					assertTrue(bebe.isParenteDirty());      // il manque la relation vers papa qui n'existe pas encore au fiscal
+				}
+
+				return null;
+			}
+		});
+
+		// refresh des données de parenté du bébé (ici, on devrait créer la relation de parenté vers papa)
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique bebe = tiersService.getPersonnePhysiqueByNumeroIndividu(indBebe);
+				assertNotNull(bebe);
+				tiersService.refreshParentesSurPersonnePhysique(bebe, false);
+				return null;
+			}
+		});
+
+		// vérification des relations depuis bébé (-> papa est arrivé)
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique bebe = tiersService.getPersonnePhysiqueByNumeroIndividu(indBebe);
+				assertNotNull(bebe);
+
+				final Set<RapportEntreTiers> relParents = bebe.getRapportsSujet();
+				assertNotNull(relParents);
+				assertEquals(2, relParents.size());
+
+				final List<RapportEntreTiers> sortedRelParents = new ArrayList<>(relParents);
+				Collections.sort(sortedRelParents, new Comparator<RapportEntreTiers>() {
+					@Override
+					public int compare(RapportEntreTiers o1, RapportEntreTiers o2) {
+						return Long.compare(o1.getObjetId(), o2.getObjetId());
+					}
+				});
+
+				{
+					final RapportEntreTiers relParent = sortedRelParents.get(0);
+					assertNotNull(relParent);
+					assertEquals(TypeRapportEntreTiers.PARENTE, relParent.getType());
+					assertEquals((Long) idMaman, relParent.getObjetId());
+					assertEquals(bebe.getNumero(), relParent.getSujetId());
+					assertEquals(dateNaissanceBebe, relParent.getDateDebut());
+					assertNull(relParent.getDateFin());
+					assertFalse(relParent.isAnnule());
+				}
+				{
+					final RapportEntreTiers relParent = sortedRelParents.get(1);
+					assertNotNull(relParent);
+					assertEquals(TypeRapportEntreTiers.PARENTE, relParent.getType());
+					assertEquals((Long) idPapa, relParent.getObjetId());
+					assertEquals(bebe.getNumero(), relParent.getSujetId());
+					assertEquals(dateNaissanceBebe, relParent.getDateDebut());
+					assertNull(relParent.getDateFin());
+					assertFalse(relParent.isAnnule());
+				}
+
+				assertFalse(bebe.isParenteDirty());
 				return null;
 			}
 		});

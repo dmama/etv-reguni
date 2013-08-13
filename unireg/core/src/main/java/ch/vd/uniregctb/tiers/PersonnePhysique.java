@@ -26,7 +26,6 @@ import ch.vd.uniregctb.type.Sexe;
 /**
  * Être humain sous l'angle du droit, individualisée par ses caractéristiques, telles que son
  * nom et prénom, sa date de naissance, son sexe, son numéro AVS?
- *
  */
 @Entity
 @DiscriminatorValue("PersonnePhysique")
@@ -88,11 +87,6 @@ public class PersonnePhysique extends Contribuable {
 	private Integer numeroOfsNationalite;
 
 	/**
-	 * Code ISO-2 du pays selon la norme ISO-3166
-	 */
-	private Integer numeroOfsCommuneOrigine;
-
-	/**
 	 * Genre de permis réglementant le séjour d'une personne étrangère en Suisse.
 	 * Voir eCH-0006 pour les valeurs possibles
 	 */
@@ -123,6 +117,13 @@ public class PersonnePhysique extends Contribuable {
 	 * "source pure" sur un contribuable précédemment passé au rôle par ce batch
 	 */
 	private Boolean rentierSourcierPasseAuRole;
+
+	/**
+	 * [SIFISC-9096] Booléen utilisé pour déterminer s'il faut tenter un recalcul des relations de parentés sur la personne physique
+	 * (par exemple utilisé pour les mineurs dont l'arrivée est signalée avant celle de leurs parents, et pour lesquels les parentés
+	 * ne peuvent être insérées dans Unireg tant que les parents ne sont pas créés également)
+	 */
+	private boolean parenteDirty;
 
 	@Transient
 	@Override
@@ -423,6 +424,16 @@ public class PersonnePhysique extends Contribuable {
 
 	public void setRentierSourcierPasseAuRole(Boolean rentierSourcierPasseAuRole) {
 		this.rentierSourcierPasseAuRole = rentierSourcierPasseAuRole;
+	}
+
+	// Updatable = false -> hibernate ne modifiera pas cette valeur (qui sera modifiée par une requête SQL ad'hoc)
+	@Column(name = "PP_PARENTE_DIRTY", nullable = false, updatable = false)
+	public boolean isParenteDirty() {
+		return parenteDirty;
+	}
+
+	protected void setParenteDirty(boolean parenteDirty) {
+		this.parenteDirty = parenteDirty;
 	}
 
 	/**
