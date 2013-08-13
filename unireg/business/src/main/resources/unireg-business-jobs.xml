@@ -496,7 +496,14 @@
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="rapportEntreTiersDAO" ref="rapportEntreTiersDAO"/>
 		<property name="rapportService" ref="rapportService"/>
-		<property name="parentesSynchronizerInterceptor" ref="parentesSynchronizerInterceptor"/>
+		<property name="interceptors">
+			<list>
+				<ref bean="parentesSynchronizerInterceptor"/>
+				<ref bean="tacheSynchronizerInterceptor"/>
+				<ref bean="officeImpotHibernateInterceptor"/>
+				<ref bean="validationInterceptor"/>
+			</list>
+		</property>
 	</bean>
 
     <bean id="cacheResetJob" parent="schedulerJob" class="ch.vd.uniregctb.cache.CacheResetJob">

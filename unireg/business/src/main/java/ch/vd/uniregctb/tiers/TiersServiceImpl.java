@@ -1838,7 +1838,7 @@ public class TiersServiceImpl implements TiersService {
 		final RegDate dateDecesEnfant = getDateDeces(enfant);
 
 		final long noIndividuParent = filiation.getNumeroAutreIndividu();
-		final PersonnePhysique parent = getPersonnePhysiqueByNumeroIndividu(noIndividuParent);
+		final PersonnePhysique parent = tiersDAO.getPPByNumeroIndividu(noIndividuParent, true);
 		if (parent != null) {
 			final RegDate dateDecesParent = getDateDeces(parent);
 			final RegDate dateNaissanceParent = getDateNaissance(parent);

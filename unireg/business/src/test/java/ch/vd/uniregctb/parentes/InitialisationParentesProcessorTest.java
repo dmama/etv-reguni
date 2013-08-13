@@ -17,6 +17,7 @@ import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.common.MultipleSwitch;
 import ch.vd.uniregctb.tiers.Parente;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
@@ -32,7 +33,11 @@ public class InitialisationParentesProcessorTest extends BusinessTest {
 		super.runOnSetUp();
 
 		final RapportEntreTiersDAO rapportDAO = getBean(RapportEntreTiersDAO.class, "rapportEntreTiersDAO");
-		processor = new InitialisationParentesProcessor(rapportDAO, tiersDAO, transactionManager, hibernateTemplate, parentesSynchronizer, tiersService);
+
+		// contrairement au vrai code, je ne coupe pas ici le validationInterceptor pour que si quelque chose
+		// pête à ce niveau, on le voit au moins ici...
+		final MultipleSwitch interceptorSwitch = new MultipleSwitch(parentesSynchronizer, tacheSynchronizer);
+		processor = new InitialisationParentesProcessor(rapportDAO, tiersDAO, transactionManager, hibernateTemplate, interceptorSwitch, tiersService);
 	}
 
 	@Test

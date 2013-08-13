@@ -8,6 +8,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.uniregctb.audit.Audit;
+import ch.vd.uniregctb.common.MultipleSwitch;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.common.Switchable;
 import ch.vd.uniregctb.document.InitialisationParentesRapport;
@@ -34,7 +35,7 @@ public class InitialisationParentesJob extends JobDefinition {
 	private HibernateTemplate hibernateTemplate;
 	private TiersService tiersService;
 	private RapportService rapportService;
-	private Switchable parentesSynchronizerInterceptor;
+	private MultipleSwitch interceptorSwitch;
 
 	public InitialisationParentesJob(int sortOrder, String description) {
 		super(NAME, CATEGORIE, sortOrder, description);
@@ -72,15 +73,15 @@ public class InitialisationParentesJob extends JobDefinition {
 		this.rapportService = rapportService;
 	}
 
-	public void setParentesSynchronizerInterceptor(Switchable parentesSynchronizerInterceptor) {
-		this.parentesSynchronizerInterceptor = parentesSynchronizerInterceptor;
+	public void setInterceptors(Switchable[] interceptors) {
+		this.interceptorSwitch = new MultipleSwitch(interceptors);
 	}
 
 	@Override
 	protected void doExecute(Map<String, Object> params) throws Exception {
 		final StatusManager statusManager = getStatusManager();
 		final int nbThreads = getIntegerValue(params, NB_THREADS);
-		final InitialisationParentesProcessor processor = new InitialisationParentesProcessor(rapportEntreTiersDAO, tiersDAO, transactionManager, hibernateTemplate, parentesSynchronizerInterceptor, tiersService);
+		final InitialisationParentesProcessor processor = new InitialisationParentesProcessor(rapportEntreTiersDAO, tiersDAO, transactionManager, hibernateTemplate, interceptorSwitch, tiersService);
 		final InitialisationParentesResults results = processor.run(nbThreads, statusManager);
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);

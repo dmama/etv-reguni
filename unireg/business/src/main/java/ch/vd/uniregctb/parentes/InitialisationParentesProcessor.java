@@ -15,9 +15,9 @@ import ch.vd.registre.base.tx.TxCallback;
 import ch.vd.uniregctb.common.BatchResults;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.LoggingStatusManager;
+import ch.vd.uniregctb.common.MultipleSwitch;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplate;
 import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.common.Switchable;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.tiers.Parente;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -36,16 +36,16 @@ public class InitialisationParentesProcessor {
 	private final TiersDAO tiersDAO;
 	private final PlatformTransactionManager transactionManager;
 	private final HibernateTemplate hibernateTemplate;
-	private final Switchable parentesSynchronizerInterceptor;
+	private final MultipleSwitch interceptorSwitch;
 	private final TiersService tiersService;
 
 	public InitialisationParentesProcessor(RapportEntreTiersDAO rapportDAO, TiersDAO tiersDAO, PlatformTransactionManager transactionManager, HibernateTemplate hibernateTemplate,
-	                                       Switchable parentesSynchronizerInterceptor, TiersService tiersService) {
+	                                       MultipleSwitch interceptorSwitch, TiersService tiersService) {
 		this.rapportDAO = rapportDAO;
 		this.tiersDAO = tiersDAO;
 		this.transactionManager = transactionManager;
 		this.hibernateTemplate = hibernateTemplate;
-		this.parentesSynchronizerInterceptor = parentesSynchronizerInterceptor;
+		this.interceptorSwitch = interceptorSwitch;
 		this.tiersService = tiersService;
 	}
 
@@ -86,8 +86,8 @@ public class InitialisationParentesProcessor {
 		template.execute(rapportFinal, new BatchTransactionTemplate.BatchCallback<Long, InitialisationParentesResults>() {
 			@Override
 			public boolean doInTransaction(List<Long> batch, InitialisationParentesResults rapport) throws Exception {
-				final boolean interceptorEnabled = parentesSynchronizerInterceptor.isEnabled();
-				parentesSynchronizerInterceptor.setEnabled(false);
+				interceptorSwitch.pushState();
+				interceptorSwitch.setEnabled(false);
 				try {
 					status.setMessage(msg, percent);
 					for (Long idTiers : batch) {
@@ -104,7 +104,7 @@ public class InitialisationParentesProcessor {
 					return !status.interrupted();
 				}
 				finally {
-					parentesSynchronizerInterceptor.setEnabled(interceptorEnabled);
+					interceptorSwitch.popState();
 				}
 			}
 
