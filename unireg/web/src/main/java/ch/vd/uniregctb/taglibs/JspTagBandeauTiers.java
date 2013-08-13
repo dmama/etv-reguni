@@ -51,7 +51,7 @@ import ch.vd.uniregctb.utils.WebContextUtils;
  */
 public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceAware {
 
-	private static final long serialVersionUID = -8839926167038851691L;
+	private static final long serialVersionUID = -7103375494735633544L;
 
 	/*
 	 * Ces membres sont statiques pour permettre l'injection par Spring des beans accessibles par toutes les instances de ce tag
@@ -66,8 +66,9 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 	public static final List<Action> actions;
 
 	static {
-		List<Action> list = new ArrayList<>();
+		final List<Action> list = new ArrayList<>();
 		list.add(new Reindexer());
+		list.add(new RecalculerParentes());
 		list.add(new Marier());
 		list.add(new Deceder());
 		list.add(new Separer());
@@ -965,6 +966,29 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		@Override
 		public String getActionUrl() {
 			return "goto:/activation/annulation/recap.do?numero=";
+		}
+	}
+
+	private static class RecalculerParentes implements Action {
+
+		@Override
+		public boolean isGranted() {
+			return SecurityHelper.isAnyGranted(securityProvider, Role.TESTER, Role.ADMIN);
+		}
+
+		@Override
+		public boolean isValide(Tiers tiers) {
+			return tiers instanceof PersonnePhysique && ((PersonnePhysique) tiers).isHabitantVD();
+		}
+
+		@Override
+		public String getLabel() {
+			return "Recalculer les relations de parenté";
+		}
+
+		@Override
+		public String getActionUrl() {
+			return "post:/admin/refreshParentes.do?id=";
 		}
 	}
 }
