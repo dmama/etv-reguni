@@ -234,6 +234,11 @@ public class MockTiersDAO implements TiersDAO {
 	}
 
 	@Override
+	public List<Long> getIdsConnusDuCivil() {
+		throw new NotImplementedException();
+	}
+
+	@Override
 	public List<Tiers> getAll() {
 		throw new NotImplementedException();
 	}

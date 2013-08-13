@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.tiers;
 
-import java.sql.SQLException;
+import javax.persistence.DiscriminatorValue;
 import java.util.Arrays;
 import java.util.List;
 
@@ -175,5 +175,18 @@ public class RapportEntreTiersDAOImpl extends GenericDAOImpl<RapportEntreTiers, 
 			query += " and r.class = " + type.getRapportClass().getSimpleName();
 		}
 		return DataAccessUtils.intResult(find(query, null, null));
+	}
+
+	@Override
+	public int removeAllOfKind(TypeRapportEntreTiers kind) {
+		final Class<?> rapportClass = kind.getRapportClass();
+		final DiscriminatorValue discriminator = rapportClass.getAnnotation(DiscriminatorValue.class);
+		final String discriminatorValue = discriminator.value();
+
+		final String sql = "DELETE FROM RAPPORT_ENTRE_TIERS WHERE RAPPORT_ENTRE_TIERS_TYPE=:discriminator";
+		final Session session = getCurrentSession();
+		final Query query = session.createSQLQuery(sql);
+		query.setParameter("discriminator", discriminatorValue);
+		return query.executeUpdate();
 	}
 }

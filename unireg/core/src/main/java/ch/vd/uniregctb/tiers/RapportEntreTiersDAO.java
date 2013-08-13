@@ -31,7 +31,7 @@ public interface RapportEntreTiersDAO extends GenericDAO<RapportEntreTiers, Long
 	 * @param activesOnly     <b>vrai</b> s'il ne faut retourner que les rapports actifs à l'heure actuelle; <b>faux</b> pour retourner tous les rapports existants.
 	 * @return les rapports trouvés.
 	 */
-	public List<RapportPrestationImposable> getRapportsPrestationImposable(Long numeroDebiteur, ParamPagination paramPagination, boolean activesOnly);
+	List<RapportPrestationImposable> getRapportsPrestationImposable(Long numeroDebiteur, ParamPagination paramPagination, boolean activesOnly);
 
 
 	/**
@@ -44,7 +44,7 @@ public interface RapportEntreTiersDAO extends GenericDAO<RapportEntreTiers, Long
 	 * @param doNotAutoFlush
 	 * @return les rapports trouvés.
 	 */
-	public List<RapportPrestationImposable> getRapportsPrestationImposable(Long numeroDebiteur, Long numeroSourcier, boolean activesOnly, boolean doNotAutoFlush);
+	List<RapportPrestationImposable> getRapportsPrestationImposable(Long numeroDebiteur, Long numeroSourcier, boolean activesOnly, boolean doNotAutoFlush);
 
 	/**
 	 * Compte le nombre de rapports prestation imposable d'un débiteur
@@ -53,7 +53,7 @@ public interface RapportEntreTiersDAO extends GenericDAO<RapportEntreTiers, Long
 	 * @param activesOnly    <b>vrai</b> s'il ne faut tenir compte que des rapports actifs à l'heure actuelle; <b>faux</b> pour tenir compte de tous les rapports existants.
 	 * @return le nombre de rapports trouvés
 	 */
-	public int countRapportsPrestationImposable(Long numeroDebiteur, boolean activesOnly);
+	int countRapportsPrestationImposable(Long numeroDebiteur, boolean activesOnly);
 
 	/**
 	 * Recherche les rapports qui pointent vers le tiers spécifié. Note : les rapports de type 'contact impôt source' et 'prestation imposable' sont affichés en fonction du type de tiers.
@@ -83,4 +83,11 @@ public interface RapportEntreTiersDAO extends GenericDAO<RapportEntreTiers, Long
 	 */
 	int countBySujetAndObjet(long tiersId, boolean appartenanceMenageOnly, boolean showHisto, TypeRapportEntreTiers type, final boolean excludePrestationImposable,
 	                         final boolean excludeContactImpotSource);
+
+	/**
+	 * Efface (réellement !) tous les rapports entre tiers d'un type donné
+	 * @param kind le type des rapports entre tiers à effacer
+	 * @return le nombre de rapports effacés
+	 */
+	int removeAllOfKind(TypeRapportEntreTiers kind);
 }

@@ -487,6 +487,18 @@
 		<property name="auditLineDAO" ref="auditLineDAO"/>
 	</bean>
 
+	<bean id="initialisationFiliationsJob" parent="schedulerJob" class="ch.vd.uniregctb.tiers.jobs.InitialisationFiliationsJob">
+		<constructor-arg value="711"/>
+		<constructor-arg value="(Ré-)initialiser les relations de filiations"/>
+		<property name="tiersService" ref="tiersService"/>
+		<property name="tiersDAO" ref="tiersDAO"/>
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="rapportEntreTiersDAO" ref="rapportEntreTiersDAO"/>
+		<property name="serviceCivil" ref="serviceCivilService"/>
+		<property name="rapportService" ref="rapportService"/>
+	</bean>
+
     <bean id="cacheResetJob" parent="schedulerJob" class="ch.vd.uniregctb.cache.CacheResetJob">
         <constructor-arg value="801"/>
         <constructor-arg value="Réinitialiser les différents caches d'Unireg"/>

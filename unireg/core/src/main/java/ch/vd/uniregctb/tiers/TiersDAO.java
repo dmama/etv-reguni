@@ -226,14 +226,14 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 
 	CollectiviteAdministrative getCollectiviteAdministrativesByNumeroTechnique(int numeroTechnique, boolean doNotAutoFlush);
 
-	public List<PersonnePhysique> getSourciers(int noSourcier);
+	List<PersonnePhysique> getSourciers(int noSourcier);
 
-	public List<PersonnePhysique> getAllMigratedSourciers();
+	List<PersonnePhysique> getAllMigratedSourciers();
 
 	/**
 	 * Retourne le tiers spécifié en initialisant les collections qui sont utilisées par l'indexation.
 	 */
-	public Tiers getTiersForIndexation(long id);
+	Tiers getTiersForIndexation(long id);
 
 	/**
 	 * @return la liste des ménages communs contenus dans la liste des ids spécifiés.
@@ -259,7 +259,7 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 	 *
 	 * @return la liste des debiteurs pour qui on devra construire l'historique de periodicite
 	 */
-	public List<Long> getListeDebiteursSansPeriodicites();
+	List<Long> getListeDebiteursSansPeriodicites();
 
 	/**
 	 * Ajoute un nouveau for fiscal à un tiers.
@@ -334,5 +334,10 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 	 * @param dateFinRech Date de fin de la recherche
 	 * @return la liste des ids des contribuables modifiés
 	 */
-	public List<Long> getListeCtbModifies(Date dateDebutRech, Date dateFinRech);
+	List<Long> getListeCtbModifies(Date dateDebutRech, Date dateFinRech);
+
+	/**
+	 * @return la liste des identifiants de tiers personnes physiques connues dans le registre civil (= avec un numéro d'individu assigné)
+	 */
+	List<Long> getIdsConnusDuCivil();
 }

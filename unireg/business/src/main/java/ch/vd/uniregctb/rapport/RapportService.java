@@ -40,6 +40,7 @@ import ch.vd.uniregctb.document.FusionDeCommunesRapport;
 import ch.vd.uniregctb.document.IdentifierContribuableRapport;
 import ch.vd.uniregctb.document.ImportCodesSegmentRapport;
 import ch.vd.uniregctb.document.ImportImmeublesRapport;
+import ch.vd.uniregctb.document.InitialisationFilationsRapport;
 import ch.vd.uniregctb.document.ListeAssujettisRapport;
 import ch.vd.uniregctb.document.ListeContribuablesResidentsSansForVaudoisRapport;
 import ch.vd.uniregctb.document.ListeDIsNonEmisesRapport;
@@ -88,6 +89,7 @@ import ch.vd.uniregctb.stats.evenements.StatsEvenementsIdentificationContribuabl
 import ch.vd.uniregctb.tache.ListeTachesEnInstanceParOID;
 import ch.vd.uniregctb.tache.TacheSyncResults;
 import ch.vd.uniregctb.tiers.ExclureContribuablesEnvoiResults;
+import ch.vd.uniregctb.tiers.jobs.InitialisationFiliationsResults;
 import ch.vd.uniregctb.tiers.rattrapage.etatdeclaration.CorrectionEtatDeclarationResults;
 import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantResults;
 import ch.vd.uniregctb.tiers.rattrapage.pm.MigrationCoquillesPM;
@@ -456,4 +458,12 @@ public interface RapportService {
 	 * @return le rapport
 	 */
 	RecalculTachesRapport generateRapport(TacheSyncResults results, StatusManager status);
+
+	/**
+	 * Génère le rapport d'exécution du batch de génération des relations de filiation
+	 * @param results le résultat du batch
+	 * @param status le status manager
+	 * @return le rapport
+	 */
+	InitialisationFilationsRapport generateRapport(InitialisationFiliationsResults results, StatusManager status);
 }
