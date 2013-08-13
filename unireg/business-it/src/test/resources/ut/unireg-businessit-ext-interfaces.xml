@@ -71,7 +71,6 @@
 		<property name="peoplePath" value="${testprop.webservice.rcpers.peoplePath}" />
 		<property name="peopleByEventIdPath" value="${testprop.webservice.rcpers.peopleByEventIdPath}" />
 		<property name="peopleBySocialNumberPath" value="${testprop.webservice.rcpers.peopleBySocialNumberPath}" />
-		<property name="relationsPath" value="${testprop.webservice.rcpers.relationsPath}" />
 		<property name="searchPath" value="${testprop.webservice.rcpers.searchPath}" />
 	</bean>
 

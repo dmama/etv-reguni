@@ -10,9 +10,9 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.w3c.dom.Document;
 
-import ch.vd.evd0001.v4.EventIdentification;
-import ch.vd.evd0001.v4.EventNotification;
-import ch.vd.evd0001.v4.ObjectFactory;
+import ch.vd.evd0001.v5.EventIdentification;
+import ch.vd.evd0001.v5.EventNotification;
+import ch.vd.evd0001.v5.ObjectFactory;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.AbstractEsbJmsTemplate;
@@ -51,7 +51,7 @@ public class EvenementCivilEchSenderImpl implements EvenementCivilEchSender, Ini
 	public void afterPropertiesSet() throws Exception {
 		esbValidator = new EsbXmlValidation();
 		esbValidator.setResourceResolver(new ClasspathCatalogResolver());
-		esbValidator.setSources(new Resource[]{new ClassPathResource("eVD-0009-1-0.xsd"), new ClassPathResource("eVD-0004-3-0.xsd"), new ClassPathResource("eVD-0001-4-1.xsd")});
+		esbValidator.setSources(new Resource[]{new ClassPathResource("eVD-0009-1-0.xsd"), new ClassPathResource("eVD-0004-3-0.xsd"), new ClassPathResource("eVD-0001-5-0.xsd")});
 	}
 
 	@Override

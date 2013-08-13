@@ -1,4 +1,4 @@
-package ch.vd.unireg.interfaces.infra.data;
+package ch.vd.unireg.interfaces.civil.data;
 
 import ch.ech.ech0007.v4.CantonAbbreviation;
 import ch.ech.ech0007.v4.SwissMunicipality;
@@ -7,8 +7,6 @@ import ch.ech.ech0011.v5.Destination;
 import junit.framework.Assert;
 import org.junit.Test;
 
-import ch.vd.unireg.interfaces.civil.data.Localisation;
-import ch.vd.unireg.interfaces.civil.data.LocalisationType;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;

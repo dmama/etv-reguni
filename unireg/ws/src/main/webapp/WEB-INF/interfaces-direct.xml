@@ -14,7 +14,6 @@
 		<property name="peoplePath" value="${extprop.webservice.rcpers.peoplePath}" />
 		<property name="peopleByEventIdPath" value="${extprop.webservice.rcpers.peopleByEventIdPath}" />
 		<property name="peopleBySocialNumberPath" value="${extprop.webservice.rcpers.peopleBySocialNumberPath}" />
-		<property name="relationsPath" value="${extprop.webservice.rcpers.relationsPath}" />
 		<property name="eventPath" value="${extprop.webservice.rcpers.eventPath}" />
 		<property name="searchPath" value="${extprop.webservice.rcpers.searchPath}" />
 	</bean>

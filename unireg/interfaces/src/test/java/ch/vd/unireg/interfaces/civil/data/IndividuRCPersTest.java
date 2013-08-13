@@ -18,15 +18,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
 
-import ch.vd.evd0001.v4.Contact;
-import ch.vd.evd0001.v4.DwellingAddress;
-import ch.vd.evd0001.v4.Identity;
-import ch.vd.evd0001.v4.MaritalData;
-import ch.vd.evd0001.v4.Person;
-import ch.vd.evd0001.v4.PersonIdentification;
-import ch.vd.evd0001.v4.Relationship;
-import ch.vd.evd0001.v4.Residence;
-import ch.vd.evd0001.v4.ResidencePermit;
+import ch.vd.evd0001.v5.Contact;
+import ch.vd.evd0001.v5.DwellingAddress;
+import ch.vd.evd0001.v5.Identity;
+import ch.vd.evd0001.v5.MaritalData;
+import ch.vd.evd0001.v5.Person;
+import ch.vd.evd0001.v5.PersonIdentification;
+import ch.vd.evd0001.v5.Residence;
+import ch.vd.evd0001.v5.ResidencePermit;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.rcpers.EchHelper;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
@@ -54,7 +53,7 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 
 	@Test
 	public void testGetCelibataire() throws Exception {
-		final MaritalData celibataire = newMaritalData(date(1960, 1, 1), "1");
+		final MaritalData celibataire = newMaritalData(date(1960, 1, 1), "1", null);
 		final List<MaritalData> statuses = Arrays.asList(celibataire);
 
 		final EtatCivilList ecList = IndividuRCPers.initEtatsCivils(statuses);
@@ -64,12 +63,15 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		assertNotNull(list);
 		assertEquals(1, list.size());
 		assertEtatCivil(date(1960, 1, 1), TypeEtatCivil.CELIBATAIRE, list.get(0));
+
+		final List<RelationVersIndividu> conjoints = IndividuRCPers.initConjoints(null, statuses);
+		assertNull(conjoints);
 	}
 
 	@Test
-	public void testGetMarie() throws Exception {
-		final MaritalData celibataire = newMaritalData(date(1960, 1, 1), "1");
-		final MaritalData marie = newMaritalData(date(2000, 1, 1), "2");
+	public void testGetMarieSeul() throws Exception {
+		final MaritalData celibataire = newMaritalData(date(1960, 1, 1), "1", null);
+		final MaritalData marie = newMaritalData(date(2000, 1, 1), "2", null);
 		final List<MaritalData> statuses = Arrays.asList(celibataire, marie);
 
 		final EtatCivilList ecList = IndividuRCPers.initEtatsCivils(statuses);
@@ -80,12 +82,42 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		assertEquals(2, list.size());
 		assertEtatCivil(date(1960, 1, 1), TypeEtatCivil.CELIBATAIRE, list.get(0));
 		assertEtatCivil(date(2000, 1, 1), TypeEtatCivil.MARIE, list.get(1));
+
+		final List<RelationVersIndividu> conjoints = IndividuRCPers.initConjoints(null, statuses);
+		assertNull(conjoints);
 	}
 
 	@Test
-	public void testGetMariePuisSepare() throws Exception {
-		final MaritalData celibataire = newMaritalData(date(1960, 1, 1), "1");
-		final MaritalData marie = newMaritalData(date(2000, 1, 1), "2", date(2005, 5, 29));
+	public void testGetMarie() throws Exception {
+		final MaritalData celibataire = newMaritalData(date(1960, 1, 1), "1", null);
+		final MaritalData marie = newMaritalData(date(2000, 1, 1), "2", newPersonIdentification(1234, "Marie", "Epousée", date(1962, 4, 2), Sexe.FEMININ));
+		final List<MaritalData> statuses = Arrays.asList(celibataire, marie);
+
+		final EtatCivilList ecList = IndividuRCPers.initEtatsCivils(statuses);
+		assertNotNull(ecList);
+
+		final List<EtatCivil> list = ecList.asList();
+		assertNotNull(list);
+		assertEquals(2, list.size());
+		assertEtatCivil(date(1960, 1, 1), TypeEtatCivil.CELIBATAIRE, list.get(0));
+		assertEtatCivil(date(2000, 1, 1), TypeEtatCivil.MARIE, list.get(1));
+
+		final List<RelationVersIndividu> conjoints = IndividuRCPers.initConjoints(null, statuses);
+		assertNotNull(conjoints);
+		assertEquals(1, conjoints.size());
+
+		final RelationVersIndividu conjoint = conjoints.get(0);
+		assertNotNull(conjoint);
+		assertEquals(1234, conjoint.getNumeroAutreIndividu());
+		assertEquals(TypeRelationVersIndividu.CONJOINT, conjoint.getTypeRelation());
+		assertEquals(date(2000, 1, 1), conjoint.getDateDebut());
+		assertNull(conjoint.getDateFin());
+	}
+
+	@Test
+	public void testGetMarieSeulPuisSepare() throws Exception {
+		final MaritalData celibataire = newMaritalData(date(1960, 1, 1), "1", null);
+		final MaritalData marie = newMaritalData(date(2000, 1, 1), "2", null, date(2005, 5, 29));
 		final List<MaritalData> statuses = Arrays.asList(celibataire, marie);
 
 		final EtatCivilList ecList = IndividuRCPers.initEtatsCivils(statuses);
@@ -97,12 +129,43 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		assertEtatCivil(date(1960, 1, 1), TypeEtatCivil.CELIBATAIRE, list.get(0));
 		assertEtatCivil(date(2000, 1, 1), TypeEtatCivil.MARIE, list.get(1));
 		assertEtatCivil(date(2005, 5, 29), TypeEtatCivil.SEPARE, list.get(2));
+
+		final List<RelationVersIndividu> conjoints = IndividuRCPers.initConjoints(null, statuses);
+		assertNull(conjoints);
 	}
 
 	@Test
-	public void testGetMariePuisSeparePuisReconcilie() throws Exception {
-		final MaritalData celibataire = newMaritalData(date(1960, 1, 1), "1");
-		final MaritalData marie = newMaritalData(date(2000, 1, 1), "2", date(2005, 5, 29), date(2005, 10, 4));
+	public void testGetMariePuisSepare() throws Exception {
+		final MaritalData celibataire = newMaritalData(date(1960, 1, 1), "1", null);
+		final MaritalData marie = newMaritalData(date(2000, 1, 1), "2", newPersonIdentification(1234, "Marie", "Epousée", date(1962, 4, 2), Sexe.FEMININ), date(2005, 5, 29));
+		final List<MaritalData> statuses = Arrays.asList(celibataire, marie);
+
+		final EtatCivilList ecList = IndividuRCPers.initEtatsCivils(statuses);
+		assertNotNull(ecList);
+
+		final List<EtatCivil> list = ecList.asList();
+		assertNotNull(list);
+		assertEquals(3, list.size());
+		assertEtatCivil(date(1960, 1, 1), TypeEtatCivil.CELIBATAIRE, list.get(0));
+		assertEtatCivil(date(2000, 1, 1), TypeEtatCivil.MARIE, list.get(1));
+		assertEtatCivil(date(2005, 5, 29), TypeEtatCivil.SEPARE, list.get(2));
+
+		final List<RelationVersIndividu> conjoints = IndividuRCPers.initConjoints(null, statuses);
+		assertNotNull(conjoints);
+		assertEquals(1, conjoints.size());
+
+		final RelationVersIndividu conjoint = conjoints.get(0);
+		assertNotNull(conjoint);
+		assertEquals(1234, conjoint.getNumeroAutreIndividu());
+		assertEquals(TypeRelationVersIndividu.CONJOINT, conjoint.getTypeRelation());
+		assertEquals(date(2000, 1, 1), conjoint.getDateDebut());
+		assertNull(conjoint.getDateFin());
+	}
+
+	@Test
+	public void testGetMarieSeulPuisSeparePuisReconcilie() throws Exception {
+		final MaritalData celibataire = newMaritalData(date(1960, 1, 1), "1", null);
+		final MaritalData marie = newMaritalData(date(2000, 1, 1), "2", null, date(2005, 5, 29), date(2005, 10, 4));
 		final List<MaritalData> statuses = Arrays.asList(celibataire, marie);
 
 		final EtatCivilList ecList = IndividuRCPers.initEtatsCivils(statuses);
@@ -115,12 +178,149 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		assertEtatCivil(date(2000, 1, 1), TypeEtatCivil.MARIE, list.get(1));
 		assertEtatCivil(date(2005, 5, 29), TypeEtatCivil.SEPARE, list.get(2));
 		assertEtatCivil(date(2005, 10, 4), TypeEtatCivil.MARIE, list.get(3));
+
+		final List<RelationVersIndividu> conjoints = IndividuRCPers.initConjoints(null, statuses);
+		assertNull(conjoints);
 	}
 
 	@Test
-	public void testGetPacse() throws Exception {
-		final MaritalData celibataire = newMaritalData(date(1960, 1, 1), "1");
-		final MaritalData pacse = newMaritalData(date(2000, 1, 1), "6");
+	public void testGetMariePuisSeparePuisReconcilie() throws Exception {
+		final MaritalData celibataire = newMaritalData(date(1960, 1, 1), "1", null);
+		final MaritalData marie = newMaritalData(date(2000, 1, 1), "2", newPersonIdentification(1234, "Marie", "Epousée", date(1962, 4, 2), Sexe.FEMININ), date(2005, 5, 29), date(2005, 10, 4));
+		final List<MaritalData> statuses = Arrays.asList(celibataire, marie);
+
+		final EtatCivilList ecList = IndividuRCPers.initEtatsCivils(statuses);
+		assertNotNull(ecList);
+
+		final List<EtatCivil> list = ecList.asList();
+		assertNotNull(list);
+		assertEquals(4, list.size());
+		assertEtatCivil(date(1960, 1, 1), TypeEtatCivil.CELIBATAIRE, list.get(0));
+		assertEtatCivil(date(2000, 1, 1), TypeEtatCivil.MARIE, list.get(1));
+		assertEtatCivil(date(2005, 5, 29), TypeEtatCivil.SEPARE, list.get(2));
+		assertEtatCivil(date(2005, 10, 4), TypeEtatCivil.MARIE, list.get(3));
+
+		final List<RelationVersIndividu> conjoints = IndividuRCPers.initConjoints(null, statuses);
+		assertNotNull(conjoints);
+		assertEquals(1, conjoints.size());
+
+		final RelationVersIndividu conjoint = conjoints.get(0);
+		assertNotNull(conjoint);
+		assertEquals(1234, conjoint.getNumeroAutreIndividu());
+		assertEquals(TypeRelationVersIndividu.CONJOINT, conjoint.getTypeRelation());
+		assertEquals(date(2000, 1, 1), conjoint.getDateDebut());
+		assertNull(conjoint.getDateFin());
+	}
+
+	@Test
+	public void testGetMariePuisDivorcePuisRemarieIdentique() throws Exception {
+		final MaritalData celibataire = newMaritalData(date(1960, 1, 1), "1", null);
+		final MaritalData marie = newMaritalData(date(2000, 1, 1), "2", newPersonIdentification(1234, "Marie", "Epousée", date(1962, 4, 2), Sexe.FEMININ), date(2005, 5, 29));
+		final MaritalData divorce = newMaritalData(date(2005, 12, 4), TypeEtatCivil.DIVORCE, null);
+		final MaritalData remarie = newMaritalData(date(2007, 5, 1), TypeEtatCivil.MARIE, newPersonIdentification(1234, "Marie", "Epousée", date(1962, 4, 2), Sexe.FEMININ));
+		final List<MaritalData> statuses = Arrays.asList(celibataire, marie, divorce, remarie);
+
+		final EtatCivilList ecList = IndividuRCPers.initEtatsCivils(statuses);
+		assertNotNull(ecList);
+
+		final List<EtatCivil> list = ecList.asList();
+		assertNotNull(list);
+		assertEquals(5, list.size());
+		assertEtatCivil(date(1960, 1, 1), TypeEtatCivil.CELIBATAIRE, list.get(0));
+		assertEtatCivil(date(2000, 1, 1), TypeEtatCivil.MARIE, list.get(1));
+		assertEtatCivil(date(2005, 5, 29), TypeEtatCivil.SEPARE, list.get(2));
+		assertEtatCivil(date(2005, 12, 4), TypeEtatCivil.DIVORCE, list.get(3));
+		assertEtatCivil(date(2007, 5, 1), TypeEtatCivil.MARIE, list.get(4));
+
+		final List<RelationVersIndividu> conjoints = IndividuRCPers.initConjoints(null, statuses);
+		assertNotNull(conjoints);
+		assertEquals(2, conjoints.size());
+
+		{
+			final RelationVersIndividu conjoint = conjoints.get(0);
+			assertNotNull(conjoint);
+			assertEquals(1234, conjoint.getNumeroAutreIndividu());
+			assertEquals(TypeRelationVersIndividu.CONJOINT, conjoint.getTypeRelation());
+			assertEquals(date(2000, 1, 1), conjoint.getDateDebut());
+			assertEquals(date(2005, 12, 3), conjoint.getDateFin());
+		}
+		{
+			final RelationVersIndividu conjoint = conjoints.get(1);
+			assertNotNull(conjoint);
+			assertEquals(1234, conjoint.getNumeroAutreIndividu());
+			assertEquals(TypeRelationVersIndividu.CONJOINT, conjoint.getTypeRelation());
+			assertEquals(date(2007, 5, 1), conjoint.getDateDebut());
+			assertNull(conjoint.getDateFin());
+		}
+	}
+
+	/**
+	 * Mauvais mapping ? En tout cas, nous avons ici deux états-civils mariés qui se suivent avec le même conjoint... (alors qu'il y aurait dû
+	 * y avoir une réconciliation) -> une seule relation de conjoint doit être créée, pas deux...
+	 */
+	@Test
+	public void testCollateRelationsConjoint() throws Exception {
+		final MaritalData celibataire = newMaritalData(date(1960, 1, 1), "1", null);
+		final MaritalData marie = newMaritalData(date(2000, 1, 1), "2", newPersonIdentification(1234, "Marie", "Epousée", date(1962, 4, 2), Sexe.FEMININ), date(2005, 5, 29));
+		final MaritalData marie2 = newMaritalData(date(2007, 5, 1), TypeEtatCivil.MARIE, newPersonIdentification(1234, "Marie", "Epousée", date(1962, 4, 2), Sexe.FEMININ));
+		final List<MaritalData> statuses = Arrays.asList(celibataire, marie, marie2);
+
+		final EtatCivilList ecList = IndividuRCPers.initEtatsCivils(statuses);
+		assertNotNull(ecList);
+
+		final List<EtatCivil> list = ecList.asList();
+		assertNotNull(list);
+		assertEquals(4, list.size());
+		assertEtatCivil(date(1960, 1, 1), TypeEtatCivil.CELIBATAIRE, list.get(0));
+		assertEtatCivil(date(2000, 1, 1), TypeEtatCivil.MARIE, list.get(1));
+		assertEtatCivil(date(2005, 5, 29), TypeEtatCivil.SEPARE, list.get(2));
+		assertEtatCivil(date(2007, 5, 1), TypeEtatCivil.MARIE, list.get(3));
+
+		final List<RelationVersIndividu> conjoints = IndividuRCPers.initConjoints(null, statuses);
+		assertNotNull(conjoints);
+		assertEquals(1, conjoints.size());
+
+		final RelationVersIndividu conjoint = conjoints.get(0);
+		assertNotNull(conjoint);
+		assertEquals(1234, conjoint.getNumeroAutreIndividu());
+		assertEquals(TypeRelationVersIndividu.CONJOINT, conjoint.getTypeRelation());
+		assertEquals(date(2000, 1, 1), conjoint.getDateDebut());
+		assertNull(conjoint.getDateFin());
+	}
+
+	@Test
+	public void testMarieVeufLeMemeJour() throws Exception {
+		final MaritalData celibataire = newMaritalData(date(1960, 1, 1), "1", null);
+		final MaritalData marie = newMaritalData(date(2000, 1, 1), "2", newPersonIdentification(1234, "Marie", "Epousée", date(1962, 4, 2), Sexe.FEMININ));
+		final MaritalData veuf = newMaritalData(date(2000, 1, 1), "3", null);
+		final List<MaritalData> statuses = Arrays.asList(celibataire, marie, veuf);
+
+		final EtatCivilList ecList = IndividuRCPers.initEtatsCivils(statuses);
+		assertNotNull(ecList);
+
+		final List<EtatCivil> list = ecList.asList();
+		assertNotNull(list);
+		assertEquals(3, list.size());
+		assertEtatCivil(date(1960, 1, 1), TypeEtatCivil.CELIBATAIRE, list.get(0));
+		assertEtatCivil(date(2000, 1, 1), TypeEtatCivil.MARIE, list.get(1));
+		assertEtatCivil(date(2000, 1, 1), TypeEtatCivil.VEUF, list.get(2));
+
+		final List<RelationVersIndividu> conjoints = IndividuRCPers.initConjoints(null, statuses);
+		assertNotNull(conjoints);
+		assertEquals(1, conjoints.size());
+
+		final RelationVersIndividu conjoint = conjoints.get(0);
+		assertNotNull(conjoint);
+		assertEquals(1234, conjoint.getNumeroAutreIndividu());
+		assertEquals(TypeRelationVersIndividu.CONJOINT, conjoint.getTypeRelation());
+		assertEquals(date(2000, 1, 1), conjoint.getDateDebut());
+		assertEquals(date(2000, 1, 1), conjoint.getDateFin());
+	}
+
+	@Test
+	public void testGetPacseSeul() throws Exception {
+		final MaritalData celibataire = newMaritalData(date(1960, 1, 1), "1", null);
+		final MaritalData pacse = newMaritalData(date(2000, 1, 1), "6", null);
 		final List<MaritalData> statuses = Arrays.asList(celibataire, pacse);
 
 		final EtatCivilList ecList = IndividuRCPers.initEtatsCivils(statuses);
@@ -131,12 +331,42 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		assertEquals(2, list.size());
 		assertEtatCivil(date(1960, 1, 1), TypeEtatCivil.CELIBATAIRE, list.get(0));
 		assertEtatCivil(date(2000, 1, 1), TypeEtatCivil.PACS, list.get(1));
+
+		final List<RelationVersIndividu> conjoints = IndividuRCPers.initConjoints(null, statuses);
+		assertNull(conjoints);
 	}
 
 	@Test
-	public void testGetPacsePuisSepare() throws Exception {
-		final MaritalData celibataire = newMaritalData(date(1960, 1, 1), "1");
-		final MaritalData pacse = newMaritalData(date(2000, 1, 1), "6", date(2005, 5, 29));
+	public void testGetPacse() throws Exception {
+		final MaritalData celibataire = newMaritalData(date(1960, 1, 1), "1", null);
+		final MaritalData pacse = newMaritalData(date(2000, 1, 1), "6", newPersonIdentification(1234, "Marie", "Epousée", date(1962, 4, 2), Sexe.FEMININ));
+		final List<MaritalData> statuses = Arrays.asList(celibataire, pacse);
+
+		final EtatCivilList ecList = IndividuRCPers.initEtatsCivils(statuses);
+		assertNotNull(ecList);
+
+		final List<EtatCivil> list = ecList.asList();
+		assertNotNull(list);
+		assertEquals(2, list.size());
+		assertEtatCivil(date(1960, 1, 1), TypeEtatCivil.CELIBATAIRE, list.get(0));
+		assertEtatCivil(date(2000, 1, 1), TypeEtatCivil.PACS, list.get(1));
+
+		final List<RelationVersIndividu> conjoints = IndividuRCPers.initConjoints(null, statuses);
+		assertNotNull(conjoints);
+		assertEquals(1, conjoints.size());
+
+		final RelationVersIndividu conjoint = conjoints.get(0);
+		assertNotNull(conjoint);
+		assertEquals(1234, conjoint.getNumeroAutreIndividu());
+		assertEquals(TypeRelationVersIndividu.PARTENAIRE_ENREGISTRE, conjoint.getTypeRelation());
+		assertEquals(date(2000, 1, 1), conjoint.getDateDebut());
+		assertNull(conjoint.getDateFin());
+	}
+
+	@Test
+	public void testGetPacseSeulPuisSepare() throws Exception {
+		final MaritalData celibataire = newMaritalData(date(1960, 1, 1), "1", null);
+		final MaritalData pacse = newMaritalData(date(2000, 1, 1), "6", null, date(2005, 5, 29));
 		final List<MaritalData> statuses = Arrays.asList(celibataire, pacse);
 
 		final EtatCivilList ecList = IndividuRCPers.initEtatsCivils(statuses);
@@ -148,12 +378,43 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		assertEtatCivil(date(1960, 1, 1), TypeEtatCivil.CELIBATAIRE, list.get(0));
 		assertEtatCivil(date(2000, 1, 1), TypeEtatCivil.PACS, list.get(1));
 		assertEtatCivil(date(2005, 5, 29), TypeEtatCivil.PACS_SEPARE, list.get(2));
+
+		final List<RelationVersIndividu> conjoints = IndividuRCPers.initConjoints(null, statuses);
+		assertNull(conjoints);
 	}
 
 	@Test
-	public void testGetPacsePuisSeparePuisReconcilie() throws Exception {
-		final MaritalData celibataire = newMaritalData(date(1960, 1, 1), "1");
-		final MaritalData pacse = newMaritalData(date(2000, 1, 1), "6", date(2005, 5, 29), date(2005, 10, 4));
+	public void testGetPacsePuisSepare() throws Exception {
+		final MaritalData celibataire = newMaritalData(date(1960, 1, 1), "1", null);
+		final MaritalData pacse = newMaritalData(date(2000, 1, 1), "6", newPersonIdentification(1234, "Marie", "Epousée", date(1962, 4, 2), Sexe.FEMININ), date(2005, 5, 29));
+		final List<MaritalData> statuses = Arrays.asList(celibataire, pacse);
+
+		final EtatCivilList ecList = IndividuRCPers.initEtatsCivils(statuses);
+		assertNotNull(ecList);
+
+		final List<EtatCivil> list = ecList.asList();
+		assertNotNull(list);
+		assertEquals(3, list.size());
+		assertEtatCivil(date(1960, 1, 1), TypeEtatCivil.CELIBATAIRE, list.get(0));
+		assertEtatCivil(date(2000, 1, 1), TypeEtatCivil.PACS, list.get(1));
+		assertEtatCivil(date(2005, 5, 29), TypeEtatCivil.PACS_SEPARE, list.get(2));
+
+		final List<RelationVersIndividu> conjoints = IndividuRCPers.initConjoints(null, statuses);
+		assertNotNull(conjoints);
+		assertEquals(1, conjoints.size());
+
+		final RelationVersIndividu conjoint = conjoints.get(0);
+		assertNotNull(conjoint);
+		assertEquals(1234, conjoint.getNumeroAutreIndividu());
+		assertEquals(TypeRelationVersIndividu.PARTENAIRE_ENREGISTRE, conjoint.getTypeRelation());
+		assertEquals(date(2000, 1, 1), conjoint.getDateDebut());
+		assertNull(conjoint.getDateFin());
+	}
+
+	@Test
+	public void testGetPacseSeulPuisSeparePuisReconcilie() throws Exception {
+		final MaritalData celibataire = newMaritalData(date(1960, 1, 1), "1", null);
+		final MaritalData pacse = newMaritalData(date(2000, 1, 1), "6", null, date(2005, 5, 29), date(2005, 10, 4));
 		final List<MaritalData> statuses = Arrays.asList(celibataire, pacse);
 
 		final EtatCivilList ecList = IndividuRCPers.initEtatsCivils(statuses);
@@ -166,6 +427,65 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		assertEtatCivil(date(2000, 1, 1), TypeEtatCivil.PACS, list.get(1));
 		assertEtatCivil(date(2005, 5, 29), TypeEtatCivil.PACS_SEPARE, list.get(2));
 		assertEtatCivil(date(2005, 10, 4), TypeEtatCivil.PACS, list.get(3));
+
+		final List<RelationVersIndividu> conjoints = IndividuRCPers.initConjoints(null, statuses);
+		assertNull(conjoints);
+	}
+
+	@Test
+	public void testGetPacsePuisSeparePuisReconcilie() throws Exception {
+		final MaritalData celibataire = newMaritalData(date(1960, 1, 1), "1", null);
+		final MaritalData pacse = newMaritalData(date(2000, 1, 1), "6", newPersonIdentification(1234, "Marie", "Epousée", date(1962, 4, 2), Sexe.FEMININ), date(2005, 5, 29), date(2005, 10, 4));
+		final List<MaritalData> statuses = Arrays.asList(celibataire, pacse);
+
+		final EtatCivilList ecList = IndividuRCPers.initEtatsCivils(statuses);
+		assertNotNull(ecList);
+
+		final List<EtatCivil> list = ecList.asList();
+		assertNotNull(list);
+		assertEquals(4, list.size());
+		assertEtatCivil(date(1960, 1, 1), TypeEtatCivil.CELIBATAIRE, list.get(0));
+		assertEtatCivil(date(2000, 1, 1), TypeEtatCivil.PACS, list.get(1));
+		assertEtatCivil(date(2005, 5, 29), TypeEtatCivil.PACS_SEPARE, list.get(2));
+		assertEtatCivil(date(2005, 10, 4), TypeEtatCivil.PACS, list.get(3));
+
+		final List<RelationVersIndividu> conjoints = IndividuRCPers.initConjoints(null, statuses);
+		assertNotNull(conjoints);
+		assertEquals(1, conjoints.size());
+
+		final RelationVersIndividu conjoint = conjoints.get(0);
+		assertNotNull(conjoint);
+		assertEquals(1234, conjoint.getNumeroAutreIndividu());
+		assertEquals(TypeRelationVersIndividu.PARTENAIRE_ENREGISTRE, conjoint.getTypeRelation());
+		assertEquals(date(2000, 1, 1), conjoint.getDateDebut());
+		assertNull(conjoint.getDateFin());
+	}
+
+	@Test
+	public void testMarieDecede() throws Exception {
+		final MaritalData celibataire = newMaritalData(date(1960, 1, 1), "1", null);
+		final MaritalData marie = newMaritalData(date(2000, 1, 1), "2", newPersonIdentification(1234, "Marie", "Epousée", date(1962, 4, 2), Sexe.FEMININ));
+		final List<MaritalData> statuses = Arrays.asList(celibataire, marie);
+
+		final EtatCivilList ecList = IndividuRCPers.initEtatsCivils(statuses);
+		assertNotNull(ecList);
+
+		final List<EtatCivil> list = ecList.asList();
+		assertNotNull(list);
+		assertEquals(2, list.size());
+		assertEtatCivil(date(1960, 1, 1), TypeEtatCivil.CELIBATAIRE, list.get(0));
+		assertEtatCivil(date(2000, 1, 1), TypeEtatCivil.MARIE, list.get(1));
+
+		final List<RelationVersIndividu> conjoints = IndividuRCPers.initConjoints(date(2010, 5, 12), statuses);
+		assertNotNull(conjoints);
+		assertEquals(1, conjoints.size());
+
+		final RelationVersIndividu conjoint = conjoints.get(0);
+		assertNotNull(conjoint);
+		assertEquals(1234, conjoint.getNumeroAutreIndividu());
+		assertEquals(TypeRelationVersIndividu.CONJOINT, conjoint.getTypeRelation());
+		assertEquals(date(2000, 1, 1), conjoint.getDateDebut());
+		assertEquals(date(2010, 5, 11), conjoint.getDateFin());     // limité par la veille de la date de décès
 	}
 
 	/**
@@ -340,18 +660,14 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		person.getResidenceHistory().add(newResidencePrincipale(date(1983, 7, 5), null, null, MockRue.Chamblon.RueDesUttins));
 
 		// les états-civils
-		person.getMaritalStatusHistory().add(newMaritalData(date(1965, 3, 12), TypeEtatCivil.CELIBATAIRE));
-		person.getMaritalStatusHistory().add(newMaritalData(date(1989, 5, 1), TypeEtatCivil.MARIE));
+		person.getMaritalStatusHistory().add(newMaritalData(date(1965, 3, 12), TypeEtatCivil.CELIBATAIRE, null));
+		person.getMaritalStatusHistory().add(newMaritalData(date(1989, 5, 1), TypeEtatCivil.MARIE, newPersonIdentification(562841L, "Toto", "Titi", null, Sexe.FEMININ)));
 
 		// les permis
 		person.getResidencePermitHistory().add(newResidencePermit(date(1965, 3, 12), null, TypePermis.ETABLISSEMENT));
 
-		// les relations
-		final List<Relationship> relations = new ArrayList<>();
-		relations.add(newRelation(date(1989, 5, 1), null, 562841L, TypeRelation.VERS_CONJOINT));
-
 		// on vérifie que les valeurs historisées sont bien lues
-		final Individu ind = IndividuRCPers.get(person, relations, true, true, infraService);
+		final Individu ind = IndividuRCPers.get(person, true, infraService);
 		assertNotNull(ind);
 		assertEquals(123345L, ind.getNoTechnique());
 		assertEquals("Jean", ind.getPrenom());
@@ -395,6 +711,16 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		assertNotNull(permis);
 		assertEquals(1, permis.size());
 		assertPermis(date(1965, 3, 12), null, TypePermis.ETABLISSEMENT, permis.get(0));
+
+		final List<RelationVersIndividu> conjoints = ind.getConjoints();
+		assertNotNull(conjoints);
+		assertEquals(1, conjoints.size());
+
+		final RelationVersIndividu conjoint = conjoints.get(0);
+		assertEquals(562841L, conjoint.getNumeroAutreIndividu());
+		assertEquals(TypeRelationVersIndividu.CONJOINT, conjoint.getTypeRelation());
+		assertEquals(date(1989, 5, 1), conjoint.getDateDebut());
+		assertNull(conjoint.getDateFin());
 	}
 
 	/**
@@ -409,17 +735,13 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		person.getCurrentResidence().add(newResidencePrincipale(date(1983, 7, 5), null, null, MockRue.Chamblon.RueDesUttins));
 
 		// l'état-civil courant
-		person.setCurrentMaritalStatus(newMaritalData(date(1989, 5, 1), TypeEtatCivil.MARIE));
+		person.setCurrentMaritalStatus(newMaritalData(date(1989, 5, 1), TypeEtatCivil.MARIE, newPersonIdentification(562841L, "Toto", "Titi", null, Sexe.FEMININ)));
 
 		// le permis courant
 		person.setCurrentResidencePermit(newResidencePermit(date(1965, 3, 12), null, TypePermis.ETABLISSEMENT));
 
-		// les relations courantes
-		final List<Relationship> relations = new ArrayList<>();
-		relations.add(newRelation(date(1989, 5, 1), null, 562841L, TypeRelation.VERS_CONJOINT));
-
 		// on vérifie que les valeurs courantes sont bien lues
-		final Individu ind = IndividuRCPers.get(person, relations, false, true, infraService);
+		final Individu ind = IndividuRCPers.get(person, false, infraService);
 		assertNotNull(ind);
 		assertEquals(123345L, ind.getNoTechnique());
 		assertEquals("Jean", ind.getPrenom());
@@ -459,6 +781,16 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		assertNotNull(permis);
 		assertEquals(1, permis.size());
 		assertPermis(date(1965, 3, 12), null, TypePermis.ETABLISSEMENT, permis.get(0));
+
+		final List<RelationVersIndividu> conjoints = ind.getConjoints();
+		assertNotNull(conjoints);
+		assertEquals(1, conjoints.size());
+
+		final RelationVersIndividu conjoint = conjoints.get(0);
+		assertEquals(562841L, conjoint.getNumeroAutreIndividu());
+		assertEquals(TypeRelationVersIndividu.CONJOINT, conjoint.getTypeRelation());
+		assertEquals(date(1989, 5, 1), conjoint.getDateDebut());
+		assertNull(conjoint.getDateFin());
 	}
 
 	private static void assertPermis(RegDate dateDebut, @Nullable RegDate dateFin, TypePermis typePermis, Permis permis) {
@@ -488,19 +820,6 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		}
 	}
 
-	private static Relationship newRelation(RegDate dateDebut, @Nullable RegDate dateFin, long noIndividuLie, TypeRelation typeRelation) {
-		final Relationship relation = new Relationship();
-		relation.setRelationValidFrom(XmlUtils.regdate2xmlcal(dateDebut));
-		relation.setRelationValidFrom(XmlUtils.regdate2xmlcal(dateFin));
-
-		final PersonIdentificationPartner pip = new PersonIdentificationPartner();
-		pip.setLocalPersonId(new NamedPersonId("ct.vd.rcpers", String.valueOf(noIndividuLie)));
-
-		relation.setPersonIdentificationPartner(pip);
-		relation.setTypeOfRelationship(typeRelation.getEchCode());
-		return relation;
-	}
-
 	private static ResidencePermit newResidencePermit(RegDate dateDebut, @Nullable RegDate dateFin, TypePermis typePermis) {
 		final ResidencePermit permit = new ResidencePermit();
 		permit.setResidencePermitValidFrom(XmlUtils.regdate2xmlcal(dateDebut));
@@ -528,14 +847,26 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		final Person person = new Person();
 		final Identity identity = new Identity();
 		identity.setCallName(prenom);
-		final PersonIdentification identification = new PersonIdentification();
-		identification.setLocalPersonId(new NamedPersonId("ch.vd.rcpers", String.valueOf(noInd)));
-		identification.setOfficialName(nom);
-		identification.setDateOfBirth(EchHelper.partialDateToEch44(dateNaissance));
-		identification.setSex(EchHelper.sexeToEch44(sexe));
-		identity.setPersonIdentification(identification);
+		identity.setLocalPersonId(new NamedPersonId("ch.vd.rcpers", String.valueOf(noInd)));
+		identity.setOfficialName(nom);
+		identity.setDateOfBirth(EchHelper.partialDateToEch44(dateNaissance));
+		identity.setSex(EchHelper.sexeToEch44(sexe));
 		person.setIdentity(identity);
 		return person;
+	}
+
+	private static PersonIdentification newPersonIdentification(long noInd, String prenom, String nom, RegDate dateNaissance, Sexe sexe) {
+		final PersonIdentificationPartner pip = new PersonIdentificationPartner();
+		pip.setFirstName(prenom);
+		pip.setLocalPersonId(new NamedPersonId("ch.vd.rcpers", String.valueOf(noInd)));
+		pip.setOfficialName(nom);
+		pip.setDateOfBirth(EchHelper.partialDateToEch44(dateNaissance));
+		pip.setSex(EchHelper.sexeToEch44(sexe));
+
+		final PersonIdentification pi = new PersonIdentification();
+		pi.setIdentification(pip);
+		pi.setPersonLink("toto/" + noInd);
+		return pi;
 	}
 
 	private static void assertAdresse(@Nullable RegDate dateDebut, @Nullable RegDate dateFin, @Nullable String rue, @Nullable String localite, Adresse adresse) {
@@ -647,24 +978,27 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		assertEquals(type, etat.getTypeEtatCivil());
 	}
 
-	private static MaritalData newMaritalData(RegDate date, String type) {
+	private static MaritalData newMaritalData(RegDate date, String type, @Nullable PersonIdentification partner) {
 		final MaritalData data = new MaritalData();
 		data.setDateOfMaritalStatus(XmlUtils.regdate2xmlcal(date));
 		data.setMaritalStatus(type);
+		data.setPartner(partner);
 		return data;
 	}
 
-	private static MaritalData newMaritalData(RegDate date, TypeEtatCivil etatCivil) {
+	private static MaritalData newMaritalData(RegDate date, TypeEtatCivil etatCivil, @Nullable PersonIdentification partner) {
 		final MaritalData data = new MaritalData();
 		data.setDateOfMaritalStatus(XmlUtils.regdate2xmlcal(date));
 		data.setMaritalStatus(EchHelper.etatCivilToEch11(etatCivil));
+		data.setPartner(partner);
 		return data;
 	}
 
-	private static MaritalData newMaritalData(RegDate date, String type, RegDate separation) {
+	private static MaritalData newMaritalData(RegDate date, String type, @Nullable PersonIdentification partner, RegDate separation) {
 		final MaritalData data = new MaritalData();
 		data.setDateOfMaritalStatus(XmlUtils.regdate2xmlcal(date));
 		data.setMaritalStatus(type);
+		data.setPartner(partner);
 
 		final MaritalData.Separation sep = new MaritalData.Separation();
 		sep.setDateOfSeparation(XmlUtils.regdate2xmlcal(separation));
@@ -673,10 +1007,11 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		return data;
 	}
 
-	private MaritalData newMaritalData(RegDate date, String type, RegDate separation, RegDate reconciliation) {
+	private MaritalData newMaritalData(RegDate date, String type, @Nullable PersonIdentification partner, RegDate separation, RegDate reconciliation) {
 		final MaritalData data = new MaritalData();
 		data.setDateOfMaritalStatus(XmlUtils.regdate2xmlcal(date));
 		data.setMaritalStatus(type);
+		data.setPartner(partner);
 
 		final MaritalData.Separation sep = new MaritalData.Separation();
 		sep.setDateOfSeparation(XmlUtils.regdate2xmlcal(separation));

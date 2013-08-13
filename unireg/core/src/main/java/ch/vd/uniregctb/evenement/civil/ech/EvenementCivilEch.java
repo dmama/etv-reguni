@@ -43,7 +43,7 @@ public class EvenementCivilEch extends HibernateEntity implements EvenementCivil
 	public EvenementCivilEch() {
 	}
 
-	public EvenementCivilEch(ch.vd.evd0001.v4.EventIdentification bean) {
+	public EvenementCivilEch(ch.vd.evd0001.v5.EventIdentification bean) {
 		this.id = bean.getMessageId();
 		this.refMessageId = bean.getReferenceMessageId();
 		this.dateEvenement = XmlUtils.xmlcal2regdate(bean.getEventDate());

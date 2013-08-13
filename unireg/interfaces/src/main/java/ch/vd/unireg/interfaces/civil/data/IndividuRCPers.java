@@ -20,16 +20,16 @@ import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.evd0001.v4.Contact;
-import ch.vd.evd0001.v4.Identity;
-import ch.vd.evd0001.v4.MaritalData;
-import ch.vd.evd0001.v4.Nationality;
-import ch.vd.evd0001.v4.Person;
-import ch.vd.evd0001.v4.PersonIdentification;
-import ch.vd.evd0001.v4.Relationship;
-import ch.vd.evd0001.v4.Residence;
-import ch.vd.evd0001.v4.ResidencePermit;
-import ch.vd.evd0001.v4.UpiPerson;
+import ch.vd.evd0001.v5.Contact;
+import ch.vd.evd0001.v5.Identity;
+import ch.vd.evd0001.v5.MaritalData;
+import ch.vd.evd0001.v5.Nationality;
+import ch.vd.evd0001.v5.Parent;
+import ch.vd.evd0001.v5.Person;
+import ch.vd.evd0001.v5.PersonIdentification;
+import ch.vd.evd0001.v5.Residence;
+import ch.vd.evd0001.v5.ResidencePermit;
+import ch.vd.evd0001.v5.UpiPerson;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeAdapterCallback;
 import ch.vd.registre.base.date.DateRangeComparator;
@@ -37,13 +37,11 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.interfaces.EvdHelper;
 import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.civil.mock.CollectionLimitator;
 import ch.vd.unireg.interfaces.civil.rcpers.EchHelper;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.infra.data.AdresseCourrierMinimale;
-import ch.vd.unireg.interfaces.infra.data.AdresseRCPers;
 import ch.vd.unireg.interfaces.infra.data.RangeChangingAdresseWrapper;
 import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.type.Sexe;
@@ -51,10 +49,7 @@ import ch.vd.uniregctb.type.TypeAdresseCivil;
 
 public class IndividuRCPers implements Individu, Serializable {
 
-	private static final long serialVersionUID = 4738414495689763040L;
-
-	private static final EnumSet<AttributeIndividu> RELATION_RELATED = EnumSet.of(AttributeIndividu.CONJOINTS, AttributeIndividu.PARENTS);
-	private static final EnumSet<AttributeIndividu> NON_RELATION_RELATED = EnumSet.complementOf(RELATION_RELATED);
+	private static final long serialVersionUID = -7537323239424744173L;
 
 	private long noTechnique;
 	private StatutIndividu statut;
@@ -78,34 +73,33 @@ public class IndividuRCPers implements Individu, Serializable {
 	private Collection<Nationalite> nationalites;
 	private final Set<AttributeIndividu> availableParts = EnumSet.noneOf(AttributeIndividu.class);
 
-	public static Individu get(Person target, @Nullable List<Relationship> relations, boolean history, boolean withRelations, ServiceInfrastructureRaw infraService) {
+	public static Individu get(Person target, boolean history, ServiceInfrastructureRaw infraService) {
 		if (target == null) {
 			return null;
 		}
 
-		return new IndividuRCPers(target, relations, history, withRelations, infraService);
+		return new IndividuRCPers(target, history, infraService);
 	}
 
-	public IndividuRCPers(Person person, @Nullable List<Relationship> relations, boolean history, boolean withRelations, ServiceInfrastructureRaw infraService) {
+	public IndividuRCPers(Person person, boolean history, ServiceInfrastructureRaw infraService) {
 		this.noTechnique = getNoIndividu(person);
 		this.statut = initStatut(person.getStatus());
 
 		final Identity identity = person.getIdentity();
-		final PersonIdentification identification = identity.getPersonIdentification();
 		final UpiPerson upiPerson = person.getUpiPerson();
 
-		this.prenom = initPrenom(identity.getCallName(), identification.getFirstNames());
-		this.autresPrenoms = identification.getFirstNames();
-		this.nom = identification.getOfficialName();
+		this.prenom = initPrenom(identity.getCallName(), identity.getFirstNames());
+		this.autresPrenoms = identity.getFirstNames();
+		this.nom = identity.getOfficialName();
 		this.nomNaissance = identity.getOriginalName();
-		this.noAVS11 = initNumeroAVS11(identification.getOtherPersonId());
+		this.noAVS11 = initNumeroAVS11(identity.getOtherPersonId());
 		if (upiPerson != null) {
 			this.nouveauNoAVS = EchHelper.avs13FromEch(upiPerson.getVn());
 		}
-		this.numeroRCE = initNumeroRCE(identification.getOtherPersonId());
-		this.sexe = EchHelper.sexeFromEch44(identification.getSex());
+		this.numeroRCE = initNumeroRCE(identity.getOtherPersonId());
+		this.sexe = EchHelper.sexeFromEch44(identity.getSex());
 		this.deces = XmlUtils.xmlcal2regdate(person.getDateOfDeath());
-		this.naissance = EchHelper.partialDateFromEch44(identification.getDateOfBirth());
+		this.naissance = EchHelper.partialDateFromEch44(identity.getDateOfBirth());
 		this.dateArriveeVD = initDateArriveeVD(person.getResidenceHistory());
 		this.origines = initOrigins(person);
 
@@ -128,9 +122,13 @@ public class IndividuRCPers implements Individu, Serializable {
 			throw new ServiceCivilException("Individu n°" + this.noTechnique + ": " + e.getMessage(), e);
 		}
 
-		if (relations != null) {
-			this.parents = initParents(this.naissance, relations);
-			this.conjoints = initConjoints(relations);
+		if (history) {
+			this.parents = initParents(this.naissance, person.getParentHistory());
+			this.conjoints = initConjoints(this.deces, person.getMaritalStatusHistory());
+		}
+		else {
+			this.parents = initParents(this.naissance, person.getCurrentParent());
+			this.conjoints = initConjoints(this.deces, Arrays.asList(person.getCurrentMaritalStatus()));
 		}
 
 		if (history) {
@@ -142,11 +140,8 @@ public class IndividuRCPers implements Individu, Serializable {
 			this.nationalites = initNationalites(person.getCurrentNationality(), infraService);
 		}
 
-		// avec RcPers, toutes les parts sont systématiquement retournées, à l'exception des relations qui doivent être demandées explicitement
-		this.availableParts.addAll(NON_RELATION_RELATED);
-		if (withRelations) {
-			this.availableParts.addAll(RELATION_RELATED);
-		}
+		// avec RcPers, toutes les parts sont systématiquement retournées
+		this.availableParts.addAll(EnumSet.allOf(AttributeIndividu.class));
 	}
 
 	public IndividuRCPers(IndividuRCPers right, Set<AttributeIndividu> parts) {
@@ -250,11 +245,19 @@ public class IndividuRCPers implements Individu, Serializable {
 	 * @return le numéro d'individu tel que connu par chez nous
 	 */
 	public static long getNoIndividu(Person person) {
-		return getNoIndividu(person.getIdentity().getPersonIdentification());
+		return getNoIndividu(person.getIdentity());
 	}
 
-	public static long getNoIndividu(PersonIdentification identification) {
-		return getNoIndividu(identification.getLocalPersonId());
+	public static long getNoIndividu(PersonIdentification pi) {
+		return getNoIndividu(pi.getIdentification());
+	}
+
+	public static long getNoIndividu(PersonIdentificationPartner pip) {
+		return getNoIndividu(pip.getLocalPersonId());
+	}
+
+	public static long getNoIndividu(Identity identity) {
+		return getNoIndividu(identity.getLocalPersonId());
 	}
 
 	private static String initNumeroAVS11(List<NamedPersonId> otherPersonIds) {
@@ -564,102 +567,79 @@ public class IndividuRCPers implements Individu, Serializable {
 		return map;
 	}
 
-	private static Collection<RelationVersIndividu> initEnfants(List<Relationship> relationship) {
-		if (relationship == null || relationship.isEmpty()) {
+	protected static List<RelationVersIndividu> initParents(RegDate dateNaissance, List<Parent> parents) {
+		if (parents == null || parents.isEmpty()) {
 			return null;
 		}
 		final List<RelationVersIndividu> list = new ArrayList<>();
-		for (Relationship r : relationship) {
-			final PersonIdentificationPartner partnerIdentification = r.getPersonIdentificationPartner();
+		for (Parent p : parents) {
+			final PersonIdentificationPartner partnerIdentification = p.getIdentification().getIdentification();
 			if (partnerIdentification != null) {
-				final TypeRelationVersIndividu type = EvdHelper.typeRelationFromEvd1(r.getTypeOfRelationship());
-				if (type != null && type.isEnfant()) {
-					final NamedPersonId partnerId = partnerIdentification.getLocalPersonId();
-					if (partnerId != null) {
-						final long numeroInd = getNoIndividu(partnerId);
-						final RegDate validFrom = XmlUtils.xmlcal2regdate(r.getRelationValidFrom());
-						final RegDate validTill = XmlUtils.xmlcal2regdate(r.getRelationValidTill());
-						list.add(new RelationVersIndividuImpl(numeroInd, type, validFrom, validTill));
+				final NamedPersonId partnerId = partnerIdentification.getLocalPersonId();
+				if (partnerId != null) {
+					final long numeroInd = getNoIndividu(partnerId);
+					RegDate validFrom = XmlUtils.xmlcal2regdate(p.getParentFrom());
+					if (validFrom == null) {
+						// à défaut de mieux, on considère que la relation s'établit à la naissance de l'enfant
+						validFrom = dateNaissance;
 					}
+					final RegDate validTill = XmlUtils.xmlcal2regdate(p.getParentTill());
+					final Sexe sexeParent = EchHelper.sexeFromEch44(partnerIdentification.getSex());
+					final TypeRelationVersIndividu type = (sexeParent == Sexe.MASCULIN ? TypeRelationVersIndividu.PERE : (sexeParent == Sexe.FEMININ ? TypeRelationVersIndividu.MERE : null));
+					list.add(new RelationVersIndividuImpl(numeroInd, type, validFrom, validTill));
 				}
 			}
 		}
 		return list.isEmpty() ? null : list;
 	}
 
-	private static List<RelationVersIndividu> initParents(RegDate dateNaissance, List<Relationship> relationship) {
-		if (relationship == null || relationship.isEmpty()) {
+	protected static List<RelationVersIndividu> initConjoints(RegDate dateDeces, List<MaritalData> etatsCivils) {
+		if (etatsCivils == null || etatsCivils.isEmpty()) {
 			return null;
 		}
-		final List<RelationVersIndividu> list = new ArrayList<>();
-		for (Relationship r : relationship) {
-			final PersonIdentificationPartner partnerIdentification = r.getPersonIdentificationPartner();
+		final List<RelationVersIndividuImpl> list = new ArrayList<>();
+		for (MaritalData md : etatsCivils) {
+			final RegDate validFrom = XmlUtils.xmlcal2regdate(md.getDateOfMaritalStatus());
+
+			// récupération de la date de fin de l'état civil précédent
+			if (!list.isEmpty() && validFrom != null) {
+				final RegDate oldValidTill = validFrom.getOneDayBefore();
+				for (int i = list.size() - 1 ; i >= 0 ; -- i) {
+					final RelationVersIndividuImpl oldRelation = list.get(i);
+					if (oldRelation.getDateFin() == null) {
+						oldRelation.setDateFin(RegDateHelper.maximum(oldValidTill, oldRelation.getDateDebut(), NullDateBehavior.EARLIEST));
+					}
+					else {
+						break;
+					}
+				}
+			}
+
+			final PersonIdentification partnerIdentification = md.getPartner();
 			if (partnerIdentification != null) {
-				final TypeRelationVersIndividu type = EvdHelper.typeRelationFromEvd1(r.getTypeOfRelationship());
-				if (type != null && type.isParent()) {
-					final NamedPersonId partnerId = partnerIdentification.getLocalPersonId();
+				final PersonIdentificationPartner partner = partnerIdentification.getIdentification();
+				if (partner != null) {
+					final NamedPersonId partnerId = partner.getLocalPersonId();
 					if (partnerId != null) {
 						final long numeroInd = getNoIndividu(partnerId);
-						RegDate validFrom = XmlUtils.xmlcal2regdate(r.getRelationValidFrom());
-						if (validFrom == null) {
-							// à défaut de mieux, on considère que la relation s'établit à la naissance de l'enfant
-							validFrom = dateNaissance;
-						}
-						final RegDate validTill = XmlUtils.xmlcal2regdate(r.getRelationValidTill());
-						list.add(new RelationVersIndividuImpl(numeroInd, type, validFrom, validTill));
+						final TypeEtatCivil etatCivil = EchHelper.etatCivilFromEch11(md.getMaritalStatus(), md.getCancelationReason());
+						final TypeRelationVersIndividu type = etatCivil == TypeEtatCivil.PACS ? TypeRelationVersIndividu.PARTENAIRE_ENREGISTRE : TypeRelationVersIndividu.CONJOINT;
+						list.add(new RelationVersIndividuImpl(numeroInd, type, validFrom, null));
 					}
 				}
 			}
 		}
-		return list.isEmpty() ? null : list;
-	}
 
-	private static List<RelationVersIndividu> initConjoints(List<Relationship> relationship) {
-		if (relationship == null || relationship.isEmpty()) {
+		if (list.isEmpty()) {
 			return null;
 		}
-		final List<RelationVersIndividu> list = new ArrayList<>();
-		for (Relationship r : relationship) {
-			final PersonIdentificationPartner partnerIdentification = r.getPersonIdentificationPartner();
-			if (partnerIdentification != null) {
-				final TypeRelationVersIndividu type = EvdHelper.typeRelationFromEvd1(r.getTypeOfRelationship());
-				if (type != null && type.isConjointOuPartenaire()) {
-					final NamedPersonId partnerId = partnerIdentification.getLocalPersonId();
-					if (partnerId != null) {
-						final long numeroInd = getNoIndividu(partnerId);
-						final RegDate validFrom = XmlUtils.xmlcal2regdate(r.getRelationValidFrom());
-						final RegDate validTill = fixRelationEndDate(validFrom, XmlUtils.xmlcal2regdate(r.getRelationValidTill()));
-						list.add(new RelationVersIndividuImpl(numeroInd, type, validFrom, validTill));
-					}
-				}
+		if (dateDeces != null) {
+			final RelationVersIndividuImpl last = list.get(list.size() - 1);
+			if (last.getDateFin() == null) {
+				last.setDateFin(dateDeces.getOneDayBefore());
 			}
 		}
-		return list.isEmpty() ? null : list;
-	}
-
-	private static RegDate fixRelationEndDate(RegDate validFrom, RegDate validTill) {
-		if (validTill != null) {
-			// RcPers étend les relations un jour de plus que ce que faisait Host-Interfaces, on corrige le tir ici (voir SIREF-1588).
-			//
-			// Note: l'idée derrière cette extension est que, dans les faits, une fin de relation survient en cours de journée. Cela veut
-			// dire que la relation est factuellement encore valide le matin, mais ne l'est plus le soir. Mais évidemment, l'heure exacte
-			// de cette fin de relation n'est pas connue de RcPers, qui retourne donc simplement le jour où la relation s'est arrêtée.
-			// Ce qui peut poser des problèmes d'interprétation dans certains cas : notamment le cas du divorce. Prenons l'exemple
-			// d'une personne divorce le 13 juin 2010, dans ce cas-là RcPers exposera :
-			//  - un état civil 'divorcé' avec date valeur au 13 juin 2010, ainsi que
-			//  - une relation vers son ex-femme avec date de fin le même jour (le 13 juin, donc)
-			// Bizarre, mais c'est comme ça que RcPers fonctionne...
-
-			if (validFrom == validTill) {
-				// cas ultra-rare de la personne qui se marie et dont le conjoint décède le même jour. D'un point-de-vue civil,
-				// cette personne a bien été mariée un jour et acquiert le même jour les états-civils 'marié' et 'veuf'.
-				// Dans ces cas-là, on ne décale pas la date de fin de la relation, parce que cela ferait une durée négative.
-			}
-			else {
-				validTill = validTill.getOneDayBefore();
-			}
-		}
-		return validTill;
+		return DateRangeHelper.collate(new ArrayList<RelationVersIndividu>(list));
 	}
 
 	private static Collection<Origine> initOrigins(Person person) {

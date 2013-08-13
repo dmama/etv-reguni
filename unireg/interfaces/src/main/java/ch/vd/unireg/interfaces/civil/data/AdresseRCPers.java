@@ -1,4 +1,4 @@
-package ch.vd.unireg.interfaces.infra.data;
+package ch.vd.unireg.interfaces.civil.data;
 
 import java.io.Serializable;
 
@@ -11,25 +11,22 @@ import ch.ech.ech0011.v5.Destination;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.evd0001.v4.Contact;
-import ch.vd.evd0001.v4.DwellingAddress;
-import ch.vd.evd0001.v4.Residence;
+import ch.vd.evd0001.v5.Contact;
+import ch.vd.evd0001.v5.DwellingAddress;
+import ch.vd.evd0001.v5.Residence;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.civil.ServiceCivilException;
-import ch.vd.unireg.interfaces.civil.data.Adresse;
-import ch.vd.unireg.interfaces.civil.data.CasePostale;
-import ch.vd.unireg.interfaces.civil.data.Localisation;
-import ch.vd.unireg.interfaces.civil.data.LocalisationType;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
+import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 
 public class AdresseRCPers implements Adresse, Serializable {
 
-	private static final long serialVersionUID = 5759182587094664053L;
+	private static final long serialVersionUID = -2461226404182044025L;
 
 	private final RegDate dateDebut;
 	private RegDate dateFin;

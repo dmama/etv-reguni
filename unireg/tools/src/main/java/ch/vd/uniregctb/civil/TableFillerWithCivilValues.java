@@ -53,7 +53,7 @@ public class TableFillerWithCivilValues {
 	private static final String dbUser = "UNIREG";
 	private static final String dbPassword = "uniregi_082";
 
-	private static final String RCPERS_URL = "http://rp-ws-va.etat-de-vaud.ch/registres/int-rcpers/west/ws/v4";
+	private static final String RCPERS_URL = "http://rp-ws-va.etat-de-vaud.ch/registres/int-rcpers/west/ws/v5";
 	private static final String RCPERS_USER = "gvd0unireg";
 	private static final String RCPERS_PWD = "Welc0me_";
 
@@ -90,7 +90,6 @@ public class TableFillerWithCivilValues {
 		rcpersClient.setUsername(RCPERS_USER);
 		rcpersClient.setPassword(RCPERS_PWD);
 		rcpersClient.setPeoplePath("persons/ct.vd.rcpers");
-		rcpersClient.setRelationsPath("relations/ct.vd.rcpers");
 		rcpersClient.afterPropertiesSet();
 
 		final FidorClientImpl fidorClient = new FidorClientImpl();

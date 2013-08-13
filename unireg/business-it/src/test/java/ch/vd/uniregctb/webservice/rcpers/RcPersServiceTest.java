@@ -5,18 +5,22 @@ import java.util.List;
 
 import org.junit.Test;
 
-import ch.vd.evd0001.v4.Event;
-import ch.vd.evd0001.v4.ListOfPersons;
-import ch.vd.evd0001.v4.ListOfRelations;
-import ch.vd.evd0001.v4.Person;
-import ch.vd.evd0001.v4.Relationship;
+import ch.vd.evd0001.v5.Event;
+import ch.vd.evd0001.v5.ListOfPersons;
+import ch.vd.evd0001.v5.MaritalData;
+import ch.vd.evd0001.v5.Parent;
+import ch.vd.evd0001.v5.Person;
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.IndividuRCPers;
+import ch.vd.unireg.interfaces.civil.rcpers.EchHelper;
 import ch.vd.unireg.wsclient.rcpers.RcPersClientImpl;
+import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.utils.UniregProperties;
 import ch.vd.uniregctb.utils.UniregPropertiesImpl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 public class RcPersServiceTest {
 
@@ -47,46 +51,61 @@ public class RcPersServiceTest {
 		assertNotNull(person);
 		// vue de la confédération
 		assertNotNull(person.getUpiPerson());
-		assertEquals("Maia", person.getUpiPerson().getValuesStoredUnderAhvvn().getPerson().getOfficialName());
-		assertEquals("António", person.getUpiPerson().getValuesStoredUnderAhvvn().getPerson().getFirstNames());
+		assertEquals("Maia", person.getUpiPerson().getOfficialName());
+		assertEquals("António", person.getUpiPerson().getFirstNames());
 
 		// vue des communes vaudoises
-		final String officialName = person.getIdentity().getPersonIdentification().getOfficialName();
+		final String officialName = person.getIdentity().getOfficialName();
 		assertEquals("MAIA", officialName.toUpperCase()); // on ignore la casse parce que cette valeur change souvent lors des reprises de données
 		assertEquals("Antonio", person.getIdentity().getCallName());
 	}
 
 	@Test(timeout = 5000)
-	public void testGetRelations() throws Exception {
+	public void testGetPeopleWithRelation() throws Exception {
 
 		final RcPersClientImpl client = buildClient();
+		final RegDate dateNaissance = RegDate.get(1976, 4, 15);
 
-		final ListOfRelations list = client.getRelations(Arrays.asList(476228L), null, true);
+		final ListOfPersons list = client.getPersons(Arrays.asList(347101L), null, true);
 		assertNotNull(list);
+		assertEquals(1, list.getNumberOfResults().intValue());
 
-		final List<ListOfRelations.ListOfResults.Result> allRelations = list.getListOfResults().getResult();
-		assertNotNull(allRelations);
-		assertEquals(1, allRelations.size()); // on n'a demandé qu'une seule personne
+		final List<ListOfPersons.ListOfResults.Result> result = list.getListOfResults().getResult();
+		final Person person = result.get(0).getPerson();
+		assertNotNull(person);
+		assertEquals(dateNaissance, EchHelper.partialDateFromEch44(person.getIdentity().getDateOfBirth()));
 
-		final ListOfRelations.ListOfResults.Result result = allRelations.get(0);
-		assertNotNull(result);
-		assertEquals("476228", result.getLocalPersonId().getPersonId()); // c'est bien les relations de la personne demandée
+		// les parents
+		final List<Parent> parents = person.getParentHistory();
+		assertNotNull(parents);
+		assertEquals(2, parents.size());
+		{
+			final Parent parent = parents.get(0);
+			assertEquals("347148", parent.getIdentification().getIdentification().getLocalPersonId().getPersonId());
+			assertEquals(dateNaissance, XmlUtils.xmlcal2regdate(parent.getParentFrom()));
+			assertNull(parent.getParentTill());
+		}
+		{
+			final Parent parent = parents.get(1);
+			assertEquals("347149", parent.getIdentification().getIdentification().getLocalPersonId().getPersonId());
+			assertEquals(dateNaissance, XmlUtils.xmlcal2regdate(parent.getParentFrom()));
+			assertNull(parent.getParentTill());
+		}
 
-		final List<Relationship> historique = result.getRelationHistory();
-		assertNotNull(historique);
-		assertEquals(2, historique.size());
-
-		// le femme
-		final Relationship histo0 = historique.get(0);
-		assertNotNull(histo0);
-		assertEquals("1", histo0.getTypeOfRelationship());
-		assertEquals("476229", histo0.getPersonIdentificationPartner().getLocalPersonId().getPersonId());
-
-		// la fille
-		final Relationship histo1 = historique.get(1);
-		assertNotNull(histo1);
-		assertEquals("102", histo1.getTypeOfRelationship());
-		assertEquals("476232", histo1.getPersonIdentificationPartner().getLocalPersonId().getPersonId());
+		// le conjoint (non-habitant)
+		final List<MaritalData> msHistory = person.getMaritalStatusHistory();
+		assertNotNull(msHistory);
+		assertEquals(2, msHistory.size());
+		{
+			final MaritalData md = msHistory.get(0);
+			assertEquals("1", md.getMaritalStatus());
+			assertNull(md.getPartner());
+		}
+		{
+			final MaritalData md = msHistory.get(1);
+			assertEquals("2", md.getMaritalStatus());
+			assertNotNull(md.getPartner());
+		}
 	}
 
 	@Test(timeout = 5000)
@@ -96,7 +115,7 @@ public class RcPersServiceTest {
 		final Event event = client.getEvent(1812347788L);
 		assertNotNull(event);
 
-		final Person p = event.getPersonAfterEvent().getPerson();
+		final Person p = event.getPersonAfterEvent();
 		assertNotNull("La personne associée à l'événement n°1812347788 est nulle !", p);
 		assertEquals(828322L, IndividuRCPers.getNoIndividu(p));
 	}
@@ -122,7 +141,6 @@ public class RcPersServiceTest {
 		client.setPeoplePath("persons/ct.vd.rcpers");
 		client.setPeopleByEventIdPath("persons/byevent");
 		client.setEventPath("event");
-		client.setRelationsPath("relations/ct.vd.rcpers");
 		client.setUsername("gvd0unireg");
 		client.setPassword("Welc0me_");
 		client.afterPropertiesSet();

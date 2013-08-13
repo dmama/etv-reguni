@@ -4,13 +4,15 @@ import java.io.Serializable;
 
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.registre.base.date.DateRange;
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 
 public class RelationVersIndividuImpl implements RelationVersIndividu, Serializable {
 
-	private static final long serialVersionUID = -6624424767436254182L;
+	private static final long serialVersionUID = -807338357035537506L;
 
 	private final long numeroAutreIndividu;
 	private final TypeRelationVersIndividu type;
@@ -51,6 +53,18 @@ public class RelationVersIndividuImpl implements RelationVersIndividu, Serializa
 	@Override
 	public boolean isValidAt(RegDate date) {
 		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
+	}
+
+	@Override
+	public boolean isCollatable(DateRange next) {
+		return DateRangeHelper.isCollatable(this, next)
+				&& numeroAutreIndividu == ((RelationVersIndividu) next).getNumeroAutreIndividu()
+				&& type == ((RelationVersIndividu) next).getTypeRelation();
+	}
+
+	@Override
+	public DateRange collate(DateRange next) {
+		return new RelationVersIndividuImpl(numeroAutreIndividu, type, dateDebut, next.getDateFin());
 	}
 
 	@Override

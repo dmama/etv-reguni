@@ -3,7 +3,7 @@ package ch.vd.unireg.interfaces.civil.data;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.io.Serializable;
 
-import ch.vd.evd0001.v4.Nationality;
+import ch.vd.evd0001.v5.Nationality;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -13,7 +13,7 @@ import ch.vd.uniregctb.common.XmlUtils;
 
 public class NationaliteRCPers implements Nationalite, Serializable {
 
-	private static final long serialVersionUID = 1269350960748765702L;
+	private static final long serialVersionUID = -5155791102956623665L;
 
 	private final RegDate dateDebut;
 	private final RegDate dateFin;

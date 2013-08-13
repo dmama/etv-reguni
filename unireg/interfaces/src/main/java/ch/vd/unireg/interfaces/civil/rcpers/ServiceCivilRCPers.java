@@ -4,18 +4,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.evd0001.v4.Event;
-import ch.vd.evd0001.v4.EventIdentification;
-import ch.vd.evd0001.v4.ListOfPersons;
-import ch.vd.evd0001.v4.ListOfRelations;
-import ch.vd.evd0001.v4.Person;
-import ch.vd.evd0001.v4.Relationship;
+import ch.vd.evd0001.v5.Event;
+import ch.vd.evd0001.v5.EventIdentification;
+import ch.vd.evd0001.v5.ListOfPersons;
+import ch.vd.evd0001.v5.Person;
 import ch.vd.evd0004.v3.Error;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.ServiceCivilException;
@@ -75,12 +71,8 @@ public class ServiceCivilRCPers implements ServiceCivilRaw {
 			return null;
 		}
 
-		// il faut demander les relations entre individus dans un appel séparé
-		final boolean withRelations = isWithRelations(parties);
-		final List<Relationship> relations = withRelations ? getRelationsPourIndividu(noIndividu) : null;
-
 		// on peut maintenant construire l'individu
-		final Individu individu = IndividuRCPers.get(person, relations, true, withRelations, infraService);
+		final Individu individu = IndividuRCPers.get(person, true, infraService);
 		if (individu != null) {
 			long actual = individu.getNoTechnique();
 			if (noIndividu != actual) {
@@ -94,26 +86,6 @@ public class ServiceCivilRCPers implements ServiceCivilRaw {
 		}
 
 		return individu;
-	}
-
-	private static boolean isWithRelations(AttributeIndividu... parties) {
-		return parties != null && containsAny(parties, AttributeIndividu.PARENTS, AttributeIndividu.CONJOINTS);
-	}
-
-	@Nullable
-	private List<Relationship> getRelationsPourIndividu(long noIndividu) {
-		final List<Relationship> relations;
-		final ListOfRelations rel = getRelationsSafely(Arrays.asList(noIndividu), null, true);
-		if (rel != null && rel.getListOfResults().getResult() != null && !rel.getListOfResults().getResult().isEmpty()) {
-			if (rel.getListOfResults().getResult().size() > 1) {
-				throw new ServiceCivilException("Plusieurs relations d'individu trouvés avec le même numéro d'individu = " + noIndividu);
-			}
-			relations = extractRelations(noIndividu, rel.getListOfResults().getResult().get(0), true);
-		}
-		else {
-			relations = null;
-		}
-		return relations;
 	}
 
 	@Override
@@ -136,11 +108,9 @@ public class ServiceCivilRCPers implements ServiceCivilRaw {
 
 		// il faut demander les relations entre individus dans un appel séparé
 		final long noIndividu = IndividuRCPers.getNoIndividu(person);
-		final boolean withRelations = isWithRelations(parties);
-		final List<Relationship> relations = withRelations ? getRelationsPourIndividu(noIndividu) : null;
 
 		// on peut maintenant construire l'individu
-		final Individu individu = IndividuRCPers.get(person, relations, true, withRelations, infraService);
+		final Individu individu = IndividuRCPers.get(person, true, infraService);
 		if (individu != null) {
 			long actual = individu.getNoTechnique();
 			if (noIndividu != actual) {
@@ -179,31 +149,6 @@ public class ServiceCivilRCPers implements ServiceCivilRaw {
 		return result.getPerson();
 	}
 
-	/**
-	 * Interprète le résultat retourné par RcPers et en extrait les relations valides de la personne.
-	 *
-	 * @param result le résultat retourné par RcPers
-	 * @return les relations d'une personne; ou <b>null</b> si la personne ne possède pas de relations.
-	 * @throws ServiceCivilException si RcPers à retourné un code d'erreur qui correspond à une erreur chez eux.
-	 */
-	@Nullable
-	private static List<Relationship> extractRelations(long noIndividu, ListOfRelations.ListOfResults.Result result, boolean withHistory) throws ServiceCivilException {
-
-		// [SIFISC-6685] on détecte les cas où on ne reçoit rien parce qu'il y a un bug dans RcPers
-		final Error notReturnedRelation = result.getNotReturnedRelationReason();
-		if (notReturnedRelation != null) {
-			final Integer code = notReturnedRelation.getCode();
-			if (code.equals(NOT_FOUND_PERSON)) {
-				return null; // le seul cas où les relations de la personne nesont pas retournée parce qu'elles n'existent simplement pas
-			}
-			else {
-				throw new ServiceCivilException("RcPers a retourné le code d'erreur " + code + " (" + notReturnedRelation.getMessage() + ") sur l'appel aux relations de l'individu = " + noIndividu);
-			}
-		}
-
-		return withHistory ? result.getRelationHistory() : result.getCurrentRelation();
-	}
-
 	private static boolean containsAny(AttributeIndividu[] container, AttributeIndividu... values) {
 		for (AttributeIndividu i : container) {
 			for (AttributeIndividu j : values) {
@@ -232,33 +177,10 @@ public class ServiceCivilRCPers implements ServiceCivilRaw {
 			}
 		}
 
-		// il faut demander les relations entre individus dans un appel séparé
-		final boolean withRelations = isWithRelations(parties);
-		final Map<Long, List<Relationship>> allRelations;
-		if (withRelations) {
-			final ListOfRelations rel = getRelationsSafely(nosIndividus, null, true);
-			if (rel != null && rel.getListOfResults().getResult() != null) {
-				allRelations = new HashMap<>();
-				for (ListOfRelations.ListOfResults.Result relRes : rel.getListOfResults().getResult()) {
-					final List<Relationship> relations = extractRelations(0, relRes, true);
-					if (relations != null) {
-						allRelations.put(IndividuRCPers.getNoIndividu(relRes.getLocalPersonId()), relations);
-					}
-				}
-			}
-			else {
-				allRelations = null;
-			}
-		}
-		else {
-			allRelations = null;
-		}
-
 		// on peut maintenant construire les individus
 		final List<Individu> individus = new ArrayList<>(nosIndividus.size());
 		for (Person person : persons) {
-			final List<Relationship> relations = allRelations == null ? null : allRelations.get(IndividuRCPers.getNoIndividu(person));
-			final Individu individu = IndividuRCPers.get(person, relations, true, withRelations, infraService);
+			final Individu individu = IndividuRCPers.get(person, true, infraService);
 			individus.add(individu);
 		}
 
@@ -302,37 +224,13 @@ public class ServiceCivilRCPers implements ServiceCivilRaw {
 		}
 	}
 
-	private ListOfRelations getRelationsSafely(Collection<Long> nosIndividus, @Nullable RegDate date, boolean withHistory) {
-		if (date != null && withHistory) {
-			throw new IllegalArgumentException("Il n'est pas possible de spécifier à la fois une date de validité et de demander l'historique complet des relations d'un individu");
-		}
-		try {
-			ListOfRelations list = null;
-			final BatchIterator<Long> batches = new StandardBatchIterator<>(nosIndividus, NB_PARAMS_MAX_PAR_GET);
-			while (batches.hasNext()) {
-				final ListOfRelations localList = client.getRelations(batches.next(), date, withHistory);
-				if (list == null) {
-					list = localList;
-				}
-				else {
-					list.setNumberOfResults(list.getNumberOfResults().add(localList.getNumberOfResults()));
-					list.getListOfResults().getResult().addAll(localList.getListOfResults().getResult());
-				}
-			}
-			return list;
-		}
-		catch (Exception e) {
-			throw new ServiceCivilException(e);
-		}
-	}
-
 	@Override
 	public IndividuApresEvenement getIndividuAfterEvent(long eventId) {
 		try {
 			final Event ref = client.getEvent(eventId);
 			if (ref != null) {
-				final Event.PersonAfterEvent personAfterEvent = ref.getPersonAfterEvent();
-				final Individu individu = IndividuRCPers.get(personAfterEvent.getPerson(), personAfterEvent.getRelations(), false, true, infraService);
+				final Person personAfterEvent = ref.getPersonAfterEvent();
+				final Individu individu = IndividuRCPers.get(personAfterEvent, false, infraService);
 				final EventIdentification idtf = ref.getIdentification();
 				final Long refMessageId = idtf.getReferenceMessageId();
 				final RegDate dateEvt = XmlUtils.xmlcal2regdate(idtf.getEventDate());

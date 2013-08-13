@@ -20,9 +20,9 @@ import org.springframework.context.SmartLifecycle;
 import org.springframework.core.io.ClassPathResource;
 import org.xml.sax.SAXException;
 
-import ch.vd.evd0001.v4.EventIdentification;
-import ch.vd.evd0001.v4.EventNotification;
-import ch.vd.evd0001.v4.ObjectFactory;
+import ch.vd.evd0001.v5.EventIdentification;
+import ch.vd.evd0001.v5.EventNotification;
+import ch.vd.evd0001.v5.ObjectFactory;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
@@ -250,7 +250,7 @@ public class EvenementCivilEchEsbHandler implements EsbMessageHandler, Initializ
 		if (schemaCache == null) {
 			final SchemaFactory sf = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
 			sf.setResourceResolver(new ClasspathCatalogResolver());
-			final Source[] source = getClasspathSources("eVD-0009-1-0.xsd", "eVD-0004-3-0.xsd", "eVD-0001-4-1.xsd");
+			final Source[] source = getClasspathSources("eVD-0009-1-0.xsd", "eVD-0004-3-0.xsd", "eVD-0001-5-0.xsd");
 			schemaCache = sf.newSchema(source);
 		}
 	}
