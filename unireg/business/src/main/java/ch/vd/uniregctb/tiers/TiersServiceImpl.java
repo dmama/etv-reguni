@@ -1841,15 +1841,29 @@ public class TiersServiceImpl implements TiersService {
 		final PersonnePhysique parent = getPersonnePhysiqueByNumeroIndividu(noIndividuParent);
 		if (parent != null) {
 			final RegDate dateDecesParent = getDateDeces(parent);
-			final RegDate dateFin = RegDateHelper.minimum(dateDecesEnfant, dateDecesParent, NullDateBehavior.LATEST);
-			if (RegDateHelper.isAfterOrEqual(dateFin, dateNaissanceEnfant, NullDateBehavior.LATEST)) {
-				return new Parente(dateNaissanceEnfant, dateFin, parent, enfant);
+			final RegDate dateNaissanceParent = getDateNaissance(parent);
+
+			final RegDate dateDebut = maximum(NullDateBehavior.EARLIEST, filiation.getDateDebut(), dateNaissanceEnfant, dateNaissanceParent);
+			final RegDate dateFin = minimum(NullDateBehavior.LATEST, filiation.getDateFin(), dateDecesEnfant, dateDecesParent);
+
+			if (dateDebut == null || dateFin == null || dateDebut.isBeforeOrEqual(dateFin)) {
+				return new Parente(dateDebut, dateFin, parent, enfant);
 			}
 			return null;
 		}
 		else {
 			throw new CreationParenteImpossibleCarTiersParentInconnuAuFiscal(enfant, noIndividuParent);
 		}
+	}
+
+	private static RegDate minimum(NullDateBehavior nullDateBehavior, RegDate date1, RegDate date2, RegDate date3) {
+		final RegDate min = RegDateHelper.minimum(date1, date2, nullDateBehavior);
+		return RegDateHelper.minimum(min, date3, nullDateBehavior);
+	}
+
+	private static RegDate maximum(NullDateBehavior nullDateBehavior, RegDate date1, RegDate date2, RegDate date3) {
+		final RegDate max = RegDateHelper.maximum(date1, date2, nullDateBehavior);
+		return RegDateHelper.maximum(max, date3, nullDateBehavior);
 	}
 
 	/**

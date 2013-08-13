@@ -7442,5 +7442,68 @@ public class TiersServiceTest extends BusinessTest {
 			}
 		});
 	}
+
+	@Test
+	public void testPriseEnCompteDatesFiliationsCivilesDansParentes() throws Exception {
+
+		final long noIndParent = 473423L;
+		final long noIndEnfant = 4378433L;
+		final RegDate dateNaissanceEnfant = date(2005, 6, 30);
+		final RegDate dateAdoptionEnfant = date(2005, 8, 1);
+		final RegDate dateDesaveuEnfant = date(2006, 4, 30);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu parent = addIndividu(noIndParent, null, "Dursley", "Vernon", Sexe.MASCULIN);
+				final MockIndividu enfant = addIndividu(noIndEnfant, dateNaissanceEnfant, "Potter", "Harry", Sexe.MASCULIN);
+				addLiensFiliation(enfant, parent, null, dateAdoptionEnfant, dateDesaveuEnfant);
+			}
+		});
+
+		final class Ids {
+			long idEnfant;
+			long idParent;
+		}
+
+		// mise en place fiscale avec création des parentés
+		final Ids ids = doInNewTransactionAndSessionUnderSwitch(parentesSynchronizer, true, new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique parent = addHabitant(noIndParent);
+				final PersonnePhysique enfant = addHabitant(noIndEnfant);
+
+				final Ids ids = new Ids();
+				ids.idEnfant = enfant.getNumero();
+				ids.idParent = parent.getNumero();
+				return ids;
+			}
+		});
+
+		// contrôle des dates de la relation de parenté créée
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique enfant = (PersonnePhysique) tiersDAO.get(ids.idEnfant);
+				assertNotNull(enfant);
+
+				final Set<RapportEntreTiers> relSujet = enfant.getRapportsSujet();
+				assertNotNull(relSujet);
+				assertEquals(1, relSujet.size());
+
+				final RapportEntreTiers parente = relSujet.iterator().next();
+				assertNotNull(parente);
+				assertEquals(TypeRapportEntreTiers.PARENTE, parente.getType());
+				assertEquals((Long) ids.idEnfant, parente.getSujetId());
+				assertEquals((Long) ids.idParent, parente.getObjetId());
+				assertFalse(parente.isAnnule());
+				assertEquals(dateAdoptionEnfant, parente.getDateDebut());
+				assertEquals(dateDesaveuEnfant, parente.getDateFin());
+
+				return null;
+			}
+		});
+	}
 }
 
