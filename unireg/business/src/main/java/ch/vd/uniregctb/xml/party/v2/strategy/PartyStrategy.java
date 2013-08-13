@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.xml.party.v2.strategy;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
@@ -244,22 +245,32 @@ public abstract class PartyStrategy<T extends Party> {
 		if (parts.contains(PartyPart.CHILDREN) && right instanceof PersonnePhysique) {
 			final PersonnePhysique pp = (PersonnePhysique) right;
 			final List<Parente> enfants = context.tiersService.getEnfants(pp, false);
+			final List<RelationBetweenParties> relChildren = new ArrayList<>(enfants.size());
 			for (Parente enfant : enfants) {
 				final RelationBetweenParties rbp = RelationBetweenPartiesBuilder.newFiliationTowardsChild(enfant);
 				if (rbp != null) {
-					tiers.getRelationsBetweenParties().add(rbp);
+					relChildren.add(rbp);
 				}
+			}
+			if (relChildren.size() > 0) {
+				Collections.sort(relChildren, RelationBetweenPartiesBuilder.COMPARATOR);
+				tiers.getRelationsBetweenParties().addAll(relChildren);
 			}
 		}
 
 		if (parts.contains(PartyPart.PARENTS) && right instanceof PersonnePhysique) {
 			final PersonnePhysique pp = (PersonnePhysique) right;
 			final List<Parente> parents = context.tiersService.getParents(pp, false);
+			final List<RelationBetweenParties> relParents = new ArrayList<>(parents.size());
 			for (Parente parent : parents) {
 				final RelationBetweenParties rbp = RelationBetweenPartiesBuilder.newFiliationTowardsParent(parent);
 				if (rbp != null) {
-					tiers.getRelationsBetweenParties().add(rbp);
+					relParents.add(rbp);
 				}
+			}
+			if (relParents.size() > 0) {
+				Collections.sort(relParents, RelationBetweenPartiesBuilder.COMPARATOR);
+				tiers.getRelationsBetweenParties().addAll(relParents);
 			}
 		}
 	}

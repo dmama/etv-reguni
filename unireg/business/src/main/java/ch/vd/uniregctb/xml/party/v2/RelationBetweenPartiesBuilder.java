@@ -1,5 +1,10 @@
 package ch.vd.uniregctb.xml.party.v2;
 
+import java.util.Comparator;
+
+import org.jetbrains.annotations.Nullable;
+
+import ch.vd.unireg.xml.common.v1.DateHelper;
 import ch.vd.unireg.xml.party.relation.v1.RelationBetweenParties;
 import ch.vd.unireg.xml.party.relation.v1.RelationBetweenPartiesType;
 import ch.vd.uniregctb.tiers.Parente;
@@ -7,6 +12,41 @@ import ch.vd.uniregctb.xml.DataHelper;
 import ch.vd.uniregctb.xml.EnumHelper;
 
 public class RelationBetweenPartiesBuilder {
+
+	public static final Comparator<RelationBetweenParties> COMPARATOR = new Comparator<RelationBetweenParties>() {
+		@Override
+		public int compare(RelationBetweenParties o1, RelationBetweenParties o2) {
+			int comparison = DateHelper.compareTo(o1, o2);
+			if (comparison == 0) {
+				comparison = compareTo(o1.getType(), o2.getType(), false);
+				if (comparison == 0) {
+					comparison = compareTo(o1.getEndDateOfLastTaxableItem(), o2.getEndDateOfLastTaxableItem(), false);
+					if (comparison == 0) {
+						comparison = compareTo(o1.isExtensionToForcedExecution(), o2.isExtensionToForcedExecution(), false);
+						if (comparison == 0) {
+							comparison = Integer.compare(o1.getOtherPartyNumber(), o2.getOtherPartyNumber());
+						}
+					}
+				}
+			}
+			return comparison;
+		}
+	};
+
+	private static <T extends Comparable<T>> int compareTo(@Nullable T o1, @Nullable T o2, boolean nullFirst) {
+		if (o1 == o2) {
+			return 0;
+		}
+		else if (o1 == null) {
+			return nullFirst ? -1 : 1;
+		}
+		else if (o2 == null) {
+			return nullFirst ? 1 : -1;
+		}
+		else {
+			return o1.compareTo(o2);
+		}
+	}
 
 	public static RelationBetweenParties newRelationBetweenParties(ch.vd.uniregctb.tiers.RapportEntreTiers rapport, Long autreTiersNumero) {
 		final RelationBetweenParties r = new RelationBetweenParties();
