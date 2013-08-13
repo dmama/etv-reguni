@@ -83,11 +83,16 @@ public class ParentesSynchronizerInterceptor implements ModificationSubIntercept
 	@Override
 	public void postTransactionCommit() {
 
-		final HashSet<Long> set = getModifiedNos();
+		final Set<Long> set = getModifiedNos();
 		if (set.isEmpty()) {
 			return; // rien à faire
 		}
 
+		// au cas où il aurait été actif un moment dans la transaction...
+		if (!isEnabled()) {
+			set.clear();
+			return;
+		}
 
 		final boolean authenticated = AuthenticationHelper.isAuthenticated();
 
@@ -148,11 +153,25 @@ public class ParentesSynchronizerInterceptor implements ModificationSubIntercept
 	 */
 	private void addModifiedPersonnePhysique(PersonnePhysique pp) {
 		if (pp != null && pp.isConnuAuCivil()) {
-			getModifiedNos().add(pp.getNumeroIndividu());
+			addNoIndividu(pp.getNumeroIndividu());
 		}
 	}
 
-	private HashSet<Long> getModifiedNos() {
+	/**
+	 * Indique au processus que cet individu doit être rafraîchi de toute façon (i.e. même si la personne physique correspondante n'est pas modifiée).
+	 * <p/>
+	 * <b>Note :</b> cette méthode doit être appelée, si nécessaire, <i>avant</i> le {@link #postTransactionCommit()}
+	 * @param noIndividu identifiant de l'individu cible
+	 */
+	public void forceRefreshOnIndividu(long noIndividu) {
+		addNoIndividu(noIndividu);
+	}
+
+	private void addNoIndividu(long noIndividu) {
+		getModifiedNos().add(noIndividu);
+	}
+
+	private Set<Long> getModifiedNos() {
 		return modifiedNosIndividus.get();
 	}
 

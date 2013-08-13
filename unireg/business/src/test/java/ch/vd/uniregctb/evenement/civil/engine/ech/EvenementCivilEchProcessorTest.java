@@ -28,6 +28,7 @@ import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneComposite;
 import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.interne.testing.Testing;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.MotifFor;
@@ -35,6 +36,7 @@ import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 import ch.vd.uniregctb.type.TypeEvenementErreur;
+import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -824,6 +826,96 @@ public class EvenementCivilEchProcessorTest extends AbstractEvenementCivilEchPro
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppid);
 				Assert.assertFalse(pp.isHabitantVD()); // [SIFISC-6908] le forçage de l'événement doit recalculer le flag 'habitant'
+				return null;
+			}
+		});
+	}
+
+	@Test
+	public void testRefreshSystematiqueParentes() throws Exception {
+
+		final long noIndParent = 467832457L;
+		final long noIndEnfant = 4367453762L;
+		final RegDate dateNaissanceEnfant = date(2010, 4, 2);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu parent = addIndividu(noIndParent, null, "Dumas", "Alexandre, père", Sexe.MASCULIN);
+				final MockIndividu enfant = addIndividu(noIndEnfant, null, "Dumas", "Alexandre, fils", Sexe.MASCULIN);
+				addLiensFiliation(enfant, parent, null, dateNaissanceEnfant, null);
+			}
+		});
+
+		final class Ids {
+			long idParent;
+			long idEnfant;
+		}
+
+		// mise en place fiscale des deux contribuable (sans relation de parenté pour le moment)
+		final Ids ids = doInNewTransactionAndSessionUnderSwitch(parentesSynchronizer, false, new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique parent = addHabitant(noIndParent);
+				final PersonnePhysique enfant = addHabitant(noIndEnfant);
+				final Ids ids = new Ids();
+				ids.idEnfant = enfant.getNumero();
+				ids.idParent = parent.getNumero();
+				return ids;
+			}
+		});
+
+		// construction d'un événement civil bidon sur l'enfant qui ne fait rien
+		final long evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(1367813456723L);
+				evt.setNumeroIndividu(noIndEnfant);
+				evt.setType(TypeEvenementCivilEch.TESTING);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setDateEvenement(RegDate.get());
+				return hibernateTemplate.merge(evt).getId();
+			}
+		});
+
+		// on vérifie qu'il n'y a pas de relation de parenté
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique enfant = (PersonnePhysique) tiersDAO.get(ids.idEnfant);
+				assertNotNull(enfant);
+				assertEmpty(enfant.getRapportsObjet());
+				assertEmpty(enfant.getRapportsSujet());
+				return null;
+			}
+		});
+
+		// traitement de l'événement
+		traiterEvenements(noIndEnfant);
+
+		// on vérifie que la relation de parenté est maintenant présente
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique enfant = (PersonnePhysique) tiersDAO.get(ids.idEnfant);
+				assertNotNull(enfant);
+				assertEmpty(enfant.getRapportsObjet());
+
+				final Set<RapportEntreTiers> relSujets = enfant.getRapportsSujet();
+				assertNotNull(relSujets);
+				assertEquals(1, relSujets.size());
+
+				final RapportEntreTiers parente = relSujets.iterator().next();
+				assertNotNull(parente);
+				assertEquals(TypeRapportEntreTiers.PARENTE, parente.getType());
+				assertEquals((Long) ids.idParent, parente.getObjetId());
+				assertEquals((Long) ids.idEnfant, parente.getSujetId());
+				assertFalse(parente.isAnnule());
+				assertEquals(dateNaissanceEnfant, parente.getDateDebut());
+				assertNull(parente.getDateFin());
 				return null;
 			}
 		});

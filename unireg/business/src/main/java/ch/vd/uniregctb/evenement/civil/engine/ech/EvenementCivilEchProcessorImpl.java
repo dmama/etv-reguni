@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.evenement.civil.engine.ech;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -14,6 +15,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.apache.log4j.Logger;
+import org.hibernate.CallbackException;
+import org.hibernate.type.Type;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.SmartLifecycle;
@@ -27,6 +30,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
@@ -43,8 +47,11 @@ import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchErreurFactory;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchWrappingFacade;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
+import ch.vd.uniregctb.hibernate.interceptor.ModificationInterceptor;
+import ch.vd.uniregctb.hibernate.interceptor.ModificationSubInterceptor;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
+import ch.vd.uniregctb.parentes.ParentesSynchronizerInterceptor;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
@@ -74,6 +81,9 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 	private ServiceCivilService serviceCivil;
 
 	private List<ErrorPostProcessingStrategy> postProcessingStrategies;
+
+	private ModificationInterceptor mainInterceptor;
+	private ParentesSynchronizerInterceptor parentesSynchronizerInterceptor;
 
 	private Processor processor;
 	private final Map<Long, Listener> listeners = new LinkedHashMap<>();      // pour les tests, c'est pratique de conserver l'ordre (pour le reste, cela ne fait pas de mal...)
@@ -116,6 +126,14 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 
 	public void setDataEventService(DataEventService dataEventService) {
 		this.dataEventService = dataEventService;
+	}
+
+	public void setMainInterceptor(ModificationInterceptor mainInterceptor) {
+		this.mainInterceptor = mainInterceptor;
+	}
+
+	public void setParentesSynchronizerInterceptor(ParentesSynchronizerInterceptor parentesSynchronizerInterceptor) {
+		this.parentesSynchronizerInterceptor = parentesSynchronizerInterceptor;
 	}
 
 	/**
@@ -311,11 +329,54 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 	}
 
 	/**
+	 * Intercepteur qui suit la transaction en cours pour forcer, de manière systématique, le rafraîchissement
+	 * des données de parentés sur la personne physique correspondant à l'événement reçu.<p/>
+	 * On utilise ici cette mécanique d'intercepteur pour deux raisons principales :
+	 * <ul>
+	 *     <li>systématique du comportement&nbsp;;</li>
+	 *     <li>pour s'assurer que, dans le cas où la personne physique est modifiée par le traitement de l'événement, le rafraîchissement ne soit pas fait deux fois.</li>
+	 * </ul>
+	 */
+	private final class ParenteRefreshForcingInterceptor implements ModificationSubInterceptor {
+
+		private final long noIndividu;
+
+		private ParenteRefreshForcingInterceptor(long noIndividu) {
+			this.noIndividu = noIndividu;
+		}
+
+		@Override
+		public boolean onChange(HibernateEntity entity, Serializable id, Object[] currentState, Object[] previousState, String[] propertyNames, Type[] types, boolean isAnnulation) throws CallbackException {
+			return false;
+		}
+
+		@Override
+		public void postFlush() throws CallbackException {
+		}
+
+		@Override
+		public void preTransactionCommit() {
+			// ceci doit être fait avant les appels à {@link #postTransactionCommit()}... donc ici c'est bon !
+			parentesSynchronizerInterceptor.forceRefreshOnIndividu(noIndividu);
+		}
+
+		@Override
+		public void postTransactionCommit() {
+		}
+
+		@Override
+		public void postTransactionRollback() {
+		}
+	}
+
+	/**
 	 * Lancement du processing de l'événement civil décrit dans la structure donnée
 	 * @param info description de l'événement civil à traiter maintenant
 	 * @return <code>true</code> si tout s'est bien passé et que l'on peut continuer sur les événements suivants, <code>false</code> si on ne doit pas continuer
 	 */
 	private boolean processEvent(final EvenementCivilEchBasicInfo info) {
+		final ParenteRefreshForcingInterceptor myInterceptor = new ParenteRefreshForcingInterceptor(info.getNoIndividu());
+		mainInterceptor.register(myInterceptor);
 		try {
 			return doInNewTransaction(new TransactionCallback<Boolean>() {
 				@Override
@@ -355,6 +416,9 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 			LOGGER.error(String.format("Exception reçue lors du traitement de l'événement %d", info.getId()), e);
 			onException(info, e);
 			return false;
+		}
+		finally {
+			mainInterceptor.unregister(myInterceptor);
 		}
 	}
 

@@ -9,6 +9,7 @@ import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchDAO;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchProcessingMode;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchService;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
+import ch.vd.uniregctb.hibernate.interceptor.ModificationInterceptor;
 import ch.vd.uniregctb.metier.MetierService;
 
 public abstract class AbstractEvenementCivilEchProcessorTest extends BusinessTest {
@@ -18,6 +19,7 @@ public abstract class AbstractEvenementCivilEchProcessorTest extends BusinessTes
 	protected EvenementCivilEchDAO evtCivilDAO;
 	protected EvenementCivilEchService evtCivilService;
 	protected DataEventService dataEventService;
+	protected ModificationInterceptor mainInterceptor;
 
 	@Override
 	protected void runOnSetUp() throws Exception {
@@ -26,6 +28,7 @@ public abstract class AbstractEvenementCivilEchProcessorTest extends BusinessTes
 		evtCivilDAO  = getBean(EvenementCivilEchDAO.class, "evenementCivilEchDAO");
 		evtCivilService  = getBean(EvenementCivilEchService.class, "evtCivilEchService");
 		dataEventService = getBean(DataEventService.class, "dataEventService");
+		mainInterceptor = getBean(ModificationInterceptor.class, "modificationInterceptor");
 
 		final EvenementCivilEchTranslator translator = getBean(EvenementCivilEchTranslator.class, "evenementCivilEchTranslator");
 
@@ -64,6 +67,8 @@ public abstract class AbstractEvenementCivilEchProcessorTest extends BusinessTes
 		proc.setIndexer(globalTiersIndexer);
 		proc.setServiceCivil(serviceCivil);
 		proc.setDataEventService(dataEventService);
+		proc.setMainInterceptor(mainInterceptor);
+		proc.setParentesSynchronizerInterceptor(parentesSynchronizer);
 		if (restart && processor != null) {
 			processor.stop();
 		}
