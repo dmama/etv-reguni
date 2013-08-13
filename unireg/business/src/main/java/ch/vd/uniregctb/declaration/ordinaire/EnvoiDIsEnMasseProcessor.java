@@ -202,7 +202,7 @@ public class EnvoiDIsEnMasseProcessor {
 
 		// pré-chauffage du cache des individus du civil
 		if (serviceCivilCacheWarmer != null) {
-			serviceCivilCacheWarmer.warmIndividusPourTiers(ids, null, true, AttributeIndividu.ADRESSES, AttributeIndividu.ENFANTS);
+			serviceCivilCacheWarmer.warmIndividusPourTiers(ids, null, true, AttributeIndividu.ADRESSES);
 		}
 
 		final Iterator<TacheEnvoiDeclarationImpot> iter = createIteratorOnTaches(anneePeriode, categorie.getTypeContribuable(), categorie.getTypeDocument(), ids);

@@ -17,7 +17,6 @@ public class RelationsComparisonStrategy implements IndividuComparisonStrategy {
 	private static final String ATTRIBUT = "relations";
 	private static final String DATES = "dates";
 	private static final String CONJOINTS = "conjoints";
-	private static final String ENFANTS = "enfants";
 	private static final String PARENTS = "parents";
 
 	private static final Comparator<RelationVersIndividu> RELATION_COMPARATOR = new IndividuComparisonHelper.NullableComparator<RelationVersIndividu>(true) {
@@ -48,7 +47,6 @@ public class RelationsComparisonStrategy implements IndividuComparisonStrategy {
 		// les différences de relations sont à chercher dans les conjoints et les filiations
 		final IndividuComparisonHelper.FieldMonitor monitor = new IndividuComparisonHelper.FieldMonitor();
 		if (!IndividuComparisonHelper.areContentsEqual(originel.getIndividu().getConjoints(), corrige.getIndividu().getConjoints(), RELATION_COMPARATOR, RELATION_EQUALATOR, monitor, CONJOINTS)
-				|| !IndividuComparisonHelper.areContentsEqual(originel.getIndividu().getEnfants(), corrige.getIndividu().getEnfants(), RELATION_COMPARATOR, RELATION_EQUALATOR, monitor, ENFANTS)
 				|| !IndividuComparisonHelper.areContentsEqual(originel.getIndividu().getParents(), corrige.getIndividu().getParents(), RELATION_COMPARATOR, RELATION_EQUALATOR, monitor, PARENTS)) {
 			IndividuComparisonHelper.fillMonitor(monitor, ATTRIBUT);
 			msg.setValue(IndividuComparisonHelper.buildErrorMessage(monitor));

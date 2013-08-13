@@ -51,9 +51,9 @@ import ch.vd.uniregctb.type.TypeAdresseCivil;
 
 public class IndividuRCPers implements Individu, Serializable {
 
-	private static final long serialVersionUID = -6880076724313597935L;
+	private static final long serialVersionUID = 4738414495689763040L;
 
-	private static final EnumSet<AttributeIndividu> RELATION_RELATED = EnumSet.of(AttributeIndividu.CONJOINTS, AttributeIndividu.ENFANTS, AttributeIndividu.PARENTS);
+	private static final EnumSet<AttributeIndividu> RELATION_RELATED = EnumSet.of(AttributeIndividu.CONJOINTS, AttributeIndividu.PARENTS);
 	private static final EnumSet<AttributeIndividu> NON_RELATION_RELATED = EnumSet.complementOf(RELATION_RELATED);
 
 	private long noTechnique;
@@ -70,9 +70,7 @@ public class IndividuRCPers implements Individu, Serializable {
 	private RegDate naissance;
 	private RegDate dateArriveeVD;
 	private Collection<Origine> origines;
-	private Collection<AdoptionReconnaissance> adoptions;
 	private Collection<Adresse> adresses;
-	private Collection<RelationVersIndividu> enfants;
 	private EtatCivilList etatsCivils;
 	private List<RelationVersIndividu> parents;
 	private List<RelationVersIndividu> conjoints;
@@ -110,7 +108,6 @@ public class IndividuRCPers implements Individu, Serializable {
 		this.naissance = EchHelper.partialDateFromEch44(identification.getDateOfBirth());
 		this.dateArriveeVD = initDateArriveeVD(person.getResidenceHistory());
 		this.origines = initOrigins(person);
-		this.adoptions = null; // RCPers ne distingue pas les adoptions des filiations
 
 		if (history) {
 			this.adresses = initAdresses(null, person.getContactHistory(), person.getResidenceHistory(), infraService);
@@ -132,7 +129,6 @@ public class IndividuRCPers implements Individu, Serializable {
 		}
 
 		if (relations != null) {
-			this.enfants = initEnfants(relations);
 			this.parents = initParents(this.naissance, relations);
 			this.conjoints = initConjoints(relations);
 		}
@@ -172,14 +168,8 @@ public class IndividuRCPers implements Individu, Serializable {
 		if (parts != null && parts.contains(AttributeIndividu.ADRESSES)) {
 			this.adresses = right.adresses;
 		}
-		if (parts != null && parts.contains(AttributeIndividu.ADOPTIONS)) {
-			adoptions = right.adoptions;
-		}
 		if (parts != null && parts.contains(AttributeIndividu.CONJOINTS)) {
 			conjoints = right.conjoints;
-		}
-		if (parts != null && parts.contains(AttributeIndividu.ENFANTS)) {
-			enfants = right.enfants;
 		}
 		if (parts != null && parts.contains(AttributeIndividu.ORIGINE)) {
 			origines = right.origines;
@@ -217,9 +207,7 @@ public class IndividuRCPers implements Individu, Serializable {
 		this.nationalites = right.nationalites;
 
 		this.adresses = right.adresses;
-		this.adoptions = right.adoptions;
 		this.parents = right.parents;
-		this.enfants = right.enfants;
 		this.conjoints = right.conjoints;
 		this.etatsCivils = right.etatsCivils;
 		this.permis = right.permis;
@@ -233,14 +221,8 @@ public class IndividuRCPers implements Individu, Serializable {
 		if (adresses != null) {
 			adresses = CollectionLimitator.limit(adresses, date, CollectionLimitator.ADRESSE_LIMITATOR);
 		}
-		if (adoptions != null) {
-			adoptions = CollectionLimitator.limit(adoptions, date, CollectionLimitator.ADOPTION_LIMITATOR);
-		}
 		if (parents != null) {
 			parents = CollectionLimitator.limit(parents, date, CollectionLimitator.RELATION_LIMITATOR);
-		}
-		if (enfants != null) {
-			enfants = CollectionLimitator.limit(enfants, date, CollectionLimitator.RELATION_LIMITATOR);
 		}
 		if (conjoints != null) {
 			conjoints = CollectionLimitator.limit(conjoints, date, CollectionLimitator.RELATION_LIMITATOR);
@@ -737,11 +719,6 @@ public class IndividuRCPers implements Individu, Serializable {
 	}
 
 	@Override
-	public Collection<AdoptionReconnaissance> getAdoptionsReconnaissances() {
-		return adoptions;
-	}
-
-	@Override
 	public RegDate getDateDeces() {
 		return deces;
 	}
@@ -769,11 +746,6 @@ public class IndividuRCPers implements Individu, Serializable {
 	@Override
 	public List<RelationVersIndividu> getConjoints() {
 		return conjoints;
-	}
-
-	@Override
-	public Collection<RelationVersIndividu> getEnfants() {
-		return enfants;
 	}
 
 	@Override
@@ -831,14 +803,8 @@ public class IndividuRCPers implements Individu, Serializable {
 		if (parts != null && parts.contains(AttributeIndividu.ADRESSES)) {
 			adresses = individu.getAdresses();
 		}
-		if (parts != null && parts.contains(AttributeIndividu.ADOPTIONS)) {
-			adoptions = individu.getAdoptionsReconnaissances();
-		}
 		if (parts != null && parts.contains(AttributeIndividu.CONJOINTS)) {
 			conjoints = individu.getConjoints();
-		}
-		if (parts != null && parts.contains(AttributeIndividu.ENFANTS)) {
-			enfants = individu.getEnfants();
 		}
 		if (parts != null && parts.contains(AttributeIndividu.ORIGINE)) {
 			origines = individu.getOrigines();

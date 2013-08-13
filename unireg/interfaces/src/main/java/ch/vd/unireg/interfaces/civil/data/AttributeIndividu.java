@@ -7,8 +7,6 @@ public enum AttributeIndividu {
 
 	ORIGINE,
 	CONJOINTS,
-	ENFANTS,
-	ADOPTIONS,
 	ADRESSES,
 	PARENTS,
 	PERMIS,

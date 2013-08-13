@@ -123,68 +123,6 @@ public interface TiersService {
 	UpdateHabitantFlagResultat updateHabitantStatus(@NotNull PersonnePhysique pp, long noInd, @Nullable RegDate date, @Nullable Long numeroEvenement) throws TiersException;
 
     /**
-     * Retourne le contribuable <i>père</i> (au sens civil du terme) du contribuable spécifié.
-     * Si le contribuable spécifié est inconnu au contrôle des habitants, la valeur retournée est nulle. D'autre part, n'est retourné une valeur qui le père est lui-même contribuable.
-     *
-     * @param pp           une personne physique
-     * @param dateValidite la date de validité des données retournées
-     * @return un contribuable, ou <b>null</b> selon les cas.
-     */
-    PersonnePhysique getPere(PersonnePhysique pp, RegDate dateValidite);
-
-    /**
-     * Retourne le contribuable <i>mère</i> (au sens civil du terme) du contribuable spécifié.
-     * Si le contribuable spécifié est inconnu au contrôle des habitants, la valeur retournée est nulle. D'autre part, n'est retourné une valeur qui la mère est elle-même contribuable.
-     *
-     * @param pp           une personne physique
-     * @param dateValidite la date de validité des données retournées
-     * @return un contribuable, ou <b>null</b> selon les cas.
-     */
-    PersonnePhysique getMere(PersonnePhysique pp, RegDate dateValidite);
-
-    /**
-     * Retourne la liste des contribuables <i>parents</i> (au sens civil du terme) du contribuable spécifié.
-     * Si le contribuable spécifié est inconnu au contrôle des habitants, la liste retournée est vide. D'autre part, ne sont retournés que les parents qui sont eux-mêmes contribuables.
-     *
-     * @param pp           une personne physique
-     * @param dateValidite la date de validité des données retournées
-     * @return une liste de contribuables, qui peut contenir 0 ou plusieurs contribuables selon les cas.
-     */
-    List<PersonnePhysique> getParents(PersonnePhysique pp, RegDate dateValidite);
-
-    /**
-     * Retourne la liste des contribuables <i>enfants</i> (au sens civil du terme) du contribuable spécifié.
-     * Si le contribuable spécifié est inconnu au contrôle des habitants, la liste retournée est vide. D'autre part, ne sont retournés que les enfants qui sont eux-mêmes contribuables.
-     *
-     * @param pp           une personne physique
-     * @param dateValidite la date de validité des données retournées
-     * @return une liste de contribuables, qui peut contenir 0 ou plusieurs contribuables selon les cas.
-     */
-    List<PersonnePhysique> getEnfants(PersonnePhysique pp, @Nullable RegDate dateValidite);
-
-    /**
-     * Retourne la liste des contribuables <i>enfants</i> (au sens civil du terme) du ménage commun spcécifié.
-     * Il sagit de l'union <i>au sens emsembliste</i> des enfants des deux composantes du ménage commun  .
-     * Si le contribuable spécifié est inconnu au contrôle des habitants, la liste retournée est vide. D'autre part, ne sont retournés que les enfants qui sont eux-mêmes contribuables.
-     *
-     * @param pp           un ménage commun
-     * @param dateValidite la date de validité des données retournées
-     * @return une liste de contribuables, qui peut contenir 0 ou plusieurs contribuables selon les cas.
-     */
-    List<PersonnePhysique> getEnfants(MenageCommun mc, RegDate dateValidite);
-
-
-    /**
-     * Retourne la liste des contribuables <i>enfants</i> (au sens civil du terme) du contribuable spécifié.
-     * Si le contribuable spécifié est inconnu au contrôle des habitants, la liste retournée est vide. D'autre part, ne sont retournés que les enfants qui sont eux-mêmes contribuables.
-     *
-     * @param pp           un contribuable
-     * @param dateValidite la date de validité des données retournées
-     * @return une liste de contribuables, qui peut contenir 0 ou plusieurs contribuables selon les cas.
-     */
-    List<PersonnePhysique> getEnfants(Contribuable ctb, RegDate dateValidite);
-
-    /**
      * Permet de recupérer la liste des enfants à faire figurer sur la DI  d'un contribuable
      *
      * @param ctb                  dont on recherche les enfants
@@ -1223,13 +1161,27 @@ public interface TiersService {
     boolean isMenageActif(MenageCommun menage, @Nullable RegDate date);
 
     /**
-     * Détermine et retourne les rapports de filiation de type PARENT ou ENFANT
+     * Retourne la liste des parents d'un contribuable
      *
      * @param personnePhysique un personne physique
+     * @param yComprisRelationsAnnulees <code>true</code> si on veut toutes les relations existantes, <code>false</code> si on ne veut que les relations non-annulées
      * @return la liste des rapports de filiation trouvés.
      */
     @NotNull
-    List<RapportFiliation> getRapportsFiliation(PersonnePhysique personnePhysique);
+    List<Filiation> getParents(PersonnePhysique enfant, boolean yComprisRelationsAnnulees);
+
+	@NotNull
+	List<PersonnePhysique> getParents(PersonnePhysique enfant, RegDate dateValidite);
+
+	/**
+	 * Retourne la liste des enfants d'un contribuable
+	 *
+	 * @param personnePhysique un personne physique
+	 * @param yComprisRelationsAnnulees <code>true</code> si on veut toutes les relations existantes, <code>false</code> si on ne veut que les relations non-annulées
+	 * @return la liste des rapports de filiation trouvés.
+	 */
+	@NotNull
+	List<Filiation> getEnfants(PersonnePhysique parent, boolean yComprisRelationsAnnulees);
 
     /**
      * Permet de traiter la éouverture d'un for fiscal d'un débiteur. Entraine également la réouverture
@@ -1237,7 +1189,7 @@ public interface TiersService {
      *
      * @param forDebiteur le for à réouvrir
      */
-    public void reouvrirForDebiteur(@NotNull ForDebiteurPrestationImposable forDebiteur);
+    void reouvrirForDebiteur(@NotNull ForDebiteurPrestationImposable forDebiteur);
 
     /**
      * Détermine et retourne les numéros de tiers des offices d'impôt de district et de région pour une commune donnée.

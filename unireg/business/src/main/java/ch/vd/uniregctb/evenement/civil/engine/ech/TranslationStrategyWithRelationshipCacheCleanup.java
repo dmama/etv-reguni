@@ -34,9 +34,8 @@ public class TranslationStrategyWithRelationshipCacheCleanup implements Evenemen
 
 		// invalidation du cache de tous les individus en relation avec celui de l'événement
 		final long noIndividu = event.getNumeroIndividu();
-		final Individu individu = serviceCivil.getIndividu(noIndividu, null, AttributeIndividu.ENFANTS, AttributeIndividu.PARENTS, AttributeIndividu.CONJOINTS);
+		final Individu individu = serviceCivil.getIndividu(noIndividu, null, AttributeIndividu.PARENTS, AttributeIndividu.CONJOINTS);
 		invalidateCache(individu.getParents());
-		invalidateCache(individu.getEnfants());
 		invalidateCache(individu.getConjoints());
 
 		// création de l'événement interne de traitement de l'événement

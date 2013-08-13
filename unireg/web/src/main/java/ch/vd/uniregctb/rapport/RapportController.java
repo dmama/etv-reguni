@@ -28,11 +28,8 @@ import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.ContactImpotSource;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.PlusieursPersonnesPhysiquesAvecMemeNumeroIndividuException;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.RapportEntreTiersDAO;
-import ch.vd.uniregctb.tiers.RapportFiliation;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersMapHelper;
@@ -142,52 +139,6 @@ public class RapportController {
 		final List<RapportsPage.RapportView> views = getRapportViews(tiersId, showHisto, excludeContactImpotSource, excludeRapportPrestationImposable, typeRapport, pagination);
 
 		return new RapportsPage(tiersId, views, showHisto, typeRapport, typeRapportEntreTiers, page, totalCount, sortField, sortOrder);
-	}
-
-	/**
-	 * Retourne toutes les filiations (= liens vers les parents et les enfants) d'un contribuable sous format JSON.
-	 *
-	 * @param tiersId le numéro de tiers
-	 * @return une liste de filiations sous format JSON; ou un message d'erreur en cas de doublon sur les individus.
-	 * @throws ch.vd.uniregctb.security.AccessDeniedException
-	 *          si l'utilisateur ne possède les droits de visualisation suffisants.
-	 */
-	@ResponseBody
-	@RequestMapping(value = "/filiations.do", method = RequestMethod.GET)
-	@Transactional(readOnly = true, rollbackFor = Throwable.class)
-	public Object filiations(@RequestParam("tiers") long tiersId) throws AccessDeniedException {
-
-		if (!SecurityHelper.isAnyGranted(securityProvider, Role.VISU_LIMITE, Role.VISU_ALL)) {
-			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec pour visualiser les immeubles d'un contribuable");
-		}
-
-		controllerUtils.checkAccesDossierEnLecture(tiersId);
-
-		final Tiers tiers = tiersService.getTiers(tiersId);
-		if (tiers == null) {
-			throw new TiersNotFoundException(tiersId);
-		}
-
-		final List<FiliationView> views = new ArrayList<>();
-
-		if (tiers instanceof PersonnePhysique) {
-			final PersonnePhysique pp = (PersonnePhysique) tiers;
-			if (pp.isConnuAuCivil()) {
-				try {
-					final String nomInd = tiersService.getNomPrenom(pp);
-
-					final List<RapportFiliation> filiations = tiersService.getRapportsFiliation(pp);
-					for (RapportFiliation filiation : filiations) {
-						views.add(new FiliationView(filiation, nomInd, tiersService));
-					}
-				}
-				catch (PlusieursPersonnesPhysiquesAvecMemeNumeroIndividuException e) {
-					return e.getMessage();
-				}
-			}
-		}
-
-		return views;
 	}
 
 	/**

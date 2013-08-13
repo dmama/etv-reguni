@@ -97,7 +97,7 @@ public class ServiceCivilRCPers implements ServiceCivilRaw {
 	}
 
 	private static boolean isWithRelations(AttributeIndividu... parties) {
-		return parties != null && containsAny(parties, AttributeIndividu.PARENTS, AttributeIndividu.ENFANTS, AttributeIndividu.CONJOINTS);
+		return parties != null && containsAny(parties, AttributeIndividu.PARENTS, AttributeIndividu.CONJOINTS);
 	}
 
 	@Nullable

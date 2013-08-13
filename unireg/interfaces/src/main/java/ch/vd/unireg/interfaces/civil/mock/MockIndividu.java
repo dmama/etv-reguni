@@ -1,6 +1,5 @@
 package ch.vd.unireg.interfaces.civil.mock;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -12,7 +11,6 @@ import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.unireg.interfaces.civil.data.AdoptionReconnaissance;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.EtatCivil;
 import ch.vd.unireg.interfaces.civil.data.Individu;
@@ -22,9 +20,7 @@ import ch.vd.unireg.interfaces.civil.data.Permis;
 import ch.vd.unireg.interfaces.civil.data.PermisList;
 import ch.vd.unireg.interfaces.civil.data.PermisListImpl;
 import ch.vd.unireg.interfaces.civil.data.RelationVersIndividu;
-import ch.vd.unireg.interfaces.civil.data.RelationVersIndividuImpl;
 import ch.vd.unireg.interfaces.civil.data.StatutIndividu;
-import ch.vd.unireg.interfaces.civil.data.TypeRelationVersIndividu;
 import ch.vd.uniregctb.type.Sexe;
 
 public class MockIndividu extends MockEntiteCivile implements Individu {
@@ -34,12 +30,10 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 	private String autresPrenoms;
 	private String nom;
 	private String nomNaissance;
-	private Collection<AdoptionReconnaissance> adoptionsReconnaissances;
 	private RegDate dateDeces;
 	private RegDate dateNaissance;
 	private List<RelationVersIndividu> parents;
 	private List<RelationVersIndividu> conjoints;
-	private Collection<RelationVersIndividu> enfants;
 	private MockEtatCivilList etatsCivils;
 	private List<Nationalite> nationalites;
 	private long noTechnique;
@@ -79,9 +73,7 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 		this.sexe = right.sexe;
 		this.nationalites = right.nationalites;
 
-		this.adoptionsReconnaissances = right.adoptionsReconnaissances;
 		this.parents = right.parents;
-		this.enfants = right.enfants;
 		this.conjoints = right.conjoints;
 		this.etatsCivils = right.etatsCivils;
 		this.permis = right.permis;
@@ -95,14 +87,8 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 		if (getAdresses() != null) {
 			setAdresses(CollectionLimitator.limit(getAdresses(), date, CollectionLimitator.ADRESSE_LIMITATOR));
 		}
-		if (adoptionsReconnaissances != null) {
-			adoptionsReconnaissances = CollectionLimitator.limit(adoptionsReconnaissances, date, CollectionLimitator.ADOPTION_LIMITATOR);
-		}
 		if (parents != null) {
 			parents = CollectionLimitator.limit(parents, date, CollectionLimitator.RELATION_LIMITATOR);
-		}
-		if (enfants != null) {
-			enfants = CollectionLimitator.limit(enfants, date, CollectionLimitator.RELATION_LIMITATOR);
 		}
 		if (conjoints != null) {
 			conjoints = CollectionLimitator.limit(conjoints, date, CollectionLimitator.RELATION_LIMITATOR);
@@ -189,15 +175,6 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 	}
 
 	@Override
-	public Collection<AdoptionReconnaissance> getAdoptionsReconnaissances() {
-		return adoptionsReconnaissances;
-	}
-
-	public void setAdoptionsReconnaissances(Collection<AdoptionReconnaissance> adoptionsReconnaissances) {
-		this.adoptionsReconnaissances = adoptionsReconnaissances;
-	}
-
-	@Override
 	public RegDate getDateDeces() {
 		return dateDeces;
 	}
@@ -236,43 +213,6 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 
 	public void setParents(List<RelationVersIndividu> parents) {
 		this.parents = parents;
-	}
-
-	public void setParentsFromIndividus(List<Individu> individus) {
-		if (individus == null) {
-			this.parents = null;
-		}
-		else {
-			final List<RelationVersIndividu> list = new ArrayList<>();
-			for (Individu parent : individus) {
-				final TypeRelationVersIndividu type = parent.getSexe() == Sexe.MASCULIN ? TypeRelationVersIndividu.PERE : TypeRelationVersIndividu.MERE;
-				list.add(new RelationVersIndividuImpl(parent.getNoTechnique(), type, parent.getDateNaissance(), parent.getDateDeces()));
-			}
-			this.parents = list;
-		}
-	}
-
-	@Override
-	public Collection<RelationVersIndividu> getEnfants() {
-		return enfants;
-	}
-
-	public void setEnfants(Collection<RelationVersIndividu> enfants) {
-		this.enfants = enfants;
-	}
-
-	public void setEnfantsFromIndividus(List<Individu> individus) {
-		if (individus == null) {
-			this.enfants = null;
-		}
-		else {
-			final Collection<RelationVersIndividu> list = new ArrayList<>();
-			for (Individu enfant : individus) {
-				final TypeRelationVersIndividu type = enfant.getSexe() == Sexe.MASCULIN ? TypeRelationVersIndividu.FILS : TypeRelationVersIndividu.FILLE;
-				list.add(new RelationVersIndividuImpl(enfant.getNoTechnique(), type, enfant.getDateNaissance(), enfant.getDateDeces()));
-			}
-			this.enfants = list;
-		}
 	}
 
 	@Override
@@ -396,15 +336,8 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 	@Override
 	public void copyPartsFrom(Individu individu, Set<AttributeIndividu> parts) {
 		super.copyPartsFrom(individu, parts);
-
-		if (parts != null && parts.contains(AttributeIndividu.ADOPTIONS)) {
-			adoptionsReconnaissances = individu.getAdoptionsReconnaissances();
-		}
 		if (parts != null && parts.contains(AttributeIndividu.CONJOINTS)) {
 			conjoints = individu.getConjoints();
-		}
-		if (parts != null && parts.contains(AttributeIndividu.ENFANTS)) {
-			enfants = individu.getEnfants();
 		}
 		if (parts != null && parts.contains(AttributeIndividu.ORIGINE)) {
 			origines = individu.getOrigines();

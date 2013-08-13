@@ -1335,7 +1335,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 			protected void init() {
 				final MockIndividu papa = addIndividu(noIndPapa, date(1950, 8, 26), "Smith", "John Senior", Sexe.MASCULIN);
 				final MockIndividu fiston = addIndividu(noIndFiston, dateNaissanceFiston, "Smith", "Johnny Baby", Sexe.MASCULIN);
-				addLiensFiliation(papa, fiston, dateNaissanceFiston, null);
+				addLiensFiliation(fiston, papa, null, dateNaissanceFiston, null);
 			}
 		});
 
@@ -1349,7 +1349,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 			public Ids doInTransaction(TransactionStatus status) {
 				final PersonnePhysique papa = addHabitant(noIndPapa);
 				final PersonnePhysique fiston = addHabitant(noIndFiston);
-				addFiliation(papa, fiston, dateNaissanceFiston, null);
+				addFiliation(fiston, papa, dateNaissanceFiston, null);
 				final Ids ids = new Ids();
 				ids.idPapa = papa.getNumero();
 				ids.idFiston = fiston.getNumero();

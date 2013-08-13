@@ -83,9 +83,6 @@ public abstract class IndividuDumper {
 
 		StringBuilder s = new StringBuilder();
 		s.append("Individu{\n");
-		if (!ignoreSpecific) {
-			s.append(tab(depth + 1)).append("adoptionsReconnaissances=").append(dumpAdoptions(individu.getAdoptionsReconnaissances(), depth + 1)).append(", \n");
-		}
 		s.append(tab(depth + 1)).append("adresses=").append(dumpAdresses(individu.getAdresses(), ignoreSpecific, depth + 1)).append(", \n");
 		s.append(tab(depth + 1)).append("autresPrenoms=").append(dumpString(individu.getAutresPrenoms())).append(", \n");
 		s.append(tab(depth + 1)).append("conjoints=").append(dumpRelationsVersIndividus(individu.getConjoints(), false, depth + 1)).append(", \n");
@@ -94,7 +91,6 @@ public abstract class IndividuDumper {
 		if (!ignoreSpecific) {
 			s.append(tab(depth + 1)).append("dateArriveeVD=").append(individu.getDateArriveeVD()).append(", \n");
 		}
-		s.append(tab(depth + 1)).append("enfants=").append(dumpRelationsVersIndividus(individu.getEnfants(), ignoreBugs, depth + 1)).append(", \n");
 		s.append(tab(depth + 1)).append("etatsCivils=").append(dumpEtatsCivils(individu.getEtatsCivils(), depth + 1)).append(", \n");
 		if (!ignoreSpecific) {
 			s.append(tab(depth + 1)).append("derniereNationalite=").append(IndividuDumper.dumpNationalites(individu.getNationalites(), ignoreSpecific, depth + 1)).append(", \n");

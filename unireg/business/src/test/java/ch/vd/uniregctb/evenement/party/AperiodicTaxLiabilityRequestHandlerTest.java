@@ -1,14 +1,11 @@
 package ch.vd.uniregctb.evenement.party;
 
-import java.util.Arrays;
-
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
@@ -426,14 +423,15 @@ public class AperiodicTaxLiabilityRequestHandlerTest extends BusinessTest {
 		final long noIndEnfant = 1234;
 		final long noIndPere = 1235;
 		final long noIndMere = 1236;
+		final RegDate dateNaissanceEnfant = RegDate.get().addYears(-10);
 
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
-				MockIndividu enfant = addIndividu(noIndEnfant, RegDate.get().addYears(-10), "Ramaldadji", "Jacques", Sexe.MASCULIN);
-				MockIndividu pere = addIndividu(noIndPere, date(1973, 5, 9), "Ramaldadji", "Robert", Sexe.MASCULIN);
-				MockIndividu mere = addIndividu(noIndMere, date(1976, 9, 12), "Ramaldadji", "Mireille", Sexe.FEMININ);
-				enfant.setParentsFromIndividus(Arrays.<Individu>asList(pere, mere));
+				final MockIndividu enfant = addIndividu(noIndEnfant, dateNaissanceEnfant, "Ramaldadji", "Jacques", Sexe.MASCULIN);
+				final MockIndividu pere = addIndividu(noIndPere, date(1973, 5, 9), "Ramaldadji", "Robert", Sexe.MASCULIN);
+				final MockIndividu mere = addIndividu(noIndMere, date(1976, 9, 12), "Ramaldadji", "Mireille", Sexe.FEMININ);
+				addLiensFiliation(enfant, pere, mere, dateNaissanceEnfant, null);
 			}
 		});
 
@@ -453,6 +451,8 @@ public class AperiodicTaxLiabilityRequestHandlerTest extends BusinessTest {
 				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(pere, mere, date(1994, 3, 12), null);
 				final MenageCommun menage = ensemble.getMenage();
 				addForPrincipal(menage, date(1994, 3, 12), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Vevey);
+				addFiliation(enfant, pere, dateNaissanceEnfant, null);
+				addFiliation(enfant, mere, dateNaissanceEnfant, null);
 
 				ids.pp = enfant.getId();
 				ids.mc = menage.getId();
@@ -499,10 +499,10 @@ public class AperiodicTaxLiabilityRequestHandlerTest extends BusinessTest {
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
-				MockIndividu enfant = addIndividu(noIndEnfant, RegDate.get().addYears(-10), "Ramaldadji", "Jacques", Sexe.MASCULIN);
-				MockIndividu pere = addIndividu(noIndPere, date(1973, 5, 9), "Ramaldadji", "Robert", Sexe.MASCULIN);
-				MockIndividu mere = addIndividu(noIndMere, date(1976, 9, 12), "Ramaldadji", "Mireille", Sexe.FEMININ);
-				enfant.setParentsFromIndividus(Arrays.<Individu>asList(pere, mere));
+				final MockIndividu enfant = addIndividu(noIndEnfant, RegDate.get().addYears(-10), "Ramaldadji", "Jacques", Sexe.MASCULIN);
+				final MockIndividu pere = addIndividu(noIndPere, date(1973, 5, 9), "Ramaldadji", "Robert", Sexe.MASCULIN);
+				final MockIndividu mere = addIndividu(noIndMere, date(1976, 9, 12), "Ramaldadji", "Mireille", Sexe.FEMININ);
+				addLiensFiliation(enfant, pere, mere, enfant.getDateNaissance(), null);
 			}
 		});
 

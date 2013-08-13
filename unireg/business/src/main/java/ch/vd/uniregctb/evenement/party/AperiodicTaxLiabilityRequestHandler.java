@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.core.io.ClassPathResource;
 
+import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.xml.common.v1.UserLogin;
 import ch.vd.unireg.xml.event.party.taxliab.aperiodic.v1.AperiodicTaxLiabilityRequest;
@@ -22,6 +23,7 @@ import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
+import ch.vd.uniregctb.tiers.Filiation;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
@@ -254,15 +256,25 @@ public class AperiodicTaxLiabilityRequestHandler implements RequestHandler<Aperi
 	@Nullable
 	private MenageCommun getMenageDesParents(@NotNull PersonnePhysique pp, RegDate date) {
 		MenageCommun menageParents = null;
-		final List<PersonnePhysique> parents = tiersService.getParents(pp, date);
+		final List<Filiation> parents = validOn(tiersService.getParents(pp, false), date);
 		if (parents.size() == 2) { // TODO (msi) vérifier ça avec Philippe Campiche
-			final MenageCommun menage0 = getMenage(parents.get(0), date);
-			final MenageCommun menage1 = getMenage(parents.get(1), date);
+			final MenageCommun menage0 = getMenage((PersonnePhysique) tiersService.getTiers(parents.get(0).getObjetId()), date);
+			final MenageCommun menage1 = getMenage((PersonnePhysique) tiersService.getTiers(parents.get(1).getObjetId()), date);
 			if (menage0 != null && menage0 == menage1) {
 				menageParents = menage0;
 			}
 		}
 		return menageParents;
+	}
+
+	private static <T extends DateRange> List<T> validOn(List<T> src, RegDate date) {
+		final List<T> res = new ArrayList<>(src.size());
+		for (T elt : src) {
+			if (elt.isValidAt(date)) {
+				res.add(elt);
+			}
+		}
+		return res;
 	}
 
 	@Nullable

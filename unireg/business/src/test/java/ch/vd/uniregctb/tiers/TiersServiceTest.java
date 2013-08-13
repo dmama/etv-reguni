@@ -4422,14 +4422,15 @@ public class TiersServiceTest extends BusinessTest {
 
 		final long indMere = 1;
 		final long indFils = 2;
+		final RegDate dateNaissance = date(1993, 2, 8);
 
 		// On crée la situation de départ : une mère et un fils mineur
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
 				MockIndividu mere = addIndividu(indMere, date(1960, 1, 1), "Cognac", "Josette", false);
-				MockIndividu fils = addIndividu(indFils, date(1993, 2, 8), "Cognac", "Yvan", true);
-				fils.setParentsFromIndividus(Arrays.<Individu>asList(mere));
+				MockIndividu fils = addIndividu(indFils, dateNaissance, "Cognac", "Yvan", true);
+				addLiensFiliation(fils, null, mere, dateNaissance, null);
 			}
 		});
 
@@ -4446,6 +4447,7 @@ public class TiersServiceTest extends BusinessTest {
 				ids.mere = mere.getId();
 				final PersonnePhysique fils = addHabitant(indFils);
 				ids.fils = fils.getId();
+				addFiliation(fils, mere, dateNaissance, null);
 				return null;
 			}
 		});
@@ -4503,14 +4505,15 @@ public class TiersServiceTest extends BusinessTest {
 
 		final long indPere = 1;
 		final long indFils = 2;
+		final RegDate dateNaissance = date(1993, 2, 8);
 
 		// On crée la situation de départ : un père et un fils mineur
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
 				MockIndividu pere = addIndividu(indPere, date(1960, 1, 1), "Cognac", "Raoul", true);
-				MockIndividu fils = addIndividu(indFils, date(1993, 2, 8), "Cognac", "Yvan", true);
-				fils.setParentsFromIndividus(Arrays.<Individu>asList(pere));
+				MockIndividu fils = addIndividu(indFils, dateNaissance, "Cognac", "Yvan", true);
+				addLiensFiliation(fils, pere, null, dateNaissance, null);
 			}
 		});
 
@@ -4527,6 +4530,7 @@ public class TiersServiceTest extends BusinessTest {
 				ids.pere = pere.getId();
 				final PersonnePhysique fils = addHabitant(indFils);
 				ids.fils = fils.getId();
+				addFiliation(fils, pere, dateNaissance, null);
 				return null;
 			}
 		});
@@ -4579,14 +4583,15 @@ public class TiersServiceTest extends BusinessTest {
 
 		final long indMere = 1;
 		final long indFils = 2;
+		final RegDate dateNaissance = date(1993, 2, 8);
 
 		// On crée la situation de départ : une mère mariée seule et un fils mineur
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
 				MockIndividu mere = addIndividu(indMere, date(1960, 1, 1), "Cognac", "Josette", false);
-				MockIndividu fils = addIndividu(indFils, date(1993, 2, 8), "Cognac", "Yvan", true);
-				fils.setParentsFromIndividus(Arrays.<Individu>asList(mere));
+				MockIndividu fils = addIndividu(indFils, dateNaissance, "Cognac", "Yvan", true);
+				addLiensFiliation(fils, null, mere, dateNaissance, null);
 			}
 		});
 
@@ -4606,6 +4611,7 @@ public class TiersServiceTest extends BusinessTest {
 				ids.menage = ensemble.getMenage().getId();
 				final PersonnePhysique fils = addHabitant(indFils);
 				ids.fils = fils.getId();
+				addFiliation(fils, mere, dateNaissance, null);
 				return null;
 			}
 		});
@@ -4656,7 +4662,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	/**
-	 * [UNIREG-3244] Vérifie qu'aucun événement de fin d'autorité parentale n'est envoyé lorsqu'un enfant devient majeure alors qu'il est déjà été assujetti (pour cause de fortune personnelle, par
+	 * [UNIREG-3244] Vérifie qu'aucun événement de fin d'autorité parentale n'est envoyé lorsqu'un enfant devient majeur alors qu'il est déjà été assujetti (pour cause de fortune personnelle, par
 	 * exemple).
 	 */
 	@Test
@@ -4664,14 +4670,15 @@ public class TiersServiceTest extends BusinessTest {
 
 		final long indMere = 1;
 		final long indFils = 2;
+		final RegDate dateNaissance = date(1993, 2, 8);
 
 		// On crée la situation de départ : une mère et un fils mineur qui possède un immeuble
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
 				MockIndividu mere = addIndividu(indMere, date(1960, 1, 1), "Cognac", "Josette", false);
-				MockIndividu fils = addIndividu(indFils, date(1993, 2, 8), "Cognac", "Yvan", true);
-				fils.setParentsFromIndividus(Arrays.<Individu>asList(mere));
+				MockIndividu fils = addIndividu(indFils, dateNaissance, "Cognac", "Yvan", true);
+				addLiensFiliation(fils, null, mere, dateNaissance, null);
 			}
 		});
 
@@ -4688,6 +4695,7 @@ public class TiersServiceTest extends BusinessTest {
 				ids.mere = mere.getId();
 				final PersonnePhysique fils = addHabitant(indFils);
 				ids.fils = fils.getId();
+				addFiliation(fils, mere, dateNaissance, null);
 				addForPrincipal(fils, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, date(2000, 12, 31), MotifFor.VENTE_IMMOBILIER, MockCommune.Bussigny);
 				addForSecondaire(fils, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, date(2000, 12, 31), MotifFor.VENTE_IMMOBILIER, MockCommune.Bussigny.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 				return null;
@@ -4742,25 +4750,25 @@ public class TiersServiceTest extends BusinessTest {
 		final long indPere = 2;
 		final long indFils = 3;
 		final long indFille = 4;
+		final RegDate dateNaissanceFils = date(2000, 2, 8);
+		final RegDate dateNaissanceFille = date(1988, 2, 8);
 
-		// On crée la situation de départ : une mère, un père, un fils mineur et une fille majeur
+		// On crée la situation de départ : une mère, un père, un fils mineur et une fille majeure
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
 				MockIndividu mere = addIndividu(indMere, date(1960, 1, 1), "Cognac", "Josette", false);
 				MockIndividu pere = addIndividu(indPere, date(1960, 1, 1), "Cognac", "Guy", true);
-				MockIndividu fils = addIndividu(indFils, date(2000, 2, 8), "Cognac", "Yvan", true);
-				MockIndividu fille = addIndividu(indFille, date(1988, 2, 8), "Cognac", "Eva", false);
+				MockIndividu fils = addIndividu(indFils, dateNaissanceFils, "Cognac", "Yvan", true);
+				MockIndividu fille = addIndividu(indFille, dateNaissanceFille, "Cognac", "Eva", false);
 
 				addAdresse(mere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
 				addAdresse(pere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
 				addAdresse(fils, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
 				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
 
-				fils.setParentsFromIndividus(Arrays.<Individu>asList(mere, pere));
-				fille.setParentsFromIndividus(Arrays.<Individu>asList(mere, pere));
-				pere.setEnfantsFromIndividus(Arrays.<Individu>asList(fils, fille));
-				mere.setEnfantsFromIndividus(Arrays.<Individu>asList(fils, fille));
+				addLiensFiliation(fils, pere, mere, dateNaissanceFils, null);
+				addLiensFiliation(fille, pere, mere, dateNaissanceFille, null);
 			}
 		});
 
@@ -4783,6 +4791,11 @@ public class TiersServiceTest extends BusinessTest {
 				ids.fils = fils.getId();
 				final PersonnePhysique fille = addHabitant(indFille);
 				ids.fille = fille.getId();
+
+				addFiliation(fils, mere, dateNaissanceFils, null);
+				addFiliation(fils, pere, dateNaissanceFils, null);
+				addFiliation(fille, mere, dateNaissanceFille, null);
+				addFiliation(fille, pere, dateNaissanceFille, null);
 
 				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(pere, mere, date(1985, 1, 1), null);
 				final MenageCommun mc = ensemble.getMenage();
@@ -4810,6 +4823,9 @@ public class TiersServiceTest extends BusinessTest {
 		final long indPere = 2;
 		final long indFils = 3;
 		final long indFille = 4;
+		final RegDate dateNaissanceFils = date(2000, 2, 8);
+		final RegDate dateNaissanceFille = date(2007, 2, 8);
+		final RegDate dateDecesFille = date(2011, 2, 2);
 
 		// On crée la situation de départ : une mère, un père, un fils mineur et une fille majeur
 		serviceCivil.setUp(new MockServiceCivil() {
@@ -4817,13 +4833,12 @@ public class TiersServiceTest extends BusinessTest {
 			protected void init() {
 				MockIndividu mere = addIndividu(indMere, date(1960, 1, 1), "Cognac", "Josette", false);
 				MockIndividu pere = addIndividu(indPere, date(1960, 1, 1), "Cognac", "Guy", true);
-				MockIndividu fils = addIndividu(indFils, date(2000, 2, 8), "Cognac", "Yvan", true);
-				MockIndividu fille = addIndividu(indFille, date(2007, 2, 8), "Cognac", "Eva", false);
-				fille.setDateDeces(date(2011, 2, 2));
-				fils.setParentsFromIndividus(Arrays.<Individu>asList(mere, pere));
-				fille.setParentsFromIndividus(Arrays.<Individu>asList(mere, pere));
-				pere.setEnfantsFromIndividus(Arrays.<Individu>asList(fils, fille));
-				mere.setEnfantsFromIndividus(Arrays.<Individu>asList(fils, fille));
+				MockIndividu fils = addIndividu(indFils, dateNaissanceFils, "Cognac", "Yvan", true);
+				MockIndividu fille = addIndividu(indFille, dateNaissanceFille, "Cognac", "Eva", false);
+				fille.setDateDeces(dateDecesFille);
+
+				addLiensFiliation(fils, pere, mere, dateNaissanceFils, null);
+				addLiensFiliation(fille, pere, mere, dateNaissanceFille, dateDecesFille);
 
 				addAdresse(mere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
 				addAdresse(pere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
@@ -4851,6 +4866,11 @@ public class TiersServiceTest extends BusinessTest {
 				ids.fils = fils.getId();
 				final PersonnePhysique fille = addHabitant(indFille);
 				ids.fille = fille.getId();
+
+				addFiliation(fils, mere, dateNaissanceFils, null);
+				addFiliation(fils, pere, dateNaissanceFils, null);
+				addFiliation(fille, mere, dateNaissanceFille, dateDecesFille);
+				addFiliation(fille, pere, dateNaissanceFille, dateDecesFille);
 
 				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(pere, mere, date(1985, 1, 1), null);
 				final MenageCommun mc = ensemble.getMenage();
@@ -4877,6 +4897,9 @@ public class TiersServiceTest extends BusinessTest {
 		final long indPere = 2;
 		final long indFils = 3;
 		final long indFille = 4;
+		final RegDate dateMariage = date(1985, 1, 1);
+		final RegDate dateNaissanceFils = date(2000, 2, 8);
+		final RegDate dateNaissanceFille = date(2007, 2, 8);
 
 		// On crée la situation de départ : une mère, un père, un fils mineur et une fille majeur
 		serviceCivil.setUp(new MockServiceCivil() {
@@ -4884,18 +4907,16 @@ public class TiersServiceTest extends BusinessTest {
 			protected void init() {
 				MockIndividu mere = addIndividu(indMere, date(1960, 1, 1), "Cognac", "Josette", false);
 				MockIndividu pere = addIndividu(indPere, date(1960, 1, 1), "Cognac", "Guy", true);
-				MockIndividu fils = addIndividu(indFils, date(2000, 2, 8), "Cognac", "Yvan", true);
-				MockIndividu fille = addIndividu(indFille, date(2007, 2, 8), "Cognac", "Eva", false);
-				fils.setParentsFromIndividus(Arrays.<Individu>asList(mere));
-				fille.setParentsFromIndividus(Arrays.<Individu>asList(mere));
-				pere.setEnfantsFromIndividus(Arrays.<Individu>asList(fils, fille));
-				mere.setEnfantsFromIndividus(Arrays.<Individu>asList(fils, fille));
+				MockIndividu fils = addIndividu(indFils, dateNaissanceFils, "Cognac", "Yvan", true);
+				MockIndividu fille = addIndividu(indFille, dateNaissanceFille, "Cognac", "Eva", false);
+				marieIndividus(pere, mere, dateMariage);
+				addLiensFiliation(fils, null, mere, dateNaissanceFils, null);       // <-- pas de filiation vers le père
+				addLiensFiliation(fille, null, mere, dateNaissanceFille, null);     // <-- pas de filiation vers le père
 
 				addAdresse(mere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
 				addAdresse(pere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
-				addAdresse(fils, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(2000, 2, 8), null);
-				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(2007, 2, 8), null);
-
+				addAdresse(fils, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, dateNaissanceFils, null);
+				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, dateNaissanceFille, null);
 			}
 		});
 
@@ -4906,7 +4927,6 @@ public class TiersServiceTest extends BusinessTest {
 			Long fille;
 		}
 		final Ids ids = new Ids();
-
 
 		final long idMenage = doInNewTransaction(new TxCallback<Long>() {
 			@Override
@@ -4920,7 +4940,10 @@ public class TiersServiceTest extends BusinessTest {
 				final PersonnePhysique fille = addHabitant(indFille);
 				ids.fille = fille.getId();
 
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(pere, mere, date(1985, 1, 1), null);
+				addFiliation(fils, mere, dateNaissanceFils, null);
+				addFiliation(fille, mere, dateNaissanceFille, null);
+
+				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(pere, mere, dateMariage, null);
 				final MenageCommun mc = ensemble.getMenage();
 				addForPrincipal(mc, date(1998, 1, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
 
@@ -4945,6 +4968,8 @@ public class TiersServiceTest extends BusinessTest {
 		final long indPere = 2;
 		final long indFils = 3;
 		final long indFille = 4;
+		final RegDate dateNaissanceFils = date(2000, 2, 8);
+		final RegDate dateNaissanceFille = date(2007, 2, 8);
 
 		// On crée la situation de départ : une mère, un père, un fils mineur et une fille majeur
 		serviceCivil.setUp(new MockServiceCivil() {
@@ -4952,17 +4977,16 @@ public class TiersServiceTest extends BusinessTest {
 			protected void init() {
 				MockIndividu mere = addIndividu(indMere, date(1960, 1, 1), "Cognac", "Josette", false);
 				MockIndividu pere = addIndividu(indPere, date(1960, 1, 1), "Cognac", "Guy", true);
-				MockIndividu fils = addIndividu(indFils, date(2000, 2, 8), "Cognac", "Yvan", true);
-				MockIndividu fille = addIndividu(indFille, date(2007, 2, 8), "Cognac", "Eva", false);
-				fils.setParentsFromIndividus(Arrays.<Individu>asList(mere, pere));
-				fille.setParentsFromIndividus(Arrays.<Individu>asList(mere, pere));
-				pere.setEnfantsFromIndividus(Arrays.<Individu>asList(fils, fille));
-				mere.setEnfantsFromIndividus(Arrays.<Individu>asList(fils, fille));
+				MockIndividu fils = addIndividu(indFils, dateNaissanceFils, "Cognac", "Yvan", true);
+				MockIndividu fille = addIndividu(indFille, dateNaissanceFille, "Cognac", "Eva", false);
+
+				addLiensFiliation(fils, pere, mere, dateNaissanceFils, null);
+				addLiensFiliation(fille, pere, mere, dateNaissanceFille, null);
 
 				addAdresse(mere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Grandvaux.BatimentRouteDeLausanne, null, date(1998, 1, 1), null);
 				addAdresse(pere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
-				addAdresse(fils, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(2000, 2, 8), null);
-				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(2007, 2, 8), null);
+				addAdresse(fils, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, dateNaissanceFils, null);
+				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, dateNaissanceFille, null);
 			}
 		});
 
@@ -4986,6 +5010,11 @@ public class TiersServiceTest extends BusinessTest {
 				ids.fils = fils.getId();
 				final PersonnePhysique fille = addHabitant(indFille);
 				ids.fille = fille.getId();
+
+				addFiliation(fils, pere, dateNaissanceFils, null);
+				addFiliation(fils, mere, dateNaissanceFils, null);
+				addFiliation(fille, pere, dateNaissanceFille, null);
+				addFiliation(fille, mere, dateNaissanceFille, null);
 
 				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(pere, mere, date(1985, 1, 1), null);
 				final MenageCommun mc = ensemble.getMenage();
@@ -5011,6 +5040,8 @@ public class TiersServiceTest extends BusinessTest {
 		final long indPere = 2;
 		final long indFils = 3;
 		final long indFille = 4;
+		final RegDate dateNaissanceFils = date(2000, 2, 8);
+		final RegDate dateNaissanceFille = date(2007, 2, 8);
 
 		// On crée la situation de départ : une mère, un père, un fils mineur et une fille majeur
 		serviceCivil.setUp(new MockServiceCivil() {
@@ -5018,16 +5049,15 @@ public class TiersServiceTest extends BusinessTest {
 			protected void init() {
 				MockIndividu mere = addIndividu(indMere, date(1960, 1, 1), "Cognac", "Josette", false);
 				MockIndividu pere = addIndividu(indPere, date(1960, 1, 1), "Cognac", "Guy", true);
-				MockIndividu fils = addIndividu(indFils, date(2000, 2, 8), "Cognac", "Yvan", true);
-				MockIndividu fille = addIndividu(indFille, date(2007, 2, 8), "Cognac", "Eva", false);
-				fils.setParentsFromIndividus(Arrays.<Individu>asList(mere, pere));
-				fille.setParentsFromIndividus(Arrays.<Individu>asList(mere, pere));
-				pere.setEnfantsFromIndividus(Arrays.<Individu>asList(fils, fille));
-				mere.setEnfantsFromIndividus(Arrays.<Individu>asList(fils, fille));
+				MockIndividu fils = addIndividu(indFils, dateNaissanceFils, "Cognac", "Yvan", true);
+				MockIndividu fille = addIndividu(indFille, dateNaissanceFille, "Cognac", "Eva", false);
+
+				addLiensFiliation(fils, pere, mere, dateNaissanceFils, null);
+				addLiensFiliation(fille, pere, mere, dateNaissanceFille, null);
 
 				addAdresse(mere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
-				addAdresse(fils, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(2000, 2, 8), null);
-				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(2007, 2, 8), null);
+				addAdresse(fils, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, dateNaissanceFils, null);
+				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, dateNaissanceFille, null);
 			}
 		});
 
@@ -5051,6 +5081,11 @@ public class TiersServiceTest extends BusinessTest {
 				ids.fils = fils.getId();
 				final PersonnePhysique fille = addHabitant(indFille);
 				ids.fille = fille.getId();
+
+				addFiliation(fils, pere, dateNaissanceFils, null);
+				addFiliation(fils, mere, dateNaissanceFils, null);
+				addFiliation(fille, pere, dateNaissanceFille, null);
+				addFiliation(fille, mere, dateNaissanceFille, null);
 
 				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(pere, mere, date(1985, 1, 1), null);
 				final MenageCommun mc = ensemble.getMenage();
@@ -5077,6 +5112,8 @@ public class TiersServiceTest extends BusinessTest {
 		final long indPere = 2;
 		final long indFils = 3;
 		final long indFille = 4;
+		final RegDate dateNaissanceFils = date(2000, 2, 8);
+		final RegDate dateNaissanceFille = date(2007, 2, 8);
 
 		// On crée la situation de départ : une mère, un père, un fils mineur et une fille majeur
 		serviceCivil.setUp(new MockServiceCivil() {
@@ -5084,16 +5121,15 @@ public class TiersServiceTest extends BusinessTest {
 			protected void init() {
 				MockIndividu mere = addIndividu(indMere, date(1960, 1, 1), "Cognac", "Josette", false);
 				MockIndividu pere = addIndividu(indPere, date(1960, 1, 1), "Cognac", "Guy", true);
-				MockIndividu fils = addIndividu(indFils, date(2000, 2, 8), "Cognac", "Yvan", true);
-				MockIndividu fille = addIndividu(indFille, date(2007, 2, 8), "Cognac", "Eva", false);
-				fils.setParentsFromIndividus(Arrays.<Individu>asList(mere, pere));
-				fille.setParentsFromIndividus(Arrays.<Individu>asList(mere, pere));
-				pere.setEnfantsFromIndividus(Arrays.<Individu>asList(fils, fille));
-				mere.setEnfantsFromIndividus(Arrays.<Individu>asList(fils, fille));
+				MockIndividu fils = addIndividu(indFils, dateNaissanceFils, "Cognac", "Yvan", true);
+				MockIndividu fille = addIndividu(indFille, dateNaissanceFille, "Cognac", "Eva", false);
+
+				addLiensFiliation(fils, pere, mere, dateNaissanceFils, null);
+				addLiensFiliation(fille, pere, mere, dateNaissanceFille, null);
 
 				addAdresse(mere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
 				addAdresse(pere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
-				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(2007, 2, 8), null);
+				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, dateNaissanceFille, null);
 			}
 		});
 
@@ -5117,6 +5153,11 @@ public class TiersServiceTest extends BusinessTest {
 				ids.fils = fils.getId();
 				final PersonnePhysique fille = addHabitant(indFille);
 				ids.fille = fille.getId();
+
+				addFiliation(fils, pere, dateNaissanceFils, null);
+				addFiliation(fils, mere, dateNaissanceFils, null);
+				addFiliation(fille, pere, dateNaissanceFille, null);
+				addFiliation(fille, mere, dateNaissanceFille, null);
 
 				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(pere, mere, date(1985, 1, 1), null);
 				final MenageCommun mc = ensemble.getMenage();
@@ -5143,6 +5184,8 @@ public class TiersServiceTest extends BusinessTest {
 		final long indPere = 2;
 		final long indFils = 3;
 		final long indFille = 4;
+		final RegDate dateNaissanceFils = date(2000, 2, 8);
+		final RegDate dateNaissanceFille = date(2007, 2, 8);
 
 		// On crée la situation de départ : une mère, un père, un fils mineur et une fille majeur
 		serviceCivil.setUp(new MockServiceCivil() {
@@ -5150,17 +5193,16 @@ public class TiersServiceTest extends BusinessTest {
 			protected void init() {
 				MockIndividu mere = addIndividu(indMere, date(1960, 1, 1), "Cognac", "Josette", false);
 				MockIndividu pere = addIndividu(indPere, date(1960, 1, 1), "Cognac", "Guy", true);
-				MockIndividu fils = addIndividu(indFils, date(2000, 2, 8), "Cognac", "Yvan", true);
-				MockIndividu fille = addIndividu(indFille, date(2007, 2, 8), "Cognac", "Eva", false);
-				fils.setParentsFromIndividus(Arrays.<Individu>asList(mere, pere));
-				fille.setParentsFromIndividus(Arrays.<Individu>asList(mere, pere));
-				pere.setEnfantsFromIndividus(Arrays.<Individu>asList(fils, fille));
-				mere.setEnfantsFromIndividus(Arrays.<Individu>asList(fils, fille));
+				MockIndividu fils = addIndividu(indFils, dateNaissanceFils, "Cognac", "Yvan", true);
+				MockIndividu fille = addIndividu(indFille, dateNaissanceFille, "Cognac", "Eva", false);
+
+				addLiensFiliation(fils, pere, mere, dateNaissanceFils, null);
+				addLiensFiliation(fille, pere, mere, dateNaissanceFille, null);
 
 				addAdresse(mere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
 				addAdresse(pere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
-				addAdresse(fils, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(2000, 2, 8), null);
-				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(2007, 2, 8), null);
+				addAdresse(fils, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, dateNaissanceFils, null);
+				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, dateNaissanceFille, null);
 			}
 		});
 
@@ -5184,6 +5226,11 @@ public class TiersServiceTest extends BusinessTest {
 				ids.fils = fils.getId();
 				final PersonnePhysique fille = addHabitant(indFille);
 				ids.fille = fille.getId();
+
+				addFiliation(fils, pere, dateNaissanceFils, null);
+				addFiliation(fils, mere, dateNaissanceFils, null);
+				addFiliation(fille, pere, dateNaissanceFille, null);
+				addFiliation(fille, mere, dateNaissanceFille, null);
 
 				return ids.mere;
 			}
@@ -5209,19 +5256,23 @@ public class TiersServiceTest extends BusinessTest {
 		final long indMere = 1;
 		final long indFils = 3;
 		final long indFille = 4;
+		final RegDate dateNaissanceFils = date(2000, 2, 8);
+		final RegDate dateNaissanceFille = date(2007, 2, 8);
 
 		// On crée la situation de départ : une mère, un père, un fils mineur et une fille majeur
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
 				MockIndividu mere = addIndividu(indMere, date(1960, 1, 1), "Cognac", "Josette", false);
-				MockIndividu fils = addIndividu(indFils, date(2000, 2, 8), "Cognac", "Yvan", true);
-				MockIndividu fille = addIndividu(indFille, date(2007, 2, 8), "Cognac", "Eva", false);
-				mere.setEnfantsFromIndividus(Arrays.<Individu>asList(fils, fille));
+				MockIndividu fils = addIndividu(indFils, dateNaissanceFils, "Cognac", "Yvan", true);
+				MockIndividu fille = addIndividu(indFille, dateNaissanceFille, "Cognac", "Eva", false);
+
+				addLiensFiliation(fils, null, mere, dateNaissanceFils, null);
+				addLiensFiliation(fille, null, mere, dateNaissanceFille, null);
 
 				addAdresse(mere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
-				addAdresse(fils, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(2000, 2, 8), null);
-				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(2007, 2, 8), null);
+				addAdresse(fils, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, dateNaissanceFils, null);
+				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, dateNaissanceFille, null);
 			}
 		});
 
@@ -5244,6 +5295,9 @@ public class TiersServiceTest extends BusinessTest {
 				final PersonnePhysique fille = addHabitant(indFille);
 				ids.fille = fille.getId();
 
+				addFiliation(fils, mere, dateNaissanceFils, null);
+				addFiliation(fille, mere, dateNaissanceFille, null);
+
 				return ids.mere;
 			}
 		});
@@ -5264,6 +5318,8 @@ public class TiersServiceTest extends BusinessTest {
 		final long indPere = 2;
 		final long indFils = 3;
 		final long indFille = 4;
+		final RegDate dateNaissanceFils = date(2000, 2, 8);
+		final RegDate dateNaissanceFille = date(2007, 2, 8);
 
 		// On crée la situation de départ : une mère, un père, un fils mineur et une fille majeur
 		serviceCivil.setUp(new MockServiceCivil() {
@@ -5271,17 +5327,16 @@ public class TiersServiceTest extends BusinessTest {
 			protected void init() {
 				MockIndividu mere = addIndividu(indMere, date(1960, 1, 1), "Cognac", "Josette", false);
 				MockIndividu pere = addIndividu(indPere, date(1960, 1, 1), "Cognac", "Guy", true);
-				MockIndividu fils = addIndividu(indFils, date(2000, 2, 8), "Cognac", "Yvan", true);
-				MockIndividu fille = addIndividu(indFille, date(2007, 2, 8), "Cognac", "Eva", false);
-				fils.setParentsFromIndividus(Arrays.<Individu>asList(mere, pere));
-				fille.setParentsFromIndividus(Arrays.<Individu>asList(mere, pere));
-				pere.setEnfantsFromIndividus(Arrays.<Individu>asList(fils, fille));
-				mere.setEnfantsFromIndividus(Arrays.<Individu>asList(fils, fille));
+				MockIndividu fils = addIndividu(indFils, dateNaissanceFils, "Cognac", "Yvan", true);
+				MockIndividu fille = addIndividu(indFille, dateNaissanceFille, "Cognac", "Eva", false);
+
+				addLiensFiliation(fils, pere, mere, dateNaissanceFils, null);
+				addLiensFiliation(fille, pere, mere, dateNaissanceFille, null);
 
 				addAdresse(mere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
 				addAdresse(pere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
-				addAdresse(fils, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(2000, 2, 8), null);
-				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(2007, 2, 8), null);
+				addAdresse(fils, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, dateNaissanceFils, null);
+				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, dateNaissanceFille, null);
 			}
 		});
 
@@ -5304,6 +5359,11 @@ public class TiersServiceTest extends BusinessTest {
 				ids.fils = fils.getId();
 				final PersonnePhysique fille = addHabitant(indFille);
 				ids.fille = fille.getId();
+
+				addFiliation(fils, pere, dateNaissanceFils, null);
+				addFiliation(fils, mere, dateNaissanceFils, null);
+				addFiliation(fille, pere, dateNaissanceFille, null);
+				addFiliation(fille, mere, dateNaissanceFille, null);
 
 				return ids.mere;
 			}
@@ -5327,6 +5387,8 @@ public class TiersServiceTest extends BusinessTest {
 		final long indPere = 2;
 		final long indFils = 3;
 		final long indFille = 4;
+		final RegDate dateNaissanceFils = date(2000, 2, 8);
+		final RegDate dateNaissanceFille = date(2007, 2, 8);
 
 		// On crée la situation de départ : une mère, un père, un fils mineur et une fille majeur
 		serviceCivil.setUp(new MockServiceCivil() {
@@ -5334,17 +5396,16 @@ public class TiersServiceTest extends BusinessTest {
 			protected void init() {
 				MockIndividu mere = addIndividu(indMere, date(1960, 1, 1), "Cognac", "Josette", false);
 				MockIndividu pere = addIndividu(indPere, date(1960, 1, 1), "Cognac", "Guy", true);
-				MockIndividu fils = addIndividu(indFils, date(2000, 2, 8), "Cognac", "Yvan", true);
-				MockIndividu fille = addIndividu(indFille, date(2007, 2, 8), "Cognac", "Eva", false);
-				fils.setParentsFromIndividus(Arrays.<Individu>asList(mere, pere));
-				fille.setParentsFromIndividus(Arrays.<Individu>asList(mere, pere));
-				pere.setEnfantsFromIndividus(Arrays.<Individu>asList(fils, fille));
-				mere.setEnfantsFromIndividus(Arrays.<Individu>asList(fils, fille));
+				MockIndividu fils = addIndividu(indFils, dateNaissanceFils, "Cognac", "Yvan", true);
+				MockIndividu fille = addIndividu(indFille, dateNaissanceFille, "Cognac", "Eva", false);
+
+				addLiensFiliation(fils, pere, mere, dateNaissanceFils, null);
+				addLiensFiliation(fille, pere, mere, dateNaissanceFille, null);
 
 				addAdresse(mere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Villette.BatimentCheminDesGranges, null, date(1998, 1, 1), null);
 				addAdresse(pere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
-				addAdresse(fils, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(2000, 2, 8), null);
-				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(2007, 2, 8), null);
+				addAdresse(fils, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, dateNaissanceFils, null);
+				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, dateNaissanceFille, null);
 			}
 		});
 
@@ -5368,6 +5429,12 @@ public class TiersServiceTest extends BusinessTest {
 				ids.fils = fils.getId();
 				final PersonnePhysique fille = addHabitant(indFille);
 				ids.fille = fille.getId();
+
+				addFiliation(fils, pere, dateNaissanceFils, null);
+				addFiliation(fils, mere, dateNaissanceFils, null);
+				addFiliation(fille, pere, dateNaissanceFille, null);
+				addFiliation(fille, mere, dateNaissanceFille, null);
+
 				return ids.mere;
 			}
 		});
@@ -5389,6 +5456,8 @@ public class TiersServiceTest extends BusinessTest {
 		final long indPere = 2;
 		final long indFils = 3;
 		final long indFille = 4;
+		final RegDate dateNaissanceFils = date(2000, 2, 8);
+		final RegDate dateNaissanceFille = date(2007, 2, 8);
 
 		// On crée la situation de départ : une mère, un père, un fils mineur et une fille majeur
 		serviceCivil.setUp(new MockServiceCivil() {
@@ -5396,17 +5465,16 @@ public class TiersServiceTest extends BusinessTest {
 			protected void init() {
 				MockIndividu mere = addIndividu(indMere, date(1960, 1, 1), "Cognac", "Josette", false);
 				MockIndividu pere = addIndividu(indPere, date(1960, 1, 1), "Cognac", "Guy", true);
-				MockIndividu fils = addIndividu(indFils, date(2000, 2, 8), "Cognac", "Yvan", true);
-				MockIndividu fille = addIndividu(indFille, date(2007, 2, 8), "Cognac", "Eva", false);
-				fils.setParentsFromIndividus(Arrays.<Individu>asList(mere, pere));
-				fille.setParentsFromIndividus(Arrays.<Individu>asList(mere, pere));
-				pere.setEnfantsFromIndividus(Arrays.<Individu>asList(fils, fille));
-				mere.setEnfantsFromIndividus(Arrays.<Individu>asList(fils, fille));
+				MockIndividu fils = addIndividu(indFils, dateNaissanceFils, "Cognac", "Yvan", true);
+				MockIndividu fille = addIndividu(indFille, dateNaissanceFille, "Cognac", "Eva", false);
+
+				addLiensFiliation(fils, pere, mere, dateNaissanceFils, null);
+				addLiensFiliation(fille, pere, mere, dateNaissanceFille, null);
 
 				addAdresse(mere, TypeAdresseCivil.PRINCIPALE, MockRue.Aubonne.RueTrevelin, null, date(1998, 1, 1), null);
 				addAdresse(pere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
-				addAdresse(fils, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(2000, 2, 8), null);
-				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(2007, 2, 8), null);
+				addAdresse(fils, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, dateNaissanceFils, null);
+				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, dateNaissanceFille, null);
 			}
 		});
 
@@ -5430,6 +5498,12 @@ public class TiersServiceTest extends BusinessTest {
 				ids.fils = fils.getId();
 				final PersonnePhysique fille = addHabitant(indFille);
 				ids.fille = fille.getId();
+
+				addFiliation(fils, pere, dateNaissanceFils, null);
+				addFiliation(fils, mere, dateNaissanceFils, null);
+				addFiliation(fille, pere, dateNaissanceFille, null);
+				addFiliation(fille, mere, dateNaissanceFille, null);
+
 				return ids.mere;
 			}
 		});
@@ -5453,15 +5527,19 @@ public class TiersServiceTest extends BusinessTest {
 		final long indFille = 4;
 		final long indFille2 = 5;
 
+		final RegDate dateNaissanceFils = date(2000, 2, 8);
+		final RegDate dateNaissanceFille = date(2004, 2, 8);
+		final RegDate dateNaissanceFille2 = date(2006, 2, 8);
+
 		// On crée la situation de départ : une mère, un père, un fils mineur et une fille majeur
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
 				MockIndividu mere = addIndividu(indMere, date(1960, 1, 1), "Cognac", "Josette", false);
 				MockIndividu pere = addIndividu(indPere, date(1960, 1, 1), "Cognac", "Guy", true);
-				MockIndividu fils = addIndividu(indFils, date(2000, 2, 8), "Cognac", "Yvan", true);
-				MockIndividu fille = addIndividu(indFille, date(2004, 2, 8), "Cognac", "Eva", false);
-				MockIndividu fille2 = addIndividu(indFille2, date(2006, 2, 8), "Cognac", "Lucie", false);
+				MockIndividu fils = addIndividu(indFils, dateNaissanceFils, "Cognac", "Yvan", true);
+				MockIndividu fille = addIndividu(indFille, dateNaissanceFille, "Cognac", "Eva", false);
+				MockIndividu fille2 = addIndividu(indFille2, dateNaissanceFille2, "Cognac", "Lucie", false);
 
 				addAdresse(mere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
 				addAdresse(pere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
@@ -5469,11 +5547,9 @@ public class TiersServiceTest extends BusinessTest {
 				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
 				addAdresse(fille2, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
 
-				fils.setParentsFromIndividus(Arrays.<Individu>asList(mere, pere));
-				fille.setParentsFromIndividus(Arrays.<Individu>asList(mere, pere));
-				fille2.setParentsFromIndividus(Arrays.<Individu>asList(mere, pere));
-				pere.setEnfantsFromIndividus(Arrays.<Individu>asList(fils, fille, fille2));
-				mere.setEnfantsFromIndividus(Arrays.<Individu>asList(fils, fille, fille2));
+				addLiensFiliation(fils, pere, mere, dateNaissanceFils, null);
+				addLiensFiliation(fille, pere, mere, dateNaissanceFille, null);
+				addLiensFiliation(fille2, pere, mere, dateNaissanceFille2, null);
 			}
 		});
 
@@ -5502,6 +5578,13 @@ public class TiersServiceTest extends BusinessTest {
 				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(pere, mere, date(1985, 1, 1), null);
 				final MenageCommun mc = ensemble.getMenage();
 				addForPrincipal(mc, date(1998, 1, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
+
+				addFiliation(fils, pere, dateNaissanceFils, null);
+				addFiliation(fils, mere, dateNaissanceFils, null);
+				addFiliation(fille, pere, dateNaissanceFille, null);
+				addFiliation(fille, mere, dateNaissanceFille, null);
+				addFiliation(fille2, pere, dateNaissanceFille2, null);
+				addFiliation(fille2, mere, dateNaissanceFille2, null);
 
 				return mc.getNumero();
 			}
@@ -6144,7 +6227,7 @@ public class TiersServiceTest extends BusinessTest {
 				public Long doInTransaction(TransactionStatus status) {
 					final PersonnePhysique lui = (PersonnePhysique) tiersService.getTiers(noLui);
 					final RegDate dateDeces = tiersService.getDateDecesDepuisDernierForPrincipal(lui);
-					assertEquals(date(2010,1,1), dateDeces);
+					assertEquals(date(2010, 1, 1), dateDeces);
 					return null;
 				}
 			});
@@ -6156,7 +6239,7 @@ public class TiersServiceTest extends BusinessTest {
 				public Long doInTransaction(TransactionStatus status) {
 					final PersonnePhysique lui = (PersonnePhysique) tiersService.getTiers(noLui);
 					final RegDate dateDeces = tiersService.getDateDecesDepuisDernierForPrincipal(lui);
-					assertEquals(date(2010,1,1), dateDeces);
+					assertEquals(date(2010, 1, 1), dateDeces);
 					return null;
 				}
 			});
@@ -6168,7 +6251,7 @@ public class TiersServiceTest extends BusinessTest {
 				public Long doInTransaction(TransactionStatus status) {
 					final PersonnePhysique lui = (PersonnePhysique) tiersService.getTiers(noLui);
 					final RegDate dateDeces = tiersService.getDateDecesDepuisDernierForPrincipal(lui);
-					assertEquals(date(2010,1,1), dateDeces);
+					assertEquals(date(2010, 1, 1), dateDeces);
 					return null;
 				}
 			});
@@ -6400,103 +6483,6 @@ public class TiersServiceTest extends BusinessTest {
 				Assert.assertNull(tiersService.getDateNaissance(nonHabitant));
 				nonHabitant.setDateNaissance(dateNaissanceNonHabitant);
 				Assert.assertEquals(dateNaissanceNonHabitant, tiersService.getDateNaissance(nonHabitant));
-
-				return null;
-			}
-		});
-	}
-
-	@Test
-	public void testGetRapportsFiliation() throws Exception {
-
-		final long noIndividuEnfant = 43784328L;
-		final long noIndividuPapa = 224243L;
-		final long noIndividuMaman1 = 23474236L;
-		final long noIndividuMaman2 = 3474328523L;
-		final RegDate dateAdoptionMaman2 = date(2012, 5, 12);
-		final RegDate dateNaissanceEnfant = date(2010, 1, 1);
-
-		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil() {
-			@Override
-			protected void init() {
-				final MockIndividu enfant = addIndividu(noIndividuEnfant, dateNaissanceEnfant, "Flintstone", "Junior", Sexe.MASCULIN);
-				final MockIndividu papa = addIndividu(noIndividuPapa, null, "Flintstone", "Senior", Sexe.MASCULIN);
-				final MockIndividu maman1 = addIndividu(noIndividuMaman1, null, "Flintstone", "Mama-One", Sexe.FEMININ);
-				final MockIndividu maman2 = addIndividu(noIndividuMaman2, null, "Flintstone", "Mama-Two", Sexe.FEMININ);
-
-				addLiensFiliation(papa, enfant, dateNaissanceEnfant, null);
-				addLiensFiliation(maman1, enfant, dateNaissanceEnfant, dateAdoptionMaman2.addDays(-1));
-				addLiensFiliation(maman2, enfant, dateAdoptionMaman2, null);
-			}
-		});
-
-		final class Ids {
-			long enfant;
-			long papa;
-			long maman1;
-		}
-
-		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique enfant = addHabitant(noIndividuEnfant);
-				final PersonnePhysique papa = addHabitant(noIndividuPapa);
-				final PersonnePhysique maman1 = addHabitant(noIndividuMaman1);
-				final Ids ids = new Ids();
-				ids.enfant = enfant.getNumero();
-				ids.papa = papa.getNumero();
-				ids.maman1 = maman1.getNumero();
-				return ids;
-			}
-		});
-
-		// interrogation des relations de l'enfant
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique enfant = (PersonnePhysique) tiersDAO.get(ids.enfant);
-				final List<RapportFiliation> rapports = tiersService.getRapportsFiliation(enfant);
-				Assert.assertNotNull(rapports);
-				Assert.assertEquals(3, rapports.size());
-
-				boolean vuPapa = false;
-				boolean vuMaman1 = false;
-				boolean vuMaman2 = false;
-
-				for (RapportFiliation rapport : rapports) {
-					Assert.assertNotNull(rapport);
-					Assert.assertEquals(RapportFiliation.Type.PARENT, rapport.getType());
-					Assert.assertEquals(noIndividuEnfant, rapport.getIndividu().getNoTechnique());
-					Assert.assertEquals((Long) ids.enfant, rapport.getPersonnePhysique().getNumero());
-					Assert.assertNotNull(rapport.getAutreIndividu());
-					if (rapport.getAutreIndividu().getNoTechnique() == noIndividuPapa) {
-						Assert.assertFalse(vuPapa);
-						Assert.assertEquals((Long) ids.papa, rapport.getAutrePersonnePhysique().getNumero());
-						Assert.assertEquals(dateNaissanceEnfant, rapport.getDateDebut());
-						Assert.assertNull(rapport.getDateFin());
-						vuPapa = true;
-					}
-					else if (rapport.getAutreIndividu().getNoTechnique() == noIndividuMaman1) {
-						Assert.assertFalse(vuMaman1);
-						Assert.assertEquals((Long) ids.maman1, rapport.getAutrePersonnePhysique().getNumero());
-						Assert.assertEquals(dateNaissanceEnfant, rapport.getDateDebut());
-						Assert.assertEquals(dateAdoptionMaman2.addDays(-1), rapport.getDateFin());
-						vuMaman1 = true;
-					}
-					else if (rapport.getAutreIndividu().getNoTechnique() == noIndividuMaman2) {
-						Assert.assertFalse(vuMaman2);
-						Assert.assertNull(rapport.getAutrePersonnePhysique());
-						Assert.assertEquals(dateAdoptionMaman2, rapport.getDateDebut());
-						Assert.assertNull(rapport.getDateFin());
-						vuMaman2 = true;
-					}
-				}
-
-				Assert.assertTrue(vuPapa);
-				Assert.assertTrue(vuMaman1);
-				Assert.assertTrue(vuMaman2);
 
 				return null;
 			}

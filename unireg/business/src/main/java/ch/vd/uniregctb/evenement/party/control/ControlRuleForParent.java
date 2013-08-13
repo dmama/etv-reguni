@@ -7,8 +7,8 @@ import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
 
+import ch.vd.uniregctb.tiers.Filiation;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.RapportFiliation;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 
@@ -23,19 +23,16 @@ public abstract class ControlRuleForParent extends AbstractControlRule {
 		final TaxLiabilityControlResult result = new TaxLiabilityControlResult();
 
 		//Recherche des parents:
-		final List<RapportFiliation> filiations = tiers instanceof PersonnePhysique ? tiersService.getRapportsFiliation((PersonnePhysique) tiers) : Collections.<RapportFiliation>emptyList();
-		final List<RapportFiliation> filiationParents = extractParents(filiations);
-		if (filiationParents.isEmpty()) {
+		final List<Filiation> filiations = tiers instanceof PersonnePhysique ? extractParents(tiersService.getParents((PersonnePhysique) tiers, false)) : Collections.<Filiation>emptyList();
+		if (filiations.isEmpty()) {
 			setErreur(result, TaxLiabilityControlEchec.EchecType.CONTROLE_SUR_PARENTS_KO, null, null, null);
 		}
-		else if (filiationParents.size() == 1) {
-			final RapportFiliation rapportParent = filiationParents.get(0);
-			final PersonnePhysique parent = rapportParent.getAutrePersonnePhysique();
+		else if (filiations.size() == 1) {
+			final Filiation filiation = filiations.get(0);
+			final Long parentId = filiation.getObjetId();
+			final PersonnePhysique parent = (PersonnePhysique) tiersService.getTiers(parentId);
 			if (parent != null) {
-
-				final Long parentId = parent.getId();
-
-				//le parent est assujetti tout va bien
+				// le parent est assujetti tout va bien
 				if (isAssujetti(parent)) {
 					result.setIdTiersAssujetti(parentId);
 				}
@@ -55,25 +52,25 @@ public abstract class ControlRuleForParent extends AbstractControlRule {
 				setErreur(result, TaxLiabilityControlEchec.EchecType.CONTROLE_SUR_PARENTS_KO, null, null, null);
 			}
 		}
-		else if (filiationParents.size() == 2) {
-			checkAppartenanceMenageAssujetti(filiationParents, result);
+		else if (filiations.size() == 2) {
+			checkAppartenanceMenageAssujetti(filiations, result);
 		}
-		else if (filiationParents.size() > 2) {
-			final List<Long> parentsIds = new ArrayList<Long>(filiationParents.size());
-			for (RapportFiliation filiationParent : filiationParents) {
-				parentsIds.add(filiationParent.getAutrePersonnePhysique().getId());
+		else if (filiations.size() > 2) {
+			final List<Long> parentsIds = new ArrayList<>(filiations.size());
+			for (Filiation filiationParent : filiations) {
+				parentsIds.add(filiationParent.getObjetId());
 			}
 			setErreur(result, TaxLiabilityControlEchec.EchecType.CONTROLE_SUR_PARENTS_KO, null, null, parentsIds);
 		}
 		return result;
 	}
 
-	public void checkAppartenanceMenageAssujetti(List<RapportFiliation> filiationParents, TaxLiabilityControlResult result) throws ControlRuleException {
-		final RapportFiliation rapportParent1 = filiationParents.get(0);
-		final PersonnePhysique parent1 = rapportParent1.getAutrePersonnePhysique();
+	public void checkAppartenanceMenageAssujetti(List<Filiation> filiationParents, TaxLiabilityControlResult result) throws ControlRuleException {
+		final Filiation rapportParent1 = filiationParents.get(0);
+		final PersonnePhysique parent1 = (PersonnePhysique) tiersService.getTiers(rapportParent1.getObjetId());
 
-		final RapportFiliation rapportParent2 = filiationParents.get(1);
-		final PersonnePhysique parent2 = rapportParent2.getAutrePersonnePhysique();
+		final Filiation rapportParent2 = filiationParents.get(1);
+		final PersonnePhysique parent2 = (PersonnePhysique) tiersService.getTiers(rapportParent2.getObjetId());
 
 		final Long parent1Id = parent1.getId();
 		final TaxLiabilityControlResult resultMenageParent1 = rechercheAssujettisementSurMenage(parent1);
@@ -117,7 +114,7 @@ public abstract class ControlRuleForParent extends AbstractControlRule {
 		}
 	}
 
-	protected abstract List<RapportFiliation> extractParents(List<RapportFiliation> filiations);
+	protected abstract List<Filiation> extractParents(List<Filiation> filiations);
 
 	protected abstract TaxLiabilityControlResult rechercheAssujettisementSurMenage(@NotNull PersonnePhysique parent) throws ControlRuleException;
 

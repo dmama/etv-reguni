@@ -1,15 +1,13 @@
 package ch.vd.uniregctb.xml.party.v1;
 
-import org.jetbrains.annotations.Nullable;
-
 import ch.vd.unireg.xml.party.relation.v1.RelationBetweenParties;
 import ch.vd.unireg.xml.party.relation.v1.RelationBetweenPartiesType;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.RapportFiliation;
+import ch.vd.uniregctb.tiers.Filiation;
 import ch.vd.uniregctb.xml.DataHelper;
 import ch.vd.uniregctb.xml.EnumHelper;
 
 public class RelationBetweenPartiesBuilder {
+
 	public static RelationBetweenParties newRelationBetweenParties(ch.vd.uniregctb.tiers.RapportEntreTiers rapport, Long autreTiersNumero) {
 		final RelationBetweenParties r = new RelationBetweenParties();
 		r.setType(EnumHelper.coreToXML(rapport.getType()));
@@ -33,23 +31,27 @@ public class RelationBetweenPartiesBuilder {
 	}
 
 	/**
-	 * @param filiation un rapport de filiation
-	 * @return un objet {@link RelationBetweenParties}, ou <code>null</code> si l'une des personnes physiques du rapport de filiation est inconnue
+	 * @param child un rapport de filiation vers un enfant
+	 * @return un objet {@link ch.vd.unireg.xml.party.relation.v1.RelationBetweenParties}
 	 */
-	@Nullable
-	public static RelationBetweenParties newFiliation(RapportFiliation filiation) {
-		final RelationBetweenParties r;
-		final PersonnePhysique autrePersonnePhysique = filiation.getAutrePersonnePhysique();
-		if (autrePersonnePhysique != null) {
-			r = new RelationBetweenParties();
-			r.setType(filiation.getType() == RapportFiliation.Type.ENFANT ? RelationBetweenPartiesType.CHILD : RelationBetweenPartiesType.PARENT);
-			r.setDateFrom(DataHelper.coreToXML(filiation.getDateDebut()));
-			r.setDateTo(DataHelper.coreToXML(filiation.getDateFin()));
-			r.setOtherPartyNumber(autrePersonnePhysique.getNumero().intValue());
-		}
-		else {
-			r = null;
-		}
+	public static RelationBetweenParties newFiliationTowardsChild(Filiation child) {
+		return newFiliation(child, true);
+	}
+
+	/**
+	 * @param parent un rapport de filiation vers un parent
+	 * @return un objet {@link ch.vd.unireg.xml.party.relation.v1.RelationBetweenParties}
+	 */
+	public static RelationBetweenParties newFiliationTowardsParent(Filiation parent) {
+		return newFiliation(parent, false);
+	}
+
+	private static RelationBetweenParties newFiliation(Filiation filiation, boolean towardsChild) {
+		final RelationBetweenParties r = new RelationBetweenParties();
+		r.setType(towardsChild ? RelationBetweenPartiesType.CHILD : RelationBetweenPartiesType.PARENT);
+		r.setDateFrom(DataHelper.coreToXML(filiation.getDateDebut()));
+		r.setDateTo(DataHelper.coreToXML(filiation.getDateFin()));
+		r.setOtherPartyNumber(towardsChild ? filiation.getSujetId().intValue() : filiation.getObjetId().intValue());
 		return r;
 	}
 }

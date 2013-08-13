@@ -293,16 +293,14 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 			Long idPere;
 		}
 		final Ids ids = new Ids();
+		final RegDate dateNaissance = date(2005, 3, 12);
 
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
-				final RegDate dateNaissance = date(2005, 3, 12);
 				MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertPeriode", "Jeroma", Sexe.FEMININ);
 				MockIndividu parent = addIndividu(noIndParent, date(1974, 8, 16), "RuppertPeriode", "PereJeroma", Sexe.MASCULIN);
-				addLiensFiliation(parent, fille, dateNaissance, null);
-
-
+				addLiensFiliation(fille, parent, null, dateNaissance, null);
 			}
 		});
 
@@ -314,6 +312,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 				final PersonnePhysique ppParent = addHabitant(noIndParent);
 				ids.idFille = ppFille.getId();
 				ids.idPere = ppParent.getId();
+				addFiliation(ppFille, ppParent, dateNaissance, null);
 				//addForPrincipal(ppParent, date(2000, 1, 5), MotifFor.ARRIVEE_HS, MockCommune.Moudon);
 
 				return null;

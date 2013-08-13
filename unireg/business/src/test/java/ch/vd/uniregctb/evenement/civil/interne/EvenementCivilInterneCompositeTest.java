@@ -336,7 +336,7 @@ public class EvenementCivilInterneCompositeTest extends WithoutSpringTest {
 				new EvenementCivilInterneMock(){
 					@Override
 					protected void fillRequiredParts(Set<AttributeIndividu> parts) {
-						parts.add(AttributeIndividu.ADOPTIONS);
+						parts.add(AttributeIndividu.ORIGINE);
 					}
 				},
 				new EvenementCivilInterneMock(){
@@ -355,7 +355,7 @@ public class EvenementCivilInterneCompositeTest extends WithoutSpringTest {
 
 		// Création de l'instance à tester
 		EvenementCivilInterne evtComposite = new EvenementCivilInterneComposite(
-				mockEvenementCivilEch, mockEvenementCivilContext,mockEvenementCivilOptions,
+				mockEvenementCivilEch, mockEvenementCivilContext, mockEvenementCivilOptions,
 				mockEvenementsComposants);
 
 		// Appel de la méthode testée

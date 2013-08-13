@@ -73,7 +73,7 @@ public class InitialisationFiliationsProcessorTest extends BusinessTest {
 			public Ids doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pierre = addNonHabitant("Pierre", "Kiroul", null, Sexe.MASCULIN);
 				final PersonnePhysique namass = addNonHabitant("Namass", "Pamouss", null, Sexe.FEMININ);
-				final Filiation filiation = addFiliation(pierre, namass, date(2010, 6, 23), null);
+				final Filiation filiation = addFiliation(namass, pierre, date(2010, 6, 23), null);
 				final Ids ids = new Ids();
 				ids.idParent = pierre.getNumero();
 				ids.idEnfant = namass.getNumero();

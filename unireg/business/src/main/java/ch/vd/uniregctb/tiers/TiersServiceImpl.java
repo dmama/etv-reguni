@@ -13,6 +13,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -38,7 +39,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationException;
-import ch.vd.unireg.interfaces.civil.data.AdoptionReconnaissance;
 import ch.vd.unireg.interfaces.civil.data.Adresse;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
@@ -47,9 +47,7 @@ import ch.vd.unireg.interfaces.civil.data.LocalisationType;
 import ch.vd.unireg.interfaces.civil.data.Nationalite;
 import ch.vd.unireg.interfaces.civil.data.Origine;
 import ch.vd.unireg.interfaces.civil.data.Permis;
-import ch.vd.unireg.interfaces.civil.data.RelationVersIndividu;
 import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
-import ch.vd.unireg.interfaces.civil.data.TypeRelationVersIndividu;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.adresse.AdresseException;
@@ -609,7 +607,8 @@ public class TiersServiceImpl implements TiersService {
                 throw new IndividuNotFoundException(pp);
             }
             sexe = individu.getSexe();
-        } else {
+        }
+        else {
             sexe = pp.getSexe();
         }
         return sexe;
@@ -1567,138 +1566,11 @@ public class TiersServiceImpl implements TiersService {
 		}
 	}
 
-	@Override
-    public PersonnePhysique getPere(PersonnePhysique pp, RegDate dateValidite) {
-        if (pp == null || !pp.isConnuAuCivil()) {
-            return null;
-        }
-
-        final Long numeroIndividu = pp.getNumeroIndividu();
-        Assert.notNull(numeroIndividu);
-
-        final Individu individu = serviceCivilService.getIndividu(numeroIndividu, dateValidite, AttributeIndividu.PARENTS);
-        if (individu == null) {
-            throw new IndividuNotFoundException(numeroIndividu);
-        }
-
-        PersonnePhysique pere = null;
-
-        final List<RelationVersIndividu> relParents = individu.getParents();
-        if (relParents != null) {
-            for (RelationVersIndividu relation : relParents) {
-	            if (relation.getTypeRelation() == TypeRelationVersIndividu.PERE) {
-                    pere = tiersDAO.getPPByNumeroIndividu(relation.getNumeroAutreIndividu(), true);
-                    break;
-                }
-            }
-        }
-
-        return pere;
-    }
-
-    @Override
-    public PersonnePhysique getMere(PersonnePhysique pp, RegDate dateValidite) {
-        if (pp == null || !pp.isConnuAuCivil()) {
-            return null;
-        }
-
-        final Long numeroIndividu = pp.getNumeroIndividu();
-        Assert.notNull(numeroIndividu);
-
-        final Individu individu = serviceCivilService.getIndividu(numeroIndividu, dateValidite, AttributeIndividu.PARENTS);
-        if (individu == null) {
-            throw new IndividuNotFoundException(numeroIndividu);
-        }
-
-        PersonnePhysique mere = null;
-
-        final List<RelationVersIndividu> relParents = individu.getParents();
-        if (relParents != null) {
-            for (RelationVersIndividu relation : relParents) {
-	            if (relation.getTypeRelation() == TypeRelationVersIndividu.MERE) {
-		            mere = tiersDAO.getPPByNumeroIndividu(relation.getNumeroAutreIndividu(), true);
-		            break;
-	            }
-            }
-        }
-
-        return mere;
-    }
-
-    @Override
-    public List<PersonnePhysique> getParents(PersonnePhysique pp, RegDate dateValidite) {
-        if (pp == null || !pp.isConnuAuCivil()) {
-            return Collections.emptyList();
-        }
-
-        final Long numeroIndividu = pp.getNumeroIndividu();
-        Assert.notNull(numeroIndividu);
-
-        final Individu individu = serviceCivilService.getIndividu(numeroIndividu, dateValidite, AttributeIndividu.PARENTS);
-        if (individu == null) {
-            throw new IndividuNotFoundException(numeroIndividu);
-        }
-
-        final List<PersonnePhysique> parents = new ArrayList<>(2);
-
-        final List<RelationVersIndividu> relParents = individu.getParents();
-        if (relParents != null) {
-            for (RelationVersIndividu relation : relParents) {
-                final PersonnePhysique parent = tiersDAO.getPPByNumeroIndividu(relation.getNumeroAutreIndividu(), true);
-                if (parent != null) {
-                    parents.add(parent);
-                }
-            }
-        }
-
-        return parents;
-    }
-
-    @Override
-    public List<PersonnePhysique> getEnfants(PersonnePhysique pp, RegDate dateValidite) {
-        if (pp == null || !pp.isConnuAuCivil()) {
-            return Collections.emptyList();
-        }
-
-        final Long numeroIndividu = pp.getNumeroIndividu();
-        Assert.notNull(numeroIndividu);
-
-        final Individu individu = serviceCivilService.getIndividu(numeroIndividu, dateValidite, AttributeIndividu.ENFANTS, AttributeIndividu.ADOPTIONS);
-        if (individu == null) {
-            throw new IndividuNotFoundException(numeroIndividu);
-        }
-
-        final List<PersonnePhysique> enfants = new ArrayList<>();
-        if (individu.getEnfants() != null) {
-            for (RelationVersIndividu rel : individu.getEnfants()) {
-                final PersonnePhysique enfant = tiersDAO.getPPByNumeroIndividu(rel.getNumeroAutreIndividu(), true);
-                if (enfant != null) {
-                    enfants.add(enfant);
-                }
-            }
-        }
-        if (individu.getAdoptionsReconnaissances() != null) {
-            for (AdoptionReconnaissance adopt : individu.getAdoptionsReconnaissances()) {
-                final RegDate debutLien = RegDateHelper.maximum(adopt.getDateAdoption(), adopt.getDateReconnaissance(), NullDateBehavior.EARLIEST);
-                final DateRange dureeLien = new DateRangeHelper.Range(debutLien, adopt.getDateDesaveu());
-                if (dureeLien.isValidAt(dateValidite)) {
-                    final PersonnePhysique enfant = tiersDAO.getPPByNumeroIndividu(adopt.getAdopteReconnu().getNoTechnique(), true);
-                    if (enfant != null) {
-                        enfants.add(enfant);
-                    }
-                }
-            }
-        }
-
-        return enfants;
-    }
-
-    @Override
-    public List<PersonnePhysique> getEnfants(MenageCommun mc, RegDate dateValidite) {
-        EnsembleTiersCouple ensembleTiersCouple = getEnsembleTiersCouple(mc, dateValidite);
-        PersonnePhysique principal = ensembleTiersCouple.getPrincipal();
-        Set<PersonnePhysique> setEnfantsMenage = new HashSet<>();
-        PersonnePhysique conjoint = ensembleTiersCouple.getConjoint();
+    private List<PersonnePhysique> getEnfants(MenageCommun mc, RegDate dateValidite) {
+        final EnsembleTiersCouple ensembleTiersCouple = getEnsembleTiersCouple(mc, dateValidite);
+        final PersonnePhysique principal = ensembleTiersCouple.getPrincipal();
+        final Set<PersonnePhysique> setEnfantsMenage = new HashSet<>();
+        final PersonnePhysique conjoint = ensembleTiersCouple.getConjoint();
         setEnfantsMenage.addAll(getEnfants(principal, dateValidite));
         if (conjoint != null) {
             setEnfantsMenage.addAll(getEnfants(conjoint, dateValidite));
@@ -1706,17 +1578,29 @@ public class TiersServiceImpl implements TiersService {
         return new ArrayList<>(setEnfantsMenage);
     }
 
-    @Override
-    public List<PersonnePhysique> getEnfants(Contribuable ctb, RegDate dateValidite) {
+    private List<PersonnePhysique> getEnfants(Contribuable ctb, RegDate dateValidite) {
         if (ctb instanceof MenageCommun) {
             return getEnfants((MenageCommun) ctb, dateValidite);
-        } else if (ctb instanceof PersonnePhysique) {
+        }
+        else if (ctb instanceof PersonnePhysique) {
             return getEnfants((PersonnePhysique) ctb, dateValidite);
-        } else {
+        }
+        else {
             return Collections.emptyList();
         }
-
     }
+
+	private List<PersonnePhysique> getEnfants(PersonnePhysique pp, RegDate dateValidite) {
+		final List<Filiation> filiations = extractFiliations(pp.getRapportsObjet(), false);
+		final List<PersonnePhysique> enfants = new ArrayList<>(filiations.size());
+		for (Filiation filiation : filiations) {
+			if (filiation.isValidAt(dateValidite)) {
+				final PersonnePhysique enfant = (PersonnePhysique) tiersDAO.get(filiation.getSujetId());
+				enfants.add(enfant);
+			}
+		}
+		return enfants;
+	}
 
     @Override
     public List<PersonnePhysique> getEnfantsForDeclaration(Contribuable ctb, RegDate finPeriodeImposition) {
@@ -1825,207 +1709,45 @@ public class TiersServiceImpl implements TiersService {
         return false;
     }
 
-    @NotNull
-    @Override
-    public List<RapportFiliation> getRapportsFiliation(PersonnePhysique personnePhysique) {
-
-        final List<RapportFiliation> filiations = new ArrayList<>();
-        if (!personnePhysique.isConnuAuCivil()) {
-            return Collections.emptyList();
-        }
-
-        final RegDate date = RegDate.get();
-
-        final AttributeIndividu[] enumValues = new AttributeIndividu[]{AttributeIndividu.ENFANTS, AttributeIndividu.PARENTS, AttributeIndividu.ADOPTIONS};
-        final Individu ind = serviceCivilService.getIndividu(personnePhysique.getNumeroIndividu(), date, enumValues);
-	    if (ind == null) {
-		    throw new IndividuNotFoundException(personnePhysique);
-	    }
-
-        // enfants biologiques
-        final Collection<RelationVersIndividu> enfants = ind.getEnfants();
-        if (enfants != null) {
-            for (RelationVersIndividu enfant : enfants) {
-                RapportFiliation r = createRapportPourEnfant(personnePhysique, ind, enfant);
-                if (r != null) {
-                    filiations.add(r);
-                }
-            }
-        }
-
-        // enfants adoptés / reconnus
-        final Collection<AdoptionReconnaissance> adoptions = ind.getAdoptionsReconnaissances();
-        if (adoptions != null) {
-            for (AdoptionReconnaissance ar : adoptions) {
-                RapportFiliation r = createRapportPourAdoption(personnePhysique, ind, ar);
-                if (r != null) {
-                    filiations.add(r);
-                }
-            }
-        }
-
-        // parents
-        final List<RelationVersIndividu> parents = ind.getParents();
-        if (parents != null) {
-            for (RelationVersIndividu parent : parents) {
-                RapportFiliation r = createRapportPourParents(personnePhysique, ind, parent, date);
-                if (r != null) {
-                    filiations.add(r);
-                }
-            }
-        }
-
-		if (LOGGER.isTraceEnabled()) {
-			final String message = "Personne physique n°" + personnePhysique.getNumero() + " / individu n°" + personnePhysique.getNumeroIndividu() + " :\n" +
-					"  - " + size(ind.getEnfants()) + " enfant(s)\n" +
-					"  - " + size(ind.getAdoptionsReconnaissances()) + " adoptés(s)\n" +
-					"  - " + size(ind.getParents()) + " parent(s)\n" +
-					" => total " + size(filiations) + " liens de filiation générés.";
-			LOGGER.trace(message);
-		}
-
-        return filiations;
-    }
-
-	private static int size(Collection<?> coll) {
-		return coll == null ? 0 : coll.size();
+	@NotNull
+	@Override
+	public List<Filiation> getParents(PersonnePhysique enfant, boolean yComprisRelationsAnnulees) {
+		return extractFiliations(enfant.getRapportsSujet(), yComprisRelationsAnnulees);
 	}
 
-	/**
-	 * @param dateDebut date candidate pour le début du range
-	 * @param dateFin date candidate pour la fin du range
-	 * @param parent personne physique parente dans la relation à limiter
-	 * @param enfant personne physique enfant dans la relation à limiter
-	 * @return le range limité par les dates de naissance/décès des deux personnes physiques données (ou <code>null</code> si les dates début/fin seraient dans le mauvais ordre suite à cette limitation)
-	 * (cas du père qui décède avant la naissance de son enfant)
-	 */
-	@Nullable
-	private DateRange limitRangeAccordingToBirthAndDeathDates(RegDate dateDebut, RegDate dateFin, PersonnePhysique parent, PersonnePhysique enfant) {
-		// recherche de la date de début après limitation avec les dates de naissance des personnes concernées
-		dateDebut = RegDateHelper.maximum(dateDebut, getDateNaissance(parent), NullDateBehavior.EARLIEST);
-		dateDebut = RegDateHelper.maximum(dateDebut, getDateNaissance(enfant), NullDateBehavior.EARLIEST);
-
-		// recherche de la date de début après limitation avec les dates de naissance des personnes concernées
-		dateFin = RegDateHelper.minimum(dateFin, getDateDeces(parent), NullDateBehavior.LATEST);
-		dateFin = RegDateHelper.minimum(dateFin, getDateDeces(enfant), NullDateBehavior.LATEST);
-
-		if (dateDebut == null || dateFin == null || dateDebut.isBeforeOrEqual(dateFin)) {
-			return new DateRangeHelper.Range(dateDebut, dateFin);
+	@NotNull
+	@Override
+	public List<PersonnePhysique> getParents(PersonnePhysique enfant, RegDate dateValidite) {
+		final List<Filiation> filiations = getParents(enfant, false);
+		final List<PersonnePhysique> parents = new ArrayList<>(filiations.size());
+		for (Filiation filiation : filiations) {
+			if (filiation.isValidAt(dateValidite)) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(filiation.getObjetId());
+				parents.add(pp);
+			}
 		}
-		else {
-			return null;
-		}
+		return parents;
 	}
 
-	@Nullable
-	private RapportFiliation createRapportPourEnfant(PersonnePhysique personnePhysique, Individu individu, RelationVersIndividu relationEnfant) {
+	@NotNull
+	@Override
+	public List<Filiation> getEnfants(PersonnePhysique parent, boolean yComprisRelationsAnnulees) {
+		return extractFiliations(parent.getRapportsObjet(), yComprisRelationsAnnulees);
+	}
 
-        final long noIndEnfant = relationEnfant.getNumeroAutreIndividu();
-
-        final PersonnePhysique ppEnfant = tiersDAO.getPPByNumeroIndividu(noIndEnfant);
-        if (ppEnfant == null) {
-	        LOGGER.warn("Impossible de trouver la personne physique qui correspond à l'individu enfant n°" + noIndEnfant);
-        }
-
-        final Individu enfant = serviceCivilService.getIndividu(noIndEnfant, null);
-        if (enfant == null) {
-            throw new IndividuNotFoundException(noIndEnfant);
-        }
-
-		final DateRange limitedRange = limitRangeAccordingToBirthAndDeathDates(relationEnfant.getDateDebut(), relationEnfant.getDateFin(), personnePhysique, ppEnfant);
-		if (limitedRange != null) {
-            return new RapportFiliation(individu, personnePhysique, enfant, ppEnfant, limitedRange.getDateDebut(), limitedRange.getDateFin(), RapportFiliation.Type.ENFANT);
+	private static List<Filiation> extractFiliations(Collection<RapportEntreTiers> rapports, boolean yComprisRelationsAnnulees) {
+		final List<Filiation> filiations = new LinkedList<>();
+		if (rapports != null) {
+			for (RapportEntreTiers rapport : rapports) {
+				if (rapport instanceof Filiation) {
+					if (yComprisRelationsAnnulees || !rapport.isAnnule()) {
+						filiations.add((Filiation) rapport);
+					}
+				}
+			}
 		}
-		else {
-			return null;
-		}
-    }
-
-    @Nullable
-    private RapportFiliation createRapportPourAdoption(PersonnePhysique personnePhysique, Individu individu, AdoptionReconnaissance ar) {
-
-        final Individu enfant = ar.getAdopteReconnu();
-
-        final PersonnePhysique ppEnfant = tiersDAO.getPPByNumeroIndividu(enfant.getNoTechnique());
-        if (ppEnfant == null) {
-	        LOGGER.warn("Impossible de trouver la personne physique qui correspond à l'individu enfant n°" + enfant.getNoTechnique());
-        }
-
-	    final RegDate dateDebut = RegDateHelper.maximum(ar.getDateAdoption(), ar.getDateReconnaissance(), NullDateBehavior.EARLIEST);
-	    final RegDate dateFin = ar.getDateDesaveu();
-
-	    final DateRange limitedRange = limitRangeAccordingToBirthAndDeathDates(dateDebut, dateFin, personnePhysique, ppEnfant);
-	    if (limitedRange != null) {
-	        return new RapportFiliation(individu, personnePhysique, enfant, ppEnfant, limitedRange.getDateDebut(), limitedRange.getDateFin(), RapportFiliation.Type.ENFANT);
-	    }
-	    else {
-		    return null;
-	    }
-    }
-
-    @Nullable
-    private RapportFiliation createRapportPourParents(PersonnePhysique personnePhysique, Individu individu, RelationVersIndividu relationParent, RegDate date) {
-
-        final long noIndParent = relationParent.getNumeroAutreIndividu();
-
-        final PersonnePhysique ppParent = tiersDAO.getPPByNumeroIndividu(noIndParent);
-        if (ppParent == null) {
-	        LOGGER.warn("Impossible de trouver la personne physique qui correspond à l'individu parent n°" + noIndParent);
-        }
-
-        final Individu parent = serviceCivilService.getIndividu(noIndParent, date, AttributeIndividu.ADOPTIONS);
-        if (parent == null) {
-            throw new IndividuNotFoundException(noIndParent);
-        }
-
-	    final RegDate dateDebut;
-	    final RegDate dateFin;
-	    if (relationParent.getDateDebut() != null) {
-		    dateDebut = relationParent.getDateDebut();
-	    }
-	    else {
-		    final AdoptionReconnaissance ar = getAdoptionPourEnfant(parent.getAdoptionsReconnaissances(), personnePhysique.getNumeroIndividu());
-		    if (ar != null) {
-			    dateDebut = RegDateHelper.maximum(ar.getDateAdoption(), ar.getDateReconnaissance(), NullDateBehavior.EARLIEST);
-		    }
-		    else {
-			    dateDebut = null;
-		    }
-	    }
-	    if (relationParent.getDateFin() != null) {
-		    dateFin = relationParent.getDateFin();
-	    }
-	    else {
-		    final AdoptionReconnaissance ar = getAdoptionPourEnfant(parent.getAdoptionsReconnaissances(), personnePhysique.getNumeroIndividu());
-		    if (ar != null) {
-			    dateFin = ar.getDateDesaveu();
-		    }
-		    else {
-			    dateFin = null;
-		    }
-	    }
-
-	    final DateRange limitedRange = limitRangeAccordingToBirthAndDeathDates(dateDebut, dateFin, ppParent, personnePhysique);
-	    if (limitedRange != null) {
-            return new RapportFiliation(individu, personnePhysique, parent, ppParent, limitedRange.getDateDebut(), limitedRange.getDateFin(), RapportFiliation.Type.PARENT);
-	    }
-	    else {
-		    return null;
-	    }
-    }
-
-    private static AdoptionReconnaissance getAdoptionPourEnfant(Collection<AdoptionReconnaissance> adoptions, long noIndEnfant) {
-        AdoptionReconnaissance a = null;
-        if (adoptions != null && !adoptions.isEmpty()) {
-            for (AdoptionReconnaissance candidat : adoptions) {
-                if (candidat.getAdopteReconnu().getNoTechnique() == noIndEnfant) {
-                    a = candidat;
-                    break;
-                }
-            }
-        }
-        return a;
-    }
+		return filiations;
+	}
 
     private void afterForFiscalPrincipalAdded(Contribuable contribuable, ForFiscalPrincipal forFiscalPrincipal) {
         final MotifFor motifOuverture = forFiscalPrincipal.getMotifOuverture();
@@ -2093,7 +1815,17 @@ public class TiersServiceImpl implements TiersService {
         resetFlagBlocageRemboursementAutomatiqueSelonFors(contribuable);
     }
 
-    @Override
+	private PersonnePhysique getMere(PersonnePhysique pp, RegDate dateValidite) {
+		final List<PersonnePhysique> parents = getParents(pp, dateValidite);
+		for (PersonnePhysique parent : parents) {
+			if (getSexe(parent) == Sexe.FEMININ) {
+				return parent;
+			}
+		}
+		return null;
+	}
+
+	@Override
     public Contribuable getAutoriteParentaleDe(PersonnePhysique contribuableEnfant, RegDate dateValidite) {
 
         final PersonnePhysique parent = getMere(contribuableEnfant, dateValidite);

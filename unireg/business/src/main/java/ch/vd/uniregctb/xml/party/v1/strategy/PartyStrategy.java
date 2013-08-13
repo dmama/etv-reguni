@@ -18,8 +18,8 @@ import ch.vd.unireg.xml.party.taxdeclaration.v1.TaxDeclaration;
 import ch.vd.unireg.xml.party.taxresidence.v1.TaxResidence;
 import ch.vd.unireg.xml.party.v1.Party;
 import ch.vd.unireg.xml.party.v1.PartyPart;
+import ch.vd.uniregctb.tiers.Filiation;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.RapportFiliation;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 import ch.vd.uniregctb.xml.Context;
@@ -241,16 +241,25 @@ public abstract class PartyStrategy<T extends Party> {
 			}
 		}
 
-		if ((parts.contains(PartyPart.CHILDREN) || parts.contains(PartyPart.PARENTS)) && right instanceof PersonnePhysique) { // [SIFISC-2588]
+
+		if (parts.contains(PartyPart.CHILDREN) && right instanceof PersonnePhysique) {
 			final PersonnePhysique pp = (PersonnePhysique) right;
-			final List<RapportFiliation> filiations = context.tiersService.getRapportsFiliation(pp);
-			for (RapportFiliation filiation : filiations) {
-				if (filiation.getType() == RapportFiliation.Type.ENFANT && parts.contains(PartyPart.CHILDREN) ||
-						filiation.getType() == RapportFiliation.Type.PARENT && parts.contains(PartyPart.PARENTS)) {
-					final RelationBetweenParties rbp = RelationBetweenPartiesBuilder.newFiliation(filiation);
-					if (rbp != null) {
-						tiers.getRelationsBetweenParties().add(rbp);
-					}
+			final List<Filiation> enfants = context.tiersService.getEnfants(pp, false);
+			for (Filiation enfant : enfants) {
+				final RelationBetweenParties rbp = RelationBetweenPartiesBuilder.newFiliationTowardsChild(enfant);
+				if (rbp != null) {
+					tiers.getRelationsBetweenParties().add(rbp);
+				}
+			}
+		}
+
+		if (parts.contains(PartyPart.PARENTS) && right instanceof PersonnePhysique) {
+			final PersonnePhysique pp = (PersonnePhysique) right;
+			final List<Filiation> parents = context.tiersService.getParents(pp, false);
+			for (Filiation parent : parents) {
+				final RelationBetweenParties rbp = RelationBetweenPartiesBuilder.newFiliationTowardsParent(parent);
+				if (rbp != null) {
+					tiers.getRelationsBetweenParties().add(rbp);
 				}
 			}
 		}

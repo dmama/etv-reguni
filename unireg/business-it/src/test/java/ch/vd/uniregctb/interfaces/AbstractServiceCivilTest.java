@@ -51,9 +51,7 @@ public abstract class AbstractServiceCivilTest extends BusinessItTest {
 	@Test(timeout = 10000)
 	public void testGetIndividuComplet() throws Exception {
 
-		final Individu individu =
-				service.getIndividu(692185, null, AttributeIndividu.ADRESSES, AttributeIndividu.ORIGINE, AttributeIndividu.NATIONALITES, AttributeIndividu.ADOPTIONS, AttributeIndividu.ENFANTS,
-						AttributeIndividu.PARENTS, AttributeIndividu.PERMIS);
+		final Individu individu = service.getIndividu(692185, null, AttributeIndividu.ADRESSES, AttributeIndividu.ORIGINE, AttributeIndividu.NATIONALITES, AttributeIndividu.PARENTS, AttributeIndividu.PERMIS);
 		assertNotNull(individu);
 		assertEquals("Jean-Marc", individu.getPrenom());
 		assertEquals("Delacrétaz", individu.getNom());
@@ -140,27 +138,6 @@ public abstract class AbstractServiceCivilTest extends BusinessItTest {
 		final RelationVersIndividu conjoint0 = conjoints.get(0);
 		assertNotNull(conjoint0);
 		assertEquals(590369, conjoint0.getNumeroAutreIndividu());
-
-		// On vérifie les enfants
-		final Collection<RelationVersIndividu> enfants = individu.getEnfants();
-		assertNotNull(enfants);
-		assertEquals(2, enfants.size());
-
-		final List<RelationVersIndividu> listeEnfants = new ArrayList<>(enfants);
-		Collections.sort(listeEnfants, new Comparator<RelationVersIndividu>() {
-			@Override
-			public int compare(RelationVersIndividu o1, RelationVersIndividu o2) {
-				return Long.compare(o1.getNumeroAutreIndividu(), o2.getNumeroAutreIndividu());
-			}
-		});
-
-		final RelationVersIndividu enfant0 = listeEnfants.get(0);
-		assertNotNull(enfant0);
-		assertEquals(1031455, enfant0.getNumeroAutreIndividu());
-
-		final RelationVersIndividu enfant1 = listeEnfants.get(1);
-		assertNotNull(enfant1);
-		assertEquals(2034197, enfant1.getNumeroAutreIndividu());
 
 		// On vérifie les origines
 		final Collection<Origine> origines = individu.getOrigines();

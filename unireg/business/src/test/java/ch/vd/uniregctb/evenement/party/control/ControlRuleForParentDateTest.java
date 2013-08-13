@@ -54,34 +54,33 @@ public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTes
 	public void testCheckTiersWithParentNonAsujetti() throws Exception {
 		final long noIndFille = 1244;
 		final long noIndParent = 1245;
-		class Ids {
-			Long idFille;
-			Long idPere;
-		}
-		final Ids ids = new Ids();
+		final RegDate dateNaissance = date(2005, 3, 12);
 
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
-				final RegDate dateNaissance = date(2005, 3, 12);
-				MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertDate", "Jeroma", Sexe.FEMININ);
-				MockIndividu parent = addIndividu(noIndParent, date(1974, 8, 16), "RuppertDate", "PereJeroma", Sexe.MASCULIN);
-				addLiensFiliation(parent, fille, dateNaissance, null);
-
-
+				final MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertDate", "Jeroma", Sexe.FEMININ);
+				final MockIndividu parent = addIndividu(noIndParent, date(1974, 8, 16), "RuppertDate", "PereJeroma", Sexe.MASCULIN);
+				addLienVersParent(fille, parent, dateNaissance, null);
 			}
 		});
 
+		class Ids {
+			Long idFille;
+			Long idPere;
+		}
+
 		// on crée un habitant vaudois ordinaire
-		doInNewTransaction(new TxCallback<Object>() {
+		final Ids ids = doInNewTransaction(new TxCallback<Ids>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Ids execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique ppFille = addHabitant(noIndFille);
 				final PersonnePhysique ppParent = addHabitant(noIndParent);
+				addFiliation(ppFille, ppParent, dateNaissance, null);
+				final Ids ids = new Ids();
 				ids.idFille = ppFille.getId();
 				ids.idPere = ppParent.getId();
-
-				return null;
+				return ids;
 			}
 		});
 
@@ -100,37 +99,38 @@ public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTes
 
 	@Test
 	public void testCheckTiersWithParentAsujetti() throws Exception {
+
 		final long noIndFille = 1244;
 		final long noIndParent = 1245;
-		class Ids {
-			Long idFille;
-			Long idPere;
-		}
-		final Ids ids = new Ids();
+		final RegDate dateNaissance = date(2005, 3, 12);
 
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
-				final RegDate dateNaissance = date(2005, 3, 12);
-				MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertDate", "Jeroma", Sexe.FEMININ);
-				MockIndividu parent = addIndividu(noIndParent, date(1974, 8, 16), "RuppertDate", "PereJeroma", Sexe.MASCULIN);
-				addLiensFiliation(parent, fille, dateNaissance, null);
-
-
+				final MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertDate", "Jeroma", Sexe.FEMININ);
+				final MockIndividu parent = addIndividu(noIndParent, date(1974, 8, 16), "RuppertDate", "PereJeroma", Sexe.MASCULIN);
+				addLienVersParent(fille, parent, dateNaissance, null);
 			}
 		});
 
+		class Ids {
+			Long idFille;
+			Long idPere;
+		}
+
 		// on crée un habitant vaudois ordinaire
-		doInNewTransaction(new TxCallback<Object>() {
+		final Ids ids = doInNewTransaction(new TxCallback<Ids>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Ids execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique ppFille = addHabitant(noIndFille);
 				final PersonnePhysique ppParent = addHabitant(noIndParent);
-				ids.idFille = ppFille.getId();
-				ids.idPere = ppParent.getId();
+				addFiliation(ppFille, ppParent, dateNaissance, null);
 				addForPrincipal(ppParent, date(2000, 1, 5), MotifFor.ARRIVEE_HS, MockCommune.Moudon);
 
-				return null;
+				final Ids ids = new Ids();
+				ids.idFille = ppFille.getId();
+				ids.idPere = ppParent.getId();
+				return ids;
 			}
 		});
 
@@ -151,39 +151,38 @@ public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTes
 	public void testCheckTiersWithParentWithMenageCommunNonAsujetti() throws Exception {
 		final long noIndFille = 1244;
 		final long noIndParent = 1245;
+		final RegDate dateNaissance = date(2005, 3, 12);
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertDate", "Jeroma", Sexe.FEMININ);
+				final MockIndividu parent = addIndividu(noIndParent, date(1974, 8, 16), "RuppertDate", "PereJeroma", Sexe.MASCULIN);
+				addLienVersParent(fille, parent, dateNaissance, null);
+			}
+		});
+
 		class Ids {
 			Long idFille;
 			Long idPere;
 			Long idMenagePere;
 		}
-		final Ids ids = new Ids();
-
-		serviceCivil.setUp(new MockServiceCivil() {
-			@Override
-			protected void init() {
-				final RegDate dateNaissance = date(2005, 3, 12);
-				MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertDate", "Jeroma", Sexe.FEMININ);
-				MockIndividu parent = addIndividu(noIndParent, date(1974, 8, 16), "RuppertDate", "PereJeroma", Sexe.MASCULIN);
-				addLiensFiliation(parent, fille, dateNaissance, null);
-
-
-			}
-		});
 
 		// on crée un habitant vaudois ordinaire
-		doInNewTransaction(new TxCallback<Object>() {
+		final Ids ids = doInNewTransaction(new TxCallback<Ids>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Ids execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique ppFille = addHabitant(noIndFille);
 				final PersonnePhysique ppPere = addHabitant(noIndParent);
+				addFiliation(ppFille, ppPere, dateNaissance, null);
+				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(ppPere, null, date(2000, 5, 5), null);
+				final MenageCommun menage = ensemble.getMenage();
+
+				final Ids ids = new Ids();
 				ids.idFille = ppFille.getId();
 				ids.idPere = ppPere.getId();
-
-				EnsembleTiersCouple ensemble = addEnsembleTiersCouple(ppPere, null, date(2000, 5, 5), null);
-				final MenageCommun menage = ensemble.getMenage();
 				ids.idMenagePere = menage.getId();
-
-				return null;
+				return ids;
 			}
 		});
 
@@ -204,40 +203,39 @@ public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTes
 	public void testCheckTiersWithParentWithMenageCommunAsujetti() throws Exception {
 		final long noIndFille = 1244;
 		final long noIndParent = 1245;
+		final RegDate dateNaissance = date(2005, 3, 12);
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertDate", "Jeroma", Sexe.FEMININ);
+				final MockIndividu parent = addIndividu(noIndParent, date(1974, 8, 16), "RuppertDate", "PereJeroma", Sexe.MASCULIN);
+				addLienVersParent(fille, parent, dateNaissance, null);
+			}
+		});
+
 		class Ids {
 			Long idFille;
 			Long idPere;
 			Long idMenagePere;
 		}
-		final Ids ids = new Ids();
-
-		serviceCivil.setUp(new MockServiceCivil() {
-			@Override
-			protected void init() {
-				final RegDate dateNaissance = date(2005, 3, 12);
-				MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertDate", "Jeroma", Sexe.FEMININ);
-				MockIndividu parent = addIndividu(noIndParent, date(1974, 8, 16), "RuppertDate", "PereJeroma", Sexe.MASCULIN);
-				addLiensFiliation(parent, fille, dateNaissance, null);
-
-
-			}
-		});
 
 		// on crée un habitant vaudois ordinaire
-		doInNewTransaction(new TxCallback<Object>() {
+		final Ids ids = doInNewTransaction(new TxCallback<Ids>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Ids execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique ppFille = addHabitant(noIndFille);
 				final PersonnePhysique ppPere = addHabitant(noIndParent);
-				ids.idFille = ppFille.getId();
-				ids.idPere = ppPere.getId();
-
-				EnsembleTiersCouple ensemble = addEnsembleTiersCouple(ppPere, null, date(2000, 1, 5), null);
+				addFiliation(ppFille, ppPere, dateNaissance, null);
+				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(ppPere, null, date(2000, 1, 5), null);
 				final MenageCommun menage = ensemble.getMenage();
-				ids.idMenagePere = menage.getId();
 				addForPrincipal(menage, date(2000, 1, 5), MotifFor.ARRIVEE_HS, MockCommune.Moudon);
 
-				return null;
+				final Ids ids = new Ids();
+				ids.idFille = ppFille.getId();
+				ids.idPere = ppPere.getId();
+				ids.idMenagePere = menage.getId();
+				return ids;
 			}
 		});
 
@@ -259,37 +257,40 @@ public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTes
 		final long noIndFille = 1244;
 		final long noIndPere = 1245;
 		final long noIndMere = 1246;
+		final RegDate dateNaissance = date(2005, 3, 12);
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertDate", "Jeroma", Sexe.FEMININ);
+				final MockIndividu pere = addIndividu(noIndPere, date(1974, 8, 16), "RuppertDate", "PereJeroma", Sexe.MASCULIN);
+				final MockIndividu mere = addIndividu(noIndMere, date(1978, 10, 19), "RuppertDate", "MereJeroma", Sexe.FEMININ);
+				addLienVersParent(fille, pere, dateNaissance, null);
+				addLienVersParent(fille, mere, dateNaissance, null);
+			}
+		});
+
 		class Ids {
 			Long idFille;
 			Long idPere;
 			Long idMere;
 
 		}
-		final Ids ids = new Ids();
-
-		serviceCivil.setUp(new MockServiceCivil() {
-			@Override
-			protected void init() {
-				final RegDate dateNaissance = date(2005, 3, 12);
-				MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertDate", "Jeroma", Sexe.FEMININ);
-				MockIndividu pere = addIndividu(noIndPere, date(1974, 8, 16), "RuppertDate", "PereJeroma", Sexe.MASCULIN);
-				MockIndividu mere = addIndividu(noIndMere, date(1978, 10, 19), "RuppertDate", "MereJeroma", Sexe.FEMININ);
-				addLiensFiliation(pere, fille, dateNaissance, null);
-				addLiensFiliation(mere, fille, dateNaissance, null);
-			}
-		});
-
 		// on crée un habitant vaudois ordinaire
-		doInNewTransaction(new TxCallback<Object>() {
+		final Ids ids = doInNewTransaction(new TxCallback<Ids>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Ids execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique ppFille = addHabitant(noIndFille);
 				final PersonnePhysique ppPere = addHabitant(noIndPere);
 				final PersonnePhysique ppMere = addHabitant(noIndMere);
+				addFiliation(ppFille, ppPere, dateNaissance, null);
+				addFiliation(ppFille, ppMere, dateNaissance, null);
+
+				final Ids ids = new Ids();
 				ids.idFille = ppFille.getId();
 				ids.idPere = ppPere.getId();
 				ids.idMere = ppMere.getId();
-				return null;
+				return ids;
 			}
 		});
 		final RegDate dateDemande = RegDate.get(2012,2,2);
@@ -310,6 +311,19 @@ public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTes
 		final long noIndFille = 1244;
 		final long noIndPere = 1245;
 		final long noIndMere = 1246;
+		final RegDate dateNaissance = date(2005, 3, 12);
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertDate", "Jeroma", Sexe.FEMININ);
+				final MockIndividu pere = addIndividu(noIndPere, date(1974, 8, 16), "RuppertDate", "PereJeroma", Sexe.MASCULIN);
+				final MockIndividu mere = addIndividu(noIndMere, date(1978, 10, 19), "RuppertDate", "MereJeroma", Sexe.FEMININ);
+				addLienVersParent(fille, pere, dateNaissance, null);
+				addLienVersParent(fille, mere, dateNaissance, null);
+			}
+		});
+
 		class Ids {
 			Long idFille;
 			Long idPere;
@@ -317,36 +331,25 @@ public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTes
 			Long idMenagePere;
 
 		}
-		final Ids ids = new Ids();
-
-		serviceCivil.setUp(new MockServiceCivil() {
-			@Override
-			protected void init() {
-				final RegDate dateNaissance = date(2005, 3, 12);
-				MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertDate", "Jeroma", Sexe.FEMININ);
-				MockIndividu pere = addIndividu(noIndPere, date(1974, 8, 16), "RuppertDate", "PereJeroma", Sexe.MASCULIN);
-				MockIndividu mere = addIndividu(noIndMere, date(1978, 10, 19), "RuppertDate", "MereJeroma", Sexe.FEMININ);
-				addLiensFiliation(pere, fille, dateNaissance, null);
-				addLiensFiliation(mere, fille, dateNaissance, null);
-
-
-			}
-		});
-
 		// on crée un habitant vaudois ordinaire
-		doInNewTransaction(new TxCallback<Object>() {
+		final Ids ids = doInNewTransaction(new TxCallback<Ids>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Ids execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique ppFille = addHabitant(noIndFille);
 				final PersonnePhysique ppPere = addHabitant(noIndPere);
 				final PersonnePhysique ppMere = addHabitant(noIndMere);
+				addFiliation(ppFille, ppPere, dateNaissance, null);
+				addFiliation(ppFille, ppMere, dateNaissance, null);
+
+				final EnsembleTiersCouple ensembleTiersCouplePere = addEnsembleTiersCouple(ppPere, null, date(2006, 7, 8), null);
+				final MenageCommun menageCommunPere = ensembleTiersCouplePere.getMenage();
+
+				final Ids ids = new Ids();
 				ids.idFille = ppFille.getId();
 				ids.idPere = ppPere.getId();
 				ids.idMere = ppMere.getId();
-				final EnsembleTiersCouple ensembleTiersCouplePere = addEnsembleTiersCouple(ppPere,null,date(2006,7,8),null);
-				MenageCommun menageCommunPere = ensembleTiersCouplePere.getMenage();
 				ids.idMenagePere = menageCommunPere.getId();
-				return null;
+				return ids;
 			}
 		});
 		final RegDate dateDemande = RegDate.get(2012,2,2);
@@ -367,6 +370,19 @@ public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTes
 		final long noIndFille = 1244;
 		final long noIndPere = 1245;
 		final long noIndMere = 1246;
+		final RegDate dateNaissance = date(2005, 3, 12);
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertDate", "Jeroma", Sexe.FEMININ);
+				final MockIndividu pere = addIndividu(noIndPere, date(1974, 8, 16), "RuppertDate", "PereJeroma", Sexe.MASCULIN);
+				final MockIndividu mere = addIndividu(noIndMere, date(1978, 10, 19), "RuppertDate", "MereJeroma", Sexe.FEMININ);
+				addLienVersParent(fille, pere, dateNaissance, null);
+				addLienVersParent(fille, mere, dateNaissance, null);
+			}
+		});
+
 		class Ids {
 			Long idFille;
 			Long idPere;
@@ -375,40 +391,29 @@ public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTes
 			Long idMenageMere;
 
 		}
-		final Ids ids = new Ids();
-
-		serviceCivil.setUp(new MockServiceCivil() {
-			@Override
-			protected void init() {
-				final RegDate dateNaissance = date(2005, 3, 12);
-				MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertDate", "Jeroma", Sexe.FEMININ);
-				MockIndividu pere = addIndividu(noIndPere, date(1974, 8, 16), "RuppertDate", "PereJeroma", Sexe.MASCULIN);
-				MockIndividu mere = addIndividu(noIndMere, date(1978, 10, 19), "RuppertDate", "MereJeroma", Sexe.FEMININ);
-				addLiensFiliation(pere, fille, dateNaissance, null);
-				addLiensFiliation(mere, fille, dateNaissance, null);
-
-
-			}
-		});
 
 		// on crée un habitant vaudois ordinaire
-		doInNewTransaction(new TxCallback<Object>() {
+		final Ids ids = doInNewTransaction(new TxCallback<Ids>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Ids execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique ppFille = addHabitant(noIndFille);
 				final PersonnePhysique ppPere = addHabitant(noIndPere);
 				final PersonnePhysique ppMere = addHabitant(noIndMere);
+				addFiliation(ppFille, ppPere, dateNaissance, null);
+				addFiliation(ppFille, ppMere, dateNaissance, null);
+
+				final EnsembleTiersCouple ensembleTiersCouplePere = addEnsembleTiersCouple(ppPere, null, date(2006, 7, 8), null);
+				final MenageCommun menageCommunPere = ensembleTiersCouplePere.getMenage();
+				final EnsembleTiersCouple ensembleTiersCoupleMere = addEnsembleTiersCouple(ppMere, null, date(2006, 7, 8), null);
+				final MenageCommun menageCommunMere = ensembleTiersCoupleMere.getMenage();
+
+				final Ids ids = new Ids();
 				ids.idFille = ppFille.getId();
 				ids.idPere = ppPere.getId();
 				ids.idMere = ppMere.getId();
-				final EnsembleTiersCouple ensembleTiersCouplePere = addEnsembleTiersCouple(ppPere,null,date(2006,7,8),null);
-				MenageCommun menageCommunPere = ensembleTiersCouplePere.getMenage();
 				ids.idMenagePere = menageCommunPere.getId();
-
-				final EnsembleTiersCouple ensembleTiersCoupleMere = addEnsembleTiersCouple(ppMere,null,date(2006,7,8),null);
-				MenageCommun menageCommunMere = ensembleTiersCoupleMere.getMenage();
 				ids.idMenageMere = menageCommunMere.getId();
-				return null;
+				return ids;
 			}
 		});
 		final RegDate dateDemande = RegDate.get(2012,2,2);
@@ -424,57 +429,57 @@ public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTes
 		assertDeuxParentsDeuxMCNonAssujetti(ids.idPere,ids.idMere,ids.idMenagePere,ids.idMenageMere, result);
 	}
 
-
-
 	@Test
 	public void testCheckTiersWithDeuxParentDeuxMCDifferentsAsujetti() throws Exception {
 		final long noIndFille = 1244;
 		final long noIndPere = 1245;
 		final long noIndMere = 1246;
+		final RegDate dateNaissance = date(2005, 3, 12);
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertDate", "Jeroma", Sexe.FEMININ);
+				final MockIndividu pere = addIndividu(noIndPere, date(1974, 8, 16), "RuppertDate", "PereJeroma", Sexe.MASCULIN);
+				final MockIndividu mere = addIndividu(noIndMere, date(1978, 10, 19), "RuppertDate", "MereJeroma", Sexe.FEMININ);
+				addLienVersParent(fille, pere, dateNaissance, null);
+				addLienVersParent(fille, mere, dateNaissance, null);
+			}
+		});
+
 		class Ids {
 			Long idFille;
 			Long idPere;
 			Long idMere;
 			Long idMenagePere;
 			Long idMenageMere;
-
 		}
-		final Ids ids = new Ids();
-
-		serviceCivil.setUp(new MockServiceCivil() {
-			@Override
-			protected void init() {
-				final RegDate dateNaissance = date(2005, 3, 12);
-				MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertDate", "Jeroma", Sexe.FEMININ);
-				MockIndividu pere = addIndividu(noIndPere, date(1974, 8, 16), "RuppertDate", "PereJeroma", Sexe.MASCULIN);
-				MockIndividu mere = addIndividu(noIndMere, date(1978, 10, 19), "RuppertDate", "MereJeroma", Sexe.FEMININ);
-				addLiensFiliation(pere, fille, dateNaissance, null);
-				addLiensFiliation(mere, fille, dateNaissance, null);
-
-
-			}
-		});
 
 		// on crée un habitant vaudois ordinaire
-		doInNewTransaction(new TxCallback<Object>() {
+		final Ids ids = doInNewTransaction(new TxCallback<Ids>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Ids execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique ppFille = addHabitant(noIndFille);
 				final PersonnePhysique ppPere = addHabitant(noIndPere);
 				final PersonnePhysique ppMere = addHabitant(noIndMere);
-				ids.idFille = ppFille.getId();
-				ids.idPere = ppPere.getId();
-				ids.idMere = ppMere.getId();
+				addFiliation(ppFille, ppPere, dateNaissance, null);
+				addFiliation(ppFille, ppMere, dateNaissance, null);
+
 				final EnsembleTiersCouple ensembleTiersCouplePere = addEnsembleTiersCouple(ppPere,null,date(2010, 1, 5),null);
-				MenageCommun menageCommunPere = ensembleTiersCouplePere.getMenage();
-				ids.idMenagePere = menageCommunPere.getId();
+				final MenageCommun menageCommunPere = ensembleTiersCouplePere.getMenage();
 				addForPrincipal(menageCommunPere, date(2010, 1, 5), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Moudon);
 
 				final EnsembleTiersCouple ensembleTiersCoupleMere = addEnsembleTiersCouple(ppMere,null,date(2009, 1, 5),null);
-				MenageCommun menageCommunMere = ensembleTiersCoupleMere.getMenage();
+				final MenageCommun menageCommunMere = ensembleTiersCoupleMere.getMenage();
 				addForPrincipal(menageCommunMere, date(2009, 1, 5), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
+
+				final Ids ids = new Ids();
+				ids.idFille = ppFille.getId();
+				ids.idPere = ppPere.getId();
+				ids.idMere = ppMere.getId();
+				ids.idMenagePere = menageCommunPere.getId();
 				ids.idMenageMere = menageCommunMere.getId();
-				return null;
+				return ids;
 			}
 		});
 		final RegDate dateDemande = RegDate.get(2012,2,2);
@@ -495,6 +500,19 @@ public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTes
 		final long noIndFille = 1244;
 		final long noIndPere = 1245;
 		final long noIndMere = 1246;
+		final RegDate dateNaissance = date(2005, 3, 12);
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertDate", "Jeroma", Sexe.FEMININ);
+				final MockIndividu pere = addIndividu(noIndPere, date(1974, 8, 16), "RuppertDate", "PereJeroma", Sexe.MASCULIN);
+				final MockIndividu mere = addIndividu(noIndMere, date(1978, 10, 19), "RuppertDate", "MereJeroma", Sexe.FEMININ);
+				addLienVersParent(fille, pere, dateNaissance, null);
+				addLienVersParent(fille, mere, dateNaissance, null);
+			}
+		});
+
 		class Ids {
 			Long idFille;
 			Long idPere;
@@ -502,38 +520,27 @@ public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTes
 			Long idMenage;
 
 		}
-		final Ids ids = new Ids();
-
-		serviceCivil.setUp(new MockServiceCivil() {
-			@Override
-			protected void init() {
-				final RegDate dateNaissance = date(2005, 3, 12);
-				MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertDate", "Jeroma", Sexe.FEMININ);
-				MockIndividu pere = addIndividu(noIndPere, date(1974, 8, 16), "RuppertDate", "PereJeroma", Sexe.MASCULIN);
-				MockIndividu mere = addIndividu(noIndMere, date(1978, 10, 19), "RuppertDate", "MereJeroma", Sexe.FEMININ);
-				addLiensFiliation(pere, fille, dateNaissance, null);
-				addLiensFiliation(mere, fille, dateNaissance, null);
-
-
-			}
-		});
 
 		// on crée un habitant vaudois ordinaire
-		doInNewTransaction(new TxCallback<Object>() {
+		final Ids ids = doInNewTransaction(new TxCallback<Ids>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Ids execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique ppFille = addHabitant(noIndFille);
 				final PersonnePhysique ppPere = addHabitant(noIndPere);
 				final PersonnePhysique ppMere = addHabitant(noIndMere);
+				addFiliation(ppFille, ppPere, dateNaissance, null);
+				addFiliation(ppFille, ppMere, dateNaissance, null);
+
+				final EnsembleTiersCouple ensembleTiersCouple = addEnsembleTiersCouple(ppPere,ppMere,date(2006,7,8),null);
+				final MenageCommun menageCommun = ensembleTiersCouple.getMenage();
+				addForPrincipal(menageCommun, date(2006, 7,8), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, date(2012,2,1),MotifFor.DEPART_HC,MockCommune.Moudon);
+
+				final Ids ids = new Ids();
 				ids.idFille = ppFille.getId();
 				ids.idPere = ppPere.getId();
 				ids.idMere = ppMere.getId();
-				final EnsembleTiersCouple ensembleTiersCouple = addEnsembleTiersCouple(ppPere,ppMere,date(2006,7,8),null);
-				MenageCommun menageCommun = ensembleTiersCouple.getMenage();
 				ids.idMenage = menageCommun.getId();
-				addForPrincipal(menageCommun, date(2006, 7,8), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, date(2012,2,1),MotifFor.DEPART_HC,MockCommune.Moudon);
-
-				return null;
+				return ids;
 			}
 		});
 		final RegDate dateDemande = RegDate.get(2012,2,2);
@@ -554,6 +561,19 @@ public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTes
 		final long noIndFille = 1244;
 		final long noIndPere = 1245;
 		final long noIndMere = 1246;
+		final RegDate dateNaissance = date(2005, 3, 12);
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertDate", "Jeroma", Sexe.FEMININ);
+				final MockIndividu pere = addIndividu(noIndPere, date(1974, 8, 16), "RuppertDate", "PereJeroma", Sexe.MASCULIN);
+				final MockIndividu mere = addIndividu(noIndMere, date(1978, 10, 19), "RuppertDate", "MereJeroma", Sexe.FEMININ);
+				addLienVersParent(fille, pere, dateNaissance, null);
+				addLienVersParent(fille, mere, dateNaissance, null);
+			}
+		});
+
 		class Ids {
 			Long idFille;
 			Long idPere;
@@ -561,38 +581,26 @@ public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTes
 			Long idMenage;
 
 		}
-		final Ids ids = new Ids();
-
-		serviceCivil.setUp(new MockServiceCivil() {
-			@Override
-			protected void init() {
-				final RegDate dateNaissance = date(2005, 3, 12);
-				MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertDate", "Jeroma", Sexe.FEMININ);
-				MockIndividu pere = addIndividu(noIndPere, date(1974, 8, 16), "RuppertDate", "PereJeroma", Sexe.MASCULIN);
-				MockIndividu mere = addIndividu(noIndMere, date(1978, 10, 19), "RuppertDate", "MereJeroma", Sexe.FEMININ);
-				addLiensFiliation(pere, fille, dateNaissance, null);
-				addLiensFiliation(mere, fille, dateNaissance, null);
-
-
-			}
-		});
-
 		// on crée un habitant vaudois ordinaire
-		doInNewTransaction(new TxCallback<Object>() {
+		final Ids ids = doInNewTransaction(new TxCallback<Ids>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Ids execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique ppFille = addHabitant(noIndFille);
 				final PersonnePhysique ppPere = addHabitant(noIndPere);
 				final PersonnePhysique ppMere = addHabitant(noIndMere);
+				addFiliation(ppFille, ppPere, dateNaissance, null);
+				addFiliation(ppFille, ppMere, dateNaissance, null);
+
+				final EnsembleTiersCouple ensembleTiersCouple = addEnsembleTiersCouple(ppPere,ppMere,date(2006,7,8),null);
+				final MenageCommun menageCommun = ensembleTiersCouple.getMenage();
+				addForPrincipal(menageCommun, date(2006, 7,8), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Moudon);
+
+				final Ids ids = new Ids();
 				ids.idFille = ppFille.getId();
 				ids.idPere = ppPere.getId();
 				ids.idMere = ppMere.getId();
-				final EnsembleTiersCouple ensembleTiersCouple = addEnsembleTiersCouple(ppPere,ppMere,date(2006,7,8),null);
-				MenageCommun menageCommun = ensembleTiersCouple.getMenage();
 				ids.idMenage = menageCommun.getId();
-				addForPrincipal(menageCommun, date(2006, 7,8), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Moudon);
-
-				return null;
+				return ids;
 			}
 		});
 		final RegDate dateDemande = RegDate.get(2012,2,2);

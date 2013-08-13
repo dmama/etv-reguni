@@ -37,11 +37,6 @@ public interface Individu extends EntiteCivile {
 	String getNomNaissance();
 
 	/**
-	 * @return la liste des adoptions et reconnaissances de l'individu.
-	 */
-	Collection<AdoptionReconnaissance> getAdoptionsReconnaissances();
-
-	/**
 	 * @return la date de décès de l'individu.
 	 */
 	RegDate getDateDeces();
@@ -63,11 +58,6 @@ public interface Individu extends EntiteCivile {
 	 * @return <code>true</code> si l'individu est encore mineur à la date donnée, <code>false</code> s'il est déjà majeur (ou si sa date de naissance est inconnue)
 	 */
 	boolean isMineur(RegDate date);
-
-	/**
-	 * @return la liste des enfants de l'individu.
-	 */
-	Collection<RelationVersIndividu> getEnfants();
 
 	/**
 	 * @return la liste des états civils de l'individu.

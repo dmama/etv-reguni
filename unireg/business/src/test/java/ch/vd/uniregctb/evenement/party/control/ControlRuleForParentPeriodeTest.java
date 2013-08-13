@@ -55,6 +55,7 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 	public void testCheckTiersWithParentNonAsujetti() throws Exception {
 		final long noIndFille = 1244;
 		final long noIndParent = 1245;
+		final RegDate dateNaissance = date(2005, 3, 12);
 		class Ids {
 			Long idFille;
 			Long idPere;
@@ -64,12 +65,9 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
-				final RegDate dateNaissance = date(2005, 3, 12);
-				MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertPeriode", "Jeroma", Sexe.FEMININ);
-				MockIndividu parent = addIndividu(noIndParent, date(1974, 8, 16), "RuppertPeriode", "PereJeroma", Sexe.MASCULIN);
-				addLiensFiliation(parent, fille, dateNaissance, null);
-
-
+				final MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertPeriode", "Jeroma", Sexe.FEMININ);
+				final MockIndividu parent = addIndividu(noIndParent, date(1974, 8, 16), "RuppertPeriode", "PereJeroma", Sexe.MASCULIN);
+				addLiensFiliation(fille, parent, null, dateNaissance, null);
 			}
 		});
 
@@ -81,7 +79,7 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 				final PersonnePhysique ppParent = addHabitant(noIndParent);
 				ids.idFille = ppFille.getId();
 				ids.idPere = ppParent.getId();
-
+				addFiliation(ppFille, ppParent, dateNaissance, null);
 				return null;
 			}
 		});
@@ -105,6 +103,7 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 	public void testCheckTiersWithParentAsujetti() throws Exception {
 		final long noIndFille = 1244;
 		final long noIndParent = 1245;
+		final RegDate dateNaissance = date(2005, 3, 12);
 		class Ids {
 			Long idFille;
 			Long idPere;
@@ -114,12 +113,9 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
-				final RegDate dateNaissance = date(2005, 3, 12);
-				MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertPeriode", "Jeroma", Sexe.FEMININ);
-				MockIndividu parent = addIndividu(noIndParent, date(1974, 8, 16), "RuppertPeriode", "PereJeroma", Sexe.MASCULIN);
-				addLiensFiliation(parent, fille, dateNaissance, null);
-
-
+				final MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertPeriode", "Jeroma", Sexe.FEMININ);
+				final MockIndividu parent = addIndividu(noIndParent, date(1974, 8, 16), "RuppertPeriode", "PereJeroma", Sexe.MASCULIN);
+				addLiensFiliation(fille, parent, null, dateNaissance, null);
 			}
 		});
 
@@ -132,7 +128,7 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 				ids.idFille = ppFille.getId();
 				ids.idPere = ppParent.getId();
 				addForPrincipal(ppParent, date(2000, 1, 5), MotifFor.ARRIVEE_HS, MockCommune.Moudon);
-
+				addFiliation(ppFille, ppParent, dateNaissance, null);
 				return null;
 			}
 		});
@@ -155,6 +151,7 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 	public void testCheckTiersWithParentWithMenageCommunNonAsujetti() throws Exception {
 		final long noIndFille = 1244;
 		final long noIndParent = 1245;
+		final RegDate dateNaissance = date(2005, 3, 12);
 		class Ids {
 			Long idFille;
 			Long idPere;
@@ -165,12 +162,9 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
-				final RegDate dateNaissance = date(2005, 3, 12);
-				MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertPeriode", "Jeroma", Sexe.FEMININ);
-				MockIndividu parent = addIndividu(noIndParent, date(1974, 8, 16), "RuppertPeriode", "PereJeroma", Sexe.MASCULIN);
-				addLiensFiliation(parent, fille, dateNaissance, null);
-
-
+				final MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertPeriode", "Jeroma", Sexe.FEMININ);
+				final MockIndividu parent = addIndividu(noIndParent, date(1974, 8, 16), "RuppertPeriode", "PereJeroma", Sexe.MASCULIN);
+				addLiensFiliation(fille, parent, null, dateNaissance, null);
 			}
 		});
 
@@ -182,8 +176,9 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 				final PersonnePhysique ppPere = addHabitant(noIndParent);
 				ids.idFille = ppFille.getId();
 				ids.idPere = ppPere.getId();
+				addFiliation(ppFille, ppPere, dateNaissance, null);
 
-				EnsembleTiersCouple ensemble = addEnsembleTiersCouple(ppPere, null, date(2000, 5, 5), null);
+				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(ppPere, null, date(2000, 5, 5), null);
 				final MenageCommun menage = ensemble.getMenage();
 				ids.idMenagePere = menage.getId();
 
@@ -210,6 +205,7 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 	public void testCheckTiersWithParentWithMenageCommunAsujetti() throws Exception {
 		final long noIndFille = 1244;
 		final long noIndParent = 1245;
+		final RegDate dateNaissance = date(2005, 3, 12);
 		class Ids {
 			Long idFille;
 			Long idPere;
@@ -220,12 +216,9 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
-				final RegDate dateNaissance = date(2005, 3, 12);
-				MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertPeriode", "Jeroma", Sexe.FEMININ);
-				MockIndividu parent = addIndividu(noIndParent, date(1974, 8, 16), "RuppertPeriode", "PereJeroma", Sexe.MASCULIN);
-				addLiensFiliation(parent, fille, dateNaissance, null);
-
-
+				final MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertPeriode", "Jeroma", Sexe.FEMININ);
+				final MockIndividu parent = addIndividu(noIndParent, date(1974, 8, 16), "RuppertPeriode", "PereJeroma", Sexe.MASCULIN);
+				addLiensFiliation(fille, parent, null, dateNaissance, null);
 			}
 		});
 
@@ -237,8 +230,9 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 				final PersonnePhysique ppPere = addHabitant(noIndParent);
 				ids.idFille = ppFille.getId();
 				ids.idPere = ppPere.getId();
+				addFiliation(ppFille, ppPere, dateNaissance, null);
 
-				EnsembleTiersCouple ensemble = addEnsembleTiersCouple(ppPere, null, date(2000, 1, 5), null);
+				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(ppPere, null, date(2000, 1, 5), null);
 				final MenageCommun menage = ensemble.getMenage();
 				ids.idMenagePere = menage.getId();
 				addForPrincipal(menage, date(2000, 1, 5), MotifFor.ARRIVEE_HS, MockCommune.Moudon);
@@ -258,7 +252,6 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 		});
 
 		assertTiersAssujetti(ids.idMenagePere, result);
-
 	}
 
 	@Test
@@ -266,6 +259,7 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 		final long noIndFille = 1244;
 		final long noIndPere = 1245;
 		final long noIndMere = 1246;
+		final RegDate dateNaissance = date(2005, 3, 12);
 		class Ids {
 			Long idFille;
 			Long idPere;
@@ -277,14 +271,10 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
-				final RegDate dateNaissance = date(2005, 3, 12);
-				MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertPeriode", "Jeroma", Sexe.FEMININ);
-				MockIndividu pere = addIndividu(noIndPere, date(1974, 8, 16), "RuppertPeriode", "PereJeroma", Sexe.MASCULIN);
-				MockIndividu mere = addIndividu(noIndMere, date(1978, 10, 19), "RuppertPeriode", "MereJeroma", Sexe.FEMININ);
-				addLiensFiliation(pere, fille, dateNaissance, null);
-				addLiensFiliation(mere, fille, dateNaissance, null);
-
-
+				final MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertPeriode", "Jeroma", Sexe.FEMININ);
+				final MockIndividu pere = addIndividu(noIndPere, date(1974, 8, 16), "RuppertPeriode", "PereJeroma", Sexe.MASCULIN);
+				final MockIndividu mere = addIndividu(noIndMere, date(1978, 10, 19), "RuppertPeriode", "MereJeroma", Sexe.FEMININ);
+				addLiensFiliation(fille, pere, mere, dateNaissance, null);
 			}
 		});
 
@@ -295,6 +285,9 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 				final PersonnePhysique ppFille = addHabitant(noIndFille);
 				final PersonnePhysique ppPere = addHabitant(noIndPere);
 				final PersonnePhysique ppMere = addHabitant(noIndMere);
+				addFiliation(ppFille, ppPere, dateNaissance, null);
+				addFiliation(ppFille, ppMere, dateNaissance, null);
+
 				ids.idFille = ppFille.getId();
 				ids.idPere = ppPere.getId();
 				ids.idMere = ppMere.getId();
@@ -312,7 +305,6 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 		});
 
 		assertDeuxParentsNonAssujettis(ids.idPere, ids.idMere, result);
-
 	}
 
 	@Test
@@ -320,6 +312,7 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 		final long noIndFille = 1244;
 		final long noIndPere = 1245;
 		final long noIndMere = 1246;
+		final RegDate dateNaissance = date(2005, 3, 12);
 		class Ids {
 			Long idFille;
 			Long idPere;
@@ -332,14 +325,10 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
-				final RegDate dateNaissance = date(2005, 3, 12);
-				MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertPeriode", "Jeroma", Sexe.FEMININ);
-				MockIndividu pere = addIndividu(noIndPere, date(1974, 8, 16), "RuppertPeriode", "PereJeroma", Sexe.MASCULIN);
-				MockIndividu mere = addIndividu(noIndMere, date(1978, 10, 19), "RuppertPeriode", "MereJeroma", Sexe.FEMININ);
-				addLiensFiliation(pere, fille, dateNaissance, null);
-				addLiensFiliation(mere, fille, dateNaissance, null);
-
-
+				final MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertPeriode", "Jeroma", Sexe.FEMININ);
+				final MockIndividu pere = addIndividu(noIndPere, date(1974, 8, 16), "RuppertPeriode", "PereJeroma", Sexe.MASCULIN);
+				final MockIndividu mere = addIndividu(noIndMere, date(1978, 10, 19), "RuppertPeriode", "MereJeroma", Sexe.FEMININ);
+				addLiensFiliation(fille, pere, mere, dateNaissance, null);
 			}
 		});
 
@@ -350,11 +339,14 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 				final PersonnePhysique ppFille = addHabitant(noIndFille);
 				final PersonnePhysique ppPere = addHabitant(noIndPere);
 				final PersonnePhysique ppMere = addHabitant(noIndMere);
+				addFiliation(ppFille, ppPere, dateNaissance, null);
+				addFiliation(ppFille, ppMere, dateNaissance, null);
+
 				ids.idFille = ppFille.getId();
 				ids.idPere = ppPere.getId();
 				ids.idMere = ppMere.getId();
 				final EnsembleTiersCouple ensembleTiersCouplePere = addEnsembleTiersCouple(ppPere, null, date(2006, 7, 8), null);
-				MenageCommun menageCommunPere = ensembleTiersCouplePere.getMenage();
+				final MenageCommun menageCommunPere = ensembleTiersCouplePere.getMenage();
 				ids.idMenagePere = menageCommunPere.getId();
 				return null;
 			}
@@ -378,6 +370,7 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 		final long noIndFille = 1244;
 		final long noIndPere = 1245;
 		final long noIndMere = 1246;
+		final RegDate dateNaissance = date(2005, 3, 12);
 		class Ids {
 			Long idFille;
 			Long idPere;
@@ -391,14 +384,10 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
-				final RegDate dateNaissance = date(2005, 3, 12);
-				MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertPeriode", "Jeroma", Sexe.FEMININ);
-				MockIndividu pere = addIndividu(noIndPere, date(1974, 8, 16), "RuppertPeriode", "PereJeroma", Sexe.MASCULIN);
-				MockIndividu mere = addIndividu(noIndMere, date(1978, 10, 19), "RuppertPeriode", "MereJeroma", Sexe.FEMININ);
-				addLiensFiliation(pere, fille, dateNaissance, null);
-				addLiensFiliation(mere, fille, dateNaissance, null);
-
-
+				final MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertPeriode", "Jeroma", Sexe.FEMININ);
+				final MockIndividu pere = addIndividu(noIndPere, date(1974, 8, 16), "RuppertPeriode", "PereJeroma", Sexe.MASCULIN);
+				final MockIndividu mere = addIndividu(noIndMere, date(1978, 10, 19), "RuppertPeriode", "MereJeroma", Sexe.FEMININ);
+				addLiensFiliation(fille, pere, mere, dateNaissance, null);
 			}
 		});
 
@@ -409,15 +398,18 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 				final PersonnePhysique ppFille = addHabitant(noIndFille);
 				final PersonnePhysique ppPere = addHabitant(noIndPere);
 				final PersonnePhysique ppMere = addHabitant(noIndMere);
+				addFiliation(ppFille, ppPere, dateNaissance, null);
+				addFiliation(ppFille, ppMere, dateNaissance, null);
 				ids.idFille = ppFille.getId();
 				ids.idPere = ppPere.getId();
 				ids.idMere = ppMere.getId();
+
 				final EnsembleTiersCouple ensembleTiersCouplePere = addEnsembleTiersCouple(ppPere, null, date(2006, 7, 8), null);
-				MenageCommun menageCommunPere = ensembleTiersCouplePere.getMenage();
+				final MenageCommun menageCommunPere = ensembleTiersCouplePere.getMenage();
 				ids.idMenagePere = menageCommunPere.getId();
 
 				final EnsembleTiersCouple ensembleTiersCoupleMere = addEnsembleTiersCouple(ppMere, null, date(2006, 7, 8), null);
-				MenageCommun menageCommunMere = ensembleTiersCoupleMere.getMenage();
+				final MenageCommun menageCommunMere = ensembleTiersCoupleMere.getMenage();
 				ids.idMenageMere = menageCommunMere.getId();
 				return null;
 			}
@@ -440,6 +432,7 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 		final long noIndFille = 1244;
 		final long noIndPere = 1245;
 		final long noIndMere = 1246;
+		final RegDate dateNaissance = date(2005, 3, 12);
 		class Ids {
 			Long idFille;
 			Long idPere;
@@ -453,14 +446,10 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
-				final RegDate dateNaissance = date(2005, 3, 12);
-				MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertPeriode", "Jeroma", Sexe.FEMININ);
-				MockIndividu pere = addIndividu(noIndPere, date(1974, 8, 16), "RuppertPeriode", "PereJeroma", Sexe.MASCULIN);
-				MockIndividu mere = addIndividu(noIndMere, date(1978, 10, 19), "RuppertPeriode", "MereJeroma", Sexe.FEMININ);
-				addLiensFiliation(pere, fille, dateNaissance, null);
-				addLiensFiliation(mere, fille, dateNaissance, null);
-
-
+				final MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertPeriode", "Jeroma", Sexe.FEMININ);
+				final MockIndividu pere = addIndividu(noIndPere, date(1974, 8, 16), "RuppertPeriode", "PereJeroma", Sexe.MASCULIN);
+				final MockIndividu mere = addIndividu(noIndMere, date(1978, 10, 19), "RuppertPeriode", "MereJeroma", Sexe.FEMININ);
+				addLiensFiliation(fille, pere, mere, dateNaissance, null);
 			}
 		});
 
@@ -471,16 +460,19 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 				final PersonnePhysique ppFille = addHabitant(noIndFille);
 				final PersonnePhysique ppPere = addHabitant(noIndPere);
 				final PersonnePhysique ppMere = addHabitant(noIndMere);
+				addFiliation(ppFille, ppPere, dateNaissance, null);
+				addFiliation(ppFille, ppMere, dateNaissance, null);
 				ids.idFille = ppFille.getId();
 				ids.idPere = ppPere.getId();
 				ids.idMere = ppMere.getId();
+
 				final EnsembleTiersCouple ensembleTiersCouplePere = addEnsembleTiersCouple(ppPere, null, date(2010, 1, 5), null);
-				MenageCommun menageCommunPere = ensembleTiersCouplePere.getMenage();
+				final MenageCommun menageCommunPere = ensembleTiersCouplePere.getMenage();
 				ids.idMenagePere = menageCommunPere.getId();
 				addForPrincipal(menageCommunPere, date(2010, 1, 5), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Moudon);
 
 				final EnsembleTiersCouple ensembleTiersCoupleMere = addEnsembleTiersCouple(ppMere, null, date(2009, 1, 5), null);
-				MenageCommun menageCommunMere = ensembleTiersCoupleMere.getMenage();
+				final MenageCommun menageCommunMere = ensembleTiersCoupleMere.getMenage();
 				addForPrincipal(menageCommunMere, date(2009, 1, 5), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
 				ids.idMenageMere = menageCommunMere.getId();
 				return null;
@@ -505,6 +497,7 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 		final long noIndFille = 1244;
 		final long noIndPere = 1245;
 		final long noIndMere = 1246;
+		final RegDate dateNaissance = date(2005, 3, 12);
 		class Ids {
 			Long idFille;
 			Long idPere;
@@ -517,14 +510,10 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
-				final RegDate dateNaissance = date(2005, 3, 12);
-				MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertPeriode", "Jeroma", Sexe.FEMININ);
-				MockIndividu pere = addIndividu(noIndPere, date(1974, 8, 16), "RuppertPeriode", "PereJeroma", Sexe.MASCULIN);
-				MockIndividu mere = addIndividu(noIndMere, date(1978, 10, 19), "RuppertPeriode", "MereJeroma", Sexe.FEMININ);
-				addLiensFiliation(pere, fille, dateNaissance, null);
-				addLiensFiliation(mere, fille, dateNaissance, null);
-
-
+				final MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertPeriode", "Jeroma", Sexe.FEMININ);
+				final MockIndividu pere = addIndividu(noIndPere, date(1974, 8, 16), "RuppertPeriode", "PereJeroma", Sexe.MASCULIN);
+				final MockIndividu mere = addIndividu(noIndMere, date(1978, 10, 19), "RuppertPeriode", "MereJeroma", Sexe.FEMININ);
+				addLiensFiliation(fille, pere, mere, dateNaissance, null);
 			}
 		});
 
@@ -535,11 +524,14 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 				final PersonnePhysique ppFille = addHabitant(noIndFille);
 				final PersonnePhysique ppPere = addHabitant(noIndPere);
 				final PersonnePhysique ppMere = addHabitant(noIndMere);
+				addFiliation(ppFille, ppMere, dateNaissance, null);
+				addFiliation(ppFille, ppPere, dateNaissance, null);
 				ids.idFille = ppFille.getId();
 				ids.idPere = ppPere.getId();
 				ids.idMere = ppMere.getId();
+
 				final EnsembleTiersCouple ensembleTiersCouple = addEnsembleTiersCouple(ppPere, ppMere, date(2006, 7, 8), null);
-				MenageCommun menageCommun = ensembleTiersCouple.getMenage();
+				final MenageCommun menageCommun = ensembleTiersCouple.getMenage();
 				ids.idMenage = menageCommun.getId();
 				addForPrincipal(menageCommun, date(2006, 7, 8), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, date(2012, 2, 1), MotifFor.DEPART_HC, MockCommune.Moudon);
 
@@ -564,6 +556,7 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 		final long noIndFille = 1244;
 		final long noIndPere = 1245;
 		final long noIndMere = 1246;
+		final RegDate dateNaissance = date(2005, 3, 12);
 		class Ids {
 			Long idFille;
 			Long idPere;
@@ -576,14 +569,10 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
-				final RegDate dateNaissance = date(2005, 3, 12);
-				MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertPeriode", "Jeroma", Sexe.FEMININ);
-				MockIndividu pere = addIndividu(noIndPere, date(1974, 8, 16), "RuppertPeriode", "PereJeroma", Sexe.MASCULIN);
-				MockIndividu mere = addIndividu(noIndMere, date(1978, 10, 19), "RuppertPeriode", "MereJeroma", Sexe.FEMININ);
-				addLiensFiliation(pere, fille, dateNaissance, null);
-				addLiensFiliation(mere, fille, dateNaissance, null);
-
-
+				final MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertPeriode", "Jeroma", Sexe.FEMININ);
+				final MockIndividu pere = addIndividu(noIndPere, date(1974, 8, 16), "RuppertPeriode", "PereJeroma", Sexe.MASCULIN);
+				final MockIndividu mere = addIndividu(noIndMere, date(1978, 10, 19), "RuppertPeriode", "MereJeroma", Sexe.FEMININ);
+				addLiensFiliation(fille, pere, mere, dateNaissance, null);
 			}
 		});
 
@@ -594,11 +583,14 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 				final PersonnePhysique ppFille = addHabitant(noIndFille);
 				final PersonnePhysique ppPere = addHabitant(noIndPere);
 				final PersonnePhysique ppMere = addHabitant(noIndMere);
+				addFiliation(ppFille, ppPere, dateNaissance, null);
+				addFiliation(ppFille, ppMere, dateNaissance, null);
 				ids.idFille = ppFille.getId();
 				ids.idPere = ppPere.getId();
 				ids.idMere = ppMere.getId();
+
 				final EnsembleTiersCouple ensembleTiersCouple = addEnsembleTiersCouple(ppPere, ppMere, date(2006, 7, 8), null);
-				MenageCommun menageCommun = ensembleTiersCouple.getMenage();
+				final MenageCommun menageCommun = ensembleTiersCouple.getMenage();
 				ids.idMenage = menageCommun.getId();
 				addForPrincipal(menageCommun, date(2006, 7, 8), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Moudon);
 

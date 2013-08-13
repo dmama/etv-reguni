@@ -10,8 +10,6 @@ import org.springframework.transaction.support.TransactionCallback;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.cache.ServiceCivilCache;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
-import ch.vd.unireg.interfaces.civil.data.RelationVersIndividuImpl;
-import ch.vd.unireg.interfaces.civil.data.TypeRelationVersIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.uniregctb.data.DataEventService;
@@ -127,12 +125,8 @@ public class TranslationStrategyWithRelationshipCacheCleanupTest extends Abstrac
 				final MockIndividu mere = addIndividu(noIndividuMere, dateNaissanceMere, "Tartempion", "Rita", Sexe.FEMININ);
 				final MockIndividu fils = addIndividu(noIndividuFils, dateNaissanceFils, "Tartempion", "Junior", Sexe.MASCULIN);
 				final MockIndividu grandPere = addIndividu(noIndividuGrandPere, dateNaissanceGrandPere, "Tartempion", "Senior", Sexe.MASCULIN);
-				pere.getEnfants().add(new RelationVersIndividuImpl(noIndividuFils, TypeRelationVersIndividu.FILS, dateNaissanceFils, null));
-				pere.getParents().add(new RelationVersIndividuImpl(noIndividuGrandPere, TypeRelationVersIndividu.PERE, dateNaissancePere, null));
-				fils.getParents().add(new RelationVersIndividuImpl(noIndividuPere, TypeRelationVersIndividu.PERE, dateNaissanceFils, null));
-				fils.getParents().add(new RelationVersIndividuImpl(noIndividuMere, TypeRelationVersIndividu.MERE, dateNaissanceFils, null));
-				mere.getEnfants().add(new RelationVersIndividuImpl(noIndividuFils, TypeRelationVersIndividu.FILS, dateNaissanceFils,  null));
-				grandPere.getEnfants().add(new RelationVersIndividuImpl(noIndividuPere, TypeRelationVersIndividu.FILS, dateNaissancePere, null));
+				addLiensFiliation(fils, pere, mere, dateNaissanceFils, null);
+				addLiensFiliation(pere, grandPere, null, dateNaissancePere, null);
 				marieIndividus(pere, mere, dateMariage);
 			}
 		});
@@ -151,10 +145,10 @@ public class TranslationStrategyWithRelationshipCacheCleanupTest extends Abstrac
 			});
 
 			// remplissons le cache avec toutes les données
-			serviceCivil.getIndividu(noIndividuFils, null, AttributeIndividu.PARENTS, AttributeIndividu.ENFANTS, AttributeIndividu.CONJOINTS);
-			serviceCivil.getIndividu(noIndividuMere, null, AttributeIndividu.PARENTS, AttributeIndividu.ENFANTS, AttributeIndividu.CONJOINTS);
-			serviceCivil.getIndividu(noIndividuPere, null, AttributeIndividu.PARENTS, AttributeIndividu.ENFANTS, AttributeIndividu.CONJOINTS);
-			serviceCivil.getIndividu(noIndividuGrandPere, null, AttributeIndividu.PARENTS, AttributeIndividu.ENFANTS, AttributeIndividu.CONJOINTS);
+			serviceCivil.getIndividu(noIndividuFils, null, AttributeIndividu.PARENTS, AttributeIndividu.CONJOINTS);
+			serviceCivil.getIndividu(noIndividuMere, null, AttributeIndividu.PARENTS, AttributeIndividu.CONJOINTS);
+			serviceCivil.getIndividu(noIndividuPere, null, AttributeIndividu.PARENTS, AttributeIndividu.CONJOINTS);
+			serviceCivil.getIndividu(noIndividuGrandPere, null, AttributeIndividu.PARENTS, AttributeIndividu.CONJOINTS);
 
 			// modification des données sous-jacentes au cache
 			doModificationIndividu(noIndividuFils, new IndividuModification() {

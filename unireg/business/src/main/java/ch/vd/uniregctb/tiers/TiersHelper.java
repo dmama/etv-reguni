@@ -257,10 +257,9 @@ public abstract class TiersHelper {
 	 * @return l'autre parent de l'enfant
 	 */
 	public static PersonnePhysique getAutreParent(PersonnePhysique enfant, PersonnePhysique parent, RegDate dateValidite, TiersService tiersService) {
-		List<PersonnePhysique> lesParents = tiersService.getParents(enfant, dateValidite);
+		final List<PersonnePhysique> lesParents = tiersService.getParents(enfant, dateValidite);
 		if (lesParents.size() > 1) {
-			final PersonnePhysique autreParent = !parent.getNumero().equals(lesParents.get(0).getNumero()) ? lesParents.get(0) : lesParents.get(1);
-			return autreParent;
+			return !parent.getNumero().equals(lesParents.get(0).getNumero()) ? lesParents.get(0) : lesParents.get(1);
 		}
 		return null;
 

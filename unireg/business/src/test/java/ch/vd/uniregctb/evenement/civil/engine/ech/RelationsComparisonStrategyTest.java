@@ -54,10 +54,6 @@ public class RelationsComparisonStrategyTest extends AbstractIndividuComparisonS
 		individu.getParents().add(buildRelation(range, noParent, typeRelation));
 	}
 
-	private static void addRelationVersEnfant(MockIndividu individu, DateRange range, long noEnfant, TypeRelationVersIndividu typeRelation) {
-		individu.getEnfants().add(buildRelation(range, noEnfant, typeRelation));
-	}
-
 	private static void addRelationVersConjoint(MockIndividu individu, DateRange range, long noConjoint, TypeRelationVersIndividu typeRelation) {
 		individu.getConjoints().add(buildRelation(range, noConjoint, typeRelation));
 	}
@@ -70,92 +66,6 @@ public class RelationsComparisonStrategyTest extends AbstractIndividuComparisonS
 		final long idEvt2 = 567437834342L;
 
 		setupCivil(noIndividu, idEvt1, null, idEvt2, null);
-		assertNeutre(strategy, idEvt1, idEvt2);
-	}
-
-	@Test(timeout = 10000L)
-	public void testAvecMemesEnfants() throws Exception {
-
-		final long noIndividu = 6374237L;
-		final long noEnfant1 = 43678454L;
-		final long noEnfant2 = 5647347L;
-		final DateRange rangeEnfant1 = new DateRangeHelper.Range(date(2000, 1, 1), null);
-		final DateRange rangeEnfant2 = new DateRangeHelper.Range(date(2001, 1, 3), date(2001, 1, 6));
-		final long idEvt1 = 4367742354L;
-		final long idEvt2 = 567437834342L;
-
-		setupCivil(noIndividu, idEvt1, new RelationBuilder() {
-			           @Override
-			           public void buildRelations(MockIndividu individu) {
-				           addRelationVersEnfant(individu, rangeEnfant1, noEnfant1, TypeRelationVersIndividu.FILS);
-				           addRelationVersEnfant(individu, rangeEnfant2, noEnfant2, TypeRelationVersIndividu.FILS);
-			           }
-		           }, idEvt2, new RelationBuilder() {
-			           @Override
-			           public void buildRelations(MockIndividu individu) {
-				           addRelationVersEnfant(individu, rangeEnfant1, noEnfant1, TypeRelationVersIndividu.FILS);
-				           addRelationVersEnfant(individu, rangeEnfant2, noEnfant2, TypeRelationVersIndividu.FILS);
-			           }
-		           }
-		);
-
-		assertNeutre(strategy, idEvt1, idEvt2);
-	}
-
-	@Test(timeout = 10000L)
-	public void testAvecMemesEnfantsMelanges() throws Exception {
-
-		final long noIndividu = 6374237L;
-		final long noEnfant1 = 43678454L;
-		final long noEnfant2 = 5647347L;
-		final DateRange rangeEnfant1 = new DateRangeHelper.Range(date(2000, 1, 1), null);
-		final DateRange rangeEnfant2 = new DateRangeHelper.Range(date(2001, 1, 3), date(2001, 1, 6));
-		final long idEvt1 = 4367742354L;
-		final long idEvt2 = 567437834342L;
-
-		setupCivil(noIndividu, idEvt1, new RelationBuilder() {
-			           @Override
-			           public void buildRelations(MockIndividu individu) {
-				           addRelationVersEnfant(individu, rangeEnfant1, noEnfant1, TypeRelationVersIndividu.FILS);
-				           addRelationVersEnfant(individu, rangeEnfant2, noEnfant2, TypeRelationVersIndividu.FILS);
-			           }
-		           }, idEvt2, new RelationBuilder() {
-			           @Override
-			           public void buildRelations(MockIndividu individu) {
-				           addRelationVersEnfant(individu, rangeEnfant2, noEnfant2, TypeRelationVersIndividu.FILS);
-				           addRelationVersEnfant(individu, rangeEnfant1, noEnfant1, TypeRelationVersIndividu.FILS);
-			           }
-		           }
-		);
-
-		assertNeutre(strategy, idEvt1, idEvt2);
-	}
-
-	@Test(timeout = 10000L)
-	public void testAvecMemesEnfantsEtMemesDatesMelanges() throws Exception {
-
-		final long noIndividu = 6374237L;
-		final long noEnfant1 = 43678454L;
-		final long noEnfant2 = 5647347L;
-		final DateRange range = new DateRangeHelper.Range(date(2000, 1, 1), null);
-		final long idEvt1 = 4367742354L;
-		final long idEvt2 = 567437834342L;
-
-		setupCivil(noIndividu, idEvt1, new RelationBuilder() {
-			           @Override
-			           public void buildRelations(MockIndividu individu) {
-				           addRelationVersEnfant(individu, range, noEnfant1, TypeRelationVersIndividu.FILS);
-				           addRelationVersEnfant(individu, range, noEnfant2, TypeRelationVersIndividu.FILS);
-			           }
-		           }, idEvt2, new RelationBuilder() {
-			           @Override
-			           public void buildRelations(MockIndividu individu) {
-				           addRelationVersEnfant(individu, range, noEnfant2, TypeRelationVersIndividu.FILS);
-				           addRelationVersEnfant(individu, range, noEnfant1, TypeRelationVersIndividu.FILS);
-			           }
-		           }
-		);
-
 		assertNeutre(strategy, idEvt1, idEvt2);
 	}
 
@@ -332,23 +242,6 @@ public class RelationsComparisonStrategyTest extends AbstractIndividuComparisonS
 	}
 
 	@Test(timeout = 10000L)
-	public void testApparitionEnfant() throws Exception {
-		final long noIndividu = 6374237L;
-		final long noEnfant = 43678454L;
-		final DateRange range = new DateRangeHelper.Range(date(2000, 1, 1), null);
-		final long idEvt1 = 4367742354L;
-		final long idEvt2 = 567437834342L;
-
-		setupCivil(noIndividu, idEvt1, null, idEvt2, new RelationBuilder() {
-			@Override
-			public void buildRelations(MockIndividu individu) {
-				addRelationVersEnfant(individu, range, noEnfant, TypeRelationVersIndividu.FILS);
-			}
-		});
-		assertNonNeutre(strategy, idEvt1, idEvt2, "relations (enfants (apparition))");
-	}
-
-	@Test(timeout = 10000L)
 	public void testApparitionParent() throws Exception {
 		final long noIndividu = 6374237L;
 		final long noParent = 43678454L;
@@ -383,23 +276,6 @@ public class RelationsComparisonStrategyTest extends AbstractIndividuComparisonS
 	}
 
 	@Test(timeout = 10000L)
-	public void testDisparitionEnfant() throws Exception {
-		final long noIndividu = 6374237L;
-		final long noEnfant = 43678454L;
-		final DateRange range = new DateRangeHelper.Range(date(2000, 1, 1), null);
-		final long idEvt1 = 4367742354L;
-		final long idEvt2 = 567437834342L;
-
-		setupCivil(noIndividu, idEvt1, new RelationBuilder() {
-			@Override
-			public void buildRelations(MockIndividu individu) {
-				addRelationVersEnfant(individu, range, noEnfant, TypeRelationVersIndividu.FILLE);
-			}
-		}, idEvt2, null);
-		assertNonNeutre(strategy, idEvt1, idEvt2, "relations (enfants (disparition))");
-	}
-
-	@Test(timeout = 10000L)
 	public void testDisparitionParent() throws Exception {
 		final long noIndividu = 6374237L;
 		final long noParent = 43678454L;
@@ -431,51 +307,6 @@ public class RelationsComparisonStrategyTest extends AbstractIndividuComparisonS
 			}
 		}, idEvt2, null);
 		assertNonNeutre(strategy, idEvt1, idEvt2, "relations (conjoints (disparition))");
-	}
-
-	@Test(timeout = 10000L)
-	public void testChangementEnfant() throws Exception {
-		final long noIndividu = 6374237L;
-		final long noEnfant1 = 43678454L;
-		final long noEnfant2 = 34674367L;
-		final DateRange range = new DateRangeHelper.Range(date(2000, 1, 1), null);
-		final long idEvt1 = 4367742354L;
-		final long idEvt2 = 567437834342L;
-
-		setupCivil(noIndividu, idEvt1, new RelationBuilder() {
-			           @Override
-			           public void buildRelations(MockIndividu individu) {
-				           addRelationVersEnfant(individu, range, noEnfant1, TypeRelationVersIndividu.FILS);
-			           }
-		           }, idEvt2, new RelationBuilder() {
-			           @Override
-			           public void buildRelations(MockIndividu individu) {
-				           addRelationVersEnfant(individu, range, noEnfant2, TypeRelationVersIndividu.FILS);
-			           }
-		           });
-		assertNonNeutre(strategy, idEvt1, idEvt2, "relations (enfants)");
-	}
-
-	@Test(timeout = 10000L)
-	public void testChangementSexeEnfant() throws Exception {
-		final long noIndividu = 6374237L;
-		final long noEnfant = 43678454L;
-		final DateRange range = new DateRangeHelper.Range(date(2000, 1, 1), null);
-		final long idEvt1 = 4367742354L;
-		final long idEvt2 = 567437834342L;
-
-		setupCivil(noIndividu, idEvt1, new RelationBuilder() {
-			           @Override
-			           public void buildRelations(MockIndividu individu) {
-				           addRelationVersEnfant(individu, range, noEnfant, TypeRelationVersIndividu.FILS);
-			           }
-		           }, idEvt2, new RelationBuilder() {
-			           @Override
-			           public void buildRelations(MockIndividu individu) {
-				           addRelationVersEnfant(individu, range, noEnfant, TypeRelationVersIndividu.FILLE);
-			           }
-		           });
-		assertNeutre(strategy, idEvt1, idEvt2);
 	}
 
 	@Test(timeout = 10000L)
@@ -522,53 +353,6 @@ public class RelationsComparisonStrategyTest extends AbstractIndividuComparisonS
 			           }
 		           });
 		assertNonNeutre(strategy, idEvt1, idEvt2, "relations (conjoints)");
-	}
-
-	@Test(timeout = 10000L)
-	public void testChangementDateDebutEnfant() throws Exception {
-		final long noIndividu = 6374237L;
-		final long noEnfant = 43678454L;
-		final DateRange range1 = new DateRangeHelper.Range(date(2000, 1, 1), null);
-		final DateRange range2 = new DateRangeHelper.Range(date(2000, 1, 3), null);
-		final long idEvt1 = 4367742354L;
-		final long idEvt2 = 567437834342L;
-
-		setupCivil(noIndividu, idEvt1, new RelationBuilder() {
-			           @Override
-			           public void buildRelations(MockIndividu individu) {
-				           addRelationVersEnfant(individu, range1, noEnfant, TypeRelationVersIndividu.FILS);
-			           }
-		           }, idEvt2, new RelationBuilder() {
-			           @Override
-			           public void buildRelations(MockIndividu individu) {
-				           addRelationVersEnfant(individu, range2, noEnfant, TypeRelationVersIndividu.FILS);
-			           }
-		           });
-		assertNonNeutre(strategy, idEvt1, idEvt2, "relations (enfants (dates))");
-	}
-
-	@Test(timeout = 10000L)
-	public void testChangementDateFinEnfant() throws Exception {
-		final long noIndividu = 6374237L;
-		final long noEnfant = 43678454L;
-		final DateRange range1 = new DateRangeHelper.Range(date(2000, 1, 1), null);
-		final DateRange range2 = new DateRangeHelper.Range(date(2000, 1, 1), date(2010, 3, 21));
-		final long idEvt1 = 4367742354L;
-		final long idEvt2 = 567437834342L;
-
-		setupCivil(noIndividu, idEvt1, new RelationBuilder() {
-			           @Override
-			           public void buildRelations(MockIndividu individu) {
-				           addRelationVersEnfant(individu, range1, noEnfant, TypeRelationVersIndividu.FILLE);
-			           }
-		           }, idEvt2, new RelationBuilder() {
-			           @Override
-			           public void buildRelations(MockIndividu individu) {
-				           addRelationVersEnfant(individu, range2, noEnfant, TypeRelationVersIndividu.FILLE);
-			           }
-		           }
-		);
-		assertNonNeutre(strategy, idEvt1, idEvt2, "relations (enfants (dates))");
 	}
 
 	@Test(timeout = 10000L)

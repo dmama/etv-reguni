@@ -9,8 +9,8 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
+import ch.vd.uniregctb.tiers.Filiation;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.RapportFiliation;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 
@@ -19,13 +19,13 @@ import ch.vd.uniregctb.tiers.TiersService;
  */
 public class ControlRuleForParentPeriode extends ControlRuleForParent {
 
-	private final int periode;
+	private final DateRange periode;
 	private final AbstractControlRule ruleForTiers;
 	private final AbstractControlRule ruleForMenage;
 
 	public ControlRuleForParentPeriode(int periode, TiersService tiersService, AssujettissementService assService) {
 		super(tiersService);
-		this.periode = periode;
+		this.periode = new DateRangeHelper.Range(RegDate.get(periode, 1, 1), RegDate.get(periode, 12, 31));
 		this.ruleForTiers = new ControlRuleForTiersPeriode(periode, tiersService, assService);
 		this.ruleForMenage = new ControlRuleForMenagePeriode(periode, tiersService, assService);
 	}
@@ -43,16 +43,13 @@ public class ControlRuleForParentPeriode extends ControlRuleForParent {
 	}
 
 	@Override
-	public List<RapportFiliation> extractParents(List<RapportFiliation> filiations) {
-		DateRange rangePeriode = new DateRangeHelper.Range(RegDate.get(periode, 1, 1), RegDate.get(periode, 12, 31));
-
-		List<RapportFiliation> filiationsParents = new ArrayList<>();
-		for (RapportFiliation filiation : filiations) {
-			final boolean isDansPeriode = DateRangeHelper.intersect(rangePeriode, filiation);
-			if (filiation.getType() == RapportFiliation.Type.PARENT && isDansPeriode) {
+	protected List<Filiation> extractParents(List<Filiation> filiations) {
+		final List<Filiation> filiationsParents = new ArrayList<>(filiations.size());
+		for (Filiation filiation : filiations) {
+			if (DateRangeHelper.intersect(periode, filiation)) {
 				filiationsParents.add(filiation);
 			}
 		}
-		return filiationsParents;  //To change body of created methods use File | Settings | File Templates.
+		return filiationsParents;
 	}
 }

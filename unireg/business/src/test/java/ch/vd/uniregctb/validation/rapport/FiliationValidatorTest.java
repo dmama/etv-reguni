@@ -27,7 +27,7 @@ public class FiliationValidatorTest extends AbstractValidatorTest<Filiation> {
 	public void testFiliationComplete() throws Exception {
 		final PersonnePhysique parent = addNonHabitant("Papa", "Barbapapa", null, Sexe.MASCULIN);
 		final PersonnePhysique enfant = addNonHabitant("Barbidur", "Barbapapa", null, Sexe.MASCULIN);
-		final Filiation filiation = addFiliation(parent, enfant, date(2000, 1, 1), null);
+		final Filiation filiation = addFiliation(enfant, parent, date(2000, 1, 1), null);
 		final ValidationResults vr = validate(filiation);
 		assertNotNull(vr);
 		assertEquals(0, vr.getErrors().size());
@@ -47,7 +47,7 @@ public class FiliationValidatorTest extends AbstractValidatorTest<Filiation> {
 			public Ids doInTransaction(TransactionStatus status) {
 				final PersonnePhysique parent = addNonHabitant("Papa", "Barbapapa", null, Sexe.MASCULIN);
 				final PersonnePhysique enfant = addNonHabitant("Barbidur", "Barbapapa", null, Sexe.MASCULIN);
-				final Filiation filiation = addFiliation(parent, enfant, date(2000, 1, 1), null);
+				final Filiation filiation = addFiliation(enfant, parent, date(2000, 1, 1), null);
 				final Ids ids = new Ids();
 				ids.idParent = parent.getNumero();
 				ids.idEnfant = enfant.getNumero();
@@ -93,7 +93,7 @@ public class FiliationValidatorTest extends AbstractValidatorTest<Filiation> {
 			public Ids doInTransaction(TransactionStatus status) {
 				final PersonnePhysique parent = addNonHabitant("Papa", "Barbapapa", null, Sexe.MASCULIN);
 				final PersonnePhysique enfant = addNonHabitant("Barbidur", "Barbapapa", null, Sexe.MASCULIN);
-				final Filiation filiation = addFiliation(parent, enfant, date(2000, 1, 1), null);
+				final Filiation filiation = addFiliation(enfant, parent, date(2000, 1, 1), null);
 				final Ids ids = new Ids();
 				ids.idParent = parent.getNumero();
 				ids.idEnfant = enfant.getNumero();

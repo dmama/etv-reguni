@@ -1,7 +1,5 @@
 package ch.vd.uniregctb.evenement.civil.interne.naissance;
 
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 import junit.framework.Assert;
@@ -14,9 +12,7 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.cache.ServiceCivilCache;
-import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.unireg.interfaces.civil.data.RelationVersIndividu;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
@@ -29,6 +25,7 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
+import ch.vd.uniregctb.tiers.Filiation;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 
@@ -191,7 +188,7 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 				MockIndividu pere = addIndividu(indPere, date(1980, 1, 1), "Cognac", "Raoul", true);
 				MockIndividu mere = addIndividu(indMere, date(1980, 1, 1), "Cognac", "Josette", false);
 				MockIndividu enfant = addIndividu(indEnfant, dateNaissanceEnfant, "Cognac", "Yvan", true);
-				enfant.setParentsFromIndividus(Arrays.<Individu>asList(pere, mere));
+				addLiensFiliation(enfant, pere, mere, dateNaissanceEnfant, null);
 			}
 		});
 
@@ -275,8 +272,9 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 			protected void init() {
 				MockIndividu pere = addIndividu(indPere, date(1980, 1, 1), "Cognac", "Raoul", true);
 				MockIndividu mere = addIndividu(indMere, date(1980, 1, 1), "Cognac", "Josette", false);
-				MockIndividu fils = addIndividu(indFils, date(2010, 2, 8), "Cognac", "Yvan", true);
-				fils.setParentsFromIndividus(Arrays.<Individu>asList(pere, mere));
+				final RegDate dateNaissance = date(2010, 2, 8);
+				MockIndividu fils = addIndividu(indFils, dateNaissance, "Cognac", "Yvan", true);
+				addLiensFiliation(fils, pere, mere, dateNaissance, null);
 			}
 		});
 
@@ -372,9 +370,7 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 				marieIndividus(pere, mere, date(2005, 1, 1));
 
 				MockIndividu fils = addIndividu(indFils, dateNaissance, "Tord-boyaux", "Yvan", true);
-				fils.setParentsFromIndividus(Arrays.<Individu>asList(pere, mere));
-				pere.setEnfantsFromIndividus(Arrays.<Individu>asList(fils));
-				mere.setEnfantsFromIndividus(Arrays.<Individu>asList(fils));
+				addLiensFiliation(fils, pere, mere, dateNaissance, null);
 			}
 		};
 
@@ -390,8 +386,8 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 		serviceCivil.setUp(cache);
 
 		// On s'assure que ni la mère ni le père n'existent à ce stade (et que leurs inexistance est bien enregistrée dans le cache)
-		assertNull(serviceCivil.getIndividu(indMere, dateNaissance, AttributeIndividu.ENFANTS));
-		assertNull(serviceCivil.getIndividu(indPere, dateNaissance, AttributeIndividu.ENFANTS));
+		assertNull(serviceCivil.getIndividu(indMere, dateNaissance));
+		assertNull(serviceCivil.getIndividu(indPere, dateNaissance));
 
 		// On créer l'arrivée des parents et la naissance de l'enfant (cas bizarre, mais on a vu des choses semblables en production)
 		realService.step1();
@@ -399,26 +395,25 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 		class Ids {
 			Long pere;
 			Long mere;
-			Long fils;
 		}
-		final Ids ids = new Ids();
 
 		// On crée le père et la mère
-		doInNewTransactionAndSession(new TxCallback<Object>() {
+		final Ids ids = doInNewTransactionAndSession(new TxCallback<Ids>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Ids execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pere = addHabitant(indPere);
-				ids.pere = pere.getId();
 				final PersonnePhysique mere = addHabitant(indMere);
+				final Ids ids = new Ids();
+				ids.pere = pere.getId();
 				ids.mere = mere.getId();
-				return null;
+				return ids;
 			}
 		});
 
 		// On envoie l'événement de naissance
-		doInNewTransactionAndSession(new TxCallback<Object>() {
+		final Long idFils = doInNewTransactionAndSession(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				final Individu fils = serviceCivil.getIndividu(indFils, date(2010, 12, 31));
 				final Naissance naissance = createValidNaissance(fils, true);
 
@@ -432,27 +427,32 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 				assertFalse(collector.hasErreurs());
 				assertFalse(collector.hasWarnings());
 
-				ids.fils = tiersDAO.getNumeroPPByNumeroIndividu(indFils, false);
-				return null;
+				return tiersDAO.getNumeroPPByNumeroIndividu(indFils, false);
 			}
 		});
 
-
 		// On vérifie que la mère et le père sont trouvés dans le cache et qu'ils possèdent bien un enfant
-		assertParent(indPere, indFils, dateNaissance);
-		assertParent(indMere, indFils, dateNaissance);
+		assertParent(indPere, ids.pere, idFils, dateNaissance);
+		assertParent(indMere, ids.mere, idFils, dateNaissance);
 	}
 
-	private void assertParent(long indParent, long indFils, RegDate dateNaissance) {
-		final Individu parent = serviceCivil.getIndividu(indParent, null, AttributeIndividu.ENFANTS);
-		assertNotNull(parent);
-		final Collection<RelationVersIndividu> enfants = parent.getEnfants();
+	private void assertParent(long indParent, Long idParent, Long idFils, RegDate dateNaissance) {
+		final Individu individuParent = serviceCivil.getIndividu(indParent, null);
+		assertNotNull(individuParent);
+
+		final PersonnePhysique parent = tiersService.getPersonnePhysiqueByNumeroIndividu(indParent);
+		assertNotNull(indParent);
+		assertEquals(idParent, parent.getNumero());
+
+		final List<Filiation> enfants = tiersService.getEnfants(parent, true);
 		assertNotNull(enfants);
 		assertEquals(1, enfants.size());
-		final RelationVersIndividu enfant0 = enfants.iterator().next();
-		assertNotNull(enfant0);
-		assertEquals(dateNaissance, enfant0.getDateDebut());
-		assertEquals(indFils, enfant0.getNumeroAutreIndividu());
+
+		final Filiation filiation = enfants.get(0);
+		assertNotNull(filiation);
+		assertEquals(idFils, filiation.getSujetId());
+		assertEquals(dateNaissance, filiation.getDateDebut());
+		assertNull(filiation.getDateFin());
 	}
 
 }

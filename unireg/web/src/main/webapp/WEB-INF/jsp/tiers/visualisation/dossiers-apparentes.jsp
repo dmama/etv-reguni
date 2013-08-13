@@ -14,14 +14,12 @@
 </c:if>
 
 <div id="rapportsDiv" style="position:relative"><img src="<c:url value="/images/loading.gif"/>"/></div>
-<div id="filiationsDiv" style="position:relative"></div>
 <div id="debiteursDiv" style="position:relative"></div>
 
 <script>
 	// chargement Ajax des rapports-entre-tiers
 	$(function() {
 		DossiersApparentes.loadRapports(1);
-        DossiersApparentes.loadFiliations();
         DossiersApparentes.loadDebiteurs();
 	});
 
@@ -175,80 +173,6 @@
                 }
 
                 html += '<td><a href="#" class="consult" title="Consultation des logs" onclick="return Dialog.open_consulter_log(\'RapportEntreTiers\', ' + rapport.id + ');">&nbsp;</a></td>';
-                html += '</tr>\n';
-            }
-
-            return html;
-        },
-
-	    loadFiliations: function() {
-            // get the data
-            $.get('<c:url value="/rapport/filiations.do?tiers=${command.tiersGeneral.numero}"/>' + '&' + new Date().getTime(), function(filiations) {
-                var html = '';
-                if (typeof filiations === 'string') {
-                    // on a reçu une erreur
-                    html += '<fieldset>\n';
-                    html += '<legend><span><fmt:message key="label.filiations" /></span></legend>\n';
-                    html += '<div class="flash-warning">' + DossiersApparentes.escape("<fmt:message key="label.affichage.filiations.impossible"/>") + '<br/><i>' + DossiersApparentes.escape(filiations) + '</i></div>\n';
-                    html += '</fieldset>\n'
-                }
-                else {
-                    // on a bien reçu les filiations
-                    if (filiations.length) {
-                        html += '<fieldset>\n';
-                        html += '<legend><span><fmt:message key="label.filiations" /></span></legend>\n';
-                        html += DossiersApparentes.buildTableFiliations(filiations) + '\n';
-                        html += '</fieldset>\n'
-                    }
-                }
-                $('#filiationsDiv').html(html);
-                Tooltips.activate_static_tooltips($('#filiationsDiv'));
-            }, 'json')
-            .error(DossiersApparentes.errorFiliations);
-            return false;
-        },
-
-        errorFiliations: function(xhr, ajaxOptions, thrownError) {
-            var html = '<fieldset>\n';
-            html += '<legend><span><fmt:message key="label.filiations" /></span></legend>\n';
-            html += '<div class="flash-warning">' + DossiersApparentes.escape("<fmt:message key="label.affichage.filiations.impossible"/>") + '<br/><i>' + DossiersApparentes.escape(xhr.responseText) + '</i></div>\n';
-            html += '</fieldset>\n';
-            $('#filiationsDiv').html(html);
-        },
-
-	    buildTableFiliations: function(filiations) {
-
-            var html = '<table id="filiation" class="display"><thead><tr>\n';
-            html += '<th>Rapport avec le tiers</th>';
-            html += '<th>Date début</th>';
-            html += '<th>Date fin</th>';
-            html += '<th>N° de tiers</th>';
-            html += '<th>Nom / Raison sociale</th>';
-            html += '</tr></thead>\n';
-
-            html += '<tbody>\n';
-
-            for (var i in filiations) {
-                var filiation = filiations[i];
-                html += '<tr class="' + (i % 2 == 0 ? 'odd' : 'even') +'">';
-                html += '<td>' + (filiation.type == 'ENFANT' ? 'Enfant' : 'Parent');
-                if (filiation.toolTipMessage) {
-                    var filId = 'fil-' + i;
-                    html += ' <a href="#tooltip" class="staticTip" id="' + filId +'">?</a><div id="' + filId + '-tooltip" style="display:none;">' + filiation.toolTipMessage + '</div></td>';
-                }
-                html += '<td>' + DossiersApparentes.escape(filiation.dateDebut) + '</td>';
-                html += '<td>' + DossiersApparentes.escape(filiation.dateFin) + '</td>';
-                if (filiation.numeroAutreTiers) {
-                    html += '<td>' + Tiers.linkTo(filiation.numeroAutreTiers) + '</td>';
-                }
-                else {
-                    html += '<td><div class="flash-warning">' + DossiersApparentes.escape(filiation.messageAutreTiersAbsent) + '</div></td>';
-                }
-                html += '<td>' + DossiersApparentes.escape(filiation.nomCourrier.nomCourrier1);
-                if (filiation.nomCourrier.nomCourrier2) {
-                    html += '<br/>' + DossiersApparentes.escape(filiation.nomCourrier.nomCourrier2);
-                }
-                html += '</td>';
                 html += '</tr>\n';
             }
 

@@ -1,11 +1,10 @@
 package ch.vd.uniregctb.evenement.civil.interne.changement.filiation;
 
-import java.util.Arrays;
-
 import net.sf.ehcache.CacheManager;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.cache.ServiceCivilCache;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
@@ -65,19 +64,20 @@ public class CorrectionFiliationTest extends AbstractEvenementCivilInterneTest {
 			final long veroNoInd = 1235;
 			final long jacquesNoInd = 1233;
 			final long martineNoInd = 1232;
+			final RegDate datesNaissanceEnfants = date(1975, 3, 2);
 
 			// Création de l'individu
 			cache.setTarget(new MockServiceCivil() {
 				@Override
 				protected void init() {
-					final MockIndividu enfant = addIndividu(jeanNoInd, date(1975, 3, 2), "Jacquouille", "Jean", true);
-					final MockIndividu enfant2 = addIndividu(veroNoInd, date(1975, 3, 2), "Jacquouille", "Véronique", false);       // soeur jumelle
+					final MockIndividu enfant = addIndividu(jeanNoInd, datesNaissanceEnfants, "Jacquouille", "Jean", true);
+					final MockIndividu enfant2 = addIndividu(veroNoInd, datesNaissanceEnfants, "Jacquouille", "Véronique", false);       // soeur jumelle
 
 					final MockIndividu pere = addIndividu(jacquesNoInd, date(1948, 1, 26), "Jacquouille", "Jacques", true);
 					final MockIndividu mere = addIndividu(martineNoInd, date(1948, 9, 4), "Jacquouille", "Martine", false);
 
-					enfant.setParentsFromIndividus(Arrays.<Individu>asList(pere, mere));
-					enfant2.setParentsFromIndividus(Arrays.<Individu>asList(pere, mere));
+					addLiensFiliation(enfant, pere, mere, datesNaissanceEnfants, null);
+					addLiensFiliation(enfant2, pere, mere, datesNaissanceEnfants, null);
 				}
 			});
 

@@ -13,8 +13,8 @@ import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
@@ -103,14 +103,20 @@ public class PartyWebServiceCacheTest extends WebserviceTest {
 		wsCacheManager = getBean(PartyWebServiceCacheManager.class, "partyService3CacheManager");
 		wsCacheManager.setCache(cache);
 
+		final int noIndividu = 123456;
+		final int noIndividuPapa = 111111;
+		final int noIndividuJunior = 222222;
+		final RegDate dateNaissance = date(1965, 4, 13);
+		final RegDate dateNaissanceJunior = date(2002, 3, 7);
+
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
-				final MockIndividu ind = addIndividu(123456, date(1965, 4, 13), "Eric", "Bolomey", true);
-				final Individu papa = addIndividu(111111, date(1925, 11, 29), "Papa", "Bolomey", true);
-				ind.setParentsFromIndividus(Arrays.asList(papa));
-				final Individu junior = addIndividu(222222, date(2002, 3, 7), "Junior", "Bolomey", true);
-				ind.setEnfantsFromIndividus(Arrays.asList(junior));
+				final MockIndividu papa = addIndividu(noIndividuPapa, date(1925, 11, 29), "Papa", "Bolomey", true);
+				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Eric", "Bolomey", true);
+				final MockIndividu junior = addIndividu(noIndividuJunior, dateNaissanceJunior, "Junior", "Bolomey", true);
+				addLiensFiliation(junior, ind, null, dateNaissanceJunior, null);
+				addLiensFiliation(ind, papa, null, dateNaissance, null);
 			}
 		});
 
@@ -121,7 +127,7 @@ public class PartyWebServiceCacheTest extends WebserviceTest {
 				addCollAdm(MockCollectiviteAdministrative.CEDI);
 
 				// Un tiers avec avec toutes les parties renseignées
-				final PersonnePhysique eric = addHabitant(123456);
+				final PersonnePhysique eric = addHabitant(noIndividu);
 				addAdresseSuisse(eric, TypeAdresseTiers.COURRIER, date(1983, 4, 13), null, MockRue.Lausanne.AvenueDeBeaulieu);
 				addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
 				addForSecondaire(eric, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
@@ -144,8 +150,11 @@ public class PartyWebServiceCacheTest extends WebserviceTest {
 				ids.eric = eric.getNumero();
 
 				// le père et l'enfant
-				addHabitant(111111);
-				addHabitant(222222);
+				final PersonnePhysique papa = addHabitant(noIndividuPapa);
+				final PersonnePhysique junior = addHabitant(noIndividuJunior);
+
+				addFiliation(eric, papa, dateNaissance, null);
+				addFiliation(junior, eric, dateNaissanceJunior, null);
 
 				// un débiteur
 				final DebiteurPrestationImposable debiteur = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.ANNUEL, date(2000, 1, 1));

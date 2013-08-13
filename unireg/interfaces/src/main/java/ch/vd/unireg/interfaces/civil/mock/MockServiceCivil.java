@@ -19,7 +19,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.civil.ServiceCivilRaw;
-import ch.vd.unireg.interfaces.civil.data.AdoptionReconnaissance;
 import ch.vd.unireg.interfaces.civil.data.Adresse;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.CasePostale;
@@ -157,14 +156,6 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 		// Adresses
 		final List<Adresse> sdresses = new ArrayList<>();
 		individu.setAdresses(sdresses);
-
-		// Enfants
-		final List<RelationVersIndividu> enfants = new ArrayList<>();
-		individu.setEnfants(enfants);
-
-		// Adoptions et reconnaissances
-		final List<AdoptionReconnaissance> adoptions = new ArrayList<>();
-		individu.setAdoptionsReconnaissances(adoptions);
 
 		// Conjoints
 		individu.setConjoints(new ArrayList<RelationVersIndividu>());
@@ -305,14 +296,6 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 		return adresse;
 	}
 
-	public static void addLienVersEnfant(MockIndividu parent, MockIndividu enfant, RegDate dateDebut, @Nullable RegDate dateFin) {
-		if (enfant.getSexe() == null) {
-			throw new IllegalArgumentException("Le sexe de l'enfant doit être connu");
-		}
-		final TypeRelationVersIndividu typeRelation = enfant.getSexe() == Sexe.FEMININ ? TypeRelationVersIndividu.FILLE : TypeRelationVersIndividu.FILS;
-		parent.getEnfants().add(new RelationVersIndividuImpl(enfant.getNoTechnique(), typeRelation, dateDebut, dateFin));
-	}
-
 	public static void addLienVersParent(MockIndividu enfant, MockIndividu parent, RegDate dateDebut, @Nullable RegDate dateFin) {
 		if (parent.getSexe() == null) {
 			throw new IllegalArgumentException("Le sexe du parent doit être connu");
@@ -321,9 +304,13 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 		enfant.getParents().add(new RelationVersIndividuImpl(parent.getNoTechnique(), typeRelation, dateDebut, dateFin));
 	}
 
-	public static void addLiensFiliation(MockIndividu parent, MockIndividu enfant, RegDate dateDebut, @Nullable RegDate dateFin) {
-		addLienVersEnfant(parent, enfant, dateDebut, dateFin);
-		addLienVersParent(enfant, parent, dateDebut, dateFin);
+	public static void addLiensFiliation(MockIndividu enfant, @Nullable MockIndividu papa, @Nullable MockIndividu maman, RegDate dateDebut, @Nullable RegDate dateFin) {
+		if (papa != null) {
+			addLienVersParent(enfant, papa, dateDebut, dateFin);
+		}
+		if (maman != null) {
+			addLienVersParent(enfant, maman, dateDebut, dateFin);
+		}
 	}
 
 	/**

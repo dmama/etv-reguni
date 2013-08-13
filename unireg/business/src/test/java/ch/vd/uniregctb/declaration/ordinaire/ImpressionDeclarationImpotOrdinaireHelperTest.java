@@ -2,7 +2,6 @@ package ch.vd.uniregctb.declaration.ordinaire;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -28,7 +27,6 @@ import org.springframework.transaction.annotation.Transactional;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService;
@@ -807,22 +805,23 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 		final long indPere = 2;
 		final long indFils = 3;
 		final long indFille = 4;
+		final RegDate dateNaissanceFils = date(2000, 2, 8);
+		final RegDate dateNaissanceFille = date(2005, 2, 8);
 
 		// On crée la situation de départ : une mère, un père, un fils mineur et une fille majeur
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
-				MockIndividu pere = addIndividu(indPere, date(1960, 1, 1), "Cognac", "Guy", true);
-				MockIndividu fils = addIndividu(indFils, date(2000, 2, 8), "Cognac", "Yvan", true);
-				MockIndividu fille = addIndividu(indFille, date(2005, 2, 8), "Cognac", "Eva", false);
+				final MockIndividu pere = addIndividu(indPere, date(1960, 1, 1), "Cognac", "Guy", true);
+				final MockIndividu fils = addIndividu(indFils, dateNaissanceFils, "Cognac", "Yvan", true);
+				final MockIndividu fille = addIndividu(indFille, dateNaissanceFille, "Cognac", "Eva", false);
 
 				addAdresse(pere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
 				addAdresse(fils, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
 				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
 
-				fils.setParentsFromIndividus(Arrays.<Individu>asList(pere));
-				fille.setParentsFromIndividus(Arrays.<Individu>asList(pere));
-				pere.setEnfantsFromIndividus(Arrays.<Individu>asList(fils, fille));
+				addLiensFiliation(fils, pere, null, fils.getDateNaissance(), null);
+				addLiensFiliation(fille, pere, null, fille.getDateNaissance(), null);
 			}
 		});
 
@@ -842,6 +841,10 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 				ids.fils = fils.getId();
 				final PersonnePhysique fille = addHabitant(indFille);
 				ids.fille = fille.getId();
+
+				addFiliation(fils, pere, dateNaissanceFils, null);
+				addFiliation(fille, pere, dateNaissanceFille, null);
+
 				addCollAdm(MockCollectiviteAdministrative.CEDI);
 				final CollectiviteAdministrative aci = addCollAdm(MockCollectiviteAdministrative.ACI);
 
@@ -961,22 +964,23 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 		final long indPere = 2;
 		final long indFils = 3;
 		final long indFille = 4;
+		final RegDate dateNaissanceFils = date(2000, 2, 8);
+		final RegDate dateNaissanceFille = date(2005, 2, 8);
 
 		// On crée la situation de départ : une mère, un père, un fils mineur et une fille majeur
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
 				MockIndividu pere = addIndividu(indPere, date(1960, 1, 1), "Cognac", "Guy", true);
-				MockIndividu fils = addIndividu(indFils, date(2000, 2, 8), "Cognac", "Yvan", true);
-				MockIndividu fille = addIndividu(indFille, date(2005, 2, 8), "Cognac", "Eva", false);
+				MockIndividu fils = addIndividu(indFils, dateNaissanceFils, "Cognac", "Yvan", true);
+				MockIndividu fille = addIndividu(indFille, dateNaissanceFille, "Cognac", "Eva", false);
 
 				addAdresse(pere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
 				addAdresse(fils, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
 				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
 
-				fils.setParentsFromIndividus(Arrays.<Individu>asList(pere));
-				fille.setParentsFromIndividus(Arrays.<Individu>asList(pere));
-				pere.setEnfantsFromIndividus(Arrays.<Individu>asList(fils, fille));
+				addLiensFiliation(fils, pere, null, fils.getDateNaissance(), null);
+				addLiensFiliation(fille, pere, null, fille.getDateNaissance(), null);
 			}
 		});
 
@@ -996,6 +1000,10 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 				ids.fils = fils.getId();
 				final PersonnePhysique fille = addHabitant(indFille);
 				ids.fille = fille.getId();
+
+				addFiliation(fils, pere, dateNaissanceFils, null);
+				addFiliation(fille, pere, dateNaissanceFille, null);
+
 				addCollAdm(MockCollectiviteAdministrative.CEDI);
 				final CollectiviteAdministrative aci = addCollAdm(MockCollectiviteAdministrative.ACI);
 

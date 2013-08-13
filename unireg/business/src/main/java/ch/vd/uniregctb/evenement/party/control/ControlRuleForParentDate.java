@@ -6,8 +6,8 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.tiers.Filiation;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.RapportFiliation;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 
@@ -27,16 +27,14 @@ public class ControlRuleForParentDate extends ControlRuleForParent {
 	}
 
 	@Override
-	public List<RapportFiliation> extractParents(List<RapportFiliation> filiations) {
-
-		List<RapportFiliation> filiationsParents = new ArrayList<>();
-		for (RapportFiliation filiation : filiations) {
-			final boolean isValide = filiation.isValidAt(date);
-			if (filiation.getType() == RapportFiliation.Type.PARENT && isValide) {
-				filiationsParents.add(filiation);
+	protected List<Filiation> extractParents(List<Filiation> filiations) {
+		final List<Filiation> extraction = new ArrayList<>(filiations.size());
+		for (Filiation filiation : filiations) {
+			if (filiation.isValidAt(date)) {
+				extraction.add(filiation);
 			}
 		}
-		return filiationsParents;
+		return extraction;
 	}
 
 	//vérification du for en vigueur à la date (règle A1.3) sur ce numéro de tiers

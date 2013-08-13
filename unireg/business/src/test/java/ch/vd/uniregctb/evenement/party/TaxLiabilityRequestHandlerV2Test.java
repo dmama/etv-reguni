@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.evenement.party;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -11,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
@@ -122,14 +120,15 @@ public class TaxLiabilityRequestHandlerV2Test extends BusinessTest {
 		final long noIndEnfant = 1234;
 		final long noIndPere = 1235;
 		final long noIndMere = 1236;
+		final RegDate dateNaissance = RegDate.get().addYears(-10);
 
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
-				MockIndividu enfant = addIndividu(noIndEnfant, RegDate.get().addYears(-10), "Ramaldadji", "Jacques", Sexe.MASCULIN);
+				MockIndividu enfant = addIndividu(noIndEnfant, dateNaissance, "Ramaldadji", "Jacques", Sexe.MASCULIN);
 				MockIndividu pere = addIndividu(noIndPere, date(1973, 5, 9), "Ramaldadji", "Robert", Sexe.MASCULIN);
 				MockIndividu mere = addIndividu(noIndMere, date(1976, 9, 12), "Ramaldadji", "Mireille", Sexe.FEMININ);
-				enfant.setParentsFromIndividus(Arrays.<Individu>asList(pere, mere));
+				addLiensFiliation(enfant, pere, mere, dateNaissance, null);
 			}
 		});
 
@@ -149,6 +148,9 @@ public class TaxLiabilityRequestHandlerV2Test extends BusinessTest {
 				addForPrincipal(pere, date(1994, 3, 12), MotifFor.DEMENAGEMENT_VD, MockCommune.Vevey);
 				final PersonnePhysique mere = addHabitant(noIndMere);
 				addForPrincipal(mere, date(1994, 3, 12), MotifFor.DEMENAGEMENT_VD, MockCommune.Vevey);
+
+				addFiliation(enfant, pere, dateNaissance, null);
+				addFiliation(enfant, mere, dateNaissance, null);
 
 				ids.idEnfant = enfant.getId();
 				ids.idPere = pere.getId();
