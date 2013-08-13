@@ -2,6 +2,7 @@ package ch.vd.uniregctb.hibernate.interceptor;
 
 import java.io.Serializable;
 
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.CallbackException;
 import org.hibernate.type.Type;
 import org.springframework.beans.factory.InitializingBean;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.InitializingBean;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.HibernateEntity;
+import ch.vd.uniregctb.common.LengthConstants;
 
 public class ModificationLogInterceptor implements ModificationSubInterceptor, InitializingBean {
 
@@ -52,7 +54,7 @@ public class ModificationLogInterceptor implements ModificationSubInterceptor, I
 
 		boolean modified = false;
 
-		final String user = AuthenticationHelper.getCurrentPrincipal();
+		final String user = StringUtils.abbreviate(AuthenticationHelper.getCurrentPrincipal(), LengthConstants.HIBERNATE_LOGUSER);
 
 		if (previousState == null) {
 			modified = assignValue("logCreationUser", propertyNames, currentState, user);

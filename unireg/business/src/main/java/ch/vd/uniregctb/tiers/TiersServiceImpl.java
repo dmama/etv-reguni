@@ -1894,6 +1894,11 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Override
+	public Set<Long> getNumerosIndividusLiesParParente(long noIndividuSource) {
+		return tiersDAO.getNumerosIndividusLiesParParente(noIndividuSource);
+	}
+
+	@Override
 	public void refreshParentesSurPersonnePhysique(PersonnePhysique pp, boolean enfantsAussi) {
 		if (pp != null) {
 			final Long noIndividu = pp.getNumeroIndividu();

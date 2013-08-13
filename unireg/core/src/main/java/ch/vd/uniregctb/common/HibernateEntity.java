@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Date;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -35,7 +36,7 @@ public abstract class HibernateEntity implements Loggable, Annulable {
 	}
 
 	public void setLogCreationUser(String theLogCreationUser) {
-		logCreationUser = theLogCreationUser;
+		logCreationUser = StringUtils.abbreviate(theLogCreationUser, LengthConstants.HIBERNATE_LOGUSER);
 	}
 
 	@Override
@@ -55,7 +56,7 @@ public abstract class HibernateEntity implements Loggable, Annulable {
 	}
 
 	public void setLogModifUser(String theLogModifUser) {
-		logModifUser = theLogModifUser;
+		logModifUser = StringUtils.abbreviate(theLogModifUser, LengthConstants.HIBERNATE_LOGUSER);
 	}
 
 	@Override
@@ -92,7 +93,7 @@ public abstract class HibernateEntity implements Loggable, Annulable {
 	}
 
 	public void setAnnulationUser(@Nullable String annulationUser) {
-		this.annulationUser = annulationUser;
+		this.annulationUser = StringUtils.abbreviate(annulationUser, LengthConstants.HIBERNATE_LOGUSER);
 	}
 
 	/**

@@ -1105,7 +1105,7 @@ public interface TiersService {
      * @param tiers
      * @return le numéro d'individu de la personne physique ou de la personne principal du menage. null si le tiers ne possède pas de numéro d'individu
      */
-    public Long extractNumeroIndividuPrincipal(Tiers tiers);
+    Long extractNumeroIndividuPrincipal(Tiers tiers);
 
     /**
      * Analyse le graphe des entités liées et retourne tous les tiers trouvés.
@@ -1128,7 +1128,7 @@ public interface TiersService {
      * @param collId le numéro d'une collectivité administrative
      * @return le nom de la collectivité adminsitrative
      */
-    public String getNomCollectiviteAdministrative(int collId);
+    String getNomCollectiviteAdministrative(int collId);
 
     /**
      * Retourne le nom de la collectivité administrative en paramètre
@@ -1136,7 +1136,7 @@ public interface TiersService {
      * @param collectiviteAdministrative une collectivité administrative
      * @return le nom de la collectivité adminsitrative
      */
-    public String getNomCollectiviteAdministrative(CollectiviteAdministrative collectiviteAdministrative);
+    String getNomCollectiviteAdministrative(CollectiviteAdministrative collectiviteAdministrative);
 
     /**
      * Permet de savoir si un contribuable possède un for hors canton à une date données
@@ -1220,7 +1220,14 @@ public interface TiersService {
 	 */
 	List<Parente> initParentesDepuisFiliationsCiviles(PersonnePhysique pp);
 
-    /**
+	/**
+	 * Renvoie les numéros d'individus liés par une relation de parenté au(x) contribuable(s) dont le numéro d'individu est donné (lien direct)
+	 * @param noIndividuSource le numéro d'individu origine des relations de parenté recherchées
+	 * @return ensemble non-null des numéros d'individus liés (le numéro d'individu source n'est pas inclus)
+	 */
+	Set<Long> getNumerosIndividusLiesParParente(long noIndividuSource);
+
+	/**
      * Permet de traiter la éouverture d'un for fiscal d'un débiteur. Entraine également la réouverture
      * de tous les rapports de travail fermés à la même date que le for.
      *

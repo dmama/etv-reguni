@@ -125,8 +125,8 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 	private static Map<EventTypeKey, EvenementCivilEchTranslationStrategy> buildStrategies(EvenementCivilContext context, EvenementCivilEchStrategyParameters params) {
 
 		final EvenementCivilEchTranslationStrategy defaultCorrectionStrategy = new DefaultCorrectionTranslationStrategy(context.getServiceCivil(), context.getServiceInfra(), context.getTiersService());
-		final EvenementCivilEchTranslationStrategy cacheCleaningCorrectionStrategy = new TranslationStrategyWithRelationshipCacheCleanup(defaultCorrectionStrategy, context.getServiceCivil(), context.getDataEventService());
-		final TranslationStrategyWithRelationshipCacheCleanup notImplementedWithRelationshipCacheCleanup = new TranslationStrategyWithRelationshipCacheCleanup(NOT_IMPLEMENTED, context.getServiceCivil(), context.getDataEventService());
+		final EvenementCivilEchTranslationStrategy cacheCleaningCorrectionStrategy = embedInRelationshipCacheCleanupStrategy(defaultCorrectionStrategy, context);
+		final EvenementCivilEchTranslationStrategy notImplementedWithRelationshipCacheCleanup = embedInRelationshipCacheCleanupStrategy(NOT_IMPLEMENTED, context);
 
 		final Map<EventTypeKey, EvenementCivilEchTranslationStrategy> strategies = new HashMap<>();
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON), new NaissanceTranslationStrategy());
@@ -266,6 +266,10 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.PREMIERE_LIVRAISON), new TestingTranslationStrategy());
 
 		return strategies;
+	}
+
+	private static EvenementCivilEchTranslationStrategy embedInRelationshipCacheCleanupStrategy(EvenementCivilEchTranslationStrategy strategy, EvenementCivilContext context) {
+		return new TranslationStrategyWithRelationshipCacheCleanup(strategy, context.getServiceCivil(), context.getDataEventService(), context.getTiersService());
 	}
 
 	private ServiceCivilService serviceCivilService;

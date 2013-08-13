@@ -130,6 +130,12 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 	Set<Long> getNumerosIndividu(Collection<Long> tiersIds, boolean includesComposantsMenage);
 
 	/**
+	 * @param noIndividuSource le numéro de l'individu à l'origine de la recherche
+	 * @return un ensemble des numéros d'individu distincts directement liés par un lien de parenté à la personne physique dont le numéro d'individu est donné
+	 */
+	Set<Long> getNumerosIndividusLiesParParente(long noIndividuSource);
+
+	/**
 	 * Détermine et retourne la liste des numéros des PMs contenues dans le liste de tiers spécifiée.
 	 *
 	 * @param tiersIds une liste d'ids de tiers

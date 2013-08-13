@@ -169,6 +169,11 @@ public class TiersDAOBooster implements TiersDAO, InitializingBean {
 		return target.getNumerosIndividu(tiersIds, includesComposantsMenage);
 	}
 
+	@Override
+	public Set<Long> getNumerosIndividusLiesParParente(long noIndividuSource) {
+		return target.getNumerosIndividusLiesParParente(noIndividuSource);
+	}
+
 	@Nullable
 	@Override
 	public List<Long> getNumerosPMs(Collection<Long> tiersIds) {

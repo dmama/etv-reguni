@@ -666,6 +666,33 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 		return numeros;
 	}
 
+	private static final String SQL_QUERY_INDIVIDUS_LIES_PARENTE =
+			"SELECT PPO.NUMERO_INDIVIDU FROM TIERS PPO " +
+					"JOIN RAPPORT_ENTRE_TIERS RETS ON PPO.NUMERO=RETS.TIERS_SUJET_ID AND RETS.RAPPORT_ENTRE_TIERS_TYPE='Parente' " +
+					"JOIN TIERS PPS ON PPS.NUMERO=RETS.TIERS_OBJET_ID " +
+					"WHERE PPS.NUMERO_INDIVIDU=:noIndividu " +
+					"UNION " +
+			"SELECT PPO.NUMERO_INDIVIDU FROM TIERS PPO " +
+					"JOIN RAPPORT_ENTRE_TIERS RETO ON PPO.NUMERO=RETO.TIERS_OBJET_ID AND RETO.RAPPORT_ENTRE_TIERS_TYPE='Parente' " +
+					"JOIN TIERS PPS ON PPS.NUMERO=RETO.TIERS_SUJET_ID " +
+					"WHERE PPS.NUMERO_INDIVIDU=:noIndividu";
+
+	@Override
+	public Set<Long> getNumerosIndividusLiesParParente(long noIndividuSource) {
+		final Session session = getCurrentSession();
+		final SQLQuery query = session.createSQLQuery(SQL_QUERY_INDIVIDUS_LIES_PARENTE);
+		query.setLong("noIndividu", noIndividuSource);
+		//noinspection unchecked
+		final List<? extends Number> list = query.list();
+		final Set<Long> set = new HashSet<>(list.size());
+		for (Number nr : list) {
+			if (nr != null) {
+				set.add(nr.longValue());
+			}
+		}
+		return set;
+	}
+
 	@Nullable
 	@Override
 	public List<Long> getNumerosPMs(Collection<Long> tiersIds) {

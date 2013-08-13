@@ -81,6 +81,11 @@ public class MockTiersDAO implements TiersDAO {
 		throw new NotImplementedException();
 	}
 
+	@Override
+	public Set<Long> getNumerosIndividusLiesParParente(long noIndividuSource) {
+		throw new NotImplementedException();
+	}
+
 	@Nullable
 	@Override
 	public List<Long> getNumerosPMs(Collection<Long> tiersIds) {
