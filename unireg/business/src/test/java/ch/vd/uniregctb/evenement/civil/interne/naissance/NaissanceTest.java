@@ -25,7 +25,7 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
-import ch.vd.uniregctb.tiers.Filiation;
+import ch.vd.uniregctb.tiers.Parente;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 
@@ -444,15 +444,15 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 		assertNotNull(indParent);
 		assertEquals(idParent, parent.getNumero());
 
-		final List<Filiation> enfants = tiersService.getEnfants(parent, true);
+		final List<Parente> enfants = tiersService.getEnfants(parent, true);
 		assertNotNull(enfants);
 		assertEquals(1, enfants.size());
 
-		final Filiation filiation = enfants.get(0);
-		assertNotNull(filiation);
-		assertEquals(idFils, filiation.getSujetId());
-		assertEquals(dateNaissance, filiation.getDateDebut());
-		assertNull(filiation.getDateFin());
+		final Parente parente = enfants.get(0);
+		assertNotNull(parente);
+		assertEquals(idFils, parente.getSujetId());
+		assertEquals(dateNaissance, parente.getDateDebut());
+		assertNull(parente.getDateFin());
 	}
 
 }

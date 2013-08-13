@@ -2,7 +2,7 @@ package ch.vd.uniregctb.xml.party.v2;
 
 import ch.vd.unireg.xml.party.relation.v1.RelationBetweenParties;
 import ch.vd.unireg.xml.party.relation.v1.RelationBetweenPartiesType;
-import ch.vd.uniregctb.tiers.Filiation;
+import ch.vd.uniregctb.tiers.Parente;
 import ch.vd.uniregctb.xml.DataHelper;
 import ch.vd.uniregctb.xml.EnumHelper;
 
@@ -34,7 +34,7 @@ public class RelationBetweenPartiesBuilder {
 	 * @param child un rapport de filiation vers un enfant
 	 * @return un objet {@link ch.vd.unireg.xml.party.relation.v1.RelationBetweenParties}
 	 */
-	public static RelationBetweenParties newFiliationTowardsChild(Filiation child) {
+	public static RelationBetweenParties newFiliationTowardsChild(Parente child) {
 		return newFiliation(child, true);
 	}
 
@@ -42,16 +42,16 @@ public class RelationBetweenPartiesBuilder {
 	 * @param parent un rapport de filiation vers un parent
 	 * @return un objet {@link ch.vd.unireg.xml.party.relation.v1.RelationBetweenParties}
 	 */
-	public static RelationBetweenParties newFiliationTowardsParent(Filiation parent) {
+	public static RelationBetweenParties newFiliationTowardsParent(Parente parent) {
 		return newFiliation(parent, false);
 	}
 
-	private static RelationBetweenParties newFiliation(Filiation filiation, boolean towardsChild) {
+	private static RelationBetweenParties newFiliation(Parente parente, boolean towardsChild) {
 		final RelationBetweenParties r = new RelationBetweenParties();
 		r.setType(towardsChild ? RelationBetweenPartiesType.CHILD : RelationBetweenPartiesType.PARENT);
-		r.setDateFrom(DataHelper.coreToXML(filiation.getDateDebut()));
-		r.setDateTo(DataHelper.coreToXML(filiation.getDateFin()));
-		r.setOtherPartyNumber(towardsChild ? filiation.getSujetId().intValue() : filiation.getObjetId().intValue());
+		r.setDateFrom(DataHelper.coreToXML(parente.getDateDebut()));
+		r.setDateTo(DataHelper.coreToXML(parente.getDateFin()));
+		r.setOtherPartyNumber(towardsChild ? parente.getSujetId().intValue() : parente.getObjetId().intValue());
 		return r;
 	}
 }

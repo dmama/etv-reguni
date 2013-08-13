@@ -842,8 +842,8 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 				final PersonnePhysique fille = addHabitant(indFille);
 				ids.fille = fille.getId();
 
-				addFiliation(fils, pere, dateNaissanceFils, null);
-				addFiliation(fille, pere, dateNaissanceFille, null);
+				addParente(fils, pere, dateNaissanceFils, null);
+				addParente(fille, pere, dateNaissanceFille, null);
 
 				addCollAdm(MockCollectiviteAdministrative.CEDI);
 				final CollectiviteAdministrative aci = addCollAdm(MockCollectiviteAdministrative.ACI);
@@ -1001,8 +1001,8 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 				final PersonnePhysique fille = addHabitant(indFille);
 				ids.fille = fille.getId();
 
-				addFiliation(fils, pere, dateNaissanceFils, null);
-				addFiliation(fille, pere, dateNaissanceFille, null);
+				addParente(fils, pere, dateNaissanceFils, null);
+				addParente(fille, pere, dateNaissanceFille, null);
 
 				addCollAdm(MockCollectiviteAdministrative.CEDI);
 				final CollectiviteAdministrative aci = addCollAdm(MockCollectiviteAdministrative.ACI);

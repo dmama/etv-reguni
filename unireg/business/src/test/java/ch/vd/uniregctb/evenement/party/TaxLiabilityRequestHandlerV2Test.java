@@ -149,8 +149,8 @@ public class TaxLiabilityRequestHandlerV2Test extends BusinessTest {
 				final PersonnePhysique mere = addHabitant(noIndMere);
 				addForPrincipal(mere, date(1994, 3, 12), MotifFor.DEMENAGEMENT_VD, MockCommune.Vevey);
 
-				addFiliation(enfant, pere, dateNaissance, null);
-				addFiliation(enfant, mere, dateNaissance, null);
+				addParente(enfant, pere, dateNaissance, null);
+				addParente(enfant, mere, dateNaissance, null);
 
 				ids.idEnfant = enfant.getId();
 				ids.idPere = pere.getId();

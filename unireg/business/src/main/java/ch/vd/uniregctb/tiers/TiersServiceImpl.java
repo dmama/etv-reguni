@@ -1591,11 +1591,11 @@ public class TiersServiceImpl implements TiersService {
     }
 
 	private List<PersonnePhysique> getEnfants(PersonnePhysique pp, RegDate dateValidite) {
-		final List<Filiation> filiations = extractFiliations(pp.getRapportsObjet(), false);
-		final List<PersonnePhysique> enfants = new ArrayList<>(filiations.size());
-		for (Filiation filiation : filiations) {
-			if (filiation.isValidAt(dateValidite)) {
-				final PersonnePhysique enfant = (PersonnePhysique) tiersDAO.get(filiation.getSujetId());
+		final List<Parente> parentes = extractParentes(pp.getRapportsObjet(), false);
+		final List<PersonnePhysique> enfants = new ArrayList<>(parentes.size());
+		for (Parente parente : parentes) {
+			if (parente.isValidAt(dateValidite)) {
+				final PersonnePhysique enfant = (PersonnePhysique) tiersDAO.get(parente.getSujetId());
 				enfants.add(enfant);
 			}
 		}
@@ -1711,18 +1711,18 @@ public class TiersServiceImpl implements TiersService {
 
 	@NotNull
 	@Override
-	public List<Filiation> getParents(PersonnePhysique enfant, boolean yComprisRelationsAnnulees) {
-		return extractFiliations(enfant.getRapportsSujet(), yComprisRelationsAnnulees);
+	public List<Parente> getParents(PersonnePhysique enfant, boolean yComprisRelationsAnnulees) {
+		return extractParentes(enfant.getRapportsSujet(), yComprisRelationsAnnulees);
 	}
 
 	@NotNull
 	@Override
 	public List<PersonnePhysique> getParents(PersonnePhysique enfant, RegDate dateValidite) {
-		final List<Filiation> filiations = getParents(enfant, false);
-		final List<PersonnePhysique> parents = new ArrayList<>(filiations.size());
-		for (Filiation filiation : filiations) {
-			if (filiation.isValidAt(dateValidite)) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(filiation.getObjetId());
+		final List<Parente> parentes = getParents(enfant, false);
+		final List<PersonnePhysique> parents = new ArrayList<>(parentes.size());
+		for (Parente parente : parentes) {
+			if (parente.isValidAt(dateValidite)) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(parente.getObjetId());
 				parents.add(pp);
 			}
 		}
@@ -1731,22 +1731,22 @@ public class TiersServiceImpl implements TiersService {
 
 	@NotNull
 	@Override
-	public List<Filiation> getEnfants(PersonnePhysique parent, boolean yComprisRelationsAnnulees) {
-		return extractFiliations(parent.getRapportsObjet(), yComprisRelationsAnnulees);
+	public List<Parente> getEnfants(PersonnePhysique parent, boolean yComprisRelationsAnnulees) {
+		return extractParentes(parent.getRapportsObjet(), yComprisRelationsAnnulees);
 	}
 
-	private static List<Filiation> extractFiliations(Collection<RapportEntreTiers> rapports, boolean yComprisRelationsAnnulees) {
-		final List<Filiation> filiations = new LinkedList<>();
+	private static List<Parente> extractParentes(Collection<RapportEntreTiers> rapports, boolean yComprisRelationsAnnulees) {
+		final List<Parente> parentes = new LinkedList<>();
 		if (rapports != null) {
 			for (RapportEntreTiers rapport : rapports) {
-				if (rapport instanceof Filiation) {
+				if (rapport instanceof Parente) {
 					if (yComprisRelationsAnnulees || !rapport.isAnnule()) {
-						filiations.add((Filiation) rapport);
+						parentes.add((Parente) rapport);
 					}
 				}
 			}
 		}
-		return filiations;
+		return parentes;
 	}
 
     private void afterForFiscalPrincipalAdded(Contribuable contribuable, ForFiscalPrincipal forFiscalPrincipal) {

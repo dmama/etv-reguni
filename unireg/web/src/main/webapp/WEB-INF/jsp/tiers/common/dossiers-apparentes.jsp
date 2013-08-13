@@ -74,19 +74,17 @@
 	</c:if>
 
 	<display:column style="action">
-		<c:if test="${dossierApparente.typeRapportEntreTiers != 'FILIATION'}">
-			<c:if test="${page == 'visu' }">
-				<unireg:consulterLog entityNature="RapportEntreTiers" entityId="${dossierApparente.id}"/>
-			</c:if>
-			<c:if test="${page == 'edit' }">
-				<c:if test="${!dossierApparente.annule}">
-					<c:if test="${((dossierApparente.typeRapportEntreTiers == 'PRESTATION_IMPOSABLE') && (autorisations.rapportsDeTravail)) ||
-					((dossierApparente.typeRapportEntreTiers != 'APPARTENANCE_MENAGE') && (dossierApparente.typeRapportEntreTiers != 'PRESTATION_IMPOSABLE') && (autorisations.autresRapports))  && (dossierApparente.id != null)}">
-						<unireg:raccourciModifier
-								link="../tiers/rapport.do?idRapport=${dossierApparente.id}&sens=${dossierApparente.sensRapportEntreTiers}&viewRetour=%2Fdossiers-apparentes%2Fedit.do%3Fid%3D${tiersGeneral.numero}"
-								tooltip="Edition de rapport"/>
-						<unireg:raccourciAnnuler onClick="javascript:Rapport.annulerRapport(${dossierApparente.id});" tooltip="Annuler"/>
-					</c:if>
+		<c:if test="${page == 'visu' }">
+			<unireg:consulterLog entityNature="RapportEntreTiers" entityId="${dossierApparente.id}"/>
+		</c:if>
+		<c:if test="${page == 'edit' }">
+			<c:if test="${!dossierApparente.annule}">
+				<c:if test="${((dossierApparente.typeRapportEntreTiers == 'PRESTATION_IMPOSABLE') && (autorisations.rapportsDeTravail)) ||
+				((dossierApparente.typeRapportEntreTiers != 'APPARTENANCE_MENAGE') && (dossierApparente.typeRapportEntreTiers != 'PRESTATION_IMPOSABLE') && (autorisations.autresRapports))  && (dossierApparente.id != null)}">
+					<unireg:raccourciModifier
+							link="../tiers/rapport.do?idRapport=${dossierApparente.id}&sens=${dossierApparente.sensRapportEntreTiers}&viewRetour=%2Fdossiers-apparentes%2Fedit.do%3Fid%3D${tiersGeneral.numero}"
+							tooltip="Edition de rapport"/>
+					<unireg:raccourciAnnuler onClick="javascript:Rapport.annulerRapport(${dossierApparente.id});" tooltip="Annuler"/>
 				</c:if>
 			</c:if>
 		</c:if>

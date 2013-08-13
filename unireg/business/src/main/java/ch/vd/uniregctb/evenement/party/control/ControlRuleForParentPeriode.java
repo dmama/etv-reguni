@@ -9,7 +9,7 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
-import ch.vd.uniregctb.tiers.Filiation;
+import ch.vd.uniregctb.tiers.Parente;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -43,11 +43,11 @@ public class ControlRuleForParentPeriode extends ControlRuleForParent {
 	}
 
 	@Override
-	protected List<Filiation> extractParents(List<Filiation> filiations) {
-		final List<Filiation> filiationsParents = new ArrayList<>(filiations.size());
-		for (Filiation filiation : filiations) {
-			if (DateRangeHelper.intersect(periode, filiation)) {
-				filiationsParents.add(filiation);
+	protected List<Parente> extractParents(List<Parente> parentes) {
+		final List<Parente> filiationsParents = new ArrayList<>(parentes.size());
+		for (Parente parente : parentes) {
+			if (DateRangeHelper.intersect(periode, parente)) {
+				filiationsParents.add(parente);
 			}
 		}
 		return filiationsParents;

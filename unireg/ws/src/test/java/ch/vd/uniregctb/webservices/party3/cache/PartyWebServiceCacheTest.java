@@ -153,8 +153,8 @@ public class PartyWebServiceCacheTest extends WebserviceTest {
 				final PersonnePhysique papa = addHabitant(noIndividuPapa);
 				final PersonnePhysique junior = addHabitant(noIndividuJunior);
 
-				addFiliation(eric, papa, dateNaissance, null);
-				addFiliation(junior, eric, dateNaissanceJunior, null);
+				addParente(eric, papa, dateNaissance, null);
+				addParente(junior, eric, dateNaissanceJunior, null);
 
 				// un débiteur
 				final DebiteurPrestationImposable debiteur = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.ANNUEL, date(2000, 1, 1));

@@ -15,26 +15,26 @@ import ch.vd.uniregctb.type.TypeRapportEntreTiers;
  * +------------------+                       +------------------+
  *         ^                                           ^
  *         ¦  sujet         +-----------+       objet  ¦
- *         +----------------| Filiation |--------------+
+ *         +----------------|  Parenté  |--------------+
  *                          +-----------+
  * </pre>
  * <!-- end-user-doc -->
  */
 @Entity
-@DiscriminatorValue("Filiation")
-public class Filiation extends RapportEntreTiers {
+@DiscriminatorValue("Parente")
+public class Parente extends RapportEntreTiers {
 
 	private static final String PARENT = "parent";
 	private static final String ENFANT = "enfant";
 
-	public Filiation() {
+	public Parente() {
 	}
 
-	public Filiation(RegDate dateDebut, RegDate dateFin, PersonnePhysique parent, PersonnePhysique enfant) {
+	public Parente(RegDate dateDebut, RegDate dateFin, PersonnePhysique parent, PersonnePhysique enfant) {
 		super(dateDebut, dateFin, enfant, parent);
 	}
 
-	public Filiation(RapportEntreTiers rapport) {
+	public Parente(RapportEntreTiers rapport) {
 		super(rapport);
 	}
 
@@ -53,11 +53,11 @@ public class Filiation extends RapportEntreTiers {
 	@Transient
 	@Override
 	public TypeRapportEntreTiers getType() {
-		return TypeRapportEntreTiers.FILIATION;
+		return TypeRapportEntreTiers.PARENTE;
 	}
 
 	@Override
 	public RapportEntreTiers duplicate() {
-		return new Filiation(this);
+		return new Parente(this);
 	}
 }

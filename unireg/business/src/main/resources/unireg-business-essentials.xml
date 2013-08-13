@@ -241,7 +241,7 @@
 
 	<bean id="appartenanceMenageValidator" class="ch.vd.uniregctb.validation.rapport.AppartenanceMenageValidator" parent="rapportEntreTiersValidator"/>
 
-	<bean id="filiationValidator" class="ch.vd.uniregctb.validation.rapport.FiliationValidator" parent="rapportEntreTiersValidator"/>
+	<bean id="parenteValidator" class="ch.vd.uniregctb.validation.rapport.ParenteValidator" parent="rapportEntreTiersValidator"/>
 
 	<bean id="defaultRapportEntreTiersValidator" class="ch.vd.uniregctb.validation.rapport.DefaultRapportEntreTiersValidator" parent="rapportEntreTiersValidator" />
 

@@ -45,9 +45,9 @@ public abstract class TiersHisto {
 	private static final Logger LOGGER = Logger.getLogger(TiersHisto.class);
 
 	/**
-	 * Les filiations (fiscales) et les contacts impôt source ne sortent pas par ce service
+	 * Les parentés (fiscales) et les contacts impôt source ne sortent pas par ce service
 	 */
-	private static final Set<TypeRapportEntreTiers> RAPPORT_EXPOSES = EnumSet.complementOf(EnumSet.of(TypeRapportEntreTiers.CONTACT_IMPOT_SOURCE, TypeRapportEntreTiers.FILIATION));
+	private static final Set<TypeRapportEntreTiers> RAPPORT_EXPOSES = EnumSet.complementOf(EnumSet.of(TypeRapportEntreTiers.CONTACT_IMPOT_SOURCE, TypeRapportEntreTiers.PARENTE));
 
 
 	/**

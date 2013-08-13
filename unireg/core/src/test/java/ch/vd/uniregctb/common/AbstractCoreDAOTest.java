@@ -81,12 +81,12 @@ import ch.vd.uniregctb.tiers.DroitAcces;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
-import ch.vd.uniregctb.tiers.Filiation;
 import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.ForFiscalAutreImpot;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.tiers.Parente;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RepresentationConventionnelle;
 import ch.vd.uniregctb.tiers.SituationFamilleMenageCommun;
@@ -885,11 +885,11 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		return menage;
 	}
 
-	protected Filiation addFiliation(PersonnePhysique enfant, PersonnePhysique parent, RegDate dateDebut, @Nullable RegDate dateFin) {
-		final Filiation filiation = merge(new Filiation(dateDebut, dateFin, parent, enfant));
-		parent.addRapportObjet(filiation);
-		enfant.addRapportSujet(filiation);
-		return filiation;
+	protected Parente addParente(PersonnePhysique enfant, PersonnePhysique parent, RegDate dateDebut, @Nullable RegDate dateFin) {
+		final Parente parente = merge(new Parente(dateDebut, dateFin, parent, enfant));
+		parent.addRapportObjet(parente);
+		enfant.addRapportSujet(parente);
+		return parente;
 	}
 
 	protected Tutelle addTutelle(PersonnePhysique pupille, Tiers tuteur, @Nullable CollectiviteAdministrative autoriteTutelaire, RegDate dateDebut, @Nullable RegDate dateFin) {

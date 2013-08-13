@@ -9,7 +9,7 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.document.InitialisationFilationsRapport;
+import ch.vd.uniregctb.document.InitialisationParentesRapport;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.rapport.RapportService;
@@ -21,9 +21,9 @@ import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 
-public class InitialisationFiliationsJob extends JobDefinition {
+public class InitialisationParentesJob extends JobDefinition {
 
-	private static final String NAME = "InitialisationFiliationsJob";
+	private static final String NAME = "InitialisationParentesJob";
 	private static final String CATEGORIE = "Database";
 
 	public static final String NB_THREADS = "NB_THREADS";
@@ -36,7 +36,7 @@ public class InitialisationFiliationsJob extends JobDefinition {
 	private TiersService tiersService;
 	private RapportService rapportService;
 
-	public InitialisationFiliationsJob(int sortOrder, String description) {
+	public InitialisationParentesJob(int sortOrder, String description) {
 		super(NAME, CATEGORIE, sortOrder, description);
 
 		final JobParam param = new JobParam();
@@ -80,18 +80,18 @@ public class InitialisationFiliationsJob extends JobDefinition {
 	protected void doExecute(Map<String, Object> params) throws Exception {
 		final StatusManager statusManager = getStatusManager();
 		final int nbThreads = getIntegerValue(params, NB_THREADS);
-		final InitialisationFiliationsProcessor processor = new InitialisationFiliationsProcessor(rapportEntreTiersDAO, tiersDAO, transactionManager, hibernateTemplate, serviceCivil, tiersService);
-		final InitialisationFiliationsResults results = processor.run(nbThreads, statusManager);
+		final InitialisationParentesProcessor processor = new InitialisationParentesProcessor(rapportEntreTiersDAO, tiersDAO, transactionManager, hibernateTemplate, serviceCivil, tiersService);
+		final InitialisationParentesResults results = processor.run(nbThreads, statusManager);
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-		final InitialisationFilationsRapport rapport = template.execute(new TransactionCallback<InitialisationFilationsRapport>() {
+		final InitialisationParentesRapport rapport = template.execute(new TransactionCallback<InitialisationParentesRapport>() {
 			@Override
-			public InitialisationFilationsRapport doInTransaction(TransactionStatus status) {
+			public InitialisationParentesRapport doInTransaction(TransactionStatus status) {
 				return rapportService.generateRapport(results, statusManager);
 			}
 		});
 		setLastRunReport(rapport);
-		Audit.success("Le génération des données de filiation est terminée.", rapport);
+		Audit.success("Le génération des données de parenté est terminée.", rapport);
 	}
 }

@@ -4447,7 +4447,7 @@ public class TiersServiceTest extends BusinessTest {
 				ids.mere = mere.getId();
 				final PersonnePhysique fils = addHabitant(indFils);
 				ids.fils = fils.getId();
-				addFiliation(fils, mere, dateNaissance, null);
+				addParente(fils, mere, dateNaissance, null);
 				return null;
 			}
 		});
@@ -4530,7 +4530,7 @@ public class TiersServiceTest extends BusinessTest {
 				ids.pere = pere.getId();
 				final PersonnePhysique fils = addHabitant(indFils);
 				ids.fils = fils.getId();
-				addFiliation(fils, pere, dateNaissance, null);
+				addParente(fils, pere, dateNaissance, null);
 				return null;
 			}
 		});
@@ -4611,7 +4611,7 @@ public class TiersServiceTest extends BusinessTest {
 				ids.menage = ensemble.getMenage().getId();
 				final PersonnePhysique fils = addHabitant(indFils);
 				ids.fils = fils.getId();
-				addFiliation(fils, mere, dateNaissance, null);
+				addParente(fils, mere, dateNaissance, null);
 				return null;
 			}
 		});
@@ -4695,7 +4695,7 @@ public class TiersServiceTest extends BusinessTest {
 				ids.mere = mere.getId();
 				final PersonnePhysique fils = addHabitant(indFils);
 				ids.fils = fils.getId();
-				addFiliation(fils, mere, dateNaissance, null);
+				addParente(fils, mere, dateNaissance, null);
 				addForPrincipal(fils, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, date(2000, 12, 31), MotifFor.VENTE_IMMOBILIER, MockCommune.Bussigny);
 				addForSecondaire(fils, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, date(2000, 12, 31), MotifFor.VENTE_IMMOBILIER, MockCommune.Bussigny.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 				return null;
@@ -4792,10 +4792,10 @@ public class TiersServiceTest extends BusinessTest {
 				final PersonnePhysique fille = addHabitant(indFille);
 				ids.fille = fille.getId();
 
-				addFiliation(fils, mere, dateNaissanceFils, null);
-				addFiliation(fils, pere, dateNaissanceFils, null);
-				addFiliation(fille, mere, dateNaissanceFille, null);
-				addFiliation(fille, pere, dateNaissanceFille, null);
+				addParente(fils, mere, dateNaissanceFils, null);
+				addParente(fils, pere, dateNaissanceFils, null);
+				addParente(fille, mere, dateNaissanceFille, null);
+				addParente(fille, pere, dateNaissanceFille, null);
 
 				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(pere, mere, date(1985, 1, 1), null);
 				final MenageCommun mc = ensemble.getMenage();
@@ -4867,10 +4867,10 @@ public class TiersServiceTest extends BusinessTest {
 				final PersonnePhysique fille = addHabitant(indFille);
 				ids.fille = fille.getId();
 
-				addFiliation(fils, mere, dateNaissanceFils, null);
-				addFiliation(fils, pere, dateNaissanceFils, null);
-				addFiliation(fille, mere, dateNaissanceFille, dateDecesFille);
-				addFiliation(fille, pere, dateNaissanceFille, dateDecesFille);
+				addParente(fils, mere, dateNaissanceFils, null);
+				addParente(fils, pere, dateNaissanceFils, null);
+				addParente(fille, mere, dateNaissanceFille, dateDecesFille);
+				addParente(fille, pere, dateNaissanceFille, dateDecesFille);
 
 				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(pere, mere, date(1985, 1, 1), null);
 				final MenageCommun mc = ensemble.getMenage();
@@ -4940,8 +4940,8 @@ public class TiersServiceTest extends BusinessTest {
 				final PersonnePhysique fille = addHabitant(indFille);
 				ids.fille = fille.getId();
 
-				addFiliation(fils, mere, dateNaissanceFils, null);
-				addFiliation(fille, mere, dateNaissanceFille, null);
+				addParente(fils, mere, dateNaissanceFils, null);
+				addParente(fille, mere, dateNaissanceFille, null);
 
 				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(pere, mere, dateMariage, null);
 				final MenageCommun mc = ensemble.getMenage();
@@ -5011,10 +5011,10 @@ public class TiersServiceTest extends BusinessTest {
 				final PersonnePhysique fille = addHabitant(indFille);
 				ids.fille = fille.getId();
 
-				addFiliation(fils, pere, dateNaissanceFils, null);
-				addFiliation(fils, mere, dateNaissanceFils, null);
-				addFiliation(fille, pere, dateNaissanceFille, null);
-				addFiliation(fille, mere, dateNaissanceFille, null);
+				addParente(fils, pere, dateNaissanceFils, null);
+				addParente(fils, mere, dateNaissanceFils, null);
+				addParente(fille, pere, dateNaissanceFille, null);
+				addParente(fille, mere, dateNaissanceFille, null);
 
 				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(pere, mere, date(1985, 1, 1), null);
 				final MenageCommun mc = ensemble.getMenage();
@@ -5082,10 +5082,10 @@ public class TiersServiceTest extends BusinessTest {
 				final PersonnePhysique fille = addHabitant(indFille);
 				ids.fille = fille.getId();
 
-				addFiliation(fils, pere, dateNaissanceFils, null);
-				addFiliation(fils, mere, dateNaissanceFils, null);
-				addFiliation(fille, pere, dateNaissanceFille, null);
-				addFiliation(fille, mere, dateNaissanceFille, null);
+				addParente(fils, pere, dateNaissanceFils, null);
+				addParente(fils, mere, dateNaissanceFils, null);
+				addParente(fille, pere, dateNaissanceFille, null);
+				addParente(fille, mere, dateNaissanceFille, null);
 
 				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(pere, mere, date(1985, 1, 1), null);
 				final MenageCommun mc = ensemble.getMenage();
@@ -5154,10 +5154,10 @@ public class TiersServiceTest extends BusinessTest {
 				final PersonnePhysique fille = addHabitant(indFille);
 				ids.fille = fille.getId();
 
-				addFiliation(fils, pere, dateNaissanceFils, null);
-				addFiliation(fils, mere, dateNaissanceFils, null);
-				addFiliation(fille, pere, dateNaissanceFille, null);
-				addFiliation(fille, mere, dateNaissanceFille, null);
+				addParente(fils, pere, dateNaissanceFils, null);
+				addParente(fils, mere, dateNaissanceFils, null);
+				addParente(fille, pere, dateNaissanceFille, null);
+				addParente(fille, mere, dateNaissanceFille, null);
 
 				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(pere, mere, date(1985, 1, 1), null);
 				final MenageCommun mc = ensemble.getMenage();
@@ -5227,10 +5227,10 @@ public class TiersServiceTest extends BusinessTest {
 				final PersonnePhysique fille = addHabitant(indFille);
 				ids.fille = fille.getId();
 
-				addFiliation(fils, pere, dateNaissanceFils, null);
-				addFiliation(fils, mere, dateNaissanceFils, null);
-				addFiliation(fille, pere, dateNaissanceFille, null);
-				addFiliation(fille, mere, dateNaissanceFille, null);
+				addParente(fils, pere, dateNaissanceFils, null);
+				addParente(fils, mere, dateNaissanceFils, null);
+				addParente(fille, pere, dateNaissanceFille, null);
+				addParente(fille, mere, dateNaissanceFille, null);
 
 				return ids.mere;
 			}
@@ -5295,8 +5295,8 @@ public class TiersServiceTest extends BusinessTest {
 				final PersonnePhysique fille = addHabitant(indFille);
 				ids.fille = fille.getId();
 
-				addFiliation(fils, mere, dateNaissanceFils, null);
-				addFiliation(fille, mere, dateNaissanceFille, null);
+				addParente(fils, mere, dateNaissanceFils, null);
+				addParente(fille, mere, dateNaissanceFille, null);
 
 				return ids.mere;
 			}
@@ -5360,10 +5360,10 @@ public class TiersServiceTest extends BusinessTest {
 				final PersonnePhysique fille = addHabitant(indFille);
 				ids.fille = fille.getId();
 
-				addFiliation(fils, pere, dateNaissanceFils, null);
-				addFiliation(fils, mere, dateNaissanceFils, null);
-				addFiliation(fille, pere, dateNaissanceFille, null);
-				addFiliation(fille, mere, dateNaissanceFille, null);
+				addParente(fils, pere, dateNaissanceFils, null);
+				addParente(fils, mere, dateNaissanceFils, null);
+				addParente(fille, pere, dateNaissanceFille, null);
+				addParente(fille, mere, dateNaissanceFille, null);
 
 				return ids.mere;
 			}
@@ -5430,10 +5430,10 @@ public class TiersServiceTest extends BusinessTest {
 				final PersonnePhysique fille = addHabitant(indFille);
 				ids.fille = fille.getId();
 
-				addFiliation(fils, pere, dateNaissanceFils, null);
-				addFiliation(fils, mere, dateNaissanceFils, null);
-				addFiliation(fille, pere, dateNaissanceFille, null);
-				addFiliation(fille, mere, dateNaissanceFille, null);
+				addParente(fils, pere, dateNaissanceFils, null);
+				addParente(fils, mere, dateNaissanceFils, null);
+				addParente(fille, pere, dateNaissanceFille, null);
+				addParente(fille, mere, dateNaissanceFille, null);
 
 				return ids.mere;
 			}
@@ -5499,10 +5499,10 @@ public class TiersServiceTest extends BusinessTest {
 				final PersonnePhysique fille = addHabitant(indFille);
 				ids.fille = fille.getId();
 
-				addFiliation(fils, pere, dateNaissanceFils, null);
-				addFiliation(fils, mere, dateNaissanceFils, null);
-				addFiliation(fille, pere, dateNaissanceFille, null);
-				addFiliation(fille, mere, dateNaissanceFille, null);
+				addParente(fils, pere, dateNaissanceFils, null);
+				addParente(fils, mere, dateNaissanceFils, null);
+				addParente(fille, pere, dateNaissanceFille, null);
+				addParente(fille, mere, dateNaissanceFille, null);
 
 				return ids.mere;
 			}
@@ -5579,12 +5579,12 @@ public class TiersServiceTest extends BusinessTest {
 				final MenageCommun mc = ensemble.getMenage();
 				addForPrincipal(mc, date(1998, 1, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
 
-				addFiliation(fils, pere, dateNaissanceFils, null);
-				addFiliation(fils, mere, dateNaissanceFils, null);
-				addFiliation(fille, pere, dateNaissanceFille, null);
-				addFiliation(fille, mere, dateNaissanceFille, null);
-				addFiliation(fille2, pere, dateNaissanceFille2, null);
-				addFiliation(fille2, mere, dateNaissanceFille2, null);
+				addParente(fils, pere, dateNaissanceFils, null);
+				addParente(fils, mere, dateNaissanceFils, null);
+				addParente(fille, pere, dateNaissanceFille, null);
+				addParente(fille, mere, dateNaissanceFille, null);
+				addParente(fille2, pere, dateNaissanceFille2, null);
+				addParente(fille2, mere, dateNaissanceFille2, null);
 
 				return mc.getNumero();
 			}

@@ -487,9 +487,9 @@
 		<property name="auditLineDAO" ref="auditLineDAO"/>
 	</bean>
 
-	<bean id="initialisationFiliationsJob" parent="schedulerJob" class="ch.vd.uniregctb.tiers.jobs.InitialisationFiliationsJob">
+	<bean id="initialisationParentesJob" parent="schedulerJob" class="ch.vd.uniregctb.tiers.jobs.InitialisationParentesJob">
 		<constructor-arg value="711"/>
-		<constructor-arg value="(Ré-)initialiser les relations de filiations"/>
+		<constructor-arg value="(Ré-)initialiser les relations de parentés"/>
 		<property name="tiersService" ref="tiersService"/>
 		<property name="tiersDAO" ref="tiersDAO"/>
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>

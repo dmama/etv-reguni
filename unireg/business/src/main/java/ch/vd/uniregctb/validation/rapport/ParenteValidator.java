@@ -2,15 +2,15 @@ package ch.vd.uniregctb.validation.rapport;
 
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.tiers.Filiation;
+import ch.vd.uniregctb.tiers.Parente;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 
-public class FiliationValidator extends RapportEntreTiersValidator<Filiation> {
+public class ParenteValidator extends RapportEntreTiersValidator<Parente> {
 
 	@Override
-	protected Class<Filiation> getValidatedClass() {
-		return Filiation.class;
+	protected Class<Parente> getValidatedClass() {
+		return Parente.class;
 	}
 
 	@Override

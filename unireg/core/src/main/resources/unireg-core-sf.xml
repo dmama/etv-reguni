@@ -60,7 +60,7 @@
 		<value>ch.vd.uniregctb.tiers.PersonnePhysique</value>
 		<value>ch.vd.uniregctb.tiers.RapportEntreTiers</value>
 		<value>ch.vd.uniregctb.tiers.AppartenanceMenage</value>
-		<value>ch.vd.uniregctb.tiers.Filiation</value>
+		<value>ch.vd.uniregctb.tiers.Parente</value>
 		<value>ch.vd.uniregctb.tiers.RapportPrestationImposable</value>
 		<value>ch.vd.uniregctb.tiers.RepresentationConventionnelle</value>
 		<value>ch.vd.uniregctb.tiers.RepresentationLegale</value>
@@ -140,7 +140,7 @@
 		<value>ch.vd.uniregctb.document.ListeDroitsAccesRapport</value>
 		<value>ch.vd.uniregctb.document.SuppressionOIDRapport</value>
 		<value>ch.vd.uniregctb.document.RecalculTachesRapport</value>
-		<value>ch.vd.uniregctb.document.InitialisationFilationsRapport</value>
+		<value>ch.vd.uniregctb.document.InitialisationParentesRapport</value>
 		<value>ch.vd.uniregctb.parametrage.ParametreApp</value>
 		<value>ch.vd.uniregctb.rf.Immeuble</value>
 	</util:list>

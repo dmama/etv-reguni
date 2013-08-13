@@ -2834,7 +2834,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 	}
 
 	@Test
-	public void testFiliationsFiscalesNonRenvoyeesCommeRapportEntreTiers() throws Exception {
+	public void testParentesFiscalesNonRenvoyeesCommeRapportEntreTiers() throws Exception {
 
 		final long noIndPapa = 7856487345L;
 		final long noIndFiston = 438953683L;
@@ -2860,7 +2860,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 			public Ids doInTransaction(TransactionStatus status) {
 				final PersonnePhysique papa = addHabitant(noIndPapa);
 				final PersonnePhysique fiston = addHabitant(noIndFiston);
-				addFiliation(fiston, papa, dateNaissanceFiston, null);
+				addParente(fiston, papa, dateNaissanceFiston, null);
 				final Ids ids = new Ids();
 				ids.idPapa = papa.getNumero();
 				ids.idFiston = fiston.getNumero();

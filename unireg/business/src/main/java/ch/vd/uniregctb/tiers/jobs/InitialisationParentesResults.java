@@ -7,21 +7,21 @@ import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.AbstractJobResults;
-import ch.vd.uniregctb.tiers.Filiation;
+import ch.vd.uniregctb.tiers.Parente;
 
-public class InitialisationFiliationsResults extends AbstractJobResults<Long, InitialisationFiliationsResults> {
+public class InitialisationParentesResults extends AbstractJobResults<Long, InitialisationParentesResults> {
 
-	public static class InfoFiliation {
+	public static class InfoParente {
 		public final long noCtbParent;
 		public final long noCtbEnfant;
 		public final RegDate dateDebut;
 		public final RegDate dateFin;
 
-		public InfoFiliation(Filiation filiation) {
-			this.noCtbParent = filiation.getObjetId();
-			this.noCtbEnfant = filiation.getSujetId();
-			this.dateDebut = filiation.getDateDebut();
-			this.dateFin = filiation.getDateFin();
+		public InfoParente(Parente parente) {
+			this.noCtbParent = parente.getObjetId();
+			this.noCtbEnfant = parente.getSujetId();
+			this.dateDebut = parente.getDateDebut();
+			this.dateFin = parente.getDateFin();
 		}
 	}
 
@@ -38,10 +38,10 @@ public class InitialisationFiliationsResults extends AbstractJobResults<Long, In
 	public final int nbThreads;
 	public boolean interrupted;
 
-	private final List<InfoFiliation> filiations = new LinkedList<>();
+	private final List<InfoParente> parentes = new LinkedList<>();
 	private final List<InfoErreur> erreurs = new LinkedList<>();
 
-	public InitialisationFiliationsResults(int nbThreads) {
+	public InitialisationParentesResults(int nbThreads) {
 		this.nbThreads = nbThreads;
 	}
 
@@ -51,13 +51,13 @@ public class InitialisationFiliationsResults extends AbstractJobResults<Long, In
 	}
 
 	@Override
-	public void addAll(InitialisationFiliationsResults right) {
-		filiations.addAll(right.filiations);
+	public void addAll(InitialisationParentesResults right) {
+		parentes.addAll(right.parentes);
 		erreurs.addAll(right.erreurs);
 	}
 
-	public void addFiliation(Filiation filiation) {
-		filiations.add(new InfoFiliation(filiation));
+	public void addParente(Parente parente) {
+		parentes.add(new InfoParente(parente));
 	}
 
 	private static String buildErrorMessage(Exception e) {
@@ -70,8 +70,8 @@ public class InitialisationFiliationsResults extends AbstractJobResults<Long, In
 		}
 	}
 
-	public List<InfoFiliation> getFiliations() {
-		return filiations;
+	public List<InfoParente> getParentes() {
+		return parentes;
 	}
 
 	public List<InfoErreur> getErreurs() {

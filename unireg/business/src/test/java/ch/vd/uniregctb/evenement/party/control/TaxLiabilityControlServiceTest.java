@@ -312,7 +312,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 				final PersonnePhysique ppParent = addHabitant(noIndParent);
 				ids.idFille = ppFille.getId();
 				ids.idPere = ppParent.getId();
-				addFiliation(ppFille, ppParent, dateNaissance, null);
+				addParente(ppFille, ppParent, dateNaissance, null);
 				//addForPrincipal(ppParent, date(2000, 1, 5), MotifFor.ARRIVEE_HS, MockCommune.Moudon);
 
 				return null;

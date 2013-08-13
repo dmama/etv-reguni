@@ -1165,10 +1165,10 @@ public interface TiersService {
      *
      * @param personnePhysique un personne physique
      * @param yComprisRelationsAnnulees <code>true</code> si on veut toutes les relations existantes, <code>false</code> si on ne veut que les relations non-annulées
-     * @return la liste des rapports de filiation trouvés.
+     * @return la liste des rapports de parenté trouvés.
      */
     @NotNull
-    List<Filiation> getParents(PersonnePhysique enfant, boolean yComprisRelationsAnnulees);
+    List<Parente> getParents(PersonnePhysique enfant, boolean yComprisRelationsAnnulees);
 
 	@NotNull
 	List<PersonnePhysique> getParents(PersonnePhysique enfant, RegDate dateValidite);
@@ -1178,10 +1178,10 @@ public interface TiersService {
 	 *
 	 * @param personnePhysique un personne physique
 	 * @param yComprisRelationsAnnulees <code>true</code> si on veut toutes les relations existantes, <code>false</code> si on ne veut que les relations non-annulées
-	 * @return la liste des rapports de filiation trouvés.
+	 * @return la liste des rapports de parenté trouvés.
 	 */
 	@NotNull
-	List<Filiation> getEnfants(PersonnePhysique parent, boolean yComprisRelationsAnnulees);
+	List<Parente> getEnfants(PersonnePhysique parent, boolean yComprisRelationsAnnulees);
 
     /**
      * Permet de traiter la éouverture d'un for fiscal d'un débiteur. Entraine également la réouverture

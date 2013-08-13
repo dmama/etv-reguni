@@ -17,22 +17,22 @@ import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.tiers.Filiation;
+import ch.vd.uniregctb.tiers.Parente;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.RapportEntreTiersDAO;
 import ch.vd.uniregctb.type.Sexe;
 
-public class InitialisationFiliationsProcessorTest extends BusinessTest {
+public class InitialisationParentesProcessorTest extends BusinessTest {
 
-	private InitialisationFiliationsProcessor processor;
+	private InitialisationParentesProcessor processor;
 
 	@Override
 	protected void runOnSetUp() throws Exception {
 		super.runOnSetUp();
 
 		final RapportEntreTiersDAO rapportDAO = getBean(RapportEntreTiersDAO.class, "rapportEntreTiersDAO");
-		processor = new InitialisationFiliationsProcessor(rapportDAO, tiersDAO, transactionManager, hibernateTemplate, serviceCivil, tiersService);
+		processor = new InitialisationParentesProcessor(rapportDAO, tiersDAO, transactionManager, hibernateTemplate, serviceCivil, tiersService);
 	}
 
 	@Test
@@ -49,22 +49,22 @@ public class InitialisationFiliationsProcessorTest extends BusinessTest {
 			}
 		});
 
-		final InitialisationFiliationsResults results = processor.run(1, null);
+		final InitialisationParentesResults results = processor.run(1, null);
 		Assert.assertNotNull(results);
 		Assert.assertNotNull(results.getErreurs());
-		Assert.assertNotNull(results.getFiliations());
+		Assert.assertNotNull(results.getParentes());
 		Assert.assertEquals(0, results.getErreurs().size());
-		Assert.assertEquals(0, results.getFiliations().size());
+		Assert.assertEquals(0, results.getParentes().size());
 	}
 
 	@Test
-	public void testDestructionFiliationsPresentes() throws Exception {
+	public void testDestructionParentesPresentes() throws Exception {
 		serviceCivil.setUp(new DefaultMockServiceCivil());
 
 		final class Ids {
 			long idParent;
 			long idEnfant;
-			long idFilation;
+			long isParente;
 		}
 
 		// quelques non-habitants quand-même (avec une relation de filiation entre eux...)
@@ -73,11 +73,11 @@ public class InitialisationFiliationsProcessorTest extends BusinessTest {
 			public Ids doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pierre = addNonHabitant("Pierre", "Kiroul", null, Sexe.MASCULIN);
 				final PersonnePhysique namass = addNonHabitant("Namass", "Pamouss", null, Sexe.FEMININ);
-				final Filiation filiation = addFiliation(namass, pierre, date(2010, 6, 23), null);
+				final Parente parente = addParente(namass, pierre, date(2010, 6, 23), null);
 				final Ids ids = new Ids();
 				ids.idParent = pierre.getNumero();
 				ids.idEnfant = namass.getNumero();
-				ids.idFilation = filiation.getId();
+				ids.isParente = parente.getId();
 				return ids;
 			}
 		});
@@ -95,8 +95,8 @@ public class InitialisationFiliationsProcessorTest extends BusinessTest {
 
 					final RapportEntreTiers rapport = objectRapports.iterator().next();
 					Assert.assertNotNull(rapport);
-					Assert.assertEquals(Filiation.class, rapport.getClass());
-					Assert.assertEquals((Long) ids.idFilation, rapport.getId());
+					Assert.assertEquals(Parente.class, rapport.getClass());
+					Assert.assertEquals((Long) ids.isParente, rapport.getId());
 				}
 				{
 					final PersonnePhysique enfant = (PersonnePhysique) tiersDAO.get(ids.idEnfant);
@@ -107,22 +107,22 @@ public class InitialisationFiliationsProcessorTest extends BusinessTest {
 
 					final RapportEntreTiers rapport = sujetRapports.iterator().next();
 					Assert.assertNotNull(rapport);
-					Assert.assertEquals(Filiation.class, rapport.getClass());
-					Assert.assertEquals((Long) ids.idFilation, rapport.getId());
+					Assert.assertEquals(Parente.class, rapport.getClass());
+					Assert.assertEquals((Long) ids.isParente, rapport.getId());
 				}
 
 				return null;
 			}
 		});
 
-		final InitialisationFiliationsResults results = processor.run(1, null);
+		final InitialisationParentesResults results = processor.run(1, null);
 		Assert.assertNotNull(results);
 		Assert.assertNotNull(results.getErreurs());
-		Assert.assertNotNull(results.getFiliations());
+		Assert.assertNotNull(results.getParentes());
 		Assert.assertEquals(0, results.getErreurs().size());
-		Assert.assertEquals(0, results.getFiliations().size());
+		Assert.assertEquals(0, results.getParentes().size());
 
-		// on vérifie que la relation de filiation a bien été enlevée
+		// on vérifie que la relation de parenté a bien été enlevée
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
@@ -141,8 +141,8 @@ public class InitialisationFiliationsProcessorTest extends BusinessTest {
 					Assert.assertEquals(0, sujetRapports.size());
 				}
 				{
-					final Filiation filiation = hibernateTemplate.get(Filiation.class, ids.idFilation);
-					Assert.assertNull(filiation);
+					final Parente parente = hibernateTemplate.get(Parente.class, ids.isParente);
+					Assert.assertNull(parente);
 				}
 
 				return null;
@@ -205,18 +205,18 @@ public class InitialisationFiliationsProcessorTest extends BusinessTest {
 		});
 
 		// génération des relations
-		final InitialisationFiliationsResults results = processor.run(1, null);
+		final InitialisationParentesResults results = processor.run(1, null);
 		Assert.assertNotNull(results);
 		Assert.assertNotNull(results.getErreurs());
-		Assert.assertNotNull(results.getFiliations());
+		Assert.assertNotNull(results.getParentes());
 		Assert.assertEquals(0, results.getErreurs().size());
-		Assert.assertEquals(4, results.getFiliations().size());
+		Assert.assertEquals(4, results.getParentes().size());
 
 		// vérification du contenu du rapport d'exécution
-		final List<InitialisationFiliationsResults.InfoFiliation> filiations = new ArrayList<>(results.getFiliations());
-		Collections.sort(filiations, new Comparator<InitialisationFiliationsResults.InfoFiliation>() {
+		final List<InitialisationParentesResults.InfoParente> parentes = new ArrayList<>(results.getParentes());
+		Collections.sort(parentes, new Comparator<InitialisationParentesResults.InfoParente>() {
 			@Override
-			public int compare(InitialisationFiliationsResults.InfoFiliation o1, InitialisationFiliationsResults.InfoFiliation o2) {
+			public int compare(InitialisationParentesResults.InfoParente o1, InitialisationParentesResults.InfoParente o2) {
 				final int compParents = Long.compare(o1.noCtbParent, o2.noCtbParent);
 				if (compParents == 0) {
 					return Long.compare(o1.noCtbEnfant, o2.noCtbEnfant);
@@ -226,49 +226,49 @@ public class InitialisationFiliationsProcessorTest extends BusinessTest {
 		});
 
 		{
-			final InitialisationFiliationsResults.InfoFiliation filiation = filiations.get(0);
-			Assert.assertNotNull(filiation);
-			Assert.assertEquals(ids.idPapa, filiation.noCtbParent);
-			Assert.assertEquals(ids.idBelle, filiation.noCtbEnfant);
-			Assert.assertEquals(date(2005, 12, 22), filiation.dateDebut);
-			Assert.assertNull(filiation.dateFin);
+			final InitialisationParentesResults.InfoParente parente = parentes.get(0);
+			Assert.assertNotNull(parente);
+			Assert.assertEquals(ids.idPapa, parente.noCtbParent);
+			Assert.assertEquals(ids.idBelle, parente.noCtbEnfant);
+			Assert.assertEquals(date(2005, 12, 22), parente.dateDebut);
+			Assert.assertNull(parente.dateFin);
 		}
 		{
-			final InitialisationFiliationsResults.InfoFiliation filiation = filiations.get(1);
-			Assert.assertNotNull(filiation);
-			Assert.assertEquals(ids.idPapa, filiation.noCtbParent);
-			Assert.assertEquals(ids.idDur, filiation.noCtbEnfant);
-			Assert.assertEquals(date(2005, 12, 21), filiation.dateDebut);
-			Assert.assertNull(filiation.dateFin);
+			final InitialisationParentesResults.InfoParente parente = parentes.get(1);
+			Assert.assertNotNull(parente);
+			Assert.assertEquals(ids.idPapa, parente.noCtbParent);
+			Assert.assertEquals(ids.idDur, parente.noCtbEnfant);
+			Assert.assertEquals(date(2005, 12, 21), parente.dateDebut);
+			Assert.assertNull(parente.dateFin);
 		}
 		{
-			final InitialisationFiliationsResults.InfoFiliation filiation = filiations.get(2);
-			Assert.assertNotNull(filiation);
-			Assert.assertEquals(ids.idMaman, filiation.noCtbParent);
-			Assert.assertEquals(ids.idBelle, filiation.noCtbEnfant);
-			Assert.assertEquals(date(2005, 12, 22), filiation.dateDebut);
-			Assert.assertNull(filiation.dateFin);
+			final InitialisationParentesResults.InfoParente parente = parentes.get(2);
+			Assert.assertNotNull(parente);
+			Assert.assertEquals(ids.idMaman, parente.noCtbParent);
+			Assert.assertEquals(ids.idBelle, parente.noCtbEnfant);
+			Assert.assertEquals(date(2005, 12, 22), parente.dateDebut);
+			Assert.assertNull(parente.dateFin);
 		}
 		{
-			final InitialisationFiliationsResults.InfoFiliation filiation = filiations.get(3);
-			Assert.assertNotNull(filiation);
-			Assert.assertEquals(ids.idMaman, filiation.noCtbParent);
-			Assert.assertEquals(ids.idDur, filiation.noCtbEnfant);
-			Assert.assertEquals(date(2005, 12, 21), filiation.dateDebut);
-			Assert.assertNull(filiation.dateFin);
+			final InitialisationParentesResults.InfoParente parente = parentes.get(3);
+			Assert.assertNotNull(parente);
+			Assert.assertEquals(ids.idMaman, parente.noCtbParent);
+			Assert.assertEquals(ids.idDur, parente.noCtbEnfant);
+			Assert.assertEquals(date(2005, 12, 21), parente.dateDebut);
+			Assert.assertNull(parente.dateFin);
 		}
 
 		// vérification en base
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
-				final List<Filiation> filiations = hibernateTemplate.find("from Filiation", null, FlushMode.AUTO);
-				Assert.assertNotNull(filiations);
-				Assert.assertEquals(4, filiations.size());
-				final List<Filiation> copyToSort = new ArrayList<>(filiations);
-				Collections.sort(copyToSort, new Comparator<Filiation>() {
+				final List<Parente> parentes = hibernateTemplate.find("from Parente", null, FlushMode.AUTO);
+				Assert.assertNotNull(parentes);
+				Assert.assertEquals(4, parentes.size());
+				final List<Parente> copyToSort = new ArrayList<>(parentes);
+				Collections.sort(copyToSort, new Comparator<Parente>() {
 					@Override
-					public int compare(Filiation o1, Filiation o2) {
+					public int compare(Parente o1, Parente o2) {
 						int comp = Long.compare(o1.getObjetId(), o2.getObjetId());
 						if (comp == 0) {
 							comp = Long.compare(o1.getSujetId(), o2.getSujetId());
@@ -278,36 +278,36 @@ public class InitialisationFiliationsProcessorTest extends BusinessTest {
 				});
 
 				{
-					final Filiation filiation = copyToSort.get(0);
-					Assert.assertNotNull(filiation);
-					Assert.assertEquals((Long) ids.idPapa, filiation.getObjetId());
-					Assert.assertEquals((Long) ids.idBelle, filiation.getSujetId());
-					Assert.assertEquals(date(2005, 12, 22), filiation.getDateDebut());
-					Assert.assertNull(filiation.getDateFin());
+					final Parente parente = copyToSort.get(0);
+					Assert.assertNotNull(parente);
+					Assert.assertEquals((Long) ids.idPapa, parente.getObjetId());
+					Assert.assertEquals((Long) ids.idBelle, parente.getSujetId());
+					Assert.assertEquals(date(2005, 12, 22), parente.getDateDebut());
+					Assert.assertNull(parente.getDateFin());
 				}
 				{
-					final Filiation filiation = copyToSort.get(1);
-					Assert.assertNotNull(filiation);
-					Assert.assertEquals((Long) ids.idPapa, filiation.getObjetId());
-					Assert.assertEquals((Long) ids.idDur, filiation.getSujetId());
-					Assert.assertEquals(date(2005, 12, 21), filiation.getDateDebut());
-					Assert.assertNull(filiation.getDateFin());
+					final Parente parente = copyToSort.get(1);
+					Assert.assertNotNull(parente);
+					Assert.assertEquals((Long) ids.idPapa, parente.getObjetId());
+					Assert.assertEquals((Long) ids.idDur, parente.getSujetId());
+					Assert.assertEquals(date(2005, 12, 21), parente.getDateDebut());
+					Assert.assertNull(parente.getDateFin());
 				}
 				{
-					final Filiation filiation = copyToSort.get(2);
-					Assert.assertNotNull(filiation);
-					Assert.assertEquals((Long) ids.idMaman, filiation.getObjetId());
-					Assert.assertEquals((Long) ids.idBelle, filiation.getSujetId());
-					Assert.assertEquals(date(2005, 12, 22), filiation.getDateDebut());
-					Assert.assertNull(filiation.getDateFin());
+					final Parente parente = copyToSort.get(2);
+					Assert.assertNotNull(parente);
+					Assert.assertEquals((Long) ids.idMaman, parente.getObjetId());
+					Assert.assertEquals((Long) ids.idBelle, parente.getSujetId());
+					Assert.assertEquals(date(2005, 12, 22), parente.getDateDebut());
+					Assert.assertNull(parente.getDateFin());
 				}
 				{
-					final Filiation filiation = copyToSort.get(3);
-					Assert.assertNotNull(filiation);
-					Assert.assertEquals((Long) ids.idMaman, filiation.getObjetId());
-					Assert.assertEquals((Long) ids.idDur, filiation.getSujetId());
-					Assert.assertEquals(date(2005, 12, 21), filiation.getDateDebut());
-					Assert.assertNull(filiation.getDateFin());
+					final Parente parente = copyToSort.get(3);
+					Assert.assertNotNull(parente);
+					Assert.assertEquals((Long) ids.idMaman, parente.getObjetId());
+					Assert.assertEquals((Long) ids.idDur, parente.getSujetId());
+					Assert.assertEquals(date(2005, 12, 21), parente.getDateDebut());
+					Assert.assertNull(parente.getDateFin());
 				}
 				return null;
 			}

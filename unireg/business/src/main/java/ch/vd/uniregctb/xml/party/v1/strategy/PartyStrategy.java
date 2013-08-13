@@ -18,7 +18,7 @@ import ch.vd.unireg.xml.party.taxdeclaration.v1.TaxDeclaration;
 import ch.vd.unireg.xml.party.taxresidence.v1.TaxResidence;
 import ch.vd.unireg.xml.party.v1.Party;
 import ch.vd.unireg.xml.party.v1.PartyPart;
-import ch.vd.uniregctb.tiers.Filiation;
+import ch.vd.uniregctb.tiers.Parente;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
@@ -222,7 +222,7 @@ public abstract class PartyStrategy<T extends Party> {
 		copyColl(to.getDebtProsecutionAddressesOfOtherParty(), from.getDebtProsecutionAddressesOfOtherParty());
 	}
 
-	private static final Set<TypeRapportEntreTiers> EXPOSED_RELATIONS_BETWEEN_PARTIES = EnumSet.complementOf(EnumSet.of(TypeRapportEntreTiers.CONTACT_IMPOT_SOURCE, TypeRapportEntreTiers.FILIATION));
+	private static final Set<TypeRapportEntreTiers> EXPOSED_RELATIONS_BETWEEN_PARTIES = EnumSet.complementOf(EnumSet.of(TypeRapportEntreTiers.CONTACT_IMPOT_SOURCE, TypeRapportEntreTiers.PARENTE));
 
 	private static void initRelationsBetweenParties(Party tiers, final Tiers right, Set<PartyPart> parts, Context context) {
 		if (parts.contains(PartyPart.RELATIONS_BETWEEN_PARTIES)) {
@@ -244,8 +244,8 @@ public abstract class PartyStrategy<T extends Party> {
 
 		if (parts.contains(PartyPart.CHILDREN) && right instanceof PersonnePhysique) {
 			final PersonnePhysique pp = (PersonnePhysique) right;
-			final List<Filiation> enfants = context.tiersService.getEnfants(pp, false);
-			for (Filiation enfant : enfants) {
+			final List<Parente> enfants = context.tiersService.getEnfants(pp, false);
+			for (Parente enfant : enfants) {
 				final RelationBetweenParties rbp = RelationBetweenPartiesBuilder.newFiliationTowardsChild(enfant);
 				if (rbp != null) {
 					tiers.getRelationsBetweenParties().add(rbp);
@@ -255,8 +255,8 @@ public abstract class PartyStrategy<T extends Party> {
 
 		if (parts.contains(PartyPart.PARENTS) && right instanceof PersonnePhysique) {
 			final PersonnePhysique pp = (PersonnePhysique) right;
-			final List<Filiation> parents = context.tiersService.getParents(pp, false);
-			for (Filiation parent : parents) {
+			final List<Parente> parents = context.tiersService.getParents(pp, false);
+			for (Parente parent : parents) {
 				final RelationBetweenParties rbp = RelationBetweenPartiesBuilder.newFiliationTowardsParent(parent);
 				if (rbp != null) {
 					tiers.getRelationsBetweenParties().add(rbp);

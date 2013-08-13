@@ -23,11 +23,11 @@ import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.tiers.Filiation;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.tiers.Parente;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -256,7 +256,7 @@ public class AperiodicTaxLiabilityRequestHandler implements RequestHandler<Aperi
 	@Nullable
 	private MenageCommun getMenageDesParents(@NotNull PersonnePhysique pp, RegDate date) {
 		MenageCommun menageParents = null;
-		final List<Filiation> parents = validOn(tiersService.getParents(pp, false), date);
+		final List<Parente> parents = validOn(tiersService.getParents(pp, false), date);
 		if (parents.size() == 2) { // TODO (msi) vérifier ça avec Philippe Campiche
 			final MenageCommun menage0 = getMenage((PersonnePhysique) tiersService.getTiers(parents.get(0).getObjetId()), date);
 			final MenageCommun menage1 = getMenage((PersonnePhysique) tiersService.getTiers(parents.get(1).getObjetId()), date);

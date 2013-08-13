@@ -65,7 +65,7 @@ public abstract class TiersWebHelper {
 		else if (rapport instanceof RapportPrestationImposable) {
 			return String.format("%s %s employé(e) par %s", nomSujet, fermeOuAnnule ? "était" : "est", nomObjet);
 		}
-		else if (rapport instanceof Filiation) {
+		else if (rapport instanceof Parente) {
 			return String.format("%s %s l'enfant de %s", nomSujet, fermeOuAnnule ? "était" : "est", nomObjet);
 		}
 		else {

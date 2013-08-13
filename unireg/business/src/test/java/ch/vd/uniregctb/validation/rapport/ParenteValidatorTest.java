@@ -7,7 +7,7 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.tiers.Filiation;
+import ch.vd.uniregctb.tiers.Parente;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.validation.AbstractValidatorTest;
@@ -15,30 +15,30 @@ import ch.vd.uniregctb.validation.AbstractValidatorTest;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-public class FiliationValidatorTest extends AbstractValidatorTest<Filiation> {
+public class ParenteValidatorTest extends AbstractValidatorTest<Parente> {
 
 	@Override
 	protected String getValidatorBeanName() {
-		return "filiationValidator";
+		return "parenteValidator";
 	}
 
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
-	public void testFiliationComplete() throws Exception {
+	public void testParenteComplete() throws Exception {
 		final PersonnePhysique parent = addNonHabitant("Papa", "Barbapapa", null, Sexe.MASCULIN);
 		final PersonnePhysique enfant = addNonHabitant("Barbidur", "Barbapapa", null, Sexe.MASCULIN);
-		final Filiation filiation = addFiliation(enfant, parent, date(2000, 1, 1), null);
-		final ValidationResults vr = validate(filiation);
+		final Parente parente = addParente(enfant, parent, date(2000, 1, 1), null);
+		final ValidationResults vr = validate(parente);
 		assertNotNull(vr);
 		assertEquals(0, vr.getErrors().size());
 	}
 
 	@Test
-	public void testFiliationAvecParentDeMauvaiseClasse() throws Exception {
+	public void testParenteAvecParentDeMauvaiseClasse() throws Exception {
 		final class Ids {
 			long idParent;
 			long idEnfant;
-			long idFiliation;
+			long idParente;
 		}
 
 		// mise en place
@@ -47,11 +47,11 @@ public class FiliationValidatorTest extends AbstractValidatorTest<Filiation> {
 			public Ids doInTransaction(TransactionStatus status) {
 				final PersonnePhysique parent = addNonHabitant("Papa", "Barbapapa", null, Sexe.MASCULIN);
 				final PersonnePhysique enfant = addNonHabitant("Barbidur", "Barbapapa", null, Sexe.MASCULIN);
-				final Filiation filiation = addFiliation(enfant, parent, date(2000, 1, 1), null);
+				final Parente parente = addParente(enfant, parent, date(2000, 1, 1), null);
 				final Ids ids = new Ids();
 				ids.idParent = parent.getNumero();
 				ids.idEnfant = enfant.getNumero();
-				ids.idFiliation = filiation.getId();
+				ids.idParente = parente.getId();
 				return ids;
 			}
 		});
@@ -69,8 +69,8 @@ public class FiliationValidatorTest extends AbstractValidatorTest<Filiation> {
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
-				final Filiation filiation = hibernateTemplate.get(Filiation.class, ids.idFiliation);
-				final ValidationResults vr = validate(filiation);
+				final Parente parente = hibernateTemplate.get(Parente.class, ids.idParente);
+				final ValidationResults vr = validate(parente);
 				assertNotNull(vr);
 				assertEquals(1, vr.getErrors().size());
 				assertEquals("Le tiers parent " + FormatNumeroHelper.numeroCTBToDisplay(ids.idParent) + " n'est pas une personne physique", vr.getErrors().get(0));
@@ -80,11 +80,11 @@ public class FiliationValidatorTest extends AbstractValidatorTest<Filiation> {
 	}
 
 	@Test
-	public void testFiliationAvecEnfantDeMauvaiseClasse() throws Exception {
+	public void testParenteAvecEnfantDeMauvaiseClasse() throws Exception {
 		final class Ids {
 			long idParent;
 			long idEnfant;
-			long idFiliation;
+			long idParente;
 		}
 
 		// mise en place
@@ -93,11 +93,11 @@ public class FiliationValidatorTest extends AbstractValidatorTest<Filiation> {
 			public Ids doInTransaction(TransactionStatus status) {
 				final PersonnePhysique parent = addNonHabitant("Papa", "Barbapapa", null, Sexe.MASCULIN);
 				final PersonnePhysique enfant = addNonHabitant("Barbidur", "Barbapapa", null, Sexe.MASCULIN);
-				final Filiation filiation = addFiliation(enfant, parent, date(2000, 1, 1), null);
+				final Parente parente = addParente(enfant, parent, date(2000, 1, 1), null);
 				final Ids ids = new Ids();
 				ids.idParent = parent.getNumero();
 				ids.idEnfant = enfant.getNumero();
-				ids.idFiliation = filiation.getId();
+				ids.idParente = parente.getId();
 				return ids;
 			}
 		});
@@ -115,8 +115,8 @@ public class FiliationValidatorTest extends AbstractValidatorTest<Filiation> {
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
-				final Filiation filiation = hibernateTemplate.get(Filiation.class, ids.idFiliation);
-				final ValidationResults vr = validate(filiation);
+				final Parente parente = hibernateTemplate.get(Parente.class, ids.idParente);
+				final ValidationResults vr = validate(parente);
 				assertNotNull(vr);
 				assertEquals(1, vr.getErrors().size());
 				assertEquals("Le tiers enfant " + FormatNumeroHelper.numeroCTBToDisplay(ids.idEnfant) + " n'est pas une personne physique", vr.getErrors().get(0));

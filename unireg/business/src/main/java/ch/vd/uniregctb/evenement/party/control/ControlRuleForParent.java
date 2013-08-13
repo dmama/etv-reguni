@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.uniregctb.tiers.Filiation;
+import ch.vd.uniregctb.tiers.Parente;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -23,13 +23,13 @@ public abstract class ControlRuleForParent extends AbstractControlRule {
 		final TaxLiabilityControlResult result = new TaxLiabilityControlResult();
 
 		//Recherche des parents:
-		final List<Filiation> filiations = tiers instanceof PersonnePhysique ? extractParents(tiersService.getParents((PersonnePhysique) tiers, false)) : Collections.<Filiation>emptyList();
-		if (filiations.isEmpty()) {
+		final List<Parente> parentes = tiers instanceof PersonnePhysique ? extractParents(tiersService.getParents((PersonnePhysique) tiers, false)) : Collections.<Parente>emptyList();
+		if (parentes.isEmpty()) {
 			setErreur(result, TaxLiabilityControlEchec.EchecType.CONTROLE_SUR_PARENTS_KO, null, null, null);
 		}
-		else if (filiations.size() == 1) {
-			final Filiation filiation = filiations.get(0);
-			final Long parentId = filiation.getObjetId();
+		else if (parentes.size() == 1) {
+			final Parente parente = parentes.get(0);
+			final Long parentId = parente.getObjetId();
 			final PersonnePhysique parent = (PersonnePhysique) tiersService.getTiers(parentId);
 			if (parent != null) {
 				// le parent est assujetti tout va bien
@@ -52,24 +52,24 @@ public abstract class ControlRuleForParent extends AbstractControlRule {
 				setErreur(result, TaxLiabilityControlEchec.EchecType.CONTROLE_SUR_PARENTS_KO, null, null, null);
 			}
 		}
-		else if (filiations.size() == 2) {
-			checkAppartenanceMenageAssujetti(filiations, result);
+		else if (parentes.size() == 2) {
+			checkAppartenanceMenageAssujetti(parentes, result);
 		}
-		else if (filiations.size() > 2) {
-			final List<Long> parentsIds = new ArrayList<>(filiations.size());
-			for (Filiation filiationParent : filiations) {
-				parentsIds.add(filiationParent.getObjetId());
+		else if (parentes.size() > 2) {
+			final List<Long> parentsIds = new ArrayList<>(parentes.size());
+			for (Parente parenteParent : parentes) {
+				parentsIds.add(parenteParent.getObjetId());
 			}
 			setErreur(result, TaxLiabilityControlEchec.EchecType.CONTROLE_SUR_PARENTS_KO, null, null, parentsIds);
 		}
 		return result;
 	}
 
-	public void checkAppartenanceMenageAssujetti(List<Filiation> filiationParents, TaxLiabilityControlResult result) throws ControlRuleException {
-		final Filiation rapportParent1 = filiationParents.get(0);
+	public void checkAppartenanceMenageAssujetti(List<Parente> parenteParents, TaxLiabilityControlResult result) throws ControlRuleException {
+		final Parente rapportParent1 = parenteParents.get(0);
 		final PersonnePhysique parent1 = (PersonnePhysique) tiersService.getTiers(rapportParent1.getObjetId());
 
-		final Filiation rapportParent2 = filiationParents.get(1);
+		final Parente rapportParent2 = parenteParents.get(1);
 		final PersonnePhysique parent2 = (PersonnePhysique) tiersService.getTiers(rapportParent2.getObjetId());
 
 		final Long parent1Id = parent1.getId();
@@ -114,7 +114,7 @@ public abstract class ControlRuleForParent extends AbstractControlRule {
 		}
 	}
 
-	protected abstract List<Filiation> extractParents(List<Filiation> filiations);
+	protected abstract List<Parente> extractParents(List<Parente> parentes);
 
 	protected abstract TaxLiabilityControlResult rechercheAssujettisementSurMenage(@NotNull PersonnePhysique parent) throws ControlRuleException;
 

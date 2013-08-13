@@ -451,8 +451,8 @@ public class AperiodicTaxLiabilityRequestHandlerTest extends BusinessTest {
 				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(pere, mere, date(1994, 3, 12), null);
 				final MenageCommun menage = ensemble.getMenage();
 				addForPrincipal(menage, date(1994, 3, 12), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Vevey);
-				addFiliation(enfant, pere, dateNaissanceEnfant, null);
-				addFiliation(enfant, mere, dateNaissanceEnfant, null);
+				addParente(enfant, pere, dateNaissanceEnfant, null);
+				addParente(enfant, mere, dateNaissanceEnfant, null);
 
 				ids.pp = enfant.getId();
 				ids.mc = menage.getId();

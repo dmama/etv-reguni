@@ -49,7 +49,7 @@ import ch.vd.uniregctb.document.FusionDeCommunesRapport;
 import ch.vd.uniregctb.document.IdentifierContribuableRapport;
 import ch.vd.uniregctb.document.ImportCodesSegmentRapport;
 import ch.vd.uniregctb.document.ImportImmeublesRapport;
-import ch.vd.uniregctb.document.InitialisationFilationsRapport;
+import ch.vd.uniregctb.document.InitialisationParentesRapport;
 import ch.vd.uniregctb.document.ListeAssujettisRapport;
 import ch.vd.uniregctb.document.ListeContribuablesResidentsSansForVaudoisRapport;
 import ch.vd.uniregctb.document.ListeDIsNonEmisesRapport;
@@ -99,7 +99,7 @@ import ch.vd.uniregctb.stats.evenements.StatsEvenementsIdentificationContribuabl
 import ch.vd.uniregctb.tache.ListeTachesEnInstanceParOID;
 import ch.vd.uniregctb.tache.TacheSyncResults;
 import ch.vd.uniregctb.tiers.ExclureContribuablesEnvoiResults;
-import ch.vd.uniregctb.tiers.jobs.InitialisationFiliationsResults;
+import ch.vd.uniregctb.tiers.jobs.InitialisationParentesResults;
 import ch.vd.uniregctb.tiers.rattrapage.etatdeclaration.CorrectionEtatDeclarationResults;
 import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantResults;
 import ch.vd.uniregctb.tiers.rattrapage.pm.MigrationCoquillesPM;
@@ -1125,18 +1125,18 @@ public class RapportServiceImpl implements RapportService {
 	}
 	
 	@Override
-	public InitialisationFilationsRapport generateRapport(final InitialisationFiliationsResults results, StatusManager s) {
+	public InitialisationParentesRapport generateRapport(final InitialisationParentesResults results, StatusManager s) {
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
-		final String nom = "RapportInitialisationFiliations";
-		final String description = "Rapport d'exécution du job d'initialisation des relations de filiation";
+		final String nom = "RapportInitialisationParentes";
+		final String description = "Rapport d'exécution du job d'initialisation des relations de parenté";
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
-			return docService.newDoc(InitialisationFilationsRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<InitialisationFilationsRapport>() {
+			return docService.newDoc(InitialisationParentesRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<InitialisationParentesRapport>() {
 				@Override
-				public void writeDoc(InitialisationFilationsRapport doc, OutputStream os) throws Exception {
-					final PdfInitialisationFiliationsRapport document = new PdfInitialisationFiliationsRapport();
+				public void writeDoc(InitialisationParentesRapport doc, OutputStream os) throws Exception {
+					final PdfInitialisationParentesRapport document = new PdfInitialisationParentesRapport();
 					document.write(results, nom, description, dateGeneration, os, status);
 				}
 			});

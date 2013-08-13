@@ -79,7 +79,7 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 				final PersonnePhysique ppParent = addHabitant(noIndParent);
 				ids.idFille = ppFille.getId();
 				ids.idPere = ppParent.getId();
-				addFiliation(ppFille, ppParent, dateNaissance, null);
+				addParente(ppFille, ppParent, dateNaissance, null);
 				return null;
 			}
 		});
@@ -128,7 +128,7 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 				ids.idFille = ppFille.getId();
 				ids.idPere = ppParent.getId();
 				addForPrincipal(ppParent, date(2000, 1, 5), MotifFor.ARRIVEE_HS, MockCommune.Moudon);
-				addFiliation(ppFille, ppParent, dateNaissance, null);
+				addParente(ppFille, ppParent, dateNaissance, null);
 				return null;
 			}
 		});
@@ -176,7 +176,7 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 				final PersonnePhysique ppPere = addHabitant(noIndParent);
 				ids.idFille = ppFille.getId();
 				ids.idPere = ppPere.getId();
-				addFiliation(ppFille, ppPere, dateNaissance, null);
+				addParente(ppFille, ppPere, dateNaissance, null);
 
 				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(ppPere, null, date(2000, 5, 5), null);
 				final MenageCommun menage = ensemble.getMenage();
@@ -230,7 +230,7 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 				final PersonnePhysique ppPere = addHabitant(noIndParent);
 				ids.idFille = ppFille.getId();
 				ids.idPere = ppPere.getId();
-				addFiliation(ppFille, ppPere, dateNaissance, null);
+				addParente(ppFille, ppPere, dateNaissance, null);
 
 				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(ppPere, null, date(2000, 1, 5), null);
 				final MenageCommun menage = ensemble.getMenage();
@@ -285,8 +285,8 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 				final PersonnePhysique ppFille = addHabitant(noIndFille);
 				final PersonnePhysique ppPere = addHabitant(noIndPere);
 				final PersonnePhysique ppMere = addHabitant(noIndMere);
-				addFiliation(ppFille, ppPere, dateNaissance, null);
-				addFiliation(ppFille, ppMere, dateNaissance, null);
+				addParente(ppFille, ppPere, dateNaissance, null);
+				addParente(ppFille, ppMere, dateNaissance, null);
 
 				ids.idFille = ppFille.getId();
 				ids.idPere = ppPere.getId();
@@ -339,8 +339,8 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 				final PersonnePhysique ppFille = addHabitant(noIndFille);
 				final PersonnePhysique ppPere = addHabitant(noIndPere);
 				final PersonnePhysique ppMere = addHabitant(noIndMere);
-				addFiliation(ppFille, ppPere, dateNaissance, null);
-				addFiliation(ppFille, ppMere, dateNaissance, null);
+				addParente(ppFille, ppPere, dateNaissance, null);
+				addParente(ppFille, ppMere, dateNaissance, null);
 
 				ids.idFille = ppFille.getId();
 				ids.idPere = ppPere.getId();
@@ -398,8 +398,8 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 				final PersonnePhysique ppFille = addHabitant(noIndFille);
 				final PersonnePhysique ppPere = addHabitant(noIndPere);
 				final PersonnePhysique ppMere = addHabitant(noIndMere);
-				addFiliation(ppFille, ppPere, dateNaissance, null);
-				addFiliation(ppFille, ppMere, dateNaissance, null);
+				addParente(ppFille, ppPere, dateNaissance, null);
+				addParente(ppFille, ppMere, dateNaissance, null);
 				ids.idFille = ppFille.getId();
 				ids.idPere = ppPere.getId();
 				ids.idMere = ppMere.getId();
@@ -460,8 +460,8 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 				final PersonnePhysique ppFille = addHabitant(noIndFille);
 				final PersonnePhysique ppPere = addHabitant(noIndPere);
 				final PersonnePhysique ppMere = addHabitant(noIndMere);
-				addFiliation(ppFille, ppPere, dateNaissance, null);
-				addFiliation(ppFille, ppMere, dateNaissance, null);
+				addParente(ppFille, ppPere, dateNaissance, null);
+				addParente(ppFille, ppMere, dateNaissance, null);
 				ids.idFille = ppFille.getId();
 				ids.idPere = ppPere.getId();
 				ids.idMere = ppMere.getId();
@@ -524,8 +524,8 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 				final PersonnePhysique ppFille = addHabitant(noIndFille);
 				final PersonnePhysique ppPere = addHabitant(noIndPere);
 				final PersonnePhysique ppMere = addHabitant(noIndMere);
-				addFiliation(ppFille, ppMere, dateNaissance, null);
-				addFiliation(ppFille, ppPere, dateNaissance, null);
+				addParente(ppFille, ppMere, dateNaissance, null);
+				addParente(ppFille, ppPere, dateNaissance, null);
 				ids.idFille = ppFille.getId();
 				ids.idPere = ppPere.getId();
 				ids.idMere = ppMere.getId();
@@ -583,8 +583,8 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 				final PersonnePhysique ppFille = addHabitant(noIndFille);
 				final PersonnePhysique ppPere = addHabitant(noIndPere);
 				final PersonnePhysique ppMere = addHabitant(noIndMere);
-				addFiliation(ppFille, ppPere, dateNaissance, null);
-				addFiliation(ppFille, ppMere, dateNaissance, null);
+				addParente(ppFille, ppPere, dateNaissance, null);
+				addParente(ppFille, ppMere, dateNaissance, null);
 				ids.idFille = ppFille.getId();
 				ids.idPere = ppPere.getId();
 				ids.idMere = ppMere.getId();

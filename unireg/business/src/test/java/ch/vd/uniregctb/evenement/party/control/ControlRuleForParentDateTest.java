@@ -76,7 +76,7 @@ public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTes
 			public Ids execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique ppFille = addHabitant(noIndFille);
 				final PersonnePhysique ppParent = addHabitant(noIndParent);
-				addFiliation(ppFille, ppParent, dateNaissance, null);
+				addParente(ppFille, ppParent, dateNaissance, null);
 				final Ids ids = new Ids();
 				ids.idFille = ppFille.getId();
 				ids.idPere = ppParent.getId();
@@ -124,7 +124,7 @@ public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTes
 			public Ids execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique ppFille = addHabitant(noIndFille);
 				final PersonnePhysique ppParent = addHabitant(noIndParent);
-				addFiliation(ppFille, ppParent, dateNaissance, null);
+				addParente(ppFille, ppParent, dateNaissance, null);
 				addForPrincipal(ppParent, date(2000, 1, 5), MotifFor.ARRIVEE_HS, MockCommune.Moudon);
 
 				final Ids ids = new Ids();
@@ -174,7 +174,7 @@ public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTes
 			public Ids execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique ppFille = addHabitant(noIndFille);
 				final PersonnePhysique ppPere = addHabitant(noIndParent);
-				addFiliation(ppFille, ppPere, dateNaissance, null);
+				addParente(ppFille, ppPere, dateNaissance, null);
 				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(ppPere, null, date(2000, 5, 5), null);
 				final MenageCommun menage = ensemble.getMenage();
 
@@ -226,7 +226,7 @@ public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTes
 			public Ids execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique ppFille = addHabitant(noIndFille);
 				final PersonnePhysique ppPere = addHabitant(noIndParent);
-				addFiliation(ppFille, ppPere, dateNaissance, null);
+				addParente(ppFille, ppPere, dateNaissance, null);
 				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(ppPere, null, date(2000, 1, 5), null);
 				final MenageCommun menage = ensemble.getMenage();
 				addForPrincipal(menage, date(2000, 1, 5), MotifFor.ARRIVEE_HS, MockCommune.Moudon);
@@ -283,8 +283,8 @@ public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTes
 				final PersonnePhysique ppFille = addHabitant(noIndFille);
 				final PersonnePhysique ppPere = addHabitant(noIndPere);
 				final PersonnePhysique ppMere = addHabitant(noIndMere);
-				addFiliation(ppFille, ppPere, dateNaissance, null);
-				addFiliation(ppFille, ppMere, dateNaissance, null);
+				addParente(ppFille, ppPere, dateNaissance, null);
+				addParente(ppFille, ppMere, dateNaissance, null);
 
 				final Ids ids = new Ids();
 				ids.idFille = ppFille.getId();
@@ -338,8 +338,8 @@ public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTes
 				final PersonnePhysique ppFille = addHabitant(noIndFille);
 				final PersonnePhysique ppPere = addHabitant(noIndPere);
 				final PersonnePhysique ppMere = addHabitant(noIndMere);
-				addFiliation(ppFille, ppPere, dateNaissance, null);
-				addFiliation(ppFille, ppMere, dateNaissance, null);
+				addParente(ppFille, ppPere, dateNaissance, null);
+				addParente(ppFille, ppMere, dateNaissance, null);
 
 				final EnsembleTiersCouple ensembleTiersCouplePere = addEnsembleTiersCouple(ppPere, null, date(2006, 7, 8), null);
 				final MenageCommun menageCommunPere = ensembleTiersCouplePere.getMenage();
@@ -399,8 +399,8 @@ public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTes
 				final PersonnePhysique ppFille = addHabitant(noIndFille);
 				final PersonnePhysique ppPere = addHabitant(noIndPere);
 				final PersonnePhysique ppMere = addHabitant(noIndMere);
-				addFiliation(ppFille, ppPere, dateNaissance, null);
-				addFiliation(ppFille, ppMere, dateNaissance, null);
+				addParente(ppFille, ppPere, dateNaissance, null);
+				addParente(ppFille, ppMere, dateNaissance, null);
 
 				final EnsembleTiersCouple ensembleTiersCouplePere = addEnsembleTiersCouple(ppPere, null, date(2006, 7, 8), null);
 				final MenageCommun menageCommunPere = ensembleTiersCouplePere.getMenage();
@@ -462,8 +462,8 @@ public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTes
 				final PersonnePhysique ppFille = addHabitant(noIndFille);
 				final PersonnePhysique ppPere = addHabitant(noIndPere);
 				final PersonnePhysique ppMere = addHabitant(noIndMere);
-				addFiliation(ppFille, ppPere, dateNaissance, null);
-				addFiliation(ppFille, ppMere, dateNaissance, null);
+				addParente(ppFille, ppPere, dateNaissance, null);
+				addParente(ppFille, ppMere, dateNaissance, null);
 
 				final EnsembleTiersCouple ensembleTiersCouplePere = addEnsembleTiersCouple(ppPere,null,date(2010, 1, 5),null);
 				final MenageCommun menageCommunPere = ensembleTiersCouplePere.getMenage();
@@ -528,8 +528,8 @@ public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTes
 				final PersonnePhysique ppFille = addHabitant(noIndFille);
 				final PersonnePhysique ppPere = addHabitant(noIndPere);
 				final PersonnePhysique ppMere = addHabitant(noIndMere);
-				addFiliation(ppFille, ppPere, dateNaissance, null);
-				addFiliation(ppFille, ppMere, dateNaissance, null);
+				addParente(ppFille, ppPere, dateNaissance, null);
+				addParente(ppFille, ppMere, dateNaissance, null);
 
 				final EnsembleTiersCouple ensembleTiersCouple = addEnsembleTiersCouple(ppPere,ppMere,date(2006,7,8),null);
 				final MenageCommun menageCommun = ensembleTiersCouple.getMenage();
@@ -588,8 +588,8 @@ public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTes
 				final PersonnePhysique ppFille = addHabitant(noIndFille);
 				final PersonnePhysique ppPere = addHabitant(noIndPere);
 				final PersonnePhysique ppMere = addHabitant(noIndMere);
-				addFiliation(ppFille, ppPere, dateNaissance, null);
-				addFiliation(ppFille, ppMere, dateNaissance, null);
+				addParente(ppFille, ppPere, dateNaissance, null);
+				addParente(ppFille, ppMere, dateNaissance, null);
 
 				final EnsembleTiersCouple ensembleTiersCouple = addEnsembleTiersCouple(ppPere,ppMere,date(2006,7,8),null);
 				final MenageCommun menageCommun = ensembleTiersCouple.getMenage();

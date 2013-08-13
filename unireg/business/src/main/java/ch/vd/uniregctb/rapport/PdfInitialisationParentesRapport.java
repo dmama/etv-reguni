@@ -11,27 +11,27 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.tiers.jobs.InitialisationFiliationsResults;
+import ch.vd.uniregctb.tiers.jobs.InitialisationParentesResults;
 
-public class PdfInitialisationFiliationsRapport extends PdfRapport {
+public class PdfInitialisationParentesRapport extends PdfRapport {
 
 	/**
 	 * Génère un rapport au format PDF à partir des résultats de job.
 	 */
 
-	public void write(final InitialisationFiliationsResults results, String nom, String description, final Date dateGeneration, OutputStream os, StatusManager status) throws DocumentException {
+	public void write(final InitialisationParentesResults results, String nom, String description, final Date dateGeneration, OutputStream os, StatusManager status) throws DocumentException {
 
 			Assert.notNull(status);
 
 			// Création du document PDF
-			PdfInitialisationFiliationsRapport document = new PdfInitialisationFiliationsRapport();
+			PdfInitialisationParentesRapport document = new PdfInitialisationParentesRapport();
 			PdfWriter writer = PdfWriter.getInstance(document, os);
 			document.open();
 			document.addMetaInfo(nom, description);
 			document.addEnteteUnireg();
 
 			// Titre
-			document.addTitrePrincipal("Rapport d'exécution du job génération des relations de filiation");
+			document.addTitrePrincipal("Rapport d'exécution du job génération des relations de parenté");
 
 			// Paramètres
 			document.addEntete1("Paramètres");
@@ -55,7 +55,7 @@ public class PdfInitialisationFiliationsRapport extends PdfRapport {
 				document.addTableSimple(2, new TableSimpleCallback() {
 					@Override
 					public void fillTable(PdfTableSimple table) throws DocumentException {
-						table.addLigne("Nombre total de relations générées:", String.valueOf(results.getFiliations().size()));
+						table.addLigne("Nombre total de relations générées:", String.valueOf(results.getParentes().size()));
 						table.addLigne("Nombre d'erreurs:", String.valueOf(results.getErreurs().size()));
 						table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
 						table.addLigne("Date de génération du rapport:", formatTimestamp(dateGeneration));
@@ -65,9 +65,9 @@ public class PdfInitialisationFiliationsRapport extends PdfRapport {
 
 			// Relations créées
 			{
-				String filename = "filiations_generees.csv";
-				String contenu = asCsvFileTraite(results.getFiliations(), filename, status);
-				String titre = "Liste des relations de filiation générées";
+				String filename = "parentes_generees.csv";
+				String contenu = asCsvFileTraite(results.getParentes(), filename, status);
+				String titre = "Liste des relations de parenté générées";
 				String listVide = "(aucune)";
 				document.addListeDetaillee(writer, titre, listVide, filename, contenu);
 			}
@@ -86,8 +86,8 @@ public class PdfInitialisationFiliationsRapport extends PdfRapport {
 			status.setMessage("Génération du rapport terminée.");
 	}
 
-	private static String asCsvFileTraite(List<InitialisationFiliationsResults.InfoFiliation> list, String filename, StatusManager status) {
-		return CsvHelper.asCsvFile(list, filename, status, new CsvHelper.FileFiller<InitialisationFiliationsResults.InfoFiliation>() {
+	private static String asCsvFileTraite(List<InitialisationParentesResults.InfoParente> list, String filename, StatusManager status) {
+		return CsvHelper.asCsvFile(list, filename, status, new CsvHelper.FileFiller<InitialisationParentesResults.InfoParente>() {
 			@Override
 			public void fillHeader(CsvHelper.LineFiller b) {
 				b.append("NO_CTB_PARENT").append(CsvHelper.COMMA);
@@ -97,7 +97,7 @@ public class PdfInitialisationFiliationsRapport extends PdfRapport {
 			}
 
 			@Override
-			public boolean fillLine(CsvHelper.LineFiller b, InitialisationFiliationsResults.InfoFiliation elt) {
+			public boolean fillLine(CsvHelper.LineFiller b, InitialisationParentesResults.InfoParente elt) {
 				b.append(elt.noCtbParent).append(COMMA);
 				b.append(elt.noCtbEnfant).append(COMMA);
 				b.append(RegDateHelper.dateToDashString(elt.dateDebut)).append(COMMA);
@@ -107,8 +107,8 @@ public class PdfInitialisationFiliationsRapport extends PdfRapport {
 		});
 	}
 
-	private static String asCsvFileErreur(List<InitialisationFiliationsResults.InfoErreur> list, String filename, StatusManager status) {
-		return CsvHelper.asCsvFile(list, filename, status, new CsvHelper.FileFiller<InitialisationFiliationsResults.InfoErreur>() {
+	private static String asCsvFileErreur(List<InitialisationParentesResults.InfoErreur> list, String filename, StatusManager status) {
+		return CsvHelper.asCsvFile(list, filename, status, new CsvHelper.FileFiller<InitialisationParentesResults.InfoErreur>() {
 			@Override
 			public void fillHeader(CsvHelper.LineFiller b) {
 				b.append("NO_CTB_ENFANT").append(CsvHelper.COMMA);
@@ -116,7 +116,7 @@ public class PdfInitialisationFiliationsRapport extends PdfRapport {
 			}
 
 			@Override
-			public boolean fillLine(CsvHelper.LineFiller b, InitialisationFiliationsResults.InfoErreur elt) {
+			public boolean fillLine(CsvHelper.LineFiller b, InitialisationParentesResults.InfoErreur elt) {
 				b.append(elt.noCtbEnfant).append(COMMA);
 				b.append(CsvHelper.asCsvField(elt.msg));
 				return true;

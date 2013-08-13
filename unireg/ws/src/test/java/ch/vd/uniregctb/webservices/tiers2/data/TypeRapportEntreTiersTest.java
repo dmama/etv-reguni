@@ -18,8 +18,8 @@ public class TypeRapportEntreTiersTest extends EnumTest {
 
 	@Test
 	public void testCoherence() {
-		// les rapports de filiation ne peuvent pas sortir par la v2 du web-service tiers
-		final Set<TypeRapportEntreTiers> coreEnumSet = EnumSet.complementOf(EnumSet.of(TypeRapportEntreTiers.FILIATION));
+		// les rapports de parenté ne peuvent pas sortir par la v2 du web-service tiers
+		final Set<TypeRapportEntreTiers> coreEnumSet = EnumSet.complementOf(EnumSet.of(TypeRapportEntreTiers.PARENTE));
 		final TypeRapportEntreTiers[] coreEnums = coreEnumSet.toArray(new TypeRapportEntreTiers[coreEnumSet.size()]);
 		final RapportEntreTiers.Type[] wsEnums = RapportEntreTiers.Type.values();
 

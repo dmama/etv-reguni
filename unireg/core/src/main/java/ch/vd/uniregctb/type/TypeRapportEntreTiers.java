@@ -5,7 +5,7 @@ import ch.vd.uniregctb.tiers.AppartenanceMenage;
 import ch.vd.uniregctb.tiers.ConseilLegal;
 import ch.vd.uniregctb.tiers.ContactImpotSource;
 import ch.vd.uniregctb.tiers.Curatelle;
-import ch.vd.uniregctb.tiers.Filiation;
+import ch.vd.uniregctb.tiers.Parente;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.RapportPrestationImposable;
 import ch.vd.uniregctb.tiers.RepresentationConventionnelle;
@@ -112,15 +112,15 @@ public enum TypeRapportEntreTiers {
 		}
 	},
 
-	FILIATION {
+	PARENTE {
 		@Override
 		public RapportEntreTiers newInstance() {
-			return new Filiation();
+			return new Parente();
 		}
 
 		@Override
 		public Class<? extends RapportEntreTiers> getRapportClass() {
-			return Filiation.class;
+			return Parente.class;
 		}
 	};
 
