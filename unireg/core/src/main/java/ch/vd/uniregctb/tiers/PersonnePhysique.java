@@ -427,7 +427,7 @@ public class PersonnePhysique extends Contribuable {
 	}
 
 	// Updatable = false -> hibernate ne modifiera pas cette valeur (qui sera modifiée par une requête SQL ad'hoc)
-	@Column(name = "PP_PARENTE_DIRTY", nullable = false, updatable = false)
+	@Column(name = "PP_PARENTE_DIRTY", updatable = false)
 	public boolean isParenteDirty() {
 		return parenteDirty;
 	}

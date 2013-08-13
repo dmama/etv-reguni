@@ -20,7 +20,7 @@ import ch.vd.uniregctb.type.Sexe;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityTest {
 
@@ -404,8 +404,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 				marieIndividus(papa, maman, dateMariage);
 				divorceIndividus(papa, maman, dateDivorce);
 
-				addLiensFiliation(papa, mineur, dateNaissanceMineur, null);
-				addLiensFiliation(maman, mineur, dateNaissanceMineur, null);
+				addLiensFiliation(mineur, papa, maman, dateNaissanceMineur, null);
 			}
 		});
 
@@ -417,7 +416,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+		final Ids ids = doInNewTransactionAndSessionUnderSwitch(parentesSynchronizer, true, new TransactionCallback<Ids>() {
 			@Override
 			public Ids doInTransaction(TransactionStatus status) {
 				final PersonnePhysique papa = addHabitant(noIndPapa);
@@ -449,7 +448,9 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 				final PersonnePhysique mineur = (PersonnePhysique) tiersDAO.get(ids.idMineur);
 				final TaxLiabilityControlResult res = controlService.doControlOnDate(mineur, dateDemandeControle, true, true);
 				assertNotNull(res);
-				assertNull(res.getEchec());
+				if (res.getEchec() != null) {
+					fail(res.getEchec().toString());
+				}
 				assertEquals((Long) ids.idMaman, res.getIdTiersAssujetti());
 				return null;
 			}
