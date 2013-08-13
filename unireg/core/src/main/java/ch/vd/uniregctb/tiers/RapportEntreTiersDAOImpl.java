@@ -2,8 +2,11 @@ package ch.vd.uniregctb.tiers;
 
 import javax.persistence.DiscriminatorValue;
 import java.util.Arrays;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.hibernate.FlushMode;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -188,5 +191,24 @@ public class RapportEntreTiersDAOImpl extends GenericDAOImpl<RapportEntreTiers, 
 		final Query query = session.createSQLQuery(sql);
 		query.setParameter("discriminator", discriminatorValue);
 		return query.executeUpdate();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Pair<Long, Long>> getDoublonsCandidats(TypeRapportEntreTiers kind) {
+		final Class<?> rapportClass = kind.getRapportClass();
+		final String hql = String.format("SELECT r.sujetId, r.objetId, COUNT(*) FROM %s AS r WHERE r.annulationDate IS NULL GROUP BY r.sujetId, r.objetId HAVING COUNT(*) > 1", rapportClass.getSimpleName());
+		final Session session = getCurrentSession();
+		final Query query = session.createQuery(hql);
+
+		final List<Pair<Long, Long>> liste = new LinkedList<>();
+		final Iterator<Object[]> iterator = query.iterate();
+		while (iterator.hasNext()) {
+			final Object[] row = iterator.next();
+			final Long sujetId = ((Number) row[0]).longValue();
+			final Long objetId = ((Number) row[1]).longValue();
+			liste.add(Pair.of(sujetId, objetId));
+		}
+		return liste;
 	}
 }

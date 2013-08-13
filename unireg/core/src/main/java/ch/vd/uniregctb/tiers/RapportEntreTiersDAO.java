@@ -2,6 +2,8 @@ package ch.vd.uniregctb.tiers;
 
 import java.util.List;
 
+import org.apache.commons.lang3.tuple.Pair;
+
 import ch.vd.registre.base.dao.GenericDAO;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
@@ -90,4 +92,11 @@ public interface RapportEntreTiersDAO extends GenericDAO<RapportEntreTiers, Long
 	 * @return le nombre de rapports effacés
 	 */
 	int removeAllOfKind(TypeRapportEntreTiers kind);
+
+	/**
+	 * Récupère tous les couples (sujet/objet) de tiers qui possèdent plusieurs rapports entre tiers non-annulés du type indiqué (quelles que soient les dates !)
+	 * @param kind le type des rapports entre tiers dont on cherche les doublons
+	 * @return une liste non nulle de paires (sujet/objet) qui possèdent plusieurs rapports entre tiers non-annulés du type indiqué
+	 */
+	List<Pair<Long, Long>> getDoublonsCandidats(TypeRapportEntreTiers kind);
 }

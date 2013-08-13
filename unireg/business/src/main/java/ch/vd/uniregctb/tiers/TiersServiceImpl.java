@@ -1754,13 +1754,8 @@ public class TiersServiceImpl implements TiersService {
 	public void refreshParentesDepuisNumeroIndividu(long noIndividu) {
 		final PersonnePhysique pp = getPersonnePhysiqueByNumeroIndividu(noIndividu);
 		if (pp != null) {
-			refreshParentesSurPersonnePhysique(pp);
+			refreshParentesSurPersonnePhysique(pp, true);
 		}
-	}
-
-	@Override
-	public void refreshParentesSurPersonnePhysique(PersonnePhysique pp) {
-		refreshParentesSurPersonnePhysique(pp, true);
 	}
 
 	@Override
@@ -1824,7 +1819,8 @@ public class TiersServiceImpl implements TiersService {
 		}
 	}
 
-	private void refreshParentesSurPersonnePhysique(PersonnePhysique pp, boolean enfantsAussi) {
+	@Override
+	public void refreshParentesSurPersonnePhysique(PersonnePhysique pp, boolean enfantsAussi) {
 		if (pp != null) {
 			final Long noIndividu = pp.getNumeroIndividu();
 			if (noIndividu != null) {

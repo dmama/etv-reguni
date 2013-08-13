@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.common;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -44,7 +45,7 @@ public class ParallelBatchTransactionTemplate<E, R extends BatchResults> {
 	 * @param statusManager      un status manager
 	 * @param hibernateTemplate  le template Hibernate Spring
 	 */
-	public ParallelBatchTransactionTemplate(List<E> elements, int batchSize, int nbThreads, BatchTransactionTemplate.Behavior behavior, PlatformTransactionManager transactionManager,
+	public ParallelBatchTransactionTemplate(Collection<E> elements, int batchSize, int nbThreads, BatchTransactionTemplate.Behavior behavior, PlatformTransactionManager transactionManager,
 	                                        StatusManager statusManager, HibernateTemplate hibernateTemplate) {
 		this.elements = CollectionsUtils.split(elements, batchSize);
 		this.nbThreads = nbThreads;

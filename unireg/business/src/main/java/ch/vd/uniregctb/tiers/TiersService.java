@@ -1198,14 +1198,15 @@ public interface TiersService {
 	/**
 	 * Rafraîchissement des parentés fiscales depuis les données civiles de l'individu derrière la personne physique donnée
 	 * <ul>
-	 *     <li>les parentés vers les parents de l'individu sont de toute façon rafraîchies&nbsp;;</li>
-	 *     <li>les parentés déjà connues vers les enfants de l'individu sont rafraîchies (on ne crée donc jamais de parenté vers un enfant ici !)&nbsp;;</li>
+	 *     <li>les parentés vers les parents (= ascendantes) de l'individu sont de toute façon rafraîchies&nbsp;;</li>
+	 *     <li>les parentés déjà connues vers les enfants (= descendantes) de l'individu sont rafraîchies sur demande du flag <code>enfantsAussi</code> (on ne crée donc jamais de parenté vers un enfant ici !)&nbsp;;</li>
 	 *     <li>on ne fait rien du tout si la personne physique est <code>null</code> ou si elle n'a pas de numéro d'individu civil.</li>
 	 * </ul>
-	 * @param pp personne physique dont les parentés doivent être rafraîchies
+	 * @param pp            personne physique dont les parentés doivent être rafraîchies
+	 * @param enfantsAussi  <code>false</code> si seules les parentés ascendantes sont rafraîchies, <code>true</code> pour rafraîchir également les parentés descendantes
 	 * @throws PlusieursPersonnesPhysiquesAvecMemeNumeroIndividuException si on se heurte à un numéro d'individu partagé par plusieurs personnes physiques non annulées/désactivées durant le processus
 	 */
-	void refreshParentesSurPersonnePhysique(PersonnePhysique pp);
+	void refreshParentesSurPersonnePhysique(PersonnePhysique pp, boolean enfantsAussi);
 
 	/**
 	 * Rafraîchissement des parentés fiscales depuis les données civiles de l'individu derrière la personne physique donnée

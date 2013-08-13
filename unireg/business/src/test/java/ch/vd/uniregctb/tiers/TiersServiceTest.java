@@ -12,6 +12,7 @@ import java.util.Set;
 
 import junit.framework.Assert;
 import org.apache.commons.lang3.mutable.MutableLong;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
@@ -7065,7 +7066,143 @@ public class TiersServiceTest extends BusinessTest {
 				return null;
 			}
 		});
+	}
 
+	@Test
+	public void testEliminationDoublonParenteParRefresh() throws Exception {
+
+		final long noIndividuParent = 434375L;
+		final long noIndividuEnfant = 4378436287L;
+		final RegDate dateNaissanceEnfant = date(2000, 7, 12);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu parent = addIndividu(noIndividuParent, null, "Swift", "John Senior", Sexe.MASCULIN);
+				final MockIndividu enfant = addIndividu(noIndividuEnfant, dateNaissanceEnfant, "Swift", "John Junior", Sexe.MASCULIN);
+				addLiensFiliation(enfant, parent, null, dateNaissanceEnfant, null);
+			}
+		});
+
+		final class Ids {
+			long idParent;
+			long idEnfant;
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique parent = addHabitant(noIndividuParent);
+				final PersonnePhysique enfant = addHabitant(noIndividuEnfant);
+
+				// le doublon de parenté est ajouté "à la main" car les méthodes officielles ne permettent pas de le faire
+				hibernateTemplate.merge(new Parente(dateNaissanceEnfant, null, parent, enfant));
+				hibernateTemplate.merge(new Parente(dateNaissanceEnfant, null, parent, enfant));        // doublon de parenté
+
+				final Ids ids = new Ids();
+				ids.idParent = parent.getNumero();
+				ids.idEnfant = enfant.getNumero();
+				return ids;
+			}
+		});
+
+		// vérification de l'existance du doublon de parenté
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique enfant = (PersonnePhysique) tiersDAO.get(ids.idEnfant);
+				final Set<RapportEntreTiers> relParents = enfant.getRapportsSujet();
+				assertNotNull(relParents);
+				assertEquals(2, relParents.size());
+				for (RapportEntreTiers rel : relParents) {
+					assertEquals(TypeRapportEntreTiers.PARENTE, rel.getType());
+					assertEquals((Long) ids.idEnfant, rel.getSujetId());
+					assertEquals((Long) ids.idParent, rel.getObjetId());
+					assertEquals(dateNaissanceEnfant, rel.getDateDebut());
+					assertNull(rel.getDateFin());
+					assertFalse(rel.isAnnule());
+				}
+				return null;
+			}
+		});
+
+		// vérification de la bonne récupération des candidats doublons par le DAO
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final List<Pair<Long, Long>> doublons = rapportEntreTiersDAO.getDoublonsCandidats(TypeRapportEntreTiers.PARENTE);
+				assertNotNull(doublons);
+				assertEquals(1, doublons.size());
+
+				final Pair<Long, Long> doublon = doublons.get(0);
+				assertNotNull(doublon);
+				assertEquals((Long) ids.idEnfant, doublon.getLeft());
+				assertEquals((Long) ids.idParent, doublon.getRight());
+				return null;
+			}
+		});
+
+		// demande de refresh
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				tiersService.refreshParentesDepuisNumeroIndividu(noIndividuEnfant);
+				return null;
+			}
+		});
+
+		// vérification que l'un des doublons a bien été éliminé
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique enfant = (PersonnePhysique) tiersDAO.get(ids.idEnfant);
+				final Set<RapportEntreTiers> relParents = enfant.getRapportsSujet();
+				assertNotNull(relParents);
+				assertEquals(2, relParents.size());
+
+				final List<RapportEntreTiers> sortedRelParents = new ArrayList<>(relParents);
+				Collections.sort(sortedRelParents, new Comparator<RapportEntreTiers>() {
+					@Override
+					public int compare(RapportEntreTiers o1, RapportEntreTiers o2) {
+						return Boolean.compare(o1.isAnnule(), o2.isAnnule());       // annulé à la fin
+					}
+				});
+
+				{
+					final RapportEntreTiers rel = sortedRelParents.get(0);
+					assertEquals(TypeRapportEntreTiers.PARENTE, rel.getType());
+					assertEquals((Long) ids.idEnfant, rel.getSujetId());
+					assertEquals((Long) ids.idParent, rel.getObjetId());
+					assertEquals(dateNaissanceEnfant, rel.getDateDebut());
+					assertNull(rel.getDateFin());
+					assertFalse(rel.isAnnule());
+				}
+				{
+					final RapportEntreTiers rel = sortedRelParents.get(1);
+					assertEquals(TypeRapportEntreTiers.PARENTE, rel.getType());
+					assertEquals((Long) ids.idEnfant, rel.getSujetId());
+					assertEquals((Long) ids.idParent, rel.getObjetId());
+					assertEquals(dateNaissanceEnfant, rel.getDateDebut());
+					assertNull(rel.getDateFin());
+					assertTrue(rel.isAnnule());
+				}
+				return null;
+			}
+		});
+
+		// vérification de la bonne récupération des candidats doublons par le DAO
+		// (ici, il n'y en a plus car l'un des deux a été annulé)
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final List<Pair<Long, Long>> doublons = rapportEntreTiersDAO.getDoublonsCandidats(TypeRapportEntreTiers.PARENTE);
+				assertNotNull(doublons);
+				assertEquals(0, doublons.size());
+				return null;
+			}
+		});
 	}
 }
 
