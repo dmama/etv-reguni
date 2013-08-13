@@ -225,12 +225,12 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 				addNationalite(lui, MockPays.France, naissanceLui, null);
 				addNationalite(elle, MockPays.France, naissanceElle, null);
 				marieIndividus(lui, elle, dateMariage);
-				
+
 				final MockAdresse adrLui = addAdresse(lui, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, dateArrivee, null);
 				adrLui.setLocalisationPrecedente(new Localisation(LocalisationType.CANTON_VD, MockCommune.Bussigny.getNoOFS(), null));
-				
+
 				final MockAdresse adrElle = addAdresse(elle, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, dateArrivee, null);
-				adrElle.setLocalisationPrecedente(new Localisation(LocalisationType.CANTON_VD,MockCommune.Bussigny.getNoOFS(), null));
+				adrElle.setLocalisationPrecedente(new Localisation(LocalisationType.CANTON_VD, MockCommune.Bussigny.getNoOFS(), null));
 			}
 		});
 
@@ -636,9 +636,9 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			public Object execute(TransactionStatus status) throws Exception {
 				PersonnePhysique ppLui = addHabitant(noLui);
 				PersonnePhysique ppElle = addHabitant(noElle);
-				MenageCommun menage = metierService.marie(dateMariage,ppLui,ppElle,null, EtatCivil.MARIE, null);
-				tiersService.closeAllForsFiscaux(menage,dateDepart,MotifFor.DEPART_HS);
-				addForPrincipal(menage,dateDepart.getOneDayAfter(),MotifFor.DEPART_HS,MockPays.France);
+				MenageCommun menage = metierService.marie(dateMariage, ppLui, ppElle, null, EtatCivil.MARIE, null);
+				tiersService.closeAllForsFiscaux(menage, dateDepart, MotifFor.DEPART_HS);
+				addForPrincipal(menage, dateDepart.getOneDayAfter(), MotifFor.DEPART_HS, MockPays.France);
 				return null;
 			}
 		});

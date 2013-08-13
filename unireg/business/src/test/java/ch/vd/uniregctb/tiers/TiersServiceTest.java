@@ -2991,8 +2991,6 @@ public class TiersServiceTest extends BusinessTest {
 		assertEquals(new Long(6789L), ctb.getNumero());
 	}
 
-
-
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testAddPeriodiciteDebiteurPrestationImposable() throws Exception {
@@ -7200,6 +7198,246 @@ public class TiersServiceTest extends BusinessTest {
 				final List<Pair<Long, Long>> doublons = rapportEntreTiersDAO.getDoublonsCandidats(TypeRapportEntreTiers.PARENTE);
 				assertNotNull(doublons);
 				assertEquals(0, doublons.size());
+				return null;
+			}
+		});
+	}
+
+	@Test
+	public void testRefreshParentesInactifSurAncienHabitant() throws Exception {
+
+		final long noIndPapy = 32352L;              // papa du papa
+		final long noIndPapa = 537538L;             // papa de l'individu
+		final long noIndMaman = 437634L;            // maman de l'individu
+		final long noIndividu = 4378437L;           // l'individu
+		final long noIndFifille = 23467256L;        // la fille de l'individu
+		final long noIndFiston = 4378236L;          // le fiston de l'individu
+		final long noIndFactrice = 42372436L;       // fausse maman du fiston...
+
+		final RegDate dateDecesPapy = date(1999, 12, 27);
+		final RegDate dateNaissancePapa = date(1945, 9, 4);
+		final RegDate dateNaissance = date(1973, 12, 9);
+		final RegDate dateNaissanceFille = date(2002, 1, 26);
+		final RegDate dateNaissanceFiston = date(2005, 10, 25);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu papy = addIndividu(noIndPapy, null, "Bernard", "Eugène", Sexe.MASCULIN);
+				papy.setDateDeces(dateDecesPapy);
+
+				final MockIndividu papa = addIndividu(noIndPapa, dateNaissancePapa, "Bernard", "Michel", Sexe.MASCULIN);
+				addLiensFiliation(papa, papy, null, dateNaissancePapa, null);       // pour vérifier si on prend bien en compte la date de décès même si elle n'est pas fournie par le registre civil
+
+				final MockIndividu maman = addIndividu(noIndMaman, null, "Bernard", "Francine", Sexe.FEMININ);
+
+				final MockIndividu moi = addIndividu(noIndividu, dateNaissance, "Bernard", "Olivier", Sexe.MASCULIN);
+				addLiensFiliation(moi, papa, maman, dateNaissance, null);
+
+				final MockIndividu fille = addIndividu(noIndFifille, dateNaissanceFille, "Bernard", "Chloé", Sexe.FEMININ);
+				addLiensFiliation(fille, moi, null, dateNaissanceFille, null);
+
+				final MockIndividu fiston = addIndividu(noIndFiston, dateNaissanceFiston, "Bernard", "Léo", Sexe.MASCULIN);
+				addLiensFiliation(fiston, moi, null, dateNaissanceFiston, null);
+
+				addIndividu(noIndFactrice, null, "Bolomey", "Sandrine", Sexe.FEMININ);
+			}
+		});
+
+		class Ids {
+			long ppPapy;
+			long ppPapa;
+			long ppMaman;
+			long ppMoi;
+			long ppFiston;
+			long ppFifille;
+			long ppFactrice;
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique papy = tiersService.createNonHabitantFromIndividu(noIndPapy);
+				final PersonnePhysique papa = tiersService.createNonHabitantFromIndividu(noIndPapa);
+				final PersonnePhysique maman = tiersService.createNonHabitantFromIndividu(noIndMaman);
+				final PersonnePhysique moi = tiersService.createNonHabitantFromIndividu(noIndividu);
+				final PersonnePhysique fiston = tiersService.createNonHabitantFromIndividu(noIndFiston);
+				final PersonnePhysique fifille = tiersService.createNonHabitantFromIndividu(noIndFifille);
+				final PersonnePhysique factrice = tiersService.createNonHabitantFromIndividu(noIndFactrice);
+
+				addParente(papa, papy, dateNaissancePapa, null);        // celle-ci aurait pu être annulée et remplacée par une autre avec une date de fin au décès de papy si on démarre de papa
+				addParente(moi, papa, dateNaissance, null);             // celle-ci ne doit pas bouger
+//				addParente(moi, maman, dateNaissance, null);            // en commentaire -> elle aurait pu être créée
+				addParente(fiston, moi, dateNaissanceFiston, null);     // ne doit pas bouger
+//				addParente(fifille, moi, dateNaissanceFille, null);     // en commentaire -> elle ne serait créée que si on démarre de la fille
+				addParente(fiston, factrice, dateNaissanceFiston, null);    // n'apparaît pas dans le civil -> aurait pu être annulée
+
+				final Ids ids = new Ids();
+				ids.ppPapy = papy.getNumero();
+				ids.ppPapa = papa.getNumero();
+				ids.ppMaman = maman.getNumero();
+				ids.ppMoi = moi.getNumero();
+				ids.ppFiston = fiston.getNumero();
+				ids.ppFifille = fifille.getNumero();
+				ids.ppFactrice = factrice.getNumero();
+				return ids;
+			}
+		});
+
+		// refresh de "moi"
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				tiersService.refreshParentesDepuisNumeroIndividu(noIndividu);
+				return null;
+			}
+		});
+
+		// vérification de l'impact
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+
+				// papa
+				{
+					final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ids.ppPapa);
+					assertNotNull(pp);
+
+					final Set<RapportEntreTiers> parents = pp.getRapportsSujet();
+					assertEquals(1, parents.size());
+
+					final RapportEntreTiers rapportParent = parents.iterator().next();
+					assertNotNull(rapportParent);
+					assertEquals((Long) ids.ppPapy, rapportParent.getObjetId());
+					assertEquals((Long) ids.ppPapa, rapportParent.getSujetId());
+					assertEquals(dateNaissancePapa, rapportParent.getDateDebut());
+					assertNull(rapportParent.getDateFin());         // n'a pas bougé, c'est normal car on ne vérifie qu'un niveau autour du personnage central
+					assertFalse(rapportParent.isAnnule());
+
+					final Set<RapportEntreTiers> enfants = pp.getRapportsObjet();
+					assertEquals(1, enfants.size());
+
+					final RapportEntreTiers rapportEnfant = enfants.iterator().next();
+					assertNotNull(rapportEnfant);
+					assertEquals((Long) ids.ppPapa, rapportEnfant.getObjetId());
+					assertEquals((Long) ids.ppMoi, rapportEnfant.getSujetId());
+					assertEquals(dateNaissance, rapportEnfant.getDateDebut());
+					assertNull(rapportEnfant.getDateFin());
+					assertFalse(rapportEnfant.isAnnule());
+				}
+
+				// maman
+				{
+					final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ids.ppMaman);
+					assertNotNull(pp);
+
+					final Set<RapportEntreTiers> parents = pp.getRapportsSujet();
+					assertEmpty(parents);
+
+					final Set<RapportEntreTiers> enfants = pp.getRapportsObjet();
+					assertEquals(0, enfants.size());                    // pas de nouvelle relation car non-habitant !
+				}
+
+				// moi
+				{
+					final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ids.ppMoi);
+					assertNotNull(pp);
+
+					final Set<RapportEntreTiers> parents = pp.getRapportsSujet();
+					assertEquals(1, parents.size());                    // pas de une nouvelle relation sur les non-habitants !
+
+					final RapportEntreTiers rapport = parents.iterator().next();
+					assertNotNull(rapport);
+					assertEquals((Long) ids.ppPapa, rapport.getObjetId());
+					assertEquals((Long) ids.ppMoi, rapport.getSujetId());
+					assertEquals(dateNaissance, rapport.getDateDebut());
+					assertNull(rapport.getDateFin());
+					assertFalse(rapport.isAnnule());
+
+					final Set<RapportEntreTiers> enfants = pp.getRapportsObjet();
+					assertEquals(1, enfants.size());                    // pas de nouvelle relation !
+
+					final RapportEntreTiers rapportEnfant = enfants.iterator().next();
+					assertNotNull(rapportEnfant);
+					assertEquals((Long) ids.ppMoi, rapportEnfant.getObjetId());
+					assertEquals((Long) ids.ppFiston, rapportEnfant.getSujetId());
+					assertEquals(dateNaissanceFiston, rapportEnfant.getDateDebut());
+					assertNull(rapportEnfant.getDateFin());
+					assertFalse(rapportEnfant.isAnnule());
+				}
+
+				// fiston
+				{
+					final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ids.ppFiston);
+					assertNotNull(pp);
+
+					final Set<RapportEntreTiers> parents = pp.getRapportsSujet();
+					assertEquals(2, parents.size());
+
+					final List<RapportEntreTiers> sortedParents = new ArrayList<>(parents);
+					Collections.sort(sortedParents, new Comparator<RapportEntreTiers>() {
+						@Override
+						public int compare(RapportEntreTiers o1, RapportEntreTiers o2) {
+							return Long.compare(o1.getObjetId(), o2.getObjetId());
+						}
+					});
+					{
+						final RapportEntreTiers rapport = sortedParents.get(0);
+						assertNotNull(rapport);
+						assertEquals((Long) ids.ppMoi, rapport.getObjetId());
+						assertEquals((Long) ids.ppFiston, rapport.getSujetId());
+						assertEquals(dateNaissanceFiston, rapport.getDateDebut());
+						assertNull(rapport.getDateFin());
+						assertFalse(rapport.isAnnule());
+					}
+					{
+						final RapportEntreTiers rapport = sortedParents.get(1);
+						assertNotNull(rapport);
+						assertEquals((Long) ids.ppFactrice, rapport.getObjetId());
+						assertEquals((Long) ids.ppFiston, rapport.getSujetId());
+						assertEquals(dateNaissanceFiston, rapport.getDateDebut());
+						assertNull(rapport.getDateFin());
+						assertFalse(rapport.isAnnule());             // la filiation vers la factrice n'est pas dans le civil, mais on ne touche à rien sur les non-habitants
+					}
+
+					final Set<RapportEntreTiers> enfants = pp.getRapportsObjet();
+					assertEmpty(enfants);
+				}
+
+				// fifille
+				{
+					final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ids.ppFifille);
+					assertNotNull(pp);
+
+					final Set<RapportEntreTiers> parents = pp.getRapportsSujet();
+					assertEmpty(parents);
+
+					final Set<RapportEntreTiers> enfants = pp.getRapportsObjet();
+					assertEmpty(enfants);
+				}
+
+				// factrice
+				{
+					final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ids.ppFactrice);
+					assertNotNull(pp);
+
+					final Set<RapportEntreTiers> parents = pp.getRapportsSujet();
+					assertEmpty(parents);
+
+					final Set<RapportEntreTiers> enfants = pp.getRapportsObjet();
+					assertEquals(1, enfants.size());
+
+					final RapportEntreTiers rapportEnfant = enfants.iterator().next();
+					assertNotNull(rapportEnfant);
+					assertEquals((Long) ids.ppFactrice, rapportEnfant.getObjetId());
+					assertEquals((Long) ids.ppFiston, rapportEnfant.getSujetId());
+					assertEquals(dateNaissanceFiston, rapportEnfant.getDateDebut());
+					assertNull(rapportEnfant.getDateFin());
+					assertFalse(rapportEnfant.isAnnule());           // la filiation entre le fiston et la factrice n'est pas dans le civil, mais on ne touche à rien sur les non-habitants
+				}
+
 				return null;
 			}
 		});

@@ -1761,31 +1761,36 @@ public class TiersServiceImpl implements TiersService {
 
 	@Override
 	public List<Parente> initParentesDepuisFiliationsCiviles(PersonnePhysique pp) {
-		final List<Parente> creees = new LinkedList<>();
-		final long noIndividu = pp.getNumeroIndividu();
-		final Individu individu = serviceCivilService.getIndividu(noIndividu, null, AttributeIndividu.PARENTS);
-		final List<RelationVersIndividu> parentRel = individu.getParents();
-		boolean parenteDirty = false;
-		if (parentRel != null && !parentRel.isEmpty()) {
-			for (RelationVersIndividu rel : parentRel) {
-				try {
-					final Parente parente = createParente(pp, rel);
-					if (parente != null) {
-						final Parente merged = hibernateTemplate.merge(parente);
-						pp.getRapportsSujet().add(merged);
-						creees.add(merged);
+		if (pp.isHabitantVD()) {
+			final List<Parente> creees = new LinkedList<>();
+			final long noIndividu = pp.getNumeroIndividu();
+			final Individu individu = serviceCivilService.getIndividu(noIndividu, null, AttributeIndividu.PARENTS);
+			final List<RelationVersIndividu> parentRel = individu.getParents();
+			boolean parenteDirty = false;
+			if (parentRel != null && !parentRel.isEmpty()) {
+				for (RelationVersIndividu rel : parentRel) {
+					try {
+						final Parente parente = createParente(pp, rel);
+						if (parente != null) {
+							final Parente merged = hibernateTemplate.merge(parente);
+							pp.getRapportsSujet().add(merged);
+							creees.add(merged);
+						}
+					}
+					catch (CreationParenteImpossibleCarTiersParentInconnuAuFiscal | PlusieursPersonnesPhysiquesAvecMemeNumeroIndividuException e) {
+						LOGGER.warn(e.getMessage(), e);
+						parenteDirty = true;
 					}
 				}
-				catch (CreationParenteImpossibleCarTiersParentInconnuAuFiscal | PlusieursPersonnesPhysiquesAvecMemeNumeroIndividuException e) {
-					LOGGER.warn(e.getMessage(), e);
-					parenteDirty = true;
-				}
 			}
+			if (parenteDirty != pp.isParenteDirty()) {
+				setParenteDirtyFlag(pp, parenteDirty);
+			}
+			return creees;
 		}
-		if (parenteDirty != pp.isParenteDirty()) {
-			setParenteDirtyFlag(pp, parenteDirty);
+		else {
+			return Collections.emptyList();
 		}
-		return creees;
 	}
 
 	private void setParenteDirtyFlag(final PersonnePhysique pp, final boolean flag) {
@@ -1878,7 +1883,7 @@ public class TiersServiceImpl implements TiersService {
 	public void refreshParentesSurPersonnePhysique(PersonnePhysique pp, boolean enfantsAussi) {
 		if (pp != null) {
 			final Long noIndividu = pp.getNumeroIndividu();
-			if (noIndividu != null) {
+			if (noIndividu != null && pp.isHabitantVD()) {
 				// 1. on retrouve les parents depuis les données civiles
 				final Individu individu = serviceCivilService.getIndividu(noIndividu, null, AttributeIndividu.PARENTS);
 				final List<RelationVersIndividu> parents = individu.getParents();

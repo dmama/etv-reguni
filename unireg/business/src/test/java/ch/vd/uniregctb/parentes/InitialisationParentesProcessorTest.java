@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
@@ -42,6 +43,42 @@ public class InitialisationParentesProcessorTest extends BusinessTest {
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
+				addNonHabitant("Pierre", "Kiroul", null, Sexe.MASCULIN);
+				addNonHabitant("Namass", "Pamouss", null, Sexe.FEMININ);
+				return null;
+			}
+		});
+
+		final InitialisationParentesResults results = processor.run(1, null);
+		Assert.assertNotNull(results);
+		Assert.assertNotNull(results.getErreurs());
+		Assert.assertNotNull(results.getParentes());
+		Assert.assertEquals(0, results.getErreurs().size());
+		Assert.assertEquals(0, results.getParentes().size());
+	}
+
+	@Test
+	public void testConnusAuCivilMaisNonHabitants() throws Exception {
+
+		final long noIndividuParent = 4387436L;
+		final long noIndividuEnfant = 4398243L;
+		final RegDate dateNaissanceEnfant = date(2005, 5, 1);
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu parent = addIndividu(noIndividuParent, null, "Malfoy", "Lucius", Sexe.MASCULIN);
+				final MockIndividu enfant = addIndividu(noIndividuEnfant, dateNaissanceEnfant, "Malfoy", "Draco", Sexe.MASCULIN);
+				addLiensFiliation(enfant, parent, null, dateNaissanceEnfant, null);
+			}
+		});
+
+		// les non-habitants basés sur les individus connus
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				tiersService.createNonHabitantFromIndividu(noIndividuEnfant);
+				tiersService.createNonHabitantFromIndividu(noIndividuParent);
 				addNonHabitant("Pierre", "Kiroul", null, Sexe.MASCULIN);
 				addNonHabitant("Namass", "Pamouss", null, Sexe.FEMININ);
 				return null;

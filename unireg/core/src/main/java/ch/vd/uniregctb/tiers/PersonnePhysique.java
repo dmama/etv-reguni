@@ -123,7 +123,7 @@ public class PersonnePhysique extends Contribuable {
 	 * (par exemple utilisé pour les mineurs dont l'arrivée est signalée avant celle de leurs parents, et pour lesquels les parentés
 	 * ne peuvent être insérées dans Unireg tant que les parents ne sont pas créés également)
 	 */
-	private boolean parenteDirty;
+	private Boolean parenteDirty;
 
 	@Transient
 	@Override
@@ -428,12 +428,17 @@ public class PersonnePhysique extends Contribuable {
 
 	// Updatable = false -> hibernate ne modifiera pas cette valeur (qui sera modifiée par une requête SQL ad'hoc)
 	@Column(name = "PP_PARENTE_DIRTY", updatable = false)
-	public boolean isParenteDirty() {
+	public Boolean getParenteDirty() {
 		return parenteDirty;
 	}
 
-	protected void setParenteDirty(boolean parenteDirty) {
+	protected void setParenteDirty(Boolean parenteDirty) {
 		this.parenteDirty = parenteDirty;
+	}
+
+	@Transient
+	public boolean isParenteDirty() {
+		return parenteDirty != null && parenteDirty;
 	}
 
 	/**
