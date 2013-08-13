@@ -1,21 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- edited with XMLSpy v2012 sp1 (http://www.altova.com) by Gabrielle Déal (DIRECTION DES SYSTEMS D'INFORMATION) -->
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-		   targetNamespace="http://evd.vd.ch/xmlns/eVD-0001/4" elementFormDefault="qualified" attributeFormDefault="unqualified" version="4.0"
-		   xmlns:eVD-0001="http://evd.vd.ch/xmlns/eVD-0001/4"
-		   xmlns:eVD-0004="http://evd.vd.ch/xmlns/eVD-0004/3"
-		   xmlns:eVD-0009="http://evd.vd.ch/xmlns/eVD-0009/1"
-		   xmlns:eCH-0006="http://www.ech.ch/xmlns/eCH-0006/2"
-		   xmlns:eCH-0007="http://www.ech.ch/xmlns/eCH-0007/4"
-		   xmlns:eCH-0008="http://www.ech.ch/xmlns/eCH-0008/2"
-		   xmlns:eCH-0010="http://www.ech.ch/xmlns/eCH-0010/4"
-		   xmlns:eCH-0011="http://www.ech.ch/xmlns/eCH-0011/5"
-		   xmlns:eCH-0021="http://www.ech.ch/xmlns/eCH-0021/4"
-		   xmlns:eCH-0044="http://www.ech.ch/xmlns/eCH-0044/2"
-		   xmlns:eCH-0058="http://www.ech.ch/xmlns/eCH-0058/2"
-		   xmlns:eCH-0084="http://www.ech.ch/xmlns/eCH-0084/1"
-		   xmlns:eCH-0090="http://www.ech.ch/xmlns/eCH-0090/1">
-
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:eVD-0001="http://evd.vd.ch/xmlns/eVD-0001/5" xmlns:eVD-0004="http://evd.vd.ch/xmlns/eVD-0004/3" xmlns:eVD-0009="http://evd.vd.ch/xmlns/eVD-0009/1" xmlns:eCH-0006="http://www.ech.ch/xmlns/eCH-0006/2" xmlns:eCH-0007="http://www.ech.ch/xmlns/eCH-0007/4" xmlns:eCH-0008="http://www.ech.ch/xmlns/eCH-0008/2" xmlns:eCH-0010="http://www.ech.ch/xmlns/eCH-0010/4" xmlns:eCH-0011="http://www.ech.ch/xmlns/eCH-0011/5" xmlns:eCH-0021="http://www.ech.ch/xmlns/eCH-0021/4" xmlns:eCH-0044="http://www.ech.ch/xmlns/eCH-0044/2" xmlns:eCH-0058="http://www.ech.ch/xmlns/eCH-0058/2" xmlns:eCH-0090="http://www.ech.ch/xmlns/eCH-0090/1" targetNamespace="http://evd.vd.ch/xmlns/eVD-0001/5" elementFormDefault="qualified" attributeFormDefault="unqualified" version="5.0">
 	<xs:import namespace="http://www.ech.ch/xmlns/eCH-0006/2" schemaLocation="http://www.ech.ch/xmlns/eCH-0006/2/eCH-0006-2-0.xsd"/>
 	<xs:import namespace="http://www.ech.ch/xmlns/eCH-0007/4" schemaLocation="http://www.ech.ch/xmlns/eCH-0007/4/eCH-0007-4-0.xsd"/>
 	<xs:import namespace="http://www.ech.ch/xmlns/eCH-0008/2" schemaLocation="http://www.ech.ch/xmlns/eCH-0008/2/eCH-0008-2-0.xsd"/>
@@ -24,45 +9,9 @@
 	<xs:import namespace="http://www.ech.ch/xmlns/eCH-0021/4" schemaLocation="http://www.ech.ch/xmlns/eCH-0021/4/eCH-0021-4-0.xsd"/>
 	<xs:import namespace="http://www.ech.ch/xmlns/eCH-0044/2" schemaLocation="http://www.ech.ch/xmlns/eCH-0044/2/eCH-0044-2-0.xsd"/>
 	<xs:import namespace="http://www.ech.ch/xmlns/eCH-0058/2" schemaLocation="http://www.ech.ch/xmlns/eCH-0058/2/eCH-0058-2-0.xsd"/>
-	<xs:import namespace="http://www.ech.ch/xmlns/eCH-0084/1" schemaLocation="http://www.ech.ch/xmlns/eCH-0084/1/eCH-0084-commons-1-0.xsd"/>
 	<xs:import namespace="http://www.ech.ch/xmlns/eCH-0090/1" schemaLocation="http://www.ech.ch/xmlns/eCH-0090/1/eCH-0090-1-0.xsd"/>
 	<xs:import namespace="http://evd.vd.ch/xmlns/eVD-0004/3" schemaLocation="http://evd.vd.ch/xmlns/eVD-0004/3/eVD-0004-3-0.xsd"/>
 	<xs:import namespace="http://evd.vd.ch/xmlns/eVD-0009/1" schemaLocation="http://evd.vd.ch/xmlns/eVD-0009/1/eVD-0009-1-0.xsd"/>
-
-	<xs:simpleType name="typeOfRelationshipType">
-		<xs:restriction base="xs:token">
-			<xs:enumeration value="1">
-				<xs:annotation>
-					<xs:documentation>1 = Est conjoint(e)</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="2">
-				<xs:annotation>
-					<xs:documentation>2 = Est partenaire enregistré</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="3">
-				<xs:annotation>
-					<xs:documentation>3 = Est mère</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="4">
-				<xs:annotation>
-					<xs:documentation>4 = Est père</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="101">
-				<xs:annotation>
-					<xs:documentation>101 = Est fille</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="102">
-				<xs:annotation>
-					<xs:documentation>102 = Est fils</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-		</xs:restriction>
-	</xs:simpleType>
 	<xs:simpleType name="eventTypesType">
 		<xs:restriction base="xs:token">
 			<xs:enumeration value="1"/>
@@ -147,10 +96,14 @@
 					<xs:documentation>Caractère 1.7.1.5 du catalogue officiel des caractères vaudois.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="undoSwissDate" type="xs:date" minOccurs="0"/>
-			<xs:element name="reportingDate" type="xs:date" minOccurs="0">
+			<xs:element name="undoSwissDate" type="xs:date" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>Caractère 1.7.1.6 du catalogue officiel des caractères vaudois.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="reportingDate" type="xs:date" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Caractère 1.7.1.7 du catalogue officiel des caractères vaudois.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 		</xs:sequence>
@@ -185,6 +138,38 @@
 		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="personIdentificationType">
+		<xs:annotation>
+			<xs:documentation>Ce type définit une relation (filiation, conjoint, composition ménage, etc.)avec la personne</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="identification" type="eCH-0044:personIdentificationPartnerType"/>
+			<xs:element name="personLink" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>URL vers la ressource persons correspondant à cette relation</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="currentResidenceType">
+		<xs:sequence>
+			<xs:element name="typeOfReportingRelationship" type="eVD-0009:typeOfReportingRelationshipCodeType">
+				<xs:annotation>
+					<xs:documentation>Caractère 1.5.1 du catalogue officiel des caractères vaudois</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="residenceMunicipality" type="eCH-0007:swissMunicipalityType">
+				<xs:annotation>
+					<xs:documentation>Caractère 1.5.3 du catalogue officiel des caractères vaudois</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="address" type="eCH-0010:swissAddressInformationType">
+				<xs:annotation>
+					<xs:documentation>Caractère 1.5.5 du catalogue officiel des caractères vaudois</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="identityType">
 		<xs:sequence>
 			<xs:element name="localPersonId" type="eCH-0044:namedPersonIdType">
 				<xs:annotation>
@@ -213,33 +198,9 @@
 			</xs:element>
 			<xs:element name="sex" type="eCH-0044:sexType" minOccurs="0">
 				<xs:annotation>
-					<xs:documentation>Caractère 1.2.7 du catalogue officiel des caractères vaudois</xs:documentation>
+					<xs:documentation>Caractère 1.2.6 du catalogue officiel des caractères vaudois</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-		</xs:sequence>
-	</xs:complexType>
-	<xs:complexType name="currentResidenceType">
-		<xs:sequence>
-			<xs:element name="typeOfReportingRelationship" type="eVD-0009:typeOfReportingRelationshipCodeType">
-				<xs:annotation>
-					<xs:documentation>Caractère 1.5.1 du catalogue officiel des caractères vaudois</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element name="residenceMunicipality" type="eCH-0007:swissMunicipalityType">
-				<xs:annotation>
-					<xs:documentation>Caractère 1.5.3 du catalogue officiel des caractères vaudois</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element name="address" type="eCH-0010:swissAddressInformationType">
-				<xs:annotation>
-					<xs:documentation>Caractère 1.5.5 du catalogue officiel des caractères vaudois</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-		</xs:sequence>
-	</xs:complexType>
-	<xs:complexType name="identityType">
-		<xs:sequence>
-			<xs:element name="personIdentification" type="eVD-0001:personIdentificationType"/>
 			<xs:element name="originalName" type="eCH-0044:baseNameType" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>Caractère 1.2.1.2 du catalogue officiel des caractères vaudois</xs:documentation>
@@ -275,22 +236,36 @@
 					<xs:documentation>Caractère 1.2.4 du catalogue officiel des caractères vaudois</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="parent" minOccurs="0">
+			<xs:element name="origin" type="eCH-0011:placeOfOriginType" minOccurs="0" maxOccurs="unbounded">
 				<xs:annotation>
 					<xs:documentation>Caractère 1.2.5 du catalogue officiel des caractères vaudois</xs:documentation>
 				</xs:annotation>
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element name="mothersName" type="eCH-0084:fullName_Type" minOccurs="0"/>
-						<xs:element name="fathersName" type="eCH-0084:fullName_Type" minOccurs="0"/>
-					</xs:sequence>
-				</xs:complexType>
 			</xs:element>
-			<xs:element name="origin" type="eCH-0011:placeOfOriginType" minOccurs="0" maxOccurs="unbounded">
-				<xs:annotation>
-					<xs:documentation>Caractère 1.2.6 du catalogue officiel des caractères vaudois</xs:documentation>
-				</xs:annotation>
-			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="baseNameUPI_Type">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Name constructed with the latin letters from ISO 8859-15 (or
+        in unicode (ISO 10646 at implementation level 3): BasicLatin, Latin-1Supplement and ŒœŠšŸŽž
+        from LatinExtended-A ) and the characters ' (APOSTROPHE), - (HYPHEN-MINUS), . (FULL STOP
+        also called period) and (SPACE). An other choise could be the latin letters mentioned in the
+        document "Informations utiles à l'intégration de nouvelles langues européennes" by Holger
+        Bagola (http://publications.europa.eu/pdf/fr/elarg-vl.pdf).
+        Change:
+        - a name consists of at least one letter from the base alphabeth. No resitrictions are
+        imposed on the usage of spaces, hyphens or full stops.
+      </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:token">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="100"/>
+			<xs:pattern value="[']?[A-Za-zÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõöøùúûüýþÿŒœŠšŸŽž]['A-Za-zÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõöøùúûüýþÿŒœŠšŸŽž\.\- ]*"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="fullName_Type">
+		<xs:sequence>
+			<xs:element name="firstNames" type="eVD-0001:baseNameUPI_Type" nillable="true"/>
+			<xs:element name="lastName" type="eVD-0001:baseNameUPI_Type"/>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="upiPersonType">
@@ -300,14 +275,70 @@
 					<xs:documentation>Caractère 1.3.1 du Catalogue officiel des caractères vaudois</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="valuesStoredUnderAhvvn" type="eCH-0084:valuesStoredUnderAhvvn_Type">
+			<xs:element name="firstNames" type="eVD-0001:baseNameUPI_Type" nillable="true">
 				<xs:annotation>
-					<xs:documentation xml:lang="fr">Caractères 1.3.2 à 1.3.13 du Catalogue officiel des caractères vaudois</xs:documentation>
+					<xs:documentation>Caractère 1.3.2 du Catalogue officiel des caractères vaudois</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="officialName" type="eVD-0001:baseNameUPI_Type">
+				<xs:annotation>
+					<xs:documentation>Caractère 1.3.3 du Catalogue officiel des caractères vaudois</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="originalName" type="eVD-0001:baseNameUPI_Type" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Caractère 1.3.4 du Catalogue officiel des caractères vaudois</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="nameOnPassport" type="eVD-0001:baseNameUPI_Type" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Caractère 1.3.5 du Catalogue officiel des caractères vaudois</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="sex" type="eCH-0044:sexType">
+				<xs:annotation>
+					<xs:documentation>Caractère 1.3.6 du Catalogue officiel des caractères vaudois</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="dateOfBirth" type="eCH-0044:datePartiallyKnownType">
+				<xs:annotation>
+					<xs:documentation>Caractère 1.3.7 du Catalogue officiel des caractères vaudois</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="placeOfBirth" type="eCH-0011:birthplaceType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Caractère 1.3.8 du Catalogue officiel des caractères vaudois</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="nationality">
+				<xs:annotation>
+					<xs:documentation>Caractère 1.3.9 du Catalogue officiel des caractères vaudois</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="nationalityStatus" type="eCH-0011:nationalityStatusType"/>
+						<xs:element name="countryId" type="eCH-0008:countryIdType" minOccurs="0"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="mothersName" type="eVD-0001:fullName_Type" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Caractère 1.3.10 du Catalogue officiel des caractères vaudois</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="fathersName" type="eVD-0001:fullName_Type" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Caractère 1.3.11 du Catalogue officiel des caractères vaudois</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="dateOfDeath" type="xs:date" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Caractère 1.3.12 du Catalogue officiel des caractères vaudois</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="upiSource" minOccurs="0">
 				<xs:annotation>
-					<xs:documentation>Caractère 1.3.14 du Catalogue officiel des caractères vaudois</xs:documentation>
+					<xs:documentation>Caractère 1.3.13 du Catalogue officiel des caractères vaudois</xs:documentation>
 				</xs:annotation>
 				<xs:complexType>
 					<xs:choice>
@@ -324,6 +355,11 @@
 						</xs:element>
 					</xs:choice>
 				</xs:complexType>
+			</xs:element>
+			<xs:element name="lastUpdateTimestamp" type="xs:dateTime" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Caractère 1.3.14 du Catalogue officiel des caractères vaudois</xs:documentation>
+				</xs:annotation>
 			</xs:element>
 			<xs:element name="reportingDate" type="xs:date" minOccurs="0">
 				<xs:annotation>
@@ -361,7 +397,7 @@
 			<xs:choice>
 				<xs:element name="mainResidence">
 					<xs:annotation>
-						<xs:documentation>Caractère 1.6.1 du catalogue officiel des caractères vaudois</xs:documentation>
+						<xs:documentation>Caractère 1.5.1 du catalogue officiel des caractères vaudois</xs:documentation>
 					</xs:annotation>
 					<xs:complexType>
 						<xs:sequence>
@@ -375,7 +411,7 @@
 				</xs:element>
 				<xs:element name="secondaryResidence">
 					<xs:annotation>
-						<xs:documentation>Caractère 1.6.1 du catalogue officiel des caractères vaudois</xs:documentation>
+						<xs:documentation>Caractère 1.5.1 du catalogue officiel des caractères vaudois</xs:documentation>
 					</xs:annotation>
 					<xs:complexType>
 						<xs:sequence>
@@ -414,7 +450,11 @@
 					<xs:documentation>Caractères 1.5.4.2 et 1.5.4.3 du catalogue officiel des caractères vaudois</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="dwellingAddress" type="eVD-0001:dwellingAddressType"/>
+			<xs:element name="dwellingAddress" type="eVD-0001:dwellingAddressType">
+				<xs:annotation>
+					<xs:documentation>Caractère 1.5.5 et 1.5.6 du catalogue officiel des caractères vaudois</xs:documentation>
+				</xs:annotation>
+			</xs:element>
 			<xs:element name="departureDate" type="xs:date" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>Caractère 1.5.7.1 du catalogue officiel des caractères vaudois</xs:documentation>
@@ -486,21 +526,20 @@
 	</xs:complexType>
 	<xs:complexType name="householdCompositionType">
 		<xs:sequence>
-			<xs:element name="parent" type="eVD-0001:personIdentificationType" minOccurs="0" maxOccurs="2">
+			<xs:element name="member" type="eVD-0001:personIdentificationType" minOccurs="0" maxOccurs="unbounded">
 				<xs:annotation>
-					<xs:documentation>Caractère 1.10.1 du catalogue officiel des caractères vaudois</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element name="child" type="eVD-0001:personIdentificationType" minOccurs="0" maxOccurs="unbounded">
-				<xs:annotation>
-					<xs:documentation>Caractère 1.10.2 du catalogue officiel des caractères vaudois</xs:documentation>
+					<xs:documentation>Caractère 1.11.1 du catalogue officiel des caractères vaudois</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="foundPersonType">
 		<xs:sequence>
-			<xs:element name="person" type="eVD-0001:personIdentificationType"/>
+			<xs:element name="person" type="eVD-0001:personIdentificationType">
+				<xs:annotation>
+					<xs:documentation>Caractères 1.2.1, 1.2.2, 1.2.3 et 1.2.6 du catalogue officiel des caractères vaudois</xs:documentation>
+				</xs:annotation>
+			</xs:element>
 			<xs:element name="dateOfDeath" type="xs:date" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>Caractère 1.8 du catalogue officiel des caractères vaudois</xs:documentation>
@@ -508,12 +547,12 @@
 			</xs:element>
 			<xs:element name="nationality" type="eVD-0001:nationalityType">
 				<xs:annotation>
-					<xs:documentation>Caractères 7.1.1 et 7.1.2 du catalogue officiel des caractères vaudois</xs:documentation>
+					<xs:documentation>Caractères 1.7.1 du catalogue officiel des caractères vaudois</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="residencePermit" type="eVD-0001:residencePermitType" minOccurs="0">
 				<xs:annotation>
-					<xs:documentation>Caractères 7.2 du catalogue officiel des caractères vaudois</xs:documentation>
+					<xs:documentation>Caractères 1.7.2 du catalogue officiel des caractères vaudois</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="residence" type="eVD-0001:currentResidenceType" minOccurs="0">
@@ -523,7 +562,7 @@
 			</xs:element>
 			<xs:element name="dataLock" type="eCH-0021:dataLockType" minOccurs="0">
 				<xs:annotation>
-					<xs:documentation>Caractère 1.13.1 du catalogue officiel des caractères vaudois</xs:documentation>
+					<xs:documentation>Caractère 1.12.1 du catalogue officiel des caractères vaudois</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 		</xs:sequence>
@@ -547,6 +586,30 @@
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
+	<xs:complexType name="parentType">
+		<xs:sequence>
+			<xs:element name="identification" type="eVD-0001:personIdentificationType">
+				<xs:annotation>
+					<xs:documentation>Caractère 1.10.1 du catalogue officiel des caractères vaudois</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="parentFrom" type="xs:date" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Caractère 1.10.2.1 du catalogue officiel des caractères vaudois</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="parentTill" type="xs:date" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Caractère 1.10.2.2 du catalogue officiel des caractères vaudois</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="reportingDate" type="xs:date" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Caractère 1.10.2.3 du catalogue officiel des caractères vaudois</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
 	<xs:complexType name="personType">
 		<xs:sequence>
 			<xs:element name="status">
@@ -554,19 +617,19 @@
 					<xs:sequence>
 						<xs:element name="dataLock" type="eCH-0021:dataLockType" minOccurs="0">
 							<xs:annotation>
-								<xs:documentation>Caractère 1.13.1 du catalogue officiel des caractères vaudois</xs:documentation>
+								<xs:documentation>Caractère 1.12.1 du catalogue officiel des caractères vaudois</xs:documentation>
 							</xs:annotation>
 						</xs:element>
 						<xs:choice>
 							<xs:element name="canceled">
 								<xs:annotation>
-									<xs:documentation>Caractère 1.13.2 du catalogue officiel des caractères vaudois</xs:documentation>
+									<xs:documentation>Caractère 1.12.2 du catalogue officiel des caractères vaudois</xs:documentation>
 								</xs:annotation>
 								<xs:complexType>
 									<xs:sequence>
 										<xs:element name="replacedBy" type="eCH-0044:personIdentificationPartnerType" minOccurs="0">
 											<xs:annotation>
-												<xs:documentation>Caractère 1.13.3 du catalogue officiel des caractère vaudois</xs:documentation>
+												<xs:documentation>Caractère 1.12.3 du catalogue officiel des caractère vaudois</xs:documentation>
 											</xs:annotation>
 										</xs:element>
 									</xs:sequence>
@@ -574,7 +637,7 @@
 							</xs:element>
 							<xs:element name="active">
 								<xs:annotation>
-									<xs:documentation>Caractère 1.13.2 du catalogue officiel des caractères vaudois</xs:documentation>
+									<xs:documentation>Caractère 1.12.2 du catalogue officiel des caractères vaudois</xs:documentation>
 								</xs:annotation>
 								<xs:complexType/>
 							</xs:element>
@@ -582,7 +645,11 @@
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
-			<xs:element name="identity" type="eVD-0001:identityType"/>
+			<xs:element name="identity" type="eVD-0001:identityType">
+				<xs:annotation>
+					<xs:documentation>Caractères 1.1 et 1.2 du catalogue officiel des caractères vaudois</xs:documentation>
+				</xs:annotation>
+			</xs:element>
 			<xs:element name="upiPerson" type="eVD-0001:upiPersonType" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>Caractères 1.3 du catalogue officiel des caractères vaudois</xs:documentation>
@@ -591,7 +658,7 @@
 			<xs:choice minOccurs="0">
 				<xs:element name="currentContact" type="eVD-0001:contactType">
 					<xs:annotation>
-						<xs:documentation>Caractère 1.4 du catalogue officiel des caractères vaudois. Élément contenant les adresses courantes de la personne qui peuvent être multiples en cas de résidence secondaire.</xs:documentation>
+						<xs:documentation>Caractère 1.4 du catalogue officiel des caractères vaudois. </xs:documentation>
 					</xs:annotation>
 				</xs:element>
 				<xs:element name="contactHistory" type="eVD-0001:contactType" maxOccurs="unbounded">
@@ -615,12 +682,12 @@
 			<xs:choice>
 				<xs:element name="currentMaritalStatus" type="eVD-0001:maritalDataType">
 					<xs:annotation>
-						<xs:documentation>Caractère 1.7 du catalogue officiel des caractères vaudois. Élément contenant l'état civil courant de la personne.</xs:documentation>
+						<xs:documentation>Caractère 1.6 du catalogue officiel des caractères vaudois. Élément contenant l'état civil courant de la personne.</xs:documentation>
 					</xs:annotation>
 				</xs:element>
 				<xs:element name="maritalStatusHistory" type="eVD-0001:maritalDataType" maxOccurs="unbounded">
 					<xs:annotation>
-						<xs:documentation>Caractère 1.7 du catalogue officiel des caractères vaudois. Élément retourné via l'utilisation du paramètre "history" du service persons : il contient tous les états civils connus dans RCPers pour la personne.</xs:documentation>
+						<xs:documentation>Caractère 1.6 du catalogue officiel des caractères vaudois. Élément retourné via l'utilisation du paramètre "history" du service persons : il contient tous les états civils connus dans RCPers pour la personne.</xs:documentation>
 					</xs:annotation>
 				</xs:element>
 			</xs:choice>
@@ -653,6 +720,18 @@
 					</xs:annotation>
 				</xs:element>
 			</xs:choice>
+			<xs:choice minOccurs="0">
+				<xs:element name="currentParent" type="eVD-0001:parentType" maxOccurs="2">
+					<xs:annotation>
+						<xs:documentation>Caractère 1.10 du catalogue officiel des caractères vaudois. </xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="parentHistory" type="eVD-0001:parentType" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:documentation>Caractère 1.10 du catalogue officiel des caractères vaudois. </xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:choice>
 			<xs:element name="dateOfDeath" type="xs:date" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>Caractère 1.8 du catalogue officiel des caractères vaudois</xs:documentation>
@@ -672,70 +751,39 @@
 					<xs:documentation>Caractère 1.6.2 du catalogue officiel des caractères vaudois.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
+			<xs:element name="partner" type="eVD-0001:personIdentificationType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Caractère 1.6.3 du catalogue officiel des caractères vaudois.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
 			<xs:element name="cancelationReason" type="eCH-0011:partnerShipAbolitionType" minOccurs="0">
 				<xs:annotation>
-					<xs:documentation>Caractère 1.6.4 du catalogue officiel des caractères vaudois.</xs:documentation>
+					<xs:documentation>Caractère 1.6.5 du catalogue officiel des caractères vaudois.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="separation" minOccurs="0" maxOccurs="unbounded">
 				<xs:annotation>
-					<xs:documentation>Caractère 1.6.3 du catalogue officiel des caractères vaudois.</xs:documentation>
+					<xs:documentation>Caractère 1.6.4 du catalogue officiel des caractères vaudois.</xs:documentation>
 				</xs:annotation>
 				<xs:complexType>
 					<xs:sequence>
 						<xs:element name="separationType" type="eCH-0011:separationType" minOccurs="0">
 							<xs:annotation>
-								<xs:documentation>Caractère 1.6.3.1 du catalogue officiel des caractères vaudois.</xs:documentation>
+								<xs:documentation>Caractère 1.6.4.1 du catalogue officiel des caractères vaudois.</xs:documentation>
 							</xs:annotation>
 						</xs:element>
 						<xs:element name="dateOfSeparation" type="xs:date" minOccurs="0">
 							<xs:annotation>
-								<xs:documentation>Caractère 1.6.3.2 du catalogue officiel des caractères vaudois.</xs:documentation>
+								<xs:documentation>Caractère 1.6.4.2 du catalogue officiel des caractères vaudois.</xs:documentation>
 							</xs:annotation>
 						</xs:element>
 						<xs:element name="separationTill" type="xs:date" minOccurs="0">
 							<xs:annotation>
-								<xs:documentation>Caractère 1.6.3.3 du catalogue officiel des caractères vaudois.</xs:documentation>
+								<xs:documentation>Caractère 1.6.4.3 du catalogue officiel des caractères vaudois.</xs:documentation>
 							</xs:annotation>
 						</xs:element>
 					</xs:sequence>
 				</xs:complexType>
-			</xs:element>
-		</xs:sequence>
-	</xs:complexType>
-	<xs:complexType name="relationshipType">
-		<xs:sequence>
-			<xs:element name="typeOfRelationship" type="eVD-0001:typeOfRelationshipType">
-				<xs:annotation>
-					<xs:documentation>Caractère 1.12.1 du catalogue officiel des caractères vaudois :
-						• 1 = Est conjoint(e),
-						• 2 = Est partenaire
-						• 3 = Est mère,
-						• 4 = Est père,
-						• 101 = Est fille,
-						• 102 = Est fils.
-					</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element name="personLink" type="xs:string" minOccurs="0">
-				<xs:annotation>
-					<xs:documentation>URL vers la ressource persons correspondant à cette relation</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element name="personIdentificationPartner" type="eCH-0044:personIdentificationPartnerType">
-				<xs:annotation>
-					<xs:documentation>Caractères 1.3.1, 1.1.1, 1.1.2, 1.2.1, 1.2.2, 1.2.7 et 1.2.3 du catalogue officiel des caractères vaudois</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element name="relationValidFrom" type="xs:date" minOccurs="0">
-				<xs:annotation>
-					<xs:documentation>Caractère 1.12.3 du catalogue officiel des caractères vaudois</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element name="relationValidTill" type="xs:date" minOccurs="0">
-				<xs:annotation>
-					<xs:documentation>Caractère 1.12.4 du catalogue officiel des caractères vaudois</xs:documentation>
-				</xs:annotation>
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
@@ -804,7 +852,7 @@
 												</xs:element>
 												<xs:element name="treatmentStatus" type="eVD-0001:treatmentStatusType">
 													<xs:annotation>
-														<xs:documentation>Caractère 1.14 du catalogue officiel des caractères</xs:documentation>
+														<xs:documentation>Caractère 1.12 du catalogue officiel des caractères</xs:documentation>
 													</xs:annotation>
 												</xs:element>
 											</xs:sequence>
@@ -857,56 +905,9 @@
 			<xs:sequence>
 				<xs:element name="householdComposition" type="eVD-0001:householdCompositionType">
 					<xs:annotation>
-						<xs:documentation>Caractère 1.10 du catalogue officiel des caractères vaudois</xs:documentation>
+						<xs:documentation>Caractère 1.11 du catalogue officiel des caractères vaudois</xs:documentation>
 					</xs:annotation>
 				</xs:element>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="listOfRelations">
-		<xs:annotation>
-			<xs:documentation>Liste des relations d'une personne</xs:documentation>
-		</xs:annotation>
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element name="numberOfResults" type="xs:integer"/>
-				<xs:element name="listOfResults">
-					<xs:complexType>
-						<xs:sequence>
-							<xs:element name="result" maxOccurs="unbounded">
-								<xs:complexType>
-									<xs:sequence>
-										<xs:element name="localPersonId" type="eCH-0044:namedPersonIdType">
-											<xs:annotation>
-												<xs:documentation>Identifiant de la personne pour laquelle la requête a été faite</xs:documentation>
-											</xs:annotation>
-										</xs:element>
-										<xs:choice>
-											<xs:sequence>
-												<xs:element name="currentRelation" type="eVD-0001:relationshipType" minOccurs="0" maxOccurs="unbounded">
-													<xs:annotation>
-														<xs:documentation>Caractère 1.12 du catalogue des caractères vaudois. Élément contenant les relations courantes de la personne qui peuvent être multiples.</xs:documentation>
-													</xs:annotation>
-												</xs:element>
-												<xs:element name="relationHistory" type="eVD-0001:relationshipType" minOccurs="0" maxOccurs="unbounded">
-													<xs:annotation>
-														<xs:documentation>Caractère 1.12 du catalogue des caractères vaudois. Élément retourné via l'utilisation du paramètre "history" du service : il contient toutes les relations connues dans RCPers pour la personne, toute relation confondue (conjoin, enfant, parent)</xs:documentation>
-													</xs:annotation>
-												</xs:element>
-											</xs:sequence>
-											<xs:element name="notReturnedRelationReason" type="eVD-0004:errorType">
-												<xs:annotation>
-													<xs:documentation>La liste des raisons est listée dans le manuel technique "Services d'échanges de données"</xs:documentation>
-												</xs:annotation>
-											</xs:element>
-										</xs:choice>
-									</xs:sequence>
-								</xs:complexType>
-							</xs:element>
-						</xs:sequence>
-					</xs:complexType>
-				</xs:element>
-				<xs:element name="nextResults" type="xs:string" minOccurs="0"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -921,24 +922,11 @@
 						<xs:documentation>Caractère 2 du catalogue des caractères vaudois</xs:documentation>
 					</xs:annotation>
 				</xs:element>
-				<xs:element name="personAfterEvent">
+				<xs:element name="personAfterEvent" type="eVD-0001:personType">
 					<xs:annotation>
-						<xs:documentation>État de la personne juste après que l'événement soit survenu</xs:documentation>
+						<xs:documentation>État de la personne juste après que l'événement soit survenu
+						Caractère 1 du catalogue des caractères vaudois</xs:documentation>
 					</xs:annotation>
-					<xs:complexType>
-						<xs:sequence>
-							<xs:element name="person" type="eVD-0001:personType">
-								<xs:annotation>
-									<xs:documentation>Caractère 1 du catalogue des caractères vaudois</xs:documentation>
-								</xs:annotation>
-							</xs:element>
-							<xs:element name="relations" type="eVD-0001:relationshipType" minOccurs="0" maxOccurs="unbounded">
-								<xs:annotation>
-									<xs:documentation>Caractère 1.12 du catalogue des caractères vaudois</xs:documentation>
-								</xs:annotation>
-							</xs:element>
-						</xs:sequence>
-					</xs:complexType>
 				</xs:element>
 			</xs:sequence>
 		</xs:complexType>
@@ -978,7 +966,7 @@
 										<xs:choice>
 											<xs:element name="treatmentStatus" type="eVD-0001:treatmentStatusType">
 												<xs:annotation>
-													<xs:documentation>Caractère 1.14 du catalogue officiel des caractères vaudois</xs:documentation>
+													<xs:documentation>Caractère 1.12 du catalogue officiel des caractères vaudois</xs:documentation>
 												</xs:annotation>
 											</xs:element>
 											<xs:element name="notReturnedTreatmentStatusReason" type="eVD-0004:errorType"/>
@@ -993,51 +981,50 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-
 	<xs:complexType name="searchCriteriaType">
 		<xs:sequence>
 			<xs:annotation>
 				<xs:documentation>Critères de recherche. Voir la spécification de la recherche de personnes.</xs:documentation>
 			</xs:annotation>
 			<xs:element name="officialName" type="xs:string" minOccurs="0"/>
-			<xs:element name="originalName" type="xs:string" minOccurs="0" />
-			<xs:element name="passportName" type="xs:string" minOccurs="0" />
-			<xs:element name="alliancePartnershipName" type="xs:string" minOccurs="0" />
-			<xs:element name="aliasName" type="xs:string" minOccurs="0" />
-			<xs:element name="otherNames" type="xs:string" minOccurs="0" />
-			<xs:element name="firstNames" type="xs:string" minOccurs="0" />
-			<xs:element name="dateOfBirth" type="eCH-0044:datePartiallyKnownType" minOccurs="0" />
-			<xs:element name="dateOfBirthFrom" type="xs:date" minOccurs="0" />
-			<xs:element name="dateOfBirthTo" type="xs:date" minOccurs="0" />
-			<xs:element name="dateOfDeath" type="xs:date" minOccurs="0" />
-			<xs:element name="dateOfDeathFrom" type="xs:date" minOccurs="0" />
-			<xs:element name="dateOfDeathTo" type="xs:date" minOccurs="0" />
+			<xs:element name="originalName" type="xs:string" minOccurs="0"/>
+			<xs:element name="passportName" type="xs:string" minOccurs="0"/>
+			<xs:element name="alliancePartnershipName" type="xs:string" minOccurs="0"/>
+			<xs:element name="aliasName" type="xs:string" minOccurs="0"/>
+			<xs:element name="otherNames" type="xs:string" minOccurs="0"/>
+			<xs:element name="firstNames" type="xs:string" minOccurs="0"/>
+			<xs:element name="dateOfBirth" type="eCH-0044:datePartiallyKnownType" minOccurs="0"/>
+			<xs:element name="dateOfBirthFrom" type="xs:date" minOccurs="0"/>
+			<xs:element name="dateOfBirthTo" type="xs:date" minOccurs="0"/>
+			<xs:element name="dateOfDeath" type="xs:date" minOccurs="0"/>
+			<xs:element name="dateOfDeathFrom" type="xs:date" minOccurs="0"/>
+			<xs:element name="dateOfDeathTo" type="xs:date" minOccurs="0"/>
 			<xs:element name="sex" type="eCH-0044:sexType" minOccurs="0"/>
 			<xs:element name="nationalityStatus" type="eCH-0011:nationalityStatusType" minOccurs="0"/>
-			<xs:element name="nationalityCountryId" type="xs:integer" minOccurs="0" />
-			<xs:element name="town" type="xs:string" minOccurs="0" />
-			<xs:element name="swissZipCode" type="xs:integer" minOccurs="0" />
-			<xs:element name="municipalityId" type="xs:integer" minOccurs="0" />
-			<xs:element name="typeOfReportingRelationship" type="eVD-0009:typeOfReportingRelationshipCodeType" minOccurs="0" />
+			<xs:element name="nationalityCountryId" type="xs:integer" minOccurs="0"/>
+			<xs:element name="town" type="xs:string" minOccurs="0"/>
+			<xs:element name="swissZipCode" type="xs:integer" minOccurs="0"/>
+			<xs:element name="municipalityId" type="xs:integer" minOccurs="0"/>
+			<xs:element name="typeOfReportingRelationship" type="eVD-0009:typeOfReportingRelationshipCodeType" minOccurs="0"/>
 			<xs:element name="residencePermit" type="eCH-0006:residencePermitType" minOccurs="0"/>
-			<xs:element name="street" type="xs:string" minOccurs="0" />
-			<xs:element name="searchInDeadPerson" type="xs:boolean" minOccurs="0" />
-			<xs:element name="searchInCanceledPerson" type="xs:boolean" minOccurs="0" />
-			<xs:element name="dataSource" minOccurs="0" >
+			<xs:element name="street" type="xs:string" minOccurs="0"/>
+			<xs:element name="houseNumber" type="xs:string" minOccurs="0"/>
+			<xs:element name="searchInDeadPerson" type="xs:boolean" minOccurs="0"/>
+			<xs:element name="searchInCanceledPerson" type="xs:boolean" minOccurs="0"/>
+			<xs:element name="dataSource" minOccurs="0">
 				<xs:simpleType>
 					<xs:restriction base="xs:string">
-					  <xs:enumeration value="ALL"/>
-					  <xs:enumeration value="FEDERAL"/>
-					  <xs:enumeration value="MUNICIPAL"/>
+						<xs:enumeration value="ALL"/>
+						<xs:enumeration value="FEDERAL"/>
+						<xs:enumeration value="MUNICIPAL"/>
 					</xs:restriction>
-  				</xs:simpleType>
- 				</xs:element>
-			<xs:element name="contains" type="xs:boolean" minOccurs="0" />
-			<xs:element name="history" type="xs:boolean" minOccurs="0" />
-			<xs:element name="maxHits" type="xs:integer" minOccurs="0" />
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="contains" type="xs:boolean" minOccurs="0"/>
+			<xs:element name="history" type="xs:boolean" minOccurs="0"/>
+			<xs:element name="maxHits" type="xs:integer" minOccurs="0"/>
 		</xs:sequence>
 	</xs:complexType>
-
 	<xs:complexType name="asynchronousSearchRequestType">
 		<xs:sequence>
 			<xs:element name="criteria" type="eVD-0001:searchCriteriaType" minOccurs="0">
@@ -1045,7 +1032,7 @@
 					<xs:documentation>Critères de recherche. Renvoie la totalité des personnes si non précisé.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="referenceDate" type="xs:date" minOccurs="0" >
+			<xs:element name="referenceDate" type="xs:date" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>Date de reference pour les données des personnes. Défaut: date du jour de l'extraction</xs:documentation>
 				</xs:annotation>
@@ -1062,9 +1049,7 @@
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
-
 	<xs:element name="asynchronousSearchRequest" type="eVD-0001:asynchronousSearchRequestType"/>
-
 	<xs:element name="asynchronousSearchResponse">
 		<xs:complexType>
 			<xs:sequence>
@@ -1100,5 +1085,4 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-
 </xs:schema>

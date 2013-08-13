@@ -8,12 +8,12 @@
 
 	<!-- local XSDs -->
 
-	<jxb:bindings schemaLocation="http://evd.vd.ch/xmlns/eVD-0001/4/eVD-0001-4-1.xsd">
+	<jxb:bindings schemaLocation="http://evd.vd.ch/xmlns/eVD-0001/5/eVD-0001-5-0.xsd">
 		<jxb:schemaBindings>
-			<jxb:package name="ch.vd.evd0001.v4" />
+			<jxb:package name="ch.vd.evd0001.v5" />
 		</jxb:schemaBindings>
 		<jxb:bindings>
-			<namespace:prefix name="eVD-0001-4" />
+			<namespace:prefix name="eVD-0001-5" />
 		</jxb:bindings>
 	</jxb:bindings>
 
