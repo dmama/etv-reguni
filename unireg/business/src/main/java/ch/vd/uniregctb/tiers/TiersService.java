@@ -17,6 +17,7 @@ import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
+import ch.vd.uniregctb.parentes.ParenteUpdateInfo;
 import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantResults;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
@@ -1193,7 +1194,7 @@ public interface TiersService {
 	 * @param noIndividu numéro technique de l'individu civil
 	 * @throws PlusieursPersonnesPhysiquesAvecMemeNumeroIndividuException si le numéro d'individu correspond à plusieurs personnes physiques non annulées/désactivées
 	 */
-	void refreshParentesDepuisNumeroIndividu(long noIndividu);
+	List<ParenteUpdateInfo> refreshParentesDepuisNumeroIndividu(long noIndividu);
 
 	/**
 	 * Rafraîchissement des parentés fiscales depuis les données civiles de l'individu derrière la personne physique donnée
@@ -1206,7 +1207,7 @@ public interface TiersService {
 	 * @param enfantsAussi  <code>false</code> si seules les parentés ascendantes sont rafraîchies, <code>true</code> pour rafraîchir également les parentés descendantes
 	 * @throws PlusieursPersonnesPhysiquesAvecMemeNumeroIndividuException si on se heurte à un numéro d'individu partagé par plusieurs personnes physiques non annulées/désactivées durant le processus
 	 */
-	void refreshParentesSurPersonnePhysique(PersonnePhysique pp, boolean enfantsAussi);
+	List<ParenteUpdateInfo> refreshParentesSurPersonnePhysique(PersonnePhysique pp, boolean enfantsAussi);
 
 	/**
 	 * Rafraîchissement des parentés fiscales depuis les données civiles de l'individu derrière la personne physique donnée
@@ -1218,7 +1219,7 @@ public interface TiersService {
 	 * @return les relations de parenté créées
 	 * @throws PlusieursPersonnesPhysiquesAvecMemeNumeroIndividuException si on se heurte à un numéro d'individu partagé par plusieurs personnes physiques non annulées/désactivées durant le processus
 	 */
-	List<Parente> initParentesDepuisFiliationsCiviles(PersonnePhysique pp);
+	List<ParenteUpdateInfo> initParentesDepuisFiliationsCiviles(PersonnePhysique pp);
 
 	/**
 	 * Renvoie les numéros d'individus liés par une relation de parenté au(x) contribuable(s) dont le numéro d'individu est donné (lien direct)

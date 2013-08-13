@@ -140,7 +140,7 @@
 		<value>ch.vd.uniregctb.document.ListeDroitsAccesRapport</value>
 		<value>ch.vd.uniregctb.document.SuppressionOIDRapport</value>
 		<value>ch.vd.uniregctb.document.RecalculTachesRapport</value>
-		<value>ch.vd.uniregctb.document.InitialisationParentesRapport</value>
+		<value>ch.vd.uniregctb.document.CalculParentesRapport</value>
 		<value>ch.vd.uniregctb.parametrage.ParametreApp</value>
 		<value>ch.vd.uniregctb.rf.Immeuble</value>
 	</util:list>

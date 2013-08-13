@@ -1,31 +1,16 @@
 package ch.vd.uniregctb.parentes;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
-import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.AbstractJobResults;
-import ch.vd.uniregctb.tiers.Parente;
 
-public class InitialisationParentesResults extends AbstractJobResults<Long, InitialisationParentesResults> {
+public class CalculParentesResults extends AbstractJobResults<Long, CalculParentesResults> {
 
-	public static class InfoParente {
-		public final long noCtbParent;
-		public final long noCtbEnfant;
-		public final RegDate dateDebut;
-		public final RegDate dateFin;
-
-		public InfoParente(Parente parente) {
-			this.noCtbParent = parente.getObjetId();
-			this.noCtbEnfant = parente.getSujetId();
-			this.dateDebut = parente.getDateDebut();
-			this.dateFin = parente.getDateFin();
-		}
-	}
-
-	public static class InfoErreur {
+	public static class InfoErreur implements Comparable<InfoErreur> {
 		public final long noCtbEnfant;
 		public final String msg;
 
@@ -33,16 +18,23 @@ public class InitialisationParentesResults extends AbstractJobResults<Long, Init
 			this.noCtbEnfant = noCtbEnfant;
 			this.msg = msg;
 		}
+
+		@Override
+		public int compareTo(InfoErreur o) {
+			return Long.compare(noCtbEnfant, o.noCtbEnfant);
+		}
 	}
 
+	public final CalculParentesMode mode;
 	public final int nbThreads;
 	public boolean interrupted;
 
-	private final List<InfoParente> parentes = new LinkedList<>();
+	private final List<ParenteUpdateInfo> updates = new LinkedList<>();
 	private final List<InfoErreur> erreurs = new LinkedList<>();
 
-	public InitialisationParentesResults(int nbThreads) {
+	public CalculParentesResults(int nbThreads, CalculParentesMode mode) {
 		this.nbThreads = nbThreads;
+		this.mode = mode;
 	}
 
 	@Override
@@ -51,13 +43,13 @@ public class InitialisationParentesResults extends AbstractJobResults<Long, Init
 	}
 
 	@Override
-	public void addAll(InitialisationParentesResults right) {
-		parentes.addAll(right.parentes);
+	public void addAll(CalculParentesResults right) {
+		updates.addAll(right.updates);
 		erreurs.addAll(right.erreurs);
 	}
 
-	public void addParente(Parente parente) {
-		parentes.add(new InfoParente(parente));
+	public void addParenteUpdate(ParenteUpdateInfo update) {
+		updates.add(update);
 	}
 
 	private static String buildErrorMessage(Exception e) {
@@ -70,11 +62,18 @@ public class InitialisationParentesResults extends AbstractJobResults<Long, Init
 		}
 	}
 
-	public List<InfoParente> getParentes() {
-		return parentes;
+	public List<ParenteUpdateInfo> getUpdates() {
+		return updates;
 	}
 
 	public List<InfoErreur> getErreurs() {
 		return erreurs;
+	}
+
+	@Override
+	public void end() {
+		Collections.sort(updates);
+		Collections.sort(erreurs);
+		super.end();
 	}
 }

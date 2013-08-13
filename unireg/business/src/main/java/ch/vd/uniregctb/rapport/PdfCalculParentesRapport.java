@@ -11,27 +11,28 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.parentes.InitialisationParentesResults;
+import ch.vd.uniregctb.parentes.CalculParentesResults;
+import ch.vd.uniregctb.parentes.ParenteUpdateInfo;
 
-public class PdfInitialisationParentesRapport extends PdfRapport {
+public class PdfCalculParentesRapport extends PdfRapport {
 
 	/**
 	 * Génère un rapport au format PDF à partir des résultats de job.
 	 */
 
-	public void write(final InitialisationParentesResults results, String nom, String description, final Date dateGeneration, OutputStream os, StatusManager status) throws DocumentException {
+	public void write(final CalculParentesResults results, String nom, String description, final Date dateGeneration, OutputStream os, StatusManager status) throws DocumentException {
 
 			Assert.notNull(status);
 
 			// Création du document PDF
-			PdfInitialisationParentesRapport document = new PdfInitialisationParentesRapport();
+			PdfCalculParentesRapport document = new PdfCalculParentesRapport();
 			PdfWriter writer = PdfWriter.getInstance(document, os);
 			document.open();
 			document.addMetaInfo(nom, description);
 			document.addEnteteUnireg();
 
 			// Titre
-			document.addTitrePrincipal("Rapport d'exécution du job génération des relations de parenté");
+			document.addTitrePrincipal("Rapport d'exécution du job calcul des relations de parenté");
 
 			// Paramètres
 			document.addEntete1("Paramètres");
@@ -39,7 +40,8 @@ public class PdfInitialisationParentesRapport extends PdfRapport {
 				document.addTableSimple(2, new TableSimpleCallback() {
 					@Override
 					public void fillTable(PdfTableSimple table) throws DocumentException {
-						table.addLigne("Nombre de threads:", String.valueOf(results.nbThreads));
+						table.addLigne("Nombre de threads :", String.valueOf(results.nbThreads));
+						table.addLigne("Mode :", String.valueOf(results.mode));
 					}
 				});
 			}
@@ -55,19 +57,19 @@ public class PdfInitialisationParentesRapport extends PdfRapport {
 				document.addTableSimple(2, new TableSimpleCallback() {
 					@Override
 					public void fillTable(PdfTableSimple table) throws DocumentException {
-						table.addLigne("Nombre total de relations générées:", String.valueOf(results.getParentes().size()));
-						table.addLigne("Nombre d'erreurs:", String.valueOf(results.getErreurs().size()));
-						table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
-						table.addLigne("Date de génération du rapport:", formatTimestamp(dateGeneration));
+						table.addLigne("Nombre total de relations mises à jour :", String.valueOf(results.getUpdates().size()));
+						table.addLigne("Nombre d'erreurs :", String.valueOf(results.getErreurs().size()));
+						table.addLigne("Durée d'exécution du job :", formatDureeExecution(results));
+						table.addLigne("Date de génération du rapport :", formatTimestamp(dateGeneration));
 					}
 				});
 			}
 
 			// Relations créées
 			{
-				String filename = "parentes_generees.csv";
-				String contenu = asCsvFileTraite(results.getParentes(), filename, status);
-				String titre = "Liste des relations de parenté générées";
+				String filename = "parentes.csv";
+				String contenu = asCsvFileTraite(results.getUpdates(), filename, status);
+				String titre = "Liste des relations de parenté mises à jour";
 				String listVide = "(aucune)";
 				document.addListeDetaillee(writer, titre, listVide, filename, contenu);
 			}
@@ -86,18 +88,20 @@ public class PdfInitialisationParentesRapport extends PdfRapport {
 			status.setMessage("Génération du rapport terminée.");
 	}
 
-	private static String asCsvFileTraite(List<InitialisationParentesResults.InfoParente> list, String filename, StatusManager status) {
-		return CsvHelper.asCsvFile(list, filename, status, new CsvHelper.FileFiller<InitialisationParentesResults.InfoParente>() {
+	private static String asCsvFileTraite(List<ParenteUpdateInfo> list, String filename, StatusManager status) {
+		return CsvHelper.asCsvFile(list, filename, status, new CsvHelper.FileFiller<ParenteUpdateInfo>() {
 			@Override
 			public void fillHeader(CsvHelper.LineFiller b) {
-				b.append("NO_CTB_PARENT").append(CsvHelper.COMMA);
-				b.append("NO_CTB_ENFANT").append(CsvHelper.COMMA);
-				b.append("DATE_DEBUT").append(CsvHelper.COMMA);
+				b.append("ACTION").append(COMMA);
+				b.append("NO_CTB_PARENT").append(COMMA);
+				b.append("NO_CTB_ENFANT").append(COMMA);
+				b.append("DATE_DEBUT").append(COMMA);
 				b.append("DATE_FIN");
 			}
 
 			@Override
-			public boolean fillLine(CsvHelper.LineFiller b, InitialisationParentesResults.InfoParente elt) {
+			public boolean fillLine(CsvHelper.LineFiller b, ParenteUpdateInfo elt) {
+				b.append(elt.action).append(COMMA);
 				b.append(elt.noCtbParent).append(COMMA);
 				b.append(elt.noCtbEnfant).append(COMMA);
 				b.append(RegDateHelper.dateToDashString(elt.dateDebut)).append(COMMA);
@@ -107,16 +111,16 @@ public class PdfInitialisationParentesRapport extends PdfRapport {
 		});
 	}
 
-	private static String asCsvFileErreur(List<InitialisationParentesResults.InfoErreur> list, String filename, StatusManager status) {
-		return CsvHelper.asCsvFile(list, filename, status, new CsvHelper.FileFiller<InitialisationParentesResults.InfoErreur>() {
+	private static String asCsvFileErreur(List<CalculParentesResults.InfoErreur> list, String filename, StatusManager status) {
+		return CsvHelper.asCsvFile(list, filename, status, new CsvHelper.FileFiller<CalculParentesResults.InfoErreur>() {
 			@Override
 			public void fillHeader(CsvHelper.LineFiller b) {
-				b.append("NO_CTB_ENFANT").append(CsvHelper.COMMA);
+				b.append("NO_CTB_ENFANT").append(COMMA);
 				b.append("DETAILS");
 			}
 
 			@Override
-			public boolean fillLine(CsvHelper.LineFiller b, InitialisationParentesResults.InfoErreur elt) {
+			public boolean fillLine(CsvHelper.LineFiller b, CalculParentesResults.InfoErreur elt) {
 				b.append(elt.noCtbEnfant).append(COMMA);
 				b.append(CsvHelper.asCsvField(elt.msg));
 				return true;

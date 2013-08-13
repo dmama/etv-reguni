@@ -19,7 +19,6 @@ import ch.vd.uniregctb.common.MultipleSwitch;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplate;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.tiers.Parente;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiersDAO;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -27,9 +26,9 @@ import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
-public class InitialisationParentesProcessor {
+public class CalculParentesProcessor {
 
-	private static final Logger LOGGER = Logger.getLogger(InitialisationParentesProcessor.class);
+	private static final Logger LOGGER = Logger.getLogger(CalculParentesProcessor.class);
 	private static final int BATCH_SIZE = 20;
 
 	private final RapportEntreTiersDAO rapportDAO;
@@ -39,8 +38,8 @@ public class InitialisationParentesProcessor {
 	private final MultipleSwitch interceptorSwitch;
 	private final TiersService tiersService;
 
-	public InitialisationParentesProcessor(RapportEntreTiersDAO rapportDAO, TiersDAO tiersDAO, PlatformTransactionManager transactionManager, HibernateTemplate hibernateTemplate,
-	                                       MultipleSwitch interceptorSwitch, TiersService tiersService) {
+	public CalculParentesProcessor(RapportEntreTiersDAO rapportDAO, TiersDAO tiersDAO, PlatformTransactionManager transactionManager, HibernateTemplate hibernateTemplate,
+	                               MultipleSwitch interceptorSwitch, TiersService tiersService) {
 		this.rapportDAO = rapportDAO;
 		this.tiersDAO = tiersDAO;
 		this.transactionManager = transactionManager;
@@ -49,16 +48,18 @@ public class InitialisationParentesProcessor {
 		this.tiersService = tiersService;
 	}
 
-	public InitialisationParentesResults run(int nbThreads, @Nullable StatusManager s) {
+	public CalculParentesResults run(int nbThreads, CalculParentesMode mode, @Nullable StatusManager s) {
 
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
-		// dabord, on vide la base de tous les rapports de parenté existants
-		final int nbRemoved = removeExisting(status);
-		LOGGER.info("Nombre d'anciens rapports de parenté effacés : " + nbRemoved);
+		if (mode == CalculParentesMode.FULL) {
+			// dabord, on vide la base de tous les rapports de parenté existants
+			final int nbRemoved = removeExisting(status);
+			LOGGER.info("Nombre d'anciens rapports de parenté effacés : " + nbRemoved);
+		}
 
-		// ensuite, il faut charger les nouveaux...
-		return initParentes(nbThreads, status);
+		// ensuite, il faut faire le refresh
+		return refreshParentes(nbThreads, mode, status);
 	}
 
 	private int removeExisting(StatusManager status) {
@@ -72,29 +73,41 @@ public class InitialisationParentesProcessor {
 		});
 	}
 
-	private InitialisationParentesResults initParentes(final int nbThreads, final StatusManager status) {
-		final List<Long> ids = getNumerosPersonnesPhysiquesConnuesDuCivil(status);
-		LOGGER.info("Nombre de personnes physiques connues dans le registre civil trouvées : " + ids.size());
+	private CalculParentesResults refreshParentes(final int nbThreads, final CalculParentesMode mode, final StatusManager status) {
+		final List<Long> ids;
+		if (mode == CalculParentesMode.REFRESH_DIRTY) {
+			ids = getNumerosPersonnesPhysiquesDirty(status);
+		}
+		else {
+			ids = getNumerosPersonnesPhysiquesConnuesDuCivil(status);
+		}
+		LOGGER.info("Nombre de personnes physiques à inspecter : " + ids.size());
 
-		final String msg = "Génération des relations de parenté...";
+		final String msg = "Calcul des relations de parenté...";
 		status.setMessage(msg, 0);
-		final InitialisationParentesResults rapportFinal = new InitialisationParentesResults(nbThreads);
+		final CalculParentesResults rapportFinal = new CalculParentesResults(nbThreads, mode);
 
-		final ParallelBatchTransactionTemplate<Long, InitialisationParentesResults> template = new ParallelBatchTransactionTemplate<>(ids, BATCH_SIZE, nbThreads,
-		                                                                                                                                BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE,
-		                                                                                                                                transactionManager, status, hibernateTemplate);
-		template.execute(rapportFinal, new BatchTransactionTemplate.BatchCallback<Long, InitialisationParentesResults>() {
+		final ParallelBatchTransactionTemplate<Long, CalculParentesResults> template = new ParallelBatchTransactionTemplate<>(ids, BATCH_SIZE, nbThreads,
+		                                                                                                                      BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE,
+		                                                                                                                      transactionManager, status, hibernateTemplate);
+		template.execute(rapportFinal, new BatchTransactionTemplate.BatchCallback<Long, CalculParentesResults>() {
 			@Override
-			public boolean doInTransaction(List<Long> batch, InitialisationParentesResults rapport) throws Exception {
+			public boolean doInTransaction(List<Long> batch, CalculParentesResults rapport) throws Exception {
 				interceptorSwitch.pushState();
 				interceptorSwitch.setEnabled(false);
 				try {
 					status.setMessage(msg, percent);
 					for (Long idTiers : batch) {
 						final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idTiers);
-						final List<Parente> creees = tiersService.initParentesDepuisFiliationsCiviles(pp);
-						for (Parente creee : creees) {
-							rapport.addParente(creee);
+						final List<ParenteUpdateInfo> updates;
+						if (mode == CalculParentesMode.FULL) {
+							updates = tiersService.initParentesDepuisFiliationsCiviles(pp);
+						}
+						else {
+							updates = tiersService.refreshParentesSurPersonnePhysique(pp, false);
+						}
+						for (ParenteUpdateInfo update : updates) {
+							rapport.addParenteUpdate(update);
 						}
 
 						if (status.interrupted()) {
@@ -109,8 +122,8 @@ public class InitialisationParentesProcessor {
 			}
 
 			@Override
-			public InitialisationParentesResults createSubRapport() {
-				return new InitialisationParentesResults(nbThreads);
+			public CalculParentesResults createSubRapport() {
+				return new CalculParentesResults(nbThreads, mode);
 			}
 		});
 
@@ -136,6 +149,18 @@ public class InitialisationParentesProcessor {
 			@Override
 			public List<Long> execute(TransactionStatus status) throws Exception {
 				return tiersDAO.getIdsConnusDuCivil();
+			}
+		});
+	}
+
+	private List<Long> getNumerosPersonnesPhysiquesDirty(StatusManager status) {
+		status.setMessage("Récupération des identifiants des personnes physiques à rafraîchir...");
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
+		return template.execute(new TxCallback<List<Long>>() {
+			@Override
+			public List<Long> execute(TransactionStatus status) throws Exception {
+				return tiersDAO.getIdsParenteDirty();
 			}
 		});
 	}

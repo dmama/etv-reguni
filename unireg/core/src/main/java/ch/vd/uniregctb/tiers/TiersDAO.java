@@ -346,4 +346,9 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 	 * @return la liste des identifiants de tiers personnes physiques connues dans le registre civil (= avec un numéro d'individu assigné)
 	 */
 	List<Long> getIdsConnusDuCivil();
+
+	/**
+	 * @return la liste des identifiants de tiers personnes physiques dont le flag "parentesDirty" est vrai
+	 */
+	List<Long> getIdsParenteDirty();
 }

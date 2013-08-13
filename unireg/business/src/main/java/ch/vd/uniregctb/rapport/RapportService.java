@@ -20,6 +20,7 @@ import ch.vd.uniregctb.declaration.source.DeterminerLRsEchuesResults;
 import ch.vd.uniregctb.declaration.source.EnvoiLRsResults;
 import ch.vd.uniregctb.declaration.source.EnvoiSommationLRsResults;
 import ch.vd.uniregctb.document.AcomptesRapport;
+import ch.vd.uniregctb.document.CalculParentesRapport;
 import ch.vd.uniregctb.document.ComparerForFiscalEtCommuneRapport;
 import ch.vd.uniregctb.document.ComparerSituationFamilleRapport;
 import ch.vd.uniregctb.document.CorrectionEtatDeclarationRapport;
@@ -40,7 +41,6 @@ import ch.vd.uniregctb.document.FusionDeCommunesRapport;
 import ch.vd.uniregctb.document.IdentifierContribuableRapport;
 import ch.vd.uniregctb.document.ImportCodesSegmentRapport;
 import ch.vd.uniregctb.document.ImportImmeublesRapport;
-import ch.vd.uniregctb.document.InitialisationParentesRapport;
 import ch.vd.uniregctb.document.ListeAssujettisRapport;
 import ch.vd.uniregctb.document.ListeContribuablesResidentsSansForVaudoisRapport;
 import ch.vd.uniregctb.document.ListeDIsNonEmisesRapport;
@@ -76,7 +76,7 @@ import ch.vd.uniregctb.metier.OuvertureForsResults;
 import ch.vd.uniregctb.metier.PassageNouveauxRentiersSourciersEnMixteResults;
 import ch.vd.uniregctb.mouvement.DeterminerMouvementsDossiersEnMasseResults;
 import ch.vd.uniregctb.oid.SuppressionOIDResults;
-import ch.vd.uniregctb.parentes.InitialisationParentesResults;
+import ch.vd.uniregctb.parentes.CalculParentesResults;
 import ch.vd.uniregctb.registrefoncier.ImportImmeublesResults;
 import ch.vd.uniregctb.registrefoncier.RapprocherCtbResults;
 import ch.vd.uniregctb.role.ProduireRolesCommunesResults;
@@ -465,5 +465,5 @@ public interface RapportService {
 	 * @param status le status manager
 	 * @return le rapport
 	 */
-	InitialisationParentesRapport generateRapport(InitialisationParentesResults results, StatusManager status);
+	CalculParentesRapport generateRapport(CalculParentesResults results, StatusManager status);
 }

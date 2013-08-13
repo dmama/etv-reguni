@@ -57,6 +57,24 @@
 					</property>
 				</bean>
 
+				<bean class="ch.vd.uniregctb.scheduler.CronTab$CronDefinition">
+					<property name="job" ref="calculParentesJob"/>
+					<!-- rafraîchissement des relations de parenté des personnes physiques obsolètes à ce niveau -->
+					<property name="cronExpression" value="${extprop.crontab.refresh.parentes}"/>
+					<property name="params">
+						<map>
+							<entry>
+								<key><util:constant static-field="ch.vd.uniregctb.parentes.CalculParentesJob.NB_THREADS"/></key>
+								<value type="java.lang.Integer">4</value>
+							</entry>
+							<entry>
+								<key><util:constant static-field="ch.vd.uniregctb.parentes.CalculParentesJob.MODE"/></key>
+								<value type="ch.vd.uniregctb.parentes.CalculParentesMode">REFRESH_DIRTY</value>
+							</entry>
+						</map>
+					</property>
+				</bean>
+
 			</list>
 		</property>
 	</bean>

@@ -11,23 +11,25 @@ import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.MultipleSwitch;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.common.Switchable;
-import ch.vd.uniregctb.document.InitialisationParentesRapport;
+import ch.vd.uniregctb.document.CalculParentesRapport;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.rapport.RapportService;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
+import ch.vd.uniregctb.scheduler.JobParamEnum;
 import ch.vd.uniregctb.scheduler.JobParamInteger;
 import ch.vd.uniregctb.tiers.RapportEntreTiersDAO;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 
-public class InitialisationParentesJob extends JobDefinition {
+public class CalculParentesJob extends JobDefinition {
 
-	private static final String NAME = "InitialisationParentesJob";
+	private static final String NAME = "CalculParentesJob";
 	private static final String CATEGORIE = "Database";
 
 	public static final String NB_THREADS = "NB_THREADS";
+	public static final String MODE = "MODE";
 
 	private RapportEntreTiersDAO rapportEntreTiersDAO;
 	private TiersDAO tiersDAO;
@@ -37,16 +39,27 @@ public class InitialisationParentesJob extends JobDefinition {
 	private RapportService rapportService;
 	private MultipleSwitch interceptorSwitch;
 
-	public InitialisationParentesJob(int sortOrder, String description) {
+	public CalculParentesJob(int sortOrder, String description) {
 		super(NAME, CATEGORIE, sortOrder, description);
 
-		final JobParam param = new JobParam();
-		param.setDescription("Nombre de threads");
-		param.setName(NB_THREADS);
-		param.setMandatory(true);
-		param.setEnabled(true);
-		param.setType(new JobParamInteger());
-		addParameterDefinition(param, 4);
+		{
+			final JobParam param = new JobParam();
+			param.setDescription("Nombre de threads");
+			param.setName(NB_THREADS);
+			param.setMandatory(true);
+			param.setEnabled(true);
+			param.setType(new JobParamInteger());
+			addParameterDefinition(param, 4);
+		}
+		{
+			final JobParam param = new JobParam();
+			param.setDescription("Mode");
+			param.setName(MODE);
+			param.setMandatory(true);
+			param.setEnabled(true);
+			param.setType(new JobParamEnum(CalculParentesMode.class));
+			addParameterDefinition(param, CalculParentesMode.FULL);
+		}
 	}
 
 	public void setRapportEntreTiersDAO(RapportEntreTiersDAO rapportEntreTiersDAO) {
@@ -81,14 +94,15 @@ public class InitialisationParentesJob extends JobDefinition {
 	protected void doExecute(Map<String, Object> params) throws Exception {
 		final StatusManager statusManager = getStatusManager();
 		final int nbThreads = getIntegerValue(params, NB_THREADS);
-		final InitialisationParentesProcessor processor = new InitialisationParentesProcessor(rapportEntreTiersDAO, tiersDAO, transactionManager, hibernateTemplate, interceptorSwitch, tiersService);
-		final InitialisationParentesResults results = processor.run(nbThreads, statusManager);
+		final CalculParentesMode mode = getEnumValue(params, MODE, CalculParentesMode.class);
+		final CalculParentesProcessor processor = new CalculParentesProcessor(rapportEntreTiersDAO, tiersDAO, transactionManager, hibernateTemplate, interceptorSwitch, tiersService);
+		final CalculParentesResults results = processor.run(nbThreads, mode, statusManager);
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-		final InitialisationParentesRapport rapport = template.execute(new TransactionCallback<InitialisationParentesRapport>() {
+		final CalculParentesRapport rapport = template.execute(new TransactionCallback<CalculParentesRapport>() {
 			@Override
-			public InitialisationParentesRapport doInTransaction(TransactionStatus status) {
+			public CalculParentesRapport doInTransaction(TransactionStatus status) {
 				return rapportService.generateRapport(results, statusManager);
 			}
 		});

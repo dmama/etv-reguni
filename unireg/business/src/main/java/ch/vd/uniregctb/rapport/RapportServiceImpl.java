@@ -28,6 +28,7 @@ import ch.vd.uniregctb.declaration.source.DeterminerLRsEchuesResults;
 import ch.vd.uniregctb.declaration.source.EnvoiLRsResults;
 import ch.vd.uniregctb.declaration.source.EnvoiSommationLRsResults;
 import ch.vd.uniregctb.document.AcomptesRapport;
+import ch.vd.uniregctb.document.CalculParentesRapport;
 import ch.vd.uniregctb.document.ComparerForFiscalEtCommuneRapport;
 import ch.vd.uniregctb.document.ComparerSituationFamilleRapport;
 import ch.vd.uniregctb.document.CorrectionEtatDeclarationRapport;
@@ -49,7 +50,6 @@ import ch.vd.uniregctb.document.FusionDeCommunesRapport;
 import ch.vd.uniregctb.document.IdentifierContribuableRapport;
 import ch.vd.uniregctb.document.ImportCodesSegmentRapport;
 import ch.vd.uniregctb.document.ImportImmeublesRapport;
-import ch.vd.uniregctb.document.InitialisationParentesRapport;
 import ch.vd.uniregctb.document.ListeAssujettisRapport;
 import ch.vd.uniregctb.document.ListeContribuablesResidentsSansForVaudoisRapport;
 import ch.vd.uniregctb.document.ListeDIsNonEmisesRapport;
@@ -86,7 +86,7 @@ import ch.vd.uniregctb.metier.OuvertureForsResults;
 import ch.vd.uniregctb.metier.PassageNouveauxRentiersSourciersEnMixteResults;
 import ch.vd.uniregctb.mouvement.DeterminerMouvementsDossiersEnMasseResults;
 import ch.vd.uniregctb.oid.SuppressionOIDResults;
-import ch.vd.uniregctb.parentes.InitialisationParentesResults;
+import ch.vd.uniregctb.parentes.CalculParentesResults;
 import ch.vd.uniregctb.registrefoncier.ImportImmeublesResults;
 import ch.vd.uniregctb.registrefoncier.RapprocherCtbResults;
 import ch.vd.uniregctb.role.ProduireRolesCommunesResults;
@@ -1125,18 +1125,18 @@ public class RapportServiceImpl implements RapportService {
 	}
 	
 	@Override
-	public InitialisationParentesRapport generateRapport(final InitialisationParentesResults results, StatusManager s) {
+	public CalculParentesRapport generateRapport(final CalculParentesResults results, StatusManager s) {
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
 		final String nom = "RapportInitialisationParentes";
-		final String description = "Rapport d'exécution du job d'initialisation des relations de parenté";
+		final String description = "Rapport d'exécution du job de calcul des relations de parenté";
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
-			return docService.newDoc(InitialisationParentesRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<InitialisationParentesRapport>() {
+			return docService.newDoc(CalculParentesRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<CalculParentesRapport>() {
 				@Override
-				public void writeDoc(InitialisationParentesRapport doc, OutputStream os) throws Exception {
-					final PdfInitialisationParentesRapport document = new PdfInitialisationParentesRapport();
+				public void writeDoc(CalculParentesRapport doc, OutputStream os) throws Exception {
+					final PdfCalculParentesRapport document = new PdfCalculParentesRapport();
 					document.write(results, nom, description, dateGeneration, os, status);
 				}
 			});

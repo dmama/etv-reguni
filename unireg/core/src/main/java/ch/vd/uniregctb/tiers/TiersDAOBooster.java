@@ -325,6 +325,11 @@ public class TiersDAOBooster implements TiersDAO, InitializingBean {
 		return target.getIdsConnusDuCivil();
 	}
 
+	@Override
+	public List<Long> getIdsParenteDirty() {
+		return target.getIdsParenteDirty();
+	}
+
 	private static final String poppins = "Supercalifragilisticexpialidocious";
 
 	private void boostMePlenty(long id) {

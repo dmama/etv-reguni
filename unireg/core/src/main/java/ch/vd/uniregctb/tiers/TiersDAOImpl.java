@@ -1344,6 +1344,15 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 		return query.list();
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Long> getIdsParenteDirty() {
+		final String hql = "select pp.id from PersonnePhysique pp where pp.numeroIndividu is not null and pp.parenteDirty=true";
+		final Session session = getCurrentSession();
+		final Query query = session.createQuery(hql);
+		return query.list();
+	}
+
 	private static interface EntityAccessor<T extends Tiers, E extends HibernateEntity> {
 		Collection<E> getEntities(T tiers);
 
