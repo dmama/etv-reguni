@@ -16,7 +16,7 @@ import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
-public class TiersHelper {
+public abstract class TiersHelper {
 
 	/**
 	 * Extrait les adresses surchargées au niveau fiscal (= adresse tiers) actives à la date donnée et pour le tiers spécifiés.
@@ -303,5 +303,4 @@ public class TiersHelper {
 			return egid1.equals(egid2);
 		}
 	}
-
 }

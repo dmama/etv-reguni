@@ -61,13 +61,9 @@ import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.situationfamille.SituationFamilleService;
 import ch.vd.uniregctb.situationfamille.VueSituationFamille;
 import ch.vd.uniregctb.situationfamille.VueSituationFamilleMenageCommun;
-import ch.vd.uniregctb.tiers.AnnuleEtRemplace;
-import ch.vd.uniregctb.tiers.AppartenanceMenage;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
-import ch.vd.uniregctb.tiers.ConseilLegal;
 import ch.vd.uniregctb.tiers.ContactImpotSource;
 import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.Curatelle;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.Entreprise;
@@ -85,7 +81,7 @@ import ch.vd.uniregctb.tiers.RepresentationLegale;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.tiers.Tutelle;
+import ch.vd.uniregctb.tiers.TiersWebHelper;
 import ch.vd.uniregctb.tiers.view.AdresseCivilView;
 import ch.vd.uniregctb.tiers.view.AdresseCivilViewComparator;
 import ch.vd.uniregctb.tiers.view.AdresseView;
@@ -240,7 +236,7 @@ public class TiersManager implements MessageSourceAware {
 				}
 				rapportView.setNomCourrier(nomSujet);
 
-				final String toolTipMessage = getRapportEntreTiersTooltips(rapportEntreTiers);
+				final String toolTipMessage = TiersWebHelper.getRapportEntreTiersTooltips(rapportEntreTiers, adresseService, tiersService);
 				rapportView.setToolTipMessage(toolTipMessage);
 				if (rapportEntreTiers instanceof RepresentationLegale) {
 					setNomAutoriteTutelaire(rapportEntreTiers, rapportView);
@@ -276,7 +272,7 @@ public class TiersManager implements MessageSourceAware {
 					rapportView.setNomCourrier(nomObjet);
 				}
 
-				final String toolTipMessage = getRapportEntreTiersTooltips(rapportEntreTiers);
+				final String toolTipMessage = TiersWebHelper.getRapportEntreTiersTooltips(rapportEntreTiers, adresseService, tiersService);
 				rapportView.setToolTipMessage(toolTipMessage);
 
 				if (rapportEntreTiers instanceof RapportPrestationImposable) {
@@ -332,7 +328,7 @@ public class TiersManager implements MessageSourceAware {
 				rapportView.setNumero(tiersSujet.getNumero());
 				final List<String> nomCourrier = getAdresseService().getNomCourrier(tiersSujet, null, false);
 				rapportView.setNomCourrier(nomCourrier);
-				final String toolTipMessage = getRapportEntreTiersTooltips(rapportEntreTiers);
+				final String toolTipMessage = TiersWebHelper.getRapportEntreTiersTooltips(rapportEntreTiers, adresseService, tiersService);
 				rapportView.setToolTipMessage(toolTipMessage);
 				rapportsView.add(rapportView);
 			}
@@ -349,84 +345,6 @@ public class TiersManager implements MessageSourceAware {
 			}
 		}
 
-	}
-
-	/**
-	 * Construit et retourne une string qui résume de manière compréhensible pour un humain un rapport entre deux tiers.
-	 *
-	 * @param rapport le rapport dont on veut obtenir un résumé
-	 * @return un résumé du rapport; ou <b>null</b> s'il n'est pas possible de le créer pour une raison ou une autre.
-	 */
-	protected String getRapportEntreTiersTooltips(RapportEntreTiers rapport) {
-
-		final Long sujetId = rapport.getSujetId();
-		final Long objetId = rapport.getObjetId();
-		final Tiers sujet = tiersDAO.get(sujetId);
-		final Tiers objet = tiersDAO.get(objetId);
-
-		final String nomSujet;
-		final String nomObjet;
-		try {
-			nomSujet = getNomCourrierPlat(sujet);
-			nomObjet = getNomCourrierPlat(objet);
-		}
-		catch (Exception e) {
-			LOGGER.warn("Exception catchée pendant le calcul des tooltips", e);
-			return null;
-		}
-
-		if (nomSujet == null || nomObjet == null) {
-			return null;
-		}
-
-		final boolean fermeOuAnnule = rapport.isAnnule() || rapport.getDateFin() != null;
-
-		if (rapport instanceof ContactImpotSource) {
-			return String.format("%s %s le tiers référent de %s", nomSujet, fermeOuAnnule ? "était" : "est", nomObjet);
-		}
-		else if (rapport instanceof RepresentationConventionnelle) {
-			return String.format("%s %s représenté(e) par %s", nomSujet, fermeOuAnnule ? "était" : "est", nomObjet);
-		}
-		else if (rapport instanceof Curatelle) {
-			return String.format("%s %s le curateur de %s", nomObjet, fermeOuAnnule ? "était" : "est", nomSujet);
-		}
-		else if (rapport instanceof ConseilLegal) {
-			return String.format("%s %s le conseiller légal de %s", nomObjet, fermeOuAnnule ? "était" : "est", nomSujet);
-		}
-		else if (rapport instanceof Tutelle) {
-			return String.format("%s %s le tuteur de %s", nomObjet, fermeOuAnnule ? "était" : "est", nomSujet);
-		}
-		else if (rapport instanceof AnnuleEtRemplace) {
-			return String.format("%s (n°%d) %s %s (n°%d)", nomObjet, objetId, fermeOuAnnule ? "remplaçait" : "remplace", nomSujet, sujetId);
-		}
-		else if (rapport instanceof AppartenanceMenage) {
-			return String.format("%s %s au ménage %s", nomSujet, fermeOuAnnule ? "appartenait" : "appartient", nomObjet);
-		}
-		else if (rapport instanceof RapportPrestationImposable) {
-			return String.format("%s %s employé(e) par %s", nomSujet, fermeOuAnnule ? "était" : "est", nomObjet);
-		}
-		else {
-			throw new IllegalArgumentException("Type de rapport-entre-tiers inconnu = [" + rapport.getClass() + ']');
-		}
-	}
-
-	protected String getNomCourrierPlat(Tiers tiers) throws AdresseException {
-
-		final List<String> noms = adresseService.getNomCourrier(tiers, null, false);
-		if (noms == null || noms.isEmpty()) {
-			return null;
-		}
-
-		if (noms.size() == 1) {
-			return noms.get(0);
-		}
-		else {
-			final StringBuilder b = new StringBuilder(noms.get(0));
-			for (int i = 1; i < noms.size(); ++i) {
-				b.append(" / ").append(noms.get(i));
-			}
-			return b.toString();
-		}
 	}
 
 	/**

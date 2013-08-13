@@ -26,6 +26,7 @@ import ch.vd.uniregctb.tiers.RapportPrestationImposable;
 import ch.vd.uniregctb.tiers.RepresentationConventionnelle;
 import ch.vd.uniregctb.tiers.RepresentationLegale;
 import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.TiersWebHelper;
 import ch.vd.uniregctb.tiers.manager.TiersManager;
 import ch.vd.uniregctb.tiers.view.TiersEditView;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
@@ -110,7 +111,7 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 		Assert.notNull(tiersLie);
 
 		final List<String> nomTiersLie = adresseService.getNomCourrier(tiersLie, null, false);
-		final String toolTipMessage = getRapportEntreTiersTooltips(rapportEntreTiers);
+		final String toolTipMessage = TiersWebHelper.getRapportEntreTiersTooltips(rapportEntreTiers, adresseService, tiersService);
 
 		rapportView.setNumeroCourant(numeroTiersCourant);
 		rapportView.setNumero(numeroTiersLie);

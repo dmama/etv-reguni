@@ -14,6 +14,7 @@ import ch.vd.uniregctb.tiers.RepresentationConventionnelle;
 import ch.vd.uniregctb.tiers.RepresentationLegale;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.tiers.TiersWebHelper;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 import ch.vd.uniregctb.utils.WebContextUtils;
 
@@ -58,7 +59,7 @@ public class RapportsPage {
 				this.nomAutoriteTutelaire = initNomAutoriteTutelaire(this.autoriteTutelaireId, tiersService);
 			}
 
-			this.toolTipMessage = ch.vd.uniregctb.rapport.view.RapportView.getRapportEntreTiersTooltips(rapport, adresseService, tiersService);
+			this.toolTipMessage = TiersWebHelper.getRapportEntreTiersTooltips(rapport, adresseService, tiersService);
 		}
 
 		private static String initNomAutoriteTutelaire(Long autoriteTutelaireId, TiersService tiersService) {
