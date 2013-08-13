@@ -697,13 +697,17 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 				query2.setParameter("id", ppId);
 				query2.executeUpdate();
 
-				final SQLQuery query3 = session.createSQLQuery("DELETE FROM IDENTIFICATION_PERSONNE WHERE NON_HABITANT_ID=:id");
+				final SQLQuery query3 = session.createSQLQuery("DELETE FROM RAPPORT_ENTRE_TIERS WHERE (TIERS_SUJET_ID=:id OR TIERS_OBJET_ID=:id) AND RAPPORT_ENTRE_TIERS_TYPE='Parente'");
 				query3.setParameter("id", ppId);
 				query3.executeUpdate();
 
-				final SQLQuery query4 = session.createSQLQuery("DELETE FROM DROIT_ACCES WHERE TIERS_ID=:id");
+				final SQLQuery query4 = session.createSQLQuery("DELETE FROM IDENTIFICATION_PERSONNE WHERE NON_HABITANT_ID=:id");
 				query4.setParameter("id", ppId);
 				query4.executeUpdate();
+
+				final SQLQuery query5 = session.createSQLQuery("DELETE FROM DROIT_ACCES WHERE TIERS_ID=:id");
+				query5.setParameter("id", ppId);
+				query5.executeUpdate();
 
 				// Création des rapports entre tiers de type 'appartenance ménage'
 				addRapportAppartenanceMenage(ppId, idPrincipal, dateDebut, dateFin, session, user);
