@@ -1,9 +1,10 @@
 package ch.vd.uniregctb.rapport;
 
-import ch.vd.uniregctb.common.WithoutSpringTest;
-import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 import org.junit.Assert;
 import org.junit.Test;
+
+import ch.vd.uniregctb.common.WithoutSpringTest;
+import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 public class TypeRapportEntreTiersWebTest extends WithoutSpringTest {
 
@@ -17,12 +18,11 @@ public class TypeRapportEntreTiersWebTest extends WithoutSpringTest {
 			Assert.assertEquals(modalite, modaliteWeb.toCore());
 		}
 
-		// seule la filiation n'existe que du côté WEB...
+		// toutes les valeurs de WEB doivent être reprises dans le CORE
 		for (TypeRapportEntreTiersWeb modalite : TypeRapportEntreTiersWeb.values()) {
-			if (TypeRapportEntreTiersWeb.FILIATION != modalite) {
-				final TypeRapportEntreTiers modaliteCore = modalite.toCore();
-				Assert.assertNotNull(modaliteCore);
-			}
+			final TypeRapportEntreTiers modaliteCore = modalite.toCore();
+			Assert.assertNotNull(modaliteCore);
+			Assert.assertEquals(modalite, TypeRapportEntreTiersWeb.fromCore(modaliteCore));
 		}
 	}
 }

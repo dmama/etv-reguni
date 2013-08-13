@@ -11,7 +11,7 @@ import ch.vd.uniregctb.type.TypeRapportEntreTiers;
  * <!-- begin-user-doc -->
  * <pre>
  * +------------------+                       +------------------+
- * | PersonnePhysique | (parent)     (enfant) | PersonnePhysique |
+ * | PersonnePhysique | (enfant)     (parent) | PersonnePhysique |
  * +------------------+                       +------------------+
  *         ^                                           ^
  *         ¦  sujet         +-----------+       objet  ¦
@@ -31,7 +31,7 @@ public class Filiation extends RapportEntreTiers {
 	}
 
 	public Filiation(RegDate dateDebut, RegDate dateFin, PersonnePhysique parent, PersonnePhysique enfant) {
-		super(dateDebut, dateFin, parent, enfant);
+		super(dateDebut, dateFin, enfant, parent);
 	}
 
 	public Filiation(RapportEntreTiers rapport) {
@@ -41,13 +41,13 @@ public class Filiation extends RapportEntreTiers {
 	@Transient
 	@Override
 	public String getDescriptionTypeObjet() {
-		return ENFANT;
+		return PARENT;
 	}
 
 	@Transient
 	@Override
 	public String getDescriptionTypeSujet() {
-		return PARENT;
+		return ENFANT;
 	}
 
 	@Transient

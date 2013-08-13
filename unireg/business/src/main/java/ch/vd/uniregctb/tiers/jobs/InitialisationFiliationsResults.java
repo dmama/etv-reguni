@@ -18,8 +18,8 @@ public class InitialisationFiliationsResults extends AbstractJobResults<Long, In
 		public final RegDate dateFin;
 
 		public InfoFiliation(Filiation filiation) {
-			this.noCtbParent = filiation.getSujetId();
-			this.noCtbEnfant = filiation.getObjetId();
+			this.noCtbParent = filiation.getObjetId();
+			this.noCtbEnfant = filiation.getSujetId();
 			this.dateDebut = filiation.getDateDebut();
 			this.dateFin = filiation.getDateFin();
 		}

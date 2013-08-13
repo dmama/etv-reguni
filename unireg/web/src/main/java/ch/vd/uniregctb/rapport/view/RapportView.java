@@ -23,6 +23,7 @@ import ch.vd.uniregctb.tiers.AppartenanceMenage;
 import ch.vd.uniregctb.tiers.ConseilLegal;
 import ch.vd.uniregctb.tiers.ContactImpotSource;
 import ch.vd.uniregctb.tiers.Curatelle;
+import ch.vd.uniregctb.tiers.Filiation;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.RapportPrestationImposable;
@@ -114,10 +115,6 @@ public class RapportView implements Comparable<RapportView>, Annulable {
 		this.numero = (sens == SensRapportEntreTiers.SUJET ? rapport.getObjetId() : rapport.getSujetId());
 		this.nomCourrier = buildNomCourrier(getTiers(this.numero, tiersService), adresseService);
 		this.natureRapportEntreTiers = rapport.getClass().getSimpleName();
-
-		if (rapport instanceof RapportPrestationImposable) {
-			final RapportPrestationImposable rpi = (RapportPrestationImposable) rapport;
-		}
 
 		if (rapport instanceof RepresentationConventionnelle) {
 			final RepresentationConventionnelle rc = (RepresentationConventionnelle) rapport;
@@ -447,6 +444,9 @@ public class RapportView implements Comparable<RapportView>, Annulable {
 		}
 		else if (rapport instanceof RapportPrestationImposable) {
 			return String.format("%s %s employé(e) par %s", nomSujet, fermeOuAnnule ? "était" : "est", nomObjet);
+		}
+		else if (rapport instanceof Filiation) {
+			return String.format("%s %s l'enfant de %s", nomSujet, fermeOuAnnule ? "était" : "est", nomObjet);
 		}
 		else {
 			throw new IllegalArgumentException("Type de rapport-entre-tiers inconnu = [" + rapport.getClass() + ']');

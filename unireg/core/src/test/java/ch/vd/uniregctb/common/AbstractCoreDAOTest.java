@@ -887,8 +887,8 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 
 	protected Filiation addFiliation(PersonnePhysique parent, PersonnePhysique enfant, RegDate dateDebut, @Nullable RegDate dateFin) {
 		final Filiation filiation = merge(new Filiation(dateDebut, dateFin, parent, enfant));
-		parent.addRapportSujet(filiation);
-		enfant.addRapportObjet(filiation);
+		parent.addRapportObjet(filiation);
+		enfant.addRapportSujet(filiation);
 		return filiation;
 	}
 
