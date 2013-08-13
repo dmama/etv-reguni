@@ -1882,6 +1882,23 @@
       <null/>
       <null/>
     </row>
+    <row>
+      <value>Parente</value>
+      <value>70269478</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2011-06-09 22:51:21.768]]></value>
+      <value>EvtCivil-11362337</value>
+      <value><![CDATA[2011-06-09 22:51:21.768]]></value>
+      <value>EvtCivil-11362337</value>
+      <value>20101104</value>
+      <null/>
+      <value>10711803</value>
+      <value>10815138</value>
+      <null/>
+      <null/>
+      <null/>
+    </row>
   </table>
   <table name="PERIODICITE">
     <column>ID</column>
