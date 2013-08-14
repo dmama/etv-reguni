@@ -125,45 +125,4 @@ public abstract class DateHelper {
 
 		return (debutPremierAvantFinSecond && finPremierApresDebutSecond);
 	}
-
-	/**
-	 * Compare la position de deux ranges de dates, d'abord en fonction de la date de début puis, à dates de début égales, en fonction de la date de fin
-	 * (un range annulé sera systématiquement placé après un range non-annulé)
-	 * @param left range 1
-	 * @param right range 2
-	 * @return 0 si les ranges sont équivallents, négatif si le range de gauche est avant le range de droite, et positif dans le cas contraire
-	 */
-	public static int compareTo(DateRange left, DateRange right) {
-		final boolean canceledLeft = left instanceof Cancelable && ((Cancelable) left).getCancellationDate() != null;
-		final boolean canceledRight = right instanceof Cancelable && ((Cancelable) right).getCancellationDate() != null;
-		if (canceledLeft == canceledRight) {
-			final boolean nullFromLeft = left.getDateFrom() == null;
-			final boolean nullFromRight = right.getDateFrom() == null;
-			if (nullFromLeft == nullFromRight) {
-				final int compareFrom = nullFromLeft ? 0 : left.getDateFrom().compareTo(right.getDateFrom());
-				if (compareFrom == 0) {
-					final boolean nullToLeft = left.getDateTo() == null;
-					final boolean nullToRight = right.getDateTo() == null;
-					if (nullToLeft == nullToRight) {
-						return nullToLeft ? 0 : left.getDateTo().compareTo(right.getDateTo());
-					}
-					else {
-						// le range qui se termine au big-crunch est après
-						return nullToLeft ? 1 : -1;
-					}
-				}
-				else {
-					return compareFrom;
-				}
-			}
-			else {
-				// le range qui commence au big-bang est avant
-				return nullFromLeft ? -1 : 1;
-			}
-		}
-		else {
-			// les ranges annulés sont après
-			return canceledLeft ? 1 : -1;
-		}
-	}
 }

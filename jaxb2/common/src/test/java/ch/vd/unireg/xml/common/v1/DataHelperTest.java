@@ -301,31 +301,4 @@ public class DataHelperTest {
 		assertEquals(Arrays.asList(r19980101_20001231), DateHelper.getAllAt(list9, new Date(2000, 1, 1)));
 		assertNull(DateHelper.getAllAt(list9, new Date(2001, 1, 1)));
 	}
-
-	@Test
-	public void testCompareTo() throws Exception {
-		final DateRange range1 = new CancelableRange(null, new Date(2000, 1, 4), null);
-		final DateRange range2 = new CancelableRange(null, new Date(2000, 1, 4), new Date(2010, 2, 1));
-		final DateRange range3 = new CancelableRange(null, null, null);
-		final DateRange range4 = new CancelableRange(null, null, new Date(2000, 1, 4));
-		final DateRange range5 = new CancelableRange(new Date(1989, 5, 13), new Date(2000, 1, 4), null);
-		final DateRange range6 = new CancelableRange(new Date(1989, 5, 13), new Date(2000, 1, 4), new Date(2010, 2, 1));
-		final DateRange range7 = new CancelableRange(new Date(1989, 5, 13), new Date(2000, 5, 4), null);
-		final DateRange range8 = new CancelableRange(new Date(1989, 5, 13), new Date(2000, 5, 4), new Date(2010, 2, 1));
-		final DateRange range9 = new CancelableRange(new Date(1989, 5, 13), null, null);
-		final DateRange range10 = new CancelableRange(new Date(1989, 5, 13), null, new Date(2010, 2, 1));
-
-		final List<DateRange> list = new ArrayList<>(Arrays.asList(range10, range9, range8, range7, range6, range5, range4, range3, range2, range1));
-		Collections.shuffle(list);
-		Collections.sort(list, new Comparator<DateRange>() {
-			@Override
-			public int compare(DateRange o1, DateRange o2) {
-				return DateHelper.compareTo(o1, o2);
-			}
-		});
-		final DateRange[] found = list.toArray(new DateRange[list.size()]);
-
-		final DateRange[] expected = new DateRange[] {range1, range3, range5, range7, range9, range2, range4, range6, range8, range10 };
-		assertEquals(expected, found);
-	}
 }
