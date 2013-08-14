@@ -31,6 +31,7 @@ import ch.vd.uniregctb.interfaces.model.EvenementPM;
 import ch.vd.uniregctb.interfaces.model.PartPM;
 import ch.vd.uniregctb.interfaces.model.PersonneMorale;
 import ch.vd.uniregctb.stats.StatsService;
+import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 /**
  * @author Manuel Siggen <manuel.siggen@vd.ch>
@@ -424,6 +425,11 @@ public class ServicePersonneMoraleCache extends ServicePersonneMoraleBase implem
 
 	@Override
 	public void onDroitAccessChange(long tiersId) {
+		// rien à faire
+	}
+
+	@Override
+	public void onRelationshipChange(TypeRapportEntreTiers type, long sujetId, long objetId) {
 		// rien à faire
 	}
 

@@ -30,6 +30,7 @@ import ch.vd.uniregctb.tiers.MockTiersDAO;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
+import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 public class EvenementCivilInterneTest extends WithoutSpringTest {
 
@@ -173,6 +174,10 @@ public class EvenementCivilInterneTest extends WithoutSpringTest {
 		@Override
 		public void onDroitAccessChange(long ppId) {
 			droitsChanged.add(ppId);
+		}
+
+		@Override
+		public void onRelationshipChange(TypeRapportEntreTiers type, long sujetId, long objetId) {
 		}
 
 		@Override

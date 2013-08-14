@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ch.vd.registre.base.utils.NotImplementedException;
+import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 public class MockDataEventService implements DataEventService {
 
@@ -32,6 +33,10 @@ public class MockDataEventService implements DataEventService {
 	@Override
 	public void onPersonneMoraleChange(long id) {
 		changedPMs.add(id);
+	}
+
+	@Override
+	public void onRelationshipChange(TypeRapportEntreTiers type, long sujetId, long objetId) {
 	}
 
 	@Override

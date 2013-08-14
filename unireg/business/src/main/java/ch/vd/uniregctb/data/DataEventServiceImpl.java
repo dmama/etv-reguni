@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+
 public class DataEventServiceImpl implements DataEventService {
 
 	private static final Logger LOGGER = Logger.getLogger(DataEventServiceImpl.class);
@@ -87,6 +89,19 @@ public class DataEventServiceImpl implements DataEventService {
 			final DataEventListener l = listeners.get(i);
 			try {
 				l.onDroitAccessChange(ppId);
+			}
+			catch (Exception e) {
+				LOGGER.error("L'exception ci-après a été ignorée car levée dans un listener", e);
+			}
+		}
+	}
+
+	@Override
+	public void onRelationshipChange(TypeRapportEntreTiers type, long sujetId, long objetId) {
+		for (int i = 0, listenersSize = listeners.size(); i < listenersSize; i++) {
+			final DataEventListener l = listeners.get(i);
+			try {
+				l.onRelationshipChange(type, sujetId, objetId);
 			}
 			catch (Exception e) {
 				LOGGER.error("L'exception ci-après a été ignorée car levée dans un listener", e);

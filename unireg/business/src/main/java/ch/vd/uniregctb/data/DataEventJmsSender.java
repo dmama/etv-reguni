@@ -12,6 +12,7 @@ import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.uniregctb.common.XmlUtils;
+import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 /**
  * Bean qui envoie les événements de modification de données comme messages JSM.
@@ -115,6 +116,11 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 		catch (Exception e) {
 			LOGGER.error("Impossible d'envoyer un message de changement de la PM n°" + id, e);
 		}
+	}
+
+	@Override
+	public void onRelationshipChange(TypeRapportEntreTiers type, long sujetId, long objetId) {
+		// TODO jde envoyer un événement...
 	}
 
 	@Override

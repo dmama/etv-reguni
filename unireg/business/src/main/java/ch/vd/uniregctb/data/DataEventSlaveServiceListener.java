@@ -2,6 +2,8 @@ package ch.vd.uniregctb.data;
 
 import org.springframework.beans.factory.InitializingBean;
 
+import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+
 /**
  * Ce listener s'enregistre dans un service maître, et délégue tous les appels à un service esclave.
  */
@@ -41,6 +43,11 @@ public class DataEventSlaveServiceListener implements DataEventListener, Initial
 	@Override
 	public void onDroitAccessChange(long tiersId) {
 		slave.onDroitAccessChange(tiersId);
+	}
+
+	@Override
+	public void onRelationshipChange(TypeRapportEntreTiers type, long sujetId, long objetId) {
+		slave.onRelationshipChange(type, sujetId, objetId);
 	}
 
 	@Override

@@ -25,6 +25,7 @@ import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
+import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 public class AutorisationCacheImpl implements AutorisationCache, DataEventListener, InitializingBean, DumpableUniregCache {
 
@@ -191,6 +192,11 @@ public class AutorisationCacheImpl implements AutorisationCache, DataEventListen
 	@Override
 	public void onPersonneMoraleChange(long id) {
 		// rien à faire
+	}
+
+	@Override
+	public void onRelationshipChange(TypeRapportEntreTiers type, long sujetId, long objetId) {
+		// rien à faire (le onTiersChange() est également appelé)
 	}
 
 	@Override

@@ -6,10 +6,19 @@ import java.util.List;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallback;
 
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
+import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceSecuriteService;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Niveau;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeDroitAcces;
@@ -176,5 +185,94 @@ public class SecurityProviderCacheTest extends SecurityTest {
 		assertEquals(Niveau.ECRITURE, acces.get(0));
 		assertEquals(Niveau.ECRITURE, acces.get(1));
 		assertNull(acces.get(2)); // id null -> accès null
+	}
+
+
+	/**
+	 * [SIFISC-9341] après son mariage, le ménage commun d'une collaboratrice de l'ACI n'était pas protégé tant que le cache
+	 * du security-provider n'a pas été nettoyé...
+	 */
+	@Test
+	public void testCreationMenageSurPersonnePhysiqueProtegee() throws Exception {
+
+		final long noIndProtege = 37854L;
+		final long noIndNonProtege = 48745672L;
+		final RegDate dateMariage = RegDate.get().addDays(-5);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final RegDate dateNaissanceProt = date(1990, 1, 1);
+				final RegDate dateNaissanceNonProt = date(1991, 5, 4);
+
+				final MockIndividu prot = addIndividu(noIndProtege, dateNaissanceProt, "Huile", "Grosse", Sexe.MASCULIN);
+				final MockIndividu nonProt = addIndividu(noIndNonProtege, dateNaissanceNonProt, "Huile", "Epouse", Sexe.FEMININ);
+				addNationalite(prot, MockPays.Suisse, dateNaissanceProt, null);
+				addNationalite(nonProt, MockPays.Suisse, dateNaissanceNonProt, null);
+				marieIndividus(prot, nonProt, dateMariage);
+			}
+		});
+
+		// mise en place fiscale avant mariage avec ajout d'un droit d'accès sur le contribuable protégé
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique prot = addHabitant(noIndProtege);
+				addForPrincipal(prot, date(2012, 5, 12), MotifFor.INDETERMINE, MockCommune.Lausanne);
+				addDroitAcces(1, prot, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE, date(2013, 1, 1), null);
+
+				final PersonnePhysique nonProt = addHabitant(noIndNonProtege);
+				addForPrincipal(nonProt, date(2012, 3, 1), MotifFor.INDETERMINE, MockCommune.Bex);
+
+				return prot.getNumero();
+			}
+		});
+
+		// vérification que le contribuable est bien protégé
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final Niveau droits = cache.getDroitAcces("TOTO", ppId);
+				assertNull(droits);
+				return null;
+			}
+		});
+
+		// création du ménage commun
+		final long mcId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique prot = (PersonnePhysique) tiersDAO.get(ppId);
+				final PersonnePhysique nonProt = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndNonProtege);
+				assertNotNull(prot);
+				assertNotNull(nonProt);
+
+				final ForFiscalPrincipal ffpProt = prot.getDernierForFiscalPrincipal();
+				ffpProt.setDateFin(dateMariage.getOneDayBefore());
+				ffpProt.setMotifFermeture(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
+
+				final ForFiscalPrincipal ffpNonProt = nonProt.getDernierForFiscalPrincipal();
+				ffpNonProt.setDateFin(dateMariage.getOneDayBefore());
+				ffpNonProt.setMotifFermeture(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
+
+				final EnsembleTiersCouple couple = addEnsembleTiersCouple(prot, nonProt, dateMariage, null);
+				final MenageCommun mc = couple.getMenage();
+				addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
+
+				return mc.getNumero();
+			}
+		});
+
+		// vérification que le contribuable ménage est bien protégé également
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final Niveau droits = cache.getDroitAcces("TOTO", mcId);
+				assertNull(droits);
+				return null;
+			}
+		});
+
 	}
 }

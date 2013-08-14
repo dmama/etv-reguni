@@ -30,6 +30,7 @@ import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.type.Niveau;
+import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 public class SecurityProviderCache implements DumpableUniregCache, SecurityProviderInterface, DataEventListener, InitializingBean {
 
@@ -382,10 +383,23 @@ public class SecurityProviderCache implements DumpableUniregCache, SecurityProvi
 		 * fait maintenant partie des tiers nouvellement contrôlés et on l'ajoute à la liste. Au pire, on fera un appel en trop au service
 		 * pour ce tiers.
 		 */
-		synchronized (this) { // les trois lignes de code ci-dessous ne doivent pas être executée par plusieurs threads en même temps
-			final Set<Long> newSet = new HashSet<>(dossiersControles);
-			newSet.add(tiersId);
-			dossiersControles = newSet; // l'assignement est atomique en java, pas besoin de locking
+		addToDossiersControles(tiersId);
+	}
+
+	@Override
+	public void onRelationshipChange(TypeRapportEntreTiers type, long sujetId, long objetId) {
+		if (type == TypeRapportEntreTiers.APPARTENANCE_MENAGE && dossiersControles.contains(sujetId)) {
+			addToDossiersControles(objetId);
+		}
+	}
+
+	private void addToDossiersControles(long id) {
+		if (!dossiersControles.contains(id)) {
+			synchronized (this) {   // les trois lignes de code ci-dessous ne doivent pas être executée par plusieurs threads en même temps
+				final Set<Long> newSet = new HashSet<>(dossiersControles);
+				newSet.add(id);
+				dossiersControles = newSet; // l'assignement est atomique en java, pas besoin de locking
+			}
 		}
 	}
 

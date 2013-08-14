@@ -10,6 +10,7 @@ import ch.vd.uniregctb.data.DataEventListener;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 public class WebServiceEventListenerAdapter implements DataEventListener, InitializingBean {
 
@@ -65,6 +66,11 @@ public class WebServiceEventListenerAdapter implements DataEventListener, Initia
 
 	@Override
 	public void onDroitAccessChange(long tiersId) {
+		// rien à faire
+	}
+
+	@Override
+	public void onRelationshipChange(TypeRapportEntreTiers type, long sujetId, long objetId) {
 		// rien à faire
 	}
 

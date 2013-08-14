@@ -50,12 +50,59 @@ public class DatabaseChangeInterceptor implements ModificationSubInterceptor, In
 		this.tiersService = tiersService;
 	}
 
+	private static final class RelationshipKey implements Serializable {
+
+		private static final long serialVersionUID = -2980295059934269128L;
+
+		public final TypeRapportEntreTiers type;
+		public final long sujetId;
+		public final long objetId;
+
+		private RelationshipKey(TypeRapportEntreTiers type, long sujetId, long objetId) {
+			this.type = type;
+			this.sujetId = sujetId;
+			this.objetId = objetId;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+
+			final RelationshipKey that = (RelationshipKey) o;
+
+			if (objetId != that.objetId) return false;
+			if (sujetId != that.sujetId) return false;
+			if (type != that.type) return false;
+
+			return true;
+		}
+
+		@Override
+		public int hashCode() {
+			int result = type.hashCode();
+			result = 31 * result + (int) (sujetId ^ (sujetId >>> 32));
+			result = 31 * result + (int) (objetId ^ (objetId >>> 32));
+			return result;
+		}
+
+		@Override
+		public String toString() {
+			return "RelationshipKey{" +
+					"type=" + type +
+					", sujetId=" + sujetId +
+					", objetId=" + objetId +
+					'}';
+		}
+	}
+
 	/**
 	 * Ids des tiers changés qui ont déjà été notifiés.
 	 */
 	private static class Data {
 		private final Set<Long> tiersChange = new HashSet<>();
 		private final Set<Long> droitsAccesChange = new HashSet<>();
+		private final Set<RelationshipKey> relationshipChange = new HashSet<>();
 
 		public void addTiersChange(Long id) {
 			tiersChange.add(id);
@@ -63,6 +110,10 @@ public class DatabaseChangeInterceptor implements ModificationSubInterceptor, In
 
 		public void addDroitAccesChange(Long id) {
 			droitsAccesChange.add(id);
+		}
+
+		public void addRelationshipChange(RelationshipKey key) {
+			relationshipChange.add(key);
 		}
 
 		public boolean containsTiersChange(Long id) {
@@ -73,9 +124,14 @@ public class DatabaseChangeInterceptor implements ModificationSubInterceptor, In
 			return droitsAccesChange.contains(id);
 		}
 
+		public boolean containsRelationshipChange(RelationshipKey key) {
+			return relationshipChange.contains(key);
+		}
+
 		public void clear() {
 			tiersChange.clear();
 			droitsAccesChange.clear();
+			relationshipChange.clear();
 		}
 	}
 
@@ -89,6 +145,12 @@ public class DatabaseChangeInterceptor implements ModificationSubInterceptor, In
 			if (numero != null) {
 				onTiersChange(numero);
 			}
+		}
+		else if (entity instanceof RapportEntreTiers) {
+			final RapportEntreTiers ret = (RapportEntreTiers) entity;
+			onRelationshipChange(ret.getType(), ret.getSujetId(), ret.getObjetId());
+			onTiersChange(ret.getSujetId());
+			onTiersChange(ret.getObjetId());
 		}
 		else if (entity instanceof LinkedEntity) { // [UNIREG-2581] on doit remonter sur le tiers en cas de changement sur les classes satellites
 			final LinkedEntity child = (LinkedEntity) entity;
@@ -137,6 +199,15 @@ public class DatabaseChangeInterceptor implements ModificationSubInterceptor, In
 		if (!d.containsDroitAcessChange(id)) { // on n'envoie un événement qu'une seule fois par transaction
 			dataEventService.onDroitAccessChange(id);
 			d.addDroitAccesChange(id);
+		}
+	}
+
+	private void onRelationshipChange(TypeRapportEntreTiers type, Long sujetId, Long objetId) {
+		final Data d = getThreadData();
+		final RelationshipKey key = new RelationshipKey(type, sujetId, objetId);
+		if (!d.containsRelationshipChange(key)) { // on n'envoie un événement qu'une seule fois par transaction
+			dataEventService.onRelationshipChange(type, sujetId, objetId);
+			d.addRelationshipChange(key);
 		}
 	}
 
