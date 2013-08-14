@@ -1546,28 +1546,41 @@ public class PartyWebServiceTest extends AbstractPartyWebServiceTest {
 			assertNotNull(relations);
 			assertEquals(4, relations.size());
 
-			final RelationBetweenParties rel0 = relations.get(0);
+			final List<RelationBetweenParties> sortedRelations = new ArrayList<>(relations);
+			Collections.sort(sortedRelations, new Comparator<RelationBetweenParties>() {
+				@Override
+				public int compare(RelationBetweenParties o1, RelationBetweenParties o2) {
+					// d'abord par type, puis par numéro d'autre tiers
+					int comparison = Integer.compare(o1.getType().ordinal(), o2.getType().ordinal());
+					if (comparison == 0) {
+						comparison = Integer.compare(o1.getOtherPartyNumber(), o2.getOtherPartyNumber());
+					}
+					return comparison;
+				}
+			});
+
+			final RelationBetweenParties rel0 = sortedRelations.get(0);
 			assertNotNull(rel0);
 			assertEquals(RelationBetweenPartiesType.HOUSEHOLD_MEMBER, rel0.getType());
 			assertSameDay(newDate(2010, 9, 11), rel0.getDateFrom());
 			assertNull(rel0.getDateTo());
 			assertEquals(10796695, rel0.getOtherPartyNumber());
 
-			final RelationBetweenParties rel1 = relations.get(1);
+			final RelationBetweenParties rel1 = sortedRelations.get(1);
 			assertNotNull(rel1);
 			assertEquals(RelationBetweenPartiesType.CHILD, rel1.getType());
 			assertSameDay(newDate(2010, 11, 4), rel1.getDateFrom());
 			assertNull(rel1.getDateTo());
 			assertEquals(10815138, rel1.getOtherPartyNumber());
 
-			final RelationBetweenParties rel2 = relations.get(2);
+			final RelationBetweenParties rel2 = sortedRelations.get(2);
 			assertNotNull(rel2);
 			assertEquals(RelationBetweenPartiesType.PARENT, rel2.getType());
 			assertSameDay(newDate(1981, 5, 28), rel2.getDateFrom());
 			assertNull(rel2.getDateTo());
 			assertEquals(10119538, rel2.getOtherPartyNumber());
 
-			final RelationBetweenParties rel3 = relations.get(3);
+			final RelationBetweenParties rel3 = sortedRelations.get(3);
 			assertNotNull(rel3);
 			assertEquals(RelationBetweenPartiesType.PARENT, rel3.getType());
 			assertSameDay(newDate(1981, 5, 28), rel3.getDateFrom());
@@ -1625,14 +1638,23 @@ public class PartyWebServiceTest extends AbstractPartyWebServiceTest {
 			assertNotNull(relations);
 			assertEquals(2, relations.size());
 
-			final RelationBetweenParties rel0 = relations.get(0);
+			final List<RelationBetweenParties> sortedRelations = new ArrayList<>(relations);
+			Collections.sort(sortedRelations, new Comparator<RelationBetweenParties>() {
+				@Override
+				public int compare(RelationBetweenParties o1, RelationBetweenParties o2) {
+					// par numéro d'autre tiers
+					return Integer.compare(o1.getOtherPartyNumber(), o2.getOtherPartyNumber());
+				}
+			});
+
+			final RelationBetweenParties rel0 = sortedRelations.get(0);
 			assertNotNull(rel0);
 			assertEquals(RelationBetweenPartiesType.PARENT, rel0.getType());
 			assertSameDay(newDate(1981, 5, 28), rel0.getDateFrom());
 			assertNull(rel0.getDateTo());
 			assertEquals(10119538, rel0.getOtherPartyNumber());
 
-			final RelationBetweenParties rel1 = relations.get(1);
+			final RelationBetweenParties rel1 = sortedRelations.get(1);
 			assertNotNull(rel1);
 			assertEquals(RelationBetweenPartiesType.PARENT, rel1.getType());
 			assertSameDay(newDate(1981, 5, 28), rel1.getDateFrom());
