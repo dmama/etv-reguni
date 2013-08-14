@@ -7,6 +7,7 @@ import java.util.Set;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeAdapterCallback;
 import ch.vd.registre.base.date.DateRangeHelper;
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.adresse.AdresseCivile;
@@ -47,7 +48,7 @@ public class DebiteurPrestationImposableValidator extends TiersValidator<Debiteu
 
 			final ValidationService validationService = getValidationService();
 
-			// Les plages de validité des fors ne doivent pas se chevaucher
+			// Les plages de validité des périodicités ne doivent pas se chevaucher
 			Periodicite lastPeriodicite = null;
 			for (Periodicite p : periodicites) {
 				if (p.isAnnule()) {
@@ -66,7 +67,7 @@ public class DebiteurPrestationImposableValidator extends TiersValidator<Debiteu
 			final ForDebiteurPrestationImposable premierForFiscal = dpi.getPremierForDebiteur();
 			if (premierForFiscal != null) {
 				final Periodicite premierePeriodicite = dpi.getPremierePeriodicite();
-				if (premierForFiscal.getDateDebut().isBefore(premierePeriodicite.getDateDebut())) {
+				if (RegDateHelper.isBefore(premierForFiscal.getDateDebut(), premierePeriodicite.getDateDebut(), NullDateBehavior.EARLIEST)) {
 					results.addError(String.format("Aucune périodicité n'est définie entre le début d'activité (%s) et la date de début de la première périodicité (%s)",
 							RegDateHelper.dateToDisplayString(premierForFiscal.getDateDebut()), RegDateHelper.dateToDisplayString(premierePeriodicite.getDateDebut())));
 				}
