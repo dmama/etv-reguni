@@ -192,7 +192,7 @@ public class MiseAJourRapportTravailRequestListenerItTest extends RapportTravail
 		final MiseAJourRapportTravailResponse response = (MiseAJourRapportTravailResponse) parseResponse(message);
 		assertNotNull(response);
 		assertNotNull(response.getExceptionInfo());
-		final String messageErreur = "le débiteur 15.000.00 n'existe pas dans unireg";
+		final String messageErreur = "Le débiteur 15.000.00 n'existe pas dans unireg";
 		assertEquals(messageErreur, response.getExceptionInfo().getMessage());
 
 	}
