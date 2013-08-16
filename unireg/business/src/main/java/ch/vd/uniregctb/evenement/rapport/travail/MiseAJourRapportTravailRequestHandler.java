@@ -198,8 +198,8 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 				//on annule touts les rapports précédents déja existant
 				if (rapportsConcerne.getId() != null) {
 					rapportsConcerne.setAnnule(true);
-					final String message = String.format("Traitement des doublons et des chevauchements: Annulation du rapport commencant le  %s " +
-							" et se terminant le %s pour le débiteur %s et le sourcier %s. Il sera remplacé par un nouveau rapport de prestation avec les dates de débuts et dates de fin adaptées",
+					final String message = String.format("Traitement des doublons et des chevauchements: Annulation du rapport commençant le '%s'" +
+							" et se terminant le '%s' pour le débiteur %s et le sourcier %s. Il sera remplacé par un nouveau rapport de prestation avec les dates de début et de fin adaptées",
 							RegDateHelper.dateToDisplayString(rapportsConcerne.getDateDebut()),
 							RegDateHelper.dateToDisplayString(rapportsConcerne.getDateFin()),
 							FormatNumeroHelper.numeroCTBToDisplay(dpi.getNumero()),
@@ -209,8 +209,8 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 				else {
 					//on peut supprimer ce nouveau rapport de la liste des rapport à ajouter
 					nouveauxRapports.remove(rapportsConcerne);
-					final String message = String.format("Traitement des doublons et des chevauchements: Suppression du rapport temporaire calculé  commencant le  %s " +
-							" et se terminant le %s pour le débiteur %s  et le sourcier %s. Il sera remplacé par un nouveau rapport de prestation avec les dates de débuts et dates de fin adaptées.",
+					final String message = String.format("Traitement des doublons et des chevauchements: Suppression du rapport temporaire calculé commençant le '%s'" +
+							" et se terminant le '%s' pour le débiteur %s et le sourcier %s. Il sera remplacé par un nouveau rapport de prestation avec les dates de début et de fin adaptées.",
 							RegDateHelper.dateToDisplayString(rapportsConcerne.getDateDebut()),
 							RegDateHelper.dateToDisplayString(rapportsConcerne.getDateFin()),
 							FormatNumeroHelper.numeroCTBToDisplay(dpi.getNumero()),
@@ -221,8 +221,8 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 
 			}
 
-			String message = String.format("nouveau rapport de travail créé suite à la détection de chevauchement:" +
-					"Ce nouveau rapport commence le %s et se termine le %s.  Concerne le debiteur %s et le sourcier %s.",
+			String message = String.format("Nouveau rapport de travail créé suite à la détection de chevauchement: " +
+					"Ce nouveau rapport commence le '%s' et se termine le '%s'.  Concerne le debiteur %s et le sourcier %s.",
 					RegDateHelper.dateToDisplayString(nouveauRapport.getDateDebut()),
 					RegDateHelper.dateToDisplayString(nouveauRapport.getDateFin()),
 					FormatNumeroHelper.numeroCTBToDisplay(dpi.getNumero()),
@@ -239,12 +239,12 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 		final Tiers tiers = tiersService.getTiers(numeroSourcier);
 
 		if (tiers == null) {
-			final String msg = String.format("le sourcier %s n'existe pas dans unireg", FormatNumeroHelper.numeroCTBToDisplay(numeroSourcier));
+			final String msg = String.format("Le sourcier %s n'existe pas dans unireg", FormatNumeroHelper.numeroCTBToDisplay(numeroSourcier));
 			throw new ServiceException(new BusinessExceptionInfo(msg, BusinessExceptionCode.UNKNOWN_PARTY.name(), null));
 		}
 
 		if (!(tiers instanceof PersonnePhysique)) {
-			final String msg = String.format("le sourcier %s ne correspond pas à une personne physique", FormatNumeroHelper.numeroCTBToDisplay(numeroSourcier));
+			final String msg = String.format("Le sourcier %s ne correspond pas à une personne physique", FormatNumeroHelper.numeroCTBToDisplay(numeroSourcier));
 			throw new ServiceException(new BusinessExceptionInfo(msg, BusinessExceptionCode.INVALID_PARTY_TYPE.name(), null));
 		}
 
@@ -257,13 +257,13 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 		final Tiers tiers = tiersService.getTiers(numeroDpi);
 		//le débiteur doit exister
 		if (tiers == null) {
-			final String msg = String.format("le débiteur %s n'existe pas dans unireg", FormatNumeroHelper.numeroCTBToDisplay(numeroDpi));
+			final String msg = String.format("Le débiteur %s n'existe pas dans unireg", FormatNumeroHelper.numeroCTBToDisplay(numeroDpi));
 			throw new ServiceException(new BusinessExceptionInfo(msg, BusinessExceptionCode.UNKNOWN_PARTY.name(), null));
 		}
 
 		//nature du tiers récupéré
 		if (!(tiers instanceof DebiteurPrestationImposable)) {
-			final String msg = String.format("le tiers %s ne correspond pas à un débiteur", FormatNumeroHelper.numeroCTBToDisplay(numeroDpi));
+			final String msg = String.format("Le tiers %s ne correspond pas à un débiteur", FormatNumeroHelper.numeroCTBToDisplay(numeroDpi));
 			throw new ServiceException(new BusinessExceptionInfo(msg, BusinessExceptionCode.INVALID_PARTY_TYPE.name(), null));
 		}
 
@@ -274,7 +274,7 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 	                                             List<RapportPrestationImposable> nouveauxRapports) {
 		//On a un evenement de fermeture de rapport de travail
 		if (request.isFermetureRapportTravail()) {
-			handleEvenementFermetureRapportTravailExistant(rapportAModifier, request);
+			handleEvenementFermetureRapportTravailExistant(rapportAModifier, request, nouveauxRapports);
 		}
 		else {
 			handleModificationRapportTravailExistant(dpi, sourcier, rapportAModifier, request, nouveauxRapports);
@@ -329,22 +329,17 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 	private void handleRapportOuvertApresPeriode(RapportPrestationImposable rapportAModifier, MiseAjourRapportTravail request, List<RapportPrestationImposable> nouveauxRapports) {
 
 		final RegDate dateDebutVersementSalaire = request.getDateDebutVersementSalaire();
-
-		final String modification = String.format("Modification de la date de début, nouvelle date: %s ", dateDebutVersementSalaire);
-
+		final String modification = String.format("Modification de la date de début, nouvelle date: %s ", RegDateHelper.dateToDisplayString(dateDebutVersementSalaire));
 		loggerModification(modification, rapportAModifier);
 
 		final RapportPrestationImposable rapportPrestationImposable = new RapportPrestationImposable(rapportAModifier);
 		rapportPrestationImposable.setDateDebut(dateDebutVersementSalaire);
 		rapportAModifier.setAnnule(true);
 		nouveauxRapports.add(rapportPrestationImposable);
-
-
 	}
 
 	private void loggerModification(String modification, RapportPrestationImposable rapportAModifier) {
-		String message = String.format(modification + " pour le rapport de travail commencant" +
-				" le %s pour le debiteur %s et le sourcier %s.",
+		String message = String.format(modification + " pour le rapport de travail commençant le '%s' pour le debiteur %s et le sourcier %s.",
 				RegDateHelper.dateToDisplayString(rapportAModifier.getDateDebut()),
 				FormatNumeroHelper.numeroCTBToDisplay(rapportAModifier.getObjetId()),
 				FormatNumeroHelper.numeroCTBToDisplay(rapportAModifier.getSujetId()));
@@ -371,18 +366,18 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 				fermerRapportTravail(rapportAModifier, dateFermeture);
 			}
 			else {
-				final String cause = "Rapport sans date de fin, aucun evenement de fermeture ou de fin de rapport dans la demande";
+				final String cause = "Rapport sans date de fin, aucun événement de fermeture ou de fin de rapport dans la demande";
 				aucunTraitement(cause, rapportAModifier, request);
 			}
 		}
 		else {
 			if (dateFin.isAfterOrEqual(dateFinPeriodeDeclaration)) {
-				final String cause = "le rapport a une date de fin, postérieure ou égale à la date de fin de la période de déclaration :";
+				final String cause = "Le rapport a une date de fin, postérieure ou égale à la date de fin de la période de déclaration";
 				aucunTraitement(cause, rapportAModifier, request);
 			}
 			else if (dateFin.isAfterOrEqual(dateDebutPeriodeDeclaration)) {
 				if (isEvenementFinRapportTravail(request)) {
-					final String cause = "le rapport a déjà une date de fin au %S :";
+					final String cause = "Le rapport a déjà une date de fin postérieure à la date de début de la période de déclaraton";
 					aucunTraitement(cause, rapportAModifier, request);
 				}
 				else {
@@ -396,15 +391,11 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 	}
 
 	private void reouvrirRapportTravail(RapportPrestationImposable rapportAModifier, MiseAjourRapportTravail request, List<RapportPrestationImposable> nouveauxRapports) {
-
-
-		loggerModification("Reouverture ", rapportAModifier);
+		loggerModification("Ré-ouverture", rapportAModifier);
 		final RapportPrestationImposable rapportPrestationImposable = new RapportPrestationImposable(rapportAModifier);
 		rapportPrestationImposable.setDateFin(null);
 		rapportAModifier.setAnnule(true);
 		nouveauxRapports.add(rapportPrestationImposable);
-
-
 	}
 
 	/**
@@ -412,8 +403,9 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 	 *
 	 * @param rapportAModifier rapport de travail trouvé pour la periode
 	 * @param request          la demande de modification
+	 * @param nouveauxRapports
 	 */
-	private void handleEvenementFermetureRapportTravailExistant(RapportPrestationImposable rapportAModifier, MiseAjourRapportTravail request) {
+	private void handleEvenementFermetureRapportTravailExistant(RapportPrestationImposable rapportAModifier, MiseAjourRapportTravail request, List<RapportPrestationImposable> nouveauxRapports) {
 		final RegDate dateDebutRapportTravail = rapportAModifier.getDateDebut();
 		final RegDate dateDebutPeriodeDeclaration = request.getDateDebutPeriodeDeclaration();
 
@@ -421,9 +413,9 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 			//CAS 18
 			annulerRapportTravail(rapportAModifier);
 		}
-		else if (dateDebutRapportTravail.isBefore(dateDebutPeriodeDeclaration)) {
+		else {
 			//Traitement de la date de fin du rappport
-			traiterFermetureRapportTravail(rapportAModifier, request);
+			traiterFermetureRapportTravail(rapportAModifier, request, nouveauxRapports);
 		}
 	}
 
@@ -432,21 +424,26 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 	 *
 	 * @param rapportAModifier rapport de travail trouvé pour la periode
 	 * @param request          la demande de mis a jour
+	 * @param nouveauxRapports
 	 */
-	private void traiterFermetureRapportTravail(RapportPrestationImposable rapportAModifier, MiseAjourRapportTravail request) {
+	private void traiterFermetureRapportTravail(RapportPrestationImposable rapportAModifier, MiseAjourRapportTravail request, List<RapportPrestationImposable> nouveauxRapports) {
 
 		final RegDate dateFermeture = request.getDateDebutPeriodeDeclaration().getOneDayBefore();
 		final RegDate dateFinDeclaration = request.getDateFinPeriodeDeclaration();
 
-		//cas 17
+		// cas 17
 		final RegDate dateFinRapport = rapportAModifier.getDateFin();
 		if (dateFinRapport != null && dateFinRapport.isBefore(request.getDateDebutPeriodeDeclaration())) {
 			final String cause = "Date de fin du rapport avant la date de début de la période";
 			aucunTraitement(cause, rapportAModifier, request);
 		}
-		//cas 16 et cas 15
-		else if (dateFinRapport == null || dateFinRapport.isBeforeOrEqual(dateFinDeclaration)) {
+		// cas 15
+		else if (dateFinRapport == null) {
 			fermerRapportTravail(rapportAModifier, dateFermeture);
+		}
+		// cas 16
+		else if (dateFinRapport.isBeforeOrEqual(dateFinDeclaration)) {
+			modifierFinRapportTravail(rapportAModifier, dateFermeture, nouveauxRapports);
 		}
 	}
 
@@ -458,13 +455,25 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 	 */
 	private void fermerRapportTravail(RapportPrestationImposable rapportAModifier, RegDate dateFermeture) {
 		rapportAModifier.setDateFin(dateFermeture);
-		String message = String.format("Fermeture du rapport de travail commencant" +
-				" le %s pour le debiteur %s et le sourcier %s. La date de fermeture a été determinée au %s",
+		final String message = String.format("Fermeture du rapport de travail commençant le %s pour le debiteur %s et le sourcier %s. La date de fermeture a été determinée au %s.",
 				RegDateHelper.dateToDisplayString(rapportAModifier.getDateDebut()),
 				FormatNumeroHelper.numeroCTBToDisplay(rapportAModifier.getObjetId()),
 				FormatNumeroHelper.numeroCTBToDisplay(rapportAModifier.getSujetId()),
 				RegDateHelper.dateToDisplayString(dateFermeture));
 		LOGGER.info(message);
+	}
+
+	/**
+	 * Modifie la date de fin d'un rapport de travail en passant par l'annulation du rapport existant et la création d'un autre
+	 */
+	private void modifierFinRapportTravail(RapportPrestationImposable rapportAModifier, RegDate dateFermeture, List<RapportPrestationImposable> nouveauxRapports) {
+		final RapportPrestationImposable rpi = new RapportPrestationImposable(rapportAModifier);
+		rpi.setDateFin(dateFermeture);
+		rapportAModifier.setAnnule(true);
+		nouveauxRapports.add(rpi);
+
+		final String modification = String.format("Modification de la date de fin, nouvelle date: %s ", RegDateHelper.dateToDisplayString(dateFermeture));
+		loggerModification(modification, rapportAModifier);
 	}
 
 	/**
@@ -474,8 +483,7 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 	 */
 	private void annulerRapportTravail(RapportPrestationImposable rapportAModifier) {
 		rapportAModifier.setAnnule(true);
-		String message = String.format("Annulation du rapport de travail commencant" +
-				" le %s pour le debiteur %s et le sourcier %s",
+		String message = String.format("Annulation du rapport de travail commençant le %s pour le debiteur %s et le sourcier %s",
 				RegDateHelper.dateToDisplayString(rapportAModifier.getDateDebut()),
 				FormatNumeroHelper.numeroCTBToDisplay(rapportAModifier.getObjetId()),
 				FormatNumeroHelper.numeroCTBToDisplay(rapportAModifier.getSujetId())
@@ -639,12 +647,9 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 	 */
 	private void annulerRapportMultiple(DebiteurPrestationImposable dpi, PersonnePhysique sourcier) {
 
-		List<RapportPrestationImposable> rapportsAModifier = findRapportPrestationImposable(dpi, sourcier);
+		final List<RapportPrestationImposable> rapportsAModifier = findRapportPrestationImposable(dpi, sourcier);
 		final List<RapportPrestationImposable> rapportMultiples = new ArrayList<>();
-
 		final List<RapportPrestationImposable> rapportsOuverts = new ArrayList<>();
-
-
 		for (RapportPrestationImposable rapportAModifier : rapportsAModifier) {
 			if (rapportAModifier.getDateFin() == null) {
 				rapportsOuverts.add(rapportAModifier);
@@ -671,11 +676,8 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 
 		}
 
-
 		for (RapportPrestationImposable rapportMultiple : rapportMultiples) {
 			rapportMultiple.setAnnule(true);
 		}
-
 	}
-
 }

@@ -81,7 +81,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 			assertTrue(e.getInfo() instanceof BusinessExceptionInfo);
 			final BusinessExceptionInfo info = (BusinessExceptionInfo) e.getInfo();
 			assertEquals(BusinessExceptionCode.UNKNOWN_PARTY.name(), info.getCode());
-			assertEquals("le débiteur 123.254.78 n'existe pas dans unireg", e.getMessage());
+			assertEquals("Le débiteur 123.254.78 n'existe pas dans unireg", e.getMessage());
 		}
 	}
 
@@ -340,60 +340,6 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		assertTrue(rapportPrestationImposable.isAnnule());
 
 	}
-
-	//CODE FERMETURE SUR MESSAGE CAS 16
-	//Dans le cas ou une date de fin de rapport de travail est antérieur ou égal à la date de fin de la période de déclaration
-	//la date de fin du rapport de travail recoit la valeur date de début de période -1 jour
-	@Test
-	@Transactional(rollbackFor = Throwable.class)
-	public void testRTExistantDateFinAnterieurDateFinPeriode() throws Exception {
-
-
-		class Ids {
-			Long idDebiteur;
-			Long idSourcier;
-		}
-		final Ids ids = new Ids();
-
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				DebiteurPrestationImposable debiteur = addDebiteur();
-				addForDebiteur(debiteur, date(2012, 1, 1), null, MockCommune.Echallens);
-				ids.idDebiteur= debiteur.getNumero();
-				PersonnePhysique sourcier = addHabitant(12365478L);
-				ids.idSourcier= sourcier.getNumero();
-
-				addRapportPrestationImposable(debiteur,sourcier,date(2011,1,1),date(2012,6,1),false);
-
-				return null;
-			}
-		});
-
-		final RegDate dateDebutPeriode = date(2012, 1, 1);
-		final RegDate dateFinPeriode = date(2012, 12, 31);
-		final RegDate dateDebutVersementSalaire = date(2012, 1, 1);
-		final RegDate dateFinRapportAttendu = dateDebutPeriode.getOneDayBefore();
-		final DateRange periodeDeclaration = new DateRangeHelper.Range(dateDebutPeriode,dateFinPeriode);
-
-
-		final MiseAJourRapportTravailRequest request = createMiseAJourRapportTravailRequest(ids.idDebiteur, ids.idSourcier,periodeDeclaration, dateDebutVersementSalaire,null);
-		request.setFermetureRapportTravail(new FermetureRapportTravail());
-		MiseAJourRapportTravailResponse response = doInNewTransaction(new TxCallback<MiseAJourRapportTravailResponse>() {
-			@Override
-			public MiseAJourRapportTravailResponse execute(TransactionStatus status) throws Exception {
-				return handler.handle(MiseAjourRapportTravail.get(request, null));
-			}
-		});
-		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
-		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
-		List<RapportEntreTiers> rapportPrestations = new ArrayList<>();
-		rapportPrestations.addAll(dpi.getRapportsObjet());
-		RapportPrestationImposable rapportPrestationImposable = (RapportPrestationImposable) rapportPrestations.get(0);
-		assertEquals(dateFinRapportAttendu, rapportPrestationImposable.getDateFin());
-
-	}
-
 
 	//CODE FERMETURE SUR MESSAGE CAS 15
 	//Dans le cas ou une date de fin de rapport de travail est inexistante
@@ -1715,7 +1661,87 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		});
 	}
 
+	/**
+	 * CODE FERMETURE SUR MESSAGE CAS 16
+	 * Dans le cas ou une date de fin de rapport de travail est antérieur ou égal à la date de fin de la période de déclaration
+	 * la date de fin du rapport de travail recoit la valeur date de début de période -1 jour
+	 * [SIFISC-8964] l'ancien rapport doit être annulé pour conserver l'historique
+	 */
+	@Test
+	public void testDemandeFermetureDateAnterieureAFermetureExistante() throws Exception {
 
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				// personne !
+			}
+		});
 
+		final class Ids {
+			long idSourcier;
+			long idDebiteur;
+		}
 
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique sourcier = addNonHabitant("Harry", "Miettinnen", date(1980, 6, 30), Sexe.MASCULIN);
+				addForPrincipal(sourcier, date(2010, 4, 1), MotifFor.ARRIVEE_HS, MockCommune.Nyon, ModeImposition.SOURCE);
+
+				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2013, 1, 1));
+				addForDebiteur(dpi, date(2013, 1, 1), null, MockCommune.Aubonne);
+				addRapportPrestationImposable(dpi, sourcier, date(2013, 1, 1), date(2013, 4, 1), false);
+
+				final Ids ids = new Ids();
+				ids.idSourcier = sourcier.getNumero();
+				ids.idDebiteur = dpi.getNumero();
+				return ids;
+			}
+		});
+
+		final MiseAJourRapportTravailRequest req = createMiseAJourRapportTravailRequest(ids.idDebiteur, ids.idSourcier, new DateRangeHelper.Range(date(2013, 4, 1), date(2013, 4, 30)), null, null);
+		req.setFermetureRapportTravail(new FermetureRapportTravail());
+
+		final MiseAJourRapportTravailResponse response =  doInNewTransaction(new TxCallback<MiseAJourRapportTravailResponse>() {
+			@Override
+			public MiseAJourRapportTravailResponse execute(TransactionStatus status) throws Exception {
+				return handler.handle(MiseAjourRapportTravail.get(req, null));
+			}
+		});
+		assertEquals(DataHelper.coreToXML(RegDate.get()), response.getDatePriseEnCompte());
+		assertNull(response.getExceptionInfo());
+
+		// allons voir en base
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(ids.idDebiteur);
+				final PersonnePhysique sourcier = (PersonnePhysique) tiersDAO.get(ids.idSourcier);
+
+				final List<RapportPrestationImposable> rapports = tiersService.getAllRapportPrestationImposable(dpi, sourcier, false, true);
+				assertNotNull(rapports);
+				assertEquals(2, rapports.size());
+
+				Collections.sort(rapports, new DateRangeComparator<RapportPrestationImposable>());
+				{
+					final RapportPrestationImposable rapport = rapports.get(0);
+					assertNotNull(rapport);
+					assertEquals(date(2013, 1, 1), rapport.getDateDebut());
+					assertEquals(date(2013, 3, 31), rapport.getDateFin());
+					assertFalse(rapport.isAnnule());
+				}
+				{
+					final RapportPrestationImposable rapport = rapports.get(1);
+					assertNotNull(rapport);
+					assertEquals(date(2013, 1, 1), rapport.getDateDebut());
+					assertEquals(date(2013, 4, 1), rapport.getDateFin());
+					assertTrue(rapport.isAnnule());
+				}
+
+				return null;
+			}
+		});
+	}
 }
