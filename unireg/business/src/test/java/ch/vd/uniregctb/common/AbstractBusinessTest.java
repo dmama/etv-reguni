@@ -561,17 +561,50 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
         return ca;
     }
 
-    protected DeclarationImpotSource addLR(DebiteurPrestationImposable debiteur, RegDate debut, RegDate fin, PeriodeFiscale periode) {
-        return addLR(debiteur, debut, fin, periode, TypeEtatDeclaration.EMISE);
+	protected DeclarationImpotSource addLRPeriodiciteUnique(DebiteurPrestationImposable debiteur, RegDate debut, RegDate fin, PeriodeFiscale periode) {
+		return addLRPeriodiciteUnique(debiteur, debut, fin, periode, TypeEtatDeclaration.EMISE);
+	}
+
+	protected DeclarationImpotSource addLRPeriodiciteUnique(DebiteurPrestationImposable debiteur, RegDate debut, RegDate fin, PeriodeFiscale periode, TypeEtatDeclaration typeEtat) {
+		DeclarationImpotSource lr = new DeclarationImpotSource();
+		lr.setDateDebut(debut);
+		lr.setDateFin(fin);
+		lr.setPeriode(periode);
+		lr.setModeCommunication(ModeCommunication.PAPIER);
+		lr.setPeriodicite(PeriodiciteDecompte.UNIQUE);
+
+		// l'état "EMISE" si l'état demandé est autre (il faut au moins l'état "EMISE")
+		if (typeEtat != TypeEtatDeclaration.EMISE) {
+			final EtatDeclaration etatEmission = new EtatDeclarationEmise();
+			etatEmission.setDateObtention(fin);
+			lr.addEtat(etatEmission);
+		}
+
+		if (typeEtat != null) {
+			final EtatDeclaration etat = EtatDeclarationHelper.getInstanceOfEtatDeclaration(typeEtat);
+			etat.setDateObtention(fin);
+			lr.addEtat(etat);
+		}
+
+		lr.setTiers(debiteur);
+		lr = hibernateTemplate.merge(lr);
+		debiteur.addDeclaration(lr);
+		return lr;
+	}
+
+    protected DeclarationImpotSource addLR(DebiteurPrestationImposable debiteur, RegDate debut, PeriodiciteDecompte periodicite, PeriodeFiscale periode) {
+        return addLR(debiteur, debut, periodicite, periode, TypeEtatDeclaration.EMISE);
     }
 
-    protected DeclarationImpotSource addLR(DebiteurPrestationImposable debiteur, RegDate debut, RegDate fin, PeriodeFiscale periode, TypeEtatDeclaration typeEtat) {
+    protected DeclarationImpotSource addLR(DebiteurPrestationImposable debiteur, RegDate debut, PeriodiciteDecompte periodicite, PeriodeFiscale periode, TypeEtatDeclaration typeEtat) {
         DeclarationImpotSource lr = new DeclarationImpotSource();
         lr.setDateDebut(debut);
+
+	    final RegDate fin = periodicite.getFinPeriode(debut);
         lr.setDateFin(fin);
         lr.setPeriode(periode);
         lr.setModeCommunication(ModeCommunication.PAPIER);
-        lr.setPeriodicite(debiteur.getPeriodiciteAt(debut).getPeriodiciteDecompte());
+        lr.setPeriodicite(periodicite);
 
         // l'état "EMISE" si l'état demandé est autre (il faut au moins l'état "EMISE")
         if (typeEtat != TypeEtatDeclaration.EMISE) {

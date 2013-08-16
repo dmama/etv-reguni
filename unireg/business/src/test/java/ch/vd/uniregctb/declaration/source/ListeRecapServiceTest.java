@@ -17,6 +17,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.Declaration;
+import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
@@ -61,7 +62,6 @@ public class ListeRecapServiceTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testFindLRsManquantesWithDifferentesPeriodicites1() throws Exception {
 
 		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
@@ -93,7 +93,6 @@ public class ListeRecapServiceTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testFindLRsManquantesWithDifferentesPeriodicites2() throws Exception {
 
 		final long dpiId2 = doInNewTransaction(new TxCallback<Long>() {
@@ -125,7 +124,6 @@ public class ListeRecapServiceTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testFindLRsManquantesWithDifferentesPeriodicites3() throws Exception {
 
 		final long dpiId3 = doInNewTransaction(new TxCallback<Long>() {
@@ -140,9 +138,9 @@ public class ListeRecapServiceTest extends BusinessTest {
 				final PeriodeFiscale periodeFiscale2008 = addPeriodeFiscale(2008);
 				final PeriodeFiscale periodeFiscale2009 = addPeriodeFiscale(2009);
 
-				addLR(dpi, date(2008, 2, 1), date(2008, 8, 28), periodeFiscale2008, TypeEtatDeclaration.RETOURNEE);
-				addLR(dpi, date(2009, 1, 1), date(2009, 3, 31), periodeFiscale2009, TypeEtatDeclaration.RETOURNEE);
-				addLR(dpi, date(2009, 4, 1), date(2009, 6, 30), periodeFiscale2009, TypeEtatDeclaration.RETOURNEE);
+				addLRPeriodiciteUnique(dpi, date(2008, 2, 1), date(2008, 8, 28), periodeFiscale2008, TypeEtatDeclaration.RETOURNEE);
+				addLR(dpi, date(2009, 1, 1), PeriodiciteDecompte.TRIMESTRIEL, periodeFiscale2009, TypeEtatDeclaration.RETOURNEE);
+				addLR(dpi, date(2009, 4, 1), PeriodiciteDecompte.TRIMESTRIEL, periodeFiscale2009, TypeEtatDeclaration.RETOURNEE);
 				return dpi.getNumero();
 			}
 		});
@@ -163,7 +161,6 @@ public class ListeRecapServiceTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testFindLRsManquantesWithDifferentesPeriodicites4() throws Exception {
 
 		final long dpiId4 = doInNewTransaction(new TxCallback<Long>() {
@@ -195,7 +192,211 @@ public class ListeRecapServiceTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
+	public void testFindLRsManquantesWithDifferentesPeriodicitesLaMemeAnnee() throws Exception {
+		// mise en place
+		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final DebiteurPrestationImposable dpi = addDebiteur();
+				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.SEMESTRIEL, null, date(2010, 1, 1), date(2010, 3, 31));
+				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.TRIMESTRIEL, null, date(2010, 4, 1), date(2010, 9, 30));
+				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.MENSUEL, null, date(2010, 10, 1), null);
+				addForDebiteur(dpi, date(2010, 1, 1), null, MockCommune.Aubonne);
+				return dpi.getNumero();
+			}
+		});
+
+		// on vérifie que l'on a bien ce que l'on veut
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final DebiteurPrestationImposable dpi = tiersDAO.getDebiteurPrestationImposableByNumero(dpiId);
+				Assert.assertNotNull(dpi);
+
+				final List<Periodicite> periodicites = dpi.getPeriodicitesSorted();
+				Assert.assertNotNull(periodicites);
+				Assert.assertEquals(3, periodicites.size());
+				{
+					final Periodicite periodicite = periodicites.get(0);
+					Assert.assertEquals(PeriodiciteDecompte.SEMESTRIEL, periodicite.getPeriodiciteDecompte());
+					Assert.assertEquals(date(2010, 1, 1), periodicite.getDateDebut());
+					Assert.assertEquals(date(2010, 3, 31), periodicite.getDateFin());
+					Assert.assertFalse(periodicite.isAnnule());
+				}
+				{
+					final Periodicite periodicite = periodicites.get(1);
+					Assert.assertEquals(PeriodiciteDecompte.TRIMESTRIEL, periodicite.getPeriodiciteDecompte());
+					Assert.assertEquals(date(2010, 4, 1), periodicite.getDateDebut());
+					Assert.assertEquals(date(2010, 9, 30), periodicite.getDateFin());
+					Assert.assertFalse(periodicite.isAnnule());
+				}
+				{
+					final Periodicite periodicite = periodicites.get(2);
+					Assert.assertEquals(PeriodiciteDecompte.MENSUEL, periodicite.getPeriodiciteDecompte());
+					Assert.assertEquals(date(2010, 10, 1), periodicite.getDateDebut());
+					Assert.assertNull(periodicite.getDateFin());
+					Assert.assertFalse(periodicite.isAnnule());
+				}
+
+				// les LR manquantes -> toute l'année, répartie entre 5 LR (une semestrielle, une trimestrielle, et trois mensuelles)
+				final List<DateRange> lrTrouveesOut = new ArrayList<>();
+				final List<DateRange> lrManquantes = lrService.findLRsManquantes(dpi, date(2010, 12, 31), lrTrouveesOut);
+				Assert.assertNotNull(lrManquantes);
+				Assert.assertEquals(0, lrTrouveesOut.size());
+				Assert.assertEquals(5, lrManquantes.size());
+				{
+					final DateRange range = lrManquantes.get(0);
+					Assert.assertEquals(date(2010, 1, 1), range.getDateDebut());
+					Assert.assertEquals(date(2010, 6, 30), range.getDateFin());
+				}
+				{
+					final DateRange range = lrManquantes.get(1);
+					Assert.assertEquals(date(2010, 7, 1), range.getDateDebut());
+					Assert.assertEquals(date(2010, 9, 30), range.getDateFin());
+				}
+				{
+					final DateRange range = lrManquantes.get(2);
+					Assert.assertEquals(date(2010, 10, 1), range.getDateDebut());
+					Assert.assertEquals(date(2010, 10, 31), range.getDateFin());
+				}
+				{
+					final DateRange range = lrManquantes.get(3);
+					Assert.assertEquals(date(2010, 11, 1), range.getDateDebut());
+					Assert.assertEquals(date(2010, 11, 30), range.getDateFin());
+				}
+				{
+					final DateRange range = lrManquantes.get(4);
+					Assert.assertEquals(date(2010, 12, 1), range.getDateDebut());
+					Assert.assertEquals(date(2010, 12, 31), range.getDateFin());
+				}
+				return null;
+			}
+		});
+	}
+
+	@Test
+	public void testImprimeAllLRWithDifferentesPeriodicitesLaMemeAnnee() throws Exception {
+		// mise en place
+		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final DebiteurPrestationImposable dpi = addDebiteur();
+				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.SEMESTRIEL, null, date(2010, 1, 1), date(2010, 3, 31));
+				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.TRIMESTRIEL, null, date(2010, 4, 1), date(2010, 9, 30));
+				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.MENSUEL, null, date(2010, 10, 1), null);
+				addForDebiteur(dpi, date(2010, 1, 1), null, MockCommune.Aubonne);
+				addPeriodeFiscale(2010);
+				return dpi.getNumero();
+			}
+		});
+
+		final EnvoiLRsResults results = lrService.imprimerAllLR(date(2010, 12, 31), null);
+		Assert.assertNotNull(results);
+		Assert.assertEquals(1, results.nbDPIsTotal);
+		Assert.assertEquals(0, results.LREnErreur.size());
+		Assert.assertEquals(0, results.nbLrAnnuellesTraitees);
+		Assert.assertEquals(1, results.nbLrSemestriellesTraitees);
+		Assert.assertEquals(1, results.nbLrTrimestriellesTraitees);
+		Assert.assertEquals(3, results.nbLrMensuellesTraitees);
+		Assert.assertEquals(5, results.LRTraitees.size());
+		{
+			final EnvoiLRsResults.Traite lr = results.LRTraitees.get(0);
+			Assert.assertNotNull(lr);
+			Assert.assertEquals(date(2010, 1, 1), lr.dateDebut);
+			Assert.assertEquals(date(2010, 6, 30), lr.dateFin);
+			Assert.assertEquals(PeriodiciteDecompte.SEMESTRIEL, lr.periodicite);
+		}
+		{
+			final EnvoiLRsResults.Traite lr = results.LRTraitees.get(1);
+			Assert.assertNotNull(lr);
+			Assert.assertEquals(date(2010, 7, 1), lr.dateDebut);
+			Assert.assertEquals(date(2010, 9, 30), lr.dateFin);
+			Assert.assertEquals(PeriodiciteDecompte.TRIMESTRIEL, lr.periodicite);
+		}
+		{
+			final EnvoiLRsResults.Traite lr = results.LRTraitees.get(2);
+			Assert.assertNotNull(lr);
+			Assert.assertEquals(date(2010, 10, 1), lr.dateDebut);
+			Assert.assertEquals(date(2010, 10, 31), lr.dateFin);
+			Assert.assertEquals(PeriodiciteDecompte.MENSUEL, lr.periodicite);
+		}
+		{
+			final EnvoiLRsResults.Traite lr = results.LRTraitees.get(3);
+			Assert.assertNotNull(lr);
+			Assert.assertEquals(date(2010, 11, 1), lr.dateDebut);
+			Assert.assertEquals(date(2010, 11, 30), lr.dateFin);
+			Assert.assertEquals(PeriodiciteDecompte.MENSUEL, lr.periodicite);
+		}
+		{
+			final EnvoiLRsResults.Traite lr = results.LRTraitees.get(4);
+			Assert.assertNotNull(lr);
+			Assert.assertEquals(date(2010, 12, 1), lr.dateDebut);
+			Assert.assertEquals(date(2010, 12, 31), lr.dateFin);
+			Assert.assertEquals(PeriodiciteDecompte.MENSUEL, lr.periodicite);
+		}
+
+		// on vérifie que l'on a bien ce que l'on veut en base aussi
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final DebiteurPrestationImposable dpi = tiersDAO.getDebiteurPrestationImposableByNumero(dpiId);
+				Assert.assertNotNull(dpi);
+
+				// toute l'année, répartie entre 5 LR (une semestrielle, une trimestrielle, et trois mensuelles)
+				final List<Declaration> lrs = dpi.getDeclarationsSorted();
+				Assert.assertNotNull(lrs);
+				Assert.assertEquals(5, lrs.size());
+				{
+					final Declaration decl = lrs.get(0);
+					Assert.assertNotNull(decl);
+					Assert.assertEquals(DeclarationImpotSource.class, decl.getClass());
+					Assert.assertEquals(date(2010, 1, 1), decl.getDateDebut());
+					Assert.assertEquals(date(2010, 6, 30), decl.getDateFin());
+					Assert.assertEquals(PeriodiciteDecompte.SEMESTRIEL, ((DeclarationImpotSource) decl).getPeriodicite());
+					Assert.assertFalse(decl.isAnnule());
+				}
+				{
+					final Declaration decl = lrs.get(1);
+					Assert.assertNotNull(decl);
+					Assert.assertEquals(DeclarationImpotSource.class, decl.getClass());
+					Assert.assertEquals(date(2010, 7, 1), decl.getDateDebut());
+					Assert.assertEquals(date(2010, 9, 30), decl.getDateFin());
+					Assert.assertEquals(PeriodiciteDecompte.TRIMESTRIEL, ((DeclarationImpotSource) decl).getPeriodicite());
+					Assert.assertFalse(decl.isAnnule());
+				}
+				{
+					final Declaration decl = lrs.get(2);
+					Assert.assertNotNull(decl);
+					Assert.assertEquals(DeclarationImpotSource.class, decl.getClass());
+					Assert.assertEquals(date(2010, 10, 1), decl.getDateDebut());
+					Assert.assertEquals(date(2010, 10, 31), decl.getDateFin());
+					Assert.assertEquals(PeriodiciteDecompte.MENSUEL, ((DeclarationImpotSource) decl).getPeriodicite());
+					Assert.assertFalse(decl.isAnnule());
+				}
+				{
+					final Declaration decl = lrs.get(3);
+					Assert.assertNotNull(decl);
+					Assert.assertEquals(DeclarationImpotSource.class, decl.getClass());
+					Assert.assertEquals(date(2010, 11, 1), decl.getDateDebut());
+					Assert.assertEquals(date(2010, 11, 30), decl.getDateFin());
+					Assert.assertEquals(PeriodiciteDecompte.MENSUEL, ((DeclarationImpotSource) decl).getPeriodicite());
+					Assert.assertFalse(decl.isAnnule());
+				}
+				{
+					final Declaration decl = lrs.get(4);
+					Assert.assertNotNull(decl);
+					Assert.assertEquals(DeclarationImpotSource.class, decl.getClass());
+					Assert.assertEquals(date(2010, 12, 1), decl.getDateDebut());
+					Assert.assertEquals(date(2010, 12, 31), decl.getDateFin());
+					Assert.assertEquals(PeriodiciteDecompte.MENSUEL, ((DeclarationImpotSource) decl).getPeriodicite());
+					Assert.assertFalse(decl.isAnnule());
+				}
+				return null;
+			}
+		});
+	}
+
+	@Test
 	public void testAjusterSelonPeriodeFiscale() throws Exception {
 
 		// cas simple sur une seule période fiscale (= pas de coupure à générer)

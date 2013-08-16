@@ -3226,10 +3226,10 @@ public class TiersServiceTest extends BusinessTest {
 
 				final PeriodeFiscale fiscale2009 = addPeriodeFiscale(anneeReference - 1);
 
-				addLR(dpi, date(anneePrecedente, 1, 1), date(anneePrecedente, 3, 31), fiscale2009, TypeEtatDeclaration.EMISE);
-				addLR(dpi, date(anneePrecedente, 4, 1), date(anneePrecedente, 6, 30), fiscale2009, TypeEtatDeclaration.EMISE);
-				addLR(dpi, date(anneePrecedente, 7, 1), date(anneePrecedente, 9, 30), fiscale2009, TypeEtatDeclaration.EMISE);
-				addLR(dpi, date(anneePrecedente, 10, 1), date(anneePrecedente, 12, 31), fiscale2009, TypeEtatDeclaration.EMISE);
+				addLR(dpi, date(anneePrecedente, 1, 1), PeriodiciteDecompte.TRIMESTRIEL, fiscale2009, TypeEtatDeclaration.EMISE);
+				addLR(dpi, date(anneePrecedente, 4, 1), PeriodiciteDecompte.TRIMESTRIEL, fiscale2009, TypeEtatDeclaration.EMISE);
+				addLR(dpi, date(anneePrecedente, 7, 1), PeriodiciteDecompte.TRIMESTRIEL, fiscale2009, TypeEtatDeclaration.EMISE);
+				addLR(dpi, date(anneePrecedente, 10, 1), PeriodiciteDecompte.TRIMESTRIEL, fiscale2009, TypeEtatDeclaration.EMISE);
 				return dpi.getNumero();
 			}
 		});
@@ -3238,7 +3238,7 @@ public class TiersServiceTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
-				RegDate dateDebut = tiersService.getDateDebutNouvellePeriodicite(dpi);
+				RegDate dateDebut = tiersService.getDateDebutNouvellePeriodicite(dpi, PeriodiciteDecompte.UNIQUE);
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.UNIQUE, PeriodeDecompte.M12, dateDebut, null);
 				Periodicite periodicite = dpi.getDernierePeriodicite();
 				assertEquals(dateDebut, periodicite.getDateDebut());
@@ -3312,21 +3312,6 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
-	public void testGetDateDebutValiditeNouvellePeriodicite() throws Exception {
-		loadDatabase("TiersServiceTest.xml");
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(1234L);
-				assertEquals(RegDate.get(2009, 1, 1), tiersService.getDateDebutNouvellePeriodicite(dpi));
-				return null;
-			}
-		});
-	}
-
-	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testAddPeriodiciteBeforAddFor() throws Exception {
 
 		//Ajout d'une première periodicite et d'un for à la même date
@@ -3380,15 +3365,14 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testGetDateDebutValiditeNouvellePeriodiciteSansLR() throws Exception {
 
 		//Ajout d'une première periodicite'
 		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
-				DebiteurPrestationImposable dpi = addDebiteur();
-				addForDebiteur(dpi, date(2009, 6, 1), null, MockCommune.Bex);
+				final DebiteurPrestationImposable dpi = addDebiteur();
+				addForDebiteur(dpi, date(2009, 11, 1), null, MockCommune.Bex);
 				return dpi.getNumero();
 			}
 		});
@@ -3396,10 +3380,13 @@ public class TiersServiceTest extends BusinessTest {
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-
-				RegDate dateDebutPeriodicite = RegDate.get(2009, 6, 1);
-				DebiteurPrestationImposable debiteur = tiersDAO.getDebiteurPrestationImposableByNumero(dpiId);
-				assertEquals(dateDebutPeriodicite, tiersService.getDateDebutNouvellePeriodicite(debiteur));
+				final RegDate dateDebutPeriodicite = RegDate.get(2009, 6, 1);
+				final DebiteurPrestationImposable debiteur = tiersDAO.getDebiteurPrestationImposableByNumero(dpiId);
+				assertEquals(date(2009, 11, 1), tiersService.getDateDebutNouvellePeriodicite(debiteur, PeriodiciteDecompte.MENSUEL));
+				assertEquals(date(2009, 10, 1), tiersService.getDateDebutNouvellePeriodicite(debiteur, PeriodiciteDecompte.TRIMESTRIEL));
+				assertEquals(date(2009, 7, 1), tiersService.getDateDebutNouvellePeriodicite(debiteur, PeriodiciteDecompte.SEMESTRIEL));
+				assertEquals(date(2009, 1, 1), tiersService.getDateDebutNouvellePeriodicite(debiteur, PeriodiciteDecompte.ANNUEL));
+				assertEquals(date(2009, 1, 1), tiersService.getDateDebutNouvellePeriodicite(debiteur, PeriodiciteDecompte.UNIQUE));
 				return null;
 			}
 		});
@@ -3407,18 +3394,17 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testGetDateDebutValiditeNouvellePeriodiciteAvecLR() throws Exception {
 
 		//Ajout d'une première periodicite'
 		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
-				DebiteurPrestationImposable dpi = addDebiteur();
+				final DebiteurPrestationImposable dpi = addDebiteur();
 				addForDebiteur(dpi, date(2009, 6, 1), null, MockCommune.Bex);
 				final PeriodeFiscale fiscale = addPeriodeFiscale(2009);
 
-				addLR(dpi, date(2009, 7, 1), date(2009, 9, 30), fiscale, TypeEtatDeclaration.EMISE);
+				addLR(dpi, date(2009, 7, 1), PeriodiciteDecompte.TRIMESTRIEL, fiscale, TypeEtatDeclaration.EMISE);
 				return dpi.getNumero();
 			}
 		});
@@ -3426,10 +3412,12 @@ public class TiersServiceTest extends BusinessTest {
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-
-				RegDate dateDebutPeriodicite = RegDate.get(2010, 1, 1);
-				DebiteurPrestationImposable debiteur = tiersDAO.getDebiteurPrestationImposableByNumero(dpiId);
-				assertEquals(dateDebutPeriodicite, tiersService.getDateDebutNouvellePeriodicite(debiteur));
+				final DebiteurPrestationImposable debiteur = tiersDAO.getDebiteurPrestationImposableByNumero(dpiId);
+				assertEquals(date(2009, 10, 1), tiersService.getDateDebutNouvellePeriodicite(debiteur, PeriodiciteDecompte.MENSUEL));
+				assertEquals(date(2009, 10, 1), tiersService.getDateDebutNouvellePeriodicite(debiteur, PeriodiciteDecompte.TRIMESTRIEL));
+				assertEquals(date(2010, 1, 1), tiersService.getDateDebutNouvellePeriodicite(debiteur, PeriodiciteDecompte.SEMESTRIEL));
+				assertEquals(date(2010, 1, 1), tiersService.getDateDebutNouvellePeriodicite(debiteur, PeriodiciteDecompte.ANNUEL));
+				assertEquals(date(2010, 1, 1), tiersService.getDateDebutNouvellePeriodicite(debiteur, PeriodiciteDecompte.UNIQUE));
 				return null;
 			}
 		});
@@ -3437,16 +3425,13 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testGetDateDebutValiditeNouvellePeriodiciteSansLRSansFor() throws Exception {
 
 		//Ajout d'une première periodicite'
 		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
-				DebiteurPrestationImposable dpi = addDebiteur();
-
-
+				final DebiteurPrestationImposable dpi = addDebiteur();
 				return dpi.getNumero();
 			}
 		});
@@ -3454,11 +3439,14 @@ public class TiersServiceTest extends BusinessTest {
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-
-				int anneeCourante = RegDate.get().year();
-				RegDate dateDebutPeriodicite = RegDate.get(anneeCourante, 1, 1);
-				DebiteurPrestationImposable debiteur = tiersDAO.getDebiteurPrestationImposableByNumero(dpiId);
-				assertEquals(dateDebutPeriodicite, tiersService.getDateDebutNouvellePeriodicite(debiteur));
+				final int anneeCourante = RegDate.get().year();
+				final RegDate dateDebutPeriodicite = RegDate.get(anneeCourante, 1, 1);
+				final DebiteurPrestationImposable debiteur = tiersDAO.getDebiteurPrestationImposableByNumero(dpiId);
+				assertEquals(dateDebutPeriodicite, tiersService.getDateDebutNouvellePeriodicite(debiteur, PeriodiciteDecompte.ANNUEL));
+				assertEquals(dateDebutPeriodicite, tiersService.getDateDebutNouvellePeriodicite(debiteur, PeriodiciteDecompte.TRIMESTRIEL));
+				assertEquals(dateDebutPeriodicite, tiersService.getDateDebutNouvellePeriodicite(debiteur, PeriodiciteDecompte.SEMESTRIEL));
+				assertEquals(dateDebutPeriodicite, tiersService.getDateDebutNouvellePeriodicite(debiteur, PeriodiciteDecompte.ANNUEL));
+				assertEquals(dateDebutPeriodicite, tiersService.getDateDebutNouvellePeriodicite(debiteur, PeriodiciteDecompte.UNIQUE));
 				return null;
 			}
 		});

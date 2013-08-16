@@ -79,7 +79,7 @@ public class EvenementExterneEsbHandlerTest extends BusinessTest {
 	public void testOldEventImpotSource() throws Exception {
 
 		final RegDate dateDebut = date(2008, 1, 1);
-		final RegDate dateFin = date(2008, 3, 31);
+		final RegDate dateFin = PeriodiciteDecompte.TRIMESTRIEL.getFinPeriode(dateDebut);
 		final RegDate dateQuittancement = RegDate.get();
 
 		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
@@ -90,7 +90,7 @@ public class EvenementExterneEsbHandlerTest extends BusinessTest {
 				addForDebiteur(dpi, dateDebut, null, MockCommune.Lausanne);
 
 				final PeriodeFiscale pf = addPeriodeFiscale(2008);
-				addLR(dpi, dateDebut, dateFin, pf);
+				addLR(dpi, dateDebut, PeriodiciteDecompte.TRIMESTRIEL, pf);
 
 				return dpi.getNumero();
 			}
@@ -153,7 +153,7 @@ public class EvenementExterneEsbHandlerTest extends BusinessTest {
 	public void testOldEventLC() throws Exception {
 
 		final RegDate dateDebut = date(2008, 1, 1);
-		final RegDate dateFin = date(2008, 3, 31);
+		final RegDate dateFin = PeriodiciteDecompte.TRIMESTRIEL.getFinPeriode(dateDebut);
 		final RegDate dateQuittancement = RegDate.get();
 
 		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
@@ -164,7 +164,7 @@ public class EvenementExterneEsbHandlerTest extends BusinessTest {
 				addForDebiteur(dpi, dateDebut, null, MockCommune.Lausanne);
 
 				final PeriodeFiscale pf = addPeriodeFiscale(2008);
-				addLR(dpi, dateDebut, dateFin, pf);
+				addLR(dpi, dateDebut, PeriodiciteDecompte.TRIMESTRIEL, pf);
 
 				return dpi.getNumero();
 			}
@@ -196,7 +196,7 @@ public class EvenementExterneEsbHandlerTest extends BusinessTest {
 	public void testOldEventAnnulationEtatRetourInexistant() throws Exception {
 
 		final RegDate dateDebut = date(2008, 1, 1);
-		final RegDate dateFin = date(2008, 3, 31);
+		final RegDate dateFin = PeriodiciteDecompte.TRIMESTRIEL.getFinPeriode(dateDebut);
 		final RegDate dateQuittancement = RegDate.get();
 
 		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
@@ -207,7 +207,7 @@ public class EvenementExterneEsbHandlerTest extends BusinessTest {
 				addForDebiteur(dpi, dateDebut, null, MockCommune.Lausanne);
 
 				final PeriodeFiscale pf = addPeriodeFiscale(2008);
-				addLR(dpi, dateDebut, dateFin, pf);
+				addLR(dpi, dateDebut, PeriodiciteDecompte.TRIMESTRIEL, pf);
 
 				return dpi.getNumero();
 			}
@@ -261,7 +261,7 @@ public class EvenementExterneEsbHandlerTest extends BusinessTest {
 	public void testOldEventDoubleAnnulation() throws Exception{
 
 		final RegDate dateDebut = date(2008, 1, 1);
-		final RegDate dateFin = date(2008, 3, 31);
+		final RegDate dateFin = PeriodiciteDecompte.TRIMESTRIEL.getFinPeriode(dateDebut);
 		final RegDate dateQuittancement = RegDate.get();
 
 		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
@@ -273,7 +273,7 @@ public class EvenementExterneEsbHandlerTest extends BusinessTest {
 
 				final PeriodeFiscale pf = addPeriodeFiscale(2008);
 
-				final DeclarationImpotSource lr = addLR(dpi, dateDebut, dateFin, pf);
+				final DeclarationImpotSource lr = addLR(dpi, dateDebut, PeriodiciteDecompte.TRIMESTRIEL, pf);
 				lr.addEtat(new EtatDeclarationEmise(dateFin.addDays(-10)));
 
 				final EtatDeclaration etatRetourne = new EtatDeclarationRetournee(dateQuittancement, "TEST");
@@ -312,7 +312,7 @@ public class EvenementExterneEsbHandlerTest extends BusinessTest {
 	public void testOldEventAnnulation() throws Exception {
 
 		final RegDate dateDebut = date(2008, 1, 1);
-		final RegDate dateFin = date(2008, 3, 31);
+		final RegDate dateFin = PeriodiciteDecompte.TRIMESTRIEL.getFinPeriode(dateDebut);
 		final RegDate dateQuittancement = RegDate.get();
 
 		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
@@ -324,7 +324,7 @@ public class EvenementExterneEsbHandlerTest extends BusinessTest {
 
 				final PeriodeFiscale pf = addPeriodeFiscale(2008);
 
-				final DeclarationImpotSource lr = addLR(dpi, dateDebut, dateFin, pf);
+				final DeclarationImpotSource lr = addLR(dpi, dateDebut, PeriodiciteDecompte.TRIMESTRIEL, pf);
 				lr.addEtat(new EtatDeclarationRetournee(dateQuittancement, "TEST"));
 
 				return dpi.getNumero();
@@ -381,7 +381,7 @@ public class EvenementExterneEsbHandlerTest extends BusinessTest {
 	public void testOldEvenementDoubleQuittancement() throws Exception {
 		
 		final RegDate dateDebut = date(2008, 1, 1);
-		final RegDate dateFin = date(2008, 3, 31);
+		final RegDate dateFin = PeriodiciteDecompte.TRIMESTRIEL.getFinPeriode(dateDebut);
 		final RegDate dateQuittancement = RegDate.get();
 
 		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
@@ -393,7 +393,7 @@ public class EvenementExterneEsbHandlerTest extends BusinessTest {
 
 				final PeriodeFiscale pf = addPeriodeFiscale(2008);
 
-				final DeclarationImpotSource lr = addLR(dpi, dateDebut, dateFin, pf);
+				final DeclarationImpotSource lr = addLR(dpi, dateDebut, PeriodiciteDecompte.TRIMESTRIEL, pf);
 				lr.addEtat(new EtatDeclarationRetournee(dateQuittancement, "TEST"));
 
 				return dpi.getNumero();
@@ -460,7 +460,7 @@ public class EvenementExterneEsbHandlerTest extends BusinessTest {
 	public void testOldEvenementAnnulationDoubleQuittancement() throws Exception {
 
 		final RegDate dateDebut = date(2008, 1, 1);
-		final RegDate dateFin = date(2008, 3, 31);
+		final RegDate dateFin = PeriodiciteDecompte.TRIMESTRIEL.getFinPeriode(dateDebut);
 		final RegDate dateQuittancement = RegDate.get();
 
 		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
@@ -472,7 +472,7 @@ public class EvenementExterneEsbHandlerTest extends BusinessTest {
 
 				final PeriodeFiscale pf = addPeriodeFiscale(2008);
 
-				final DeclarationImpotSource lr = addLR(dpi, dateDebut, dateFin, pf);
+				final DeclarationImpotSource lr = addLR(dpi, dateDebut, PeriodiciteDecompte.TRIMESTRIEL, pf);
 				lr.addEtat(new EtatDeclarationRetournee(dateQuittancement, "TEST"));
 				lr.addEtat(new EtatDeclarationRetournee(dateQuittancement, "TEST"));
 
@@ -598,7 +598,7 @@ public class EvenementExterneEsbHandlerTest extends BusinessTest {
 	public void testNewEventImpotSource() throws Exception {
 
 		final RegDate dateDebut = date(2008, 1, 1);
-		final RegDate dateFin = date(2008, 3, 31);
+		final RegDate dateFin = PeriodiciteDecompte.TRIMESTRIEL.getFinPeriode(dateDebut);
 		final RegDate dateQuittancement = RegDate.get();
 
 		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
@@ -609,7 +609,7 @@ public class EvenementExterneEsbHandlerTest extends BusinessTest {
 				addForDebiteur(dpi, dateDebut, null, MockCommune.Lausanne);
 
 				final PeriodeFiscale pf = addPeriodeFiscale(2008);
-				addLR(dpi, dateDebut, dateFin, pf);
+				addLR(dpi, dateDebut, PeriodiciteDecompte.TRIMESTRIEL, pf);
 
 				return dpi.getNumero();
 			}
@@ -673,7 +673,7 @@ public class EvenementExterneEsbHandlerTest extends BusinessTest {
 	public void testNewEventLC() throws Exception {
 
 		final RegDate dateDebut = date(2008, 1, 1);
-		final RegDate dateFin = date(2008, 3, 31);
+		final RegDate dateFin = PeriodiciteDecompte.TRIMESTRIEL.getFinPeriode(dateDebut);
 		final RegDate dateQuittancement = RegDate.get();
 
 		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
@@ -684,7 +684,7 @@ public class EvenementExterneEsbHandlerTest extends BusinessTest {
 				addForDebiteur(dpi, dateDebut, null, MockCommune.Lausanne);
 
 				final PeriodeFiscale pf = addPeriodeFiscale(2008);
-				addLR(dpi, dateDebut, dateFin, pf);
+				addLR(dpi, dateDebut, PeriodiciteDecompte.TRIMESTRIEL, pf);
 
 				return dpi.getNumero();
 			}
@@ -716,7 +716,7 @@ public class EvenementExterneEsbHandlerTest extends BusinessTest {
 	public void testNewEventAnnulationEtatRetourInexistant() throws Exception {
 
 		final RegDate dateDebut = date(2008, 1, 1);
-		final RegDate dateFin = date(2008, 3, 31);
+		final RegDate dateFin = PeriodiciteDecompte.TRIMESTRIEL.getFinPeriode(dateDebut);
 		final RegDate dateQuittancement = RegDate.get();
 
 		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
@@ -727,7 +727,7 @@ public class EvenementExterneEsbHandlerTest extends BusinessTest {
 				addForDebiteur(dpi, dateDebut, null, MockCommune.Lausanne);
 
 				final PeriodeFiscale pf = addPeriodeFiscale(2008);
-				addLR(dpi, dateDebut, dateFin, pf);
+				addLR(dpi, dateDebut, PeriodiciteDecompte.TRIMESTRIEL, pf);
 
 				return dpi.getNumero();
 			}
@@ -781,7 +781,7 @@ public class EvenementExterneEsbHandlerTest extends BusinessTest {
 	public void testNewEventDoubleAnnulation() throws Exception{
 
 		final RegDate dateDebut = date(2008, 1, 1);
-		final RegDate dateFin = date(2008, 3, 31);
+		final RegDate dateFin = PeriodiciteDecompte.TRIMESTRIEL.getFinPeriode(dateDebut);
 		final RegDate dateQuittancement = RegDate.get();
 
 		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
@@ -793,7 +793,7 @@ public class EvenementExterneEsbHandlerTest extends BusinessTest {
 
 				final PeriodeFiscale pf = addPeriodeFiscale(2008);
 
-				final DeclarationImpotSource lr = addLR(dpi, dateDebut, dateFin, pf);
+				final DeclarationImpotSource lr = addLR(dpi, dateDebut, PeriodiciteDecompte.TRIMESTRIEL, pf);
 				lr.addEtat(new EtatDeclarationEmise(dateFin.addDays(-10)));
 
 				final EtatDeclaration etatRetourne = new EtatDeclarationRetournee(dateQuittancement, "TEST");
@@ -832,7 +832,7 @@ public class EvenementExterneEsbHandlerTest extends BusinessTest {
 	public void testNewEventAnnulation() throws Exception {
 
 		final RegDate dateDebut = date(2008, 1, 1);
-		final RegDate dateFin = date(2008, 3, 31);
+		final RegDate dateFin = PeriodiciteDecompte.TRIMESTRIEL.getFinPeriode(dateDebut);
 		final RegDate dateQuittancement = RegDate.get();
 
 		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
@@ -844,7 +844,7 @@ public class EvenementExterneEsbHandlerTest extends BusinessTest {
 
 				final PeriodeFiscale pf = addPeriodeFiscale(2008);
 
-				final DeclarationImpotSource lr = addLR(dpi, dateDebut, dateFin, pf);
+				final DeclarationImpotSource lr = addLR(dpi, dateDebut, PeriodiciteDecompte.TRIMESTRIEL, pf);
 				lr.addEtat(new EtatDeclarationRetournee(dateQuittancement, "TEST"));
 
 				return dpi.getNumero();
@@ -901,7 +901,7 @@ public class EvenementExterneEsbHandlerTest extends BusinessTest {
 	public void testNewEvenementDoubleQuittancement() throws Exception {
 
 		final RegDate dateDebut = date(2008, 1, 1);
-		final RegDate dateFin = date(2008, 3, 31);
+		final RegDate dateFin = PeriodiciteDecompte.TRIMESTRIEL.getFinPeriode(dateDebut);
 		final RegDate dateQuittancement = RegDate.get();
 
 		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
@@ -913,7 +913,7 @@ public class EvenementExterneEsbHandlerTest extends BusinessTest {
 
 				final PeriodeFiscale pf = addPeriodeFiscale(2008);
 
-				final DeclarationImpotSource lr = addLR(dpi, dateDebut, dateFin, pf);
+				final DeclarationImpotSource lr = addLR(dpi, dateDebut, PeriodiciteDecompte.TRIMESTRIEL, pf);
 				lr.addEtat(new EtatDeclarationRetournee(dateQuittancement, "TEST"));
 
 				return dpi.getNumero();
@@ -980,7 +980,7 @@ public class EvenementExterneEsbHandlerTest extends BusinessTest {
 	public void testNewEvenementAnnulationDoubleQuittancement() throws Exception {
 
 		final RegDate dateDebut = date(2008, 1, 1);
-		final RegDate dateFin = date(2008, 3, 31);
+		final RegDate dateFin = PeriodiciteDecompte.TRIMESTRIEL.getFinPeriode(dateDebut);
 		final RegDate dateQuittancement = RegDate.get();
 
 		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
@@ -992,7 +992,7 @@ public class EvenementExterneEsbHandlerTest extends BusinessTest {
 
 				final PeriodeFiscale pf = addPeriodeFiscale(2008);
 
-				final DeclarationImpotSource lr = addLR(dpi, dateDebut, dateFin, pf);
+				final DeclarationImpotSource lr = addLR(dpi, dateDebut, PeriodiciteDecompte.TRIMESTRIEL, pf);
 				lr.addEtat(new EtatDeclarationRetournee(dateQuittancement, "TEST"));
 				lr.addEtat(new EtatDeclarationRetournee(dateQuittancement, "TEST"));
 

@@ -114,12 +114,9 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 		if (tiers == null) {
 			throw new TiersNotFoundException(numero);
 		}
-
 		Assert.isInstanceOf(DebiteurPrestationImposable.class, tiers);
 		return new DebiteurEditView((DebiteurPrestationImposable) tiers, ibanValidator);
 	}
-
-
 
 	/**
 	 * Charge les informations dans TiersView
@@ -433,7 +430,7 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 
 	private Periodicite changePeriodicite(DebiteurPrestationImposable dpi, PeriodiciteDecompte nouvellePeriodicite, PeriodeDecompte nouvellePeriode) {
 		final PeriodeDecompte periodeDecompte = (nouvellePeriodicite == PeriodiciteDecompte.UNIQUE ? nouvellePeriode : null);
-		final RegDate debutValidite = tiersService.getDateDebutNouvellePeriodicite(dpi);
+		final RegDate debutValidite = tiersService.getDateDebutNouvellePeriodicite(dpi, nouvellePeriodicite);
 		return tiersService.addPeriodicite(dpi, nouvellePeriodicite, periodeDecompte, debutValidite, null);
 	}
 

@@ -597,7 +597,7 @@ public class TiersManager implements MessageSourceAware {
 		if (periodiciteCourante == null) {
 			// Périodicité par défaut à enregistrer dans la vue
 			final RegDate debutPeriodicite = RegDate.get(RegDate.get().year(), 1, 1);
-			periodiciteCourante = new Periodicite(PeriodiciteDecompte.TRIMESTRIEL, PeriodeDecompte.M12, debutPeriodicite, null);
+			periodiciteCourante = new Periodicite(PeriodiciteDecompte.MENSUEL, PeriodeDecompte.M12, debutPeriodicite, null);
 
 		}
 

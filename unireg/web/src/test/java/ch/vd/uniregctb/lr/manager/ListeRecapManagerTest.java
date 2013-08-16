@@ -133,10 +133,10 @@ public class ListeRecapManagerTest extends WebTest {
 
 				final PeriodeFiscale fiscale = addPeriodeFiscale(anneeReference);
 
-				addLR(dpi, date(anneeReference, 1, 1), date(anneeReference, 3, 31), fiscale, TypeEtatDeclaration.EMISE);
-				addLR(dpi, date(anneeReference, 4, 1), date(anneeReference, 6, 30), fiscale, TypeEtatDeclaration.EMISE);
-				addLR(dpi, date(anneeReference, 7, 1), date(anneeReference, 9, 30), fiscale, TypeEtatDeclaration.EMISE);
-				addLR(dpi, date(anneeReference, 10, 1), date(anneeReference, 12, 31), fiscale, TypeEtatDeclaration.EMISE);
+				addLR(dpi, date(anneeReference, 1, 1), PeriodiciteDecompte.TRIMESTRIEL, fiscale, TypeEtatDeclaration.EMISE);
+				addLR(dpi, date(anneeReference, 4, 1), PeriodiciteDecompte.TRIMESTRIEL, fiscale, TypeEtatDeclaration.EMISE);
+				addLR(dpi, date(anneeReference, 7, 1), PeriodiciteDecompte.TRIMESTRIEL, fiscale, TypeEtatDeclaration.EMISE);
+				addLR(dpi, date(anneeReference, 10, 1), PeriodiciteDecompte.TRIMESTRIEL, fiscale, TypeEtatDeclaration.EMISE);
 				return dpi.getNumero();
 			}
 		});
@@ -164,7 +164,7 @@ public class ListeRecapManagerTest extends WebTest {
 
 				final PeriodeFiscale fiscale = addPeriodeFiscale(anneeReference);
 
-				addLR(dpi, date(anneeReference, 10, 1), date(anneeReference, 12, 31), fiscale, TypeEtatDeclaration.EMISE);
+				addLR(dpi, date(anneeReference, 10, 1), PeriodiciteDecompte.TRIMESTRIEL, fiscale, TypeEtatDeclaration.EMISE);
 
 				return dpi.getNumero();
 			}
@@ -195,8 +195,8 @@ public class ListeRecapManagerTest extends WebTest {
 
 				final PeriodeFiscale fiscale = addPeriodeFiscale(anneeReference);
 
-				addLR(dpi, date(anneeReference, 1, 1), date(anneeReference, 3, 31), fiscale, TypeEtatDeclaration.EMISE);
-				addLR(dpi, date(anneeReference, 4, 1), date(anneeReference, 6, 30), fiscale, TypeEtatDeclaration.EMISE);
+				addLR(dpi, date(anneeReference, 1, 1), PeriodiciteDecompte.TRIMESTRIEL, fiscale, TypeEtatDeclaration.EMISE);
+				addLR(dpi, date(anneeReference, 4, 1), PeriodiciteDecompte.TRIMESTRIEL, fiscale, TypeEtatDeclaration.EMISE);
 
 				return dpi.getNumero();
 			}
@@ -227,9 +227,9 @@ public class ListeRecapManagerTest extends WebTest {
 				final PeriodeFiscale fiscale2009 = addPeriodeFiscale(anneeReference);
 				final PeriodeFiscale fiscale2010 = addPeriodeFiscale(anneeSuivante);
 
-				addLR(dpi, date(anneeReference, 1, 1), date(anneeReference, 3, 31), fiscale2009, TypeEtatDeclaration.EMISE);
-				addLR(dpi, date(anneeReference, 4, 1), date(anneeReference, 6, 30), fiscale2009, TypeEtatDeclaration.EMISE);
-				addLR(dpi, date(anneeSuivante, 10, 1), date(anneeSuivante, 12, 31), fiscale2010, TypeEtatDeclaration.EMISE);
+				addLR(dpi, date(anneeReference, 1, 1), PeriodiciteDecompte.TRIMESTRIEL, fiscale2009, TypeEtatDeclaration.EMISE);
+				addLR(dpi, date(anneeReference, 4, 1), PeriodiciteDecompte.TRIMESTRIEL, fiscale2009, TypeEtatDeclaration.EMISE);
+				addLR(dpi, date(anneeSuivante, 10, 1), PeriodiciteDecompte.TRIMESTRIEL, fiscale2010, TypeEtatDeclaration.EMISE);
 
 				return dpi.getNumero();
 			}
@@ -264,9 +264,9 @@ public class ListeRecapManagerTest extends WebTest {
 				final PeriodeFiscale fiscale2010 = addPeriodeFiscale(anneeSuivante);
 				final PeriodeFiscale fiscale2011 = addPeriodeFiscale(anneePostSuivante);
 
-				addLR(dpi, date(anneeReference, 1, 1), date(anneeReference, 3, 31), fiscale2009, TypeEtatDeclaration.EMISE);
-				addLR(dpi, date(anneeReference, 4, 1), date(anneeReference, 6, 30), fiscale2009, TypeEtatDeclaration.EMISE);
-				addLR(dpi, date(anneeSuivante, 10, 1), date(anneeSuivante, 12, 31), fiscale2010, TypeEtatDeclaration.EMISE);
+				addLR(dpi, date(anneeReference, 1, 1), PeriodiciteDecompte.TRIMESTRIEL, fiscale2009, TypeEtatDeclaration.EMISE);
+				addLR(dpi, date(anneeReference, 4, 1), PeriodiciteDecompte.TRIMESTRIEL, fiscale2009, TypeEtatDeclaration.EMISE);
+				addLR(dpi, date(anneeSuivante, 10, 1), PeriodiciteDecompte.TRIMESTRIEL, fiscale2010, TypeEtatDeclaration.EMISE);
 
 				return dpi.getNumero();
 			}
@@ -298,7 +298,7 @@ public class ListeRecapManagerTest extends WebTest {
 
 				final PeriodeFiscale periodeFiscale = addPeriodeFiscale(anneeReference);
 
-				addLR(dpi, date(anneeReference, 8, 1), date(anneeReference, 8, 31), periodeFiscale, TypeEtatDeclaration.EMISE);
+				addLRPeriodiciteUnique(dpi, date(anneeReference, 8, 1), date(anneeReference, 8, 31), periodeFiscale, TypeEtatDeclaration.EMISE);
 				return dpi.getNumero();
 			}
 		});
@@ -328,10 +328,10 @@ public class ListeRecapManagerTest extends WebTest {
 				addForDebiteur(dpi, date(anneeReference, 1, 1), null, MockCommune.Bex);
 
 				final PeriodeFiscale periodeFiscale = addPeriodeFiscale(anneeReference);
-				addLR(dpi, date(anneeReference, 1, 1), date(anneeReference, 3, 31), periodeFiscale, TypeEtatDeclaration.EMISE);
-				addLR(dpi, date(anneeReference, 4, 1), date(anneeReference, 6, 30), periodeFiscale, TypeEtatDeclaration.EMISE);
-				addLR(dpi, date(anneeReference, 7, 1), date(anneeReference, 9, 30), periodeFiscale, TypeEtatDeclaration.EMISE);
-				addLR(dpi, date(anneeReference, 10, 1), date(anneeReference, 12, 31), periodeFiscale, TypeEtatDeclaration.EMISE);
+				addLR(dpi, date(anneeReference, 1, 1), PeriodiciteDecompte.TRIMESTRIEL, periodeFiscale, TypeEtatDeclaration.EMISE);
+				addLR(dpi, date(anneeReference, 4, 1), PeriodiciteDecompte.TRIMESTRIEL, periodeFiscale, TypeEtatDeclaration.EMISE);
+				addLR(dpi, date(anneeReference, 7, 1), PeriodiciteDecompte.TRIMESTRIEL, periodeFiscale, TypeEtatDeclaration.EMISE);
+				addLR(dpi, date(anneeReference, 10, 1), PeriodiciteDecompte.TRIMESTRIEL, periodeFiscale, TypeEtatDeclaration.EMISE);
 
 				return dpi.getNumero();
 			}
@@ -391,10 +391,10 @@ public class ListeRecapManagerTest extends WebTest {
 				addForDebiteur(dpi, date(anneeReference, 1, 1), null, MockCommune.Bex);
 
 				final PeriodeFiscale periodeFiscale = addPeriodeFiscale(anneeReference);
-				addLR(dpi, date(anneeReference, 1, 1), date(anneeReference, 3, 31), periodeFiscale, TypeEtatDeclaration.EMISE);
-				addLR(dpi, date(anneeReference, 4, 1), date(anneeReference, 6, 30), periodeFiscale, TypeEtatDeclaration.EMISE);
-				addLR(dpi, date(anneeReference, 7, 1), date(anneeReference, 9, 30), periodeFiscale, TypeEtatDeclaration.EMISE);
-				addLR(dpi, date(anneeReference, 10, 1), date(anneeReference, 12, 31), periodeFiscale, TypeEtatDeclaration.EMISE);
+				addLR(dpi, date(anneeReference, 1, 1), PeriodiciteDecompte.TRIMESTRIEL, periodeFiscale, TypeEtatDeclaration.EMISE);
+				addLR(dpi, date(anneeReference, 4, 1), PeriodiciteDecompte.TRIMESTRIEL, periodeFiscale, TypeEtatDeclaration.EMISE);
+				addLR(dpi, date(anneeReference, 7, 1), PeriodiciteDecompte.TRIMESTRIEL, periodeFiscale, TypeEtatDeclaration.EMISE);
+				addLR(dpi, date(anneeReference, 10, 1), PeriodiciteDecompte.TRIMESTRIEL, periodeFiscale, TypeEtatDeclaration.EMISE);
 
 				return dpi.getNumero();
 			}
@@ -424,9 +424,9 @@ public class ListeRecapManagerTest extends WebTest {
 				addForDebiteur(dpi, date(anneeReference, 1, 1), null, MockCommune.Bex);
 
 				final PeriodeFiscale periodeFiscale = addPeriodeFiscale(anneeReference);
-				addLR(dpi, date(anneeReference, 1, 1), date(anneeReference, 3, 31), periodeFiscale, TypeEtatDeclaration.EMISE);
-				addLR(dpi, date(anneeReference, 4, 1), date(anneeReference, 6, 30), periodeFiscale, TypeEtatDeclaration.EMISE);
-				addLR(dpi, date(anneeReference, 7, 1), date(anneeReference, 9, 30), periodeFiscale, TypeEtatDeclaration.EMISE);
+				addLR(dpi, date(anneeReference, 1, 1), PeriodiciteDecompte.TRIMESTRIEL, periodeFiscale, TypeEtatDeclaration.EMISE);
+				addLR(dpi, date(anneeReference, 4, 1), PeriodiciteDecompte.TRIMESTRIEL, periodeFiscale, TypeEtatDeclaration.EMISE);
+				addLR(dpi, date(anneeReference, 7, 1), PeriodiciteDecompte.TRIMESTRIEL, periodeFiscale, TypeEtatDeclaration.EMISE);
 
 
 				return dpi.getNumero();
@@ -457,7 +457,7 @@ public class ListeRecapManagerTest extends WebTest {
 				addForDebiteur(dpi, date(anneeReference, 1, 1), null, MockCommune.Bex);
 
 				final PeriodeFiscale periodeFiscale = addPeriodeFiscale(anneeReference);
-				addLR(dpi, date(anneeReference, 7, 1), date(anneeReference, 7, 31), periodeFiscale, TypeEtatDeclaration.EMISE);
+				addLRPeriodiciteUnique(dpi, date(anneeReference, 7, 1), date(anneeReference, 7, 31), periodeFiscale, TypeEtatDeclaration.EMISE);
 
 				return dpi.getNumero();
 			}

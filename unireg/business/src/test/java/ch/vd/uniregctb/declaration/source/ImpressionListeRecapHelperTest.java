@@ -50,7 +50,7 @@ public class ImpressionListeRecapHelperTest extends BusinessTest {
 				addForDebiteur(dpi, date(2009, 1, 1), null, MockCommune.Bussigny);
 
 				final PeriodeFiscale pf = addPeriodeFiscale(2010);
-				DeclarationImpotSource lr = addLR(dpi, date(2010, 1, 1), date(2010, 3, 31), pf);
+				DeclarationImpotSource lr = addLR(dpi, date(2010, 1, 1), PeriodiciteDecompte.TRIMESTRIEL, pf);
 
 		InfoEnteteDocument infoEnteteDocument = impressionLRHelper.remplitEnteteDocument(lr,null);
 		Expediteur expediteur = infoEnteteDocument.getExpediteur();

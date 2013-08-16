@@ -52,9 +52,9 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 				addForDebiteur(dpi, date(2009, 1, 1), null, MockCommune.Bussigny);
 
 				final PeriodeFiscale pf = addPeriodeFiscale(2009);
-				addLR(dpi, date(2009, 1, 1), date(2009, 3, 31), pf);
-				addLR(dpi, date(2009, 4, 1), date(2009, 6, 30), pf);
-				addLR(dpi, date(2009, 7, 1), date(2009, 9, 30), pf);
+				addLR(dpi, date(2009, 1, 1), PeriodiciteDecompte.TRIMESTRIEL, pf);
+				addLR(dpi, date(2009, 4, 1), PeriodiciteDecompte.TRIMESTRIEL, pf);
+				addLR(dpi, date(2009, 7, 1), PeriodiciteDecompte.TRIMESTRIEL, pf);
 				return null;
 			}
 		});
@@ -80,10 +80,10 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 				addForDebiteur(dpi, date(2009, 1, 1), null, MockCommune.Bussigny);
 
 				final PeriodeFiscale pf = addPeriodeFiscale(2009);
-				final DeclarationImpotSource lr = addLR(dpi, date(2009, 1, 1), date(2009, 3, 31), pf);
+				final DeclarationImpotSource lr = addLR(dpi, date(2009, 1, 1), PeriodiciteDecompte.TRIMESTRIEL, pf);
 				lr.addEtat(new EtatDeclarationSommee(date(2009, 12, 4), date(2009, 12, 4)));
-				addLR(dpi, date(2009, 4, 1), date(2009, 6, 30), pf);
-				addLR(dpi, date(2009, 7, 1), date(2009, 9, 30), pf);
+				addLR(dpi, date(2009, 4, 1), PeriodiciteDecompte.TRIMESTRIEL, pf);
+				addLR(dpi, date(2009, 7, 1), PeriodiciteDecompte.TRIMESTRIEL, pf);
 				return null;
 			}
 		});
@@ -111,10 +111,10 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 				addForDebiteur(dpi, date(2009, 1, 1), null, MockCommune.Bussigny);
 
 				final PeriodeFiscale pf = addPeriodeFiscale(2009);
-				final DeclarationImpotSource lr = addLR(dpi, date(2009, 1, 1), date(2009, 3, 31), pf);
+				final DeclarationImpotSource lr = addLR(dpi, date(2009, 1, 1),PeriodiciteDecompte.TRIMESTRIEL, pf);
 				lr.addEtat(new EtatDeclarationSommee(date(2009, 12, 4),date(2009, 12, 4)));
-				addLR(dpi, date(2009, 4, 1), date(2009, 6, 30), pf);
-				addLR(dpi, date(2009, 7, 1), date(2009, 9, 30), pf);
+				addLR(dpi, date(2009, 4, 1), PeriodiciteDecompte.TRIMESTRIEL, pf);
+				addLR(dpi, date(2009, 7, 1), PeriodiciteDecompte.TRIMESTRIEL, pf);
 				return null;
 			}
 		});
@@ -144,11 +144,11 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 				addForDebiteur(dpi, date(2009, 1, 1), null, MockCommune.Bussigny);
 
 				final PeriodeFiscale pf = addPeriodeFiscale(2009);
-				final DeclarationImpotSource lr = addLR(dpi, date(2009, 1, 1), date(2009, 3, 31), pf);
+				final DeclarationImpotSource lr = addLR(dpi, date(2009, 1, 1), PeriodiciteDecompte.TRIMESTRIEL, pf);
 				lr.addEtat(new EtatDeclarationSommee(date(2009, 12, 4),date(2009, 12, 4)));
-				addLR(dpi, date(2009, 4, 1), date(2009, 6, 30), pf);
-				addLR(dpi, date(2009, 7, 1), date(2009, 9, 30), pf);
-				addLR(dpi, date(2009, 10, 1), date(2009, 12, 31), pf);
+				addLR(dpi, date(2009, 4, 1), PeriodiciteDecompte.TRIMESTRIEL, pf);
+				addLR(dpi, date(2009, 7, 1), PeriodiciteDecompte.TRIMESTRIEL, pf);
+				addLR(dpi, date(2009, 10, 1), PeriodiciteDecompte.TRIMESTRIEL, pf);
 				return null;
 			}
 		});
@@ -178,11 +178,11 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 				addForDebiteur(dpi, date(2009, 1, 1), null, MockCommune.Bussigny);
 
 				final PeriodeFiscale pf = addPeriodeFiscale(2009);
-				final DeclarationImpotSource lr = addLR(dpi, date(2009, 1, 1), date(2009, 3, 31), pf);
+				final DeclarationImpotSource lr = addLR(dpi, date(2009, 1, 1), PeriodiciteDecompte.TRIMESTRIEL, pf);
 				lr.addEtat(new EtatDeclarationSommee(date(2009, 12, 4),date(2009, 12, 4)));
-				addLR(dpi, date(2009, 4, 1), date(2009, 6, 30), pf);
-				addLR(dpi, date(2009, 7, 1), date(2009, 9, 30), pf);
-				addLR(dpi, date(2009, 10, 1), date(2009, 12, 31), pf);
+				addLR(dpi, date(2009, 4, 1), PeriodiciteDecompte.TRIMESTRIEL, pf);
+				addLR(dpi, date(2009, 7, 1), PeriodiciteDecompte.TRIMESTRIEL, pf);
+				addLR(dpi, date(2009, 10, 1), PeriodiciteDecompte.TRIMESTRIEL, pf);
 				return null;
 			}
 		});
@@ -212,11 +212,11 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 				addForDebiteur(dpi, date(2009, 1, 1), null, MockCommune.Bussigny);
 
 				final PeriodeFiscale pf = addPeriodeFiscale(2009);
-				final DeclarationImpotSource lr = addLR(dpi, date(2009, 1, 1), date(2009, 3, 31), pf);
+				final DeclarationImpotSource lr = addLR(dpi, date(2009, 1, 1), PeriodiciteDecompte.TRIMESTRIEL, pf);
 				lr.addEtat(new EtatDeclarationSommee(RegDate.get().addDays(-10),RegDate.get().addDays(-10)));
-				addLR(dpi, date(2009, 4, 1), date(2009, 6, 30), pf);
-				addLR(dpi, date(2009, 7, 1), date(2009, 9, 30), pf);
-				addLR(dpi, date(2009, 10, 1), date(2009, 12, 31), pf);
+				addLR(dpi, date(2009, 4, 1), PeriodiciteDecompte.TRIMESTRIEL, pf);
+				addLR(dpi, date(2009, 7, 1), PeriodiciteDecompte.TRIMESTRIEL, pf);
+				addLR(dpi, date(2009, 10, 1), PeriodiciteDecompte.TRIMESTRIEL, pf);
 				return null;
 			}
 		});
@@ -242,12 +242,12 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 				addForDebiteur(dpi, date(2009, 1, 1), null, MockCommune.Bussigny);
 
 				final PeriodeFiscale pf = addPeriodeFiscale(2009);
-				final DeclarationImpotSource lr = addLR(dpi, date(2009, 1, 1), date(2009, 3, 31), pf);
+				final DeclarationImpotSource lr = addLR(dpi, date(2009, 1, 1), PeriodiciteDecompte.TRIMESTRIEL, pf);
 				lr.addEtat(new EtatDeclarationSommee(date(2009, 12, 4), date(2009, 12, 4)));
 				lr.addEtat(new EtatDeclarationEchue(date(2010, 1, 20)));
-				addLR(dpi, date(2009, 4, 1), date(2009, 6, 30), pf);
-				addLR(dpi, date(2009, 7, 1), date(2009, 9, 30), pf);
-				addLR(dpi, date(2009, 10, 1), date(2009, 12, 31), pf);
+				addLR(dpi, date(2009, 4, 1), PeriodiciteDecompte.TRIMESTRIEL, pf);
+				addLR(dpi, date(2009, 7, 1), PeriodiciteDecompte.TRIMESTRIEL, pf);
+				addLR(dpi, date(2009, 10, 1), PeriodiciteDecompte.TRIMESTRIEL, pf);
 				return null;
 			}
 		});
@@ -274,15 +274,15 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 
 				final PeriodeFiscale pf = addPeriodeFiscale(2009);
 
-				final DeclarationImpotSource lr1 = addLR(dpi, date(2009, 1, 1), date(2009, 3, 31), pf);
+				final DeclarationImpotSource lr1 = addLR(dpi, date(2009, 1, 1), PeriodiciteDecompte.TRIMESTRIEL, pf);
 				lr1.addEtat(new EtatDeclarationSommee(date(2009, 12, 4),date(2009, 12, 4)));
 				lr1.addEtat(new EtatDeclarationEchue(date(2010, 1, 20)));
 
-				final DeclarationImpotSource lr2 = addLR(dpi, date(2009, 4, 1), date(2009, 6, 30), pf);
+				final DeclarationImpotSource lr2 = addLR(dpi, date(2009, 4, 1), PeriodiciteDecompte.TRIMESTRIEL, pf);
 				lr2.addEtat(new EtatDeclarationSommee(date(2009, 12, 4), date(2009, 12, 4)));
 
-				addLR(dpi, date(2009, 7, 1), date(2009, 9, 30), pf);
-				addLR(dpi, date(2009, 10, 1), date(2009, 12, 31), pf);
+				addLR(dpi, date(2009, 7, 1), PeriodiciteDecompte.TRIMESTRIEL, pf);
+				addLR(dpi, date(2009, 10, 1), PeriodiciteDecompte.TRIMESTRIEL, pf);
 				return null;
 			}
 		});
@@ -313,13 +313,13 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 
 				final PeriodeFiscale pf = addPeriodeFiscale(2009);
 
-				final DeclarationImpotSource lr1 = addLR(dpi, date(2009, 1, 1), date(2009, 3, 31), pf);
+				final DeclarationImpotSource lr1 = addLR(dpi, date(2009, 1, 1), PeriodiciteDecompte.TRIMESTRIEL, pf);
 				lr1.addEtat(new EtatDeclarationSommee(date(2009, 12, 4),date(2009, 12, 4)));
 				lr1.addEtat(new EtatDeclarationRetournee(date(2010, 1, 20), "TEST"));
 
-				addLR(dpi, date(2009, 4, 1), date(2009, 6, 30), pf);
-				addLR(dpi, date(2009, 7, 1), date(2009, 9, 30), pf);
-				addLR(dpi, date(2009, 10, 1), date(2009, 12, 31), pf);
+				addLR(dpi, date(2009, 4, 1), PeriodiciteDecompte.TRIMESTRIEL, pf);
+				addLR(dpi, date(2009, 7, 1), PeriodiciteDecompte.TRIMESTRIEL, pf);
+				addLR(dpi, date(2009, 10, 1), PeriodiciteDecompte.TRIMESTRIEL, pf);
 				return null;
 			}
 		});
@@ -346,14 +346,14 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 
 				final PeriodeFiscale pf = addPeriodeFiscale(2009);
 
-				final DeclarationImpotSource lr1 = addLR(dpi, date(2009, 1, 1), date(2009, 3, 31), pf);
+				final DeclarationImpotSource lr1 = addLR(dpi, date(2009, 1, 1), PeriodiciteDecompte.TRIMESTRIEL, pf);
 				lr1.addEtat(new EtatDeclarationSommee(date(2009, 12, 4),date(2009, 12, 4)));
 
-				final DeclarationImpotSource lr2 = addLR(dpi, date(2009, 4, 1), date(2009, 6, 30), pf);
+				final DeclarationImpotSource lr2 = addLR(dpi, date(2009, 4, 1), PeriodiciteDecompte.TRIMESTRIEL, pf);
 				lr2.addEtat(new EtatDeclarationSommee(date(2009, 12, 4),date(2009, 12, 4)));
 
-				addLR(dpi, date(2009, 7, 1), date(2009, 9, 30), pf);
-				addLR(dpi, date(2009, 10, 1), date(2009, 12, 31), pf);
+				addLR(dpi, date(2009, 7, 1), PeriodiciteDecompte.TRIMESTRIEL, pf);
+				addLR(dpi, date(2009, 10, 1), PeriodiciteDecompte.TRIMESTRIEL, pf);
 				return null;
 			}
 		});

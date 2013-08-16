@@ -46,18 +46,18 @@ public class ImpressionSommationLRHelperTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDateEnvoiCourrierForSommation() throws Exception {
 		LOGGER.debug("ImpressionListeRecapHelperTest - testDateEnvoiCourrierForSommation");
-	     final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
-				addForDebiteur(dpi, date(2009, 1, 1), null, MockCommune.Bussigny);
+	    final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
+		addForDebiteur(dpi, date(2009, 1, 1), null, MockCommune.Bussigny);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(2010);
-				DeclarationImpotSource lr = addLR(dpi, date(2010, 7, 1), date(2010, 9, 30), pf, TypeEtatDeclaration.EMISE);
+		final PeriodeFiscale pf = addPeriodeFiscale(2010);
+		final DeclarationImpotSource lr = addLR(dpi, date(2010, 7, 1), PeriodiciteDecompte.TRIMESTRIEL, pf, TypeEtatDeclaration.EMISE);
 		final RegDate dateObtention = date(2011, 1, 17);
 		final RegDate dateEnvoiCourrier = date(2011, 1, 20);
-		EtatDeclarationSommee sommee = new EtatDeclarationSommee(dateObtention, dateEnvoiCourrier);
-		        lr.addEtat(sommee);
+		final EtatDeclarationSommee sommee = new EtatDeclarationSommee(dateObtention, dateEnvoiCourrier);
+		lr.addEtat(sommee);
 
-		InfoEnteteDocument infoEnteteDocument = impressionSommationLRHelper.remplitEnteteDocument(lr);
-		Expediteur expediteur = infoEnteteDocument.getExpediteur();
+		final InfoEnteteDocument infoEnteteDocument = impressionSommationLRHelper.remplitEnteteDocument(lr);
+		final Expediteur expediteur = infoEnteteDocument.getExpediteur();
 		final String numeroTelCAT = serviceInfra.getCAT().getNoTelephone();
 		final String numeroExpediteur = expediteur.getNumTelephone();
 		assertEquals(numeroTelCAT,numeroExpediteur);
@@ -66,13 +66,8 @@ public class ImpressionSommationLRHelperTest extends BusinessTest {
 		final String numeroFaxExpediteur = expediteur.getNumFax();
 		assertEquals(numeroFaxACISource,numeroFaxExpediteur);
 
-		Date date = dateEnvoiCourrier.asJavaDate();
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+		final Date date = dateEnvoiCourrier.asJavaDate();
+		final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
 		assertEquals(dateFormat.format(date), expediteur.getDateExpedition());
-
 	}
-
-
-
-
 }

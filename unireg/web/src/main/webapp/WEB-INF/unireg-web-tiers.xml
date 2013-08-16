@@ -177,11 +177,11 @@
 		<property name="serviceSecuriteService" ref="serviceSecuriteService" />
 	</bean>
 
-	<bean id="debiteurEditController" class="ch.vd.uniregctb.tiers.DebiteurEditController" parent="abstractTiersController">
-		<property name="sessionForm" value="true" />
-		<property name="commandClass" value="ch.vd.uniregctb.tiers.view.DebiteurEditView" />
-		<property name="formView" value="tiers/edition/debiteur/edit" />
-		<property name="tiersEditManager" ref="tiersEditManager" />
+	<bean id="debiteurEditController" class="ch.vd.uniregctb.tiers.DebiteurEditController">
+		<property name="securityProvider" ref="securityProviderInterface"/>
+		<property name="tiersMapHelper" ref="tiersMapHelper"/>
+		<property name="controllerUtils" ref="controllerUtils"/>
+		<property name="tiersEditManager" ref="tiersEditManager"/>
 	</bean>
 
 	<bean id="tiersPickerController" class="ch.vd.uniregctb.tiers.picker.TiersPickerController">

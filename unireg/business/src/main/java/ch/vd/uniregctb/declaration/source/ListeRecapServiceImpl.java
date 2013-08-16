@@ -123,8 +123,8 @@ public class ListeRecapServiceImpl implements ListeRecapService {
 	private DeclarationImpotSource saveLR(DebiteurPrestationImposable dpi, RegDate dateDebutPeriode, RegDate dateFinPeriode) throws Exception {
 		DeclarationImpotSource lr = new DeclarationImpotSource();
 		lr.setDateDebut(dateDebutPeriode);
-			//[UNIREG-3115] Periodicite non trouvé en debut de periode de lR on cherche à la fin.
-		Periodicite periodiciteAt = dpi.findPeriodicite(dateDebutPeriode,dateFinPeriode);
+		//[UNIREG-3115] Periodicite non trouvé en debut de periode de lR on cherche à la fin.
+		final Periodicite periodiciteAt = dpi.findPeriodicite(dateDebutPeriode,dateFinPeriode);
 		lr.setDateFin(periodiciteAt.getFinPeriode(dateDebutPeriode));
 		lr.setPeriodicite(periodiciteAt.getPeriodiciteDecompte());
 		lr.setModeCommunication(dpi.getModeCommunication());
@@ -196,7 +196,7 @@ public class ListeRecapServiceImpl implements ListeRecapService {
 
 		List<DateRange> lrPeriodiquesManquantes = null;
 		List<DateRange> lrTrouveesIn = null;
-		DateRange periodeInteressante = new DateRangeHelper.Range(null, dateFinPeriode);
+		final DateRange periodeInteressante = new DateRangeHelper.Range(null, dateFinPeriode);
 		final List<ForFiscal> fors = dpi.getForsFiscauxNonAnnules(true);
 		if (fors != null && !fors.isEmpty()) {
 
@@ -253,7 +253,7 @@ public class ListeRecapServiceImpl implements ListeRecapService {
 				// maintenant, à partir de cette liste de ranges où il devrait y avoir une LR mais il n'y en a pas
 				// il faut extraire les périodes de LR
 				if (!lrManquantes.isEmpty()) {
-					final List<DateRange>lrManquantesAjustees = ajusterSelonPeriodeFiscale(lrManquantes);
+					final List<DateRange> lrManquantesAjustees = ajusterSelonPeriodeFiscale(lrManquantes);
 					lrPeriodiquesManquantes = extrairePeriodesAvecPeriodicites(dpi, lrManquantesAjustees);
 				}
 			}
@@ -336,7 +336,7 @@ public class ListeRecapServiceImpl implements ListeRecapService {
 					final RegDate debut = periodiciteCourante.getDebutPeriode(date);
 					final RegDate fin = periodiciteCourante.getFinPeriode(date);
 					lr.add(new DateRangeHelper.Range(debut, fin));
-					date = fin.addDays(1);
+					date = fin.getOneDayAfter();
 				}
 			}
 			while (manquante.isValidAt(date));

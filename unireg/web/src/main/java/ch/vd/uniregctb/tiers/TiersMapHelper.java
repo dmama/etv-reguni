@@ -3,9 +3,11 @@ package ch.vd.uniregctb.tiers;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -273,7 +275,25 @@ public class TiersMapHelper extends CommonMapHelper {
 	}
 
 	/**
-	 * Initialise la map des periodicites decompte
+	 * Renvoie une map non-modifiable des périodicités de décomptes assignables au tout venant sur un débiteur
+	 * @param current la périodicité actuelle du débiteur (qui doit toujours faire partie des choix sélectionnables)
+	 * @param modeCommunication mode de communication du débiteur
+	 * @return une map des valeurs sélectionables
+	 */
+	public Map<PeriodiciteDecompte, String> getMapLimiteePeriodiciteDecompte(PeriodiciteDecompte current, ModeCommunication modeCommunication) {
+		final Set<PeriodiciteDecompte> allowedValues = EnumSet.of(PeriodiciteDecompte.MENSUEL, PeriodiciteDecompte.UNIQUE);
+		if (current != null) {
+			allowedValues.add(current);
+		}
+		// on ne peut jamais "agrandir" la périodicité (M -> T) mais si on est déjà T, S ou A, et en mode PAPIER, T est autorisé
+		if (modeCommunication == ModeCommunication.PAPIER && (current == PeriodiciteDecompte.ANNUEL || current == PeriodiciteDecompte.SEMESTRIEL)) {
+			allowedValues.add(PeriodiciteDecompte.TRIMESTRIEL);
+		}
+		return getSpecificMapEnum(ApplicationConfig.masterKeyPeriodiciteDecompte, allowedValues);
+	}
+
+	/**
+	 * Initialise la map des modes de communication
 	 *
 	 * @return une map
 	 */
@@ -282,6 +302,26 @@ public class TiersMapHelper extends CommonMapHelper {
 			mapModeCommunication = initMapEnum(ApplicationConfig.masterKeyModeCommunication, ModeCommunication.class);
 		}
 		return mapModeCommunication;
+	}
+
+	/**
+	 * Renvoie une map non-modifiable des modes de communication assignables au tout venant sur un débiteur
+	 * @param modeCourant le mode de communication actuel du débiteur (qui doit toujours faire partie des choix sélectionnables)
+	 * @param periodicite périodicité du débiteur
+	 * @return une map des valeurs sélectionables
+	 */
+	public Map<ModeCommunication, String> getMapLimiteeModeCommunication(ModeCommunication modeCourant, PeriodiciteDecompte periodicite) {
+		final Set<ModeCommunication> allowedValues;
+		if (periodicite == PeriodiciteDecompte.UNIQUE || periodicite == PeriodiciteDecompte.MENSUEL) {
+			allowedValues = EnumSet.allOf(ModeCommunication.class);
+		}
+		else {
+			allowedValues = EnumSet.of(ModeCommunication.PAPIER);
+		}
+		if (modeCourant != null) {
+			allowedValues.add(modeCourant);
+		}
+		return getSpecificMapEnum(ApplicationConfig.masterKeyModeCommunication, allowedValues);
 	}
 
 	/**

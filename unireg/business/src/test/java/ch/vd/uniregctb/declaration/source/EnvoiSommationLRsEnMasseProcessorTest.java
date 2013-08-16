@@ -159,16 +159,16 @@ public class EnvoiSommationLRsEnMasseProcessorTest extends BusinessTest {
 			@Override
 			public Ids doInTransaction(TransactionStatus status) {
 				final PeriodeFiscale periode = addPeriodeFiscale(2007);
-				final DeclarationImpotSource janvierMensuelle = addLRaSommerAvecDebiteur(periode, date(2007, 1, 1), date(2007, 1, 31), PeriodiciteDecompte.MENSUEL);
-				final DeclarationImpotSource janvierTrimestrielle = addLRaSommerAvecDebiteur(periode, date(2007, 1, 1), date(2007, 3, 31), PeriodiciteDecompte.TRIMESTRIEL);
-				final DeclarationImpotSource janvierSemestrielle = addLRaSommerAvecDebiteur(periode, date(2007, 1, 1), date(2007, 6, 30), PeriodiciteDecompte.SEMESTRIEL);
-				final DeclarationImpotSource janvierAnnuelle = addLRaSommerAvecDebiteur(periode, date(2007, 1, 1), date(2007, 12, 31), PeriodiciteDecompte.ANNUEL);
-				final DeclarationImpotSource janvierUnique = addLRaSommerAvecDebiteur(periode, date(2007, 1, 1), date(2007, 1, 1), PeriodiciteDecompte.UNIQUE);
+				final DeclarationImpotSource janvierMensuelle = addLRaSommerAvecDebiteur(periode, date(2007, 1, 1), PeriodiciteDecompte.MENSUEL);
+				final DeclarationImpotSource janvierTrimestrielle = addLRaSommerAvecDebiteur(periode, date(2007, 1, 1), PeriodiciteDecompte.TRIMESTRIEL);
+				final DeclarationImpotSource janvierSemestrielle = addLRaSommerAvecDebiteur(periode, date(2007, 1, 1), PeriodiciteDecompte.SEMESTRIEL);
+				final DeclarationImpotSource janvierAnnuelle = addLRaSommerAvecDebiteur(periode, date(2007, 1, 1), PeriodiciteDecompte.ANNUEL);
+				final DeclarationImpotSource janvierUnique = addLRaSommerAvecDebiteurPeriodiciteUnique(periode, date(2007, 1, 1), date(2007, 1, 1));
 
-				final DeclarationImpotSource decembreMensuelle = addLRaSommerAvecDebiteur(periode, date(2007, 12, 1), date(2007, 12, 31), PeriodiciteDecompte.MENSUEL);
-				final DeclarationImpotSource decembreTrimestrielle = addLRaSommerAvecDebiteur(periode, date(2007, 10, 1), date(2007, 12, 31), PeriodiciteDecompte.TRIMESTRIEL);
-				final DeclarationImpotSource decembreSemestrielle = addLRaSommerAvecDebiteur(periode, date(2007, 7, 1), date(2007, 12, 31), PeriodiciteDecompte.SEMESTRIEL);
-				final DeclarationImpotSource decembreUnique = addLRaSommerAvecDebiteur(periode, date(2007, 12, 31), date(2007, 12, 31), PeriodiciteDecompte.UNIQUE);
+				final DeclarationImpotSource decembreMensuelle = addLRaSommerAvecDebiteur(periode, date(2007, 12, 1), PeriodiciteDecompte.MENSUEL);
+				final DeclarationImpotSource decembreTrimestrielle = addLRaSommerAvecDebiteur(periode, date(2007, 10, 1), PeriodiciteDecompte.TRIMESTRIEL);
+				final DeclarationImpotSource decembreSemestrielle = addLRaSommerAvecDebiteur(periode, date(2007, 7, 1), PeriodiciteDecompte.SEMESTRIEL);
+				final DeclarationImpotSource decembreUnique = addLRaSommerAvecDebiteurPeriodiciteUnique(periode, date(2007, 12, 31), date(2007, 12, 31));
 
 				final Ids ids = new Ids();
 				ids.janvierMensuelle = janvierMensuelle.getId();
@@ -248,16 +248,26 @@ public class EnvoiSommationLRsEnMasseProcessorTest extends BusinessTest {
 	private DeclarationImpotSource addLRaSommerAvecDebiteur(CategorieImpotSource categorie, PeriodeFiscale periode) {
 		DebiteurPrestationImposable admin = addDebiteur(categorie, PeriodiciteDecompte.MENSUEL,  date(2007, 1, 1));
 		addForDebiteur(admin,date(2007,1,1),null, MockCommune.Lausanne);
-		DeclarationImpotSource lr = addLR(admin, date(2007, 1, 1), date(2007, 12, 31), periode);
+		DeclarationImpotSource lr = addLR(admin, date(2007, 1, 1), PeriodiciteDecompte.ANNUEL, periode);
 		addEtatDeclarationEmise(lr, date(2008, 1, 5));
 		addDelaiDeclaration(lr, date(2008, 1, 5), date(2008, 3, 15));
 		return lr;
 	}
 
-	private DeclarationImpotSource addLRaSommerAvecDebiteur(PeriodeFiscale periode, RegDate debut, RegDate fin, PeriodiciteDecompte periodicite) {
-		DebiteurPrestationImposable admin = addDebiteur(CategorieImpotSource.REGULIERS, periodicite, debut);
+	private DeclarationImpotSource addLRaSommerAvecDebiteur(PeriodeFiscale periode, RegDate debut, PeriodiciteDecompte periodicite) {
+		final DebiteurPrestationImposable admin = addDebiteur(CategorieImpotSource.REGULIERS, periodicite, debut);
 		addForDebiteur(admin,debut,null, MockCommune.Lausanne);
-		DeclarationImpotSource lr = addLR(admin, debut, fin, periode);
+		final DeclarationImpotSource lr = addLR(admin, debut, periodicite, periode);
+		final RegDate fin = periodicite.getFinPeriode(debut);
+		addEtatDeclarationEmise(lr, fin.addDays(6));
+		addDelaiDeclaration(lr, fin.addDays(6), fin.addMonths(1));
+		return lr;
+	}
+
+	private DeclarationImpotSource addLRaSommerAvecDebiteurPeriodiciteUnique(PeriodeFiscale periode, RegDate debut, RegDate fin) {
+		final DebiteurPrestationImposable admin = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.UNIQUE, debut);
+		addForDebiteur(admin,debut,null, MockCommune.Lausanne);
+		final DeclarationImpotSource lr = addLRPeriodiciteUnique(admin, debut, fin, periode);
 		addEtatDeclarationEmise(lr, fin.addDays(6));
 		addDelaiDeclaration(lr, fin.addDays(6), fin.addMonths(1));
 		return lr;
@@ -273,7 +283,7 @@ public class EnvoiSommationLRsEnMasseProcessorTest extends BusinessTest {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final PeriodeFiscale pf = addPeriodeFiscale(2007);
-				final DeclarationImpotSource lr = addLRaSommerAvecDebiteur(pf, date(2007, 1, 1), date(2007, 1, 31), PeriodiciteDecompte.MENSUEL);
+				final DeclarationImpotSource lr = addLRaSommerAvecDebiteur(pf, date(2007, 1, 1), PeriodiciteDecompte.MENSUEL);
 				lr.addEtat(new EtatDeclarationRetournee(date(2007, 1, 12), "TEST"));
 
 				final RegDate dateEmission = lr.getDernierEtatOfType(TypeEtatDeclaration.EMISE).getDateObtention();
@@ -294,7 +304,7 @@ public class EnvoiSommationLRsEnMasseProcessorTest extends BusinessTest {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final PeriodeFiscale pf = addPeriodeFiscale(2007);
-				final DeclarationImpotSource lr = addLRaSommerAvecDebiteur(pf, date(2007, 1, 1), date(2007, 1, 31), PeriodiciteDecompte.MENSUEL);
+				final DeclarationImpotSource lr = addLRaSommerAvecDebiteur(pf, date(2007, 1, 1), PeriodiciteDecompte.MENSUEL);
 				lr.addEtat(new EtatDeclarationSommee(date(2007, 3, 12), date(2007, 3, 15)));
 				return null;  //To change body of implemented methods use File | Settings | File Templates.
 			}
@@ -318,7 +328,7 @@ public class EnvoiSommationLRsEnMasseProcessorTest extends BusinessTest {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final PeriodeFiscale periode = addPeriodeFiscale(2007);
-				final DeclarationImpotSource lr = addLRaSommerAvecDebiteur(periode, date(2007, 1, 1), date(2007, 3, 31), PeriodiciteDecompte.TRIMESTRIEL);
+				final DeclarationImpotSource lr = addLRaSommerAvecDebiteur(periode, date(2007, 1, 1), PeriodiciteDecompte.TRIMESTRIEL);
 				return lr.getTiers().getId();
 			}
 		});
@@ -342,7 +352,7 @@ public class EnvoiSommationLRsEnMasseProcessorTest extends BusinessTest {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final PeriodeFiscale periode = addPeriodeFiscale(2007);
-				final DeclarationImpotSource lr = addLRaSommerAvecDebiteur(periode, date(2007, 1, 1), date(2007, 3, 31), PeriodiciteDecompte.TRIMESTRIEL);
+				final DeclarationImpotSource lr = addLRaSommerAvecDebiteur(periode, date(2007, 1, 1), PeriodiciteDecompte.TRIMESTRIEL);
 				return lr.getId();
 			}
 		});

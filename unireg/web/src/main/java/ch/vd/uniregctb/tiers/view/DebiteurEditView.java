@@ -40,7 +40,6 @@ public class DebiteurEditView {
 			this.periodiciteCourante = periodicite.getPeriodiciteDecompte();
 			this.periodeDecompte = periodicite.getPeriodeDecompte();
 		}
-
 		this.complement = new ComplementView(dpi, null, null, ibanValidator);
 	}
 

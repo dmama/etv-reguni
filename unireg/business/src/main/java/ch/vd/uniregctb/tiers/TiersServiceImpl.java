@@ -70,6 +70,7 @@ import ch.vd.uniregctb.common.NationaliteHelper;
 import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.Declaration;
+import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchDAO;
@@ -2743,7 +2744,8 @@ public class TiersServiceImpl implements TiersService {
             if (courante.getDateDebut() != null && courante.getDateDebut().isAfter(veilleDebut)) {
                 // la périodicité courante est masquée par le nouvelle périodicité, on l'annule (et on continue de boucler)
                 courante.setAnnule(true);
-            } else {
+            }
+            else {
                 // autrement, on adapte la date fin
                 courante.setDateFin(veilleDebut);
                 break;
@@ -3842,22 +3844,45 @@ public class TiersServiceImpl implements TiersService {
     }
 
     @Override
-    public RegDate getDateDebutNouvellePeriodicite(DebiteurPrestationImposable debiteur) {
-        RegDate debutValidite;
-        int anneeDebut = RegDate.get().year();
-        Declaration derniereDeclaration = debiteur.getDerniereDeclaration();
+    public RegDate getDateDebutNouvellePeriodicite(DebiteurPrestationImposable debiteur, PeriodiciteDecompte souhait) {
+	    final RegDate debutValidite;
+        final Declaration derniereDeclaration = debiteur.getDerniereDeclaration();
         if (derniereDeclaration != null) {
-            anneeDebut = derniereDeclaration.getPeriode().getAnnee() + 1;
-            debutValidite = RegDate.get(anneeDebut, 1, 1);
-        } else {
-            ForFiscal forDebiteur = debiteur.getDernierForDebiteur();
+
+	        final DeclarationImpotSource lr = (DeclarationImpotSource) derniereDeclaration;
+	        final PeriodiciteDecompte dernierePeriodicite = lr.getPeriodicite();
+	        if (dernierePeriodicite == PeriodiciteDecompte.UNIQUE || souhait == PeriodiciteDecompte.UNIQUE) {
+		        // l'année d'après !
+		        final int anneeDebut = derniereDeclaration.getPeriode().getAnnee() + 1;
+		        debutValidite = RegDate.get(anneeDebut, 1, 1);
+	        }
+	        else {
+		        // dès que c'est compatible avec l'ancienne et la nouvelle périodicité
+		        final RegDate reference = derniereDeclaration.getDateFin().getOneDayAfter();
+		        if (souhait.getDebutPeriode(reference) == reference) {
+			        debutValidite = reference;
+		        }
+		        else {
+			        debutValidite = souhait.getDebutPeriodeSuivante(reference);
+			        Assert.isSame(debutValidite, dernierePeriodicite.getDebutPeriode(debutValidite));       // valide que cela joue aussi pour l'ancienne périodicité
+		        }
+	        }
+        }
+        else {
+            final ForFiscal forDebiteur = debiteur.getDernierForDebiteur();
             if (forDebiteur != null) {
-                debutValidite = forDebiteur.getDateDebut();
-            } else {
+	            if (souhait == PeriodiciteDecompte.UNIQUE) {
+		            debutValidite = RegDate.get(forDebiteur.getDateDebut().year(), 1, 1);
+	            }
+	            else {
+                    debutValidite = souhait.getDebutPeriode(forDebiteur.getDateDebut());
+	            }
+            }
+            else {
+	            final int anneeDebut = RegDate.get().year();
                 debutValidite = RegDate.get(anneeDebut, 1, 1);
             }
         }
-
         return debutValidite;
     }
 

@@ -245,12 +245,6 @@ public abstract class AbstractTiersController extends AbstractSimpleFormControll
 	public static final String TYPE_ADRESSE_TIERS = "typeAdresseTiers";
 
 	/**
-	 * Libellé des logiciels
-	 */
-
-	public static final String LIBELLE_LOGICIEL = "libellesLogiciel";
-
-	/**
 	 * Type Adresse Fiscale autorisé pour les Tiers
 	 */
 	public static final String TYPE_ADRESSE_FISCALE_TIERS = "typeAdresseFiscaleTiers";

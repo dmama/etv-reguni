@@ -16,6 +16,7 @@ import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.xml.DataHelper;
 
 import static org.junit.Assert.assertEquals;
@@ -108,7 +109,7 @@ public class MiseAJourRapportTravailRequestListenerItTest extends RapportTravail
 				addForDebiteur(debiteur, date(2012, 1, 1), null, MockCommune.Echallens);
 				PeriodeFiscale periode2011 = new PeriodeFiscale();
 				periode2011.setAnnee(2011);
-				addLR(debiteur,date(2011,9,1),date(2011,12,31),periode2011);
+				addLR(debiteur,date(2011,10,1), PeriodiciteDecompte.TRIMESTRIEL,periode2011);
 				ids.idDebiteur= debiteur.getNumero();
 				PersonnePhysique sourcier = addHabitant(12365478L);
 				ids.idSourcier= sourcier.getNumero();
@@ -214,7 +215,7 @@ public class MiseAJourRapportTravailRequestListenerItTest extends RapportTravail
 				addForDebiteur(debiteur, date(2012, 1, 1), null, MockCommune.Echallens);
 				PeriodeFiscale periode2011 = new PeriodeFiscale();
 				periode2011.setAnnee(2011);
-				addLR(debiteur,date(2011,9,1),date(2011,12,31),periode2011);
+				addLR(debiteur,date(2011,10,1),PeriodiciteDecompte.TRIMESTRIEL,periode2011);
 				ids.idDebiteur= debiteur.getNumero();
 				PersonnePhysique sourcier = addHabitant(12365478L);
 				ids.idSourcier= sourcier.getNumero();
