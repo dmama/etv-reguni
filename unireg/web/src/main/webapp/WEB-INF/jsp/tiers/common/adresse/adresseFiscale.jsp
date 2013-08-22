@@ -26,10 +26,28 @@
 			<c:out value="${adresse.complements}"/>
 		</display:column>
 		<display:column sortable ="true" titleKey="label.rueCasePostale">
-			<c:out value="${adresse.rue}"/>
-			<c:if test="${not empty adresse.formattedCasePostale}">
-			<br/><c:out value="${adresse.formattedCasePostale}"/>
-			</c:if>
+			<c:choose>
+				<c:when test="${adresse.egid != null || adresse.ewid != null}">
+					<span id="fis-${adresse.usage}-<fmt:formatDate value="${adresse.dateDebut}" pattern="yyyyMMdd"/>-<fmt:formatDate value="${adresse.dateFin}" pattern="yyyyMMdd"/>" class="staticTip">
+						<c:out value="${adresse.rue}"/>
+						<c:if test="${not empty adresse.formattedCasePostale}">
+							<br/><c:out value="${adresse.formattedCasePostale}"/>
+						</c:if>
+					</span>
+					<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
+						<div id="fis-${adresse.usage}-<fmt:formatDate value="${adresse.dateDebut}" pattern="yyyyMMdd"/>-<fmt:formatDate value="${adresse.dateFin}" pattern="yyyyMMdd"/>-tooltip" style="display: none;">
+							<b>EGID&nbsp;</b>: <c:choose><c:when test="${adresse.egid != null}"><c:out value="${adresse.egid}"/></c:when><c:otherwise>-</c:otherwise></c:choose><br/>
+							<b>EWID&nbsp;</b>: <c:choose><c:when test="${adresse.ewid != null}"><c:out value="${adresse.ewid}"/></c:when><c:otherwise>-</c:otherwise></c:choose><br/>
+						</div>
+					</authz:authorize>
+				</c:when>
+				<c:otherwise>
+					<c:out value="${adresse.rue}"/>
+					<c:if test="${not empty adresse.formattedCasePostale}">
+						<br/><c:out value="${adresse.formattedCasePostale}"/>
+					</c:if>
+				</c:otherwise>
+			</c:choose>
 		</display:column>
 		<display:column sortable ="true" titleKey="label.localite" >
 			<c:out value="${adresse.localite}"/>
@@ -126,4 +144,9 @@
 			form.submit();
 		}
 	}
+
+	$(function() {
+		Tooltips.activate_static_tooltips($('#adresse'));
+	});
+
 </script>

@@ -938,6 +938,8 @@ public class TiersManager implements MessageSourceAware {
 		adresseView.setAnnule(adresse.isAnnule());
 		adresseView.setId(adresse.getId());
 		adresseView.setPermanente(adresse.isPermanente());
+		adresseView.setEgid(adresse.getEgid());
+		adresseView.setEwid(adresse.getEwid());
 
 		final RueEtNumero rueEtNumero = AdresseServiceImpl.buildRueEtNumero(adresse);
 		adresseView.setRue(rueEtNumero == null ? null : rueEtNumero.getRueEtNumero());

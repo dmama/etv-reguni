@@ -12,7 +12,7 @@ import ch.vd.uniregctb.type.TexteCasePostale;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 
-public class AdresseView  implements Comparable<AdresseView>, Annulable{
+public class AdresseView implements Comparable<AdresseView>, Annulable {
 
 	private Long id;
 	private RegDate dateDebut;
@@ -25,6 +25,8 @@ public class AdresseView  implements Comparable<AdresseView>, Annulable{
 	private String rue;
 	private String complements;
 	private boolean permanente;
+	private Integer egid;
+	private Integer ewid;
 
 	/**
 	 * SourceType de l'adresse (civile ou fiscale)
@@ -85,7 +87,7 @@ public class AdresseView  implements Comparable<AdresseView>, Annulable{
 	 */
 	private boolean mettreAJourDecedes;
 
-		public String getIndex() {
+	public String getIndex() {
 		return index;
 	}
 
@@ -362,6 +364,22 @@ public class AdresseView  implements Comparable<AdresseView>, Annulable{
 		this.permanente = permanente;
 	}
 
+	public Integer getEgid() {
+		return egid;
+	}
+
+	public void setEgid(Integer egid) {
+		this.egid = egid;
+	}
+
+	public Integer getEwid() {
+		return ewid;
+	}
+
+	public void setEwid(Integer ewid) {
+		this.ewid = ewid;
+	}
+
 	public Long getNumCTB() {
 		return numCTB;
 	}
@@ -429,8 +447,7 @@ public class AdresseView  implements Comparable<AdresseView>, Annulable{
 
 	@Override
 	public int compareTo(AdresseView o) {
-		int value = -  getDateDebut().compareTo(o.getDateDebut());
-		return value;
+		return -  getDateDebut().compareTo(o.getDateDebut());
 	}
 
 	/**

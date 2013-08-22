@@ -21,6 +21,8 @@ public class AdresseCivilView implements DateRange {
 	private String rue;
 	private String localite;
 	private Integer paysOFS;
+	private Integer egid;
+	private Integer ewid;
 	private LocalisationView localisationPrecedente;
 	private LocalisationView localisationSuivante;
 
@@ -32,6 +34,8 @@ public class AdresseCivilView implements DateRange {
 		this.rue = extractRue(adresse);
 		this.localite = extractLocalite(adresse);
 		this.paysOFS = adresse.getNoOfsPays();
+		this.egid = adresse.getEgid();
+		this.ewid = adresse.getEwid();
 		this.localisationPrecedente = extractLocalisation(adresse.getLocalisationPrecedente());
 		this.localisationSuivante = extractLocalisation(adresse.getLocalisationSuivante());
 	}
@@ -119,5 +123,13 @@ public class AdresseCivilView implements DateRange {
 
 	public LocalisationView getLocalisationSuivante() {
 		return localisationSuivante;
+	}
+
+	public Integer getEgid() {
+		return egid;
+	}
+
+	public Integer getEwid() {
+		return ewid;
 	}
 }
