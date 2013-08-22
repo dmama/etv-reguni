@@ -4752,10 +4752,10 @@ public class TiersServiceTest extends BusinessTest {
 				MockIndividu fils = addIndividu(indFils, dateNaissanceFils, "Cognac", "Yvan", true);
 				MockIndividu fille = addIndividu(indFille, dateNaissanceFille, "Cognac", "Eva", false);
 
-				addAdresse(mere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
-				addAdresse(pere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
-				addAdresse(fils, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
-				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
+				addAdresse(mere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, 1, null, date(1998, 1, 1), null);
+				addAdresse(pere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, 1, null, date(1998, 1, 1), null);
+				addAdresse(fils, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, 1, null, date(1998, 1, 1), null);
+				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, 1, null, date(1998, 1, 1), null);
 
 				addLiensFiliation(fils, pere, mere, dateNaissanceFils, null);
 				addLiensFiliation(fille, pere, mere, dateNaissanceFille, null);
@@ -4830,10 +4830,10 @@ public class TiersServiceTest extends BusinessTest {
 				addLiensFiliation(fils, pere, mere, dateNaissanceFils, null);
 				addLiensFiliation(fille, pere, mere, dateNaissanceFille, dateDecesFille);
 
-				addAdresse(mere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
-				addAdresse(pere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
-				addAdresse(fils, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
-				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
+				addAdresse(mere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, 1, null, date(1998, 1, 1), null);
+				addAdresse(pere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, 1, null, date(1998, 1, 1), null);
+				addAdresse(fils, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, 1, null, date(1998, 1, 1), null);
+				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, 1, null, date(1998, 1, 1), null);
 			}
 		});
 
@@ -4903,10 +4903,10 @@ public class TiersServiceTest extends BusinessTest {
 				addLiensFiliation(fils, null, mere, dateNaissanceFils, null);       // <-- pas de filiation vers le père
 				addLiensFiliation(fille, null, mere, dateNaissanceFille, null);     // <-- pas de filiation vers le père
 
-				addAdresse(mere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
-				addAdresse(pere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
-				addAdresse(fils, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, dateNaissanceFils, null);
-				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, dateNaissanceFille, null);
+				addAdresse(mere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, 1, null, date(1998, 1, 1), null);
+				addAdresse(pere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, 1, null, date(1998, 1, 1), null);
+				addAdresse(fils, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, 1, null, dateNaissanceFils, null);
+				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, 1, null, dateNaissanceFille, null);
 			}
 		});
 
@@ -4973,10 +4973,10 @@ public class TiersServiceTest extends BusinessTest {
 				addLiensFiliation(fils, pere, mere, dateNaissanceFils, null);
 				addLiensFiliation(fille, pere, mere, dateNaissanceFille, null);
 
-				addAdresse(mere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Grandvaux.BatimentRouteDeLausanne, null, date(1998, 1, 1), null);
-				addAdresse(pere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
-				addAdresse(fils, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, dateNaissanceFils, null);
-				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, dateNaissanceFille, null);
+				addAdresse(mere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Grandvaux.BatimentRouteDeLausanne, 1, null, date(1998, 1, 1), null);
+				addAdresse(pere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, 1, null, date(1998, 1, 1), null);
+				addAdresse(fils, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, 1, null, dateNaissanceFils, null);
+				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, 1, null, dateNaissanceFille, null);
 			}
 		});
 
@@ -5021,6 +5021,152 @@ public class TiersServiceTest extends BusinessTest {
 		assertEquals(0, enfantsForDeclaration.size());
 	}
 
+	//Couple avec Enfant  ayant des EWID differents (le garage ?)
+	@Test
+	@Transactional
+	public void testGetEnfantsForDeclarationEWIDDifferent() throws Exception {
+
+		final long indMere = 1;
+		final long indPere = 2;
+		final long indFils = 3;
+		final long indFille = 4;
+		final RegDate dateNaissanceFils = date(2000, 2, 8);
+		final RegDate dateNaissanceFille = date(2007, 2, 8);
+
+		// On crée la situation de départ : une mère, un père, un fils mineur et une fille majeur
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu mere = addIndividu(indMere, date(1960, 1, 1), "Cognac", "Josette", false);
+				MockIndividu pere = addIndividu(indPere, date(1960, 1, 1), "Cognac", "Guy", true);
+				MockIndividu fils = addIndividu(indFils, dateNaissanceFils, "Cognac", "Yvan", true);
+				MockIndividu fille = addIndividu(indFille, dateNaissanceFille, "Cognac", "Eva", false);
+
+				addLiensFiliation(fils, pere, mere, dateNaissanceFils, null);
+				addLiensFiliation(fille, pere, mere, dateNaissanceFille, null);
+
+				addAdresse(mere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, 1, null, date(1998, 1, 1), null);
+				addAdresse(pere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, 1, null, date(1998, 1, 1), null);
+				addAdresse(fils, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, 2, null, dateNaissanceFils, null);
+				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, 1, null, dateNaissanceFille, null);
+			}
+		});
+
+		class Ids {
+			Long mere;
+			Long pere;
+			Long fils;
+			Long fille;
+		}
+		final Ids ids = new Ids();
+
+
+		final long idMenage = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique mere = addHabitant(indMere);
+				ids.mere = mere.getId();
+				final PersonnePhysique pere = addHabitant(indPere);
+				ids.pere = pere.getId();
+				final PersonnePhysique fils = addHabitant(indFils);
+				ids.fils = fils.getId();
+				final PersonnePhysique fille = addHabitant(indFille);
+				ids.fille = fille.getId();
+
+				addParente(fils, pere, dateNaissanceFils, null);
+				addParente(fils, mere, dateNaissanceFils, null);
+				addParente(fille, pere, dateNaissanceFille, null);
+				addParente(fille, mere, dateNaissanceFille, null);
+
+				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(pere, mere, date(1985, 1, 1), null);
+				final MenageCommun mc = ensemble.getMenage();
+				addForPrincipal(mc, date(1998, 1, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
+
+				return mc.getNumero();
+			}
+		});
+
+
+		final Contribuable menageCommun = (Contribuable) tiersDAO.get(idMenage);
+		List<PersonnePhysique> enfantsForDeclaration = tiersService.getEnfantsForDeclaration(menageCommun, date(2011, 12, 31));
+		assertNotNull(enfantsForDeclaration);
+		assertEquals(1, enfantsForDeclaration.size());
+		assertEquals((Long) ids.fille, enfantsForDeclaration.get(0).getNumero());
+	}
+
+	//Couple avec Enfant  ayant des EWID absents (oubli de saisie ?)
+	@Test
+	@Transactional
+	public void testGetEnfantsForDeclarationEWIDAbsent() throws Exception {
+
+		final long indMere = 1;
+		final long indPere = 2;
+		final long indFils = 3;
+		final long indFille = 4;
+		final RegDate dateNaissanceFils = date(2000, 2, 8);
+		final RegDate dateNaissanceFille = date(2007, 2, 8);
+
+		// On crée la situation de départ : une mère, un père, un fils mineur et une fille majeur
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu mere = addIndividu(indMere, date(1960, 1, 1), "Cognac", "Josette", false);
+				MockIndividu pere = addIndividu(indPere, date(1960, 1, 1), "Cognac", "Guy", true);
+				MockIndividu fils = addIndividu(indFils, dateNaissanceFils, "Cognac", "Yvan", true);
+				MockIndividu fille = addIndividu(indFille, dateNaissanceFille, "Cognac", "Eva", false);
+
+				addLiensFiliation(fils, pere, mere, dateNaissanceFils, null);
+				addLiensFiliation(fille, pere, mere, dateNaissanceFille, null);
+
+				addAdresse(mere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, 1, null, date(1998, 1, 1), null);
+				addAdresse(pere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, 1, null, date(1998, 1, 1), null);
+				addAdresse(fils, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, null, dateNaissanceFils, null);
+				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, 1, null, dateNaissanceFille, null);
+			}
+		});
+
+		class Ids {
+			Long mere;
+			Long pere;
+			Long fils;
+			Long fille;
+		}
+		final Ids ids = new Ids();
+
+
+		final long idMenage = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique mere = addHabitant(indMere);
+				ids.mere = mere.getId();
+				final PersonnePhysique pere = addHabitant(indPere);
+				ids.pere = pere.getId();
+				final PersonnePhysique fils = addHabitant(indFils);
+				ids.fils = fils.getId();
+				final PersonnePhysique fille = addHabitant(indFille);
+				ids.fille = fille.getId();
+
+				addParente(fils, pere, dateNaissanceFils, null);
+				addParente(fils, mere, dateNaissanceFils, null);
+				addParente(fille, pere, dateNaissanceFille, null);
+				addParente(fille, mere, dateNaissanceFille, null);
+
+				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(pere, mere, date(1985, 1, 1), null);
+				final MenageCommun mc = ensemble.getMenage();
+				addForPrincipal(mc, date(1998, 1, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
+
+				return mc.getNumero();
+			}
+		});
+
+
+		final Contribuable menageCommun = (Contribuable) tiersDAO.get(idMenage);
+		List<PersonnePhysique> enfantsForDeclaration = tiersService.getEnfantsForDeclaration(menageCommun, date(2011, 12, 31));
+		assertNotNull(enfantsForDeclaration);
+		assertEquals(1, enfantsForDeclaration.size());
+		assertEquals((Long) ids.fille, enfantsForDeclaration.get(0).getNumero());
+	}
+
 	//SIFISC-3053
 	@Test
 	@Transactional
@@ -5045,9 +5191,9 @@ public class TiersServiceTest extends BusinessTest {
 				addLiensFiliation(fils, pere, mere, dateNaissanceFils, null);
 				addLiensFiliation(fille, pere, mere, dateNaissanceFille, null);
 
-				addAdresse(mere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
-				addAdresse(fils, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, dateNaissanceFils, null);
-				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, dateNaissanceFille, null);
+				addAdresse(mere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, null, date(1998, 1, 1), null);
+				addAdresse(fils, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, null, dateNaissanceFils, null);
+				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, null, dateNaissanceFille, null);
 			}
 		});
 
@@ -5117,9 +5263,9 @@ public class TiersServiceTest extends BusinessTest {
 				addLiensFiliation(fils, pere, mere, dateNaissanceFils, null);
 				addLiensFiliation(fille, pere, mere, dateNaissanceFille, null);
 
-				addAdresse(mere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
-				addAdresse(pere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
-				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, dateNaissanceFille, null);
+				addAdresse(mere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, 1, null, date(1998, 1, 1), null);
+				addAdresse(pere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, 1, null, date(1998, 1, 1), null);
+				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, 1, null, dateNaissanceFille, null);
 			}
 		});
 
@@ -5189,10 +5335,10 @@ public class TiersServiceTest extends BusinessTest {
 				addLiensFiliation(fils, pere, mere, dateNaissanceFils, null);
 				addLiensFiliation(fille, pere, mere, dateNaissanceFille, null);
 
-				addAdresse(mere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
-				addAdresse(pere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
-				addAdresse(fils, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, dateNaissanceFils, null);
-				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, dateNaissanceFille, null);
+				addAdresse(mere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, null, date(1998, 1, 1), null);
+				addAdresse(pere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, null, date(1998, 1, 1), null);
+				addAdresse(fils, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, null, dateNaissanceFils, null);
+				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, null, dateNaissanceFille, null);
 			}
 		});
 
@@ -5260,9 +5406,9 @@ public class TiersServiceTest extends BusinessTest {
 				addLiensFiliation(fils, null, mere, dateNaissanceFils, null);
 				addLiensFiliation(fille, null, mere, dateNaissanceFille, null);
 
-				addAdresse(mere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
-				addAdresse(fils, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, dateNaissanceFils, null);
-				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, dateNaissanceFille, null);
+				addAdresse(mere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, 1, null, date(1998, 1, 1), null);
+				addAdresse(fils, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, 1, null, dateNaissanceFils, null);
+				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, 1, null, dateNaissanceFille, null);
 			}
 		});
 
@@ -5294,7 +5440,7 @@ public class TiersServiceTest extends BusinessTest {
 
 
 		final Contribuable ctbMere = (Contribuable) tiersDAO.get(ids.mere);
-		List<PersonnePhysique> enfantsForDeclarationMere = tiersService.getEnfantsForDeclaration(ctbMere, date(2011, 12, 31));
+		final List<PersonnePhysique> enfantsForDeclarationMere = tiersService.getEnfantsForDeclaration(ctbMere, date(2011, 12, 31));
 		assertNotNull(enfantsForDeclarationMere);
 		assertEquals(2, enfantsForDeclarationMere.size());
 	}
@@ -5323,10 +5469,10 @@ public class TiersServiceTest extends BusinessTest {
 				addLiensFiliation(fils, pere, mere, dateNaissanceFils, null);
 				addLiensFiliation(fille, pere, mere, dateNaissanceFille, null);
 
-				addAdresse(mere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
-				addAdresse(pere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
-				addAdresse(fils, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, dateNaissanceFils, null);
-				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, dateNaissanceFille, null);
+				addAdresse(mere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, 1, null, date(1998, 1, 1), null);
+				addAdresse(pere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, 1, null, date(1998, 1, 1), null);
+				addAdresse(fils, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, 1, null, dateNaissanceFils, null);
+				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, 1, null, dateNaissanceFille, null);
 			}
 		});
 
@@ -5364,11 +5510,10 @@ public class TiersServiceTest extends BusinessTest {
 		final PersonnePhysique mere = (PersonnePhysique) tiersDAO.get(ids.mere);
 		final PersonnePhysique fille = (PersonnePhysique) tiersDAO.get(ids.fille);
 		AdresseGenerique adressePere = adresseService.getAdresseFiscale(pere, TypeAdresseFiscale.DOMICILE, date(2011, 12, 31), false);
-		assertFalse(TiersHelper.hasParentsAvecEgidDifferent(fille, pere, adressePere, date(2011, 12, 31), adresseService, tiersService));
+		assertFalse(TiersHelper.hasParentsAvecEgidEwidDifferents(fille, pere, adressePere, date(2011, 12, 31), adresseService, tiersService));
 	}
 
 	//l'egid des 2 parents est differents
-
 	@Test
 	@Transactional
 	public void testIsEgidAutreParentDifferent2() throws Exception {
@@ -5392,10 +5537,10 @@ public class TiersServiceTest extends BusinessTest {
 				addLiensFiliation(fils, pere, mere, dateNaissanceFils, null);
 				addLiensFiliation(fille, pere, mere, dateNaissanceFille, null);
 
-				addAdresse(mere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Villette.BatimentCheminDesGranges, null, date(1998, 1, 1), null);
-				addAdresse(pere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
-				addAdresse(fils, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, dateNaissanceFils, null);
-				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, dateNaissanceFille, null);
+				addAdresse(mere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Villette.BatimentCheminDesGranges, 1, null, date(1998, 1, 1), null);
+				addAdresse(pere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, 1, null, date(1998, 1, 1), null);
+				addAdresse(fils, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, 1, null, dateNaissanceFils, null);
+				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, 1, null, dateNaissanceFille, null);
 			}
 		});
 
@@ -5434,10 +5579,10 @@ public class TiersServiceTest extends BusinessTest {
 		final PersonnePhysique mere = (PersonnePhysique) tiersDAO.get(ids.mere);
 		final PersonnePhysique fille = (PersonnePhysique) tiersDAO.get(ids.fille);
 		AdresseGenerique adressePere = adresseService.getAdresseFiscale(pere, TypeAdresseFiscale.DOMICILE, date(2011, 12, 31), false);
-		assertTrue(TiersHelper.hasParentsAvecEgidDifferent(fille, pere, adressePere, date(2011, 12, 31), adresseService, tiersService));
+		assertTrue(TiersHelper.hasParentsAvecEgidEwidDifferents(fille, pere, adressePere, date(2011, 12, 31), adresseService, tiersService));
 	}
-	//un parent à un egid, l'autre non
 
+	//un parent à un egid, l'autre non
 	@Test
 	@Transactional
 	public void testIsEgidAutreParentDifferent3() throws Exception {
@@ -5462,9 +5607,9 @@ public class TiersServiceTest extends BusinessTest {
 				addLiensFiliation(fille, pere, mere, dateNaissanceFille, null);
 
 				addAdresse(mere, TypeAdresseCivil.PRINCIPALE, MockRue.Aubonne.RueTrevelin, null, date(1998, 1, 1), null);
-				addAdresse(pere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
-				addAdresse(fils, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, dateNaissanceFils, null);
-				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, dateNaissanceFille, null);
+				addAdresse(pere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, 1, null, date(1998, 1, 1), null);
+				addAdresse(fils, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, 1, null, dateNaissanceFils, null);
+				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, 1, null, dateNaissanceFille, null);
 			}
 		});
 
@@ -5503,7 +5648,7 @@ public class TiersServiceTest extends BusinessTest {
 		final PersonnePhysique mere = (PersonnePhysique) tiersDAO.get(ids.mere);
 		final PersonnePhysique fille = (PersonnePhysique) tiersDAO.get(ids.fille);
 		AdresseGenerique adressePere = adresseService.getAdresseFiscale(pere, TypeAdresseFiscale.DOMICILE, date(2011, 12, 31), false);
-		assertTrue(TiersHelper.hasParentsAvecEgidDifferent(fille, pere, adressePere, date(2011, 12, 31), adresseService, tiersService));
+		assertTrue(TiersHelper.hasParentsAvecEgidEwidDifferents(fille, pere, adressePere, date(2011, 12, 31), adresseService, tiersService));
 	}
 
 	// [SIFISC-2703]  Tri des enfants dans l'ordre décroissant
@@ -5531,11 +5676,11 @@ public class TiersServiceTest extends BusinessTest {
 				MockIndividu fille = addIndividu(indFille, dateNaissanceFille, "Cognac", "Eva", false);
 				MockIndividu fille2 = addIndividu(indFille2, dateNaissanceFille2, "Cognac", "Lucie", false);
 
-				addAdresse(mere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
-				addAdresse(pere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
-				addAdresse(fils, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
-				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
-				addAdresse(fille2, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
+				addAdresse(mere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, 1, null, date(1998, 1, 1), null);
+				addAdresse(pere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, 1, null, date(1998, 1, 1), null);
+				addAdresse(fils, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, 1, null, date(1998, 1, 1), null);
+				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, 1, null, date(1998, 1, 1), null);
+				addAdresse(fille2, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, 1, null, date(1998, 1, 1), null);
 
 				addLiensFiliation(fils, pere, mere, dateNaissanceFils, null);
 				addLiensFiliation(fille, pere, mere, dateNaissanceFille, null);

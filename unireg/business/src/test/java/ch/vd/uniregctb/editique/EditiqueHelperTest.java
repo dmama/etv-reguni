@@ -56,7 +56,7 @@ public class EditiqueHelperTest extends BusinessTest {
 			@Override
 			protected void init() {
 				MockIndividu indJerome = addIndividu(numeroIndJerome, date(1960, 1, 1), "Cognac", "Jerome", true);
-				addAdresse(indJerome, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
+				addAdresse(indJerome, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, null, date(1998, 1, 1), null);
 
 				MockIndividu indJacques = addIndividu(numeroIndJacques, date(1960, 1, 1), "Cognac", "Jacques", true);
 				addAdresse(indJacques, TypeAdresseCivil.COURRIER, "Chemin du palais","15b",null, CasePostale.parse("7507"),"Paris", MockPays.France, date(2012,1,1), null);

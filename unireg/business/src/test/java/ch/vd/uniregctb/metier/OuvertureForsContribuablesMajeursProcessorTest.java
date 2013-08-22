@@ -515,7 +515,7 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 			@Override
 			protected void init() {
 				MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Duschmole", "Jean", true);
-				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockBatiment.Gressy.BatimentLesPechauds, null, dateNaissance, null); // localité Gressy => commune de Gressy jusqu'à fin 2010
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockBatiment.Gressy.BatimentLesPechauds, null, null, dateNaissance, null); // localité Gressy => commune de Gressy jusqu'à fin 2010
 				addNationalite(individu, MockPays.Suisse, dateNaissance, null);
 			}
 		});
@@ -577,7 +577,7 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 			@Override
 			protected void init() {
 				MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Duschmole", "Jean", true);
-				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockBatiment.Gressy.BatimentLesPechauds, null, dateNaissance, null); // localité Gressy => commune d'Yverdon-les-Bains dès 2011
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockBatiment.Gressy.BatimentLesPechauds, null, null, dateNaissance, null); // localité Gressy => commune d'Yverdon-les-Bains dès 2011
 				addNationalite(individu, MockPays.Suisse, dateNaissance, null);
 			}
 		});

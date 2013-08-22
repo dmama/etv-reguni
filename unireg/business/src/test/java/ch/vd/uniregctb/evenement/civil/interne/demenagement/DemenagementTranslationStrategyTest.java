@@ -51,8 +51,8 @@ public class DemenagementTranslationStrategyTest extends AbstractEvenementCivilI
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noInd, date(1970, 1, 1), "Hutter", "Marcel", true);
-				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockBatiment.Villette.BatimentCheminDeCreuxBechet, null, date(1990, 1, 1), dateDemenagement.getOneDayBefore());
-				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockBatiment.Grandvaux.BatimentSentierDesVinches, null, dateDemenagement, null);
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockBatiment.Villette.BatimentCheminDeCreuxBechet, null, null, date(1990, 1, 1), dateDemenagement.getOneDayBefore());
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockBatiment.Grandvaux.BatimentSentierDesVinches, null, null, dateDemenagement, null);
 			}
 		});
 
@@ -100,8 +100,8 @@ public class DemenagementTranslationStrategyTest extends AbstractEvenementCivilI
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noInd, date(1970, 1, 1), "Hutter", "Marcel", true);
-				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockBatiment.Villette.BatimentCheminDeCreuxBechet, null, date(1990, 1, 1), dateDemenagement.getOneDayBefore());
-				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockBatiment.Villette.BatimentRouteDeLausanne, null, dateDemenagement, null);
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockBatiment.Villette.BatimentCheminDeCreuxBechet, null, null, date(1990, 1, 1), dateDemenagement.getOneDayBefore());
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockBatiment.Villette.BatimentRouteDeLausanne, null, null, dateDemenagement, null);
 			}
 		});
 
@@ -147,8 +147,8 @@ public class DemenagementTranslationStrategyTest extends AbstractEvenementCivilI
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noInd, date(1970, 1, 1), "Hutter", "Marcel", true);
-				addAdresse(ind, TypeAdresseCivil.SECONDAIRE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1990, 1, 1), dateDemenagement.getOneDayBefore());
-				addAdresse(ind, TypeAdresseCivil.SECONDAIRE, MockBatiment.Cully.BatimentPlaceDuTemple, null, dateDemenagement, null);
+				addAdresse(ind, TypeAdresseCivil.SECONDAIRE, MockBatiment.Cully.BatimentChDesColombaires, null, null, date(1990, 1, 1), dateDemenagement.getOneDayBefore());
+				addAdresse(ind, TypeAdresseCivil.SECONDAIRE, MockBatiment.Cully.BatimentPlaceDuTemple, null, null, dateDemenagement, null);
 			}
 		});
 

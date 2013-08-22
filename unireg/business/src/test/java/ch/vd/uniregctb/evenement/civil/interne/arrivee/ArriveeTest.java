@@ -525,7 +525,7 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 			protected void init() {
 				final MockIndividu ind = addIndividu(noInd, date(1970, 1, 1), "Zbinden", "Arnold", true);
 				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Echallens.GrandRue, null, date(1990, 1, 1), dateDemenagement.getOneDayBefore());
-				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockBatiment.Grandvaux.BatimentSentierDesVinches, null, dateDemenagement, null);
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockBatiment.Grandvaux.BatimentSentierDesVinches, null, null, dateDemenagement, null);
 				addNationalite(ind, MockPays.Suisse, date(1970, 1, 1), null);
 			}
 		});
@@ -588,7 +588,7 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 				final MockIndividu ind = addIndividu(noInd, date(1970, 1, 1), "Zbinden", "Arnold", true);
 				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Echallens.GrandRue, null, date(1990, 1, 1), dateDemenagement.getOneDayBefore());
 				// note: la localité de Grandvaux fait partie de la commune fusionnée Bourg-en-Lavaux
-				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockBatiment.Grandvaux.BatimentSentierDesVinches, null, dateDemenagement, null);
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockBatiment.Grandvaux.BatimentSentierDesVinches, null, null, dateDemenagement, null);
 				addNationalite(ind, MockPays.Suisse, date(1970, 1, 1), null);
 			}
 		});
@@ -706,7 +706,7 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 				final MockIndividu ind = addIndividu(noInd, date(1970, 1, 1), "Zbinden", "Arnold", true);
 				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Echallens.GrandRue, null, date(1990, 1, 1), dateDemenagement.getOneDayBefore());
 				// note: la localité de Grandvaux fait partie de la commune fusionnée Bourg-en-Lavaux
-				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockBatiment.Grandvaux.BatimentSentierDesVinches, null, dateDemenagement, null);
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockBatiment.Grandvaux.BatimentSentierDesVinches, null, null, dateDemenagement, null);
 				addNationalite(ind, MockPays.Suisse, date(1970, 1, 1), null);
 			}
 		});
@@ -759,8 +759,8 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noInd, date(1970, 1, 1), "Hutter", "Marcel", true);
-				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockBatiment.Villette.BatimentCheminDeCreuxBechet, null, date(1990, 1, 1), dateDemenagement.getOneDayBefore());
-				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockBatiment.Grandvaux.BatimentSentierDesVinches, null, dateDemenagement, null);
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockBatiment.Villette.BatimentCheminDeCreuxBechet, null, null, date(1990, 1, 1), dateDemenagement.getOneDayBefore());
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockBatiment.Grandvaux.BatimentSentierDesVinches, null, null, dateDemenagement, null);
 				addNationalite(ind, MockPays.Suisse, date(1970, 1, 1), null);
 			}
 		});

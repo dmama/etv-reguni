@@ -265,41 +265,40 @@ public abstract class TiersHelper {
 
 	}
 
-	/** Determine si les deux parents d'un contribuable enfant  ont un domicile(EGID) différent
+	/** Determine si les deux parents d'un contribuable enfant ont un domicile (EGID/EWID) différent
 	 *
 	 * @param enfant pour qui on compare l'egid des parents
 	 * @param parent   connu de l'enfant
-	 * @param  adresseParent adresse du parent connu
+	 * @param adresseParent adresse du parent connu
 	 * @param finPeriodeImposition   date de validitéde l'adresse du second parent
 	 * @param adresseService       service des adresses
 	 * @param tiersService service des tiers
-	 * @return True si les 2 parents ont un egid différent, False sinon
+	 * @return True si les 2 parents ont un egid/ewid différent, False sinon
 	 * @throws AdresseException
 	 */
-	public static boolean hasParentsAvecEgidDifferent(PersonnePhysique enfant, PersonnePhysique parent, AdresseGenerique adresseParent, RegDate finPeriodeImposition,
-	                                                  AdresseService adresseService, TiersService tiersService) throws AdresseException {
-		final PersonnePhysique parentConjoint = TiersHelper.getAutreParent(enfant, parent, finPeriodeImposition, tiersService);
-		if (parentConjoint != null) {
-			final AdresseGenerique adresseDomicileParentConjoint = adresseService.getAdresseFiscale(parentConjoint, TypeAdresseFiscale.DOMICILE, finPeriodeImposition, false);
-			if (adresseDomicileParentConjoint != null && adresseParent != null) {
-				return !isSameEgid(adresseDomicileParentConjoint.getEgid(), adresseParent.getEgid());
-			}
-			else {
-				return false;
-			}
+	public static boolean hasParentsAvecEgidEwidDifferents(PersonnePhysique enfant, PersonnePhysique parent, AdresseGenerique adresseParent, RegDate finPeriodeImposition,
+	                                                       AdresseService adresseService, TiersService tiersService) throws AdresseException {
+		final PersonnePhysique autreParent = TiersHelper.getAutreParent(enfant, parent, finPeriodeImposition, tiersService);
+		if (autreParent != null) {
+			final AdresseGenerique adresseAutreParent = adresseService.getAdresseFiscale(autreParent, TypeAdresseFiscale.DOMICILE, finPeriodeImposition, false);
+			return !isSameEgidEwid(adresseParent, adresseAutreParent);
 		}
 		else {
 			return true;
 		}
-
 	}
 
-	public static boolean isSameEgid(Integer egid1, Integer egid2) {
-		if (egid1 == null || egid2 == null) {
-			return false;
-		}
-		else {
-			return egid1.equals(egid2);
-		}
+	/**
+	 * @param o1 premier objet à comparer
+	 * @param o2 deuxième objet à comparer
+	 * @param <T> type des objets (pour comparer des choses comparables)
+	 * @return <code>false</code> si l'un au moins des objets est <code>null</code> ou si leurs valeurs sont différentes, <code>true</code> si les deux objets ne sont pas <code>null</code> et que les valeurs sont identiques
+	 */
+	private static <T> boolean areSame(T o1, T o2) {
+		return o1 != null && o2 != null && o1.equals(o2);
+	}
+
+	public static boolean isSameEgidEwid(AdresseGenerique a1, AdresseGenerique a2) {
+		return a1 != null && a2 != null && areSame(a1.getEgid(), a2.getEgid()) && areSame(a1.getEwid(), a2.getEwid());
 	}
 }

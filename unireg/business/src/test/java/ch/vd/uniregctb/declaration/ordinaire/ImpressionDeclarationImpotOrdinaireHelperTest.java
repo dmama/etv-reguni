@@ -816,9 +816,9 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 				final MockIndividu fils = addIndividu(indFils, dateNaissanceFils, "Cognac", "Yvan", true);
 				final MockIndividu fille = addIndividu(indFille, dateNaissanceFille, "Cognac", "Eva", false);
 
-				addAdresse(pere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
-				addAdresse(fils, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
-				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
+				addAdresse(pere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, 1, null, date(1998, 1, 1), null);
+				addAdresse(fils, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, 1, null, date(1998, 1, 1), null);
+				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, 1, null, date(1998, 1, 1), null);
 
 				addLiensFiliation(fils, pere, null, fils.getDateNaissance(), null);
 				addLiensFiliation(fille, pere, null, fille.getDateNaissance(), null);
@@ -975,9 +975,9 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 				MockIndividu fils = addIndividu(indFils, dateNaissanceFils, "Cognac", "Yvan", true);
 				MockIndividu fille = addIndividu(indFille, dateNaissanceFille, "Cognac", "Eva", false);
 
-				addAdresse(pere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
-				addAdresse(fils, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
-				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1998, 1, 1), null);
+				addAdresse(pere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, null, date(1998, 1, 1), null);
+				addAdresse(fils, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, null, date(1998, 1, 1), null);
+				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, null, null, date(1998, 1, 1), null);
 
 				addLiensFiliation(fils, pere, null, fils.getDateNaissance(), null);
 				addLiensFiliation(fille, pere, null, fille.getDateNaissance(), null);

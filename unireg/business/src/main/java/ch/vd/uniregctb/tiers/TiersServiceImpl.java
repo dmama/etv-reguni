@@ -1621,12 +1621,12 @@ public class TiersServiceImpl implements TiersService {
 
             for (PersonnePhysique enfant : listeRecherche) {
                 final RegDate dateDeces = getDateDeces(enfant);
-                //enfant non Décédé
+                // enfant non Décédé
                 if (dateDeces == null || dateDeces.isAfter(finPeriodeImposition)) {
-                    //Enfant mineur à la date de fin de la periode d'imposition
+                    // Enfant mineur à la date de fin de la periode d'imposition
                     if (isMineur(enfant, finPeriodeImposition)) {
-                        //L'adresse de domicile (EGID) doit être la même entre l'enfant et le contribuable
-                        if (isEgidCoherent(ctb, enfant, finPeriodeImposition)) {
+                        // L'adresse de domicile (EGID/EWID) doit être la même entre l'enfant et le contribuable
+                        if (areEgidEwidCoherents(ctb, enfant, finPeriodeImposition)) {
                             listeEnfants.add(enfant);
                         }
                     }
@@ -1655,56 +1655,48 @@ public class TiersServiceImpl implements TiersService {
     }
 
     /**
-     * L’EGID de l’adresse domicile doit être le même entre l’enfant et le CTB à la fin de la période d’imposition. Dans le cadre d’un ménage commun, il faut que chacun des deux parents ait un EGID
-     * identique à celui de l’enfant. Si deux membres d’un ménage commun habitent à des adresses vaudoises (EGID) différentes, l’enfant ne doit pas figurer sur la DI. Si les deux parents ne sont pas en
-     * ménage commun alors qu’ils ont le même EGID, l’enfant ne doit figurer sur aucune des deux DI.
+     * Le couple EGID/EWID de l’adresse domicile doit être le même entre l’enfant et le CTB à la fin de la période d’imposition. Dans le cadre d’un ménage commun, il faut que chacun des deux parents ait un EGID/EWID
+     * identique à celui de l’enfant. Si deux membres d’un ménage commun habitent à des adresses vaudoises (EGID/EWID) différentes, l’enfant ne doit pas figurer sur la DI. Si les deux parents ne sont pas en
+     * ménage commun alors qu’ils ont le même EGID/EWID, l’enfant ne doit figurer sur aucune des deux DI.
      *
      * @param parent               le contribuable  <i>PersonnePhysique</i> ou <i>MenageCommun</i>
      * @param enfant               qui est succeptible d'être rajouter sur la DI
      * @param finPeriodeImposition date de fin de période d'imposition
      * @return <i>TRUE</i> si les egid sont cohérents, <i>FALSE</i>  des incoherences sont trouvées entre l'egid de l'enfant et des parents
      */
-    private boolean isEgidCoherent(Contribuable parent, PersonnePhysique enfant, RegDate finPeriodeImposition) {
+    private boolean areEgidEwidCoherents(Contribuable parent, PersonnePhysique enfant, RegDate finPeriodeImposition) {
         try {
             final AdresseGenerique adresseDomicileParent = adresseService.getAdresseFiscale(parent, TypeAdresseFiscale.DOMICILE, finPeriodeImposition, false);
             final AdresseGenerique adresseDomicileEnfant = adresseService.getAdresseFiscale(enfant, TypeAdresseFiscale.DOMICILE, finPeriodeImposition, false);
-            //Les EGID ne peuvent être déterminées, on retourne false
+            //Les EGID/EWID ne peuvent être déterminées, on retourne false
             if (adresseDomicileEnfant == null || adresseDomicileParent == null) {
                 return false;
             }
 
             if (parent instanceof PersonnePhysique) {
                 //Si les deux parents ne sont pas en ménage commun alors qu’ils ont le même EGID, l’enfant ne doit figurer sur aucune des deux DI.
-                final boolean hasParentsAvecEgidDifferent =
-                        TiersHelper.hasParentsAvecEgidDifferent(enfant, (PersonnePhysique) parent, adresseDomicileParent, finPeriodeImposition, adresseService, this);
-                if (adresseDomicileParent != null && adresseDomicileEnfant != null && hasParentsAvecEgidDifferent) {
-                    //On compare l'egid du parent et de l'enfant
-                    return TiersHelper.isSameEgid(adresseDomicileEnfant.getEgid(), adresseDomicileParent.getEgid());
+                final boolean hasParentsAvecEgidDifferents = TiersHelper.hasParentsAvecEgidEwidDifferents(enfant, (PersonnePhysique) parent, adresseDomicileParent, finPeriodeImposition, adresseService, this);
+                if (hasParentsAvecEgidDifferents) {
+                    //On compare l'egid/ewid du parent et de l'enfant
+                    return TiersHelper.isSameEgidEwid(adresseDomicileEnfant, adresseDomicileParent);
                 }
-
-            } else if (parent instanceof MenageCommun) {
-                EnsembleTiersCouple ensembleTiersCouple = getEnsembleTiersCouple((MenageCommun) parent, finPeriodeImposition);
-                PersonnePhysique principal = ensembleTiersCouple.getPrincipal();
-                PersonnePhysique conjoint = ensembleTiersCouple.getConjoint();
+            }
+            else if (parent instanceof MenageCommun) {
+                final EnsembleTiersCouple ensembleTiersCouple = getEnsembleTiersCouple((MenageCommun) parent, finPeriodeImposition);
+                final PersonnePhysique principal = ensembleTiersCouple.getPrincipal();
+                final PersonnePhysique conjoint = ensembleTiersCouple.getConjoint();
                 if (conjoint != null) {
                     final AdresseGenerique adresseDomicilePrincipal = adresseService.getAdresseFiscale(principal, TypeAdresseFiscale.DOMICILE, finPeriodeImposition, false);
                     final AdresseGenerique adresseDomicileConjoint = adresseService.getAdresseFiscale(conjoint, TypeAdresseFiscale.DOMICILE, finPeriodeImposition, false);
-                    //Dans le cadre d’un ménage commun, il faut que chacun des deux parents ait un EGID identique à celui de l’enfant.
-                    //noinspection SimplifiableIfStatement
-                    if (adresseDomicilePrincipal != null && adresseDomicileConjoint != null && TiersHelper.isSameEgid(adresseDomicilePrincipal.getEgid(), adresseDomicileConjoint.getEgid())) {
-                        return TiersHelper.isSameEgid(adresseDomicileEnfant.getEgid(), adresseDomicileParent.getEgid());
 
-                    } else {
-                        //les deux membres du ménage commun habitent a deux endroits différents
-                        return false;
-                    }
-                } else {
-                    //Marié(e) seul(e)
-                    return TiersHelper.isSameEgid(adresseDomicileEnfant.getEgid(), adresseDomicileParent.getEgid());
+                    //Dans le cadre d’un ménage commun, il faut que chacun des deux parents ait un EGID/EWID identique à celui de l’enfant.
+	                return TiersHelper.isSameEgidEwid(adresseDomicilePrincipal, adresseDomicileConjoint) && TiersHelper.isSameEgidEwid(adresseDomicileEnfant, adresseDomicileParent);
                 }
-
+                else {
+                    //Marié(e) seul(e)
+                    return TiersHelper.isSameEgidEwid(adresseDomicileEnfant, adresseDomicileParent);
+                }
             }
-
         } catch (AdresseException e) {
             // rien à faire...
             LOGGER.warn("Test de la coherence d'egid: Impossible de déterminer l'adresse des tiers parent " + parent.getNumero() + " et enfant " + enfant.getNumero(), e);

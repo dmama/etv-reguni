@@ -34,6 +34,7 @@ public class MockAdresse implements Adresse, MockCloneable {
 	public TypeAdresseCivil typeAdresse;
 	public Integer noOfsCommuneAdresse;
 	public Integer egid;
+	public Integer ewid;
 	public Localisation localisationPrecedente;
 	public Localisation localisationSuivante;
 
@@ -47,9 +48,10 @@ public class MockAdresse implements Adresse, MockCloneable {
 		this.numeroRue = rue.getNoRue();
 	}
 
-	public MockAdresse(TypeAdresseCivil type, MockBatiment batiment, CasePostale casePostale, RegDate debutValidite, RegDate finValidite) {
+	public MockAdresse(TypeAdresseCivil type, MockBatiment batiment, @Nullable Integer ewid, CasePostale casePostale, RegDate debutValidite, RegDate finValidite) {
 		this(type, batiment.getRue(), casePostale, debutValidite, finValidite);
 		this.egid = batiment.getEgid();
+		this.ewid = ewid;
 	}
 
 	public MockAdresse(TypeAdresseCivil type, String rue, @Nullable CasePostale casePostale, String npaLocalite, MockPays pays, RegDate debutValidite, @Nullable RegDate finValidite) {
@@ -272,7 +274,11 @@ public class MockAdresse implements Adresse, MockCloneable {
 
 	@Override
 	public Integer getEwid() {
-		return null;
+		return ewid;
+	}
+
+	public void setEwid(Integer ewid) {
+		this.ewid = ewid;
 	}
 
 	@Override
