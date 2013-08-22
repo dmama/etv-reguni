@@ -1,6 +1,9 @@
 package ch.vd.uniregctb.webservice.rcpers;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.junit.Test;
@@ -10,7 +13,9 @@ import ch.vd.evd0001.v5.ListOfPersons;
 import ch.vd.evd0001.v5.MaritalData;
 import ch.vd.evd0001.v5.Parent;
 import ch.vd.evd0001.v5.Person;
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.civil.data.IndividuRCPers;
 import ch.vd.unireg.interfaces.civil.rcpers.EchHelper;
 import ch.vd.unireg.wsclient.rcpers.RcPersClientImpl;
@@ -79,14 +84,26 @@ public class RcPersServiceTest {
 		final List<Parent> parents = person.getParentHistory();
 		assertNotNull(parents);
 		assertEquals(2, parents.size());
+
+		final List<Parent> parentSorted = new ArrayList<>(parents);
+		Collections.sort(parentSorted, new Comparator<Parent>() {
+			@Override
+			public int compare(Parent o1, Parent o2) {
+				int comparison = NullDateBehavior.EARLIEST.compare(XmlUtils.xmlcal2regdate(o1.getParentFrom()), XmlUtils.xmlcal2regdate(o2.getParentFrom()));
+				if (comparison == 0) {
+					comparison = o1.getIdentification().getIdentification().getLocalPersonId().getPersonId().compareTo(o2.getIdentification().getIdentification().getLocalPersonId().getPersonId());
+				}
+				return comparison;
+			}
+		});
 		{
-			final Parent parent = parents.get(0);
+			final Parent parent = parentSorted.get(0);
 			assertEquals("347148", parent.getIdentification().getIdentification().getLocalPersonId().getPersonId());
 			assertEquals(dateNaissance, XmlUtils.xmlcal2regdate(parent.getParentFrom()));
 			assertNull(parent.getParentTill());
 		}
 		{
-			final Parent parent = parents.get(1);
+			final Parent parent = parentSorted.get(1);
 			assertEquals("347149", parent.getIdentification().getIdentification().getLocalPersonId().getPersonId());
 			assertEquals(dateNaissance, XmlUtils.xmlcal2regdate(parent.getParentFrom()));
 			assertNull(parent.getParentTill());
