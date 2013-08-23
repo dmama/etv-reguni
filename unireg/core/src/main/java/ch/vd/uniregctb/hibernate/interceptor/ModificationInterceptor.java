@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.log4j.Logger;
 import org.hibernate.CallbackException;
@@ -31,6 +33,7 @@ public class ModificationInterceptor extends AbstractLinkedInterceptor {
 	private static final Logger LOGGER = Logger.getLogger(ModificationInterceptor.class);
 
 	private final ThreadSwitch activationSwitch = new ThreadSwitch(true);
+	private final ReentrantReadWriteLock rwlock = new ReentrantReadWriteLock();
 
 	private TransactionManager transactionManager;
 	private final ThreadLocal<HashSet<Transaction>> registeredTransactions = new ThreadLocal<HashSet<Transaction>>() {
@@ -46,11 +49,25 @@ public class ModificationInterceptor extends AbstractLinkedInterceptor {
 	}
 
 	public void register(ModificationSubInterceptor sub) {
-		subInterceptors.add(sub);
+		final Lock lock = rwlock.writeLock();
+		lock.lock();
+		try {
+			subInterceptors.add(sub);
+		}
+		finally {
+			lock.unlock();
+		}
 	}
 
 	public void unregister(ModificationSubInterceptor sub) {
-		subInterceptors.remove(sub);
+		final Lock lock = rwlock.writeLock();
+		lock.lock();
+		try {
+			subInterceptors.remove(sub);
+		}
+		finally {
+			lock.unlock();
+		}
 	}
 
 	/**
@@ -138,9 +155,16 @@ public class ModificationInterceptor extends AbstractLinkedInterceptor {
 	public void postFlush(Iterator<?> entities) throws CallbackException {
 
 		registerTxInterceptor();
-		
-		for (ModificationSubInterceptor s : subInterceptors) {
-			s.postFlush();
+
+		final Lock lock = rwlock.readLock();
+		lock.lock();
+		try {
+			for (ModificationSubInterceptor s : subInterceptors) {
+				s.postFlush();
+			}
+		}
+		finally {
+			lock.unlock();
 		}
 	}
 
@@ -150,8 +174,15 @@ public class ModificationInterceptor extends AbstractLinkedInterceptor {
 		boolean modified = false;
 		boolean isAnnulation = detectAnnulation(currentState, previousState, propertyNames);
 
-		for (ModificationSubInterceptor s : subInterceptors) {
-			modified = s.onChange(entity, id, currentState, previousState, propertyNames, types, isAnnulation) || modified;
+		final Lock lock = rwlock.readLock();
+		lock.lock();
+		try {
+			for (ModificationSubInterceptor s : subInterceptors) {
+				modified = s.onChange(entity, id, currentState, previousState, propertyNames, types, isAnnulation) || modified;
+			}
+		}
+		finally {
+			lock.unlock();
 		}
 
 		return modified;
@@ -183,20 +214,41 @@ public class ModificationInterceptor extends AbstractLinkedInterceptor {
 	}
 
 	private void preTransactionCommit() {
-		for (ModificationSubInterceptor s : subInterceptors) {
-			s.preTransactionCommit();
+		final Lock lock = rwlock.readLock();
+		lock.lock();
+		try {
+			for (ModificationSubInterceptor s : subInterceptors) {
+				s.preTransactionCommit();
+			}
+		}
+		finally {
+			lock.unlock();
 		}
 	}
 
 	private void postTransactionCommit() {
-		for (ModificationSubInterceptor s : subInterceptors) {
-			s.postTransactionCommit();
+		final Lock lock = rwlock.readLock();
+		lock.lock();
+		try {
+			for (ModificationSubInterceptor s : subInterceptors) {
+				s.postTransactionCommit();
+			}
+		}
+		finally {
+			lock.unlock();
 		}
 	}
 
 	private void postTransactionRollback() {
-		for (ModificationSubInterceptor s : subInterceptors) {
-			s.postTransactionRollback();
+		final Lock lock = rwlock.readLock();
+		lock.lock();
+		try {
+			for (ModificationSubInterceptor s : subInterceptors) {
+				s.postTransactionRollback();
+			}
+		}
+		finally {
+			lock.unlock();
 		}
 	}
 
