@@ -95,11 +95,9 @@ public class Naissance extends EvenementCivilInterne {
 	public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 		LOGGER.debug("Traitement de la naissance de l'individu : " + getNoIndividu() );
 
-
 		/*
 		 * Transtypage de l'événement en naissance
 		 */
-		final Individu individu = getIndividu();
 		final RegDate dateEvenement = getDate();
 
 		/*
@@ -108,9 +106,10 @@ public class Naissance extends EvenementCivilInterne {
 		final PersonnePhysique bebe;
 		if (getPrincipalPP() != null) {
 			if (!okSiContribuableExiste) {
-				throw new EvenementCivilException("Le tiers existe déjà avec cet individu " + individu.getNoTechnique() + " alors que c'est une naissance");
+				throw new EvenementCivilException(String.format("Le tiers existe déjà avec l'individu %d alors que c'est une naissance", getNoIndividu()));
 			}
 			bebe = getPrincipalPP();
+			Audit.info(getNumeroEvenement(), String.format("Un tiers personne physique existe déjà avec cet individu: %d", bebe.getNumero()));
 		}
 		else {
 
@@ -118,9 +117,9 @@ public class Naissance extends EvenementCivilInterne {
 			 *  Création d'un nouveau Tiers et sauvegarde de celui-ci
 			 */
 			final PersonnePhysique nouveauNe = new PersonnePhysique(true);
-			nouveauNe.setNumeroIndividu(individu.getNoTechnique());
+			nouveauNe.setNumeroIndividu(getNoIndividu());
 			bebe = (PersonnePhysique) context.getTiersDAO().save(nouveauNe);
-			Audit.info(getNumeroEvenement(), "Création d'un nouveau tiers habitant (numéro: " + bebe.getNumero() + ')');
+			Audit.info(getNumeroEvenement(), String.format("Création d'un nouveau tiers habitant (numéro: %d)", bebe.getNumero()));
 		}
 
 		context.getTiersService().refreshParentesSurPersonnePhysique(bebe, false);

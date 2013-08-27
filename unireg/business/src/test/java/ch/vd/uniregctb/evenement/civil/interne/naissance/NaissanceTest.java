@@ -169,7 +169,7 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 					Assert.fail();
 				}
 				catch (EvenementCivilException e) {
-					Assert.assertEquals("Le tiers existe déjà avec cet individu " + NOUVEAU_NE + " alors que c'est une naissance", e.getMessage());
+					Assert.assertEquals("Le tiers existe déjà avec l'individu " + NOUVEAU_NE + " alors que c'est une naissance", e.getMessage());
 				}
 				return null;
 			}
