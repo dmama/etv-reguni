@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.utils;
 
+import javax.ws.rs.core.HttpHeaders;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -24,8 +25,8 @@ import ch.vd.uniregctb.common.TempFileInputStreamProvider;
  */
 public abstract class HttpDocumentFetcher {
 
-	private static final String HTTP_CONTENT_TYPE = "Content-Type";
-	private static final String HTTP_CONTENT_LENGTH = "Content-Length";
+	private static final String HTTP_CONTENT_TYPE = HttpHeaders.CONTENT_TYPE;
+	private static final String HTTP_CONTENT_LENGTH = HttpHeaders.CONTENT_LENGTH;
 	private static final String HTTP_CONTENT_DISPOSITION = "Content-Disposition";
 
 	/**
