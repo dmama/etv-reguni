@@ -84,22 +84,20 @@ public class EFactureServiceImpl implements EFactureService, InitializingBean {
 		}
 		// Verification de l'historique des situations
 		final DestinataireAvecHisto histo = getDestinataireAvecSonHistorique(noCtb);
-		if (histo != null && histo.getDernierEtat().getType() == TypeEtatDestinataire.DESINSCRIT_SUSPENDU) {
+		if (histo == null) {
+			return ResultatQuittancement.aucuneDemandeEnAttenteDeSignature();
+		}
+		if (histo.getDernierEtat().getType() == TypeEtatDestinataire.DESINSCRIT_SUSPENDU) {
 			return ResultatQuittancement.etatFiscalIncoherent();
 		}
 		if (!EFactureHelper.valideEtatFiscalContribuablePourInscription(tiers)) {
 			return ResultatQuittancement.etatFiscalIncoherent();
 		}
 
-		final PayerWithHistory payerWithHistory = eFactureClient.getHistory(noCtb,EFactureService.ACI_BILLER_ID);
-		if (payerWithHistory == null) {
-			return ResultatQuittancement.aucuneDemandeEnAttenteDeSignature();
-		}
-		final DestinataireAvecHisto destinataireAvecHisto = new DestinataireAvecHisto(payerWithHistory, noCtb);
-		if (destinataireAvecHisto.getDernierEtat().getType() == TypeEtatDestinataire.INSCRIT) {
+		if (histo.getDernierEtat().getType() == TypeEtatDestinataire.INSCRIT) {
 			return ResultatQuittancement.dejaInscrit();
 		}
-		for (DemandeAvecHisto dem : destinataireAvecHisto.getHistoriqueDemandes()) {
+		for (DemandeAvecHisto dem : histo.getHistoriqueDemandes()) {
 			if (dem.getDernierEtat().getType() == TypeEtatDemande.VALIDATION_EN_COURS_EN_ATTENTE_SIGNATURE) {
 				final String businessId = eFactureMessageSender.envoieAcceptationDemandeInscription(dem.getIdDemande(), true, String.format("Traitement manuel par %s.", AuthenticationHelper.getCurrentPrincipal()));
 				return ResultatQuittancement.enCours(businessId);

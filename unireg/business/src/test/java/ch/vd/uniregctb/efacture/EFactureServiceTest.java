@@ -63,41 +63,48 @@ public class EFactureServiceTest extends BusinessTest {
 			int callCount = 0;
 
 			PayerWithHistory[] mockResult = new PayerWithHistory[] {
-				// 1er appel au client eFacture renvoie un contribuable inscrit
-				buildPayerWithHistory(PayerStatus.INSCRIT, Collections.singletonList(new PayerSituationHistoryEntryBuilder().setStatus(PayerStatus.INSCRIT).build()),DUMMY_HISTORY_OF_REQUEST),
+					// 1er appel au client eFacture renvoie un contribuable inscrit
+					buildPayerWithHistory(PayerStatus.INSCRIT, Collections.singletonList(new PayerSituationHistoryEntryBuilder().setStatus(PayerStatus.INSCRIT).build()),DUMMY_HISTORY_OF_REQUEST),
 
-				// 2eme appel au client eFacture renvoie un contribuable avec la situation DESINSCRIT avec une demande en attente de signature
-				buildPayerWithHistory(PayerStatus.DESINSCRIT,
-						Collections.singletonList(new PayerSituationHistoryEntryBuilder().setStatus(PayerStatus.DESINSCRIT).build()),
-						Collections.singletonList(new DemandeAvecHistoBuilderForUnitTests()
-								.addHistoryEntry(date(2012,6,1),RegistrationRequestStatus.VALIDATION_EN_COURS,TypeAttenteDemande.EN_ATTENTE_SIGNATURE.getCode(),"","").buildRegistrationRequestWithHistory())),
+					// 2eme appel au client eFacture renvoie un contribuable avec la situation DESINSCRIT avec une demande en attente de signature
+					buildPayerWithHistory(PayerStatus.DESINSCRIT,
+					                      Collections.singletonList(new PayerSituationHistoryEntryBuilder().setStatus(PayerStatus.DESINSCRIT).build()),
+					                      Collections.singletonList(new DemandeAvecHistoBuilderForUnitTests()
+							                                                .addHistoryEntry(date(2012,6,1),RegistrationRequestStatus.VALIDATION_EN_COURS,TypeAttenteDemande.EN_ATTENTE_SIGNATURE.getCode(),"","").buildRegistrationRequestWithHistory())),
 
-				// 3eme appel au client eFacture renvoie un contribuable avec la situation DESINSCRIT avec une demande en attente de contact
-				buildPayerWithHistory(PayerStatus.DESINSCRIT,
-						Collections.singletonList(new PayerSituationHistoryEntryBuilder().setStatus(PayerStatus.DESINSCRIT).build()),
-						Collections.singletonList(new DemandeAvecHistoBuilderForUnitTests()
-								.addHistoryEntry(date(2012, 6, 1), RegistrationRequestStatus.VALIDATION_EN_COURS, TypeAttenteDemande.EN_ATTENTE_CONTACT.getCode(), "", "")
-								.buildRegistrationRequestWithHistory())),
+					// 3eme appel au client eFacture renvoie un contribuable avec la situation DESINSCRIT avec une demande en attente de contact
+					buildPayerWithHistory(PayerStatus.DESINSCRIT,
+					                      Collections.singletonList(new PayerSituationHistoryEntryBuilder().setStatus(PayerStatus.DESINSCRIT).build()),
+					                      Collections.singletonList(new DemandeAvecHistoBuilderForUnitTests()
+							                                                .addHistoryEntry(date(2012, 6, 1), RegistrationRequestStatus.VALIDATION_EN_COURS, TypeAttenteDemande.EN_ATTENTE_CONTACT.getCode(), "", "")
+							                                                .buildRegistrationRequestWithHistory())),
 
-				// 4eme appel au client eFacture renvoie un contribuable avec la situation DESINSCRIT avec une demande validée
-				buildPayerWithHistory(PayerStatus.DESINSCRIT,
-						Collections.singletonList(new PayerSituationHistoryEntryBuilder().setStatus(PayerStatus.DESINSCRIT).build()),
-						Collections.singletonList(new DemandeAvecHistoBuilderForUnitTests()
-								.addHistoryEntry(date(2012, 6, 1), RegistrationRequestStatus.VALIDEE, null, "", "").buildRegistrationRequestWithHistory())),
+					// 4eme appel au client eFacture renvoie un contribuable avec la situation DESINSCRIT avec une demande validée
+					buildPayerWithHistory(PayerStatus.DESINSCRIT,
+					                      Collections.singletonList(new PayerSituationHistoryEntryBuilder().setStatus(PayerStatus.DESINSCRIT).build()),
+					                      Collections.singletonList(new DemandeAvecHistoBuilderForUnitTests()
+							                                                .addHistoryEntry(date(2012, 6, 1), RegistrationRequestStatus.VALIDEE, null, "", "").buildRegistrationRequestWithHistory())),
 
-				// 5eme appel au client eFacture renvoie un contribualble avec la situation DESINSCRIT avec une demande refusée
-				buildPayerWithHistory(PayerStatus.DESINSCRIT,
-						Collections.singletonList(new PayerSituationHistoryEntryBuilder().setStatus(PayerStatus.DESINSCRIT).build()),
-						Collections.singletonList(new DemandeAvecHistoBuilderForUnitTests()
-								.addHistoryEntry(date(2012, 6, 1), RegistrationRequestStatus.REFUSEE, null, "", "").buildRegistrationRequestWithHistory())),
+					// 5eme appel au client eFacture renvoie un contribualble avec la situation DESINSCRIT avec une demande refusée
+					buildPayerWithHistory(PayerStatus.DESINSCRIT,
+					                      Collections.singletonList(new PayerSituationHistoryEntryBuilder().setStatus(PayerStatus.DESINSCRIT).build()),
+					                      Collections.singletonList(new DemandeAvecHistoBuilderForUnitTests()
+							                                                .addHistoryEntry(date(2012, 6, 1), RegistrationRequestStatus.REFUSEE, null, "", "").buildRegistrationRequestWithHistory())),
 
-				// Le dernier appelle renvoye null
-				null
+					// 6ème appel renvoie null (contribuable inconnu d'e-facture)
+					null,
+
+					// 7ème appel au client eFacture renvoie un contribuable avec la situation DESINSCRIT et une demande en attente de signature
+					buildPayerWithHistory(PayerStatus.DESINSCRIT,
+					                      Collections.singletonList(new PayerSituationHistoryEntryBuilder().setStatus(PayerStatus.DESINSCRIT).build()),
+					                      Collections.singletonList(new DemandeAvecHistoBuilderForUnitTests()
+							                                                .addHistoryEntry(date(2012,6,1),RegistrationRequestStatus.VALIDATION_EN_COURS,TypeAttenteDemande.EN_ATTENTE_SIGNATURE.getCode(),"","").buildRegistrationRequestWithHistory()))
+
 			};
 
 			@Override
 			public PayerWithHistory getHistory(long ctbId, String billerId) {
-				return mockResult[callCount++/2]; // on renvoie chaque resultat 2 fois  (2 appels au client efacture pas quittancement)
+				return mockResult[callCount++];
 			}
 		};
 
@@ -121,6 +128,7 @@ public class EFactureServiceTest extends BusinessTest {
 					Assert.assertEquals("le contribuable chollet existe, n'est pas inscrit, et sa demande est en attente de contact", ResultatQuittancement.aucuneDemandeEnAttenteDeSignature(), efactureService.quittancer(ts.idChollet));
 					Assert.assertEquals("le contribuable chollet existe n'est pas inscrit et sa demande est validée", ResultatQuittancement.aucuneDemandeEnAttenteDeSignature(), efactureService.quittancer(ts.idChollet));
 					Assert.assertEquals("le contribuable chollet existe n'est pas inscrit et sa demande est refusée", ResultatQuittancement.aucuneDemandeEnAttenteDeSignature(), efactureService.quittancer(ts.idChollet));
+					Assert.assertEquals("le contribuable Jacquier existe, mais est inconnu d'e-facture", ResultatQuittancement.aucuneDemandeEnAttenteDeSignature(), efactureService.quittancer(ts.idJacquier));
 					Assert.assertEquals("le contribuable Jacquier n'est pas dans un etat fiscale coherent (pas de for)", ResultatQuittancement.etatFiscalIncoherent(), efactureService.quittancer(ts.idJacquier));
 				} catch (Exception e) {
 					throw new RuntimeException(e);
