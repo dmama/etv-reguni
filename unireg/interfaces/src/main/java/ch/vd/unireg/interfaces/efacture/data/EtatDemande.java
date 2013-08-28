@@ -36,6 +36,14 @@ public class EtatDemande {
 		this.type = TypeEtatDemande.valueOf(target.getStatus(), TypeAttenteDemande.valueOf(target.getReasonCode()));
 	}
 
+	public EtatDemande(String champLibre, Date date, Integer codeRaison, String descriptionRaison, TypeEtatDemande type) {
+		this.champLibre = champLibre;
+		this.date = date;
+		this.codeRaison = codeRaison;
+		this.descriptionRaison = descriptionRaison;
+		this.type = type;
+	}
+
 	public String getChampLibre() {
 		return champLibre;
 	}

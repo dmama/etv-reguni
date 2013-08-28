@@ -1,41 +1,24 @@
 package ch.vd.uniregctb.efacture;
 
+import org.apache.commons.lang3.StringUtils;
+
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.efacture.data.DemandeAvecHisto;
 import ch.vd.unireg.interfaces.efacture.data.DestinataireAvecHisto;
 import ch.vd.unireg.interfaces.efacture.data.ResultatQuittancement;
 import ch.vd.unireg.interfaces.efacture.data.TypeAttenteDemande;
-import ch.vd.unireg.interfaces.efacture.data.TypeRefusDemande;
-import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.type.TypeDocument;
 
-public class EFactureServiceMock implements EFactureService {
+public class DummyEFactureService implements EFactureService {
 
 	@Override
-	public String notifieMiseEnAttenteInscription(String idDemande, TypeAttenteDemande typeAttenteEFacture, String description, String idArchivage, boolean retourAttendu) throws
-			EvenementEfactureException {
-		return null;
+	public String notifieMiseEnAttenteInscription(String idDemande, TypeAttenteDemande typeAttenteEFacture, String description, String idArchivage, boolean retourAttendu) throws EvenementEfactureException {
+		return StringUtils.EMPTY;
 	}
 
 	@Override
 	public String imprimerDocumentEfacture(Long ctbId, TypeDocument typeDocument, RegDate dateDemande) throws EditiqueException {
-		return null;
-	}
-
-	@Override
-	public DemandeAvecHisto getDemandeEnAttente(long ctbId) {
-		return null;
-	}
-
-	@Override
-	public TypeRefusDemande identifieContribuablePourInscription(long ctbId, String noAvs) throws AdresseException {
-		return null;
-	}
-
-	@Override
-	public boolean valideEtatFiscalContribuablePourInscription(long ctbId) {
-		return false;
+		return StringUtils.EMPTY;
 	}
 
 	@Override
@@ -45,26 +28,26 @@ public class EFactureServiceMock implements EFactureService {
 
 	@Override
 	public String suspendreContribuable(long ctbId, boolean retourAttendu, String description) throws EvenementEfactureException {
-		return null;
+		return StringUtils.EMPTY;
 	}
 
 	@Override
 	public String activerContribuable(long ctbId, boolean retourAttendu, String description) throws EvenementEfactureException {
-		return null;
+		return StringUtils.EMPTY;
 	}
 
 	@Override
 	public String accepterDemande(String idDemande, boolean retourAttendu, String description) throws EvenementEfactureException {
-		return null;
+		return StringUtils.EMPTY;
 	}
 
 	@Override
 	public String refuserDemande(String idDemande, boolean retourAttendu, String description) throws EvenementEfactureException {
-		return null;
+		return StringUtils.EMPTY;
 	}
 
 	@Override
-	public ResultatQuittancement quittancer(Long noCtb) throws EvenementEfactureException {
+	public ResultatQuittancement quittancer(Long noCtb) {
 		return null;
 	}
 }

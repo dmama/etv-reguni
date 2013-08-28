@@ -10,7 +10,6 @@ import org.jetbrains.annotations.NotNull;
 import ch.vd.evd0025.v1.MapEntry;
 import ch.vd.evd0025.v1.RegistrationMode;
 import ch.vd.evd0025.v1.RegistrationRequest;
-import ch.vd.registre.base.avs.AvsHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.XmlUtils;
 
@@ -19,14 +18,16 @@ import ch.vd.uniregctb.common.XmlUtils;
  */
 public class Demande {
 
-	static final String AVS13 = "AVS13";
+	private static final String AVS13 = "AVS13";
 
 	/**
 	 * Seule la distinction entre inscription et désinscription nous intéresse, pas vrai ?
 	 */
 	public static enum Action {
-		INSCRIPTION,
-		DESINSCRIPTION;
+		INSCRIPTION("Inscription"),
+		DESINSCRIPTION("Désinscription");
+
+		private final String description;
 
 		public static Action get(RegistrationMode mode) {
 			switch (mode) {
@@ -38,6 +39,14 @@ public class Demande {
 				default:
 					throw new IllegalArgumentException("Mode de registration inconnu : " + mode);
 			}
+		}
+
+		private Action(String description) {
+			this.description = description;
+		}
+
+		public String getDescription() {
+			return description;
 		}
 	}
 
@@ -76,27 +85,18 @@ public class Demande {
 
 		final Map<String, String> map = buildAdditionalData(request);
 		this.noAvs = map.get(AVS13);
-
 	}
 
 	/**
-	 * Effectue les contrôles de cohérence de base pour l'objet
-	 *
-	 * @return le type de refus pour le contrôle en echec ou null si tout est ok
-	 *
+	 * Pour les tests seulement
 	 */
-	public TypeRefusDemande performBasicValidation() {
-		if (getAction() == Demande.Action.INSCRIPTION) {
-			//Check Numéro AVS à 13 chiffres
-			if (!AvsHelper.isValidNouveauNumAVS(getNoAvs())) {
-				return TypeRefusDemande.NUMERO_AVS_INVALIDE;
-			}
-			//Check Date et heure de la demande
-			if (getDateDemande() == null) {
-				return TypeRefusDemande.DATE_DEMANDE_ABSENTE;
-			}
-		}
-		return null;
+	public Demande(String id, long ctbId, String email, RegDate dateDemande, Action action, String noAvs) {
+		this.idDemande = id;
+		this.ctbId = ctbId;
+		this.email = email;
+		this.dateDemande = dateDemande;
+		this.action = action;
+		this.noAvs = noAvs;
 	}
 
 	public String getIdDemande() {

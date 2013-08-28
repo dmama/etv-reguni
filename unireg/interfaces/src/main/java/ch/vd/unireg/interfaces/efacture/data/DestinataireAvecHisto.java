@@ -12,9 +12,10 @@ import ch.vd.evd0025.v1.RegistrationRequestWithHistory;
  * du evd e-facture
  */
 public class DestinataireAvecHisto {
-	private long ctbId;
-	private List<DemandeAvecHisto> historiqueDemandes;
-	private List<EtatDestinataire> historiquesEtats;
+
+	private final long ctbId;
+	private final List<DemandeAvecHisto> historiqueDemandes = new ArrayList<>();
+	private final List<EtatDestinataire> historiquesEtats = new ArrayList<>();
 
 	public List<DemandeAvecHisto> getHistoriqueDemandes() {
 		return historiqueDemandes;
@@ -26,23 +27,31 @@ public class DestinataireAvecHisto {
 
 	public DestinataireAvecHisto(PayerWithHistory payerWithHistory, long ctbId) {
 		this.ctbId = ctbId;
-		this.historiqueDemandes = new ArrayList<>();
-		List<RegistrationRequestWithHistory> historyOfRequests = payerWithHistory.getHistoryOfRequests().getRequest();
+		final List<RegistrationRequestWithHistory> historyOfRequests = payerWithHistory.getHistoryOfRequests().getRequest();
 		for (RegistrationRequestWithHistory registrationRequestHistory : historyOfRequests) {
 			this.historiqueDemandes.add(new DemandeAvecHisto(registrationRequestHistory));
 		}
-		this.historiquesEtats = new ArrayList<>();
-		List<PayerSituationHistoryEntry> historyOfSituations = payerWithHistory.getHistoryOfSituations().getSituation();
+		final List<PayerSituationHistoryEntry> historyOfSituations = payerWithHistory.getHistoryOfSituations().getSituation();
 		if (historyOfSituations == null || historyOfSituations.isEmpty()) {
 			if (payerWithHistory.getPayerStatus() == null) {
 				throw new NullPointerException("Le statut du destinataire ne doit pas être null");
 			}
 			this.historiquesEtats.add(EtatDestinataire.newEtatDestinataireFactice(TypeEtatDestinataire.valueOf(payerWithHistory.getPayerStatus())));
-		} else {
-			for(PayerSituationHistoryEntry payerSituationHistoryEntry: historyOfSituations){
+		}
+		else {
+			for (PayerSituationHistoryEntry payerSituationHistoryEntry : historyOfSituations) {
 				this.historiquesEtats.add(new EtatDestinataire(payerSituationHistoryEntry));
 			}
 		}
+	}
+
+	/**
+	 * Pour les tests seulement
+	 * @param ctbId le numéro de contribuable représenté par la structure
+	 */
+	public DestinataireAvecHisto(long ctbId, TypeEtatDestinataire etatInitial) {
+		this.ctbId = ctbId;
+		this.historiquesEtats.add(EtatDestinataire.newEtatDestinataireFactice(etatInitial));
 	}
 
 	public long getCtbId() {

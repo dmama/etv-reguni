@@ -1,14 +1,9 @@
 package ch.vd.uniregctb.efacture;
 
-import org.jetbrains.annotations.Nullable;
-
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.efacture.data.DemandeAvecHisto;
 import ch.vd.unireg.interfaces.efacture.data.DestinataireAvecHisto;
 import ch.vd.unireg.interfaces.efacture.data.ResultatQuittancement;
 import ch.vd.unireg.interfaces.efacture.data.TypeAttenteDemande;
-import ch.vd.unireg.interfaces.efacture.data.TypeRefusDemande;
-import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.type.TypeDocument;
 
@@ -27,7 +22,6 @@ public interface EFactureService {
 	 * @param idArchivage la clé d'archivage générée
 	 * @param retourAttendu vrai si un retour est attendu suite à la notification
 	 */
-
 	String notifieMiseEnAttenteInscription(String idDemande, TypeAttenteDemande typeAttenteEFacture, String description, String idArchivage, boolean retourAttendu) throws EvenementEfactureException;
 
 	/**
@@ -40,36 +34,6 @@ public interface EFactureService {
 	 * @return l'archivage id
 	 */
 	String imprimerDocumentEfacture(Long ctbId, TypeDocument typeDocument, RegDate dateDemande) throws EditiqueException;
-
-	/**
-	 *
-	 * @param ctbId L'id du contribuable dont on veut recuperer la demande en cours
-	 *
-	 * @return retrouve la demande d'inscription en cours de traitment pour un contribuable, null s'il n'y en a pas.
-	 */
-	@Nullable
-	DemandeAvecHisto getDemandeEnAttente(long ctbId);
-
-	/**
-	 * Identifie le contribuable avec son numero de contribuable
-	 * et son numero AVS lors de la procédure d'inscription à la e-Facture
-	 *
-	 * @param ctbId le numero du contribualble a identifier
-	 * @param noAvs le numero AVS du contribuable a identifier
-	 *
-	 * @return null si l'identification est ok (le numero de contribuable existe et le numero AVS match) sinon renvoie le type de refus pour e-facture
-	 */
-	@Nullable
-	TypeRefusDemande identifieContribuablePourInscription(long ctbId, String noAvs) throws AdresseException;
-
-	/**
-	 * Valide l'état du contribuable lors de la procédure d'inscription à la e-Facture
-	 *
-	 * @param ctbId l'id du contribuale a valider
-	 * @return <code>true</code> si l'état fiscal (= assujettissement, en gros) est cohérent
-	 */
-	boolean valideEtatFiscalContribuablePourInscription(long ctbId);
-
 
 	/**
 	 * Recupère l'historique e-facture pour un contribuable
@@ -88,7 +52,7 @@ public interface EFactureService {
 	 * @param description ...
 	 * @return le business id du message demandant la suspension
 	 */
-	public String suspendreContribuable(long ctbId, boolean retourAttendu, String description) throws EvenementEfactureException;
+	String suspendreContribuable(long ctbId, boolean retourAttendu, String description) throws EvenementEfactureException;
 
 
 	/**
@@ -100,7 +64,7 @@ public interface EFactureService {
 	 * @param description ...
 	 * @return le business id du message demandant l'activation
 	 */
-	public String activerContribuable(long ctbId, boolean retourAttendu, String description) throws EvenementEfactureException;
+	String activerContribuable(long ctbId, boolean retourAttendu, String description) throws EvenementEfactureException;
 
 	/**Permet l'envoi d'un message d'acceptation pour une demande d'inscription
 	 *
@@ -112,7 +76,7 @@ public interface EFactureService {
 	 * @return le business id du message demandant l'acceptation
 	 * @throws EvenementEfactureException
 	 */
-	public String accepterDemande(String idDemande, boolean retourAttendu, String description) throws EvenementEfactureException;
+	String accepterDemande(String idDemande, boolean retourAttendu, String description) throws EvenementEfactureException;
 
 	/**
 	 * Permet l'envoi d'un message de refus pour une demande d'inscription

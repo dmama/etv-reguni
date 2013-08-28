@@ -156,7 +156,7 @@ public class EfactureManagerImpl implements EfactureManager {
 				etatsDemande.add(etatView);
 			}
 			final DemandeAvecHistoView view = new DemandeAvecHistoView(demande.getIdDemande(), demande.getDateDemande(), demande.getNoAvs(),
-			                                                           demande.getEmail(), demande.getTypeDemande(), etatsDemande);
+			                                                           demande.getEmail(), demande.getAction(), etatsDemande);
 			demandes.add(view);
 		}
 		res.setDemandes(demandes);

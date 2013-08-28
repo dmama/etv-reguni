@@ -215,6 +215,8 @@
 
 	<bean id="efactureEventHandler" class="ch.vd.uniregctb.efacture.EFactureEventHandlerImpl">
 		<property name="eFactureService" ref="efactureService"/>
+		<property name="tiersService" ref="tiersService"/>
+		<property name="adresseService" ref="adresseService"/>
 	</bean>
 
 	<bean id="identificationContribuableHelper" class="ch.vd.uniregctb.identification.contribuable.IdentificationContribuableHelper"/>
@@ -262,7 +264,6 @@
 
 	<bean id="efactureService" class="ch.vd.uniregctb.efacture.EFactureServiceImpl" depends-on="uniregModeHelper">
 		<property name="tiersService" ref="tiersService" />
-		<property name="adresseService" ref="adresseService" />
 		<property name="editiqueCompositionService" ref="editiqueCompositionService" />
 		<property name="eFactureMessageSender" ref="eFactureMessageSender" />
 		<property name="eFactureClient" ref="eFactureClient" />

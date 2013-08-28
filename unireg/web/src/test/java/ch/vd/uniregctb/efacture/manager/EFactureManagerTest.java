@@ -20,9 +20,9 @@ import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.WithoutSpringTest;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.efacture.DestinataireAvecHistoView;
+import ch.vd.uniregctb.efacture.DummyEFactureService;
 import ch.vd.uniregctb.efacture.EFactureResponseService;
 import ch.vd.uniregctb.efacture.EFactureService;
-import ch.vd.uniregctb.efacture.EFactureServiceMock;
 import ch.vd.uniregctb.efacture.EvenementEfactureException;
 import ch.vd.uniregctb.type.TypeDocument;
 
@@ -56,7 +56,7 @@ public class EFactureManagerTest extends WithoutSpringTest {
 		};
 		eFactureManager = new EfactureManagerImpl();
 		eFactureManager.setMessageSource(messageSource);
-		eFactureManager.seteFactureService(new EFactureServiceMock());
+		eFactureManager.seteFactureService(new DummyEFactureService());
 		eFactureManager.seteFactureResponseService(new EFactureResponseServiceMock());
 		AuthenticationHelper.pushPrincipal("USER_ID");
 	}
@@ -71,7 +71,7 @@ public class EFactureManagerTest extends WithoutSpringTest {
 
 	@Test
 	public void testEnvoyerDocumentAvecNotificationEFacture () throws Exception {
-		EFactureService eFactureService = new EFactureServiceMock() {
+		EFactureService eFactureService = new DummyEFactureService() {
 			@Override
 			public String imprimerDocumentEfacture(Long ctbId, TypeDocument typeDocument, RegDate dateDemande) throws EditiqueException {
 				assertEquals(NO_CTB, ctbId.longValue());
@@ -98,7 +98,7 @@ public class EFactureManagerTest extends WithoutSpringTest {
 
 	@Test
 	public void testGetDestinataireAvecSonHistorique() {
-		EFactureService eFactureService = new EFactureServiceMock() {
+		EFactureService eFactureService = new DummyEFactureService() {
 			boolean firstCall = true;
 			@Override
 			public DestinataireAvecHisto getDestinataireAvecSonHistorique(long ctbId) {
@@ -128,7 +128,7 @@ public class EFactureManagerTest extends WithoutSpringTest {
 
 	@Test
 	public void testSuspendreContribuable() throws Exception {
-		final EFactureService eFactureService = new EFactureServiceMock() {
+		final EFactureService eFactureService = new DummyEFactureService() {
 			@Override
 			public String suspendreContribuable(long ctbId, boolean retourAttendu, String description) throws EvenementEfactureException {
 				assertEquals(NO_CTB, ctbId);
@@ -143,7 +143,7 @@ public class EFactureManagerTest extends WithoutSpringTest {
 
 	@Test
 	public void testActiverContribuable() throws Exception {
-		final EFactureService eFactureService = new EFactureServiceMock() {
+		final EFactureService eFactureService = new DummyEFactureService() {
 			@Override
 			public String activerContribuable(long ctbId, boolean retourAttendu, String description) throws EvenementEfactureException {
 				assertEquals(NO_CTB, ctbId);
@@ -158,7 +158,7 @@ public class EFactureManagerTest extends WithoutSpringTest {
 
 	@Test
 	public void testAccepterDemande() throws Exception {
-		EFactureService eFactureService = new EFactureServiceMock() {
+		EFactureService eFactureService = new DummyEFactureService() {
 			@Override
 			public String accepterDemande(String idDemande, boolean retourAttendu, String description) throws EvenementEfactureException {
 				assertEquals("ID_DEMANDE",idDemande);
@@ -173,7 +173,7 @@ public class EFactureManagerTest extends WithoutSpringTest {
 
 	@Test
 	public void testRefuserDemande() throws Exception {
-		EFactureService eFactureService = new EFactureServiceMock() {
+		EFactureService eFactureService = new DummyEFactureService() {
 			@Override
 			public String refuserDemande(String idDemande, boolean retourAttendu, String description) throws EvenementEfactureException {
 				assertEquals("ID_DEMANDE",idDemande);

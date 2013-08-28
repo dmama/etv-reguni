@@ -12,8 +12,8 @@ public class EtatDestinataire {
 	private Integer codeRaison;
 	private TypeEtatDestinataire type;
 
-	public static EtatDestinataire newEtatDestinataireFactice (TypeEtatDestinataire type) {
-		return new EtatDestinataire (type);
+	public static EtatDestinataire newEtatDestinataireFactice(TypeEtatDestinataire type) {
+		return new EtatDestinataire(type);
 	}
 
 	private EtatDestinataire (TypeEtatDestinataire type) {
@@ -30,6 +30,14 @@ public class EtatDestinataire {
 		this.descriptionRaison = payerSituationHistoryEntry.getReasonDescription();
 		this.type = TypeEtatDestinataire.valueOf(payerSituationHistoryEntry.getStatus());
 		this.codeRaison = payerSituationHistoryEntry.getReasonCode();
+	}
+
+	public EtatDestinataire(String champLibre, Date dateObtention, String descriptionRaison, Integer codeRaison, TypeEtatDestinataire type) {
+		this.champLibre = champLibre;
+		this.dateObtention = dateObtention;
+		this.descriptionRaison = descriptionRaison;
+		this.codeRaison = codeRaison;
+		this.type = type;
 	}
 
 	public String getChampLibre() {

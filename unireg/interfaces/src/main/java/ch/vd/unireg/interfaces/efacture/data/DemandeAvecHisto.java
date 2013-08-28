@@ -5,32 +5,26 @@ import java.util.List;
 
 import ch.vd.evd0025.v1.RegistrationRequestHistoryEntry;
 import ch.vd.evd0025.v1.RegistrationRequestWithHistory;
-import ch.vd.unireg.interfaces.EvdHelper;
+import ch.vd.registre.base.date.RegDate;
 
 /**
  * Representation Interne UNIREG de la classe {@link RegistrationRequestWithHistory} de l' eVD-25
  */
 public class DemandeAvecHisto extends Demande {
 
-	private final List<EtatDemande> historiqueEtats;
-	private final TypeDemande typeDemande;
+	private final List<EtatDemande> historiqueEtats = new ArrayList<>();
 
 	public List<EtatDemande> getHistoriqueEtats() {
 		return historiqueEtats;
 	}
 
-	public TypeDemande getTypeDemande() {
-		return typeDemande;
-	}
-
 	public DemandeAvecHisto(RegistrationRequestWithHistory request) {
 		super(request);
-
-		this.historiqueEtats = new ArrayList<>();
 		if (request.getRegistrationRequestHistoryEntry() == null || request.getRegistrationRequestHistoryEntry().isEmpty()) {
 			if (request.getRegistrationStatus() == null) {
 				historiqueEtats.add(EtatDemande.newEtatDemandeFactice(TypeEtatDemande.IGNOREE));
-			} else {
+			}
+			else {
 				historiqueEtats.add(EtatDemande.newEtatDemandeFactice(TypeEtatDemande.valueOf(request.getRegistrationStatus(), null)));
 			}
 		}
@@ -39,7 +33,13 @@ public class DemandeAvecHisto extends Demande {
 				historiqueEtats.add(new EtatDemande(entry));
 			}
 		}
-		this.typeDemande = EvdHelper.getTypeDemandeFromEvd25(request.getRegistrationMode());
+	}
+
+	/**
+	 * Pour les tests seulement
+	 */
+	public DemandeAvecHisto(String id, long ctbId, String email, RegDate dateDemande, Action action, String noAvs) {
+		super(id, ctbId, email, dateDemande, action, noAvs);
 	}
 
 	public EtatDemande getDernierEtat() {

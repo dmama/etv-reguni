@@ -6,7 +6,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.efacture.data.TypeDemande;
+import ch.vd.unireg.interfaces.efacture.data.Demande;
 import ch.vd.unireg.interfaces.efacture.data.TypeEtatDemande;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 
@@ -22,12 +22,12 @@ public class DemandeAvecHistoView {
 	private final String descriptionTypeDemande;
 	private final List<EtatDemandeView> etats;
 
-	public DemandeAvecHistoView(String idDemande, RegDate dateDemande, String avs, String email, TypeDemande typeDemande, List<EtatDemandeView> etats) {
+	public DemandeAvecHistoView(String idDemande, RegDate dateDemande, String avs, String email, Demande.Action actionDemande, List<EtatDemandeView> etats) {
 		this.idDemande = idDemande;
 		this.dateDemande = dateDemande;
 		this.avs = avs != null ? FormatNumeroHelper.formatNumAVS(avs) : StringUtils.EMPTY;
 		this.email = email != null ? email : StringUtils.EMPTY;
-		this.descriptionTypeDemande = typeDemande != null ? typeDemande.getDescription() : StringUtils.EMPTY;
+		this.descriptionTypeDemande = actionDemande != null ? actionDemande.getDescription() : StringUtils.EMPTY;
 
 		if (etats == null || etats.isEmpty()) {
 			throw new IllegalArgumentException("etats ne peut être ni null ni vide");
