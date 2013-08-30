@@ -1,5 +1,10 @@
 package ch.vd.uniregctb.efacture;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.core.io.ClassPathResource;
@@ -100,6 +105,7 @@ public class EFactureEventHandlerImpl implements EFactureEventHandler {
 		if (!AvsHelper.isValidNouveauNumAVS(demande.getNoAvs())) {
 			return TypeRefusDemande.NUMERO_AVS_INVALIDE;
 		}
+
 		// Check Date et heure de la demande
 		if (demande.getDateDemande() == null) {
 			return TypeRefusDemande.DATE_DEMANDE_ABSENTE;
@@ -110,23 +116,17 @@ public class EFactureEventHandlerImpl implements EFactureEventHandler {
 			return TypeRefusDemande.AUTRE_DEMANDE_EN_COURS_DE_TRAITEMENT;
 		}
 
-		// récupération du tiers
-		if (tiers == null || !(tiers instanceof MenageCommun || tiers instanceof PersonnePhysique)) {
+		// vérification du tiers et de la correspondance avec le navs
+		final Set<Long> noAvsRegistre = findNavsDansRegistre(tiers);
+		if (noAvsRegistre.isEmpty()) {
 			return TypeRefusDemande.NUMERO_CTB_INCOHERENT;
 		}
 
-		// si le tiers a un numéro AVS connu dans Unireg, il doit correspondre avec celui de la demande
-		if (isNavsRenseignePourTiers(tiers)) {
-			final long noAvs;
-			try {
-				noAvs = AvsHelper.stringToLong(demande.getNoAvs());
-			}
-			catch (IllegalArgumentException e) {
-				return TypeRefusDemande.NUMERO_AVS_INVALIDE;
-			}
-			final TypeRefusDemande refusDemande = controlerNumeroAVS(noAvs, tiers);
-			if (refusDemande != null) {
-				return refusDemande;
+		// si le set contient "null", on ne va pas plus loin dans le test sur le numéro AVS puisqu'un au moins est inconnu dans le registre
+		if (!noAvsRegistre.contains(null)) {
+			final long noAvsDemande = AvsHelper.stringToLong(demande.getNoAvs());
+			if (!noAvsRegistre.contains(noAvsDemande)) {
+				return TypeRefusDemande.NUMERO_AVS_CTB_INCOHERENT;
 			}
 		}
 
@@ -178,51 +178,27 @@ public class EFactureEventHandlerImpl implements EFactureEventHandler {
 	}
 
 	/**
-	 * Permet de tester les conditions suivante issues du JIRA-7326
-	 * Navs renseigné pour le ctb personne physique
-	 * Navs renseigné pour les deux membres d'un ctb ménage commun
+	 * @param tiers tiers de référence
+	 * @return l'ensemble de tous les numéros AVS des personnes physiques qui constituent ce tiers (<code>null</code> compris si au moins l'un de ces tiers n'a pas de numéro AVS connu)
 	 */
-	private boolean isNavsRenseignePourTiers(Tiers tiers) {
-		if (tiers instanceof MenageCommun) {
-			final MenageCommun menage = (MenageCommun) tiers;
-			for (PersonnePhysique pp : tiersService.getPersonnesPhysiques(menage)) {
-				final String avs = tiersService.getNumeroAssureSocial(pp);
-				if (StringUtils.isBlank(avs) ) {
-					return false;
-				}
+	private Set<Long> findNavsDansRegistre(Tiers tiers) {
+		final Set<Long> list;
+		if (tiers instanceof PersonnePhysique) {
+			final String avsStr = tiersService.getNumeroAssureSocial((PersonnePhysique) tiers);
+			final Long noAvs = StringUtils.isBlank(avsStr) ? null : AvsHelper.stringToLong(avsStr);
+			list = new HashSet<>(Arrays.asList(noAvs));
+		}
+		else if (tiers instanceof MenageCommun) {
+			final Set<PersonnePhysique> pps = tiersService.getPersonnesPhysiques((MenageCommun) tiers);
+			list = new HashSet<>(pps.size());
+			for (PersonnePhysique pp : pps) {
+				list.addAll(findNavsDansRegistre(pp));
 			}
 		}
-		else if (tiers instanceof PersonnePhysique) {
-			final String avs = tiersService.getNumeroAssureSocial((PersonnePhysique) tiers);
-			if (StringUtils.isBlank(avs)) {
-				return false;
-			}
+		else {
+			list = Collections.emptySet();
 		}
-		return true;
-	}
-
-	private TypeRefusDemande controlerNumeroAVS(long noAvs, Tiers tiers) {
-		if (tiers instanceof MenageCommun) {
-			boolean found = false;
-			final MenageCommun menage = (MenageCommun)tiers;
-			for (PersonnePhysique pp : tiersService.getPersonnesPhysiques(menage)) {
-				final String avs = tiersService.getNumeroAssureSocial(pp);
-				if (noAvs == AvsHelper.stringToLong(avs)) {
-					found = true;
-					break;
-				}
-			}
-			if (!found) {
-				return TypeRefusDemande.NUMERO_AVS_CTB_INCOHERENT;
-			}
-		}
-		else if (tiers instanceof PersonnePhysique) {
-			final String avs = tiersService.getNumeroAssureSocial((PersonnePhysique) tiers);
-			if (noAvs != AvsHelper.stringToLong(avs)) {
-				return TypeRefusDemande.NUMERO_AVS_CTB_INCOHERENT;
-			}
-		}
-		return null;
+		return list;
 	}
 
 	@Override
