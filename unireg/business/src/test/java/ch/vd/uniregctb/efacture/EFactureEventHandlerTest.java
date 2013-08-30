@@ -15,7 +15,6 @@ import ch.vd.unireg.interfaces.efacture.data.EtatDemande;
 import ch.vd.unireg.interfaces.efacture.data.TypeAttenteDemande;
 import ch.vd.unireg.interfaces.efacture.data.TypeEtatDemande;
 import ch.vd.unireg.interfaces.efacture.data.TypeEtatDestinataire;
-import ch.vd.unireg.interfaces.efacture.data.TypeRefusDemande;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.adresse.AdresseService;
@@ -370,7 +369,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		Assert.assertEquals(TypeEtatDemande.REFUSEE, etatDemande.getType());
 		Assert.assertNull(etatDemande.getCodeRaison());
 		Assert.assertNull(etatDemande.getDescriptionRaison());
-		Assert.assertEquals(TypeRefusDemande.NUMERO_AVS_CTB_INCOHERENT.getDescription(), etatDemande.getChampLibre());
+		Assert.assertEquals(EFactureEventHandlerImpl.TypeRefusDemande.NUMERO_AVS_CTB_INCOHERENT.getDescription(), etatDemande.getChampLibre());
 	}
 
 	@Test
@@ -723,7 +722,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		Assert.assertEquals(TypeEtatDemande.REFUSEE, etatDemande.getType());
 		Assert.assertNull(etatDemande.getCodeRaison());
 		Assert.assertNull(etatDemande.getDescriptionRaison());
-		Assert.assertEquals(TypeRefusDemande.NUMERO_AVS_CTB_INCOHERENT.getDescription(), etatDemande.getChampLibre());
+		Assert.assertEquals(EFactureEventHandlerImpl.TypeRefusDemande.NUMERO_AVS_CTB_INCOHERENT.getDescription(), etatDemande.getChampLibre());
 	}
 
 	@Test
@@ -788,7 +787,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		Assert.assertEquals(TypeEtatDemande.REFUSEE, etatDemande.getType());
 		Assert.assertNull(etatDemande.getCodeRaison());
 		Assert.assertNull(etatDemande.getDescriptionRaison());
-		Assert.assertEquals(TypeRefusDemande.NUMERO_AVS_INVALIDE.getDescription(), etatDemande.getChampLibre());
+		Assert.assertEquals(EFactureEventHandlerImpl.TypeRefusDemande.NUMERO_AVS_INVALIDE.getDescription(), etatDemande.getChampLibre());
 	}
 
 	@Test
@@ -853,7 +852,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		Assert.assertEquals(TypeEtatDemande.REFUSEE, etatDemande.getType());
 		Assert.assertNull(etatDemande.getCodeRaison());
 		Assert.assertNull(etatDemande.getDescriptionRaison());
-		Assert.assertEquals(TypeRefusDemande.DATE_DEMANDE_ABSENTE.getDescription(), etatDemande.getChampLibre());
+		Assert.assertEquals(EFactureEventHandlerImpl.TypeRefusDemande.DATE_DEMANDE_ABSENTE.getDescription(), etatDemande.getChampLibre());
 	}
 
 	@Test
@@ -919,7 +918,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		Assert.assertEquals(TypeEtatDemande.REFUSEE, etatDemande.getType());
 		Assert.assertNull(etatDemande.getCodeRaison());
 		Assert.assertNull(etatDemande.getDescriptionRaison());
-		Assert.assertEquals(TypeRefusDemande.AUTRE_DEMANDE_EN_COURS_DE_TRAITEMENT.getDescription(), etatDemande.getChampLibre());
+		Assert.assertEquals(EFactureEventHandlerImpl.TypeRefusDemande.AUTRE_DEMANDE_EN_COURS_DE_TRAITEMENT.getDescription(), etatDemande.getChampLibre());
 	}
 
 	@Test
@@ -973,7 +972,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		Assert.assertEquals(TypeEtatDemande.REFUSEE, etatDemande.getType());
 		Assert.assertNull(etatDemande.getCodeRaison());
 		Assert.assertNull(etatDemande.getDescriptionRaison());
-		Assert.assertEquals(TypeRefusDemande.NUMERO_CTB_INCOHERENT.getDescription(), etatDemande.getChampLibre());
+		Assert.assertEquals(EFactureEventHandlerImpl.TypeRefusDemande.NUMERO_CTB_INCOHERENT.getDescription(), etatDemande.getChampLibre());
 	}
 
 	@Test
@@ -1037,7 +1036,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		Assert.assertEquals(TypeEtatDemande.REFUSEE, etatDemande.getType());
 		Assert.assertNull(etatDemande.getCodeRaison());
 		Assert.assertNull(etatDemande.getDescriptionRaison());
-		Assert.assertEquals(TypeRefusDemande.ADRESSE_COURRIER_INEXISTANTE.getDescription(), etatDemande.getChampLibre());
+		Assert.assertEquals(EFactureEventHandlerImpl.TypeRefusDemande.ADRESSE_COURRIER_INEXISTANTE.getDescription(), etatDemande.getChampLibre());
 	}
 
 }
