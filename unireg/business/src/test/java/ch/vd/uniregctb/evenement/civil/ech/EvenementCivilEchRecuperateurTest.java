@@ -4,21 +4,37 @@ import java.util.ArrayList;
 import java.util.List;
 
 import junit.framework.Assert;
+import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
+import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
+import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 
 public class EvenementCivilEchRecuperateurTest extends BusinessTest {
 
-	private EvenementCivilEch addEvent(@Nullable Long noIndividu, long id, TypeEvenementCivilEch type, ActionEvenementCivilEch action, RegDate date, EtatEvenementCivil etat) {
+	private static final Logger LOGGER = Logger.getLogger(EvenementCivilEchRecuperateurTest.class);
+
+	private EvenementCivilEchDAO evtCivilDao;
+	private EvenementCivilEchService evtCivilService;
+
+	@Override
+	protected void runOnSetUp() throws Exception {
+		super.runOnSetUp();
+		evtCivilDao = getBean(EvenementCivilEchDAO.class, "evenementCivilEchDAO");
+		evtCivilService = getBean(EvenementCivilEchService.class, "evtCivilEchService");
+	}
+
+	private EvenementCivilEch addEvent(@Nullable Long noIndividu, long id, TypeEvenementCivilEch type, ActionEvenementCivilEch action, RegDate date, EtatEvenementCivil etat, @Nullable Long refEvtId) {
 		final EvenementCivilEch event = new EvenementCivilEch();
 		event.setId(id);
 		event.setNumeroIndividu(noIndividu);
@@ -26,6 +42,7 @@ public class EvenementCivilEchRecuperateurTest extends BusinessTest {
 		event.setAction(action);
 		event.setDateEvenement(date);
 		event.setEtat(etat);
+		event.setRefMessageId(refEvtId);
 		return hibernateTemplate.merge(event);
 	}
 
@@ -46,9 +63,9 @@ public class EvenementCivilEchRecuperateurTest extends BusinessTest {
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
-				addEvent(null, 1L, TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, date(2010, 4, 12), EtatEvenementCivil.A_TRAITER);
-				addEvent(noIndividu, 2L, TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, date(2010, 4, 12), EtatEvenementCivil.A_TRAITER);
-				addEvent(noIndividu, 3L, TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, date(2010, 4, 12), EtatEvenementCivil.TRAITE);
+				addEvent(null, 1L, TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, date(2010, 4, 12), EtatEvenementCivil.A_TRAITER, null);
+				addEvent(noIndividu, 2L, TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, date(2010, 4, 12), EtatEvenementCivil.A_TRAITER, null);
+				addEvent(noIndividu, 3L, TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, date(2010, 4, 12), EtatEvenementCivil.TRAITE, null);
 				return null;
 			}
 		});
@@ -86,5 +103,57 @@ public class EvenementCivilEchRecuperateurTest extends BusinessTest {
 		}
 		Assert.assertTrue(foundOne);
 		Assert.assertTrue(foundTwo);
+	}
+
+	/**
+	 * [SIFISC-9534]
+	 */
+	@Test
+	public void testRecuperationNumeroIndividuParDependances() throws Exception {
+
+		final long noIndividu = 1748265328L;
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ind = createIndividu(noIndividu, null, "Tartempion", "Mo", Sexe.MASCULIN);
+				addIndividuAfterEvent(1L, ind, date(2010, 4, 12), TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, null);
+			}
+		});
+
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				addEvent(noIndividu, 1L, TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, date(2010, 4, 12), EtatEvenementCivil.TRAITE, null);
+				addEvent(null, 2L, TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.CORRECTION, date(2010, 4, 12), EtatEvenementCivil.A_TRAITER, 1L);
+				return null;
+			}
+		});
+
+		final EvenementCivilEchReceptionHandlerImpl handler = new EvenementCivilEchReceptionHandlerImpl() {
+			@Override
+			public void demanderTraitementQueue(long noIndividu, EvenementCivilEchProcessingMode mode) {
+				Assert.fail("Le récupérateur ne doit plus lancer le traitement des événements à relancer");
+			}
+		};
+		handler.setTransactionManager(transactionManager);
+		handler.setEvtCivilDAO(evtCivilDao);
+		handler.setEvtCivilService(evtCivilService);
+		handler.afterPropertiesSet();
+
+		final EvenementCivilEchRecuperateur recuperateur = buildRecuperateur(handler);
+		recuperateur.recupererEvenementsCivil();
+
+		// vérification du numéro d'individu présent dans l'événement qui n'en avait pas jusqu'ici
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch ech = evtCivilDao.get(2L);
+				Assert.assertNotNull(ech);
+				Assert.assertEquals((Long) noIndividu, ech.getNumeroIndividu());
+				Assert.assertEquals(EtatEvenementCivil.A_TRAITER, ech.getEtat());
+				return null;
+			}
+		});
 	}
 }

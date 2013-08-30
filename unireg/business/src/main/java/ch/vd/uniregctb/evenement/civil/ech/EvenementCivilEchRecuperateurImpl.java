@@ -7,6 +7,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 
@@ -50,14 +51,23 @@ public class EvenementCivilEchRecuperateurImpl implements EvenementCivilEchRecup
 		}
 
 		if (relanceables != null && relanceables.size() > 0) {
-			for (EvenementCivilEch evt : relanceables) {
-				try {
-					// [SIFISC-9181] ici on ne demande que la récupération du numéro d'invidu, d'où le <code>null</code>
-					receptionHandler.handleEvent(evt, null);
-				}
-				catch (Exception e) {
-					LOGGER.error(String.format("Erreur lors de la relance de l'événement civil %d", evt.getId()), e);
-				}
+			for (final EvenementCivilEch evt : relanceables) {
+
+				// [SIFISC-9534] introduction d'une transaction ici car cette méthode handleEvent doit être appelée
+				// dans un contexte transactionnel depuis que l'on peut utiliser les dépendances d'un événement civil
+				// pour récupérer un numéro d'individu associé
+				template.execute(new TransactionCallbackWithoutResult() {
+					@Override
+					protected void doInTransactionWithoutResult(TransactionStatus status) {
+						try {
+							// [SIFISC-9181] ici on ne demande que la récupération du numéro d'invidu, d'où le <code>null</code>
+							receptionHandler.handleEvent(evt, null);
+						}
+						catch (Exception e) {
+							LOGGER.error(String.format("Erreur lors de la relance de l'événement civil %d", evt.getId()), e);
+						}
+					}
+				});
 			}
 
 			if (LOGGER.isInfoEnabled()) {
