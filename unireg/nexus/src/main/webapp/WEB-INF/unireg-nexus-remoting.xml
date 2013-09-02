@@ -16,6 +16,11 @@
 		<property name="callback" ref="serviceCivilRawExporterCallback" />
  	</bean>
 
+	<bean name="serviceUpiRawExporter" class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter">
+		<property name="service" ref="serviceUpiRaw"/>
+		<property name="serviceInterface" value="ch.vd.unireg.interfaces.upi.ServiceUpiRaw"/>
+	</bean>
+
 	<bean name="serviceInfraRawExporter" class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter">
 		<property name="service" ref="serviceInfrastructureRaw" />
 		<property name="serviceInterface" value="ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw" />
@@ -31,6 +36,7 @@
 			<map>
 				<!-- Mapping des beans de remoting -->
 				<entry key="/serviceCivil.remoting" value-ref="serviceCivilRawExporter" />
+				<entry key="/serviceUpi.remoting" value-ref="serviceUpiRawExporter" />
 				<entry key="/serviceInfra.remoting" value-ref="serviceInfraRawExporter" />
 				<entry key="/dataEventService.remoting" value-ref="dataEventServiceExporter" />
 			</map>

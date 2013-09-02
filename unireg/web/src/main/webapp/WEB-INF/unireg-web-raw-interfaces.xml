@@ -20,6 +20,10 @@
 
 	<alias alias="serviceCivilRaw" name="serviceCivilServiceCache"/>
 
+	<!-- Service UPI -->
+
+	<alias alias="serviceUpiRaw" name="serviceUpiTracing"/>
+
 	<!-- Service infra -->
 
 	<bean id="serviceInfrastructureCache" class="ch.vd.unireg.interfaces.infra.cache.ServiceInfrastructureCache">

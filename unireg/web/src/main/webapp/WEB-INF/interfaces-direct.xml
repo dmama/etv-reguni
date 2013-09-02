@@ -16,6 +16,7 @@
 		<property name="peopleBySocialNumberPath" value="${extprop.webservice.rcpers.peopleBySocialNumberPath}" />
 		<property name="eventPath" value="${extprop.webservice.rcpers.eventPath}" />
 		<property name="searchPath" value="${extprop.webservice.rcpers.searchPath}" />
+		<property name="upiGetInfoPersonPath" value="${extprop.webservice.rcpers.upiGetInfoPersonPath}" />
 	</bean>
 
 	<bean id="rcPersClientTracing" class="ch.vd.uniregctb.wsclient.rcpers.RcPersClientTracing">
@@ -38,6 +39,17 @@
 	<bean id="serviceCivilServiceTracing" class="ch.vd.unireg.interfaces.civil.ServiceCivilTracing">
 		<property name="target" ref="serviceCivilRcPers" />
 		<property name="statsService" ref="statsService" />
+	</bean>
+
+	<!-- Service UPI -->
+
+	<bean id="serviceUpiRcPers" class="ch.vd.unireg.interfaces.upi.rcpers.ServiceUpiRCPers">
+		<property name="client" ref="rcPersClient"/>
+	</bean>
+
+	<bean id="serviceUpiTracing" class="ch.vd.unireg.interfaces.upi.ServiceUpiTracing">
+		<property name="target" ref="serviceUpiRcPers"/>
+		<property name="statsService" ref="statsService"/>
 	</bean>
 
 	<!-- Client fidor -->

@@ -26,6 +26,26 @@
 		<property name="statsService" ref="statsService" />
 	</bean>
 
+	<!-- Service UPI -->
+
+	<bean id="serviceUpiHttpRequestExecutor" class="ch.vd.unireg.servlet.remoting.GentilHttpInvokerRequestExecutor">
+		<constructor-arg value="ServiceUpi"/>
+	</bean>
+
+	<bean id="serviceUpiRemote" class="ch.vd.unireg.servlet.remoting.BasicAuthHttpInvokerProxyFactoryBean">
+		<property name="serviceUrl" value="${extprop.remoting.unireg.nexus.url}/serviceUpi.remoting"/>
+		<property name="serviceInterface" value="ch.vd.unireg.interfaces.upi.ServiceUpiRaw"/>
+		<property name="username" value="${extprop.remoting.unireg.username}"/>
+		<property name="password" value="${extprop.remoting.unireg.password}"/>
+		<property name="executor" ref="serviceUpiHttpRequestExecutor"/>
+		<property name="maxConnectionsPerHost" value="${extprop.remoting.maxConnectionsPerHost}"/>
+	</bean>
+
+	<bean id="serviceUpiTracing" class="ch.vd.unireg.interfaces.upi.ServiceUpiTracing">
+		<property name="target" ref="serviceUpiRemote"/>
+		<property name="statsService" ref="statsService"/>
+	</bean>
+
 	<!-- Service infra -->
 
 	<bean id="serviceInfraHttpRequestExecutor" class="ch.vd.unireg.servlet.remoting.GentilHttpInvokerRequestExecutor">

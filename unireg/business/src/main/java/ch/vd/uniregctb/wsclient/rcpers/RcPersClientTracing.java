@@ -2,6 +2,7 @@ package ch.vd.uniregctb.wsclient.rcpers;
 
 import java.util.Collection;
 
+import ch.ech.ech0085.v1.GetInfoPersonResponse;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -185,6 +186,27 @@ public class RcPersClientTracing implements RcPersClient, InitializingBean, Disp
 						}
 						s.append(key).append('=').append(value);
 					}
+				}
+			});
+		}
+	}
+
+	@Override
+	public GetInfoPersonResponse getInfoPersonUpi(final long avs13) {
+		Throwable t = null;
+		final long time = tracing.start();
+		try {
+			return target.getInfoPersonUpi(avs13);
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
+		}
+		finally {
+			tracing.end(time, t, "getInfoPersonUpi", new Object() {
+				@Override
+				public String toString() {
+					return String.format("avs13=%d", avs13);
 				}
 			});
 		}

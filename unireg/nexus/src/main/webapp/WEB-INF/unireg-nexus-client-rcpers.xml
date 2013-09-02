@@ -2,18 +2,6 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-	<bean id="fidorClientv2" class="ch.vd.uniregctb.webservice.fidor.v2.FidorClientImpl">
-		<property name="serviceUrl" value="${extprop.webservice.fidor.v2.url}" />
-	    <property name="username" value="${extprop.webservice.fidor.username}" />
-	    <property name="password" value="${extprop.webservice.fidor.password}" />
-	</bean>
-
-	<bean id="fidorClientv5" class="ch.vd.uniregctb.webservice.fidor.v5.FidorClientImpl">
-		<property name="serviceUrl" value="${extprop.webservice.fidor.v5.url}" />
-	    <property name="username" value="${extprop.webservice.fidor.username}" />
-	    <property name="password" value="${extprop.webservice.fidor.password}" />
-	</bean>
-
 	<bean id="rcPersClientRaw" class="ch.vd.unireg.wsclient.rcpers.RcPersClientImpl">
 		<property name="baseUrl" value="${extprop.webservice.rcpers.url}" />
 		<property name="username" value="${extprop.webservice.rcpers.username}" />
@@ -23,6 +11,7 @@
 		<property name="peopleBySocialNumberPath" value="${extprop.webservice.rcpers.peopleBySocialNumberPath}" />
 		<property name="eventPath" value="${extprop.webservice.rcpers.eventPath}" />
 		<property name="searchPath" value="${extprop.webservice.rcpers.searchPath}" />
+		<property name="upiGetInfoPersonPath" value="${extprop.webservice.rcpers.upiGetInfoPersonPath}" />
 	</bean>
 
 	<bean id="rcPersClientTracing" class="ch.vd.uniregctb.wsclient.rcpers.RcPersClientTracing">

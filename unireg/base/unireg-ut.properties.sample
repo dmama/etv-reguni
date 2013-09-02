@@ -103,6 +103,7 @@ testprop.webservice.rcpers.peopleByEventIdPath=persons/byevent
 testprop.webservice.rcpers.peopleBySocialNumberPath=persons/ch.vn
 testprop.webservice.rcpers.eventPath=event
 testprop.webservice.rcpers.searchPath=search
+testprop.webservice.rcpers.upiGetInfoPersonPath=upi/query/getInfoPerson
 
 # Paramétrage LocaliteInvalideMatcher
 testprop.localite.invalide.regexp.enabled = true

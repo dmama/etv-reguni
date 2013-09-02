@@ -16,6 +16,7 @@
 		<property name="peopleBySocialNumberPath" value="${extprop.webservice.rcpers.peopleBySocialNumberPath}" />
 		<property name="eventPath" value="${extprop.webservice.rcpers.eventPath}" />
 		<property name="searchPath" value="${extprop.webservice.rcpers.searchPath}" />
+		<property name="upiGetInfoPersonPath" value="${extprop.webservice.rcpers.upiGetInfoPersonPath}" />
 	</bean>
 
 	<bean id="rcPersClientTracing" class="ch.vd.uniregctb.wsclient.rcpers.RcPersClientTracing">

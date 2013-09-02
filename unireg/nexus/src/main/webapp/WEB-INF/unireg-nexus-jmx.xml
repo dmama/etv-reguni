@@ -82,6 +82,7 @@
 		<property name="services">
 			<map>
 				<entry key="ServiceCivil" value-ref="serviceCivilEndPoint"/>
+				<entry key="ServiceUpi" value-ref="serviceUpiEndPoint"/>
 				<entry key="ServiceInfra" value-ref="serviceInfrastructureEndPoint"/>
 			</map>
 		</property>
