@@ -1,14 +1,11 @@
 package ch.vd.unireg.wsclient.rcpers;
 
-import javax.ws.rs.core.Response;
-import java.net.HttpURLConnection;
 import java.util.Collection;
 
 import ch.ech.ech0085.v1.GetInfoPersonRequest;
 import ch.ech.ech0085.v1.GetInfoPersonResponse;
 import org.apache.cxf.jaxrs.client.ServerWebApplicationException;
 import org.apache.cxf.jaxrs.client.WebClient;
-import org.apache.cxf.jaxrs.ext.form.Form;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.evd0001.v5.Event;
@@ -268,18 +265,12 @@ public class RcPersClientImpl implements RcPersClient, InitializingBean {
 		try {
 			wc.path(upiGetInfoPersonPath);
 
-			final Form form = new Form();
-			form.set("payload", new GetInfoPersonRequest(noAvs13));
-			final Response response = wc.form(form);
-			if (response == null) {
-				throw new RcPersClientException("Null response received", null);
-			}
-			else if (response.getStatus() != HttpURLConnection.HTTP_OK) {
-				throw new RcPersClientException("Status " + response.getStatus(), null);
-			}
-			else {
-				return (GetInfoPersonResponse) response.getEntity();
-			}
+			final ch.ech.ech0085.v1.ObjectFactory objectFactory = new ch.ech.ech0085.v1.ObjectFactory();
+			final GetInfoPersonRequest request = new GetInfoPersonRequest(noAvs13);
+			return wc.post(objectFactory.createGetInfoPersonRequest(request), GetInfoPersonResponse.class);
+		}
+		catch (ServerWebApplicationException e) {
+			throw new RcPersClientException(e);
 		}
 		finally {
 			wcPool.returnClient(wc);
