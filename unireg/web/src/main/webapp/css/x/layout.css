@@ -361,9 +361,7 @@ INPUT.readonly {
 }
 
 #sommaire .canton {
-	background-image: url(logoVD.gif);
-	background-repeat: no-repeat;
-	background-position: right bottom;
+	background: url(vd_logo_rvb_120px.png) no-repeat 6em center;
 	height: 130px;
 	width: 10em;
 	display: block;
