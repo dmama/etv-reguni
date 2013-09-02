@@ -1,16 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- edited with XMLSpy v2005 rel. 3 U (http://www.altova.com) by GUILLON (Etat de Vaud) -->
-<!--Version  0.0.1  - 29.04.09: JVO - Spécification Chemise TO UNIREG-->
-<!--Version  0.0.2  - 10.12.09: JVO - Nom de l' office-->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<xs:include schemaLocation="DonneesTechniques.xsd"/>
 	<xs:element name="LettresEFacture">
-		<!-- Description du schema pour l'impression du document BVR-->
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element name="numContrib" type="typNumeroCtb" minOccurs="0">
 					<xs:annotation>
-						<xs:documentation>numéro  du contribuable sans les points</xs:documentation>
+						<xs:documentation>numéro du contribuable avec les points</xs:documentation>
 					</xs:annotation>
 				</xs:element>
 				<xs:element name="politesse" type="xs:string"/>
@@ -18,6 +15,30 @@
 					<xs:annotation>
 						<xs:documentation>Date d'édition</xs:documentation>
 					</xs:annotation>
+				</xs:element>
+				<xs:element name="numAdherEnCours" type="typNoAdherentEFacture">
+					<xs:annotation>
+						<xs:documentation>numéro d'adhérent de la demande d'inscription en cours</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="inscriptionPrecedente" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Si cette demande d'inscription remplace une inscription préalable, les données de cette inscription</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="dateInscriptionPrecedente" type="typDatAAAAMMJJ">
+								<xs:annotation>
+									<xs:documentation>Date de l'inscription précédente</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="numAdherPrecedent" type="typNoAdherentEFacture">
+								<xs:annotation>
+									<xs:documentation>numéro d'adhérent de la demande d'inscription précédente</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
 				</xs:element>
 			</xs:sequence>
 		</xs:complexType>

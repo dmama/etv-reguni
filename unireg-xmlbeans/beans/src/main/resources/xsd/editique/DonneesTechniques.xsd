@@ -780,4 +780,14 @@
 			<xs:pattern value="A|B|"/>
 		</xs:restriction>
 	</xs:simpleType>
+	<xs:simpleType name="typNoAdherentEFacture">
+		<xs:annotation>
+			<xs:documentation>
+				Type utilisé pour le numéro d'adhérent e-facture utilisé par les partenaires pour identifier les destinataires (17 chiffres).
+			</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:unsignedLong">
+			<xs:pattern value="\d{17}"/>
+		</xs:restriction>
+	</xs:simpleType>
 </xs:schema>
