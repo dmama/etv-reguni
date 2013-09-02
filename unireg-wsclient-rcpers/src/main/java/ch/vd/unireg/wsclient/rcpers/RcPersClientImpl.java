@@ -6,9 +6,9 @@ import java.util.Collection;
 
 import ch.ech.ech0085.v1.GetInfoPersonRequest;
 import ch.ech.ech0085.v1.GetInfoPersonResponse;
-import ch.ech.ech0085.v1.ObjectFactory;
 import org.apache.cxf.jaxrs.client.ServerWebApplicationException;
 import org.apache.cxf.jaxrs.client.WebClient;
+import org.apache.cxf.jaxrs.ext.form.Form;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.evd0001.v5.Event;
@@ -267,7 +267,10 @@ public class RcPersClientImpl implements RcPersClient, InitializingBean {
 		final WebClient wc = wcPool.borrowClient(60000);    // 1 minute
 		try {
 			wc.path(upiGetInfoPersonPath);
-			final Response response = wc.post(new ObjectFactory().createGetInfoPersonRequest(new GetInfoPersonRequest(noAvs13)));
+
+			final Form form = new Form();
+			form.set("payload", new GetInfoPersonRequest(noAvs13));
+			final Response response = wc.form(form);
 			if (response == null) {
 				throw new RcPersClientException("Null response received", null);
 			}
