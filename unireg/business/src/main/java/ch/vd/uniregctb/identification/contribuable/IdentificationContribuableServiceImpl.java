@@ -448,6 +448,18 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	}
 
 	/**
+	 * Envoie une réponse d'identification positive de type automatique
+	 * @param message  la requête d'identification initiale
+	 * @param personne la personne physique identifiée
+	 * @param avsUpi non-null (= le NAVS13 de l'UPI) si l'identification automatique a abouti après que le numéro AVS13 de la demande a été remplacé par le numéro actuel fourni par l'UPI
+	 * @throws Exception en cas de problème
+	 */
+	private void identifieAutomatiquement(IdentificationContribuable message, PersonnePhysique personne, @Nullable String avsUpi) throws Exception {
+		identifie(message, personne, Etat.TRAITE_AUTOMATIQUEMENT);
+		message.setNAVS13Upi(avsUpi);
+	}
+
+	/**
 	 * Envoie une réponse d'identification <b>lorsqu'un contribuable a été identifié formellement</b>.
 	 *
 	 * @param message  la requête d'identification initiale
@@ -769,10 +781,11 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 			final CriteresPersonne criteresPersonne = demande.getPersonne();
 			Assert.notNull(demande, "Le message ne contient aucun critère sur la personne à identifier.");
 
+			final Mutable<String> avsUpi = new MutableObject<>();
 			Integer foundSize;
 			List<Long> found;
 			try {
-				found = identifie(criteresPersonne, null);
+				found = identifie(criteresPersonne, avsUpi);
 				foundSize = found.size();
 			}
 			catch (TooManyIdentificationPossibilitiesException e) {
@@ -784,7 +797,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 				final PersonnePhysique personne = (PersonnePhysique) tiersDAO.get(found.get(0));
 
 				// on peut répondre immédiatement
-				identifie(message, personne, Etat.TRAITE_AUTOMATIQUEMENT);
+				identifieAutomatiquement(message, personne, avsUpi.getValue());
 			}
 			else {
 				//UNIREG 2412 Ajout de possibilités au service d'identification UniReg asynchrone
@@ -1059,9 +1072,10 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		final CriteresPersonne criteresPersonne = demande.getPersonne();
 		Assert.notNull(demande, "Le message ne contient aucun critère sur la personne à identifier.");
 		if (criteresPersonne != null) {
+			final Mutable<String> avsUpi = new MutableObject<>();
 			List<Long> found;
 			try {
-				found = identifie(criteresPersonne, null);
+				found = identifie(criteresPersonne, avsUpi);
 			}
 			catch (TooManyIdentificationPossibilitiesException e) {
 				found = Collections.emptyList();
@@ -1071,9 +1085,8 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 				final PersonnePhysique personne = (PersonnePhysique) tiersDAO.get(found.get(0));
 
 				// on peut répondre immédiatement
-				identifie(message, personne, Etat.TRAITE_AUTOMATIQUEMENT);
+				identifieAutomatiquement(message, personne, avsUpi.getValue());
 				return true;
-
 			}
 			else {
 				//Dans le cas d'un message en exception,non traité automatiquement, on le met a traiter manuellement et on envoie une notification d'attente

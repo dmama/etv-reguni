@@ -331,7 +331,7 @@ a.reOpenFor:hover {
 	height: 16px;
 }
 
-.ongletCivilAvecIndividuAnnule {
+.ongletCivilAvecIndividuAnnule, .upiAutreNavs13 {
 	background: url(warn.png) no-repeat;
 	vertical-align: middle;
 	margin-left: 2px;

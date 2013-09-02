@@ -100,7 +100,15 @@
 						<unireg:date date="${message.dateNaissance}" />
 				</display:column>
 				<display:column sortable ="true" titleKey="label.navs13" sortName="demande.personne.NAVS13">
-						<c:out value="${message.navs13}" />
+					<c:out value="${message.navs13}" />
+						<c:if test="${messageTraite && message.navs13Upi != null}">
+							<span id="avs13upi-${message.id}" class="staticTip upiAutreNavs13">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+							<div id="avs13upi-${message.id}-tooltip" style="display:none;">
+								<fmt:message key="warning.identification.navs13.upi">
+									<fmt:param value="${message.navs13Upi}"/>
+								</fmt:message>
+							</div>
+						</c:if>
 				</display:column>
                 <authz:authorize ifAnyGranted="ROLE_MW_IDENT_CTB_GEST_BO,ROLE_MW_IDENT_CTB_ADMIN,ROLE_MW_IDENT_CTB_CELLULE_BO,ROLE_NCS_IDENT_CTB_CELLULE_BO,ROLE_LISTE_IS_IDENT_CTB_CELLULE_BO">
                     <display:column>
@@ -166,6 +174,11 @@
 		</form:form>
 
 		<script type="text/javascript" language="javascript" src="<c:url value="/js/identification.js"/>"></script>
+	    <script type="text/javascript" language="javascript">
+		    $(function() {
+			    Tooltips.activate_static_tooltips($('#message'));
+		    });
+	    </script>
 
 	</tiles:put>
 </tiles:insert>

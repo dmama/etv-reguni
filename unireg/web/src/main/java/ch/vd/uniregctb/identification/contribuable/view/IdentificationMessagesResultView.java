@@ -19,6 +19,7 @@ public class IdentificationMessagesResultView implements Annulable {
 	private String prenoms;
 	private RegDate dateNaissance;
 	private String navs13;
+	private String navs13Upi;
 	private String navs11;
 	private String traitementUser;
 	private Date traitementDate;
@@ -106,6 +107,14 @@ public class IdentificationMessagesResultView implements Annulable {
 
 	public void setNavs13(String navs13) {
 		this.navs13 = navs13;
+	}
+
+	public String getNavs13Upi() {
+		return navs13Upi;
+	}
+
+	public void setNavs13Upi(String navs13Upi) {
+		this.navs13Upi = navs13Upi;
 	}
 
 	@Override

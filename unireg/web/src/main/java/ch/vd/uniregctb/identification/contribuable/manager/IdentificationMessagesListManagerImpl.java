@@ -95,8 +95,8 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 	@Transactional(readOnly = true)
 	public List<IdentificationMessagesResultView> find(IdentificationContribuableCriteria bean, WebParamPagination pagination,
 	                                                   IdentificationContribuableEtatFilter filter, TypeDemande... typeDemande) throws AdressesResolutionException, ServiceInfrastructureException {
-		List<IdentificationMessagesResultView> identificationsView = new ArrayList<>();
-		List<IdentificationContribuable> identifications = identCtbService.find(bean, pagination, filter, typeDemande);
+		final List<IdentificationMessagesResultView> identificationsView = new ArrayList<>();
+		final List<IdentificationContribuable> identifications = identCtbService.find(bean, pagination, filter, typeDemande);
 		for (IdentificationContribuable identification : identifications) {
 			IdentificationMessagesResultView identificationView = buildView(identification);
 			identificationsView.add(identificationView);
@@ -230,27 +230,22 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 	 * @throws ServiceInfrastructureException
 	 */
 	private IdentificationMessagesResultView buildView(IdentificationContribuable identification) throws ServiceInfrastructureException {
-		IdentificationMessagesResultView identificationMessagesResultView = new IdentificationMessagesResultView();
+		final IdentificationMessagesResultView identificationMessagesResultView = new IdentificationMessagesResultView();
 		identificationMessagesResultView.setId(identification.getId());
-		if (identification.getAnnulationDate() == null) {
-			identificationMessagesResultView.setAnnule(false);
-		}
-		else {
-			identificationMessagesResultView.setAnnule(true);
-		}
-		if (identification.getUtilisateurTraitant() != null) {
-			identificationMessagesResultView.setUtilisateurTraitant(identification.getUtilisateurTraitant());
-		}
+		identificationMessagesResultView.setAnnule(identification.isAnnule());
+		identificationMessagesResultView.setUtilisateurTraitant(identification.getUtilisateurTraitant());
 
 		if (identification.getTraitementUser() != null) {
-			IdentifiantUtilisateur identifiantUtilisateur = identCtbService.getNomUtilisateurFromVisaUser(identification.getTraitementUser());
+			final IdentifiantUtilisateur identifiantUtilisateur = identCtbService.getNomUtilisateurFromVisaUser(identification.getTraitementUser());
 			identificationMessagesResultView.setTraitementUser(identifiantUtilisateur.getNomComplet());
 		}
 
-		if (identification.getDateTraitement() != null) {
-			identificationMessagesResultView.setTraitementDate(identification.getDateTraitement());
-		}
+		identificationMessagesResultView.setTraitementDate(identification.getDateTraitement());
 		identificationMessagesResultView.setEtatMessage(identification.getEtat());
+		if (identification.getNAVS13Upi() != null) {
+			identificationMessagesResultView.setNavs13Upi(FormatNumeroHelper.formatNumAVS(identification.getNAVS13Upi()));
+		}
+
 		if (identification.getDemande() != null) {
 			identificationMessagesResultView.setDateMessage(identification.getDemande().getDate());
 			identificationMessagesResultView.setEmetteurId(identification.getDemande().getEmetteurId());
@@ -271,11 +266,11 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 		if (identification.getReponse() != null) {
 			//Message par Défaut
 			identificationMessagesResultView.setMessageRetour("Identifié");
-			Long noContribuable = identification.getReponse().getNoContribuable();
+			final Long noContribuable = identification.getReponse().getNoContribuable();
 			if (noContribuable != null) {
 				identificationMessagesResultView.setNumeroContribuable(noContribuable);
 			}
-			Erreur erreur = identification.getReponse().getErreur();
+			final Erreur erreur = identification.getReponse().getErreur();
 			if (erreur != null) {
 				identificationMessagesResultView.setMessageRetour(erreur.getMessage());
 			}

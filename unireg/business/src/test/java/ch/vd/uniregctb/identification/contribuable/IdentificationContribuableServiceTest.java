@@ -3898,4 +3898,70 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 	}
+
+	@Test
+	public void testMiseAJourAvsUpiEnBase() throws Exception {
+
+		final String oldAvs = "7566101270542";
+		final String newAvs = "7566285711978";
+
+		serviceUpi.setUp(new MockServiceUpi() {
+			@Override
+			protected void init() {
+				addReplacement(oldAvs, newAvs);
+			}
+		});
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				// rien au civil
+			}
+		});
+
+		final long ppId = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = addNonHabitant("Mathilda", "Tourdesac", null, Sexe.FEMININ);
+				pp.setNumeroAssureSocial(newAvs);
+				return pp.getNumero();
+			}
+		});
+
+		globalTiersIndexer.sync();
+
+		assertCountDemandes(0);
+
+		// création et traitement du message d'identification
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final CriteresPersonne criteres = new CriteresPersonne();
+				criteres.setNAVS13(oldAvs);
+				criteres.setPrenoms("Mathilda");
+				criteres.setNom("Tourdesac");
+
+				final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
+				service.handleDemande(message);
+				return null;
+			}
+		});
+
+		// vérification du résultat : identification automatique avec autre NAVS (fourni par l'UPI)
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final List<IdentificationContribuable> list = identCtbDAO.getAll();
+				assertEquals(1, list.size());
+
+				final IdentificationContribuable ic = list.get(0);
+				assertNotNull(ic);
+				assertEquals(Etat.TRAITE_AUTOMATIQUEMENT, ic.getEtat());
+				assertEquals(Integer.valueOf(1), ic.getNbContribuablesTrouves());
+				assertEquals(oldAvs, ic.getDemande().getPersonne().getNAVS13());
+				assertEquals(newAvs, ic.getNAVS13Upi());
+				return null;
+			}
+		});
+	}
 }

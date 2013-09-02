@@ -159,6 +159,11 @@ public class IdentificationContribuable extends HibernateEntity {
 
 	private Date dateTraitement;
 
+	/**
+	 * En cas d'identification automatique réussi qui a fait intervenir un numéro AVS13 fourni par l'UPI et différent de celui présent dans la demande initiale, ce numéro
+	 */
+	private String NAVS13Upi;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	public Long getId() {
@@ -245,5 +250,14 @@ public class IdentificationContribuable extends HibernateEntity {
 
 	public void setDateTraitement(Date dateTraitement) {
 		this.dateTraitement = dateTraitement;
+	}
+
+	@Column(name = "NAVS13_UPI", length = 13)
+	public String getNAVS13Upi() {
+		return NAVS13Upi;
+	}
+
+	public void setNAVS13Upi(String NAVS13Upi) {
+		this.NAVS13Upi = NAVS13Upi;
 	}
 }
