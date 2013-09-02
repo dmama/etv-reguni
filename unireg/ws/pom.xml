@@ -91,6 +91,13 @@
 			<scope>test</scope>
 	    </dependency>
 		<dependency>
+			<groupId>${pom.parent.groupId}</groupId>
+			<artifactId>uniregctb-interfaces</artifactId>
+			<version>${pom.parent.version}</version>
+			<type>test-jar</type>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>ch.vd.registre</groupId>
 			<artifactId>shared-embedded-tomcat</artifactId>
 			<version>${embedded-tomcat.version}</version>

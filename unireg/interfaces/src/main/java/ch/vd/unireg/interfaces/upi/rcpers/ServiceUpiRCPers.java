@@ -30,6 +30,9 @@ public class ServiceUpiRCPers implements ServiceUpiRaw {
 		try {
 			final GetInfoPersonResponse info = client.getInfoPersonUpi(avs13);
 			if (info.getRefused() != null) {
+				if (info.getRefused().getReason() == 10) {       // service indisponible
+					throw new ServiceUpiException("Service indisponible.");
+				}
 				return null;
 			}
 			else if (info.getAccepted() != null) {

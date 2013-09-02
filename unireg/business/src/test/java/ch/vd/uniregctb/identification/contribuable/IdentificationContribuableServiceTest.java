@@ -6,6 +6,8 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.mutable.Mutable;
+import org.apache.commons.lang3.mutable.MutableObject;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
@@ -19,6 +21,11 @@ import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
+import ch.vd.unireg.interfaces.upi.ServiceUpiException;
+import ch.vd.unireg.interfaces.upi.data.UpiPersonInfo;
+import ch.vd.unireg.interfaces.upi.mock.DefaultMockServiceUpi;
+import ch.vd.unireg.interfaces.upi.mock.MockServiceUpi;
+import ch.vd.unireg.interfaces.upi.mock.ServiceUpiProxy;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.evenement.identification.contribuable.CriteresAdresse;
@@ -117,6 +124,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	private IdentificationContribuableServiceImpl service;
 	private TestMessageHandler messageHandler;
 	private IdentificationContribuableHelper helper;
+	private ServiceUpiProxy serviceUpi;
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -129,6 +137,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		infraService = getBean(ServiceInfrastructureService.class, "serviceInfrastructureService");
 		identCtbDAO = getBean(IdentCtbDAO.class, "identCtbDAO");
 		helper = getBean(IdentificationContribuableHelper.class, "identificationContribuableHelper");
+		serviceUpi = new ServiceUpiProxy();
 
 		service = new IdentificationContribuableServiceImpl() {
 			@Override
@@ -144,6 +153,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		service.setInfraService(infraService);
 		service.setIdentCtbDAO(identCtbDAO);
 		service.setTransactionManager(transactionManager);
+		service.setServiceUpi(serviceUpi);
 
 		messageHandler = new TestMessageHandler();
 		service.setMessageHandler(messageHandler);
@@ -163,23 +173,27 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testIdentifieBaseVide() throws Exception {
 
+		serviceUpi.setUp(new DefaultMockServiceUpi());
+
 		{
 			CriteresPersonne criteres = new CriteresPersonne();
 			criteres.setNom("Dupneu"); // du contentieux
-			assertEmpty(service.identifie(criteres));
+			assertEmpty(service.identifie(criteres, null));
 		}
 		{
 			CriteresPersonne criteres = new CriteresPersonne();
 			criteres.setNom("A");
 			criteres.setPrenoms("B");
 			criteres.setDateNaissance(date(1970, 2, 2));
-			assertEmpty(service.identifie(criteres));
+			assertEmpty(service.identifie(criteres, null));
 		}
 	}
 
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testIdentifieUnNonHabitant() throws Exception {
+
+		serviceUpi.setUp(new DefaultMockServiceUpi());
 
 		final Long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
@@ -199,6 +213,8 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	public void testIdentifieUnHabitant() throws Exception {
 
 		final long noIndividu = 1234;
+
+		serviceUpi.setUp(new DefaultMockServiceUpi());
 
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
@@ -225,38 +241,38 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			CriteresPersonne criteres = new CriteresPersonne();
 			criteres.setNom("Planck");
 			criteres.setPrenoms("Max");
-			assertEmpty(service.identifie(criteres));
+			assertEmpty(service.identifie(criteres, null));
 		}
 
 		{
 			CriteresPersonne criteres = new CriteresPersonne();
 			criteres.setNom("Zweistein"); // l'identification sur le nom doit être stricte
-			assertEmpty(service.identifie(criteres));
+			assertEmpty(service.identifie(criteres, null));
 		}
 
 		{
 			CriteresPersonne criteres = new CriteresPersonne();
 			criteres.setPrenoms("Alberto"); // l'identification sur le prénom doit être stricte
-			assertEmpty(service.identifie(criteres));
+			assertEmpty(service.identifie(criteres, null));
 		}
 
 		{
 			CriteresPersonne criteres = new CriteresPersonne();
 			criteres.setDateNaissance(date(1953, 3, 4)); // mauvaise date de naissance
-			assertEmpty(service.identifie(criteres));
+			assertEmpty(service.identifie(criteres, null));
 		}
 
 		{
 			CriteresPersonne criteres = new CriteresPersonne();
 			criteres.setNom("Zweisteinen");
 			criteres.setSexe(Sexe.FEMININ);
-			assertEmpty(service.identifie(criteres));
+			assertEmpty(service.identifie(criteres, null));
 		}
 
 		{
 			CriteresPersonne criteres = new CriteresPersonne();
 			criteres.setNom("Zweisteinen");
-			final List<Long> list = service.identifie(criteres);
+			final List<Long> list = service.identifie(criteres, null);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 
@@ -267,7 +283,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		{
 			CriteresPersonne criteres = new CriteresPersonne();
 			criteres.setPrenoms("Albert");
-			final List<Long> list = service.identifie(criteres);
+			final List<Long> list = service.identifie(criteres, null);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 
@@ -278,7 +294,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		{
 			CriteresPersonne criteres = new CriteresPersonne();
 			criteres.setDateNaissance(date(1953, 4, 3));
-			final List<Long> list = service.identifie(criteres);
+			final List<Long> list = service.identifie(criteres, null);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 
@@ -292,7 +308,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			criteres.setNom("Zweisteinen");
 			criteres.setSexe(Sexe.MASCULIN);
 			criteres.setDateNaissance(date(1953, 4, 3));
-			final List<Long> list = service.identifie(criteres);
+			final List<Long> list = service.identifie(criteres, null);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 
@@ -306,6 +322,8 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	public void testContribuableMisAJourSuiteIdentification() throws Exception {
 		final long noIndividuAlbert = 1234;
 		final long noIndividuAnne = 2345;
+
+		serviceUpi.setUp(new DefaultMockServiceUpi());
 
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
@@ -388,6 +406,8 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	public void testContribuableSurNPA() throws Exception {
 		final long noIndividuClaude = 151658;
 		final long noIndividuAnne = 2345;
+
+		serviceUpi.setUp(new DefaultMockServiceUpi());
 
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
@@ -479,6 +499,8 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		final long noIndividuClaude = 151658;
 		final long noIndividuAnne = 2345;
 
+		serviceUpi.setUp(new DefaultMockServiceUpi());
+
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
@@ -552,6 +574,8 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		final long noIndividuClaude = 151658;
 		final long noIndividuAnne = 2345;
 
+		serviceUpi.setUp(new DefaultMockServiceUpi());
+
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
@@ -623,6 +647,8 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	public void testContribuableSurDateNaissanceMessageVide() throws Exception {
 		final long noIndividuClaude = 151658;
 		final long noIndividuAnne = 2345;
+
+		serviceUpi.setUp(new DefaultMockServiceUpi());
 
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
@@ -696,6 +722,8 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		final long noIndividuClaude = 151658;
 		final long noIndividuAnne = 2345;
 
+		serviceUpi.setUp(new DefaultMockServiceUpi());
+
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
@@ -758,6 +786,8 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		final long noIndividuClaude = 151658;
 		final long noIndividuAnne = 2345;
 
+		serviceUpi.setUp(new DefaultMockServiceUpi());
+
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
@@ -819,6 +849,8 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	public void testContribuableSurDateNaissanceRegistreVide() throws Exception {
 		final long noIndividuClaude = 151658;
 		final long noIndividuAnne = 2345;
+
+		serviceUpi.setUp(new DefaultMockServiceUpi());
 
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
@@ -892,6 +924,8 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		final long noIndividuClaude = 151658;
 		final long noIndividuAnne = 2345;
 
+		serviceUpi.setUp(new DefaultMockServiceUpi());
+
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
@@ -963,6 +997,8 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	public void testContribuableSurDateNaissancePartielAnneeRegistre() throws Exception {
 		final long noIndividuClaude = 151658;
 		final long noIndividuAnne = 2345;
+
+		serviceUpi.setUp(new DefaultMockServiceUpi());
 
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
@@ -1036,6 +1072,8 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		final long noIndividuClaude = 151658;
 		final long noIndividuAnne = 2345;
 
+		serviceUpi.setUp(new DefaultMockServiceUpi());
+
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
@@ -1107,6 +1145,8 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	public void testContribuableSurDateNaissancePartielAnneeMoisRegistre() throws Exception {
 		final long noIndividuClaude = 151658;
 		final long noIndividuAnne = 2345;
+
+		serviceUpi.setUp(new DefaultMockServiceUpi());
 
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
@@ -1181,6 +1221,8 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	public void testContribuableSurNAVS11Habitant() throws Exception {
 		final long noIndividuClaude = 151658;
 		final long noIndividuAnne = 2345;
+
+		serviceUpi.setUp(new DefaultMockServiceUpi());
 
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
@@ -1258,6 +1300,8 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	public void testNavs13EtHomonymes() throws Exception {
 		final long noIndividuJerome1 = 151658;
 		final long noIndividuJerome2 = 123497;
+
+		serviceUpi.setUp(new DefaultMockServiceUpi());
 
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
@@ -1372,6 +1416,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		final long noIndividuClaude = 151658;
 		final long noIndividuAnne = 2345;
 
+		serviceUpi.setUp(new DefaultMockServiceUpi());
 
 		class Ids {
 			Long claude;
@@ -1448,6 +1493,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		final long noIndividuClaude = 151658;
 		final long noIndividuAnne = 2345;
 
+		serviceUpi.setUp(new DefaultMockServiceUpi());
 
 		class Ids {
 			Long claude;
@@ -1513,6 +1559,8 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	public void testIdentificationAvecDate1900() throws Exception {
 		final long noIndividuAlbert = 1234;
 		final long noIndividuAnne = 2345;
+
+		serviceUpi.setUp(new DefaultMockServiceUpi());
 
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
@@ -1596,6 +1644,8 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		final long noIndividuAlbert = 1234;
 		final long noIndividuAnne = 2345;
 
+		serviceUpi.setUp(new DefaultMockServiceUpi());
+
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
@@ -1642,7 +1692,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		{
 			CriteresPersonne criteres = new CriteresPersonne();
 			criteres.setPrenoms("Albert");
-			final List<Long> list = service.identifie(criteres);
+			final List<Long> list = service.identifie(criteres, null);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 
@@ -1655,7 +1705,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			CriteresPersonne criteres = new CriteresPersonne();
 			criteres.setNom("Zweisteinen");
 			criteres.setSexe(Sexe.MASCULIN);
-			final List<Long> list = service.identifie(criteres);
+			final List<Long> list = service.identifie(criteres, null);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 
@@ -1667,7 +1717,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		{
 			CriteresPersonne criteres = new CriteresPersonne();
 			criteres.setNom("Zweisteinen");
-			final List<Long> list = service.identifie(criteres);
+			final List<Long> list = service.identifie(criteres, null);
 			assertNotNull(list);
 			assertEquals(2, list.size());
 			Collections.sort(list);
@@ -1688,6 +1738,8 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final long noIndividuAlbert = 1234;
 		final long noIndividuAnne = 2345;
+
+		serviceUpi.setUp(new DefaultMockServiceUpi());
 
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
@@ -1730,7 +1782,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			criteres.setPrenoms("Alberto");
 
 			try {
-				final List<Long> list = service.identifie(criteres);
+				final List<Long> list = service.identifie(criteres, null);
 				fail(ArrayUtils.toString(list.toArray()));
 			}
 			catch (TooManyIdentificationPossibilitiesException e) {
@@ -1783,6 +1835,8 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
+		serviceUpi.setUp(new DefaultMockServiceUpi());
+
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
@@ -1815,7 +1869,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			adresse.setNpaSuisse(1000);
 			criteres.setAdresse(adresse);
 
-			final List<Long> list = service.identifie(criteres);
+			final List<Long> list = service.identifie(criteres, null);
 			assertNotNull(list);
 			assertEquals(2, list.size());
 			Collections.sort(list);
@@ -1835,7 +1889,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			adresse.setNpaSuisse(1000);
 			criteres.setAdresse(adresse);
 
-			final List<Long> list = service.identifie(criteres);
+			final List<Long> list = service.identifie(criteres, null);
 			assertNotNull(list);
 			assertEquals(2, list.size());
 		}
@@ -1849,7 +1903,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			adresse.setNpaSuisse(1000);
 			criteres.setAdresse(adresse);
 
-			final List<Long> list = service.identifie(criteres);
+			final List<Long> list = service.identifie(criteres, null);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 
@@ -1862,7 +1916,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			CriteresPersonne criteres = new CriteresPersonne();
 			criteres.setNom("Haddoque");
 
-			final List<Long> list = service.identifie(criteres);
+			final List<Long> list = service.identifie(criteres, null);
 			assertNotNull(list);
 			assertEquals(2, list.size());
 			Collections.sort(list);
@@ -1882,7 +1936,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			adresse.setNpaSuisse(1350);
 			criteres.setAdresse(adresse);
 
-			final List<Long> list = service.identifie(criteres);
+			final List<Long> list = service.identifie(criteres, null);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 
@@ -1899,7 +1953,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			adresse.setNpaSuisse(1337);
 			criteres.setAdresse(adresse);
 
-			final List<Long> list = service.identifie(criteres);
+			final List<Long> list = service.identifie(criteres, null);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 
@@ -1917,6 +1971,8 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		}
 		final Ids ids = new Ids();
+
+		serviceUpi.setUp(new DefaultMockServiceUpi());
 
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
@@ -1938,7 +1994,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			adresse.setNpaSuisse(1000);
 			criteres.setAdresse(adresse);
 
-			final List<Long> list = service.identifie(criteres);
+			final List<Long> list = service.identifie(criteres, null);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			Collections.sort(list);
@@ -1953,6 +2009,8 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		// la base est vide
 		assertCountDemandes(0);
+
+		serviceUpi.setUp(new DefaultMockServiceUpi());
 
 		// création et traitement du message d'identification
 		final IdentificationContribuable message = createDemandeMeldewesen("Arnold", "Duchoux");
@@ -1987,6 +2045,8 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 	@Test
 	public void testHandleDemandeUnContribuableTrouve() throws Exception {
+
+		serviceUpi.setUp(new DefaultMockServiceUpi());
 
 		// création d'un contribuable
 		final Long id = doInNewTransaction(new TxCallback<Long>() {
@@ -2043,6 +2103,8 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	@Test
 	public void testHandleDemande_SANS_MANUEL() throws Exception {
 
+		serviceUpi.setUp(new DefaultMockServiceUpi());
+
 		// création d'un contribuable
 		final Long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
@@ -2098,6 +2160,8 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	@Test
 	public void testHandleDemande_MANUEL_AVEC_ACK() throws Exception {
 
+		serviceUpi.setUp(new DefaultMockServiceUpi());
+
 		// création d'un contribuable
 		final Long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
@@ -2152,6 +2216,8 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 	@Test
 	public void testHandleDemandeEnErreur_MANUEL_AVEC_ACK() throws Exception {
+
+		serviceUpi.setUp(new DefaultMockServiceUpi());
 
 		final long noIndividu = 1234;
 		serviceCivil.setUp(new MockServiceCivil() {
@@ -2225,6 +2291,8 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	@Test
 	public void testHandleDemande_NCS_MANUEL_AVEC_ACK() throws Exception {
 
+		serviceUpi.setUp(new DefaultMockServiceUpi());
+
 		// création d'un contribuable
 		final Long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
@@ -2280,6 +2348,8 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	@Test
 	public void testHandleDemande_EMPACI_MANUEL_AVEC_ACK() throws Exception {
 
+		serviceUpi.setUp(new DefaultMockServiceUpi());
+
 		// création d'un contribuable
 		final Long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
@@ -2334,6 +2404,8 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 	@Test
 	public void testHandleDemande_E_FACTURE_SANS_MANUEL() throws Exception {
+
+		serviceUpi.setUp(new DefaultMockServiceUpi());
 
 		// création d'un contribuable
 		final Long numeroZora = doInNewTransaction(new TxCallback<Long>() {
@@ -2392,6 +2464,8 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	@Test
 	public void testHandleDemande_MANUEL_SANS_ACK() throws Exception {
 
+		serviceUpi.setUp(new DefaultMockServiceUpi());
+
 		// création d'un contribuable
 		final Long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
@@ -2441,6 +2515,8 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	@Test
 	public void testHandleDemandePlusieursContribuablesTrouves() throws Exception {
 
+		serviceUpi.setUp(new DefaultMockServiceUpi());
+
 		// création de plusieurs contribuables
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
@@ -2488,6 +2564,8 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 	@Test
 	public void testHandleDemandeException() throws Exception {
+
+		serviceUpi.setUp(new DefaultMockServiceUpi());
 
 		// création d'un contribuable
 		doInNewTransaction(new TxCallback<Object>() {
@@ -2558,6 +2636,8 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	@Test
 	public void testHandleDemandeAvecNumeroAVSInconnu() throws Exception {
 
+		serviceUpi.setUp(new DefaultMockServiceUpi());
+
 		// création d'un contribuable
 		final Long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
@@ -2614,6 +2694,8 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	@Test
 	public void testHandleDemandeAvecNumeroAVSConnuMaisFaux() throws Exception {
 
+		serviceUpi.setUp(new DefaultMockServiceUpi());
+
 		// création d'un contribuable
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
@@ -2666,6 +2748,8 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	 */
 	@Test
 	public void testHandleDemandeUnContribuableAvecMenageTrouve() throws Exception {
+
+		serviceUpi.setUp(new DefaultMockServiceUpi());
 
 		class Ids {
 			Long zora;
@@ -2740,6 +2824,8 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	// le traitement d'une PF de 2001 donnera le contribuable à la date du 31.12.2012).
 	@Test
 	public void testHandleDemandeUnContribuableAvecMenageSurPeriodeAvant2003() throws Exception {
+
+		serviceUpi.setUp(new DefaultMockServiceUpi());
 
 		class Ids {
 			Long zora;
@@ -2820,6 +2906,8 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testIdentifieUE() throws Exception {
 
+		serviceUpi.setUp(new DefaultMockServiceUpi());
+
 		final long noIndividu = 1234;
 
 		serviceCivil.setUp(new MockServiceCivil() {
@@ -2845,7 +2933,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			criteres.setNom("MUELLER");
 			criteres.setPrenoms("Maya");
 			criteres.setNAVS11("67142770412");
-			final List<Long> list = service.identifie(criteres);
+			final List<Long> list = service.identifie(criteres, null);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 
@@ -2861,6 +2949,8 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	public void testIdentifieAE() throws Exception {
 
 		final long noIndividu = 1234;
+
+		serviceUpi.setUp(new DefaultMockServiceUpi());
 
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
@@ -2885,7 +2975,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			criteres.setNom("OHLENSCHLAEGER");
 			criteres.setPrenoms("Alex");
 			criteres.setNAVS11("69447258153");
-			final List<Long> list = service.identifie(criteres);
+			final List<Long> list = service.identifie(criteres, null);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 
@@ -2900,6 +2990,8 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	public void testIdentifieOE() throws Exception {
 
 		final long noIndividu = 1234;
+
+		serviceUpi.setUp(new DefaultMockServiceUpi());
 
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
@@ -2924,7 +3016,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			criteres.setNom("Schoenenberg");
 			criteres.setPrenoms("Peter");
 			criteres.setNAVS11("83143380117");
-			final List<Long> list = service.identifie(criteres);
+			final List<Long> list = service.identifie(criteres, null);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 
@@ -2939,6 +3031,8 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	public void testIdentifieSansDernierPrenom() throws Exception {
 
 		final long noIndividu = 1234;
+
+		serviceUpi.setUp(new DefaultMockServiceUpi());
 
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
@@ -2963,7 +3057,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			criteres.setNom("STEVENSON");
 			criteres.setPrenoms("Hugh-Clark");
 			criteres.setNAVS11("85948265155");
-			final List<Long> list = service.identifie(criteres);
+			final List<Long> list = service.identifie(criteres, null);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 
@@ -2978,6 +3072,8 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	public void testIdentifieSansDernierNom() throws Exception {
 
 		final long noIndividu = 1234;
+
+		serviceUpi.setUp(new DefaultMockServiceUpi());
 
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
@@ -3002,7 +3098,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			criteres.setNom("RICHOZ-VINCENT");
 			criteres.setPrenoms("Jean-Pierre");
 			criteres.setNAVS11("74150388116");
-			final List<Long> list = service.identifie(criteres);
+			final List<Long> list = service.identifie(criteres, null);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 
@@ -3017,6 +3113,8 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	public void testIdentifieOESansDernierPrenom() throws Exception {
 
 		final long noIndividu = 1234;
+
+		serviceUpi.setUp(new DefaultMockServiceUpi());
 
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
@@ -3041,7 +3139,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			criteres.setNom("Schoenenberg");
 			criteres.setPrenoms("Peter-Hanz");
 			criteres.setNAVS11("83143380117");
-			final List<Long> list = service.identifie(criteres);
+			final List<Long> list = service.identifie(criteres, null);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 
@@ -3056,6 +3154,8 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	public void testIdentifieOESansDernierNom() throws Exception {
 
 		final long noIndividu = 1234;
+
+		serviceUpi.setUp(new DefaultMockServiceUpi());
 
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
@@ -3080,7 +3180,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			criteres.setNom("Schoenenberg-Mueller");
 			criteres.setPrenoms("Peter");
 			criteres.setNAVS11("83143380117");
-			final List<Long> list = service.identifie(criteres);
+			final List<Long> list = service.identifie(criteres, null);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 
@@ -3095,6 +3195,8 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	public void testIdentifieSansE_NomPrenom() throws Exception {
 
 		final long noIndividu = 1234;
+
+		serviceUpi.setUp(new DefaultMockServiceUpi());
 
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
@@ -3119,7 +3221,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			criteres.setNom("Schoenenberg-Mueller");
 			criteres.setPrenoms("Ülrich");
 			criteres.setNAVS11("83143380117");
-			final List<Long> list = service.identifie(criteres);
+			final List<Long> list = service.identifie(criteres, null);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 
@@ -3134,6 +3236,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	public void testMenageCommunRetourneAvantMariage() throws Exception {
 
 		final long noIndividu = 13624325642L;
+
+		serviceUpi.setUp(new DefaultMockServiceUpi());
+
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
@@ -3183,6 +3288,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	public void testMenageCommunRetournePendantValiditeMariage() throws Exception {
 
 		final long noIndividu = 13624325642L;
+
+		serviceUpi.setUp(new DefaultMockServiceUpi());
+
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
@@ -3251,6 +3359,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	public void testMenageCommunRetourneApresValiditeMariage() throws Exception {
 
 		final long noIndividu = 13624325642L;
+
+		serviceUpi.setUp(new DefaultMockServiceUpi());
+
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
@@ -3543,6 +3654,8 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final String navs11 = "78674361253";
 
+		serviceUpi.setUp(new DefaultMockServiceUpi());
+
 		// rien au civil
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
@@ -3596,12 +3709,193 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			critere.setNAVS11(navs11);
 
 			try {
-				final List<Long> res = service.identifie(critere);
+				final List<Long> res = service.identifie(critere, null);
 				fail("D'après l'agorithme de la spécification, on aurait dû récupérer toutes les personnes physiques sans navs11 également, donc beaucoup!");
 			}
 			catch (TooManyIdentificationPossibilitiesException e) {
 				// tout va bien, il y en a effectivement beaucoup...
 			}
 		}
+	}
+
+	/**
+	 * Une personne avec un vieu numéro AVS que l'on connait avec son nouveau numéro mais pour laquel on reçoit une demande d'identification avec le vieux
+	 */
+	@Test
+	public void testAppelUpiSimple() throws Exception {
+
+		final String oldAvs = "7566101270542";
+		final String newAvs = "7566285711978";
+
+		serviceUpi.setUp(new MockServiceUpi() {
+			@Override
+			protected void init() {
+				addReplacement(oldAvs, newAvs);
+			}
+		});
+
+		// rien au civil
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+			}
+		});
+
+		// au fiscal, une personne avec un vieux numéro AVS que l'on connait avec son nouveau numéro mais pour laquel on reçoit une demande d'identification avec le vieux
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Albert", "Foldingue", date(2000, 5, 3), Sexe.MASCULIN);
+				pp.setNumeroAssureSocial(newAvs);
+				return pp.getNumero();
+			}
+		});
+
+		// on indexe tout ça
+		globalTiersIndexer.sync();
+
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final CriteresPersonne criteres = new CriteresPersonne();
+				criteres.setNAVS13(oldAvs);
+				final Mutable<String> upiAvs = new MutableObject<>();
+				final List<Long> res = service.identifie(criteres, upiAvs);
+				assertNotNull(res);
+				assertEquals(1, res.size());
+				assertEquals((Long) ppId, res.get(0));
+				assertEquals(newAvs, upiAvs.getValue());
+				return null;
+			}
+		});
+	}
+
+	@Test
+	public void testPasAppelUpiSiConnuAvecVieuxNumero() throws Exception {
+
+		final String oldAvs = "7566101270542";
+		final String newAvs = "7566285711978";
+
+		serviceUpi.setUp(new MockServiceUpi() {
+			@Override
+			protected void init() {
+				addReplacement(oldAvs, newAvs);
+			}
+
+			@Override
+			public UpiPersonInfo getPersonInfo(String noAvs13) throws ServiceUpiException {
+				throw new RuntimeException("Le service ne devrait pas être appelé !!");
+			}
+		});
+
+		// rien au civil
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+			}
+		});
+
+		// au fiscal, une personne avec un vieux numéro AVS que l'on connait avec le vieux numéro et pour laquel on reçoit une demande d'identification avec le vieux
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Albert", "Foldingue", date(2000, 5, 3), Sexe.MASCULIN);
+				pp.setNumeroAssureSocial(oldAvs);
+				return pp.getNumero();
+			}
+		});
+
+		// on indexe tout ça
+		globalTiersIndexer.sync();
+
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final CriteresPersonne criteres = new CriteresPersonne();
+				criteres.setNAVS13(oldAvs);
+				final Mutable<String> upiAvs = new MutableObject<>("toto");
+				final List<Long> res = service.identifie(criteres, upiAvs);
+				assertNotNull(res);
+				assertEquals(1, res.size());
+				assertEquals((Long) ppId, res.get(0));
+				assertNull(upiAvs.getValue());
+				return null;
+			}
+		});
+	}
+
+	@Test
+	public void testPasAppelUpiPlusieursPersonnesConnuesAvecNumeroDansDemande() throws Exception {
+
+		final String oldAvs = "7566101270542";
+		final String newAvs = "7566285711978";
+
+		serviceUpi.setUp(new MockServiceUpi() {
+			@Override
+			protected void init() {
+				addReplacement(oldAvs, newAvs);
+			}
+
+			@Override
+			public UpiPersonInfo getPersonInfo(String noAvs13) throws ServiceUpiException {
+				throw new RuntimeException("Le service ne devrait pas être appelé !!");
+			}
+		});
+
+		// rien au civil
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+			}
+		});
+
+		final class Ids {
+			long ppId1;
+			long ppId2;
+			long ppId3;
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp1 = addNonHabitant("Albert", "Foldingue", date(2000, 5, 3), Sexe.MASCULIN);
+				pp1.setNumeroAssureSocial(oldAvs);
+
+				final PersonnePhysique pp2 = addNonHabitant("Albertine", "Foldingo", date(2000, 5, 3), Sexe.FEMININ);
+				pp2.setNumeroAssureSocial(oldAvs);
+
+				final PersonnePhysique pp3 = addNonHabitant("Francine", "Foldinginni", date(2000, 5, 3), Sexe.FEMININ);
+				pp3.setNumeroAssureSocial(newAvs);
+
+				final Ids ids = new Ids();
+				ids.ppId1 = pp1.getNumero();
+				ids.ppId2 = pp2.getNumero();
+				ids.ppId3 = pp3.getNumero();
+				return ids;
+			}
+		});
+
+		// on indexe tout ça
+		globalTiersIndexer.sync();
+
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final CriteresPersonne criteres = new CriteresPersonne();
+				criteres.setNAVS13(oldAvs);
+				final Mutable<String> upiAvs = new MutableObject<>("titi");
+				final List<Long> res = service.identifie(criteres, upiAvs);
+				assertNotNull(res);
+				assertEquals(2, res.size());
+				assertNull(upiAvs.getValue());
+
+				final List<Long> resSorted = new ArrayList<>(res);
+				Collections.sort(resSorted);
+				assertEquals((Long) ids.ppId1, resSorted.get(0));
+				assertEquals((Long) ids.ppId2, resSorted.get(1));
+				return null;
+			}
+		});
 	}
 }

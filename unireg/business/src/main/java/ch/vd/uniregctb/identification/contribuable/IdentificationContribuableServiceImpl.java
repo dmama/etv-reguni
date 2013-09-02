@@ -15,7 +15,11 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.mutable.Mutable;
+import org.apache.commons.lang3.mutable.MutableObject;
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -32,6 +36,9 @@ import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Canton;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.Localite;
+import ch.vd.unireg.interfaces.upi.ServiceUpiException;
+import ch.vd.unireg.interfaces.upi.ServiceUpiRaw;
+import ch.vd.unireg.interfaces.upi.data.UpiPersonInfo;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.common.AuthenticationHelper;
@@ -86,6 +93,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	private PlatformTransactionManager transactionManager;
 	private ServiceSecuriteService serviceSecuriteService;
 	private IdentificationContribuableHelper identificationContribuableHelper;
+	private ServiceUpiRaw serviceUpi;
 	private HibernateTemplate hibernateTemplate;
 	private int flowSearchThreadPoolSize;
 
@@ -134,6 +142,10 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 
 	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
 		this.hibernateTemplate = hibernateTemplate;
+	}
+
+	public void setServiceUpi(ServiceUpiRaw serviceUpi) {
+		this.serviceUpi = serviceUpi;
 	}
 
 	public void setFlowSearchThreadPoolSize(int flowSearchThreadPoolSize) {
@@ -247,10 +259,13 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<Long> identifie(CriteresPersonne criteres) throws TooManyIdentificationPossibilitiesException {
+	public List<Long> identifie(CriteresPersonne criteres, Mutable<String> upiAutreNavs) throws TooManyIdentificationPossibilitiesException {
+
+		final Mutable<String> avsUpi = upiAutreNavs != null ? upiAutreNavs : new MutableObject<String>();
+		avsUpi.setValue(null);
 
 		// 1. phase AVS13
-		final List<TiersIndexedData> indexedAvs13 = findByNavs13(criteres);
+		final List<TiersIndexedData> indexedAvs13 = findByNavs13(criteres, avsUpi);
 		if (indexedAvs13 != null && !indexedAvs13.isEmpty()) {
 			final List<PersonnePhysique> ppList = getListePersonneFromIndexedData(indexedAvs13);
 			filterCoherenceAfterIdentificationAvs13(ppList, criteres);
@@ -260,7 +275,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		}
 
 		// 2. si rien trouvé d'unique, on passe à la phase noms/prénoms...
-		final List<TiersIndexedData> indexedComplets = findAvecCriteresComplets(criteres, NB_MAX_RESULTS_POUR_LISTE_IDENTIFICATION);
+		final List<TiersIndexedData> indexedComplets = findAvecCriteresComplets(criteres, avsUpi.getValue(), NB_MAX_RESULTS_POUR_LISTE_IDENTIFICATION);
 		return buildIdListFromIndex(indexedComplets);
 	}
 
@@ -302,25 +317,75 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		return list;
 	}
 
-	public List<TiersIndexedData> findByNavs13(CriteresPersonne criteres) {
-		final TiersCriteria criteria = asTiersCriteriaNAVS13(criteres);
+	/**
+	 * Fait une recherche selon le numéro avs13 donné dans les critères. Si ce numéro ne donne aucun résultat, on
+	 * appelle alors le service UPI pour voir s'il n'a pas mieux à proposer (auquel cas on refait la recherche
+	 * avec ce numéro et on le renvoie à l'appelant)
+	 * @param criteres critères issus de la demande d'identification
+	 * @param navs13UpiProposal en sortie, si non-null et si l'appel UPI a donné un nouveau numéro, le numéro en question
+	 * @return la liste des tiers trouvés
+	 */
+	private List<TiersIndexedData> findByNavs13(CriteresPersonne criteres, @NotNull Mutable<String> navs13UpiProposal) {
+		try {
+			final String navs13Demande = criteres.getNAVS13();
+			final List<TiersIndexedData> first = findByNavs13(navs13Demande);
+			if (first.isEmpty() && StringUtils.isNotBlank(navs13Demande)) {
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug(String.format("Aucun résultat trouvé avec le NAVS13 '%s'. On essaie à l'UPI.", navs13Demande));
+				}
+
+				// recherche à l'UPI
+				final UpiPersonInfo upiInfo = serviceUpi.getPersonInfo(navs13Demande);
+				if (upiInfo != null && !navs13Demande.equals(upiInfo.getNoAvs13())) {
+					LOGGER.info(String.format("L'UPI indique que le NAVS13 '%s' a été remplacé par '%s'.", navs13Demande, upiInfo.getNoAvs13()));
+
+					// information pour l'appelant
+					navs13UpiProposal.setValue(upiInfo.getNoAvs13());
+
+					// recherche avec le nouveau numéro
+					return findByNavs13(upiInfo.getNoAvs13());
+				}
+				else if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug(String.format("Réponse de l'UPI pour le NAVS13 '%s' : pas mieux !", navs13Demande));
+				}
+			}
+			return first;
+		}
+		catch (TooManyResultsIndexerException e) {
+			return Collections.emptyList();
+		}
+		catch (ServiceUpiException e) {
+			LOGGER.warn("Erreur à l'appel au service UPI, l'identification se poursuit sans l'aide des informations UPI.", e);
+			return Collections.emptyList();
+		}
+	}
+
+	private List<TiersIndexedData> findByNavs13(String navs13) throws TooManyResultsIndexerException {
+		final TiersCriteria criteria = asTiersCriteriaNAVS13(navs13);
 		if (!criteria.isEmpty()) {
 			try {
 				return searcher.search(criteria);
 			}
+			catch (TooManyResultsIndexerException e) {
+				throw e;
+			}
 			catch (IndexerException e) {
-				if (e instanceof TooManyResultsIndexerException) {
-					return Collections.emptyList();
-				}
-				else {
-					throw new RuntimeException(e);
-				}
+				throw new RuntimeException(e);
 			}
 		}
 		return Collections.emptyList();
 	}
 
-	private List<TiersIndexedData> findAvecCriteresComplets(CriteresPersonne criteres, int maxNumberForList) throws TooManyIdentificationPossibilitiesException {
+	/**
+	 * Phase de recherche sur tous les critères (parce que la phase sur les critères NAVS a échoué)
+	 * @param criteres les critères de l'identification tels que fournis dans la demande
+	 * @param avsUpi si non-null, le numéro AVS renvoyé par l'UPI en remplacement de celui présent dans la demande
+	 * @param maxNumberForList le nombre maximal de donner à renvoyer au delà duquel tout se termine en {@link TooManyIdentificationPossibilitiesException}
+	 * @return une liste de contribuables qui satisfont aux critères
+	 * @throws TooManyIdentificationPossibilitiesException si le nombre de résultats trouvés est plus grand que <code>maxNumberForList</code>
+	 */
+	@NotNull
+	private List<TiersIndexedData> findAvecCriteresComplets(CriteresPersonne criteres, @Nullable String avsUpi, int maxNumberForList) throws TooManyIdentificationPossibilitiesException {
 
 		List<TiersIndexedData> indexedData = null;
 
@@ -342,7 +407,10 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 				final String npa = adresse.getNpaSuisse() == null ? StringUtils.trimToNull(adresse.getNpaEtranger()) : Integer.toString(adresse.getNpaSuisse());
 				criteria.setNpaTousOrNull(npa);
 			}
-			if (criteres.getNAVS13() != null) {
+			if (avsUpi != null) {
+				criteria.setNavs13OrNull(avsUpi);
+			}
+			else if (criteres.getNAVS13() != null) {
 				criteria.setNavs13OrNull(criteres.getNAVS13());
 			}
 
@@ -704,7 +772,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 			Integer foundSize;
 			List<Long> found;
 			try {
-				found = identifie(criteresPersonne);
+				found = identifie(criteresPersonne, null);
 				foundSize = found.size();
 			}
 			catch (TooManyIdentificationPossibilitiesException e) {
@@ -802,9 +870,12 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	}
 
 	private TiersCriteria asTiersCriteriaNAVS13(CriteresPersonne criteres) {
+		return asTiersCriteriaNAVS13(criteres.getNAVS13());
+	}
+
+	private TiersCriteria asTiersCriteriaNAVS13(String navs13) {
 		final TiersCriteria criteria = new TiersCriteria();
 		identificationContribuableHelper.setUpCriteria(criteria);
-		final String navs13 = criteres.getNAVS13();
 		criteria.setNumeroAVS(navs13);
 		return criteria;
 	}
@@ -990,7 +1061,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		if (criteresPersonne != null) {
 			List<Long> found;
 			try {
-				found = identifie(criteresPersonne);
+				found = identifie(criteresPersonne, null);
 			}
 			catch (TooManyIdentificationPossibilitiesException e) {
 				found = Collections.emptyList();

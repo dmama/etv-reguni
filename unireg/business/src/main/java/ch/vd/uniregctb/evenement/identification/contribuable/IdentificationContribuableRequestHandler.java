@@ -171,7 +171,7 @@ public class IdentificationContribuableRequestHandler implements EsbMessageHandl
 		IdentificationResult status;
 		List<Long> found;
 		try {
-			found = identCtbService.identifie(criteresPersonne);
+			found = identCtbService.identifie(criteresPersonne, null);
 			switch (found.size()) {
 				case 0:
 					status = IdentificationResult.FOUND_NONE;

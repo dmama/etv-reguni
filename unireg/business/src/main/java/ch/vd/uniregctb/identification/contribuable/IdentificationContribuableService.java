@@ -4,6 +4,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.mutable.Mutable;
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.uniregctb.common.ParamPagination;
@@ -34,11 +37,12 @@ public interface IdentificationContribuableService {
 	 * sont déterminants (c'est-à-dire qu'ils sont combinés en utilisant l'opérateur booléen ET).
 	 *
 	 * @param criteres les critères de recherche du contribuable
+	 * @param upiAutreNavs si non-null, en sortie, contient le cas échéant le numéro AVS fournit par l'UPI (s'il est différent du numéro AVS présent dans la demande)
 	 * @return une liste contenant 0 ou plus numéros de contribuable.
 	 * @throws TooManyIdentificationPossibilitiesException si le nombre de résultats de l'identification dépasse le seuil {@link #NB_MAX_RESULTS_POUR_LISTE_IDENTIFICATION}
 	 * @see #NB_MAX_RESULTS_POUR_LISTE_IDENTIFICATION
 	 */
-	List<Long> identifie(CriteresPersonne criteres) throws TooManyIdentificationPossibilitiesException;
+	List<Long> identifie(CriteresPersonne criteres, @Nullable Mutable<String> upiAutreNavs) throws TooManyIdentificationPossibilitiesException;
 
 	/**
 	 * Recherche une liste d'IdentificationContribuable en fonction de critères
