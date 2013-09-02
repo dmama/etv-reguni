@@ -22,8 +22,12 @@ public class ServiceUpiTest extends BusinessItTest {
 		final UpiPersonInfo infoVide = service.getPersonInfo("7560000000002");
 		Assert.assertNull(infoVide);
 
-		final UpiPersonInfo infoNonVide = service.getPersonInfo("7568409992270");
-		Assert.assertNotNull(infoNonVide);
-		Assert.assertEquals("7568409992270", infoNonVide.getNoAvs13());
+		final UpiPersonInfo infoNonVideSansChangement = service.getPersonInfo("7568409992270");
+		Assert.assertNotNull(infoNonVideSansChangement);
+		Assert.assertEquals("7568409992270", infoNonVideSansChangement.getNoAvs13());
+
+		final UpiPersonInfo infoNonVideAvecChangement = service.getPersonInfo("7561163512081");
+		Assert.assertNotNull(infoNonVideAvecChangement);
+		Assert.assertEquals("7564457068837", infoNonVideAvecChangement.getNoAvs13());
 	}
 }
