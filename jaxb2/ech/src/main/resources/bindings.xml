@@ -161,12 +161,21 @@
 		</jxb:bindings>
 	</jxb:bindings>
 
-	<jxb:bindings schemaLocation="http://www.ech.ch/xmlns/eCH-0084/1/eCH-0084-commons-1-0.xsd">
+	<jxb:bindings schemaLocation="http://www.ech.ch/xmlns/eCH-0084/1/eCH-0084-commons-1-2.xsd">
 		<jxb:schemaBindings>
 			<jxb:package name="ch.ech.ech0084.v1" />
 		</jxb:schemaBindings>
 		<jxb:bindings>
 			<namespace:prefix name="eCH-0084-1" />
+		</jxb:bindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="http://www.ech.ch/xmlns/eCH-0085/1/eCH-0085-1-4.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.ech.ech0085.v1" />
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="eCH-0085-1" />
 		</jxb:bindings>
 	</jxb:bindings>
 
