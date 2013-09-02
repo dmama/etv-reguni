@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.efacture;
 
+import java.math.BigInteger;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -50,8 +51,8 @@ public abstract class MockEFactureService implements EFactureService {
 		histo.getHistoriquesEtats().add(etatDest);
 	}
 
-	protected DemandeAvecHisto addDemandeInscription(String id, long ctbId, String email, RegDate dateDemande, Demande.Action action, String noAvs, TypeEtatDemande etatDemande) {
-		final DemandeAvecHisto demande = new DemandeAvecHisto(id, ctbId, email, dateDemande, action, noAvs);
+	protected DemandeAvecHisto addDemandeInscription(String id, long ctbId, String email, RegDate dateDemande, Demande.Action action, String noAvs, TypeEtatDemande etatDemande, BigInteger noAdherent) {
+		final DemandeAvecHisto demande = new DemandeAvecHisto(id, ctbId, email, dateDemande, action, noAvs, noAdherent);
 		demande.getHistoriqueEtats().add(EtatDemande.newEtatDemandeFactice(etatDemande));
 
 		final DestinataireAvecHisto dest = data.get(ctbId);
@@ -76,7 +77,7 @@ public abstract class MockEFactureService implements EFactureService {
 	}
 
 	@Override
-	public String imprimerDocumentEfacture(Long ctbId, TypeDocument typeDocument, RegDate dateDemande) throws EditiqueException {
+	public String imprimerDocumentEfacture(Long ctbId, TypeDocument typeDocument, RegDate dateDemande, BigInteger noAdherent, RegDate dateDemandePrecedente, BigInteger noAdherentPrecedent) throws EditiqueException {
 		return StringUtils.EMPTY;
 	}
 

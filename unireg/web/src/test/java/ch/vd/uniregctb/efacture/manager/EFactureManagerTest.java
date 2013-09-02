@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.efacture.manager;
 
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Locale;
 
@@ -73,7 +74,7 @@ public class EFactureManagerTest extends WithoutSpringTest {
 	public void testEnvoyerDocumentAvecNotificationEFacture () throws Exception {
 		EFactureService eFactureService = new DummyEFactureService() {
 			@Override
-			public String imprimerDocumentEfacture(Long ctbId, TypeDocument typeDocument, RegDate dateDemande) throws EditiqueException {
+			public String imprimerDocumentEfacture(Long ctbId, TypeDocument typeDocument, RegDate dateDemande, BigInteger noAdherent, RegDate dateDemandePrecedente, BigInteger noAdherentPrecedent) throws EditiqueException {
 				assertEquals(NO_CTB, ctbId.longValue());
 				assertEquals(TypeDocument.E_FACTURE_ATTENTE_CONTACT, typeDocument);
 				assertEquals(DATE_DEMANDE, dateDemande);
@@ -92,7 +93,7 @@ public class EFactureManagerTest extends WithoutSpringTest {
 			}
 		};
 		eFactureManager.seteFactureService(eFactureService);
-		assertEquals("BUSINESS_ID", eFactureManager.envoyerDocumentAvecNotificationEFacture(NO_CTB, TypeDocument.E_FACTURE_ATTENTE_CONTACT, "ID_DEMANDE", DATE_DEMANDE));
+		assertEquals("BUSINESS_ID", eFactureManager.envoyerDocumentAvecNotificationEFacture(NO_CTB, TypeDocument.E_FACTURE_ATTENTE_CONTACT, "ID_DEMANDE", DATE_DEMANDE, BigInteger.ONE, null, null));
 	}
 
 

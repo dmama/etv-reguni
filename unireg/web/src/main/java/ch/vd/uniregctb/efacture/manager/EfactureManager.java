@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.efacture.manager;
 
+import java.math.BigInteger;
+
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
@@ -18,10 +20,12 @@ public interface EfactureManager {
 	 * @param typeDocument permet de determiner le type de document à envoyer au contribuable
 	 * @param idDemande l'id de la demande à traiter
 	 * @param dateDemande la date
-	 *
+	 * @param noAdherent numéro d'adhérent e-facture de la demande d'inscription en cours de traitement
+	 * @param dateDemandePrecedente date de la demande d'inscription précédente remplacée par celle-ci
+	 * @param noAdherentPrecedent numéro d'adhérent e-facture de l'inscription précédente remplacée par celle-ci
 	 * @return business id du message jms
 	 */
-	String envoyerDocumentAvecNotificationEFacture(long ctbId, TypeDocument typeDocument, String idDemande, RegDate dateDemande) throws EditiqueException, EvenementEfactureException;
+	String envoyerDocumentAvecNotificationEFacture(long ctbId, TypeDocument typeDocument, String idDemande, RegDate dateDemande, BigInteger noAdherent, RegDate dateDemandePrecedente, BigInteger noAdherentPrecedent) throws EditiqueException, EvenementEfactureException;
 
 	/**Permet de rechercher l'historique des états  et des demandes d'un destinataire
 	 *

@@ -119,6 +119,7 @@ public enum TypeDocument {
 			return "Document de demande de contact pour E-facture";
 		}
 	},
+
 	E_FACTURE_ATTENTE_SIGNATURE{
 		@Override
 		public boolean isOrdinaire() {

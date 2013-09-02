@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.editique.mock;
 
 import javax.jms.JMSException;
+import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -86,7 +87,7 @@ public class MockEditiqueCompositionService implements EditiqueCompositionServic
 	}
 
 	@Override
-	public String imprimeDocumentEfacture(Tiers tiers, TypeDocument typeDoc, Date dateTraitement, RegDate dateDemande) throws EditiqueException, JMSException {
+	public String imprimeDocumentEfacture(Tiers tiers, TypeDocument typeDoc, Date dateTraitement, RegDate dateDemande, BigInteger noAdherent, RegDate dateDemandePrecedente, BigInteger noAdherentPrecedent) throws EditiqueException, JMSException {
 		return null;
 	}
 

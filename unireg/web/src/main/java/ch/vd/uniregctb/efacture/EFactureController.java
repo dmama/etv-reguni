@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -38,6 +39,7 @@ public class EFactureController implements MessageSourceAware {
 	private static final String ACTION_URL = "actionUrl";
 	private static final String LIBELLE_ACTION = "libelleAction";
 	private static final String COMMAND = "command";
+	private static final String DATA_DEMANDE = "dataDemande";
 	private static final String MAXLEN = "maxlen";
 	private EfactureManager efactureManager;
 	private SecurityProviderInterface securityProvider;
@@ -82,7 +84,17 @@ public class EFactureController implements MessageSourceAware {
 			throw new ActionException("Le contribuable ne possède aucun état e-facture avec lequel il est possible d'interagir");
 		}
 
+		final ActionDemandeView actionDemandeView = new ActionDemandeView();
+		actionDemandeView.setCtbId(ctbId);
+		final DemandeAvecHistoView demandeEnCours = histo.getDemandeEnCours();
+		if (demandeEnCours != null) {
+			actionDemandeView.setDateDemande(demandeEnCours.getDateDemande());
+			actionDemandeView.setIdDemande(demandeEnCours.getIdDemande());
+			actionDemandeView.setNoAdherent(demandeEnCours.getNoAdherent());
+		}
+
 		model.addAttribute("histo", histo);
+		model.addAttribute(DATA_DEMANDE, actionDemandeView);
 		return "tiers/edition/efacture/edit";
 	}
 
@@ -95,7 +107,7 @@ public class EFactureController implements MessageSourceAware {
 		checkDroitGestionaireEfacture(securityProvider);
 		final String businessId = efactureManager.suspendreContribuable(ctbId, StringUtils.trimToNull(comment));
 		if (!efactureManager.isReponseRecueDeEfacture(businessId)) {
-			Flash.warning("Votre demande de suspension a bien été prise en compte, Elle sera traitée dès que possible par le système E-facture.");
+			Flash.warning("Votre demande de suspension a bien été prise en compte. Elle sera traitée dès que possible par le système E-facture.");
 		}
 		return String.format("redirect:/tiers/visu.do?id=%d", ctbId);
 	}
@@ -105,7 +117,7 @@ public class EFactureController implements MessageSourceAware {
 		checkDroitGestionaireEfacture(securityProvider);
 		final String businessId = efactureManager.activerContribuable(ctbId, comment);
 		if (!efactureManager.isReponseRecueDeEfacture(businessId)) {
-			Flash.warning("Votre demande d'activation a bien été prise en compte, Elle sera traitée dès que possible par le système E-facture.");
+			Flash.warning("Votre demande d'activation a bien été prise en compte. Elle sera traitée dès que possible par le système E-facture.");
 		}
 		return String.format("redirect:/tiers/visu.do?id=%d", ctbId);
 	}
@@ -115,7 +127,7 @@ public class EFactureController implements MessageSourceAware {
 		checkDroitGestionaireEfacture(securityProvider);
 		final String businessId = efactureManager.accepterDemande(idDemande);
 		if (!efactureManager.isReponseRecueDeEfacture(businessId)) {
-			Flash.warning("Votre demande de validation a bien été prise en compte, Elle sera traitée dès que possible par le système E-facture.");
+			Flash.warning("Votre demande de validation a bien été prise en compte. Elle sera traitée dès que possible par le système E-facture.");
 		}
 		return String.format("redirect:/tiers/visu.do?id=%d", ctbId);
 	}
@@ -125,31 +137,29 @@ public class EFactureController implements MessageSourceAware {
 		checkDroitGestionaireEfacture(securityProvider);
 		final String businessId = efactureManager.refuserDemande(idDemande);
 		if (!efactureManager.isReponseRecueDeEfacture(businessId)) {
-			Flash.warning("Votre demande de refus a bien été prise en compte, Elle sera traitée dès que possible par le système E-facture.");
+			Flash.warning("Votre demande de refus a bien été prise en compte. Elle sera traitée dès que possible par le système E-facture.");
 		}
 		return String.format("redirect:/tiers/visu.do?id=%d", ctbId);
 	}
 
 	@RequestMapping(value = "/wait-signature.do", method = RequestMethod.POST)
-	public String waitForSignature(@RequestParam(value = CTB, required = true) long ctbId, @RequestParam(value = ID_DEMANDE, required = true) String idDemande,
-	                               @RequestParam(value = DATE_DEMANDE, required = true) RegDate dateDemande) throws Exception {
+	public String waitForSignature(@ModelAttribute(value = DATA_DEMANDE) ActionDemandeView view) throws Exception {
 		checkDroitGestionaireEfacture(securityProvider);
-		final String businessId = efactureManager.envoyerDocumentAvecNotificationEFacture(ctbId, TypeDocument.E_FACTURE_ATTENTE_SIGNATURE, idDemande, dateDemande);
+		final String businessId = efactureManager.envoyerDocumentAvecNotificationEFacture(view.getCtbId(), TypeDocument.E_FACTURE_ATTENTE_SIGNATURE, view.getIdDemande(), view.getDateDemande(), view.getNoAdherent(), null, null);
 		if (!efactureManager.isReponseRecueDeEfacture(businessId)) {
-			Flash.warning("Votre demande de confirmation d'inscription a bien été prise en compte, Elle sera traitée dès que possible par le système E-facture.");
+			Flash.warning("Votre demande de confirmation d'inscription a bien été prise en compte. Elle sera traitée dès que possible par le système E-facture.");
 		}
-		return String.format("redirect:/tiers/visu.do?id=%d", ctbId);
+		return String.format("redirect:/tiers/visu.do?id=%d", view.getCtbId());
 	}
 
 	@RequestMapping(value = "/wait-contact.do", method = RequestMethod.POST)
-	public String waitForContact(@RequestParam(value = CTB, required = true) long ctbId, @RequestParam(value = ID_DEMANDE, required = true) String idDemande,
-	                             @RequestParam(value = DATE_DEMANDE, required = true) RegDate dateDemande) throws Exception {
+	public String waitForContact(@ModelAttribute(value = DATA_DEMANDE) ActionDemandeView view) throws Exception {
 		checkDroitGestionaireEfacture(securityProvider);
-		final String businessId = efactureManager.envoyerDocumentAvecNotificationEFacture(ctbId, TypeDocument.E_FACTURE_ATTENTE_CONTACT, idDemande, dateDemande);
+		final String businessId = efactureManager.envoyerDocumentAvecNotificationEFacture(view.getCtbId(), TypeDocument.E_FACTURE_ATTENTE_CONTACT, view.getIdDemande(), view.getDateDemande(), view.getNoAdherent(), null, null);
 		if (!efactureManager.isReponseRecueDeEfacture(businessId)) {
-			Flash.warning("Votre demande de prise de contact a bien été prise en compte, Elle sera traitée dès que possible par le système E-facture.");
+			Flash.warning("Votre demande de prise de contact a bien été prise en compte. Elle sera traitée dès que possible par le système E-facture.");
 		}
-		return String.format("redirect:/tiers/visu.do?id=%d", ctbId);
+		return String.format("redirect:/tiers/visu.do?id=%d", view.getCtbId());
 	}
 
 	@Nullable

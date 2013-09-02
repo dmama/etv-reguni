@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.efacture;
 
+import java.math.BigInteger;
+
 import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.registre.base.date.RegDate;
@@ -17,7 +19,7 @@ public class DummyEFactureService implements EFactureService {
 	}
 
 	@Override
-	public String imprimerDocumentEfacture(Long ctbId, TypeDocument typeDocument, RegDate dateDemande) throws EditiqueException {
+	public String imprimerDocumentEfacture(Long ctbId, TypeDocument typeDocument, RegDate dateDemande, BigInteger noAdherent, RegDate dateDemandePrecedente, BigInteger noAdherentPrecedent) throws EditiqueException {
 		return StringUtils.EMPTY;
 	}
 

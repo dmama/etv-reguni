@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.efacture;
 
 import javax.jms.JMSException;
+import java.math.BigInteger;
 import java.util.Date;
 
 import org.apache.log4j.Logger;
@@ -35,11 +36,11 @@ public class EFactureServiceImpl implements EFactureService, InitializingBean {
 	private EFactureClient eFactureClient;
 
 	@Override
-	public String imprimerDocumentEfacture(Long ctbId, TypeDocument typeDocument, RegDate dateDemande) throws EditiqueException {
+	public String imprimerDocumentEfacture(Long ctbId, TypeDocument typeDocument, RegDate dateDemande, BigInteger noAdherent, RegDate dateDemandePrecedente, BigInteger noAdherentPrecedent) throws EditiqueException {
 		final Tiers tiers = tiersService.getTiers(ctbId);
 		final Date dateTraitement = DateHelper.getCurrentDate();
 		try {
-			return editiqueCompositionService.imprimeDocumentEfacture(tiers, typeDocument, dateTraitement, dateDemande);
+			return editiqueCompositionService.imprimeDocumentEfacture(tiers, typeDocument, dateTraitement, dateDemande, noAdherent, dateDemandePrecedente, noAdherentPrecedent);
 		}
 		catch (JMSException e) {
 			throw new EditiqueException(e);

@@ -1,5 +1,8 @@
 package ch.vd.uniregctb.efacture;
 
+import java.math.BigInteger;
+import java.util.Random;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
@@ -44,6 +47,18 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		handler.seteFactureService(eFactureService);
 	}
 
+	protected static BigInteger getNewNumeroAdherent() {
+		final BigInteger min = BigInteger.valueOf(10000000000000000L);      // 17 chiffres!
+		final BigInteger max = BigInteger.valueOf(99999999999999999L);
+		final BigInteger len = max.subtract(min).add(BigInteger.ONE);
+		final byte[] arrayMuster = len.toByteArray();
+
+		final Random rnd = new Random();
+		final byte[] newArray = new byte[arrayMuster.length];
+		rnd.nextBytes(newArray);
+		return min.add(new BigInteger(newArray).abs().mod(len));
+	}
+
 	@Test
 	public void testDemandeInscriptionAttenteSignature() throws Exception {
 
@@ -52,6 +67,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		final String email = "albert@dufoin.ch";
 		final RegDate dateDemande = RegDate.get();
 		final Demande.Action typeDemande = Demande.Action.INSCRIPTION;
+		final BigInteger noAdherent = getNewNumeroAdherent();
 
 		// mise en place civile
 		serviceCivil.setUp(new MockServiceCivil() {
@@ -78,7 +94,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 			@Override
 			public void init() {
 				addDestinataire(ppId);
-				addDemandeInscription(demandeId, ppId, email, dateDemande, typeDemande, noAvs, TypeEtatDemande.VALIDATION_EN_COURS);
+				addDemandeInscription(demandeId, ppId, email, dateDemande, typeDemande, noAvs, TypeEtatDemande.VALIDATION_EN_COURS, noAdherent);
 			}
 		});
 
@@ -86,7 +102,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final Demande demande = new Demande(demandeId, ppId, email, dateDemande, typeDemande, noAvs);
+				final Demande demande = new Demande(demandeId, ppId, email, dateDemande, typeDemande, noAvs, noAdherent);
 				handler.handle(demande);
 				return null;
 			}
@@ -116,6 +132,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		final String email = "albert@dufoin.ch";
 		final RegDate dateDemande = RegDate.get();
 		final Demande.Action typeDemande = Demande.Action.INSCRIPTION;
+		final BigInteger noAdherent = getNewNumeroAdherent();
 
 		// mise en place civile
 		serviceCivil.setUp(new MockServiceCivil() {
@@ -142,7 +159,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 			@Override
 			public void init() {
 				addDestinataire(ppId);
-				addDemandeInscription(demandeId, ppId, email, dateDemande, typeDemande, noAvs, TypeEtatDemande.VALIDATION_EN_COURS);
+				addDemandeInscription(demandeId, ppId, email, dateDemande, typeDemande, noAvs, TypeEtatDemande.VALIDATION_EN_COURS, noAdherent);
 			}
 		});
 
@@ -150,7 +167,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final Demande demande = new Demande(demandeId, ppId, email, dateDemande, typeDemande, noAvs);
+				final Demande demande = new Demande(demandeId, ppId, email, dateDemande, typeDemande, noAvs, noAdherent);
 				handler.handle(demande);
 				return null;
 			}
@@ -181,6 +198,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		final String email = "albert@dufoin.ch";
 		final RegDate dateDemande = RegDate.get();
 		final Demande.Action typeDemande = Demande.Action.INSCRIPTION;
+		final BigInteger noAdherent = getNewNumeroAdherent();
 
 		// mise en place civile
 		serviceCivil.setUp(new MockServiceCivil() {
@@ -208,7 +226,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 			public void init() {
 				addDestinataire(ppId);
 				addEtatDestinataire(ppId, DateHelper.getCurrentDate(), "Suspendu... pas gentil!", null, TypeEtatDestinataire.DESINSCRIT_SUSPENDU);
-				addDemandeInscription(demandeId, ppId, email, dateDemande, typeDemande, noAvs, TypeEtatDemande.VALIDATION_EN_COURS);
+				addDemandeInscription(demandeId, ppId, email, dateDemande, typeDemande, noAvs, TypeEtatDemande.VALIDATION_EN_COURS, noAdherent);
 			}
 		});
 
@@ -216,7 +234,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final Demande demande = new Demande(demandeId, ppId, email, dateDemande, typeDemande, noAvs);
+				final Demande demande = new Demande(demandeId, ppId, email, dateDemande, typeDemande, noAvs, noAdherent);
 				handler.handle(demande);
 				return null;
 			}
@@ -247,6 +265,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		final String email = "albert@dufoin.ch";
 		final RegDate dateDemande = RegDate.get();
 		final Demande.Action typeDemande = Demande.Action.INSCRIPTION;
+		final BigInteger noAdherent = getNewNumeroAdherent();
 
 		// mise en place civile
 		serviceCivil.setUp(new MockServiceCivil() {
@@ -273,7 +292,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 			@Override
 			public void init() {
 				addDestinataire(ppId);
-				final DemandeAvecHisto demande = addDemandeInscription(demandeId, ppId, email, dateDemande, typeDemande, noAvs, TypeEtatDemande.VALIDATION_EN_COURS);
+				final DemandeAvecHisto demande = addDemandeInscription(demandeId, ppId, email, dateDemande, typeDemande, noAvs, TypeEtatDemande.VALIDATION_EN_COURS, noAdherent);
 				addEtatDemande(demande, DateHelper.getCurrentDate(), null, "Désinscription immédiate demandée... Tralalère!", TypeEtatDemande.IGNOREE);
 			}
 		});
@@ -282,7 +301,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final Demande demande = new Demande(demandeId, ppId, email, dateDemande, typeDemande, noAvs);
+				final Demande demande = new Demande(demandeId, ppId, email, dateDemande, typeDemande, noAvs, noAdherent);
 				handler.handle(demande);
 				return null;
 			}
@@ -315,6 +334,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		final String email = "albert@dufoin.ch";
 		final RegDate dateDemande = RegDate.get();
 		final Demande.Action typeDemande = Demande.Action.INSCRIPTION;
+		final BigInteger noAdherent = getNewNumeroAdherent();
 
 		// mise en place civile
 		serviceCivil.setUp(new MockServiceCivil() {
@@ -341,7 +361,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 			@Override
 			public void init() {
 				addDestinataire(ppId);
-				addDemandeInscription(demandeId, ppId, email, dateDemande, typeDemande, noAvsDemande, TypeEtatDemande.VALIDATION_EN_COURS);
+				addDemandeInscription(demandeId, ppId, email, dateDemande, typeDemande, noAvsDemande, TypeEtatDemande.VALIDATION_EN_COURS, noAdherent);
 			}
 		});
 
@@ -349,7 +369,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final Demande demande = new Demande(demandeId, ppId, email, dateDemande, typeDemande, noAvsDemande);
+				final Demande demande = new Demande(demandeId, ppId, email, dateDemande, typeDemande, noAvsDemande, noAdherent);
 				handler.handle(demande);
 				return null;
 			}
@@ -381,6 +401,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		final String email = "albert@dufoin.ch";
 		final RegDate dateDemande = RegDate.get();
 		final Demande.Action typeDemande = Demande.Action.INSCRIPTION;
+		final BigInteger noAdherent = getNewNumeroAdherent();
 
 		// mise en place civile
 		serviceCivil.setUp(new MockServiceCivil() {
@@ -413,7 +434,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 			@Override
 			public void init() {
 				addDestinataire(mcId);
-				addDemandeInscription(demandeId, mcId, email, dateDemande, typeDemande, noAvs1, TypeEtatDemande.VALIDATION_EN_COURS);
+				addDemandeInscription(demandeId, mcId, email, dateDemande, typeDemande, noAvs1, TypeEtatDemande.VALIDATION_EN_COURS, noAdherent);
 			}
 		});
 
@@ -421,7 +442,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final Demande demande = new Demande(demandeId, mcId, email, dateDemande, typeDemande, noAvs1);
+				final Demande demande = new Demande(demandeId, mcId, email, dateDemande, typeDemande, noAvs1, noAdherent);
 				handler.handle(demande);
 				return null;
 			}
@@ -452,6 +473,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		final String email = "albert@dufoin.ch";
 		final RegDate dateDemande = RegDate.get();
 		final Demande.Action typeDemande = Demande.Action.INSCRIPTION;
+		final BigInteger noAdherent = getNewNumeroAdherent();
 
 		// mise en place civile
 		serviceCivil.setUp(new MockServiceCivil() {
@@ -478,7 +500,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 			@Override
 			public void init() {
 				addDestinataire(ppId);
-				addDemandeInscription(demandeId, ppId, email, dateDemande, typeDemande, noAvsDemande, TypeEtatDemande.VALIDATION_EN_COURS);
+				addDemandeInscription(demandeId, ppId, email, dateDemande, typeDemande, noAvsDemande, TypeEtatDemande.VALIDATION_EN_COURS, noAdherent);
 			}
 		});
 
@@ -486,7 +508,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final Demande demande = new Demande(demandeId, ppId, email, dateDemande, typeDemande, noAvsDemande);
+				final Demande demande = new Demande(demandeId, ppId, email, dateDemande, typeDemande, noAvsDemande, noAdherent);
 				handler.handle(demande);
 				return null;
 			}
@@ -518,6 +540,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		final String email = "albert@dufoin.ch";
 		final RegDate dateDemande = RegDate.get();
 		final Demande.Action typeDemande = Demande.Action.INSCRIPTION;
+		final BigInteger noAdherent = getNewNumeroAdherent();
 
 		// mise en place civile
 		serviceCivil.setUp(new MockServiceCivil() {
@@ -550,7 +573,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 			@Override
 			public void init() {
 				addDestinataire(mcId);
-				addDemandeInscription(demandeId, mcId, email, dateDemande, typeDemande, noAvsDemande, TypeEtatDemande.VALIDATION_EN_COURS);
+				addDemandeInscription(demandeId, mcId, email, dateDemande, typeDemande, noAvsDemande, TypeEtatDemande.VALIDATION_EN_COURS, noAdherent);
 			}
 		});
 
@@ -558,7 +581,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final Demande demande = new Demande(demandeId, mcId, email, dateDemande, typeDemande, noAvsDemande);
+				final Demande demande = new Demande(demandeId, mcId, email, dateDemande, typeDemande, noAvsDemande, noAdherent);
 				handler.handle(demande);
 				return null;
 			}
@@ -590,6 +613,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		final String email = "albert@dufoin.ch";
 		final RegDate dateDemande = RegDate.get();
 		final Demande.Action typeDemande = Demande.Action.INSCRIPTION;
+		final BigInteger noAdherent = getNewNumeroAdherent();
 
 		// mise en place civile
 		serviceCivil.setUp(new MockServiceCivil() {
@@ -622,7 +646,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 			@Override
 			public void init() {
 				addDestinataire(mcId);
-				addDemandeInscription(demandeId, mcId, email, dateDemande, typeDemande, noAvsDemande, TypeEtatDemande.VALIDATION_EN_COURS);
+				addDemandeInscription(demandeId, mcId, email, dateDemande, typeDemande, noAvsDemande, TypeEtatDemande.VALIDATION_EN_COURS, noAdherent);
 			}
 		});
 
@@ -630,7 +654,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final Demande demande = new Demande(demandeId, mcId, email, dateDemande, typeDemande, noAvsDemande);
+				final Demande demande = new Demande(demandeId, mcId, email, dateDemande, typeDemande, noAvsDemande, noAdherent);
 				handler.handle(demande);
 				return null;
 			}
@@ -662,6 +686,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		final String email = "albert@dufoin.ch";
 		final RegDate dateDemande = RegDate.get();
 		final Demande.Action typeDemande = Demande.Action.INSCRIPTION;
+		final BigInteger noAdherent = getNewNumeroAdherent();
 
 		// mise en place civile
 		serviceCivil.setUp(new MockServiceCivil() {
@@ -694,7 +719,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 			@Override
 			public void init() {
 				addDestinataire(mcId);
-				addDemandeInscription(demandeId, mcId, email, dateDemande, typeDemande, noAvsDemande, TypeEtatDemande.VALIDATION_EN_COURS);
+				addDemandeInscription(demandeId, mcId, email, dateDemande, typeDemande, noAvsDemande, TypeEtatDemande.VALIDATION_EN_COURS, noAdherent);
 			}
 		});
 
@@ -702,7 +727,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final Demande demande = new Demande(demandeId, mcId, email, dateDemande, typeDemande, noAvsDemande);
+				final Demande demande = new Demande(demandeId, mcId, email, dateDemande, typeDemande, noAvsDemande, noAdherent);
 				handler.handle(demande);
 				return null;
 			}
@@ -733,6 +758,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		final String email = "albert@dufoin.ch";
 		final RegDate dateDemande = RegDate.get();
 		final Demande.Action typeDemande = Demande.Action.INSCRIPTION;
+		final BigInteger noAdherent = getNewNumeroAdherent();
 
 		// mise en place civile
 		serviceCivil.setUp(new MockServiceCivil() {
@@ -759,7 +785,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 			@Override
 			public void init() {
 				addDestinataire(ppId);
-				addDemandeInscription(demandeId, ppId, email, dateDemande, typeDemande, noAvs, TypeEtatDemande.VALIDATION_EN_COURS);
+				addDemandeInscription(demandeId, ppId, email, dateDemande, typeDemande, noAvs, TypeEtatDemande.VALIDATION_EN_COURS, noAdherent);
 			}
 		});
 
@@ -767,7 +793,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final Demande demande = new Demande(demandeId, ppId, email, dateDemande, typeDemande, noAvs);
+				final Demande demande = new Demande(demandeId, ppId, email, dateDemande, typeDemande, noAvs, noAdherent);
 				handler.handle(demande);
 				return null;
 			}
@@ -798,6 +824,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		final String email = "albert@dufoin.ch";
 		final RegDate dateDemande = null;
 		final Demande.Action typeDemande = Demande.Action.INSCRIPTION;
+		final BigInteger noAdherent = getNewNumeroAdherent();
 
 		// mise en place civile
 		serviceCivil.setUp(new MockServiceCivil() {
@@ -824,7 +851,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 			@Override
 			public void init() {
 				addDestinataire(ppId);
-				addDemandeInscription(demandeId, ppId, email, dateDemande, typeDemande, noAvs, TypeEtatDemande.VALIDATION_EN_COURS);
+				addDemandeInscription(demandeId, ppId, email, dateDemande, typeDemande, noAvs, TypeEtatDemande.VALIDATION_EN_COURS, noAdherent);
 			}
 		});
 
@@ -832,7 +859,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final Demande demande = new Demande(demandeId, ppId, email, dateDemande, typeDemande, noAvs);
+				final Demande demande = new Demande(demandeId, ppId, email, dateDemande, typeDemande, noAvs, noAdherent);
 				handler.handle(demande);
 				return null;
 			}
@@ -863,6 +890,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		final String email = "albert@dufoin.ch";
 		final RegDate dateDemande = RegDate.get();
 		final Demande.Action typeDemande = Demande.Action.INSCRIPTION;
+		final BigInteger noAdherent = getNewNumeroAdherent();
 
 		// mise en place civile
 		serviceCivil.setUp(new MockServiceCivil() {
@@ -889,8 +917,8 @@ public class EFactureEventHandlerTest extends BusinessTest {
 			@Override
 			public void init() {
 				addDestinataire(ppId);
-				addDemandeInscription("41", ppId, email, dateDemande, typeDemande, noAvs, TypeEtatDemande.VALIDATION_EN_COURS_EN_ATTENTE_SIGNATURE);
-				addDemandeInscription(demandeId, ppId, email, dateDemande, typeDemande, noAvs, TypeEtatDemande.VALIDATION_EN_COURS);
+				addDemandeInscription("41", ppId, email, dateDemande, typeDemande, noAvs, TypeEtatDemande.VALIDATION_EN_COURS_EN_ATTENTE_SIGNATURE, noAdherent);
+				addDemandeInscription(demandeId, ppId, email, dateDemande, typeDemande, noAvs, TypeEtatDemande.VALIDATION_EN_COURS, noAdherent);
 			}
 		});
 
@@ -898,7 +926,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final Demande demande = new Demande(demandeId, ppId, email, dateDemande, typeDemande, noAvs);
+				final Demande demande = new Demande(demandeId, ppId, email, dateDemande, typeDemande, noAvs, noAdherent);
 				handler.handle(demande);
 				return null;
 			}
@@ -930,6 +958,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		final RegDate dateDemande = RegDate.get();
 		final Demande.Action typeDemande = Demande.Action.INSCRIPTION;
 		final long ctbId = 10000025;
+		final BigInteger noAdherent = getNewNumeroAdherent();
 
 		// mise en place civile
 		serviceCivil.setUp(new MockServiceCivil() {
@@ -944,7 +973,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 			@Override
 			public void init() {
 				addDestinataire(ctbId);
-				addDemandeInscription(demandeId, ctbId, email, dateDemande, typeDemande, noAvs, TypeEtatDemande.VALIDATION_EN_COURS);
+				addDemandeInscription(demandeId, ctbId, email, dateDemande, typeDemande, noAvs, TypeEtatDemande.VALIDATION_EN_COURS, noAdherent);
 			}
 		});
 
@@ -952,7 +981,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final Demande demande = new Demande(demandeId, ctbId, email, dateDemande, typeDemande, noAvs);
+				final Demande demande = new Demande(demandeId, ctbId, email, dateDemande, typeDemande, noAvs, noAdherent);
 				handler.handle(demande);
 				return null;
 			}
@@ -983,6 +1012,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		final String email = "albert@dufoin.ch";
 		final RegDate dateDemande = RegDate.get();
 		final Demande.Action typeDemande = Demande.Action.INSCRIPTION;
+		final BigInteger noAdherent = getNewNumeroAdherent();
 
 		// mise en place civile
 		serviceCivil.setUp(new MockServiceCivil() {
@@ -1008,7 +1038,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 			@Override
 			public void init() {
 				addDestinataire(ppId);
-				addDemandeInscription(demandeId, ppId, email, dateDemande, typeDemande, noAvs, TypeEtatDemande.VALIDATION_EN_COURS);
+				addDemandeInscription(demandeId, ppId, email, dateDemande, typeDemande, noAvs, TypeEtatDemande.VALIDATION_EN_COURS, noAdherent);
 			}
 		});
 
@@ -1016,7 +1046,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final Demande demande = new Demande(demandeId, ppId, email, dateDemande, typeDemande, noAvs);
+				final Demande demande = new Demande(demandeId, ppId, email, dateDemande, typeDemande, noAvs, noAdherent);
 				handler.handle(demande);
 				return null;
 			}

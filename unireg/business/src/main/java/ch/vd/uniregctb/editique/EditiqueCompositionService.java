@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.editique;
 
 import javax.jms.JMSException;
+import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -148,23 +149,19 @@ public interface EditiqueCompositionService {
 	 */
 	EditiqueResultat envoyerImpressionLocaleBordereau(BordereauMouvementDossier bordereauMouvementDossier) throws EditiqueException, JMSException;
 
-
-	/**Imprime les document de confirmation ou de mise en attente lors d'une demande d'inscription à la E-facture
-	 *
-	 *
-	 *
-	 *
-	 *
+	/**
+	 * Imprime les document de confirmation ou de mise en attente lors d'une demande d'inscription à la E-facture
 	 * @param tiers a qui le document doit être envoyé
 	 * @param typeDoc permet de determiner le type de document a imprimer
 	 * @param dateTraitement date du traitement
-	 * @param dateDemande
+	 * @param dateDemande date de la demande d'inscription pour laquelle on imprime ce document
+	 * @param noAdherent numéro d'adhérent e-facture de la demande d'inscription en cours de traitement
+	 * @param dateDemandePrecedente date de la demande d'inscription précédente remplacée par celle-ci
+	 * @param noAdherentPrecedent numéro d'adhérent e-facture de l'inscription précédente remplacée par celle-ci
+	 * @return l'identifiant d'archivage du document
 	 * @throws EditiqueException
-	 *
 	 */
-	String imprimeDocumentEfacture(Tiers tiers, TypeDocument typeDoc, Date dateTraitement, RegDate dateDemande) throws EditiqueException, JMSException;
-
-
+	String imprimeDocumentEfacture(Tiers tiers, TypeDocument typeDoc, Date dateTraitement, RegDate dateDemande, BigInteger noAdherent, RegDate dateDemandePrecedente, BigInteger noAdherentPrecedent) throws EditiqueException, JMSException;
 
 	/**
 	 * Envoie à l'éditique le formulaire immeuble à imprimer en masse
@@ -175,6 +172,5 @@ public interface EditiqueCompositionService {
 	 * @param nombreAnnexesImmeuble
 	 * @throws EditiqueException
 	 */
-	public int imprimeAnnexeImmeubleForBatch(InformationsDocumentAdapter infosDocument, Set<ModeleFeuilleDocument> listeModele, RegDate dateEvenement, int nombreAnnexesImmeuble) throws EditiqueException;
-
+	int imprimeAnnexeImmeubleForBatch(InformationsDocumentAdapter infosDocument, Set<ModeleFeuilleDocument> listeModele, RegDate dateEvenement, int nombreAnnexesImmeuble) throws EditiqueException;
 }

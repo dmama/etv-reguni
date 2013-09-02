@@ -99,6 +99,12 @@ public class ImpressionDocumentEfactureHelperImpl extends EditiqueAbstractHelper
 		final LettresEFactureDocument.LettresEFacture lettresEFacture = LettresEFactureDocument.Factory.newInstance().addNewLettresEFacture();
 		lettresEFacture.setDateDemande(RegDateHelper.toIndexString(params.getDateDemande()));
 		lettresEFacture.setNumContrib(FormatNumeroHelper.numeroCTBToDisplay(params.getTiers().getNumero()));
+		lettresEFacture.setNumAdherEnCours(params.getNoAdherentCourant());
+		if (params.getNoAdherentPrecedent() != null && params.getDateDemandePrecedente() != null) {
+			final LettresEFactureDocument.LettresEFacture.InscriptionPrecedente precedente = lettresEFacture.addNewInscriptionPrecedente();
+			precedente.setDateInscriptionPrecedente(RegDateHelper.toIndexString(params.getDateDemandePrecedente()));
+			precedente.setNumAdherPrecedent(params.getNoAdherentPrecedent());
+		}
 		final String politesse = adresseService.getFormulePolitesse(params.getTiers()).formuleAppel();
 		lettresEFacture.setPolitesse(politesse);
 		return lettresEFacture;

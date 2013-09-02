@@ -107,7 +107,7 @@ public class EFactureEventHandlerImpl implements EFactureEventHandler {
 						description = String.format("%s Assujettissement incohérent avec la e-facture.", etatFinal.getDescription());
 					}
 
-					final String archivageId = eFactureService.imprimerDocumentEfacture(demande.getCtbId(), typeDocument, demande.getDateDemande());
+					final String archivageId = eFactureService.imprimerDocumentEfacture(demande.getCtbId(), typeDocument, demande.getDateDemande(), demande.getNoAdherent(), null, null);
 					eFactureService.notifieMiseEnAttenteInscription(demande.getIdDemande(), etatFinal, description, archivageId, false);
 					LOGGER.info(String.format("Demande d'inscription passée à l'état %s", etatFinal));
 				}

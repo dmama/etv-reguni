@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.efacture.manager;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
@@ -41,8 +42,8 @@ public class EfactureManagerImpl implements EfactureManager {
 
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
-	public String envoyerDocumentAvecNotificationEFacture(long ctbId, TypeDocument typeDocument, String idDemande, RegDate dateDemande) throws EditiqueException, EvenementEfactureException {
-		final String idArchivage = eFactureService.imprimerDocumentEfacture(ctbId, typeDocument, dateDemande);
+	public String envoyerDocumentAvecNotificationEFacture(long ctbId, TypeDocument typeDocument, String idDemande, RegDate dateDemande, BigInteger noAdherent, RegDate dateDemandePrecedente, BigInteger noAdherentPrecedent) throws EditiqueException, EvenementEfactureException {
+		final String idArchivage = eFactureService.imprimerDocumentEfacture(ctbId, typeDocument, dateDemande, noAdherent, dateDemandePrecedente, noAdherentPrecedent);
 		final TypeAttenteDemande typeAttenteEFacture = determineTypeAttenteEfacture(typeDocument);
 		final String messageAvecVisaUser = getMessageAvecVisaUser();
 		final String description = String.format("%s %s", typeAttenteEFacture.getDescription(), messageAvecVisaUser);
@@ -155,7 +156,7 @@ public class EfactureManagerImpl implements EfactureManager {
 				final EtatDemandeView etatView = getEtatDemande(jt.previous());
 				etatsDemande.add(etatView);
 			}
-			final DemandeAvecHistoView view = new DemandeAvecHistoView(demande.getIdDemande(), demande.getDateDemande(), demande.getNoAvs(),
+			final DemandeAvecHistoView view = new DemandeAvecHistoView(demande.getIdDemande(), demande.getDateDemande(), demande.getNoAdherent(), demande.getNoAvs(),
 			                                                           demande.getEmail(), demande.getAction(), etatsDemande);
 			demandes.add(view);
 		}

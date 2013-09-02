@@ -1,5 +1,6 @@
 package ch.vd.unireg.interfaces.efacture.data;
 
+import java.math.BigInteger;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -75,6 +76,7 @@ public class Demande {
 	private final RegDate dateDemande;
 	private final Action action;
 	private final String noAvs;
+	private final BigInteger noAdherent;
 
 	public Demande(RegistrationRequest request) {
 		this.idDemande = request.getId();
@@ -82,6 +84,7 @@ public class Demande {
 		this.dateDemande = XmlUtils.xmlcal2regdate(request.getRegistrationDate());
 		this.action = Action.get(request.getRegistrationMode());
 		this.email = (this.action == Action.DESINSCRIPTION ? null : request.getEmail());
+		this.noAdherent = request.getEBillAccountId();
 
 		final Map<String, String> map = buildAdditionalData(request);
 		this.noAvs = map.get(AVS13);
@@ -90,13 +93,14 @@ public class Demande {
 	/**
 	 * Pour les tests seulement
 	 */
-	public Demande(String id, long ctbId, String email, RegDate dateDemande, Action action, String noAvs) {
+	public Demande(String id, long ctbId, String email, RegDate dateDemande, Action action, String noAvs, BigInteger noAdherent) {
 		this.idDemande = id;
 		this.ctbId = ctbId;
 		this.email = email;
 		this.dateDemande = dateDemande;
 		this.action = action;
 		this.noAvs = noAvs;
+		this.noAdherent = noAdherent;
 	}
 
 	public String getIdDemande() {
@@ -121,5 +125,9 @@ public class Demande {
 
 	public String getNoAvs() {
 		return noAvs;
+	}
+
+	public BigInteger getNoAdherent() {
+		return noAdherent;
 	}
 }

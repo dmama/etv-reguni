@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.editique.impl;
 
 import javax.jms.JMSException;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -354,14 +355,12 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	}
 
 	@Override
-	public String imprimeDocumentEfacture(Tiers tiers, TypeDocument typeDoc, Date dateTraitement, RegDate dateDemande) throws EditiqueException, JMSException {
+	public String imprimeDocumentEfacture(Tiers tiers, TypeDocument typeDoc, Date dateTraitement, RegDate dateDemande, BigInteger noAdherent, RegDate dateDemandePrecedente, BigInteger noAdherentPrecedent) throws EditiqueException, JMSException {
 		final TypeDocumentEditique prefixe = impressionEfactureHelper.getTypeDocumentEditique(typeDoc);
-		ImpressionDocumentEfactureParams params = new ImpressionDocumentEfactureParams(tiers,typeDoc,dateTraitement,dateDemande);
+		ImpressionDocumentEfactureParams params = new ImpressionDocumentEfactureParams(tiers, typeDoc, dateTraitement, dateDemande, noAdherent, dateDemandePrecedente, noAdherentPrecedent);
 		final FichierImpressionDocument document = impressionEfactureHelper.remplitDocumentEfacture(params);
 		final String nomDocument = impressionEfactureHelper.construitIdDocument(params);
 		editiqueService.creerDocumentParBatch(nomDocument, prefixe, document, true);
 		return impressionEfactureHelper.construitIdArchivageDocument(params);
 	}
-
-
 }

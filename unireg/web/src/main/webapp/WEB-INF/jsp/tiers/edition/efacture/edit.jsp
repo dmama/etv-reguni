@@ -77,12 +77,28 @@
                             </c:if>
                             <c:if test="${etatDemandeEnCours.mettableEnAttenteSignature}">
                                 &nbsp;
-                                <input id="activate" type="button" value="<fmt:message key='label.efacture.bouton.attente.signature'/>" onclick="EditEFacture.waitForSignature(${histo.ctbId}, ${demandeEnCours.idDemande}, '<unireg:regdate regdate="${demandeEnCours.dateDemande}" />');"/>
+                                <input id="wait-signature" type="button" value="<fmt:message key='label.efacture.bouton.attente.signature'/>" onclick="EditEFacture.waitForSignature();"/>
+	                            <div style="display:none;">
+		                            <form:form id="signature-form" commandName="dataDemande" action="wait-signature.do" method="post">
+			                            <form:hidden path="noAdherent"/>
+			                            <form:hidden path="ctbId"/>
+			                            <form:hidden path="idDemande"/>
+			                            <form:hidden path="dateDemande"/>
+		                            </form:form>
+			                    </div>
                                 &nbsp;
                             </c:if>
                             <c:if test="${etatDemandeEnCours.mettableEnAttenteContact}">
                                 &nbsp;
-                                <input id="activate" type="button" value="<fmt:message key='label.efacture.bouton.attente.contact'/>" onclick="EditEFacture.waitForContact(${histo.ctbId}, ${demandeEnCours.idDemande},  '<unireg:regdate regdate="${demandeEnCours.dateDemande}" />');"/>
+                                <input id="wait-contact" type="button" value="<fmt:message key='label.efacture.bouton.attente.contact'/>" onclick="EditEFacture.waitForContact();"/>
+	                            <div style="display:none;">
+		                            <form:form id="contact-form" commandName="dataDemande" action="wait-contact.do" method="post">
+			                            <form:hidden path="noAdherent"/>
+			                            <form:hidden path="ctbId"/>
+			                            <form:hidden path="idDemande"/>
+			                            <form:hidden path="dateDemande"/>
+		                            </form:form>
+	                            </div>
                                 &nbsp;
                             </c:if>
                         </td>
@@ -149,19 +165,15 @@
                     }
                 },
 
-                waitForSignature: function(ctbId, idDemande, dateDemande) {
+                waitForSignature: function() {
                     if (confirm('Êtes-vous sûr de vouloir envoyer le formulaire d\'acceptation à ce contribuable ?')) {
-                        var form = $('<form method="POST" action="' + App.curl("/efacture/wait-signature.do?ctb=" + ctbId + '&idDemande=' + idDemande + '&dateDemande=' + dateDemande) +'"/>');
-                        form.appendTo('body');
-                        form.submit();
+	                    $("#signature-form").submit();
                     }
                 },
 
-                waitForContact: function(ctbId, idDemande, dateDemande) {
+                waitForContact: function() {
                     if (confirm('Êtes-vous sûr de vouloir envoyer le courrier de demande de contact à ce contribuable ?')) {
-                        var form = $('<form method="POST" action="' + App.curl("/efacture/wait-contact.do?ctb=" + ctbId + '&idDemande=' + idDemande + '&dateDemande=' + dateDemande) +'"/>');
-                        form.appendTo('body');
-                        form.submit();
+	                    $("#contact-form").submit();
                     }
                 }
             };

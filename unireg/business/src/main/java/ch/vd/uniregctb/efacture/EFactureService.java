@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.efacture;
 
+import java.math.BigInteger;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.efacture.data.DestinataireAvecHisto;
 import ch.vd.unireg.interfaces.efacture.data.ResultatQuittancement;
@@ -30,10 +32,12 @@ public interface EFactureService {
 	 * @param ctbId     le numéro de contribuable traité
 	 * @param typeDocument permet de determiner le type de document à envoyer au contribuable
 	 * @param dateDemande date à laquel le contribuable a fait sa demande d'inscription
-	 *
+	 * @param noAdherent numéro d'adhérent e-facture de la demande d'inscription en cours de traitement
+	 * @param dateDemandePrecedente date de la demande d'inscription précédente remplacée par celle-ci
+	 * @param noAdherentPrecedent numéro d'adhérent e-facture de l'inscription précédente remplacée par celle-ci
 	 * @return l'archivage id
 	 */
-	String imprimerDocumentEfacture(Long ctbId, TypeDocument typeDocument, RegDate dateDemande) throws EditiqueException;
+	String imprimerDocumentEfacture(Long ctbId, TypeDocument typeDocument, RegDate dateDemande, BigInteger noAdherent, RegDate dateDemandePrecedente, BigInteger noAdherentPrecedent) throws EditiqueException;
 
 	/**
 	 * Recupère l'historique e-facture pour un contribuable

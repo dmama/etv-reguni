@@ -1,5 +1,6 @@
 package ch.vd.unireg.interfaces.efacture.data;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,8 +39,8 @@ public class DemandeAvecHisto extends Demande {
 	/**
 	 * Pour les tests seulement
 	 */
-	public DemandeAvecHisto(String id, long ctbId, String email, RegDate dateDemande, Action action, String noAvs) {
-		super(id, ctbId, email, dateDemande, action, noAvs);
+	public DemandeAvecHisto(String id, long ctbId, String email, RegDate dateDemande, Action action, String noAvs, BigInteger noAdherent) {
+		super(id, ctbId, email, dateDemande, action, noAvs, noAdherent);
 	}
 
 	public EtatDemande getDernierEtat() {

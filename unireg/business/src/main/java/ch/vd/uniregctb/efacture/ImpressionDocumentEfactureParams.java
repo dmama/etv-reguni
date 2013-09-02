@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.efacture;
 
+import java.math.BigInteger;
 import java.util.Date;
 
 import ch.vd.registre.base.date.RegDate;
@@ -8,16 +9,26 @@ import ch.vd.uniregctb.type.TypeDocument;
 
 public class ImpressionDocumentEfactureParams {
 
-	private Tiers tiers;
-	private TypeDocument typeDocument;
-	private Date dateTraitement;
-	private RegDate dateDemande;
+	private final Tiers tiers;
+	private final TypeDocument typeDocument;
+	private final Date dateTraitement;
+	private final RegDate dateDemande;
+	private final BigInteger noAdherentCourant;
+	private final RegDate dateDemandePrecedente;
+	private final BigInteger noAdherentPrecedent;
 
-	public ImpressionDocumentEfactureParams(Tiers tiers, TypeDocument typeDoc,Date dateTraitement,RegDate dateDemande) {
+	public ImpressionDocumentEfactureParams(Tiers tiers, TypeDocument typeDoc, Date dateTraitement, RegDate dateDemande, BigInteger noAdherentCourant) {
+		this(tiers, typeDoc, dateTraitement, dateDemande, noAdherentCourant, null, null);
+	}
+
+	public ImpressionDocumentEfactureParams(Tiers tiers, TypeDocument typeDoc, Date dateTraitement, RegDate dateDemande, BigInteger noAdherentCourant, RegDate dateDemandePrecedente, BigInteger noAdherentPrecedent) {
 		this.tiers = tiers;
 		this.typeDocument = typeDoc;
 		this.dateTraitement = dateTraitement;
 		this.dateDemande = dateDemande;
+		this.noAdherentCourant = noAdherentCourant;
+		this.dateDemandePrecedente = dateDemandePrecedente;
+		this.noAdherentPrecedent = noAdherentPrecedent;
 	}
 
 	public Tiers getTiers() {
@@ -34,5 +45,17 @@ public class ImpressionDocumentEfactureParams {
 
 	public RegDate getDateDemande() {
 		return dateDemande;
+	}
+
+	public BigInteger getNoAdherentCourant() {
+		return noAdherentCourant;
+	}
+
+	public RegDate getDateDemandePrecedente() {
+		return dateDemandePrecedente;
+	}
+
+	public BigInteger getNoAdherentPrecedent() {
+		return noAdherentPrecedent;
 	}
 }

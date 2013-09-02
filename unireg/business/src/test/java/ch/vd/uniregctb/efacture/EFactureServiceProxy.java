@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.efacture;
 
+import java.math.BigInteger;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.efacture.data.DestinataireAvecHisto;
 import ch.vd.unireg.interfaces.efacture.data.ResultatQuittancement;
@@ -30,9 +32,9 @@ public class EFactureServiceProxy implements EFactureService {
 	}
 
 	@Override
-	public String imprimerDocumentEfacture(Long ctbId, TypeDocument typeDocument, RegDate dateDemande) throws EditiqueException {
+	public String imprimerDocumentEfacture(Long ctbId, TypeDocument typeDocument, RegDate dateDemande, BigInteger noAdherent, RegDate dateDemandePrecedente, BigInteger noAdherentPrecedent) throws EditiqueException {
 		checkTarget();
-		return target.imprimerDocumentEfacture(ctbId, typeDocument, dateDemande);
+		return target.imprimerDocumentEfacture(ctbId, typeDocument, dateDemande, noAdherent, dateDemandePrecedente, noAdherentPrecedent);
 	}
 
 	@Override

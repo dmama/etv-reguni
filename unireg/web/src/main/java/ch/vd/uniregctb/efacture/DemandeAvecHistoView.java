@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.efacture;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,14 +18,16 @@ public class DemandeAvecHistoView {
 
 	private final String idDemande;
 	private final RegDate dateDemande;
+	private final BigInteger noAdherent;
 	private final String avs;
 	private final String email;
 	private final String descriptionTypeDemande;
 	private final List<EtatDemandeView> etats;
 
-	public DemandeAvecHistoView(String idDemande, RegDate dateDemande, String avs, String email, Demande.Action actionDemande, List<EtatDemandeView> etats) {
+	public DemandeAvecHistoView(String idDemande, RegDate dateDemande, BigInteger noAdherent, String avs, String email, Demande.Action actionDemande, List<EtatDemandeView> etats) {
 		this.idDemande = idDemande;
 		this.dateDemande = dateDemande;
+		this.noAdherent = noAdherent;
 		this.avs = avs != null ? FormatNumeroHelper.formatNumAVS(avs) : StringUtils.EMPTY;
 		this.email = email != null ? email : StringUtils.EMPTY;
 		this.descriptionTypeDemande = actionDemande != null ? actionDemande.getDescription() : StringUtils.EMPTY;
@@ -48,6 +51,10 @@ public class DemandeAvecHistoView {
 	@SuppressWarnings("UnusedDeclaration")
 	public RegDate getDateDemande() {
 		return dateDemande;
+	}
+
+	public BigInteger getNoAdherent() {
+		return noAdherent;
 	}
 
 	@SuppressWarnings("UnusedDeclaration")
