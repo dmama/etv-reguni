@@ -1,14 +1,19 @@
 package ch.vd.unireg.wsclient.rcpers;
 
+import javax.ws.rs.core.Response;
+import java.net.HttpURLConnection;
 import java.util.Collection;
 
+import ch.ech.ech0085.v1.GetInfoPersonRequest;
+import ch.ech.ech0085.v1.GetInfoPersonResponse;
+import ch.ech.ech0085.v1.ObjectFactory;
 import org.apache.cxf.jaxrs.client.ServerWebApplicationException;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.springframework.beans.factory.InitializingBean;
 
+import ch.vd.evd0001.v5.Event;
 import ch.vd.evd0001.v5.ListOfFoundPersons;
 import ch.vd.evd0001.v5.ListOfPersons;
-import ch.vd.evd0001.v5.Event;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 
@@ -24,6 +29,7 @@ public class RcPersClientImpl implements RcPersClient, InitializingBean {
 	private String peopleByEventIdPath;
 	private String eventPath;
 	private String searchPath;
+	private String upiGetInfoPersonPath;
 
 	public void setBaseUrl(String baseUrl) {
 		this.wcPool.setBaseUrl(baseUrl);
@@ -47,6 +53,10 @@ public class RcPersClientImpl implements RcPersClient, InitializingBean {
 
 	public void setSearchPath(String searchPath) {
 		this.searchPath = searchPath;
+	}
+
+	public void setUpiGetInfoPersonPath(String upiGetInfoPersonPath) {
+		this.upiGetInfoPersonPath = upiGetInfoPersonPath;
 	}
 
 	public void setUsername(String username) {
@@ -249,6 +259,27 @@ public class RcPersClientImpl implements RcPersClient, InitializingBean {
 	private static void addCriterion(WebClient wc, String key, Integer value) {
 		if (value != null) {
 			wc.query(key, value);
+		}
+	}
+
+	@Override
+	public GetInfoPersonResponse getInfoPersonUpi(long noAvs13) {
+		final WebClient wc = wcPool.borrowClient(60000);    // 1 minute
+		try {
+			wc.path(upiGetInfoPersonPath);
+			final Response response = wc.post(new ObjectFactory().createGetInfoPersonRequest(new GetInfoPersonRequest(noAvs13)));
+			if (response == null) {
+				throw new RcPersClientException("Null response received", null);
+			}
+			else if (response.getStatus() != HttpURLConnection.HTTP_OK) {
+				throw new RcPersClientException("Status " + response.getStatus(), null);
+			}
+			else {
+				return (GetInfoPersonResponse) response.getEntity();
+			}
+		}
+		finally {
+			wcPool.returnClient(wc);
 		}
 	}
 }

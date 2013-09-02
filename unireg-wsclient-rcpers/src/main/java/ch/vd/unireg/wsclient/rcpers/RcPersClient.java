@@ -2,9 +2,11 @@ package ch.vd.unireg.wsclient.rcpers;
 
 import java.util.Collection;
 
+import ch.ech.ech0085.v1.GetInfoPersonResponse;
+
+import ch.vd.evd0001.v5.Event;
 import ch.vd.evd0001.v5.ListOfFoundPersons;
 import ch.vd.evd0001.v5.ListOfPersons;
-import ch.vd.evd0001.v5.Event;
 import ch.vd.registre.base.date.RegDate;
 
 @SuppressWarnings("UnusedDeclaration")
@@ -74,4 +76,12 @@ public interface RcPersClient {
 	ListOfFoundPersons findPersons(String sex, String firstNames, String officialName, String swissZipCode, String municipalityId, String dataSource, String contains, Boolean history,
 	                               String originalName, String alliancePartnershipName, String aliasName, Integer nationalityStatus, Integer nationalityCountryId, String town,
 	                               String passportName, String otherNames, RegDate birthDateFrom, RegDate birthDateTo);
+
+	/**
+	 * Recherche la personne au niveau de l'UPI correspondant au numéro AVS donné
+	 *
+	 * @param noAvs13 numéro AVS 13
+	 * @return les données retournées par l'UPI sur le numéro en entrée
+	 */
+	GetInfoPersonResponse getInfoPersonUpi(long noAvs13);
 }
