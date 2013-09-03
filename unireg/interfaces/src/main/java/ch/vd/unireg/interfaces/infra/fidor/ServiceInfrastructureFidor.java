@@ -406,17 +406,20 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 					final String patternTaoBA = getUrl("TAOBA", "dossier");
 					final String patternTaoIS = getUrl("TAOIS", "default");
 					final String patternSipf = getUrl("SIPF", "explorer");
+					final String patternRepelec = getUrl("REPELEC", "contribuable");
 
 					final Map<ApplicationFiscale, String> map = new EnumMap<>(ApplicationFiscale.class);
 					map.put(ApplicationFiscale.TAO_PP, patternTaoPP);
 					map.put(ApplicationFiscale.TAO_BA, patternTaoBA);
 					map.put(ApplicationFiscale.TAO_IS, patternTaoIS);
 					map.put(ApplicationFiscale.SIPF, patternSipf); // [UNIREG-2409]
+					map.put(ApplicationFiscale.REPELEC, patternRepelec);
 					LOGGER.info("URLs externes (FiDoR) :\n" +
 							" * TAOPP = " + patternTaoPP + '\n' +
 							" * TAOBA = " + patternTaoBA + '\n' +
 							" * TAOIS = " + patternTaoIS + '\n' +
-							" * SIPF = " + patternSipf);
+							" * SIPF = " + patternSipf + '\n' +
+							" * REPELEC = " + patternRepelec);
 
 					urlsApplication = map;
 				}

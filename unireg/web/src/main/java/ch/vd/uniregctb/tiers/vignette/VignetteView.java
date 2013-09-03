@@ -99,7 +99,7 @@ public class VignetteView {
 				list = Arrays.asList(ApplicationFiscale.SIPF);
 			}
 			else {
-				list = Arrays.asList(ApplicationFiscale.TAO_PP, ApplicationFiscale.TAO_BA, ApplicationFiscale.TAO_IS, ApplicationFiscale.SIPF);
+				list = Arrays.asList(ApplicationFiscale.TAO_PP, ApplicationFiscale.TAO_BA, ApplicationFiscale.TAO_IS, ApplicationFiscale.SIPF, ApplicationFiscale.REPELEC);
 			}
 
 			this.urlsVers = new ArrayList<>();

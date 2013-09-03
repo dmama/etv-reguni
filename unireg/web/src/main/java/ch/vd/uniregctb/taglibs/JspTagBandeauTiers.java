@@ -528,6 +528,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 			}
 			s.append("\t<option value=\"").append(url("/redirect/SIPF.do?id=")).append(tiers.getNumero()).append("\">").append(message("label.SIPF")).append("</option>\n");
 			if (!isEntreprise) { // [UNIREG-1949] débranchement uniquement vers SIPF pour les PMs
+				s.append("\t<option value=\"").append(url("/redirect/REPELEC.do?id=")).append(tiers.getNumero()).append("\">").append(message("label.REPELEC")).append("</option>\n");
 				s.append("\t<option value=\"").append(url("launchcat.do?numero=")).append(tiers.getNumero()).append("\">").append(message("label.CAT")).append("</option>\n");
 			}
 			s.append("</select>\n");

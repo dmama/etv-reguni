@@ -7,7 +7,8 @@ public enum ApplicationFiscale {
 	TAO_PP("label.TAOPP"),
 	TAO_BA("label.TAOBA"),
 	TAO_IS("label.TAOIS"),
-	SIPF("label.SIPF");
+	SIPF("label.SIPF"),
+	REPELEC("label.REPELEC");
 
 	private String messageKey;
 
