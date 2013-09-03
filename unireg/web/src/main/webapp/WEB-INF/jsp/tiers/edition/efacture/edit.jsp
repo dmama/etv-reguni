@@ -124,7 +124,7 @@
 
 		            dialog.dialog({
 			                          title: "Activation / suspension d'un contribuable e-Facture",
-			                          height: 220,
+			                          height: 230,
 			                          width: 400,
 			                          modal: true,
 			                          buttons: {

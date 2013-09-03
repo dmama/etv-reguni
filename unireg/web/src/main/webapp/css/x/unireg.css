@@ -426,3 +426,13 @@ div.flash-error {
 	display: inline-block;
 	background: url(fors/autre_16.png) no-repeat;
 }
+
+/**
+ * E-Facture
+ */
+
+textarea.add-comment {
+	height: 60px;
+	width: 360px;
+	resize: none;
+}
