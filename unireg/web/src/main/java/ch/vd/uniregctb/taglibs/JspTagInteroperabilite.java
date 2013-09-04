@@ -149,10 +149,6 @@ public class JspTagInteroperabilite extends BodyTagSupport implements MessageSou
 		this.natureTiers = modalite;
 	}
 
-	public void setNatureTiers(NatureTiers natureTiers) {
-		this.natureTiers = natureTiers;
-	}
-
 	public void setDebiteurInactif(boolean debiteurInactif) {
 		this.debiteurInactif = debiteurInactif;
 	}
