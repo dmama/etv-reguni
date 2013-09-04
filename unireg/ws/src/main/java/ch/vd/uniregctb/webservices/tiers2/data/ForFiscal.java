@@ -312,6 +312,7 @@ public class ForFiscal implements Range {
 				case "DEBUT_PRESTATION_IS":
 				case "FIN_PRESTATION_IS":
 				case "CESSATION_ACTIVITE_FUSION_FAILLITE":
+				case "DEMENAGEMENT_SIEGE":
 					return INDETERMINE;
 				default:
 					return valueOf(v);

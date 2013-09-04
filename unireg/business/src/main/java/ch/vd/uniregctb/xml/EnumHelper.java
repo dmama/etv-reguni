@@ -824,6 +824,7 @@ public abstract class EnumHelper {
 		case DEBUT_PRESTATION_IS:
 		case FIN_PRESTATION_IS:
 		case CESSATION_ACTIVITE_FUSION_FAILLITE:
+		case DEMENAGEMENT_SIEGE:
 		case INDETERMINE:
 			return LiabilityChangeReason.UNDETERMINED;
 		case MAJORITE:

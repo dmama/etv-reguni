@@ -73,9 +73,14 @@ public enum MotifFor {
 	FIN_PRESTATION_IS("Fin de prestation IS"),
 
 	/**
-	 * Cessation d'activité / fusion / faillite d'un débiteur de prestations imposables (date de fin correspondante toujours en fin de mois)
+	 * Cessation d'activité / fusion / faillite d'un débiteur IS (date de fin correspondante toujours en fin de mois)
 	 */
-	CESSATION_ACTIVITE_FUSION_FAILLITE("Cessation d'activité / fusion / faillite");
+	CESSATION_ACTIVITE_FUSION_FAILLITE("Cessation d'activité / fusion / faillite"),
+
+	/**
+	 * Déménagement du siège social d'un débiteur IS (date de debut/fin sur debut/fin de mois)
+	 */
+	DEMENAGEMENT_SIEGE("Déménagement de siège");
 
 	private final String descriptionOuverture;
 

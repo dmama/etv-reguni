@@ -83,7 +83,7 @@ public class ForDebiteurPrestationImposableValidatorTest extends AbstractValidat
 		ff.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
 		ff.setNumeroOfsAutoriteFiscale(MockCommune.Aigle.getNoOFS());
 
-		final Set<MotifFor> autorises = EnumSet.of(MotifFor.INDETERMINE, MotifFor.DEBUT_PRESTATION_IS, MotifFor.FUSION_COMMUNES, MotifFor.REACTIVATION);
+		final Set<MotifFor> autorises = EnumSet.of(MotifFor.INDETERMINE, MotifFor.DEBUT_PRESTATION_IS, MotifFor.FUSION_COMMUNES, MotifFor.REACTIVATION, MotifFor.DEMENAGEMENT_SIEGE);
 		for (MotifFor motif : MotifFor.values()) {
 			ff.setMotifOuverture(motif);
 			final ValidationResults vr = validate(ff);
@@ -94,7 +94,7 @@ public class ForDebiteurPrestationImposableValidatorTest extends AbstractValidat
 				Assert.assertTrue(motif.name(), vr.hasErrors());
 				final List<String> errors = vr.getErrors();
 				assertEquals(motif.name(), 1, errors.size());
-				assertEquals(motif.name(), "Le motif d'ouverture " + motif + " n'est pas autorisé sur les fors fiscaux 'débiteur prestation imposable'.", errors.get(0));
+				assertEquals(motif.name(), "Le motif d'ouverture '" + motif.getDescription(true) + "' n'est pas autorisé sur les fors fiscaux 'débiteur prestation imposable'.", errors.get(0));
 			}
 		}
 	}
@@ -109,7 +109,7 @@ public class ForDebiteurPrestationImposableValidatorTest extends AbstractValidat
 		ff.setNumeroOfsAutoriteFiscale(MockCommune.Aigle.getNoOFS());
 		ff.setDateFin(RegDate.get(2010, 12, 31));
 
-		final Set<MotifFor> autorises = EnumSet.of(MotifFor.INDETERMINE, MotifFor.FIN_PRESTATION_IS, MotifFor.FUSION_COMMUNES, MotifFor.CESSATION_ACTIVITE_FUSION_FAILLITE, MotifFor.ANNULATION);
+		final Set<MotifFor> autorises = EnumSet.of(MotifFor.INDETERMINE, MotifFor.FIN_PRESTATION_IS, MotifFor.FUSION_COMMUNES, MotifFor.CESSATION_ACTIVITE_FUSION_FAILLITE, MotifFor.ANNULATION, MotifFor.DEMENAGEMENT_SIEGE);
 		for (MotifFor motif : MotifFor.values()) {
 			ff.setMotifFermeture(motif);
 			final ValidationResults vr = validate(ff);
@@ -120,7 +120,7 @@ public class ForDebiteurPrestationImposableValidatorTest extends AbstractValidat
 				Assert.assertTrue(motif.name(), vr.hasErrors());
 				final List<String> errors = vr.getErrors();
 				assertEquals(motif.name(), 1, errors.size());
-				assertEquals(motif.name(), "Le motif de fermeture " + motif + " n'est pas autorisé sur les fors fiscaux 'débiteur prestation imposable'.", errors.get(0));
+				assertEquals(motif.name(), "Le motif de fermeture '" + motif.getDescription(false) + "' n'est pas autorisé sur les fors fiscaux 'débiteur prestation imposable'.", errors.get(0));
 			}
 		}
 	}

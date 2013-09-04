@@ -12,8 +12,12 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 public class ForDebiteurPrestationImposableValidator extends ForFiscalAvecMotifsValidator<ForDebiteurPrestationImposable> {
 
-	private static final Set<MotifFor> ALLOWED_OPENING_CAUSES = EnumSet.of(MotifFor.INDETERMINE, MotifFor.DEBUT_PRESTATION_IS, MotifFor.FUSION_COMMUNES, MotifFor.REACTIVATION);
-	private static final Set<MotifFor> ALLOWED_CLOSING_CAUSES = EnumSet.of(MotifFor.INDETERMINE, MotifFor.FIN_PRESTATION_IS, MotifFor.CESSATION_ACTIVITE_FUSION_FAILLITE, MotifFor.FUSION_COMMUNES, MotifFor.ANNULATION);
+	private static final Set<MotifFor> ALLOWED_OPENING_CAUSES = EnumSet.of(MotifFor.INDETERMINE, MotifFor.DEBUT_PRESTATION_IS, MotifFor.FUSION_COMMUNES, MotifFor.REACTIVATION, MotifFor.DEMENAGEMENT_SIEGE);
+	private static final Set<MotifFor> ALLOWED_CLOSING_CAUSES = EnumSet.of(MotifFor.INDETERMINE, MotifFor.FIN_PRESTATION_IS, MotifFor.CESSATION_ACTIVITE_FUSION_FAILLITE, MotifFor.FUSION_COMMUNES, MotifFor.ANNULATION, MotifFor.DEMENAGEMENT_SIEGE);
+
+	private static final Set<MotifFor> OPENING_MONTH_BEGINNING = EnumSet.of(MotifFor.DEBUT_PRESTATION_IS, MotifFor.DEMENAGEMENT_SIEGE);
+	private static final Set<MotifFor> CLOSING_MONTH_END = EnumSet.of(MotifFor.CESSATION_ACTIVITE_FUSION_FAILLITE, MotifFor.DEMENAGEMENT_SIEGE);
+	private static final Set<MotifFor> CLOSING_YEAR_END = EnumSet.of(MotifFor.FIN_PRESTATION_IS);
 
 	@Override
 	protected Class<ForDebiteurPrestationImposable> getValidatedClass() {
@@ -36,30 +40,32 @@ public class ForDebiteurPrestationImposableValidator extends ForFiscalAvecMotifs
 
 			// [SIFISC-8712] ensemble des valeurs autorisées pour les motifs d'ouverture/de fermeture
 			if (ff.getMotifOuverture() != null && !ALLOWED_OPENING_CAUSES.contains(ff.getMotifOuverture())) {
-				vr.addError("Le motif d'ouverture " + ff.getMotifOuverture() + " n'est pas autorisé sur les fors fiscaux 'débiteur prestation imposable'.");
+				vr.addError("Le motif d'ouverture '" + ff.getMotifOuverture().getDescription(true) + "' n'est pas autorisé sur les fors fiscaux 'débiteur prestation imposable'.");
 			}
 			if (ff.getMotifFermeture() != null && !ALLOWED_CLOSING_CAUSES.contains(ff.getMotifFermeture())) {
-				vr.addError("Le motif de fermeture " + ff.getMotifFermeture() + " n'est pas autorisé sur les fors fiscaux 'débiteur prestation imposable'.");
+				vr.addError("Le motif de fermeture '" + ff.getMotifFermeture().getDescription(false) + "' n'est pas autorisé sur les fors fiscaux 'débiteur prestation imposable'.");
 			}
 
-			// [SIFISC-8712] les motifs d'ouverture et de fermeture sont obligatoires
+			// [SIFISC-8712] le motif d'ouverture est obligatoire
 			if (ff.getMotifOuverture() == null) {
 				vr.addError("Le motif d'ouverture est une donnée obligatoire sur les fors fiscaux 'débiteur prestation imposable'.");
 			}
-			if (ff.getDateFin() != null && ff.getMotifFermeture() == null) {
-				vr.addError("Le motif de fermeture est une donnée obligatoire sur les fors fiscaux 'débiteur prestation imposable' fermés.");
+			// [SIFISC-8712] conformité du motif d'ouverture avec la date correspondante
+			else if (ff.getDateDebut() != null && OPENING_MONTH_BEGINNING.contains(ff.getMotifOuverture()) && ff.getDateDebut().day() != 1) {
+				vr.addError("Les fors ouverts avec le motif '" + ff.getMotifOuverture().getDescription(true) + "' doivent commencer un premier jour du mois.");
 			}
 
-			// [SIFISC-8712] conformité des motifs d'ouverture et de fermeture des fors avec les dates correspondantes
-			if (ff.getDateDebut() != null && ff.getMotifOuverture() == MotifFor.DEBUT_PRESTATION_IS && ff.getDateDebut().day() != 1) {
-				vr.addError("Les fors ouverts avec le motif '" + MotifFor.DEBUT_PRESTATION_IS.getDescription(true) + "' doivent commencer un premier jour du mois.");
-			}
 			if (ff.getDateFin() != null) {
-				if (ff.getMotifFermeture() == MotifFor.CESSATION_ACTIVITE_FUSION_FAILLITE && ff.getDateFin() != ff.getDateFin().getLastDayOfTheMonth()) {
-					vr.addError("Les fors fermés avec le motif '" + MotifFor.CESSATION_ACTIVITE_FUSION_FAILLITE.getDescription(false) + "' doivent être fermés à une fin de mois.");
+				// [SIFISC-8712] le motif de fermeture est obligatoire si le for est fermé
+				if (ff.getMotifFermeture() == null) {
+					vr.addError("Le motif de fermeture est une donnée obligatoire sur les fors fiscaux 'débiteur prestation imposable' fermés.");
 				}
-				if (ff.getMotifFermeture() == MotifFor.FIN_PRESTATION_IS && ff.getDateFin() != RegDate.get(ff.getDateFin().year(), 12, 31)) {
-					vr.addError("Les fors fermés avec le motif '" + MotifFor.FIN_PRESTATION_IS.getDescription(false) + "' doivent être fermés à une fin d'année.");
+				// [SIFISC-8712] conformité du motif de fermeture avec la date correspondante
+				else if (CLOSING_YEAR_END.contains(ff.getMotifFermeture()) && ff.getDateFin() != RegDate.get(ff.getDateFin().year(), 12, 31)) {
+					vr.addError("Les fors fermés avec le motif '" + ff.getMotifFermeture().getDescription(false) + "' doivent être fermés à une fin d'année.");
+				}
+				else if (CLOSING_MONTH_END.contains(ff.getMotifFermeture()) && ff.getDateFin() != ff.getDateFin().getLastDayOfTheMonth()) {
+					vr.addError("Les fors fermés avec le motif '" + ff.getMotifFermeture().getDescription(false) + "' doivent être fermés à une fin de mois.");
 				}
 			}
 		}

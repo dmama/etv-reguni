@@ -18,7 +18,8 @@ public class MotifForTest extends EnumTest {
 		// tous les motifs actuels n'existent pas forcément dans le mapping de la version 4
 		final Set<ch.vd.uniregctb.type.MotifFor> set = EnumSet.complementOf(EnumSet.of(ch.vd.uniregctb.type.MotifFor.CESSATION_ACTIVITE_FUSION_FAILLITE,
 							                                                           ch.vd.uniregctb.type.MotifFor.DEBUT_PRESTATION_IS,
-							                                                           ch.vd.uniregctb.type.MotifFor.FIN_PRESTATION_IS));
+							                                                           ch.vd.uniregctb.type.MotifFor.FIN_PRESTATION_IS,
+							                                                           ch.vd.uniregctb.type.MotifFor.DEMENAGEMENT_SIEGE));
 		return set.toArray(new ch.vd.uniregctb.type.MotifFor[set.size()]);
 	}
 
@@ -59,5 +60,6 @@ public class MotifForTest extends EnumTest {
 		assertEquals(LiabilityChangeReason.UNDETERMINED, EnumHelper.coreToWeb(ch.vd.uniregctb.type.MotifFor.DEBUT_PRESTATION_IS));
 		assertEquals(LiabilityChangeReason.UNDETERMINED, EnumHelper.coreToWeb(ch.vd.uniregctb.type.MotifFor.FIN_PRESTATION_IS));
 		assertEquals(LiabilityChangeReason.UNDETERMINED, EnumHelper.coreToWeb(ch.vd.uniregctb.type.MotifFor.CESSATION_ACTIVITE_FUSION_FAILLITE));
+		assertEquals(LiabilityChangeReason.UNDETERMINED, EnumHelper.coreToWeb(ch.vd.uniregctb.type.MotifFor.DEMENAGEMENT_SIEGE));
 	}
 }

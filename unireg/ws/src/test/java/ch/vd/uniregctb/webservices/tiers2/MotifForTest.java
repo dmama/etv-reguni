@@ -19,7 +19,8 @@ public class MotifForTest extends EnumTest {
 		                                                                               ch.vd.uniregctb.type.MotifFor.FIN_ACTIVITE_DIPLOMATIQUE,
 		                                                                               ch.vd.uniregctb.type.MotifFor.CESSATION_ACTIVITE_FUSION_FAILLITE,
 		                                                                               ch.vd.uniregctb.type.MotifFor.DEBUT_PRESTATION_IS,
-		                                                                               ch.vd.uniregctb.type.MotifFor.FIN_PRESTATION_IS));
+		                                                                               ch.vd.uniregctb.type.MotifFor.FIN_PRESTATION_IS,
+		                                                                               ch.vd.uniregctb.type.MotifFor.DEMENAGEMENT_SIEGE));
 		return set.toArray(new ch.vd.uniregctb.type.MotifFor[set.size()]);
 	}
 
@@ -62,5 +63,6 @@ public class MotifForTest extends EnumTest {
 		assertEquals(MotifFor.INDETERMINE, EnumHelper.coreToWeb(ch.vd.uniregctb.type.MotifFor.DEBUT_PRESTATION_IS));
 		assertEquals(MotifFor.INDETERMINE, EnumHelper.coreToWeb(ch.vd.uniregctb.type.MotifFor.FIN_PRESTATION_IS));
 		assertEquals(MotifFor.INDETERMINE, EnumHelper.coreToWeb(ch.vd.uniregctb.type.MotifFor.CESSATION_ACTIVITE_FUSION_FAILLITE));
+		assertEquals(MotifFor.INDETERMINE, EnumHelper.coreToWeb(ch.vd.uniregctb.type.MotifFor.DEMENAGEMENT_SIEGE));
 	}
 }

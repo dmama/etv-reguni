@@ -42,7 +42,8 @@ public class MotifsForHelper {
 
 	private static List<MotifFor> getMotifsOuvertureDebiteursPrestationsImposables() {
 		return Arrays.asList(MotifFor.DEBUT_PRESTATION_IS,
-		                     MotifFor.FUSION_COMMUNES);
+		                     MotifFor.FUSION_COMMUNES,
+		                     MotifFor.DEMENAGEMENT_SIEGE);
 	}
 
 	private static List<MotifFor> getMotifsOuvertureRevenuFortune(TypeFor type) {
@@ -121,7 +122,8 @@ public class MotifsForHelper {
 	private static List<MotifFor> getMotifsFermetureDebiteursPrestationsImposables() {
 		return Arrays.asList(MotifFor.FIN_PRESTATION_IS,
 		                     MotifFor.CESSATION_ACTIVITE_FUSION_FAILLITE,
-		                     MotifFor.FUSION_COMMUNES);
+		                     MotifFor.FUSION_COMMUNES,
+		                     MotifFor.DEMENAGEMENT_SIEGE);
 	}
 
 	private static List<MotifFor> getMotifsFermetureRevenuFortune(TypeFor type) {
