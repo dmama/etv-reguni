@@ -6,7 +6,7 @@
 	<c:set var="message" value="${status.value}"  scope="request"/>
 </spring:bind>
 <!-- Debut Caracteristiques identification -->
-<fieldset class="information">
+<fieldset class="information" id="info-demande">
 	<legend><span>
 		<fmt:message key="caracteristiques.message.identification" />
 	</span></legend>
@@ -25,7 +25,17 @@
 			<td><fmt:message key="label.periode.fiscale" />&nbsp;:</td>
 			<td>${message.periodeFiscale}</td>
 			<td><fmt:message key="label.navs13" />&nbsp;:</td>
-			<td>${message.navs13}</td>
+			<td>
+				${message.navs13}
+				<c:if test="${message.navs13Upi != null}">
+					<span id="avs13upi-${message.id}" class="staticTip upiAutreNavs13">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+					<div id="avs13upi-${message.id}-tooltip" style="display:none;">
+						<fmt:message key="warning.identification.navs13.upi">
+							<fmt:param value="${message.navs13Upi}"/>
+						</fmt:message>
+					</div>
+				</c:if>
+			</td>
 		</tr>
 		<tr class="<unireg:nextRowClass/>" >
 			<td><fmt:message key="label.emetteur" />&nbsp;:</td>
@@ -142,4 +152,11 @@
 	</table>
 	
 </fieldset>
+
+<script type="text/javascript" language="javascript">
+	$(function() {
+		Tooltips.activate_static_tooltips($('#info-demande'));
+	});
+</script>
+
 <!-- Fin Caracteristiques identification -->

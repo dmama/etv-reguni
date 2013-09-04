@@ -451,12 +451,10 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	 * Envoie une réponse d'identification positive de type automatique
 	 * @param message  la requête d'identification initiale
 	 * @param personne la personne physique identifiée
-	 * @param avsUpi non-null (= le NAVS13 de l'UPI) si l'identification automatique a abouti après que le numéro AVS13 de la demande a été remplacé par le numéro actuel fourni par l'UPI
 	 * @throws Exception en cas de problème
 	 */
-	private void identifieAutomatiquement(IdentificationContribuable message, PersonnePhysique personne, @Nullable String avsUpi) throws Exception {
+	private void identifieAutomatiquement(IdentificationContribuable message, PersonnePhysique personne) throws Exception {
 		identifie(message, personne, Etat.TRAITE_AUTOMATIQUEMENT);
-		message.setNAVS13Upi(avsUpi);
 	}
 
 	/**
@@ -792,12 +790,13 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 				found = Collections.emptyList();
 				foundSize = null;
 			}
+			message.setNAVS13Upi(avsUpi.getValue());
 			if (found.size() == 1) {
 				// on a trouvé un et un seul contribuable:
 				final PersonnePhysique personne = (PersonnePhysique) tiersDAO.get(found.get(0));
 
 				// on peut répondre immédiatement
-				identifieAutomatiquement(message, personne, avsUpi.getValue());
+				identifieAutomatiquement(message, personne);
 			}
 			else {
 				//UNIREG 2412 Ajout de possibilités au service d'identification UniReg asynchrone
@@ -1080,12 +1079,13 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 			catch (TooManyIdentificationPossibilitiesException e) {
 				found = Collections.emptyList();
 			}
+			message.setNAVS13Upi(avsUpi.getValue());
 			if (found.size() == 1) {
 				// on a trouvé un et un seul contribuable:
 				final PersonnePhysique personne = (PersonnePhysique) tiersDAO.get(found.get(0));
 
 				// on peut répondre immédiatement
-				identifieAutomatiquement(message, personne, avsUpi.getValue());
+				identifieAutomatiquement(message, personne);
 				return true;
 			}
 			else {

@@ -74,10 +74,18 @@ public class IdentificationMessagesEditManagerImpl implements IdentificationMess
 				}
 			}
 			identificationMessagesEditView.setNomRaison(nomRaison);
-			identificationMessagesEditView.setNumeroAVS(FormatNumeroHelper.formatNumAVS(personne.getNAVS13()));
-			if ("".equals(identificationMessagesEditView.getNumeroAVS())) {
-				identificationMessagesEditView.setNumeroAVS(FormatNumeroHelper.formatAncienNumAVS(personne.getNAVS11()));
+
+			final String navs;
+			if (StringUtils.isNotBlank(identificationMessagesEditView.getDemandeIdentificationView().getNavs13Upi())) {
+				navs = identificationMessagesEditView.getDemandeIdentificationView().getNavs13Upi();
 			}
+			else if (StringUtils.isNotBlank(personne.getNAVS13())) {
+				navs = FormatNumeroHelper.formatNumAVS(personne.getNAVS13());
+			}
+			else {
+				navs = FormatNumeroHelper.formatAncienNumAVS(personne.getNAVS11());
+			}
+			identificationMessagesEditView.setNumeroAVS(navs);
 		}
 		return identificationMessagesEditView;
 	}
@@ -96,6 +104,7 @@ public class IdentificationMessagesEditManagerImpl implements IdentificationMess
 		final DemandeIdentificationView demandeIdentificationView = new DemandeIdentificationView();
 		demandeIdentificationView.setId(identificationContribuable.getId());
 		demandeIdentificationView.setEtatMessage(identificationContribuable.getEtat());
+		demandeIdentificationView.setNavs13Upi(FormatNumeroHelper.formatNumAVS(identificationContribuable.getNAVS13Upi()));
 
 		final Demande demande = identificationContribuable.getDemande();
 		if (demande != null) {
