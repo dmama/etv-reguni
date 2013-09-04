@@ -10,6 +10,7 @@ import ch.vd.uniregctb.common.WebTest;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.lr.view.ListeRecapDetailView;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
+import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.PeriodeDecompte;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
@@ -129,7 +130,7 @@ public class ListeRecapManagerTest extends WebTest {
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.TRIMESTRIEL, null, date(anneeReference, 1, 1), date(anneeReference, 12, 31));
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.MENSUEL, null, date(anneeSuivante, 1, 1), null);
 
-				addForDebiteur(dpi, date(anneeReference, 1, 1), null, MockCommune.Bex);
+				addForDebiteur(dpi, date(anneeReference, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bex);
 
 				final PeriodeFiscale fiscale = addPeriodeFiscale(anneeReference);
 
@@ -160,7 +161,7 @@ public class ListeRecapManagerTest extends WebTest {
 			public Long execute(TransactionStatus status) throws Exception {
 				DebiteurPrestationImposable dpi = addDebiteur();
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.TRIMESTRIEL, null, date(anneeReference, 9, 1), null);
-				addForDebiteur(dpi, date(anneeReference, 9, 1), null, MockCommune.Bex);
+				addForDebiteur(dpi, date(anneeReference, 9, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bex);
 
 				final PeriodeFiscale fiscale = addPeriodeFiscale(anneeReference);
 
@@ -190,8 +191,8 @@ public class ListeRecapManagerTest extends WebTest {
 			public Long execute(TransactionStatus status) throws Exception {
 				DebiteurPrestationImposable dpi = addDebiteur();
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.TRIMESTRIEL, null, date(anneeReference, 9, 1), null);
-				addForDebiteur(dpi, date(anneeReference, 1, 1), date(anneeReference, 6, 30), MockCommune.Bex);
-				addForDebiteur(dpi, date(anneeSuivante, 10, 1), null, MockCommune.Bex);
+				addForDebiteur(dpi, date(anneeReference, 1, 1), MotifFor.INDETERMINE, date(anneeReference, 6, 30), MotifFor.INDETERMINE, MockCommune.Bex);
+				addForDebiteur(dpi, date(anneeSuivante, 10, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bex);
 
 				final PeriodeFiscale fiscale = addPeriodeFiscale(anneeReference);
 
@@ -221,8 +222,8 @@ public class ListeRecapManagerTest extends WebTest {
 			public Long execute(TransactionStatus status) throws Exception {
 				DebiteurPrestationImposable dpi = addDebiteur();
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.TRIMESTRIEL, null, date(anneeReference, 1, 1), null);
-				addForDebiteur(dpi, date(anneeReference, 1, 1), date(anneeReference, 6, 30), MockCommune.Bex);
-				addForDebiteur(dpi, date(anneeSuivante, 10, 1), date(anneeSuivante, 12, 31), MockCommune.Bex);
+				addForDebiteur(dpi, date(anneeReference, 1, 1), MotifFor.INDETERMINE, date(anneeReference, 6, 30), MotifFor.INDETERMINE, MockCommune.Bex);
+				addForDebiteur(dpi, date(anneeSuivante, 10, 1), MotifFor.INDETERMINE, date(anneeSuivante, 12, 31), MotifFor.INDETERMINE, MockCommune.Bex);
 
 				final PeriodeFiscale fiscale2009 = addPeriodeFiscale(anneeReference);
 				final PeriodeFiscale fiscale2010 = addPeriodeFiscale(anneeSuivante);
@@ -257,9 +258,9 @@ public class ListeRecapManagerTest extends WebTest {
 			public Long execute(TransactionStatus status) throws Exception {
 				DebiteurPrestationImposable dpi = addDebiteur();
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.TRIMESTRIEL, null, date(anneeReference, 1, 1), null);
-				addForDebiteur(dpi, date(anneeReference, 1, 1), date(anneeReference, 6, 30), MockCommune.Bex);
-				addForDebiteur(dpi, date(anneeSuivante, 10, 1), date(anneeSuivante, 12, 31), MockCommune.Bex);
-				addForDebiteur(dpi, date(anneePostSuivante, 3, 1), null, MockCommune.Bex);
+				addForDebiteur(dpi, date(anneeReference, 1, 1), MotifFor.INDETERMINE, date(anneeReference, 6, 30), MotifFor.INDETERMINE, MockCommune.Bex);
+				addForDebiteur(dpi, date(anneeSuivante, 10, 1), MotifFor.INDETERMINE, date(anneeSuivante, 12, 31), MotifFor.INDETERMINE, MockCommune.Bex);
+				addForDebiteur(dpi, date(anneePostSuivante, 3, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bex);
 				final PeriodeFiscale fiscale2009 = addPeriodeFiscale(anneeReference);
 				final PeriodeFiscale fiscale2010 = addPeriodeFiscale(anneeSuivante);
 				final PeriodeFiscale fiscale2011 = addPeriodeFiscale(anneePostSuivante);
@@ -294,7 +295,7 @@ public class ListeRecapManagerTest extends WebTest {
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.UNIQUE, PeriodeDecompte.M08, date(anneeReference, 1, 1), date(anneeReference, 12, 31));
 
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.MENSUEL, null, date(anneeSuivante, 1, 1), null);
-				addForDebiteur(dpi, date(anneeReference, 1, 1), null, MockCommune.Bex);
+				addForDebiteur(dpi, date(anneeReference, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bex);
 
 				final PeriodeFiscale periodeFiscale = addPeriodeFiscale(anneeReference);
 
@@ -325,7 +326,7 @@ public class ListeRecapManagerTest extends WebTest {
 
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.TRIMESTRIEL, null, date(anneeReference, 1, 1), date(anneeReference, 12, 31));
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.UNIQUE, PeriodeDecompte.M06, date(anneeSuivante, 1, 1), null);
-				addForDebiteur(dpi, date(anneeReference, 1, 1), null, MockCommune.Bex);
+				addForDebiteur(dpi, date(anneeReference, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bex);
 
 				final PeriodeFiscale periodeFiscale = addPeriodeFiscale(anneeReference);
 				addLR(dpi, date(anneeReference, 1, 1), PeriodiciteDecompte.TRIMESTRIEL, periodeFiscale, TypeEtatDeclaration.EMISE);
@@ -360,7 +361,7 @@ public class ListeRecapManagerTest extends WebTest {
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.UNIQUE, PeriodeDecompte.M06, date(anneeReference, 1, 1), date(anneeReference, 12, 31));
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.MENSUEL, null, date(anneeSuivante, 1, 1), null);
 
-				addForDebiteur(dpi, date(anneePrecedente, 3, 1), null, MockCommune.Bex);
+				addForDebiteur(dpi, date(anneePrecedente, 3, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bex);
 
 				return dpi.getNumero();
 			}
@@ -388,7 +389,7 @@ public class ListeRecapManagerTest extends WebTest {
 
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.TRIMESTRIEL, null, date(anneeReference, 3, 1), null);
 
-				addForDebiteur(dpi, date(anneeReference, 1, 1), null, MockCommune.Bex);
+				addForDebiteur(dpi, date(anneeReference, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bex);
 
 				final PeriodeFiscale periodeFiscale = addPeriodeFiscale(anneeReference);
 				addLR(dpi, date(anneeReference, 1, 1), PeriodiciteDecompte.TRIMESTRIEL, periodeFiscale, TypeEtatDeclaration.EMISE);
@@ -421,7 +422,7 @@ public class ListeRecapManagerTest extends WebTest {
 
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.TRIMESTRIEL, null, date(anneeReference, 3, 1), null);
 
-				addForDebiteur(dpi, date(anneeReference, 1, 1), null, MockCommune.Bex);
+				addForDebiteur(dpi, date(anneeReference, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bex);
 
 				final PeriodeFiscale periodeFiscale = addPeriodeFiscale(anneeReference);
 				addLR(dpi, date(anneeReference, 1, 1), PeriodiciteDecompte.TRIMESTRIEL, periodeFiscale, TypeEtatDeclaration.EMISE);
@@ -454,7 +455,7 @@ public class ListeRecapManagerTest extends WebTest {
 
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.UNIQUE, PeriodeDecompte.M07, date(anneeReference, 3, 1), null);
 
-				addForDebiteur(dpi, date(anneeReference, 1, 1), null, MockCommune.Bex);
+				addForDebiteur(dpi, date(anneeReference, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bex);
 
 				final PeriodeFiscale periodeFiscale = addPeriodeFiscale(anneeReference);
 				addLRPeriodiciteUnique(dpi, date(anneeReference, 7, 1), date(anneeReference, 7, 31), periodeFiscale, TypeEtatDeclaration.EMISE);
@@ -484,7 +485,7 @@ public class ListeRecapManagerTest extends WebTest {
 
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.UNIQUE, PeriodeDecompte.M07, date(anneeReference, 3, 1), null);
 
-				addForDebiteur(dpi, date(anneeReference, 1, 1), null, MockCommune.Bex);
+				addForDebiteur(dpi, date(anneeReference, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bex);
 
 				return dpi.getNumero();
 			}

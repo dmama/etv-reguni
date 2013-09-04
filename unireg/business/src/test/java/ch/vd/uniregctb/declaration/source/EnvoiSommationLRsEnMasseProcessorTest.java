@@ -20,6 +20,7 @@ import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.type.CategorieImpotSource;
+import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
@@ -247,7 +248,7 @@ public class EnvoiSommationLRsEnMasseProcessorTest extends BusinessTest {
 
 	private DeclarationImpotSource addLRaSommerAvecDebiteur(CategorieImpotSource categorie, PeriodeFiscale periode) {
 		DebiteurPrestationImposable admin = addDebiteur(categorie, PeriodiciteDecompte.MENSUEL,  date(2007, 1, 1));
-		addForDebiteur(admin,date(2007,1,1),null, MockCommune.Lausanne);
+		addForDebiteur(admin, date(2007,1,1), MotifFor.INDETERMINE, null, null, MockCommune.Lausanne);
 		DeclarationImpotSource lr = addLR(admin, date(2007, 1, 1), PeriodiciteDecompte.ANNUEL, periode);
 		addEtatDeclarationEmise(lr, date(2008, 1, 5));
 		addDelaiDeclaration(lr, date(2008, 1, 5), date(2008, 3, 15));
@@ -256,7 +257,7 @@ public class EnvoiSommationLRsEnMasseProcessorTest extends BusinessTest {
 
 	private DeclarationImpotSource addLRaSommerAvecDebiteur(PeriodeFiscale periode, RegDate debut, PeriodiciteDecompte periodicite) {
 		final DebiteurPrestationImposable admin = addDebiteur(CategorieImpotSource.REGULIERS, periodicite, debut);
-		addForDebiteur(admin,debut,null, MockCommune.Lausanne);
+		addForDebiteur(admin, debut, MotifFor.INDETERMINE, null, null, MockCommune.Lausanne);
 		final DeclarationImpotSource lr = addLR(admin, debut, periodicite, periode);
 		final RegDate fin = periodicite.getFinPeriode(debut);
 		addEtatDeclarationEmise(lr, fin.addDays(6));
@@ -266,7 +267,7 @@ public class EnvoiSommationLRsEnMasseProcessorTest extends BusinessTest {
 
 	private DeclarationImpotSource addLRaSommerAvecDebiteurPeriodiciteUnique(PeriodeFiscale periode, RegDate debut, RegDate fin) {
 		final DebiteurPrestationImposable admin = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.UNIQUE, debut);
-		addForDebiteur(admin,debut,null, MockCommune.Lausanne);
+		addForDebiteur(admin, debut, MotifFor.INDETERMINE, null, null, MockCommune.Lausanne);
 		final DeclarationImpotSource lr = addLRPeriodiciteUnique(admin, debut, fin, periode);
 		addEtatDeclarationEmise(lr, fin.addDays(6));
 		addDelaiDeclaration(lr, fin.addDays(6), fin.addMonths(1));

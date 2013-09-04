@@ -19,6 +19,7 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.CategorieImpotSource;
+import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 
@@ -264,7 +265,7 @@ public class DebiteurPrestationImposableIndexableTest extends BusinessTest {
 				dpi = (DebiteurPrestationImposable) dao.save(dpi);
 
 				addAdresseSuisse(dpi, TypeAdresseTiers.COURRIER, date(2009,1,1), null,  MockRue.Lausanne.AvenueDeBeaulieu);
-				addForDebiteur(dpi, date(2009,1,1), null, MockCommune.Lausanne);
+				addForDebiteur(dpi, date(2009,1,1), MotifFor.INDETERMINE, null, null, MockCommune.Lausanne);
 
 				AutreCommunaute ac = new AutreCommunaute();
 				ac.setNumero(idAC);
@@ -326,7 +327,7 @@ public class DebiteurPrestationImposableIndexableTest extends BusinessTest {
 				dpi = (DebiteurPrestationImposable) dao.save(dpi);
 
 				addAdresseSuisse(dpi, TypeAdresseTiers.COURRIER, date(2009,1,1), null,  MockRue.Lausanne.AvenueDeBeaulieu);
-				addForDebiteur(dpi, date(2009,1,1), null, MockCommune.Lausanne);
+				addForDebiteur(dpi, date(2009,1,1), MotifFor.INDETERMINE, null, null, MockCommune.Lausanne);
 
 				return dpi.getNumero();
 			}

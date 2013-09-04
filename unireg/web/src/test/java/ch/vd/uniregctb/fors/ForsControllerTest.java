@@ -657,8 +657,11 @@ public class ForsControllerTest extends WebTestSpring3 {
 		final ModelAndView mav = handle(request, response);
 		assertNotNull(mav);
 
-		// Vérifie que le ménage commun possède bien deux fors fiscaux
+		final BeanPropertyBindingResult bindingResult = getBindingResult(mav);
+		assertNotNull(bindingResult);
+		assertEquals(0, bindingResult.getErrorCount());
 
+		// Vérifie que le ménage commun possède bien deux fors fiscaux
 		doInTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
@@ -692,7 +695,7 @@ public class ForsControllerTest extends WebTestSpring3 {
 			public Long doInTransaction(TransactionStatus status) {
 
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
-				addForDebiteur(dpi, date(2009, 1, 1), null, MockCommune.Bex);
+				addForDebiteur(dpi, date(2009, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bex);
 
 				final PersonnePhysique pp1 = addNonHabitant("Draco", "Malfoy", date(1980, 10, 25), Sexe.MASCULIN);
 				addRapportPrestationImposable(dpi, pp1, date(2009, 1, 1), null, false);
@@ -715,13 +718,21 @@ public class ForsControllerTest extends WebTestSpring3 {
 		// On vérifie qu'il y a une erreur sur la date de début
 		final BeanPropertyBindingResult result = getBindingResult(mav);
 		assertNotNull(result);
-		assertEquals(1, result.getErrorCount());
+		assertEquals(2, result.getErrorCount());
 
 		final List<?> errors = result.getAllErrors();
-		final FieldError error = (FieldError) errors.get(0);
-		assertNotNull(error);
-		assertEquals("dateDebut", error.getField());
-		assertEquals("error.date.debut.vide", error.getCode());
+		{
+			final FieldError error = (FieldError) errors.get(0);
+			assertNotNull(error);
+			assertEquals("dateDebut", error.getField());
+			assertEquals("error.date.debut.vide", error.getCode());
+		}
+		{
+			final FieldError error = (FieldError) errors.get(1);
+			assertNotNull(error);
+			assertEquals("motifDebut", error.getField());
+			assertEquals("error.motif.ouverture.vide", error.getCode());
+		}
 
 		// On vérifie qu'aucun for fiscal n'a été créé
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -747,7 +758,7 @@ public class ForsControllerTest extends WebTestSpring3 {
 			public Long doInTransaction(TransactionStatus status) {
 
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
-				addForDebiteur(dpi, dateDebut, null, MockCommune.Bex);
+				addForDebiteur(dpi, dateDebut, MotifFor.INDETERMINE, null, null, MockCommune.Bex);
 
 				final PersonnePhysique pp1 = addNonHabitant("Draco", "Malfoy", date(1980, 10, 25), Sexe.MASCULIN);
 				addRapportPrestationImposable(dpi, pp1, dateDebut, null, false);
@@ -760,6 +771,7 @@ public class ForsControllerTest extends WebTestSpring3 {
 		request.setMethod("POST");
 		request.addParameter("tiersId", String.valueOf(dpiId));
 		request.addParameter("dateDebut", RegDateHelper.dateToDisplayString(dateOuvertureNouveauFor));
+		request.addParameter("motifDebut", MotifFor.FUSION_COMMUNES.name());
 		request.addParameter("typeAutoriteFiscale", TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD.name());
 		request.addParameter("noAutoriteFiscale", String.valueOf(MockCommune.Vevey.getNoOFS()));
 		request.setRequestURI("/fors/debiteur/add.do");
@@ -812,7 +824,7 @@ public class ForsControllerTest extends WebTestSpring3 {
 	public void testAddForDebiteurFerme() throws Exception {
 
 		final RegDate dateDebut = date(2010, 9, 1);
-		final RegDate dateFermeture = date(2010, 12, 30);
+		final RegDate dateFermeture = date(2010, 12, 31);
 
 		// mise en place fiscale
 		final Long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
@@ -829,7 +841,9 @@ public class ForsControllerTest extends WebTestSpring3 {
 		request.setMethod("POST");
 		request.addParameter("tiersId", String.valueOf(dpiId));
 		request.addParameter("dateDebut", "01.09.2010");
-		request.addParameter("dateFin", "30.12.2010");
+		request.addParameter("motifDebut", MotifFor.DEBUT_PRESTATION_IS.name());
+		request.addParameter("dateFin", "31.12.2010");
+		request.addParameter("motifFin", MotifFor.FIN_PRESTATION_IS.name());
 		request.addParameter("typeAutoriteFiscale", TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD.name());
 		request.addParameter("noAutoriteFiscale", String.valueOf(MockCommune.Villette.getNoOFS()));
 		request.setRequestURI("/fors/debiteur/add.do");
@@ -950,7 +964,7 @@ public class ForsControllerTest extends WebTestSpring3 {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
-				final ForDebiteurPrestationImposable ff = addForDebiteur(dpi, dateDebut, null, MockCommune.Bex);
+				final ForDebiteurPrestationImposable ff = addForDebiteur(dpi, dateDebut, MotifFor.INDETERMINE, null, null, MockCommune.Bex);
 
 				final PersonnePhysique pp1 = addNonHabitant("Draco", "Malfoy", date(1980, 10, 25), Sexe.MASCULIN);
 				addRapportPrestationImposable(dpi, pp1, dateDebut, null, false);
@@ -963,6 +977,7 @@ public class ForsControllerTest extends WebTestSpring3 {
 		request.setMethod("POST");
 		request.addParameter("id", String.valueOf(ids.forDebiteur));
 		request.addParameter("dateFin", RegDateHelper.dateToDisplayString(dateFermeture));
+		request.addParameter("motifFin", MotifFor.CESSATION_ACTIVITE_FUSION_FAILLITE.name());
 		request.addParameter("typeAutoriteFiscale", TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD.name());
 		request.addParameter("noAutoriteFiscale", String.valueOf(MockCommune.Bex.getNoOFS()));
 		request.setRequestURI("/fors/debiteur/edit.do");

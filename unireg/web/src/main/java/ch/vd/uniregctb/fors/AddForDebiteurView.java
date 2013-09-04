@@ -1,16 +1,19 @@
 package ch.vd.uniregctb.fors;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 @SuppressWarnings("UnusedDeclaration")
-public class AddForDebiteurView implements AddForView {
+public class AddForDebiteurView implements AddForAvecMotifsView {
 
 	private Long id;
 	private long tiersId;
 
 	private RegDate dateDebut;
+	private MotifFor motifDebut;
 	private RegDate dateFin;
+	private MotifFor motifFin;
 
 	private TypeAutoriteFiscale typeAutoriteFiscale;
 	private Integer noAutoriteFiscale;
@@ -57,6 +60,22 @@ public class AddForDebiteurView implements AddForView {
 
 	public void setDateFin(RegDate dateFin) {
 		this.dateFin = dateFin;
+	}
+
+	public MotifFor getMotifDebut() {
+		return motifDebut;
+	}
+
+	public void setMotifDebut(MotifFor motifDebut) {
+		this.motifDebut = motifDebut;
+	}
+
+	public MotifFor getMotifFin() {
+		return motifFin;
+	}
+
+	public void setMotifFin(MotifFor motifFin) {
+		this.motifFin = motifFin;
 	}
 
 	@Override

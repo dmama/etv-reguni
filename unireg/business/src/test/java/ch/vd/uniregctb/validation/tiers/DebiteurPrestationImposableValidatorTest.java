@@ -13,6 +13,7 @@ import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeCommunication;
+import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.validation.AbstractValidatorTest;
@@ -39,6 +40,8 @@ public class DebiteurPrestationImposableValidatorTest extends AbstractValidatorT
 			final ForDebiteurPrestationImposable forFiscal = new ForDebiteurPrestationImposable();
 			forFiscal.setDateDebut(date(2003, 12, 1));
 			forFiscal.setDateFin(date(2004, 8, 11));
+			forFiscal.setMotifOuverture(MotifFor.INDETERMINE);
+			forFiscal.setMotifFermeture(MotifFor.INDETERMINE);
 			forFiscal.setGenreImpot(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE);
 			forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
 			forFiscal.setNumeroOfsAutoriteFiscale(MockCommune.Lausanne.getNoOFS());
@@ -48,6 +51,8 @@ public class DebiteurPrestationImposableValidatorTest extends AbstractValidatorT
 			final ForDebiteurPrestationImposable forFiscal = new ForDebiteurPrestationImposable();
 			forFiscal.setDateDebut(date(2004, 8, 12));
 			forFiscal.setDateFin(date(2006, 10, 1));
+			forFiscal.setMotifOuverture(MotifFor.INDETERMINE);
+			forFiscal.setMotifFermeture(MotifFor.INDETERMINE);
 			forFiscal.setGenreImpot(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE);
 			forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
 			forFiscal.setNumeroOfsAutoriteFiscale(MockCommune.Vevey.getNoOFS());
@@ -56,7 +61,7 @@ public class DebiteurPrestationImposableValidatorTest extends AbstractValidatorT
 		{ // ce for intermédiaire est ouvert => il doit entrer en conflit avec le for suivant
 			final ForDebiteurPrestationImposable forFiscal = new ForDebiteurPrestationImposable();
 			forFiscal.setDateDebut(date(2006, 10, 2));
-			forFiscal.setDateFin(null);
+			forFiscal.setMotifOuverture(MotifFor.INDETERMINE);
 			forFiscal.setGenreImpot(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE);
 			forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
 			forFiscal.setNumeroOfsAutoriteFiscale(MockCommune.Aubonne.getNoOFS());
@@ -66,6 +71,8 @@ public class DebiteurPrestationImposableValidatorTest extends AbstractValidatorT
 			final ForDebiteurPrestationImposable forFiscal = new ForDebiteurPrestationImposable();
 			forFiscal.setDateDebut(date(2006, 10, 3));
 			forFiscal.setDateFin(date(2007, 3, 30));
+			forFiscal.setMotifOuverture(MotifFor.INDETERMINE);
+			forFiscal.setMotifFermeture(MotifFor.INDETERMINE);
 			forFiscal.setGenreImpot(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE);
 			forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
 			forFiscal.setNumeroOfsAutoriteFiscale(MockCommune.Aubonne.getNoOFS());
@@ -74,7 +81,7 @@ public class DebiteurPrestationImposableValidatorTest extends AbstractValidatorT
 		{
 			final ForDebiteurPrestationImposable forFiscal = new ForDebiteurPrestationImposable();
 			forFiscal.setDateDebut(date(2007, 3, 31));
-			forFiscal.setDateFin(null);
+			forFiscal.setMotifOuverture(MotifFor.INDETERMINE);
 			forFiscal.setGenreImpot(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE);
 			forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
 			forFiscal.setNumeroOfsAutoriteFiscale(MockCommune.Bussigny.getNoOFS());
@@ -129,6 +136,8 @@ public class DebiteurPrestationImposableValidatorTest extends AbstractValidatorT
 			final ForDebiteurPrestationImposable forFiscal = new ForDebiteurPrestationImposable();
 			forFiscal.setDateDebut(date(2006, 10, 2));
 			forFiscal.setDateFin(date(2008, 2, 12));
+			forFiscal.setMotifOuverture(MotifFor.INDETERMINE);
+			forFiscal.setMotifFermeture(MotifFor.INDETERMINE);
 			forFiscal.setGenreImpot(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE);
 			forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
 			forFiscal.setNumeroOfsAutoriteFiscale(MockCommune.Aubonne.getNoOFS());
@@ -140,6 +149,8 @@ public class DebiteurPrestationImposableValidatorTest extends AbstractValidatorT
 			final ForDebiteurPrestationImposable forFiscal = new ForDebiteurPrestationImposable();
 			forFiscal.setDateDebut(date(2010, 10, 2));
 			forFiscal.setDateFin(date(2010, 12, 25));
+			forFiscal.setMotifOuverture(MotifFor.INDETERMINE);
+			forFiscal.setMotifFermeture(MotifFor.INDETERMINE);
 			forFiscal.setGenreImpot(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE);
 			forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
 			forFiscal.setNumeroOfsAutoriteFiscale(MockCommune.Aubonne.getNoOFS());
@@ -151,6 +162,8 @@ public class DebiteurPrestationImposableValidatorTest extends AbstractValidatorT
 			final ForDebiteurPrestationImposable forFiscal = new ForDebiteurPrestationImposable();
 			forFiscal.setDateDebut(date(2011, 6, 24));
 			forFiscal.setDateFin(date(2011, 9, 20));
+			forFiscal.setMotifOuverture(MotifFor.INDETERMINE);
+			forFiscal.setMotifFermeture(MotifFor.INDETERMINE);
 			forFiscal.setGenreImpot(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE);
 			forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
 			forFiscal.setNumeroOfsAutoriteFiscale(MockCommune.Aubonne.getNoOFS());
@@ -160,7 +173,7 @@ public class DebiteurPrestationImposableValidatorTest extends AbstractValidatorT
 		{
 			final ForDebiteurPrestationImposable forFiscal = new ForDebiteurPrestationImposable();
 			forFiscal.setDateDebut(date(2011, 12, 1));
-			forFiscal.setDateFin(null);
+			forFiscal.setMotifOuverture(MotifFor.INDETERMINE);
 			forFiscal.setGenreImpot(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE);
 			forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
 			forFiscal.setNumeroOfsAutoriteFiscale(MockCommune.Aubonne.getNoOFS());
@@ -220,7 +233,7 @@ public class DebiteurPrestationImposableValidatorTest extends AbstractValidatorT
 		{
 			final ForDebiteurPrestationImposable forFiscal = new ForDebiteurPrestationImposable();
 			forFiscal.setDateDebut(date(2006, 10, 2));
-			forFiscal.setDateFin(null);
+			forFiscal.setMotifOuverture(MotifFor.INDETERMINE);
 			forFiscal.setGenreImpot(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE);
 			forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
 			forFiscal.setNumeroOfsAutoriteFiscale(MockCommune.Aubonne.getNoOFS());
@@ -247,7 +260,7 @@ public class DebiteurPrestationImposableValidatorTest extends AbstractValidatorT
 		{
 			final ForDebiteurPrestationImposable forFiscal = new ForDebiteurPrestationImposable();
 			forFiscal.setDateDebut(date(2006, 10, 2));
-			forFiscal.setDateFin(null);
+			forFiscal.setMotifOuverture(MotifFor.INDETERMINE);
 			forFiscal.setGenreImpot(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE);
 			forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
 			forFiscal.setNumeroOfsAutoriteFiscale(MockCommune.Aubonne.getNoOFS());

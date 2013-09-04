@@ -97,7 +97,6 @@ import ch.vd.uniregctb.tiers.view.PeriodiciteViewComparator;
 import ch.vd.uniregctb.tiers.view.SituationFamilleView;
 import ch.vd.uniregctb.tiers.view.TiersEditView;
 import ch.vd.uniregctb.tiers.view.TiersView;
-import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.PeriodeDecompte;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
@@ -530,20 +529,8 @@ public class TiersManager implements MessageSourceAware {
 		final Set<ForFiscal> forsFiscaux = dpi.getForsFiscaux();
 		if (forsFiscaux != null) {
 			for (ForFiscal forFiscal : forsFiscaux) {
-				final ForFiscalView forFiscalView = new ForFiscalView();
-				forFiscalView.setId(forFiscal.getId());
-				forFiscalView.setNumeroCtb(forFiscal.getTiers().getNumero());
-				forFiscalView.setGenreImpot(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE);
-				forFiscalView.setAnnule(forFiscal.isAnnule());
-				forFiscalView.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-				forFiscalView.setNumeroForFiscalCommune(forFiscal.getNumeroOfsAutoriteFiscale());
-				forFiscalView.setDateOuverture(forFiscal.getDateDebut());
-				forFiscalView.setDateFermeture(forFiscal.getDateFin());
-				forFiscalView.setNatureForFiscal(forFiscal.getClass().getSimpleName());
-
 				final boolean dernierFor = !forFiscal.isAnnule() && (forFiscal.getDateFin() == null || dpi.getForDebiteurPrestationImposableAfter(forFiscal.getDateFin()) == null);
-				forFiscalView.setDernierForPrincipalOuDebiteur(dernierFor);
-
+				final ForFiscalView forFiscalView = new ForFiscalView(forFiscal, false, dernierFor);
 				forsFiscauxView.add(forFiscalView);
 			}
 			Collections.sort(forsFiscauxView, new ForDebiteurViewComparator());

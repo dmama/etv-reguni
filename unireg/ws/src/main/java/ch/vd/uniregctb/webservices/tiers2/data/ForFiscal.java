@@ -305,10 +305,17 @@ public class ForFiscal implements Range {
 
 		public static MotifFor fromValue(String v) {
 			// [UNIREG-911] pour des raisons de compatibilité ascendante, les motifs de début/fin d'activité diplomatiques sont mappés comme indéterminés
-			if ("DEBUT_ACTIVITE_DIPLOMATIQUE".equals(v) || "FIN_ACTIVITE_DIPLOMATIQUE".equals(v)) {
-				return INDETERMINE;
+			// [SIFISC-8712] Pareil pour les motifs liés spécifiquement aux débiteurs IS
+			switch (v) {
+				case "DEBUT_ACTIVITE_DIPLOMATIQUE":
+				case "FIN_ACTIVITE_DIPLOMATIQUE":
+				case "DEBUT_PRESTATION_IS":
+				case "FIN_PRESTATION_IS":
+				case "CESSATION_ACTIVITE_FUSION_FAILLITE":
+					return INDETERMINE;
+				default:
+					return valueOf(v);
 			}
-			return valueOf(v);
 		}
 	}
 

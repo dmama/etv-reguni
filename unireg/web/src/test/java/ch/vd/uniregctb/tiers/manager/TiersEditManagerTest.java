@@ -27,6 +27,7 @@ import ch.vd.uniregctb.tiers.view.DebiteurEditView;
 import ch.vd.uniregctb.tiers.view.TiersEditView;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.ModeCommunication;
+import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
@@ -219,7 +220,7 @@ public class TiersEditManagerTest extends WebTest {
 				dpi.setModeCommunication(ModeCommunication.PAPIER);
 				dpi.setCategorieImpotSource(CategorieImpotSource.REGULIERS);
 				dpi.addPeriodicite(new Periodicite(PeriodiciteDecompte.MENSUEL, null, date(2010, 1, 1), null));
-				addForDebiteur(dpi, date(2010, 11, 1), null, MockCommune.Aigle);
+				addForDebiteur(dpi, date(2010, 11, 1), MotifFor.INDETERMINE, null, null, MockCommune.Aigle);
 				return dpi.getNumero();
 			}
 		});

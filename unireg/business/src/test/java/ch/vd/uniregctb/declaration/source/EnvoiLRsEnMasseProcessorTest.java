@@ -7,6 +7,7 @@ import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
+import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.PeriodeDecompte;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 
@@ -41,7 +42,7 @@ public class EnvoiLRsEnMasseProcessorTest extends BusinessTest {
 				dpi.setSansListeRecapitulative(false);
 
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.UNIQUE, PeriodeDecompte.M10, date(anneeReference, 9, 1), null);
-				addForDebiteur(dpi, date(anneeReference, 9, 1), null, MockCommune.Bex);
+				addForDebiteur(dpi, date(anneeReference, 9, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bex);
 
 				addPeriodeFiscale(anneeReference);
 				return dpi.getNumero();

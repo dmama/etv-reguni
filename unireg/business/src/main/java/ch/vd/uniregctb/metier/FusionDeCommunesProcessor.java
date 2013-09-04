@@ -300,8 +300,8 @@ public class FusionDeCommunesProcessor {
 			}
 			else {
 				final DebiteurPrestationImposable debiteur = (DebiteurPrestationImposable) deb.getTiers();
-				tiersService.closeForDebiteurPrestationImposable(debiteur, deb, dateFusion.getOneDayBefore(), false);
-				tiersService.openForDebiteurPrestationImposable(debiteur, dateFusion, nouveauNoOfs, deb.getTypeAutoriteFiscale());
+				tiersService.closeForDebiteurPrestationImposable(debiteur, deb, dateFusion.getOneDayBefore(), MotifFor.FUSION_COMMUNES, false);
+				tiersService.openForDebiteurPrestationImposable(debiteur, dateFusion, MotifFor.FUSION_COMMUNES, nouveauNoOfs, deb.getTypeAutoriteFiscale());
 			}
 		}
 	}

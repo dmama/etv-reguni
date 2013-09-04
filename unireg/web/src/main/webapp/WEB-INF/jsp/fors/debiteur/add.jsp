@@ -54,6 +54,10 @@
 						}
 					}
 
+					function updateMotifsFors() {
+						Fors.updateMotifsOuverture($('#motifDebut'), '${command.tiersId}', 'DEBITEUR_PRESTATION_IMPOSABLE', null, '${command.motifDebut}');
+						Fors.updateMotifsFermeture($('#motifFin'), '${command.tiersId}', 'DEBITEUR_PRESTATION_IMPOSABLE', null, '${command.motifFin}')
+					}
 				</script>
 
 				<!-- Debut For -->
@@ -81,6 +85,19 @@
 							</jsp:include>
 						</td>
 					</tr>
+					<tr class="<unireg:nextRowClass/>" >
+						<td><fmt:message key="label.motif.ouverture" />&nbsp;:</td>
+						<td>
+							<form:select path="motifDebut" cssStyle="width:30ex" />
+							<form:errors path="motifDebut" cssClass="error" />
+						</td>
+						<td><fmt:message key="label.motif.fermeture" />&nbsp;:</td>
+						<td>
+							<form:select path="motifFin" cssStyle="width:30ex" />
+							<form:errors path="motifFin" cssClass="error" />
+						</td>
+					</tr>
+
 					<tr class="<unireg:nextRowClass/>">
 
 						<td><fmt:message key="label.type.for.fiscal"/>&nbsp;:</td>
@@ -121,8 +138,8 @@
 			$(function() {
 				// pour forcer la validation au chargement
 				dateOuverture_OnChange($('#dateDebut').get(0));
-
 				selectAutoriteFiscale('${command.typeAutoriteFiscale}');
+				updateMotifsFors();
 			});
 		</script>
 

@@ -19,6 +19,7 @@ import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.editique.EditiqueHelper;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.type.CategorieImpotSource;
+import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
@@ -47,7 +48,7 @@ public class ImpressionSommationLRHelperTest extends BusinessTest {
 	public void testDateEnvoiCourrierForSommation() throws Exception {
 		LOGGER.debug("ImpressionListeRecapHelperTest - testDateEnvoiCourrierForSommation");
 	    final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
-		addForDebiteur(dpi, date(2009, 1, 1), null, MockCommune.Bussigny);
+		addForDebiteur(dpi, date(2009, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bussigny);
 
 		final PeriodeFiscale pf = addPeriodeFiscale(2010);
 		final DeclarationImpotSource lr = addLR(dpi, date(2010, 7, 1), PeriodiciteDecompte.TRIMESTRIEL, pf, TypeEtatDeclaration.EMISE);

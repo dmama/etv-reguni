@@ -3130,7 +3130,7 @@ public class TiersServiceTest extends BusinessTest {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
 				DebiteurPrestationImposable dpi = addDebiteur();
-				tiersService.addForDebiteur(dpi,date(2009,6,22),null,TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,MockCommune.Bex.getNoOFS());
+				tiersService.addForDebiteur(dpi, date(2009,6,22), MotifFor.INDETERMINE, null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Bex.getNoOFS());
 
 
 
@@ -3143,7 +3143,7 @@ public class TiersServiceTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
-				tiersService.addForDebiteur(dpi, date(2009, 4, 1), date(2009, 6, 21), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Bex.getNoOFS());
+				tiersService.addForDebiteur(dpi, date(2009, 4, 1), MotifFor.INDETERMINE, date(2009, 6, 21), MotifFor.INDETERMINE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Bex.getNoOFS());
 				return null;
 			}
 		});
@@ -3177,7 +3177,7 @@ public class TiersServiceTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
-				tiersService.addForDebiteur(dpi,date(2010,4,1),null,TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,MockCommune.Bex.getNoOFS());
+				tiersService.addForDebiteur(dpi, date(2010,4,1), MotifFor.INDETERMINE, null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Bex.getNoOFS());
 				return null;
 			}
 		});
@@ -3222,7 +3222,7 @@ public class TiersServiceTest extends BusinessTest {
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.TRIMESTRIEL, null, date(anneeReference, 1, 1), date(anneeReference, 12, 31));
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.UNIQUE, PeriodeDecompte.M11, date(anneeSuivante, 1, 1), null);
 
-				addForDebiteur(dpi, date(anneeReference - 1, 1, 1), null, MockCommune.Bex);
+				addForDebiteur(dpi, date(anneeReference - 1, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bex);
 
 				final PeriodeFiscale fiscale2009 = addPeriodeFiscale(anneeReference - 1);
 
@@ -3320,7 +3320,7 @@ public class TiersServiceTest extends BusinessTest {
 			public Long execute(TransactionStatus status) throws Exception {
 				DebiteurPrestationImposable dpi = addDebiteur();
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.TRIMESTRIEL, null, date(2010, 1, 1), null);
-				addForDebiteur(dpi, date(2010, 1, 1), null, MockCommune.Bex);
+				addForDebiteur(dpi, date(2010, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bex);
 				return dpi.getNumero();
 			}
 		});
@@ -3343,7 +3343,7 @@ public class TiersServiceTest extends BusinessTest {
 			public Long execute(TransactionStatus status) throws Exception {
 				DebiteurPrestationImposable dpi = addDebiteur();
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.TRIMESTRIEL, null, date(2010, 1, 1), null);
-				addForDebiteur(dpi, date(2009, 6, 1), null, MockCommune.Bex);
+				addForDebiteur(dpi, date(2009, 6, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bex);
 				return dpi.getNumero();
 			}
 		});
@@ -3372,7 +3372,7 @@ public class TiersServiceTest extends BusinessTest {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
 				final DebiteurPrestationImposable dpi = addDebiteur();
-				addForDebiteur(dpi, date(2009, 11, 1), null, MockCommune.Bex);
+				addForDebiteur(dpi, date(2009, 11, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bex);
 				return dpi.getNumero();
 			}
 		});
@@ -3401,7 +3401,7 @@ public class TiersServiceTest extends BusinessTest {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
 				final DebiteurPrestationImposable dpi = addDebiteur();
-				addForDebiteur(dpi, date(2009, 6, 1), null, MockCommune.Bex);
+				addForDebiteur(dpi, date(2009, 6, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bex);
 				final PeriodeFiscale fiscale = addPeriodeFiscale(2009);
 
 				addLR(dpi, date(2009, 7, 1), PeriodiciteDecompte.TRIMESTRIEL, fiscale, TypeEtatDeclaration.EMISE);
@@ -4202,7 +4202,7 @@ public class TiersServiceTest extends BusinessTest {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
-				addForDebiteur(dpi, dateDebut, null, MockCommune.Bex);
+				addForDebiteur(dpi, dateDebut, MotifFor.INDETERMINE, null, null, MockCommune.Bex);
 
 				final PersonnePhysique pp1 = addNonHabitant("Draco", "Malfoy", date(1980, 10, 25), Sexe.MASCULIN);
 				final PersonnePhysique pp2 = addNonHabitant("Weasley", "Ronnald", date(1980, 5, 12), Sexe.MASCULIN);
@@ -4224,7 +4224,7 @@ public class TiersServiceTest extends BusinessTest {
 				final ForDebiteurPrestationImposable forDebiteur = dpi.getForDebiteurPrestationImposableAt(null);
 				assertNotNull(forDebiteur);
 
-				tiersService.closeForDebiteurPrestationImposable(dpi, forDebiteur, dateFermetureFor, false);
+				tiersService.closeForDebiteurPrestationImposable(dpi, forDebiteur, dateFermetureFor, MotifFor.CESSATION_ACTIVITE_FUSION_FAILLITE, false);
 				return null;
 			}
 		});
@@ -4276,7 +4276,7 @@ public class TiersServiceTest extends BusinessTest {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
-				addForDebiteur(dpi, dateDebut, null, MockCommune.Bex);
+				addForDebiteur(dpi, dateDebut, MotifFor.INDETERMINE, null, null, MockCommune.Bex);
 
 				final PersonnePhysique pp1 = addNonHabitant("Draco", "Malfoy", date(1980, 10, 25), Sexe.MASCULIN);
 				final PersonnePhysique pp2 = addNonHabitant("Weasley", "Ronnald", date(1980, 5, 12), Sexe.MASCULIN);
@@ -4298,7 +4298,7 @@ public class TiersServiceTest extends BusinessTest {
 				final ForDebiteurPrestationImposable forDebiteur = dpi.getForDebiteurPrestationImposableAt(null);
 				assertNotNull(forDebiteur);
 
-				tiersService.closeForDebiteurPrestationImposable(dpi, forDebiteur, dateFermetureFor, true);
+				tiersService.closeForDebiteurPrestationImposable(dpi, forDebiteur, dateFermetureFor, MotifFor.INDETERMINE, true);
 				return null;
 			}
 		});
@@ -5750,8 +5750,8 @@ public class TiersServiceTest extends BusinessTest {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
-				ids.idFor1 = addForDebiteur(dpi, date(2009, 1, 1), date(2010, 12, 31), MockCommune.Bussigny).getId();
-				ids.idFor2 = addForDebiteur(dpi, date(2011, 1, 1), date(2011, 9, 30), MockCommune.Aubonne).getId();
+				ids.idFor1 = addForDebiteur(dpi, date(2009, 1, 1), MotifFor.INDETERMINE, date(2010, 12, 31), MotifFor.INDETERMINE, MockCommune.Bussigny).getId();
+				ids.idFor2 = addForDebiteur(dpi, date(2011, 1, 1), MotifFor.INDETERMINE, date(2011, 9, 30), MotifFor.INDETERMINE, MockCommune.Aubonne).getId();
 				PersonnePhysique jean = addNonHabitant("Jean", "zep", null, Sexe.MASCULIN);
 				PersonnePhysique michel = addNonHabitant("michel", "zep", null, Sexe.MASCULIN);
 				ids.jeanId = jean.getNumero();

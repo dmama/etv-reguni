@@ -510,12 +510,13 @@ public interface TiersService {
      *
      * @param debiteur                 le debiteur sur lequel le nouveau for est ouvert
      * @param dateOuverture            la date à laquelle le nouveau for est ouvert
+     * @param motifOuverture           le motif d'ouverture du nouveau for
      * @param numeroOfsAutoriteFiscale le numéro OFS de l'autorité fiscale sur laquelle est ouverte le nouveau fort.
      * @param typeAutoriteFiscale      le type d'autorité fiscale.
      * @return le nouveau for debiteur
      */
-    ForDebiteurPrestationImposable openForDebiteurPrestationImposable(DebiteurPrestationImposable debiteur, RegDate dateOuverture, int numeroOfsAutoriteFiscale,
-                                                                      TypeAutoriteFiscale typeAutoriteFiscale);
+    ForDebiteurPrestationImposable openForDebiteurPrestationImposable(DebiteurPrestationImposable debiteur, RegDate dateOuverture, MotifFor motifOuverture,
+                                                                      int numeroOfsAutoriteFiscale, TypeAutoriteFiscale typeAutoriteFiscale);
 
     /**
      * Ré-ouvre les rapports de prestation imposables du débiteur qui ont été fermés à la date de désactivation avec une nouvelle date d'ouverture à la réactivation
@@ -576,12 +577,13 @@ public interface TiersService {
      * @param debiteur                       le debiteur concerné
      * @param forDebiteurPrestationImposable le for débiteur concerné
      * @param dateFermeture                  la date de fermeture du for
+     * @param motifFermeture                 la motif de fermeture du for
      * @param fermerRapportsPrestation       <code>true</code> s'il faut fermer les rapports "prestation" du débiteur, <code>false</code> s'il faut les laisser ouverts
      * @return le for debiteur fermé, ou <b>null</b> si le contribuable n'en possédait pas.
      */
     ForDebiteurPrestationImposable closeForDebiteurPrestationImposable(DebiteurPrestationImposable debiteur,
                                                                        ForDebiteurPrestationImposable forDebiteurPrestationImposable,
-                                                                       RegDate dateFermeture, boolean fermerRapportsPrestation);
+                                                                       RegDate dateFermeture, MotifFor motifFermeture, boolean fermerRapportsPrestation);
 
     /**
      * Ferme le for autre impôt d'un tiers.
@@ -640,7 +642,7 @@ public interface TiersService {
 	ForFiscalAutreElementImposable updateForAutreElementImposable(ForFiscalAutreElementImposable ffaei, RegDate dateFermeture, MotifFor motifFermeture, Integer noOfsAutoriteFiscale);
 
 	@Nullable
-	ForDebiteurPrestationImposable updateForDebiteur(ForDebiteurPrestationImposable fdpi, RegDate dateFermeture);
+	ForDebiteurPrestationImposable updateForDebiteur(ForDebiteurPrestationImposable fdpi, RegDate dateFermeture, MotifFor motifFermeture);
 
 	/**
      * Annule tous les fors ouverts à la date spécifiée (et qui ne sont pas fermés) sur le contribuable donné et dont le motif d'ouverture correspond à ce qui est indiqué
@@ -699,12 +701,15 @@ public interface TiersService {
      *
      * @param debiteur            un débiteur de prestations imposables
      * @param dateDebut           la date d'ouverture du for à créer
+     * @param motifOuverture      le motif d'ouverture du for à créer
      * @param dateFin             la date de fermeture du for à créer (peut être nulle)
+     * @param motifFermeture      le motif de fermeture du for à créer (peut être nul si la date de fermeture est nulle)
      * @param typeAutoriteFiscale le type d'autorité fiscale du for à créer
      * @param autoriteFiscale     le numéro de l'autorité fiscale du for à créer
      * @return le nouveau for fiscal.
      */
-    ForDebiteurPrestationImposable addForDebiteur(DebiteurPrestationImposable debiteur, RegDate dateDebut, RegDate dateFin, TypeAutoriteFiscale typeAutoriteFiscale, int autoriteFiscale);
+    ForDebiteurPrestationImposable addForDebiteur(DebiteurPrestationImposable debiteur, RegDate dateDebut, MotifFor motifOuverture,
+                                                  RegDate dateFin, MotifFor motifFermeture, TypeAutoriteFiscale typeAutoriteFiscale, int autoriteFiscale);
 
     /**
      * Fusionne un non habitant avec un habitant
@@ -981,18 +986,21 @@ public interface TiersService {
                                                       ModeImposition modeImposition, MotifFor motifOuverture, RegDate dateFermeture, MotifFor motifFermeture);
 
     /**
-     * OUvre et ferme un for debiteur préstation imposable sur un débiteur
+     * Ouvre et ferme un for debiteur préstation imposable sur un débiteur
      *
      * @param debiteur                 sur lequel le for est ouvert et ferme
      * @param dateOuverture            date d'ouverture du for
+     * @param motifOuverture           motif d'ouverture du for
      * @param dateFermeture            date de fermeture du for
+     * @param motifFermeture           motif de fermeture du for
      * @param numeroOfsAutoriteFiscale le numéro OFS de l'autorité fiscale sur laquelle est ouverte le nouveau fort.
      * @param typeAutoriteFiscale      le type d'autorité fiscale.
      * @return le nouveau for principal
      */
 
-    ForDebiteurPrestationImposable openAndCloseForDebiteurPrestationImposable(DebiteurPrestationImposable debiteur, RegDate dateOuverture, RegDate dateFermeture, int numeroOfsAutoriteFiscale,
-                                                                                     TypeAutoriteFiscale typeAutoriteFiscale);
+    ForDebiteurPrestationImposable openAndCloseForDebiteurPrestationImposable(DebiteurPrestationImposable debiteur, RegDate dateOuverture, MotifFor motifOuverture,
+                                                                              RegDate dateFermeture, MotifFor motifFermeture, int numeroOfsAutoriteFiscale,
+                                                                              TypeAutoriteFiscale typeAutoriteFiscale);
 
     /**
      * Lance la correction des flags "habitant" sur les personnes physiques en fonction de leur for fiscal principal actif

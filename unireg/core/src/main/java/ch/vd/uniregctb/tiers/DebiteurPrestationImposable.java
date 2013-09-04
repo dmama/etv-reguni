@@ -26,6 +26,7 @@ import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.ModeCommunication;
+import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.PeriodeDecompte;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 
@@ -280,6 +281,21 @@ public class DebiteurPrestationImposable extends Tiers {
 			}
 		}
 		return null;
+	}
+
+	@Override
+	@Transient
+	public RegDate getDateDesactivation() {
+		final RegDate date;
+		final ForDebiteurPrestationImposable courant = getForDebiteurPrestationImposableAt(null);
+		if (courant == null) {
+			final ForDebiteurPrestationImposable dernier = getDernierForDebiteur();
+			date = dernier != null && dernier.getMotifFermeture() == MotifFor.ANNULATION ? dernier.getDateFin() : null;
+		}
+		else {
+			date = null;
+		}
+		return date;
 	}
 
 	/**

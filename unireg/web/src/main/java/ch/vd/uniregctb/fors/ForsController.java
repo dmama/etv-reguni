@@ -700,7 +700,7 @@ public class ForsController {
 			throw new ObjectNotFoundException("Le débiteur avec l'id=" + dpiId + " n'existe pas.");
 		}
 
-		tiersService.addForDebiteur(debiteur, view.getDateDebut(), view.getDateFin(), view.getTypeAutoriteFiscale(), view.getNoAutoriteFiscale());
+		tiersService.addForDebiteur(debiteur, view.getDateDebut(), view.getMotifDebut(), view.getDateFin(), view.getMotifFin(), view.getTypeAutoriteFiscale(), view.getNoAutoriteFiscale());
 
 		return "redirect:/fiscal/edit-for-debiteur.do?id=" + dpiId;
 	}
@@ -744,7 +744,7 @@ public class ForsController {
 			return "fors/debiteur/edit";
 		}
 
-		tiersService.updateForDebiteur(fdpi, view.getDateFin());
+		tiersService.updateForDebiteur(fdpi, view.getDateFin(), view.getMotifFin());
 
 		return "redirect:/fiscal/edit-for-debiteur.do?id=" + dpiId;
 	}

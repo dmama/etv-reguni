@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Set;
 
 import junit.framework.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.TransactionStatus;
@@ -1027,7 +1026,7 @@ public class ActivationServiceTest extends BusinessTest {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
-				addForDebiteur(dpi, dateDebut, null, MockCommune.Bex);
+				addForDebiteur(dpi, dateDebut, MotifFor.INDETERMINE, null, null, MockCommune.Bex);
 
 				final PersonnePhysique pp1 = addNonHabitant("Draco", "Malfoy", date(1980, 10, 25), Sexe.MASCULIN);
 				final PersonnePhysique pp2 = addNonHabitant("Weasley", "Ronnald", date(1980, 5, 12), Sexe.MASCULIN);
@@ -1063,7 +1062,9 @@ public class ActivationServiceTest extends BusinessTest {
 				final ForDebiteurPrestationImposable forFerme = dpi.getForDebiteurPrestationImposableAt(dateDesactivation);
 				Assert.assertNotNull(forFerme);
 				Assert.assertEquals(dateDesactivation, forFerme.getDateFin());
+				Assert.assertEquals(MotifFor.ANNULATION, forFerme.getMotifFermeture());
 				Assert.assertEquals(dateDebut, forFerme.getDateDebut());
+				Assert.assertEquals(MotifFor.INDETERMINE, forFerme.getMotifOuverture());
 				Assert.assertFalse(forFerme.isAnnule());
 
 				// les rapports de travail encore ouverts ont été fermés à la date de désactivation
@@ -1098,7 +1099,6 @@ public class ActivationServiceTest extends BusinessTest {
 	}
 
 	@Test
-	@Ignore(value = "La réactivation d'un DPI ne fonctionne pas puisqu'il n'y a pas de moyen de stocker la date de désactivation sur un débiteur")
 	public void testDesactivationEtReactivationDebiteurPrestationImposable() throws Exception {
 
 		final RegDate dateDebut = date(2009, 1, 1);
@@ -1109,7 +1109,7 @@ public class ActivationServiceTest extends BusinessTest {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
-				addForDebiteur(dpi, dateDebut, null, MockCommune.Bex);
+				addForDebiteur(dpi, dateDebut, MotifFor.INDETERMINE, null, null, MockCommune.Bex);
 
 				final PersonnePhysique pp1 = addNonHabitant("Draco", "Malfoy", date(1980, 10, 25), Sexe.MASCULIN);
 				final PersonnePhysique pp2 = addNonHabitant("Weasley", "Ronnald", date(1980, 5, 12), Sexe.MASCULIN);
@@ -1145,7 +1145,9 @@ public class ActivationServiceTest extends BusinessTest {
 				final ForDebiteurPrestationImposable forFerme = dpi.getForDebiteurPrestationImposableAt(dateDesactivation);
 				Assert.assertNotNull(forFerme);
 				Assert.assertEquals(dateDesactivation, forFerme.getDateFin());
+				Assert.assertEquals(MotifFor.ANNULATION, forFerme.getMotifFermeture());
 				Assert.assertEquals(dateDebut, forFerme.getDateDebut());
+				Assert.assertEquals(MotifFor.INDETERMINE, forFerme.getMotifOuverture());
 				Assert.assertFalse(forFerme.isAnnule());
 
 				// les rapports de travail encore ouverts ont été fermés à la date de désactivation
@@ -1200,13 +1202,16 @@ public class ActivationServiceTest extends BusinessTest {
 				final ForDebiteurPrestationImposable forCourant = dpi.getForDebiteurPrestationImposableAt(null);
 				Assert.assertNotNull(forCourant);
 				Assert.assertEquals(dateReactivation, forCourant.getDateDebut());
+				Assert.assertEquals(MotifFor.REACTIVATION, forCourant.getMotifOuverture());
 				Assert.assertFalse(forCourant.isAnnule());
 
 				// le for précédemment ouvert est resté fermé à la date de désactivation
 				final ForDebiteurPrestationImposable forFerme = dpi.getForDebiteurPrestationImposableAt(dateDesactivation);
 				Assert.assertNotNull(forFerme);
 				Assert.assertEquals(dateDesactivation, forFerme.getDateFin());
+				Assert.assertEquals(MotifFor.ANNULATION, forFerme.getMotifFermeture());
 				Assert.assertEquals(dateDebut, forFerme.getDateDebut());
+				Assert.assertEquals(MotifFor.INDETERMINE, forFerme.getMotifOuverture());
 				Assert.assertFalse(forFerme.isAnnule());
 
 				// le rapport de travail qui avait été fermé doit avoir été ré-ouvert à la date de réactivation
@@ -1214,36 +1219,33 @@ public class ActivationServiceTest extends BusinessTest {
 				Assert.assertNotNull(rapports);
 				Assert.assertEquals(3, rapports.size());
 
-				boolean foundExOpen = false;
-				boolean foundAlreadyClosed = false;
-				boolean foundReOpen = false;
-				for (RapportEntreTiers r : rapports) {
+				final List<RapportEntreTiers> rapportsTries = new ArrayList<>(rapports);
+				Collections.sort(rapportsTries, new DateRangeComparator<RapportEntreTiers>());
+
+				{
+					final RapportEntreTiers r = rapportsTries.get(0);
 					Assert.assertNotNull(r);
 					assertInstanceOf(RapportPrestationImposable.class, r);
 					Assert.assertEquals(dateDebut, r.getDateDebut());
+					Assert.assertEquals(dateDesactivation.addMonths(-1), r.getDateFin());
 					Assert.assertFalse(r.isAnnule());
-					Assert.assertNotNull(r.getDateFin());
-					if (r.getDateFin() != null) {
-						if (dateDesactivation.equals(r.getDateFin())) {
-							Assert.assertFalse(foundExOpen);
-							foundExOpen = true;
-						}
-						else {
-							Assert.assertFalse(foundAlreadyClosed);
-							Assert.assertEquals(dateDesactivation.addMonths(-1), r.getDateFin());
-							foundAlreadyClosed = true;
-						}
-					}
-					else {
-						Assert.assertFalse(foundReOpen);
-						Assert.assertEquals(dateReactivation, r.getDateDebut());
-						foundReOpen = true;
-					}
 				}
-				Assert.assertTrue(foundExOpen);
-				Assert.assertTrue(foundAlreadyClosed);
-				Assert.assertTrue(foundReOpen);
-
+				{
+					final RapportEntreTiers r = rapportsTries.get(1);
+					Assert.assertNotNull(r);
+					assertInstanceOf(RapportPrestationImposable.class, r);
+					Assert.assertEquals(dateDebut, r.getDateDebut());
+					Assert.assertEquals(dateDesactivation, r.getDateFin());
+					Assert.assertFalse(r.isAnnule());
+				}
+				{
+					final RapportEntreTiers r = rapportsTries.get(2);
+					Assert.assertNotNull(r);
+					assertInstanceOf(RapportPrestationImposable.class, r);
+					Assert.assertEquals(dateReactivation, r.getDateDebut());
+					Assert.assertNull(r.getDateFin());
+					Assert.assertFalse(r.isAnnule());
+				}
 				return null;
 			}
 		});

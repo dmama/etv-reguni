@@ -23,6 +23,7 @@ import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.CategorieImpotSource;
+import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.PeriodeDecompte;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
@@ -72,7 +73,7 @@ public class ListeRecapServiceTest extends BusinessTest {
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.TRIMESTRIEL, null, date(2009, 1, 1), date(2009, 12, 31));
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.UNIQUE, PeriodeDecompte.M01, date(2010, 1, 1), date(2010, 12, 31));
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.MENSUEL, null, date(2011, 1, 1), null);
-				addForDebiteur(dpi, date(2008, 1, 1), null, MockCommune.Bex);
+				addForDebiteur(dpi, date(2008, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bex);
 				return dpi.getNumero();
 			}
 		});
@@ -103,7 +104,7 @@ public class ListeRecapServiceTest extends BusinessTest {
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.TRIMESTRIEL, null, date(2009, 1, 1), date(2009, 12, 31));
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.UNIQUE, PeriodeDecompte.S1, date(2010, 1, 1), date(2010, 12, 31));
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.MENSUEL, null, date(2011, 1, 1), null);
-				addForDebiteur(dpi, date(2008, 1, 1), null, MockCommune.Bex);
+				addForDebiteur(dpi, date(2008, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bex);
 				return dpi.getNumero();
 			}
 		});
@@ -134,7 +135,7 @@ public class ListeRecapServiceTest extends BusinessTest {
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.TRIMESTRIEL, null, date(2009, 1, 1), date(2009, 12, 31));
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.UNIQUE, PeriodeDecompte.S1, date(2010, 1, 1), date(2010, 12, 31));
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.MENSUEL, null, date(2011, 1, 1), null);
-				addForDebiteur(dpi, date(2008, 1, 1), null, MockCommune.Bex);
+				addForDebiteur(dpi, date(2008, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bex);
 				final PeriodeFiscale periodeFiscale2008 = addPeriodeFiscale(2008);
 				final PeriodeFiscale periodeFiscale2009 = addPeriodeFiscale(2009);
 
@@ -171,7 +172,7 @@ public class ListeRecapServiceTest extends BusinessTest {
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.ANNUEL, PeriodeDecompte.T1, date(2009, 1, 1), date(2009, 12, 31));
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.UNIQUE, PeriodeDecompte.S1, date(2010, 1, 1), date(2010, 12, 31));
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.ANNUEL, PeriodeDecompte.A, date(2011, 1, 1), null);
-				addForDebiteur(dpi, date(2008, 1, 1), null, MockCommune.Bex);
+				addForDebiteur(dpi, date(2008, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bex);
 				return dpi.getNumero();
 			}
 		});
@@ -201,7 +202,7 @@ public class ListeRecapServiceTest extends BusinessTest {
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.SEMESTRIEL, null, date(2010, 1, 1), date(2010, 3, 31));
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.TRIMESTRIEL, null, date(2010, 4, 1), date(2010, 9, 30));
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.MENSUEL, null, date(2010, 10, 1), null);
-				addForDebiteur(dpi, date(2010, 1, 1), null, MockCommune.Aubonne);
+				addForDebiteur(dpi, date(2010, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Aubonne);
 				return dpi.getNumero();
 			}
 		});
@@ -284,7 +285,7 @@ public class ListeRecapServiceTest extends BusinessTest {
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.SEMESTRIEL, null, date(2010, 1, 1), date(2010, 3, 31));
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.TRIMESTRIEL, null, date(2010, 4, 1), date(2010, 9, 30));
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.MENSUEL, null, date(2010, 10, 1), null);
-				addForDebiteur(dpi, date(2010, 1, 1), null, MockCommune.Aubonne);
+				addForDebiteur(dpi, date(2010, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Aubonne);
 				addPeriodeFiscale(2010);
 				return dpi.getNumero();
 			}
@@ -471,7 +472,7 @@ public class ListeRecapServiceTest extends BusinessTest {
 				dpi.addPeriodicite(new Periodicite(PeriodiciteDecompte.MENSUEL, null, dateDebut, datePremierChangement.getOneDayBefore()));
 				dpi.addPeriodicite(new Periodicite(PeriodiciteDecompte.TRIMESTRIEL, null, datePremierChangement, dateDeuxiemeChangement.getOneDayBefore()));
 				dpi.addPeriodicite(new Periodicite(PeriodiciteDecompte.ANNUEL, null, dateDeuxiemeChangement, null));
-				addForDebiteur(dpi, dateDebut, null, MockCommune.Lausanne);
+				addForDebiteur(dpi, dateDebut, MotifFor.INDETERMINE, null, null, MockCommune.Lausanne);
 				return dpi.getNumero();
 			}
 		});
@@ -516,7 +517,7 @@ public class ListeRecapServiceTest extends BusinessTest {
 				final DebiteurPrestationImposable dpi = addDebiteur();
 				dpi.setCategorieImpotSource(CategorieImpotSource.REGULIERS);
 				dpi.addPeriodicite(new Periodicite(PeriodiciteDecompte.TRIMESTRIEL, null, dateDebutFor, null));
-				addForDebiteur(dpi, dateDebutFor, null, MockCommune.Lausanne);
+				addForDebiteur(dpi, dateDebutFor, MotifFor.INDETERMINE, null, null, MockCommune.Lausanne);
 				addPeriodeFiscale(dateDebutFor.year());
 				return dpi.getNumero();
 			}

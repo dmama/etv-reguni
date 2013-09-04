@@ -9,7 +9,7 @@ import ch.vd.uniregctb.tiers.NatureTiers;
 import ch.vd.uniregctb.tiers.validator.MotifsForHelper;
 import ch.vd.uniregctb.type.GenreImpot;
 
-public abstract class EditForRevenuFortuneValidator extends EditForValidator {
+public abstract class EditForRevenuFortuneValidator extends EditForAvecMotifsValidator {
 
 	private HibernateTemplate hibernateTemplate;
 
@@ -39,32 +39,15 @@ public abstract class EditForRevenuFortuneValidator extends EditForValidator {
 			else if (ffrf.getMotifOuverture() != view.getMotifDebut()) { // [SIFISC-7909] on ne valide le motif d'ouverture que s'il a changé
 				final NatureTiers natureTiers = ffrf.getTiers().getNatureTiers();
 				final MotifsForHelper.TypeFor typeFor = new MotifsForHelper.TypeFor(natureTiers, GenreImpot.REVENU_FORTUNE, ffrf.getMotifRattachement());
-
-				if (!MotifsForHelper.getMotifsOuverture(typeFor).contains(view.getMotifDebut())) {
-					errors.rejectValue("motifDebut", "Motif ouverture invalide");
-				}
+				ForValidatorHelper.validateMotifDebut(typeFor, view.getMotifDebut(), errors);
 			}
-		}
-		else if (view.getMotifDebut() != null) { // [SIFISC-7381] les dates et motifs doivent être renseignés tous les deux, ou nuls tous les deux
-			errors.rejectValue("dateDebut", "error.date.ouverture.vide");
 		}
 
 		// validation du motif de fin
-		if (view.getDateFin() != null) {
-			if (view.getMotifFin() == null) {
-				errors.rejectValue("motifFin", "error.motif.fermeture.vide");
-			}
-			else {
-				final NatureTiers natureTiers = ffrf.getTiers().getNatureTiers();
-				final MotifsForHelper.TypeFor typeFor = new MotifsForHelper.TypeFor(natureTiers, GenreImpot.REVENU_FORTUNE, ffrf.getMotifRattachement());
-
-				if (!MotifsForHelper.getMotifsFermeture(typeFor).contains(view.getMotifFin())) {
-					errors.rejectValue("motifFin", "Motif fermeture invalide");
-				}
-			}
-		}
-		else if (view.getMotifFin() != null) { // [SIFISC-7381] les dates et motifs doivent être renseignés tous les deux, ou nuls tous les deux
-			errors.rejectValue("dateFin", "error.date.fermeture.vide");
+		if (view.getMotifFin() != null) {
+			final NatureTiers natureTiers = ffrf.getTiers().getNatureTiers();
+			final MotifsForHelper.TypeFor typeFor = new MotifsForHelper.TypeFor(natureTiers, GenreImpot.REVENU_FORTUNE, ffrf.getMotifRattachement());
+			ForValidatorHelper.validateMotifFin(typeFor, view.getMotifFin(), errors);
 		}
 	}
 }

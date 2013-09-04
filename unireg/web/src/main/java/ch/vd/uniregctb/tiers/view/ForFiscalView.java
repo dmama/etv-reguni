@@ -9,6 +9,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalAutreImpot;
+import ch.vd.uniregctb.tiers.ForFiscalAvecMotifs;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalRevenuFortune;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
@@ -103,10 +104,14 @@ public class ForFiscalView implements Comparable<ForFiscalView>, DateRange, Annu
 
 		setTypeEtNumeroForFiscal(forFiscal.getTypeAutoriteFiscale(), forFiscal.getNumeroOfsAutoriteFiscale());
 
+		if (forFiscal instanceof ForFiscalAvecMotifs) {
+			final ForFiscalAvecMotifs ffam = (ForFiscalAvecMotifs) forFiscal;
+			this.motifOuverture = ffam.getMotifOuverture();
+			this.motifFermeture = ffam.getMotifFermeture();
+		}
+
 		if (forFiscal instanceof ForFiscalRevenuFortune) {
 			final ForFiscalRevenuFortune forFiscalRevenuFortune = (ForFiscalRevenuFortune) forFiscal;
-			this.motifOuverture = forFiscalRevenuFortune.getMotifOuverture();
-			this.motifFermeture = forFiscalRevenuFortune.getMotifFermeture();
 			this.motifRattachement = forFiscalRevenuFortune.getMotifRattachement();
 			this.forGestion = isForGestion;
 		}
@@ -114,9 +119,9 @@ public class ForFiscalView implements Comparable<ForFiscalView>, DateRange, Annu
 		if (forFiscal instanceof ForFiscalPrincipal) {
 			final ForFiscalPrincipal forFiscalPrincipal = (ForFiscalPrincipal) forFiscal;
 			this.modeImposition = forFiscalPrincipal.getModeImposition();
-			this.dernierForPrincipalOuDebiteur = dernierForPrincipalOuDebiteur;
 		}
 
+		this.dernierForPrincipalOuDebiteur = dernierForPrincipalOuDebiteur;
 		this.natureForFiscal = forFiscal.getClass().getSimpleName();
 	}
 

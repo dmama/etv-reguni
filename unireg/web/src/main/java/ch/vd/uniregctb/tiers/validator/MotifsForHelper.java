@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.tiers.validator;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -30,11 +31,21 @@ public class MotifsForHelper {
 	}
 
 	public static List<MotifFor> getMotifsOuverture(TypeFor type) {
-
-		if (GenreImpot.REVENU_FORTUNE != type.genreImpot) {
-			// par définition
-			return Collections.emptyList();
+		if (GenreImpot.REVENU_FORTUNE == type.genreImpot) {
+			return getMotifsOuvertureRevenuFortune(type);
 		}
+		else if (GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE == type.genreImpot) {
+			return getMotifsOuvertureDebiteursPrestationsImposables();
+		}
+		return Collections.emptyList();
+	}
+
+	private static List<MotifFor> getMotifsOuvertureDebiteursPrestationsImposables() {
+		return Arrays.asList(MotifFor.DEBUT_PRESTATION_IS,
+		                     MotifFor.FUSION_COMMUNES);
+	}
+
+	private static List<MotifFor> getMotifsOuvertureRevenuFortune(TypeFor type) {
 
 		// Motifs interdits depuis la GUI
 		// motifs.add(MotifFor.CHGT_MODE_IMPOSITION);
@@ -98,11 +109,22 @@ public class MotifsForHelper {
 	}
 
 	public static List<MotifFor> getMotifsFermeture(TypeFor type) {
-
-		if (GenreImpot.REVENU_FORTUNE != type.genreImpot) {
-			// par définition
-			return Collections.emptyList();
+		if (GenreImpot.REVENU_FORTUNE == type.genreImpot) {
+			return getMotifsFermetureRevenuFortune(type);
 		}
+		else if (GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE == type.genreImpot) {
+			return getMotifsFermetureDebiteursPrestationsImposables();
+		}
+		return Collections.emptyList();
+	}
+
+	private static List<MotifFor> getMotifsFermetureDebiteursPrestationsImposables() {
+		return Arrays.asList(MotifFor.FIN_PRESTATION_IS,
+		                     MotifFor.CESSATION_ACTIVITE_FUSION_FAILLITE,
+		                     MotifFor.FUSION_COMMUNES);
+	}
+
+	private static List<MotifFor> getMotifsFermetureRevenuFortune(TypeFor type) {
 
 		// Motifs interdits depuis la GUI
 		// motifs.add(MotifFor.CHGT_MODE_IMPOSITION);

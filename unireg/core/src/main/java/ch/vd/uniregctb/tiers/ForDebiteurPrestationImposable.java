@@ -17,7 +17,7 @@ import ch.vd.uniregctb.type.GenreImpot;
  */
 @Entity
 @DiscriminatorValue("ForDebiteurPrestationImposable")
-public class ForDebiteurPrestationImposable extends ForFiscal {
+public class ForDebiteurPrestationImposable extends ForFiscalAvecMotifs {
 
 	public ForDebiteurPrestationImposable() {
 		setGenreImpot(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE);

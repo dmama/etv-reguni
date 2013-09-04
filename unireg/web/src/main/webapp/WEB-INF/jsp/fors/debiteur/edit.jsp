@@ -22,26 +22,48 @@
 					<tr class="<unireg:nextRowClass/>">
 						<td><fmt:message key="label.date.ouverture"/>&nbsp;:</td>
 						<td>
-							<c:if test="${command.dateDebutEditable}">
+							<c:if test="${command.ouvertureEditable}">
 								<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 									<jsp:param name="path" value="dateDebut"/>
 									<jsp:param name="id" value="dateDebut"/>
 								</jsp:include>
 							</c:if>
-							<c:if test="${!command.dateDebutEditable}">
+							<c:if test="${!command.ouvertureEditable}">
 								<unireg:regdate regdate="${command.dateDebut}"/>
 							</c:if>
 						</td>
 						<td><fmt:message key="label.date.fermeture"/>&nbsp;:</td>
 						<td>
-							<c:if test="${command.dateFinEditable}">
+							<c:if test="${command.fermetureEditable}">
 								<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 									<jsp:param name="path" value="dateFin"/>
 									<jsp:param name="id" value="dateFin"/>
 								</jsp:include>
 							</c:if>
-							<c:if test="${!command.dateFinEditable}">
+							<c:if test="${!command.fermetureEditable}">
 								<unireg:regdate regdate="${command.dateFin}"/>
+							</c:if>
+						</td>
+					</tr>
+					<tr class="<unireg:nextRowClass/>" >
+						<td><fmt:message key="label.motif.ouverture" />&nbsp;:</td>
+						<td>
+							<c:if test="${command.ouvertureEditable}">
+								<form:select path="motifDebut" cssStyle="width:30ex" />
+								<form:errors path="motifDebut" cssClass="error" />
+							</c:if>
+							<c:if test="${!command.ouvertureEditable && command.motifDebut != null}">
+								<fmt:message key="option.motif.ouverture.${command.motifDebut}"/>
+							</c:if>
+						</td>
+						<td><fmt:message key="label.motif.fermeture" />&nbsp;:</td>
+						<td>
+							<c:if test="${command.fermetureEditable}">
+								<form:select path="motifFin" cssStyle="width:30ex" />
+								<form:errors path="motifFin" cssClass="error" />
+							</c:if>
+							<c:if test="${!command.fermetureEditable && command.motifFin != null}">
+								<fmt:message key="option.motif.fermeture.${command.motifFin}"/>
 							</c:if>
 						</td>
 					</tr>
@@ -78,6 +100,18 @@
 				</tr>
 			</table>
 		</form:form>
+
+		<script type="text/javascript">
+			$(function() {
+				<c:if test="${command.ouvertureEditable}">
+					Fors.updateMotifsOuverture($('#motifDebut'), '${command.tiersId}', 'DEBITEUR_PRESTATION_IMPOSABLE', null, '${command.motifDebut}');
+				</c:if>
+				<c:if test="${command.fermetureEditable}">
+					Fors.updateMotifsFermeture($('#motifFin'), '${command.tiersId}', 'DEBITEUR_PRESTATION_IMPOSABLE', null, '${command.motifFin}');
+				</c:if>
+			});
+		</script>
+
 	</tiles:put>
 </tiles:insert>
 

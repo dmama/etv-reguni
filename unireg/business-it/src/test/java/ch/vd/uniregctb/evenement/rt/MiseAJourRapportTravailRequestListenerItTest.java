@@ -16,6 +16,7 @@ import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.xml.DataHelper;
 
@@ -52,7 +53,7 @@ public class MiseAJourRapportTravailRequestListenerItTest extends RapportTravail
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				DebiteurPrestationImposable debiteur = addDebiteur();
-				addForDebiteur(debiteur, date(2012, 1, 1), null, MockCommune.Echallens);
+				addForDebiteur(debiteur, date(2012, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Echallens);
 				ids.idDebiteur= debiteur.getNumero();
 				PersonnePhysique sourcier = addHabitant(12365478L);
 				ids.idSourcier= sourcier.getNumero();
@@ -106,7 +107,7 @@ public class MiseAJourRapportTravailRequestListenerItTest extends RapportTravail
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				DebiteurPrestationImposable debiteur = addDebiteur();
-				addForDebiteur(debiteur, date(2012, 1, 1), null, MockCommune.Echallens);
+				addForDebiteur(debiteur, date(2012, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Echallens);
 				PeriodeFiscale periode2011 = new PeriodeFiscale();
 				periode2011.setAnnee(2011);
 				addLR(debiteur,date(2011,10,1), PeriodiciteDecompte.TRIMESTRIEL,periode2011);
@@ -212,7 +213,7 @@ public class MiseAJourRapportTravailRequestListenerItTest extends RapportTravail
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				DebiteurPrestationImposable debiteur = addDebiteur();
-				addForDebiteur(debiteur, date(2012, 1, 1), null, MockCommune.Echallens);
+				addForDebiteur(debiteur, date(2012, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Echallens);
 				PeriodeFiscale periode2011 = new PeriodeFiscale();
 				periode2011.setAnnee(2011);
 				addLR(debiteur,date(2011,10,1),PeriodiciteDecompte.TRIMESTRIEL,periode2011);

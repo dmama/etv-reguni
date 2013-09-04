@@ -93,7 +93,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
 				DebiteurPrestationImposable debiteur = addDebiteur();
-				addForDebiteur(debiteur, date(2012, 1, 1), date(2012, 6, 20), MockCommune.Echallens);
+				addForDebiteur(debiteur, date(2012, 1, 1), MotifFor.INDETERMINE, date(2012, 6, 20), MotifFor.INDETERMINE, MockCommune.Echallens);
 				return debiteur.getNumero();
 			}
 		});
@@ -147,7 +147,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
 				DebiteurPrestationImposable debiteur = addDebiteur();
-				addForDebiteur(debiteur, date(2012, 1, 1), null, MockCommune.Echallens);
+				addForDebiteur(debiteur, date(2012, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Echallens);
 				return debiteur.getNumero();
 			}
 		});
@@ -201,7 +201,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				DebiteurPrestationImposable debiteur = addDebiteur();
-				addForDebiteur(debiteur, date(2010, 1, 1), null, MockCommune.Echallens);
+				addForDebiteur(debiteur, date(2010, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Echallens);
 				ids.idDebiteur= debiteur.getNumero();
 				PersonnePhysique sourcier = addHabitant(12365478L);
 				ids.idSourcier= sourcier.getNumero();
@@ -248,7 +248,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
 				DebiteurPrestationImposable debiteur = addDebiteur();
-				addForDebiteur(debiteur, date(2012, 1, 1), null, MockCommune.Echallens);
+				addForDebiteur(debiteur, date(2012, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Echallens);
 				return debiteur.getNumero();
 			}
 		});
@@ -307,7 +307,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				DebiteurPrestationImposable debiteur = addDebiteur();
-				addForDebiteur(debiteur, date(2012, 1, 1), null, MockCommune.Echallens);
+				addForDebiteur(debiteur, date(2012, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Echallens);
 				ids.idDebiteur= debiteur.getNumero();
 				PersonnePhysique sourcier = addHabitant(12365478L);
 				ids.idSourcier= sourcier.getNumero();
@@ -359,7 +359,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				DebiteurPrestationImposable debiteur = addDebiteur();
-				addForDebiteur(debiteur, date(2012, 1, 1), null, MockCommune.Echallens);
+				addForDebiteur(debiteur, date(2012, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Echallens);
 				ids.idDebiteur= debiteur.getNumero();
 				PersonnePhysique sourcier = addHabitant(12365478L);
 				ids.idSourcier= sourcier.getNumero();
@@ -413,7 +413,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				DebiteurPrestationImposable debiteur = addDebiteur();
-				addForDebiteur(debiteur, date(2012, 1, 1), null, MockCommune.Echallens);
+				addForDebiteur(debiteur, date(2012, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Echallens);
 				ids.idDebiteur= debiteur.getNumero();
 				PersonnePhysique sourcier = addHabitant(12365478L);
 				ids.idSourcier= sourcier.getNumero();
@@ -473,7 +473,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				DebiteurPrestationImposable debiteur = addDebiteur();
-				addForDebiteur(debiteur, date(2012, 1, 1), null, MockCommune.Echallens);
+				addForDebiteur(debiteur, date(2012, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Echallens);
 				ids.idDebiteur= debiteur.getNumero();
 				PersonnePhysique sourcier = addHabitant(12365478L);
 				ids.idSourcier= sourcier.getNumero();
@@ -528,7 +528,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				DebiteurPrestationImposable debiteur = addDebiteur();
-				addForDebiteur(debiteur, date(2011, 1, 1), null, MockCommune.Echallens);
+				addForDebiteur(debiteur, date(2011, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Echallens);
 				ids.idDebiteur= debiteur.getNumero();
 				PersonnePhysique sourcier = addHabitant(12365478L);
 				ids.idSourcier= sourcier.getNumero();
@@ -582,7 +582,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				DebiteurPrestationImposable debiteur = addDebiteur();
-				addForDebiteur(debiteur, date(2011, 1, 1), null, MockCommune.Echallens);
+				addForDebiteur(debiteur, date(2011, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Echallens);
 				ids.idDebiteur= debiteur.getNumero();
 				PersonnePhysique sourcier = addHabitant(12365478L);
 				ids.idSourcier= sourcier.getNumero();
@@ -653,7 +653,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				DebiteurPrestationImposable debiteur = addDebiteur();
-				addForDebiteur(debiteur, date(2011, 1, 1), null, MockCommune.Echallens);
+				addForDebiteur(debiteur, date(2011, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Echallens);
 				ids.idDebiteur= debiteur.getNumero();
 				PersonnePhysique sourcier = addHabitant(12365478L);
 				ids.idSourcier= sourcier.getNumero();
@@ -726,7 +726,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				DebiteurPrestationImposable debiteur = addDebiteur();
-				addForDebiteur(debiteur, date(2011, 1, 1), null, MockCommune.Echallens);
+				addForDebiteur(debiteur, date(2011, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Echallens);
 				ids.idDebiteur= debiteur.getNumero();
 				PersonnePhysique sourcier = addHabitant(12365478L);
 				ids.idSourcier= sourcier.getNumero();
@@ -788,7 +788,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				DebiteurPrestationImposable debiteur = addDebiteur();
-				addForDebiteur(debiteur, date(2011, 1, 1), null, MockCommune.Echallens);
+				addForDebiteur(debiteur, date(2011, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Echallens);
 				ids.idDebiteur= debiteur.getNumero();
 				PersonnePhysique sourcier = addHabitant(12365478L);
 				ids.idSourcier= sourcier.getNumero();
@@ -851,7 +851,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				DebiteurPrestationImposable debiteur = addDebiteur();
-				addForDebiteur(debiteur, date(2011, 1, 1), null, MockCommune.Echallens);
+				addForDebiteur(debiteur, date(2011, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Echallens);
 				ids.idDebiteur= debiteur.getNumero();
 				PersonnePhysique sourcier = addHabitant(12365478L);
 				ids.idSourcier= sourcier.getNumero();
@@ -910,7 +910,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				DebiteurPrestationImposable debiteur = addDebiteur();
-				addForDebiteur(debiteur, date(2011, 1, 1), null, MockCommune.Echallens);
+				addForDebiteur(debiteur, date(2011, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Echallens);
 				ids.idDebiteur= debiteur.getNumero();
 				PersonnePhysique sourcier = addHabitant(12365478L);
 				ids.idSourcier= sourcier.getNumero();
@@ -970,7 +970,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				DebiteurPrestationImposable debiteur = addDebiteur();
-				addForDebiteur(debiteur, date(2011, 1, 1), null, MockCommune.Echallens);
+				addForDebiteur(debiteur, date(2011, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Echallens);
 				ids.idDebiteur= debiteur.getNumero();
 				PersonnePhysique sourcier = addHabitant(12365478L);
 				ids.idSourcier= sourcier.getNumero();
@@ -1026,7 +1026,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				DebiteurPrestationImposable debiteur = addDebiteur();
-				addForDebiteur(debiteur, date(2011, 1, 1), null, MockCommune.Echallens);
+				addForDebiteur(debiteur, date(2011, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Echallens);
 				ids.idDebiteur= debiteur.getNumero();
 				PersonnePhysique sourcier = addHabitant(12365478L);
 				ids.idSourcier= sourcier.getNumero();
@@ -1089,7 +1089,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				DebiteurPrestationImposable debiteur = addDebiteur();
-				addForDebiteur(debiteur, date(2012, 1, 1), null, MockCommune.Echallens);
+				addForDebiteur(debiteur, date(2012, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Echallens);
 				ids.idDebiteur= debiteur.getNumero();
 				PersonnePhysique sourcier = addHabitant(12365478L);
 				ids.idSourcier= sourcier.getNumero();
@@ -1152,7 +1152,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 				DebiteurPrestationImposable debiteur = addDebiteur();
 
-				addForDebiteur(debiteur, date(2012, 1, 1), dateFermetureFor, MockCommune.Echallens);
+				addForDebiteur(debiteur, date(2012, 1, 1), MotifFor.INDETERMINE, dateFermetureFor, MotifFor.INDETERMINE, MockCommune.Echallens);
 				ids.idDebiteur= debiteur.getNumero();
 				PersonnePhysique sourcier = addHabitant(12365478L);
 				ids.idSourcier= sourcier.getNumero();
@@ -1240,7 +1240,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 				addForPrincipal(sourcier, date(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aubonne, ModeImposition.SOURCE);
 
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2005, 1, 1));
-				addForDebiteur(dpi, date(2005, 1, 1), null, MockCommune.Bussigny);
+				addForDebiteur(dpi, date(2005, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bussigny);
 
 				addRapportPrestationImposable(dpi, sourcier, date(2005, 1, 1), date(2006, 4, 12), false);
 				addRapportPrestationImposable(dpi, sourcier, date(2008, 1, 1), null, false);
@@ -1325,7 +1325,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 				addForPrincipal(sourcier, date(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aubonne, ModeImposition.SOURCE);
 
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2005, 1, 1));
-				addForDebiteur(dpi, date(2005, 1, 1), null, MockCommune.Bussigny);
+				addForDebiteur(dpi, date(2005, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bussigny);
 
 				addRapportPrestationImposable(dpi, sourcier, date(2005, 1, 1), date(2006, 4, 12), false);
 				addRapportPrestationImposable(dpi, sourcier, date(2008, 1, 1), null, false);
@@ -1412,7 +1412,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 				addForPrincipal(sourcier, date(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aubonne, ModeImposition.SOURCE);
 
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2005, 1, 1));
-				addForDebiteur(dpi, date(2005, 1, 1), null, MockCommune.Bussigny);
+				addForDebiteur(dpi, date(2005, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bussigny);
 
 				addRapportPrestationImposable(dpi, sourcier, date(2005, 1, 1), date(2006, 4, 12), false);
 				addRapportPrestationImposable(dpi, sourcier, date(2008, 1, 1), date(2012, 12, 31), false);
@@ -1509,7 +1509,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 				addForPrincipal(sourcier, date(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aubonne, ModeImposition.SOURCE);
 
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2005, 1, 1));
-				addForDebiteur(dpi, date(2005, 1, 1), null, MockCommune.Bussigny);
+				addForDebiteur(dpi, date(2005, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bussigny);
 
 				addRapportPrestationImposable(dpi, sourcier, date(2011, 1, 1), null, false);
 				addRapportPrestationImposable(dpi, sourcier, date(2011, 1, 1), null, false);
@@ -1595,7 +1595,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 				addForPrincipal(sourcier, date(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aubonne, ModeImposition.SOURCE);
 
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2005, 1, 1));
-				addForDebiteur(dpi, date(2005, 1, 1), null, MockCommune.Bussigny);
+				addForDebiteur(dpi, date(2005, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bussigny);
 
 				addRapportPrestationImposable(dpi, sourcier, date(2011, 1, 1), null, false);
 				addRapportPrestationImposable(dpi, sourcier, date(2010, 1, 1), null, false);
@@ -1691,7 +1691,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 				addForPrincipal(sourcier, date(2010, 4, 1), MotifFor.ARRIVEE_HS, MockCommune.Nyon, ModeImposition.SOURCE);
 
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2013, 1, 1));
-				addForDebiteur(dpi, date(2013, 1, 1), null, MockCommune.Aubonne);
+				addForDebiteur(dpi, date(2013, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Aubonne);
 				addRapportPrestationImposable(dpi, sourcier, date(2013, 1, 1), date(2013, 4, 1), false);
 
 				final Ids ids = new Ids();

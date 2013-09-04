@@ -1,5 +1,8 @@
 package ch.vd.uniregctb.webservices.party4.data;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 import org.junit.Test;
 
 import ch.vd.unireg.xml.party.taxresidence.v1.LiabilityChangeReason;
@@ -11,14 +14,22 @@ import static junit.framework.Assert.assertNull;
 
 public class MotifForTest extends EnumTest {
 
+	private static ch.vd.uniregctb.type.MotifFor[] buildAllowedCoreMotifsFor() {
+		// tous les motifs actuels n'existent pas forcément dans le mapping de la version 4
+		final Set<ch.vd.uniregctb.type.MotifFor> set = EnumSet.complementOf(EnumSet.of(ch.vd.uniregctb.type.MotifFor.CESSATION_ACTIVITE_FUSION_FAILLITE,
+							                                                           ch.vd.uniregctb.type.MotifFor.DEBUT_PRESTATION_IS,
+							                                                           ch.vd.uniregctb.type.MotifFor.FIN_PRESTATION_IS));
+		return set.toArray(new ch.vd.uniregctb.type.MotifFor[set.size()]);
+	}
+
 	@Test
 	public void testCoherence() {
-		assertEnumLengthEquals(LiabilityChangeReason.class, ch.vd.uniregctb.type.MotifFor.class);
+		assertEnumLengthEquals(LiabilityChangeReason.class.getEnumConstants(), buildAllowedCoreMotifsFor());
 	}
 
 	@SuppressWarnings("deprecation")
 	@Test
-	public void testFromValue() {
+	public void testCoreToWeb() {
 		assertNull(EnumHelper.coreToWeb((ch.vd.uniregctb.type.MotifFor) null));
 		assertNull(EnumHelper.coreToWeb((ch.vd.uniregctb.type.MotifFor) null));
 		assertEquals(LiabilityChangeReason.MOVE_VD, EnumHelper.coreToWeb(ch.vd.uniregctb.type.MotifFor.DEMENAGEMENT_VD));
@@ -43,5 +54,10 @@ public class MotifForTest extends EnumTest {
 		assertEquals(LiabilityChangeReason.REACTIVATION, EnumHelper.coreToWeb(ch.vd.uniregctb.type.MotifFor.REACTIVATION));
 		assertEquals(LiabilityChangeReason.START_DIPLOMATIC_ACTVITY, EnumHelper.coreToWeb(ch.vd.uniregctb.type.MotifFor.DEBUT_ACTIVITE_DIPLOMATIQUE));
 		assertEquals(LiabilityChangeReason.END_DIPLOMATIC_ACTVITY, EnumHelper.coreToWeb(ch.vd.uniregctb.type.MotifFor.FIN_ACTIVITE_DIPLOMATIQUE));
+
+		// [SIFISC-8712] Pour des raisons de compatibilité ascendante, les nouveaux motifs sont traduits en "UNDETERMINED"
+		assertEquals(LiabilityChangeReason.UNDETERMINED, EnumHelper.coreToWeb(ch.vd.uniregctb.type.MotifFor.DEBUT_PRESTATION_IS));
+		assertEquals(LiabilityChangeReason.UNDETERMINED, EnumHelper.coreToWeb(ch.vd.uniregctb.type.MotifFor.FIN_PRESTATION_IS));
+		assertEquals(LiabilityChangeReason.UNDETERMINED, EnumHelper.coreToWeb(ch.vd.uniregctb.type.MotifFor.CESSATION_ACTIVITE_FUSION_FAILLITE));
 	}
 }

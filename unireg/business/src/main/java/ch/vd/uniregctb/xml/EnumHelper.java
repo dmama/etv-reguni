@@ -821,6 +821,9 @@ public abstract class EnumHelper {
 			return LiabilityChangeReason.END_COMMERCIAL_EXPLOITATION;
 		case FUSION_COMMUNES:
 			return LiabilityChangeReason.MERGE_OF_MUNICIPALITIES;
+		case DEBUT_PRESTATION_IS:
+		case FIN_PRESTATION_IS:
+		case CESSATION_ACTIVITE_FUSION_FAILLITE:
 		case INDETERMINE:
 			return LiabilityChangeReason.UNDETERMINED;
 		case MAJORITE:

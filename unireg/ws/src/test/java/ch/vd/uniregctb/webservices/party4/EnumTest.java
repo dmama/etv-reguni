@@ -17,6 +17,10 @@ public abstract class EnumTest extends WithoutSpringTest {
 		assertEquals(message, expectedValues.length, actualValues.length);
 	}
 
+	public static <E extends Enum<E>, A extends Enum<A>> void assertEnumLengthEquals(E[] expectedValues, A[] actualValues) {
+		assertEquals(expectedValues.length, actualValues.length);
+	}
+
 	public static <E extends Enum<E>, A extends Enum<A>> void assertEnumConstantsEqual(Class<E> expectedEnum, Class<A> actualEnum) {
 		assertContainsEnum(expectedEnum, actualEnum);
 		assertContainsEnum(actualEnum, expectedEnum);

@@ -142,11 +142,11 @@ public class DebiteurPrestationImposableIndexable extends TiersIndexable {
 		String communeDernierFfp = null;
 		RegDate dateOuvertureFor = null;
 		RegDate dateFermetureFor = null;
-		final ForDebiteurPrestationImposable dernierPrincipal = tiers.getDernierForDebiteur();
-		if (dernierPrincipal != null) {
-			communeDernierFfp =  getForCommuneAsString(dernierPrincipal);
-			dateOuvertureFor = dernierPrincipal.getDateDebut();
-			dateFermetureFor = dernierPrincipal.getDateFin();
+		final ForDebiteurPrestationImposable dernierFor = tiers.getDernierForDebiteur();
+		if (dernierFor != null) {
+			communeDernierFfp =  getForCommuneAsString(dernierFor);
+			dateOuvertureFor = dernierFor.getDateDebut();
+			dateFermetureFor = dernierFor.getDateFin();
 		}
 
 		// Autre fors

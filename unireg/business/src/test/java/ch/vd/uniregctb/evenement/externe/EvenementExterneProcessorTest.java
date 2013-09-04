@@ -20,6 +20,7 @@ import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.type.CategorieImpotSource;
+import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
@@ -65,7 +66,7 @@ public class EvenementExterneProcessorTest extends BusinessTest {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
-				addForDebiteur(dpi,dateDebut,null, MockCommune.Lausanne);
+				addForDebiteur(dpi, dateDebut, MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Lausanne);
 				final PeriodeFiscale pf = addPeriodeFiscale(annee);
 				final DeclarationImpotSource lr = addLR(dpi, dateDebut, PeriodiciteDecompte.TRIMESTRIEL, pf);
 				lr.addEtat(new EtatDeclarationRetournee(obtentionRetour, "TEST"));
@@ -114,7 +115,7 @@ public class EvenementExterneProcessorTest extends BusinessTest {
 			@Override
 			public Ids doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
-				addForDebiteur(dpi,dateDebut,null, MockCommune.Lausanne);
+				addForDebiteur(dpi, dateDebut, MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Lausanne);
 				final PeriodeFiscale pf = addPeriodeFiscale(annee);
 				addLR(dpi, dateDebut, PeriodiciteDecompte.TRIMESTRIEL, pf);
 
@@ -189,7 +190,7 @@ public class EvenementExterneProcessorTest extends BusinessTest {
 			@Override
 			public Ids doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
-				addForDebiteur(dpi,dateDebut,null, MockCommune.Lausanne);
+				addForDebiteur(dpi, dateDebut, MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Lausanne);
 				final PeriodeFiscale pf = addPeriodeFiscale(annee);
 				addLR(dpi, dateDebut, PeriodiciteDecompte.TRIMESTRIEL, pf);
 
@@ -265,7 +266,7 @@ public class EvenementExterneProcessorTest extends BusinessTest {
 			@Override
 			public Ids doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
-				addForDebiteur(dpi,dateDebut,null, MockCommune.Lausanne);
+				addForDebiteur(dpi, dateDebut, MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Lausanne);
 				final PeriodeFiscale pf = addPeriodeFiscale(annee);
 				final DeclarationImpotSource lr = addLR(dpi, dateDebut, PeriodiciteDecompte.TRIMESTRIEL, pf);
 				lr.addEtat(new EtatDeclarationRetournee(RegDateHelper.get(premierQuittancement), "TEST"));      // premier quittancement
@@ -356,7 +357,7 @@ public class EvenementExterneProcessorTest extends BusinessTest {
 			@Override
 			public Ids doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
-				addForDebiteur(dpi,dateDebut,null, MockCommune.Lausanne);
+				addForDebiteur(dpi, dateDebut, MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Lausanne);
 				final PeriodeFiscale pf = addPeriodeFiscale(annee);
 				addLR(dpi, dateDebut, PeriodiciteDecompte.TRIMESTRIEL, pf);
 

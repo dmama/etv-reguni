@@ -21,6 +21,7 @@ import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.CategorieImpotSource;
+import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 
 public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
@@ -49,7 +50,7 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
-				addForDebiteur(dpi, date(2009, 1, 1), null, MockCommune.Bussigny);
+				addForDebiteur(dpi, date(2009, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bussigny);
 
 				final PeriodeFiscale pf = addPeriodeFiscale(2009);
 				addLR(dpi, date(2009, 1, 1), PeriodiciteDecompte.TRIMESTRIEL, pf);
@@ -77,7 +78,7 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
-				addForDebiteur(dpi, date(2009, 1, 1), null, MockCommune.Bussigny);
+				addForDebiteur(dpi, date(2009, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bussigny);
 
 				final PeriodeFiscale pf = addPeriodeFiscale(2009);
 				final DeclarationImpotSource lr = addLR(dpi, date(2009, 1, 1), PeriodiciteDecompte.TRIMESTRIEL, pf);
@@ -108,7 +109,7 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.ADMINISTRATEURS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
-				addForDebiteur(dpi, date(2009, 1, 1), null, MockCommune.Bussigny);
+				addForDebiteur(dpi, date(2009, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bussigny);
 
 				final PeriodeFiscale pf = addPeriodeFiscale(2009);
 				final DeclarationImpotSource lr = addLR(dpi, date(2009, 1, 1),PeriodiciteDecompte.TRIMESTRIEL, pf);
@@ -141,7 +142,7 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
-				addForDebiteur(dpi, date(2009, 1, 1), null, MockCommune.Bussigny);
+				addForDebiteur(dpi, date(2009, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bussigny);
 
 				final PeriodeFiscale pf = addPeriodeFiscale(2009);
 				final DeclarationImpotSource lr = addLR(dpi, date(2009, 1, 1), PeriodiciteDecompte.TRIMESTRIEL, pf);
@@ -175,7 +176,7 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.ADMINISTRATEURS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
-				addForDebiteur(dpi, date(2009, 1, 1), null, MockCommune.Bussigny);
+				addForDebiteur(dpi, date(2009, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bussigny);
 
 				final PeriodeFiscale pf = addPeriodeFiscale(2009);
 				final DeclarationImpotSource lr = addLR(dpi, date(2009, 1, 1), PeriodiciteDecompte.TRIMESTRIEL, pf);
@@ -209,7 +210,7 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
-				addForDebiteur(dpi, date(2009, 1, 1), null, MockCommune.Bussigny);
+				addForDebiteur(dpi, date(2009, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bussigny);
 
 				final PeriodeFiscale pf = addPeriodeFiscale(2009);
 				final DeclarationImpotSource lr = addLR(dpi, date(2009, 1, 1), PeriodiciteDecompte.TRIMESTRIEL, pf);
@@ -239,7 +240,7 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
-				addForDebiteur(dpi, date(2009, 1, 1), null, MockCommune.Bussigny);
+				addForDebiteur(dpi, date(2009, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bussigny);
 
 				final PeriodeFiscale pf = addPeriodeFiscale(2009);
 				final DeclarationImpotSource lr = addLR(dpi, date(2009, 1, 1), PeriodiciteDecompte.TRIMESTRIEL, pf);
@@ -270,7 +271,7 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
-				addForDebiteur(dpi, date(2009, 1, 1), null, MockCommune.Bussigny);
+				addForDebiteur(dpi, date(2009, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bussigny);
 
 				final PeriodeFiscale pf = addPeriodeFiscale(2009);
 
@@ -309,7 +310,7 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
-				addForDebiteur(dpi, date(2009, 1, 1), null, MockCommune.Bussigny);
+				addForDebiteur(dpi, date(2009, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bussigny);
 
 				final PeriodeFiscale pf = addPeriodeFiscale(2009);
 
@@ -342,7 +343,7 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
-				addForDebiteur(dpi, date(2009, 1, 1), null, MockCommune.Bussigny);
+				addForDebiteur(dpi, date(2009, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bussigny);
 
 				final PeriodeFiscale pf = addPeriodeFiscale(2009);
 

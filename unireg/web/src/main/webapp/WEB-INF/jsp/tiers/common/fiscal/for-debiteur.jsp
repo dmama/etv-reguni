@@ -11,31 +11,35 @@
 <display:table
 	name="command.forsFiscaux" id="forFiscal" pagesize="10" 
 	requestURI="${url}"
-	class="display">
+	class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
 	
 	<display:column sortable ="true" titleKey="label.commune">
-		<c:if test="${forFiscal.annule}"><strike></c:if>
-			<unireg:commune ofs="${forFiscal.numeroForFiscalCommune}" displayProperty="nomOfficiel" titleProperty="noOFS" date="${forFiscal.regDateOuverture}"/>
-		<c:if test="${forFiscal.annule}"></strike></c:if>
+		<unireg:commune ofs="${forFiscal.numeroForFiscalCommune}" displayProperty="nomOfficiel" titleProperty="noOFS" date="${forFiscal.regDateOuverture}"/>
 	</display:column>
 
 	<display:column sortable ="true" titleKey="label.date.ouv" sortProperty="dateOuverture">
-		<c:if test="${forFiscal.annule}"><strike></c:if>
-			<fmt:formatDate value="${forFiscal.dateOuverture}" pattern="dd.MM.yyyy"/>
-		<c:if test="${forFiscal.annule}"></strike></c:if>
+		<fmt:formatDate value="${forFiscal.dateOuverture}" pattern="dd.MM.yyyy"/>
+	</display:column>
+	<display:column sortable ="true" titleKey="label.motif.ouv">
+		<c:if test="${forFiscal.motifOuverture != null}">
+			<fmt:message key="option.motif.ouverture.${forFiscal.motifOuverture}" />
+		</c:if>
 	</display:column>
 	<display:column sortable ="true" titleKey="label.date.fer" sortProperty="dateFermeture">
-		<c:if test="${forFiscal.annule}"><strike></c:if>
-			<fmt:formatDate value="${forFiscal.dateFermeture}" pattern="dd.MM.yyyy"/>
-			<c:if test="${forFiscal.dateFermeture != null}">
-				<c:if test="${page == 'edit' }">
-					<c:if test="${forFiscal.dernierForPrincipalOuDebiteur}">
-						<unireg:linkTo name="" action="/fors/debiteur/reopen.do" method="POST" params="{forId:${forFiscal.id}}" link_class="reOpenFor"
-						               title="Ré-ouvrir de for" confirm="Voulez-vous vraiment ré-ouvrir ce for fiscal ?" />
-					</c:if>
+		<fmt:formatDate value="${forFiscal.dateFermeture}" pattern="dd.MM.yyyy"/>
+		<c:if test="${forFiscal.dateFermeture != null}">
+			<c:if test="${page == 'edit' }">
+				<c:if test="${forFiscal.dernierForPrincipalOuDebiteur}">
+					<unireg:linkTo name="" action="/fors/debiteur/reopen.do" method="POST" params="{forId:${forFiscal.id}}" link_class="reOpenFor"
+					               title="Ré-ouvrir de for" confirm="Voulez-vous vraiment ré-ouvrir ce for fiscal ?" />
 				</c:if>
 			</c:if>
-		<c:if test="${forFiscal.annule}"></strike></c:if>
+		</c:if>
+	</display:column>
+	<display:column sortable ="true" titleKey="label.motif.fer">
+		<c:if test="${forFiscal.motifFermeture != null}">
+			<fmt:message key="option.motif.fermeture.${forFiscal.motifFermeture}" />
+		</c:if>
 	</display:column>
 	<display:column style="action">
 		<c:if test="${page == 'visu' }">

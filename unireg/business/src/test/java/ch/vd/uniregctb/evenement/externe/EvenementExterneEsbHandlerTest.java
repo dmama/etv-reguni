@@ -45,6 +45,7 @@ import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.CategorieImpotSource;
+import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
@@ -87,7 +88,7 @@ public class EvenementExterneEsbHandlerTest extends BusinessTest {
 			public Long execute(TransactionStatus status) throws Exception {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
 				dpi.setNom1("DebiteurTest");
-				addForDebiteur(dpi, dateDebut, null, MockCommune.Lausanne);
+				addForDebiteur(dpi, dateDebut, MotifFor.INDETERMINE, null, null, MockCommune.Lausanne);
 
 				final PeriodeFiscale pf = addPeriodeFiscale(2008);
 				addLR(dpi, dateDebut, PeriodiciteDecompte.TRIMESTRIEL, pf);
@@ -161,7 +162,7 @@ public class EvenementExterneEsbHandlerTest extends BusinessTest {
 			public Long execute(TransactionStatus status) throws Exception {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
 				dpi.setNom1("DebiteurTest");
-				addForDebiteur(dpi, dateDebut, null, MockCommune.Lausanne);
+				addForDebiteur(dpi, dateDebut, MotifFor.INDETERMINE, null, null, MockCommune.Lausanne);
 
 				final PeriodeFiscale pf = addPeriodeFiscale(2008);
 				addLR(dpi, dateDebut, PeriodiciteDecompte.TRIMESTRIEL, pf);
@@ -204,7 +205,7 @@ public class EvenementExterneEsbHandlerTest extends BusinessTest {
 			public Long execute(TransactionStatus status) throws Exception {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
 				dpi.setNom1("DebiteurTest");
-				addForDebiteur(dpi, dateDebut, null, MockCommune.Lausanne);
+				addForDebiteur(dpi, dateDebut, MotifFor.INDETERMINE, null, null, MockCommune.Lausanne);
 
 				final PeriodeFiscale pf = addPeriodeFiscale(2008);
 				addLR(dpi, dateDebut, PeriodiciteDecompte.TRIMESTRIEL, pf);
@@ -269,7 +270,7 @@ public class EvenementExterneEsbHandlerTest extends BusinessTest {
 			public Long execute(TransactionStatus status) throws Exception {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
 				dpi.setNom1("DebiteurTest");
-				addForDebiteur(dpi, dateDebut, null, MockCommune.Lausanne);
+				addForDebiteur(dpi, dateDebut, MotifFor.INDETERMINE, null, null, MockCommune.Lausanne);
 
 				final PeriodeFiscale pf = addPeriodeFiscale(2008);
 
@@ -320,7 +321,7 @@ public class EvenementExterneEsbHandlerTest extends BusinessTest {
 			public Long execute(TransactionStatus status) throws Exception {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
 				dpi.setNom1("DebiteurTest");
-				addForDebiteur(dpi, dateDebut, null, MockCommune.Lausanne);
+				addForDebiteur(dpi, dateDebut, MotifFor.INDETERMINE, null, null, MockCommune.Lausanne);
 
 				final PeriodeFiscale pf = addPeriodeFiscale(2008);
 
@@ -389,7 +390,7 @@ public class EvenementExterneEsbHandlerTest extends BusinessTest {
 			public Long execute(TransactionStatus status) throws Exception {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
 				dpi.setNom1("DebiteurTest");
-				addForDebiteur(dpi, dateDebut, null, MockCommune.Lausanne);
+				addForDebiteur(dpi, dateDebut, MotifFor.INDETERMINE, null, null, MockCommune.Lausanne);
 
 				final PeriodeFiscale pf = addPeriodeFiscale(2008);
 
@@ -468,7 +469,7 @@ public class EvenementExterneEsbHandlerTest extends BusinessTest {
 			public Long execute(TransactionStatus status) throws Exception {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
 				dpi.setNom1("DebiteurTest");
-				addForDebiteur(dpi, dateDebut, null, MockCommune.Lausanne);
+				addForDebiteur(dpi, dateDebut, MotifFor.INDETERMINE, null, null, MockCommune.Lausanne);
 
 				final PeriodeFiscale pf = addPeriodeFiscale(2008);
 
@@ -606,7 +607,7 @@ public class EvenementExterneEsbHandlerTest extends BusinessTest {
 			public Long execute(TransactionStatus status) throws Exception {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
 				dpi.setNom1("DebiteurTest");
-				addForDebiteur(dpi, dateDebut, null, MockCommune.Lausanne);
+				addForDebiteur(dpi, dateDebut, MotifFor.INDETERMINE, null, null, MockCommune.Lausanne);
 
 				final PeriodeFiscale pf = addPeriodeFiscale(2008);
 				addLR(dpi, dateDebut, PeriodiciteDecompte.TRIMESTRIEL, pf);
@@ -681,7 +682,7 @@ public class EvenementExterneEsbHandlerTest extends BusinessTest {
 			public Long execute(TransactionStatus status) throws Exception {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
 				dpi.setNom1("DebiteurTest");
-				addForDebiteur(dpi, dateDebut, null, MockCommune.Lausanne);
+				addForDebiteur(dpi, dateDebut, MotifFor.INDETERMINE, null, null, MockCommune.Lausanne);
 
 				final PeriodeFiscale pf = addPeriodeFiscale(2008);
 				addLR(dpi, dateDebut, PeriodiciteDecompte.TRIMESTRIEL, pf);
@@ -724,7 +725,7 @@ public class EvenementExterneEsbHandlerTest extends BusinessTest {
 			public Long execute(TransactionStatus status) throws Exception {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
 				dpi.setNom1("DebiteurTest");
-				addForDebiteur(dpi, dateDebut, null, MockCommune.Lausanne);
+				addForDebiteur(dpi, dateDebut, MotifFor.INDETERMINE, null, null, MockCommune.Lausanne);
 
 				final PeriodeFiscale pf = addPeriodeFiscale(2008);
 				addLR(dpi, dateDebut, PeriodiciteDecompte.TRIMESTRIEL, pf);
@@ -789,7 +790,7 @@ public class EvenementExterneEsbHandlerTest extends BusinessTest {
 			public Long execute(TransactionStatus status) throws Exception {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
 				dpi.setNom1("DebiteurTest");
-				addForDebiteur(dpi, dateDebut, null, MockCommune.Lausanne);
+				addForDebiteur(dpi, dateDebut, MotifFor.INDETERMINE, null, null, MockCommune.Lausanne);
 
 				final PeriodeFiscale pf = addPeriodeFiscale(2008);
 
@@ -840,7 +841,7 @@ public class EvenementExterneEsbHandlerTest extends BusinessTest {
 			public Long execute(TransactionStatus status) throws Exception {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
 				dpi.setNom1("DebiteurTest");
-				addForDebiteur(dpi, dateDebut, null, MockCommune.Lausanne);
+				addForDebiteur(dpi, dateDebut, MotifFor.INDETERMINE, null, null, MockCommune.Lausanne);
 
 				final PeriodeFiscale pf = addPeriodeFiscale(2008);
 
@@ -909,7 +910,7 @@ public class EvenementExterneEsbHandlerTest extends BusinessTest {
 			public Long execute(TransactionStatus status) throws Exception {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
 				dpi.setNom1("DebiteurTest");
-				addForDebiteur(dpi, dateDebut, null, MockCommune.Lausanne);
+				addForDebiteur(dpi, dateDebut, MotifFor.INDETERMINE, null, null, MockCommune.Lausanne);
 
 				final PeriodeFiscale pf = addPeriodeFiscale(2008);
 
@@ -988,7 +989,7 @@ public class EvenementExterneEsbHandlerTest extends BusinessTest {
 			public Long execute(TransactionStatus status) throws Exception {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
 				dpi.setNom1("DebiteurTest");
-				addForDebiteur(dpi, dateDebut, null, MockCommune.Lausanne);
+				addForDebiteur(dpi, dateDebut, MotifFor.INDETERMINE, null, null, MockCommune.Lausanne);
 
 				final PeriodeFiscale pf = addPeriodeFiscale(2008);
 

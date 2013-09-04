@@ -72,7 +72,7 @@ public class TestData {
 		pf0.setLogModifDate(new Timestamp(1199142000000L));
 		pf0.setParametrePeriodeFiscale(new HashSet());
 		pf0.setModelesDocument(new HashSet());
-		pf0 = (PeriodeFiscale) hibernateTemplate.merge(pf0);
+		pf0 = hibernateTemplate.merge(pf0);
 
 		PeriodeFiscale pf1 = new PeriodeFiscale();
 		pf1.setId(3L);
@@ -80,7 +80,7 @@ public class TestData {
 		pf1.setLogModifDate(new Timestamp(1199142000000L));
 		pf1.setParametrePeriodeFiscale(new HashSet());
 		pf1.setModelesDocument(new HashSet());
-		pf1 = (PeriodeFiscale) hibernateTemplate.merge(pf1);
+		pf1 = hibernateTemplate.merge(pf1);
 
 		PeriodeFiscale pf2 = new PeriodeFiscale();
 		pf2.setId(4L);
@@ -88,7 +88,7 @@ public class TestData {
 		pf2.setLogModifDate(new Timestamp(1199142000000L));
 		pf2.setParametrePeriodeFiscale(new HashSet());
 		pf2.setModelesDocument(new HashSet());
-		pf2 = (PeriodeFiscale) hibernateTemplate.merge(pf2);
+		pf2 = hibernateTemplate.merge(pf2);
 
 		PeriodeFiscale pf3 = new PeriodeFiscale();
 		pf3.setId(5L);
@@ -96,7 +96,7 @@ public class TestData {
 		pf3.setLogModifDate(new Timestamp(1199142000000L));
 		pf3.setParametrePeriodeFiscale(new HashSet());
 		pf3.setModelesDocument(new HashSet());
-		pf3 = (PeriodeFiscale) hibernateTemplate.merge(pf3);
+		pf3 = hibernateTemplate.merge(pf3);
 
 		PeriodeFiscale pf4 = new PeriodeFiscale();
 		pf4.setId(6L);
@@ -104,7 +104,7 @@ public class TestData {
 		pf4.setLogModifDate(new Timestamp(1199142000000L));
 		pf4.setParametrePeriodeFiscale(new HashSet());
 		pf4.setModelesDocument(new HashSet());
-		pf4 = (PeriodeFiscale) hibernateTemplate.merge(pf4);
+		pf4 = hibernateTemplate.merge(pf4);
 
 		PeriodeFiscale pf5 = new PeriodeFiscale();
 		pf5.setId(7L);
@@ -112,7 +112,7 @@ public class TestData {
 		pf5.setLogModifDate(new Timestamp(1199142000000L));
 		pf5.setParametrePeriodeFiscale(new HashSet());
 		pf5.setModelesDocument(new HashSet());
-		pf5 = (PeriodeFiscale) hibernateTemplate.merge(pf5);
+		pf5 = hibernateTemplate.merge(pf5);
 
 		PeriodeFiscale pf6 = new PeriodeFiscale();
 		pf6.setId(8L);
@@ -120,7 +120,7 @@ public class TestData {
 		pf6.setLogModifDate(new Timestamp(1199142000000L));
 		pf6.setParametrePeriodeFiscale(new HashSet());
 		pf6.setModelesDocument(new HashSet());
-		pf6 = (PeriodeFiscale) hibernateTemplate.merge(pf6);
+		pf6 = hibernateTemplate.merge(pf6);
 
 		PeriodeFiscale pf7 = new PeriodeFiscale();
 		pf7.setId(9L);
@@ -128,7 +128,7 @@ public class TestData {
 		pf7.setLogModifDate(new Timestamp(1199142000000L));
 		pf7.setParametrePeriodeFiscale(new HashSet());
 		pf7.setModelesDocument(new HashSet());
-		pf7 = (PeriodeFiscale) hibernateTemplate.merge(pf7);
+		pf7 = hibernateTemplate.merge(pf7);
 
 		ParametrePeriodeFiscale ppf0 = new ParametrePeriodeFiscale();
 		ppf0.setId(1L);
@@ -138,7 +138,7 @@ public class TestData {
 		ppf0.setTermeGeneralSommationReglementaire(RegDate.get(2003, 1, 31));
 		ppf0.setTypeContribuable(TypeContribuable.VAUDOIS_ORDINAIRE);
 		pf0.addParametrePeriodeFiscale(ppf0);
-		pf0 = (PeriodeFiscale) hibernateTemplate.merge(pf0);
+		pf0 = hibernateTemplate.merge(pf0);
 
 		ParametrePeriodeFiscale ppf1 = new ParametrePeriodeFiscale();
 		ppf1.setId(2L);
@@ -148,7 +148,7 @@ public class TestData {
 		ppf1.setTermeGeneralSommationReglementaire(RegDate.get(2003, 1, 31));
 		ppf1.setTypeContribuable(TypeContribuable.VAUDOIS_DEPENSE);
 		pf0.addParametrePeriodeFiscale(ppf1);
-		pf0 = (PeriodeFiscale) hibernateTemplate.merge(pf0);
+		pf0 = hibernateTemplate.merge(pf0);
 
 		ParametrePeriodeFiscale ppf2 = new ParametrePeriodeFiscale();
 		ppf2.setId(3L);
@@ -158,7 +158,7 @@ public class TestData {
 		ppf2.setTermeGeneralSommationReglementaire(RegDate.get(2003, 1, 31));
 		ppf2.setTypeContribuable(TypeContribuable.HORS_CANTON);
 		pf0.addParametrePeriodeFiscale(ppf2);
-		pf0 = (PeriodeFiscale) hibernateTemplate.merge(pf0);
+		pf0 = hibernateTemplate.merge(pf0);
 
 		ParametrePeriodeFiscale ppf3 = new ParametrePeriodeFiscale();
 		ppf3.setId(4L);
@@ -168,7 +168,7 @@ public class TestData {
 		ppf3.setTermeGeneralSommationReglementaire(RegDate.get(2003, 1, 31));
 		ppf3.setTypeContribuable(TypeContribuable.HORS_SUISSE);
 		pf0.addParametrePeriodeFiscale(ppf3);
-		pf0 = (PeriodeFiscale) hibernateTemplate.merge(pf0);
+		pf0 = hibernateTemplate.merge(pf0);
 
 		ParametrePeriodeFiscale ppf4 = new ParametrePeriodeFiscale();
 		ppf4.setId(5L);
@@ -178,7 +178,7 @@ public class TestData {
 		ppf4.setTermeGeneralSommationReglementaire(RegDate.get(2004, 1, 31));
 		ppf4.setTypeContribuable(TypeContribuable.VAUDOIS_ORDINAIRE);
 		pf1.addParametrePeriodeFiscale(ppf4);
-		pf1 = (PeriodeFiscale) hibernateTemplate.merge(pf1);
+		pf1 = hibernateTemplate.merge(pf1);
 
 		ParametrePeriodeFiscale ppf5 = new ParametrePeriodeFiscale();
 		ppf5.setId(6L);
@@ -188,7 +188,7 @@ public class TestData {
 		ppf5.setTermeGeneralSommationReglementaire(RegDate.get(2004, 1, 31));
 		ppf5.setTypeContribuable(TypeContribuable.VAUDOIS_DEPENSE);
 		pf1.addParametrePeriodeFiscale(ppf5);
-		pf1 = (PeriodeFiscale) hibernateTemplate.merge(pf1);
+		pf1 = hibernateTemplate.merge(pf1);
 
 		ParametrePeriodeFiscale ppf6 = new ParametrePeriodeFiscale();
 		ppf6.setId(7L);
@@ -198,7 +198,7 @@ public class TestData {
 		ppf6.setTermeGeneralSommationReglementaire(RegDate.get(2004, 1, 31));
 		ppf6.setTypeContribuable(TypeContribuable.HORS_CANTON);
 		pf1.addParametrePeriodeFiscale(ppf6);
-		pf1 = (PeriodeFiscale) hibernateTemplate.merge(pf1);
+		pf1 = hibernateTemplate.merge(pf1);
 
 		ParametrePeriodeFiscale ppf7 = new ParametrePeriodeFiscale();
 		ppf7.setId(8L);
@@ -208,7 +208,7 @@ public class TestData {
 		ppf7.setTermeGeneralSommationReglementaire(RegDate.get(2004, 1, 31));
 		ppf7.setTypeContribuable(TypeContribuable.HORS_SUISSE);
 		pf1.addParametrePeriodeFiscale(ppf7);
-		pf1 = (PeriodeFiscale) hibernateTemplate.merge(pf1);
+		pf1 = hibernateTemplate.merge(pf1);
 
 		ParametrePeriodeFiscale ppf8 = new ParametrePeriodeFiscale();
 		ppf8.setId(9L);
@@ -218,7 +218,7 @@ public class TestData {
 		ppf8.setTermeGeneralSommationReglementaire(RegDate.get(2005, 1, 31));
 		ppf8.setTypeContribuable(TypeContribuable.VAUDOIS_ORDINAIRE);
 		pf2.addParametrePeriodeFiscale(ppf8);
-		pf2 = (PeriodeFiscale) hibernateTemplate.merge(pf2);
+		pf2 = hibernateTemplate.merge(pf2);
 
 		ParametrePeriodeFiscale ppf9 = new ParametrePeriodeFiscale();
 		ppf9.setId(10L);
@@ -228,7 +228,7 @@ public class TestData {
 		ppf9.setTermeGeneralSommationReglementaire(RegDate.get(2005, 1, 31));
 		ppf9.setTypeContribuable(TypeContribuable.VAUDOIS_DEPENSE);
 		pf2.addParametrePeriodeFiscale(ppf9);
-		pf2 = (PeriodeFiscale) hibernateTemplate.merge(pf2);
+		pf2 = hibernateTemplate.merge(pf2);
 
 		ParametrePeriodeFiscale ppf10 = new ParametrePeriodeFiscale();
 		ppf10.setId(11L);
@@ -238,7 +238,7 @@ public class TestData {
 		ppf10.setTermeGeneralSommationReglementaire(RegDate.get(2005, 1, 31));
 		ppf10.setTypeContribuable(TypeContribuable.HORS_CANTON);
 		pf2.addParametrePeriodeFiscale(ppf10);
-		pf2 = (PeriodeFiscale) hibernateTemplate.merge(pf2);
+		pf2 = hibernateTemplate.merge(pf2);
 
 		ParametrePeriodeFiscale ppf11 = new ParametrePeriodeFiscale();
 		ppf11.setId(12L);
@@ -248,7 +248,7 @@ public class TestData {
 		ppf11.setTermeGeneralSommationReglementaire(RegDate.get(2005, 1, 31));
 		ppf11.setTypeContribuable(TypeContribuable.HORS_SUISSE);
 		pf2.addParametrePeriodeFiscale(ppf11);
-		pf2 = (PeriodeFiscale) hibernateTemplate.merge(pf2);
+		pf2 = hibernateTemplate.merge(pf2);
 
 		ParametrePeriodeFiscale ppf12 = new ParametrePeriodeFiscale();
 		ppf12.setId(13L);
@@ -258,7 +258,7 @@ public class TestData {
 		ppf12.setTermeGeneralSommationReglementaire(RegDate.get(2006, 1, 31));
 		ppf12.setTypeContribuable(TypeContribuable.VAUDOIS_ORDINAIRE);
 		pf3.addParametrePeriodeFiscale(ppf12);
-		pf3 = (PeriodeFiscale) hibernateTemplate.merge(pf3);
+		pf3 = hibernateTemplate.merge(pf3);
 
 		ParametrePeriodeFiscale ppf13 = new ParametrePeriodeFiscale();
 		ppf13.setId(14L);
@@ -268,7 +268,7 @@ public class TestData {
 		ppf13.setTermeGeneralSommationReglementaire(RegDate.get(2006, 1, 31));
 		ppf13.setTypeContribuable(TypeContribuable.VAUDOIS_DEPENSE);
 		pf3.addParametrePeriodeFiscale(ppf13);
-		pf3 = (PeriodeFiscale) hibernateTemplate.merge(pf3);
+		pf3 = hibernateTemplate.merge(pf3);
 
 		ParametrePeriodeFiscale ppf14 = new ParametrePeriodeFiscale();
 		ppf14.setId(15L);
@@ -278,7 +278,7 @@ public class TestData {
 		ppf14.setTermeGeneralSommationReglementaire(RegDate.get(2006, 1, 31));
 		ppf14.setTypeContribuable(TypeContribuable.HORS_CANTON);
 		pf3.addParametrePeriodeFiscale(ppf14);
-		pf3 = (PeriodeFiscale) hibernateTemplate.merge(pf3);
+		pf3 = hibernateTemplate.merge(pf3);
 
 		ParametrePeriodeFiscale ppf15 = new ParametrePeriodeFiscale();
 		ppf15.setId(16L);
@@ -288,7 +288,7 @@ public class TestData {
 		ppf15.setTermeGeneralSommationReglementaire(RegDate.get(2006, 1, 31));
 		ppf15.setTypeContribuable(TypeContribuable.HORS_SUISSE);
 		pf3.addParametrePeriodeFiscale(ppf15);
-		pf3 = (PeriodeFiscale) hibernateTemplate.merge(pf3);
+		pf3 = hibernateTemplate.merge(pf3);
 
 		ParametrePeriodeFiscale ppf16 = new ParametrePeriodeFiscale();
 		ppf16.setId(17L);
@@ -298,7 +298,7 @@ public class TestData {
 		ppf16.setTermeGeneralSommationReglementaire(RegDate.get(2007, 1, 31));
 		ppf16.setTypeContribuable(TypeContribuable.VAUDOIS_ORDINAIRE);
 		pf4.addParametrePeriodeFiscale(ppf16);
-		pf4 = (PeriodeFiscale) hibernateTemplate.merge(pf4);
+		pf4 = hibernateTemplate.merge(pf4);
 
 		ParametrePeriodeFiscale ppf17 = new ParametrePeriodeFiscale();
 		ppf17.setId(18L);
@@ -308,7 +308,7 @@ public class TestData {
 		ppf17.setTermeGeneralSommationReglementaire(RegDate.get(2007, 1, 31));
 		ppf17.setTypeContribuable(TypeContribuable.VAUDOIS_DEPENSE);
 		pf4.addParametrePeriodeFiscale(ppf17);
-		pf4 = (PeriodeFiscale) hibernateTemplate.merge(pf4);
+		pf4 = hibernateTemplate.merge(pf4);
 
 		ParametrePeriodeFiscale ppf18 = new ParametrePeriodeFiscale();
 		ppf18.setId(19L);
@@ -318,7 +318,7 @@ public class TestData {
 		ppf18.setTermeGeneralSommationReglementaire(RegDate.get(2007, 1, 31));
 		ppf18.setTypeContribuable(TypeContribuable.HORS_CANTON);
 		pf4.addParametrePeriodeFiscale(ppf18);
-		pf4 = (PeriodeFiscale) hibernateTemplate.merge(pf4);
+		pf4 = hibernateTemplate.merge(pf4);
 
 		ParametrePeriodeFiscale ppf19 = new ParametrePeriodeFiscale();
 		ppf19.setId(20L);
@@ -328,7 +328,7 @@ public class TestData {
 		ppf19.setTermeGeneralSommationReglementaire(RegDate.get(2007, 1, 31));
 		ppf19.setTypeContribuable(TypeContribuable.HORS_SUISSE);
 		pf4.addParametrePeriodeFiscale(ppf19);
-		pf4 = (PeriodeFiscale) hibernateTemplate.merge(pf4);
+		pf4 = hibernateTemplate.merge(pf4);
 
 		ParametrePeriodeFiscale ppf20 = new ParametrePeriodeFiscale();
 		ppf20.setId(21L);
@@ -338,7 +338,7 @@ public class TestData {
 		ppf20.setTermeGeneralSommationReglementaire(RegDate.get(2008, 1, 31));
 		ppf20.setTypeContribuable(TypeContribuable.VAUDOIS_ORDINAIRE);
 		pf5.addParametrePeriodeFiscale(ppf20);
-		pf5 = (PeriodeFiscale) hibernateTemplate.merge(pf5);
+		pf5 = hibernateTemplate.merge(pf5);
 
 		ParametrePeriodeFiscale ppf21 = new ParametrePeriodeFiscale();
 		ppf21.setId(22L);
@@ -348,7 +348,7 @@ public class TestData {
 		ppf21.setTermeGeneralSommationReglementaire(RegDate.get(2008, 1, 31));
 		ppf21.setTypeContribuable(TypeContribuable.VAUDOIS_DEPENSE);
 		pf5.addParametrePeriodeFiscale(ppf21);
-		pf5 = (PeriodeFiscale) hibernateTemplate.merge(pf5);
+		pf5 = hibernateTemplate.merge(pf5);
 
 		ParametrePeriodeFiscale ppf22 = new ParametrePeriodeFiscale();
 		ppf22.setId(23L);
@@ -358,7 +358,7 @@ public class TestData {
 		ppf22.setTermeGeneralSommationReglementaire(RegDate.get(2008, 1, 31));
 		ppf22.setTypeContribuable(TypeContribuable.HORS_CANTON);
 		pf5.addParametrePeriodeFiscale(ppf22);
-		pf5 = (PeriodeFiscale) hibernateTemplate.merge(pf5);
+		pf5 = hibernateTemplate.merge(pf5);
 
 		ParametrePeriodeFiscale ppf23 = new ParametrePeriodeFiscale();
 		ppf23.setId(24L);
@@ -368,7 +368,7 @@ public class TestData {
 		ppf23.setTermeGeneralSommationReglementaire(RegDate.get(2008, 1, 31));
 		ppf23.setTypeContribuable(TypeContribuable.HORS_SUISSE);
 		pf5.addParametrePeriodeFiscale(ppf23);
-		pf5 = (PeriodeFiscale) hibernateTemplate.merge(pf5);
+		pf5 = hibernateTemplate.merge(pf5);
 
 		ParametrePeriodeFiscale ppf24 = new ParametrePeriodeFiscale();
 		ppf24.setId(25L);
@@ -378,7 +378,7 @@ public class TestData {
 		ppf24.setTermeGeneralSommationReglementaire(RegDate.get(2009, 1, 31));
 		ppf24.setTypeContribuable(TypeContribuable.VAUDOIS_ORDINAIRE);
 		pf6.addParametrePeriodeFiscale(ppf24);
-		pf6 = (PeriodeFiscale) hibernateTemplate.merge(pf6);
+		pf6 = hibernateTemplate.merge(pf6);
 
 		ParametrePeriodeFiscale ppf25 = new ParametrePeriodeFiscale();
 		ppf25.setId(26L);
@@ -388,7 +388,7 @@ public class TestData {
 		ppf25.setTermeGeneralSommationReglementaire(RegDate.get(2009, 1, 31));
 		ppf25.setTypeContribuable(TypeContribuable.VAUDOIS_DEPENSE);
 		pf6.addParametrePeriodeFiscale(ppf25);
-		pf6 = (PeriodeFiscale) hibernateTemplate.merge(pf6);
+		pf6 = hibernateTemplate.merge(pf6);
 
 		ParametrePeriodeFiscale ppf26 = new ParametrePeriodeFiscale();
 		ppf26.setId(27L);
@@ -398,7 +398,7 @@ public class TestData {
 		ppf26.setTermeGeneralSommationReglementaire(RegDate.get(2009, 1, 31));
 		ppf26.setTypeContribuable(TypeContribuable.HORS_CANTON);
 		pf6.addParametrePeriodeFiscale(ppf26);
-		pf6 = (PeriodeFiscale) hibernateTemplate.merge(pf6);
+		pf6 = hibernateTemplate.merge(pf6);
 
 		ParametrePeriodeFiscale ppf27 = new ParametrePeriodeFiscale();
 		ppf27.setId(28L);
@@ -408,7 +408,7 @@ public class TestData {
 		ppf27.setTermeGeneralSommationReglementaire(RegDate.get(2009, 1, 31));
 		ppf27.setTypeContribuable(TypeContribuable.HORS_SUISSE);
 		pf6.addParametrePeriodeFiscale(ppf27);
-		pf6 = (PeriodeFiscale) hibernateTemplate.merge(pf6);
+		pf6 = hibernateTemplate.merge(pf6);
 
 		ParametrePeriodeFiscale ppf28 = new ParametrePeriodeFiscale();
 		ppf28.setId(29L);
@@ -418,7 +418,7 @@ public class TestData {
 		ppf28.setTermeGeneralSommationReglementaire(RegDate.get(2010, 1, 31));
 		ppf28.setTypeContribuable(TypeContribuable.VAUDOIS_ORDINAIRE);
 		pf7.addParametrePeriodeFiscale(ppf28);
-		pf7 = (PeriodeFiscale) hibernateTemplate.merge(pf7);
+		pf7 = hibernateTemplate.merge(pf7);
 
 		ParametrePeriodeFiscale ppf29 = new ParametrePeriodeFiscale();
 		ppf29.setId(30L);
@@ -428,7 +428,7 @@ public class TestData {
 		ppf29.setTermeGeneralSommationReglementaire(RegDate.get(2010, 1, 31));
 		ppf29.setTypeContribuable(TypeContribuable.VAUDOIS_DEPENSE);
 		pf7.addParametrePeriodeFiscale(ppf29);
-		pf7 = (PeriodeFiscale) hibernateTemplate.merge(pf7);
+		pf7 = hibernateTemplate.merge(pf7);
 
 		ParametrePeriodeFiscale ppf30 = new ParametrePeriodeFiscale();
 		ppf30.setId(31L);
@@ -438,7 +438,7 @@ public class TestData {
 		ppf30.setTermeGeneralSommationReglementaire(RegDate.get(2010, 1, 31));
 		ppf30.setTypeContribuable(TypeContribuable.HORS_CANTON);
 		pf7.addParametrePeriodeFiscale(ppf30);
-		pf7 = (PeriodeFiscale) hibernateTemplate.merge(pf7);
+		pf7 = hibernateTemplate.merge(pf7);
 
 		ParametrePeriodeFiscale ppf31 = new ParametrePeriodeFiscale();
 		ppf31.setId(32L);
@@ -448,7 +448,7 @@ public class TestData {
 		ppf31.setTermeGeneralSommationReglementaire(RegDate.get(2010, 1, 31));
 		ppf31.setTypeContribuable(TypeContribuable.HORS_SUISSE);
 		pf7.addParametrePeriodeFiscale(ppf31);
-		pf7 = (PeriodeFiscale) hibernateTemplate.merge(pf7);
+		pf7 = hibernateTemplate.merge(pf7);
 
 		ModeleDocument md0 = new ModeleDocument();
 		md0.setId(1L);
@@ -456,7 +456,7 @@ public class TestData {
 		md0.setModelesFeuilleDocument(new HashSet());
 		md0.setTypeDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH);
 		pf5.addModeleDocument(md0);
-		pf5 = (PeriodeFiscale) hibernateTemplate.merge(pf5);
+		pf5 = hibernateTemplate.merge(pf5);
 
 		ModeleDocument md1 = new ModeleDocument();
 		md1.setId(101L);
@@ -464,7 +464,7 @@ public class TestData {
 		md1.setModelesFeuilleDocument(new HashSet());
 		md1.setTypeDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL);
 		pf5.addModeleDocument(md1);
-		pf5 = (PeriodeFiscale) hibernateTemplate.merge(pf5);
+		pf5 = hibernateTemplate.merge(pf5);
 
 		ModeleDocument md2 = new ModeleDocument();
 		md2.setId(2L);
@@ -472,7 +472,7 @@ public class TestData {
 		md2.setModelesFeuilleDocument(new HashSet());
 		md2.setTypeDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX);
 		pf5.addModeleDocument(md2);
-		pf5 = (PeriodeFiscale) hibernateTemplate.merge(pf5);
+		pf5 = hibernateTemplate.merge(pf5);
 
 		ModeleDocument md3 = new ModeleDocument();
 		md3.setId(3L);
@@ -480,7 +480,7 @@ public class TestData {
 		md3.setModelesFeuilleDocument(new HashSet());
 		md3.setTypeDocument(TypeDocument.DECLARATION_IMPOT_DEPENSE);
 		pf5.addModeleDocument(md3);
-		pf5 = (PeriodeFiscale) hibernateTemplate.merge(pf5);
+		pf5 = hibernateTemplate.merge(pf5);
 
 		ModeleDocument md4 = new ModeleDocument();
 		md4.setId(4L);
@@ -488,7 +488,7 @@ public class TestData {
 		md4.setModelesFeuilleDocument(new HashSet());
 		md4.setTypeDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE);
 		pf5.addModeleDocument(md4);
-		pf5 = (PeriodeFiscale) hibernateTemplate.merge(pf5);
+		pf5 = hibernateTemplate.merge(pf5);
 
 		ModeleDocument md5 = new ModeleDocument();
 		md5.setId(5L);
@@ -496,7 +496,7 @@ public class TestData {
 		md5.setModelesFeuilleDocument(new HashSet());
 		md5.setTypeDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH);
 		pf6.addModeleDocument(md5);
-		pf6 = (PeriodeFiscale) hibernateTemplate.merge(pf6);
+		pf6 = hibernateTemplate.merge(pf6);
 
 		ModeleDocument md6 = new ModeleDocument();
 		md6.setId(105L);
@@ -504,7 +504,7 @@ public class TestData {
 		md6.setModelesFeuilleDocument(new HashSet());
 		md6.setTypeDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL);
 		pf6.addModeleDocument(md6);
-		pf6 = (PeriodeFiscale) hibernateTemplate.merge(pf6);
+		pf6 = hibernateTemplate.merge(pf6);
 
 		ModeleDocument md7 = new ModeleDocument();
 		md7.setId(6L);
@@ -512,7 +512,7 @@ public class TestData {
 		md7.setModelesFeuilleDocument(new HashSet());
 		md7.setTypeDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX);
 		pf6.addModeleDocument(md7);
-		pf6 = (PeriodeFiscale) hibernateTemplate.merge(pf6);
+		pf6 = hibernateTemplate.merge(pf6);
 
 		ModeleDocument md8 = new ModeleDocument();
 		md8.setId(7L);
@@ -520,7 +520,7 @@ public class TestData {
 		md8.setModelesFeuilleDocument(new HashSet());
 		md8.setTypeDocument(TypeDocument.DECLARATION_IMPOT_DEPENSE);
 		pf6.addModeleDocument(md8);
-		pf6 = (PeriodeFiscale) hibernateTemplate.merge(pf6);
+		pf6 = hibernateTemplate.merge(pf6);
 
 		ModeleDocument md9 = new ModeleDocument();
 		md9.setId(8L);
@@ -528,7 +528,7 @@ public class TestData {
 		md9.setModelesFeuilleDocument(new HashSet());
 		md9.setTypeDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE);
 		pf6.addModeleDocument(md9);
-		pf6 = (PeriodeFiscale) hibernateTemplate.merge(pf6);
+		pf6 = hibernateTemplate.merge(pf6);
 
 		ModeleDocument md10 = new ModeleDocument();
 		md10.setId(9L);
@@ -536,7 +536,7 @@ public class TestData {
 		md10.setModelesFeuilleDocument(new HashSet());
 		md10.setTypeDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH);
 		pf7.addModeleDocument(md10);
-		pf7 = (PeriodeFiscale) hibernateTemplate.merge(pf7);
+		pf7 = hibernateTemplate.merge(pf7);
 
 		ModeleDocument md11 = new ModeleDocument();
 		md11.setId(109L);
@@ -544,7 +544,7 @@ public class TestData {
 		md11.setModelesFeuilleDocument(new HashSet());
 		md11.setTypeDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL);
 		pf7.addModeleDocument(md11);
-		pf7 = (PeriodeFiscale) hibernateTemplate.merge(pf7);
+		pf7 = hibernateTemplate.merge(pf7);
 
 		ModeleDocument md12 = new ModeleDocument();
 		md12.setId(10L);
@@ -552,7 +552,7 @@ public class TestData {
 		md12.setModelesFeuilleDocument(new HashSet());
 		md12.setTypeDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX);
 		pf7.addModeleDocument(md12);
-		pf7 = (PeriodeFiscale) hibernateTemplate.merge(pf7);
+		pf7 = hibernateTemplate.merge(pf7);
 
 		ModeleDocument md13 = new ModeleDocument();
 		md13.setId(11L);
@@ -560,7 +560,7 @@ public class TestData {
 		md13.setModelesFeuilleDocument(new HashSet());
 		md13.setTypeDocument(TypeDocument.DECLARATION_IMPOT_DEPENSE);
 		pf7.addModeleDocument(md13);
-		pf7 = (PeriodeFiscale) hibernateTemplate.merge(pf7);
+		pf7 = hibernateTemplate.merge(pf7);
 
 		ModeleDocument md14 = new ModeleDocument();
 		md14.setId(12L);
@@ -568,7 +568,7 @@ public class TestData {
 		md14.setModelesFeuilleDocument(new HashSet());
 		md14.setTypeDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE);
 		pf7.addModeleDocument(md14);
-		pf7 = (PeriodeFiscale) hibernateTemplate.merge(pf7);
+		pf7 = hibernateTemplate.merge(pf7);
 
 		ModeleFeuilleDocument mfd0 = new ModeleFeuilleDocument();
 		mfd0.setId(1L);
@@ -576,7 +576,7 @@ public class TestData {
 		mfd0.setLogModifDate(new Timestamp(1199142000000L));
 		mfd0.setNumeroFormulaire("210");
 		md0.addModeleFeuilleDocument(mfd0);
-		md0 = (ModeleDocument) hibernateTemplate.merge(md0);
+		md0 = hibernateTemplate.merge(md0);
 
 		ModeleFeuilleDocument mfd1 = new ModeleFeuilleDocument();
 		mfd1.setId(2L);
@@ -584,7 +584,7 @@ public class TestData {
 		mfd1.setLogModifDate(new Timestamp(1199142000000L));
 		mfd1.setNumeroFormulaire("220");
 		md0.addModeleFeuilleDocument(mfd1);
-		md0 = (ModeleDocument) hibernateTemplate.merge(md0);
+		md0 = hibernateTemplate.merge(md0);
 
 		ModeleFeuilleDocument mfd2 = new ModeleFeuilleDocument();
 		mfd2.setId(3L);
@@ -592,7 +592,7 @@ public class TestData {
 		mfd2.setLogModifDate(new Timestamp(1199142000000L));
 		mfd2.setNumeroFormulaire("230");
 		md0.addModeleFeuilleDocument(mfd2);
-		md0 = (ModeleDocument) hibernateTemplate.merge(md0);
+		md0 = hibernateTemplate.merge(md0);
 
 		ModeleFeuilleDocument mfd3 = new ModeleFeuilleDocument();
 		mfd3.setId(4L);
@@ -600,7 +600,7 @@ public class TestData {
 		mfd3.setLogModifDate(new Timestamp(1199142000000L));
 		mfd3.setNumeroFormulaire("240");
 		md0.addModeleFeuilleDocument(mfd3);
-		md0 = (ModeleDocument) hibernateTemplate.merge(md0);
+		md0 = hibernateTemplate.merge(md0);
 
 		ModeleFeuilleDocument mfd4 = new ModeleFeuilleDocument();
 		mfd4.setId(5L);
@@ -608,7 +608,7 @@ public class TestData {
 		mfd4.setLogModifDate(new Timestamp(1199142000000L));
 		mfd4.setNumeroFormulaire("250");
 		md2.addModeleFeuilleDocument(mfd4);
-		md2 = (ModeleDocument) hibernateTemplate.merge(md2);
+		md2 = hibernateTemplate.merge(md2);
 
 		ModeleFeuilleDocument mfd5 = new ModeleFeuilleDocument();
 		mfd5.setId(6L);
@@ -616,7 +616,7 @@ public class TestData {
 		mfd5.setLogModifDate(new Timestamp(1199142000000L));
 		mfd5.setNumeroFormulaire("210");
 		md3.addModeleFeuilleDocument(mfd5);
-		md3 = (ModeleDocument) hibernateTemplate.merge(md3);
+		md3 = hibernateTemplate.merge(md3);
 
 		ModeleFeuilleDocument mfd6 = new ModeleFeuilleDocument();
 		mfd6.setId(10L);
@@ -624,7 +624,7 @@ public class TestData {
 		mfd6.setLogModifDate(new Timestamp(1199142000000L));
 		mfd6.setNumeroFormulaire("270");
 		md3.addModeleFeuilleDocument(mfd6);
-		md3 = (ModeleDocument) hibernateTemplate.merge(md3);
+		md3 = hibernateTemplate.merge(md3);
 
 		ModeleFeuilleDocument mfd7 = new ModeleFeuilleDocument();
 		mfd7.setId(11L);
@@ -632,7 +632,7 @@ public class TestData {
 		mfd7.setLogModifDate(new Timestamp(1199142000000L));
 		mfd7.setNumeroFormulaire("200");
 		md4.addModeleFeuilleDocument(mfd7);
-		md4 = (ModeleDocument) hibernateTemplate.merge(md4);
+		md4 = hibernateTemplate.merge(md4);
 
 		ModeleFeuilleDocument mfd8 = new ModeleFeuilleDocument();
 		mfd8.setId(12L);
@@ -640,7 +640,7 @@ public class TestData {
 		mfd8.setLogModifDate(new Timestamp(1199142000000L));
 		mfd8.setNumeroFormulaire("210");
 		md5.addModeleFeuilleDocument(mfd8);
-		md5 = (ModeleDocument) hibernateTemplate.merge(md5);
+		md5 = hibernateTemplate.merge(md5);
 
 		ModeleFeuilleDocument mfd9 = new ModeleFeuilleDocument();
 		mfd9.setId(13L);
@@ -648,7 +648,7 @@ public class TestData {
 		mfd9.setLogModifDate(new Timestamp(1199142000000L));
 		mfd9.setNumeroFormulaire("220");
 		md5.addModeleFeuilleDocument(mfd9);
-		md5 = (ModeleDocument) hibernateTemplate.merge(md5);
+		md5 = hibernateTemplate.merge(md5);
 
 		ModeleFeuilleDocument mfd10 = new ModeleFeuilleDocument();
 		mfd10.setId(14L);
@@ -656,7 +656,7 @@ public class TestData {
 		mfd10.setLogModifDate(new Timestamp(1199142000000L));
 		mfd10.setNumeroFormulaire("230");
 		md5.addModeleFeuilleDocument(mfd10);
-		md5 = (ModeleDocument) hibernateTemplate.merge(md5);
+		md5 = hibernateTemplate.merge(md5);
 
 		ModeleFeuilleDocument mfd11 = new ModeleFeuilleDocument();
 		mfd11.setId(15L);
@@ -664,7 +664,7 @@ public class TestData {
 		mfd11.setLogModifDate(new Timestamp(1199142000000L));
 		mfd11.setNumeroFormulaire("240");
 		md5.addModeleFeuilleDocument(mfd11);
-		md5 = (ModeleDocument) hibernateTemplate.merge(md5);
+		md5 = hibernateTemplate.merge(md5);
 
 		ModeleFeuilleDocument mfd12 = new ModeleFeuilleDocument();
 		mfd12.setId(16L);
@@ -672,7 +672,7 @@ public class TestData {
 		mfd12.setLogModifDate(new Timestamp(1199142000000L));
 		mfd12.setNumeroFormulaire("250");
 		md7.addModeleFeuilleDocument(mfd12);
-		md7 = (ModeleDocument) hibernateTemplate.merge(md7);
+		md7 = hibernateTemplate.merge(md7);
 
 		ModeleFeuilleDocument mfd13 = new ModeleFeuilleDocument();
 		mfd13.setId(17L);
@@ -680,7 +680,7 @@ public class TestData {
 		mfd13.setLogModifDate(new Timestamp(1199142000000L));
 		mfd13.setNumeroFormulaire("210");
 		md8.addModeleFeuilleDocument(mfd13);
-		md8 = (ModeleDocument) hibernateTemplate.merge(md8);
+		md8 = hibernateTemplate.merge(md8);
 
 		ModeleFeuilleDocument mfd14 = new ModeleFeuilleDocument();
 		mfd14.setId(18L);
@@ -688,7 +688,7 @@ public class TestData {
 		mfd14.setLogModifDate(new Timestamp(1199142000000L));
 		mfd14.setNumeroFormulaire("220");
 		md8.addModeleFeuilleDocument(mfd14);
-		md8 = (ModeleDocument) hibernateTemplate.merge(md8);
+		md8 = hibernateTemplate.merge(md8);
 
 		ModeleFeuilleDocument mfd15 = new ModeleFeuilleDocument();
 		mfd15.setId(19L);
@@ -696,7 +696,7 @@ public class TestData {
 		mfd15.setLogModifDate(new Timestamp(1199142000000L));
 		mfd15.setNumeroFormulaire("230");
 		md8.addModeleFeuilleDocument(mfd15);
-		md8 = (ModeleDocument) hibernateTemplate.merge(md8);
+		md8 = hibernateTemplate.merge(md8);
 
 		ModeleFeuilleDocument mfd16 = new ModeleFeuilleDocument();
 		mfd16.setId(20L);
@@ -704,7 +704,7 @@ public class TestData {
 		mfd16.setLogModifDate(new Timestamp(1199142000000L));
 		mfd16.setNumeroFormulaire("240");
 		md8.addModeleFeuilleDocument(mfd16);
-		md8 = (ModeleDocument) hibernateTemplate.merge(md8);
+		md8 = hibernateTemplate.merge(md8);
 
 		ModeleFeuilleDocument mfd17 = new ModeleFeuilleDocument();
 		mfd17.setId(21L);
@@ -712,7 +712,7 @@ public class TestData {
 		mfd17.setLogModifDate(new Timestamp(1199142000000L));
 		mfd17.setNumeroFormulaire("270");
 		md8.addModeleFeuilleDocument(mfd17);
-		md8 = (ModeleDocument) hibernateTemplate.merge(md8);
+		md8 = hibernateTemplate.merge(md8);
 
 		ModeleFeuilleDocument mfd18 = new ModeleFeuilleDocument();
 		mfd18.setId(22L);
@@ -720,7 +720,7 @@ public class TestData {
 		mfd18.setLogModifDate(new Timestamp(1199142000000L));
 		mfd18.setNumeroFormulaire("200");
 		md9.addModeleFeuilleDocument(mfd18);
-		md9 = (ModeleDocument) hibernateTemplate.merge(md9);
+		md9 = hibernateTemplate.merge(md9);
 
 		ModeleFeuilleDocument mfd19 = new ModeleFeuilleDocument();
 		mfd19.setId(23L);
@@ -728,7 +728,7 @@ public class TestData {
 		mfd19.setLogModifDate(new Timestamp(1199142000000L));
 		mfd19.setNumeroFormulaire("210");
 		md10.addModeleFeuilleDocument(mfd19);
-		md10 = (ModeleDocument) hibernateTemplate.merge(md10);
+		md10 = hibernateTemplate.merge(md10);
 
 		ModeleFeuilleDocument mfd20 = new ModeleFeuilleDocument();
 		mfd20.setId(24L);
@@ -736,7 +736,7 @@ public class TestData {
 		mfd20.setLogModifDate(new Timestamp(1199142000000L));
 		mfd20.setNumeroFormulaire("220");
 		md10.addModeleFeuilleDocument(mfd20);
-		md10 = (ModeleDocument) hibernateTemplate.merge(md10);
+		md10 = hibernateTemplate.merge(md10);
 
 		ModeleFeuilleDocument mfd21 = new ModeleFeuilleDocument();
 		mfd21.setId(25L);
@@ -744,7 +744,7 @@ public class TestData {
 		mfd21.setLogModifDate(new Timestamp(1199142000000L));
 		mfd21.setNumeroFormulaire("230");
 		md10.addModeleFeuilleDocument(mfd21);
-		md10 = (ModeleDocument) hibernateTemplate.merge(md10);
+		md10 = hibernateTemplate.merge(md10);
 
 		ModeleFeuilleDocument mfd22 = new ModeleFeuilleDocument();
 		mfd22.setId(26L);
@@ -752,7 +752,7 @@ public class TestData {
 		mfd22.setLogModifDate(new Timestamp(1199142000000L));
 		mfd22.setNumeroFormulaire("240");
 		md10.addModeleFeuilleDocument(mfd22);
-		md10 = (ModeleDocument) hibernateTemplate.merge(md10);
+		md10 = hibernateTemplate.merge(md10);
 
 		ModeleFeuilleDocument mfd23 = new ModeleFeuilleDocument();
 		mfd23.setId(27L);
@@ -760,7 +760,7 @@ public class TestData {
 		mfd23.setLogModifDate(new Timestamp(1199142000000L));
 		mfd23.setNumeroFormulaire("310");
 		md10.addModeleFeuilleDocument(mfd23);
-		md10 = (ModeleDocument) hibernateTemplate.merge(md10);
+		md10 = hibernateTemplate.merge(md10);
 
 		ModeleFeuilleDocument mfd24 = new ModeleFeuilleDocument();
 		mfd24.setId(28L);
@@ -768,7 +768,7 @@ public class TestData {
 		mfd24.setLogModifDate(new Timestamp(1199142000000L));
 		mfd24.setNumeroFormulaire("250");
 		md12.addModeleFeuilleDocument(mfd24);
-		md12 = (ModeleDocument) hibernateTemplate.merge(md12);
+		md12 = hibernateTemplate.merge(md12);
 
 		ModeleFeuilleDocument mfd25 = new ModeleFeuilleDocument();
 		mfd25.setId(29L);
@@ -776,7 +776,7 @@ public class TestData {
 		mfd25.setLogModifDate(new Timestamp(1199142000000L));
 		mfd25.setNumeroFormulaire("270");
 		md13.addModeleFeuilleDocument(mfd25);
-		md13 = (ModeleDocument) hibernateTemplate.merge(md13);
+		md13 = hibernateTemplate.merge(md13);
 
 		ModeleFeuilleDocument mfd26 = new ModeleFeuilleDocument();
 		mfd26.setId(30L);
@@ -784,7 +784,7 @@ public class TestData {
 		mfd26.setLogModifDate(new Timestamp(1199142000000L));
 		mfd26.setNumeroFormulaire("200");
 		md14.addModeleFeuilleDocument(mfd26);
-		md14 = (ModeleDocument) hibernateTemplate.merge(md14);
+		md14 = hibernateTemplate.merge(md14);
 
 		MenageCommun mc0 = new MenageCommun();
 		mc0.setNumero(12600004L);
@@ -799,7 +799,7 @@ public class TestData {
 		mc0.setForsFiscaux(new HashSet());
 		mc0.setRapportsObjet(new HashSet());
 		mc0.setRapportsSujet(new HashSet());
-		mc0 = (MenageCommun) hibernateTemplate.merge(mc0);
+		mc0 = hibernateTemplate.merge(mc0);
 
 		PersonnePhysique pp0 = new PersonnePhysique();
 		pp0.setNumero(12600003L);
@@ -823,7 +823,7 @@ public class TestData {
 		pp0.setForsFiscaux(new HashSet());
 		pp0.setRapportsObjet(new HashSet());
 		pp0.setRapportsSujet(new HashSet());
-		pp0 = (PersonnePhysique) hibernateTemplate.merge(pp0);
+		pp0 = hibernateTemplate.merge(pp0);
 
 		PersonnePhysique pp1 = new PersonnePhysique();
 		pp1.setNumero(12600009L);
@@ -847,7 +847,7 @@ public class TestData {
 		pp1.setForsFiscaux(new HashSet());
 		pp1.setRapportsObjet(new HashSet());
 		pp1.setRapportsSujet(new HashSet());
-		pp1 = (PersonnePhysique) hibernateTemplate.merge(pp1);
+		pp1 = hibernateTemplate.merge(pp1);
 
 		PersonnePhysique pp2 = new PersonnePhysique();
 		pp2.setNumero(12600001L);
@@ -882,7 +882,7 @@ public class TestData {
 		pp2.setRapportsObjet(new HashSet());
 		pp2.setRapportsSujet(new HashSet());
 		pp2.setTitulaireCompteBancaire("ERIC MONTAGNY");
-		pp2 = (PersonnePhysique) hibernateTemplate.merge(pp2);
+		pp2 = hibernateTemplate.merge(pp2);
 
 		PersonnePhysique pp3 = new PersonnePhysique();
 		pp3.setNumero(43308102L);
@@ -901,7 +901,7 @@ public class TestData {
 		pp3.setForsFiscaux(new HashSet());
 		pp3.setRapportsObjet(new HashSet());
 		pp3.setRapportsSujet(new HashSet());
-		pp3 = (PersonnePhysique) hibernateTemplate.merge(pp3);
+		pp3 = hibernateTemplate.merge(pp3);
 
 		PersonnePhysique pp4 = new PersonnePhysique();
 		pp4.setNumero(43308103L);
@@ -920,7 +920,7 @@ public class TestData {
 		pp4.setForsFiscaux(new HashSet());
 		pp4.setRapportsObjet(new HashSet());
 		pp4.setRapportsSujet(new HashSet());
-		pp4 = (PersonnePhysique) hibernateTemplate.merge(pp4);
+		pp4 = hibernateTemplate.merge(pp4);
 
 		PersonnePhysique pp5 = new PersonnePhysique();
 		pp5.setNumero(43308104L);
@@ -939,7 +939,7 @@ public class TestData {
 		pp5.setForsFiscaux(new HashSet());
 		pp5.setRapportsObjet(new HashSet());
 		pp5.setRapportsSujet(new HashSet());
-		pp5 = (PersonnePhysique) hibernateTemplate.merge(pp5);
+		pp5 = hibernateTemplate.merge(pp5);
 
 		DebiteurPrestationImposable dpi0 = new DebiteurPrestationImposable();
 		dpi0.setNumero(1678432L);
@@ -956,7 +956,7 @@ public class TestData {
 		dpi0.setForsFiscaux(new HashSet());
 		dpi0.setRapportsObjet(new HashSet());
 		dpi0.setRapportsSujet(new HashSet());
-		dpi0 = (DebiteurPrestationImposable) hibernateTemplate.merge(dpi0);
+		dpi0 = hibernateTemplate.merge(dpi0);
 
 		DebiteurPrestationImposable dpi1 = new DebiteurPrestationImposable();
 		dpi1.setNumero(1678439L);
@@ -981,9 +981,10 @@ public class TestData {
 		forDebiteur1.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
 		forDebiteur1.setNumeroOfsAutoriteFiscale(MockCommune.Lausanne.getNoOFS());
 		forDebiteur1.setDateDebut(RegDate.get(2008, 1, 1));
+		forDebiteur1.setMotifOuverture(MotifFor.DEBUT_PRESTATION_IS);
 		dpi1.addForFiscal(forDebiteur1);
 
-		dpi1 = (DebiteurPrestationImposable) hibernateTemplate.merge(dpi1);
+		dpi1 = hibernateTemplate.merge(dpi1);
 
 		PersonnePhysique pp6 = new PersonnePhysique();
 		pp6.setNumero(12900001L);
@@ -1013,7 +1014,7 @@ public class TestData {
 		pp6.setRapportsObjet(new HashSet());
 		pp6.setRapportsSujet(new HashSet());
 		pp6.setTitulaireCompteBancaire("Lederet Michel");
-		pp6 = (PersonnePhysique) hibernateTemplate.merge(pp6);
+		pp6 = hibernateTemplate.merge(pp6);
 
 		PersonnePhysique pp7 = new PersonnePhysique();
 		pp7.setNumero(12300003L);
@@ -1032,7 +1033,7 @@ public class TestData {
 		pp7.setForsFiscaux(new HashSet());
 		pp7.setRapportsObjet(new HashSet());
 		pp7.setRapportsSujet(new HashSet());
-		pp7 = (PersonnePhysique) hibernateTemplate.merge(pp7);
+		pp7 = hibernateTemplate.merge(pp7);
 
 		PersonnePhysique pp8 = new PersonnePhysique();
 		pp8.setNumero(34807810L);
@@ -1057,7 +1058,7 @@ public class TestData {
 		pp8.setRapportsObjet(new HashSet());
 		pp8.setRapportsSujet(new HashSet());
 		pp8.setTitulaireCompteBancaire("Pascaline Descloux");
-		pp8 = (PersonnePhysique) hibernateTemplate.merge(pp8);
+		pp8 = hibernateTemplate.merge(pp8);
 
 		PersonnePhysique pp9 = new PersonnePhysique();
 		pp9.setNumero(12300001L);
@@ -1076,7 +1077,7 @@ public class TestData {
 		pp9.setForsFiscaux(new HashSet());
 		pp9.setRapportsObjet(new HashSet());
 		pp9.setRapportsSujet(new HashSet());
-		pp9 = (PersonnePhysique) hibernateTemplate.merge(pp9);
+		pp9 = hibernateTemplate.merge(pp9);
 
 		PersonnePhysique pp10 = new PersonnePhysique();
 		pp10.setNumero(12300002L);
@@ -1095,7 +1096,7 @@ public class TestData {
 		pp10.setForsFiscaux(new HashSet());
 		pp10.setRapportsObjet(new HashSet());
 		pp10.setRapportsSujet(new HashSet());
-		pp10 = (PersonnePhysique) hibernateTemplate.merge(pp10);
+		pp10 = hibernateTemplate.merge(pp10);
 
 		PersonnePhysique pp11 = new PersonnePhysique();
 		pp11.setNumero(10246283L);
@@ -1114,7 +1115,7 @@ public class TestData {
 		pp11.setForsFiscaux(new HashSet());
 		pp11.setRapportsObjet(new HashSet());
 		pp11.setRapportsSujet(new HashSet());
-		pp11 = (PersonnePhysique) hibernateTemplate.merge(pp11);
+		pp11 = hibernateTemplate.merge(pp11);
 
 		MenageCommun mc1 = new MenageCommun();
 		mc1.setNumero(86006202L);
@@ -1139,7 +1140,7 @@ public class TestData {
 		mc1.setRapportsObjet(new HashSet());
 		mc1.setRapportsSujet(new HashSet());
 		mc1.setTitulaireCompteBancaire("ERIC MONTAGNY");
-		mc1 = (MenageCommun) hibernateTemplate.merge(mc1);
+		mc1 = hibernateTemplate.merge(mc1);
 
 		Entreprise e0 = new Entreprise();
 		e0.setNumero(127001L);
@@ -1154,7 +1155,7 @@ public class TestData {
 		e0.setForsFiscaux(new HashSet());
 		e0.setRapportsObjet(new HashSet());
 		e0.setRapportsSujet(new HashSet());
-		e0 = (Entreprise) hibernateTemplate.merge(e0);
+		e0 = hibernateTemplate.merge(e0);
 
 		PersonnePhysique pp12 = new PersonnePhysique();
 		pp12.setNumero(12600008L);
@@ -1189,7 +1190,7 @@ public class TestData {
 		pp12.setRapportsObjet(new HashSet());
 		pp12.setRapportsSujet(new HashSet());
 		pp12.setTitulaireCompteBancaire("ERIC MONTAGNY");
-		pp12 = (PersonnePhysique) hibernateTemplate.merge(pp12);
+		pp12 = hibernateTemplate.merge(pp12);
 
 		PersonnePhysique pp13 = new PersonnePhysique();
 		pp13.setNumero(12600002L);
@@ -1224,7 +1225,7 @@ public class TestData {
 		pp13.setRapportsObjet(new HashSet());
 		pp13.setRapportsSujet(new HashSet());
 		pp13.setTitulaireCompteBancaire("ERIC MONTAGNY");
-		pp13 = (PersonnePhysique) hibernateTemplate.merge(pp13);
+		pp13 = hibernateTemplate.merge(pp13);
 
 		AutreCommunaute ac0 = new AutreCommunaute();
 		ac0.setNumero(2800001L);
@@ -1242,7 +1243,7 @@ public class TestData {
 		ac0.setForsFiscaux(new HashSet());
 		ac0.setRapportsObjet(new HashSet());
 		ac0.setRapportsSujet(new HashSet());
-		ac0 = (AutreCommunaute) hibernateTemplate.merge(ac0);
+		ac0 = hibernateTemplate.merge(ac0);
 
 		CollectiviteAdministrative ca0 = new CollectiviteAdministrative();
 		ca0.setNumero(2100001L);
@@ -1257,7 +1258,7 @@ public class TestData {
 		ca0.setForsFiscaux(new HashSet());
 		ca0.setRapportsObjet(new HashSet());
 		ca0.setRapportsSujet(new HashSet());
-		ca0 = (CollectiviteAdministrative) hibernateTemplate.merge(ca0);
+		ca0 = hibernateTemplate.merge(ca0);
 
 		CollectiviteAdministrative ca1 = new CollectiviteAdministrative();
 		ca1.setNumero(2100002L);
@@ -1272,7 +1273,7 @@ public class TestData {
 		ca1.setForsFiscaux(new HashSet());
 		ca1.setRapportsObjet(new HashSet());
 		ca1.setRapportsSujet(new HashSet());
-		ca1 = (CollectiviteAdministrative) hibernateTemplate.merge(ca1);
+		ca1 = hibernateTemplate.merge(ca1);
 
 		AdresseSuisse as0 = new AdresseSuisse();
 		as0.setId(1L);
@@ -1286,7 +1287,7 @@ public class TestData {
 		as0.setTexteCasePostale(TexteCasePostale.CASE_POSTALE);
 		as0.setUsage(TypeAdresseTiers.COURRIER);
 		pp6.addAdresseTiers(as0);
-		pp6 = (PersonnePhysique) hibernateTemplate.merge(pp6);
+		pp6 = hibernateTemplate.merge(pp6);
 
 		AdresseSuisse as1 = new AdresseSuisse();
 		as1.setId(6L);
@@ -1297,7 +1298,7 @@ public class TestData {
 		as1.setPermanente(false);
 		as1.setUsage(TypeAdresseTiers.COURRIER);
 		pp2.addAdresseTiers(as1);
-		pp2 = (PersonnePhysique) hibernateTemplate.merge(pp2);
+		pp2 = hibernateTemplate.merge(pp2);
 
 		AdresseSuisse as2 = new AdresseSuisse();
 		as2.setId(7L);
@@ -1309,7 +1310,7 @@ public class TestData {
 		as2.setPermanente(false);
 		as2.setUsage(TypeAdresseTiers.COURRIER);
 		pp13.addAdresseTiers(as2);
-		pp13 = (PersonnePhysique) hibernateTemplate.merge(pp13);
+		pp13 = hibernateTemplate.merge(pp13);
 
 		AdresseSuisse as3 = new AdresseSuisse();
 		as3.setId(8L);
@@ -1321,7 +1322,7 @@ public class TestData {
 		as3.setRue("Rue des terreaux");
 		as3.setUsage(TypeAdresseTiers.COURRIER);
 		pp0.addAdresseTiers(as3);
-		pp0 = (PersonnePhysique) hibernateTemplate.merge(pp0);
+		pp0 = hibernateTemplate.merge(pp0);
 
 		AdresseSuisse as4 = new AdresseSuisse();
 		as4.setId(9L);
@@ -1333,7 +1334,7 @@ public class TestData {
 		as4.setRue("Rue des terreaux");
 		as4.setUsage(TypeAdresseTiers.COURRIER);
 		mc0.addAdresseTiers(as4);
-		mc0 = (MenageCommun) hibernateTemplate.merge(mc0);
+		mc0 = hibernateTemplate.merge(mc0);
 
 		AdresseSuisse as5 = new AdresseSuisse();
 		as5.setId(10L);
@@ -1345,7 +1346,7 @@ public class TestData {
 		as5.setPermanente(false);
 		as5.setUsage(TypeAdresseTiers.COURRIER);
 		pp12.addAdresseTiers(as5);
-		pp12 = (PersonnePhysique) hibernateTemplate.merge(pp12);
+		pp12 = hibernateTemplate.merge(pp12);
 
 		AdresseSuisse as6 = new AdresseSuisse();
 		as6.setId(11L);
@@ -1356,28 +1357,31 @@ public class TestData {
 		as6.setPermanente(false);
 		as6.setUsage(TypeAdresseTiers.COURRIER);
 		pp1.addAdresseTiers(as6);
-		pp1 = (PersonnePhysique) hibernateTemplate.merge(pp1);
+		pp1 = hibernateTemplate.merge(pp1);
 
 		ForDebiteurPrestationImposable fdpi0 = new ForDebiteurPrestationImposable();
 		fdpi0.setId(11L);
 		fdpi0.setDateFin(RegDate.get(2008,3,22));
 		fdpi0.setDateDebut(RegDate.get(2007, 1, 1));
+		fdpi0.setMotifFermeture(MotifFor.INDETERMINE);
+		fdpi0.setMotifOuverture(MotifFor.INDETERMINE);
 		fdpi0.setGenreImpot(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE);
 		fdpi0.setLogModifDate(new Timestamp(1199142000000L));
 		fdpi0.setNumeroOfsAutoriteFiscale(MockCommune.Echallens.getNoOFS());
 		fdpi0.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
 		dpi0.addForFiscal(fdpi0);
-		dpi0 = (DebiteurPrestationImposable) hibernateTemplate.merge(dpi0);
+		dpi0 = hibernateTemplate.merge(dpi0);
 
 		ForDebiteurPrestationImposable fdpi1 = new ForDebiteurPrestationImposable();
 		fdpi1.setId(12L);
 		fdpi1.setDateDebut(RegDate.get(2008, 3, 23));
+		fdpi1.setMotifOuverture(MotifFor.INDETERMINE);
 		fdpi1.setGenreImpot(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE);
 		fdpi1.setLogModifDate(new Timestamp(1199142000000L));
 		fdpi1.setNumeroOfsAutoriteFiscale(MockCommune.Leysin.getNoOFS());
 		fdpi1.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
 		dpi0.addForFiscal(fdpi1);
-		dpi0 = (DebiteurPrestationImposable) hibernateTemplate.merge(dpi0);
+		dpi0 = hibernateTemplate.merge(dpi0);
 
 		DeclarationImpotSource dis0 = new DeclarationImpotSource();
 		dis0.setId(1L);
@@ -1406,7 +1410,7 @@ public class TestData {
 		dis1.setPeriode(pf6);
 		dis1.setPeriodicite(PeriodiciteDecompte.TRIMESTRIEL);
 		dpi0.addDeclaration(dis1);
-		dpi0 = (DebiteurPrestationImposable) hibernateTemplate.merge(dpi0);
+		dpi0 = hibernateTemplate.merge(dpi0);
 
 		DeclarationImpotOrdinaire dio0 = new DeclarationImpotOrdinaire();
 		dio0.setId(2L);
@@ -1423,7 +1427,7 @@ public class TestData {
 		dio0.setPeriode(pf3);
 		dio0.setTypeContribuable(TypeContribuable.VAUDOIS_ORDINAIRE);
 		mc1.addDeclaration(dio0);
-		mc1 = (MenageCommun) hibernateTemplate.merge(mc1);
+		mc1 = hibernateTemplate.merge(mc1);
 
 		DeclarationImpotOrdinaire dio1 = new DeclarationImpotOrdinaire();
 		dio1.setId(3L);
@@ -1440,7 +1444,7 @@ public class TestData {
 		dio1.setPeriode(pf4);
 		dio1.setTypeContribuable(TypeContribuable.VAUDOIS_ORDINAIRE);
 		mc1.addDeclaration(dio1);
-		mc1 = (MenageCommun) hibernateTemplate.merge(mc1);
+		mc1 = hibernateTemplate.merge(mc1);
 
 		DeclarationImpotOrdinaire dio2 = new DeclarationImpotOrdinaire();
 		dio2.setId(4L);
@@ -1457,7 +1461,7 @@ public class TestData {
 		dio2.setPeriode(pf5);
 		dio2.setTypeContribuable(TypeContribuable.VAUDOIS_ORDINAIRE);
 		mc1.addDeclaration(dio2);
-		mc1 = (MenageCommun) hibernateTemplate.merge(mc1);
+		mc1 = hibernateTemplate.merge(mc1);
 
 		DeclarationImpotSource dis2 = new DeclarationImpotSource();
 		dis2.setId(15L);
@@ -1471,73 +1475,73 @@ public class TestData {
 		dis2.setPeriode(pf6);
 		dis2.setPeriodicite(PeriodiciteDecompte.TRIMESTRIEL);
 		dpi1.addDeclaration(dis2);
-		dpi1 = (DebiteurPrestationImposable) hibernateTemplate.merge(dpi1);
+		dpi1 = hibernateTemplate.merge(dpi1);
 
 		EtatDeclaration ed0 = new EtatDeclarationEmise((RegDate.get(2008, 3, 20)));
 		ed0.setId(1L);
 		ed0.setLogModifDate(new Timestamp(1199142000000L));
 		dis0.addEtat(ed0);
-		dis0 = (DeclarationImpotSource) hibernateTemplate.merge(dis0);
+		dis0 = hibernateTemplate.merge(dis0);
 
 		EtatDeclaration ed1 = new EtatDeclarationSommee(RegDate.get(2008, 5, 15),RegDate.get(2008, 5, 18));
 		ed1.setId(8L);
 		ed1.setLogModifDate(new Timestamp(1199142000000L));
 		dis0.addEtat(ed1);
-		dis0 = (DeclarationImpotSource) hibernateTemplate.merge(dis0);
+		dis0 = hibernateTemplate.merge(dis0);
 
 		EtatDeclaration ed2 = new EtatDeclarationRetournee(RegDate.get(2008, 5, 25), "TEST");
 		ed2.setId(10L);
 		ed2.setLogModifDate(new Timestamp(1199142000000L));
 		dis0.addEtat(ed2);
-		dis0 = (DeclarationImpotSource) hibernateTemplate.merge(dis0);
+		dis0 = hibernateTemplate.merge(dis0);
 
 		EtatDeclaration ed3 = new EtatDeclarationEmise(RegDate.get(2008, 6, 20));
 		ed3.setId(9L);
 		ed3.setLogModifDate(new Timestamp(1199142000000L));
 		dis1.addEtat(ed3);
-		dis1 = (DeclarationImpotSource) hibernateTemplate.merge(dis1);
+		dis1 = hibernateTemplate.merge(dis1);
 
 		EtatDeclaration ed4 = new EtatDeclarationEmise(RegDate.get(2006, 1, 15));
 		ed4.setId(2L);
 		ed4.setLogModifDate(new Timestamp(1199142000000L));
 		dio0.addEtat(ed4);
-		dio0 = (DeclarationImpotOrdinaire) hibernateTemplate.merge(dio0);
+		dio0 = hibernateTemplate.merge(dio0);
 
 		EtatDeclaration ed5 = new EtatDeclarationRetournee(RegDate.get(2006, 4, 13), "TEST");
 		ed5.setId(3L);
 		ed5.setLogModifDate(new Timestamp(1199142000000L));
 		dio0.addEtat(ed5);
-		dio0 = (DeclarationImpotOrdinaire) hibernateTemplate.merge(dio0);
+		dio0 = hibernateTemplate.merge(dio0);
 
 		EtatDeclaration ed6 = new EtatDeclarationEmise(RegDate.get(2007, 1, 16));
 		ed6.setId(4L);
 		ed6.setLogModifDate(new Timestamp(1199142000000L));
 		dio1.addEtat(ed6);
-		dio1 = (DeclarationImpotOrdinaire) hibernateTemplate.merge(dio1);
+		dio1 = hibernateTemplate.merge(dio1);
 
 		EtatDeclaration ed7 = new EtatDeclarationSommee(RegDate.get(2007, 9, 15),RegDate.get(2007, 9, 18));
 		ed7.setId(5L);
 		ed7.setLogModifDate(new Timestamp(1199142000000L));
 		dio1.addEtat(ed7);
-		dio1 = (DeclarationImpotOrdinaire) hibernateTemplate.merge(dio1);
+		dio1 = hibernateTemplate.merge(dio1);
 
 		EtatDeclaration ed8 = new EtatDeclarationEchue(RegDate.get(2007, 11, 1));
 		ed8.setId(6L);
 		ed8.setLogModifDate(new Timestamp(1199142000000L));
 		dio1.addEtat(ed8);
-		dio1 = (DeclarationImpotOrdinaire) hibernateTemplate.merge(dio1);
+		dio1 = hibernateTemplate.merge(dio1);
 
 		EtatDeclaration ed9 = new EtatDeclarationEmise(RegDate.get(2007, 1, 15));
 		ed9.setId(7L);
 		ed9.setLogModifDate(new Timestamp(1199142000000L));
 		dio2.addEtat(ed9);
-		dio2 = (DeclarationImpotOrdinaire) hibernateTemplate.merge(dio2);
+		dio2 = hibernateTemplate.merge(dio2);
 
 		EtatDeclaration ed10 = new EtatDeclarationEmise(RegDate.get(2008, 3, 20));
 		ed10.setId(18L);
 		ed10.setLogModifDate(new Timestamp(1199142000000L));
 		dis2.addEtat(ed10);
-		dis2 = (DeclarationImpotSource) hibernateTemplate.merge(dis2);
+		dis2 = hibernateTemplate.merge(dis2);
 
 		DelaiDeclaration dd0 = new DelaiDeclaration();
 		dd0.setId(1L);
@@ -1545,7 +1549,7 @@ public class TestData {
 		dd0.setDelaiAccordeAu(RegDate.get(2008, 4, 30));
 		dd0.setLogModifDate(new Timestamp(1199142000000L));
 		dis0.addDelai(dd0);
-		dis0 = (DeclarationImpotSource) hibernateTemplate.merge(dis0);
+		dis0 = hibernateTemplate.merge(dis0);
 
 		DelaiDeclaration dd1 = new DelaiDeclaration();
 		dd1.setId(7L);
@@ -1553,7 +1557,7 @@ public class TestData {
 		dd1.setDelaiAccordeAu(RegDate.get(2008, 7, 31));
 		dd1.setLogModifDate(new Timestamp(1199142000000L));
 		dis1.addDelai(dd1);
-		dis1 = (DeclarationImpotSource) hibernateTemplate.merge(dis1);
+		dis1 = hibernateTemplate.merge(dis1);
 
 		DelaiDeclaration dd2 = new DelaiDeclaration();
 		dd2.setId(8L);
@@ -1563,7 +1567,7 @@ public class TestData {
 		dd2.setDelaiAccordeAu(RegDate.get(2008, 9, 30));
 		dd2.setLogModifDate(new Timestamp(1199142000000L));
 		dis1.addDelai(dd2);
-		dis1 = (DeclarationImpotSource) hibernateTemplate.merge(dis1);
+		dis1 = hibernateTemplate.merge(dis1);
 
 		DelaiDeclaration dd3 = new DelaiDeclaration();
 		dd3.setId(2L);
@@ -1571,7 +1575,7 @@ public class TestData {
 		dd3.setDelaiAccordeAu(RegDate.get(2006, 3, 15));
 		dd3.setLogModifDate(new Timestamp(1199142000000L));
 		dio0.addDelai(dd3);
-		dio0 = (DeclarationImpotOrdinaire) hibernateTemplate.merge(dio0);
+		dio0 = hibernateTemplate.merge(dio0);
 
 		DelaiDeclaration dd4 = new DelaiDeclaration();
 		dd4.setId(3L);
@@ -1581,7 +1585,7 @@ public class TestData {
 		dd4.setDelaiAccordeAu(RegDate.get(2006, 7, 31));
 		dd4.setLogModifDate(new Timestamp(1199142000000L));
 		dio0.addDelai(dd4);
-		dio0 = (DeclarationImpotOrdinaire) hibernateTemplate.merge(dio0);
+		dio0 = hibernateTemplate.merge(dio0);
 
 		DelaiDeclaration dd5 = new DelaiDeclaration();
 		dd5.setId(4L);
@@ -1589,7 +1593,7 @@ public class TestData {
 		dd5.setDelaiAccordeAu(RegDate.get(2007, 3, 15));
 		dd5.setLogModifDate(new Timestamp(1199142000000L));
 		dio1.addDelai(dd5);
-		dio1 = (DeclarationImpotOrdinaire) hibernateTemplate.merge(dio1);
+		dio1 = hibernateTemplate.merge(dio1);
 
 		DelaiDeclaration dd6 = new DelaiDeclaration();
 		dd6.setId(5L);
@@ -1597,7 +1601,7 @@ public class TestData {
 		dd6.setDelaiAccordeAu(RegDate.get(2008, 3, 15));
 		dd6.setLogModifDate(new Timestamp(1199142000000L));
 		dio2.addDelai(dd6);
-		dio2 = (DeclarationImpotOrdinaire) hibernateTemplate.merge(dio2);
+		dio2 = hibernateTemplate.merge(dio2);
 
 		DelaiDeclaration dd7 = new DelaiDeclaration();
 		dd7.setId(6L);
@@ -1607,7 +1611,7 @@ public class TestData {
 		dd7.setDelaiAccordeAu(RegDate.get(2008, 9, 15));
 		dd7.setLogModifDate(new Timestamp(1199142000000L));
 		dio2.addDelai(dd7);
-		dio2 = (DeclarationImpotOrdinaire) hibernateTemplate.merge(dio2);
+		dio2 = hibernateTemplate.merge(dio2);
 
 		AppartenanceMenage am0 = new AppartenanceMenage();
 		am0.setId(5L);
@@ -1615,7 +1619,7 @@ public class TestData {
 		am0.setLogModifDate(new Timestamp(1199142000000L));
 		am0.setObjetId(12600004L);
 		am0.setSujetId(12600003L);
-		am0 = (AppartenanceMenage) hibernateTemplate.merge(am0);
+		am0 = hibernateTemplate.merge(am0);
 		pp0.addRapportSujet(am0);
 		mc0.addRapportObjet(am0);
 
@@ -1625,7 +1629,7 @@ public class TestData {
 		am1.setLogModifDate(new Timestamp(1199142000000L));
 		am1.setObjetId(86006202L);
 		am1.setSujetId(12300001L);
-		am1 = (AppartenanceMenage) hibernateTemplate.merge(am1);
+		am1 = hibernateTemplate.merge(am1);
 		pp9.addRapportSujet(am1);
 		mc1.addRapportObjet(am1);
 
@@ -1635,7 +1639,7 @@ public class TestData {
 		am2.setLogModifDate(new Timestamp(1199142000000L));
 		am2.setObjetId(86006202L);
 		am2.setSujetId(12300002L);
-		am2 = (AppartenanceMenage) hibernateTemplate.merge(am2);
+		am2 = hibernateTemplate.merge(am2);
 		pp10.addRapportSujet(am2);
 		mc1.addRapportObjet(am2);
 
@@ -1646,7 +1650,7 @@ public class TestData {
 		rpi0.setLogModifDate(new Timestamp(1199142000000L));
 		rpi0.setObjetId(1678432L);
 		rpi0.setSujetId(12600001L);
-		rpi0 = (RapportPrestationImposable) hibernateTemplate.merge(rpi0);
+		rpi0 = hibernateTemplate.merge(rpi0);
 		pp2.addRapportSujet(rpi0);
 		dpi0.addRapportObjet(rpi0);
 
@@ -1656,7 +1660,7 @@ public class TestData {
 		rpi1.setLogModifDate(new Timestamp(1199142000000L));
 		rpi1.setObjetId(1678432L);
 		rpi1.setSujetId(12600003L);
-		rpi1 = (RapportPrestationImposable) hibernateTemplate.merge(rpi1);
+		rpi1 = hibernateTemplate.merge(rpi1);
 		pp0.addRapportSujet(rpi1);
 		dpi0.addRapportObjet(rpi1);
 
@@ -1666,7 +1670,7 @@ public class TestData {
 		t0.setLogModifDate(new Timestamp(1199142000000L));
 		t0.setObjetId(12300002L);
 		t0.setSujetId(34807810L);
-		t0 = (Tutelle) hibernateTemplate.merge(t0);
+		t0 = hibernateTemplate.merge(t0);
 		pp8.addRapportSujet(t0);
 		pp10.addRapportObjet(t0);
 
@@ -1676,7 +1680,7 @@ public class TestData {
 		cis0.setLogModifDate(new Timestamp(1199142000000L));
 		cis0.setObjetId(1678432L);
 		cis0.setSujetId(43308102L);
-		cis0 = (ContactImpotSource) hibernateTemplate.merge(cis0);
+		cis0 = hibernateTemplate.merge(cis0);
 		pp3.addRapportSujet(cis0);
 		dpi0.addRapportObjet(cis0);
 
@@ -1691,7 +1695,7 @@ public class TestData {
 		ffp0.setNumeroOfsAutoriteFiscale(MockCommune.Bale.getNoOFS());
 		ffp0.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_HC);
 		pp6.addForFiscal(ffp0);
-		pp6 = (PersonnePhysique) hibernateTemplate.merge(pp6);
+		pp6 = hibernateTemplate.merge(pp6);
 
 		ForFiscalSecondaire ffs0 = new ForFiscalSecondaire();
 		ffs0.setId(8L);
@@ -1705,7 +1709,7 @@ public class TestData {
 		ffs0.setNumeroOfsAutoriteFiscale(MockCommune.Renens.getNoOFS());
 		ffs0.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
 		pp6.addForFiscal(ffs0);
-		pp6 = (PersonnePhysique) hibernateTemplate.merge(pp6);
+		pp6 = hibernateTemplate.merge(pp6);
 
 		ForFiscalSecondaire ffs1 = new ForFiscalSecondaire();
 		ffs1.setId(80L);
@@ -1717,7 +1721,7 @@ public class TestData {
 		ffs1.setNumeroOfsAutoriteFiscale(MockCommune.Aubonne.getNoOFS());
 		ffs1.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
 		pp6.addForFiscal(ffs1);
-		pp6 = (PersonnePhysique) hibernateTemplate.merge(pp6);
+		pp6 = hibernateTemplate.merge(pp6);
 
 		ForFiscalPrincipal ffp1 = new ForFiscalPrincipal();
 		ffp1.setId(107L);
@@ -1731,7 +1735,7 @@ public class TestData {
 		ffp1.setNumeroOfsAutoriteFiscale(MockCommune.Bern.getNoOFS());
 		ffp1.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_HC);
 		pp6.addForFiscal(ffp1);
-		pp6 = (PersonnePhysique) hibernateTemplate.merge(pp6);
+		pp6 = hibernateTemplate.merge(pp6);
 
 		ForFiscalPrincipal ffp2 = new ForFiscalPrincipal();
 		ffp2.setId(108L);
@@ -1746,7 +1750,7 @@ public class TestData {
 		ffp2.setNumeroOfsAutoriteFiscale(MockCommune.Neuchatel.getNoOFS());
 		ffp2.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_HC);
 		pp6.addForFiscal(ffp2);
-		pp6 = (PersonnePhysique) hibernateTemplate.merge(pp6);
+		pp6 = hibernateTemplate.merge(pp6);
 
 		ForFiscalPrincipal ffp3 = new ForFiscalPrincipal();
 		ffp3.setId(1L);
@@ -1759,7 +1763,7 @@ public class TestData {
 		ffp3.setNumeroOfsAutoriteFiscale(MockCommune.Aigle.getNoOFS());
 		ffp3.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
 		pp2.addForFiscal(ffp3);
-		pp2 = (PersonnePhysique) hibernateTemplate.merge(pp2);
+		pp2 = hibernateTemplate.merge(pp2);
 
 		ForFiscalPrincipal ffp4 = new ForFiscalPrincipal();
 		ffp4.setId(2L);
@@ -1774,7 +1778,7 @@ public class TestData {
 		ffp4.setNumeroOfsAutoriteFiscale(MockCommune.Bex.getNoOFS());
 		ffp4.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
 		pp9.addForFiscal(ffp4);
-		pp9 = (PersonnePhysique) hibernateTemplate.merge(pp9);
+		pp9 = hibernateTemplate.merge(pp9);
 
 		ForFiscalPrincipal ffp5 = new ForFiscalPrincipal();
 		ffp5.setId(6L);
@@ -1789,7 +1793,7 @@ public class TestData {
 		ffp5.setNumeroOfsAutoriteFiscale(MockCommune.Bussigny.getNoOFS());
 		ffp5.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
 		pp10.addForFiscal(ffp5);
-		pp10 = (PersonnePhysique) hibernateTemplate.merge(pp10);
+		pp10 = hibernateTemplate.merge(pp10);
 
 		ForFiscalPrincipal ffp6 = new ForFiscalPrincipal();
 		ffp6.setId(5L);
@@ -1802,7 +1806,7 @@ public class TestData {
 		ffp6.setNumeroOfsAutoriteFiscale(MockCommune.CheseauxSurLausanne.getNoOFS());
 		ffp6.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
 		mc1.addForFiscal(ffp6);
-		mc1 = (MenageCommun) hibernateTemplate.merge(mc1);
+		mc1 = hibernateTemplate.merge(mc1);
 
 		ForFiscalPrincipal ffp7 = new ForFiscalPrincipal();
 		ffp7.setId(4L);
@@ -1815,7 +1819,7 @@ public class TestData {
 		ffp7.setNumeroOfsAutoriteFiscale(MockCommune.Bussigny.getNoOFS());
 		ffp7.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
 		pp8.addForFiscal(ffp7);
-		pp8 = (PersonnePhysique) hibernateTemplate.merge(pp8);
+		pp8 = hibernateTemplate.merge(pp8);
 
 		ForFiscalPrincipal ffp8 = new ForFiscalPrincipal();
 		ffp8.setId(9L);
@@ -1828,7 +1832,7 @@ public class TestData {
 		ffp8.setNumeroOfsAutoriteFiscale(MockCommune.Chamblon.getNoOFS());
 		ffp8.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
 		mc0.addForFiscal(ffp8);
-		mc0 = (MenageCommun) hibernateTemplate.merge(mc0);
+		mc0 = hibernateTemplate.merge(mc0);
 
 		ForFiscalPrincipal ffp9 = new ForFiscalPrincipal();
 		ffp9.setId(10L);
@@ -1841,7 +1845,7 @@ public class TestData {
 		ffp9.setNumeroOfsAutoriteFiscale(MockCommune.Croy.getNoOFS());
 		ffp9.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
 		pp13.addForFiscal(ffp9);
-		pp13 = (PersonnePhysique) hibernateTemplate.merge(pp13);
+		pp13 = hibernateTemplate.merge(pp13);
 
 
 		ForFiscalPrincipal ffp10 = new ForFiscalPrincipal();
@@ -1855,7 +1859,7 @@ public class TestData {
 		ffp10.setNumeroOfsAutoriteFiscale(MockPays.Allemagne.getNoOFS());
 		ffp10.setTypeAutoriteFiscale(TypeAutoriteFiscale.PAYS_HS);
 		pp1.addForFiscal(ffp10);
-		pp1 = (PersonnePhysique) hibernateTemplate.merge(pp1);
+		pp1 = hibernateTemplate.merge(pp1);
 
 		ForFiscalSecondaire ffs2 = new ForFiscalSecondaire();
 		ffs2.setId(14L);
@@ -1867,7 +1871,7 @@ public class TestData {
 		ffs2.setNumeroOfsAutoriteFiscale(MockCommune.Bussigny.getNoOFS());
 		ffs2.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
 		pp1.addForFiscal(ffs2);
-		pp1 = (PersonnePhysique) hibernateTemplate.merge(pp1);
+		pp1 = hibernateTemplate.merge(pp1);
 
 		ForFiscalPrincipal ffp11 = new ForFiscalPrincipal();
 		ffp11.setId(15L);
@@ -1882,7 +1886,7 @@ public class TestData {
 		ffp11.setNumeroOfsAutoriteFiscale(MockCommune.Lonay.getNoOFS());
 		ffp11.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
 		pp0.addForFiscal(ffp11);
-		pp0 = (PersonnePhysique) hibernateTemplate.merge(pp0);
+		pp0 = hibernateTemplate.merge(pp0);
 
 		SituationFamilleMenageCommun sfmc0 = new SituationFamilleMenageCommun();
 		sfmc0.setId(10L);
@@ -1893,7 +1897,7 @@ public class TestData {
 		sfmc0.setTarifApplicable(TarifImpotSource.NORMAL);
 		sfmc0.setContribuablePrincipalId(12600003L);
 		mc0.addSituationFamille(sfmc0);
-		mc0 = (MenageCommun) hibernateTemplate.merge(mc0);
+		mc0 = hibernateTemplate.merge(mc0);
 
 		SituationFamillePersonnePhysique sfpp0 = new SituationFamillePersonnePhysique();
 		sfpp0.setId(1L);
@@ -1903,7 +1907,7 @@ public class TestData {
 		sfpp0.setLogModifDate(new Timestamp(1199142000000L));
 		sfpp0.setNombreEnfants(0);
 		pp9.addSituationFamille(sfpp0);
-		pp9 = (PersonnePhysique) hibernateTemplate.merge(pp9);
+		pp9 = hibernateTemplate.merge(pp9);
 
 		SituationFamillePersonnePhysique sfpp1 = new SituationFamillePersonnePhysique();
 		sfpp1.setId(2L);
@@ -1913,7 +1917,7 @@ public class TestData {
 		sfpp1.setLogModifDate(new Timestamp(1199142000000L));
 		sfpp1.setNombreEnfants(0);
 		pp10.addSituationFamille(sfpp1);
-		pp10 = (PersonnePhysique) hibernateTemplate.merge(pp10);
+		pp10 = hibernateTemplate.merge(pp10);
 
 		SituationFamillePersonnePhysique sfpp2 = new SituationFamillePersonnePhysique();
 		sfpp2.setId(3L);
@@ -1922,7 +1926,7 @@ public class TestData {
 		sfpp2.setLogModifDate(new Timestamp(1199142000000L));
 		sfpp2.setNombreEnfants(0);
 		pp7.addSituationFamille(sfpp2);
-		pp7 = (PersonnePhysique) hibernateTemplate.merge(pp7);
+		pp7 = hibernateTemplate.merge(pp7);
 
 		SituationFamillePersonnePhysique sfpp3 = new SituationFamillePersonnePhysique();
 		sfpp3.setId(4L);
@@ -1931,7 +1935,7 @@ public class TestData {
 		sfpp3.setLogModifDate(new Timestamp(1199142000000L));
 		sfpp3.setNombreEnfants(0);
 		pp8.addSituationFamille(sfpp3);
-		pp8 = (PersonnePhysique) hibernateTemplate.merge(pp8);
+		pp8 = hibernateTemplate.merge(pp8);
 
 		SituationFamilleMenageCommun sfmc1 = new SituationFamilleMenageCommun();
 		sfmc1.setId(5L);
@@ -1942,7 +1946,7 @@ public class TestData {
 		sfmc1.setNombreEnfants(0);
 		sfmc1.setContribuablePrincipalId(12300002L);
 		mc1.addSituationFamille(sfmc1);
-		mc1 = (MenageCommun) hibernateTemplate.merge(mc1);
+		mc1 = hibernateTemplate.merge(mc1);
 
 		SituationFamilleMenageCommun sfmc2 = new SituationFamilleMenageCommun();
 		sfmc2.setId(6L);
@@ -1952,7 +1956,7 @@ public class TestData {
 		sfmc2.setNombreEnfants(1);
 		sfmc2.setContribuablePrincipalId(12300002L);
 		mc1.addSituationFamille(sfmc2);
-		mc1 = (MenageCommun) hibernateTemplate.merge(mc1);
+		mc1 = hibernateTemplate.merge(mc1);
 
 		SituationFamillePersonnePhysique sfpp4 = new SituationFamillePersonnePhysique();
 		sfpp4.setId(9L);
@@ -1961,7 +1965,7 @@ public class TestData {
 		sfpp4.setLogModifDate(new Timestamp(1199142000000L));
 		sfpp4.setNombreEnfants(0);
 		pp2.addSituationFamille(sfpp4);
-		pp2 = (PersonnePhysique) hibernateTemplate.merge(pp2);
+		pp2 = hibernateTemplate.merge(pp2);
 
 		IdentificationPersonne ip0 = new IdentificationPersonne();
 		ip0.setId(1L);
@@ -1969,7 +1973,7 @@ public class TestData {
 		ip0.setIdentifiant("15489652357");
 		ip0.setLogModifDate(new Timestamp(1199142000000L));
 		pp2.addIdentificationPersonne(ip0);
-		pp2 = (PersonnePhysique) hibernateTemplate.merge(pp2);
+		pp2 = hibernateTemplate.merge(pp2);
 
 		IdentificationPersonne ip1 = new IdentificationPersonne();
 		ip1.setId(2L);
@@ -1977,6 +1981,6 @@ public class TestData {
 		ip1.setIdentifiant("0784.7621/5");
 		ip1.setLogModifDate(new Timestamp(1199142000000L));
 		pp2.addIdentificationPersonne(ip1);
-		pp2 = (PersonnePhysique) hibernateTemplate.merge(pp2);
+		pp2 = hibernateTemplate.merge(pp2);
 	}
 }

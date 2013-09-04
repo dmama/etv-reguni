@@ -1389,6 +1389,7 @@ public class TiersServiceImpl implements TiersService {
 
     private ForDebiteurPrestationImposable reopenForDebiteur(ForDebiteurPrestationImposable forDebiteur) {
         forDebiteur.setDateFin(null);
+	    forDebiteur.setMotifFermeture(null);
         return forDebiteur;
     }
 
@@ -1478,13 +1479,17 @@ public class TiersServiceImpl implements TiersService {
 
     }
 
-    public ForDebiteurPrestationImposable openAndCloseForDebiteurPrestationImposable(DebiteurPrestationImposable debiteur, RegDate dateOuverture, RegDate dateFermeture, int numeroOfsAutoriteFiscale,
+	@Override
+    public ForDebiteurPrestationImposable openAndCloseForDebiteurPrestationImposable(DebiteurPrestationImposable debiteur, RegDate dateOuverture, MotifFor motifOuverture,
+                                                                                     RegDate dateFermeture, MotifFor motifFermeture, int numeroOfsAutoriteFiscale,
                                                                                      TypeAutoriteFiscale typeAutoriteFiscale) {
         // Ouvre un nouveau for à la date d'événement
         ForDebiteurPrestationImposable nouveauForFiscal = new ForDebiteurPrestationImposable();
         nouveauForFiscal.setGenreImpot(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE);
         nouveauForFiscal.setDateDebut(dateOuverture);
+		nouveauForFiscal.setMotifOuverture(motifOuverture);
         nouveauForFiscal.setDateFin(dateFermeture);
+		nouveauForFiscal.setMotifFermeture(motifFermeture);
         nouveauForFiscal.setNumeroOfsAutoriteFiscale(numeroOfsAutoriteFiscale);
         nouveauForFiscal.setTypeAutoriteFiscale(typeAutoriteFiscale);
         nouveauForFiscal = tiersDAO.addAndSave(debiteur, nouveauForFiscal);
@@ -1494,7 +1499,7 @@ public class TiersServiceImpl implements TiersService {
         }
 
         Assert.notNull(nouveauForFiscal);
-        nouveauForFiscal = closeForDebiteurPrestationImposable(debiteur, nouveauForFiscal, dateFermeture, true);
+        nouveauForFiscal = closeForDebiteurPrestationImposable(debiteur, nouveauForFiscal, dateFermeture, motifFermeture, true);
         return nouveauForFiscal;
     }
 
@@ -2165,13 +2170,14 @@ public class TiersServiceImpl implements TiersService {
      * {@inheritDoc}
      */
     @Override
-    public ForDebiteurPrestationImposable openForDebiteurPrestationImposable(DebiteurPrestationImposable debiteur, RegDate dateOuverture, int numeroOfsAutoriteFiscale,
+    public ForDebiteurPrestationImposable openForDebiteurPrestationImposable(DebiteurPrestationImposable debiteur, RegDate dateOuverture, MotifFor motifOuverture, int numeroOfsAutoriteFiscale,
                                                                              TypeAutoriteFiscale typeAutoriteFiscale) {
 
         // Ouvre un nouveau for à la date d'événement
         ForDebiteurPrestationImposable nouveauForFiscal = new ForDebiteurPrestationImposable();
         nouveauForFiscal.setGenreImpot(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE);
         nouveauForFiscal.setDateDebut(dateOuverture);
+	    nouveauForFiscal.setMotifOuverture(motifOuverture);
         nouveauForFiscal.setNumeroOfsAutoriteFiscale(numeroOfsAutoriteFiscale);
         nouveauForFiscal.setTypeAutoriteFiscale(typeAutoriteFiscale);
         nouveauForFiscal = tiersDAO.addAndSave(debiteur, nouveauForFiscal);
@@ -2198,7 +2204,7 @@ public class TiersServiceImpl implements TiersService {
             if (rapport instanceof RapportPrestationImposable && rapport.isValidAt(dateDesactivation) && dateDesactivation.equals(rapport.getDateFin())) {
                 final Tiers sourcier = getTiers(rapport.getSujetId());
                 final RapportPrestationImposable rpi = new RapportPrestationImposable(dateReactivation, null, (Contribuable) sourcier, debiteur);
-                nouveaux.add(rpi);
+                nouveaux.add(hibernateTemplate.merge(rpi));
             }
         }
         debiteur.getRapportsObjet().addAll(nouveaux);
@@ -2661,13 +2667,13 @@ public class TiersServiceImpl implements TiersService {
 
 	@Nullable
 	@Override
-	public ForDebiteurPrestationImposable updateForDebiteur(ForDebiteurPrestationImposable fdpi, RegDate dateFermeture) {
+	public ForDebiteurPrestationImposable updateForDebiteur(ForDebiteurPrestationImposable fdpi, RegDate dateFermeture, MotifFor motifFermeture) {
 
 		ForDebiteurPrestationImposable updated = null;
 
 		if (fdpi.getDateFin() == null && dateFermeture != null) {
 			// le for a été fermé
-			updated = closeForDebiteurPrestationImposable((DebiteurPrestationImposable) fdpi.getTiers(), fdpi, dateFermeture, true);
+			updated = closeForDebiteurPrestationImposable((DebiteurPrestationImposable) fdpi.getTiers(), fdpi, dateFermeture, motifFermeture, true);
 		}
 
 		return updated;
@@ -2804,11 +2810,12 @@ public class TiersServiceImpl implements TiersService {
      * {@inheritDoc}
      */
     @Override
-    public ForDebiteurPrestationImposable addForDebiteur(DebiteurPrestationImposable debiteur, RegDate dateDebut, RegDate dateFin, TypeAutoriteFiscale typeAutoriteFiscale, int autoriteFiscale) {
+    public ForDebiteurPrestationImposable addForDebiteur(DebiteurPrestationImposable debiteur, RegDate dateDebut, MotifFor motifOuverture,
+                                                         RegDate dateFin, MotifFor motifFermeture, TypeAutoriteFiscale typeAutoriteFiscale, int autoriteFiscale) {
         final ForDebiteurPrestationImposable dernierForDebiteur = debiteur.getDernierForDebiteur();
         if (dernierForDebiteur != null && dernierForDebiteur.getDateFin() == null) {
 	        if (dateFin == null || dateFin.isAfter(dernierForDebiteur.getDateDebut())) {
-		        closeForDebiteurPrestationImposable(debiteur, dernierForDebiteur, dateDebut.getOneDayBefore(), false);
+		        closeForDebiteurPrestationImposable(debiteur, dernierForDebiteur, dateDebut.getOneDayBefore(), motifOuverture, false);
 	        }
 
         }
@@ -2819,9 +2826,10 @@ public class TiersServiceImpl implements TiersService {
 
         ForDebiteurPrestationImposable forRtr;
         if (dateFin == null) {
-            forRtr = openForDebiteurPrestationImposable(debiteur, dateDebut, autoriteFiscale, typeAutoriteFiscale);
-        } else {
-            forRtr = openAndCloseForDebiteurPrestationImposable(debiteur, dateDebut, dateFin, autoriteFiscale, typeAutoriteFiscale);
+            forRtr = openForDebiteurPrestationImposable(debiteur, dateDebut, motifOuverture, autoriteFiscale, typeAutoriteFiscale);
+        }
+        else {
+            forRtr = openAndCloseForDebiteurPrestationImposable(debiteur, dateDebut, motifOuverture, dateFin, motifFermeture, autoriteFiscale, typeAutoriteFiscale);
         }
         return forRtr;
 
@@ -2858,13 +2866,14 @@ public class TiersServiceImpl implements TiersService {
      * @param debiteur                       le debiteur concerné
      * @param forDebiteurPrestationImposable le for débiteur concerné
      * @param dateFermeture                  la date de fermeture du for
+     * @param motifFermeture                 la motif de fermeture du for
      * @param fermerRapportsPrestation       <code>true</code> s'il faut fermer les rapports "prestation" du débiteur, <code>false</code> s'il faut les laisser ouverts
      * @return le for debiteur fermé, ou <b>null</b> si le contribuable n'en possédait pas.
      */
     @Override
     public ForDebiteurPrestationImposable closeForDebiteurPrestationImposable(DebiteurPrestationImposable debiteur,
                                                                               ForDebiteurPrestationImposable forDebiteurPrestationImposable,
-                                                                              RegDate dateFermeture,
+                                                                              RegDate dateFermeture, MotifFor motifFermeture,
                                                                               boolean fermerRapportsPrestation) {
         if (forDebiteurPrestationImposable != null) {
             if (forDebiteurPrestationImposable.getDateDebut().isAfter(dateFermeture)) {
@@ -2873,6 +2882,7 @@ public class TiersServiceImpl implements TiersService {
                         + RegDateHelper.dateToDisplayString(forDebiteurPrestationImposable.getDateDebut()) + ") du for fiscal actif");
             }
             forDebiteurPrestationImposable.setDateFin(dateFermeture);
+	        forDebiteurPrestationImposable.setMotifFermeture(motifFermeture);
 
             // [UNIREG-2144] Fermeture des rapports de travail
             if (fermerRapportsPrestation) {
@@ -2883,8 +2893,7 @@ public class TiersServiceImpl implements TiersService {
                 }
             }
 
-            this.evenementFiscalService.publierEvenementFiscalFermetureFor(debiteur, dateFermeture, null,
-                    forDebiteurPrestationImposable.getId());
+            this.evenementFiscalService.publierEvenementFiscalFermetureFor(debiteur, dateFermeture, null, forDebiteurPrestationImposable.getId());
         }
 
         return forDebiteurPrestationImposable;

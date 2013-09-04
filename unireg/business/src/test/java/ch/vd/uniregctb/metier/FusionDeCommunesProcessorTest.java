@@ -609,7 +609,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
 				final DebiteurPrestationImposable dpi = addDebiteur();
-				addForDebiteur(dpi, date(1990, 5, 23), null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Croy);
+				addForDebiteur(dpi, date(1990, 5, 23), MotifFor.INDETERMINE, null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Croy);
 				return dpi.getNumero();
 			}
 		});

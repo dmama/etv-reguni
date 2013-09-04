@@ -434,10 +434,12 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
         return ffp;
     }
 
-    protected ForDebiteurPrestationImposable addForDebiteur(DebiteurPrestationImposable dpi, RegDate debut, @Nullable RegDate fin, MockCommune commune) {
+    protected ForDebiteurPrestationImposable addForDebiteur(DebiteurPrestationImposable dpi, RegDate debut, MotifFor motifOuverture, @Nullable RegDate fin, @Nullable MotifFor motifFermeture, MockCommune commune) {
         ForDebiteurPrestationImposable f = new ForDebiteurPrestationImposable();
         f.setDateDebut(debut);
+	    f.setMotifOuverture(motifOuverture);
         f.setDateFin(fin);
+	    f.setMotifFermeture(motifFermeture);
         f.setGenreImpot(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE);
         f.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
         f.setNumeroOfsAutoriteFiscale(commune.getNoOFS());
@@ -634,18 +636,20 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
         return debiteur;
     }
 
-    protected ForDebiteurPrestationImposable addForDebiteur(DebiteurPrestationImposable dpi, RegDate dateDebut, RegDate dateFin, TypeAutoriteFiscale typeAutorite, MockCommune commune) {
-        ForDebiteurPrestationImposable f = createForDebiteur(dpi, dateDebut, dateFin, typeAutorite, commune);
+    protected ForDebiteurPrestationImposable addForDebiteur(DebiteurPrestationImposable dpi, RegDate dateDebut, MotifFor motifOuverture, RegDate dateFin, MotifFor motifFermeture, TypeAutoriteFiscale typeAutorite, MockCommune commune) {
+        ForDebiteurPrestationImposable f = createForDebiteur(dpi, dateDebut, motifOuverture, dateFin, motifFermeture, typeAutorite, commune);
         return tiersDAO.addAndSave(dpi, f);
     }
 
-    protected ForDebiteurPrestationImposable createForDebiteur(DebiteurPrestationImposable dpi, RegDate dateDebut, RegDate dateFin, TypeAutoriteFiscale typeAutorite, MockCommune commune) {
-        ForDebiteurPrestationImposable f = new ForDebiteurPrestationImposable();
+    protected ForDebiteurPrestationImposable createForDebiteur(DebiteurPrestationImposable dpi, RegDate dateDebut, MotifFor motifOuverture, RegDate dateFin, MotifFor motifFermeture, TypeAutoriteFiscale typeAutorite, MockCommune commune) {
+        final ForDebiteurPrestationImposable f = new ForDebiteurPrestationImposable();
         f.setTiers(dpi);
         f.setTypeAutoriteFiscale(typeAutorite);
         f.setNumeroOfsAutoriteFiscale(commune.getNoOFS());
         f.setDateDebut(dateDebut);
+	    f.setMotifOuverture(motifOuverture);
         f.setDateFin(dateFin);
+	    f.setMotifFermeture(motifFermeture);
         return f;
     }
 

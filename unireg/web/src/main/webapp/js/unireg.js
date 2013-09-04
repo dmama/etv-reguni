@@ -547,8 +547,13 @@ var Fors = {
 		var motifOuverture = motifsOuvertureSelect.val();
 		if (motifOuverture == null) motifOuverture = defaultMotifOuverture;
 
+		var url = App.curl('/fors/motifsOuverture.do?tiersId=') + numeroCtb + '&genreImpot=' + genreImpot;
+		if (rattachement != null) {
+			url += '&rattachement=' + rattachement;
+		}
+
 		// appels ajax pour mettre-à-jour les motifs d'ouverture
-		$.get(App.curl('/fors/motifsOuverture.do?tiersId=') + numeroCtb + '&genreImpot=' + genreImpot + '&rattachement=' + rattachement + '&' + new Date().getTime(), function(motifs) {
+		$.get(url + '&' + new Date().getTime(), function(motifs) {
 			var list = '';
 			if (!motifOuverture || !(motifOuverture in motifs) && motifs.length > 1) {
 				// on ajoute une option vide si le motif courant (= ancienne valeur) n'est pas mappable sur les nouveaux motifs disponibles (et qu'il y en a plusieurs)
@@ -583,8 +588,13 @@ var Fors = {
 		var motifFermeture = motifsFermetureSelect.val();
 		if (motifFermeture == null) motifFermeture = defaultMotifFermeture;
 
+		var url = App.curl('/fors/motifsFermeture.do?tiersId=') + numeroCtb + '&genreImpot=' + genreImpot;
+		if (rattachement != null) {
+			url += '&rattachement=' + rattachement;
+		}
+
 		// appels ajax pour mettre-à-jour les motifs de fermeture
-		$.get(App.curl('/fors/motifsFermeture.do?tiersId=') + numeroCtb + '&genreImpot=' + genreImpot + '&rattachement=' + rattachement + '&' + new Date().getTime(), function(motifs) {
+		$.get(url + '&' + new Date().getTime(), function(motifs) {
 			var list = '<option></option>'; // dans le cas du motif de fermeture, on ajoute toujours une option vide
 			for(var i = 0; i < motifs.length; ++i) {
 				var motif = motifs[i];
