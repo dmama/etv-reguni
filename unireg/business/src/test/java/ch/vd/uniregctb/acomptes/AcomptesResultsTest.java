@@ -14,6 +14,7 @@ import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.ModeImposition;
+import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
@@ -42,8 +43,8 @@ public class AcomptesResultsTest extends BusinessTest {
 
 		final PersonnePhysique pp = new PersonnePhysique(false);
 		pp.setNumero(12345678L);
-		pp.addForFiscal(new ForFiscalPrincipal(dateOuvertureForPrincipal, null, MockCommune.Bern.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE));
-		pp.addForFiscal(new ForFiscalSecondaire(dateOuvertureForSecondaire, null, MockCommune.Cossonay.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.IMMEUBLE_PRIVE));
+		pp.addForFiscal(new ForFiscalPrincipal(dateOuvertureForPrincipal, MotifFor.ACHAT_IMMOBILIER, null, null, MockCommune.Bern.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE));
+		pp.addForFiscal(new ForFiscalSecondaire(dateOuvertureForSecondaire, MotifFor.ACHAT_IMMOBILIER, null, null, MockCommune.Cossonay.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.IMMEUBLE_PRIVE));
 
 		final AcomptesResults.InfoAssujettissementContribuable info = results.calculerInfoAssujettissement(pp, dateTraitement.year());
 		Assert.assertNotNull(info);
@@ -58,8 +59,8 @@ public class AcomptesResultsTest extends BusinessTest {
 
 		final PersonnePhysique pp = new PersonnePhysique(false);
 		pp.setNumero(12345678L);
-		pp.addForFiscal(new ForFiscalPrincipal(dateOuvertureForPrincipal, null, MockPays.Danemark.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE));
-		pp.addForFiscal(new ForFiscalSecondaire(dateOuvertureForSecondaire, null, MockCommune.Cossonay.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.IMMEUBLE_PRIVE));
+		pp.addForFiscal(new ForFiscalPrincipal(dateOuvertureForPrincipal, MotifFor.ACHAT_IMMOBILIER, null, null, MockPays.Danemark.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE));
+		pp.addForFiscal(new ForFiscalSecondaire(dateOuvertureForSecondaire, MotifFor.ACHAT_IMMOBILIER, null, null, MockCommune.Cossonay.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.IMMEUBLE_PRIVE));
 
 		final AcomptesResults.InfoAssujettissementContribuable info = results.calculerInfoAssujettissement(pp, dateTraitement.year());
 		Assert.assertNotNull(info);

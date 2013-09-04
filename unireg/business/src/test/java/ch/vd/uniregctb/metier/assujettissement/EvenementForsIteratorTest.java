@@ -16,6 +16,7 @@ import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.ModeImposition;
+import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
@@ -385,11 +386,11 @@ public class EvenementForsIteratorTest extends WithoutSpringTest {
 	}
 
 	private static ForFiscalSecondaire addForSecondaire(RegDate dateOuverture, RegDate dateFermeture) {
-		return new ForFiscalSecondaire(dateOuverture, dateFermeture, 1234, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.IMMEUBLE_PRIVE);
+		return new ForFiscalSecondaire(dateOuverture, MotifFor.ACHAT_IMMOBILIER, dateFermeture, dateFermeture == null ? null : MotifFor.VENTE_IMMOBILIER, 1234, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.IMMEUBLE_PRIVE);
 	}
 
 	private static ForFiscalPrincipal addForPrincipal(RegDate dateOuverture, @Nullable RegDate dateFermeture) {
-		return new ForFiscalPrincipal(dateOuverture, dateFermeture, 1234, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+		return new ForFiscalPrincipal(dateOuverture, MotifFor.ARRIVEE_HS, dateFermeture, dateFermeture == null ? null : MotifFor.DEPART_HS, 1234, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 	}
 
 	private static void assertForsAt(ForsAt expected, ForsAt actual) {

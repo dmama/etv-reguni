@@ -6,7 +6,7 @@ import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
-public abstract class ForFiscalRevenuFortuneValidator<T extends ForFiscalRevenuFortune> extends ForFiscalValidator<T> {
+public abstract class ForFiscalRevenuFortuneValidator<T extends ForFiscalRevenuFortune> extends ForFiscalAvecMotifsValidator<T> {
 
 	@Override
 	public ValidationResults validate(T ff) {

@@ -114,7 +114,6 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 				f.setMotifRattachement(MotifRattachement.DOMICILE);
 				f.setModeImposition(ModeImposition.ORDINAIRE);
 				f.setMotifOuverture(MotifFor.ARRIVEE_HC);
-				f.setMotifFermeture(MotifFor.DEPART_HC);
 				nh.addForFiscal(f);
 
 				nh = (PersonnePhysique) tiersDAO.save(nh);
@@ -139,7 +138,7 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 				nh.setNom("Dupres");
 
 				// variante : le for principal est d'abord sauvé pour lui-même avant d'être ajouté au tiers
-				addForPrincipal(nh, date(2000, 1, 1), MotifFor.ARRIVEE_HC, null, MotifFor.DEPART_HC, MockCommune.Lausanne);
+				addForPrincipal(nh, date(2000, 1, 1), MotifFor.ARRIVEE_HC, null, null, MockCommune.Lausanne);
 
 				nh = (PersonnePhysique) tiersDAO.save(nh);
 				return nh.getNumero();

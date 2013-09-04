@@ -516,7 +516,6 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 		ffp2.setModeImposition(ModeImposition.SOURCE);
 		ffp2.setNumeroOfsAutoriteFiscale(MockCommune.Neuchatel.getNoOFS());
 		ffp2.setMotifOuverture(MotifFor.ARRIVEE_HC);
-		ffp2.setMotifFermeture(MotifFor.DEMENAGEMENT_VD);
 		hab.addForFiscal(ffp2);
 
 		final ForFiscalSecondaire ffs = new ForFiscalSecondaire();
@@ -524,7 +523,6 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 		ffs.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
 		ffs.setNumeroOfsAutoriteFiscale(MockCommune.Bussigny.getNoOFS());
 		ffs.setMotifOuverture(MotifFor.DEBUT_EXPLOITATION);
-		ffs.setMotifFermeture(MotifFor.FIN_EXPLOITATION);
 		hab.addForFiscal(ffs);
 
 		// Avec for secondaire
@@ -538,6 +536,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 			{
 				ffs.setDateDebut(RegDate.get(2000, 1, 1));
 				ffs.setDateFin(RegDate.get(2005, 12, 31));
+				ffs.setMotifFermeture(MotifFor.FIN_EXPLOITATION);
 				ffp.setModeImposition(ModeImposition.SOURCE);
 
 				final ValidationResults vr = validate(hab);
@@ -570,6 +569,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 
 				ffs.setDateDebut(RegDate.get(2006, 1, 1));
 				ffs.setDateFin(null);
+				ffs.setMotifFermeture(null);
 				ffp.setModeImposition(ModeImposition.SOURCE);
 
 				final ValidationResults vr = validate(hab);

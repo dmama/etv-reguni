@@ -51,20 +51,14 @@ public class MenageCommunValidatorTest extends AbstractValidatorTest<MenageCommu
 			final MenageCommun mc3 = hibernateTemplate.merge(new MenageCommun());
 			final PersonnePhysique pp3 = addNonHabitant("Albus", "Mandragore", null, Sexe.MASCULIN);
 			mc3.addRapportObjet(new AppartenanceMenage(date(2000, 1, 1), date(2004, 12, 31), pp3, mc3));
-			final ForFiscalPrincipal f3 = new ForFiscalPrincipal(date(2000, 1, 1), date(2004, 12, 31), MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
-			f3.setMotifOuverture(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
-			f3.setMotifFermeture(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT);
-			mc3.addForFiscal(f3);
+			mc3.addForFiscal(new ForFiscalPrincipal(date(2000, 1, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, date(2004, 12, 31), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE));
 			assertValidation(null, null, validate(mc3));
 
 			// un ménage commun avec une période de validité et un for compris dans cette période
 			final MenageCommun mc4 = hibernateTemplate.merge(new MenageCommun());
 			final PersonnePhysique pp4 = addNonHabitant("Albus", "Mandragore", null, Sexe.MASCULIN);
 			mc4.addRapportObjet(new AppartenanceMenage(date(2000, 1, 1), date(2004, 12, 31), pp4, mc4));
-			ForFiscalPrincipal f4 = new ForFiscalPrincipal(date(2001, 1, 1), date(2003, 12, 31), MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
-			f4.setMotifOuverture(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
-			f4.setMotifFermeture(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT);
-			mc4.addForFiscal(f4);
+			mc4.addForFiscal(new ForFiscalPrincipal(date(2001, 1, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, date(2003, 12, 31), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE));
 			assertValidation(null, null, validate(mc4));
 
 			// un ménage commun avec deux périodes de validité adjacentes et un for compris dans ces deux périodes
@@ -72,10 +66,7 @@ public class MenageCommunValidatorTest extends AbstractValidatorTest<MenageCommu
 			final PersonnePhysique pp5 = addNonHabitant("Albus", "Mandragore", null, Sexe.MASCULIN);
 			mc5.addRapportObjet(new AppartenanceMenage(date(2000, 1, 1), date(2002, 12, 31), pp5, mc5));
 			mc5.addRapportObjet(new AppartenanceMenage(date(2003, 1, 1), date(2004, 12, 31), pp5, mc5));
-			ForFiscalPrincipal f5 = new ForFiscalPrincipal(date(2000, 1, 1), date(2004, 12, 31), MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
-			f5.setMotifOuverture(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
-			f5.setMotifFermeture(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT);
-			mc5.addForFiscal(f5);
+			mc5.addForFiscal(new ForFiscalPrincipal(date(2000, 1, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, date(2004, 12, 31), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE));
 			assertValidation(null, null, validate(mc5));
 		}
 
@@ -85,9 +76,7 @@ public class MenageCommunValidatorTest extends AbstractValidatorTest<MenageCommu
 		{
 			// un ménage commun sans période de validité mais avec un for
 			final MenageCommun mc1 = hibernateTemplate.merge(new MenageCommun());
-			final ForFiscalPrincipal f1 = new ForFiscalPrincipal(date(2000, 1, 1), date(2004, 12, 31), MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
-			f1.setMotifOuverture(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
-			f1.setMotifFermeture(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT);
+			final ForFiscalPrincipal f1 = new ForFiscalPrincipal(date(2000, 1, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, date(2004, 12, 31), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 			mc1.addForFiscal(f1);
 			assertValidation(Arrays.asList(String.format("Le for fiscal [%s] ne peut pas exister en dehors de la période de validité du ménage-commun numéro [%s]", f1, mc1.getNumero())), null, validate(mc1));
 
@@ -95,9 +84,7 @@ public class MenageCommunValidatorTest extends AbstractValidatorTest<MenageCommu
 			final MenageCommun mc2 = hibernateTemplate.merge(new MenageCommun());
 			final PersonnePhysique pp2 = addNonHabitant("Albus", "Mandragore", null, Sexe.MASCULIN);
 			mc2.addRapportObjet(new AppartenanceMenage(date(1990, 1, 1), date(1994, 12, 31), pp2, mc2));
-			final ForFiscalPrincipal f2 = new ForFiscalPrincipal(date(2000, 1, 1), date(2004, 12, 31), MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
-			f2.setMotifOuverture(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
-			f2.setMotifFermeture(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT);
+			final ForFiscalPrincipal f2 = new ForFiscalPrincipal(date(2000, 1, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, date(2004, 12, 31), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 			mc2.addForFiscal(f2);
 			assertValidation(Arrays.asList(String.format("Le for fiscal [%s] ne peut pas exister en dehors de la période de validité du ménage-commun numéro [%s]", f2, mc2.getNumero())), null, validate(mc2));
 
@@ -105,9 +92,7 @@ public class MenageCommunValidatorTest extends AbstractValidatorTest<MenageCommu
 			final MenageCommun mc3 = hibernateTemplate.merge(new MenageCommun());
 			final PersonnePhysique pp3 = addNonHabitant("Albus", "Mandragore", null, Sexe.MASCULIN);
 			mc3.addRapportObjet(new AppartenanceMenage(date(2000, 1, 1), date(2004, 12, 31), pp3, mc3));
-			final ForFiscalPrincipal f3 = new ForFiscalPrincipal(date(2003, 1, 1), date(2007, 12, 31), MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
-			f3.setMotifOuverture(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
-			f3.setMotifFermeture(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT);
+			final ForFiscalPrincipal f3 = new ForFiscalPrincipal(date(2003, 1, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, date(2007, 12, 31), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 			mc3.addForFiscal(f3);
 			assertValidation(Arrays.asList(String.format("Le for fiscal [%s] ne peut pas exister en dehors de la période de validité du ménage-commun numéro [%s]", f3, mc3.getNumero())), null, validate(mc3));
 
@@ -116,9 +101,7 @@ public class MenageCommunValidatorTest extends AbstractValidatorTest<MenageCommu
 			final PersonnePhysique pp4 = addNonHabitant("Albus", "Mandragore", null, Sexe.MASCULIN);
 			mc4.addRapportObjet(new AppartenanceMenage(date(2000, 1, 1), date(2001, 12, 31), pp4, mc4));
 			mc4.addRapportObjet(new AppartenanceMenage(date(2003, 1, 1), date(2004, 12, 31), pp4, mc4));
-			ForFiscalPrincipal f4 = new ForFiscalPrincipal(date(2001, 1, 1), date(2003, 12, 31), MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
-			f4.setMotifOuverture(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
-			f4.setMotifFermeture(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT);
+			final ForFiscalPrincipal f4 = new ForFiscalPrincipal(date(2001, 1, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, date(2003, 12, 31), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 			mc4.addForFiscal(f4);
 			assertValidation(Arrays.asList(String.format("Le for fiscal [%s] ne peut pas exister en dehors de la période de validité du ménage-commun numéro [%s]", f4, mc4.getNumero())), null, validate(mc4));
 		}
@@ -146,15 +129,11 @@ public class MenageCommunValidatorTest extends AbstractValidatorTest<MenageCommu
 
 			// Fors
 			// Premier for: annulé
-			ForFiscalPrincipal ffp = new ForFiscalPrincipal(date(1982, 12, 4), date(2008, 1, 1), 261, TypeAutoriteFiscale.COMMUNE_HC, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
-			ffp.setMotifOuverture(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
-			ffp.setMotifFermeture(MotifFor.VEUVAGE_DECES);
+			ForFiscalPrincipal ffp = new ForFiscalPrincipal(date(1982, 12, 4), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, date(2008, 1, 1), MotifFor.VEUVAGE_DECES, 261, TypeAutoriteFiscale.COMMUNE_HC, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
 			ffp.setAnnule(true);
 			mc.addForFiscal(ffp);
 			// Deuxieme for: ouvert
-			ffp = new ForFiscalPrincipal(date(1982, 12, 4), null, 261, TypeAutoriteFiscale.COMMUNE_HC, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
-			ffp.setMotifOuverture(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
-			ffp.setMotifFermeture(MotifFor.VEUVAGE_DECES);
+			ffp = new ForFiscalPrincipal(date(1982, 12, 4), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null, null, 261, TypeAutoriteFiscale.COMMUNE_HC, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
 			mc.addForFiscal(ffp);
 
 			// validations

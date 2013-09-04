@@ -189,10 +189,9 @@ public class TacheServiceTest extends BusinessTest {
 				hab.setNumeroIndividu(333908L);
 				hab = hibernateTemplate.merge(hab);
 
-				ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipal(RegDate.get(2006, 6, 12), null, 5652,
+				final ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipal(RegDate.get(2006, 6, 12), MotifFor.ARRIVEE_HS, null, null, 5652,
 						TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 				hab.addForFiscal(forFiscalPrincipal);
-				forFiscalPrincipal.setMotifOuverture(MotifFor.ARRIVEE_HS);
 				tacheService.genereTacheDepuisOuvertureForPrincipal(hab, forFiscalPrincipal, null);
 				return null;
 			}
@@ -217,10 +216,9 @@ public class TacheServiceTest extends BusinessTest {
 				hab.setNumeroIndividu(333908L);
 				hab = hibernateTemplate.merge(hab);
 
-				ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipal(RegDate.get(2006, 6, 12), null, 5652,
+				final ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipal(RegDate.get(2006, 6, 12), MotifFor.ARRIVEE_HS, null, null, 5652,
 						TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
 				hab.addForFiscal(forFiscalPrincipal);
-				forFiscalPrincipal.setMotifOuverture(MotifFor.ARRIVEE_HS);
 				tacheService.genereTacheDepuisOuvertureForPrincipal(hab, forFiscalPrincipal, null);
 				return null;
 			}
@@ -241,10 +239,9 @@ public class TacheServiceTest extends BusinessTest {
 				hab.setNumeroIndividu(333908L);
 				hab = hibernateTemplate.merge(hab);
 
-				ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipal(RegDate.get(2006, 6, 12), null, 5652,
+				final ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipal(RegDate.get(2006, 6, 12), MotifFor.ARRIVEE_HC, null, null, 5652,
 						TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 				hab.addForFiscal(forFiscalPrincipal);
-				forFiscalPrincipal.setMotifOuverture(MotifFor.ARRIVEE_HC);
 				tacheService.genereTacheDepuisOuvertureForPrincipal(hab, forFiscalPrincipal, null);
 				return null;
 			}
@@ -276,15 +273,12 @@ public class TacheServiceTest extends BusinessTest {
 				hab.setNumeroIndividu(333908L);
 				hab = hibernateTemplate.merge(hab);
 
-				ForFiscalPrincipal forFiscalPrincipalDepart = new ForFiscalPrincipal(RegDate.get(2008, 6, 12), RegDate.get(periodeCourante, 1, 2), 5586,
+				final ForFiscalPrincipal forFiscalPrincipalDepart = new ForFiscalPrincipal(RegDate.get(2008, 6, 12), MotifFor.ARRIVEE_HC, RegDate.get(periodeCourante, 1, 2), MotifFor.DEMENAGEMENT_VD, 5586,
 						TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
-				forFiscalPrincipalDepart.setMotifOuverture(MotifFor.ARRIVEE_HC);
-				forFiscalPrincipalDepart.setMotifFermeture(MotifFor.DEMENAGEMENT_VD);
 				hab.addForFiscal(forFiscalPrincipalDepart);
 
-				ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipal(RegDate.get(periodeCourante, 1, 3), null, 5652,
+				final ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipal(RegDate.get(periodeCourante, 1, 3), MotifFor.DEMENAGEMENT_VD, null, null, 5652,
 						TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
-				forFiscalPrincipal.setMotifOuverture(MotifFor.DEMENAGEMENT_VD);
 				hab.addForFiscal(forFiscalPrincipal);
 
 				tacheService.genereTacheDepuisOuvertureForPrincipal(hab, forFiscalPrincipal, null);
@@ -304,15 +298,12 @@ public class TacheServiceTest extends BusinessTest {
 				hab2.setNumeroIndividu(333904L);
 				hab2 = hibernateTemplate.merge(hab2);
 
-				ForFiscalPrincipal forFiscalPrincipalDepart2 = new ForFiscalPrincipal(RegDate.get(2007, 6, 12), RegDate.get(periodeEchue, 6, 11), 5586,
+				final ForFiscalPrincipal forFiscalPrincipalDepart2 = new ForFiscalPrincipal(RegDate.get(2007, 6, 12), MotifFor.ARRIVEE_HC, RegDate.get(periodeEchue, 6, 11), MotifFor.DEMENAGEMENT_VD, 5586,
 						TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
-				forFiscalPrincipalDepart2.setMotifOuverture(MotifFor.ARRIVEE_HC);
-				forFiscalPrincipalDepart2.setMotifFermeture(MotifFor.DEMENAGEMENT_VD);
 				hab2.addForFiscal(forFiscalPrincipalDepart2);
 
-				ForFiscalPrincipal forFiscalPrincipal2 = new ForFiscalPrincipal(RegDate.get(periodeEchue, 6, 12), null, 5652,
+				final ForFiscalPrincipal forFiscalPrincipal2 = new ForFiscalPrincipal(RegDate.get(periodeEchue, 6, 12), MotifFor.DEMENAGEMENT_VD, null, null, 5652,
 						TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
-				forFiscalPrincipal2.setMotifOuverture(MotifFor.DEMENAGEMENT_VD);
 				hab2.addForFiscal(forFiscalPrincipal2);
 
 				tacheService.genereTacheDepuisOuvertureForPrincipal(hab2, forFiscalPrincipal2, null);
@@ -333,17 +324,16 @@ public class TacheServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
-				PersonnePhysique hab1 = (PersonnePhysique) tiersService.getTiers(12300001);
-				PersonnePhysique hab2 = (PersonnePhysique) tiersService.getTiers(12300002);
+				final PersonnePhysique hab1 = (PersonnePhysique) tiersService.getTiers(12300001);
+				final PersonnePhysique hab2 = (PersonnePhysique) tiersService.getTiers(12300002);
 
-				EnsembleTiersCouple ensemble = tiersService.createEnsembleTiersCouple(hab1, hab2, RegDate.get(2006, 6, 12), null);
-				MenageCommun menage = ensemble.getMenage();
+				final EnsembleTiersCouple ensemble = tiersService.createEnsembleTiersCouple(hab1, hab2, RegDate.get(2006, 6, 12), null);
+				final MenageCommun menage = ensemble.getMenage();
 
-				ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipal(RegDate.get(2006, 6, 12), null, 5652,
+				final ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipal(RegDate.get(2006, 6, 12), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null, null, 5652,
 						TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 				menage.addForFiscal(forFiscalPrincipal);
 
-				forFiscalPrincipal.setMotifOuverture(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
 				tacheService.genereTacheDepuisOuvertureForPrincipal(menage, forFiscalPrincipal, null);
 				return null;
 			}
@@ -392,10 +382,9 @@ public class TacheServiceTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 				PersonnePhysique hab1 = (PersonnePhysique) tiersService.getTiers(12300001);
 				// Etat après veuvage
-				ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipal(RegDate.get(2006, 6, 12), null, 5652,
+				final ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipal(RegDate.get(2006, 6, 12), MotifFor.VEUVAGE_DECES, null, null, 5652,
 						TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 				hab1.addForFiscal(forFiscalPrincipal);
-				forFiscalPrincipal.setMotifOuverture(MotifFor.VEUVAGE_DECES);
 
 				MenageCommun menage = (MenageCommun) tiersService.getTiers(idMenage);
 				Set<RapportEntreTiers> rapport = menage.getRapportsObjet();
@@ -598,9 +587,8 @@ public class TacheServiceTest extends BusinessTest {
 				MenageCommun menage = ensemble.getMenage();
 				assertNotNull(menage);
 
-				ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipal(RegDate.get(2006, 6, 12), null, 5652,
+				final ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipal(RegDate.get(2006, 6, 12), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null, null, 5652,
 						TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
-				forFiscalPrincipal.setMotifOuverture(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
 				menage.addForFiscal(forFiscalPrincipal);
 
 				PeriodeFiscale pf2006 = pfDAO.getPeriodeFiscaleByYear(2006);
@@ -630,14 +618,12 @@ public class TacheServiceTest extends BusinessTest {
 				hab1.getRapportsSujet().iterator().next().setDateFin(forFiscalPrincipal.getDateFin());
 				hab2.getRapportsSujet().iterator().next().setDateFin(forFiscalPrincipal.getDateFin());
 
-				ForFiscalPrincipal ffp1 = new ForFiscalPrincipal(forFiscalPrincipal.getDateFin().getOneDayAfter(), null, 5652,
+				ForFiscalPrincipal ffp1 = new ForFiscalPrincipal(forFiscalPrincipal.getDateFin().getOneDayAfter(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null, null, 5652,
 						TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
-				ffp1.setMotifOuverture(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT);
 				hab1.addForFiscal(ffp1);
 
-				ForFiscalPrincipal ffp2 = new ForFiscalPrincipal(forFiscalPrincipal.getDateFin().getOneDayAfter(), null, 5652,
+				ForFiscalPrincipal ffp2 = new ForFiscalPrincipal(forFiscalPrincipal.getDateFin().getOneDayAfter(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null, null, 5652,
 						TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
-				ffp2.setMotifOuverture(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT);
 				hab2.addForFiscal(ffp2);
 
 				tacheService.genereTacheDepuisOuvertureForPrincipal(hab1, ffp1, null);
@@ -664,9 +650,9 @@ public class TacheServiceTest extends BusinessTest {
 				hab.setNumeroIndividu((long) 333908);
 				hab = hibernateTemplate.merge(hab);
 
-				ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipal(RegDate.get(2006, 6, 12), null, 8201,
+				final ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipal(RegDate.get(2006, 6, 12), MotifFor.DEBUT_EXPLOITATION, null, null, 8201,
 						TypeAutoriteFiscale.PAYS_HS, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
-				ForFiscalSecondaire forFiscalSecondaire = new ForFiscalSecondaire(RegDate.get(2006, 6, 12), null, 5652,
+				final ForFiscalSecondaire forFiscalSecondaire = new ForFiscalSecondaire(RegDate.get(2006, 6, 12), MotifFor.DEBUT_EXPLOITATION, null, null, 5652,
 						TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.ACTIVITE_INDEPENDANTE);
 
 				hab.addForFiscal(forFiscalPrincipal);
@@ -694,9 +680,9 @@ public class TacheServiceTest extends BusinessTest {
 		hab.setNumeroIndividu((long) 333908);
 		hab = hibernateTemplate.merge(hab);
 
-		ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipal(RegDate.get(2006, 6, 12), null, 8201,
+		ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipal(RegDate.get(2006, 6, 12), MotifFor.ACHAT_IMMOBILIER, null, null, 8201,
 				TypeAutoriteFiscale.PAYS_HS, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
-		ForFiscalSecondaire forFiscalSecondaire = new ForFiscalSecondaire(RegDate.get(2006, 6, 12), null, 5652,
+		ForFiscalSecondaire forFiscalSecondaire = new ForFiscalSecondaire(RegDate.get(2006, 6, 12), MotifFor.ACHAT_IMMOBILIER, null, null, 5652,
 				TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.IMMEUBLE_PRIVE);
 
 		hab.addForFiscal(forFiscalPrincipal);
@@ -1040,9 +1026,8 @@ public class TacheServiceTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 				PersonnePhysique hab = (PersonnePhysique) tiersService.getTiers(12300001);
 
-				ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipal(RegDate.get(2007, 6, 12), RegDate.get(2007, 12, 31),
+				final ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipal(RegDate.get(2007, 6, 12), MotifFor.INDETERMINE, RegDate.get(2007, 12, 31), MotifFor.DEPART_HC,
 						5652, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
-				forFiscalPrincipal.setMotifFermeture(MotifFor.DEPART_HC);
 
 				tacheService.genereTacheDepuisFermetureForPrincipal(hab, forFiscalPrincipal);
 				return null;
@@ -2290,9 +2275,7 @@ public class TacheServiceTest extends BusinessTest {
 				hab.setNumeroIndividu((long) 333908);
 				hab = hibernateTemplate.merge(hab);
 
-				ForFiscalPrincipal f = new ForFiscalPrincipal(dateOuverture, null, 5652, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
-						MotifRattachement.DOMICILE, modeImposition);
-				f.setMotifOuverture(motifOuverture);
+				final ForFiscalPrincipal f = new ForFiscalPrincipal(dateOuverture, motifOuverture, null, null, 5652, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, modeImposition);
 				hab.addForFiscal(f);
 				tacheService.genereTacheDepuisOuvertureForPrincipal(hab, f, null);
 				return null;

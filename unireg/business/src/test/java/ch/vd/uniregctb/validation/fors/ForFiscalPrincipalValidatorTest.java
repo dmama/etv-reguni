@@ -230,4 +230,31 @@ public class ForFiscalPrincipalValidatorTest extends AbstractValidatorTest<ForFi
 			}
 		}
 	}
+
+	@Test
+	public void testPresenceDateFermetureSiMotifFermeturePresent() throws Exception {
+
+		final ForFiscalPrincipal ffp = new ForFiscalPrincipal();
+		ffp.setMotifRattachement(MotifRattachement.DOMICILE);
+		ffp.setGenreImpot(GenreImpot.REVENU_FORTUNE);
+		ffp.setDateDebut(RegDate.get(2000, 1, 1));
+		ffp.setMotifOuverture(MotifFor.ARRIVEE_HS);
+		ffp.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+		ffp.setNumeroOfsAutoriteFiscale(MockCommune.Aigle.getNoOFS());
+		ffp.setModeImposition(ModeImposition.SOURCE);
+		ffp.setMotifFermeture(MotifFor.DEPART_HS);
+		{
+			ffp.setDateFin(null);
+			final ValidationResults vr = validate(ffp);
+			Assert.assertTrue(vr.hasErrors());
+			final List<String> errors = vr.getErrors();
+			assertEquals(1, errors.size());
+			assertEquals("Une date de fermeture doit être indiquée si un motif de fermeture l'est.", errors.get(0));
+		}
+		{
+			ffp.setDateFin(date(2005, 5, 23));
+			final ValidationResults vr = validate(ffp);
+			Assert.assertFalse(vr.hasErrors());
+		}
+	}
 }

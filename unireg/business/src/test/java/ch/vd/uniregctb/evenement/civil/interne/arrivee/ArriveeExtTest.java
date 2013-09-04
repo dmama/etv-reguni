@@ -359,9 +359,8 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			/*
 			 * Création de l'habitant et de sa situation avant l'arrivée
 			 */
-			PersonnePhysique habitant = newHabitant(noIndividu);
-			ForFiscalPrincipal f = addForPrincipal(habitant, MockCommune.Lausanne, RegDate.get(1980, 1, 1), null);
-			f.setMotifOuverture(MotifFor.ARRIVEE_HC);
+			final PersonnePhysique habitant = newHabitant(noIndividu);
+			final ForFiscalPrincipal f = addForPrincipal(habitant, MockCommune.Lausanne, RegDate.get(1980, 1, 1), MotifFor.ARRIVEE_HC, null, null);
 			tiersDAO.save(habitant);
 		}
 		hibernateTemplate.flush();
@@ -719,10 +718,8 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			/*
 			 * Création de l'habitant et de sa situation avant l'arrivée
 			 */
-			PersonnePhysique habitant = newHabitant(noIndividu);
-			ForFiscalPrincipal f = addForPrincipal(habitant, MockCommune.Lausanne, RegDate.get(1980, 1, 1), null);
-			f.setMotifOuverture(MotifFor.ARRIVEE_HC);
-
+			final PersonnePhysique habitant = newHabitant(noIndividu);
+			final ForFiscalPrincipal f = addForPrincipal(habitant, MockCommune.Lausanne, RegDate.get(1980, 1, 1), MotifFor.ARRIVEE_HC, null, null);
 			tiersDAO.save(habitant);
 		}
 		hibernateTemplate.flush();
@@ -869,8 +866,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			 * Création de l'habitant et de sa situation avant l'arrivée
 			 */
 			PersonnePhysique habitant = newHabitant(noIndividu);
-			ForFiscalPrincipal f = addForPrincipal(habitant, MockCommune.Lausanne, RegDate.get(1980, 1, 1), null);
-			f.setMotifOuverture(MotifFor.ARRIVEE_HC);
+			ForFiscalPrincipal f = addForPrincipal(habitant, MockCommune.Lausanne, RegDate.get(1980, 1, 1), MotifFor.ARRIVEE_HC, null, null);
 			habitant = (PersonnePhysique) tiersDAO.save(habitant);
 			assertEquals(habitant, tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu));
 
@@ -1142,8 +1138,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			 * Création de l'habitant et de sa situation avant l'arrivée
 			 */
 			PersonnePhysique habitant = newHabitant(noIndividu);
-			ForFiscalPrincipal f = addForPrincipal(habitant, MockCommune.Lausanne, RegDate.get(1980, 1, 1), null);
-			f.setMotifOuverture(MotifFor.ARRIVEE_HC);
+			ForFiscalPrincipal f = addForPrincipal(habitant, MockCommune.Lausanne, RegDate.get(1980, 1, 1), MotifFor.ARRIVEE_HC, null, null);
 			f.setModeImposition(ModeImposition.SOURCE);
 			habitant = (PersonnePhysique) tiersDAO.save(habitant);
 			assertEquals(habitant, tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu));
@@ -1409,8 +1404,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 						newHabitant(noIndividuConjoint), dateMariage, null);
 
 				MenageCommun menage = ensemble.getMenage();
-				ForFiscalPrincipal f = addForPrincipal(menage, MockCommune.Lausanne, dateArriveInitiale, null);
-				f.setMotifOuverture(MotifFor.ARRIVEE_HC);
+				ForFiscalPrincipal f = addForPrincipal(menage, MockCommune.Lausanne, dateArriveInitiale, MotifFor.ARRIVEE_HC, null, null);
 				menage = (MenageCommun) tiersDAO.save(menage);
 				assertNotNull(menage);
 				return null;
@@ -1557,8 +1551,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 						newHabitant(noIndividuConjoint), dateMariage, null);
 
 				MenageCommun menage = ensemble.getMenage();
-				ForFiscalPrincipal f = addForPrincipal(menage, MockCommune.Lausanne, RegDate.get(1980, 1, 1), null);
-				f.setMotifOuverture(MotifFor.ARRIVEE_HC);
+				ForFiscalPrincipal f = addForPrincipal(menage, MockCommune.Lausanne, RegDate.get(1980, 1, 1), MotifFor.ARRIVEE_HC, null, null);
 				f.setModeImposition(ModeImposition.SOURCE);
 				menage = (MenageCommun) tiersDAO.save(menage);
 				assertNotNull(menage);
@@ -1675,8 +1668,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			 * Création de l'habitant et de sa situation avant l'arrivée
 			 */
 			PersonnePhysique habitant = newHabitant(noIndividu);
-			ForFiscalPrincipal f = addForPrincipal(habitant, MockCommune.Lausanne, RegDate.get(1980, 1, 1), null);
-			f.setMotifOuverture(MotifFor.ARRIVEE_HC);
+			ForFiscalPrincipal f = addForPrincipal(habitant, MockCommune.Lausanne, RegDate.get(1980, 1, 1), MotifFor.ARRIVEE_HC, null, null);
 			{
 				AdresseSuisse adresse = new AdresseSuisse();
 				adresse.setDateDebut(RegDate.get(2000, 3, 20));
@@ -1795,8 +1787,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				final EnsembleTiersCouple ensemble = tiersService.createEnsembleTiersCouple(newHabitant(noIndividuPrincipal), newHabitant(noIndividuConjoint), dateMariage, null);
 				MenageCommun menage = ensemble.getMenage();
 
-				ForFiscalPrincipal f = addForPrincipal(menage, MockCommune.Lausanne, dateArriveInitiale, null);
-				f.setMotifOuverture(MotifFor.ARRIVEE_HC);
+				ForFiscalPrincipal f = addForPrincipal(menage, MockCommune.Lausanne, dateArriveInitiale, MotifFor.ARRIVEE_HC, null, null);
 				{
 					AdresseSuisse adresse = new AdresseSuisse();
 					adresse.setDateDebut(RegDate.get(2000, 3, 20));
@@ -1952,15 +1943,11 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				
 				// for principal
 				{
-					final ForFiscalPrincipal f = addForPrincipal(nonHabitant, MockCommune.Bern, dateArrivee.addYears(-1), null);
-					f.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_HC);
-					f.setMotifOuverture(MotifFor.INDETERMINE);
-					f.setMotifRattachement(MotifRattachement.DOMICILE);
+					addForPrincipal(nonHabitant, MockCommune.Bern, dateArrivee.addYears(-1), MotifFor.INDETERMINE, null, null);
 				}
 				// for secondaire
 				{
-					final ForFiscalSecondaire f = addForSecondaire(nonHabitant, MockCommune.Lausanne, dateArrivee.addYears(-1), null);
-					f.setMotifOuverture(MotifFor.ACHAT_IMMOBILIER);
+					final ForFiscalSecondaire f = addForSecondaire(nonHabitant, MockCommune.Lausanne, dateArrivee.addYears(-1), MotifFor.ACHAT_IMMOBILIER, null, null);
 					f.setMotifRattachement(MotifRattachement.IMMEUBLE_PRIVE);
 				}
 				nonHabitant = (PersonnePhysique) tiersDAO.save(nonHabitant);
@@ -2122,10 +2109,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				final EnsembleTiersCouple ensemble = tiersService.createEnsembleTiersCouple(principal, conjoint, dateMariage, null);
 
 				MenageCommun menage = ensemble.getMenage();
-				final ForFiscalPrincipal f = addForPrincipal(menage, MockCommune.Vevey, dateArriveInitiale, dateDepart);
-				f.setMotifOuverture(MotifFor.ARRIVEE_HC);
-				f.setMotifFermeture(MotifFor.DEPART_HC);
-				
+				final ForFiscalPrincipal f = addForPrincipal(menage, MockCommune.Vevey, dateArriveInitiale, MotifFor.ARRIVEE_HC, dateDepart, MotifFor.DEPART_HC);
 				menage = (MenageCommun) tiersDAO.save(menage);
 				assertNotNull(menage);
 				
@@ -2375,12 +2359,10 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique habitant = addNonHabitant("Mohamed", "Pouly", date(1950, 1, 1), Sexe.MASCULIN);
-				final ForFiscalPrincipal ffp = addForPrincipal(habitant, MockCommune.Bern, dateAchat, null);
-				ffp.setMotifOuverture(MotifFor.ACHAT_IMMOBILIER);
+				final ForFiscalPrincipal ffp = addForPrincipal(habitant, MockCommune.Bern, dateAchat, MotifFor.ACHAT_IMMOBILIER, null, null);
 				ffp.setModeImposition(ModeImposition.ORDINAIRE);
 
-				final ForFiscalSecondaire ffs = addForSecondaire(habitant, MockCommune.Aubonne, dateAchat, null);
-				ffs.setMotifOuverture(MotifFor.ACHAT_IMMOBILIER);
+				addForSecondaire(habitant, MockCommune.Aubonne, dateAchat, MotifFor.ACHAT_IMMOBILIER, null, null);
 				return null;
 			}
 		});
@@ -2856,15 +2838,15 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		return nonHabitant;
 	}
 	
-	private static ForFiscalPrincipal addForPrincipal(Contribuable contribuable, Commune commune, RegDate ouverture, RegDate fermeture) {
+	private static ForFiscalPrincipal addForPrincipal(Contribuable contribuable, Commune commune, RegDate ouverture, MotifFor motifOuverture, RegDate fermeture, MotifFor motifFermeture) {
 		final TypeAutoriteFiscale type = commune.isVaudoise() ? TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD : TypeAutoriteFiscale.COMMUNE_HC;
-		final ForFiscalPrincipal ffp = new ForFiscalPrincipal(ouverture, fermeture, commune.getNoOFS(), type, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+		final ForFiscalPrincipal ffp = new ForFiscalPrincipal(ouverture, motifOuverture, fermeture, motifFermeture, commune.getNoOFS(), type, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 		contribuable.addForFiscal(ffp);
 		return ffp;
 	}
 	
-	private static ForFiscalSecondaire addForSecondaire(Contribuable contribuable, Commune commune, RegDate ouverture, RegDate fermeture) {
-		final ForFiscalSecondaire ffs = new ForFiscalSecondaire(ouverture, fermeture, commune.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.IMMEUBLE_PRIVE);
+	private static ForFiscalSecondaire addForSecondaire(Contribuable contribuable, Commune commune, RegDate ouverture, MotifFor motifOuverture, RegDate fermeture, MotifFor motifFermeture) {
+		final ForFiscalSecondaire ffs = new ForFiscalSecondaire(ouverture, motifOuverture, fermeture, motifFermeture, commune.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.IMMEUBLE_PRIVE);
 		contribuable.addForFiscal(ffs);
 		return ffs;
 	}

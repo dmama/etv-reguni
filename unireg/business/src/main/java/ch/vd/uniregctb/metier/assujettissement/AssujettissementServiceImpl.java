@@ -488,11 +488,8 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 				else {
 					debut = RegDateHelper.maximum(RegDate.get(triplet.current.getDateDebut().year(), 1, 1), triplet.previous.getDateFin().getOneDayAfter(), NullDateBehavior.EARLIEST);
 				}
-				final ForFiscalPrincipal forFictif = new ForFiscalPrincipal(debut, fin, triplet.current.getNumeroOfsAutoriteFiscale(),
+				final ForFiscalPrincipal forFictif = new ForFiscalPrincipal(debut, MotifFor.INDETERMINE, fin, MotifFor.PERMIS_C_SUISSE, triplet.current.getNumeroOfsAutoriteFiscale(),
 						triplet.current.getTypeAutoriteFiscale(), triplet.current.getMotifRattachement(), ModeImposition.SOURCE);
-				//noinspection deprecation
-				forFictif.setMotifOuverture(MotifFor.INDETERMINE);
-				forFictif.setMotifFermeture(MotifFor.PERMIS_C_SUISSE);
 				if (forsFictifs == null) {
 					forsFictifs = new ArrayList<>();
 				}

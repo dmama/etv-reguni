@@ -195,7 +195,6 @@ public class MassTiersIndexerTest extends BusinessTest {
 					f.setMotifRattachement(MotifRattachement.DOMICILE);
 					f.setModeImposition(ModeImposition.ORDINAIRE);
 					f.setMotifOuverture(MotifFor.ARRIVEE_HC);
-					f.setMotifFermeture(MotifFor.DEPART_HC);
 					nh.addForFiscal(f);
 				}
 				nh = (PersonnePhysique) tiersDAO.save(nh);

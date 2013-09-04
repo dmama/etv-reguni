@@ -4,7 +4,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 
 import org.hibernate.annotations.Type;
-import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.LengthConstants;
@@ -22,7 +21,7 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
  * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_IJGfIF-hEdyCxumqfWBxMQ"
  */
 @Entity
-public abstract class ForFiscalRevenuFortune extends ForFiscal {
+public abstract class ForFiscalRevenuFortune extends ForFiscalAvecMotifs {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -31,41 +30,19 @@ public abstract class ForFiscalRevenuFortune extends ForFiscal {
 	 */
 	private MotifRattachement motifRattachement;
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_2oQGUPY0Edyw0I40oDFBsg"
-	 */
-	private MotifFor motifOuverture;
-
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_-4CyQPY0Edyw0I40oDFBsg"
-	 */
-	private MotifFor motifFermeture;
-
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_d6IWsPBVEdyG2_4LrN35Ag"
-	 */
-	private Boolean forGestion;
-
 	public ForFiscalRevenuFortune() {
 		setGenreImpot(GenreImpot.REVENU_FORTUNE);
 	}
 
-	public ForFiscalRevenuFortune(RegDate ouverture, RegDate fermeture, Integer numeroOfsAutoriteFiscale,
-			TypeAutoriteFiscale typeAutoriteFiscale, MotifRattachement motifRattachement) {
-		super(ouverture, fermeture, GenreImpot.REVENU_FORTUNE, numeroOfsAutoriteFiscale, typeAutoriteFiscale);
+	public ForFiscalRevenuFortune(RegDate ouverture, MotifFor motifOuverture, RegDate fermeture, MotifFor motifFermeture,
+	                              Integer numeroOfsAutoriteFiscale, TypeAutoriteFiscale typeAutoriteFiscale, MotifRattachement motifRattachement) {
+		super(ouverture, motifOuverture, fermeture, motifFermeture, GenreImpot.REVENU_FORTUNE, numeroOfsAutoriteFiscale, typeAutoriteFiscale);
 		setMotifRattachement(motifRattachement); // virtual
 	}
 
 	public ForFiscalRevenuFortune(ForFiscalRevenuFortune ffrf) {
-		this(ffrf.getDateDebut(), ffrf.getDateFin(), ffrf.getNumeroOfsAutoriteFiscale(), ffrf.getTypeAutoriteFiscale(), ffrf.getMotifRattachement());
-		this.setMotifOuverture(ffrf.getMotifOuverture());
-		this.setMotifFermeture(ffrf.getMotifFermeture());
+		super(ffrf);
+		setMotifRattachement(ffrf.getMotifRattachement()); // virtual
 	}
 
 	/**
@@ -95,67 +72,11 @@ public abstract class ForFiscalRevenuFortune extends ForFiscal {
 		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @return the motifOuverture
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_2oQGUPY0Edyw0I40oDFBsg?GETTER"
-	 */
-	@Column(name = "MOTIF_OUVERTURE", length = LengthConstants.FOR_MOTIF)
-	@Type(type = "ch.vd.uniregctb.hibernate.MotifForUserType")
-	public MotifFor getMotifOuverture() {
-		// begin-user-code
-		return motifOuverture;
-		// end-user-code
-	}
-
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @param theMotifOuverture
-	 *            the motifOuverture to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_2oQGUPY0Edyw0I40oDFBsg?SETTER"
-	 */
-	public void setMotifOuverture(MotifFor theMotifOuverture) {
-		// begin-user-code
-		motifOuverture = theMotifOuverture;
-		// end-user-code
-	}
-
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @return the motifFermeture
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_-4CyQPY0Edyw0I40oDFBsg?GETTER"
-	 */
-	@Column(name = "MOTIF_FERMETURE", length = LengthConstants.FOR_MOTIF)
-	@Type(type = "ch.vd.uniregctb.hibernate.MotifForUserType")
-	public MotifFor getMotifFermeture() {
-		// begin-user-code
-		return motifFermeture;
-		// end-user-code
-	}
-
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @param theMotifFermeture
-	 *            the motifFermeture to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_-4CyQPY0Edyw0I40oDFBsg?SETTER"
-	 */
-	public void setMotifFermeture(@Nullable MotifFor theMotifFermeture) {
-		// begin-user-code
-		motifFermeture = theMotifFermeture;
-		// end-user-code
-	}
 
 	@Override
 	protected void dumpForDebug(int nbTabs) {
 		super.dumpForDebug(nbTabs);
-
 		ddump(nbTabs, "Motif rattach: "+motifRattachement);
-		ddump(nbTabs, "Motif ouv: "+motifOuverture);
-		ddump(nbTabs, "Motif ferm: "+motifFermeture);
 	}
 
 	/* (non-Javadoc)
@@ -172,21 +93,6 @@ public abstract class ForFiscalRevenuFortune extends ForFiscal {
 		if (getClass() != obj.getClass())
 			return false;
 		final ForFiscalRevenuFortune other = (ForFiscalRevenuFortune) obj;
-		if (forGestion == null) {
-			if (other.forGestion != null)
-				return false;
-		} else if (!forGestion.equals(other.forGestion))
-			return false;
-		if (motifFermeture == null) {
-			if (other.motifFermeture != null)
-				return false;
-		} else if (motifFermeture != other.motifFermeture)
-			return false;
-		if (motifOuverture == null) {
-			if (other.motifOuverture != null)
-				return false;
-		} else if (motifOuverture != other.motifOuverture)
-			return false;
 		if (motifRattachement == null) {
 			if (other.motifRattachement != null)
 				return false;
@@ -194,6 +100,4 @@ public abstract class ForFiscalRevenuFortune extends ForFiscal {
 			return false;
 		return true;
 	}
-
-
 }

@@ -11,6 +11,7 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.type.ModeImposition;
+import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
@@ -47,9 +48,9 @@ public class ForFiscalPrincipal extends ForFiscalRevenuFortune {
 	public ForFiscalPrincipal() {
 	}
 
-	public ForFiscalPrincipal(RegDate ouverture, RegDate fermeture, Integer numeroOfsAutoriteFiscale, TypeAutoriteFiscale typeAutoriteFiscale,
-			MotifRattachement motifRattachement, ModeImposition modeImposition) {
-		super(ouverture, fermeture, numeroOfsAutoriteFiscale, typeAutoriteFiscale, motifRattachement);
+	public ForFiscalPrincipal(RegDate ouverture, MotifFor motifOuverture, RegDate fermeture, MotifFor motifFermeture, Integer numeroOfsAutoriteFiscale,
+	                          TypeAutoriteFiscale typeAutoriteFiscale, MotifRattachement motifRattachement, ModeImposition modeImposition) {
+		super(ouverture, motifOuverture, fermeture, motifFermeture, numeroOfsAutoriteFiscale, typeAutoriteFiscale, motifRattachement);
 		this.modeImposition = modeImposition;
 	}
 

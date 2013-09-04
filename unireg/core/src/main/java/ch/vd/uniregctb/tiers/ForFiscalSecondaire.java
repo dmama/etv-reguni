@@ -4,18 +4,10 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
-/**
- * <!-- begin-user-doc -->
- * <!-- end-user-doc -->
- * @author msi
- *
- * @uml.annotations
- *     derived_abstraction="platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_Nido4BxAEd2SDKWRJy7Z3g"
- * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_Nido4BxAEd2SDKWRJy7Z3g"
- */
 @Entity
 @DiscriminatorValue("ForFiscalSecondaire")
 public class ForFiscalSecondaire extends ForFiscalRevenuFortune {
@@ -23,8 +15,8 @@ public class ForFiscalSecondaire extends ForFiscalRevenuFortune {
 	public ForFiscalSecondaire() {
 	}
 
-	public ForFiscalSecondaire(RegDate ouverture, RegDate fermeture, Integer numeroOfsAutoriteFiscale, TypeAutoriteFiscale typeAutoriteFiscale, MotifRattachement motifRattachement) {
-		super(ouverture, fermeture, numeroOfsAutoriteFiscale, typeAutoriteFiscale, motifRattachement);
+	public ForFiscalSecondaire(RegDate ouverture, MotifFor motifOuverture, RegDate fermeture, MotifFor motifFermeture, Integer numeroOfsAutoriteFiscale, TypeAutoriteFiscale typeAutoriteFiscale, MotifRattachement motifRattachement) {
+		super(ouverture, motifOuverture, fermeture, motifFermeture, numeroOfsAutoriteFiscale, typeAutoriteFiscale, motifRattachement);
 	}
 
 	public ForFiscalSecondaire(ForFiscalSecondaire ffs) {
