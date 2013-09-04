@@ -26,6 +26,7 @@ public class SearchTiersResults {
 		private RegDate dateFermeture;
 		private boolean annule;
 		private boolean debiteurInactif;
+		private String tiersType;
 
 		public Entry(TiersIndexedData data) {
 			this.numero = data.getNumero();
@@ -41,6 +42,7 @@ public class SearchTiersResults {
 			this.dateFermeture = RegDateHelper.get(data.getDateFermetureFor());
 			this.annule = data.isAnnule();
 			this.debiteurInactif = data.isDebiteurInactif();
+			this.tiersType = data.getTiersType();
 		}
 
 		public Long getNumero() {
@@ -93,6 +95,10 @@ public class SearchTiersResults {
 
 		public boolean isDebiteurInactif() {
 			return debiteurInactif;
+		}
+
+		public String getTiersType() {
+			return tiersType;
 		}
 	}
 

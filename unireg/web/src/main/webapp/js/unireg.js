@@ -2732,13 +2732,18 @@ var Search = {
 					if (!Search.urlRetour) {
 						table += '<select name="AppSelect" onchange="App.gotoExternalApp(this);">';
 						table += '<option value="">---</option>';
-						if (!e.debiteurInactif) {
+						if (!e.debiteurInactif && e.tiersType != 'entreprise') {
 							table += '<option value="' + App.curl('/redirect/TAO_PP.do?id=' + e.numero) + '">TAO-PP</option>';
 							table += '<option value="' + App.curl('/redirect/TAO_BA.do?id=' + e.numero) + '">TAO-BA</option>';
 							table += '<option value="' + App.curl('/redirect/TAO_IS.do?id=' + e.numero) + '">TAO-IS</option>';
 						}
 						table += '<option value="' + App.curl('/redirect/SIPF.do?id=' + e.numero) + '">SIPF</option>';
-						table += '<option value="' + App.curl('/tiers/launchcat.do?numero=' + e.numero) + '">CAT</option>';
+						if (!e.debiteurInactif && e.tiersType != 'entreprise') {
+							table += '<option value="' + App.curl('/redirect/REPELEC.do?id=' + e.numero) + '">REPELEC</option>';
+						}
+						if (e.tiersType != 'entreprise') {
+							table += '<option value="' + App.curl('/tiers/launchcat.do?numero=' + e.numero) + '">CAT</option>';
+						}
 						table += '</select>';
 					}
 					else {
