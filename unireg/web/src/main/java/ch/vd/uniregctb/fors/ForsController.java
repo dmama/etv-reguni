@@ -3,6 +3,7 @@ package ch.vd.uniregctb.fors;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -142,6 +143,13 @@ public class ForsController {
 			list.add(new MotifForView(motifFor, getLabelOuverture(motifFor)));
 		}
 
+		Collections.sort(list, new Comparator<MotifForView>() {
+			@Override
+			public int compare(MotifForView o1, MotifForView o2) {
+				return o1.getLabel().compareTo(o2.getLabel());
+			}
+		});
+
 		return list;
 	}
 
@@ -169,6 +177,13 @@ public class ForsController {
 		for (MotifFor motifFor : MotifsForHelper.getMotifsFermeture(typeFor)) {
 			list.add(new MotifForView(motifFor, getLabelFermeture(motifFor)));
 		}
+
+		Collections.sort(list, new Comparator<MotifForView>() {
+			@Override
+			public int compare(MotifForView o1, MotifForView o2) {
+				return o1.getLabel().compareTo(o2.getLabel());
+			}
+		});
 
 		return list;
 	}
