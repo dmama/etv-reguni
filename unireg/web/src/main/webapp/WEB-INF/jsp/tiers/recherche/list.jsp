@@ -68,25 +68,14 @@
 
 					<display:column sortable="false" titleKey="label.ouvrir.vers">
 						<c:if test="${!tiers.annule}">
-							<c:if test="${urlRetour == null}">
-								<select name="AppSelect" onchange="App.gotoExternalApp(this);"
-								        <c:if test="${!tiers.annule}">readonly="true"</c:if> >
-									<option value="">---</option>
-									<c:if test="${!tiers.debiteurInactif && tiers.tiersType != 'entreprise'}">
-										<option value="<c:url value="/redirect/TAO_PP.do?id=${tiers.numero}"/>"><fmt:message key="label.TAOPP"/></option>
-										<option value="<c:url value="/redirect/TAO_BA.do?id=${tiers.numero}"/>"><fmt:message key="label.TAOBA"/></option>
-										<option value="<c:url value="/redirect/TAO_IS.do?id=${tiers.numero}"/>"><fmt:message key="label.TAOIS"/></option>
-									</c:if>
-									<option value="<c:url value="/redirect/SIPF.do?id=${tiers.numero}"/>"><fmt:message key="label.SIPF"/></option>
-									<c:if test="${tiers.tiersType != 'entreprise'}">
-										<option value="<c:url value="/redirect/REPELEC.do?id=${tiers.numero}"/>"><fmt:message key="label.REPELEC"/></option>
-										<option value="<c:out value='launchcat.do?numero=' /><c:out value='${tiers.numero}' />"><fmt:message key="label.CAT"/></option>
-									</c:if>
-								</select>
-							</c:if>
-							<c:if test="${urlRetour != null}">
-								<a href="${urlRetour}${tiers.numero}" class="detail" title="<fmt:message key="label.retour.application.appelante" />">&nbsp;</a>
-							</c:if>
+							<c:choose>
+								<c:when test="${urlRetour == null}">
+									<unireg:interoperabilite noTiers="${tiers.numero}" natureTiers="${tiers.tiersType}" debiteurInactif="${tiers.debiteurInactif}"/>
+								</c:when>
+								<c:otherwise>
+									<a href="${urlRetour}${tiers.numero}" class="detail" title="<fmt:message key="label.retour.application.appelante" />">&nbsp;</a>
+								</c:otherwise>
+							</c:choose>
 						</c:if>
 					</display:column>
 				</display:table>

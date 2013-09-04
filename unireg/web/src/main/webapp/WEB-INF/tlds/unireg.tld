@@ -1170,6 +1170,32 @@
 	</tag>
 
 	<tag>
+		<description>Affiche la combo des liens d'inter-opérabilité d'un tiers</description>
+		<name>interoperabilite</name>
+		<tag-class>ch.vd.uniregctb.taglibs.JspTagInteroperabilite</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<description>Numéro du tiers</description>
+			<name>noTiers</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description>Nature du tiers : voir ch.vd.uniregctb.tiers.NatureTiers</description>
+			<name>natureTiers</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.lang.String</type>
+		</attribute>
+		<attribute>
+			<description>Flag débiteur inactif</description>
+			<name>debiteurInactif</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
 		<name>duration</name>
 		<tag-class>ch.vd.uniregctb.taglibs.JspTagDuration</tag-class>
 		<body-content>JSP</body-content>

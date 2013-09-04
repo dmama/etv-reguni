@@ -136,6 +136,8 @@
 		<property name="securityProvider" ref="securityProviderInterface"/>
 	</bean>
 
+	<bean id="jspTagInteroperabilite" class="ch.vd.uniregctb.taglibs.JspTagInteroperabilite"/>
+
 	<bean id="jspTagSetAutorisations" class="ch.vd.uniregctb.taglibs.JspTagSetAutorisations">
 		<property name="cache">
 			<bean class="ch.vd.uniregctb.tiers.manager.AutorisationCacheImpl">

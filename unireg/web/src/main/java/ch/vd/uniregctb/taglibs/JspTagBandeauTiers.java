@@ -507,8 +507,12 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 	}
 
 	private String url(String relative) {
-		HttpServletRequest request = (HttpServletRequest) this.pageContext.getRequest();
-		return request.getContextPath() + relative;
+		return getContextPath() + relative;
+	}
+
+	private String getContextPath() {
+		final HttpServletRequest request = (HttpServletRequest) this.pageContext.getRequest();
+		return request.getContextPath();
 	}
 
 	private String buildVers(Tiers tiers) {
@@ -518,20 +522,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		s.append("<span>").append(message("label.ouvrir.vers")).append(" : </span>\n");
 
 		if (StringUtils.isBlank(urlRetour)) {
-			s.append("<select name=\"AppSelect\" onchange=\"App.gotoExternalApp(this);\">\n");
-			s.append("\t<option value=\"\">---</option>\n");
-			final boolean isEntreprise = tiers instanceof Entreprise;
-			if (!isEntreprise) { // [UNIREG-1949] débranchement uniquement vers SIPF pour les PMs
-				s.append("\t<option value=\"").append(url("/redirect/TAO_PP.do?id=")).append(tiers.getNumero()).append("\">").append(message("label.TAOPP")).append("</option>\n");
-				s.append("\t<option value=\"").append(url("/redirect/TAO_BA.do?id=")).append(tiers.getNumero()).append("\">").append(message("label.TAOBA")).append("</option>\n");
-				s.append("\t<option value=\"").append(url("/redirect/TAO_IS.do?id=")).append(tiers.getNumero()).append("\">").append(message("label.TAOIS")).append("</option>\n");
-			}
-			s.append("\t<option value=\"").append(url("/redirect/SIPF.do?id=")).append(tiers.getNumero()).append("\">").append(message("label.SIPF")).append("</option>\n");
-			if (!isEntreprise) { // [UNIREG-1949] débranchement uniquement vers SIPF pour les PMs
-				s.append("\t<option value=\"").append(url("/redirect/REPELEC.do?id=")).append(tiers.getNumero()).append("\">").append(message("label.REPELEC")).append("</option>\n");
-				s.append("\t<option value=\"").append(url("launchcat.do?numero=")).append(tiers.getNumero()).append("\">").append(message("label.CAT")).append("</option>\n");
-			}
-			s.append("</select>\n");
+			s.append(JspTagInteroperabilite.buildHtml(getContextPath(), tiers.getNatureTiers(), tiers.getNumero(), tiers.isDebiteurInactif()));
 		}
 		else {
 			s.append("<a href=\"").append(urlRetour).append(tiers.getNumero()).append("\" class=\"detail\" title=\"").append(message("label.retour.application.appelante")).append("\">&nbsp;</a>\n");
