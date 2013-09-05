@@ -98,7 +98,7 @@ public class ChangementCategorieEtrangerEchProcessorTest extends AbstractEveneme
 				
 				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
 				Assert.assertNotNull(ffp);
-				Assert.assertEquals(dateObtentionPermis, ffp.getDateDebut());
+				Assert.assertEquals(dateObtentionPermis.getOneDayAfter(), ffp.getDateDebut());
 				Assert.assertEquals(MotifFor.PERMIS_C_SUISSE, ffp.getMotifOuverture());
 				return null;
 			}

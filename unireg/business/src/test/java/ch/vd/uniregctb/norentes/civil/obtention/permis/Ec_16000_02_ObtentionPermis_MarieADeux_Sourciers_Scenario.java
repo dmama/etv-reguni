@@ -135,6 +135,6 @@ public class Ec_16000_02_ObtentionPermis_MarieADeux_Sourciers_Scenario extends E
 		final EvenementCivilRegPP evt = getEvenementCivilRegoupeForHabitant(noHabMomo);
 		assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "L'événement aurait dû être traité");
 
-		checkCouple(ModeImposition.ORDINAIRE, dateObtentionPermis);
+		checkCouple(ModeImposition.ORDINAIRE, dateObtentionPermis.getOneDayAfter());
 	}
 }

@@ -88,7 +88,7 @@ public class NaturalisationEchProcessorTest extends AbstractEvenementCivilEchPro
 
 				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
 				Assert.assertNotNull(ffp);
-				Assert.assertEquals(dateNaturalisation, ffp.getDateDebut());
+				Assert.assertEquals(dateNaturalisation.getOneDayAfter(), ffp.getDateDebut());
 				Assert.assertEquals(MotifFor.PERMIS_C_SUISSE, ffp.getMotifOuverture());
 				Assert.assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition());
 				return null;

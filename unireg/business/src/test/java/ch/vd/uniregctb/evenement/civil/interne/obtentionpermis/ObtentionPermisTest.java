@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.evenement.civil.interne.obtentionpermis;
 
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
@@ -18,6 +20,10 @@ import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
+import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
+import ch.vd.uniregctb.metier.assujettissement.SourcierPur;
+import ch.vd.uniregctb.metier.assujettissement.VaudoisOrdinaire;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -149,6 +155,139 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 		assertNull(julie.getReindexOn()); // [UNIREG-1979] pas de permis C, pas de réindexation dans le futur
 	}
 
+	/**
+	 * [SIFISC-9211] même si le permis est obtenu le premier jour d'un mois, l'assujetissement source doit quand-même rester valide tout le mois
+	 */
+	@Test
+	public void testObtentionPermisHandlerPremierJourDuMois() throws Exception {
+
+		final long noIndividu = 478423L;
+		final RegDate dateNaissance = date(1980, 10, 25);
+		final RegDate dateArrivee = date(2000, 5, 12);
+		final RegDate dateObtentionPermis = date(2005, 7, 1);
+
+		final AssujettissementService assujettissementService = getBean(AssujettissementService.class, "assujettissementService");
+
+		// mise en place civile : étranger résident depuis plusieurs années lorsqu'il reçoit le permis C un premier jour de mois
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Oulianov", "Wladimir", Sexe.MASCULIN);
+				addPermis(individu, TypePermis.SEJOUR, dateArrivee, dateObtentionPermis.getOneDayBefore(), false);
+				addPermis(individu, TypePermis.ETABLISSEMENT, dateObtentionPermis, null, false);
+				addNationalite(individu, MockPays.Russie, dateNaissance, null);
+			}
+		});
+
+		// mise en place fiscale : for source depuis l'arrivée
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.ChateauDoex, ModeImposition.SOURCE);
+				return pp.getNumero();
+			}
+		});
+
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final Individu ind = serviceCivil.getIndividu(noIndividu, null);
+				final ObtentionPermis obtentionPermis = createValidObtentionPermisNonC(ind, dateObtentionPermis, MockCommune.ChateauDoex.getNoOFS(), TypePermis.ETABLISSEMENT);
+
+				final MessageCollector collector = buildMessageCollector();
+				obtentionPermis.validate(collector, collector);
+				obtentionPermis.handle(collector);
+
+				assertEmpty(collector.getErreurs());
+				assertEmpty(collector.getWarnings());
+				return null;
+			}
+		});
+
+		// vérification de l'état des fors du contribuable
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				assertNotNull(pp);
+
+				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+				assertNotNull(ffp);
+				assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition());
+				assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+				assertEquals((Integer) MockCommune.ChateauDoex.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
+				assertNull(ffp.getDateFin());
+				assertEquals(dateObtentionPermis.getOneDayAfter(), ffp.getDateDebut());
+
+				final List<Assujettissement> assujettissement = assujettissementService.determine(pp);
+				assertNotNull(assujettissement);
+				assertEquals(2, assujettissement.size());
+				{
+					final Assujettissement ass = assujettissement.get(0);
+					assertNotNull(ass);
+					assertInstanceOf(SourcierPur.class, ass);
+					assertEquals(dateArrivee, ass.getDateDebut());
+					assertEquals(dateObtentionPermis.getLastDayOfTheMonth(), ass.getDateFin());
+				}
+				{
+					final Assujettissement ass = assujettissement.get(1);
+					assertNotNull(ass);
+					assertInstanceOf(VaudoisOrdinaire.class, ass);
+					assertEquals(dateObtentionPermis.getLastDayOfTheMonth().getOneDayAfter(), ass.getDateDebut());
+					assertNull(ass.getDateFin());
+				}
+				return null;
+			}
+		});
+	}
+
+	@Test
+	public void testTraitementObtentionDuJour() throws Exception {
+		final long noIndividu = 478423L;
+		final RegDate dateNaissance = date(1980, 10, 25);
+		final RegDate dateObtentionPermis = RegDate.get();
+		final RegDate dateArrivee = dateObtentionPermis.addYears(-5);
+
+		// mise en place civile : étranger résident depuis plusieurs années lorsqu'il reçoit le permis C aujourd'hui
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Oulianov", "Wladimir", Sexe.MASCULIN);
+				addPermis(individu, TypePermis.SEJOUR, dateArrivee, dateObtentionPermis.getOneDayBefore(), false);
+				addPermis(individu, TypePermis.ETABLISSEMENT, dateObtentionPermis, null, false);
+				addNationalite(individu, MockPays.Russie, dateNaissance, null);
+			}
+		});
+
+		// mise en place fiscale : for source depuis l'arrivée
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.ChateauDoex, ModeImposition.SOURCE);
+				return pp.getNumero();
+			}
+		});
+
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final Individu ind = serviceCivil.getIndividu(noIndividu, null);
+				final ObtentionPermis obtentionPermis = createValidObtentionPermisNonC(ind, dateObtentionPermis, MockCommune.ChateauDoex.getNoOFS(), TypePermis.ETABLISSEMENT);
+
+				final MessageCollector collector = buildMessageCollector();
+				obtentionPermis.validate(collector, collector);
+				assertEmpty(collector.getWarnings());
+				assertEquals(1, collector.getErreurs().size());
+
+				final MessageCollector.Msg erreur = collector.getErreurs().get(0);
+				assertEquals("Une obtention de permis ou de nationalité ne peut être traitée qu'à partir du lendemain de sa date d'effet", erreur.getMessage());
+				return null;
+			}
+		});
+	}
+
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testObtentionPermisHandlerSourcierMarieSeul() throws Exception {
@@ -202,8 +341,7 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 		 */
 		ForFiscalPrincipal forCommun = menageCommun.getForFiscalPrincipalAt(null);
 		assertNotNull("Aucun for fiscal principal trouvé sur le tiers MenageCommun", forCommun);
-		// 25-06-2009 (PBO) : selon la spéc la date d'ouverture du nouveau for doit être faite le 1er jour du mois qui suit l'événement
-		assertEquals("La date d'ouverture du nouveau for ne correspond pas a la date de l'obtention du permis", DATE_OBTENTION_PERMIS, forCommun.getDateDebut());
+		assertEquals("La date d'ouverture du nouveau for ne correspond pas au lendemain de la date de l'obtention du permis", DATE_OBTENTION_PERMIS.getOneDayAfter(), forCommun.getDateDebut());
 		assertEquals(ModeImposition.ORDINAIRE, forCommun.getModeImposition());
 
 		assertEquals(date(1986, 5, 1), menageCommun.getReindexOn()); // [UNIREG-1979] permis C -> réindexation au début du mois suivant l'obtention
@@ -276,8 +414,7 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 		 */
 		final ForFiscalPrincipal forCommun = menageCommun.getForFiscalPrincipalAt(null);
 		assertNotNull("Aucun for fiscal principal trouvé sur le tiers MenageCommun",  forCommun);
-		// 25-06-2009 (PBO) : selon la spéc la date d'ouverture du nouveau for doit être faite le 1er jour du mois qui suit l'événement
-		assertEquals("La date d'ouverture du nouveau for ne correspond pas a la date de l'obtention du permis", DATE_OBTENTION_PERMIS, forCommun.getDateDebut());
+		assertEquals("La date d'ouverture du nouveau for ne correspond pas au lendemain de la date de l'obtention du permis", DATE_OBTENTION_PERMIS.getOneDayAfter(), forCommun.getDateDebut());
 		assertEquals(ModeImposition.ORDINAIRE, forCommun.getModeImposition());
 
 		assertEquals(date(1986, 5, 1), menageCommun.getReindexOn()); // [UNIREG-1979] permis C -> réindexation au début du mois suivant l'obtention
@@ -415,8 +552,8 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 
 		final RegDate dateNaissance = date(1977, 5, 23);
 		final RegDate dateArrivee = date(2002, 1, 1);
-		final RegDate dateObtentionPermis = RegDate.get();
-		final RegDate dateDebutMoisProchain = RegDate.get(dateObtentionPermis.year(), dateObtentionPermis.month(), 1).addMonths(1);
+		final RegDate dateObtentionPermis = RegDate.get().getOneDayBefore();
+		final RegDate dateDebutMoisProchain = dateObtentionPermis.getLastDayOfTheMonth().getOneDayAfter();
 
 		// On crée la situation suivante : contribuable de nationalité française domicilée à Lausanne et recevant un permis d'établissement aujourd'hui
 		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
@@ -487,8 +624,8 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 
 		final RegDate dateNaissance = date(1977, 5, 23);
 		final RegDate dateArrivee = date(2002, 1, 1);
-		final RegDate dateObtentionPermis = RegDate.get();
-		final RegDate dateDebutMoisProchain = RegDate.get(dateObtentionPermis.year(), dateObtentionPermis.month(), 1).addMonths(1);
+		final RegDate dateObtentionPermis = RegDate.get().getOneDayBefore();
+		final RegDate dateDebutMoisProchain = dateObtentionPermis.getLastDayOfTheMonth().getOneDayAfter();
 
 		// On crée la situation suivante : contribuable de nationalité française domicilée à Lausanne et recevant un permis d'établissement aujourd'hui
 		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
@@ -620,7 +757,7 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 
 				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
 				assertNotNull(ffp);
-				assertEquals(datePermisC, ffp.getDateDebut());
+				assertEquals(datePermisC.getOneDayAfter(), ffp.getDateDebut());
 				assertNull(ffp.getDateFin());
 				assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition());
 				assertEquals(TypeAutoriteFiscale.COMMUNE_HC, ffp.getTypeAutoriteFiscale());
@@ -775,7 +912,7 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 
 				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
 				assertNotNull(ffp);
-				assertEquals(datePermisC, ffp.getDateDebut());
+				assertEquals(datePermisC.getOneDayAfter(), ffp.getDateDebut());
 				assertNull(ffp.getDateFin());
 				assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition());
 				assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());

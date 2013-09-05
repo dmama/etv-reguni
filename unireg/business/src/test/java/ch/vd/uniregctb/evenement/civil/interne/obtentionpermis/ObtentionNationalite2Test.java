@@ -209,8 +209,7 @@ public class ObtentionNationalite2Test extends AbstractEvenementCivilInterneTest
 		 */
 		ForFiscalPrincipal forCommun = menageCommun.getForFiscalPrincipalAt(null);
 		assertNotNull("Aucun for fiscal principal trouvé sur le tiers MenageCommun", forCommun);
-		assertEquals("La date d'ouverture du nouveau for ne correspond pas a la date de l'obtention de la nationalité suisse",
-				DATE_OBTENTION_NATIONALITE, forCommun.getDateDebut());
+		assertEquals("La date d'ouverture du nouveau for ne correspond pas au lendemain de la date de l'obtention de la nationalité suisse", DATE_OBTENTION_NATIONALITE.getOneDayAfter(), forCommun.getDateDebut());
 		assertEquals(ModeImposition.ORDINAIRE, forCommun.getModeImposition());
 	}
 
@@ -284,7 +283,7 @@ public class ObtentionNationalite2Test extends AbstractEvenementCivilInterneTest
 		 */
 		final ForFiscalPrincipal forCommun = menageCommun.getForFiscalPrincipalAt(null);
 		Assert.assertNotNull("Aucun for fiscal principal trouvé sur le tiers MenageCommun", forCommun);
-		Assert.assertEquals("La date d'ouverture du nouveau for ne correspond pas a la date de l'obtention de la nationalité suisse", DATE_OBTENTION_NATIONALITE, forCommun.getDateDebut());
+		Assert.assertEquals("La date d'ouverture du nouveau for ne correspond pas au lendemain de la date de l'obtention de la nationalité suisse", DATE_OBTENTION_NATIONALITE.getOneDayAfter(), forCommun.getDateDebut());
 		Assert.assertEquals(ModeImposition.ORDINAIRE, forCommun.getModeImposition());
 	}
 

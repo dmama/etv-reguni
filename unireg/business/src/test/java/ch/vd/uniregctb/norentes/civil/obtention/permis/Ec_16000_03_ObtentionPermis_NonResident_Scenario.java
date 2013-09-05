@@ -112,7 +112,7 @@ public class Ec_16000_03_ObtentionPermis_NonResident_Scenario extends EvenementC
 		assertEquals(MockCommune.Neuchatel.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "Mauvaise autorité fiscale");
 		assertEquals(MotifRattachement.DOMICILE, ffp.getMotifRattachement(), "Mauvais motif de rattachement");
 		assertEquals(MotifFor.PERMIS_C_SUISSE, ffp.getMotifOuverture(), "Mauvais motif d'ouverture");
-		assertEquals(dateObtentionPermisC, ffp.getDateDebut(), "Mauvaise date d'ouverture du for actif");
+		assertEquals(dateObtentionPermisC.getOneDayAfter(), ffp.getDateDebut(), "Mauvaise date d'ouverture du for actif");
 		assertNull(ffp.getDateFin(), "For actif fermé");
 	}
 }

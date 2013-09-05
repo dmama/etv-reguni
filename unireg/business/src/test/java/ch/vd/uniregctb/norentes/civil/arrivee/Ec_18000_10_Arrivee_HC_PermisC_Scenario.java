@@ -167,7 +167,7 @@ public class Ec_18000_10_Arrivee_HC_PermisC_Scenario extends EvenementCivilScena
 
 		ForFiscalPrincipal ffp = habAntoine.getDernierForFiscalPrincipal();
 		assertNotNull(ffp, "For principal de l'Habitant " + habAntoine.getNumero() + " null");
-		assertEquals(dateArriveeBex, ffp.getDateDebut(), "Date de début du  for sur Bex fausse");
+		assertEquals(dateArriveeBex.getOneDayAfter(), ffp.getDateDebut(), "Date de début du  for sur Bex fausse");
 		assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition(), "mode d'imposition faux");
 				
 	}

@@ -68,6 +68,12 @@ public abstract class ObtentionPermisCOuNationaliteSuisse extends EvenementCivil
 		 * L'evenenement est mis en erreur dans les cas suivants
 		 */
 
+		// [SIFISC-9211] si on ne veut pas avoir à ouvrir des fors dans le futur, on ne peut pas traiter les obtentions de permis/nationalité
+		// dès le jour de leur réalisation (voir SIFISC-35)
+		if (getDate().equals(RegDate.get())) {
+			errors.addErreur("Une obtention de permis ou de nationalité ne peut être traitée qu'à partir du lendemain de sa date d'effet");
+		}
+
 		/*
 		 * Il n'existe pas de tiers contribuable correspondant à l'individu,
 		 * assujetti ou non (mineur, conjoint) correspondant à l'individu.
@@ -114,6 +120,8 @@ public abstract class ObtentionPermisCOuNationaliteSuisse extends EvenementCivil
 				ModeImposition.ORDINAIRE);
 	}
 
+
+
 	/**
 	 * Traite l'événement passé en paramètre.
 	 *
@@ -125,9 +133,10 @@ public abstract class ObtentionPermisCOuNationaliteSuisse extends EvenementCivil
 		final Individu individu = getIndividu();
 		final PersonnePhysique habitant = getPersonnePhysiqueOrThrowException(individu.getNoTechnique());
 
-		final RegDate dateEvenement = getDate();
+		// [SIFISC-9211] : le for ordinaire ne doit être ouvert qu'au lendemain de l'obtention du permis/de la nationalité
+		final RegDate datePriseEnCompte = getDate().getOneDayAfter();
 		final ForFiscalPrincipal forPrincipalHabitant = habitant.getForFiscalPrincipalAt(null);
-		final EnsembleTiersCouple ensembleTiersCouple = getService().getEnsembleTiersCouple(habitant, getDate());
+		final EnsembleTiersCouple ensembleTiersCouple = getService().getEnsembleTiersCouple(habitant, datePriseEnCompte);
 		MenageCommun menage = null;
 		if (ensembleTiersCouple != null) {
 			menage = ensembleTiersCouple.getMenage();
@@ -146,15 +155,15 @@ public abstract class ObtentionPermisCOuNationaliteSuisse extends EvenementCivil
 
 			final ModeImposition modeImposition = forPrincipalHabitant.getModeImposition();
 			if (modeImposition == ModeImposition.SOURCE || modeImposition == ModeImposition.MIXTE_137_2 || modeImposition == ModeImposition.MIXTE_137_1) {
-				//obtention permis ou nationalité le jour de l'arrivée
-				if (forPrincipalHabitant.getDateDebut().isAfterOrEqual(dateEvenement) &&
+				// obtention permis ou nationalité le jour de l'arrivée
+				if (forPrincipalHabitant.getDateDebut().isAfterOrEqual(datePriseEnCompte) &&
 						(MotifFor.ARRIVEE_HC == forPrincipalHabitant.getMotifOuverture() || MotifFor.ARRIVEE_HS == forPrincipalHabitant.getMotifOuverture())) {
 					getService().annuleForFiscal(forPrincipalHabitant);
 					openForFiscalPrincipalChangementModeImposition(habitant, forPrincipalHabitant, forPrincipalHabitant.getDateDebut(), forPrincipalHabitant.getMotifOuverture(), ModeImposition.ORDINAIRE);
 					Audit.info(getNumeroEvenement(), "Mise au rôle ordinaire de l'individu");
 				} else {
-					closeForFiscalPrincipal(habitant, dateEvenement.getOneDayBefore(), MotifFor.PERMIS_C_SUISSE);
-					openForFiscalPrincipalChangementModeImposition(habitant, forPrincipalHabitant, dateEvenement, MotifFor.PERMIS_C_SUISSE, ModeImposition.ORDINAIRE);
+					closeForFiscalPrincipal(habitant, datePriseEnCompte.getOneDayBefore(), MotifFor.PERMIS_C_SUISSE);
+					openForFiscalPrincipalChangementModeImposition(habitant, forPrincipalHabitant, datePriseEnCompte, MotifFor.PERMIS_C_SUISSE, ModeImposition.ORDINAIRE);
 					Audit.info(getNumeroEvenement(), "Mise à jour du for principal de l'individu au rôle ordinaire");
 				}
 			}
@@ -166,20 +175,20 @@ public abstract class ObtentionPermisCOuNationaliteSuisse extends EvenementCivil
 			final ModeImposition modeImposition = forPrincipalMenage.getModeImposition();
 			if(modeImposition == ModeImposition.SOURCE || modeImposition == ModeImposition.MIXTE_137_2 || modeImposition == ModeImposition.MIXTE_137_1) {
 				//obtention permis ou nationalité le jour de l'arrivée
-				if (forPrincipalMenage.getDateDebut().isAfterOrEqual(dateEvenement) &&
+				if (forPrincipalMenage.getDateDebut().isAfterOrEqual(datePriseEnCompte) &&
 						(MotifFor.ARRIVEE_HC == forPrincipalMenage.getMotifOuverture() || MotifFor.ARRIVEE_HS == forPrincipalMenage.getMotifOuverture())) {
 					getService().annuleForFiscal(forPrincipalMenage);
 					openForFiscalPrincipalChangementModeImposition(menage, forPrincipalMenage, forPrincipalMenage.getDateDebut(), forPrincipalMenage.getMotifOuverture(), ModeImposition.ORDINAIRE);
 					Audit.info(getNumeroEvenement(), "Mise au role ordinaire du ménage");
 				} else {
-					closeForFiscalPrincipal(menage, dateEvenement.getOneDayBefore(), MotifFor.PERMIS_C_SUISSE);
-					openForFiscalPrincipalChangementModeImposition(menage, forPrincipalMenage, dateEvenement, MotifFor.PERMIS_C_SUISSE, ModeImposition.ORDINAIRE);
+					closeForFiscalPrincipal(menage, datePriseEnCompte.getOneDayBefore(), MotifFor.PERMIS_C_SUISSE);
+					openForFiscalPrincipalChangementModeImposition(menage, forPrincipalMenage, datePriseEnCompte, MotifFor.PERMIS_C_SUISSE, ModeImposition.ORDINAIRE);
 					Audit.info(getNumeroEvenement(), "Mise à jour du for principal du ménage au rôle ordinaire");
 				}
 			}
 			//else pas de changement du mode d'imposition
 		}
-		else if (!FiscalDateHelper.isMajeurAt(individu, dateEvenement)) { //individu mineur non assujetti
+		else if (!FiscalDateHelper.isMajeurAt(individu, datePriseEnCompte)) { //individu mineur non assujetti
 			Audit.info(getNumeroEvenement(), "Individu mineur non assujetti, il reste non assujetti");
 		}
 		else { //individu majeur non assujetti
@@ -199,9 +208,9 @@ public abstract class ObtentionPermisCOuNationaliteSuisse extends EvenementCivil
 			if (noOfs == 0) {
 				// récupération du numero OFS de la commune à partir de l'adresse du tiers
 				try {
-					final AdresseGenerique adresse = context.getAdresseService().getAdresseFiscale(habitant, TypeAdresseFiscale.DOMICILE, dateEvenement, false);
+					final AdresseGenerique adresse = context.getAdresseService().getAdresseFiscale(habitant, TypeAdresseFiscale.DOMICILE, datePriseEnCompte, false);
 					if (adresse != null) {
-						final Commune commune = context.getServiceInfra().getCommuneByAdresse(adresse, dateEvenement);
+						final Commune commune = context.getServiceInfra().getCommuneByAdresse(adresse, datePriseEnCompte);
 						// uniquement si la commune de domicile est vaudoise
 						if (commune != null && commune.isVaudoise()) {
 							noOfs = commune.getNoOFS();
@@ -217,7 +226,7 @@ public abstract class ObtentionPermisCOuNationaliteSuisse extends EvenementCivil
 			else {
 				// on vérifie que la commune principale est bien vaudoise...
 				try {
-					final Commune commune = context.getServiceInfra().getCommuneByNumeroOfs(noOfs, dateEvenement);
+					final Commune commune = context.getServiceInfra().getCommuneByNumeroOfs(noOfs, datePriseEnCompte);
 					if (commune == null || !commune.isVaudoise()) {
 						noOfs = 0;
 					}
@@ -232,10 +241,9 @@ public abstract class ObtentionPermisCOuNationaliteSuisse extends EvenementCivil
 				if (noOfs == NO_OFS_FRACTION_SENTIER) {
 					warnings.addWarning("Ouverture d'un for dans la fraction de commune du Sentier: veuillez vérifier la fraction de commune du for principal");
 				}
-				//TODO chercher dans les adresses si arrivée après obtention permis pour ouvrir le for à la date d'arrivée (pas de for ouvert car bridage IS)
 				if (EtatCivilHelper.estMarieOuPacse(etatCivilIndividu)) { // le for est ouvert sur le ménage commun
 					if (menage != null) {
-						openForFiscalPrincipalChangementModeImpositionImplicite(menage, dateEvenement, noOfs);
+						openForFiscalPrincipalChangementModeImpositionImplicite(menage, datePriseEnCompte, noOfs);
 						Audit.info(getNumeroEvenement(), "Ouverture du for principal du ménage au rôle ordinaire");
 					}
 					else {
@@ -243,7 +251,7 @@ public abstract class ObtentionPermisCOuNationaliteSuisse extends EvenementCivil
 					}
 				}
 				else { // le for est ouvert sur l'individu
-					openForFiscalPrincipalChangementModeImpositionImplicite(habitant, dateEvenement, noOfs);
+					openForFiscalPrincipalChangementModeImpositionImplicite(habitant, datePriseEnCompte, noOfs);
 					Audit.info(getNumeroEvenement(), "Ouverture du for principal de l'individu au rôle ordinaire");
 				}
 			}
