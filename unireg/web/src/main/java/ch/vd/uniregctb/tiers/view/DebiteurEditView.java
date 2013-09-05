@@ -14,8 +14,6 @@ public class DebiteurEditView {
 	private Long idCtbAssocie;
 	private CategorieImpotSource categorieImpotSource;
 	private ModeCommunication modeCommunication;
-	private Boolean sansSommation;
-	private Boolean sansListeRecapitulative;
 	private PeriodiciteDecompte periodiciteCourante;
 	private PeriodeDecompte periodeDecompte;
 	private final ComplementView complement;
@@ -31,8 +29,6 @@ public class DebiteurEditView {
 		this.idCtbAssocie = dpi.getContribuableId();
 		this.categorieImpotSource = dpi.getCategorieImpotSource();
 		this.modeCommunication = dpi.getModeCommunication();
-		this.sansSommation = dpi.getSansRappel();
-		this.sansListeRecapitulative = dpi.getSansListeRecapitulative();
 		this.logicielId = dpi.getLogicielId();
 		this.sansLREmises = dpi.isSansLREmises();
 		final Periodicite periodicite = dpi.getDernierePeriodicite();
@@ -73,22 +69,6 @@ public class DebiteurEditView {
 
 	public void setModeCommunication(ModeCommunication modeCommunication) {
 		this.modeCommunication = modeCommunication;
-	}
-
-	public Boolean getSansSommation() {
-		return sansSommation;
-	}
-
-	public void setSansSommation(Boolean sansSommation) {
-		this.sansSommation = sansSommation;
-	}
-
-	public Boolean getSansListeRecapitulative() {
-		return sansListeRecapitulative;
-	}
-
-	public void setSansListeRecapitulative(Boolean sansListeRecapitulative) {
-		this.sansListeRecapitulative = sansListeRecapitulative;
 	}
 
 	public PeriodiciteDecompte getPeriodiciteCourante() {

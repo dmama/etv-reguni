@@ -40,8 +40,6 @@ public class ListeRecapDetailView implements Comparable<ListeRecapDetailView> {
 
 	private List<EtatDeclaration> etats;
 
-	private Boolean sansSommation;
-
 	private Long numero;
 
 	private final NomCourrierViewPart nomCourrier = new NomCourrierViewPart();
@@ -110,14 +108,6 @@ public class ListeRecapDetailView implements Comparable<ListeRecapDetailView> {
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public Boolean getSansSommation() {
-		return sansSommation;
-	}
-
-	public void setSansSommation(Boolean sansSommation) {
-		this.sansSommation = sansSommation;
 	}
 
 	public List<DelaiDeclarationView> getDelais() {

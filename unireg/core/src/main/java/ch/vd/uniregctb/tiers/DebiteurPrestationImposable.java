@@ -408,18 +408,6 @@ public class DebiteurPrestationImposable extends Tiers {
 		}
 		else if (periodiciteDecompteAvantMigration != other.periodiciteDecompteAvantMigration)
 			return false;
-		if (sansListeRecapitulative == null) {
-			if (other.sansListeRecapitulative != null)
-				return false;
-		}
-		else if (!sansListeRecapitulative.equals(other.sansListeRecapitulative))
-			return false;
-		if (sansRappel == null) {
-			if (other.sansRappel != null)
-				return false;
-		}
-		else if (!sansRappel.equals(other.sansRappel))
-			return false;
 		return true;
 	}
 }

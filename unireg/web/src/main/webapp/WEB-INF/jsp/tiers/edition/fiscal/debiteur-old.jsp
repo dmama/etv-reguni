@@ -115,13 +115,7 @@
 				<div id="div_periodeDecompte_input" style="display:none;" ><form:select path="periodicite.periodeDecompte" items="${periodeDecomptes}" /></div>
 			</td>
 		</tr>
-		<tr class="<unireg:nextRowClass/>" >
-			<td width="25%"><fmt:message key="label.sans.sommation"/>&nbsp;:</td>
-			<td width="25%"><form:checkbox path="tiers.sansRappel" /></td>
-			<td width="25%"><fmt:message key="label.sans.lr"/>&nbsp;:</td>
-			<td width="25%"><form:checkbox path="tiers.sansListeRecapitulative" /></td>
-		</tr>
-		
+
 	</table>
 </fieldset>
 

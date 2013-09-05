@@ -136,23 +136,17 @@
 			</td>
 		</tr>
 		<tr class="<unireg:nextRowClass/>" >
-			<td width="25%"><fmt:message key="label.sans.sommation"/>&nbsp;:</td>
-			<td width="25%"><form:checkbox path="sansSommation" /></td>
-			<td width="25%"><fmt:message key="label.sans.lr"/>&nbsp;:</td>
-			<td width="25%"><form:checkbox path="sansListeRecapitulative" /></td>
-		</tr>
-		<tr class="<unireg:nextRowClass/>" >
-					<td>
-						<div id="div_logiciel_label" style="display:none;" ><fmt:message key="label.complement.logicielPaye" />&nbsp;:</div>
-					</td>
-					<td>
-						<div id="div_logiciel_input" style="display:none;" >
-							<form:select path="logicielId">
-								<form:option value=""/>
-								<form:options items="${libellesLogiciel}"/>
-							</form:select>
-						</div>
-					</td>
+			<td>
+				<div id="div_logiciel_label" style="display:none;" ><fmt:message key="label.complement.logicielPaye" />&nbsp;:</div>
+			</td>
+			<td>
+				<div id="div_logiciel_input" style="display:none;" >
+					<form:select path="logicielId">
+						<form:option value=""/>
+						<form:options items="${libellesLogiciel}"/>
+					</form:select>
+				</div>
+			</td>
 		</tr>
 	</table>
 </fieldset>

@@ -327,7 +327,6 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 			}
 		}
 		if(lrEditView.getDateDebutPeriode()!=null){
-			lrEditView.setSansSommation(dpi.getSansRappel());
 			lrEditView.setImprimable(true);
 			lrEditView.setDelaiAccorde(delaisService.getDateFinDelaiRetourListeRecapitulative(aujourdhui, lrEditView.getRegDateFinPeriode()));
 			setDroitLR(lrEditView, dpi);
@@ -499,7 +498,6 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 				throw new ValidationException(lr, "Veuillez initialiser la période fiscale correspondante.");
 			}
 			lr.setPeriode(periodeFiscale);
-			lr.setSansRappel(lrEditView.getSansSommation());
 
 			//DelaiDeclaration delai = new DelaiDeclaration();
 			//delai.setDateDemande(theDateDemande);

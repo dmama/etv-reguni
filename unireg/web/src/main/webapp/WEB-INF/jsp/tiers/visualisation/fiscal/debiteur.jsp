@@ -9,20 +9,6 @@
 				<fmt:message key="option.mode.communication.${command.tiers.modeCommunication}" />
 			</td>
 		</tr>
-		<tr class="<unireg:nextRowClass/>" >
-			<td width="50%"><fmt:message key="label.sans.sommation"/>&nbsp;:</td>
-			<td width="50%">
-				<input type="checkbox" name="sansRappel" value="True"
-					<c:if test="${command.tiers.sansRappel}">checked </c:if> disabled="disabled" />
-			</td>
-		</tr>
-		<tr class="<unireg:nextRowClass/>" >
-		<td width="25%"><fmt:message key="label.sans.lr"/>&nbsp;:</td>
-			<td width="25%">
-				<input type="checkbox" name="sansListeRecapitulative" value="True"
-					<c:if test="${command.tiers.sansListeRecapitulative}">checked </c:if> disabled="disabled" />
-			</td>		
-		</tr>
 	</table>
 </fieldset>
 <c:if test="${command.tiers.modeCommunication == 'ELECTRONIQUE'}">

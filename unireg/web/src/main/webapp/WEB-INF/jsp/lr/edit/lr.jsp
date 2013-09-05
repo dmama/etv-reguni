@@ -23,10 +23,6 @@
 		</c:if>
 		<c:if test="${command.id == null }">
 		<tr class="<unireg:nextRowClass/>" >
-			<td width="25%"><fmt:message key="label.sans.sommation" />&nbsp;:</td>
-			<td width="25%">
-				<form:checkbox path="sansSommation" />
-			</td>
 			<td width="25%"><fmt:message key="label.date.delai.accorde" />&nbsp;:</td>
 			<td width="25%">
 				<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
@@ -34,6 +30,8 @@
 					<jsp:param name="id" value="delaiAccorde" />
 				</jsp:include>
 			</td>
+			<td width="25%">&nbsp;</td>
+			<td width="25%">&nbsp;</td>
 		</tr>
 		</c:if>
 	</table>

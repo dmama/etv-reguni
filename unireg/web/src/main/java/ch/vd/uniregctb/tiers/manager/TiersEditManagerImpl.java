@@ -422,8 +422,6 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 			dpi.setCategorieImpotSource(view.getCategorieImpotSource());
 		}
 		dpi.setModeCommunication(view.getModeCommunication());
-		dpi.setSansListeRecapitulative(view.getSansListeRecapitulative());
-		dpi.setSansRappel(view.getSansSommation());
 		dpi.setLogicielId(view.getLogicielId());
 		changePeriodicite(dpi, view.getPeriodiciteCourante(), view.getPeriodeDecompte());
 	}
