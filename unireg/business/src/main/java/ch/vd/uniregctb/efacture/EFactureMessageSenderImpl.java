@@ -33,8 +33,7 @@ public class EFactureMessageSenderImpl implements EFactureMessageSender {
 	private EsbJmsTemplate esbTemplate;
 	private EsbXmlValidation esbValidator;
 	private boolean enabled = true;
-	private String serviceDestinationDemande;
-	private String serviceDestinationDestinataire;
+	private String serviceDestination;
 	private String serviceReplyTo;
 
 	private final ObjectFactory objectFactory = new ObjectFactory();
@@ -53,12 +52,8 @@ public class EFactureMessageSenderImpl implements EFactureMessageSender {
 		this.enabled = enabled;
 	}
 
-	public void setServiceDestinationDemande(String serviceDestinationDemande) {
-		this.serviceDestinationDemande = serviceDestinationDemande;
-	}
-
-	public void setServiceDestinationDestinataire(String serviceDestinationDestinataire) {
-		this.serviceDestinationDestinataire = serviceDestinationDestinataire;
+	public void setServiceDestination(String serviceDestination) {
+		this.serviceDestination = serviceDestination;
 	}
 
 	public void setServiceReplyTo(String serviceReplyTo) {
@@ -109,7 +104,7 @@ public class EFactureMessageSenderImpl implements EFactureMessageSender {
 				msg.setNewEmailAddress(emailContainer);
 				marshaller.marshal(msg, doc);
 			}
-		}, serviceDestinationDestinataire);
+		});
 		return businessId;
 	}
 
@@ -138,7 +133,7 @@ public class EFactureMessageSenderImpl implements EFactureMessageSender {
 				msg.setStatus(status);
 				marshaller.marshal(msg, doc);
 			}
-		}, serviceDestinationDemande);
+		});
 		return businessId;
 	}
 
@@ -164,11 +159,11 @@ public class EFactureMessageSenderImpl implements EFactureMessageSender {
 				msg.setPayerUpdateAction(action);
 				marshaller.marshal(msg, doc);
 			}
-		}, serviceDestinationDestinataire);
+		});
 		return businessId;
 	}
 
-	private void sendEvent(String businessId, boolean retourAttendu, CustomMarshaller customMarshaller, String serviceDestination) throws EvenementEfactureException {
+	private void sendEvent(String businessId, boolean retourAttendu, CustomMarshaller customMarshaller) throws EvenementEfactureException {
 
 		if (enabled) {
 			final String principal = AuthenticationHelper.getCurrentPrincipal();
