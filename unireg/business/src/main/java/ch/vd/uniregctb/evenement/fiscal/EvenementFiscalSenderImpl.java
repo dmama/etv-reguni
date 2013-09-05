@@ -1,5 +1,8 @@
 package ch.vd.uniregctb.evenement.fiscal;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlObject;
 import org.springframework.transaction.annotation.Propagation;
@@ -176,8 +179,11 @@ public final class EvenementFiscalSenderImpl implements EvenementFiscalSender {
 	 */
 	@SuppressWarnings({"deprecation"})
 	protected static MotifForEnumType.Enum core2xml(MotifFor motifFor) {
-		if (motifFor == MotifFor.DEBUT_ACTIVITE_DIPLOMATIQUE || motifFor == MotifFor.FIN_ACTIVITE_DIPLOMATIQUE) {
+		final Set<MotifFor> equivIndetermine = EnumSet.of(MotifFor.DEBUT_ACTIVITE_DIPLOMATIQUE, MotifFor.FIN_ACTIVITE_DIPLOMATIQUE,
+		                                                  MotifFor.CESSATION_ACTIVITE_FUSION_FAILLITE, MotifFor.DEBUT_PRESTATION_IS, MotifFor.FIN_PRESTATION_IS, MotifFor.DEMENAGEMENT_SIEGE);
+		if (equivIndetermine.contains(motifFor)) {
 			// [UNIREG-911] pour des raisons de compatibilité ascendante, les motifs de début/fin d'activité diplomatiques sont mappés comme indéterminés
+			// [SIFISC-8712] pareil pour les nouveaux motifs de fors débiteurs
 			motifFor = MotifFor.INDETERMINE;
 		}
 		return MotifForEnumType.Enum.forString(motifFor.toString());
