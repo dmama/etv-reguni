@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.efacture;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.unireg.interfaces.efacture.data.TypeAttenteDemande;
 
 /**
@@ -9,24 +11,14 @@ public interface EFactureMessageSender {
 
 	/**
 	 * Envoie un message à la e-facture qui annonce le refus d'une demande d'inscription
-	 *
-	 *
-	 *
 	 * @param idDemande identifiant de la demande d'inscription refusée
 	 * @param description
-	 *@param retourAttendu  @throws EvenementEfactureException en cas de problème
+	 * @param retourAttendu  @throws EvenementEfactureException en cas de problème
 	 */
 	String envoieRefusDemandeInscription(String idDemande, String description, boolean retourAttendu) throws EvenementEfactureException;
 
 	/**
 	 * Envoie un message à la e-facture qui annonce la mise en attente d'une demande d'inscription
-	 *
-	 *
-	 *
-	 *
-	 *
-	 *
-	 *
 	 * @param idDemande identifiant de la demande d'inscription mise en attente
 	 * @param typeAttenteEFacture Permet de determiner le type de message à envoyer: Attente de contact ou attente de confirmation
 	 * @param description description de l'attente
@@ -38,8 +30,6 @@ public interface EFactureMessageSender {
 
 	/**
 	 * Envoie un message à la e-facture qui annonce l'acceptation d'une demande d'inscription
-	 *
-	 *
 	 * @param idDemande identifiant de la demande d'inscription acceptée
 	 * @param retourAttendu
 	 * @param description
@@ -49,9 +39,6 @@ public interface EFactureMessageSender {
 
 	/**
 	 * Envoie un message à la e-facture qui annonce la suspension du contribuable
-	 *
-	 *
-	 *
 	 * @param noCtb numéro du contribuable dont les activités e-facture doivent être suspendues
 	 * @param retourAttendu
 	 * @param description
@@ -61,13 +48,22 @@ public interface EFactureMessageSender {
 
 	/**
 	 * Envoie un message à la e-facture qui annonce l'activation du contribuable
-	 *
-	 *
 	 * @param noCtb numéro du contribuable dont les activités e-facture peuvent être activées
 	 * @param retourAttendu
 	 * @param description
 	 * @throws EvenementEfactureException en cas de problème
 	 */
 	String envoieActivationContribuable(long noCtb, boolean retourAttendu, String description) throws EvenementEfactureException;
+
+	/**
+	 * Envoie un message à la e-facture qui demande le changement d'adresse mail associée au contribuable
+	 * @param noCtb numéro du contribuable concerné
+	 * @param newMail nouvelle valeur de l'adresse mail
+	 * @param retourAttendu <code>true</code> si on demande une réponse (ACK) à l'application e-facture correspondant de cette demande
+	 * @param description description associée au changement d'adresse mail
+	 * @return le business id du message de demande envoyé à l'application e-facture
+	 * @throws EvenementEfactureException
+	 */
+	String envoieDemandeChangementEmail(long noCtb, @Nullable String newMail, boolean retourAttendu, String description) throws EvenementEfactureException;
 
 }

@@ -78,6 +78,11 @@ public class EFactureServiceImpl implements EFactureService, InitializingBean {
 	}
 
 	@Override
+	public String modifierEmailContribuable(long noCtb, @Nullable String newEmail, boolean retourAttendu, String description) throws EvenementEfactureException {
+		return eFactureMessageSender.envoieDemandeChangementEmail(noCtb, newEmail, retourAttendu, description);
+	}
+
+	@Override
 	public ResultatQuittancement quittancer(Long noCtb) throws EvenementEfactureException {
 		final Tiers tiers = tiersService.getTiers(noCtb);
 		if (tiers == null) {

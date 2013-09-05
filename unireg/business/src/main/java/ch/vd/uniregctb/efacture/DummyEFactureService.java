@@ -3,6 +3,7 @@ package ch.vd.uniregctb.efacture;
 import java.math.BigInteger;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.efacture.data.DestinataireAvecHisto;
@@ -51,5 +52,10 @@ public class DummyEFactureService implements EFactureService {
 	@Override
 	public ResultatQuittancement quittancer(Long noCtb) {
 		return null;
+	}
+
+	@Override
+	public String modifierEmailContribuable(long noCtb, @Nullable String newEmail, boolean retourAttendu, String description) throws EvenementEfactureException {
+		return StringUtils.EMPTY;
 	}
 }

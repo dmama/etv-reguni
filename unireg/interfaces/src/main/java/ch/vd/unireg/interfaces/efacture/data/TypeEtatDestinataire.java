@@ -3,6 +3,7 @@ package ch.vd.unireg.interfaces.efacture.data;
 import ch.vd.evd0025.v1.PayerStatus;
 
 public enum TypeEtatDestinataire {
+	NON_INSCRIT("Non inscrit"),
 	INSCRIT("Inscrit"),
 	INSCRIT_SUSPENDU("Inscrit suspendu"),
 	DESINSCRIT("Désinscrit"),
@@ -32,6 +33,8 @@ public enum TypeEtatDestinataire {
 
 	public static TypeEtatDestinataire valueOf(PayerStatus status) {
 		switch (status) {
+		case NON_INSCRIT:
+			return NON_INSCRIT;
 		case DESINSCRIT:
 			return TypeEtatDestinataire.DESINSCRIT;
 		case DESINSCRIT_SUSPENDU:

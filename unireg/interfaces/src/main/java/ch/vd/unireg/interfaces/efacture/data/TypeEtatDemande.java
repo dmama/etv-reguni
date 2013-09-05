@@ -14,6 +14,7 @@ public enum TypeEtatDemande {
 	VALIDATION_EN_COURS_EN_ATTENTE_SIGNATURE(TypeAttenteDemande.EN_ATTENTE_SIGNATURE), // état interne unireg qui n'a pas d'équivalent e-facture
 	REFUSEE(null),
 	IGNOREE(null),
+	ANNULEE(null),
 	VALIDEE(null);
 
 	private final TypeAttenteDemande typeAttente;
@@ -66,6 +67,8 @@ public enum TypeEtatDemande {
 			return TypeEtatDemande.A_TRAITER;
 		case REFUSEE:
 			return TypeEtatDemande.REFUSEE;
+		case ANNULEE:
+			return TypeEtatDemande.ANNULEE;
 		case VALIDATION_EN_COURS:
 			if (typeAttente == null) {
 				return TypeEtatDemande.VALIDATION_EN_COURS;

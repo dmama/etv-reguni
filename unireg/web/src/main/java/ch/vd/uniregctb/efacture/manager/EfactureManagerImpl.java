@@ -101,6 +101,13 @@ public class EfactureManagerImpl implements EfactureManager {
 	}
 
 	@Override
+	@Transactional(rollbackFor = Throwable.class)
+	public String modifierEmail(long noCtb, String newEmail) throws EvenementEfactureException {
+		final String description = getMessageAvecVisaUser();
+		return eFactureService.modifierEmailContribuable(noCtb, newEmail, true, description);
+	}
+
+	@Override
 	public boolean isReponseRecueDeEfacture(String businessId) {
 		return eFactureResponseService.waitForResponse(businessId, timeOutForReponse);
 	}

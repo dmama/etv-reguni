@@ -35,7 +35,7 @@ class DemandeAvecHistoBuilderForUnitTests extends DemandeBuilderForUnitTests {
 	}
 
 	DemandeAvecHistoBuilderForUnitTests addHistoryEntry(RegDate date, RegistrationRequestStatus status, @Nullable Integer reasonCode, String description, String customField) {
-		addHistoryEntry(new RegistrationRequestHistoryEntry(XmlUtils.regdate2xmlcal(date), status, reasonCode, description, customField));
+		addHistoryEntry(new RegistrationRequestHistoryEntry(XmlUtils.regdate2xmlcal(date), status, reasonCode, null, description, customField));
 		return this;
 	}
 

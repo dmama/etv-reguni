@@ -249,7 +249,7 @@ public class EFactureController implements MessageSourceAware {
 	}
 
 	@RequestMapping(value = "change-email.do", method = RequestMethod.POST)
-	public String changeEmail(@Valid @ModelAttribute("newmail") ChangeEmailView view, BindingResult result, Model model) {
+	public String changeEmail(@Valid @ModelAttribute("newmail") ChangeEmailView view, BindingResult result, Model model) throws Exception {
 		checkDroitGestionaireEfacture(securityProvider);
 
 		if (result.hasErrors()) {
@@ -260,8 +260,10 @@ public class EFactureController implements MessageSourceAware {
 		final String oldEmail = StringUtils.trimToNull(view.getPreviousEmail());
 		final String newEmail = StringUtils.trimToNull(view.getEmail());
 		if (!StringUtils.equals(oldEmail, newEmail)) {
-			// TODO jde envoyer la demande de changement à e-facture
-			// TODO jde ajouter un Flash de confirmation/problème
+			final String businessId = efactureManager.modifierEmail(view.getNoCtb(), newEmail);
+			if (!efactureManager.isReponseRecueDeEfacture(businessId)) {
+				Flash.warning("Votre demande modification de l'adresse e-mail a bien été prise en compte. Elle sera traitée dès que possible par le système E-facture.");
+			}
 		}
 
 		return String.format("redirect:/efacture/edit.do?ctb=%d", view.getNoCtb());

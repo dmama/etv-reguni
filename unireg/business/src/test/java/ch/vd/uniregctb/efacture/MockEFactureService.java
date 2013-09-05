@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.evd0025.v1.RegistrationRequestStatus;
 import ch.vd.registre.base.date.DateHelper;
@@ -152,6 +153,7 @@ public abstract class MockEFactureService implements EFactureService {
 		final EtatDestinataire dernierEtat = dest.getDernierEtat();
 		final TypeEtatDestinataire nouveauType;
 		switch (dernierEtat.getType()) {
+			case NON_INSCRIT:
 			case DESINSCRIT:
 				nouveauType = TypeEtatDestinataire.INSCRIT;
 				break;
@@ -199,5 +201,13 @@ public abstract class MockEFactureService implements EFactureService {
 		}
 		final String bid = accepterDemande(enCours.getIdDemande(), false, "Quittancement 'douchette'");
 		return ResultatQuittancement.enCours(bid);
+	}
+
+	@Override
+	public String modifierEmailContribuable(long noCtb, @Nullable String newEmail, boolean retourAttendu, String description) throws EvenementEfactureException {
+		final DestinataireAvecHisto dest = data.get(noCtb);
+		final EtatDestinataire etatDestinataire = new EtatDestinataire(description, DateHelper.getCurrentDate(), null, null, dest.getDernierEtat().getType(), newEmail);
+		dest.getHistoriquesEtats().add(etatDestinataire);
+		return StringUtils.EMPTY;
 	}
 }

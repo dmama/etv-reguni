@@ -83,6 +83,13 @@ public interface EfactureManager {
 	 */
 	ResultatQuittancement quittancer(Long noCtb) throws EvenementEfactureException;
 
+	/**
+	 * Demande le changement d'adresse mail du contribuable inscrit à la e-facture
+	 * @param noCtb numéro du contribuable
+	 * @param newEmail nouvelle valeur de l'adresse mail (peut être nulle si inconnue)
+	 */
+	String modifierEmail(long noCtb, @Nullable String newEmail) throws EvenementEfactureException;
+
 	String getMessageQuittancement(ResultatQuittancement resultatQuittancement, long noCtb);
 
 	/**

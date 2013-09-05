@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.efacture;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.unireg.interfaces.efacture.data.TypeAttenteDemande;
 
@@ -27,6 +28,11 @@ public class MockEFactureMessageSender implements EFactureMessageSender {
 
 	@Override
 	public String envoieActivationContribuable(long noCtb, boolean retourAttendu, String description) throws EvenementEfactureException {
+		return StringUtils.EMPTY;
+	}
+
+	@Override
+	public String envoieDemandeChangementEmail(long noCtb, @Nullable String newMail, boolean retourAttendu, String description) throws EvenementEfactureException {
 		return StringUtils.EMPTY;
 	}
 }

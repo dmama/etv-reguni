@@ -233,11 +233,12 @@ public class EFactureServiceTest extends BusinessTest {
 		private Integer reasonCode = null;
 		private String descr = "";
 		private String customField = "";
+		private String email = "toto@titi.org";
 
 		PayerSituationHistoryEntry build() {
 			return new PayerSituationHistoryEntry(
-					XmlUtils.regdate2xmlcal(date),status,providerId,
-					eBillAcountId, regMode, reasonCode, descr, customField);
+					XmlUtils.regdate2xmlcal(date),status, providerId,
+					eBillAcountId, email, regMode, reasonCode, null, descr, customField);
 		}
 
 		PayerSituationHistoryEntryBuilder setDate(RegDate date) {

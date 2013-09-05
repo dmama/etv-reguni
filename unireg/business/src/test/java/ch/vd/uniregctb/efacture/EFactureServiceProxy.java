@@ -2,6 +2,8 @@ package ch.vd.uniregctb.efacture;
 
 import java.math.BigInteger;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.efacture.data.DestinataireAvecHisto;
 import ch.vd.unireg.interfaces.efacture.data.ResultatQuittancement;
@@ -71,5 +73,11 @@ public class EFactureServiceProxy implements EFactureService {
 	public ResultatQuittancement quittancer(Long noCtb) throws EvenementEfactureException {
 		checkTarget();
 		return target.quittancer(noCtb);
+	}
+
+	@Override
+	public String modifierEmailContribuable(long noCtb, @Nullable String newEmail, boolean retourAttendu, String description) throws EvenementEfactureException {
+		checkTarget();
+		return target.modifierEmailContribuable(noCtb, newEmail, retourAttendu, description);
 	}
 }

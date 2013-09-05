@@ -6,6 +6,7 @@ import javax.xml.bind.Marshaller;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 import org.w3c.dom.Document;
@@ -15,6 +16,7 @@ import ch.vd.evd0025.v1.PayerId;
 import ch.vd.evd0025.v1.PayerUpdateAction;
 import ch.vd.evd0025.v1.RegistrationRequestStatus;
 import ch.vd.evd0025.v1.UpdatePayer;
+import ch.vd.evd0025.v1.UpdatePayerContact;
 import ch.vd.evd0025.v1.UpdateRegistrationRequest;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.utils.Assert;
@@ -87,6 +89,28 @@ public class EFactureMessageSenderImpl implements EFactureMessageSender {
 	@Override
 	public String envoieActivationContribuable(long noCtb, boolean retourAttendu, String description) throws EvenementEfactureException {
 		return sendMiseAJourDestinataire(noCtb, PayerUpdateAction.LIBERER, null, description, null, retourAttendu);
+	}
+
+	@Override
+	public String envoieDemandeChangementEmail(long noCtb, @Nullable final String newMail, boolean retourAttendu, final String description) throws EvenementEfactureException {
+		final PayerId payerId = new PayerId(String.valueOf(noCtb), EFactureService.ACI_BILLER_ID);
+		final String businessId = String.format("%d-mail-%s", noCtb, SDF.format(DateHelper.getCurrentDate()));
+		sendEvent(businessId, retourAttendu, new CustomMarshaller() {
+			@Override
+			public void marshall(Marshaller marshaller, Document doc) throws JAXBException {
+				final UpdatePayerContact msg = objectFactory.createUpdatePayerContact();
+				msg.setPayerId(payerId);
+				msg.setReasonDescription(description);
+
+				final UpdatePayerContact.NewEmailAddress emailContainer = new UpdatePayerContact.NewEmailAddress();
+				if (StringUtils.isNotBlank(newMail)) {
+					emailContainer.setEmail(newMail);
+				}
+				msg.setNewEmailAddress(emailContainer);
+				marshaller.marshal(msg, doc);
+			}
+		}, serviceDestinationDestinataire);
+		return businessId;
 	}
 
 	private static interface CustomMarshaller {

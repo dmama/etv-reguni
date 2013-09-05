@@ -36,8 +36,7 @@ public class EtatDestinataire {
 		this.type = TypeEtatDestinataire.valueOf(payerSituationHistoryEntry.getStatus());
 		this.codeRaison = payerSituationHistoryEntry.getReasonCode();
 		if (type.isInscrit()) {
-			// TODO jde Récupérer l'adresse mail dans les données efacture
-			this.email = "god@heaven.com";
+			this.email = payerSituationHistoryEntry.getEmail();
 		}
 		else {
 			this.email = null;
