@@ -26,6 +26,10 @@ public enum TypeEtatDestinataire {
 		return this == INSCRIT || this == DESINSCRIT;
 	}
 
+	public boolean isInscrit() {
+		return this == INSCRIT || this == INSCRIT_SUSPENDU;
+	}
+
 	public static TypeEtatDestinataire valueOf(PayerStatus status) {
 		switch (status) {
 		case DESINSCRIT:

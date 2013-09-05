@@ -1,11 +1,15 @@
 package ch.vd.uniregctb.efacture;
 
+import javax.validation.Valid;
+
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.Validator;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -41,9 +45,11 @@ public class EFactureController implements MessageSourceAware {
 	private static final String COMMAND = "command";
 	private static final String DATA_DEMANDE = "dataDemande";
 	private static final String MAXLEN = "maxlen";
+
 	private EfactureManager efactureManager;
 	private SecurityProviderInterface securityProvider;
 	private MessageSource messageSource;
+	private Validator validator;
 
 	private static void checkDroitVisuEfacture(SecurityProviderInterface securityProvider) {
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.VISU_ALL, Role.GEST_EFACTURE)) {
@@ -66,6 +72,7 @@ public class EFactureController implements MessageSourceAware {
 	@SuppressWarnings({"UnusedDeclaration"})
 	@InitBinder
 	protected void initBinder(WebDataBinder binder) {
+		binder.setValidator(validator);
 		binder.registerCustomEditor(RegDate.class, new RegDateEditor(true, false, true));
 	}
 
@@ -78,6 +85,10 @@ public class EFactureController implements MessageSourceAware {
 
 	@RequestMapping(value = "/edit.do", method = RequestMethod.GET)
 	public String edit(Model model, @RequestParam(value = CTB, required = true) long ctbId) {
+		return edit(model, ctbId, null);
+	}
+
+	private String edit(Model model, long ctbId, @Nullable ChangeEmailView changeEmailView) {
 		checkDroitGestionaireEfacture(securityProvider);
 		final DestinataireAvecHistoView histo = buildHistoDestinataire(ctbId);
 		if (histo == null) {
@@ -95,7 +106,17 @@ public class EFactureController implements MessageSourceAware {
 
 		model.addAttribute("histo", histo);
 		model.addAttribute(DATA_DEMANDE, actionDemandeView);
+		model.addAttribute("newmail", changeEmailView != null ? changeEmailView : new ChangeEmailView(ctbId, findMail(histo)));
+		model.addAttribute("mailEditionInProgress", changeEmailView != null);
 		return "tiers/edition/efacture/edit";
+	}
+
+	private static String findMail(DestinataireAvecHistoView histo) {
+		String email = null;
+		if (histo != null && histo.isInscrit()) {
+			email = histo.getEtats().get(0).getEmail();
+		}
+		return email;
 	}
 
 	private int getMaxLengthForManualComment() {
@@ -200,6 +221,10 @@ public class EFactureController implements MessageSourceAware {
 		this.messageSource = messageSource;
 	}
 
+	public void setValidator(Validator validator) {
+		this.validator = validator;
+	}
+
 	public static enum AddCommentActionType {
 		SUSPEND("/efacture/suspend.do", "label.efacture.bouton.suspendre"),
 		ACTIVATE("/efacture/activate.do", "label.efacture.bouton.activer");
@@ -221,5 +246,24 @@ public class EFactureController implements MessageSourceAware {
 		model.addAttribute(COMMAND, new FreeCommentView());
 		model.addAttribute(MAXLEN, getMaxLengthForManualComment());
 		return "tiers/edition/efacture/add-comment";
+	}
+
+	@RequestMapping(value = "change-email.do", method = RequestMethod.POST)
+	public String changeEmail(@Valid @ModelAttribute("newmail") ChangeEmailView view, BindingResult result, Model model) {
+		checkDroitGestionaireEfacture(securityProvider);
+
+		if (result.hasErrors()) {
+			return edit(model, view.getNoCtb(), view);
+		}
+
+		// valeurs différentes ?
+		final String oldEmail = StringUtils.trimToNull(view.getPreviousEmail());
+		final String newEmail = StringUtils.trimToNull(view.getEmail());
+		if (!StringUtils.equals(oldEmail, newEmail)) {
+			// TODO jde envoyer la demande de changement à e-facture
+			// TODO jde ajouter un Flash de confirmation/problème
+		}
+
+		return String.format("redirect:/efacture/edit.do?ctb=%d", view.getNoCtb());
 	}
 }

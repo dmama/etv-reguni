@@ -45,9 +45,9 @@ public abstract class MockEFactureService implements EFactureService {
 		data.put(ctbId, histo);
 	}
 
-	protected void addEtatDestinataire(long ctbId, Date date, String descriptionRaison, Integer codeRaison, TypeEtatDestinataire etat) {
+	protected void addEtatDestinataire(long ctbId, Date date, String descriptionRaison, Integer codeRaison, TypeEtatDestinataire etat, String email) {
 		final DestinataireAvecHisto histo = data.get(ctbId);
-		final EtatDestinataire etatDest = new EtatDestinataire(null, date, descriptionRaison, codeRaison, etat);
+		final EtatDestinataire etatDest = new EtatDestinataire(null, date, descriptionRaison, codeRaison, etat, email);
 		histo.getHistoriquesEtats().add(etatDest);
 	}
 
@@ -93,19 +93,23 @@ public abstract class MockEFactureService implements EFactureService {
 		final TypeEtatDestinataire nouveauType;
 		switch (dernierEtat.getType()) {
 			case DESINSCRIT:
-			case DESINSCRIT_SUSPENDU:
 				nouveauType = TypeEtatDestinataire.DESINSCRIT_SUSPENDU;
 				break;
 			case INSCRIT:
-			case INSCRIT_SUSPENDU:
 				nouveauType = TypeEtatDestinataire.INSCRIT_SUSPENDU;
+				break;
+			case DESINSCRIT_SUSPENDU:
+			case INSCRIT_SUSPENDU:
+				nouveauType = null;
 				break;
 			default:
 				throw new IllegalStateException("Invalid value: " + dernierEtat.getType());
 		}
 
-		final EtatDestinataire etat = new EtatDestinataire(description, DateHelper.getCurrentDate(), null, null, nouveauType);
-		dest.getHistoriquesEtats().add(etat);
+		if (nouveauType != null) {
+			final EtatDestinataire etat = new EtatDestinataire(description, DateHelper.getCurrentDate(), null, null, nouveauType, dernierEtat.getEmail());
+			dest.getHistoriquesEtats().add(etat);
+		}
 		return StringUtils.EMPTY;
 	}
 
@@ -115,20 +119,24 @@ public abstract class MockEFactureService implements EFactureService {
 		final EtatDestinataire dernierEtat = dest.getDernierEtat();
 		final TypeEtatDestinataire nouveauType;
 		switch (dernierEtat.getType()) {
-			case DESINSCRIT:
 			case DESINSCRIT_SUSPENDU:
 				nouveauType = TypeEtatDestinataire.DESINSCRIT;
 				break;
-			case INSCRIT:
 			case INSCRIT_SUSPENDU:
 				nouveauType = TypeEtatDestinataire.INSCRIT;
+				break;
+			case INSCRIT:
+			case DESINSCRIT:
+				nouveauType = null;
 				break;
 			default:
 				throw new IllegalStateException("Invalid value: " + dernierEtat.getType());
 		}
 
-		final EtatDestinataire etat = new EtatDestinataire(description, DateHelper.getCurrentDate(), null, null, nouveauType);
-		dest.getHistoriquesEtats().add(etat);
+		if (nouveauType != null) {
+			final EtatDestinataire etat = new EtatDestinataire(description, DateHelper.getCurrentDate(), null, null, nouveauType, dernierEtat.getEmail());
+			dest.getHistoriquesEtats().add(etat);
+		}
 		return StringUtils.EMPTY;
 	}
 
@@ -145,18 +153,23 @@ public abstract class MockEFactureService implements EFactureService {
 		final TypeEtatDestinataire nouveauType;
 		switch (dernierEtat.getType()) {
 			case DESINSCRIT:
-			case INSCRIT:
 				nouveauType = TypeEtatDestinataire.INSCRIT;
 				break;
 			case DESINSCRIT_SUSPENDU:
-			case INSCRIT_SUSPENDU:
 				nouveauType = TypeEtatDestinataire.INSCRIT_SUSPENDU;
+				break;
+			case INSCRIT:
+			case INSCRIT_SUSPENDU:
+				nouveauType = null;
 				break;
 			default:
 				throw new IllegalStateException("Invalid value: " + dernierEtat.getType());
 		}
-		final EtatDestinataire etatDestinataire = new EtatDestinataire(description, DateHelper.getCurrentDate(), null, null, nouveauType);
-		dest.getHistoriquesEtats().add(etatDestinataire);
+
+		if (nouveauType != null) {
+			final EtatDestinataire etatDestinataire = new EtatDestinataire(description, DateHelper.getCurrentDate(), null, null, nouveauType, demande.getEmail());
+			dest.getHistoriquesEtats().add(etatDestinataire);
+		}
 		return StringUtils.EMPTY;
 	}
 

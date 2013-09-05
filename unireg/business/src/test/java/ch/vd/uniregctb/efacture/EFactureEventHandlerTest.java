@@ -225,7 +225,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 			@Override
 			public void init() {
 				addDestinataire(ppId);
-				addEtatDestinataire(ppId, DateHelper.getCurrentDate(), "Suspendu... pas gentil!", null, TypeEtatDestinataire.DESINSCRIT_SUSPENDU);
+				addEtatDestinataire(ppId, DateHelper.getCurrentDate(), "Suspendu... pas gentil!", null, TypeEtatDestinataire.DESINSCRIT_SUSPENDU, null);
 				addDemandeInscription(demandeId, ppId, email, dateDemande, typeDemande, noAvs, TypeEtatDemande.VALIDATION_EN_COURS, noAdherent);
 			}
 		});

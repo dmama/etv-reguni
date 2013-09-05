@@ -16,6 +16,7 @@ public class DestinataireAvecHistoView {
 	private List<DemandeAvecHistoView> demandes;
 	private boolean suspendable;
 	private boolean activable;
+	private boolean inscrit;
 
 	public long getCtbId() {
 		return ctbId;
@@ -58,6 +59,14 @@ public class DestinataireAvecHistoView {
 
 	public void setActivable(boolean activable) {
 		this.activable = activable;
+	}
+
+	public boolean isInscrit() {
+		return inscrit;
+	}
+
+	public void setInscrit(boolean inscrit) {
+		this.inscrit = inscrit;
 	}
 
 	@Nullable

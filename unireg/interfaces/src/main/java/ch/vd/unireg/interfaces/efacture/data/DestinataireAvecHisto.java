@@ -63,13 +63,15 @@ public class DestinataireAvecHisto {
 	}
 
 
-    public boolean isActivable(){
+    public boolean isActivable() {
 		 return getDernierEtat().getType().isActivable();
 	}
 
-	public boolean isSuspendable(){
+	public boolean isSuspendable() {
 		return getDernierEtat().getType().isSuspendable();
 	}
 
-
+	public boolean isInscrit() {
+		return getDernierEtat().getType().isInscrit();
+	}
 }

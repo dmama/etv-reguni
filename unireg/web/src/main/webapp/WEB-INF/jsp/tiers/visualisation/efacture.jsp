@@ -57,9 +57,10 @@
         buildHistoriqueDestinataire: function(etats) {
 
             var html = '<table id="efacture-destinataire" class="display"><thead><tr>\n';
-            html += '<th width="10%"><fmt:message key="label.efacture.date.obtention"/></th>';
-            html += '<th><fmt:message key="label.efacture.etat"/></th>';
-            html += '<th><fmt:message key="label.efacture.motifTransition"/></th>';
+            html += '<th style="width:20%"><fmt:message key="label.efacture.date.obtention"/></th>';
+            html += '<th style="width:20%"><fmt:message key="label.efacture.etat"/></th>';
+            html += '<th style="width:30%"><fmt:message key="label.efacture.motifTransition"/></th>';
+            html += '<th style="width:25%"><fmt:message key="label.efacture.email"/></th>';
             html += '<th/>';
             html += '</tr></thead>\n';
             html += '<tbody>\n';
@@ -70,6 +71,7 @@
                 html += '<td>' + DateUtils.toNormalString(new Date(etat.dateObtention)) + '</td>';
                 html += '<td>' + StringUtils.escapeHTML(etat.descriptionEtat) + '</td>';
                 html += '<td>' + StringUtils.escapeHTML(etat.motifObtention) + '</td>';
+                html += '<td>' + StringUtils.escapeHTML(etat.email) + '</td>';
                 html += '<td>&nbsp;</td>';
                 html += '</tr>';
             }

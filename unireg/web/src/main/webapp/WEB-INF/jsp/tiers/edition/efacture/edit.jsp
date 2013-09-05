@@ -15,19 +15,87 @@
         <%-- destinataire --%>
         <fieldset>
             <legend><span><fmt:message key="label.efacture.historique.destinataire" /></span></legend>
+	        <c:set var="firstLine" value="true"/>
             <display:table id="destinataire" name="histo.etats" class="display">
-                <display:column titleKey="label.efacture.date.obtention">
+                <display:column titleKey="label.efacture.date.obtention" style="width:20%">
                     <unireg:sdate sdate="${destinataire.dateObtention}"/>
                 </display:column>
-                <display:column titleKey="label.efacture.etat">
+                <display:column titleKey="label.efacture.etat" style="width:20%">
                     <c:out value="${destinataire.descriptionEtat}"/>
                 </display:column>
-                <display:column titleKey="label.efacture.motifTransition">
+                <display:column titleKey="label.efacture.motifTransition" style="width:30%">
                     <c:out value="${destinataire.motifObtention}"/>
+                </display:column>
+                <display:column titleKey="label.efacture.email">
+	                <span id="roMail">
+			            <c:out value="${destinataire.email}"/>
+		                <c:if test="${firstLine && histo.inscrit}">
+			                <unireg:raccourciModifier onClick="EditEFactureMail.showEdition();"/>
+		                </c:if>
+				    </span>
+	                <c:if test="${firstLine && histo.inscrit}">
+		                <span id="rwMail" style="display:none;">
+						    <form:form name="emailForm" id="emailForm" commandName="newmail" action="change-email.do" method="post">
+							    <form:hidden path="noCtb"/>
+							    <form:hidden id="previousMail" path="previousEmail"/>
+							    <form:input id="email" path="email" onkeyup="EditEFactureMail.checkValue(this);"/>
+							    <unireg:raccourciAnnuler id="newmailcancel" onClick="EditEFactureMail.cancelEdition();"/>
+							    <unireg:raccourciEnregistrer id="newmailvalidation" onClick="EditEFactureMail.submitNewMail($('#emailForm'));"/>
+							    <form:errors id="emailerrors" path="email" cssClass="error"/>
+						    </form:form>
+
+			                <script type="text/javascript">
+				                var EditEFactureMail = {
+			                        cancelEdition: function() {
+				                        this.hideEdition(form);
+				                        var form = $('#emailForm');
+				                        $('#email', form)[0].value = $('#previousMail', form)[0].value;
+				                        $('#emailerrors', form).hide();
+			                        },
+
+					                showEdition: function() {
+						                $('#roMail').hide();
+						                $('#rwMail').show();
+						                this.checkValue($('#email')[0]);
+					                },
+
+					                hideEdition: function() {
+						                $('#roMail').show();
+						                $('#rwMail').hide();
+					                },
+
+					                submitNewMail: function(form) {
+						                $(':button').attr("disabled", "disabled");
+						                $('#newmailcancel, #newmailvalidation').hide();
+						                form.submit();
+					                },
+
+					                checkValue: function(input) {
+						                var form = input.parent;
+						                var previousMail = $('#previousMail', form)[0].value;
+						                if (input.value === previousMail) {
+							                $('#newmailvalidation').hide();
+						                }
+						                else {
+							                $('#newmailvalidation').show();
+						                }
+					                }
+			                    };
+
+				                <c:if test="${mailEditionInProgress}">
+					                $(function() {
+						                EditEFactureMail.showEdition();
+					                });
+				                </c:if>
+
+		                    </script>
+		                </span>
+	                </c:if>
+	                <c:set var="firstLine" value="false"/>
                 </display:column>
             </display:table>
 
-            <table border="0" style="display: ${histo.suspendable || histo.activable ? '' : 'none'};">
+            <table border="0" <c:if test="${!histo.suspendable && !histo.activable}">style="display:none;"</c:if>>
                 <tr>
                     <td align="center">
                         <c:if test="${histo.suspendable}">

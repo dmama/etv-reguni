@@ -187,6 +187,19 @@ public class JspTagRaccourci extends BodyTagSupport implements MessageSourceAwar
 	}
 
 	/**
+	 * Raccourci d'enregistrement de données
+	 */
+	public static class Enregistrer extends JspTagRaccourci {
+
+		private static final long serialVersionUID = 4514972534732668432L;
+
+		@Override
+		protected String getCssClass() {
+			return "save";
+		}
+	}
+
+	/**
 	 * Raccourci d'ajout
 	 */
 	public static class Ajouter extends JspTagRaccourci {

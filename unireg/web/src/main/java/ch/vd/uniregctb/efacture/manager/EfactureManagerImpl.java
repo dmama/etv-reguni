@@ -144,6 +144,7 @@ public class EfactureManagerImpl implements EfactureManager {
 		res.setCtbId(destinataire.getCtbId());
 		res.setActivable(destinataire.isActivable());
 		res.setSuspendable(destinataire.isSuspendable());
+		res.setInscrit(destinataire.isInscrit());
 
 		//On charge l'historique des demandes.
 		final int sizeDemandes = destinataire.getHistoriqueDemandes().size();
@@ -174,11 +175,11 @@ public class EfactureManagerImpl implements EfactureManager {
 	}
 
 	private EtatDestinataireView getEtatDestinataire(EtatDestinataire etat) {
-		return new EtatDestinataireView(
-				etat.getDateObtention(),
-				etat.getDescriptionRaison(),
-				null, // pas de document relatif au destinataire, prévu dans un futur proche
-				messageSource.getMessage("label.efacture.etat.destinataire." + etat.getType(), null, WebContextUtils.getDefaultLocale()));
+		return new EtatDestinataireView(etat.getDateObtention(),
+		                                etat.getDescriptionRaison(),
+		                                null, // pas de document relatif au destinataire, prévu dans un futur proche
+		                                messageSource.getMessage("label.efacture.etat.destinataire." + etat.getType(), null, WebContextUtils.getDefaultLocale()),
+		                                etat.getEmail());
 	}
 
 	private EtatDemandeView getEtatDemande(EtatDemande etat) {
@@ -201,12 +202,12 @@ public class EfactureManagerImpl implements EfactureManager {
 
 	private static TypeAttenteDemande determineTypeAttenteEfacture(TypeDocument typeDocument) throws IllegalArgumentException {
 		switch (typeDocument) {
-		case E_FACTURE_ATTENTE_CONTACT:
-			return TypeAttenteDemande.EN_ATTENTE_CONTACT;
-		case E_FACTURE_ATTENTE_SIGNATURE:
-			return TypeAttenteDemande.EN_ATTENTE_SIGNATURE;
-		default:
-			throw new IllegalArgumentException("Le type de document " + typeDocument.name() + " est inconnue");
+			case E_FACTURE_ATTENTE_CONTACT:
+				return TypeAttenteDemande.EN_ATTENTE_CONTACT;
+			case E_FACTURE_ATTENTE_SIGNATURE:
+				return TypeAttenteDemande.EN_ATTENTE_SIGNATURE;
+			default:
+				throw new IllegalArgumentException("Le type de document " + typeDocument.name() + " est inconnue");
 		}
 	}
 
