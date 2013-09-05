@@ -13,6 +13,21 @@
             Schéma décrivant les types utilisés pour les échanges relatifs aux destinataires de E-facture,
             c'est à dire les débiteurs à qui des factures électroniques peuvent être adressées.
             Pour les factures, voir eVD-0026.
+
+            --Historique--
+
+            --Version 1.1 (eVD-0025-1-1.xsd)--
+            * ajout de nouveaux messages updatePayerContact et unsubscribePayerWithNewRequest
+            * ajout de l'adresse e-mail dans l'historique des situations d'un Payer (payerSituationHistoryEntryType)
+            * la présence de l'élément email est facultative dans registrationRequestType
+            * ajout d'un nouveau payerStatusType  "NON_INSCRIT"
+            * ajout d'un nouveau registrationRequestStatusType "ANNULEE"
+            * ajout de l'élément reasonCodeCyber sur payerSituationHistoryEntryType et registrationRequestHistoryEntryType
+            * lastName et firstName sont facultatifs dans registrationRequestType
+
+            --Version 1.0 (eVD-0025-1-0.xsd)--
+            * Première version, mise en production septembre 2012.
+
         </xs:documentation>
     </xs:annotation>
 
@@ -34,7 +49,7 @@
         </xs:annotation>
         <xs:sequence>
             <xs:element name="payerId" type="eVD-0025:payerIdType"/>
-            <xs:element name="payerStatus" type="eVD-0025:payerStatusType" />
+            <xs:element name="payerStatus" type="eVD-0025:payerStatusType"/>
         </xs:sequence>
     </xs:complexType>
 
@@ -151,8 +166,28 @@
             <xs:element name="status" type="eVD-0025:payerStatusType"/>
             <xs:element name="providerId" type="eVD-0025:providerIdType" minOccurs="0"/>
             <xs:element name="eBillAccountId" type="eVD-0025:eBillAccountIdType" minOccurs="0"/>
+            <xs:element name="email" type="eCH-0046:emailAddressType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>
+                        Adresse e-mail fournie avec cette inscription. Element facultatif car pour les désinscriptions, l'adresse e-mail n'est pas fournie.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
             <xs:element name="registrationMode" type="eVD-0025:registrationModeType" minOccurs="0"/>
-            <xs:element name="reasonCode" type="eVD-0025:reasonCodeType" minOccurs="0"/>
+            <xs:element name="reasonCode" type="eVD-0025:reasonCodeType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>
+                        Code défini par l'application métier (Unireg).
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="reasonCodeCyber" type="eVD-0025:reasonCodeType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>
+                        Code défini par Cyberfact (changements d'état issus de processus internes).
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
             <xs:element name="reasonDescription" type="eVD-0025:reasonDescriptionType" minOccurs="0"/>
             <xs:element name="customField" type="eVD-0025:historyEntryCustomFieldType" minOccurs="0"/>
         </xs:sequence>
@@ -190,6 +225,17 @@
             </xs:documentation>
         </xs:annotation>
         <xs:restriction base="xs:token">
+            <xs:enumeration value="NON_INSCRIT">
+                <xs:annotation>
+                    <xs:documentation>
+                        Le destinataire n'est pas inscrit, et ne l'a jamais été auparavant.
+                        Etat initial à la création du destinataire, pendant que sa demande d'inscription est en cours de validation.
+                        Il ne peut pas recevoir de factures électroniques jusqu'à ce que sa demande d'inscription soit
+                        validée.
+                        (Nouvel état introduit en version 1.1 du XSD, Cyberfact v1.6.x (13.4) voir cas Jira CYBADM-193)
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
             <xs:enumeration value="INSCRIT">
                 <xs:annotation>
                     <xs:documentation>
@@ -288,24 +334,27 @@
                 </xs:annotation>
             </xs:element>
             <xs:element name="eBillAccountId" type="eVD-0025:eBillAccountIdType"/>
-            <xs:element name="lastName" type="eCH-0044:baseNameType">
+            <xs:element name="lastName" type="eCH-0044:baseNameType" minOccurs="0">
                 <xs:annotation>
                     <xs:documentation>
                         Nom fourni par le formulaire d'inscription.
+                        Peut être nul selon la qualité des données transmises par l'établissement financier et le type de compte (p. ex. comptes d'entreprises).
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="firstName" type="eCH-0044:baseNameType">
+            <xs:element name="firstName" type="eCH-0044:baseNameType" minOccurs="0">
                 <xs:annotation>
                     <xs:documentation>
                         Prénom fourni par le formulaire d'inscription.
+                        Peut être nul selon la qualité des données transmises par l'établissement financier et le type de compte (p. ex. comptes de conjoints).
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="email" type="eCH-0046:emailAddressType">
+            <xs:element name="email" type="eCH-0046:emailAddressType" minOccurs="0">
                 <xs:annotation>
                     <xs:documentation>
                         Adresse e-mail fournie par le formulaire d'inscription.
+                        Element facultatif car pour les désinscriptions, l'adresse e-mail n'est pas fournie.
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
@@ -373,7 +422,20 @@
         <xs:sequence>
             <xs:element name="date" type="xs:dateTime"/>
             <xs:element name="status" type="eVD-0025:registrationRequestStatusType"/>
-            <xs:element name="reasonCode" type="eVD-0025:reasonCodeType" minOccurs="0"/>
+            <xs:element name="reasonCode" type="eVD-0025:reasonCodeType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>
+                        Code défini par l'application métier (Unireg).
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="reasonCodeCyber" type="eVD-0025:reasonCodeType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>
+                        Code défini par Cyberfact (changements d'état issus de processus internes).
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
             <xs:element name="reasonDescription" type="eVD-0025:reasonDescriptionType" minOccurs="0"/>
             <xs:element name="customField" type="eVD-0025:historyEntryCustomFieldType" minOccurs="0"/>
         </xs:sequence>
@@ -421,6 +483,13 @@
                     </xs:documentation>
                 </xs:annotation>
             </xs:enumeration>
+            <xs:enumeration value="ANNULEE">
+                <xs:annotation>
+                    <xs:documentation>
+                        Traitement terminé, la demande a été annulée par l'arrivée d'une autre demande du même destinataire.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
         </xs:restriction>
     </xs:simpleType>
 
@@ -456,8 +525,7 @@
     <xs:simpleType name="reasonCodeType">
         <xs:annotation>
             <xs:documentation>
-                Code numérique pour caractériser le motif de changement d'état. La sémantique est définie par les
-                applications métier.
+                Code numérique pour caractériser le motif de changement d'état.
             </xs:documentation>
         </xs:annotation>
         <xs:restriction base="xs:int"/>
@@ -749,5 +817,62 @@
         </xs:complexType>
     </xs:element>
 
+    <xs:element name="updatePayerContact">
+        <xs:annotation>
+            <xs:documentation>
+                Message de mise à jour d'adresse e-mail envoyé par Unireg à Cyberfact.
 
+                Si le message ESB de requête contient un 'serviceReplyTo',
+                lorsque l'adresse mail et l'historique du destinataire sont mis à jour,
+                un message de réponse vide est renvoyé à cette destination avec le businessCorrelationId correspondant
+                au businessId de la requête.
+                L'application cliente peut alors demander le nouvel historique du destinataire.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="payerId" type="eVD-0025:payerIdType"/>
+                <xs:element name="newEmailAddress" minOccurs="0">
+                    <xs:complexType>
+                        <xs:annotation>
+                            <xs:documentation>
+                                Structure encapsulant la nouvelle adresse e-mail du destinataire.
+                                Si newEmailAddress ne contient pas d'élément email, cela signifie qu'on ne connait pas d'adresse email valable pour ce destinataire.
+                                Cyberfact n'enverra pas d'emails au destinataire.
+                            </xs:documentation>
+                        </xs:annotation>
+                        <xs:sequence>
+                            <xs:element name="email" type="eCH-0046:emailAddressType" minOccurs="0"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="reasonCode" type="eVD-0025:reasonCodeType" minOccurs="0"/>
+                <xs:element name="reasonDescription" type="eVD-0025:reasonDescriptionType" minOccurs="0"/>
+                <xs:element name="customField" type="eVD-0025:historyEntryCustomFieldType" minOccurs="0"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="unsubscribePayerWithNewRequest">
+        <xs:annotation>
+            <xs:documentation>
+                Message envoyé par Unireg à Cyberfact lors du traitement d'une demande d'inscription d'un destinataire
+                déjà inscrit (par exemple changement de relation bancaire). Voir cas Jira CYBADM-409 (http://issuetracker.etat-de-vaud.ch/jira/browse/CYBADM-409)
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="registrationRequestId" type="eVD-0025:registrationRequestIdType">
+                    <xs:annotation>
+                        <xs:documentation>
+                            Identifiant de la nouvelle demande d'inscription, qui doit remplacer l'inscription en cours et annuler toutes les demandes antérieures.
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="reasonCode" type="eVD-0025:reasonCodeType" minOccurs="0"/>
+                <xs:element name="reasonDescription" type="eVD-0025:reasonDescriptionType" minOccurs="0"/>
+                <xs:element name="customField" type="eVD-0025:historyEntryCustomFieldType" minOccurs="0"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
 </xs:schema>
