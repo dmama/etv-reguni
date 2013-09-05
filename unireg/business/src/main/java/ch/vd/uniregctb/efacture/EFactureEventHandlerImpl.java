@@ -222,6 +222,6 @@ public class EFactureEventHandlerImpl implements EFactureEventHandler {
 
 	@Override
 	public ClassPathResource getRequestXSD() {
-		return new ClassPathResource("eVD-0025-1-0.xsd");
+		return new ClassPathResource("eVD-0025-1-1.xsd");
 	}
 }
