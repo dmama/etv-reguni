@@ -975,7 +975,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 
 		@Override
 		public String getLabel() {
-			return "Recalculer les relations de parenté";
+			return "Recalculer les parentés";
 		}
 
 		@Override
