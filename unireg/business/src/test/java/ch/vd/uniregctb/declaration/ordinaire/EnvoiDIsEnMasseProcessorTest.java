@@ -33,9 +33,9 @@ import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
+import ch.vd.uniregctb.declaration.ordinaire.AbstractEnvoiDIsResults.Ignore;
+import ch.vd.uniregctb.declaration.ordinaire.AbstractEnvoiDIsResults.IgnoreType;
 import ch.vd.uniregctb.declaration.ordinaire.EnvoiDIsEnMasseProcessor.DeclarationsCache;
-import ch.vd.uniregctb.declaration.ordinaire.EnvoiDIsResults.Ignore;
-import ch.vd.uniregctb.declaration.ordinaire.EnvoiDIsResults.IgnoreType;
 import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDI;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
@@ -1614,7 +1614,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 			}
 		});
 
-		final EnvoiDIsResults<EnvoiDIsResults> results = processor.run(annee, CategorieEnvoiDI.VAUDOIS_VAUDTAX, null, null, 0, RegDate.get(), false, nbThreads, null);
+		final EnvoiDIsResults results = processor.run(annee, CategorieEnvoiDI.VAUDOIS_VAUDTAX, null, null, 0, RegDate.get(), false, nbThreads, null);
 		assertNotNull(results);
 		assertEquals(nbCtbs, results.ctbsAvecDiGeneree.size());
 		assertEquals(0, results.ctbsEnErrors.size());

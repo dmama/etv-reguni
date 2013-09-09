@@ -24,27 +24,25 @@ public class MockOuvertureForsContribuablesMajeursProcessor extends OuvertureFor
 	}
 
 	@Override
-	protected void traiteHabitant(Long id, RegDate dateReference) {
+	protected void traiteHabitant(Long id, RegDate dateReference, OuvertureForsResults r) {
 		PersonnePhysique habitant = hibernateTemplate.get(PersonnePhysique.class, id);
 
-		++rapport.nbHabitantsTotal;
+		++r.nbHabitantsTotal;
 
 		//Exception d'infrastructure
 		try {
 			throw new ServiceInfrastructureException("Exception Infrastructure attendu");
 		}
-
 		catch (Exception e) {
-			rapport.addUnknownException(habitant, e);
+			r.addUnknownException(habitant, e);
 		}
-
 
 		// Exception Hibernate
 		try {
 			throw new ConstraintViolationException("Exception hibernate attendu", new SQLException(), "contrainte");
 		}
 		catch (Exception e) {
-			rapport.addUnknownException(habitant, e);
+			r.addUnknownException(habitant, e);
 		}
 	}
 }

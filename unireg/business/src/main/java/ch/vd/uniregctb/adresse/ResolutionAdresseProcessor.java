@@ -14,13 +14,16 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
+import ch.vd.shared.batchtemplate.Behavior;
+import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
+import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Localite;
 import ch.vd.unireg.interfaces.infra.data.Rue;
-import ch.vd.uniregctb.common.BatchTransactionTemplate;
+import ch.vd.uniregctb.common.AuthenticationInterface;
 import ch.vd.uniregctb.common.LoggingStatusManager;
-import ch.vd.uniregctb.common.ParallelBatchTransactionTemplate;
-import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResult;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -38,7 +41,6 @@ public class ResolutionAdresseProcessor {
 	private final PlatformTransactionManager transactionManager;
 	private final TiersService tiersService;
 	private final HibernateTemplate hibernateTemplate;
-	private final ThreadLocal<ResolutionAdresseResults> rapport = new ThreadLocal<>();
 
 	public ResolutionAdresseProcessor(AdresseService adresseService, ServiceInfrastructureService infraService, PlatformTransactionManager transactionManager,
 	                                  TiersService tiersService, HibernateTemplate hibernateTemplate) {
@@ -57,10 +59,10 @@ public class ResolutionAdresseProcessor {
 		final List<Long> ids = recupererAdresseATraiter();
 
 		// Reussi les messages par lots
-		final ParallelBatchTransactionTemplate<Long, ResolutionAdresseResults>
-				template = new ParallelBatchTransactionTemplate<>(ids, BATCH_SIZE, nbThreads, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE,
-				transactionManager, status, hibernateTemplate);
-		template.execute(rapportFinal, new BatchTransactionTemplate.BatchCallback<Long, ResolutionAdresseResults>() {
+		final SimpleProgressMonitor progressMonitor = new SimpleProgressMonitor();
+		final ParallelBatchTransactionTemplateWithResult<Long, ResolutionAdresseResults>
+				template = new ParallelBatchTransactionTemplateWithResult<>(ids, BATCH_SIZE, nbThreads, Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, AuthenticationInterface.INSTANCE);
+		template.execute(rapportFinal, new BatchWithResultsCallback<Long, ResolutionAdresseResults>() {
 
 			@Override
 			public ResolutionAdresseResults createSubRapport() {
@@ -69,14 +71,12 @@ public class ResolutionAdresseProcessor {
 
 			@Override
 			public boolean doInTransaction(List<Long> batch, ResolutionAdresseResults r) throws Exception {
-
-				rapport.set(r);
-				status.setMessage("Traitement du batch [" + batch.get(0) + "; " + batch.get(batch.size() - 1) + "] ...", percent);
-
-				traiterBatch(batch);
+				status.setMessage("Traitement du batch [" + batch.get(0) + "; " + batch.get(batch.size() - 1) + "] ...", progressMonitor.getProgressInPercent());
+				traiterBatch(batch, r);
 				return true;
 			}
-		});
+		}, progressMonitor);
+
 		//On calcul le nombre total d'adresse traitées
 		rapportFinal.nbAdresseTotal = rapportFinal.nbAdresseTotal + rapportFinal.erreurs.size();
 		final int countTraites = rapportFinal.nbAdresseTotal;
@@ -99,7 +99,7 @@ public class ResolutionAdresseProcessor {
 
 	}
 
-	private void traiterBatch(final List<Long> batch) throws Exception {
+	private void traiterBatch(final List<Long> batch, ResolutionAdresseResults r) throws Exception {
 		//Chargement des messages d'identification
 		// On charge tous les contribuables en vrac (avec préchargement des déclarations)
 		final List<AdresseSuisse> list = hibernateTemplate.execute(new HibernateCallback<List<AdresseSuisse>>() {
@@ -113,14 +113,14 @@ public class ResolutionAdresseProcessor {
 			}
 		});
 		for (AdresseSuisse adresseSuisse : list) {
-			rapport.get().nbAdresseTotal++;
-			ressoudreAdresse(adresseSuisse);
+			r.nbAdresseTotal++;
+			ressoudreAdresse(adresseSuisse, r);
 		}
 
 
 	}
 
-	private void ressoudreAdresse(AdresseSuisse adresseSuisse) throws RuntimeException {
+	private void ressoudreAdresse(AdresseSuisse adresseSuisse, ResolutionAdresseResults r) throws RuntimeException {
 		Rue rue = null;
 		final Integer numeroRueAdresse = adresseSuisse.getNumeroRue();
 		try {
@@ -149,7 +149,7 @@ public class ResolutionAdresseProcessor {
 
 		adresseSuisse.setRue(rue.getDesignationCourrier());
 		adresseSuisse.setNumeroOrdrePoste(localite.getNoOrdre());
-		rapport.get().addAdresseResolue(adresseSuisse, localite.getNomCompletMinuscule());
+		r.addAdresseResolue(adresseSuisse, localite.getNomCompletMinuscule());
 
 		//SUppression de la référence vers la rue
 		adresseSuisse.setNumeroRue(null);

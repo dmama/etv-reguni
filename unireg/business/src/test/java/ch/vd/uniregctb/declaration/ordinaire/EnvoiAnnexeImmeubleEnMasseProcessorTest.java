@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.uniregctb.adresse.AdresseService;
@@ -34,6 +35,7 @@ import static junit.framework.Assert.assertNull;
 public class EnvoiAnnexeImmeubleEnMasseProcessorTest extends BusinessTest {
 
 	private EnvoiAnnexeImmeubleEnMasseProcessor processor;
+	private AdresseService adresseService;
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -45,7 +47,7 @@ public class EnvoiAnnexeImmeubleEnMasseProcessorTest extends BusinessTest {
 		final DeclarationImpotService diService = getBean(DeclarationImpotService.class, "diService");
 		final ServiceCivilCacheWarmer serviceCivilCacheWarmer = getBean(ServiceCivilCacheWarmer.class, "serviceCivilCacheWarmer");
 		final PeriodeImpositionService periodeImpositionService = getBean(PeriodeImpositionService.class, "periodeImpositionService");
-		final AdresseService adresseService = getBean(AdresseService.class, "adresseService");
+		adresseService = getBean(AdresseService.class, "adresseService");
 
 		serviceCivil.setUp(new DefaultMockServiceCivil());
 
@@ -86,19 +88,21 @@ public class EnvoiAnnexeImmeubleEnMasseProcessorTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testPeriodeImpositionEnFinPeriode() {
 
+		final EnvoiAnnexeImmeubleResults r = new EnvoiAnnexeImmeubleResults(2011, RegDate.get(), "tubidu.zip", Integer.MAX_VALUE, tiersService, adresseService);
+
 		// Contribuable sans for fiscal
 		final Contribuable erich = addNonHabitant("Erich", "Honekker", date(1934, 1, 1), Sexe.MASCULIN);
-		assertNull(processor.getPeriodeImpositionEnFinDePeriodeFiscale(erich, 2011));
+		assertNull(processor.getPeriodeImpositionEnFinDePeriodeFiscale(erich, 2011, r));
 
 		// Contribuable avec un for fiscal principal à Neuchâtel
 		final Contribuable maxwell = addNonHabitant("Maxwell", "Dupuis", date(1955, 1, 1), Sexe.MASCULIN);
 		addForPrincipal(maxwell, date(1980, 1, 1), null, MockCommune.Neuchatel);
-		assertNull(processor.getPeriodeImpositionEnFinDePeriodeFiscale(maxwell, 2011));
+		assertNull(processor.getPeriodeImpositionEnFinDePeriodeFiscale(maxwell, 2011, r));
 
 		// Contribuable avec un for fiscal principal ouvert à Lausanne
 		final Contribuable felicien = addNonHabitant("Félicien", "Bolomey", date(1955, 1, 1), Sexe.MASCULIN);
 		addForPrincipal(felicien, date(1980, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
-		final PeriodeImposition piFelicien = processor.getPeriodeImpositionEnFinDePeriodeFiscale(felicien, 2011);
+		final PeriodeImposition piFelicien = processor.getPeriodeImpositionEnFinDePeriodeFiscale(felicien, 2011, r);
 		assertNotNull(piFelicien);
 		assertEquals(date(2011, 1, 1), piFelicien.getDateDebut());
 		assertEquals(date(2011, 12, 31), piFelicien.getDateFin());
@@ -106,12 +110,12 @@ public class EnvoiAnnexeImmeubleEnMasseProcessorTest extends BusinessTest {
 		// Contribuable avec un for fiscal principal fermé à Lausanne
 		final Contribuable bernard = addNonHabitant("Bernard", "Bidon", date(1955, 1, 1), Sexe.MASCULIN);
 		addForPrincipal(bernard, date(1980, 1, 1), MotifFor.ARRIVEE_HS, date(2011, 8, 20), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
-		assertNull(processor.getPeriodeImpositionEnFinDePeriodeFiscale(bernard, 2011));
+		assertNull(processor.getPeriodeImpositionEnFinDePeriodeFiscale(bernard, 2011, r));
 
 		// Contribuable avec un for fiscal principal fermé à Lausanne
 		final Contribuable lamda = addNonHabitant("Lamda", "Bidon", date(1955, 1, 1), Sexe.MASCULIN);
 		addForPrincipal(lamda, date(1980, 1, 1), MotifFor.ARRIVEE_HS, date(2011, 8, 20), MotifFor.VEUVAGE_DECES, MockCommune.Lausanne);
-		assertNull(processor.getPeriodeImpositionEnFinDePeriodeFiscale(lamda, 2011));
+		assertNull(processor.getPeriodeImpositionEnFinDePeriodeFiscale(lamda, 2011, r));
 	}
 
 	@Test

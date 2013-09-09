@@ -14,12 +14,13 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
+import ch.vd.shared.batchtemplate.Behavior;
+import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
+import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.common.BatchTransactionTemplate;
-import ch.vd.uniregctb.common.BatchTransactionTemplate.BatchCallback;
-import ch.vd.uniregctb.common.BatchTransactionTemplate.Behavior;
+import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.LoggingStatusManager;
-import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
@@ -72,8 +73,10 @@ public class EchoirDIsProcessor {
 
 		status.setMessage("Analyse des déclarations d'impôt...");
 
-		final BatchTransactionTemplate<IdentifiantDeclaration, EchoirDIsResults> template = new BatchTransactionTemplate<>(dis, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, hibernateTemplate);
-		template.execute(rapportFinal, new BatchCallback<IdentifiantDeclaration, EchoirDIsResults>() {
+		final SimpleProgressMonitor progressMonitor = new SimpleProgressMonitor();
+		final BatchTransactionTemplateWithResults<IdentifiantDeclaration, EchoirDIsResults>
+				template = new BatchTransactionTemplateWithResults<>(dis, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE, transactionManager, status);
+		template.execute(rapportFinal, new BatchWithResultsCallback<IdentifiantDeclaration, EchoirDIsResults>() {
 
 			@Override
 			public EchoirDIsResults createSubRapport() {
@@ -82,13 +85,11 @@ public class EchoirDIsProcessor {
 
 			@Override
 			public boolean doInTransaction(List<IdentifiantDeclaration> batch, EchoirDIsResults r) throws Exception {
-
-				status.setMessage(String.format("Déclarations d'impôt analysées : %d/%d", rapportFinal.nbDIsTotal, dis.size()), percent);
-
+				status.setMessage(String.format("Déclarations d'impôt analysées : %d/%d", rapportFinal.nbDIsTotal, dis.size()), progressMonitor.getProgressInPercent());
 				traiterBatch(batch, r, status);
 				return !status.interrupted();
 			}
-		});
+		}, progressMonitor);
 
 		rapportFinal.interrompu = status.interrupted();
 		rapportFinal.end();

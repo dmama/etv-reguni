@@ -39,7 +39,7 @@ import ch.vd.uniregctb.type.MotifRattachement;
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public abstract class ProduireRolesResults extends JobResults<Long, ProduireRolesResults> {
+public abstract class ProduireRolesResults<T extends ProduireRolesResults<T>> extends JobResults<Long, T> {
 	
 	private static final Logger LOGGER = Logger.getLogger(ProduireRolesResults.class);
 
@@ -567,13 +567,13 @@ public abstract class ProduireRolesResults extends JobResults<Long, ProduireRole
 	}
 
 	@Override
-	public void addAll(ProduireRolesResults rapport) {
+	public void addAll(T rapport) {
 		if (rapport != null) {
 			this.ctbsTraites += rapport.ctbsTraites;
 			this.ctbsEnErrors.addAll(rapport.ctbsEnErrors);
 			this.ctbsIgnores.addAll(rapport.ctbsIgnores);
 			
-			for (Map.Entry<Integer, InfoCommune> e: rapport.infosCommunes.entrySet()) {
+			for (Map.Entry<Integer, InfoCommune> e : rapport.infosCommunes.entrySet()) {
 				InfoCommune thisInfo = getOrCreateInfoPourCommune(e.getKey());
 				thisInfo.addAll(e.getValue());
 			}

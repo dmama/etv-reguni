@@ -6,9 +6,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.springframework.transaction.PlatformTransactionManager;
 
+import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.ListesThread;
-import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.tiers.TiersDAO;
 

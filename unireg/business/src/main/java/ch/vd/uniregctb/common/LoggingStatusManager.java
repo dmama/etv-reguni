@@ -3,6 +3,7 @@ package ch.vd.uniregctb.common;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
+import ch.vd.shared.batchtemplate.StatusManager;
 
 /**
  * Status manager qui n'interrompt jamais le processus et ne fait que logger les messages.

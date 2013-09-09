@@ -9,11 +9,13 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
+import ch.vd.shared.batchtemplate.BatchCallback;
+import ch.vd.shared.batchtemplate.Behavior;
+import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
+import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.common.BatchResults;
-import ch.vd.uniregctb.common.BatchTransactionTemplate;
+import ch.vd.uniregctb.common.AuthenticationInterface;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplate;
-import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
@@ -83,14 +85,15 @@ public class DumpAssujettissementsJob extends JobDefinition {
 
 	private void processAll(List<Long> ids, int nbThreads, final FileWriter file, final StatusManager statusManager) {
 
-		final ParallelBatchTransactionTemplate<Long, BatchResults> template =
-				new ParallelBatchTransactionTemplate<>(ids, 100, nbThreads, BatchTransactionTemplate.Behavior.SANS_REPRISE, transactionManager, statusManager, hibernateTemplate);
+		final SimpleProgressMonitor progressMonitor = new SimpleProgressMonitor();
+		final ParallelBatchTransactionTemplate<Long> template =
+				new ParallelBatchTransactionTemplate<>(ids, 100, nbThreads, Behavior.SANS_REPRISE, transactionManager, statusManager, AuthenticationInterface.INSTANCE);
 		template.setReadonly(true);
-		template.execute(new BatchTransactionTemplate.BatchCallback<Long, BatchResults>() {
+		template.execute(new BatchCallback<Long>() {
 			@Override
-			public boolean doInTransaction(List<Long> batch, BatchResults rapport) throws Exception {
+			public boolean doInTransaction(List<Long> batch) throws Exception {
 
-				statusManager.setMessage("Traitement du lot [" + batch.get(0) + "; " + batch.get(batch.size() - 1) + "] ...", percent);
+				statusManager.setMessage("Traitement du lot [" + batch.get(0) + "; " + batch.get(batch.size() - 1) + "] ...", progressMonitor.getProgressInPercent());
 				for (Long id : batch) {
 					String line;
 					try {
@@ -105,7 +108,7 @@ public class DumpAssujettissementsJob extends JobDefinition {
 				}
 				return true;
 			}
-		});
+		}, progressMonitor);
 	}
 
 	private String process(Long id) throws IOException {

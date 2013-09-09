@@ -17,10 +17,10 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.shared.batchtemplate.BatchResults;
+import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.common.BatchResults;
-import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.EditiqueErrorHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
@@ -349,8 +349,8 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 		}
 
 		@Override
-		public BatchTransactionTemplate.Behavior getBatchBehavior() {
-			return BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE;
+		public Behavior getBatchBehavior() {
+			return Behavior.REPRISE_AUTOMATIQUE;
 		}
 
 		@Override

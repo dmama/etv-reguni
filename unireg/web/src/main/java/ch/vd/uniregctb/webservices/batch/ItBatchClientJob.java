@@ -5,7 +5,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamEnum;

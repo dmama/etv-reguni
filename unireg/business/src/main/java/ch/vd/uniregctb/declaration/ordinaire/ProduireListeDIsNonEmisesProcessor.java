@@ -9,13 +9,14 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
+import ch.vd.shared.batchtemplate.Behavior;
+import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
+import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
-import ch.vd.uniregctb.common.BatchTransactionTemplate;
-import ch.vd.uniregctb.common.BatchTransactionTemplate.BatchCallback;
-import ch.vd.uniregctb.common.BatchTransactionTemplate.Behavior;
+import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.LoggingStatusManager;
-import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
@@ -62,8 +63,6 @@ public class ProduireListeDIsNonEmisesProcessor {
 	private DeterminationDIsAEmettreProcessor determinationDIsAEmettreProcessor;
 	private EnvoiDIsEnMasseProcessor envoiDIsEnMasseProcessor;
 
-	private ListeDIsNonEmises rapport;
-
 	public ProduireListeDIsNonEmisesProcessor(HibernateTemplate hibernateTemplate, PeriodeFiscaleDAO periodeDAO,
 	                                          ModeleDocumentDAO modeleDocumentDAO, TacheDAO tacheDAO, TiersService tiersService, DelaisService delaisService,
 	                                          DeclarationImpotService diService, PlatformTransactionManager transactionManager, ParametreAppService parametres,
@@ -100,8 +99,10 @@ public class ProduireListeDIsNonEmisesProcessor {
 		final List<Long> ids = determinationDIsAEmettreProcessor.createListeIdsContribuables(anneePeriode);
 
 		// Traite les contribuables par lots
-		final BatchTransactionTemplate<Long, ListeDIsNonEmises> template = new BatchTransactionTemplate<>(ids, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, hibernateTemplate);
-		template.execute(rapportFinal, new BatchCallback<Long, ListeDIsNonEmises>() {
+		final SimpleProgressMonitor progressMonitor = new SimpleProgressMonitor();
+		final BatchTransactionTemplateWithResults<Long, ListeDIsNonEmises>
+				template = new BatchTransactionTemplateWithResults<>(ids, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE, transactionManager, status);
+		template.execute(rapportFinal, new BatchWithResultsCallback<Long, ListeDIsNonEmises>() {
 
 			@Override
 			public ListeDIsNonEmises createSubRapport() {
@@ -116,21 +117,18 @@ public class ProduireListeDIsNonEmisesProcessor {
 
 			@Override
 			public boolean doInTransaction(List<Long> batch, ListeDIsNonEmises r) throws Exception {
-
-				rapport = r;
-				status.setMessage("Traitement du batch [" + batch.get(0) + "; " + batch.get(batch.size() - 1) + "] ...", percent);
-
-				traiterBatch(batch, anneePeriode, dateTraitement);
+				status.setMessage("Traitement du batch [" + batch.get(0) + "; " + batch.get(batch.size() - 1) + "] ...", progressMonitor.getProgressInPercent());
+				traiterBatch(batch, anneePeriode, dateTraitement, r);
 				return true;
 			}
-		});
+		}, progressMonitor);
 
 		rapportFinal.interrompu = status.interrupted();
 		rapportFinal.end();
 		return rapportFinal;
 	}
 
-	protected void traiterBatch(List<Long> batch, int anneePeriode, RegDate dateTraitement) throws DeclarationException, AssujettissementException {
+	protected void traiterBatch(List<Long> batch, int anneePeriode, RegDate dateTraitement, ListeDIsNonEmises r) throws DeclarationException, AssujettissementException {
 
 		final EnvoiDIsEnMasseProcessor.Cache cache = this.envoiDIsEnMasseProcessor.initCache(anneePeriode, CategorieEnvoiDI.VAUDOIS_COMPLETE);
 
@@ -142,14 +140,14 @@ public class ProduireListeDIsNonEmisesProcessor {
 
 		// Traite tous les contribuables
 		for (Long id : batch) {
-			traiterContribuable(id, periode, dateTraitement, cache);
+			traiterContribuable(id, periode, dateTraitement, cache, r);
 		}
 
 	}
 
-	private void traiterContribuable(Long id, PeriodeFiscale periode, RegDate dateTraitement, EnvoiDIsEnMasseProcessor.Cache cache) throws DeclarationException, AssujettissementException {
+	private void traiterContribuable(Long id, PeriodeFiscale periode, RegDate dateTraitement, EnvoiDIsEnMasseProcessor.Cache cache, ListeDIsNonEmises r) throws DeclarationException, AssujettissementException {
 
-		rapport.nbCtbsTotal++;
+		r.nbCtbsTotal++;
 
 		final Contribuable contribuable = hibernateTemplate.get(Contribuable.class, id);
 		if (validationService.validate(contribuable).hasErrors()) {
@@ -157,17 +155,17 @@ public class ProduireListeDIsNonEmisesProcessor {
 			return;
 		}
 
-		final List<PeriodeImposition> details = determinationDIsAEmettreProcessor.determineDetailsEnvoi(contribuable, periode.getAnnee());
+		final List<PeriodeImposition> details = determinationDIsAEmettreProcessor.determineDetailsEnvoi(contribuable, periode.getAnnee(), null);
 		if (details == null) {
 			return;
 		}
 
 		for (PeriodeImposition d : details) {
-			traiterDetails(d, contribuable, periode, dateTraitement, cache);
+			traiterDetails(d, contribuable, periode, dateTraitement, cache, r);
 		}
 	}
 
-	private void traiterDetails(PeriodeImposition details, Contribuable contribuable, PeriodeFiscale periode, RegDate dateTraitement, EnvoiDIsEnMasseProcessor.Cache cache) throws DeclarationException {
+	private void traiterDetails(PeriodeImposition details, Contribuable contribuable, PeriodeFiscale periode, RegDate dateTraitement, EnvoiDIsEnMasseProcessor.Cache cache, ListeDIsNonEmises r) throws DeclarationException {
 		
 		final RegDate datePeriode = RegDate.get(periode.getAnnee());
 
@@ -178,11 +176,11 @@ public class ProduireListeDIsNonEmisesProcessor {
 			return;
 		}
 
-		TacheEnvoiDeclarationImpot tache = determinationDIsAEmettreProcessor.traiterPeriodeImposition(contribuable, periode, details);
+		TacheEnvoiDeclarationImpot tache = determinationDIsAEmettreProcessor.traiterPeriodeImposition(contribuable, periode, details, null);
 		if (tache == null) {
 			final ExistenceResults<TacheEnvoiDeclarationImpot> res = determinationDIsAEmettreProcessor.checkExistenceTache(contribuable, details);
 			if (res == null) {
-				rapport.addNonEmisePourRaisonInconnue(contribuable.getId(), null, null);
+				r.addNonEmisePourRaisonInconnue(contribuable.getId(), null, null);
 				return;
 			}
 
@@ -190,10 +188,10 @@ public class ProduireListeDIsNonEmisesProcessor {
 			switch (tache.getEtat()) {
 			case EN_COURS:
 				// Reellement ce cas ne devrait pas se produire ...
-				rapport.addEntrainDEtreEmise(contribuable.getId());
+				r.addEntrainDEtreEmise(contribuable.getId());
 				return;
 			case EN_INSTANCE:
-				rapport.addTacheNonTraitee(contribuable.getId());
+				r.addTacheNonTraitee(contribuable.getId());
 				return;
 			case TRAITE:
 				// Cas ou la tache à était traité et la DI non émises, il va falloir simuler !
@@ -206,11 +204,11 @@ public class ProduireListeDIsNonEmisesProcessor {
 		ids.add(contribuable.getId());
 		final DeclarationsCache dcache = envoiDIsEnMasseProcessor.new DeclarationsCache(periode.getAnnee(), ids);
 
-		final boolean tacheTraitee = envoiDIsEnMasseProcessor.traiterTache(tache, dateTraitement, rapport, cache, dcache, true);
+		final boolean tacheTraitee = envoiDIsEnMasseProcessor.traiterTache(tache, dateTraitement, r, cache, dcache, true);
 		if (tacheTraitee) {
 			// Incoherence !
 			LOGGER.info("Impossible de determiner pourquoi la DI n'est pas émise pour " + contribuable.toString());
-			rapport.addNonEmisePourRaisonInconnue(contribuable.getId(), tache.getDateDebut(), tache.getDateFin());
+			r.addNonEmisePourRaisonInconnue(contribuable.getId(), tache.getDateDebut(), tache.getDateFin());
 		}
 		else {
 			LOGGER.info("DI non émise pour " + contribuable.toString());

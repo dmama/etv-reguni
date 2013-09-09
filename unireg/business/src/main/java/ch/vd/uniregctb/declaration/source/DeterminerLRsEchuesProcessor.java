@@ -18,10 +18,13 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
+import ch.vd.shared.batchtemplate.Behavior;
+import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
+import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.common.BatchTransactionTemplate;
+import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.LoggingStatusManager;
-import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationEchue;
@@ -84,12 +87,14 @@ public class DeterminerLRsEchuesProcessor {
 		final List<DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue> list = getListeInfosSurCandidats(periodeFiscale, dateTraitement);
 
 		// passage en revue par groupe transactionnel
-		final BatchTransactionTemplate<DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue, DeterminerLRsEchuesResults> template = new BatchTransactionTemplate<>(list, BATCH_SIZE, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE, transactionManager, s, hibernateTemplate);
-		template.execute(rapportFinal, new BatchTransactionTemplate.BatchCallback<DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue, DeterminerLRsEchuesResults>() {
+		final SimpleProgressMonitor progressMonitor = new SimpleProgressMonitor();
+		final BatchTransactionTemplateWithResults<DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue, DeterminerLRsEchuesResults>
+				template = new BatchTransactionTemplateWithResults<>(list, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE, transactionManager, s);
+		template.execute(rapportFinal, new BatchWithResultsCallback<DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue, DeterminerLRsEchuesResults>() {
 			@Override
 			public boolean doInTransaction(List<DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue> batch, DeterminerLRsEchuesResults rapport) throws Exception {
 
-				s.setMessage(String.format("Débiteurs analysés : %d/%d...", rapportFinal.getNbDebiteursAnalyses(), list.size()), percent);
+				s.setMessage(String.format("Débiteurs analysés : %d/%d...", rapportFinal.getNbDebiteursAnalyses(), list.size()), progressMonitor.getProgressInPercent());
 
 				for (DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue debiteur : batch) {
 					traiteDebiteur(rapport, debiteur, pf, dateTraitement);
@@ -104,7 +109,7 @@ public class DeterminerLRsEchuesProcessor {
 			public DeterminerLRsEchuesResults createSubRapport() {
 				return new DeterminerLRsEchuesResults(periodeFiscale, dateTraitement, tiersService, adresseService);
 			}
-		});
+		}, progressMonitor);
 
 		if (status.interrupted()) {
 			status.setMessage(String.format(

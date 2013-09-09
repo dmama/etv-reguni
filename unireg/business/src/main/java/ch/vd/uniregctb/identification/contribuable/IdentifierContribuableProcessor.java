@@ -15,11 +15,14 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
+import ch.vd.shared.batchtemplate.Behavior;
+import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
+import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.common.BatchTransactionTemplate;
+import ch.vd.uniregctb.common.AuthenticationInterface;
 import ch.vd.uniregctb.common.LoggingStatusManager;
-import ch.vd.uniregctb.common.ParallelBatchTransactionTemplate;
-import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResult;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
@@ -58,10 +61,10 @@ public class IdentifierContribuableProcessor {
 		final List<Long> ids = recupererMessageATraiter(idMessage);
 
 		// Reussi les messages par lots
-		final ParallelBatchTransactionTemplate<Long, IdentifierContribuableResults>
-				template = new ParallelBatchTransactionTemplate<>(ids, BATCH_SIZE, nbThreads, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE,
-				                                                                                     transactionManager, status, hibernateTemplate);
-		template.execute(rapportFinal, new BatchTransactionTemplate.BatchCallback<Long, IdentifierContribuableResults>() {
+		final SimpleProgressMonitor progressMonitor = new SimpleProgressMonitor();
+		final ParallelBatchTransactionTemplateWithResult<Long, IdentifierContribuableResults>
+				template = new ParallelBatchTransactionTemplateWithResult<>(ids, BATCH_SIZE, nbThreads, Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, AuthenticationInterface.INSTANCE);
+		template.execute(rapportFinal, new BatchWithResultsCallback<Long, IdentifierContribuableResults>() {
 
 			@Override
 			public IdentifierContribuableResults createSubRapport() {
@@ -70,7 +73,7 @@ public class IdentifierContribuableProcessor {
 
 			@Override
 			public boolean doInTransaction(List<Long> batch, IdentifierContribuableResults r) throws Exception {
-				status.setMessage("Traitement du batch [" + batch.get(0) + "; " + batch.get(batch.size() - 1) + "] ...", percent);
+				status.setMessage("Traitement du batch [" + batch.get(0) + "; " + batch.get(batch.size() - 1) + "] ...", progressMonitor.getProgressInPercent());
 				traiterBatch(batch, r);
 				return true;
 			}
@@ -81,7 +84,7 @@ public class IdentifierContribuableProcessor {
 					LOGGER.error(e.getMessage(), e);
 				}
 			}
-		});
+		}, progressMonitor);
 
 		final int count = rapportFinal.identifies.size();
 

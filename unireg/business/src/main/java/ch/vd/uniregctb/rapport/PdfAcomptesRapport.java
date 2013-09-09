@@ -9,10 +9,10 @@ import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfWriter;
 
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.acomptes.AcomptesResults;
 import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.ListesResults;
-import ch.vd.uniregctb.common.StatusManager;
 
 /**
  * Rapport PDF contenant les résultats du rapprochement des ctb et des propriétaires fonciers.

@@ -8,8 +8,8 @@ import com.lowagie.text.pdf.PdfWriter;
 
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.ordinaire.EnvoiDIsResults;
 
 /**

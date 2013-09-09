@@ -1,9 +1,9 @@
 package ch.vd.uniregctb.rapport;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.acomptes.AcomptesResults;
 import ch.vd.uniregctb.adresse.ResolutionAdresseResults;
-import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.ListeNoteResults;
 import ch.vd.uniregctb.declaration.ordinaire.DemandeDelaiCollectiveResults;

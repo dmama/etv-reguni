@@ -15,7 +15,7 @@ import ch.vd.uniregctb.tiers.TiersService;
 /**
  * Classe de base des containers de résultats pour les rapports d'exécution des batchs
  */
-public abstract class JobResults<E, R extends JobResults> extends AbstractJobResults<E, R> {
+public abstract class JobResults<E, R extends JobResults<E, R>> extends AbstractJobResults<E, R> {
 
 	public static final String EXCEPTION_DESCRIPTION = "Une exception est apparue pendant le traitement du tiers, veuillez en informer le chef de projet Unireg";
 

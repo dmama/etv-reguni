@@ -13,12 +13,12 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
+import ch.vd.shared.batchtemplate.Behavior;
+import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.common.BatchTransactionTemplate;
-import ch.vd.uniregctb.common.BatchTransactionTemplate.BatchCallback;
-import ch.vd.uniregctb.common.BatchTransactionTemplate.Behavior;
+import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.LoggingStatusManager;
-import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.IdentifiantDeclaration;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
@@ -74,9 +74,8 @@ private final Logger LOGGER = Logger.getLogger(EnvoiLRsEnMasseProcessor.class);
 		// liste de toutes les LR à passer en revue
 		final List<IdentifiantDeclaration> list = getListIdLRs(dateFinPeriode, dateTraitement, categorie);
 
-		final BatchTransactionTemplate<IdentifiantDeclaration, EnvoiSommationLRsResults> template = new BatchTransactionTemplate<>(list, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE,
-				transactionManager, s, hibernateTemplate);
-		template.execute(rapportFinal, new BatchCallback<IdentifiantDeclaration, EnvoiSommationLRsResults>() {
+		final BatchTransactionTemplateWithResults<IdentifiantDeclaration, EnvoiSommationLRsResults> template = new BatchTransactionTemplateWithResults<>(list, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE, transactionManager, s);
+		template.execute(rapportFinal, new BatchWithResultsCallback<IdentifiantDeclaration, EnvoiSommationLRsResults>() {
 
 			@Override
 			public EnvoiSommationLRsResults createSubRapport() {
@@ -95,7 +94,7 @@ private final Logger LOGGER = Logger.getLogger(EnvoiLRsEnMasseProcessor.class);
 				s.setMessage(String.format("%d sur %d listes récapitulatives traitées (%d LR sommées)",
 						rapportFinal.nbLRsTotal, list.size(), rapportFinal.lrSommees.size()), percent);
 			}
-		});
+		}, null);
 
 		if (status.interrupted()) {
 			status.setMessage("L'envoi des sommations de listes récapitulatives a été interrompu."

@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.listes.afc;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.shared.batchtemplate.StatusManager;
 
 /**
  * Interface du service utilisé par l'extraction des listes des données de référence RPT

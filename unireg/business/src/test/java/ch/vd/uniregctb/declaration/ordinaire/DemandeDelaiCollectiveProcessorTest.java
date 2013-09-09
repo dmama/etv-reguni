@@ -63,8 +63,7 @@ public class DemandeDelaiCollectiveProcessorTest extends BusinessTest {
 		{
 			// TEST : un tiers sans déclaration pour 2009.
 			final DemandeDelaiCollectiveResults rapport = new DemandeDelaiCollectiveResults(2009, dateDelai, ids, dateTraitement, tiersService, adresseService);
-			processor.setRapport(rapport);
-			processor.accorderDelaiDeclaration(mrKong, 2009, newDelaiDeclaration(dateDelai));
+			processor.accorderDelaiDeclaration(mrKong, 2009, newDelaiDeclaration(dateDelai), rapport);
 			assertEquals(0, rapport.traites.size());
 			assertEquals(0, rapport.ignores.size());
 			assertEquals(1, rapport.errors.size());
@@ -91,8 +90,7 @@ public class DemandeDelaiCollectiveProcessorTest extends BusinessTest {
 			// - une fois le délai accordé, le délai est au au 01.09.2010
 
 			final DemandeDelaiCollectiveResults rapport = new DemandeDelaiCollectiveResults(2009, dateDelai, ids, dateTraitement, tiersService, adresseService);
-			processor.setRapport(rapport);
-			processor.accorderDelaiDeclaration(mrKong, 2009, newDelaiDeclaration(dateDelai));
+			processor.accorderDelaiDeclaration(mrKong, 2009, newDelaiDeclaration(dateDelai), rapport);
 			assertEquals(1, rapport.traites.size());
 			assertEquals(0, rapport.ignores.size());
 			assertEquals(0, rapport.errors.size());
@@ -106,8 +104,7 @@ public class DemandeDelaiCollectiveProcessorTest extends BusinessTest {
 			// - le délai est toujours au 01.09.2010
 
 			final DemandeDelaiCollectiveResults rapport = new DemandeDelaiCollectiveResults(2009, dateDelai, ids, dateTraitement, tiersService, adresseService);
-			processor.setRapport(rapport);
-			processor.accorderDelaiDeclaration(mrKong, 2009, newDelaiDeclaration(date(2010, 8, 31)));
+			processor.accorderDelaiDeclaration(mrKong, 2009, newDelaiDeclaration(date(2010, 8, 31)), rapport);
 			assertEquals(0, rapport.traites.size());
 			assertEquals(1, rapport.ignores.size());
 			assertEquals(0, rapport.errors.size());
@@ -121,8 +118,7 @@ public class DemandeDelaiCollectiveProcessorTest extends BusinessTest {
 			// - le délai ne doit pas etre ajouté
 			// - le délai est toujours au 01.09.2010
 			final DemandeDelaiCollectiveResults rapport = new DemandeDelaiCollectiveResults(2009, dateDelai, ids, dateTraitement, tiersService, adresseService);
-			processor.setRapport(rapport);
-			processor.accorderDelaiDeclaration(mrKong, 2009, newDelaiDeclaration(dateDelai));
+			processor.accorderDelaiDeclaration(mrKong, 2009, newDelaiDeclaration(dateDelai), rapport);
 			assertEquals(0, rapport.traites.size());
 			assertEquals(1, rapport.ignores.size());
 			assertEquals(0, rapport.errors.size());
@@ -136,8 +132,7 @@ public class DemandeDelaiCollectiveProcessorTest extends BusinessTest {
 			// - le délai doit etre ajouté
 			// - le délai est maintenant au 02.09.2010
 			final DemandeDelaiCollectiveResults rapport = new DemandeDelaiCollectiveResults(2009, dateDelai, ids, dateTraitement, tiersService, adresseService);
-			processor.setRapport(rapport);
-			processor.accorderDelaiDeclaration(mrKong, 2009, newDelaiDeclaration(date(2010, 9, 2)));
+			processor.accorderDelaiDeclaration(mrKong, 2009, newDelaiDeclaration(date(2010, 9, 2)), rapport);
 			assertEquals(1, rapport.traites.size());
 			assertEquals(0, rapport.ignores.size());
 			assertEquals(0, rapport.errors.size());
@@ -154,8 +149,7 @@ public class DemandeDelaiCollectiveProcessorTest extends BusinessTest {
 			etatSomme.setDateObtention(date(2010,7,18));
 			d.addEtat(etatSomme);
 			final DemandeDelaiCollectiveResults rapport = new DemandeDelaiCollectiveResults(2009, dateDelai, ids, dateTraitement, tiersService, adresseService);
-			processor.setRapport(rapport);
-			processor.accorderDelaiDeclaration(mrKong, 2009, newDelaiDeclaration(date(2010, 12, 4)));
+			processor.accorderDelaiDeclaration(mrKong, 2009, newDelaiDeclaration(date(2010, 12, 4)), rapport);
 			assertEquals(0, rapport.traites.size());
 			assertEquals(0, rapport.ignores.size());
 			assertEquals(1, rapport.errors.size());
@@ -170,8 +164,7 @@ public class DemandeDelaiCollectiveProcessorTest extends BusinessTest {
 			etatEchu.setDateObtention(date(2010,8,17));
 			d.addEtat(etatEchu);
 			final DemandeDelaiCollectiveResults rapport = new DemandeDelaiCollectiveResults(2009, dateDelai, ids, dateTraitement, tiersService, adresseService);
-			processor.setRapport(rapport);
-			processor.accorderDelaiDeclaration(mrKong, 2009, newDelaiDeclaration(date(2010, 12, 4)));
+			processor.accorderDelaiDeclaration(mrKong, 2009, newDelaiDeclaration(date(2010, 12, 4)), rapport);
 			assertEquals(0, rapport.traites.size());
 			assertEquals(0, rapport.ignores.size());
 			assertEquals(1, rapport.errors.size());
@@ -191,8 +184,7 @@ public class DemandeDelaiCollectiveProcessorTest extends BusinessTest {
 
 
 			final DemandeDelaiCollectiveResults rapport = new DemandeDelaiCollectiveResults(2009, dateDelai, ids, dateTraitement, tiersService, adresseService);
-			processor.setRapport(rapport);
-			processor.accorderDelaiDeclaration(mrKong, 2009, newDelaiDeclaration(date(2010, 12, 4)));
+			processor.accorderDelaiDeclaration(mrKong, 2009, newDelaiDeclaration(date(2010, 12, 4)), rapport);
 			assertEquals(0, rapport.traites.size());
 			assertEquals(0, rapport.ignores.size());
 			assertEquals(1, rapport.errors.size());

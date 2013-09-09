@@ -7,7 +7,7 @@ import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfWriter;
 
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.oid.SuppressionOIDResults;
 
 public class PdfSuppressionOIDRapport extends PdfRapport {

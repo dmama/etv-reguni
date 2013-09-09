@@ -55,7 +55,7 @@ public class ReinitialiserBaremeDoubleGainProcessorTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testTraiterSituationIdNull() {
 		try {
-			processor.traiterSituation(null, date(2000, 1, 1));
+			processor.traiterSituation(null, date(2000, 1, 1), new ReinitialiserBaremeDoubleGainResults(RegDate.get(), tiersService, adresseService));
 			fail();
 		}
 		catch (IllegalArgumentException e) {
@@ -67,7 +67,7 @@ public class ReinitialiserBaremeDoubleGainProcessorTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testTraiterSituationInexistante() {
 		try {
-			processor.traiterSituation(12345L, date(2000, 1, 1));
+			processor.traiterSituation(12345L, date(2000, 1, 1), new ReinitialiserBaremeDoubleGainResults(RegDate.get(), tiersService, adresseService));
 			fail();
 		}
 		catch (IllegalArgumentException e) {
@@ -93,9 +93,7 @@ public class ReinitialiserBaremeDoubleGainProcessorTest extends BusinessTest {
 		});
 
 		final ReinitialiserBaremeDoubleGainResults rapport = new ReinitialiserBaremeDoubleGainResults(dateTraitement, tiersService, adresseService);
-
-		processor.setRapport(rapport);
-		processor.traiterSituation(id, dateTraitement);
+		processor.traiterSituation(id, dateTraitement, rapport);
 
 		// la situation ne doit pas avoir été traitée
 		assertEquals(1, rapport.nbSituationsTotal);
@@ -141,9 +139,7 @@ public class ReinitialiserBaremeDoubleGainProcessorTest extends BusinessTest {
 		});
 
 		final ReinitialiserBaremeDoubleGainResults rapport = new ReinitialiserBaremeDoubleGainResults(dateTraitement, tiersService, adresseService);
-
-		processor.setRapport(rapport);
-		processor.traiterSituation(ids.situation, dateTraitement);
+		processor.traiterSituation(ids.situation, dateTraitement, rapport);
 
 		// la situation doit avoir été traitée
 		assertEquals(1, rapport.nbSituationsTotal);

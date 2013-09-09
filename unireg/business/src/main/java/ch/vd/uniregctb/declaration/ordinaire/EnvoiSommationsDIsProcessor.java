@@ -16,12 +16,12 @@ import org.springframework.transaction.support.TransactionCallback;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
+import ch.vd.shared.batchtemplate.Behavior;
+import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.common.BatchTransactionTemplate;
-import ch.vd.uniregctb.common.BatchTransactionTemplate.BatchCallback;
-import ch.vd.uniregctb.common.BatchTransactionTemplate.Behavior;
+import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.LoggingStatusManager;
-import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
@@ -121,10 +121,9 @@ public class EnvoiSommationsDIsProcessor  {
 
 		final List<IdentifiantDeclaration> dis = retrieveListIdDIs(dateTraitement);
 
-		final BatchTransactionTemplate<IdentifiantDeclaration, EnvoiSommationsDIsResults> t = new BatchTransactionTemplate<>(dis, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, hibernateTemplate);
-		t.execute(rapportFinal, new BatchCallback<IdentifiantDeclaration, EnvoiSommationsDIsResults>() {
-
-			int currentBatch = 0;
+		final BatchTransactionTemplateWithResults<IdentifiantDeclaration, EnvoiSommationsDIsResults>
+				t = new BatchTransactionTemplateWithResults<>(dis, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE, transactionManager, status);
+		t.execute(rapportFinal, new BatchWithResultsCallback<IdentifiantDeclaration, EnvoiSommationsDIsResults>() {
 
 			@Override
 			public EnvoiSommationsDIsResults createSubRapport() {
@@ -133,17 +132,12 @@ public class EnvoiSommationsDIsProcessor  {
 
 			@Override
 			public boolean doInTransaction(List<IdentifiantDeclaration> batch, EnvoiSommationsDIsResults r) {
-				currentBatch++;
-				List<Long> numerosDis = getListNumerosDis(batch);
-				try {
-					final Set<DeclarationImpotOrdinaire> declarations = declarationImpotOrdinaireDAO.getDIsForSommation(numerosDis);
-					final Iterator<DeclarationImpotOrdinaire> iter = declarations.iterator();
-					while (iter.hasNext() && ! status.interrupted() && (nombreMax == 0 || (rapportFinal.getTotalDisSommees()  + r.getTotalDisSommees()) < nombreMax)) {
-						final DeclarationImpotOrdinaire di = iter.next();
-						traiterDI(di, r, dateTraitement, miseSousPliImpossible);
-					}
-				} finally {
-					LOGGER.debug("Batch no " + currentBatch + " terminé");
+				final List<Long> numerosDis = getListNumerosDis(batch);
+				final Set<DeclarationImpotOrdinaire> declarations = declarationImpotOrdinaireDAO.getDIsForSommation(numerosDis);
+				final Iterator<DeclarationImpotOrdinaire> iter = declarations.iterator();
+				while (iter.hasNext() && ! status.interrupted() && (nombreMax == 0 || (rapportFinal.getTotalDisSommees()  + r.getTotalDisSommees()) < nombreMax)) {
+					final DeclarationImpotOrdinaire di = iter.next();
+					traiterDI(di, r, dateTraitement, miseSousPliImpossible);
 				}
 				return  (nombreMax == 0 || (rapportFinal.getTotalDisSommees()  + r.getTotalDisSommees() ) < nombreMax) && !status.interrupted();
 			}
@@ -156,7 +150,7 @@ public class EnvoiSommationsDIsProcessor  {
 						"%d sur %d déclarations d'impôt analysées : %d sommée(s), %d en erreur",
 						rapportFinal.getTotalDisTraitees(), nombreTotal, rapportFinal.getTotalDisSommees(), rapportFinal.getTotalSommationsEnErreur()), percent);
 			}
-		});
+		}, null);
 
 		final String msg = String.format(
 				"Envoi des sommations pour les DI au %s (traitement terminé; %d sommées, %d en erreur))",

@@ -15,15 +15,15 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
+import ch.vd.shared.batchtemplate.Behavior;
+import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
 import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.common.BatchTransactionTemplate;
-import ch.vd.uniregctb.common.BatchTransactionTemplate.BatchCallback;
-import ch.vd.uniregctb.common.BatchTransactionTemplate.Behavior;
+import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.LoggingStatusManager;
-import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.ordinaire.StatistiquesCtbs.TypeContribuable;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
@@ -82,9 +82,10 @@ public class ProduireStatsCtbsProcessor {
 		status.setMessage(String.format("Début de la production des statistiques des contribuables assujettis : période fiscale = %d.", anneePeriode));
 
 		final List<Long> listeComplete = chargerIdentifiantsContribuables(anneePeriode);
-		final BatchTransactionTemplate<Long, StatistiquesCtbs> template = new BatchTransactionTemplate<>(listeComplete, BATCH_SIZE, Behavior.SANS_REPRISE, transactionManager, status, hibernateTemplate);
+		final BatchTransactionTemplateWithResults<Long, StatistiquesCtbs>
+				template = new BatchTransactionTemplateWithResults<>(listeComplete, BATCH_SIZE, Behavior.SANS_REPRISE, transactionManager, status);
 		template.setReadonly(true);
-		template.execute(rapportFinal, new BatchCallback<Long, StatistiquesCtbs>() {
+		template.execute(rapportFinal, new BatchWithResultsCallback<Long, StatistiquesCtbs>() {
 
 			@Override
 			public StatistiquesCtbs createSubRapport() {
@@ -96,7 +97,7 @@ public class ProduireStatsCtbsProcessor {
 				traiteBatch(batch, rapport, status, listeComplete.size(), rapportFinal.nbCtbsTotal);
 				return true;
 			}
-		});
+		}, null);
 
 		rapportFinal.end();
 		return rapportFinal;

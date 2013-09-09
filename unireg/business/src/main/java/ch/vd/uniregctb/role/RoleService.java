@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.role;
 
-import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.shared.batchtemplate.StatusManager;
 
 /**
  * Service de production des rôles pour les communes vaudoises.

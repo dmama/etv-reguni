@@ -18,13 +18,14 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.shared.batchtemplate.BatchTransactionTemplateWithResults;
+import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
+import ch.vd.shared.batchtemplate.Behavior;
+import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
+import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.common.BatchTransactionTemplate;
-import ch.vd.uniregctb.common.BatchTransactionTemplate.BatchCallback;
-import ch.vd.uniregctb.common.BatchTransactionTemplate.Behavior;
 import ch.vd.uniregctb.common.LoggingStatusManager;
-import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.document.CorrectionEtatDeclarationRapport;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
@@ -126,10 +127,9 @@ public class CorrectionEtatDeclarationJob extends JobDefinition {
 	private CorrectionEtatDeclarationResults traiteDeclarations(final StatusManager status, List<Long> ids) {
 
 		final CorrectionEtatDeclarationResults rapportFinal = new CorrectionEtatDeclarationResults(tiersService, adresseService);
-
-		final BatchTransactionTemplate<Long, CorrectionEtatDeclarationResults> t =
-				new BatchTransactionTemplate<>(ids, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, hibernateTemplate);
-		t.execute(rapportFinal, new BatchCallback<Long, CorrectionEtatDeclarationResults>() {
+		final SimpleProgressMonitor progressMonitor = new SimpleProgressMonitor();
+		final BatchTransactionTemplateWithResults<Long, CorrectionEtatDeclarationResults> t = new BatchTransactionTemplateWithResults<>(ids, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE, transactionManager, status);
+		t.execute(rapportFinal, new BatchWithResultsCallback<Long, CorrectionEtatDeclarationResults>() {
 			@Override
 			public CorrectionEtatDeclarationResults createSubRapport() {
 				return new CorrectionEtatDeclarationResults(tiersService, adresseService);
@@ -137,11 +137,11 @@ public class CorrectionEtatDeclarationJob extends JobDefinition {
 
 			@Override
 			public boolean doInTransaction(List<Long> batch, CorrectionEtatDeclarationResults rapport) throws Exception {
-				status.setMessage("Traitement du batch [" + batch.get(0) + "; " + batch.get(batch.size() - 1) + "] ...", percent);
+				status.setMessage("Traitement du batch [" + batch.get(0) + "; " + batch.get(batch.size() - 1) + "] ...", progressMonitor.getProgressInPercent());
 				traiterBatch(batch, rapport);
 				return true;
 			}
-		});
+		}, progressMonitor);
 
 		final int count = rapportFinal.doublons.size();
 		if (status.interrupted()) {

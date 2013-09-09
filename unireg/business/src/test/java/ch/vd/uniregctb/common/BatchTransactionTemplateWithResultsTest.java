@@ -13,8 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.BatchTransactionTemplate.BatchCallback;
-import ch.vd.uniregctb.common.BatchTransactionTemplate.Behavior;
+import ch.vd.shared.batchtemplate.BatchResults;
+import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
+import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
@@ -30,13 +31,24 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-public class BatchTransactionTemplateTest extends BusinessTest {
+public class BatchTransactionTemplateWithResultsTest extends BusinessTest {
+
+	private static class TestJobResults implements BatchResults<Long, TestJobResults> {
+		@Override
+		public void addErrorException(Long element, Exception e) {
+		}
+
+		@Override
+		public void addAll(TestJobResults right) {
+		}
+	}
 
 	@Test
 	public void testEmptyList() {
 		List<Long> list = Collections.emptyList();
-		BatchTransactionTemplate<Long, JobResults> template = new BatchTransactionTemplate<>(list, 100, Behavior.SANS_REPRISE, transactionManager, null, hibernateTemplate);
-		template.execute(new BatchCallback<Long, JobResults>() {
+		final TestJobResults rapportFinal = new TestJobResults();
+		BatchTransactionTemplateWithResults<Long, TestJobResults> template = new BatchTransactionTemplateWithResults<>(list, 100, Behavior.SANS_REPRISE, transactionManager, null);
+		template.execute(rapportFinal, new BatchWithResultsCallback<Long, TestJobResults>() {
 
 			@Override
 			public void beforeTransaction() {
@@ -44,7 +56,7 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 			}
 
 			@Override
-			public boolean doInTransaction(List<Long> batch, JobResults rapport) throws Exception {
+			public boolean doInTransaction(List<Long> batch, TestJobResults rapport) throws Exception {
 				fail();
 				return true;
 			}
@@ -58,7 +70,12 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 			public void afterTransactionRollback(Exception e, boolean willRetry) {
 				fail();
 			}
-		});
+
+			@Override
+			public TestJobResults createSubRapport() {
+				return new TestJobResults();
+			}
+		}, null);
 	}
 
 	private static String buildNameForPP(List<Long> batchPP) {
@@ -85,11 +102,12 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 
 		assertTiersCountHorsTransaction(0);
 
-		BatchTransactionTemplate<Long, JobResults> template = new BatchTransactionTemplate<>(list, 2, Behavior.SANS_REPRISE, transactionManager, null, hibernateTemplate);
-		template.execute(new BatchCallback<Long, JobResults>() {
+		final TestJobResults rapportFinal = new TestJobResults();
+		BatchTransactionTemplateWithResults<Long, TestJobResults> template = new BatchTransactionTemplateWithResults<>(list, 2, Behavior.SANS_REPRISE, transactionManager, null);
+		template.execute(rapportFinal, new BatchWithResultsCallback<Long, TestJobResults>() {
 
 			@Override
-			public boolean doInTransaction(List<Long> batch, JobResults rapport) throws Exception {
+			public boolean doInTransaction(List<Long> batch, TestJobResults rapport) throws Exception {
 				assertTrue(batch.size() == 1 || batch.size() == 2);
 				addNonHabitant("Test", buildNameForPP(batch), RegDate.get(), Sexe.MASCULIN);
 				return true;
@@ -99,7 +117,12 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 			public void afterTransactionRollback(Exception e, boolean willRetry) {
 				fail("La transaction ne doit pas sauter");
 			}
-		});
+
+			@Override
+			public TestJobResults createSubRapport() {
+				return new TestJobResults();
+			}
+		}, null);
 
 		doInTransaction(new TransactionCallback<Object>() {
 			@Override
@@ -138,11 +161,12 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 
 		assertTiersCountHorsTransaction(0);
 
-		BatchTransactionTemplate<Long, JobResults> template = new BatchTransactionTemplate<>(list, 2, Behavior.SANS_REPRISE, transactionManager, null, hibernateTemplate);
-		template.execute(new BatchCallback<Long, JobResults>() {
+		final TestJobResults rapportFinal = new TestJobResults();
+		BatchTransactionTemplateWithResults<Long, TestJobResults> template = new BatchTransactionTemplateWithResults<>(list, 2, Behavior.SANS_REPRISE, transactionManager, null);
+		template.execute(rapportFinal, new BatchWithResultsCallback<Long, TestJobResults>() {
 
 			@Override
-			public boolean doInTransaction(List<Long> batch, JobResults rapport) throws Exception {
+			public boolean doInTransaction(List<Long> batch, TestJobResults rapport) throws Exception {
 				assertTrue(batch.size() == 1 || batch.size() == 2);
 
 				if (batch.get(0).equals(2L)) {
@@ -157,7 +181,12 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 			public void afterTransactionRollback(Exception e, boolean willRetry) {
 				assertFalse(willRetry);
 			}
-		});
+
+			@Override
+			public TestJobResults createSubRapport() {
+				return new TestJobResults();
+			}
+		}, null);
 
 		doInTransaction(new TransactionCallback<Object>() {
 			@Override
@@ -194,12 +223,12 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 
 		assertTiersCountHorsTransaction(0);
 
-		BatchTransactionTemplate<Long, JobResults> template = new BatchTransactionTemplate<>(list, 2, Behavior.REPRISE_AUTOMATIQUE,
-				transactionManager, null, hibernateTemplate);
-		template.execute(new BatchCallback<Long, JobResults>() {
+		final TestJobResults rapportFinal = new TestJobResults();
+		final BatchTransactionTemplateWithResults<Long, TestJobResults> template = new BatchTransactionTemplateWithResults<>(list, 2, Behavior.REPRISE_AUTOMATIQUE, transactionManager, null);
+		template.execute(rapportFinal, new BatchWithResultsCallback<Long, TestJobResults>() {
 
 			@Override
-			public boolean doInTransaction(List<Long> batch, JobResults rapport) throws Exception {
+			public boolean doInTransaction(List<Long> batch, TestJobResults rapport) throws Exception {
 				assertTrue(batch.size() == 1 || batch.size() == 2);
 				addNonHabitant("Test", buildNameForPP(batch), RegDate.get(), Sexe.MASCULIN);
 				return true;
@@ -209,7 +238,12 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 			public void afterTransactionRollback(Exception e, boolean willRetry) {
 				fail("La transaction ne doit pas sauter");
 			}
-		});
+
+			@Override
+			public TestJobResults createSubRapport() {
+				return new TestJobResults();
+			}
+		}, null);
 
 		doInTransaction(new TransactionCallback<Object>() {
 			@Override
@@ -248,14 +282,14 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 
 		assertTiersCountHorsTransaction(0);
 
-		BatchTransactionTemplate<Long, JobResults> template = new BatchTransactionTemplate<>(list, 2, Behavior.REPRISE_AUTOMATIQUE,
-				transactionManager, null, hibernateTemplate);
-		template.execute(new BatchCallback<Long, JobResults>() {
+		final TestJobResults rapportFinal = new TestJobResults();
+		BatchTransactionTemplateWithResults<Long, TestJobResults> template = new BatchTransactionTemplateWithResults<>(list, 2, Behavior.REPRISE_AUTOMATIQUE, transactionManager, null);
+		template.execute(rapportFinal, new BatchWithResultsCallback<Long, TestJobResults>() {
 
 			boolean dejaRepris = false;
 
 			@Override
-			public boolean doInTransaction(List<Long> batch, JobResults rapport) throws Exception {
+			public boolean doInTransaction(List<Long> batch, TestJobResults rapport) throws Exception {
 				assertTrue(batch.size() == 1 || batch.size() == 2);
 
 				if (batch.get(0).equals(2L)) {
@@ -276,7 +310,12 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 					dejaRepris = true;
 				}
 			}
-		});
+
+			@Override
+			public TestJobResults createSubRapport() {
+				return new TestJobResults();
+			}
+		}, null);
 
 		doInTransaction(new TransactionCallback<Object>() {
 			@Override
@@ -319,12 +358,12 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 
 		assertTiersCountHorsTransaction(0);
 
-		BatchTransactionTemplate<Long, JobResults> template = new BatchTransactionTemplate<>(list, 2, Behavior.SANS_REPRISE,
-				transactionManager, null, hibernateTemplate);
-		template.execute(new BatchCallback<Long, JobResults>() {
+		final TestJobResults rapportFinal = new TestJobResults();
+		BatchTransactionTemplateWithResults<Long, TestJobResults> template = new BatchTransactionTemplateWithResults<>(list, 2, Behavior.SANS_REPRISE, transactionManager, null);
+		template.execute(rapportFinal, new BatchWithResultsCallback<Long, TestJobResults>() {
 
 			@Override
-			public boolean doInTransaction(List<Long> batch, JobResults rapport) throws Exception {
+			public boolean doInTransaction(List<Long> batch, TestJobResults rapport) throws Exception {
 
 				for (Long id : batch) {
 					DebiteurPrestationImposable dpi = new DebiteurPrestationImposable();
@@ -360,7 +399,12 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 
 				return true;
 			}
-		});
+
+			@Override
+			public TestJobResults createSubRapport() {
+				return new TestJobResults();
+			}
+		}, null);
 
 		doInTransaction(new TransactionCallback<Object>() {
 			@Override
@@ -403,9 +447,8 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 		}
 
 		final Rapport rapportFinal = new Rapport();
-
-		BatchTransactionTemplate<Long, Rapport> template = new BatchTransactionTemplate<>(list, 10, Behavior.REPRISE_AUTOMATIQUE, transactionManager, null, hibernateTemplate);
-		template.execute(rapportFinal, new BatchCallback<Long, Rapport>() {
+		final BatchTransactionTemplateWithResults<Long, Rapport> template = new BatchTransactionTemplateWithResults<>(list, 10, Behavior.REPRISE_AUTOMATIQUE, transactionManager, null);
+		template.execute(rapportFinal, new BatchWithResultsCallback<Long, Rapport>() {
 
 			@Override
 			public Rapport createSubRapport() {
@@ -419,7 +462,7 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 				}
 				return true;
 			}
-		});
+		}, null);
 
 		assertEquals(count, rapportFinal.traites.size());
 		assertEmpty(rapportFinal.erreurs);
@@ -440,9 +483,8 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 		}
 
 		final Rapport rapportFinal = new Rapport();
-
-		BatchTransactionTemplate<Long, Rapport> template = new BatchTransactionTemplate<>(list, 10, Behavior.REPRISE_AUTOMATIQUE, transactionManager, null, hibernateTemplate);
-		template.execute(rapportFinal, new BatchCallback<Long, Rapport>() {
+		final BatchTransactionTemplateWithResults<Long, Rapport> template = new BatchTransactionTemplateWithResults<>(list, 10, Behavior.REPRISE_AUTOMATIQUE, transactionManager, null);
+		template.execute(rapportFinal, new BatchWithResultsCallback<Long, Rapport>() {
 
 			@Override
 			public Rapport createSubRapport() {
@@ -461,7 +503,7 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 
 				return true;
 			}
-		});
+		}, null);
 
 		assertEquals(count -2 , rapportFinal.traites.size());
 		assertEquals(2 , rapportFinal.erreurs.size());

@@ -2,7 +2,7 @@ package ch.vd.uniregctb.evenement.civil.engine.ech;
 
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.shared.batchtemplate.StatusManager;
 
 /**
  * Interface du service utilisé par le batch de relance des événements civils eCH

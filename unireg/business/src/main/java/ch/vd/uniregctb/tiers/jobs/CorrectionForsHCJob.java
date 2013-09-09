@@ -15,14 +15,12 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.shared.batchtemplate.BatchCallback;
+import ch.vd.shared.batchtemplate.Behavior;
+import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
+import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
-import ch.vd.uniregctb.common.BatchTransactionTemplate.BatchCallback;
-import ch.vd.uniregctb.common.BatchTransactionTemplate.Behavior;
-import ch.vd.uniregctb.common.JobResults;
-import ch.vd.uniregctb.common.LoggingStatusManager;
-import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.metier.MetierService;
@@ -69,31 +67,40 @@ public class CorrectionForsHCJob extends JobDefinition {
 		this.tiersService = tiersService;
 	}
 
+	private static final class CorrectionMonitor extends SimpleProgressMonitor {
+		private int analyses = 0;
+		private int rouverts = 0;
+		private int erreurs = 0;
+	}
+
 	@Override
 	protected void doExecute(Map<String, Object> params) throws Exception {
 		
-		final StatusManager statusManager;
-		if (getStatusManager() == null) {
-			statusManager = new LoggingStatusManager(LOGGER);
-		}
-		else {
-			statusManager = getStatusManager();
-		}
-		
+		final StatusManager statusManager = getStatusManager();
 		Audit.success("Demarrage du traitement de correction de fors HC.");
 			
 		final List<Long> ids = retrieveIdFors();
-		
-		final BatchTransactionTemplate<Long, JobResults> t = new BatchTransactionTemplate<>(ids, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE, transactionManager, statusManager, hibernateTemplate);
-		t.execute(null, createProcessor(ids, statusManager));
-		Audit.success("Traitement de correction de fors HC terminé.");
-	}
+		final CorrectionMonitor monitor = new CorrectionMonitor();
+		final BatchTransactionTemplate<Long> t = new BatchTransactionTemplate<>(ids, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE, transactionManager, statusManager);
+		t.execute(new BatchCallback<Long>() {
+			@Override
+			public boolean doInTransaction(List<Long> batch) throws Exception {
+				return doBatch(batch, monitor);
+			}
 
-	private BatchCallback<Long, JobResults> createProcessor(List<Long> ids, StatusManager statusManager) {
-		final CorrectionForsProcessor processor = new CorrectionForsProcessor();
-		processor.setForIds(ids);
-		processor.setStatusManager(statusManager);
-		return processor;
+			@Override
+			public void afterTransactionCommit() {
+				super.afterTransactionCommit();
+
+				final String message = String.format("%d sur %d des for hors canton analysés (%d%%) : %d rouverts, %d en erreur",
+				                                     monitor.analyses, ids.size(), monitor.getProgressInPercent(), monitor.rouverts, monitor.erreurs);
+				getStatusManager().setMessage(message);
+				Audit.info(message);
+			}
+
+		}, monitor);
+
+		Audit.success("Traitement de correction de fors HC terminé.");
 	}
 
 	@SuppressWarnings("unchecked")
@@ -104,9 +111,8 @@ public class CorrectionForsHCJob extends JobDefinition {
 			+ " and ffp.dateFin is null and ffp.annulationDate is null"
 			+ " and ffp.tiers.class=MenageCommun";
 		
-		final List ids = hibernateTemplate.find(queryStr, null, null);
-		return ids;
-		
+		return hibernateTemplate.find(queryStr, null, null);
+
 	}
 
 	@SuppressWarnings("unchecked")
@@ -116,7 +122,7 @@ public class CorrectionForsHCJob extends JobDefinition {
 
 			@Override
 			public List<ForFiscalPrincipal> doInHibernate(Session session) throws HibernateException, SQLException {
-				Criteria criteria = session.createCriteria(ForFiscalPrincipal.class);
+				final Criteria criteria = session.createCriteria(ForFiscalPrincipal.class);
 				criteria.add(Restrictions.in("id", ids));
 				criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 
@@ -136,126 +142,73 @@ public class CorrectionForsHCJob extends JobDefinition {
 	}
 
 	public boolean isForVaudois(ForFiscalPrincipal ffp) {
-		if (ffp == null) {
-			return false;
-		}
-		if (TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD == ffp.getTypeAutoriteFiscale()) {
-			return true;
-		}
-		return false;
+		return ffp != null && TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD == ffp.getTypeAutoriteFiscale();
 	}
-	
-	class CorrectionForsProcessor extends BatchCallback<Long, JobResults> {
-		
-		private final int currentBatch = 0;
-		private int analyses = 0;
-		private int rouverts = 0;
-		private int erreurs = 0;
-		
-		private StatusManager statusManager;
-		private List<Long> forIds;
-		
-		@Override
-		public boolean doInTransaction(List<Long> batch, JobResults rapport) throws Exception {
-			
-			AuthenticationHelper.pushPrincipal('[' + NAME + ' ' + AuthenticationHelper.getCurrentPrincipal() + ']');
-			try {
-				
-				final Set<ForFiscalPrincipal> fors = getFors(batch);
-				for (ForFiscalPrincipal ffp : fors) {
-					Audit.info(String.format("Analyse du for %d", ffp.getId()));
-					
-					MenageCommun menage = (MenageCommun) ffp.getTiers();
-					final RegDate dateDebutFor = ffp.getDateDebut();
-					final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(menage, dateDebutFor);
-					
-					final PersonnePhysique principal = couple.getPrincipal();
-					final PersonnePhysique conjoint = couple.getConjoint();
-					
-					if (conjoint == null) {
-						Audit.info("Marié seul détecté -> à vérifier manuellement");
+
+	private boolean doBatch(List<Long> ids, CorrectionMonitor monitor) {
+		try {
+			final Set<ForFiscalPrincipal> fors = getFors(ids);
+			for (ForFiscalPrincipal ffp : fors) {
+				Audit.info(String.format("Analyse du for %d", ffp.getId()));
+
+				MenageCommun menage = (MenageCommun) ffp.getTiers();
+				final RegDate dateDebutFor = ffp.getDateDebut();
+				final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(menage, dateDebutFor);
+
+				final PersonnePhysique principal = couple.getPrincipal();
+				final PersonnePhysique conjoint = couple.getConjoint();
+
+				if (conjoint == null) {
+					Audit.info("Marié seul détecté -> à vérifier manuellement");
+				}
+				else {
+					final RegDate veuilleDebutFor = dateDebutFor.getOneDayBefore();
+					final ForFiscalPrincipal ffpPrincipal = principal.getForFiscalPrincipalAt(veuilleDebutFor);
+					final ForFiscalPrincipal ffpConjoint = conjoint.getForFiscalPrincipalAt(veuilleDebutFor);
+
+					if (ffpPrincipal == null || ffpConjoint == null) {
+						Audit.info("Aucun ou seulement un des deux membres possédait un for -> à vérifier manuellement");
 					}
-					else {
-						final RegDate veuilleDebutFor = dateDebutFor.getOneDayBefore();
-						final ForFiscalPrincipal ffpPrincipal = principal.getForFiscalPrincipalAt(veuilleDebutFor);
-						final ForFiscalPrincipal ffpConjoint;
-						if (conjoint != null) {
-							ffpConjoint = conjoint.getForFiscalPrincipalAt(veuilleDebutFor);
+					else
+					{
+						final boolean isForDuPrincipalVaudois = isForVaudois(ffpPrincipal);
+						final boolean isForDuConjointVaudois = isForVaudois(ffpConjoint);
+
+						if (!isForDuPrincipalVaudois && isForDuConjointVaudois) {
+							Audit.info(String.format("Rattachement du for à la commune # %d", ffpConjoint.getNumeroOfsAutoriteFiscale()));
+							ForFiscalPrincipal nouveauFor = (ForFiscalPrincipal) ffp.duplicate();
+							// annuler le for car il est pas rattaché à la bonne commune
+							tiersService.annuleForFiscal(ffp);
+							// ouvrir une nouveau for rattaché à la bonne commune
+							nouveauFor.setTypeAutoriteFiscale(ffpConjoint.getTypeAutoriteFiscale());
+							nouveauFor.setNumeroOfsAutoriteFiscale(ffpConjoint.getNumeroOfsAutoriteFiscale());
+
+							menage.addForFiscal(nouveauFor);
+							menage = hibernateTemplate.merge(menage);
+
+							++ monitor.rouverts;
 						}
 						else {
-							ffpConjoint = null;
-						}
-						
-						if (ffpPrincipal == null || ffpConjoint == null) {
-							Audit.info("Aucun ou seulement un des deux membres possédait un for -> à vérifier manuellement");
-						}
-						else
-						{
-							final boolean isForDuPrincipalVaudois = isForVaudois(ffpPrincipal);
-							final boolean isForDuConjointVaudois = isForVaudois(ffpConjoint);
-							
-							if (!isForDuPrincipalVaudois && isForDuConjointVaudois) {
-								Audit.info(String.format("Rattachement du for à la commune # %d", ffpConjoint.getNumeroOfsAutoriteFiscale()));
-								ForFiscalPrincipal nouveauFor = (ForFiscalPrincipal) ffp.duplicate();
-								// annuler le for car il est pas rattaché à la bonne commune
-								tiersService.annuleForFiscal(ffp);
-								// ouvrir une nouveau for rattaché à la bonne commune
-								nouveauFor.setTypeAutoriteFiscale(ffpConjoint.getTypeAutoriteFiscale());
-								nouveauFor.setNumeroOfsAutoriteFiscale(ffpConjoint.getNumeroOfsAutoriteFiscale());
-								
-								menage.addForFiscal(nouveauFor);
-								menage = hibernateTemplate.merge(menage);
-								rouverts++;
-							}
-							else {
-								Audit.info("Les deux fors sont vaudois -> à vérifier manuellement");
-							}
+							Audit.info("Les deux fors sont vaudois -> à vérifier manuellement");
 						}
 					}
-					analyses++;
-					Audit.info(String.format("Analyse du for %d terminé", ffp.getId()));
 				}
-			}
-			catch (RuntimeException e) {
-				erreurs++;
-				LOGGER.error(e.getMessage(), e);
-				throw e;
-			}
-			catch (Exception e) {
-				erreurs++;
-				LOGGER.error(e.getMessage(), e);
-				throw new RuntimeException(e);
-			}
-			finally {
-				AuthenticationHelper.popPrincipal();
-				LOGGER.debug("Batch # " + currentBatch + " terminé");
-			}
-			return !statusManager.interrupted();
-		}
-		
-		@Override
-		public void afterTransactionCommit() {
-			int percent = (100 * analyses) / forIds.size();
-			final String message = String.format("%d sur %d des for hors canton analysés (%d%%) : %d rouverts, %d en erreur", analyses, forIds.size(), percent, rouverts, erreurs);
-			statusManager.setMessage(message);
-			Audit.info(message);
-		}
 
-		public StatusManager getStatusManager() {
-			return statusManager;
-		}
+				++ monitor.analyses;
+				Audit.info(String.format("Analyse du for %d terminé", ffp.getId()));
+			}
 
-		public void setStatusManager(StatusManager statusManager) {
-			this.statusManager = statusManager;
+			return !getStatusManager().interrupted();
 		}
-
-		public List<Long> getForIds() {
-			return forIds;
+		catch (RuntimeException e) {
+			++ monitor.erreurs;
+			LOGGER.error(e.getMessage(), e);
+			throw e;
 		}
-
-		public void setForIds(List<Long> forIds) {
-			this.forIds = forIds;
+		catch (Exception e) {
+			++ monitor.erreurs;
+			LOGGER.error(e.getMessage(), e);
+			throw new RuntimeException(e);
 		}
-		
 	}
 }

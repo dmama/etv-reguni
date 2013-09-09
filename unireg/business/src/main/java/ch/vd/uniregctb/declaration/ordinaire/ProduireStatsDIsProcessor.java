@@ -14,14 +14,15 @@ import org.springframework.transaction.support.TransactionCallback;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
+import ch.vd.shared.batchtemplate.Behavior;
+import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
+import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
 import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.common.BatchTransactionTemplate;
-import ch.vd.uniregctb.common.BatchTransactionTemplate.BatchCallback;
-import ch.vd.uniregctb.common.BatchTransactionTemplate.Behavior;
+import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.LoggingStatusManager;
-import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
@@ -79,8 +80,10 @@ public class ProduireStatsDIsProcessor {
 		status.setMessage(String.format("Début de la production des statistiques des déclaration d'impôts ordinaires : période fiscale = %d.", anneePeriode));
 
 		final List<Long> listeComplete = chargerIdentifiantsDeclarations(anneePeriode);
-		final BatchTransactionTemplate<Long, StatistiquesDIs> template = new BatchTransactionTemplate<>(listeComplete, BATCH_SIZE, Behavior.SANS_REPRISE, transactionManager, status, hibernateTemplate);
-		template.execute(rapportFinal, new BatchCallback<Long, StatistiquesDIs>() {
+		final SimpleProgressMonitor progressMonitor = new SimpleProgressMonitor();
+		final BatchTransactionTemplateWithResults<Long, StatistiquesDIs>
+				template = new BatchTransactionTemplateWithResults<>(listeComplete, BATCH_SIZE, Behavior.SANS_REPRISE, transactionManager, status);
+		template.execute(rapportFinal, new BatchWithResultsCallback<Long, StatistiquesDIs>() {
 
 			@Override
 			public StatistiquesDIs createSubRapport() {
@@ -97,7 +100,7 @@ public class ProduireStatsDIsProcessor {
 
 					++ rapportFinal.nbDIsTotal;
 					if (rapportFinal.nbDIsTotal % 100 == 0) {
-						status.setMessage(String.format("Traitement de la DI n°%d (%d/%d)", id, rapportFinal.nbDIsTotal, listeComplete.size()), percent);
+						status.setMessage(String.format("Traitement de la DI n°%d (%d/%d)", id, rapportFinal.nbDIsTotal, listeComplete.size()), progressMonitor.getProgressInPercent());
 					}
 
 					final DeclarationImpotOrdinaire di = diDAO.get(id);
@@ -116,7 +119,7 @@ public class ProduireStatsDIsProcessor {
 				}
 				return true;
 			}
-		});
+		}, progressMonitor);
 
 		rapportFinal.end();
 		return rapportFinal;

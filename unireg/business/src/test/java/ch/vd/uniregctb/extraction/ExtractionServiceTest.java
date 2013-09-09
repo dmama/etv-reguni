@@ -17,8 +17,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.uniregctb.common.BatchResults;
-import ch.vd.uniregctb.common.BatchTransactionTemplate;
+import ch.vd.shared.batchtemplate.BatchResults;
+import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.inbox.InboxAttachment;
 import ch.vd.uniregctb.inbox.InboxElement;
@@ -127,8 +127,8 @@ public class ExtractionServiceTest extends BusinessTest {
 			}
 
 			@Override
-			public BatchTransactionTemplate.Behavior getBatchBehavior() {
-				return BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE;
+			public Behavior getBatchBehavior() {
+				return Behavior.REPRISE_AUTOMATIQUE;
 			}
 
 			@Override
@@ -240,8 +240,8 @@ public class ExtractionServiceTest extends BusinessTest {
 			}
 
 			@Override
-			public BatchTransactionTemplate.Behavior getBatchBehavior() {
-				return BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE;
+			public Behavior getBatchBehavior() {
+				return Behavior.REPRISE_AUTOMATIQUE;
 			}
 
 			@Override

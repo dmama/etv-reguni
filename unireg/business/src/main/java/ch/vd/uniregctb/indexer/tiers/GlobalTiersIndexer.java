@@ -4,7 +4,7 @@ import java.util.Collection;
 
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.indexer.IndexerException;
 
 /**
@@ -68,8 +68,7 @@ public interface GlobalTiersIndexer {
 	 * @throws ch.vd.uniregctb.indexer.IndexerException
 	 *          si l'indexation n'a pas pu être faite.
 	 */
-	public int indexAllDatabase(@Nullable StatusManager statusManager, int nbThreads, Mode mode, boolean prefetchPMs) throws
-			IndexerException;
+	public int indexAllDatabase(@Nullable StatusManager statusManager, int nbThreads, Mode mode, boolean prefetchPMs) throws IndexerException;
 
 	/**
 	 * Flag qui indique si l'indexation doit se faire a la volée ou si elle sera faite a posteriori.

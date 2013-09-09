@@ -27,6 +27,9 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
+import ch.vd.shared.batchtemplate.Behavior;
+import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
@@ -34,11 +37,10 @@ import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
 import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.common.BatchTransactionTemplate;
+import ch.vd.uniregctb.common.AuthenticationInterface;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.LoggingStatusManager;
-import ch.vd.uniregctb.common.ParallelBatchTransactionTemplate;
-import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResult;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
@@ -175,7 +177,7 @@ public class ProduireRolesProcessor {
 	 * @param variante variante de construction des résultats
 	 * @return un rapport (technique) sur les rôles demandés
 	 */
-	private <T extends ProduireRolesResults> T doRun(final int anneePeriode, final int nbThreads, @Nullable String statusMessagePrefix,
+	private <T extends ProduireRolesResults<T>> T doRun(final int anneePeriode, final int nbThreads, @Nullable String statusMessagePrefix,
 	                                                 final StatusManager status, final ProgressCalculator progressCalculator, final VarianteProductionRole<T> variante) {
 
 		final RegDate today = RegDate.get();
@@ -198,9 +200,10 @@ public class ProduireRolesProcessor {
 		status.setMessage(msgRechercheContribuables, progressCalculator.getProgressPercentage(0, 0));
 
 		final List<Long> list = variante.getIdsContribuablesConcernes(anneePeriode);
-		final ParallelBatchTransactionTemplate<Long, T> template = new ParallelBatchTransactionTemplate<>(list, BATCH_SIZE, nbThreads, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, hibernateTemplate);
+		final ParallelBatchTransactionTemplateWithResult<Long, T>
+				template = new ParallelBatchTransactionTemplateWithResult<>(list, BATCH_SIZE, nbThreads, Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, AuthenticationInterface.INSTANCE);
 		template.setReadonly(true);
-		template.execute(rapportFinal, new BatchTransactionTemplate.BatchCallback<Long, T>() {
+		template.execute(rapportFinal, new BatchWithResultsCallback<Long, T>() {
 
 			@Override
 			public boolean doInTransaction(List<Long> batch, T rapport) throws Exception {
@@ -249,7 +252,7 @@ public class ProduireRolesProcessor {
 			public T createSubRapport() {
 				return variante.creerRapport(anneePeriode, nbThreads, today, false);
 			}
-		});
+		}, null);
 
 		rapportFinal.interrompu = status.interrupted();
 		rapportFinal.end();

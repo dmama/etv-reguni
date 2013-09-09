@@ -20,11 +20,14 @@ import org.springframework.transaction.support.TransactionCallback;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
+import ch.vd.shared.batchtemplate.Behavior;
+import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
+import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.common.BatchTransactionTemplate;
+import ch.vd.uniregctb.common.AuthenticationInterface;
 import ch.vd.uniregctb.common.LoggingStatusManager;
-import ch.vd.uniregctb.common.ParallelBatchTransactionTemplate;
-import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResult;
 import ch.vd.uniregctb.declaration.ListeNoteResults;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
@@ -47,7 +50,6 @@ public class ListeNoteProcessor {
 	private final TiersService tiersService;
 	private final AdresseService adresseService;
 	private final ServiceInfrastructureService infraService;
-	private final ThreadLocal<ListeNoteResults> rapport = new ThreadLocal<ListeNoteResults>();
 	private Map<Long, List<ForFiscalSecondaire>> mapInfo;
 
 	public ListeNoteProcessor(HibernateTemplate hibernateTemplate, PlatformTransactionManager transactionManager, TiersService tiersService, AdresseService adresseService,
@@ -70,10 +72,10 @@ public class ListeNoteProcessor {
 		final List<Long> ids = new ArrayList<Long>(mapInfo.keySet());
 
 		// Reussi les messages par lots
-		final ParallelBatchTransactionTemplate<Long, ListeNoteResults>
-				template = new ParallelBatchTransactionTemplate<Long, ListeNoteResults>(ids, BATCH_SIZE, nbThreads, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE,
-																						transactionManager, status, hibernateTemplate);
-		template.execute(rapportFinal, new BatchTransactionTemplate.BatchCallback<Long, ListeNoteResults>() {
+		final SimpleProgressMonitor progressMonitor = new SimpleProgressMonitor();
+		final ParallelBatchTransactionTemplateWithResult<Long, ListeNoteResults>
+				template = new ParallelBatchTransactionTemplateWithResult<>(ids, BATCH_SIZE, nbThreads, Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, AuthenticationInterface.INSTANCE);
+		template.execute(rapportFinal, new BatchWithResultsCallback<Long, ListeNoteResults>() {
 
 			@Override
 			public ListeNoteResults createSubRapport() {
@@ -82,14 +84,11 @@ public class ListeNoteProcessor {
 
 			@Override
 			public boolean doInTransaction(List<Long> batch, ListeNoteResults r) throws Exception {
-
-				rapport.set(r);
-				status.setMessage("Traitement du batch [" + batch.get(0) + "; " + batch.get(batch.size() - 1) + "] ...", percent);
-
-				traiterBatch(batch, annee);
+				status.setMessage("Traitement du batch [" + batch.get(0) + "; " + batch.get(batch.size() - 1) + "] ...", progressMonitor.getProgressInPercent());
+				traiterBatch(batch, annee, r);
 				return true;
 			}
-		});
+		}, progressMonitor);
 
 		final int count = rapportFinal.listeContribuableAvecNote.size();
 
@@ -110,7 +109,7 @@ public class ListeNoteProcessor {
 	}
 
 
-	private void traiterBatch(final List<Long> batch, final int annee) throws Exception {
+	private void traiterBatch(final List<Long> batch, final int annee, ListeNoteResults r) throws Exception {
 
 		// On charge tous les contribuables en vrac
 		final List<Contribuable> list = hibernateTemplate.execute(new HibernateCallback<List<Contribuable>>() {
@@ -125,24 +124,19 @@ public class ListeNoteProcessor {
 		});
 
 		for (Contribuable contribuable : list) {
-			rapport.get().nbContribuable++;
-			List<ForFiscalSecondaire> forsSecondaires = mapInfo.get(contribuable.getNumero());
+			r.nbContribuable++;
+			final List<ForFiscalSecondaire> forsSecondaires = mapInfo.get(contribuable.getNumero());
 			Collections.sort(forsSecondaires, new DateRangeComparator<ForFiscalSecondaire>());
 			for (ForFiscalSecondaire forsSecondaire : forsSecondaires) {
 				if (!isForSecondaireRecouvert(contribuable, forsSecondaire)) {
-					RegDate dateFinSecondaire = forsSecondaire.getDateFin();
+					final RegDate dateFinSecondaire = forsSecondaire.getDateFin();
 					if (tiersService.isHorsCanton(contribuable, dateFinSecondaire)) {
-						rapport.get().addContribuableAvecNote(new ListeNoteResults.InfoContribuableAvecNote(
-								contribuable, dateFinSecondaire, adresseService, tiersService, infraService));
+						r.addContribuableAvecNote(new ListeNoteResults.InfoContribuableAvecNote(contribuable, dateFinSecondaire, adresseService, tiersService, infraService));
 					}
 
 				}
 			}
-
-
 		}
-
-
 	}
 
 

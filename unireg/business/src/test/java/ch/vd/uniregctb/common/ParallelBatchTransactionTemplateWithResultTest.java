@@ -6,15 +6,19 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.TreeSet;
 
-import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
+import ch.vd.shared.batchtemplate.BatchResults;
+import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
+import ch.vd.shared.batchtemplate.Behavior;
+import ch.vd.shared.batchtemplate.ProgressMonitor;
+import ch.vd.shared.batchtemplate.StatusManager;
+
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -23,15 +27,25 @@ import static org.junit.Assert.fail;
 /**
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class ParallelBatchTransactionTemplateTest extends BusinessTest {
+public class ParallelBatchTransactionTemplateWithResultTest extends BusinessTest {
 
+	private static class TestJobResults implements BatchResults<Long, TestJobResults> {
+		@Override
+		public void addErrorException(Long element, Exception e) {
+		}
+
+		@Override
+		public void addAll(TestJobResults right) {
+		}
+	}
 
 	@Test
 	public void testEmptyList() {
 		List<Long> list = Collections.emptyList();
-		ParallelBatchTransactionTemplate<Long, JobResults> template =
-				new ParallelBatchTransactionTemplate<>(list, 100, 2, BatchTransactionTemplate.Behavior.SANS_REPRISE, transactionManager, null, hibernateTemplate);
-		final boolean completed = template.execute(new BatchTransactionTemplate.BatchCallback<Long, JobResults>() {
+		final TestJobResults rapportFinal = new TestJobResults();
+		ParallelBatchTransactionTemplateWithResult<Long, TestJobResults> template =
+				new ParallelBatchTransactionTemplateWithResult<>(list, 100, 2, Behavior.SANS_REPRISE, transactionManager, null, AuthenticationInterface.INSTANCE);
+		final boolean completed = template.execute(rapportFinal, new BatchWithResultsCallback<Long, TestJobResults>() {
 
 			@Override
 			public void beforeTransaction() {
@@ -39,7 +53,7 @@ public class ParallelBatchTransactionTemplateTest extends BusinessTest {
 			}
 
 			@Override
-			public boolean doInTransaction(List<Long> batch, JobResults rapport) throws Exception {
+			public boolean doInTransaction(List<Long> batch, TestJobResults rapport) throws Exception {
 				fail();
 				return true;
 			}
@@ -53,7 +67,12 @@ public class ParallelBatchTransactionTemplateTest extends BusinessTest {
 			public void afterTransactionRollback(Exception e, boolean willRetry) {
 				fail();
 			}
-		});
+
+			@Override
+			public TestJobResults createSubRapport() {
+				return new TestJobResults();
+			}
+		}, null);
 
 		assertTrue(completed);
 	}
@@ -65,18 +84,24 @@ public class ParallelBatchTransactionTemplateTest extends BusinessTest {
 		final Set<Long> processed = new HashSet<>(1000);
 
 		// processe 1000 longs par lots de 10 en 5 threads différents
-		ParallelBatchTransactionTemplate<Long, JobResults> template =
-				new ParallelBatchTransactionTemplate<>(list, 10, 5, BatchTransactionTemplate.Behavior.SANS_REPRISE, transactionManager, null, hibernateTemplate);
-		final boolean completed = template.execute(new BatchTransactionTemplate.BatchCallback<Long, JobResults>() {
+		final TestJobResults rapportFinal = new TestJobResults();
+		final ParallelBatchTransactionTemplateWithResult<Long, TestJobResults> template =
+				new ParallelBatchTransactionTemplateWithResult<>(list, 10, 5, Behavior.SANS_REPRISE, transactionManager, null, AuthenticationInterface.INSTANCE);
+		final boolean completed = template.execute(rapportFinal, new BatchWithResultsCallback<Long, TestJobResults>() {
 
 			@Override
-			public boolean doInTransaction(List<Long> batch, JobResults rapport) throws Exception {
+			public boolean doInTransaction(List<Long> batch, TestJobResults rapport) throws Exception {
 				synchronized (processed) {
 					processed.addAll(batch);
 				}
 				return true;
 			}
-		});
+
+			@Override
+			public TestJobResults createSubRapport() {
+				return new TestJobResults();
+			}
+		}, null);
 
 		// on s'assure que tous les ids ont été processés
 		assertTrue(completed);
@@ -91,12 +116,13 @@ public class ParallelBatchTransactionTemplateTest extends BusinessTest {
 
 		final List<Long> list = generateList(1000);
 
-		final ParallelBatchTransactionTemplate<Long, JobResults> template =
-				new ParallelBatchTransactionTemplate<>(list, 100, 2, BatchTransactionTemplate.Behavior.SANS_REPRISE, transactionManager, null, hibernateTemplate);
-		template.execute(new BatchTransactionTemplate.BatchCallback<Long, JobResults>() {
+		final TestJobResults rapportFinal = new TestJobResults();
+		final ParallelBatchTransactionTemplateWithResult<Long, TestJobResults> template =
+				new ParallelBatchTransactionTemplateWithResult<>(list, 100, 2, Behavior.SANS_REPRISE, transactionManager, null, AuthenticationInterface.INSTANCE);
+		template.execute(rapportFinal, new BatchWithResultsCallback<Long, TestJobResults>() {
 
 			@Override
-			public boolean doInTransaction(List<Long> batch, JobResults rapport) throws Exception {
+			public boolean doInTransaction(List<Long> batch, TestJobResults rapport) throws Exception {
 				return true;
 			}
 
@@ -104,7 +130,12 @@ public class ParallelBatchTransactionTemplateTest extends BusinessTest {
 			public void afterTransactionCommit() {
 				throw new RuntimeException("forced halt");
 			}
-		});
+
+			@Override
+			public TestJobResults createSubRapport() {
+				return new TestJobResults();
+			}
+		}, null);
 	}
 
 	/**
@@ -132,17 +163,23 @@ public class ParallelBatchTransactionTemplateTest extends BusinessTest {
 		};
 
 		final Set<Long> processed = new HashSet<>();
-		ParallelBatchTransactionTemplate<Long, JobResults> template =
-				new ParallelBatchTransactionTemplate<>(list, 100, 2, BatchTransactionTemplate.Behavior.SANS_REPRISE, transactionManager, status, hibernateTemplate);
-		final boolean completed = template.execute(new BatchTransactionTemplate.BatchCallback<Long, JobResults>() {
+		final TestJobResults rapportFinal = new TestJobResults();
+		final ParallelBatchTransactionTemplateWithResult<Long, TestJobResults> template =
+				new ParallelBatchTransactionTemplateWithResult<>(list, 100, 2, Behavior.SANS_REPRISE, transactionManager, status, AuthenticationInterface.INSTANCE);
+		final boolean completed = template.execute(rapportFinal, new BatchWithResultsCallback<Long, TestJobResults>() {
 
 			@Override
-			public boolean doInTransaction(List<Long> batch, JobResults rapport) throws Exception {
+			public boolean doInTransaction(List<Long> batch, TestJobResults rapport) throws Exception {
 				processed.addAll(batch);
 				interrupted.setValue(true); // interrompt le traitement
 				return true;
 			}
-		});
+
+			@Override
+			public TestJobResults createSubRapport() {
+				return new TestJobResults();
+			}
+		}, null);
 
 		assertFalse(completed);
 		assertTrue(!processed.isEmpty()); // le traitement a bien commencé
@@ -157,17 +194,23 @@ public class ParallelBatchTransactionTemplateTest extends BusinessTest {
 
 		final List<Long> list = generateList(1000);
 
+		final TestJobResults rapportFinal = new TestJobResults();
 		final Set<Long> processed = new HashSet<>();
-		ParallelBatchTransactionTemplate<Long, JobResults> template =
-				new ParallelBatchTransactionTemplate<>(list, 100, 2, BatchTransactionTemplate.Behavior.SANS_REPRISE, transactionManager, null, hibernateTemplate);
-		final boolean completed = template.execute(new BatchTransactionTemplate.BatchCallback<Long, JobResults>() {
+		ParallelBatchTransactionTemplateWithResult<Long, TestJobResults> template =
+				new ParallelBatchTransactionTemplateWithResult<>(list, 100, 2, Behavior.SANS_REPRISE, transactionManager, null, AuthenticationInterface.INSTANCE);
+		final boolean completed = template.execute(rapportFinal, new BatchWithResultsCallback<Long, TestJobResults>() {
 
 			@Override
-			public boolean doInTransaction(List<Long> batch, JobResults rapport) throws Exception {
+			public boolean doInTransaction(List<Long> batch, TestJobResults rapport) throws Exception {
 				processed.addAll(batch);
 				return false; // interrompt le traitement
 			}
-		});
+
+			@Override
+			public TestJobResults createSubRapport() {
+				return new TestJobResults();
+			}
+		}, null);
 
 		assertFalse(completed);
 		assertTrue(!processed.isEmpty()); // le traitement a bien commencé
@@ -198,10 +241,9 @@ public class ParallelBatchTransactionTemplateTest extends BusinessTest {
 		}
 
 		final Rapport rapportFinal = new Rapport();
-
-		ParallelBatchTransactionTemplate<Long, Rapport> template =
-				new ParallelBatchTransactionTemplate<>(list, 10, nbThreads, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE, transactionManager, null, hibernateTemplate);
-		template.execute(rapportFinal, new BatchTransactionTemplate.BatchCallback<Long, Rapport>() {
+		final ParallelBatchTransactionTemplateWithResult<Long, Rapport> template =
+				new ParallelBatchTransactionTemplateWithResult<>(list, 10, nbThreads, Behavior.REPRISE_AUTOMATIQUE, transactionManager, null, AuthenticationInterface.INSTANCE);
+		template.execute(rapportFinal, new BatchWithResultsCallback<Long, Rapport>() {
 
 			@Override
 			public Rapport createSubRapport() {
@@ -215,7 +257,7 @@ public class ParallelBatchTransactionTemplateTest extends BusinessTest {
 				}
 				return true;
 			}
-		});
+		}, null);
 
 		assertEquals(count, rapportFinal.traites.size());
 		assertEmpty(rapportFinal.erreurs);
@@ -237,10 +279,9 @@ public class ParallelBatchTransactionTemplateTest extends BusinessTest {
 		}
 
 		final Rapport rapportFinal = new Rapport();
-
-		ParallelBatchTransactionTemplate<Long, Rapport> template =
-				new ParallelBatchTransactionTemplate<>(list, 10, nbThreads, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE, transactionManager, null, hibernateTemplate);
-		template.execute(rapportFinal, new BatchTransactionTemplate.BatchCallback<Long, Rapport>() {
+		final ParallelBatchTransactionTemplateWithResult<Long, Rapport> template =
+				new ParallelBatchTransactionTemplateWithResult<>(list, 10, nbThreads, Behavior.REPRISE_AUTOMATIQUE, transactionManager, null, AuthenticationInterface.INSTANCE);
+		template.execute(rapportFinal, new BatchWithResultsCallback<Long, Rapport>() {
 
 			@Override
 			public Rapport createSubRapport() {
@@ -259,7 +300,7 @@ public class ParallelBatchTransactionTemplateTest extends BusinessTest {
 
 				return true;
 			}
-		});
+		}, null);
 
 		assertEquals(count - 2, rapportFinal.traites.size());
 		assertEquals(2, rapportFinal.erreurs.size());
@@ -291,22 +332,16 @@ public class ParallelBatchTransactionTemplateTest extends BusinessTest {
 	@Test
 	public void testProgressMonitoring() throws Exception {
 
-		final BatchTransactionTemplate.BatchCallback<Integer, BatchResults> callback = new BatchTransactionTemplate.BatchCallback<Integer, BatchResults>() {
+		final BatchWithResultsCallback<Long, TestJobResults> callback = new BatchWithResultsCallback<Long, TestJobResults>() {
 			@Override
-			public boolean doInTransaction(List<Integer> batch, BatchResults rapport) throws Exception {
+			public boolean doInTransaction(List<Long> batch, TestJobResults rapport) throws Exception {
 				Thread.sleep(10);
 				return true;
 			}
-		};
 
-		final Set<Integer> collector = new TreeSet<>(Arrays.asList(0, 100));
-		final Mutable<Boolean> started = new MutableBoolean(false);
-		final TimerTask samplingTask = new TimerTask() {
 			@Override
-			public void run() {
-				final int percent = callback.percent;
-				collector.add(percent);
-				started.setValue(true);
+			public TestJobResults createSubRapport() {
+				return new TestJobResults();
 			}
 		};
 
@@ -315,30 +350,29 @@ public class ParallelBatchTransactionTemplateTest extends BusinessTest {
 		final int BATCH_SIZE = 2;
 		final int NB_THREADS = 5;
 
-		final Timer timer = new Timer();
-		timer.schedule(samplingTask, 1, 1);     // chaque milliseconde...
-		try {
-			while (!started.getValue()) {
-				Thread.sleep(15);
-			}
-
-			final List<Integer> data = new ArrayList<>(TOTAL);
-			for (int i = 0 ; i < TOTAL ; ++ i) {
-				data.add(i);
-			}
-
-			final ParallelBatchTransactionTemplate<Integer, BatchResults> template = new ParallelBatchTransactionTemplate<>(data, BATCH_SIZE, NB_THREADS, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE, transactionManager, null, hibernateTemplate);
-			template.execute(callback);
-		}
-		finally {
-			timer.cancel();
+		final Set<Integer> collector = Collections.synchronizedSet(new TreeSet<>(Arrays.asList(0, 100)));
+		final List<Long> data = new ArrayList<>(TOTAL);
+		for (long i = 0 ; i < TOTAL ; ++ i) {
+			data.add(i);
 		}
 
-		// compte tenu de la méthode de mesure, on compte sur 50% de remplissable comme seuil accepté
+		final ProgressMonitor pm = new ProgressMonitor() {
+			@Override
+			public void setProgressInPercent(int percent) {
+				collector.add(percent);
+			}
+		};
+
+		final TestJobResults rapportFinal = new TestJobResults();
+		final ParallelBatchTransactionTemplateWithResult<Long, TestJobResults>
+				template = new ParallelBatchTransactionTemplateWithResult<>(data, BATCH_SIZE, NB_THREADS, Behavior.REPRISE_AUTOMATIQUE, transactionManager, null, AuthenticationInterface.INSTANCE);
+		template.execute(rapportFinal, callback, pm);
+
 		final int expectedSetSize = TOTAL / BATCH_SIZE + 1;
-		assertTrue(expectedSetSize > 10);
-		if (collector.size() > expectedSetSize || collector.size() < expectedSetSize * 5 / 10) {
-			fail("Expected size of " + expectedSetSize + ", got " + collector.size() + " (" + Arrays.toString(collector.toArray(new Integer[collector.size()])) + ")");
+		final Integer[] expectedSetContent = new Integer[expectedSetSize];
+		for (int i = 0 ; i < expectedSetSize ; ++ i) {
+			expectedSetContent[i] = 2*i;
 		}
+		assertArrayEquals(expectedSetContent, collector.toArray(new Integer[collector.size()]));
 	}
 }

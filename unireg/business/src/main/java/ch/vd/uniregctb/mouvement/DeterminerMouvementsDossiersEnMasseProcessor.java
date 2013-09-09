@@ -17,11 +17,14 @@ import org.springframework.transaction.support.TransactionCallback;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
+import ch.vd.shared.batchtemplate.Behavior;
+import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
+import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.common.BatchTransactionTemplate;
+import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.LoggingStatusManager;
-import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
@@ -97,8 +100,10 @@ public class DeterminerMouvementsDossiersEnMasseProcessor {
 		// différentes périodes utiles (il ne sert à rien de les calculer des milliers de fois...)
 		final RangesUtiles rangesUtiles = new RangesUtiles(dateTraitement);
 
-		final BatchTransactionTemplate<Long, DeterminerMouvementsDossiersEnMasseResults> template = new BatchTransactionTemplate<>(ctbs, BATCH_SIZE, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, hibernateTemplate);
-		template.execute(rapportFinal, new BatchTransactionTemplate.BatchCallback<Long, DeterminerMouvementsDossiersEnMasseResults>() {
+		final SimpleProgressMonitor progressMonitor = new SimpleProgressMonitor();
+		final BatchTransactionTemplateWithResults<Long, DeterminerMouvementsDossiersEnMasseResults>
+				template = new BatchTransactionTemplateWithResults<>(ctbs, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE, transactionManager, status);
+		template.execute(rapportFinal, new BatchWithResultsCallback<Long, DeterminerMouvementsDossiersEnMasseResults>() {
 
 			@Override
 			public DeterminerMouvementsDossiersEnMasseResults createSubRapport() {
@@ -112,7 +117,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessor {
 													FormatNumeroHelper.numeroCTBToDisplay(batch.get(0)),
 													FormatNumeroHelper.numeroCTBToDisplay(batch.get(batch.size() - 1)),
 													rapportFinal.mouvements.size(), rapportFinal.erreurs.size());
-				status.setMessage(message, percent);
+				status.setMessage(message, progressMonitor.getProgressInPercent());
 
 				// cache des collectivités administratives (il y a 20 OID, et nous travaillons par
 				// groupes de BATCH_SIZE contribuables, autant essayer de cacher les appels à la base)
@@ -140,7 +145,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessor {
 
 				return !status.interrupted();
 			}
-		});
+		}, progressMonitor);
 
 		rapportFinal.setInterrompu(status.interrupted());
 		rapportFinal.end();

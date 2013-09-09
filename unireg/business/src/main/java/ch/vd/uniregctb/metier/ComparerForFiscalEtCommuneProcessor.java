@@ -14,14 +14,17 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
+import ch.vd.shared.batchtemplate.Behavior;
+import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
+import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
-import ch.vd.uniregctb.common.BatchTransactionTemplate;
+import ch.vd.uniregctb.common.AuthenticationInterface;
 import ch.vd.uniregctb.common.LoggingStatusManager;
-import ch.vd.uniregctb.common.ParallelBatchTransactionTemplate;
-import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResult;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -42,7 +45,6 @@ public class ComparerForFiscalEtCommuneProcessor {
 	private final TiersService tiersService;
 	private final ServiceInfrastructureService serviceInfra;
 	private static final int batchSize = BATCH_SIZE;
-	private final ThreadLocal<ComparerForFiscalEtCommuneResults> rapport = new ThreadLocal<>();
 
 	public ComparerForFiscalEtCommuneProcessor(HibernateTemplate hibernateTemplate, PlatformTransactionManager transactionManager, AdresseService aService,
 	                                           TiersService tiersService, ServiceInfrastructureService serviceInfra) {
@@ -61,10 +63,10 @@ public class ComparerForFiscalEtCommuneProcessor {
 		final List<Long> ids = recupererContribuableAAnalyser();
 
 		// Reussi les messages par lots
-		final ParallelBatchTransactionTemplate<Long, ComparerForFiscalEtCommuneResults>
-				template = new ParallelBatchTransactionTemplate<>(ids, batchSize, nbThreads, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE,
-																										 transactionManager, status, hibernateTemplate);
-		template.execute(rapportFinal, new BatchTransactionTemplate.BatchCallback<Long, ComparerForFiscalEtCommuneResults>() {
+		final SimpleProgressMonitor progressMonitor = new SimpleProgressMonitor();
+		final ParallelBatchTransactionTemplateWithResult<Long, ComparerForFiscalEtCommuneResults>
+				template = new ParallelBatchTransactionTemplateWithResult<>(ids, batchSize, nbThreads, Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, AuthenticationInterface.INSTANCE);
+		template.execute(rapportFinal, new BatchWithResultsCallback<Long, ComparerForFiscalEtCommuneResults>() {
 
 			@Override
 			public ComparerForFiscalEtCommuneResults createSubRapport() {
@@ -73,14 +75,11 @@ public class ComparerForFiscalEtCommuneProcessor {
 
 			@Override
 			public boolean doInTransaction(List<Long> batch, ComparerForFiscalEtCommuneResults r) throws Exception {
-
-				rapport.set(r);
-				status.setMessage("Traitement du batch [" + batch.get(0) + "; " + batch.get(batch.size() - 1) + "] ...", percent);
-
-				traiterBatch(batch);
+				status.setMessage("Traitement du batch [" + batch.get(0) + "; " + batch.get(batch.size() - 1) + "] ...", progressMonitor.getProgressInPercent());
+				traiterBatch(batch, r);
 				return true;
 			}
-		});
+		}, progressMonitor);
 
 		final int count = rapportFinal.listeCommunesDifferentes.size();
 
@@ -100,7 +99,7 @@ public class ComparerForFiscalEtCommuneProcessor {
 
 	}
 
-	private void traiterBatch(final List<Long> batch) throws Exception {
+	private void traiterBatch(final List<Long> batch, ComparerForFiscalEtCommuneResults r) throws Exception {
 
 		// On charge tous les contribuables en vrac (avec préchargement des situations)
 		final List<Contribuable> list = hibernateTemplate.execute(new HibernateCallback<List<Contribuable>>() {
@@ -114,7 +113,7 @@ public class ComparerForFiscalEtCommuneProcessor {
 		});
 
 		for (Contribuable contribuable : list) {
-			rapport.get().nbCtbTotal++;
+			r.nbCtbTotal++;
 			ForFiscalPrincipal forFiscal = contribuable.getDernierForFiscalPrincipal();
 			final Integer numeroAutoriteFiscale = forFiscal.getNumeroOfsAutoriteFiscale();
 			Commune communeFor = serviceInfra.getCommuneByNumeroOfs(numeroAutoriteFiscale, RegDate.get());
@@ -122,7 +121,7 @@ public class ComparerForFiscalEtCommuneProcessor {
 			Commune communeAdresse = serviceInfra.getCommuneByAdresse(adresse, RegDate.get());
 			if(communeAdresse != null && communeFor!=null){
 				if (communeFor.getNoOFS() != communeAdresse.getNoOFS()) {
-					rapport.get().addCommunesDifferentes(forFiscal, communeFor.getNomOfficiel(), adresse, communeAdresse.getNomOfficiel());
+					r.addCommunesDifferentes(forFiscal, communeFor.getNomOfficiel(), adresse, communeAdresse.getNomOfficiel());
 				}
 			}
 

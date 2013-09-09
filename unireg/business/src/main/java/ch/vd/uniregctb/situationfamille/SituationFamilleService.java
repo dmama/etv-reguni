@@ -3,8 +3,7 @@ package ch.vd.uniregctb.situationfamille;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.identification.contribuable.IdentifierContribuableResults;
+import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.SituationFamille;
@@ -37,8 +36,6 @@ public interface SituationFamilleService {
 	 *
 	 * @param contribuable
 	 *            le contribuable dont on veut obtenir la situation de famille
-	 * @param date
-	 *            la date de validité de la situation de famille, ou <b>null</b> pour obtenir la situation de famille la plus à jour.
 	 * @return une vue de la situation de famille
 	 */
 	List<VueSituationFamille> getVueHisto(Contribuable contribuable);

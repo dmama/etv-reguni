@@ -1,9 +1,11 @@
 package ch.vd.uniregctb.common;
 
+import ch.vd.shared.batchtemplate.BatchResults;
+
 /**
  * Classe de base des containers de résultats pour les rapports d'exécution des batchs
  */
-public abstract class AbstractJobResults<E, R extends AbstractJobResults> implements BatchResults<E, R> {
+public abstract class AbstractJobResults<E, R extends AbstractJobResults<E, R>> implements BatchResults<E, R> {
 
 	/**
 	 * Heure de démarrage du job (à la milliseconde près).

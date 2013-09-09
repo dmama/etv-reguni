@@ -90,8 +90,7 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 
 		// Lancement du batch
 		final OuvertureForsResults rapport = new OuvertureForsResults(dateTraitement, tiersService, adresseService);
-		processor.rapport = rapport;
-		processor.traiteHabitant(h.getNumero(), dateTraitement);
+		processor.traiteHabitant(h.getNumero(), dateTraitement, rapport);
 
 		// Vérification du rapport
 		assertEquals(1, rapport.nbHabitantsTotal);
@@ -131,8 +130,7 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 
 		// Lancement du batch
 		final OuvertureForsResults rapport = new OuvertureForsResults(dateTraitement, tiersService, adresseService);
-		processor.rapport = rapport;
-		processor.traiteHabitant(h.getNumero(), dateTraitement);
+		processor.traiteHabitant(h.getNumero(), dateTraitement, rapport);
 
 		// Vérification du rapport
 		assertEquals(1, rapport.nbHabitantsTotal);
@@ -200,8 +198,7 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 				ids.jean = h.getNumero();
 				// Lancement du batch
 				final OuvertureForsResults rapport = new OuvertureForsResults(dateTraitement, tiersService, adresseService);
-				processor.rapport = rapport;
-				processor.traiteHabitant(h.getNumero(), dateTraitement);
+				processor.traiteHabitant(h.getNumero(), dateTraitement, rapport);
 				return rapport;
 			}
 		});
@@ -242,8 +239,7 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 
 		// Lancement du batch
 		final OuvertureForsResults rapport = new OuvertureForsResults(dateTraitement, tiersService, adresseService);
-		processor.rapport = rapport;
-		processor.traiteHabitant(h.getNumero(), dateTraitement);
+		processor.traiteHabitant(h.getNumero(), dateTraitement, rapport);
 
 		// Vérification du rapport
 		assertEquals(1, rapport.nbHabitantsTotal);
@@ -305,8 +301,7 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 
 		// Lancement du batch
 		final OuvertureForsResults rapport = new OuvertureForsResults(dateTraitement, tiersService, adresseService);
-		processor.rapport = rapport;
-		processor.traiteHabitant(h.getNumero(), dateTraitement);
+		processor.traiteHabitant(h.getNumero(), dateTraitement, rapport);
 
 		// Vérification du rapport
 		assertEquals(1, rapport.nbHabitantsTotal);
@@ -347,8 +342,7 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 
 		// Lancement du batch
 		final OuvertureForsResults rapport = new OuvertureForsResults(dateTraitement, tiersService, adresseService);
-		processor.rapport = rapport;
-		processor.traiteHabitant(h.getNumero(), dateTraitement);
+		processor.traiteHabitant(h.getNumero(), dateTraitement, rapport);
 
 		// Vérification du rapport
 		assertEquals(1, rapport.nbHabitantsTotal);
@@ -393,9 +387,8 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 
 		// Lancement du batch
 		final OuvertureForsResults rapport = new OuvertureForsResults(dateTraitement, tiersService, adresseService);
-		processor.rapport = rapport;
-		processor.traiteHabitant(h1.getNumero(), dateTraitement);
-		processor.traiteHabitant(h2.getNumero(), dateTraitement);
+		processor.traiteHabitant(h1.getNumero(), dateTraitement, rapport);
+		processor.traiteHabitant(h2.getNumero(), dateTraitement, rapport);
 
 		// Vérification du rapport
 		assertEquals(2, rapport.nbHabitantsTotal);
@@ -441,8 +434,7 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 
 		// Lancement du batch
 		final OuvertureForsResults rapport = new OuvertureForsResults(dateTraitement, tiersService, adresseService);
-		mockProcessor.rapport = rapport;
-		mockProcessor.traiteHabitant(h1.getNumero(), dateTraitement);
+		mockProcessor.traiteHabitant(h1.getNumero(), dateTraitement, rapport);
 
 		// Vérification du rapport
 		assertEquals(1, rapport.nbHabitantsTotal);
@@ -483,8 +475,7 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 
 		// Lancement du batch
 		final OuvertureForsResults rapport = new OuvertureForsResults(dateTraitement, tiersService, adresseService);
-		processor.rapport = rapport;
-		processor.traiteHabitant(h.getNumero(), dateTraitement);
+		processor.traiteHabitant(h.getNumero(), dateTraitement, rapport);
 
 		// Vérification du rapport
 		assertEquals(1, rapport.nbHabitantsTotal);
@@ -524,13 +515,12 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 
 		// Lancement du batch
 		final OuvertureForsResults rapport = new OuvertureForsResults(dateTraitement, tiersService, adresseService);
-		processor.rapport = rapport;
 
 		// pour des raisons de validation, on va dire que l'on se place à un jour où la commune de Gressy est
 		// encore active fiscalement (un mois avant la fin)
 		ForFiscalValidator.setFutureBeginDate(MockCommune.Gressy.getDateFinValidite().addMonths(-1));
 		try {
-			processor.traiteHabitant(h.getNumero(), dateTraitement);
+			processor.traiteHabitant(h.getNumero(), dateTraitement, rapport);
 		}
 		finally {
 			ForFiscalValidator.setFutureBeginDate(null);
@@ -586,8 +576,7 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 
 		// Lancement du batch
 		final OuvertureForsResults rapport = new OuvertureForsResults(dateTraitement, tiersService, adresseService);
-		processor.rapport = rapport;
-		processor.traiteHabitant(h.getNumero(), dateTraitement);
+		processor.traiteHabitant(h.getNumero(), dateTraitement, rapport);
 
 		// Vérification du rapport
 		assertEquals(1, rapport.nbHabitantsTotal);

@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.extraction;
 
-import ch.vd.uniregctb.common.BatchResults;
+import ch.vd.shared.batchtemplate.BatchResults;
 
 /**
  * Interface implémentée par les extracteurs qui supportent un traitement par lots parallélisé

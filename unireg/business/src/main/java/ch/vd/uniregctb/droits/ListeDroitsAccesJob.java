@@ -15,13 +15,16 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.tx.TxCallback;
 import ch.vd.securite.model.Operateur;
+import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
+import ch.vd.shared.batchtemplate.Behavior;
+import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
+import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.common.BatchTransactionTemplate;
+import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.NomPrenom;
-import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.document.ListeDroitsAccesRapport;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
@@ -84,10 +87,11 @@ public class ListeDroitsAccesJob extends JobDefinition {
 		final ListeDroitsAccesResults rapportFinal = new ListeDroitsAccesResults(dateValeur, tiersService, adresseService);
 
 		// on résoud les noms, prénom, oid, adresses, opérateurs, ... des droits d'accès
-		final BatchTransactionTemplate<Number, ListeDroitsAccesResults> t =
-				new BatchTransactionTemplate<>(daIds, 100, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE, transactionManager, statusManager, hibernateTemplate);
+		final SimpleProgressMonitor progressMonitor = new SimpleProgressMonitor();
+		final BatchTransactionTemplateWithResults<Number, ListeDroitsAccesResults> t =
+				new BatchTransactionTemplateWithResults<>(daIds, 100, Behavior.REPRISE_AUTOMATIQUE, transactionManager, statusManager);
 		t.setReadonly(true);
-		t.execute(rapportFinal, new BatchTransactionTemplate.BatchCallback<Number, ListeDroitsAccesResults>() {
+		t.execute(rapportFinal, new BatchWithResultsCallback<Number, ListeDroitsAccesResults>() {
 			@Override
 			public ListeDroitsAccesResults createSubRapport() {
 				return new ListeDroitsAccesResults(dateValeur, tiersService, adresseService);
@@ -108,7 +112,7 @@ public class ListeDroitsAccesJob extends JobDefinition {
 					if (!da.isValidAt(dateValeur)) {
 						continue;
 					}
-					statusManager.setMessage("Traitement du contribuable n°" + da.getTiers().getNumero(), percent);
+					statusManager.setMessage("Traitement du contribuable n°" + da.getTiers().getNumero(), progressMonitor.getProgressInPercent());
 					final AdresseEnvoiDetaillee adresseEnvoi = getAdresseDomicile(da.getTiers());
 					final Integer oid = tiersService.getOfficeImpotIdAt(da.getTiers(), dateValeur);
 					final Operateur operateur = securiteService.getOperateur(da.getNoIndividuOperateur());
@@ -129,7 +133,7 @@ public class ListeDroitsAccesJob extends JobDefinition {
 					return a;
 				}
 			}
-		});
+		}, progressMonitor);
 
 		rapportFinal.setInterrompu(statusManager.interrupted());
 		rapportFinal.end();

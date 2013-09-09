@@ -12,8 +12,8 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.DateHelper;
+import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.document.DatabaseDump;
 import ch.vd.uniregctb.document.DocumentService;
 import ch.vd.uniregctb.scheduler.JobDefinition;

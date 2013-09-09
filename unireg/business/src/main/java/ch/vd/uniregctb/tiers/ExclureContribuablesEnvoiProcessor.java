@@ -7,12 +7,13 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
+import ch.vd.shared.batchtemplate.Behavior;
+import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
+import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.common.BatchTransactionTemplate;
-import ch.vd.uniregctb.common.BatchTransactionTemplate.BatchCallback;
-import ch.vd.uniregctb.common.BatchTransactionTemplate.Behavior;
+import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.LoggingStatusManager;
-import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 
 /**
@@ -31,8 +32,6 @@ public class ExclureContribuablesEnvoiProcessor {
 	private final TiersService tiersService;
 	private final AdresseService adresseService;
 
-	private ExclureContribuablesEnvoiResults rapport;
-
 	public ExclureContribuablesEnvoiProcessor(HibernateTemplate hibernateTemplate, PlatformTransactionManager transactionManager, TiersService tiersService, AdresseService adresseService) {
 		this.hibernateTemplate = hibernateTemplate;
 		this.transactionManager = transactionManager;
@@ -48,9 +47,10 @@ public class ExclureContribuablesEnvoiProcessor {
 
 		final ExclureContribuablesEnvoiResults rapportFinal = new ExclureContribuablesEnvoiResults(ctbIds, dateLimite, tiersService, adresseService);
 
-		final BatchTransactionTemplate<Long, ExclureContribuablesEnvoiResults> template = new BatchTransactionTemplate<>(ctbIds, BATCH_SIZE,
-				Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, hibernateTemplate);
-		template.execute(rapportFinal, new BatchCallback<Long, ExclureContribuablesEnvoiResults>() {
+		final SimpleProgressMonitor progressMonitor = new SimpleProgressMonitor();
+		final BatchTransactionTemplateWithResults<Long, ExclureContribuablesEnvoiResults> template = new BatchTransactionTemplateWithResults<>(ctbIds, BATCH_SIZE,
+				Behavior.REPRISE_AUTOMATIQUE, transactionManager, status);
+		template.execute(rapportFinal, new BatchWithResultsCallback<Long, ExclureContribuablesEnvoiResults>() {
 
 			@Override
 			public ExclureContribuablesEnvoiResults createSubRapport() {
@@ -59,14 +59,11 @@ public class ExclureContribuablesEnvoiProcessor {
 
 			@Override
 			public boolean doInTransaction(List<Long> batch, ExclureContribuablesEnvoiResults r) throws Exception {
-
-				rapport = r;
-				status.setMessage("Traitement du batch [" + batch.get(0) + "; " + batch.get(batch.size() - 1) + "] ...", percent);
-
-				traiterBatch(batch, dateLimite);
+				status.setMessage("Traitement du batch [" + batch.get(0) + "; " + batch.get(batch.size() - 1) + "] ...", progressMonitor.getProgressInPercent());
+				traiterBatch(batch, dateLimite, r);
 				return true;
 			}
-		});
+		}, progressMonitor);
 
 		rapportFinal.interrompu = status.interrupted();
 		rapportFinal.end();
@@ -76,13 +73,13 @@ public class ExclureContribuablesEnvoiProcessor {
 	/**
 	 * Applique la date limite d'exclusion à tous les contribuables spécifiés par leur numéros.
 	 */
-	private void traiterBatch(List<Long> batch, RegDate dateLimite) {
+	private void traiterBatch(List<Long> batch, RegDate dateLimite, ExclureContribuablesEnvoiResults r) {
 
 		for (Long id : batch) {
 
 			final Contribuable ctb = hibernateTemplate.get(Contribuable.class, id);
 			if (ctb == null) {
-				rapport.addErrorCtbInconnu(id);
+				r.addErrorCtbInconnu(id);
 				continue;
 			}
 
@@ -93,7 +90,7 @@ public class ExclureContribuablesEnvoiProcessor {
 			}
 			else {
 				// il y a déjà une date, et elle est plus grande -> on ignore
-				rapport.addIgnoreDateLimiteExistante(ctb, "Date limite existante = " + RegDateHelper.dateToDisplayString(dateExistante));
+				r.addIgnoreDateLimiteExistante(ctb, "Date limite existante = " + RegDateHelper.dateToDisplayString(dateExistante));
 			}
 		}
 	}

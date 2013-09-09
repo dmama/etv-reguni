@@ -23,9 +23,11 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationException;
+import ch.vd.shared.batchtemplate.BatchResults;
+import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
+import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.common.BatchResults;
-import ch.vd.uniregctb.common.BatchTransactionTemplate;
+import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
@@ -796,11 +798,10 @@ public class TiersWebServiceImpl implements TiersWebService {
 
 		try {
 			final List<DemandeQuittancementDeclaration> demandes = params.demandes;
-			final BatchTransactionTemplate<DemandeQuittancementDeclaration, QuittancementResults> template =
-					new BatchTransactionTemplate<>(demandes, demandes.size(), BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE,
-							context.transactionManager, null, context.hibernateTemplate);
+			final BatchTransactionTemplateWithResults<DemandeQuittancementDeclaration, QuittancementResults> template =
+					new BatchTransactionTemplateWithResults<>(demandes, demandes.size(), Behavior.REPRISE_AUTOMATIQUE, context.transactionManager, null);
 			final QuittancementResults rapportFinal = new QuittancementResults();
-			template.execute(rapportFinal, new BatchTransactionTemplate.BatchCallback<DemandeQuittancementDeclaration, QuittancementResults>() {
+			template.execute(rapportFinal, new BatchWithResultsCallback<DemandeQuittancementDeclaration, QuittancementResults>() {
 
 				@Override
 				public QuittancementResults createSubRapport() {
@@ -815,7 +816,7 @@ public class TiersWebServiceImpl implements TiersWebService {
 					}
 					return true;
 				}
-			});
+			}, null);
 			return rapportFinal.getReponses();
 		}
 		catch (RuntimeException e) {

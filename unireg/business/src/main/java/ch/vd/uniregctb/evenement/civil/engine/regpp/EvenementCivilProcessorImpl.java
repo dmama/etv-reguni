@@ -14,13 +14,13 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.CheckedTransactionCallback;
 import ch.vd.uniregctb.common.CheckedTransactionTemplate;
-import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilHelper;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilMessageCollector;

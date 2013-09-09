@@ -25,11 +25,13 @@ import org.springframework.transaction.TransactionStatus;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.tx.TxCallback;
+import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
+import ch.vd.shared.batchtemplate.Behavior;
+import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.common.BatchTransactionTemplate;
+import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.NomPrenom;
-import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.rf.Immeuble;
@@ -166,9 +168,9 @@ public class ImportImmeublesProcessor {
 		final List<String> headers = extractHeaders(csvIterator.next());
 
 		// Processing des lignes de données
-		final BatchTransactionTemplate<String, ImportImmeublesResults> template = new BatchTransactionTemplate<>(csvIterator, BATCH_SIZE,
-				BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, hibernateTemplate);
-		template.execute(rapportFinal, new BatchTransactionTemplate.BatchCallback<String, ImportImmeublesResults>() {
+		final BatchTransactionTemplateWithResults<String, ImportImmeublesResults> template = new BatchTransactionTemplateWithResults<>(csvIterator, BATCH_SIZE,
+		                                                                                                                               Behavior.REPRISE_AUTOMATIQUE, transactionManager, status);
+		template.execute(rapportFinal, new BatchWithResultsCallback<String, ImportImmeublesResults>() {
 
 			@Override
 			public ImportImmeublesResults createSubRapport() {
@@ -198,7 +200,7 @@ public class ImportImmeublesProcessor {
 
 				return true;
 			}
-		});
+		}, null);
 	}
 
 	private static List<String> extractHeaders(String headerLine) {

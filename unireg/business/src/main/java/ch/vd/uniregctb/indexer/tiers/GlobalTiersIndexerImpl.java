@@ -20,6 +20,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.uniregctb.adresse.AdresseService;
@@ -29,7 +30,6 @@ import ch.vd.uniregctb.common.BatchIterator;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.ProgrammingException;
 import ch.vd.uniregctb.common.StandardBatchIterator;
-import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.common.ThreadSwitch;
 import ch.vd.uniregctb.indexer.GlobalIndexInterface;
 import ch.vd.uniregctb.indexer.GlobalIndexTracing;

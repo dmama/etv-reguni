@@ -9,8 +9,8 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
+import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher.CheckCallback;
 import ch.vd.uniregctb.scheduler.JobDefinition;

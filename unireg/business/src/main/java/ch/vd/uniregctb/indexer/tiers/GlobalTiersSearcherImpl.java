@@ -22,8 +22,8 @@ import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.registre.simpleindexer.DocGetter;
+import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.Fuse;
-import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.indexer.EmptySearchCriteriaException;
 import ch.vd.uniregctb.indexer.GlobalIndexInterface;
 import ch.vd.uniregctb.indexer.IndexerException;

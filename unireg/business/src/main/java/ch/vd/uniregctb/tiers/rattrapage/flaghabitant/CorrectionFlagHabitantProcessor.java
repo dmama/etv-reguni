@@ -6,10 +6,12 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
+import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
+import ch.vd.shared.batchtemplate.Behavior;
+import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.common.BatchTransactionTemplate;
-import ch.vd.uniregctb.common.ParallelBatchTransactionTemplate;
-import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.uniregctb.common.AuthenticationInterface;
+import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResult;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -64,10 +66,10 @@ public class CorrectionFlagHabitantProcessor {
 			final String messageStatus = String.format("Phase 1 : Traitement de %d personnes physiques", ids.size());
 			statusManager.setMessage(messageStatus, 0);
 
-			final ParallelBatchTransactionTemplate<Long, CorrectionFlagHabitantResults> template =
-					new ParallelBatchTransactionTemplate<>(ids, TAILLE_LOT, nbThreads, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE, transactionManager,
-					                                                                          statusManager, hibernateTemplate);
-			template.execute(rapportFinal, new BatchTransactionTemplate.BatchCallback<Long, CorrectionFlagHabitantResults>() {
+			final ParallelBatchTransactionTemplateWithResult<Long, CorrectionFlagHabitantResults> template =
+					new ParallelBatchTransactionTemplateWithResult<>(ids, TAILLE_LOT, nbThreads, Behavior.REPRISE_AUTOMATIQUE, transactionManager,
+					                                                 statusManager, AuthenticationInterface.INSTANCE);
+			template.execute(rapportFinal, new BatchWithResultsCallback<Long, CorrectionFlagHabitantResults>() {
 
 				@Override
 				public CorrectionFlagHabitantResults createSubRapport() {
@@ -113,7 +115,7 @@ public class CorrectionFlagHabitantProcessor {
 					final int progression = rapportFinal.getNombrePPInspectees() * 100 / ids.size();
 					statusManager.setMessage(message, progression);
 				}
-			});
+			}, null);
 		}
 
 		rapportFinal.setInterrupted(statusManager.interrupted());

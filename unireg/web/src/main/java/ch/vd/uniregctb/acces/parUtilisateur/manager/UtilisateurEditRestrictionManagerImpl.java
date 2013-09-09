@@ -9,6 +9,8 @@ import java.util.List;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.shared.batchtemplate.BatchResults;
+import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.uniregctb.acces.parUtilisateur.view.DroitAccesUtilisateurView;
 import ch.vd.uniregctb.acces.parUtilisateur.view.RecapPersonneUtilisateurView;
@@ -17,8 +19,6 @@ import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.common.BatchResults;
-import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.MimeTypeHelper;
 import ch.vd.uniregctb.common.WebParamPagination;
@@ -188,8 +188,8 @@ public class UtilisateurEditRestrictionManagerImpl implements UtilisateurEditRes
 		}
 
 		@Override
-		public BatchTransactionTemplate.Behavior getBatchBehavior() {
-			return BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE;
+		public Behavior getBatchBehavior() {
+			return Behavior.REPRISE_AUTOMATIQUE;
 		}
 
 		@Override

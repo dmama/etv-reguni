@@ -12,7 +12,7 @@ import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDI;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.TiersService;
 
-public class ListeDIsNonEmises extends EnvoiDIsResults<ListeDIsNonEmises> {
+public class ListeDIsNonEmises extends AbstractEnvoiDIsResults<ListeDIsNonEmises> {
 
 	/**
 	 * Classe pour stocker les informations d'une ligne du fichier csv resulat

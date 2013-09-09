@@ -7,9 +7,9 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.tiers.ContactImpotSource;

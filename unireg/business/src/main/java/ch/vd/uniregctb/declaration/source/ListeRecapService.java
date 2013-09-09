@@ -5,7 +5,7 @@ import java.util.List;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
@@ -26,7 +26,6 @@ public interface ListeRecapService {
 	 * Impression d'une sommation LR
 	 * 		- Alimentation de l'objet EditiqueListeRecap
 	 * 		- Envoi des informations nécessaires à l'éditique
-	 * @param dpi
 	 * @#param date de traitement de la sommation
 	 * @throws Exception
 	 */

@@ -18,12 +18,15 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
+import ch.vd.shared.batchtemplate.Behavior;
+import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
+import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.common.BatchTransactionTemplate;
+import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.JobResults;
 import ch.vd.uniregctb.common.LoggingStatusManager;
-import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.document.MigrationCoquillesPMRapport;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
@@ -147,10 +150,10 @@ public class MigrationCoquillesPM extends JobDefinition {
 	private MigrationResults migrate(List<Long> ids, final StatusManager status, final RegDate dateTraitement) {
 
 		final MigrationResults rapportFinal = new MigrationResults(dateTraitement, tiersService, adresseService);
-
-		final BatchTransactionTemplate<Long, MigrationResults> template =
-				new BatchTransactionTemplate<>(ids, 100, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, hibernateTemplate);
-		template.execute(rapportFinal, new BatchTransactionTemplate.BatchCallback<Long, MigrationResults>() {
+		final SimpleProgressMonitor progressMonitor = new SimpleProgressMonitor();
+		final BatchTransactionTemplateWithResults<Long, MigrationResults> template =
+				new BatchTransactionTemplateWithResults<>(ids, 100, Behavior.REPRISE_AUTOMATIQUE, transactionManager, status);
+		template.execute(rapportFinal, new BatchWithResultsCallback<Long, MigrationResults>() {
 
 			@Override
 			public MigrationResults createSubRapport() {
@@ -159,7 +162,7 @@ public class MigrationCoquillesPM extends JobDefinition {
 
 			@Override
 			public boolean doInTransaction(List<Long> batch, MigrationResults rapport) throws Exception {
-				status.setMessage("Traitement du lot " + batch.get(0) + " -> " + batch.get(batch.size() - 1) + " ...", percent);
+				status.setMessage("Traitement du lot " + batch.get(0) + " -> " + batch.get(batch.size() - 1) + " ...", progressMonitor.getProgressInPercent());
 				for (Long id : batch) {
 					++ rapport.total;
 					hibernateTemplate.merge(new Entreprise(id));
@@ -167,7 +170,7 @@ public class MigrationCoquillesPM extends JobDefinition {
 				}
 				return true;
 			}
-		});
+		}, progressMonitor);
 
 		final int count = rapportFinal.traitees.size();
 

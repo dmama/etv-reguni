@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.acomptes;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.shared.batchtemplate.StatusManager;
 
 public interface AcomptesService {
 

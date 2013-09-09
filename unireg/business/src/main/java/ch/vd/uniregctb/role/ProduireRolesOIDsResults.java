@@ -4,7 +4,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.tiers.TiersService;
 
-public class ProduireRolesOIDsResults extends ProduireRolesResults {
+public class ProduireRolesOIDsResults extends ProduireRolesResults<ProduireRolesOIDsResults> {
 
 	/** renseigné en cas de sélection d'un office d'impôt */
 	public final Integer noColOID;

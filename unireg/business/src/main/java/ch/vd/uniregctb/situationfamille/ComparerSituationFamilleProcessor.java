@@ -14,13 +14,16 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
+import ch.vd.shared.batchtemplate.Behavior;
+import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
+import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.unireg.interfaces.civil.data.EtatCivil;
 import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.common.BatchTransactionTemplate;
+import ch.vd.uniregctb.common.AuthenticationInterface;
 import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.common.LoggingStatusManager;
-import ch.vd.uniregctb.common.ParallelBatchTransactionTemplate;
-import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResult;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
@@ -39,7 +42,6 @@ public class ComparerSituationFamilleProcessor {
 	private final HibernateTemplate hibernateTemplate;
 	private final AdresseService adresseService;
 	private final TiersService tiersService;
-	private final ThreadLocal<ComparerSituationFamilleResults> rapport = new ThreadLocal<>();
 
 	public ComparerSituationFamilleProcessor(ServiceCivilService serviceCivil, HibernateTemplate hibernateTemplate, TiersService tiersService, PlatformTransactionManager transactionManager,
 	                                         AdresseService adresseService) {
@@ -60,10 +62,10 @@ public class ComparerSituationFamilleProcessor {
 		final List<Long> ids = recupererSituationFamilleAComparer();
 
 		// Reussi les messages par lots
-		final ParallelBatchTransactionTemplate<Long, ComparerSituationFamilleResults>
-				template = new ParallelBatchTransactionTemplate<>(ids, BATCH_SIZE, nbThreads, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE,
-																									   transactionManager, status, hibernateTemplate);
-		template.execute(rapportFinal, new BatchTransactionTemplate.BatchCallback<Long, ComparerSituationFamilleResults>() {
+		final SimpleProgressMonitor progressMonitor = new SimpleProgressMonitor();
+		final ParallelBatchTransactionTemplateWithResult<Long, ComparerSituationFamilleResults>
+				template = new ParallelBatchTransactionTemplateWithResult<>(ids, BATCH_SIZE, nbThreads, Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, AuthenticationInterface.INSTANCE);
+		template.execute(rapportFinal, new BatchWithResultsCallback<Long, ComparerSituationFamilleResults>() {
 
 			@Override
 			public ComparerSituationFamilleResults createSubRapport() {
@@ -72,14 +74,11 @@ public class ComparerSituationFamilleProcessor {
 
 			@Override
 			public boolean doInTransaction(List<Long> batch, ComparerSituationFamilleResults r) throws Exception {
-
-				rapport.set(r);
-				status.setMessage("Traitement du batch [" + batch.get(0) + "; " + batch.get(batch.size() - 1) + "] ...", percent);
-
-				traiterBatch(batch);
+				status.setMessage("Traitement du batch [" + batch.get(0) + "; " + batch.get(batch.size() - 1) + "] ...", progressMonitor.getProgressInPercent());
+				traiterBatch(batch, r);
 				return true;
 			}
-		});
+		}, progressMonitor);
 
 		final int count = rapportFinal.listeSituationsDifferentes.size();
 
@@ -99,7 +98,7 @@ public class ComparerSituationFamilleProcessor {
 
 	}
 
-	private void traiterBatch(final List<Long> batch) throws Exception {
+	private void traiterBatch(final List<Long> batch, ComparerSituationFamilleResults r) throws Exception {
 
 		// On charge tous les contribuables en vrac (avec préchargement des situations)
         final List<SituationFamilleMenageCommun> list = hibernateTemplate.execute(new HibernateCallback<List<SituationFamilleMenageCommun>>() {
@@ -114,13 +113,13 @@ public class ComparerSituationFamilleProcessor {
         });
 
 		for (SituationFamilleMenageCommun situation : list) {
-			rapport.get().nbSituationTotal++;
+			r.nbSituationTotal++;
 			PersonnePhysique personne = (PersonnePhysique)tiersService.getTiers(situation.getContribuablePrincipalId());
 			final Long numeroIndividu = personne.getNumeroIndividu();
 			if(numeroIndividu!=null){
 				EtatCivil etatCivil =  serviceCivil.getEtatCivilActif(numeroIndividu,null);
 				if(situation.getEtatCivil() != EtatCivilHelper.civil2core(etatCivil.getTypeEtatCivil())){
-					rapport.get().addSituationsDifferentes(situation,etatCivil);
+					r.addSituationsDifferentes(situation,etatCivil);
 				}
 			}
 

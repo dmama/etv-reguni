@@ -14,6 +14,10 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
+import ch.vd.shared.batchtemplate.Behavior;
+import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
+import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
@@ -22,9 +26,8 @@ import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
-import ch.vd.uniregctb.common.BatchTransactionTemplate;
+import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.LoggingStatusManager;
-import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -57,8 +60,6 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessor {
 	private final int ageRentierHomme;
 	private final int ageRentierFemme;
 
-	private PassageNouveauxRentiersSourciersEnMixteResults rapport;
-
 	private Set<Long> conjointAIgnorerGlobal = new HashSet<>();
 
 	public PassageNouveauxRentiersSourciersEnMixteProcessor(PlatformTransactionManager transactionManager, HibernateTemplate hibernateTemplate, TiersService tiersService,
@@ -85,10 +86,10 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessor {
 
 		final List<Long> list = getListPotentielsNouveauxRentiersSourciers(dateTraitement);
 
-		final BatchTransactionTemplate<Long, PassageNouveauxRentiersSourciersEnMixteResults> template =
-				new BatchTransactionTemplate<>(list, BATCH_SIZE, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE,
-						transactionManager, s, hibernateTemplate);
-		template.execute(rapportFinal, new BatchTransactionTemplate.BatchCallback<Long, PassageNouveauxRentiersSourciersEnMixteResults>() {
+		final SimpleProgressMonitor progressMonitor = new SimpleProgressMonitor();
+		final BatchTransactionTemplateWithResults<Long, PassageNouveauxRentiersSourciersEnMixteResults> template =
+				new BatchTransactionTemplateWithResults<>(list, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE, transactionManager, s);
+		template.execute(rapportFinal, new BatchWithResultsCallback<Long, PassageNouveauxRentiersSourciersEnMixteResults>() {
 
 			@Override
 			public PassageNouveauxRentiersSourciersEnMixteResults createSubRapport() {
@@ -97,22 +98,20 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessor {
 
 			@Override
 			public boolean doInTransaction(List<Long> batch, PassageNouveauxRentiersSourciersEnMixteResults r) throws Exception {
-				rapport = r;
 				Set<Long> conjointAIgnorer = new HashSet<>();
-				traiteBatch(batch, dateTraitement, s, conjointAIgnorer);
+				traiteBatch(batch, dateTraitement, s, r, conjointAIgnorer);
 				conjointAIgnorerGlobal.addAll(conjointAIgnorer);
 				return !s.interrupted();
 			}
 
 			@Override
 			public void afterTransactionCommit() {
-				int percent = (100 * rapportFinal.getNbSourciersTotal()) / list.size();
 				s.setMessage(String.format(
 						"%d sourciers traités sur %d (convertis = %s, erreurs = %s, conjoints ignorés = %s, hors-suisse = %s, trop jeune = %s)",
 						rapportFinal.getNbSourciersTotal(), list.size(), rapportFinal.sourciersConvertis.size(), rapportFinal.sourciersEnErreurs.size(), rapportFinal.nbSourciersConjointsIgnores,
-						rapportFinal.nbSourciersHorsSuisse, rapportFinal.nbSourciersTropJeunes), percent);
+						rapportFinal.nbSourciersHorsSuisse, rapportFinal.nbSourciersTropJeunes), progressMonitor.getProgressInPercent());
 			}
-		});
+		}, progressMonitor);
 
 		if (statusManager.interrupted()) {
 			statusManager.setMessage("Le passage des nouveaux rentiers sourciers en mixte 1 a été interrompue."
@@ -128,7 +127,7 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessor {
 		return rapportFinal;
 	}
 
-	private void traiteBatch(List<Long> batch, RegDate dateReference, StatusManager status, Set<Long> conjointAIgnorer) {
+	private void traiteBatch(List<Long> batch, RegDate dateReference, StatusManager status, PassageNouveauxRentiersSourciersEnMixteResults r, Set<Long> conjointAIgnorer) {
 		// On préchauffe le cache des individus, si possible
 		// On évite de le faire pour les batchs de taille 1 (reprise sur batch avec une erreur),ça ne sert à rien.
 		serviceCivilCacheWarmer.warmIndividusPourTiers(batch, dateReference, false, AttributeIndividu.ADRESSES);
@@ -137,26 +136,26 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessor {
 			if (status.interrupted()) {
 				break;
 			}
-			traiteSourcier(id, dateReference, conjointAIgnorer);
+			traiteSourcier(id, dateReference, r, conjointAIgnorer);
 		}
 	}
 
-	private void traiteSourcier(Long id, RegDate dateReference, Set<Long> conjointAIgnorer) {
+	private void traiteSourcier(Long id, RegDate dateReference, PassageNouveauxRentiersSourciersEnMixteResults r, Set<Long> conjointAIgnorer) {
 		try {
 			PersonnePhysique sourcier = hibernateTemplate.get(PersonnePhysique.class, id);
 			// traitement du sourcier
-			traiteSourcier(sourcier, dateReference, conjointAIgnorer);
+			traiteSourcier(sourcier, dateReference, r, conjointAIgnorer);
 		}
 		catch (PassageNouveauxRentiersSourciersEnMixteException e) {
-			rapport.addPassageNouveauxRentiersSourciersEnMixteException(e);
+			r.addPassageNouveauxRentiersSourciersEnMixteException(e);
 		}
 		catch (Exception e) {
 			LOGGER.error("Erreur inconnue en traitant le sourcier n° " + id, e);
-			rapport.addUnknownException(id, e);
+			r.addUnknownException(id, e);
 		}
 	}
 
-	private void traiteSourcier(PersonnePhysique sourcier, RegDate dateReference, Set<Long> conjointAIgnorer) throws PassageNouveauxRentiersSourciersEnMixteException {
+	private void traiteSourcier(PersonnePhysique sourcier, RegDate dateReference, PassageNouveauxRentiersSourciersEnMixteResults r, Set<Long> conjointAIgnorer) throws PassageNouveauxRentiersSourciersEnMixteException {
 
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("Traitement du sourcier n° " + sourcier.getNumero());
@@ -164,7 +163,7 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessor {
 
 		if (conjointAIgnorer.contains(sourcier.getNumero()) || conjointAIgnorerGlobal.contains(sourcier.getNumero())) {
 			// le for du sourcier à deja été modifié par l'intermediaire de son conjoint --> Rien à faire
-			rapport.nbSourciersConjointsIgnores++;
+			r.nbSourciersConjointsIgnores++;
 			LOGGER.info(String.format("Le sourcier [%s] fait parti d'un couple déjà mixte -> ignoré", sourcier.getNumero()));
 			return;
 		}
@@ -203,7 +202,7 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessor {
 		// L’individu doit avoir atteint l'âge être rentier à la date du traitement
 		if (!isAgeRentier(dateReference, data.getDateNaissance(), data.getSexe())) {
 			// l'individu n'a pas encore atteint l'age d'etre rentier
-			rapport.nbSourciersTropJeunes++;
+			r.nbSourciersTropJeunes++;
 			LOGGER.info(String.format("Le sourcier [%s] est trop jeune -> ignoré", sourcier.getNumero()));
 			return;
 		}
@@ -229,7 +228,7 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessor {
 		fillInfoDomicile(contribuable, data, dateReference);
 
 		if (!data.isDomicilieSurVD()) {
-			rapport.nbSourciersHorsSuisse++;
+			r.nbSourciersHorsSuisse++;
 			LOGGER.info(String.format("Le contribuable [%s] n'est pas domicilié en suisse -> ignoré", contribuable.getNumero()));
 			return;
 		}
@@ -275,7 +274,7 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessor {
 		tiersService.openForFiscalPrincipal(contribuable, dateRentier, dernierForFiscalPrincipal.getMotifRattachement(), dernierForFiscalPrincipal.getNumeroOfsAutoriteFiscale(),
 				dernierForFiscalPrincipal.getTypeAutoriteFiscale(), ModeImposition.MIXTE_137_1, MotifFor.CHGT_MODE_IMPOSITION);
 		LOGGER.info("ouverture du for mixte pour le contribuable [" + contribuable.getNumero() +"]");
-		rapport.addSourcierConverti(contribuable.getNumero());
+		r.addSourcierConverti(contribuable.getNumero());
 
 		// [SIFISC-8177] flag pour ne pas y revenir
 		sourcier.setRentierSourcierPasseAuRole(Boolean.TRUE);

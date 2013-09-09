@@ -18,8 +18,8 @@ import org.apache.commons.lang3.mutable.MutableInt;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.document.ImportCodesSegmentRapport;
 import ch.vd.uniregctb.rapport.RapportService;
 import ch.vd.uniregctb.scheduler.JobDefinition;

@@ -46,8 +46,8 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.shared.hibernate.config.DescriptiveSessionFactoryBean;
-import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.dbutils.SqlFileExecutor;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;

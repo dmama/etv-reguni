@@ -9,13 +9,14 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
+import ch.vd.shared.batchtemplate.Behavior;
+import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
+import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.common.BatchTransactionTemplate;
-import ch.vd.uniregctb.common.BatchTransactionTemplate.BatchCallback;
-import ch.vd.uniregctb.common.BatchTransactionTemplate.Behavior;
+import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
-import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
@@ -45,8 +46,6 @@ public class DemandeDelaiCollectiveProcessor {
 	private final TiersService tiersService;
 	private final AdresseService adresseService;
 
-	private DemandeDelaiCollectiveResults rapport;
-
 	public DemandeDelaiCollectiveProcessor(PeriodeFiscaleDAO periodeFiscaleDAO, HibernateTemplate hibernateTemplate,
 	                                       PlatformTransactionManager transactionManager, TiersService tiersService, AdresseService adresseService) {
 		this.periodeFiscaleDAO = periodeFiscaleDAO;
@@ -54,13 +53,6 @@ public class DemandeDelaiCollectiveProcessor {
 		this.transactionManager = transactionManager;
 		this.tiersService = tiersService;
 		this.adresseService = adresseService;
-	}
-
-	/**
-	 * For testing purpose only
-	 */
-	protected void setRapport(DemandeDelaiCollectiveResults rapport) {
-		this.rapport = rapport;
 	}
 
 	public DemandeDelaiCollectiveResults run(final List<Long> ids, final int annee, final RegDate dateDelai, final RegDate dateTraitement,
@@ -72,9 +64,9 @@ public class DemandeDelaiCollectiveProcessor {
 		checkParams(annee);
 
 		// Traite les contribuables par lots
-		final BatchTransactionTemplate<Long, DemandeDelaiCollectiveResults> template = new BatchTransactionTemplate<>(ids, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE,
-				transactionManager, status, hibernateTemplate);
-		template.execute(rapportFinal, new BatchCallback<Long, DemandeDelaiCollectiveResults>() {
+		final SimpleProgressMonitor progressMonitor = new SimpleProgressMonitor();
+		final BatchTransactionTemplateWithResults<Long, DemandeDelaiCollectiveResults> template = new BatchTransactionTemplateWithResults<>(ids, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE, transactionManager, status);
+		template.execute(rapportFinal, new BatchWithResultsCallback<Long, DemandeDelaiCollectiveResults>() {
 
 			@Override
 			public DemandeDelaiCollectiveResults createSubRapport() {
@@ -83,14 +75,11 @@ public class DemandeDelaiCollectiveProcessor {
 
 			@Override
 			public boolean doInTransaction(List<Long> batch, DemandeDelaiCollectiveResults r) throws Exception {
-
-				rapport = r;
-				status.setMessage("Traitement du batch [" + batch.get(0) + "; " + batch.get(batch.size() - 1) + "] ...", percent);
-				
-				traiterBatch(batch, annee, dateDelai, dateTraitement);
+				status.setMessage("Traitement du batch [" + batch.get(0) + "; " + batch.get(batch.size() - 1) + "] ...", progressMonitor.getProgressInPercent());
+				traiterBatch(batch, annee, dateDelai, dateTraitement, r);
 				return true;
 			}
-		});
+		}, progressMonitor);
 
 		final int count = rapportFinal.traites.size();
 
@@ -121,24 +110,24 @@ public class DemandeDelaiCollectiveProcessor {
 		}
 	}
 
-	protected void traiterBatch(List<Long> batch, int annee, RegDate dateDelai, RegDate dateTraitement) {
+	protected void traiterBatch(List<Long> batch, int annee, RegDate dateDelai, RegDate dateTraitement, DemandeDelaiCollectiveResults r) {
 		for (Long id : batch) {
-			traiterContribuable(id, annee, dateDelai, dateTraitement);
+			traiterContribuable(id, annee, dateDelai, dateTraitement, r);
 		}
 	}
 
-	private void traiterContribuable(Long id, int annee, RegDate dateDelai, RegDate dateTraitement) {
+	private void traiterContribuable(Long id, int annee, RegDate dateDelai, RegDate dateTraitement, DemandeDelaiCollectiveResults r) {
 
-		rapport.nbCtbsTotal++;
+		r.nbCtbsTotal++;
 
 		final Contribuable tiers = hibernateTemplate.get(Contribuable.class, id);
 		if (tiers == null) {
-			rapport.addErrorCtbInconnu(id);
+			r.addErrorCtbInconnu(id);
 			return;
 		}
 
 		final DelaiDeclaration dd = newDelaiDeclaration(dateDelai, dateTraitement);
-		accorderDelaiDeclaration(tiers, annee, dd);
+		accorderDelaiDeclaration(tiers, annee, dd, r);
 	}
 
 	/**
@@ -157,13 +146,13 @@ public class DemandeDelaiCollectiveProcessor {
 	/**
 	 * Accorde le délai spécifié au contribuable.
 	 */
-	protected void accorderDelaiDeclaration(Contribuable ctb, int annee, DelaiDeclaration delai) {
+	protected void accorderDelaiDeclaration(Contribuable ctb, int annee, DelaiDeclaration delai, DemandeDelaiCollectiveResults r) {
 
 		final RegDate nouveauDelai = delai.getDelaiAccordeAu();
 
 		final List<Declaration> declarations = ctb.getDeclarationsForPeriode(annee, false);
 		if (declarations == null || declarations.isEmpty()) {
-			rapport.addErrorCtbSansDI(ctb);
+			r.addErrorCtbSansDI(ctb);
 			return;
 		}
 
@@ -175,22 +164,22 @@ public class DemandeDelaiCollectiveProcessor {
 				final RegDate delaiExistant = d.getDelaiAccordeAu();
 				if (delaiExistant != null && delaiExistant.isAfterOrEqual(nouveauDelai)) {
 					// Le délai accordé est égal ou au delà du délai souhaité
-					rapport.addIgnoreDIDelaiSuperieur(d);
+					r.addIgnoreDIDelaiSuperieur(d);
 				}
 				else {
 					d.addDelai(delai);
-					rapport.addDeclarationTraitee(d);
+					r.addDeclarationTraitee(d);
 				}
 				break;
 			}
 			case RETOURNEE:
-				rapport.addErrorDIRetournee(d);
+				r.addErrorDIRetournee(d);
 				break;
 			case ECHUE:
-				rapport.addErrorDIEchue(d);
+				r.addErrorDIEchue(d);
 				break;
 			case SOMMEE:
-				rapport.addErrorDISommee(d);
+				r.addErrorDISommee(d);
 				break;
 			default:
 				throw new IllegalArgumentException("Etat de DI invalide : " + etatDeclaration);

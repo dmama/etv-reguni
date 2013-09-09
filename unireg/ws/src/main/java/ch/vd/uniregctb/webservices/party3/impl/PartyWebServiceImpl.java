@@ -23,6 +23,9 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationException;
+import ch.vd.shared.batchtemplate.BatchResults;
+import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
+import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.unireg.webservices.party3.AcknowledgeTaxDeclarationRequest;
 import ch.vd.unireg.webservices.party3.AcknowledgeTaxDeclarationResponse;
 import ch.vd.unireg.webservices.party3.AcknowledgeTaxDeclarationsRequest;
@@ -56,8 +59,7 @@ import ch.vd.unireg.xml.party.v1.Party;
 import ch.vd.unireg.xml.party.v1.PartyInfo;
 import ch.vd.unireg.xml.party.v1.PartyType;
 import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.common.BatchResults;
-import ch.vd.uniregctb.common.BatchTransactionTemplate;
+import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
@@ -666,11 +668,10 @@ public class PartyWebServiceImpl implements PartyWebService {
 
 		try {
 			final List<AcknowledgeTaxDeclarationRequest> requests = params.getRequests();
-			final BatchTransactionTemplate<AcknowledgeTaxDeclarationRequest, AcknowledgeTaxDeclarationResults> template =
-					new BatchTransactionTemplate<>(requests, requests.size(), BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE,
-							context.transactionManager, null, context.hibernateTemplate);
+			final BatchTransactionTemplateWithResults<AcknowledgeTaxDeclarationRequest, AcknowledgeTaxDeclarationResults> template =
+					new BatchTransactionTemplateWithResults<>(requests, requests.size(), Behavior.REPRISE_AUTOMATIQUE, context.transactionManager, null);
 			final AcknowledgeTaxDeclarationResults finalReport = new AcknowledgeTaxDeclarationResults();
-			template.execute(finalReport, new BatchTransactionTemplate.BatchCallback<AcknowledgeTaxDeclarationRequest, AcknowledgeTaxDeclarationResults>() {
+			template.execute(finalReport, new BatchWithResultsCallback<AcknowledgeTaxDeclarationRequest, AcknowledgeTaxDeclarationResults>() {
 
 				@Override
 				public AcknowledgeTaxDeclarationResults createSubRapport() {
@@ -685,7 +686,7 @@ public class PartyWebServiceImpl implements PartyWebService {
 					}
 					return true;
 				}
-			});
+			}, null);
 			return finalReport.getReponses();
 		}
 		catch (RuntimeException e) {

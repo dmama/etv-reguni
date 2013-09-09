@@ -9,8 +9,8 @@ import com.lowagie.text.pdf.PdfWriter;
 
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.CsvHelper;
-import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.ordinaire.EnvoiAnnexeImmeubleResults;
 
 /**
@@ -42,7 +42,7 @@ public class PdfEnvoiAnnexeImmeubleRapport extends PdfRapport {
 				@Override
 				public void fillTable(PdfTableSimple table) throws DocumentException {
 					table.addLigne("Période fiscale considérée :", String.valueOf(results.annee));
-					table.addLigne("Nombre maximum de contribuables :", String.valueOf(results.nombreAnnexe));
+					table.addLigne("Nombre maximum de contribuables :", String.valueOf(results.nbMaxAnnexes));
 					table.addLigne("Date de traitement :", RegDateHelper.dateToDisplayString(results.dateTraitement));
 				}
 			});

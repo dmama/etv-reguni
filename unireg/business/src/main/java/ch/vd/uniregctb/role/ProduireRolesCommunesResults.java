@@ -4,7 +4,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.tiers.TiersService;
 
-public class ProduireRolesCommunesResults extends ProduireRolesResults {
+public class ProduireRolesCommunesResults extends ProduireRolesResults<ProduireRolesCommunesResults> {
 
 	/** renseigné en cas de sélection d'une seule commune */
 	public final Integer noOfsCommune;

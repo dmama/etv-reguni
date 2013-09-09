@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.parentes;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -12,12 +13,16 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.tx.TxCallback;
-import ch.vd.uniregctb.common.BatchResults;
-import ch.vd.uniregctb.common.BatchTransactionTemplate;
+import ch.vd.shared.batchtemplate.BatchCallback;
+import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
+import ch.vd.shared.batchtemplate.Behavior;
+import ch.vd.shared.batchtemplate.ParallelBatchTransactionTemplateWithResults;
+import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
+import ch.vd.shared.batchtemplate.StatusManager;
+import ch.vd.uniregctb.common.AuthenticationInterface;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.MultipleSwitch;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplate;
-import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiersDAO;
@@ -87,16 +92,17 @@ public class CalculParentesProcessor {
 		status.setMessage(msg, 0);
 		final CalculParentesResults rapportFinal = new CalculParentesResults(nbThreads, mode);
 
-		final ParallelBatchTransactionTemplate<Long, CalculParentesResults> template = new ParallelBatchTransactionTemplate<>(ids, BATCH_SIZE, nbThreads,
-		                                                                                                                      BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE,
-		                                                                                                                      transactionManager, status, hibernateTemplate);
-		template.execute(rapportFinal, new BatchTransactionTemplate.BatchCallback<Long, CalculParentesResults>() {
+		final SimpleProgressMonitor progressMonitor = new SimpleProgressMonitor();
+		final ParallelBatchTransactionTemplateWithResults<Long, CalculParentesResults> template = new ParallelBatchTransactionTemplateWithResults<>(ids, BATCH_SIZE, nbThreads,
+		                                                                                                                      Behavior.REPRISE_AUTOMATIQUE,
+		                                                                                                                      transactionManager, status, AuthenticationInterface.INSTANCE);
+		template.execute(rapportFinal, new BatchWithResultsCallback<Long, CalculParentesResults>() {
 			@Override
 			public boolean doInTransaction(List<Long> batch, CalculParentesResults rapport) throws Exception {
 				interceptorSwitch.pushState();
 				interceptorSwitch.setEnabled(false);
 				try {
-					status.setMessage(msg, percent);
+					status.setMessage(msg, progressMonitor.getProgressInPercent());
 					for (Long idTiers : batch) {
 						final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idTiers);
 						final List<ParenteUpdateInfo> updates;
@@ -125,7 +131,7 @@ public class CalculParentesProcessor {
 			public CalculParentesResults createSubRapport() {
 				return new CalculParentesResults(nbThreads, mode);
 			}
-		});
+		}, progressMonitor);
 
 		if (status.interrupted()) {
 			status.setMessage("Génération des parentés interrompue.");
@@ -167,22 +173,22 @@ public class CalculParentesProcessor {
 
 	private void eliminationDoublonsParentes(int nbThreads, StatusManager status) {
 		status.setMessage("Récupération des éventuels doublons de parentés à éliminer...");
-		final Set<Long> idsEnfants = getEnfantsAvecDoublonsSurParents();
+		final List<Long> idsEnfants = new ArrayList<>(getEnfantsAvecDoublonsSurParents());
 
-		if (idsEnfants != null && idsEnfants.size() > 0) {
+		if (idsEnfants.size() > 0) {
 			status.setMessage("Elimination des doublons de parentés trouvés...");
-			final ParallelBatchTransactionTemplate<Long, BatchResults> template = new ParallelBatchTransactionTemplate<>(idsEnfants, BATCH_SIZE, nbThreads, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE,
-			                                                                                                             transactionManager, status, hibernateTemplate);
-			template.execute(new BatchTransactionTemplate.BatchCallback<Long, BatchResults>() {
+			final ParallelBatchTransactionTemplate<Long> template = new ParallelBatchTransactionTemplate<>(idsEnfants, BATCH_SIZE, nbThreads, Behavior.REPRISE_AUTOMATIQUE,
+			                                                                                               transactionManager, status, AuthenticationInterface.INSTANCE);
+			template.execute(new BatchCallback<Long>() {
 				@Override
-				public boolean doInTransaction(List<Long> batch, BatchResults rapport) throws Exception {
+				public boolean doInTransaction(List<Long> batch) throws Exception {
 					for (Long id : batch) {
 						final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(id);
 						tiersService.refreshParentesSurPersonnePhysique(pp, false);
 					}
 					return true;
 				}
-			});
+			}, null);
 		}
 	}
 

@@ -18,12 +18,15 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
+import ch.vd.shared.batchtemplate.Behavior;
+import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
+import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.common.BatchTransactionTemplate;
+import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.LoggingStatusManager;
-import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -64,8 +67,6 @@ public class FusionDeCommunesProcessor {
 
 	private final Map<Class<? extends ForFiscal>, Strategy> strategies = new HashMap<>();
 
-	protected FusionDeCommunesResults rapport;
-
 	public FusionDeCommunesProcessor(PlatformTransactionManager transactionManager, HibernateTemplate hibernateTemplate, TiersService tiersService, ServiceInfrastructureService serviceInfra,
 	                                 ValidationService validationService, ValidationInterceptor validationInterceptor, AdresseService adresseService) {
 		this.transactionManager = transactionManager;
@@ -81,15 +82,6 @@ public class FusionDeCommunesProcessor {
 		this.strategies.put(ForFiscalAutreElementImposable.class, new ForAutreElementImposableStrategy());
 		this.strategies.put(ForDebiteurPrestationImposable.class, new ForDebiteurStrategy());
 		this.strategies.put(ForFiscalAutreImpot.class, new ForAutreImpotStrategy());
-	}
-
-	/**
-	 * for testing purpose only
-	 *
-	 * @param rapport le rapport qui va bient
-	 */
-	protected void setRapport(FusionDeCommunesResults rapport) {
-		this.rapport = rapport;
 	}
 
 	/**
@@ -117,9 +109,9 @@ public class FusionDeCommunesProcessor {
 		final List<Long> list = getListTiersTouchesParFusion(anciensNoOfs, dateFusion);
 
 		// boucle principale sur les contribuables à traiter
-		final BatchTransactionTemplate<Long, FusionDeCommunesResults> template =
-				new BatchTransactionTemplate<>(list, BATCH_SIZE, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE, transactionManager, s, hibernateTemplate);
-		template.execute(rapportFinal, new BatchTransactionTemplate.BatchCallback<Long, FusionDeCommunesResults>() {
+		final SimpleProgressMonitor progressMonitor = new SimpleProgressMonitor();
+		final BatchTransactionTemplateWithResults<Long, FusionDeCommunesResults> template = new BatchTransactionTemplateWithResults<>(list, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE, transactionManager, s);
+		template.execute(rapportFinal, new BatchWithResultsCallback<Long, FusionDeCommunesResults>() {
 
 			@Override
 			public FusionDeCommunesResults createSubRapport() {
@@ -128,12 +120,11 @@ public class FusionDeCommunesProcessor {
 
 			@Override
 			public boolean doInTransaction(List<Long> batch, FusionDeCommunesResults r) throws Exception {
-				rapport = r;
-				s.setMessage("Traitement du batch [" + batch.get(0) + "; " + batch.get(batch.size() - 1) + "] ...", percent);
-				traiteBatch(batch, anciensNoOfs, nouveauNoOfs, dateFusion, s);
+				s.setMessage("Traitement du batch [" + batch.get(0) + "; " + batch.get(batch.size() - 1) + "] ...", progressMonitor.getProgressInPercent());
+				traiteBatch(batch, anciensNoOfs, nouveauNoOfs, dateFusion, s, r);
 				return !s.interrupted();
 			}
-		});
+		}, progressMonitor);
 
 		if (status.interrupted()) {
 			status.setMessage("Le traitement de la fusion des communes a été interrompu."
@@ -149,16 +140,16 @@ public class FusionDeCommunesProcessor {
 		return rapportFinal;
 	}
 
-	private void traiteBatch(List<Long> batch, final Set<Integer> anciensNoOfs, int nouveauNoOfs, RegDate dateFusion, StatusManager s) {
+	private void traiteBatch(List<Long> batch, final Set<Integer> anciensNoOfs, int nouveauNoOfs, RegDate dateFusion, StatusManager s, FusionDeCommunesResults r) {
 		for (Long id : batch) {
-			traiteTiers(id, anciensNoOfs, nouveauNoOfs, dateFusion);
+			traiteTiers(id, anciensNoOfs, nouveauNoOfs, dateFusion, r);
 			if (s.interrupted()) {
 				break;
 			}
 		}
 	}
 
-	protected void traiteTiers(Long id, Set<Integer> anciensNoOfs, int nouveauNoOfs, RegDate dateFusion) {
+	protected void traiteTiers(Long id, Set<Integer> anciensNoOfs, int nouveauNoOfs, RegDate dateFusion, FusionDeCommunesResults r) {
 
 		final Tiers tiers = hibernateTemplate.get(Tiers.class, id);
 		Assert.notNull(tiers);
@@ -210,10 +201,10 @@ public class FusionDeCommunesProcessor {
 			}
 
 			if (forTraite) {
-				rapport.tiersTraites.add(id);
+				r.tiersTraites.add(id);
 			}
 			else if (forIgnore) {
-				rapport.addTiersIgnoreDejaSurCommuneResultante(tiers);
+				r.addTiersIgnoreDejaSurCommuneResultante(tiers);
 			}
 
 		}

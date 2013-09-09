@@ -8,8 +8,8 @@ import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfWriter;
 
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.CsvHelper;
-import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.registrefoncier.ImportImmeublesResults;
 
 public class PdfImportImmeublesRapport extends PdfRapport {

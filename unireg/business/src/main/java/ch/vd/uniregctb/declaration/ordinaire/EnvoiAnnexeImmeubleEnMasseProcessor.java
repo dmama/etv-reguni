@@ -12,14 +12,15 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
+import ch.vd.shared.batchtemplate.Behavior;
+import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
+import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
-import ch.vd.uniregctb.common.BatchTransactionTemplate;
-import ch.vd.uniregctb.common.BatchTransactionTemplate.BatchCallback;
-import ch.vd.uniregctb.common.BatchTransactionTemplate.Behavior;
+import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.LoggingStatusManager;
-import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
@@ -46,7 +47,6 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 
 	final Logger LOGGER = Logger.getLogger(EnvoiAnnexeImmeubleEnMasseProcessor.class);
 
-
 	private final TiersService tiersService;
 	private final HibernateTemplate hibernateTemplate;
 	private final PeriodeFiscaleDAO periodeDAO;
@@ -58,7 +58,6 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 	private final AdresseService adresseService;
 
 	private final int tailleLot;
-
 
 	private static class Cache {
 		public final CollectiviteAdministrative cedi;
@@ -82,7 +81,6 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 	}
 
 	private Cache cache;
-	private EnvoiAnnexeImmeubleResults rapport;
 
 	public EnvoiAnnexeImmeubleEnMasseProcessor(TiersService tiersService, HibernateTemplate hibernateTemplate, ModeleDocumentDAO modeleDAO,
 	                                           PeriodeFiscaleDAO periodeDAO, DeclarationImpotService diService, int tailleLot,
@@ -103,16 +101,15 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 
 	public EnvoiAnnexeImmeubleResults run(final int anneePeriode, final List<ContribuableAvecImmeuble> listCtbImmo, final int nbMax,
 	                                      final RegDate dateTraitement, StatusManager s) throws DeclarationException {
-		Assert.isTrue(rapport == null);
 
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 		final EnvoiAnnexeImmeubleResults rapportFinal = new EnvoiAnnexeImmeubleResults(anneePeriode, dateTraitement, "", nbMax, tiersService, adresseService);
 
 		// Traite les contribuables par lots
-		final BatchTransactionTemplate<ContribuableAvecImmeuble, EnvoiAnnexeImmeubleResults> template =
-				new BatchTransactionTemplate<>(listCtbImmo, tailleLot, Behavior.REPRISE_AUTOMATIQUE,
-						transactionManager, status, hibernateTemplate);
-		template.execute(rapportFinal, new BatchCallback<ContribuableAvecImmeuble, EnvoiAnnexeImmeubleResults>() {
+		final SimpleProgressMonitor progressMonitor = new SimpleProgressMonitor();
+		final BatchTransactionTemplateWithResults<ContribuableAvecImmeuble, EnvoiAnnexeImmeubleResults> template =
+				new BatchTransactionTemplateWithResults<>(listCtbImmo, tailleLot, Behavior.REPRISE_AUTOMATIQUE, transactionManager, status);
+		template.execute(rapportFinal, new BatchWithResultsCallback<ContribuableAvecImmeuble, EnvoiAnnexeImmeubleResults>() {
 
 			@Override
 			public EnvoiAnnexeImmeubleResults createSubRapport() {
@@ -121,9 +118,7 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 
 			@Override
 			public boolean doInTransaction(List<ContribuableAvecImmeuble> batch, EnvoiAnnexeImmeubleResults r) throws Exception {
-				rapport = r;
-
-				status.setMessage("Traitement du batch [" + batch.get(0).getNumeroContribuable() + "; " + batch.get(batch.size() - 1).getNumeroContribuable() + "] ...", percent);
+				status.setMessage("Traitement du batch [" + batch.get(0).getNumeroContribuable() + "; " + batch.get(batch.size() - 1).getNumeroContribuable() + "] ...", progressMonitor.getProgressInPercent());
 
 				if (nbMax > 0 && rapportFinal.nbCtbsTotal + batch.size() >= nbMax) {
 					// limite le nombre de contribuable pour ne pas dépasser le nombre max
@@ -132,12 +127,12 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 				}
 
 				if (!batch.isEmpty()) {
-					traiterBatch(batch, anneePeriode, dateTraitement);
+					traiterBatch(batch, anneePeriode, dateTraitement, r);
 				}
 
 				return !rapportFinal.interrompu && (nbMax <= 0 || rapportFinal.nbCtbsTotal + batch.size() < nbMax);
 			}
-		});
+		}, progressMonitor);
 
 		if (status.interrupted()) {
 			status.setMessage("L'envoi en masse du formulaire immeuble a été interrompue."
@@ -154,38 +149,33 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 	}
 
 	/**
-	 * Pour le testing uniquement !
-	 */
-	protected void setRapport(EnvoiAnnexeImmeubleResults rapport) {
-		this.rapport = rapport;
-	}
-
-	/**
 	 * Traite tout le batch des contribuables, un par un.
+	 *
 	 *
 	 * @param listCtbImmeuble les listCtbImmeuble des contribuables à traiter
 	 * @param anneePeriode    l'année fiscale considérée
 	 * @param dateTraitement  la date de traitement
+	 * @param r
 	 * @throws ch.vd.uniregctb.declaration.DeclarationException
 	 *          en cas d'erreur dans le traitement d'un contribuable.
 	 */
-	protected void traiterBatch(List<ContribuableAvecImmeuble> listCtbImmeuble, int anneePeriode, RegDate dateTraitement)
+	protected void traiterBatch(List<ContribuableAvecImmeuble> listCtbImmeuble, int anneePeriode, RegDate dateTraitement, EnvoiAnnexeImmeubleResults r)
 			throws DeclarationException {
 		// pré-chauffage du cache des individus du civil
 		final List<Long> idsCtb = getIdCtb(listCtbImmeuble);
 		if (serviceCivilCacheWarmer != null) {
 			serviceCivilCacheWarmer.warmIndividusPourTiers(idsCtb, null, true, AttributeIndividu.ADRESSES);
 		}
-		rapport.nbCtbsTotal += listCtbImmeuble.size();
+		r.nbCtbsTotal += listCtbImmeuble.size();
 
 		initCache(anneePeriode);
 
 		for (ContribuableAvecImmeuble ctbImmeuble : listCtbImmeuble) {
 			final Contribuable ctb = (Contribuable) tiersService.getTiers(ctbImmeuble.getNumeroContribuable());
 
-			final PeriodeImposition pi = getPeriodeImpositionEnFinDePeriodeFiscale(ctb, anneePeriode);
+			final PeriodeImposition pi = getPeriodeImpositionEnFinDePeriodeFiscale(ctb, anneePeriode, r);
 			if (pi == null) {
-				rapport.addIgnoreCtbNonAssujetti(ctb, anneePeriode);
+				r.addIgnoreCtbNonAssujetti(ctb, anneePeriode);
 			}
 			else {
 				final int nombreAnnexesImmeuble = getNombreAnnexeAEnvoyer(ctbImmeuble.getNombreImmeubles());
@@ -205,11 +195,9 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 
 
 				final int nombreAnnexesImprimees = imprimerAnnexeImmeuble(infoFormulaireImmeuble, cache.setAnnexeImmeuble, dateTraitement, nombreAnnexesImmeuble);
-				rapport.addInfoCtbTraites(ctb, nombreAnnexesImprimees);
-				rapport.addCtbTraites(ctb.getId());
+				r.addInfoCtbTraites(ctb, nombreAnnexesImprimees);
+				r.addCtbTraites(ctb.getId());
 			}
-
-
 		}
 	}
 
@@ -242,17 +230,19 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 	/**
 	 * On ne prend que les contribuables qui ont une période d'imposition qui va jusqu'à la fin de l'année (pour éliminer les sourciers purs, pour lesquels on ne trouvera pas d'OID de gestion)
 	 *
+	 *
 	 * @param ctb     contribuable à tester
 	 * @param periode année fiscale
+	 * @param r
 	 * @return la période d'imposition en fin de période fiscale s'il y en a une, <code>null</code> dans le cas contraire
 	 */
-	protected PeriodeImposition getPeriodeImpositionEnFinDePeriodeFiscale(Contribuable ctb, int periode) {
+	protected PeriodeImposition getPeriodeImpositionEnFinDePeriodeFiscale(Contribuable ctb, int periode, EnvoiAnnexeImmeubleResults r) {
 		List<PeriodeImposition> list = null;
 		try {
 			list = periodeImpositionService.determine(ctb, periode);
 		}
 		catch (AssujettissementException e) {
-			rapport.addErrorException(ctb, e);
+			r.addErrorException(ctb, e);
 		}
 		final RegDate date = RegDate.get(periode, 12, 31);
 		if (list != null) {

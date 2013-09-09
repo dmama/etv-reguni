@@ -7,9 +7,9 @@ import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
+import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.MultipleSwitch;
-import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.common.Switchable;
 import ch.vd.uniregctb.document.CalculParentesRapport;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;

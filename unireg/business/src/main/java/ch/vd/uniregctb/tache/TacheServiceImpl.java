@@ -28,12 +28,14 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
+import ch.vd.shared.batchtemplate.Behavior;
+import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.common.BatchTransactionTemplate;
+import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.FiscalDateHelper;
-import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
@@ -558,9 +560,9 @@ public class TacheServiceImpl implements TacheService {
 		// toutes les actions d'un contribuable soient exécutées dans une même transaction.
 		final TacheSyncResults results = new TacheSyncResults(false);
 
-		final BatchTransactionTemplate<Long, TacheSyncResults> batchTemplate =
-				new BatchTransactionTemplate<>(entityActions.keySet(), 100, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE, transactionManager, null, hibernateTemplate);
-		batchTemplate.execute(results, new BatchTransactionTemplate.BatchCallback<Long, TacheSyncResults>() {
+		final BatchTransactionTemplateWithResults<Long, TacheSyncResults> batchTemplate =
+				new BatchTransactionTemplateWithResults<>(entityActions.keySet(), 100, Behavior.REPRISE_AUTOMATIQUE, transactionManager, null);
+		batchTemplate.execute(results, new BatchWithResultsCallback<Long, TacheSyncResults>() {
 			@Override
 			public boolean doInTransaction(List<Long> batch, TacheSyncResults rapport) throws Exception {
 				for (Long id : batch) {
@@ -573,7 +575,7 @@ public class TacheServiceImpl implements TacheService {
 			public TacheSyncResults createSubRapport() {
 				return new TacheSyncResults(false);
 			}
-		});
+		}, null);
 
 		return results;
 	}

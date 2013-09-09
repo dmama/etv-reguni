@@ -11,9 +11,9 @@ import org.apache.log4j.Logger;
 import org.springframework.util.ResourceUtils;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.BusinessItTestApplication;
-import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.document.RapprocherCtbRapport;
 import ch.vd.uniregctb.rapport.RapportService;
 

@@ -11,11 +11,14 @@ import org.jetbrains.annotations.Nullable;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.registre.base.date.DateHelper;
+import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
+import ch.vd.shared.batchtemplate.Behavior;
+import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
+import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.common.BatchTransactionTemplate;
+import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.LoggingStatusManager;
-import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
@@ -46,11 +49,13 @@ public class ImportCodesSegmentProcessor {
 		final StatusManager status = (s != null ? s : new LoggingStatusManager(LOGGER));
 
 		final ImportCodesSegmentResults rapportFinal = new ImportCodesSegmentResults(tiersService, adresseService);
-		final BatchTransactionTemplate<ContribuableAvecCodeSegment, ImportCodesSegmentResults> batchTemplate = new BatchTransactionTemplate<>(input, BATCH_SIZE, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, hibernateTemplate);
-		batchTemplate.execute(rapportFinal, new BatchTransactionTemplate.BatchCallback<ContribuableAvecCodeSegment, ImportCodesSegmentResults>() {
+		final SimpleProgressMonitor progressMonitor = new SimpleProgressMonitor();
+		final BatchTransactionTemplateWithResults<ContribuableAvecCodeSegment, ImportCodesSegmentResults>
+				batchTemplate = new BatchTransactionTemplateWithResults<>(input, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE, transactionManager, status);
+		batchTemplate.execute(rapportFinal, new BatchWithResultsCallback<ContribuableAvecCodeSegment, ImportCodesSegmentResults>() {
 			@Override
 			public boolean doInTransaction(List<ContribuableAvecCodeSegment> batch, ImportCodesSegmentResults rapport) throws Exception {
-				status.setMessage("Traitement du batch [" + batch.get(0).getNoContribuable() + "; " + batch.get(batch.size() - 1).getNoContribuable() + "] ...", percent);
+				status.setMessage("Traitement du batch [" + batch.get(0).getNoContribuable() + "; " + batch.get(batch.size() - 1).getNoContribuable() + "] ...", progressMonitor.getProgressInPercent());
 				doBatch(batch, rapport);
 				return !status.interrupted();
 			}
@@ -59,7 +64,7 @@ public class ImportCodesSegmentProcessor {
 			public ImportCodesSegmentResults createSubRapport() {
 				return new ImportCodesSegmentResults(tiersService, adresseService);
 			}
-		});
+		}, progressMonitor);
 
 		rapportFinal.setInterrompu(status.interrupted());
 		rapportFinal.end();

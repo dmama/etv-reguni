@@ -12,12 +12,13 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
+import ch.vd.shared.batchtemplate.Behavior;
+import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
+import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.common.BatchTransactionTemplate;
-import ch.vd.uniregctb.common.BatchTransactionTemplate.BatchCallback;
-import ch.vd.uniregctb.common.BatchTransactionTemplate.Behavior;
+import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.LoggingStatusManager;
-import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -44,8 +45,6 @@ public class ReinitialiserBaremeDoubleGainProcessor {
 	private final TiersService tiersService;
 	private final AdresseService adresseService;
 
-	private ReinitialiserBaremeDoubleGainResults rapport;
-
 	public ReinitialiserBaremeDoubleGainProcessor(SituationFamilleService service, HibernateTemplate hibernateTemplate,
 	                                              PlatformTransactionManager transactionManager, TiersService tiersService, AdresseService adresseService) {
 		this.service = service;
@@ -66,9 +65,9 @@ public class ReinitialiserBaremeDoubleGainProcessor {
 
 		final ReinitialiserBaremeDoubleGainResults rapportFinal = new ReinitialiserBaremeDoubleGainResults(dateTraitement, tiersService, adresseService);
 
-		final BatchTransactionTemplate<Long, ReinitialiserBaremeDoubleGainResults> template = new BatchTransactionTemplate<>(dis, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE,
-				transactionManager, status, hibernateTemplate);
-		template.execute(rapportFinal, new BatchCallback<Long, ReinitialiserBaremeDoubleGainResults>() {
+		final SimpleProgressMonitor progressMonitor = new SimpleProgressMonitor();
+		final BatchTransactionTemplateWithResults<Long, ReinitialiserBaremeDoubleGainResults> template = new BatchTransactionTemplateWithResults<>(dis, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE, transactionManager, status);
+		template.execute(rapportFinal, new BatchWithResultsCallback<Long, ReinitialiserBaremeDoubleGainResults>() {
 
 			@Override
 			public ReinitialiserBaremeDoubleGainResults createSubRapport() {
@@ -77,14 +76,11 @@ public class ReinitialiserBaremeDoubleGainProcessor {
 
 			@Override
 			public boolean doInTransaction(List<Long> batch, ReinitialiserBaremeDoubleGainResults r) throws Exception {
-
-				rapport = r;
-				status.setMessage("Traitement du batch [" + batch.get(0) + "; " + batch.get(batch.size() - 1) + "] ...", percent);
-
-				traiterBatch(batch, dateTraitement);
+				status.setMessage("Traitement du batch [" + batch.get(0) + "; " + batch.get(batch.size() - 1) + "] ...", progressMonitor.getProgressInPercent());
+				traiterBatch(batch, dateTraitement, r);
 				return true;
 			}
-		});
+		}, progressMonitor);
 
 		rapportFinal.interrompu = status.interrupted();
 		rapportFinal.end();
@@ -98,11 +94,12 @@ public class ReinitialiserBaremeDoubleGainProcessor {
 	 * @param batch
 	 *            le batch des situations à traiter
 	 * @param dateTraitement
-	 *            la date de traitement. Voir {@link ReinitialiserBaremeDoubleGainProcessor#traiterSituation(Long, RegDate)}.
+	 *            la date de traitement. Voir {@link ReinitialiserBaremeDoubleGainProcessor#traiterSituation(Long, ch.vd.registre.base.date.RegDate, ReinitialiserBaremeDoubleGainResults)}.
+	 * @param r
 	 */
-	private void traiterBatch(List<Long> batch, RegDate dateTraitement) {
+	private void traiterBatch(List<Long> batch, RegDate dateTraitement, ReinitialiserBaremeDoubleGainResults r) {
 		for (Long id : batch) {
-			traiterSituation(id, dateTraitement);
+			traiterSituation(id, dateTraitement, r);
 		}
 	}
 
@@ -113,9 +110,9 @@ public class ReinitialiserBaremeDoubleGainProcessor {
 	 * @param id
 	 *            l'id de la situation de famille à traiter
 	 * @param dateTraitement
-	 *            la date de traitement.
+	 * @param r
 	 */
-	protected void traiterSituation(Long id, RegDate dateTraitement) {
+	protected void traiterSituation(Long id, RegDate dateTraitement, ReinitialiserBaremeDoubleGainResults r) {
 
 		Assert.notNull(id, "L'id doit être spécifié.");
 
@@ -123,7 +120,7 @@ public class ReinitialiserBaremeDoubleGainProcessor {
 		Assert.notNull(situation, "La situation de famille n'existe pas.");
 
 		if (situation.getTarifApplicable() != TarifImpotSource.DOUBLE_GAIN) {
-			rapport.addIgnoreBaremeNonDoubleGain(situation, "Attendu = DOUBLE_GAIN, constaté = " + situation.getTarifApplicable()
+			r.addIgnoreBaremeNonDoubleGain(situation, "Attendu = DOUBLE_GAIN, constaté = " + situation.getTarifApplicable()
 					+ ". Erreur dans la requête SQL ?");
 			return;
 		}
@@ -137,7 +134,7 @@ public class ReinitialiserBaremeDoubleGainProcessor {
 		nouvelle.setTarifApplicable(TarifImpotSource.NORMAL);
 
 		nouvelle = (SituationFamilleMenageCommun) service.addSituationFamille(nouvelle, contribuable);
-		rapport.addSituationsTraitee(situation, nouvelle);
+		r.addSituationsTraitee(situation, nouvelle);
 	}
 
 	private static final String QUERY_STRING = "SELECT "// -------------------------------------------------------
@@ -173,12 +170,5 @@ public class ReinitialiserBaremeDoubleGainProcessor {
 		});
 
 		return ids;
-	}
-
-	/**
-	 * Uniquement pour le testing.
-	 */
-	protected void setRapport(ReinitialiserBaremeDoubleGainResults rapport) {
-		this.rapport = rapport;
 	}
 }

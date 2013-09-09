@@ -249,8 +249,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 		});
 
 		final FusionDeCommunesResults rapport = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
-		processor.setRapport(rapport);
-		processor.traiteTiers(id, anciensNoOfs, nouveauNoOfs, dateFusion);
+		processor.traiteTiers(id, anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
 
 		// Le contribuable ne possède pas de for -> il ne devrait pas être impacté
 		final PersonnePhysique bruno = hibernateTemplate.get(PersonnePhysique.class, id);
@@ -278,8 +277,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 		});
 
 		final FusionDeCommunesResults rapport = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
-		processor.setRapport(rapport);
-		processor.traiteTiers(id, anciensNoOfs, nouveauNoOfs, dateFusion);
+		processor.traiteTiers(id, anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
 
 		// Le contribuable possède des fors sur des communes non-concernées pas la fusion -> il ne devrait pas être impacté
 		final PersonnePhysique bruno = hibernateTemplate.get(PersonnePhysique.class, id);
@@ -320,8 +318,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 		});
 
 		final FusionDeCommunesResults rapport = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
-		processor.setRapport(rapport);
-		processor.traiteTiers(id, anciensNoOfs, nouveauNoOfs, dateFusion);
+		processor.traiteTiers(id, anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
 
 		// Le contribuable possède des fors sur les communes concernées pas la fusion, mais ils sont tous fermés -> il ne devrait pas être impacté
 		final PersonnePhysique bruno = hibernateTemplate.get(PersonnePhysique.class, id);
@@ -368,8 +365,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 		});
 
 		final FusionDeCommunesResults rapport = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
-		processor.setRapport(rapport);
-		processor.traiteTiers(id, anciensNoOfs, nouveauNoOfs, dateFusion);
+		processor.traiteTiers(id, anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
 
 		// Le contribuable possède un immeuble sur une des communes concernées pas la fusion -> ce for devrait être mis-à-jour
 		final PersonnePhysique bruno = hibernateTemplate.get(PersonnePhysique.class, id);
@@ -413,8 +409,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 		});
 
 		final FusionDeCommunesResults rapport = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
-		processor.setRapport(rapport);
-		processor.traiteTiers(id, anciensNoOfs, nouveauNoOfs, dateFusion);
+		processor.traiteTiers(id, anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
 
 		// Le contribuable habite sur une des communes concernées pas la fusion -> son for principal devrait être mis-à-jour
 		final PersonnePhysique bruno = hibernateTemplate.get(PersonnePhysique.class, id);
@@ -460,8 +455,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				processor.setRapport(rapport);
-				processor.traiteTiers(id, anciensNoOfs, nouveauNoOfs, dateFusion);
+				processor.traiteTiers(id, anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
 				return null;
 			}
 		});
@@ -520,8 +514,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				processor.setRapport(rapport);
-				processor.traiteTiers(id, anciensNoOfs, nouveauNoOfs, dateFusion);
+				processor.traiteTiers(id, anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
 				return null;
 			}
 		});
@@ -580,8 +573,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 		});
 
 		final FusionDeCommunesResults rapport = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
-		processor.setRapport(rapport);
-		processor.traiteTiers(id, anciensNoOfs, nouveauNoOfs, dateFusion);
+		processor.traiteTiers(id, anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
 
 		// Le contribuable habite déjà sur la commune résultant de la fusion -> son for principal ne doit pas être mis-à-jour
 		final PersonnePhysique bruno = hibernateTemplate.get(PersonnePhysique.class, id);
@@ -615,8 +607,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 		});
 
 		final FusionDeCommunesResults rapport = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
-		processor.setRapport(rapport);
-		processor.traiteTiers(id, anciensNoOfs, nouveauNoOfs, dateFusion);
+		processor.traiteTiers(id, anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
 
 		// Le débiteur habite sur une des communes concernées pas la fusion -> son for principal devrait être mis-à-jour
 		final DebiteurPrestationImposable dpi = hibernateTemplate.get(DebiteurPrestationImposable.class, id);

@@ -15,13 +15,13 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
+import ch.vd.shared.batchtemplate.Behavior;
+import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.common.BatchTransactionTemplate;
-import ch.vd.uniregctb.common.BatchTransactionTemplate.BatchCallback;
-import ch.vd.uniregctb.common.BatchTransactionTemplate.Behavior;
+import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.LoggingStatusManager;
-import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
@@ -67,11 +67,8 @@ public class EnvoiLRsEnMasseProcessor {
 		// Liste de tous les DPI à passer en revue
 		final List<Long> list = getListDPI();
 
-		final BatchTransactionTemplate<Long, EnvoiLRsResults> template =
-				new BatchTransactionTemplate<>(list, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE, transactionManager, s, hibernateTemplate);
-		template.execute(rapportFinal, new BatchCallback<Long, EnvoiLRsResults>() {
-
-			private EnvoiLRsResults rapport;
+		final BatchTransactionTemplateWithResults<Long, EnvoiLRsResults> template = new BatchTransactionTemplateWithResults<>(list, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE, transactionManager, s);
+		template.execute(rapportFinal, new BatchWithResultsCallback<Long, EnvoiLRsResults>() {
 
 			@Override
 			public EnvoiLRsResults createSubRapport() {
@@ -80,8 +77,7 @@ public class EnvoiLRsEnMasseProcessor {
 
 			@Override
 			public boolean doInTransaction(List<Long> batch, EnvoiLRsResults r) throws Exception {
-				rapport = r;
-				traiteBatch(batch, dateFinPeriode, s, this.rapport);
+				traiteBatch(batch, dateFinPeriode, s, r);
 				return !s.interrupted();
 			}
 
@@ -90,7 +86,7 @@ public class EnvoiLRsEnMasseProcessor {
 				final int percent = (100 * rapportFinal.nbDPIsTotal) / list.size();
 				s.setMessage(String.format("%d sur %d débiteurs traités", rapportFinal.nbDPIsTotal, list.size()), percent);
 			}
-		});
+		}, null);
 
 		if (status.interrupted()) {
 			status.setMessage("L'envoi des listes récapitulatives a été interrompu."

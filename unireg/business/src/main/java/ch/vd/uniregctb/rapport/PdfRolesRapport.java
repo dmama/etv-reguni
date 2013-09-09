@@ -113,7 +113,7 @@ public abstract class PdfRolesRapport<T extends ProduireRolesResults> extends Pd
 	 * @param triAlphabetique <code>false</code> si les commune ne doivent pas être spécialement triées, <code>true</code> si le tri doit être fait alphabétiquement
 	 * @return la liste des communes triées (ou non) par ordre alphabétique
 	 */
-	protected final List<Commune> getListeCommunes(final T results, boolean triAlphabetique) {
+	protected final List<Commune> getListeCommunes(final ProduireRolesResults<? extends T> results, boolean triAlphabetique) {
 
 		final List<Commune> listCommunes = new ArrayList<>(results.infosCommunes.size());
 		for (ProduireRolesResults.InfoCommune infoCommune : results.infosCommunes.values()) {

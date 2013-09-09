@@ -24,13 +24,16 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.shared.batchtemplate.BatchResults;
+import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
+import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
+import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.common.BatchResults;
-import ch.vd.uniregctb.common.BatchTransactionTemplate;
+import ch.vd.uniregctb.common.AuthenticationInterface;
+import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.DefaultThreadNameGenerator;
 import ch.vd.uniregctb.common.MonitorableExecutorService;
-import ch.vd.uniregctb.common.ParallelBatchTransactionTemplate;
-import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResult;
 import ch.vd.uniregctb.common.ThreadNameGenerator;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.inbox.InboxAttachment;
@@ -478,9 +481,12 @@ public class ExtractionServiceImpl implements ExtractionService, InitializingBea
 		return runBatchableExtractor(extractor, new CustomBatchableRun<E, R, BatchableParallelExtractor<E, R>>() {
 			@Override
 			public void run(BatchableParallelExtractor<E, R> extractor, R rapportFinal, List<E> elements) {
-				final ParallelBatchTransactionTemplate<E, R> batch = new ParallelBatchTransactionTemplate<>(elements, extractor.getBatchSize(), extractor.getNbThreads(), extractor.getBatchBehavior(), transactionManager, extractor.getStatusManager(), hibernateTemplate);
+				final SimpleProgressMonitor progressMonitor = new SimpleProgressMonitor();
+				final ParallelBatchTransactionTemplateWithResult<E, R>
+						batch = new ParallelBatchTransactionTemplateWithResult<>(elements, extractor.getBatchSize(), extractor.getNbThreads(), extractor.getBatchBehavior(), transactionManager,
+						                                                         extractor.getStatusManager(), AuthenticationInterface.INSTANCE);
 				batch.setReadonly(true);        // ce sont toutes des extractions !
-				batch.execute(rapportFinal, createCallback(extractor, rapportFinal));
+				batch.execute(rapportFinal, createCallback(extractor, rapportFinal, progressMonitor), progressMonitor);
 			}
 		});
 	}
@@ -497,9 +503,11 @@ public class ExtractionServiceImpl implements ExtractionService, InitializingBea
 		return runBatchableExtractor(extractor, new CustomBatchableRun<E, R, BatchableExtractor<E, R>>() {
 			@Override
 			public void run(BatchableExtractor<E, R> extractor, R rapportFinal, List<E> elements) {
-				final BatchTransactionTemplate<E, R> batch = new BatchTransactionTemplate<>(elements, extractor.getBatchSize(), extractor.getBatchBehavior(), transactionManager, extractor.getStatusManager(), hibernateTemplate);
+				final SimpleProgressMonitor progressMonitor = new SimpleProgressMonitor();
+				final BatchTransactionTemplateWithResults<E, R>
+						batch = new BatchTransactionTemplateWithResults<>(elements, extractor.getBatchSize(), extractor.getBatchBehavior(), transactionManager, extractor.getStatusManager());
 				batch.setReadonly(true);        // ce sont toutes des extractions !
-				batch.execute(rapportFinal, createCallback(extractor, rapportFinal));
+				batch.execute(rapportFinal, createCallback(extractor, rapportFinal, progressMonitor), progressMonitor);
 			}
 		});
 	}
@@ -511,8 +519,8 @@ public class ExtractionServiceImpl implements ExtractionService, InitializingBea
 	 * @param <R> classe de résultat de chacun des lots
 	 * @return le code qui sera exécuté pour chaque lot
 	 */
-	private static <E, R extends BatchResults<E, R>> BatchTransactionTemplate.BatchCallback<E, R> createCallback(final BatchableExtractor<E, R> extractor, final R rapportFinal) {
-		return new BatchTransactionTemplate.BatchCallback<E, R>() {
+	private static <E, R extends BatchResults<E, R>> BatchWithResultsCallback<E, R> createCallback(final BatchableExtractor<E, R> extractor, final R rapportFinal, final SimpleProgressMonitor progressMonitor) {
+		return new BatchWithResultsCallback<E, R>() {
 			@Override
 			public boolean doInTransaction(List<E> batch, R rapport) throws Exception {
 				return !extractor.wasInterrupted() && extractor.doBatchExtraction(batch, rapport);
@@ -526,7 +534,7 @@ public class ExtractionServiceImpl implements ExtractionService, InitializingBea
 			@Override
 			public void afterTransactionCommit() {
 				super.afterTransactionCommit();
-				extractor.afterTransactionCommit(rapportFinal, percent);
+				extractor.afterTransactionCommit(rapportFinal, progressMonitor.getProgressInPercent());
 			}
 		};
 	}

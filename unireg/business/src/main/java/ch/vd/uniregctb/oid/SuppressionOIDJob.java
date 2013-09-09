@@ -20,10 +20,13 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
+import ch.vd.shared.batchtemplate.Behavior;
+import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
+import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.common.BatchTransactionTemplate;
-import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.document.SuppressionOIDRapport;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.rapport.RapportService;
@@ -128,9 +131,10 @@ public class SuppressionOIDJob extends JobDefinition {
 		final SuppressionOIDResults rapportFinal = new SuppressionOIDResults(oid, dateTraitement, tiersService, adresseService);
 		rapportFinal.total = ids.size();
 
-		final BatchTransactionTemplate<Long, SuppressionOIDResults> template =
-				new BatchTransactionTemplate<>(ids, 100, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, hibernateTemplate);
-		template.execute(rapportFinal, new BatchTransactionTemplate.BatchCallback<Long, SuppressionOIDResults>() {
+		final SimpleProgressMonitor progressMonitor = new SimpleProgressMonitor();
+		final BatchTransactionTemplateWithResults<Long, SuppressionOIDResults> template =
+				new BatchTransactionTemplateWithResults<>(ids, 100, Behavior.REPRISE_AUTOMATIQUE, transactionManager, status);
+		template.execute(rapportFinal, new BatchWithResultsCallback<Long, SuppressionOIDResults>() {
 
 			@Override
 			public SuppressionOIDResults createSubRapport() {
@@ -141,12 +145,12 @@ public class SuppressionOIDJob extends JobDefinition {
 			public boolean doInTransaction(List<Long> batch, SuppressionOIDResults rapport) throws Exception {
 				final Long first = batch.get(0);
 				final Long last = batch.get(batch.size() - 1);
-				status.setMessage("Correction de l'OID sur les tiers n°" + first + " à " + last, percent);
+				status.setMessage("Correction de l'OID sur les tiers n°" + first + " à " + last, progressMonitor.getProgressInPercent());
 
 				processBatch(batch, oid, officeImpotId, rapport);
 				return !status.interrupted();
 			}
-		});
+		}, progressMonitor);
 
 		if (status.interrupted()) {
 			status.setMessage("La suppression de l'OID n°" + oid + " a été interrompue."

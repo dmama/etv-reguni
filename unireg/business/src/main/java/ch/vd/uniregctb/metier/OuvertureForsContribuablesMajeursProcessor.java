@@ -14,6 +14,10 @@ import org.springframework.transaction.support.TransactionCallback;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
+import ch.vd.shared.batchtemplate.Behavior;
+import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
+import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.EtatCivil;
@@ -26,12 +30,9 @@ import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
-import ch.vd.uniregctb.common.BatchTransactionTemplate;
-import ch.vd.uniregctb.common.BatchTransactionTemplate.BatchCallback;
-import ch.vd.uniregctb.common.BatchTransactionTemplate.Behavior;
+import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.common.LoggingStatusManager;
-import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -66,8 +67,6 @@ public class OuvertureForsContribuablesMajeursProcessor {
 	private final ServiceCivilCacheWarmer serviceCivilCacheWarmer;
 	private final ValidationService validationService;
 
-	protected OuvertureForsResults rapport;
-
 	public OuvertureForsContribuablesMajeursProcessor(PlatformTransactionManager transactionManager, HibernateTemplate hibernateTemplate, TiersDAO tiersDAO, TiersService tiersService,
 	                                                  AdresseService adresseService, ServiceInfrastructureService serviceInfra, ServiceCivilCacheWarmer serviceCivilCacheWarmer,
 	                                                  ValidationService validationService) {
@@ -96,9 +95,9 @@ public class OuvertureForsContribuablesMajeursProcessor {
 		// boucle principale sur les habitants à traiter
 		final List<Long> list = getListHabitantsSansForPrincipal(dateReference);
 
-		final BatchTransactionTemplate<Long, OuvertureForsResults> template = new BatchTransactionTemplate<>(list, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE,
-				transactionManager, s, hibernateTemplate);
-		template.execute(rapportFinal, new BatchCallback<Long, OuvertureForsResults>() {
+		final SimpleProgressMonitor progressMonitor = new SimpleProgressMonitor();
+		final BatchTransactionTemplateWithResults<Long, OuvertureForsResults> template = new BatchTransactionTemplateWithResults<>(list, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE, transactionManager, s);
+		template.execute(rapportFinal, new BatchWithResultsCallback<Long, OuvertureForsResults>() {
 
 			@Override
 			public OuvertureForsResults createSubRapport() {
@@ -107,20 +106,18 @@ public class OuvertureForsContribuablesMajeursProcessor {
 
 			@Override
 			public boolean doInTransaction(List<Long> batch, OuvertureForsResults r) throws Exception {
-				rapport = r;
-				traiteBatch(batch, dateReference, s);
+				traiteBatch(batch, dateReference, s, r);
 				return !s.interrupted();
 			}
 
 			@Override
 			public void afterTransactionCommit() {
-				int percent = (100 * rapportFinal.nbHabitantsTotal) / list.size();
 				s.setMessage(String.format(
 						"%d habitants traités sur %d [fors ouverts=%d, mineurs=%d, décédés=%d, horsVD=%d, en erreur=%d]",
 						rapportFinal.nbHabitantsTotal, list.size(), rapportFinal.habitantTraites.size(), rapportFinal.nbHabitantsMineurs,
-						rapportFinal.nbHabitantsDecedes, rapportFinal.nbHabitantsHorsVD, rapportFinal.habitantEnErrors.size()), percent);
+						rapportFinal.nbHabitantsDecedes, rapportFinal.nbHabitantsHorsVD, rapportFinal.habitantEnErrors.size()), progressMonitor.getProgressInPercent());
 			}
-		});
+		}, progressMonitor);
 
 		if (status.interrupted()) {
 			status.setMessage("L'ouverture des fors des contribuables majeurs a été interrompue."
@@ -136,7 +133,7 @@ public class OuvertureForsContribuablesMajeursProcessor {
 		return rapportFinal;
 	}
 
-	private void traiteBatch(List<Long> batch, RegDate dateReference, StatusManager status) {
+	private void traiteBatch(List<Long> batch, RegDate dateReference, StatusManager status, OuvertureForsResults r) {
 
 		// On préchauffe le cache des individus, si possible
 		if (serviceCivilCacheWarmer.isServiceWarmable()) {
@@ -151,26 +148,26 @@ public class OuvertureForsContribuablesMajeursProcessor {
 			if (status.interrupted()) {
 				break;
 			}
-			traiteHabitant(id, dateReference);
+			traiteHabitant(id, dateReference, r);
 		}
 	}
 
-	protected void traiteHabitant(Long id, RegDate dateReference) {
+	protected void traiteHabitant(Long id, RegDate dateReference, OuvertureForsResults r) {
 
 		PersonnePhysique habitant = hibernateTemplate.get(PersonnePhysique.class, id);
 
-		++rapport.nbHabitantsTotal;
+		++r.nbHabitantsTotal;
 
 		// traitement de l'habitant
 		try {
-			traiteHabitant(habitant, dateReference);
+			traiteHabitant(habitant, dateReference, r);
 		}
 		catch (OuvertureForsException e) {
-			rapport.addOuvertureForsException(e);
+			r.addOuvertureForsException(e);
 		}
 		catch (Exception e) {
 			LOGGER.error("Erreur inconnue en traitant l'habitant n° " + habitant.getNumero(), e);
-			rapport.addUnknownException(habitant, e);
+			r.addUnknownException(habitant, e);
 		}
 	}
 
@@ -253,7 +250,7 @@ public class OuvertureForsContribuablesMajeursProcessor {
 		}
 	}
 
-	private void traiteHabitant(PersonnePhysique habitant, RegDate dateReference) throws OuvertureForsException {
+	private void traiteHabitant(PersonnePhysique habitant, RegDate dateReference, OuvertureForsResults r) throws OuvertureForsException {
 
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("Traitement de l'habitant n° " + habitant.getNumero());
@@ -281,14 +278,14 @@ public class OuvertureForsContribuablesMajeursProcessor {
 		// L’individu doit être majeur à la date du traitement, c’est-à-dire avoir 18 ans révolus
 		if (!FiscalDateHelper.isMajeur(dateReference, data.getDateNaissance())) {
 			// l'individu est mineur => rien à faire
-			rapport.nbHabitantsMineurs++;
+			r.nbHabitantsMineurs++;
 			return;
 		}
 
 		if (data.getDateDeces() != null) {
 			// l'individu est décédé => rien à faire
 			habitant.setMajoriteTraitee(Boolean.TRUE); // à moins d'un résurrection, c'est fini avec celui-là.
-			rapport.nbHabitantsDecedes++;
+			r.nbHabitantsDecedes++;
 			return;
 		}
 
@@ -298,7 +295,7 @@ public class OuvertureForsContribuablesMajeursProcessor {
 		if (!data.isDomicilieDansLeCanton()) {
 			// l'individu domicilié hors-Canton/hors-Suisse => rien à faire
 			habitant.setMajoriteTraitee(Boolean.TRUE); // on ouvrira un for à son arrivée dans le canton, si nécessaire
-			rapport.nbHabitantsHorsVD++;
+			r.nbHabitantsHorsVD++;
 			return;
 		}
 		Assert.notNull(data.getNumeroOfsAutoriteFiscale());
@@ -350,7 +347,7 @@ public class OuvertureForsContribuablesMajeursProcessor {
 		//On n'assert pas car les sourcier n'ont pour le moment pas de for de gestion
 		//Assert.notNull(oid);
 				
-		rapport.addHabitantTraite(habitant, oid, modeImposition);
+		r.addHabitantTraite(habitant, oid, modeImposition);
 	}
 
 	private void fillDatesNaissanceEtDeces(PersonnePhysique habitant, final HabitantData data, RegDate dateReference) throws OuvertureForsException {

@@ -4,8 +4,8 @@ import java.util.Map;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.document.IdentifierContribuableRapport;
 import ch.vd.uniregctb.rapport.RapportService;
 import ch.vd.uniregctb.scheduler.JobDefinition;
@@ -44,16 +44,8 @@ public class IdentifierContribuableJob extends JobDefinition {
 		addParameterDefinition(paramIdMessage, null);
 	}
 
-	public IdentificationContribuableService getIdentificationService() {
-		return identificationService;
-	}
-
 	public void setIdentificationService(IdentificationContribuableService identificationService) {
 		this.identificationService = identificationService;
-	}
-
-	public RapportService getRapportService() {
-		return rapportService;
 	}
 
 	public void setRapportService(RapportService rapportService) {

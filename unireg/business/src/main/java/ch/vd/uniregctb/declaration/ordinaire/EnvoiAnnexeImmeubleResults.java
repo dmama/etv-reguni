@@ -12,7 +12,7 @@ import ch.vd.uniregctb.common.JobResults;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.TiersService;
 
-public class EnvoiAnnexeImmeubleResults<R extends EnvoiAnnexeImmeubleResults> extends JobResults<ContribuableAvecImmeuble, R> {
+public class EnvoiAnnexeImmeubleResults extends JobResults<ContribuableAvecImmeuble, EnvoiAnnexeImmeubleResults> {
 
 	public static enum ErreurType {
 		EXCEPTION(EXCEPTION_DESCRIPTION);
@@ -91,7 +91,7 @@ public class EnvoiAnnexeImmeubleResults<R extends EnvoiAnnexeImmeubleResults> ex
 	public final int annee;
 	public final RegDate dateTraitement;
 	public final String nomFichier;
-	public final int nombreAnnexe;
+	public final int nbMaxAnnexes;
 
 	// Données de processing
 	public int nbCtbsTotal;
@@ -101,12 +101,12 @@ public class EnvoiAnnexeImmeubleResults<R extends EnvoiAnnexeImmeubleResults> ex
 	public final List<Erreur> ctbsEnErrors = new ArrayList<>();
 	public boolean interrompu;
 
-	public EnvoiAnnexeImmeubleResults(int annee, RegDate dateTraitement, String nomFichier, int nombreAnnexe, TiersService tiersService, AdresseService adresseService) {
+	public EnvoiAnnexeImmeubleResults(int annee, RegDate dateTraitement, String nomFichier, int nbMaxAnnexes, TiersService tiersService, AdresseService adresseService) {
 		super(tiersService, adresseService);
 		this.annee = annee;
 		this.dateTraitement = dateTraitement;
 		this.nomFichier = nomFichier;
-		this.nombreAnnexe = nombreAnnexe;
+		this.nbMaxAnnexes = nbMaxAnnexes;
 	}
 
 	public void addCtbTraites(Long noCtb) {
@@ -141,7 +141,7 @@ public class EnvoiAnnexeImmeubleResults<R extends EnvoiAnnexeImmeubleResults> ex
 	}
 
 	@Override
-	public void addAll(R rapport) {
+	public void addAll(EnvoiAnnexeImmeubleResults rapport) {
 		if (rapport != null) {
 			this.nbCtbsTotal += rapport.nbCtbsTotal;
 			this.ctbsTraites.addAll(rapport.ctbsTraites);

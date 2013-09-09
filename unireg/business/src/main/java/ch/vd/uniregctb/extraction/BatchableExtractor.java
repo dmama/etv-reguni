@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
-import ch.vd.uniregctb.common.BatchResults;
-import ch.vd.uniregctb.common.BatchTransactionTemplate;
+import ch.vd.shared.batchtemplate.BatchResults;
+import ch.vd.shared.batchtemplate.Behavior;
 
 /**
  * Interface implémentée par les extracteurs qui supportent le traitement par lot
@@ -24,7 +24,7 @@ public interface BatchableExtractor<E, R extends BatchResults<E, R>> extends Ext
 	/**
 	 * @return le comportement à adopter en cas d'erreur dans un lot
 	 */
-	BatchTransactionTemplate.Behavior getBatchBehavior();
+	Behavior getBatchBehavior();
 
 	/**
 	 * Méthode appelée dans le cadre d'une transaction read-only
@@ -38,7 +38,7 @@ public interface BatchableExtractor<E, R extends BatchResults<E, R>> extends Ext
 	int getBatchSize();
 
 	/**
-	 * Méthode appelée dans le cadre d'une transaction par le {@link BatchTransactionTemplate}
+	 * Méthode appelée dans le cadre d'une transaction par le {@link ch.vd.uniregctb.common.BatchTransactionTemplateWithResults}
 	 * @param batch le lot à traiter
 	 * @param rapport le rapport à remplir à partir des informations du lot
 	 * @return <code>true</code> s'il faut continuer avec le lot suivant, <code>false</code> si le traitement doit s'arrêter là

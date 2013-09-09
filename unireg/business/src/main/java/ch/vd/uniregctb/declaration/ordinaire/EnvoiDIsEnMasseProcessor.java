@@ -24,15 +24,17 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
+import ch.vd.shared.batchtemplate.Behavior;
+import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
+import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
-import ch.vd.uniregctb.common.BatchTransactionTemplate.BatchCallback;
-import ch.vd.uniregctb.common.BatchTransactionTemplate.Behavior;
+import ch.vd.uniregctb.common.AuthenticationInterface;
 import ch.vd.uniregctb.common.LoggingStatusManager;
-import ch.vd.uniregctb.common.ParallelBatchTransactionTemplate;
-import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResult;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
@@ -125,7 +127,7 @@ public class EnvoiDIsEnMasseProcessor {
 		Assert.isTrue(tailleLot > 0);
 	}
 
-	public EnvoiDIsResults<EnvoiDIsResults> run(final int anneePeriode, final CategorieEnvoiDI categorie, @Nullable final Long noCtbMin, @Nullable final Long noCtbMax, final int nbMax,
+	public EnvoiDIsResults run(final int anneePeriode, final CategorieEnvoiDI categorie, @Nullable final Long noCtbMin, @Nullable final Long noCtbMax, final int nbMax,
 	                           final RegDate dateTraitement, final boolean exclureDecedes, final int nbThreads, @Nullable StatusManager s) throws DeclarationException {
 
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
@@ -141,9 +143,10 @@ public class EnvoiDIsEnMasseProcessor {
 			final List<Long> ids = createListOnContribuableIds(anneePeriode, categorie.getTypeContribuable(), categorie.getTypeDocument(), noCtbMin, noCtbMax);
 
 			// Traite les contribuables par lots
-			final ParallelBatchTransactionTemplate<Long, EnvoiDIsResults> template = new ParallelBatchTransactionTemplate<>(ids, tailleLot, nbThreads, Behavior.REPRISE_AUTOMATIQUE,
-			                                                                                                                                     transactionManager, status, hibernateTemplate);
-			template.execute(rapportFinal, new BatchCallback<Long, EnvoiDIsResults>() {
+			final SimpleProgressMonitor progressMonitor = new SimpleProgressMonitor();
+			final ParallelBatchTransactionTemplateWithResult<Long, EnvoiDIsResults> template = new ParallelBatchTransactionTemplateWithResult<>(ids, tailleLot, nbThreads, Behavior.REPRISE_AUTOMATIQUE,
+			                                                                                                                                     transactionManager, status, AuthenticationInterface.INSTANCE);
+			template.execute(rapportFinal, new BatchWithResultsCallback<Long, EnvoiDIsResults>() {
 
 				@Override
 				public EnvoiDIsResults createSubRapport() {
@@ -152,7 +155,7 @@ public class EnvoiDIsEnMasseProcessor {
 
 				@Override
 				public boolean doInTransaction(List<Long> batch, EnvoiDIsResults r) throws Exception {
-					status.setMessage("Traitement du batch [" + batch.get(0) + "; " + batch.get(batch.size() - 1) + "] ...", percent);
+					status.setMessage("Traitement du batch [" + batch.get(0) + "; " + batch.get(batch.size() - 1) + "] ...", progressMonitor.getProgressInPercent());
 
 					if (nbMax > 0 && rapportFinal.nbCtbsTotal + batch.size() >= nbMax) {
 						// limite le nombre de contribuable pour ne pas dépasser le nombre max
@@ -166,7 +169,7 @@ public class EnvoiDIsEnMasseProcessor {
 
 					return !rapportFinal.interrompu && (nbMax <= 0 || rapportFinal.nbCtbsTotal + batch.size() < nbMax);
 				}
-			});
+			}, progressMonitor);
 		}
 
 		if (status.interrupted()) {
@@ -370,11 +373,11 @@ public class EnvoiDIsEnMasseProcessor {
 	 *
 	 * @return <b>vrai</b> si la tâche a été traitée, <b>faux</b> autrement
 	 */
-	protected boolean traiterTache(TacheEnvoiDeclarationImpot tache, RegDate dateTraitement, EnvoiDIsResults rapport, Cache cache, DeclarationsCache dcache) throws DeclarationException {
+	protected boolean traiterTache(TacheEnvoiDeclarationImpot tache, RegDate dateTraitement, AbstractEnvoiDIsResults rapport, Cache cache, DeclarationsCache dcache) throws DeclarationException {
 		return traiterTache(tache, dateTraitement, rapport, cache, dcache, false);
 	}
 
-	protected boolean traiterTache(TacheEnvoiDeclarationImpot tache, RegDate dateTraitement, EnvoiDIsResults rapport, Cache cache, DeclarationsCache dcache, boolean simul) throws DeclarationException {
+	protected boolean traiterTache(TacheEnvoiDeclarationImpot tache, RegDate dateTraitement, AbstractEnvoiDIsResults rapport, Cache cache, DeclarationsCache dcache, boolean simul) throws DeclarationException {
 
 		final Contribuable contribuable = tache.getContribuable();
 		final Long numeroCtb = contribuable.getNumero();
@@ -382,7 +385,9 @@ public class EnvoiDIsEnMasseProcessor {
 		// Voir le use-case "SCU-ExclureContribuablesEnvoiDI"
 		final RegDate dateLimiteExclusion = contribuable.getDateLimiteExclusionEnvoiDeclarationImpot();
 		if (dateLimiteExclusion != null && dateTraitement.isBeforeOrEqual(dateLimiteExclusion)) {
-			rapport.addIgnoreCtbExclu(contribuable, dateLimiteExclusion);
+			if (rapport != null) {
+				rapport.addIgnoreCtbExclu(contribuable, dateLimiteExclusion);
+			}
 			return false;
 		}
 
@@ -467,7 +472,7 @@ public class EnvoiDIsEnMasseProcessor {
 	 * @throws ch.vd.uniregctb.declaration.DeclarationException
 	 *          en cas d'exception
 	 */
-	private boolean envoyerDIIndigent(TacheEnvoiDeclarationImpot tache, RegDate dateTraitement, EnvoiDIsResults rapport, Cache cache, DeclarationsCache dcache, boolean simul) throws DeclarationException {
+	private boolean envoyerDIIndigent(TacheEnvoiDeclarationImpot tache, RegDate dateTraitement, AbstractEnvoiDIsResults rapport, Cache cache, DeclarationsCache dcache, boolean simul) throws DeclarationException {
 
 		final DeclarationImpotOrdinaire di = creeDI(tache, rapport, cache, dcache, simul);
 		if (di == null) {
@@ -491,7 +496,7 @@ public class EnvoiDIsEnMasseProcessor {
 	/**
 	 * Crée une nouvelle déclaration d'impôt sur le tiers
 	 */
-	protected DeclarationImpotOrdinaire creeDI(TacheEnvoiDeclarationImpot tache, EnvoiDIsResults rapport, Cache cache, DeclarationsCache dcache, boolean simul) throws DeclarationException {
+	protected DeclarationImpotOrdinaire creeDI(TacheEnvoiDeclarationImpot tache, AbstractEnvoiDIsResults rapport, Cache cache, DeclarationsCache dcache, boolean simul) throws DeclarationException {
 
 		final Contribuable contribuable = tache.getContribuable();
 		final ForGestion forGestion = tiersService.getForGestionActif(contribuable, tache.getDateFin());
@@ -577,7 +582,7 @@ public class EnvoiDIsEnMasseProcessor {
 	 * @param simul          true si le batch est appelé en mode simulation ( {@link ch.vd.uniregctb.declaration.ordinaire.ProduireListeDIsNonEmisesProcessor} ). Dans ce cas on imprime pas
 	 *
 	 */
-	private boolean envoyerDINormal(TacheEnvoiDeclarationImpot tache, RegDate dateTraitement, EnvoiDIsResults rapport, Cache cache, DeclarationsCache dcache, boolean simul) throws DeclarationException {
+	private boolean envoyerDINormal(TacheEnvoiDeclarationImpot tache, RegDate dateTraitement, AbstractEnvoiDIsResults rapport, Cache cache, DeclarationsCache dcache, boolean simul) throws DeclarationException {
 
 		final Contribuable ctb = tache.getContribuable();
 		if (!simul && ctb.getOfficeImpotId() == null) {
