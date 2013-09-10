@@ -588,7 +588,7 @@ public class CalculParentesProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	public void testRefreshDirtyToujourdPasBon() throws Exception {
+	public void testRefreshDirtyToujoursPasBon() throws Exception {
 
 		final long noIndParent1 = 4367345L;
 		final long noIndEnfant1 = 543735L;
