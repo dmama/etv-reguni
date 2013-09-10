@@ -30,6 +30,7 @@ import ch.vd.evd0001.v5.PersonIdentification;
 import ch.vd.evd0001.v5.Residence;
 import ch.vd.evd0001.v5.ResidencePermit;
 import ch.vd.evd0001.v5.UpiPerson;
+import ch.vd.registre.base.avs.AvsHelper;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeAdapterCallback;
 import ch.vd.registre.base.date.DateRangeComparator;
@@ -92,14 +93,14 @@ public class IndividuRCPers implements Individu, Serializable {
 		this.autresPrenoms = identity.getFirstNames();
 		this.nom = identity.getOfficialName();
 		this.nomNaissance = identity.getOriginalName();
-		this.noAVS11 = initNumeroAVS11(identity.getOtherPersonId());
+		this.sexe = EchHelper.sexeFromEch44(identity.getSex());
+		this.deces = XmlUtils.xmlcal2regdate(person.getDateOfDeath());
+		this.naissance = EchHelper.partialDateFromEch44(identity.getDateOfBirth());
+		this.noAVS11 = initNumeroAVS11(identity.getOtherPersonId(), this.naissance, this.sexe);
 		if (upiPerson != null) {
 			this.nouveauNoAVS = EchHelper.avs13FromEch(upiPerson.getVn());
 		}
 		this.numeroRCE = initNumeroRCE(identity.getOtherPersonId());
-		this.sexe = EchHelper.sexeFromEch44(identity.getSex());
-		this.deces = XmlUtils.xmlcal2regdate(person.getDateOfDeath());
-		this.naissance = EchHelper.partialDateFromEch44(identity.getDateOfBirth());
 		this.dateArriveeVD = initDateArriveeVD(person.getResidenceHistory());
 		this.origines = initOrigins(person);
 
@@ -260,14 +261,18 @@ public class IndividuRCPers implements Individu, Serializable {
 		return getNoIndividu(identity.getLocalPersonId());
 	}
 
-	private static String initNumeroAVS11(List<NamedPersonId> otherPersonIds) {
+	private static String initNumeroAVS11(List<NamedPersonId> otherPersonIds, RegDate dateNaissance, Sexe sexe) {
 		if (otherPersonIds == null) {
 			return null;
 		}
 		String numeroAVS11 = null;
 		for (NamedPersonId id : otherPersonIds) {
 			if ("CH.AHV".equals(id.getPersonIdCategory())) {
-				numeroAVS11 = id.getPersonId();
+				// [SIFISC-7610] on ne prend en compte l'identifiant ici que s'il a la bonne tête pour être un NAVS11 (la validation sur le sexe est bypassée si on ne le connait pas)
+				final String avs11 = AvsHelper.removeSpaceAndDash(id.getPersonId());
+				if (AvsHelper.isValidAncienNumAVS(avs11, dateNaissance, sexe == Sexe.MASCULIN) || (sexe == null && AvsHelper.isValidAncienNumAVS(avs11, dateNaissance, true))) {
+					numeroAVS11 = id.getPersonId();
+				}
 				break;
 			}
 		}
