@@ -17,7 +17,6 @@ import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
-import ch.vd.uniregctb.parentes.ParenteUpdateInfo;
 import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantResults;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
@@ -1201,9 +1200,10 @@ public interface TiersService {
 	 *     <li>on ne fait rien du tout si l'individu ne correspond à aucune personne physique.</li>
 	 * </ul>
 	 * @param noIndividu numéro technique de l'individu civil
+	 * @return les parentés créées/annulées et les erreurs rencontrées
 	 * @throws PlusieursPersonnesPhysiquesAvecMemeNumeroIndividuException si le numéro d'individu correspond à plusieurs personnes physiques non annulées/désactivées
 	 */
-	List<ParenteUpdateInfo> refreshParentesDepuisNumeroIndividu(long noIndividu);
+	ParenteUpdateResult refreshParentesDepuisNumeroIndividu(long noIndividu);
 
 	/**
 	 * Rafraîchissement des parentés fiscales depuis les données civiles de l'individu derrière la personne physique donnée
@@ -1214,9 +1214,10 @@ public interface TiersService {
 	 * </ul>
 	 * @param pp            personne physique dont les parentés doivent être rafraîchies
 	 * @param enfantsAussi  <code>false</code> si seules les parentés ascendantes sont rafraîchies, <code>true</code> pour rafraîchir également les parentés descendantes
+	 * @return les parentés créées/annulées et les erreurs rencontrées
 	 * @throws PlusieursPersonnesPhysiquesAvecMemeNumeroIndividuException si on se heurte à un numéro d'individu partagé par plusieurs personnes physiques non annulées/désactivées durant le processus
 	 */
-	List<ParenteUpdateInfo> refreshParentesSurPersonnePhysique(PersonnePhysique pp, boolean enfantsAussi);
+	ParenteUpdateResult refreshParentesSurPersonnePhysique(PersonnePhysique pp, boolean enfantsAussi);
 
 	/**
 	 * Rafraîchissement des parentés fiscales depuis les données civiles de l'individu derrière la personne physique donnée
@@ -1225,10 +1226,10 @@ public interface TiersService {
 	 *     <li>on ne fait rien du tout si la personne physique est <code>null</code> ou si elle n'a pas de numéro d'individu civil.</li>
 	 * </ul>
 	 * @param pp personne physique dont les parentés doivent être rafraîchies
-	 * @return les relations de parenté créées
+	 * @return les parentés créées/annulées et les erreurs rencontrées
 	 * @throws PlusieursPersonnesPhysiquesAvecMemeNumeroIndividuException si on se heurte à un numéro d'individu partagé par plusieurs personnes physiques non annulées/désactivées durant le processus
 	 */
-	List<ParenteUpdateInfo> initParentesDepuisFiliationsCiviles(PersonnePhysique pp);
+	ParenteUpdateResult initParentesDepuisFiliationsCiviles(PersonnePhysique pp);
 
 	/**
 	 * Renvoie les numéros d'individus liés par une relation de parenté au(x) contribuable(s) dont le numéro d'individu est donné (lien direct)

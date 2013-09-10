@@ -23,7 +23,7 @@ import ch.vd.uniregctb.common.AuthenticationInterface;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.MultipleSwitch;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplate;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
+import ch.vd.uniregctb.tiers.ParenteUpdateResult;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiersDAO;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -39,16 +39,13 @@ public class CalculParentesProcessor {
 	private final RapportEntreTiersDAO rapportDAO;
 	private final TiersDAO tiersDAO;
 	private final PlatformTransactionManager transactionManager;
-	private final HibernateTemplate hibernateTemplate;
 	private final MultipleSwitch interceptorSwitch;
 	private final TiersService tiersService;
 
-	public CalculParentesProcessor(RapportEntreTiersDAO rapportDAO, TiersDAO tiersDAO, PlatformTransactionManager transactionManager, HibernateTemplate hibernateTemplate,
-	                               MultipleSwitch interceptorSwitch, TiersService tiersService) {
+	public CalculParentesProcessor(RapportEntreTiersDAO rapportDAO, TiersDAO tiersDAO, PlatformTransactionManager transactionManager, MultipleSwitch interceptorSwitch, TiersService tiersService) {
 		this.rapportDAO = rapportDAO;
 		this.tiersDAO = tiersDAO;
 		this.transactionManager = transactionManager;
-		this.hibernateTemplate = hibernateTemplate;
 		this.interceptorSwitch = interceptorSwitch;
 		this.tiersService = tiersService;
 	}
@@ -105,15 +102,18 @@ public class CalculParentesProcessor {
 					status.setMessage(msg, progressMonitor.getProgressInPercent());
 					for (Long idTiers : batch) {
 						final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idTiers);
-						final List<ParenteUpdateInfo> updates;
+						final ParenteUpdateResult result;
 						if (mode == CalculParentesMode.FULL) {
-							updates = tiersService.initParentesDepuisFiliationsCiviles(pp);
+							result = tiersService.initParentesDepuisFiliationsCiviles(pp);
 						}
 						else {
-							updates = tiersService.refreshParentesSurPersonnePhysique(pp, false);
+							result = tiersService.refreshParentesSurPersonnePhysique(pp, false);
 						}
-						for (ParenteUpdateInfo update : updates) {
+						for (ParenteUpdateInfo update : result.getUpdates()) {
 							rapport.addParenteUpdate(update);
+						}
+						for (ParenteUpdateResult.Error error : result.getErrors()) {
+							rapport.addError(error.getNoCtb(), error.getErrorMsg());
 						}
 
 						if (status.interrupted()) {

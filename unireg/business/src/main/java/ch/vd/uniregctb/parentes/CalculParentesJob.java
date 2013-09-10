@@ -12,7 +12,6 @@ import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.MultipleSwitch;
 import ch.vd.uniregctb.common.Switchable;
 import ch.vd.uniregctb.document.CalculParentesRapport;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.rapport.RapportService;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
@@ -34,7 +33,6 @@ public class CalculParentesJob extends JobDefinition {
 	private RapportEntreTiersDAO rapportEntreTiersDAO;
 	private TiersDAO tiersDAO;
 	private PlatformTransactionManager transactionManager;
-	private HibernateTemplate hibernateTemplate;
 	private TiersService tiersService;
 	private RapportService rapportService;
 	private MultipleSwitch interceptorSwitch;
@@ -74,10 +72,6 @@ public class CalculParentesJob extends JobDefinition {
 		this.transactionManager = transactionManager;
 	}
 
-	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
-		this.hibernateTemplate = hibernateTemplate;
-	}
-
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
 	}
@@ -95,7 +89,7 @@ public class CalculParentesJob extends JobDefinition {
 		final StatusManager statusManager = getStatusManager();
 		final int nbThreads = getIntegerValue(params, NB_THREADS);
 		final CalculParentesMode mode = getEnumValue(params, MODE, CalculParentesMode.class);
-		final CalculParentesProcessor processor = new CalculParentesProcessor(rapportEntreTiersDAO, tiersDAO, transactionManager, hibernateTemplate, interceptorSwitch, tiersService);
+		final CalculParentesProcessor processor = new CalculParentesProcessor(rapportEntreTiersDAO, tiersDAO, transactionManager, interceptorSwitch, tiersService);
 		final CalculParentesResults results = processor.run(nbThreads, mode, statusManager);
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);

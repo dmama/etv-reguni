@@ -37,7 +37,7 @@ public class CalculParentesProcessorTest extends BusinessTest {
 		// contrairement au vrai code, je ne coupe pas ici le validationInterceptor pour que si quelque chose
 		// pête à ce niveau, on le voit au moins ici...
 		final MultipleSwitch interceptorSwitch = new MultipleSwitch(parentesSynchronizer, tacheSynchronizer);
-		processor = new CalculParentesProcessor(rapportDAO, tiersDAO, transactionManager, hibernateTemplate, interceptorSwitch, tiersService);
+		processor = new CalculParentesProcessor(rapportDAO, tiersDAO, transactionManager, interceptorSwitch, tiersService);
 	}
 
 	@Test
@@ -585,5 +585,56 @@ public class CalculParentesProcessorTest extends BusinessTest {
 				return null;
 			}
 		});
+	}
+
+	@Test
+	public void testRefreshDirtyToujourdPasBon() throws Exception {
+
+		final long noIndParent1 = 4367345L;
+		final long noIndEnfant1 = 543735L;
+		final RegDate dateNaissanceEnfant1 = date(2000, 5, 31);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu parent1 = addIndividu(noIndParent1, null, "Bleu", "Papa", Sexe.MASCULIN);
+				final MockIndividu enfant1 = addIndividu(noIndEnfant1, dateNaissanceEnfant1, "Bleu", "Puce", Sexe.FEMININ);
+				addLiensFiliation(enfant1, parent1, null, dateNaissanceEnfant1, null);
+			}
+		});
+
+		// on crée juste l'enfant1 en tant que contribuable, sans son parent -> dirty
+		final long ppEnfant1 = doInNewTransactionAndSessionUnderSwitch(parentesSynchronizer, true, new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique enfant1 = addHabitant(noIndEnfant1);
+				return enfant1.getNumero();
+			}
+		});
+
+		// vérifie le flag "dirty"
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique enfant1 = (PersonnePhysique) tiersDAO.get(ppEnfant1);
+				Assert.assertNotNull(enfant1);
+				Assert.assertTrue(enfant1.isParenteDirty());
+				return null;
+			}
+		});
+
+		// on lance le retraitement
+		final CalculParentesResults result = processor.run(1, CalculParentesMode.REFRESH_DIRTY, null);
+		Assert.assertNotNull(result);
+		Assert.assertEquals(1, result.getErreurs().size());     // eh oui, il y a toujours un problème ici !!...
+		Assert.assertEquals(0, result.getUpdates().size());
+
+		final CalculParentesResults.InfoErreur erreur = result.getErreurs().get(0);
+		Assert.assertNotNull(erreur);
+		Assert.assertEquals(ppEnfant1, erreur.noCtbEnfant);
+		Assert.assertEquals(String.format("Impossible de créer une parenté depuis l'enfant %d vers son parent car aucun tiers n'existe dans le registre avec le numéro d'individu %d.",
+		                                  ppEnfant1, noIndParent1),
+		                    erreur.msg);
 	}
 }

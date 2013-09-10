@@ -1751,22 +1751,22 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Override
-	public List<ParenteUpdateInfo> refreshParentesDepuisNumeroIndividu(long noIndividu) {
+	public ParenteUpdateResult refreshParentesDepuisNumeroIndividu(long noIndividu) {
 		final PersonnePhysique pp = getPersonnePhysiqueByNumeroIndividu(noIndividu);
-		final List<ParenteUpdateInfo> updateInfos;
+		final ParenteUpdateResult result;
 		if (pp != null) {
-			updateInfos = refreshParentesSurPersonnePhysique(pp, true);
+			result = refreshParentesSurPersonnePhysique(pp, true);
 		}
 		else {
-			updateInfos = Collections.emptyList();
+			result = ParenteUpdateResult.EMPTY;
 		}
-		return updateInfos;
+		return result;
 	}
 
 	@Override
-	public List<ParenteUpdateInfo> initParentesDepuisFiliationsCiviles(PersonnePhysique pp) {
+	public ParenteUpdateResult initParentesDepuisFiliationsCiviles(PersonnePhysique pp) {
 		if (pp.isHabitantVD()) {
-			final List<ParenteUpdateInfo> creees = new LinkedList<>();
+			final ParenteUpdateResult result = new ParenteUpdateResult();
 			final long noIndividu = pp.getNumeroIndividu();
 			final Individu individu = serviceCivilService.getIndividu(noIndividu, null, AttributeIndividu.PARENTS);
 			final List<RelationVersIndividu> parentRel = individu.getParents();
@@ -1778,11 +1778,12 @@ public class TiersServiceImpl implements TiersService {
 						if (parente != null) {
 							final Parente merged = hibernateTemplate.merge(parente);
 							pp.getRapportsSujet().add(merged);
-							creees.add(ParenteUpdateInfo.getCreation(parente));
+							result.addUpdate(ParenteUpdateInfo.getCreation(parente));
 						}
 					}
 					catch (CreationParenteImpossibleCarTiersParentInconnuAuFiscal | PlusieursPersonnesPhysiquesAvecMemeNumeroIndividuException e) {
 						LOGGER.warn(e.getMessage(), e);
+						result.addError(pp.getNumero(), e.getMessage());
 						parenteDirty = true;
 					}
 				}
@@ -1790,10 +1791,10 @@ public class TiersServiceImpl implements TiersService {
 			if (parenteDirty != pp.isParenteDirty()) {
 				setParenteDirtyFlag(pp, parenteDirty);
 			}
-			return creees;
+			return result.isEmpty() ? ParenteUpdateResult.EMPTY : result;
 		}
 		else {
-			return Collections.emptyList();
+			return ParenteUpdateResult.EMPTY;
 		}
 	}
 
@@ -1903,8 +1904,7 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Override
-	public List<ParenteUpdateInfo> refreshParentesSurPersonnePhysique(PersonnePhysique pp, boolean enfantsAussi) {
-		final List<ParenteUpdateInfo> updates;
+	public ParenteUpdateResult refreshParentesSurPersonnePhysique(PersonnePhysique pp, boolean enfantsAussi) {
 		if (pp != null && pp.isHabitantVD()) {
 
 			// 1. on retrouve les parents depuis les données civiles
@@ -1913,6 +1913,7 @@ public class TiersServiceImpl implements TiersService {
 			final List<RelationVersIndividu> parents = individu.getParents();
 
 			boolean parenteDirty = false;
+			final ParenteUpdateResult result = new ParenteUpdateResult();
 
 			// 1.1. on récupère les données "en tiers"
 			final Set<RapportEntreTiers> sujetsConnus = pp.getRapportsSujet();
@@ -1928,6 +1929,7 @@ public class TiersServiceImpl implements TiersService {
 					}
 					catch (CreationParenteImpossibleCarTiersParentInconnuAuFiscal | PlusieursPersonnesPhysiquesAvecMemeNumeroIndividuException e) {
 						LOGGER.warn(e.getMessage(), e);
+						result.addError(pp.getNumero(), e.getMessage());
 						parenteDirty = true;
 					}
 				}
@@ -1938,8 +1940,6 @@ public class TiersServiceImpl implements TiersService {
 			if (parenteDirty != pp.isParenteDirty()) {
 				setParenteDirtyFlag(pp, parenteDirty);
 			}
-
-			updates = new LinkedList<>();
 
 			// 1.2. on passe d'abord en revue les parentés (-> parents) connues pour voir celles qui doivent disparaître
 			final Set<RapportEntreTiers> sujets;
@@ -1957,7 +1957,7 @@ public class TiersServiceImpl implements TiersService {
 							// non, pas de relation avec cet individu ou la relation ne correspond pas (dates ?)
 							// -> il faut annuler l'ancienne
 							sujet.setAnnule(true);
-							updates.add(ParenteUpdateInfo.getAnnulation((Parente) sujet));
+							result.addUpdate(ParenteUpdateInfo.getAnnulation((Parente) sujet));
 						}
 					}
 				}
@@ -1971,7 +1971,7 @@ public class TiersServiceImpl implements TiersService {
 			for (Parente civile : filiationsCiviles.values()) {
 				final Parente persistent = hibernateTemplate.merge(civile);
 				sujets.add(persistent);
-				updates.add(ParenteUpdateInfo.getCreation(persistent));
+				result.addUpdate(ParenteUpdateInfo.getCreation(persistent));
 			}
 
 			// 2. si nécessaire, on fait pareil sur les enfants connus
@@ -1979,14 +1979,15 @@ public class TiersServiceImpl implements TiersService {
 				final List<Parente> enfants = getEnfants(pp, false);
 				for (Parente versEnfant : enfants) {
 					final PersonnePhysique enfant = (PersonnePhysique) tiersDAO.get(versEnfant.getSujetId());
-					updates.addAll(refreshParentesSurPersonnePhysique(enfant, false));
+					result.addAll(refreshParentesSurPersonnePhysique(enfant, false));
 				}
 			}
+
+			return result.isEmpty() ? ParenteUpdateResult.EMPTY : result;
 		}
 		else {
-			updates = Collections.emptyList();
+			return ParenteUpdateResult.EMPTY;
 		}
-		return updates;
 	}
 
 	private void afterForFiscalPrincipalAdded(Contribuable contribuable, ForFiscalPrincipal forFiscalPrincipal) {

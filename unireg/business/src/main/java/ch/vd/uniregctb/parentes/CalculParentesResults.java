@@ -39,7 +39,11 @@ public class CalculParentesResults extends AbstractJobResults<Long, CalculParent
 
 	@Override
 	public void addErrorException(Long element, Exception e) {
-		erreurs.add(new InfoErreur(element, buildErrorMessage(e)));
+		addError(element, buildErrorMessage(e));
+	}
+
+	public void addError(Long element, String errorMessage) {
+		erreurs.add(new InfoErreur(element, errorMessage));
 	}
 
 	@Override
