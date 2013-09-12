@@ -127,6 +127,7 @@ public abstract class Depart extends Mouvement {
 	public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
 		if (isDepartVaudois()) { // on ignore les départs vaudois car dans ce cas c'est l'arrivée qui fait foi
+			Audit.info(getNumeroEvenement(), "Départ vaudois -> ignoré.");
 			return HandleStatus.TRAITE;
 		}
 
