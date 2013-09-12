@@ -1764,6 +1764,24 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Override
+	public void markParentesDirtyDepuisNumeroIndividu(long noIndividu) {
+		final PersonnePhysique pp = getPersonnePhysiqueByNumeroIndividu(noIndividu);
+		if (pp != null) {
+			markParentesDirtySurPersonnePhysique(pp, true);
+		}
+	}
+
+	private void markParentesDirtySurPersonnePhysique(PersonnePhysique pp, boolean enfantsAussi) {
+		setParenteDirtyFlag(pp, true);
+		if (enfantsAussi) {
+			final List<Parente> enfants = getEnfants(pp, false);
+			for (Parente enfant : enfants) {
+				setParenteDirtyFlag(enfant.getSujetId(), true);
+			}
+		}
+	}
+
+	@Override
 	public ParenteUpdateResult initParentesDepuisFiliationsCiviles(PersonnePhysique pp) {
 		if (pp.isHabitantVD()) {
 			final ParenteUpdateResult result = new ParenteUpdateResult();
@@ -1798,20 +1816,24 @@ public class TiersServiceImpl implements TiersService {
 		}
 	}
 
-	private void setParenteDirtyFlag(final PersonnePhysique pp, final boolean flag) {
+	private void setParenteDirtyFlag(final long ppId, final boolean flag) {
 		final String sql = "UPDATE TIERS SET PP_PARENTE_DIRTY=:flag WHERE NUMERO=:id";
 		final int nbChanged = hibernateTemplate.execute(new HibernateCallback<Integer>() {
 			@Override
 			public Integer doInHibernate(Session session) throws HibernateException, SQLException {
 				final Query query = session.createSQLQuery(sql);
 				query.setBoolean("flag", flag);
-				query.setLong("id", pp.getNumero());
+				query.setLong("id", ppId);
 				return query.executeUpdate();
 			}
 		});
 		if (LOGGER.isDebugEnabled() && nbChanged > 0) {
-			LOGGER.debug(String.format("Flag 'parenté dirty' passé à %s sur la personne physique %d", flag, pp.getNumero()));
+			LOGGER.debug(String.format("Flag 'parenté dirty' passé à %s sur la personne physique %d", flag, ppId));
 		}
+	}
+
+	private void setParenteDirtyFlag(PersonnePhysique pp, boolean flag) {
+		setParenteDirtyFlag(pp.getNumero(), flag);
 	}
 
 	private static class CreationParenteImpossibleCarTiersParentInconnuAuFiscal extends Exception {

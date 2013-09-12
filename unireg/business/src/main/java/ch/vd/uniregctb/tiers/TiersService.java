@@ -1206,6 +1206,18 @@ public interface TiersService {
 	ParenteUpdateResult refreshParentesDepuisNumeroIndividu(long noIndividu);
 
 	/**
+	 * Marquage des tiers associés au numéro d'individu donnu comme "nécessitant un recalcul des parentés".
+	 * <ul>
+	 *     <li>le(s) tiers(s) correspondant(s) directement au numéro d'individu est/sont de toute façon marqué(s)&nbsp;;</li>
+	 *     <li>les tiers enfants connus sont également marqués&nbsp;;</li>
+	 *     <li>on ne fait rien du tout si l'individu ne correspond à aucune personne physique.</li>
+	 * </ul>
+	 * @param noIndividu numéro technique de l'individu civil
+	 * @throws PlusieursPersonnesPhysiquesAvecMemeNumeroIndividuException si on se heurte à un numéro d'individu partagé par plusieurs personnes physiques non annulées/désactivées durant le processus
+	 */
+	void markParentesDirtyDepuisNumeroIndividu(long noIndividu);
+
+	/**
 	 * Rafraîchissement des parentés fiscales depuis les données civiles de l'individu derrière la personne physique donnée
 	 * <ul>
 	 *     <li>les parentés vers les parents (= ascendantes) de l'individu sont de toute façon rafraîchies&nbsp;;</li>

@@ -2,16 +2,18 @@ package ch.vd.uniregctb.parentes;
 
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.hibernate.CallbackException;
 import org.hibernate.type.Type;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.HibernateEntity;
@@ -35,6 +37,8 @@ public class ParentesSynchronizerInterceptor implements ModificationSubIntercept
 	private ModificationInterceptor parent;
 	private TiersService tiersService;
 	private PlatformTransactionManager transactionManager;
+
+	private final Random randomGenerator = new Random();
 
 	private final ThreadLocal<HashSet<Long>> modifiedNosIndividus = new ThreadLocal<HashSet<Long>>() {
 		@Override
@@ -104,21 +108,34 @@ public class ParentesSynchronizerInterceptor implements ModificationSubIntercept
 			parent.setEnabledForThread(false); // on désactive l'intercepteur pour éviter de s'intercepter soi-même
 			activationSwitch.setEnabled(false);
 			try {
-				// on ré-ouvre une transaction pour effectuer les modifications nécessaires
-				final TransactionTemplate template = new TransactionTemplate(transactionManager);
-				template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-				template.execute(new TransactionCallback<Object>() {
-					@Override
-					public Object doInTransaction(TransactionStatus status) {
-						for (Long noIndividu : getModifiedNos()) {
-							tiersService.refreshParentesDepuisNumeroIndividu(noIndividu);
-						}
-						return null;
+				refreshParentes(set);
+			}
+			catch (OptimisticLockingFailureException e) {
+				// [SIFISC-9599] en cas de problème de modification concurrente, on ré-essaie une fois
+				try {
+					final int waitingTime = 100 + Math.abs(randomGenerator.nextInt(500));    // attente entre 100 et 600 ms, aléatoire des fois qu'on serait plusieurs sur le coup
+					LOGGER.warn(String.format("OptimisticLocking issue (%s): let's try again after a small break (%d ms)...", e.getMessage(), waitingTime));
+					Thread.sleep(waitingTime);
+					LOGGER.warn("OptimisticLocking issue: let's try again.");
+					refreshParentes(set);
+				}
+				catch (RuntimeException | InterruptedException ex) {
+					if (ex instanceof OptimisticLockingFailureException) {
+						// encore ?!?!?
+						// je disais donc, on ré-essaie une fois, et si cela ne fonctionne toujours pas, on
+						// demande la levée du flag "parenté dirty" sur les personnes physiques correspondant à ces individus
+						LOGGER.error("Renewed OptimisticLocking issue, the relationships will be marked dirty...", ex);
 					}
-				});
+					else {
+						LOGGER.error("Error: the relationships will be marked dirty", ex);
+					}
+
+					markParentesDirty(set);
+				}
 			}
 			catch (RuntimeException e) {
 				LOGGER.error(e, e);
+				markParentesDirty(set);
 				throw e;
 			}
 			finally {
@@ -130,6 +147,36 @@ public class ParentesSynchronizerInterceptor implements ModificationSubIntercept
 		finally {
 			AuthenticationHelper.popPrincipal();
 		}
+	}
+
+	private void refreshParentes(final Set<Long> nosIndividus) {
+		// on ré-ouvre une transaction pour effectuer les modifications nécessaires
+		doInNewTransaction(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				for (Long noIndividu : nosIndividus) {
+					tiersService.refreshParentesDepuisNumeroIndividu(noIndividu);
+				}
+			}
+		});
+	}
+
+	private void markParentesDirty(final Set<Long> nosIndividus) {
+		// nouvelle transaction
+		doInNewTransaction(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				for (Long noIndividu : nosIndividus) {
+					tiersService.markParentesDirtyDepuisNumeroIndividu(noIndividu);
+				}
+			}
+		});
+	}
+
+	private void doInNewTransaction(TransactionCallbackWithoutResult callback) {
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+		template.execute(callback);
 	}
 
 	@Override
