@@ -837,11 +837,27 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	@Transient
 	public ForDebiteurPrestationImposable getDernierForDebiteur() {
 
-		List<ForFiscal> list = getForsFiscauxSorted();
+		final List<ForFiscal> list = getForsFiscauxSorted();
 		if (list != null) {
 			for (int i = list.size() - 1; i >= 0; i--) {
-				ForFiscal forFiscal = list.get(i);
+				final ForFiscal forFiscal = list.get(i);
 				if (!forFiscal.isAnnule() && forFiscal.isDebiteur()) {
+					return (ForDebiteurPrestationImposable) forFiscal;
+				}
+			}
+		}
+		return null;
+	}
+
+	// ***********************************************
+	@Transient
+	public ForDebiteurPrestationImposable getDernierForDebiteurAvant(RegDate date) {
+
+		final List<ForFiscal> list = getForsFiscauxSorted();
+		if (list != null) {
+			for (int i = list.size() - 1; i >= 0; i--) {
+				final ForFiscal forFiscal = list.get(i);
+				if (!forFiscal.isAnnule() && forFiscal.isDebiteur() && RegDateHelper.isBeforeOrEqual(forFiscal.getDateDebut(), date, NullDateBehavior.LATEST)) {
 					return (ForDebiteurPrestationImposable) forFiscal;
 				}
 			}

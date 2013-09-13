@@ -285,6 +285,25 @@ public class DebiteurPrestationImposable extends Tiers {
 
 	@Override
 	@Transient
+	protected boolean isDesactiveSelonFors(RegDate date) {
+		// pour un débiteur, on dira qu'il est désactivé à une date donnée s'il n'y a pas de for
+		// débiteur actif à la date donnée et que le dernier for fiscal débiteur a été fermé
+		// pour un motif "ANNULATION"
+
+		final boolean desactive;
+		final ForDebiteurPrestationImposable courant = getForDebiteurPrestationImposableAt(date);
+		if (courant == null) {
+			final ForDebiteurPrestationImposable dernier = getDernierForDebiteurAvant(date);
+			desactive = dernier != null && dernier.getMotifFermeture() == MotifFor.ANNULATION;
+		}
+		else {
+			desactive = false;
+		}
+		return desactive;
+	}
+
+	@Override
+	@Transient
 	public RegDate getDateDesactivation() {
 		final RegDate date;
 		final ForDebiteurPrestationImposable courant = getForDebiteurPrestationImposableAt(null);

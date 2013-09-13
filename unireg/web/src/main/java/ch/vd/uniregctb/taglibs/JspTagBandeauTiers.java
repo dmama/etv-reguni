@@ -855,7 +855,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 
 		@Override
 		public boolean isValide(Tiers tiers) {
-			return tiers.isAnnule();
+			return tiers.isDesactive(null);
 		}
 
 		@Override
@@ -947,7 +947,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 
 		@Override
 		public boolean isValide(Tiers tiers) {
-			return !tiers.isAnnule();
+			return !tiers.isDesactive(null);
 		}
 
 		@Override
