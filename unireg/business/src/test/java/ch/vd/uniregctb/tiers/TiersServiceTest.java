@@ -19,6 +19,7 @@ import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.DateRangeHelper;
@@ -7645,6 +7646,8 @@ public class TiersServiceTest extends BusinessTest {
 	@Test
 	public void testInitParenteAvecIndividuInconnuAuCivil() throws Exception {
 
+		final long noIndividu = 42L;
+
 		// mise en place civile
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
@@ -7659,28 +7662,100 @@ public class TiersServiceTest extends BusinessTest {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Albert", "Fujitsu", null, Sexe.MASCULIN);
 				pp.setHabitant(true);
-				pp.setNumeroIndividu(42L);
+				pp.setNumeroIndividu(noIndividu);
 				return pp.getNumero();
 			}
 		});
 
-		// vérification que la personne physique est toujours habitante (des fois qu'on mettrait en place un intercepteur qui recalcule le bousin)
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+		final ParenteUpdateResult result = doInNewTransactionAndSession(new TransactionCallback<ParenteUpdateResult>() {
 			@Override
-			public Object doInTransaction(TransactionStatus status) {
+			public ParenteUpdateResult doInTransaction(TransactionStatus status) {
+				// vérification que la personne physique est toujours habitante (des fois qu'on mettrait en place un intercepteur qui recalcule le bousin)
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				assertNotNull(pp);
 				assertTrue(pp.isHabitantVD());
+				assertFalse(pp.isParenteDirty());
 
-				final ParenteUpdateResult result = tiersService.initParentesDepuisFiliationsCiviles(pp);
-				assertNotNull(result);
-				assertEquals(0, result.getUpdates().size());
-				assertEquals(1, result.getErrors().size());
+				// lancement du traitement
+				return tiersService.initParentesDepuisFiliationsCiviles(pp);
+			}
+		});
 
-				final ParenteUpdateResult.Error error = result.getErrors().get(0);
-				assertEquals(ppId, error.getNoCtb());
-				assertEquals(String.format("Individu %d lié à l'habitant %d non-récupérable depuis le registre civil", 42L, ppId), error.getErrorMsg());
-				return null;
+		assertNotNull(result);
+		assertEquals(0, result.getUpdates().size());
+		assertEquals(1, result.getErrors().size());
+
+		final ParenteUpdateResult.Error error = result.getErrors().get(0);
+		assertEquals(ppId, error.getNoCtb());
+		assertEquals(String.format("Individu %d lié à l'habitant %d non-récupérable depuis le registre civil", noIndividu, ppId), error.getErrorMsg());
+
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				assertNotNull(pp);
+				assertTrue(pp.isHabitantVD());
+				assertTrue(pp.isParenteDirty());
+			}
+		});
+	}
+
+	/**
+	 * Cas des environnements de test où la synchro entre le civil et le fiscal n'est pas parfaite
+	 */
+	@Test
+	public void testRefreshParenteAvecIndividuInconnuAuCivil() throws Exception {
+
+		final long noIndividu = 42L;
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				// vide...
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Albert", "Fujitsu", null, Sexe.MASCULIN);
+				pp.setHabitant(true);
+				pp.setNumeroIndividu(noIndividu);
+				return pp.getNumero();
+			}
+		});
+
+		final ParenteUpdateResult result = doInNewTransactionAndSession(new TransactionCallback<ParenteUpdateResult>() {
+			@Override
+			public ParenteUpdateResult doInTransaction(TransactionStatus status) {
+				// vérification que la personne physique est toujours habitante (des fois qu'on mettrait en place un intercepteur qui recalcule le bousin)
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				assertNotNull(pp);
+				assertTrue(pp.isHabitantVD());
+				assertFalse(pp.isParenteDirty());
+
+				// lancement du traitement
+				return tiersService.refreshParentesSurPersonnePhysique(pp, false);
+			}
+		});
+
+		assertNotNull(result);
+		assertEquals(0, result.getUpdates().size());
+		assertEquals(1, result.getErrors().size());
+
+		final ParenteUpdateResult.Error error = result.getErrors().get(0);
+		assertEquals(ppId, error.getNoCtb());
+		assertEquals(String.format("Individu %d lié à l'habitant %d non-récupérable depuis le registre civil", noIndividu, ppId), error.getErrorMsg());
+
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				assertNotNull(pp);
+				assertTrue(pp.isHabitantVD());
+				assertTrue(pp.isParenteDirty());
 			}
 		});
 	}
