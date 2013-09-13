@@ -1787,22 +1787,30 @@ public class TiersServiceImpl implements TiersService {
 			final ParenteUpdateResult result = new ParenteUpdateResult();
 			final long noIndividu = pp.getNumeroIndividu();
 			final Individu individu = serviceCivilService.getIndividu(noIndividu, null, AttributeIndividu.PARENTS);
-			final List<RelationVersIndividu> parentRel = individu.getParents();
 			boolean parenteDirty = false;
-			if (parentRel != null && !parentRel.isEmpty()) {
-				for (RelationVersIndividu rel : parentRel) {
-					try {
-						final Parente parente = createParente(pp, rel);
-						if (parente != null) {
-							final Parente merged = hibernateTemplate.merge(parente);
-							pp.getRapportsSujet().add(merged);
-							result.addUpdate(ParenteUpdateInfo.getCreation(parente));
+			if (individu == null) {
+				final String msg = String.format("Individu %d lié à l'habitant %d non-récupérable depuis le registre civil", noIndividu, pp.getNumero());
+				LOGGER.error(msg);
+				result.addError(pp.getNumero(), msg);
+				parenteDirty = true;
+			}
+			else {
+				final List<RelationVersIndividu> parentRel = individu.getParents();
+				if (parentRel != null && !parentRel.isEmpty()) {
+					for (RelationVersIndividu rel : parentRel) {
+						try {
+							final Parente parente = createParente(pp, rel);
+							if (parente != null) {
+								final Parente merged = hibernateTemplate.merge(parente);
+								pp.getRapportsSujet().add(merged);
+								result.addUpdate(ParenteUpdateInfo.getCreation(parente));
+							}
 						}
-					}
-					catch (CreationParenteImpossibleCarTiersParentInconnuAuFiscal | PlusieursPersonnesPhysiquesAvecMemeNumeroIndividuException e) {
-						LOGGER.warn(e.getMessage(), e);
-						result.addError(pp.getNumero(), e.getMessage());
-						parenteDirty = true;
+						catch (CreationParenteImpossibleCarTiersParentInconnuAuFiscal | PlusieursPersonnesPhysiquesAvecMemeNumeroIndividuException e) {
+							LOGGER.warn(e.getMessage(), e);
+							result.addError(pp.getNumero(), e.getMessage());
+							parenteDirty = true;
+						}
 					}
 				}
 			}

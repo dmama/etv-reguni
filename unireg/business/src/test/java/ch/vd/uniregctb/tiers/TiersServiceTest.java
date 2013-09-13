@@ -7638,5 +7638,51 @@ public class TiersServiceTest extends BusinessTest {
 			}
 		});
 	}
+
+	/**
+	 * Cas des environnements de test où la synchro entre le civil et le fiscal n'est pas parfaite
+	 */
+	@Test
+	public void testInitParenteAvecIndividuInconnuAuCivil() throws Exception {
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				// vide...
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Albert", "Fujitsu", null, Sexe.MASCULIN);
+				pp.setHabitant(true);
+				pp.setNumeroIndividu(42L);
+				return pp.getNumero();
+			}
+		});
+
+		// vérification que la personne physique est toujours habitante (des fois qu'on mettrait en place un intercepteur qui recalcule le bousin)
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				assertNotNull(pp);
+				assertTrue(pp.isHabitantVD());
+
+				final ParenteUpdateResult result = tiersService.initParentesDepuisFiliationsCiviles(pp);
+				assertNotNull(result);
+				assertEquals(0, result.getUpdates().size());
+				assertEquals(1, result.getErrors().size());
+
+				final ParenteUpdateResult.Error error = result.getErrors().get(0);
+				assertEquals(ppId, error.getNoCtb());
+				assertEquals(String.format("Individu %d lié à l'habitant %d non-récupérable depuis le registre civil", 42L, ppId), error.getErrorMsg());
+				return null;
+			}
+		});
+	}
 }
 
