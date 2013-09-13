@@ -277,17 +277,14 @@ public class TiersMapHelper extends CommonMapHelper {
 	/**
 	 * Renvoie une map non-modifiable des périodicités de décomptes assignables au tout venant sur un débiteur
 	 * @param current la périodicité actuelle du débiteur (qui doit toujours faire partie des choix sélectionnables)
-	 * @param modeCommunication mode de communication du débiteur
 	 * @return une map des valeurs sélectionables
 	 */
-	public Map<PeriodiciteDecompte, String> getMapLimiteePeriodiciteDecompte(PeriodiciteDecompte current, ModeCommunication modeCommunication) {
+	public Map<PeriodiciteDecompte, String> getMapLimiteePeriodiciteDecompte(PeriodiciteDecompte current) {
 		final Set<PeriodiciteDecompte> allowedValues = EnumSet.of(PeriodiciteDecompte.MENSUEL, PeriodiciteDecompte.UNIQUE);
 		if (current != null) {
+			// on doit toujours pouvoir "descendre" en périodicité
 			allowedValues.add(current);
-		}
-		// on ne peut jamais "agrandir" la périodicité (M -> T) mais si on est déjà T, S ou A, et en mode PAPIER, T est autorisé
-		if (modeCommunication == ModeCommunication.PAPIER && (current == PeriodiciteDecompte.ANNUEL || current == PeriodiciteDecompte.SEMESTRIEL)) {
-			allowedValues.add(PeriodiciteDecompte.TRIMESTRIEL);
+			allowedValues.addAll(current.getShorterPeriodicities());
 		}
 		return getSpecificMapEnum(ApplicationConfig.masterKeyPeriodiciteDecompte, allowedValues);
 	}

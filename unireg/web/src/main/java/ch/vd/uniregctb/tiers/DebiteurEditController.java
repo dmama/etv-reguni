@@ -21,7 +21,6 @@ import ch.vd.uniregctb.security.SecurityHelper;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.manager.TiersEditManager;
 import ch.vd.uniregctb.tiers.view.DebiteurEditView;
-import ch.vd.uniregctb.type.ModeCommunication;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 
 @Controller
@@ -30,6 +29,9 @@ public class DebiteurEditController {
 
 	public static final String LIBELLES_LOGICIELS = "libellesLogiciel";
 	public static final String CATEGORIES_IMPOT_SOURCE = "categoriesImpotSource";
+	public static final String MODES_COMMUNICATION = "modesCommunication";
+	public static final String PERIODES_DECOMPTE = "periodesDecomptes";
+	public static final String PERIODICITES_DECOMPTE = "periodicitesDecomptes";
 
 	private TiersMapHelper tiersMapHelper;
 	private TiersEditManager tiersEditManager;
@@ -95,30 +97,16 @@ public class DebiteurEditController {
 		return SecurityHelper.isGranted(securityProvider, Role.SUPERGRA);
 	}
 
-	@RequestMapping(value = "/modesCommunication.do", method = RequestMethod.GET)
-	@ResponseBody
-	public List<EnumView<ModeCommunication>> getAllowedModesCommunication(@RequestParam(value = "periodicite") PeriodiciteDecompte periodicite,
-	                                                                      @RequestParam(value = "modeActuel") ModeCommunication modeCommunicationActuel) {
-		final Map<ModeCommunication, String> map;
-		if (hasFullRights()) {
-			map = tiersMapHelper.getMapModeCommunication();
-		}
-		else {
-			map = tiersMapHelper.getMapLimiteeModeCommunication(modeCommunicationActuel, periodicite);
-		}
-		return EnumView.fromMap(map);
-	}
 
 	@RequestMapping(value = "/periodicitesDecompte.do", method = RequestMethod.GET)
 	@ResponseBody
-	public List<EnumView<PeriodiciteDecompte>> getAllowedPeriodicitesDecompte(@RequestParam(value = "modeCommunication") ModeCommunication modeCommunication,
-	                                                                          @RequestParam(value = "periodiciteActuelle") PeriodiciteDecompte periodiciteActuelle) {
-		final Map<PeriodiciteDecompte, String> map;
+	public List<EnumView<PeriodiciteDecompte>> getAllowedPeriodicitesDecomptes(@RequestParam(value = "periodiciteActuelle") PeriodiciteDecompte periodiciteActuelle) {
+	final Map<PeriodiciteDecompte, String> map;
 		if (hasFullRights()) {
 			map = tiersMapHelper.getMapPeriodiciteDecompte();
 		}
 		else {
-			map = tiersMapHelper.getMapLimiteePeriodiciteDecompte(periodiciteActuelle, modeCommunication);
+			map = tiersMapHelper.getMapLimiteePeriodiciteDecompte(periodiciteActuelle);
 		}
 		return EnumView.fromMap(map);
 	}
@@ -129,6 +117,9 @@ public class DebiteurEditController {
 		controllerUtils.checkAccesDossierEnLecture(id);
 		final DebiteurEditView view = tiersEditManager.getDebiteurEditView(id);
 
+		model.addAttribute(PERIODICITES_DECOMPTE, getAllowedPeriodicitesDecomptes(view.getPeriodiciteCourante()));
+		model.addAttribute(PERIODES_DECOMPTE, tiersMapHelper.getPeriodeDecomptes());
+		model.addAttribute(MODES_COMMUNICATION, tiersMapHelper.getMapModeCommunication());
 		model.addAttribute(LIBELLES_LOGICIELS, tiersMapHelper.getAllLibellesLogiciels());
 		model.addAttribute(CATEGORIES_IMPOT_SOURCE, tiersMapHelper.getMapCategorieImpotSource());
 		model.addAttribute("command", view);

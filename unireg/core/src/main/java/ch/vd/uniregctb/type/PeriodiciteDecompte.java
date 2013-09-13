@@ -1,10 +1,12 @@
 package ch.vd.uniregctb.type;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.NotImplementedException;
 
 /**
- * <!-- begin-user-doc --> Périodicité du décompte IS (listes récapitulatives) <!-- end-user-doc -->
  * Périodicité du décompte IS (listes récapitulatives)
  * Valeurs possibles (à compléter) :
  * - Mensuel
@@ -12,14 +14,11 @@ import ch.vd.registre.base.utils.NotImplementedException;
  * - ...
  *
  * Longueur de colonne : 11
- *
- * @uml.annotations
- *     derived_abstraction="platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_TNdu0GHuEdydo47IZ53QMw"
- * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_TNdu0GHuEdydo47IZ53QMw"
  */
 public enum PeriodiciteDecompte {
+
 	/**
-	 * <!-- begin-user-doc --> Détermine une période calée précisemment sur un mois du calendrier grégorien.
+	 * Détermine une période calée précisemment sur un mois du calendrier grégorien.
 	 * <p>
 	 * Exemples:
 	 * <ul>
@@ -27,9 +26,6 @@ public enum PeriodiciteDecompte {
 	 * <li>du 01.07.2000 au 31.07.2000</li>
 	 * <li>...</li>
 	 * </ul>
-	 * <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_WzjkYGHxEdydo47IZ53QMw"
 	 */
 	MENSUEL() {
 		@Override
@@ -41,9 +37,15 @@ public enum PeriodiciteDecompte {
 		public RegDate getDebutPeriodeSuivante(RegDate reference) {
 			return RegDate.get(reference.year(), reference.month(), 1).addMonths(1);
 		}
+
+		@Override
+		public Set<PeriodiciteDecompte> getShorterPeriodicities() {
+			return EnumSet.noneOf(PeriodiciteDecompte.class);
+		}
 	},
+
 	/**
-	 * <!-- begin-user-doc --> Détermine une période calée précisemment sur une année du calendrier grégorien.
+	 * Détermine une période calée précisemment sur une année du calendrier grégorien.
 	 * <p>
 	 * Exemples:
 	 * <ul>
@@ -52,9 +54,6 @@ public enum PeriodiciteDecompte {
 	 * <li>du 01.01.2006 au 31.12.2006</li>
 	 * <li>...</li>
 	 * </ul>
-	 * <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_WqiyUGHxEdydo47IZ53QMw"
 	 */
 	ANNUEL() {
 		@Override
@@ -66,9 +65,15 @@ public enum PeriodiciteDecompte {
 		public RegDate getDebutPeriodeSuivante(RegDate reference) {
 			return RegDate.get(reference.year() + 1, 1, 1);
 		}
+
+		@Override
+		public Set<PeriodiciteDecompte> getShorterPeriodicities() {
+			return EnumSet.of(MENSUEL, TRIMESTRIEL, SEMESTRIEL);
+		}
 	},
+
 	/**
-	 * <!-- begin-user-doc --> Détermine une période calée précisemment sur un trimestre du calendrier grégorien.
+	 * Détermine une période calée précisemment sur un trimestre du calendrier grégorien.
 	 * <p>
 	 * Exemples:
 	 * <ul>
@@ -77,9 +82,6 @@ public enum PeriodiciteDecompte {
 	 * <li>du 01.10.2006 au 31.12.2006</li>
 	 * <li>...</li>
 	 * </ul>
-	 * <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_WhZdYGHxEdydo47IZ53QMw"
 	 */
 	TRIMESTRIEL() {
 		@Override
@@ -92,9 +94,15 @@ public enum PeriodiciteDecompte {
 		public RegDate getDebutPeriodeSuivante(RegDate reference) {
 			return getDebutPeriode(reference).addMonths(3);
 		}
+
+		@Override
+		public Set<PeriodiciteDecompte> getShorterPeriodicities() {
+			return EnumSet.of(MENSUEL);
+		}
 	},
+
 	/**
-	 * <!-- begin-user-doc --> Détermine une période calée précisemment sur un semestre du calendrier grégorien.
+	 * Détermine une période calée précisemment sur un semestre du calendrier grégorien.
 	 * <p>
 	 * Exemples:
 	 * <ul>
@@ -103,9 +111,6 @@ public enum PeriodiciteDecompte {
 	 * <li>du 01.01.2006 au 30.06.2006</li>
 	 * <li>...</li>
 	 * </ul>
-	 * <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_WYO6UGHxEdydo47IZ53QMw"
 	 */
 	SEMESTRIEL() {
 		@Override
@@ -118,11 +123,15 @@ public enum PeriodiciteDecompte {
 		public RegDate getDebutPeriodeSuivante(RegDate reference) {
 			return getDebutPeriode(reference).addMonths(6);
 		}
+
+		@Override
+		public Set<PeriodiciteDecompte> getShorterPeriodicities() {
+			return EnumSet.of(MENSUEL, TRIMESTRIEL);
+		}
 	},
+
 	/**
-	 * <!-- begin-user-doc -->  <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_D_4L8PZ7EdyDE6gdiHo60A"
+	 * Périodicité annuelle mais seulement sur une partie de l'année, chaque année
 	 */
 	UNIQUE() {
 		@Override
@@ -133,6 +142,11 @@ public enum PeriodiciteDecompte {
 		@Override
 		public RegDate getDebutPeriodeSuivante(RegDate reference) {
 			throw new NotImplementedException();
+		}
+
+		@Override
+		public Set<PeriodiciteDecompte> getShorterPeriodicities() {
+			return EnumSet.noneOf(PeriodiciteDecompte.class);
 		}
 	};
 
@@ -161,8 +175,14 @@ public enum PeriodiciteDecompte {
 	/**
 	 * Calcule la date de début de la période suivant la période indiquée par la date de référence (c'est le lendemain de la fin
 	 * de la période indiquée)
-	 * @param reference
+	 * @param reference date de référence
 	 * @return le début de la période suivante
 	 */
 	public abstract RegDate getDebutPeriodeSuivante(RegDate reference);
+
+	/**
+	 * Renvoie un ensemble contenant les périodicités plus courtes
+	 * @return les périodicités plus courtes
+	 */
+	public abstract Set<PeriodiciteDecompte> getShorterPeriodicities();
 }
