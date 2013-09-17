@@ -1,9 +1,9 @@
 package ch.vd.uniregctb.tiers.vignette;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.context.MessageSource;
 
@@ -16,8 +16,8 @@ import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.general.view.TypeAvatar;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.taglibs.JspTagBandeauTiers;
+import ch.vd.uniregctb.taglibs.JspTagInteroperabilite;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -93,17 +93,9 @@ public class VignetteView {
 
 		// les urls vers les autres applications
 		if (fillUrlVers) {
-			final List<ApplicationFiscale> list;
-			if (tiers instanceof Entreprise) {
-				// [UNIREG-1949] débranchement uniquement vers SIPF pour les PMs
-				list = Arrays.asList(ApplicationFiscale.SIPF);
-			}
-			else {
-				list = Arrays.asList(ApplicationFiscale.TAO_PP, ApplicationFiscale.TAO_BA, ApplicationFiscale.TAO_IS, ApplicationFiscale.SIPF, ApplicationFiscale.REPELEC);
-			}
-
+			final Set<ApplicationFiscale> apps = JspTagInteroperabilite.getApplicationsFiscalesAutorisees(tiers.getNatureTiers(), tiers.isDebiteurInactif());
 			this.urlsVers = new ArrayList<>();
-			for (ApplicationFiscale af : list) {
+			for (ApplicationFiscale af : apps) {
 				final String label = messageSource.getMessage(af.getMessageKey(), null, WebContextUtils.getDefaultLocale());
 				this.urlsVers.add(new UrlVersView(af.name(), label, af.name()));
 			}

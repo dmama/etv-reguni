@@ -6,8 +6,10 @@ import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.MessageSource;
@@ -111,21 +113,39 @@ public class JspTagInteroperabilite extends BodyTagSupport implements MessageSou
 
 		b.append("<select name=\"AppSelect\" onchange=\"App.gotoExternalApp(this);\">\n");
 		b.append("\t<option value=\"\">---</option>\n");
-		final boolean isEntreprise = natureTiers == NatureTiers.Entreprise;
-		if (!isEntreprise && !debiteurInactif) { // [UNIREG-1949] débranchement uniquement vers SIPF pour les PMs
-			b.append(addOption(contextPath, noTiers, ApplicationFiscale.TAO_PP));
-			b.append(addOption(contextPath, noTiers, ApplicationFiscale.TAO_BA));
-			b.append(addOption(contextPath, noTiers, ApplicationFiscale.TAO_IS));
+
+		final Set<ApplicationFiscale> apps = getApplicationsFiscalesAutorisees(natureTiers, debiteurInactif);
+		for (ApplicationFiscale app : apps) {
+			b.append(addOption(contextPath, noTiers, app));
 		}
-		b.append(addOption(contextPath, noTiers, ApplicationFiscale.SIPF));
-		if (!isEntreprise && !debiteurInactif) {
-			b.append(addOption(contextPath, noTiers, ApplicationFiscale.REPELEC));
-		}
-		if (!isEntreprise) { // [UNIREG-1949] débranchement uniquement vers SIPF pour les PMs
+		if (natureTiers != NatureTiers.Entreprise) { // [UNIREG-1949] débranchement uniquement vers SIPF pour les PMs
 			b.append(addOptionCat(contextPath, noTiers));
 		}
 		b.append("</select>\n");
 		return b.toString();
+	}
+
+	public static Set<ApplicationFiscale> getApplicationsFiscalesAutorisees(NatureTiers natureTiers, boolean debiteurInactif) {
+		final Set<NatureTiers> naturesTiersPP = EnumSet.of(NatureTiers.Habitant, NatureTiers.NonHabitant, NatureTiers.MenageCommun);
+		final boolean isEntreprise = natureTiers == NatureTiers.Entreprise;
+		final boolean isPP = naturesTiersPP.contains(natureTiers);
+		final boolean showTAO = !isEntreprise && !debiteurInactif;
+		final boolean showSIPF = true;
+		final boolean showREPELEC = !debiteurInactif && isPP;
+
+		final Set<ApplicationFiscale> apps = EnumSet.noneOf(ApplicationFiscale.class);
+		if (showTAO) { // [UNIREG-1949] débranchement uniquement vers SIPF pour les PMs
+			apps.add(ApplicationFiscale.TAO_PP);
+			apps.add(ApplicationFiscale.TAO_BA);
+			apps.add(ApplicationFiscale.TAO_IS);
+		}
+		if (showSIPF) {
+			apps.add(ApplicationFiscale.SIPF);
+		}
+		if (showREPELEC) {
+			apps.add(ApplicationFiscale.REPELEC);
+		}
+		return apps;
 	}
 
 	private static String message(String key) {
