@@ -25,21 +25,16 @@
 					</display:column>
 					<display:column sortable="true" titleKey="label.adresse.complement" property="complements"/>
 					<display:column sortable ="true" titleKey="label.rueCasePostale">
-						<c:choose>
-							<c:when test="${adresseCivile.egid != null || adresseCivile.ewid != null}">
-								<c:out value="${adresseCivile.rue}"/>
-								<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
-									<a href="#" class="consult staticTip" id="prn-${adresseCivile.usageCivil}-<unireg:regdate regdate="${adresseCivile.dateDebut}" format="yyyyMMdd"/>-<unireg:regdate regdate="${adresseCivile.dateFin}" format="yyyyMMdd"/>">&nbsp;</a>
-									<div id="prn-${adresseCivile.usageCivil}-<unireg:regdate regdate="${adresseCivile.dateDebut}" format="yyyyMMdd"/>-<unireg:regdate regdate="${adresseCivile.dateFin}" format="yyyyMMdd"/>-tooltip" style="display: none;">
-										<b>EGID&nbsp;</b>: <c:choose><c:when test="${adresseCivile.egid != null}"><c:out value="${adresseCivile.egid}"/></c:when><c:otherwise>-</c:otherwise></c:choose><br/>
-										<b>EWID&nbsp;</b>: <c:choose><c:when test="${adresseCivile.ewid != null}"><c:out value="${adresseCivile.ewid}"/></c:when><c:otherwise>-</c:otherwise></c:choose><br/>
-									</div>
-								</authz:authorize>
-							</c:when>
-							<c:otherwise>
-								<c:out value="${adresseCivile.rue}"/>
-							</c:otherwise>
-						</c:choose>
+						<c:out value="${adresseCivile.rue}"/>
+						<c:if test="${adresseCivile.egid != null || adresseCivile.ewid != null}">
+							<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
+								<a href="#" class="consult staticTip" id="prn-${adresseCivile.usageCivil}-<unireg:regdate regdate="${adresseCivile.dateDebut}" format="yyyyMMdd"/>-<unireg:regdate regdate="${adresseCivile.dateFin}" format="yyyyMMdd"/>">&nbsp;</a>
+								<div id="prn-${adresseCivile.usageCivil}-<unireg:regdate regdate="${adresseCivile.dateDebut}" format="yyyyMMdd"/>-<unireg:regdate regdate="${adresseCivile.dateFin}" format="yyyyMMdd"/>-tooltip" style="display: none;">
+									<b>EGID&nbsp;</b>: <c:choose><c:when test="${adresseCivile.egid != null}"><c:out value="${adresseCivile.egid}"/></c:when><c:otherwise>-</c:otherwise></c:choose><br/>
+									<b>EWID&nbsp;</b>: <c:choose><c:when test="${adresseCivile.ewid != null}"><c:out value="${adresseCivile.ewid}"/></c:when><c:otherwise>-</c:otherwise></c:choose><br/>
+								</div>
+							</authz:authorize>
+						</c:if>
 					</display:column>
 					<display:column sortable ="true" titleKey="label.localite" property="localite"/>
 					<display:column sortable ="true" titleKey="label.pays">
@@ -76,21 +71,16 @@
 					</display:column>
 					<display:column sortable="true" titleKey="label.adresse.complement" property="complements"/>
 					<display:column sortable ="true" titleKey="label.rueCasePostale">
-						<c:choose>
-							<c:when test="${adresseCivileConjoint.egid != null || adresseCivileConjoint.ewid != null}">
-								<c:out value="${adresseCivileConjoint.rue}"/>
-								<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
-									<a href="#" class="consult staticTip" id="cnj-${adresseCivileConjoint.usageCivil}-<unireg:regdate regdate="${adresseCivileConjoint.dateDebut}" format="yyyyMMdd"/>-<unireg:regdate regdate="${adresseCivileConjoint.dateFin}" format="yyyyMMdd"/>">&nbsp;</a>
-									<div id="cnj-${adresseCivileConjoint.usageCivil}-<unireg:regdate regdate="${adresseCivileConjoint.dateDebut}" format="yyyyMMdd"/>-<unireg:regdate regdate="${adresseCivileConjoint.dateFin}" format="yyyyMMdd"/>-tooltip" style="display: none;">
-										<b>EGID&nbsp;</b>: <c:choose><c:when test="${adresseCivileConjoint.egid != null}"><c:out value="${adresseCivileConjoint.egid}"/></c:when><c:otherwise>-</c:otherwise></c:choose><br/>
-										<b>EWID&nbsp;</b>: <c:choose><c:when test="${adresseCivileConjoint.ewid != null}"><c:out value="${adresseCivileConjoint.ewid}"/></c:when><c:otherwise>-</c:otherwise></c:choose><br/>
-									</div>
-								</authz:authorize>
-							</c:when>
-							<c:otherwise>
-								<c:out value="${adresseCivileConjoint.rue}"/>
-							</c:otherwise>
-						</c:choose>
+						<c:out value="${adresseCivileConjoint.rue}"/>
+						<c:if test="${adresseCivileConjoint.egid != null || adresseCivileConjoint.ewid != null}">
+							<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
+								<a href="#" class="consult staticTip" id="cnj-${adresseCivileConjoint.usageCivil}-<unireg:regdate regdate="${adresseCivileConjoint.dateDebut}" format="yyyyMMdd"/>-<unireg:regdate regdate="${adresseCivileConjoint.dateFin}" format="yyyyMMdd"/>">&nbsp;</a>
+								<div id="cnj-${adresseCivileConjoint.usageCivil}-<unireg:regdate regdate="${adresseCivileConjoint.dateDebut}" format="yyyyMMdd"/>-<unireg:regdate regdate="${adresseCivileConjoint.dateFin}" format="yyyyMMdd"/>-tooltip" style="display: none;">
+									<b>EGID&nbsp;</b>: <c:choose><c:when test="${adresseCivileConjoint.egid != null}"><c:out value="${adresseCivileConjoint.egid}"/></c:when><c:otherwise>-</c:otherwise></c:choose><br/>
+									<b>EWID&nbsp;</b>: <c:choose><c:when test="${adresseCivileConjoint.ewid != null}"><c:out value="${adresseCivileConjoint.ewid}"/></c:when><c:otherwise>-</c:otherwise></c:choose><br/>
+								</div>
+							</authz:authorize>
+						</c:if>
 					</display:column>
 					<display:column sortable ="true" titleKey="label.localite" property="localite"/>
 					<display:column sortable ="true" titleKey="label.pays">
