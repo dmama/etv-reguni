@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import ch.vd.uniregctb.common.ControllerUtils;
 import ch.vd.uniregctb.security.Role;
@@ -97,10 +96,7 @@ public class DebiteurEditController {
 		return SecurityHelper.isGranted(securityProvider, Role.SUPERGRA);
 	}
 
-
-	@RequestMapping(value = "/periodicitesDecompte.do", method = RequestMethod.GET)
-	@ResponseBody
-	public List<EnumView<PeriodiciteDecompte>> getAllowedPeriodicitesDecomptes(@RequestParam(value = "periodiciteActuelle") PeriodiciteDecompte periodiciteActuelle) {
+	private List<EnumView<PeriodiciteDecompte>> getAllowedPeriodicitesDecomptes(PeriodiciteDecompte periodiciteActuelle) {
 	final Map<PeriodiciteDecompte, String> map;
 		if (hasFullRights()) {
 			map = tiersMapHelper.getMapPeriodiciteDecompte();

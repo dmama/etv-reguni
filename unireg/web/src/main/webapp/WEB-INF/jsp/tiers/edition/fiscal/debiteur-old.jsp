@@ -13,40 +13,6 @@
 				$('#div_periodeDecompte_label').hide();
 				$('#div_periodeDecompte_input').hide();
 			}
-		},
-
-		/**
-		 * Cette fonction met-à-jour la liste des périodicités de décompte en fonction du mode de communication actuel
-		 *
-		 * @param periodiciteSelect
-		 *            le select contenant les périodicités à mettre à jour
-		 * @param modeCommunication
-		 *            le mode de communication courant
-		 * @param defaultPeriodicite
-		 *            (optionel) la valeur par défaut de la périodicite
-		 *            lorsqu'aucune valeur n'est sélectionné dans la liste
-		 *            'periodiciteSelect'
-		 */
-		updatePeriodicitesDecompte: function(periodiciteSelect, defaultPeriodicite) {
-
-			var periodiciteSelectionnee = periodiciteSelect.val();
-			if (periodiciteSelectionnee == null) {
-				periodiciteSelectionnee = 'MENSUEL';
-			}
-			var periodicite = periodiciteSelectionnee;
-			if (periodicite == null) {
-				periodicite = defaultPeriodicite;
-			}
-
-			// appels ajax pour mettre-à-jour les modes de communication
-			$.get(App.curl('/debiteur/periodicitesDecompte.do?periodiciteActuelle=') + periodicite + '&' + new Date().getTime(), function(periodicites) {
-				var list = '';
-				for(var i = 0; i < periodicites.length; ++i) {
-					var p = periodicites[i];
-					list += '<option value="' + p.value + '"' + (p.value == periodiciteSelectionnee ? ' selected=true' : '') + '>' + StringUtils.escapeHTML(p.label) + '</option>';
-				}
-				periodiciteSelect.html(list);
-			}, 'json').error(Ajax.popupErrorHandler);
 		}
 	};
 
@@ -66,7 +32,8 @@
 		<tr class="<unireg:nextRowClass/>" >
 			<td width="25%"><fmt:message key="label.periodicite.decompte"/>&nbsp;:</td>
 			<td width="25%">
-				<form:select id="periodiciteCourante" path="periodicite.periodiciteDecompte" onchange="CreateDebiteur.selectPeriodeDecompte(this.options[this.selectedIndex].value);"/>
+				<form:select id="periodiciteCourante" path="periodicite.periodiciteDecompte" items="${periodicitesDecompte}"
+				             onchange="CreateDebiteur.selectPeriodeDecompte(this.options[this.selectedIndex].value);"/>
 			</td>
 			<td width="25%">
 				<div id="div_periodeDecompte_label" style="display:none;" ><fmt:message key="label.periode.decompte"/>&nbsp;:</div>
@@ -80,7 +47,6 @@
 </fieldset>
 
 <script type="text/javascript">
-	CreateDebiteur.updatePeriodicitesDecompte($('#periodiciteCourante'), 'MENSUEL');
 	CreateDebiteur.selectPeriodeDecompte('${command.periodicite.periodiciteDecompte}');
 </script>
 <!-- Fin fiscal pour debiteurs impot a la source-->
