@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.tiers.view;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.iban.IbanValidator;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
@@ -14,7 +15,9 @@ public class DebiteurEditView {
 	private Long idCtbAssocie;
 	private CategorieImpotSource categorieImpotSource;
 	private ModeCommunication modeCommunication;
-	private PeriodiciteDecompte periodiciteCourante;
+	private PeriodiciteDecompte nouvellePeriodicite;
+	private final PeriodiciteDecompte periodiciteActive;
+	private RegDate dateDebutNouvellePeriodicite;
 	private PeriodeDecompte periodeDecompte;
 	private final ComplementView complement;
 	private Long logicielId;
@@ -22,6 +25,7 @@ public class DebiteurEditView {
 
 	public DebiteurEditView() {
 		this.complement = new ComplementView();
+		this.periodiciteActive = null;
 	}
 
 	public DebiteurEditView(DebiteurPrestationImposable dpi, IbanValidator ibanValidator) {
@@ -31,11 +35,14 @@ public class DebiteurEditView {
 		this.modeCommunication = dpi.getModeCommunication();
 		this.logicielId = dpi.getLogicielId();
 		this.sansLREmises = dpi.isSansLREmises();
-		final Periodicite periodicite = dpi.getDernierePeriodicite();
-		if (periodicite != null) {
-			this.periodiciteCourante = periodicite.getPeriodiciteDecompte();
-			this.periodeDecompte = periodicite.getPeriodeDecompte();
+		final Periodicite dernierePeriodicite = dpi.getDernierePeriodicite();
+		if (dernierePeriodicite != null) {
+			this.nouvellePeriodicite = dernierePeriodicite.getPeriodiciteDecompte();
+			this.periodeDecompte = dernierePeriodicite.getPeriodeDecompte();
+			this.dateDebutNouvellePeriodicite = dernierePeriodicite.getDateDebut();
 		}
+		final Periodicite periodiciteActive = dpi.getPeriodiciteAt(RegDate.get());
+		this.periodiciteActive = periodiciteActive != null ? periodiciteActive.getPeriodiciteDecompte() : null;
 		this.complement = new ComplementView(dpi, null, null, ibanValidator);
 	}
 
@@ -71,12 +78,16 @@ public class DebiteurEditView {
 		this.modeCommunication = modeCommunication;
 	}
 
-	public PeriodiciteDecompte getPeriodiciteCourante() {
-		return periodiciteCourante;
+	public PeriodiciteDecompte getNouvellePeriodicite() {
+		return nouvellePeriodicite;
 	}
 
-	public void setPeriodiciteCourante(PeriodiciteDecompte periodiciteCourante) {
-		this.periodiciteCourante = periodiciteCourante;
+	public void setNouvellePeriodicite(PeriodiciteDecompte nouvellePeriodicite) {
+		this.nouvellePeriodicite = nouvellePeriodicite;
+	}
+
+	public PeriodiciteDecompte getPeriodiciteActive() {
+		return periodiciteActive;
 	}
 
 	public PeriodeDecompte getPeriodeDecompte() {
@@ -105,5 +116,13 @@ public class DebiteurEditView {
 
 	public void setSansLREmises(boolean sansLREmises) {
 		this.sansLREmises = sansLREmises;
+	}
+
+	public RegDate getDateDebutNouvellePeriodicite() {
+		return dateDebutNouvellePeriodicite;
+	}
+
+	public void setDateDebutNouvellePeriodicite(RegDate dateDebutNouvellePeriodicite) {
+		this.dateDebutNouvellePeriodicite = dateDebutNouvellePeriodicite;
 	}
 }

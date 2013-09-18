@@ -1,19 +1,20 @@
 package ch.vd.uniregctb.tiers;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.ControllerUtils;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityHelper;
@@ -21,6 +22,7 @@ import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.manager.TiersEditManager;
 import ch.vd.uniregctb.tiers.view.DebiteurEditView;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
+import ch.vd.uniregctb.utils.RegDateEditor;
 
 @Controller
 @RequestMapping(value = "/debiteur")
@@ -31,6 +33,9 @@ public class DebiteurEditController {
 	public static final String MODES_COMMUNICATION = "modesCommunication";
 	public static final String PERIODES_DECOMPTE = "periodesDecomptes";
 	public static final String PERIODICITES_DECOMPTE = "periodicitesDecomptes";
+
+	private static final String ID = "id";
+	private static final String NOUVELLE_PERIODICITE = "nouvellePeriodicite";
 
 	private TiersMapHelper tiersMapHelper;
 	private TiersEditManager tiersEditManager;
@@ -57,6 +62,11 @@ public class DebiteurEditController {
 		return SecurityHelper.isGranted(securityProvider, Role.SUPERGRA);
 	}
 
+	@InitBinder
+	public void initBinder(WebDataBinder binder) {
+		binder.registerCustomEditor(RegDate.class, new RegDateEditor(true, false, false));
+	}
+
 	private Map<PeriodiciteDecompte, String> getAllowedPeriodicitesDecomptes(PeriodiciteDecompte periodiciteActuelle) {
 		final Map<PeriodiciteDecompte, String> map;
 		if (hasFullRights()) {
@@ -70,17 +80,26 @@ public class DebiteurEditController {
 
 	@RequestMapping(value = "/edit.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true)
-	public String getDebiteurToEdit(Model model, @RequestParam(value = "id") long id) throws Exception {
+	public String getDebiteurToEdit(Model model, @RequestParam(value = ID) long id) throws Exception {
 		controllerUtils.checkAccesDossierEnLecture(id);
 		final DebiteurEditView view = tiersEditManager.getDebiteurEditView(id);
 
-		model.addAttribute(PERIODICITES_DECOMPTE, getAllowedPeriodicitesDecomptes(view.getPeriodiciteCourante()));
+		model.addAttribute(PERIODICITES_DECOMPTE, getAllowedPeriodicitesDecomptes(view.getNouvellePeriodicite()));
 		model.addAttribute(PERIODES_DECOMPTE, tiersMapHelper.getPeriodeDecomptes());
 		model.addAttribute(MODES_COMMUNICATION, tiersMapHelper.getMapModeCommunication());
 		model.addAttribute(LIBELLES_LOGICIELS, tiersMapHelper.getAllLibellesLogiciels());
 		model.addAttribute(CATEGORIES_IMPOT_SOURCE, tiersMapHelper.getMapCategorieImpotSource());
 		model.addAttribute("command", view);
 		return "tiers/edition/debiteur/edit";
+	}
+
+	@RequestMapping(value = "/dates-nouvelle-periodicite.do", method = RequestMethod.GET)
+	@ResponseBody
+	public List<RegDate> getDatesNouvellePeriodicite(@RequestParam(value = ID) long dpiId,
+	                                                 @RequestParam(value = NOUVELLE_PERIODICITE) PeriodiciteDecompte nouvellePeriodicite) {
+
+		// max un an dans le futur
+		return tiersEditManager.getDatesPossiblesPourDebutNouvellePeriodicite(dpiId, nouvellePeriodicite, RegDate.get().addYears(1));
 	}
 
 	@RequestMapping(value = "/edit.do", method = RequestMethod.POST)

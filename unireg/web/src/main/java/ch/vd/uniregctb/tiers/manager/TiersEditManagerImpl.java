@@ -1,10 +1,14 @@
 package ch.vd.uniregctb.tiers.manager;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.transaction.annotation.Transactional;
 
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
@@ -116,6 +120,60 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 		}
 		Assert.isInstanceOf(DebiteurPrestationImposable.class, tiers);
 		return new DebiteurEditView((DebiteurPrestationImposable) tiers, ibanValidator);
+	}
+
+	@Override
+	public List<RegDate> getDatesPossiblesPourDebutNouvellePeriodicite(long dpiId, PeriodiciteDecompte nouvellePeriodicite, RegDate maxDate) {
+		final Tiers tiers = tiersDAO.get(dpiId);
+		if (tiers == null) {
+			throw new TiersNotFoundException(dpiId);
+		}
+		if (tiers instanceof DebiteurPrestationImposable) {
+			final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiers;
+			final RegDate minDate = tiersService.getDateDebutNouvellePeriodicite(dpi, nouvellePeriodicite);
+
+			final List<RegDate> datesPossibles = new ArrayList<>();
+
+			// périodicité active à la veille de la date minimale = périodicité avec laquelle il faut composer
+			final List<Periodicite> periodicites = dpi.getPeriodicitesSorted();
+			Periodicite active = DateRangeHelper.rangeAt(periodicites, minDate.getOneDayBefore());
+			if (active == null) {
+				active = DateRangeHelper.rangeAt(periodicites, minDate);
+			}
+			if (active == null) {
+				datesPossibles.add(minDate);
+			}
+			else {
+
+				// on avance dans le temps tant qu'on est avant (ou le jour même) la date maximale
+				RegDate current = minDate;
+				while (current.isBeforeOrEqual(maxDate)) {
+					datesPossibles.add(current);
+
+					if (active.getPeriodiciteDecompte() == PeriodiciteDecompte.UNIQUE || nouvellePeriodicite == PeriodiciteDecompte.UNIQUE) {
+						current = current.addYears(1);
+					}
+					else {
+						// infinite loop
+						for (;;) {
+							final RegDate candidate = active.getPeriodiciteDecompte().getDebutPeriodeSuivante(current);
+							if (active.getDateFin() != null && candidate.isAfter(active.getDateFin())) {
+								active = DateRangeHelper.rangeAt(periodicites, candidate);
+							}
+							current = candidate;
+							if (nouvellePeriodicite.getDebutPeriode(candidate) == candidate) {
+								break;
+							}
+						}
+					}
+				}
+			}
+
+			return datesPossibles;
+		}
+		else {
+            return Collections.emptyList();
+		}
 	}
 
 	/**
@@ -358,7 +416,8 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 			final PeriodiciteView periodicite = tiersView.getPeriodicite();
 			if (periodicite != null) {
 				// L'appel de addperiodicite permet de sauver le tiers et la périodicité
-				final Periodicite periodiciteAjoutee = changePeriodicite(dpiFromView, periodicite.getPeriodiciteDecompte(), periodicite.getPeriodeDecompte());
+				final RegDate debutValidite = tiersService.getDateDebutNouvellePeriodicite(dpiFromView, periodicite.getPeriodiciteDecompte());
+				final Periodicite periodiciteAjoutee = changePeriodicite(dpiFromView, periodicite.getPeriodiciteDecompte(), periodicite.getPeriodeDecompte(), debutValidite);
 
 				// permet de recuperer l'id dans le cas d'un débiteur nouvellement créé
 				Assert.notNull(periodiciteAjoutee.getId());
@@ -423,13 +482,12 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 		}
 		dpi.setModeCommunication(view.getModeCommunication());
 		dpi.setLogicielId(view.getLogicielId());
-		changePeriodicite(dpi, view.getPeriodiciteCourante(), view.getPeriodeDecompte());
+		changePeriodicite(dpi, view.getNouvellePeriodicite(), view.getPeriodeDecompte(), view.getDateDebutNouvellePeriodicite());
 	}
 
-	private Periodicite changePeriodicite(DebiteurPrestationImposable dpi, PeriodiciteDecompte nouvellePeriodicite, PeriodeDecompte nouvellePeriode) {
+	private Periodicite changePeriodicite(DebiteurPrestationImposable dpi, PeriodiciteDecompte nouvellePeriodicite, PeriodeDecompte nouvellePeriode, RegDate dateDebut) {
 		final PeriodeDecompte periodeDecompte = (nouvellePeriodicite == PeriodiciteDecompte.UNIQUE ? nouvellePeriode : null);
-		final RegDate debutValidite = tiersService.getDateDebutNouvellePeriodicite(dpi, nouvellePeriodicite);
-		return tiersService.addPeriodicite(dpi, nouvellePeriodicite, periodeDecompte, debutValidite, null);
+		return tiersService.addPeriodicite(dpi, nouvellePeriodicite, periodeDecompte, dateDebut, null);
 	}
 
 	/**
