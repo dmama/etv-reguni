@@ -37,45 +37,6 @@ public class DebiteurEditController {
 	private SecurityProviderInterface securityProvider;
 	private ControllerUtils controllerUtils;
 
-	public static class EnumView<T extends Enum<T>> implements Serializable {
-
-		private static final long serialVersionUID = 4609848662920574499L;
-
-		private final T value;
-		private final String label;
-
-		public EnumView(T value, String label) {
-			this.value = value;
-			this.label = label;
-		}
-
-		@SuppressWarnings("UnusedDeclaration")
-		public T getValue() {
-			return value;
-		}
-
-		@SuppressWarnings("UnusedDeclaration")
-		public String getLabel() {
-			return label;
-		}
-
-		public static <T extends Enum<T>> List<EnumView<T>> fromMap(Map<T, String> map) {
-			final List<EnumView<T>> list = new ArrayList<>(map.size());
-			for (Map.Entry<T, String> entry : map.entrySet()) {
-				list.add(new EnumView<>(entry.getKey(), entry.getValue()));
-			}
-			return list;
-		}
-
-		public static <T extends Enum<T>> Map<T, String> toMap(List<EnumView<T>> list) {
-			final Map<T, String> map = new LinkedHashMap<>(list.size());
-			for (EnumView<T> elt : list) {
-				map.put(elt.getValue(), elt.getLabel());
-			}
-			return map;
-		}
-	}
-
 	public void setTiersMapHelper(TiersMapHelper tiersMapHelper) {
 		this.tiersMapHelper = tiersMapHelper;
 	}
