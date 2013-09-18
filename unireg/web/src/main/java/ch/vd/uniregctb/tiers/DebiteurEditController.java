@@ -96,15 +96,15 @@ public class DebiteurEditController {
 		return SecurityHelper.isGranted(securityProvider, Role.SUPERGRA);
 	}
 
-	private List<EnumView<PeriodiciteDecompte>> getAllowedPeriodicitesDecomptes(PeriodiciteDecompte periodiciteActuelle) {
-	final Map<PeriodiciteDecompte, String> map;
+	private Map<PeriodiciteDecompte, String> getAllowedPeriodicitesDecomptes(PeriodiciteDecompte periodiciteActuelle) {
+		final Map<PeriodiciteDecompte, String> map;
 		if (hasFullRights()) {
 			map = tiersMapHelper.getMapPeriodiciteDecompte();
 		}
 		else {
 			map = tiersMapHelper.getMapLimiteePeriodiciteDecompte(periodiciteActuelle);
 		}
-		return EnumView.fromMap(map);
+		return map;
 	}
 
 	@RequestMapping(value = "/edit.do", method = RequestMethod.GET)
