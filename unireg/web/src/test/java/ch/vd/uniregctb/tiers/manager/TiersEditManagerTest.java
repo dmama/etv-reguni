@@ -306,18 +306,21 @@ public class TiersEditManagerTest extends WebTest {
 
 		{
 			view.setNouvellePeriodicite(PeriodiciteDecompte.SEMESTRIEL);
+			view.setDateDebutNouvellePeriodicite(date(2010, 7, 1));
 			tiersEditManager.save(view);
 			view = tiersEditManager.getDebiteurEditView(dpiId);
 			assertEquals(PeriodiciteDecompte.SEMESTRIEL, view.getNouvellePeriodicite());
 		}
 		{
 			view.setNouvellePeriodicite(PeriodiciteDecompte.TRIMESTRIEL);
+			view.setDateDebutNouvellePeriodicite(date(2010, 10, 1));
 			tiersEditManager.save(view);
 			view = tiersEditManager.getDebiteurEditView(dpiId);
 			assertEquals(PeriodiciteDecompte.TRIMESTRIEL, view.getNouvellePeriodicite());
 		}
 		{
 			view.setNouvellePeriodicite(PeriodiciteDecompte.MENSUEL);
+			view.setDateDebutNouvellePeriodicite(date(2010, 11, 1));
 			tiersEditManager.save(view);
 			view = tiersEditManager.getDebiteurEditView(dpiId);
 			assertEquals(PeriodiciteDecompte.MENSUEL, view.getNouvellePeriodicite());
