@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
@@ -759,6 +760,64 @@ public class TiersEditManagerTest extends WebTest {
 				assertEquals("index " + i, expectedDates.get(i), dates.get(i));
 			}
 		}
+	}
+
+	/**
+	 * Cas où on a joué avec l'IHM, mis une date dans le futur dans la combo des dates possibles et puis qu'on est revenu sur la périodicité
+	 * originelle -> la combo a disparu de l'affichage mais sa dernière valeur est tout de même postée dans le formulaire
+	 */
+	@Test
+	public void testConservationMemePeriodiciteAvecDateDifferente() throws Exception {
+
+		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1980, 10, 25), Sexe.MASCULIN);
+				final DebiteurPrestationImposable dpi = addDebiteur(null, pp, date(2010, 1, 1));
+				dpi.setModeCommunication(ModeCommunication.PAPIER);
+				dpi.setCategorieImpotSource(CategorieImpotSource.REGULIERS);
+				dpi.addPeriodicite(new Periodicite(PeriodiciteDecompte.SEMESTRIEL, null, date(2010, 1, 1), null));
+				return dpi.getNumero();
+			}
+		});
+
+		// on reste en SEMESTRIEL
+		{
+			DebiteurEditView view = tiersEditManager.getDebiteurEditView(dpiId);
+			assertEquals(PeriodiciteDecompte.SEMESTRIEL, view.getNouvellePeriodicite());
+			assertEquals(PeriodiciteDecompte.SEMESTRIEL, view.getPeriodiciteActive());
+			assertEquals(date(2010, 1, 1), view.getDateDebutNouvellePeriodicite());
+			{
+				view.setNouvellePeriodicite(PeriodiciteDecompte.SEMESTRIEL);
+				view.setDateDebutNouvellePeriodicite(date(RegDate.get().year() + 1, 1, 1));
+				tiersEditManager.save(view);
+				view = tiersEditManager.getDebiteurEditView(dpiId);
+				assertEquals(PeriodiciteDecompte.SEMESTRIEL, view.getNouvellePeriodicite());
+				assertEquals(PeriodiciteDecompte.SEMESTRIEL, view.getPeriodiciteActive());
+				assertEquals(date(2010, 1, 1), view.getDateDebutNouvellePeriodicite());
+			}
+		}
+
+		// et en base, rien ne devrait avoir changé non plus
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
+				assertNotNull(dpi);
+
+				final Set<Periodicite> allPeriodicites = dpi.getPeriodicites();
+				assertNotNull(allPeriodicites);
+				assertEquals(1, allPeriodicites.size());
+
+				final Periodicite periodicite = allPeriodicites.iterator().next();
+				assertNotNull(periodicite);
+				assertEquals(PeriodiciteDecompte.SEMESTRIEL, periodicite.getPeriodiciteDecompte());
+				assertEquals(date(2010, 1, 1), periodicite.getDateDebut());
+				assertNull(periodicite.getDateFin());
+				assertFalse(periodicite.isAnnule());
+				return null;
+			}
+		});
 	}
 
 	public TiersEditManager getTiersEditManager() {
