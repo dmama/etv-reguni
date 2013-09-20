@@ -21,6 +21,8 @@ import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.common.WebTest;
+import ch.vd.uniregctb.declaration.ModeleDocument;
+import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.tiers.AutreCommunaute;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
@@ -34,6 +36,7 @@ import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
+import ch.vd.uniregctb.type.TypeDocument;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
@@ -434,6 +437,58 @@ public class TiersEditManagerTest extends WebTest {
 		final TiersEditView view = tiersEditManager.getView(6789L);
 		view.getTiers().setPersonneContact("toto");
 		tiersEditManager.refresh(view, 6789L);
+	}
+
+	@Test
+	public void testGetDatesPossiblesPourNouvellePeriodiciteAvecLREmise() throws Exception {
+
+		final RegDate today = RegDate.get();
+		final int year = today.year();
+		final RegDate endOfYear = date(year, 12, 31);
+
+		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1980, 10, 25), Sexe.MASCULIN);
+				final DebiteurPrestationImposable dpi = addDebiteur(null, pp, date(2010, 1, 1));
+				dpi.setModeCommunication(ModeCommunication.PAPIER);
+				dpi.setCategorieImpotSource(CategorieImpotSource.REGULIERS);
+				dpi.addPeriodicite(new Periodicite(PeriodiciteDecompte.TRIMESTRIEL, null, date(2010, 1, 1), null));
+
+				addForDebiteur(dpi, date(year, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Lausanne);
+
+				final PeriodeFiscale pf = addPeriodeFiscale(year);
+				final ModeleDocument md = addModeleDocument(TypeDocument.LISTE_RECAPITULATIVE, pf);
+				addListeRecapitulative(dpi, pf, date(year, 1, 1), date(year, 3, 31), md);
+
+				return dpi.getNumero();
+			}
+		});
+
+		// cas mensuel (= périodicité plus petite)
+		{
+			final List<RegDate> dates = tiersEditManager.getDatesPossiblesPourDebutNouvellePeriodicite(dpiId, PeriodiciteDecompte.MENSUEL, endOfYear, false);
+			assertNotNull(dates);
+			assertEquals(3, dates.size());
+			assertEquals(date(year, 4, 1), dates.get(0));
+			assertEquals(date(year, 7, 1), dates.get(1));
+			assertEquals(date(year, 10, 1), dates.get(2));
+		}
+
+		// cas trimestriel (= même périodicité)
+		{
+			final List<RegDate> dates = tiersEditManager.getDatesPossiblesPourDebutNouvellePeriodicite(dpiId, PeriodiciteDecompte.TRIMESTRIEL, endOfYear, false);
+			assertNotNull(dates);
+			assertEquals(0, dates.size());
+		}
+
+		// cas semestriel (= périodicité plus grande)
+		{
+			final List<RegDate> dates = tiersEditManager.getDatesPossiblesPourDebutNouvellePeriodicite(dpiId, PeriodiciteDecompte.SEMESTRIEL, endOfYear, false);
+			assertNotNull(dates);
+			assertEquals(1, dates.size());
+			assertEquals(date(year, 7, 1), dates.get(0));
+		}
 	}
 
 	@Test
