@@ -17,6 +17,7 @@ public class DebiteurEditView {
 	private ModeCommunication modeCommunication;
 	private PeriodiciteDecompte nouvellePeriodicite;
 	private final PeriodiciteDecompte periodiciteActive;
+	private final RegDate dateDebutPeriodiciteActive;
 	private RegDate dateDebutNouvellePeriodicite;
 	private PeriodeDecompte periodeDecompte;
 	private final ComplementView complement;
@@ -26,6 +27,7 @@ public class DebiteurEditView {
 	public DebiteurEditView() {
 		this.complement = new ComplementView();
 		this.periodiciteActive = null;
+		this.dateDebutPeriodiciteActive = null;
 	}
 
 	public DebiteurEditView(DebiteurPrestationImposable dpi, IbanValidator ibanValidator) {
@@ -43,6 +45,7 @@ public class DebiteurEditView {
 		}
 		final Periodicite periodiciteActive = dpi.getPeriodiciteAt(RegDate.get());
 		this.periodiciteActive = periodiciteActive != null ? periodiciteActive.getPeriodiciteDecompte() : null;
+		this.dateDebutPeriodiciteActive = periodiciteActive != null ? periodiciteActive.getDateDebut() : null;
 		this.complement = new ComplementView(dpi, null, null, ibanValidator);
 	}
 
@@ -124,5 +127,9 @@ public class DebiteurEditView {
 
 	public void setDateDebutNouvellePeriodicite(RegDate dateDebutNouvellePeriodicite) {
 		this.dateDebutNouvellePeriodicite = dateDebutNouvellePeriodicite;
+	}
+
+	public RegDate getDateDebutPeriodiciteActive() {
+		return dateDebutPeriodiciteActive;
 	}
 }

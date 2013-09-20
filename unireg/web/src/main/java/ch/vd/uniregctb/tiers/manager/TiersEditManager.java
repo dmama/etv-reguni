@@ -43,14 +43,14 @@ public interface TiersEditManager {
 	DebiteurEditView getDebiteurEditView(Long numero) throws AdresseException, ServiceInfrastructureException;
 
 	/**
-	 *
-	 * @param dpiId
-	 * @param nouvellePeriodicite
-	 * @param maxDate
-	 * @return
+	 * @param dpiId identifiant technique du débiteur
+	 * @param nouvellePeriodicite nouvelle périodicité souhaitée
+	 * @param maxDate date maximale (comprise) pour la limitation des dates proposées
+	 * @param descendingOnly <code>true</code> si l'utilisateur courant n'a pas le droit d'agrandir les périodicité, <code>false</code> s'il peut le faire (= SuperGRA)
+	 * @return une liste de dates possibles pour changer vers la périodicité demandée
 	 */
 	@Transactional(readOnly = true)
-	List<RegDate> getDatesPossiblesPourDebutNouvellePeriodicite(long dpiId, PeriodiciteDecompte nouvellePeriodicite, RegDate maxDate);
+	List<RegDate> getDatesPossiblesPourDebutNouvellePeriodicite(long dpiId, PeriodiciteDecompte nouvellePeriodicite, RegDate maxDate, boolean descendingOnly);
 
 	/**
 	 * Charge les informations dans TiersView

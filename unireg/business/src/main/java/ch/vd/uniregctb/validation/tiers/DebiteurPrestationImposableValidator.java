@@ -51,9 +51,6 @@ public class DebiteurPrestationImposableValidator extends TiersValidator<Debiteu
 			// Les plages de validité des périodicités ne doivent pas se chevaucher
 			Periodicite lastPeriodicite = null;
 			for (Periodicite p : periodicites) {
-				if (p.isAnnule()) {
-					continue;
-				}
 				// on valide les périodicités pour elles-mêmes
 				results.merge(validationService.validate(p));
 

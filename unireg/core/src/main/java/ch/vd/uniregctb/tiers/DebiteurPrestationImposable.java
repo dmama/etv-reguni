@@ -207,44 +207,43 @@ public class DebiteurPrestationImposable extends Tiers {
 	}
 
 	/**
-	 * @return Retourne les Periodicités triées par - La date d'ouverture
+	 * @return Retourne les Periodicités triées par - La date d'ouverture (sans les annulées)
 	 */
 	@Transient
 	public List<Periodicite> getPeriodicitesSorted() {
 		if (periodicites == null) {
 			return null;
 		}
-		final List<Periodicite> list = new ArrayList<>(periodicites);
+		final List<Periodicite> list = new ArrayList<>(periodicites.size());
+		for (Periodicite p : periodicites) {
+			if (!p.isAnnule()) {
+				list.add(p);
+			}
+		}
 		Collections.sort(list, new DateRangeComparator<Periodicite>());
 		return list;
 	}
 
 	@Transient
 	public Periodicite getDernierePeriodicite() {
-
-		List<Periodicite> list = getPeriodicitesSorted();
-		if (list != null) {
-			for (int i = list.size() - 1; i >= 0; i--) {
-				Periodicite periodicite = list.get(i);
-				if (!periodicite.isAnnule()) {
-					return periodicite;
-				}
-			}
+		final List<Periodicite> list = getPeriodicitesSorted();
+		if (list != null && !list.isEmpty()) {
+			return list.get(list.size() - 1);
 		}
-		return null;
+		else {
+			return null;
+		}
 	}
 
 	@Transient
 	public Periodicite getPremierePeriodicite() {
-		List<Periodicite> list = getPeriodicitesSorted();
-		if (list != null) {
-			for (Periodicite periodicite : list) {
-				if (!periodicite.isAnnule()) {
-					return periodicite;
-				}
-			}
+		final List<Periodicite> list = getPeriodicitesSorted();
+		if (list != null && !list.isEmpty()) {
+			return list.get(0);
 		}
-		return null;
+		else {
+			return null;
+		}
 	}
 
 	/**

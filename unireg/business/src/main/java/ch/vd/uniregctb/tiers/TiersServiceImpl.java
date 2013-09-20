@@ -2744,7 +2744,21 @@ public class TiersServiceImpl implements TiersService {
      */
     @Override
     public Periodicite addPeriodicite(DebiteurPrestationImposable debiteur, PeriodiciteDecompte periodiciteDecompte, PeriodeDecompte periodeDecompte, RegDate dateDebut, RegDate dateFin) {
-        annulerPeriodicitePosterieur(debiteur, dateDebut);
+
+        annulerPeriodicitePosterieure(debiteur, dateDebut);
+
+	    if (dateDebut == null) {
+		    final Periodicite active = debiteur.getPeriodiciteAt(null);
+		    if (periodeDecompte != active.getPeriodeDecompte() || periodiciteDecompte != active.getPeriodiciteDecompte()) {
+			    throw new IllegalArgumentException("Une date doit toujours être donnée si on change la périodicité");
+		    }
+		    final Periodicite derniere = debiteur.getDernierePeriodicite();
+		    if (active != derniere) {
+			    throw new IllegalArgumentException("Une date doit toujours être donnée quand il existe des périodicités avec une date de début future.");
+		    }
+		    return active;
+	    }
+
         while (true) { // cette boucle permet de fusionner - si nécessaire - la nouvelle périodicité avec celles existantes
             Periodicite courante = debiteur.getPeriodiciteAt(dateDebut);
             if (courante == null) {
@@ -2800,17 +2814,15 @@ public class TiersServiceImpl implements TiersService {
      * @param debiteur  sur qui on veut annuler les périodicités
      * @param dateDebut date de référence  calculée par @link #getDateDebutNouvellePeriodicite
      */
-    private void annulerPeriodicitePosterieur(DebiteurPrestationImposable debiteur, RegDate dateDebut) {
-        List<Periodicite> periodicites = debiteur.getPeriodicitesSorted();
-        if (periodicites != null) {
+    private void annulerPeriodicitePosterieure(DebiteurPrestationImposable debiteur, RegDate dateDebut) {
+        final List<Periodicite> periodicites = debiteur.getPeriodicitesSorted();
+        if (periodicites != null && !periodicites.isEmpty()) {
             for (Periodicite periodicite : periodicites) {
-                if (!periodicite.isAnnule() && periodicite.getDateDebut().isAfter(dateDebut)) {
+                if (RegDateHelper.isAfter(periodicite.getDateDebut(), dateDebut, NullDateBehavior.LATEST)) {
                     periodicite.setAnnule(true);
                 }
             }
-
         }
-
     }
 
 		@Override

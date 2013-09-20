@@ -15,25 +15,35 @@
 				$('#div_periodeDecompte_input').hide();
 			}
 
-			if (name === '${command.periodiciteActive}' && '${command.periodiciteActive}' === '${command.nouvellePeriodicite}') {
-				$('#periodiciteDepuis').hide();
-			}
-			else {
-
-				var selectDate = $('#dateDebutPeriodicite');
-
-				// appels ajax pour mettre-à-jour les dates possibles pour le début de la nouvelle périodicité
-				$.get(App.curl('/debiteur/dates-nouvelle-periodicite.do?id=${command.id}&nouvellePeriodicite=' + name + '&' + new Date().getTime()), function(dates) {
-					var list = '';
-					for(var i = 0; i < dates.length; ++i) {
-						var d = dates[i];
-						var str = RegDate.format(d);
-						list += '<option value="' + str + '"' + (str === '<unireg:regdate regdate="${command.dateDebutNouvellePeriodicite}"/>' ? ' selected=true' : '') + '">' + str + '</option>';
+			<c:choose>
+				<c:when test="${command.nouvellePeriodicite == 'UNIQUE' || command.periodiciteActive != command.nouvellePeriodicite || command.dateDebutPeriodiciteActive != command.dateDebutNouvellePeriodicite}">
+					this.showDatesDebutPossibles(name);
+				</c:when>
+				<c:otherwise>
+					if (name === 'UNIQUE' || name != '${command.periodiciteActive}') {
+						this.showDatesDebutPossibles(name);
 					}
-					selectDate.html(list);
-					$('#periodiciteDepuis').show();
-				}, 'json').error(Ajax.popupErrorHandler);
-			}
+					else {
+						$('#periodiciteDepuis').hide();
+					}
+				</c:otherwise>
+			</c:choose>
+		},
+
+		showDatesDebutPossibles: function(name) {
+			var selectDate = $('#dateDebutPeriodicite');
+
+			// appels ajax pour mettre-à-jour les dates possibles pour le début de la nouvelle périodicité
+			$.get(App.curl('/debiteur/dates-nouvelle-periodicite.do?id=${command.id}&nouvellePeriodicite=' + name + '&' + new Date().getTime()), function(dates) {
+				var list = '';
+				for(var i = 0; i < dates.length; ++i) {
+					var d = dates[i];
+					var str = RegDate.format(d);
+					list += '<option value="' + str + '"' + (str === '<unireg:regdate regdate="${command.dateDebutNouvellePeriodicite}"/>' ? ' selected=true' : '') + '">' + str + '</option>';
+				}
+				selectDate.html(list);
+				$('#periodiciteDepuis').show();
+			}, 'json').error(Ajax.popupErrorHandler);
 		},
 
 		selectLogiciel: function(name) {

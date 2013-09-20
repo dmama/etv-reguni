@@ -451,7 +451,7 @@ public class TiersEditManagerTest extends WebTest {
 		});
 
 		for (PeriodiciteDecompte nvelle : PeriodiciteDecompte.values()) {
-			final List<RegDate> dates = tiersEditManager.getDatesPossiblesPourDebutNouvellePeriodicite(dpiId, nvelle, RegDate.get().addYears(1));
+			final List<RegDate> dates = tiersEditManager.getDatesPossiblesPourDebutNouvellePeriodicite(dpiId, nvelle, RegDate.get().addYears(1), false);
 			assertNotNull(nvelle.name(), dates);
 			assertEquals(nvelle.name(), 1, dates.size());
 			assertEquals(nvelle.name(), date(RegDate.get().year(), 1, 1), dates.get(0));
@@ -484,7 +484,7 @@ public class TiersEditManagerTest extends WebTest {
 				current = current.addMonths(3);
 			}
 
-			final List<RegDate> dates = tiersEditManager.getDatesPossiblesPourDebutNouvellePeriodicite(dpiId, PeriodiciteDecompte.MENSUEL, oneYearFromNow);
+			final List<RegDate> dates = tiersEditManager.getDatesPossiblesPourDebutNouvellePeriodicite(dpiId, PeriodiciteDecompte.MENSUEL, oneYearFromNow, false);
 			assertNotNull(dates);
 			assertEquals(Arrays.toString(dates.toArray()), expectedDates.size(), dates.size());
 			for (int i = 0 ; i < expectedDates.size() ; ++ i) {
@@ -494,19 +494,9 @@ public class TiersEditManagerTest extends WebTest {
 
 		// passage en TRIMESTRIEL
 		{
-			final List<RegDate> expectedDates = new ArrayList<>();
-			RegDate current = date(RegDate.get().year(), 1, 1);
-			while (current.isBeforeOrEqual(oneYearFromNow)) {
-				expectedDates.add(current);
-				current = current.addMonths(3);
-			}
-
-			final List<RegDate> dates = tiersEditManager.getDatesPossiblesPourDebutNouvellePeriodicite(dpiId, PeriodiciteDecompte.TRIMESTRIEL, oneYearFromNow);
+			final List<RegDate> dates = tiersEditManager.getDatesPossiblesPourDebutNouvellePeriodicite(dpiId, PeriodiciteDecompte.TRIMESTRIEL, oneYearFromNow, false);
 			assertNotNull(dates);
-			assertEquals(Arrays.toString(dates.toArray()), expectedDates.size(), dates.size());
-			for (int i = 0 ; i < expectedDates.size() ; ++ i) {
-				assertEquals("index " + i, expectedDates.get(i), dates.get(i));
-			}
+			assertEquals(0, dates.size());      // aucune date retournée parce qu'on est déjà en trimestriel
 		}
 
 		// passage en SEMESTRIEL
@@ -518,7 +508,7 @@ public class TiersEditManagerTest extends WebTest {
 				current = current.addMonths(6);
 			}
 
-			final List<RegDate> dates = tiersEditManager.getDatesPossiblesPourDebutNouvellePeriodicite(dpiId, PeriodiciteDecompte.SEMESTRIEL, oneYearFromNow);
+			final List<RegDate> dates = tiersEditManager.getDatesPossiblesPourDebutNouvellePeriodicite(dpiId, PeriodiciteDecompte.SEMESTRIEL, oneYearFromNow, false);
 			assertNotNull(dates);
 			assertEquals(Arrays.toString(dates.toArray()), expectedDates.size(), dates.size());
 			for (int i = 0 ; i < expectedDates.size() ; ++ i) {
@@ -535,7 +525,7 @@ public class TiersEditManagerTest extends WebTest {
 				current = current.addMonths(12);
 			}
 
-			final List<RegDate> dates = tiersEditManager.getDatesPossiblesPourDebutNouvellePeriodicite(dpiId, PeriodiciteDecompte.ANNUEL, oneYearFromNow);
+			final List<RegDate> dates = tiersEditManager.getDatesPossiblesPourDebutNouvellePeriodicite(dpiId, PeriodiciteDecompte.ANNUEL, oneYearFromNow, false);
 			assertNotNull(dates);
 			assertEquals(Arrays.toString(dates.toArray()), expectedDates.size(), dates.size());
 			for (int i = 0 ; i < expectedDates.size() ; ++ i) {
@@ -546,7 +536,7 @@ public class TiersEditManagerTest extends WebTest {
 		// passage en UNIQUE
 		{
 			final List<RegDate> expectedDates = Arrays.asList(date(RegDate.get().year(), 1, 1), date(RegDate.get().year() + 1, 1, 1));
-			final List<RegDate> dates = tiersEditManager.getDatesPossiblesPourDebutNouvellePeriodicite(dpiId, PeriodiciteDecompte.UNIQUE, oneYearFromNow);
+			final List<RegDate> dates = tiersEditManager.getDatesPossiblesPourDebutNouvellePeriodicite(dpiId, PeriodiciteDecompte.UNIQUE, oneYearFromNow, false);
 			assertNotNull(dates);
 			assertEquals(Arrays.toString(dates.toArray()), expectedDates.size(), dates.size());
 			for (int i = 0 ; i < expectedDates.size() ; ++ i) {
@@ -583,7 +573,7 @@ public class TiersEditManagerTest extends WebTest {
 				current = current.addMonths(3);
 			}
 
-			final List<RegDate> dates = tiersEditManager.getDatesPossiblesPourDebutNouvellePeriodicite(dpiId, PeriodiciteDecompte.MENSUEL, oneYearFromNow);
+			final List<RegDate> dates = tiersEditManager.getDatesPossiblesPourDebutNouvellePeriodicite(dpiId, PeriodiciteDecompte.MENSUEL, oneYearFromNow, false);
 			assertNotNull(dates);
 			assertEquals(Arrays.toString(dates.toArray()), expectedDates.size(), dates.size());
 			for (int i = 0 ; i < expectedDates.size() ; ++ i) {
@@ -593,19 +583,9 @@ public class TiersEditManagerTest extends WebTest {
 
 		// passage en TRIMESTRIEL
 		{
-			final List<RegDate> expectedDates = new ArrayList<>();
-			RegDate current = date(RegDate.get().year(), 1, 1);
-			while (current.isBeforeOrEqual(oneYearFromNow)) {
-				expectedDates.add(current);
-				current = current.addMonths(3);
-			}
-
-			final List<RegDate> dates = tiersEditManager.getDatesPossiblesPourDebutNouvellePeriodicite(dpiId, PeriodiciteDecompte.TRIMESTRIEL, oneYearFromNow);
+			final List<RegDate> dates = tiersEditManager.getDatesPossiblesPourDebutNouvellePeriodicite(dpiId, PeriodiciteDecompte.TRIMESTRIEL, oneYearFromNow, false);
 			assertNotNull(dates);
-			assertEquals(Arrays.toString(dates.toArray()), expectedDates.size(), dates.size());
-			for (int i = 0 ; i < expectedDates.size() ; ++ i) {
-				assertEquals("index " + i, expectedDates.get(i), dates.get(i));
-			}
+			assertEquals(1, dates.size());      // juste la date de début de la périodicité actuelle
 		}
 
 		// passage en SEMESTRIEL
@@ -617,7 +597,7 @@ public class TiersEditManagerTest extends WebTest {
 				current = current.addMonths(6);
 			}
 
-			final List<RegDate> dates = tiersEditManager.getDatesPossiblesPourDebutNouvellePeriodicite(dpiId, PeriodiciteDecompte.SEMESTRIEL, oneYearFromNow);
+			final List<RegDate> dates = tiersEditManager.getDatesPossiblesPourDebutNouvellePeriodicite(dpiId, PeriodiciteDecompte.SEMESTRIEL, oneYearFromNow, false);
 			assertNotNull(dates);
 			assertEquals(Arrays.toString(dates.toArray()), expectedDates.size(), dates.size());
 			for (int i = 0 ; i < expectedDates.size() ; ++ i) {
@@ -634,7 +614,7 @@ public class TiersEditManagerTest extends WebTest {
 				current = current.addMonths(12);
 			}
 
-			final List<RegDate> dates = tiersEditManager.getDatesPossiblesPourDebutNouvellePeriodicite(dpiId, PeriodiciteDecompte.ANNUEL, oneYearFromNow);
+			final List<RegDate> dates = tiersEditManager.getDatesPossiblesPourDebutNouvellePeriodicite(dpiId, PeriodiciteDecompte.ANNUEL, oneYearFromNow, false);
 			assertNotNull(dates);
 			assertEquals(Arrays.toString(dates.toArray()), expectedDates.size(), dates.size());
 			for (int i = 0 ; i < expectedDates.size() ; ++ i) {
@@ -645,7 +625,7 @@ public class TiersEditManagerTest extends WebTest {
 		// passage en UNIQUE
 		{
 			final List<RegDate> expectedDates = Arrays.asList(date(RegDate.get().year(), 1, 1), date(RegDate.get().year() + 1, 1, 1));
-			final List<RegDate> dates = tiersEditManager.getDatesPossiblesPourDebutNouvellePeriodicite(dpiId, PeriodiciteDecompte.UNIQUE, oneYearFromNow);
+			final List<RegDate> dates = tiersEditManager.getDatesPossiblesPourDebutNouvellePeriodicite(dpiId, PeriodiciteDecompte.UNIQUE, oneYearFromNow, false);
 			assertNotNull(dates);
 			assertEquals(Arrays.toString(dates.toArray()), expectedDates.size(), dates.size());
 			for (int i = 0 ; i < expectedDates.size() ; ++ i) {
@@ -657,8 +637,10 @@ public class TiersEditManagerTest extends WebTest {
 	@Test
 	public void testGetDatesPossiblesPourDebutNouvellePeriodiciteAvecPeriodiciteExistanteNonActive() throws Exception {
 
-		final int year = RegDate.get().year();
+		final RegDate today = RegDate.get();
+		final int year = today.year();
 		final RegDate nextFirstOfJanuary = date(year + 1, 1, 1);
+		final RegDate nextSemesterBegin = today.isBefore(date(year, 7, 1)) ? date(year, 7, 1) : nextFirstOfJanuary;
 
 		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
@@ -673,13 +655,13 @@ public class TiersEditManagerTest extends WebTest {
 			}
 		});
 
-		final RegDate oneYearFromNow = RegDate.get().addYears(1);
+		final RegDate oneYearFromNow = today.addYears(1);
 
 		// passage en MENSUEL
 		{
 			final List<RegDate> expectedDates = new ArrayList<>();
 			RegDate current = date(year, 1, 1);
-			while (current.isBefore(nextFirstOfJanuary)) {
+			while (current.isBefore(nextSemesterBegin)) {
 				expectedDates.add(current);
 				current = current.addMonths(6);
 			}
@@ -688,7 +670,7 @@ public class TiersEditManagerTest extends WebTest {
 				current = current.addMonths(3);
 			}
 
-			final List<RegDate> dates = tiersEditManager.getDatesPossiblesPourDebutNouvellePeriodicite(dpiId, PeriodiciteDecompte.MENSUEL, oneYearFromNow);
+			final List<RegDate> dates = tiersEditManager.getDatesPossiblesPourDebutNouvellePeriodicite(dpiId, PeriodiciteDecompte.MENSUEL, oneYearFromNow, false);
 			assertNotNull(dates);
 			assertEquals(Arrays.toString(dates.toArray()), expectedDates.size(), dates.size());
 			for (int i = 0 ; i < expectedDates.size() ; ++ i) {
@@ -700,16 +682,16 @@ public class TiersEditManagerTest extends WebTest {
 		{
 			final List<RegDate> expectedDates = new ArrayList<>();
 			RegDate current = date(year, 1, 1);
-			while (current.isBefore(nextFirstOfJanuary)) {
+			while (current.isBefore(nextSemesterBegin)) {
 				expectedDates.add(current);
 				current = current.addMonths(6);
 			}
-			while (current.isBeforeOrEqual(oneYearFromNow)) {
+			while (current.isBeforeOrEqual(nextFirstOfJanuary)) {      // pas la peine d'aller plus loin, c'est déjà trimestriel
 				expectedDates.add(current);
 				current = current.addMonths(3);
 			}
 
-			final List<RegDate> dates = tiersEditManager.getDatesPossiblesPourDebutNouvellePeriodicite(dpiId, PeriodiciteDecompte.TRIMESTRIEL, oneYearFromNow);
+			final List<RegDate> dates = tiersEditManager.getDatesPossiblesPourDebutNouvellePeriodicite(dpiId, PeriodiciteDecompte.TRIMESTRIEL, oneYearFromNow, false);
 			assertNotNull(dates);
 			assertEquals(Arrays.toString(dates.toArray()), expectedDates.size(), dates.size());
 			for (int i = 0 ; i < expectedDates.size() ; ++ i) {
@@ -720,13 +702,13 @@ public class TiersEditManagerTest extends WebTest {
 		// passage en SEMESTRIEL
 		{
 			final List<RegDate> expectedDates = new ArrayList<>();
-			RegDate current = date(year, 1, 1);
+			RegDate current = nextFirstOfJanuary;           // pas la peine de commencer avant, puisqu'avant c'est déjà semestriel
 			while (current.isBeforeOrEqual(oneYearFromNow)) {
 				expectedDates.add(current);
 				current = current.addMonths(6);
 			}
 
-			final List<RegDate> dates = tiersEditManager.getDatesPossiblesPourDebutNouvellePeriodicite(dpiId, PeriodiciteDecompte.SEMESTRIEL, oneYearFromNow);
+			final List<RegDate> dates = tiersEditManager.getDatesPossiblesPourDebutNouvellePeriodicite(dpiId, PeriodiciteDecompte.SEMESTRIEL, oneYearFromNow, false);
 			assertNotNull(dates);
 			assertEquals(Arrays.toString(dates.toArray()), expectedDates.size(), dates.size());
 			for (int i = 0 ; i < expectedDates.size() ; ++ i) {
@@ -743,7 +725,7 @@ public class TiersEditManagerTest extends WebTest {
 				current = current.addMonths(12);
 			}
 
-			final List<RegDate> dates = tiersEditManager.getDatesPossiblesPourDebutNouvellePeriodicite(dpiId, PeriodiciteDecompte.ANNUEL, oneYearFromNow);
+			final List<RegDate> dates = tiersEditManager.getDatesPossiblesPourDebutNouvellePeriodicite(dpiId, PeriodiciteDecompte.ANNUEL, oneYearFromNow, false);
 			assertNotNull(dates);
 			assertEquals(Arrays.toString(dates.toArray()), expectedDates.size(), dates.size());
 			for (int i = 0 ; i < expectedDates.size() ; ++ i) {
@@ -753,8 +735,183 @@ public class TiersEditManagerTest extends WebTest {
 
 		// passage en UNIQUE
 		{
-			final List<RegDate> expectedDates = Arrays.asList(date(RegDate.get().year(), 1, 1), date(RegDate.get().year() + 1, 1, 1));
-			final List<RegDate> dates = tiersEditManager.getDatesPossiblesPourDebutNouvellePeriodicite(dpiId, PeriodiciteDecompte.UNIQUE, oneYearFromNow);
+			final List<RegDate> expectedDates = Arrays.asList(date(today.year(), 1, 1), date(today.year() + 1, 1, 1));
+			final List<RegDate> dates = tiersEditManager.getDatesPossiblesPourDebutNouvellePeriodicite(dpiId, PeriodiciteDecompte.UNIQUE, oneYearFromNow, false);
+			assertNotNull(dates);
+			assertEquals(Arrays.toString(dates.toArray()), expectedDates.size(), dates.size());
+			for (int i = 0 ; i < expectedDates.size() ; ++ i) {
+				assertEquals("index " + i, expectedDates.get(i), dates.get(i));
+			}
+		}
+	}
+
+	@Test
+	public void testGetDatesPossiblesPeriodicitePlusGrande() throws Exception {
+
+		final RegDate today = RegDate.get();
+		final int year = today.year();
+		final RegDate oneYearFromNow = today.addYears(1);
+		final RegDate nextNewYear = date(year + 1, 1, 1);
+		final RegDate nextSemesterBegin = today.isBefore(date(year, 7, 1)) ? date(year, 7, 1) : nextNewYear;
+
+		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1980, 10, 25), Sexe.MASCULIN);
+				final DebiteurPrestationImposable dpi = addDebiteur(null, pp, date(2010, 1, 1));
+				dpi.setModeCommunication(ModeCommunication.PAPIER);
+				dpi.setCategorieImpotSource(CategorieImpotSource.REGULIERS);
+				dpi.addPeriodicite(new Periodicite(PeriodiciteDecompte.SEMESTRIEL, null, date(2010, 1, 1), nextNewYear.getOneDayBefore()));
+				dpi.addPeriodicite(new Periodicite(PeriodiciteDecompte.MENSUEL, null, nextNewYear, null));
+				return dpi.getNumero();
+			}
+		});
+
+		// passage en MENSUEL / supergra
+		{
+			final List<RegDate> expectedDates = new ArrayList<>();
+			RegDate current = date(year, 1, 1);
+			while (current.isBefore(nextSemesterBegin)) {
+				expectedDates.add(current);
+				current = current.addMonths(6);
+			}
+			while (current.isBeforeOrEqual(nextNewYear)) {     // on ne va pas plus loin car après on est déjà en mensuel
+				expectedDates.add(current);
+				current = current.addMonths(1);
+			}
+
+			final List<RegDate> dates = tiersEditManager.getDatesPossiblesPourDebutNouvellePeriodicite(dpiId, PeriodiciteDecompte.MENSUEL, oneYearFromNow, false);
+			assertNotNull(dates);
+			assertEquals(Arrays.toString(dates.toArray()), expectedDates.size(), dates.size());
+			for (int i = 0 ; i < expectedDates.size() ; ++ i) {
+				assertEquals("index " + i, expectedDates.get(i), dates.get(i));
+			}
+		}
+
+		// passage en MENSUEL / non-supergra -> pas de différence car la périodicité est la même que la dernière existante
+		{
+			final List<RegDate> expectedDates = new ArrayList<>();
+			RegDate current = date(year, 1, 1);
+			while (current.isBefore(nextSemesterBegin)) {
+				expectedDates.add(current);
+				current = current.addMonths(6);
+			}
+			while (current.isBeforeOrEqual(nextNewYear)) {     // on ne va pas plus loin car après on est déjà en mensuel
+				expectedDates.add(current);
+				current = current.addMonths(1);
+			}
+
+			final List<RegDate> dates = tiersEditManager.getDatesPossiblesPourDebutNouvellePeriodicite(dpiId, PeriodiciteDecompte.MENSUEL, oneYearFromNow, true);
+			assertNotNull(dates);
+			assertEquals(Arrays.toString(dates.toArray()), expectedDates.size(), dates.size());
+			for (int i = 0 ; i < expectedDates.size() ; ++ i) {
+				assertEquals("index " + i, expectedDates.get(i), dates.get(i));
+			}
+		}
+
+		// passage en TRIMESTRIEL / supergra
+		{
+			final List<RegDate> expectedDates = new ArrayList<>();
+			RegDate current = date(year, 1, 1);
+			while (current.isBefore(nextNewYear)) {
+				expectedDates.add(current);
+				current = current.addMonths(6);
+			}
+			while (current.isBeforeOrEqual(oneYearFromNow)) {
+				expectedDates.add(current);
+				current = current.addMonths(3);
+			}
+
+			final List<RegDate> dates = tiersEditManager.getDatesPossiblesPourDebutNouvellePeriodicite(dpiId, PeriodiciteDecompte.TRIMESTRIEL, oneYearFromNow, false);
+			assertNotNull(dates);
+			assertEquals(Arrays.toString(dates.toArray()), expectedDates.size(), dates.size());
+			for (int i = 0 ; i < expectedDates.size() ; ++ i) {
+				assertEquals("index " + i, expectedDates.get(i), dates.get(i));
+			}
+		}
+
+		// passage en TRIMESTRIEL / non-supergra
+		{
+			final List<RegDate> expectedDates = Arrays.asList(RegDate.get(year, 1, 1), RegDate.get(year, 7, 1), nextNewYear);
+			final List<RegDate> dates = tiersEditManager.getDatesPossiblesPourDebutNouvellePeriodicite(dpiId, PeriodiciteDecompte.TRIMESTRIEL, oneYearFromNow, true);
+			assertNotNull(dates);
+			assertEquals(Arrays.toString(dates.toArray()), expectedDates.size(), dates.size());
+			for (int i = 0 ; i < expectedDates.size() ; ++ i) {
+				assertEquals("index " + i, expectedDates.get(i), dates.get(i));
+			}
+		}
+
+		// passage en SEMESTRIEL / supergra
+		{
+			final List<RegDate> expectedDates = new ArrayList<>();
+			RegDate current = nextNewYear;      // on ne commence pas avant, c'est déjà semestriel avant
+			while (current.isBeforeOrEqual(oneYearFromNow)) {
+				expectedDates.add(current);
+				current = current.addMonths(6);
+			}
+
+			final List<RegDate> dates = tiersEditManager.getDatesPossiblesPourDebutNouvellePeriodicite(dpiId, PeriodiciteDecompte.SEMESTRIEL, oneYearFromNow, false);
+			assertNotNull(dates);
+			assertEquals(Arrays.toString(dates.toArray()), expectedDates.size(), dates.size());
+			for (int i = 0 ; i < expectedDates.size() ; ++ i) {
+				assertEquals("index " + i, expectedDates.get(i), dates.get(i));
+			}
+		}
+
+		// passage en SEMESTRIEL / non-supergra
+		{
+			final List<RegDate> expectedDates = Arrays.asList(nextNewYear);         // on ne commence pas avant, c'est déjà semestriel avant
+			final List<RegDate> dates = tiersEditManager.getDatesPossiblesPourDebutNouvellePeriodicite(dpiId, PeriodiciteDecompte.SEMESTRIEL, oneYearFromNow, true);
+			assertNotNull(dates);
+			assertEquals(Arrays.toString(dates.toArray()), expectedDates.size(), dates.size());
+			for (int i = 0 ; i < expectedDates.size() ; ++ i) {
+				assertEquals("index " + i, expectedDates.get(i), dates.get(i));
+			}
+		}
+
+		// passage en ANNUEL / supergra
+		{
+			final List<RegDate> expectedDates = new ArrayList<>();
+			RegDate current = date(year, 1, 1);
+			while (current.isBeforeOrEqual(oneYearFromNow)) {
+				expectedDates.add(current);
+				current = current.addMonths(12);
+			}
+
+			final List<RegDate> dates = tiersEditManager.getDatesPossiblesPourDebutNouvellePeriodicite(dpiId, PeriodiciteDecompte.ANNUEL, oneYearFromNow, false);
+			assertNotNull(dates);
+			assertEquals(Arrays.toString(dates.toArray()), expectedDates.size(), dates.size());
+			for (int i = 0 ; i < expectedDates.size() ; ++ i) {
+				assertEquals("index " + i, expectedDates.get(i), dates.get(i));
+			}
+		}
+
+		// passage en ANNUEL / non-supergra
+		{
+			final List<RegDate> expectedDates = Arrays.asList(date(year, 1, 1));
+			final List<RegDate> dates = tiersEditManager.getDatesPossiblesPourDebutNouvellePeriodicite(dpiId, PeriodiciteDecompte.ANNUEL, oneYearFromNow, true);
+			assertNotNull(dates);
+			assertEquals(Arrays.toString(dates.toArray()), expectedDates.size(), dates.size());
+			for (int i = 0 ; i < expectedDates.size() ; ++ i) {
+				assertEquals("index " + i, expectedDates.get(i), dates.get(i));
+			}
+		}
+
+		// passage en UNIQUE / supergra
+		{
+			final List<RegDate> expectedDates = Arrays.asList(date(today.year(), 1, 1), date(today.year() + 1, 1, 1));
+			final List<RegDate> dates = tiersEditManager.getDatesPossiblesPourDebutNouvellePeriodicite(dpiId, PeriodiciteDecompte.UNIQUE, oneYearFromNow, false);
+			assertNotNull(dates);
+			assertEquals(Arrays.toString(dates.toArray()), expectedDates.size(), dates.size());
+			for (int i = 0 ; i < expectedDates.size() ; ++ i) {
+				assertEquals("index " + i, expectedDates.get(i), dates.get(i));
+			}
+		}
+
+		// passage en UNIQUE / non-supergra
+		{
+			final List<RegDate> expectedDates = Arrays.asList(date(today.year(), 1, 1), date(today.year() + 1, 1, 1));
+			final List<RegDate> dates = tiersEditManager.getDatesPossiblesPourDebutNouvellePeriodicite(dpiId, PeriodiciteDecompte.UNIQUE, oneYearFromNow, true);
 			assertNotNull(dates);
 			assertEquals(Arrays.toString(dates.toArray()), expectedDates.size(), dates.size());
 			for (int i = 0 ; i < expectedDates.size() ; ++ i) {
@@ -791,6 +948,63 @@ public class TiersEditManagerTest extends WebTest {
 			{
 				view.setNouvellePeriodicite(PeriodiciteDecompte.SEMESTRIEL);
 				view.setDateDebutNouvellePeriodicite(date(RegDate.get().year() + 1, 1, 1));
+				tiersEditManager.save(view);
+				view = tiersEditManager.getDebiteurEditView(dpiId);
+				assertEquals(PeriodiciteDecompte.SEMESTRIEL, view.getNouvellePeriodicite());
+				assertEquals(PeriodiciteDecompte.SEMESTRIEL, view.getPeriodiciteActive());
+				assertEquals(date(2010, 1, 1), view.getDateDebutNouvellePeriodicite());
+			}
+		}
+
+		// et en base, rien ne devrait avoir changé non plus
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
+				assertNotNull(dpi);
+
+				final Set<Periodicite> allPeriodicites = dpi.getPeriodicites();
+				assertNotNull(allPeriodicites);
+				assertEquals(1, allPeriodicites.size());
+
+				final Periodicite periodicite = allPeriodicites.iterator().next();
+				assertNotNull(periodicite);
+				assertEquals(PeriodiciteDecompte.SEMESTRIEL, periodicite.getPeriodiciteDecompte());
+				assertEquals(date(2010, 1, 1), periodicite.getDateDebut());
+				assertNull(periodicite.getDateFin());
+				assertFalse(periodicite.isAnnule());
+				return null;
+			}
+		});
+	}
+
+	/**
+	 * Cas où la combo avec les dates n'a jamais été montrée à l'IHM -> la date est donc forcément nulle
+	 */
+	@Test
+	public void testDateDebutPeriodiciteNulle() throws Exception {
+
+		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1980, 10, 25), Sexe.MASCULIN);
+				final DebiteurPrestationImposable dpi = addDebiteur(null, pp, date(2010, 1, 1));
+				dpi.setModeCommunication(ModeCommunication.PAPIER);
+				dpi.setCategorieImpotSource(CategorieImpotSource.REGULIERS);
+				dpi.addPeriodicite(new Periodicite(PeriodiciteDecompte.SEMESTRIEL, null, date(2010, 1, 1), null));
+				return dpi.getNumero();
+			}
+		});
+
+		// on reste en SEMESTRIEL
+		{
+			DebiteurEditView view = tiersEditManager.getDebiteurEditView(dpiId);
+			assertEquals(PeriodiciteDecompte.SEMESTRIEL, view.getNouvellePeriodicite());
+			assertEquals(PeriodiciteDecompte.SEMESTRIEL, view.getPeriodiciteActive());
+			assertEquals(date(2010, 1, 1), view.getDateDebutNouvellePeriodicite());
+			{
+				view.setNouvellePeriodicite(PeriodiciteDecompte.SEMESTRIEL);
+				view.setDateDebutNouvellePeriodicite(null);         // <--- NULL
 				tiersEditManager.save(view);
 				view = tiersEditManager.getDebiteurEditView(dpiId);
 				assertEquals(PeriodiciteDecompte.SEMESTRIEL, view.getNouvellePeriodicite());

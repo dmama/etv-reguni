@@ -123,7 +123,7 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 	}
 
 	@Override
-	public List<RegDate> getDatesPossiblesPourDebutNouvellePeriodicite(long dpiId, PeriodiciteDecompte nouvellePeriodicite, RegDate maxDate) {
+	public List<RegDate> getDatesPossiblesPourDebutNouvellePeriodicite(long dpiId, PeriodiciteDecompte nouvellePeriodicite, RegDate maxDate, boolean descendingOnly) {
 		final Tiers tiers = tiersDAO.get(dpiId);
 		if (tiers == null) {
 			throw new TiersNotFoundException(dpiId);
@@ -148,14 +148,25 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 				// on avance dans le temps tant qu'on est avant (ou le jour même) la date maximale
 				RegDate current = minDate;
 				while (current.isBeforeOrEqual(maxDate)) {
-					datesPossibles.add(current);
+					// on n'ajoute la date dans la liste que si la périodicité n'est pas déjà active à cette date (sauf la date de début, justement, pour indiquer que rien ne change)
+					if (active.getPeriodiciteDecompte() == PeriodiciteDecompte.UNIQUE
+							|| nouvellePeriodicite == PeriodiciteDecompte.UNIQUE
+							|| active.getPeriodiciteDecompte() != nouvellePeriodicite
+							|| current == active.getDateDebut()) {
+						datesPossibles.add(current);
+					}
 
 					if (active.getPeriodiciteDecompte() == PeriodiciteDecompte.UNIQUE || nouvellePeriodicite == PeriodiciteDecompte.UNIQUE) {
 						current = current.addYears(1);
 					}
 					else {
-						// infinite loop
-						for (;;) {
+
+						// si on essaie de ré-agrandir la périodicité sans en avoir le droit, cela ne doit pas fonctionner -> one ne propose pas de date ultérieure au remplacement
+						if (descendingOnly && nouvellePeriodicite.getShorterPeriodicities().contains(active.getPeriodiciteDecompte())) {
+							break;
+						}
+
+						while (true) {
 							final RegDate candidate = active.getPeriodiciteDecompte().getDebutPeriodeSuivante(current);
 							if (active.getDateFin() != null && candidate.isAfter(active.getDateFin())) {
 								active = DateRangeHelper.rangeAt(periodicites, candidate);

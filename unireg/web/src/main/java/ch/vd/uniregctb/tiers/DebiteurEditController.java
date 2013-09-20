@@ -84,7 +84,7 @@ public class DebiteurEditController {
 		controllerUtils.checkAccesDossierEnLecture(id);
 		final DebiteurEditView view = tiersEditManager.getDebiteurEditView(id);
 
-		model.addAttribute(PERIODICITES_DECOMPTE, getAllowedPeriodicitesDecomptes(view.getNouvellePeriodicite()));
+		model.addAttribute(PERIODICITES_DECOMPTE, getAllowedPeriodicitesDecomptes(view.getPeriodiciteActive()));
 		model.addAttribute(PERIODES_DECOMPTE, tiersMapHelper.getPeriodeDecomptes());
 		model.addAttribute(MODES_COMMUNICATION, tiersMapHelper.getMapModeCommunication());
 		model.addAttribute(LIBELLES_LOGICIELS, tiersMapHelper.getAllLibellesLogiciels());
@@ -99,7 +99,8 @@ public class DebiteurEditController {
 	                                                 @RequestParam(value = NOUVELLE_PERIODICITE) PeriodiciteDecompte nouvellePeriodicite) {
 
 		// max un an dans le futur
-		return tiersEditManager.getDatesPossiblesPourDebutNouvellePeriodicite(dpiId, nouvellePeriodicite, RegDate.get().addYears(1));
+		final RegDate maxDate = RegDate.get().addYears(1);
+		return tiersEditManager.getDatesPossiblesPourDebutNouvellePeriodicite(dpiId, nouvellePeriodicite, maxDate, !hasFullRights());
 	}
 
 	@RequestMapping(value = "/edit.do", method = RequestMethod.POST)
