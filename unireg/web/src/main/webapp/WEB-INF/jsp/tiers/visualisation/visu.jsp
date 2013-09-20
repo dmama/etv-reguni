@@ -327,7 +327,7 @@
 		<script type="text/javascript" language="Javascript1.3">
 			Histo.toggleRowsIsHisto('adresse','isAdrHisto',2);
 			Histo.toggleAffichageRows('forFiscal',false, 2);
-			Histo.toggleRowsIsHistoPeriodicite('periodicite','isPeriodiciteHisto', 2,3);
+			Histo.toggleRowsIsHistoFromClass('periodicite', 'isPeriodiciteHisto', 'histo-only');
 			Histo.toggleRowsIsActif('contribuableAssocie','isCtbAssoHisto', 0);
 		</script>
 	</c:if>

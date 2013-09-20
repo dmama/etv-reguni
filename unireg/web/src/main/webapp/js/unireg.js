@@ -1202,31 +1202,32 @@ var Histo = {
 		}
 	},
 
-	/*
-	* Toggle rows is actif
-	*/
-	toggleRowsIsHistoPeriodicite: function(tableId,elementId, numCol,numColActive){
+	/**
+	 * En fonction de la valeur de la checkbox, affiche ou pas les lignes de la table
+	 * @param tableId table
+	 * @param elementId checkbox
+	 * @param triggerClass class des éléments tr qui ne doivent être affichés que si la checkbox est checkée
+	 */
+	toggleRowsIsHistoFromClass: function(tableId, elementId, triggerClass) {
 
 		var tbl = $('#' + tableId).get(0);
 		if (tbl != null) {
-			var len = tbl.rows.length;
+			// hide/show what must be hidden/shown
 			var showHisto = $('#' + elementId).attr('checked');
-
-			for (var i=1 ; i< len; i++){
-				if (!showHisto) {
-					var x = tbl.rows[i].cells;
-					if ((StringUtils.trim(x[numCol].innerHTML) == '') && (!this.hasClassName(tbl.rows[i], 'strike'))||(x[numColActive].innerHTML.match(/Active/))){
-						tbl.rows[i].style.display = '';
-					}
-					else {
-						tbl.rows[i].style.display = 'none';
-					}
-				}
-				else {
-					tbl.rows[i].style.display = '';
-				}
+			var toggleScope = $('#' + tableId + " tr." + triggerClass);
+			if (showHisto) {
+				toggleScope.show();
+			}
+			else {
+				toggleScope.hide();
 			}
 
+			// reset odd/even classes
+			var rows = $('#' + tableId + ' tr:visible');
+			rows.removeClass('odd');
+			rows.removeClass('even');
+			$('#' + tableId + ' tr:visible:even').addClass('even');
+			$('#' + tableId + ' tr:visible:odd').addClass('odd');
 		}
 	},
 

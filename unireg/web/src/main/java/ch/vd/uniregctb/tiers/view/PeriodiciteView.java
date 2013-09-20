@@ -1,7 +1,5 @@
 package ch.vd.uniregctb.tiers.view;
 
-import java.util.Date;
-
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -9,9 +7,9 @@ import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.type.PeriodeDecompte;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 
-public class PeriodiciteView implements Comparable<PeriodiciteView>, Annulable {
+public class PeriodiciteView implements Annulable {
 
-	Long id;
+	private Long id;
 
 	private PeriodiciteDecompte periodiciteDecompte;
 
@@ -43,16 +41,16 @@ public class PeriodiciteView implements Comparable<PeriodiciteView>, Annulable {
 		this.periodiciteDecompte = periodiciteDecompte;
 	}
 
-	public Date getDateDebut() {
-		return RegDate.asJavaDate(dateDebut);
+	public RegDate getDateDebut() {
+		return dateDebut;
 	}
 
 	public void setDateDebut(RegDate dateDebut) {
 		this.dateDebut = dateDebut;
 	}
 
-	public Date getDateFin() {
-		return  RegDate.asJavaDate(dateFin);
+	public RegDate getDateFin() {
+		return dateFin;
 	}
 
 	public void setDateFin(RegDate dateFin) {
@@ -82,12 +80,6 @@ public class PeriodiciteView implements Comparable<PeriodiciteView>, Annulable {
 
 	public void setPeriodeDecompte(PeriodeDecompte periodeDecompte) {
 		this.periodeDecompte = periodeDecompte;
-	}
-
-	@Override
-	public int compareTo(PeriodiciteView periodiciteView) {
-		int value = - dateDebut.asJavaDate().compareTo(periodiciteView.getDateDebut());
-		return value;
 	}
 
 	public boolean isValidAt(RegDate date) {
