@@ -12,6 +12,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
+import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
@@ -815,6 +816,87 @@ public class TiersEditManagerTest extends WebTest {
 				assertEquals(date(2010, 1, 1), periodicite.getDateDebut());
 				assertNull(periodicite.getDateFin());
 				assertFalse(periodicite.isAnnule());
+				return null;
+			}
+		});
+	}
+
+	@Test
+	public void testRetourMemePeriodiciteApresPassageParAutre() throws Exception {
+
+		final RegDate today = RegDate.get();
+		final RegDate debutTrimestriel = today.addMonths(1).getLastDayOfTheMonth().getOneDayAfter().addMonths(3 - (today.month() + 1) % 3);
+		assertEquals(1, debutTrimestriel.month() % 3);                  // vérification que la date calculée est bien un début de trimestre
+		final RegDate retourMensuel = debutTrimestriel.addMonths(3);    // un seul trimestre
+
+		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1980, 10, 25), Sexe.MASCULIN);
+				final DebiteurPrestationImposable dpi = addDebiteur(null, pp, date(2010, 1, 1));
+				dpi.setModeCommunication(ModeCommunication.PAPIER);
+				dpi.setCategorieImpotSource(CategorieImpotSource.REGULIERS);
+				dpi.addPeriodicite(new Periodicite(PeriodiciteDecompte.MENSUEL, null, date(2010, 1, 1), debutTrimestriel.getOneDayBefore()));
+				dpi.addPeriodicite(new Periodicite(PeriodiciteDecompte.TRIMESTRIEL, null, debutTrimestriel, null));
+				return dpi.getNumero();
+			}
+		});
+
+		// on retourne en mensuel
+		{
+			DebiteurEditView view = tiersEditManager.getDebiteurEditView(dpiId);
+			assertEquals(PeriodiciteDecompte.TRIMESTRIEL, view.getNouvellePeriodicite());
+			assertEquals(PeriodiciteDecompte.MENSUEL, view.getPeriodiciteActive());
+			assertEquals(debutTrimestriel, view.getDateDebutNouvellePeriodicite());
+			{
+				view.setNouvellePeriodicite(PeriodiciteDecompte.MENSUEL);
+				view.setDateDebutNouvellePeriodicite(retourMensuel);
+				tiersEditManager.save(view);
+				view = tiersEditManager.getDebiteurEditView(dpiId);
+				assertEquals(PeriodiciteDecompte.MENSUEL, view.getNouvellePeriodicite());
+				assertEquals(PeriodiciteDecompte.MENSUEL, view.getPeriodiciteActive());
+				assertEquals(retourMensuel, view.getDateDebutNouvellePeriodicite());
+			}
+		}
+
+		// et en base, on devrait voir les trois périodicités : mensuelle, trimestrielle puis mensuelle à nouveau
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
+				assertNotNull(dpi);
+
+				final Set<Periodicite> allPeriodicites = dpi.getPeriodicites();
+				assertNotNull(allPeriodicites);
+				assertEquals(3, allPeriodicites.size());
+
+				final List<Periodicite> sortedPeriodicites = new ArrayList<>(allPeriodicites);
+				Collections.sort(sortedPeriodicites, new DateRangeComparator<Periodicite>());
+
+				{
+					final Periodicite periodicite = sortedPeriodicites.get(0);
+					assertNotNull(periodicite);
+					assertEquals(PeriodiciteDecompte.MENSUEL, periodicite.getPeriodiciteDecompte());
+					assertEquals(date(2010, 1, 1), periodicite.getDateDebut());
+					assertEquals(debutTrimestriel.getOneDayBefore(), periodicite.getDateFin());
+					assertFalse(periodicite.isAnnule());
+				}
+				{
+					final Periodicite periodicite = sortedPeriodicites.get(1);
+					assertNotNull(periodicite);
+					assertEquals(PeriodiciteDecompte.TRIMESTRIEL, periodicite.getPeriodiciteDecompte());
+					assertEquals(debutTrimestriel, periodicite.getDateDebut());
+					assertEquals(retourMensuel.getOneDayBefore(), periodicite.getDateFin());
+					assertFalse(periodicite.isAnnule());
+				}
+				{
+					final Periodicite periodicite = sortedPeriodicites.get(2);
+					assertNotNull(periodicite);
+					assertEquals(PeriodiciteDecompte.MENSUEL, periodicite.getPeriodiciteDecompte());
+					assertEquals(retourMensuel, periodicite.getDateDebut());
+					assertNull(periodicite.getDateFin());
+					assertFalse(periodicite.isAnnule());
+				}
 				return null;
 			}
 		});
