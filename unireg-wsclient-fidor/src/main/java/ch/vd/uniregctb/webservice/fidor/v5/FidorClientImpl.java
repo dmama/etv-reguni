@@ -95,7 +95,11 @@ public class FidorClientImpl implements FidorClient {
 			if (list.getNumberOfResults() > 1) {
 				throw new IllegalArgumentException("Plusieurs communes retournées pour le numéro Ofs = " + ofsId + " à la date " + RegDateHelper.dateToDisplayString(date));
 			}
-			return list.getListOfResults().getListOfCommunesFiscales().getCommuneFiscale().get(0);
+			final CommuneFiscale c = list.getListOfResults().getListOfCommunesFiscales().getCommuneFiscale().get(0);
+			if (c.getNumeroOfs() != ofsId) {
+				throw new IllegalArgumentException("Commune retournée incohérente avec la demande (demandé OFS " + ofsId + ", reçu " + c.getNumeroOfs() + ")", null);
+			}
+			return c;
 		}
 		catch (ServerWebApplicationException e) {
 			throw new FidorClientException(e);
@@ -116,7 +120,13 @@ public class FidorClientImpl implements FidorClient {
 			if (list == null || list.getNumberOfResults() == 0) {
 				return null;
 			}
-			return list.getListOfResults().getListOfCommunesFiscales().getCommuneFiscale();
+			final List<CommuneFiscale> result = list.getListOfResults().getListOfCommunesFiscales().getCommuneFiscale();
+			for (CommuneFiscale commune : result) {
+				if (commune.getNumeroOfs() != ofsId) {
+					throw new IllegalArgumentException("Commune retournée incohérente avec la demande (demandé OFS " + ofsId + ", reçu " + commune.getNumeroOfs() + ")", null);
+				}
+			}
+			return result;
 		}
 		catch (ServerWebApplicationException e) {
 			throw new FidorClientException(e);
@@ -218,7 +228,11 @@ public class FidorClientImpl implements FidorClient {
 			if (list.getNumberOfResults().intValue() > 1) {
 				throw new IllegalArgumentException("Plusieurs pays retournés pour le numéro Ofs = " + ofsId + " et date " + RegDateHelper.dateToDisplayString(date));
 			}
-			return list.getListOfResults().getListOfStateTerritories().getStateTerritory().get(0);
+			final Country c = list.getListOfResults().getListOfStateTerritories().getStateTerritory().get(0);
+			if (c.getCountry().getId() != ofsId) {
+				throw new IllegalArgumentException("Pays retourné incohérent avec la demande (demandé OFS " + ofsId + ", reçu " + c.getCountry().getId() + ")");
+			}
+			return c;
 		}
 		catch (ServerWebApplicationException e) {
 			throw new FidorClientException(e);
@@ -247,7 +261,11 @@ public class FidorClientImpl implements FidorClient {
 			if (list.getNumberOfResults().intValue() > 1) {
 				throw new IllegalArgumentException("Plusieurs pays retournés pour le code ISO2 = " + iso2Id + " et date " + RegDateHelper.dateToDisplayString(date));
 			}
-			return list.getListOfResults().getListOfStateTerritories().getStateTerritory().get(0);
+			final Country c = list.getListOfResults().getListOfStateTerritories().getStateTerritory().get(0);
+			if (iso2Id != null && !iso2Id.equalsIgnoreCase(c.getCountry().getIso2Id())) {
+				throw new IllegalArgumentException("Pays retourné incohérent avec la demande (demandé ISO2 '" + iso2Id + "', reçu '" + c.getCountry().getIso2Id() + "')");
+			}
+			return c;
 		}
 		catch (ServerWebApplicationException e) {
 			throw new FidorClientException(e);
@@ -287,7 +305,11 @@ public class FidorClientImpl implements FidorClient {
 			if (list.getNumberOfResults() > 1) {
 				throw new IllegalArgumentException("Plusieurs logiciels retournés pour l'id = " + logicielId);
 			}
-			return list.getListOfResults().getListOfLogiciels().getLogiciel().get(0);
+			final Logiciel l = list.getListOfResults().getListOfLogiciels().getLogiciel().get(0);
+			if (l.getIdLogiciel() != logicielId) {
+				throw new IllegalArgumentException("Logiciel retourné incohérent avec la demande (demandé ID " + logicielId + ", reçu " + l.getIdLogiciel() + ")");
+			}
+			return l;
 		}
 		catch (ServerWebApplicationException e) {
 			throw new FidorClientException(e);
@@ -327,7 +349,11 @@ public class FidorClientImpl implements FidorClient {
 			if (list.getNumberOfResults() > 1) {
 				throw new IllegalArgumentException("Plusieurs districts retournés pour le code = " + code);
 			}
-			return list.getListOfResults().getListOfDistrictsFiscaux().getDistrictFiscal().get(0);
+			final DistrictFiscal df = list.getListOfResults().getListOfDistrictsFiscaux().getDistrictFiscal().get(0);
+			if (df.getCode() != code) {
+				throw new IllegalArgumentException("District fiscal retourné incohérent avec la demande (demandé code " + code + ", reçu " + df.getCode() + ")");
+			}
+			return df;
 		}
 		catch (ServerWebApplicationException e) {
 			throw new FidorClientException(e);
@@ -350,7 +376,11 @@ public class FidorClientImpl implements FidorClient {
 			if (list.getNumberOfResults() > 1) {
 				throw new IllegalArgumentException("Plusieurs districts retournés pour le code = " + code);
 			}
-			return list.getListOfResults().getListOfRegionsFiscales().getRegionFiscale().get(0);
+			final RegionFiscale rf = list.getListOfResults().getListOfRegionsFiscales().getRegionFiscale().get(0);
+			if (rf.getCode() != code) {
+				throw new IllegalArgumentException("Région fiscale retournée incohérente avec la demande (demandé code " + code + ", reçu " + rf.getCode() + ")");
+			}
+			return rf;
 		}
 		catch (ServerWebApplicationException e) {
 			throw new FidorClientException(e);
