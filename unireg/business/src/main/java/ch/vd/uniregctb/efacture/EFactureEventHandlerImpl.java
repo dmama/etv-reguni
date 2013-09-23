@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.efacture;
 
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -10,7 +11,9 @@ import org.apache.log4j.Logger;
 import org.springframework.core.io.ClassPathResource;
 
 import ch.vd.registre.base.avs.AvsHelper;
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.registre.base.utils.Pair;
 import ch.vd.unireg.interfaces.efacture.data.Demande;
 import ch.vd.unireg.interfaces.efacture.data.DemandeAvecHisto;
 import ch.vd.unireg.interfaces.efacture.data.DestinataireAvecHisto;
@@ -29,7 +32,9 @@ import ch.vd.uniregctb.type.TypeDocument;
 
 public class EFactureEventHandlerImpl implements EFactureEventHandler {
 
-	private final Logger LOGGER = Logger.getLogger(EFactureEventHandlerImpl.class);
+	private static final Logger LOGGER = Logger.getLogger(EFactureEventHandlerImpl.class);
+
+	private static final String TRAITEMENT_NOUVELLE_DEMANDE = "Traitement d'une nouvelle demande d'inscription.";
 
 	private EFactureService eFactureService;
 	private TiersService tiersService;
@@ -38,7 +43,6 @@ public class EFactureEventHandlerImpl implements EFactureEventHandler {
 	protected static enum TypeRefusDemande {
 
 		NUMERO_AVS_INVALIDE("Numéro AVS invalide."),
-		AUTRE_DEMANDE_EN_COURS_DE_TRAITEMENT("Une autre demande est déjà en cours de traitement."),
 		DATE_DEMANDE_ABSENTE("Date de la demande non renseignée."),
 		NUMERO_CTB_INCOHERENT("Numéro de contribuable incohérent."),
 		NUMERO_AVS_CTB_INCOHERENT("Numéro AVS incohérent avec le numéro de contribuable."),
@@ -83,12 +87,20 @@ public class EFactureEventHandlerImpl implements EFactureEventHandler {
 			// [SIFISC-9362] Si la demande n'est pas dans l'état "VALIDATION_EN_COURS", on ne peut pas la traiter
 			// et donc il faut l'ignorer (cas par exemple d'une demande qui aurait été annulée entre temps)
 			if (isStillValid(histo, demande.getIdDemande())) {
-				final TypeRefusDemande refus = check(demande, tiers, histo);
+				final TypeRefusDemande refus = check(demande, tiers);
 				if (refus != null) {
 					eFactureService.refuserDemande(demande.getIdDemande(), false, refus.getDescription());
 					LOGGER.info(String.format("Demande d'inscription refusée : %s", refus));
 				}
 				else {
+
+					// [SIFISC-8210] On recherche le numéro d'adhérent (et la date) d'une inscription (ou juste d'une demande en cours) préalable
+					final Pair<RegDate, BigInteger> enCours = findDemandeEnCours(histo, demande.getIdDemande());
+					if (enCours != null) {
+						LOGGER.info(String.format("Trouvé une demande/inscription en cours en date du %s", RegDateHelper.dateToDisplayString(enCours.getFirst())));
+						eFactureService.demanderDesinscriptionContribuable(tiers.getNumero(), demande.getIdDemande(), TRAITEMENT_NOUVELLE_DEMANDE);
+					}
+
 					// valide l'etat du contribuable et envoye le courrier adéquat
 					final TypeAttenteDemande etatFinal;
 					final TypeDocument typeDocument;
@@ -107,7 +119,9 @@ public class EFactureEventHandlerImpl implements EFactureEventHandler {
 						description = String.format("%s Assujettissement incohérent avec la e-facture.", etatFinal.getDescription());
 					}
 
-					final String archivageId = eFactureService.imprimerDocumentEfacture(demande.getCtbId(), typeDocument, demande.getDateDemande(), demande.getNoAdherent(), null, null);
+					final String archivageId = eFactureService.imprimerDocumentEfacture(demande.getCtbId(), typeDocument,
+					                                                                    demande.getDateDemande(), demande.getNoAdherent(),
+					                                                                    enCours != null ? enCours.getFirst() : null, enCours != null ? enCours.getSecond() : null);
 					eFactureService.notifieMiseEnAttenteInscription(demande.getIdDemande(), etatFinal, description, archivageId, false);
 					LOGGER.info(String.format("Demande d'inscription passée à l'état %s", etatFinal));
 				}
@@ -118,7 +132,30 @@ public class EFactureEventHandlerImpl implements EFactureEventHandler {
 		}
 	}
 
-	private TypeRefusDemande check(Demande demande, Tiers tiers, DestinataireAvecHisto histo) throws EvenementEfactureException {
+	/**
+	 * Retrouve une éventuelle inscription (ou demande d'inscription) en cours de validité (avant la demande donnée)
+	 * @param histo historique connu des états du destinataire
+	 * @param idDemande identifiant de la demande en cours de traitement
+	 * @return si une inscription/demande active existe, les données qui en sont extraite (date de la demande/de l'inscription et numéro d'adhérent e-facture concerné)
+	 */
+	private static Pair<RegDate, BigInteger> findDemandeEnCours(DestinataireAvecHisto histo, String idDemande) {
+		if (histo.isInscrit()) {
+			final RegDate dateInscription = RegDateHelper.get(histo.getDernierEtat().getDateObtention());
+			final BigInteger noAdherent = histo.getDernierEtat().getNoAdherent();
+			return new Pair<>(dateInscription, noAdherent);
+		}
+		else {
+			final Demande autreDemande = findAutreDemandeEnAttente(histo, idDemande);
+			if (autreDemande != null) {
+				return new Pair<>(autreDemande.getDateDemande(), autreDemande.getNoAdherent());
+			}
+			else {
+				return null;
+			}
+		}
+	}
+
+	private TypeRefusDemande check(Demande demande, Tiers tiers) throws EvenementEfactureException {
 
 		// Check Numéro AVS à 13 chiffres
 		if (!AvsHelper.isValidNouveauNumAVS(demande.getNoAvs())) {
@@ -128,11 +165,6 @@ public class EFactureEventHandlerImpl implements EFactureEventHandler {
 		// Check Date et heure de la demande
 		if (demande.getDateDemande() == null) {
 			return TypeRefusDemande.DATE_DEMANDE_ABSENTE;
-		}
-
-		// Vérification de l'absence d'éventuelles autres demandes en cours
-		if (hasAutreDemandeEnAttente(histo, demande.getIdDemande())) {
-			return TypeRefusDemande.AUTRE_DEMANDE_EN_COURS_DE_TRAITEMENT;
 		}
 
 		// vérification du tiers et de la correspondance avec le navs
@@ -163,19 +195,15 @@ public class EFactureEventHandlerImpl implements EFactureEventHandler {
 		return null;
 	}
 
-	private static boolean hasAutreDemandeEnAttente(DestinataireAvecHisto histo, String idDemande) {
-		boolean hasSome = false;
+	private static Demande findAutreDemandeEnAttente(DestinataireAvecHisto histo, String idDemande) {
 		if (histo != null) {
 			for (DemandeAvecHisto demande : histo.getHistoriqueDemandes()) {
-				if (!idDemande.equals(demande.getIdDemande())) {
-					hasSome = demande.isEnAttente();
-					if (hasSome) {
-						break;
-					}
+				if (!idDemande.equals(demande.getIdDemande()) && demande.isEnAttente()) {
+					return demande;
 				}
 			}
 		}
-		return hasSome;
+		return null;
 	}
 
 	private static boolean isStillValid(DestinataireAvecHisto histo, String idDemande) {

@@ -83,6 +83,11 @@ public class EFactureServiceImpl implements EFactureService, InitializingBean {
 	}
 
 	@Override
+	public void demanderDesinscriptionContribuable(long noCtb, String idNouvelleDemande, String description) throws EvenementEfactureException {
+		eFactureMessageSender.demandeDesinscriptionContribuable(noCtb, idNouvelleDemande, description);
+	}
+
+	@Override
 	public ResultatQuittancement quittancer(Long noCtb) throws EvenementEfactureException {
 		final Tiers tiers = tiersService.getTiers(noCtb);
 		if (tiers == null) {

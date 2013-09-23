@@ -103,4 +103,13 @@ public interface EFactureService {
 	 * @throws EvenementEfactureException en cas de souci
 	 */
 	String modifierEmailContribuable(long noCtb, @Nullable String newEmail, boolean retourAttendu, String description) throws EvenementEfactureException;
+
+	/**
+	 * Envoie une demande de désinscription complète du contribuable pour tout ce qui concerne ce qui s'est passé avant la demande dont l'identifiant est donné
+	 * @param noCtb numéro du contribuable concerné
+	 * @param idNouvelleDemande id de la demande en cours de traitement qui représente le nouveau départ
+	 * @param description texte libre attaché à la désinscription
+	 * @throws EvenementEfactureException en cas de souci
+	 */
+	void demanderDesinscriptionContribuable(long noCtb, String idNouvelleDemande, String description) throws EvenementEfactureException;
 }

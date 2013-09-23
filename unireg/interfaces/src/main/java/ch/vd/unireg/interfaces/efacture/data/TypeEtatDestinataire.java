@@ -20,7 +20,7 @@ public enum TypeEtatDestinataire {
 	}
 
 	public boolean isActivable() {
-		return this == INSCRIT_SUSPENDU || this == DESINSCRIT_SUSPENDU ;
+		return this == INSCRIT_SUSPENDU || this == DESINSCRIT_SUSPENDU;
 	}
 
 	public boolean isSuspendable() {

@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.efacture;
 
 import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -15,6 +14,7 @@ import ch.vd.evd0025.v1.ObjectFactory;
 import ch.vd.evd0025.v1.PayerId;
 import ch.vd.evd0025.v1.PayerUpdateAction;
 import ch.vd.evd0025.v1.RegistrationRequestStatus;
+import ch.vd.evd0025.v1.UnsubscribePayerWithNewRequest;
 import ch.vd.evd0025.v1.UpdatePayer;
 import ch.vd.evd0025.v1.UpdatePayerContact;
 import ch.vd.evd0025.v1.UpdateRegistrationRequest;
@@ -36,7 +36,6 @@ public class EFactureMessageSenderImpl implements EFactureMessageSender {
 	private String serviceDestination;
 	private String serviceReplyTo;
 
-	private final ObjectFactory objectFactory = new ObjectFactory();
 	private final static ThreadSafeSimpleDateFormat SDF = new ThreadSafeSimpleDateFormat("MMddHHmmssSSS");
 	private final static Logger LOGGER = Logger.getLogger(EFactureMessageSenderImpl.class);
 
@@ -86,14 +85,18 @@ public class EFactureMessageSenderImpl implements EFactureMessageSender {
 		return sendMiseAJourDestinataire(noCtb, PayerUpdateAction.LIBERER, null, description, null, retourAttendu);
 	}
 
+	private static interface MessageBodyBuilder<T> {
+		T buildBody();
+	}
+
 	@Override
 	public String envoieDemandeChangementEmail(long noCtb, @Nullable final String newMail, boolean retourAttendu, final String description) throws EvenementEfactureException {
 		final PayerId payerId = new PayerId(String.valueOf(noCtb), EFactureService.ACI_BILLER_ID);
 		final String businessId = String.format("%d-mail-%s", noCtb, SDF.format(DateHelper.getCurrentDate()));
-		sendEvent(businessId, retourAttendu, new CustomMarshaller() {
+		sendEvent(businessId, retourAttendu, new MessageBodyBuilder<UpdatePayerContact>() {
 			@Override
-			public void marshall(Marshaller marshaller, Document doc) throws JAXBException {
-				final UpdatePayerContact msg = objectFactory.createUpdatePayerContact();
+			public UpdatePayerContact buildBody() {
+				final UpdatePayerContact msg = new UpdatePayerContact();
 				msg.setPayerId(payerId);
 				msg.setReasonDescription(description);
 
@@ -102,24 +105,34 @@ public class EFactureMessageSenderImpl implements EFactureMessageSender {
 					emailContainer.setEmail(newMail);
 				}
 				msg.setNewEmailAddress(emailContainer);
-				marshaller.marshal(msg, doc);
+				return msg;
 			}
 		});
 		return businessId;
 	}
 
-	private static interface CustomMarshaller {
-		void marshall(Marshaller marshaller, Document doc) throws JAXBException;
+	@Override
+	public void demandeDesinscriptionContribuable(long noCtb, final String idNouvelleDemande, final String description) throws EvenementEfactureException {
+		final String businessId = String.format("%d-desinscription-%s", noCtb, SDF.format(DateHelper.getCurrentDate()));
+		sendEvent(businessId, false, new MessageBodyBuilder<UnsubscribePayerWithNewRequest>() {
+			@Override
+			public UnsubscribePayerWithNewRequest buildBody() {
+				final UnsubscribePayerWithNewRequest msg = new UnsubscribePayerWithNewRequest();
+				msg.setRegistrationRequestId(idNouvelleDemande);
+				msg.setReasonDescription(description);
+				return msg;
+			}
+		});
 	}
 
 	private String sendMiseAJourDemande(final String idDemande, final RegistrationRequestStatus status,
 	                                    @Nullable final Integer code, @Nullable final String description, @Nullable final String custom,
 	                                    boolean retourAttendu) throws EvenementEfactureException {
 		final String businessId = String.format("%s-%s-%s", idDemande, status.name(), SDF.format(DateHelper.getCurrentDate()));
-		sendEvent(businessId, retourAttendu, new CustomMarshaller() {
+		sendEvent(businessId, retourAttendu, new MessageBodyBuilder<UpdateRegistrationRequest>() {
 			@Override
-			public void marshall(Marshaller marshaller, Document doc) throws JAXBException {
-				final UpdateRegistrationRequest msg = objectFactory.createUpdateRegistrationRequest();
+			public UpdateRegistrationRequest buildBody() {
+				final UpdateRegistrationRequest msg = new UpdateRegistrationRequest();
 				if (custom != null) {
 					msg.setCustomField(custom);
 				}
@@ -131,7 +144,7 @@ public class EFactureMessageSenderImpl implements EFactureMessageSender {
 				}
 				msg.setRegistrationRequestId(idDemande);
 				msg.setStatus(status);
-				marshaller.marshal(msg, doc);
+				return msg;
 			}
 		});
 		return businessId;
@@ -142,10 +155,10 @@ public class EFactureMessageSenderImpl implements EFactureMessageSender {
 	                                       boolean retourAttendu) throws EvenementEfactureException {
 		final PayerId payerId = new PayerId(String.valueOf(noCtb), EFactureService.ACI_BILLER_ID);
 		final String businessId = String.format("%d-%s-%s", noCtb, action.name(), SDF.format(DateHelper.getCurrentDate()));
-		sendEvent(businessId, retourAttendu, new CustomMarshaller() {
+		sendEvent(businessId, retourAttendu, new MessageBodyBuilder<UpdatePayer>() {
 			@Override
-			public void marshall(Marshaller marshaller, Document doc) throws JAXBException {
-				final UpdatePayer msg = objectFactory.createUpdatePayer();
+			public UpdatePayer buildBody() {
+				final UpdatePayer msg = new UpdatePayer();
 				if (custom != null) {
 					msg.setCustomField(custom);
 				}
@@ -157,13 +170,13 @@ public class EFactureMessageSenderImpl implements EFactureMessageSender {
 				}
 				msg.setPayerId(payerId);
 				msg.setPayerUpdateAction(action);
-				marshaller.marshal(msg, doc);
+				return msg;
 			}
 		});
 		return businessId;
 	}
 
-	private void sendEvent(String businessId, boolean retourAttendu, CustomMarshaller customMarshaller) throws EvenementEfactureException {
+	private <T> void sendEvent(String businessId, boolean retourAttendu, MessageBodyBuilder<T> bodyBuilder) throws EvenementEfactureException {
 
 		if (enabled) {
 			final String principal = AuthenticationHelper.getCurrentPrincipal();
@@ -177,7 +190,8 @@ public class EFactureMessageSenderImpl implements EFactureMessageSender {
 				dbf.setNamespaceAware(true);
 				final DocumentBuilder db = dbf.newDocumentBuilder();
 				final Document doc = db.newDocument();
-				customMarshaller.marshall(marshaller, doc);
+				final T jaxbDoc = bodyBuilder.buildBody();
+				marshaller.marshal(jaxbDoc, doc);
 
 				final EsbMessage m = EsbMessageFactory.createMessage();
 				m.setBusinessId(businessId);

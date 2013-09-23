@@ -1,5 +1,6 @@
 package ch.vd.unireg.interfaces.efacture.data;
 
+import java.math.BigInteger;
 import java.util.Date;
 
 import org.apache.commons.lang3.StringUtils;
@@ -15,6 +16,7 @@ public class EtatDestinataire {
 	private final Integer codeRaison;
 	private final TypeEtatDestinataire type;
 	private final String email;
+	private final BigInteger noAdherent;
 
 	public static EtatDestinataire newEtatDestinataireFactice(TypeEtatDestinataire type) {
 		return new EtatDestinataire(type);
@@ -27,6 +29,7 @@ public class EtatDestinataire {
 		this.descriptionRaison = "ATTENTION: le service E-facture ne renvoie aucun historique des états du destinataire, cette donnée est générée par UNIREG";
 		this.champLibre = StringUtils.EMPTY;
 		this.email = null;
+		this.noAdherent = null;
 	}
 
 	public EtatDestinataire(PayerSituationHistoryEntry payerSituationHistoryEntry) {
@@ -41,9 +44,10 @@ public class EtatDestinataire {
 		else {
 			this.email = null;
 		}
+		this.noAdherent = payerSituationHistoryEntry.getEBillAccountId();
 	}
 
-	public EtatDestinataire(String champLibre, Date dateObtention, String descriptionRaison, Integer codeRaison, TypeEtatDestinataire type, String email) {
+	public EtatDestinataire(String champLibre, Date dateObtention, String descriptionRaison, Integer codeRaison, TypeEtatDestinataire type, String email, BigInteger noAdherent) {
 		this.champLibre = champLibre;
 		this.dateObtention = dateObtention;
 		this.descriptionRaison = descriptionRaison;
@@ -53,6 +57,7 @@ public class EtatDestinataire {
 			throw new IllegalArgumentException("L'adresse mail n'a de sens que pour les états INSCRIT et INSCRIT_SUSPENDU");
 		}
 		this.email = StringUtils.trimToNull(email);
+		this.noAdherent = noAdherent;
 	}
 
 	public String getChampLibre() {
@@ -77,5 +82,9 @@ public class EtatDestinataire {
 
 	public String getEmail() {
 		return email;
+	}
+
+	public BigInteger getNoAdherent() {
+		return noAdherent;
 	}
 }

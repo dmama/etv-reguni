@@ -35,4 +35,8 @@ public class MockEFactureMessageSender implements EFactureMessageSender {
 	public String envoieDemandeChangementEmail(long noCtb, @Nullable String newMail, boolean retourAttendu, String description) throws EvenementEfactureException {
 		return StringUtils.EMPTY;
 	}
+
+	@Override
+	public void demandeDesinscriptionContribuable(long noCtb, String idNouvelleDemande, String description) throws EvenementEfactureException {
+	}
 }

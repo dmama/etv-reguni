@@ -12,8 +12,9 @@ public interface EFactureMessageSender {
 	/**
 	 * Envoie un message à la e-facture qui annonce le refus d'une demande d'inscription
 	 * @param idDemande identifiant de la demande d'inscription refusée
-	 * @param description
-	 * @param retourAttendu  @throws EvenementEfactureException en cas de problème
+	 * @param description texte libre
+	 * @param retourAttendu <code>true</code> si on demande une réponse (ACK) à l'application e-facture correspondant de cette demande
+	 * @throws EvenementEfactureException en cas de problème
 	 */
 	String envoieRefusDemandeInscription(String idDemande, String description, boolean retourAttendu) throws EvenementEfactureException;
 
@@ -23,7 +24,7 @@ public interface EFactureMessageSender {
 	 * @param typeAttenteEFacture Permet de determiner le type de message à envoyer: Attente de contact ou attente de confirmation
 	 * @param description description de l'attente
 	 * @param idArchivage clé d'archivage générée lors du traitement des documents E-Facture
-	 * @param retourAttendu vrai si on attend une réponse de la E-facture, false sinon
+	 * @param retourAttendu <code>true</code> si on demande une réponse (ACK) à l'application e-facture correspondant de cette demande
 	 * @throws EvenementEfactureException en cas de problème
 	 */
 	String envoieMiseEnAttenteDemandeInscription(String idDemande, TypeAttenteDemande typeAttenteEFacture, String description, String idArchivage, boolean retourAttendu) throws EvenementEfactureException;
@@ -31,8 +32,8 @@ public interface EFactureMessageSender {
 	/**
 	 * Envoie un message à la e-facture qui annonce l'acceptation d'une demande d'inscription
 	 * @param idDemande identifiant de la demande d'inscription acceptée
-	 * @param retourAttendu
-	 * @param description
+	 * @param retourAttendu <code>true</code> si on demande une réponse (ACK) à l'application e-facture correspondant de cette demande
+	 * @param description texte libre
 	 * @throws EvenementEfactureException en cas de problème
 	 */
 	String envoieAcceptationDemandeInscription(String idDemande, boolean retourAttendu, String description) throws EvenementEfactureException;
@@ -40,8 +41,8 @@ public interface EFactureMessageSender {
 	/**
 	 * Envoie un message à la e-facture qui annonce la suspension du contribuable
 	 * @param noCtb numéro du contribuable dont les activités e-facture doivent être suspendues
-	 * @param retourAttendu
-	 * @param description
+	 * @param retourAttendu <code>true</code> si on demande une réponse (ACK) à l'application e-facture correspondant de cette demande
+	 * @param description texte libre
 	 * @throws EvenementEfactureException en cas de problème
 	 */
 	String envoieSuspensionContribuable(long noCtb, boolean retourAttendu, String description) throws EvenementEfactureException;
@@ -49,8 +50,8 @@ public interface EFactureMessageSender {
 	/**
 	 * Envoie un message à la e-facture qui annonce l'activation du contribuable
 	 * @param noCtb numéro du contribuable dont les activités e-facture peuvent être activées
-	 * @param retourAttendu
-	 * @param description
+	 * @param retourAttendu <code>true</code> si on demande une réponse (ACK) à l'application e-facture correspondant de cette demande
+	 * @param description texte libre
 	 * @throws EvenementEfactureException en cas de problème
 	 */
 	String envoieActivationContribuable(long noCtb, boolean retourAttendu, String description) throws EvenementEfactureException;
@@ -65,5 +66,14 @@ public interface EFactureMessageSender {
 	 * @throws EvenementEfactureException
 	 */
 	String envoieDemandeChangementEmail(long noCtb, @Nullable String newMail, boolean retourAttendu, String description) throws EvenementEfactureException;
+
+	/**
+	 * Envoie une demande de désinscription / abandon des demandes précédentes dans le cadre du traitement d'une nouvelle demande
+	 * @param noCtb numéro du contribuable concerné
+	 * @param idNouvelleDemande identifiant de la demande en cours de traitement
+	 * @param description texte libre
+	 * @throws EvenementEfactureException
+	 */
+	void demandeDesinscriptionContribuable(long noCtb, String idNouvelleDemande, String description) throws EvenementEfactureException;
 
 }

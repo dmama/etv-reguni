@@ -111,7 +111,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		// vérification état final e-facture
 		final DestinataireAvecHisto histo = eFactureService.getDestinataireAvecSonHistorique(ppId);
 		Assert.assertNotNull(histo);
-		Assert.assertEquals(TypeEtatDestinataire.DESINSCRIT, histo.getDernierEtat().getType());
+		Assert.assertEquals(TypeEtatDestinataire.NON_INSCRIT, histo.getDernierEtat().getType());
 		Assert.assertEquals(1, histo.getHistoriqueDemandes().size());
 
 		final DemandeAvecHisto demande = histo.getHistoriqueDemandes().get(0);
@@ -176,7 +176,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		// vérification état final e-facture
 		final DestinataireAvecHisto histo = eFactureService.getDestinataireAvecSonHistorique(ppId);
 		Assert.assertNotNull(histo);
-		Assert.assertEquals(TypeEtatDestinataire.DESINSCRIT, histo.getDernierEtat().getType());
+		Assert.assertEquals(TypeEtatDestinataire.NON_INSCRIT, histo.getDernierEtat().getType());
 		Assert.assertEquals(1, histo.getHistoriqueDemandes().size());
 
 		final DemandeAvecHisto demande = histo.getHistoriqueDemandes().get(0);
@@ -225,7 +225,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 			@Override
 			public void init() {
 				addDestinataire(ppId);
-				addEtatDestinataire(ppId, DateHelper.getCurrentDate(), "Suspendu... pas gentil!", null, TypeEtatDestinataire.DESINSCRIT_SUSPENDU, null);
+				addEtatDestinataire(ppId, DateHelper.getCurrentDate(), "Suspendu... pas gentil!", null, TypeEtatDestinataire.DESINSCRIT_SUSPENDU, null, null);
 				addDemandeInscription(demandeId, ppId, email, dateDemande, typeDemande, noAvs, TypeEtatDemande.VALIDATION_EN_COURS, noAdherent);
 			}
 		});
@@ -310,7 +310,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		// vérification état final e-facture
 		final DestinataireAvecHisto histo = eFactureService.getDestinataireAvecSonHistorique(ppId);
 		Assert.assertNotNull(histo);
-		Assert.assertEquals(TypeEtatDestinataire.DESINSCRIT, histo.getDernierEtat().getType());
+		Assert.assertEquals(TypeEtatDestinataire.NON_INSCRIT, histo.getDernierEtat().getType());
 		Assert.assertEquals(1, histo.getHistoriqueDemandes().size());
 
 		final DemandeAvecHisto demande = histo.getHistoriqueDemandes().get(0);
@@ -378,7 +378,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		// vérification état final e-facture
 		final DestinataireAvecHisto histo = eFactureService.getDestinataireAvecSonHistorique(ppId);
 		Assert.assertNotNull(histo);
-		Assert.assertEquals(TypeEtatDestinataire.DESINSCRIT, histo.getDernierEtat().getType());
+		Assert.assertEquals(TypeEtatDestinataire.NON_INSCRIT, histo.getDernierEtat().getType());
 		Assert.assertEquals(1, histo.getHistoriqueDemandes().size());
 
 		final DemandeAvecHisto demande = histo.getHistoriqueDemandes().get(0);
@@ -388,8 +388,8 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		Assert.assertNotNull(etatDemande);
 		Assert.assertEquals(TypeEtatDemande.REFUSEE, etatDemande.getType());
 		Assert.assertNull(etatDemande.getCodeRaison());
-		Assert.assertNull(etatDemande.getDescriptionRaison());
-		Assert.assertEquals(EFactureEventHandlerImpl.TypeRefusDemande.NUMERO_AVS_CTB_INCOHERENT.getDescription(), etatDemande.getChampLibre());
+		Assert.assertEquals(EFactureEventHandlerImpl.TypeRefusDemande.NUMERO_AVS_CTB_INCOHERENT.getDescription(), etatDemande.getDescriptionRaison());
+		Assert.assertNull(etatDemande.getChampLibre());
 	}
 
 	@Test
@@ -451,7 +451,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		// vérification état final e-facture
 		final DestinataireAvecHisto histo = eFactureService.getDestinataireAvecSonHistorique(mcId);
 		Assert.assertNotNull(histo);
-		Assert.assertEquals(TypeEtatDestinataire.DESINSCRIT, histo.getDernierEtat().getType());
+		Assert.assertEquals(TypeEtatDestinataire.NON_INSCRIT, histo.getDernierEtat().getType());
 		Assert.assertEquals(1, histo.getHistoriqueDemandes().size());
 
 		final DemandeAvecHisto demande = histo.getHistoriqueDemandes().get(0);
@@ -517,7 +517,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		// vérification état final e-facture
 		final DestinataireAvecHisto histo = eFactureService.getDestinataireAvecSonHistorique(ppId);
 		Assert.assertNotNull(histo);
-		Assert.assertEquals(TypeEtatDestinataire.DESINSCRIT, histo.getDernierEtat().getType());
+		Assert.assertEquals(TypeEtatDestinataire.NON_INSCRIT, histo.getDernierEtat().getType());
 		Assert.assertEquals(1, histo.getHistoriqueDemandes().size());
 
 		final DemandeAvecHisto demande = histo.getHistoriqueDemandes().get(0);
@@ -590,7 +590,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		// vérification état final e-facture
 		final DestinataireAvecHisto histo = eFactureService.getDestinataireAvecSonHistorique(mcId);
 		Assert.assertNotNull(histo);
-		Assert.assertEquals(TypeEtatDestinataire.DESINSCRIT, histo.getDernierEtat().getType());
+		Assert.assertEquals(TypeEtatDestinataire.NON_INSCRIT, histo.getDernierEtat().getType());
 		Assert.assertEquals(1, histo.getHistoriqueDemandes().size());
 
 		final DemandeAvecHisto demande = histo.getHistoriqueDemandes().get(0);
@@ -663,7 +663,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		// vérification état final e-facture
 		final DestinataireAvecHisto histo = eFactureService.getDestinataireAvecSonHistorique(mcId);
 		Assert.assertNotNull(histo);
-		Assert.assertEquals(TypeEtatDestinataire.DESINSCRIT, histo.getDernierEtat().getType());
+		Assert.assertEquals(TypeEtatDestinataire.NON_INSCRIT, histo.getDernierEtat().getType());
 		Assert.assertEquals(1, histo.getHistoriqueDemandes().size());
 
 		final DemandeAvecHisto demande = histo.getHistoriqueDemandes().get(0);
@@ -736,7 +736,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		// vérification état final e-facture
 		final DestinataireAvecHisto histo = eFactureService.getDestinataireAvecSonHistorique(mcId);
 		Assert.assertNotNull(histo);
-		Assert.assertEquals(TypeEtatDestinataire.DESINSCRIT, histo.getDernierEtat().getType());
+		Assert.assertEquals(TypeEtatDestinataire.NON_INSCRIT, histo.getDernierEtat().getType());
 		Assert.assertEquals(1, histo.getHistoriqueDemandes().size());
 
 		final DemandeAvecHisto demande = histo.getHistoriqueDemandes().get(0);
@@ -746,8 +746,8 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		Assert.assertNotNull(etatDemande);
 		Assert.assertEquals(TypeEtatDemande.REFUSEE, etatDemande.getType());
 		Assert.assertNull(etatDemande.getCodeRaison());
-		Assert.assertNull(etatDemande.getDescriptionRaison());
-		Assert.assertEquals(EFactureEventHandlerImpl.TypeRefusDemande.NUMERO_AVS_CTB_INCOHERENT.getDescription(), etatDemande.getChampLibre());
+		Assert.assertEquals(EFactureEventHandlerImpl.TypeRefusDemande.NUMERO_AVS_CTB_INCOHERENT.getDescription(), etatDemande.getDescriptionRaison());
+		Assert.assertNull(etatDemande.getChampLibre());
 	}
 
 	@Test
@@ -802,7 +802,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		// vérification état final e-facture
 		final DestinataireAvecHisto histo = eFactureService.getDestinataireAvecSonHistorique(ppId);
 		Assert.assertNotNull(histo);
-		Assert.assertEquals(TypeEtatDestinataire.DESINSCRIT, histo.getDernierEtat().getType());
+		Assert.assertEquals(TypeEtatDestinataire.NON_INSCRIT, histo.getDernierEtat().getType());
 		Assert.assertEquals(1, histo.getHistoriqueDemandes().size());
 
 		final DemandeAvecHisto demande = histo.getHistoriqueDemandes().get(0);
@@ -812,8 +812,8 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		Assert.assertNotNull(etatDemande);
 		Assert.assertEquals(TypeEtatDemande.REFUSEE, etatDemande.getType());
 		Assert.assertNull(etatDemande.getCodeRaison());
-		Assert.assertNull(etatDemande.getDescriptionRaison());
-		Assert.assertEquals(EFactureEventHandlerImpl.TypeRefusDemande.NUMERO_AVS_INVALIDE.getDescription(), etatDemande.getChampLibre());
+		Assert.assertEquals(EFactureEventHandlerImpl.TypeRefusDemande.NUMERO_AVS_INVALIDE.getDescription(), etatDemande.getDescriptionRaison());
+		Assert.assertNull(etatDemande.getChampLibre());
 	}
 
 	@Test
@@ -868,7 +868,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		// vérification état final e-facture
 		final DestinataireAvecHisto histo = eFactureService.getDestinataireAvecSonHistorique(ppId);
 		Assert.assertNotNull(histo);
-		Assert.assertEquals(TypeEtatDestinataire.DESINSCRIT, histo.getDernierEtat().getType());
+		Assert.assertEquals(TypeEtatDestinataire.NON_INSCRIT, histo.getDernierEtat().getType());
 		Assert.assertEquals(1, histo.getHistoriqueDemandes().size());
 
 		final DemandeAvecHisto demande = histo.getHistoriqueDemandes().get(0);
@@ -878,8 +878,8 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		Assert.assertNotNull(etatDemande);
 		Assert.assertEquals(TypeEtatDemande.REFUSEE, etatDemande.getType());
 		Assert.assertNull(etatDemande.getCodeRaison());
-		Assert.assertNull(etatDemande.getDescriptionRaison());
-		Assert.assertEquals(EFactureEventHandlerImpl.TypeRefusDemande.DATE_DEMANDE_ABSENTE.getDescription(), etatDemande.getChampLibre());
+		Assert.assertEquals(EFactureEventHandlerImpl.TypeRefusDemande.DATE_DEMANDE_ABSENTE.getDescription(), etatDemande.getDescriptionRaison());
+		Assert.assertNull(etatDemande.getChampLibre());
 	}
 
 	@Test
@@ -935,18 +935,29 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		// vérification état final e-facture
 		final DestinataireAvecHisto histo = eFactureService.getDestinataireAvecSonHistorique(ppId);
 		Assert.assertNotNull(histo);
-		Assert.assertEquals(TypeEtatDestinataire.DESINSCRIT, histo.getDernierEtat().getType());
+		Assert.assertEquals(TypeEtatDestinataire.NON_INSCRIT, histo.getDernierEtat().getType());
 		Assert.assertEquals(2, histo.getHistoriqueDemandes().size());
 
-		final DemandeAvecHisto demande = histo.getHistoriqueDemandes().get(1);
-		Assert.assertEquals(demandeId, demande.getIdDemande());
+		// la nouvelle demande doit avoir été acceptée
+		{
+			final DemandeAvecHisto demande = histo.getHistoriqueDemandes().get(1);
+			Assert.assertEquals(demandeId, demande.getIdDemande());
 
-		final EtatDemande etatDemande = demande.getDernierEtat();
-		Assert.assertNotNull(etatDemande);
-		Assert.assertEquals(TypeEtatDemande.REFUSEE, etatDemande.getType());
-		Assert.assertNull(etatDemande.getCodeRaison());
-		Assert.assertNull(etatDemande.getDescriptionRaison());
-		Assert.assertEquals(EFactureEventHandlerImpl.TypeRefusDemande.AUTRE_DEMANDE_EN_COURS_DE_TRAITEMENT.getDescription(), etatDemande.getChampLibre());
+			final EtatDemande etatDemande = demande.getDernierEtat();
+			Assert.assertNotNull(etatDemande);
+			Assert.assertEquals(TypeEtatDemande.VALIDATION_EN_COURS_EN_ATTENTE_SIGNATURE, etatDemande.getType());
+			Assert.assertEquals((Integer) TypeAttenteDemande.EN_ATTENTE_SIGNATURE.getCode(), etatDemande.getCodeRaison());
+			Assert.assertEquals(TypeAttenteDemande.EN_ATTENTE_SIGNATURE.getDescription(), etatDemande.getDescriptionRaison());
+		}
+
+		// l'ancienne demande, quant à elle, doit être annulée
+		{
+			final DemandeAvecHisto demande = histo.getHistoriqueDemandes().get(0);
+			final EtatDemande etatDemande = demande.getDernierEtat();
+			Assert.assertNotNull(etatDemande);
+			Assert.assertEquals(TypeEtatDemande.ANNULEE, etatDemande.getType());
+			Assert.assertEquals("Traitement d'une nouvelle demande d'inscription.", etatDemande.getDescriptionRaison());
+		}
 	}
 
 	@Test
@@ -990,7 +1001,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		// vérification état final e-facture
 		final DestinataireAvecHisto histo = eFactureService.getDestinataireAvecSonHistorique(ctbId);
 		Assert.assertNotNull(histo);
-		Assert.assertEquals(TypeEtatDestinataire.DESINSCRIT, histo.getDernierEtat().getType());
+		Assert.assertEquals(TypeEtatDestinataire.NON_INSCRIT, histo.getDernierEtat().getType());
 		Assert.assertEquals(1, histo.getHistoriqueDemandes().size());
 
 		final DemandeAvecHisto demande = histo.getHistoriqueDemandes().get(0);
@@ -1000,8 +1011,8 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		Assert.assertNotNull(etatDemande);
 		Assert.assertEquals(TypeEtatDemande.REFUSEE, etatDemande.getType());
 		Assert.assertNull(etatDemande.getCodeRaison());
-		Assert.assertNull(etatDemande.getDescriptionRaison());
-		Assert.assertEquals(EFactureEventHandlerImpl.TypeRefusDemande.NUMERO_CTB_INCOHERENT.getDescription(), etatDemande.getChampLibre());
+		Assert.assertEquals(EFactureEventHandlerImpl.TypeRefusDemande.NUMERO_CTB_INCOHERENT.getDescription(), etatDemande.getDescriptionRaison());
+		Assert.assertNull(etatDemande.getChampLibre());
 	}
 
 	@Test
@@ -1055,7 +1066,7 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		// vérification état final e-facture
 		final DestinataireAvecHisto histo = eFactureService.getDestinataireAvecSonHistorique(ppId);
 		Assert.assertNotNull(histo);
-		Assert.assertEquals(TypeEtatDestinataire.DESINSCRIT, histo.getDernierEtat().getType());
+		Assert.assertEquals(TypeEtatDestinataire.NON_INSCRIT, histo.getDernierEtat().getType());
 		Assert.assertEquals(1, histo.getHistoriqueDemandes().size());
 
 		final DemandeAvecHisto demande = histo.getHistoriqueDemandes().get(0);
@@ -1065,8 +1076,8 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		Assert.assertNotNull(etatDemande);
 		Assert.assertEquals(TypeEtatDemande.REFUSEE, etatDemande.getType());
 		Assert.assertNull(etatDemande.getCodeRaison());
-		Assert.assertNull(etatDemande.getDescriptionRaison());
-		Assert.assertEquals(EFactureEventHandlerImpl.TypeRefusDemande.ADRESSE_COURRIER_INEXISTANTE.getDescription(), etatDemande.getChampLibre());
+		Assert.assertEquals(EFactureEventHandlerImpl.TypeRefusDemande.ADRESSE_COURRIER_INEXISTANTE.getDescription(), etatDemande.getDescriptionRaison());
+		Assert.assertNull(etatDemande.getChampLibre());
 	}
 
 }

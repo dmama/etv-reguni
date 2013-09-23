@@ -42,13 +42,13 @@ public abstract class MockEFactureService implements EFactureService {
 	private final Map<String, DemandeAvecHisto> demandes = new HashMap<>();
 
 	protected void addDestinataire(long ctbId) {
-		final DestinataireAvecHisto histo = new DestinataireAvecHisto(ctbId, TypeEtatDestinataire.DESINSCRIT);
+		final DestinataireAvecHisto histo = new DestinataireAvecHisto(ctbId, TypeEtatDestinataire.NON_INSCRIT);
 		data.put(ctbId, histo);
 	}
 
-	protected void addEtatDestinataire(long ctbId, Date date, String descriptionRaison, Integer codeRaison, TypeEtatDestinataire etat, String email) {
+	protected void addEtatDestinataire(long ctbId, Date date, String descriptionRaison, Integer codeRaison, TypeEtatDestinataire etat, String email, BigInteger noAdherent) {
 		final DestinataireAvecHisto histo = data.get(ctbId);
-		final EtatDestinataire etatDest = new EtatDestinataire(null, date, descriptionRaison, codeRaison, etat, email);
+		final EtatDestinataire etatDest = new EtatDestinataire(null, date, descriptionRaison, codeRaison, etat, email, noAdherent);
 		histo.getHistoriquesEtats().add(etatDest);
 	}
 
@@ -108,7 +108,7 @@ public abstract class MockEFactureService implements EFactureService {
 		}
 
 		if (nouveauType != null) {
-			final EtatDestinataire etat = new EtatDestinataire(description, DateHelper.getCurrentDate(), null, null, nouveauType, dernierEtat.getEmail());
+			final EtatDestinataire etat = new EtatDestinataire(description, DateHelper.getCurrentDate(), null, null, nouveauType, dernierEtat.getEmail(), dernierEtat.getNoAdherent());
 			dest.getHistoriquesEtats().add(etat);
 		}
 		return StringUtils.EMPTY;
@@ -128,6 +128,7 @@ public abstract class MockEFactureService implements EFactureService {
 				break;
 			case INSCRIT:
 			case DESINSCRIT:
+			case NON_INSCRIT:
 				nouveauType = null;
 				break;
 			default:
@@ -135,7 +136,7 @@ public abstract class MockEFactureService implements EFactureService {
 		}
 
 		if (nouveauType != null) {
-			final EtatDestinataire etat = new EtatDestinataire(description, DateHelper.getCurrentDate(), null, null, nouveauType, dernierEtat.getEmail());
+			final EtatDestinataire etat = new EtatDestinataire(null, DateHelper.getCurrentDate(), description, null, nouveauType, dernierEtat.getEmail(), dernierEtat.getNoAdherent());
 			dest.getHistoriquesEtats().add(etat);
 		}
 		return StringUtils.EMPTY;
@@ -145,7 +146,7 @@ public abstract class MockEFactureService implements EFactureService {
 	public String accepterDemande(String idDemande, boolean retourAttendu, String description) throws EvenementEfactureException {
 		// on accepte la demande et on passe le contribuable en "inscrit"
 		final DemandeAvecHisto demande = demandes.get(idDemande);
-		final EtatDemande etatDemande = new EtatDemande(description, DateHelper.getCurrentDate(), null, null, TypeEtatDemande.VALIDEE);
+		final EtatDemande etatDemande = new EtatDemande(null, DateHelper.getCurrentDate(), null, description, TypeEtatDemande.VALIDEE);
 		demande.getHistoriqueEtats().add(etatDemande);
 
 		final long ctbId = demande.getCtbId();
@@ -169,7 +170,7 @@ public abstract class MockEFactureService implements EFactureService {
 		}
 
 		if (nouveauType != null) {
-			final EtatDestinataire etatDestinataire = new EtatDestinataire(description, DateHelper.getCurrentDate(), null, null, nouveauType, demande.getEmail());
+			final EtatDestinataire etatDestinataire = new EtatDestinataire(null, DateHelper.getCurrentDate(), description, null, nouveauType, demande.getEmail(), demande.getNoAdherent());
 			dest.getHistoriquesEtats().add(etatDestinataire);
 		}
 		return StringUtils.EMPTY;
@@ -178,7 +179,7 @@ public abstract class MockEFactureService implements EFactureService {
 	@Override
 	public String refuserDemande(String idDemande, boolean retourAttendu, String description) throws EvenementEfactureException {
 		final DemandeAvecHisto demande = demandes.get(idDemande);
-		final EtatDemande etatDemande = new EtatDemande(description, DateHelper.getCurrentDate(), null, null, TypeEtatDemande.REFUSEE);
+		final EtatDemande etatDemande = new EtatDemande(null, DateHelper.getCurrentDate(), null, description, TypeEtatDemande.REFUSEE);
 		demande.getHistoriqueEtats().add(etatDemande);
 		return StringUtils.EMPTY;
 	}
@@ -206,8 +207,28 @@ public abstract class MockEFactureService implements EFactureService {
 	@Override
 	public String modifierEmailContribuable(long noCtb, @Nullable String newEmail, boolean retourAttendu, String description) throws EvenementEfactureException {
 		final DestinataireAvecHisto dest = data.get(noCtb);
-		final EtatDestinataire etatDestinataire = new EtatDestinataire(description, DateHelper.getCurrentDate(), null, null, dest.getDernierEtat().getType(), newEmail);
+		final EtatDestinataire dernierEtat = dest.getDernierEtat();
+		final EtatDestinataire etatDestinataire = new EtatDestinataire(null, DateHelper.getCurrentDate(), description, null, dernierEtat.getType(), newEmail, dernierEtat.getNoAdherent());
 		dest.getHistoriquesEtats().add(etatDestinataire);
 		return StringUtils.EMPTY;
+	}
+
+	@Override
+	public void demanderDesinscriptionContribuable(long noCtb, String idNouvelleDemande, String description) throws EvenementEfactureException {
+		final DestinataireAvecHisto dest = data.get(noCtb);
+		if (dest.isInscrit()) {
+			final EtatDestinataire etatDestinataire = new EtatDestinataire(null, DateHelper.getCurrentDate(), description, null, TypeEtatDestinataire.DESINSCRIT, null, null);
+			dest.getHistoriquesEtats().add(etatDestinataire);
+		}
+		final List<DemandeAvecHisto> histoDemandes = dest.getHistoriqueDemandes();
+		for (DemandeAvecHisto demande : histoDemandes) {
+			if (idNouvelleDemande.equals(demande.getIdDemande())) {
+				break;
+			}
+			if (demande.getDernierEtat().getType().isEnCours()) {
+				final EtatDemande etatDemande = new EtatDemande(null, DateHelper.getCurrentDate(), null, description, TypeEtatDemande.ANNULEE);
+				demande.getHistoriqueEtats().add(etatDemande);
+			}
+		}
 	}
 }

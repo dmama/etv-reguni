@@ -80,4 +80,10 @@ public class EFactureServiceProxy implements EFactureService {
 		checkTarget();
 		return target.modifierEmailContribuable(noCtb, newEmail, retourAttendu, description);
 	}
+
+	@Override
+	public void demanderDesinscriptionContribuable(long noCtb, String idNouvelleDemande, String description) throws EvenementEfactureException {
+		checkTarget();
+		target.demanderDesinscriptionContribuable(noCtb, idNouvelleDemande, description);
+	}
 }

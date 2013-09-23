@@ -58,4 +58,8 @@ public class DummyEFactureService implements EFactureService {
 	public String modifierEmailContribuable(long noCtb, @Nullable String newEmail, boolean retourAttendu, String description) throws EvenementEfactureException {
 		return StringUtils.EMPTY;
 	}
+
+	@Override
+	public void demanderDesinscriptionContribuable(long noCtb, String idNouvelleDemande, String description) throws EvenementEfactureException {
+	}
 }
