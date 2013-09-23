@@ -97,7 +97,7 @@ public class FidorClientImpl implements FidorClient {
 			}
 			final CommuneFiscale c = list.getListOfResults().getListOfCommunesFiscales().getCommuneFiscale().get(0);
 			if (c.getNumeroOfs() != ofsId) {
-				throw new IllegalArgumentException("Commune retournée incohérente avec la demande (demandé OFS " + ofsId + ", reçu " + c.getNumeroOfs() + ")", null);
+				throw new IllegalArgumentException("Commune retournée incohérente avec la demande (demandé OFS " + ofsId + ", reçu " + c.getNumeroOfs() + ")");
 			}
 			return c;
 		}
@@ -123,7 +123,7 @@ public class FidorClientImpl implements FidorClient {
 			final List<CommuneFiscale> result = list.getListOfResults().getListOfCommunesFiscales().getCommuneFiscale();
 			for (CommuneFiscale commune : result) {
 				if (commune.getNumeroOfs() != ofsId) {
-					throw new IllegalArgumentException("Commune retournée incohérente avec la demande (demandé OFS " + ofsId + ", reçu " + commune.getNumeroOfs() + ")", null);
+					throw new IllegalArgumentException("Commune retournée incohérente avec la demande (demandé OFS " + ofsId + ", reçu " + commune.getNumeroOfs() + ")");
 				}
 			}
 			return result;
