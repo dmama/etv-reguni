@@ -4030,4 +4030,56 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 	}
+
+	/**
+	 * SIFISC-9747 : balise "adresse" présente mais vide -> on ne trouve plus personne...
+	 */
+	@Test
+	public void testAdressePresenteSansLocalite() throws Exception {
+		serviceUpi.setUp(new DefaultMockServiceUpi());
+
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique albert = addNonHabitant("Albert", "Zweisteinen", date(1953, 4, 3), Sexe.MASCULIN);
+				addAdresseSuisse(albert, TypeAdresseTiers.COURRIER, date(2000, 1, 1), null, MockRue.CossonayVille.AvenueDuFuniculaire);
+				return albert.getNumero();
+			}
+		});
+
+		globalTiersIndexer.sync();
+
+		assertCountDemandes(0);
+
+		// création et traitement du message d'identification
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final CriteresPersonne criteres = new CriteresPersonne();
+				criteres.setPrenoms("Albert");
+				criteres.setNom("Zweisteinen");
+				criteres.setAdresse(new CriteresAdresse());         // <--- c'était ça la problème
+
+				final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
+				service.handleDemande(message);
+				return null;
+			}
+		});
+
+		// vérification du résultat : identification automatique avec autre NAVS (fourni par l'UPI)
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final List<IdentificationContribuable> list = identCtbDAO.getAll();
+				assertEquals(1, list.size());
+
+				final IdentificationContribuable ic = list.get(0);
+				assertNotNull(ic);
+				assertEquals(Etat.TRAITE_AUTOMATIQUEMENT, ic.getEtat());
+				assertEquals(Integer.valueOf(1), ic.getNbContribuablesTrouves());
+				assertEquals(id, ic.getReponse().getNoContribuable());
+				return null;
+			}
+		});
+	}
 }

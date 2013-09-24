@@ -405,7 +405,9 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 			if (criteres.getAdresse() != null) {
 				final CriteresAdresse adresse = criteres.getAdresse();
 				final String npa = adresse.getNpaSuisse() == null ? StringUtils.trimToNull(adresse.getNpaEtranger()) : Integer.toString(adresse.getNpaSuisse());
-				criteria.setNpaTousOrNull(npa);
+				if (StringUtils.isNotBlank(npa)) {
+					criteria.setNpaTousOrNull(npa);
+				}
 			}
 			if (avsUpi != null) {
 				criteria.setNavs13OrNull(avsUpi);
