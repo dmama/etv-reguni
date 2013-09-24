@@ -3,7 +3,7 @@
 	<groupId>ch.vd.uniregctb</groupId>
 	<artifactId>jaxb2-unireg-ws-plugin</artifactId>
 	<packaging>jar</packaging>
-	<version>1.1.0</version>
+	<version>1.2.0</version>
 
 	<name>JAXB2 Plugin - Unireg Web-service</name>
 	<description>Ce plugin ajoute certaines méthodes à certaines classes en fonction des besoins spécifiques des web-services d'Unireg.</description>
@@ -23,8 +23,8 @@
 					<inherited>true</inherited>
 					<artifactId>maven-compiler-plugin</artifactId>
 					<configuration>
-						<source>1.6</source>
-						<target>1.6</target>
+						<source>1.7</source>
+						<target>1.7</target>
 					</configuration>
 				</plugin>
 			</plugins>
@@ -62,7 +62,7 @@
 
 	<properties>
 		<!-- Application settings -->
-		<copyright.year>2011</copyright.year>
+		<copyright.year>2013</copyright.year>
 		<amp.genericCore>true</amp.genericCore>
 		<amp.fullSource>false</amp.fullSource>
 	</properties>

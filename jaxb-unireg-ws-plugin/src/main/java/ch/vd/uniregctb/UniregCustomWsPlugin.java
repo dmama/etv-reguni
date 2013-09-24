@@ -64,7 +64,7 @@ public class UniregCustomWsPlugin extends Plugin {
 		// For each defined class
 
 		for (final ClassOutline classOutline : outline.getClasses()) {
-			if (classOutline.implClass.name().equals("Date")) {
+			if (classOutline.implClass.name().equals("Date") && classOutline.implClass.getPackage().name().startsWith("ch.vd.unireg.xml.common")) {
 				final JClass comparableClass = classOutline.implClass.owner().ref("java.lang.Comparable<Date>");
 				classOutline.implClass._implements(comparableClass);
 				classOutline.implClass.direct(DATE_HASHCODE);
