@@ -30,9 +30,9 @@ version=$(grep "long=" unireg/base/version.txt|awk -F= '{ print $2; }')
 echo "Version: $version"
 
 env=integration-te
-user=unireg@spip
-upDir=/ccv/data2/unireg/uploads
-tomcatDir=/ccv/data2/unireg/apache-tomcat
+user=unireg@calimero
+upDir=/ccv/data/unireg/uploads
+tomcatDir=/ccv/data/unireg/uniregTE/apache-tomcat
 
 webFileOrig=unireg-web-release.zip
 webFileDest=unireg-web-release-${version}-${DATE}.zip
