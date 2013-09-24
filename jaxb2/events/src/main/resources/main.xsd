@@ -46,4 +46,7 @@
 	<xs:import namespace="http://www.vd.ch/fiscalite/taxation/is/evt-liste/1" schemaLocation="http://www.vd.ch/fiscalite/taxation/is/evtliste-1.xsd"/>
 	<xs:import namespace="http://www.vd.ch/fiscalite/taxation/is/evt-liste/2" schemaLocation="http://www.vd.ch/fiscalite/taxation/is/evtliste-2.xsd"/>
 
+	<xs:import namespace="http://www.vd.ch/fiscalite/taxation/dossier-electronique/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/taxation/DossierElectronique-1-0.xsd"/>
+	<xs:import namespace="http://www.vd.ch/fiscalite/taxation/dossier-electronique/2" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/taxation/DossierElectronique-2-0.xsd"/>
+
 </xs:schema>

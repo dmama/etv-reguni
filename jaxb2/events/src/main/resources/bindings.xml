@@ -322,4 +322,23 @@
 		</jxb:bindings>
 	</jxb:bindings>
 
+	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/taxation/DossierElectronique-1-0.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.xml.event.taxation.v1" />
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="ev-scan-di-1" />
+		</jxb:bindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/taxation/DossierElectronique-2-0.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.xml.event.taxation.v2" />
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="ev-scan-di-2" />
+		</jxb:bindings>
+	</jxb:bindings>
+
+
 </jxb:bindings>

@@ -40,6 +40,9 @@
 	<system systemId="http://www.vd.ch/fiscalite/taxation/is/evtliste-1.xsd" uri="event/lr/evtListe-1.xsd"/>
 	<system systemId="http://www.vd.ch/fiscalite/taxation/is/evtliste-2.xsd" uri="event/lr/evtListe-2.xsd"/>
 
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/taxation/DossierElectronique-1-0.xsd" uri="event/taxation/DossierElectronique-1-0.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/taxation/DossierElectronique-2-0.xsd" uri="event/taxation/DossierElectronique-2-0.xsd"/>
+
 	<delegateSystem systemIdStartString="http://ressources.etat-de-vaud.ch/fiscalite/registre/party" catalog="../../../../party/src/main/resources/catalog.xml" />
 	<delegateSystem systemIdStartString="http://ressources.etat-de-vaud.ch/fiscalite/registre/" catalog="../../../../common/src/main/resources/catalog.xml" />
 	<delegateSystem systemIdStartString="http://www.ech.ch/xmlns/" catalog="../../../../ech/src/main/resources/catalog.xml" />
