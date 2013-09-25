@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.tache;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -19,8 +20,10 @@ import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.common.BusinessTestingConstants;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
+import ch.vd.uniregctb.evenement.cedi.DossierElectroniqueHandler;
 import ch.vd.uniregctb.evenement.cedi.EvenementCediEsbMessageHandler;
-import ch.vd.uniregctb.evenement.cedi.EvenementCediHandler;
+import ch.vd.uniregctb.evenement.cedi.EvenementCediService;
+import ch.vd.uniregctb.evenement.cedi.V1Handler;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.tache.sync.AddDI;
@@ -55,12 +58,15 @@ public class TacheSynchronizerInterceptorTest extends BusinessTest {
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
-		final EvenementCediHandler cediHandler = getBean(EvenementCediHandler.class, "evenementCediService");
 		tacheService = getBean(TacheService.class, "tacheService");
 		tacheDAO = getBean(TacheDAO.class, "tacheDAO");
 
+		final EvenementCediService cediHandler = getBean(EvenementCediService.class, "evenementCediService");
+		final V1Handler v1Handler = new V1Handler();
+		v1Handler.setEvenementCediService(cediHandler);
+
 		cediListener = new EvenementCediEsbMessageHandler();
-		cediListener.setHandler(cediHandler);
+		cediListener.setHandlers(Arrays.<DossierElectroniqueHandler<?>>asList(v1Handler));
 		cediListener.setHibernateTemplate(hibernateTemplate);
 	}
 

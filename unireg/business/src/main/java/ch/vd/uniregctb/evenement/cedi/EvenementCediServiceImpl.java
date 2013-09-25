@@ -28,7 +28,7 @@ import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.validation.ValidationService;
 
-public class EvenementCediServiceImpl implements EvenementCediService, EvenementCediHandler {
+public class EvenementCediServiceImpl implements EvenementCediService {
 
 	private static final Logger LOGGER = Logger.getLogger(EvenementCediServiceImpl.class);
 
@@ -137,7 +137,7 @@ public class EvenementCediServiceImpl implements EvenementCediService, Evenement
 					declaration.setModeleDocument(vaudTax);
 				}
 				break;
-			case ORDINAIRE:
+			case MANUSCRITE:
 				if (typeDocument == TypeDocument.DECLARATION_IMPOT_VAUDTAX) {
 					declaration.setModeleDocument(complete);
 				}

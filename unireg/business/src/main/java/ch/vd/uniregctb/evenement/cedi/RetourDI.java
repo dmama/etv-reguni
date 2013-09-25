@@ -2,8 +2,6 @@ package ch.vd.uniregctb.evenement.cedi;
 
 import java.util.Date;
 
-import org.apache.commons.lang3.StringUtils;
-
 /**
  * Données utiles à Unireg extraites de l'événement JMS envoyé par le CEDI suite au retour (au scannage pour être précis) d'une DI. 
  */
@@ -11,40 +9,9 @@ public class RetourDI extends EvenementCedi {
 
 	public enum TypeDocument {
 		VAUDTAX,
-		ORDINAIRE;
-
-		public static TypeDocument fromTypeSaisie(String code) {
-			if (StringUtils.isBlank(code)) {
-				return null;
-			}
-
-			if ("M".equals(code)) {
-				return ORDINAIRE;
-			}
-			else if ("E".equals(code)) {
-				return VAUDTAX;
-			}
-
-			return null;
-		}
-
-		public static TypeDocument fromTypeDocument(String code) {
-			if (StringUtils.isBlank(code)) {
-				return null;
-			}
-
-			if ("100".equals(code)) {
-				return ORDINAIRE;
-			}
-			else if ("109".equals(code)) {
-				return VAUDTAX;
-			}
-
-			return null;
-		}
+		MANUSCRITE
 	}
 
-	private String businessId;
 	private Date dateTraitement;
 
 	private long noContribuable;
@@ -56,14 +23,6 @@ public class RetourDI extends EvenementCedi {
 	private String noMobile;
 	private String noTelephone;
 	private String titulaireCompte;
-
-	public String getBusinessId() {
-		return businessId;
-	}
-
-	public void setBusinessId(String businessId) {
-		this.businessId = businessId;
-	}
 
 	public Date getDateTraitement() {
 		return dateTraitement;
@@ -148,8 +107,7 @@ public class RetourDI extends EvenementCedi {
 	@Override
 	public String toString() {
 		return "RetourDI{" +
-				"businessId='" + businessId + '\'' +
-				", dateTraitement=" + dateTraitement +
+				"dateTraitement=" + dateTraitement +
 				", noContribuable=" + noContribuable +
 				", periodeFiscale=" + periodeFiscale +
 				", noSequenceDI=" + noSequenceDI +

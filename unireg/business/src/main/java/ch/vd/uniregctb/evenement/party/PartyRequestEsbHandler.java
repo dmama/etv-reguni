@@ -217,7 +217,7 @@ public class PartyRequestEsbHandler implements EsbMessageHandler, InitializingBe
 	public void afterPropertiesSet() throws Exception {
 
 		final List<Resource> resources = new ArrayList<>(handlers.size());
-		for (RequestHandler handler : handlers.values()) {
+		for (RequestHandler<?> handler : handlers.values()) {
 			final List<ClassPathResource> resource = handler.getResponseXSD();
 			resources.addAll(resource);
 		}

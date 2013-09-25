@@ -7,9 +7,21 @@
 	</bean>
 
 	<bean id="evenementCediHandler" class="ch.vd.uniregctb.evenement.cedi.EvenementCediEsbMessageHandler">
-		<property name="handler" ref="evenementCediService" />
-		<property name="hibernateTemplate" ref="hibernateTemplate" />
+		<property name="handlers">
+			<list>
+				<ref bean="evenementCediHandlerV1"/>
+				<ref bean="evenementCediHandlerV2"/>
+			</list>
+		</property>
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 	</bean>
+
+	<bean id="evenementCediAbstractHandler" abstract="true" class="ch.vd.uniregctb.evenement.cedi.AbstractDossierElectroniqueHandler">
+		<property name="evenementCediService" ref="evenementCediService"/>
+	</bean>
+
+	<bean id="evenementCediHandlerV1" class="ch.vd.uniregctb.evenement.cedi.V1Handler" parent="evenementCediAbstractHandler"/>
+	<bean id="evenementCediHandlerV2" class="ch.vd.uniregctb.evenement.cedi.V2Handler" parent="evenementCediAbstractHandler"/>
 
 	<bean id="evenementCediEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">
 		<property name="resourceAdapter" ref="jmsResourceAdapter"/>

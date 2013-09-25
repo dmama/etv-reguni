@@ -2,6 +2,7 @@ package ch.vd.uniregctb.evenement.cedi;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -35,7 +36,7 @@ import static org.junit.Assert.assertNull;
 public class EvenementCediEsbMessageHandlerTest extends EvenementTest {
 
 	private String INPUT_QUEUE;
-	private EvenementCediEsbMessageHandler handler;
+	private EvenementCediEsbMessageHandler esbHandler;
 
 	@Before
 	public void setUp() throws Exception {
@@ -62,16 +63,17 @@ public class EvenementCediEsbMessageHandlerTest extends EvenementTest {
 			}
 		};
 
-		handler = new EvenementCediEsbMessageHandler();
-		handler.setHibernateTemplate(hibernateTemplate);
+		esbHandler = new EvenementCediEsbMessageHandler();
+		esbHandler.setHibernateTemplate(hibernateTemplate);
 
 		final GentilEsbMessageEndpointListener listener = new GentilEsbMessageEndpointListener();
-		listener.setHandler(handler);
+		listener.setHandler(esbHandler);
 		listener.setTransactionManager(new JmsTransactionManager(jmsConnectionFactory));
 		listener.setEsbTemplate(esbTemplate);
 
 		esbValidator = new EsbXmlValidation();
-		esbValidator.setSources(new Resource[]{new ClassPathResource("xsd/cedi/DossierElectronique-1-0.xsd")});
+		esbValidator.setSources(new Resource[]{new ClassPathResource("event/taxation/DossierElectronique-1-0.xsd"),
+											   new ClassPathResource("event/taxation/DossierElectronique-2-0.xsd")});
 
 		initEndpointManager(INPUT_QUEUE, listener);
 	}
@@ -81,12 +83,12 @@ public class EvenementCediEsbMessageHandlerTest extends EvenementTest {
 
 		final List<EvenementCedi> events = new ArrayList<>();
 
-		handler.setHandler(new EvenementCediHandler() {
+		esbHandler.setHandlers(Arrays.<DossierElectroniqueHandler<?>>asList(new V1Handler() {
 			@Override
-			public void onEvent(EvenementCedi event, Map<String, String> incomingHeaders) {
-				events.add(event);
+			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) {
+				events.add(evt);
 			}
-		});
+		}));
 
 		// Lit le message sous format texte
 		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/cedi/retour_di.xml");
@@ -106,7 +108,7 @@ public class EvenementCediEsbMessageHandlerTest extends EvenementTest {
 		assertEquals(12500001L, q.getNoContribuable());
 		assertEquals(2009, q.getPeriodeFiscale());
 		assertEquals(1, q.getNoSequenceDI());
-		assertEquals(RetourDI.TypeDocument.ORDINAIRE, q.getTypeDocument());
+		assertEquals(RetourDI.TypeDocument.MANUSCRITE, q.getTypeDocument());
 		assertNull(q.getEmail());
 		assertEquals("CH3708401016ZZ0535380", q.getIban());
 		assertEquals("0211234567", q.getNoTelephone());
@@ -123,12 +125,12 @@ public class EvenementCediEsbMessageHandlerTest extends EvenementTest {
 
 		final List<EvenementCedi> events = new ArrayList<>();
 
-		handler.setHandler(new EvenementCediHandler() {
+		esbHandler.setHandlers(Arrays.<DossierElectroniqueHandler<?>>asList(new V1Handler() {
 			@Override
-			public void onEvent(EvenementCedi event, Map<String, String> incomingHeaders) {
-				events.add(event);
+			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) {
+				events.add(evt);
 			}
-		});
+		}));
 
 		// Lit le message sous format texte
 		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/cedi/retour_di_presque_vide.xml");
@@ -148,11 +150,56 @@ public class EvenementCediEsbMessageHandlerTest extends EvenementTest {
 		assertEquals(12500001L, q.getNoContribuable());
 		assertEquals(2009, q.getPeriodeFiscale());
 		assertEquals(1, q.getNoSequenceDI());
-		assertEquals(RetourDI.TypeDocument.ORDINAIRE, q.getTypeDocument());
+		assertEquals(RetourDI.TypeDocument.MANUSCRITE, q.getTypeDocument());
 		assertNull(q.getEmail());
 		assertNull(q.getIban());
 		assertNull(q.getNoTelephone());
 		assertNull(q.getNoMobile());
 		assertNull(q.getTitulaireCompte());
+	}
+
+	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
+	public void testFormatV2() throws Exception {
+
+		final List<EvenementCedi> events = new ArrayList<>();
+		final DossierElectroniqueHandler<?> v1Handler = new V1Handler() {
+			@Override
+			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
+				Assert.fail("Un message v2 ne devrait pas arriver dans le handler v1");
+			}
+		};
+		final DossierElectroniqueHandler<?> v2Handler = new V2Handler() {
+			@Override
+			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
+				events.add(evt);
+			}
+		};
+
+		esbHandler.setHandlers(Arrays.asList(v1Handler, v2Handler));
+
+		// Lit le message sous format texte
+		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/cedi/DossierElectronique-2.0-exemple.xml");
+		final String texte = FileUtils.readFileToString(file);
+
+		// Envoie le message
+		sendTextMessage(INPUT_QUEUE, texte);
+
+		// On attend le message
+		while (events.isEmpty()) {
+			Thread.sleep(100);
+		}
+		Assert.assertEquals(1, events.size());
+
+		final RetourDI q = (RetourDI) events.get(0);
+		assertNotNull(q);
+		assertEquals(10500171, q.getNoContribuable());
+		assertEquals(2013, q.getPeriodeFiscale());
+		assertEquals(1, q.getNoSequenceDI());
+		assertEquals(RetourDI.TypeDocument.VAUDTAX, q.getTypeDocument());
+		assertEquals("toto@earth.net", q.getEmail());
+		assertEquals("CH2800767000U09565735", q.getIban());
+		assertEquals("0211234567", q.getNoTelephone());
+		assertEquals("0797654321", q.getNoMobile());
+		assertEquals("Toto le rigolo", q.getTitulaireCompte());
 	}
 }
