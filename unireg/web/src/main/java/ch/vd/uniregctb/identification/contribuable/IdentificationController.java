@@ -270,7 +270,7 @@ public class IdentificationController {
 	                              @RequestParam(value = "wipeCriteria", required = false) String wipeCriteria,
 	                              ModelMap model) throws AdressesResolutionException {
 
-		criteria = manageCriteria(request, criteria, "identificationCriteria",wipeCriteria!=null?false:true);
+		criteria = manageCriteria(request, criteria, "identificationCriteria", wipeCriteria == null);
 		addPaginationToModel(request, model);
 		return buildResponseForMessageEnCours(request, criteria, model);
 	}
@@ -313,7 +313,7 @@ public class IdentificationController {
 	                                     @RequestParam(value = "wipeCriteria", required = false) String wipeCriteria,
 	                                     ModelMap model) throws AdressesResolutionException {
 
-		criteria = manageCriteria(request, criteria, "identificationCriteria", wipeCriteria!=null ?false:true);
+		criteria = manageCriteria(request, criteria, "identificationCriteria", wipeCriteria == null);
 		addPaginationToModel(request, model);
 		return buildReponseForMessageSuspendu(request, criteria, model);
 	}
@@ -376,7 +376,7 @@ public class IdentificationController {
 	                              @RequestParam(value = "wipeCriteria", required = false) String wipeCriteria,
 	                              ModelMap model) throws AdressesResolutionException {
 
-		criteria = manageCriteria(request, criteria, "identificationCriteria", wipeCriteria!=null?false:true);
+		criteria = manageCriteria(request, criteria, "identificationCriteria", wipeCriteria == null);
 		addPaginationToModel(request, model);
 		return buildReponseForMessageTraite(request, model, criteria);
 	}
