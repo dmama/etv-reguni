@@ -412,7 +412,7 @@
 	<distributionManagement>
 		<site>
 			<id>unireg.website</id>
-			<url>file:///home/slaves/hudson_unireg_doc/website4.x/</url>
+			<url>scp://tom.etat-de-vaud.ch/var/www/html/unireg/javadoc-site</url>
 		</site>
 		<repository>
 			<id>nexus.releases</id>
