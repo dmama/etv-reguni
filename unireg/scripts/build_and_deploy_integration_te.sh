@@ -112,7 +112,7 @@ echo "Fin du deploiement de la web-app nexus à: $(date)"
 # Deploiement de la web-app web
 #
 
-ssh $user "rm -rf $upDir && mkdir -p $upDir/explode"
+ssh $user "rm -rf $upDir/explode && mkdir -p $upDir/explode"
 scp unireg/web/target/$webFileDest $user:$upDir/
 ssh $user "cd $upDir/explode && unzip $upDir/$webFileDest"
 
