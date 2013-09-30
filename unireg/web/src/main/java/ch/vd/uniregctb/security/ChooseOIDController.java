@@ -9,9 +9,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.web.WebAttributes;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -134,14 +132,7 @@ public class ChooseOIDController {
 	 * @return le profil de sécurité de l'opérateur courant.
 	 */
 	private UniregSecurityDetails getProfilSecuriteCourant() {
-		// Récupération du contexte de sécurité
-		SecurityContext context = SecurityContextHolder.getContext();
-		if (context == null) {
-			return null;
-		}
-
-		// Récupération des données d'authentification
-		Authentication auth = context.getAuthentication();
+		final AbstractAuthenticationToken auth = AuthenticationHelper.getAuthentication();
 		if (auth == null) {
 			return null;
 		}

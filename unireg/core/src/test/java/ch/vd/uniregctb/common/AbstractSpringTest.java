@@ -239,7 +239,7 @@ public abstract class AbstractSpringTest implements ApplicationContextAware {
 		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user, "noPwd");
 
 		/* Enregistre le context de sécurité */
-		SecurityContextHolder.getContext().setAuthentication(authentication);
+		AuthenticationHelper.setAuthentication(authentication);
 	}
 
 	protected void setAuthentication(String username, String[] roles) {
@@ -254,11 +254,11 @@ public abstract class AbstractSpringTest implements ApplicationContextAware {
 		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user, "noPwd", authorities);
 
 		/* Enregistre le context de sécurité */
-		SecurityContextHolder.getContext().setAuthentication(authentication);
+		AuthenticationHelper.setAuthentication(authentication);
 	}
 
 	protected void resetAuthentication() {
-		SecurityContextHolder.getContext().setAuthentication(null);
+		AuthenticationHelper.setAuthentication(null);
 	}
 
 	/**

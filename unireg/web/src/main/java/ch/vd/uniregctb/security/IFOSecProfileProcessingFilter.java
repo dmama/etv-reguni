@@ -15,10 +15,10 @@ import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.filter.GenericFilterBean;
 
+import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
 import ch.vd.uniregctb.interfaces.service.host.IfoSecProfilImpl;
 
@@ -32,7 +32,7 @@ public class IFOSecProfileProcessingFilter extends GenericFilterBean {
 	@Override
 	public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
 
-		final AbstractAuthenticationToken authentication = (AbstractAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+		final AbstractAuthenticationToken authentication = AuthenticationHelper.getAuthentication();
 		final IFOSecDetails details = (IFOSecDetails) authentication.getDetails();
 
 		if (details.getIfoSecProfil() == null) {
@@ -58,7 +58,7 @@ public class IFOSecProfileProcessingFilter extends GenericFilterBean {
 			final UsernamePasswordAuthenticationToken newAuthentication = new UsernamePasswordAuthenticationToken(user, "noPwd", granted);
 			newAuthentication.setDetails(details);
 
-			SecurityContextHolder.getContext().setAuthentication(newAuthentication);
+			AuthenticationHelper.setAuthentication(newAuthentication);
 		}
 
 		filterChain.doFilter(servletRequest, servletResponse);

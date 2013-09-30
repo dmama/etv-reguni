@@ -15,12 +15,12 @@ import org.apache.log4j.Logger;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.filter.GenericFilterBean;
 
 import ch.vd.registre.web.filter.IAMUtil;
+import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.EncodingFixHelper;
 
 /**
@@ -44,7 +44,7 @@ public class IAMAuthenticationProcessingFilter extends GenericFilterBean {
 	@Override
 	public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
 
-		if (SecurityContextHolder.getContext().getAuthentication() == null) {
+		if (AuthenticationHelper.getAuthentication() == null) {
 
 			final HttpServletRequest request = (HttpServletRequest) servletRequest;
 
@@ -83,7 +83,7 @@ public class IAMAuthenticationProcessingFilter extends GenericFilterBean {
 			final UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user, "noPwd", granted);
 			authentication.setDetails(details);
 
-			SecurityContextHolder.getContext().setAuthentication(authentication);
+			AuthenticationHelper.setAuthentication(authentication);
 		}
 
 		filterChain.doFilter(servletRequest, servletResponse);
