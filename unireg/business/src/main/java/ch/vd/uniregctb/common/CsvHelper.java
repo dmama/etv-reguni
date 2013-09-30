@@ -215,12 +215,12 @@ public abstract class CsvHelper {
 	}
 
 	/**
-	 * Supression des caractères " et ;
+	 * Supression des caractères " et ;, et remplacement de tous les caractères "blancs" par un espace
 	 * @param ligne
 	 * @return
 	 */
 	public static String escapeChars(String ligne) {
-		return StringUtils.isBlank(ligne) ? EMPTY : ligne.trim().replaceAll("[\";]", EMPTY);
+		return StringUtils.isBlank(ligne) ? EMPTY : ligne.replaceAll("[\";]", EMPTY).replaceAll("[\\s\\u00a0]+", " ").trim();
 	}
 
 	/**
