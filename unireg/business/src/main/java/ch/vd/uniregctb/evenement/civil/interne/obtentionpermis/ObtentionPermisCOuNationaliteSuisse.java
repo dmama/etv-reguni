@@ -96,7 +96,7 @@ public abstract class ObtentionPermisCOuNationaliteSuisse extends EvenementCivil
 	                                                            MotifFor motifOuverture,
 	                                                            ModeImposition nouveauModeImposition) {
 		// [UNIREG-1979] On schedule un réindexation pour le début du mois suivant (les changements d'assujettissement source->ordinaire sont décalés en fin de mois)
-		final RegDate debutMoisProchain = RegDate.get(dateOuverture.year(), dateOuverture.month(), 1).addMonths(1);
+		final RegDate debutMoisProchain = getDebutMoisProchain(dateOuverture);
 		contribuable.scheduleReindexationOn(debutMoisProchain);
 
 		openForFiscalPrincipal(contribuable, dateOuverture, reference.getTypeAutoriteFiscale(), reference.getNumeroOfsAutoriteFiscale(), reference.getMotifRattachement(), motifOuverture, nouveauModeImposition);
@@ -113,14 +113,16 @@ public abstract class ObtentionPermisCOuNationaliteSuisse extends EvenementCivil
 	 */
 	private ForFiscalPrincipal openForFiscalPrincipalChangementModeImpositionImplicite(Contribuable contribuable, final RegDate dateOuverture, int numeroOfsAutoriteFiscale) {
 		// [UNIREG-1979][SIFISC-1199] On schedule un réindexation pour le début du mois suivant (les changements d'assujettissement source->ordinaire sont décalés en fin de mois)
-		final RegDate debutMoisProchain = RegDate.get(dateOuverture.year(), dateOuverture.month(), 1).addMonths(1);
+		final RegDate debutMoisProchain = getDebutMoisProchain(dateOuverture);
 		contribuable.scheduleReindexationOn(debutMoisProchain);
 
 		return openForFiscalPrincipal(contribuable, dateOuverture, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, numeroOfsAutoriteFiscale, MotifRattachement.DOMICILE, MotifFor.PERMIS_C_SUISSE,
 				ModeImposition.ORDINAIRE);
 	}
 
-
+	private static RegDate getDebutMoisProchain(RegDate dateOuverture) {
+		return dateOuverture.getOneDayBefore().getLastDayOfTheMonth().getOneDayAfter();
+	}
 
 	/**
 	 * Traite l'événement passé en paramètre.

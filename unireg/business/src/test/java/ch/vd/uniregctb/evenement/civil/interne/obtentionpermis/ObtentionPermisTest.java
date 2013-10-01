@@ -552,7 +552,8 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 
 		final RegDate dateNaissance = date(1977, 5, 23);
 		final RegDate dateArrivee = date(2002, 1, 1);
-		final RegDate dateObtentionPermis = RegDate.get().getOneDayBefore();
+		final RegDate today = RegDate.get();
+		final RegDate dateObtentionPermis = today.getOneDayBefore();
 		final RegDate dateDebutMoisProchain = dateObtentionPermis.getLastDayOfTheMonth().getOneDayAfter();
 
 		// On crée la situation suivante : contribuable de nationalité française domicilée à Lausanne et recevant un permis d'établissement aujourd'hui
@@ -605,11 +606,11 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				assertNotNull(pp);
 				assertEquals(dateDebutMoisProchain, pp.getReindexOn()); // [SIFISC-1199] date de réindexation dans le futur car il y a une de transition source -> ordinaire
-				if (dateObtentionPermis.day() == 1) {
-					assertEquals("Imposition ordinaire VD", tiersService.getRoleAssujettissement(pp, RegDate.get()));
+				if (dateObtentionPermis.getOneDayAfter().day() == 1) {
+					assertEquals("Imposition ordinaire VD", tiersService.getRoleAssujettissement(pp, today));
 				}
 				else {
-					assertEquals("Imposition à la source", tiersService.getRoleAssujettissement(pp, RegDate.get()));
+					assertEquals("Imposition à la source", tiersService.getRoleAssujettissement(pp, today));
 				}
 				return null;
 			}
@@ -624,7 +625,8 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 
 		final RegDate dateNaissance = date(1977, 5, 23);
 		final RegDate dateArrivee = date(2002, 1, 1);
-		final RegDate dateObtentionPermis = RegDate.get().getOneDayBefore();
+		final RegDate today = RegDate.get();
+		final RegDate dateObtentionPermis = today.getOneDayBefore();
 		final RegDate dateDebutMoisProchain = dateObtentionPermis.getLastDayOfTheMonth().getOneDayAfter();
 
 		// On crée la situation suivante : contribuable de nationalité française domicilée à Lausanne et recevant un permis d'établissement aujourd'hui
@@ -677,11 +679,11 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 				// [SIFISC-1199] date de réindexation dans le futur car il y a une de transition source -> ordinaire (le calcul de l'assujettissement détermine
 				// que le contribuable était sourcier à cause du mode d'ouverture 'obtention de permis C', même s'il n'y a pas de for principal source explicite)
 				assertEquals(dateDebutMoisProchain, pp.getReindexOn());
-				if (dateObtentionPermis.day() == 1) {
-					assertEquals("Imposition ordinaire VD", tiersService.getRoleAssujettissement(pp, RegDate.get()));
+				if (dateObtentionPermis.getOneDayAfter().day() == 1) {
+					assertEquals("Imposition ordinaire VD", tiersService.getRoleAssujettissement(pp, today));
 				}
 				else {
-					assertEquals("Imposition à la source", tiersService.getRoleAssujettissement(pp, RegDate.get()));
+					assertEquals("Imposition à la source", tiersService.getRoleAssujettissement(pp, today));
 				}
 				return null;
 			}
