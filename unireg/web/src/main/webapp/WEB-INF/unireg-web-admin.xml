@@ -16,12 +16,6 @@
 		<property name="adresseService" ref="adresseService" />
 	</bean>
 
-	<!-- Performance -->
-	<bean id="servicePerformanceController" class="ch.vd.uniregctb.common.PerformanceListController">
-		<property name="viewName" value="admin/performance" />
-		<property name="requestURI" value="/admin/performance.do" />
-	</bean>
-
 	<!-- Accès à l'inbox -->
 	<bean id="inboxController" class="ch.vd.uniregctb.admin.inbox.InboxController">
 		<property name="inboxService" ref="inboxService"/>

@@ -226,12 +226,6 @@
 		<url-pattern>*.css</url-pattern>
 	</filter-mapping>
 
-	<!-- Filtre de performance pour les URLs -->
-	<filter>
-		<filter-name>WebPerformanceFilter</filter-name>
-		<filter-class>ch.vd.uniregctb.performance.PerformanceFilter</filter-class>
-	</filter>
-
 	<!-- Filtre de logging des requêtes http -->
 	<filter>
 		<filter-name>servletRequestLoggingFilter</filter-name>
@@ -250,11 +244,7 @@
 		<filter-name>springSecurityFilter</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
-	<!--<filter-mapping>-->
-		<!--<filter-name>WebPerformanceFilter</filter-name>-->
-		<!--<url-pattern>*.do</url-pattern>-->
-	<!--</filter-mapping>-->
-	<!-- décommenter cette partie pour activer le logging des requêtes http 
+	<!-- décommenter cette partie pour activer le logging des requêtes http
 	<filter-mapping>
 		<filter-name>servletRequestLoggingFilter</filter-name>
 		<url-pattern>*.do</url-pattern>

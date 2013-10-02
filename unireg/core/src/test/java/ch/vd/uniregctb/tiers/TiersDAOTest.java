@@ -10,7 +10,6 @@ import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -30,8 +29,6 @@ import ch.vd.uniregctb.adresse.AdresseEtrangere;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.CoreDAOTest;
-import ch.vd.uniregctb.performance.PerformanceLog;
-import ch.vd.uniregctb.performance.PerformanceLogsRepository;
 import ch.vd.uniregctb.tiers.TiersDAO.Parts;
 import ch.vd.uniregctb.type.CategorieIdentifiant;
 import ch.vd.uniregctb.type.GenreImpot;
@@ -273,17 +270,6 @@ public class TiersDAOTest extends CoreDAOTest {
 			final Tiers t = dao.get(id);
 			assertTrue("Le numéro de Tiers (id=" + id + " tiers=" + t + ") doit être dans le range " + first + " => " + last, first <= t.getId() && t.getId() < last);
 		}
-	}
-
-	public void _testPerf() {
-		Map<String, PerformanceLog> logs = PerformanceLogsRepository.getInstance().getLogs("dao");
-		for (Map.Entry<String, PerformanceLog> entry : logs.entrySet()) {
-			PerformanceLog log = entry.getValue();
-
-			LOGGER.warn("Item: " + entry.getKey() + " Log: " + log);
-		}
-
-		logs = null;
 	}
 
 	/**

@@ -90,7 +90,6 @@
 				<!-- Admin -->
 				<entry key="/admin/batch.do" value-ref="gestionBatchController" />
 				<entry key="/admin/audit.do" value-ref="auditLogController" />
-				<entry key="/admin/performance.do" value-ref="servicePerformanceController" />
 				<!--
 				<entry key="/admin/tracing.do" value-ref="gestionTracingController" />
 				-->
