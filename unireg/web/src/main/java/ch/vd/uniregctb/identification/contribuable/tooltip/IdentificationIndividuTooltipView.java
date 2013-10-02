@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.identification.contribuable.tooltip.individu;
+package ch.vd.uniregctb.identification.contribuable.tooltip;
 
 import java.util.List;
 
@@ -25,10 +25,7 @@ public class IdentificationIndividuTooltipView {
 	private String numeroRCE;
 	private String nationalites;
 
-	public IdentificationIndividuTooltipView() {
-	}
-
-	public void init(Individu individu) {
+	public IdentificationIndividuTooltipView(Individu individu) {
 		if (individu != null) {
 			this.numeroIndividu = individu.getNoTechnique();
 			this.prenom = individu.getPrenom();

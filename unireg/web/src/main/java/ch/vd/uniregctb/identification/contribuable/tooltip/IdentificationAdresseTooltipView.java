@@ -1,17 +1,17 @@
-package ch.vd.uniregctb.identification.contribuable.tooltip.adresse;
+package ch.vd.uniregctb.identification.contribuable.tooltip;
 
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 
 public class IdentificationAdresseTooltipView {
 
-	private String rue;
-	private String complements;
-	private String localite;
-	private String pays;
-	private AdresseGenerique.SourceType source;
-	private String errorMessage;
+	private final String rue;
+	private final String complements;
+	private final String localite;
+	private final String pays;
+	private final AdresseGenerique.SourceType source;
+	private final String errorMessage;
 
-	public void init(String rue, String complements, String localite, String pays, AdresseGenerique.SourceType source) {
+	public IdentificationAdresseTooltipView(String rue, String complements, String localite, String pays, AdresseGenerique.SourceType source) {
 		this.rue = rue;
 		this.complements = complements;
 		this.localite = localite;
@@ -20,7 +20,7 @@ public class IdentificationAdresseTooltipView {
 		this.errorMessage = null;
 	}
 
-	public void init(String errorMessage) {
+	public IdentificationAdresseTooltipView(String errorMessage) {
 		this.rue = null;
 		this.complements = null;
 		this.localite = null;
@@ -29,7 +29,7 @@ public class IdentificationAdresseTooltipView {
 		this.errorMessage = errorMessage;
 	}
 	
-	public void reset() {
+	public IdentificationAdresseTooltipView() {
 		this.rue = null;
 		this.complements = null;
 		this.localite = null;

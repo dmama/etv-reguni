@@ -53,10 +53,6 @@
 				<!-- Mapping des beans de remoting -->
 				<entry key="/tiersSearcher.remoting" value-ref="remoteTiersSearch" />
 
-				<!-- Identification de contribuable -->
-				<entry key="/identification/tooltip/adresse.do" value-ref="identificationAdresseTooltipController" />
-				<entry key="/identification/tooltip/individu.do" value-ref="identificationIndividuTooltipController" />
-
 				<!-- Annulation Couple -->
 				<entry key="/annulation/couple/recap.do" value-ref="annulationCoupleRecapController" />
 				<entry key="/annulation/couple/list.do" value-ref="annulationCoupleListController" />
