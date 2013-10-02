@@ -3,6 +3,7 @@ package ch.vd.uniregctb.efacture;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -106,7 +107,8 @@ public class EFactureEventHandlerImpl implements EFactureEventHandler {
 					final TypeDocument typeDocument;
 					final String description;
 
-					final boolean okSignature = (histo == null || histo.getDernierEtat().getType() != TypeEtatDestinataire.DESINSCRIT_SUSPENDU)
+					final Set<TypeEtatDestinataire> etatsSuspendusNonInscrits = EnumSet.of(TypeEtatDestinataire.DESINSCRIT_SUSPENDU, TypeEtatDestinataire.NON_INSCRIT_SUSPENDU);
+					final boolean okSignature = (histo == null || !etatsSuspendusNonInscrits.contains(histo.getDernierEtat().getType()))
 							&& EFactureHelper.valideEtatFiscalContribuablePourInscription(tiers);
 					if (okSignature) {
 						etatFinal = TypeAttenteDemande.EN_ATTENTE_SIGNATURE;
@@ -250,6 +252,6 @@ public class EFactureEventHandlerImpl implements EFactureEventHandler {
 
 	@Override
 	public ClassPathResource getRequestXSD() {
-		return new ClassPathResource("eVD-0025-1-1.xsd");
+		return new ClassPathResource("eVD-0025-1-2.xsd");
 	}
 }

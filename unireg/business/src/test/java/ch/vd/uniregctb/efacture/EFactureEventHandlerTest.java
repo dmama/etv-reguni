@@ -258,6 +258,73 @@ public class EFactureEventHandlerTest extends BusinessTest {
 	}
 
 	@Test
+	public void testDemandeInscriptionNonInscritSuspendu() throws Exception {
+
+		final String noAvs = "7564822568443";
+		final String demandeId = "42";
+		final String email = "albert@dufoin.ch";
+		final RegDate dateDemande = RegDate.get();
+		final Demande.Action typeDemande = Demande.Action.INSCRIPTION;
+		final BigInteger noAdherent = getNewNumeroAdherent();
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				// personne...
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Albert", "Dufoin", null, Sexe.MASCULIN);
+				addForPrincipal(pp, date(2010, 3, 12), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+				addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(2010, 3, 13), null, MockRue.Lausanne.CheminPrazBerthoud);
+				pp.setNumeroAssureSocial(noAvs);
+				return pp.getNumero();
+			}
+		});
+
+		// mise en place...
+		eFactureService.setUp(new MockEFactureService() {
+			@Override
+			public void init() {
+				addDestinataire(ppId);
+				addEtatDestinataire(ppId, DateHelper.getCurrentDate(), "Suspendu... pas gentil!", null, TypeEtatDestinataire.NON_INSCRIT_SUSPENDU, null, null);
+				addDemandeInscription(demandeId, ppId, email, dateDemande, typeDemande, noAvs, TypeEtatDemande.VALIDATION_EN_COURS, noAdherent);
+			}
+		});
+
+		// traitement de la demande d'inscription
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final Demande demande = new Demande(demandeId, ppId, email, dateDemande, typeDemande, noAvs, noAdherent);
+				handler.handle(demande);
+				return null;
+			}
+		});
+
+		// vérification état final e-facture
+		final DestinataireAvecHisto histo = eFactureService.getDestinataireAvecSonHistorique(ppId);
+		Assert.assertNotNull(histo);
+		Assert.assertEquals(TypeEtatDestinataire.NON_INSCRIT_SUSPENDU, histo.getDernierEtat().getType());
+		Assert.assertEquals(1, histo.getHistoriqueDemandes().size());
+
+		final DemandeAvecHisto demande = histo.getHistoriqueDemandes().get(0);
+		Assert.assertEquals(demandeId, demande.getIdDemande());
+
+		final EtatDemande etatDemande = demande.getDernierEtat();
+		Assert.assertNotNull(etatDemande);
+		Assert.assertEquals(TypeEtatDemande.VALIDATION_EN_COURS_EN_ATTENTE_CONTACT, etatDemande.getType());
+		Assert.assertEquals((Integer) TypeAttenteDemande.EN_ATTENTE_CONTACT.getCode(), etatDemande.getCodeRaison());
+		Assert.assertEquals(TypeAttenteDemande.EN_ATTENTE_CONTACT.getDescription(), etatDemande.getDescriptionRaison());
+		Assert.assertEquals(TypeAttenteDemande.EN_ATTENTE_CONTACT.getDescription() + " Assujettissement incohérent avec la e-facture.", etatDemande.getChampLibre());
+	}
+
+	@Test
 	public void testDemandeInscriptionDejaInvalideDepuisEnvoi() throws Exception {
 
 		final String noAvs = "7564822568443";

@@ -4,6 +4,7 @@ import ch.vd.evd0025.v1.PayerStatus;
 
 public enum TypeEtatDestinataire {
 	NON_INSCRIT("Non inscrit"),
+	NON_INSCRIT_SUSPENDU("Non inscrit suspendu"),
 	INSCRIT("Inscrit"),
 	INSCRIT_SUSPENDU("Inscrit suspendu"),
 	DESINSCRIT("Désinscrit"),
@@ -20,11 +21,11 @@ public enum TypeEtatDestinataire {
 	}
 
 	public boolean isActivable() {
-		return this == INSCRIT_SUSPENDU || this == DESINSCRIT_SUSPENDU;
+		return this == INSCRIT_SUSPENDU || this == DESINSCRIT_SUSPENDU || this == NON_INSCRIT_SUSPENDU;
 	}
 
 	public boolean isSuspendable() {
-		return this == INSCRIT || this == DESINSCRIT;
+		return this == INSCRIT || this == DESINSCRIT || this == NON_INSCRIT;
 	}
 
 	public boolean isInscrit() {
@@ -34,7 +35,9 @@ public enum TypeEtatDestinataire {
 	public static TypeEtatDestinataire valueOf(PayerStatus status) {
 		switch (status) {
 		case NON_INSCRIT:
-			return NON_INSCRIT;
+			return TypeEtatDestinataire.NON_INSCRIT;
+		case NON_INSCRIT_SUSPENDU:
+			return TypeEtatDestinataire.NON_INSCRIT_SUSPENDU;
 		case DESINSCRIT:
 			return TypeEtatDestinataire.DESINSCRIT;
 		case DESINSCRIT_SUSPENDU:

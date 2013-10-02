@@ -98,7 +98,7 @@ public class EFactureServiceImpl implements EFactureService, InitializingBean {
 		if (histo == null) {
 			return ResultatQuittancement.aucuneDemandeEnAttenteDeSignature();
 		}
-		if (histo.getDernierEtat().getType() == TypeEtatDestinataire.DESINSCRIT_SUSPENDU) {
+		if (histo.getDernierEtat().getType() == TypeEtatDestinataire.DESINSCRIT_SUSPENDU || histo.getDernierEtat().getType() == TypeEtatDestinataire.NON_INSCRIT_SUSPENDU) {
 			return ResultatQuittancement.etatFiscalIncoherent();
 		}
 		if (!EFactureHelper.valideEtatFiscalContribuablePourInscription(tiers)) {

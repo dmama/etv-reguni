@@ -99,8 +99,12 @@ public abstract class MockEFactureService implements EFactureService {
 			case INSCRIT:
 				nouveauType = TypeEtatDestinataire.INSCRIT_SUSPENDU;
 				break;
+			case NON_INSCRIT:
+				nouveauType = TypeEtatDestinataire.NON_INSCRIT_SUSPENDU;
+				break;
 			case DESINSCRIT_SUSPENDU:
 			case INSCRIT_SUSPENDU:
+			case NON_INSCRIT_SUSPENDU:
 				nouveauType = null;
 				break;
 			default:
@@ -125,6 +129,9 @@ public abstract class MockEFactureService implements EFactureService {
 				break;
 			case INSCRIT_SUSPENDU:
 				nouveauType = TypeEtatDestinataire.INSCRIT;
+				break;
+			case NON_INSCRIT_SUSPENDU:
+				nouveauType = TypeEtatDestinataire.NON_INSCRIT;
 				break;
 			case INSCRIT:
 			case DESINSCRIT:
@@ -159,6 +166,7 @@ public abstract class MockEFactureService implements EFactureService {
 				nouveauType = TypeEtatDestinataire.INSCRIT;
 				break;
 			case DESINSCRIT_SUSPENDU:
+			case NON_INSCRIT_SUSPENDU:
 				nouveauType = TypeEtatDestinataire.INSCRIT_SUSPENDU;
 				break;
 			case INSCRIT:
