@@ -16,11 +16,16 @@
 
             --Historique--
 
+            --Version 1.2 (eVD-0025-1-2.xsd)--
+            Pour évolutions dans Cyberfact v1.5.1, octobre 2013
+            * ajout du nouveau payerStatusType  "NON_INSCRIT_SUSPENDU"
+
             --Version 1.1 (eVD-0025-1-1.xsd)--
+            Pour évolutions dans Cyberfact v1.5.0, septembre 2013
             * ajout de nouveaux messages updatePayerContact et unsubscribePayerWithNewRequest
             * ajout de l'adresse e-mail dans l'historique des situations d'un Payer (payerSituationHistoryEntryType)
             * la présence de l'élément email est facultative dans registrationRequestType
-            * ajout d'un nouveau payerStatusType  "NON_INSCRIT"
+            * ajout du nouveau payerStatusType  "NON_INSCRIT"
             * ajout d'un nouveau registrationRequestStatusType "ANNULEE"
             * ajout de l'élément reasonCodeCyber sur payerSituationHistoryEntryType et registrationRequestHistoryEntryType
             * lastName et firstName sont facultatifs dans registrationRequestType
@@ -232,6 +237,9 @@
                         Etat initial à la création du destinataire, pendant que sa demande d'inscription est en cours de validation.
                         Il ne peut pas recevoir de factures électroniques jusqu'à ce que sa demande d'inscription soit
                         validée.
+
+                        Transitions possibles vers INSCRIT ou NON_INSCRIT_SUSPENDU
+
                         (Nouvel état introduit en version 1.1 du XSD, Cyberfact v1.6.x (13.4) voir cas Jira CYBADM-193)
                     </xs:documentation>
                 </xs:annotation>
@@ -242,6 +250,8 @@
                         Le destinataire est inscrit auprès d'un partenaire e-facture,
                         il est prêt à recevoir des factures électroniques.
                         (anciennement: "ACTIF")
+
+                        Transitions possibles vers INSCRIT_SUSPENDU ou DESINSCRIT
                     </xs:documentation>
                 </xs:annotation>
             </xs:enumeration>
@@ -254,6 +264,19 @@
                         Il ne peut pas recevoir de factures électroniques jusqu'à ce que sa demande d'inscription soit
                         validée.
                         (anciennement: "INACTIF")
+
+                        Transitions possibles vers DESINSCRIT_SUSPENDU ou INSCRIT
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="NON_INSCRIT_SUSPENDU">
+                <xs:annotation>
+                    <xs:documentation>
+                        Destinataire dont la demande d'inscription est en cours de traitement et qui a été suspendu par l'ACV pendant ce temps.
+
+                        Transitions possibles vers INSCRIT_SUSPENDU ou NON_INSCRIT
+
+                        (Nouvel état introduit en version 1.1 du XSD, Cyberfact v1.6.x (13.4) voir cas Jira CYBADM-193)
                     </xs:documentation>
                 </xs:annotation>
             </xs:enumeration>
@@ -263,6 +286,8 @@
                         Le destinataire a été suspendu par l'ACV.
                         Il ne peut pas recevoir de factures électroniques jusqu'à ce qu'il soit libéré.
                         (anciennement: "SUSPENDU")
+
+                        Transitions possibles vers INSCRIT ou DESINSCRIT_SUSPENDU
                     </xs:documentation>
                 </xs:annotation>
             </xs:enumeration>
@@ -272,6 +297,8 @@
                         Le destinataire a été suspendu par l'ACV et il est désinscrit.
                         Il ne peut pas recevoir de factures électroniques jusqu'à ce qu'il se soit réinscrit
                         et qu'il soit libéré par l'ACV.
+
+                        Transitions possibles vers DESINSCRIT ou INSCRIT_SUSPENDU
                     </xs:documentation>
                 </xs:annotation>
             </xs:enumeration>
