@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
@@ -17,6 +18,7 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.civil.data.Adresse;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Logiciel;
@@ -71,6 +73,7 @@ import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.ForGestion;
+import ch.vd.uniregctb.tiers.IndividuNotFoundException;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
@@ -304,8 +307,6 @@ public class TiersManager implements MessageSourceAware {
 				String nom = tiersService.getNomCollectiviteAdministrative(autoriteTutelaire);
 				rapportView.setNomAutoriteTutelaire(nom);
 			}
-
-
 		}
 	}
 
@@ -343,7 +344,6 @@ public class TiersManager implements MessageSourceAware {
 				tiersView.setLogiciel(new LogicielView(logiciel));
 			}
 		}
-
 	}
 
 	/**
@@ -351,30 +351,35 @@ public class TiersManager implements MessageSourceAware {
 	 */
 	protected List<RapportPrestationView> getRapportsPrestation(DebiteurPrestationImposable dpi, WebParamPagination pagination, boolean rapportsPrestationHisto) throws AdresseException {
 
-		List<RapportPrestationView> rapportPrestationViews = new ArrayList<>();
+		final List<RapportPrestationView> rapportPrestationViews = new ArrayList<>();
 
-		List<RapportPrestationImposable> rapports = rapportEntreTiersDAO.getRapportsPrestationImposable(dpi.getNumero(), pagination, !rapportsPrestationHisto);
+		final List<RapportPrestationImposable> rapports = rapportEntreTiersDAO.getRapportsPrestationImposable(dpi.getNumero(), pagination, !rapportsPrestationHisto);
 		for (RapportPrestationImposable rapport : rapports) {
-			RapportPrestationView rapportPrestationView = new RapportPrestationView();
+			final RapportPrestationView rapportPrestationView = new RapportPrestationView();
 			rapportPrestationView.setId(rapport.getId());
 			rapportPrestationView.setAnnule(rapport.isAnnule());
 			rapportPrestationView.setDateDebut(rapport.getDateDebut());
 			rapportPrestationView.setDateFin(rapport.getDateFin());
-			Tiers tiersObjet = tiersDAO.get(rapport.getSujetId());
-			if (tiersObjet instanceof PersonnePhysique) {
-				PersonnePhysique pp = (PersonnePhysique) tiersObjet;
-				String nouveauNumeroAvs = tiersService.getNumeroAssureSocial(pp);
-				if (nouveauNumeroAvs != null && !"".equals(nouveauNumeroAvs)) {
-					rapportPrestationView.setNumeroAVS(FormatNumeroHelper.formatNumAVS(nouveauNumeroAvs));
+			final Tiers ctb = tiersDAO.get(rapport.getSujetId());
+			try {
+				if (ctb instanceof PersonnePhysique) {
+					final PersonnePhysique pp = (PersonnePhysique) ctb;
+					final String nouveauNumeroAvs = tiersService.getNumeroAssureSocial(pp);
+					if (StringUtils.isNotBlank(nouveauNumeroAvs)) {
+						rapportPrestationView.setNumeroAVS(FormatNumeroHelper.formatNumAVS(nouveauNumeroAvs));
+					}
+					else {
+						final String ancienNumeroAvs = tiersService.getAncienNumeroAssureSocial(pp);
+						rapportPrestationView.setNumeroAVS(FormatNumeroHelper.formatAncienNumAVS(ancienNumeroAvs));
+					}
 				}
-				else {
-					String ancienNumeroAvs = tiersService.getAncienNumeroAssureSocial(pp);
-					rapportPrestationView.setNumeroAVS(FormatNumeroHelper.formatAncienNumAVS(ancienNumeroAvs));
-				}
+				final List<String> nomCourrier = adresseService.getNomCourrier(ctb, null, false);
+				rapportPrestationView.setNomCourrier(nomCourrier);
 			}
-			rapportPrestationView.setNumero(tiersObjet.getNumero());
-			List<String> nomCourrier = adresseService.getNomCourrier(tiersObjet, null, false);
-			rapportPrestationView.setNomCourrier(nomCourrier);
+			catch (IndividuNotFoundException | ServiceCivilException e) {
+				LOGGER.error("Impossible d'obtenir les informations civiles du contribuable " + ctb.getNumero(), e);
+			}
+			rapportPrestationView.setNumero(ctb.getNumero());
 			rapportPrestationViews.add(rapportPrestationView);
 		}
 		return rapportPrestationViews;

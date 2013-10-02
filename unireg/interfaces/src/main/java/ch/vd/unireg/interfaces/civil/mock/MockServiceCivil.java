@@ -72,10 +72,19 @@ import ch.vd.uniregctb.type.TypePermis;
 public abstract class MockServiceCivil implements ServiceCivilRaw {
 
 	/**
-	 * Map des individus par numéro.
+	 * Map des individus par numéro
 	 */
 	private final Map<Long, MockIndividu> individusMap = new HashMap<>();
 
+	/**
+	 * Ensemble des numéros d'individu pour lesquels l'appel à {@link #getIndividu(Long)} ou {@link #getIndividu(long, ch.vd.unireg.interfaces.civil.data.AttributeIndividu...)} renvoie une exception
+	 * (individus dits "minés")
+	 */
+	private final Set<Long> explodingIndividus = new HashSet<>();
+
+	/**
+	 * Map des données d'événements civils par identifiant d'événement
+	 */
 	private final Map<Long, IndividuApresEvenement> evenementsMap = new HashMap<>();
 
 	/**
@@ -128,6 +137,15 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 		final MockIndividu individu = createIndividu(numero, dateNaissance, nom, prenom, isMasculin);
 		add(individu);
 		return individu;
+	}
+
+	/**
+	 * Ajoute un numéro individu dans la liste des parias qui explosent dès qu'on essaie de les toucher...
+	 * (il y en a dans le vrai service civil, autant les utiliser ici aussi...)
+	 * @param numero le numéro d'individu miné
+	 */
+	protected void addIndividuMine(long numero) {
+		explodingIndividus.add(numero);
 	}
 
 	/**
@@ -587,6 +605,9 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 	}
 
 	public MockIndividu getIndividu(Long numeroIndividu) {
+		if (explodingIndividus.contains(numeroIndividu)) {
+			throw new ServiceCivilException("Individu miné !");
+		}
 		return individusMap.get(numeroIndividu);
 	}
 
