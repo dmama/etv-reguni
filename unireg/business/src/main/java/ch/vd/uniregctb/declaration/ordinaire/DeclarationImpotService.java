@@ -108,12 +108,11 @@ public interface DeclarationImpotService {
 	 * sur l'inbox
 	 *
 	 * @param declaration   la déclaration d'impôt ordinaire à imprimer
-	 * @param dateEvenement la date d'impression
 	 * @param typeDocument  le type de document
 	 * @param annexes       la liste des annexes
 	 * @return l'ID du document d'impression
 	 */
-	EditiqueResultat envoiDuplicataDIOnline(DeclarationImpotOrdinaire declaration, RegDate dateEvenement, TypeDocument typeDocument,
+	EditiqueResultat envoiDuplicataDIOnline(DeclarationImpotOrdinaire declaration, TypeDocument typeDocument,
 	                                        List<ModeleFeuilleDocumentEditique> annexes) throws DeclarationException;
 
 	/**
@@ -230,7 +229,7 @@ public interface DeclarationImpotService {
 
 	ListeNoteResults produireListeNote(RegDate dateTraitement, int nbThreads, Integer annee, StatusManager statusManager);
 
-	int envoiAnnexeImmeubleForBatch(InformationsDocumentAdapter infoDocuments, Set<ModeleFeuilleDocument> listeModele, RegDate dateTraitement, int nombreAnnexesImmeuble) throws DeclarationException;
+	int envoiAnnexeImmeubleForBatch(InformationsDocumentAdapter infoDocuments, Set<ModeleFeuilleDocument> listeModele, int nombreAnnexesImmeuble) throws DeclarationException;
 
 	/**
 	 * Ajoute un delai à une declaration et renvoi le delai enregistré avec son id renseigné

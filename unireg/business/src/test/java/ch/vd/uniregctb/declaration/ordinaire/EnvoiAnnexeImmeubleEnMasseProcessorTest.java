@@ -52,7 +52,7 @@ public class EnvoiAnnexeImmeubleEnMasseProcessorTest extends BusinessTest {
 		serviceCivil.setUp(new DefaultMockServiceCivil());
 
 		// création du processeur à la main de manière à pouvoir appeler les méthodes protégées
-		processor = new EnvoiAnnexeImmeubleEnMasseProcessor(tiersService, hibernateTemplate, modeleDAO, periodeDAO, diService, 100, transactionManager, serviceCivilCacheWarmer,
+		processor = new EnvoiAnnexeImmeubleEnMasseProcessor(tiersService, modeleDAO, periodeDAO, diService, 100, transactionManager, serviceCivilCacheWarmer,
 				periodeImpositionService, adresseService);
 		// évite de logger plein d'erreurs pendant qu'on teste le comportement du processor
 		Logger serviceLogger = Logger.getLogger(DeclarationImpotServiceImpl.class);

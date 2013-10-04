@@ -4,6 +4,7 @@ import java.util.List;
 
 import noNamespace.TypFichierImpression;
 import noNamespace.TypFichierImpression.Document;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
@@ -21,7 +22,7 @@ public interface ImpressionDeclarationImpotOrdinaireHelper {
 	 * @param declaration
 	 * @return
 	 */
-	public String construitIdDocument(DeclarationImpotOrdinaire declaration);
+	String construitIdDocument(DeclarationImpotOrdinaire declaration);
 
 
 	/**
@@ -32,38 +33,37 @@ public interface ImpressionDeclarationImpotOrdinaireHelper {
 	 * @param tiers
 	 * @return
 	 */
-	public String construitIdDocument(Integer annee, Integer numeroDoc, Tiers tiers);
+	String construitIdDocument(Integer annee, Integer numeroDoc, Tiers tiers);
 
 	/**
 	 * Alimente un objet Document pour l'impression des DI
 	 *
 	 * @param declaration
 	 * @param annexes
-	 * @param isFromBatch
 	 * @return
 	 */
-	public Document remplitEditiqueSpecifiqueDI(DeclarationImpotOrdinaire declaration, TypFichierImpression typeFichierImpression,
-	                                            TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes, boolean isFromBatch) throws EditiqueException;
+	Document remplitEditiqueSpecifiqueDI(DeclarationImpotOrdinaire declaration, TypFichierImpression typeFichierImpression,
+	                                     @Nullable TypeDocument typeDocumentOverride, List<ModeleFeuilleDocumentEditique> annexes) throws EditiqueException;
 
 
 
 
-	public Document remplitEditiqueSpecifiqueDI(InformationsDocumentAdapter informationsDocument, TypFichierImpression typeFichierImpression, List<ModeleFeuilleDocumentEditique> annexes,
-	                                            boolean isFromBatch) throws EditiqueException;
+	Document remplitEditiqueSpecifiqueDI(InformationsDocumentAdapter informationsDocument, TypFichierImpression typeFichierImpression, List<ModeleFeuilleDocumentEditique> annexes,
+	                                     boolean isFromBatchImmeuble) throws EditiqueException;
 	/**
 	 * Calcul le prefixe
 	 *
 	 * @param declaration
 	 * @return
 	 */
-	public TypeDocumentEditique getTypeDocumentEditique(Declaration declaration);
+	TypeDocumentEditique getTypeDocumentEditique(Declaration declaration);
 
 	/**
 	 *
 	 * @param typeDoc
 	 * @return
 	 */
-	public TypeDocumentEditique getTypeDocumentEditique(TypeDocument typeDoc);
+	TypeDocumentEditique getTypeDocumentEditique(TypeDocument typeDoc);
 
 
 }

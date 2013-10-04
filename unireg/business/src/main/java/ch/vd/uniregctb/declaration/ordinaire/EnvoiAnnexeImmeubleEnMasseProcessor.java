@@ -48,7 +48,6 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 	final Logger LOGGER = Logger.getLogger(EnvoiAnnexeImmeubleEnMasseProcessor.class);
 
 	private final TiersService tiersService;
-	private final HibernateTemplate hibernateTemplate;
 	private final PeriodeFiscaleDAO periodeDAO;
 	private final ModeleDocumentDAO modeleDAO;
 	private final DeclarationImpotService diService;
@@ -82,12 +81,11 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 
 	private Cache cache;
 
-	public EnvoiAnnexeImmeubleEnMasseProcessor(TiersService tiersService, HibernateTemplate hibernateTemplate, ModeleDocumentDAO modeleDAO,
+	public EnvoiAnnexeImmeubleEnMasseProcessor(TiersService tiersService, ModeleDocumentDAO modeleDAO,
 	                                           PeriodeFiscaleDAO periodeDAO, DeclarationImpotService diService, int tailleLot,
 	                                           PlatformTransactionManager transactionManager,
 	                                           ServiceCivilCacheWarmer serviceCivilCacheWarmer, PeriodeImpositionService periodeImpositionService, AdresseService adresseService) {
 		this.tiersService = tiersService;
-		this.hibernateTemplate = hibernateTemplate;
 		this.modeleDAO = modeleDAO;
 		this.periodeDAO = periodeDAO;
 		this.tailleLot = tailleLot;
@@ -127,7 +125,7 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 				}
 
 				if (!batch.isEmpty()) {
-					traiterBatch(batch, anneePeriode, dateTraitement, r);
+					traiterBatch(batch, anneePeriode, r);
 				}
 
 				return !rapportFinal.interrompu && (nbMax <= 0 || rapportFinal.nbCtbsTotal + batch.size() < nbMax);
@@ -151,16 +149,13 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 	/**
 	 * Traite tout le batch des contribuables, un par un.
 	 *
-	 *
 	 * @param listCtbImmeuble les listCtbImmeuble des contribuables à traiter
 	 * @param anneePeriode    l'année fiscale considérée
-	 * @param dateTraitement  la date de traitement
 	 * @param r
 	 * @throws ch.vd.uniregctb.declaration.DeclarationException
 	 *          en cas d'erreur dans le traitement d'un contribuable.
 	 */
-	protected void traiterBatch(List<ContribuableAvecImmeuble> listCtbImmeuble, int anneePeriode, RegDate dateTraitement, EnvoiAnnexeImmeubleResults r)
-			throws DeclarationException {
+	protected void traiterBatch(List<ContribuableAvecImmeuble> listCtbImmeuble, int anneePeriode, EnvoiAnnexeImmeubleResults r) throws DeclarationException {
 		// pré-chauffage du cache des individus du civil
 		final List<Long> idsCtb = getIdCtb(listCtbImmeuble);
 		if (serviceCivilCacheWarmer != null) {
@@ -194,7 +189,7 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, null);
 
 
-				final int nombreAnnexesImprimees = imprimerAnnexeImmeuble(infoFormulaireImmeuble, cache.setAnnexeImmeuble, dateTraitement, nombreAnnexesImmeuble);
+				final int nombreAnnexesImprimees = imprimerAnnexeImmeuble(infoFormulaireImmeuble, cache.setAnnexeImmeuble, nombreAnnexesImmeuble);
 				r.addInfoCtbTraites(ctb, nombreAnnexesImprimees);
 				r.addCtbTraites(ctb.getId());
 			}
@@ -222,9 +217,8 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 		return noSequence;
 	}
 
-	private int imprimerAnnexeImmeuble(InformationsDocumentAdapter infosDocuments, Set<ModeleFeuilleDocument> listeModele, RegDate dateTraitement, int nombreAnnexesImmeuble) throws
-			DeclarationException {
-		return diService.envoiAnnexeImmeubleForBatch(infosDocuments, listeModele, dateTraitement, nombreAnnexesImmeuble);
+	private int imprimerAnnexeImmeuble(InformationsDocumentAdapter infosDocuments, Set<ModeleFeuilleDocument> listeModele, int nombreAnnexesImmeuble) throws DeclarationException {
+		return diService.envoiAnnexeImmeubleForBatch(infosDocuments, listeModele, nombreAnnexesImmeuble);
 	}
 
 	/**

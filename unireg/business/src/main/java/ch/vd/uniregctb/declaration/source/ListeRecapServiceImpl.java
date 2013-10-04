@@ -116,7 +116,7 @@ public class ListeRecapServiceImpl implements ListeRecapService {
 		 * (lrCourante.getDateDebut().equals(dateDebutPeriode)) { lr = lrCourante; } } }
 		 */
 
-		editiqueCompositionService.imprimeLRForBatch(lrSaved, RegDate.get());
+		editiqueCompositionService.imprimeLRForBatch(lrSaved);
 		evenementFiscalService.publierEvenementFiscalOuverturePeriodeDecompteLR(dpi, lrSaved, RegDate.get());
 	}
 

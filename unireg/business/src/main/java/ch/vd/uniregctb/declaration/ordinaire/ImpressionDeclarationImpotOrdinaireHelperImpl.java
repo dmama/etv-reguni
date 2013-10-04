@@ -29,6 +29,7 @@ import noNamespace.TypFichierImpression;
 import noNamespace.TypFichierImpression.Document;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.DateHelper;
@@ -241,16 +242,11 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl extends EditiqueAbstr
 	 */
 	@Override
 	public Document remplitEditiqueSpecifiqueDI(DeclarationImpotOrdinaire declaration, TypFichierImpression typeFichierImpression,
-	                                            TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes, boolean isFromBatch) throws EditiqueException {
+	                                            @Nullable TypeDocument typeDocumentOverride, List<ModeleFeuilleDocumentEditique> annexes) throws EditiqueException {
 
-		final InformationsDocumentAdapter infoAdapter = new InformationsDocumentAdapter(declaration);
-		//SIFISC-8417
-		//Dans le cas d'une impression locale, il faut prendre en compte le type de document passer en paramètre pour l'impression.
-		//et non le type porté par la déclaration
-		if (!isFromBatch) {
-			infoAdapter.typeDocument = typeDocument;
-		}
-		return remplitEditiqueSpecifiqueDI(infoAdapter, typeFichierImpression, annexes, isFromBatch);
+		// SIFISC-8417 / SIFISC-9875 : l'appelant peut imposer un type de document spécifique qui n'est pas nécessairement sauvegardé en base
+		final InformationsDocumentAdapter infoAdapter = new InformationsDocumentAdapter(declaration, typeDocumentOverride);
+		return remplitEditiqueSpecifiqueDI(infoAdapter, typeFichierImpression, annexes, false);
 	}
 
 	/**

@@ -239,7 +239,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	@Override
 	public EnvoiAnnexeImmeubleResults envoyerAnnexeImmeubleEnMasse(int anneePeriode, RegDate dateTraitement,
 	                                                               List<ContribuableAvecImmeuble> listeCtb, int nbMax, StatusManager status) throws DeclarationException {
-		final EnvoiAnnexeImmeubleEnMasseProcessor processor = new EnvoiAnnexeImmeubleEnMasseProcessor(tiersService, hibernateTemplate, modeleDAO, periodeDAO,
+		final EnvoiAnnexeImmeubleEnMasseProcessor processor = new EnvoiAnnexeImmeubleEnMasseProcessor(tiersService, modeleDAO, periodeDAO,
 				this, tailleLot, transactionManager, serviceCivilCacheWarmer, periodeImpositionService, adresseService);
 		return processor.run(anneePeriode, listeCtb, nbMax, dateTraitement, status);
 	}
@@ -295,7 +295,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 
 		EditiqueResultat resultat;
 		try {
-			resultat = editiqueCompositionService.imprimeDIOnline(declaration, dateEvenement);
+			resultat = editiqueCompositionService.imprimeDIOnline(declaration);
 			evenementFiscalService.publierEvenementFiscalEnvoiDI(ctb, declaration, dateEvenement);
 
 			// [SIFISC-3103] Pour les périodes fiscales avant 2011, on n'envoie aucun événement de création de DI (pour le moment, il ne s'agit que d'ADDI)
@@ -305,13 +305,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 				evenementDeclarationSender.sendEmissionEvent(ctb.getNumero(), pf, dateEvenement, declaration.getCodeControle(), codeSegmentString);
 			}
 		}
-		catch (EditiqueException e) {
-			throw new DeclarationException(e);
-		}
-		catch (JMSException e) {
-			throw new DeclarationException(e);
-		}
-		catch (EvenementDeclarationException e) {
+		catch (EditiqueException | EvenementDeclarationException | JMSException e) {
 			throw new DeclarationException(e);
 		}
 
@@ -327,16 +321,12 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public EditiqueResultat envoiDuplicataDIOnline(DeclarationImpotOrdinaire declaration, RegDate dateEvenement, TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes) throws
-			DeclarationException {
+	public EditiqueResultat envoiDuplicataDIOnline(DeclarationImpotOrdinaire declaration, TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes) throws DeclarationException {
 		final EditiqueResultat resultat;
 		try {
-			resultat = editiqueCompositionService.imprimeDuplicataDIOnline(declaration, dateEvenement, typeDocument, annexes);
+			resultat = editiqueCompositionService.imprimeDuplicataDIOnline(declaration, typeDocument, annexes);
 		}
-		catch (EditiqueException e) {
-			throw new DeclarationException(e);
-		}
-		catch (JMSException e) {
+		catch (EditiqueException | JMSException e) {
 			throw new DeclarationException(e);
 		}
 		return resultat;
@@ -346,16 +336,13 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	public void envoiDIForBatch(DeclarationImpotOrdinaire declaration, RegDate dateEvenement) throws DeclarationException {
 		try {
 			final Contribuable tiers = (Contribuable) declaration.getTiers();
-			editiqueCompositionService.imprimeDIForBatch(declaration, dateEvenement);
+			editiqueCompositionService.imprimeDIForBatch(declaration);
 			evenementFiscalService.publierEvenementFiscalEnvoiDI(tiers, declaration, dateEvenement);
 
 			final String codeSegmentString = Integer.toString(declaration.getCodeSegment() != null ? declaration.getCodeSegment() : VALEUR_DEFAUT_CODE_SEGMENT);
 			evenementDeclarationSender.sendEmissionEvent(tiers.getNumero(), declaration.getPeriode().getAnnee(), dateEvenement, declaration.getCodeControle(), codeSegmentString);
 		}
-		catch (EditiqueException e) {
-			throw new DeclarationException(e);
-		}
-		catch (EvenementDeclarationException e) {
+		catch (EditiqueException | EvenementDeclarationException e) {
 			throw new DeclarationException(e);
 		}
 	}
@@ -545,10 +532,9 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	}
 
 	@Override
-	public int envoiAnnexeImmeubleForBatch(InformationsDocumentAdapter infoDocuments, Set<ModeleFeuilleDocument> listeModele, RegDate dateTraitement, int nombreAnnexesImmeuble) throws
-			DeclarationException {
+	public int envoiAnnexeImmeubleForBatch(InformationsDocumentAdapter infoDocuments, Set<ModeleFeuilleDocument> listeModele, int nombreAnnexesImmeuble) throws DeclarationException {
 		try {
-			return editiqueCompositionService.imprimeAnnexeImmeubleForBatch(infoDocuments, listeModele, dateTraitement, nombreAnnexesImmeuble);
+			return editiqueCompositionService.imprimeAnnexeImmeubleForBatch(infoDocuments, listeModele, nombreAnnexesImmeuble);
 		}
 		catch (EditiqueException e) {
 			throw new DeclarationException(e);

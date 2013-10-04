@@ -26,7 +26,7 @@ import ch.vd.uniregctb.type.TypeDocument;
 public class MockEditiqueCompositionService implements EditiqueCompositionService {
 
 	@Override
-	public EditiqueResultat imprimeDIOnline(DeclarationImpotOrdinaire declaration, RegDate dateEvenement) throws EditiqueException, JMSException {
+	public EditiqueResultat imprimeDIOnline(DeclarationImpotOrdinaire declaration) throws EditiqueException, JMSException {
 		return dummyResultat();
 	}
 
@@ -35,17 +35,16 @@ public class MockEditiqueCompositionService implements EditiqueCompositionServic
 	}
 
 	@Override
-	public EditiqueResultat imprimeDuplicataDIOnline(DeclarationImpotOrdinaire declaration, RegDate dateEvenement, TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes) throws
-			EditiqueException, JMSException {
+	public EditiqueResultat imprimeDuplicataDIOnline(DeclarationImpotOrdinaire declaration, TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes) throws EditiqueException, JMSException {
 		return dummyResultat();
 	}
 
 	@Override
-	public void imprimeDIForBatch(DeclarationImpotOrdinaire declaration, RegDate dateEvenement) throws EditiqueException {
+	public void imprimeDIForBatch(DeclarationImpotOrdinaire declaration) throws EditiqueException {
 	}
 
 	@Override
-	public void imprimeLRForBatch(DeclarationImpotSource lr, RegDate dateEvenement) throws EditiqueException {
+	public void imprimeLRForBatch(DeclarationImpotSource lr) throws EditiqueException {
 	}
 
 	@Override
@@ -77,7 +76,7 @@ public class MockEditiqueCompositionService implements EditiqueCompositionServic
 	}
 
 	@Override
-	public EditiqueResultat imprimeLROnline(DeclarationImpotSource lr, RegDate dateEvenement, TypeDocument typeDocument) throws EditiqueException, JMSException {
+	public EditiqueResultat imprimeLROnline(DeclarationImpotSource lr, TypeDocument typeDocument) throws EditiqueException, JMSException {
 		return dummyResultat();
 	}
 
@@ -92,8 +91,7 @@ public class MockEditiqueCompositionService implements EditiqueCompositionServic
 	}
 
 	@Override
-	public int imprimeAnnexeImmeubleForBatch(InformationsDocumentAdapter infosDocument, Set<ModeleFeuilleDocument> listeModele, RegDate dateEvenement, int nombreAnnexesImmeuble) throws
-			EditiqueException {
+	public int imprimeAnnexeImmeubleForBatch(InformationsDocumentAdapter infosDocument, Set<ModeleFeuilleDocument> listeModele, int nombreAnnexesImmeuble) throws EditiqueException {
 		return nombreAnnexesImmeuble;
 	}
 }

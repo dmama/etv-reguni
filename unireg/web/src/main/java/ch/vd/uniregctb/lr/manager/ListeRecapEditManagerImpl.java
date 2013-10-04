@@ -590,7 +590,7 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 
 		try {
 			//Envoi du flux xml à l'éditique
-			return editiqueCompositionService.imprimeLROnline(lr, RegDate.get(), TypeDocument.LISTE_RECAPITULATIVE);
+			return editiqueCompositionService.imprimeLROnline(lr, TypeDocument.LISTE_RECAPITULATIVE);
 		}
 		catch (JMSException e) {
 			throw new EditiqueException(e);
@@ -628,7 +628,7 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 			                         RegDateHelper.dateToDashString(lr.getDateDebut()),
 			                         RegDateHelper.dateToDashString(lr.getDateFin())));
 			
-			return editiqueCompositionService.imprimeLROnline(lr, RegDate.get(), TypeDocument.LISTE_RECAPITULATIVE);
+			return editiqueCompositionService.imprimeLROnline(lr, TypeDocument.LISTE_RECAPITULATIVE);
 		}
 		catch (JMSException e) {
 			throw new EditiqueException(e);

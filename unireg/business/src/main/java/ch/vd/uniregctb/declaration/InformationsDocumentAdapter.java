@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.declaration;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.Qualification;
@@ -17,7 +19,7 @@ public class InformationsDocumentAdapter {
 	public final Long collId;
 	public final Qualification qualification;
 	public final Integer codeSegment;
-	public TypeDocument typeDocument;
+	public final TypeDocument typeDocument;
 	public final String codeControle;
 
 	public InformationsDocumentAdapter(Tiers tiers, Integer idDocument, int annee, RegDate delaiRetourImprime, RegDate delaiAccorde, RegDate dateReference, int noOfsCommune, Long collId,
@@ -37,8 +39,7 @@ public class InformationsDocumentAdapter {
 
 	}
 
-	public InformationsDocumentAdapter(DeclarationImpotOrdinaire declaration) {
-		this.typeDocument = declaration.getTypeDeclaration();
+	public InformationsDocumentAdapter(DeclarationImpotOrdinaire declaration, @Nullable TypeDocument typeDocumentOverride) {
 		tiers = declaration.getTiers();
 		idDocument = declaration.getNumero();
 		annee = declaration.getPeriode().getAnnee();
@@ -49,6 +50,7 @@ public class InformationsDocumentAdapter {
 		collId = declaration.getRetourCollectiviteAdministrativeId();
 		qualification = declaration.getQualification();
 		codeSegment = declaration.getCodeSegment();
+		typeDocument = typeDocumentOverride != null ? typeDocumentOverride : declaration.getTypeDeclaration();
 		codeControle = declaration.getCodeControle();
 	}
 

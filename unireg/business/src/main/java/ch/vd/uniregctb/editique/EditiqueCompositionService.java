@@ -27,25 +27,22 @@ public interface EditiqueCompositionService {
 	 * ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService#envoiDIOnline(DeclarationImpotOrdinaire, RegDate)}.
 	 *
 	 * @param declaration   la déclaration d'impôt ordinaire à imprimer
-	 * @param dateEvenement la date d'impression
 	 * @return le document imprimé
 	 */
-	EditiqueResultat imprimeDIOnline(DeclarationImpotOrdinaire declaration, RegDate dateEvenement) throws EditiqueException, JMSException;
+	EditiqueResultat imprimeDIOnline(DeclarationImpotOrdinaire declaration) throws EditiqueException, JMSException;
 
 	/**
 	 * Imprime la déclaration spécifiée pour une visualisation on-line et retourne le document imprimé (ou le fait envoyer dans l'inbox si c'est trop lent)
 	 * <p/>
 	 * <b>Note:</b> cette méthode n'envoie pas d'événement fiscal et ne devrait pas être appelée directement. Il faut utiliser la méthode {@link
-	 * ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService#envoiDuplicataDIOnline(DeclarationImpotOrdinaire, RegDate, TypeDocument, List)}.
+	 * ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService#envoiDuplicataDIOnline(ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire, ch.vd.uniregctb.type.TypeDocument, java.util.List}.
 	 *
 	 * @param declaration   la déclaration d'impôt ordinaire à imprimer
-	 * @param dateEvenement la date d'impression
 	 * @param typeDocument  le type de document
 	 * @param annexes       la liste des annexes
 	 * @return le document imprimé
 	 */
-	EditiqueResultat imprimeDuplicataDIOnline(DeclarationImpotOrdinaire declaration, RegDate dateEvenement, TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes) throws
-			EditiqueException, JMSException;
+	EditiqueResultat imprimeDuplicataDIOnline(DeclarationImpotOrdinaire declaration, TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes) throws EditiqueException, JMSException;
 
 	/**
 	 * Imprime la déclaration spécifiée pour un envoi en masse. Cette méthode retourne immédiatement et du moment que la transaction est committée, il est de la responsabilité d'éditique d'imprimer la
@@ -55,9 +52,8 @@ public interface EditiqueCompositionService {
 	 * ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService#envoiDIForBatch(DeclarationImpotOrdinaire, RegDate)}.
 	 *
 	 * @param declaration   la déclaration d'impôt ordinaire à imprimer
-	 * @param dateEvenement la date d'impression
 	 */
-	void imprimeDIForBatch(DeclarationImpotOrdinaire declaration, RegDate dateEvenement) throws EditiqueException;
+	void imprimeDIForBatch(DeclarationImpotOrdinaire declaration) throws EditiqueException;
 
 	/**
 	 * Imprime la lr spécifiée pour un envoi en masse. Cette méthode retourne immédiatement et du moment que la transaction est committée, il est de la responsabilité d'éditique d'imprimer la
@@ -67,9 +63,8 @@ public interface EditiqueCompositionService {
 	 * ch.vd.uniregctb.declaration.source.ListeRecapService#imprimerLR(ch.vd.uniregctb.tiers.DebiteurPrestationImposable, ch.vd.registre.base.date.RegDate, ch.vd.registre.base.date.RegDate)}
 	 *
 	 * @param lr            la LR à imprimer
-	 * @param dateEvenement la date d'impression
 	 */
-	void imprimeLRForBatch(DeclarationImpotSource lr, RegDate dateEvenement) throws EditiqueException;
+	void imprimeLRForBatch(DeclarationImpotSource lr) throws EditiqueException;
 
 	/**
 	 * Imprime les fourres de nouveaux dossiers
@@ -134,12 +129,11 @@ public interface EditiqueCompositionService {
 	 * Imprime la liste récapitulative spécifiée on-line
 	 *
 	 * @param lr
-	 * @param dateEvenement
 	 * @param typeDocument
 	 * @return
 	 * @throws EditiqueException
 	 */
-	EditiqueResultat imprimeLROnline(DeclarationImpotSource lr, RegDate dateEvenement, TypeDocument typeDocument) throws EditiqueException, JMSException;
+	EditiqueResultat imprimeLROnline(DeclarationImpotSource lr, TypeDocument typeDocument) throws EditiqueException, JMSException;
 
 	/**
 	 * Envoie à l'éditique le bordereau de mouvements de dossiers correspondant aux mouvement donnés
@@ -168,9 +162,8 @@ public interface EditiqueCompositionService {
 	 *
 	 * @param infosDocument
 	 * @param listeModele
-	 * @param dateEvenement
 	 * @param nombreAnnexesImmeuble
 	 * @throws EditiqueException
 	 */
-	int imprimeAnnexeImmeubleForBatch(InformationsDocumentAdapter infosDocument, Set<ModeleFeuilleDocument> listeModele, RegDate dateEvenement, int nombreAnnexesImmeuble) throws EditiqueException;
+	int imprimeAnnexeImmeubleForBatch(InformationsDocumentAdapter infosDocument, Set<ModeleFeuilleDocument> listeModele, int nombreAnnexesImmeuble) throws EditiqueException;
 }

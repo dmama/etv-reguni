@@ -282,11 +282,11 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 				RegDateHelper.dateToDashString(declaration.getDateDebut()), RegDateHelper.dateToDashString(declaration.getDateFin()));
 
 		if (saveModele) {
-			messageInfoImpression = new StringBuilder().append(messageInfoImpression).append( ". Sauvegarde du nouveau type de document sur la DI").toString();
+			messageInfoImpression = String.format("%s. Sauvegarde du nouveau type de document sur la DI", messageInfoImpression);
 		}
 		Audit.info(messageInfoImpression);
 
-		return diService.envoiDuplicataDIOnline(declaration, RegDate.get(), typeDocument, annexes);
+		return diService.envoiDuplicataDIOnline(declaration, typeDocument, annexes);
 	}
 
 	@Override

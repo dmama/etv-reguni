@@ -147,21 +147,20 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	}
 
 	@Override
-	public EditiqueResultat imprimeDIOnline(DeclarationImpotOrdinaire declaration, RegDate dateEvenement) throws EditiqueException, JMSException {
-		return imprimeDIOnline(declaration, dateEvenement, declaration.getTypeDeclaration(), buildDefaultAnnexes(declaration), false);
+	public EditiqueResultat imprimeDIOnline(DeclarationImpotOrdinaire declaration) throws EditiqueException, JMSException {
+		return imprimeDIOnline(declaration, declaration.getTypeDeclaration(), buildDefaultAnnexes(declaration), false);
 	}
 
 	@Override
-	public EditiqueResultat imprimeDuplicataDIOnline(DeclarationImpotOrdinaire declaration, RegDate dateEvenement, TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes) throws
-			EditiqueException, JMSException {
-		return imprimeDIOnline(declaration, dateEvenement, typeDocument, annexes, true);
+	public EditiqueResultat imprimeDuplicataDIOnline(DeclarationImpotOrdinaire declaration, TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes) throws EditiqueException, JMSException {
+		return imprimeDIOnline(declaration, typeDocument, annexes, true);
 	}
 
-	private EditiqueResultat imprimeDIOnline(DeclarationImpotOrdinaire declaration, RegDate dateEvenement, TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes,
+	private EditiqueResultat imprimeDIOnline(DeclarationImpotOrdinaire declaration, TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes,
 	                                         boolean isDuplicata) throws EditiqueException, JMSException {
 		final FichierImpressionDocument mainDocument = FichierImpressionDocument.Factory.newInstance();
 		final TypFichierImpression editiqueDI = mainDocument.addNewFichierImpression();
-		final TypFichierImpression.Document document = impressionDIHelper.remplitEditiqueSpecifiqueDI(declaration, editiqueDI, typeDocument, annexes, false);
+		final TypFichierImpression.Document document = impressionDIHelper.remplitEditiqueSpecifiqueDI(declaration, editiqueDI, typeDocument, annexes);
 		final TypFichierImpression.Document[] documents;
 		if (isDuplicata || typeDocument == TypeDocument.DECLARATION_IMPOT_VAUDTAX) {
 			documents = new TypFichierImpression.Document[1];
@@ -182,11 +181,11 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	}
 
 	@Override
-	public void imprimeDIForBatch(DeclarationImpotOrdinaire declaration, RegDate dateEvenement) throws EditiqueException {
+	public void imprimeDIForBatch(DeclarationImpotOrdinaire declaration) throws EditiqueException {
 		final FichierImpressionDocument mainDocument = FichierImpressionDocument.Factory.newInstance();
 		final TypFichierImpression editiqueDI = mainDocument.addNewFichierImpression();
 		final TypeDocumentEditique typeDocument = impressionDIHelper.getTypeDocumentEditique(declaration);
-		final TypFichierImpression.Document document = impressionDIHelper.remplitEditiqueSpecifiqueDI(declaration, editiqueDI, null, buildDefaultAnnexes(declaration), false);
+		final TypFichierImpression.Document document = impressionDIHelper.remplitEditiqueSpecifiqueDI(declaration, editiqueDI, null, buildDefaultAnnexes(declaration));
 		final TypFichierImpression.Document[] documents;
 		Assert.notNull(document);
 		if (declaration.getTypeDeclaration() == TypeDocument.DECLARATION_IMPOT_VAUDTAX) {
@@ -204,8 +203,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	}
 
 	@Override
-	public int imprimeAnnexeImmeubleForBatch(InformationsDocumentAdapter infosDocument, Set<ModeleFeuilleDocument> listeModele, RegDate dateEvenement, int nombreAnnexesImmeuble) throws
-			EditiqueException {
+	public int imprimeAnnexeImmeubleForBatch(InformationsDocumentAdapter infosDocument, Set<ModeleFeuilleDocument> listeModele, int nombreAnnexesImmeuble) throws EditiqueException {
 
 		final FichierImpressionDocument mainDocument = FichierImpressionDocument.Factory.newInstance();
 		final TypFichierImpression editiqueDI = mainDocument.addNewFichierImpression();
@@ -224,7 +222,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	}
 
 	@Override
-	public void imprimeLRForBatch(DeclarationImpotSource lr, RegDate dateEvenement) throws EditiqueException {
+	public void imprimeLRForBatch(DeclarationImpotSource lr) throws EditiqueException {
 		final FichierImpressionDocument document = impressionLRHelper.remplitListeRecap(lr, null);
 		final TypeDocumentEditique typeDocument = impressionLRHelper.getTypeDocumentEditique();
 		final String nomDocument = impressionLRHelper.construitIdDocument(lr);
@@ -336,7 +334,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	}
 
 	@Override
-	public EditiqueResultat imprimeLROnline(DeclarationImpotSource lr, RegDate dateEvenement, TypeDocument typeDocument) throws EditiqueException, JMSException {
+	public EditiqueResultat imprimeLROnline(DeclarationImpotSource lr, TypeDocument typeDocument) throws EditiqueException, JMSException {
 		String[] traitePar = getInfoOperateur();
 		FichierImpressionDocument document = impressionLRHelper.remplitListeRecap(lr, traitePar[0]);
 		final TypeDocumentEditique typeDocumentMessage = impressionLRHelper.getTypeDocumentEditique();

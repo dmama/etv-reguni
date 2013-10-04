@@ -3,6 +3,7 @@ package ch.vd.uniregctb.declaration.ordinaire;
 import java.util.List;
 
 import noNamespace.TypFichierImpression;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
@@ -24,8 +25,8 @@ public class MockImpressionDeclarationImpotOrdinaireHelper implements Impression
 	}
 
 	@Override
-	public TypFichierImpression.Document remplitEditiqueSpecifiqueDI(DeclarationImpotOrdinaire declaration, TypFichierImpression typeFichierImpression, TypeDocument typeDocument,
-	                                                                 List<ModeleFeuilleDocumentEditique> annexes, boolean isFromBatch) throws EditiqueException {
+	public TypFichierImpression.Document remplitEditiqueSpecifiqueDI(DeclarationImpotOrdinaire declaration, TypFichierImpression typeFichierImpression,
+	                                                                 @Nullable TypeDocument typeDocumentOverride, List<ModeleFeuilleDocumentEditique> annexes) throws EditiqueException {
 		throw new IllegalArgumentException("no meant to be called");
 	}
 
