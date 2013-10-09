@@ -70,6 +70,15 @@ public class UniregWsTomcatRunner {
 
 		System.setProperty("extprop.hibernate.hbm2ddl.mode", "update");
 
+		final String userDbPath;
+		final File userDb = new File("src/test/resources/ch/vd/uniregctb/embedded/tomcat-users.xml");
+		if (userDb.exists()) {
+			userDbPath = userDb.getPath();
+		}
+		else {
+			userDbPath = null;
+		}
+
 		/**
 		 * Paramètres:
 		 * <ul>
@@ -81,7 +90,7 @@ public class UniregWsTomcatRunner {
 		 * <li>5. Le fichier tomcat-users.xml pour la définition des utilisateurs</li>
 		 * </ul>
 		 */
-		final TomcatRunner runner = new TomcatRunner("/fiscalite/unireg/ws", 8080, "src/main/webapp", null, null);
+		final TomcatRunner runner = new TomcatRunner("/fiscalite/unireg/ws", 8080, "src/main/webapp", null, userDbPath);
 		runner.start();
 	}
 }
