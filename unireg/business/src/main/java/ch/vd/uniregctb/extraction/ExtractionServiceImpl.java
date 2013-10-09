@@ -33,7 +33,7 @@ import ch.vd.uniregctb.common.AuthenticationInterface;
 import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.DefaultThreadNameGenerator;
 import ch.vd.uniregctb.common.MonitorableExecutorService;
-import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResult;
+import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.ThreadNameGenerator;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.inbox.InboxAttachment;
@@ -482,8 +482,8 @@ public class ExtractionServiceImpl implements ExtractionService, InitializingBea
 			@Override
 			public void run(BatchableParallelExtractor<E, R> extractor, R rapportFinal, List<E> elements) {
 				final SimpleProgressMonitor progressMonitor = new SimpleProgressMonitor();
-				final ParallelBatchTransactionTemplateWithResult<E, R>
-						batch = new ParallelBatchTransactionTemplateWithResult<>(elements, extractor.getBatchSize(), extractor.getNbThreads(), extractor.getBatchBehavior(), transactionManager,
+				final ParallelBatchTransactionTemplateWithResults<E, R>
+						batch = new ParallelBatchTransactionTemplateWithResults<>(elements, extractor.getBatchSize(), extractor.getNbThreads(), extractor.getBatchBehavior(), transactionManager,
 						                                                         extractor.getStatusManager(), AuthenticationInterface.INSTANCE);
 				batch.setReadonly(true);        // ce sont toutes des extractions !
 				batch.execute(rapportFinal, createCallback(extractor, rapportFinal, progressMonitor), progressMonitor);

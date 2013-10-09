@@ -30,7 +30,7 @@ import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.AuthenticationInterface;
 import ch.vd.uniregctb.common.LoggingStatusManager;
-import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResult;
+import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
@@ -104,8 +104,8 @@ public class DeterminationDIsAEmettreProcessor {
 
 		// Traite les contribuables par lots
 		final SimpleProgressMonitor progressMonitor = new SimpleProgressMonitor();
-		final ParallelBatchTransactionTemplateWithResult<Long, DeterminationDIsResults>
-				template = new ParallelBatchTransactionTemplateWithResult<>(ids, batchSize, nbThreads, Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, AuthenticationInterface.INSTANCE);
+		final ParallelBatchTransactionTemplateWithResults<Long, DeterminationDIsResults>
+				template = new ParallelBatchTransactionTemplateWithResults<>(ids, batchSize, nbThreads, Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, AuthenticationInterface.INSTANCE);
 		template.execute(rapportFinal, new BatchWithResultsCallback<Long, DeterminationDIsResults>() {
 
 			@Override

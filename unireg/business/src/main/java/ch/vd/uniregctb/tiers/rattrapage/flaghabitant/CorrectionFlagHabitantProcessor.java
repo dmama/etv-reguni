@@ -11,7 +11,7 @@ import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.AuthenticationInterface;
-import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResult;
+import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -66,8 +66,8 @@ public class CorrectionFlagHabitantProcessor {
 			final String messageStatus = String.format("Phase 1 : Traitement de %d personnes physiques", ids.size());
 			statusManager.setMessage(messageStatus, 0);
 
-			final ParallelBatchTransactionTemplateWithResult<Long, CorrectionFlagHabitantResults> template =
-					new ParallelBatchTransactionTemplateWithResult<>(ids, TAILLE_LOT, nbThreads, Behavior.REPRISE_AUTOMATIQUE, transactionManager,
+			final ParallelBatchTransactionTemplateWithResults<Long, CorrectionFlagHabitantResults> template =
+					new ParallelBatchTransactionTemplateWithResults<>(ids, TAILLE_LOT, nbThreads, Behavior.REPRISE_AUTOMATIQUE, transactionManager,
 					                                                 statusManager, AuthenticationInterface.INSTANCE);
 			template.execute(rapportFinal, new BatchWithResultsCallback<Long, CorrectionFlagHabitantResults>() {
 

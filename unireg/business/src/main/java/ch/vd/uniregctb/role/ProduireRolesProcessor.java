@@ -40,7 +40,7 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.AuthenticationInterface;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.LoggingStatusManager;
-import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResult;
+import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
@@ -200,8 +200,8 @@ public class ProduireRolesProcessor {
 		status.setMessage(msgRechercheContribuables, progressCalculator.getProgressPercentage(0, 0));
 
 		final List<Long> list = variante.getIdsContribuablesConcernes(anneePeriode);
-		final ParallelBatchTransactionTemplateWithResult<Long, T>
-				template = new ParallelBatchTransactionTemplateWithResult<>(list, BATCH_SIZE, nbThreads, Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, AuthenticationInterface.INSTANCE);
+		final ParallelBatchTransactionTemplateWithResults<Long, T>
+				template = new ParallelBatchTransactionTemplateWithResults<>(list, BATCH_SIZE, nbThreads, Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, AuthenticationInterface.INSTANCE);
 		template.setReadonly(true);
 		template.execute(rapportFinal, new BatchWithResultsCallback<Long, T>() {
 

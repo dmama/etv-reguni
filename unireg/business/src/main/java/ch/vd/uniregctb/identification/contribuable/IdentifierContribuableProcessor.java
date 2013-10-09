@@ -22,7 +22,7 @@ import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.AuthenticationInterface;
 import ch.vd.uniregctb.common.LoggingStatusManager;
-import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResult;
+import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
@@ -62,8 +62,8 @@ public class IdentifierContribuableProcessor {
 
 		// Reussi les messages par lots
 		final SimpleProgressMonitor progressMonitor = new SimpleProgressMonitor();
-		final ParallelBatchTransactionTemplateWithResult<Long, IdentifierContribuableResults>
-				template = new ParallelBatchTransactionTemplateWithResult<>(ids, BATCH_SIZE, nbThreads, Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, AuthenticationInterface.INSTANCE);
+		final ParallelBatchTransactionTemplateWithResults<Long, IdentifierContribuableResults>
+				template = new ParallelBatchTransactionTemplateWithResults<>(ids, BATCH_SIZE, nbThreads, Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, AuthenticationInterface.INSTANCE);
 		template.execute(rapportFinal, new BatchWithResultsCallback<Long, IdentifierContribuableResults>() {
 
 			@Override

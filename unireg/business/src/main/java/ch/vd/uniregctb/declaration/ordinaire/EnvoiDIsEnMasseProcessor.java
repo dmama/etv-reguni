@@ -34,7 +34,7 @@ import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.AuthenticationInterface;
 import ch.vd.uniregctb.common.LoggingStatusManager;
-import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResult;
+import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
@@ -144,7 +144,8 @@ public class EnvoiDIsEnMasseProcessor {
 
 			// Traite les contribuables par lots
 			final SimpleProgressMonitor progressMonitor = new SimpleProgressMonitor();
-			final ParallelBatchTransactionTemplateWithResult<Long, EnvoiDIsResults> template = new ParallelBatchTransactionTemplateWithResult<>(ids, tailleLot, nbThreads, Behavior.REPRISE_AUTOMATIQUE,
+			final ParallelBatchTransactionTemplateWithResults<Long, EnvoiDIsResults>
+					template = new ParallelBatchTransactionTemplateWithResults<>(ids, tailleLot, nbThreads, Behavior.REPRISE_AUTOMATIQUE,
 			                                                                                                                                     transactionManager, status, AuthenticationInterface.INSTANCE);
 			template.execute(rapportFinal, new BatchWithResultsCallback<Long, EnvoiDIsResults>() {
 

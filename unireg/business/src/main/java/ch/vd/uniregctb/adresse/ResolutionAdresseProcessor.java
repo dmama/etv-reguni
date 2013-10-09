@@ -23,7 +23,7 @@ import ch.vd.unireg.interfaces.infra.data.Localite;
 import ch.vd.unireg.interfaces.infra.data.Rue;
 import ch.vd.uniregctb.common.AuthenticationInterface;
 import ch.vd.uniregctb.common.LoggingStatusManager;
-import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResult;
+import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -60,8 +60,8 @@ public class ResolutionAdresseProcessor {
 
 		// Reussi les messages par lots
 		final SimpleProgressMonitor progressMonitor = new SimpleProgressMonitor();
-		final ParallelBatchTransactionTemplateWithResult<Long, ResolutionAdresseResults>
-				template = new ParallelBatchTransactionTemplateWithResult<>(ids, BATCH_SIZE, nbThreads, Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, AuthenticationInterface.INSTANCE);
+		final ParallelBatchTransactionTemplateWithResults<Long, ResolutionAdresseResults>
+				template = new ParallelBatchTransactionTemplateWithResults<>(ids, BATCH_SIZE, nbThreads, Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, AuthenticationInterface.INSTANCE);
 		template.execute(rapportFinal, new BatchWithResultsCallback<Long, ResolutionAdresseResults>() {
 
 			@Override

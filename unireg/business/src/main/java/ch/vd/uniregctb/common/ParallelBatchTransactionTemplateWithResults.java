@@ -8,7 +8,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 import ch.vd.shared.batchtemplate.AuthenticationInterface;
 import ch.vd.shared.batchtemplate.BatchResults;
 import ch.vd.shared.batchtemplate.Behavior;
-import ch.vd.shared.batchtemplate.ParallelBatchTransactionTemplateWithResults;
 import ch.vd.shared.batchtemplate.StatusManager;
 
 /**
@@ -16,12 +15,12 @@ import ch.vd.shared.batchtemplate.StatusManager;
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class ParallelBatchTransactionTemplateWithResult<E, R extends BatchResults<E, R>> extends ParallelBatchTransactionTemplateWithResults<E, R>{
+public class ParallelBatchTransactionTemplateWithResults<E, R extends BatchResults<E, R>> extends ch.vd.shared.batchtemplate.ParallelBatchTransactionTemplateWithResults<E, R> {
 
 	private static final TransactionTemplateFactory TRANSACTION_TEMPLATE_FACTORY = new TransactionTemplateFactory();
 
-	public ParallelBatchTransactionTemplateWithResult(List<E> elements, int batchSize, int nbThreads, Behavior behavior, PlatformTransactionManager transactionManager,
-	                                                  @Nullable StatusManager statusManager, @Nullable AuthenticationInterface authenticationInterface) {
+	public ParallelBatchTransactionTemplateWithResults(List<E> elements, int batchSize, int nbThreads, Behavior behavior, PlatformTransactionManager transactionManager,
+	                                                   @Nullable StatusManager statusManager, @Nullable AuthenticationInterface authenticationInterface) {
 		super(elements, batchSize, nbThreads, behavior, transactionManager, TRANSACTION_TEMPLATE_FACTORY, statusManager, authenticationInterface);
 	}
 

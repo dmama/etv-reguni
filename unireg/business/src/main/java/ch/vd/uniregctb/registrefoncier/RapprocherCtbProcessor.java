@@ -25,7 +25,7 @@ import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.AuthenticationInterface;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.NomPrenom;
-import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResult;
+import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -71,8 +71,8 @@ public class RapprocherCtbProcessor {
 
 		final RapprocherCtbResults rapportFinal = new RapprocherCtbResults(dateTraitement, tiersService, adresseService);
 		final SimpleProgressMonitor progressMonitor = new SimpleProgressMonitor();
-		final ParallelBatchTransactionTemplateWithResult<ProprietaireFoncier, RapprocherCtbResults> template =
-				new ParallelBatchTransactionTemplateWithResult<>(listeProprietairesFonciers, BATCH_SIZE,
+		final ParallelBatchTransactionTemplateWithResults<ProprietaireFoncier, RapprocherCtbResults> template =
+				new ParallelBatchTransactionTemplateWithResults<>(listeProprietairesFonciers, BATCH_SIZE,
 																 nbThreads, Behavior.REPRISE_AUTOMATIQUE, transactionManager, status,
 																 AuthenticationInterface.INSTANCE);
 		template.setReadonly(true);

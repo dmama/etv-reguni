@@ -23,7 +23,7 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.AuthenticationInterface;
 import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.common.LoggingStatusManager;
-import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResult;
+import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
@@ -63,8 +63,8 @@ public class ComparerSituationFamilleProcessor {
 
 		// Reussi les messages par lots
 		final SimpleProgressMonitor progressMonitor = new SimpleProgressMonitor();
-		final ParallelBatchTransactionTemplateWithResult<Long, ComparerSituationFamilleResults>
-				template = new ParallelBatchTransactionTemplateWithResult<>(ids, BATCH_SIZE, nbThreads, Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, AuthenticationInterface.INSTANCE);
+		final ParallelBatchTransactionTemplateWithResults<Long, ComparerSituationFamilleResults>
+				template = new ParallelBatchTransactionTemplateWithResults<>(ids, BATCH_SIZE, nbThreads, Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, AuthenticationInterface.INSTANCE);
 		template.execute(rapportFinal, new BatchWithResultsCallback<Long, ComparerSituationFamilleResults>() {
 
 			@Override

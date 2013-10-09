@@ -27,7 +27,7 @@ import static org.junit.Assert.fail;
 /**
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class ParallelBatchTransactionTemplateWithResultTest extends BusinessTest {
+public class ParallelBatchTransactionTemplateWithResultsTest extends BusinessTest {
 
 	private static class TestJobResults implements BatchResults<Long, TestJobResults> {
 		@Override
@@ -43,8 +43,8 @@ public class ParallelBatchTransactionTemplateWithResultTest extends BusinessTest
 	public void testEmptyList() {
 		List<Long> list = Collections.emptyList();
 		final TestJobResults rapportFinal = new TestJobResults();
-		ParallelBatchTransactionTemplateWithResult<Long, TestJobResults> template =
-				new ParallelBatchTransactionTemplateWithResult<>(list, 100, 2, Behavior.SANS_REPRISE, transactionManager, null, AuthenticationInterface.INSTANCE);
+		ParallelBatchTransactionTemplateWithResults<Long, TestJobResults> template =
+				new ParallelBatchTransactionTemplateWithResults<>(list, 100, 2, Behavior.SANS_REPRISE, transactionManager, null, AuthenticationInterface.INSTANCE);
 		final boolean completed = template.execute(rapportFinal, new BatchWithResultsCallback<Long, TestJobResults>() {
 
 			@Override
@@ -85,8 +85,8 @@ public class ParallelBatchTransactionTemplateWithResultTest extends BusinessTest
 
 		// processe 1000 longs par lots de 10 en 5 threads différents
 		final TestJobResults rapportFinal = new TestJobResults();
-		final ParallelBatchTransactionTemplateWithResult<Long, TestJobResults> template =
-				new ParallelBatchTransactionTemplateWithResult<>(list, 10, 5, Behavior.SANS_REPRISE, transactionManager, null, AuthenticationInterface.INSTANCE);
+		final ParallelBatchTransactionTemplateWithResults<Long, TestJobResults> template =
+				new ParallelBatchTransactionTemplateWithResults<>(list, 10, 5, Behavior.SANS_REPRISE, transactionManager, null, AuthenticationInterface.INSTANCE);
 		final boolean completed = template.execute(rapportFinal, new BatchWithResultsCallback<Long, TestJobResults>() {
 
 			@Override
@@ -117,8 +117,8 @@ public class ParallelBatchTransactionTemplateWithResultTest extends BusinessTest
 		final List<Long> list = generateList(1000);
 
 		final TestJobResults rapportFinal = new TestJobResults();
-		final ParallelBatchTransactionTemplateWithResult<Long, TestJobResults> template =
-				new ParallelBatchTransactionTemplateWithResult<>(list, 100, 2, Behavior.SANS_REPRISE, transactionManager, null, AuthenticationInterface.INSTANCE);
+		final ParallelBatchTransactionTemplateWithResults<Long, TestJobResults> template =
+				new ParallelBatchTransactionTemplateWithResults<>(list, 100, 2, Behavior.SANS_REPRISE, transactionManager, null, AuthenticationInterface.INSTANCE);
 		template.execute(rapportFinal, new BatchWithResultsCallback<Long, TestJobResults>() {
 
 			@Override
@@ -164,8 +164,8 @@ public class ParallelBatchTransactionTemplateWithResultTest extends BusinessTest
 
 		final Set<Long> processed = new HashSet<>();
 		final TestJobResults rapportFinal = new TestJobResults();
-		final ParallelBatchTransactionTemplateWithResult<Long, TestJobResults> template =
-				new ParallelBatchTransactionTemplateWithResult<>(list, 100, 2, Behavior.SANS_REPRISE, transactionManager, status, AuthenticationInterface.INSTANCE);
+		final ParallelBatchTransactionTemplateWithResults<Long, TestJobResults> template =
+				new ParallelBatchTransactionTemplateWithResults<>(list, 100, 2, Behavior.SANS_REPRISE, transactionManager, status, AuthenticationInterface.INSTANCE);
 		final boolean completed = template.execute(rapportFinal, new BatchWithResultsCallback<Long, TestJobResults>() {
 
 			@Override
@@ -196,8 +196,8 @@ public class ParallelBatchTransactionTemplateWithResultTest extends BusinessTest
 
 		final TestJobResults rapportFinal = new TestJobResults();
 		final Set<Long> processed = new HashSet<>();
-		ParallelBatchTransactionTemplateWithResult<Long, TestJobResults> template =
-				new ParallelBatchTransactionTemplateWithResult<>(list, 100, 2, Behavior.SANS_REPRISE, transactionManager, null, AuthenticationInterface.INSTANCE);
+		ParallelBatchTransactionTemplateWithResults<Long, TestJobResults> template =
+				new ParallelBatchTransactionTemplateWithResults<>(list, 100, 2, Behavior.SANS_REPRISE, transactionManager, null, AuthenticationInterface.INSTANCE);
 		final boolean completed = template.execute(rapportFinal, new BatchWithResultsCallback<Long, TestJobResults>() {
 
 			@Override
@@ -241,8 +241,8 @@ public class ParallelBatchTransactionTemplateWithResultTest extends BusinessTest
 		}
 
 		final Rapport rapportFinal = new Rapport();
-		final ParallelBatchTransactionTemplateWithResult<Long, Rapport> template =
-				new ParallelBatchTransactionTemplateWithResult<>(list, 10, nbThreads, Behavior.REPRISE_AUTOMATIQUE, transactionManager, null, AuthenticationInterface.INSTANCE);
+		final ParallelBatchTransactionTemplateWithResults<Long, Rapport> template =
+				new ParallelBatchTransactionTemplateWithResults<>(list, 10, nbThreads, Behavior.REPRISE_AUTOMATIQUE, transactionManager, null, AuthenticationInterface.INSTANCE);
 		template.execute(rapportFinal, new BatchWithResultsCallback<Long, Rapport>() {
 
 			@Override
@@ -279,8 +279,8 @@ public class ParallelBatchTransactionTemplateWithResultTest extends BusinessTest
 		}
 
 		final Rapport rapportFinal = new Rapport();
-		final ParallelBatchTransactionTemplateWithResult<Long, Rapport> template =
-				new ParallelBatchTransactionTemplateWithResult<>(list, 10, nbThreads, Behavior.REPRISE_AUTOMATIQUE, transactionManager, null, AuthenticationInterface.INSTANCE);
+		final ParallelBatchTransactionTemplateWithResults<Long, Rapport> template =
+				new ParallelBatchTransactionTemplateWithResults<>(list, 10, nbThreads, Behavior.REPRISE_AUTOMATIQUE, transactionManager, null, AuthenticationInterface.INSTANCE);
 		template.execute(rapportFinal, new BatchWithResultsCallback<Long, Rapport>() {
 
 			@Override
@@ -364,8 +364,8 @@ public class ParallelBatchTransactionTemplateWithResultTest extends BusinessTest
 		};
 
 		final TestJobResults rapportFinal = new TestJobResults();
-		final ParallelBatchTransactionTemplateWithResult<Long, TestJobResults>
-				template = new ParallelBatchTransactionTemplateWithResult<>(data, BATCH_SIZE, NB_THREADS, Behavior.REPRISE_AUTOMATIQUE, transactionManager, null, AuthenticationInterface.INSTANCE);
+		final ParallelBatchTransactionTemplateWithResults<Long, TestJobResults>
+				template = new ParallelBatchTransactionTemplateWithResults<>(data, BATCH_SIZE, NB_THREADS, Behavior.REPRISE_AUTOMATIQUE, transactionManager, null, AuthenticationInterface.INSTANCE);
 		template.execute(rapportFinal, callback, pm);
 
 		final int expectedSetSize = TOTAL / BATCH_SIZE + 1;
