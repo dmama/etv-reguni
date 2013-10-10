@@ -47,6 +47,7 @@ import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.jms.EsbBusinessCode;
 import ch.vd.uniregctb.jms.EsbBusinessException;
 import ch.vd.uniregctb.jms.EsbMessageHandler;
+import ch.vd.uniregctb.jms.EsbMessageHelper;
 import ch.vd.uniregctb.xml.ServiceException;
 
 /**
@@ -170,6 +171,7 @@ public class PartyRequestEsbHandler implements EsbMessageHandler, InitializingBe
 			final Document doc = db.newDocument();
 
 			marshaller.marshal(objectFactory.createResponse(response), doc);
+			EsbMessageHelper.cleanupDocumentNamespaceDefinitions(doc.getDocumentElement());
 
 			if (LOGGER.isDebugEnabled()) {
 				StringWriter buffer = new StringWriter();

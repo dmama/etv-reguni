@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.jms;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -11,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import ch.vd.technical.esb.EsbMessage;
 
@@ -138,6 +140,84 @@ public abstract class EsbMessageHelper {
 		catch (Exception e) {
 			logger.warn(String.format("Exception lors de l'extraction du type de l'élément racine du message '%s'", msg.getBusinessId()), e);
 			return ERROR_VALUE;
+		}
+	}
+
+	/**
+	 * Nettoie les attributs xmlns:* inutilisés de l'élément racine du document
+	 * @param rootElement element racine du document qui nous intéresse
+	 */
+	public static void cleanupDocumentNamespaceDefinitions(Element rootElement) {
+		// petit blindage innocent...
+		if (rootElement != null) {
+			final Map<String, String> unused = new HashMap<>();
+
+			// gather all declarations
+			final NamedNodeMap attributes = rootElement.getAttributes();
+			for (int i = 0 ; i < attributes.getLength() ; ++ i) {
+				final Node node = attributes.item(i);
+				final String nodeName = node.getNodeName();
+				final String prefix = extractPrefix(nodeName);
+				if ("xmlns".equals(prefix)) {
+					unused.put(node.getLocalName(), nodeName);
+				}
+			}
+
+			// remove the used named from the "unused" map according to recursive usage inspection
+			removeUsedNamespaces(rootElement, unused);
+
+			// the remaining elements ought to be removed from document
+			for (String declaredAndNotUsed : unused.values()) {
+				rootElement.removeAttribute(declaredAndNotUsed);
+			}
+		}
+	}
+
+	/**
+	 * Méthode récursive qui passe en revue le noeud et ses enfants en enlevant de la map les éléments correspondants à un namespace utilisé
+	 * @param node noeud de base pour le passage en revue
+	 * @param unused une map dont les clés correspondent à des alias de namespace
+	 */
+	private static void removeUsedNamespaces(Node node, Map<String, String> unused) {
+
+		// the node itself
+		final String nodeName = node.getNodeName();
+		final String prefix = extractPrefix(nodeName);
+		if (prefix != null) {
+			unused.remove(prefix);
+		}
+
+		// the node's attributes
+		final NamedNodeMap attributes = node.getAttributes();
+		if (attributes != null && attributes.getLength() > 0) {
+			for (int i = 0 ; i < attributes.getLength() ; ++ i) {
+				final Node attribute = attributes.item(i);
+				final String attributeNamePrefix = extractPrefix(attribute.getNodeName());
+				if (attributeNamePrefix != null) {
+					unused.remove(attributeNamePrefix);
+				}
+			}
+		}
+
+		// the node's children (recursively)
+		final NodeList childNodes = node.getChildNodes();
+		for (int i = 0 ; i < childNodes.getLength() ; ++ i) {
+			final Node childNode = childNodes.item(i);
+			removeUsedNamespaces(childNode, unused);
+		}
+	}
+
+	/**
+	 * @param nodeName nom (complet) d'un noeud
+	 * @return le préfixe utilisé, ou <code>null</code> si aucun préfixe n'est présent
+	 */
+	private static String extractPrefix(String nodeName) {
+		final int semicolonPosition = nodeName.indexOf(SEPARATOR);
+		if (semicolonPosition > 0) {
+			return nodeName.substring(0, semicolonPosition);
+		}
+		else {
+			return null;
 		}
 	}
 }
