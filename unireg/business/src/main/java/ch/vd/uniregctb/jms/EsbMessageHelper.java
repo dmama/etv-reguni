@@ -203,8 +203,9 @@ public abstract class EsbMessageHelper {
 					if (xsiAliases.contains(attributeNamePrefix) && attributeName.endsWith(TYPE_SUFFIX)) {
 						final String attributeValue = attribute.getNodeValue();
 						final String typePrefix = extractPrefix(attributeValue);     // il s'agit d'un type, qui possède potentiellement un préfixe
-						if (typePrefix != null)
+						if (typePrefix != null) {
 							unused.remove(typePrefix);
+						}
 					}
 				}
 			}
