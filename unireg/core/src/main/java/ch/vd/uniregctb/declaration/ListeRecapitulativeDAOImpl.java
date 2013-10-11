@@ -48,7 +48,7 @@ public class ListeRecapitulativeDAOImpl extends GenericDAOImpl< DeclarationImpot
 			fragment.add(paramPagination.buildOrderClause("lr", null, true, null));
 		}
 		else {
-			fragment.add(" ORDER BY lr.id ASC");
+			fragment.add("ORDER BY lr.id ASC");
 		}
 
 		final Query queryObject = fragment.createQuery(session);

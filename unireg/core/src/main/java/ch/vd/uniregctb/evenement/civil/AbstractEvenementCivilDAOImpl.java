@@ -112,7 +112,7 @@ public abstract class AbstractEvenementCivilDAOImpl<EVT, TYP_EVT extends Enum<TY
 		List<Object> criteria = new ArrayList<>();
 		String queryWhere =buildCriterion(criteria, criterion);
 		String query = String.format(
-				" select count(*) from %s evenement %s where 1=1 %s",
+				"select count(*) from %s evenement %s where 1=1 %s",
 				getEvenementCivilClass().getSimpleName(),
 				criterion.isJoinOnPersonnePhysique() ? ", PersonnePhysique pp": "",
 				queryWhere);

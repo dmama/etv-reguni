@@ -117,7 +117,7 @@
             }
 
             var html = '<table id="rapport" class="display"><thead><tr>\n';
-            html += '<th class="sortable"><a href="#" onclick="return DossiersApparentes.sortRapportBy(\'type\');">Rapport avec le tiers</a></th>';
+            html += '<th class="sortable"><a href="#" onclick="return DossiersApparentes.sortRapportBy(\'class\');">Rapport avec le tiers</a></th>';
             html += '<th class="sortable"><a href="#" onclick="return DossiersApparentes.sortRapportBy(\'dateDebut\');">Date début</a></th>';
             html += '<th class="sortable"><a href="#" onclick="return DossiersApparentes.sortRapportBy(\'dateFin\');">Date fin</a></th>';
             html += '<th class="sortable"><a href="#" onclick="return DossiersApparentes.sortRapportBy(\'tiersId\');">N° de tiers</a></th>';

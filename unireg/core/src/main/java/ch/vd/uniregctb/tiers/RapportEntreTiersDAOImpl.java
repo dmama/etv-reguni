@@ -48,7 +48,7 @@ public class RapportEntreTiersDAOImpl extends GenericDAOImpl<RapportEntreTiers, 
 
 		final QueryFragment fragment = new QueryFragment("SELECT rapport FROM RapportPrestationImposable rapport WHERE rapport.objetId = ?", Arrays.<Object>asList(numeroDebiteur));
 		if (activesOnly) {
-			fragment.add(" and rapport.dateFin is null and rapport.annulationDate is null");
+			fragment.add("and rapport.dateFin is null and rapport.annulationDate is null");
 		}
 		fragment.add(paramPagination.buildOrderClause("rapport", "logCreationDate", true, null));
 
@@ -103,22 +103,22 @@ public class RapportEntreTiersDAOImpl extends GenericDAOImpl<RapportEntreTiers, 
 		final QueryFragment fragment = new QueryFragment("from RapportEntreTiers r where ((r.sujetId = " + tiersId + ") or (r.objetId = " + tiersId + "))");
 
 		if (excludeRapportPrestationImposable && !excludeContactImpotSource) {
-			fragment.add(" and r.class != RapportPrestationImposable ");
+			fragment.add("and r.class != RapportPrestationImposable");
 		}
 		else if (excludeContactImpotSource && !excludeRapportPrestationImposable) {
-			fragment.add(" and r.class != ContactImpotSource ");
+			fragment.add("and r.class != ContactImpotSource");
 		}
-		else if (excludeContactImpotSource && excludeRapportPrestationImposable) {
-			fragment.add(" and r.class != ContactImpotSource  and r.class != RapportPrestationImposable ");
+		else if (excludeContactImpotSource) {
+			fragment.add("and r.class != ContactImpotSource  and r.class != RapportPrestationImposable");
 		}
 		if (appartenanceMenageOnly) {
-			fragment.add(" and r.class = AppartenanceMenage");
+			fragment.add("and r.class = AppartenanceMenage");
 		}
 		if (!showHisto) {
-			fragment.add(" and r.dateFin is null and r.annulationDate is null");
+			fragment.add("and r.dateFin is null and r.annulationDate is null");
 		}
 		if (type != null) {
-			fragment.add(" and r.class = " + type.getRapportClass().getSimpleName());
+			fragment.add("and r.class = " + type.getRapportClass().getSimpleName());
 		}
 		fragment.add(buildOrderClause(pagination));
 

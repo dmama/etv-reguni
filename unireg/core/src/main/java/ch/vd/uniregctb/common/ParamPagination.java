@@ -82,7 +82,7 @@ public class ParamPagination {
 				if (!matcher.matches()) {
 					throw new IllegalArgumentException("Field name '" + champ + "' not supported as sorting criterion");
 				}
-				clauseOrder.add(" order by " + tableAlias + "." + champ);
+				clauseOrder.add("order by " + tableAlias + "." + champ);
 			}
 
 			if (sorting.isAscending()) {
@@ -94,10 +94,10 @@ public class ParamPagination {
 		}
 		else {
 			if (defaultField == null) {
-				clauseOrder.add(" order by " + tableAlias + ".id " + (defaultAsc ? "asc" : "desc"));
+				clauseOrder.add("order by " + tableAlias + ".id " + (defaultAsc ? "asc" : "desc"));
 			}
 			else {
-				clauseOrder.add(" order by " + tableAlias + "." + defaultField + " " + (defaultAsc ? "asc" : "desc"));
+				clauseOrder.add("order by " + tableAlias + "." + defaultField + " " + (defaultAsc ? "asc" : "desc"));
 			}
 		}
 

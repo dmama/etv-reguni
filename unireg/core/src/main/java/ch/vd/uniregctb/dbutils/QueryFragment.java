@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.dbutils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -15,7 +16,6 @@ public class QueryFragment {
 
 	private final StringBuilder query = new StringBuilder();
 	private final List<Object> params = new ArrayList<>();
-
 
 	public QueryFragment() {
 	}
@@ -35,23 +35,21 @@ public class QueryFragment {
 	}
 
 	public QueryFragment add(String query) {
-		this.query.append(query);
-		return this;
+		return add(new QueryFragment(query));
 	}
 
 	public QueryFragment add(String query, Object param) {
-		this.query.append(query);
-		this.params.add(param);
-		return this;
+		return add(new QueryFragment(query, Arrays.asList(param)));
 	}
 
 	public QueryFragment add(String query, List<Object> params) {
-		this.query.append(query);
-		this.params.addAll(params);
-		return this;
+		return add(new QueryFragment(query, params));
 	}
 
 	public QueryFragment add(QueryFragment fragment) {
+		if (this.query.length() > 0 && fragment.query.length() > 0) {
+			this.query.append(" ");     // separator
+		}
 		this.query.append(fragment.query);
 		this.params.addAll(fragment.params);
 		return this;
