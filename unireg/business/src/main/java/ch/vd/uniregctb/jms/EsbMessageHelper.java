@@ -151,8 +151,9 @@ public abstract class EsbMessageHelper {
 		// petit blindage innocent...
 		if (rootElement != null) {
 			final Map<String, String> unused = new HashMap<>();
+			final Set<String> xsiAliases = new HashSet<>();
 
-			// gather all declarations
+			// gather all declarations (and find out which alias the XSI has here)
 			final NamedNodeMap attributes = rootElement.getAttributes();
 			for (int i = 0 ; i < attributes.getLength() ; ++ i) {
 				final Node node = attributes.item(i);
@@ -160,11 +161,14 @@ public abstract class EsbMessageHelper {
 				final String prefix = extractPrefix(nodeName);
 				if ("xmlns".equals(prefix)) {
 					unused.put(node.getLocalName(), nodeName);
+					if (SCHEMA_INSTANCE_NS.equals(node.getNodeValue())) {
+						xsiAliases.add(node.getLocalName());
+					}
 				}
 			}
 
 			// remove the used named from the "unused" map according to recursive usage inspection
-			removeUsedNamespaces(rootElement, unused);
+			removeUsedNamespaces(rootElement, xsiAliases, unused);
 
 			// the remaining elements ought to be removed from document
 			for (String declaredAndNotUsed : unused.values()) {
@@ -178,7 +182,7 @@ public abstract class EsbMessageHelper {
 	 * @param node noeud de base pour le passage en revue
 	 * @param unused une map dont les clés correspondent à des alias de namespace
 	 */
-	private static void removeUsedNamespaces(Node node, Map<String, String> unused) {
+	private static void removeUsedNamespaces(Node node, Set<String> xsiAliases, Map<String, String> unused) {
 
 		// the node itself
 		final String nodeName = node.getNodeName();
@@ -192,9 +196,16 @@ public abstract class EsbMessageHelper {
 		if (attributes != null && attributes.getLength() > 0) {
 			for (int i = 0 ; i < attributes.getLength() ; ++ i) {
 				final Node attribute = attributes.item(i);
-				final String attributeNamePrefix = extractPrefix(attribute.getNodeName());
+				final String attributeName = attribute.getNodeName();
+				final String attributeNamePrefix = extractPrefix(attributeName);
 				if (attributeNamePrefix != null) {
 					unused.remove(attributeNamePrefix);
+					if (xsiAliases.contains(attributeNamePrefix) && attributeName.endsWith(TYPE_SUFFIX)) {
+						final String attributeValue = attribute.getNodeValue();
+						final String typePrefix = extractPrefix(attributeValue);     // il s'agit d'un type, qui possède potentiellement un préfixe
+						if (typePrefix != null)
+							unused.remove(typePrefix);
+					}
 				}
 			}
 		}
@@ -203,7 +214,7 @@ public abstract class EsbMessageHelper {
 		final NodeList childNodes = node.getChildNodes();
 		for (int i = 0 ; i < childNodes.getLength() ; ++ i) {
 			final Node childNode = childNodes.item(i);
-			removeUsedNamespaces(childNode, unused);
+			removeUsedNamespaces(childNode, xsiAliases, unused);
 		}
 	}
 
