@@ -131,7 +131,7 @@ public class JspTagInteroperabilite extends BodyTagSupport implements MessageSou
 		final boolean isPP = naturesTiersPP.contains(natureTiers);
 		final boolean showTAO = !isEntreprise && !debiteurInactif;
 		final boolean showSIPF = true;
-		final boolean showREPELEC = !debiteurInactif && isPP;
+		final boolean showDPERM = !debiteurInactif && isPP;
 
 		final Set<ApplicationFiscale> apps = EnumSet.noneOf(ApplicationFiscale.class);
 		if (showTAO) { // [UNIREG-1949] débranchement uniquement vers SIPF pour les PMs
@@ -142,8 +142,8 @@ public class JspTagInteroperabilite extends BodyTagSupport implements MessageSou
 		if (showSIPF) {
 			apps.add(ApplicationFiscale.SIPF);
 		}
-		if (showREPELEC) {
-			apps.add(ApplicationFiscale.REPELEC);
+		if (showDPERM) {
+			apps.add(ApplicationFiscale.DPERM);
 		}
 		return apps;
 	}

@@ -2750,7 +2750,7 @@ var Search = {
 						}
 						table += '<option value="' + App.curl('/redirect/SIPF.do?id=' + e.numero) + '">SIPF</option>';
 						if (!e.debiteurInactif && (e.tiersType === 'habitant' || e.tiersType === 'nonhabitant' || e.tiersType === 'menagecommun')) {
-							table += '<option value="' + App.curl('/redirect/REPELEC.do?id=' + e.numero) + '">REPELEC</option>';
+							table += '<option value="' + App.curl('/redirect/DPERM.do?id=' + e.numero) + '">DPERM</option>';
 						}
 						if (e.tiersType != 'entreprise') {
 							table += '<option value="' + App.curl('/tiers/launchcat.do?numero=' + e.numero) + '">CAT</option>';
