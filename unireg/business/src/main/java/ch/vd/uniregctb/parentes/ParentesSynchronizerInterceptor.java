@@ -8,6 +8,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.hibernate.CallbackException;
 import org.hibernate.type.Type;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -17,6 +18,7 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.HibernateEntity;
+import ch.vd.uniregctb.common.OtherPrincipalSynchronousExecutor;
 import ch.vd.uniregctb.common.Switchable;
 import ch.vd.uniregctb.common.ThreadSwitch;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationInterceptor;
@@ -30,13 +32,14 @@ import ch.vd.uniregctb.transaction.TransactionTemplate;
 /**
  * [SIFISC-9096] Cet intercepteur recalcule automatiquement les parentés sur les personnes physiques connues du civil et modifiées après le commit de chaque transaction.
  */
-public class ParentesSynchronizerInterceptor implements ModificationSubInterceptor, InitializingBean, Switchable {
+public class ParentesSynchronizerInterceptor implements ModificationSubInterceptor, InitializingBean, DisposableBean, Switchable {
 
 	private static final Logger LOGGER = Logger.getLogger(ParentesSynchronizerInterceptor.class);
 
 	private ModificationInterceptor parent;
 	private TiersService tiersService;
 	private PlatformTransactionManager transactionManager;
+	private OtherPrincipalSynchronousExecutor syncExecutor;
 
 	private final Random randomGenerator = new Random();
 
@@ -98,55 +101,53 @@ public class ParentesSynchronizerInterceptor implements ModificationSubIntercept
 			return;
 		}
 
-		final boolean authenticated = AuthenticationHelper.isAuthenticated();
-
 		// [UNIREG-2894] dans le context post-transactional suite à la réception d'un événement JMS, l'autentification n'est pas renseignée. On le fait donc à la volée ici.
-		final String newPrincipal = authenticated ? String.format("%s-recalculParentes", AuthenticationHelper.getCurrentPrincipal()) : "AutoSynchroParentes";
+		final String newPrincipal = AuthenticationHelper.isAuthenticated() ? String.format("%s-recalculParentes", AuthenticationHelper.getCurrentPrincipal()) : "AutoSynchroParentes";
 
-		AuthenticationHelper.pushPrincipal(newPrincipal);
-		try {
-			parent.setEnabledForThread(false); // on désactive l'intercepteur pour éviter de s'intercepter soi-même
-			activationSwitch.setEnabled(false);
-			try {
-				refreshParentes(set);
-			}
-			catch (OptimisticLockingFailureException e) {
-				// [SIFISC-9599] en cas de problème de modification concurrente, on ré-essaie une fois
+		// [SIFISC-9983] déportation du traitement dans un thread séparé afin que le visa trafiqué ne se risque pas de se retrouver dans la session HTTP...
+		syncExecutor.doWithPrincipal(newPrincipal, new Runnable() {
+			@Override
+			public void run() {
+				parent.setEnabledForThread(false); // on désactive l'intercepteur pour éviter de s'intercepter soi-même
+				activationSwitch.setEnabled(false);
 				try {
-					final int waitingTime = 100 + Math.abs(randomGenerator.nextInt(500));    // attente entre 100 et 600 ms, aléatoire des fois qu'on serait plusieurs sur le coup
-					LOGGER.warn(String.format("OptimisticLocking issue (%s): let's try again after a small break (%d ms)...", e.getMessage(), waitingTime));
-					Thread.sleep(waitingTime);
-					LOGGER.warn("OptimisticLocking issue: let's try again.");
 					refreshParentes(set);
 				}
-				catch (RuntimeException | InterruptedException ex) {
-					if (ex instanceof OptimisticLockingFailureException) {
-						// encore ?!?!?
-						// je disais donc, on ré-essaie une fois, et si cela ne fonctionne toujours pas, on
-						// demande la levée du flag "parenté dirty" sur les personnes physiques correspondant à ces individus
-						LOGGER.error("Renewed OptimisticLocking issue, the relationships will be marked dirty...", ex);
+				catch (OptimisticLockingFailureException e) {
+					// [SIFISC-9599] en cas de problème de modification concurrente, on ré-essaie une fois
+					try {
+						final int waitingTime = 100 + Math.abs(randomGenerator.nextInt(500));    // attente entre 100 et 600 ms, aléatoire des fois qu'on serait plusieurs sur le coup
+						LOGGER.warn(String.format("OptimisticLocking issue (%s): let's try again after a small break (%d ms)...", e.getMessage(), waitingTime));
+						Thread.sleep(waitingTime);
+						LOGGER.warn("OptimisticLocking issue: let's try again.");
+						refreshParentes(set);
 					}
-					else {
-						LOGGER.error("Error: the relationships will be marked dirty", ex);
-					}
+					catch (RuntimeException | InterruptedException ex) {
+						if (ex instanceof OptimisticLockingFailureException) {
+							// encore ?!?!?
+							// je disais donc, on ré-essaie une fois, et si cela ne fonctionne toujours pas, on
+							// demande la levée du flag "parenté dirty" sur les personnes physiques correspondant à ces individus
+							LOGGER.error("Renewed OptimisticLocking issue, the relationships will be marked dirty...", ex);
+						}
+						else {
+							LOGGER.error("Error: the relationships will be marked dirty", ex);
+						}
 
+						markParentesDirty(set);
+					}
+				}
+				catch (RuntimeException e) {
+					LOGGER.error(e, e);
 					markParentesDirty(set);
+					throw e;
+				}
+				finally {
+					parent.setEnabledForThread(true);
+					activationSwitch.setEnabled(true);
+					set.clear();
 				}
 			}
-			catch (RuntimeException e) {
-				LOGGER.error(e, e);
-				markParentesDirty(set);
-				throw e;
-			}
-			finally {
-				parent.setEnabledForThread(true);
-				activationSwitch.setEnabled(true);
-				set.clear();
-			}
-		}
-		finally {
-			AuthenticationHelper.popPrincipal();
-		}
+		});
 	}
 
 	private void refreshParentes(final Set<Long> nosIndividus) {
@@ -237,5 +238,11 @@ public class ParentesSynchronizerInterceptor implements ModificationSubIntercept
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		parent.register(this);
+		syncExecutor = new OtherPrincipalSynchronousExecutor("ParenteSync", 2, 16);
+	}
+
+	@Override
+	public void destroy() throws Exception {
+		syncExecutor.shutdown();
 	}
 }

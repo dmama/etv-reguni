@@ -7,10 +7,12 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.hibernate.CallbackException;
 import org.hibernate.type.Type;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.HibernateEntity;
+import ch.vd.uniregctb.common.OtherPrincipalSynchronousExecutor;
 import ch.vd.uniregctb.common.Switchable;
 import ch.vd.uniregctb.common.ThreadSwitch;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationInterceptor;
@@ -23,13 +25,14 @@ import ch.vd.uniregctb.tiers.TiersService;
 /**
  * [UNIREG-2305] Cet interceptor recalcul automatiquement les tâches d'envoi et d'annulation de DIs sur les contribuables modifiées après le commit de chaque transaction.
  */
-public class TacheSynchronizerInterceptor implements ModificationSubInterceptor, InitializingBean, Switchable {
+public class TacheSynchronizerInterceptor implements ModificationSubInterceptor, InitializingBean, DisposableBean, Switchable {
 
 	private static final Logger LOGGER = Logger.getLogger(TacheSynchronizerInterceptor.class);
 
 	private ModificationInterceptor parent;
 	private TacheService tacheService;
 	private TiersService tiersService;
+	private OtherPrincipalSynchronousExecutor syncExecutor;
 
 	private final ThreadLocal<HashSet<Long>> modifiedCtbIds = new ThreadLocal<HashSet<Long>>() {
 		@Override
@@ -83,34 +86,30 @@ public class TacheSynchronizerInterceptor implements ModificationSubInterceptor,
 			return; // rien à faire
 		}
 
-
-		final boolean authenticated = AuthenticationHelper.isAuthenticated();
-
 		// [UNIREG-2894] dans le context post-transactional suite à la réception d'un événement JMS, l'autentification n'est pas renseignée. On le fait donc à la volée ici.
-		final String newPrincipal = authenticated ? String.format("%s-recalculTaches", AuthenticationHelper.getCurrentPrincipal()) : "AutoSynchro";
+		final String newPrincipal = AuthenticationHelper.isAuthenticated() ? String.format("%s-recalculTaches", AuthenticationHelper.getCurrentPrincipal()) : "AutoSynchroTaches";
 
-		AuthenticationHelper.pushPrincipal(newPrincipal);
-		try {
-
-			parent.setEnabledForThread(false); // on désactive l'intercepteur pour éviter de s'intercepter soi-même
-			activationSwitch.setEnabled(false);
-			try {
-				tacheService.synchronizeTachesDIs(set);
-                tacheService.annuleTachesObsoletes(set);
+		// [SIFISC-9983] déportation du traitement dans un thread séparé afin que le visa trafiqué ne se risque pas de se retrouver dans la session HTTP...
+		syncExecutor.doWithPrincipal(newPrincipal, new Runnable() {
+			@Override
+			public void run() {
+				parent.setEnabledForThread(false); // on désactive l'intercepteur pour éviter de s'intercepter soi-même
+				activationSwitch.setEnabled(false);
+				try {
+					tacheService.synchronizeTachesDIs(set);
+					tacheService.annuleTachesObsoletes(set);
+				}
+				catch (RuntimeException e) {
+					LOGGER.error(e, e);
+					throw e;
+				}
+				finally {
+					parent.setEnabledForThread(true);
+					activationSwitch.setEnabled(true);
+					set.clear();
+				}
 			}
-			catch (RuntimeException e) {
-				LOGGER.error(e, e);
-				throw e;
-			}
-			finally {
-				parent.setEnabledForThread(true);
-				activationSwitch.setEnabled(true);
-				set.clear();
-			}
-		}
-		finally {
-			AuthenticationHelper.popPrincipal();
-		}
+		});
 	}
 
 	@Override
@@ -165,5 +164,11 @@ public class TacheSynchronizerInterceptor implements ModificationSubInterceptor,
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		parent.register(this);
+		syncExecutor = new OtherPrincipalSynchronousExecutor("TacheSync", 2, 16);
+	}
+
+	@Override
+	public void destroy() throws Exception {
+		syncExecutor.shutdown();
 	}
 }
