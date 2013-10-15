@@ -55,7 +55,7 @@ public interface GlobalTiersIndexer {
 	 *          si l'indexation n'a pas pu être faite.
 	 * @return le nombre de tiers indexés
 	 */
-	public int indexAllDatabase() throws IndexerException;
+	int indexAllDatabase() throws IndexerException;
 
 	/**
 	 * Indexe ou réindexe tout ou partie de la base de données.
@@ -68,7 +68,7 @@ public interface GlobalTiersIndexer {
 	 * @throws ch.vd.uniregctb.indexer.IndexerException
 	 *          si l'indexation n'a pas pu être faite.
 	 */
-	public int indexAllDatabase(@Nullable StatusManager statusManager, int nbThreads, Mode mode, boolean prefetchPMs) throws IndexerException;
+	int indexAllDatabase(@Nullable StatusManager statusManager, int nbThreads, Mode mode, boolean prefetchPMs) throws IndexerException;
 
 	/**
 	 * Flag qui indique si l'indexation doit se faire a la volée ou si elle sera faite a posteriori.
@@ -77,12 +77,22 @@ public interface GlobalTiersIndexer {
 	 *
 	 * @return <b>vrai</b> si l'indexation est faite à la volée ou <b>faux</b> si elle est faite à postériori.
 	 */
-	public boolean isOnTheFlyIndexation();
+	boolean isOnTheFlyIndexation();
 
 	/**
 	 * Active ou désactive l'indexation <b>pour le thread courant</b>.
 	 *
 	 * @param onTheFlyIndexation <b>vrai</b> si l'indexation doit se faire à la volée ou <b>faux</b> si elle sera faite à postériori.
 	 */
-	public void setOnTheFlyIndexation(boolean onTheFlyIndexation);
+	void setOnTheFlyIndexation(boolean onTheFlyIndexation);
+
+	/**
+	 * @return le nombre de tiers actuellement en attente d'indexation dans le mode "on-the-fly"
+	 */
+	int getOnTheFlyQueueSize();
+
+	/**
+	 * @return le nombre de threads actuellement activés pour le traitement des indexations "on-the-fly"
+	 */
+	int getOnTheFlyThreadNumber();
 }

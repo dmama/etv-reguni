@@ -10,7 +10,7 @@ import ch.vd.uniregctb.indexer.IndexerException;
 
 public class MockTiersIndexer implements GlobalTiersIndexer {
 
-	public List<Long> scheduled = new ArrayList<>();
+	public final List<Long> scheduled = new ArrayList<>();
 
 	@Override
 	public void overwriteIndex() {
@@ -49,5 +49,15 @@ public class MockTiersIndexer implements GlobalTiersIndexer {
 	@Override
 	public void setOnTheFlyIndexation(boolean onTheFlyIndexation) {
 		throw new NotImplementedException();
+	}
+
+	@Override
+	public int getOnTheFlyQueueSize() {
+		return scheduled.size();
+	}
+
+	@Override
+	public int getOnTheFlyThreadNumber() {
+		return 0;
 	}
 }

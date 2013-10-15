@@ -42,6 +42,9 @@ import ch.vd.uniregctb.indexer.async.TiersIndexerWorker;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
+import ch.vd.uniregctb.load.BasicLoadMonitor;
+import ch.vd.uniregctb.load.LoadAverager;
+import ch.vd.uniregctb.load.LoadMonitorable;
 import ch.vd.uniregctb.stats.ServiceStats;
 import ch.vd.uniregctb.stats.StatsService;
 import ch.vd.uniregctb.tiers.AutreCommunaute;
@@ -64,6 +67,8 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 
 	private static final int NANO_TO_MILLI = 1000000;
 
+	private static final String ON_THE_FLY_SERVICE_NAME = "OnTheFlyIndexerQueueSize";
+
     private static final Logger LOGGER = Logger.getLogger(GlobalTiersIndexerImpl.class);
 
     private GlobalIndexInterface globalIndex;
@@ -79,7 +84,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 	private StatsService statsService;
 
 	private OnTheFlyTiersIndexer onTheFlyTiersIndexer;
-
+	private LoadAverager onTheFlyLoadAverager;
 	private final ThreadSwitch onTheFlyIndexation = new ThreadSwitch(true);
 
     /**
@@ -648,11 +653,35 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		onTheFlyTiersIndexer = new OnTheFlyTiersIndexer(this, transactionManager, sessionFactory, dialect);
+		if (statsService != null) {
+
+			// façade de monitoring sur la queue d'indexation on-the-fly, où la charge est définie comme le nombre de tiers en attente d'indexation
+			final LoadMonitorable service = new LoadMonitorable() {
+				@Override
+				public int getLoad() {
+					return getOnTheFlyQueueSize();
+				}
+			};
+
+			// calculateur de moyenne de charge sur les 5 dernières minutes (échantillonnage à 2 fois par seconde)
+			onTheFlyLoadAverager = new LoadAverager(service, ON_THE_FLY_SERVICE_NAME, 600, 500);
+			onTheFlyLoadAverager.start();
+
+			// enregistrement du monitoring
+			statsService.registerLoadMonitor(ON_THE_FLY_SERVICE_NAME, new BasicLoadMonitor(service, onTheFlyLoadAverager));
+		}
 	}
 
 	@Override
 	public void destroy() throws Exception {
 		onTheFlyTiersIndexer.destroy();
+		if (onTheFlyLoadAverager != null) {
+			onTheFlyLoadAverager.stop();
+			onTheFlyLoadAverager = null;
+		}
+		if (statsService != null) {
+			statsService.unregisterLoadMonitor(ON_THE_FLY_SERVICE_NAME);
+		}
 	}
 
     @Override
@@ -664,6 +693,16 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
     public void setOnTheFlyIndexation(boolean onTheFlyIndexation) {
         this.onTheFlyIndexation.setEnabled(onTheFlyIndexation);
     }
+
+	@Override
+	public int getOnTheFlyQueueSize() {
+		return onTheFlyTiersIndexer.getQueueSize();
+	}
+
+	@Override
+	public int getOnTheFlyThreadNumber() {
+		return onTheFlyTiersIndexer.getActiveThreadNumber();
+	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
     public void setGlobalIndex(GlobalIndexInterface globalIndex) {

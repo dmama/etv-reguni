@@ -28,6 +28,7 @@
 				<entry key="ch.vd.uniregctb-web:type=Monitoring,name=Jobs" value-ref="batchScheduler" />
 				<entry key="ch.vd.uniregctb-web:type=Monitoring,name=EvenementsCivils" value-ref="evenementsCivilsEchJmxBean" />
 				<entry key="ch.vd.uniregctb-web:type=Monitoring,name=RetourImpression" value-ref="retourImpressionJmxBean" />
+				<entry key="ch.vd.uniregctb-web:type=Monitoring,name=IndexationOnTheFly" value-ref="onTheFlyTiersIndexerJmxBean"/>
 				<entry key="ch.vd.uniregctb-web:type=Monitoring,name=ExtractionsAsynchrones" value-ref="extractionServiceJmxBean" />
 				<entry key="ch.vd.uniregctb-web:type=Monitoring,name=AccessLoad" value-ref="webAccessLoadJmxBean" />
 				<entry key="ch.vd.uniregctb-web:type=Connections,name=Oracle" value-ref="oracleConnectionJmxBean" />
@@ -102,6 +103,10 @@
 
 	<bean name="extractionServiceJmxBean" class="ch.vd.uniregctb.jmx.ExtractionServiceJmxBeanImpl">
 		<property name="extractionService" ref="extractionService"/>
+	</bean>
+
+	<bean name="onTheFlyTiersIndexerJmxBean" class="ch.vd.uniregctb.jmx.OnTheFlyTiersIndexerJmxBeanImpl">
+		<property name="globalTiersIndexer" ref="globalTiersIndexer"/>
 	</bean>
 
 	<bean name="othersPropertiesJmxBean" class="ch.vd.registre.jmx.PropertiesJmxBeanImpl">
