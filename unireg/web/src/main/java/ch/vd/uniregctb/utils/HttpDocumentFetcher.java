@@ -141,9 +141,9 @@ public abstract class HttpDocumentFetcher {
 	/**
 	 * Récupère le document dont l'URL est passée en paramètre
 	 * @param url URL d'accès au document recherché
-	 * @return le document trouvé
+	 * @return le document trouvé (<code>null</code> si la réponse du serveur est une HTTP 204 No Content ou une HTTP 200 OK avec une longueur de contenu 0)
 	 * @throws IOException en cas d'erreur de communication
-	 * @throws ch.vd.uniregctb.utils.HttpDocumentFetcher.HttpDocumentException si la réponse HTTP n'est pas 200-OK
+	 * @throws ch.vd.uniregctb.utils.HttpDocumentFetcher.HttpDocumentException si la réponse HTTP n'est pas 200-OK ou 204-No-Content
 	 */
 	public static HttpDocument fetch(URL url, Integer timeoutms) throws IOException, HttpDocumentException {
 		final GetMethod method;
@@ -164,7 +164,7 @@ public abstract class HttpDocumentFetcher {
 				client.getParams().setConnectionManagerTimeout(timeoutms);
 			}
 			final int responseCode = client.executeMethod(method);
-			if (responseCode != HttpURLConnection.HTTP_OK) {
+			if (responseCode != HttpURLConnection.HTTP_OK && responseCode != HttpURLConnection.HTTP_NO_CONTENT) {
 				final String responseMessage = method.getStatusText();
 				if (responseCode / 100 == 4) {
 					throw new HttpDocumentClientException(responseCode, responseMessage);
@@ -177,11 +177,22 @@ public abstract class HttpDocumentFetcher {
 				}
 			}
 
-			final String lengthHeader = extractResponseString(method, HTTP_CONTENT_LENGTH);
-			final Integer length = lengthHeader != null && !lengthHeader.isEmpty() ? Integer.parseInt(lengthHeader) : null;
-			final String contentType = extractResponseString(method, HTTP_CONTENT_TYPE);
-			final String proposedFilename = extractFilename(extractResponseString(method, HTTP_CONTENT_DISPOSITION));
-			return new HttpDocument(contentType, length, proposedFilename, method.getResponseBodyAsStream());
+			final Integer length;
+			if (responseCode == HttpURLConnection.HTTP_NO_CONTENT) {
+				length = 0;
+			}
+			else {
+				final String lengthHeader = extractResponseString(method, HTTP_CONTENT_LENGTH);
+				length = lengthHeader != null && !lengthHeader.isEmpty() ? Integer.parseInt(lengthHeader) : null;
+			}
+			if (length == null || length > 0) {
+				final String contentType = extractResponseString(method, HTTP_CONTENT_TYPE);
+				final String proposedFilename = extractFilename(extractResponseString(method, HTTP_CONTENT_DISPOSITION));
+				return new HttpDocument(contentType, length, proposedFilename, method.getResponseBodyAsStream());
+			}
+			else {
+				return null;
+			}
 		}
 		catch (ConnectTimeoutException | SocketTimeoutException e) {
 			throw new HttpDocumentServerException(504, "Gateway timeout: " + e.getMessage());

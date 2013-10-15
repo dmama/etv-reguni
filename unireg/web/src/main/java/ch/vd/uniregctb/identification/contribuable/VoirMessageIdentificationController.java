@@ -67,19 +67,24 @@ public class VoirMessageIdentificationController {
 			final URL url = new URL(documentUrl);
 			try {
 				try (HttpDocumentFetcher.HttpDocument document = HttpDocumentFetcher.fetch(url, GET_TIMEOUT)) {
-					final String proposedFilename = document.getProposedContentFilename();
-					final String filename;
-					if (proposedFilename == null) {
-						final String extension = MimeTypeHelper.getFileExtensionForType(document.getContentType());
-						filename = String.format("message%s", extension);
+					if (document != null) {
+						final String proposedFilename = document.getProposedContentFilename();
+						final String filename;
+						if (proposedFilename == null) {
+							final String extension = MimeTypeHelper.getFileExtensionForType(document.getContentType());
+							filename = String.format("message%s", extension);
+						}
+						else {
+							filename = proposedFilename;
+						}
+						try (InputStream content = document.getContent()) {
+							servletService.downloadAsFile(filename, document.getContentType(), content, document.getContentLength(), response);
+						}
+						return null;
 					}
 					else {
-						filename = proposedFilename;
+						return "Le document est vide.";
 					}
-					try (InputStream content = document.getContent()) {
-						servletService.downloadAsFile(filename, document.getContentType(), content, document.getContentLength(), response);
-					}
-					return null;
 				}
 			}
 			catch (HttpDocumentFetcher.HttpDocumentException e) {
