@@ -176,7 +176,7 @@ public class TacheSynchronizerInterceptorTest extends BusinessTest {
 				assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
 				assertEquals(date(2008, 1, 1), tache.getDateDebut());
 				assertEquals(date(2008, 12, 31), tache.getDateFin());
-				assertEquals("AutoSynchroTaches", tache.getLogCreationUser());
+				assertEquals("AutoSynchro", tache.getLogCreationUser());
 				return null;
 			}
 		});
