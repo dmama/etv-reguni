@@ -14,12 +14,14 @@
 </c:if>
 
 <div id="rapportsDiv" style="position:relative"><img src="<c:url value="/images/loading.gif"/>"/></div>
+<div id="parentesDiv" style="position:relative"></div>
 <div id="debiteursDiv" style="position:relative"></div>
 
 <script>
 	// chargement Ajax des rapports-entre-tiers
 	$(function() {
 		DossiersApparentes.loadRapports(1);
+		DossiersApparentes.loadParentes();
         DossiersApparentes.loadDebiteurs();
 	});
 
@@ -42,7 +44,7 @@
                     html += DossiersApparentes.buildRapportsOptions(rapportsPage.page, rapportsPage.showHisto, rapportsPage.typeRapport, rapportsPage.typesRapportEntreTiers, rapportsPage.sortField, rapportsPage.sortOrder);
                     if (rapportsPage.totalCount > 0) {
                         html += DossiersApparentes.buildRapportsPagination(rapportsPage.page, 10, rapportsPage.totalCount);
-                        html += DossiersApparentes.buildRapportsTable(rapportsPage.rapports) + '\n';
+                        html += DossiersApparentes.buildRapportsTable(rapportsPage.rapports, true) + '\n';
                     }
                     else {
                         html += DossiersApparentes.escape("<fmt:message key="label.dossiers.apparentes.vide"/>");
@@ -106,7 +108,7 @@
             }
         },
 
-	    buildRapportsTable: function(rapports) {
+	    buildRapportsTable: function(rapports, sortable) {
 
             var hasExtensionExecutionForcee = false;
             var hasAutoriteTutelaire = false;
@@ -117,17 +119,32 @@
             }
 
             var html = '<table id="rapport" class="display"><thead><tr>\n';
-            html += '<th class="sortable"><a href="#" onclick="return DossiersApparentes.sortRapportBy(\'class\');">Rapport avec le tiers</a></th>';
-            html += '<th class="sortable"><a href="#" onclick="return DossiersApparentes.sortRapportBy(\'dateDebut\');">Date début</a></th>';
-            html += '<th class="sortable"><a href="#" onclick="return DossiersApparentes.sortRapportBy(\'dateFin\');">Date fin</a></th>';
-            html += '<th class="sortable"><a href="#" onclick="return DossiersApparentes.sortRapportBy(\'tiersId\');">N° de tiers</a></th>';
-            html += '<th>Nom / Raison sociale</th>';
-            if (hasAutoriteTutelaire) {
-                html += '<th class="sortable"><a href="#" onclick="return DossiersApparentes.sortRapportBy(\'autoriteTutelaireId\');">Autorité tutelaire</a></th>';
-            }
-            if (hasExtensionExecutionForcee) {
-                html += '<th class="sortable"><a href="#" onclick="return DossiersApparentes.sortRapportBy(\'extensionExecutionForcee\');">Extension à l\'exécution forcée</a></th>';
-            }
+		    if (sortable) {
+	            html += '<th class="sortable"><a href="#" onclick="return DossiersApparentes.sortRapportBy(\'class\');">Rapport avec le tiers</a></th>';
+	            html += '<th class="sortable"><a href="#" onclick="return DossiersApparentes.sortRapportBy(\'dateDebut\');">Date début</a></th>';
+	            html += '<th class="sortable"><a href="#" onclick="return DossiersApparentes.sortRapportBy(\'dateFin\');">Date fin</a></th>';
+	            html += '<th class="sortable"><a href="#" onclick="return DossiersApparentes.sortRapportBy(\'tiersId\');">N° de tiers</a></th>';
+	            html += '<th>Nom / Raison sociale</th>';
+	            if (hasAutoriteTutelaire) {
+	                html += '<th class="sortable"><a href="#" onclick="return DossiersApparentes.sortRapportBy(\'autoriteTutelaireId\');">Autorité tutelaire</a></th>';
+	            }
+	            if (hasExtensionExecutionForcee) {
+	                html += '<th class="sortable"><a href="#" onclick="return DossiersApparentes.sortRapportBy(\'extensionExecutionForcee\');">Extension à l\'exécution forcée</a></th>';
+	            }
+	        }
+		    else {
+			    html += '<th>Rapport avec le tiers</th>';
+			    html += '<th>Date début</th>';
+			    html += '<th>Date fin</th>';
+			    html += '<th>N° de tiers</th>';
+			    html += '<th>Nom / Raison sociale</th>';
+			    if (hasAutoriteTutelaire) {
+				    html += '<th>Autorité tutelaire</th>';
+			    }
+			    if (hasExtensionExecutionForcee) {
+				    html += '<th>Extension à l\'exécution forcée</th>';
+			    }
+		    }
             html += '<th></th>';
             html += '</tr></thead>\n';
 
@@ -179,7 +196,34 @@
             return html;
         },
 
-        loadDebiteurs: function() {
+	    loadParentes: function() {
+		    // get the data
+		    $.get('<c:url value="/rapport/parentes.do?tiers=${command.tiersGeneral.numero}"/>' + '&' + new Date().getTime(), function(parentes) {
+			    var html = '';
+			    if (typeof parentes === 'string') {
+				    // on a reçu une erreur
+				    html += '<fieldset>\n';
+				    html += '<legend><span><fmt:message key="label.parentes" /></span></legend>\n';
+				    html += '<div class="flash-warning">' + DossiersApparentes.escape("<fmt:message key="label.affichage.parentes.impossible"/>") + '<br/><i>' + DossiersApparentes.escape(parentes) + '</i></div>\n';
+				    html += '</fieldset>\n'
+			    }
+			    else {
+				    // on a bien reçu les liens de parenté
+				    if (parentes.totalCount > 0) {
+					    html += '<fieldset>\n';
+					    html += '<legend><span><fmt:message key="label.parentes" /></span></legend>\n';
+					    html += DossiersApparentes.buildRapportsTable(parentes.rapports, false) + '\n';
+					    html += '</fieldset>\n'
+				    }
+			    }
+			    $('#parentesDiv').html(html);
+			    Tooltips.activate_static_tooltips($('#parentesDiv'));
+		    }, 'json')
+			.error(Ajax.popupErrorHandler);
+		    return false;
+	    },
+
+	    loadDebiteurs: function() {
             // get the data
             $.get('<c:url value="/rapport/debiteurs.do?tiers=${command.tiersGeneral.numero}"/>' + '&' + new Date().getTime(), function(debiteurs) {
                 var html = '';

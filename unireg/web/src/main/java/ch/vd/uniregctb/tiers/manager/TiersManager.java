@@ -216,7 +216,7 @@ public class TiersManager implements MessageSourceAware {
 
 		// Rapport entre tiers Objet
 		for (RapportEntreTiers rapportEntreTiers : tiers.getRapportsObjet()) {
-			if (rapportEntreTiers.getType() != TypeRapportEntreTiers.PRESTATION_IMPOSABLE) {
+			if (rapportEntreTiers.getType() != TypeRapportEntreTiers.PRESTATION_IMPOSABLE && rapportEntreTiers.getType() != TypeRapportEntreTiers.PARENTE) {
 				final RapportView rapportView = new RapportView();
 				rapportView.setId(rapportEntreTiers.getId());
 				rapportView.setAnnule(rapportEntreTiers.isAnnule());
@@ -250,7 +250,7 @@ public class TiersManager implements MessageSourceAware {
 
 		// Rapport entre tiers Sujet
 		for (RapportEntreTiers rapportEntreTiers : tiers.getRapportsSujet()) {
-			if (rapportEntreTiers.getType() != TypeRapportEntreTiers.CONTACT_IMPOT_SOURCE) {
+			if (rapportEntreTiers.getType() != TypeRapportEntreTiers.CONTACT_IMPOT_SOURCE && rapportEntreTiers.getType() != TypeRapportEntreTiers.PARENTE) {
 				final RapportView rapportView = new RapportView();
 				rapportView.setId(rapportEntreTiers.getId());
 				rapportView.setAnnule(rapportEntreTiers.isAnnule());

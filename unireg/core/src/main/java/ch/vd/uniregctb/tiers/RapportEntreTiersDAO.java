@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.tiers;
 
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -58,33 +59,25 @@ public interface RapportEntreTiersDAO extends GenericDAO<RapportEntreTiers, Long
 	int countRapportsPrestationImposable(Long numeroDebiteur, boolean activesOnly);
 
 	/**
-	 * Recherche les rapports qui pointent vers le tiers spécifié. Note : les rapports de type 'contact impôt source' et 'prestation imposable' sont affichés en fonction du type de tiers.
+	 * Recherche les rapports qui pointent vers le tiers spécifié.
 	 *
 	 * @param tiersId                   l'id du tiers
-	 * @param appartenanceMenageOnly    si vrai, seuls les rapports d'appartenance ménage sont retournés
-	 * @param showHisto
-	 * @param type
-	 * @param pagination                les paramètres de pagination  @return la liste des rapports trouvés
-	 * @param excludeRapportPrestationImposable
-	 *
-	 * @param excludeContactImpotSource
+	 * @param showHisto                 <code>true</code> si les rapports terminés/annulés sont concernés
+	 * @param types                     les types de rapports entre tiers à récupérer
+	 * @param pagination                les paramètres de pagination
+	 * @return la liste des rapports trouvés
 	 */
-	List<RapportEntreTiers> findBySujetAndObjet(long tiersId, boolean appartenanceMenageOnly, boolean showHisto, TypeRapportEntreTiers type, ParamPagination pagination,
-	                                            boolean excludeRapportPrestationImposable, boolean excludeContactImpotSource);
+	List<RapportEntreTiers> findBySujetAndObjet(long tiersId, boolean showHisto, Set<TypeRapportEntreTiers> types, ParamPagination pagination);
 
 	/**
 	 * Compte le nombre de rappors qui pointent vers le tiers spécifié.  Note : les rapports de type 'contact impôt source' et 'prestation imposable' sont comptés en fonction du type de tiers.
 	 *
 	 * @param tiersId                    l'id du sujet
-	 * @param appartenanceMenageOnly     si vrai, seuls les rapports d'appartenance ménage sont comptés
-	 * @param showHisto
-	 * @param type
-	 * @param excludePrestationImposable
-	 * @param excludeContactImpotSource
-	 * @return le nombre de rapports qui pointe vers le sujet spécifié.
+	 * @param showHisto                 <code>true</code> si les rapports terminés/annulés sont concernés
+	 * @param types                     les types de rapports entre tiers à récupérer
+	 * @return le nombre de rapports qui pointent vers le sujet spécifié.
 	 */
-	int countBySujetAndObjet(long tiersId, boolean appartenanceMenageOnly, boolean showHisto, TypeRapportEntreTiers type, final boolean excludePrestationImposable,
-	                         final boolean excludeContactImpotSource);
+	int countBySujetAndObjet(long tiersId, boolean showHisto, Set<TypeRapportEntreTiers> types);
 
 	/**
 	 * Efface (réellement !) tous les rapports entre tiers d'un type donné

@@ -2,9 +2,11 @@ package ch.vd.uniregctb.tiers;
 
 import javax.persistence.DiscriminatorValue;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.hibernate.FlushMode;
@@ -96,29 +98,32 @@ public class RapportEntreTiersDAOImpl extends GenericDAOImpl<RapportEntreTiers, 
 		return DataAccessUtils.intResult(find(query, null, null));
 	}
 
+	private static String buildWhereClassFragment(Set<TypeRapportEntreTiers> types, String alias) {
+		final StringBuilder b = new StringBuilder(String.format("and %s.class in (", alias));
+		boolean first = true;
+		for (TypeRapportEntreTiers type : types) {
+			if (!first) {
+				b.append(", ");
+			}
+			b.append(type.getRapportClass().getSimpleName());
+			first = false;
+		}
+		b.append(")");
+		return b.toString();
+	}
+
 	@Override
-	public List<RapportEntreTiers> findBySujetAndObjet(final long tiersId, final boolean appartenanceMenageOnly, final boolean showHisto, final TypeRapportEntreTiers type,
-	                                                   final ParamPagination pagination, final boolean excludeRapportPrestationImposable, final boolean excludeContactImpotSource) {
+	public List<RapportEntreTiers> findBySujetAndObjet(final long tiersId, final boolean showHisto, Set<TypeRapportEntreTiers> types, final ParamPagination pagination) {
+
+		// aucun type demandé -> aucun rapport trouvé!
+		if (types == null || types.isEmpty()) {
+			return Collections.emptyList();
+		}
 
 		final QueryFragment fragment = new QueryFragment("from RapportEntreTiers r where ((r.sujetId = " + tiersId + ") or (r.objetId = " + tiersId + "))");
-
-		if (excludeRapportPrestationImposable && !excludeContactImpotSource) {
-			fragment.add("and r.class != RapportPrestationImposable");
-		}
-		else if (excludeContactImpotSource && !excludeRapportPrestationImposable) {
-			fragment.add("and r.class != ContactImpotSource");
-		}
-		else if (excludeContactImpotSource) {
-			fragment.add("and r.class != ContactImpotSource  and r.class != RapportPrestationImposable");
-		}
-		if (appartenanceMenageOnly) {
-			fragment.add("and r.class = AppartenanceMenage");
-		}
+		fragment.add(buildWhereClassFragment(types, "r"));
 		if (!showHisto) {
 			fragment.add("and r.dateFin is null and r.annulationDate is null");
-		}
-		if (type != null) {
-			fragment.add("and r.class = " + type.getRapportClass().getSimpleName());
 		}
 		fragment.add(buildOrderClause(pagination));
 
@@ -154,30 +159,14 @@ public class RapportEntreTiersDAOImpl extends GenericDAOImpl<RapportEntreTiers, 
 	}
 
 	@Override
-	public int countBySujetAndObjet(long tiersId, boolean appartenanceMenageOnly, boolean showHisto, TypeRapportEntreTiers type, final boolean excludePrestationImposable,
-	                                final boolean excludeContactImpotSource) {
-		String query = "select count(*) from RapportEntreTiers r where ((r.sujetId = " + tiersId + ") or (r.objetId = " + tiersId + "))";
+	public int countBySujetAndObjet(long tiersId, boolean showHisto, Set<TypeRapportEntreTiers> types) {
 
-		if (excludePrestationImposable && !excludeContactImpotSource) {
-			query += " and r.class != RapportPrestationImposable ";
-		}
-		else if (excludeContactImpotSource && !excludePrestationImposable) {
-			query += " and r.class != ContactImpotSource ";
-		}
-		else if (excludeContactImpotSource && excludePrestationImposable) {
-			query += " and r.class != RapportPrestationImposable and r.class != ContactImpotSource ";
-		}
-
-		if (appartenanceMenageOnly) {
-			query += " and r.class = AppartenanceMenage";
-		}
+		final QueryFragment fragment = new QueryFragment("select count(*) from RapportEntreTiers r where ((r.sujetId = " + tiersId + ") or (r.objetId = " + tiersId + "))");
+		fragment.add(buildWhereClassFragment(types, "r"));
 		if (!showHisto) {
-			query += " and r.dateFin is null and r.annulationDate is null";
+			fragment.add("and r.dateFin is null and r.annulationDate is null");
 		}
-		if (type != null) {
-			query += " and r.class = " + type.getRapportClass().getSimpleName();
-		}
-		return DataAccessUtils.intResult(find(query, null, null));
+		return DataAccessUtils.intResult(find(fragment.getQuery(), null, null));
 	}
 
 	@Override
