@@ -14,14 +14,18 @@
 </c:if>
 
 <div id="rapportsDiv" style="position:relative"><img src="<c:url value="/images/loading.gif"/>"/></div>
-<div id="parentesDiv" style="position:relative"></div>
+<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
+	<div id="parentesDiv" style="position:relative"></div>
+</authz:authorize>
 <div id="debiteursDiv" style="position:relative"></div>
 
 <script>
 	// chargement Ajax des rapports-entre-tiers
 	$(function() {
 		DossiersApparentes.loadRapports(1);
-		DossiersApparentes.loadParentes();
+		<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
+			DossiersApparentes.loadParentes();
+		</authz:authorize>
         DossiersApparentes.loadDebiteurs();
 	});
 
@@ -196,32 +200,34 @@
             return html;
         },
 
-	    loadParentes: function() {
-		    // get the data
-		    $.get('<c:url value="/rapport/parentes.do?tiers=${command.tiersGeneral.numero}"/>' + '&' + new Date().getTime(), function(parentes) {
-			    var html = '';
-			    if (typeof parentes === 'string') {
-				    // on a reçu une erreur
-				    html += '<fieldset>\n';
-				    html += '<legend><span><fmt:message key="label.parentes" /></span></legend>\n';
-				    html += '<div class="flash-warning">' + DossiersApparentes.escape("<fmt:message key="label.affichage.parentes.impossible"/>") + '<br/><i>' + DossiersApparentes.escape(parentes) + '</i></div>\n';
-				    html += '</fieldset>\n'
-			    }
-			    else {
-				    // on a bien reçu les liens de parenté
-				    if (parentes.totalCount > 0) {
+		<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
+		    loadParentes: function() {
+			    // get the data
+			    $.get('<c:url value="/rapport/parentes.do?tiers=${command.tiersGeneral.numero}"/>' + '&' + new Date().getTime(), function(parentes) {
+				    var html = '';
+				    if (typeof parentes === 'string') {
+					    // on a reçu une erreur
 					    html += '<fieldset>\n';
 					    html += '<legend><span><fmt:message key="label.parentes" /></span></legend>\n';
-					    html += DossiersApparentes.buildRapportsTable(parentes.rapports, 'prnt-', false) + '\n';
+					    html += '<div class="flash-warning">' + DossiersApparentes.escape("<fmt:message key="label.affichage.parentes.impossible"/>") + '<br/><i>' + DossiersApparentes.escape(parentes) + '</i></div>\n';
 					    html += '</fieldset>\n'
 				    }
-			    }
-			    $('#parentesDiv').html(html);
-			    Tooltips.activate_static_tooltips($('#parentesDiv'));
-		    }, 'json')
-			.error(Ajax.popupErrorHandler);
-		    return false;
-	    },
+				    else {
+					    // on a bien reçu les liens de parenté
+					    if (parentes.totalCount > 0) {
+						    html += '<fieldset>\n';
+						    html += '<legend><span><fmt:message key="label.parentes" /></span></legend>\n';
+						    html += DossiersApparentes.buildRapportsTable(parentes.rapports, 'prnt-', false) + '\n';
+						    html += '</fieldset>\n'
+					    }
+				    }
+				    $('#parentesDiv').html(html);
+				    Tooltips.activate_static_tooltips($('#parentesDiv'));
+			    }, 'json')
+				.error(Ajax.popupErrorHandler);
+			    return false;
+		    },
+		</authz:authorize>
 
 	    loadDebiteurs: function() {
             // get the data

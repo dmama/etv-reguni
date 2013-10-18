@@ -187,7 +187,7 @@ public class RapportController {
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public RapportsPage parentes(@RequestParam("tiers") long tiersId) throws AccessDeniedException {
 
-		if (!SecurityHelper.isAnyGranted(securityProvider, Role.VISU_LIMITE, Role.VISU_ALL)) {
+		if (!SecurityHelper.isAnyGranted(securityProvider, Role.VISU_ALL)) {
 			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec pour visualiser les parentés d'un contribuable");
 		}
 
