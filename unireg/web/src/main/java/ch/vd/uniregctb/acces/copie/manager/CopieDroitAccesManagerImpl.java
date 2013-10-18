@@ -13,8 +13,8 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.general.manager.UtilisateurManager;
 import ch.vd.uniregctb.general.view.UtilisateurView;
+import ch.vd.uniregctb.security.DroitAccesConflit;
 import ch.vd.uniregctb.security.DroitAccesDAO;
-import ch.vd.uniregctb.security.DroitAccesException;
 import ch.vd.uniregctb.security.DroitAccesService;
 import ch.vd.uniregctb.tiers.DroitAcces;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -78,8 +78,8 @@ public class CopieDroitAccesManagerImpl implements CopieDroitAccesManager {
 	 */
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
-	public void copie(ConfirmedDataView view) throws DroitAccesException {
-		droitAccesService.copieDroitsAcces(view.getNoOperateurReference(), view.getNoOperateurDestination());
+	public List<DroitAccesConflit> copie(ConfirmedDataView view)  {
+		return droitAccesService.copieDroitsAcces(view.getNoOperateurReference(), view.getNoOperateurDestination());
 	}
 
 	/**
@@ -87,8 +87,8 @@ public class CopieDroitAccesManagerImpl implements CopieDroitAccesManager {
 	 */
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
-	public void transfert(ConfirmedDataView view) throws DroitAccesException {
-		droitAccesService.transfereDroitsAcces(view.getNoOperateurReference(), view.getNoOperateurDestination());
+	public List<DroitAccesConflit> transfert(ConfirmedDataView view) {
+		return droitAccesService.transfereDroitsAcces(view.getNoOperateurReference(), view.getNoOperateurDestination());
 	}
 
 }

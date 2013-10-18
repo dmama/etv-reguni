@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.security;
 
+import java.util.List;
+
 import ch.vd.uniregctb.tiers.DroitAcces;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.Niveau;
@@ -14,17 +16,11 @@ public interface DroitAccesService {
 
 	/**
 	 * Ajoute un droit d'accès sur un tiers pour un opérateur donné.
-	 *
-	 * @param operateurId
-	 *            le numéro d'individu de l'opérateur qui reçoit le droit d'accès.
-	 * @param tiersId
-	 *            le tiers sur lequel le droit d'accès s'applique.
-	 * @param type
-	 *            le type d'accès
-	 * @param niveau
-	 *            le niveau d'accès
-	 * @throws DroitAccesException
-	 *             si l'ajout de cet accès provoquerait un problème cohérence (p.a. interdiction + autorisation sur le même contribuable)
+	 * @param operateurId le numéro d'individu de l'opérateur qui reçoit le droit d'accès.
+	 * @param tiersId le tiers sur lequel le droit d'accès s'applique.
+	 * @param type le type d'accès
+	 * @param niveau le niveau d'accès
+	 * @throws DroitAccesException si l'ajout de cet accès provoquerait un problème cohérence (p.a. interdiction + autorisation sur le même contribuable)
 	 */
 	DroitAcces ajouteDroitAcces(long operateurId, long tiersId, TypeDroitAcces type, Niveau niveau) throws DroitAccesException;
 
@@ -38,42 +34,29 @@ public interface DroitAccesService {
 
 	/**
 	 * Copie les droits d'accès d'un opérateur à un autre.
-	 *
-	 * @param operateurSourceId
-	 *            le numéro d'individu de l'opérateur source.
-	 * @param operateurTargetId
-	 *            le numéro d'individu de l'opérateur destination.
-	 * @throws DroitAccesException
-	 *             si la copie de ces accès provoquerait un problème cohérence (p.a. interdiction + autorisation sur le même contribuable)
+	 * @param operateurSourceId le numéro d'individu de l'opérateur source.
+	 * @param operateurTargetId le numéro d'individu de l'opérateur destination.
+	 * @return les éventuels conflit rencontrés lors de la copie (les accès sans conflit ont été copiés)
 	 */
-	void copieDroitsAcces(long operateurSourceId, long operateurTargetId) throws DroitAccesException;
+	List<DroitAccesConflit> copieDroitsAcces(long operateurSourceId, long operateurTargetId);
 
 	/**
 	 * Transfère les droits d'accès d'un opérateur à un autre. Les droits de l'opérateur source seront donc annulés.
-	 *
-	 * @param operateurSourceId
-	 *            le numéro d'individu de l'opérateur source.
-	 * @param operateurTargetId
-	 *            le numéro d'individu de l'opérateur destination.
-	 * @throws DroitAccesException
-	 *             si le transfert de ces accès provoquerait un problème cohérence (p.a. interdiction + autorisation sur le même
-	 *             contribuable)
+	 * @param operateurSourceId le numéro d'individu de l'opérateur source.
+	 * @param operateurTargetId le numéro d'individu de l'opérateur destination.
+	 * @return les éventuels conflit rencontrés lors du transfert (les accès sans conflit ont été transférés, et les accès en conflit ont simplement été fermés sur l'opérateur source)
 	 */
-	void transfereDroitsAcces(long operateurSourceId, long operateurTargetId) throws DroitAccesException;
+	List<DroitAccesConflit> transfereDroitsAcces(long operateurSourceId, long operateurTargetId);
 
 	/**
 	 * Annule un droit d'accès.
-	 *
-	 * @param id
-	 *            l'id du droit d'accès à annuler.
+	 * @param id l'id du droit d'accès à annuler.
 	 */
 	void annuleDroitAcces(long id) throws DroitAccesException;
 
 	/**
 	 * Annule tous les droits d'accès pour un opérateur donné.
-	 *
-	 * @param id
-	 *            le numero d'individu de l'operateur dont les droits seront supprimés
+	 * @param noIndividuOperateur le numero d'individu de l'operateur dont les droits seront supprimés
 	 */
 	void annuleToutLesDroitAcces(long noIndividuOperateur);
 }

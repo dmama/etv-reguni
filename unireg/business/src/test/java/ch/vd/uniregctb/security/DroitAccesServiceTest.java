@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.security;
 
-import java.util.regex.Pattern;
+import java.util.List;
 
 import junit.framework.Assert;
 import org.junit.Test;
@@ -68,7 +68,8 @@ public class DroitAccesServiceTest extends BusinessTest {
 		assertAvecDroit(noIndOperateurSource, dossier.getNumero(), aujourdhui, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE);
 		assertSansDroit(noIndOperateurDestination, dossier.getNumero(), aujourdhui);
 
-		service.copieDroitsAcces(noIndOperateurSource, noIndOperateurDestination);
+		final List<DroitAccesConflit> conflits = service.copieDroitsAcces(noIndOperateurSource, noIndOperateurDestination);
+		assertEmpty(conflits);
 		assertAvecDroit(noIndOperateurSource, dossier.getNumero(), aujourdhui, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE);
 		assertAvecDroit(noIndOperateurSource, dossier.getNumero(), demain, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE);
 		assertSansDroit(noIndOperateurDestination, dossier.getNumero(), hier);
@@ -88,7 +89,8 @@ public class DroitAccesServiceTest extends BusinessTest {
 		assertSansDroit(noIndOperateurDestination, dossier.getNumero(), milieu);
 
 		// un droit échu ne doit pas être copié !
-		service.copieDroitsAcces(noIndOperateurSource, noIndOperateurDestination);
+		final List<DroitAccesConflit> conflits = service.copieDroitsAcces(noIndOperateurSource, noIndOperateurDestination);
+		assertEmpty(conflits);
 		assertSansDroit(noIndOperateurSource, dossier.getNumero(), aujourdhui);
 		assertAvecDroit(noIndOperateurSource, dossier.getNumero(), milieu, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE);
 		assertSansDroit(noIndOperateurDestination, dossier.getNumero(), aujourdhui);
@@ -108,7 +110,8 @@ public class DroitAccesServiceTest extends BusinessTest {
 		assertSansDroit(noIndOperateurDestination, dossier.getNumero(), milieu);
 
 		// un droit échu ne doit pas être transféré !
-		service.transfereDroitsAcces(noIndOperateurSource, noIndOperateurDestination);
+		final List<DroitAccesConflit> conflits = service.transfereDroitsAcces(noIndOperateurSource, noIndOperateurDestination);
+		assertEmpty(conflits);
 		assertSansDroit(noIndOperateurSource, dossier.getNumero(), aujourdhui);
 		assertAvecDroit(noIndOperateurSource, dossier.getNumero(), milieu, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE);
 		assertSansDroit(noIndOperateurDestination, dossier.getNumero(), aujourdhui);
@@ -124,7 +127,8 @@ public class DroitAccesServiceTest extends BusinessTest {
 		assertAvecDroit(noIndOperateurSource, dossier.getNumero(), aujourdhui, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE);
 		assertSansDroit(noIndOperateurDestination, dossier.getNumero(), aujourdhui);
 
-		service.transfereDroitsAcces(noIndOperateurSource, noIndOperateurDestination);
+		final List<DroitAccesConflit> conflits = service.transfereDroitsAcces(noIndOperateurSource, noIndOperateurDestination);
+		assertEmpty(conflits);
 		assertAvecDroit(noIndOperateurSource, dossier.getNumero(), aujourdhui, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE);
 		assertSansDroit(noIndOperateurSource, dossier.getNumero(), demain);
 		assertSansDroit(noIndOperateurDestination, dossier.getNumero(), hier);
@@ -141,7 +145,8 @@ public class DroitAccesServiceTest extends BusinessTest {
 		assertAvecDroit(noIndOperateurSource, dossier.getNumero(), aujourdhui, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE);
 		assertAvecDroit(noIndOperateurDestination, dossier.getNumero(), aujourdhui, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE);
 
-		service.copieDroitsAcces(noIndOperateurSource, noIndOperateurDestination);
+		final List<DroitAccesConflit> conflits = service.copieDroitsAcces(noIndOperateurSource, noIndOperateurDestination);
+		assertEmpty(conflits);
 		assertAvecDroit(noIndOperateurSource, dossier.getNumero(), aujourdhui, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE);
 		assertAvecDroit(noIndOperateurSource, dossier.getNumero(), demain, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE);
 		assertSansDroit(noIndOperateurDestination, dossier.getNumero(), hier);
@@ -158,7 +163,8 @@ public class DroitAccesServiceTest extends BusinessTest {
 		assertAvecDroit(noIndOperateurSource, dossier.getNumero(), aujourdhui, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE);
 		assertAvecDroit(noIndOperateurDestination, dossier.getNumero(), aujourdhui, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE);
 
-		service.transfereDroitsAcces(noIndOperateurSource, noIndOperateurDestination);
+		final List<DroitAccesConflit> conflits = service.transfereDroitsAcces(noIndOperateurSource, noIndOperateurDestination);
+		assertEmpty(conflits);
 		assertAvecDroit(noIndOperateurSource, dossier.getNumero(), aujourdhui, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE);
 		assertSansDroit(noIndOperateurSource, dossier.getNumero(), demain);
 		assertSansDroit(noIndOperateurDestination, dossier.getNumero(), hier);
@@ -176,7 +182,8 @@ public class DroitAccesServiceTest extends BusinessTest {
 		assertSansDroit(noIndOperateurDestination, dossier.getNumero(), aujourdhui);
 		assertAvecDroit(noIndOperateurDestination, dossier.getNumero(), demain, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE);
 
-		service.copieDroitsAcces(noIndOperateurSource, noIndOperateurDestination);
+		final List<DroitAccesConflit> conflits = service.copieDroitsAcces(noIndOperateurSource, noIndOperateurDestination);
+		assertEmpty(conflits);
 		assertAvecDroit(noIndOperateurSource, dossier.getNumero(), aujourdhui, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE);
 		assertAvecDroit(noIndOperateurSource, dossier.getNumero(), demain, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE);
 		assertSansDroit(noIndOperateurDestination, dossier.getNumero(), hier);
@@ -194,7 +201,8 @@ public class DroitAccesServiceTest extends BusinessTest {
 		assertSansDroit(noIndOperateurDestination, dossier.getNumero(), aujourdhui);
 		assertAvecDroit(noIndOperateurDestination, dossier.getNumero(), demain, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE);
 
-		service.transfereDroitsAcces(noIndOperateurSource, noIndOperateurDestination);
+		final List<DroitAccesConflit> conflits = service.transfereDroitsAcces(noIndOperateurSource, noIndOperateurDestination);
+		assertEmpty(conflits);
 		assertAvecDroit(noIndOperateurSource, dossier.getNumero(), aujourdhui, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE);
 		assertSansDroit(noIndOperateurSource, dossier.getNumero(), demain);
 		assertSansDroit(noIndOperateurDestination, dossier.getNumero(), hier);
@@ -204,93 +212,133 @@ public class DroitAccesServiceTest extends BusinessTest {
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testCopieAvecConflitDeNiveau() throws Exception {
-		final PersonnePhysique dossier = createTiersPourDossier();
-		createDroitAcces(RegDate.get(2000,1,1), null, Niveau.ECRITURE, TypeDroitAcces.AUTORISATION, noIndOperateurSource, dossier);
-		createDroitAcces(RegDate.get(2002,1,1), null, Niveau.LECTURE, TypeDroitAcces.AUTORISATION, noIndOperateurDestination, dossier);
+		final PersonnePhysique dossier1 = createTiersPourDossier();
+		final PersonnePhysique dossier2 = createTiersPourDossier();
+		createDroitAcces(RegDate.get(2000, 1, 1), null, Niveau.ECRITURE, TypeDroitAcces.AUTORISATION, noIndOperateurSource, dossier1);
+		createDroitAcces(RegDate.get(2000, 1, 1), null, Niveau.ECRITURE, TypeDroitAcces.AUTORISATION, noIndOperateurSource, dossier2);
+		createDroitAcces(RegDate.get(2002, 1, 1), null, Niveau.LECTURE, TypeDroitAcces.AUTORISATION, noIndOperateurDestination, dossier1);
 
-		assertAvecDroit(noIndOperateurSource, dossier.getNumero(), aujourdhui, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE);
-		assertAvecDroit(noIndOperateurDestination, dossier.getNumero(), aujourdhui, TypeDroitAcces.AUTORISATION, Niveau.LECTURE);
+		assertAvecDroit(noIndOperateurSource, dossier1.getNumero(), aujourdhui, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE);
+		assertAvecDroit(noIndOperateurSource, dossier2.getNumero(), aujourdhui, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE);
+		assertAvecDroit(noIndOperateurDestination, dossier1.getNumero(), aujourdhui, TypeDroitAcces.AUTORISATION, Niveau.LECTURE);
 
-		try {
-			service.copieDroitsAcces(noIndOperateurSource, noIndOperateurDestination);
-			Assert.fail("Il y a un conflit sur le niveau d'autorisation, on n'aurait pas dû accepter la copie !");
-		}
-		catch (DroitAccesException e) {
-			final Pattern pattern = Pattern.compile("Impossible d'ajouter le droit d'accès \\w+/\\w+ sur le dossier [0-9\\.]+ à l'opérateur '\\?' \\(\\?/\\d+\\) car celui-ci entrerait en conflit avec un droit \\w+/\\w+ existant");
-			Assert.assertTrue(e.getMessage(), pattern.matcher(e.getMessage()).matches());
-		}
+		final List<DroitAccesConflit> conflits = service.copieDroitsAcces(noIndOperateurSource, noIndOperateurDestination);
+		Assert.assertEquals(1, conflits.size());
 
-		assertAvecDroit(noIndOperateurSource, dossier.getNumero(), aujourdhui, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE);
-		assertAvecDroit(noIndOperateurDestination, dossier.getNumero(), aujourdhui, TypeDroitAcces.AUTORISATION, Niveau.LECTURE);
+		final DroitAccesConflit conflit = conflits.get(0);
+		Assert.assertNotNull(conflit);
+		Assert.assertEquals(dossier1.getNumero(), (Long) conflit.getNoContribuable());
+		Assert.assertEquals(Niveau.LECTURE, conflit.getAccesPreexistant().getNiveau());
+		Assert.assertEquals(TypeDroitAcces.AUTORISATION, conflit.getAccesPreexistant().getType());
+		Assert.assertEquals(Niveau.ECRITURE, conflit.getAccesCopie().getNiveau());
+		Assert.assertEquals(TypeDroitAcces.AUTORISATION, conflit.getAccesCopie().getType());
+
+		assertAvecDroit(noIndOperateurSource, dossier1.getNumero(), aujourdhui, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE);
+		assertAvecDroit(noIndOperateurSource, dossier1.getNumero(), demain, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE);
+		assertAvecDroit(noIndOperateurSource, dossier2.getNumero(), aujourdhui, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE);
+		assertAvecDroit(noIndOperateurSource, dossier2.getNumero(), demain, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE);
+		assertAvecDroit(noIndOperateurDestination, dossier1.getNumero(), aujourdhui, TypeDroitAcces.AUTORISATION, Niveau.LECTURE);
+		assertSansDroit(noIndOperateurDestination, dossier2.getNumero(), hier);
+		assertAvecDroit(noIndOperateurDestination, dossier2.getNumero(), aujourdhui, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE);
 	}
 
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testTransfertAvecConflitDeNiveau() throws Exception {
-		final PersonnePhysique dossier = createTiersPourDossier();
-		createDroitAcces(RegDate.get(2000,1,1), null, Niveau.ECRITURE, TypeDroitAcces.AUTORISATION, noIndOperateurSource, dossier);
-		createDroitAcces(RegDate.get(2002,1,1), null, Niveau.LECTURE, TypeDroitAcces.AUTORISATION, noIndOperateurDestination, dossier);
+		final PersonnePhysique dossier1 = createTiersPourDossier();
+		final PersonnePhysique dossier2 = createTiersPourDossier();
+		createDroitAcces(RegDate.get(2000, 1, 1), null, Niveau.ECRITURE, TypeDroitAcces.AUTORISATION, noIndOperateurSource, dossier1);
+		createDroitAcces(RegDate.get(2000, 1, 1), null, Niveau.ECRITURE, TypeDroitAcces.AUTORISATION, noIndOperateurSource, dossier2);
+		createDroitAcces(RegDate.get(2002, 1, 1), null, Niveau.LECTURE, TypeDroitAcces.AUTORISATION, noIndOperateurDestination, dossier1);
 
-		assertAvecDroit(noIndOperateurSource, dossier.getNumero(), aujourdhui, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE);
-		assertAvecDroit(noIndOperateurDestination, dossier.getNumero(), aujourdhui, TypeDroitAcces.AUTORISATION, Niveau.LECTURE);
+		assertAvecDroit(noIndOperateurSource, dossier1.getNumero(), aujourdhui, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE);
+		assertAvecDroit(noIndOperateurSource, dossier2.getNumero(), aujourdhui, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE);
+		assertAvecDroit(noIndOperateurDestination, dossier1.getNumero(), aujourdhui, TypeDroitAcces.AUTORISATION, Niveau.LECTURE);
 
-		try {
-			service.transfereDroitsAcces(noIndOperateurSource, noIndOperateurDestination);
-			Assert.fail("Il y a un conflit sur le niveau d'autorisation, on n'aurait pas dû accepter le transfert !");
-		}
-		catch (DroitAccesException e) {
-			final Pattern pattern = Pattern.compile("Impossible d'ajouter le droit d'accès \\w+/\\w+ sur le dossier [0-9\\.]+ à l'opérateur '\\?' \\(\\?/\\d+\\) car celui-ci entrerait en conflit avec un droit \\w+/\\w+ existant");
-			Assert.assertTrue(e.getMessage(), pattern.matcher(e.getMessage()).matches());
-		}
+		final List<DroitAccesConflit> conflits = service.transfereDroitsAcces(noIndOperateurSource, noIndOperateurDestination);
+		Assert.assertEquals(1, conflits.size());
 
-		assertAvecDroit(noIndOperateurSource, dossier.getNumero(), aujourdhui, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE);
-		assertAvecDroit(noIndOperateurDestination, dossier.getNumero(), aujourdhui, TypeDroitAcces.AUTORISATION, Niveau.LECTURE);
+		final DroitAccesConflit conflit = conflits.get(0);
+		Assert.assertNotNull(conflit);
+		Assert.assertEquals(dossier1.getNumero(), (Long) conflit.getNoContribuable());
+		Assert.assertEquals(Niveau.LECTURE, conflit.getAccesPreexistant().getNiveau());
+		Assert.assertEquals(TypeDroitAcces.AUTORISATION, conflit.getAccesPreexistant().getType());
+		Assert.assertEquals(Niveau.ECRITURE, conflit.getAccesCopie().getNiveau());
+		Assert.assertEquals(TypeDroitAcces.AUTORISATION, conflit.getAccesCopie().getType());
+
+		assertAvecDroit(noIndOperateurSource, dossier1.getNumero(), aujourdhui, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE);
+		assertSansDroit(noIndOperateurSource, dossier1.getNumero(), demain);
+		assertAvecDroit(noIndOperateurSource, dossier2.getNumero(), aujourdhui, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE);
+		assertSansDroit(noIndOperateurSource, dossier2.getNumero(), demain);
+		assertAvecDroit(noIndOperateurDestination, dossier1.getNumero(), aujourdhui, TypeDroitAcces.AUTORISATION, Niveau.LECTURE);
+		assertSansDroit(noIndOperateurDestination, dossier2.getNumero(), hier);
+		assertAvecDroit(noIndOperateurDestination, dossier2.getNumero(), aujourdhui, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE);
 	}
 
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testCopieAvecConflitDeType() throws Exception {
-		final PersonnePhysique dossier = createTiersPourDossier();
-		createDroitAcces(RegDate.get(2000,1,1), null, Niveau.ECRITURE, TypeDroitAcces.AUTORISATION, noIndOperateurSource, dossier);
-		createDroitAcces(RegDate.get(2002,1,1), null, Niveau.ECRITURE, TypeDroitAcces.INTERDICTION, noIndOperateurDestination, dossier);
+		final PersonnePhysique dossier1 = createTiersPourDossier();
+		final PersonnePhysique dossier2 = createTiersPourDossier();
+		createDroitAcces(RegDate.get(2000, 1, 1), null, Niveau.ECRITURE, TypeDroitAcces.AUTORISATION, noIndOperateurSource, dossier1);
+		createDroitAcces(RegDate.get(2000, 1, 1), null, Niveau.ECRITURE, TypeDroitAcces.AUTORISATION, noIndOperateurSource, dossier2);
+		createDroitAcces(RegDate.get(2002, 1, 1), null, Niveau.ECRITURE, TypeDroitAcces.INTERDICTION, noIndOperateurDestination, dossier1);
 
-		assertAvecDroit(noIndOperateurSource, dossier.getNumero(), aujourdhui, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE);
-		assertAvecDroit(noIndOperateurDestination, dossier.getNumero(), aujourdhui, TypeDroitAcces.INTERDICTION, Niveau.ECRITURE);
+		assertAvecDroit(noIndOperateurSource, dossier1.getNumero(), aujourdhui, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE);
+		assertAvecDroit(noIndOperateurSource, dossier2.getNumero(), aujourdhui, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE);
+		assertAvecDroit(noIndOperateurDestination, dossier1.getNumero(), aujourdhui, TypeDroitAcces.INTERDICTION, Niveau.ECRITURE);
 
-		try {
-			service.copieDroitsAcces(noIndOperateurSource, noIndOperateurDestination);
-			Assert.fail("Il y a un conflit sur le niveau d'autorisation, on n'aurait pas dû accepter la copie !");
-		}
-		catch (DroitAccesException e) {
-			final Pattern pattern = Pattern.compile("Impossible d'ajouter le droit d'accès \\w+/\\w+ sur le dossier [0-9\\.]+ à l'opérateur '\\?' \\(\\?/\\d+\\) car celui-ci entrerait en conflit avec un droit \\w+/\\w+ existant");
-			Assert.assertTrue(e.getMessage(), pattern.matcher(e.getMessage()).matches());
-		}
+		final List<DroitAccesConflit> conflits = service.copieDroitsAcces(noIndOperateurSource, noIndOperateurDestination);
+		Assert.assertEquals(1, conflits.size());
 
-		assertAvecDroit(noIndOperateurSource, dossier.getNumero(), aujourdhui, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE);
-		assertAvecDroit(noIndOperateurDestination, dossier.getNumero(), aujourdhui, TypeDroitAcces.INTERDICTION, Niveau.ECRITURE);
+		final DroitAccesConflit conflit = conflits.get(0);
+		Assert.assertNotNull(conflit);
+		Assert.assertEquals(dossier1.getNumero(), (Long) conflit.getNoContribuable());
+		Assert.assertEquals(Niveau.ECRITURE, conflit.getAccesPreexistant().getNiveau());
+		Assert.assertEquals(TypeDroitAcces.INTERDICTION, conflit.getAccesPreexistant().getType());
+		Assert.assertEquals(Niveau.ECRITURE, conflit.getAccesCopie().getNiveau());
+		Assert.assertEquals(TypeDroitAcces.AUTORISATION, conflit.getAccesCopie().getType());
+
+		assertAvecDroit(noIndOperateurSource, dossier1.getNumero(), aujourdhui, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE);
+		assertAvecDroit(noIndOperateurSource, dossier1.getNumero(), demain, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE);
+		assertAvecDroit(noIndOperateurSource, dossier2.getNumero(), aujourdhui, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE);
+		assertAvecDroit(noIndOperateurSource, dossier2.getNumero(), demain, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE);
+		assertAvecDroit(noIndOperateurDestination, dossier1.getNumero(), aujourdhui, TypeDroitAcces.INTERDICTION, Niveau.ECRITURE);
+		assertSansDroit(noIndOperateurDestination, dossier2.getNumero(), hier);
+		assertAvecDroit(noIndOperateurDestination, dossier2.getNumero(), aujourdhui, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE);
 	}
 
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testTransfertAvecConflitDeType() throws Exception {
-		final PersonnePhysique dossier = createTiersPourDossier();
-		createDroitAcces(RegDate.get(2000,1,1), null, Niveau.ECRITURE, TypeDroitAcces.AUTORISATION, noIndOperateurSource, dossier);
-		createDroitAcces(RegDate.get(2002,1,1), null, Niveau.ECRITURE, TypeDroitAcces.INTERDICTION, noIndOperateurDestination, dossier);
+		final PersonnePhysique dossier1 = createTiersPourDossier();
+		final PersonnePhysique dossier2 = createTiersPourDossier();
+		createDroitAcces(RegDate.get(2000, 1, 1), null, Niveau.ECRITURE, TypeDroitAcces.AUTORISATION, noIndOperateurSource, dossier1);
+		createDroitAcces(RegDate.get(2000, 1, 1), null, Niveau.ECRITURE, TypeDroitAcces.AUTORISATION, noIndOperateurSource, dossier2);
+		createDroitAcces(RegDate.get(2002, 1, 1), null, Niveau.ECRITURE, TypeDroitAcces.INTERDICTION, noIndOperateurDestination, dossier1);
 
-		assertAvecDroit(noIndOperateurSource, dossier.getNumero(), aujourdhui, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE);
-		assertAvecDroit(noIndOperateurDestination, dossier.getNumero(), aujourdhui, TypeDroitAcces.INTERDICTION, Niveau.ECRITURE);
+		assertAvecDroit(noIndOperateurSource, dossier1.getNumero(), aujourdhui, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE);
+		assertAvecDroit(noIndOperateurSource, dossier2.getNumero(), aujourdhui, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE);
+		assertAvecDroit(noIndOperateurDestination, dossier1.getNumero(), aujourdhui, TypeDroitAcces.INTERDICTION, Niveau.ECRITURE);
 
-		try {
-			service.transfereDroitsAcces(noIndOperateurSource, noIndOperateurDestination);
-			Assert.fail("Il y a un conflit sur le niveau d'autorisation, on n'aurait pas dû accepter le transfert !");
-		}
-		catch (DroitAccesException e) {
-			final Pattern pattern = Pattern.compile("Impossible d'ajouter le droit d'accès \\w+/\\w+ sur le dossier [0-9\\.]+ à l'opérateur '\\?' \\(\\?/\\d+\\) car celui-ci entrerait en conflit avec un droit \\w+/\\w+ existant");
-			Assert.assertTrue(e.getMessage(), pattern.matcher(e.getMessage()).matches());
-		}
+		final List<DroitAccesConflit> conflits = service.transfereDroitsAcces(noIndOperateurSource, noIndOperateurDestination);
+		Assert.assertEquals(1, conflits.size());
 
-		assertAvecDroit(noIndOperateurSource, dossier.getNumero(), aujourdhui, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE);
-		assertAvecDroit(noIndOperateurDestination, dossier.getNumero(), aujourdhui, TypeDroitAcces.INTERDICTION, Niveau.ECRITURE);
+		final DroitAccesConflit conflit = conflits.get(0);
+		Assert.assertNotNull(conflit);
+		Assert.assertEquals(dossier1.getNumero(), (Long) conflit.getNoContribuable());
+		Assert.assertEquals(Niveau.ECRITURE, conflit.getAccesPreexistant().getNiveau());
+		Assert.assertEquals(TypeDroitAcces.INTERDICTION, conflit.getAccesPreexistant().getType());
+		Assert.assertEquals(Niveau.ECRITURE, conflit.getAccesCopie().getNiveau());
+		Assert.assertEquals(TypeDroitAcces.AUTORISATION, conflit.getAccesCopie().getType());
+
+		assertAvecDroit(noIndOperateurSource, dossier1.getNumero(), aujourdhui, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE);
+		assertSansDroit(noIndOperateurSource, dossier1.getNumero(), demain);
+		assertAvecDroit(noIndOperateurSource, dossier2.getNumero(), aujourdhui, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE);
+		assertSansDroit(noIndOperateurSource, dossier2.getNumero(), demain);
+		assertAvecDroit(noIndOperateurDestination, dossier1.getNumero(), aujourdhui, TypeDroitAcces.INTERDICTION, Niveau.ECRITURE);
+		assertSansDroit(noIndOperateurDestination, dossier2.getNumero(), hier);
+		assertAvecDroit(noIndOperateurDestination, dossier2.getNumero(), aujourdhui, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE);
 	}
 
 	@Test
@@ -304,7 +352,8 @@ public class DroitAccesServiceTest extends BusinessTest {
 		assertAvecDroit(noIndOperateurSource, dossier.getNumero(), aujourdhui, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE);
 		assertSansDroit(noIndOperateurDestination, dossier.getNumero(), aujourdhui);
 
-		service.copieDroitsAcces(noIndOperateurSource, noIndOperateurDestination);
+		final List<DroitAccesConflit> conflits = service.copieDroitsAcces(noIndOperateurSource, noIndOperateurDestination);
+		assertEmpty(conflits);
 		assertAvecDroit(noIndOperateurSource, dossier.getNumero(), aujourdhui, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE);
 		assertAvecDroit(noIndOperateurSource, dossier.getNumero(), demain, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE);
 		assertSansDroit(noIndOperateurDestination, dossier.getNumero(), hier);

@@ -1,12 +1,14 @@
 package ch.vd.uniregctb.acces.copie.manager;
 
+import java.util.List;
+
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.acces.copie.view.ConfirmCopieView;
 import ch.vd.uniregctb.acces.copie.view.ConfirmedDataView;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
-import ch.vd.uniregctb.security.DroitAccesException;
+import ch.vd.uniregctb.security.DroitAccesConflit;
 
 public interface CopieDroitAccesManager {
 
@@ -22,14 +24,16 @@ public interface CopieDroitAccesManager {
 
 	/**
 	 * Copie les droits d'un utilisateur vers un autre
+	 * @return les éventuels conflits rencontrés lors de la copie
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	void copie(ConfirmedDataView view) throws DroitAccesException ;
+	List<DroitAccesConflit> copie(ConfirmedDataView view);
 
 	/**
 	 * Transfert les droits d'un utilisateur vers un autre
+	 * @return les éventuels conflits rencontrés lors du transfert
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	void transfert(ConfirmedDataView view) throws DroitAccesException ;
+	List<DroitAccesConflit> transfert(ConfirmedDataView view);
 
 }

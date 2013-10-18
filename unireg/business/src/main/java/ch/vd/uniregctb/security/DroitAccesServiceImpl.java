@@ -1,6 +1,8 @@
 package ch.vd.uniregctb.security;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -11,7 +13,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.securite.model.Operateur;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteException;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
 import ch.vd.uniregctb.tiers.DroitAcces;
@@ -176,21 +177,6 @@ public class DroitAccesServiceImpl implements DroitAccesService {
 	 * @return <code>true</code> si le droit déjà existant a juste été adapté à l'ajout, <code>false</code> si rien n'a été modifié
 	 * @throws DroitAccesException en cas de conflit (la spécification dit qu'un conflit est un droit qui serait à la fois en écriture et en lecture, ou à la fois une autorisation et une interdiction)
 	 */
-	private boolean adapteExistantPourTransfertOperateur(DroitAcces aAjouter, DroitAcces existant, RegDate aujourdhui) throws DroitAccesException {
-		Assert.isFalse(aAjouter.isAnnule());
-		return  aAjouter.getTiers().getNumero().equals(existant.getTiers().getNumero()) &&
-				adapteExistant(aAjouter.getType(), aAjouter.getNiveau(), aAjouter, existant, aujourdhui);
-	}
-
-	/**
-	 * Détecte un éventuel conflit autour des deux droits donnés (peuvent être considérés comme en conflit ici deux droits qui sont assignés à deux opérateurs différents, puisque le but est justement de faire
-	 * ce test avant de faire une copie/un transfert de droit d'un opérateur à un autre)
-	 * @param aAjouter candidat à l'ajout
-	 * @param existant droit existant avec lequel il faut vérifier la compatibilité
-	 * @param aujourdhui date du jour (= date d'ouverture au plus tard du droit existant en cas d'adaptation)
-	 * @return <code>true</code> si le droit déjà existant a juste été adapté à l'ajout, <code>false</code> si rien n'a été modifié
-	 * @throws DroitAccesException en cas de conflit (la spécification dit qu'un conflit est un droit qui serait à la fois en écriture et en lecture, ou à la fois une autorisation et une interdiction)
-	 */
 	private boolean adapteExistantPourTransfertDossier(DroitAcces aAjouter, DroitAcces existant, RegDate aujourdhui) throws DroitAccesException {
 		Assert.isFalse(aAjouter.isAnnule());
 		return  aAjouter.getNoIndividuOperateur() == existant.getNoIndividuOperateur() &&
@@ -205,9 +191,9 @@ public class DroitAccesServiceImpl implements DroitAccesService {
 	 * @param existant droit existant avec lequel il faut vérifier la compatibilité
 	 * @param aujourdhui date du jour (= date d'ouverture au plus tard du droit existant en cas d'adaptation)
 	 * @return <code>true</code> si le droit déjà existant a juste été adapté à l'ajout, <code>false</code> si rien n'a été modifié
-	 * @throws DroitAccesException en cas de conflit (la spécification dit qu'un conflit est un droit qui serait à la fois en écriture et en lecture, ou à la fois une autorisation et une interdiction)
+	 * @throws DroitAccesConflitException en cas de conflit (la spécification dit qu'un conflit est un droit qui serait à la fois en écriture et en lecture, ou à la fois une autorisation et une interdiction)
 	 */
-	private boolean adapteExistant(TypeDroitAcces type, Niveau niveau, DateRange periode, DroitAcces existant, RegDate aujourdhui) throws DroitAccesException {
+	private boolean adapteExistant(TypeDroitAcces type, Niveau niveau, DateRange periode, DroitAcces existant, RegDate aujourdhui) throws DroitAccesConflitException {
 
 		// si l'un au moins des droits est annulé, il ne peut y avoir de conflit, ni d'adaptation
 		if (!existant.isAnnule()) {
@@ -235,10 +221,10 @@ public class DroitAccesServiceImpl implements DroitAccesService {
 					}
 					final String nomOperateur = operateur != null ? String.format("%s %s", operateur.getPrenom(), operateur.getNom()) : "?";
 					final String visaOperateur = operateur != null ? operateur.getCode() : "?";
-					final String msg = String.format("Impossible d'ajouter le droit d'accès %s/%s sur le dossier %s à l'opérateur '%s' (%s/%d) car celui-ci entrerait en conflit avec un droit %s/%s existant",
-													type, niveau, FormatNumeroHelper.numeroCTBToDisplay(existant.getTiers().getNumero()),
-													nomOperateur, visaOperateur, existant.getNoIndividuOperateur(), existant.getType(), existant.getNiveau());
-					throw new DroitAccesException(msg);
+					final String msg = String.format("Impossible d'ajouter le droit d'accès à l'opérateur '%s' (%s/%d).", nomOperateur, visaOperateur, existant.getNoIndividuOperateur());
+					throw new DroitAccesConflitException(msg, new DroitAccesConflit(existant.getTiers().getNumero(),
+					                                                                existant.getType(), existant.getNiveau(),
+					                                                                type, niveau));
 				}
 			}
 		}
@@ -273,45 +259,71 @@ public class DroitAccesServiceImpl implements DroitAccesService {
         }
     }
 
-    /**
-	 * {@inheritDoc}
-	 */
 	@Override
-	public void copieDroitsAcces(long operateurSourceId, long operateurTargetId) throws DroitAccesException {
-		copie(operateurSourceId, operateurTargetId, false);
+	public List<DroitAccesConflit> copieDroitsAcces(long operateurSourceId, long operateurTargetId) {
+		return copie(operateurSourceId, operateurTargetId, false);
+	}
+
+	@Override
+	public List<DroitAccesConflit> transfereDroitsAcces(long operateurSourceId, long operateurTargetId) {
+		return copie(operateurSourceId, operateurTargetId, true);
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Détecte un éventuel conflit autour des deux droits donnés (peuvent être considérés comme en conflit ici deux droits qui sont assignés à deux opérateurs différents, puisque le but est justement de faire
+	 * ce test avant de faire une copie/un transfert de droit d'un opérateur à un autre)
+	 * @param aAjouter candidat à l'ajout
+	 * @param existant droit existant avec lequel il faut vérifier la compatibilité
+	 * @param aujourdhui date du jour (= date d'ouverture au plus tard du droit existant en cas d'adaptation)
+	 * @return <code>true</code> si le droit déjà existant a juste été adapté à l'ajout, <code>false</code> s'il faut recopier le droit
 	 */
-	@Override
-	public void transfereDroitsAcces(long operateurSourceId, long operateurTargetId) throws DroitAccesException {
-		copie(operateurSourceId, operateurTargetId, true);
+	private boolean adapteExistantPourTransfertOperateur(DroitAcces aAjouter, DroitAcces existant, RegDate aujourdhui, List<DroitAccesConflit> conflits)  {
+		Assert.isFalse(aAjouter.isAnnule());
+		if (aAjouter.getTiers().getNumero().equals(existant.getTiers().getNumero())) {
+			try {
+				return adapteExistant(aAjouter.getType(), aAjouter.getNiveau(), aAjouter, existant, aujourdhui);
+			}
+			catch (DroitAccesConflitException e) {
+				conflits.add(e.getConflit());
+				return true;
+			}
+		}
+		else {
+			return false;
+		}
 	}
 
-	private void copie(final long operateurSourceId, final long operateurTargetId, final boolean fermeSource) throws DroitAccesException {
+	private List<DroitAccesConflit> copie(final long operateurSourceId, final long operateurTargetId, final boolean fermeSource) {
 
 		final List<DroitAcces> source = droitAccesDAO.getDroitsAcces(operateurSourceId);
 		final List<DroitAcces> target = droitAccesDAO.getDroitsAcces(operateurTargetId);
 		final RegDate dateReference = RegDate.get();
 
-		copieDroitsAcces(source, target, dateReference, new CopieDroitCallback() {
-			@Override
-			public boolean adapteExistant(DroitAcces src, DroitAcces dst) throws DroitAccesException {
-				return adapteExistantPourTransfertOperateur(src, dst, dateReference);
-			}
-
-			@Override
-			public void fillDestinationContext(DroitAcces droit) {
-				droit.setNoIndividuOperateur(operateurTargetId);
-			}
-
-			@Override
-			public void postTraiteSource(DroitAcces droit) {
-				if (fermeSource && droit.isValidAt(dateReference)) {
-					droit.setDateFin(dateReference);
+		final List<DroitAccesConflit> conflits = new LinkedList<>();
+		try {
+			copieDroitsAcces(source, target, dateReference, new CopieDroitCallback() {
+				@Override
+				public boolean adapteExistant(DroitAcces src, DroitAcces dst) {
+					return adapteExistantPourTransfertOperateur(src, dst, dateReference, conflits);
 				}
-			}
-		});
+
+				@Override
+				public void fillDestinationContext(DroitAcces droit) {
+					droit.setNoIndividuOperateur(operateurTargetId);
+				}
+
+				@Override
+				public void postTraiteSource(DroitAcces droit) {
+					if (fermeSource && droit.isValidAt(dateReference)) {
+						droit.setDateFin(dateReference);
+					}
+				}
+			});
+		}
+		catch (DroitAccesException e) {
+			// cela ne devrait pas être possible maintenant que l'on gère les conflits à ce niveau
+			throw new RuntimeException(e);
+		}
+		return conflits.isEmpty() ? Collections.<DroitAccesConflit>emptyList() : conflits;
 	}
 }

@@ -44,6 +44,7 @@ import ch.vd.uniregctb.general.view.UtilisateurView;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.TooManyResultsIndexerException;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
+import ch.vd.uniregctb.security.DroitAccesConflit;
 import ch.vd.uniregctb.security.DroitAccesException;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityCheck;
@@ -64,6 +65,7 @@ public class DroitAccesController {
 
 	public static final String DOSSIER_CRITERIA_NAME = "DossierCriteria";
 	public static final String UTILISATEUR_CRITERIA_NAME = "PersonneCriteria";
+	public static final String CONFLICTS_NAME = "DroitAccesConflits";
 
 	private static final String TYPE_DROIT_ACCES_NOM_MAP_NAME = "typesDroitAcces";
 	private static final String TYPES_RECHERCHE_NOM = "typesRechercheNom";
@@ -73,10 +75,11 @@ public class DroitAccesController {
 	private static final String COMMAND = "command";
 	private static final String NUMERO = "numero";
 	private static final String NO_INDIVIDU_OPERATEUR = "noIndividuOperateur";
-
 	private static final String NO_OPERATEUR_REFERENCE = "noOperateurReference";
 	private static final String NO_OPERATEUR_DESTINATION = "noOperateurDestination";
 	private static final String TYPE_OPERATION = "typeOperation";
+	private static final String WITH_CONFLICTS = "withConflicts";
+	private static final String CONFLICTS = "conflicts";
 
 	private static final String READ_REQUIRED = "Vous ne possédez aucun droit Ifo-Sec pour accéder à cet écran.";
 	private static final String WRITE_REQUIRED = "Vous ne possédez aucun droit Ifo-Sec pour accéder à cet écran en modification.";
@@ -268,11 +271,24 @@ public class DroitAccesController {
 	@RequestMapping(value = "/par-utilisateur/restrictions.do", method = RequestMethod.GET)
 	@SecurityCheck(rolesToCheck = {Role.SEC_DOS_ECR, Role.SEC_DOS_LEC}, accessDeniedMessage = READ_REQUIRED)
 	public String getRestrictionsUtilisateur(HttpServletRequest request,
+	                                         HttpSession session,
 	                                         Model model,
-	                                         @RequestParam(value = NO_INDIVIDU_OPERATEUR) long noIndividuOperateur) throws Exception {
+	                                         @RequestParam(value = NO_INDIVIDU_OPERATEUR) long noIndividuOperateur,
+											 @RequestParam(value = WITH_CONFLICTS, required = false, defaultValue = "false") boolean withConflicts) throws Exception {
 		final WebParamPagination pagination = new WebParamPagination(request, "restriction", 25, "id", true);
 		final UtilisateurEditRestrictionView view = utilisateurEditManager.get(noIndividuOperateur, pagination);
 		model.addAttribute(COMMAND, view);
+		if (withConflicts) {
+			model.addAttribute(CONFLICTS, session.getAttribute(CONFLICTS_NAME));
+		}
+		else {
+			// cleanup...
+			session.removeAttribute(CONFLICTS_NAME);
+		}
+
+		// TODO jde afficher les conflits
+		// TODO jde permettre l'export des conflits en CSV
+
 		return "acces/par-utilisateur/restrictions-utilisateur";
 	}
 
@@ -394,9 +410,10 @@ public class DroitAccesController {
 
 	@RequestMapping(value = "/copie-transfert.do", method = RequestMethod.GET)
 	@SecurityCheck(rolesToCheck = {Role.SEC_DOS_ECR}, accessDeniedMessage = WRITE_REQUIRED)
-	public String getCopieTransfert(Model model) {
+	public String getCopieTransfert(Model model, HttpSession session) {
 		final SelectUtilisateursView view = new SelectUtilisateursView();
 		view.setTypeOperation(TypeOperation.COPIE);
+		session.removeAttribute(CONFLICTS_NAME);
 		return getCopieTransfert(model, view);
 	}
 
@@ -438,31 +455,35 @@ public class DroitAccesController {
 
 	@RequestMapping(value = "/copie-transfert/copie.do", method = RequestMethod.POST)
 	@SecurityCheck(rolesToCheck = {Role.SEC_DOS_ECR}, accessDeniedMessage = WRITE_REQUIRED)
-	public String copieDroitsAccess(@ModelAttribute ConfirmedDataView view) {
-		return doCopieTransfert(view, TypeOperation.COPIE);
+	public String copieDroitsAccess(@ModelAttribute ConfirmedDataView view, HttpSession session) {
+		return doCopieTransfert(view, TypeOperation.COPIE, session);
 	}
 
 	@RequestMapping(value = "/copie-transfert/transfert.do", method = RequestMethod.POST)
 	@SecurityCheck(rolesToCheck = {Role.SEC_DOS_ECR}, accessDeniedMessage = WRITE_REQUIRED)
-	public String transfereDroitsAccess(@ModelAttribute ConfirmedDataView view) {
-		return doCopieTransfert(view, TypeOperation.TRANSFERT);
+	public String transfereDroitsAccess(@ModelAttribute ConfirmedDataView view, HttpSession session) {
+		return doCopieTransfert(view, TypeOperation.TRANSFERT, session);
 	}
 
-	private String doCopieTransfert(ConfirmedDataView view, TypeOperation type) {
-		try {
-			switch (type) {
-				case COPIE:
-					copieManager.copie(view);
-					break;
-				case TRANSFERT:
-					copieManager.transfert(view);
-					break;
-			}
-		}
-		catch (DroitAccesException e) {
-			throw new ActionException(e.getMessage());
+	private String doCopieTransfert(ConfirmedDataView view, TypeOperation type, HttpSession session) {
+		final List<DroitAccesConflit> conflits;
+		switch (type) {
+			case COPIE:
+				conflits = copieManager.copie(view);
+				break;
+			case TRANSFERT:
+				conflits = copieManager.transfert(view);
+				break;
+			default:
+				throw new IllegalArgumentException("Unsupported type: " + type);
 		}
 
-		return String.format("redirect:/acces/par-utilisateur/restrictions.do?%s=%d", NO_INDIVIDU_OPERATEUR, view.getNoOperateurDestination());
+		String conflictUrlPart = StringUtils.EMPTY;
+		if (!conflits.isEmpty()) {
+			session.setAttribute(CONFLICTS_NAME, conflits);
+			conflictUrlPart = String.format("&%s=true", WITH_CONFLICTS);
+			Flash.warning("Des conflits ont été détectés (voir en bas de page).");
+		}
+		return String.format("redirect:/acces/par-utilisateur/restrictions.do?%s=%d%s", NO_INDIVIDU_OPERATEUR, view.getNoOperateurDestination(), conflictUrlPart);
 	}
 }

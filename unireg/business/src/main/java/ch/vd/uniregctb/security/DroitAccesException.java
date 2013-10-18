@@ -7,7 +7,7 @@ package ch.vd.uniregctb.security;
  */
 public class DroitAccesException extends Exception {
 
-	private static final long serialVersionUID = -1758850613746806898L;
+	private static final long serialVersionUID = 8122032497045553771L;
 
 	public DroitAccesException(String msg, Throwable t) {
 		super(msg, t);
