@@ -446,5 +446,5 @@ table.conflicts th, table.conflicts td {
 }
 
 table.conflicts td.conflict {
-	background-color: salmon;
+	background-color: orange;
 }

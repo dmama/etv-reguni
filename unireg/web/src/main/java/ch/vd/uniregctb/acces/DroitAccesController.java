@@ -531,11 +531,23 @@ public class DroitAccesController {
 
 	private String doCopieTransfert(ConfirmedDataView view, HttpSession session, CopieTransfertAction action) throws AdresseException {
 		final List<DroitAccesConflitAvecDonneesContribuable> conflits = action.execute(view);
-		String conflictUrlPart = StringUtils.EMPTY;
-		if (!conflits.isEmpty()) {
+		final String conflictUrlPart;
+		final int nbConflicts = conflits.size();
+		if (nbConflicts > 0) {
 			session.setAttribute(CONFLICTS_NAME, conflits);
 			conflictUrlPart = String.format("&%s=true", WITH_CONFLICTS);
-			Flash.warning("Des conflits ont été détectés.");
+
+			final String warning;
+			if (nbConflicts > 1) {
+				warning = String.format("%d conflits ont été détectés.", nbConflicts);
+			}
+			else {
+				warning = "Un conflit a été détecté.";
+			}
+			Flash.warning(warning);
+		}
+		else {
+			conflictUrlPart = StringUtils.EMPTY;
 		}
 		return String.format("redirect:/acces/par-utilisateur/restrictions.do?%s=%d%s", NO_INDIVIDU_OPERATEUR, view.getNoOperateurDestination(), conflictUrlPart);
 	}
