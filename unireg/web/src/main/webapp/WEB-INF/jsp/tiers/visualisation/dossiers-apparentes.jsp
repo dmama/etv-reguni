@@ -44,7 +44,7 @@
                     html += DossiersApparentes.buildRapportsOptions(rapportsPage.page, rapportsPage.showHisto, rapportsPage.typeRapport, rapportsPage.typesRapportEntreTiers, rapportsPage.sortField, rapportsPage.sortOrder);
                     if (rapportsPage.totalCount > 0) {
                         html += DossiersApparentes.buildRapportsPagination(rapportsPage.page, 10, rapportsPage.totalCount);
-                        html += DossiersApparentes.buildRapportsTable(rapportsPage.rapports, true) + '\n';
+                        html += DossiersApparentes.buildRapportsTable(rapportsPage.rapports, 'ret-', true) + '\n';
                     }
                     else {
                         html += DossiersApparentes.escape("<fmt:message key="label.dossiers.apparentes.vide"/>");
@@ -108,7 +108,7 @@
             }
         },
 
-	    buildRapportsTable: function(rapports, sortable) {
+	    buildRapportsTable: function(rapports, tooltipIdPrefix, sortable) {
 
             var hasExtensionExecutionForcee = false;
             var hasAutoriteTutelaire = false;
@@ -156,7 +156,7 @@
 
                 html += '<td>' + DossiersApparentes.escape(rapport.type);
                 if (rapport.toolTipMessage) {
-                    var filId = 'ret-' + i;
+                    var filId = tooltipIdPrefix + i;
                     html += ' <a href="#tooltip" class="staticTip" id="' + filId +'">?</a><div id="' + filId + '-tooltip" style="display:none;">' + rapport.toolTipMessage + '</div></td>';
                 }
                 html += '</td>';
@@ -212,7 +212,7 @@
 				    if (parentes.totalCount > 0) {
 					    html += '<fieldset>\n';
 					    html += '<legend><span><fmt:message key="label.parentes" /></span></legend>\n';
-					    html += DossiersApparentes.buildRapportsTable(parentes.rapports, false) + '\n';
+					    html += DossiersApparentes.buildRapportsTable(parentes.rapports, 'prnt-', false) + '\n';
 					    html += '</fieldset>\n'
 				    }
 			    }
