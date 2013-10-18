@@ -60,6 +60,7 @@
 		<entry key="hibernate.dialect" value="${oracle.hibernate.dialect}" />
 		<entry key="hibernate.query.substitutions" value="${oracle.hibernate.query.substitutions}" />
 		<entry key="hibernate.hbm2ddl.auto" value="${extprop.hibernate.hbm2ddl.mode}" />
+		<entry key="hibernate.default_schema" value="${extprop.hibernate.schema}" />
 	</util:map>
 
 	<bean id="jdbcManagedConnectionFactory" class="ch.vd.uniregctb.datasource.UniregXAMCF">
