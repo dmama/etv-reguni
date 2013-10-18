@@ -34,6 +34,7 @@ import ch.vd.uniregctb.acces.parUtilisateur.view.RecapPersonneUtilisateurView;
 import ch.vd.uniregctb.acces.parUtilisateur.view.SelectUtilisateurView;
 import ch.vd.uniregctb.acces.parUtilisateur.view.UtilisateurEditRestrictionView;
 import ch.vd.uniregctb.acces.parUtilisateur.view.UtilisateurListPersonneView;
+import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.common.ActionException;
 import ch.vd.uniregctb.common.Flash;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
@@ -44,7 +45,7 @@ import ch.vd.uniregctb.general.view.UtilisateurView;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.TooManyResultsIndexerException;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
-import ch.vd.uniregctb.security.DroitAccesConflit;
+import ch.vd.uniregctb.security.DroitAccesConflitAvecDonneesContribuable;
 import ch.vd.uniregctb.security.DroitAccesException;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityCheck;
@@ -285,10 +286,6 @@ public class DroitAccesController {
 			// cleanup...
 			session.removeAttribute(CONFLICTS_NAME);
 		}
-
-		// TODO jde afficher les conflits
-		// TODO jde permettre l'export des conflits en CSV
-
 		return "acces/par-utilisateur/restrictions-utilisateur";
 	}
 
@@ -317,6 +314,14 @@ public class DroitAccesController {
 		final ExtractionJob job = utilisateurEditManager.exportListeDroitsAcces(noIndividuOperateur);
 		Flash.message(String.format("Demande d'export enregistrée (%s)", job.getDescription()));
 		return String.format("redirect:/acces/par-utilisateur/restrictions.do?%s=%d", NO_INDIVIDU_OPERATEUR, noIndividuOperateur);
+	}
+
+	@RequestMapping(value = "/par-utilisateur/exporter-conflits.do", method = RequestMethod.POST)
+	@SecurityCheck(rolesToCheck = {Role.SEC_DOS_ECR}, accessDeniedMessage = WRITE_REQUIRED)
+	public String exporterConflits(@RequestParam(value = NO_INDIVIDU_OPERATEUR) long noIndividuOperateur) {
+		Flash.message("Demande d'export enregistrée.");
+		// TODO faire l'export du contenu de la variable de session...
+		return String.format("redirect:/acces/par-utilisateur/restrictions.do?%s=%d&%s=true", NO_INDIVIDU_OPERATEUR, noIndividuOperateur, WITH_CONFLICTS);
 	}
 
 	@RequestMapping(value = "/par-utilisateur/ajouter-restriction.do", method = RequestMethod.GET)
@@ -455,18 +460,18 @@ public class DroitAccesController {
 
 	@RequestMapping(value = "/copie-transfert/copie.do", method = RequestMethod.POST)
 	@SecurityCheck(rolesToCheck = {Role.SEC_DOS_ECR}, accessDeniedMessage = WRITE_REQUIRED)
-	public String copieDroitsAccess(@ModelAttribute ConfirmedDataView view, HttpSession session) {
+	public String copieDroitsAccess(@ModelAttribute ConfirmedDataView view, HttpSession session) throws Exception {
 		return doCopieTransfert(view, TypeOperation.COPIE, session);
 	}
 
 	@RequestMapping(value = "/copie-transfert/transfert.do", method = RequestMethod.POST)
 	@SecurityCheck(rolesToCheck = {Role.SEC_DOS_ECR}, accessDeniedMessage = WRITE_REQUIRED)
-	public String transfereDroitsAccess(@ModelAttribute ConfirmedDataView view, HttpSession session) {
+	public String transfereDroitsAccess(@ModelAttribute ConfirmedDataView view, HttpSession session) throws Exception {
 		return doCopieTransfert(view, TypeOperation.TRANSFERT, session);
 	}
 
-	private String doCopieTransfert(ConfirmedDataView view, TypeOperation type, HttpSession session) {
-		final List<DroitAccesConflit> conflits;
+	private String doCopieTransfert(ConfirmedDataView view, TypeOperation type, HttpSession session) throws AdresseException {
+		final List<DroitAccesConflitAvecDonneesContribuable> conflits;
 		switch (type) {
 			case COPIE:
 				conflits = copieManager.copie(view);
@@ -482,7 +487,7 @@ public class DroitAccesController {
 		if (!conflits.isEmpty()) {
 			session.setAttribute(CONFLICTS_NAME, conflits);
 			conflictUrlPart = String.format("&%s=true", WITH_CONFLICTS);
-			Flash.warning("Des conflits ont été détectés (voir en bas de page).");
+			Flash.warning("Des conflits ont été détectés.");
 		}
 		return String.format("redirect:/acces/par-utilisateur/restrictions.do?%s=%d%s", NO_INDIVIDU_OPERATEUR, view.getNoOperateurDestination(), conflictUrlPart);
 	}

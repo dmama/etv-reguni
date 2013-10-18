@@ -1,12 +1,15 @@
 package ch.vd.uniregctb.acces.copie.manager;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.transaction.annotation.Transactional;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.acces.copie.view.ConfirmCopieView;
 import ch.vd.uniregctb.acces.copie.view.ConfirmedDataView;
+import ch.vd.uniregctb.acces.parUtilisateur.view.BaseDroitAccesDossierView;
 import ch.vd.uniregctb.acces.parUtilisateur.view.DroitAccesUtilisateurView;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
@@ -14,9 +17,12 @@ import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.general.manager.UtilisateurManager;
 import ch.vd.uniregctb.general.view.UtilisateurView;
 import ch.vd.uniregctb.security.DroitAccesConflit;
+import ch.vd.uniregctb.security.DroitAccesConflitAvecDonneesContribuable;
 import ch.vd.uniregctb.security.DroitAccesDAO;
 import ch.vd.uniregctb.security.DroitAccesService;
 import ch.vd.uniregctb.tiers.DroitAcces;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 
 public class CopieDroitAccesManagerImpl implements CopieDroitAccesManager {
@@ -78,8 +84,33 @@ public class CopieDroitAccesManagerImpl implements CopieDroitAccesManager {
 	 */
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
-	public List<DroitAccesConflit> copie(ConfirmedDataView view)  {
-		return droitAccesService.copieDroitsAcces(view.getNoOperateurReference(), view.getNoOperateurDestination());
+	public List<DroitAccesConflitAvecDonneesContribuable> copie(ConfirmedDataView view) throws AdresseException {
+		final List<DroitAccesConflit> conflits = droitAccesService.copieDroitsAcces(view.getNoOperateurReference(), view.getNoOperateurDestination());
+		return addDonneesContribuable(conflits);
+	}
+
+	private List<DroitAccesConflitAvecDonneesContribuable> addDonneesContribuable(List<DroitAccesConflit> conflits) throws AdresseException {
+		if (!conflits.isEmpty()) {
+			final List<DroitAccesConflitAvecDonneesContribuable> liste = new ArrayList<>(conflits.size());
+			for (DroitAccesConflit conflit : conflits) {
+				final Tiers tiers = tiersService.getTiers(conflit.getNoContribuable());
+				String nomPrenom = null;
+				RegDate dateNaissance = null;
+				String npaLocalite = null;
+				if (tiers instanceof PersonnePhysique) {
+					final PersonnePhysique pp = (PersonnePhysique) tiers;
+					final BaseDroitAccesDossierView ppView = new BaseDroitAccesDossierView(pp, tiersService, adresseService);
+					nomPrenom = ppView.getPrenomNom();
+					dateNaissance = ppView.getDateNaissance();
+					npaLocalite = ppView.getLocalite();
+				}
+				liste.add(new DroitAccesConflitAvecDonneesContribuable(conflit, nomPrenom, dateNaissance, npaLocalite));
+			}
+			return liste;
+		}
+		else {
+			return Collections.emptyList();
+		}
 	}
 
 	/**
@@ -87,8 +118,9 @@ public class CopieDroitAccesManagerImpl implements CopieDroitAccesManager {
 	 */
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
-	public List<DroitAccesConflit> transfert(ConfirmedDataView view) {
-		return droitAccesService.transfereDroitsAcces(view.getNoOperateurReference(), view.getNoOperateurDestination());
+	public List<DroitAccesConflitAvecDonneesContribuable> transfert(ConfirmedDataView view) throws AdresseException {
+		final List<DroitAccesConflit> conflits = droitAccesService.transfereDroitsAcces(view.getNoOperateurReference(), view.getNoOperateurDestination());
+		return addDonneesContribuable(conflits);
 	}
 
 }

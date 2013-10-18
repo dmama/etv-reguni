@@ -6,6 +6,11 @@
 		<a href="#" onClick="javascript:ouvrirAide('<c:url value='/docs/acces-par-utilisateur.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
 	</tiles:put>
 	<tiles:put name="body">
+
+	<form:form action="exporter-conflits.do" id="formExportConflits">
+		<input type="hidden" value="${command.utilisateur.numeroIndividu}" name="noIndividuOperateur"/>
+	</form:form>
+
 	<form:form  action="annuler-restriction.do" id="formEditRestriction"  name="theForm" commandName="command">
 		<input type="hidden" value="${command.utilisateur.numeroIndividu}" name="noIndividuOperateur"/>
 		<input type="hidden" value="false" name="annuleTout" id="annuleTout"/>
@@ -16,7 +21,62 @@
 			<jsp:param name="titleKey" value="title.droits.operateur" />
 		</jsp:include>
 		<!-- Fin Caracteristiques generales -->
+
+		<!-- Début de la liste des conflits rencontrés -->
+		<c:if test="${not empty conflicts}">
+			<fieldset>
+				<legend><span><fmt:message key="label.conflits"/></span></legend>
+				<table border="0">
+					<tr>
+						<td>
+							<input type="button" value="Exporter" onclick="$('#formExportConflits').submit();"/>
+						</td>
+					</tr>
+				</table>
+
+				<table class="display conflicts">
+					<tr>
+						<th rowspan="2"><fmt:message key="label.numero.contribuable"/></th>
+						<th rowspan="2"><fmt:message key="label.prenom.nom"/></th>
+						<th rowspan="2"><fmt:message key="label.localite"/></th>
+						<th rowspan="2"><fmt:message key="label.date.naissance"/></th>
+						<th colspan="2" style="text-align: center;"><fmt:message key="label.droit.acces.preexistant"/></th>
+						<th colspan="2" style="text-align: center;"><fmt:message key="label.droit.acces.souhaite"/></th>
+					</tr>
+					<tr>
+						<th><fmt:message key="label.type.restriction"/></th>
+						<th><fmt:message key="label.lecture.seule"/></th>
+						<th><fmt:message key="label.type.restriction"/></th>
+						<th><fmt:message key="label.lecture.seule"/></th>
+					</tr>
+					<unireg:nextRowClass reset="1"/>
+					<c:forEach items="${conflicts}" var="conflict">
+						<tr class="<unireg:nextRowClass/>">
+							<td><unireg:numCTB numero="${conflict.noContribuable}"/></td>
+							<td><c:out value="${conflict.prenomNom}"/></td>
+							<td><c:out value="${conflict.npaLocalite}"/></td>
+							<td><unireg:regdate regdate="${conflict.dateNaissance}" format="dd.MM.yyyy"/></td>
+							<td><fmt:message key="option.type.droit.acces.${conflict.accesPreexistant.type}"/></td>
+							<td>
+								<input type="checkbox" name="lectureSeule" value="True"
+							                               <c:if test="${conflict.accesPreexistant.niveau == 'LECTURE'}">checked </c:if> disabled="disabled" />
+							</td>
+							<td <c:if test="${conflict.accesPreexistant.type != conflict.accesCopie.type}">class="conflict"</c:if>>
+								<fmt:message key="option.type.droit.acces.${conflict.accesCopie.type}"/>
+							</td>
+							<td <c:if test="${conflict.accesPreexistant.niveau != conflict.accesCopie.niveau}">class="conflict"</c:if>>
+								<input type="checkbox" name="lectureSeule" value="True"
+								       <c:if test="${conflict.accesCopie.niveau == 'LECTURE'}">checked </c:if> disabled="disabled" />
+							</td>
+						</tr>
+					</c:forEach>
+				</table>
+			</fieldset>
+		</c:if>
+		<!-- Fin de la liste des conflits rencontrés -->
+
 		<!-- Debut Liste des restrictions -->
+		<unireg:nextRowClass reset="1"/>
 		<fieldset>
 		<legend><span><fmt:message key="label.caracteristiques.acces" /></span></legend>
 		<authz:authorize ifAnyGranted="ROLE_SEC_DOS_ECR">

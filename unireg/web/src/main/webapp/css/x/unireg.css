@@ -436,3 +436,15 @@ textarea.add-comment {
 	width: 360px;
 	resize: none;
 }
+
+/**
+ * Droits d'accès
+ */
+
+table.conflicts th, table.conflicts td {
+	vertical-align: middle;
+}
+
+table.conflicts td.conflict {
+	background-color: salmon;
+}

@@ -8,7 +8,7 @@ import ch.vd.uniregctb.acces.copie.view.ConfirmCopieView;
 import ch.vd.uniregctb.acces.copie.view.ConfirmedDataView;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
-import ch.vd.uniregctb.security.DroitAccesConflit;
+import ch.vd.uniregctb.security.DroitAccesConflitAvecDonneesContribuable;
 
 public interface CopieDroitAccesManager {
 
@@ -27,13 +27,13 @@ public interface CopieDroitAccesManager {
 	 * @return les éventuels conflits rencontrés lors de la copie
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	List<DroitAccesConflit> copie(ConfirmedDataView view);
+	List<DroitAccesConflitAvecDonneesContribuable> copie(ConfirmedDataView view) throws AdresseException;
 
 	/**
 	 * Transfert les droits d'un utilisateur vers un autre
 	 * @return les éventuels conflits rencontrés lors du transfert
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	List<DroitAccesConflit> transfert(ConfirmedDataView view);
+	List<DroitAccesConflitAvecDonneesContribuable> transfert(ConfirmedDataView view) throws AdresseException;
 
 }
