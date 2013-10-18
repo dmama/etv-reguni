@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import ch.vd.uniregctb.common.Flash;
+import ch.vd.uniregctb.common.HttpHelper;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
 import ch.vd.uniregctb.servlet.ServletService;
@@ -74,7 +75,7 @@ public class CopieConformeController {
 				if (StringUtils.isNotBlank(errorMessageIfNoSuchDocument)) {
 					Flash.error(errorMessageIfNoSuchDocument, errorFadingTimeout);
 				}
-				return getRedirectPagePrecedente(request);
+				return HttpHelper.getRedirectPagePrecedente(request);
 			}
 		}
 	}
@@ -114,15 +115,5 @@ public class CopieConformeController {
 
 	private void downloadFile(InputStream stream, String filename, HttpServletResponse response) throws IOException {
 		servletService.downloadAsFile(filename, stream, null, response);
-	}
-
-	private static String getRedirectPagePrecedente(HttpServletRequest request) {
-		final String previousPage = request.getHeader("referer");
-		if (StringUtils.isNotBlank(previousPage)) {
-			return String.format("redirect:%s", previousPage);
-		}
-		else {
-			return "redirect:/404.do";
-		}
 	}
 }

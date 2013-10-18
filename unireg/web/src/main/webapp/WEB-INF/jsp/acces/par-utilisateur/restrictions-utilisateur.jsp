@@ -7,10 +7,6 @@
 	</tiles:put>
 	<tiles:put name="body">
 
-	<form:form action="exporter-conflits.do" id="formExportConflits">
-		<input type="hidden" value="${command.utilisateur.numeroIndividu}" name="noIndividuOperateur"/>
-	</form:form>
-
 	<form:form  action="annuler-restriction.do" id="formEditRestriction"  name="theForm" commandName="command">
 		<input type="hidden" value="${command.utilisateur.numeroIndividu}" name="noIndividuOperateur"/>
 		<input type="hidden" value="false" name="annuleTout" id="annuleTout"/>
@@ -29,7 +25,7 @@
 				<table border="0">
 					<tr>
 						<td>
-							<input type="button" value="Exporter" onclick="$('#formExportConflits').submit();"/>
+							<unireg:linkTo name="Exporter" action="/acces/par-utilisateur/exporter-conflits.do" method="get" link_class="download noprint"/>
 						</td>
 					</tr>
 				</table>

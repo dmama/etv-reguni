@@ -1,8 +1,12 @@
 package ch.vd.uniregctb.acces;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,8 +40,10 @@ import ch.vd.uniregctb.acces.parUtilisateur.view.UtilisateurEditRestrictionView;
 import ch.vd.uniregctb.acces.parUtilisateur.view.UtilisateurListPersonneView;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.common.ActionException;
+import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.Flash;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
+import ch.vd.uniregctb.common.HttpHelper;
 import ch.vd.uniregctb.common.WebParamPagination;
 import ch.vd.uniregctb.extraction.ExtractionJob;
 import ch.vd.uniregctb.general.manager.UtilisateurManager;
@@ -49,6 +55,7 @@ import ch.vd.uniregctb.security.DroitAccesConflitAvecDonneesContribuable;
 import ch.vd.uniregctb.security.DroitAccesException;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityCheck;
+import ch.vd.uniregctb.servlet.ServletService;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.TiersIndexedDataView;
 import ch.vd.uniregctb.tiers.TiersMapHelper;
@@ -92,6 +99,7 @@ public class DroitAccesController {
 	private UtilisateurEditRestrictionManager utilisateurEditManager;
 	private UtilisateurManager utilisateurManager;
 	private CopieDroitAccesManager copieManager;
+	private ServletService servletService;
 
 	public void setTiersMapHelper(TiersMapHelper tiersMapHelper) {
 		this.tiersMapHelper = tiersMapHelper;
@@ -119,6 +127,10 @@ public class DroitAccesController {
 
 	public void setCopieManager(CopieDroitAccesManager copieManager) {
 		this.copieManager = copieManager;
+	}
+
+	public void setServletService(ServletService servletService) {
+		this.servletService = servletService;
 	}
 
 	@InitBinder
@@ -316,12 +328,45 @@ public class DroitAccesController {
 		return String.format("redirect:/acces/par-utilisateur/restrictions.do?%s=%d", NO_INDIVIDU_OPERATEUR, noIndividuOperateur);
 	}
 
-	@RequestMapping(value = "/par-utilisateur/exporter-conflits.do", method = RequestMethod.POST)
+	@RequestMapping(value = "/par-utilisateur/exporter-conflits.do", method = RequestMethod.GET)
 	@SecurityCheck(rolesToCheck = {Role.SEC_DOS_ECR}, accessDeniedMessage = WRITE_REQUIRED)
-	public String exporterConflits(@RequestParam(value = NO_INDIVIDU_OPERATEUR) long noIndividuOperateur) {
-		Flash.message("Demande d'export enregistrée.");
-		// TODO faire l'export du contenu de la variable de session...
-		return String.format("redirect:/acces/par-utilisateur/restrictions.do?%s=%d&%s=true", NO_INDIVIDU_OPERATEUR, noIndividuOperateur, WITH_CONFLICTS);
+	public String exporterConflits(HttpSession session, HttpServletRequest request, HttpServletResponse response) throws IOException {
+		final List<DroitAccesConflitAvecDonneesContribuable> conflits = (List<DroitAccesConflitAvecDonneesContribuable>) session.getAttribute(CONFLICTS_NAME);
+		if (conflits == null || conflits.isEmpty()) {
+			Flash.warning("Aucun conflit d'accès à exporter.");
+			return HttpHelper.getRedirectPagePrecedente(request);
+		}
+
+		final String content = CsvHelper.asCsvFile(conflits, "conflits.csv", null, new CsvHelper.FileFiller<DroitAccesConflitAvecDonneesContribuable>() {
+			@Override
+			public void fillHeader(CsvHelper.LineFiller b) {
+				b.append("NO_CTB").append(CsvHelper.COMMA);
+				b.append("NOM_PRENOM").append(CsvHelper.COMMA);
+				b.append("LOCALITE").append(CsvHelper.COMMA);
+				b.append("DATE_NAISSANCE").append(CsvHelper.COMMA);
+				b.append("PRE_EXISTANT_TYPE_ACCES").append(CsvHelper.COMMA);
+				b.append("PRE_EXISTANT_LECTURE_ECRITURE").append(CsvHelper.COMMA);
+				b.append("COPIE_TYPE_ACCES").append(CsvHelper.COMMA);
+				b.append("COPIE_LECTURE_ECRITURE");
+			}
+
+			@Override
+			public boolean fillLine(CsvHelper.LineFiller b, DroitAccesConflitAvecDonneesContribuable elt) {
+				b.append(elt.getNoContribuable()).append(CsvHelper.COMMA);
+				b.append(CsvHelper.escapeChars(elt.getPrenomNom())).append(CsvHelper.COMMA);
+				b.append(CsvHelper.escapeChars(elt.getNpaLocalite())).append(CsvHelper.COMMA);
+				b.append(elt.getDateNaissance()).append(CsvHelper.COMMA);
+				b.append(elt.getAccesPreexistant().getType()).append(CsvHelper.COMMA);
+				b.append(elt.getAccesPreexistant().getNiveau()).append(CsvHelper.COMMA);
+				b.append(elt.getAccesCopie().getType()).append(CsvHelper.COMMA);
+				b.append(elt.getAccesCopie().getNiveau());
+				return true;
+			}
+		});
+		try (InputStream in = new ByteArrayInputStream(content.getBytes(CsvHelper.CHARSET))) {
+			servletService.downloadAsFile("conflits.csv", CsvHelper.MIME_TYPE, in, null, response);
+		}
+		return null;
 	}
 
 	@RequestMapping(value = "/par-utilisateur/ajouter-restriction.do", method = RequestMethod.GET)

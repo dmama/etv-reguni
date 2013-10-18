@@ -37,6 +37,7 @@
 		<property name="utilisateurEditManager" ref="utilisateurEditRestrictionManager"/>
 		<property name="utilisateurManager" ref="utilisateurManager"/>
 		<property name="copieManager" ref="copieDroitAccesManager"/>
+		<property name="servletService" ref="servletService"/>
 	</bean>
 
 </beans>
