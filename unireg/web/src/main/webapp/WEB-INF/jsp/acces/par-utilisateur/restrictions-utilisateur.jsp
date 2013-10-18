@@ -6,7 +6,7 @@
 		<a href="#" onClick="javascript:ouvrirAide('<c:url value='/docs/acces-par-utilisateur.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
 	</tiles:put>
 	<tiles:put name="body">
-	<form:form  action="restrictions-utilisateur/annuler.do" id="formEditRestriction"  name="theForm" commandName="command">
+	<form:form  action="annuler-restriction.do" id="formEditRestriction"  name="theForm" commandName="command">
 		<input type="hidden" value="${command.utilisateur.numeroIndividu}" name="noIndividuOperateur"/>
 		<input type="hidden" value="false" name="annuleTout" id="annuleTout"/>
 		<unireg:nextRowClass reset="1"/>
@@ -23,7 +23,7 @@
 			<table border="0">
 			<tr>
 				<td>
-					<a href="list-pp-utilisateur.do?noIndividuOperateur=${command.utilisateur.numeroIndividu}" 
+					<a href="ajouter-restriction.do?noIndividuOperateur=${command.utilisateur.numeroIndividu}"
 					class="add" title="Ajouter"><fmt:message key="label.bouton.ajouter" /></a>
 
 				<c:if test="${not empty command.restrictions}">
@@ -91,19 +91,25 @@
 				</authz:authorize>
 				</display:column>
 				<display:column sortable ="false" titleKey="label.type.restriction">
-						<fmt:message key="option.type.droit.acces.${restriction.type}"  />
+					<fmt:message key="option.type.droit.acces.${restriction.type}"  />
 				</display:column>
-				<display:column sortable ="false" titleKey="label.numero.contribuable" >
-						<unireg:numCTB numero="${restriction.numeroCTB}" />
+				<display:column sortable ="false" titleKey="label.numero.contribuable">
+					<unireg:numCTB numero="${restriction.numeroCTB}" />
+				</display:column>
+				<display:column sortable ="false" titleKey="label.date.debut">
+					<unireg:regdate regdate="${restriction.dateDebut}" format="dd.MM.yyyy"/>
+				</display:column>
+				<display:column sortable ="false" titleKey="label.date.fin">
+					<unireg:regdate regdate="${restriction.dateFin}" format="dd.MM.yyyy"/>
 				</display:column>
 				<display:column sortable ="false" titleKey="label.prenom.nom">
-						<c:out value="${restriction.prenomNom}" />
+					<c:out value="${restriction.prenomNom}" />
 				</display:column>
 				<display:column sortable ="false" titleKey="label.localite">
-						<c:out value="${restriction.localite}" />
+					<c:out value="${restriction.localite}" />
 				</display:column>
 				<display:column sortable ="false" titleKey="label.date.naissance">
-						<unireg:date date="${restriction.dateNaissance}"></unireg:date>
+					<unireg:date date="${restriction.dateNaissance}"/>
 				</display:column>
 				<display:column sortable ="false" titleKey="label.lecture.seule">
 					<input type="checkbox" name="lectureSeule" value="True"   
@@ -121,8 +127,8 @@
 		<!-- Fin Liste des restrictions -->
 		<!-- Debut Bouton -->
 		</form:form>
-		<form:form action="restrictions-utilisateur/exporter.do" method="post" id="formExporter"  name="formExporter">
-		<input type="button" value="<fmt:message key="label.bouton.retour" />" onClick="javascript:document.location.href='select-utilisateur.do';" />
+		<form:form action="exporter-restrictions.do" method="post" id="formExporter"  name="formExporter">
+		<input type="button" value="<fmt:message key="label.bouton.retour" />" onClick="javascript:document.location.href='../par-utilisateur.do';" />
 		<c:if test="${not empty command.restrictions}">
 			<input type="hidden" value="${command.utilisateur.numeroIndividu}" name="noIndividuOperateur"/>
 			<input type="submit" value="<fmt:message key="label.bouton.exporter"/>" name="exporter"/>

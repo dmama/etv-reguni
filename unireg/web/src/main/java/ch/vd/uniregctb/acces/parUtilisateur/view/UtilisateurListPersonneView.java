@@ -3,12 +3,9 @@ package ch.vd.uniregctb.acces.parUtilisateur.view;
 import ch.vd.uniregctb.general.view.UtilisateurView;
 import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
 
-public class UtilisateurListPersonneView extends TiersCriteriaView{
+public class UtilisateurListPersonneView extends TiersCriteriaView {
 
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 452698227505576337L;
+	private static final long serialVersionUID = 6799591065529941434L;
 
 	private long noIndividuOperateur;
 	private UtilisateurView utilisateurView;

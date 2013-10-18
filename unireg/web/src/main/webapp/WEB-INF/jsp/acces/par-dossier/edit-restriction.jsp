@@ -62,12 +62,19 @@
 				<input type="button" id="ajouter" value="<fmt:message key="label.bouton.ajouter" />" onclick="javascript:ajouterRestriction();">
 			</td>
 			<td width="25%">
-				<c:if test="${!command.ajoutEffectue}">
-					<input type="button" id="annuler" value="<fmt:message key="label.bouton.annuler" />" onclick="document.location.href='restrictions-pp.do?numero=${command.numero}'">
-				</c:if>
-				<c:if test="${command.ajoutEffectue}">
-					<input type="button" id="retour" value="<fmt:message key="label.bouton.retour" />" onclick="document.location.href='restrictions-pp.do?numero=${command.numero}'">
-				</c:if>
+				<c:choose>
+					<c:when test="${command.ajoutEffectue}">
+						<c:set var="labelBouton">
+							<fmt:message key="label.bouton.retour"/>
+						</c:set>
+					</c:when>
+					<c:otherwise>
+						<c:set var="labelBouton">
+							<fmt:message key="label.bouton.annuler"/>
+						</c:set>
+					</c:otherwise>
+				</c:choose>
+				<input type="button" id="retour" value="${labelBouton}" onclick="document.location.href='restrictions.do?numero=${command.numero}'"/>
 			</td>
 			<td width="25%">&nbsp;</td>
 		</tr>

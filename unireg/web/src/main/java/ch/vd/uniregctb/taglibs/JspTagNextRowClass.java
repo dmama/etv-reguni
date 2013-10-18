@@ -11,10 +11,20 @@ import org.apache.commons.lang3.mutable.MutableInt;
  */
 public class JspTagNextRowClass extends BodyTagSupport {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -6368239797943548141L;
 
-	private static final ThreadLocal<MutableInt> count = new ThreadLocal<>();
-	private static final ThreadLocal<Boolean> justReset = new ThreadLocal<>();
+	private static final ThreadLocal<MutableInt> count = new ThreadLocal<MutableInt>() {
+		@Override
+		protected MutableInt initialValue() {
+			return new MutableInt(0);
+		}
+	};
+	private static final ThreadLocal<Boolean> justReset = new ThreadLocal<Boolean>() {
+		@Override
+		protected Boolean initialValue() {
+			return Boolean.FALSE;
+		}
+	};
 
 	private boolean frozen = false;
 
@@ -49,24 +59,17 @@ public class JspTagNextRowClass extends BodyTagSupport {
 		justReset.set(value);
 	}
 
+	@SuppressWarnings("UnusedDeclaration")
 	public void setReset(int value) {
 		setCount(value);
 		setJustReset(true);
 	}
 
 	private void setCount(int value) {
-		if (count.get() == null) {
-			count.set(new MutableInt(value));
-		}
-		else {
-			count.get().setValue(value);
-		}
+		count.get().setValue(value);
 	}
 
 	private int getCount() {
-		if (count.get() == null) {
-			count.set(new MutableInt(0));
-		}
 		return count.get().intValue();
 	}
 
@@ -75,7 +78,7 @@ public class JspTagNextRowClass extends BodyTagSupport {
 	}
 
 	private boolean justReset() {
-		return justReset.get() != null && justReset.get();
+		return justReset.get();
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})

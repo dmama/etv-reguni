@@ -308,7 +308,7 @@ public class DroitAccesServiceImpl implements DroitAccesService {
 
 			@Override
 			public void postTraiteSource(DroitAcces droit) {
-				if (fermeSource) {
+				if (fermeSource && droit.isValidAt(dateReference)) {
 					droit.setDateFin(dateReference);
 				}
 			}

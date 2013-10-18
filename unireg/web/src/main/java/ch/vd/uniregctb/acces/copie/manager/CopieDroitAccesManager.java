@@ -1,9 +1,10 @@
 package ch.vd.uniregctb.acces.copie.manager;
 
-import ch.vd.uniregctb.adresse.AdresseException;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.acces.copie.view.ConfirmCopieView;
+import ch.vd.uniregctb.acces.copie.view.ConfirmedDataView;
+import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.security.DroitAccesException;
 
@@ -17,22 +18,18 @@ public interface CopieDroitAccesManager {
 	 * @throws AdressesResolutionException
 	 */
 	@Transactional(readOnly = true)
-	public ConfirmCopieView get(long noOperateurReference, long noOperateurDestination) throws AdresseException;
+	ConfirmCopieView get(long noOperateurReference, long noOperateurDestination) throws AdresseException;
 
 	/**
 	 * Copie les droits d'un utilisateur vers un autre
-	 *
-	 * @param confirmCopieView
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public void copie(ConfirmCopieView confirmCopieView) throws DroitAccesException ;
+	void copie(ConfirmedDataView view) throws DroitAccesException ;
 
 	/**
 	 * Transfert les droits d'un utilisateur vers un autre
-	 *
-	 * @param confirmCopieView
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public void transfert(ConfirmCopieView confirmCopieView) throws DroitAccesException ;
+	void transfert(ConfirmedDataView view) throws DroitAccesException ;
 
 }

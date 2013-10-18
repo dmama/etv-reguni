@@ -21,10 +21,10 @@
 					<c:out value="${restriction.localite}" />
 			</display:column>
 			<display:column sortable ="true" titleKey="label.date.naissance">
-					<unireg:date date="${restriction.dateNaissance}"></unireg:date>
+					<unireg:date date="${restriction.dateNaissance}"/>
 			</display:column>
 			<display:column sortable ="true" titleKey="label.lecture.seule">
-				<input type="checkbox" name="lectureSeule" value="True"   
+				<input type="checkbox" name="lectureSeule" value="true"
 						<c:if test="${restriction.lectureSeule}">checked </c:if> disabled="disabled" />
 			</display:column>
 			<display:setProperty name="paging.banner.all_items_found" value=""/>

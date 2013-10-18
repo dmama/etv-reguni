@@ -145,10 +145,10 @@
 					<authz:authorize ifAnyGranted="ROLE_SEC_DOS_LEC, ROLE_SEC_DOS_ECR">
 						<li><fmt:message key="label.action.acces" />
 							<ul>
-								<li><a href="<c:url value='/acces/list-pp.do'/>"><fmt:message key="label.action.par.dossier" /></a></li>
-								<li><a href="<c:url value='/acces/select-utilisateur.do'/>"><fmt:message key="label.action.par.utilisateur" /></a></li>
+								<li><a href="<c:url value='/acces/par-dossier.do'/>"><fmt:message key="label.action.par.dossier" /></a></li>
+								<li><a href="<c:url value='/acces/par-utilisateur.do'/>"><fmt:message key="label.action.par.utilisateur" /></a></li>
 								<authz:authorize ifAnyGranted="ROLE_SEC_DOS_ECR">
-									<li><a href="<c:url value='/acces/select-utilisateurs.do'/>"><fmt:message key="label.action.copie.transfert" /></a></li>
+									<li><a href="<c:url value='/acces/copie-transfert.do'/>"><fmt:message key="label.action.copie.transfert" /></a></li>
 								</authz:authorize>
 							</ul>
 						</li>

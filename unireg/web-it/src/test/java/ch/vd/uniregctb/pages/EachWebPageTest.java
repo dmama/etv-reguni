@@ -474,61 +474,61 @@ public class EachWebPageTest extends WebitTest {
 	// Page de recherche par dossier
 	@Test
 	public void testAccesList() throws Exception {
-		assertPage("/acces/list-pp.do", "Accès par dossier - Recherche d'une personne physique");
+		assertPage("/acces/par-dossier.do", "Accès par dossier - Recherche d'une personne physique");
 	}
 
 	// Page de restrictions de dossier
 	@Test
 	public void testAccesRestrictionsPP() throws Exception {
-		assertPage("/acces/restrictions-pp.do?numero=12300002", "Droits d'accès du dossier");
+		assertPage("/acces/par-dossier/restrictions.do?numero=12300002", "Droits d'accès du dossier");
 	}
 
 	// Page d'édition de droit d'accès par dossier
 	@Test
 	public void testAccesEdit() throws Exception {
-		assertPage("/acces/edit-acces-pp.do?numero=12300002", "Création d'un droit d'accès sur la personne physique n°123.000.02");
+		assertPage("/acces/par-dossier/ajouter-restriction.do?numero=12300002", "Création d'un droit d'accès sur la personne physique n°123.000.02");
 	}
 
 	// Page de sélection d'un utilisateur
 	@Test
 	public void testAccesSelectUtilisateur() throws Exception {
-		assertPage("/acces/select-utilisateur.do", "Accès par utilisateur - Recherche d'un utilisateur");
+		assertPage("/acces/par-utilisateur.do", "Accès par utilisateur - Recherche d'un utilisateur");
 	}
 
 	// Page des droits d'accès pour un utilisateur
 	@Test
 	public void testAccesRestrictionsUtilisateur() throws Exception {
-		assertPage("/acces/restrictions-utilisateur.do?noIndividuOperateur=582380", "Droits d'accès de l'utilisateur");
+		assertPage("/acces/par-utilisateur/restrictions.do?noIndividuOperateur=582380", "Droits d'accès de l'utilisateur");
 	}
 
 	// Page de recherche d'un dossier pour un utilisateur
 	@Test
 	public void testAccesListPersonneUtilisateur() throws Exception {
-		assertPage("/acces/list-pp-utilisateur.do?noIndividuOperateur=582380", "Accès par utilisateur - Recherche d'une personne physique");
+		assertPage("/acces/par-utilisateur/ajouter-restriction.do?noIndividuOperateur=582380", "Accès par utilisateur - Recherche d'une personne physique");
 	}
 
 	// Page de récapitulation de droit d'accès par dossier
 	@Test
 	public void testAccesRecapDossierUtilisateur() throws Exception {
-		assertPage("/acces/recap-pp-utilisateur.do?numero=12300002&noIndividuOperateur=582380", "Création d'un droit d'accès");
+		assertPage("/acces/par-utilisateur/recap.do?numero=12300002&noIndividuOperateur=582380", "Création d'un droit d'accès");
 	}
 
 	// Page de Copie / Transfert de droit d'accès
 	@Test
 	public void testAccesCopieTransfert() throws Exception {
-		assertPage("/acces/select-utilisateurs.do", "Copie / Transfert - Recherche des utilisateurs");
+		assertPage("/acces/copie-transfert.do", "Copie / Transfert - Recherche des utilisateurs");
 	}
 
 	// Page de de confirmation de Copie de droit d'accès
 	@Test
 	public void testAccesConfirmCopie() throws Exception {
-		assertPage("/acces/confirm-copie.do?noOperateurReference=582380&noOperateurDestination=860474&typeOperation=COPIE", "Confirmation de la copie des droits d'accès");
+		assertPage("/acces/copie-transfert/confirm.do?noOperateurReference=582380&noOperateurDestination=860474&typeOperation=COPIE", "Confirmation de la copie des droits d'accès");
 	}
 
 	// Page de de confirmation de transfert de droit d'accès
 	@Test
 	public void testAccesConfirmTransfert() throws Exception {
-		assertPage("/acces/confirm-copie.do?noOperateurReference=582380&noOperateurDestination=860474&typeOperation=TRANSFERT", "Confirmation du transfert des droits d'accès");
+		assertPage("/acces/copie-transfert/confirm.do?noOperateurReference=582380&noOperateurDestination=860474&typeOperation=TRANSFERT", "Confirmation du transfert des droits d'accès");
 	}
 
 	/*----------------------

@@ -133,16 +133,18 @@ public class UtilisateurEditRestrictionManagerImpl implements UtilisateurEditRes
 	@Override
 	@Transactional(readOnly = true)
 	public RecapPersonneUtilisateurView get(Long numeroPP, Long noIndividuOperateur) throws ServiceInfrastructureException, AdressesResolutionException {
-		RecapPersonneUtilisateurView recapPersonneUtilisateurView = new RecapPersonneUtilisateurView();
+		final RecapPersonneUtilisateurView recapPersonneUtilisateurView = new RecapPersonneUtilisateurView();
 
-		UtilisateurView utilisateurView = utilisateurManager.get(noIndividuOperateur);
+		final UtilisateurView utilisateurView = utilisateurManager.get(noIndividuOperateur);
 		recapPersonneUtilisateurView.setUtilisateur(utilisateurView);
 
-		PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(numeroPP);
-		TiersGeneralView tiersGeneralView = tiersGeneralManager.getPersonnePhysique(pp, true);
+		final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(numeroPP);
+		final TiersGeneralView tiersGeneralView = tiersGeneralManager.getPersonnePhysique(pp, true);
 		recapPersonneUtilisateurView.setDossier(tiersGeneralView);
 
 		recapPersonneUtilisateurView.setType(TypeDroitAcces.INTERDICTION);
+		recapPersonneUtilisateurView.setNoDossier(numeroPP);
+		recapPersonneUtilisateurView.setNoIndividuOperateur(noIndividuOperateur);
 
 		return recapPersonneUtilisateurView;
 	}
@@ -155,8 +157,8 @@ public class UtilisateurEditRestrictionManagerImpl implements UtilisateurEditRes
 	@Transactional(rollbackFor = Throwable.class)
 	public void save(RecapPersonneUtilisateurView recapPersonneUtilisateurView) throws DroitAccesException {
 
-		final long operateurId = recapPersonneUtilisateurView.getUtilisateur().getNumeroIndividu();
-		final long tiersId = recapPersonneUtilisateurView.getDossier().getNumero();
+		final long operateurId = recapPersonneUtilisateurView.getNoIndividuOperateur();
+		final long tiersId = recapPersonneUtilisateurView.getNoDossier();
 		final TypeDroitAcces type = recapPersonneUtilisateurView.getType();
 		final Niveau niveau = (recapPersonneUtilisateurView.isLectureSeule() ? Niveau.LECTURE : Niveau.ECRITURE);
 

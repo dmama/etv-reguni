@@ -18,6 +18,12 @@
 			<fieldset>
 				<legend><span><fmt:message key="label.criteres.recherche"/></span></legend>
 				<form:errors  cssClass="error"/>
+				<c:if test="${errorMessage != null}">
+					<span class="error">
+						<fmt:message key="${errorMessage}"/>
+					</span>
+				</c:if>
+				<form:hidden path="typeTiers"/>
 				<jsp:include page="../../tiers/recherche/form.jsp">
 					<jsp:param name="typeRecherche" value="acces" />
 				</jsp:include>
@@ -31,7 +37,7 @@
 			<display:setProperty name="paging.banner.all_items_found"><span class="pagebanner">{0} <fmt:message key="banner.personnes.trouvees" /></span></display:setProperty>
 
 			<display:column sortable ="true" titleKey="label.numero.contribuable" sortProperty="numero" >
-				<a href="recap-pp-utilisateur.do?numero=${row.numero}&noIndividuOperateur=${command.noIndividuOperateur}"><unireg:numCTB numero="${row.numero}" /></a>			
+				<a href="recap.do?numero=${row.numero}&noIndividuOperateur=${command.noIndividuOperateur}"><unireg:numCTB numero="${row.numero}" /></a>
 			</display:column>
 			<display:column sortable ="true" titleKey="label.prenom.nom" >
 				<c:out value="${row.nom1}" />
@@ -45,7 +51,7 @@
 		<!-- Debut Bouton -->
 		<table border="0">
 		<tr><td>
-			<input type="button" value="<fmt:message key="label.bouton.retour" />" onClick="javascript:document.location.href='restrictions-utilisateur.do?noIndividuOperateur=${command.utilisateurView.numeroIndividu}';" />
+			<input type="button" value="<fmt:message key="label.bouton.retour" />" onClick="javascript:document.location.href='restrictions.do?noIndividuOperateur=${command.utilisateurView.numeroIndividu}';" />
 		</td></tr>
 		</table>
 		<!-- Fin Bouton -->

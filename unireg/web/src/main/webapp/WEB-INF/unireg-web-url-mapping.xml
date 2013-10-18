@@ -151,15 +151,6 @@
 				<!-- Tâches en instance / Nouveaux dossiers -->
 				<entry key="/tache/list.do" value-ref="tacheListController" />
 				<entry key="/tache/list-nouveau-dossier.do" value-ref="nouveauDossierListController" />
-				<!-- Accès -->
-				<entry key="/acces/list-pp.do" value-ref="dossierListController" />
-				<entry key="/acces/restrictions-pp.do" value-ref="dossierEditRestrictionController" />
-				<entry key="/acces/edit-acces-pp.do" value-ref="droitAccesEditController" />
-				<entry key="/acces/select-utilisateur.do" value-ref="selectUtilisateurController" />
-				<entry key="/acces/list-pp-utilisateur.do" value-ref="utilisateurListPersonneController" />
-				<entry key="/acces/recap-pp-utilisateur.do" value-ref="recapPersonneUtilisateurController" />
-				<entry key="/acces/select-utilisateurs.do" value-ref="selectUtilisateursController" />
-				<entry key="/acces/confirm-copie.do" value-ref="confirmCopieController" />
 				<!-- Documents -->
 				<entry key="/common/docs.do" value-ref="documentController" />
 				<!-- Annulation / Réactivation -->

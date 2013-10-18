@@ -14,26 +14,31 @@
 			<fieldset>
 				<legend><span><fmt:message key="label.criteres.recherche"/></span></legend>
 				<form:errors  cssClass="error"/>
+				<c:if test="${errorMessage != null}">
+					<span class="error">
+						<fmt:message key="${errorMessage}"/>
+					</span>
+				</c:if>
+				<form:hidden path="typeTiers"/>
+				<unireg:nextRowClass reset="0"/>
 				<jsp:include page="../../tiers/recherche/form.jsp">
 					<jsp:param name="typeRecherche" value="acces" />
 				</jsp:include>
 			</fieldset>
 		</form:form>
 
-		<display:table 	name="list" id="row" pagesize="25" requestURI="/couple/list-pp.do" class="display" sort="list">
+		<display:table 	name="list" id="row" pagesize="25" requestURI="/acces/par-dossier.do" class="display" sort="list">
 			<display:setProperty name="paging.banner.no_items_found"><span class="pagebanner"><fmt:message key="banner.auncune.personne.trouvee" /></span></display:setProperty>
 			<display:setProperty name="paging.banner.one_item_found"><span class="pagebanner">1 <fmt:message key="banner.personne.trouvee" /></span></display:setProperty>
 			<display:setProperty name="paging.banner.some_items_found"><span class="pagebanner">{0} <fmt:message key="banner.personnes.trouvees" /></span></display:setProperty>
 			<display:setProperty name="paging.banner.all_items_found"><span class="pagebanner">{0} <fmt:message key="banner.personnes.trouvees" /></span></display:setProperty>
 
 			<display:column sortable ="true" titleKey="label.numero.contribuable" sortProperty="numero" >
-				<a href="restrictions-pp.do?numero=${row.numero}"><unireg:numCTB numero="${row.numero}" /></a>			
+				<a href="par-dossier/restrictions.do?numero=${row.numero}"><unireg:numCTB numero="${row.numero}" /></a>
 			</display:column>
-			<display:column sortable ="true" titleKey="label.prenom.nom" >
-				<c:out value="${row.nom1}" />
-			</display:column>
+			<display:column sortable ="true" titleKey="label.prenom.nom" property="nom1"/>
 			<display:column sortable ="true" titleKey="label.date.naissance" sortProperty="dateNaissance">
-				<unireg:date date="${row.dateNaissance}"></unireg:date>
+				<unireg:date date="${row.dateNaissance}"/>
 			</display:column>
 			<display:column property="localiteOuPays" sortable ="true" titleKey="label.localitePays"  />
 		</display:table>

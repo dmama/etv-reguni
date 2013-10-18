@@ -6,7 +6,9 @@
 		<a href="#" onClick="javascript:ouvrirAide('<c:url value='/docs/acces-par-utilisateur.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
 	</tiles:put>
 	<tiles:put name="body">
-	<form:form method="post" id="formEditRestriction"  name="theForm">
+	<form:form method="post" id="formEditRestriction"  name="theForm" action="sauver-restriction.do">
+		<form:hidden path="noIndividuOperateur"/>
+		<form:hidden path="noDossier"/>
 		<unireg:nextRowClass reset="1"/>
 		<!-- Debut Caracteristiques generales -->
 		<jsp:include page="../../general/utilisateur.jsp">
@@ -18,7 +20,7 @@
 			<jsp:param name="path" value="dossier" />
 		</jsp:include>
 		<jsp:include page="restriction.jsp" />
-		<input type="button" name="retourRecherche" value="<fmt:message key="label.bouton.retour" />" onClick="javascript:document.location.href='list-pp-utilisateur.do?noIndividuOperateur=${command.utilisateur.numeroIndividu}';" />
+		<input type="button" name="retourRecherche" value="<fmt:message key="label.bouton.retour" />" onClick="javascript:document.location.href='ajouter-restriction.do?noIndividuOperateur=${command.utilisateur.numeroIndividu}';" />
 		<input type="submit" name="save" value="<fmt:message key="label.bouton.sauver" />" />
 	</form:form>
 	</tiles:put>

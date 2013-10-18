@@ -6,9 +6,6 @@
 		<a href="#" onClick="javascript:ouvrirAide('<c:url value='/docs/acces-par-dossier.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
 	</tiles:put>
 	<tiles:put name="body">
-	<form:form method="post" id="formEditRestriction"  name="theForm">
-		<input type="hidden"  name="__TARGET__" value="">
-		<input type="hidden"  name="__EVENT_ARGUMENT__" value="">
 		<unireg:nextRowClass reset="1"/>
 		<!-- Debut Caracteristiques generales -->
 		<jsp:include page="../../general/pp.jsp">
@@ -23,7 +20,7 @@
 			<table border="0">
 			<tr>
 				<td>
-					<a href="edit-acces-pp.do?numero=${command.dossier.numero}" class="add" title="Ajouter"><fmt:message key="label.bouton.ajouter"/></a>
+					<a href="ajouter-restriction.do?numero=${command.dossier.numero}" class="add" title="Ajouter"><fmt:message key="label.bouton.ajouter"/></a>
 				</td>
 			</tr>
 			</table>
@@ -37,15 +34,15 @@
 				<display:column sortable ="true" titleKey="label.type.restriction">
 						<fmt:message key="option.type.droit.acces.${restriction.type}"  />
 				</display:column>
-				<display:column sortable ="true" titleKey="label.visa.operateur" >
-						${restriction.visaOperateur}
+				<display:column sortable ="true" titleKey="label.visa.operateur" property="visaOperateur"/>
+				<display:column sortable ="true" titleKey="label.prenom.nom" property="prenomNom"/>
+				<display:column sortable ="true" titleKey="label.date.debut" sortProperty="dateDebut" sortName="dateDebut">
+					<unireg:regdate regdate="${restriction.dateDebut}" format="dd.MM.yyyy"/>
 				</display:column>
-				<display:column sortable ="true" titleKey="label.prenom.nom">
-						<c:out value="${restriction.prenomNom}" />
+				<display:column sortable ="true" titleKey="label.date.fin" sortProperty="dateFin" sortName="dateFin">
+					<unireg:regdate regdate="${restriction.dateFin}" format="dd.MM.yyyy"/>
 				</display:column>
-				<display:column sortable ="true" titleKey="label.office.impot" style="width: 60%;">
-						<c:out value="${restriction.officeImpot}" />
-				</display:column>
+				<display:column sortable ="true" titleKey="label.office.impot" style="width: 40%;" property="officeImpot"/>
 				<display:column sortable ="true" titleKey="label.lecture.seule">
 					<input type="checkbox" name="lectureSeule" value="True"   
 							<c:if test="${restriction.lectureSeule}">checked </c:if> disabled="disabled" />
@@ -65,9 +62,9 @@
 			
 				<script type="text/javascript">
 					function Page_AnnulerRestriction(id) {
-							if(confirm('Voulez-vous vraiment annuler ce droit d\'acces ?')) {
-								Form.doPostBack("theForm", "annulerRestriction", id);
-						 	}
+						if(confirm('Voulez-vous vraiment annuler ce droit d\'acces ?')) {
+							App.executeAction('post:/acces/par-dossier/annuler-restriction.do?id=' + id + '&ctbId=${command.dossier.numero}');
+					    }
 				 	} 	
 				</script>
 			
@@ -75,9 +72,8 @@
 			</fieldset>
 		<!-- Fin Liste des restrictions -->
 		<!-- Debut Bouton -->
-		<input type="button" value="<fmt:message key="label.bouton.retour" />" onClick="javascript:document.location.href='list-pp.do';" />
+		<input type="button" value="<fmt:message key="label.bouton.retour" />" onClick="javascript:document.location.href='../par-dossier.do';" />
 		<!-- Fin Bouton -->
 		&nbsp;
-	</form:form>
 	</tiles:put>
 </tiles:insert>

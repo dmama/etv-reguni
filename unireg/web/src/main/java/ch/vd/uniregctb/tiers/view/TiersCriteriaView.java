@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.tiers.view;
 
+import java.io.Serializable;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -13,7 +14,9 @@ import ch.vd.uniregctb.type.ModeImposition;
 /**
  * Critères de recherche pour les tiers.
  */
-public class TiersCriteriaView {
+public class TiersCriteriaView implements Serializable {
+
+	private static final long serialVersionUID = -1356109968828773937L;
 
 	// Valeurs utilisées en sortie seulement
 	private Long numeroSourcier;
