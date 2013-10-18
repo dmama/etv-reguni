@@ -461,28 +461,31 @@ public class DroitAccesController {
 	@RequestMapping(value = "/copie-transfert/copie.do", method = RequestMethod.POST)
 	@SecurityCheck(rolesToCheck = {Role.SEC_DOS_ECR}, accessDeniedMessage = WRITE_REQUIRED)
 	public String copieDroitsAccess(@ModelAttribute ConfirmedDataView view, HttpSession session) throws Exception {
-		return doCopieTransfert(view, TypeOperation.COPIE, session);
+		return doCopieTransfert(view, session, new CopieTransfertAction() {
+			@Override
+			public List<DroitAccesConflitAvecDonneesContribuable> execute(ConfirmedDataView view) throws AdresseException {
+				return copieManager.copie(view);
+			}
+		});
 	}
 
 	@RequestMapping(value = "/copie-transfert/transfert.do", method = RequestMethod.POST)
 	@SecurityCheck(rolesToCheck = {Role.SEC_DOS_ECR}, accessDeniedMessage = WRITE_REQUIRED)
 	public String transfereDroitsAccess(@ModelAttribute ConfirmedDataView view, HttpSession session) throws Exception {
-		return doCopieTransfert(view, TypeOperation.TRANSFERT, session);
+		return doCopieTransfert(view, session, new CopieTransfertAction() {
+			@Override
+			public List<DroitAccesConflitAvecDonneesContribuable> execute(ConfirmedDataView view) throws AdresseException {
+				return copieManager.transfert(view);
+			}
+		});
 	}
 
-	private String doCopieTransfert(ConfirmedDataView view, TypeOperation type, HttpSession session) throws AdresseException {
-		final List<DroitAccesConflitAvecDonneesContribuable> conflits;
-		switch (type) {
-			case COPIE:
-				conflits = copieManager.copie(view);
-				break;
-			case TRANSFERT:
-				conflits = copieManager.transfert(view);
-				break;
-			default:
-				throw new IllegalArgumentException("Unsupported type: " + type);
-		}
+	private static interface CopieTransfertAction {
+		List<DroitAccesConflitAvecDonneesContribuable> execute(ConfirmedDataView view) throws AdresseException;
+	}
 
+	private String doCopieTransfert(ConfirmedDataView view, HttpSession session, CopieTransfertAction action) throws AdresseException {
+		final List<DroitAccesConflitAvecDonneesContribuable> conflits = action.execute(view);
 		String conflictUrlPart = StringUtils.EMPTY;
 		if (!conflits.isEmpty()) {
 			session.setAttribute(CONFLICTS_NAME, conflits);
