@@ -1,11 +1,18 @@
 package ch.vd.uniregctb.interfaces;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
 
+import ch.vd.evd0007.v1.Country;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.infra.data.Canton;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.Localite;
@@ -13,6 +20,7 @@ import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.webservice.fidor.v5.FidorClient;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
@@ -221,5 +229,119 @@ public class ServiceInfrastructureServiceTest extends BusinessItTest {
 		assertNotNull(commune);
 		assertEquals(5434, commune.getNoOFS());
 		assertEquals("Saint-George", commune.getNomOfficiel());
+	}
+
+	/**
+	 * [SIFISC-9707] Effet de charge ponctuelle qui fait que quelqu'un associe de mauvaises données à un numéro OFS donné ?
+	 */
+	@Test
+	public void testChargeForceeAvecCacheUnireg() throws Exception {
+		final int NB_THREADS = 50;
+		final int NB_CALLS = 1000;
+		final int[] OFS = {8212, 8215, 8100};
+		final Random rnd = new Random();
+		final ServiceInfrastructureRaw serviceAvecCache = getBean(ServiceInfrastructureRaw.class, "serviceInfrastructureCache");
+
+		final class GetPays implements Runnable {
+			private final int noOfs;
+
+			private GetPays(int noOfs) {
+				this.noOfs = noOfs;
+			}
+
+			@Override
+			public void run() {
+				final Pays pays = serviceAvecCache.getPays(noOfs, RegDate.get().addDays(-rnd.nextInt(3650)));      // date au hasard dans les 10 dernières années
+				if (pays != null && pays.getNoOFS() != noOfs) {
+					throw new RuntimeException("Mauvais pays !!! Demandé " + noOfs + " et reçu " + pays.getNoOFS());
+				}
+			}
+		}
+
+		final ExecutorService executor = Executors.newFixedThreadPool(NB_THREADS);
+		final List<Future<?>> futures = new ArrayList<>(NB_CALLS);
+		for (int i = 0 ; i < NB_CALLS ; ++ i) {
+			futures.add(executor.submit(new GetPays(OFS[i % OFS.length])));
+		}
+		executor.shutdown();
+		for (Future<?> future : futures) {
+			future.get();
+		}
+	}
+
+	/**
+	 * [SIFISC-9707] Effet de charge ponctuelle qui fait que quelqu'un associe de mauvaises données à un numéro OFS donné ?
+	 */
+	@Test
+	public void testChargeForceeSansCacheUnireg() throws Exception {
+		final int NB_THREADS = 50;
+		final int NB_CALLS = 1000;
+		final int[] OFS = {8212, 8215, 8100};
+		final Random rnd = new Random();
+		final ServiceInfrastructureRaw serviceSansCache = getBean(ServiceInfrastructureRaw.class, "serviceInfrastructureMarshaller");
+
+		final class GetPays implements Runnable {
+			private final int noOfs;
+
+			private GetPays(int noOfs) {
+				this.noOfs = noOfs;
+			}
+
+			@Override
+			public void run() {
+				final Pays pays = serviceSansCache .getPays(noOfs, RegDate.get().addDays(-rnd.nextInt(3650)));      // date au hasard dans les 10 dernières années
+				if (pays != null && pays.getNoOFS() != noOfs) {
+					throw new RuntimeException("Mauvais pays !!! Demandé " + noOfs + " et reçu " + pays.getNoOFS());
+				}
+			}
+		}
+
+		final ExecutorService executor = Executors.newFixedThreadPool(NB_THREADS);
+		final List<Future<?>> futures = new ArrayList<>(NB_CALLS);
+		for (int i = 0 ; i < NB_CALLS ; ++ i) {
+			futures.add(executor.submit(new GetPays(OFS[i % OFS.length])));
+		}
+		executor.shutdown();
+		for (Future<?> future : futures) {
+			future.get();
+		}
+	}
+
+	/**
+	 * [SIFISC-9707] Effet de charge ponctuelle qui fait que quelqu'un associe de mauvaises données à un numéro OFS donné ?
+	 */
+	@Test
+	public void testChargeForceeDirectementClientFiDoR() throws Exception {
+		final int NB_THREADS = 50;
+		final int NB_CALLS = 1000;
+		final int[] OFS = {8212, 8215, 8100};
+		final Random rnd = new Random();
+		final FidorClient fidorClient = getBean(FidorClient.class, "fidorClientv5");
+
+		final class GetPays implements Runnable {
+			private final int noOfs;
+
+			private GetPays(int noOfs) {
+				this.noOfs = noOfs;
+			}
+
+			@Override
+			public void run() {
+				final Country pays = fidorClient.getPaysDetail(noOfs, RegDate.get().addDays(-rnd.nextInt(3650)));      // date au hasard dans les 10 dernières années
+				if (pays != null && pays.getCountry().getId() != noOfs) {
+					throw new RuntimeException("Mauvais pays !!! Demandé " + noOfs + " et reçu " + pays.getCountry().getId());
+				}
+			}
+		}
+
+		final ExecutorService executor = Executors.newFixedThreadPool(NB_THREADS);
+		final List<Future<?>> futures = new ArrayList<>(NB_CALLS);
+		for (int i = 0 ; i < NB_CALLS ; ++ i) {
+			futures.add(executor.submit(new GetPays(OFS[i % OFS.length])));
+		}
+		executor.shutdown();
+		for (Future<?> future : futures) {
+			future.get();
+		}
 	}
 }
