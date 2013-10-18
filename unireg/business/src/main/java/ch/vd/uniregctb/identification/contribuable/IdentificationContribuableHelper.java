@@ -5,86 +5,119 @@ import org.apache.commons.lang3.StringUtils;
 import ch.vd.uniregctb.evenement.identification.contribuable.CriteresPersonne;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 
-public class IdentificationContribuableHelper {
+public abstract class IdentificationContribuableHelper {
 
-	public void updateCriteriaStandard(CriteresPersonne criteres, final TiersCriteria criteria) {
+	public static void updateCriteriaStandard(CriteresPersonne criteres, final TiersCriteria criteria) {
 		setUpCriteria(criteria);
 		// [UNIREG-1630] dans tous les cas, on doit tenir compte des autres critères (autres que le numéro AVS, donc)
 		criteria.setNomRaison(concatCriteres(criteres.getPrenoms(), criteres.getNom()));
-
 	}
 
-	public void updateCriteriaSansDernierNom(CriteresPersonne criteres, final TiersCriteria criteria) {
+	public static void updateCriteriaSansDernierNom(CriteresPersonne criteres, final TiersCriteria criteria) throws NotEnoughWordsException {
 		setUpCriteria(criteria);
 		//Suppression du dernier Nom
-		final String critereNom = getPremierMot(criteres.getNom());
+		final String critereNom = sansDernierMot(criteres.getNom(), true);
+		if (critereNom == null) {
+			throw new NotEnoughWordsException("un seul nom présent");
+		}
 		criteria.setNomRaison(concatCriteres(criteres.getPrenoms(), critereNom));
-
 	}
 
-	public String getPremierMot(String mot) {
-		if (mot == null || StringUtils.containsOnly(mot, "-") || StringUtils.containsOnly(mot, " ") || mot.isEmpty()) {
+	private static String rebuildString(String[] array, int len) {
+		final StringBuilder b = new StringBuilder();
+		for (int i = 0 ; i < len ; ++ i) {
+			b.append(array[i]);
+			if (i < len - 1) {
+				b.append(" ");
+			}
+		}
+		return b.toString();
+	}
+
+	protected static String sansDernierMot(String mots, boolean separerSurTiret) {
+		final String[] decomposition = StringUtils.split(mots);
+		if (decomposition == null || decomposition.length < 1) {
 			return null;
 		}
-		final String motMinuscule = mot.toLowerCase();
-		String[] tabMots = StringUtils.split(motMinuscule);
-		if (tabMots.length == 1) {
-			//on recherche d'autres type de séparation
-			tabMots = StringUtils.split(mot, "-");
-
+		final String truncated;
+		if (decomposition.length == 1) {
+			if (separerSurTiret) {
+				final String[] decompositionTiret = StringUtils.split(decomposition[0], '-');
+				if (decompositionTiret == null || decompositionTiret.length < 2) {
+					truncated = null;
+				}
+				else {
+					truncated = rebuildString(decompositionTiret, decompositionTiret.length - 1);
+				}
+			}
+			else {
+				truncated = null;
+			}
 		}
-		return tabMots[0];
+		else {
+			truncated = rebuildString(decomposition, decomposition.length - 1);
+		}
+		return StringUtils.trimToNull(truncated);
 	}
 
-	public String getMotSansE(String mot) {
-
+	protected static String getMotSansE(String mot) {
 		if (mot == null) {
 			return null;
 		}
-		final String motMinuscule = mot.toLowerCase();
-		final String sansAe = StringUtils.replace(motMinuscule, "ae", "a");
-		final String sansUe = StringUtils.replace(sansAe, "ue", "u");
-		final String result = StringUtils.replace(sansUe, "oe", "o");
-		return result;
-
+		return mot.toLowerCase().replaceAll("([auo])e", "$1");
 	}
 
-	public void updateCriteriaSansDernierPrenom(CriteresPersonne criteres, final TiersCriteria criteria) {
+	public static void updateCriteriaSansDernierPrenom(CriteresPersonne criteres, final TiersCriteria criteria) throws NotEnoughWordsException {
 		setUpCriteria(criteria);
 		//Suppression du dernier prenom
-		final String criterePrenom = getPremierMot(criteres.getPrenoms());
+		final String criterePrenom = sansDernierMot(criteres.getPrenoms(), false);
+		if (criterePrenom == null) {
+			throw new NotEnoughWordsException("un seul prénom présent");
+		}
 		criteria.setNomRaison(concatCriteres(criterePrenom, criteres.getNom()));
 
 	}
 
-
-	public void updateCriteriaStandardSansE(CriteresPersonne criteres, final TiersCriteria criteria) {
+	public static void updateCriteriaStandardSansE(CriteresPersonne criteres, final TiersCriteria criteria) throws NoEsToRemoveException {
 		setUpCriteria(criteria);
 		final String criteresPrenom = getMotSansE(criteres.getPrenoms());
 		final String criteresNom = getMotSansE(criteres.getNom());
+		if (StringUtils.equalsIgnoreCase(criteresNom, criteres.getNom()) && StringUtils.equalsIgnoreCase(criteresPrenom, criteres.getPrenoms())) {
+			throw new NoEsToRemoveException("Pas de ae, oe, ue dans les noms et prénoms");
+		}
 		criteria.setNomRaison(concatCriteres(criteresPrenom, criteresNom));
 
 	}
 
-	public void updateCriteriaSansDernierNomSansE(CriteresPersonne criteres, final TiersCriteria criteria) {
+	public static void updateCriteriaSansDernierNomSansE(CriteresPersonne criteres, final TiersCriteria criteria) throws NoEsToRemoveException, NotEnoughWordsException {
 		setUpCriteria(criteria);
 		final String criteresPrenom = getMotSansE(criteres.getPrenoms());
 		final String criteresNomSansE = getMotSansE(criteres.getNom());
-		final String criteresNom = getPremierMot(criteresNomSansE);
+		if (StringUtils.equalsIgnoreCase(criteresNomSansE, criteres.getNom()) && StringUtils.equalsIgnoreCase(criteresPrenom, criteres.getPrenoms())) {
+			throw new NoEsToRemoveException("Pas de ae, oe, ue dans les noms et prénoms");
+		}
+		final String criteresNom = sansDernierMot(criteresNomSansE, true);
+		if (criteresNom == null) {
+			throw new NotEnoughWordsException("un seul nom présent");
+		}
 		criteria.setNomRaison(concatCriteres(criteresPrenom, criteresNom));
-
 	}
 
-	public void updateCriteriaSansDernierPrenomSansE(CriteresPersonne criteres, final TiersCriteria criteria) {
+	public static void updateCriteriaSansDernierPrenomSansE(CriteresPersonne criteres, final TiersCriteria criteria) throws NoEsToRemoveException, NotEnoughWordsException {
 		setUpCriteria(criteria);
 		final String criteresPrenomSansE = getMotSansE(criteres.getPrenoms());
-		final String criteresPrenom = getPremierMot(criteresPrenomSansE);
 		final String criteresNom = getMotSansE(criteres.getNom());
+		if (StringUtils.equalsIgnoreCase(criteresNom, criteres.getNom()) && StringUtils.equalsIgnoreCase(criteresPrenomSansE, criteres.getPrenoms())) {
+			throw new NoEsToRemoveException("Pas de ae, oe, ue dans les noms et prénoms");
+		}
+		final String criteresPrenom = sansDernierMot(criteresPrenomSansE, false);
+		if (criteresPrenom == null) {
+			throw new NotEnoughWordsException("un seul prénom présent");
+		}
 		criteria.setNomRaison(concatCriteres(criteresPrenom, criteresNom));
 	}
 
-
-	public void setUpCriteria(TiersCriteria criteria) {
+	public static void setUpCriteria(TiersCriteria criteria) {
 		criteria.setTypeRechercheDuNom(TiersCriteria.TypeRecherche.EST_EXACTEMENT);
 
 		// critères statiques
@@ -93,7 +126,6 @@ public class IdentificationContribuableHelper {
 		criteria.setTypeTiers(TiersCriteria.TypeTiers.PERSONNE_PHYSIQUE);
 		criteria.setTypeVisualisation(TiersCriteria.TypeVisualisation.COMPLETE);
 	}
-
 
 	private static String concatCriteres(final String first, final String second) {
 		final String concat;

@@ -92,17 +92,12 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	private IdentificationContribuableMessageHandler messageHandler;
 	private PlatformTransactionManager transactionManager;
 	private ServiceSecuriteService serviceSecuriteService;
-	private IdentificationContribuableHelper identificationContribuableHelper;
 	private ServiceUpiRaw serviceUpi;
 	private HibernateTemplate hibernateTemplate;
 	private int flowSearchThreadPoolSize;
 
 	private IdentificationContribuableCache identificationContribuableCache = new IdentificationContribuableCache();        // cache vide à l'initialisation
 	private ExecutorService asynchronousFlowSearchExecutor;
-
-	public void setIdentificationContribuableHelper(IdentificationContribuableHelper identificationContribuableHelper) {
-		this.identificationContribuableHelper = identificationContribuableHelper;
-	}
 
 	public void setTransactionManager(PlatformTransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
@@ -391,38 +386,45 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 
 		// [SIFISC-147] effectue la recherche sur les nom et prénoms en plusieurs phase
 		for (PhaseRechercheSurNomPrenom phase : PhaseRechercheSurNomPrenom.values()) {
-			final TiersCriteria criteria = asTiersCriteriaForNomPrenom(criteres, phase);
-			if (criteres.getNAVS11() != null) {
-				// on ne compare que les 8 premiers caractères
-				criteria.setNavs11OrNull(StringUtils.left(criteres.getNAVS11(), 8));
-			}
-			if (criteres.getSexe() != null) {
-				criteria.setSexeOrNull(criteres.getSexe());
-			}
-			if (criteres.getDateNaissance() != null) {
-				criteria.setDateNaissanceOrNull(criteres.getDateNaissance());
-			}
-			if (criteres.getAdresse() != null) {
-				final CriteresAdresse adresse = criteres.getAdresse();
-				final String npa = adresse.getNpaSuisse() == null ? StringUtils.trimToNull(adresse.getNpaEtranger()) : Integer.toString(adresse.getNpaSuisse());
-				if (StringUtils.isNotBlank(npa)) {
-					criteria.setNpaTousOrNull(npa);
+			try {
+				final TiersCriteria criteria = asTiersCriteriaForNomPrenom(criteres, phase);
+				if (criteres.getNAVS11() != null) {
+					// on ne compare que les 8 premiers caractères
+					criteria.setNavs11OrNull(StringUtils.left(criteres.getNAVS11(), 8));
+				}
+				if (criteres.getSexe() != null) {
+					criteria.setSexeOrNull(criteres.getSexe());
+				}
+				if (criteres.getDateNaissance() != null) {
+					criteria.setDateNaissanceOrNull(criteres.getDateNaissance());
+				}
+				if (criteres.getAdresse() != null) {
+					final CriteresAdresse adresse = criteres.getAdresse();
+					final String npa = adresse.getNpaSuisse() == null ? StringUtils.trimToNull(adresse.getNpaEtranger()) : Integer.toString(adresse.getNpaSuisse());
+					if (StringUtils.isNotBlank(npa)) {
+						criteria.setNpaTousOrNull(npa);
+					}
+				}
+				if (avsUpi != null) {
+					criteria.setNavs13OrNull(avsUpi);
+				}
+				else if (criteres.getNAVS13() != null) {
+					criteria.setNavs13OrNull(criteres.getNAVS13());
+				}
+
+				if (!criteria.isEmpty()) {
+					indexedData = searcher.searchTop(criteria, maxNumberForList + 1);
+					if (indexedData != null && !indexedData.isEmpty()) {
+						if (indexedData.size() > maxNumberForList) {
+							throw new TooManyIdentificationPossibilitiesException(maxNumberForList);
+						}
+						break;
+					}
 				}
 			}
-			if (avsUpi != null) {
-				criteria.setNavs13OrNull(avsUpi);
-			}
-			else if (criteres.getNAVS13() != null) {
-				criteria.setNavs13OrNull(criteres.getNAVS13());
-			}
-
-			if (!criteria.isEmpty()) {
-				indexedData = searcher.searchTop(criteria, maxNumberForList + 1);
-				if (indexedData != null && !indexedData.isEmpty()) {
-					if (indexedData.size() > maxNumberForList) {
-						throw new TooManyIdentificationPossibilitiesException(maxNumberForList);
-					}
-					break;
+			catch (IgnoredPhaseException e) {
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug(String.format("Phase %s ignorée : %s", phase, e.getMessage()));
 				}
 			}
 		}
@@ -889,32 +891,32 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 
 	private TiersCriteria asTiersCriteriaNAVS13(String navs13) {
 		final TiersCriteria criteria = new TiersCriteria();
-		identificationContribuableHelper.setUpCriteria(criteria);
+		IdentificationContribuableHelper.setUpCriteria(criteria);
 		criteria.setNumeroAVS(navs13);
 		return criteria;
 	}
 
-	private TiersCriteria asTiersCriteriaForNomPrenom(CriteresPersonne criteres, PhaseRechercheSurNomPrenom phase) {
+	private TiersCriteria asTiersCriteriaForNomPrenom(CriteresPersonne criteres, PhaseRechercheSurNomPrenom phase) throws IgnoredPhaseException {
 
 		final TiersCriteria criteria = new TiersCriteria();
 		switch (phase) {
 		case STANDARD:
-			identificationContribuableHelper.updateCriteriaStandard(criteres, criteria);
+			IdentificationContribuableHelper.updateCriteriaStandard(criteres, criteria);
 			break;
 		case SANS_DERNIER_NOM:
-			identificationContribuableHelper.updateCriteriaSansDernierNom(criteres, criteria);
+			IdentificationContribuableHelper.updateCriteriaSansDernierNom(criteres, criteria);
 			break;
 		case SANS_DERNIER_PRENOM:
-			identificationContribuableHelper.updateCriteriaSansDernierPrenom(criteres, criteria);
+			IdentificationContribuableHelper.updateCriteriaSansDernierPrenom(criteres, criteria);
 			break;
 		case STANDARD_SANS_E:
-			identificationContribuableHelper.updateCriteriaStandardSansE(criteres, criteria);
+			IdentificationContribuableHelper.updateCriteriaStandardSansE(criteres, criteria);
 			break;
 		case SANS_DERNIER_NOM_SANS_E:
-			identificationContribuableHelper.updateCriteriaSansDernierNomSansE(criteres, criteria);
+			IdentificationContribuableHelper.updateCriteriaSansDernierNomSansE(criteres, criteria);
 			break;
 		case SANS_DERNIER_PRENOM_SANS_E:
-			identificationContribuableHelper.updateCriteriaSansDernierPrenomSansE(criteres, criteria);
+			IdentificationContribuableHelper.updateCriteriaSansDernierPrenomSansE(criteres, criteria);
 			break;
 
 		}

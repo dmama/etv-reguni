@@ -123,7 +123,6 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 	private IdentificationContribuableServiceImpl service;
 	private TestMessageHandler messageHandler;
-	private IdentificationContribuableHelper helper;
 	private ServiceUpiProxy serviceUpi;
 
 	@Override
@@ -136,7 +135,6 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		adresseService = getBean(AdresseService.class, "adresseService");
 		infraService = getBean(ServiceInfrastructureService.class, "serviceInfrastructureService");
 		identCtbDAO = getBean(IdentCtbDAO.class, "identCtbDAO");
-		helper = getBean(IdentificationContribuableHelper.class, "identificationContribuableHelper");
 		serviceUpi = new ServiceUpiProxy();
 
 		service = new IdentificationContribuableServiceImpl() {
@@ -157,7 +155,6 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		messageHandler = new TestMessageHandler();
 		service.setMessageHandler(messageHandler);
-		service.setIdentificationContribuableHelper(helper);
 		service.setFlowSearchThreadPoolSize(1);
 
 		service.afterPropertiesSet();
@@ -3055,7 +3052,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		{
 			CriteresPersonne criteres = new CriteresPersonne();
 			criteres.setNom("STEVENSON");
-			criteres.setPrenoms("Hugh-Clark");
+			criteres.setPrenoms("Hugh Clark");
 			criteres.setNAVS11("85948265155");
 			final List<Long> list = service.identifie(criteres, null);
 			assertNotNull(list);
@@ -3137,7 +3134,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		{
 			CriteresPersonne criteres = new CriteresPersonne();
 			criteres.setNom("Schoenenberg");
-			criteres.setPrenoms("Peter-Hanz");
+			criteres.setPrenoms("Peter Hanz");
 			criteres.setNAVS11("83143380117");
 			final List<Long> list = service.identifie(criteres, null);
 			assertNotNull(list);
@@ -4078,6 +4075,107 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 				assertEquals(Etat.TRAITE_AUTOMATIQUEMENT, ic.getEtat());
 				assertEquals(Integer.valueOf(1), ic.getNbContribuablesTrouves());
 				assertEquals(id, ic.getReponse().getNoContribuable());
+				return null;
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-10077] il ne faut pas séparer les prénoms composés (séparés par des tirets)
+	 */
+	@Test
+	public void testPrenomsComposes() throws Exception {
+		serviceUpi.setUp(new DefaultMockServiceUpi());
+
+		doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique jeanDaniel = addNonHabitant("Jean-Daniel", "Zweisteinen", date(1953, 4, 3), Sexe.MASCULIN);
+				addAdresseSuisse(jeanDaniel, TypeAdresseTiers.COURRIER, date(2000, 1, 1), null, MockRue.CossonayVille.AvenueDuFuniculaire);
+				return null;
+			}
+		});
+
+		globalTiersIndexer.sync();
+
+		assertCountDemandes(0);
+
+		// création et traitement du message d'identification
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final CriteresPersonne criteres = new CriteresPersonne();
+				criteres.setPrenoms("Jean-Claude");     // <-- même première partie de prénom composé
+				criteres.setNom("Zweisteinen");
+
+				final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
+				message.getDemande().setModeIdentification(Demande.ModeIdentificationType.SANS_MANUEL);
+				service.handleDemande(message);
+				return null;
+			}
+		});
+
+		// vérification du résultat : identification automatique avec autre NAVS (fourni par l'UPI)
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final List<IdentificationContribuable> list = identCtbDAO.getAll();
+				assertEquals(1, list.size());
+
+				final IdentificationContribuable ic = list.get(0);
+				assertNotNull(ic);
+				assertEquals(Etat.NON_IDENTIFIE, ic.getEtat());
+				assertEquals(Integer.valueOf(0), ic.getNbContribuablesTrouves());
+				assertNull(ic.getReponse().getNoContribuable());
+				return null;
+			}
+		});
+	}
+
+	@Test
+	public void testPlusDeDeuxPrenoms() throws Exception {
+		serviceUpi.setUp(new DefaultMockServiceUpi());
+
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique jeanDaniel = addNonHabitant("Jean Daniel", "Zweisteinen", date(1953, 4, 3), Sexe.MASCULIN);
+				addAdresseSuisse(jeanDaniel, TypeAdresseTiers.COURRIER, date(2000, 1, 1), null, MockRue.CossonayVille.AvenueDuFuniculaire);
+				return jeanDaniel.getNumero();
+			}
+		});
+
+		globalTiersIndexer.sync();
+
+		assertCountDemandes(0);
+
+		// création et traitement du message d'identification
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final CriteresPersonne criteres = new CriteresPersonne();
+				criteres.setPrenoms("Jean Daniel René Albert");     // <-- si on n'enlève que le dernier prénom, on ne doit trouver personne
+				criteres.setNom("Zweisteinen");
+
+				final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
+				message.getDemande().setModeIdentification(Demande.ModeIdentificationType.SANS_MANUEL);
+				service.handleDemande(message);
+				return null;
+			}
+		});
+
+		// vérification du résultat : identification automatique avec autre NAVS (fourni par l'UPI)
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final List<IdentificationContribuable> list = identCtbDAO.getAll();
+				assertEquals(1, list.size());
+
+				final IdentificationContribuable ic = list.get(0);
+				assertNotNull(ic);
+				assertEquals(Etat.NON_IDENTIFIE, ic.getEtat());
+				assertEquals(Integer.valueOf(0), ic.getNbContribuablesTrouves());
+				assertNull(ic.getReponse().getNoContribuable());
 				return null;
 			}
 		});
