@@ -118,7 +118,7 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 
 				if (rapportPrestationImposable.getDateFin() == null) {
 					//la date de fin du for est la même que la de fin de période
-					fermerRapportTravail(rapportPrestationImposable, request.getDateFinPeriodeDeclaration());
+					fermerRapportTravail(rapportPrestationImposable, request.getDateFinPeriodeDeclaration(), "date de fermeture du dernier for débiteur");
 				}
 			}
 			//on ferme tous les rapports encore ouverts a cette date la dans la liste des nouveaux rapports
@@ -126,7 +126,7 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 
 				if (rapportPrestationImposable.getDateFin() == null) {
 					//la date de fin du for est la même que la de fin de période
-					fermerRapportTravail(rapportPrestationImposable, request.getDateFinPeriodeDeclaration());
+					fermerRapportTravail(rapportPrestationImposable, request.getDateFinPeriodeDeclaration(), "date de fermeture du dernier for débiteur");
 				}
 			}
 		}
@@ -363,7 +363,7 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 		if (dateFin == null) {
 			if (isEvenementFinRapportTravail(request)) {
 				final RegDate dateFermeture = calculerDateFinRapportTravail(request);
-				fermerRapportTravail(rapportAModifier, dateFermeture);
+				fermerRapportTravail(rapportAModifier, dateFermeture, "événement de sortie/décès");
 			}
 			else {
 				final String cause = "Rapport sans date de fin, aucun événement de fermeture ou de fin de rapport dans la demande";
@@ -439,7 +439,7 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 		}
 		// cas 15
 		else if (dateFinRapport == null) {
-			fermerRapportTravail(rapportAModifier, dateFermeture);
+			fermerRapportTravail(rapportAModifier, dateFermeture, "événement de fermeture");
 		}
 		// cas 16
 		else if (dateFinRapport.isBeforeOrEqual(dateFinDeclaration)) {
@@ -453,13 +453,14 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 	 * @param rapportAModifier rapport de travail à fermer
 	 * @param dateFermeture    la date de fin du rapport
 	 */
-	private void fermerRapportTravail(RapportPrestationImposable rapportAModifier, RegDate dateFermeture) {
+	private void fermerRapportTravail(RapportPrestationImposable rapportAModifier, RegDate dateFermeture, String motifPourLog) {
 		rapportAModifier.setDateFin(dateFermeture);
-		final String message = String.format("Fermeture du rapport de travail commençant le %s pour le debiteur %s et le sourcier %s. La date de fermeture a été determinée au %s.",
+		final String message = String.format("Fermeture du rapport de travail commençant le %s pour le debiteur %s et le sourcier %s. La date de fermeture a été determinée au %s (%s).",
 				RegDateHelper.dateToDisplayString(rapportAModifier.getDateDebut()),
 				FormatNumeroHelper.numeroCTBToDisplay(rapportAModifier.getObjetId()),
 				FormatNumeroHelper.numeroCTBToDisplay(rapportAModifier.getSujetId()),
-				RegDateHelper.dateToDisplayString(dateFermeture));
+				RegDateHelper.dateToDisplayString(dateFermeture),
+				motifPourLog);
 		LOGGER.info(message);
 	}
 
