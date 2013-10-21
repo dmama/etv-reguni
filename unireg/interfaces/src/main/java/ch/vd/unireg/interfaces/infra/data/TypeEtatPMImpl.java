@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public class TypeEtatPMImpl implements TypeEtatPM, Serializable {
 
-	private static final long serialVersionUID = 5814738254309200425L;
+	private static final long serialVersionUID = -6379519462650897806L;
 
 	private String code;
 	private String libelle;
@@ -40,5 +40,10 @@ public class TypeEtatPMImpl implements TypeEtatPM, Serializable {
 
 	public void setLibelle(String libelle) {
 		this.libelle = libelle;
+	}
+
+	@Override
+	public String toString() {
+		return String.format("TypeEtatPMImpl{code='%s', libelle='%s'}", code, libelle);
 	}
 }

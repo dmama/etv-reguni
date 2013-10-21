@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public class InstitutionFinanciereImpl implements InstitutionFinanciere, Serializable {
 
-	private static final long serialVersionUID = 2897961922279151851L;
+	private static final long serialVersionUID = -7169582415319190342L;
 	
 	private final String adresse1;
 	private final String adresse2;
@@ -71,5 +71,10 @@ public class InstitutionFinanciereImpl implements InstitutionFinanciere, Seriali
 	@Override
 	public String getNomInstitutionFinanciere() {
 		return nomInstitutionFinanciere;
+	}
+
+	@Override
+	public String toString() {
+		return String.format("InstitutionFinanciereImpl{code=%d, nom='%s'}", code, nomInstitutionFinanciere);
 	}
 }

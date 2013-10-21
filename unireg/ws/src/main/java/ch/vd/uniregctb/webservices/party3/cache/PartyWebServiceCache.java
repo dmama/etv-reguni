@@ -8,6 +8,7 @@ import java.util.Set;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -41,13 +42,14 @@ import ch.vd.unireg.xml.party.v1.PartyType;
 import ch.vd.uniregctb.cache.CacheHelper;
 import ch.vd.uniregctb.cache.CacheStats;
 import ch.vd.uniregctb.cache.CompletePartsCallbackWithException;
-import ch.vd.uniregctb.cache.DumpableUniregCache;
+import ch.vd.uniregctb.cache.KeyDumpableCache;
 import ch.vd.uniregctb.cache.EhCacheStats;
+import ch.vd.uniregctb.cache.UniregCacheInterface;
 import ch.vd.uniregctb.cache.UniregCacheManager;
 import ch.vd.uniregctb.stats.StatsService;
 import ch.vd.uniregctb.webservices.party3.impl.ExceptionHelper;
 
-public class PartyWebServiceCache implements DumpableUniregCache, PartyWebService, InitializingBean, DisposableBean {
+public class PartyWebServiceCache implements UniregCacheInterface, KeyDumpableCache, PartyWebService, InitializingBean, DisposableBean {
 
 	private static final String SERVICE_NAME = "PartyWebService3";
 
@@ -458,8 +460,7 @@ public class PartyWebServiceCache implements DumpableUniregCache, PartyWebServic
 	}
 
 	@Override
-	public String dumpCacheKeys() {
-		@SuppressWarnings("unchecked") final List<Object> keys = cache.getKeys();
-		return CacheHelper.dumpKeys(keys);
+	public void dumpCacheKeys(Logger logger, Level level) {
+		CacheHelper.dumpCacheKeys(cache, logger, level);
 	}
 }

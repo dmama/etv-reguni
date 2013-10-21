@@ -8,7 +8,7 @@ import ch.vd.evd0012.v1.DistrictFiscal;
 
 public class DistrictImpl extends EntiteFiscaleImpl implements District, Serializable {
 
-	private static final long serialVersionUID = -7321126594707702915L;
+	private static final long serialVersionUID = -7794860762522753894L;
 
 	private Integer codeRegion;
 
@@ -52,5 +52,10 @@ public class DistrictImpl extends EntiteFiscaleImpl implements District, Seriali
 	@Override
 	public Integer getCodeRegion() {
 		return codeRegion;
+	}
+
+	@Override
+	protected String getMemberString() {
+		return String.format("%s, codeRegion=%s", super.getMemberString(), codeRegion);
 	}
 }

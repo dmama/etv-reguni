@@ -1,6 +1,5 @@
 package ch.vd.unireg.interfaces.infra.cache;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -10,6 +9,8 @@ import java.util.Set;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.DisposableBean;
@@ -38,13 +39,15 @@ import ch.vd.unireg.interfaces.infra.data.TypeEtatPM;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.uniregctb.cache.CacheHelper;
 import ch.vd.uniregctb.cache.CacheStats;
-import ch.vd.uniregctb.cache.DumpableUniregCache;
 import ch.vd.uniregctb.cache.EhCacheStats;
+import ch.vd.uniregctb.cache.KeyDumpableCache;
+import ch.vd.uniregctb.cache.KeyValueDumpableCache;
+import ch.vd.uniregctb.cache.UniregCacheInterface;
 import ch.vd.uniregctb.cache.UniregCacheManager;
 import ch.vd.uniregctb.stats.StatsService;
 
 @SuppressWarnings({"SimplifiableIfStatement"})
-public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, DumpableUniregCache, InitializingBean, DisposableBean {
+public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, UniregCacheInterface, KeyDumpableCache, KeyValueDumpableCache, InitializingBean, DisposableBean {
 
 	//private static final Logger LOGGER = Logger.getLogger(ServiceInfrastructureCache.class);
 
@@ -1796,15 +1799,16 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Dum
 		return resultat;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public String dumpCacheKeys() {
-		final List<Object> cacheKeys = cache.getKeys();
-		final List<Object> shortLivedCacheKeys = shortLivedCache.getKeys();
-		final List<Object> keys = new ArrayList<>(cacheKeys.size() + shortLivedCacheKeys.size());
-		keys.addAll(cacheKeys);
-		keys.addAll(shortLivedCacheKeys);
-		return CacheHelper.dumpKeys(keys);
+	public void dumpCacheKeys(Logger logger, Level level) {
+		CacheHelper.dumpCacheKeys(cache, logger, level);
+		CacheHelper.dumpCacheKeys(shortLivedCache, logger, level);
+	}
+
+	@Override
+	public void dumpCacheContent(Logger logger, Level level) {
+		CacheHelper.dumpCacheKeysAndValues(cache, logger, level, null);
+		CacheHelper.dumpCacheKeysAndValues(shortLivedCache, logger, level, null);
 	}
 
 	@Override

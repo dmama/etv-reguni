@@ -13,7 +13,7 @@ public class PaysImpl extends EntiteOFSImpl implements Pays, Serializable {
 
 	private static final DateRange ETERNITY = new DateRangeHelper.Range(null, null);
 
-	private static final long serialVersionUID = -2920444137353232870L;
+	private static final long serialVersionUID = 348017906687857815L;
 
 	private final boolean valide;
 	private final DateRange validityRange;
@@ -167,5 +167,12 @@ public class PaysImpl extends EntiteOFSImpl implements Pays, Serializable {
 	@Override
 	public TypeAffranchissement getTypeAffranchissement() {
 		return typeAffranchissement;
+	}
+
+	@Override
+	protected String getMemberString() {
+		return String.format("%s, dateDebut=%s, dateFin=%s, etatSouverain=%b, ofsParent=%s, iso2=%s, iso3=%s, affranchissement=%s",
+		                     super.getMemberString(), validityRange.getDateDebut(), validityRange.getDateFin(), etatSouverain, ofsEtatSouverainParent,
+		                     buildQuotedString(codeIso2), buildQuotedString(codeIso3), typeAffranchissement);
 	}
 }

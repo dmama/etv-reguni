@@ -6,7 +6,7 @@ import org.jetbrains.annotations.Nullable;
 
 public abstract class EntiteOFSImpl implements EntiteOFS, Serializable {
 
-	private static final long serialVersionUID = -7802594307578576973L;
+	private static final long serialVersionUID = -7784763105975900783L;
 
 	private final int noOFS;
 	private final String nomCourt;
@@ -70,5 +70,23 @@ public abstract class EntiteOFSImpl implements EntiteOFS, Serializable {
 		result = 31 * result + (nomOfficiel != null ? nomOfficiel.hashCode() : 0);
 		result = 31 * result + (sigleOFS != null ? sigleOFS.hashCode() : 0);
 		return result;
+	}
+
+	@Override
+	public final String toString() {
+		return String.format("%s{%s}", getClass().getSimpleName(), getMemberString());
+	}
+
+	protected String getMemberString() {
+		return String.format("noOfs=%d, sigleOfs=%s, nomCourt=%s", noOFS, buildQuotedString(sigleOFS), buildQuotedString(nomCourt));
+	}
+
+	protected static String buildQuotedString(String str) {
+		if (str == null) {
+			return "null";
+		}
+		else {
+			return String.format("'%s'", str);
+		}
 	}
 }

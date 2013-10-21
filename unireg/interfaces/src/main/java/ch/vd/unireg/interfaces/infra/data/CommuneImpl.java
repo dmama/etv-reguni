@@ -16,7 +16,7 @@ import ch.vd.uniregctb.common.XmlUtils;
 
 public class CommuneImpl extends EntiteOFSImpl implements Commune, Serializable {
 
-	private static final long serialVersionUID = 861289905065121600L;
+	private static final long serialVersionUID = 6781278866373397086L;
 
 	private final RegDate dateDebut;
 	private final RegDate dateFin;
@@ -180,5 +180,12 @@ public class CommuneImpl extends EntiteOFSImpl implements Commune, Serializable 
 	@Override
 	public Integer getCodeRegion() {
 		return codeRegion;
+	}
+
+	@Override
+	protected String getMemberString() {
+		return String.format("%s, dateDebut=%s, dateFin=%s, mere=%s, vaudoise=%b, fraction=%b, principale=%b, canton=%s, district=%s, region=%s",
+		                     super.getMemberString(), dateDebut, dateFin, noOfsCommuneMere <= 0 ? null : noOfsCommuneMere, vaudoise, fraction,
+		                     principale, buildQuotedString(sigleCanton), codeDistrict, codeRegion);
 	}
 }

@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.common;
 
 /**
- * Interface qui permet de customiser la conversion d'un objet en chaîne de caractère
+ * Interface qui permet de customiser la conversion d'un objet en chaîne de caractères
  * @param <T> type de l'objet à convertir
  */
 public interface StringRenderer<T> {

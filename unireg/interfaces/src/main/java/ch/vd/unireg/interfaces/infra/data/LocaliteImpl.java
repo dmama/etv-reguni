@@ -7,7 +7,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 
 public class LocaliteImpl implements Localite, Serializable {
 
-	private static final long serialVersionUID = -8507140048340746513L;
+	private static final long serialVersionUID = -7310769238358759760L;
 	
 	private final Commune commune;
 	private final RegDate dateFin;
@@ -111,5 +111,10 @@ public class LocaliteImpl implements Localite, Serializable {
 	@Override
 	public boolean isValide() {
 		return valide;
+	}
+
+	@Override
+	public String toString() {
+		return String.format("LocaliteImpl{npa=%d, noCommune=%d, valide=%s, nomAbregeMinuscule='%s', noOrdre=%d}", npa, noCommune, valide, nomAbregeMinuscule, noOrdre);
 	}
 }

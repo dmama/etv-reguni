@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.interfaces.service;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -7,6 +8,8 @@ import java.util.Set;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -17,15 +20,56 @@ import ch.vd.securite.model.Operateur;
 import ch.vd.securite.model.ProfilOperateur;
 import ch.vd.uniregctb.cache.CacheHelper;
 import ch.vd.uniregctb.cache.CacheStats;
-import ch.vd.uniregctb.cache.DumpableUniregCache;
 import ch.vd.uniregctb.cache.EhCacheStats;
+import ch.vd.uniregctb.cache.KeyDumpableCache;
+import ch.vd.uniregctb.cache.KeyValueDumpableCache;
+import ch.vd.uniregctb.cache.UniregCacheInterface;
 import ch.vd.uniregctb.cache.UniregCacheManager;
+import ch.vd.uniregctb.common.StringRenderer;
+import ch.vd.uniregctb.security.IfoSecProcedure;
 import ch.vd.uniregctb.security.IfoSecProfil;
 import ch.vd.uniregctb.stats.StatsService;
 
-public class ServiceSecuriteCache implements DumpableUniregCache, ServiceSecuriteService, InitializingBean, DisposableBean {
+public class ServiceSecuriteCache implements UniregCacheInterface, KeyDumpableCache, KeyValueDumpableCache, ServiceSecuriteService, InitializingBean, DisposableBean {
 
-	//private static final Logger LOGGER = Logger.getLogger(ServiceSecuriteCache.class);
+	private static final CacheHelper.ValueRendererFactory RENDERER_FACTORY;
+	static
+	{
+		final CacheHelper.ValueRendererFactory factory = new CacheHelper.ValueRendererFactory();
+		factory.addSpecificRenderer(CollectiviteAdministrative.class, new StringRenderer<CollectiviteAdministrative>() {
+			@Override
+			public String toString(CollectiviteAdministrative coladm) {
+				return String.format("CollAdm{no=%d}", coladm.getNoColAdm());
+			}
+		});
+		factory.addSpecificRenderer(ProfilOperateur.class, new StringRenderer<ProfilOperateur>() {
+			@Override
+			public String toString(ProfilOperateur profil) {
+				final String procedures = Arrays.toString(profil.getProcedures().toArray());
+				return String.format("{%s (%s %s), coladm=%d, procs=%s}", profil.getVisaOperateur(), profil.getPrenom(), profil.getNom(), profil.getCollectivite().getNoColAdm(), procedures);
+			}
+		});
+		factory.addSpecificRenderer(IfoSecProfil.class, new StringRenderer<IfoSecProfil>() {
+			@Override
+			public String toString(IfoSecProfil profil) {
+				return String.format("{%s (%s %s)}", profil.getVisaOperateur(), profil.getPrenom(), profil.getNom());
+			}
+		});
+		factory.addSpecificRenderer(Operateur.class, new StringRenderer<Operateur>() {
+			@Override
+			public String toString(Operateur operateur) {
+				return String.format("{%s (%s %s)}", operateur.getCode(), operateur.getPrenom(), operateur.getNom());
+			}
+		});
+		factory.addSpecificRenderer(IfoSecProcedure.class, new StringRenderer<IfoSecProcedure>() {
+			@Override
+			public String toString(IfoSecProcedure object) {
+				return object.getCode();
+			}
+		});
+		RENDERER_FACTORY = factory;
+	}
+
 
 	private CacheManager cacheManager;
 	private String cacheName;
@@ -470,8 +514,12 @@ public class ServiceSecuriteCache implements DumpableUniregCache, ServiceSecurit
 	}
 
 	@Override
-	public String dumpCacheKeys() {
-		@SuppressWarnings("unchecked") final List<Object> keys = cache.getKeys();
-		return CacheHelper.dumpKeys(keys);
+	public void dumpCacheKeys(Logger logger, Level level) {
+		CacheHelper.dumpCacheKeys(cache, logger, level);
+	}
+
+	@Override
+	public void dumpCacheContent(Logger logger, Level level) {
+		CacheHelper.dumpCacheKeysAndValues(cache, logger, level, RENDERER_FACTORY);
 	}
 }

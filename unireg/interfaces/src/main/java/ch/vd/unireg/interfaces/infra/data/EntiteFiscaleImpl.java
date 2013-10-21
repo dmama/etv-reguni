@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public abstract class EntiteFiscaleImpl implements EntiteFiscale, Serializable {
 
-	private static final long serialVersionUID = -8674294582132866017L;
+	private static final long serialVersionUID = 9087929252816681359L;
 
 	private Integer code;
 	private String designation;
@@ -33,6 +33,15 @@ public abstract class EntiteFiscaleImpl implements EntiteFiscale, Serializable {
 	protected EntiteFiscaleImpl(Integer code, String designation) {
 		this.code = code;
 		this.designation = designation;
+	}
+
+	@Override
+	public final String toString() {
+		return String.format("%s{%s}", getClass().getSimpleName(), getMemberString());
+	}
+
+	protected String getMemberString() {
+		return String.format("code=%s, designation='%s'", code, designation);
 	}
 }
 

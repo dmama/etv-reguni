@@ -206,4 +206,32 @@ public class Autorisations {
 	public boolean isSituationsFamille() {
 		return situationsFamille;
 	}
+
+	@Override
+	public String toString() {
+		return "Autorisations{" +
+				"donneesFiscales=" + donneesFiscales +
+				", forsPrincipaux=" + forsPrincipaux +
+				", forsSecondaires=" + forsSecondaires +
+				", forsAutresElementsImposables=" + forsAutresElementsImposables +
+				", forsAutresImpots=" + forsAutresImpots +
+				", declarationImpots=" + declarationImpots +
+				", adresses=" + adresses +
+				", adressesDomicile=" + adressesDomicile +
+				", adressesCourrier=" + adressesCourrier +
+				", adressesRepresentation=" + adressesRepresentation +
+				", adressesPoursuite=" + adressesPoursuite +
+				", complements=" + complements +
+				", complementsCommunications=" + complementsCommunications +
+				", complementsCoordonneesFinancieres=" + complementsCoordonneesFinancieres +
+				", rapports=" + rapports +
+				", rapportsDePrestations=" + rapportsDePrestations +
+				", rapportsDeTravail=" + rapportsDeTravail +
+				", autresRapports=" + autresRapports +
+				", donneesCiviles=" + donneesCiviles +
+				", debiteurs=" + debiteurs +
+				", mouvements=" + mouvements +
+				", situationsFamille=" + situationsFamille +
+				'}';
+	}
 }

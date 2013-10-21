@@ -6,6 +6,7 @@ import java.util.List;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -17,8 +18,10 @@ import ch.vd.registre.base.tx.TxCallback;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.cache.CacheHelper;
 import ch.vd.uniregctb.cache.CacheStats;
-import ch.vd.uniregctb.cache.DumpableUniregCache;
 import ch.vd.uniregctb.cache.EhCacheStats;
+import ch.vd.uniregctb.cache.KeyDumpableCache;
+import ch.vd.uniregctb.cache.KeyValueDumpableCache;
+import ch.vd.uniregctb.cache.UniregCacheInterface;
 import ch.vd.uniregctb.cache.UniregCacheManager;
 import ch.vd.uniregctb.data.DataEventListener;
 import ch.vd.uniregctb.data.DataEventService;
@@ -27,7 +30,7 @@ import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
-public class AutorisationCacheImpl implements AutorisationCache, DataEventListener, InitializingBean, DumpableUniregCache {
+public class AutorisationCacheImpl implements AutorisationCache, DataEventListener, InitializingBean, UniregCacheInterface, KeyDumpableCache, KeyValueDumpableCache {
 
 	private static final Logger LOGGER = Logger.getLogger(AutorisationCacheImpl.class);
 
@@ -235,8 +238,12 @@ public class AutorisationCacheImpl implements AutorisationCache, DataEventListen
 	}
 
 	@Override
-	public String dumpCacheKeys() {
-		@SuppressWarnings("unchecked") final List<Object> keys = cache.getKeys();
-		return CacheHelper.dumpKeys(keys);
+	public void dumpCacheKeys(Logger logger, Level level) {
+		CacheHelper.dumpCacheKeys(cache, logger, level);
+	}
+
+	@Override
+	public void dumpCacheContent(Logger logger, Level level) {
+		CacheHelper.dumpCacheKeysAndValues(cache, logger, level, null);
 	}
 }

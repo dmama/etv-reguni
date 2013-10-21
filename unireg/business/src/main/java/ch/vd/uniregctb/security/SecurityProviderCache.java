@@ -11,6 +11,7 @@ import java.util.Set;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -20,8 +21,10 @@ import org.springframework.transaction.support.TransactionCallback;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.cache.CacheHelper;
 import ch.vd.uniregctb.cache.CacheStats;
-import ch.vd.uniregctb.cache.DumpableUniregCache;
 import ch.vd.uniregctb.cache.EhCacheStats;
+import ch.vd.uniregctb.cache.KeyDumpableCache;
+import ch.vd.uniregctb.cache.KeyValueDumpableCache;
+import ch.vd.uniregctb.cache.UniregCacheInterface;
 import ch.vd.uniregctb.cache.UniregCacheManager;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.TiersNotFoundException;
@@ -32,7 +35,7 @@ import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.type.Niveau;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
-public class SecurityProviderCache implements DumpableUniregCache, SecurityProviderInterface, DataEventListener, InitializingBean {
+public class SecurityProviderCache implements UniregCacheInterface, KeyDumpableCache, KeyValueDumpableCache, SecurityProviderInterface, DataEventListener, InitializingBean {
 
 	private static final Logger LOGGER = Logger.getLogger(SecurityProviderCache.class);
 
@@ -534,8 +537,12 @@ public class SecurityProviderCache implements DumpableUniregCache, SecurityProvi
 	}
 
 	@Override
-	public String dumpCacheKeys() {
-		@SuppressWarnings("unchecked") final List<Object> keys = cache.getKeys();
-		return CacheHelper.dumpKeys(keys);
+	public void dumpCacheKeys(Logger logger, Level level) {
+		CacheHelper.dumpCacheKeys(cache, logger, level);
+	}
+
+	@Override
+	public void dumpCacheContent(Logger logger, Level level) {
+		CacheHelper.dumpCacheKeysAndValues(cache, logger, level, null);
 	}
 }

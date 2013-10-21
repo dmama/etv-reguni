@@ -9,7 +9,7 @@ import ch.vd.unireg.interfaces.civil.data.Adresse;
 
 public class CollectiviteAdministrativeImpl implements CollectiviteAdministrative, Serializable {
 
-	private static final long serialVersionUID = 7240105233074827079L;
+	private static final long serialVersionUID = -7828220740473730387L;
 	
 	private final Adresse adresse;
 	private final RegDate dateFin;
@@ -139,4 +139,8 @@ public class CollectiviteAdministrativeImpl implements CollectiviteAdministrativ
 		return valide;
 	}
 
+	@Override
+	public String toString() {
+		return String.format("CollectiviteAdministrativeImpl{nomCourt='%s', noColAdm=%d, aci=%b, oid=%b, valide=%b}", nomCourt, noColAdm, aci, oid, valide);
+	}
 }

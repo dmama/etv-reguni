@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public class TypeRegimeFiscalImpl implements TypeRegimeFiscal, Serializable {
 
-	private static final long serialVersionUID = 2040229723470123167L;
+	private static final long serialVersionUID = 3090705989660439765L;
 
 	private String code;
 	private String libelle;
@@ -53,4 +53,8 @@ public class TypeRegimeFiscalImpl implements TypeRegimeFiscal, Serializable {
 		this.libelleAbrege = libelleAbrege;
 	}
 
+	@Override
+	public String toString() {
+		return String.format("TypeRegimeFiscalImpl{code='%s', libelleAbrege='%s', libelle='%s'}", code, libelleAbrege, libelle);
+	}
 }

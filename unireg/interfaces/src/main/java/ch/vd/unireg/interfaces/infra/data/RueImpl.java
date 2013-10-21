@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public class RueImpl implements Rue, Serializable {
 
-	private static final long serialVersionUID = 6059798153298428189L;
+	private static final long serialVersionUID = -19873225126550620L;
 	
 	private final String designationCourrier;
 	private final Integer noLocalite;
@@ -36,5 +36,10 @@ public class RueImpl implements Rue, Serializable {
 	@Override
 	public Integer getNoRue() {
 		return noRue;
+	}
+
+	@Override
+	public String toString() {
+		return String.format("RueImpl{designationCourrier='%s', noLocalite=%d, noRue=%d}", designationCourrier, noLocalite, noRue);
 	}
 }

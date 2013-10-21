@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public class LogicielImpl implements Logiciel, Serializable {
 
-	private static final long serialVersionUID = 5078303547684479416L;
+	private static final long serialVersionUID = -2583048226599169062L;
 
 	private final String contactMetierMail;
 	private final String contactTechniqueMail;
@@ -95,5 +95,10 @@ public class LogicielImpl implements Logiciel, Serializable {
 	@Override
 	public boolean isCertifie() {
 		return certifie;
+	}
+
+	@Override
+	public String toString() {
+		return String.format("LogicielImpl{id=%d, libelle='%s'}", id, getLibelleComplet());
 	}
 }
