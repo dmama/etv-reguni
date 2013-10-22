@@ -26,7 +26,7 @@ public class ChangeEmailValidator implements Validator {
 			errors.rejectValue("email", "error.efacture.empty.email");
 		}
 		else {
-			final Matcher matcher = EMAIL_PATTERN.matcher(view.getEmail());
+			final Matcher matcher = EMAIL_PATTERN.matcher(StringUtils.trim(view.getEmail()));
 			if (!matcher.matches()) {
 				errors.rejectValue("email", "error.efacture.invalid.email");
 			}
