@@ -190,21 +190,48 @@ public class ForFiscalValidatorTest extends AbstractValidatorTest<ForFiscal> {
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDateDebutDansLeFutur() throws Exception {
+		final RegDate aujourdhui = RegDate.get();
+		final RegDate demain = aujourdhui.addDays(1);
 		{
-			final ForFiscalPrincipal ffp = new ForFiscalPrincipal(RegDate.get(), MotifFor.ARRIVEE_HS, null, null, MockCommune.Cossonay.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+			final ForFiscalPrincipal ffp = new ForFiscalPrincipal(aujourdhui, MotifFor.ARRIVEE_HS, null, null, MockCommune.Cossonay.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 			final ValidationResults vr = validate(ffp);
 			Assert.assertNotNull(vr);
 			Assert.assertEquals(0, vr.errorsCount());
 			Assert.assertEquals(0, vr.warningsCount());
 		}
 		{
-			final ForFiscalPrincipal ffp = new ForFiscalPrincipal(RegDate.get().addDays(1), MotifFor.ARRIVEE_HS, null, null, MockCommune.Cossonay.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+			final ForFiscalPrincipal ffp = new ForFiscalPrincipal(demain, MotifFor.ARRIVEE_HS, null, null, MockCommune.Cossonay.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 			final ValidationResults vr = validate(ffp);
 			Assert.assertNotNull(vr);
 			Assert.assertEquals(1, vr.errorsCount());
 			Assert.assertEquals(0, vr.warningsCount());
 
 			final String expectedMsg = String.format("La date de début du for %s est dans le futur", ffp);
+			Assert.assertEquals(expectedMsg, vr.getErrors().get(0));
+		}
+	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testDateFinDansLeFutur() throws Exception {
+		final RegDate debut = date(2010, 1, 1);
+		final RegDate aujourdhui = RegDate.get();
+		final RegDate demain = aujourdhui.addDays(1);
+		{
+			final ForFiscalPrincipal ffp = new ForFiscalPrincipal(debut, MotifFor.ARRIVEE_HS, aujourdhui, MotifFor.DEPART_HS, MockCommune.Cossonay.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+			final ValidationResults vr = validate(ffp);
+			Assert.assertNotNull(vr);
+			Assert.assertEquals(0, vr.errorsCount());
+			Assert.assertEquals(0, vr.warningsCount());
+		}
+		{
+			final ForFiscalPrincipal ffp = new ForFiscalPrincipal(debut, MotifFor.ARRIVEE_HS, demain, MotifFor.DEPART_HS, MockCommune.Cossonay.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+			final ValidationResults vr = validate(ffp);
+			Assert.assertNotNull(vr);
+			Assert.assertEquals(1, vr.errorsCount());
+			Assert.assertEquals(0, vr.warningsCount());
+
+			final String expectedMsg = String.format("La date de fin du for %s est dans le futur", ffp);
 			Assert.assertEquals(expectedMsg, vr.getErrors().get(0));
 		}
 	}

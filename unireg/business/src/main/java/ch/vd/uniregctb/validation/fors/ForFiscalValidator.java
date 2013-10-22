@@ -97,6 +97,10 @@ public abstract class ForFiscalValidator<T extends ForFiscal> extends EntityVali
 			// la date de début d'un for ne doit en aucun cas être dans le futur !
 			results.addError(String.format("La date de début du for %s est dans le futur", ff));
 		}
+		if (dateFin != null && dateFin.isAfter(getFutureBeginDate())) {
+			// la date de fin non plus, ne doit jamais être dans le futur !
+			results.addError(String.format("La date de fin du for %s est dans le futur", ff));
+		}
 		if (typeAutoriteFiscale == null) {
 			results.addError(String.format("Le for %s n'a pas de type d'autorité fiscale", ff));
 		}
