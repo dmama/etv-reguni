@@ -49,7 +49,7 @@
 						<td><fmt:message key="label.motif.ouverture" />&nbsp;:</td>
 						<td>
 							<c:if test="${command.ouvertureEditable}">
-								<form:select path="motifDebut" cssStyle="width:30ex" />
+								<form:select path="motifDebut" cssStyle="width:40ex" />
 								<form:errors path="motifDebut" cssClass="error" />
 							</c:if>
 							<c:if test="${!command.ouvertureEditable && command.motifDebut != null}">
@@ -59,7 +59,7 @@
 						<td><fmt:message key="label.motif.fermeture" />&nbsp;:</td>
 						<td>
 							<c:if test="${command.fermetureEditable}">
-								<form:select path="motifFin" cssStyle="width:30ex" />
+								<form:select path="motifFin" cssStyle="width:40ex" />
 								<form:errors path="motifFin" cssClass="error" />
 							</c:if>
 							<c:if test="${!command.fermetureEditable && command.motifFin != null}">

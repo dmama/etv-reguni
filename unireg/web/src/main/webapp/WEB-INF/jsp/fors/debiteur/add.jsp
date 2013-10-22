@@ -88,12 +88,12 @@
 					<tr class="<unireg:nextRowClass/>" >
 						<td><fmt:message key="label.motif.ouverture" />&nbsp;:</td>
 						<td>
-							<form:select path="motifDebut" cssStyle="width:30ex" />
+							<form:select path="motifDebut" cssStyle="width:40ex" />
 							<form:errors path="motifDebut" cssClass="error" />
 						</td>
 						<td><fmt:message key="label.motif.fermeture" />&nbsp;:</td>
 						<td>
-							<form:select path="motifFin" cssStyle="width:30ex" />
+							<form:select path="motifFin" cssStyle="width:40ex" />
 							<form:errors path="motifFin" cssClass="error" />
 						</td>
 					</tr>
