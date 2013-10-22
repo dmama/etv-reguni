@@ -36,6 +36,7 @@ a.edit,
 a.modif,
 a.delete,
 a.undelete,
+a.cancel,
 a.selectionner,
 a.correction,
 a.notes,
@@ -74,6 +75,7 @@ a.download:hover,
 a.edit:hover,
 a.delete:hover,
 a.undelete:hover,
+a.cancel:hover,
 a.selectionner:hover,
 a.correction:hover,
 a.notes:hover,
@@ -252,6 +254,15 @@ a.undelete {
 }
 a.undelete:hover {
 	background-image: url(undelete_on.gif);
+}
+
+a.cancel {
+	width: 16px;
+	height: 16px;
+	background-image: url(cancel_off.png);
+}
+a.cancel:hover {
+	background-image: url(cancel_on.png);
 }
 
 a.selectionner {

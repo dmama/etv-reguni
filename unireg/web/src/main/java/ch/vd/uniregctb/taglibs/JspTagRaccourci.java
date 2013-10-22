@@ -213,6 +213,19 @@ public class JspTagRaccourci extends BodyTagSupport implements MessageSourceAwar
 	}
 
 	/**
+	 * Raccourci d'abandon de saisie
+	 */
+	public static class Abandonner extends JspTagRaccourci {
+
+		private static final long serialVersionUID = 2574271931490030554L;
+
+		@Override
+		protected String getCssClass() {
+			return "cancel iepngfix";
+		}
+	}
+
+	/**
 	 * Raccourci d'alerte
 	 */
 	public static class Alerter extends JspTagRaccourci {
@@ -291,5 +304,4 @@ public class JspTagRaccourci extends BodyTagSupport implements MessageSourceAwar
 			return "reOpenFor";
 		}
 	}
-
 }

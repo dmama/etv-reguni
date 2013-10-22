@@ -30,7 +30,7 @@
 	                <span id="roMail">
 			            <c:out value="${destinataire.email}"/>
 		                <c:if test="${firstLine && histo.inscrit}">
-			                <unireg:raccourciModifier onClick="EditEFactureMail.showEdition();"/>
+			                <unireg:raccourciModifier onClick="EditEFactureMail.showEdition();" tooltip="label.bouton.modifier"/>
 		                </c:if>
 				    </span>
 	                <c:if test="${firstLine && histo.inscrit}">
@@ -39,8 +39,8 @@
 							    <form:hidden path="noCtb"/>
 							    <form:hidden id="previousMail" path="previousEmail"/>
 							    <form:input id="email" path="email" onkeyup="EditEFactureMail.checkValue(this);"/>
-							    <unireg:raccourciAnnuler id="newmailcancel" onClick="EditEFactureMail.cancelEdition();"/>
-							    <unireg:raccourciEnregistrer id="newmailvalidation" onClick="EditEFactureMail.submitNewMail($('#emailForm'));"/>
+							    <unireg:raccourciAbandonner id="newmailcancel" onClick="EditEFactureMail.cancelEdition();" tooltip="label.bouton.abandonner.saisie"/>
+							    <unireg:raccourciEnregistrer id="newmailvalidation" onClick="EditEFactureMail.submitNewMail($('#emailForm'));" tooltip="label.bouton.sauver"/>
 							    <form:errors id="emailerrors" path="email" cssClass="error"/>
 						    </form:form>
 
@@ -73,7 +73,7 @@
 					                checkValue: function(input) {
 						                var form = input.parent;
 						                var previousMail = $('#previousMail', form)[0].value;
-						                if (input.value === previousMail) {
+						                if (input.value === previousMail || $.trim(input.value) === "") {
 							                $('#newmailvalidation').hide();
 						                }
 						                else {

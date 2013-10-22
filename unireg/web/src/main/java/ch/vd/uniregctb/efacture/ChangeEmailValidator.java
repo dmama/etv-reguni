@@ -22,7 +22,10 @@ public class ChangeEmailValidator implements Validator {
 	@Override
 	public void validate(Object target, Errors errors) {
 		final ChangeEmailView view = (ChangeEmailView) target;
-		if (StringUtils.isNotBlank(view.getEmail())) {
+		if (StringUtils.isBlank(view.getEmail())) {
+			errors.rejectValue("email", "error.efacture.empty.email");
+		}
+		else {
 			final Matcher matcher = EMAIL_PATTERN.matcher(view.getEmail());
 			if (!matcher.matches()) {
 				errors.rejectValue("email", "error.efacture.invalid.email");
