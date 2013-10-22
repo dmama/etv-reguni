@@ -24,7 +24,7 @@
 
 		<table border="0"><tr valign="top">
 		<td>
-			<form:form commandName="command" action="edit.do">
+			<form:form id="editForForm" commandName="command" action="edit.do">
 				<fieldset>
 					<legend><span><fmt:message key="label.for.fiscal" /></span></legend>
 
@@ -110,7 +110,7 @@
 
 		</td>
 		<td id="actions_column" style="display:none">
-			<div id="actions_list"/>
+			<div id="actions_list"></div>
 		</td>
 		</tr></table>
 

@@ -33,9 +33,9 @@
 				<unireg:linkTo name="Créer un for autre élément imposable" action="/fors/autreelementimposable/add.do" params="{tiersId:${command.tiersId}}" link_class="createAutreElementLink"/>
 			</authz:authorize>
 		</div>
-		<div style="clear: right;"/>
+		<div style="clear: right;"></div>
 
-		<form:form commandName="command" action="add.do">
+		<form:form id="addForForm" commandName="command" action="add.do">
 			<fieldset>
 				<legend><span><fmt:message key="label.for.fiscal" /></span></legend>
 

@@ -9,7 +9,7 @@
 		</fmt:message>
 	</tiles:put>
 	<tiles:put name="body">
-		<form:form commandName="command" action="add.do">
+		<form:form id="addForForm" commandName="command" action="add.do">
 			<fieldset>
 				<legend><span><fmt:message key="label.for.fiscal"/></span></legend>
 

@@ -31,9 +31,9 @@
 				<unireg:linkTo name="Créer un for autre impôt" action="/fors/autreimpot/add.do" params="{tiersId:${command.tiersId}}" link_class="createAutreLink"/>
 			</authz:authorize>
 		</div>
-		<div style="clear: right;"/>
+		<div style="clear: right;"></div>
 
-		<form:form commandName="command" action="add.do">
+		<form:form id="addForForm" commandName="command" action="add.do">
 			<fieldset>
 				<legend><span><fmt:message key="label.for.fiscal" /></span></legend>
 
@@ -158,7 +158,7 @@
 								<form:select path="typeAutoriteFiscale" items="${typesForFiscal}" id="optionTypeAutoriteFiscale"
 								             onchange="selectAutoriteFiscale(this.options[this.selectedIndex].value);" />
 							</div>
-							<div id="mandatory_type_for" style="display: none;"/>
+							<div id="mandatory_type_for" style="display: none;"></div>
 						</td>
 
 						<td>
