@@ -15,6 +15,7 @@
 				<form:errors  cssClass="error"/>
 					<jsp:include page="../../../recherche/form.jsp">
 						<jsp:param name="typeRecherche" value="fusion-non-habitant" />
+						<jsp:param name="prefixeEffacer" value="/fusion/nonhabitant" />
 					</jsp:include>
 			</fieldset>
 		</form:form>

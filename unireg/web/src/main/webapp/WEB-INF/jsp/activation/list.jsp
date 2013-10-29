@@ -22,6 +22,7 @@
 				<form:errors  cssClass="error"/>
 				<jsp:include page="../tiers/recherche/form.jsp">
 					<jsp:param name="typeRecherche" value="activation" />
+					<jsp:param name="prefixeEffacer" value="/activation" />
 				</jsp:include>
 			</fieldset>
 		</form:form>

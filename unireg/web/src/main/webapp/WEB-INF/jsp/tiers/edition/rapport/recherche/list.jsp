@@ -20,6 +20,7 @@
 				<form:errors  cssClass="error"/>
 				<jsp:include page="../../../recherche/form.jsp">
 					<jsp:param name="typeRecherche" value="rapport" />
+					<jsp:param name="prefixeEffacer" value="/rapport" />
 				</jsp:include>		
 			</fieldset>
 		</form:form>

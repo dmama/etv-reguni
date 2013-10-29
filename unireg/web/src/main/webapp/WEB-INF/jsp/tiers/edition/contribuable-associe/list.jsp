@@ -24,7 +24,8 @@
 				<form:errors  cssClass="error"/>
 				<jsp:include page="../../recherche/form.jsp">
 					<jsp:param name="typeRecherche" value="rapport" />
-				</jsp:include>		
+					<jsp:param name="prefixeEffacer" value="/contribuable-associe" />
+				</jsp:include>
 			</fieldset>
 		</form:form>
 

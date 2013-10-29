@@ -27,8 +27,6 @@ public class DecesListController extends  AbstractTiersListController {
 	protected final Logger LOGGER = Logger.getLogger(DecesListController.class);
 
 	public static final String ACTION_PARAMETER_NAME = "action";
-	public static final String ACTION_PARAMETER_EFFACER = "effacer";
-	public static final String ACTION_PARAMETER_RECHERCHER = "rechercher";
 
 	public static final String DECES_CRITERIA_NAME = "DecesCriteria";
 	public static final String DECES_LIST_ATTRIBUTE_NAME = "list";
@@ -46,10 +44,8 @@ public class DecesListController extends  AbstractTiersListController {
 	protected Object formBackingObject(HttpServletRequest request) throws Exception {
 
 		final HttpSession session = request.getSession();
-		final String action = request.getParameter(ACTION_PARAMETER_NAME);
-
 		TiersCriteriaView bean = (TiersCriteriaView) session.getAttribute(DECES_CRITERIA_NAME);
-		if (bean == null || (action != null && action.equals(EFFACER_PARAMETER_VALUE))) {
+		if (bean == null) {
 			bean = new TiersCriteriaView();
 			bean.setTypeRechercheDuNom(TiersCriteria.TypeRecherche.EST_EXACTEMENT);
 			bean.setTypeTiers(TiersCriteria.TypeTiers.PERSONNE_PHYSIQUE);
@@ -118,12 +114,7 @@ public class DecesListController extends  AbstractTiersListController {
 		final HttpSession session = request.getSession();
 		session.setAttribute(DECES_CRITERIA_NAME, bean);
 
-		if (request.getParameter(BOUTON_EFFACER) != null) {
-			mav.setView(new RedirectView("list.do?action=effacer"));
-		} else {
-			mav.setView(new RedirectView("list.do"));
-		}
-
+		mav.setView(new RedirectView("list.do"));
 		return mav;
 	}
 

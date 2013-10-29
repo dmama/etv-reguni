@@ -21,6 +21,7 @@
 				<form:errors  cssClass="error"/>
 				<jsp:include page="../../../recherche/form.jsp">
 					<jsp:param name="typeRecherche" value="rt-sourcier" />
+					<jsp:param name="prefixeEffacer" value="/rt/sourcier" />
 				</jsp:include>
 			</fieldset>
 		</form:form>

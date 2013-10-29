@@ -19,8 +19,14 @@
 				<fieldset>
 					<legend><span><fmt:message key="label.recherche.avancee"/></span></legend>
 					<form:errors cssClass="error"/>
+					<c:if test="${errorMessage != null}">
+						<span class="error">
+							<fmt:message key="${errorMessage}"/>
+						</span>
+					</c:if>
 					<jsp:include page="form.jsp">
 						<jsp:param name="typeRecherche" value="principale"/>
+						<jsp:param name="prefixeEffacer" value="/tiers"/>
 					</jsp:include>
 				</fieldset>
 

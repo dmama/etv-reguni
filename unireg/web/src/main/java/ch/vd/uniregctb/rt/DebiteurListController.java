@@ -29,8 +29,6 @@ public class DebiteurListController  extends  AbstractTiersListController implem
 	private static final String NUMERO_SOURCIER_PARAMETER_NAME = "numeroSrc";
 
 	public static final String ACTION_PARAMETER_NAME = "action";
-	public static final String ACTION_PARAMETER_EFFACER = "effacer";
-	public static final String ACTION_PARAMETER_RECHERCHER = "rechercher";
 
 	public static final String DEBITEUR_CRITERIA_NAME = "debiteurCriteria";
 	public static final String DEBITEUR_LIST_ATTRIBUTE_NAME = "list";
@@ -51,8 +49,6 @@ public class DebiteurListController  extends  AbstractTiersListController implem
 		}
 
 		final HttpSession session = request.getSession();
-		final String action = request.getParameter(ACTION_PARAMETER_NAME);
-
 		final String numeroSrcParam = request.getParameter(NUMERO_SOURCIER_PARAMETER_NAME);
 		final Long numeroSrc = Long.parseLong(numeroSrcParam);
 
@@ -66,7 +62,7 @@ public class DebiteurListController  extends  AbstractTiersListController implem
 		}
 
 		DebiteurListView bean = (DebiteurListView) session.getAttribute(DEBITEUR_CRITERIA_NAME);
-		if (bean == null || (action != null && action.equals(EFFACER_PARAMETER_VALUE))) {
+		if (bean == null) {
 			bean = rapportPrestationEditManager.getDebiteurList(numeroSrc);
 		}
 
@@ -103,11 +99,7 @@ public class DebiteurListController  extends  AbstractTiersListController implem
 		final HttpSession session = request.getSession();
 		session.setAttribute(DEBITEUR_CRITERIA_NAME, bean);
 
-		if (request.getParameter(BOUTON_RECHERCHER) != null) {
-			mav.setView(new RedirectView("list-debiteur.do?numeroSrc=" + bean.getNumeroSourcier()));
-		} else if (request.getParameter(BOUTON_EFFACER) != null) {
-			mav.setView(new RedirectView("list-debiteur.do?numeroSrc=" + bean.getNumeroSourcier() + "&action=effacer"));
-		}
+		mav.setView(new RedirectView("list-debiteur.do?numeroSrc=" + bean.getNumeroSourcier()));
 		return mav;
 	}
 

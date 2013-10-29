@@ -28,8 +28,6 @@ public class ContribuableAssocieListController  extends  AbstractTiersListContro
 	private static final String NUMERO_DEBITEUR_PARAMETER_NAME = "numeroDpi";
 
 	public static final String ACTION_PARAMETER_NAME = "action";
-	public static final String ACTION_PARAMETER_EFFACER = "effacer";
-	public static final String ACTION_PARAMETER_RECHERCHER = "rechercher";
 
 	public static final String CONTRIBUABLE_ASSOCIE_CRITERIA_NAME = "ContribuableAssocieCriteria";
 	public static final String CONTRIBUABLE_ASSOCIE_LIST_ATTRIBUTE_NAME = "list";
@@ -47,14 +45,13 @@ public class ContribuableAssocieListController  extends  AbstractTiersListContro
 	protected Object formBackingObject(HttpServletRequest request) throws Exception {
 
 		HttpSession session = request.getSession();
-		String action = request.getParameter(ACTION_PARAMETER_NAME);
 		String numeroDebiteurParam = request.getParameter(NUMERO_DEBITEUR_PARAMETER_NAME);
 
 		ContribuableAssocieListView bean = (ContribuableAssocieListView) session.getAttribute(CONTRIBUABLE_ASSOCIE_CRITERIA_NAME);
 		final Long debiteurDansBean = (bean != null && bean.getDebiteur() != null ? bean.getDebiteur().getNumero() : null);
 		final Long debiteurDansRequete = numeroDebiteurParam != null ? Long.parseLong(numeroDebiteurParam) : null;
 		final boolean isDifferentDebiteur = (debiteurDansBean == null || !debiteurDansBean.equals(debiteurDansRequete));
-		if (bean == null || EFFACER_PARAMETER_VALUE.equals(action) || isDifferentDebiteur) {
+		if (bean == null || isDifferentDebiteur) {
 			if (debiteurDansRequete != null) {
 				bean = contribuableAssocieEditManager.getContribuableList(debiteurDansRequete);
 			}
@@ -120,12 +117,7 @@ public class ContribuableAssocieListController  extends  AbstractTiersListContro
 		HttpSession session = request.getSession();
 		session.setAttribute(CONTRIBUABLE_ASSOCIE_CRITERIA_NAME, bean);
 
-		if (request.getParameter(BOUTON_EFFACER) != null) {
-			mav.setView(new RedirectView("list.do?action=effacer&numeroDpi=" + numeroDebiteurParam ));
-		} else {
-			mav.setView(new RedirectView("list.do?numeroDpi=" + numeroDebiteurParam));
-		}
-
+		mav.setView(new RedirectView("list.do?numeroDpi=" + numeroDebiteurParam));
 		return mav;
 	}
 

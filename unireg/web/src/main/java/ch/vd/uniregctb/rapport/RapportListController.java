@@ -36,13 +36,11 @@ public class RapportListController extends AbstractTiersListController {
 	protected Object formBackingObject(HttpServletRequest request) throws Exception {
 
 		HttpSession session = request.getSession();
-		String action = request.getParameter(ACTION_PARAMETER_NAME);
 		String numeroTiersParam = request.getParameter(NUMERO_TIERS_PARAMETER_NAME);
 		Long numeroTiers = Long.parseLong(numeroTiersParam);
 
 		RapportListView rapportListView = (RapportListView) session.getAttribute(TIERS_LIE_CRITERIA_NAME);
-		if ((rapportListView == null) ||
-				((action != null) && action.equals(EFFACER_PARAMETER_VALUE))) {
+		if (rapportListView == null) {
 			//gestion des droits par rapportListeManager
 			rapportListView = rapportListManager.get(numeroTiers);
 		}
@@ -78,18 +76,8 @@ public class RapportListController extends AbstractTiersListController {
 		RapportListView bean = (RapportListView) command;
 		HttpSession session = request.getSession();
 		session.setAttribute(TIERS_LIE_CRITERIA_NAME, bean);
-
-		if (request.getParameter(BOUTON_RECHERCHER) != null) {
-			mav.setView(new RedirectView("search.do?numero=" + bean.getTiers().getNumero()));
-		}
-		else if (request.getParameter(BOUTON_EFFACER) != null) {
-			mav.setView(new RedirectView("search.do?numero=" + bean.getTiers().getNumero() + "&action=effacer"));
-		}
+		mav.setView(new RedirectView("search.do?numero=" + bean.getTiers().getNumero()));
 		return mav;
-	}
-
-	public RapportListManager getRapportListManager() {
-		return rapportListManager;
 	}
 
 	public void setRapportListManager(RapportListManager rapportListManager) {

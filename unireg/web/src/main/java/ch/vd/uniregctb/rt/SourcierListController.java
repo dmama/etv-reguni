@@ -29,8 +29,6 @@ public class SourcierListController  extends  AbstractTiersListController implem
 	private static final String NUMERO_DEBITEUR_PARAMETER_NAME = "numeroDpi";
 
 	public static final String ACTION_PARAMETER_NAME = "action";
-	public static final String ACTION_PARAMETER_EFFACER = "effacer";
-	public static final String ACTION_PARAMETER_RECHERCHER = "rechercher";
 
 	public static final String SOURCIER_CRITERIA_NAME = "sourcierCriteria";
 	public static final String SOURCIER_LIST_ATTRIBUTE_NAME = "list";
@@ -58,10 +56,9 @@ public class SourcierListController  extends  AbstractTiersListController implem
 		}
 
 		final HttpSession session = request.getSession();
-		final String action = request.getParameter(ACTION_PARAMETER_NAME);
 
 		SourcierListView bean = (SourcierListView) session.getAttribute(SOURCIER_CRITERIA_NAME);
-		if (bean == null || (action != null && action.equals(EFFACER_PARAMETER_VALUE))) {
+		if (bean == null) {
 			bean = rapportPrestationEditManager.getSourcierList(numeroDpi);
 	 	}
 
@@ -106,28 +103,13 @@ public class SourcierListController  extends  AbstractTiersListController implem
 		HttpSession session = request.getSession();
 		session.setAttribute(SOURCIER_CRITERIA_NAME, bean);
 
-		String view = null;
-		if (request.getParameter(BOUTON_RECHERCHER) != null) {
-			view = "list-sourcier.do?numeroDpi=" + bean.getNumeroDebiteur();
-		}
-		else if (request.getParameter(BOUTON_EFFACER) != null) {
-			view = "list-sourcier.do?numeroDpi=" + bean.getNumeroDebiteur() + "&action=effacer";
-		}
-		
-		if (view != null) {
-
-			if (StringUtils.isNotBlank(bean.getProvenance())) {
-				view += "&provenance=" + bean.getProvenance();
-			}
-
-			mav.setView(new RedirectView(view));
+		String view = "list-sourcier.do?numeroDpi=" + bean.getNumeroDebiteur();
+		if (StringUtils.isNotBlank(bean.getProvenance())) {
+			view += "&provenance=" + bean.getProvenance();
 		}
 
+		mav.setView(new RedirectView(view));
 		return mav;
-	}
-
-	public RapportPrestationEditManager getRapportPrestationEditManager() {
-		return rapportPrestationEditManager;
 	}
 
 	public void setRapportPrestationEditManager(RapportPrestationEditManager rapportPrestationEditManager) {

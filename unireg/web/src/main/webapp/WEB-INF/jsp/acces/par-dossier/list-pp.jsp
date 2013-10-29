@@ -23,6 +23,7 @@
 				<unireg:nextRowClass reset="0"/>
 				<jsp:include page="../../tiers/recherche/form.jsp">
 					<jsp:param name="typeRecherche" value="acces" />
+					<jsp:param name="prefixeEffacer" value="/acces/par-dossier"/>
 				</jsp:include>
 			</fieldset>
 		</form:form>

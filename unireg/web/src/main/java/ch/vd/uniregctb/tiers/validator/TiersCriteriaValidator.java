@@ -36,35 +36,34 @@ public class TiersCriteriaValidator implements Validator {
 	@Override
 	public void validate(Object target, Errors errors) {
 		// s'il y a deja des erreurs (ce sont des erreurs de binding), pas continuer les vérifications
-		if (errors.hasErrors())
-			return;
-		TiersCriteriaView bean = (TiersCriteriaView) target;
-		if (bean.isEmpty()) {
-			errors.reject("error.criteres.vide");
-		}
-		if (StringUtils.isNotBlank(bean.getNumeroFormatte()) && !ValidatorUtils.isNumber(FormatNumeroHelper.removeSpaceAndDash(bean.getNumeroFormatte()))) {
-			errors.rejectValue("numeroFormatte", "error.numero");
-		}
+		if (!errors.hasErrors()) {
+			final TiersCriteriaView bean = (TiersCriteriaView) target;
+			if (bean.isEmpty()) {
+				errors.reject("error.criteres.vide");
+			}
+			if (StringUtils.isNotBlank(bean.getNumeroFormatte()) && !ValidatorUtils.isNumber(FormatNumeroHelper.removeSpaceAndDash(bean.getNumeroFormatte()))) {
+				errors.rejectValue("numeroFormatte", "error.numero");
+			}
 
-		// Si le noOfsFor est null, mais que forAll est pas null
-		// C'est que l'autocomplete a pas marché
-		//   => Avertir l'utilisateur
-		if (	(bean.getNoOfsFor() == null || bean.getNoOfsFor().isEmpty())
-				&&
-				(bean.getForAll() != null && !bean.getForAll().isEmpty())
-			)
-		{
-			bean.setForAll(null);
-			errors.rejectValue("forAll", "error.tiers.noOfsFor.invalide");
-			//errors.reject("error.tiers.noOfsFor.invalide");
-		}
+			// Si le noOfsFor est null, mais que forAll est pas null
+			// C'est que l'autocomplete a pas marché
+			//   => Avertir l'utilisateur
+			if (	(bean.getNoOfsFor() == null || bean.getNoOfsFor().isEmpty())
+					&&
+					(bean.getForAll() != null && !bean.getForAll().isEmpty())
+				)
+			{
+				bean.setForAll(null);
+				errors.rejectValue("forAll", "error.tiers.noOfsFor.invalide");
+				//errors.reject("error.tiers.noOfsFor.invalide");
+			}
 
-		if (bean.getDateNaissance() != null) {
-			RegDate dateDuJour = RegDate.get();
-			if (bean.getDateNaissance().isAfter(dateDuJour)) {
-				errors.rejectValue("dateNaissance", "error.date.naissance.posterieure.date.jour");
+			if (bean.getDateNaissance() != null) {
+				RegDate dateDuJour = RegDate.get();
+				if (bean.getDateNaissance().isAfter(dateDuJour)) {
+					errors.rejectValue("dateNaissance", "error.date.naissance.posterieure.date.jour");
+				}
 			}
 		}
 	}
-
 }

@@ -26,6 +26,7 @@
 				<form:hidden path="typeTiers"/>
 				<jsp:include page="../../tiers/recherche/form.jsp">
 					<jsp:param name="typeRecherche" value="acces" />
+					<jsp:param name="prefixeEffacer" value="/acces/par-utilisateur/restriction"/>
 				</jsp:include>
 			</fieldset>
 		</form:form>

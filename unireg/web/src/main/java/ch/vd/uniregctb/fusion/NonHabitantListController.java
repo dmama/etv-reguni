@@ -28,12 +28,9 @@ public class NonHabitantListController  extends  AbstractTiersListController {
 	protected Object formBackingObject(HttpServletRequest request) throws Exception {
 
 		HttpSession session = request.getSession();
-		String action = request.getParameter(ACTION_PARAMETER_NAME);
-
 		TiersCriteriaView  bean = (TiersCriteriaView) session.getAttribute(NON_HABITANT_CRITERIA_NAME);
 
-		if(	(bean == null) ||
-			((action != null) && action.equals(EFFACER_PARAMETER_VALUE)) ) {
+		if (bean == null) {
 			bean = (TiersCriteriaView) super.formBackingObject(request);
 			bean.setTypeRechercheDuNom(TiersCriteria.TypeRecherche.EST_EXACTEMENT);
 			bean.setTypeTiers(TiersCriteria.TypeTiers.NON_HABITANT);
@@ -72,12 +69,8 @@ public class NonHabitantListController  extends  AbstractTiersListController {
 		HttpSession session = request.getSession();
 		TiersCriteriaView bean = (TiersCriteriaView) command;
 
-		if (request.getParameter(BOUTON_RECHERCHER) != null) {
-			session.setAttribute(NON_HABITANT_CRITERIA_NAME, bean);
-			mav.setView(new RedirectView(getSuccessView()));
-		} else if (request.getParameter(BOUTON_EFFACER) != null) {
-			mav.setView(new RedirectView("list-non-habitant.do?action=effacer"));
-		}
+		session.setAttribute(NON_HABITANT_CRITERIA_NAME, bean);
+		mav.setView(new RedirectView(getSuccessView()));
 		return mav;
 	}
 

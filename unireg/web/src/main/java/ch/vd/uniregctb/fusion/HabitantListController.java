@@ -41,7 +41,6 @@ public class HabitantListController  extends  AbstractTiersListController {
 	@Override
 	protected Object formBackingObject(HttpServletRequest request) throws Exception {
 
-		String action = request.getParameter(ACTION_PARAMETER_NAME);
 		String numeroNonHabParam = request.getParameter(NUMERO_NON_HABITANT_PARAMETER_NAME);
 		Long numeroNonHab= null;
 		if (numeroNonHabParam != null) {
@@ -51,8 +50,7 @@ public class HabitantListController  extends  AbstractTiersListController {
 		HttpSession session = request.getSession();
 		FusionListView  fusionListView = (FusionListView) session.getAttribute(HABITANT_CRITERIA_NAME);
 
-		if(	(fusionListView == null) ||
-			((action != null) && action.equals(EFFACER_PARAMETER_VALUE)) ) {
+		if (fusionListView == null) {
 			fusionListView = fusionListManager.get(numeroNonHab);
 		}
 
@@ -89,12 +87,8 @@ public class HabitantListController  extends  AbstractTiersListController {
 		FusionListView bean = (FusionListView) command;
 		HttpSession session = request.getSession();
 
-		if (request.getParameter(BOUTON_RECHERCHER) != null) {
-			session.setAttribute(HABITANT_CRITERIA_NAME, bean);
-			mav.setView(new RedirectView("list-habitant.do?numeroNonHab=" + bean.getNumeroNonHabitant() ));
-		} else if (request.getParameter(BOUTON_EFFACER) != null) {
-			mav.setView(new RedirectView("list-habitant.do?numeroNonHab=" + bean.getNumeroNonHabitant() +"&action=effacer"));
-		}
+		session.setAttribute(HABITANT_CRITERIA_NAME, bean);
+		mav.setView(new RedirectView("list-habitant.do?numeroNonHab=" + bean.getNumeroNonHabitant() ));
 		TracingManager.end(tp);
 
 		TracingManager.outputMeasures(LOGGER);

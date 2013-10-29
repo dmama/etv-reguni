@@ -191,17 +191,20 @@ public class DroitAccesController {
 
 	@RequestMapping(value = "/par-dossier.do", method = RequestMethod.POST)
 	@SecurityCheck(rolesToCheck = {Role.SEC_DOS_LEC, Role.SEC_DOS_ECR}, accessDeniedMessage = READ_REQUIRED)
-	public String accesParDossierPostFormulaire(@Valid @ModelAttribute(value = COMMAND) TiersCriteriaView view, BindingResult bindingResult, HttpSession session, Model model,
-	                                            @RequestParam(value = "effacer", required = false) String actionEffacer) {
-		if (StringUtils.isNotBlank(actionEffacer)) {
-			session.removeAttribute(DOSSIER_CRITERIA_NAME);
-		}
-		else if (bindingResult.hasErrors()) {
+	public String accesParDossierPostFormulaire(@Valid @ModelAttribute(value = COMMAND) TiersCriteriaView view, BindingResult bindingResult, HttpSession session, Model model) {
+		if (bindingResult.hasErrors()) {
 			return accesParDossier(model, view, true);
 		}
 		else {
 			session.setAttribute(DOSSIER_CRITERIA_NAME, view);
 		}
+		return "redirect:/acces/par-dossier.do";
+	}
+
+	@RequestMapping(value = "/par-dossier/reset-search.do", method = RequestMethod.GET)
+	@SecurityCheck(rolesToCheck = {Role.SEC_DOS_LEC, Role.SEC_DOS_ECR}, accessDeniedMessage = READ_REQUIRED)
+	public String resetCriteriaParDossier(HttpSession session) {
+		session.removeAttribute(DOSSIER_CRITERIA_NAME);
 		return "redirect:/acces/par-dossier.do";
 	}
 
@@ -430,6 +433,13 @@ public class DroitAccesController {
 			session.setAttribute(UTILISATEUR_CRITERIA_NAME, view);
 		}
 		return String.format("redirect:/acces/par-utilisateur/ajouter-restriction.do?%s=%d", NO_INDIVIDU_OPERATEUR, view.getNoIndividuOperateur());
+	}
+
+	@RequestMapping(value = "/par-utilisateur/restriction/reset-search.do", method = RequestMethod.GET)
+	@SecurityCheck(rolesToCheck = {Role.SEC_DOS_LEC, Role.SEC_DOS_ECR}, accessDeniedMessage = READ_REQUIRED)
+	public String resetCriteriaParUtilisateur(HttpServletRequest request, HttpSession session) {
+		session.removeAttribute(UTILISATEUR_CRITERIA_NAME);
+		return HttpHelper.getRedirectPagePrecedente(request);
 	}
 
 	@RequestMapping(value = "/par-utilisateur/recap.do", method = RequestMethod.GET)

@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
@@ -78,7 +79,7 @@ public class AnnulationDecesController {
 	public void initBinder(WebDataBinder binder) {
 		binder.setValidator(validator);
 		binder.registerCustomEditor(RegDate.class, "dateNaissance", new RegDateEditor(true, true, false));
-		binder.registerCustomEditor(String.class, "numeroAVS", new PropertyEditorSupport(){
+		binder.registerCustomEditor(String.class, "numeroAVS", new PropertyEditorSupport() {
 			@Override
 			public void setAsText(String text) {
 				setValue(FormatNumeroHelper.removeSpaceAndDash(text));
@@ -88,7 +89,8 @@ public class AnnulationDecesController {
 			public String getAsText() {
 				if (getValue() == null) {
 					return "";
-				} else {
+				}
+				else {
 					return super.getAsText();
 				}
 			}
@@ -145,13 +147,10 @@ public class AnnulationDecesController {
 		return list;
 	}
 
-	/**
-	 * réinitialise les citères du formulaire de recherche en session
-	 */
-	@RequestMapping(value = "/list.do", params = "effacer")
-	public String effacer(ModelMap model) {
-		TiersCriteriaView criteresDeRechercheInitiaux = newCriteresDeRechercheInitiaux();
-		model.put(ANNULATION_DECES_CRITERIA, criteresDeRechercheInitiaux);
+	@RequestMapping(value = "/reset-search.do", method = RequestMethod.GET)
+	public String effacerCriteresRechercheAnnulationDeces(Model model) {
+		final TiersCriteriaView criteresDeRechercheInitiaux = newCriteresDeRechercheInitiaux();
+		model.addAttribute(ANNULATION_DECES_CRITERIA, criteresDeRechercheInitiaux);
 		return "redirect:list.do";
 	}
 

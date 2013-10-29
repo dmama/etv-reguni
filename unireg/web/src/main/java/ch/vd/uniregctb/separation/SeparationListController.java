@@ -27,8 +27,6 @@ public class SeparationListController extends  AbstractTiersListController {
 	protected final Logger LOGGER = Logger.getLogger(SeparationListController.class);
 
 	public static final String ACTION_PARAMETER_NAME = "action";
-	public static final String ACTION_PARAMETER_EFFACER = "effacer";
-	public static final String ACTION_PARAMETER_RECHERCHER = "rechercher";
 
 	public static final String SEPARATION_CRITERIA_NAME = "SeparationCriteria";
 	public static final String SEPARATION_LIST_ATTRIBUTE_NAME = "list";
@@ -49,7 +47,7 @@ public class SeparationListController extends  AbstractTiersListController {
 		final String action = request.getParameter(ACTION_PARAMETER_NAME);
 
 		TiersCriteriaView bean = (TiersCriteriaView) session.getAttribute(SEPARATION_CRITERIA_NAME);
-		if (bean == null || (action != null && action.equals(EFFACER_PARAMETER_VALUE))) {
+		if (bean == null) {
 			bean = new TiersCriteriaView();
 			bean.setTypeRechercheDuNom(TiersCriteria.TypeRecherche.EST_EXACTEMENT);
 			bean.setTypeTiers(TiersCriteria.TypeTiers.MENAGE_COMMUN);
@@ -115,12 +113,7 @@ public class SeparationListController extends  AbstractTiersListController {
 		HttpSession session = request.getSession();
 		session.setAttribute(SEPARATION_CRITERIA_NAME, bean);
 
-		if (request.getParameter(BOUTON_EFFACER) != null) {
-			mav.setView(new RedirectView("list.do?action=effacer"));
-		} else {
-			mav.setView(new RedirectView("list.do"));
-		}
-
+		mav.setView(new RedirectView("list.do"));
 		return mav;
 	}
 }

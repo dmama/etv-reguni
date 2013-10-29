@@ -43,14 +43,15 @@
 		<property name="validationService" ref="validationService"/>
 	</bean>
 
-	<bean id="tiersListController" class="ch.vd.uniregctb.tiers.TiersListController" parent="abstractTiersListController">
-		<property name="sessionForm" value="true" />
-		<property name="commandClass" value="ch.vd.uniregctb.tiers.view.TiersCriteriaView" />
-		<property name="tiersListManager" ref="tiersListManager" />
-		<property name="commandName" value="command" />
-		<property name="formView" value="tiers/recherche/list" />
-		<property name="successView" value="list.do" />
-		<property name="validator" ref="tiersCriteriaValidator" />
+	<bean id="tiersSearchHelper" class="ch.vd.uniregctb.tiers.TiersSearchHelper">
+		<property name="infraService" ref="serviceInfrastructureService" />
+		<property name="tiersService" ref="tiersService"/>
+		<property name="tiersMapHelper" ref="tiersMapHelper"/>
+	</bean>
+
+	<bean id="tiersListController" class="ch.vd.uniregctb.tiers.TiersListController">
+		<property name="securityProvider" ref="securityProviderInterface" />
+		<property name="helper" ref="tiersSearchHelper"/>
 	</bean>
 
 	<bean id="tiersVisuController" class="ch.vd.uniregctb.tiers.TiersVisuController" parent="abstractTiersController">
@@ -123,10 +124,6 @@
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 	</bean>
 	
-	<bean id="tiersListManager" class="ch.vd.uniregctb.tiers.manager.TiersListManagerImpl">
-		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
-	</bean>
-
 	<bean id="lrVisuManager" class="ch.vd.uniregctb.tiers.manager.ListeRecapVisuManagerImpl">
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="tiersGeneralManager" ref="tiersGeneralManager" />

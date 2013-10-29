@@ -563,69 +563,69 @@
 	</tag>
 
 	<tag>
+		<description>Affiche un bouton qui soumet un formulaire vers une autre page lorsqu'il est cliqué.</description>
 		<name>buttonTo</name>
 		<tag-class>ch.vd.uniregctb.taglibs.JspTagButtonTo</tag-class>
 		<body-content>JSP</body-content>
-		<description>Affiche un bouton qui soumet un formulaire vers une autre page lorsqu'il est cliqué.</description>
 		<attribute>
+			<description>L'id du bouton.</description>
 			<name>id</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>L'id du bouton.</description>
 		</attribute>
 		<attribute>
+			<description>Le texte du bouton.</description>
 			<name>name</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>Le texte du bouton.</description>
 		</attribute>
 		<attribute>
+			<description>L'url relatif (action du formulaire) a atteindre lors du clic sur le bouton.</description>
 			<name>action</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>L'url relatif (action du formulaire) a atteindre lors du clic sur le bouton.</description>
 		</attribute>
 		<attribute>
+			<description>Les paramètres (au format JSON) qui doivent être soumis en même temps que le formulaire.</description>
 			<name>params</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>Les paramètres (au format JSON) qui doivent être soumis en même temps que le formulaire.</description>
 		</attribute>
 		<attribute>
+			<description>La méthode http (GET, POST) à utiliser (par défaut POST).</description>
 			<name>method</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>La méthode http (GET, POST) à utiliser (par défaut POST).</description>
 		</attribute>
 		<attribute>
+			<description>Un texte de confirmation avant exécution.</description>
 			<name>confirm</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>Un texte de confirmation avant exécution.</description>
 		</attribute>
 		<attribute>
+			<description>Le titre du bouton (tooltip).</description>
 			<name>title</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>Le titre du bouton (tooltip).</description>
 		</attribute>
 		<attribute>
+			<description>La classe CSS du bouton.</description>
 			<name>button_class</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>La classe CSS du bouton.</description>
 		</attribute>
 		<attribute>
+			<description>Vrai (défaut) si le bouton est visible; faux pour le cacher.</description>
 			<name>visible</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>Vrai (défaut) si le bouton est visible; faux pour le cacher.</description>
 		</attribute>
 		<attribute>
+			<description>Vrai si le bouton est désactivé; faux (défaut) pour l'activer.</description>
 			<name>disabled</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>Vrai si le bouton est désactivé; faux (défaut) pour l'activer.</description>
 		</attribute>
 	</tag>
 

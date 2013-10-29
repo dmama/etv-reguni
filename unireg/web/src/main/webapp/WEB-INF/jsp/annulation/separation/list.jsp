@@ -17,6 +17,7 @@
 				<form:errors  cssClass="error"/>
 				<jsp:include page="../../tiers/recherche/form.jsp">
 					<jsp:param name="typeRecherche" value="annulationSeparation" />
+					<jsp:param name="prefixeEffacer" value ="/annulation/separation" />
 				</jsp:include>
 			</fieldset>
 		</form:form>

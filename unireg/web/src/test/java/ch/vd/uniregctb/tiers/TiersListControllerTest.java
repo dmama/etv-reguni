@@ -5,7 +5,16 @@ import java.util.List;
 import java.util.Map;
 
 import junit.framework.Assert;
+import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpSession;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.web.servlet.ModelAndView;
@@ -19,11 +28,10 @@ import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.common.TestData;
 import ch.vd.uniregctb.common.WebTest;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServicePM;
+import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
-import static org.junit.Assert.assertNotNull;
 
 /**
  * Test case du controlleur spring du m�me nom.
@@ -32,15 +40,14 @@ import static org.junit.Assert.assertNotNull;
  */
 public class TiersListControllerTest extends WebTest {
 
-	private final static String CONTROLLER_NAME = "tiersListController";
-
-	private TiersListController controller;
+	private MockMvc mvc;
 
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 
-		controller = getBean(TiersListController.class, CONTROLLER_NAME);
+		final TiersListController controller = getBean(TiersListController.class, "tiersListController");
+		mvc = MockMvcBuilders.standaloneSetup(controller).build();
 
 		servicePM.setUp(new DefaultMockServicePM());
 
@@ -72,34 +79,55 @@ public class TiersListControllerTest extends WebTest {
 		setWantIndexation(true);
 	}
 
-	@SuppressWarnings("unchecked")
-	private List<TiersIndexedDataView> getTiersList(HashMap<String, String> params) throws Exception {
+	private ResultActions get(String uri, @Nullable Map<String, String> params, @Nullable MockHttpSession session) throws Exception {
+		final MockHttpServletRequestBuilder reqBuilder = MockMvcRequestBuilders.get(uri);
+		return performHttp(params, reqBuilder, session).andExpect(MockMvcResultMatchers.status().isOk());
+	}
 
-		// onSubmit
-		request.setMethod("POST");
-		for (String key : params.keySet()) {
-			String value = params.get(key);
-			request.addParameter(key, value);
+	private ResultActions post(String uri, @Nullable Map<String, String> params, @Nullable MockHttpSession session) throws Exception {
+		final MockHttpServletRequestBuilder reqBuilder = MockMvcRequestBuilders.post(uri);
+		return performHttp(params, reqBuilder, session);
+	}
+
+	private ResultActions performHttp(Map<String, String> params, MockHttpServletRequestBuilder reqBuilder, @Nullable MockHttpSession session) throws Exception {
+		if (params != null) {
+			for (Map.Entry<String, String> param : params.entrySet()) {
+				reqBuilder.param(param.getKey(), param.getValue());
+			}
 		}
-		ModelAndView mav = controller.handleRequest(request, response);
-		Map<?, ?> model = mav.getModel();
-		Assert.assertNotNull(model);
+		if (session != null) {
+			reqBuilder.session(session);
+		}
+		return mvc.perform(reqBuilder);
+	}
 
-		// showForm
-		request.setMethod("GET");
-		ModelAndView mav2 = controller.handleRequest(request, response);
-		Map<?, ?> model2 = mav2.getModel();
-		Assert.assertNotNull(model2);
-		List<TiersIndexedDataView> list = (List<TiersIndexedDataView>) model2.get(TiersListController.TIERS_LIST_ATTRIBUTE_NAME);
+	@SuppressWarnings("unchecked")
+	private List<TiersIndexedDataView> getTiersList(Map<String, String> params) throws Exception {
+		final ResultActions resActions = get("/tiers/list.do", params, null);
+		final MvcResult result = resActions.andReturn();
+		Assert.assertNotNull(result);
+		return (List<TiersIndexedDataView>) result.getModelAndView().getModel().get("list");
+	}
 
-		// for (TiersIndexedData data : list) {
-		// long numero = data.getNumero();
-		// String nom1 = data.getNom1();
-		// String nom2 = data.getNom2();
-		// data = null;
-		// }
+	@SuppressWarnings("unchecked")
+	private List<TiersIndexedDataView> doSearch(Map<String, String> params) throws Exception {
+		final MockHttpSession session = new MockHttpSession();
+		final ResultActions resActions = post("/tiers/list.do", params, session);
+		final MvcResult result = resActions.andReturn();
+		Assert.assertNotNull(result);
+		if (result.getResponse().getStatus() == 200) {
+			return (List<TiersIndexedDataView>) result.getModelAndView().getModel().get("list");
+		}
+		else if (result.getResponse().getStatus() == 302) {       // redirect
+			final String location = result.getResponse().getHeader("Location");
+			Assert.assertEquals("/tiers/list.do", location);
 
-		return list;
+			final ResultActions getAction = get("/tiers/list.do", params, session);
+			final MvcResult getResult = getAction.andReturn();
+			Assert.assertNotNull(getResult);
+			return (List<TiersIndexedDataView>) getResult.getModelAndView().getModel().get("list");
+		}
+		throw new IllegalArgumentException("Wrong status: " + result.getResponse().getStatus());
 	}
 
 	@Test
@@ -134,87 +162,59 @@ public class TiersListControllerTest extends WebTest {
 	 */
 	@Test
 	public void testShowForm() throws Exception {
-
 		loadDatabase();
-		request.setMethod("GET");
-		ModelAndView mav = controller.handleRequest(request, response);
-		Map<?, ?> model = mav.getModel();
-		Assert.assertNotNull(model);
+		final MvcResult res = get("/tiers/list.do", null, null).andReturn();
+		Assert.assertNotNull(res);
 
+		final ModelAndView mav = res.getModelAndView();
+		Assert.assertNotNull(mav);
+
+		final Object command = mav.getModel().get("command");
+		Assert.assertNotNull(command);
+		Assert.assertEquals(TiersCriteriaView.class, command.getClass());
+		Assert.assertTrue(((TiersCriteriaView) command).isEmpty());
 	}
 
 	@Test
 	public void testOnSubmitWithCriteresWithNumCTB() throws Exception {
 
 		loadDatabase();
-		request.setMethod("POST");
-		request.addParameter("numeroFormatte", "12300003");
-		ModelAndView mav = controller.handleRequest(request, response);
-		Map<?, ?> model = mav.getModel();
-		Assert.assertNotNull(model);
-		request.setMethod("GET");
-		ModelAndView mav2 = controller.handleRequest(request, response);
-		Map<?, ?> model2 = mav2.getModel();
-		Assert.assertNotNull(model2);
-		List<?> list = (List<?>) model2.get(TiersListController.TIERS_LIST_ATTRIBUTE_NAME);
+
+		final Map<String, String> params = new HashMap<>();
+		params.put("numeroFormatte", "12300003");
+		final List<TiersIndexedDataView> list = doSearch(params);
 		assertEquals(1, list.size());
-
-
 	}
 
 	@Test
 	public void testRechercheNomContient() throws Exception {
-
 		loadDatabase();
-		request.setMethod("POST");
-		request.addParameter("nomRaison", "Cuendet");
-		request.addParameter("typeRechercheDuNom", "CONTIENT");
-		ModelAndView mav = controller.handleRequest(request, response);
-		Map<?, ?> model = mav.getModel();
-		Assert.assertNotNull(model);
-		request.setMethod("GET");
-		ModelAndView mav2 = controller.handleRequest(request, response);
-		Map<?, ?> model2 = mav2.getModel();
-		Assert.assertNotNull(model2);
-		List<?> list = (List<?>) model2.get(TiersListController.TIERS_LIST_ATTRIBUTE_NAME);
+		final Map<String, String> params = new HashMap<>();
+		params.put("nomRaison", "Cuendet");
+		params.put("typeRechercheDuNom", "CONTIENT");
+		final List<TiersIndexedDataView> list = doSearch(params);
 		assertEquals(3, list.size());
-
 	}
 
 	@Test
 	public void testRechercheNomPhonetique() throws Exception {
-
 		loadDatabase();
-		request.setMethod("POST");
-		request.addParameter("nomRaison", "Cuendet");
-		request.addParameter("typeRechercheDuNom", "PHONETIQUE");
-		ModelAndView mav = controller.handleRequest(request, response);
-		Map<?, ?> model = mav.getModel();
-		Assert.assertNotNull(model);
-		request.setMethod("GET");
-		ModelAndView mav2 = controller.handleRequest(request, response);
-		Map<?, ?> model2 = mav2.getModel();
-		Assert.assertNotNull(model2);
-		List<?> list = (List<?>) model2.get(TiersListController.TIERS_LIST_ATTRIBUTE_NAME);
-		assertEquals(3, list.size());
 
+		final Map<String, String> params = new HashMap<>();
+		params.put("nomRaison", "Cuendet");
+		params.put("typeRechercheDuNom", "PHONETIQUE");
+		final List<TiersIndexedDataView> list = doSearch(params);
+		assertEquals(3, list.size());
 	}
 
 	@Test
 	public void testRechercheDateNaissance() throws Exception {
 
 		loadDatabase();
-		request.setMethod("POST");
-		request.addParameter("dateNaissance", "23.01.1970");
-		ModelAndView mav = controller.handleRequest(request, response);
-		Map<?, ?> model = mav.getModel();
-		assertNotNull(model);
-		
-		request.setMethod("GET");
-		ModelAndView mav2 = controller.handleRequest(request, response);
-		Map<?, ?> model2 = mav2.getModel();
-		assertNotNull(model2);
-		List<?> list = (List<?>) model2.get(TiersListController.TIERS_LIST_ATTRIBUTE_NAME);
+
+		final Map<String, String> params = new HashMap<>();
+		params.put("dateNaissance", "23.01.1970");
+		final List<TiersIndexedDataView> list = doSearch(params);
 		assertEquals(1, list.size()); // il y a 2 ctbs qui ont cette date de naissance, mais un des deux est un i107 qui n'est pas retourné par défaut.
 	}
 
@@ -222,54 +222,41 @@ public class TiersListControllerTest extends WebTest {
 	public void testRechercheLocalite() throws Exception {
 
 		loadDatabase();
-		request.setMethod("POST");
-		request.addParameter("localiteOuPays", "Lausanne");
-		ModelAndView mav = controller.handleRequest(request, response);
-		Map<?, ?> model = mav.getModel();
-		assertNotNull(model);
-		request.setMethod("GET");
-		ModelAndView mav2 = controller.handleRequest(request, response);
-		Map<?, ?> model2 = mav2.getModel();
-		assertNotNull(model2);
-		List<?> list = (List<?>) model2.get(TiersListController.TIERS_LIST_ATTRIBUTE_NAME);
-		assertTrue(!list.isEmpty());
 
+		final Map<String, String> params = new HashMap<>();
+		params.put("localiteOuPays", "Lausanne");
+		{
+			final List<TiersIndexedDataView> list = doSearch(params);
+			assertEquals(3, list.size());
+		}
+
+		params.put("typeTiers", "CONTRIBUABLE");
+		{
+			final List<TiersIndexedDataView> list = doSearch(params);
+			assertEquals(2, list.size());
+		}
 	}
 
 	@Test
 	public void testRechercheNumAVS() throws Exception {
 
 		loadDatabase();
-		request.setMethod("POST");
-		request.addParameter("numeroAVS", "7561234567897");
-		ModelAndView mav = controller.handleRequest(request, response);
-		Map<?, ?> model = mav.getModel();
-		assertNotNull(model);
-		request.setMethod("GET");
-		ModelAndView mav2 = controller.handleRequest(request, response);
-		Map<?, ?> model2 = mav2.getModel();
-		assertNotNull(model2);
-		List<?> list = (List<?>) model2.get(TiersListController.TIERS_LIST_ATTRIBUTE_NAME);
-		assertEquals(3, list.size());
 
+		final Map<String, String> params = new HashMap<>();
+		params.put("numeroAVS", "7561234567897");
+		final List<TiersIndexedDataView> list = doSearch(params);
+		assertEquals(3, list.size());
 	}
 
 	@Test
 	public void testRechercheNumAVSWithDash() throws Exception {
 
 		loadDatabase();
-		request.setMethod("POST");
-		request.addParameter("numeroAVS", "75612.34.567.897");
-		ModelAndView mav = controller.handleRequest(request, response);
-		Map<?, ?> model = mav.getModel();
-		assertNotNull(model);
-		request.setMethod("GET");
-		ModelAndView mav2 = controller.handleRequest(request, response);
-		Map<?, ?> model2 = mav2.getModel();
-		assertNotNull(model2);
-		List<?> list = (List<?>) model2.get(TiersListController.TIERS_LIST_ATTRIBUTE_NAME);
-		assertEquals(3, list.size());
 
+		final Map<String, String> params = new HashMap<>();
+		params.put("numeroAVS", "75612.34.567.897");
+		final List<TiersIndexedDataView> list = doSearch(params);
+		assertEquals(3, list.size());
 	}
 
 	private void loadDatabase() throws Exception {

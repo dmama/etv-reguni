@@ -32,8 +32,6 @@ public class TiersActivationListController extends AbstractTiersListController {
 	public static final String ACTIVATION_PARAMETER_NAME = "activation";
 	public static final String ACTIVATION_ANNULATION_VALUE = "annulation";
 	public static final String ACTIVATION_REACTIVATION_VALUE = "reactivation";
-	public static final String ACTION_PARAMETER_EFFACER = "effacer";
-	public static final String ACTION_PARAMETER_RECHERCHER = "rechercher";
 
 	public static final String ACTIVATION_CRITERIA_NAME = "ActivationCriteria";
 	public static final String ACTIVATION_LIST_ATTRIBUTE_NAME = "list";
@@ -45,12 +43,10 @@ public class TiersActivationListController extends AbstractTiersListController {
 	protected Object formBackingObject(HttpServletRequest request) throws Exception {
 
 		HttpSession session = request.getSession();
-		String action = request.getParameter(ACTION_PARAMETER_NAME);
 		String activation = request.getParameter(ACTIVATION_PARAMETER_NAME);
 
 		TiersActivationListView bean = (TiersActivationListView) session.getAttribute(ACTIVATION_CRITERIA_NAME);
-		if(	(bean == null) ||
-				((action != null) && action.equals(EFFACER_PARAMETER_VALUE)) ) {
+		if (bean == null) {
 			bean = tiersActivationListManager.get(activation);
 	 	}
 		return bean;
@@ -102,8 +98,7 @@ public class TiersActivationListController extends AbstractTiersListController {
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
 	 */
 	@Override
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors)
-			throws Exception {
+	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
 
 		ModelAndView mav = super.onSubmit(request, response, command, errors);
 
@@ -113,12 +108,7 @@ public class TiersActivationListController extends AbstractTiersListController {
 		HttpSession session = request.getSession();
 		session.setAttribute(ACTIVATION_CRITERIA_NAME, bean);
 
-		if (request.getParameter(BOUTON_EFFACER) != null) {
-			mav.setView(new RedirectView("list.do?activation=" + activation + "&action=effacer"));
-		} else {
-			mav.setView(new RedirectView("list.do?activation=" + activation));
-		}
-
+		mav.setView(new RedirectView("list.do?activation=" + activation));
 		return mav;
 	}
 

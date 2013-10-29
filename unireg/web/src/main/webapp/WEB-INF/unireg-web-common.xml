@@ -188,4 +188,6 @@
 		<property name="securityProvider" ref="securityProviderInterface"/>
 	</bean>
 
+	<bean id="searchCriteriaRemovalController" class="ch.vd.uniregctb.common.SearchCriteriaRemovalController"/>
+
 </beans>

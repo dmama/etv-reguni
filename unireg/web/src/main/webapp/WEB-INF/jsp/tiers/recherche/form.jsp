@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 <c:set var="typeRecherche" value="${param.typeRecherche}" />
+<c:set var="prefixeEffacer" value="${param.prefixeEffacer}" />
 <table>
 	<tr class="<unireg:nextRowClass/>" >
 		<td><fmt:message key="label.numero.tiers" />&nbsp;:</td>
@@ -164,7 +165,8 @@
 			<div class="navigation-action"><input type="submit" value="<fmt:message key="label.bouton.rechercher"/>" name="rechercher"/></div>
 		</td>
 		<td width="25%">
-			<div class="navigation-action"><input type="submit" value="<fmt:message key="label.bouton.effacer"/>" name="effacer" /></div>		
+			<c:set var="nomBoutonEffacer"><fmt:message key="label.bouton.effacer"/></c:set>
+			<div class="navigation-action"><unireg:buttonTo name="${nomBoutonEffacer}" action="${prefixeEffacer}/reset-search.do" method="get"/></div>
 		</td>
 		<td width="25%">&nbsp;</td>
 	</tr>

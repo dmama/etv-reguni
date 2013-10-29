@@ -105,7 +105,6 @@
 				<entry key="/param/modele-suppr.do" value-ref="paramModeleDocumentSupprController" />
 
 				<!-- Tiers - display -->
-				<entry key="/tiers/list.do" value-ref="tiersListController" />
 				<entry key="/tiers/launchcat.do" value-ref="tiersLaunchCatController" />
 				<entry key="/tiers/visu.do" value-ref="tiersVisuController" />
 				<entry key="/adresses/adresse.do" value-ref="tiersAdresseController" />
