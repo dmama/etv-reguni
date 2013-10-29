@@ -14,7 +14,7 @@ public abstract class CalculateurChiffreCle {
 	}
 
 	private static short key(short lastReport) {
-		return (short) (10 - lastReport);
+		return (short) ((10 - lastReport) % 10);
 	}
 
 	public static short getKey(String input) {
