@@ -27,7 +27,7 @@ public enum CategorieImpotSource implements RestrictedAccess {
 	 */
 	PARTICIPATIONS_HORS_SUISSE("Participations Hors-Suisse"),
 	/**
-	 * @since 5.5.x - 13R3
+	 * @since 5.5.x - 13R3 (5.7.x / 14R1 pour l'utilisabilité dans l'application)
 	 */
 	EFFEUILLEUSES("Effeuilleuses");
 
@@ -42,7 +42,6 @@ public enum CategorieImpotSource implements RestrictedAccess {
 	}
 
 	public boolean isAllowed() {
-		// [SIFISC-8625] Pour le moment, on ne peut pas utiliser les débiteurs IS de catégorie "Effeuilleuses"
-		return this != EFFEUILLEUSES;
+		return true;
 	}
 }
