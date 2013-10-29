@@ -13,6 +13,9 @@
 		<property name="statsService" ref="statsService"/>
 	</bean>
 
+	<!--<bean id="mockBvrPlusClient" class="ch.vd.uniregctb.wsclient.bvrplus.MockBVRPlusClient"/>-->
+
 	<alias alias="bvrPlusClient" name="bvrPlusClientTracing"/>
+	<!--<alias alias="bvrPlusClient" name="mockBvrPlusClient"/>-->
 
 </beans>
