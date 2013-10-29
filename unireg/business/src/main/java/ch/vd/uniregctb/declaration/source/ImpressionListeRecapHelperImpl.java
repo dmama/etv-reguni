@@ -72,7 +72,7 @@ public class ImpressionListeRecapHelperImpl extends EditiqueAbstractHelper imple
 	private static final String ADM_MIN = "pour les prestations versées aux administrateurs domiciliés à l'étranger";
 	private static final String CAS_MIN = "pour les artistes, sportifs et conférenciers domiciliés à l'étranger";
 	private static final String PHS_MIN = "pour les participations de collaborateur réalisées lorsque les bénéficiaires sont domiciliés à l'étranger";
-	private static final String EFF_MIN = "pour les effeuilleuses";
+	private static final String EFF_MIN = "pour les saisonniers agricoles et viticoles";
 	private static final String DECOMPTE_LR_MIN = "Décompte liste récapitulative";
 
 	private static final String HYP_MAJ = "CREANCIERS HYPOTHECAIRES";
@@ -80,7 +80,7 @@ public class ImpressionListeRecapHelperImpl extends EditiqueAbstractHelper imple
 	private static final String CAS_MAJ = "CONFERENCIERS ARTISTES SPORTIFS";
 	private static final String ADM_MAJ = "ADMINISTRATEURS";
 	private static final String PHS_MAJ = "PARTICIPATIONS HORS-SUISSE";
-	private static final String EFF_MAJ = "EFFEUILLEUSES";
+	private static final String EFF_MAJ = "SAISONNIER AGRICOLE/VITICOLE";
 
 	private static final String VERSION = "1.0";
 
