@@ -28,6 +28,7 @@ import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
+import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 
 public class EnvoiLRsEnMasseProcessor {
@@ -117,7 +118,6 @@ public class EnvoiLRsEnMasseProcessor {
 			traiteDebiteur(dpi, dateFinPeriode, rapport);
 			rapport.addDebiteur(dpi);
 		}
-
 	}
 
 	private boolean isdebiteurSansPeriodiciteUnique(DebiteurPrestationImposable dpi) {
@@ -127,14 +127,13 @@ public class EnvoiLRsEnMasseProcessor {
 
 	private void traiteDebiteur(DebiteurPrestationImposable dpi, RegDate dateFinPeriode, EnvoiLRsResults rapport) throws Exception {
 
-		final DateRange periodeInteressante = new DateRangeHelper.Range(null, dateFinPeriode);
 		final List<DateRange> lrTrouvees = new ArrayList<>();
 		final List<DateRange> lrPeriodiquesManquantes = lrService.findLRsManquantes(dpi, dateFinPeriode, lrTrouvees);
 		if (lrPeriodiquesManquantes != null) {
+			final SendingTimeStrategy sts = getSendingTimeStrategy(dpi);
 			for (DateRange lrPourCreation : lrPeriodiquesManquantes) {
-
-				// on vérifie quand même que la période de la LR est échue à la date donnée
-				if (periodeInteressante.isValidAt(lrPourCreation.getDateFin())) {
+				final PeriodiciteDecompte periodiciteDecompte = dpi.findPeriodicite(lrPourCreation.getDateDebut(), lrPourCreation.getDateFin()).getPeriodiciteDecompte();
+				if (sts.isRightMoment(dateFinPeriode, lrPourCreation, periodiciteDecompte)) {
 					if (DateRangeHelper.intersect(lrPourCreation, lrTrouvees)) {
 						final String message = String.format("Le débiteur %s possède déjà une LR qui intersecte la période du %s au %s.",
 								FormatNumeroHelper.numeroCTBToDisplay(dpi.getNumero()),
@@ -149,7 +148,15 @@ public class EnvoiLRsEnMasseProcessor {
 				}
 			}
 		}
+	}
 
+	private static SendingTimeStrategy getSendingTimeStrategy(DebiteurPrestationImposable dpi) {
+		if (dpi.getCategorieImpotSource() == CategorieImpotSource.EFFEUILLEUSES) {
+			return SendingTimeStrategy.PERIOD_MIDDLE;
+		}
+		else {
+			return SendingTimeStrategy.PERIOD_END;
+		}
 	}
 
 	/**
