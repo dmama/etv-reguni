@@ -16,18 +16,18 @@ import org.apache.cxf.message.Message;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.util.ResourceUtils;
 
-import ch.vd.unireg.webservices.party3.BatchParty;
-import ch.vd.unireg.webservices.party3.BatchPartyEntry;
-import ch.vd.unireg.webservices.party3.GetBatchPartyRequest;
-import ch.vd.unireg.webservices.party3.GetPartyRequest;
-import ch.vd.unireg.webservices.party3.PartyPart;
-import ch.vd.unireg.webservices.party3.PartyWebService;
-import ch.vd.unireg.webservices.party3.PartyWebServiceFactory;
-import ch.vd.unireg.webservices.party3.WebServiceException;
+import ch.vd.unireg.webservices.party4.BatchParty;
+import ch.vd.unireg.webservices.party4.BatchPartyEntry;
+import ch.vd.unireg.webservices.party4.GetBatchPartyRequest;
+import ch.vd.unireg.webservices.party4.GetPartyRequest;
+import ch.vd.unireg.webservices.party4.PartyPart;
+import ch.vd.unireg.webservices.party4.PartyWebService;
+import ch.vd.unireg.webservices.party4.PartyWebServiceFactory;
+import ch.vd.unireg.webservices.party4.WebServiceException;
 import ch.vd.unireg.xml.common.v1.UserLogin;
 import ch.vd.unireg.xml.party.address.v1.Address;
 import ch.vd.unireg.xml.party.address.v1.FormattedAddress;
-import ch.vd.unireg.xml.party.v1.Party;
+import ch.vd.unireg.xml.party.v2.Party;
 
 /**
  * Outil pour aller chercher les adresses d'envoi (sur six lignes, donc) des tiers
@@ -36,17 +36,17 @@ import ch.vd.unireg.xml.party.v1.Party;
 public class AdresseExtractor {
 
 	// INTEGRATION
-//	private static final String urlWebService = "http://unireg-in.etat-de-vaud.ch/fiscalite/int-unireg/ws/party3";
+//	private static final String urlWebService = "http://unireg-in.etat-de-vaud.ch/fiscalite/int-unireg/ws/party4";
 //	private static final String userWebService = "unireg";
 //	private static final String pwdWebService = "unireg_1014";
 
 	// PRE-PRODUCTION
-	private static final String urlWebService = "http://unireg-pp.etat-de-vaud.ch/fiscalite/unireg/ws/party3";
+	private static final String urlWebService = "http://unireg-pp.etat-de-vaud.ch/fiscalite/unireg/ws/party4";
 	private static final String userWebService = "web-it";
 	private static final String pwdWebService = "unireg_1014";
 
 	// PRODUCTION
-//	private static final String urlWebService = "http://unireg-pr.etat-de-vaud.ch/fiscalite/unireg/ws/party3";
+//	private static final String urlWebService = "http://unireg-pr.etat-de-vaud.ch/fiscalite/unireg/ws/party4";
 //	private static final String userWebService = "se renseigner...";
 //	private static final String pwdWebService = "se renseigner...";
 
@@ -171,7 +171,7 @@ public class AdresseExtractor {
 	}
 
 	private static PartyWebService initWebService(String serviceUrl, String username, String password) throws Exception {
-		final URL wsdlUrl = ResourceUtils.getURL("classpath:PartyService3.wsdl");
+		final URL wsdlUrl = ResourceUtils.getURL("classpath:PartyService4.wsdl");
 		final PartyWebServiceFactory ts = new PartyWebServiceFactory(wsdlUrl);
 		final PartyWebService service = ts.getService();
 		final Map<String, Object> context = ((BindingProvider) service).getRequestContext();
