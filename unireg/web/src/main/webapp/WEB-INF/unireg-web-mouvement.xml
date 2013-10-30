@@ -14,16 +14,11 @@
 		<property name="controllerUtils" ref="controllerUtils"/>
 	</bean>
 	
-	<bean id="mouvementEditContribuableController" class="ch.vd.uniregctb.mouvement.MouvementEditContribuableController" parent="abstractMouvementController">
-	</bean>
-
 	<bean id="mouvementEditController" class="ch.vd.uniregctb.mouvement.MouvementEditController" parent="abstractMouvementController">
 		<property name="tacheListManager" ref="tacheListManager" />
 		<property name="validator" ref="mouvementEditValidator" />
-		<property name="controllerUtils" ref="controllerUtils"/>
 	</bean>
 
-	
 	<bean id="mouvementEditManager" class="ch.vd.uniregctb.mouvement.manager.MouvementEditManagerImpl" parent="abstractMouvementManager"/>
 
 	<bean id="mouvementMasseManager" class="ch.vd.uniregctb.mouvement.manager.MouvementMasseManagerImpl" parent="abstractMouvementManager">
