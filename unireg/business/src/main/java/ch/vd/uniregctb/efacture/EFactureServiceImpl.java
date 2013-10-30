@@ -19,6 +19,7 @@ import ch.vd.unireg.interfaces.efacture.data.TypeEtatDemande;
 import ch.vd.unireg.interfaces.efacture.data.TypeEtatDestinataire;
 import ch.vd.unireg.wsclient.efacture.EFactureClient;
 import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.editique.EditiqueCompositionService;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -108,7 +109,7 @@ public class EFactureServiceImpl implements EFactureService, InitializingBean {
 		if (histo.getDernierEtat().getType() == TypeEtatDestinataire.INSCRIT) {
 			return ResultatQuittancement.dejaInscrit();
 		}
-		for (DemandeAvecHisto dem : histo.getHistoriqueDemandes()) {
+		for (DemandeAvecHisto dem : CollectionsUtils.revertedOrder(histo.getHistoriqueDemandes())) {
 			if (dem.getDernierEtat().getType() == TypeEtatDemande.VALIDATION_EN_COURS_EN_ATTENTE_SIGNATURE) {
 				final String businessId = eFactureMessageSender.envoieAcceptationDemandeInscription(dem.getIdDemande(), true, String.format("Traitement manuel par %s.", AuthenticationHelper.getCurrentPrincipal()));
 				return ResultatQuittancement.enCours(businessId);
