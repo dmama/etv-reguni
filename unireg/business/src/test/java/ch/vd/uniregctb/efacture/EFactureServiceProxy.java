@@ -13,7 +13,7 @@ import ch.vd.uniregctb.type.TypeDocument;
 
 public class EFactureServiceProxy implements EFactureService {
 
-	private EFactureService target;
+	private MockEFactureService target;
 
 	public void setUp(MockEFactureService service) {
 		this.target = service;
@@ -85,5 +85,15 @@ public class EFactureServiceProxy implements EFactureService {
 	public void demanderDesinscriptionContribuable(long noCtb, String idNouvelleDemande, String description) throws EvenementEfactureException {
 		checkTarget();
 		target.demanderDesinscriptionContribuable(noCtb, idNouvelleDemande, description);
+	}
+
+	public void commit() {
+		checkTarget();
+		target.commit();
+	}
+
+	public void rollback() {
+		checkTarget();
+		target.rollback();
 	}
 }

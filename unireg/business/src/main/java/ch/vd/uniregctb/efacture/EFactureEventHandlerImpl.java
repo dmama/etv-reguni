@@ -107,9 +107,8 @@ public class EFactureEventHandlerImpl implements EFactureEventHandler {
 					final TypeDocument typeDocument;
 					final String description;
 
-					final Set<TypeEtatDestinataire> etatsSuspendusNonInscrits = EnumSet.of(TypeEtatDestinataire.DESINSCRIT_SUSPENDU, TypeEtatDestinataire.NON_INSCRIT_SUSPENDU);
-					final boolean okSignature = (histo == null || !etatsSuspendusNonInscrits.contains(histo.getDernierEtat().getType()))
-							&& EFactureHelper.valideEtatFiscalContribuablePourInscription(tiers);
+					// [SIFISC-10215] tout destinataire suspendu doit être mis en attente
+					final boolean okSignature = (histo == null || !histo.getDernierEtat().getType().isSuspendu()) && EFactureHelper.valideEtatFiscalContribuablePourInscription(tiers);
 					if (okSignature) {
 						etatFinal = TypeAttenteDemande.EN_ATTENTE_SIGNATURE;
 						typeDocument = TypeDocument.E_FACTURE_ATTENTE_SIGNATURE;
