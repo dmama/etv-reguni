@@ -4,11 +4,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.ListIterator;
 
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.common.CollectionsUtils;
 
 public abstract class AbstractEtatCivilList implements EtatCivilList, Serializable {
 
@@ -26,13 +26,11 @@ public abstract class AbstractEtatCivilList implements EtatCivilList, Serializab
 	@Override
 	public EtatCivil getEtatCivilAt(RegDate date) {
 		EtatCivil etat = null;
-		final ListIterator<EtatCivil> iter = list.listIterator(list.size());
-		while (iter.hasPrevious()) {
-			final EtatCivil e = iter.previous();
+		for (EtatCivil candidate : CollectionsUtils.revertedOrder(list)) {
 			// les état-civils n'ont pas de date de fin de validité
 			// (= implicite à la date d'ouverture du suivant)
-			if (RegDateHelper.isBetween(date, e.getDateDebut(), null, NullDateBehavior.LATEST)) {
-				etat = e;
+			if (RegDateHelper.isBetween(date, candidate.getDateDebut(), null, NullDateBehavior.LATEST)) {
+				etat = candidate;
 				break;      // on prend le premier que l'on trouve
 			}
 		}

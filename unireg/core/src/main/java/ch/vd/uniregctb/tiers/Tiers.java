@@ -38,6 +38,7 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.BusinessComparable;
+import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.declaration.Declaration;
@@ -562,14 +563,11 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	 */
 	@Transient
 	public Declaration getDerniereDeclaration() {
-		List<Declaration> listeTriees = getDeclarationsSorted();
+		final List<Declaration> listeTriees = getDeclarationsSorted();
 		if (listeTriees != null) {
-			final ListIterator<Declaration> iterator = listeTriees.listIterator(listeTriees.size());
-			while (iterator.hasPrevious()) {
-				final Declaration candidate = iterator.previous();
+			for (Declaration candidate : CollectionsUtils.revertedOrder(listeTriees)) {
 				if (!candidate.isAnnule()) {
 					return candidate;
-
 				}
 			}
 		}

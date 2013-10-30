@@ -1984,12 +1984,9 @@ public class AdresseServiceImpl implements AdresseService {
 		final List<AdresseGenerique> listeAdresse = adressesHistoriques.ofType(type);
 		if (listeAdresse != null) {
 
-			// Tri des adresses
-			Collections.sort(listeAdresse, new DateRangeComparator<AdresseGenerique>());
-
-			final ListIterator<AdresseGenerique> iter = listeAdresse.listIterator(listeAdresse.size());
-			while (iter.hasPrevious()) {
-				final AdresseGenerique adresseGenerique = iter.previous();
+			// Tri des adresses dans l'ordre inverse
+			Collections.sort(listeAdresse, Collections.reverseOrder(new DateRangeComparator<AdresseGenerique>()));
+			for (AdresseGenerique adresseGenerique : listeAdresse) {
 				final Commune commune;
 				try {
 					commune = serviceInfra.getCommuneByAdresse(adresseGenerique, adresseGenerique.getDateDebut());

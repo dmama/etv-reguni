@@ -23,6 +23,7 @@ import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
+import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
@@ -160,20 +161,9 @@ public class DeterminerMouvementsDossiersEnMasseProcessor {
 	 * @return le for de gestion trouvé, ou null s'il n'y en a pas
 	 */
 	private static ForGestion findForGestion(List<ForGestion> fors, DateRange anneeRange, boolean debut) {
-		if (debut) {
-			for (ForGestion candidat : fors) {
-				if (DateRangeHelper.intersect(candidat, anneeRange)) {
-					return candidat;
-				}
-			}
-		}
-		else {
-			final ListIterator<ForGestion> iterator = fors.listIterator(fors.size());
-			while (iterator.hasPrevious()) {
-				final ForGestion candidat = iterator.previous();
-				if (DateRangeHelper.intersect(candidat, anneeRange)) {
-					return candidat;
-				}
+		for (ForGestion candidat : (debut ? fors : CollectionsUtils.revertedOrder(fors))) {
+			if (DateRangeHelper.intersect(candidat, anneeRange)) {
+				return candidat;
 			}
 		}
 		return null;

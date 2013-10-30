@@ -18,6 +18,7 @@ import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.audit.Audit;
+import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
@@ -345,10 +346,8 @@ public abstract class Arrivee extends Mouvement {
 		final List<EtatCivil> ecList = etatsCivils != null ? etatsCivils.asList() : null;
 		final RegDate dateDebutMenage;
 		if (ecList != null && !ecList.isEmpty()) {
-			final ListIterator<EtatCivil> iterator = ecList.listIterator(ecList.size());
-			RegDate candidate = limiteSuperieureEtDefaut;
-			while (iterator.hasPrevious()) {
-				final EtatCivil etatCivil = iterator.previous();
+            RegDate candidate = limiteSuperieureEtDefaut;
+			for (EtatCivil etatCivil : CollectionsUtils.revertedOrder(ecList)) {
 				if (EtatCivilHelper.estMarieOuPacse(etatCivil)) {
 					if (etatCivil.getDateDebut() == null) {
 						// si si, ça arrive...

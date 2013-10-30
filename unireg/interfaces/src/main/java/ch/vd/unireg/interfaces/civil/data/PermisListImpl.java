@@ -15,6 +15,7 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.common.CollectionsUtils;
 
 public class PermisListImpl implements PermisList, Serializable {
 
@@ -192,14 +193,12 @@ public class PermisListImpl implements PermisList, Serializable {
 
 		// itération sur la liste des permis, dans l'ordre inverse de l'obtention
 		// (on s'arrête sur le premier pour lequel les dates sont bonnes - et on ne prends pas en compte les permis annulés)
-		final ListIterator<Permis> iter = list.listIterator(list.size());
-		while (iter.hasPrevious()) {
-			final Permis p = iter.previous();
-			if (p.getDateAnnulation() != null) {
+		for (Permis candidate : CollectionsUtils.revertedOrder(list)) {
+			if (candidate.getDateAnnulation() != null) {
 				continue;
 			}
-			if (RegDateHelper.isBetween(date, p.getDateDebut(), p.getDateFin(), NullDateBehavior.LATEST)) {
-				permis = p;
+			if (RegDateHelper.isBetween(date, candidate.getDateDebut(), candidate.getDateFin(), NullDateBehavior.LATEST)) {
+				permis = candidate;
 				break;
 			}
 		}

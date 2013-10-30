@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 
 import org.apache.commons.collections.CollectionUtils;
 
@@ -78,5 +79,35 @@ public class CollectionsUtils extends CollectionUtils {
 		}
 
 		return output;
+	}
+
+	/**
+	 * Méthode utilitaire qui permet d'itérer sur une liste dans l'ordre inverse de l'ordre nominal
+	 * dans une construction for each...
+	 */
+	public static <T> Iterable<T> revertedOrder(List<T> list) {
+		final ListIterator<T> iter = list.listIterator(list.size());
+		final Iterator<T> revertedIterator = new Iterator<T>() {
+			@Override
+			public boolean hasNext() {
+				return iter.hasPrevious();
+			}
+
+			@Override
+			public T next() {
+				return iter.previous();
+			}
+
+			@Override
+			public void remove() {
+				iter.remove();
+			}
+		};
+		return new Iterable<T>() {
+			@Override
+			public Iterator<T> iterator() {
+				return revertedIterator;
+			}
+		};
 	}
 }

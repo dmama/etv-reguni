@@ -22,6 +22,7 @@ import ch.vd.unireg.interfaces.civil.data.EtatCivilList;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
 import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
@@ -212,9 +213,7 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 		RegDate dateFin = tiersService.getDateDeces(pp);
 
 		// on parcourt la liste à l'envers et on prend les états civils connus
-		final ListIterator<EtatCivil> iterator = ecList.listIterator(ecList.size());
-		while (iterator.hasPrevious()) {
-			final EtatCivil ec = iterator.previous();
+		for (EtatCivil ec : CollectionsUtils.revertedOrder(ecList)) {
 			final RegDate dateDebutCivile = ec.getDateDebut();
 			final RegDate dateDebut = dateDebutCivile == null ? findDateDebutEtatCivil(ec, pp, individu) : dateDebutCivile;
 			if (dateDebut == null || dateFin == null || dateDebut.compareTo(dateFin) <= 0) {

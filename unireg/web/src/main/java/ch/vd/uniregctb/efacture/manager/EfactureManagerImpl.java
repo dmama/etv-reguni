@@ -3,7 +3,6 @@ package ch.vd.uniregctb.efacture.manager;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
@@ -19,6 +18,7 @@ import ch.vd.unireg.interfaces.efacture.data.ResultatQuittancement;
 import ch.vd.unireg.interfaces.efacture.data.TypeAttenteDemande;
 import ch.vd.unireg.interfaces.efacture.data.TypeEtatDemande;
 import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
 import ch.vd.uniregctb.efacture.ArchiveKey;
@@ -154,14 +154,13 @@ public class EfactureManagerImpl implements EfactureManager {
 		res.setInscrit(destinataire.isInscrit());
 
 		//On charge l'historique des demandes.
-		final int sizeDemandes = destinataire.getHistoriqueDemandes().size();
-		final List<DemandeAvecHistoView> demandes = new ArrayList<>(sizeDemandes);
-		for (ListIterator<DemandeAvecHisto> it = destinataire.getHistoriqueDemandes().listIterator(sizeDemandes); it.hasPrevious(); ) {
-			final DemandeAvecHisto demande = it.previous();
-			final int sizeEtatDemandes = demande.getHistoriqueEtats().size();
-			final List<EtatDemandeView> etatsDemande = new ArrayList<>(sizeEtatDemandes);
-			for (ListIterator<EtatDemande> jt = demande.getHistoriqueEtats().listIterator(sizeEtatDemandes); jt.hasPrevious(); ) {
-				final EtatDemandeView etatView = getEtatDemande(jt.previous());
+		final List<DemandeAvecHisto> historiqueDemandes = destinataire.getHistoriqueDemandes();
+		final List<DemandeAvecHistoView> demandes = new ArrayList<>(historiqueDemandes.size());
+		for (DemandeAvecHisto demande : CollectionsUtils.revertedOrder(historiqueDemandes)) {
+			final List<EtatDemande> historiqueEtats = demande.getHistoriqueEtats();
+			final List<EtatDemandeView> etatsDemande = new ArrayList<>(historiqueEtats.size());
+			for (EtatDemande etat : CollectionsUtils.revertedOrder(historiqueEtats)) {
+				final EtatDemandeView etatView = getEtatDemande(etat);
 				etatsDemande.add(etatView);
 			}
 			final DemandeAvecHistoView view = new DemandeAvecHistoView(demande.getIdDemande(), demande.getDateDemande(), demande.getNoAdherent(), demande.getNoAvs(),
@@ -171,10 +170,11 @@ public class EfactureManagerImpl implements EfactureManager {
 		res.setDemandes(demandes);
 
 		//Chargement de l'historique des états du destinataire
-		final int sizeEtatDestinataire = destinataire.getHistoriquesEtats().size();
-		final List<EtatDestinataireView> etats = new ArrayList<>(sizeEtatDestinataire);
-		for (ListIterator<EtatDestinataire> it = destinataire.getHistoriquesEtats().listIterator(sizeEtatDestinataire); it.hasPrevious(); ) {
-			etats.add(getEtatDestinataire(it.previous()));
+		final List<EtatDestinataire> historiquesEtats = destinataire.getHistoriquesEtats();
+		final List<EtatDestinataireView> etats = new ArrayList<>(historiquesEtats.size());
+		for (EtatDestinataire etat : CollectionsUtils.revertedOrder(historiquesEtats)) {
+			final EtatDestinataireView etatView = getEtatDestinataire(etat);
+			etats.add(etatView);
 		}
 		res.setEtats(etats);
 

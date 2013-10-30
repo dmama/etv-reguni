@@ -9,6 +9,7 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.tiers.AnnuleEtRemplace;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -108,9 +109,7 @@ public class ActivationServiceImpl implements ActivationService {
 
 			// puisqu'elles sont triées, il suffit de trouver la dernière déclaration non annulée et de la tester
 			Declaration nonAnnulee = null;
-			final ListIterator<Declaration> iterator = declarations.listIterator(declarations.size());
-			while (iterator.hasPrevious()) {
-				final Declaration candidate = iterator.previous();
+			for (Declaration candidate : CollectionsUtils.revertedOrder(declarations)) {
 				if (!candidate.isAnnule()) {
 					nonAnnulee = candidate;
 					break;

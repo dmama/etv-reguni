@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.declaration.ordinaire.ForsList;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
@@ -142,9 +143,7 @@ public abstract class ExtractionDonneesRptAssujettissementResults extends Extrac
 	 * @return le dernier for principal de la liste fournie avec un mode d'imposition SOURCE, ou <code>null</code> s'il n'y en a pas...
 	 */
 	private static ForFiscalPrincipal extraireDernierForSource(ForsList<ForFiscalPrincipal> principauxDansLaPeriode) {
-		final ListIterator<ForFiscalPrincipal> iterator = principauxDansLaPeriode.listIterator(principauxDansLaPeriode.size());
-		while (iterator.hasPrevious()) {
-			final ForFiscalPrincipal ffp = iterator.previous();
+		for (ForFiscalPrincipal ffp : CollectionsUtils.revertedOrder(principauxDansLaPeriode)) {
 			if (ffp.getModeImposition() == ModeImposition.SOURCE) {
 				return ffp;
 			}
