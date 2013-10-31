@@ -54,6 +54,8 @@ public class ListeRecapDetailView implements Comparable<ListeRecapDetailView> {
 
 	private boolean imprimable;
 
+	private boolean annulable;
+
 	public CategorieImpotSource getCategorie() {
 		return categorie;
 	}
@@ -249,6 +251,14 @@ public class ListeRecapDetailView implements Comparable<ListeRecapDetailView> {
 
 	public void setImprimable(boolean imprimable) {
 		this.imprimable = imprimable;
+	}
+
+	public boolean isAnnulable() {
+		return annulable;
+	}
+
+	public void setAnnulable(boolean annulable) {
+		this.annulable = annulable;
 	}
 
 	@Override

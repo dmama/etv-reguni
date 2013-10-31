@@ -53,6 +53,7 @@ import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.PeriodeDecompte;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.TypeDocument;
+import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.utils.WebContextUtils;
 
 /**
@@ -160,7 +161,9 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 		setDroitLR(lrEditView, dpi);
 		setDelais(lrEditView, lr);
 		lrEditView.setAnnule(lr.isAnnule());
-		lrEditView.setImprimable(true);
+
+		// [SIFISC-10283] LR annulable si EMISE, SOMMEE ou ECHUE
+		lrEditView.setAnnulable(!lr.isAnnule() && etatLR.getEtat() != TypeEtatDeclaration.RETOURNEE);
 		return lrEditView;
 	}
 

@@ -23,7 +23,7 @@
 			<input 	type="submit" name="duplicataLR" value="<fmt:message key="label.bouton.imprimer.duplicata" />"
 					onClick="javascript:return Page_DuplicataLR(event || window.event);" />
 			<!-- <input type="submit" name="sommerLR" value="<fmt:message key="label.bouton.sommer" />" onClick="javascript:return Page_SommerLR(event || window.event);" /> -->
-			<c:if test="${command.etat == 'EMISE'}">
+			<c:if test="${command.annulable}">
 				<input type="submit" name="annulerLR" value="<fmt:message key="label.bouton.annuler.liste" />" onClick="javascript:return Page_AnnulerLR(event || window.event);" />
 			</c:if>
 		</c:if>

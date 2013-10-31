@@ -3,6 +3,7 @@ package ch.vd.uniregctb.lr;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.validation.BindException;
 import org.springframework.validation.ValidationUtils;
@@ -43,26 +44,22 @@ public class ListeRecapEditController extends AbstractListeRecapController {
 	 */
 	@Override
 	protected Object formBackingObject(HttpServletRequest request) throws Exception {
-		String idLrParam = request.getParameter(LR_ID_PARAMETER_NAME);
-		String idDpiParam = request.getParameter(DEBITEUR_ID_PARAMETER_NAME);
+		final String idLrParam = request.getParameter(LR_ID_PARAMETER_NAME);
+		final String idDpiParam = request.getParameter(DEBITEUR_ID_PARAMETER_NAME);
 
 		ListeRecapDetailView lrEditView = null;
 
-		if(!SecurityHelper.isGranted(securityProvider, Role.LR)){
+		if (!SecurityHelper.isGranted(securityProvider, Role.LR)) {
 			throw new AccessDeniedException("vous n'avez pas le droit d'accéder aux listes récapitulatives pour l'application Unireg");
 		}
 
-		if (idLrParam != null) {
-			Long id = Long.parseLong(idLrParam);
-			if (idLrParam != null && !"".equals(idLrParam)) {
-				lrEditView = lrEditManager.get(id);
-			}
+		if (StringUtils.isNotBlank(idLrParam)) {
+			final long id = Long.parseLong(idLrParam);
+			lrEditView = lrEditManager.get(id);
 		}
-		else {
-			if (idDpiParam != null) {
-				Long idDpi = Long.parseLong(idDpiParam);
-				lrEditView = lrEditManager.creerLr(idDpi);
-			}
+		else if (StringUtils.isNotBlank(idDpiParam)) {
+			final long idDpi = Long.parseLong(idDpiParam);
+			lrEditView = lrEditManager.creerLr(idDpi);
 		}
 
 		return lrEditView;
