@@ -3,11 +3,12 @@ package ch.vd.uniregctb.tiers.view;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
 
 public class RapportsPrestationView {
 
-	public static class Rapport {
+	public static class Rapport implements Annulable {
 
 		public Long id;
 		public boolean annule;

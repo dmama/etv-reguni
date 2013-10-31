@@ -19,38 +19,28 @@
 
 		<!-- Debut liste de tous les rapports -->
 		<c:if test="${not empty command.rapports}">
-			<display:table name="command.rapports" id="rapportPrestation" requestURI="/rapports-prestation/list.do" class="display" >
+			<display:table name="command.rapports" id="rapportPrestation" requestURI="/rapports-prestation/list.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
 
-				<display:column sortable="true" titleKey="label.date.debut">
-					<c:if test="${rapportPrestation.annule}"><strike></c:if>
-						<unireg:regdate regdate="${rapportPrestation.dateDebut}"/>
-					<c:if test="${rapportPrestation.annule}"></strike></c:if>
+				<display:column sortable="true" titleKey="label.date.debut" sortProperty="dateDebut">
+					<unireg:regdate regdate="${rapportPrestation.dateDebut}"/>
 				</display:column>
 
-				<display:column sortable="true" titleKey="label.date.fin">
-					<c:if test="${rapportPrestation.annule}"><strike></c:if>
-						<unireg:regdate regdate="${rapportPrestation.dateFin}"/>
-					<c:if test="${rapportPrestation.annule}"></strike></c:if>
+				<display:column sortable="true" titleKey="label.date.fin" sortProperty="dateFin">
+					<unireg:regdate regdate="${rapportPrestation.dateFin}"/>
 				</display:column>
 				<display:column sortable="true" titleKey="label.numero.contribuable">
-					<c:if test="${rapportPrestation.annule}"><strike></c:if>
-						<a href="../tiers/visu.do?id=${rapportPrestation.noCTB}"><unireg:numCTB numero="${rapportPrestation.noCTB}"></unireg:numCTB></a>
-					<c:if test="${rapportPrestation.annule}"></strike></c:if>
+					<a href="../tiers/visu.do?id=${rapportPrestation.noCTB}"><unireg:numCTB numero="${rapportPrestation.noCTB}"/></a>
 				</display:column>
 				<display:column sortable="true" titleKey="label.nom.prenom" >
-					<c:if test="${rapportPrestation.annule}"><strike></c:if>
-						<c:if test="${rapportPrestation.nomCourrier1 != null }">
-							${rapportPrestation.nomCourrier1}
-						</c:if>
-						<c:if test="${rapportPrestation.nomCourrier2 != null }">
-							<br />${rapportPrestation.nomCourrier2}
-						</c:if>
-					<c:if test="${rapportPrestation.annule}"></strike></c:if>
+					<c:if test="${rapportPrestation.nomCourrier1 != null }">
+						${rapportPrestation.nomCourrier1}
+					</c:if>
+					<c:if test="${rapportPrestation.nomCourrier2 != null }">
+						<br />${rapportPrestation.nomCourrier2}
+					</c:if>
 				</display:column>
 				<display:column sortable="true" titleKey="label.numero.avs" >
-					<c:if test="${rapportPrestation.annule}"><strike></c:if>
-						${rapportPrestation.noAVS}
-					<c:if test="${rapportPrestation.annule}"></strike></c:if>
+					${rapportPrestation.noAVS}
 				</display:column>
 				<display:column style="action">
 					<unireg:consulterLog entityNature="RapportEntreTiers" entityId="${rapportPrestation.id}"/>
