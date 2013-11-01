@@ -125,7 +125,7 @@ public class RapportEntreTiersDAOImpl extends GenericDAOImpl<RapportEntreTiers, 
 		if (!showHisto) {
 			fragment.add("and r.dateFin is null and r.annulationDate is null");
 		}
-		fragment.add(buildOrderClause(pagination));
+		fragment.add(buildOrderClause(pagination, tiersId));
 
 		final Session session = getCurrentSession();
 		final Query queryObject = fragment.createQuery(session);
@@ -138,7 +138,7 @@ public class RapportEntreTiersDAOImpl extends GenericDAOImpl<RapportEntreTiers, 
 		return queryObject.list();
 	}
 
-	private static QueryFragment buildOrderClause(ParamPagination pagination) {
+	private static QueryFragment buildOrderClause(ParamPagination pagination, final long srcTiersId) {
 		return pagination.buildOrderClause("r", null, true, new ParamPagination.CustomOrderByGenerator() {
 			@Override
 			public boolean supports(String fieldName) {
@@ -147,13 +147,8 @@ public class RapportEntreTiersDAOImpl extends GenericDAOImpl<RapportEntreTiers, 
 
 			@Override
 			public QueryFragment generate(String fieldName, ParamPagination pagination) {
-				// pour le champs tiersId, on s'arrange pour trier selon l'ordre sujet-objet
-				if (pagination.isSensAscending()) {
-					return new QueryFragment("r.sujetId asc, r.objetId");
-				}
-				else {
-					return new QueryFragment("r.sujetId desc, r.objetId");
-				}
+				// [SIFISC-9965] on va trier par le résultat de l'expression "sujetId + objetId - $srcTiersId", i.e. par l'AUTRE numéro de tiers
+				return new QueryFragment("r.sujetId + r.objetId - " + srcTiersId);
 			}
 		});
 	}

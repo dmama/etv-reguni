@@ -1,32 +1,31 @@
 package ch.vd.uniregctb.tiers;
 
+import java.util.EnumSet;
+import java.util.List;
 import java.util.Set;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.CoreDAOTest;
+import ch.vd.uniregctb.common.ParamPagination;
+import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
-
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
 
 @SuppressWarnings({"JavaDoc"})
 public class RapportEntreTiersTest extends CoreDAOTest {
 
-	// private static final Logger LOGGER = Logger.getLogger(RapportEntreTiersTest.class);
-
-	private TiersDAO dao;
+	private RapportEntreTiersDAO retDAO;
 
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
-
-		dao = getBean(TiersDAO.class, "tiersDAO");
+		retDAO = getBean(RapportEntreTiersDAO.class, "rapportEntreTiersDAO");
 	}
 
 	/**
@@ -57,16 +56,16 @@ public class RapportEntreTiersTest extends CoreDAOTest {
 				// Menage
 				MenageCommun menage = new MenageCommun();
 
-				ctb1 = (PersonnePhysique) dao.save(ctb1);
-				ctb2 = (PersonnePhysique) dao.save(ctb2);
-				menage = (MenageCommun) dao.save(menage);
+				ctb1 = (PersonnePhysique) tiersDAO.save(ctb1);
+				ctb2 = (PersonnePhysique) tiersDAO.save(ctb2);
+				menage = (MenageCommun) tiersDAO.save(menage);
 
 				// Rattachement
 				RapportEntreTiers rapport1 = new AppartenanceMenage(RegDate.get(2002, 2, 1), null, ctb1, menage);
 				RapportEntreTiers rapport2 = new AppartenanceMenage(RegDate.get(2002, 2, 1), null, ctb2, menage);
 
-				dao.save(rapport1);
-				dao.save(rapport2);
+				tiersDAO.save(rapport1);
+				tiersDAO.save(rapport2);
 
 				Numeros numeros = new Numeros();
 				numeros.hab1Num = ctb1.getNumero();
@@ -82,77 +81,77 @@ public class RapportEntreTiersTest extends CoreDAOTest {
 
 		// Nombre d'éléments stockés dans la base
 		{
-			assertEquals("Nombre de tiers incorrect", 3, dao.getCount(Tiers.class));
-			assertEquals("Nombre de rapport-entre-tiers incorrect", 2, dao.getCount(RapportEntreTiers.class));
+			Assert.assertEquals("Nombre de tiers incorrect", 3, tiersDAO.getCount(Tiers.class));
+			Assert.assertEquals("Nombre de rapport-entre-tiers incorrect", 2, tiersDAO.getCount(RapportEntreTiers.class));
 		}
 
 		// Depuis le point de vue du ménage
 		{
-			final MenageCommun menage = (MenageCommun) dao.get(mcNum);
-			assertNotNull(menage);
+			final MenageCommun menage = (MenageCommun) tiersDAO.get(mcNum);
+			Assert.assertNotNull(menage);
 
 			final Set<RapportEntreTiers> rapportsSujet = menage.getRapportsSujet();
-			assertTrue(rapportsSujet == null || rapportsSujet.isEmpty());
+			Assert.assertTrue(rapportsSujet == null || rapportsSujet.isEmpty());
 
 			final Set<RapportEntreTiers> rapportsObjet = menage.getRapportsObjet();
-			assertNotNull(rapportsObjet);
-			assertEquals(2, rapportsObjet.size());
+			Assert.assertNotNull(rapportsObjet);
+			Assert.assertEquals(2, rapportsObjet.size());
 
 			final RapportEntreTiers ret1 = (RapportEntreTiers) rapportsObjet.toArray()[0];
 			final RapportEntreTiers ret2 = (RapportEntreTiers) rapportsObjet.toArray()[1];
-			assertEquals(menage.getId(), ret1.getObjetId());
-			assertEquals(menage.getId(), ret2.getObjetId());
+			Assert.assertEquals(menage.getId(), ret1.getObjetId());
+			Assert.assertEquals(menage.getId(), ret2.getObjetId());
 
-			final PersonnePhysique habitant1 = (PersonnePhysique) dao.get(ret1.getSujetId());
-			final PersonnePhysique habitant2 = (PersonnePhysique) dao.get(ret2.getSujetId());
-			assertNotNull(habitant1);
-			assertNotNull(habitant2);
-			assertTrue(habitant1.getNumeroIndividu() == 12345L || habitant1.getNumeroIndividu() == 23456L);
-			assertTrue(habitant2.getNumeroIndividu() == 12345L || habitant2.getNumeroIndividu() == 23456L);
+			final PersonnePhysique habitant1 = (PersonnePhysique) tiersDAO.get(ret1.getSujetId());
+			final PersonnePhysique habitant2 = (PersonnePhysique) tiersDAO.get(ret2.getSujetId());
+			Assert.assertNotNull(habitant1);
+			Assert.assertNotNull(habitant2);
+			Assert.assertTrue(habitant1.getNumeroIndividu() == 12345L || habitant1.getNumeroIndividu() == 23456L);
+			Assert.assertTrue(habitant2.getNumeroIndividu() == 12345L || habitant2.getNumeroIndividu() == 23456L);
 		}
 
 		// Depuis le point de vue de l'habitant n°1
 		{
-			final PersonnePhysique habitant1 = (PersonnePhysique) dao.get(hab1Num);
-			assertNotNull(habitant1);
-			assertTrue(habitant1.getNumeroIndividu() == 12345L);
+			final PersonnePhysique habitant1 = (PersonnePhysique) tiersDAO.get(hab1Num);
+			Assert.assertNotNull(habitant1);
+			Assert.assertTrue(habitant1.getNumeroIndividu() == 12345L);
 
-			final MenageCommun menage = (MenageCommun) dao.get(mcNum);
-			assertNotNull(menage);
+			final MenageCommun menage = (MenageCommun) tiersDAO.get(mcNum);
+			Assert.assertNotNull(menage);
 
 			final Set<RapportEntreTiers> rapportsObjet = habitant1.getRapportsObjet();
-			assertTrue(rapportsObjet == null || rapportsObjet.isEmpty());
+			Assert.assertTrue(rapportsObjet == null || rapportsObjet.isEmpty());
 
 			final Set<RapportEntreTiers> rapportsSujet = habitant1.getRapportsSujet();
-			assertNotNull(rapportsSujet);
-			assertEquals(1, rapportsSujet.size());
+			Assert.assertNotNull(rapportsSujet);
+			Assert.assertEquals(1, rapportsSujet.size());
 
 			final RapportEntreTiers ret = (RapportEntreTiers) rapportsSujet.toArray()[0];
-			assertNotNull(ret);
-			assertEquals(habitant1.getId(), ret.getSujetId());
-			assertEquals(menage.getId(), ret.getObjetId());
+			Assert.assertNotNull(ret);
+			Assert.assertEquals(habitant1.getId(), ret.getSujetId());
+			Assert.assertEquals(menage.getId(), ret.getObjetId());
 		}
 
 		// Tests depuis le point de vue de l'habitant n°2
 		{
-			final PersonnePhysique habitant2 = (PersonnePhysique) dao.get(hab2Num);
-			assertNotNull(habitant2);
-			assertTrue(habitant2.getNumeroIndividu() == 23456L);
+			final PersonnePhysique habitant2 = (PersonnePhysique) tiersDAO.get(hab2Num);
+			Assert.assertNotNull(habitant2);
+			Assert.assertTrue(habitant2.getNumeroIndividu() == 23456L);
 
-			final MenageCommun menage = (MenageCommun) dao.get(mcNum);
-			assertNotNull(menage);
+			final MenageCommun menage = (MenageCommun) tiersDAO.get(mcNum);
+			Assert.assertNotNull(menage);
 
 			final Set<RapportEntreTiers> rapportsObjet = habitant2.getRapportsObjet();
-			assertTrue(rapportsObjet == null || rapportsObjet.isEmpty());
+			Assert.assertTrue(rapportsObjet == null || rapportsObjet.isEmpty());
 
 			final Set<RapportEntreTiers> rapportsSujet = habitant2.getRapportsSujet();
-			assertNotNull(rapportsSujet);
-			assertEquals(1, rapportsSujet.size());
+			Assert.assertNotNull(rapportsSujet);
+			Assert.assertEquals(1, rapportsSujet.size());
 
 			final RapportEntreTiers ret = (RapportEntreTiers) rapportsSujet.toArray()[0];
-			assertNotNull(ret);
-			assertEquals(habitant2.getId(), ret.getSujetId());
-			assertEquals(menage.getId(), ret.getObjetId());
+			Assert.assertNotNull(ret);
+			Assert.assertEquals(habitant2.getId(), ret.getSujetId());
+			Assert.assertEquals(menage.getId(), ret.getObjetId());
 		}
 	}
 
@@ -178,8 +177,8 @@ public class RapportEntreTiersTest extends CoreDAOTest {
 				PersonnePhysique pupille = new PersonnePhysique(true);
 				pupille.setNumeroIndividu(23456L);
 
-				tuteur = (PersonnePhysique) dao.save(tuteur);
-				pupille = (PersonnePhysique) dao.save(pupille);
+				tuteur = (PersonnePhysique) tiersDAO.save(tuteur);
+				pupille = (PersonnePhysique) tiersDAO.save(pupille);
 
 				Numeros numeros = new Numeros();
 				numeros.tuteurNum = tuteur.getNumero();
@@ -195,67 +194,67 @@ public class RapportEntreTiersTest extends CoreDAOTest {
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				PersonnePhysique tuteur = (PersonnePhysique) dao.get(tuteurNum);
-				PersonnePhysique pupille = (PersonnePhysique) dao.get(pupilleNum);
+				PersonnePhysique tuteur = (PersonnePhysique) tiersDAO.get(tuteurNum);
+				PersonnePhysique pupille = (PersonnePhysique) tiersDAO.get(pupilleNum);
 
 				RapportEntreTiers tutelle = new Tutelle(RegDate.get(2006, 1, 12), null, pupille, tuteur, null);
 
-				tutelle = dao.save(tutelle);
+				tutelle = tiersDAO.save(tutelle);
 				return null;
 			}
 		});
 
 		// Nombre d'éléments stockés dans la base
 		{
-			assertEquals("Nombre de tiers incorrect", 2, dao.getCount(Tiers.class));
-			assertEquals("Nombre de rapport-entre-tiers incorrect", 1, dao.getCount(RapportEntreTiers.class));
+			Assert.assertEquals("Nombre de tiers incorrect", 2, tiersDAO.getCount(Tiers.class));
+			Assert.assertEquals("Nombre de rapport-entre-tiers incorrect", 1, tiersDAO.getCount(RapportEntreTiers.class));
 		}
 
 		// Depuis le point de vue du tuteur
 		{
-			final PersonnePhysique tuteur = (PersonnePhysique) dao.get(tuteurNum);
-			assertNotNull(tuteur);
-			assertTrue(tuteur.getNumeroIndividu() == 12345L);
+			final PersonnePhysique tuteur = (PersonnePhysique) tiersDAO.get(tuteurNum);
+			Assert.assertNotNull(tuteur);
+			Assert.assertTrue(tuteur.getNumeroIndividu() == 12345L);
 
-			final PersonnePhysique pupille = (PersonnePhysique) dao.get(pupilleNum);
-			assertNotNull(pupille);
-			assertTrue(pupille.getNumeroIndividu() == 23456L);
+			final PersonnePhysique pupille = (PersonnePhysique) tiersDAO.get(pupilleNum);
+			Assert.assertNotNull(pupille);
+			Assert.assertTrue(pupille.getNumeroIndividu() == 23456L);
 
 			final Set<RapportEntreTiers> rapportsSujet = tuteur.getRapportsSujet();
-			assertTrue(rapportsSujet == null || rapportsSujet.isEmpty());
+			Assert.assertTrue(rapportsSujet == null || rapportsSujet.isEmpty());
 
 			final Set<RapportEntreTiers> rapportsObjet = tuteur.getRapportsObjet();
-			assertNotNull(rapportsObjet);
-			assertEquals(1, rapportsObjet.size());
+			Assert.assertNotNull(rapportsObjet);
+			Assert.assertEquals(1, rapportsObjet.size());
 
 			final RapportEntreTiers ret = (RapportEntreTiers) rapportsObjet.toArray()[0];
-			assertNotNull(ret);
-			assertEquals(pupille.getId(), ret.getSujetId());
-			assertEquals(tuteur.getId(), ret.getObjetId());
+			Assert.assertNotNull(ret);
+			Assert.assertEquals(pupille.getId(), ret.getSujetId());
+			Assert.assertEquals(tuteur.getId(), ret.getObjetId());
 		}
 
 		// Depuis le point de vue de la pupille
 		{
-			final PersonnePhysique tuteur = (PersonnePhysique) dao.get(tuteurNum);
-			assertNotNull(tuteur);
-			assertTrue(tuteur.getNumeroIndividu() == 12345L);
+			final PersonnePhysique tuteur = (PersonnePhysique) tiersDAO.get(tuteurNum);
+			Assert.assertNotNull(tuteur);
+			Assert.assertTrue(tuteur.getNumeroIndividu() == 12345L);
 
-			final PersonnePhysique pupille = (PersonnePhysique) dao.get(pupilleNum);
-			assertNotNull(pupille);
-			assertTrue(pupille.getNumeroIndividu() == 23456L);
+			final PersonnePhysique pupille = (PersonnePhysique) tiersDAO.get(pupilleNum);
+			Assert.assertNotNull(pupille);
+			Assert.assertTrue(pupille.getNumeroIndividu() == 23456L);
 
 			final Set<RapportEntreTiers> rapportsObjet = pupille.getRapportsObjet();
-			assertTrue(rapportsObjet == null || rapportsObjet.isEmpty());
+			Assert.assertTrue(rapportsObjet == null || rapportsObjet.isEmpty());
 
 			final Set<RapportEntreTiers> rapportsSujet = pupille.getRapportsSujet();
-			assertNotNull(rapportsSujet);
-			assertEquals(1, rapportsSujet.size());
+			Assert.assertNotNull(rapportsSujet);
+			Assert.assertEquals(1, rapportsSujet.size());
 
 			final RapportEntreTiers ret = (RapportEntreTiers) rapportsSujet.toArray()[0];
-			assertNotNull(ret);
-			assertEquals(TypeRapportEntreTiers.TUTELLE, ret.getType());
-			assertEquals(pupille.getId(), ret.getSujetId());
-			assertEquals(tuteur.getId(), ret.getObjetId());
+			Assert.assertNotNull(ret);
+			Assert.assertEquals(TypeRapportEntreTiers.TUTELLE, ret.getType());
+			Assert.assertEquals(pupille.getId(), ret.getSujetId());
+			Assert.assertEquals(tuteur.getId(), ret.getObjetId());
 		}
 	}
 
@@ -268,13 +267,101 @@ public class RapportEntreTiersTest extends CoreDAOTest {
 		rapport.setDateFin(RegDate.get(2009, 12, 31));
 
 		rapport.setAnnule(false);
-		assertTrue(rapport.isValidAt(RegDate.get(2004, 1, 1)));
-		assertFalse(rapport.isValidAt(RegDate.get(1990, 1, 1)));
-		assertFalse(rapport.isValidAt(RegDate.get(2060, 1, 1)));
+		Assert.assertTrue(rapport.isValidAt(RegDate.get(2004, 1, 1)));
+		Assert.assertFalse(rapport.isValidAt(RegDate.get(1990, 1, 1)));
+		Assert.assertFalse(rapport.isValidAt(RegDate.get(2060, 1, 1)));
 
 		rapport.setAnnule(true);
-		assertFalse(rapport.isValidAt(RegDate.get(2004, 1, 1)));
-		assertFalse(rapport.isValidAt(RegDate.get(1990, 1, 1)));
-		assertFalse(rapport.isValidAt(RegDate.get(2060, 1, 1)));
+		Assert.assertFalse(rapport.isValidAt(RegDate.get(2004, 1, 1)));
+		Assert.assertFalse(rapport.isValidAt(RegDate.get(1990, 1, 1)));
+		Assert.assertFalse(rapport.isValidAt(RegDate.get(2060, 1, 1)));
+	}
+
+	@Test
+	public void testSortingOrderOnOtherPartysNumber() throws Exception {
+
+		final class Ids {
+			long m;
+			long mc;
+			long fiston;
+			long gdpa;
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransaction(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique m = addNonHabitant("Francis", "D'aquitaine", date(1953, 7, 31), Sexe.MASCULIN);
+				final PersonnePhysique fiston = addNonHabitant("Kevin", "D'aquitaine", date(1980, 10, 25), Sexe.MASCULIN);
+				final EnsembleTiersCouple couple = addEnsembleTiersCouple(m, null, date(1973, 5, 1), null);
+				final MenageCommun mc = couple.getMenage();
+				final PersonnePhysique gdpa = addNonHabitant("Alphonse", "D'aquitaine", date(1920, 8, 4), Sexe.MASCULIN);
+				addParente(m, gdpa, date(1953, 7, 31), null);
+				addParente(fiston, m, date(1980, 10, 25), null);
+
+				final Ids ids = new Ids();
+				ids.m = m.getNumero();
+				ids.mc = mc.getNumero();
+				ids.fiston = fiston.getNumero();
+				ids.gdpa = gdpa.getNumero();
+				return ids;
+			}
+		});
+
+		// tri des relations par "tiersId"
+		doInNewReadOnlyTransaction(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final ParamPagination paginationAsc = new ParamPagination(1, 25, "tiersId", true);
+				final List<RapportEntreTiers> asc = retDAO.findBySujetAndObjet(ids.m, true, EnumSet.allOf(TypeRapportEntreTiers.class), paginationAsc);
+				Assert.assertEquals(3, asc.size());
+				{
+					final RapportEntreTiers ret = asc.get(0);
+					Assert.assertNotNull(ret);
+					Assert.assertEquals(TypeRapportEntreTiers.PARENTE, ret.getType());
+					Assert.assertEquals((Long) ids.m, ret.getObjetId());
+					Assert.assertEquals((Long) ids.fiston, ret.getSujetId());
+				}
+				{
+					final RapportEntreTiers ret = asc.get(1);
+					Assert.assertNotNull(ret);
+					Assert.assertEquals(TypeRapportEntreTiers.APPARTENANCE_MENAGE, ret.getType());
+					Assert.assertEquals((Long) ids.m, ret.getSujetId());
+					Assert.assertEquals((Long) ids.mc, ret.getObjetId());
+				}
+				{
+					final RapportEntreTiers ret = asc.get(2);
+					Assert.assertNotNull(ret);
+					Assert.assertEquals(TypeRapportEntreTiers.PARENTE, ret.getType());
+					Assert.assertEquals((Long) ids.m, ret.getSujetId());
+					Assert.assertEquals((Long) ids.gdpa, ret.getObjetId());
+				}
+
+				final ParamPagination paginationDesc = new ParamPagination(1, 25, "tiersId", false);
+				final List<RapportEntreTiers> desc = retDAO.findBySujetAndObjet(ids.m, true, EnumSet.allOf(TypeRapportEntreTiers.class), paginationDesc);
+				Assert.assertEquals(3, desc.size());
+				{
+					final RapportEntreTiers ret = desc.get(2);
+					Assert.assertNotNull(ret);
+					Assert.assertEquals(TypeRapportEntreTiers.PARENTE, ret.getType());
+					Assert.assertEquals((Long) ids.m, ret.getObjetId());
+					Assert.assertEquals((Long) ids.fiston, ret.getSujetId());
+				}
+				{
+					final RapportEntreTiers ret = desc.get(1);
+					Assert.assertNotNull(ret);
+					Assert.assertEquals(TypeRapportEntreTiers.APPARTENANCE_MENAGE, ret.getType());
+					Assert.assertEquals((Long) ids.m, ret.getSujetId());
+					Assert.assertEquals((Long) ids.mc, ret.getObjetId());
+				}
+				{
+					final RapportEntreTiers ret = desc.get(0);
+					Assert.assertNotNull(ret);
+					Assert.assertEquals(TypeRapportEntreTiers.PARENTE, ret.getType());
+					Assert.assertEquals((Long) ids.m, ret.getSujetId());
+					Assert.assertEquals((Long) ids.gdpa, ret.getObjetId());
+				}
+			}
+		});
 	}
 }
