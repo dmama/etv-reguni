@@ -11,7 +11,7 @@
 		<groupId>ch.vd.uniregctb</groupId>
 		<artifactId>unireg-jaxb2</artifactId>
 		<!-- BEGIN_LVERSION -->
-		<version>2.5</version>
+		<version>2.6-SNAPSHOT</version>
 		<!-- END_LVERSION -->
 		<relativePath>../base/pom.xml</relativePath>
 	</parent>
@@ -137,7 +137,7 @@
 				<artifactId>maven-assembly-plugin</artifactId>
 				<configuration>
 					<!-- BEGIN_LVERSION -->
-					<finalName>PartyJMSService_2.5</finalName>
+					<finalName>PartyJMSService_2.6-SNAPSHOT</finalName>
 					<!-- END_LVERSION -->
 					<descriptors>
 						<descriptor>release_partyservice.xml</descriptor>
@@ -176,13 +176,13 @@
 										 author="true"
 										 classpath="${compile_classpath}"
 										 destdir="target/javadoc"
-										 doctitle="Unireg - Documentation du service Jms (2.5)"
+										 doctitle="Unireg - Documentation du service Jms (2.6-SNAPSHOT)"
 										 nodeprecated="false"
 										 nodeprecatedlist="false"
 										 noindex="false"
 										 nonavbar="false"
 										 notree="false"
-										 source="2.5"
+										 source="2.6-SNAPSHOT"
 										 splitindex="true"
 										 use="true"
 										 version="true" >
