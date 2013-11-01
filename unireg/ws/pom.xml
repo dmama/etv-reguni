@@ -221,6 +221,12 @@
 			<artifactId>uniregctb-wlw</artifactId>
 			<version>1.0.0</version>
 		</dependency>
+		<!-- dépendance vers unireg-jaxb2-ech 2.5+ nécessaire pour le mode "direct" à cause du service UPI -->
+		<dependency>
+			<groupId>ch.vd.uniregctb</groupId>
+			<artifactId>unireg-jaxb2-ech</artifactId>
+			<version>2.5</version>
+		</dependency>
 	</dependencies>
 
 	<build>
