@@ -25,12 +25,10 @@ import ch.vd.uniregctb.evenement.externe.EtatEvenementExterne;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
 import ch.vd.uniregctb.stats.evenements.StatistiqueEvenementInfo;
 import ch.vd.uniregctb.stats.evenements.StatsEvenementsCivilsEchResults;
-import ch.vd.uniregctb.stats.evenements.StatsEvenementsCivilsRegPPResults;
 import ch.vd.uniregctb.stats.evenements.StatsEvenementsExternesResults;
 import ch.vd.uniregctb.stats.evenements.StatsEvenementsIdentificationContribuableResults;
 import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 
 /**
@@ -48,7 +46,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 		return Integer.toString(value != null ? value : defaut);
 	}
 
-	public void write(final StatsEvenementsCivilsRegPPResults civilsRegPP, final StatsEvenementsCivilsEchResults civilsEch,
+	public void write(final StatsEvenementsCivilsEchResults civilsEch,
 	                  final StatsEvenementsExternesResults externes, final StatsEvenementsIdentificationContribuableResults identCtb,
 	                  final RegDate dateReference, String nom, String description, final Date dateGeneration, OutputStream os,
 	                  StatusManager status) throws Exception {
@@ -70,75 +68,13 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 			addTableSimple(2, new PdfRapport.TableSimpleCallback() {
 				@Override
 				public void fillTable(PdfTableSimple table) throws DocumentException {
-					table.addLigne("Evénements civils:", String.valueOf(civilsRegPP != null || civilsEch != null));
+					table.addLigne("Evénements civils:", String.valueOf(civilsEch != null));
 					table.addLigne("Evénements externes:", String.valueOf(externes != null));
 					table.addLigne("Evénements identification:", String.valueOf(identCtb != null));
 					table.addLigne("Date de référence:", RegDateHelper.dateToDisplayString(dateReference));
 					table.addLigne("Date de génération du rapport:", formatTimestamp(dateGeneration));
 				}
 			});
-		}
-
-		if (civilsRegPP != null) {
-
-			newPage();
-			addTitrePrincipal("Evénements civils (RegPP)");
-
-			// Evénements civils : états
-			addEntete1("Répartition par état");
-			{
-				addTableSimple(2, new PdfRapport.TableSimpleCallback() {
-					@Override
-					public void fillTable(PdfTableSimple table) throws DocumentException {
-
-						table.addLigne("Etat", "Total");
-						table.setHeaderRows(1);
-
-						final Map<EtatEvenementCivil, Integer> etats = civilsRegPP.getEtats();
-						for (EtatEvenementCivil etat : EtatEvenementCivil.values()) {
-							final Integer nombre = etats.get(etat);
-							final String total = toStringInt(nombre, 0);
-							table.addLigne(String.format("%s", etat.toString()), total);
-						}
-					}
-				});
-			}
-
-			// événements civils : types en erreur
-			{
-				final String filename = "erreurs_evts_civils_regpp_par_type.csv";
-				final String contenu = asCsvFile(civilsRegPP.getErreursParType(), null, null, dateReference, TypeEvenementCivil.class, filename, status);
-				final String titre = "Erreurs des événements civils RegPP par type d'événement";
-				final String listVide = "(aucune)";
-				addListeDetaillee(writer, titre, listVide, filename, contenu);
-			}
-
-			// messages d'erreur regroupés par type
-			{
-				final String filename = "messages_erreurs_evts_civils_regpp_par_type.csv";
-				final String contenu = buildStatsMessagesErreursRegPPParType(civilsRegPP.getToutesErreurs(), filename, status);
-				final String titre = "Messages d'erreurs des événements civils RegPP par type d'événement";
-				final String listVide = "(aucun)";
-				addListeDetaillee(writer, titre, listVide, filename, contenu);
-			}
-
-			// toutes les erreurs
-			{
-				final String filename = "erreurs_evts_civils_regpp.csv";
-				final String contenu = asCsvStatFile(civilsRegPP.getToutesErreurs(), filename, status);
-				final String titre = "Erreurs des événements civils RegPP";
-				final String listVide = "(aucune)";
-				addListeDetaillee(writer, titre, listVide, filename, contenu);
-			}
-
-			// manipulations manuelles
-			{
-				final String filename = "manipulations_evts_civils_regpp.csv";
-				final String contenu = asCsvStatFile(civilsRegPP.getManipulationsManuelles(), filename, status);
-				final String titre = String.format("Manipulations manuelles des événements civils RegPP depuis le %s", RegDateHelper.dateToDisplayString(dateReference));
-				final String listVide = "(aucune)";
-				addListeDetaillee(writer, titre, listVide, filename, contenu);
-			}
 		}
 
 		if (civilsEch != null) {
@@ -348,39 +284,6 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 		return contenu;
 	}
 
-	private static <T extends Enum<T>> String asCsvFile(Map<T, Integer> tous, @Nullable Map<T, Integer> nouveaux, String prefixeNouveaux, RegDate dateReference, Class<T> enumClass, String fileName, StatusManager statusManager) {
-		String contenu = null;
-		if (tous != null && !tous.isEmpty()) {
-			final String message = String.format("Génération du fichier %s", fileName);
-			statusManager.setMessage(message, 0);
-			final StringBuilder b = new StringBuilder();
-
-			// les noms des colonnes
-			b.append("VALEUR").append(COMMA).append("TOTAL");
-			if (nouveaux != null) {
-				b.append(COMMA).append(prefixeNouveaux).append("_DEPUIS_").append(RegDateHelper.dateToDisplayString(dateReference));
-			}
-			b.append('\n');
-
-			// les valeurs
-			for (T mod : enumClass.getEnumConstants()) {
-				final Integer total = tous.get(mod);
-				final Integer marginal = nouveaux != null ? nouveaux.get(mod) : null;
-				if ((total != null && total > 0) || (marginal != null && marginal > 0)) {
-					b.append(mod).append(COMMA).append(toStringInt(total, 0));
-					if (nouveaux != null) {
-						b.append(COMMA).append(toStringInt(marginal, 0));
-					}
-					b.append('\n');
-				}
-			}
-			contenu = b.toString();
-
-			statusManager.setMessage(message, 100);
-		}
-		return contenu;
-	}
-
 	private static String asCsvFile(Map<Pair<TypeEvenementCivilEch, ActionEvenementCivilEch>, Integer> tous, @Nullable Map<Pair<TypeEvenementCivilEch, ActionEvenementCivilEch>, Integer> nouveaux, @Nullable String prefixeNouveaux, RegDate dateReference, String fileName, StatusManager statusManager) {
 		String contenu = null;
 		if (tous != null && !tous.isEmpty()) {
@@ -417,96 +320,6 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 		return contenu;
 	}
 
-	private static final class EvtCivilRegPPMsgTypeKey {
-
-		public final String msg;
-		public final TypeEvenementCivil type;
-
-		public EvtCivilRegPPMsgTypeKey(String msg, TypeEvenementCivil type) {
-			this.msg = msg.replaceAll("[0-9]+(\\.[0-9]+)*", "?");       // pour enlever toutes les différences sur des dates ou des numéros d'individu, de tiers...
-			this.type = type;
-		}
-
-		@Override
-		public boolean equals(Object o) {
-			if (this == o) return true;
-			if (o == null || getClass() != o.getClass()) return false;
-
-			final EvtCivilRegPPMsgTypeKey that = (EvtCivilRegPPMsgTypeKey) o;
-
-			if (type != that.type) return false;
-			if (msg != null ? !msg.equals(that.msg) : that.msg != null) return false;
-
-			return true;
-		}
-
-		@Override
-		public int hashCode() {
-			int result = msg != null ? msg.hashCode() : 0;
-			result = 31 * result + (type != null ? type.hashCode() : 0);
-			return result;
-		}
-	}
-
-	private String buildStatsMessagesErreursRegPPParType(List<StatsEvenementsCivilsRegPPResults.EvenementCivilEnErreurInfo> toutesErreurs, String fileName, StatusManager statusManager) {
-		String contenu = null;
-		if (toutesErreurs != null && !toutesErreurs.isEmpty()) {
-
-			final String messageCalcul = String.format("Calcul des statistiques pour le fichier %s", fileName);
-			statusManager.setMessage(messageCalcul, 0);
-
-			// première partie : calcul des statistiques
-			final Map<EvtCivilRegPPMsgTypeKey, MutableInt> map = new HashMap<>();
-			final GentilIterator<StatsEvenementsCivilsRegPPResults.EvenementCivilEnErreurInfo> iter = new GentilIterator<>(toutesErreurs);
-			while (iter.hasNext()) {
-				if (iter.isAtNewPercent()) {
-					statusManager.setMessage(messageCalcul, iter.getPercent());
-				}
-
-				final StatsEvenementsCivilsRegPPResults.EvenementCivilEnErreurInfo erreur = iter.next();
-				if (erreur != null && erreur.etat == EtatEvenementCivil.EN_ERREUR) {
-					final EvtCivilRegPPMsgTypeKey key = new EvtCivilRegPPMsgTypeKey(erreur.message, erreur.type);
-					final MutableInt nb = map.get(key);
-					if (nb == null) {
-						map.put(key, new MutableInt(1));
-					}
-					else {
-						nb.increment();
-					}
-				}
-			}
-
-			// tri des lignes dans l'ordre décroissant des nombres d'occurrence
-			final List<Map.Entry<EvtCivilRegPPMsgTypeKey, MutableInt>> stats = new ArrayList<>(map.entrySet());
-			Collections.sort(stats, new Comparator<Map.Entry<EvtCivilRegPPMsgTypeKey, MutableInt>>() {
-				@Override
-				public int compare(Map.Entry<EvtCivilRegPPMsgTypeKey, MutableInt> o1, Map.Entry<EvtCivilRegPPMsgTypeKey, MutableInt> o2) {
-					return o2.getValue().intValue() - o1.getValue().intValue();
-				}
-			});
-
-			// touche finale : remplissage de la chaîne de caractères qui finira dans le fichier CSV
-			contenu = CsvHelper.asCsvFile(stats, fileName, statusManager, new CsvHelper.FileFiller<Map.Entry<EvtCivilRegPPMsgTypeKey, MutableInt>>() {
-				@Override
-				public void fillHeader(CsvHelper.LineFiller b) {
-					b.append("MESSAGE").append(COMMA);
-					b.append("TYPE_EVT").append(COMMA);
-					b.append("COUNT");
-				}
-
-				@Override
-				public boolean fillLine(CsvHelper.LineFiller b, Map.Entry<EvtCivilRegPPMsgTypeKey, MutableInt> stat) {
-					final EvtCivilRegPPMsgTypeKey key = stat.getKey();
-					b.append(asCsvField(key.msg)).append(COMMA);
-					b.append(key.type).append(COMMA);
-					b.append(stat.getValue().intValue());
-					return true;
-				}
-			});
-		}
-		return contenu;
-	}
-	
 	private static class EvtCivilEchMsgTypeKey {
 		public final String msg;
 		public final TypeEvenementCivilEch type;

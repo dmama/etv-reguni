@@ -97,14 +97,11 @@ public class StatistiquesEvenementsJob extends JobDefinition {
 		final RegDate debutActivite = RegDate.get().addDays(- dureeReference);
 
 		// lancement des extractions
-		final StatsEvenementsCivilsRegPPResults resultatsCivilsRegPP;
 		final StatsEvenementsCivilsEchResults resultatsCivilsEch;
 		if (civils) {
-			resultatsCivilsRegPP = service.getStatistiquesEvenementsCivilsRegPP(debutActivite);
 			resultatsCivilsEch = service.getStatistiquesEvenementsCivilsEch(debutActivite);
 		}
 		else {
-			resultatsCivilsRegPP = null;
 			resultatsCivilsEch = null;
 		}
 
@@ -130,7 +127,7 @@ public class StatistiquesEvenementsJob extends JobDefinition {
 		final StatistiquesEvenementsRapport rapport = template.execute(new TransactionCallback<StatistiquesEvenementsRapport>() {
 			@Override
 			public StatistiquesEvenementsRapport doInTransaction(TransactionStatus status) {
-				return rapportService.generateRapport(resultatsCivilsRegPP, resultatsCivilsEch, resultatsExternes, resultatsIdentCtb, debutActivite, getStatusManager());
+				return rapportService.generateRapport(resultatsCivilsEch, resultatsExternes, resultatsIdentCtb, debutActivite, getStatusManager());
 			}
 		});
 

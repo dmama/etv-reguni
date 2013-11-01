@@ -23,7 +23,6 @@ import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 
 public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenementsService {
@@ -34,100 +33,6 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 
 	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
 		this.hibernateTemplate = hibernateTemplate;
-	}
-
-	/**
-	 * Renvoie les statistiques sur les événements civils issus de RegPP (= les vieux)
-	 * @param debutActivite date à partir de laquelle on liste les nouvelles modifications
-	 */
-	@Override
-	public StatsEvenementsCivilsRegPPResults getStatistiquesEvenementsCivilsRegPP(RegDate debutActivite) {
-		final Map<EtatEvenementCivil, Integer> etats = getEtatsEvenementsCivilsRegPP(null);
-		final Map<TypeEvenementCivil, Integer> erreursParType = getNombreEvenementsCivilsEnErreurParTypeRegPP(null);
-		final List<StatsEvenementsCivilsRegPPResults.EvenementCivilEnErreurInfo> toutesErreurs = getToutesErreursEvenementsCivilsRegPP();
-		final List<StatsEvenementsCivilsRegPPResults.EvenementCivilTraiteManuellementInfo> manipulationsManuelles = getManipulationsManuellesRegPP(debutActivite);
-		return new StatsEvenementsCivilsRegPPResults(etats, erreursParType, toutesErreurs, manipulationsManuelles);
-	}
-
-	private Map<EtatEvenementCivil, Integer> getEtatsEvenementsCivilsRegPP(@Nullable RegDate debutActivite) {
-		final String sql;
-		final Map<String, Object> sqlParameters;
-		if (debutActivite != null) {
-			sql = "SELECT ETAT, COUNT(*) FROM EVENEMENT_CIVIL WHERE LOG_CDATE > TO_DATE(:debutActivite, 'YYYYMMDD') GROUP BY ETAT";
-			sqlParameters = new HashMap<>(1);
-			sqlParameters.put("debutActivite", debutActivite.index());
-		}
-		else {
-			sql = "SELECT ETAT, COUNT(*) FROM EVENEMENT_CIVIL GROUP BY ETAT";
-			sqlParameters = null;
-		}
-		return getNombreParModalite(EtatEvenementCivil.class, sql, sqlParameters);
-	}
-
-	private Map<TypeEvenementCivil, Integer> getNombreEvenementsCivilsEnErreurParTypeRegPP(@Nullable RegDate debutActivite) {
-		final String sql;
-		final Map<String, Object> sqlParameters;
-		if (debutActivite != null) {
-			sql = "SELECT TYPE, COUNT(*) FROM EVENEMENT_CIVIL WHERE ETAT='EN_ERREUR' AND LOG_CDATE > TO_DATE(:debutActivite, 'YYYYMMDD') GROUP BY TYPE";
-			sqlParameters = new HashMap<>(1);
-			sqlParameters.put("debutActivite", debutActivite.index());
-		}
-		else {
-			sql = "SELECT TYPE, COUNT(*) FROM EVENEMENT_CIVIL WHERE ETAT='EN_ERREUR' GROUP BY TYPE";
-			sqlParameters = null;
-		}
-		return getNombreParModalite(TypeEvenementCivil.class, sql, sqlParameters);
-	}
-
-	private List<StatsEvenementsCivilsRegPPResults.EvenementCivilEnErreurInfo> getToutesErreursEvenementsCivilsRegPP() {
-
-		final String sql = "SELECT R.ID, R.DATE_EVENEMENT, R.DATE_TRAITEMENT, R.ETAT, R.NO_INDIVIDU_PRINCIPAL, R.NO_INDIVIDU_CONJOINT, R.TYPE, R.NUMERO_OFS_ANNONCE, E.MESSAGE"
-				+ " FROM EVENEMENT_CIVIL R JOIN EVENEMENT_CIVIL_ERREUR E ON E.EVT_CIVIL_ID = R.ID WHERE R.ETAT != 'TRAITE' ORDER BY R.ID, R.DATE_TRAITEMENT";
-
-		return executeSelect(sql, new SelectCallback<StatsEvenementsCivilsRegPPResults.EvenementCivilEnErreurInfo>() {
-			@Override
-			public StatsEvenementsCivilsRegPPResults.EvenementCivilEnErreurInfo onRow(Object[] row) {
-
-				Assert.isEqual(9, row.length);
-
-				final long id = ((Number) row[0]).longValue();
-				final RegDate dateEvenement = RegDate.fromIndex(((Number) row[1]).intValue(), false);
-				final Date dateTraitement = (Date) row[2];
-				final EtatEvenementCivil etat = EtatEvenementCivil.valueOf((String) row[3]);
-				final Long individuPrincipal = ((Number) row[4]).longValue();
-				final Long individuConjoint = row[5] != null ? ((Number) row[5]).longValue() : null;
-				final TypeEvenementCivil type = TypeEvenementCivil.valueOf((String) row[6]);
-				final Integer ofsAnnonce = row[7] != null ? ((Number) row[7]).intValue() : null;
-				final String message = (String) row[8];
-				return new StatsEvenementsCivilsRegPPResults.EvenementCivilEnErreurInfo(id, type, dateEvenement, dateTraitement, etat, individuPrincipal, individuConjoint, ofsAnnonce, message);
-			}
-		});
-	}
-
-	private List<StatsEvenementsCivilsRegPPResults.EvenementCivilTraiteManuellementInfo> getManipulationsManuellesRegPP(RegDate debutActivite) {
-
-		final String sql = "SELECT ID, LOG_CDATE, LOG_MDATE, LOG_MUSER, DATE_EVENEMENT, ETAT, NO_INDIVIDU_PRINCIPAL, NO_INDIVIDU_CONJOINT, NUMERO_OFS_ANNONCE, TYPE FROM EVENEMENT_CIVIL"
-				+ " WHERE LOG_MUSER LIKE '" + VISA_HUMAIN_TEMPLATE + "' AND LOG_MDATE > TO_DATE('" + debutActivite.index() + "', 'YYYYMMDD') ORDER BY ID";
-
-		return executeSelect(sql, new SelectCallback<StatsEvenementsCivilsRegPPResults.EvenementCivilTraiteManuellementInfo>() {
-			@Override
-			public StatsEvenementsCivilsRegPPResults.EvenementCivilTraiteManuellementInfo onRow(Object[] row) {
-
-				Assert.isEqual(10, row.length);
-
-				final long id = ((Number) row[0]).longValue();
-				final Date dateReception = (Date) row[1];
-				final Date dateModification = (Date) row[2];
-				final String visaOperateur = (String) row[3];
-				final RegDate dateEvenement = RegDate.fromIndex(((Number) row[4]).intValue(), false);
-				final EtatEvenementCivil etat = EtatEvenementCivil.valueOf((String) row[5]);
-				final Long individuPrincipal = ((Number) row[6]).longValue();
-				final Long individuConjoint = row[7] != null ? ((Number) row[7]).longValue() : null;
-				final Integer ofsAnnonce = row[8] != null ? ((Number) row[8]).intValue() : null;
-				final TypeEvenementCivil type = TypeEvenementCivil.valueOf((String) row[9]);
-				return new StatsEvenementsCivilsRegPPResults.EvenementCivilTraiteManuellementInfo(id, type, dateEvenement, etat, individuPrincipal, individuConjoint, ofsAnnonce, visaOperateur, dateReception, dateModification);
-			}
-		});
 	}
 
 	/**

@@ -84,7 +84,6 @@ import ch.vd.uniregctb.role.ProduireRolesOIDsResults;
 import ch.vd.uniregctb.situationfamille.ComparerSituationFamilleResults;
 import ch.vd.uniregctb.situationfamille.ReinitialiserBaremeDoubleGainResults;
 import ch.vd.uniregctb.stats.evenements.StatsEvenementsCivilsEchResults;
-import ch.vd.uniregctb.stats.evenements.StatsEvenementsCivilsRegPPResults;
 import ch.vd.uniregctb.stats.evenements.StatsEvenementsExternesResults;
 import ch.vd.uniregctb.stats.evenements.StatsEvenementsIdentificationContribuableResults;
 import ch.vd.uniregctb.tache.ListeTachesEnInstanceParOID;
@@ -329,7 +328,7 @@ public interface RapportService {
 	 * @param dateReference date que les requêtes du type "évolutions depuis le..." utilisent
 	 * @return le rapport
 	 */
-	StatistiquesEvenementsRapport generateRapport(StatsEvenementsCivilsRegPPResults civilsRegPP, StatsEvenementsCivilsEchResults civilsEch,
+	StatistiquesEvenementsRapport generateRapport(StatsEvenementsCivilsEchResults civilsEch,
 	                                              StatsEvenementsExternesResults externes, StatsEvenementsIdentificationContribuableResults identCtb,
 	                                              RegDate dateReference, StatusManager statusManager);
 
