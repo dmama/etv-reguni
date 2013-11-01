@@ -142,7 +142,7 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 				final RegDate dateEvenement = RegDate.fromIndex(((Number) row[1]).intValue(), false);
 				final Date dateTraitement = (Date) row[2];
 				final EtatEvenementCivil etat = EtatEvenementCivil.valueOf((String) row[3]);
-				final Long individu = ((Number) row[4]).longValue();
+				final Long individu = row[4] != null ? ((Number) row[4]).longValue() : null;
 				final TypeEvenementCivilEch type = TypeEvenementCivilEch.valueOf((String) row[5]);
 				final ActionEvenementCivilEch action = ActionEvenementCivilEch.valueOf((String) row[6]);
 				final String message = (String) row[7];
@@ -185,11 +185,16 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 			@Override
 			public StatsEvenementsCivilsEchResults.QueueAttenteInfo onRow(Object[] row) {
 				Assert.isEqual(4, row.length);
-				final long noIndividu = ((Number) row[0]).longValue();
-				final RegDate minDate = RegDate.fromIndex(((Number) row[1]).intValue(), false);
-				final RegDate maxDate = RegDate.fromIndex(((Number) row[2]).intValue(), false);
-				final int count = ((Number) row[3]).intValue();
-				return new StatsEvenementsCivilsEchResults.QueueAttenteInfo(noIndividu, minDate, maxDate, count);
+				if (row[0] != null) {
+					final long noIndividu = ((Number) row[0]).longValue();
+					final RegDate minDate = RegDate.fromIndex(((Number) row[1]).intValue(), false);
+					final RegDate maxDate = RegDate.fromIndex(((Number) row[2]).intValue(), false);
+					final int count = ((Number) row[3]).intValue();
+					return new StatsEvenementsCivilsEchResults.QueueAttenteInfo(noIndividu, minDate, maxDate, count);
+				}
+				else {
+					return null;
+				}
 			}
 		});
 	}
