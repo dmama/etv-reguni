@@ -201,9 +201,9 @@ public class BatchSchedulerImpl implements BatchScheduler, InitializingBean, Dis
 	private void scheduleJob(JobDefinition job, @Nullable Map<String, Object> params, Trigger trigger) throws SchedulerException {
 
 		// Renseignement de l'authentication
-		final Authentication auth = AuthenticationHelper.getAuthentication();
-		Assert.notNull(auth);
-		trigger.getJobDataMap().put(JobDefinition.KEY_AUTH, auth);
+		final String launchingUser = AuthenticationHelper.getCurrentPrincipal();
+		Assert.notNull(launchingUser);
+		trigger.getJobDataMap().put(JobDefinition.KEY_USER, launchingUser);
 		trigger.getJobDataMap().put(JobDefinition.KEY_PARAMS, params);
 
 		// Création du lien entre le trigger et le détails du job
@@ -218,10 +218,6 @@ public class BatchSchedulerImpl implements BatchScheduler, InitializingBean, Dis
 		final JobKey jobKey = new JobKey(job.getName(), Scheduler.DEFAULT_GROUP);
 		JobDetail jobDetail = scheduler.getJobDetail(jobKey);
 		if (jobDetail == null) {
-
-			final Authentication auth = AuthenticationHelper.getAuthentication();
-			Assert.notNull(auth);
-
 			final JobDataMap map = new JobDataMap();
 			map.put(JobDefinition.KEY_JOB, job);
 			jobDetail = JobBuilder.newJob(JobStarter.class)

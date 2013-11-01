@@ -231,7 +231,7 @@ public abstract class AbstractSpringTest implements ApplicationContextAware {
 		return "[UT] " + getClass().getSimpleName();
 	}
 
-	protected void setAuthentication(String username) {
+	protected static void setAuthentication(String username) {
 
 		/* crée un objet Authentication */
 		GrantedAuthority auth = new SimpleGrantedAuthority(username);
@@ -242,7 +242,12 @@ public abstract class AbstractSpringTest implements ApplicationContextAware {
 		AuthenticationHelper.setAuthentication(authentication);
 	}
 
-	protected void setAuthentication(String username, String[] roles) {
+	protected static void setAuthentication(String username, int oid) {
+		setAuthentication(username);
+		AuthenticationHelper.setCurrentOID(oid, String.format("COL-ADM %d", oid));
+	}
+
+	protected static void setAuthentication(String username, String[] roles) {
 
 		/* crée un objet Authentication */
 		List<GrantedAuthority> authorities = new ArrayList<>();

@@ -84,7 +84,7 @@ public class TacheSynchronizerInterceptor implements ModificationSubInterceptor,
 		}
 
 
-		final boolean authenticated = AuthenticationHelper.isAuthenticated();
+		final boolean authenticated = AuthenticationHelper.hasCurrentPrincipal();
 
 		// [UNIREG-2894] dans le context post-transactional suite à la réception d'un événement JMS, l'autentification n'est pas renseignée. On le fait donc à la volée ici.
 		final String newPrincipal = authenticated ? String.format("%s-recalculTaches", AuthenticationHelper.getCurrentPrincipal()) : "AutoSynchro";

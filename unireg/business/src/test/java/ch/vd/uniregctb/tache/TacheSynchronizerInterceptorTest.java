@@ -134,12 +134,12 @@ public class TacheSynchronizerInterceptorTest extends BusinessTest {
 
 		setWantSynchroTache(true); // on l'intercepteur pour maintenant crééer les tâches d'envoi automatiquement
 
-		assertTrue(AuthenticationHelper.isAuthenticated());
+		assertTrue(AuthenticationHelper.hasCurrentPrincipal());
 		final String principal = AuthenticationHelper.getCurrentPrincipal();
 		AuthenticationHelper.resetAuthentication();
 		try {
 			// on s'assure qu'on est dans le même mode que dans l'environnement web : dans une transaction et sans authentification
-			assertFalse(AuthenticationHelper.isAuthenticated());
+			assertFalse(AuthenticationHelper.hasCurrentPrincipal());
 
 			// simule l'envoi d'un événement de retour de DI sur le contribuable n°12500001
 			// (cet événement de retour de DI est normalement englobé dans une transaction JTA gérée par Géronimo)

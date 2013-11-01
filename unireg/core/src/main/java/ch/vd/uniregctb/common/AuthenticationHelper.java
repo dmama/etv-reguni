@@ -1,150 +1,100 @@
 package ch.vd.uniregctb.common;
 
-import java.util.Arrays;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.Stack;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.security.acls.domain.PrincipalSid;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.security.UniregSecurityDetails;
 
-public class AuthenticationHelper {
+public abstract class AuthenticationHelper {
 
 	public static final String SYSTEM_USER = "[system]";
-	private static final Authentication NULL_AUTH = createAuthentication("__null__");
 
-	private static final ThreadLocal<Stack<Authentication>> stackByThread = new ThreadLocal<Stack<Authentication>>() {
+	private static final String MISSING_AUTH = "Missing authentication information!";
+
+	private static final class StackableData {
+		public final String principal;
+		public final Integer oid;
+
+		private StackableData(String principal, Integer oid) {
+			this.principal = principal;
+			this.oid = oid;
+		}
+	}
+
+	private static final ThreadLocal<Deque<StackableData>> STACKS = new ThreadLocal<Deque<StackableData>>() {
 		@Override
-		protected Stack<Authentication> initialValue() {
-			return new Stack<>();
+		protected Deque<StackableData> initialValue() {
+			return new ArrayDeque<>();
 		}
 	};
 
-	private static Stack<Authentication> stack() {
-		return stackByThread.get();
+	private static Deque<StackableData> stack() {
+		return STACKS.get();
 	}
 
-	/**
-	 * crée un objet Authentication
-	 *
-	 * @param username un nom de l'utilisateur
-	 * @return un objet Authentication
-	 */
-	private static UsernamePasswordAuthenticationToken createAuthentication(String username) {
-		final User user = new User(username, "noPwd", true, true, true, true, Arrays.asList(new SimpleGrantedAuthority(username)));
-		return new UsernamePasswordAuthenticationToken(user, "noPwd");
-	}
-
-	/**
-	 * crée un objet Authentication
-	 *
-	 * @param username un nom de l'utilisateur
-	 * @return un objet Authentication
-	 */
-	private static UsernamePasswordAuthenticationToken createAuthentication(String username, int oid) {
-		final UsernamePasswordAuthenticationToken authentication = createAuthentication(username);
-		final UniregSecurityDetails details = getDetails(authentication);
-		details.setIfoSecOID(oid);
-		return authentication;
-	}
-
-	/**
-	 * Définit un nouvel utilisateur principal et mémorise-là de manière à la récupérer avec {@link #popPrincipal()}.
-	 *
-	 * @param username le visa de l'utilisateur principal
-	 */
 	public static void pushPrincipal(String username) {
-		// crée et enregistre le nouveau context de sécurité */
-		pushAuthentication(createAuthentication(username));
+		stack().push(new StackableData(username, null));
 	}
 
-	/**
-	 * Définit un nouvel utilisateur principal et mémorise-là de manière à la récupérer avec {@link #popPrincipal()}.
-	 *
-	 * @param username le visa de l'utilisateur principal
-	 * @param oid l'oid de l'utilisateur
-	 */
 	public static void pushPrincipal(String username, int oid) {
-		// crée et enregistre le nouveau context de sécurité */
-		pushAuthentication(createAuthentication(username, oid));
+		stack().push(new StackableData(username, oid));
 	}
 
-	private static void pushAuthentication(Authentication authentication) {
-		final Authentication current;
-		if (getAuthentication() == null) {
-			// pas autentifier -> on stock une authentification nulle de manière à retrouver la fin de la pile.
-			current = NULL_AUTH;
-		}
-		else {
-			current = getAuthentication();
-			Assert.notNull(current);
-		}
-		stack().push(current);
-
-		// enregistre le nouveau context de sécurité */
-		setAuthentication(authentication);
-	}
-
-	/**
-	 * Récupère l'utilisateur précédent et défini-le comme l'utilisateur principal.
-	 * <p>
-	 * <b>Note:</b> un utilisateur doit avoir été mémorisé précédemment avec {@link #pushPrincipal(String)}.
-	 */
 	public static void popPrincipal() {
-		final Authentication previous = stack().pop();
-		if (previous == NULL_AUTH){
-			resetAuthentication();
-		}
-		else {
-			setAuthentication(previous);
-		}
-	}
-
-	public static void setAuthentication(Authentication authentication) {
-		SecurityContextHolder.getContext().setAuthentication(authentication);
-	}
-
-	public static void resetAuthentication() {
-		SecurityContextHolder.getContext().setAuthentication(null);
-	}
-
-	public static AbstractAuthenticationToken getAuthentication() {
-		return (AbstractAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
-	}
-
-	/**
-	 * @return whether or not someone is authentified for the current thread.
-	 */
-	public static boolean isAuthenticated() {
-		return getAuthentication() != null;
+		stack().pop();
 	}
 
 	public static String getCurrentPrincipal() {
-
-		Authentication auth = getAuthentication();
-		if (auth == null) {
-			throw new IllegalArgumentException("L'authentification ne peut pas être nulle");
+		final Deque<StackableData> stack = stack();
+		if (stack.isEmpty()) {
+			final AbstractAuthenticationToken auth = getAuthentication();
+			if (auth == null) {
+				throw new IllegalStateException(MISSING_AUTH);
+			}
+			return new PrincipalSid(auth).getPrincipal();
 		}
-		PrincipalSid sid = new PrincipalSid(auth);
+		else {
+			return stack.peek().principal;
+		}
+	}
 
-		return sid.getPrincipal();
+	public static Integer getCurrentOID() {
+		final Deque<StackableData> stack = stack();
+		if (!stack.isEmpty()) {
+			for (StackableData data : stack) {
+				if (data.oid != null) {
+					return data.oid;        // override
+				}
+			}
+		}
+		final AbstractAuthenticationToken auth = getAuthentication();
+		if (auth == null) {
+			if (stack.isEmpty()) {
+				throw new IllegalStateException(MISSING_AUTH);
+			}
+			else {
+				return null;
+			}
+		}
+		return getDetails(auth).getIfoSecOID();
 	}
 
 	private static UniregSecurityDetails getDetails() {
 		AbstractAuthenticationToken auth = getAuthentication();
 		if (auth == null) {
-			throw new IllegalArgumentException("L'authentification ne peut pas être nulle");
+			throw new IllegalStateException(MISSING_AUTH);
 		}
 		return getDetails(auth);
 	}
 
-	private static UniregSecurityDetails getDetails(AbstractAuthenticationToken auth) {
+	private static UniregSecurityDetails getDetails(@NotNull AbstractAuthenticationToken auth) {
 		UniregSecurityDetails d = (UniregSecurityDetails) auth.getDetails();
 		if (d == null) {
 			d = new UniregSecurityDetails();
@@ -153,25 +103,26 @@ public class AuthenticationHelper {
 		return d;
 	}
 
-	public static Integer getCurrentOID() {
-		final UniregSecurityDetails details = getDetails();
-		return details.getIfoSecOID();
+	public static void setAuthentication(Authentication auth) {
+		stack().clear();
+		SecurityContextHolder.getContext().setAuthentication(auth);
 	}
 
-	public static String getCurrentOIDSigle() {
-		final UniregSecurityDetails details = getDetails();
-		return details.getIfoSecOIDSigle();
+	public static void resetAuthentication() {
+		stack().clear();
+		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 
-	public static void setCurrentOID(int i, String sigle) {
-		final UniregSecurityDetails details = getDetails();
-		details.setIfoSecOID(i);
-		details.setIfoSecOIDSigle(sigle);
+	public static AbstractAuthenticationToken getAuthentication() {
+		return (AbstractAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
 	}
 
-	public static void setCurrentOID(int i) {
-		final UniregSecurityDetails details = getDetails();
-		details.setIfoSecOID(i);
+	public static boolean hasCurrentPrincipal() {
+		return isAuthenticated() || !stack().isEmpty();
+	}
+
+	public static boolean isAuthenticated() {
+		return getAuthentication() != null;
 	}
 
 	public static String getFirstName() {
@@ -182,5 +133,16 @@ public class AuthenticationHelper {
 	public static String getLastName() {
 		final UniregSecurityDetails details = getDetails();
 		return details.getIamLastName();
+	}
+
+	public static void setCurrentOID(int i, String sigle) {
+		final UniregSecurityDetails details = getDetails();
+		details.setIfoSecOID(i);
+		details.setIfoSecOIDSigle(sigle);
+	}
+
+	public static String getCurrentOIDSigle() {
+		final UniregSecurityDetails details = getDetails();
+		return details.getIfoSecOIDSigle();
 	}
 }

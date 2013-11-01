@@ -9,7 +9,6 @@ import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.UnableToInterruptJobException;
-import org.springframework.security.core.Authentication;
 
 import ch.vd.uniregctb.common.AuthenticationHelper;
 
@@ -24,19 +23,19 @@ public class JobStarter implements Job, InterruptableJob {
 	public void execute(JobExecutionContext ctxt) throws JobExecutionException {
 
 		final JobDataMap dataMap = ctxt.getMergedJobDataMap();
-		final Authentication authentication = (Authentication) dataMap.get(JobDefinition.KEY_AUTH);
+		final String launchingUser = (String) dataMap.get(JobDefinition.KEY_USER);
 		final Map<String, Object> params = (Map<String, Object>) dataMap.get(JobDefinition.KEY_PARAMS);
 
 		job = (JobDefinition) dataMap.get(JobDefinition.KEY_JOB);
 		try {
-			executeJob(authentication, params);
+			executeJob(launchingUser, params);
 		}
 		finally {
 			job = null;
 		}
 	}
 
-	private void executeJob(Authentication authentication, Map<String, Object> params) {
+	private void executeJob(String launchingUser, Map<String, Object> params) {
 		final String initialThreadName = Thread.currentThread().getName();
 		try {
 			// on donne le nom du job au thread d'exécution, de manière à le repérer plus facilement
@@ -51,7 +50,7 @@ public class JobStarter implements Job, InterruptableJob {
 				}
 			}
 
-			AuthenticationHelper.setAuthentication(authentication);
+			AuthenticationHelper.pushPrincipal(launchingUser);
 			try {
 				job.initialize();
 				try {
@@ -62,7 +61,7 @@ public class JobStarter implements Job, InterruptableJob {
 				}
 			}
 			finally {
-				AuthenticationHelper.resetAuthentication();
+				AuthenticationHelper.popPrincipal();
 			}
 		}
 		catch (Exception e) {

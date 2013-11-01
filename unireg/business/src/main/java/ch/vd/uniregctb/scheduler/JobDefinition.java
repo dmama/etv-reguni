@@ -34,7 +34,7 @@ public abstract class JobDefinition implements InitializingBean, Comparable<JobD
 	public static final String DATE_TRAITEMENT = "DATE_TRAITEMENT"; // pour le testing uniquement
 
 	public final static String KEY_JOB = "job";
-	public final static String KEY_AUTH = "authentication";
+	public final static String KEY_USER = "user";
 	public final static String KEY_PARAMS = "params";
 
 	// Params dynamic

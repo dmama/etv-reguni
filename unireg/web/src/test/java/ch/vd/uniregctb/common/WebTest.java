@@ -81,11 +81,6 @@ public abstract class WebTest extends AbstractBusinessTest {
 
 		super.onSetUp();
 
-		if (AuthenticationHelper.isAuthenticated()) {
-			// msi: pourquoi est-il nécessaire de forcer l'OID ???
-			AuthenticationHelper.setCurrentOID(ServiceInfrastructureService.noACI); // ACI
-		}
-
 		request = new MockHttpServletRequest();
 		session = new MockHttpSession();
 		request.setSession(session);
@@ -107,13 +102,9 @@ public abstract class WebTest extends AbstractBusinessTest {
 	}
 
 	@Override
-	public void onTearDown() throws Exception {
-
-		if (AuthenticationHelper.isAuthenticated()) {
-			AuthenticationHelper.setCurrentOID(-1);
-		}
-
-		super.onTearDown();
+	protected void setAuthentication() {
+		// on assigne également l'OID dans l'authentification pour pouvoir faire des tests sur les rôles par collectivité
+		setAuthentication(getDefaultOperateurName(), 22);
 	}
 
 	/**
