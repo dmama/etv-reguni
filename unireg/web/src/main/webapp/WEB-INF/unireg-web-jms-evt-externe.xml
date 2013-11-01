@@ -16,6 +16,7 @@
 				<ref bean="evtExterneQuittanceListeV1Connector"/>
 				<ref bean="evtExterneListeV1Connector"/>
 				<ref bean="evtExterneListeV2Connector"/>
+				<ref bean="evtExterneListeV3Connector"/>
 			</util:list>
 		</property>
 	</bean>
@@ -38,5 +39,6 @@
 	<bean id="evtExterneQuittanceListeV1Connector" class="ch.vd.uniregctb.evenement.externe.EvtQuittanceListeV1Connector"/>
 	<bean id="evtExterneListeV1Connector" class="ch.vd.uniregctb.evenement.externe.EvtListeV1Connector"/>
 	<bean id="evtExterneListeV2Connector" class="ch.vd.uniregctb.evenement.externe.EvtListeV2Connector"/>
+	<bean id="evtExterneListeV3Connector" class="ch.vd.uniregctb.evenement.externe.EvtListeV3Connector"/>
 
 </beans>

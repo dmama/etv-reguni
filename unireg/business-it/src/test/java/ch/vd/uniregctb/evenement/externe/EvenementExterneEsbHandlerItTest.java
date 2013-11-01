@@ -71,7 +71,7 @@ public class EvenementExterneEsbHandlerItTest extends EvenementTest {
 		handler = new EvenementExterneEsbHandler();
 		handler.setHibernateTemplate(hibernateTemplate);
 
-		final List<EvenementExterneConnector> connectors = Arrays.<EvenementExterneConnector>asList(new EvtQuittanceListeV1Connector(), new EvtListeV1Connector(), new EvtListeV2Connector());
+		final List<EvenementExterneConnector> connectors = Arrays.<EvenementExterneConnector>asList(new EvtQuittanceListeV1Connector(), new EvtListeV1Connector(), new EvtListeV2Connector(), new EvtListeV3Connector());
 		handler.setConnectors(connectors);
 
 		final GentilEsbMessageEndpointListener listener = new GentilEsbMessageEndpointListener();
@@ -172,6 +172,40 @@ public class EvenementExterneEsbHandlerItTest extends EvenementTest {
 
 		// Lit le message sous format texte
 		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/externe/new_quittance_lr_v2.xml");
+		final String texte = FileUtils.readFileToString(file);
+
+		// Envoie le message
+		sendTextMessage(INPUT_QUEUE, texte);
+
+		// On attend le message
+		while (events.isEmpty()) {
+			Thread.sleep(100);
+		}
+		Assert.assertEquals(1, events.size());
+
+		final QuittanceLR q = (QuittanceLR) events.get(0);
+		assertNotNull(q);
+		Assert.assertEquals(1500001L, q.getTiersId().longValue());
+		assertEquals(RegDate.get(2009, 12, 7), RegDateHelper.get(q.getDateEvenement()));
+		assertEquals(RegDate.get(2008, 1, 1), q.getDateDebut());
+		assertEquals(RegDate.get(2008, 1, 31), q.getDateFin());
+		Assert.assertEquals(TypeQuittance.QUITTANCEMENT, q.getType());
+	}
+
+	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
+	public void testReceiveNewQuittanceLRV3() throws Exception {
+
+		final List<EvenementExterne> events = new ArrayList<>();
+
+		handler.setHandler(new EvenementExterneHandler() {
+			@Override
+			public void onEvent(EvenementExterne event) {
+				events.add(event);
+			}
+		});
+
+		// Lit le message sous format texte
+		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/externe/new_quittance_lr_v3.xml");
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
