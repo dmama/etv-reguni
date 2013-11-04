@@ -206,11 +206,11 @@ public abstract class ExtractionDonneesRptResults extends ListesResults<Extracti
 	/**
 	 * Construit un objet {@link InfoIdentificationCtb} pour le contribuable donné à la date donnée
 	 * @param ctb contribuable
-	 * @param dateReference date de référence (pour les rapports d'appartenance ménage)
+	 * @param pf période de référence de référence (pour les rapports d'appartenance ménage)
 	 * @return une nouvelle instance de InfoIdentificationCtb correspondant au contribuable
 	 * @throws CoupleInvalideException si le ménage commun n'a pas de contribuable principal à la date donnée
 	 */
-	protected InfoIdentificationCtb buildInfoIdentification(Contribuable ctb, RegDate dateReference) throws CoupleInvalideException {
+	protected InfoIdentificationCtb buildInfoIdentification(Contribuable ctb, int pf) throws CoupleInvalideException {
 
 		final String nom;
 		final String prenom;
@@ -237,7 +237,7 @@ public abstract class ExtractionDonneesRptResults extends ListesResults<Extracti
 		else if (ctb instanceof MenageCommun) {
 			final MenageCommun mc = (MenageCommun) ctb;
 
-			final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(mc, dateReference);
+			final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(mc, pf);
 			if (couple == null || couple.getPrincipal() == null) {
 				throw new CoupleInvalideException(mc);
 			}

@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.listes.afc;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -8,8 +9,10 @@ import org.springframework.transaction.support.TransactionCallback;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
+import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
+import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.BusinessTest;
@@ -24,6 +27,7 @@ import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 public class ExtractionDonneesRptProcessorTest extends BusinessTest {
@@ -2490,6 +2494,141 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			Assert.assertEquals(MotifRattachement.IMMEUBLE_PRIVE, elt.motifRattachement);
 			Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, elt.autoriteFiscaleForPrincipal);
 			Assert.assertTrue(elt.limite);
+		}
+	}
+
+	/**
+	 * [SIFISC-10312]... pour le moment, je ne sais pas trop quoi faire de ces cas -> test ignoré
+	 */
+	@Ignore
+	@Test
+	public void testSourcierHcPuisVdMixte2PuisMarie() throws Exception {
+
+		final long noIndividu = 4634226L;
+		final RegDate dateArriveeVD = date(2011, 4, 1);
+		final RegDate dateMariage = date(2011, 11, 7);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noIndividu, date(1975, 5, 2), "Petitjean", "Raimond", Sexe.MASCULIN);
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, null, dateArriveeVD, null);
+				marieIndividu(ind, dateMariage);
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				addForPrincipal(pp, date(2000, 1, 1), MotifFor.ARRIVEE_HS, dateArriveeVD.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bern, ModeImposition.SOURCE);
+				addForPrincipal(pp, dateArriveeVD, MotifFor.ARRIVEE_HC, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Cossonay, ModeImposition.MIXTE_137_2);
+				addEnsembleTiersCouple(pp, null, dateMariage, null);
+				return pp.getNumero();
+			}
+		});
+
+		final ExtractionDonneesRptResults res = processor.run(RegDate.get(), 2011, TypeExtractionDonneesRpt.REVENU_SOURCE_PURE, 1, null);
+		Assert.assertNotNull(res);
+		Assert.assertEquals(TypeExtractionDonneesRpt.REVENU_SOURCE_PURE, res.getMode());
+		Assert.assertEquals(1, res.getListePeriode().size());
+		Assert.assertEquals(0, res.getListeCtbsIgnores().size());
+		Assert.assertEquals(0, res.getListeErreurs().size());
+	}
+
+	/**
+	 * [SIFISC-10314] Cas du sourcier qui divorce pendant la période fiscale considérée pour la RPT
+	 * --> le MC était mis en erreur pour cause de "lien inexistant avec les personnes physiques"
+	 */
+	@Test
+	public void testSourcierDivorceDansPeriode() throws Exception {
+
+		final long noIndividu = 4634226L;
+		final RegDate dateArrivee = date(2000, 4, 1);
+		final RegDate dateMariage = date(2005, 6, 12);
+		final RegDate dateSeparation = date(2011, 8, 7);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noIndividu, date(1975, 5, 2), "Petitjean", "Raimond", Sexe.MASCULIN);
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, null, dateArrivee, null);
+				marieIndividu(ind, dateMariage);
+				separeIndividu(ind, dateSeparation);
+			}
+		});
+
+		final class Ids {
+			long ppId;
+			long mcId;
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Cossonay, ModeImposition.SOURCE);
+				addForPrincipal(pp, dateSeparation, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Cossonay, ModeImposition.SOURCE);
+
+				final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, dateMariage, dateSeparation.getOneDayBefore());
+				final MenageCommun mc = couple.getMenage();
+				addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateSeparation.getOneDayBefore(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Cossonay, ModeImposition.SOURCE);
+
+				final Ids ids = new Ids();
+				ids.ppId = pp.getNumero();
+				ids.mcId = mc.getNumero();
+				return ids;
+			}
+		});
+
+		final ExtractionDonneesRptResults res = processor.run(RegDate.get(), dateSeparation.year(), TypeExtractionDonneesRpt.REVENU_SOURCE_PURE, 1, null);
+		Assert.assertNotNull(res);
+		Assert.assertEquals(TypeExtractionDonneesRpt.REVENU_SOURCE_PURE, res.getMode());
+		Assert.assertEquals(2, res.getListePeriode().size());
+		Assert.assertEquals(0, res.getListeCtbsIgnores().size());
+		Assert.assertEquals(0, res.getListeErreurs().size());
+
+		{
+			final ExtractionDonneesRptResults.InfoPeriodeImposition elt = res.getListePeriode().get(0);
+			Assert.assertNotNull(elt);
+			Assert.assertEquals(ids.ppId, elt.noCtb);
+			Assert.assertEquals("Raimond", elt.identification.prenom);
+			Assert.assertEquals("Petitjean", elt.identification.nom);
+			Assert.assertEquals(MockCommune.Cossonay.getNoOFS(), (int) elt.ofsCommuneForGestion);
+			Assert.assertEquals(date(1975, 5, 2), elt.identification.dateNaissance);
+			Assert.assertNull(elt.identification.numeroAvs);
+			Assert.assertNull(elt.identification.noCtbPrincipal);
+			Assert.assertNull(elt.identification.noCtbConjoint);
+			Assert.assertEquals(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,  elt.motifOuverture);
+			Assert.assertNull(elt.motifFermeture);
+			Assert.assertEquals(date(2011, 8, 1), elt.debutPeriodeImposition);
+			Assert.assertEquals(date(2011, 12, 31), elt.finPeriodeImposition);
+			Assert.assertEquals(ModeImposition.SOURCE, elt.modeImposition);
+			Assert.assertEquals(MotifRattachement.DOMICILE, elt.motifRattachement);
+			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, elt.autoriteFiscaleForPrincipal);
+		}
+		{
+			final ExtractionDonneesRptResults.InfoPeriodeImposition elt = res.getListePeriode().get(1);
+			Assert.assertNotNull(elt);
+			Assert.assertEquals(ids.mcId, elt.noCtb);
+			Assert.assertEquals("Raimond", elt.identification.prenom);
+			Assert.assertEquals("Petitjean", elt.identification.nom);
+			Assert.assertEquals(MockCommune.Cossonay.getNoOFS(), (int) elt.ofsCommuneForGestion);
+			Assert.assertEquals(date(1975, 5, 2), elt.identification.dateNaissance);
+			Assert.assertNull(elt.identification.numeroAvs);
+			Assert.assertEquals((Long) ids.ppId, elt.identification.noCtbPrincipal);
+			Assert.assertNull(elt.identification.noCtbConjoint);
+			Assert.assertNull(elt.motifOuverture);
+			Assert.assertEquals(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, elt.motifFermeture);
+			Assert.assertEquals(date(2011, 1, 1), elt.debutPeriodeImposition);
+			Assert.assertEquals(date(2011, 8, 31), elt.finPeriodeImposition);
+			Assert.assertEquals(ModeImposition.SOURCE, elt.modeImposition);
+			Assert.assertEquals(MotifRattachement.DOMICILE, elt.motifRattachement);
+			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, elt.autoriteFiscaleForPrincipal);
 		}
 	}
 }

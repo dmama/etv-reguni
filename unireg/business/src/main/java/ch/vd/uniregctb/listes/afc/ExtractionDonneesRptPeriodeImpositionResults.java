@@ -107,7 +107,7 @@ public abstract class ExtractionDonneesRptPeriodeImpositionResults extends Extra
 			throw new ContribuableIgnoreException(raisonExclusion);
 		}
 
-		final InfoIdentificationCtb identification = buildInfoIdentification(ctb, periodes.get(periodes.size() - 1).getDateFin());
+		final InfoIdentificationCtb identification = buildInfoIdentification(ctb, periodeFiscale);
 
 		// une entité par période d'imposition restante
 		final List<InfoPeriodeImposition> listeFinale = new ArrayList<>(periodes.size());

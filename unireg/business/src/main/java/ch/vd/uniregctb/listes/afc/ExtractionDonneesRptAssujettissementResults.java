@@ -67,7 +67,7 @@ public abstract class ExtractionDonneesRptAssujettissementResults extends Extrac
 			throw new ContribuableIgnoreException(raisonExclusion);
 		}
 
-		final InfoIdentificationCtb identification = buildInfoIdentification(ctb, assujettissements.get(assujettissements.size() - 1).getDateFin());
+		final InfoIdentificationCtb identification = buildInfoIdentification(ctb, decomposition.annee);
 
 		// on boucle ensuite sur les périodes d'assujettissement pour faire une ligne par période
 		final List<InfoPeriodeImposition> liste = new ArrayList<>(assujettissements.size());
@@ -144,7 +144,7 @@ public abstract class ExtractionDonneesRptAssujettissementResults extends Extrac
 	 */
 	private static ForFiscalPrincipal extraireDernierForSource(ForsList<ForFiscalPrincipal> principauxDansLaPeriode) {
 		for (ForFiscalPrincipal ffp : CollectionsUtils.revertedOrder(principauxDansLaPeriode)) {
-			if (ffp.getModeImposition() == ModeImposition.SOURCE) {
+			if (ffp.getModeImposition().isSource()) {
 				return ffp;
 			}
 		}
