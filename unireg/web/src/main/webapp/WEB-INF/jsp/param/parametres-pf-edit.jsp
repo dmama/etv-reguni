@@ -19,6 +19,7 @@
 
 	<tiles:put name="body">
 	<form:form name="form" id="formTermes">
+		<form:hidden path="idPeriodeFiscale"/>
 		<fieldset>
 			<legend><fmt:message key="label.param.parametres-pf-edit" /></legend>
 			<table>
@@ -31,7 +32,6 @@
 				<th><fmt:message key="label.param.entete.DS"/></th>
 			</tr>
 			<tr>
-				
 				<th><fmt:message key="label.param.som.reg"/></th>
 				<td>
 					<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
@@ -138,7 +138,7 @@
 				<input type="submit" id="maj" value="<fmt:message key="label.bouton.mettre.a.jour" />">
 			</span>
 			<span class="bouton">
-				<input type="button" id="annuler" value="<fmt:message key="label.bouton.annuler" />" onclick="document.location.href='periode.do?pf=${command.idPeriodeFiscale}'">
+				<input type="button" id="annuler" value="<fmt:message key="label.bouton.annuler" />" onclick="document.location.href='list.do?pf=${command.idPeriodeFiscale}'">
 			</span>
 		</div>
 	</form:form>	

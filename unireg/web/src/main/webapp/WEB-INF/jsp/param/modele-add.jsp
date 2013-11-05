@@ -11,6 +11,7 @@
 
 	<tiles:put name="body">
 	<form:form name="form" id="formModeleAdd">
+		<form:hidden path="idPeriode"/>
 		<fieldset>
 			<legend><fmt:message key="label.param.modele-add" /></legend>
 			<table>
@@ -18,7 +19,7 @@
 				<tr>
 					<th><fmt:message key="title.param.type"/></th>
 					<td>
-						<form:select path="typeDocument" items="${typeDocuments}"></form:select>
+						<form:select path="typeDocument" items="${typeDocuments}"/>
 						<c:if test="${status.error}">
 			 				&nbsp;<span class="erreur">${status.errorMessage}</span>
 			 			</c:if>
@@ -29,7 +30,7 @@
 		</fieldset>
 		<div>
 			<input type="submit" id="ajout" value="<fmt:message key="label.bouton.ajouter" />">
-			<input type="button" id="annuler" value="<fmt:message key="label.bouton.annuler" />" onclick="document.location.href='periode.do?pf=${command.idPeriode}'">
+			<input type="button" id="annuler" value="<fmt:message key="label.bouton.annuler" />" onclick="document.location.href='list.do?pf=${command.idPeriode}'">
 		</div>		
 	</form:form>	
 	</tiles:put>

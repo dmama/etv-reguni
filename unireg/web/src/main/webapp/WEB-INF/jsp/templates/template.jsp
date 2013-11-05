@@ -136,7 +136,7 @@
 								<li><a href="<c:url value='/param/app/list.do'/>"><fmt:message key="label.action.param.application" /></a></li>
 							</authz:authorize>
 							<authz:authorize ifAnyGranted="ROLE_PARAM_PERIODE">
-								<li><a href="<c:url value='/param/periode.do'/>"><fmt:message key="label.action.param.periode" /></a></li>
+								<li><a href="<c:url value='/param/periode/list.do'/>"><fmt:message key="label.action.param.periode" /></a></li>
 							</authz:authorize>
 							</ul>
 						</li>

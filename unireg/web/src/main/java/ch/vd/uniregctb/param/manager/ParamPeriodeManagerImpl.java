@@ -139,12 +139,6 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 		ppfv.setIdPeriodeFiscale(pf.getId());
 		ppfv.setAnneePeriodeFiscale(pf.getAnnee());
 
-		ppfv.setIdDepense(pf.getParametrePeriodeFiscaleDepense().getId());
-		ppfv.setIdDiplomate(pf.getParametrePeriodeFiscaleDiplomateSuisse().getId());
-		ppfv.setIdHorsCanton(pf.getParametrePeriodeFiscaleHorsCanton().getId());
-		ppfv.setIdHorsSuisse(pf.getParametrePeriodeFiscaleHorsSuisse().getId());
-		ppfv.setIdVaud(pf.getParametrePeriodeFiscaleVaud().getId());
-
 		ppfv.setFinEnvoiMasseDIDepense(pf.getParametrePeriodeFiscaleDepense().getDateFinEnvoiMasseDI());
 		ppfv.setFinEnvoiMasseDIDiplomate(pf.getParametrePeriodeFiscaleDiplomateSuisse().getDateFinEnvoiMasseDI());
 		ppfv.setFinEnvoiMasseDIHorsCanton(pf.getParametrePeriodeFiscaleHorsCanton().getDateFinEnvoiMasseDI());
@@ -205,15 +199,16 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 
 		// ATTENTION : L'ordre des elements dans les tableaux est primordiale pour le bon fonctionnement de l'algo
 
-		ParametrePeriodeFiscale[] ppfs = new ParametrePeriodeFiscale[] {
-				parametrePeriodeFiscaleDAO.get(ppfv.getIdVaud()),
-				parametrePeriodeFiscaleDAO.get(ppfv.getIdHorsCanton()),
-				parametrePeriodeFiscaleDAO.get(ppfv.getIdHorsSuisse()),
-				parametrePeriodeFiscaleDAO.get(ppfv.getIdDepense()),
-				parametrePeriodeFiscaleDAO.get(ppfv.getIdDiplomate())
+		final PeriodeFiscale pf = periodeFiscaleDAO.get(ppfv.getIdPeriodeFiscale());
+		final ParametrePeriodeFiscale[] ppfs = new ParametrePeriodeFiscale[] {
+				pf.getParametrePeriodeFiscaleVaud(),
+				pf.getParametrePeriodeFiscaleHorsCanton(),
+				pf.getParametrePeriodeFiscaleHorsSuisse(),
+				pf.getParametrePeriodeFiscaleDepense(),
+				pf.getParametrePeriodeFiscaleDiplomateSuisse()
 		};
 
-		RegDate[][] termes = new RegDate [][] {
+		final RegDate[][] termes = new RegDate [][] {
 			{ppfv.getSommationEffectiveVaud(), ppfv.getSommationReglementaireVaud(), ppfv.getFinEnvoiMasseDIVaud() },
 			{ppfv.getSommationEffectiveHorsCanton(), ppfv.getSommationReglementaireHorsCanton(), ppfv.getFinEnvoiMasseDIHorsCanton() },
 			{ppfv.getSommationEffectiveHorsSuisse(), ppfv.getSommationReglementaireHorsSuisse(), ppfv.getFinEnvoiMasseDIHorsSuisse() },
@@ -243,7 +238,6 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 		for (ParametrePeriodeFiscale ppf : ppfs) {
 			parametrePeriodeFiscaleDAO.save(ppf);
 		}
-
 	}
 
 	@Override

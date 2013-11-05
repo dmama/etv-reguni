@@ -44,47 +44,10 @@
 
 	<!-- Les Controlleurs -->
 
-	<bean id="paramPeriodeController" class="ch.vd.uniregctb.param.ParamPeriodeController">
-		<property name="manager" ref="paramPeriodeManager" />
-		<property name="securityProvider" ref="securityProviderInterface" />
-	</bean>
-
-	<bean id="initPeriodeController" class="ch.vd.uniregctb.param.InitPeriodeController">
-		<property name="manager" ref="paramPeriodeManager" />
-		<property name="securityProvider" ref="securityProviderInterface" />
-	</bean>
-
-	<bean id="paramParametrePeriodeFiscaleEditController"
-		  class="ch.vd.uniregctb.param.ParamParametrePeriodeFiscaleEditController"
-		  parent="abstractSimpleFormController">
-		<property name="sessionForm" value="false" />
-		<property name="commandClass" value="ch.vd.uniregctb.param.view.ParametrePeriodeFiscaleView" />
-		<property name="commandName" value="command" />
-		<property name="formView" value="param/parametres-pf-edit" />
-		<property name="successView" value="param/refresh-parent-periode" />
-		<property name="validator" ref="parametrePeriodeFiscaleValidator" />
-		<property name="manager" ref="paramPeriodeManager" />
-		<property name="securityProvider" ref="securityProviderInterface" />
-	</bean>
-
-	<bean id="paramModeleDocumentAddController"
-		  class="ch.vd.uniregctb.param.ParamModeleDocumentAddController"
-		  parent="abstractSimpleFormController">
-		<property name="sessionForm" value="false" />
-		<property name="commandClass" value="ch.vd.uniregctb.param.view.ModeleDocumentView" />
-		<property name="commandName" value="command" />
-		<property name="formView" value="param/modele-add" />
-		<property name="successView" value="param/refresh-parent-periode" />
-		<property name="validator" ref="modeleDocumentValidator" />
+	<bean id="parametrePeriodeController" class="ch.vd.uniregctb.param.ParamPeriodeController">
 		<property name="manager" ref="paramPeriodeManager" />
 		<property name="tiersMapHelper" ref="tiersMapHelper" />
-		<property name="securityProvider" ref="securityProviderInterface" />
-	</bean>
-
-	<bean id="paramModeleDocumentSupprController" class="ch.vd.uniregctb.param.ParamModeleDocumentSupprController">
-		<property name="manager" ref="paramPeriodeManager" />
 		<property name="messageSource" ref="messageSource" />
-		<property name="securityProvider" ref="securityProviderInterface" />
 	</bean>
 
 	<bean id="modeleFeuilleDocumentController" class="ch.vd.uniregctb.param.ModeleFeuilleDocumentController">
@@ -92,11 +55,6 @@
 		<property name="messageSource" ref="messageSource" />
 		<property name="modeleFeuilleDocumentDAO" ref="modeleFeuilleDocumentDAO" />
 		<property name="modeleFeuilleDocumentValidator" ref="modeleFeuilleDocumentValidator" />
-		<property name="securityProvider" ref="securityProviderInterface" />
 	</bean>
 
-	<bean id="abstractParamModeleFeuilleDocumentController" parent="abstractSimpleFormController" abstract="true" class="ch.vd.uniregctb.param.AbstractParamModeleFeuilleDocumentController">
-		<property name="paramHelper" ref="paramHelper" />
-		<property name="manager" ref="paramPeriodeManager" />
-	</bean>
 </beans>

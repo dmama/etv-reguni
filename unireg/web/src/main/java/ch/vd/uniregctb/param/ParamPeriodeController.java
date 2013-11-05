@@ -1,55 +1,109 @@
 package ch.vd.uniregctb.param;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.AbstractController;
+import org.springframework.context.MessageSource;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.param.manager.ParamPeriodeManager;
-import ch.vd.uniregctb.security.SecurityProviderInterface;
+import ch.vd.uniregctb.param.view.ModeleDocumentView;
+import ch.vd.uniregctb.param.view.ParametrePeriodeFiscaleView;
+import ch.vd.uniregctb.security.Role;
+import ch.vd.uniregctb.security.SecurityCheck;
+import ch.vd.uniregctb.tiers.TiersMapHelper;
+import ch.vd.uniregctb.utils.RegDateEditor;
 
-import static ch.vd.uniregctb.param.Commun.getModeleIdFromRequest;
-import static ch.vd.uniregctb.param.Commun.getPeriodeIdFromRequest;
-import static ch.vd.uniregctb.param.Commun.isModeleIdInRequest;
-import static ch.vd.uniregctb.param.Commun.isPeriodeIdInRequest;
-import static ch.vd.uniregctb.param.Commun.verifieLesDroits;
+@Controller
+@RequestMapping("/param/periode")
+public class ParamPeriodeController {
 
-public class ParamPeriodeController extends AbstractController {
-	
+	private static final String ACCESS_DENIED_MESSAGE = "Vous ne possédez aucun droit IfoSec sur l'écran de paramétrisation des périodes";
+
+	private static final String PARAMETER_PERIODE_ID = "pf";
+	private static final String PARAMETER_MODELE_ID = "md";
+
 	private ParamPeriodeManager manager;
-	private SecurityProviderInterface securityProvider;
+	private TiersMapHelper tiersMapHelper;
+	private MessageSource messageSource;
 
-	@Override
-	protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		
-		verifieLesDroits(securityProvider);
-		
-		Map<String, Object> model = new HashMap<>();
-		List<PeriodeFiscale> periodes = manager.getAllPeriodeFiscale();
-		if (periodes.isEmpty()) {
-			return new ModelAndView("param/aucune-periode");
+	private static PeriodeFiscale findPeriodById(List<PeriodeFiscale> periodes, long id) {
+		for (PeriodeFiscale pf : periodes) {
+			if (pf.getId() == id) {
+				return pf;
+			}
 		}
-		model.put("periodes", periodes);
-		PeriodeFiscale periodeSelectionnee = retrouverPeriodeSelectionnee(request, periodes);
-		model.put("periodeSelectionnee", periodeSelectionnee);
-		model.put("parametrePeriodeFiscaleVaud", manager.getVaudByPeriodeFiscale(periodeSelectionnee));
-		model.put("parametrePeriodeFiscaleDepense", manager.getDepenseByPeriodeFiscale(periodeSelectionnee));
-		model.put("parametrePeriodeFiscaleHorsCanton", manager.getHorsCantonByPeriodeFiscale(periodeSelectionnee));
-		model.put("parametrePeriodeFiscaleHorsSuisse", manager.getHorsSuisseByPeriodeFiscale(periodeSelectionnee));
-		model.put("parametrePeriodeFiscaleDiplomateSuisse", manager.getDiplomateSuisseByPeriodeFiscale(periodeSelectionnee));
-		List<ModeleDocument> modeles = new ArrayList<>(periodeSelectionnee.getModelesDocument());
+		return null;
+	}
+
+	private static ModeleDocument findModelById(List<ModeleDocument> modeles, long id) {
+		for (ModeleDocument md : modeles) {
+			if (md.getId() == id) {
+				return md;
+			}
+		}
+		return null;
+	}
+
+	public void setManager(ParamPeriodeManager manager) {
+		this.manager = manager;
+	}
+
+	public void setTiersMapHelper(TiersMapHelper tiersMapHelper) {
+		this.tiersMapHelper = tiersMapHelper;
+	}
+
+	public void setMessageSource(MessageSource messageSource) {
+		this.messageSource = messageSource;
+	}
+
+	@InitBinder
+	public void initBinder(WebDataBinder binder) {
+		binder.registerCustomEditor(RegDate.class, new RegDateEditor(false, false, false, RegDateHelper.StringFormat.DISPLAY));
+	}
+
+	@RequestMapping(value = "/list.do", method = RequestMethod.GET)
+	@SecurityCheck(rolesToCheck = {Role.PARAM_PERIODE}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
+	public String view(Model model, HttpSession session,
+	                   @RequestParam(value = PARAMETER_PERIODE_ID, required = false) Long pfId,
+	                   @RequestParam(value = PARAMETER_MODELE_ID, required = false) Long modeleId) {
+
+		final List<PeriodeFiscale> periodes = manager.getAllPeriodeFiscale();
+		if (periodes.isEmpty()) {
+			return "param/aucune-periode";
+		}
+		model.addAttribute("periodes", periodes);
+
+		final PeriodeFiscale periodeDemandee = pfId != null ? findPeriodById(periodes, pfId) : null;
+		final PeriodeFiscale periodeSelectionnee = periodeDemandee != null ? periodeDemandee : periodes.get(0);
+		model.addAttribute("periodeSelectionnee", periodeSelectionnee);
+		model.addAttribute("parametrePeriodeFiscaleVaud", manager.getVaudByPeriodeFiscale(periodeSelectionnee));
+		model.addAttribute("parametrePeriodeFiscaleDepense", manager.getDepenseByPeriodeFiscale(periodeSelectionnee));
+		model.addAttribute("parametrePeriodeFiscaleHorsCanton", manager.getHorsCantonByPeriodeFiscale(periodeSelectionnee));
+		model.addAttribute("parametrePeriodeFiscaleHorsSuisse", manager.getHorsSuisseByPeriodeFiscale(periodeSelectionnee));
+		model.addAttribute("parametrePeriodeFiscaleDiplomateSuisse", manager.getDiplomateSuisseByPeriodeFiscale(periodeSelectionnee));
+
+		final List<ModeleDocument> modeles = new ArrayList<>(manager.getModeleDocuments(periodeSelectionnee));
 		Collections.sort(modeles, new Comparator<ModeleDocument>() {
 			@Override
 			public int compare(ModeleDocument o1, ModeleDocument o2) {
@@ -65,97 +119,90 @@ public class ParamPeriodeController extends AbstractController {
 				return o1.getTypeDocument().compareTo(o2.getTypeDocument());
 			}
 		});
-		
-		model.put("modeles", modeles);	
-		ModeleDocument modeleSelectionne = retrouverModeleSelectionne(request, modeles);
-		model.put("modeleSelectionne", modeleSelectionne);
+
+		model.addAttribute("modeles", modeles);
+
+		final ModeleDocument modeleDemande = modeleId != null ? findModelById(modeles, modeleId) : null;
+		final ModeleDocument modeleSelectionne = modeleDemande != null || modeles.isEmpty() ? modeleDemande : modeles.get(0);
+		model.addAttribute("modeleSelectionne", modeleSelectionne);
 		if (modeleSelectionne != null) {
-			List<ModeleFeuilleDocument> feuilles = new ArrayList<>(modeleSelectionne.getModelesFeuilleDocument());
+			final List<ModeleFeuilleDocument> feuilles = new ArrayList<>(manager.getModeleFeuilleDocuments(modeleSelectionne));
 			Collections.sort(feuilles, new ModeleFeuilleDocumentComparator());
-			model.put("feuilles", feuilles);			
-		} else {
-			model.put("feuilles", null);
+			model.addAttribute("feuilles", feuilles);
 		}
-		
-		Object errorModele = request.getSession().getAttribute("error_modele");
-		if ( errorModele != null) {
-			request.getSession().setAttribute("error_modele", null);
-			model.put("error_modele", errorModele);
+		else {
+			model.addAttribute("feuilles", null);
 		}
-		
-		Object errorFeuille = request.getSession().getAttribute("error_feuille");
-		if ( errorFeuille != null) {
-			request.getSession().setAttribute("error_feuille", null);
-			model.put("error_feuille", errorFeuille);
+
+		final Object errorModele = session.getAttribute("error_modele");
+		if (errorModele != null) {
+			model.addAttribute("error_modele", errorModele);
+			session.setAttribute("error_modele", null);
 		}
-		return new ModelAndView("param/periode", model);
+
+		final Object errorFeuille = session.getAttribute("error_feuille");
+		if (errorFeuille != null) {
+			model.addAttribute("error_feuille", errorFeuille);
+			session.setAttribute("error_feuille", null);
+		}
+		return "param/periode";
 	}
 
-	/**
-	 * 
-	 * Retrouver la période sélectionnée prédédemment
-	 * 
-	 * @param request
-	 * @return la période selectionné ou la plus récente si il n'y en a pas, null s'il n'y a aucun période en base.
-	 */
-	private PeriodeFiscale retrouverPeriodeSelectionnee(final HttpServletRequest request, List<PeriodeFiscale> periodes) {
-
-		assert !periodes.isEmpty() : "la liste des periodes doit comporter au moins un element";
-
-		PeriodeFiscale periodeSelectionnee = null;
-
-		if (isPeriodeIdInRequest(request)) {
-			periodeSelectionnee = (PeriodeFiscale) CollectionUtils.find(periodes, new Predicate(){
-				@Override
-				public boolean evaluate(Object o) {
-					return ((PeriodeFiscale)o).getId().equals(getPeriodeIdFromRequest(request));
-				}
-			});
-		}
-
-		if (periodeSelectionnee == null) {
-			periodeSelectionnee = periodes.get(0);
-		}
-		
-		assert periodeSelectionnee != null;
-		return periodeSelectionnee;
-	}
-	
-	/**
-	 * Retrouver le modèle de document selectionné
-	 * 
-	 * @param request
-	 * @return le modèle selectionné ou null.
-	 */
-	private ModeleDocument retrouverModeleSelectionne(final HttpServletRequest request, List<ModeleDocument> modeles) {
-		assert request != null;
-		ModeleDocument modeleSelectionne = null;
-
-		if (isModeleIdInRequest(request)) {
-			modeleSelectionne = (ModeleDocument) CollectionUtils.find(modeles, new Predicate(){
-				@Override
-				public boolean evaluate(Object o) {
-					return ((ModeleDocument)o).getId().equals(getModeleIdFromRequest(request));
-				}
-			});
-		}
-
-		if (modeleSelectionne == null && !modeles.isEmpty()) {
-			modeleSelectionne = modeles.toArray(new ModeleDocument[modeles.size()])[0];
-		}
-		
-		return modeleSelectionne;
+	@RequestMapping(value = "/init-periode.do", method = RequestMethod.GET)
+	@SecurityCheck(rolesToCheck = {Role.PARAM_PERIODE}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
+	public String initPeriode() {
+		manager.initNouvellePeriodeFiscale();
+		return "redirect:/param/periode/list.do";
 	}
 
-	public ParamPeriodeManager getManager() {
-		return manager;
+	@RequestMapping(value = "/pf-edit.do", method = RequestMethod.GET)
+	@SecurityCheck(rolesToCheck = {Role.PARAM_PERIODE}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
+	public String showEditPeriod(Model model, @RequestParam(value = PARAMETER_PERIODE_ID) Long pfId) {
+		final ParametrePeriodeFiscaleView view = manager.createParametrePeriodeFiscaleViewEdit(pfId);
+		model.addAttribute("command", view);
+		return "param/parametres-pf-edit";
 	}
 
-	public void setManager(ParamPeriodeManager manager) {
-		this.manager = manager;
+	@RequestMapping(value = "/pf-edit.do", method = RequestMethod.POST)
+	@SecurityCheck(rolesToCheck = {Role.PARAM_PERIODE}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
+	public String commitEditPeriod(Model model, @ModelAttribute("command") ParametrePeriodeFiscaleView view, BindingResult bindingResult) {
+		if (bindingResult.hasErrors()) {
+			return showEditPeriod(model, view.getIdPeriodeFiscale());
+		}
+		manager.saveParametrePeriodeFiscaleView(view);
+		return "redirect:/param/periode/list.do?pf=" + view.getIdPeriodeFiscale();
 	}
 
-	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
-		this.securityProvider = securityProvider;
+	@RequestMapping(value = "/modele-add.do", method = RequestMethod.GET)
+	@SecurityCheck(rolesToCheck = {Role.PARAM_PERIODE}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
+	public String showAddModel(Model model, @RequestParam(value = PARAMETER_PERIODE_ID) Long pfId) {
+		final ModeleDocumentView view = manager.createModeleDocumentViewAdd(pfId);
+		model.addAttribute("command", view);
+		model.addAttribute("typeDocuments", tiersMapHelper.getTypesDeclarationImpotPourParam());
+		return "param/modele-add";
+	}
+
+	@RequestMapping(value = "/modele-add.do", method = RequestMethod.POST)
+	@SecurityCheck(rolesToCheck = {Role.PARAM_PERIODE}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
+	public String postAddModel(Model model, @ModelAttribute("command") ModeleDocumentView view, BindingResult bindingResult) {
+		if (bindingResult.hasErrors()) {
+			return showAddModel(model, view.getIdPeriode());
+		}
+		manager.saveModeleDocumentView(view);
+		return "redirect:/param/periode/list.do?pf=" + view.getIdPeriode();
+	}
+
+	@RequestMapping(value = "/modele-suppr.do", method = RequestMethod.GET)
+	@SecurityCheck(rolesToCheck = {Role.PARAM_PERIODE}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
+	public String annulerModele(HttpSession session, @RequestParam(PARAMETER_PERIODE_ID) Long pfId, @RequestParam(PARAMETER_MODELE_ID) Long mdId) {
+		try {
+			manager.deleteModeleDocument(mdId);
+		}
+		catch (DataIntegrityViolationException e) {
+			final Map<Long, String> m = new HashMap<>(1);
+			m.put(mdId, messageSource.getMessage("error.suppr.impossible", null, "error.suppr.impossible", Locale.getDefault()));
+			session.setAttribute("error_modele", m);
+		}
+		return "redirect:/param/periode/list.do?pf=" + pfId;
 	}
 }

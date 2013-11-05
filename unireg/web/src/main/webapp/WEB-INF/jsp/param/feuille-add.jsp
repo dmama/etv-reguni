@@ -17,7 +17,7 @@
 		<form:hidden path="periodeAnnee" value="${command.periodeAnnee}"/>
 		<div>
 			<input type="submit" id="ajout" value="<fmt:message key="label.bouton.ajouter" />">
-			<input type="button" id="annuler" value="<fmt:message key="label.bouton.annuler" />" onclick="document.location.href='../periode.do?pf=${command.idPeriode}&md=${command.idModele}'">
+			<input type="button" id="annuler" value="<fmt:message key="label.bouton.annuler" />" onclick="document.location.href='../list.do?pf=${command.idPeriode}&md=${command.idModele}'">
 		</div>
 		</form:form>		
 	</tiles:put>

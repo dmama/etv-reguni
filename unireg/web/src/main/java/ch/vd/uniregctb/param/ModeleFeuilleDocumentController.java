@@ -29,20 +29,22 @@ import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
 import ch.vd.uniregctb.declaration.ModeleFeuilleDocumentDAO;
 import ch.vd.uniregctb.param.manager.ParamPeriodeManager;
 import ch.vd.uniregctb.param.view.ModeleFeuilleDocumentView;
-import ch.vd.uniregctb.security.SecurityProviderInterface;
+import ch.vd.uniregctb.security.Role;
+import ch.vd.uniregctb.security.SecurityCheck;
 
 /**
  * Ce contrôleur est responsable de l'ajout, de l'édition et de la suppression des feuilles sur les modèles de documents.
  */
 @Controller
-@RequestMapping(value = "/param/feuille")
+@RequestMapping(value = "/param/periode/feuille")
 public class ModeleFeuilleDocumentController {
+
+	private static final String ACCESS_DENIED_MESSAGE = "Vous ne possédez aucun droit IfoSec sur l'écran de paramétrisation des périodes";
 
 	private ParamPeriodeManager manager;
 	private MessageSource messageSource;
 	private ModeleFeuilleDocumentDAO modeleFeuilleDocumentDAO;
 	private Validator modeleFeuilleDocumentValidator;
-	private SecurityProviderInterface securityProvider;
 
 	public void setManager(ParamPeriodeManager manager) {
 		this.manager = manager;
@@ -60,10 +62,6 @@ public class ModeleFeuilleDocumentController {
 		this.modeleFeuilleDocumentValidator = modeleFeuilleDocumentValidator;
 	}
 
-	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
-		this.securityProvider = securityProvider;
-	}
-
 	@SuppressWarnings({"UnusedDeclaration"})
 	@InitBinder
 	protected void initBinder(WebDataBinder binder) {
@@ -73,8 +71,8 @@ public class ModeleFeuilleDocumentController {
 
 	@RequestMapping(value = "/add.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
+	@SecurityCheck(rolesToCheck = {Role.PARAM_PERIODE}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	public String add(@RequestParam("pf") Long periodeId, @RequestParam("md") Long modeleId, Model model) throws Exception {
-		Commun.verifieLesDroits(securityProvider);
 
 		final ModeleFeuilleDocumentView view = manager.createModeleFeuilleDocumentViewAdd(periodeId, modeleId);
 		model.addAttribute("command", view);
@@ -84,22 +82,20 @@ public class ModeleFeuilleDocumentController {
 
 	@RequestMapping(value = "/add.do", method = RequestMethod.POST)
 	@Transactional(rollbackFor = Throwable.class)
+	@SecurityCheck(rolesToCheck = {Role.PARAM_PERIODE}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	public String add(@Valid @ModelAttribute("command") ModeleFeuilleDocumentView view, BindingResult result) throws Exception {
-		Commun.verifieLesDroits(securityProvider);
-
 		if (result.hasErrors()) {
 			return "param/feuille-add";
 		}
 		manager.addFeuille(view.getIdModele(), view.getModeleFeuille());
 
-		return "redirect:/param/periode.do?pf=" + view.getIdPeriode() + "&md=" + view.getIdModele();
+		return "redirect:/param/periode/list.do?pf=" + view.getIdPeriode() + "&md=" + view.getIdModele();
 	}
 
 	@RequestMapping(value = "/edit.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
+	@SecurityCheck(rolesToCheck = {Role.PARAM_PERIODE}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	public String edit(@RequestParam("pf") Long periodeId, @RequestParam("md") Long modeleId, @RequestParam("mfd") Long feuilleId, Model model) throws Exception {
-		Commun.verifieLesDroits(securityProvider);
-
 		final ModeleFeuilleDocumentView view = manager.createModeleFeuilleDocumentViewEdit(periodeId, modeleId, feuilleId);
 		model.addAttribute("command", view);
 
@@ -108,21 +104,20 @@ public class ModeleFeuilleDocumentController {
 
 	@RequestMapping(value = "/edit.do", method = RequestMethod.POST)
 	@Transactional(rollbackFor = Throwable.class)
+	@SecurityCheck(rolesToCheck = {Role.PARAM_PERIODE}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	public String edit(@Valid @ModelAttribute("command") ModeleFeuilleDocumentView view, BindingResult result) throws Exception {
-		Commun.verifieLesDroits(securityProvider);
 		if (result.hasErrors()) {
 			return "param/feuille-edit";
 		}
 		manager.updateFeuille(view.getIdFeuille(), view.getModeleFeuille());
 
-		return "redirect:/param/periode.do?pf=" + view.getIdPeriode() + "&md=" + view.getIdModele();
+		return "redirect:/param/periode/list.do?pf=" + view.getIdPeriode() + "&md=" + view.getIdModele();
 	}
 
 	@RequestMapping(value = "/suppr.do", method = RequestMethod.GET)
 	@Transactional(rollbackFor = Throwable.class)
+	@SecurityCheck(rolesToCheck = {Role.PARAM_PERIODE}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	public String suppr(@RequestParam("pf") Long periodeId, @RequestParam("md") Long modeleId, @RequestParam("mfd") Long feuilleId, Model model) throws Exception {
-		Commun.verifieLesDroits(securityProvider);
-
 		try {
 			manager.deleteModeleFeuilleDocument(feuilleId);
 		}
@@ -132,14 +127,13 @@ public class ModeleFeuilleDocumentController {
 			model.addAttribute("error_feuille", m);
 		}
 
-		return "redirect:/param/periode.do?pf=" + periodeId + "&md=" + modeleId;
+		return "redirect:/param/periode/list.do?pf=" + periodeId + "&md=" + modeleId;
 	}
 
 	@RequestMapping(value = "/move.do", method = RequestMethod.GET)
 	@Transactional(rollbackFor = Throwable.class)
+	@SecurityCheck(rolesToCheck = {Role.PARAM_PERIODE}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	public String move(@RequestParam("mfd") Long feuilleId, @RequestParam("dir") Direction direction) throws Exception {
-		Commun.verifieLesDroits(securityProvider);
-
 		final ModeleFeuilleDocument feuille = modeleFeuilleDocumentDAO.get(feuilleId);
 		if (feuille == null) {
 			throw new ObjectNotFoundException("L'id spécifié ne correspond à aucune feuille. Aucune action effectuée.");
@@ -147,7 +141,7 @@ public class ModeleFeuilleDocumentController {
 
 		if (direction == null) {
 			// rien à faire
-			return "redirect:/param/periode.do?pf=" + feuille.getModeleDocument().getPeriodeFiscale().getId() + "&md=" + feuille.getModeleDocument().getId();
+			return "redirect:/param/periode/list.do?pf=" + feuille.getModeleDocument().getPeriodeFiscale().getId() + "&md=" + feuille.getModeleDocument().getId();
 		}
 
 		final ModeleDocument modele = feuille.getModeleDocument();
@@ -189,6 +183,6 @@ public class ModeleFeuilleDocumentController {
 			f.setIndex(i);
 		}
 
-		return "redirect:/param/periode.do?pf=" + feuille.getModeleDocument().getPeriodeFiscale().getId() + "&md=" + feuille.getModeleDocument().getId();
+		return "redirect:/param/periode/list.do?pf=" + feuille.getModeleDocument().getPeriodeFiscale().getId() + "&md=" + feuille.getModeleDocument().getId();
 	}
 }

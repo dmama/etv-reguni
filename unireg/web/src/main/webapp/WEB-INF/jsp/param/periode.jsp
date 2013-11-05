@@ -64,7 +64,7 @@
 
 	</tiles:put>
 	<tiles:put name="body">
-		<form method="get" id="form" action="periode.do">
+		<form method="get" id="form" action="list.do">
 		<fieldset class="information"><legend><fmt:message key="label.param.periodes"/></legend>
 			<div style="margin-top: 5px">
 				<fmt:message key="label.param.periode.select"/>:
@@ -92,7 +92,7 @@
 			<fmt:message key="label.param.periode.arg" var="titleParametres">
 				<fmt:param value="${periodeSelectionnee.annee}" />
 			</fmt:message> 
-			<a href="parametres-pf-edit.do?pf=${periodeSelectionnee.id}" class="edit" title="${titleParametres}"><fmt:message key="label.param.edit"/>&nbsp;</a>
+			<a href="pf-edit.do?pf=${periodeSelectionnee.id}" class="edit" title="${titleParametres}"><fmt:message key="label.param.edit"/>&nbsp;</a>
 		<table>
 			<tr>
 				<th></th>
@@ -160,26 +160,10 @@
 
 		</fieldset>
 		<fieldset style="margin: 10px" class="information">
-			<legend><fmt:message key="label.param.modele"/></legend> 
-			<div style="margin-top: 5px"><fmt:message key="label.param.modele.select"/>:  
-				<select name="md" id="modele">
-					<c:forEach var="modele" items="${modeles}">
-							<c:set var="selected" value=""/>
-							<c:if test="${modele.id == modeleSelectionne.id }">
-								<c:set var="selected">
-									selected="selected"
-								</c:set> 
-							</c:if>
-						<option value="${modele.id}" ${selected}>
-							<fmt:message key="option.type.document.${modele.typeDocument}"/>
-						</option>
-					</c:forEach>
-				</select>
+			<legend><fmt:message key="label.param.modele"/></legend>
+			<div class="button-add">
+				<a href="modele-add.do?pf=${periodeSelectionnee.id}" class="add" title="${titleParametres}"><fmt:message key="label.param.add"/></a>
 			</div>
-
-		<div class="button-add">
-			<a href="modele-add.do?pf=${periodeSelectionnee.id}" class="add" title="${titleParametres}"><fmt:message key="label.param.add"/></a>
-		</div>
 		<table>
 			<tr>
 				<th class="colonneModele"><fmt:message key="title.param.periode" /></th>
@@ -203,6 +187,22 @@
 			</c:forEach>
 		</table>
 		<c:if test="${not empty modeles}">
+			<div style="margin-top: 5px"><fmt:message key="label.param.modele.select"/>:
+				<select name="md" id="modele">
+					<c:forEach var="modele" items="${modeles}">
+						<c:set var="selected" value=""/>
+						<c:if test="${modele.id == modeleSelectionne.id }">
+							<c:set var="selected">
+								selected="selected"
+							</c:set>
+						</c:if>
+						<option value="${modele.id}" ${selected}>
+							<fmt:message key="option.type.document.${modele.typeDocument}"/>
+						</option>
+					</c:forEach>
+				</select>
+			</div>
+
 			<fieldset style="margin: 10px" class="information">
 				<legend><fmt:message key="title.param.modele.feuille"/></legend>
 				<table border="0">
