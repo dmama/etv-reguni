@@ -9,6 +9,7 @@
     <column>LOG_MDATE</column>
     <column>LOG_MUSER</column>
     <column>ANNEE</column>
+    <column>CODE_CTRL_SOMM_DI</column>
     <row>
       <value>3</value>
       <null/>
@@ -18,6 +19,7 @@
       <value><![CDATA[2009-07-08 17:37:37.305]]></value>
       <value>[HostMigrationMain]</value>
       <value>2000</value>
+      <value>0</value>
     </row>
     <row>
       <value>8</value>
@@ -28,6 +30,7 @@
       <value><![CDATA[2009-07-08 17:37:37.365]]></value>
       <value>[HostMigrationMain]</value>
       <value>2001</value>
+      <value>0</value>
     </row>
     <row>
       <value>13</value>
@@ -38,6 +41,7 @@
       <value><![CDATA[2009-07-08 17:37:37.431]]></value>
       <value>[HostMigrationMain]</value>
       <value>2002</value>
+      <value>0</value>
     </row>
     <row>
       <value>18</value>
@@ -48,6 +52,7 @@
       <value><![CDATA[2009-07-08 17:37:37.495]]></value>
       <value>[HostMigrationMain]</value>
       <value>2003</value>
+      <value>0</value>
     </row>
     <row>
       <value>23</value>
@@ -58,6 +63,7 @@
       <value><![CDATA[2009-07-08 17:37:37.552]]></value>
       <value>[HostMigrationMain]</value>
       <value>2004</value>
+      <value>0</value>
     </row>
     <row>
       <value>28</value>
@@ -68,6 +74,7 @@
       <value><![CDATA[2009-07-08 17:37:37.622]]></value>
       <value>[HostMigrationMain]</value>
       <value>2005</value>
+      <value>0</value>
     </row>
     <row>
       <value>33</value>
@@ -78,6 +85,7 @@
       <value><![CDATA[2009-07-08 17:37:37.684]]></value>
       <value>[HostMigrationMain]</value>
       <value>2006</value>
+      <value>0</value>
     </row>
     <row>
       <value>38</value>
@@ -88,6 +96,7 @@
       <value><![CDATA[2009-07-08 17:37:37.753]]></value>
       <value>[HostMigrationMain]</value>
       <value>2007</value>
+      <value>0</value>
     </row>
     <row>
       <value>43</value>
@@ -98,6 +107,7 @@
       <value><![CDATA[2009-07-08 17:37:37.819]]></value>
       <value>[HostMigrationMain]</value>
       <value>2008</value>
+      <value>0</value>
     </row>
     <row>
       <value>48</value>
@@ -108,6 +118,7 @@
       <value><![CDATA[2010-01-09 01:53:36.752]]></value>
       <value><![CDATA[[Batch WS]]]></value>
       <value>2009</value>
+      <value>0</value>
     </row>
     <row>
       <value>53</value>
@@ -118,6 +129,7 @@
       <value><![CDATA[2009-11-30 14:06:59.643]]></value>
       <value>zaiptf</value>
       <value>2010</value>
+      <value>0</value>
     </row>
   </table>
   <table name="PARAMETRE_PERIODE_FISCALE">

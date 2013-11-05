@@ -97,6 +97,7 @@ public class ParamPeriodeController {
 		final PeriodeFiscale periodeDemandee = pfId != null ? findPeriodById(periodes, pfId) : null;
 		final PeriodeFiscale periodeSelectionnee = periodeDemandee != null ? periodeDemandee : periodes.get(0);
 		model.addAttribute("periodeSelectionnee", periodeSelectionnee);
+		model.addAttribute("codeControleSurSommationDI", periodeSelectionnee.isShowCodeControleSommationDeclaration());
 		model.addAttribute("parametrePeriodeFiscaleVaud", manager.getVaudByPeriodeFiscale(periodeSelectionnee));
 		model.addAttribute("parametrePeriodeFiscaleDepense", manager.getDepenseByPeriodeFiscale(periodeSelectionnee));
 		model.addAttribute("parametrePeriodeFiscaleHorsCanton", manager.getHorsCantonByPeriodeFiscale(periodeSelectionnee));

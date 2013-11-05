@@ -29,6 +29,7 @@ import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.editique.EditiqueAbstractHelper;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueHelper;
@@ -261,37 +262,37 @@ public class ImpressionSommationDIHelperImpl extends EditiqueAbstractHelper impl
 		}
 
 		void ajouteSommationDI(Document document, ImpressionSommationDIHelperParams params) throws EditiqueException {
-			SommationDI sommationDI = document.addNewSommationDI();
+			final SommationDI sommationDI = document.addNewSommationDI();
 			final TypPeriode periode = sommationDI.addNewPeriode();
 			final TypeDocumentEditique typeDocumentEditique = getTypeDocumentEditique();
 			periode.setPrefixe(buildPrefixePeriode(typeDocumentEditique));
 			periode.setOrigDuplicat(ORIGINAL);
 			periode.setHorsSuisse("");
 			periode.setHorsCanton("");
-			periode.setAnneeFiscale(params.getDi().getPeriode().getAnnee().toString());
-			periode.setDateDecompte(
-					RegDateHelper.toIndexString(
-							params.getDi().getDernierEtatOfType(TypeEtatDeclaration.EMISE).getDateObtention()
-					)
-			);
+
+			final DeclarationImpotOrdinaire di = params.getDi();
+			final PeriodeFiscale pf = di.getPeriode();
+			final String pfStr = pf.getAnnee().toString();
+			periode.setAnneeFiscale(pfStr);
+			periode.setDateDecompte(RegDateHelper.toIndexString(di.getDernierEtatOfType(TypeEtatDeclaration.EMISE).getDateObtention()));
 			periode.setDatDerCalculAc("");
 			final Entete entete = periode.addNewEntete();
 			final Tit tit = entete.addNewTit();
 			tit.setPrefixe(buildPrefixeTitreEntete(typeDocumentEditique));
-			tit.setLibTit(
-					String.format(
-							"Invitation à déposer la déclaration %s - Sommation",
-							params.getDi().getPeriode().getAnnee().toString()));
+			tit.setLibTit(String.format("Invitation à déposer la déclaration %s - Sommation", pfStr));
 			final ImpCcn impCcn = entete.addNewImpCcn();
 			impCcn.setPrefixe(buildPrefixeImpCcnEntete(typeDocumentEditique));
 			impCcn.setLibImpCcn("");
 
 			final LettreSom lettreSom = sommationDI.addNewLettreSom();
-			lettreSom.setOFS(editiqueHelper.getCommune(params.getDi()));
-			final String formuleAppel = adresseService.getFormulePolitesse(params.getDi().getTiers()).formuleAppel();
+			lettreSom.setOFS(editiqueHelper.getCommune(di));
+			final String formuleAppel = adresseService.getFormulePolitesse(di.getTiers()).formuleAppel();
 			lettreSom.setCivil(formuleAppel);
-			lettreSom.setPeriodeFiscal(params.getDi().getPeriode().getAnnee().toString());
+			lettreSom.setPeriodeFiscal(pfStr);
 			lettreSom.setDateEnrg(RegDateHelper.toIndexString(params.getDateTraitement()));
+			if (pf.isShowCodeControleSommationDeclaration() && StringUtils.isNotBlank(di.getCodeControle())) {
+				lettreSom.setCodeValidation(di.getCodeControle());
+			}
 		}
 
 		void ajouteInfoArchivage(Document document, ImpressionSommationDIHelperParams params) {

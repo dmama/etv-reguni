@@ -6,6 +6,7 @@ public class ParametrePeriodeFiscaleView {
 
 	private Long idPeriodeFiscale;
 	private Integer anneePeriodeFiscale;
+	private boolean codeControleSurSommationDI;
 
 	private RegDate sommationReglementaireVaud;
 	private RegDate sommationEffectiveVaud;
@@ -161,5 +162,13 @@ public class ParametrePeriodeFiscaleView {
 
 	public void setFinEnvoiMasseDIDiplomate(RegDate finEnvoiMasseDIDiplomate) {
 		this.finEnvoiMasseDIDiplomate = finEnvoiMasseDIDiplomate;
+	}
+
+	public boolean isCodeControleSurSommationDI() {
+		return codeControleSurSommationDI;
+	}
+
+	public void setCodeControleSurSommationDI(boolean codeControleSurSommationDI) {
+		this.codeControleSurSommationDI = codeControleSurSommationDI;
 	}
 }

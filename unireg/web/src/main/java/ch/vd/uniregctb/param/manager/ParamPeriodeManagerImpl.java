@@ -138,6 +138,7 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 
 		ppfv.setIdPeriodeFiscale(pf.getId());
 		ppfv.setAnneePeriodeFiscale(pf.getAnnee());
+		ppfv.setCodeControleSurSommationDI(pf.isShowCodeControleSommationDeclaration());
 
 		ppfv.setFinEnvoiMasseDIDepense(pf.getParametrePeriodeFiscaleDepense().getDateFinEnvoiMasseDI());
 		ppfv.setFinEnvoiMasseDIDiplomate(pf.getParametrePeriodeFiscaleDiplomateSuisse().getDateFinEnvoiMasseDI());
@@ -200,6 +201,8 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 		// ATTENTION : L'ordre des elements dans les tableaux est primordiale pour le bon fonctionnement de l'algo
 
 		final PeriodeFiscale pf = periodeFiscaleDAO.get(ppfv.getIdPeriodeFiscale());
+		pf.setShowCodeControleSommationDeclaration(ppfv.isCodeControleSurSommationDI());
+
 		final ParametrePeriodeFiscale[] ppfs = new ParametrePeriodeFiscale[] {
 				pf.getParametrePeriodeFiscaleVaud(),
 				pf.getParametrePeriodeFiscaleHorsCanton(),

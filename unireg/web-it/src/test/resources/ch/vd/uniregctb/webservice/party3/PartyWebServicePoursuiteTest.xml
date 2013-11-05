@@ -895,6 +895,7 @@
     <column>LOG_MDATE</column>
     <column>LOG_MUSER</column>
     <column>ANNEE</column>
+    <column>CODE_CTRL_SOMM_DI</column>
   </table>
   <table name="PARAMETRE_PERIODE_FISCALE">
     <column>ID</column>

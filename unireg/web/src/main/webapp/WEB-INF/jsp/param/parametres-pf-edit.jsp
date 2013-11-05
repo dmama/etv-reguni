@@ -8,6 +8,9 @@
 				width: 50%;
 				text-align: center;
 			}
+			div.checkbox {
+				margin: 10px;
+			}
 		</style>
 	</tiles:put>
 
@@ -22,6 +25,14 @@
 		<form:hidden path="idPeriodeFiscale"/>
 		<fieldset>
 			<legend><fmt:message key="label.param.parametres-pf-edit" /></legend>
+
+			<div class="checkbox">
+				<c:set var="labelCheckbox">
+					<fmt:message key="label.param.code.controle.sur.sommation"/>
+				</c:set>
+				<form:checkbox path="codeControleSurSommationDI" label=" ${labelCheckbox}"/>
+			</div>
+
 			<table>
 			<tr>
 				<th></th>

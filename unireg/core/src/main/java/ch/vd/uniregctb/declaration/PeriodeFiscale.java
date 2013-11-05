@@ -28,6 +28,8 @@ public class PeriodeFiscale extends HibernateEntity {
 	private Long id;
 	private Integer annee;
 	private Set<ModeleDocument> modelesDocument;
+	private Set<ParametrePeriodeFiscale> parametrePeriodeFiscale;
+	private boolean showCodeControleSommationDeclaration = false;
 
 	@Transient
 	@Override
@@ -53,8 +55,6 @@ public class PeriodeFiscale extends HibernateEntity {
 	public void setAnnee(Integer theAnnee) {
 		annee = theAnnee;
 	}
-
-	private Set<ParametrePeriodeFiscale> parametrePeriodeFiscale;
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinColumn(name = "PERIODE_ID")
@@ -107,6 +107,15 @@ public class PeriodeFiscale extends HibernateEntity {
 			}
 		}
 		return null;
+	}
+
+	@Column(name = "CODE_CTRL_SOMM_DI", nullable = false)
+	public boolean isShowCodeControleSommationDeclaration() {
+		return showCodeControleSommationDeclaration;
+	}
+
+	public void setShowCodeControleSommationDeclaration(boolean showCodeControleSommationDeclaration) {
+		this.showCodeControleSommationDeclaration = showCodeControleSommationDeclaration;
 	}
 
 	/**

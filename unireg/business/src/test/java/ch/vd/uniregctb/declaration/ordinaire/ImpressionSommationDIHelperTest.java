@@ -38,6 +38,7 @@ import ch.vd.uniregctb.type.TypeDocument;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 public class ImpressionSommationDIHelperTest extends BusinessTest {
 
@@ -306,7 +307,64 @@ public class ImpressionSommationDIHelperTest extends BusinessTest {
 				return null;
 			}
 		});
+	}
 
+	@Test
+	public void testImpressionCodeControle() throws Exception {
 
+		final class Ids {
+			long diAvec;
+			long diSans;
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PeriodeFiscale pfSans = addPeriodeFiscale(2011);
+				pfSans.setShowCodeControleSommationDeclaration(false);
+				final ModeleDocument mdSans = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pfSans);
+
+				final PeriodeFiscale pfAvec = addPeriodeFiscale(2012);
+				pfAvec.setShowCodeControleSommationDeclaration(true);
+				final ModeleDocument mdAvec = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pfAvec);
+
+				final PersonnePhysique pp = addNonHabitant("Gudule", "Tsichorée", date(1979, 8, 25), Sexe.FEMININ);
+				addForPrincipal(pp, date(2011, 1, 1), MotifFor.ARRIVEE_HS, date(2012, 12, 31), MotifFor.DEPART_HS, MockCommune.Vevey);
+				final DeclarationImpotOrdinaire diSans = addDeclarationImpot(pp, pfSans, date(2011, 1, 1), date(2011, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, mdSans);
+				diSans.setCodeControle("F31823");
+				addEtatDeclarationEmise(diSans, date(2012, 1, 20));
+				final DeclarationImpotOrdinaire diAvec = addDeclarationImpot(pp, pfAvec, date(2012, 1, 1), date(2012, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, mdAvec);
+				diAvec.setCodeControle("J75397");
+				addEtatDeclarationEmise(diAvec, date(2013, 1, 18));
+
+				final Ids ids = new Ids();
+				ids.diAvec = diAvec.getId();
+				ids.diSans = diSans.getId();
+				return ids;
+			}
+		});
+
+		// test de construction des données des sommations à envoyer à l'éditique
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				// di 2011 -> sans code de contrôle sur la sommation
+				{
+					final DeclarationImpotOrdinaire di = hibernateTemplate.get(DeclarationImpotOrdinaire.class, ids.diSans);
+					final ImpressionSommationDIHelperParams params = ImpressionSommationDIHelperParams.createBatchParams(di, false, RegDate.get());
+					final FichierImpressionDocument doc = impressionSommationDIHelper.remplitSommationDI(params);
+					assertNull(doc.getFichierImpression().getDocumentArray(0).getSommationDI().getLettreSom().getCodeValidation());
+				}
+				// di 2012 -> avec code de contrôle sur la sommation
+				{
+					final DeclarationImpotOrdinaire di = hibernateTemplate.get(DeclarationImpotOrdinaire.class, ids.diAvec);
+					final ImpressionSommationDIHelperParams params = ImpressionSommationDIHelperParams.createBatchParams(di, false, RegDate.get());
+					final FichierImpressionDocument doc = impressionSommationDIHelper.remplitSommationDI(params);
+					assertEquals("J75397", doc.getFichierImpression().getDocumentArray(0).getSommationDI().getLettreSom().getCodeValidation());
+				}
+				return null;
+			}
+		});
 	}
 }

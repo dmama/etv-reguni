@@ -147,6 +147,7 @@
     <column>LOG_MDATE</column>
     <column>LOG_MUSER</column>
     <column>ANNEE</column>
+    <column>CODE_CTRL_SOMM_DI</column>
     <row>
       <value>6</value>
       <null/>
@@ -156,6 +157,7 @@
       <value><![CDATA[2008-12-23 09:24:18.302]]></value>
       <value><![CDATA[[UT] DeclarationImpotServiceTest]]></value>
       <value>2007</value>
+      <value>0</value>
     </row>
   </table>
   <table name="PARAMETRE_PERIODE_FISCALE">

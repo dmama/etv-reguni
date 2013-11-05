@@ -14,16 +14,16 @@
 		<fmt:message key="label.param.confirm.init" var="confirmInit"/>
 		<fmt:message key="label.param.confirm.suppr" var="confirmSuppr"/>
 		<style type="text/css">
-			.select-maitre, a.edit, div.button-add {
-				margin: 10px
+			a.edit, div.button-add, div.checkbox {
+				margin: 10px;
 			}
 			.information {
-				width: auto
+				width: auto;
 			}
-			div.button-add {
-				/*float: right*/
+			div.checkbox {
+				float: right;
 			}
-			
+
 			.colonneModele{
 				width: 25%;
 			} 
@@ -93,6 +93,12 @@
 				<fmt:param value="${periodeSelectionnee.annee}" />
 			</fmt:message> 
 			<a href="pf-edit.do?pf=${periodeSelectionnee.id}" class="edit" title="${titleParametres}"><fmt:message key="label.param.edit"/>&nbsp;</a>
+
+			<div class="checkbox">
+				<input type="checkbox" disabled="disabled" <c:if test="${codeControleSurSommationDI}">checked</c:if>/>
+				<fmt:message key="label.param.code.controle.sur.sommation"/>
+			</div>
+
 		<table>
 			<tr>
 				<th></th>
