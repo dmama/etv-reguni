@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
@@ -1741,6 +1742,177 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 				}
 
 				return null;
+			}
+		});
+	}
+
+	/**
+	 * C'est le cas du SIFISC-10334 : on avait deux rapports qui se chevauchaient et la réception d'une "sortie" -> modification des rapports existants et chevauchement conservé...
+	 */
+	@Test
+	public void testFermetureSurChevauchementSansEnglobant() throws Exception {
+
+		final long noIndividuSourcier = 478267L;
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				addIndividu(noIndividuSourcier, date(1965, 9, 17), "O'Hara", "Starlett", Sexe.FEMININ);
+			}
+		});
+
+		final class Ids {
+			long pp;
+			long dpi;
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique sourcier = addHabitant(noIndividuSourcier);
+				addForPrincipal(sourcier, date(2009, 6, 1), MotifFor.ARRIVEE_HS, MockCommune.Aigle, ModeImposition.SOURCE);
+
+				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+				addForDebiteur(dpi, date(2009, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Lausanne);
+				addRapportPrestationImposable(dpi, sourcier, date(2009, 6, 1), date(2012, 12, 31), false);
+				addRapportPrestationImposable(dpi, sourcier, date(2012, 1, 1), date(2013, 5, 10), false);
+
+				final Ids ids = new Ids();
+				ids.pp = sourcier.getNumero();
+				ids.dpi = dpi.getNumero();
+				return ids;
+			}
+		});
+
+		final MiseAJourRapportTravailRequest req = createMiseAJourRapportTravailRequest(ids.dpi, ids.pp, new DateRangeHelper.Range(date(2013, 5, 1), date(2013, 5, 31)), date(2013, 5, 1), date(2013, 5, 31));
+		req.setFinRapportTravail(new FinRapportTravail(FinRapportTravailType.SORTIE, DataHelper.coreToXML(date(2013, 5, 15))));
+
+		final MiseAJourRapportTravailResponse response =  doInNewTransaction(new TxCallback<MiseAJourRapportTravailResponse>() {
+			@Override
+			public MiseAJourRapportTravailResponse execute(TransactionStatus status) throws Exception {
+				return handler.handle(MiseAjourRapportTravail.get(req, null));
+			}
+		});
+		assertEquals(DataHelper.coreToXML(RegDate.get()), response.getDatePriseEnCompte());
+		assertNull(response.getExceptionInfo());
+
+		// vérification des rapports au final -> les deux existants doivent avoir été annulés et remplacé par leur fusion, sans autre modification
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(ids.dpi);
+				final PersonnePhysique sourcier = (PersonnePhysique) tiersDAO.get(ids.pp);
+
+				final List<RapportPrestationImposable> rapports = tiersService.getAllRapportPrestationImposable(dpi, sourcier, false, true);
+				assertNotNull(rapports);
+				assertEquals(3, rapports.size());
+
+				Collections.sort(rapports, new DateRangeComparator<RapportPrestationImposable>());
+				{
+					final RapportPrestationImposable rapport = rapports.get(0);
+					assertNotNull(rapport);
+					assertEquals(date(2009, 6, 1), rapport.getDateDebut());
+					assertEquals(date(2012, 12, 31), rapport.getDateFin());
+					assertTrue(rapport.isAnnule());
+				}
+				{
+					final RapportPrestationImposable rapport = rapports.get(1);
+					assertNotNull(rapport);
+					assertEquals(date(2009, 6, 1), rapport.getDateDebut());
+					assertEquals(date(2013, 5, 10), rapport.getDateFin());
+					assertFalse(rapport.isAnnule());
+				}
+				{
+					final RapportPrestationImposable rapport = rapports.get(2);
+					assertNotNull(rapport);
+					assertEquals(date(2012, 1, 1), rapport.getDateDebut());
+					assertEquals(date(2013, 5, 10), rapport.getDateFin());
+					assertTrue(rapport.isAnnule());
+				}
+			}
+		});
+	}
+
+	/**
+	 * C'est un cas dérivé du SIFISC-10334 : on avait deux rapports qui se chevauchaient et la réception d'une "sortie" -> modification des rapports existants et chevauchement conservé...
+	 */
+	@Test
+	public void testFermetureSurChevauchementAvecEnglobant() throws Exception {
+
+		final long noIndividuSourcier = 478267L;
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				addIndividu(noIndividuSourcier, date(1965, 9, 17), "O'Hara", "Starlett", Sexe.FEMININ);
+			}
+		});
+
+		final class Ids {
+			long pp;
+			long dpi;
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique sourcier = addHabitant(noIndividuSourcier);
+				addForPrincipal(sourcier, date(2009, 6, 1), MotifFor.ARRIVEE_HS, MockCommune.Aigle, ModeImposition.SOURCE);
+
+				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+				addForDebiteur(dpi, date(2009, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Lausanne);
+				addRapportPrestationImposable(dpi, sourcier, date(2009, 6, 1), date(2013, 5, 10), false);
+				addRapportPrestationImposable(dpi, sourcier, date(2012, 1, 1), date(2013, 5, 10), false);
+
+				final Ids ids = new Ids();
+				ids.pp = sourcier.getNumero();
+				ids.dpi = dpi.getNumero();
+				return ids;
+			}
+		});
+
+		final MiseAJourRapportTravailRequest req = createMiseAJourRapportTravailRequest(ids.dpi, ids.pp, new DateRangeHelper.Range(date(2013, 5, 1), date(2013, 5, 31)), date(2013, 5, 1), date(2013, 5, 31));
+		req.setFinRapportTravail(new FinRapportTravail(FinRapportTravailType.SORTIE, DataHelper.coreToXML(date(2013, 5, 15))));
+
+		final MiseAJourRapportTravailResponse response =  doInNewTransaction(new TxCallback<MiseAJourRapportTravailResponse>() {
+			@Override
+			public MiseAJourRapportTravailResponse execute(TransactionStatus status) throws Exception {
+				return handler.handle(MiseAjourRapportTravail.get(req, null));
+			}
+		});
+		assertEquals(DataHelper.coreToXML(RegDate.get()), response.getDatePriseEnCompte());
+		assertNull(response.getExceptionInfo());
+
+		// vérification des rapports au final -> les deux existants doivent avoir été annulés et remplacé par leur fusion, sans autre modification
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(ids.dpi);
+				final PersonnePhysique sourcier = (PersonnePhysique) tiersDAO.get(ids.pp);
+
+				final List<RapportPrestationImposable> rapports = tiersService.getAllRapportPrestationImposable(dpi, sourcier, false, true);
+				assertNotNull(rapports);
+				assertEquals(2, rapports.size());
+
+				Collections.sort(rapports, new DateRangeComparator<RapportPrestationImposable>());
+				{
+					final RapportPrestationImposable rapport = rapports.get(0);
+					assertNotNull(rapport);
+					assertEquals(date(2009, 6, 1), rapport.getDateDebut());
+					assertEquals(date(2013, 5, 10), rapport.getDateFin());
+					assertFalse(rapport.isAnnule());
+				}
+				{
+					final RapportPrestationImposable rapport = rapports.get(1);
+					assertNotNull(rapport);
+					assertEquals(date(2012, 1, 1), rapport.getDateDebut());
+					assertEquals(date(2013, 5, 10), rapport.getDateFin());
+					assertTrue(rapport.isAnnule());
+				}
 			}
 		});
 	}

@@ -100,13 +100,46 @@ public class CollectionsUtils extends CollectionUtils {
 
 			@Override
 			public void remove() {
-				iter.remove();
+				throw new UnsupportedOperationException();
 			}
 		};
 		return new Iterable<T>() {
 			@Override
 			public Iterator<T> iterator() {
 				return revertedIterator;
+			}
+		};
+	}
+
+	/**
+	 * @param first première liste présentée
+	 * @param second seconde liste présentée
+	 * @param <T> type des éléments des collections
+	 * @return itérable sur une liste virtuelle vue comme la composition des deux listes données
+	 */
+	public static <T> Iterable<T> merged(List<T> first, List<T> second) {
+		final Iterator<T> iterFirst = first.iterator();
+		final Iterator<T> iterSecond = second.iterator();
+		final Iterator<T> merged = new Iterator<T>() {
+			@Override
+			public boolean hasNext() {
+				return iterFirst.hasNext() || iterSecond.hasNext();
+			}
+
+			@Override
+			public T next() {
+				return iterFirst.hasNext() ? iterFirst.next() : iterSecond.next();
+			}
+
+			@Override
+			public void remove() {
+				throw new UnsupportedOperationException();
+			}
+		};
+		return new Iterable<T>() {
+			@Override
+			public Iterator<T> iterator() {
+				return merged;
 			}
 		};
 	}

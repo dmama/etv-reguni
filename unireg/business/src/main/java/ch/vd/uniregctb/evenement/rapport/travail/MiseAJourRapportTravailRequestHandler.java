@@ -11,12 +11,14 @@ import org.springframework.core.io.ClassPathResource;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.unireg.xml.event.rt.response.v1.MiseAJourRapportTravailResponse;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
+import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
@@ -59,19 +61,23 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 		validateDebiteur(dpi, periodeDeclaration);
 
 		final PersonnePhysique sourcier = getSourcier(request);
-
-
-		//On retrouve le rapport a modifier.
-		annulerRapportMultiple(dpi,sourcier);
-		final List<RapportPrestationImposable> rapportsAModifier = findRapportPrestationImposable(dpi,sourcier);
+		annulerRapportMultiple(dpi, sourcier);
+		final List<RapportPrestationImposable> rapportsAModifier = findRapportsPrestationImposableNonAnnules(dpi, sourcier);
 		final List<RapportPrestationImposable> nouveauxRapports = new ArrayList<>();
 
 		if (rapportsAModifier == null || rapportsAModifier.isEmpty()) {
 			handleRapportPrestationInexistant(dpi, sourcier, request, nouveauxRapports);
 		}
 		else {
-			for (RapportPrestationImposable rapportAModifier : rapportsAModifier) {
-				handleRapportPrestationExistant(dpi, sourcier, rapportAModifier, request, nouveauxRapports);
+			// premier cleanup pour éliminer les chevauchements pré-existants
+			cleanupChevauchements(dpi, sourcier, rapportsAModifier, nouveauxRapports);
+
+			final ArrayList<RapportPrestationImposable> nouveauxJusquici = new ArrayList<>(nouveauxRapports);
+			for (RapportPrestationImposable rapportAModifier : CollectionsUtils.merged(rapportsAModifier, nouveauxJusquici)) {
+				// attention ! un rapport pré-existant a pu être annulé dans le cleanup des chevauchements...
+				if (!rapportAModifier.isAnnule()) {
+					handleRapportPrestationExistant(dpi, sourcier, rapportAModifier, request, nouveauxRapports);
+				}
 			}
 		}
 
@@ -87,13 +93,86 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 		return createResponse(request);
 	}
 
+	private static void cleanupChevauchements(DebiteurPrestationImposable dpi, PersonnePhysique sourcier,
+	                                          List<RapportPrestationImposable> anciensRapports,
+	                                          List<RapportPrestationImposable> nouveauRapports) {
+
+		// il faut d'abord constituer des groupes
+		// -> si on trie les anciens rapports selon leur date de début, et qu'on les prend en compte dans cet ordre, on peut être certain
+		// qu'on ne devra pas fusionner des groupes (si un élément n'intersecte pas un groupe déjà formé, l'élément suivant ne pourra pas non-plus
+		// intersecter l'un de ces groupes)
+		final List<RapportPrestationImposable> listeTriee = new ArrayList<>(anciensRapports);
+		Collections.sort(listeTriee, new DateRangeComparator<RapportPrestationImposable>());
+
+		// constitution des groupes
+		final List<List<RapportPrestationImposable>> groupes = new ArrayList<>(anciensRapports.size());
+		List<RapportPrestationImposable> groupeCourant = null;
+		for (RapportPrestationImposable elt : listeTriee) {
+			if (groupeCourant == null || !DateRangeHelper.intersect(elt, groupeCourant)) {
+				groupeCourant = new ArrayList<>(anciensRapports.size());
+				groupes.add(groupeCourant);
+			}
+			groupeCourant.add(elt);
+		}
+
+		// si autant de groupes que de rapports initiaux, il n'y a pas de chevauchement, on peut s'arrêter là
+		if (groupes.size() != anciensRapports.size()) {
+			for (List<RapportPrestationImposable> groupe : groupes) {
+				// on ne s'intéresse bien-sûr qu'aux groupes qui contiennent plusieurs éléments...
+				if (groupe.size() > 1) {
+					// si on trouve un élément qui englobe tous les autres, on le prend et on élimine tous les autres
+					// sinon, on élimine tout le monde et on crée un nouveau qui englobe tout
+					boolean first = true;
+					RegDate min = null;
+					RegDate max = null;
+					for (RapportPrestationImposable elt : groupe) {
+						if (first) {
+							min = elt.getDateDebut();
+							max = elt.getDateFin();
+							first = false;
+						}
+						else {
+							min = RegDateHelper.minimum(min, elt.getDateDebut(), NullDateBehavior.EARLIEST);
+							max = RegDateHelper.maximum(max, elt.getDateFin(), NullDateBehavior.LATEST);
+						}
+					}
+
+					// nouveau tour pour savoir si un élément englobe le tout
+					RapportPrestationImposable master = null;
+					for (RapportPrestationImposable elt : groupe) {
+						if (elt.getDateDebut() == min && elt.getDateFin() == max) {
+							// trouvé
+							master = elt;
+							break;
+						}
+					}
+
+					// on annule tous les rapports qui ne sont pas l'englobant
+					for (RapportPrestationImposable elt : groupe) {
+						if (elt != master) {
+							elt.setAnnule(true);
+							LOGGER.info(String.format("Nettoyage des chevauchements initiaux : annulation du rapport sur la période %s",
+							                          DateRangeHelper.toDisplayString(elt)));
+						}
+					}
+
+					// si on n'a pas d'englobant, il faut en créer un
+					if (master == null) {
+						LOGGER.info(String.format("Nettoyage des chevauchements initiaux : création d'un rapport consolidé sur la période %s", DateRangeHelper.toDisplayString(min, max)));
+						nouveauRapports.add(new RapportPrestationImposable(min, max, sourcier, dpi));
+					}
+				}
+			}
+		}
+	}
+
 	private void addNewRapport(DebiteurPrestationImposable dpi, PersonnePhysique sourcier, List<RapportPrestationImposable> nouveauxRapports) {
 		for (RapportPrestationImposable nouveauxRapport : nouveauxRapports) {
 			tiersService.addRapportPrestationImposable(sourcier, dpi, nouveauxRapport.getDateDebut(), nouveauxRapport.getDateFin());
 		}
 	}
 
-	List<RapportPrestationImposable> getRapportPrestation(DebiteurPrestationImposable dpi, PersonnePhysique sourcier) {
+	private static List<RapportPrestationImposable> getRapportPrestation(DebiteurPrestationImposable dpi, PersonnePhysique sourcier) {
 		final List<RapportPrestationImposable> rapports = new ArrayList<>();
 		for (RapportEntreTiers rapportEntreTiers : dpi.getRapportsObjet()) {
 			if (rapportEntreTiers instanceof RapportPrestationImposable && rapportEntreTiers.getSujetId().equals(sourcier.getId()) && !rapportEntreTiers.isAnnule()) {
@@ -519,19 +598,15 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 		}
 	}
 
-
 	/**
-	 * Trouve le rapport de Travail qui est concerné par la période de déclaration
-	 *
+	 * Trouve les rapports de travail entre le débiteur et le sourcier considérés
 	 * @param dpi      un débiteur
 	 * @param sourcier le sourcier
-	 * @return le premier rapport de travail qui est concerne par la période de déclaration
+	 * @return tous les rapports de travail non-annulés entre ces deux-là
 	 */
-	private List<RapportPrestationImposable> findRapportPrestationImposable(DebiteurPrestationImposable dpi, PersonnePhysique sourcier) {
-		List<RapportPrestationImposable> listeRapport = tiersService.getAllRapportPrestationImposable(dpi, sourcier, true, true);
-		return listeRapport;
+	private List<RapportPrestationImposable> findRapportsPrestationImposableNonAnnules(DebiteurPrestationImposable dpi, PersonnePhysique sourcier) {
+		return tiersService.getAllRapportPrestationImposable(dpi, sourcier, true, true);
 	}
-
 
 	@Override
 	public ClassPathResource getRequestXSD() {
@@ -648,7 +723,7 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 	 */
 	private void annulerRapportMultiple(DebiteurPrestationImposable dpi, PersonnePhysique sourcier) {
 
-		final List<RapportPrestationImposable> rapportsAModifier = findRapportPrestationImposable(dpi, sourcier);
+		final List<RapportPrestationImposable> rapportsAModifier = findRapportsPrestationImposableNonAnnules(dpi, sourcier);
 		final List<RapportPrestationImposable> rapportMultiples = new ArrayList<>();
 		final List<RapportPrestationImposable> rapportsOuverts = new ArrayList<>();
 		for (RapportPrestationImposable rapportAModifier : rapportsAModifier) {
