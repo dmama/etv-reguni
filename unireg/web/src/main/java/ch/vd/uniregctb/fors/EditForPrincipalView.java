@@ -57,6 +57,11 @@ public class EditForPrincipalView implements EditForRevenuFortuneView {
 	}
 
 	@Override
+	public boolean isDateFinFutureAutorisee() {
+		return false;
+	}
+
+	@Override
 	public long getId() {
 		return id;
 	}

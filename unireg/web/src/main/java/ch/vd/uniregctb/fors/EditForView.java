@@ -16,4 +16,6 @@ public interface EditForView {
 	TypeAutoriteFiscale getTypeAutoriteFiscale();
 
 	Integer getNoAutoriteFiscale();
+
+	boolean isDateFinFutureAutorisee();
 }

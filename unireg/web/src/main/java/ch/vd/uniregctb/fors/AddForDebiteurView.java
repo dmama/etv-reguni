@@ -27,6 +27,11 @@ public class AddForDebiteurView implements AddForAvecMotifsView {
 	}
 
 	@Override
+	public boolean isDateFinFutureAutorisee() {
+		return true;
+	}
+
+	@Override
 	public Long getId() {
 		return id;
 	}

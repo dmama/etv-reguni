@@ -277,4 +277,80 @@ public class ForDebiteurPrestationImposableValidatorTest extends AbstractValidat
 			}
 		}
 	}
+
+	@Test
+	public void testFermetureDansLeFutur() throws Exception {
+		final ForDebiteurPrestationImposable ff = new ForDebiteurPrestationImposable();
+		ff.setDateDebut(date(2009, 1, 1));
+		ff.setMotifOuverture(MotifFor.INDETERMINE);
+		ff.setGenreImpot(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE);
+		ff.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+		ff.setNumeroOfsAutoriteFiscale(MockCommune.Aigle.getNoOFS());
+
+		final RegDate today = RegDate.get();
+		final RegDate finAnneeCourante = date(today.year(), 12, 31);
+		final RegDate finAnneProchaine = date(today.year() + 1, 12, 31);
+
+		// for ouuvert -> tout va bien
+		{
+			final ValidationResults vr = validate(ff);
+			assertFalse(vr.hasErrors());
+		}
+
+		// for fermé à demain non 31.12 -> non ! (on ne fait pas ce test le 30.12...)
+		if (today.month() != 12 || today.day() != 31) {
+			final RegDate dateFermeture = today.addDays(1);
+			ff.setDateFin(dateFermeture);
+			ff.setMotifFermeture(MotifFor.FIN_PRESTATION_IS);
+			final ValidationResults vr = validate(ff);
+			assertTrue(vr.hasErrors());
+
+			final List<String> errors = vr.getErrors();
+			assertEquals(1, errors.size());
+
+			final String error = errors.get(0);
+			assertEquals("Une date de fin dans le futur ne peut être que le 31.12 de l'année courante.", error);
+		}
+
+		// for fermé au 31.12 de l'année prochaine -> ko
+		{
+			ff.setDateFin(finAnneProchaine);
+			ff.setMotifFermeture(MotifFor.FIN_PRESTATION_IS);
+			final ValidationResults vr = validate(ff);
+			assertTrue(vr.hasErrors());
+
+			final List<String> errors = vr.getErrors();
+			assertEquals(1, errors.size());
+
+			final String error = errors.get(0);
+			assertEquals("Une date de fin dans le futur ne peut être que le 31.12 de l'année courante.", error);
+		}
+
+		// for fermé au 31.12 de cette année -> ok
+		{
+			ff.setDateFin(finAnneeCourante);
+			ff.setMotifFermeture(MotifFor.FIN_PRESTATION_IS);
+			final ValidationResults vr = validate(ff);
+			assertFalse(vr.hasErrors());
+		}
+
+		// for fermé au 31.12 de cette année avec mauvais motif -> ok (si on n'est pas dans le futur) ou pas (si on l'est)
+		{
+			ff.setDateFin(finAnneeCourante);
+			ff.setMotifFermeture(MotifFor.CESSATION_ACTIVITE_FUSION_FAILLITE);
+			final ValidationResults vr = validate(ff);
+			if (today == finAnneeCourante) {
+				assertFalse(vr.hasErrors());
+			}
+			else {
+				assertTrue(vr.hasErrors());
+
+				final List<String> errors = vr.getErrors();
+				assertEquals(1, errors.size());
+
+				final String error = errors.get(0);
+				assertEquals("Seul le motif '" + MotifFor.FIN_PRESTATION_IS.getDescription(false) + "' est autorisé pour une fermeture dans le futur.", error);
+			}
+		}
+	}
 }

@@ -29,6 +29,11 @@ public class AddForSecondaireView implements AddForRevenuFortuneView {
 	}
 
 	@Override
+	public boolean isDateFinFutureAutorisee() {
+		return false;
+	}
+
+	@Override
 	public Long getId() {
 		return id;
 	}

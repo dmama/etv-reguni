@@ -70,9 +70,17 @@ public abstract class ForFiscalValidator<T extends ForFiscal> extends EntityVali
 		return futureBeginDateAccessors.get();
 	}
 
-	private static RegDate getFutureBeginDate() {
+	protected static RegDate getFutureBeginDate() {
 		final ReferenceDateAccessor accessor = getFutureBeginDateAccessor();
 		return accessor.getReferenceDate();
+	}
+
+	/**
+	 * [SIFISC-10141] Certains fors fiscaux (sur les DIS) peuvent avoir des dates de fermeture dans le futur
+	 * @return <code>false</code> par défaut, surchargeable
+	 */
+	protected boolean isDateFermetureFutureAllowed() {
+		return false;
 	}
 
 	@Override
@@ -97,7 +105,7 @@ public abstract class ForFiscalValidator<T extends ForFiscal> extends EntityVali
 			// la date de début d'un for ne doit en aucun cas être dans le futur !
 			results.addError(String.format("La date de début du for %s est dans le futur", ff));
 		}
-		if (dateFin != null && dateFin.isAfter(getFutureBeginDate())) {
+		if (dateFin != null && !isDateFermetureFutureAllowed() && dateFin.isAfter(getFutureBeginDate())) {
 			// la date de fin non plus, ne doit jamais être dans le futur !
 			results.addError(String.format("La date de fin du for %s est dans le futur", ff));
 		}

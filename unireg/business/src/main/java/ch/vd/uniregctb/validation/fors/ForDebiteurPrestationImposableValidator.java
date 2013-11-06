@@ -24,6 +24,15 @@ public class ForDebiteurPrestationImposableValidator extends ForFiscalAvecMotifs
 		return ForDebiteurPrestationImposable.class;
 	}
 
+	/**
+	 * [SIFISC-10141] les fors DPI peuvent avoir des dates de fermeture dans le futur
+	 * @return <code>true</code>
+	 */
+	@Override
+	protected boolean isDateFermetureFutureAllowed() {
+		return true;
+	}
+
 	@Override
 	public ValidationResults validate(ForDebiteurPrestationImposable ff) {
 		final ValidationResults vr = super.validate(ff);
@@ -55,7 +64,19 @@ public class ForDebiteurPrestationImposableValidator extends ForFiscalAvecMotifs
 				vr.addError("Les fors ouverts avec le motif '" + ff.getMotifOuverture().getDescription(true) + "' doivent commencer un premier jour du mois.");
 			}
 
-			if (ff.getDateFin() != null) {
+			if (ff.getDateFin() != null && ff.getDateFin().isAfter(getFutureBeginDate())) {
+				// [SIFISC-10141] si la date de fin est dans le futur :
+				//  - seul le 31.12 courant est autorisé
+				//  - seul le motif FIN_PRESTATION_IS est autorisé
+				final RegDate allowed = RegDate.get(getFutureBeginDate().year(), 12, 31);
+				if (ff.getDateFin() != allowed) {
+					vr.addError("Une date de fin dans le futur ne peut être que le 31.12 de l'année courante.");
+				}
+				if (ff.getMotifFermeture() != MotifFor.FIN_PRESTATION_IS) {
+					vr.addError("Seul le motif '" + MotifFor.FIN_PRESTATION_IS.getDescription(false) + "' est autorisé pour une fermeture dans le futur.");
+				}
+			}
+			else if (ff.getDateFin() != null) {
 				// [SIFISC-8712] le motif de fermeture est obligatoire si le for est fermé
 				if (ff.getMotifFermeture() == null) {
 					vr.addError("Le motif de fermeture est une donnée obligatoire sur les fors fiscaux 'débiteur prestation imposable' fermés.");

@@ -21,6 +21,11 @@ public class AddForAutreImpotView implements AddForView {
 	}
 
 	@Override
+	public boolean isDateFinFutureAutorisee() {
+		return false;
+	}
+
+	@Override
 	public Long getId() {
 		return id;
 	}

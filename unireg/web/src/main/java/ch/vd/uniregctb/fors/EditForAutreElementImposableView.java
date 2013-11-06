@@ -44,6 +44,11 @@ public class EditForAutreElementImposableView implements EditForRevenuFortuneVie
 	}
 
 	@Override
+	public boolean isDateFinFutureAutorisee() {
+		return false;
+	}
+
+	@Override
 	public long getId() {
 		return id;
 	}

@@ -14,7 +14,7 @@ public abstract class EditForValidator implements Validator {
 		final RegDate dateDebut = view.getDateDebut();
 		final RegDate dateFin = view.getDateFin();
 		if (dateFin != null) {
-			if (RegDate.get().isBefore(dateFin)) {
+			if (RegDate.get().isBefore(dateFin) && !view.isDateFinFutureAutorisee()) {
 				errors.rejectValue("dateFin", "error.date.fin.dans.futur");
 			}
 			else if (dateDebut != null && dateFin.isBefore(dateDebut)) {

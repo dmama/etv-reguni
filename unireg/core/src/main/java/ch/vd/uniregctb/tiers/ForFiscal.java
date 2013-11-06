@@ -137,7 +137,7 @@ public abstract class ForFiscal extends HibernateEntity implements Comparable<Fo
 	}
 
 	/**
-	 * @param id
+	 * @param theId
 	 *            the id to set
 	 */
 	public void setId(Long theId) {
@@ -164,7 +164,7 @@ public abstract class ForFiscal extends HibernateEntity implements Comparable<Fo
 	 * <!-- begin-user-doc -->
 	 * La date d'ouverture du for fiscal.
 	 * <!-- end-user-doc -->
-	 * @param theDateOuverture the dateOuverture to set
+	 * @param date the dateOuverture to set
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8x1x9Edygsbnw9h5bVw?SETTER"
 	 */
 	public void setDateDebut(RegDate date) {
@@ -193,7 +193,7 @@ public abstract class ForFiscal extends HibernateEntity implements Comparable<Fo
 	 * <!-- begin-user-doc -->
 	 * La date de fermeture du for fiscal.
 	 * <!-- end-user-doc -->
-	 * @param theDateFermeture the dateFermeture to set
+	 * @param date the dateFermeture to set
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8yVx9Edygsbnw9h5bVw?SETTER"
 	 */
 	public void setDateFin(@Nullable RegDate date) {
@@ -315,11 +315,12 @@ public abstract class ForFiscal extends HibernateEntity implements Comparable<Fo
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * En cas de date nulle, vérifie la validité du for <b>à la date du jour</b> (et pas le fait que le for n'a pas de date de fin)
+	 * @see DateRange#isValidAt(ch.vd.registre.base.date.RegDate)
 	 */
 	@Override
 	public boolean isValidAt(@Nullable RegDate date) {
-		return !isAnnule() && RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
+		return !isAnnule() && RegDateHelper.isBetween(date == null ? RegDate.get() : date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
 
 	protected void dumpForDebug(int nbTabs) {

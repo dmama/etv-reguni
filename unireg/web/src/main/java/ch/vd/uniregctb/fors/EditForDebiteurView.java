@@ -55,6 +55,11 @@ public class EditForDebiteurView implements EditForAvecMotifsView {
 	}
 
 	@Override
+	public boolean isDateFinFutureAutorisee() {
+		return true;
+	}
+
+	@Override
 	public long getId() {
 		return id;
 	}
