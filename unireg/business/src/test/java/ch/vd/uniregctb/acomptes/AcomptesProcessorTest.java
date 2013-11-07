@@ -1,6 +1,8 @@
 package ch.vd.uniregctb.acomptes;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -541,5 +543,72 @@ public class AcomptesProcessorTest extends BusinessTest {
 		Assert.assertNotNull(icc);
 		Assert.assertEquals((Integer) MockCommune.Aubonne.getNoOFS(), icc.noOfsForGestion);
 		Assert.assertEquals((Integer) MockCommune.Aubonne.getNoOFS(), icc.noOfsForPrincipal);
+	}
+
+	/**
+	 * Cas soulevé par M. Rime du Data Warehouse ACI : contribuable VD parti HS dans l'année précédent les acomptes... Il n'apparaît bien-évidemment pas dans
+	 * la partie ICC (plus là en fin d'année), ni dans la partie IFD (pareil), mais il devrait être dans la liste des ignorés, non ?
+	 */
+	@Test
+	public void testDepartHSEnCoursAnnee() throws Exception {
+
+		final int anneeAcomptes = 2011;
+		final RegDate dateDepart = date(anneeAcomptes - 1, 8, 24);
+
+		serviceCivil.setUp(new DefaultMockServiceCivil() {
+			@Override
+			protected void init() {
+			}
+		});
+
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				// départ HS dans l'année n-1
+				final PersonnePhysique pp = addNonHabitant("Carole", "Luciole", date(1985, 8, 1), Sexe.FEMININ);
+				addForPrincipal(pp, date(2005, 5, 12), MotifFor.ARRIVEE_HS, dateDepart, MotifFor.DEPART_HS, MockCommune.Aigle);
+				addForPrincipal(pp, dateDepart.getOneDayAfter(), MotifFor.DEPART_HS, MockPays.Espagne);
+				return pp.getNumero();
+			}
+		});
+
+		final AcomptesResults results = processor.run(RegDate.get(), 1, anneeAcomptes, null);
+		Assert.assertNotNull(results);
+
+		final List<AcomptesResults.InfoContribuableAssujetti> assujettis = results.getListeContribuablesAssujettis();
+		Assert.assertNotNull(assujettis);
+		Assert.assertEquals(0, assujettis.size());
+
+		final List<AcomptesResults.InfoContribuableIgnore> ignores = results.getContribuablesIgnores();
+		Assert.assertNotNull(ignores);
+		Assert.assertEquals(2, ignores.size());
+
+		// vérification des résultats pour le contribuable ignoré
+		final List<AcomptesResults.InfoContribuableIgnore> ignoresTries = new ArrayList<>(ignores);
+		Collections.sort(ignoresTries, new Comparator<AcomptesResults.InfoContribuableIgnore>() {
+			@Override
+			public int compare(AcomptesResults.InfoContribuableIgnore o1, AcomptesResults.InfoContribuableIgnore o2) {
+				int compare = Long.compare(o1.getNumeroCtb(), o2.getNumeroCtb());
+				if (compare == 0) {
+					compare = o1.getAnneeFiscale() - o2.getAnneeFiscale();
+				}
+				return compare;
+			}
+		});
+
+		{
+			final AcomptesResults.InfoContribuableIgnore info = ignoresTries.get(0);
+			Assert.assertNotNull(info);
+			Assert.assertEquals(AcomptesResults.InfoContribuableNonAssujetti.class, info.getClass());
+			Assert.assertEquals(ppId, info.getNumeroCtb());
+			Assert.assertEquals(anneeAcomptes - 1, info.getAnneeFiscale());
+		}
+		{
+			final AcomptesResults.InfoContribuableIgnore info = ignoresTries.get(1);
+			Assert.assertNotNull(info);
+			Assert.assertEquals(AcomptesResults.InfoContribuableNonAssujetti.class, info.getClass());
+			Assert.assertEquals(ppId, info.getNumeroCtb());
+			Assert.assertEquals(anneeAcomptes, info.getAnneeFiscale());
+		}
 	}
 }

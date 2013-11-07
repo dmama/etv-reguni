@@ -298,6 +298,7 @@ public class AcomptesResults extends ListesResults<AcomptesResults> {
 			}
 		}
 		else {
+			addContribuableIgnorePasAssujetti(ctb, anneeFiscale);
 			return null;
 		}
 
