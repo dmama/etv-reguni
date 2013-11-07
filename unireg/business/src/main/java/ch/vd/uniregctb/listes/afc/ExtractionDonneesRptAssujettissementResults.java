@@ -144,7 +144,7 @@ public abstract class ExtractionDonneesRptAssujettissementResults extends Extrac
 	 */
 	private static ForFiscalPrincipal extraireDernierForSource(ForsList<ForFiscalPrincipal> principauxDansLaPeriode) {
 		for (ForFiscalPrincipal ffp : CollectionsUtils.revertedOrder(principauxDansLaPeriode)) {
-			if (ffp.getModeImposition().isSource()) {
+			if (ffp.getModeImposition() == ModeImposition.SOURCE) {
 				return ffp;
 			}
 		}
