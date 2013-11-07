@@ -251,6 +251,8 @@
 	<properties>
 		<!-- A priori, on met tous le répertoire webapp dans le WAR -->
 		<excluded-from-war/>
+		<!-- On utilise le web.xml standard (mais celui filtré, quand même) -->
+		<webXmlForWar>${pom.basedir}/target/classes/WEB-INF/web.xml</webXmlForWar>
 	</properties>
 
 	<profiles>
@@ -260,6 +262,8 @@
 			<properties>
 				<!-- Pas la peine de mettre les JSP dans le WAR si elles sont précompilées -->
 				<excluded-from-war>**/*.jsp</excluded-from-war>
+				<!-- On utilise le web.xml qui contient le mapping des JPS compilées -->
+				<webXmlForWar>${pom.basedir}/target/jspweb.xml</webXmlForWar>
 			</properties>
 			<build>
 				<plugins>
@@ -273,11 +277,12 @@
 								<goals>
 									<goal>compile</goal>
 								</goals>
-								<phase>compile</phase>
+								<!--<phase>compile</phase>-->
 							</execution>
 						</executions>
 						<configuration>
-							<inputWebXml>${pom.basedir}/src/main/webapp/WEB-INF/web.xml</inputWebXml>
+							<!-- On veut utiliser la version déjà filtrée -->
+							<inputWebXml>${pom.basedir}/target/classes/WEB-INF/web.xml</inputWebXml>
 							<source>1.7</source>
 							<target>1.7</target>
 							<sources>
@@ -286,7 +291,8 @@
 									<include>**/*.jsp</include>
 								</includes>
 							</sources>
-							<outputWebXml>${pom.basedir}/src/main/webapp/WEB-INF/web.xml</outputWebXml>
+							<trimSpaces>false</trimSpaces>   <!-- Autrement, certains mots se retrouvent collés ensembles -->
+							<outputWebXml>${pom.basedir}/target/jspweb.xml</outputWebXml>
 						</configuration>
 						<dependencies>
 							<dependency>
@@ -468,14 +474,7 @@
 							<Application-Version>${pom.version}</Application-Version>
 						</manifestEntries>
 					</archive>
-					<overlays>
-						<overlay>
-							<excludes>
-								<exclude>**/hibernate.cfg.xml</exclude>
-								<exclude>**/web.xml</exclude>
-							</excludes>
-						</overlay>
-					</overlays>
+					<webXml>${webXmlForWar}</webXml>
 					<webResources>
 						<resource>
 							<filtering>true</filtering>
@@ -483,6 +482,9 @@
 							<includes>
 								<include>**/*.xml</include>
 							</includes>
+							<excludes>
+								<exclude>**/web.xml</exclude>
+							</excludes>
 						</resource>
 					</webResources>
 					<warSourceExcludes>${excluded-from-war}</warSourceExcludes>
