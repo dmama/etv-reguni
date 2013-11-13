@@ -252,6 +252,11 @@ public class ServiceInfrastructureCommuneCacheTest {
 		}
 
 		@Override
+		public String getNomOfficielAvecCanton() {
+			throw new NotImplementedException();
+		}
+
+		@Override
 		public boolean isVaudoise() {
 			return true;
 		}

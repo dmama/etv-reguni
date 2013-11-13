@@ -399,7 +399,7 @@ public abstract class IndividuDumper {
 		}
 		if (infraService != null) {
 			final Commune commune = infraService.getCommuneByNumeroOfs(adresse.getNoOfsCommuneAdresse(), adresse.getDateDebut());
-			if (commune != null && !"VD".equals(commune.getSigleCanton())) {
+			if (commune != null && !commune.isVaudoise()) {
 				return true;
 			}
 			final int ordrePoste = adresse.getNumeroOrdrePostal();
@@ -427,9 +427,7 @@ public abstract class IndividuDumper {
 		final Localite localite = infraService.getLocaliteByONRP(ordrePoste);
 		if (localite != null) {
 			final Commune c = localite.getCommuneLocalite();
-			if (c != null && !"VD".equals(c.getSigleCanton())) {
-				horscanton = true;
-			}
+			horscanton = c != null && !c.isVaudoise();
 		}
 		return horscanton;
 	}

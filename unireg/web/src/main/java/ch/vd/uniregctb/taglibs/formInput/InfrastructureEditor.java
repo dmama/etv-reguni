@@ -200,7 +200,7 @@ public class InfrastructureEditor implements Editor {
 					return commune.getNomOfficiel();
 				}
 				else {
-					return commune.getNomOfficiel() + " (" + commune.getSigleCanton() + ')';
+					return commune.getNomOfficielAvecCanton();
 				}
 			}
 		case ETAT:

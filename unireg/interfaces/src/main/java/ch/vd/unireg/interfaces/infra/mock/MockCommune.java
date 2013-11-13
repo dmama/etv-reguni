@@ -247,6 +247,18 @@ public class MockCommune extends MockEntityOFS implements Commune {
 	}
 
 	@Override
+	public String getNomOfficielAvecCanton() {
+		final String canton = String.format("(%s)", sigleCanton);
+		final String nomOfficiel = getNomOfficiel();
+		if (nomOfficiel.endsWith(sigleCanton) || nomOfficiel.endsWith(canton)) {
+			return nomOfficiel;
+		}
+		else {
+			return String.format("%s %s", nomOfficiel, canton);
+		}
+	}
+
+	@Override
 	public boolean isVaudoise() {
 		return VAUD.equals(sigleCanton);
 	}

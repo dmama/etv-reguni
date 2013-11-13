@@ -25,6 +25,11 @@ public interface Commune extends EntiteOFS {
 	String getSigleCanton();
 
 	/**
+	 * @return le nom officiel de la commune avec la mention du canton (même pour les communes vaudoises)
+	 */
+	String getNomOfficielAvecCanton();
+
+	/**
 	 * @return <code>true</code> si la commune (ou fraction) est vaudoise, <code>false</code> sinon
 	 */
 	boolean isVaudoise();

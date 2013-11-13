@@ -16,7 +16,7 @@ import ch.vd.uniregctb.common.XmlUtils;
 
 public class CommuneImpl extends EntiteOFSImpl implements Commune, Serializable {
 
-	private static final long serialVersionUID = 6781278866373397086L;
+	private static final long serialVersionUID = -6476753135498264292L;
 
 	private final RegDate dateDebut;
 	private final RegDate dateFin;
@@ -155,6 +155,18 @@ public class CommuneImpl extends EntiteOFSImpl implements Commune, Serializable 
 	@Override
 	public String getSigleCanton() {
 		return sigleCanton;
+	}
+
+	@Override
+	public String getNomOfficielAvecCanton() {
+		final String canton = String.format("(%s)", sigleCanton);
+		final String nomOfficiel = getNomOfficiel();
+		if (nomOfficiel.endsWith(sigleCanton) || nomOfficiel.endsWith(canton)) {
+			return nomOfficiel;
+		}
+		else {
+			return String.format("%s %s", nomOfficiel, canton);
+		}
 	}
 
 	@Override

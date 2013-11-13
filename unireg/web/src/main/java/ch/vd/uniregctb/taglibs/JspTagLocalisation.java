@@ -101,7 +101,7 @@ public class JspTagLocalisation extends BodyTagSupport {
 				return "Commune hors-canton inconnue";
 			}
 			else {
-				return commune.getNomOfficiel() + " (" + commune.getSigleCanton() + ")";
+				return commune.getNomOfficielAvecCanton();
 			}
 		}
 		case HORS_SUISSE: {
