@@ -7,10 +7,14 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.DateRangeHelper;
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.registre.webscreenshot.WebScreenshot;
 import ch.vd.registre.webscreenshot.WebScreenshotDoc;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
@@ -24,6 +28,7 @@ import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.uniregctb.validation.fors.ForFiscalValidator;
 
 import static ch.vd.registre.base.date.DateRangeHelper.Range;
 import static junit.framework.Assert.assertNotNull;
@@ -3279,7 +3284,7 @@ public class AssujettissementServiceTest extends MetierTest {
 
 		addForPrincipal(ctb, date(2010, 7, 8), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, date(2011, 6, 6), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Morges);
 		addForSecondaire(ctb, date(2010, 7, 8), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, date(2011, 6, 6), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
-				MockCommune.Morges.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		                 MockCommune.Morges.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 
 		final List<Assujettissement> liste = service.determine(ctb);
 		assertEquals(1, liste.size());
@@ -4062,6 +4067,58 @@ public class AssujettissementServiceTest extends MetierTest {
 		final List<Assujettissement> liste = service.determine(ctb);
 		assertEquals(1, liste.size());
 		assertHorsCanton(date(2010, 1, 1), date(2012, 12, 31), MotifFor.ACHAT_IMMOBILIER, MotifFor.VENTE_IMMOBILIER, liste.get(0));
+	}
+
+	/**
+	 * [SIFISC-10365]/1 (avant 2014) un mixte 2 qui part HC doit voir son assujettissement changer le jour du départ HC
+	 */
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testMixte2DepartHCAvant2014() throws Exception {
+
+		final RegDate arrivee = date(2013, 1, 1);
+		final RegDate depart = date(2013, 6, 12);
+
+		final Contribuable ctb = createContribuableSansFor();
+		addForPrincipal(ctb, arrivee, MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HC, MockCommune.Moudon, ModeImposition.MIXTE_137_2);
+		addForPrincipal(ctb, depart.getOneDayAfter(), MotifFor.DEPART_HC, MockCommune.Bern, ModeImposition.SOURCE);
+
+		final List<Assujettissement> liste = service.determine(ctb);
+		assertEquals(2, liste.size());
+		assertSourcierMixteArt137Al2(arrivee, depart, MotifFor.ARRIVEE_HS, MotifFor.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(0));
+		assertSourcierPur(depart.getOneDayAfter(), null, MotifFor.DEPART_HC, null, TypeAutoriteFiscale.COMMUNE_HC, liste.get(1));
+	}
+
+	/**
+	 * [SIFISC-10365]/2 (depuis 2014) un mixte 2 qui part HC doit voir son assujettissement changer au début du mois suivant son départ HC
+	 */
+	@Test
+	public void testMixte2DepartHCDepuis2014() throws Exception {
+
+		final RegDate arrivee = date(2013, 1, 1);
+		final RegDate depart = date(2014, 6, 12);
+
+		// ce test est écrit en 2013, donc on doit un peu manipuler la date de début du futur
+		// pour permettre aux fors que l'on veut utiliser d'être valides
+		ForFiscalValidator.setFutureBeginDate(RegDateHelper.maximum(date(2014, 10, 31), RegDate.get(), NullDateBehavior.LATEST));
+		try {
+			doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+				@Override
+				public void execute(TransactionStatus status) throws Exception {
+					final Contribuable ctb = createContribuableSansFor();
+					addForPrincipal(ctb, arrivee, MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HC, MockCommune.Moudon, ModeImposition.MIXTE_137_2);
+					addForPrincipal(ctb, depart.getOneDayAfter(), MotifFor.DEPART_HC, MockCommune.Bern, ModeImposition.SOURCE);
+
+					final List<Assujettissement> liste = service.determine(ctb);
+					assertEquals(2, liste.size());
+					assertSourcierMixteArt137Al2(arrivee, depart.getLastDayOfTheMonth(), MotifFor.ARRIVEE_HS, MotifFor.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(0));
+					assertSourcierPur(depart.getLastDayOfTheMonth().getOneDayAfter(), null, MotifFor.DEPART_HC, null, TypeAutoriteFiscale.COMMUNE_HC, liste.get(1));
+				}
+			});
+		}
+		finally {
+			ForFiscalValidator.setFutureBeginDate(null);
+		}
 	}
 
 	@Test

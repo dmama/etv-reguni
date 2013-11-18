@@ -10,6 +10,8 @@ import ch.vd.uniregctb.type.MotifFor;
 
 public class FractionnementsRole extends Fractionnements {
 
+	private static final int PREMIERE_ANNEE_DECALAGE_FIN_MOIS_POUR_MIXTE2_PARTI_HC = 2014;
+
 	public FractionnementsRole(List<ForFiscalPrincipal> principaux) {
 		super(principaux);
 	}
@@ -72,7 +74,14 @@ public class FractionnementsRole extends Fractionnements {
 		}
 		else if (AssujettissementServiceImpl.isDepartDansHorsCanton(current, next) && current.getModeImposition() == ModeImposition.MIXTE_137_2) {
 			// [SIFISC-7281] le départ hors-canton d'un sourcier mixte 137 al2 doit fractionner la période d'assujettissement
-			fraction = new FractionSimple(current.getDateFin().getOneDayAfter(), null, motifFermeture);
+			// [SIFISC-10365] dès 2014, ce fractionnement est décalé à la fin du mois
+			if (current.getDateFin().year() < PREMIERE_ANNEE_DECALAGE_FIN_MOIS_POUR_MIXTE2_PARTI_HC) {
+				fraction = new FractionSimple(current.getDateFin().getOneDayAfter(), null, motifFermeture);
+			}
+			else {
+				final RegDate dateFraction = current.getDateFin().getLastDayOfTheMonth().getOneDayAfter();
+				fraction = new FractionDecalee(dateFraction, new DateRangeHelper.Range(current.getDateFin(), dateFraction), motifFermeture, null);
+			}
 		}
 
 		return fraction;
