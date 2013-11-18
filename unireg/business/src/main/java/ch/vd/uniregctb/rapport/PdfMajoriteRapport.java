@@ -9,6 +9,7 @@ import com.lowagie.text.pdf.PdfWriter;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.StatusManager;
+import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.metier.OuvertureForsResults;
 
 /**
@@ -67,19 +68,42 @@ public class PdfMajoriteRapport extends PdfRapport {
 
         // Habitants traités
         {
-            String filename = "habitants_traites.csv";
-            String contenu = asCsvFile(results.habitantTraites, filename, status);
-            String titre = "Liste des habitants traités";
-            String listVide = "(aucun habitant traité)";
+            final String filename = "habitants_traites.csv";
+            final String contenu = CsvHelper.asCsvFile(results.habitantTraites, filename, status, new CsvHelper.FileFiller<OuvertureForsResults.Traite>() {
+	            @Override
+	            public void fillHeader(CsvHelper.LineFiller b) {
+		            b.append("OID").append(COMMA);
+		            b.append("NO_CTB").append(COMMA);
+		            b.append("NOM").append(COMMA);
+		            b.append("DATE_OUVERTURE").append(COMMA);
+		            b.append("RAISON").append(COMMA);
+		            b.append("COMMENTAIRE");
+	            }
+
+	            @Override
+	            public boolean fillLine(CsvHelper.LineFiller b, OuvertureForsResults.Traite elt) {
+		            b.append(elt.officeImpotID != null ? elt.officeImpotID.toString() : EMPTY).append(COMMA);
+		            b.append(elt.noCtb).append(COMMA);
+		            b.append(escapeChars(elt.nomCtb)).append(COMMA);
+		            b.append(elt.dateOuverture).append(COMMA);
+		            b.append(escapeChars(elt.getDescriptionRaison()));
+		            if (elt.details != null) {
+			            b.append(COMMA).append(asCsvField(elt.details));
+		            }
+		            return true;
+	            }
+            });
+            final String titre = "Liste des habitants traités";
+            final String listVide = "(aucun habitant traité)";
             document.addListeDetaillee(writer, titre, listVide, filename, contenu);
         }
 
         // Habitants en erreurs
         {
-            String filename = "habitants_en_erreur.csv";
-            String contenu = asCsvFile(results.habitantEnErrors, filename, status);
-            String titre = "Liste des habitants en erreur";
-            String listVide = "(aucun habitant en erreur)";
+            final String filename = "habitants_en_erreur.csv";
+            final String contenu = asCsvFile(results.habitantEnErrors, filename, status);
+            final String titre = "Liste des habitants en erreur";
+            final String listVide = "(aucun habitant en erreur)";
             document.addListeDetaillee(writer, titre, listVide, filename, contenu);
         }
 

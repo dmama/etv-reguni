@@ -347,7 +347,7 @@ public class OuvertureForsContribuablesMajeursProcessor {
 		//On n'assert pas car les sourcier n'ont pour le moment pas de for de gestion
 		//Assert.notNull(oid);
 				
-		r.addHabitantTraite(habitant, oid, modeImposition);
+		r.addHabitantTraite(habitant, oid, dateMajorite, modeImposition);
 	}
 
 	private void fillDatesNaissanceEtDeces(PersonnePhysique habitant, final HabitantData data, RegDate dateReference) throws OuvertureForsException {

@@ -21,7 +21,7 @@ public class OuvertureForsResults extends JobResults<Long, OuvertureForsResults>
 		DOMICILE_INCONNU("le domicile de l'habitant est inconnu."), // -------------------------------------------------------------
 		INFRA_EXCEPTION("le service infrastructure a retourné une exception"), // --------------------------------------------------
 		ADRESSE_EXCEPTION("le service d'adresses a retourné une exception"), // ----------------------------------------------------
-		CIVIL_EXCEPTION("le service civile a retourné une exception"), // ----------------------------------------------------------
+		CIVIL_EXCEPTION("le service civil a retourné une exception"), // ----------------------------------------------------------
 		INDIVIDU_INCONNU("l'individu associé à l'habitant n'existe pas"), // -------------------------------------------------------
 		UNKNOWN_EXCEPTION("une exception inconnue a été levée"), // ----------------------------------------------------------------
 		CONSTRAINT_VIOLATION_EXCEPTION("une exception de violation de contrainte base de données a été levée"), // ----------------------------------------------------------------
@@ -43,10 +43,12 @@ public class OuvertureForsResults extends JobResults<Long, OuvertureForsResults>
 
 	public static class Traite extends Info {
 
+		public final RegDate dateOuverture;
 		public final ModeImposition modeImposition;
 
-		public Traite(long noCtb, Integer officeImpotID, ModeImposition modeImposition, String nomCtb) {
+		public Traite(long noCtb, Integer officeImpotID, RegDate dateOuverture, ModeImposition modeImposition, String nomCtb) {
 			super(noCtb, officeImpotID, null, nomCtb);
+			this.dateOuverture = dateOuverture;
 			this.modeImposition = modeImposition;
 		}
 
@@ -94,8 +96,8 @@ public class OuvertureForsResults extends JobResults<Long, OuvertureForsResults>
 		this.habitantEnErrors.addAll(right.habitantEnErrors);
 	}
 
-	public void addHabitantTraite(PersonnePhysique h, Integer officeImpotId, ModeImposition modeImposition) {
-		habitantTraites.add(new Traite(h.getNumero(), officeImpotId, modeImposition, getNom(h.getNumero())));
+	public void addHabitantTraite(PersonnePhysique h, Integer officeImpotId, RegDate dateOuverture, ModeImposition modeImposition) {
+		habitantTraites.add(new Traite(h.getNumero(), officeImpotId, dateOuverture, modeImposition, getNom(h.getNumero())));
 	}
 
 	public void addUnknownException(PersonnePhysique h, Exception e) {
