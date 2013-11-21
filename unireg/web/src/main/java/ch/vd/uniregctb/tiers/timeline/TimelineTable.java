@@ -227,6 +227,24 @@ public class TimelineTable {
 		c.longueurAffichage = longueur;
 	}
 
+	public void addPeriodeImpositionIS(DateRange range) {
+		TimelineCell c = new TimelineCell(range);
+		int longueur = 0;
+		for (TimelineRow r : rows) {
+			if (isFirstRowForRange(r, range, bigBang)) {
+				Assert.isTrue(r.periodeImpositionIS == TimelineCell.FILLER);
+				r.periodeImpositionIS = c;
+				longueur++;
+			}
+			else if (DateRangeHelper.within(r.periode, range)) {
+				Assert.isTrue(r.periodeImpositionIS == TimelineCell.FILLER);
+				r.periodeImpositionIS = TimelineCell.SPAN;
+				longueur++;
+			}
+		}
+		c.longueurAffichage = longueur;
+	}
+
 	/**
 	 * Ajoute un range dans la colonne "fors secondaires". Note: il est possible d'avoir plusieurs fors secondaires valides pour une
 	 * période donnée.

@@ -9,6 +9,7 @@ import ch.vd.registre.base.date.DateRange;
  * Représente une ligne dans la table
  */
 public class TimelineRow {
+
 	public final TimelineRange periode;
 	public TimelineCell forPrincipal;
 	public final List<TimelineCell> forsSecondaires = new ArrayList<>(1);
@@ -17,6 +18,7 @@ public class TimelineRow {
 	public TimelineCell assujettissementRole;
 	public TimelineCell assujettissement;
 	public TimelineCell periodeImposition;
+	public TimelineCell periodeImpositionIS;
 
 	public TimelineRow(TimelineRange periode) {
 		this.periode = periode;
@@ -27,6 +29,7 @@ public class TimelineRow {
 		this.assujettissementRole = TimelineCell.FILLER;
 		this.assujettissement = TimelineCell.FILLER;
 		this.periodeImposition = TimelineCell.FILLER;
+		this.periodeImpositionIS = TimelineCell.FILLER;
 	}
 
 	public DateRange getPeriode() {
@@ -59,5 +62,9 @@ public class TimelineRow {
 
 	public TimelineCell getPeriodeImposition() {
 		return periodeImposition;
+	}
+
+	public TimelineCell getPeriodeImpositionIS() {
+		return periodeImpositionIS;
 	}
 }

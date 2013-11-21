@@ -620,6 +620,14 @@ table.timeline {
 	background-color: #CC99CC;
 }
 
+.timeline td.periodeImpositionIS_SOURCE {
+	background-color: #bbbb00
+}
+
+.timeline td.periodeImpositionIS_MIXTE {
+	background-color: #dddd00
+}
+
 .timeline td.civile, #legend td.civile {
 	background-color: #99FF66;
 }

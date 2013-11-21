@@ -95,6 +95,13 @@
 				<input type="checkbox" id="checkPeriodesImposition" onclick="$('#showPeriodesImposition').val($(this).is(':checked')); $(this).closest('form').submit();" <c:if test="${command.showPeriodesImposition}"> checked</c:if>/>
 				<label for="checkPeriodesImposition">Périodes d'imposition</label>
 				<input type="hidden" id="showPeriodesImposition" name="showPeriodesImposition" value="${command.showPeriodesImposition}"/>
+
+				<authz:authorize ifAnyGranted="ROLE_SUPERGRA">
+					<input type="checkbox" id="checkPeriodesImpositionIS" onclick="$('#showPeriodesImpositionIS').val($(this).is(':checked')); $(this).closest('form').submit();" <c:if test="${command.showPeriodesImpositionIS}"> checked</c:if>/>
+					<label for="checkPeriodesImpositionIS">Périodes d'imposition IS</label>
+					<input type="hidden" id="showPeriodesImpositionIS" name="showPeriodesImpositionIS" value="${command.showPeriodesImpositionIS}"/>
+				</authz:authorize>
+
 			</span>
 		</form>
 
@@ -110,6 +117,7 @@
 				</c:if>
 				<c:if test="${command.showAssujettissements}"><th>Assujettissements<c:if test="${debugAssujettissement}"> (combinés)</c:if></th></c:if>
 				<c:if test="${command.showPeriodesImposition}"><th>Périodes d'imposition</th></c:if>
+				<c:if test="${command.showPeriodesImpositionIS}"><th>Périodes d'imposition IS</th></c:if>
 			</tr>
 
 			<tr class="invisibleBorder" />
@@ -401,6 +409,43 @@
 						</c:choose>
 					</c:if>
 					
+					<%-- périodes d'imposition IS --%>
+					<c:if test="${command.showPeriodesImpositionIS}">
+						<c:choose>
+							<c:when test="${ligne.periodeImpositionIS.filler}">
+								<td class="filler" />
+							</c:when>
+							<c:when test="${ligne.periodeImpositionIS.span}">
+								<%-- rien à mettre, le rowspan est automatiquement rempli --%>
+							</c:when>
+							<c:otherwise>
+								<c:set var="pi" value="${ligne.periodeImpositionIS.range}" />
+								<c:set var="td_class" value="periodeImpositionIS_${pi.type}"/>
+								<td class="${td_class} tooltip_cell" id="piis-<unireg:regdate regdate="${pi.dateDebut}" format="yyyyMMdd"/>" rowspan="<c:out value="${ligne.periodeImpositionIS.longueurAffichage}" />">
+									<fmt:message key="option.type.piis.${pi.type}"/>
+	                                <div id="piis-<unireg:regdate regdate="${pi.dateDebut}" format="yyyyMMdd"/>-tooltip" style="display:none;">
+	                                    Début : <b><unireg:date date="${pi.dateDebut}"/></b><br/>
+	                                    Fin : <b><unireg:date date="${pi.dateFin}"/></b><br/>
+	                                    Type : <b><fmt:message key="option.type.piis.${pi.type}"/></b><br/>
+		                                <c:if test="${pi.noOfs != null}">
+			                                <c:choose>
+				                                <c:when test="${pi.typeAutoriteFiscale == 'COMMUNE_OU_FRACTION_VD'}">
+					                                Commune VD : <b><unireg:commune ofs="${pi.noOfs}" displayProperty="nomOfficiel" date="${pi.dateDebut}"/></b>
+				                                </c:when>
+				                                <c:when test="${pi.typeAutoriteFiscale == 'COMMUNE_HC'}">
+					                                Commune HC : <b><unireg:commune ofs="${pi.noOfs}" displayProperty="nomOfficiel" date="${pi.dateDebut}"/></b>
+				                                </c:when>
+				                                <c:when test="${pi.typeAutoriteFiscale == 'PAYS_HS'}">
+					                                Pays : <b><unireg:pays ofs="${pi.noOfs}" displayProperty="nomCourt"/></b>
+				                                </c:when>
+			                                </c:choose>
+		                                </c:if>
+	                                </div>
+								</td>
+							</c:otherwise>
+						</c:choose>
+					</c:if>
+
 				</tr>
 			</c:forEach>
 		</table>

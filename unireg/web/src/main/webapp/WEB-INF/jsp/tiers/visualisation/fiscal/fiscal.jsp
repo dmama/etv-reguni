@@ -7,6 +7,9 @@
 <authz:authorize ifAnyGranted="ROLE_VISU_ALL,ROLE_VISU_FORS">
 	<c:set var="showTimelineLink" value="${not empty command.forsFiscaux}" />
 </authz:authorize>
+<authz:authorize ifAnyGranted="ROLE_SUPERGRA">
+	<c:set var="showTimelineLink" value="${showTimelineLink || command.natureTiers == 'Habitant' || command.natureTiers == 'NonHabitant'}"/>
+</authz:authorize>
 
 <!-- Debut Fiscal -->
 <c:if test="${showEditLink || showTimelineLink}">
