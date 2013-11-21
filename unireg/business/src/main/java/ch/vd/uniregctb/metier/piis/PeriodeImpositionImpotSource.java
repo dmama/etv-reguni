@@ -21,8 +21,8 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 public class PeriodeImpositionImpotSource implements CollatableDateRange, Duplicable<PeriodeImpositionImpotSource> {
 
 	private static final String HS = "HS";
-	private static final String INCONNU_HC = "HC";
-	private static final String INCONNU = "INCONNU";
+	private static final String INCONNUE_HC = "HC";
+	private static final String INCONNUE = "INCONNUE";
 
 	public static enum Type {
 		MIXTE,
@@ -116,11 +116,11 @@ public class PeriodeImpositionImpotSource implements CollatableDateRange, Duplic
 	 * Construction d'une clé de localisation différente pour chaque pays et chaque canton
 	 * @param ff le for fiscal à analyser
 	 * @param infraService le service infrastructure (nécessaire pour connaître le canton d'une commune donnée)
-	 * @return une clé de localisation associée au for fiscal (s'il est <code>null</code>, la valeur {@link #INCONNU} sera renvoyée)
+	 * @return une clé de localisation associée au for fiscal (s'il est <code>null</code>, la valeur {@link #INCONNUE} sera renvoyée)
 	 */
 	@NotNull
 	private static String buildCleLocalisation(@Nullable ForFiscalPrincipal ff, ServiceInfrastructureService infraService) {
-		return ff != null ? buildCleLocalisation(ff.getTypeAutoriteFiscale(), ff.getNumeroOfsAutoriteFiscale(), ff.getDateDebut(), infraService) : INCONNU;
+		return ff != null ? buildCleLocalisation(ff.getTypeAutoriteFiscale(), ff.getNumeroOfsAutoriteFiscale(), ff.getDateDebut(), infraService) : INCONNUE;
 	}
 
 	/**
@@ -142,7 +142,7 @@ public class PeriodeImpositionImpotSource implements CollatableDateRange, Duplic
 				return commune.getSigleCanton();
 			}
 			else {
-				return INCONNU_HC;
+				return INCONNUE_HC;
 			}
 		}
 		else {

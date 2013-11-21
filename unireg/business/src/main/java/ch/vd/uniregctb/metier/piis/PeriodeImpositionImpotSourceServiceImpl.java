@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -256,6 +257,19 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 		return ctb.getForsFiscauxPrincipauxActifsSorted();
 	}
 
+	/**
+	 * @param pp une personne physique
+	 * @return l'ensemble des IDs des ménages communs liés à cette personnes physiques (en cas de re-mariage ou réconciliation, on s'assure que chaque ménage n'est présent qu'une seule fois)
+	 */
+	private static Set<Long> getIdsMenagesCommuns(PersonnePhysique pp) {
+		final List<AppartenanceMenage> am = getRapportsEntreTiers(pp, AppartenanceMenage.class, false);
+		final Set<Long> idsMenages = new HashSet<>();
+		for (AppartenanceMenage lienMenage : am) {
+			idsMenages.add(lienMenage.getObjetId());
+		}
+		return idsMenages;
+	}
+
 	@Override
 	public List<PeriodeImpositionImpotSource> determine(PersonnePhysique pp) {
 
@@ -264,9 +278,9 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 		// 2. des fors de la personne et de ses ménages communs
 
 		final List<ForFiscalPrincipal> fors = getForsPrincipaux(pp);
-		final List<AppartenanceMenage> am = getRapportsEntreTiers(pp, AppartenanceMenage.class, false);
-		for (AppartenanceMenage lienMenage : am) {
-			final MenageCommun mc = (MenageCommun) tiersDAO.get(lienMenage.getObjetId(), true);
+		final Set<Long> idsMenages = getIdsMenagesCommuns(pp);
+		for (Long idMenage : idsMenages) {
+			final MenageCommun mc = (MenageCommun) tiersDAO.get(idMenage, true);
 			fors.addAll(getForsPrincipaux(mc));
 		}
 
@@ -391,7 +405,7 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 	 * @param noOfsAutoriteFiscalePrecedente numéro OFS de l'entité derrière le for principal précédent
 	 * @return le motif effectif à prendre en compte
 	 */
-	private MotifFor computeActualMotive(@NotNull MotifFor motifOuverture, @NotNull RegDate dateDebut,
+	private MotifFor computeActualMotive(MotifFor motifOuverture, @NotNull RegDate dateDebut,
 	                                     @NotNull TypeAutoriteFiscale typeAutoriteFiscale, int noOfsAutoriteFiscale,
 	                                     @NotNull TypeAutoriteFiscale typeAutoriteFiscalePrecedente, int noOfsAutoriteFiscalePrecedente) {
 		if (typeAutoriteFiscale == typeAutoriteFiscalePrecedente) {
@@ -434,7 +448,12 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 				                      previous.getTypeAutoriteFiscale(), previous.getNumeroOfsAutoriteFiscale())
 				: ffp.getMotifOuverture();
 		final DateShiftingStrategy strategy = BEGIN_DATE_SHIFTING_STRATEGIES.get(actualMotive);
-		return Pair.of(strategy.shift(ffp.getDateDebut()), strategy.isImperativeSegmentationPoint());
+		if (strategy != null) {
+			return Pair.of(strategy.shift(ffp.getDateDebut()), strategy.isImperativeSegmentationPoint());
+		}
+		else {
+			return Pair.of(ffp.getDateDebut(), false);
+		}
 	}
 
 	/**

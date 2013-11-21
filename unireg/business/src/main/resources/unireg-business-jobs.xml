@@ -9,13 +9,6 @@
         <property name="uniregModeHelper" ref="uniregModeHelper"/>
     </bean>
 
-    <!-- Job qui réindexe toute ou partie de la base de donnée -->
-    <bean id="databaseIndexingJob" parent="schedulerJob" class="ch.vd.uniregctb.indexer.jobs.DatabaseIndexerJob">
-        <constructor-arg value="100"/>
-        <constructor-arg value="Réindexer tout ou partie des tiers de la base de données"/>
-        <property name="globalTiersIndexer" ref="globalTiersIndexer"/>
-    </bean>
-
 	<bean id="dumpAssujettissementsJob" parent="schedulerJob" class="ch.vd.uniregctb.metier.assujettissement.DumpAssujettissementsJob">
 		<constructor-arg value="90"/>
 		<constructor-arg value="Dump les assujettissements dans un fichier sur le disque du serveur"/>
@@ -23,6 +16,13 @@
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 		<property name="assujettissementService" ref="assujettissementService" />
 	</bean>
+
+	<!-- Job qui réindexe toute ou partie de la base de donnée -->
+    <bean id="databaseIndexingJob" parent="schedulerJob" class="ch.vd.uniregctb.indexer.jobs.DatabaseIndexerJob">
+        <constructor-arg value="100"/>
+        <constructor-arg value="Réindexer tout ou partie des tiers de la base de données"/>
+        <property name="globalTiersIndexer" ref="globalTiersIndexer"/>
+    </bean>
 
     <bean id="optimizeIndexJob" parent="schedulerJob" class="ch.vd.uniregctb.indexer.OptimizeIndexJob">
         <constructor-arg value="101"/>
@@ -395,6 +395,16 @@
 		<property name="adresseService" ref="adresseService"/>
 		<property name="tiersService" ref="tiersService"/>
 		<property name="securiteService" ref="serviceSecuriteService"/>
+		<property name="rapportService" ref="rapportService"/>
+	</bean>
+
+	<bean id="dumpPeriodesImpositionImpotSourceJob" parent="schedulerJob" class="ch.vd.uniregctb.metier.piis.DumpPeriodesImpositionImpotSourceJob">
+		<constructor-arg value="613"/>
+		<constructor-arg value="Produire la liste périodes d'imposition IS"/>
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="tiersDAO" ref="tiersDAO"/>
+		<property name="piisService" ref="periodeImpositionImpotSourceService"/>
 		<property name="rapportService" ref="rapportService"/>
 	</bean>
 

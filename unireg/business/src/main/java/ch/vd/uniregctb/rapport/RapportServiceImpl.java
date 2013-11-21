@@ -38,6 +38,7 @@ import ch.vd.uniregctb.document.DeterminationDIsRapport;
 import ch.vd.uniregctb.document.DeterminerLRsEchuesRapport;
 import ch.vd.uniregctb.document.DeterminerMouvementsDossiersEnMasseRapport;
 import ch.vd.uniregctb.document.DocumentService;
+import ch.vd.uniregctb.document.DumpPeriodesImpositionImpotSourceRapport;
 import ch.vd.uniregctb.document.EchoirDIsRapport;
 import ch.vd.uniregctb.document.EnvoiAnnexeImmeubleRapport;
 import ch.vd.uniregctb.document.EnvoiDIsRapport;
@@ -84,6 +85,7 @@ import ch.vd.uniregctb.metier.ComparerForFiscalEtCommuneResults;
 import ch.vd.uniregctb.metier.FusionDeCommunesResults;
 import ch.vd.uniregctb.metier.OuvertureForsResults;
 import ch.vd.uniregctb.metier.PassageNouveauxRentiersSourciersEnMixteResults;
+import ch.vd.uniregctb.metier.piis.DumpPeriodesImpositionImpotSourceResults;
 import ch.vd.uniregctb.mouvement.DeterminerMouvementsDossiersEnMasseResults;
 import ch.vd.uniregctb.oid.SuppressionOIDResults;
 import ch.vd.uniregctb.parentes.CalculParentesResults;
@@ -1136,6 +1138,28 @@ public class RapportServiceImpl implements RapportService {
 				@Override
 				public void writeDoc(CalculParentesRapport doc, OutputStream os) throws Exception {
 					final PdfCalculParentesRapport document = new PdfCalculParentesRapport();
+					document.write(results, nom, description, dateGeneration, os, status);
+				}
+			});
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public DumpPeriodesImpositionImpotSourceRapport generateRapport(final DumpPeriodesImpositionImpotSourceResults results, StatusManager s) {
+		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
+
+		final String nom = "RapportDumpPeriodesImpositionImpotSource";
+		final String description = "Rapport d'exécution du job de calcul des périodes d'imposition IS";
+		final Date dateGeneration = DateHelper.getCurrentDate();
+
+		try {
+			return docService.newDoc(DumpPeriodesImpositionImpotSourceRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<DumpPeriodesImpositionImpotSourceRapport>() {
+				@Override
+				public void writeDoc(DumpPeriodesImpositionImpotSourceRapport doc, OutputStream os) throws Exception {
+					final PdfDumpPeriodesImpositionImpotSourceRapport document = new PdfDumpPeriodesImpositionImpotSourceRapport();
 					document.write(results, nom, description, dateGeneration, os, status);
 				}
 			});

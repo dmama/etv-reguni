@@ -29,6 +29,7 @@ import ch.vd.uniregctb.document.DemandeDelaiCollectiveRapport;
 import ch.vd.uniregctb.document.DeterminationDIsRapport;
 import ch.vd.uniregctb.document.DeterminerLRsEchuesRapport;
 import ch.vd.uniregctb.document.DeterminerMouvementsDossiersEnMasseRapport;
+import ch.vd.uniregctb.document.DumpPeriodesImpositionImpotSourceRapport;
 import ch.vd.uniregctb.document.EchoirDIsRapport;
 import ch.vd.uniregctb.document.EnvoiAnnexeImmeubleRapport;
 import ch.vd.uniregctb.document.EnvoiDIsRapport;
@@ -74,6 +75,7 @@ import ch.vd.uniregctb.metier.ComparerForFiscalEtCommuneResults;
 import ch.vd.uniregctb.metier.FusionDeCommunesResults;
 import ch.vd.uniregctb.metier.OuvertureForsResults;
 import ch.vd.uniregctb.metier.PassageNouveauxRentiersSourciersEnMixteResults;
+import ch.vd.uniregctb.metier.piis.DumpPeriodesImpositionImpotSourceResults;
 import ch.vd.uniregctb.mouvement.DeterminerMouvementsDossiersEnMasseResults;
 import ch.vd.uniregctb.oid.SuppressionOIDResults;
 import ch.vd.uniregctb.parentes.CalculParentesResults;
@@ -465,4 +467,12 @@ public interface RapportService {
 	 * @return le rapport
 	 */
 	CalculParentesRapport generateRapport(CalculParentesResults results, StatusManager status);
+
+	/**
+	 * Génère le rapport d'exécution du batch de calcul des périodes d'imposition IS
+	 * @param results le résultat du batch
+	 * @param status le status manager
+	 * @return le rapport
+	 */
+	DumpPeriodesImpositionImpotSourceRapport generateRapport(DumpPeriodesImpositionImpotSourceResults results, StatusManager status);
 }
