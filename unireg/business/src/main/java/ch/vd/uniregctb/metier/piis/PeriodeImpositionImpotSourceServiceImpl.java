@@ -41,8 +41,7 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositionImpotSourceService {
 
-	private static final Set<MotifFor> SHIFT_TO_END_OF_MONTH = EnumSet.of(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MotifFor.PERMIS_C_SUISSE, MotifFor.ARRIVEE_HC);
-	private static final int FIRST_PF_DEPART_HC_SHIFTED_TO_END_OF_MONTH = 2014;
+	private static final Set<MotifFor> SHIFT_TO_END_OF_MONTH = EnumSet.of(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MotifFor.PERMIS_C_SUISSE, MotifFor.ARRIVEE_HC, MotifFor.DEPART_HC);
 
 	private TiersDAO tiersDAO;
 	private TiersService tiersService;
@@ -166,12 +165,12 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 		return res.isEmpty() ? Collections.<T>emptyList() : res;
 	}
 
-	private static boolean shouldShiftToEndOfMonth(int pf, MotifFor motifOuverture) {
-		return SHIFT_TO_END_OF_MONTH.contains(motifOuverture) || (pf >= FIRST_PF_DEPART_HC_SHIFTED_TO_END_OF_MONTH && motifOuverture == MotifFor.DEPART_HC);
+	private static boolean shouldShiftToEndOfMonth(MotifFor motifOuverture) {
+		return SHIFT_TO_END_OF_MONTH.contains(motifOuverture);
 	}
 
-	private static RegDate computeDateDebutMapping(int pf, ForFiscalPrincipal ffp) {
-		if (shouldShiftToEndOfMonth(pf, ffp.getMotifOuverture())) {
+	private static RegDate computeDateDebutMapping(ForFiscalPrincipal ffp) {
+		if (shouldShiftToEndOfMonth(ffp.getMotifOuverture())) {
 			return ffp.getDateDebut().getLastDayOfTheMonth().getOneDayAfter();
 		}
 		else {
@@ -186,7 +185,7 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 				mapping.put(ffp.getDateDebut(), pf.getDateDebut());
 			}
 			else {
-				final RegDate newDebut = computeDateDebutMapping(pf.getDateDebut().year(), ffp);
+				final RegDate newDebut = computeDateDebutMapping(ffp);
 				mapping.put(ffp.getDateDebut(), newDebut);
 				mapping.put(ffp.getDateDebut().getOneDayBefore(), newDebut.getOneDayBefore());
 			}

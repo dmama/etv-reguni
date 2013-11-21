@@ -1870,105 +1870,12 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 	}
 
 	/**
-	 * Cas 20 et 23 (avant 2014)
+	 * Cas 20 et 23
 	 */
 	@Test
-	public void testDepartHorsCantonMixte2Avant2014() throws Exception {
+	public void testDepartHorsCantonMixte2() throws Exception {
 
-		final int year = 2013;
-		final RegDate depart = date(year, 6, 23);
-
-		final class Ids {
-			long ppSrc;
-			long ppOrd;
-		}
-
-		ForFiscalValidator.setFutureBeginDate(date(year, 12, 31));
-		try {
-			// mise en place fiscale
-			final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-				@Override
-				public Ids doInTransaction(TransactionStatus status) {
-					final Ids ids = new Ids();
-					{
-						final PersonnePhysique pp = addNonHabitant("Iain", "Kentucky", date(1980, 5, 3), Sexe.MASCULIN);
-						addForPrincipal(pp, date(year, 1, 1), MotifFor.INDETERMINE, depart, MotifFor.DEPART_HC, MockCommune.Aubonne, ModeImposition.MIXTE_137_2);
-						addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HC, date(year, 12, 31), MotifFor.INDETERMINE, MockCommune.Bern, ModeImposition.SOURCE);
-						ids.ppSrc = pp.getNumero();
-					}
-					{
-						final PersonnePhysique pp = addNonHabitant("Iain", "Kentucky", date(1980, 5, 3), Sexe.MASCULIN);
-						addForPrincipal(pp, date(year, 1, 1), MotifFor.INDETERMINE, depart, MotifFor.DEPART_HC, MockCommune.Aubonne, ModeImposition.MIXTE_137_2);
-						addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HC, date(year, 12, 31), MotifFor.INDETERMINE, MockCommune.Bern, ModeImposition.ORDINAIRE);
-						addForSecondaire(pp, depart.getOneDayAfter(), MotifFor.ACHAT_IMMOBILIER, date(year, 12, 31), MotifFor.INDETERMINE, MockCommune.Aigle.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
-						ids.ppOrd = pp.getNumero();
-					}
-					return ids;
-				}
-			});
-
-			final MutableLong testedId = new MutableLong();
-			final Runnable test = new Runnable() {
-				@Override
-				public void run() {
-					try {
-						final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(testedId.longValue());
-						final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
-						Assert.assertNotNull(piis);
-						Assert.assertEquals(2, piis.size());
-						{
-							final PeriodeImpositionImpotSource pi = piis.get(0);
-							Assert.assertNotNull(pi);
-							Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-							Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
-							Assert.assertEquals((Integer) MockCommune.Aubonne.getNoOFS(), pi.getNoOfs());
-							Assert.assertEquals(date(year, 1, 1), pi.getDateDebut());
-							Assert.assertEquals(depart, pi.getDateFin());
-							Assert.assertNotNull(pi.getContribuable());
-							Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
-						}
-						{
-							final PeriodeImpositionImpotSource pi = piis.get(1);
-							Assert.assertNotNull(pi);
-							Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-							Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, pi.getTypeAutoriteFiscale());
-							Assert.assertEquals((Integer) MockCommune.Bern.getNoOFS(), pi.getNoOfs());
-							Assert.assertEquals(depart.getOneDayAfter(), pi.getDateDebut());
-							Assert.assertEquals(date(year, 12, 31), pi.getDateFin());
-							Assert.assertNotNull(pi.getContribuable());
-							Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
-						}
-					}
-					catch (AssujettissementException e) {
-						throw new RuntimeException(e);
-					}
-				}
-			};
-
-			// calcul
-			doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-				@Override
-				protected void doInTransactionWithoutResult(TransactionStatus status) {
-					testedId.setValue(ids.ppSrc);
-					test.run();
-
-					testedId.setValue(ids.ppOrd);
-					test.run();
-				}
-			});
-		}
-		finally {
-			ForFiscalValidator.setFutureBeginDate(null);
-		}
-	}
-
-	/**
-	 * Cas 20 et 23 (après 2014)
-	 */
-	@Test
-	public void testDepartHorsCantonMixte2Des2014() throws Exception {
-
-		final int year = 2014;
+		final int year = RegDate.get().year() - 1;
 		final RegDate depart = date(year, 6, 23);
 
 		final class Ids {
@@ -2055,12 +1962,12 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 	}
 
 	/**
-	 * Cas 21 et 22 (avant 2014)
+	 * Cas 21 et 22
 	 */
 	@Test
-	public void testDepartHorsCantonMixte1OuOrdinaireAvant2014() throws Exception {
+	public void testDepartHorsCantonMixte1OuOrdinaire() throws Exception {
 
-		final int year = 2013;
+		final int year = RegDate.get().year() - 1;
 		final RegDate depart = date(year, 6, 23);
 
 		final class Ids {
@@ -2068,175 +1975,76 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 			long ppOrd;
 		}
 
-		ForFiscalValidator.setFutureBeginDate(date(year, 12, 31));
-		try {
-			// mise en place fiscale
-			final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-				@Override
-				public Ids doInTransaction(TransactionStatus status) {
-					final Ids ids = new Ids();
-					{
-						final PersonnePhysique pp = addNonHabitant("Iain", "Kentucky", date(1980, 5, 3), Sexe.MASCULIN);
-						addForPrincipal(pp, date(year, 1, 1), MotifFor.INDETERMINE, depart, MotifFor.DEPART_HC, MockCommune.Aubonne, ModeImposition.MIXTE_137_1);
-						addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HC, date(year, 12, 31), MotifFor.INDETERMINE, MockCommune.Bern, ModeImposition.SOURCE);
-						ids.ppSrc = pp.getNumero();
-					}
-					{
-						final PersonnePhysique pp = addNonHabitant("Iain", "Kentucky", date(1980, 5, 3), Sexe.MASCULIN);
-						addForPrincipal(pp, date(year, 1, 1), MotifFor.INDETERMINE, depart, MotifFor.DEPART_HC, MockCommune.Aubonne, ModeImposition.MIXTE_137_1);
-						addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HC, date(year, 12, 31), MotifFor.INDETERMINE, MockCommune.Bern, ModeImposition.ORDINAIRE);
-						addForSecondaire(pp, depart.getOneDayAfter(), MotifFor.ACHAT_IMMOBILIER, date(year, 12, 31), MotifFor.INDETERMINE, MockCommune.Aigle.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
-						ids.ppOrd = pp.getNumero();
-					}
-					return ids;
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final Ids ids = new Ids();
+				{
+					final PersonnePhysique pp = addNonHabitant("Iain", "Kentucky", date(1980, 5, 3), Sexe.MASCULIN);
+					addForPrincipal(pp, date(year, 1, 1), MotifFor.INDETERMINE, depart, MotifFor.DEPART_HC, MockCommune.Aubonne, ModeImposition.MIXTE_137_1);
+					addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HC, date(year, 12, 31), MotifFor.INDETERMINE, MockCommune.Bern, ModeImposition.SOURCE);
+					ids.ppSrc = pp.getNumero();
 				}
-			});
-
-			final MutableLong testedId = new MutableLong();
-			final Runnable test = new Runnable() {
-				@Override
-				public void run() {
-					try {
-						final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(testedId.longValue());
-						final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
-						Assert.assertNotNull(piis);
-						Assert.assertEquals(2, piis.size());
-						{
-							final PeriodeImpositionImpotSource pi = piis.get(0);
-							Assert.assertNotNull(pi);
-							Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-							Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
-							Assert.assertEquals((Integer) MockCommune.Aubonne.getNoOFS(), pi.getNoOfs());
-							Assert.assertEquals(date(year, 1, 1), pi.getDateDebut());
-							Assert.assertEquals(depart, pi.getDateFin());
-							Assert.assertNotNull(pi.getContribuable());
-							Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
-						}
-						{
-							final PeriodeImpositionImpotSource pi = piis.get(1);
-							Assert.assertNotNull(pi);
-							Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-							Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, pi.getTypeAutoriteFiscale());
-							Assert.assertEquals((Integer) MockCommune.Bern.getNoOFS(), pi.getNoOfs());
-							Assert.assertEquals(depart.getOneDayAfter(), pi.getDateDebut());
-							Assert.assertEquals(date(year, 12, 31), pi.getDateFin());
-							Assert.assertNotNull(pi.getContribuable());
-							Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
-						}
-					}
-					catch (AssujettissementException e) {
-						throw new RuntimeException(e);
-					}
+				{
+					final PersonnePhysique pp = addNonHabitant("Iain", "Kentucky", date(1980, 5, 3), Sexe.MASCULIN);
+					addForPrincipal(pp, date(year, 1, 1), MotifFor.INDETERMINE, depart, MotifFor.DEPART_HC, MockCommune.Aubonne, ModeImposition.MIXTE_137_1);
+					addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HC, date(year, 12, 31), MotifFor.INDETERMINE, MockCommune.Bern, ModeImposition.ORDINAIRE);
+					addForSecondaire(pp, depart.getOneDayAfter(), MotifFor.ACHAT_IMMOBILIER, date(year, 12, 31), MotifFor.INDETERMINE, MockCommune.Aigle.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+					ids.ppOrd = pp.getNumero();
 				}
-			};
+				return ids;
+			}
+		});
 
-			// calcul
-			doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-				@Override
-				protected void doInTransactionWithoutResult(TransactionStatus status) {
-					testedId.setValue(ids.ppSrc);
-					test.run();
-
-					testedId.setValue(ids.ppOrd);
-					test.run();
-				}
-			});
-		}
-		finally {
-			ForFiscalValidator.setFutureBeginDate(null);
-		}
-	}
-
-	/**
-	 * Cas 21 et 22 (après 2014)
-	 */
-	@Test
-	public void testDepartHorsCantonMixte1OuOrdinaireDes2014() throws Exception {
-
-		final int year = 2014;
-		final RegDate depart = date(year, 6, 23);
-
-		final class Ids {
-			long ppSrc;
-			long ppOrd;
-		}
-
-		ForFiscalValidator.setFutureBeginDate(date(year, 12, 31));
-		try {
-			// mise en place fiscale
-			final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-				@Override
-				public Ids doInTransaction(TransactionStatus status) {
-					final Ids ids = new Ids();
+		final MutableLong testedId = new MutableLong();
+		final Runnable test = new Runnable() {
+			@Override
+			public void run() {
+				try {
+					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(testedId.longValue());
+					final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
+					Assert.assertNotNull(piis);
+					Assert.assertEquals(2, piis.size());
 					{
-						final PersonnePhysique pp = addNonHabitant("Iain", "Kentucky", date(1980, 5, 3), Sexe.MASCULIN);
-						addForPrincipal(pp, date(year, 1, 1), MotifFor.INDETERMINE, depart, MotifFor.DEPART_HC, MockCommune.Aubonne, ModeImposition.MIXTE_137_1);
-						addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HC, date(year, 12, 31), MotifFor.INDETERMINE, MockCommune.Bern, ModeImposition.SOURCE);
-						ids.ppSrc = pp.getNumero();
+						final PeriodeImpositionImpotSource pi = piis.get(0);
+						Assert.assertNotNull(pi);
+						Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
+						Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
+						Assert.assertEquals((Integer) MockCommune.Aubonne.getNoOFS(), pi.getNoOfs());
+						Assert.assertEquals(date(year, 1, 1), pi.getDateDebut());
+						Assert.assertEquals(depart.getLastDayOfTheMonth(), pi.getDateFin());
+						Assert.assertNotNull(pi.getContribuable());
+						Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
 					}
 					{
-						final PersonnePhysique pp = addNonHabitant("Iain", "Kentucky", date(1980, 5, 3), Sexe.MASCULIN);
-						addForPrincipal(pp, date(year, 1, 1), MotifFor.INDETERMINE, depart, MotifFor.DEPART_HC, MockCommune.Aubonne, ModeImposition.MIXTE_137_1);
-						addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HC, date(year, 12, 31), MotifFor.INDETERMINE, MockCommune.Bern, ModeImposition.ORDINAIRE);
-						addForSecondaire(pp, depart.getOneDayAfter(), MotifFor.ACHAT_IMMOBILIER, date(year, 12, 31), MotifFor.INDETERMINE, MockCommune.Aigle.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
-						ids.ppOrd = pp.getNumero();
+						final PeriodeImpositionImpotSource pi = piis.get(1);
+						Assert.assertNotNull(pi);
+						Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
+						Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, pi.getTypeAutoriteFiscale());
+						Assert.assertEquals((Integer) MockCommune.Bern.getNoOFS(), pi.getNoOfs());
+						Assert.assertEquals(depart.getLastDayOfTheMonth().getOneDayAfter(), pi.getDateDebut());
+						Assert.assertEquals(date(year, 12, 31), pi.getDateFin());
+						Assert.assertNotNull(pi.getContribuable());
+						Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
 					}
-					return ids;
 				}
-			});
+				catch (AssujettissementException e) {
+					throw new RuntimeException(e);
+				}
+			}
+		};
+		// calcul
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				testedId.setValue(ids.ppSrc);
+				test.run();
 
-			final MutableLong testedId = new MutableLong();
-			final Runnable test = new Runnable() {
-				@Override
-				public void run() {
-					try {
-						final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(testedId.longValue());
-						final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
-						Assert.assertNotNull(piis);
-						Assert.assertEquals(2, piis.size());
-						{
-							final PeriodeImpositionImpotSource pi = piis.get(0);
-							Assert.assertNotNull(pi);
-							Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-							Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
-							Assert.assertEquals((Integer) MockCommune.Aubonne.getNoOFS(), pi.getNoOfs());
-							Assert.assertEquals(date(year, 1, 1), pi.getDateDebut());
-							Assert.assertEquals(depart.getLastDayOfTheMonth(), pi.getDateFin());
-							Assert.assertNotNull(pi.getContribuable());
-							Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
-						}
-						{
-							final PeriodeImpositionImpotSource pi = piis.get(1);
-							Assert.assertNotNull(pi);
-							Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-							Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, pi.getTypeAutoriteFiscale());
-							Assert.assertEquals((Integer) MockCommune.Bern.getNoOFS(), pi.getNoOfs());
-							Assert.assertEquals(depart.getLastDayOfTheMonth().getOneDayAfter(), pi.getDateDebut());
-							Assert.assertEquals(date(year, 12, 31), pi.getDateFin());
-							Assert.assertNotNull(pi.getContribuable());
-							Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
-						}
-					}
-					catch (AssujettissementException e) {
-						throw new RuntimeException(e);
-					}
-				}
-			};
-			// calcul
-			doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-				@Override
-				protected void doInTransactionWithoutResult(TransactionStatus status) {
-					testedId.setValue(ids.ppSrc);
-					test.run();
-
-					testedId.setValue(ids.ppOrd);
-					test.run();
-				}
-			});
-		}
-		finally {
-			ForFiscalValidator.setFutureBeginDate(null);
-		}
+				testedId.setValue(ids.ppOrd);
+				test.run();
+			}
+		});
 	}
 
 	/**
