@@ -423,6 +423,17 @@
 								<c:set var="td_class" value="periodeImpositionIS_${pi.type}"/>
 								<td class="${td_class} tooltip_cell" id="piis-<unireg:regdate regdate="${pi.dateDebut}" format="yyyyMMdd"/>" rowspan="<c:out value="${ligne.periodeImpositionIS.longueurAffichage}" />">
 									<fmt:message key="option.type.piis.${pi.type}"/>
+									<c:if test="${pi.noOfs != null}">
+										<br/>
+										<c:choose>
+											<c:when test="${pi.typeAutoriteFiscale == 'COMMUNE_OU_FRACTION_VD' || pi.typeAutoriteFiscale == 'COMMUNE_HC'}">
+												<unireg:commune ofs="${pi.noOfs}" displayProperty="nomOfficielAvecCanton" date="${pi.dateDebut}"/>
+											</c:when>
+											<c:when test="${pi.typeAutoriteFiscale == 'PAYS_HS'}">
+												<unireg:pays ofs="${pi.noOfs}" displayProperty="nomCourt"/>
+											</c:when>
+										</c:choose>
+									</c:if>
 	                                <div id="piis-<unireg:regdate regdate="${pi.dateDebut}" format="yyyyMMdd"/>-tooltip" style="display:none;">
 	                                    Début : <b><unireg:date date="${pi.dateDebut}"/></b><br/>
 	                                    Fin : <b><unireg:date date="${pi.dateFin}"/></b><br/>
