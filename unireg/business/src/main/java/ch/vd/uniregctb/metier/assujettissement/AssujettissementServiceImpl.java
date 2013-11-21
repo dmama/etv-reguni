@@ -24,6 +24,9 @@ import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.Triplet;
 import ch.vd.uniregctb.common.TripletIterator;
+import ch.vd.uniregctb.metier.common.ForFiscalPrincipalContext;
+import ch.vd.uniregctb.metier.common.Fraction;
+import ch.vd.uniregctb.metier.common.Fractionnements;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
@@ -169,10 +172,10 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 	 * du jour d'arrivée jusqu'au jour de départ, précisemment.</li> <li><i>for fiscal secondaire</i> : valable du 1er janvier de l'année d'ouverture jusqu'au 31 décembre de l'année de fermeture.</li>
 	 * </ul> Il s'agit donc de règles générales, qui ne tiennent pas compte des fractionnements et des cas particuliers (voir ci-dessous).
 	 * <p/>
-	 * Les méthodes {@link AssujettissementServiceImpl#determineDateDebutAssujettissement(ForFiscalPrincipalContext, Fractionnements)}
-	 * et {@link AssujettissementServiceImpl#determineDateFinAssujettissement(ForFiscalPrincipalContext, Fractionnements)} déterminent
-	 * les durées des assujettissements pour raison de domicile sur sol vaudois. Les méthodes {@link #determineDateDebutNonAssujettissement(ForFiscalPrincipalContext)}
-	 * et {@link #determineDateFinNonAssujettissement(ForFiscalPrincipalContext)} déterminent les durées des assujettissements pour
+	 * Les méthodes {@link AssujettissementServiceImpl#determineDateDebutAssujettissement(ch.vd.uniregctb.metier.common.ForFiscalPrincipalContext, ch.vd.uniregctb.metier.common.Fractionnements)}
+	 * et {@link AssujettissementServiceImpl#determineDateFinAssujettissement(ch.vd.uniregctb.metier.common.ForFiscalPrincipalContext, ch.vd.uniregctb.metier.common.Fractionnements)} déterminent
+	 * les durées des assujettissements pour raison de domicile sur sol vaudois. Les méthodes {@link #determineDateDebutNonAssujettissement(ch.vd.uniregctb.metier.common.ForFiscalPrincipalContext)}
+	 * et {@link #determineDateFinNonAssujettissement(ch.vd.uniregctb.metier.common.ForFiscalPrincipalContext)} déterminent les durées des assujettissements pour
 	 * raison de domicile hors-canton ou hors-Suisse (qui ne correspondent pas à des assujettissements vaudois et sont donc appelés des "non-assujettissements". Ces "non-assujettissements" sont
 	 * nécessaires plus tard pour fusionner les assujettissements économiques).
 	 * <p/>

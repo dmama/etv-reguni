@@ -26,7 +26,7 @@ public class DumpPeriodesImpositionImpotSourceResults extends AbstractJobResults
 		public final PeriodeImpositionImpotSource.Type type;
 		public final RegDate dateDebut;
 		public final RegDate dateFin;
-		public final String cleLocalisation;
+		public final Localisation localisation;
 		@Nullable
 		public final TypeAutoriteFiscale typeAutoriteFiscale;
 		@Nullable
@@ -37,7 +37,7 @@ public class DumpPeriodesImpositionImpotSourceResults extends AbstractJobResults
 			this.type = piis.getType();
 			this.dateDebut = piis.getDateDebut();
 			this.dateFin = piis.getDateFin();
-			this.cleLocalisation = piis.getCleLocalisation();
+			this.localisation = piis.getLocalisation();
 			this.typeAutoriteFiscale = piis.getTypeAutoriteFiscale();
 			this.noOfs = piis.getNoOfs();
 		}

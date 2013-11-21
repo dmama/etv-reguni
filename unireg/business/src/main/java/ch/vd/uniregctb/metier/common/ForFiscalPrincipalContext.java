@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.metier.assujettissement;
+package ch.vd.uniregctb.metier.common;
 
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.uniregctb.common.Triplet;

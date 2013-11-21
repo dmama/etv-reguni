@@ -4,11 +4,15 @@ import java.util.List;
 
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.metier.common.ForFiscalPrincipalContext;
+import ch.vd.uniregctb.metier.common.Fraction;
+import ch.vd.uniregctb.metier.common.FractionDecalee;
+import ch.vd.uniregctb.metier.common.FractionSimple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 
-public class FractionnementsRole extends Fractionnements {
+public class FractionnementsRole extends FractionnementsAssujettissement {
 
 	private static final int PREMIERE_ANNEE_DECALAGE_FIN_MOIS_POUR_MIXTE2_PARTI_HC = 2014;
 
@@ -44,6 +48,7 @@ public class FractionnementsRole extends Fractionnements {
 			fraction = new FractionDecalee(dateFraction, new DateRangeHelper.Range(current.getDateDebut(), dateFraction), motifOuverture, null);
 		}
 
+		checkMotifSurFractionOuverture(forPrincipal, fraction);
 		return fraction;
 	}
 

@@ -9,9 +9,7 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.common.Duplicable;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.ModeImposition;
@@ -19,10 +17,6 @@ import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 public class PeriodeImpositionImpotSource implements CollatableDateRange, Duplicable<PeriodeImpositionImpotSource> {
-
-	private static final String HS = "HS";
-	private static final String INCONNUE_HC = "HC";
-	private static final String INCONNUE = "INCONNUE";
 
 	public static enum Type {
 		MIXTE,
@@ -35,7 +29,7 @@ public class PeriodeImpositionImpotSource implements CollatableDateRange, Duplic
 	private final RegDate dateFin;
 	private final TypeAutoriteFiscale typeAutoriteFiscale;
 	private final Integer noOfs;
-	private final String cleLocalisation;
+	private final Localisation localisation;
 
 	private final MotifFor motifOuverture;
 	private final MotifFor motifFermeture;
@@ -55,7 +49,7 @@ public class PeriodeImpositionImpotSource implements CollatableDateRange, Duplic
 		this.type = suivant.type;
 		this.typeAutoriteFiscale = suivant.typeAutoriteFiscale;
 		this.noOfs = suivant.noOfs;
-		this.cleLocalisation = suivant.cleLocalisation;
+		this.localisation = suivant.localisation;
 		this.dateDebut = courant.dateDebut;
 		this.dateFin = suivant.dateFin;
 		this.motifOuverture = courant.motifOuverture;
@@ -70,7 +64,7 @@ public class PeriodeImpositionImpotSource implements CollatableDateRange, Duplic
 		this.type = src.type;
 		this.typeAutoriteFiscale = src.typeAutoriteFiscale;
 		this.noOfs = src.noOfs;
-		this.cleLocalisation = src.cleLocalisation;
+		this.localisation = src.localisation;
 		this.dateDebut = src.dateDebut;
 		this.dateFin = src.dateFin;
 		this.motifOuverture = src.motifOuverture;
@@ -80,7 +74,7 @@ public class PeriodeImpositionImpotSource implements CollatableDateRange, Duplic
 	}
 
 	private PeriodeImpositionImpotSource(PersonnePhysique pp, Type type, RegDate dateDebut, RegDate dateFin,
-	                                     @Nullable TypeAutoriteFiscale typeAutoriteFiscale, @Nullable Integer noOfs, @Nullable String cleLocalisation,
+	                                     @Nullable TypeAutoriteFiscale typeAutoriteFiscale, @Nullable Integer noOfs, @NotNull Localisation localisation,
 	                                     @Nullable MotifFor motifOuverture, @Nullable MotifFor motifFermeture,
 	                                     @Nullable ModeImposition modeImpositionDebut, @Nullable ModeImposition modeImpositionFin) {
 		this.pp = pp;
@@ -89,7 +83,7 @@ public class PeriodeImpositionImpotSource implements CollatableDateRange, Duplic
 		this.dateFin = dateFin;
 		this.typeAutoriteFiscale = typeAutoriteFiscale;
 		this.noOfs = noOfs;
-		this.cleLocalisation = cleLocalisation;
+		this.localisation = localisation;
 		this.motifOuverture = motifOuverture;
 		this.motifFermeture = motifFermeture;
 		this.modeImpositionDebut = modeImpositionDebut;
@@ -98,56 +92,28 @@ public class PeriodeImpositionImpotSource implements CollatableDateRange, Duplic
 	}
 
 	public PeriodeImpositionImpotSource(PeriodeImpositionImpotSource src, RegDate dateDebut, RegDate dateFin) {
-		this(src.pp, src.type, dateDebut, dateFin, src.typeAutoriteFiscale, src.noOfs, src.cleLocalisation, src.motifOuverture, src.motifFermeture, src.modeImpositionDebut, src.modeImpositionFin);
+		this(src.pp, src.type, dateDebut, dateFin, src.typeAutoriteFiscale, src.noOfs, src.localisation, src.motifOuverture, src.motifFermeture, src.modeImpositionDebut, src.modeImpositionFin);
 	}
 
-	public PeriodeImpositionImpotSource(PersonnePhysique pp, Type type, RegDate dateDebut, RegDate dateFin, @Nullable ForFiscalPrincipal ff, ServiceInfrastructureService infraService) {
+	/**
+	 * La période "bouche trou", forcément SOURCE et sans for
+	 * @param pp une personne physique
+	 * @param dateDebut date de début du trou
+	 * @param dateFin date de fin du trou
+	 */
+	public PeriodeImpositionImpotSource(PersonnePhysique pp, RegDate dateDebut, RegDate dateFin) {
+		this(pp, Type.SOURCE, dateDebut, dateFin, null, null, Localisation.getInconnue(), null, null, null, null);
+	}
+
+	public PeriodeImpositionImpotSource(PersonnePhysique pp, Type type, RegDate dateDebut, RegDate dateFin, @Nullable ForFiscalPrincipal ff, Localisation localisation, @Nullable Integer noOfs) {
 		this(pp, type, dateDebut, dateFin,
 		     ff != null ? ff.getTypeAutoriteFiscale() : null,
-		     ff != null ? ff.getNumeroOfsAutoriteFiscale() : null,
-		     buildCleLocalisation(ff, infraService),
+		     noOfs,
+		     localisation,
 		     ff != null ? ff.getMotifOuverture() : null,
 		     ff != null ? ff.getMotifFermeture() : null,
 		     ff != null ? ff.getModeImposition() : null,
 		     ff != null ? ff.getModeImposition() : null);
-	}
-
-	/**
-	 * Construction d'une clé de localisation différente pour chaque pays et chaque canton
-	 * @param ff le for fiscal à analyser
-	 * @param infraService le service infrastructure (nécessaire pour connaître le canton d'une commune donnée)
-	 * @return une clé de localisation associée au for fiscal (s'il est <code>null</code>, la valeur {@link #INCONNUE} sera renvoyée)
-	 */
-	@NotNull
-	private static String buildCleLocalisation(@Nullable ForFiscalPrincipal ff, ServiceInfrastructureService infraService) {
-		return ff != null ? buildCleLocalisation(ff.getTypeAutoriteFiscale(), ff.getNumeroOfsAutoriteFiscale(), ff.getDateDebut(), infraService) : INCONNUE;
-	}
-
-	/**
-	 * Construction d'une clé de localisation différente pour chaque pays et canton
-	 * @param taf type d'autorité fiscale associée au numéro OFS
-	 * @param noOfs numéro OFS de la commune/du pays (dépend du type d'autorité fiscale)
-	 * @param dateReference date de référence
-	 * @param infraService service infrastructure (nécessaire pour connaître le canton d'une commune donnée)
-	 * @return une clé de localisation associée aux données indiquées
-	 */
-	@NotNull
-	protected static String buildCleLocalisation(TypeAutoriteFiscale taf, int noOfs, RegDate dateReference, ServiceInfrastructureService infraService) {
-		if (taf == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
-			return ServiceInfrastructureService.SIGLE_CANTON_VD;
-		}
-		else if (taf == TypeAutoriteFiscale.COMMUNE_HC) {
-			final Commune commune = infraService.getCommuneByNumeroOfs(noOfs, dateReference);
-			if (commune != null) {
-				return commune.getSigleCanton();
-			}
-			else {
-				return INCONNUE_HC;
-			}
-		}
-		else {
-			return String.format("%s-%d", HS, noOfs);
-		}
 	}
 
 	@Override
@@ -160,7 +126,7 @@ public class PeriodeImpositionImpotSource implements CollatableDateRange, Duplic
 		}
 
 		// changement de type d'autorité fiscale (ou conservation du même type en changeant de canton/pays) -> on ne colle pas
-		if (!other.cleLocalisation.equals(cleLocalisation)) {
+		if (!other.localisation.equals(localisation)) {
 			return false;
 		}
 
@@ -229,7 +195,7 @@ public class PeriodeImpositionImpotSource implements CollatableDateRange, Duplic
 		return noOfs;
 	}
 
-	public String getCleLocalisation() {
-		return cleLocalisation;
+	public Localisation getLocalisation() {
+		return localisation;
 	}
 }

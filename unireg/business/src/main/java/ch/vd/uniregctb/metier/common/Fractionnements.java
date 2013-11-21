@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.metier.assujettissement;
+package ch.vd.uniregctb.metier.common;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,13 +41,6 @@ public abstract class Fractionnements implements Iterable<Fraction> {
 			// on détecte une éventuelle date de fractionnement à l'ouverture
 			final Fraction fractionOuverture = isFractionOuverture(forPrincipal);
 			if (fractionOuverture != null) {
-
-				if (forPrincipal.next != null && AssujettissementServiceImpl.isArriveeHCApresDepartHSMemeAnnee(forPrincipal.current) && !AssujettissementServiceImpl.roleSourcierPur(
-						forPrincipal.current)) {
-					// dans ce cas précis, on veut utiliser le motif d'ouverture du for suivant comme motif de fractionnement
-					fractionOuverture.setMotifOuverture(forPrincipal.next.getMotifOuverture());
-				}
-
 				addFractionOuverture(fractionOuverture);
 			}
 
@@ -86,6 +79,19 @@ public abstract class Fractionnements implements Iterable<Fraction> {
 			final Fraction f = map.get(d);
 			if (f == null) {
 				map.put(d, fraction);
+			}
+			else if (fraction instanceof FractionContrariante) {
+				final Fraction replacingFraction = new FractionSimple(fraction.getDate(), f.getMotifOuverture(), fraction.getMotifFermeture());
+				for (Map.Entry<RegDate, Fraction> entry : map.entrySet()) {
+					if (entry.getValue() == f) {
+						if (entry.getKey().isBeforeOrEqual(d)) {
+							entry.setValue(replacingFraction);
+						}
+						else {
+							entry.setValue(null);
+						}
+					}
+				}
 			}
 			else {
 				f.setMotifFermeture(fraction.getMotifFermeture());

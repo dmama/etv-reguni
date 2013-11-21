@@ -2,10 +2,13 @@ package ch.vd.uniregctb.metier.assujettissement;
 
 import java.util.List;
 
+import ch.vd.uniregctb.metier.common.ForFiscalPrincipalContext;
+import ch.vd.uniregctb.metier.common.Fraction;
+import ch.vd.uniregctb.metier.common.FractionSimple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.type.MotifFor;
 
-public class FractionnementsSource extends Fractionnements {
+public class FractionnementsSource extends FractionnementsAssujettissement {
 
 	public FractionnementsSource(List<ForFiscalPrincipal> principaux) {
 		super(principaux);
@@ -29,6 +32,7 @@ public class FractionnementsSource extends Fractionnements {
 			fraction = new FractionSimple(current.getDateDebut(), motifOuverture, null);
 		}
 
+		checkMotifSurFractionOuverture(forPrincipal, fraction);
 		return fraction;
 	}
 

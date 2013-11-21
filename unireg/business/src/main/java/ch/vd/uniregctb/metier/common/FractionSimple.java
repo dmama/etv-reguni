@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.metier.assujettissement;
+package ch.vd.uniregctb.metier.common;
 
 import org.jetbrains.annotations.NotNull;
 

@@ -1,6 +1,7 @@
-package ch.vd.uniregctb.metier.assujettissement;
+package ch.vd.uniregctb.metier.common;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
@@ -34,13 +35,21 @@ public abstract class Fraction {
 	 * @return le motif de fractionnement général et accepté comme tel. L'utilisation des motifs différenciés <i>ouverture</i> et <i>fermeture</i> est réservée pour des cas particuliers.
 	 */
 	public MotifFor getMotif() {
-		if (motifOuverture == null) {
+		return getMotifEffectif(motifFermeture, motifOuverture);
+	}
+
+	/**
+	 * Règle de choix du motif effectif quand deux fors se suivent avec les motifs de fermeture et d'ouverture donnés
+	 * @param motifFermeture motif de fermeture du premier for
+	 * @param motifOuverture motif d'ouverture de second for
+	 * @return motif à prendre en compte
+	 */
+	@Nullable
+	public static MotifFor getMotifEffectif(@Nullable MotifFor motifFermeture, @Nullable MotifFor motifOuverture) {
+		if (motifOuverture == null || motifOuverture == motifFermeture) {
 			return motifFermeture;
 		}
 		else if (motifFermeture == null) {
-			return motifOuverture;
-		}
-		else if (motifOuverture == motifFermeture) {
 			return motifOuverture;
 		}
 		else {

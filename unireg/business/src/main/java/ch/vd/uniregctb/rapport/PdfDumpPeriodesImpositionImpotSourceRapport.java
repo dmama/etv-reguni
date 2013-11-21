@@ -127,7 +127,7 @@ public class PdfDumpPeriodesImpositionImpotSourceRapport extends PdfRapport {
 					b.append(elt.dateFin).append(COMMA);
 					b.append(elt.typeAutoriteFiscale != null ? elt.typeAutoriteFiscale.name() : EMPTY).append(COMMA);
 					b.append(elt.noOfs != null ? Integer.toString(elt.noOfs) : EMPTY).append(COMMA);
-					b.append(elt.cleLocalisation);
+					b.append(elt.localisation);
 					return true;
 				}
 			});

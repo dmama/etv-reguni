@@ -120,7 +120,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 				final PeriodeImpositionImpotSource pi = piis.get(0);
 				Assert.assertNotNull(pi);
 				Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-				Assert.assertEquals("VD", pi.getCleLocalisation());
+				Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 				Assert.assertEquals((Integer) MockCommune.Aubonne.getNoOFS(), pi.getNoOfs());
 				Assert.assertEquals(date(lastYear, 1, 1), pi.getDateDebut());
@@ -166,7 +166,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 				final PeriodeImpositionImpotSource pi = piis.get(0);
 				Assert.assertNotNull(pi);
 				Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-				Assert.assertEquals("VD", pi.getCleLocalisation());
+				Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 				Assert.assertEquals((Integer) MockCommune.Aubonne.getNoOFS(), pi.getNoOfs());
 				Assert.assertEquals(date(lastYear, 1, 1), pi.getDateDebut());
@@ -236,7 +236,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(0);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-					Assert.assertEquals("INCONNUE", pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getInconnue(), pi.getLocalisation());
 					Assert.assertNull(pi.getTypeAutoriteFiscale());
 					Assert.assertNull(pi.getNoOfs());
 					Assert.assertEquals(date(firstYear, 1, 1), pi.getDateDebut());
@@ -248,7 +248,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(1);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-					Assert.assertEquals("VD", pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(debutFor, pi.getDateDebut());
@@ -260,7 +260,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(2);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-					Assert.assertEquals("VD", pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(date(currentYear, 1, 1), pi.getDateDebut());
@@ -318,7 +318,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(0);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-					Assert.assertEquals("INCONNUE", pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getInconnue(), pi.getLocalisation());
 					Assert.assertNull(pi.getTypeAutoriteFiscale());
 					Assert.assertNull(pi.getNoOfs());
 					Assert.assertEquals(date(firstYear, 1, 1), pi.getDateDebut());
@@ -330,7 +330,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(1);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-					Assert.assertEquals("VD", pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(debutFor, pi.getDateDebut());
@@ -342,7 +342,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(2);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-					Assert.assertEquals("VD", pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(date(currentYear, 1, 1), pi.getDateDebut());
@@ -423,7 +423,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(0);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-					Assert.assertEquals("INCONNUE", pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getInconnue(), pi.getLocalisation());
 					Assert.assertNull(pi.getTypeAutoriteFiscale());
 					Assert.assertNull(pi.getNoOfs());
 					Assert.assertEquals(date(firstYear, 1, 1), pi.getDateDebut());
@@ -435,7 +435,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(1);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-					Assert.assertEquals("VD", pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(debutFor, pi.getDateDebut());
@@ -447,7 +447,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(2);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-					Assert.assertEquals("VD", pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(date(currentYear, 1, 1), pi.getDateDebut());
@@ -591,7 +591,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(0);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-					Assert.assertEquals("HS-" + MockPays.Allemagne.getNoOFS(), pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getHorsSuisse(MockPays.Allemagne.getNoOFS()), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockPays.Allemagne.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(date(currentYear - 1, 1, 1), pi.getDateDebut());
@@ -603,7 +603,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(1);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-					Assert.assertEquals("VD", pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(arrivee, pi.getDateDebut());
@@ -615,7 +615,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(2);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-					Assert.assertEquals("VD", pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(date(currentYear, 1, 1), pi.getDateDebut());
@@ -702,7 +702,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(0);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-					Assert.assertEquals("HS-" + MockPays.Allemagne.getNoOFS(), pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getHorsSuisse(MockPays.Allemagne.getNoOFS()), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockPays.Allemagne.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(date(currentYear - 1, 1, 1), pi.getDateDebut());
@@ -714,7 +714,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(1);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-					Assert.assertEquals("VD", pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(arrivee, pi.getDateDebut());
@@ -726,7 +726,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(2);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-					Assert.assertEquals("VD", pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(date(currentYear, 1, 1), pi.getDateDebut());
@@ -895,7 +895,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(0);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-					Assert.assertEquals("VD", pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(date(lastYear, 1, 1), pi.getDateDebut());
@@ -907,7 +907,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(1);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-					Assert.assertEquals("HS-" + MockPays.Allemagne.getNoOFS(), pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getHorsSuisse(MockPays.Allemagne.getNoOFS()), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockPays.Allemagne.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(depart.getOneDayAfter(), pi.getDateDebut());
@@ -1006,7 +1006,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(0);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-					Assert.assertEquals("VD", pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(date(lastYear, 1, 1), pi.getDateDebut());
@@ -1018,7 +1018,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(1);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-					Assert.assertEquals("HS-" + MockPays.Allemagne.getNoOFS(), pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getHorsSuisse(MockPays.Allemagne.getNoOFS()), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockPays.Allemagne.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(depart.getOneDayAfter(), pi.getDateDebut());
@@ -1119,7 +1119,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(0);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-					Assert.assertEquals("VD", pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(date(lastYear, 1, 1), pi.getDateDebut());
@@ -1131,7 +1131,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(1);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-					Assert.assertEquals("HS-" + MockPays.Allemagne.getNoOFS(), pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getHorsSuisse(MockPays.Allemagne.getNoOFS()), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockPays.Allemagne.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(depart.getOneDayAfter(), pi.getDateDebut());
@@ -1251,7 +1251,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(0);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-					Assert.assertEquals("VD", pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(date(lastYear, 1, 1), pi.getDateDebut());
@@ -1263,7 +1263,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(1);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-					Assert.assertEquals("HS-" + MockPays.Allemagne.getNoOFS(), pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getHorsSuisse(MockPays.Allemagne.getNoOFS()), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockPays.Allemagne.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(depart.getOneDayAfter(), pi.getDateDebut());
@@ -1360,7 +1360,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(0);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-					Assert.assertEquals("INCONNUE", pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getInconnue(), pi.getLocalisation());
 					Assert.assertNull(pi.getTypeAutoriteFiscale());
 					Assert.assertNull(pi.getNoOfs());
 					Assert.assertEquals(date(lastYear, 1, 1), pi.getDateDebut());
@@ -1372,7 +1372,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(1);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-					Assert.assertEquals("VD", pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(arrivee.getLastDayOfTheMonth().getOneDayAfter(), pi.getDateDebut());
@@ -1384,7 +1384,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(2);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-					Assert.assertEquals("VD", pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(date(currentYear, 1, 1), pi.getDateDebut());
@@ -1494,7 +1494,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(0);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-					Assert.assertEquals("INCONNUE", pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getInconnue(), pi.getLocalisation());
 					Assert.assertNull(pi.getTypeAutoriteFiscale());
 					Assert.assertNull(pi.getNoOfs());
 					Assert.assertEquals(date(lastYear, 1, 1), pi.getDateDebut());
@@ -1506,7 +1506,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(1);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-					Assert.assertEquals("VD", pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(arrivee.getLastDayOfTheMonth().getOneDayAfter(), pi.getDateDebut());
@@ -1518,7 +1518,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(2);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-					Assert.assertEquals("VD", pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(date(currentYear, 1, 1), pi.getDateDebut());
@@ -1626,7 +1626,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(0);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-					Assert.assertEquals("BE", pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getHorsCanton("BE"), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockCommune.Bern.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(date(lastYear, 1, 1), pi.getDateDebut());
@@ -1638,7 +1638,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(1);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-					Assert.assertEquals("VD", pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(arrivee.getLastDayOfTheMonth().getOneDayAfter(), pi.getDateDebut());
@@ -1650,7 +1650,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(2);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-					Assert.assertEquals("VD", pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(date(currentYear, 1, 1), pi.getDateDebut());
@@ -1771,7 +1771,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(0);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-					Assert.assertEquals("BE", pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getHorsCanton("BE"), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockCommune.Bern.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(date(lastYear, 1, 1), pi.getDateDebut());
@@ -1783,7 +1783,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(1);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-					Assert.assertEquals("VD", pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(arrivee.getLastDayOfTheMonth().getOneDayAfter(), pi.getDateDebut());
@@ -1795,7 +1795,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(2);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-					Assert.assertEquals("VD", pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(date(currentYear, 1, 1), pi.getDateDebut());
@@ -1878,7 +1878,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 						final PeriodeImpositionImpotSource pi = piis.get(0);
 						Assert.assertNotNull(pi);
 						Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-						Assert.assertEquals("VD", pi.getCleLocalisation());
+						Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 						Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 						Assert.assertEquals((Integer) MockCommune.Aubonne.getNoOFS(), pi.getNoOfs());
 						Assert.assertEquals(date(year, 1, 1), pi.getDateDebut());
@@ -1890,7 +1890,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 						final PeriodeImpositionImpotSource pi = piis.get(1);
 						Assert.assertNotNull(pi);
 						Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-						Assert.assertEquals("BE", pi.getCleLocalisation());
+						Assert.assertEquals(Localisation.getHorsCanton("BE"), pi.getLocalisation());
 						Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, pi.getTypeAutoriteFiscale());
 						Assert.assertEquals((Integer) MockCommune.Bern.getNoOFS(), pi.getNoOfs());
 						Assert.assertEquals(depart.getLastDayOfTheMonth().getOneDayAfter(), pi.getDateDebut());
@@ -1965,7 +1965,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(0);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-					Assert.assertEquals("VD", pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockCommune.Aubonne.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(date(year, 1, 1), pi.getDateDebut());
@@ -1977,7 +1977,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(1);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-					Assert.assertEquals("BE", pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getHorsCanton("BE"), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockCommune.Bern.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(depart.getLastDayOfTheMonth().getOneDayAfter(), pi.getDateDebut());
@@ -2032,7 +2032,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(0);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-					Assert.assertEquals("VD", pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(date(year, 1, 1), pi.getDateDebut());
@@ -2044,7 +2044,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(1);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-					Assert.assertEquals("VD", pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(obtention.getLastDayOfTheMonth().getOneDayAfter(), pi.getDateDebut());
@@ -2088,7 +2088,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(0);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-					Assert.assertEquals("VD", pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(date(year, 1, 1), pi.getDateDebut());
@@ -2100,7 +2100,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(1);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-					Assert.assertEquals("VD", pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(obtention, pi.getDateDebut());
@@ -2144,7 +2144,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(0);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-					Assert.assertEquals("VD", pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(date(year, 1, 1), pi.getDateDebut());
@@ -2189,7 +2189,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(0);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-					Assert.assertEquals("VD", pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(date(year, 1, 1), pi.getDateDebut());
@@ -2201,7 +2201,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(1);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-					Assert.assertEquals("VD", pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(date(year + 1, 1, 1), pi.getDateDebut());
@@ -2217,7 +2217,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 	 * Cas 27 (avec RT)
 	 */
 	@Test
-	public void testAchatPourINCONNUEHorsSuisseAvecRT() throws Exception {
+	public void testAchatPourInconnuHorsSuisseAvecRT() throws Exception {
 
 		final int year = RegDate.get().year() - 1;
 		final RegDate achat = date(year, 5, 12);
@@ -2248,7 +2248,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(0);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-					Assert.assertEquals("INCONNUE", pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getInconnue(), pi.getLocalisation());
 					Assert.assertNull(pi.getTypeAutoriteFiscale());
 					Assert.assertNull(pi.getNoOfs());
 					Assert.assertEquals(date(year, 1, 1), pi.getDateDebut());
@@ -2260,7 +2260,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(1);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-					Assert.assertEquals("HS-" + MockPays.Danemark.getNoOFS(), pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getHorsSuisse(MockPays.Danemark.getNoOFS()), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockPays.Danemark.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(achat, pi.getDateDebut());
@@ -2272,7 +2272,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(2);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-					Assert.assertEquals("HS-" + MockPays.Danemark.getNoOFS(), pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getHorsSuisse(MockPays.Danemark.getNoOFS()), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockPays.Danemark.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(date(year + 1, 1, 1), pi.getDateDebut());
@@ -2288,7 +2288,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 	 * Cas 27 (sans RT)
 	 */
 	@Test
-	public void testAchatPourINCONNUEHorsSuisseSansRT() throws Exception {
+	public void testAchatPourInconnuHorsSuisseSansRT() throws Exception {
 
 		final int year = RegDate.get().year() - 1;
 		final RegDate achat = date(year, 5, 12);
@@ -2318,7 +2318,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 	 * Cas 28 (avec RT)
 	 */
 	@Test
-	public void testAchatPourINCONNUEHorsCantonAvecRT() throws Exception {
+	public void testAchatPourInconnuHorsCantonAvecRT() throws Exception {
 
 		final int year = RegDate.get().year() - 1;
 		final RegDate achat = date(year, 5, 12);
@@ -2349,7 +2349,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(0);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-					Assert.assertEquals("INCONNUE", pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getInconnue(), pi.getLocalisation());
 					Assert.assertNull(pi.getTypeAutoriteFiscale());
 					Assert.assertNull(pi.getNoOfs());
 					Assert.assertEquals(date(year, 1, 1), pi.getDateDebut());
@@ -2361,7 +2361,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(1);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-					Assert.assertEquals("BE", pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getHorsCanton("BE"), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockCommune.Bern.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(achat, pi.getDateDebut());
@@ -2373,7 +2373,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(2);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-					Assert.assertEquals("BE", pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getHorsCanton("BE"), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockCommune.Bern.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(date(year + 1, 1, 1), pi.getDateDebut());
@@ -2389,7 +2389,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 	 * Cas 28 (sans RT)
 	 */
 	@Test
-	public void testAchatPourINCONNUEHorsCantonSansRT() throws Exception {
+	public void testAchatPourInconnuHorsCantonSansRT() throws Exception {
 
 		final int year = RegDate.get().year() - 1;
 		final RegDate achat = date(year, 5, 12);
@@ -2447,7 +2447,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(0);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-					Assert.assertEquals("VD", pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockCommune.Bex.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(date(year, 1, 1), pi.getDateDebut());
@@ -2494,7 +2494,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(0);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-					Assert.assertEquals("HS-" + MockPays.Allemagne.getNoOFS(), pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getHorsSuisse(MockPays.Allemagne.getNoOFS()), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockPays.Allemagne.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(date(year, 1, 1), pi.getDateDebut());
@@ -2571,7 +2571,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(0);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-					Assert.assertEquals("GE", pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getHorsCanton("GE"), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockCommune.Geneve.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(date(year, 1, 1), pi.getDateDebut());
@@ -2665,7 +2665,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 						final PeriodeImpositionImpotSource pi = piis.get(0);
 						Assert.assertNotNull(pi);
 						Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-						Assert.assertEquals("VD", pi.getCleLocalisation());
+						Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 						Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 						Assert.assertEquals((Integer) MockCommune.Bex.getNoOFS(), pi.getNoOfs());
 						Assert.assertEquals(date(year, 1, 1), pi.getDateDebut());
@@ -2677,7 +2677,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 						final PeriodeImpositionImpotSource pi = piis.get(1);
 						Assert.assertNotNull(pi);
 						Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-						Assert.assertEquals("VD", pi.getCleLocalisation());
+						Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 						Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 						Assert.assertEquals((Integer) MockCommune.Bex.getNoOFS(), pi.getNoOfs());
 						Assert.assertEquals(mariage.getLastDayOfTheMonth().getOneDayAfter(), pi.getDateDebut());
@@ -2695,7 +2695,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 						final PeriodeImpositionImpotSource pi = piis.get(0);
 						Assert.assertNotNull(pi);
 						Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-						Assert.assertEquals("VD", pi.getCleLocalisation());
+						Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 						Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 						Assert.assertEquals((Integer) MockCommune.Bex.getNoOFS(), pi.getNoOfs());
 						Assert.assertEquals(date(year, 1, 1), pi.getDateDebut());
@@ -2707,7 +2707,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 						final PeriodeImpositionImpotSource pi = piis.get(1);
 						Assert.assertNotNull(pi);
 						Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-						Assert.assertEquals("VD", pi.getCleLocalisation());
+						Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 						Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 						Assert.assertEquals((Integer) MockCommune.Bex.getNoOFS(), pi.getNoOfs());
 						Assert.assertEquals(date(year + 1, 1, 1), pi.getDateDebut());
@@ -2769,7 +2769,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 						final PeriodeImpositionImpotSource pi = piis.get(0);
 						Assert.assertNotNull(pi);
 						Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-						Assert.assertEquals("VD", pi.getCleLocalisation());
+						Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 						Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 						Assert.assertEquals((Integer) MockCommune.Bex.getNoOFS(), pi.getNoOfs());
 						Assert.assertEquals(date(year, 1, 1), pi.getDateDebut());
@@ -2781,7 +2781,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 						final PeriodeImpositionImpotSource pi = piis.get(1);
 						Assert.assertNotNull(pi);
 						Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-						Assert.assertEquals("VD", pi.getCleLocalisation());
+						Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 						Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 						Assert.assertEquals((Integer) MockCommune.Bex.getNoOFS(), pi.getNoOfs());
 						Assert.assertEquals(mariage.getLastDayOfTheMonth().getOneDayAfter(), pi.getDateDebut());
@@ -2847,7 +2847,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 						final PeriodeImpositionImpotSource pi = piis.get(0);
 						Assert.assertNotNull(pi);
 						Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-						Assert.assertEquals("VD", pi.getCleLocalisation());
+						Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 						Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 						Assert.assertEquals((Integer) MockCommune.Bex.getNoOFS(), pi.getNoOfs());
 						Assert.assertEquals(date(year, 1, 1), pi.getDateDebut());
@@ -2859,7 +2859,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 						final PeriodeImpositionImpotSource pi = piis.get(1);
 						Assert.assertNotNull(pi);
 						Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-						Assert.assertEquals("VD", pi.getCleLocalisation());
+						Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 						Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 						Assert.assertEquals((Integer) MockCommune.Bex.getNoOFS(), pi.getNoOfs());
 						Assert.assertEquals(date(year + 1, 1, 1), pi.getDateDebut());
@@ -2877,7 +2877,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 						final PeriodeImpositionImpotSource pi = piis.get(0);
 						Assert.assertNotNull(pi);
 						Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-						Assert.assertEquals("VD", pi.getCleLocalisation());
+						Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 						Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 						Assert.assertEquals((Integer) MockCommune.Bex.getNoOFS(), pi.getNoOfs());
 						Assert.assertEquals(date(year, 1, 1), pi.getDateDebut());
@@ -2889,7 +2889,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 						final PeriodeImpositionImpotSource pi = piis.get(1);
 						Assert.assertNotNull(pi);
 						Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-						Assert.assertEquals("VD", pi.getCleLocalisation());
+						Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 						Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 						Assert.assertEquals((Integer) MockCommune.Bex.getNoOFS(), pi.getNoOfs());
 						Assert.assertEquals(date(year + 1, 1, 1), pi.getDateDebut());
@@ -2953,7 +2953,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 						final PeriodeImpositionImpotSource pi = piis.get(0);
 						Assert.assertNotNull(pi);
 						Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-						Assert.assertEquals("VD", pi.getCleLocalisation());
+						Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 						Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 						Assert.assertEquals((Integer) MockCommune.Bex.getNoOFS(), pi.getNoOfs());
 						Assert.assertEquals(date(year, 1, 1), pi.getDateDebut());
@@ -2965,7 +2965,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 						final PeriodeImpositionImpotSource pi = piis.get(1);
 						Assert.assertNotNull(pi);
 						Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-						Assert.assertEquals("VD", pi.getCleLocalisation());
+						Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 						Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 						Assert.assertEquals((Integer) MockCommune.Bex.getNoOFS(), pi.getNoOfs());
 						Assert.assertEquals(mariage.getLastDayOfTheMonth().getOneDayAfter(), pi.getDateDebut());
@@ -2983,9 +2983,9 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 						final PeriodeImpositionImpotSource pi = piis.get(0);
 						Assert.assertNotNull(pi);
 						Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-						Assert.assertEquals("VD", pi.getCleLocalisation());
+						Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 						Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
-						Assert.assertEquals((Integer) MockCommune.Leysin.getNoOFS(), pi.getNoOfs());
+						Assert.assertEquals((Integer) MockCommune.Bex.getNoOFS(), pi.getNoOfs());
 						Assert.assertEquals(date(year, 1, 1), pi.getDateDebut());
 						Assert.assertEquals(obtention.getLastDayOfTheMonth(), pi.getDateFin());
 						Assert.assertNotNull(pi.getContribuable());
@@ -2995,7 +2995,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 						final PeriodeImpositionImpotSource pi = piis.get(1);
 						Assert.assertNotNull(pi);
 						Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-						Assert.assertEquals("VD", pi.getCleLocalisation());
+						Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 						Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 						Assert.assertEquals((Integer) MockCommune.Bex.getNoOFS(), pi.getNoOfs());
 						Assert.assertEquals(obtention.getLastDayOfTheMonth().getOneDayAfter(), pi.getDateDebut());
@@ -3059,7 +3059,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 						final PeriodeImpositionImpotSource pi = piis.get(0);
 						Assert.assertNotNull(pi);
 						Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-						Assert.assertEquals("VD", pi.getCleLocalisation());
+						Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 						Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 						Assert.assertEquals((Integer) MockCommune.Bex.getNoOFS(), pi.getNoOfs());
 						Assert.assertEquals(date(year, 1, 1), pi.getDateDebut());
@@ -3071,7 +3071,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 						final PeriodeImpositionImpotSource pi = piis.get(1);
 						Assert.assertNotNull(pi);
 						Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-						Assert.assertEquals("VD", pi.getCleLocalisation());
+						Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 						Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 						Assert.assertEquals((Integer) MockCommune.Bex.getNoOFS(), pi.getNoOfs());
 						Assert.assertEquals(obtention.getLastDayOfTheMonth().getOneDayAfter(), pi.getDateDebut());
@@ -3089,7 +3089,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 						final PeriodeImpositionImpotSource pi = piis.get(0);
 						Assert.assertNotNull(pi);
 						Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-						Assert.assertEquals("VD", pi.getCleLocalisation());
+						Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 						Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 						Assert.assertEquals((Integer) MockCommune.Bex.getNoOFS(), pi.getNoOfs());
 						Assert.assertEquals(date(year, 1, 1), pi.getDateDebut());
@@ -3101,7 +3101,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 						final PeriodeImpositionImpotSource pi = piis.get(1);
 						Assert.assertNotNull(pi);
 						Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-						Assert.assertEquals("VD", pi.getCleLocalisation());
+						Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 						Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 						Assert.assertEquals((Integer) MockCommune.Bex.getNoOFS(), pi.getNoOfs());
 						Assert.assertEquals(obtention.getLastDayOfTheMonth().getOneDayAfter(), pi.getDateDebut());
@@ -3144,9 +3144,9 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(0);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-					Assert.assertEquals("VD", pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
-					Assert.assertEquals((Integer) MockCommune.Echallens.getNoOFS(), pi.getNoOfs());
+					Assert.assertEquals((Integer) MockCommune.Cossonay.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(date(year, 1, 1), pi.getDateDebut());
 					Assert.assertEquals(obtention.getLastDayOfTheMonth(), pi.getDateFin());
 					Assert.assertNotNull(pi.getContribuable());
@@ -3156,7 +3156,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(1);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-					Assert.assertEquals("VD", pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockCommune.Cossonay.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(obtention.getLastDayOfTheMonth().getOneDayAfter(), pi.getDateDebut());
@@ -3202,9 +3202,9 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(0);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-					Assert.assertEquals("VD", pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
-					Assert.assertEquals((Integer) MockCommune.Echallens.getNoOFS(), pi.getNoOfs());
+					Assert.assertEquals((Integer) MockCommune.Cossonay.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(date(year, 1, 1), pi.getDateDebut());
 					Assert.assertEquals(obtention.getLastDayOfTheMonth(), pi.getDateFin());
 					Assert.assertNotNull(pi.getContribuable());
@@ -3214,7 +3214,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(1);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-					Assert.assertEquals("VD", pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockCommune.Cossonay.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(obtention.getLastDayOfTheMonth().getOneDayAfter(), pi.getDateDebut());
@@ -3269,7 +3269,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 						final PeriodeImpositionImpotSource pi = piis.get(0);
 						Assert.assertNotNull(pi);
 						Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-						Assert.assertEquals("VD", pi.getCleLocalisation());
+						Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 						Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 						Assert.assertEquals((Integer) MockCommune.Cossonay.getNoOFS(), pi.getNoOfs());
 						Assert.assertEquals(date(year, 1, 1), pi.getDateDebut());
@@ -3288,7 +3288,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 						final PeriodeImpositionImpotSource pi = piis.get(0);
 						Assert.assertNotNull(pi);
 						Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-						Assert.assertEquals("VD", pi.getCleLocalisation());
+						Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 						Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 						Assert.assertEquals((Integer) MockCommune.Cossonay.getNoOFS(), pi.getNoOfs());
 						Assert.assertEquals(date(year, 1, 1), pi.getDateDebut());
@@ -3300,7 +3300,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 						final PeriodeImpositionImpotSource pi = piis.get(1);
 						Assert.assertNotNull(pi);
 						Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-						Assert.assertEquals("VD", pi.getCleLocalisation());
+						Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 						Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 						Assert.assertEquals((Integer) MockCommune.Cossonay.getNoOFS(), pi.getNoOfs());
 						Assert.assertEquals(dateDeces.getOneDayAfter(), pi.getDateDebut());
@@ -3312,7 +3312,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 						final PeriodeImpositionImpotSource pi = piis.get(2);
 						Assert.assertNotNull(pi);
 						Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-						Assert.assertEquals("VD", pi.getCleLocalisation());
+						Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 						Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 						Assert.assertEquals((Integer) MockCommune.Cossonay.getNoOFS(), pi.getNoOfs());
 						Assert.assertEquals(date(year + 1, 1, 1), pi.getDateDebut());
@@ -3368,7 +3368,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 						final PeriodeImpositionImpotSource pi = piis.get(0);
 						Assert.assertNotNull(pi);
 						Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-						Assert.assertEquals("VD", pi.getCleLocalisation());
+						Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 						Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 						Assert.assertEquals((Integer) MockCommune.Cossonay.getNoOFS(), pi.getNoOfs());
 						Assert.assertEquals(date(year, 1, 1), pi.getDateDebut());
@@ -3387,7 +3387,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 						final PeriodeImpositionImpotSource pi = piis.get(0);
 						Assert.assertNotNull(pi);
 						Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-						Assert.assertEquals("VD", pi.getCleLocalisation());
+						Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 						Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 						Assert.assertEquals((Integer) MockCommune.Cossonay.getNoOFS(), pi.getNoOfs());
 						Assert.assertEquals(date(year, 1, 1), pi.getDateDebut());
@@ -3399,7 +3399,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 						final PeriodeImpositionImpotSource pi = piis.get(1);
 						Assert.assertNotNull(pi);
 						Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-						Assert.assertEquals("VD", pi.getCleLocalisation());
+						Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 						Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 						Assert.assertEquals((Integer) MockCommune.Cossonay.getNoOFS(), pi.getNoOfs());
 						Assert.assertEquals(dateDeces.getOneDayAfter(), pi.getDateDebut());
@@ -3411,7 +3411,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 						final PeriodeImpositionImpotSource pi = piis.get(2);
 						Assert.assertNotNull(pi);
 						Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-						Assert.assertEquals("VD", pi.getCleLocalisation());
+						Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 						Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 						Assert.assertEquals((Integer) MockCommune.Cossonay.getNoOFS(), pi.getNoOfs());
 						Assert.assertEquals(date(year + 1, 1, 1), pi.getDateDebut());
@@ -3460,7 +3460,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(0);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-					Assert.assertEquals("BE", pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getHorsCanton("BE"), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockCommune.Bern.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(date(year, 1, 1), pi.getDateDebut());
@@ -3472,7 +3472,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(1);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-					Assert.assertEquals("VD", pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockCommune.Echallens.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(obtention.getLastDayOfTheMonth().getOneDayAfter(), pi.getDateDebut());
@@ -3515,7 +3515,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 				{
 					final PeriodeImpositionImpotSource pi = piis.get(0);
 					Assert.assertNotNull(pi);
-					Assert.assertEquals("BE", pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getHorsCanton("BE"), pi.getLocalisation());
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockCommune.Bern.getNoOFS(), pi.getNoOfs());
@@ -3528,7 +3528,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(1);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-					Assert.assertEquals("VD", pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(arrivee.getLastDayOfTheMonth().getOneDayAfter(), pi.getDateDebut());
@@ -3540,7 +3540,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(2);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-					Assert.assertEquals("VD", pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(date(year + 1, 1, 1), pi.getDateDebut());
@@ -3587,7 +3587,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(0);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-					Assert.assertEquals("BE", pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getHorsCanton("BE"), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockCommune.Bern.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(date(year, 1, 1), pi.getDateDebut());
@@ -3599,7 +3599,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(1);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-					Assert.assertEquals("VS", pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getHorsCanton("VS"), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockCommune.Sierre.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(demenagement.getLastDayOfTheMonth().getOneDayAfter(), pi.getDateDebut());
@@ -3646,7 +3646,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(0);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-					Assert.assertEquals("HS-" + MockPays.Allemagne.getNoOFS(), pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getHorsSuisse(MockPays.Allemagne.getNoOFS()), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockPays.Allemagne.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(date(year, 1, 1), pi.getDateDebut());
@@ -3658,7 +3658,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(1);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-					Assert.assertEquals("HS-" + MockPays.France.getNoOFS(), pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getHorsSuisse(MockPays.France.getNoOFS()), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockPays.France.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(demenagement, pi.getDateDebut());
@@ -3706,7 +3706,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(0);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-					Assert.assertEquals("INCONNUE", pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getInconnue(), pi.getLocalisation());
 					Assert.assertNull(pi.getTypeAutoriteFiscale());
 					Assert.assertNull(pi.getNoOfs());
 					Assert.assertEquals(date(baseYear, 1, 1), pi.getDateDebut());
@@ -3718,7 +3718,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(1);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-					Assert.assertEquals("INCONNUE", pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getInconnue(), pi.getLocalisation());
 					Assert.assertNull(pi.getTypeAutoriteFiscale());
 					Assert.assertNull(pi.getNoOfs());
 					Assert.assertEquals(date(baseYear + 2, 1, 1), pi.getDateDebut());
@@ -3765,7 +3765,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(0);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-					Assert.assertEquals("VD", pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockCommune.Cossonay.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(date(year, 1, 1), pi.getDateDebut());
@@ -3812,7 +3812,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(0);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-					Assert.assertEquals("VD", pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockCommune.Cossonay.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(date(year, 1, 1), pi.getDateDebut());
@@ -3824,7 +3824,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(1);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-					Assert.assertEquals("HS-" + MockPays.Allemagne.getNoOFS(), pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getHorsSuisse(MockPays.Allemagne.getNoOFS()), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockPays.Allemagne.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(depart.getOneDayAfter(), pi.getDateDebut());
@@ -3874,7 +3874,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(0);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-					Assert.assertEquals("HS-" + MockPays.France.getNoOFS(), pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getHorsSuisse(MockPays.France.getNoOFS()), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockPays.France.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(date(year, 1, 1), pi.getDateDebut());
@@ -3886,7 +3886,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(1);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-					Assert.assertEquals("VD", pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(arrivee, pi.getDateDebut());
@@ -3936,7 +3936,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(0);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-					Assert.assertEquals("HS-" + MockPays.France.getNoOFS(), pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getHorsSuisse(MockPays.France.getNoOFS()), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockPays.France.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(date(year, 1, 1), pi.getDateDebut());
@@ -3948,7 +3948,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(1);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-					Assert.assertEquals("HS-" + MockPays.Allemagne.getNoOFS(), pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getHorsSuisse(MockPays.Allemagne.getNoOFS()), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockPays.Allemagne.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(demenagement, pi.getDateDebut());
@@ -4002,7 +4002,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(0);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-					Assert.assertEquals("VD", pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(date(2010, 1, 1), pi.getDateDebut());
@@ -4014,7 +4014,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(1);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-					Assert.assertEquals("VD", pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(date(2011, 1, 1), pi.getDateDebut());
@@ -4026,7 +4026,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(2);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-					Assert.assertEquals("VD", pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(date(2012, 1, 1), pi.getDateDebut());
@@ -4067,7 +4067,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(0);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-					Assert.assertEquals("BE", pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getHorsCanton("BE"), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockCommune.Bern.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(date(year, 1, 1), pi.getDateDebut());
@@ -4079,7 +4079,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(1);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-					Assert.assertEquals("VD", pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockCommune.Bex.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(arrivee.getLastDayOfTheMonth().getOneDayAfter(), pi.getDateDebut());
@@ -4091,7 +4091,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(2);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-					Assert.assertEquals("VD", pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockCommune.Bex.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(date(year + 1, 1, 1), pi.getDateDebut());
@@ -4138,7 +4138,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(0);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-					Assert.assertEquals("VD", pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockCommune.Bussigny.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(date(year, 1, 1), pi.getDateDebut());
@@ -4151,8 +4151,8 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 	}
 
 	/**
-	 * Ce qui est important ici, c'est la localisation de la période d'imposition IS (la commune devrait être celle d'avant le déménagement,
-	 * puisque normalement l'obtention d'un permis C pour un sourcier pur pousse au mois suivant)
+	 * Ce qui est important ici, c'est la localisation de la période d'imposition IS (la commune devrait être celle d'après le déménagement,
+	 * même si normalement l'obtention d'un permis C pour un sourcier pur pousse au mois suivant car on doit prendre le dernier for vaudois)
 	 */
 	@Test
 	public void testSourcierPurPermisCPuisDemenagementMemeMoisFinAnnee() throws Exception {
@@ -4185,9 +4185,9 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PeriodeImpositionImpotSource pi = piis.get(0);
 					Assert.assertNotNull(pi);
 					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-					Assert.assertEquals("VD", pi.getCleLocalisation());
+					Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
-					Assert.assertEquals((Integer) MockCommune.Aubonne.getNoOFS(), pi.getNoOfs());
+					Assert.assertEquals((Integer) MockCommune.Bussigny.getNoOFS(), pi.getNoOfs());
 					Assert.assertEquals(date(year, 1, 1), pi.getDateDebut());
 					Assert.assertEquals(date(year, 12, 31), pi.getDateFin());
 					Assert.assertNotNull(pi.getContribuable());
@@ -4231,5 +4231,216 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 			Assert.assertEquals(PeriodeImpositionImpotSourceServiceException.class, e.getCause().getClass());
 			Assert.assertTrue(e.getMessage(), e.getMessage().contains("Chevauchement de fors principaux"));
 		}
+	}
+
+	/**
+	 * Exemple donné par R. Carbo dans un mail du 18.11 :
+	 * <ul>
+	 *     <li>sourcier lausannois qui obtient son permis C le 15.02</li>
+	 *     <li>déménagement à Morges en mars</li>
+	 *     <li>départ HC (Neuchâtel) en avril</li>
+	 *     <li>déménagement de Neuch' à Péseux (NE) en mai</li>
+	 *     <li>déménagement de Péseux (NE) à Berne en juin</li>
+	 *     <li>retour à Nyon en juillet</li>
+	 *     <li>déménagement à Vevey en octobre</li>
+	 * </ul>
+	 * Le nombre de PIIS attendues est de 5 :
+	 * <ol>
+	 *     <li>une SOURCE sur Morges sur janvier/février</li>
+	 *     <li>une MIXTE sur Morges sur mars/avril</li>
+	 *     <li>une SOURCE sur Péseux  sur mai/juin</li>
+	 *     <li>une SOURCE sur Berne en juillet</li>
+	 *     <li>une MIXTE sur Vevey d'août à décembre</li>
+	 * </ol>
+	 */
+	@Test
+	public void testPlusieursDemenagementDansAnneeAvecPassageHC() throws Exception {
+
+		final int year = RegDate.get().year() - 1;
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Gigi", "Jampère", date(1972, 6, 23), Sexe.FEMININ);
+				addForPrincipal(pp, date(year, 1, 1), MotifFor.INDETERMINE, date(year, 2, 15), MotifFor.PERMIS_C_SUISSE, MockCommune.Lausanne, ModeImposition.SOURCE);
+				addForPrincipal(pp, date(year, 2, 16), MotifFor.PERMIS_C_SUISSE, date(year, 3, 10), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
+				addForPrincipal(pp, date(year, 3, 11), MotifFor.DEMENAGEMENT_VD, date(year, 4, 22), MotifFor.DEPART_HC, MockCommune.Morges);
+				addForPrincipal(pp, date(year, 4, 23), MotifFor.DEPART_HC, date(year, 5, 4), MotifFor.DEPART_HC, MockCommune.Neuchatel);
+				addForPrincipal(pp, date(year, 5, 5), MotifFor.DEPART_HC, date(year, 6, 18), MotifFor.DEMENAGEMENT_VD, MockCommune.Peseux);
+				addForPrincipal(pp, date(year, 6, 19), MotifFor.DEMENAGEMENT_VD, date(year, 7, 25), MotifFor.ARRIVEE_HC, MockCommune.Bern);
+				addForPrincipal(pp, date(year, 7, 26), MotifFor.ARRIVEE_HC, date(year, 10, 7), MotifFor.DEMENAGEMENT_VD, MockCommune.Nyon);
+				addForPrincipal(pp, date(year, 10, 8), MotifFor.DEMENAGEMENT_VD, MockCommune.Vevey);
+				return pp.getNumero();
+			}
+		});
+
+		// calculs des périodes
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
+				Assert.assertNotNull(piis);
+				Assert.assertEquals(5, piis.size());
+				{
+					final PeriodeImpositionImpotSource pi = piis.get(0);
+					Assert.assertNotNull(pi);
+					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
+					Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
+					Assert.assertEquals((Integer) MockCommune.Morges.getNoOFS(), pi.getNoOfs());
+					Assert.assertEquals(date(year, 1, 1), pi.getDateDebut());
+					Assert.assertEquals(date(year, 2, 1).getLastDayOfTheMonth(), pi.getDateFin());
+					Assert.assertNotNull(pi.getContribuable());
+					Assert.assertEquals((Long) ppId, pi.getContribuable().getNumero());
+				}
+				{
+					final PeriodeImpositionImpotSource pi = piis.get(1);
+					Assert.assertNotNull(pi);
+					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
+					Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
+					Assert.assertEquals((Integer) MockCommune.Morges.getNoOFS(), pi.getNoOfs());
+					Assert.assertEquals(date(year, 3, 1), pi.getDateDebut());
+					Assert.assertEquals(date(year, 4, 30), pi.getDateFin());
+					Assert.assertNotNull(pi.getContribuable());
+					Assert.assertEquals((Long) ppId, pi.getContribuable().getNumero());
+				}
+				{
+					final PeriodeImpositionImpotSource pi = piis.get(2);
+					Assert.assertNotNull(pi);
+					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
+					Assert.assertEquals(Localisation.getHorsCanton("NE"), pi.getLocalisation());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, pi.getTypeAutoriteFiscale());
+					Assert.assertEquals((Integer) MockCommune.Peseux.getNoOFS(), pi.getNoOfs());
+					Assert.assertEquals(date(year, 5, 1), pi.getDateDebut());
+					Assert.assertEquals(date(year, 6, 30), pi.getDateFin());
+					Assert.assertNotNull(pi.getContribuable());
+					Assert.assertEquals((Long) ppId, pi.getContribuable().getNumero());
+				}
+				{
+					final PeriodeImpositionImpotSource pi = piis.get(3);
+					Assert.assertNotNull(pi);
+					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
+					Assert.assertEquals(Localisation.getHorsCanton("BE"), pi.getLocalisation());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, pi.getTypeAutoriteFiscale());
+					Assert.assertEquals((Integer) MockCommune.Bern.getNoOFS(), pi.getNoOfs());
+					Assert.assertEquals(date(year, 7, 1), pi.getDateDebut());
+					Assert.assertEquals(date(year, 7, 31), pi.getDateFin());
+					Assert.assertNotNull(pi.getContribuable());
+					Assert.assertEquals((Long) ppId, pi.getContribuable().getNumero());
+				}
+				{
+					final PeriodeImpositionImpotSource pi = piis.get(4);
+					Assert.assertNotNull(pi);
+					Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
+					Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
+					Assert.assertEquals((Integer) MockCommune.Vevey.getNoOFS(), pi.getNoOfs());
+					Assert.assertEquals(date(year, 8, 1), pi.getDateDebut());
+					Assert.assertEquals(date(year, 12, 31), pi.getDateFin());
+					Assert.assertNotNull(pi.getContribuable());
+					Assert.assertEquals((Long) ppId, pi.getContribuable().getNumero());
+				}
+			}
+		});
+	}
+
+	/**
+	 * Exemple donné par R. Carbo dans un mail du 18.11 :
+	 * <ul>
+	 *     <li>sourcier lausannois qui obtient son permis C le 15.02</li>
+	 *     <li>déménagement à Morges en mars</li>
+	 *     <li>départ HS (France) en avril</li>
+	 *     <li>retour à Nyon en juillet</li>
+	 *     <li>déménagement à Vevey en octobre</li>
+	 * </ul>
+	 * Le nombre de PIIS attendues est de 4 :
+	 * <ol>
+	 *     <li>une SOURCE sur Morges sur janvier/février</li>
+	 *     <li>une MIXTE sur Morges sur mars/avril</li>
+	 *     <li>une SOURCE sur France sur fin avril/mai/juin/juillet</li>
+	 *     <li>une MIXTE sur Vevey de fin juillet à décembre</li>
+	 * </ol>
+	 */
+	@Test
+	public void testPlusieursDemenagementDansAnneeAvecPassageHS() throws Exception {
+
+		final int year = RegDate.get().year() - 1;
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Gigi", "Jampère", date(1972, 6, 23), Sexe.FEMININ);
+				addForPrincipal(pp, date(year, 1, 1), MotifFor.INDETERMINE, date(year, 2, 15), MotifFor.PERMIS_C_SUISSE, MockCommune.Lausanne, ModeImposition.SOURCE);
+				addForPrincipal(pp, date(year, 2, 16), MotifFor.PERMIS_C_SUISSE, date(year, 3, 10), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
+				addForPrincipal(pp, date(year, 3, 11), MotifFor.DEMENAGEMENT_VD, date(year, 4, 22), MotifFor.DEPART_HS, MockCommune.Morges);
+				addForPrincipal(pp, date(year, 4, 23), MotifFor.DEPART_HS, date(year, 7, 25), MotifFor.ARRIVEE_HS, MockPays.France);
+				addForPrincipal(pp, date(year, 7, 26), MotifFor.ARRIVEE_HS, date(year, 10, 7), MotifFor.DEMENAGEMENT_VD, MockCommune.Nyon);
+				addForPrincipal(pp, date(year, 10, 8), MotifFor.DEMENAGEMENT_VD, MockCommune.Vevey);
+				return pp.getNumero();
+			}
+		});
+
+		// calculs des périodes
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
+				Assert.assertNotNull(piis);
+				Assert.assertEquals(4, piis.size());
+				{
+					final PeriodeImpositionImpotSource pi = piis.get(0);
+					Assert.assertNotNull(pi);
+					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
+					Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
+					Assert.assertEquals((Integer) MockCommune.Morges.getNoOFS(), pi.getNoOfs());
+					Assert.assertEquals(date(year, 1, 1), pi.getDateDebut());
+					Assert.assertEquals(date(year, 2, 1).getLastDayOfTheMonth(), pi.getDateFin());
+					Assert.assertNotNull(pi.getContribuable());
+					Assert.assertEquals((Long) ppId, pi.getContribuable().getNumero());
+				}
+				{
+					final PeriodeImpositionImpotSource pi = piis.get(1);
+					Assert.assertNotNull(pi);
+					Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
+					Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
+					Assert.assertEquals((Integer) MockCommune.Morges.getNoOFS(), pi.getNoOfs());
+					Assert.assertEquals(date(year, 3, 1), pi.getDateDebut());
+					Assert.assertEquals(date(year, 4, 22), pi.getDateFin());
+					Assert.assertNotNull(pi.getContribuable());
+					Assert.assertEquals((Long) ppId, pi.getContribuable().getNumero());
+				}
+				{
+					final PeriodeImpositionImpotSource pi = piis.get(2);
+					Assert.assertNotNull(pi);
+					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
+					Assert.assertEquals(Localisation.getHorsSuisse(MockPays.France.getNoOFS()), pi.getLocalisation());
+					Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, pi.getTypeAutoriteFiscale());
+					Assert.assertEquals((Integer) MockPays.France.getNoOFS(), pi.getNoOfs());
+					Assert.assertEquals(date(year, 4, 23), pi.getDateDebut());
+					Assert.assertEquals(date(year, 7, 25), pi.getDateFin());
+					Assert.assertNotNull(pi.getContribuable());
+					Assert.assertEquals((Long) ppId, pi.getContribuable().getNumero());
+				}
+				{
+					final PeriodeImpositionImpotSource pi = piis.get(3);
+					Assert.assertNotNull(pi);
+					Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
+					Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
+					Assert.assertEquals((Integer) MockCommune.Vevey.getNoOFS(), pi.getNoOfs());
+					Assert.assertEquals(date(year, 7, 26), pi.getDateDebut());
+					Assert.assertEquals(date(year, 12, 31), pi.getDateFin());
+					Assert.assertNotNull(pi.getContribuable());
+					Assert.assertEquals((Long) ppId, pi.getContribuable().getNumero());
+				}
+			}
+		});
 	}
 }
