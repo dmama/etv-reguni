@@ -7,14 +7,12 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -39,7 +37,11 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		service = getBean(PeriodeImpositionImpotSourceService.class, "periodeImpositionImpotSourceService");
 	}
 
-	private void assertNoPiis(PersonnePhysique pp) throws AssujettissementException {
+	private static interface TestRunnable {
+		void run() throws Exception;
+	}
+
+	private void assertNoPiis(PersonnePhysique pp) throws PeriodeImpositionImpotSourceServiceException {
 		final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
 		Assert.assertNotNull(piis);
 		Assert.assertEquals(0, piis.size());
@@ -305,9 +307,9 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		});
 
 		final MutableLong testedId = new MutableLong();
-		final Runnable test = new Runnable() {
+		final TestRunnable test = new TestRunnable() {
 			@Override
-			public void run() {
+			public void run() throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(testedId.longValue());
 				final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
 				Assert.assertNotNull(piis);
@@ -352,9 +354,9 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		};
 
 		// calcul
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
+			public void execute(TransactionStatus status) throws Exception {
 				testedId.setValue(ids.ppMixte1);
 				test.run();
 
@@ -410,9 +412,9 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		});
 
 		final MutableLong testedId = new MutableLong();
-		final Runnable test = new Runnable() {
+		final TestRunnable test = new TestRunnable() {
 			@Override
-			public void run() {
+			public void run() throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(testedId.longValue());
 				final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
 				Assert.assertNotNull(piis);
@@ -457,9 +459,9 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		};
 
 		// calcul
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
+			public void execute(TransactionStatus status) throws Exception {
 				testedId.setValue(ids.ppOrdinaire);
 				test.run();
 
@@ -578,9 +580,9 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		});
 
 		final MutableLong testedId = new MutableLong();
-		final Runnable test = new Runnable() {
+		final TestRunnable test = new TestRunnable() {
 			@Override
-			public void run() {
+			public void run() throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(testedId.longValue());
 				final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
 				Assert.assertNotNull(piis);
@@ -625,9 +627,9 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		};
 
 		// calcul
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
+			public void execute(TransactionStatus status) throws Exception {
 				testedId.setValue(ids.ppMixte1);
 				test.run();
 
@@ -689,9 +691,9 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		});
 
 		final MutableLong testedId = new MutableLong();
-		final Runnable test = new Runnable() {
+		final TestRunnable test = new TestRunnable() {
 			@Override
-			public void run() {
+			public void run() throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(testedId.longValue());
 				final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
 				Assert.assertNotNull(piis);
@@ -736,9 +738,9 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		};
 
 		// calcul
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
+			public void execute(TransactionStatus status) throws Exception {
 				testedId.setValue(ids.ppOrdinaire);
 				test.run();
 
@@ -882,9 +884,9 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		});
 
 		final MutableLong testedId = new MutableLong();
-		final Runnable test = new Runnable() {
+		final TestRunnable test = new TestRunnable() {
 			@Override
-			public void run() {
+			public void run() throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(testedId.longValue());
 				final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
 				Assert.assertNotNull(piis);
@@ -915,16 +917,11 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 				}
 			}
 		};
-		final Runnable testEmpty = new Runnable() {
+		final TestRunnable testEmpty = new TestRunnable() {
 			@Override
-			public void run() {
-				try {
-					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(testedId.longValue());
-					assertNoPiis(pp);
-				}
-				catch (AssujettissementException e) {
-					throw new RuntimeException(e);
-				}
+			public void run() throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(testedId.longValue());
+				assertNoPiis(pp);
 			}
 		};
 
@@ -998,9 +995,9 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		});
 
 		final MutableLong testedId = new MutableLong();
-		final Runnable test = new Runnable() {
+		final TestRunnable test = new TestRunnable() {
 			@Override
-			public void run() {
+			public void run() throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(testedId.longValue());
 				final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
 				Assert.assertNotNull(piis);
@@ -1111,9 +1108,9 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		});
 
 		final MutableLong testedId = new MutableLong();
-		final Runnable test = new Runnable() {
+		final TestRunnable test = new TestRunnable() {
 			@Override
-			public void run() {
+			public void run() throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(testedId.longValue());
 				final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
 				Assert.assertNotNull(piis);
@@ -1144,23 +1141,18 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 				}
 			}
 		};
-		final Runnable testEmpty = new Runnable() {
+		final TestRunnable testEmpty = new TestRunnable() {
 			@Override
-			public void run() {
-				try {
-					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(testedId.longValue());
-					assertNoPiis(pp);
-				}
-				catch (AssujettissementException e) {
-					throw new RuntimeException(e);
-				}
+			public void run() throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(testedId.longValue());
+				assertNoPiis(pp);
 			}
 		};
 
 		// calcul
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
+			public void execute(TransactionStatus status) throws Exception {
 				testedId.setValue(ids.ppOrdinaire);
 				testEmpty.run();
 
@@ -1248,9 +1240,9 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		});
 
 		final MutableLong testedId = new MutableLong();
-		final Runnable test = new Runnable() {
+		final TestRunnable test = new TestRunnable() {
 			@Override
-			public void run() {
+			public void run() throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(testedId.longValue());
 				final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
 				Assert.assertNotNull(piis);
@@ -1283,9 +1275,9 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		};
 
 		// calcul
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
+			public void execute(TransactionStatus status) throws Exception {
 				testedId.setValue(ids.ppOrdinaire);
 				test.run();
 
@@ -1357,9 +1349,9 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		});
 
 		final MutableLong testedId = new MutableLong();
-		final Runnable test = new Runnable() {
+		final TestRunnable test = new TestRunnable() {
 			@Override
-			public void run() {
+			public void run() throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(testedId.longValue());
 				final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
 				Assert.assertNotNull(piis);
@@ -1402,23 +1394,18 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 				}
 			}
 		};
-		final Runnable testEmpty = new Runnable() {
+		final TestRunnable testEmpty = new TestRunnable() {
 			@Override
-			public void run() {
-				try {
-					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(testedId.longValue());
-					assertNoPiis(pp);
-				}
-				catch (AssujettissementException e) {
-					throw new RuntimeException(e);
-				}
+			public void run() throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(testedId.longValue());
+				assertNoPiis(pp);
 			}
 		};
 
 		// calcul
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
+			public void execute(TransactionStatus status) throws Exception {
 				testedId.setValue(ids.ppOrdinaire);
 				testEmpty.run();
 
@@ -1496,9 +1483,9 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		});
 
 		final MutableLong testedId = new MutableLong();
-		final Runnable test = new Runnable() {
+		final TestRunnable test = new TestRunnable() {
 			@Override
-			public void run() {
+			public void run() throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(testedId.longValue());
 				final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
 				Assert.assertNotNull(piis);
@@ -1543,9 +1530,9 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		};
 
 		// calcul
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
+			public void execute(TransactionStatus status) throws Exception {
 				testedId.setValue(ids.ppOrdinaire);
 				test.run();
 
@@ -1628,9 +1615,9 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		});
 
 		final MutableLong testedId = new MutableLong();
-		final Runnable test = new Runnable() {
+		final TestRunnable test = new TestRunnable() {
 			@Override
-			public void run() {
+			public void run() throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(testedId.longValue());
 				final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
 				Assert.assertNotNull(piis);
@@ -1673,23 +1660,18 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 				}
 			}
 		};
-		final Runnable testEmpty = new Runnable() {
+		final TestRunnable testEmpty = new TestRunnable() {
 			@Override
-			public void run() {
-				try {
-					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(testedId.longValue());
-					assertNoPiis(pp);
-				}
-				catch (AssujettissementException e) {
-					throw new RuntimeException(e);
-				}
+			public void run() throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(testedId.longValue());
+				assertNoPiis(pp);
 			}
 		};
 
 		// calcul
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
+			public void execute(TransactionStatus status) throws Exception {
 				testedId.setValue(ids.ppOrdinaire);
 				testEmpty.run();
 
@@ -1778,9 +1760,9 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		});
 
 		final MutableLong testedId = new MutableLong();
-		final Runnable test = new Runnable() {
+		final TestRunnable test = new TestRunnable() {
 			@Override
-			public void run() {
+			public void run() throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(testedId.longValue());
 				final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
 				Assert.assertNotNull(piis);
@@ -1825,9 +1807,9 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		};
 
 		// calcul
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
+			public void execute(TransactionStatus status) throws Exception {
 				testedId.setValue(ids.ppOrdinaire);
 				test.run();
 
@@ -1885,9 +1867,9 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 			});
 
 			final MutableLong testedId = new MutableLong();
-			final Runnable test = new Runnable() {
+			final TestRunnable test = new TestRunnable() {
 				@Override
-				public void run() {
+				public void run() throws Exception {
 					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(testedId.longValue());
 					final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
 					Assert.assertNotNull(piis);
@@ -1919,9 +1901,9 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 				}
 			};
 			// calcul
-			doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 				@Override
-				protected void doInTransactionWithoutResult(TransactionStatus status) {
+				public void execute(TransactionStatus status) throws Exception {
 					testedId.setValue(ids.ppSrc);
 					test.run();
 
@@ -1972,9 +1954,9 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		});
 
 		final MutableLong testedId = new MutableLong();
-		final Runnable test = new Runnable() {
+		final TestRunnable test = new TestRunnable() {
 			@Override
-			public void run() {
+			public void run() throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(testedId.longValue());
 				final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
 				Assert.assertNotNull(piis);
@@ -2006,9 +1988,9 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 			}
 		};
 		// calcul
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
+			public void execute(TransactionStatus status) throws Exception {
 				testedId.setValue(ids.ppSrc);
 				test.run();
 
@@ -3713,9 +3695,9 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		});
 
 		// calcul
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
+			public void execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
 				Assert.assertNotNull(piis);
@@ -3772,9 +3754,9 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		});
 
 		// calcul
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
+			public void execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
 				Assert.assertNotNull(piis);
@@ -3819,9 +3801,9 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		});
 
 		// calcul
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
+			public void execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
 				Assert.assertNotNull(piis);
@@ -3881,9 +3863,9 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		});
 
 		// calcul
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
+			public void execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
 				Assert.assertNotNull(piis);
@@ -3943,9 +3925,9 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		});
 
 		// calcul
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
+			public void execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
 				Assert.assertNotNull(piis);
@@ -4009,9 +3991,9 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		});
 
 		// calculs
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
+			public void execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
 				Assert.assertNotNull(piis);
@@ -4074,9 +4056,9 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		});
 
 		// calculs
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
+			public void execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
 				Assert.assertNotNull(piis);
@@ -4145,9 +4127,9 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		});
 
 		// calcul des piis
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
+			public void execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
 				Assert.assertNotNull(piis);
@@ -4192,9 +4174,9 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		});
 
 		// calcul des piis
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
+			public void execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
 				Assert.assertNotNull(piis);
@@ -4213,5 +4195,41 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 				}
 			}
 		});
+	}
+
+	@Test
+	public void testChevauchementDeFors() throws Exception {
+
+		// mise en place sans validation car ce n'est pas un cas accepté par la validation (pp appartenant à plusieurs mc)
+		final long ppId = doInNewTransactionAndSessionWithoutValidation(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Philibert", "Macaroni", date(1984, 3, 1), Sexe.MASCULIN);
+				final EnsembleTiersCouple couple1 = addEnsembleTiersCouple(pp, null, date(2013, 4, 2), null);
+				final EnsembleTiersCouple couple2 = addEnsembleTiersCouple(pp, null, date(2013, 5, 1), null);
+
+				addForPrincipal(pp, date(2012, 3, 1), MotifFor.MAJORITE, date(2013, 4, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bussigny, ModeImposition.SOURCE);
+				addForPrincipal(couple1.getMenage(), date(2013, 4, 2), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bussigny, ModeImposition.SOURCE);
+				addForPrincipal(couple2.getMenage(), date(2013, 5, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bussigny, ModeImposition.SOURCE);
+				return pp.getNumero();
+			}
+		});
+
+		// calculs
+		try {
+			doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+				@Override
+				public void execute(TransactionStatus status) throws Exception {
+					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+					service.determine(pp);
+					Assert.fail("La détermination aurait dû sauter en raison des chevauchements de fors");
+				}
+			});
+		}
+		catch (ch.vd.registre.base.tx.TxCallbackException e) {
+			Assert.assertNotNull(e.getMessage(), e.getCause());
+			Assert.assertEquals(PeriodeImpositionImpotSourceServiceException.class, e.getCause().getClass());
+			Assert.assertTrue(e.getMessage(), e.getMessage().contains("Chevauchement de fors principaux"));
+		}
 	}
 }

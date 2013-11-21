@@ -26,6 +26,7 @@ import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.metier.assujettissement.SourcierPur;
 import ch.vd.uniregctb.metier.piis.PeriodeImpositionImpotSource;
 import ch.vd.uniregctb.metier.piis.PeriodeImpositionImpotSourceService;
+import ch.vd.uniregctb.metier.piis.PeriodeImpositionImpotSourceServiceException;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -226,7 +227,12 @@ public class ForsTimelineController {
 		}
 		if (bean.isShowPeriodesImpositionIS() && tiers instanceof PersonnePhysique) {
 			final PersonnePhysique pp = (PersonnePhysique) tiers;
-			periodesImpositionIS.addAll(periodeImpositionImpotSourceService.determine(pp));
+			try {
+				periodesImpositionIS.addAll(periodeImpositionImpotSourceService.determine(pp));
+			}
+			catch (PeriodeImpositionImpotSourceServiceException e) {
+				bean.addException(new AssujettissementException(e));
+			}
 		}
 
 		// Calcul des différents ranges de l'axe du temps

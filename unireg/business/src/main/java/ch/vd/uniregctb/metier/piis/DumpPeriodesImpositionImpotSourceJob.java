@@ -145,8 +145,13 @@ public class DumpPeriodesImpositionImpotSourceJob extends JobDefinition {
 							rapport.addIgnore(id, DumpPeriodesImpositionImpotSourceResults.CauseIgnorance.ANNULE);
 						}
 						else {
-							final List<PeriodeImpositionImpotSource> piis = piisService.determine(pp);
-							rapport.addPeriodes(id, piis);
+							try {
+								final List<PeriodeImpositionImpotSource> piis = piisService.determine(pp);
+								rapport.addPeriodes(id, piis);
+							}
+							catch (PeriodeImpositionImpotSourceServiceException e) {
+								rapport.addErrorException(id, e);
+							}
 						}
 					}
 					sm.setMessage(msg, progressMonitor.getProgressInPercent());

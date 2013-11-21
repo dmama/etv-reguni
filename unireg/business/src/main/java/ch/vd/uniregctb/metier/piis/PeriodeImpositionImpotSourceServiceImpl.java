@@ -23,6 +23,7 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.CollectionsUtils;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.AppartenanceMenage;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -280,7 +281,7 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 	}
 
 	@Override
-	public List<PeriodeImpositionImpotSource> determine(PersonnePhysique pp) {
+	public List<PeriodeImpositionImpotSource> determine(PersonnePhysique pp) throws PeriodeImpositionImpotSourceServiceException {
 
 		// j'ai besoin :
 		// 1. des rapports de travail de la personne
@@ -295,6 +296,19 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 
 		// il est important que les fors soient triés y compris si plusieurs contribuables sont impliqués
 		Collections.sort(fors, new DateRangeComparator<ForFiscalPrincipal>());
+		ForFiscalPrincipal previous = null;
+		for (ForFiscalPrincipal ffp : fors) {
+			// il y a chevauchement de fors (ce qui est normalement interdit sur les fors principaux) si la date de début du for courant
+			// est incluse dans le for vu juste avant
+			if (previous != null && previous.isValidAt(ffp.getDateDebut())) {
+				final String msg = String.format("Chevauchement de fors principaux : %s sur contribuable %s avec %s sur contribuable %s",
+				                                 previous, FormatNumeroHelper.numeroCTBToDisplay(previous.getTiers().getNumero()),
+				                                 ffp, FormatNumeroHelper.numeroCTBToDisplay(ffp.getTiers().getNumero()));
+
+				throw new PeriodeImpositionImpotSourceServiceException(msg);
+			}
+			previous = ffp;
+		}
 
 		final List<RapportPrestationImposable> rpis = getRapportsEntreTiers(pp, RapportPrestationImposable.class, false);
 		return determine(pp, fors, rpis);
