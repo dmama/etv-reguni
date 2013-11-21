@@ -228,4 +228,8 @@ public class PeriodeImpositionImpotSource implements CollatableDateRange, Duplic
 	public Integer getNoOfs() {
 		return noOfs;
 	}
+
+	public String getCleLocalisation() {
+		return cleLocalisation;
+	}
 }

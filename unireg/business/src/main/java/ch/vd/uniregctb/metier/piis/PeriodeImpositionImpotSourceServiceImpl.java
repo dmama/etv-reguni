@@ -39,6 +39,7 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositionImpotSourceService {
 
 	private static final Map<MotifFor, DateShiftingStrategy> BEGIN_DATE_SHIFTING_STRATEGIES = buildBeginDateShiftingStrategies();
+	private static final Map<MotifFor, DateShiftingStrategy> END_DATE_SHIFTING_STRATEGIES = buildEndDateShiftingStrategies();
 
 	private TiersDAO tiersDAO;
 	private TiersService tiersService;
@@ -58,19 +59,78 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 
 	private static interface DateShiftingStrategy {
 		RegDate shift(RegDate date);
+		boolean isImperativeSegmentationPoint();
 	}
 
 	private static final class NoopDateShiftingStrategy implements DateShiftingStrategy {
+		private final boolean imperativeSegmentationPoint;
+
+		public NoopDateShiftingStrategy(boolean imperativeSegmentationPoint) {
+			this.imperativeSegmentationPoint = imperativeSegmentationPoint;
+		}
+
 		@Override
 		public RegDate shift(RegDate date) {
 			return date;
 		}
+
+		@Override
+		public boolean isImperativeSegmentationPoint() {
+			return imperativeSegmentationPoint;
+		}
 	}
 
-	private static final class BeginOfNextMonthDateShiftingStrategy implements DateShiftingStrategy {
+	private static abstract class AdditionalTranslationDateShiftingStrategy implements DateShiftingStrategy {
+		private final DateShiftingStrategy wrapped;
+
+		public AdditionalTranslationDateShiftingStrategy(DateShiftingStrategy wrapped) {
+			this.wrapped = wrapped;
+		}
+
+		@Override
+		public final RegDate shift(RegDate date) {
+			return translate(wrapped.shift(date));
+		}
+
+		@Override
+		public final boolean isImperativeSegmentationPoint() {
+			return wrapped.isImperativeSegmentationPoint();
+		}
+
+		protected abstract RegDate translate(RegDate date);
+	}
+
+	private static final class NextDayDateShiftingStrategy extends AdditionalTranslationDateShiftingStrategy {
+		public NextDayDateShiftingStrategy(DateShiftingStrategy wrapped) {
+			super(wrapped);
+		}
+
+		@Override
+		protected RegDate translate(RegDate date) {
+			return date.getOneDayAfter();
+		}
+	}
+
+	private static final class PreviousDayDateShiftingStrategy extends AdditionalTranslationDateShiftingStrategy {
+		public PreviousDayDateShiftingStrategy(DateShiftingStrategy wrapped) {
+			super(wrapped);
+		}
+
+		@Override
+		protected RegDate translate(RegDate date) {
+			return date.getOneDayBefore();
+		}
+	}
+
+	private static final class EndOfMonthDateShiftingStrategy implements DateShiftingStrategy {
 		@Override
 		public RegDate shift(RegDate date) {
-			return date.getLastDayOfTheMonth().getOneDayAfter();
+			return date.getLastDayOfTheMonth();
+		}
+
+		@Override
+		public boolean isImperativeSegmentationPoint() {
+			return false;
 		}
 	}
 
@@ -79,17 +139,80 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 		public RegDate shift(RegDate date) {
 			return date.getOneDayBefore().getLastDayOfTheMonth().getOneDayAfter();
 		}
+
+		@Override
+		public boolean isImperativeSegmentationPoint() {
+			return false;
+		}
 	}
 
+	/**
+	 * Construction des stratégies de décalage des dates de début
+	 */
 	private static Map<MotifFor, DateShiftingStrategy> buildBeginDateShiftingStrategies() {
 		final Map<MotifFor, DateShiftingStrategy> map = new EnumMap<>(MotifFor.class);
-		map.put(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, new BeginOfNextMonthDateShiftingStrategy());
-		map.put(MotifFor.PERMIS_C_SUISSE, new NextBeginOfMonthDateShiftingStrategy());
-		map.put(MotifFor.ARRIVEE_HC, new BeginOfNextMonthDateShiftingStrategy());
-		map.put(MotifFor.DEPART_HC, new BeginOfNextMonthDateShiftingStrategy());
 
+		//
+		// les cas de décalage au début du mois suivant
+		//
+		final DateShiftingStrategy beginOfNextMonth = new NextDayDateShiftingStrategy(new EndOfMonthDateShiftingStrategy());
+		map.put(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, beginOfNextMonth);
+		map.put(MotifFor.ARRIVEE_HC, beginOfNextMonth);
+		map.put(MotifFor.DEPART_HC, beginOfNextMonth);
+
+		//
+		// le permis C / nationalité est un cas particulier -> on prend le prochain début de mois (on reste sur la date courante si on est déjà en début de mois)
+		//
+		map.put(MotifFor.PERMIS_C_SUISSE, new NextBeginOfMonthDateShiftingStrategy());
+
+		//
+		// pas de décalage de date, mais des motifs suffisament impératifs pour contrer un décalage de date, justement
+		//
+		final NoopDateShiftingStrategy imperativeNoop = new NoopDateShiftingStrategy(true);
+		map.put(MotifFor.ARRIVEE_HS, imperativeNoop);
+		map.put(MotifFor.DEPART_HS, imperativeNoop);
+		map.put(MotifFor.VEUVAGE_DECES, imperativeNoop);
+
+		//
 		// tous les autres -> Noop
-		final DateShiftingStrategy noop = new NoopDateShiftingStrategy();
+		//
+		final DateShiftingStrategy noop = new NoopDateShiftingStrategy(false);
+		for (MotifFor motif : MotifFor.values()) {
+			if (!map.containsKey(motif)) {
+				map.put(motif, noop);
+			}
+		}
+		return map;
+	}
+
+	private static Map<MotifFor, DateShiftingStrategy> buildEndDateShiftingStrategies() {
+		final Map<MotifFor, DateShiftingStrategy> map = new EnumMap<>(MotifFor.class);
+
+		//
+		// les cas de décalage en fin de mois
+		//
+		final DateShiftingStrategy endOfMonth = new EndOfMonthDateShiftingStrategy();
+		map.put(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, endOfMonth);
+		map.put(MotifFor.ARRIVEE_HC, endOfMonth);
+		map.put(MotifFor.DEPART_HC, endOfMonth);
+
+		//
+		// le permis C / nationalité est un cas particulier -> on prend la veille du prochain début de mois (la veille de la date courante si on est en début de mois)
+		//
+		map.put(MotifFor.PERMIS_C_SUISSE, new PreviousDayDateShiftingStrategy(new NextBeginOfMonthDateShiftingStrategy()));
+
+		//
+		// pas de décalage de date, mais des motifs suffisament impératifs pour contrer un décalage de date, justement
+		//
+		final NoopDateShiftingStrategy imperativeNoop = new NoopDateShiftingStrategy(true);
+		map.put(MotifFor.ARRIVEE_HS, imperativeNoop);
+		map.put(MotifFor.DEPART_HS, imperativeNoop);
+		map.put(MotifFor.VEUVAGE_DECES, imperativeNoop);
+
+		//
+		// tous les autres -> Noop
+		//
+		final DateShiftingStrategy noop = new NoopDateShiftingStrategy(false);
 		for (MotifFor motif : MotifFor.values()) {
 			if (!map.containsKey(motif)) {
 				map.put(motif, noop);
@@ -125,6 +248,10 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 		return liste;
 	}
 
+	/**
+	 * @param ctb un contribuable
+	 * @return la liste des fors fiscaux principaux non-annulés de ce contribuables, triés par date
+	 */
 	private static List<ForFiscalPrincipal> getForsPrincipaux(Contribuable ctb) {
 		return ctb.getForsFiscauxPrincipauxActifsSorted();
 	}
@@ -150,6 +277,11 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 		return determine(pp, fors, rpis);
 	}
 
+	/**
+	 * @param sortedList liste triée d'éléments
+	 * @param <T> types des éléments de la liste
+	 * @return le premier et le dernier (qui peuvent être les mêmes) éléments de la liste
+	 */
 	@Nullable
 	private static <T extends DateRange> Pair<T, T> getFirstAndLast(List<T> sortedList) {
 		if (sortedList.isEmpty()) {
@@ -191,6 +323,13 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 		return Pair.of(debut.year(), fin == null ? RegDate.get().year() : fin.year());
 	}
 
+	/**
+	 * Extraction des éléments d'une liste qui intersectent un range donné
+	 * @param pf le range d'intersection
+	 * @param src la liste à filtrer
+	 * @param <T> le type des éléments de la liste
+	 * @return une nouvelle liste contenant tous les éléments de la liste initiale qui intersectent avec le range donné (dans le même ordre que dans la liste initiale)
+	 */
 	private static <T extends DateRange> List<T> extractIntersectionWithFiscalPeriod(DateRange pf, List<T> src) {
 		if (pf.getDateDebut() == null || !pf.getDateDebut().addYears(1).getOneDayBefore().equals(pf.getDateFin()) || pf.getDateDebut().year() != pf.getDateFin().year()) {
 			throw new IllegalArgumentException("Invalid call with pf " + DateRangeHelper.toDisplayString(pf));
@@ -204,6 +343,9 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 		return res.isEmpty() ? Collections.<T>emptyList() : res;
 	}
 
+	/**
+	 * Iterateur sur une liste qui permet de guigner l'élément juste avant et l'élément juste après
+	 */
 	private static final class ForIterator implements Iterator<ForFiscalPrincipal> {
 
 		private int index = 0;      // l'index du prochain élément renvoyé par {@link next()}
@@ -239,23 +381,31 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 		}
 	}
 
+	/**
+	 * Calcul du motif d'ouverture à considérer (en donnant la priorité aux changements d'autorité fiscales - en fait, aux changements de clé de localisation : canton/pays)
+	 * @param motifOuverture le motif à utiliser s'il n'y a pas de changement de clé de localisation
+	 * @param dateDebut date de début du for (= date du motif)
+	 * @param typeAutoriteFiscale type d'autorité fiscale du for principal
+	 * @param noOfsAutoriteFiscale numéro OFS de l'entité derrière le for principal
+	 * @param typeAutoriteFiscalePrecedente type d'autorité fiscale du for principal précédent
+	 * @param noOfsAutoriteFiscalePrecedente numéro OFS de l'entité derrière le for principal précédent
+	 * @return le motif effectif à prendre en compte
+	 */
 	private MotifFor computeActualMotive(@NotNull MotifFor motifOuverture, @NotNull RegDate dateDebut,
 	                                     @NotNull TypeAutoriteFiscale typeAutoriteFiscale, int noOfsAutoriteFiscale,
 	                                     @NotNull TypeAutoriteFiscale typeAutoriteFiscalePrecedente, int noOfsAutoriteFiscalePrecedente) {
 		if (typeAutoriteFiscale == typeAutoriteFiscalePrecedente) {
-			if (typeAutoriteFiscale == TypeAutoriteFiscale.COMMUNE_HC) {
-				final String cleLocalisationAvant = PeriodeImpositionImpotSource.buildCleLocalisation(typeAutoriteFiscalePrecedente, noOfsAutoriteFiscalePrecedente,
-				                                                                                      dateDebut.getOneDayBefore(), infraService);
-				final String cleLocalisationApres = PeriodeImpositionImpotSource.buildCleLocalisation(typeAutoriteFiscale, noOfsAutoriteFiscale, dateDebut, infraService);
-				if (cleLocalisationApres.equals(cleLocalisationAvant)) {
-					return motifOuverture;
-				}
-				else {
-					return MotifFor.DEPART_HC;
-				}
+			final String cleLocalisationAvant = PeriodeImpositionImpotSource.buildCleLocalisation(typeAutoriteFiscalePrecedente, noOfsAutoriteFiscalePrecedente,
+			                                                                                      dateDebut.getOneDayBefore(), infraService);
+			final String cleLocalisationApres = PeriodeImpositionImpotSource.buildCleLocalisation(typeAutoriteFiscale, noOfsAutoriteFiscale, dateDebut, infraService);
+			if (cleLocalisationApres.equals(cleLocalisationAvant)) {
+				return motifOuverture;
+			}
+			else if (typeAutoriteFiscale == TypeAutoriteFiscale.PAYS_HS) {
+				return MotifFor.DEPART_HS;
 			}
 			else {
-				return motifOuverture;
+				return MotifFor.DEPART_HC;
 			}
 		}
 		else if (typeAutoriteFiscale == TypeAutoriteFiscale.PAYS_HS) {
@@ -272,39 +422,105 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 		}
 	}
 
-	private RegDate computeDateDebutMapping(ForFiscalPrincipal ffp, @Nullable ForFiscalPrincipal previous) {
+	/**
+	 * @param ffp for fiscal principal de base
+	 * @param previous éventuel for principal précédent
+	 * @return <ul><li>la date de début pour la PIIS du for</li><li>si oui ou non cette date peut même servir à contrer un décalage précédent</li></ul>
+	 */
+	private Pair<RegDate, Boolean> computeDateDebutMapping(ForFiscalPrincipal ffp, @Nullable ForFiscalPrincipal previous) {
 		final MotifFor actualMotive = previous != null && previous.getDateFin().getOneDayAfter() == ffp.getDateDebut()
 				? computeActualMotive(ffp.getMotifOuverture(), ffp.getDateDebut(),
 				                      ffp.getTypeAutoriteFiscale(), ffp.getNumeroOfsAutoriteFiscale(),
 				                      previous.getTypeAutoriteFiscale(), previous.getNumeroOfsAutoriteFiscale())
 				: ffp.getMotifOuverture();
-		return BEGIN_DATE_SHIFTING_STRATEGIES.get(actualMotive).shift(ffp.getDateDebut());
+		final DateShiftingStrategy strategy = BEGIN_DATE_SHIFTING_STRATEGIES.get(actualMotive);
+		return Pair.of(strategy.shift(ffp.getDateDebut()), strategy.isImperativeSegmentationPoint());
 	}
 
+	/**
+	 * Appelé sur le dernier for de la liste (il n'y a donc jamais de for suivant...)
+	 * @param ffp for fiscal principal de base
+	 * @return <ul><li>la date de fin pour la PIIS du for</li><li>si oui ou non cette date peut même servir à contrer un décalage précédent</li></ul>
+	 */
+	private Pair<RegDate, Boolean> computeDateFinMapping(ForFiscalPrincipal ffp) {
+		final DateShiftingStrategy strategy = END_DATE_SHIFTING_STRATEGIES.get(ffp.getMotifFermeture());
+		return Pair.of(strategy.shift(ffp.getDateFin()), strategy.isImperativeSegmentationPoint());
+	}
+
+	/**
+	 * Calcule un mapping entre les dates des fors et les dates des périodes d'imposition IS
+	 * @param fors les fors, ordonnés par date, qui ont une intersection avec la PF donnée
+	 * @param pf la période fiscale qui nous intéresse
+	 * @return le mapping des dates
+	 */
 	private Map<RegDate, RegDate> computeDateMapping(List<ForFiscalPrincipal> fors, DateRange pf) {
-		final Map<RegDate, RegDate> mapping = new HashMap<>(fors.size() * 2);
+		final Map<RegDate, RegDate> debutMapping = new HashMap<>(fors.size());
+		final Map<RegDate, RegDate> finMapping = new HashMap<>(fors.size());
 		final ForIterator iterator = new ForIterator(fors);
 		while (iterator.hasNext()) {
 			final ForFiscalPrincipal ffp = iterator.next();
 			if (!pf.isValidAt(ffp.getDateDebut())) {
-				mapping.put(ffp.getDateDebut(), pf.getDateDebut());
+				debutMapping.put(ffp.getDateDebut(), pf.getDateDebut());
 			}
 			else {
-				final RegDate newDebut = computeDateDebutMapping(ffp, iterator.peekAtPrevious());
-				mapping.put(ffp.getDateDebut(), newDebut);
-				mapping.put(ffp.getDateDebut().getOneDayBefore(), newDebut.getOneDayBefore());
+				final Pair<RegDate, Boolean> computedMapping = computeDateDebutMapping(ffp, iterator.peekAtPrevious());
+				final RegDate newDebut = computedMapping.getLeft();
+				debutMapping.put(ffp.getDateDebut(), newDebut);
+				finMapping.put(ffp.getDateDebut().getOneDayBefore(), newDebut.getOneDayBefore());   // peut écraser une valeur précédemment placée là dans une boucle précédente
+
+				// si on rencontre un mapping "impératif", il faut contrer les éventuels mappings qui allaient plus loin
+				// (comme on voit les fors dans l'ordre chronologique et que seuls les NOOP peuvent être "impératifs",
+				// on peut se contenter de travailler sur les dates déjà connues)
+				if (computedMapping.getRight()) {
+					for (Map.Entry<RegDate, RegDate> mapping : debutMapping.entrySet()) {
+						if (mapping.getValue().isAfter(newDebut)) {
+							mapping.setValue(newDebut);
+						}
+					}
+					for (Map.Entry<RegDate, RegDate> mapping : finMapping.entrySet()) {
+						if (mapping.getValue().isAfterOrEqual(newDebut)) {
+							mapping.setValue(newDebut.getOneDayBefore());
+						}
+					}
+				}
 			}
 
 			if (!pf.isValidAt(ffp.getDateFin())) {
-				mapping.put(ffp.getDateFin(), pf.getDateFin());
+				finMapping.put(ffp.getDateFin(), pf.getDateFin());
 			}
 			else {
-				mapping.put(ffp.getDateFin(), ffp.getDateFin());
+				final ForFiscalPrincipal next = iterator.peekAtNext();
+				if (next != null) {
+					finMapping.put(ffp.getDateFin(), ffp.getDateFin());     // pourra être écrasé lors d'un passage ultérieur dans la boucle
+				}
+				else {
+					final Pair<RegDate, Boolean> computedMapping = computeDateFinMapping(ffp);
+					final RegDate newFin = computedMapping.getLeft();
+					finMapping.put(ffp.getDateFin(), newFin);
+
+					// mapping impératif sur la fermeture du dernier for ?
+					if (computedMapping.getRight()) {
+						for (Map.Entry<RegDate, RegDate> mapping : finMapping.entrySet()) {
+							if (mapping.getValue().isAfterOrEqual(newFin)) {
+								mapping.setValue(newFin);
+							}
+						}
+					}
+				}
 			}
 		}
+
+		final Map<RegDate, RegDate> mapping = new HashMap<>(fors.size() * 2);
+		mapping.putAll(finMapping);
+		mapping.putAll(debutMapping);
 		return mapping;
 	}
 
+	/**
+	 * @param ffp un for principal
+	 * @param forSuivant l'éventuel for principal suivant
+	 * @return si oui ou non on peut considérer que le for principal se termine avec un départ HC
+	 */
 	private boolean isDepartHC(ForFiscalPrincipal ffp, @Nullable ForFiscalPrincipal forSuivant) {
 		final MotifFor motive;
 		if (forSuivant != null && forSuivant.getDateDebut().getOneDayBefore() == ffp.getDateFin()) {
@@ -317,6 +533,11 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 		return motive == MotifFor.DEPART_HC;
 	}
 
+	/**
+	 * @param ffp un for principal
+	 * @param forSuivant l'éventuel for principal suivant
+	 * @return le type ({@link PeriodeImpositionImpotSource.Type#MIXTE MIXTE} ou {@link PeriodeImpositionImpotSource.Type#SOURCE SOURCE}) de la période d'imposition IS à créer pour le for principal
+	 */
 	private PeriodeImpositionImpotSource.Type determineTypePeriode(ForFiscalPrincipal ffp, @Nullable ForFiscalPrincipal forSuivant) {
 		final PeriodeImpositionImpotSource.Type type;
 		if (ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && ffp.getModeImposition() != ModeImposition.MIXTE_137_2 && isDepartHC(ffp, forSuivant)) {
@@ -331,6 +552,13 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 		return type;
 	}
 
+	/**
+	 * La méthode centrale du calcul des périodes d'imposition IS
+	 * @param pp personne physique dont on veut calculer les périodes d'imposition IS
+	 * @param fors les fors principaux non-annulés de cette personne physique (et de ses éventuels ménages communs), triés par date
+	 * @param rpis les rapports de travail non-annulés de cette personne physique, triés par date
+	 * @return la liste des périodes d'imposition IS de la personne physique considérée
+	 */
 	private List<PeriodeImpositionImpotSource> determine(PersonnePhysique pp, List<ForFiscalPrincipal> fors, List<RapportPrestationImposable> rpis) {
 
 		// cas trivial de la personne sans for ni RT (= mineur ?)
