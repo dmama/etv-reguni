@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.RandomAccess;
 
 import org.apache.commons.collections.CollectionUtils;
 
@@ -142,5 +143,23 @@ public class CollectionsUtils extends CollectionUtils {
 				return merged;
 			}
 		};
+	}
+
+	/**
+	 * @param list une liste d'éléments
+	 * @param <T> le type d'élément dans la liste
+	 * @return le dernier élément de la liste (utilise l'accès direct si la liste implémente {@link RandomAccess} ou un accès par {@link ListIterator} dans le cas contraire)
+	 * @throws IllegalArgumentException si la liste est nulle ou vide
+	 */
+	public static <T> T getLastElement(List<T> list) {
+		if (list == null || list.isEmpty()) {
+			throw new IllegalArgumentException("Empty list has no last element!");
+		}
+		if (list instanceof RandomAccess) {
+			return list.get(list.size() - 1);
+		}
+		else {
+			return list.listIterator(list.size()).previous();
+		}
 	}
 }

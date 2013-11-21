@@ -205,6 +205,12 @@
 		<property name="assujettissementService" ref="assujettissementService" />
 	</bean>
 
+	<bean id="periodeImpositionImpotSourceService" class="ch.vd.uniregctb.metier.piis.PeriodeImpositionImpotSourceServiceImpl">
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="tiersService" ref="tiersService"/>
+		<property name="assujettissementService" ref="assujettissementService"/>
+	</bean>
+
 	<bean id="validationService" class="ch.vd.uniregctb.validation.ValidationServiceImpl" />
 
 	<bean id="entityValidator" class="ch.vd.uniregctb.validation.EntityValidatorImpl" abstract="true">
