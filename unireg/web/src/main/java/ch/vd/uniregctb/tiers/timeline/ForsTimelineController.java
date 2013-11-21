@@ -226,12 +226,7 @@ public class ForsTimelineController {
 		}
 		if (bean.isShowPeriodesImpositionIS() && tiers instanceof PersonnePhysique) {
 			final PersonnePhysique pp = (PersonnePhysique) tiers;
-			try {
-				periodesImpositionIS.addAll(periodeImpositionImpotSourceService.determine(pp));
-			}
-			catch (AssujettissementException e) {
-				bean.addException(e);
-			}
+			periodesImpositionIS.addAll(periodeImpositionImpotSourceService.determine(pp));
 		}
 
 		// Calcul des différents ranges de l'axe du temps

@@ -23,12 +23,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
-import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
-import ch.vd.uniregctb.metier.assujettissement.AssujettissementHelper;
-import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
-import ch.vd.uniregctb.metier.assujettissement.HorsCanton;
-import ch.vd.uniregctb.metier.assujettissement.SourcierPur;
 import ch.vd.uniregctb.tiers.AppartenanceMenage;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
@@ -49,7 +43,6 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 	private TiersDAO tiersDAO;
 	private TiersService tiersService;
 	private ServiceInfrastructureService infraService;
-	private AssujettissementService assujettissementService;
 
 	public void setTiersDAO(TiersDAO tiersDAO) {
 		this.tiersDAO = tiersDAO;
@@ -61,10 +54,6 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 
 	public void setInfraService(ServiceInfrastructureService infraService) {
 		this.infraService = infraService;
-	}
-
-	public void setAssujettissementService(AssujettissementService assujettissementService) {
-		this.assujettissementService = assujettissementService;
 	}
 
 	private static interface DateShiftingStrategy {
@@ -141,7 +130,7 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 	}
 
 	@Override
-	public List<PeriodeImpositionImpotSource> determine(PersonnePhysique pp) throws AssujettissementException {
+	public List<PeriodeImpositionImpotSource> determine(PersonnePhysique pp) {
 
 		// j'ai besoin :
 		// 1. des rapports de travail de la personne
@@ -216,6 +205,7 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 	}
 
 	private static final class ForIterator implements Iterator<ForFiscalPrincipal> {
+
 		private int index = 0;      // l'index du prochain élément renvoyé par {@link next()}
 		private final List<ForFiscalPrincipal> list;
 
@@ -239,9 +229,13 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 			throw new UnsupportedOperationException();
 		}
 
-		public ForFiscalPrincipal peekAtFormer() {
+		public ForFiscalPrincipal peekAtPrevious() {
 			// le précédent du dernier appel à next -> -2
 			return index > 1 ? list.get(index - 2) : null;
+		}
+
+		public ForFiscalPrincipal peekAtNext() {
+			return index < list.size() ? list.get(index) : null;
 		}
 	}
 
@@ -296,7 +290,7 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 				mapping.put(ffp.getDateDebut(), pf.getDateDebut());
 			}
 			else {
-				final RegDate newDebut = computeDateDebutMapping(ffp, iterator.peekAtFormer());
+				final RegDate newDebut = computeDateDebutMapping(ffp, iterator.peekAtPrevious());
 				mapping.put(ffp.getDateDebut(), newDebut);
 				mapping.put(ffp.getDateDebut().getOneDayBefore(), newDebut.getOneDayBefore());
 			}
@@ -311,11 +305,24 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 		return mapping;
 	}
 
-	private static PeriodeImpositionImpotSource.Type determineTypePeriode(ForFiscalPrincipal ffp, List<Assujettissement> assujettissementsPf) {
+	private boolean isDepartHC(ForFiscalPrincipal ffp, @Nullable ForFiscalPrincipal forSuivant) {
+		final MotifFor motive;
+		if (forSuivant != null && forSuivant.getDateDebut().getOneDayBefore() == ffp.getDateFin()) {
+			motive = computeActualMotive(forSuivant.getMotifOuverture(), forSuivant.getDateDebut(), forSuivant.getTypeAutoriteFiscale(), forSuivant.getNumeroOfsAutoriteFiscale(),
+			                             ffp.getTypeAutoriteFiscale(), ffp.getNumeroOfsAutoriteFiscale());
+		}
+		else {
+			motive = ffp.getMotifFermeture();
+		}
+		return motive == MotifFor.DEPART_HC;
+	}
+
+	private PeriodeImpositionImpotSource.Type determineTypePeriode(ForFiscalPrincipal ffp, @Nullable ForFiscalPrincipal forSuivant) {
 		final PeriodeImpositionImpotSource.Type type;
-		if ((assujettissementsPf.isEmpty() && ffp.getTiers() instanceof PersonnePhysique)
-				|| ffp.getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD
-				|| ffp.getModeImposition() == ModeImposition.SOURCE) {
+		if (ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && ffp.getModeImposition() != ModeImposition.MIXTE_137_2 && isDepartHC(ffp, forSuivant)) {
+			type = PeriodeImpositionImpotSource.Type.SOURCE;
+		}
+		else if (ffp.getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD || ffp.getModeImposition() == ModeImposition.SOURCE) {
 			type = PeriodeImpositionImpotSource.Type.SOURCE;
 		}
 		else {
@@ -324,24 +331,7 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 		return type;
 	}
 
-	private static List<Assujettissement> extractAssujettissementOrdinaireVaudois(List<Assujettissement> list, int pf) {
-		final List<Assujettissement> onPf = AssujettissementHelper.extractYear(list, pf);
-		if (onPf != null) {
-			final Iterator<Assujettissement> iterator = onPf.iterator();
-			while (iterator.hasNext()) {
-				final Assujettissement a = iterator.next();
-				if (a instanceof SourcierPur || a instanceof HorsCanton) {
-					iterator.remove();
-				}
-			}
-			return onPf;
-		}
-		else {
-			return Collections.emptyList();
-		}
-	}
-
-	private List<PeriodeImpositionImpotSource> determine(PersonnePhysique pp, List<ForFiscalPrincipal> fors, List<RapportPrestationImposable> rpis) throws AssujettissementException {
+	private List<PeriodeImpositionImpotSource> determine(PersonnePhysique pp, List<ForFiscalPrincipal> fors, List<RapportPrestationImposable> rpis) {
 
 		// cas trivial de la personne sans for ni RT (= mineur ?)
 		final Pair<Integer, Integer> interval = getPeriodInterval(fors, rpis);
@@ -349,9 +339,6 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 			// cas trivial de la personne sans for ni RT (= mineur ?)
 			return Collections.emptyList();
 		}
-
-		// calcul de l'assujettissement ordinaire
-		final List<Assujettissement> assujettissements = assujettissementService.determine(pp);
 
 		// on avance pf par pf
 		final int size = interval.getRight() - interval.getLeft() + 1;
@@ -386,20 +373,19 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 				}
 			}
 
-			// quel est l'assujettissement ordinaire vaudois sur cette PF ?
-			final List<Assujettissement> assujettissementPf = extractAssujettissementOrdinaireVaudois(assujettissements, pf);
-
 			// il y a des fors, nous voici donc dans le vif du sujet...
 			final Map<RegDate, RegDate> dateMapping = computeDateMapping(fors, pfRange);
 
 			// tous les fors sont pris en compte
 			final List<PeriodeImpositionImpotSource> piisPf = new ArrayList<>(forsPf.size());
 			RegDate lastDebut = null;
-			for (ForFiscalPrincipal ffp : forsPf) {
+			final ForIterator iterator = new ForIterator(forsPf);
+			while (iterator.hasNext()) {
+				final ForFiscalPrincipal ffp = iterator.next();
 				final RegDate debut = RegDateHelper.maximum(dateMapping.get(ffp.getDateDebut()), lastDebut, NullDateBehavior.EARLIEST);
 				final RegDate fin = dateMapping.get(ffp.getDateFin());
 				if (debut.isBeforeOrEqual(fin)) {
-					final PeriodeImpositionImpotSource.Type type = determineTypePeriode(ffp, assujettissementPf);
+					final PeriodeImpositionImpotSource.Type type = determineTypePeriode(ffp, iterator.peekAtNext());
 					piisPf.add(new PeriodeImpositionImpotSource(pp, type, debut, fin, ffp, infraService));
 				}
 				lastDebut = debut;

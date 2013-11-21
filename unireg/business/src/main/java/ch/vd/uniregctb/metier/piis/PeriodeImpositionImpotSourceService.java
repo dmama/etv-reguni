@@ -15,5 +15,5 @@ public interface PeriodeImpositionImpotSourceService {
 	 * @param pp personne physique
 	 * @return liste des périodes d'imposition de l'impôt source calculées
 	 */
-	List<PeriodeImpositionImpotSource> determine(PersonnePhysique pp) throws AssujettissementException;
+	List<PeriodeImpositionImpotSource> determine(PersonnePhysique pp);
 }

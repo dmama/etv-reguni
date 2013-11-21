@@ -303,47 +303,42 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final Runnable test = new Runnable() {
 			@Override
 			public void run() {
-				try {
-					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(testedId.longValue());
-					final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
-					Assert.assertNotNull(piis);
-					Assert.assertEquals(3, piis.size());
-					{
-						final PeriodeImpositionImpotSource pi = piis.get(0);
-						Assert.assertNotNull(pi);
-						Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-						Assert.assertNull(pi.getTypeAutoriteFiscale());
-						Assert.assertNull(pi.getNoOfs());
-						Assert.assertEquals(date(firstYear, 1, 1), pi.getDateDebut());
-						Assert.assertEquals(debutFor.getOneDayBefore(), pi.getDateFin());
-						Assert.assertNotNull(pi.getContribuable());
-						Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
-					}
-					{
-						final PeriodeImpositionImpotSource pi = piis.get(1);
-						Assert.assertNotNull(pi);
-						Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-						Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
-						Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
-						Assert.assertEquals(debutFor, pi.getDateDebut());
-						Assert.assertEquals(date(firstYear, 12, 31), pi.getDateFin());
-						Assert.assertNotNull(pi.getContribuable());
-						Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
-					}
-					{
-						final PeriodeImpositionImpotSource pi = piis.get(2);
-						Assert.assertNotNull(pi);
-						Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-						Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
-						Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
-						Assert.assertEquals(date(currentYear, 1, 1), pi.getDateDebut());
-						Assert.assertEquals(date(currentYear, 12, 31), pi.getDateFin());
-						Assert.assertNotNull(pi.getContribuable());
-						Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
-					}
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(testedId.longValue());
+				final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
+				Assert.assertNotNull(piis);
+				Assert.assertEquals(3, piis.size());
+				{
+					final PeriodeImpositionImpotSource pi = piis.get(0);
+					Assert.assertNotNull(pi);
+					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
+					Assert.assertNull(pi.getTypeAutoriteFiscale());
+					Assert.assertNull(pi.getNoOfs());
+					Assert.assertEquals(date(firstYear, 1, 1), pi.getDateDebut());
+					Assert.assertEquals(debutFor.getOneDayBefore(), pi.getDateFin());
+					Assert.assertNotNull(pi.getContribuable());
+					Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
 				}
-				catch (AssujettissementException e) {
-					throw new RuntimeException(e);
+				{
+					final PeriodeImpositionImpotSource pi = piis.get(1);
+					Assert.assertNotNull(pi);
+					Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
+					Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
+					Assert.assertEquals(debutFor, pi.getDateDebut());
+					Assert.assertEquals(date(firstYear, 12, 31), pi.getDateFin());
+					Assert.assertNotNull(pi.getContribuable());
+					Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
+				}
+				{
+					final PeriodeImpositionImpotSource pi = piis.get(2);
+					Assert.assertNotNull(pi);
+					Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
+					Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
+					Assert.assertEquals(date(currentYear, 1, 1), pi.getDateDebut());
+					Assert.assertEquals(date(currentYear, 12, 31), pi.getDateFin());
+					Assert.assertNotNull(pi.getContribuable());
+					Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
 				}
 			}
 		};
@@ -410,47 +405,42 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final Runnable test = new Runnable() {
 			@Override
 			public void run() {
-				try {
-					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(testedId.longValue());
-					final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
-					Assert.assertNotNull(piis);
-					Assert.assertEquals(3, piis.size());
-					{
-						final PeriodeImpositionImpotSource pi = piis.get(0);
-						Assert.assertNotNull(pi);
-						Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-						Assert.assertNull(pi.getTypeAutoriteFiscale());
-						Assert.assertNull(pi.getNoOfs());
-						Assert.assertEquals(date(firstYear, 1, 1), pi.getDateDebut());
-						Assert.assertEquals(debutFor.getOneDayBefore(), pi.getDateFin());
-						Assert.assertNotNull(pi.getContribuable());
-						Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
-					}
-					{
-						final PeriodeImpositionImpotSource pi = piis.get(1);
-						Assert.assertNotNull(pi);
-						Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-						Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
-						Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
-						Assert.assertEquals(debutFor, pi.getDateDebut());
-						Assert.assertEquals(date(firstYear, 12, 31), pi.getDateFin());
-						Assert.assertNotNull(pi.getContribuable());
-						Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
-					}
-					{
-						final PeriodeImpositionImpotSource pi = piis.get(2);
-						Assert.assertNotNull(pi);
-						Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-						Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
-						Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
-						Assert.assertEquals(date(currentYear, 1, 1), pi.getDateDebut());
-						Assert.assertEquals(date(currentYear, 12, 31), pi.getDateFin());
-						Assert.assertNotNull(pi.getContribuable());
-						Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
-					}
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(testedId.longValue());
+				final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
+				Assert.assertNotNull(piis);
+				Assert.assertEquals(3, piis.size());
+				{
+					final PeriodeImpositionImpotSource pi = piis.get(0);
+					Assert.assertNotNull(pi);
+					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
+					Assert.assertNull(pi.getTypeAutoriteFiscale());
+					Assert.assertNull(pi.getNoOfs());
+					Assert.assertEquals(date(firstYear, 1, 1), pi.getDateDebut());
+					Assert.assertEquals(debutFor.getOneDayBefore(), pi.getDateFin());
+					Assert.assertNotNull(pi.getContribuable());
+					Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
 				}
-				catch (AssujettissementException e) {
-					throw new RuntimeException(e);
+				{
+					final PeriodeImpositionImpotSource pi = piis.get(1);
+					Assert.assertNotNull(pi);
+					Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
+					Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
+					Assert.assertEquals(debutFor, pi.getDateDebut());
+					Assert.assertEquals(date(firstYear, 12, 31), pi.getDateFin());
+					Assert.assertNotNull(pi.getContribuable());
+					Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
+				}
+				{
+					final PeriodeImpositionImpotSource pi = piis.get(2);
+					Assert.assertNotNull(pi);
+					Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
+					Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
+					Assert.assertEquals(date(currentYear, 1, 1), pi.getDateDebut());
+					Assert.assertEquals(date(currentYear, 12, 31), pi.getDateFin());
+					Assert.assertNotNull(pi.getContribuable());
+					Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
 				}
 			}
 		};
@@ -580,47 +570,42 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final Runnable test = new Runnable() {
 			@Override
 			public void run() {
-				try {
-					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(testedId.longValue());
-					final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
-					Assert.assertNotNull(piis);
-					Assert.assertEquals(3, piis.size());
-					{
-						final PeriodeImpositionImpotSource pi = piis.get(0);
-						Assert.assertNotNull(pi);
-						Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-						Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, pi.getTypeAutoriteFiscale());
-						Assert.assertEquals((Integer) MockPays.Allemagne.getNoOFS(), pi.getNoOfs());
-						Assert.assertEquals(date(currentYear - 1, 1, 1), pi.getDateDebut());
-						Assert.assertEquals(arrivee.getOneDayBefore(), pi.getDateFin());
-						Assert.assertNotNull(pi.getContribuable());
-						Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
-					}
-					{
-						final PeriodeImpositionImpotSource pi = piis.get(1);
-						Assert.assertNotNull(pi);
-						Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-						Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
-						Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
-						Assert.assertEquals(arrivee, pi.getDateDebut());
-						Assert.assertEquals(date(currentYear - 1, 12, 31), pi.getDateFin());
-						Assert.assertNotNull(pi.getContribuable());
-						Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
-					}
-					{
-						final PeriodeImpositionImpotSource pi = piis.get(2);
-						Assert.assertNotNull(pi);
-						Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-						Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
-						Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
-						Assert.assertEquals(date(currentYear, 1, 1), pi.getDateDebut());
-						Assert.assertEquals(date(currentYear, 12, 31), pi.getDateFin());
-						Assert.assertNotNull(pi.getContribuable());
-						Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
-					}
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(testedId.longValue());
+				final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
+				Assert.assertNotNull(piis);
+				Assert.assertEquals(3, piis.size());
+				{
+					final PeriodeImpositionImpotSource pi = piis.get(0);
+					Assert.assertNotNull(pi);
+					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
+					Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, pi.getTypeAutoriteFiscale());
+					Assert.assertEquals((Integer) MockPays.Allemagne.getNoOFS(), pi.getNoOfs());
+					Assert.assertEquals(date(currentYear - 1, 1, 1), pi.getDateDebut());
+					Assert.assertEquals(arrivee.getOneDayBefore(), pi.getDateFin());
+					Assert.assertNotNull(pi.getContribuable());
+					Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
 				}
-				catch (AssujettissementException e) {
-					throw new RuntimeException(e);
+				{
+					final PeriodeImpositionImpotSource pi = piis.get(1);
+					Assert.assertNotNull(pi);
+					Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
+					Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
+					Assert.assertEquals(arrivee, pi.getDateDebut());
+					Assert.assertEquals(date(currentYear - 1, 12, 31), pi.getDateFin());
+					Assert.assertNotNull(pi.getContribuable());
+					Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
+				}
+				{
+					final PeriodeImpositionImpotSource pi = piis.get(2);
+					Assert.assertNotNull(pi);
+					Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
+					Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
+					Assert.assertEquals(date(currentYear, 1, 1), pi.getDateDebut());
+					Assert.assertEquals(date(currentYear, 12, 31), pi.getDateFin());
+					Assert.assertNotNull(pi.getContribuable());
+					Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
 				}
 			}
 		};
@@ -693,47 +678,42 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final Runnable test = new Runnable() {
 			@Override
 			public void run() {
-				try {
-					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(testedId.longValue());
-					final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
-					Assert.assertNotNull(piis);
-					Assert.assertEquals(3, piis.size());
-					{
-						final PeriodeImpositionImpotSource pi = piis.get(0);
-						Assert.assertNotNull(pi);
-						Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-						Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, pi.getTypeAutoriteFiscale());
-						Assert.assertEquals((Integer) MockPays.Allemagne.getNoOFS(), pi.getNoOfs());
-						Assert.assertEquals(date(currentYear - 1, 1, 1), pi.getDateDebut());
-						Assert.assertEquals(arrivee.getOneDayBefore(), pi.getDateFin());
-						Assert.assertNotNull(pi.getContribuable());
-						Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
-					}
-					{
-						final PeriodeImpositionImpotSource pi = piis.get(1);
-						Assert.assertNotNull(pi);
-						Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-						Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
-						Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
-						Assert.assertEquals(arrivee, pi.getDateDebut());
-						Assert.assertEquals(date(currentYear - 1, 12, 31), pi.getDateFin());
-						Assert.assertNotNull(pi.getContribuable());
-						Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
-					}
-					{
-						final PeriodeImpositionImpotSource pi = piis.get(2);
-						Assert.assertNotNull(pi);
-						Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-						Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
-						Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
-						Assert.assertEquals(date(currentYear, 1, 1), pi.getDateDebut());
-						Assert.assertEquals(date(currentYear, 12, 31), pi.getDateFin());
-						Assert.assertNotNull(pi.getContribuable());
-						Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
-					}
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(testedId.longValue());
+				final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
+				Assert.assertNotNull(piis);
+				Assert.assertEquals(3, piis.size());
+				{
+					final PeriodeImpositionImpotSource pi = piis.get(0);
+					Assert.assertNotNull(pi);
+					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
+					Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, pi.getTypeAutoriteFiscale());
+					Assert.assertEquals((Integer) MockPays.Allemagne.getNoOFS(), pi.getNoOfs());
+					Assert.assertEquals(date(currentYear - 1, 1, 1), pi.getDateDebut());
+					Assert.assertEquals(arrivee.getOneDayBefore(), pi.getDateFin());
+					Assert.assertNotNull(pi.getContribuable());
+					Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
 				}
-				catch (AssujettissementException e) {
-					throw new RuntimeException(e);
+				{
+					final PeriodeImpositionImpotSource pi = piis.get(1);
+					Assert.assertNotNull(pi);
+					Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
+					Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
+					Assert.assertEquals(arrivee, pi.getDateDebut());
+					Assert.assertEquals(date(currentYear - 1, 12, 31), pi.getDateFin());
+					Assert.assertNotNull(pi.getContribuable());
+					Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
+				}
+				{
+					final PeriodeImpositionImpotSource pi = piis.get(2);
+					Assert.assertNotNull(pi);
+					Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
+					Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
+					Assert.assertEquals(date(currentYear, 1, 1), pi.getDateDebut());
+					Assert.assertEquals(date(currentYear, 12, 31), pi.getDateFin());
+					Assert.assertNotNull(pi.getContribuable());
+					Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
 				}
 			}
 		};
@@ -888,36 +868,31 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final Runnable test = new Runnable() {
 			@Override
 			public void run() {
-				try {
-					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(testedId.longValue());
-					final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
-					Assert.assertNotNull(piis);
-					Assert.assertEquals(2, piis.size());
-					{
-						final PeriodeImpositionImpotSource pi = piis.get(0);
-						Assert.assertNotNull(pi);
-						Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-						Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
-						Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
-						Assert.assertEquals(date(lastYear, 1, 1), pi.getDateDebut());
-						Assert.assertEquals(depart, pi.getDateFin());
-						Assert.assertNotNull(pi.getContribuable());
-						Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
-					}
-					{
-						final PeriodeImpositionImpotSource pi = piis.get(1);
-						Assert.assertNotNull(pi);
-						Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-						Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, pi.getTypeAutoriteFiscale());
-						Assert.assertEquals((Integer) MockPays.Allemagne.getNoOFS(), pi.getNoOfs());
-						Assert.assertEquals(depart.getOneDayAfter(), pi.getDateDebut());
-						Assert.assertEquals(date(lastYear, 12, 31), pi.getDateFin());
-						Assert.assertNotNull(pi.getContribuable());
-						Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
-					}
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(testedId.longValue());
+				final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
+				Assert.assertNotNull(piis);
+				Assert.assertEquals(2, piis.size());
+				{
+					final PeriodeImpositionImpotSource pi = piis.get(0);
+					Assert.assertNotNull(pi);
+					Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
+					Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
+					Assert.assertEquals(date(lastYear, 1, 1), pi.getDateDebut());
+					Assert.assertEquals(depart, pi.getDateFin());
+					Assert.assertNotNull(pi.getContribuable());
+					Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
 				}
-				catch (AssujettissementException e) {
-					throw new RuntimeException(e);
+				{
+					final PeriodeImpositionImpotSource pi = piis.get(1);
+					Assert.assertNotNull(pi);
+					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
+					Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, pi.getTypeAutoriteFiscale());
+					Assert.assertEquals((Integer) MockPays.Allemagne.getNoOFS(), pi.getNoOfs());
+					Assert.assertEquals(depart.getOneDayAfter(), pi.getDateDebut());
+					Assert.assertEquals(date(lastYear, 12, 31), pi.getDateFin());
+					Assert.assertNotNull(pi.getContribuable());
+					Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
 				}
 			}
 		};
@@ -1007,36 +982,31 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final Runnable test = new Runnable() {
 			@Override
 			public void run() {
-				try {
-					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(testedId.longValue());
-					final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
-					Assert.assertNotNull(piis);
-					Assert.assertEquals(2, piis.size());
-					{
-						final PeriodeImpositionImpotSource pi = piis.get(0);
-						Assert.assertNotNull(pi);
-						Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-						Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
-						Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
-						Assert.assertEquals(date(lastYear, 1, 1), pi.getDateDebut());
-						Assert.assertEquals(depart, pi.getDateFin());
-						Assert.assertNotNull(pi.getContribuable());
-						Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
-					}
-					{
-						final PeriodeImpositionImpotSource pi = piis.get(1);
-						Assert.assertNotNull(pi);
-						Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-						Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, pi.getTypeAutoriteFiscale());
-						Assert.assertEquals((Integer) MockPays.Allemagne.getNoOFS(), pi.getNoOfs());
-						Assert.assertEquals(depart.getOneDayAfter(), pi.getDateDebut());
-						Assert.assertEquals(date(lastYear, 12, 31), pi.getDateFin());
-						Assert.assertNotNull(pi.getContribuable());
-						Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
-					}
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(testedId.longValue());
+				final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
+				Assert.assertNotNull(piis);
+				Assert.assertEquals(2, piis.size());
+				{
+					final PeriodeImpositionImpotSource pi = piis.get(0);
+					Assert.assertNotNull(pi);
+					Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
+					Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
+					Assert.assertEquals(date(lastYear, 1, 1), pi.getDateDebut());
+					Assert.assertEquals(depart, pi.getDateFin());
+					Assert.assertNotNull(pi.getContribuable());
+					Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
 				}
-				catch (AssujettissementException e) {
-					throw new RuntimeException(e);
+				{
+					final PeriodeImpositionImpotSource pi = piis.get(1);
+					Assert.assertNotNull(pi);
+					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
+					Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, pi.getTypeAutoriteFiscale());
+					Assert.assertEquals((Integer) MockPays.Allemagne.getNoOFS(), pi.getNoOfs());
+					Assert.assertEquals(depart.getOneDayAfter(), pi.getDateDebut());
+					Assert.assertEquals(date(lastYear, 12, 31), pi.getDateFin());
+					Assert.assertNotNull(pi.getContribuable());
+					Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
 				}
 			}
 		};
@@ -1123,36 +1093,31 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final Runnable test = new Runnable() {
 			@Override
 			public void run() {
-				try {
-					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(testedId.longValue());
-					final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
-					Assert.assertNotNull(piis);
-					Assert.assertEquals(2, piis.size());
-					{
-						final PeriodeImpositionImpotSource pi = piis.get(0);
-						Assert.assertNotNull(pi);
-						Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-						Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
-						Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
-						Assert.assertEquals(date(lastYear, 1, 1), pi.getDateDebut());
-						Assert.assertEquals(depart, pi.getDateFin());
-						Assert.assertNotNull(pi.getContribuable());
-						Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
-					}
-					{
-						final PeriodeImpositionImpotSource pi = piis.get(1);
-						Assert.assertNotNull(pi);
-						Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-						Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, pi.getTypeAutoriteFiscale());
-						Assert.assertEquals((Integer) MockPays.Allemagne.getNoOFS(), pi.getNoOfs());
-						Assert.assertEquals(depart.getOneDayAfter(), pi.getDateDebut());
-						Assert.assertEquals(date(lastYear, 12, 31), pi.getDateFin());
-						Assert.assertNotNull(pi.getContribuable());
-						Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
-					}
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(testedId.longValue());
+				final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
+				Assert.assertNotNull(piis);
+				Assert.assertEquals(2, piis.size());
+				{
+					final PeriodeImpositionImpotSource pi = piis.get(0);
+					Assert.assertNotNull(pi);
+					Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
+					Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
+					Assert.assertEquals(date(lastYear, 1, 1), pi.getDateDebut());
+					Assert.assertEquals(depart, pi.getDateFin());
+					Assert.assertNotNull(pi.getContribuable());
+					Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
 				}
-				catch (AssujettissementException e) {
-					throw new RuntimeException(e);
+				{
+					final PeriodeImpositionImpotSource pi = piis.get(1);
+					Assert.assertNotNull(pi);
+					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
+					Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, pi.getTypeAutoriteFiscale());
+					Assert.assertEquals((Integer) MockPays.Allemagne.getNoOFS(), pi.getNoOfs());
+					Assert.assertEquals(depart.getOneDayAfter(), pi.getDateDebut());
+					Assert.assertEquals(date(lastYear, 12, 31), pi.getDateFin());
+					Assert.assertNotNull(pi.getContribuable());
+					Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
 				}
 			}
 		};
@@ -1263,36 +1228,31 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final Runnable test = new Runnable() {
 			@Override
 			public void run() {
-				try {
-					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(testedId.longValue());
-					final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
-					Assert.assertNotNull(piis);
-					Assert.assertEquals(2, piis.size());
-					{
-						final PeriodeImpositionImpotSource pi = piis.get(0);
-						Assert.assertNotNull(pi);
-						Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-						Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
-						Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
-						Assert.assertEquals(date(lastYear, 1, 1), pi.getDateDebut());
-						Assert.assertEquals(depart, pi.getDateFin());
-						Assert.assertNotNull(pi.getContribuable());
-						Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
-					}
-					{
-						final PeriodeImpositionImpotSource pi = piis.get(1);
-						Assert.assertNotNull(pi);
-						Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-						Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, pi.getTypeAutoriteFiscale());
-						Assert.assertEquals((Integer) MockPays.Allemagne.getNoOFS(), pi.getNoOfs());
-						Assert.assertEquals(depart.getOneDayAfter(), pi.getDateDebut());
-						Assert.assertEquals(date(lastYear, 12, 31), pi.getDateFin());
-						Assert.assertNotNull(pi.getContribuable());
-						Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
-					}
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(testedId.longValue());
+				final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
+				Assert.assertNotNull(piis);
+				Assert.assertEquals(2, piis.size());
+				{
+					final PeriodeImpositionImpotSource pi = piis.get(0);
+					Assert.assertNotNull(pi);
+					Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
+					Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
+					Assert.assertEquals(date(lastYear, 1, 1), pi.getDateDebut());
+					Assert.assertEquals(depart, pi.getDateFin());
+					Assert.assertNotNull(pi.getContribuable());
+					Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
 				}
-				catch (AssujettissementException e) {
-					throw new RuntimeException(e);
+				{
+					final PeriodeImpositionImpotSource pi = piis.get(1);
+					Assert.assertNotNull(pi);
+					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
+					Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, pi.getTypeAutoriteFiscale());
+					Assert.assertEquals((Integer) MockPays.Allemagne.getNoOFS(), pi.getNoOfs());
+					Assert.assertEquals(depart.getOneDayAfter(), pi.getDateDebut());
+					Assert.assertEquals(date(lastYear, 12, 31), pi.getDateFin());
+					Assert.assertNotNull(pi.getContribuable());
+					Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
 				}
 			}
 		};
@@ -1375,47 +1335,42 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final Runnable test = new Runnable() {
 			@Override
 			public void run() {
-				try {
-					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(testedId.longValue());
-					final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
-					Assert.assertNotNull(piis);
-					Assert.assertEquals(3, piis.size());
-					{
-						final PeriodeImpositionImpotSource pi = piis.get(0);
-						Assert.assertNotNull(pi);
-						Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-						Assert.assertNull(pi.getTypeAutoriteFiscale());
-						Assert.assertNull(pi.getNoOfs());
-						Assert.assertEquals(date(lastYear, 1, 1), pi.getDateDebut());
-						Assert.assertEquals(arrivee.getLastDayOfTheMonth(), pi.getDateFin());
-						Assert.assertNotNull(pi.getContribuable());
-						Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
-					}
-					{
-						final PeriodeImpositionImpotSource pi = piis.get(1);
-						Assert.assertNotNull(pi);
-						Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-						Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
-						Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
-						Assert.assertEquals(arrivee.getLastDayOfTheMonth().getOneDayAfter(), pi.getDateDebut());
-						Assert.assertEquals(date(lastYear, 12, 31), pi.getDateFin());
-						Assert.assertNotNull(pi.getContribuable());
-						Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
-					}
-					{
-						final PeriodeImpositionImpotSource pi = piis.get(2);
-						Assert.assertNotNull(pi);
-						Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-						Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
-						Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
-						Assert.assertEquals(date(currentYear, 1, 1), pi.getDateDebut());
-						Assert.assertEquals(date(currentYear, 12, 31), pi.getDateFin());
-						Assert.assertNotNull(pi.getContribuable());
-						Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
-					}
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(testedId.longValue());
+				final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
+				Assert.assertNotNull(piis);
+				Assert.assertEquals(3, piis.size());
+				{
+					final PeriodeImpositionImpotSource pi = piis.get(0);
+					Assert.assertNotNull(pi);
+					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
+					Assert.assertNull(pi.getTypeAutoriteFiscale());
+					Assert.assertNull(pi.getNoOfs());
+					Assert.assertEquals(date(lastYear, 1, 1), pi.getDateDebut());
+					Assert.assertEquals(arrivee.getLastDayOfTheMonth(), pi.getDateFin());
+					Assert.assertNotNull(pi.getContribuable());
+					Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
 				}
-				catch (AssujettissementException e) {
-					throw new RuntimeException(e);
+				{
+					final PeriodeImpositionImpotSource pi = piis.get(1);
+					Assert.assertNotNull(pi);
+					Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
+					Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
+					Assert.assertEquals(arrivee.getLastDayOfTheMonth().getOneDayAfter(), pi.getDateDebut());
+					Assert.assertEquals(date(lastYear, 12, 31), pi.getDateFin());
+					Assert.assertNotNull(pi.getContribuable());
+					Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
+				}
+				{
+					final PeriodeImpositionImpotSource pi = piis.get(2);
+					Assert.assertNotNull(pi);
+					Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
+					Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
+					Assert.assertEquals(date(currentYear, 1, 1), pi.getDateDebut());
+					Assert.assertEquals(date(currentYear, 12, 31), pi.getDateFin());
+					Assert.assertNotNull(pi.getContribuable());
+					Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
 				}
 			}
 		};
@@ -1516,47 +1471,42 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final Runnable test = new Runnable() {
 			@Override
 			public void run() {
-				try {
-					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(testedId.longValue());
-					final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
-					Assert.assertNotNull(piis);
-					Assert.assertEquals(3, piis.size());
-					{
-						final PeriodeImpositionImpotSource pi = piis.get(0);
-						Assert.assertNotNull(pi);
-						Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-						Assert.assertNull(pi.getTypeAutoriteFiscale());
-						Assert.assertNull(pi.getNoOfs());
-						Assert.assertEquals(date(lastYear, 1, 1), pi.getDateDebut());
-						Assert.assertEquals(arrivee.getLastDayOfTheMonth(), pi.getDateFin());
-						Assert.assertNotNull(pi.getContribuable());
-						Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
-					}
-					{
-						final PeriodeImpositionImpotSource pi = piis.get(1);
-						Assert.assertNotNull(pi);
-						Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-						Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
-						Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
-						Assert.assertEquals(arrivee.getLastDayOfTheMonth().getOneDayAfter(), pi.getDateDebut());
-						Assert.assertEquals(date(lastYear, 12, 31), pi.getDateFin());
-						Assert.assertNotNull(pi.getContribuable());
-						Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
-					}
-					{
-						final PeriodeImpositionImpotSource pi = piis.get(2);
-						Assert.assertNotNull(pi);
-						Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-						Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
-						Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
-						Assert.assertEquals(date(currentYear, 1, 1), pi.getDateDebut());
-						Assert.assertEquals(date(currentYear, 12, 31), pi.getDateFin());
-						Assert.assertNotNull(pi.getContribuable());
-						Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
-					}
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(testedId.longValue());
+				final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
+				Assert.assertNotNull(piis);
+				Assert.assertEquals(3, piis.size());
+				{
+					final PeriodeImpositionImpotSource pi = piis.get(0);
+					Assert.assertNotNull(pi);
+					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
+					Assert.assertNull(pi.getTypeAutoriteFiscale());
+					Assert.assertNull(pi.getNoOfs());
+					Assert.assertEquals(date(lastYear, 1, 1), pi.getDateDebut());
+					Assert.assertEquals(arrivee.getLastDayOfTheMonth(), pi.getDateFin());
+					Assert.assertNotNull(pi.getContribuable());
+					Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
 				}
-				catch (AssujettissementException e) {
-					throw new RuntimeException(e);
+				{
+					final PeriodeImpositionImpotSource pi = piis.get(1);
+					Assert.assertNotNull(pi);
+					Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
+					Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
+					Assert.assertEquals(arrivee.getLastDayOfTheMonth().getOneDayAfter(), pi.getDateDebut());
+					Assert.assertEquals(date(lastYear, 12, 31), pi.getDateFin());
+					Assert.assertNotNull(pi.getContribuable());
+					Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
+				}
+				{
+					final PeriodeImpositionImpotSource pi = piis.get(2);
+					Assert.assertNotNull(pi);
+					Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
+					Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
+					Assert.assertEquals(date(currentYear, 1, 1), pi.getDateDebut());
+					Assert.assertEquals(date(currentYear, 12, 31), pi.getDateFin());
+					Assert.assertNotNull(pi.getContribuable());
+					Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
 				}
 			}
 		};
@@ -1650,47 +1600,42 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final Runnable test = new Runnable() {
 			@Override
 			public void run() {
-				try {
-					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(testedId.longValue());
-					final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
-					Assert.assertNotNull(piis);
-					Assert.assertEquals(3, piis.size());
-					{
-						final PeriodeImpositionImpotSource pi = piis.get(0);
-						Assert.assertNotNull(pi);
-						Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-						Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, pi.getTypeAutoriteFiscale());
-						Assert.assertEquals((Integer) MockCommune.Bern.getNoOFS(), pi.getNoOfs());
-						Assert.assertEquals(date(lastYear, 1, 1), pi.getDateDebut());
-						Assert.assertEquals(arrivee.getLastDayOfTheMonth(), pi.getDateFin());
-						Assert.assertNotNull(pi.getContribuable());
-						Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
-					}
-					{
-						final PeriodeImpositionImpotSource pi = piis.get(1);
-						Assert.assertNotNull(pi);
-						Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-						Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
-						Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
-						Assert.assertEquals(arrivee.getLastDayOfTheMonth().getOneDayAfter(), pi.getDateDebut());
-						Assert.assertEquals(date(lastYear, 12, 31), pi.getDateFin());
-						Assert.assertNotNull(pi.getContribuable());
-						Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
-					}
-					{
-						final PeriodeImpositionImpotSource pi = piis.get(2);
-						Assert.assertNotNull(pi);
-						Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-						Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
-						Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
-						Assert.assertEquals(date(currentYear, 1, 1), pi.getDateDebut());
-						Assert.assertEquals(date(currentYear, 12, 31), pi.getDateFin());
-						Assert.assertNotNull(pi.getContribuable());
-						Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
-					}
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(testedId.longValue());
+				final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
+				Assert.assertNotNull(piis);
+				Assert.assertEquals(3, piis.size());
+				{
+					final PeriodeImpositionImpotSource pi = piis.get(0);
+					Assert.assertNotNull(pi);
+					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, pi.getTypeAutoriteFiscale());
+					Assert.assertEquals((Integer) MockCommune.Bern.getNoOFS(), pi.getNoOfs());
+					Assert.assertEquals(date(lastYear, 1, 1), pi.getDateDebut());
+					Assert.assertEquals(arrivee.getLastDayOfTheMonth(), pi.getDateFin());
+					Assert.assertNotNull(pi.getContribuable());
+					Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
 				}
-				catch (AssujettissementException e) {
-					throw new RuntimeException(e);
+				{
+					final PeriodeImpositionImpotSource pi = piis.get(1);
+					Assert.assertNotNull(pi);
+					Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
+					Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
+					Assert.assertEquals(arrivee.getLastDayOfTheMonth().getOneDayAfter(), pi.getDateDebut());
+					Assert.assertEquals(date(lastYear, 12, 31), pi.getDateFin());
+					Assert.assertNotNull(pi.getContribuable());
+					Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
+				}
+				{
+					final PeriodeImpositionImpotSource pi = piis.get(2);
+					Assert.assertNotNull(pi);
+					Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
+					Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
+					Assert.assertEquals(date(currentYear, 1, 1), pi.getDateDebut());
+					Assert.assertEquals(date(currentYear, 12, 31), pi.getDateFin());
+					Assert.assertNotNull(pi.getContribuable());
+					Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
 				}
 			}
 		};
@@ -1802,47 +1747,42 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final Runnable test = new Runnable() {
 			@Override
 			public void run() {
-				try {
-					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(testedId.longValue());
-					final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
-					Assert.assertNotNull(piis);
-					Assert.assertEquals(3, piis.size());
-					{
-						final PeriodeImpositionImpotSource pi = piis.get(0);
-						Assert.assertNotNull(pi);
-						Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-						Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, pi.getTypeAutoriteFiscale());
-						Assert.assertEquals((Integer) MockCommune.Bern.getNoOFS(), pi.getNoOfs());
-						Assert.assertEquals(date(lastYear, 1, 1), pi.getDateDebut());
-						Assert.assertEquals(arrivee.getLastDayOfTheMonth(), pi.getDateFin());
-						Assert.assertNotNull(pi.getContribuable());
-						Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
-					}
-					{
-						final PeriodeImpositionImpotSource pi = piis.get(1);
-						Assert.assertNotNull(pi);
-						Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-						Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
-						Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
-						Assert.assertEquals(arrivee.getLastDayOfTheMonth().getOneDayAfter(), pi.getDateDebut());
-						Assert.assertEquals(date(lastYear, 12, 31), pi.getDateFin());
-						Assert.assertNotNull(pi.getContribuable());
-						Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
-					}
-					{
-						final PeriodeImpositionImpotSource pi = piis.get(2);
-						Assert.assertNotNull(pi);
-						Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-						Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
-						Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
-						Assert.assertEquals(date(currentYear, 1, 1), pi.getDateDebut());
-						Assert.assertEquals(date(currentYear, 12, 31), pi.getDateFin());
-						Assert.assertNotNull(pi.getContribuable());
-						Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
-					}
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(testedId.longValue());
+				final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
+				Assert.assertNotNull(piis);
+				Assert.assertEquals(3, piis.size());
+				{
+					final PeriodeImpositionImpotSource pi = piis.get(0);
+					Assert.assertNotNull(pi);
+					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, pi.getTypeAutoriteFiscale());
+					Assert.assertEquals((Integer) MockCommune.Bern.getNoOFS(), pi.getNoOfs());
+					Assert.assertEquals(date(lastYear, 1, 1), pi.getDateDebut());
+					Assert.assertEquals(arrivee.getLastDayOfTheMonth(), pi.getDateFin());
+					Assert.assertNotNull(pi.getContribuable());
+					Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
 				}
-				catch (AssujettissementException e) {
-					throw new RuntimeException(e);
+				{
+					final PeriodeImpositionImpotSource pi = piis.get(1);
+					Assert.assertNotNull(pi);
+					Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
+					Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
+					Assert.assertEquals(arrivee.getLastDayOfTheMonth().getOneDayAfter(), pi.getDateDebut());
+					Assert.assertEquals(date(lastYear, 12, 31), pi.getDateFin());
+					Assert.assertNotNull(pi.getContribuable());
+					Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
+				}
+				{
+					final PeriodeImpositionImpotSource pi = piis.get(2);
+					Assert.assertNotNull(pi);
+					Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
+					Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), pi.getNoOfs());
+					Assert.assertEquals(date(currentYear, 1, 1), pi.getDateDebut());
+					Assert.assertEquals(date(currentYear, 12, 31), pi.getDateFin());
+					Assert.assertNotNull(pi.getContribuable());
+					Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
 				}
 			}
 		};
@@ -1911,36 +1851,31 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 			final Runnable test = new Runnable() {
 				@Override
 				public void run() {
-					try {
-						final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(testedId.longValue());
-						final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
-						Assert.assertNotNull(piis);
-						Assert.assertEquals(2, piis.size());
-						{
-							final PeriodeImpositionImpotSource pi = piis.get(0);
-							Assert.assertNotNull(pi);
-							Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
-							Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
-							Assert.assertEquals((Integer) MockCommune.Aubonne.getNoOFS(), pi.getNoOfs());
-							Assert.assertEquals(date(year, 1, 1), pi.getDateDebut());
-							Assert.assertEquals(depart.getLastDayOfTheMonth(), pi.getDateFin());
-							Assert.assertNotNull(pi.getContribuable());
-							Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
-						}
-						{
-							final PeriodeImpositionImpotSource pi = piis.get(1);
-							Assert.assertNotNull(pi);
-							Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-							Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, pi.getTypeAutoriteFiscale());
-							Assert.assertEquals((Integer) MockCommune.Bern.getNoOFS(), pi.getNoOfs());
-							Assert.assertEquals(depart.getLastDayOfTheMonth().getOneDayAfter(), pi.getDateDebut());
-							Assert.assertEquals(date(year, 12, 31), pi.getDateFin());
-							Assert.assertNotNull(pi.getContribuable());
-							Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
-						}
+					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(testedId.longValue());
+					final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
+					Assert.assertNotNull(piis);
+					Assert.assertEquals(2, piis.size());
+					{
+						final PeriodeImpositionImpotSource pi = piis.get(0);
+						Assert.assertNotNull(pi);
+						Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
+						Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
+						Assert.assertEquals((Integer) MockCommune.Aubonne.getNoOFS(), pi.getNoOfs());
+						Assert.assertEquals(date(year, 1, 1), pi.getDateDebut());
+						Assert.assertEquals(depart.getLastDayOfTheMonth(), pi.getDateFin());
+						Assert.assertNotNull(pi.getContribuable());
+						Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
 					}
-					catch (AssujettissementException e) {
-						throw new RuntimeException(e);
+					{
+						final PeriodeImpositionImpotSource pi = piis.get(1);
+						Assert.assertNotNull(pi);
+						Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
+						Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, pi.getTypeAutoriteFiscale());
+						Assert.assertEquals((Integer) MockCommune.Bern.getNoOFS(), pi.getNoOfs());
+						Assert.assertEquals(depart.getLastDayOfTheMonth().getOneDayAfter(), pi.getDateDebut());
+						Assert.assertEquals(date(year, 12, 31), pi.getDateFin());
+						Assert.assertNotNull(pi.getContribuable());
+						Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
 					}
 				}
 			};
@@ -2001,36 +1936,31 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final Runnable test = new Runnable() {
 			@Override
 			public void run() {
-				try {
-					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(testedId.longValue());
-					final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
-					Assert.assertNotNull(piis);
-					Assert.assertEquals(2, piis.size());
-					{
-						final PeriodeImpositionImpotSource pi = piis.get(0);
-						Assert.assertNotNull(pi);
-						Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-						Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
-						Assert.assertEquals((Integer) MockCommune.Aubonne.getNoOFS(), pi.getNoOfs());
-						Assert.assertEquals(date(year, 1, 1), pi.getDateDebut());
-						Assert.assertEquals(depart.getLastDayOfTheMonth(), pi.getDateFin());
-						Assert.assertNotNull(pi.getContribuable());
-						Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
-					}
-					{
-						final PeriodeImpositionImpotSource pi = piis.get(1);
-						Assert.assertNotNull(pi);
-						Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
-						Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, pi.getTypeAutoriteFiscale());
-						Assert.assertEquals((Integer) MockCommune.Bern.getNoOFS(), pi.getNoOfs());
-						Assert.assertEquals(depart.getLastDayOfTheMonth().getOneDayAfter(), pi.getDateDebut());
-						Assert.assertEquals(date(year, 12, 31), pi.getDateFin());
-						Assert.assertNotNull(pi.getContribuable());
-						Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
-					}
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(testedId.longValue());
+				final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
+				Assert.assertNotNull(piis);
+				Assert.assertEquals(2, piis.size());
+				{
+					final PeriodeImpositionImpotSource pi = piis.get(0);
+					Assert.assertNotNull(pi);
+					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
+					Assert.assertEquals((Integer) MockCommune.Aubonne.getNoOFS(), pi.getNoOfs());
+					Assert.assertEquals(date(year, 1, 1), pi.getDateDebut());
+					Assert.assertEquals(depart.getLastDayOfTheMonth(), pi.getDateFin());
+					Assert.assertNotNull(pi.getContribuable());
+					Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
 				}
-				catch (AssujettissementException e) {
-					throw new RuntimeException(e);
+				{
+					final PeriodeImpositionImpotSource pi = piis.get(1);
+					Assert.assertNotNull(pi);
+					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, pi.getTypeAutoriteFiscale());
+					Assert.assertEquals((Integer) MockCommune.Bern.getNoOFS(), pi.getNoOfs());
+					Assert.assertEquals(depart.getLastDayOfTheMonth().getOneDayAfter(), pi.getDateDebut());
+					Assert.assertEquals(date(year, 12, 31), pi.getDateFin());
+					Assert.assertNotNull(pi.getContribuable());
+					Assert.assertEquals((Long) testedId.longValue(), pi.getContribuable().getNumero());
 				}
 			}
 		};

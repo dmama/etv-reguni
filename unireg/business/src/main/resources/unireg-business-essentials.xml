@@ -209,7 +209,6 @@
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="tiersService" ref="tiersService"/>
 		<property name="infraService" ref="serviceInfrastructureService"/>
-		<property name="assujettissementService" ref="assujettissementService"/>
 	</bean>
 
 	<bean id="validationService" class="ch.vd.uniregctb.validation.ValidationServiceImpl" />
