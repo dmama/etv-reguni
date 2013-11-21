@@ -2380,4 +2380,194 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 			}
 		});
 	}
+
+	@Test
+	public void testVeuvageChezMixtes() throws Exception {
+
+		final int year = RegDate.get().year() - 1;
+		final RegDate dateDeces = date(year, 8, 6);
+		final RegDate dateMariage = date(year - 10, 5, 3);
+
+		final class Ids {
+			long ppDecede;
+			long ppSurvivant;
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique decede = addNonHabitant("Gertrud", "Haenkel", date(1967, 9, 23), Sexe.FEMININ);
+				decede.setDateDeces(dateDeces);
+				final PersonnePhysique survivant = addNonHabitant("Alfredo", "Haenkel", date(1965, 4, 12), Sexe.MASCULIN);
+				final EnsembleTiersCouple couple = addEnsembleTiersCouple(survivant, decede, dateMariage, dateDeces);
+				addForPrincipal(couple.getMenage(), date(year, 1, 1), MotifFor.ARRIVEE_HS, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Cossonay, ModeImposition.MIXTE_137_2);
+				addForPrincipal(survivant, dateDeces.getOneDayAfter(), MotifFor.VEUVAGE_DECES, MockCommune.Cossonay, ModeImposition.MIXTE_137_2);
+
+				final Ids ids = new Ids();
+				ids.ppDecede = decede.getNumero();
+				ids.ppSurvivant = survivant.getNumero();
+				return ids;
+			}
+		});
+
+		// calculs
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				// la personne physique décédée
+				{
+					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.ppDecede);
+					final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
+					Assert.assertEquals(1, piis.size());
+					{
+						final PeriodeImpositionImpotSource pi = piis.get(0);
+						Assert.assertNotNull(pi);
+						Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
+						Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
+						Assert.assertEquals((Integer) MockCommune.Cossonay.getNoOFS(), pi.getNoOfs());
+						Assert.assertEquals(date(year, 1, 1), pi.getDateDebut());
+						Assert.assertEquals(dateDeces, pi.getDateFin());
+						Assert.assertNotNull(pi.getContribuable());
+						Assert.assertEquals((Long) ids.ppDecede, pi.getContribuable().getNumero());
+					}
+				}
+
+				// la personne physique survivante
+				{
+					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.ppSurvivant);
+					final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
+					Assert.assertEquals(3, piis.size());
+					{
+						final PeriodeImpositionImpotSource pi = piis.get(0);
+						Assert.assertNotNull(pi);
+						Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
+						Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
+						Assert.assertEquals((Integer) MockCommune.Cossonay.getNoOFS(), pi.getNoOfs());
+						Assert.assertEquals(date(year, 1, 1), pi.getDateDebut());
+						Assert.assertEquals(dateDeces, pi.getDateFin());
+						Assert.assertNotNull(pi.getContribuable());
+						Assert.assertEquals((Long) ids.ppSurvivant, pi.getContribuable().getNumero());
+					}
+					{
+						final PeriodeImpositionImpotSource pi = piis.get(1);
+						Assert.assertNotNull(pi);
+						Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
+						Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
+						Assert.assertEquals((Integer) MockCommune.Cossonay.getNoOFS(), pi.getNoOfs());
+						Assert.assertEquals(dateDeces.getOneDayAfter(), pi.getDateDebut());
+						Assert.assertEquals(date(year, 12, 31), pi.getDateFin());
+						Assert.assertNotNull(pi.getContribuable());
+						Assert.assertEquals((Long) ids.ppSurvivant, pi.getContribuable().getNumero());
+					}
+					{
+						final PeriodeImpositionImpotSource pi = piis.get(2);
+						Assert.assertNotNull(pi);
+						Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
+						Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
+						Assert.assertEquals((Integer) MockCommune.Cossonay.getNoOFS(), pi.getNoOfs());
+						Assert.assertEquals(date(year + 1, 1, 1), pi.getDateDebut());
+						Assert.assertEquals(date(year + 1, 12, 31), pi.getDateFin());
+						Assert.assertNotNull(pi.getContribuable());
+						Assert.assertEquals((Long) ids.ppSurvivant, pi.getContribuable().getNumero());
+					}
+				}
+			}
+		});
+	}
+
+	@Test
+	public void testVeuvageChezSourciersPurs() throws Exception {
+
+		final int year = RegDate.get().year() - 1;
+		final RegDate dateDeces = date(year, 8, 6);
+		final RegDate dateMariage = date(year - 10, 5, 3);
+
+		final class Ids {
+			long ppDecede;
+			long ppSurvivant;
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique decede = addNonHabitant("Gertrud", "Haenkel", date(1967, 9, 23), Sexe.FEMININ);
+				decede.setDateDeces(dateDeces);
+				final PersonnePhysique survivant = addNonHabitant("Alfredo", "Haenkel", date(1965, 4, 12), Sexe.MASCULIN);
+				final EnsembleTiersCouple couple = addEnsembleTiersCouple(survivant, decede, dateMariage, dateDeces);
+				addForPrincipal(couple.getMenage(), date(year, 1, 1), MotifFor.ARRIVEE_HS, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Cossonay, ModeImposition.SOURCE);
+				addForPrincipal(survivant, dateDeces.getOneDayAfter(), MotifFor.VEUVAGE_DECES, MockCommune.Cossonay, ModeImposition.SOURCE);
+
+				final Ids ids = new Ids();
+				ids.ppDecede = decede.getNumero();
+				ids.ppSurvivant = survivant.getNumero();
+				return ids;
+			}
+		});
+
+		// calculs
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				// la personne physique décédée
+				{
+					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.ppDecede);
+					final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
+					Assert.assertEquals(1, piis.size());
+					{
+						final PeriodeImpositionImpotSource pi = piis.get(0);
+						Assert.assertNotNull(pi);
+						Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
+						Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
+						Assert.assertEquals((Integer) MockCommune.Cossonay.getNoOFS(), pi.getNoOfs());
+						Assert.assertEquals(date(year, 1, 1), pi.getDateDebut());
+						Assert.assertEquals(dateDeces, pi.getDateFin());
+						Assert.assertNotNull(pi.getContribuable());
+						Assert.assertEquals((Long) ids.ppDecede, pi.getContribuable().getNumero());
+					}
+				}
+
+				// la personne physique survivante
+				{
+					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.ppSurvivant);
+					final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
+					Assert.assertEquals(3, piis.size());
+					{
+						final PeriodeImpositionImpotSource pi = piis.get(0);
+						Assert.assertNotNull(pi);
+						Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
+						Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
+						Assert.assertEquals((Integer) MockCommune.Cossonay.getNoOFS(), pi.getNoOfs());
+						Assert.assertEquals(date(year, 1, 1), pi.getDateDebut());
+						Assert.assertEquals(dateDeces, pi.getDateFin());
+						Assert.assertNotNull(pi.getContribuable());
+						Assert.assertEquals((Long) ids.ppSurvivant, pi.getContribuable().getNumero());
+					}
+					{
+						final PeriodeImpositionImpotSource pi = piis.get(1);
+						Assert.assertNotNull(pi);
+						Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
+						Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
+						Assert.assertEquals((Integer) MockCommune.Cossonay.getNoOFS(), pi.getNoOfs());
+						Assert.assertEquals(dateDeces.getOneDayAfter(), pi.getDateDebut());
+						Assert.assertEquals(date(year, 12, 31), pi.getDateFin());
+						Assert.assertNotNull(pi.getContribuable());
+						Assert.assertEquals((Long) ids.ppSurvivant, pi.getContribuable().getNumero());
+					}
+					{
+						final PeriodeImpositionImpotSource pi = piis.get(2);
+						Assert.assertNotNull(pi);
+						Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
+						Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
+						Assert.assertEquals((Integer) MockCommune.Cossonay.getNoOFS(), pi.getNoOfs());
+						Assert.assertEquals(date(year + 1, 1, 1), pi.getDateDebut());
+						Assert.assertEquals(date(year + 1, 12, 31), pi.getDateFin());
+						Assert.assertNotNull(pi.getContribuable());
+						Assert.assertEquals((Long) ids.ppSurvivant, pi.getContribuable().getNumero());
+					}
+				}
+			}
+		});
+	}
 }

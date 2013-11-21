@@ -95,7 +95,7 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 	public List<PeriodeImpositionImpotSource> determine(PersonnePhysique pp) throws AssujettissementException {
 
 		// j'ai besoin :
-		// 1. des rapports de travails de la personne
+		// 1. des rapports de travail de la personne
 		// 2. des fors de la personne et de ses ménages communs
 
 		final List<ForFiscalPrincipal> fors = getForsPrincipaux(pp);
@@ -104,8 +104,11 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 			final MenageCommun mc = (MenageCommun) tiersDAO.get(lienMenage.getObjetId(), true);
 			fors.addAll(getForsPrincipaux(mc));
 		}
-		final List<RapportPrestationImposable> rpis = getRapportsEntreTiers(pp, RapportPrestationImposable.class, false);
 
+		// il est important que les fors soient triés y compris si plusieurs contribuables sont impliqués
+		Collections.sort(fors, new DateRangeComparator<ForFiscalPrincipal>());
+
+		final List<RapportPrestationImposable> rpis = getRapportsEntreTiers(pp, RapportPrestationImposable.class, false);
 		return determine(pp, fors, rpis);
 	}
 

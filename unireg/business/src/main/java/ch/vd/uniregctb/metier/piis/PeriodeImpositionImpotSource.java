@@ -108,8 +108,14 @@ public class PeriodeImpositionImpotSource implements CollatableDateRange, Duplic
 		if (dateDebut.year() != other.dateDebut.year()) {
 			return false;
 		}
+
 		// changement de type d'autorité fiscale -> on ne colle pas
 		if (other.typeAutoriteFiscale != typeAutoriteFiscale) {
+			return false;
+		}
+
+		// veuvage -> on ne colle pas !
+		if (motifFermeture == MotifFor.VEUVAGE_DECES || other.motifOuverture == MotifFor.VEUVAGE_DECES) {
 			return false;
 		}
 
