@@ -4120,4 +4120,98 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 			}
 		});
 	}
+
+	/**
+	 * Ce qui est important ici, c'est la localisation de la période d'imposition IS (la commune devrait être celle d'après le déménagement,
+	 * puisque normalement l'obtention d'un permis C pour un mixte ne doit pas pousser au mois suivant)
+	 */
+	@Test
+	public void testMixtePermisCPuisDemenagementMemeMoisFinAnnee() throws Exception {
+
+		final int year = RegDate.get().year() - 1;
+		final RegDate permis = date(year, 12, 3);
+		final RegDate demenagement = date(year, 12, 15);
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Rusticule", "de Saint-André", date(1967, 7, 26), Sexe.FEMININ);
+				addForPrincipal(pp, date(year, 1, 1), MotifFor.ARRIVEE_HS, permis.getOneDayBefore(), MotifFor.PERMIS_C_SUISSE, MockCommune.Aubonne, ModeImposition.MIXTE_137_1);
+				addForPrincipal(pp, permis, MotifFor.PERMIS_C_SUISSE, demenagement.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, MockCommune.Aubonne);
+				addForPrincipal(pp, demenagement, MotifFor.DEMENAGEMENT_VD, MockCommune.Bussigny);
+				return pp.getNumero();
+			}
+		});
+
+		// calcul des piis
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
+				Assert.assertNotNull(piis);
+				Assert.assertEquals(1, piis.size());
+				{
+					final PeriodeImpositionImpotSource pi = piis.get(0);
+					Assert.assertNotNull(pi);
+					Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
+					Assert.assertEquals("VD", pi.getCleLocalisation());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
+					Assert.assertEquals((Integer) MockCommune.Bussigny.getNoOFS(), pi.getNoOfs());
+					Assert.assertEquals(date(year, 1, 1), pi.getDateDebut());
+					Assert.assertEquals(date(year, 12, 31), pi.getDateFin());
+					Assert.assertNotNull(pi.getContribuable());
+					Assert.assertEquals((Long) ppId, pi.getContribuable().getNumero());
+				}
+			}
+		});
+	}
+
+	/**
+	 * Ce qui est important ici, c'est la localisation de la période d'imposition IS (la commune devrait être celle d'avant le déménagement,
+	 * puisque normalement l'obtention d'un permis C pour un sourcier pur pousse au mois suivant)
+	 */
+	@Test
+	public void testSourcierPurPermisCPuisDemenagementMemeMoisFinAnnee() throws Exception {
+
+		final int year = RegDate.get().year() - 1;
+		final RegDate permis = date(year, 12, 3);
+		final RegDate demenagement = date(year, 12, 15);
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Rusticule", "de Saint-André", date(1967, 7, 26), Sexe.FEMININ);
+				addForPrincipal(pp, date(year, 1, 1), MotifFor.ARRIVEE_HS, permis.getOneDayBefore(), MotifFor.PERMIS_C_SUISSE, MockCommune.Aubonne, ModeImposition.SOURCE);
+				addForPrincipal(pp, permis, MotifFor.PERMIS_C_SUISSE, demenagement.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, MockCommune.Aubonne);
+				addForPrincipal(pp, demenagement, MotifFor.DEMENAGEMENT_VD, MockCommune.Bussigny);
+				return pp.getNumero();
+			}
+		});
+
+		// calcul des piis
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
+				Assert.assertNotNull(piis);
+				Assert.assertEquals(1, piis.size());
+				{
+					final PeriodeImpositionImpotSource pi = piis.get(0);
+					Assert.assertNotNull(pi);
+					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
+					Assert.assertEquals("VD", pi.getCleLocalisation());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
+					Assert.assertEquals((Integer) MockCommune.Aubonne.getNoOFS(), pi.getNoOfs());
+					Assert.assertEquals(date(year, 1, 1), pi.getDateDebut());
+					Assert.assertEquals(date(year, 12, 31), pi.getDateFin());
+					Assert.assertNotNull(pi.getContribuable());
+					Assert.assertEquals((Long) ppId, pi.getContribuable().getNumero());
+				}
+			}
+		});
+	}
 }

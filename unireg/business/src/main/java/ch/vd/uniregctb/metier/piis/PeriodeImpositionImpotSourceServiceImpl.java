@@ -39,8 +39,9 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositionImpotSourceService {
 
-	private static final Map<MotifFor, DateShiftingStrategy> BEGIN_DATE_SHIFTING_STRATEGIES = buildBeginDateShiftingStrategies();
-	private static final Map<MotifFor, DateShiftingStrategy> END_DATE_SHIFTING_STRATEGIES = buildEndDateShiftingStrategies();
+	private static final Map<MotifFor, DateShiftingStrategy> BEGIN_DATE_SHIFTING_STRATEGIES_SRC_ORD = buildBeginDateShiftingStrategies(true);
+	private static final Map<MotifFor, DateShiftingStrategy> BEGIN_DATE_SHIFTING_STRATEGIES_DEFAULT = buildBeginDateShiftingStrategies(false);
+	private static final Map<MotifFor, DateShiftingStrategy> END_DATE_SHIFTING_STRATEGIES_DEFAULT = buildEndDateShiftingStrategies(false);
 
 	private TiersDAO tiersDAO;
 	private TiersService tiersService;
@@ -150,21 +151,25 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 	/**
 	 * Construction des stratégies de décalage des dates de début
 	 */
-	private static Map<MotifFor, DateShiftingStrategy> buildBeginDateShiftingStrategies() {
+	private static Map<MotifFor, DateShiftingStrategy> buildBeginDateShiftingStrategies(boolean passageSourceOrdinaire) {
 		final Map<MotifFor, DateShiftingStrategy> map = new EnumMap<>(MotifFor.class);
 
 		//
 		// les cas de décalage au début du mois suivant
 		//
 		final DateShiftingStrategy beginOfNextMonth = new NextDayDateShiftingStrategy(new EndOfMonthDateShiftingStrategy());
-		map.put(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, beginOfNextMonth);
+		if (passageSourceOrdinaire) {
+			map.put(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, beginOfNextMonth);
+		}
 		map.put(MotifFor.ARRIVEE_HC, beginOfNextMonth);
 		map.put(MotifFor.DEPART_HC, beginOfNextMonth);
 
 		//
 		// le permis C / nationalité est un cas particulier -> on prend le prochain début de mois (on reste sur la date courante si on est déjà en début de mois)
 		//
-		map.put(MotifFor.PERMIS_C_SUISSE, new NextBeginOfMonthDateShiftingStrategy());
+		if (passageSourceOrdinaire) {
+			map.put(MotifFor.PERMIS_C_SUISSE, new NextBeginOfMonthDateShiftingStrategy());
+		}
 
 		//
 		// pas de décalage de date, mais des motifs suffisament impératifs pour contrer un décalage de date, justement
@@ -186,21 +191,25 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 		return map;
 	}
 
-	private static Map<MotifFor, DateShiftingStrategy> buildEndDateShiftingStrategies() {
+	private static Map<MotifFor, DateShiftingStrategy> buildEndDateShiftingStrategies(boolean passageSourceOrdinaire) {
 		final Map<MotifFor, DateShiftingStrategy> map = new EnumMap<>(MotifFor.class);
 
 		//
 		// les cas de décalage en fin de mois
 		//
 		final DateShiftingStrategy endOfMonth = new EndOfMonthDateShiftingStrategy();
-		map.put(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, endOfMonth);
+		if (passageSourceOrdinaire) {
+			map.put(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, endOfMonth);
+		}
 		map.put(MotifFor.ARRIVEE_HC, endOfMonth);
 		map.put(MotifFor.DEPART_HC, endOfMonth);
 
 		//
 		// le permis C / nationalité est un cas particulier -> on prend la veille du prochain début de mois (la veille de la date courante si on est en début de mois)
 		//
-		map.put(MotifFor.PERMIS_C_SUISSE, new PreviousDayDateShiftingStrategy(new NextBeginOfMonthDateShiftingStrategy()));
+		if (passageSourceOrdinaire) {
+			map.put(MotifFor.PERMIS_C_SUISSE, new PreviousDayDateShiftingStrategy(new NextBeginOfMonthDateShiftingStrategy()));
+		}
 
 		//
 		// pas de décalage de date, mais des motifs suffisament impératifs pour contrer un décalage de date, justement
@@ -436,19 +445,29 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 		}
 	}
 
+	private static Map<MotifFor, DateShiftingStrategy> getBeginDateShiftingStrategies(@Nullable ModeImposition before, ModeImposition after) {
+		if ((before == ModeImposition.SOURCE || before == null) && !after.isSource()) {
+			return BEGIN_DATE_SHIFTING_STRATEGIES_SRC_ORD;
+		}
+		else {
+			return BEGIN_DATE_SHIFTING_STRATEGIES_DEFAULT;
+		}
+	}
+
 	/**
 	 * @param ffp for fiscal principal de base
 	 * @param previous éventuel for principal précédent
 	 * @return <ul><li>la date de début pour la PIIS du for</li><li>si oui ou non cette date peut même servir à contrer un décalage précédent</li></ul>
 	 */
 	private Pair<RegDate, Boolean> computeDateDebutMapping(ForFiscalPrincipal ffp, @Nullable ForFiscalPrincipal previous) {
-		final MotifFor actualMotive = previous != null && previous.getDateFin().getOneDayAfter() == ffp.getDateDebut()
+		final ForFiscalPrincipal realPrevious = (previous != null && previous.getDateFin().getOneDayAfter() == ffp.getDateDebut() ? previous : null);
+		final MotifFor actualMotive = realPrevious != null
 				? computeActualMotive(ffp.getMotifOuverture(), ffp.getDateDebut(),
 				                      ffp.getTypeAutoriteFiscale(), ffp.getNumeroOfsAutoriteFiscale(),
 				                      previous.getTypeAutoriteFiscale(), previous.getNumeroOfsAutoriteFiscale())
 				: ffp.getMotifOuverture();
-		final DateShiftingStrategy strategy = BEGIN_DATE_SHIFTING_STRATEGIES.get(actualMotive);
-		if (strategy != null) {
+		if (actualMotive != null) {
+			final DateShiftingStrategy strategy = getBeginDateShiftingStrategies(realPrevious != null ? realPrevious.getModeImposition() : null, ffp.getModeImposition()).get(actualMotive);
 			return Pair.of(strategy.shift(ffp.getDateDebut()), strategy.isImperativeSegmentationPoint());
 		}
 		else {
@@ -462,7 +481,7 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 	 * @return <ul><li>la date de fin pour la PIIS du for</li><li>si oui ou non cette date peut même servir à contrer un décalage précédent</li></ul>
 	 */
 	private Pair<RegDate, Boolean> computeDateFinMapping(ForFiscalPrincipal ffp) {
-		final DateShiftingStrategy strategy = END_DATE_SHIFTING_STRATEGIES.get(ffp.getMotifFermeture());
+		final DateShiftingStrategy strategy = END_DATE_SHIFTING_STRATEGIES_DEFAULT.get(ffp.getMotifFermeture());
 		return Pair.of(strategy.shift(ffp.getDateFin()), strategy.isImperativeSegmentationPoint());
 	}
 
