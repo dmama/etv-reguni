@@ -2,7 +2,7 @@ package ch.vd.uniregctb.metier.piis;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.EnumSet;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -41,7 +41,7 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositionImpotSourceService {
 
-	private static final Set<MotifFor> SHIFT_TO_END_OF_MONTH = EnumSet.of(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MotifFor.PERMIS_C_SUISSE, MotifFor.ARRIVEE_HC, MotifFor.DEPART_HC);
+	private static final Map<MotifFor, DateShiftingStrategy> BEGIN_DATE_SHIFTING_STRATEGIES = buildBeginDateShiftingStrategies();
 
 	private TiersDAO tiersDAO;
 	private TiersService tiersService;
@@ -58,6 +58,50 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 	public void setAssujettissementService(AssujettissementService assujettissementService) {
 		this.assujettissementService = assujettissementService;
 	}
+
+	private static interface DateShiftingStrategy {
+		RegDate shift(RegDate date);
+	}
+
+	private static final class NoopDateShiftingStrategy implements DateShiftingStrategy {
+		@Override
+		public RegDate shift(RegDate date) {
+			return date;
+		}
+	}
+
+	private static final class BeginOfNextMonthDateShiftingStrategy implements DateShiftingStrategy {
+		@Override
+		public RegDate shift(RegDate date) {
+			return date.getLastDayOfTheMonth().getOneDayAfter();
+		}
+	}
+
+	private static final class NextBeginOfMonthDateShiftingStrategy implements DateShiftingStrategy {
+		@Override
+		public RegDate shift(RegDate date) {
+			return date.getOneDayBefore().getLastDayOfTheMonth().getOneDayAfter();
+		}
+	}
+
+	private static Map<MotifFor, DateShiftingStrategy> buildBeginDateShiftingStrategies() {
+		final Map<MotifFor, DateShiftingStrategy> map = new EnumMap<>(MotifFor.class);
+		map.put(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, new BeginOfNextMonthDateShiftingStrategy());
+		map.put(MotifFor.PERMIS_C_SUISSE, new NextBeginOfMonthDateShiftingStrategy());
+		map.put(MotifFor.ARRIVEE_HC, new BeginOfNextMonthDateShiftingStrategy());
+		map.put(MotifFor.DEPART_HC, new BeginOfNextMonthDateShiftingStrategy());
+
+		// tous les autres -> Noop
+		final DateShiftingStrategy noop = new NoopDateShiftingStrategy();
+		for (MotifFor motif : MotifFor.values()) {
+			if (!map.containsKey(motif)) {
+				map.put(motif, noop);
+			}
+		}
+		return map;
+	}
+
+
 
 	/**
 	 * Renvoie une liste triée par date des rapports entre tiers d'un type et d'un sens donné
@@ -165,17 +209,8 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 		return res.isEmpty() ? Collections.<T>emptyList() : res;
 	}
 
-	private static boolean shouldShiftToEndOfMonth(MotifFor motifOuverture) {
-		return SHIFT_TO_END_OF_MONTH.contains(motifOuverture);
-	}
-
 	private static RegDate computeDateDebutMapping(ForFiscalPrincipal ffp) {
-		if (shouldShiftToEndOfMonth(ffp.getMotifOuverture())) {
-			return ffp.getDateDebut().getLastDayOfTheMonth().getOneDayAfter();
-		}
-		else {
-			return ffp.getDateDebut();
-		}
+		return BEGIN_DATE_SHIFTING_STRATEGIES.get(ffp.getMotifOuverture()).shift(ffp.getDateDebut());
 	}
 
 	private static Map<RegDate, RegDate> computeDateMapping(List<ForFiscalPrincipal> fors, DateRange pf) {
