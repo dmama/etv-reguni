@@ -109,7 +109,9 @@ public class FractionnementsPeriodesImpositionIS implements Iterable<Fraction> {
 					fraction = new FractionContrariante(current.getDateDebut(), motifEffectif, null);
 				}
 				else if (motifEffectif == MotifFor.DEPART_HC || motifEffectif == MotifFor.ARRIVEE_HC) {
-					final RegDate dateFraction = current.getDateDebut().getLastDayOfTheMonth().getOneDayAfter();
+					// la date d'ouverture du for est la date d'arrivée dans le nouveau canton
+					// -> la date de fraction doit être le premier jour du mois qui suit celui de la date de départ (= la veille de l'arrivée)
+					final RegDate dateFraction = current.getDateDebut().getOneDayBefore().getLastDayOfTheMonth().getOneDayAfter();
 					fraction = new FractionDecalee(dateFraction, new DateRangeHelper.Range(current.getDateDebut(), dateFraction), motifEffectif, null);
 				}
 				else if (previous != null && previous.getModeImposition() == ModeImposition.SOURCE && !current.getModeImposition().isSource() && motifEffectif == MotifFor.PERMIS_C_SUISSE) {
@@ -151,7 +153,9 @@ public class FractionnementsPeriodesImpositionIS implements Iterable<Fraction> {
 					fraction = new FractionContrariante(current.getDateFin().getOneDayAfter(), null, motifEffectif);
 				}
 				else if (motifEffectif == MotifFor.DEPART_HC || motifEffectif == MotifFor.ARRIVEE_HC) {
-					final RegDate dateFraction = current.getDateFin().getOneDayAfter().getLastDayOfTheMonth().getOneDayAfter();
+					// la date de fermeture du for est la date de départ dans l'ancien canton
+					// -> la date de fraction doit être le premier jour du mois qui suit celui de la date de départ
+					final RegDate dateFraction = current.getDateFin().getLastDayOfTheMonth().getOneDayAfter();
 					fraction = new FractionDecalee(dateFraction, new DateRangeHelper.Range(current.getDateFin(), dateFraction), null, motifEffectif);
 				}
 				else if (current.getModeImposition() == ModeImposition.SOURCE && next != null && !next.getModeImposition().isSource() && motifEffectif == MotifFor.PERMIS_C_SUISSE) {
