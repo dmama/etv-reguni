@@ -261,6 +261,21 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 				continue;
 			}
 
+			// s'il n'y a pas de rapports de travail, il faut qu'il y ait au moins un for "source/mixte" vaudois pour générer une période d'imposition IS
+			if (rpisPf.isEmpty()) {
+				boolean forAssimileSourceTrouve = false;
+				for (ForFiscalPrincipal ffp : forsPf) {
+					if (ffp.getModeImposition().isSource() && ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+						forAssimileSourceTrouve = true;
+						break;
+					}
+				}
+				if (!forAssimileSourceTrouve) {
+					// rien dans cette période....
+					continue;
+				}
+			}
+
 			// quel est l'assujettissement ordinaire vaudois sur cette PF ?
 			final List<Assujettissement> assujettissementPf = extractAssujettissementOrdinaireVaudois(assujettissements, pf);
 
