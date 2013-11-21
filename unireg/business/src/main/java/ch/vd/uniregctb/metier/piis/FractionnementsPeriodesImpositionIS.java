@@ -44,7 +44,7 @@ public class FractionnementsPeriodesImpositionIS implements Iterable<Fraction> {
 	@NotNull
 	private Localisation getLocalisation(ForFiscalPrincipal forPrincipal) {
 		if (forPrincipal == null) {
-			return Localisation.getInconnue();
+			return Localisation.get(null, infraService);
 		}
 		else {
 			return Localisation.get(forPrincipal.getNumeroOfsAutoriteFiscale(), forPrincipal.getDateDebut(), forPrincipal.getTypeAutoriteFiscale(), infraService);
@@ -52,7 +52,7 @@ public class FractionnementsPeriodesImpositionIS implements Iterable<Fraction> {
 	}
 
 	@Nullable
-	private static MotifFor getMotifEffectif(Localisation localisationAvant, MotifFor motifFermeture, Localisation localisationApres, MotifFor motifOuverture) {
+	protected static MotifFor getMotifEffectif(Localisation localisationAvant, MotifFor motifFermeture, Localisation localisationApres, MotifFor motifOuverture) {
 		// changement de localisation -> on se moque des motifs
 		if (!localisationAvant.isInconnue() && !localisationApres.isInconnue() && !localisationAvant.equals(localisationApres)) {
 			if (localisationApres.isHS()) {

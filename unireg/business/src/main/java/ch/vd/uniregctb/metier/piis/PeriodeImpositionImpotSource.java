@@ -10,9 +10,9 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.Duplicable;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.metier.common.Fraction;
+import ch.vd.uniregctb.metier.common.FractionSimple;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
@@ -30,11 +30,8 @@ public class PeriodeImpositionImpotSource implements CollatableDateRange, Duplic
 	private final TypeAutoriteFiscale typeAutoriteFiscale;
 	private final Integer noOfs;
 	private final Localisation localisation;
-
-	private final MotifFor motifOuverture;
-	private final MotifFor motifFermeture;
-	private final ModeImposition modeImpositionDebut;
-	private final ModeImposition modeImpositionFin;
+	private final Fraction fractionDebut;
+	private final Fraction fractionFin;
 
 	/**
 	 * Constructeur utilisé lors du {@link #collate(ch.vd.registre.base.date.DateRange)}
@@ -52,13 +49,16 @@ public class PeriodeImpositionImpotSource implements CollatableDateRange, Duplic
 		this.localisation = suivant.localisation;
 		this.dateDebut = courant.dateDebut;
 		this.dateFin = suivant.dateFin;
-		this.motifOuverture = courant.motifOuverture;
-		this.motifFermeture = suivant.motifFermeture;
-		this.modeImpositionDebut = courant.modeImpositionDebut;
-		this.modeImpositionFin = suivant.modeImpositionFin;
+		this.fractionDebut = courant.fractionDebut;
+		this.fractionFin = courant.fractionFin;
 		DateRangeHelper.assertValidRange(this.dateDebut, this.dateFin);
 	}
 
+	/**
+	 * Constructeur de duplication
+	 * @param src source
+	 * @see #duplicate()
+	 */
 	private PeriodeImpositionImpotSource(PeriodeImpositionImpotSource src) {
 		this.pp = src.pp;
 		this.type = src.type;
@@ -67,16 +67,25 @@ public class PeriodeImpositionImpotSource implements CollatableDateRange, Duplic
 		this.localisation = src.localisation;
 		this.dateDebut = src.dateDebut;
 		this.dateFin = src.dateFin;
-		this.motifOuverture = src.motifOuverture;
-		this.motifFermeture = src.motifFermeture;
-		this.modeImpositionDebut = src.modeImpositionDebut;
-		this.modeImpositionFin = src.modeImpositionFin;
+		this.fractionDebut = src.fractionDebut;
+		this.fractionFin = src.fractionFin;
 	}
 
-	private PeriodeImpositionImpotSource(PersonnePhysique pp, Type type, RegDate dateDebut, RegDate dateFin,
+	/**
+	 * Constructeur membre à membre
+	 * @param pp personne physique concernée par la période
+	 * @param type type de période
+	 * @param dateDebut date de début de la période
+	 * @param dateFin date de fin de la période
+	 * @param typeAutoriteFiscale (optionnel) type d'autorité fiscale
+	 * @param noOfs (optionnel) numéro OFS de l'autorité fiscale
+	 * @param localisation localisation de la période
+	 * @param fractionDebut (optionnel) fraction en début de période
+	 * @param fractionFin (optionnel) fraction en fin de période
+	 */
+	public PeriodeImpositionImpotSource(@NotNull PersonnePhysique pp, @NotNull Type type, @NotNull RegDate dateDebut, @NotNull RegDate dateFin,
 	                                     @Nullable TypeAutoriteFiscale typeAutoriteFiscale, @Nullable Integer noOfs, @NotNull Localisation localisation,
-	                                     @Nullable MotifFor motifOuverture, @Nullable MotifFor motifFermeture,
-	                                     @Nullable ModeImposition modeImpositionDebut, @Nullable ModeImposition modeImpositionFin) {
+	                                     @Nullable Fraction fractionDebut, @Nullable Fraction fractionFin) {
 		this.pp = pp;
 		this.type = type;
 		this.dateDebut = dateDebut;
@@ -84,15 +93,21 @@ public class PeriodeImpositionImpotSource implements CollatableDateRange, Duplic
 		this.typeAutoriteFiscale = typeAutoriteFiscale;
 		this.noOfs = noOfs;
 		this.localisation = localisation;
-		this.motifOuverture = motifOuverture;
-		this.motifFermeture = motifFermeture;
-		this.modeImpositionDebut = modeImpositionDebut;
-		this.modeImpositionFin = modeImpositionFin;
+		this.fractionDebut = fractionDebut;
+		this.fractionFin = fractionFin;
 		DateRangeHelper.assertValidRange(this.dateDebut, this.dateFin);
 	}
 
+	/**
+	 * Constructeur utilisé par le calcul de remplissage des trous
+	 * @param src période d'imposition existante à adapter
+	 * @param dateDebut nouvelle date de début
+	 * @param dateFin nouvelle date de fin
+	 */
 	public PeriodeImpositionImpotSource(PeriodeImpositionImpotSource src, RegDate dateDebut, RegDate dateFin) {
-		this(src.pp, src.type, dateDebut, dateFin, src.typeAutoriteFiscale, src.noOfs, src.localisation, src.motifOuverture, src.motifFermeture, src.modeImpositionDebut, src.modeImpositionFin);
+		this(src.pp, src.type, dateDebut, dateFin, src.typeAutoriteFiscale, src.noOfs, src.localisation,
+		     dateDebut == src.dateDebut ? src.fractionDebut : null,
+		     dateFin == src.dateFin ? src.fractionFin : null);
 	}
 
 	/**
@@ -102,19 +117,9 @@ public class PeriodeImpositionImpotSource implements CollatableDateRange, Duplic
 	 * @param dateFin date de fin du trou
 	 */
 	public PeriodeImpositionImpotSource(PersonnePhysique pp, RegDate dateDebut, RegDate dateFin) {
-		this(pp, Type.SOURCE, dateDebut, dateFin, null, null, Localisation.getInconnue(), null, null, null, null);
+		this(pp, Type.SOURCE, dateDebut, dateFin, null, null, Localisation.getInconnue(), new FractionSimple(dateDebut, null, null), new FractionSimple(dateFin, null, null));
 	}
 
-	public PeriodeImpositionImpotSource(PersonnePhysique pp, Type type, RegDate dateDebut, RegDate dateFin, @Nullable ForFiscalPrincipal ff, Localisation localisation, @Nullable Integer noOfs) {
-		this(pp, type, dateDebut, dateFin,
-		     ff != null ? ff.getTypeAutoriteFiscale() : null,
-		     noOfs,
-		     localisation,
-		     ff != null ? ff.getMotifOuverture() : null,
-		     ff != null ? ff.getMotifFermeture() : null,
-		     ff != null ? ff.getModeImposition() : null,
-		     ff != null ? ff.getModeImposition() : null);
-	}
 
 	@Override
 	public boolean isCollatable(DateRange next) {
@@ -130,22 +135,16 @@ public class PeriodeImpositionImpotSource implements CollatableDateRange, Duplic
 			return false;
 		}
 
-		// veuvage -> on ne colle pas !
-		if (motifFermeture == MotifFor.VEUVAGE_DECES || other.motifOuverture == MotifFor.VEUVAGE_DECES) {
-			return false;
-		}
-
-		// obtention d'un permis C / d'une nationalité avec passage de "source pure" à "ordinaire"
-		if (motifFermeture == MotifFor.PERMIS_C_SUISSE || other.motifOuverture == MotifFor.PERMIS_C_SUISSE) {
-			if (modeImpositionFin == ModeImposition.SOURCE && !other.modeImpositionDebut.isSource()) {
+		// si fraction présente, il faut réfléchir
+		if (fractionFin != null || other.fractionDebut != null) {
+			final MotifFor motif = Fraction.getMotifEffectif(fractionFin != null ? fractionFin.getMotif() : null, other.fractionDebut != null ? other.fractionDebut.getMotif() : null);
+			if (motif == MotifFor.VEUVAGE_DECES) {
 				return false;
 			}
-		}
-
-		// mariage avec passage de "source pure" à "ordinaire" -> on ne colle pas
-		if (motifFermeture == MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION || other.motifOuverture == MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION) {
-			if (modeImpositionFin == ModeImposition.SOURCE && !other.modeImpositionDebut.isSource()) {
-				return false;
+			else if (motif == MotifFor.PERMIS_C_SUISSE || motif == MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION) {
+				if (type != other.type) {
+					return false;
+				}
 			}
 		}
 

@@ -205,7 +205,8 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 
 	/**
 	 * Calcul du motif d'ouverture à considérer (en donnant la priorité aux changements d'autorité fiscales - en fait, aux changements de clé de localisation : canton/pays)
-	 * @param motifOuverture le motif à utiliser s'il n'y a pas de changement de clé de localisation
+	 * @param motifFermeture motif de fermeture du for précédent
+	 * @param motifOuverture motif d'ouverture du for
 	 * @param dateDebut date de début du for (= date du motif)
 	 * @param typeAutoriteFiscale type d'autorité fiscale du for principal
 	 * @param noOfsAutoriteFiscale numéro OFS de l'entité derrière le for principal
@@ -213,34 +214,12 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 	 * @param noOfsAutoriteFiscalePrecedente numéro OFS de l'entité derrière le for principal précédent
 	 * @return le motif effectif à prendre en compte
 	 */
-	private MotifFor computeActualMotive(MotifFor motifOuverture, @NotNull RegDate dateDebut,
+	private MotifFor computeActualMotive(MotifFor motifFermeture, MotifFor motifOuverture, @NotNull RegDate dateDebut,
 	                                     @NotNull TypeAutoriteFiscale typeAutoriteFiscale, int noOfsAutoriteFiscale,
 	                                     @NotNull TypeAutoriteFiscale typeAutoriteFiscalePrecedente, int noOfsAutoriteFiscalePrecedente) {
-		if (typeAutoriteFiscale == typeAutoriteFiscalePrecedente) {
-			final Localisation localisationAvant = Localisation.get(noOfsAutoriteFiscalePrecedente, dateDebut.getOneDayBefore(), typeAutoriteFiscalePrecedente, infraService);
-			final Localisation localisationApres = Localisation.get(noOfsAutoriteFiscale, dateDebut, typeAutoriteFiscale, infraService);
-			if (localisationApres.equals(localisationAvant)) {
-				return motifOuverture;
-			}
-			else if (typeAutoriteFiscale == TypeAutoriteFiscale.PAYS_HS) {
-				return MotifFor.DEPART_HS;
-			}
-			else {
-				return MotifFor.DEPART_HC;
-			}
-		}
-		else if (typeAutoriteFiscale == TypeAutoriteFiscale.PAYS_HS) {
-			return MotifFor.DEPART_HS;
-		}
-		else if (typeAutoriteFiscalePrecedente == TypeAutoriteFiscale.PAYS_HS) {
-			return MotifFor.ARRIVEE_HS;
-		}
-		else if (typeAutoriteFiscale == TypeAutoriteFiscale.COMMUNE_HC) {
-			return MotifFor.DEPART_HC;
-		}
-		else {
-			return MotifFor.ARRIVEE_HC;
-		}
+		final Localisation localisationAvant = Localisation.get(noOfsAutoriteFiscalePrecedente, dateDebut.getOneDayBefore(), typeAutoriteFiscalePrecedente, infraService);
+		final Localisation localisationApres = Localisation.get(noOfsAutoriteFiscale, dateDebut, typeAutoriteFiscale, infraService);
+		return FractionnementsPeriodesImpositionIS.getMotifEffectif(localisationAvant, motifFermeture, localisationApres, motifOuverture);
 	}
 
 	/**
@@ -251,7 +230,7 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 	private boolean isDepartHC(ForFiscalPrincipal ffp, @Nullable ForFiscalPrincipal forSuivant) {
 		final MotifFor motive;
 		if (forSuivant != null && forSuivant.getDateDebut().getOneDayBefore() == ffp.getDateFin()) {
-			motive = computeActualMotive(forSuivant.getMotifOuverture(), forSuivant.getDateDebut(), forSuivant.getTypeAutoriteFiscale(), forSuivant.getNumeroOfsAutoriteFiscale(),
+			motive = computeActualMotive(ffp.getMotifFermeture(), forSuivant.getMotifOuverture(), forSuivant.getDateDebut(), forSuivant.getTypeAutoriteFiscale(), forSuivant.getNumeroOfsAutoriteFiscale(),
 			                             ffp.getTypeAutoriteFiscale(), ffp.getNumeroOfsAutoriteFiscale());
 		}
 		else {
@@ -311,31 +290,38 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 
 		public final PersonnePhysique pp;
 		public final PeriodeImpositionImpotSource.Type type;
-		public final ForFiscalPrincipal forFiscal;
+		public final TypeAutoriteFiscale typeAutoriteFiscale;
+		public final Integer noOfs;
 		public final RegDate dateDebut;
 		public final RegDate dateFin;
 		public final Localisation localisation;
-		public final Integer noOfs;
+		public final Fraction fractionDebut;
+		public final Fraction fractionFin;
 
 		private ProtoPeriodeImpositionImpotSource(PersonnePhysique pp, PeriodeImpositionImpotSource.Type type, ForFiscalPrincipal forFiscal,
-		                                          RegDate dateDebut, RegDate dateFin, ServiceInfrastructureService infraService) {
+		                                          RegDate dateDebut, RegDate dateFin, Fraction fractionDebut, Fraction fractionFin,
+		                                          ServiceInfrastructureService infraService) {
 			this.pp = pp;
 			this.type = type;
-			this.forFiscal = forFiscal;
+			this.typeAutoriteFiscale = forFiscal != null ? forFiscal.getTypeAutoriteFiscale() : null;
+			this.noOfs = forFiscal != null ? forFiscal.getNumeroOfsAutoriteFiscale() : null;
 			this.dateDebut = dateDebut;
 			this.dateFin = dateFin;
 			this.localisation = Localisation.get(forFiscal, infraService);
-			this.noOfs = forFiscal != null ? forFiscal.getNumeroOfsAutoriteFiscale() : null;
+			this.fractionDebut = fractionDebut;
+			this.fractionFin = fractionFin;
 		}
 
 		private ProtoPeriodeImpositionImpotSource(ProtoPeriodeImpositionImpotSource src, int noOfs) {
 			this.pp = src.pp;
 			this.type = src.type;
-			this.forFiscal = src.forFiscal;
+			this.typeAutoriteFiscale = src.typeAutoriteFiscale;
+			this.noOfs = noOfs;
 			this.dateDebut = src.dateDebut;
 			this.dateFin = src.dateFin;
 			this.localisation = src.localisation;
-			this.noOfs = noOfs;
+			this.fractionDebut = src.fractionDebut;
+			this.fractionFin = src.fractionFin;
 		}
 
 		public boolean isValid() {
@@ -343,7 +329,7 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 		}
 
 		public PeriodeImpositionImpotSource project() {
-			return new PeriodeImpositionImpotSource(pp, type, dateDebut, dateFin, forFiscal, localisation, noOfs);
+			return new PeriodeImpositionImpotSource(pp, type, dateDebut, dateFin, typeAutoriteFiscale, noOfs, localisation, fractionDebut, fractionFin);
 		}
 
 		public ProtoPeriodeImpositionImpotSource withNoOfs(int noOfs) {
@@ -410,8 +396,10 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 
 				final PeriodeImpositionImpotSource.Type type = determineTypePeriode(forPrincipal.current, forPrincipal.next);
 				final RegDate dateDebut = determineDateDebut(forPrincipal.current, pf, fracs);
+				final Fraction fractionDebut = fracs.getAt(forPrincipal.current.getDateDebut());
 				final RegDate dateFin = determineDateFin(forPrincipal.current, pf, fracs);
-				protos.add(new ProtoPeriodeImpositionImpotSource(pp, type, forPrincipal.current, dateDebut, dateFin, infraService));
+				final Fraction fractionFin = fracs.getAt(forPrincipal.current.getDateFin());
+				protos.add(new ProtoPeriodeImpositionImpotSource(pp, type, forPrincipal.current, dateDebut, dateFin, fractionDebut, fractionFin, infraService));
 			}
 
 			// pour chaque localisation continue, toutes les périodes doivent prendre LE DERNIER FOR de la localisation
@@ -466,6 +454,25 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 			}
 		}
 
-		return piis.isEmpty() ? Collections.<PeriodeImpositionImpotSource>emptyList() : DateRangeHelper.collate(piis);
+		return piis.isEmpty() ? Collections.<PeriodeImpositionImpotSource>emptyList() : collate(piis);
+	}
+
+	/**
+	 * Comme les périodes "déteignent" sur les périodes <b>précédentes</b> en cas de collation, et que l'algorithme
+	 * fourni par {@link DateRangeHelper#collate(java.util.List)} prend les éléments dans l'ordre canonique, il peut être nécessaire
+	 * de faire plusieurs itérations de <i>collate</i> avant d'obtenir une situation stable
+	 * @param src liste de base
+	 * @return liste collatée (on arrête les boucles dès que le nombre d'éléments dans la liste ne bouge plus)
+	 */
+	private static List<PeriodeImpositionImpotSource> collate(@NotNull List<PeriodeImpositionImpotSource> src) {
+		List<PeriodeImpositionImpotSource> collated = src;
+		while (!collated.isEmpty()) {
+			final int size = collated.size();
+			collated = DateRangeHelper.collate(collated);
+			if (size == collated.size()) {
+				break;
+			}
+		}
+		return collated;
 	}
 }
