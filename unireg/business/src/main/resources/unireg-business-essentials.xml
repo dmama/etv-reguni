@@ -208,6 +208,7 @@
 	<bean id="periodeImpositionImpotSourceService" class="ch.vd.uniregctb.metier.piis.PeriodeImpositionImpotSourceServiceImpl">
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="tiersService" ref="tiersService"/>
+		<property name="infraService" ref="serviceInfrastructureService"/>
 		<property name="assujettissementService" ref="assujettissementService"/>
 	</bean>
 

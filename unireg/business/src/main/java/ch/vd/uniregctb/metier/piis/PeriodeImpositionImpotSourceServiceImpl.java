@@ -8,9 +8,11 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.RandomAccess;
 import java.util.Set;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRange;
@@ -20,6 +22,7 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.CollectionsUtils;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementHelper;
@@ -45,6 +48,7 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 
 	private TiersDAO tiersDAO;
 	private TiersService tiersService;
+	private ServiceInfrastructureService infraService;
 	private AssujettissementService assujettissementService;
 
 	public void setTiersDAO(TiersDAO tiersDAO) {
@@ -53,6 +57,10 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
+	}
+
+	public void setInfraService(ServiceInfrastructureService infraService) {
+		this.infraService = infraService;
 	}
 
 	public void setAssujettissementService(AssujettissementService assujettissementService) {
@@ -100,8 +108,6 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 		}
 		return map;
 	}
-
-
 
 	/**
 	 * Renvoie une liste triée par date des rapports entre tiers d'un type et d'un sens donné
@@ -209,18 +215,88 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 		return res.isEmpty() ? Collections.<T>emptyList() : res;
 	}
 
-	private static RegDate computeDateDebutMapping(ForFiscalPrincipal ffp) {
-		return BEGIN_DATE_SHIFTING_STRATEGIES.get(ffp.getMotifOuverture()).shift(ffp.getDateDebut());
+	private static final class ForIterator implements Iterator<ForFiscalPrincipal> {
+		private int index = 0;      // l'index du prochain élément renvoyé par {@link next()}
+		private final List<ForFiscalPrincipal> list;
+
+		public ForIterator(List<ForFiscalPrincipal> list) {
+			this.list = (list instanceof RandomAccess ? list : new ArrayList<>(list));
+			this.index = 0;
+		}
+
+		@Override
+		public boolean hasNext() {
+			return index < list.size();
+		}
+
+		@Override
+		public ForFiscalPrincipal next() {
+			return list.get(index ++);
+		}
+
+		@Override
+		public void remove() {
+			throw new UnsupportedOperationException();
+		}
+
+		public ForFiscalPrincipal peekAtFormer() {
+			// le précédent du dernier appel à next -> -2
+			return index > 1 ? list.get(index - 2) : null;
+		}
 	}
 
-	private static Map<RegDate, RegDate> computeDateMapping(List<ForFiscalPrincipal> fors, DateRange pf) {
+	private MotifFor computeActualMotive(@NotNull MotifFor motifOuverture, @NotNull RegDate dateDebut,
+	                                     @NotNull TypeAutoriteFiscale typeAutoriteFiscale, int noOfsAutoriteFiscale,
+	                                     @NotNull TypeAutoriteFiscale typeAutoriteFiscalePrecedente, int noOfsAutoriteFiscalePrecedente) {
+		if (typeAutoriteFiscale == typeAutoriteFiscalePrecedente) {
+			if (typeAutoriteFiscale == TypeAutoriteFiscale.COMMUNE_HC) {
+				final String cleLocalisationAvant = PeriodeImpositionImpotSource.buildCleLocalisation(typeAutoriteFiscalePrecedente, noOfsAutoriteFiscalePrecedente,
+				                                                                                      dateDebut.getOneDayBefore(), infraService);
+				final String cleLocalisationApres = PeriodeImpositionImpotSource.buildCleLocalisation(typeAutoriteFiscale, noOfsAutoriteFiscale, dateDebut, infraService);
+				if (cleLocalisationApres.equals(cleLocalisationAvant)) {
+					return motifOuverture;
+				}
+				else {
+					return MotifFor.DEPART_HC;
+				}
+			}
+			else {
+				return motifOuverture;
+			}
+		}
+		else if (typeAutoriteFiscale == TypeAutoriteFiscale.PAYS_HS) {
+			return MotifFor.DEPART_HS;
+		}
+		else if (typeAutoriteFiscalePrecedente == TypeAutoriteFiscale.PAYS_HS) {
+			return MotifFor.ARRIVEE_HS;
+		}
+		else if (typeAutoriteFiscale == TypeAutoriteFiscale.COMMUNE_HC) {
+			return MotifFor.DEPART_HC;
+		}
+		else {
+			return MotifFor.ARRIVEE_HC;
+		}
+	}
+
+	private RegDate computeDateDebutMapping(ForFiscalPrincipal ffp, @Nullable ForFiscalPrincipal previous) {
+		final MotifFor actualMotive = previous != null && previous.getDateFin().getOneDayAfter() == ffp.getDateDebut()
+				? computeActualMotive(ffp.getMotifOuverture(), ffp.getDateDebut(),
+				                      ffp.getTypeAutoriteFiscale(), ffp.getNumeroOfsAutoriteFiscale(),
+				                      previous.getTypeAutoriteFiscale(), previous.getNumeroOfsAutoriteFiscale())
+				: ffp.getMotifOuverture();
+		return BEGIN_DATE_SHIFTING_STRATEGIES.get(actualMotive).shift(ffp.getDateDebut());
+	}
+
+	private Map<RegDate, RegDate> computeDateMapping(List<ForFiscalPrincipal> fors, DateRange pf) {
 		final Map<RegDate, RegDate> mapping = new HashMap<>(fors.size() * 2);
-		for (ForFiscalPrincipal ffp : fors) {
+		final ForIterator iterator = new ForIterator(fors);
+		while (iterator.hasNext()) {
+			final ForFiscalPrincipal ffp = iterator.next();
 			if (!pf.isValidAt(ffp.getDateDebut())) {
 				mapping.put(ffp.getDateDebut(), pf.getDateDebut());
 			}
 			else {
-				final RegDate newDebut = computeDateDebutMapping(ffp);
+				final RegDate newDebut = computeDateDebutMapping(ffp, iterator.peekAtFormer());
 				mapping.put(ffp.getDateDebut(), newDebut);
 				mapping.put(ffp.getDateDebut().getOneDayBefore(), newDebut.getOneDayBefore());
 			}
@@ -291,7 +367,7 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 
 			if (forsPf.isEmpty()) {
 				// il n'y a que des rapports de travail sur cette période -> toute la PF passe à la source
-				piis.add(new PeriodeImpositionImpotSource(pp, PeriodeImpositionImpotSource.Type.SOURCE, pfRange.getDateDebut(), pfRange.getDateFin(), null));
+				piis.add(new PeriodeImpositionImpotSource(pp, PeriodeImpositionImpotSource.Type.SOURCE, pfRange.getDateDebut(), pfRange.getDateFin(), null, infraService));
 				continue;
 			}
 
@@ -324,7 +400,7 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 				final RegDate fin = dateMapping.get(ffp.getDateFin());
 				if (debut.isBeforeOrEqual(fin)) {
 					final PeriodeImpositionImpotSource.Type type = determineTypePeriode(ffp, assujettissementPf);
-					piisPf.add(new PeriodeImpositionImpotSource(pp, type, debut, fin, ffp));
+					piisPf.add(new PeriodeImpositionImpotSource(pp, type, debut, fin, ffp, infraService));
 				}
 				lastDebut = debut;
 			}
@@ -334,7 +410,7 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 			final RegDate dateFin = RegDateHelper.minimum(pfRange.getDateFin(), dateDeces, NullDateBehavior.LATEST);
 			if (RegDateHelper.isBeforeOrEqual(pfRange.getDateDebut(), dateFin, NullDateBehavior.LATEST)) {
 				final List<PeriodeImpositionImpotSource> fonds = new ArrayList<>(1);
-				fonds.add(new PeriodeImpositionImpotSource(pp, PeriodeImpositionImpotSource.Type.SOURCE, pfRange.getDateDebut(), dateFin, null));
+				fonds.add(new PeriodeImpositionImpotSource(pp, PeriodeImpositionImpotSource.Type.SOURCE, pfRange.getDateDebut(), dateFin, null, infraService));
 
 				piis.addAll(DateRangeHelper.override(fonds, piisPf,
 				                                     new DateRangeHelper.AdapterCallbackExtended<PeriodeImpositionImpotSource>() {
