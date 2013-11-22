@@ -246,7 +246,7 @@
 				<%-- le champ d'accès rapide dans l'entête de l'application --%>
 				<div class="quicksearch">
 					<label for="quicksearch"><fmt:message key="label.acces.rapide"/></label>&nbsp;
-					<input id="quicksearch" class="quicksearch" size="15" type="text"
+					<input id="quicksearch" class="quicksearch" size="15" maxlength="15" type="text"
 						onKeyPress="return Quicksearch.onKeyPress(this, event);"
 						onfocus="Quicksearch.onFocus(this, '<fmt:message key="label.acces.rapide.invite"/>')"
 						onblur="Quicksearch.onBlur(this, '<fmt:message key="label.acces.rapide.invite"/>')"

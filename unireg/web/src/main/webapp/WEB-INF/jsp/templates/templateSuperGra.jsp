@@ -55,7 +55,7 @@
 				</script>
 				<div class="quicksearch">
 					<fmt:message key="label.acces.rapide"/>&nbsp;
-					<input class="quicksearch" size="15" type="text" 
+					<input class="quicksearch" size="15" maxlength="15" type="text"
 						onKeyPress="return Quicksearch.onKeyPress(this, event);"
 						onfocus="Quicksearch.onFocus(this, '<fmt:message key="label.acces.rapide.invite"/>')"
 						onblur="Quicksearch.onBlur(this, '<fmt:message key="label.acces.rapide.invite"/>')"
