@@ -10,6 +10,7 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.metier.common.DecalageDateHelper;
 import ch.vd.uniregctb.metier.common.ForFiscalPrincipalContext;
 import ch.vd.uniregctb.metier.common.Fraction;
 import ch.vd.uniregctb.metier.common.FractionContrariante;
@@ -116,8 +117,8 @@ public class FractionnementsPeriodesImpositionIS implements Iterable<Fraction> {
 				}
 				else if (previous != null && previous.getModeImposition() == ModeImposition.SOURCE && !current.getModeImposition().isSource() && motifEffectif == MotifFor.PERMIS_C_SUISSE) {
 					// attention, pas tout à fait pareil que le mariage, puisque pour le moment, l'obtention du permis C le 1er jour du mois
-					// provoque un assujettissement ordinaire immédiat (à terme, il faudra changer ça...)
-	                final RegDate dateFraction = current.getDateDebut().getOneDayBefore().getLastDayOfTheMonth().getOneDayAfter();
+					// provoque un assujettissement ordinaire immédiat (avant 2014, après on décale quand-même au mois suivant)
+	                final RegDate dateFraction = DecalageDateHelper.getDateDebutAssujettissementOrdinaireApresPermisCNationaliteSuisse(current.getDateDebut());
 					fraction = new FractionDecalee(dateFraction, new DateRangeHelper.Range(current.getDateDebut(), dateFraction), motifEffectif, null);
 				}
 				else if (previous != null && previous.getModeImposition() == ModeImposition.SOURCE && !current.getModeImposition().isSource() && motifEffectif == MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION) {
@@ -160,8 +161,8 @@ public class FractionnementsPeriodesImpositionIS implements Iterable<Fraction> {
 				}
 				else if (current.getModeImposition() == ModeImposition.SOURCE && next != null && !next.getModeImposition().isSource() && motifEffectif == MotifFor.PERMIS_C_SUISSE) {
 					// attention, pas tout à fait pareil que le mariage, puisque pour le moment, l'obtention du permis C le 1er jour du mois
-					// provoque un assujettissement ordinaire immédiat (à terme, il faudra changer ça...)
-					final RegDate dateFraction = current.getDateFin().getLastDayOfTheMonth().getOneDayAfter();
+					// provoque un assujettissement ordinaire immédiat (avant 2014, après on décale quand-même au mois suivant)
+					final RegDate dateFraction = DecalageDateHelper.getDateDebutAssujettissementOrdinaireApresPermisCNationaliteSuisse(current.getDateFin().getOneDayAfter());
 					fraction = new FractionDecalee(dateFraction, new DateRangeHelper.Range(current.getDateFin(), dateFraction), null, motifEffectif);
 				}
 				else if (current.getModeImposition() == ModeImposition.SOURCE && next != null && !next.getModeImposition().isSource() && motifEffectif == MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION) {

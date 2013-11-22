@@ -4,6 +4,7 @@ import java.util.List;
 
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.metier.common.DecalageDateHelper;
 import ch.vd.uniregctb.metier.common.ForFiscalPrincipalContext;
 import ch.vd.uniregctb.metier.common.Fraction;
 import ch.vd.uniregctb.metier.common.FractionDecalee;
@@ -44,7 +45,7 @@ public class FractionnementsRole extends FractionnementsAssujettissement {
 		}
 		else if ((previous == null || previous.getModeImposition() == ModeImposition.SOURCE) && current.getModeImposition().isRole() && motifOuverture == MotifFor.PERMIS_C_SUISSE) {
 			// [SIFISC-8095] l'obtention d'un permis C ou nationalité suisse doit fractionner la période d'assujettissement *mais* avec un décalage au 1er du mois suivant
-			final RegDate dateFraction = AssujettissementServiceImpl.getProchain1DeMois(current.getDateDebut());
+			final RegDate dateFraction = DecalageDateHelper.getDateDebutAssujettissementOrdinaireApresPermisCNationaliteSuisse(current.getDateDebut());
 			fraction = new FractionDecalee(dateFraction, new DateRangeHelper.Range(current.getDateDebut(), dateFraction), motifOuverture, null);
 		}
 

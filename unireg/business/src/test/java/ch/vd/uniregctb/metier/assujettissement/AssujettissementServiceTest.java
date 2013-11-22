@@ -4121,6 +4121,57 @@ public class AssujettissementServiceTest extends MetierTest {
 		}
 	}
 
+	/**
+	 * [SIFISC-10518] Avant 2014, un for ordinaire qui s'ouvre au premier jour d'un mois pour motif PERMIS_C_SUISSE génère
+	 * un assujettissement ordinaire dès le mois de l'ouverture du for (dès 2014, il y aura un décalage au début du mois suivant)
+	 */
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testObtentionPermisCNationalitePremierJourDuMoisAvant2014() throws Exception {
+
+		final RegDate obtention = date(2013, 5, 1);
+
+		final Contribuable ctb = createContribuableSansFor();
+		addForPrincipal(ctb, date(2013, 1, 1), MotifFor.ARRIVEE_HS, obtention.getOneDayBefore(), MotifFor.PERMIS_C_SUISSE, MockCommune.Moudon, ModeImposition.SOURCE);
+		addForPrincipal(ctb, obtention, MotifFor.PERMIS_C_SUISSE, MockCommune.Moudon);
+
+		final List<Assujettissement> liste = service.determine(ctb);
+		assertEquals(2, liste.size());
+		assertSourcierPur(date(2013, 1, 1), obtention.getOneDayBefore(), MotifFor.ARRIVEE_HS, MotifFor.PERMIS_C_SUISSE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(0));
+		assertOrdinaire(obtention, null, MotifFor.PERMIS_C_SUISSE, null, liste.get(1));
+
+	}
+
+	/**
+	 * [SIFISC-10518] Dès 2014, un for ordinaire qui s'ouvre au premier jour d'un mois pour motif PERMIS_C_SUISSE génère
+	 * un assujettissement ordinaire dès le début du mois suivant l'ouverture du for (avant 2014, il n'y avait pas de décalage au mois suivant dans ce cas)
+	 */
+	@Test
+	public void testObtentionPermisCNationalitePremierJourDuMoisDes2014() throws Exception {
+
+		final RegDate obtention = date(2014, 5, 1);
+
+		ForFiscalValidator.setFutureBeginDate(RegDateHelper.maximum(date(2014, 10, 31), RegDate.get(), NullDateBehavior.LATEST));
+		try {
+			doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+				@Override
+				public void execute(TransactionStatus status) throws Exception {
+					final Contribuable ctb = createContribuableSansFor();
+					addForPrincipal(ctb, date(2013, 1, 1), MotifFor.ARRIVEE_HS, obtention.getOneDayBefore(), MotifFor.PERMIS_C_SUISSE, MockCommune.Moudon, ModeImposition.SOURCE);
+					addForPrincipal(ctb, obtention, MotifFor.PERMIS_C_SUISSE, obtention.addMonths(5), MotifFor.DEPART_HS, MockCommune.Moudon);
+
+					final List<Assujettissement> liste = service.determine(ctb);
+					assertEquals(2, liste.size());
+					assertSourcierPur(date(2013, 1, 1), obtention.getLastDayOfTheMonth(), MotifFor.ARRIVEE_HS, MotifFor.PERMIS_C_SUISSE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(0));
+					assertOrdinaire(obtention.getLastDayOfTheMonth().getOneDayAfter(), obtention.addMonths(5), MotifFor.PERMIS_C_SUISSE, MotifFor.DEPART_HS, liste.get(1));
+				}
+			});
+		}
+		finally {
+			ForFiscalValidator.setFutureBeginDate(null);
+		}
+	}
+
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDeterminePourCommuneNonAssujetti() throws Exception {

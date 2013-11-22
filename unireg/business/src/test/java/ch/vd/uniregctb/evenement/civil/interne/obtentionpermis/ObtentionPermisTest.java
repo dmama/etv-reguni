@@ -156,10 +156,12 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	/**
-	 * [SIFISC-9211] même si le permis est obtenu le premier jour d'un mois, l'assujetissement source doit quand-même rester valide tout le mois
+	 * <b>[SIFISC-9211]</b> même si le permis est obtenu le premier jour d'un mois, l'assujetissement source doit quand-même rester valide tout le mois<br/>
+	 * <b>[SIFISC-10518]</b> cela reste vrai, mais pas par le même biais : avant 2014, c'est le for qui était décalé d'un jour, alors que dès 2014, c'est
+	 * le calcul de l'assujettissement qui prendra le cas en charge
 	 */
 	@Test
-	public void testObtentionPermisHandlerPremierJourDuMois() throws Exception {
+	public void testObtentionPermisHandlerPremierJourDuMoisAvant2014() throws Exception {
 
 		final long noIndividu = 478423L;
 		final RegDate dateNaissance = date(1980, 10, 25);
@@ -240,6 +242,100 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 				return null;
 			}
 		});
+	}
+
+	/**
+	 * <b>[SIFISC-9211]</b> même si le permis est obtenu le premier jour d'un mois, l'assujetissement source doit quand-même rester valide tout le mois<br/>
+	 * <b>[SIFISC-10518]</b> cela reste vrai, mais pas par le même biais : avant 2014, c'est le for qui était décalé d'un jour, alors que dès 2014, c'est
+	 * le calcul de l'assujettissement qui prendra le cas en charge
+	 */
+	@Test
+	public void testObtentionPermisHandlerPremierJourDuMoisDes2014() throws Exception {
+
+		final long noIndividu = 478423L;
+		final RegDate dateNaissance = date(1980, 10, 25);
+		final RegDate dateArrivee = date(2000, 5, 12);
+		final RegDate dateObtentionPermis = date(2014, 1, 1);
+
+		final AssujettissementService assujettissementService = getBean(AssujettissementService.class, "assujettissementService");
+
+		// ce test a été lancé en développement avec un décalage temporel (voir la variable d'environnement DateConstants.TIME_OFFSET)
+		// en intégration continue, il ne tournera de manière significative qu'une fois l'année 2014 effectivement commencée !!
+		if (RegDate.get().isAfterOrEqual(dateObtentionPermis)) {
+
+			// mise en place civile : étranger résident depuis plusieurs années lorsqu'il reçoit le permis C un premier jour de mois
+			serviceCivil.setUp(new MockServiceCivil() {
+				@Override
+				protected void init() {
+					final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Oulianov", "Wladimir", Sexe.MASCULIN);
+					addPermis(individu, TypePermis.SEJOUR, dateArrivee, dateObtentionPermis.getOneDayBefore(), false);
+					addPermis(individu, TypePermis.ETABLISSEMENT, dateObtentionPermis, null, false);
+					addNationalite(individu, MockPays.Russie, dateNaissance, null);
+				}
+			});
+
+			// mise en place fiscale : for source depuis l'arrivée
+			final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+				@Override
+				public Long doInTransaction(TransactionStatus status) {
+					final PersonnePhysique pp = addHabitant(noIndividu);
+					addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.ChateauDoex, ModeImposition.SOURCE);
+					return pp.getNumero();
+				}
+			});
+
+			doInNewTransactionAndSession(new TxCallback<Object>() {
+				@Override
+				public Object execute(TransactionStatus status) throws Exception {
+					final Individu ind = serviceCivil.getIndividu(noIndividu, null);
+					final ObtentionPermis obtentionPermis = createValidObtentionPermisNonC(ind, dateObtentionPermis, MockCommune.ChateauDoex.getNoOFS(), TypePermis.ETABLISSEMENT);
+
+					final MessageCollector collector = buildMessageCollector();
+					obtentionPermis.validate(collector, collector);
+					obtentionPermis.handle(collector);
+
+					assertEmpty(collector.getErreurs());
+					assertEmpty(collector.getWarnings());
+					return null;
+				}
+			});
+
+			// vérification de l'état des fors du contribuable
+			doInNewTransactionAndSession(new TxCallback<Object>() {
+				@Override
+				public Object execute(TransactionStatus status) throws Exception {
+					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+					assertNotNull(pp);
+
+					final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+					assertNotNull(ffp);
+					assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition());
+					assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+					assertEquals((Integer) MockCommune.ChateauDoex.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
+					assertNull(ffp.getDateFin());
+					assertEquals(dateObtentionPermis, ffp.getDateDebut());
+
+					final List<Assujettissement> assujettissement = assujettissementService.determine(pp);
+					assertNotNull(assujettissement);
+					assertEquals(2, assujettissement.size());
+					{
+						final Assujettissement ass = assujettissement.get(0);
+						assertNotNull(ass);
+						assertInstanceOf(SourcierPur.class, ass);
+						assertEquals(dateArrivee, ass.getDateDebut());
+						assertEquals(dateObtentionPermis.getLastDayOfTheMonth(), ass.getDateFin());
+					}
+					{
+						final Assujettissement ass = assujettissement.get(1);
+						assertNotNull(ass);
+						assertInstanceOf(VaudoisOrdinaire.class, ass);
+						assertEquals(dateObtentionPermis.getLastDayOfTheMonth().getOneDayAfter(), ass.getDateDebut());
+						assertNull(ass.getDateFin());
+					}
+					return null;
+				}
+			});
+		}
 	}
 
 	@Test

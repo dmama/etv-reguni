@@ -23,6 +23,7 @@ import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneAvecAdresses;
 import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.uniregctb.metier.common.DecalageDateHelper;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
@@ -70,7 +71,8 @@ public abstract class ObtentionPermisCOuNationaliteSuisse extends EvenementCivil
 
 		// [SIFISC-9211] si on ne veut pas avoir à ouvrir des fors dans le futur, on ne peut pas traiter les obtentions de permis/nationalité
 		// dès le jour de leur réalisation (voir SIFISC-35)
-		if (getDate().equals(RegDate.get())) {
+		// [SIFISC-10518] cette limitation n'est valable qu'avant 2014...
+		if (DecalageDateHelper.getDateOuvertureForOrdinaireApresPermisCNationaliteSuisse(getDate()).isAfter(RegDate.get())) {
 			errors.addErreur("Une obtention de permis ou de nationalité ne peut être traitée qu'à partir du lendemain de sa date d'effet");
 		}
 
@@ -136,7 +138,8 @@ public abstract class ObtentionPermisCOuNationaliteSuisse extends EvenementCivil
 		final PersonnePhysique habitant = getPersonnePhysiqueOrThrowException(individu.getNoTechnique());
 
 		// [SIFISC-9211] : le for ordinaire ne doit être ouvert qu'au lendemain de l'obtention du permis/de la nationalité
-		final RegDate datePriseEnCompte = getDate().getOneDayAfter();
+		// [SIFISC-10518] : le SIFISC-9211 ne s'applique qu'à avant 2014
+		final RegDate datePriseEnCompte = DecalageDateHelper.getDateOuvertureForOrdinaireApresPermisCNationaliteSuisse(getDate());
 		final ForFiscalPrincipal forPrincipalHabitant = habitant.getForFiscalPrincipalAt(null);
 		final EnsembleTiersCouple ensembleTiersCouple = getService().getEnsembleTiersCouple(habitant, datePriseEnCompte);
 		MenageCommun menage = null;

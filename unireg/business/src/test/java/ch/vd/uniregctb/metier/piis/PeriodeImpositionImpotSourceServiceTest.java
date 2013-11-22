@@ -8,7 +8,9 @@ import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
@@ -4764,5 +4766,117 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 				}
 			}
 		});
+	}
+
+	@Test
+	public void testObtentionPermisCPremierJourDuMoisAvant2014() throws Exception {
+
+		final int year = 2013;
+		final RegDate obtention = date(year, 4, 1);
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Alberto", "Luccini", date(1984, 3, 12), Sexe.MASCULIN);
+				addForPrincipal(pp, date(year, 1, 1), MotifFor.INDETERMINE, obtention.getOneDayBefore(), MotifFor.PERMIS_C_SUISSE, MockCommune.Bussigny, ModeImposition.SOURCE);
+				addForPrincipal(pp, obtention, MotifFor.PERMIS_C_SUISSE, MockCommune.Bussigny);
+				return pp.getNumero();
+			}
+		});
+
+		// calcul
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
+				Assert.assertNotNull(piis);
+				Assert.assertEquals(2, piis.size());
+				{
+					final PeriodeImpositionImpotSource pi = piis.get(0);
+					Assert.assertNotNull(pi);
+					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
+					Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
+					Assert.assertEquals((Integer) MockCommune.Bussigny.getNoOFS(), pi.getNoOfs());
+					Assert.assertEquals(date(year, 1, 1), pi.getDateDebut());
+					Assert.assertEquals(obtention.getOneDayBefore(), pi.getDateFin());
+					Assert.assertNotNull(pi.getContribuable());
+					Assert.assertEquals((Long) ppId, pi.getContribuable().getNumero());
+				}
+				{
+					final PeriodeImpositionImpotSource pi = piis.get(1);
+					Assert.assertNotNull(pi);
+					Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
+					Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
+					Assert.assertEquals((Integer) MockCommune.Bussigny.getNoOFS(), pi.getNoOfs());
+					Assert.assertEquals(obtention, pi.getDateDebut());
+					Assert.assertEquals(date(year, 12, 31), pi.getDateFin());
+					Assert.assertNotNull(pi.getContribuable());
+					Assert.assertEquals((Long) ppId, pi.getContribuable().getNumero());
+				}
+			}
+		});
+	}
+
+	@Test
+	public void testObtentionPermisCPremierJourDuMoisDepuis2014() throws Exception {
+
+		final int year = 2014;
+		final RegDate obtention = date(year, 4, 1);
+
+		ForFiscalValidator.setFutureBeginDate(RegDateHelper.maximum(RegDate.get(), date(year + 1, 1, 1), NullDateBehavior.LATEST));
+		try {
+			// mise en place fiscale
+			final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+				@Override
+				public Long doInTransaction(TransactionStatus status) {
+					final PersonnePhysique pp = addNonHabitant("Alberto", "Luccini", date(1984, 3, 12), Sexe.MASCULIN);
+					addForPrincipal(pp, date(year, 1, 1), MotifFor.INDETERMINE, obtention.getOneDayBefore(), MotifFor.PERMIS_C_SUISSE, MockCommune.Bussigny, ModeImposition.SOURCE);
+					addForPrincipal(pp, obtention, MotifFor.PERMIS_C_SUISSE, date(year, 12, 31), MotifFor.DEPART_HS, MockCommune.Bussigny);
+					return pp.getNumero();
+				}
+			});
+
+			// calcul
+			doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+				@Override
+				public void execute(TransactionStatus status) throws Exception {
+					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+					final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
+					Assert.assertNotNull(piis);
+					Assert.assertEquals(2, piis.size());
+					{
+						final PeriodeImpositionImpotSource pi = piis.get(0);
+						Assert.assertNotNull(pi);
+						Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
+						Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
+						Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
+						Assert.assertEquals((Integer) MockCommune.Bussigny.getNoOFS(), pi.getNoOfs());
+						Assert.assertEquals(date(year, 1, 1), pi.getDateDebut());
+						Assert.assertEquals(obtention.getLastDayOfTheMonth(), pi.getDateFin());
+						Assert.assertNotNull(pi.getContribuable());
+						Assert.assertEquals((Long) ppId, pi.getContribuable().getNumero());
+					}
+					{
+						final PeriodeImpositionImpotSource pi = piis.get(1);
+						Assert.assertNotNull(pi);
+						Assert.assertEquals(PeriodeImpositionImpotSource.Type.MIXTE, pi.getType());
+						Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
+						Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
+						Assert.assertEquals((Integer) MockCommune.Bussigny.getNoOFS(), pi.getNoOfs());
+						Assert.assertEquals(obtention.getLastDayOfTheMonth().getOneDayAfter(), pi.getDateDebut());
+						Assert.assertEquals(date(year, 12, 31), pi.getDateFin());
+						Assert.assertNotNull(pi.getContribuable());
+						Assert.assertEquals((Long) ppId, pi.getContribuable().getNumero());
+					}
+				}
+			});
+		}
+		finally {
+			ForFiscalValidator.setFutureBeginDate(null);
+		}
 	}
 }

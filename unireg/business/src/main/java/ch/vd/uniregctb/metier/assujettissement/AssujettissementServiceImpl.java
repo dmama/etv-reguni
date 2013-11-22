@@ -24,6 +24,7 @@ import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.Triplet;
 import ch.vd.uniregctb.common.TripletIterator;
+import ch.vd.uniregctb.metier.common.DecalageDateHelper;
 import ch.vd.uniregctb.metier.common.ForFiscalPrincipalContext;
 import ch.vd.uniregctb.metier.common.Fraction;
 import ch.vd.uniregctb.metier.common.Fractionnements;
@@ -433,6 +434,9 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 		}
 		else if (fraction != null) {
 			return fraction.getDate().getOneDayBefore();
+		}
+		else if (fin != null && (suivant == null || !suivant.getModeImposition().isSource()) && courant.getMotifFermeture() == MotifFor.PERMIS_C_SUISSE) {
+			return DecalageDateHelper.getDateDebutAssujettissementOrdinaireApresPermisCNationaliteSuisse(fin.getOneDayAfter()).getOneDayBefore();
 		}
 		else if (fin != null &&
 				(suivant == null || !suivant.getModeImposition().isSource()) && // fin d'assujettissement source
@@ -1096,7 +1100,7 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 		}
 		else if ((previous == null || previous.getModeImposition() == ModeImposition.SOURCE) && modeImposition.isRole() && motifOuverture == MotifFor.PERMIS_C_SUISSE) {
 			// [SIFISC-8095] l'obtention d'un permis C ou nationalité suisse doit fractionner la période d'assujettissement et on arrondi la date de début au 1er du mois suivant
-			debut = getProchain1DeMois(current.getDateDebut());
+			debut = DecalageDateHelper.getDateDebutAssujettissementOrdinaireApresPermisCNationaliteSuisse(current.getDateDebut());
 		}
 		else {
 			// dans tous les autres cas, l'assujettissement débute au 1er janvier de l'année courante
