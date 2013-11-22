@@ -29,7 +29,7 @@ public enum CategorieImpotSource implements RestrictedAccess {
 	/**
 	 * @since 5.5.x - 13R3 (5.7.x / 14R1 pour l'utilisabilité dans l'application)
 	 */
-	EFFEUILLEUSES("Effeuilleuses");
+	EFFEUILLEUSES("Saisonniers agricoles et viticoles");
 
 	private final String texte;
 
