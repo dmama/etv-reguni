@@ -1,13 +1,15 @@
 package ch.vd.uniregctb.tiers;
 
+import ch.vd.uniregctb.common.ObjectNotFoundException;
+
 /**
  * Exception spécialisée pour signaler proprement les cas où il n'est pas possible de trouver un individu.
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class IndividuNotFoundException extends RuntimeException {
+public class IndividuNotFoundException extends ObjectNotFoundException {
 
-	private static final long serialVersionUID = -2792170675610539766L;
+	private static final long serialVersionUID = -736783238495398724L;
 
 	/**
 	 * Exception spécialisée pour signaler proprement les cas où il n'est pas possible de trouver l'individu rattaché à un habitant.
