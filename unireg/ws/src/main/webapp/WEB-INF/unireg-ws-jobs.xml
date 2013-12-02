@@ -14,8 +14,8 @@
         <constructor-arg value="Resetter les caches des web-services d'Unireg"/>
         <property name="caches">
 			<list>
-				<ref bean="tiersService2Cache"/>
 				<ref bean="partyService3Cache"/>
+				<ref bean="partyService4Cache"/>
 			</list>
         </property>
     </bean>

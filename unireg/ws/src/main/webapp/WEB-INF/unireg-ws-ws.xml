@@ -14,11 +14,6 @@
         <property name="bus" ref="cxf" />        
     </bean>
 
-	<bean id="noOfsTranslator" class="ch.vd.uniregctb.webservices.common.NoOfsTranslatorImpl">
-		<property name="exposeNosTechniques" value="${extprop.webservice.expose.technical.ids}" />
-		<property name="infraService" ref="serviceInfrastructureService"/>
-	</bean>
-
 	<bean id="wsThreadPool" class="org.springframework.scheduling.concurrent.ThreadPoolExecutorFactoryBean">
 		<property name="corePoolSize" value="${extprop.webservice.threadpool.minSize}"/> <!-- nombre minimum de threads -->
 		<property name="maxPoolSize" value="${extprop.webservice.threadpool.maxSize}"/> <!-- nombre maximum de threads -->
@@ -29,60 +24,11 @@
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="listeners">
 			<util:list>
-				<ref bean="tiersService2CacheManager"/>
 				<ref bean="partyService3CacheManager"/>
 				<ref bean="partyService4CacheManager"/>
 			</util:list>
 		</property>
 	</bean>
-
-	<!-- WS - Tiers Service v2 -->
-	<jaxws:endpoint implementor="#tiersService2EndPoint" address="/tiers2" />
-
-	<bean id="tiersService2EndPoint" class="ch.vd.uniregctb.webservices.tiers2.impl.TiersWebServiceEndPoint">
-		<property name="service" ref="tiersService2Cache" />
-		<property name="securityProvider" ref="securityProviderInterface"/>
-	</bean>
-
-	<bean id="tiersService2Bean" class="ch.vd.uniregctb.webservices.tiers2.impl.TiersWebServiceImpl">
-		<property name="adresseService" ref="adresseService" />
-		<property name="tiersDAO" ref="tiersDAO" />
-		<property name="tiersService" ref="tiersService" />
-		<property name="tiersSearcher" ref="globalTiersSearcher" />
-		<property name="infraService" ref="serviceInfrastructureService" />
-		<property name="situationService" ref="situationFamilleService" />
-		<property name="ibanValidator" ref="ibanValidator" />
-		<property name="parametreService" ref="parametreAppService" />
-		<property name="serviceCivil" ref="serviceCivilService" />
-		<property name="hibernateTemplate" ref="hibernateTemplate" />
-		<property name="transactionManager" ref="transactionManager" />
-		<property name="noOfsTranslator" ref="noOfsTranslator" />
-		<property name="lrService" ref="lrService" />
-		<property name="diService" ref="diService" />
-		<property name="bamMessageSender" ref="bamMessageSender" />
-		<property name="threadPool" ref="wsThreadPool" />
-		<property name="servicePM" ref="servicePersonneMoraleService" />
-		<property name="assujettissementService" ref="assujettissementService" />
-		<property name="periodeImpositionService" ref="periodeImpositionService" />
-	</bean>
-
-	<bean id="tiersService2Cache" class="ch.vd.uniregctb.webservices.tiers2.cache.TiersWebServiceCache">
-		<property name="target" ref="tiersService2Bean" />
-		<property name="cacheManager" ref="ehCacheManager" />
-		<property name="cacheName" value="webServiceTiers2" />
-		<property name="uniregCacheManager" ref="uniregCacheManager" />
-		<property name="statsService" ref="statsService" />
-	</bean>
-	
-	<bean id="tiersService2CacheManager" class="ch.vd.uniregctb.webservices.tiers2.cache.TiersWebServiceCacheManager">
-		<property name="cache" ref="tiersService2Cache" />
-	</bean>
-	
-	<bean id="tiersService2Tracing" class="ch.vd.uniregctb.webservices.tiers2.impl.TiersWebServiceTracing">
-		<property name="counterRepository" ref="counterRepository" />
-		<property name="statsService" ref="statsService" />
-	</bean>
-
 
 	<!-- WS - Party Service v3 -->
 	<jaxws:endpoint implementor="#partyService3EndPoint" address="/party3" wsdlLocation="PartyService3.wsdl" />
