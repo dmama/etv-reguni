@@ -190,11 +190,6 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 	}
 
 	@Override
-	public Map<Integer, Integer> getNoOfs2NoTechniqueMappingForCommunes() throws ServiceInfrastructureException {
-		return Collections.emptyMap();
-	}
-
-	@Override
 	public List<Commune> getListeCommunes(Canton canton) throws ServiceInfrastructureException {
 		return communesVaud;
 	}

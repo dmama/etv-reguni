@@ -126,17 +126,6 @@ public class ServiceInfrastructureEndPoint implements ServiceInfrastructureRaw, 
 	}
 
 	@Override
-	public Map<Integer, Integer> getNoOfs2NoTechniqueMappingForCommunes() throws ServiceInfrastructureException {
-		loadMeter.start(new MethodCallDescriptor("getNoOfs2NoTechniqueMappingForCommunes"));
-		try {
-			return target.getNoOfs2NoTechniqueMappingForCommunes();
-		}
-		finally {
-			loadMeter.end();
-		}
-	}
-
-	@Override
 	public List<Localite> getLocalites() throws ServiceInfrastructureException {
 		loadMeter.start(new MethodCallDescriptor("getLocalites"));
 		try {

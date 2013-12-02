@@ -152,11 +152,6 @@ public class ServiceInfrastructureMarshaller implements ServiceInfrastructureRaw
 	}
 
 	@Override
-	public Map<Integer, Integer> getNoOfs2NoTechniqueMappingForCommunes() throws ServiceInfrastructureException {
-		return fidorService.getNoOfs2NoTechniqueMappingForCommunes();
-	}
-
-	@Override
 	public Localite getLocaliteByNPA(int npa) throws ServiceInfrastructureException {
 		return hostService.getLocaliteByNPA(npa);
 	}

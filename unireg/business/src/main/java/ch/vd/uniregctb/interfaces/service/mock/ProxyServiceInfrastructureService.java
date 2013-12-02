@@ -277,11 +277,6 @@ public class ProxyServiceInfrastructureService implements ServiceInfrastructureS
 	}
 
 	@Override
-	public Map<Integer, Integer> getNoOfs2NoTechniqueMappingForCommunes() throws ServiceInfrastructureException {
-		return target.getNoOfs2NoTechniqueMappingForCommunes();
-	}
-
-	@Override
 	public Pays getPaysInconnu() throws ServiceInfrastructureException {
 		return target.getPays(noPaysInconnu, null);
 	}

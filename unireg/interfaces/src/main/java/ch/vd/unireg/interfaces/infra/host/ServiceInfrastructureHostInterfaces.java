@@ -166,11 +166,6 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 	}
 
 	@Override
-	public Map<Integer, Integer> getNoOfs2NoTechniqueMappingForCommunes() throws ServiceInfrastructureException {
-		throw new NotImplementedException("La méthode 'getNoOfs2NoTechniqueMappingForCommunes' ne doit pas être appelée sur le service host-interfaces.");
-	}
-
-	@Override
 	public Localite getLocaliteByNPA(int npa) throws ServiceInfrastructureException {
 		if (localitesByNPA==null) {
 			initLocaliteByNPA();

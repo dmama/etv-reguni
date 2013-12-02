@@ -357,11 +357,6 @@ public class ServiceInfraGetPaysSimpleCache implements ServiceInfrastructureRaw 
 	}
 
 	@Override
-	public Map<Integer, Integer> getNoOfs2NoTechniqueMappingForCommunes() throws ServiceInfrastructureException {
-		return target.getNoOfs2NoTechniqueMappingForCommunes();
-	}
-
-	@Override
 	public List<Localite> getLocalites() throws ServiceInfrastructureException {
 		return target.getLocalites();
 	}

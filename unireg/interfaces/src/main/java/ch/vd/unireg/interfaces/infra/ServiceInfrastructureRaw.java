@@ -107,12 +107,6 @@ public interface ServiceInfrastructureRaw {
 	List<Commune> getCommunes() throws ServiceInfrastructureException;
 
 	/**
-	 * @return le mapping entre le numéro OFS et l'ancien numéro technique du Host pour les communes suisses (uniquement pour les communes dont le numéro technique est différent du numéro OFS).
-	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
-	 */
-	Map<Integer, Integer> getNoOfs2NoTechniqueMappingForCommunes() throws ServiceInfrastructureException;
-
-	/**
 	 * @return toutes les localités de Suisse
 	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */

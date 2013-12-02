@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public class LogicielImpl implements Logiciel, Serializable {
 
-	private static final long serialVersionUID = -2583048226599169062L;
+	private static final long serialVersionUID = -9093703792205240603L;
 
 	private final String contactMetierMail;
 	private final String contactTechniqueMail;
@@ -15,29 +15,11 @@ public class LogicielImpl implements Logiciel, Serializable {
 	private final String version;
 	private final boolean certifie;
 
-	public static LogicielImpl get(ch.vd.fidor.ws.v2.Logiciel target) {
-		if (target == null) {
-			return null;
-		}
-		return new LogicielImpl(target);
-	}
-
 	public static Logiciel get(ch.vd.evd0012.v1.Logiciel target) {
 		if (target == null) {
 			return null;
 		}
 		return new LogicielImpl(target);
-	}
-
-	private LogicielImpl(ch.vd.fidor.ws.v2.Logiciel target) {
-		this.contactMetierMail = target.getContactMetierMail();
-		this.contactTechniqueMail = target.getContactTechniqueMail();
-		this.fournisseur = target.getFournisseur();
-		this.id = target.getId();
-		this.libelle = target.getLibelle();
-		this.metier = LogicielMetier.get(target.getMetier());
-		this.version = target.getVersion();
-		this.certifie = target.isCertifie();
 	}
 
 	public LogicielImpl(ch.vd.evd0012.v1.Logiciel target) {

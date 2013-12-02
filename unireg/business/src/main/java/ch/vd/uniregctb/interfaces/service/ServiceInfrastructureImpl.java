@@ -490,11 +490,6 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 		return rawService.getCommuneByLocalite(localite);
 	}
 
-	@Override
-	public Map<Integer, Integer> getNoOfs2NoTechniqueMappingForCommunes() throws ServiceInfrastructureException {
-		return rawService.getNoOfs2NoTechniqueMappingForCommunes();
-	}
-
 	/**
 	 * {@inheritDoc}
 	 */

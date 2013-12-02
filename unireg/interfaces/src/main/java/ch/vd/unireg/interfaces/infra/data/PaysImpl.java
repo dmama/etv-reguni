@@ -2,7 +2,6 @@ package ch.vd.unireg.interfaces.infra.data;
 
 import java.io.Serializable;
 
-import ch.vd.fidor.ws.v2.Continent;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
@@ -13,7 +12,7 @@ public class PaysImpl extends EntiteOFSImpl implements Pays, Serializable {
 
 	private static final DateRange ETERNITY = new DateRangeHelper.Range(null, null);
 
-	private static final long serialVersionUID = 348017906687857815L;
+	private static final long serialVersionUID = 3063853234481199767L;
 
 	private final boolean valide;
 	private final DateRange validityRange;
@@ -24,13 +23,6 @@ public class PaysImpl extends EntiteOFSImpl implements Pays, Serializable {
 	private final TypeAffranchissement typeAffranchissement;
 
 	public static PaysImpl get(ch.vd.infrastructure.model.Pays target) {
-		if (target == null) {
-			return null;
-		}
-		return new PaysImpl(target);
-	}
-
-	public static PaysImpl get(ch.vd.fidor.ws.v2.Pays target) {
 		if (target == null) {
 			return null;
 		}
@@ -53,21 +45,6 @@ public class PaysImpl extends EntiteOFSImpl implements Pays, Serializable {
 		this.codeIso2 = null; // cette information n'est pas disponible dans host-interface
 		this.codeIso3 = null; // cette information n'est pas disponible dans host-interface
 		this.typeAffranchissement = null;
-	}
-
-	private PaysImpl(ch.vd.fidor.ws.v2.Pays target) {
-		super(target.getOfsId(), target.getNomCourtFr(), target.getNomOfficielFr(), target.getIso2Id());
-		this.valide = target.isValide();
-		this.validityRange = ETERNITY;      // cette information n'était pas présente dans la v2 de FiDoR
-		this.etatSouverain = target.isEtat() != null && target.isEtat();
-		this.ofsEtatSouverainParent = target.getEtatSuperieur();
-		this.codeIso2 = target.getIso2Id();
-		this.codeIso3 = target.getIso3Id();
-
-		// l'information n'est pas présente dans cette version du service... on se base sur de simple considérations géographiques...
-		this.typeAffranchissement = target.getContinent() == Continent.E_1_EUROPE
-				? (isSuisse(target.getOfsId()) ? TypeAffranchissement.SUISSE : TypeAffranchissement.EUROPE)
-				: TypeAffranchissement.MONDE;
 	}
 
 	public PaysImpl(ch.ech.ech0072.v1.Country target, ch.vd.evd0007.v1.CountryAddOn addOn, ch.vd.evd0007.v1.ValidityDate validityDates) {

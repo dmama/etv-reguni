@@ -69,11 +69,6 @@ public class NotImplementedServiceInfrastructure implements ServiceInfrastructur
 	}
 
 	@Override
-	public Map<Integer, Integer> getNoOfs2NoTechniqueMappingForCommunes() throws ServiceInfrastructureException {
-		throw new NotImplementedException();
-	}
-
-	@Override
 	public List<Localite> getLocalites() throws ServiceInfrastructureException {
 		throw new NotImplementedException();
 	}

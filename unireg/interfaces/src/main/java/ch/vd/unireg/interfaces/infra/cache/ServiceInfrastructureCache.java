@@ -506,12 +506,6 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		return resultat;
 	}
 
-	@Override
-	public Map<Integer, Integer> getNoOfs2NoTechniqueMappingForCommunes() throws ServiceInfrastructureException {
-		// on ne cache pas cette information
-		return target.getNoOfs2NoTechniqueMappingForCommunes();
-	}
-
 	private static class KeyGetListeCommunes {
 		final int noOfsCanton;
 

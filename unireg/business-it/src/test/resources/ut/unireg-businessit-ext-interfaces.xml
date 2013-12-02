@@ -52,12 +52,6 @@
 		<property name="jndiTemplate" ref="ejbJndiTemplate"/>
 	</bean>
 
-	<bean id="fidorClientv2" class="ch.vd.uniregctb.webservice.fidor.v2.FidorClientImpl">
-		<property name="serviceUrl" value="${testprop.webservice.fidor.v2.url}" />
-	    <property name="username" value="${testprop.webservice.fidor.username}" />
-	    <property name="password" value="${testprop.webservice.fidor.password}" />
-	</bean>
-
 	<bean id="fidorClientv5" class="ch.vd.uniregctb.webservice.fidor.v5.FidorClientImpl">
 		<property name="serviceUrl" value="${testprop.webservice.fidor.v5.url}" />
 	    <property name="username" value="${testprop.webservice.fidor.username}" />

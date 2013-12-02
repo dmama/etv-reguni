@@ -248,29 +248,6 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 	}
 
 	@Override
-	public Map<Integer, Integer> getNoOfs2NoTechniqueMappingForCommunes() throws ServiceInfrastructureException {
-		Throwable t = null;
-		int items = 0;
-		final long time = tracing.start();
-		try {
-			final Map<Integer, Integer> map = target.getNoOfs2NoTechniqueMappingForCommunes();
-			items = map == null ? 0 : map.size();
-			return map;
-		}
-		catch (ServiceInfrastructureException e) {
-			t = e;
-			throw e;
-		}
-		catch (RuntimeException e) {
-			t = e;
-			throw e;
-		}
-		finally {
-			tracing.end(time, t, "getNoOfs2NoTechniqueMappingForCommunes", items, null);
-		}
-	}
-
-	@Override
 	public List<Commune> getListeCommunes(final Canton canton) throws ServiceInfrastructureException {
 		Throwable t = null;
 		int items = 0;

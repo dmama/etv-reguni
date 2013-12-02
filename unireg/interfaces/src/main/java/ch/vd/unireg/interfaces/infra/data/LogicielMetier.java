@@ -17,22 +17,6 @@ public enum LogicielMetier {
 		return format;
 	}
 
-	public static LogicielMetier get(ch.vd.fidor.ws.v2.LogicielMetier right) {
-		if (right == null) {
-			return null;
-		}
-
-		switch (right) {
-		case ECH_99:
-			return LogicielMetier.ECH_99;
-		case EMPACI:
-			return LogicielMetier.EMPACI;
-		default:
-			throw new IllegalArgumentException("Valeur de logicielMetier non-supportée : " + right);
-
-		}
-	}
-
 	public static LogicielMetier get(String right) {
 		if (StringUtils.isBlank(right)) {
 			return null;

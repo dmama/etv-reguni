@@ -1,10 +1,8 @@
 package ch.vd.unireg.interfaces.infra.fidor;
 
-import javax.xml.ws.WebServiceException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -16,7 +14,6 @@ import org.springframework.util.Assert;
 
 import ch.vd.evd0007.v1.Country;
 import ch.vd.evd0012.v1.CommuneFiscale;
-import ch.vd.fidor.ws.v2.FidorBusinessException_Exception;
 import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.NotImplementedException;
@@ -64,13 +61,8 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 	private long lastTentative = 0;
 	private static final long fiveMinutes = 5L * 60L * 1000000000L; // en nanosecondes
 
-	private ch.vd.uniregctb.webservice.fidor.v2.FidorClient oldFidorClient;
 	private FidorClient fidorClient;
 	private UniregCacheManager uniregCacheManager;
-
-	public void setFidorClientv2(ch.vd.uniregctb.webservice.fidor.v2.FidorClient oldFidorClient) {
-		this.oldFidorClient = oldFidorClient;
-	}
 
 	public void setFidorClientv5(FidorClient fidorClient) {
 		this.fidorClient = fidorClient;
@@ -214,34 +206,6 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 		catch (FidorClientException e) {
 			throw new ServiceInfrastructureException(e);
 		}
-	}
-
-	@Override
-	public Map<Integer, Integer> getNoOfs2NoTechniqueMappingForCommunes() throws ServiceInfrastructureException {
-
-		// on récupère toutes les communes
-		final List<ch.vd.fidor.ws.v2.CommuneFiscale> communes;
-		try {
-			communes = oldFidorClient.getToutesLesCommunes();
-		}
-		catch (WebServiceException e) {
-			throw new ServiceInfrastructureException(e);
-		}
-		catch (FidorBusinessException_Exception e) {
-			throw new ServiceInfrastructureException(e);
-		}
-
-		// on détermine le mapping
-		final Map<Integer, Integer> map = new HashMap<>();
-		for (ch.vd.fidor.ws.v2.CommuneFiscale commune : communes) {
-			//noinspection deprecation
-			final Integer numeroTechnique = commune.getNoTechnique();
-			if (!commune.getNoOfs().equals(numeroTechnique)) {
-				map.put(commune.getNoOfs(), numeroTechnique);
-			}
-		}
-
-		return map;
 	}
 
 	@Override

@@ -8,16 +8,9 @@ import ch.vd.evd0012.v1.DistrictFiscal;
 
 public class DistrictImpl extends EntiteFiscaleImpl implements District, Serializable {
 
-	private static final long serialVersionUID = -7794860762522753894L;
+	private static final long serialVersionUID = -5747820618296196395L;
 
 	private Integer codeRegion;
-
-	public static DistrictImpl get(ch.vd.fidor.ws.v2.District target) {
-		if (target == null) {
-			return null;
-		}
-		return new DistrictImpl(target);
-	}
 
 	public static District get(DistrictFiscal target) {
 		if (target == null) {
@@ -29,11 +22,6 @@ public class DistrictImpl extends EntiteFiscaleImpl implements District, Seriali
 	@SuppressWarnings("UnusedDeclaration")
 	private DistrictImpl() {
 		// pour la serialization
-	}
-
-	private DistrictImpl(ch.vd.fidor.ws.v2.District target) {
-		super(target.getCode(), target.getDesignation());
-		this.codeRegion = target.getRegion() == null ? null : target.getRegion().getCode();
 	}
 
 	public DistrictImpl(DistrictFiscal target) {

@@ -155,12 +155,6 @@ public interface ServiceInfrastructureService {
 	Commune getCommuneByLocalite(Localite localite) throws ServiceInfrastructureException;
 
 	/**
-	 * @return le mapping entre le numéro OFS et l'ancien numéro technique du Host pour les communes suisses (uniquement pour les communes dont le numéro technique est différent du numéro OFS).
-	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
-	 */
-	Map<Integer, Integer> getNoOfs2NoTechniqueMappingForCommunes() throws ServiceInfrastructureException;
-
-	/**
 	 * @param noColAdm le numéro de collectivité administrative de l'office d'impôt
 	 * @return l'office d'impôt à partir de son numéro de collectivité.
 	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
