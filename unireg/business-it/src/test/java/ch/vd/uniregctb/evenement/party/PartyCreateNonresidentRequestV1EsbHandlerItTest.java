@@ -131,7 +131,7 @@ public class PartyCreateNonresidentRequestV1EsbHandlerItTest extends PartyReques
 		});
 	}
 
-	public int test(boolean avecDroit, boolean avecPrenom, boolean avecAvs13, boolean avecAvs11) throws Exception {
+	private int test(boolean avecDroit, boolean avecPrenom, boolean avecAvs13, boolean avecAvs11) throws Exception {
 
 		final MockSecurityProvider provider = avecDroit ? new MockSecurityProvider(Role.CREATE_NONHAB) : new MockSecurityProvider();
 		handler.setSecurityProvider(provider);
@@ -139,14 +139,19 @@ public class PartyCreateNonresidentRequestV1EsbHandlerItTest extends PartyReques
 		final CreateNonresidentRequest request = createRequest(avecPrenom, avecAvs13, avecAvs11);
 
 		// Envoie le message
-		doInNewTransaction(new TxCallback<Object>() {
+		final String businessId = doInNewTransaction(new TxCallback<String>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				sendTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
-				return null;
+			public String execute(TransactionStatus status) throws Exception {
+				return sendTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
 			}
 		});
-		CreateNonresidentResponse res = (CreateNonresidentResponse) parseResponse(getEsbMessage(getOutputQueue()));
+
+		final EsbMessage response = getEsbMessage(getOutputQueue());
+		assertEquals(businessId, response.getBusinessCorrelationId());
+
+		Thread.sleep(100);
+
+		final CreateNonresidentResponse res = (CreateNonresidentResponse) parseResponse(response);
 		assertNotNull("Le non-habitant devrait être créé", res.getNumber());
 		return res.getNumber();
 	}
