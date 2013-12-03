@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.common;
 
+import java.io.Serializable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -10,7 +11,9 @@ import ch.vd.uniregctb.dbutils.QueryFragment;
 /**
  * Classe pour definir les paramètres de la pagination
  */
-public class ParamPagination {
+public class ParamPagination implements Serializable {
+
+	private static final long serialVersionUID = 271854203815541900L;
 
 	private static final Pattern FIELD_ALLOWED_CHARS = Pattern.compile("^[a-zA-Z0-9_.]+$");
 

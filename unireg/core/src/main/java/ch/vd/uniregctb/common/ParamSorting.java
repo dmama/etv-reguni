@@ -1,9 +1,13 @@
 package ch.vd.uniregctb.common;
 
+import java.io.Serializable;
+
 /**
  * Classe qui définit un ordre de tri
  */
-public class ParamSorting {
+public class ParamSorting implements Serializable {
+
+	private static final long serialVersionUID = -5066653312464423764L;
 
 	private final String field;
 	private final boolean ascending;

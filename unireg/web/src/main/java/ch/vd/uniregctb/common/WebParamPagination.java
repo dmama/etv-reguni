@@ -9,6 +9,8 @@ import org.displaytag.util.ParamEncoder;
 
 public class WebParamPagination extends ParamPagination {
 
+	private static final long serialVersionUID = 7441663409815711161L;
+
 	public WebParamPagination(int numeroPage, int taillePage, String champ, boolean sensAscending) {
 		super(numeroPage, taillePage, champ, sensAscending);
 	}
