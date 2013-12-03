@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.uniregctb.common.ActionException;
 import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.common.ControllerUtils;
 import ch.vd.uniregctb.common.EditiqueCommunicationException;
 import ch.vd.uniregctb.common.EditiqueErrorHelper;
 import ch.vd.uniregctb.common.RetourEditiqueControllerHelper;
@@ -48,6 +50,8 @@ public class TacheController {
 
 	private static final String TACHE_CRITERIA_NAME = "tacheCriteria";
 	private static final String NOUVEAU_DOSSIER_CRITERIA_NAME = "nouveauDossierCriteria";
+
+	private static final String TACHE_PAGINATION_NAME = "tachePagination";
 
 	/**
 	 * Le nom de l'attribut utilise pour la liste des offices d'impôt de l'utilisateur
@@ -82,6 +86,7 @@ public class TacheController {
 	private TacheMapHelper tacheMapHelper;
 	private TacheListManager tacheListManager;
 	private RetourEditiqueControllerHelper editiqueControllerHelper;
+	private ControllerUtils controllerUtils;
 
 	public void setTacheMapHelper(TacheMapHelper tacheMapHelper) {
 		this.tacheMapHelper = tacheMapHelper;
@@ -95,6 +100,10 @@ public class TacheController {
 		this.editiqueControllerHelper = editiqueControllerHelper;
 	}
 
+	public void setControllerUtils(ControllerUtils controllerUtils) {
+		this.controllerUtils = controllerUtils;
+	}
+
 	@InitBinder
 	public void initBinder(HttpServletRequest request, WebDataBinder binder) {
 		final Locale locale = request.getLocale();
@@ -104,20 +113,47 @@ public class TacheController {
 		binder.setValidator(new TachesValidator());
 	}
 
+	private Pair<WebParamPagination, Boolean> getTachePagination(HttpServletRequest request) {
+		final WebParamPagination pagination;
+
+		final String inRequest = controllerUtils.getDisplayTagRequestParametersForPagination(request, TABLE_TACHE_ID);
+		boolean fromSession = false;
+		if (inRequest != null) {
+			pagination = new WebParamPagination(request, TABLE_TACHE_ID, PAGE_SIZE);
+		}
+		else {
+			final WebParamPagination inSession = (WebParamPagination) request.getSession().getAttribute(TACHE_PAGINATION_NAME);
+			fromSession = inSession != null;
+			pagination = fromSession ? inSession : new WebParamPagination(1, PAGE_SIZE, "id", false);
+		}
+		request.getSession().setAttribute(TACHE_PAGINATION_NAME, pagination);
+		return Pair.of(pagination, fromSession);
+	}
+
 	@RequestMapping(value = "/list.do", method = RequestMethod.GET)
 	public String showTaches(Model model, HttpSession session, HttpServletRequest request, @RequestParam(value = "effacer", defaultValue = "false") boolean effacer) throws Exception {
 
-		TacheCriteriaView view = (TacheCriteriaView) session.getAttribute(TACHE_CRITERIA_NAME);
-		if (view == null || effacer) {
+		if (effacer) {
 			session.removeAttribute(TACHE_CRITERIA_NAME);
+			session.removeAttribute(TACHE_PAGINATION_NAME);
+		}
+
+		TacheCriteriaView view = (TacheCriteriaView) session.getAttribute(TACHE_CRITERIA_NAME);
+		if (view == null) {
 			view = new TacheCriteriaView();
 			view.setEtatTache(TypeEtatTache.EN_INSTANCE);
 			view.setOfficeImpot(getDefaultOID());
 		}
 
 		if (!effacer) {
-			final WebParamPagination pagination = new WebParamPagination(request, TABLE_TACHE_ID, PAGE_SIZE);
-			final List<TacheListView> tachesView = tacheListManager.find(view, pagination);
+
+			final Pair<WebParamPagination, Boolean> pagination = getTachePagination(request);
+			if (pagination.getRight() && pagination.getLeft().getNumeroPage() != 1) {
+				final String params = controllerUtils.getDisplayTagRequestParametersForPagination(TABLE_TACHE_ID, pagination.getLeft());
+				return "redirect:/tache/list.do?" + params;
+			}
+
+			final List<TacheListView> tachesView = tacheListManager.find(view, pagination.getLeft());
 			model.addAttribute(TACHE_LIST_ATTRIBUTE_NAME, tachesView);
 			model.addAttribute(RESULT_SIZE_NAME, tacheListManager.count(view));
 		}
@@ -143,6 +179,7 @@ public class TacheController {
 			return showSearchTaches(model, criteria, true);
 		}
 
+		session.removeAttribute(TACHE_PAGINATION_NAME);
 		session.setAttribute(TACHE_CRITERIA_NAME, criteria);
 		return "redirect:/tache/list.do";
 	}
