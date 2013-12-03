@@ -1605,7 +1605,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 				assertEquals(1, collector.getErreurs().size());
 
 				final EvenementCivilErreur erreur = collector.getErreurs().get(0);
-				assertEquals("Un départ ne peut être traité qu'à partir du lendemain de sa date d'effet", erreur.getMessage());
+				assertEquals("Un départ HC/HS ne peut être traité qu'à partir du lendemain de sa date d'effet", erreur.getMessage());
 
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppid);
 				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();

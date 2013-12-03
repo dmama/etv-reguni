@@ -262,7 +262,7 @@ public abstract class Depart extends Mouvement {
 			// car la nouvelle adresse ne commence que demain, et les adresses qui commencent dans le futur sont ignorées (voir SIFISC-35)
 
 			if (getDate().equals(RegDate.get())) {
-				erreurs.addErreur("Un départ ne peut être traité qu'à partir du lendemain de sa date d'effet");
+				erreurs.addErreur("Un départ HC/HS ne peut être traité qu'à partir du lendemain de sa date d'effet");
 			}
 
 			/*
