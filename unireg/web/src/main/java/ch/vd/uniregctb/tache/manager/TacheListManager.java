@@ -10,6 +10,7 @@ import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
+import ch.vd.uniregctb.tache.view.ImpressionNouveauxDossiersView;
 import ch.vd.uniregctb.tache.view.NouveauDossierCriteriaView;
 import ch.vd.uniregctb.tache.view.NouveauDossierListView;
 import ch.vd.uniregctb.tache.view.TacheCriteriaView;
@@ -60,12 +61,9 @@ public interface TacheListManager {
 
 	/**
 	 * Imprime les nouveaux dossiers
-	 *
-	 * @param nouveauDossierCriteriaView
-	 * @return
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public EditiqueResultat envoieImpressionLocalDossier(NouveauDossierCriteriaView nouveauDossierCriteriaView) throws EditiqueException;
+	public EditiqueResultat envoieImpressionLocalDossier(ImpressionNouveauxDossiersView view) throws EditiqueException;
 
 	/**
 	 * Retourne le nombre de tache correspondant aux criteres

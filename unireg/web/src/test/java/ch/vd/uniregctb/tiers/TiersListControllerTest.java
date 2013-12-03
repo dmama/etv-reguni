@@ -5,16 +5,10 @@ import java.util.List;
 import java.util.Map;
 
 import junit.framework.Assert;
-import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpSession;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.web.servlet.ModelAndView;
@@ -26,7 +20,7 @@ import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.common.TestData;
-import ch.vd.uniregctb.common.WebTest;
+import ch.vd.uniregctb.common.WebMockMvcTest;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServicePM;
 import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
@@ -38,16 +32,11 @@ import static junit.framework.Assert.assertEquals;
  *
  * @author <a href="mailto:akram.ben-aissi@vd.ch">Akram BEN AISSI</a>
  */
-public class TiersListControllerTest extends WebTest {
-
-	private MockMvc mvc;
+public class TiersListControllerTest extends WebMockMvcTest {
 
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
-
-		final TiersListController controller = getBean(TiersListController.class, "tiersListController");
-		mvc = MockMvcBuilders.standaloneSetup(controller).build();
 
 		servicePM.setUp(new DefaultMockServicePM());
 
@@ -79,26 +68,9 @@ public class TiersListControllerTest extends WebTest {
 		setWantIndexation(true);
 	}
 
-	private ResultActions get(String uri, @Nullable Map<String, String> params, @Nullable MockHttpSession session) throws Exception {
-		final MockHttpServletRequestBuilder reqBuilder = MockMvcRequestBuilders.get(uri);
-		return performHttp(params, reqBuilder, session).andExpect(MockMvcResultMatchers.status().isOk());
-	}
-
-	private ResultActions post(String uri, @Nullable Map<String, String> params, @Nullable MockHttpSession session) throws Exception {
-		final MockHttpServletRequestBuilder reqBuilder = MockMvcRequestBuilders.post(uri);
-		return performHttp(params, reqBuilder, session);
-	}
-
-	private ResultActions performHttp(Map<String, String> params, MockHttpServletRequestBuilder reqBuilder, @Nullable MockHttpSession session) throws Exception {
-		if (params != null) {
-			for (Map.Entry<String, String> param : params.entrySet()) {
-				reqBuilder.param(param.getKey(), param.getValue());
-			}
-		}
-		if (session != null) {
-			reqBuilder.session(session);
-		}
-		return mvc.perform(reqBuilder);
+	@Override
+	protected Object[] getControllers() {
+		return new Object[] { getBean(TiersListController.class, "tiersListController") };
 	}
 
 	@SuppressWarnings("unchecked")

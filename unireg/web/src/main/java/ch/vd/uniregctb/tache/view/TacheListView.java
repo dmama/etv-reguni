@@ -4,6 +4,7 @@ import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.common.NomCourrierViewPart;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
@@ -15,7 +16,7 @@ import ch.vd.uniregctb.type.TypeEtatTache;
  * @author xcifde
  *
  */
-public class TacheListView {
+public class TacheListView implements Annulable {
 
 	private Long id;
 
@@ -132,11 +133,12 @@ public class TacheListView {
 		this.dateFinImposition = dateFinImposition;
 	}
 
-	public boolean isAnnulee() {
+	@Override
+	public boolean isAnnule() {
 		return annulee;
 	}
 
-	public void setAnnulee(boolean annulee) {
+	public void setAnnule(boolean annulee) {
 		this.annulee = annulee;
 	}
 

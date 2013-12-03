@@ -2,10 +2,11 @@ package ch.vd.uniregctb.tache.view;
 
 import java.util.List;
 
+import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.common.NomCourrierViewPart;
 import ch.vd.uniregctb.type.TypeEtatTache;
 
-public class NouveauDossierListView implements Comparable<NouveauDossierListView>{
+public class NouveauDossierListView implements Comparable<NouveauDossierListView>, Annulable {
 
 	private Long id;
 

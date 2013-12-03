@@ -5,7 +5,7 @@
 		<td width="25%"><fmt:message key="label.etat.tache" />&nbsp;:</td>
 		<td width="25%">
 			<form:select path="etatTache">
-				<form:option value="TOUS" ><fmt:message key="option.TOUS" /></form:option>
+				<form:option value=""><fmt:message key="option.TOUS" /></form:option>
 				<form:option value="EN_INSTANCE" ><fmt:message key="option.etat.tache.EN_INSTANCE" /></form:option>
 				<form:option value="TRAITE" ><fmt:message key="option.etat.tache.TRAITE" /></form:option>
 			</form:select>
@@ -13,7 +13,7 @@
 		<td width="25%"><fmt:message key="label.office.impot" />&nbsp;:</td>
 		<td width="25%">
 			<form:select path="officeImpot">
-				<form:option value="TOUS" ><fmt:message key="option.TOUS" /></form:option>
+				<form:option value=""><fmt:message key="option.TOUS" /></form:option>
 				<form:options items="${officesImpotUtilisateur}" />
 			</form:select>	
 		</td>
@@ -49,7 +49,10 @@
 			<div class="navigation-action"><input type="button" value="<fmt:message key="label.bouton.rechercher"/>" name="rechercher" onClick="javascript:recherche();" /></div>
 		</td>
 		<td width="25%">
-			<div class="navigation-action"><input type="button" value="<fmt:message key="label.bouton.effacer"/>" name="effacer" onClick="javascript:efface();" /></div>
+			<c:set var="labelEffacer">
+				<fmt:message key="label.bouton.effacer"/>
+			</c:set>
+			<div class="navigation-action"><unireg:buttonTo name="${labelEffacer}" action="/tache/list-nouveau-dossier.do" params="{effacer:true}" method="get"/></div>
 		</td>
 		<td width="25%">&nbsp;</td>
 	</tr>

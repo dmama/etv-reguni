@@ -15,10 +15,11 @@ function selectAllDossiers(checkSelectAll) {
 * Selection d'un type de tache
 */
 function selectTypeTache(name) {
-	if( name == 'TacheEnvoiDeclarationImpot' || name == 'TacheAnnulationDeclarationImpot' ){
+	if( name == 'TacheEnvoiDeclarationImpot' || name == 'TacheAnnulationDeclarationImpot') {
 		$('#periode_fiscale_label').show();
 		$('#periode_fiscale_input').show();
-	} else {
+	}
+	else {
 		$('#periode_fiscale_label').hide();
 		$('#periode_fiscale_input').hide();
 	}
@@ -28,10 +29,24 @@ function selectTypeTache(name) {
 * Afficher alerte lors de l'impression de nouveaux dossiers
 */
 function confirmeImpression() {
+
+	var lignesNouveauDossier = document.getElementById('nouveauDossier').getElementsByTagName('tr');
+	var taille = lignesNouveauDossier.length;
+
+	var nbSelectionnes = 0;
+	for(var i=1; i < taille; i++) {
+		var sel = $('#tabIdsDossiers_' + i);
+		if (sel && !sel.attr('disabled') && sel.attr('checked')) {
+			++ nbSelectionnes;
+		}
+	}
+	if (nbSelectionnes == 0) {
+		alert('Veuillez selectionner au moins un dossier à inclure');
+		return false;
+	}
+
 	$('#desynchro').show();
-	var form = $("form[name=\"theForm\"]");
-	form.attr('action', 'list-nouveau-dossier.do?imprimer=imprimer');
-	form.submit();
+	return true;
 }	
 
 /*
@@ -40,16 +55,5 @@ function confirmeImpression() {
 function recherche() {
 	$('#desynchro').hide();
 	var form = $("form[name=\"theForm\"]");
-	form.attr('action', 'list-nouveau-dossier.do');
-	form.submit();
-}	
-
-/*
-* Cacher alerte lors de l'impression de nouveaux dossiers
-*/
-function efface() {
-	$('#desynchro').hide();
-	var form = $("form[name=\"theForm\"]");
-	form.attr('action', 'list-nouveau-dossier.do?effacer=effacer');
 	form.submit();
 }	

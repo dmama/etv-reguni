@@ -137,9 +137,6 @@
 				<entry key="/fusion/list-habitant.do" value-ref="habitantListController" />
 				<entry key="/fusion/recap.do" value-ref="fusionRecapController" />
 				-->
-				<!-- Tâches en instance / Nouveaux dossiers -->
-				<entry key="/tache/list.do" value-ref="tacheListController" />
-				<entry key="/tache/list-nouveau-dossier.do" value-ref="nouveauDossierListController" />
 				<!-- Documents -->
 				<entry key="/common/docs.do" value-ref="documentController" />
 				<!-- Annulation / Réactivation -->

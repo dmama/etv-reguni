@@ -3,6 +3,7 @@ package ch.vd.uniregctb.tache.view;
 import java.io.Serializable;
 import java.util.Date;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import ch.vd.registre.base.date.RegDate;
@@ -12,12 +13,11 @@ import ch.vd.uniregctb.type.TypeTache;
 
 public class TacheCriteriaViewBase implements Serializable {
 
-	private static final long serialVersionUID = -1984186456557111180L;
+	private static final long serialVersionUID = 6380103088232048687L;
 	private static final Logger LOGGER = Logger.getLogger(TacheCriteriaViewBase.class);
-	private static final String TOUS = "TOUS";
 
-	private String typeTache;
-	private String etatTache;
+	private TypeTache typeTache;
+	private TypeEtatTache etatTache;
 	private Date dateCreationDepuis;
 	private Date dateCreationJusqua;
 	private Integer annee;
@@ -26,19 +26,19 @@ public class TacheCriteriaViewBase implements Serializable {
 	private Long numeroCTB;
 	private boolean voirTachesAnnulees;
 
-	public String getTypeTache() {
+	public TypeTache getTypeTache() {
 		return typeTache;
 	}
 
-	public void setTypeTache(String typeTache) {
+	public void setTypeTache(TypeTache typeTache) {
 		this.typeTache = typeTache;
 	}
 
-	public String getEtatTache() {
+	public TypeEtatTache getEtatTache() {
 		return etatTache;
 	}
 
-	public void setEtatTache(String etatTache) {
+	public void setEtatTache(TypeEtatTache etatTache) {
 		this.etatTache = etatTache;
 	}
 
@@ -116,39 +116,14 @@ public class TacheCriteriaViewBase implements Serializable {
 	 */
 	public TacheCriteria asCoreCriteria() {
 
-		TypeEtatTache etat = null;
-		if (etatTache != null && !TOUS.equals(etatTache)) {
-			try {
-				etat = TypeEtatTache.valueOf(etatTache);
-			}
-			catch (IllegalArgumentException ignored) {
-				// etat de la tâche inconnu -> on l'ignore civilement
-				LOGGER.warn("Le critère sur l'état de la tâche avec la valeur [" + etatTache + "] est incorrect et il est ignoré.");
-				etat = null;
-			}
-		}
-
-		TypeTache type = null;
-		if (typeTache != null && !TOUS.equals(typeTache)) {
-			try {
-				type = TypeTache.valueOf(typeTache);
-			}
-			catch (IllegalArgumentException ignored) {
-				// type de la tâche inconnu -> on l'ignore civilement
-				LOGGER.warn("Le critère sur le type de la tâche avec la valeur [" + typeTache + "] est incorrect et il est ignoré.");
-				type = null;
-			}
-		}
-
 		Integer oid = null;
-		if (officeImpot != null && !TOUS.equals(officeImpot)) {
+		if (StringUtils.isNotBlank(officeImpot)) {
 			try {
 				oid = Integer.valueOf(officeImpot);
 			}
 			catch (NumberFormatException ignored) {
 				// impossible d'interpéter l'OID -> on l'ignore civilement
 				LOGGER.warn("Le critère sur l'OID de la tâche avec la valeur [" + officeImpot + "] est incorrect et il est ignoré.");
-				type = null;
 			}
 		}
 
@@ -168,8 +143,8 @@ public class TacheCriteriaViewBase implements Serializable {
 		criteria.setDateCreationDepuis(dateCreationDepuis);
 		criteria.setDateCreationJusqua(dateCreationJusqua);
 		criteria.setDateEcheanceJusqua(dateEcheanceJusqua);
-		criteria.setEtatTache(etat);
-		criteria.setTypeTache(type);
+		criteria.setEtatTache(etatTache);
+		criteria.setTypeTache(typeTache);
 		criteria.setOid(oid);
 		criteria.setNumeroCTB(numeroCTB);
 		criteria.setInclureTachesAnnulees(voirTachesAnnulees);

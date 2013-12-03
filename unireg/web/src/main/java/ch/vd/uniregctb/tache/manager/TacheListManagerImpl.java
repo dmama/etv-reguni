@@ -23,6 +23,7 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteException;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
 import ch.vd.uniregctb.security.SecurityDebugConfig;
+import ch.vd.uniregctb.tache.view.ImpressionNouveauxDossiersView;
 import ch.vd.uniregctb.tache.view.NouveauDossierCriteriaView;
 import ch.vd.uniregctb.tache.view.NouveauDossierListView;
 import ch.vd.uniregctb.tache.view.TacheCriteriaView;
@@ -165,7 +166,7 @@ public class TacheListManagerImpl implements TacheListManager {
 				tacheView.setIdDI(tadi.getDeclarationImpotOrdinaire().getId());
 			}
 
-			tacheView.setAnnulee(tache.isAnnule());
+			tacheView.setAnnule(tache.isAnnule());
 			tachesView.add(tacheView);
 		}
 
@@ -174,10 +175,11 @@ public class TacheListManagerImpl implements TacheListManager {
 
 	private TacheCriteria buildCoreCriteria(TacheCriteriaViewBase tacheCriteria) throws ServiceInfrastructureException {
 		TacheCriteria coreCriteria = tacheCriteria.asCoreCriteria();
-		if ((tacheCriteria.getTypeTache() == null) || (tacheCriteria.getTypeTache().equals("TOUS"))) {
+		if (tacheCriteria.getTypeTache() == null) {
 			coreCriteria.setTypeTache(TypeTache.TacheNouveauDossier);
 			coreCriteria.setInvertTypeTache(true);
-		} else {
+		}
+		else {
 			coreCriteria.setInvertTypeTache(false);
 		}
 
@@ -232,7 +234,7 @@ public class TacheListManagerImpl implements TacheListManager {
 
 		List<NouveauDossierListView> dossiersView = new ArrayList<>();
 
-		dossierCriteria.setTypeTache(TypeTache.TacheNouveauDossier.toString());
+		dossierCriteria.setTypeTache(TypeTache.TacheNouveauDossier);
 		TacheCriteria coreCriteria = buildCoreCriteria(dossierCriteria);
 		List<Tache> taches = tacheDAO.find(coreCriteria);
 
@@ -272,7 +274,7 @@ public class TacheListManagerImpl implements TacheListManager {
 	public List<NouveauDossierListView> find(NouveauDossierCriteriaView dossierCriteria, ParamPagination paramPagination) throws ServiceInfrastructureException, AdresseException {
 
 		final List<NouveauDossierListView> nouveauxDossiersView = new ArrayList<>();
-		dossierCriteria.setTypeTache(TypeTache.TacheNouveauDossier.toString());
+		dossierCriteria.setTypeTache(TypeTache.TacheNouveauDossier);
 		final TacheCriteria coreCriteria = buildCoreCriteria(dossierCriteria);
 		final List<Tache> taches = tacheDAO.find(coreCriteria, paramPagination);
 
@@ -303,16 +305,14 @@ public class TacheListManagerImpl implements TacheListManager {
 
 	/**
 	 * Imprime les nouveaux dossiers
-	 *
-	 * @param nouveauDossierCriteriaView
 	 * @throws ServiceInfrastructureException
 	 * @throws EditiqueException
 	 */
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
-	public EditiqueResultat envoieImpressionLocalDossier(NouveauDossierCriteriaView nouveauDossierCriteriaView) throws EditiqueException {
+	public EditiqueResultat envoieImpressionLocalDossier(ImpressionNouveauxDossiersView view) throws EditiqueException {
 
-		final Long[] tabIdsDossiers = nouveauDossierCriteriaView.getTabIdsDossiers();
+		final Long[] tabIdsDossiers = view.getTabIdsDossiers();
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("Tab Ids dossiers:" + Arrays.toString(tabIdsDossiers));
 		}
@@ -346,9 +346,6 @@ public class TacheListManagerImpl implements TacheListManager {
 
 	/**
 	 * Retourne le nombre de tache correspondant aux criteres
-	 *
-	 * @param criterion
-	 * @return
 	 * @throws ServiceInfrastructureException
 	 */
 	@Override
