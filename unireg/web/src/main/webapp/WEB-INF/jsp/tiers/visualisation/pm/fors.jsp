@@ -37,10 +37,10 @@
 				</c:choose>
 			</display:column>
 
-			<display:column sortable="true" titleKey="label.date.ouv">
+			<display:column sortable="true" titleKey="label.date.ouv" sortProperty="dateDebut">
 				<unireg:regdate regdate="${forsFiscauxPM.dateDebut}"/>
 			</display:column>
-			<display:column sortable="true" titleKey="label.date.fer">
+			<display:column sortable="true" titleKey="label.date.fer" sortProperty="dateFin">
 				<unireg:regdate regdate="${forsFiscauxPM.dateFin}"/>
 			</display:column>
 		</display:table>

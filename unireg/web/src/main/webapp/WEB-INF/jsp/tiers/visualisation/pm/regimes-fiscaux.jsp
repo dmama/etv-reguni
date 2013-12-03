@@ -15,10 +15,10 @@
 		<label class="noprint" for="showRegimesVDHisto"><fmt:message key="label.historique" /></label>
 	
 		<display:table name="${command.entreprise.regimesFiscauxVD}" id="regimesVD" requestURI="visu.do" class="display">
-			<display:column sortable="true" titleKey="label.date.debut">
+			<display:column sortable="true" titleKey="label.date.debut" sortProperty="dateDebut">
 				<unireg:regdate regdate="${regimesVD.dateDebut}"/>
 			</display:column>
-			<display:column sortable="true" titleKey="label.date.fin">
+			<display:column sortable="true" titleKey="label.date.fin" sortProperty="dateFin">
 				<unireg:regdate regdate="${regimesVD.dateFin}"/>
 			</display:column>
 			<display:column sortable="true" titleKey="label.type">
@@ -43,10 +43,10 @@
 		<label class="noprint" for="showRegimesCHHisto"><fmt:message key="label.historique" /></label>
 	
 		<display:table name="${command.entreprise.regimesFiscauxCH}" id="regimesCH" requestURI="visu.do" class="display">
-			<display:column sortable="true" titleKey="label.date.debut">
+			<display:column sortable="true" titleKey="label.date.debut" sortProperty="dateDebut">
 				<unireg:regdate regdate="${regimesCH.dateDebut}"/>
 			</display:column>
-			<display:column sortable="true" titleKey="label.date.fin">
+			<display:column sortable="true" titleKey="label.date.fin" sortProperty="dateFin">
 				<unireg:regdate regdate="${regimesCH.dateFin}"/>
 			</display:column>
 			<display:column sortable="true" titleKey="label.type">

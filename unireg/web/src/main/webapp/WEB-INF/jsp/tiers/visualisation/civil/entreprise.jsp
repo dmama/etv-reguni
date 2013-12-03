@@ -53,13 +53,13 @@
 	<label class="noprint" for="showSiegesHisto"><fmt:message key="label.historique" /></label>
 
 	<display:table name="${command.entreprise.sieges}" id="sieges" requestURI="visu.do" class="display">
-		<display:column sortable="true" titleKey="label.date.debut">
+		<display:column sortable="true" titleKey="label.date.debut" sortProperty="dateDebut">
 			<unireg:regdate regdate="${sieges.dateDebut}"/>
 		</display:column>
-		<display:column sortable="true" titleKey="label.date.fin">
+		<display:column sortable="true" titleKey="label.date.fin" sortProperty="dateFin">
 			<unireg:regdate regdate="${sieges.dateFin}"/>
 		</display:column>
-		<display:column sortable="true" titleKey="label.commune.pays">
+		<display:column titleKey="label.commune.pays">
 			<c:choose>
 				<c:when test="${sieges.type == 'COMMUNE_CH' }">
 					<unireg:commune ofs="${sieges.noOfsSiege}" displayProperty="nomOfficiel" date="${sieges.dateFin}"/>
@@ -80,10 +80,10 @@
 	<label class="noprint" for="showFormesJuridiquesHisto"><fmt:message key="label.historique" /></label>
 
 	<display:table name="${command.entreprise.formesJuridiques}" id="formesJuridiques" requestURI="visu.do" class="display">
-		<display:column sortable="true" titleKey="label.date.debut">
+		<display:column sortable="true" titleKey="label.date.debut" sortProperty="dateDebut">
 			<unireg:regdate regdate="${formesJuridiques.dateDebut}"/>
 		</display:column>
-		<display:column sortable="true" titleKey="label.date.fin">
+		<display:column sortable="true" titleKey="label.date.fin" sortProperty="dateFin">
 			<unireg:regdate regdate="${formesJuridiques.dateFin}"/>
 		</display:column>
 		<display:column sortable="true" titleKey="label.forme.juridique" property="code"/>
@@ -98,20 +98,20 @@
 
 	<fmt:setLocale value="ch" scope="page"/>
 	<display:table name="${command.entreprise.capitaux}" id="capitaux" requestURI="visu.do" class="display">
-		<display:column sortable="true" titleKey="label.date.debut">
+		<display:column sortable="true" titleKey="label.date.debut" sortProperty="dateDebut">
 			<unireg:regdate regdate="${capitaux.dateDebut}"/>
 		</display:column>
-		<display:column sortable="true" titleKey="label.date.fin">
+		<display:column sortable="true" titleKey="label.date.fin" sortProperty="dateFin">
 			<unireg:regdate regdate="${capitaux.dateFin}"/>
 		</display:column>
-		<display:column sortable="true" titleKey="label.capital.action" style="text-align:right">
+		<display:column sortable="true" titleKey="label.capital.action" style="text-align:right" sortProperty="capitalAction">
 			<unireg:currency value="${capitaux.capitalAction}"/>
 		</display:column>
-		<display:column sortable="true" titleKey="label.capital.libere" style="text-align:right">
+		<display:column sortable="true" titleKey="label.capital.libere" style="text-align:right" sortProperty="capitalLibere">
 			<unireg:currency value="${capitaux.capitalLibere}"/>
 		</display:column>
 		<display:column sortable="true" titleKey="label.absence.capital.libere.normale" property="absenceCapitalLibereNormale"/>
-		<display:column sortable="true" titleKey="label.edition.fosc">
+		<display:column sortable="true" titleKey="label.edition.fosc" sortProperty="editionFosc.dateParution">
 			N°<c:out value="${capitaux.editionFosc.numero}"/> du <unireg:regdate regdate="${capitaux.editionFosc.dateParution}"/>
 		</display:column>
 	</display:table>
