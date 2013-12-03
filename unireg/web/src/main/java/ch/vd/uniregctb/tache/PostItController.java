@@ -19,10 +19,10 @@ public class PostItController {
 		this.tacheService = tacheService;
 	}
 
-	@SuppressWarnings("UnusedDeclaration")
 	public static class ToDo {
-		int taches;
-		int dossiers;
+
+		private final int taches;
+		private final int dossiers;
 
 		private ToDo(int taches, int dossiers) {
 			this.taches = taches;
