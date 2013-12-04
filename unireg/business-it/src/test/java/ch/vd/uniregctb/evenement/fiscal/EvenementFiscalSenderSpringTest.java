@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.evenement.fiscal;
 
+import org.apache.commons.lang3.mutable.MutableLong;
 import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
@@ -19,6 +20,7 @@ import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeEvenementFiscal;
 
 import static org.junit.Assert.assertNotNull;
@@ -66,7 +68,8 @@ public class EvenementFiscalSenderSpringTest extends BusinessItTest {
 
 		// test positif : le message arrive bien
 		{
-			sendEvent(false);
+			final MutableLong ppId = new MutableLong();
+			sendEvent(false, ppId);
 
 			// on doit maintenant vérifier que le message a bien été envoyé
 			LOGGER.info("Attente du premier message message pendant 3s maximum");
@@ -75,12 +78,23 @@ public class EvenementFiscalSenderSpringTest extends BusinessItTest {
 			final EsbMessage msg = esbTemplate.receive(OUTPUT_QUEUE);
 			LOGGER.info("Message reçu ou timeout expiré");
 			Assert.assertNotNull(msg);
+
+			// la personne physique doit avoir été sauvegardée en base
+			doInNewTransactionAndSession(new TransactionCallback<Object>() {
+				@Override
+				public Object doInTransaction(TransactionStatus status) {
+					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId.getValue());
+					Assert.assertNotNull(pp);
+					return null;
+				}
+			});
 		}
 
 		// test négatif : si une exception provoque le rollback de la transaction, alors rien ne doit revenir
 		{
+			final MutableLong ppId = new MutableLong();
 			try {
-				sendEvent(true);
+				sendEvent(true, ppId);
 				Assert.fail("Où est passée l'exception ?");
 			}
 			catch (RuntimeException e) {
@@ -95,10 +109,24 @@ public class EvenementFiscalSenderSpringTest extends BusinessItTest {
 			final EsbMessage msg = esbTemplate.receive(OUTPUT_QUEUE);
 			LOGGER.info("Message reçu ou timeout expiré");
 			Assert.assertNull(msg);
+
+			// la personne physique de doit pas avoir été sauvegardée en base
+			doInNewTransactionAndSession(new TransactionCallback<Object>() {
+				@Override
+				public Object doInTransaction(TransactionStatus status) {
+					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId.getValue());
+					Assert.assertNull(pp);
+					return null;
+				}
+			});
 		}
 	}
 
-	private void sendEvent(final boolean saute) {
+	/**
+	 * @param saute vrai si la transaction doit sauter
+	 * @return le numéro du tiers créé
+	 */
+	private void sendEvent(final boolean saute, final MutableLong ppId) {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
 
@@ -107,11 +135,10 @@ public class EvenementFiscalSenderSpringTest extends BusinessItTest {
 			public Object doInTransaction(TransactionStatus status) {
 
 				// Création du message
-				final Tiers tiers = new PersonnePhysique(false);
-				tiers.setNumero(10000001L);
-
+				final Tiers tiers = addNonHabitant("Maria", "Goldberg", null, Sexe.FEMININ);
 				final EvenementFiscalFor event = new EvenementFiscalFor(tiers, RegDate.get(2009, 12, 9), TypeEvenementFiscal.OUVERTURE_FOR, MotifFor.ARRIVEE_HS, ModeImposition.ORDINAIRE, (long) 1);
 				event.setId(1234L);
+				ppId.setValue(tiers.getNumero());
 
 				try {
 					sender.sendEvent(event);
@@ -123,9 +150,8 @@ public class EvenementFiscalSenderSpringTest extends BusinessItTest {
 				if (saute) {
 					throw new RuntimeException("Exception de test");
 				}
-				else {
-					return null;
-				}
+
+				return null;
 			}
 		});
 	}
