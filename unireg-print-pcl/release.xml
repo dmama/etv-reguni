@@ -1,0 +1,23 @@
+<assembly>
+	<id>release</id>
+	<formats>
+		<format>zip</format>
+	</formats>
+	<includeBaseDirectory>false</includeBaseDirectory>
+	<dependencySets>
+		<dependencySet>
+			<outputDirectory>lib</outputDirectory>
+			<scope>runtime</scope>
+		</dependencySet>
+	</dependencySets>
+	<fileSets>
+	    <fileSet>
+            <directory>docs</directory>
+            <outputDirectory>docs</outputDirectory>
+	    </fileSet>
+	    <fileSet>
+            <directory>install</directory>
+            <outputDirectory>install</outputDirectory>
+	    </fileSet>
+	</fileSets>
+</assembly>

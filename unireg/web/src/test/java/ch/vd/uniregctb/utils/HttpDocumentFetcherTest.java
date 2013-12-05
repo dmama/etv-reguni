@@ -1,0 +1,103 @@
+package ch.vd.uniregctb.utils;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.net.ConnectException;
+import java.net.URL;
+
+import org.apache.commons.io.IOUtils;
+import org.junit.Assert;
+import org.junit.Test;
+
+import ch.vd.uniregctb.common.WithoutSpringTest;
+
+public class HttpDocumentFetcherTest extends WithoutSpringTest {
+
+	@Test
+	public void testCodeRetour404() throws Exception {
+		final URL bidon = new URL("http://spip/tubidu");
+		try (HttpDocumentFetcher.HttpDocument doc = HttpDocumentFetcher.fetch(bidon, null)) {
+			Assert.fail("Cette URL existe mainenant ?");
+		}
+		catch (HttpDocumentFetcher.HttpDocumentClientException e) {
+			Assert.assertEquals(404, e.getErrorCode());
+			Assert.assertEquals("Not Found", e.getErrorMessage());
+		}
+	}
+
+	@Test
+	public void testCodeRetour200() throws Exception {
+		final URL blog = new URL("http://spip");
+		try (HttpDocumentFetcher.HttpDocument doc = HttpDocumentFetcher.fetch(blog, null)) {
+			Assert.assertEquals("text/html; charset=UTF-8", doc.getContentType());
+			Assert.assertNotNull(doc.getContent());
+		}
+	}
+
+	@Test
+	public void testRecupDocument() throws Exception {
+		final URL docUrl = new URL("http://www.vd.ch/fileadmin/user_upload/themes/etat_droit/democratie/fichiers_pdf/Demande_d_acc%C3%A8s_guide_succinct_pour_particuliers.pdf");
+		try (HttpDocumentFetcher.HttpDocument doc = HttpDocumentFetcher.fetch(docUrl, null)) {
+			Assert.assertEquals("application/pdf", doc.getContentType());
+
+			final Integer contentLength = doc.getContentLength();
+			Assert.assertNotNull(contentLength);
+
+			final File file = File.createTempFile("test-recup-doc", null);
+			file.deleteOnExit();
+
+			try (InputStream in = doc.getContent()) {
+				Assert.assertNotNull(in);
+				try (FileOutputStream out = new FileOutputStream(file)) {
+					IOUtils.copy(in, out);
+				}
+				Assert.assertEquals((long) contentLength, file.length());
+			}
+		}
+	}
+
+	@Test
+	public void testMauvaisProtocole() throws Exception {
+		final URL ftp = new URL("ftp://toto.edu");
+		try (HttpDocumentFetcher.HttpDocument doc = HttpDocumentFetcher.fetch(ftp, null)) {
+			Assert.fail("Le protocole FTP ne devrait pas être supporté...");
+		}
+		catch (IllegalArgumentException e) {
+			Assert.assertEquals("URL non supportée : " + ftp, e.getMessage());
+		}
+	}
+
+	@Test
+	public void testConnectionRefused() throws Exception {
+		final URL url = new URL("http://localhost:53");
+		try (HttpDocumentFetcher.HttpDocument doc = HttpDocumentFetcher.fetch(url, null)) {
+			Assert.fail("La machine locale a son port 53 - serveur DNS - ouvert?");
+		}
+		catch (ConnectException e) {
+			Assert.assertEquals("Connection refused", e.getMessage());
+		}
+	}
+
+	@Test
+	public void testExtractionFilename() throws Exception {
+		Assert.assertNull(HttpDocumentFetcher.extractFilename(null));
+		Assert.assertNull(HttpDocumentFetcher.extractFilename(""));
+		Assert.assertNull(HttpDocumentFetcher.extractFilename("attachment"));
+		Assert.assertNull(HttpDocumentFetcher.extractFilename("attachment; filename=\"\""));
+		Assert.assertNull(HttpDocumentFetcher.extractFilename("attachment; filename=\"\"; toto=12"));
+		Assert.assertNull(HttpDocumentFetcher.extractFilename("attachment; filename=\"   \"; toto=12"));
+
+		Assert.assertEquals("myfile.txt", HttpDocumentFetcher.extractFilename("inline;filename=myfile.txt"));
+		Assert.assertEquals("myfile.txt", HttpDocumentFetcher.extractFilename("inline;filename=\"myfile.txt\""));
+		Assert.assertEquals("myfile.txt", HttpDocumentFetcher.extractFilename("attachment;filename=\"myfile.txt\""));
+		Assert.assertEquals("myfile.txt", HttpDocumentFetcher.extractFilename("attachment ; filename=myfile.txt"));
+		Assert.assertEquals("myfile.txt", HttpDocumentFetcher.extractFilename("attachment ; filename=\"myfile.txt\""));
+		Assert.assertEquals("myfile.txt", HttpDocumentFetcher.extractFilename("attachment ; filename = myfile.txt"));
+		Assert.assertEquals("myfile.txt", HttpDocumentFetcher.extractFilename("attachment ; filename = \"myfile.txt\""));
+		Assert.assertEquals("myfile.txt", HttpDocumentFetcher.extractFilename("attachment ; filename = myfile.txt;toto"));
+		Assert.assertEquals("myfile.txt", HttpDocumentFetcher.extractFilename("attachment ; filename = myfile.txt ;toto"));
+		Assert.assertEquals("myfile.txt", HttpDocumentFetcher.extractFilename("attachment ; filename = \"myfile.txt\";toto"));
+		Assert.assertEquals("myfile.txt", HttpDocumentFetcher.extractFilename("attachment ; filename = \"myfile.txt\" ;toto"));
+	}
+}

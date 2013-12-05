@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+	                       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+	<bean id="evenementExterneListener" class="ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener" parent="esbMessageListener">
+		<property name="handler" ref="evenementExterneEsbHandler"/>
+	</bean>
+
+	<bean id="evenementExterneEsbHandler" class="ch.vd.uniregctb.evenement.externe.EvenementExterneEsbHandler">
+		<property name="handler" ref="evenementExterneService" />
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
+		<property name="connectors">
+			<util:list>
+				<ref bean="evtExterneQuittanceListeV1Connector"/>
+				<ref bean="evtExterneListeV1Connector"/>
+				<ref bean="evtExterneListeV2Connector"/>
+			</util:list>
+		</property>
+	</bean>
+
+	<bean id="evenementExterneEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">
+		<property name="resourceAdapter" ref="jmsResourceAdapter"/>
+		<property name="activationSpec">
+			<bean class="org.apache.activemq.ra.ActiveMQActivationSpec">
+				<property name="destination" value="${extprop.jms.queue.evtExterne}"/>
+				<property name="destinationType" value="javax.jms.Queue"/>
+				<property name="maxSessions" value="1"/>
+				<property name="maxMessagesPerSessions" value="1"/>
+			</bean>
+		</property>
+		<property name="messageListener" ref="evenementExterneListener"/>
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="autoStartup" value="${extprop.jms.queue.evtExterne.enabled}" />
+	</bean>
+
+	<bean id="evtExterneQuittanceListeV1Connector" class="ch.vd.uniregctb.evenement.externe.EvtQuittanceListeV1Connector"/>
+	<bean id="evtExterneListeV1Connector" class="ch.vd.uniregctb.evenement.externe.EvtListeV1Connector"/>
+	<bean id="evtExterneListeV2Connector" class="ch.vd.uniregctb.evenement.externe.EvtListeV2Connector"/>
+
+</beans>

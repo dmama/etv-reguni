@@ -1,0 +1,50 @@
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog" prefer="public">
+
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/di/evenementDeclarationImpot-common-1.xsd" uri="event/di/evenementDeclarationImpot-common-1.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/di/evenementDeclarationImpot-input-1.xsd" uri="event/di/evenementDeclarationImpot-input-1.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/di/evenementDeclarationImpot-output-1.xsd" uri="event/di/evenementDeclarationImpot-output-1.xsd"/>
+
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/rt/rapport-travail-common-1.xsd" uri="event/rt/rapport-travail-common-1.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/rt/rapport-travail-request-1.xsd" uri="event/rt/rapport-travail-request-1.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/rt/rapport-travail-response-1.xsd" uri="event/rt/rapport-travail-response-1.xsd"/>
+
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/identification/identification-contribuable-request-2.xsd" uri="event/identification/identification-contribuable-request-2.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/identification/identification-contribuable-response-2.xsd" uri="event/identification/identification-contribuable-response-2.xsd"/>
+
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/address-request-1.xsd" uri="event/party/address-request-1.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/address-response-1.xsd" uri="event/party/address-response-1.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/numbers-request-1.xsd" uri="event/party/numbers-request-1.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/numbers-response-1.xsd" uri="event/party/numbers-response-1.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/request-1.xsd" uri="event/party/request-1.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/response-1.xsd" uri="event/party/response-1.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/party-request-1.xsd" uri="event/party/party-request-1.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/party-request-2.xsd" uri="event/party/party-request-2.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/party-response-1.xsd" uri="event/party/party-response-1.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/party-response-2.xsd" uri="event/party/party-response-2.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/creation-nonhabitant-request-1.xsd" uri="event/party/create-nonresident-request-1.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/creation-nonhabitant-request-2.xsd" uri="event/party/create-nonresident-request-2.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/creation-nonhabitant-reponse-1.xsd" uri="event/party/create-nonresident-response-1.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/creation-nonhabitant-reponse-2.xsd" uri="event/party/create-nonresident-response-2.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/taxliab-common-1.xsd" uri="event/party/taxliab-common-1.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/taxliab-request-2.xsd" uri="event/party/taxliab-request-2.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/aperiodic-taxliab-request-1.xsd" uri="event/party/aperiodic-taxliab-request-1.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/aperiodic-taxliab-request-2.xsd" uri="event/party/aperiodic-taxliab-request-2.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/aperiodic-taxliab-response-1.xsd" uri="event/party/aperiodic-taxliab-response-1.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/taxliab-response-2.xsd" uri="event/party/taxliab-response-2.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/periodic-taxliab-request-1.xsd" uri="event/party/periodic-taxliab-request-1.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/periodic-taxliab-request-2.xsd" uri="event/party/periodic-taxliab-request-2.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/periodic-taxliab-response-1.xsd" uri="event/party/periodic-taxliab-response-1.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/data/dataEvent-1.xsd" uri="event/data/dataEvent-1.xsd"/>
+
+	<system systemId="http://www.vd.ch/fiscalite/taxation/is/evtquittanceListe-v1.xsd" uri="event/lr/evtQuittanceListe-v1.xsd"/>
+	<system systemId="http://www.vd.ch/fiscalite/taxation/is/evtliste-1.xsd" uri="event/lr/evtListe-1.xsd"/>
+	<system systemId="http://www.vd.ch/fiscalite/taxation/is/evtliste-2.xsd" uri="event/lr/evtListe-2.xsd"/>
+
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/taxation/DossierElectronique-1-0.xsd" uri="event/taxation/DossierElectronique-1-0.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/taxation/DossierElectronique-2-0.xsd" uri="event/taxation/DossierElectronique-2-0.xsd"/>
+
+	<delegateSystem systemIdStartString="http://ressources.etat-de-vaud.ch/fiscalite/registre/party" catalog="../../../../party/src/main/resources/catalog.xml" />
+	<delegateSystem systemIdStartString="http://ressources.etat-de-vaud.ch/fiscalite/registre/" catalog="../../../../common/src/main/resources/catalog.xml" />
+	<delegateSystem systemIdStartString="http://www.ech.ch/xmlns/" catalog="../../../../ech/src/main/resources/catalog.xml" />
+
+</catalog>
