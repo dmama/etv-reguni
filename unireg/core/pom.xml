@@ -87,11 +87,6 @@
 			<version>${activemq.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.xbean</groupId>
-			<artifactId>xbean-spring</artifactId>
-			<version>3.5</version>
-		</dependency>
-		<dependency>
 			<groupId>org.dbunit</groupId>
 			<artifactId>dbunit</artifactId>
 			<version>${dbunit.version}</version>
