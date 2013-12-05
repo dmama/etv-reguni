@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.vd.ch/fiscalite/registre/evenementFiscal-v1" targetNamespace="http://www.vd.ch/fiscalite/registre/evenementFiscal-v1"
+		   elementFormDefault="qualified" attributeFormDefault="unqualified" version="1">
+	<xs:include schemaLocation="evenementFiscalCommun-v1.xsd" />
+	<xs:element name="evenementFiscalFinAutoriteParentale" type="EvenementFiscalFinAutoriteParentaleType">
+		<xs:annotation>
+			<xs:documentation>Evénement émis lorsqu'un enfant devient majeur et qu'il se détache (fiscalement parlant) de ses parents.
+				Attention, cet événement est émis sur le tiers 'parent' (mère ou ménage) dont l'enfant est devenu majeur.
+			</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:complexType name="EvenementFiscalFinAutoriteParentaleType">
+		<xs:complexContent>
+			<xs:extension base="EvenementFiscalType">
+				<xs:sequence>
+					<xs:element name="dateTraitement" type="xs:date">
+						<xs:annotation>
+							<xs:documentation>Date d'envoi de l'événement (aaaa-mm-jj)</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="numeroTiersEnfant">
+						<xs:annotation>
+							<xs:documentation>Le numéro de l'enfant qui est devenu majeur (le numéro de tiers étant celui de la mère/ménage)</xs:documentation>
+						</xs:annotation>
+						<xs:simpleType>
+							<xs:restriction base="xs:token">
+								<xs:pattern value="([0-9])+" />
+							</xs:restriction>
+						</xs:simpleType>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+</xs:schema>

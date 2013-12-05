@@ -1,0 +1,362 @@
+a.plier,
+a.deplier {
+	/* Ne pas optimiser ces "background-xxx" en "background:" car cela surcharge implicitement l'élément "background-image" que l'on ne veut pas surcharger */
+	background-position: left top;
+	background-repeat: no-repeat;
+	padding: 4px;
+	height: 1px;
+	display: block;
+	float: left;
+	position: relative;
+	text-decoration: none;
+}
+
+a.stop,
+a.start {
+	/* Ne pas optimiser ces "background-xxx" en "background:" car cela surcharge implicitement l'élément "background-image" que l'on ne veut pas surcharger */
+	background-position: left top;
+	background-repeat: no-repeat;
+	height: 16px;
+	display: block;
+	position: relative;
+	text-decoration: none;	
+}
+
+
+a.add,
+a.copy,
+a.detail,
+a.extlink,
+a.consult,
+a.infotraitement,
+a.alert,
+a.historique,
+a.download,
+a.edit,
+a.modif,
+a.delete,
+a.undelete,
+a.cancel,
+a.selectionner,
+a.correction,
+a.notes,
+a.replay,
+a.moveUp,
+a.moveDown,
+a.reOpenFor,
+.button_placeholder,
+a.padding,
+a.pdf,
+span.pdf-grayed,
+a.key,
+a.save,
+a.calendar {
+	/* Ne pas optimiser ces "background-xxx" en "background:" car cela surcharge implicitement l'élément "background-image" que l'on ne veut pas surcharger */
+	background-position: left top;
+	background-repeat: no-repeat;
+	text-decoration: none;
+	padding-left:20px;
+	padding-bottom:2px;
+	overflow:hidden;
+}
+
+a.stop:hover,
+a.start:hover,
+a.deplier:hover,
+a.plier:hover,
+a.add:hover,
+a.copy:hover,
+a.detail:hover,
+a.extlink:hover,
+a.consult:hover,
+a.alert:hover,
+a.historique:hover,
+a.download:hover,
+a.edit:hover,
+a.delete:hover,
+a.undelete:hover,
+a.cancel:hover,
+a.selectionner:hover,
+a.correction:hover,
+a.notes:hover,
+a.replay:hover,
+a.moveUp:hover,
+a.moveDown:hover,
+a.reOpenFor:hover,
+.button_placeholder:hover,
+a.padding:hover,
+a.pdf:hover,
+span.pdf-grayed:hover
+a.key:hover,
+a.save:hover,
+a.calendar:hover {
+	background-repeat: no-repeat;
+	text-decoration: none;
+}
+
+
+a.start {
+	margin-left:3px;
+	width: 16px;
+	height: 16px;
+	padding-left:17px;
+	background-image: url(start.png);
+}
+
+a.stop {
+	background-image: url(stop.png);
+}
+
+a.deplier {
+	background-image: url(plus.jpg);
+}
+a.deplier:hover {
+	background-image: url(plus.jpg);
+}
+
+a.plier {
+	background-image: url(moins.jpg);
+}
+a.plier:hover {
+	background-image: url(moins.jpg);
+}
+
+a.calendar {
+	margin-left:3px;
+	width: 16px;
+	height: 16px;
+	background-image: url(calendar_off.gif);
+	color:transparent;
+}
+a.calendar:hover {
+	background-image: url(calendar_on.gif);
+	width: 16px;
+	height: 16px;
+	color:transparent;
+}
+
+
+a.add {
+	background-image: url(add_button_off.gif);
+}
+
+a.add:hover {
+	background-image: url(add_button_on.gif);
+	width: 80px;
+}
+
+a.copy {
+	background-image: url(copy_button_off.gif);
+}
+
+a.copy:hover {
+	background-image: url(copy_button_on.gif);
+}
+
+a.key {
+	background-image: url(key_off.png);	
+}
+
+a.key:hover {
+	background-image: url(key_on.png);
+	width: 80px;
+}
+
+a.save {
+	background-image: url(save_off.png);
+}
+
+a.save:hover {
+	background-image: url(save_on.png);
+}
+
+.correctionOrigine {
+	font-style: italic;
+	font-size: 8pt;
+}
+
+a.correction {
+	background-image: url(correction_off.gif);
+}
+
+a.correction:hover {
+	background-image: url(correction_on.gif);
+}
+
+a.detail {
+	background-image: url(detail_off.gif);
+}
+
+a.detail:hover {
+	background-image: url(detail_on.gif);
+}
+
+a.consult {
+	background-image: url(consult_off.gif);
+}
+
+a.extlink {
+	background-image: url(external-link.gif);
+}
+
+a.infotraitement {
+	background-image: url(info.png);
+}
+
+a.consult:hover {
+	background-image: url(consult_on.gif);
+}
+
+a.alert {
+	background-image: url(warn.png);
+}
+
+a.alert:hover {
+	background-image: url(warn.png);
+}
+
+a.historique {
+	background-image: url(historique_off.gif);
+	float: right;
+}
+
+a.historique:hover {
+	background-image: url(historique_on.gif);
+}
+
+a.download {
+	background-image: url(download_off.gif);
+}
+
+a.download:hover {
+	background-image: url(download_on.gif);
+}
+
+a.delete {
+	width: 16px;
+	height: 16px;
+	background-image: url(delete_off.gif);
+}
+a.delete:hover {
+	background-image: url(delete_on.gif);
+}
+
+legend a.delete:hover {
+	background-repeat: no-repeat;
+	z-index: 500;
+	text-decoration: none;
+}
+
+a.undelete {
+	width: 16px;
+	height: 16px;
+	background-image: url(undelete_off.gif);
+}
+a.undelete:hover {
+	background-image: url(undelete_on.gif);
+}
+
+a.cancel {
+	width: 16px;
+	height: 16px;
+	background-image: url(cancel_off.png);
+}
+a.cancel:hover {
+	background-image: url(cancel_on.png);
+}
+
+a.selectionner {
+	background-image: url(selectionner_on.gif);
+}
+a.selectionner:hover {
+	background-image: url(selectionner_on.gif);
+}
+
+a.edit {
+	width: 16px;
+	height: 16px;
+	background-image: url(edit_off.gif);
+}
+a.edit:hover {
+	background-image: url(edit_on.gif);
+}
+
+a.modif {
+	background-image: url(edit_off.gif);
+}
+a.modif:hover {
+	background-image: url(edit_on.gif);
+	width: 80px;
+}
+
+a.notes {
+	background-image: url(notes_button_off.gif);
+}
+a.notes:hover {
+	background: url(notes_button_on.gif);
+}
+
+a.replay {
+	background-image: url(replay_button_off.gif);
+}
+a.replay:hover {
+	background-image: url(replay_button_on.gif);
+}
+
+a.moveUp {
+	background-image: url(moveup.gif);
+}
+
+a.moveDown {
+	background-image: url(movedown.gif);
+}
+
+a.reOpenFor {
+	background-image: url(key_off.png);
+}
+a.reOpenFor:hover {
+	background-image: url(key_on.png);
+}
+
+.margin_right_10 {
+	margin-right: 10px;
+}
+
+.button_placeholder {
+	width: 16px;
+	height: 16px;
+	background-image: url(placeholder.gif);
+}
+
+.forPrincipalIconSmall {
+	background-image: url(fors/principal_16.png);
+	width: 16px;
+	height: 16px;
+}
+
+.forSecondaireIconSmall {
+	background-image: url(fors/secondaire_16.png);
+	width: 16px;
+	height: 16px;
+}
+
+.forAutreElementImposableIconSmall {
+	background-image: url(fors/autreelementimposable_16.png);
+	width: 16px;
+	height: 16px;
+}
+
+.forAutreImpotIconSmall {
+	background-image: url(fors/autre_16.png);
+	width: 16px;
+	height: 16px;
+}
+
+.ongletCivilAvecIndividuAnnule, .upiAutreNavs13 {
+	background: url(warn.png) no-repeat;
+	vertical-align: middle;
+	margin-left: 2px;
+	min-width: 64px;
+	width: 16px;
+	height: 16px;
+}

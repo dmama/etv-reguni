@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<!-- Evénements civil e-CH -->
+
+	<!-- Traitements de masse -->
+
+	<bean id="evtCivilEchMasseListener" class="ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener" parent="esbMessageListener">
+		<property name="handler" ref="evtCivilEchMasseEsbHandler"/>
+	</bean>
+
+	<bean id="evtCivilEchMasseEsbHandler" class="ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchEsbHandler" parent="evtCivilEchEsbHandler">
+		<property name="processingMode" value="BATCH"/>
+		<property name="recuperateur" ref="evtCivilEchRecuperateur"/>
+		<property name="delaiRecuperationMinutes" value="${extprop.evtCivil.rethrowDelayOnStartup}"/>
+	</bean>
+
+	<bean id="evtCivilEchRecuperateur" class="ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchRecuperateurImpl">
+		<property name="evtCivilDAO" ref="evenementCivilEchDAO"/>
+		<property name="receptionHandler" ref="evtCivilEchReceptionHandler"/>
+		<property name="transactionManager" ref="transactionManager"/>
+	</bean>
+
+	<bean id="evtCivilEchMasseEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">
+		<property name="resourceAdapter" ref="jmsResourceAdapter"/>
+		<property name="activationSpec">
+			<bean class="org.apache.activemq.ra.ActiveMQActivationSpec">
+				<property name="destination" value="${extprop.jms.queue.evtCivilEchMasse}"/>
+				<property name="destinationType" value="javax.jms.Queue"/>
+				<property name="maxSessions" value="${extprop.jms.queue.evtCivilEchMasse.consumers}"/>
+				<property name="maxMessagesPerSessions" value="100"/>
+			</bean>
+		</property>
+		<property name="messageListener" ref="evtCivilEchMasseListener"/>
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="autoStartup" value="${extprop.jms.queue.evtCivilEchMasse.enabled}" />
+	</bean>
+
+	<!-- Traitements "manuels" -->
+
+	<bean id="evtCivilEchIndividuelListener" class="ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener" parent="esbMessageListener">
+		<property name="handler" ref="evtCivilEchIndividuelEsbHandler"/>
+	</bean>
+
+	<bean id="evtCivilEchIndividuelEsbHandler" class="ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchEsbHandler" parent="evtCivilEchEsbHandler">
+		<property name="processingMode" value="MANUAL"/>
+	</bean>
+
+	<bean id="evtCivilEchIndividuelEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">
+		<property name="resourceAdapter" ref="jmsResourceAdapter"/>
+		<property name="activationSpec">
+			<bean class="org.apache.activemq.ra.ActiveMQActivationSpec">
+				<property name="destination" value="${extprop.jms.queue.evtCivilEchIndividuel}"/>
+				<property name="destinationType" value="javax.jms.Queue"/>
+				<property name="maxSessions" value="${extprop.jms.queue.evtCivilEchIndividuel.consumers}"/>
+				<property name="maxMessagesPerSessions" value="10"/>
+			</bean>
+		</property>
+		<property name="messageListener" ref="evtCivilEchIndividuelListener"/>
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="autoStartup" value="${extprop.jms.queue.evtCivilEchIndividuel.enabled}" />
+	</bean>
+
+	<!-- Parties communes -->
+
+	<bean id="evtCivilEchEsbHandler" abstract="true" class="ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchEsbHandler">
+		<property name="receptionHandler" ref="evtCivilEchReceptionHandler"/>
+		<property name="ignoredEventTypes">
+			<set>
+				<value>CORR_RELIGION</value>
+				<value>CORR_LIEU_NAISSANCE</value>
+				<value>CHGT_RELIGION</value>
+			</set>
+		</property>
+	</bean>
+
+	<bean id="evtCivilEchNotificationQueue" class="ch.vd.uniregctb.evenement.civil.engine.ech.EvenementCivilNotificationQueueImpl">
+		<constructor-arg name="delayInSeconds" value="${extprop.evtCivil.acknowledgementDelay}"/>
+		<property name="evtCivilService" ref="evtCivilEchService"/>
+		<property name="transactionManager" ref="transactionManager"/>
+	</bean>
+
+	<bean id="evtCivilEchReceptionHandler" class="ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchReceptionHandlerImpl">
+		<property name="evtCivilDAO" ref="evenementCivilEchDAO"/>
+		<property name="notificationQueue" ref="evtCivilEchNotificationQueue"/>
+		<property name="transactionManager" ref="transactionManager"/>
+        <property name="evtCivilService" ref="evtCivilEchService" />
+		<property name="statsService" ref="statsService" />
+	</bean>
+
+	<bean id="evtCivilEchProcessor" class="ch.vd.uniregctb.evenement.civil.engine.ech.EvenementCivilEchProcessorImpl">
+		<property name="notificationQueue" ref="evtCivilEchNotificationQueue"/>
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="evtCivilDAO" ref="evenementCivilEchDAO"/>
+		<property name="translator" ref="evenementCivilEchTranslator"/>
+		<property name="tiersService" ref="tiersService"/>
+		<property name="indexer" ref="globalTiersIndexer"/>
+		<property name="serviceCivil" ref="serviceCivilService"/>
+		<property name="dataEventService" ref="dataEventService"/>
+		<property name="mainInterceptor" ref="modificationInterceptor"/>
+		<property name="parentesSynchronizerInterceptor" ref="parentesSynchronizerInterceptor"/>
+	</bean>
+	
+	<bean id="evtCivilEchProcessorRetry" class="ch.vd.uniregctb.evenement.civil.engine.ech.EvenementCivilEchRetryProcessorImpl">
+		<property name="notificationQueue" ref="evtCivilEchNotificationQueue"/>
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="evtCivilDAO" ref="evenementCivilEchDAO"/>
+		<property name="processor" ref="evtCivilEchProcessor"/>
+		<property name="recuperateur" ref="evtCivilEchRecuperateur"/>
+	</bean>
+
+	<bean id="evenementCivilEchStrategyParameters" class="ch.vd.uniregctb.evenement.civil.engine.ech.EvenementCivilEchStrategyParametersImpl">
+		<property name="decalageMaxPourDepart" value="${extprop.evtCivil.depart.maxMargin}"/>
+	</bean>
+
+</beans>

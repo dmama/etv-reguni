@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<bean id="rapportTravailRequestHandler" class="ch.vd.uniregctb.evenement.rapport.travail.MiseAJourRapportTravailRequestHandler">
+		<property name="tiersService" ref="tiersService" />
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
+	</bean>
+
+	<bean id="rapportTravailRequestListener" class="ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener" parent="esbMessageListener">
+		<property name="handler" ref="rapportTravailRequestEsbHandler"/>
+	</bean>
+
+	<bean id="rapportTravailRequestEsbHandler" class="ch.vd.uniregctb.evenement.rapport.travail.RapportTravailRequestEsbHandler">
+		<property name="rapportTravailRequestHandler" ref="rapportTravailRequestHandler" />
+		<property name="esbTemplate" ref="esbJmsTemplate"/>
+		<property name="transactionManager" ref="transactionManager"/>
+	</bean>
+
+	<bean id="rapportTravailRequestEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">
+		<property name="resourceAdapter" ref="jmsResourceAdapter"/>
+		<property name="activationSpec">
+			<bean class="org.apache.activemq.ra.ActiveMQActivationSpec">
+				<property name="destination" value="${extprop.jms.queue.rapportTravail.service}"/>
+				<property name="destinationType" value="javax.jms.Queue"/>
+				<property name="maxSessions" value="1"/>
+				<property name="maxMessagesPerSessions" value="1"/>
+			</bean>
+		</property>
+		<property name="messageListener" ref="rapportTravailRequestListener" />
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="autoStartup" value="${extprop.jms.queue.rapportTravail.service.enabled}" />
+	</bean>
+
+</beans>

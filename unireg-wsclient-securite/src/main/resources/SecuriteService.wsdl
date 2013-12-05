@@ -1,0 +1,121 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- version 1.0 -->
+<wsdl:definitions name="SecuriteService" targetNamespace="http://www.vd.ch/uniregctb/webservices/security" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+				  xmlns:tns="http://www.vd.ch/uniregctb/webservices/security"
+				  xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<wsdl:types>
+		<xs:schema attributeFormDefault="unqualified" elementFormDefault="unqualified" targetNamespace="http://jaxb.dev.java.net/array" xmlns="http://jaxb.dev.java.net/array"
+				   xmlns:xs="http://www.w3.org/2001/XMLSchema">
+			<xs:complexType final="#all" name="longArray">
+				<xs:sequence>
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="item" nillable="true" type="xs:long" />
+				</xs:sequence>
+			</xs:complexType>
+		</xs:schema>
+		<xs:schema attributeFormDefault="unqualified" elementFormDefault="unqualified" targetNamespace="http://www.vd.ch/uniregctb/webservices/security" xmlns:ns0="http://jaxb.dev.java.net/array"
+				   xmlns:tns="http://www.vd.ch/uniregctb/webservices/security" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+			<xs:import namespace="http://jaxb.dev.java.net/array" />
+			<xs:complexType name="getDossiersControles">
+				<xs:sequence>
+					<xs:element name="authenticationToken" type="xs:string" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="getAutorisationSurDossier">
+				<xs:sequence>
+					<xs:element name="login" type="tns:UserLogin" />
+					<xs:element name="numeroTiers" type="xs:long" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="UserLogin">
+				<xs:sequence>
+					<xs:element name="userId" type="xs:string" />
+					<xs:element name="oid" type="xs:int" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:simpleType name="NiveauAutorisation">
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="ECRITURE" />
+					<xs:enumeration value="LECTURE" />
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:element name="WebServiceException" type="tns:WebServiceException" />
+			<xs:complexType name="WebServiceException">
+				<xs:sequence />
+			</xs:complexType>
+			<xs:element name="GetDossiersControles" nillable="true" type="tns:getDossiersControles" />
+			<xs:element name="getDossiersControlesResponse" nillable="true" type="ns0:longArray" />
+			<xs:element name="GetAutorisationSurDossier" nillable="true" type="tns:getAutorisationSurDossier" />
+			<xs:element name="getAutorisationSurDossierResponse" nillable="true" type="tns:NiveauAutorisation" />
+		</xs:schema>
+	</wsdl:types>
+	<wsdl:message name="getAutorisationSurDossier">
+		<wsdl:part element="tns:GetAutorisationSurDossier" name="params">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getAutorisationSurDossierResponse">
+		<wsdl:part element="tns:getAutorisationSurDossierResponse" name="getAutorisationSurDossierResponse">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getDossiersControlesResponse">
+		<wsdl:part element="tns:getDossiersControlesResponse" name="getDossiersControlesResponse">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getDossiersControles">
+		<wsdl:part element="tns:GetDossiersControles" name="params">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="WebServiceException">
+		<wsdl:part element="tns:WebServiceException" name="WebServiceException">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:portType name="SecuritePort">
+		<wsdl:operation name="getDossiersControles">
+			<wsdl:input message="tns:getDossiersControles" name="getDossiersControles">
+			</wsdl:input>
+			<wsdl:output message="tns:getDossiersControlesResponse" name="getDossiersControlesResponse">
+			</wsdl:output>
+			<wsdl:fault message="tns:WebServiceException" name="WebServiceException">
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="getAutorisationSurDossier">
+			<wsdl:input message="tns:getAutorisationSurDossier" name="getAutorisationSurDossier">
+			</wsdl:input>
+			<wsdl:output message="tns:getAutorisationSurDossierResponse" name="getAutorisationSurDossierResponse">
+			</wsdl:output>
+			<wsdl:fault message="tns:WebServiceException" name="WebServiceException">
+			</wsdl:fault>
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:binding name="SecuriteServiceSoapBinding" type="tns:SecuritePort">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
+		<wsdl:operation name="getDossiersControles">
+			<soap:operation soapAction="" style="document" />
+			<wsdl:input name="getDossiersControles">
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output name="getDossiersControlesResponse">
+				<soap:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="WebServiceException">
+				<soap:fault name="WebServiceException" use="literal" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="getAutorisationSurDossier">
+			<soap:operation soapAction="" style="document" />
+			<wsdl:input name="getAutorisationSurDossier">
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output name="getAutorisationSurDossierResponse">
+				<soap:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="WebServiceException">
+				<soap:fault name="WebServiceException" use="literal" />
+			</wsdl:fault>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:service name="SecuriteService">
+		<wsdl:port binding="tns:SecuriteServiceSoapBinding" name="SecuritePortPort">
+			<soap:address location="http://localhost:8080/unireg/ws/securite" />
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>

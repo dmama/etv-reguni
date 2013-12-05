@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+	<!--  Identification -->
+	<bean id="abstractIdentificationController" class="ch.vd.uniregctb.identification.contribuable.AbstractIdentificationController">
+		<property name="identificationMapHelper" ref="identificationMapHelper" />
+		<property name="tacheMapHelper" ref="tacheMapHelper" />
+		<property name="securityProvider" ref="securityProviderInterface"/>
+	</bean>
+
+	<bean id="identificationMessageValidator" class="ch.vd.uniregctb.identification.contribuable.validator.IdentificationMessageValidator">
+		<property name="validatorList" ref="identificationMessagesListValidator" />
+		<property name="validatorStats" ref="identificationMessagesStatsValidator" />
+	</bean>
+	
+	<bean id="identificationMessagesListValidator" class="ch.vd.uniregctb.identification.contribuable.validator.IdentificationMessagesListValidator" />
+	
+	<bean id="identificationMessagesStatsValidator" class="ch.vd.uniregctb.identification.contribuable.validator.IdentificationMessagesStatsValidator" />
+	
+
+
+	<bean id="identificationMessagesListManager" class="ch.vd.uniregctb.identification.contribuable.manager.IdentificationMessagesListManagerImpl">
+		<property name="identCtbService" ref="identCtbService" />
+		<property name="identCtbDAO" ref="identCtbDAO" />
+	</bean>
+
+	<bean id="identificationController" class="ch.vd.uniregctb.identification.contribuable.IdentificationController">
+		<property name="identificationMessagesStatsManager" ref="identificationMessagesStatsManager" />
+		<property name="identificationMapHelper" ref="identificationMapHelper" />
+		<property name="identificationMessagesEditManager" ref="identificationMessagesEditManager" />
+		<property name="securityProvider" ref="securityProviderCache" />
+		<property name="identificationMessagesListManager" ref="identificationMessagesListManager" />
+		<property name="validator" ref="identificationMessageValidator" />
+		<property name="controllerUtils" ref="controllerUtils" />
+
+
+	</bean>
+	
+	<bean id="identificationMessagesStatsManager" class="ch.vd.uniregctb.identification.contribuable.manager.IdentificationMessagesStatsManagerImpl">
+		<property name="identCtbService" ref="identCtbService" />
+	</bean>
+
+	<bean id="identificationMessagesEditController" class="ch.vd.uniregctb.identification.contribuable.IdentificationMessagesEditController" parent="abstractTiersListController">
+		<property name="sessionForm" value="true" />
+		<property name="commandClass" value="ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesEditView" />
+		<property name="commandName" value="command" />
+		<property name="formView" value="identification/identification" />
+		<property name="successView" value="edit.do" />
+		<property name="identificationMessagesEditManager" ref="identificationMessagesEditManager" />
+	</bean>
+	<bean id="identificationMessagesNonIdentifieController" class="ch.vd.uniregctb.identification.contribuable.IdentificationMessagesNonIdentifieController" parent="abstractIdentificationController">
+		<property name="sessionForm" value="true" />
+		<property name="commandClass" value="ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesEditView" />
+		<property name="commandName" value="command" />
+		<property name="formView" value="identification/gestion-messages/nonIdentifie" />
+		<property name="successView" value="nonIdentifie.do" />
+		<property name="identificationMessagesEditManager" ref="identificationMessagesEditManager" />
+	</bean>
+	
+	<bean id="identificationMessagesEditManager" class="ch.vd.uniregctb.identification.contribuable.manager.IdentificationMessagesEditManagerImpl">
+		<property name="identCtbService" ref="identCtbService" />
+		<property name="identCtbDAO" ref="identCtbDAO" />
+		<property name="tiersDAO" ref="tiersDAO" />
+	</bean>
+	
+	<bean id="identificationMapHelper" class="ch.vd.uniregctb.identification.contribuable.IdentificationMapHelper" >
+		<property name="identCtbService" ref="identCtbService" />
+	</bean>
+
+	<bean id="identificationTooltipController" class="ch.vd.uniregctb.identification.contribuable.tooltip.IdentificationTooltipController">
+		<property name="civilService" ref="serviceCivilService"/>
+		<property name="tiersDAO" ref="tiersDAO"/>
+		<property name="adresseService" ref="adresseService"/>
+	</bean>
+
+	<bean id="voirMessageIdentificationController" class="ch.vd.uniregctb.identification.contribuable.VoirMessageIdentificationController" >
+		<property name="identificationMessagesEditManager" ref="identificationMessagesEditManager" />
+		<property name="servletService" ref="servletService"/>
+	</bean>
+
+</beans>
