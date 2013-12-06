@@ -50,7 +50,7 @@
 		</display:column>
 		<display:column sortable ="true" titleKey="label.adresse.permanente" >
 			<c:if test="${!adresse.annule}">	
-				<c:if test="${adresse.id != null}">
+				<c:if test="${adresse.id != null || adresse.permanente}">
 					<input type="checkbox" <c:if test="${adresse.permanente}">checked</c:if> disabled="disabled" />
 				</c:if>
 			</c:if>

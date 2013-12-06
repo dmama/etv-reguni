@@ -313,7 +313,7 @@ public abstract class BaseAdresseGeneriqueAdapter implements AdresseGenerique {
 
 	@Override
 	public boolean isPermanente() {
-		return source.getType() == SourceType.FISCALE && target.isPermanente();
+		return target.isPermanente();
 	}
 
 	@Nullable
