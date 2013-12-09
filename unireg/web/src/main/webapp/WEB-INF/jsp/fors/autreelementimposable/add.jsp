@@ -23,15 +23,16 @@
 	<tiles:put name="body">
 
 		<div style="float: right; margin: 0.5em;">
-			<authz:authorize ifAnyGranted="ROLE_FOR_PRINC_ORDDEP_HAB,ROLE_FOR_PRINC_ORDDEP_HCHS,ROLE_FOR_PRINC_ORDDEP_GRIS,ROLE_FOR_PRINC_SOURC_HAB,ROLE_FOR_PRINC_SOURC_HCHS,ROLE_FOR_PRINC_SOURC_GRIS">
+			<unireg:setAuth var="autorisations" tiersId="${command.tiersId}"/>
+			<c:if test="${autorisations.forsPrincipaux}">
 				<unireg:linkTo name="Créer un for principal" action="/fors/principal/add.do" params="{tiersId:${command.tiersId}}" link_class="createPrincipalLink"/>
-			</authz:authorize>
-			<authz:authorize ifAnyGranted="ROLE_FOR_SECOND_PP">
+			</c:if>
+			<c:if test="${autorisations.forsSecondaires}">
 				<unireg:linkTo name="Créer un for secondaire" action="/fors/secondaire/add.do" params="{tiersId:${command.tiersId}}" link_class="createSecondaireLink"/>
-			</authz:authorize>
-			<authz:authorize ifAnyGranted="ROLE_FOR_AUTRE">
+			</c:if>
+			<c:if test="${autorisations.forsAutresImpots}">
 				<unireg:linkTo name="Créer un for autre impôt" action="/fors/autreimpot/add.do" params="{tiersId:${command.tiersId}}" link_class="createAutreLink"/>
-			</authz:authorize>
+			</c:if>
 		</div>
 		<div style="clear: right;"></div>
 
