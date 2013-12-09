@@ -9,7 +9,7 @@
 	<groupId>ch.vd.uniregctb</groupId>
 	<artifactId>unireg-wsclient-fidor</artifactId>
 	<packaging>jar</packaging>
-	<version>5.5-SNAPSHOT</version>
+	<version>5.5</version>
 
 	<name>Unireg - Client WS fidor</name>
 	<description>UniregCTB - Projet de base pour les classes client du WebService  offert par FIDOR </description>
@@ -23,7 +23,7 @@
 		<dependency>
 			<groupId>ch.vd.uniregctb</groupId>
 			<artifactId>unireg-jaxb2-fidor</artifactId>
-			<version>2.6-SNAPSHOT</version>
+			<version>2.6</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.cxf</groupId>
