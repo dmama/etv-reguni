@@ -2939,9 +2939,14 @@ public class TiersServiceImpl implements TiersService {
             // [UNIREG-2144] Fermeture des rapports de travail
             if (fermerRapportsPrestation) {
                 for (RapportEntreTiers rapport : debiteur.getRapportsObjet()) {
-                    if (rapport instanceof RapportPrestationImposable && rapport.isValidAt(dateFermeture) && rapport.getDateFin() == null) {
-                        rapport.setDateFin(dateFermeture);
-                    }
+	                if (!rapport.isAnnule() && rapport instanceof RapportPrestationImposable) {
+	                    if (rapport.isValidAt(dateFermeture) && rapport.getDateFin() == null) {
+                            rapport.setDateFin(dateFermeture);
+	                    }
+	                    else if (rapport.getDateDebut().isAfter(dateFermeture)) {
+		                    rapport.setAnnule(true);
+	                    }
+	                }
                 }
             }
 
