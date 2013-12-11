@@ -14,6 +14,7 @@ import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.registre.base.validation.ValidationMessage;
 import ch.vd.uniregctb.common.ActionErrors;
 import ch.vd.uniregctb.common.ActionException;
+import ch.vd.uniregctb.common.HttpHelper;
 import ch.vd.uniregctb.metier.MetierServiceException;
 
 /**
@@ -43,7 +44,7 @@ public class ActionExceptionResolver implements HandlerExceptionResolver, Ordere
 
 	private static ModelAndView handleException(HttpServletRequest request, Throwable ex) {
 
-		final String referrer = getReferrer(request);
+		final String referrer = HttpHelper.getReferrer(request);
 
 		ModelAndView mav = null;
 		if (ex instanceof ValidationException) {
@@ -81,13 +82,5 @@ public class ActionExceptionResolver implements HandlerExceptionResolver, Ordere
 			// on ignore les autres erreurs
 		}
 		return mav;
-	}
-
-	private static String getReferrer(HttpServletRequest request) {
-		String referrer = (String) request.getSession().getAttribute(ActionExceptionFilter.LAST_GET_URL);
-		if (StringUtils.isBlank(referrer)) {
-			referrer = request.getHeader("referer"); // Yes, with the legendary misspelling.
-		}
-		return referrer;
 	}
 }
