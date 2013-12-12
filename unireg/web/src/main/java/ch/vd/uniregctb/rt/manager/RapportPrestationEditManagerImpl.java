@@ -6,9 +6,13 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 import org.springframework.transaction.annotation.Transactional;
 
+import ch.vd.registre.base.date.DateRange;
+import ch.vd.registre.base.date.DateRangeHelper;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
+import ch.vd.uniregctb.common.ActionException;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.general.manager.TiersGeneralManager;
@@ -52,10 +56,6 @@ public class RapportPrestationEditManagerImpl implements RapportPrestationEditMa
 
 	public void setRapportEntreTiersDAO(RapportEntreTiersDAO rapportEntreTiersDAO) {
 		this.rapportEntreTiersDAO = rapportEntreTiersDAO;
-	}
-
-	public TiersService getTiersService() {
-		return tiersService;
 	}
 
 	public void setTiersService(TiersService tiersService) {
@@ -116,9 +116,6 @@ public class RapportPrestationEditManagerImpl implements RapportPrestationEditMa
 
 	/**
 	 * Alimente la vue RapportView
-	 *
-	 * @param numeroSrc
-	 * @param numeroDpi
 	 * @return
 	 */
 	public RapportPrestationView get (Long idRapport, SensRapportEntreTiers sensRapportEntreTiers) throws AdresseException {
@@ -160,7 +157,7 @@ public class RapportPrestationEditManagerImpl implements RapportPrestationEditMa
 	private void setNomCourrier(RapportPrestationView rapportView, Long numero) throws AdresseException {
 		rapportView.setNumero(numero);
 
-		final Tiers tiers = getTiersService().getTiers(numero);
+		final Tiers tiers = tiersService.getTiers(numero);
 		if (tiers == null) {
 			throw new TiersNotFoundException(numero);
 		}
@@ -177,11 +174,18 @@ public class RapportPrestationEditManagerImpl implements RapportPrestationEditMa
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void save(RapportPrestationView rapportView) {
+		final PersonnePhysique sourcier = (PersonnePhysique) tiersService.getTiers(rapportView.getSourcier().getNumero());
+		final DebiteurPrestationImposable debiteur = (DebiteurPrestationImposable) tiersService.getTiers(rapportView.getDebiteur().getNumero());
 
-		PersonnePhysique sourcier = (PersonnePhysique) tiersService.getTiers(rapportView.getSourcier().getNumero());
-		DebiteurPrestationImposable debiteur = (DebiteurPrestationImposable) tiersService.getTiers(rapportView.getDebiteur().getNumero());
-		getTiersService().addRapportPrestationImposable(sourcier, debiteur, rapportView.getRegDateDebut(), null);
+		final List<RapportPrestationImposable> existants = tiersService.getAllRapportPrestationImposable(debiteur, sourcier, true, true);
+		if (existants != null && !existants.isEmpty()) {
+			final DateRange newRange = new DateRangeHelper.Range(rapportView.getRegDateDebut(), null);
+			if (DateRangeHelper.intersect(newRange, existants)) {
+				throw new ActionException("Un rapport de travail existe déjà entre ces mêmes débiteur et sourcier sur une période d'au moins un jour après le " + RegDateHelper.dateToDisplayString(newRange.getDateDebut()));
+			}
+		}
 
+		tiersService.addRapportPrestationImposable(sourcier, debiteur, rapportView.getRegDateDebut(), null);
 	}
 
 	/**
