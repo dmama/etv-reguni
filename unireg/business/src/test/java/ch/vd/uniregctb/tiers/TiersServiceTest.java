@@ -22,6 +22,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.DateHelper;
+import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
@@ -4284,6 +4285,7 @@ public class TiersServiceTest extends BusinessTest {
 
 				addRapportPrestationImposable(dpi, pp1, dateDebut, null, false);
 				addRapportPrestationImposable(dpi, pp2, dateDebut, dateFermetureFor.addMonths(-1), false);
+				addRapportPrestationImposable(dpi, pp2, dateFermetureFor.addMonths(1), null, false);
 
 				return dpi.getNumero();
 			}
@@ -4313,29 +4315,38 @@ public class TiersServiceTest extends BusinessTest {
 
 				final Set<RapportEntreTiers> rapports = dpi.getRapportsObjet();
 				assertNotNull(rapports);
-				assertEquals(2, rapports.size());
+				assertEquals(3, rapports.size());
 
-				boolean foundExOpen = false;
-				boolean foundAlreadyClosed = false;
-				for (RapportEntreTiers r : rapports) {
+				final List<RapportEntreTiers> rapportsTries = new ArrayList<>(rapports);
+				Collections.sort(rapportsTries, new DateRangeComparator<RapportEntreTiers>());
+
+				// rapport déjà fermé -> pas modifié
+				{
+					final RapportEntreTiers r = rapportsTries.get(0);
 					assertNotNull(r);
 					assertInstanceOf(RapportPrestationImposable.class, r);
 					assertEquals(dateDebut, r.getDateDebut());
+					assertEquals(dateFermetureFor.addMonths(-1), r.getDateFin());
 					assertFalse(r.isAnnule());
-					assertNotNull(r.getDateFin());
-					if (dateFermetureFor.equals(r.getDateFin())) {
-						assertFalse(foundExOpen);
-						foundExOpen = true;
-					}
-					else {
-						assertFalse(foundAlreadyClosed);
-						assertEquals(dateFermetureFor.addMonths(-1), r.getDateFin());
-						foundAlreadyClosed = true;
-					}
 				}
-				assertTrue(foundExOpen);
-				assertTrue(foundAlreadyClosed);
-
+				// rapport précédemment ouvert à la date de fermeture -> fermé
+				{
+					final RapportEntreTiers r = rapportsTries.get(1);
+					assertNotNull(r);
+					assertInstanceOf(RapportPrestationImposable.class, r);
+					assertEquals(dateDebut, r.getDateDebut());
+					assertEquals(dateFermetureFor, r.getDateFin());
+					assertFalse(r.isAnnule());
+				}
+				// rapport précédemment ouvert après la date de fermeture du for -> annulé
+				{
+					final RapportEntreTiers r = rapportsTries.get(2);
+					assertNotNull(r);
+					assertInstanceOf(RapportPrestationImposable.class, r);
+					assertEquals(dateFermetureFor.addMonths(1), r.getDateDebut());
+					assertNull(r.getDateFin());
+					assertTrue(r.isAnnule());
+				}
 				return null;
 			}
 		});
