@@ -17,6 +17,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.uniregctb.audit.Audit;
+import ch.vd.uniregctb.common.ActionException;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.TiersNotFoundException;
@@ -646,9 +647,15 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void annulerLR (ListeRecapDetailView lrEditView) {
-		DeclarationImpotSource lr = lrDAO.get(lrEditView.getId());
-		lr.setAnnule(true);
-		evenementFiscalService.publierEvenementFiscalAnnulationLR((DebiteurPrestationImposable) lr.getTiers(), lr, RegDate.get()) ;
+		final DeclarationImpotSource lr = lrDAO.get(lrEditView.getId());
+		final EtatDeclaration etat = lr.getDernierEtat();
+		if (etat == null || etat.getEtat() != TypeEtatDeclaration.RETOURNEE) {
+			lr.setAnnule(true);
+			evenementFiscalService.publierEvenementFiscalAnnulationLR((DebiteurPrestationImposable) lr.getTiers(), lr, RegDate.get()) ;
+		}
+		else {
+			throw new ActionException("La liste récapitulative est quittancée. Son annulation est donc impossible.");
+		}
 	}
 
 }
