@@ -27,6 +27,7 @@
 				<jsp:include page="../../tiers/recherche/form.jsp">
 					<jsp:param name="typeRecherche" value="acces" />
 					<jsp:param name="prefixeEffacer" value="/acces/par-utilisateur/restriction"/>
+					<jsp:param name="paramsEffacer" value="noIndividuOperateur:${command.noIndividuOperateur}"/>
 				</jsp:include>
 			</fieldset>
 		</form:form>

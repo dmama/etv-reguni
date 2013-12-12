@@ -2,6 +2,16 @@
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 <c:set var="typeRecherche" value="${param.typeRecherche}" />
 <c:set var="prefixeEffacer" value="${param.prefixeEffacer}" />
+<c:set var="paramsEffacer">
+	<c:choose>
+		<c:when test="${param.paramsEffacer != null && param.paramsEffacer != ''}">
+			{url_memorize:false,${param.paramsEffacer}}
+		</c:when>
+		<c:otherwise>
+			{url_memorize:false}
+		</c:otherwise>
+	</c:choose>
+</c:set>
 <table>
 	<tr class="<unireg:nextRowClass/>" >
 		<td><fmt:message key="label.numero.tiers" />&nbsp;:</td>
@@ -166,7 +176,7 @@
 		</td>
 		<td width="25%">
 			<c:set var="nomBoutonEffacer"><fmt:message key="label.bouton.effacer"/></c:set>
-			<div class="navigation-action"><unireg:buttonTo name="${nomBoutonEffacer}" action="${prefixeEffacer}/reset-search.do" params="{url_memorize:false}" method="get"/></div>
+			<div class="navigation-action"><unireg:buttonTo name="${nomBoutonEffacer}" action="${prefixeEffacer}/reset-search.do" params="${paramsEffacer}" method="get"/></div>
 		</td>
 		<td width="25%">&nbsp;</td>
 	</tr>

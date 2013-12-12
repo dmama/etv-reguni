@@ -437,9 +437,9 @@ public class DroitAccesController {
 
 	@RequestMapping(value = "/par-utilisateur/restriction/reset-search.do", method = RequestMethod.GET)
 	@SecurityCheck(rolesToCheck = {Role.SEC_DOS_LEC, Role.SEC_DOS_ECR}, accessDeniedMessage = READ_REQUIRED)
-	public String resetCriteriaParUtilisateur(HttpServletRequest request, HttpSession session) {
+	public String resetCriteriaParUtilisateur(HttpSession session, @RequestParam(NO_INDIVIDU_OPERATEUR) long noIndividuOperateur) {
 		session.removeAttribute(UTILISATEUR_CRITERIA_NAME);
-		return HttpHelper.getRedirectPagePrecedente(request);
+		return String.format("redirect:/acces/par-utilisateur/ajouter-restriction.do?%s=%d", NO_INDIVIDU_OPERATEUR, noIndividuOperateur);
 	}
 
 	@RequestMapping(value = "/par-utilisateur/recap.do", method = RequestMethod.GET)
