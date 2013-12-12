@@ -42,8 +42,8 @@ public class TiersActivationListController extends AbstractTiersListController {
 	@Override
 	protected Object formBackingObject(HttpServletRequest request) throws Exception {
 
-		HttpSession session = request.getSession();
-		String activation = request.getParameter(ACTIVATION_PARAMETER_NAME);
+		final HttpSession session = request.getSession();
+		final String activation = request.getParameter(ACTIVATION_PARAMETER_NAME);
 
 		TiersActivationListView bean = (TiersActivationListView) session.getAttribute(ACTIVATION_CRITERIA_NAME);
 		if (bean == null) {
@@ -59,36 +59,29 @@ public class TiersActivationListController extends AbstractTiersListController {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	protected ModelAndView showForm(HttpServletRequest request, HttpServletResponse response, BindException errors, Map model)
-			throws Exception {
-		HttpSession session = request.getSession();
-		TiersActivationListView bean = (TiersActivationListView) session.getAttribute(ACTIVATION_CRITERIA_NAME);
-		String buttonEffacer = request.getParameter(ACTION_PARAMETER_NAME);
-		ModelAndView mav  =  super.showForm(request, response, errors, model);
+	protected ModelAndView showForm(HttpServletRequest request, HttpServletResponse response, BindException errors, Map model) throws Exception {
+		final HttpSession session = request.getSession();
+		final TiersActivationListView bean = (TiersActivationListView) session.getAttribute(ACTIVATION_CRITERIA_NAME);
+		final ModelAndView mav = super.showForm(request, response, errors, model);
 		if (errors.getErrorCount() == 0) {
-			if(buttonEffacer == null) {
-				LOGGER.debug("Affichage du formulaire de recherche...");
-				if (bean != null && !bean.isEmpty()) {
-					LOGGER.debug("Critères de recherche=" + bean);
-					try {
-						final List<TiersIndexedDataView> results = searchTiers(bean);
-						mav.addObject(ACTIVATION_LIST_ATTRIBUTE_NAME, results);
-					}
-					catch (TooManyResultsIndexerException ee) {
-						LOGGER.error("Exception dans l'indexer: " + ee.getMessage(), ee);
-						errors.reject("error.preciser.recherche");
-					}
-					catch (IndexerException e) {
-						LOGGER.error("Exception dans l'indexer: " + e.getMessage(), e);
-						errors.reject("error.recherche");
-					}
+			if (bean != null && !bean.isEmpty()) {
+				try {
+					final List<TiersIndexedDataView> results = searchTiers(bean);
+					mav.addObject(ACTIVATION_LIST_ATTRIBUTE_NAME, results);
+				}
+				catch (TooManyResultsIndexerException ee) {
+					LOGGER.error("Exception dans l'indexer: " + ee.getMessage(), ee);
+					errors.reject("error.preciser.recherche");
+				}
+				catch (IndexerException e) {
+					LOGGER.error("Exception dans l'indexer: " + e.getMessage(), e);
+					errors.reject("error.recherche");
 				}
 			}
 		}
 		else {
 			mav.addObject(ACTIVATION_LIST_ATTRIBUTE_NAME, null);
 		}
-		session.removeAttribute(ACTIVATION_CRITERIA_NAME);
 
 		return mav;
 	}
