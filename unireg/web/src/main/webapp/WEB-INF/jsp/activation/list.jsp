@@ -23,6 +23,7 @@
 				<jsp:include page="../tiers/recherche/form.jsp">
 					<jsp:param name="typeRecherche" value="activation" />
 					<jsp:param name="prefixeEffacer" value="/activation" />
+					<jsp:param name="paramsEffacer" value="activation:'${activation}'"/>
 				</jsp:include>
 			</fieldset>
 		</form:form>

@@ -21,6 +21,7 @@
 				<jsp:include page="../../../recherche/form.jsp">
 					<jsp:param name="typeRecherche" value="rapport" />
 					<jsp:param name="prefixeEffacer" value="/rapport" />
+					<jsp:param name="paramsEffacer" value="numero:${numeroTiers}"/>
 				</jsp:include>		
 			</fieldset>
 		</form:form>

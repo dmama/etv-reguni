@@ -20,6 +20,7 @@
 				<jsp:include page="../tiers/recherche/form.jsp" >
 					<jsp:param name="typeRecherche" value="identification" />
 					<jsp:param name="prefixeEffacer" value="/identification/gestion-messages" />
+					<jsp:param name="paramsEffacer" value="id:${command.demandeIdentificationView.id}" />
 				</jsp:include>
 			</fieldset>
 		

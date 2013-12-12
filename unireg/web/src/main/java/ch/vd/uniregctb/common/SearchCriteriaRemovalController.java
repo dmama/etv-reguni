@@ -1,11 +1,11 @@
 package ch.vd.uniregctb.common;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import ch.vd.uniregctb.activation.TiersActivationListController;
 import ch.vd.uniregctb.annulation.couple.AnnulationCoupleListController;
@@ -33,9 +33,11 @@ public class SearchCriteriaRemovalController {
 	}
 
 	@RequestMapping(value = "/activation/reset-search.do", method = RequestMethod.GET)
-	public String effacerCriteresRechercheActivation(HttpSession session, HttpServletRequest request) {
+	public String effacerCriteresRechercheActivation(HttpSession session, @RequestParam("activation") String mode) {
 		session.removeAttribute(TiersActivationListController.ACTIVATION_CRITERIA_NAME);
-		return HttpHelper.getRedirectPagePrecedente(request);
+		return "redirect:/activation/list.do?activation=" + (TiersActivationListController.ACTIVATION_REACTIVATION_VALUE.equalsIgnoreCase(mode)
+				? TiersActivationListController.ACTIVATION_REACTIVATION_VALUE
+				: TiersActivationListController.ACTIVATION_ANNULATION_VALUE);
 	}
 
 	@RequestMapping(value = "/annulation/couple/reset-search.do", method = RequestMethod.GET)
@@ -51,15 +53,15 @@ public class SearchCriteriaRemovalController {
 	}
 
 	@RequestMapping(value = "/identification/gestion-messages/reset-search.do", method = RequestMethod.GET)
-	public String effacerCriteresRechercheIdentification(HttpSession session, HttpServletRequest request) {
+	public String effacerCriteresRechercheIdentification(HttpSession session, @RequestParam("id") long id) {
 		session.removeAttribute(IdentificationMessagesEditController.PP_CRITERIA_NAME);
-		return HttpHelper.getRedirectPagePrecedente(request);
+		return String.format("redirect:/identification/gestion-messages/edit.do?id=%d", id);
 	}
 
 	@RequestMapping(value = "/contribuable-associe/reset-search.do", method = RequestMethod.GET)
-	public String effacerCriteresRechercheContribuableAssocie(HttpSession session, HttpServletRequest request) {
+	public String effacerCriteresRechercheContribuableAssocie(HttpSession session, @RequestParam("numeroDpi") long dpi) {
 		session.removeAttribute(ContribuableAssocieListController.CONTRIBUABLE_ASSOCIE_CRITERIA_NAME);
-		return HttpHelper.getRedirectPagePrecedente(request);
+		return String.format("redirect:/contribuable-associe/list.do?numeroDpi=%d", dpi);
 	}
 
 	@RequestMapping(value = "/deces/reset-search.do", method = RequestMethod.GET)
@@ -81,21 +83,21 @@ public class SearchCriteriaRemovalController {
 	}
 
 	@RequestMapping(value = "/rapport/reset-search.do", method = RequestMethod.GET)
-	public String effacerCriteresRechercheRapport(HttpSession session, HttpServletRequest request) {
+	public String effacerCriteresRechercheRapport(HttpSession session, @RequestParam("numero") long id) {
 		session.removeAttribute(RapportListController.TIERS_LIE_CRITERIA_NAME);
-		return HttpHelper.getRedirectPagePrecedente(request);
+		return String.format("redirect:/rapport/search.do?numero=%d", id);
 	}
 
 	@RequestMapping(value = "/rt/debiteur/reset-search.do", method = RequestMethod.GET)
-	public String effacerCriteresRechercheDebiteurPourRT(HttpSession session, HttpServletRequest request) {
+	public String effacerCriteresRechercheDebiteurPourRT(HttpSession session, @RequestParam("numeroSrc") long numeroSrc) {
 		session.removeAttribute(DebiteurListController.DEBITEUR_CRITERIA_NAME);
-		return HttpHelper.getRedirectPagePrecedente(request);
+		return String.format("redirect:/rt/list-debiteur.do?numeroSrc=%d", numeroSrc);
 	}
 
 	@RequestMapping(value = "/rt/sourcier/reset-search.do", method = RequestMethod.GET)
-	public String effacerCriteresRechercheSourcierPourRT(HttpSession session, HttpServletRequest request) {
+	public String effacerCriteresRechercheSourcierPourRT(HttpSession session, @RequestParam("numeroDpi") long numeroDpi) {
 		session.removeAttribute(SourcierListController.SOURCIER_CRITERIA_NAME);
-		return HttpHelper.getRedirectPagePrecedente(request);
+		return String.format("redirect:/rt/list-sourcier.do?numeroDpi=%d", numeroDpi);
 	}
 
 }

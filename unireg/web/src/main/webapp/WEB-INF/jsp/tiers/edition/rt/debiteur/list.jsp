@@ -22,6 +22,7 @@
 				<jsp:include page="../../../recherche/form.jsp">
 					<jsp:param name="typeRecherche" value="rt-debiteur" />
 					<jsp:param name="prefixeEffacer" value="/rt/debiteur" />
+					<jsp:param name="paramsEffacer" value="numeroSrc:${numeroSrc}"/>
 				</jsp:include>
 			</fieldset>
 		</form:form>
