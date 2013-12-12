@@ -14,7 +14,15 @@
 	class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
 	
 	<display:column sortable ="true" titleKey="label.commune">
-		<unireg:commune ofs="${forFiscal.numeroForFiscalCommune}" displayProperty="nomOfficiel" titleProperty="noOFS" date="${forFiscal.regDateOuverture}"/>
+		<c:choose>
+			<c:when test="${forFiscal.typeAutoriteFiscale == 'COMMUNE_OU_FRACTION_VD' }">
+				<unireg:commune ofs="${forFiscal.numeroForFiscalCommune}" displayProperty="nomOfficiel" titleProperty="noOFS" date="${forFiscal.regDateOuverture}"/>
+			</c:when>
+			<c:when test="${forFiscal.typeAutoriteFiscale == 'COMMUNE_HC' }">
+				<unireg:commune ofs="${forFiscal.numeroForFiscalCommuneHorsCanton}" displayProperty="nomOfficiel" titleProperty="noOFS" date="${forFiscal.regDateOuverture}"/>
+				(<unireg:commune ofs="${forFiscal.numeroForFiscalCommuneHorsCanton}" displayProperty="sigleCanton" date="${forFiscal.regDateOuverture}"/>)
+			</c:when>
+		</c:choose>
 	</display:column>
 
 	<display:column sortable ="true" titleKey="label.date.ouv" sortProperty="dateOuverture">
