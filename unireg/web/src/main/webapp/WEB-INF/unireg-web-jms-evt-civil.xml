@@ -72,6 +72,7 @@
 				<value>CORR_RELIGION</value>
 				<value>CORR_LIEU_NAISSANCE</value>
 				<value>CHGT_RELIGION</value>
+				<value>CHGT_BLOCAGE_ADRESSE</value>
 			</set>
 		</property>
 	</bean>

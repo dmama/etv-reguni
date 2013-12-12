@@ -205,7 +205,7 @@ public class EvenementCivilEchEsbHandler implements EsbMessageHandler, Initializ
 
 			// 2. événement ignoré ?
 			if (isIgnored(ech)) {
-				Audit.info(evt.getMessageId(), String.format("Evénement civil ignoré (id=%d, type=%s/%s)", evt.getMessageId(), ech.getType(), ech.getAction()));
+				onIgnoredEvent(ech);
 				return null;
 			}
 			else {
@@ -220,6 +220,10 @@ public class EvenementCivilEchEsbHandler implements EsbMessageHandler, Initializ
 		catch (SAXException | IOException e) {
 			throw new EvenementCivilEchEsbException(EsbBusinessCode.XML_INVALIDE, e);
 		}
+	}
+
+	protected void onIgnoredEvent(EvenementCivilEch evt) {
+		Audit.info(evt.getId(), String.format("Evénement civil ignoré (id=%d, type=%s/%s)", evt.getId(), evt.getType(), evt.getAction()));
 	}
 
 	private boolean isIgnored(EvenementCivilEch event) {
