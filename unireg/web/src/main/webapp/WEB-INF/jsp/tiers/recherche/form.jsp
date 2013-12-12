@@ -166,7 +166,7 @@
 		</td>
 		<td width="25%">
 			<c:set var="nomBoutonEffacer"><fmt:message key="label.bouton.effacer"/></c:set>
-			<div class="navigation-action"><unireg:buttonTo name="${nomBoutonEffacer}" action="${prefixeEffacer}/reset-search.do" method="get"/></div>
+			<div class="navigation-action"><unireg:buttonTo name="${nomBoutonEffacer}" action="${prefixeEffacer}/reset-search.do" params="{url_memorize:false}" method="get"/></div>
 		</td>
 		<td width="25%">&nbsp;</td>
 	</tr>

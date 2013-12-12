@@ -28,13 +28,16 @@ public class ActionExceptionFilter extends GenericFilterBean {
 
 	public static final String LAST_GET_URL = "last-get-url";
 
+	private static final String KEEP_ATTRIBUTE_NAME = "url_memorize";
+
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 
 		try {
 			final HttpServletRequest httpRequest = (HttpServletRequest) request;
-			if (isGetForHtml(httpRequest)) {
+			if (isGetForHtml(httpRequest) && shouldMemorizeUrl(httpRequest)) {
 				// si la requête utilise la méthode GET et demande de l'Html (= pas de l'ajax ni le résultat de la soumission d'un formulaire), on mémorise l'url
+				// (on ne la mémorise pas non plus si le paramètre url_memorize est à faux dans la requête)
 				final String url = URLHelper.getTargetUrl(httpRequest);
 				if (LOGGER.isTraceEnabled()) {
 					LOGGER.trace("Last get url = " + url);
@@ -69,5 +72,19 @@ public class ActionExceptionFilter extends GenericFilterBean {
 			}
 		}
 		return false;
+	}
+
+	private static boolean shouldMemorizeUrl(HttpServletRequest httpRequest) {
+		final String[] array = httpRequest.getParameterValues(KEEP_ATTRIBUTE_NAME);
+		boolean mem = true;
+		if (array != null) {
+			for (String str : array) {
+				mem = Boolean.parseBoolean(str);
+				if (!mem) {
+					break;
+				}
+			}
+		}
+		return mem;
 	}
 }
