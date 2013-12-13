@@ -19,7 +19,7 @@
 				<display:column sortable="true" titleKey="label.periode.fiscale">
 					${di.periodeFiscale}
 				</display:column>
-				<display:column sortable ="true" titleKey="label.periode.imposition" sortProperty="dateDebutPeriodeImposition">
+				<display:column sortable ="true" titleKey="label.periode.imposition" sortProperty="dateDebut">
 					<unireg:regdate regdate="${di.dateDebut}"/>&nbsp;-&nbsp;<unireg:regdate regdate="${di.dateFin}"/>
 				</display:column>
 				<display:column sortable ="true" titleKey="label.date.delai.accorde" sortProperty="delaiAccorde">
