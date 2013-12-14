@@ -10,7 +10,12 @@ import java.util.Deque;
 public class MultipleSwitch {
 
 	private final Switchable[] switches;
-	private final Deque<boolean[]> stateStack;
+	private final ThreadLocal<Deque<boolean[]>> stateStack = new ThreadLocal<Deque<boolean[]>>() {
+		@Override
+		protected Deque<boolean[]> initialValue() {
+			return new ArrayDeque<>();
+		}
+	};
 
 	public MultipleSwitch(Switchable... switches) {
 		if (switches == null) {
@@ -22,7 +27,6 @@ public class MultipleSwitch {
 			}
 		}
 		this.switches = switches;
-		this.stateStack = new ArrayDeque<>();
 	}
 
 	/**
@@ -34,7 +38,7 @@ public class MultipleSwitch {
 		for (Switchable switchable : switches) {
 			state[index ++] = switchable.isEnabled();
 		}
-		stateStack.push(state);
+		stateStack.get().push(state);
 	}
 
 	/**
@@ -42,7 +46,7 @@ public class MultipleSwitch {
 	 * @throws java.util.NoSuchElementException s'il n'y a pas de sauvegarde disponible
 	 */
 	public void popState() {
-		final boolean[] state = stateStack.pop();
+		final boolean[] state = stateStack.get().pop();
 		int index = 0;
 		for (Switchable switchable : switches) {
 			switchable.setEnabled(state[index ++]);
