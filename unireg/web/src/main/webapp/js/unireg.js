@@ -2743,8 +2743,10 @@ var Search = {
 					if (!Search.urlRetour) {
 						table += '<select name="AppSelect" onchange="App.gotoExternalApp(this);">';
 						table += '<option value="">---</option>';
-						if (!e.debiteurInactif && e.tiersType != 'entreprise') {
+						if (!e.debiteurInactif) {
 							table += '<option value="' + App.curl('/redirect/TAO_PP.do?id=' + e.numero) + '">TAO-PP</option>';
+						}
+						if (!e.debiteurInactif && e.tiersType != 'entreprise') {
 							table += '<option value="' + App.curl('/redirect/TAO_BA.do?id=' + e.numero) + '">TAO-BA</option>';
 							table += '<option value="' + App.curl('/redirect/TAO_IS.do?id=' + e.numero) + '">TAO-IS</option>';
 						}
