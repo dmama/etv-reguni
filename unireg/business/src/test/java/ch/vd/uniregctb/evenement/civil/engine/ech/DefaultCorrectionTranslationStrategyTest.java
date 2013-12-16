@@ -1294,4 +1294,80 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 			}
 		});
 	}
+
+	/**
+	 * [SIFISC-10801] Il y a tellement de modifications fiscales que le commentaire de traitement dépasse les 255 caractères ({@link ch.vd.uniregctb.common.LengthConstants#EVTCIVILECH_COMMENT})
+	 */
+	@Test
+	public void testPleinDeModificationsFiscales() throws Exception {
+
+		buildStrategyOverridingTranslatorAndProcessor(true, new StrategyOverridingCallback() {
+			@Override
+			public void overrideStrategies(EvenementCivilEchTranslatorImplOverride translator) {
+				translator.overrideStrategy(TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, strategy);
+			}
+		});
+
+		final long noIndividu = 4684263L;
+		final long idEvtCorrige = 464735292L;
+		final long idEvtCorrection = 4326478256242L;
+		final RegDate dateEvtOrig = RegDate.get();
+		final RegDate dateEvtCorrection = dateEvtOrig.addDays(-2);
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noIndividu, date(1930, 4, 1), "Zweisteinen", "Robert", true);
+				addIndividuAfterEvent(idEvtCorrige, ind, dateEvtOrig, TypeEvenementCivilEch.TESTING);
+
+				final MockIndividu conjoint = addIndividu(noIndividu + 1, null, "Zweisteinen", "Félicie", false);
+				final MockIndividu ind2 = createIndividu(noIndividu, date(1933, 4, 1), "Zweisteinen", "Albert", true);
+				marieIndividus(ind2, conjoint, date(1955, 11, 1));
+				addAdresse(ind2, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, null, date(1955, 11, 1), null);
+				addAdresse(ind2, TypeAdresseCivil.COURRIER, MockRue.CossonayVille.AvenueDuFuniculaire, null, date(1955, 11, 1), null);
+				addNationalite(ind2, MockPays.RoyaumeUni, date(1933, 4, 1), null);
+				addPermis(ind2, TypePermis.ETABLISSEMENT, date(1955, 11, 1), null, false);
+				addIndividuAfterEvent(idEvtCorrection, ind2, dateEvtCorrection, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, idEvtCorrige);
+			}
+		});
+
+		// construction de l'événement de correction
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(idEvtCorrection);
+				evt.setNumeroIndividu(noIndividu);
+				evt.setType(TypeEvenementCivilEch.TESTING);
+				evt.setAction(ActionEvenementCivilEch.CORRECTION);
+				evt.setDateEvenement(dateEvtCorrection);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setRefMessageId(idEvtCorrige);
+				hibernateTemplate.merge(evt);
+				return null;
+			}
+		});
+
+		// traitement de l'événement de correction
+		traiterEvenements(noIndividu);
+
+		// vérification du traitement
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = evtCivilDAO.get(idEvtCorrection);
+				Assert.assertNotNull(evt);
+				Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
+				Assert.assertEquals("Les éléments suivants ont été modifiés par la correction : adresse de contact (apparition), adresse de résidence principale (apparition), date de l'événement, date de naissance, état civil, nationalité (apparition), permis (apparition), relations (conj...", evt.getCommentaireTraitement());
+
+				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
+				Assert.assertNotNull(erreurs);
+				Assert.assertEquals(1, erreurs.size());
+
+				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
+				Assert.assertEquals("Traitement automatique non implémenté. Veuillez effectuer cette opération manuellement.", erreur.getMessage());
+				return null;
+			}
+		});
+	}
 }

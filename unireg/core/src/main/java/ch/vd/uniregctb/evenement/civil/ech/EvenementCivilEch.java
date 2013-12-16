@@ -12,6 +12,7 @@ import javax.persistence.Transient;
 import java.util.Date;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
@@ -154,7 +155,7 @@ public class EvenementCivilEch extends HibernateEntity implements EvenementCivil
 	}
 
 	public void setCommentaireTraitement(@Nullable String commentaireTraitement) {
-		this.commentaireTraitement = commentaireTraitement;
+		this.commentaireTraitement = StringUtils.abbreviate(commentaireTraitement, LengthConstants.EVTCIVILECH_COMMENT);
 	}
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
