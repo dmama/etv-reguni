@@ -595,8 +595,9 @@ public class PartyWebServiceImpl implements PartyWebService {
 	 */
 	@Override
 	public SearchCorporationEventsResponse searchCorporationEvents(SearchCorporationEventsRequest params) throws WebServiceException {
+		final Long corpNr = params.getCorporationNumber() != null ? Long.valueOf(params.getCorporationNumber()) : null;
 		final List<ch.vd.uniregctb.interfaces.model.EvenementPM> list =
-				context.servicePM.findEvenements(params.getCorporationNumber(), params.getEventCode(), ch.vd.uniregctb.xml.DataHelper.xmlToCore(params.getStartDate()),
+				context.servicePM.findEvenements(corpNr, params.getEventCode(), ch.vd.uniregctb.xml.DataHelper.xmlToCore(params.getStartDate()),
 				                                 ch.vd.uniregctb.xml.DataHelper.xmlToCore(params.getEndDate()));
 		return DataHelper.events2web(list);
 	}

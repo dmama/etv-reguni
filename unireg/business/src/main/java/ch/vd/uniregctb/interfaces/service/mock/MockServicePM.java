@@ -147,7 +147,7 @@ public abstract class MockServicePM extends ServicePersonneMoraleBase {
 	}
 
 	@Override
-	public List<EvenementPM> findEvenements(long numeroEntreprise, String code, RegDate minDate, RegDate maxDate) {
+	public List<EvenementPM> findEvenements(Long numeroEntreprise, String code, RegDate minDate, RegDate maxDate) {
 		return Collections.emptyList();
 	}
 

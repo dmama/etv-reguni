@@ -360,7 +360,7 @@ public class ServicePersonneMoraleCache extends ServicePersonneMoraleBase implem
 	}
 
 	@Override
-	public List<EvenementPM> findEvenements(long numeroEntreprise, String code, RegDate minDate, RegDate maxDate) {
+	public List<EvenementPM> findEvenements(Long numeroEntreprise, String code, RegDate minDate, RegDate maxDate) {
 		// pas caché : cela en vaut-il vraiment la peine ?
 		return target.findEvenements(numeroEntreprise, code, minDate, maxDate);
 	}

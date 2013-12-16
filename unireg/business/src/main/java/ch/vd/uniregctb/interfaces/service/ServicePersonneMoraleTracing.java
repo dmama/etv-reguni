@@ -221,7 +221,7 @@ public class ServicePersonneMoraleTracing implements ServicePersonneMoraleServic
 	}
 
 	@Override
-	public List<EvenementPM> findEvenements(final long numeroEntreprise, final String code, final RegDate minDate, final RegDate maxDate) {
+	public List<EvenementPM> findEvenements(final Long numeroEntreprise, final String code, final RegDate minDate, final RegDate maxDate) {
 		Throwable t = null;
 		int items = 0;
 		final long time = tracing.start();

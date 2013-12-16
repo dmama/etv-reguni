@@ -103,7 +103,7 @@ public class ServicePersonneMoraleHostInterfaces extends ServicePersonneMoraleBa
 	}
 
 	@Override
-	public List<EvenementPM> findEvenements(long numeroEntreprise, String code, RegDate minDate, RegDate maxDate) {
+	public List<EvenementPM> findEvenements(Long numeroEntreprise, String code, RegDate minDate, RegDate maxDate) {
 		try {
 			List list = servicePersonneMorale.findEvenements(numeroEntreprise, code, RegDate.asJavaDate(minDate), RegDate.asJavaDate(maxDate));
 			if (list == null) {

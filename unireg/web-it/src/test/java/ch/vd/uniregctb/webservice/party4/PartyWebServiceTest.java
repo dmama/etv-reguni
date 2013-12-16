@@ -19,6 +19,8 @@ import ch.vd.unireg.webservices.party4.GetPartyRequest;
 import ch.vd.unireg.webservices.party4.GetPartyTypeRequest;
 import ch.vd.unireg.webservices.party4.PartyPart;
 import ch.vd.unireg.webservices.party4.PartyWebService;
+import ch.vd.unireg.webservices.party4.SearchCorporationEventsRequest;
+import ch.vd.unireg.webservices.party4.SearchCorporationEventsResponse;
 import ch.vd.unireg.webservices.party4.SearchMode;
 import ch.vd.unireg.webservices.party4.SearchPartyRequest;
 import ch.vd.unireg.webservices.party4.SearchPartyResponse;
@@ -33,6 +35,7 @@ import ch.vd.unireg.xml.party.address.v1.FormattedAddress;
 import ch.vd.unireg.xml.party.address.v1.PersonMailAddressInfo;
 import ch.vd.unireg.xml.party.address.v1.TariffZone;
 import ch.vd.unireg.xml.party.corporation.v2.Corporation;
+import ch.vd.unireg.xml.party.corporation.v2.CorporationEvent;
 import ch.vd.unireg.xml.party.debtor.v2.CommunicationMode;
 import ch.vd.unireg.xml.party.debtor.v2.Debtor;
 import ch.vd.unireg.xml.party.debtor.v2.DebtorCategory;
@@ -1695,5 +1698,16 @@ public class PartyWebServiceTest extends AbstractPartyWebServiceTest {
 		assertEquals(newDate(2011, 5, 26), status2.getDateFrom());
 		assertNull(status2.getDateTo());
 		assertEquals(MaritalStatus.MARRIED, status2.getMaritalStatus());
+	}
+
+	@Test
+	public void testFindEvenementsPersonneMorale() throws Exception {
+		final SearchCorporationEventsRequest request = new SearchCorporationEventsRequest(login, null, "012", null, null);
+		final SearchCorporationEventsResponse found = service.searchCorporationEvents(request);
+		assertNotNull(found);
+
+		final List<CorporationEvent> events = found.getEvents();
+		assertNotNull(events);
+		assertTrue(events.size() > 0);
 	}
 }
