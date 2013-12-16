@@ -184,10 +184,6 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 			final long start = System.nanoTime();
 			try {
 				LOGGER.info(String.format("Lancement du traitement d'un lot de %d événement(s) pour l'individu %d", evts.size(), noIndividu));
-
-				// première chose, on invalide le cache de l'individu (afin que les stratégies aient déjà une version à jour des individus)
-				dataEventService.onIndividuChange(noIndividu);
-
 				for (EvenementCivilEchBasicInfo evt : evts) {
 					if (!stopping) {
 						if (!processEventAndDoPostProcessingOnError(evt, evts, pointer)) {
@@ -381,6 +377,10 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 			return doInNewTransaction(new TransactionCallback<Boolean>() {
 				@Override
 				public Boolean doInTransaction(TransactionStatus status) {
+
+					// première chose, on invalide le cache de l'individu (afin que les stratégies aient déjà une version à jour des individus)
+					dataEventService.onIndividuChange(info.getNoIndividu());
+
 					final EvenementCivilEch evt = fetchDatabaseEvent(info);
 					if (evt.getEtat().isTraite()) {
 						LOGGER.info(String.format("Evénement %d déjà dans l'état %s, on ne le re-traite pas", info.getId(), evt.getEtat()));
