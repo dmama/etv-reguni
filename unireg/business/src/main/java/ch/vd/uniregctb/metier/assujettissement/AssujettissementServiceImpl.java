@@ -1044,7 +1044,7 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 			return false;
 		}
 
-		if (fin.year() != current.getDateDebut().year()) {
+		if (fin.year() != current.getDateDebut().year() || fin.getOneDayAfter().year() != fin.year()) {
 			return false;
 		}
 

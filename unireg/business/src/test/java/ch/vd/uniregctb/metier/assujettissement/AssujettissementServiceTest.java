@@ -4468,6 +4468,25 @@ public class AssujettissementServiceTest extends MetierTest {
 		}
 	}
 
+	/**
+	 * [SIFISC-10824] l'assujettissement doit commencer à l'arrivée HS, pas avant, même en cas de départ HC au dernier jour de l'année
+	 */
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testDepartHC3112ApresArriveeHSMemeAnnee() throws Exception {
+		final RegDate arrivee = date(2012, 3, 12);
+		final RegDate depart = date(2012, 12, 31);
+
+		final Contribuable ctb = createContribuableSansFor();
+		addForPrincipal(ctb, arrivee, MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HC, MockCommune.Lausanne);
+		addForPrincipal(ctb, depart.getOneDayAfter(), MotifFor.DEPART_HC, MockCommune.Bern);
+
+		final List<Assujettissement> ass = service.determine(ctb, 2012);
+		assertNotNull(ass);
+		assertEquals(1, ass.size());
+		assertOrdinaire(arrivee, depart, MotifFor.ARRIVEE_HS, MotifFor.DEPART_HC, ass.get(0));
+	}
+
 	private static void assertCommunesActives(Assujettissement assujettissement, List<Integer> noOfsCommunesActives) {
 		final Set<Integer> actives;
 		if (noOfsCommunesActives != null && !noOfsCommunesActives.isEmpty()) {
