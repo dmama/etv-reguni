@@ -3,12 +3,16 @@ package ch.vd.uniregctb.situationfamille;
 import java.util.List;
 
 import org.junit.Test;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.situationfamille.VueSituationFamille.Source;
@@ -23,6 +27,7 @@ import ch.vd.uniregctb.tiers.SituationFamillePersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.EtatCivil;
+import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TarifImpotSource;
 
@@ -716,5 +721,224 @@ public class SituationFamilleServiceTest extends BusinessTest {
 		final VueSituationFamillePersonnePhysique vue19800101 = (VueSituationFamillePersonnePhysique) service.getVue(habitant, date(1980, 1, 1), true);
 		assertVue(dateNaissanceCivile, dateMariageFiscale.getOneDayBefore(), EtatCivil.CELIBATAIRE, null, Source.CIVILE, vue19700101);
 		assertVue(dateMariageFiscale, null, EtatCivil.MARIE, null, Source.CIVILE, vue19800101);
+	}
+
+	/**
+	 * [SIFISC-10825] l'état civil "marié" sans date de début n'était pas pris en compte
+	 */
+	@Test
+	public void testEtatCivilMarieSansDateDebutPuisSeparation() throws Exception {
+
+		final long noIndividu = 478437L;
+		final RegDate dateNaissance = date(1960, 1, 1);
+		final RegDate dateSeparation = date(2012, 6, 21);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Nanini", "Bernard", Sexe.MASCULIN);
+				addEtatCivil(ind, null, TypeEtatCivil.MARIE);
+				addEtatCivil(ind, dateSeparation, TypeEtatCivil.SEPARE);
+			}
+		});
+
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				addForPrincipal(pp, dateSeparation.getOneDayAfter(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Aigle);
+				return pp.getNumero();
+			}
+		});
+
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				final List<VueSituationFamille> histo = service.getVueHisto(pp);
+				assertNotNull(histo);
+				assertEquals(2, histo.size());
+				assertEquals(EtatCivil.MARIE, histo.get(0).getEtatCivil());
+				assertEquals(EtatCivil.SEPARE, histo.get(1).getEtatCivil());
+			}
+		});
+	}
+
+	@Test
+	public void testRattrapageDatesEtatsCivilsAvecAppartenancesMenages() throws Exception {
+
+		final long noIndividu = 478437L;
+		final RegDate dateNaissance = date(1960, 1, 1);
+		final RegDate dateMariage1 = date(1985, 7, 23);
+		final RegDate dateDivorce = date(1996, 2, 12);
+		final RegDate dateMariage2 = date(2000, 7, 5);
+		final RegDate dateDecesConjoint = date(2010, 9, 15);
+
+		// mise en place civile (on ne connait aucune date)
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noIndividu, null, "Lehéro", "Toto", Sexe.MASCULIN);
+				addEtatCivil(ind, null, TypeEtatCivil.MARIE);
+				addEtatCivil(ind, null, TypeEtatCivil.DIVORCE);
+				addEtatCivil(ind, null, TypeEtatCivil.MARIE);
+				addEtatCivil(ind, null, TypeEtatCivil.VEUF);
+			}
+		});
+
+		// mise ne place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
+				pp.setDateNaissance(dateNaissance);
+				addEnsembleTiersCouple(pp, null, dateMariage1, dateDivorce.getOneDayBefore());
+				addEnsembleTiersCouple(pp, null, dateMariage2, dateDecesConjoint);
+				return pp.getNumero();
+			}
+		});
+
+		// construction de la vue historique
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				final List<VueSituationFamille> histo = service.getVueHisto(pp);
+				assertNotNull(histo);
+				assertEquals(5, histo.size());
+				{
+					final VueSituationFamille vue = histo.get(0);
+					assertNotNull(vue);
+					assertEquals(dateNaissance, vue.getDateDebut());
+					assertEquals(dateMariage1.getOneDayBefore(), vue.getDateFin());
+					assertEquals(EtatCivil.CELIBATAIRE, vue.getEtatCivil());
+				}
+				{
+					final VueSituationFamille vue = histo.get(1);
+					assertNotNull(vue);
+					assertEquals(dateMariage1, vue.getDateDebut());
+					assertEquals(dateDivorce.getOneDayBefore(), vue.getDateFin());
+					assertEquals(EtatCivil.MARIE, vue.getEtatCivil());
+				}
+				{
+					final VueSituationFamille vue = histo.get(2);
+					assertNotNull(vue);
+					assertEquals(dateDivorce, vue.getDateDebut());
+					assertEquals(dateMariage2.getOneDayBefore(), vue.getDateFin());
+					assertEquals(EtatCivil.DIVORCE, vue.getEtatCivil());
+				}
+				{
+					final VueSituationFamille vue = histo.get(3);
+					assertNotNull(vue);
+					assertEquals(dateMariage2, vue.getDateDebut());
+					assertEquals(dateDecesConjoint, vue.getDateFin());
+					assertEquals(EtatCivil.MARIE, vue.getEtatCivil());
+				}
+				{
+					final VueSituationFamille vue = histo.get(4);
+					assertNotNull(vue);
+					assertEquals(dateDecesConjoint.getOneDayAfter(), vue.getDateDebut());
+					assertNull(vue.getDateFin());
+					assertEquals(EtatCivil.VEUF, vue.getEtatCivil());
+				}
+			}
+		});
+	}
+
+	@Test
+	public void testRattrapageDatesEtatsCivilsAvecForsFiscaux() throws Exception {
+
+		final long noIndividu = 478437L;
+		final RegDate dateNaissance = date(1960, 1, 1);
+		final RegDate dateDivorce = date(1996, 2, 12);
+
+		// mise en place civile (on ne connait aucune date)
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noIndividu, null, "Lehéro", "Toto", Sexe.MASCULIN);
+				addEtatCivil(ind, null, TypeEtatCivil.DIVORCE);
+				ind.setDateNaissance(dateNaissance);
+			}
+		});
+
+		// mise ne place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				addForPrincipal(pp, dateDivorce, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Bussigny);
+				return pp.getNumero();
+			}
+		});
+
+		// construction de la vue historique
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				final List<VueSituationFamille> histo = service.getVueHisto(pp);
+				assertNotNull(histo);
+				assertEquals(2, histo.size());
+				{
+					final VueSituationFamille vue = histo.get(0);
+					assertNotNull(vue);
+					assertEquals(dateNaissance, vue.getDateDebut());
+					assertEquals(dateDivorce.getOneDayBefore(), vue.getDateFin());
+					assertEquals(EtatCivil.CELIBATAIRE, vue.getEtatCivil());
+				}
+				{
+					final VueSituationFamille vue = histo.get(1);
+					assertNotNull(vue);
+					assertEquals(dateDivorce, vue.getDateDebut());      // cette date vient du for fiscal
+					assertNull(vue.getDateFin());
+					assertEquals(EtatCivil.DIVORCE, vue.getEtatCivil());
+				}
+			}
+		});
+	}
+
+	@Test
+	public void testRattrapageDatesEtatsCivilsAvecDateNaissancePartielle() throws Exception {
+
+		final long noIndividu = 478437L;
+		final RegDate dateNaissance = RegDate.get(1960, 5);
+
+		// mise en place civile (on ne connait aucune date)
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				addIndividu(noIndividu, null, "Lehéro", "Toto", Sexe.MASCULIN);
+			}
+		});
+
+		// mise ne place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
+				pp.setDateNaissance(dateNaissance);
+				return pp.getNumero();
+			}
+		});
+
+		// construction de la vue historique
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				final List<VueSituationFamille> histo = service.getVueHisto(pp);
+				assertNotNull(histo);
+				assertEquals(1, histo.size());
+				{
+					final VueSituationFamille vue = histo.get(0);
+					assertNotNull(vue);
+					assertEquals(date(1960, 5, 1), vue.getDateDebut());
+					assertNull(vue.getDateFin());
+					assertEquals(EtatCivil.CELIBATAIRE, vue.getEtatCivil());
+				}
+			}
+		});
 	}
 }

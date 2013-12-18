@@ -5,15 +5,20 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Set;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import ch.vd.registre.base.date.CollatableDateRange;
+import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.DateRangeHelper.AdapterCallback;
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.shared.batchtemplate.StatusManager;
@@ -215,8 +220,8 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 		// on parcourt la liste à l'envers et on prend les états civils connus
 		for (EtatCivil ec : CollectionsUtils.revertedOrder(ecList)) {
 			final RegDate dateDebutCivile = ec.getDateDebut();
-			final RegDate dateDebut = dateDebutCivile == null ? findDateDebutEtatCivil(ec, pp, individu) : dateDebutCivile;
-			if (dateDebut == null || dateFin == null || dateDebut.compareTo(dateFin) <= 0) {
+			final RegDate dateDebut = dateDebutCivile == null ? findDateDebutEtatCivil(ec, pp, dateFin) : dateDebutCivile;
+			if (dateDebut == null || RegDateHelper.isBeforeOrEqual(dateDebut, dateFin, NullDateBehavior.LATEST)) {
 				final VueSituationFamille vue = new VueSituationFamillePersonnePhysiqueCivilAdapter(ec, dateDebut, dateFin);
 				list.add(0, vue);
 				if (dateDebut == null) {
@@ -230,49 +235,81 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 		return list;
 	}
 
-	private RegDate findDateDebutEtatCivil(EtatCivil etatCivil, PersonnePhysique habitant, Individu individu) {
+	private RegDate findDateDebutEtatCivil(EtatCivil etatCivil, PersonnePhysique pp, @Nullable RegDate max) {
+
+		// CELIBATAIRE -> défaut à la date de naissance de l'individu (si la date est partielle, on prend le premier jour du mois/année correspondant)
+		// MARIE/PACSE... -> défaut à la date de début du dernier rapport d'appartenance ménage qui commence avant (ou à) la date "max"
+		// autres -> défaut à la date de début de la dernière période continue de fors principaux qui commence avant (ou à) la date "max"
+		//        -> si toujours rien, alors lendemain de la dernière date de fin du dernier rapport d'appartenance ménage qui se termine avant la date "max"
+
 		RegDate dateDebutEtatCivil = null;
-		if (etatCivil.getTypeEtatCivil()== TypeEtatCivil.CELIBATAIRE) {
-			dateDebutEtatCivil = individu.getDateNaissance();
+		if (etatCivil.getTypeEtatCivil() == TypeEtatCivil.CELIBATAIRE) {
+			dateDebutEtatCivil = tiersService.getDateNaissance(pp);
+			if (dateDebutEtatCivil != null && dateDebutEtatCivil.isPartial()) {
+				dateDebutEtatCivil = RegDate.get(dateDebutEtatCivil.year(), Math.max(dateDebutEtatCivil.month(), 1), Math.max(dateDebutEtatCivil.day(), 1));
+			}
 		}
 		else if (EtatCivilHelper.estMarieOuPacse(etatCivil)) {
-			Set<RapportEntreTiers> rapports = habitant.getRapportsSujet();
-			if (rapports != null) {
-				for (RapportEntreTiers rapport : rapports) {
-					if (TypeRapportEntreTiers.APPARTENANCE_MENAGE == rapport.getType() && !rapport.isAnnule()) {
-						if (dateDebutEtatCivil == null || dateDebutEtatCivil.isAfter(rapport.getDateDebut())) {
-							dateDebutEtatCivil = rapport.getDateDebut();
-						}
-					}
-				}
-			}
-			if (dateDebutEtatCivil == null) {
-				List<ForFiscalPrincipal> fors = habitant.getForsFiscauxPrincipauxActifsSorted();
-				if (fors != null && !fors.isEmpty()) {
-					dateDebutEtatCivil = fors.get(0).getDateDebut();
+			// date de début du dernier rapport d'appartenance ménage qui commence avant (ou à) la date "max"
+			final List<RapportEntreTiers> ams = getAppartenancesMenagesTriees(pp);
+			for (RapportEntreTiers am : CollectionsUtils.revertedOrder(ams)) {
+				if (RegDateHelper.isAfterOrEqual(max, am.getDateDebut(), NullDateBehavior.LATEST)) {
+					dateDebutEtatCivil = am.getDateDebut();
+					break;
 				}
 			}
 		}
 		else {
-			List<ForFiscalPrincipal> fors = habitant.getForsFiscauxPrincipauxActifsSorted();
+			final List<ForFiscalPrincipal> fors = pp.getForsFiscauxPrincipauxActifsSorted();
 			if (fors != null && !fors.isEmpty()) {
-				dateDebutEtatCivil = fors.get(0).getDateDebut();
+				// récupération des zones continues de fors principaux
+				final List<CollatableDateRange> ranges = new ArrayList<>(fors.size());
+				for (ForFiscalPrincipal ffp : fors) {
+					ranges.add(new DateRangeHelper.Range(ffp));
+				}
+				DateRangeHelper.collate(ranges);
+
+				// on prend la première date de début d'une zone continue qui se situe avant (ou à) la date "max"
+				for (DateRange ff : CollectionsUtils.revertedOrder(ranges)) {
+					if (RegDateHelper.isBeforeOrEqual(ff.getDateDebut(), max, NullDateBehavior.LATEST)) {
+						dateDebutEtatCivil = ff.getDateDebut();
+						break;
+					}
+				}
 			}
 			else {
-				Set<RapportEntreTiers> rapports = habitant.getRapportsSujet();
-				if (rapports != null) {
-					for (RapportEntreTiers rapport : rapports) {
-						if (TypeRapportEntreTiers.APPARTENANCE_MENAGE == rapport.getType() && !rapport.isAnnule()) {
-							if (dateDebutEtatCivil == null
-									|| (rapport.getDateFin() != null && dateDebutEtatCivil.isAfter(rapport.getDateFin()))) {
-								dateDebutEtatCivil = rapport.getDateFin();
-							}
-						}
+				// on prend donc le lendemain de la date de fin du dernier rapport d'appartenance ménage qui se termine avant la date "max"
+				final List<RapportEntreTiers> ams = getAppartenancesMenagesTriees(pp);
+				for (RapportEntreTiers am : CollectionsUtils.revertedOrder(ams)) {
+					if (RegDateHelper.isBefore(am.getDateFin(), max, NullDateBehavior.LATEST)) {
+						dateDebutEtatCivil = am.getDateFin().getOneDayAfter();
+						break;
 					}
 				}
 			}
 		}
 		return dateDebutEtatCivil;
+	}
+
+	@NotNull
+	private static List<RapportEntreTiers> getAppartenancesMenagesTriees(PersonnePhysique pp) {
+		final Set<RapportEntreTiers> rapports = pp.getRapportsSujet();
+		if (rapports != null && !rapports.isEmpty()) {
+
+			// récupération des rapports d'appartenance ménage du contribuable
+			final List<RapportEntreTiers> tries = new ArrayList<>();
+			for (RapportEntreTiers rapport : rapports) {
+				if (TypeRapportEntreTiers.APPARTENANCE_MENAGE == rapport.getType() && !rapport.isAnnule()) {
+					tries.add(rapport);
+				}
+			}
+
+			// tri
+			Collections.sort(tries, new DateRangeComparator<RapportEntreTiers>());
+			return tries;
+		}
+
+		return Collections.emptyList();
 	}
 
 	/**
