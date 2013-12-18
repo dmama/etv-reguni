@@ -5,7 +5,7 @@
 	<c:set var="url" value="visu.do" />
 </c:if>
 <c:if test="${page == 'edit' }">
-	<c:set var="url" value="edit.do" />
+	<c:set var="url" value="edit-for-debiteur.do" />
 </c:if>
 <c:if test="${not empty command.forsFiscaux}">
 <display:table
