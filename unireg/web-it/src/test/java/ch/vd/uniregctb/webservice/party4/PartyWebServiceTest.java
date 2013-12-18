@@ -1682,9 +1682,9 @@ public class PartyWebServiceTest extends AbstractPartyWebServiceTest {
 
 		final FamilyStatus status0 = statuses.get(0);
 		assertNotNull(status0);
-		assertEquals(newDate(1979, 5, 17), status0.getDateFrom());
+		assertNull(status0.getDateFrom());          // date de début nulle sans rattrapage -> valide depuis toujours
 		assertEquals(newDate(2008, 12, 31), status0.getDateTo());
-		assertEquals(MaritalStatus.SINGLE, status0.getMaritalStatus());
+		assertEquals(MaritalStatus.MARRIED, status0.getMaritalStatus());
 
 		// l'état civil marié sans date est ignoré
 		final FamilyStatus status1 = statuses.get(1);
