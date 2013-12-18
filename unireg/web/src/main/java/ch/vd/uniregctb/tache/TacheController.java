@@ -48,6 +48,8 @@ public class TacheController {
 
 	private static final Logger LOGGER = Logger.getLogger(TacheController.class);
 
+	private static final String COMMAND_NAME = "command";
+
 	private static final String TACHE_CRITERIA_NAME = "tacheCriteria";
 	private static final String NOUVEAU_DOSSIER_CRITERIA_NAME = "nouveauDossierCriteria";
 
@@ -161,7 +163,7 @@ public class TacheController {
 	}
 
 	private String showSearchTaches(Model model, TacheCriteriaView criteria, boolean forceEmptyResult) {
-		model.addAttribute("command", criteria);
+		model.addAttribute(COMMAND_NAME, criteria);
 		model.addAttribute(PERIODE_FISCALE_MAP_NAME, tacheMapHelper.initMapPeriodeFiscale());
 		model.addAttribute(OFFICE_IMPOT_UTILISATEUR_MAP_NAME, tacheMapHelper.initMapOfficeImpotUtilisateur());
 		model.addAttribute(ETAT_TACHE_MAP_NAME, tacheMapHelper.initMapEtatTache());
@@ -174,7 +176,7 @@ public class TacheController {
 	}
 
 	@RequestMapping(value = "/list.do", method = RequestMethod.POST)
-	public String searchTaches(Model model, HttpSession session, @Valid @ModelAttribute TacheCriteriaView criteria, BindingResult bindingResult) {
+	public String searchTaches(Model model, HttpSession session, @Valid @ModelAttribute(COMMAND_NAME)  TacheCriteriaView criteria, BindingResult bindingResult) {
 		if (bindingResult.hasErrors()) {
 			return showSearchTaches(model, criteria, true);
 		}
@@ -208,7 +210,7 @@ public class TacheController {
 	}
 
 	private String showSearchNouveauxDossiers(Model model, NouveauDossierCriteriaView criteria, boolean forceEmptyResult) {
-		model.addAttribute("command", criteria);
+		model.addAttribute(COMMAND_NAME, criteria);
 		model.addAttribute(OFFICE_IMPOT_UTILISATEUR_MAP_NAME, tacheMapHelper.initMapOfficeImpotUtilisateur());
 		if (forceEmptyResult) {
 			model.addAttribute(NOUVEAU_DOSSIER_LIST_ATTRIBUTE_NAME, new ArrayList<>());
@@ -218,7 +220,7 @@ public class TacheController {
 	}
 
 	@RequestMapping(value = "/list-nouveau-dossier.do", method = RequestMethod.POST)
-	public String searchNouveauxDossiers(Model model, HttpSession session, @Valid @ModelAttribute NouveauDossierCriteriaView criteria, BindingResult bindingResult) {
+	public String searchNouveauxDossiers(Model model, HttpSession session, @Valid @ModelAttribute(COMMAND_NAME) NouveauDossierCriteriaView criteria, BindingResult bindingResult) {
 		if (bindingResult.hasErrors()) {
 			return showSearchNouveauxDossiers(model, criteria, true);
 		}
