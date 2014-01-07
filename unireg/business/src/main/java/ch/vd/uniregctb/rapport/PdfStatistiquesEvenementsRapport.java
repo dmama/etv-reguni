@@ -320,13 +320,13 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 		return contenu;
 	}
 
-	private static class EvtCivilEchMsgTypeKey {
+	protected static final class EvtCivilEchMsgTypeKey {
 		public final String msg;
 		public final TypeEvenementCivilEch type;
 		public final ActionEvenementCivilEch action;
 
-		private EvtCivilEchMsgTypeKey(String msg, TypeEvenementCivilEch type, ActionEvenementCivilEch action) {
-			this.msg = msg.replaceAll("[0-9]+(\\.[0-9]+)*", "?");        // pour enlever toutes les différences sur des dates ou des numéros d'individu, de tiers...
+		protected EvtCivilEchMsgTypeKey(String msg, TypeEvenementCivilEch type, ActionEvenementCivilEch action) {
+			this.msg = msg.replaceAll("[0-9]+(\\.[0-9]+)*", "?").replaceAll("\\?(, \\?)+", "?");        // pour enlever toutes les différences sur des dates ou des numéros d'individu, de tiers...
 			this.type = type;
 			this.action = action;
 		}
