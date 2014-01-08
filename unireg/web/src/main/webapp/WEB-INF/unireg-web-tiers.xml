@@ -52,6 +52,7 @@
 	<bean id="tiersListController" class="ch.vd.uniregctb.tiers.TiersListController">
 		<property name="securityProvider" ref="securityProviderInterface" />
 		<property name="helper" ref="tiersSearchHelper"/>
+		<property name="paramApplicationManager" ref="paramApplicationManager"/>
 	</bean>
 
 	<bean id="tiersVisuController" class="ch.vd.uniregctb.tiers.TiersVisuController" parent="abstractTiersController">

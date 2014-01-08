@@ -21,9 +21,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.common.DelegatingValidator;
 import ch.vd.uniregctb.indexer.EmptySearchCriteriaException;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.TooManyResultsIndexerException;
+import ch.vd.uniregctb.param.manager.ParamApplicationManager;
+import ch.vd.uniregctb.param.validator.ParamApplicationValidator;
+import ch.vd.uniregctb.param.view.ParamApplicationView;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityHelper;
@@ -40,6 +44,7 @@ public class TiersListController implements MessageSourceAware {
 
 	private TiersSearchHelper helper;
 	private SecurityProviderInterface securityProvider;
+	private ParamApplicationManager paramApplicationManager;
 	private MessageSource messageSource;
 
 	public final static String NUMERO_PARAMETER_NAME = "numero";
@@ -51,6 +56,11 @@ public class TiersListController implements MessageSourceAware {
 	public final static String TYPE_RECHERCHE_PARAMETER_NAME = "typeRecherche";
 	public final static String URL_RETOUR_PARAMETER_NAME = "urlRetour";
 	public final static String FOR_PRINCIPAL_ACTIF_PARAMETER_NAME = "forPrincipalActif";
+
+	/**
+	 * Le nom de l'attribut utilise pour l'objet stockant les paramétres de l'application
+	 */
+	private static final String PARAMETRES_APP = "parametresApp";
 
 	/**
 	 * Le nom de l'objet de criteres de recherche stocké en session
@@ -82,14 +92,25 @@ public class TiersListController implements MessageSourceAware {
 		this.securityProvider = securityProvider;
 	}
 
+	public void setParamApplicationManager(ParamApplicationManager paramApplicationManager) {
+		this.paramApplicationManager = paramApplicationManager;
+	}
+
 	@Override
 	public void setMessageSource(MessageSource messageSource) {
 		this.messageSource = messageSource;
 	}
 
+	private static final class Validator extends DelegatingValidator {
+		private Validator() {
+			addSubValidator(TiersCriteriaView.class, new TiersCriteriaValidator());
+			addSubValidator(ParamApplicationView.class, new ParamApplicationValidator());
+		}
+	}
+
 	@InitBinder
 	protected void initBinder(WebDataBinder binder) {
-		binder.setValidator(new TiersCriteriaValidator());
+		binder.setValidator(new Validator());
 		binder.registerCustomEditor(RegDate.class, new RegDateEditor(true, true, false, RegDateHelper.StringFormat.DISPLAY));
 	}
 
@@ -148,6 +169,7 @@ public class TiersListController implements MessageSourceAware {
 		helper.fillModelValuesForCriteria(model, COMMAND_NAME, criteria);
 		model.addAttribute(URL_RETOUR_SESSION_NAME, session.getAttribute(URL_RETOUR_SESSION_NAME));
 		model.addAttribute(TIERS_LIST_ATTRIBUTE_NAME, results);
+		model.addAttribute(PARAMETRES_APP, paramApplicationManager.getForm());
 		return "tiers/recherche/list";
 	}
 
