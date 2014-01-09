@@ -4339,7 +4339,7 @@ public class TacheServiceTest extends BusinessTest {
 		final long noIndividu = 12345678L;
 		final int anneeCourante = RegDate.get().year();
 		final RegDate dateArrivee = date(anneeCourante - 1, 5, 12);
-		final RegDate dateDeces = date(anneeCourante, 4, 30);
+		final RegDate dateDeces = date(anneeCourante, 1, 2);
 
 		// mise en place civile
 		serviceCivil.setUp(new DefaultMockServiceCivil(true) {

@@ -339,52 +339,6 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
-	public void testTraitementObtentionDuJour() throws Exception {
-		final long noIndividu = 478423L;
-		final RegDate dateNaissance = date(1980, 10, 25);
-		final RegDate dateObtentionPermis = RegDate.get();
-		final RegDate dateArrivee = dateObtentionPermis.addYears(-5);
-
-		// mise en place civile : étranger résident depuis plusieurs années lorsqu'il reçoit le permis C aujourd'hui
-		serviceCivil.setUp(new MockServiceCivil() {
-			@Override
-			protected void init() {
-				final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Oulianov", "Wladimir", Sexe.MASCULIN);
-				addPermis(individu, TypePermis.SEJOUR, dateArrivee, dateObtentionPermis.getOneDayBefore(), false);
-				addPermis(individu, TypePermis.ETABLISSEMENT, dateObtentionPermis, null, false);
-				addNationalite(individu, MockPays.Russie, dateNaissance, null);
-			}
-		});
-
-		// mise en place fiscale : for source depuis l'arrivée
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.ChateauDoex, ModeImposition.SOURCE);
-				return pp.getNumero();
-			}
-		});
-
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final Individu ind = serviceCivil.getIndividu(noIndividu, null);
-				final ObtentionPermis obtentionPermis = createValidObtentionPermisNonC(ind, dateObtentionPermis, MockCommune.ChateauDoex.getNoOFS(), TypePermis.ETABLISSEMENT);
-
-				final MessageCollector collector = buildMessageCollector();
-				obtentionPermis.validate(collector, collector);
-				assertEmpty(collector.getWarnings());
-				assertEquals(1, collector.getErreurs().size());
-
-				final MessageCollector.Msg erreur = collector.getErreurs().get(0);
-				assertEquals("Une obtention de permis ou de nationalité ne peut être traitée qu'à partir du lendemain de sa date d'effet", erreur.getMessage());
-				return null;
-			}
-		});
-	}
-
-	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testObtentionPermisHandlerSourcierMarieSeul() throws Exception {
 
