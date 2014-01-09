@@ -1167,4 +1167,18 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	protected static RegDate date(int year, int month, int day) {
 		return RegDate.get(year, month, day);
 	}
+
+	/**
+	 * Raccourci pour créer une RegDate (partielle).
+	 */
+	protected static RegDate date(int year, int month) {
+		return RegDate.get(year, month);
+	}
+
+	/**
+	 * Raccourci pour créer une RegDate (partielle).
+	 */
+	protected static RegDate date(int year) {
+		return RegDate.get(year);
+	}
 }

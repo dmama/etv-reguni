@@ -97,4 +97,11 @@ public class FiscalDateHelperTest extends WithoutSpringTest {
 		assertEquals(date(2018, 4, 1), FiscalDateHelper.getDateMajorite(date(2000, 4))); // date partielle
 		assertEquals(date(2018, 1, 1), FiscalDateHelper.getDateMajorite(date(2000))); // date partielle
 	}
+
+	@Test
+	public void testGetDateComplete() {
+		assertEquals(date(2000, 5, 2), FiscalDateHelper.getDateComplete(date(2000, 5, 2)));
+		assertEquals(date(2000, 5, 1), FiscalDateHelper.getDateComplete(date(2000, 5)));
+		assertEquals(date(2000, 1, 1), FiscalDateHelper.getDateComplete(date(2000)));
+	}
 }

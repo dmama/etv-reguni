@@ -32,6 +32,7 @@ import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.uniregctb.adresse.AdresseGenerique.SourceType;
 import ch.vd.uniregctb.common.DonneesCivilesException;
+import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.common.NpaEtLocalite;
 import ch.vd.uniregctb.common.RueEtNumero;
@@ -1279,13 +1280,7 @@ public class AdresseServiceImpl implements AdresseService {
 	private DateRange getPeriodeVie(PersonnePhysique pp) {
 		RegDate dateNaissance = tiersService.getDateNaissance(pp);
 		if (dateNaissance != null && dateNaissance.isPartial()) {
-			// on converti (à la louche) la date de naissance partielle en une date non-partielle
-			if (dateNaissance.month() == RegDate.UNDEFINED) {
-				dateNaissance = RegDate.get(dateNaissance.year(), 1, 1);
-			}
-			else {
-				dateNaissance = RegDate.get(dateNaissance.year(), dateNaissance.month(), 1);
-			}
+			dateNaissance = FiscalDateHelper.getDateComplete(dateNaissance);
 		}
 		final RegDate dateDeces = tiersService.getDateDeces(pp);
 		// [SIFISC-4475] le jour du décès n'est pas compris dans la période de vie (= la personne est considérée morte dès le matin)

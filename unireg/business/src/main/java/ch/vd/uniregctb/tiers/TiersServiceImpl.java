@@ -64,6 +64,7 @@ import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.common.EntityKey;
 import ch.vd.uniregctb.common.EtatCivilHelper;
+import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
@@ -1869,16 +1870,16 @@ public class TiersServiceImpl implements TiersService {
 	 * @throws PlusieursPersonnesPhysiquesAvecMemeNumeroIndividuException si la filiation nous donne un numéro d'individu pour lequel il y a plusieurs tiers acitfs dans le registre
 	 */
 	private Parente createParente(PersonnePhysique enfant, RelationVersIndividu filiation) throws CreationParenteImpossibleCarTiersParentInconnuAuFiscal {
-		final RegDate dateNaissanceEnfant = getDateNaissance(enfant);
+		final RegDate dateNaissanceEnfant = findCompleteDate(getDateNaissance(enfant));
 		final RegDate dateDecesEnfant = getDateDeces(enfant);
 
 		final long noIndividuParent = filiation.getNumeroAutreIndividu();
 		final PersonnePhysique parent = tiersDAO.getPPByNumeroIndividu(noIndividuParent, true);
 		if (parent != null) {
 			final RegDate dateDecesParent = getDateDeces(parent);
-			final RegDate dateNaissanceParent = getDateNaissance(parent);
+			final RegDate dateNaissanceParent = findCompleteDate(getDateNaissance(parent));
 
-			final RegDate dateDebut = maximum(NullDateBehavior.EARLIEST, filiation.getDateDebut(), dateNaissanceEnfant, dateNaissanceParent);
+			final RegDate dateDebut = maximum(NullDateBehavior.EARLIEST, findCompleteDate(filiation.getDateDebut()), dateNaissanceEnfant, dateNaissanceParent);
 			final RegDate dateFin = minimum(NullDateBehavior.LATEST, filiation.getDateFin(), dateDecesEnfant, dateDecesParent);
 
 			if (dateDebut == null || dateFin == null || dateDebut.isBeforeOrEqual(dateFin)) {
@@ -1889,6 +1890,10 @@ public class TiersServiceImpl implements TiersService {
 		else {
 			throw new CreationParenteImpossibleCarTiersParentInconnuAuFiscal(enfant, noIndividuParent);
 		}
+	}
+
+	private static RegDate findCompleteDate(@Nullable RegDate date) {
+		return date != null ? FiscalDateHelper.getDateComplete(date) : null;
 	}
 
 	private static RegDate minimum(NullDateBehavior nullDateBehavior, RegDate date1, RegDate date2, RegDate date3) {

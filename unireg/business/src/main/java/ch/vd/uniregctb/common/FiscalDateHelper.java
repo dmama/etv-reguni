@@ -202,15 +202,7 @@ public abstract class FiscalDateHelper {
 	 * @return la date de majorité (date non-partielle)
 	 */
 	public static RegDate getDateMajorite(RegDate dateNaissance) {
-		if (dateNaissance.day() == RegDate.UNDEFINED) {
-			if (dateNaissance.month() == RegDate.UNDEFINED) {
-				dateNaissance = RegDate.get(dateNaissance.year(), 1, 1);
-			}
-			else {
-				dateNaissance = RegDate.get(dateNaissance.year(), dateNaissance.month(), 1);
-			}
-		}
-		return dateNaissance.addYears(AGE_MAJORITE);
+		return getDateComplete(dateNaissance).addYears(AGE_MAJORITE);
 	}
 
 	/**
@@ -223,5 +215,19 @@ public abstract class FiscalDateHelper {
 	//UNIREG-] la période échue correspond à n-2 pour les tâches de contrôle de dossier notamment
 	public static boolean isEnPeriodeEchue(RegDate date) {
 		return date.year() <= RegDate.get().year() - 2;
+	}
+
+	/**
+	 * @param date date potentiellement partielle
+	 * @return la date complète correspondante (si la date est déjà complète, c'est vite vu) en remplaçant les données manquantes par des 1
+	 */
+	public static RegDate getDateComplete(RegDate date) {
+		if (date.day() == RegDate.UNDEFINED) {
+			if (date.month() == RegDate.UNDEFINED) {
+				return RegDate.get(date.year(), 1, 1);
+			}
+			return RegDate.get(date.year(), date.month(), 1);
+		}
+		return date;
 	}
 }

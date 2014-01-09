@@ -29,6 +29,7 @@ import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.EtatCivilHelper;
+import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
@@ -246,7 +247,7 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 		if (etatCivil.getTypeEtatCivil() == TypeEtatCivil.CELIBATAIRE) {
 			dateDebutEtatCivil = tiersService.getDateNaissance(pp);
 			if (dateDebutEtatCivil != null && dateDebutEtatCivil.isPartial()) {
-				dateDebutEtatCivil = RegDate.get(dateDebutEtatCivil.year(), Math.max(dateDebutEtatCivil.month(), 1), Math.max(dateDebutEtatCivil.day(), 1));
+				dateDebutEtatCivil = FiscalDateHelper.getDateComplete(dateDebutEtatCivil);
 			}
 		}
 		else if (EtatCivilHelper.estMarieOuPacse(etatCivil)) {
