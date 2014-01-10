@@ -55,7 +55,7 @@
 			</display:column>
 			<display:column sortable ="true" titleKey="label.date.naissance" sortProperty="dateNaissance">
 				<c:if test="${tiers.annule}"><strike></c:if>
-					<unireg:date date="${tiers.dateNaissance}"></unireg:date>
+					<unireg:date date="${tiers.dateNaissance}"/>
 				<c:if test="${tiers.annule}"></strike></c:if>
 			</display:column>
 			<display:column sortable ="true" titleKey="label.localitePays" >
@@ -83,5 +83,14 @@
 		<c:if test="${!command.allowed}">
 			<span class="error"><fmt:message key="error.rapport.interdit" /></span>
 		</c:if>
+
+	    <!-- Debut Bouton -->
+	    <table border="0">
+		    <tr><td>
+			    <input type="button" value="<fmt:message key="label.bouton.retour" />" onClick="javascript:document.location.href='../dossiers-apparentes/edit.do?id=${numeroTiers}';" />
+		    </td></tr>
+	    </table>
+	    <!-- Fin Bouton -->
+
 	</tiles:put>
 </tiles:insert>
