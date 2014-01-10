@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.securite.model.Operateur;
@@ -12,6 +13,7 @@ import ch.vd.uniregctb.acces.parDossier.view.DossierEditRestrictionView;
 import ch.vd.uniregctb.acces.parDossier.view.DroitAccesView;
 import ch.vd.uniregctb.general.manager.TiersGeneralManager;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
+import ch.vd.uniregctb.interfaces.service.ServiceSecuriteException;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
 import ch.vd.uniregctb.security.DroitAccesException;
 import ch.vd.uniregctb.security.DroitAccesService;
@@ -28,6 +30,8 @@ import ch.vd.uniregctb.type.TypeDroitAcces;
  *
  */
 public class DossierEditRestrictionManagerImpl implements DossierEditRestrictionManager {
+
+	private static final Logger LOGGER = Logger.getLogger(DossierEditRestrictionManagerImpl.class);
 
 	private TiersDAO tiersDAO;
 	private TiersGeneralManager tiersGeneralManager;
@@ -86,15 +90,21 @@ public class DossierEditRestrictionManagerImpl implements DossierEditRestriction
 				droitAccesView.setPrenomNom(prenomNom);
 				droitAccesView.setVisaOperateur(operator.getCode());
 
-				final List<ch.vd.infrastructure.model.CollectiviteAdministrative> collectivitesAdministrative = serviceSecuriteService.getCollectivitesUtilisateur(operator.getCode());
 				String officeImpot = null;
-				for (ch.vd.infrastructure.model.CollectiviteAdministrative collectiviteAdministrative : collectivitesAdministrative) {
-					if (officeImpot != null) {
-						officeImpot = officeImpot + ", " + collectiviteAdministrative.getNomCourt();
+				try {
+					final List<ch.vd.infrastructure.model.CollectiviteAdministrative> collectivitesAdministrative = serviceSecuriteService.getCollectivitesUtilisateur(operator.getCode());
+					for (ch.vd.infrastructure.model.CollectiviteAdministrative collectiviteAdministrative : collectivitesAdministrative) {
+						if (officeImpot != null) {
+							officeImpot = officeImpot + ", " + collectiviteAdministrative.getNomCourt();
+						}
+						else {
+							officeImpot = collectiviteAdministrative.getNomCourt();
+						}
 					}
-					else {
-						officeImpot = collectiviteAdministrative.getNomCourt();
-					}
+				}
+				catch (ServiceSecuriteException e) {
+					officeImpot = null;
+					LOGGER.warn("Exception reçue à la réception des collectivités de l'utilisateur " + operator.getCode(), e);
 				}
 				if (officeImpot != null) {
 					droitAccesView.setOfficeImpot(officeImpot);
@@ -129,8 +139,6 @@ public class DossierEditRestrictionManagerImpl implements DossierEditRestriction
 
 	/**
 	 * Annule une restriction
-	 *
-	 * @param dossierEditRestrictionView
 	 * @param idRestriction
 	 */
 	@Override
