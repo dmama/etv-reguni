@@ -80,9 +80,7 @@ public class DebiteurListController  extends  AbstractTiersListController implem
 
 		final HttpSession session = request.getSession();
 		final DebiteurListView bean = (DebiteurListView) session.getAttribute(DEBITEUR_CRITERIA_NAME);
-		final ModelAndView mav = showFormForList(request, response, errors, model, DEBITEUR_CRITERIA_NAME, DEBITEUR_LIST_ATTRIBUTE_NAME, bean, true);
-		session.removeAttribute(DEBITEUR_CRITERIA_NAME);
-		return mav;
+		return showFormForList(request, response, errors, model, DEBITEUR_CRITERIA_NAME, DEBITEUR_LIST_ATTRIBUTE_NAME, bean, true);
 	}
 
 

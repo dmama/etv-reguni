@@ -84,9 +84,7 @@ public class SourcierListController  extends  AbstractTiersListController implem
 			throws Exception {
 		HttpSession session = request.getSession();
 		SourcierListView bean = (SourcierListView) session.getAttribute(SOURCIER_CRITERIA_NAME);
-		ModelAndView mav = showFormForList(request, response, errors, model, SOURCIER_CRITERIA_NAME, SOURCIER_LIST_ATTRIBUTE_NAME, bean, true);
-		session.removeAttribute(SOURCIER_CRITERIA_NAME);
-		return mav;
+		return showFormForList(request, response, errors, model, SOURCIER_CRITERIA_NAME, SOURCIER_LIST_ATTRIBUTE_NAME, bean, true);
 	}
 
 	/**
