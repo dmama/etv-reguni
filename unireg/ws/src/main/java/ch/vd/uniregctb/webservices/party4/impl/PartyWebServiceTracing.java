@@ -24,7 +24,7 @@ import ch.vd.uniregctb.webservices.common.ResponseTimeTracingCounter;
  */
 public class PartyWebServiceTracing implements ServiceTracingInterface, InitializingBean, DisposableBean {
 
-	public static final String SERVICE_NAME = "PartyWebService3";
+	public static final String SERVICE_NAME = "PartyWebService4";
 
 	private CounterRepository counterRepository;
 	private int lastRefreshCountersSize = 0;
