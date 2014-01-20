@@ -179,8 +179,7 @@ public abstract class HibernateEntity implements Loggable, Annulable {
 		}
 		setAnnulationDate(dateAnnulation);
 
-		final String currentPrincipal = AuthenticationHelper.getCurrentPrincipal();
-		if (StringUtils.isNotBlank(currentPrincipal)) {
+		if (AuthenticationHelper.hasCurrentPrincipal()) {
 			setAnnulationUser(AuthenticationHelper.getCurrentPrincipal());
 		}
 		else {
