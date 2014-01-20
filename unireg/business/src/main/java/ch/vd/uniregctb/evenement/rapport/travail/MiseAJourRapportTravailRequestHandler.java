@@ -167,8 +167,15 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 	}
 
 	private void addNewRapport(DebiteurPrestationImposable dpi, PersonnePhysique sourcier, List<RapportPrestationImposable> nouveauxRapports) {
-		for (RapportPrestationImposable nouveauxRapport : nouveauxRapports) {
-			tiersService.addRapportPrestationImposable(sourcier, dpi, nouveauxRapport.getDateDebut(), nouveauxRapport.getDateFin());
+		for (RapportPrestationImposable nouveauRapport : nouveauxRapports) {
+			// on ne rajoute pas les nouveaux rapports qui ont été annulés depuis...
+			if (!nouveauRapport.isAnnule()) {
+				tiersService.addRapportPrestationImposable(sourcier, dpi, nouveauRapport.getDateDebut(), nouveauRapport.getDateFin());
+			}
+			else {
+				LOGGER.info(String.format("Le rapport précédemment créé sur la période %s n'a finalement pas été sauvegardé en base car il a été annulé par la suite.",
+				                          DateRangeHelper.toDisplayString(nouveauRapport)));
+			}
 		}
 	}
 
@@ -248,13 +255,13 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 		//final List<RapportPrestationImposable> rapports = tiersService.getAllRapportPrestationImposable(dpi,sourcier, true, true);
 		final List<RapportPrestationImposable> rapportsConcernes = new ArrayList<>();
 		for (RapportPrestationImposable rapport : rapportsAModifier) {
-			if (DateRangeHelper.intersect(periodeDeclaration, rapport)) {
+			if (DateRangeHelper.intersect(periodeDeclaration, rapport) && !rapport.isAnnule()) {
 				rapportsConcernes.add(rapport);
 			}
 		}
 
 		for (RapportPrestationImposable rapport : nouveauxRapports) {
-			if (DateRangeHelper.intersect(periodeDeclaration, rapport)) {
+			if (DateRangeHelper.intersect(periodeDeclaration, rapport) && !rapport.isAnnule()) {
 				rapportsConcernes.add(rapport);
 			}
 		}

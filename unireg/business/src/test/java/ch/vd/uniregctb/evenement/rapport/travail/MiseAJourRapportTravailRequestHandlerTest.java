@@ -1916,4 +1916,90 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 			}
 		});
 	}
+
+	@Test
+	public void testFermetureAvecChevauchementPrealable() throws Exception {
+
+		final long noIndividuSourcier = 478267L;
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				addIndividu(noIndividuSourcier, date(1965, 9, 17), "O'Hara", "Starlett", Sexe.FEMININ);
+			}
+		});
+
+		final class Ids {
+			long pp;
+			long dpi;
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique sourcier = addHabitant(noIndividuSourcier);
+				addForPrincipal(sourcier, date(2009, 6, 1), MotifFor.ARRIVEE_HS, MockCommune.Aigle, ModeImposition.SOURCE);
+
+				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+				addForDebiteur(dpi, date(2009, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Lausanne);
+				addRapportPrestationImposable(dpi, sourcier, date(2009, 6, 1), date(2012, 12, 31), false);
+				addRapportPrestationImposable(dpi, sourcier, date(2012, 1, 1), date(2013, 5, 10), false);
+
+				final Ids ids = new Ids();
+				ids.pp = sourcier.getNumero();
+				ids.dpi = dpi.getNumero();
+				return ids;
+			}
+		});
+
+		final MiseAJourRapportTravailRequest req = createMiseAJourRapportTravailRequest(ids.dpi, ids.pp, new DateRangeHelper.Range(date(2013, 5, 1), date(2013, 5, 31)), null, null);
+		req.setFermetureRapportTravail(new FermetureRapportTravail());
+
+		final MiseAJourRapportTravailResponse response = doInNewTransaction(new TxCallback<MiseAJourRapportTravailResponse>() {
+			@Override
+			public MiseAJourRapportTravailResponse execute(TransactionStatus status) throws Exception {
+				return handler.handle(MiseAjourRapportTravail.get(req, null));
+			}
+		});
+		assertEquals(DataHelper.coreToXMLv1(RegDate.get()), response.getDatePriseEnCompte());
+		assertNull(response.getExceptionInfo());
+
+		// vérification des rapports au final -> les deux existants doivent avoir été annulés et remplacé par leur fusion, sans autre modification
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(ids.dpi);
+				final PersonnePhysique sourcier = (PersonnePhysique) tiersDAO.get(ids.pp);
+
+				final List<RapportPrestationImposable> rapports = tiersService.getAllRapportPrestationImposable(dpi, sourcier, false, true);
+				assertNotNull(rapports);
+				assertEquals(3, rapports.size());
+
+				Collections.sort(rapports, new DateRangeComparator<RapportPrestationImposable>());
+				{
+					final RapportPrestationImposable rapport = rapports.get(0);
+					assertNotNull(rapport);
+					assertEquals(date(2009, 6, 1), rapport.getDateDebut());
+					assertEquals(date(2012, 12, 31), rapport.getDateFin());
+					assertTrue(rapport.isAnnule());
+				}
+				{
+					final RapportPrestationImposable rapport = rapports.get(1);
+					assertNotNull(rapport);
+					assertEquals(date(2009, 6, 1), rapport.getDateDebut());
+					assertEquals(date(2013, 4, 30), rapport.getDateFin());
+					assertFalse(rapport.isAnnule());
+				}
+				{
+					final RapportPrestationImposable rapport = rapports.get(2);
+					assertNotNull(rapport);
+					assertEquals(date(2012, 1, 1), rapport.getDateDebut());
+					assertEquals(date(2013, 5, 10), rapport.getDateFin());
+					assertTrue(rapport.isAnnule());
+				}
+			}
+		});
+	}
 }
