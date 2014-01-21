@@ -1963,7 +1963,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 				return handler.handle(MiseAjourRapportTravail.get(req, null));
 			}
 		});
-		assertEquals(DataHelper.coreToXMLv1(RegDate.get()), response.getDatePriseEnCompte());
+		assertEquals(DataHelper.coreToXML(RegDate.get()), response.getDatePriseEnCompte());
 		assertNull(response.getExceptionInfo());
 
 		// vérification des rapports au final -> les deux existants doivent avoir été annulés et remplacé par leur fusion, sans autre modification
