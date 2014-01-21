@@ -401,6 +401,7 @@ public class TableFillerWithCivilValues {
 		b.append("NOM NVARCHAR2(100), ");
 		b.append("PRENOM NVARCHAR2(100), ");
 		b.append("DATE_NAISSANCE NUMBER(10), ");
+		b.append("DATE_DECES NUMBER(10), ");
 		b.append("SEXE NVARCHAR2(8), ");
 		b.append("AVS13 NVARCHAR2(13), ");
 		b.append("AVS11 NVARCHAR2(11), ");
@@ -439,6 +440,7 @@ public class TableFillerWithCivilValues {
 		b.append("NOM, ");
 		b.append("PRENOM, ");
 		b.append("DATE_NAISSANCE, ");
+		b.append("DATE_DECES, ");
 		b.append("SEXE, ");
 		b.append("AVS13, ");
 		b.append("AVS11, ");
@@ -466,7 +468,7 @@ public class TableFillerWithCivilValues {
 		b.append("SEXE_MERE, ");
 		b.append("AVS13_MERE, ");
 		b.append("AVS11_MERE");
-		b.append(") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+		b.append(") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 		return b.toString();
 	}
 
@@ -497,9 +499,10 @@ public class TableFillerWithCivilValues {
 		ps.setString(2, ind.getNom());
 		ps.setString(3, ind.getPrenom());
 		setRegDateParam(4, ps, ind.getDateNaissance());
-		setEnumParam(5, ps, ind.getSexe());
-		ps.setString(6, ind.getNouveauNoAVS());
-		ps.setString(7, ind.getNoAVS11());
+		setRegDateParam(5, ps, ind.getDateDeces());
+		setEnumParam(6, ps, ind.getSexe());
+		ps.setString(7, ind.getNouveauNoAVS());
+		ps.setString(8, ind.getNoAVS11());
 
 		// son adresse actuelle de contact
 		final Adresse contact = getCurrentAdresse(ind.getAdresses(), TypeAdresse.CONTACT);
@@ -507,32 +510,32 @@ public class TableFillerWithCivilValues {
 			final Integer noOfsPays = contact.getNoOfsPays();
 			if (noOfsPays == null || ServiceInfrastructureRaw.noOfsSuisse == noOfsPays) {
 				if (StringUtils.isNotBlank(contact.getNumeroPostal())) {
-					ps.setInt(8, Integer.parseInt(contact.getNumeroPostal()));
-				}
-				else {
-					ps.setNull(8, Types.INTEGER);
-				}
-				if (StringUtils.isNotBlank(contact.getNumeroPostalComplementaire())) {
-					ps.setInt(9, Integer.parseInt(contact.getNumeroPostalComplementaire()));
+					ps.setInt(9, Integer.parseInt(contact.getNumeroPostal()));
 				}
 				else {
 					ps.setNull(9, Types.INTEGER);
 				}
-				ps.setNull(10, Types.NVARCHAR);
-				ps.setInt(11, ServiceInfrastructureRaw.noOfsSuisse);
+				if (StringUtils.isNotBlank(contact.getNumeroPostalComplementaire())) {
+					ps.setInt(10, Integer.parseInt(contact.getNumeroPostalComplementaire()));
+				}
+				else {
+					ps.setNull(10, Types.INTEGER);
+				}
+				ps.setNull(11, Types.NVARCHAR);
+				ps.setInt(12, ServiceInfrastructureRaw.noOfsSuisse);
 			}
 			else {
-				ps.setNull(8, Types.INTEGER);
 				ps.setNull(9, Types.INTEGER);
-				ps.setString(10, contact.getNumeroPostal());
-				ps.setInt(11, noOfsPays);
+				ps.setNull(10, Types.INTEGER);
+				ps.setString(11, contact.getNumeroPostal());
+				ps.setInt(12, noOfsPays);
 			}
 		}
 		else {
-			ps.setNull(8, Types.INTEGER);
 			ps.setNull(9, Types.INTEGER);
-			ps.setNull(10, Types.NVARCHAR);
-			ps.setNull(11, Types.INTEGER);
+			ps.setNull(10, Types.INTEGER);
+			ps.setNull(11, Types.NVARCHAR);
+			ps.setNull(12, Types.INTEGER);
 		}
 
 		// son adresse actuelle de résidence
@@ -541,86 +544,86 @@ public class TableFillerWithCivilValues {
 			final Integer noOfsPays = residence.getNoOfsPays();
 			if (noOfsPays == null || ServiceInfrastructureRaw.noOfsSuisse == noOfsPays) {
 				if (StringUtils.isNotBlank(residence.getNumeroPostal())) {
-					ps.setInt(12, Integer.parseInt(residence.getNumeroPostal()));
-				}
-				else {
-					ps.setNull(12, Types.INTEGER);
-				}
-				if (StringUtils.isNotBlank(residence.getNumeroPostalComplementaire())) {
-					ps.setInt(13, Integer.parseInt(residence.getNumeroPostalComplementaire()));
+					ps.setInt(13, Integer.parseInt(residence.getNumeroPostal()));
 				}
 				else {
 					ps.setNull(13, Types.INTEGER);
 				}
-				ps.setNull(14, Types.NVARCHAR);
-				ps.setInt(15, ServiceInfrastructureRaw.noOfsSuisse);
+				if (StringUtils.isNotBlank(residence.getNumeroPostalComplementaire())) {
+					ps.setInt(14, Integer.parseInt(residence.getNumeroPostalComplementaire()));
+				}
+				else {
+					ps.setNull(14, Types.INTEGER);
+				}
+				ps.setNull(15, Types.NVARCHAR);
+				ps.setInt(16, ServiceInfrastructureRaw.noOfsSuisse);
 			}
 			else {
-				ps.setNull(12, Types.INTEGER);
 				ps.setNull(13, Types.INTEGER);
-				ps.setString(14, residence.getNumeroPostal());
-				ps.setInt(15, noOfsPays);
+				ps.setNull(14, Types.INTEGER);
+				ps.setString(15, residence.getNumeroPostal());
+				ps.setInt(16, noOfsPays);
 			}
 		}
 		else {
-			ps.setNull(12, Types.INTEGER);
 			ps.setNull(13, Types.INTEGER);
-			ps.setNull(14, Types.NVARCHAR);
-			ps.setNull(15, Types.INTEGER);
+			ps.setNull(14, Types.INTEGER);
+			ps.setNull(15, Types.NVARCHAR);
+			ps.setNull(16, Types.INTEGER);
 		}
 
 		// le père de l'individu
 		if (pere != null && pere.individu != null) {
-			ps.setLong(16, pere.individu.getNoTechnique());
-			ps.setNull(17, Types.NVARCHAR);
-			ps.setString(18, pere.individu.getNom());
-			ps.setString(19, pere.individu.getPrenom());
-			setRegDateParam(20, ps, pere.individu.getDateNaissance());
-			setEnumParam(21, ps, pere.individu.getSexe());
-			ps.setString(22, pere.individu.getNouveauNoAVS());
-			ps.setString(23, pere.individu.getNoAVS11());
+			ps.setLong(17, pere.individu.getNoTechnique());
+			ps.setNull(18, Types.NVARCHAR);
+			ps.setString(19, pere.individu.getNom());
+			ps.setString(20, pere.individu.getPrenom());
+			setRegDateParam(21, ps, pere.individu.getDateNaissance());
+			setEnumParam(22, ps, pere.individu.getSexe());
+			ps.setString(23, pere.individu.getNouveauNoAVS());
+			ps.setString(24, pere.individu.getNoAVS11());
 		}
 		else {
-			ps.setNull(16, Types.INTEGER);
+			ps.setNull(17, Types.INTEGER);
 			if (pere != null && pere.exception != null) {
-				ps.setString(17, buildExceptionMessage(pere.exception));
+				ps.setString(18, buildExceptionMessage(pere.exception));
 			}
 			else {
-				ps.setNull(17, Types.NVARCHAR);
+				ps.setNull(18, Types.NVARCHAR);
 			}
-			ps.setNull(18, Types.NVARCHAR);
 			ps.setNull(19, Types.NVARCHAR);
-			ps.setNull(20, Types.INTEGER);
-			ps.setNull(21, Types.NVARCHAR);
+			ps.setNull(20, Types.NVARCHAR);
+			ps.setNull(21, Types.INTEGER);
 			ps.setNull(22, Types.NVARCHAR);
 			ps.setNull(23, Types.NVARCHAR);
+			ps.setNull(24, Types.NVARCHAR);
 		}
 
 		// là mère de l'individu
 		if (mere != null && mere.individu != null) {
-			ps.setLong(24, mere.individu.getNoTechnique());
-			ps.setNull(25, Types.NVARCHAR);
-			ps.setString(26, mere.individu.getNom());
-			ps.setString(27, mere.individu.getPrenom());
-			setRegDateParam(28, ps, mere.individu.getDateNaissance());
-			setEnumParam(29, ps, mere.individu.getSexe());
-			ps.setString(30, mere.individu.getNouveauNoAVS());
-			ps.setString(31, mere.individu.getNoAVS11());
+			ps.setLong(25, mere.individu.getNoTechnique());
+			ps.setNull(26, Types.NVARCHAR);
+			ps.setString(27, mere.individu.getNom());
+			ps.setString(28, mere.individu.getPrenom());
+			setRegDateParam(29, ps, mere.individu.getDateNaissance());
+			setEnumParam(30, ps, mere.individu.getSexe());
+			ps.setString(31, mere.individu.getNouveauNoAVS());
+			ps.setString(32, mere.individu.getNoAVS11());
 		}
 		else {
-			ps.setNull(24, Types.INTEGER);
+			ps.setNull(25, Types.INTEGER);
 			if (mere != null && mere.exception != null) {
-				ps.setString(25, buildExceptionMessage(mere.exception));
+				ps.setString(26, buildExceptionMessage(mere.exception));
 			}
 			else {
-				ps.setNull(25, Types.NVARCHAR);
+				ps.setNull(26, Types.NVARCHAR);
 			}
-			ps.setNull(26, Types.NVARCHAR);
 			ps.setNull(27, Types.NVARCHAR);
-			ps.setNull(28, Types.INTEGER);
-			ps.setNull(29, Types.NVARCHAR);
+			ps.setNull(28, Types.NVARCHAR);
+			ps.setNull(29, Types.INTEGER);
 			ps.setNull(30, Types.NVARCHAR);
 			ps.setNull(31, Types.NVARCHAR);
+			ps.setNull(32, Types.NVARCHAR);
 		}
 		return ps.executeUpdate();
 	}
