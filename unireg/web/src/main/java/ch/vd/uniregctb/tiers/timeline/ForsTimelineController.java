@@ -33,6 +33,7 @@ import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalRevenuFortune;
 import ch.vd.uniregctb.tiers.ForGestion;
+import ch.vd.uniregctb.tiers.NatureTiers;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -138,15 +139,19 @@ public class ForsTimelineController {
 	 */
 	private void fillTimeline(ForsTimelineView bean, RegDate bigBang) {
 
-		Long id = bean.getTiersId();
+		final Long id = bean.getTiersId();
 		if (id == null) {
 			return;
 		}
 
-		Tiers tiers = dao.get(id);
+		final Tiers tiers = dao.get(id);
 		if (tiers == null) {
 			return;
 		}
+
+		// [SIFISC-11149] on veut pouvoir masquer des trucs selon le type de tiers
+		final NatureTiers natureTiers = tiers.getNatureTiers();
+		bean.setNatureTiers(natureTiers);
 
 		// Extraction des fors fiscaux
 		final List<ForFiscal> forsFiscaux = tiers.getForsFiscauxNonAnnules(true);

@@ -5,6 +5,7 @@ import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
+import ch.vd.uniregctb.tiers.NatureTiers;
 
 /**
  * Données pour la page de visualisation de l'historique des fors fiscaux et assujettissements d'un contribuable
@@ -16,6 +17,7 @@ public class ForsTimelineView {
 
 	// paramètres du formulaire
 	private Long tiersId = null;
+	private NatureTiers natureTiers = null;
 
 	// données découlant des paramètres
 	private final TimelineTable table;
@@ -113,5 +115,13 @@ public class ForsTimelineView {
 
 	public boolean isInvertedTime() {
 		return table.invertedTime;
+	}
+
+	public NatureTiers getNatureTiers() {
+		return natureTiers;
+	}
+
+	public void setNatureTiers(NatureTiers natureTiers) {
+		this.natureTiers = natureTiers;
 	}
 }

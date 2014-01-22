@@ -97,9 +97,11 @@
 				<input type="hidden" id="showPeriodesImposition" name="showPeriodesImposition" value="${command.showPeriodesImposition}"/>
 
 				<authz:authorize ifAnyGranted="ROLE_SUPERGRA">
-					<input type="checkbox" id="checkPeriodesImpositionIS" onclick="$('#showPeriodesImpositionIS').val($(this).is(':checked')); $(this).closest('form').submit();" <c:if test="${command.showPeriodesImpositionIS}"> checked</c:if>/>
-					<label for="checkPeriodesImpositionIS">Périodes d'imposition IS</label>
-					<input type="hidden" id="showPeriodesImpositionIS" name="showPeriodesImpositionIS" value="${command.showPeriodesImpositionIS}"/>
+					<c:if test="${command.natureTiers == 'Habitant' || command.natureTiers == 'NonHabitant'}">
+						<input type="checkbox" id="checkPeriodesImpositionIS" onclick="$('#showPeriodesImpositionIS').val($(this).is(':checked')); $(this).closest('form').submit();" <c:if test="${command.showPeriodesImpositionIS}"> checked</c:if>/>
+						<label for="checkPeriodesImpositionIS">Périodes d'imposition IS</label>
+						<input type="hidden" id="showPeriodesImpositionIS" name="showPeriodesImpositionIS" value="${command.showPeriodesImpositionIS}"/>
+					</c:if>
 				</authz:authorize>
 
 			</span>
