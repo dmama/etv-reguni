@@ -117,4 +117,9 @@ public interface WebService {
 	                                           @PathParam("sequenceNo") int seqNo,
 	                                           @QueryParam("login") String login,
 	                                           DeadlineRequest request);
+
+	@GET
+	@Path("/modifiedTaxPayers")
+	@Produces({MediaType.APPLICATION_XML, WebServiceHelper.APPLICATION_JSON_WITH_UTF8_CHARSET})
+	Response getModifiedTaxPayers(@QueryParam("login") String login, @QueryParam("since") Long since, @QueryParam("until") Long until);
 }

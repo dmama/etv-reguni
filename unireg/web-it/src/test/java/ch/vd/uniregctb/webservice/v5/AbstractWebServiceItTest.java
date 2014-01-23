@@ -1,11 +1,14 @@
 package ch.vd.uniregctb.webservice.v5;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
@@ -50,17 +53,41 @@ public abstract class AbstractWebServiceItTest extends WebitTest {
 		}
 	}
 
-	protected static RestTemplate buildTemplateWithAcceptHeader(MediaType... mediaTypes) {
-		final RestTemplate template = new RestTemplate();
-		if (mediaTypes != null && mediaTypes.length > 0) {
-			final ClientHttpRequestInterceptor interceptor = new AcceptHeaderHttpRequestInterceptor(mediaTypes);
-			template.setInterceptors(Collections.singletonList(interceptor));
+	protected static class AuthenticationInterceptor implements ClientHttpRequestInterceptor {
+		private final String username;
+		private final String password;
+
+		public AuthenticationInterceptor(String username, String password) {
+			this.username = username;
+			this.password = password;
 		}
+
+		@Override
+		public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException {
+			final String auth = String.format("%s:%s", username, password);
+			final Charset charset = Charset.forName("UTF-8");
+			final byte[] base64 = Base64.encodeBase64(auth.getBytes(charset));
+			final HttpRequestWrapper wrapper = new HttpRequestWrapper(request);
+			wrapper.getHeaders().set("Authorization", String.format("Basic %s", new String(base64, charset)));
+			return execution.execute(wrapper, body);
+		}
+	}
+
+	protected RestTemplate buildTemplate(MediaType... acceptedTypes) {
+		final RestTemplate template = new RestTemplate();
+		final List<ClientHttpRequestInterceptor> interceptors = new ArrayList<>();
+		if (acceptedTypes != null && acceptedTypes.length > 0) {
+			interceptors.add(new AcceptHeaderHttpRequestInterceptor(acceptedTypes));
+		}
+		if (StringUtils.isNotBlank(username)) {
+			interceptors.add(new AuthenticationInterceptor(username, password));
+		}
+		template.setInterceptors(interceptors);
 		return template;
 	}
 
 	protected <T> ResponseEntity<T> get(Class<T> clazz, @NotNull MediaType acceptedMediaType, String uri, Map<String, ?> params) {
-		final RestTemplate template = buildTemplateWithAcceptHeader(acceptedMediaType);
+		final RestTemplate template = buildTemplate(acceptedMediaType);
 		try {
 			final ResponseEntity<T> response = template.getForEntity(v5Url + uri, clazz, params);
 			Assert.assertNotNull(response);
@@ -74,7 +101,7 @@ public abstract class AbstractWebServiceItTest extends WebitTest {
 	}
 
 	protected HttpStatus put(String uri, Map<String, ?> params, Object data, @NotNull MediaType dataType) {
-		final RestTemplate template = new RestTemplate();
+		final RestTemplate template = buildTemplate();
 		final HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(dataType);
 		try {

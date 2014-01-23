@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.webservices.v5;
 
+import java.util.Date;
+
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
@@ -7,6 +9,7 @@ import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationAckRequest;
 import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationAckResponse;
 import ch.vd.unireg.ws.deadline.v1.DeadlineRequest;
 import ch.vd.unireg.ws.deadline.v1.DeadlineResponse;
+import ch.vd.unireg.ws.modifiedtaxpayers.v1.PartyNumberList;
 import ch.vd.unireg.ws.security.v1.SecurityResponse;
 import ch.vd.unireg.ws.taxoffices.v1.TaxOffices;
 import ch.vd.uniregctb.webservices.common.AccessDeniedException;
@@ -72,4 +75,14 @@ public interface BusinessWebService {
 	 * @throws ch.vd.uniregctb.common.ObjectNotFoundException si la commune est inconnue ou n'est pas vaudoise
 	 */
 	TaxOffices getTaxOffices(int municipalityId, @Nullable RegDate date);
+
+	/**
+	 * Récupère une liste des numéros de contribuables modifiés entre les date données (toutes deux comprises)
+	 * @param login désignation de l'opérateur qui demande la liste
+	 * @param since <i>timestamp</i> du début de la période interessante
+	 * @param until <i>timestamp</i> de la fin de la période intéressante
+	 * @return la liste des numéros des contribuables modifiés
+	 * @throws AccessDeniedException si l'opérateur n'a pas accès à cette liste
+	 */
+	PartyNumberList getModifiedTaxPayers(UserLogin login, Date since, Date until) throws AccessDeniedException;
 }

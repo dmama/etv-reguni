@@ -10,7 +10,7 @@ public class WebServiceStatusItTest extends AbstractWebServiceItTest {
 
 	@Test
 	public void testPing() throws Exception {
-		final RestTemplate template = buildTemplateWithAcceptHeader();
+		final RestTemplate template = buildTemplate();
 		final String response = template.getForObject(v5Url + "/status/ping", String.class);
 		Assert.assertNotNull(response);
 		Assert.assertTrue(response, Pattern.matches("[0-9]+", response));

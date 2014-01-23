@@ -44,4 +44,6 @@
   <user username="unitest" password="unireg_1014" roles="ws-tiers-role,ws-securite-role"/>
   <user username="perfs" password="unireg_1014" roles="ws-tiers-role,ws-securite-role"/>
 
+  <user username="web-it" password="wsunireg" roles="ws-tiers-role"/>
+
 </tomcat-users>

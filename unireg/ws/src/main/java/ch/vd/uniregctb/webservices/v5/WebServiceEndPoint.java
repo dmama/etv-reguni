@@ -4,6 +4,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.text.ParseException;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -18,6 +19,7 @@ import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationAckRequest;
 import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationAckResponse;
 import ch.vd.unireg.ws.deadline.v1.DeadlineRequest;
 import ch.vd.unireg.ws.deadline.v1.DeadlineResponse;
+import ch.vd.unireg.ws.modifiedtaxpayers.v1.PartyNumberList;
 import ch.vd.unireg.ws.security.v1.SecurityResponse;
 import ch.vd.unireg.ws.taxoffices.v1.TaxOffices;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
@@ -48,6 +50,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 	private final ch.vd.unireg.ws.ack.v1.ObjectFactory ackObjectFactory = new ch.vd.unireg.ws.ack.v1.ObjectFactory();
 	private final ch.vd.unireg.ws.deadline.v1.ObjectFactory deadlineObjectFactory = new ch.vd.unireg.ws.deadline.v1.ObjectFactory();
 	private final ch.vd.unireg.ws.taxoffices.v1.ObjectFactory taxOfficesObjectFactory = new ch.vd.unireg.ws.taxoffices.v1.ObjectFactory();
+	private final ch.vd.unireg.ws.modifiedtaxpayers.v1.ObjectFactory modifiedTaxPayersFactory = new ch.vd.unireg.ws.modifiedtaxpayers.v1.ObjectFactory();
 
 	private BusinessWebService target;
 
@@ -296,7 +299,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 		final Object params = new Object() {
 			@Override
 			public String toString() {
-				return String.format("newOrdinaryTaxDeclarationDeadline{login='%s', partyNo=%d, pf=%d, seqNo=%d, request=%s", login, partyNo, pf, seqNo, request);
+				return String.format("newOrdinaryTaxDeclarationDeadline{login='%s', partyNo=%d, pf=%d, seqNo=%d, request=%s}", login, partyNo, pf, seqNo, request);
 			}
 		};
 		return execute(login, params, WRITE_ACCESS_LOG, new ExecutionWithLoginCallback() {
@@ -304,6 +307,39 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 			public Response execute(UserLogin userLogin) throws Exception {
 				final DeadlineResponse response = target.newOrdinaryTaxDeclarationDeadline(partyNo, pf, seqNo, userLogin, request);
 				return Response.ok(deadlineObjectFactory.createDeadlineResponse(response)).build();
+			}
+		});
+	}
+
+	@Override
+	public Response getModifiedTaxPayers(final String login, final Long since, final Long until) {
+		final Object params = new Object() {
+			@Override
+			public String toString() {
+				return String.format("getModifiedTaxPayers{login='%s', since=%d, until=%d}", login, since, until);
+			}
+		};
+		return execute(login, params, READ_ACCESS_LOG, new ExecutionWithLoginCallback() {
+			@Override
+			public Response execute(UserLogin userLogin) throws Exception {
+				if (since == null || until == null) {
+					return WebServiceHelper.buildErrorResponse(Response.Status.BAD_REQUEST, getAcceptableMediaTypes(), "'since' and 'until' are required parameters.");
+				}
+				else if (since > until) {
+					return WebServiceHelper.buildErrorResponse(Response.Status.BAD_REQUEST, getAcceptableMediaTypes(), "'since' should be before 'until'");
+				}
+
+				final Date sinceTimestamp = new Date(since);
+				final Date untilTimestamp = new Date(until);
+				final PartyNumberList response = target.getModifiedTaxPayers(userLogin, sinceTimestamp, untilTimestamp);
+				final MediaType preferred = getPreferredMediaTypeFromXmlOrJson();
+				if (preferred == WebServiceHelper.APPLICATION_JSON_WITH_UTF8_CHARSET_TYPE) {
+					return Response.ok(response, preferred).build();
+				}
+				else if (preferred == MediaType.APPLICATION_XML_TYPE) {
+					return Response.ok(modifiedTaxPayersFactory.createModifiedTayPayers(response), preferred).build();
+				}
+				return Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build();
 			}
 		});
 	}

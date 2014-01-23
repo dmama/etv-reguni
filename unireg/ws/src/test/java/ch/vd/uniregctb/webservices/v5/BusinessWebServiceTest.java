@@ -1,10 +1,14 @@
 package ch.vd.uniregctb.webservices.v5;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import edu.emory.mathcs.backport.java.util.Collections;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
@@ -26,6 +30,7 @@ import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationKey;
 import ch.vd.unireg.ws.deadline.v1.DeadlineRequest;
 import ch.vd.unireg.ws.deadline.v1.DeadlineResponse;
 import ch.vd.unireg.ws.deadline.v1.DeadlineStatus;
+import ch.vd.unireg.ws.modifiedtaxpayers.v1.PartyNumberList;
 import ch.vd.unireg.ws.security.v1.AllowedAccess;
 import ch.vd.unireg.ws.security.v1.SecurityResponse;
 import ch.vd.unireg.ws.taxoffices.v1.TaxOffices;
@@ -508,5 +513,58 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		catch (ObjectNotFoundException e) {
 			Assert.assertEquals("Commune 99999 inconnue dans le canton de Vaud.", e.getMessage());
 		}
+	}
+
+	@Test
+	public void testGetModifiedTaxPayers() throws Exception {
+
+		final Pair<Long, Date> pp1 = doInNewTransactionAndSession(new TransactionCallback<Pair<Long, Date>>() {
+			@Override
+			public Pair<Long, Date> doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Philippe", "Lemol", date(1956, 9, 30), Sexe.MASCULIN);
+				addForPrincipal(pp, date(2000, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
+				return Pair.<Long, Date>of(pp.getNumero(), pp.getLogModifDate());
+			}
+		});
+
+		Thread.sleep(1000);
+		final Pair<Long, Date> pp2 = doInNewTransactionAndSession(new TransactionCallback<Pair<Long, Date>>() {
+			@Override
+			public Pair<Long, Date> doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Albert", "Duchmol", date(1941, 5, 4), Sexe.MASCULIN);
+				addForPrincipal(pp, date(2000, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
+				return Pair.<Long, Date>of(pp.getNumero(), pp.getLogModifDate());
+			}
+		});
+
+		final Date start = new Date(pp1.getRight().getTime() - 100);
+		final Date middle = new Date(pp2.getRight().getTime() - 100);
+		Assert.assertTrue(pp1.getRight().before(middle));
+		final Date end = new Date(pp2.getRight().getTime() + 100);
+		final Date now = new Date(pp2.getRight().getTime() + 200);
+
+		// rien
+		final PartyNumberList none = service.getModifiedTaxPayers(new UserLogin(getDefaultOperateurName(), 22), end, now);
+		Assert.assertNotNull(none);
+		Assert.assertNotNull(none.getPartyNo());
+		Assert.assertEquals(0, none.getPartyNo().size());
+
+		// 1 contribuable
+		final PartyNumberList one = service.getModifiedTaxPayers(new UserLogin(getDefaultOperateurName(), 22), middle, now);
+		Assert.assertNotNull(one);
+		Assert.assertNotNull(one.getPartyNo());
+		Assert.assertEquals(1, one.getPartyNo().size());
+		Assert.assertEquals(pp2.getLeft().longValue(), one.getPartyNo().get(0).longValue());
+
+		// 2 contribuables
+		final PartyNumberList two = service.getModifiedTaxPayers(new UserLogin(getDefaultOperateurName(), 22), start, now);
+		Assert.assertNotNull(two);
+		Assert.assertNotNull(two.getPartyNo());
+		Assert.assertEquals(2, two.getPartyNo().size());
+
+		final List<Integer> sortedList = new ArrayList<>(two.getPartyNo());
+		Collections.sort(sortedList);
+		Assert.assertEquals(pp1.getLeft().longValue(), sortedList.get(0).longValue());
+		Assert.assertEquals(pp2.getLeft().longValue(), sortedList.get(1).longValue());
 	}
 }

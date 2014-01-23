@@ -1,6 +1,8 @@
 package ch.vd.uniregctb.webservices.v5;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +29,7 @@ import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationKey;
 import ch.vd.unireg.ws.deadline.v1.DeadlineRequest;
 import ch.vd.unireg.ws.deadline.v1.DeadlineResponse;
 import ch.vd.unireg.ws.deadline.v1.DeadlineStatus;
+import ch.vd.unireg.ws.modifiedtaxpayers.v1.PartyNumberList;
 import ch.vd.unireg.ws.security.v1.SecurityResponse;
 import ch.vd.unireg.ws.taxoffices.v1.TaxOffice;
 import ch.vd.unireg.ws.taxoffices.v1.TaxOffices;
@@ -405,6 +408,22 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 				return new TaxOffices(new TaxOffice(oid.getNumero().intValue(), oid.getNumeroCollectiviteAdministrative()),
 				                      new TaxOffice(oir.getNumero().intValue(), oir.getNumeroCollectiviteAdministrative()),
 				                      null);
+			}
+		});
+	}
+
+	@Override
+	public PartyNumberList getModifiedTaxPayers(UserLogin login, final Date since, final Date until) throws AccessDeniedException {
+		WebServiceHelper.checkAccess(securityProvider, login, Role.VISU_ALL);
+		return doInTransaction(true, new TransactionCallback<PartyNumberList>() {
+			@Override
+			public PartyNumberList doInTransaction(TransactionStatus status) {
+				final List<Long> longList = tiersDAO.getListeCtbModifies(since, until);
+				final List<Integer> intList = new ArrayList<>(longList.size());
+				for (Long id : longList) {
+					intList.add(id.intValue());
+				}
+				return new PartyNumberList(intList);
 			}
 		});
 	}
