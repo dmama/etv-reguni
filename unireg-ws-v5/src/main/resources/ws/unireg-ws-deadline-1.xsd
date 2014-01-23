@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/ws/deadline/1" elementFormDefault="qualified"
            xmlns:xs="http://www.w3.org/2001/XMLSchema"
-           xmlns:common="http://www.vd.ch/fiscalite/unireg/common/1"
+           xmlns:common="http://www.vd.ch/fiscalite/unireg/common/2"
            xmlns:tns="http://www.vd.ch/fiscalite/unireg/ws/deadline/1"
            xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
            jxb:version="2.0">
 
-	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/1" schemaLocation="unireg-common-1.xsd"/>
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/2" schemaLocation="../unireg-common-2.xsd"/>
 
 	<xs:complexType name="deadlineRequestType">
 		<xs:annotation>

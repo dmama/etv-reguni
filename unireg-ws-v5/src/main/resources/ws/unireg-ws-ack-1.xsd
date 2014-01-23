@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/ws/ack/1" elementFormDefault="qualified"
            xmlns:xs="http://www.w3.org/2001/XMLSchema"
-           xmlns:common="http://www.vd.ch/fiscalite/unireg/common/1"
+           xmlns:common="http://www.vd.ch/fiscalite/unireg/common/2"
+           xmlns:taxdeclaration="http://www.vd.ch/fiscalite/unireg/party/taxdeclaration/3"
            xmlns:tns="http://www.vd.ch/fiscalite/unireg/ws/ack/1"
            xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
            jxb:version="2.0">
 
-	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/1" schemaLocation="unireg-common-1.xsd"/>
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/2" schemaLocation="../unireg-common-2.xsd"/>
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/taxdeclaration/3" schemaLocation="../party/unireg-party-taxdeclaration-3.xsd"/>
 
 	<xs:complexType name="ordinaryTaxDeclarationAckRequestType">
 		<xs:annotation>
@@ -35,7 +37,7 @@
 					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="declaration" type="tns:ordinaryTaxDeclarationKeyType" minOccurs="1" maxOccurs="unbounded">
+			<xs:element name="declaration" type="taxdeclaration:taxDeclarationKeyType" minOccurs="1" maxOccurs="unbounded">
 				<xs:annotation>
 					<xs:appinfo>
 						<jxb:property>
@@ -69,7 +71,7 @@
 			</xs:appinfo>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="declaration" type="tns:ordinaryTaxDeclarationKeyType">
+			<xs:element name="declaration" type="taxdeclaration:taxDeclarationKeyType">
 				<xs:annotation>
 					<xs:appinfo>
 						<jxb:property>
@@ -195,43 +197,6 @@
 			</xs:enumeration>
 		</xs:restriction>
 	</xs:simpleType>
-
-	<xs:complexType name="ordinaryTaxDeclarationKeyType">
-		<xs:annotation>
-			<xs:appinfo>
-				<jxb:class>
-					<jxb:javadoc>Identification d'une déclaration d'impôt ordinaire.</jxb:javadoc>
-				</jxb:class>
-			</xs:appinfo>
-		</xs:annotation>
-		<xs:attribute name="partyNo" type="common:partyNumberType" use="required">
-			<xs:annotation>
-				<xs:appinfo>
-					<jxb:property>
-						<jxb:javadoc>Numéro du contribuable.</jxb:javadoc>
-					</jxb:property>
-				</xs:appinfo>
-			</xs:annotation>
-		</xs:attribute>
-		<xs:attribute name="taxPeriod" type="common:yearType" use="required">
-			<xs:annotation>
-				<xs:appinfo>
-					<jxb:property>
-						<jxb:javadoc>Année de la période fiscale.</jxb:javadoc>
-					</jxb:property>
-				</xs:appinfo>
-			</xs:annotation>
-		</xs:attribute>
-		<xs:attribute name="sequenceNo" type="xs:int" use="required">
-			<xs:annotation>
-				<xs:appinfo>
-					<jxb:property>
-						<jxb:javadoc>Numéro de séquence de la déclaration d'impôt ordinaire dans la période fiscale.</jxb:javadoc>
-					</jxb:property>
-				</xs:appinfo>
-			</xs:annotation>
-		</xs:attribute>
-	</xs:complexType>
 
 	<xs:element name="ordinaryTaxDeclarationAckRequest" type="tns:ordinaryTaxDeclarationAckRequestType"/>
 	<xs:element name="ordinaryTaxDeclarationAckResponse" type="tns:ordinaryTaxDeclarationAckResponseType"/>
