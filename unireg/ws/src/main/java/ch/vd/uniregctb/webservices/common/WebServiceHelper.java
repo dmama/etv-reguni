@@ -15,6 +15,7 @@ import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.unireg.xml.error.v1.Error;
+import ch.vd.unireg.xml.error.v1.ErrorType;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
@@ -163,8 +164,8 @@ public abstract class WebServiceHelper {
 	 * @param errorMessage le message d'erreur à envoyer dans le corps de la réponse
 	 * @return la réponse elle même
 	 */
-	public static Response buildErrorResponse(Response.Status status, List<MediaType> acceptableMediaTypes, String errorMessage) {
-		final Error error = new Error(errorMessage);
+	public static Response buildErrorResponse(Response.Status status, List<MediaType> acceptableMediaTypes, ErrorType errorType, String errorMessage) {
+		final Error error = new Error(errorType, errorMessage);
 		final MediaType preferred = getPreferedMediaType(acceptableMediaTypes, new MediaType[] {MediaType.APPLICATION_XML_TYPE, APPLICATION_JSON_WITH_UTF8_CHARSET_TYPE});
 		if (preferred == APPLICATION_JSON_WITH_UTF8_CHARSET_TYPE) {
 			return Response.status(status).entity(error).build();
@@ -182,8 +183,8 @@ public abstract class WebServiceHelper {
 	 * @param t une exception dont on va extraire le message d'erreur
 	 * @return la réponse elle même
 	 */
-	public static Response buildErrorResponse(Response.Status status, List<MediaType> acceptableMediaTypes, Throwable t) {
-		return buildErrorResponse(status, acceptableMediaTypes, buildExceptionMessage(t));
+	public static Response buildErrorResponse(Response.Status status, List<MediaType> acceptableMediaTypes, ErrorType errorType, Throwable t) {
+		return buildErrorResponse(status, acceptableMediaTypes, errorType, buildExceptionMessage(t));
 	}
 
 	/**

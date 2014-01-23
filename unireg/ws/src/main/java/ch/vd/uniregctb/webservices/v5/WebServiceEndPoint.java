@@ -32,6 +32,7 @@ import ch.vd.unireg.ws.parties.v1.Parties;
 import ch.vd.unireg.ws.security.v1.SecurityResponse;
 import ch.vd.unireg.ws.taxoffices.v1.TaxOffices;
 import ch.vd.unireg.xml.error.v1.Error;
+import ch.vd.unireg.xml.error.v1.ErrorType;
 import ch.vd.unireg.xml.party.corporation.v3.CorporationEvent;
 import ch.vd.unireg.xml.party.v3.Party;
 import ch.vd.unireg.xml.party.v3.PartyInfo;
@@ -128,22 +129,22 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 		catch (AccessDeniedException e) {
 			t = e;
 			LOGGER.error(e.getMessage());
-			r = WebServiceHelper.buildErrorResponse(Response.Status.FORBIDDEN, getAcceptableMediaTypes(), e);
+			r = WebServiceHelper.buildErrorResponse(Response.Status.FORBIDDEN, getAcceptableMediaTypes(), ErrorType.ACCESS, e);
 		}
 		catch (ObjectNotFoundException e) {
 			t = e;
 			LOGGER.error(e.getMessage());
-			r = WebServiceHelper.buildErrorResponse(Response.Status.NOT_FOUND, getAcceptableMediaTypes(), e);
+			r = WebServiceHelper.buildErrorResponse(Response.Status.NOT_FOUND, getAcceptableMediaTypes(), ErrorType.BUSINESS, e);
 		}
 		catch (BadRequestException e) {
 			t = e;
 			LOGGER.error(e.getMessage());
-			r = WebServiceHelper.buildErrorResponse(Response.Status.BAD_REQUEST, getAcceptableMediaTypes(), e);
+			r = WebServiceHelper.buildErrorResponse(Response.Status.BAD_REQUEST, getAcceptableMediaTypes(), ErrorType.TECHNICAL, e);
 		}
 		catch (Throwable e) {
 			t = e;
 			LOGGER.error(e, e);
-			r = WebServiceHelper.buildErrorResponse(Response.Status.INTERNAL_SERVER_ERROR, getAcceptableMediaTypes(), e);
+			r = WebServiceHelper.buildErrorResponse(Response.Status.INTERNAL_SERVER_ERROR, getAcceptableMediaTypes(), ErrorType.TECHNICAL, e);
 		}
 		finally {
 			final long end = loadMeter.end();
@@ -166,7 +167,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 				final UserLogin userLogin = WebServiceHelper.parseLoginParameter(user);
 				if (userLogin == null) {
 					LOGGER.error("Missing/invalid user (" + user + ")");
-					return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.BAD_REQUEST, getAcceptableMediaTypes(), "Missing/invalid user parameter."));
+					return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.BAD_REQUEST, getAcceptableMediaTypes(), ErrorType.TECHNICAL, "Missing/invalid user parameter."));
 				}
 
 				WebServiceHelper.login(userLogin);
@@ -195,7 +196,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 			public ExecutionResult execute(UserLogin userLogin) throws Exception {
 				if (value == null || !BOOLEAN_PATTERN.matcher(value).matches()) {
 					LOGGER.error("Wrong or missing new flag value");
-					return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.BAD_REQUEST, getAcceptableMediaTypes(), "Wrong or missing new flag value."));
+					return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.BAD_REQUEST, getAcceptableMediaTypes(), ErrorType.TECHNICAL, "Wrong or missing new flag value."));
 				}
 
 				final boolean blocked = Boolean.parseBoolean(value);
@@ -276,7 +277,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 				try {
 					final Party party = target.getParty(userLogin, partyNo, parts);
 					if (party == null) {
-						return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.NOT_FOUND, getAcceptableMediaTypes(), "Le tiers n'existe pas."));
+						return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.NOT_FOUND, getAcceptableMediaTypes(), ErrorType.BUSINESS, "Le tiers n'existe pas."));
 					}
 					final MediaType preferred = getPreferredMediaTypeFromXmlOrJson();
 					if (preferred == WebServiceHelper.APPLICATION_JSON_WITH_UTF8_CHARSET_TYPE) {
@@ -288,7 +289,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 					return ExecutionResult.with(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build());
 				}
 				catch (ServiceException e) {
-					return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.INTERNAL_SERVER_ERROR, getAcceptableMediaTypes(), e));
+					return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.INTERNAL_SERVER_ERROR, getAcceptableMediaTypes(), ErrorType.TECHNICAL, e));
 				}
 			}
 		});
@@ -325,7 +326,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 					return ExecutionResult.with(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build());
 				}
 				catch (ServiceException e) {
-					return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.INTERNAL_SERVER_ERROR, getAcceptableMediaTypes(), e));
+					return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.INTERNAL_SERVER_ERROR, getAcceptableMediaTypes(), ErrorType.TECHNICAL, e));
 				}
 			}
 		});
@@ -366,7 +367,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 					dateNaissance = dateFromString(dateOfBirthStr, true);
 				}
 				catch (ParseException | IllegalArgumentException e) {
-					return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.BAD_REQUEST, getAcceptableMediaTypes(), e));
+					return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.BAD_REQUEST, getAcceptableMediaTypes(), ErrorType.TECHNICAL, e));
 				}
 
 				ch.vd.unireg.ws.search.party.v1.SearchResult result;
@@ -376,7 +377,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 					result = new ch.vd.unireg.ws.search.party.v1.SearchResult(null, infos);
 				}
 				catch (IndexerException e) {
-					result = new ch.vd.unireg.ws.search.party.v1.SearchResult(new Error(WebServiceHelper.buildExceptionMessage(e)), null);
+					result = new ch.vd.unireg.ws.search.party.v1.SearchResult(new Error(ErrorType.BUSINESS, WebServiceHelper.buildExceptionMessage(e)), null);
 				}
 
 				final int nbItems = result.getParty() != null ? result.getParty().size() : 0;
@@ -419,7 +420,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 					date = dateFromString(dateStr, false);
 				}
 				catch (ParseException | IllegalArgumentException e) {
-					return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.BAD_REQUEST, getAcceptableMediaTypes(), e));
+					return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.BAD_REQUEST, getAcceptableMediaTypes(), ErrorType.TECHNICAL, e));
 				}
 
 				final TaxOffices taxOffices = target.getTaxOffices(municipalityId, date);
@@ -498,10 +499,10 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 			@Override
 			public ExecutionResult execute(UserLogin userLogin) throws Exception {
 				if (since == null || until == null) {
-					return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.BAD_REQUEST, getAcceptableMediaTypes(), "'since' and 'until' are required parameters."));
+					return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.BAD_REQUEST, getAcceptableMediaTypes(), ErrorType.TECHNICAL, "'since' and 'until' are required parameters."));
 				}
 				else if (since > until) {
-					return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.BAD_REQUEST, getAcceptableMediaTypes(), "'since' should be before 'until'"));
+					return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.BAD_REQUEST, getAcceptableMediaTypes(), ErrorType.TECHNICAL, "'since' should be before 'until'"));
 				}
 
 				final Date sinceTimestamp = new Date(since);
@@ -564,7 +565,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 					end = dateFromString(endDay, false);
 				}
 				catch (ParseException | IllegalArgumentException e) {
-					return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.BAD_REQUEST, getAcceptableMediaTypes(), e));
+					return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.BAD_REQUEST, getAcceptableMediaTypes(), ErrorType.TECHNICAL, e));
 				}
 
 				ch.vd.unireg.ws.search.corpevent.v1.SearchResult result;
@@ -573,7 +574,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 					result = new ch.vd.unireg.ws.search.corpevent.v1.SearchResult(null, events);
 				}
 				catch (EmptySearchCriteriaException e) {
-					result = new ch.vd.unireg.ws.search.corpevent.v1.SearchResult(new Error(WebServiceHelper.buildExceptionMessage(e)), null);
+					result = new ch.vd.unireg.ws.search.corpevent.v1.SearchResult(new Error(ErrorType.BUSINESS, WebServiceHelper.buildExceptionMessage(e)), null);
 				}
 
 				final int nbItems = result.getEvent() != null ? result.getEvent().size() : 0;

@@ -55,6 +55,7 @@ import ch.vd.unireg.ws.parties.v1.Parties;
 import ch.vd.unireg.ws.security.v1.SecurityResponse;
 import ch.vd.unireg.ws.taxoffices.v1.TaxOffice;
 import ch.vd.unireg.ws.taxoffices.v1.TaxOffices;
+import ch.vd.unireg.xml.error.v1.ErrorType;
 import ch.vd.unireg.xml.party.corporation.v3.CorporationEvent;
 import ch.vd.unireg.xml.party.taxdeclaration.v3.TaxDeclarationKey;
 import ch.vd.unireg.xml.party.v3.Party;
@@ -789,8 +790,12 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 					WebServiceHelper.checkPartyReadAccess(context.securityProvider, user, id);
 					idLongSet.add((long) id);
 				}
-				catch (AccessDeniedException | TiersNotFoundException e) {
-					partyOrError.add(new ch.vd.unireg.ws.parties.v1.Error(e.getMessage(), id));
+				catch (AccessDeniedException e) {
+					partyOrError.add(new ch.vd.unireg.ws.parties.v1.Error(ErrorType.ACCESS, e.getMessage(), id));
+					idIterator.remove();
+				}
+				catch (TiersNotFoundException e) {
+					partyOrError.add(new ch.vd.unireg.ws.parties.v1.Error(ErrorType.BUSINESS, e.getMessage(), id));
 					idIterator.remove();
 				}
 			}
@@ -801,12 +806,18 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 				if (t != null) {
 					final Party party = buildParty(t, parts, context);
 					if (party == null) {
-						partyOrError.add(new ch.vd.unireg.ws.parties.v1.Error("Tiers non exposé.", t.getNumero().intValue()));
+						partyOrError.add(new ch.vd.unireg.ws.parties.v1.Error(ErrorType.BUSINESS, "Tiers non exposé.", t.getNumero().intValue()));
 					}
 					else {
 						partyOrError.add(party);
 					}
+					idLongSet.remove(t.getNumero());
 				}
+			}
+
+			// le reliquat sont des erreurs techniques (= bugs ?)
+			for (long id : idLongSet) {
+				partyOrError.add(new ch.vd.unireg.ws.parties.v1.Error(ErrorType.TECHNICAL, "Erreur inattendue.", (int) id));
 			}
 
 			return parties;

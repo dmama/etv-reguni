@@ -46,6 +46,7 @@ import ch.vd.unireg.ws.parties.v1.Parties;
 import ch.vd.unireg.ws.security.v1.AllowedAccess;
 import ch.vd.unireg.ws.security.v1.SecurityResponse;
 import ch.vd.unireg.ws.taxoffices.v1.TaxOffices;
+import ch.vd.unireg.xml.error.v1.ErrorType;
 import ch.vd.unireg.xml.party.address.v2.Address;
 import ch.vd.unireg.xml.party.address.v2.AddressInformation;
 import ch.vd.unireg.xml.party.address.v2.AddressType;
@@ -2579,8 +2580,10 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		{
 			final Object o = sorted.get(0);
 			Assert.assertEquals(ch.vd.unireg.ws.parties.v1.Error.class, o.getClass());
-			Assert.assertEquals(4845, ((ch.vd.unireg.ws.parties.v1.Error) o).getPartyNo());
-			Assert.assertEquals("Le tiers n°48.45 n'existe pas", ((ch.vd.unireg.ws.parties.v1.Error) o).getErrorMessage());
+			final ch.vd.unireg.ws.parties.v1.Error error = (ch.vd.unireg.ws.parties.v1.Error) o;
+			Assert.assertEquals(4845, error.getPartyNo());
+			Assert.assertEquals("Le tiers n°48.45 n'existe pas", error.getErrorMessage());
+			Assert.assertEquals(ErrorType.BUSINESS, error.getType());
 		}
 		{
 			final Object o = sorted.get(1);
@@ -2595,8 +2598,10 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		{
 			final Object o = sorted.get(3);
 			Assert.assertEquals(ch.vd.unireg.ws.parties.v1.Error.class, o.getClass());
-			Assert.assertEquals(ids.ppProtege, ((ch.vd.unireg.ws.parties.v1.Error) o).getPartyNo());
-			Assert.assertEquals("L'utilisateur UserLogin{userId='TOTO', oid=22} ne possède aucun droit de lecture sur le dossier " + ids.ppProtege, ((ch.vd.unireg.ws.parties.v1.Error) o).getErrorMessage());
+			final ch.vd.unireg.ws.parties.v1.Error error = (ch.vd.unireg.ws.parties.v1.Error) o;
+			Assert.assertEquals(ids.ppProtege, error.getPartyNo());
+			Assert.assertEquals("L'utilisateur UserLogin{userId='TOTO', oid=22} ne possède aucun droit de lecture sur le dossier " + ids.ppProtege, error.getErrorMessage());
+			Assert.assertEquals(ErrorType.ACCESS, error.getType());
 		}
 	}
 }
