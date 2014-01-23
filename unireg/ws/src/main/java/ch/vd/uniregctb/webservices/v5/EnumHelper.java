@@ -65,24 +65,4 @@ public abstract class EnumHelper {
 	public static Set<CategorieImpotSource> getCategoriesImpotSourceAutorisees() {
 		return ch.vd.uniregctb.xml.EnumHelper.CIS_SUPPORTEES_V3;
 	}
-
-	private static final Map<Class<? extends Party>, PartyType> PARTY_TYPES = buildPartyTypes();
-
-	private static Map<Class<? extends Party>, PartyType> buildPartyTypes() {
-		final Map<Class<? extends Party>, PartyType> map = new HashMap<>();
-		map.put(AdministrativeAuthority.class, PartyType.ADMINISTRATIVE_AUTHORITY);
-		map.put(NaturalPerson.class, PartyType.NATURAL_PERSON);
-		map.put(CommonHousehold.class, PartyType.HOUSEHOLD);
-		map.put(Corporation.class, PartyType.CORPORATION);
-		map.put(OtherCommunity.class, PartyType.CORPORATION);
-		map.put(Debtor.class, PartyType.DEBTOR);
-		return Collections.unmodifiableMap(map);
-	}
-
-	public static PartyType getPartyType(Party party) {
-		if (party == null) {
-			return null;
-		}
-		return PARTY_TYPES.get(party.getClass());
-	}
 }
