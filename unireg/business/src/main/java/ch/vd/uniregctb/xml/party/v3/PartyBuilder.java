@@ -28,12 +28,11 @@ import ch.vd.uniregctb.xml.party.v3.strategy.PartyStrategy;
 public class PartyBuilder {
 
 	private static final DebtorStrategy debtorStrategy = new DebtorStrategy();
-
 	private static final CommonHouseholdStrategy commonHouseholdStrategy = new CommonHouseholdStrategy();
 	private static final NaturalPersonStrategy naturalPersonStrategy = new NaturalPersonStrategy();
 	private static final CorporationStrategy corporationStrategy = new CorporationStrategy();
 	private static final AdminAuthStrategy adminAuthStrategy = new AdminAuthStrategy();
-	private static Map<Class, PartyStrategy<?>> strategies = new HashMap<>();
+	private static final Map<Class, PartyStrategy<?>> strategies = new HashMap<>();
 
 	static {
 		strategies.put(Debtor.class, debtorStrategy);

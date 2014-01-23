@@ -14,6 +14,7 @@ import ch.vd.uniregctb.rf.TypeMutation;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.type.CategorieEtranger;
 import ch.vd.uniregctb.type.CategorieImpotSource;
+import ch.vd.uniregctb.type.ModeCommunication;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.StatutMenageCommun;
 import ch.vd.uniregctb.type.TypePermis;
@@ -588,7 +589,7 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.debtor.v1.CommunicationMode coreToXMLv1(ch.vd.uniregctb.type.ModeCommunication mode) {
+	public static ch.vd.unireg.xml.party.debtor.v1.CommunicationMode coreToXMLv1(ModeCommunication mode) {
 		if (mode == null) {
 			return null;
 		}
@@ -601,11 +602,11 @@ public abstract class EnumHelper {
 		case SITE_WEB:
 			return ch.vd.unireg.xml.party.debtor.v1.CommunicationMode.WEB_SITE;
 		default:
-			throw new IllegalArgumentException("Mode de communicaiton inconnu = [" + mode + ']');
+			throw new IllegalArgumentException("Mode de communication inconnu = [" + mode + ']');
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.debtor.v2.CommunicationMode coreToXMLv2(ch.vd.uniregctb.type.ModeCommunication mode) {
+	public static ch.vd.unireg.xml.party.debtor.v2.CommunicationMode coreToXMLv2(ModeCommunication mode) {
 		if (mode == null) {
 			return null;
 		}
@@ -618,11 +619,11 @@ public abstract class EnumHelper {
 		case SITE_WEB:
 			return ch.vd.unireg.xml.party.debtor.v2.CommunicationMode.WEB_SITE;
 		default:
-			throw new IllegalArgumentException("Mode de communicaiton inconnu = [" + mode + ']');
+			throw new IllegalArgumentException("Mode de communication inconnu = [" + mode + ']');
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.withholding.v1.CommunicationMode coreToXMLv3(ch.vd.uniregctb.type.ModeCommunication mode) {
+	public static ch.vd.unireg.xml.party.withholding.v1.CommunicationMode coreToXMLv3(ModeCommunication mode) {
 		if (mode == null) {
 			return null;
 		}
@@ -635,7 +636,24 @@ public abstract class EnumHelper {
 		case SITE_WEB:
 			return ch.vd.unireg.xml.party.withholding.v1.CommunicationMode.WEB_SITE;
 		default:
-			throw new IllegalArgumentException("Mode de communicaiton inconnu = [" + mode + ']');
+			throw new IllegalArgumentException("Mode de communication inconnu = [" + mode + ']');
+		}
+	}
+
+	public static ModeCommunication xmlToCore(ch.vd.unireg.xml.party.withholding.v1.CommunicationMode mode) {
+		if (mode == null) {
+			return null;
+		}
+
+		switch (mode) {
+		case PAPER:
+			return ModeCommunication.PAPIER;
+		case UPLOAD:
+			return ModeCommunication.ELECTRONIQUE;
+		case WEB_SITE:
+			return ModeCommunication.SITE_WEB;
+		default:
+			throw new IllegalArgumentException("Mode de communication inconnu = [" + mode + ']');
 		}
 	}
 
@@ -1540,6 +1558,22 @@ public abstract class EnumHelper {
 		}
 	}
 
+	public static GenrePropriete xmlToCore(ch.vd.unireg.xml.party.immovableproperty.v2.OwnershipType ownershipType) {
+		if (ownershipType == null) {
+			return null;
+		}
+		switch (ownershipType) {
+		case SOLE_OWNERSHIP:
+			return GenrePropriete.INDIVIDUELLE;
+		case SIMPLE_CO_OWNERSHIP:
+			return GenrePropriete.COPROPRIETE;
+		case COLLECTIVE_OWNERSHIP:
+		    return GenrePropriete.COMMUNE;
+		default:
+			throw new IllegalArgumentException("OwnershipType inconnu = [" + ownershipType + ']');
+		}
+	}
+
 	public static ch.vd.unireg.xml.party.immovableproperty.v1.ImmovablePropertyType coreToXMLv1(TypeImmeuble type) {
 		if (type == null) {
 			return null;
@@ -1661,6 +1695,50 @@ public abstract class EnumHelper {
 			return ch.vd.unireg.xml.party.immovableproperty.v2.MutationType.END_OF_OWNERSHIP;
 		default:
 			throw new IllegalArgumentException("Type de mutation inconnu = [" + type + ']');
+		}
+	}
+
+	public static TypeMutation xmlToCore(ch.vd.unireg.xml.party.immovableproperty.v2.MutationType type) {
+		if (type == null) {
+			return null;
+		}
+		switch (type) {
+		case PURCHASE:
+			return TypeMutation.ACHAT;
+		case INCREASE:
+			return TypeMutation.AUGMENTATION;
+		case CESSION:
+			return TypeMutation.CESSION;
+		case CONDOMINIUM_OWNERSHIP_COMPOSITION:
+			return TypeMutation.CONSTITUTION_PPE;
+		case CO_OWNERSHIP_SHARES_COMPOSITION:
+			return TypeMutation.CONSTITUTION_PARTS_PROPRIETE;
+		case IMMOVABLE_PROPERTY_DIVISION:
+			return TypeMutation.DIVISION_BIEN_FONDS;
+		case GIFT:
+			return TypeMutation.DONATION;
+		case LEGACY_DELIVERY:
+			return TypeMutation.DELIVRANCE_LEGS;
+		case EXCHANGE:
+			return TypeMutation.ECHANGE;
+		case IMMOVABLE_PROPERTY_GROUPING:
+			return TypeMutation.GROUPEMENT_BIEN_FONDS;
+		case JUDGEMENT:
+			return TypeMutation.JUGEMENT;
+		case SHARING:
+			return TypeMutation.PARTAGE;
+		case PLOT_REFORM:
+			return TypeMutation.REMANIEMENT_PARCELLAIRE;
+		case COMPULSARY_SALE:
+			return TypeMutation.REALISATION_FORCEE;
+		case INHERITANCE:
+			return  TypeMutation.SUCCESSION;
+		case TRANSFER:
+			return TypeMutation.TRANSFERT;
+		case END_OF_OWNERSHIP:
+			return TypeMutation.FIN_DE_PROPRIETE;
+		default:
+			throw new IllegalArgumentException("Type de mutation incunnu = [" + type + ']');
 		}
 	}
 
