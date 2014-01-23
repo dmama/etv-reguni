@@ -163,6 +163,7 @@
 		<property name="diService" ref="diService"/>
 		<property name="bamSender" ref="bamMessageSender"/>
 		<property name="infraService" ref="serviceInfrastructureService" />
+		<property name="lrService" ref="lrService"/>
 	</bean>
 
 </beans>

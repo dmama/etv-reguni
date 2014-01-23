@@ -30,6 +30,7 @@ import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationKey;
 import ch.vd.unireg.ws.deadline.v1.DeadlineRequest;
 import ch.vd.unireg.ws.deadline.v1.DeadlineResponse;
 import ch.vd.unireg.ws.deadline.v1.DeadlineStatus;
+import ch.vd.unireg.ws.debtorinfo.v1.DebtorInfo;
 import ch.vd.unireg.ws.modifiedtaxpayers.v1.PartyNumberList;
 import ch.vd.unireg.ws.security.v1.AllowedAccess;
 import ch.vd.unireg.ws.security.v1.SecurityResponse;
@@ -45,10 +46,13 @@ import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceSecuriteService;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
+import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Niveau;
+import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
@@ -566,5 +570,38 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		Collections.sort(sortedList);
 		Assert.assertEquals(pp1.getLeft().longValue(), sortedList.get(0).longValue());
 		Assert.assertEquals(pp2.getLeft().longValue(), sortedList.get(1).longValue());
+	}
+
+	@Test
+	public void testDebtorInfo() throws Exception {
+
+		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+				addForDebiteur(dpi, date(2009, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Lausanne);
+				final PeriodeFiscale pf = addPeriodeFiscale(2013);
+				final ModeleDocument md = addModeleDocument(TypeDocument.LISTE_RECAPITULATIVE, pf);
+				addListeRecapitulative(dpi, pf, date(2013, 4, 1), date(2013, 4, 30), md);
+				addListeRecapitulative(dpi, pf, date(2013, 10, 1), date(2013, 10, 31), md);
+				return dpi.getNumero();
+			}
+		});
+
+		Assert.assertTrue(dpiId >= Integer.MIN_VALUE && dpiId <= Integer.MAX_VALUE);
+		{
+			final DebtorInfo info = service.getDebtorInfo(new UserLogin(getDefaultOperateurName(), 22), (int) dpiId, 2012);
+			Assert.assertEquals((int) dpiId, info.getDebtorNo());
+			Assert.assertEquals(2012, info.getTaxPeriod());
+			Assert.assertEquals(0, info.getNumberOfWithholdingTaxDeclarationsIssued());
+			Assert.assertEquals(12, info.getTheoreticalNumberOfWithholdingTaxDeclarations());
+		}
+		{
+			final DebtorInfo info = service.getDebtorInfo(new UserLogin(getDefaultOperateurName(), 22), (int) dpiId, 2013);
+			Assert.assertEquals((int) dpiId, info.getDebtorNo());
+			Assert.assertEquals(2013, info.getTaxPeriod());
+			Assert.assertEquals(2, info.getNumberOfWithholdingTaxDeclarationsIssued());
+			Assert.assertEquals(12, info.getTheoreticalNumberOfWithholdingTaxDeclarations());
+		}
 	}
 }

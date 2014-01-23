@@ -2,6 +2,7 @@ package ch.vd.uniregctb.webservices.v5;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -14,6 +15,8 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.DateHelper;
+import ch.vd.registre.base.date.DateRange;
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -29,6 +32,7 @@ import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationKey;
 import ch.vd.unireg.ws.deadline.v1.DeadlineRequest;
 import ch.vd.unireg.ws.deadline.v1.DeadlineResponse;
 import ch.vd.unireg.ws.deadline.v1.DeadlineStatus;
+import ch.vd.unireg.ws.debtorinfo.v1.DebtorInfo;
 import ch.vd.unireg.ws.modifiedtaxpayers.v1.PartyNumberList;
 import ch.vd.unireg.ws.security.v1.SecurityResponse;
 import ch.vd.unireg.ws.taxoffices.v1.TaxOffice;
@@ -40,6 +44,7 @@ import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
+import ch.vd.uniregctb.declaration.source.ListeRecapService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.jms.BamMessageHelper;
 import ch.vd.uniregctb.jms.BamMessageSender;
@@ -47,6 +52,7 @@ import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -68,6 +74,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	private DeclarationImpotService diService;
 	private BamMessageSender bamSender;
 	private ServiceInfrastructureService infraService;
+	private ListeRecapService lrService;
 
 	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
 		this.securityProvider = securityProvider;
@@ -95,6 +102,10 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 	public void setInfraService(ServiceInfrastructureService infraService) {
 		this.infraService = infraService;
+	}
+
+	public void setLrService(ListeRecapService lrService) {
+		this.lrService = lrService;
 	}
 
 	private <T> T doInTransaction(boolean readonly, TransactionCallback<T> callback) {
@@ -424,6 +435,39 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 					intList.add(id.intValue());
 				}
 				return new PartyNumberList(intList);
+			}
+		});
+	}
+
+	private static <T extends DateRange> List<T> extractIntersecting(List<T> src, DateRange periode) {
+		if (src == null || src.isEmpty()) {
+			return Collections.emptyList();
+		}
+		final List<T> res = new ArrayList<>(src.size());
+		for (T range : src) {
+			if (DateRangeHelper.intersect(range, periode)) {
+				res.add(range);
+			}
+		}
+		return res;
+	}
+
+	@Override
+	public DebtorInfo getDebtorInfo(UserLogin login, final int debtorNo, final int pf) throws AccessDeniedException {
+		WebServiceHelper.checkAccess(securityProvider, login, Role.VISU_ALL);
+		return doInTransaction(true, new TransactionCallback<DebtorInfo>() {
+			@Override
+			public DebtorInfo doInTransaction(TransactionStatus status) {
+				final Tiers tiers = tiersDAO.get(debtorNo, false);
+				if (tiers == null || !(tiers instanceof DebiteurPrestationImposable)) {
+					throw new ObjectNotFoundException("Pas de débiteur de prestation imposable avec le numéro " + debtorNo);
+				}
+
+				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiers;
+				final List<? extends DateRange> lrEmises = dpi.getDeclarationsForPeriode(pf, false);
+				final List<DateRange> lrManquantes = lrService.findLRsManquantes(dpi, RegDate.get(pf, 12, 31), new ArrayList<DateRange>());
+				final List<DateRange> lrManquantesInPf = extractIntersecting(lrManquantes, new DateRangeHelper.Range(RegDate.get(pf, 1, 1), RegDate.get(pf, 12, 31)));
+				return new DebtorInfo(debtorNo, pf, lrManquantesInPf.size() + lrEmises.size(), lrEmises.size(), null);
 			}
 		});
 	}

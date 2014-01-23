@@ -21,6 +21,7 @@ import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationAckRequest;
 import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationAckResponse;
 import ch.vd.unireg.ws.deadline.v1.DeadlineRequest;
 import ch.vd.unireg.ws.deadline.v1.DeadlineResponse;
+import ch.vd.unireg.ws.debtorinfo.v1.DebtorInfo;
 import ch.vd.unireg.ws.modifiedtaxpayers.v1.PartyNumberList;
 import ch.vd.unireg.ws.security.v1.SecurityResponse;
 import ch.vd.unireg.ws.taxoffices.v1.TaxOffices;
@@ -53,6 +54,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 	private final ch.vd.unireg.ws.deadline.v1.ObjectFactory deadlineObjectFactory = new ch.vd.unireg.ws.deadline.v1.ObjectFactory();
 	private final ch.vd.unireg.ws.taxoffices.v1.ObjectFactory taxOfficesObjectFactory = new ch.vd.unireg.ws.taxoffices.v1.ObjectFactory();
 	private final ch.vd.unireg.ws.modifiedtaxpayers.v1.ObjectFactory modifiedTaxPayersFactory = new ch.vd.unireg.ws.modifiedtaxpayers.v1.ObjectFactory();
+	private final ch.vd.unireg.ws.debtorinfo.v1.ObjectFactory debtorInfoFactory = new ch.vd.unireg.ws.debtorinfo.v1.ObjectFactory();
 
 	private BusinessWebService target;
 
@@ -236,6 +238,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 	public Response getParty(int partyNo, String user,
 	                         boolean withAddresses, boolean withTaxResidences, boolean withVirtualTaxResidences, boolean withManagingTaxResidences,
 	                         boolean withHouseholdMembers, boolean withTaxLiabilities, boolean withSimplifiedTaxLiabilities, boolean withTaxationPeriods,
+	                         boolean withWithholdingTaxationPeriods,
 	                         boolean withRelationsBetweenParties, boolean withFamilyStatuses, boolean withTaxDeclarations, boolean withTaxDeclarationDeadlines,
 	                         boolean withBankAccounts, boolean withLegalSeats, boolean withLegalForms, boolean withCapitals, boolean withTaxSystems,
 	                         boolean withCorporationStatuses, boolean withDebtorPeriodicities, boolean withImmovableProperties,boolean withChildren,
@@ -248,6 +251,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 	public Response getParties(String user, List<Integer> partyNos,
 	                           boolean withAddresses, boolean withTaxResidences, boolean withVirtualTaxResidences, boolean withManagingTaxResidences,
 	                           boolean withHouseholdMembers, boolean withTaxLiabilities, boolean withSimplifiedTaxLiabilities, boolean withTaxationPeriods,
+	                           boolean withWithholdingTaxationPeriods,
 	                           boolean withRelationsBetweenParties, boolean withFamilyStatuses, boolean withTaxDeclarations, boolean withTaxDeclarationDeadlines,
 	                           boolean withBankAccounts, boolean withLegalSeats, boolean withLegalForms, boolean withCapitals, boolean withTaxSystems,
 	                           boolean withCorporationStatuses, boolean withDebtorPeriodicities, boolean withImmovableProperties,boolean withChildren,
@@ -300,7 +304,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 	 */
 	private MediaType getPreferredMediaTypeFromXmlOrJson() {
 		return WebServiceHelper.getPreferedMediaType(getAcceptableMediaTypes(),
-		                                             new MediaType[] {MediaType.APPLICATION_XML_TYPE, WebServiceHelper.APPLICATION_JSON_WITH_UTF8_CHARSET_TYPE});
+		                                             new MediaType[]{MediaType.APPLICATION_XML_TYPE, WebServiceHelper.APPLICATION_JSON_WITH_UTF8_CHARSET_TYPE});
 	}
 
 	private List<MediaType> getAcceptableMediaTypes() {
@@ -308,14 +312,14 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 	}
 
 	@Override
-	public Response ackOrdinaryTaxDeclarations(final String login, final OrdinaryTaxDeclarationAckRequest request) {
+	public Response ackOrdinaryTaxDeclarations(final String user, final OrdinaryTaxDeclarationAckRequest request) {
 		final Object params = new Object() {
 			@Override
 			public String toString() {
-				return String.format("ackOrdinaryTaxDeclarations{user='%s', request='%s'}", login, request);
+				return String.format("ackOrdinaryTaxDeclarations{user='%s', request='%s'}", user, request);
 			}
 		};
-		return execute(login, params, WRITE_ACCESS_LOG, new ExecutionCallbackWithUser() {
+		return execute(user, params, WRITE_ACCESS_LOG, new ExecutionCallbackWithUser() {
 			@NotNull
 			@Override
 			public ExecutionResult execute(UserLogin userLogin) throws Exception {
@@ -372,6 +376,31 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 				}
 				else if (preferred == MediaType.APPLICATION_XML_TYPE) {
 					return ExecutionResult.with(Response.ok(modifiedTaxPayersFactory.createModifiedTayPayers(response), preferred).build(), response.getPartyNo().size());
+				}
+				return ExecutionResult.with(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build());
+			}
+		});
+	}
+
+	@Override
+	public Response getDebtorInfo(final int debtorNo, final int pf, final String user) {
+		final Object params = new Object() {
+			@Override
+			public String toString() {
+				return String.format("getDebtorInfo{debtorNo='%s', fiscalPeriod=%d, user='%s'", debtorNo, pf, user);
+			}
+		};
+		return execute(user, params, READ_ACCESS_LOG, new ExecutionCallbackWithUser() {
+			@NotNull
+			@Override
+			public ExecutionResult execute(UserLogin userLogin) throws Exception {
+				final DebtorInfo info = target.getDebtorInfo(userLogin, debtorNo, pf);
+				final MediaType preferred = getPreferredMediaTypeFromXmlOrJson();
+				if (preferred == WebServiceHelper.APPLICATION_JSON_WITH_UTF8_CHARSET_TYPE) {
+					return ExecutionResult.with(Response.ok(info, preferred).build());
+				}
+				else if (preferred == MediaType.APPLICATION_XML_TYPE) {
+					return ExecutionResult.with(Response.ok(debtorInfoFactory.createDebtorInfo(info), preferred).build());
 				}
 				return ExecutionResult.with(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build());
 			}

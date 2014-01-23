@@ -53,6 +53,7 @@ public interface WebService {
 	                  @QueryParam("withTaxLiabilities") @DefaultValue("false") boolean withTaxLiabilities,
 	                  @QueryParam("withSimplifiedTaxLiabilities") @DefaultValue("false") boolean withSimplifiedTaxLiabilities,
 	                  @QueryParam("withTaxationPeriods") @DefaultValue("false") boolean withTaxationPeriods,
+	                  @QueryParam("withWithholdingTaxationPeriods") @DefaultValue("false") boolean withWithholdingTaxationPeriods,
 	                  @QueryParam("withRelationsBetweenParties") @DefaultValue("false") boolean withRelationsBetweenParties,
 	                  @QueryParam("withFamilyStatuses") @DefaultValue("false") boolean withFamilyStatuses,
 	                  @QueryParam("withTaxDeclarations") @DefaultValue("false") boolean withTaxDeclarations,
@@ -81,6 +82,7 @@ public interface WebService {
 	                    @QueryParam("withTaxLiabilities") @DefaultValue("false") boolean withTaxLiabilities,
 	                    @QueryParam("withSimplifiedTaxLiabilities") @DefaultValue("false") boolean withSimplifiedTaxLiabilities,
 	                    @QueryParam("withTaxationPeriods") @DefaultValue("false") boolean withTaxationPeriods,
+	                    @QueryParam("withWithholdingTaxationPeriods") @DefaultValue("false") boolean withWithholdingTaxationPeriods,
 	                    @QueryParam("withRelationsBetweenParties") @DefaultValue("false") boolean withRelationsBetweenParties,
 	                    @QueryParam("withFamilyStatuses") @DefaultValue("false") boolean withFamilyStatuses,
 	                    @QueryParam("withTaxDeclarations") @DefaultValue("false") boolean withTaxDeclarations,
@@ -109,11 +111,11 @@ public interface WebService {
 	Response ackOrdinaryTaxDeclarations(@QueryParam("user") String user, OrdinaryTaxDeclarationAckRequest request);
 
 	@POST
-	@Path("/newOrdinaryTaxDeclarationDeadline/{partyNo}/{fiscalPeriod}/{sequenceNo}")
+	@Path("/newOrdinaryTaxDeclarationDeadline/{partyNo}/{taxPeriod}/{sequenceNo}")
 	@Consumes(MediaType.APPLICATION_XML)
 	@Produces(MediaType.APPLICATION_XML)
 	Response newOrdinaryTaxDeclarationDeadline(@PathParam("partyNo") int partyNo,
-	                                           @PathParam("fiscalPeriod") int pf,
+	                                           @PathParam("taxPeriod") int pf,
 	                                           @PathParam("sequenceNo") int seqNo,
 	                                           @QueryParam("user") String user,
 	                                           DeadlineRequest request);
@@ -122,4 +124,9 @@ public interface WebService {
 	@Path("/modifiedTaxPayers")
 	@Produces({MediaType.APPLICATION_XML, WebServiceHelper.APPLICATION_JSON_WITH_UTF8_CHARSET})
 	Response getModifiedTaxPayers(@QueryParam("user") String user, @QueryParam("since") Long since, @QueryParam("until") Long until);
+
+	@GET
+	@Path("/debtor/{debtorNo}/{taxPeriod}")
+	@Produces({MediaType.APPLICATION_XML, WebServiceHelper.APPLICATION_JSON_WITH_UTF8_CHARSET})
+	Response getDebtorInfo(@PathParam("debtorNo") int debtorNo, @PathParam("taxPeriod") int pf, @QueryParam("user") String user);
 }

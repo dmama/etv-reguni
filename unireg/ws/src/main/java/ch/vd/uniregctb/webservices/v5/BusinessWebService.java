@@ -9,6 +9,7 @@ import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationAckRequest;
 import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationAckResponse;
 import ch.vd.unireg.ws.deadline.v1.DeadlineRequest;
 import ch.vd.unireg.ws.deadline.v1.DeadlineResponse;
+import ch.vd.unireg.ws.debtorinfo.v1.DebtorInfo;
 import ch.vd.unireg.ws.modifiedtaxpayers.v1.PartyNumberList;
 import ch.vd.unireg.ws.security.v1.SecurityResponse;
 import ch.vd.unireg.ws.taxoffices.v1.TaxOffices;
@@ -85,4 +86,14 @@ public interface BusinessWebService {
 	 * @throws AccessDeniedException si l'opérateur n'a pas accès à cette liste
 	 */
 	PartyNumberList getModifiedTaxPayers(UserLogin login, Date since, Date until) throws AccessDeniedException;
+
+	/**
+	 * Récupère un état des LR émises et à émettre sur le débiteur de prestation imposable indiqué
+	 * @param login
+	 * @param debtorNo
+	 * @param pf
+	 * @return
+	 * @throws AccessDeniedException
+	 */
+	DebtorInfo getDebtorInfo(UserLogin login, int debtorNo, int pf) throws AccessDeniedException;
 }
