@@ -39,10 +39,13 @@ import ch.vd.unireg.ws.taxoffices.v1.TaxOffice;
 import ch.vd.unireg.ws.taxoffices.v1.TaxOffices;
 import ch.vd.unireg.xml.party.corporation.v3.CorporationEvent;
 import ch.vd.unireg.xml.party.taxdeclaration.v3.TaxDeclarationKey;
+import ch.vd.unireg.xml.party.v3.Party;
 import ch.vd.unireg.xml.party.v3.PartyInfo;
+import ch.vd.unireg.xml.party.v3.PartyPart;
 import ch.vd.unireg.xml.party.v3.PartyType;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorCategory;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorInfo;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.TiersNotFoundException;
@@ -51,17 +54,25 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.declaration.source.ListeRecapService;
+import ch.vd.uniregctb.hibernate.HibernateTemplate;
+import ch.vd.uniregctb.iban.IbanValidator;
 import ch.vd.uniregctb.indexer.EmptySearchCriteriaException;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.interfaces.model.EvenementPM;
+import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
 import ch.vd.uniregctb.jms.BamMessageHelper;
 import ch.vd.uniregctb.jms.BamMessageSender;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
+import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
+import ch.vd.uniregctb.metier.piis.PeriodeImpositionImpotSourceService;
+import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
+import ch.vd.uniregctb.situationfamille.SituationFamilleService;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
@@ -76,6 +87,7 @@ import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.webservices.common.AccessDeniedException;
 import ch.vd.uniregctb.webservices.common.UserLogin;
 import ch.vd.uniregctb.webservices.common.WebServiceHelper;
+import ch.vd.uniregctb.xml.Context;
 
 public class BusinessWebServiceImpl implements BusinessWebService {
 
@@ -83,47 +95,39 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 	private static final Set<CategorieImpotSource> CIS_SUPPORTEES = EnumHelper.getCategoriesImpotSourceAutorisees();
 
-	private SecurityProviderInterface securityProvider;
-	private PlatformTransactionManager transactionManager;
-	private TiersService tiersService;
-	private TiersDAO tiersDAO;
-	private DeclarationImpotService diService;
-	private BamMessageSender bamSender;
-	private ServiceInfrastructureService infraService;
-	private ListeRecapService lrService;
+	private final Context context = new Context();
 	private GlobalTiersSearcher tiersSearcher;
-	private ServicePersonneMoraleService personneMoraleService;
 
 	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
-		this.securityProvider = securityProvider;
+		this.context.securityProvider = securityProvider;
 	}
 
 	public void setTransactionManager(PlatformTransactionManager transactionManager) {
-		this.transactionManager = transactionManager;
+		this.context.transactionManager = transactionManager;
 	}
 
 	public void setTiersService(TiersService tiersService) {
-		this.tiersService = tiersService;
+		this.context.tiersService = tiersService;
 	}
 
 	public void setTiersDAO(TiersDAO tiersDAO) {
-		this.tiersDAO = tiersDAO;
+		this.context.tiersDAO = tiersDAO;
 	}
 
 	public void setDiService(DeclarationImpotService diService) {
-		this.diService = diService;
+		this.context.diService = diService;
 	}
 
 	public void setBamSender(BamMessageSender bamSender) {
-		this.bamSender = bamSender;
+		this.context.bamSender = bamSender;
 	}
 
 	public void setInfraService(ServiceInfrastructureService infraService) {
-		this.infraService = infraService;
+		this.context.infraService = infraService;
 	}
 
 	public void setLrService(ListeRecapService lrService) {
-		this.lrService = lrService;
+		this.context.lrService = lrService;
 	}
 
 	public void setTiersSearcher(GlobalTiersSearcher tiersSearcher) {
@@ -131,30 +135,66 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	}
 
 	public void setPersonneMoraleService(ServicePersonneMoraleService personneMoraleService) {
-		this.personneMoraleService = personneMoraleService;
+		this.context.servicePM = personneMoraleService;
+	}
+
+	public void setAssujettissementService(AssujettissementService service) {
+		context.assujettissementService = service;
+	}
+
+	public void setPeriodeImpositionService(PeriodeImpositionService service) {
+		context.periodeImpositionService = service;
+	}
+
+	public void setPeriodeImpositionImpotSourceService(PeriodeImpositionImpotSourceService service) {
+		context.periodeImpositionImpotSourceService = service;
+	}
+
+	public void setServiceCivil(ServiceCivilService service) {
+		context.serviceCivilService = service;
+	}
+
+	public void setHibernateTemplate(HibernateTemplate template) {
+		context.hibernateTemplate = template;
+	}
+
+	public void setSituationService(SituationFamilleService situationService) {
+		context.situationService = situationService;
+	}
+
+	public void setAdresseService(AdresseService adresseService) {
+		context.adresseService = adresseService;
+	}
+
+	public void setIbanValidator(IbanValidator ibanValidator) {
+		context.ibanValidator = ibanValidator;
+	}
+
+	public void setParametreService(ParametreAppService parametreService) {
+		context.parametreService = parametreService;
 	}
 
 	private <T> T doInTransaction(boolean readonly, TransactionCallback<T> callback) {
-		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		final TransactionTemplate template = new TransactionTemplate(context.transactionManager);
 		template.setReadOnly(readonly);
 		return template.execute(callback);
 	}
 
 	@Override
 	public SecurityResponse getSecurityOnParty(String user, int partyNo) {
-		final Niveau niveau = securityProvider.getDroitAcces(user, partyNo);
+		final Niveau niveau = context.securityProvider.getDroitAcces(user, partyNo);
 		return new SecurityResponse(user, partyNo, EnumHelper.toXml(niveau));
 	}
 
 	@Override
 	public void setAutomaticRepaymentBlockingFlag(final int partyNo, UserLogin user, final boolean blocked) throws AccessDeniedException {
-		WebServiceHelper.checkAccess(securityProvider, user, Role.VISU_ALL);
-		WebServiceHelper.checkPartyReadWriteAccess(securityProvider, user, partyNo);
+		WebServiceHelper.checkAccess(context.securityProvider, user, Role.VISU_ALL);
+		WebServiceHelper.checkPartyReadWriteAccess(context.securityProvider, user, partyNo);
 
 		doInTransaction(false, new TransactionCallbackWithoutResult() {
 			@Override
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Tiers tiers = tiersService.getTiers(partyNo);
+				final Tiers tiers = context.tiersService.getTiers(partyNo);
 				if (tiers == null) {
 					throw new TiersNotFoundException(partyNo);
 				}
@@ -165,13 +205,13 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 	@Override
 	public boolean getAutomaticRepaymentBlockingFlag(final int partyNo, UserLogin user) throws AccessDeniedException {
-		WebServiceHelper.checkAccess(securityProvider, user, Role.VISU_ALL);
-		WebServiceHelper.checkPartyReadAccess(securityProvider, user, partyNo);
+		WebServiceHelper.checkAccess(context.securityProvider, user, Role.VISU_ALL);
+		WebServiceHelper.checkPartyReadAccess(context.securityProvider, user, partyNo);
 
 		return doInTransaction(true, new TransactionCallback<Boolean>() {
 			@Override
 			public Boolean doInTransaction(TransactionStatus status) {
-				final Tiers tiers = tiersService.getTiers(partyNo);
+				final Tiers tiers = context.tiersService.getTiers(partyNo);
 				if (tiers == null) {
 					throw new TiersNotFoundException(partyNo);
 				}
@@ -182,7 +222,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 	@Override
 	public OrdinaryTaxDeclarationAckResponse ackOrdinaryTaxDeclarations(final UserLogin user, OrdinaryTaxDeclarationAckRequest request) throws AccessDeniedException {
-		WebServiceHelper.checkAccess(securityProvider, user, Role.DI_QUIT_PP);
+		WebServiceHelper.checkAccess(context.securityProvider, user, Role.DI_QUIT_PP);
 
 		final RegDate dateRetour = ch.vd.uniregctb.xml.DataHelper.xmlToCore(request.getDate());
 		final String source = request.getSource();
@@ -191,7 +231,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 		final BatchTransactionTemplateWithResults<TaxDeclarationKey, OrdinaryTaxDeclarationAckBatchResult> template = new BatchTransactionTemplateWithResults<>(request.getDeclaration(),
 		                                                                                                                                                                DECLARATION_ACK_BATCH_SIZE,
 		                                                                                                                                                                Behavior.REPRISE_AUTOMATIQUE,
-		                                                                                                                                                                transactionManager, null);
+		                                                                                                                                                                context.transactionManager, null);
 		template.execute(result, new BatchWithResultsCallback<TaxDeclarationKey, OrdinaryTaxDeclarationAckBatchResult>() {
 			@Override
 			public boolean doInTransaction(List<TaxDeclarationKey> keys, OrdinaryTaxDeclarationAckBatchResult result) throws Exception {
@@ -243,9 +283,9 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 			final int noSeq = key.getSequenceNumber();
 
 			// TODO JDE : faut-il faire ce test ? Il n'était pas fait dans les versions précédentes du service...
-			WebServiceHelper.checkPartyReadWriteAccess(securityProvider, userLogin, partyNo);
+			WebServiceHelper.checkPartyReadWriteAccess(context.securityProvider, userLogin, partyNo);
 
-			final Tiers tiers = tiersService.getTiers(partyNo);
+			final Tiers tiers = context.tiersService.getTiers(partyNo);
 			if (tiers == null) {
 				result.addCasTraite(key, AckStatus.ERROR_UNKNOWN_PARTY, null);
 			}
@@ -275,7 +315,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 					sendQuittancementToBam(di, dateRetour);
 
 					// procéde au quittancement
-					diService.quittancementDI(ctb, di, dateRetour, source, true);
+					context.diService.quittancementDI(ctb, di, dateRetour, source, true);
 
 					// tout est bon...
 					result.addCasTraite(key, AckStatus.OK, null);
@@ -311,7 +351,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 			final String businessId = String.format("%d-%d-%d-%s", ctbId, annee, noSequence, new SimpleDateFormat("yyyyMMddHHmmssSSS").format(DateHelper.getCurrentDate()));
 			final String processDefinitionId = BamMessageHelper.PROCESS_DEFINITION_ID_PAPIER;       // pour le moment, tous les quittancements par le WS concenent les DI "papier"
 			final String processInstanceId = BamMessageHelper.buildProcessInstanceId(di);
-			bamSender.sendBamMessageQuittancementDi(processDefinitionId, processInstanceId, businessId, ctbId, annee, bamHeaders);
+			context.bamSender.sendBamMessageQuittancementDi(processDefinitionId, processInstanceId, businessId, ctbId, annee, bamHeaders);
 		}
 		catch (RuntimeException e) {
 			throw e;
@@ -362,7 +402,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 	@Override
 	public DeadlineResponse newOrdinaryTaxDeclarationDeadline(final int partyNo, final int pf, final int seqNo, UserLogin user, DeadlineRequest request) throws AccessDeniedException {
-		WebServiceHelper.checkAccess(securityProvider, user, Role.DI_DELAI_PP);
+		WebServiceHelper.checkAccess(context.securityProvider, user, Role.DI_DELAI_PP);
 
 		final RegDate nouveauDelai = ch.vd.uniregctb.xml.DataHelper.xmlToCore(request.getNewDeadline());
 		final RegDate dateObtention = ch.vd.uniregctb.xml.DataHelper.xmlToCore(request.getGrantedOn());
@@ -372,7 +412,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 			@Override
 			public DeadlineResponse doInTransaction(TransactionStatus status) {
 
-				final Tiers tiers = tiersService.getTiers(partyNo);
+				final Tiers tiers = context.tiersService.getTiers(partyNo);
 				if (tiers == null) {
 					throw new TiersNotFoundException(partyNo);
 				}
@@ -426,7 +466,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	@Override
 	public TaxOffices getTaxOffices(int municipalityId, @Nullable RegDate date) {
 
-		final Commune commune = infraService.getCommuneByNumeroOfs(municipalityId, date);
+		final Commune commune = context.infraService.getCommuneByNumeroOfs(municipalityId, date);
 		if (commune == null || !commune.isVaudoise()) {
 			throw new ObjectNotFoundException(String.format("Commune %d inconnue dans le canton de Vaud.", municipalityId));
 		}
@@ -440,8 +480,8 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 		return doInTransaction(true, new TransactionCallback<TaxOffices>() {
 			@Override
 			public TaxOffices doInTransaction(TransactionStatus status) {
-				final CollectiviteAdministrative oid = tiersDAO.getCollectiviteAdministrativeForDistrict(codeDistrict);
-				final CollectiviteAdministrative oir = tiersDAO.getCollectiviteAdministrativeForRegion(codeRegion);
+				final CollectiviteAdministrative oid = context.tiersDAO.getCollectiviteAdministrativeForDistrict(codeDistrict);
+				final CollectiviteAdministrative oir = context.tiersDAO.getCollectiviteAdministrativeForRegion(codeRegion);
 				return new TaxOffices(new TaxOffice(oid.getNumero().intValue(), oid.getNumeroCollectiviteAdministrative()),
 				                      new TaxOffice(oir.getNumero().intValue(), oir.getNumeroCollectiviteAdministrative()),
 				                      null);
@@ -451,11 +491,11 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 	@Override
 	public PartyNumberList getModifiedTaxPayers(UserLogin user, final Date since, final Date until) throws AccessDeniedException {
-		WebServiceHelper.checkAccess(securityProvider, user, Role.VISU_ALL);
+		WebServiceHelper.checkAccess(context.securityProvider, user, Role.VISU_ALL);
 		return doInTransaction(true, new TransactionCallback<PartyNumberList>() {
 			@Override
 			public PartyNumberList doInTransaction(TransactionStatus status) {
-				final List<Long> longList = tiersDAO.getListeCtbModifies(since, until);
+				final List<Long> longList = context.tiersDAO.getListeCtbModifies(since, until);
 				final List<Integer> intList = new ArrayList<>(longList.size());
 				for (Long id : longList) {
 					intList.add(id.intValue());
@@ -480,18 +520,18 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 	@Override
 	public DebtorInfo getDebtorInfo(UserLogin user, final int debtorNo, final int pf) throws AccessDeniedException {
-		WebServiceHelper.checkAccess(securityProvider, user, Role.VISU_ALL);
+		WebServiceHelper.checkAccess(context.securityProvider, user, Role.VISU_ALL);
 		return doInTransaction(true, new TransactionCallback<DebtorInfo>() {
 			@Override
 			public DebtorInfo doInTransaction(TransactionStatus status) {
-				final Tiers tiers = tiersDAO.get(debtorNo, false);
+				final Tiers tiers = context.tiersDAO.get(debtorNo, false);
 				if (tiers == null || !(tiers instanceof DebiteurPrestationImposable)) {
 					throw new ObjectNotFoundException("Pas de débiteur de prestation imposable avec le numéro " + debtorNo);
 				}
 
 				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiers;
 				final List<? extends DateRange> lrEmises = dpi.getDeclarationsForPeriode(pf, false);
-				final List<DateRange> lrManquantes = lrService.findLRsManquantes(dpi, RegDate.get(pf, 12, 31), new ArrayList<DateRange>());
+				final List<DateRange> lrManquantes = context.lrService.findLRsManquantes(dpi, RegDate.get(pf, 12, 31), new ArrayList<DateRange>());
 				final List<DateRange> lrManquantesInPf = extractIntersecting(lrManquantes, new DateRangeHelper.Range(RegDate.get(pf, 1, 1), RegDate.get(pf, 12, 31)));
 				return new DebtorInfo(debtorNo, pf, lrManquantesInPf.size() + lrEmises.size(), lrEmises.size(), null);
 			}
@@ -503,7 +543,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	                                   @Nullable RegDate dateOfBirth, @Nullable String socialInsuranceNumber, @Nullable Integer taxResidenceFSOId,
 	                                   boolean onlyActiveMainTaxResidence, @Nullable Set<PartyType> partyTypes, @Nullable DebtorCategory debtorCategory,
 	                                   @Nullable Boolean activeParty, @Nullable Long oldWithholdingNumber) throws AccessDeniedException, IndexerException {
-		WebServiceHelper.checkAnyAccess(securityProvider, user, Role.VISU_ALL, Role.VISU_LIMITE);
+		WebServiceHelper.checkAnyAccess(context.securityProvider, user, Role.VISU_ALL, Role.VISU_LIMITE);
 		final TiersCriteria criteria = new TiersCriteria();
 		if (partyNo != null && StringUtils.isNotBlank(partyNo)) {
 			// tous les autres critères sont ignorés si le numéro est renseigné
@@ -546,12 +586,26 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	@Override
 	public List<CorporationEvent> searchCorporationEvent(UserLogin user, @Nullable Integer corporationId, @Nullable String eventCode,
 	                                                     @Nullable RegDate startDate, @Nullable RegDate endDate) throws AccessDeniedException, EmptySearchCriteriaException {
-		WebServiceHelper.checkAccess(securityProvider, user, Role.VISU_ALL);
+		WebServiceHelper.checkAccess(context.securityProvider, user, Role.VISU_ALL);
 		if (corporationId == null && StringUtils.isBlank(eventCode) && startDate == null && endDate == null) {
 			throw new EmptySearchCriteriaException("Les critères de recherche sont vides.");
 		}
 		final Long corpNr = corporationId != null ? Long.valueOf(corporationId) : null;
-		final List<EvenementPM> list = personneMoraleService.findEvenements(corpNr, eventCode, startDate, endDate);
+		final List<EvenementPM> list = context.servicePM.findEvenements(corpNr, eventCode, startDate, endDate);
 		return DataHelper.coreToXML(list);
+	}
+
+	@Override
+	public Party getParty(UserLogin user, final int partyNo, @Nullable final Set<PartyPart> parts) throws AccessDeniedException {
+		WebServiceHelper.checkAccess(context.securityProvider, user, Role.VISU_ALL);
+		WebServiceHelper.checkPartyReadAccess(context.securityProvider, user, partyNo);
+		return doInTransaction(true, new TransactionCallback<Party>() {
+			@Override
+			public Party doInTransaction(TransactionStatus status) {
+				final Tiers tiers = context.tiersService.getTiers(partyNo);
+				// TODO à implémenter...
+				return null;  //To change body of implemented methods use File | Settings | File Templates.
+			}
+		});
 	}
 }

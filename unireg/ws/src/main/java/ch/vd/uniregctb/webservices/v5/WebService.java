@@ -16,6 +16,7 @@ import java.util.Set;
 
 import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationAckRequest;
 import ch.vd.unireg.ws.deadline.v1.DeadlineRequest;
+import ch.vd.unireg.xml.party.v3.PartyPart;
 import ch.vd.unireg.xml.party.v3.PartyType;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorCategory;
 import ch.vd.uniregctb.webservices.common.WebServiceHelper;
@@ -46,60 +47,12 @@ public interface WebService {
 	@GET
 	@Produces(MediaType.APPLICATION_XML)
 	@Path("/party/{partyNo}")
-	Response getParty(@PathParam("partyNo") int partyNo,
-	                  @QueryParam("user") String user,
-	                  @QueryParam("withAddresses") @DefaultValue("false") boolean withAddresses,
-	                  @QueryParam("withTaxResidences") @DefaultValue("false") boolean withTaxResidences,
-	                  @QueryParam("withVirtualTaxResidences") @DefaultValue("false") boolean withVirtualTaxResidences,
-	                  @QueryParam("withManagingTaxResidences") @DefaultValue("false") boolean withManagingTaxResidences,
-	                  @QueryParam("withHouseholdMembers") @DefaultValue("false") boolean withHouseholdMembers,
-	                  @QueryParam("withTaxLiabilities") @DefaultValue("false") boolean withTaxLiabilities,
-	                  @QueryParam("withSimplifiedTaxLiabilities") @DefaultValue("false") boolean withSimplifiedTaxLiabilities,
-	                  @QueryParam("withTaxationPeriods") @DefaultValue("false") boolean withTaxationPeriods,
-	                  @QueryParam("withWithholdingTaxationPeriods") @DefaultValue("false") boolean withWithholdingTaxationPeriods,
-	                  @QueryParam("withRelationsBetweenParties") @DefaultValue("false") boolean withRelationsBetweenParties,
-	                  @QueryParam("withFamilyStatuses") @DefaultValue("false") boolean withFamilyStatuses,
-	                  @QueryParam("withTaxDeclarations") @DefaultValue("false") boolean withTaxDeclarations,
-	                  @QueryParam("withTaxDeclarationDeadlines") @DefaultValue("false") boolean withTaxDeclarationDeadlines,
-	                  @QueryParam("withBankAccounts") @DefaultValue("false") boolean withBankAccounts,
-	                  @QueryParam("withLegalSeats") @DefaultValue("false") boolean withLegalSeats,
-	                  @QueryParam("withLegalForms") @DefaultValue("false") boolean withLegalForms,
-	                  @QueryParam("withCapitals") @DefaultValue("false") boolean withCapitals,
-	                  @QueryParam("withTaxSystems") @DefaultValue("false") boolean withTaxSystems,
-	                  @QueryParam("withCorporationStatuses") @DefaultValue("false") boolean withCorporationStatuses,
-	                  @QueryParam("withDebtorPeriodicities") @DefaultValue("false") boolean withDebtorPeriodicities,
-	                  @QueryParam("withImmovableProperties") @DefaultValue("false") boolean withImmovableProperties,
-	                  @QueryParam("withChildren") @DefaultValue("false") boolean withChildren,
-	                  @QueryParam("withParents") @DefaultValue("false") boolean withParents);
+	Response getParty(@PathParam("partyNo") int partyNo, @QueryParam("user") String user, @QueryParam("part") Set<PartyPart> parts);
 
 	@GET
 	@Produces(MediaType.APPLICATION_XML)
 	@Path("/parties")
-	Response getParties(@QueryParam("user") String user,
-	                    @QueryParam("partyNo") List<Integer> partyNos,
-	                    @QueryParam("withAddresses") @DefaultValue("false") boolean withAddresses,
-	                    @QueryParam("withTaxResidences") @DefaultValue("false") boolean withTaxResidences,
-	                    @QueryParam("withVirtualTaxResidences") @DefaultValue("false") boolean withVirtualTaxResidences,
-	                    @QueryParam("withManagingTaxResidences") @DefaultValue("false") boolean withManagingTaxResidences,
-	                    @QueryParam("withHouseholdMembers") @DefaultValue("false") boolean withHouseholdMembers,
-	                    @QueryParam("withTaxLiabilities") @DefaultValue("false") boolean withTaxLiabilities,
-	                    @QueryParam("withSimplifiedTaxLiabilities") @DefaultValue("false") boolean withSimplifiedTaxLiabilities,
-	                    @QueryParam("withTaxationPeriods") @DefaultValue("false") boolean withTaxationPeriods,
-	                    @QueryParam("withWithholdingTaxationPeriods") @DefaultValue("false") boolean withWithholdingTaxationPeriods,
-	                    @QueryParam("withRelationsBetweenParties") @DefaultValue("false") boolean withRelationsBetweenParties,
-	                    @QueryParam("withFamilyStatuses") @DefaultValue("false") boolean withFamilyStatuses,
-	                    @QueryParam("withTaxDeclarations") @DefaultValue("false") boolean withTaxDeclarations,
-	                    @QueryParam("withTaxDeclarationDeadlines") @DefaultValue("false") boolean withTaxDeclarationDeadlines,
-	                    @QueryParam("withBankAccounts") @DefaultValue("false") boolean withBankAccounts,
-	                    @QueryParam("withLegalSeats") @DefaultValue("false") boolean withLegalSeats,
-	                    @QueryParam("withLegalForms") @DefaultValue("false") boolean withLegalForms,
-	                    @QueryParam("withCapitals") @DefaultValue("false") boolean withCapitals,
-	                    @QueryParam("withTaxSystems") @DefaultValue("false") boolean withTaxSystems,
-	                    @QueryParam("withCorporationStatuses") @DefaultValue("false") boolean withCorporationStatuses,
-	                    @QueryParam("withDebtorPeriodicities") @DefaultValue("false") boolean withDebtorPeriodicities,
-	                    @QueryParam("withImmovableProperties") @DefaultValue("false") boolean withImmovableProperties,
-	                    @QueryParam("withChildren") @DefaultValue("false") boolean withChildren,
-	                    @QueryParam("withParents") @DefaultValue("false") boolean withParents);
+	Response getParties(@QueryParam("user") String user, @QueryParam("partyNo") List<Integer> partyNos, @QueryParam("part") Set<PartyPart> parts);
 
 	@GET
 	@Produces({MediaType.APPLICATION_XML, WebServiceHelper.APPLICATION_JSON_WITH_UTF8_CHARSET})

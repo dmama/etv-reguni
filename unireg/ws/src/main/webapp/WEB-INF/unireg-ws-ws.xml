@@ -166,6 +166,15 @@
 		<property name="lrService" ref="lrService"/>
 		<property name="tiersSearcher" ref="globalTiersSearcher"/>
 		<property name="personneMoraleService" ref="servicePersonneMoraleService"/>
+		<property name="adresseService" ref="adresseService" />
+		<property name="situationService" ref="situationFamilleService" />
+		<property name="ibanValidator" ref="ibanValidator" />
+		<property name="parametreService" ref="parametreAppService" />
+		<property name="serviceCivil" ref="serviceCivilService" />
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
+		<property name="assujettissementService" ref="assujettissementService" />
+		<property name="periodeImpositionService" ref="periodeImpositionService" />
+		<property name="periodeImpositionImpotSourceService" ref="periodeImpositionImpotSourceService"/>
 	</bean>
 
 </beans>

@@ -13,6 +13,7 @@ import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
 import ch.vd.uniregctb.jms.BamMessageSender;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
+import ch.vd.uniregctb.metier.piis.PeriodeImpositionImpotSourceService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.situationfamille.SituationFamilleService;
@@ -55,6 +56,8 @@ public class Context {
 	public AssujettissementService assujettissementService;
 
 	public PeriodeImpositionService periodeImpositionService;
+
+	public PeriodeImpositionImpotSourceService periodeImpositionImpotSourceService;
 
 	public SecurityProviderInterface securityProvider;
 }

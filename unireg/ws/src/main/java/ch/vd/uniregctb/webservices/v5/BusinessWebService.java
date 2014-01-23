@@ -15,7 +15,9 @@ import ch.vd.unireg.ws.modifiedtaxpayers.v1.PartyNumberList;
 import ch.vd.unireg.ws.security.v1.SecurityResponse;
 import ch.vd.unireg.ws.taxoffices.v1.TaxOffices;
 import ch.vd.unireg.xml.party.corporation.v3.CorporationEvent;
+import ch.vd.unireg.xml.party.v3.Party;
 import ch.vd.unireg.xml.party.v3.PartyInfo;
+import ch.vd.unireg.xml.party.v3.PartyPart;
 import ch.vd.unireg.xml.party.v3.PartyType;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorCategory;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorInfo;
@@ -144,4 +146,12 @@ public interface BusinessWebService {
 	List<CorporationEvent> searchCorporationEvent(UserLogin user, @Nullable Integer corporationId, @Nullable String eventCode,
 	                                              @Nullable RegDate startDate, @Nullable RegDate endDate) throws AccessDeniedException, EmptySearchCriteriaException;
 
+	/**
+	 * Récupère les informations sur le tiers demandé
+	 * @param user désignation de l'opérateur pour le compte duquel les informations sont glânées
+	 * @param partyNo numéro du tiers
+	 * @param parts [optionnel] ensemble des parts supplémentaires qui intéressent l'appelant
+	 * @return les informations demandées sur le tiers
+	 */
+	Party getParty(UserLogin user, int partyNo, @Nullable Set<PartyPart> parts) throws AccessDeniedException;
 }

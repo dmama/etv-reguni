@@ -11,8 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import ch.ech.ech0044.v2.DatePartiallyKnown;
-import ch.ech.ech0044.v2.NamedPersonId;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang3.StringUtils;
@@ -707,21 +705,39 @@ public abstract class DataHelper {
 		}
 	}
 
-	public static List<NamedPersonId> deepClone(List<NamedPersonId> list) {
+	public static List<ch.ech.ech0044.v2.NamedPersonId> deepCloneV2(List<ch.ech.ech0044.v2.NamedPersonId> list) {
 		if (list == null) {
 			return null;
 		}
-		final List<NamedPersonId> otherPersonId = new ArrayList<>(list.size());
-		for (NamedPersonId namedPersonId : list) {
-			otherPersonId.add(new NamedPersonId(namedPersonId.getPersonIdCategory(), namedPersonId.getPersonId()));
+		final List<ch.ech.ech0044.v2.NamedPersonId> otherPersonId = new ArrayList<>(list.size());
+		for (ch.ech.ech0044.v2.NamedPersonId namedPersonId : list) {
+			otherPersonId.add(new ch.ech.ech0044.v2.NamedPersonId(namedPersonId.getPersonIdCategory(), namedPersonId.getPersonId()));
 		}
 		return otherPersonId;
 	}
 
-	public static DatePartiallyKnown clone(DatePartiallyKnown right) {
+	public static ch.ech.ech0044.v2.DatePartiallyKnown clone(ch.ech.ech0044.v2.DatePartiallyKnown right) {
 		if (right == null) {
 			return null;
 		}
-		return new DatePartiallyKnown(right.getYearMonthDay(), right.getYearMonth(), right.getYear());
+		return new ch.ech.ech0044.v2.DatePartiallyKnown(right.getYearMonthDay(), right.getYearMonth(), right.getYear());
+	}
+
+	public static List<ch.ech.ech0044.v3.NamedPersonId> deepCloneV3(List<ch.ech.ech0044.v3.NamedPersonId> list) {
+		if (list == null) {
+			return null;
+		}
+		final List<ch.ech.ech0044.v3.NamedPersonId> otherPersonId = new ArrayList<>(list.size());
+		for (ch.ech.ech0044.v3.NamedPersonId namedPersonId : list) {
+			otherPersonId.add(new ch.ech.ech0044.v3.NamedPersonId(namedPersonId.getPersonIdCategory(), namedPersonId.getPersonId()));
+		}
+		return otherPersonId;
+	}
+
+	public static ch.ech.ech0044.v3.DatePartiallyKnown clone(ch.ech.ech0044.v3.DatePartiallyKnown right) {
+		if (right == null) {
+			return null;
+		}
+		return new ch.ech.ech0044.v3.DatePartiallyKnown(right.getYearMonthDay(), right.getYearMonth(), right.getYear());
 	}
 }

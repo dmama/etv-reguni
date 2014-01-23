@@ -7,6 +7,7 @@ import java.util.Set;
 import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
 import ch.vd.unireg.interfaces.infra.data.TypeAffranchissement;
 import ch.vd.uniregctb.interfaces.model.CompteBancaire;
+import ch.vd.uniregctb.metier.piis.PeriodeImpositionImpotSource;
 import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.rf.TypeImmeuble;
 import ch.vd.uniregctb.rf.TypeMutation;
@@ -2034,6 +2035,20 @@ public abstract class EnumHelper {
 			return ch.vd.unireg.xml.party.person.v3.CommonHouseholdStatus.SEPARATED_DIVORCED;
 		default:
 			throw new IllegalArgumentException("unknown StatutMenageCommun = [" + setc + ']');
+		}
+	}
+
+	public static ch.vd.unireg.xml.party.taxresidence.v2.WithholdingTaxationPeriodType coreToXMLv2(PeriodeImpositionImpotSource.Type setc) {
+		if (setc == null) {
+			return null;
+		}
+		switch (setc) {
+		case MIXTE:
+			return ch.vd.unireg.xml.party.taxresidence.v2.WithholdingTaxationPeriodType.MIXED;
+		case SOURCE:
+			return ch.vd.unireg.xml.party.taxresidence.v2.WithholdingTaxationPeriodType.PURE;
+		default:
+			throw new IllegalArgumentException("unknown PeriodeImpositionImpotSource.Type = [" + setc + ']');
 		}
 	}
 }

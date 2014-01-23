@@ -5,6 +5,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.security.Principal;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -27,6 +29,8 @@ public abstract class WebServiceHelper {
 	public static final MediaType TEXT_PLAIN_WITH_UTF8_CHARSET_TYPE = MediaType.valueOf(TEXT_PLAIN_WITH_UTF8_CHARSET);
 
 	private static final Logger LOGGER = Logger.getLogger(WebServiceHelper.class);
+
+	private static final String NULL = "null";
 
 	/**
 	 * @return le nom de l'utilisateur utilisé pour se connecter au web-service en mode <i>basic authentication</i>; ou "n/a" si cette information n'existe pas.
@@ -223,10 +227,33 @@ public abstract class WebServiceHelper {
 	 */
 	public static String enquote(@Nullable String str) {
 		if (str == null) {
-			return "null";
+			return NULL;
 		}
 		else {
 			return String.format("'%s'", str);
 		}
+	}
+
+	/**
+	 * @param col collection d'énums
+	 * @param <T> type d'énum
+	 * @return chaîne de caractères "[enum1, enum2, enum3]"
+	 */
+	public static <T extends Enum<T>> String toString(Collection<T> col) {
+		if (col == null) {
+			return NULL;
+		}
+
+		final StringBuilder b = new StringBuilder();
+		final Iterator<T> iter = col.iterator();
+		b.append("[");
+		while (iter.hasNext()) {
+			b.append(iter.next());
+			if (iter.hasNext()) {
+				b.append(", ");
+			}
+		}
+		b.append("]");
+		return b.toString();
 	}
 }

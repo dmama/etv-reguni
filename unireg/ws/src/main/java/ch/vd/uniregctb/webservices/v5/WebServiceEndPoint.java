@@ -28,7 +28,9 @@ import ch.vd.unireg.ws.security.v1.SecurityResponse;
 import ch.vd.unireg.ws.taxoffices.v1.TaxOffices;
 import ch.vd.unireg.xml.error.v1.Error;
 import ch.vd.unireg.xml.party.corporation.v3.CorporationEvent;
+import ch.vd.unireg.xml.party.v3.Party;
 import ch.vd.unireg.xml.party.v3.PartyInfo;
+import ch.vd.unireg.xml.party.v3.PartyPart;
 import ch.vd.unireg.xml.party.v3.PartyType;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorCategory;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorInfo;
@@ -66,6 +68,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 	private final ch.vd.unireg.ws.debtorinfo.v1.ObjectFactory debtorInfoFactory = new ch.vd.unireg.ws.debtorinfo.v1.ObjectFactory();
 	private final ch.vd.unireg.ws.search.party.v1.ObjectFactory searchPartyObjectFactory = new ch.vd.unireg.ws.search.party.v1.ObjectFactory();
 	private final ch.vd.unireg.ws.search.corpevent.v1.ObjectFactory searchCorpEventObjectFactory = new ch.vd.unireg.ws.search.corpevent.v1.ObjectFactory();
+	private final ch.vd.unireg.ws.party.v1.ObjectFactory partyObjectFactory = new ch.vd.unireg.ws.party.v1.ObjectFactory();
 
 	private BusinessWebService target;
 
@@ -246,28 +249,35 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 	}
 
 	@Override
-	public Response getParty(int partyNo, String user,
-	                         boolean withAddresses, boolean withTaxResidences, boolean withVirtualTaxResidences, boolean withManagingTaxResidences,
-	                         boolean withHouseholdMembers, boolean withTaxLiabilities, boolean withSimplifiedTaxLiabilities, boolean withTaxationPeriods,
-	                         boolean withWithholdingTaxationPeriods,
-	                         boolean withRelationsBetweenParties, boolean withFamilyStatuses, boolean withTaxDeclarations, boolean withTaxDeclarationDeadlines,
-	                         boolean withBankAccounts, boolean withLegalSeats, boolean withLegalForms, boolean withCapitals, boolean withTaxSystems,
-	                         boolean withCorporationStatuses, boolean withDebtorPeriodicities, boolean withImmovableProperties,boolean withChildren,
-	                         boolean withParents) {
-
-		return WebServiceHelper.buildErrorResponse(Response.Status.SERVICE_UNAVAILABLE, getAcceptableMediaTypes(), "Implémentation encore en cours...");
+	public Response getParty(final int partyNo, final String user, final Set<PartyPart> parts) {
+		final Object params = new Object() {
+			@Override
+			public String toString() {
+				return String.format("getParty{user=%s, partyNo=%d, parts=%s}", WebServiceHelper.enquote(user), partyNo, WebServiceHelper.toString(parts));
+			}
+		};
+		return execute(user, params, READ_ACCESS_LOG, new ExecutionCallbackWithUser() {
+			@NotNull
+			@Override
+			public ExecutionResult execute(UserLogin userLogin) throws Exception {
+				final Party party = target.getParty(userLogin, partyNo, parts);
+				if (party == null) {
+					return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.NOT_FOUND, getAcceptableMediaTypes(), "Le tiers n'existe pas."));
+				}
+				final MediaType preferred = getPreferredMediaTypeFromXmlOrJson();
+				if (preferred == WebServiceHelper.APPLICATION_JSON_WITH_UTF8_CHARSET_TYPE) {
+					return ExecutionResult.with(Response.ok(party, preferred).build());
+				}
+				else if (preferred == MediaType.APPLICATION_XML_TYPE) {
+					return ExecutionResult.with(Response.ok(partyObjectFactory.createParty(party), preferred).build());
+				}
+				return ExecutionResult.with(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build());
+			}
+		});
 	}
 
 	@Override
-	public Response getParties(String user, List<Integer> partyNos,
-	                           boolean withAddresses, boolean withTaxResidences, boolean withVirtualTaxResidences, boolean withManagingTaxResidences,
-	                           boolean withHouseholdMembers, boolean withTaxLiabilities, boolean withSimplifiedTaxLiabilities, boolean withTaxationPeriods,
-	                           boolean withWithholdingTaxationPeriods,
-	                           boolean withRelationsBetweenParties, boolean withFamilyStatuses, boolean withTaxDeclarations, boolean withTaxDeclarationDeadlines,
-	                           boolean withBankAccounts, boolean withLegalSeats, boolean withLegalForms, boolean withCapitals, boolean withTaxSystems,
-	                           boolean withCorporationStatuses, boolean withDebtorPeriodicities, boolean withImmovableProperties,boolean withChildren,
-	                           boolean withParents) {
-
+	public Response getParties(String user, List<Integer> partyNos, Set<PartyPart> parts) {
 		return WebServiceHelper.buildErrorResponse(Response.Status.SERVICE_UNAVAILABLE, getAcceptableMediaTypes(), "Implémentation encore en cours...");
 	}
 
@@ -293,7 +303,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 			public ExecutionResult execute(UserLogin userLogin) throws Exception {
 				final RegDate dateNaissance;
 				try {
-					dateNaissance = fromString(dateOfBirthStr, true);
+					dateNaissance = dateFromString(dateOfBirthStr, true);
 				}
 				catch (ParseException | IllegalArgumentException e) {
 					return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.BAD_REQUEST, getAcceptableMediaTypes(), e));
@@ -323,7 +333,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 	}
 
 	@Nullable
-	private static RegDate fromString(@Nullable String str, boolean partialAllowed) throws ParseException, IllegalArgumentException {
+	private static RegDate dateFromString(@Nullable String str, boolean partialAllowed) throws ParseException, IllegalArgumentException {
 		if (StringUtils.isNotBlank(str)) {
 			return RegDateHelper.displayStringToRegDate(str, partialAllowed);
 		}
@@ -346,7 +356,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 			public ExecutionResult execute() throws Exception {
 				final RegDate date;
 				try {
-					date = fromString(dateStr, false);
+					date = dateFromString(dateStr, false);
 				}
 				catch (ParseException | IllegalArgumentException e) {
 					return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.BAD_REQUEST, getAcceptableMediaTypes(), e));
@@ -490,8 +500,8 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 				final RegDate start;
 				final RegDate end;
 				try {
-					start = fromString(startDay, false);
-					end = fromString(endDay, false);
+					start = dateFromString(startDay, false);
+					end = dateFromString(endDay, false);
 				}
 				catch (ParseException | IllegalArgumentException e) {
 					return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.BAD_REQUEST, getAcceptableMediaTypes(), e));

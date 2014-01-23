@@ -166,8 +166,8 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 	}
 
 	private static PersonIdentification cloneIdentification(PersonIdentification identification) {
-		return new PersonIdentification(identification.getVn(), identification.getLocalPersonId(), DataHelper.deepClone(identification.getOtherPersonId()), DataHelper
-				.deepClone(identification.getEuPersonId()), identification.getOfficialName(), identification.getFirstName(), identification.getSex(),
+		return new PersonIdentification(identification.getVn(), identification.getLocalPersonId(), DataHelper.deepCloneV2(identification.getOtherPersonId()), DataHelper
+				.deepCloneV2(identification.getEuPersonId()), identification.getOfficialName(), identification.getFirstName(), identification.getSex(),
 				DataHelper.clone(identification.getDateOfBirth()));
 	}
 }
