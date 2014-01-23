@@ -12,6 +12,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
+import java.util.Set;
 
 import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationAckRequest;
 import ch.vd.unireg.ws.deadline.v1.DeadlineRequest;
@@ -98,6 +99,22 @@ public interface WebService {
 	                    @QueryParam("withChildren") @DefaultValue("false") boolean withChildren,
 	                    @QueryParam("withParents") @DefaultValue("false") boolean withParents);
 
+	@GET
+	@Produces({MediaType.APPLICATION_XML, WebServiceHelper.APPLICATION_JSON_WITH_UTF8_CHARSET})
+	@Path("/searchParty")
+	Response searchParty(@QueryParam("user") String user,
+	                     @QueryParam("partyNo") String partyNo,
+	                     @QueryParam("name") String name,
+	                     @QueryParam("townOrCountry") String townOrCountry,
+	                     @QueryParam("dateOfBirth") String dateOfBirth,
+	                     @QueryParam("vn") String socialInsuranceNumber,
+	                     @QueryParam("taxResidenceFSOId") Integer taxResidenceFSOId,
+	                     @QueryParam("activeMainTaxResidence") Boolean activeMainTaxResidence,
+	                     @QueryParam("nameSearchMode") SearchMode nameSearchMode,
+	                     @QueryParam("partyType") Set<PartyType> partyTypes,
+	                     @QueryParam("debtorCategory") DebtorCategory debtorCategory,
+	                     @QueryParam("activeParty") Boolean activeParty,
+	                     @QueryParam("oldWithholdingNumber") Integer oldWithholdingNumber);
 
 	@GET
 	@Produces({MediaType.APPLICATION_XML, WebServiceHelper.APPLICATION_JSON_WITH_UTF8_CHARSET})

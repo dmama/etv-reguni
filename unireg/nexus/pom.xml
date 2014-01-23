@@ -91,7 +91,7 @@
 			<version>${javamail.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>ch.vd.registre</groupId>
+			<groupId>ch.vd.shared</groupId>
 			<artifactId>shared-embedded-tomcat</artifactId>
 			<version>${embedded-tomcat.version}</version>
 			<scope>test</scope>

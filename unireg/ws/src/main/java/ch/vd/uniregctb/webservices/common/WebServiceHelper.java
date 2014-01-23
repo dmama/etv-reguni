@@ -216,4 +216,17 @@ public abstract class WebServiceHelper {
 		}
 		return null;
 	}
+
+	/**
+	 * @param str une chaîne de caractères
+	 * @return si la chaîne donnée est <code>null</code>, renvoie "null"&nbsp;; sinon, renvoie cette chaîne entourée de <i>simple quotes</i>.
+	 */
+	public static String enquote(@Nullable String str) {
+		if (str == null) {
+			return "null";
+		}
+		else {
+			return String.format("'%s'", str);
+		}
+	}
 }

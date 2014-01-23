@@ -4,8 +4,10 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.text.ParseException;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
@@ -156,15 +158,15 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 	}
 
 	@Override
-	public Response setAutomaticRepaymentBlockingFlag(final int partyNo, final String login, final String value) {
+	public Response setAutomaticRepaymentBlockingFlag(final int partyNo, final String user, final String value) {
 
 		final Object params = new Object() {
 			@Override
 			public String toString() {
-				return String.format("setAutomaticRepaymentBlockingFlag{partyNo=%d, user='%s', value='%s'}", partyNo, login, value);
+				return String.format("setAutomaticRepaymentBlockingFlag{partyNo=%d, user=%s, value=%s}", partyNo, WebServiceHelper.enquote(user), WebServiceHelper.enquote(value));
 			}
 		};
-		return execute(login, params, WRITE_ACCESS_LOG, new ExecutionCallbackWithUser() {
+		return execute(user, params, WRITE_ACCESS_LOG, new ExecutionCallbackWithUser() {
 			@NotNull
 			@Override
 			public ExecutionResult execute(UserLogin userLogin) throws Exception {
@@ -181,14 +183,14 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 	}
 
 	@Override
-	public Response getAutomaticRepaymentBlockingFlag(final int partyNo, final String login) {
+	public Response getAutomaticRepaymentBlockingFlag(final int partyNo, final String user) {
 		final Object params = new Object() {
 			@Override
 			public String toString() {
-				return String.format("getAutomaticRepaymentBlockingFlag{partyNo=%d, user='%s'}", partyNo, login);
+				return String.format("getAutomaticRepaymentBlockingFlag{partyNo=%d, user=%s}", partyNo, WebServiceHelper.enquote(user));
 			}
 		};
-		return execute(login, params, READ_ACCESS_LOG, new ExecutionCallbackWithUser() {
+		return execute(user, params, READ_ACCESS_LOG, new ExecutionCallbackWithUser() {
 			@NotNull
 			@Override
 			public ExecutionResult execute(UserLogin userLogin) throws Exception {
@@ -214,7 +216,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 		final Object params = new Object() {
 			@Override
 			public String toString() {
-				return String.format("getSecurityOnParty{user='%s', partyNo=%d}", user, partyNo);
+				return String.format("getSecurityOnParty{user=%s, partyNo=%d}", WebServiceHelper.enquote(user), partyNo);
 			}
 		};
 		return execute(params, READ_ACCESS_LOG, new ExecutionCallback() {
@@ -261,11 +263,37 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 	}
 
 	@Override
+	public Response searchParty(final String user, final String partyNo, final String name, final String townOrCountry,
+	                            final String dateOfBirthStr, final String socialInsuranceNumber, final Integer taxResidenceFSOId,
+	                            final Boolean activeMainTaxResidence, final SearchMode nameSearchMode,
+	                            final Set<PartyType> partyTypes, final DebtorCategory debtorCategory, final Boolean activeParty,
+	                            final Integer oldWithholdingNumber) {
+
+		final Object params = new Object() {
+			@Override
+			public String toString() {
+				final String partyTypesStr = Arrays.toString(partyTypes.toArray(new PartyType[partyTypes.size()]));
+				return String.format("searchParty{user=%s, partyNo=%s, name=%s, townOrCountry=%s, dateOfBirth=%s, vn=%s, taxResidenceFSOId=%d, activeMainTaxResidence=%s, nameSearchMode=%s, partyTypes=%s, debtorCategory=%s, activeParty=%s, oldWithholdingNumber=%d}",
+				                     WebServiceHelper.enquote(user), WebServiceHelper.enquote(partyNo), WebServiceHelper.enquote(name), WebServiceHelper.enquote(townOrCountry),
+				                     WebServiceHelper.enquote(dateOfBirthStr), WebServiceHelper.enquote(socialInsuranceNumber), taxResidenceFSOId,
+				                     activeMainTaxResidence, nameSearchMode, partyTypesStr, debtorCategory, activeParty, oldWithholdingNumber);
+			}
+		};
+		return execute(user, params, READ_ACCESS_LOG, new ExecutionCallbackWithUser() {
+			@NotNull
+			@Override
+			public ExecutionResult execute(UserLogin userLogin) throws Exception {
+				return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.SERVICE_UNAVAILABLE, getAcceptableMediaTypes(), "Implémentation encore en cours..."));
+			}
+		});
+	}
+
+	@Override
 	public Response getTaxOffices(final int municipalityId, final String dateStr) {
 		final Object params = new Object() {
 			@Override
 			public String toString() {
-				return String.format("getTaxOffices{municipalityId=%d, date='%s'}", municipalityId, dateStr);
+				return String.format("getTaxOffices{municipalityId=%d, date=%s}", municipalityId, WebServiceHelper.enquote(dateStr));
 			}
 		};
 		return execute(params, READ_ACCESS_LOG, new ExecutionCallback() {
@@ -316,7 +344,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 		final Object params = new Object() {
 			@Override
 			public String toString() {
-				return String.format("ackOrdinaryTaxDeclarations{user='%s', request='%s'}", user, request);
+				return String.format("ackOrdinaryTaxDeclarations{user=%s, request=%s}", WebServiceHelper.enquote(user), request);
 			}
 		};
 		return execute(user, params, WRITE_ACCESS_LOG, new ExecutionCallbackWithUser() {
@@ -335,7 +363,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 		final Object params = new Object() {
 			@Override
 			public String toString() {
-				return String.format("newOrdinaryTaxDeclarationDeadline{user='%s', partyNo=%d, pf=%d, seqNo=%d, request=%s}", user, partyNo, pf, seqNo, request);
+				return String.format("newOrdinaryTaxDeclarationDeadline{user=%s, partyNo=%d, pf=%d, seqNo=%d, request=%s}", WebServiceHelper.enquote(user), partyNo, pf, seqNo, request);
 			}
 		};
 		return execute(user, params, WRITE_ACCESS_LOG, new ExecutionCallbackWithUser() {
@@ -353,7 +381,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 		final Object params = new Object() {
 			@Override
 			public String toString() {
-				return String.format("getModifiedTaxPayers{user='%s', since=%d, until=%d}", user, since, until);
+				return String.format("getModifiedTaxPayers{user=%s, since=%d, until=%d}", WebServiceHelper.enquote(user), since, until);
 			}
 		};
 		return execute(user, params, READ_ACCESS_LOG, new ExecutionCallbackWithUser() {
@@ -387,7 +415,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 		final Object params = new Object() {
 			@Override
 			public String toString() {
-				return String.format("getDebtorInfo{debtorNo='%s', fiscalPeriod=%d, user='%s'", debtorNo, pf, user);
+				return String.format("getDebtorInfo{debtorNo=%d, fiscalPeriod=%d, user=%s", debtorNo, pf, WebServiceHelper.enquote(user));
 			}
 		};
 		return execute(user, params, READ_ACCESS_LOG, new ExecutionCallbackWithUser() {
