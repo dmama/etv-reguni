@@ -44,14 +44,16 @@ public abstract class WebServiceHelper {
 	 * @param duration durée de l'appel, en nano-secondes
 	 * @param load nombre d'appel en cours (y compris celui-ci)
 	 * @param status le statut HTTP de la réponse
+	 * @param nbItems dans les cas où cela a un sens, le nombre d'éléments retournés par la requête
 	 * @param t éventuelle exception lancée pendant l'appel
 	 */
-	public static void logAccessInfo(Logger accessLogger, HttpServletRequest request, Object params, long duration, int load, @Nullable Response.Status status, @Nullable Throwable t) {
+	public static void logAccessInfo(Logger accessLogger, HttpServletRequest request, Object params, long duration, int load, @Nullable Response.Status status, @Nullable Integer nbItems, @Nullable Throwable t) {
 		if (accessLogger.isInfoEnabled()) {
 			final String user = getBasicAuthenticationUser(request);
 			final String exceptionString = (t == null ? StringUtils.EMPTY : String.format(", %s thrown", t.getClass()));
 			final String statusString = (status == null ? StringUtils.EMPTY : String.format(" status='%d %s'", status.getStatusCode(), status.getReasonPhrase()));
-			accessLogger.info(String.format("[%s] (%d ms) %s load=%d%s%s", user, TimeUnit.NANOSECONDS.toMillis(duration), params.toString(), load, statusString, exceptionString));
+			final String itemString = (nbItems == null ? StringUtils.EMPTY : String.format(" => %d item(s)", nbItems));
+			accessLogger.info(String.format("[%s] (%d ms) %s load=%d%s%s%s", user, TimeUnit.NANOSECONDS.toMillis(duration), params.toString(), load, statusString, itemString, exceptionString));
 		}
 	}
 
