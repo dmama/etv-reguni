@@ -19,8 +19,10 @@
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/party/numbers-response/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/numbers-response-1.xsd"/>
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/party/party-request/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/party-request-1.xsd"/>
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/party/party-request/2" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/party-request-2.xsd"/>
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/party/party-request/3" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/party-request-3.xsd"/>
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/party/party-response/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/party-response-1.xsd"/>
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/party/party-response/2" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/party-response-2.xsd"/>
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/party/party-response/3" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/party-response-3.xsd"/>
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/party/create-nonresident-request/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/creation-nonhabitant-request-1.xsd"/>
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/party/create-nonresident-request/2" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/creation-nonhabitant-request-2.xsd"/>
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/party/create-nonresident-response/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/creation-nonhabitant-reponse-1.xsd"/>
