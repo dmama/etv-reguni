@@ -609,6 +609,11 @@
 					<xs:documentation>Une personne morale.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
+			<xs:enumeration value="ADMINISTRATIVE_AUTHORITY">
+				<xs:annotation>
+					<xs:documentation>Une collectivité administrative.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
 		</xs:restriction>
 	</xs:simpleType>
 
