@@ -30,9 +30,6 @@ import ch.vd.uniregctb.webservices.common.WebServiceHelper;
 
 public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 
-	private static final MediaType APPLICATION_JSON_WITH_UTF8_CHARSET_TYPE = MediaType.valueOf(APPLICATION_JSON_WITH_UTF8_CHARSET);
-	private static final MediaType TEXT_PLAIN_WITH_UTF8_CHARSET_TYPE = MediaType.valueOf(TEXT_PLAIN_WITH_UTF8_CHARSET);
-
 	private static final Logger LOGGER = Logger.getLogger(WebServiceEndPoint.class);
 	private static final Logger READ_ACCESS_LOG = Logger.getLogger("ws.v5.read");
 	private static final Logger WRITE_ACCESS_LOG = Logger.getLogger("ws.v5.write");
@@ -82,17 +79,17 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 		catch (AccessDeniedException e) {
 			t = e;
 			LOGGER.error(e.getMessage());
-			r = WebServiceHelper.buildErrorResponse(Response.Status.FORBIDDEN, e);
+			r = WebServiceHelper.buildErrorResponse(Response.Status.FORBIDDEN, getAcceptableMediaTypes(), e);
 		}
 		catch (ObjectNotFoundException e) {
 			t = e;
 			LOGGER.error(e.getMessage());
-			r = WebServiceHelper.buildErrorResponse(Response.Status.NOT_FOUND, e);
+			r = WebServiceHelper.buildErrorResponse(Response.Status.NOT_FOUND, getAcceptableMediaTypes(), e);
 		}
 		catch (Throwable e) {
 			t = e;
 			LOGGER.error(e, e);
-			r = WebServiceHelper.buildErrorResponse(Response.Status.INTERNAL_SERVER_ERROR, e);
+			r = WebServiceHelper.buildErrorResponse(Response.Status.INTERNAL_SERVER_ERROR, getAcceptableMediaTypes(), e);
 		}
 		finally {
 			final long end = loadMeter.end();
@@ -113,7 +110,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 				final UserLogin userLogin = WebServiceHelper.parseLoginParameter(login);
 				if (userLogin == null) {
 					LOGGER.error("Missing/invalid login (" + login + ")");
-					return WebServiceHelper.buildErrorResponse(Response.Status.BAD_REQUEST, "Missing/invalid login parameter.");
+					return WebServiceHelper.buildErrorResponse(Response.Status.BAD_REQUEST, getAcceptableMediaTypes(), "Missing/invalid login parameter.");
 				}
 
 				WebServiceHelper.login(userLogin);
@@ -141,7 +138,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 			public Response execute(UserLogin userLogin) throws Exception {
 				if (value == null || !BOOLEAN_PATTERN.matcher(value).matches()) {
 					LOGGER.error("Wrong or missing new flag value");
-					return WebServiceHelper.buildErrorResponse(Response.Status.BAD_REQUEST, "Wrong or missing new flag value.");
+					return WebServiceHelper.buildErrorResponse(Response.Status.BAD_REQUEST, getAcceptableMediaTypes(), "Wrong or missing new flag value.");
 				}
 
 				final boolean blocked = Boolean.parseBoolean(value);
@@ -163,7 +160,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 			@Override
 			public Response execute(UserLogin userLogin) throws Exception {
 				final boolean blocked = target.getAutomaticRepaymentBlockingFlag(partyNo, userLogin);
-				return Response.ok(blocked, APPLICATION_JSON_WITH_UTF8_CHARSET_TYPE).build();
+				return Response.ok(blocked, WebServiceHelper.APPLICATION_JSON_WITH_UTF8_CHARSET_TYPE).build();
 			}
 		});
 	}
@@ -173,7 +170,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 		return execute("ping", READ_ACCESS_LOG, new ExecutionCallback() {
 			@Override
 			public Response execute() throws Exception {
-				return Response.ok(DateHelper.getCurrentDate().getTime(), TEXT_PLAIN_WITH_UTF8_CHARSET_TYPE).build();
+				return Response.ok(DateHelper.getCurrentDate().getTime(), WebServiceHelper.TEXT_PLAIN_WITH_UTF8_CHARSET_TYPE).build();
 			}
 		});
 	}
@@ -190,9 +187,8 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 			@Override
 			public Response execute() throws Exception {
 				final SecurityResponse response = target.getSecurityOnParty(user, partyNo);
-				final MediaType preferred = WebServiceHelper.getPreferedMediaType(messageContext.getHttpHeaders().getAcceptableMediaTypes(),
-				                                                                  new MediaType[] {MediaType.APPLICATION_XML_TYPE, APPLICATION_JSON_WITH_UTF8_CHARSET_TYPE});
-				if (preferred == APPLICATION_JSON_WITH_UTF8_CHARSET_TYPE) {
+				final MediaType preferred = getPreferredMediaTypeFromXmlOrJson();
+				if (preferred == WebServiceHelper.APPLICATION_JSON_WITH_UTF8_CHARSET_TYPE) {
 					return Response.ok(response, preferred).build();
 				}
 				else if (preferred == MediaType.APPLICATION_XML_TYPE) {
@@ -212,7 +208,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 	                         boolean withCorporationStatuses, boolean withDebtorPeriodicities, boolean withImmovableProperties,boolean withChildren,
 	                         boolean withParents) {
 
-		return WebServiceHelper.buildErrorResponse(Response.Status.SERVICE_UNAVAILABLE, "Implémentation encore en cours...");
+		return WebServiceHelper.buildErrorResponse(Response.Status.SERVICE_UNAVAILABLE, getAcceptableMediaTypes(), "Implémentation encore en cours...");
 	}
 
 	@Override
@@ -224,7 +220,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 	                           boolean withCorporationStatuses, boolean withDebtorPeriodicities, boolean withImmovableProperties,boolean withChildren,
 	                           boolean withParents) {
 
-		return WebServiceHelper.buildErrorResponse(Response.Status.SERVICE_UNAVAILABLE, "Implémentation encore en cours...");
+		return WebServiceHelper.buildErrorResponse(Response.Status.SERVICE_UNAVAILABLE, getAcceptableMediaTypes(), "Implémentation encore en cours...");
 	}
 
 	@Override
@@ -244,7 +240,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 						date = RegDateHelper.displayStringToRegDate(dateStr, false);
 					}
 					catch (ParseException | IllegalArgumentException e) {
-						return WebServiceHelper.buildErrorResponse(Response.Status.BAD_REQUEST, e);
+						return WebServiceHelper.buildErrorResponse(Response.Status.BAD_REQUEST, getAcceptableMediaTypes(), e);
 					}
 				}
 				else {
@@ -252,9 +248,8 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 				}
 
 				final TaxOffices taxOffices = target.getTaxOffices(municipalityId, date);
-				final MediaType preferred = WebServiceHelper.getPreferedMediaType(messageContext.getHttpHeaders().getAcceptableMediaTypes(),
-				                                                                  new MediaType[] {MediaType.APPLICATION_XML_TYPE, APPLICATION_JSON_WITH_UTF8_CHARSET_TYPE});
-				if (preferred == APPLICATION_JSON_WITH_UTF8_CHARSET_TYPE) {
+				final MediaType preferred = getPreferredMediaTypeFromXmlOrJson();
+				if (preferred == WebServiceHelper.APPLICATION_JSON_WITH_UTF8_CHARSET_TYPE) {
 					return Response.ok(taxOffices, preferred).build();
 				}
 				else if (preferred == MediaType.APPLICATION_XML_TYPE) {
@@ -263,6 +258,19 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 				return Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build();
 			}
 		});
+	}
+
+	/**
+	 * @return {@link WebServiceHelper#APPLICATION_JSON_WITH_UTF8_CHARSET_TYPE} si JSON est préféré, ou {@link MediaType#APPLICATION_XML_TYPE} si c'est XML, ou <code>null</code>
+	 * si aucun des types acceptés par le client n'est compatible avec JSON ou XML
+	 */
+	private MediaType getPreferredMediaTypeFromXmlOrJson() {
+		return WebServiceHelper.getPreferedMediaType(getAcceptableMediaTypes(),
+		                                             new MediaType[] {MediaType.APPLICATION_XML_TYPE, WebServiceHelper.APPLICATION_JSON_WITH_UTF8_CHARSET_TYPE});
+	}
+
+	private List<MediaType> getAcceptableMediaTypes() {
+		return messageContext.getHttpHeaders().getAcceptableMediaTypes();
 	}
 
 	@Override

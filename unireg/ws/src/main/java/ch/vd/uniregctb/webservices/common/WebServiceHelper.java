@@ -20,6 +20,12 @@ import ch.vd.uniregctb.type.Niveau;
 
 public abstract class WebServiceHelper {
 
+	public static final String APPLICATION_JSON_WITH_UTF8_CHARSET = MediaType.APPLICATION_JSON + "; charset=UTF-8";
+	public static final String TEXT_PLAIN_WITH_UTF8_CHARSET = MediaType.TEXT_PLAIN + "; charset=UTF-8";
+
+	public static final MediaType APPLICATION_JSON_WITH_UTF8_CHARSET_TYPE = MediaType.valueOf(APPLICATION_JSON_WITH_UTF8_CHARSET);
+	public static final MediaType TEXT_PLAIN_WITH_UTF8_CHARSET_TYPE = MediaType.valueOf(TEXT_PLAIN_WITH_UTF8_CHARSET);
+
 	private static final Logger LOGGER = Logger.getLogger(WebServiceHelper.class);
 
 	/**
@@ -147,22 +153,31 @@ public abstract class WebServiceHelper {
 	/**
 	 * Construit une réponse (en erreur) avec le message donné
 	 * @param status le statut d'erreur à mettre dans la réponse
+	 * @param acceptableMediaTypes liste des types de réponse acceptés par le client
 	 * @param errorMessage le message d'erreur à envoyer dans le corps de la réponse
 	 * @return la réponse elle même
 	 */
-	public static Response buildErrorResponse(Response.Status status, String errorMessage) {
-		final ch.vd.unireg.ws.error.v1.ObjectFactory factory = new ch.vd.unireg.ws.error.v1.ObjectFactory();
-		return Response.status(status).entity(factory.createError(new Error(errorMessage))).build();
+	public static Response buildErrorResponse(Response.Status status, List<MediaType> acceptableMediaTypes, String errorMessage) {
+		final Error error = new Error(errorMessage);
+		final MediaType preferred = getPreferedMediaType(acceptableMediaTypes, new MediaType[] {MediaType.APPLICATION_XML_TYPE, APPLICATION_JSON_WITH_UTF8_CHARSET_TYPE});
+		if (preferred == APPLICATION_JSON_WITH_UTF8_CHARSET_TYPE) {
+			return Response.status(status).entity(error).build();
+		}
+		else {
+			final ch.vd.unireg.ws.error.v1.ObjectFactory factory = new ch.vd.unireg.ws.error.v1.ObjectFactory();
+			return Response.status(status).entity(factory.createError(error)).build();
+		}
 	}
 
 	/**
 	 * Construit une réponse (en erreur) avec le message extrait de l'exception donnée
 	 * @param status le statut d'erreur à mettre dans la réponse
+	 * @param acceptableMediaTypes liste des types de réponse acceptés par le client
 	 * @param t une exception dont on va extraire le message d'erreur
 	 * @return la réponse elle même
 	 */
-	public static Response buildErrorResponse(Response.Status status, Throwable t) {
-		return buildErrorResponse(status, buildExceptionMessage(t));
+	public static Response buildErrorResponse(Response.Status status, List<MediaType> acceptableMediaTypes, Throwable t) {
+		return buildErrorResponse(status, acceptableMediaTypes, buildExceptionMessage(t));
 	}
 
 	/**

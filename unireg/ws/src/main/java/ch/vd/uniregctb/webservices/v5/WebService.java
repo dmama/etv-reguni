@@ -15,29 +15,28 @@ import java.util.List;
 
 import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationAckRequest;
 import ch.vd.unireg.ws.deadline.v1.DeadlineRequest;
+import ch.vd.uniregctb.webservices.common.WebServiceHelper;
 
 public interface WebService {
 
-	static final String APPLICATION_JSON_WITH_UTF8_CHARSET = MediaType.APPLICATION_JSON + "; charset=UTF-8";
-	static final String TEXT_PLAIN_WITH_UTF8_CHARSET = MediaType.TEXT_PLAIN + "; charset=UTF-8";
-
 	@GET
-	@Produces(TEXT_PLAIN_WITH_UTF8_CHARSET)
+	@Produces(WebServiceHelper.TEXT_PLAIN_WITH_UTF8_CHARSET)
 	@Path("/status/ping")
 	Response ping();
 
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces({MediaType.APPLICATION_XML, WebServiceHelper.APPLICATION_JSON_WITH_UTF8_CHARSET})
 	@Path("/repayment/{partyNo}/blocked")
 	Response setAutomaticRepaymentBlockingFlag(@PathParam("partyNo") int partyNo, @QueryParam("login") String login, String value);
 
 	@GET
-	@Produces(APPLICATION_JSON_WITH_UTF8_CHARSET)
+	@Produces(WebServiceHelper.APPLICATION_JSON_WITH_UTF8_CHARSET)
 	@Path("/repayment/{partyNo}/blocked")
 	Response getAutomaticRepaymentBlockingFlag(@PathParam("partyNo") int partyNo, @QueryParam("login") String login);
 
 	@GET
-	@Produces({MediaType.APPLICATION_XML, APPLICATION_JSON_WITH_UTF8_CHARSET})
+	@Produces({MediaType.APPLICATION_XML, WebServiceHelper.APPLICATION_JSON_WITH_UTF8_CHARSET})
 	@Path("/security/{user}/{partyNo}")
 	Response getSecurityOnParty(@PathParam("user") String user, @PathParam("partyNo") int partyNo);
 
@@ -99,7 +98,7 @@ public interface WebService {
 
 
 	@GET
-	@Produces({MediaType.APPLICATION_XML, APPLICATION_JSON_WITH_UTF8_CHARSET})
+	@Produces({MediaType.APPLICATION_XML, WebServiceHelper.APPLICATION_JSON_WITH_UTF8_CHARSET})
 	@Path("/taxOffices/{municipalityId}")
 	Response getTaxOffices(@PathParam("municipalityId") int municipalityId, @QueryParam("date") String date);
 
