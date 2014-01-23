@@ -431,6 +431,9 @@
 		<jxb:bindings node="//xs:complexType[@name='taxLiabilityType']">
 			<inheritance:implements>ch.vd.unireg.xml.common.v2.DateRange</inheritance:implements>
 		</jxb:bindings>
+		<jxb:bindings node="//xs:complexType[@name='withholdingTaxationPeriodType']">
+			<inheritance:implements>ch.vd.unireg.xml.common.v2.DateRange</inheritance:implements>
+		</jxb:bindings>
 		<jxb:bindings>
 			<namespace:prefix name="taxresid-2" />
 		</jxb:bindings>
