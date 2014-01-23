@@ -1,13 +1,19 @@
 package ch.vd.uniregctb.webservices.v5;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 import org.junit.Test;
 
 import ch.vd.unireg.xml.party.person.v3.NaturalPersonCategoryType;
 import ch.vd.uniregctb.type.CategorieEtranger;
 import ch.vd.uniregctb.type.TypePermis;
 
-import static junit.framework.Assert.assertNull;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 
 public class NaturalPersonTest extends EnumTest {
@@ -17,6 +23,23 @@ public class NaturalPersonTest extends EnumTest {
 		assertNull(EnumHelper.coreToWeb((CategorieEtranger) null));
 		// la catégorie suisse n'existe pas dans core. assertEquals(NaturalPersonCategoryType.SUISSE,
 		// EnumHelper.coreToXMLv3(ch.vd.uniregctb.type.CategorieEtranger.SUISSE));
+
+		// vérification que toutes les valeurs sont mappées sur quelque chose
+		final Set<CategorieEtranger> illegals = EnumSet.of(CategorieEtranger._01_SAISONNIER_A);
+		for (CategorieEtranger cat : CategorieEtranger.values()) {
+			if (illegals.contains(cat)) {
+				try {
+					EnumHelper.coreToWeb(cat);
+					fail("Type " + cat + " illégal -> devrait planter");
+				}
+				catch (IllegalArgumentException e) {
+					assertTrue(e.getMessage(), e.getMessage().startsWith("Catégorie d'étranger illégale"));
+				}
+			}
+			else {
+				assertNotNull(cat.name(), EnumHelper.coreToWeb(cat));
+			}
+		}
 
 		assertEquals(NaturalPersonCategoryType.C_02_B_PERMIT, EnumHelper.coreToWeb(CategorieEtranger._02_PERMIS_SEJOUR_B));
 		assertEquals(NaturalPersonCategoryType.C_03_C_PERMIT, EnumHelper.coreToWeb(CategorieEtranger._03_ETABLI_C));
@@ -35,6 +58,23 @@ public class NaturalPersonTest extends EnumTest {
 	@Test
 	public void testCategorieFromTypePermis() {
 		assertNull(EnumHelper.coreToWeb((TypePermis) null));
+
+		// vérification que toutes les valeurs sont mappées sur quelque chose
+		final Set<TypePermis> illegals = EnumSet.of(TypePermis.SAISONNIER);
+		for (TypePermis type : TypePermis.values()) {
+			if (illegals.contains(type)) {
+				try {
+					EnumHelper.coreToWeb(type);
+					fail("Type " + type + " illégal -> devrait planter");
+				}
+				catch (IllegalArgumentException e) {
+					assertTrue(e.getMessage(), e.getMessage().startsWith("Type de permis illégal"));
+				}
+			}
+			else {
+				assertNotNull(type.name(), EnumHelper.coreToWeb(type));
+			}
+		}
 
 		assertEquals(NaturalPersonCategoryType.C_02_B_PERMIT, EnumHelper.coreToWeb(TypePermis.SEJOUR));
 		assertEquals(NaturalPersonCategoryType.C_03_C_PERMIT, EnumHelper.coreToWeb(TypePermis.ETABLISSEMENT));

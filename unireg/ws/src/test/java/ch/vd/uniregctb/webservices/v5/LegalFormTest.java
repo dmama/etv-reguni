@@ -6,6 +6,7 @@ import ch.vd.unireg.xml.party.othercomm.v1.LegalForm;
 import ch.vd.uniregctb.type.FormeJuridique;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 
 
@@ -14,11 +15,16 @@ public class LegalFormTest extends EnumTest {
 	@Test
 	public void testCoherence() {
 		assertEnumLengthEquals(LegalForm.class, FormeJuridique.class);
+
+		// vérification que toutes les valeurs sont mappées sur quelque chose
+		for (FormeJuridique forme : FormeJuridique.values()) {
+			assertNotNull(forme.name(), EnumHelper.coreToWeb(forme));
+		}
 	}
 
 	@Test
 	public void testFromValue() {
-		assertNull(EnumHelper.coreToWeb((ch.vd.uniregctb.type.FormeJuridique) null));
+		assertNull(EnumHelper.coreToWeb((FormeJuridique) null));
 		assertEquals(LegalForm.ASSOCIATION, EnumHelper.coreToWeb(FormeJuridique.ASS));
 		assertEquals(LegalForm.COOPERATIVE_SOCIETY, EnumHelper.coreToWeb(FormeJuridique.COOP));
 		assertEquals(LegalForm.STATUTORY_CORPORATION, EnumHelper.coreToWeb(FormeJuridique.EDP));

@@ -944,6 +944,8 @@ public abstract class EnumHelper {
 		}
 
 		switch (categorie) {
+		case _01_SAISONNIER_A:
+			throw new IllegalArgumentException("Catégorie d'étranger illégale = [" + categorie + ']');
 		case _02_PERMIS_SEJOUR_B:
 			return ch.vd.unireg.xml.party.person.v3.NaturalPersonCategoryType.C_02_B_PERMIT;
 		case _03_ETABLI_C:
@@ -1142,6 +1144,9 @@ public abstract class EnumHelper {
 			return ch.vd.unireg.xml.party.relation.v2.RelationBetweenPartiesType.REPRESENTATIVE;
 		case TUTELLE:
 			return ch.vd.unireg.xml.party.relation.v2.RelationBetweenPartiesType.GUARDIAN;
+		case PARENTE:
+			// ce type ne devrait pas être utilisé tel quel, mais plutôt découpé en PARENT/CHILD
+			throw new IllegalArgumentException("Erreur de mapping?");
 		default:
 			throw new IllegalArgumentException("Type de rapport-entre-tiers inconnu = [" + type + ']');
 		}

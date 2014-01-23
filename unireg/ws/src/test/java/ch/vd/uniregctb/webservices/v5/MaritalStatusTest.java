@@ -6,6 +6,7 @@ import ch.vd.unireg.xml.party.taxpayer.v3.MaritalStatus;
 import ch.vd.uniregctb.type.EtatCivil;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 
 
@@ -13,7 +14,12 @@ public class MaritalStatusTest extends EnumTest {
 
 	@Test
 	public void testCoherence() {
-		assertEnumLengthEquals(MaritalStatus.class, ch.vd.uniregctb.type.EtatCivil.class);
+		assertEnumLengthEquals(MaritalStatus.class, EtatCivil.class);
+
+		// vérification que toutes les valeurs sont mappées sur quelque chose
+		for (EtatCivil ec : EtatCivil.values()) {
+			assertNotNull(ec.name(), EnumHelper.coreToWeb(ec));
+		}
 	}
 
 	@Test

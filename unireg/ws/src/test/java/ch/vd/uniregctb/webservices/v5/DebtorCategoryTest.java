@@ -6,6 +6,7 @@ import ch.vd.unireg.xml.party.withholding.v1.DebtorCategory;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 
 public class DebtorCategoryTest extends EnumTest {
@@ -13,6 +14,11 @@ public class DebtorCategoryTest extends EnumTest {
 	@Test
 	public void testCoherence() {
 		assertEnumLengthEquals(DebtorCategory.class, CategorieImpotSource.class);
+
+		// vérification que toutes les valeurs sont mappées sur quelque chose
+		for (CategorieImpotSource cat : CategorieImpotSource.values()) {
+			assertNotNull(cat.name(), EnumHelper.coreToWeb(cat));
+		}
 	}
 
 	@Test

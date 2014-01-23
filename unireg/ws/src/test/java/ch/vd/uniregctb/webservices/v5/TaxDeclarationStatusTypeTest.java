@@ -9,9 +9,11 @@ import ch.vd.uniregctb.declaration.EtatDeclarationEchue;
 import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
+import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.xml.party.v3.TaxDeclarationBuilder;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 
 
@@ -20,16 +22,21 @@ public class TaxDeclarationStatusTypeTest extends EnumTest {
 
 	@Test
 	public void testTypeCoherence() {
-		assertEnumLengthEquals(TaxDeclarationStatusType.class, ch.vd.uniregctb.type.TypeEtatDeclaration.class);
+		assertEnumLengthEquals(TaxDeclarationStatusType.class, TypeEtatDeclaration.class);
+
+		// vérification que toutes les valeurs sont mappées sur quelque chose
+		for (TypeEtatDeclaration type : TypeEtatDeclaration.values()) {
+			assertNotNull(type.name(), EnumHelper.coreToWeb(type));
+		}
 	}
 
 	@Test
 	public void testTypeFromValue() {
-		assertNull(EnumHelper.coreToWeb((ch.vd.uniregctb.type.TypeEtatDeclaration) null));
-		assertEquals(TaxDeclarationStatusType.SENT, EnumHelper.coreToWeb(ch.vd.uniregctb.type.TypeEtatDeclaration.EMISE));
-		assertEquals(TaxDeclarationStatusType.SUMMONS_SENT, EnumHelper.coreToWeb(ch.vd.uniregctb.type.TypeEtatDeclaration.SOMMEE));
-		assertEquals(TaxDeclarationStatusType.EXPIRED, EnumHelper.coreToWeb(ch.vd.uniregctb.type.TypeEtatDeclaration.ECHUE));
-		assertEquals(TaxDeclarationStatusType.RETURNED, EnumHelper.coreToWeb(ch.vd.uniregctb.type.TypeEtatDeclaration.RETOURNEE));
+		assertNull(EnumHelper.coreToWeb((TypeEtatDeclaration) null));
+		assertEquals(TaxDeclarationStatusType.SENT, EnumHelper.coreToWeb(TypeEtatDeclaration.EMISE));
+		assertEquals(TaxDeclarationStatusType.SUMMONS_SENT, EnumHelper.coreToWeb(TypeEtatDeclaration.SOMMEE));
+		assertEquals(TaxDeclarationStatusType.EXPIRED, EnumHelper.coreToWeb(TypeEtatDeclaration.ECHUE));
+		assertEquals(TaxDeclarationStatusType.RETURNED, EnumHelper.coreToWeb(TypeEtatDeclaration.RETOURNEE));
 	}
 
 	/**
