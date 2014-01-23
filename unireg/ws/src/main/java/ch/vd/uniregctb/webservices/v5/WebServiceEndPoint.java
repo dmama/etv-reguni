@@ -5,7 +5,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.text.ParseException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -254,7 +256,9 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 		final Object params = new Object() {
 			@Override
 			public String toString() {
-				return String.format("getParty{user=%s, partyNo=%d, parts=%s}", WebServiceHelper.enquote(user), partyNo, WebServiceHelper.toString(parts));
+				// petite combine pour que les modalités de l'énum soient toujours logguées dans le même ordre...
+				final Set<PartyPart> sortedParts = parts == null || parts.isEmpty() ? Collections.<PartyPart>emptySet() : EnumSet.copyOf(parts);
+				return String.format("getParty{user=%s, partyNo=%d, parts=%s}", WebServiceHelper.enquote(user), partyNo, WebServiceHelper.toString(sortedParts));
 			}
 		};
 		return execute(user, params, READ_ACCESS_LOG, new ExecutionCallbackWithUser() {
