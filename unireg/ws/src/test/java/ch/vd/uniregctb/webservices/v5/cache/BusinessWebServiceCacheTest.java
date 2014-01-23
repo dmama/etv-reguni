@@ -10,7 +10,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -19,8 +18,6 @@ import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 import org.apache.commons.lang3.tuple.Pair;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,7 +33,6 @@ import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.ws.parties.v1.Entry;
 import ch.vd.unireg.ws.parties.v1.Parties;
 import ch.vd.unireg.xml.common.v2.Date;
-import ch.vd.unireg.xml.error.v1.ErrorType;
 import ch.vd.unireg.xml.party.address.v2.Address;
 import ch.vd.unireg.xml.party.address.v2.FormattedAddress;
 import ch.vd.unireg.xml.party.corporation.v3.Corporation;
@@ -74,11 +70,8 @@ import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeDroitAcces;
-import ch.vd.uniregctb.webservices.common.AccessDeniedException;
 import ch.vd.uniregctb.webservices.common.UserLogin;
 import ch.vd.uniregctb.webservices.v5.BusinessWebService;
-import ch.vd.uniregctb.webservices.v5.BusinessWebServiceWrapper;
-import ch.vd.uniregctb.xml.ServiceException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -658,52 +651,6 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 			assertEquals(2, getNumberOfCalls(calls));
 			assertEquals(2, getNumberOfCallsToGetParties(calls));
 			assertEquals(Arrays.asList(ids.eric.intValue()), getLastCallParametersToGetParties(calls).getLeft());
-		}
-	}
-
-	private static class BusinessWebServiceCrashingWrapper extends BusinessWebServiceWrapper {
-		private final Set<Integer> crashingNos;
-
-		private BusinessWebServiceCrashingWrapper(@NotNull BusinessWebService target, Integer... crashingNos) {
-			setTarget(target);
-			this.crashingNos = (crashingNos != null ? new HashSet<>(Arrays.asList(crashingNos)) : Collections.<Integer>emptySet());
-		}
-
-		@Override
-		public DebtorInfo getDebtorInfo(UserLogin user, int debtorNo, int pf) throws AccessDeniedException {
-			check(debtorNo);
-			return super.getDebtorInfo(user, debtorNo, pf);
-		}
-
-		@Override
-		public Party getParty(UserLogin user, int partyNo, @Nullable Set<PartyPart> parts) throws AccessDeniedException, ServiceException {
-			check(partyNo);
-			return super.getParty(user, partyNo, parts);
-		}
-
-		@Override
-		public Parties getParties(UserLogin user, List<Integer> partyNos, @Nullable Set<PartyPart> parts) throws AccessDeniedException, ServiceException {
-			final List<Integer> nonCrashing = new ArrayList<>(partyNos.size());
-			final List<Integer> indeedCrashing = new ArrayList<>(partyNos.size());
-			for (int partyNo : partyNos) {
-				if (crashingNos.contains(partyNo)) {
-					indeedCrashing.add(partyNo);
-				}
-				else {
-					nonCrashing.add(partyNo);
-				}
-			}
-			final Parties result = super.getParties(user, nonCrashing, parts);
-			for (int partyNo : indeedCrashing) {
-				result.getEntries().add(new Entry(partyNo, null, new ch.vd.unireg.xml.error.v1.Error(ErrorType.TECHNICAL, "Boom badaboom !!")));
-			}
-			return result;
-		}
-
-		private void check(int partyNo) {
-			if (crashingNos.contains(partyNo)) {
-				throw new RuntimeException("Boom badaboom !!");
-			}
 		}
 	}
 

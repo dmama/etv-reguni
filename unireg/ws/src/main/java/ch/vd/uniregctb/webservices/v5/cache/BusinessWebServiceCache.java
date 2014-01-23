@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.webservices.v5.cache;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
@@ -16,12 +17,24 @@ import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationAckRequest;
+import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationAckResponse;
+import ch.vd.unireg.ws.deadline.v1.DeadlineRequest;
+import ch.vd.unireg.ws.deadline.v1.DeadlineResponse;
+import ch.vd.unireg.ws.modifiedtaxpayers.v1.PartyNumberList;
 import ch.vd.unireg.ws.parties.v1.Entry;
 import ch.vd.unireg.ws.parties.v1.Parties;
+import ch.vd.unireg.ws.security.v1.SecurityResponse;
+import ch.vd.unireg.ws.taxoffices.v1.TaxOffices;
 import ch.vd.unireg.xml.error.v1.ErrorType;
+import ch.vd.unireg.xml.party.corporation.v3.CorporationEvent;
 import ch.vd.unireg.xml.party.v3.Party;
+import ch.vd.unireg.xml.party.v3.PartyInfo;
 import ch.vd.unireg.xml.party.v3.PartyPart;
+import ch.vd.unireg.xml.party.v3.PartyType;
+import ch.vd.unireg.xml.party.withholding.v1.DebtorCategory;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorInfo;
 import ch.vd.uniregctb.cache.CacheHelper;
 import ch.vd.uniregctb.cache.CacheStats;
@@ -30,15 +43,18 @@ import ch.vd.uniregctb.cache.EhCacheStats;
 import ch.vd.uniregctb.cache.KeyDumpableCache;
 import ch.vd.uniregctb.cache.UniregCacheInterface;
 import ch.vd.uniregctb.cache.UniregCacheManager;
+import ch.vd.uniregctb.indexer.EmptySearchCriteriaException;
+import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.stats.StatsService;
 import ch.vd.uniregctb.webservices.common.AccessDeniedException;
 import ch.vd.uniregctb.webservices.common.UserLogin;
 import ch.vd.uniregctb.webservices.common.WebServiceHelper;
-import ch.vd.uniregctb.webservices.v5.BusinessWebServiceWrapper;
+import ch.vd.uniregctb.webservices.v5.BusinessWebService;
+import ch.vd.uniregctb.webservices.v5.SearchMode;
 import ch.vd.uniregctb.xml.ServiceException;
 
-public class BusinessWebServiceCache extends BusinessWebServiceWrapper implements UniregCacheInterface, KeyDumpableCache, InitializingBean, DisposableBean {
+public class BusinessWebServiceCache implements BusinessWebService, UniregCacheInterface, KeyDumpableCache, InitializingBean, DisposableBean {
 
 	private static final String SERVICE_NAME = "WebService5";
 
@@ -50,6 +66,11 @@ public class BusinessWebServiceCache extends BusinessWebServiceWrapper implement
 	private UniregCacheManager uniregCacheManager;
 	private StatsService statsService;
 	private SecurityProviderInterface securityProvider;
+	private BusinessWebService target;
+
+	public final void setTarget(BusinessWebService target) {
+		this.target = target;
+	}
 
 	public void setCacheManager(CacheManager manager) {
 		this.cacheManager = manager;
@@ -135,7 +156,7 @@ public class BusinessWebServiceCache extends BusinessWebServiceWrapper implement
 			final Party party;
 			final Element element = cache.get(key);
 			if (element == null) {
-				party = super.getParty(user, partyNo, parts);
+				party = target.getParty(user, partyNo, parts);
 				if (party != null) {
 					final GetPartyValue value = new GetPartyValue(parts, party);
 					cache.put(new Element(key, value));
@@ -147,7 +168,7 @@ public class BusinessWebServiceCache extends BusinessWebServiceWrapper implement
 					@Override
 					public Party getDeltaValue(Set<PartyPart> delta) throws Exception {
 						// on complète la liste des parts à la volée
-						return BusinessWebServiceCache.super.getParty(user, partyNo, delta);
+						return target.getParty(user, partyNo, delta);
 					}
 				});
 			}
@@ -171,7 +192,7 @@ public class BusinessWebServiceCache extends BusinessWebServiceWrapper implement
 		// récupération de tout ce qui peut l'être directement dans le cache
 		final List<Party> cachedEntries = getCachedParties(partyNos, parts);
 		if (cachedEntries == null || cachedEntries.isEmpty()) {
-			parties = super.getParties(user, partyNos, parts);
+			parties = target.getParties(user, partyNos, parts);
 			cacheParties(parties, parts);
 		}
 		else {
@@ -183,7 +204,7 @@ public class BusinessWebServiceCache extends BusinessWebServiceWrapper implement
 			}
 			else {
 				// on va chercher le surplus par rapport à ce qui est déjà caché
-				parties = super.getParties(user, uncachedId, parts);
+				parties = target.getParties(user, uncachedId, parts);
 				cacheParties(parties, parts);
 			}
 
@@ -277,13 +298,63 @@ public class BusinessWebServiceCache extends BusinessWebServiceWrapper implement
 		final DebtorInfo info;
 		final Element element = cache.get(key);
 		if (element == null) {
-			info = super.getDebtorInfo(user, debtorNo, pf);
+			info = target.getDebtorInfo(user, debtorNo, pf);
 			cache.put(new Element(key, info));
 		}
 		else {
 			info = (DebtorInfo) element.getObjectValue();
 		}
 		return info;
+	}
+
+	@Override
+	public SecurityResponse getSecurityOnParty(String user, int partyNo) {
+		return target.getSecurityOnParty(user, partyNo);
+	}
+
+	@Override
+	public void setAutomaticRepaymentBlockingFlag(int partyNo, UserLogin user, boolean blocked) throws AccessDeniedException {
+		target.setAutomaticRepaymentBlockingFlag(partyNo, user, blocked);
+	}
+
+	@Override
+	public boolean getAutomaticRepaymentBlockingFlag(int partyNo, UserLogin user) throws AccessDeniedException {
+		return target.getAutomaticRepaymentBlockingFlag(partyNo, user);
+	}
+
+	@Override
+	public OrdinaryTaxDeclarationAckResponse ackOrdinaryTaxDeclarations(UserLogin user, OrdinaryTaxDeclarationAckRequest request) throws AccessDeniedException {
+		return target.ackOrdinaryTaxDeclarations(user, request);
+	}
+
+	@Override
+	public DeadlineResponse newOrdinaryTaxDeclarationDeadline(int partyNo, int pf, int seqNo, UserLogin user, DeadlineRequest request) throws AccessDeniedException {
+		return target.newOrdinaryTaxDeclarationDeadline(partyNo, pf, seqNo, user, request);
+	}
+
+	@Override
+	public TaxOffices getTaxOffices(int municipalityId, @Nullable RegDate date) {
+		return target.getTaxOffices(municipalityId, date);
+	}
+
+	@Override
+	public PartyNumberList getModifiedTaxPayers(UserLogin user, Date since, Date until) throws AccessDeniedException {
+		return target.getModifiedTaxPayers(user, since, until);
+	}
+
+	@Override
+	public List<PartyInfo> searchParty(UserLogin user, @Nullable String partyNo, @Nullable String name, SearchMode nameSearchMode,
+	                                   @Nullable String townOrCountry, @Nullable RegDate dateOfBirth, @Nullable String socialInsuranceNumber,
+	                                   @Nullable Integer taxResidenceFSOId, boolean onlyActiveMainTaxResidence, @Nullable Set<PartyType> partyTypes,
+	                                   @Nullable DebtorCategory debtorCategory, @Nullable Boolean activeParty, @Nullable Long oldWithholdingNumber) throws AccessDeniedException, IndexerException {
+		return target.searchParty(user, partyNo, name, nameSearchMode, townOrCountry, dateOfBirth, socialInsuranceNumber, taxResidenceFSOId, onlyActiveMainTaxResidence, partyTypes, debtorCategory,
+		                          activeParty, oldWithholdingNumber);
+	}
+
+	@Override
+	public List<CorporationEvent> searchCorporationEvent(UserLogin user, @Nullable Integer corporationId, @Nullable String eventCode,
+	                                                     @Nullable RegDate startDate, @Nullable RegDate endDate) throws AccessDeniedException, EmptySearchCriteriaException {
+		return target.searchCorporationEvent(user, corporationId, eventCode, startDate, endDate);
 	}
 
 	/**

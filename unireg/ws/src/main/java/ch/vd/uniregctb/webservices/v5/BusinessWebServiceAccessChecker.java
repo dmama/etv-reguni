@@ -13,6 +13,8 @@ import ch.vd.unireg.ws.deadline.v1.DeadlineRequest;
 import ch.vd.unireg.ws.deadline.v1.DeadlineResponse;
 import ch.vd.unireg.ws.modifiedtaxpayers.v1.PartyNumberList;
 import ch.vd.unireg.ws.parties.v1.Parties;
+import ch.vd.unireg.ws.security.v1.SecurityResponse;
+import ch.vd.unireg.ws.taxoffices.v1.TaxOffices;
 import ch.vd.unireg.xml.party.corporation.v3.CorporationEvent;
 import ch.vd.unireg.xml.party.v3.Party;
 import ch.vd.unireg.xml.party.v3.PartyInfo;
@@ -33,9 +35,14 @@ import ch.vd.uniregctb.xml.ServiceException;
  * Implémentation du service métier v5 qui délègue à une implémentation réelle après avoir vérifié que
  * les rôles IFO-Sec étaient correctement assignés
  */
-public class BusinessWebServiceAccessChecker extends BusinessWebServiceWrapper {
+public class BusinessWebServiceAccessChecker implements BusinessWebService {
 
 	private SecurityProviderInterface securityProvider;
+	private BusinessWebService target;
+
+	public void setTarget(BusinessWebService target) {
+		this.target = target;
+	}
 
 	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
 		this.securityProvider = securityProvider;
@@ -45,38 +52,38 @@ public class BusinessWebServiceAccessChecker extends BusinessWebServiceWrapper {
 	public void setAutomaticRepaymentBlockingFlag(int partyNo, UserLogin user, boolean blocked) throws AccessDeniedException {
 		WebServiceHelper.checkAccess(securityProvider, user, Role.VISU_ALL);
 		WebServiceHelper.checkPartyReadWriteAccess(securityProvider, user, partyNo);
-		super.setAutomaticRepaymentBlockingFlag(partyNo, user, blocked);
+		target.setAutomaticRepaymentBlockingFlag(partyNo, user, blocked);
 	}
 
 	@Override
 	public boolean getAutomaticRepaymentBlockingFlag(int partyNo, UserLogin user) throws AccessDeniedException {
 		WebServiceHelper.checkAccess(securityProvider, user, Role.VISU_ALL);
 		WebServiceHelper.checkPartyReadAccess(securityProvider, user, partyNo);
-		return super.getAutomaticRepaymentBlockingFlag(partyNo, user);
+		return target.getAutomaticRepaymentBlockingFlag(partyNo, user);
 	}
 
 	@Override
 	public OrdinaryTaxDeclarationAckResponse ackOrdinaryTaxDeclarations(UserLogin user, OrdinaryTaxDeclarationAckRequest request) throws AccessDeniedException {
 		WebServiceHelper.checkAccess(securityProvider, user, Role.DI_QUIT_PP);
-		return super.ackOrdinaryTaxDeclarations(user, request);
+		return target.ackOrdinaryTaxDeclarations(user, request);
 	}
 
 	@Override
 	public DeadlineResponse newOrdinaryTaxDeclarationDeadline(int partyNo, int pf, int seqNo, UserLogin user, DeadlineRequest request) throws AccessDeniedException {
 		WebServiceHelper.checkAccess(securityProvider, user, Role.DI_DELAI_PP);
-		return super.newOrdinaryTaxDeclarationDeadline(partyNo, pf, seqNo, user, request);
+		return target.newOrdinaryTaxDeclarationDeadline(partyNo, pf, seqNo, user, request);
 	}
 
 	@Override
 	public PartyNumberList getModifiedTaxPayers(UserLogin user, Date since, Date until) throws AccessDeniedException {
 		WebServiceHelper.checkAccess(securityProvider, user, Role.VISU_ALL);
-		return super.getModifiedTaxPayers(user, since, until);
+		return target.getModifiedTaxPayers(user, since, until);
 	}
 
 	@Override
 	public DebtorInfo getDebtorInfo(UserLogin user, int debtorNo, int pf) throws AccessDeniedException {
 		WebServiceHelper.checkAccess(securityProvider, user, Role.VISU_ALL);
-		return super.getDebtorInfo(user, debtorNo, pf);
+		return target.getDebtorInfo(user, debtorNo, pf);
 	}
 
 	@Override
@@ -84,27 +91,37 @@ public class BusinessWebServiceAccessChecker extends BusinessWebServiceWrapper {
 	                                   @Nullable String socialInsuranceNumber, @Nullable Integer taxResidenceFSOId, boolean onlyActiveMainTaxResidence, @Nullable Set<PartyType> partyTypes,
 	                                   @Nullable DebtorCategory debtorCategory, @Nullable Boolean activeParty, @Nullable Long oldWithholdingNumber) throws AccessDeniedException, IndexerException {
 		WebServiceHelper.checkAnyAccess(securityProvider, user, Role.VISU_ALL, Role.VISU_LIMITE);
-		return super.searchParty(user, partyNo, name, nameSearchMode, townOrCountry, dateOfBirth, socialInsuranceNumber, taxResidenceFSOId, onlyActiveMainTaxResidence, partyTypes, debtorCategory,
-		                         activeParty, oldWithholdingNumber);
+		return target.searchParty(user, partyNo, name, nameSearchMode, townOrCountry, dateOfBirth, socialInsuranceNumber, taxResidenceFSOId, onlyActiveMainTaxResidence, partyTypes, debtorCategory,
+		                          activeParty, oldWithholdingNumber);
 	}
 
 	@Override
 	public List<CorporationEvent> searchCorporationEvent(UserLogin user, @Nullable Integer corporationId, @Nullable String eventCode,
 	                                                     @Nullable RegDate startDate, @Nullable RegDate endDate) throws AccessDeniedException, EmptySearchCriteriaException {
 		WebServiceHelper.checkAccess(securityProvider, user, Role.VISU_ALL);
-		return super.searchCorporationEvent(user, corporationId, eventCode, startDate, endDate);
+		return target.searchCorporationEvent(user, corporationId, eventCode, startDate, endDate);
 	}
 
 	@Override
 	public Party getParty(UserLogin user, int partyNo, @Nullable Set<PartyPart> parts) throws AccessDeniedException, ServiceException {
 		WebServiceHelper.checkAccess(securityProvider, user, Role.VISU_ALL);
 		WebServiceHelper.checkPartyReadAccess(securityProvider, user, partyNo);
-		return super.getParty(user, partyNo, parts);
+		return target.getParty(user, partyNo, parts);
 	}
 
 	@Override
 	public Parties getParties(UserLogin user, List<Integer> partyNos, @Nullable Set<PartyPart> parts) throws AccessDeniedException, ServiceException {
 		WebServiceHelper.checkAccess(securityProvider, user, Role.VISU_ALL);
-		return super.getParties(user, partyNos, parts);
+		return target.getParties(user, partyNos, parts);
+	}
+
+	@Override
+	public SecurityResponse getSecurityOnParty(String user, int partyNo) {
+		return target.getSecurityOnParty(user, partyNo);
+	}
+
+	@Override
+	public TaxOffices getTaxOffices(int municipalityId, @Nullable RegDate date) {
+		return target.getTaxOffices(municipalityId, date);
 	}
 }
