@@ -54,6 +54,8 @@ import ch.vd.unireg.xml.party.adminauth.v3.AdministrativeAuthority;
 import ch.vd.unireg.xml.party.corporation.v3.Corporation;
 import ch.vd.unireg.xml.party.debtor.v3.Debtor;
 import ch.vd.unireg.xml.party.immovableproperty.v2.ImmovableProperty;
+import ch.vd.unireg.xml.party.othercomm.v1.LegalForm;
+import ch.vd.unireg.xml.party.othercomm.v1.OtherCommunity;
 import ch.vd.unireg.xml.party.person.v3.CommonHousehold;
 import ch.vd.unireg.xml.party.person.v3.NaturalPerson;
 import ch.vd.unireg.xml.party.person.v3.NaturalPersonCategory;
@@ -106,6 +108,7 @@ import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.rf.TypeImmeuble;
 import ch.vd.uniregctb.rf.TypeMutation;
 import ch.vd.uniregctb.security.Role;
+import ch.vd.uniregctb.tiers.AutreCommunaute;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
@@ -113,6 +116,7 @@ import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.CategorieImpotSource;
+import ch.vd.uniregctb.type.FormeJuridique;
 import ch.vd.uniregctb.type.ModeCommunication;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
@@ -929,6 +933,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			long dpi;
 			long pm;
 			long ca;
+			long ac;
 		}
 
 		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
@@ -941,6 +946,8 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				dpi.setModeCommunication(ModeCommunication.ELECTRONIQUE);
 				final Entreprise pm = addEntreprise(noEntreprise);
 				final CollectiviteAdministrative ca = addCollAdm(MockCollectiviteAdministrative.CAT);
+				final AutreCommunaute ac = addAutreCommunaute("Tata!!");
+				ac.setFormeJuridique(FormeJuridique.ASS);
 
 				final Ids ids = new Ids();
 				ids.pp = pp.getNumero();
@@ -948,6 +955,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				ids.dpi = dpi.getNumero();
 				ids.pm = pm.getNumero();
 				ids.ca = ca.getNumero();
+				ids.ac = ac.getNumero();
 				return ids;
 			}
 		});
@@ -1019,6 +1027,17 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			final AdministrativeAuthority ca = (AdministrativeAuthority) party;
 			Assert.assertEquals(MockCollectiviteAdministrative.CAT.getNomCourt(), ca.getName());
 			Assert.assertEquals(MockCollectiviteAdministrative.CAT.getNoColAdm(), ca.getAdministrativeAuthorityId());
+		}
+		// get AC
+		{
+			final Party party = service.getParty(userLogin, (int) ids.ac, null);
+			Assert.assertNotNull(party);
+			Assert.assertEquals(OtherCommunity.class, party.getClass());
+			Assert.assertEquals(ids.ac, party.getNumber());
+
+			final OtherCommunity ac = (OtherCommunity) party;
+			Assert.assertEquals("Tata!!", ac.getName());
+			Assert.assertEquals(LegalForm.ASSOCIATION, ac.getLegalForm());
 		}
 	}
 

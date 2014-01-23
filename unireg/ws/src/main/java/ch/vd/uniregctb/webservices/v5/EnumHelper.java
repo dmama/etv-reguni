@@ -10,6 +10,7 @@ import ch.vd.unireg.ws.security.v1.AllowedAccess;
 import ch.vd.unireg.xml.party.adminauth.v3.AdministrativeAuthority;
 import ch.vd.unireg.xml.party.corporation.v3.Corporation;
 import ch.vd.unireg.xml.party.debtor.v3.Debtor;
+import ch.vd.unireg.xml.party.othercomm.v1.OtherCommunity;
 import ch.vd.unireg.xml.party.person.v3.CommonHousehold;
 import ch.vd.unireg.xml.party.person.v3.NaturalPerson;
 import ch.vd.unireg.xml.party.v3.Party;
@@ -73,6 +74,7 @@ public abstract class EnumHelper {
 		map.put(NaturalPerson.class, PartyType.NATURAL_PERSON);
 		map.put(CommonHousehold.class, PartyType.HOUSEHOLD);
 		map.put(Corporation.class, PartyType.CORPORATION);
+		map.put(OtherCommunity.class, PartyType.CORPORATION);
 		map.put(Debtor.class, PartyType.DEBTOR);
 		return Collections.unmodifiableMap(map);
 	}

@@ -14,6 +14,7 @@ import ch.vd.uniregctb.rf.TypeMutation;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.type.CategorieEtranger;
 import ch.vd.uniregctb.type.CategorieImpotSource;
+import ch.vd.uniregctb.type.FormeJuridique;
 import ch.vd.uniregctb.type.ModeCommunication;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.StatutMenageCommun;
@@ -2127,6 +2128,52 @@ public abstract class EnumHelper {
 			return ch.vd.unireg.xml.party.taxresidence.v2.WithholdingTaxationPeriodType.PURE;
 		default:
 			throw new IllegalArgumentException("unknown PeriodeImpositionImpotSource.Type = [" + setc + ']');
+		}
+	}
+
+	public static ch.vd.unireg.xml.party.othercomm.v1.LegalForm coreToXMLv1(FormeJuridique formeJuridique) {
+		if (formeJuridique == null) {
+			return null;
+		}
+		switch (formeJuridique) {
+		case ASS:
+			return ch.vd.unireg.xml.party.othercomm.v1.LegalForm.ASSOCIATION;
+		case COOP:
+			return ch.vd.unireg.xml.party.othercomm.v1.LegalForm.COOPERATIVE_SOCIETY;
+		case EDP:
+			return ch.vd.unireg.xml.party.othercomm.v1.LegalForm.STATUTORY_CORPORATION;
+		case EI:
+			return ch.vd.unireg.xml.party.othercomm.v1.LegalForm.SOLE_PROPRIETORSHIP;
+		case FOND:
+			return ch.vd.unireg.xml.party.othercomm.v1.LegalForm.FOUNDATION;
+		case IND:
+			return ch.vd.unireg.xml.party.othercomm.v1.LegalForm.JOINT_POSSESSION;
+		case PRO:
+			return ch.vd.unireg.xml.party.othercomm.v1.LegalForm.CORPORATION_WITHOUT_COMPULSORY_REGISTRATION;
+		case SA:
+			return ch.vd.unireg.xml.party.othercomm.v1.LegalForm.LIMITED_COMPANY;
+		case SAEDP:
+			return ch.vd.unireg.xml.party.othercomm.v1.LegalForm.PUBLIC_LIMITED_COMPANY;
+		case SARL:
+			return ch.vd.unireg.xml.party.othercomm.v1.LegalForm.LIMITED_LIABILITY_COMPANY;
+		case SC:
+			return ch.vd.unireg.xml.party.othercomm.v1.LegalForm.LIMITED_PARTNERSHIP;
+		case SCA:
+			return ch.vd.unireg.xml.party.othercomm.v1.LegalForm.LIMITED_JOINT_STOCK_PARTNERSHIP;
+		case SCPC:
+			return ch.vd.unireg.xml.party.othercomm.v1.LegalForm.LIMITED_PARTNERSHIP_FOR_COLLECTIVE_INVESTMENTS;
+		case SEE:
+			return ch.vd.unireg.xml.party.othercomm.v1.LegalForm.BRANCH_OF_FOREIGN_BASED_COMPANY;
+		case SES:
+			return ch.vd.unireg.xml.party.othercomm.v1.LegalForm.BRANCH_OF_SWISS_COMPANY;
+		case SICAF:
+			return ch.vd.unireg.xml.party.othercomm.v1.LegalForm.CLOSED_END_INVESTMENT_TRUST;
+		case SICAV:
+			return ch.vd.unireg.xml.party.othercomm.v1.LegalForm.OPEN_ENDED_INVESTMENT_TRUST;
+		case SNC:
+			return ch.vd.unireg.xml.party.othercomm.v1.LegalForm.GENERAL_PARTNERSHIP;
+		default:
+			throw new IllegalArgumentException("unknown FormeJuridique = [" + formeJuridique + ']');
 		}
 	}
 }

@@ -77,6 +77,7 @@ import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.situationfamille.SituationFamilleService;
+import ch.vd.uniregctb.tiers.AutreCommunaute;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
@@ -623,6 +624,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 		addToPartyFactorMap(map, DebiteurPrestationImposable.class, new DebtorPartyFactory());
 		addToPartyFactorMap(map, Entreprise.class, new CorporationPartyFactory());
 		addToPartyFactorMap(map, CollectiviteAdministrative.class, new AdministrativeAuthorityPartyFactory());
+		addToPartyFactorMap(map, AutreCommunaute.class, new OtherCommunityPartyFactory());
 		return map;
 	}
 
@@ -658,6 +660,13 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 		@Override
 		public Party buildParty(CollectiviteAdministrative ca, @Nullable Set<PartyPart> parts, Context context) throws ServiceException {
 			return PartyBuilder.newAdministrativeAuthority(ca, parts, context);
+		}
+	}
+
+	private static final class OtherCommunityPartyFactory implements PartyFactory<AutreCommunaute> {
+		@Override
+		public Party buildParty(AutreCommunaute ac, @Nullable Set<PartyPart> parts, Context context) throws ServiceException {
+			return PartyBuilder.newOtherCommunity(ac, parts, context);
 		}
 	}
 

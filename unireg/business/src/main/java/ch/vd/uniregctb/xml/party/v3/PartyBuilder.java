@@ -9,10 +9,12 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.unireg.xml.party.adminauth.v3.AdministrativeAuthority;
 import ch.vd.unireg.xml.party.corporation.v3.Corporation;
 import ch.vd.unireg.xml.party.debtor.v3.Debtor;
+import ch.vd.unireg.xml.party.othercomm.v1.OtherCommunity;
 import ch.vd.unireg.xml.party.person.v3.CommonHousehold;
 import ch.vd.unireg.xml.party.person.v3.NaturalPerson;
 import ch.vd.unireg.xml.party.v3.Party;
 import ch.vd.unireg.xml.party.v3.PartyPart;
+import ch.vd.uniregctb.tiers.AutreCommunaute;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.Entreprise;
@@ -23,6 +25,7 @@ import ch.vd.uniregctb.xml.party.v3.strategy.CommonHouseholdStrategy;
 import ch.vd.uniregctb.xml.party.v3.strategy.CorporationStrategy;
 import ch.vd.uniregctb.xml.party.v3.strategy.DebtorStrategy;
 import ch.vd.uniregctb.xml.party.v3.strategy.NaturalPersonStrategy;
+import ch.vd.uniregctb.xml.party.v3.strategy.OtherCommunityStrategy;
 import ch.vd.uniregctb.xml.party.v3.strategy.PartyStrategy;
 
 public class PartyBuilder {
@@ -32,14 +35,22 @@ public class PartyBuilder {
 	private static final NaturalPersonStrategy naturalPersonStrategy = new NaturalPersonStrategy();
 	private static final CorporationStrategy corporationStrategy = new CorporationStrategy();
 	private static final AdminAuthStrategy adminAuthStrategy = new AdminAuthStrategy();
-	private static final Map<Class, PartyStrategy<?>> strategies = new HashMap<>();
+	private static final OtherCommunityStrategy otherCommunityStrategy = new OtherCommunityStrategy();
+	private static final Map<Class<?>, PartyStrategy<?>> strategies;
 
 	static {
-		strategies.put(Debtor.class, debtorStrategy);
-		strategies.put(CommonHousehold.class, commonHouseholdStrategy);
-		strategies.put(NaturalPerson.class, naturalPersonStrategy);
-		strategies.put(Corporation.class, corporationStrategy);
-		strategies.put(AdministrativeAuthority.class, adminAuthStrategy);
+		final Map<Class<?>, PartyStrategy<?>> map = new HashMap<>();
+		registerStrategy(map, Debtor.class, debtorStrategy);
+		registerStrategy(map, CommonHousehold.class, commonHouseholdStrategy);
+		registerStrategy(map, NaturalPerson.class, naturalPersonStrategy);
+		registerStrategy(map, Corporation.class, corporationStrategy);
+		registerStrategy(map, AdministrativeAuthority.class, adminAuthStrategy);
+		registerStrategy(map, OtherCommunity.class, otherCommunityStrategy);
+		strategies = map;
+	}
+
+	private static <T extends Party> void registerStrategy(Map<Class<?>, PartyStrategy<?>> map, Class<T> clazz, PartyStrategy<T> strategy) {
+		map.put(clazz, strategy);
 	}
 
 	public static NaturalPerson newNaturalPerson(ch.vd.uniregctb.tiers.PersonnePhysique right, @Nullable Set<PartyPart> parts, Context context) throws ServiceException {
@@ -60,6 +71,10 @@ public class PartyBuilder {
 
 	public static AdministrativeAuthority newAdministrativeAuthority(CollectiviteAdministrative coladm, Set<PartyPart> parts, Context context) throws ServiceException {
 		return adminAuthStrategy.newFrom(coladm, parts, context);
+	}
+
+	public static OtherCommunity newOtherCommunity(AutreCommunaute autreCommunaute, Set<PartyPart> parts, Context context) throws ServiceException {
+		return otherCommunityStrategy.newFrom(autreCommunaute, parts, context);
 	}
 
 	@SuppressWarnings({"unchecked"})
