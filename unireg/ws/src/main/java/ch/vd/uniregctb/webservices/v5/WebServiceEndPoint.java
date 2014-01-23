@@ -24,15 +24,16 @@ import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationAckResponse;
 import ch.vd.unireg.ws.deadline.v1.DeadlineRequest;
 import ch.vd.unireg.ws.deadline.v1.DeadlineResponse;
 import ch.vd.unireg.ws.modifiedtaxpayers.v1.PartyNumberList;
-import ch.vd.unireg.ws.search.party.v1.SearchResult;
 import ch.vd.unireg.ws.security.v1.SecurityResponse;
 import ch.vd.unireg.ws.taxoffices.v1.TaxOffices;
 import ch.vd.unireg.xml.error.v1.Error;
+import ch.vd.unireg.xml.party.corporation.v3.CorporationEvent;
 import ch.vd.unireg.xml.party.v3.PartyInfo;
 import ch.vd.unireg.xml.party.v3.PartyType;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorCategory;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorInfo;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
+import ch.vd.uniregctb.indexer.EmptySearchCriteriaException;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.load.DetailedLoadMeter;
 import ch.vd.uniregctb.load.DetailedLoadMonitorable;
@@ -63,7 +64,8 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 	private final ch.vd.unireg.ws.taxoffices.v1.ObjectFactory taxOfficesObjectFactory = new ch.vd.unireg.ws.taxoffices.v1.ObjectFactory();
 	private final ch.vd.unireg.ws.modifiedtaxpayers.v1.ObjectFactory modifiedTaxPayersFactory = new ch.vd.unireg.ws.modifiedtaxpayers.v1.ObjectFactory();
 	private final ch.vd.unireg.ws.debtorinfo.v1.ObjectFactory debtorInfoFactory = new ch.vd.unireg.ws.debtorinfo.v1.ObjectFactory();
-	private final ch.vd.unireg.ws.search.party.v1.ObjectFactory searchObjectFactory = new ch.vd.unireg.ws.search.party.v1.ObjectFactory();
+	private final ch.vd.unireg.ws.search.party.v1.ObjectFactory searchPartyObjectFactory = new ch.vd.unireg.ws.search.party.v1.ObjectFactory();
+	private final ch.vd.unireg.ws.search.corpevent.v1.ObjectFactory searchCorpEventObjectFactory = new ch.vd.unireg.ws.search.corpevent.v1.ObjectFactory();
 
 	private BusinessWebService target;
 
@@ -290,26 +292,21 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 			@Override
 			public ExecutionResult execute(UserLogin userLogin) throws Exception {
 				final RegDate dateNaissance;
-				if (StringUtils.isNotBlank(dateOfBirthStr)) {
-					try {
-						dateNaissance = RegDateHelper.displayStringToRegDate(dateOfBirthStr, true);
-					}
-					catch (ParseException | IllegalArgumentException e) {
-						return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.BAD_REQUEST, getAcceptableMediaTypes(), e));
-					}
+				try {
+					dateNaissance = fromString(dateOfBirthStr, true);
 				}
-				else {
-					dateNaissance = null;
+				catch (ParseException | IllegalArgumentException e) {
+					return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.BAD_REQUEST, getAcceptableMediaTypes(), e));
 				}
 
-				SearchResult result;
+				ch.vd.unireg.ws.search.party.v1.SearchResult result;
 				try {
 					final List<PartyInfo> infos = target.searchParty(userLogin, partyNo, name, nameSearchMode, townOrCountry, dateNaissance, socialInsuranceNumber, taxResidenceFSOId, onlyActiveMainTaxResidence,
 					                                                 partyTypes, debtorCategory, activeParty, oldWithholdingNumber);
-					result = new SearchResult(null, infos);
+					result = new ch.vd.unireg.ws.search.party.v1.SearchResult(null, infos);
 				}
 				catch (IndexerException e) {
-					result = new SearchResult(new Error(WebServiceHelper.buildExceptionMessage(e)), null);
+					result = new ch.vd.unireg.ws.search.party.v1.SearchResult(new Error(WebServiceHelper.buildExceptionMessage(e)), null);
 				}
 
 				final int nbItems = result.getParty() != null ? result.getParty().size() : 0;
@@ -318,11 +315,21 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 					return ExecutionResult.with(Response.ok(result, preferred).build(), nbItems);
 				}
 				else if (preferred == MediaType.APPLICATION_XML_TYPE) {
-					return ExecutionResult.with(Response.ok(searchObjectFactory.createSearchResult(result), preferred).build(), nbItems);
+					return ExecutionResult.with(Response.ok(searchPartyObjectFactory.createSearchResult(result), preferred).build(), nbItems);
 				}
 				return ExecutionResult.with(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build());
 			}
 		});
+	}
+
+	@Nullable
+	private static RegDate fromString(@Nullable String str, boolean partialAllowed) throws ParseException, IllegalArgumentException {
+		if (StringUtils.isNotBlank(str)) {
+			return RegDateHelper.displayStringToRegDate(str, partialAllowed);
+		}
+		else {
+			return null;
+		}
 	}
 
 	@Override
@@ -338,16 +345,11 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 			@Override
 			public ExecutionResult execute() throws Exception {
 				final RegDate date;
-				if (StringUtils.isNotBlank(dateStr)) {
-					try {
-						date = RegDateHelper.displayStringToRegDate(dateStr, false);
-					}
-					catch (ParseException | IllegalArgumentException e) {
-						return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.BAD_REQUEST, getAcceptableMediaTypes(), e));
-					}
+				try {
+					date = fromString(dateStr, false);
 				}
-				else {
-					date = null;
+				catch (ParseException | IllegalArgumentException e) {
+					return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.BAD_REQUEST, getAcceptableMediaTypes(), e));
 				}
 
 				final TaxOffices taxOffices = target.getTaxOffices(municipalityId, date);
@@ -452,7 +454,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 		final Object params = new Object() {
 			@Override
 			public String toString() {
-				return String.format("getDebtorInfo{debtorNo=%d, fiscalPeriod=%d, user=%s", debtorNo, pf, WebServiceHelper.enquote(user));
+				return String.format("getDebtorInfo{debtorNo=%d, fiscalPeriod=%d, user=%s}", debtorNo, pf, WebServiceHelper.enquote(user));
 			}
 		};
 		return execute(user, params, READ_ACCESS_LOG, new ExecutionCallbackWithUser() {
@@ -470,5 +472,51 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 				return ExecutionResult.with(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build());
 			}
 		});
+	}
+
+	@Override
+	public Response searchCorporationEvent(final String user, final Integer corporationId, final String eventCode, final String startDay, final String endDay) {
+		final Object params = new Object() {
+			@Override
+			public String toString() {
+				return String.format("searchCorporationEvent{user=%s, corporationId=%d, eventCode=%s, startDay=%s, endDay=%s}",
+				                     WebServiceHelper.enquote(user), corporationId, WebServiceHelper.enquote(eventCode), WebServiceHelper.enquote(startDay), WebServiceHelper.enquote(endDay));
+			}
+		};
+		return execute(user, params, READ_ACCESS_LOG, new ExecutionCallbackWithUser() {
+			@NotNull
+			@Override
+			public ExecutionResult execute(UserLogin userLogin) throws Exception {
+				final RegDate start;
+				final RegDate end;
+				try {
+					start = fromString(startDay, false);
+					end = fromString(endDay, false);
+				}
+				catch (ParseException | IllegalArgumentException e) {
+					return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.BAD_REQUEST, getAcceptableMediaTypes(), e));
+				}
+
+				ch.vd.unireg.ws.search.corpevent.v1.SearchResult result;
+				try {
+					final List<CorporationEvent> events = target.searchCorporationEvent(userLogin, corporationId, eventCode, start, end);
+					result = new ch.vd.unireg.ws.search.corpevent.v1.SearchResult(null, events);
+				}
+				catch (EmptySearchCriteriaException e) {
+					result = new ch.vd.unireg.ws.search.corpevent.v1.SearchResult(new Error(WebServiceHelper.buildExceptionMessage(e)), null);
+				}
+
+				final int nbItems = result.getEvent() != null ? result.getEvent().size() : 0;
+				final MediaType preferred = getPreferredMediaTypeFromXmlOrJson();
+				if (preferred == WebServiceHelper.APPLICATION_JSON_WITH_UTF8_CHARSET_TYPE) {
+					return ExecutionResult.with(Response.ok(result, preferred).build(), nbItems);
+				}
+				else if (preferred == MediaType.APPLICATION_XML_TYPE) {
+					return ExecutionResult.with(Response.ok(searchCorpEventObjectFactory.createSearchResult(result), preferred).build(), nbItems);
+				}
+				return ExecutionResult.with(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build());
+			}
+		});
+
 	}
 }

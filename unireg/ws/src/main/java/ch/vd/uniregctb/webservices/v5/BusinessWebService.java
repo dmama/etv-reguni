@@ -14,10 +14,12 @@ import ch.vd.unireg.ws.deadline.v1.DeadlineResponse;
 import ch.vd.unireg.ws.modifiedtaxpayers.v1.PartyNumberList;
 import ch.vd.unireg.ws.security.v1.SecurityResponse;
 import ch.vd.unireg.ws.taxoffices.v1.TaxOffices;
+import ch.vd.unireg.xml.party.corporation.v3.CorporationEvent;
 import ch.vd.unireg.xml.party.v3.PartyInfo;
 import ch.vd.unireg.xml.party.v3.PartyType;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorCategory;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorInfo;
+import ch.vd.uniregctb.indexer.EmptySearchCriteriaException;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.webservices.common.AccessDeniedException;
 import ch.vd.uniregctb.webservices.common.UserLogin;
@@ -123,9 +125,23 @@ public interface BusinessWebService {
 	 * @throws AccessDeniedException si l'opérateur n'a pas le droit de faire des recherches de tiers
 	 * @throws IndexerException si une erreur est levée dans la recherche (critères vides, trop de résultats...)
 	 */
-	List<PartyInfo> searchParty(final UserLogin user, @Nullable final String partyNo, @Nullable final String name, final SearchMode nameSearchMode, @Nullable final String townOrCountry,
-	                            @Nullable final RegDate dateOfBirth, @Nullable final String socialInsuranceNumber, @Nullable final Integer taxResidenceFSOId,
-	                            final boolean onlyActiveMainTaxResidence, @Nullable final Set<PartyType> partyTypes, @Nullable final DebtorCategory debtorCategory, @Nullable final Boolean activeParty,
-	                            @Nullable final Long oldWithholdingNumber) throws AccessDeniedException, IndexerException;
+	List<PartyInfo> searchParty(UserLogin user, @Nullable String partyNo, @Nullable String name, SearchMode nameSearchMode, @Nullable String townOrCountry,
+	                            @Nullable RegDate dateOfBirth, @Nullable String socialInsuranceNumber, @Nullable Integer taxResidenceFSOId,
+	                            boolean onlyActiveMainTaxResidence, @Nullable Set<PartyType> partyTypes, @Nullable DebtorCategory debtorCategory, @Nullable Boolean activeParty,
+	                            @Nullable Long oldWithholdingNumber) throws AccessDeniedException, IndexerException;
+
+	/**
+	 * Effectue une recherche d'événement d'entreprise selon les critères donnés
+	 * @param user désignation de l'opérateur pour le compte duquel la recherche est faite
+	 * @param corporationId [optionnel] pour limiter la recherche à une seule entreprise
+	 * @param eventCode [optionnel] pour limiter la recherche à un seul type d'événement
+	 * @param startDate [optionnel] date la plus ancienne acceptée
+	 * @param endDate [optionnel] date la plus récente acceptée
+	 * @return les informations sur les événements d'entreprise correspondants aux critères donnés
+	 * @throws AccessDeniedException si l'opérateur n'a pas le droit de faire ce genre de recherche
+	 * @throws EmptySearchCriteriaException si les critères sont vides...
+	 */
+	List<CorporationEvent> searchCorporationEvent(UserLogin user, @Nullable Integer corporationId, @Nullable String eventCode,
+	                                              @Nullable RegDate startDate, @Nullable RegDate endDate) throws AccessDeniedException, EmptySearchCriteriaException;
 
 }

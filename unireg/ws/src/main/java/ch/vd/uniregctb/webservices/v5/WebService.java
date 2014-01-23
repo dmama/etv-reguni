@@ -120,6 +120,15 @@ public interface WebService {
 
 	@GET
 	@Produces({MediaType.APPLICATION_XML, WebServiceHelper.APPLICATION_JSON_WITH_UTF8_CHARSET})
+	@Path("/searchCorporationEvent")
+	Response searchCorporationEvent(@QueryParam("user") String user,
+	                                @QueryParam("corporationId") Integer corporationId,
+	                                @QueryParam("eventCode") String eventCode,
+	                                @QueryParam("startDay") String startDay,
+	                                @QueryParam("endDay") String endDay);
+
+	@GET
+	@Produces({MediaType.APPLICATION_XML, WebServiceHelper.APPLICATION_JSON_WITH_UTF8_CHARSET})
 	@Path("/taxOffices/{municipalityId}")
 	Response getTaxOffices(@PathParam("municipalityId") int municipalityId, @QueryParam("date") String date);
 

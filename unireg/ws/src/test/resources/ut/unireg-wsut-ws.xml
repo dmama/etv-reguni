@@ -112,6 +112,7 @@
 		<property name="infraService" ref="serviceInfrastructureService" />
 		<property name="lrService" ref="lrService"/>
 		<property name="tiersSearcher" ref="globalTiersSearcher" />
+		<property name="personneMoraleService" ref="servicePersonneMoraleService"/>
 	</bean>
 
 </beans>

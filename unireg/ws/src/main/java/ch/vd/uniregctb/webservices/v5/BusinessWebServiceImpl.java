@@ -37,6 +37,7 @@ import ch.vd.unireg.ws.modifiedtaxpayers.v1.PartyNumberList;
 import ch.vd.unireg.ws.security.v1.SecurityResponse;
 import ch.vd.unireg.ws.taxoffices.v1.TaxOffice;
 import ch.vd.unireg.ws.taxoffices.v1.TaxOffices;
+import ch.vd.unireg.xml.party.corporation.v3.CorporationEvent;
 import ch.vd.unireg.xml.party.taxdeclaration.v3.TaxDeclarationKey;
 import ch.vd.unireg.xml.party.v3.PartyInfo;
 import ch.vd.unireg.xml.party.v3.PartyType;
@@ -54,7 +55,9 @@ import ch.vd.uniregctb.indexer.EmptySearchCriteriaException;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
+import ch.vd.uniregctb.interfaces.model.EvenementPM;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
 import ch.vd.uniregctb.jms.BamMessageHelper;
 import ch.vd.uniregctb.jms.BamMessageSender;
 import ch.vd.uniregctb.security.Role;
@@ -89,6 +92,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	private ServiceInfrastructureService infraService;
 	private ListeRecapService lrService;
 	private GlobalTiersSearcher tiersSearcher;
+	private ServicePersonneMoraleService personneMoraleService;
 
 	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
 		this.securityProvider = securityProvider;
@@ -124,6 +128,10 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 	public void setTiersSearcher(GlobalTiersSearcher tiersSearcher) {
 		this.tiersSearcher = tiersSearcher;
+	}
+
+	public void setPersonneMoraleService(ServicePersonneMoraleService personneMoraleService) {
+		this.personneMoraleService = personneMoraleService;
 	}
 
 	private <T> T doInTransaction(boolean readonly, TransactionCallback<T> callback) {
@@ -533,5 +541,17 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 			}
 		}
 		return result;
+	}
+
+	@Override
+	public List<CorporationEvent> searchCorporationEvent(UserLogin user, @Nullable Integer corporationId, @Nullable String eventCode,
+	                                                     @Nullable RegDate startDate, @Nullable RegDate endDate) throws AccessDeniedException, EmptySearchCriteriaException {
+		WebServiceHelper.checkAccess(securityProvider, user, Role.VISU_ALL);
+		if (corporationId == null && StringUtils.isBlank(eventCode) && startDate == null && endDate == null) {
+			throw new EmptySearchCriteriaException("Les critères de recherche sont vides.");
+		}
+		final Long corpNr = corporationId != null ? Long.valueOf(corporationId) : null;
+		final List<EvenementPM> list = personneMoraleService.findEvenements(corpNr, eventCode, startDate, endDate);
+		return DataHelper.coreToXML(list);
 	}
 }
