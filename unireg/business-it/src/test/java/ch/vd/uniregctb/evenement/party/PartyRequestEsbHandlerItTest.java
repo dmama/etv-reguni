@@ -10,6 +10,8 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -66,7 +68,13 @@ abstract class PartyRequestEsbHandlerItTest extends BusinessItTest {
 
 		esbValidator = new EsbXmlValidation();
 		esbValidator.setResourceResolver(new ClasspathCatalogResolver());
-		esbValidator.setSources(new Resource[]{new ClassPathResource(getRequestXSD()), new ClassPathResource(getResponseXSD())});
+
+		final List<Resource> sources = new ArrayList<>();
+		sources.add(new ClassPathResource(getRequestXSD()));
+		for (String xsd : getResponseXSD()) {
+			sources.add(new ClassPathResource(xsd));
+		}
+		esbValidator.setSources(sources.toArray(new Resource[sources.size()]));
 
 		inputQueue = uniregProperties.getProperty("testprop.jms.queue.party.service");
 		OutputQueue = inputQueue + ".response";
@@ -75,7 +83,7 @@ abstract class PartyRequestEsbHandlerItTest extends BusinessItTest {
 		EvenementHelper.clearQueue(esbTemplate, OutputQueue);
 	}
 
-	protected abstract String getResponseXSD();
+	protected abstract List<String> getResponseXSD();
 
 	protected abstract String getRequestXSD();
 
@@ -139,9 +147,13 @@ abstract class PartyRequestEsbHandlerItTest extends BusinessItTest {
 		final Unmarshaller u = context.createUnmarshaller();
 		final SchemaFactory sf = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
 		sf.setResourceResolver(new ClasspathCatalogResolver());
-		Schema schema = sf.newSchema(
-				new Source[]{new StreamSource(new ClassPathResource(getRequestXSD()).getURL().toExternalForm()),
-				new StreamSource(new ClassPathResource(getResponseXSD()).getURL().toExternalForm())});
+
+		final List<Source> sources = new ArrayList<>();
+		sources.add(new StreamSource(new ClassPathResource(getRequestXSD()).getURL().toExternalForm()));
+		for (String xsd : getResponseXSD()) {
+			sources.add(new StreamSource(new ClassPathResource(xsd).getURL().toExternalForm()));
+		}
+		final Schema schema = sf.newSchema(sources.toArray(new Source[sources.size()]));
 		u.setSchema(schema);
 
 		final JAXBElement element = (JAXBElement) u.unmarshal(message.getBodyAsSource());

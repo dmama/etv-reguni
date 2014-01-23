@@ -15,6 +15,7 @@
 				<entry key="ch.vd.unireg.xml.event.party.numbers.v1.NumbersRequest" value-ref="numberRequestHandler" />
 				<entry key="ch.vd.unireg.xml.event.party.party.v1.PartyRequest" value-ref="partyRequestHandlerV1" />
 				<entry key="ch.vd.unireg.xml.event.party.party.v2.PartyRequest" value-ref="partyRequestHandlerV2" />
+				<entry key="ch.vd.unireg.xml.event.party.party.v3.PartyRequest" value-ref="partyRequestHandlerV3" />
 				<entry key="ch.vd.unireg.xml.event.party.nonresident.v1.CreateNonresidentRequest" value-ref="createNonresidentRequestHandlerV1" />
 				<entry key="ch.vd.unireg.xml.event.party.nonresident.v2.CreateNonresidentRequest" value-ref="createNonresidentRequestHandlerV2" />
 				<entry key="ch.vd.unireg.xml.event.party.taxliab.aperiodic.v1.AperiodicTaxLiabilityRequest" value-ref="aperiodicTaxLiabilityRequestHandlerV1" />
@@ -88,6 +89,27 @@
 		<property name="servicePM" ref="servicePersonneMoraleService" />
 		<property name="assujettissementService" ref="assujettissementService" />
 		<property name="periodeImpositionService" ref="periodeImpositionService" />
+		<property name="securityProvider" ref="securityProviderInterface"/>
+	</bean>
+
+	<bean id="partyRequestHandlerV3" class="ch.vd.uniregctb.evenement.party.PartyRequestHandlerV3">
+		<property name="adresseService" ref="adresseService" />
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="tiersService" ref="tiersService" />
+		<property name="infraService" ref="serviceInfrastructureService" />
+		<property name="situationService" ref="situationFamilleService" />
+		<property name="ibanValidator" ref="ibanValidator" />
+		<property name="parametreService" ref="parametreAppService" />
+		<property name="serviceCivil" ref="serviceCivilService" />
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="lrService" ref="lrService" />
+		<property name="diService" ref="diService" />
+		<property name="bamMessageSender" ref="bamMessageSender" />
+		<property name="servicePM" ref="servicePersonneMoraleService" />
+		<property name="assujettissementService" ref="assujettissementService" />
+		<property name="periodeImpositionService" ref="periodeImpositionService" />
+		<property name="periodeImpositionImpotSourceService" ref="periodeImpositionImpotSourceService" />
 		<property name="securityProvider" ref="securityProviderInterface"/>
 	</bean>
 

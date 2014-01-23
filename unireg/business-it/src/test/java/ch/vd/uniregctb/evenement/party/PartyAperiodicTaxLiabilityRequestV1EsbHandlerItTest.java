@@ -1,5 +1,8 @@
 package ch.vd.uniregctb.evenement.party;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 
@@ -53,8 +56,8 @@ public class PartyAperiodicTaxLiabilityRequestV1EsbHandlerItTest extends PartyRe
 	}
 
 	@Override
-	protected String getResponseXSD() {
-		return "event/party/aperiodic-taxliab-response-1.xsd";
+	protected List<String> getResponseXSD() {
+		return Arrays.asList("event/party/aperiodic-taxliab-response-1.xsd");
 	}
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)

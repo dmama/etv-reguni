@@ -2,6 +2,7 @@ package ch.vd.uniregctb.evenement.party;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
@@ -55,8 +56,8 @@ public class PartyNumbersRequestEsbHandlerItTest extends PartyRequestEsbHandlerI
 	}
 
 	@Override
-	protected String getResponseXSD() {
-		return "event/party/numbers-response-1.xsd";
+	protected List<String> getResponseXSD() {
+		return Arrays.asList("event/party/numbers-response-1.xsd");
 	}
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)

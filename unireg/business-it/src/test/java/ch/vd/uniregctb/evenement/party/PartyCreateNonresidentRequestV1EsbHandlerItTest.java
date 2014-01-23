@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.evenement.party;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
@@ -54,8 +55,8 @@ public class PartyCreateNonresidentRequestV1EsbHandlerItTest extends PartyReques
 	}
 
 	@Override
-	protected String getResponseXSD() {
-		return "event/party/create-nonresident-response-1.xsd";
+	protected List<String> getResponseXSD() {
+		return Arrays.asList("event/party/create-nonresident-response-1.xsd");
 	}
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)

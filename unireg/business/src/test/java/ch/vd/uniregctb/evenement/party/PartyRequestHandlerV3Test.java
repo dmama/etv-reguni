@@ -8,28 +8,29 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.unireg.xml.common.v1.Date;
 import ch.vd.unireg.xml.common.v1.UserLogin;
-import ch.vd.unireg.xml.event.party.party.v2.PartyRequest;
-import ch.vd.unireg.xml.event.party.party.v2.PartyResponse;
-import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
-import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
-import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
-import ch.vd.unireg.xml.party.address.v1.Address;
-import ch.vd.unireg.xml.party.address.v1.AddressInformation;
-import ch.vd.unireg.xml.party.address.v1.AddressType;
-import ch.vd.unireg.xml.party.address.v1.FormattedAddress;
-import ch.vd.unireg.xml.party.address.v1.PersonMailAddressInfo;
-import ch.vd.unireg.xml.party.address.v1.TariffZone;
-import ch.vd.unireg.xml.party.debtor.v2.Debtor;
-import ch.vd.unireg.xml.party.debtor.v2.DebtorCategory;
-import ch.vd.unireg.xml.party.v2.Party;
-import ch.vd.unireg.xml.party.v2.PartyPart;
+import ch.vd.unireg.xml.common.v2.Date;
+import ch.vd.unireg.xml.event.party.party.v3.PartyRequest;
+import ch.vd.unireg.xml.event.party.party.v3.PartyResponse;
+import ch.vd.unireg.xml.party.address.v2.Address;
+import ch.vd.unireg.xml.party.address.v2.AddressInformation;
+import ch.vd.unireg.xml.party.address.v2.AddressType;
+import ch.vd.unireg.xml.party.address.v2.FormattedAddress;
+import ch.vd.unireg.xml.party.address.v2.PersonMailAddressInfo;
+import ch.vd.unireg.xml.party.address.v2.TariffZone;
+import ch.vd.unireg.xml.party.debtor.v3.Debtor;
+import ch.vd.unireg.xml.party.v3.Party;
+import ch.vd.unireg.xml.party.v3.PartyPart;
+import ch.vd.unireg.xml.party.withholding.v1.DebtorCategory;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.iban.IbanValidator;
+import ch.vd.uniregctb.jms.EsbBusinessCode;
+import ch.vd.uniregctb.jms.EsbBusinessException;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
+import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
+import ch.vd.uniregctb.metier.piis.PeriodeImpositionImpotSourceService;
 import ch.vd.uniregctb.security.MockSecurityProvider;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.situationfamille.SituationFamilleService;
@@ -39,25 +40,25 @@ import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
-import ch.vd.uniregctb.xml.ServiceException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-public class PartyRequestHandlerV2Test extends BusinessTest {
+public class PartyRequestHandlerV3Test extends BusinessTest {
 
-	private PartyRequestHandlerV2 handler;
+	private PartyRequestHandlerV3 handler;
 
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 
-		handler = new PartyRequestHandlerV2();
+		handler = new PartyRequestHandlerV3();
 		handler.setAdresseService(getBean(AdresseService.class, "adresseService"));
 		handler.setAssujettissementService(getBean(AssujettissementService.class, "assujettissementService"));
+		handler.setPeriodeImpositionService(getBean(PeriodeImpositionService.class, "periodeImpositionService"));
+		handler.setPeriodeImpositionImpotSourceService(getBean(PeriodeImpositionImpotSourceService.class, "periodeImpositionImpotSourceService"));
 		handler.setDiService(getBean(DeclarationImpotService.class, "diService"));
 		handler.setHibernateTemplate(hibernateTemplate);
 		handler.setIbanValidator(getBean(IbanValidator.class, "ibanValidator"));
@@ -85,8 +86,8 @@ public class PartyRequestHandlerV2Test extends BusinessTest {
 				handler.handle(request);
 				fail();
 			}
-			catch (ServiceException e) {
-				assertTrue(e.getInfo() instanceof AccessDeniedExceptionInfo);
+			catch (EsbBusinessException e) {
+				assertEquals(EsbBusinessCode.DROITS_INSUFFISANTS, e.getCode());
 				assertEquals("L'utilisateur spécifié (xxxxx/22) n'a pas les droits d'accès en lecture complète sur l'application.", e.getMessage());
 			}
 
@@ -116,8 +117,8 @@ public class PartyRequestHandlerV2Test extends BusinessTest {
 				handler.handle(request);
 				fail();
 			}
-			catch (ServiceException e) {
-				assertTrue(e.getInfo() instanceof AccessDeniedExceptionInfo);
+			catch (EsbBusinessException e) {
+				assertEquals(EsbBusinessCode.DROITS_INSUFFISANTS, e.getCode());
 				assertEquals("L'utilisateur spécifié (xxxxx/22) n'a pas les droits d'accès en lecture sur le tiers n° 4224.", e.getMessage());
 			}
 
@@ -145,10 +146,8 @@ public class PartyRequestHandlerV2Test extends BusinessTest {
 				handler.handle(request);
 				fail();
 			}
-			catch (ServiceException e) {
-				assertTrue(e.getInfo() instanceof BusinessExceptionInfo);
-				final BusinessExceptionInfo info = (BusinessExceptionInfo) e.getInfo();
-				assertEquals(BusinessExceptionCode.UNKNOWN_PARTY.name(), info.getCode());
+			catch (EsbBusinessException e) {
+				assertEquals(EsbBusinessCode.CTB_INEXISTANT, e.getCode());
 				assertEquals("Le tiers n°4224 n'existe pas.", e.getMessage());
 			}
 		}
@@ -246,7 +245,7 @@ public class PartyRequestHandlerV2Test extends BusinessTest {
 	}
 
 	/**
-	 * Type de débiteur non-supporté par les versions précédentes du service
+	 * Type de débiteur non-supporté par les vieilles versions du service
 	 */
 	@Test
 	public void testGetDebiteurParticipationsHorsSuisse() throws Exception {
@@ -289,7 +288,7 @@ public class PartyRequestHandlerV2Test extends BusinessTest {
 	}
 
 	/**
-	 * Type de débiteur non-supporté par les versions précédentes du service
+	 * Type de débiteur non-supporté par les vieilles versions du service
 	 */
 	@Test
 	public void testGetDebiteurEffeuilleuses() throws Exception {
@@ -324,7 +323,7 @@ public class PartyRequestHandlerV2Test extends BusinessTest {
 			assertNotNull(response);
 			assertNotNull(response.getParty());
 			assertInstanceOf(Debtor.class, response.getParty());
-			assertEquals(DebtorCategory.SEASONAL_WORKERS, ((Debtor) response.getParty()).getCategory());
+			assertEquals(DebtorCategory.WINE_FARM_SEASONAL_WORKERS, ((Debtor) response.getParty()).getCategory());
 		}
 		finally {
 			handler.setSecurityProvider(null);

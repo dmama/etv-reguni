@@ -148,7 +148,7 @@ public class PartyRequestEsbHandler implements EsbMessageHandler, InitializingBe
 		}
 	}
 
-	protected RequestHandlerResult handle(Request request) throws ServiceException {
+	protected RequestHandlerResult handle(Request request) throws ServiceException, EsbBusinessException {
 
 		final RequestHandler handler = handlers.get(request.getClass());
 		if (handler == null) {
