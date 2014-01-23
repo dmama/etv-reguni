@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.cache;
 
-import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.Random;
 import java.util.Set;
 
@@ -37,23 +37,44 @@ public class CacheValueWithPartsTest extends WithoutSpringTest {
 		}
 	}
 
-	private void run() throws Exception {
-		final Set<Integer> parts = new HashSet<>();
-		parts.add(1);
+	private static enum Part {
+		ONE,
+		TWO,
+		THREE,
+		FOUR,
+		FIVE,
+		SIX,
+		SEVEN,
+		EIGHT,
+		NINE,
+		TEN,
+		ELEVEN,
+		TWELVE,
+		THIRTEEN,
+		FOURTEEN,
+		FIFTEEN,
+		SIXTEEN,
+		SEVENTEEN,
+		EIGHTTEEN,
+		NINETEEN,
+		TWENTY
+	}
 
-		final CacheValueWithParts<Data, Integer> value = new CacheValueWithParts<Data, Integer>(parts, new Data(5)) {
+	private void run() throws Exception {
+		final Set<Part> parts = EnumSet.of(Part.ONE);
+		final CacheValueWithParts<Data, Part> value = new CacheValueWithParts<Data, Part>(Part.class, parts, new Data(5)) {
 			@Override
-			protected void copyParts(Set<Integer> parts, Data from, Data to) {
+			protected void copyParts(Set<Part> parts, Data from, Data to) {
 			}
 
 			@Override
-			protected Data restrictTo(Data value, Set<Integer> parts) {
+			protected Data restrictTo(Data value, Set<Part> parts) {
 				return value;
 			}
 		};
 
 
-		Thread writer1 = new Thread() {
+		final Thread writer1 = new Thread() {
 			@Override
 			public void run() {
 				final Random rand = new Random(System.currentTimeMillis());
@@ -61,8 +82,7 @@ public class CacheValueWithPartsTest extends WithoutSpringTest {
 //				LOGGER.warn("-- writer1 starts ---");
 				try {
 					for (int i = 0; i < ITERATIONS; ++i) {
-						final Set<Integer> parts = new HashSet<>();
-						parts.add(rand.nextInt());
+						final Set<Part> parts = EnumSet.of(Part.values()[rand.nextInt(Part.values().length)]);
 						value.addParts(parts, new Data(5));
 					}
 				}
@@ -72,7 +92,7 @@ public class CacheValueWithPartsTest extends WithoutSpringTest {
 			}
 		};
 
-		Thread writer2 = new Thread() {
+		final Thread writer2 = new Thread() {
 			@Override
 			public void run() {
 				final Random rand = new Random(System.currentTimeMillis());
@@ -80,8 +100,7 @@ public class CacheValueWithPartsTest extends WithoutSpringTest {
 //				LOGGER.warn("-- writer2 starts ---");
 				try {
 					for (int i = 0; i < ITERATIONS; ++i) {
-						final Set<Integer> parts = new HashSet<>();
-						parts.add(rand.nextInt());
+						final Set<Part> parts = EnumSet.of(Part.values()[rand.nextInt(Part.values().length)]);
 						value.addParts(parts, new Data(5));
 					}
 				}
@@ -91,7 +110,7 @@ public class CacheValueWithPartsTest extends WithoutSpringTest {
 			}
 		};
 
-		Thread reader = new Thread() {
+		final Thread reader = new Thread() {
 			@Override
 			public void run() {
 				final Random rand = new Random(System.currentTimeMillis());
@@ -99,8 +118,7 @@ public class CacheValueWithPartsTest extends WithoutSpringTest {
 //				LOGGER.warn("-- reader starts ---");
 				try {
 					for (int i = 0; i < ITERATIONS * 10; ++i) {
-						final Set<Integer> parts = new HashSet<>();
-						parts.add(rand.nextInt());
+						final Set<Part> parts = EnumSet.of(Part.values()[rand.nextInt(Part.values().length)]);
 						try {
 							assertEquals(5, value.getValueForParts(parts).i);
 						}

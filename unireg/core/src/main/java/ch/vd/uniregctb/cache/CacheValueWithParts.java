@@ -2,7 +2,7 @@ package ch.vd.uniregctb.cache;
 
 import java.io.Serializable;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
@@ -16,16 +16,19 @@ import ch.vd.registre.base.utils.Assert;
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public abstract class CacheValueWithParts<T, P> implements Serializable {
+public abstract class CacheValueWithParts<T, P extends Enum<P>> implements Serializable {
 
-	private static final long serialVersionUID = -2265610043652838951L;
+	private static final long serialVersionUID = 589510106370854736L;
 
 	@NotNull
 	private final Set<P> parts;
 	private T value;
 
-	public CacheValueWithParts(Set<P> parts, T value) {
-		this.parts = (parts == null ? new HashSet<P>() : new HashSet<>(parts));
+	public CacheValueWithParts(Class<P> partClass, Set<P> parts, T value) {
+		this.parts = EnumSet.noneOf(partClass);
+		if (parts != null) {
+			this.parts.addAll(parts);
+		}
 		this.value = value;
 	}
 
@@ -54,7 +57,7 @@ public abstract class CacheValueWithParts<T, P> implements Serializable {
 			return null;
 		}
 		else {
-			Set<P> missing = new HashSet<>(newParts);
+			final Set<P> missing = EnumSet.copyOf(newParts);
 			missing.removeAll(this.parts);
 			return missing;
 		}

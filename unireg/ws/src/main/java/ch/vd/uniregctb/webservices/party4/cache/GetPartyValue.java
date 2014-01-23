@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.webservices.party4.cache;
 
+import java.io.Serializable;
 import java.util.Set;
 
 import ch.vd.unireg.webservices.party4.PartyPart;
@@ -8,10 +9,12 @@ import ch.vd.uniregctb.cache.CacheValueWithParts;
 import ch.vd.uniregctb.webservices.party4.impl.DataHelper;
 import ch.vd.uniregctb.xml.party.v2.PartyBuilder;
 
-class GetPartyValue extends CacheValueWithParts<Party, PartyPart> {
+class GetPartyValue extends CacheValueWithParts<Party, PartyPart> implements Serializable {
+
+	private static final long serialVersionUID = -5109367985727902846L;
 
 	public GetPartyValue(Set<PartyPart> parts, Party tiers) {
-		super(parts, tiers);
+		super(PartyPart.class, parts, tiers);
 	}
 
 	@Override

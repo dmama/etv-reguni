@@ -67,7 +67,7 @@
 				<entry key="PartyWebService3" value-ref="partyService3EndPoint"/>
 				<entry key="PartyWebService4" value-ref="partyService4EndPoint"/>
 				<entry key="ServiceSecurite" value-ref="securiteServiceBean"/>
-				<entry key="WebService5" value-ref="v5EndPoint"/>
+				<entry key="WebService5" value-ref="wsv5EndPoint"/>
 			</map>
 		</property>
 	</bean>

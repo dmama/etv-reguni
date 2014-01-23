@@ -28,6 +28,7 @@
 			<util:list>
 				<ref bean="partyService3CacheManager"/>
 				<ref bean="partyService4CacheManager"/>
+				<ref bean="wsv5CacheEventListener"/>
 			</util:list>
 		</property>
 	</bean>
@@ -135,7 +136,7 @@
 	<!-- WS REST v5 -->
 	<jaxrs:server address="/v5">
 		<jaxrs:serviceBeans>
-			<ref bean="v5EndPoint"/>
+			<ref bean="wsv5EndPoint"/>
 		</jaxrs:serviceBeans>
 		<jaxrs:extensionMappings>
 			<entry key="xml" value="application/xml"/>
@@ -167,16 +168,29 @@
 		</jaxrs:providers>
 	</jaxrs:server>
 
-	<bean id="v5EndPoint" class="ch.vd.uniregctb.webservices.v5.WebServiceEndPoint">
-		<property name="target" ref="v5Access"/>
+	<bean id="wsv5EndPoint" class="ch.vd.uniregctb.webservices.v5.WebServiceEndPoint">
+		<property name="target" ref="wsv5Access"/>
 	</bean>
 
-	<bean id="v5Access" class="ch.vd.uniregctb.webservices.v5.BusinessWebServiceAccessChecker">
+	<bean id="wsv5Access" class="ch.vd.uniregctb.webservices.v5.BusinessWebServiceAccessChecker">
 		<property name="securityProvider" ref="securityProviderInterface"/>
-		<property name="target" ref="v5Business"/>
+		<property name="target" ref="wsv5Cache"/>
 	</bean>
 
-	<bean id="v5Business" class="ch.vd.uniregctb.webservices.v5.BusinessWebServiceImpl">
+	<bean id="wsv5Cache" class="ch.vd.uniregctb.webservices.v5.cache.BusinessWebServiceCache">
+		<property name="target" ref="wsv5Business"/>
+		<property name="cacheManager" ref="ehCacheManager" />
+		<property name="cacheName" value="webService5" />
+		<property name="uniregCacheManager" ref="uniregCacheManager" />
+		<property name="statsService" ref="statsService" />
+		<property name="securityProvider" ref="securityProviderInterface"/>
+	</bean>
+
+	<bean id="wsv5CacheEventListener" class="ch.vd.uniregctb.webservices.v5.cache.BusinessWebServiceCacheEventListener">
+		<property name="cache" ref="wsv5Cache"/>
+	</bean>
+
+	<bean id="wsv5Business" class="ch.vd.uniregctb.webservices.v5.BusinessWebServiceImpl">
 		<property name="securityProvider" ref="securityProviderInterface"/>
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="tiersService" ref="tiersService"/>

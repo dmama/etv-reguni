@@ -51,6 +51,7 @@ import ch.vd.unireg.ws.deadline.v1.DeadlineRequest;
 import ch.vd.unireg.ws.deadline.v1.DeadlineResponse;
 import ch.vd.unireg.ws.deadline.v1.DeadlineStatus;
 import ch.vd.unireg.ws.modifiedtaxpayers.v1.PartyNumberList;
+import ch.vd.unireg.ws.parties.v1.Entry;
 import ch.vd.unireg.ws.parties.v1.Parties;
 import ch.vd.unireg.ws.security.v1.SecurityResponse;
 import ch.vd.unireg.ws.taxoffices.v1.TaxOffice;
@@ -779,7 +780,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 		private Parties doExtract() throws ServiceException {
 
 			final Parties parties = new Parties();
-			final List<Object> partyOrError = parties.getPartyOrError();
+			final List<Entry> entries = parties.getEntries();
 
 			// vérification des droits d'accès et de l'existence des tiers
 			final Iterator<Integer> idIterator = partyNos.iterator();
@@ -791,11 +792,11 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 					idLongSet.add((long) id);
 				}
 				catch (AccessDeniedException e) {
-					partyOrError.add(new ch.vd.unireg.ws.parties.v1.Error(ErrorType.ACCESS, e.getMessage(), id));
+					entries.add(new Entry(id, null, new ch.vd.unireg.xml.error.v1.Error(ErrorType.ACCESS, e.getMessage())));
 					idIterator.remove();
 				}
 				catch (TiersNotFoundException e) {
-					partyOrError.add(new ch.vd.unireg.ws.parties.v1.Error(ErrorType.BUSINESS, e.getMessage(), id));
+					entries.add(new Entry(id, null, new ch.vd.unireg.xml.error.v1.Error(ErrorType.BUSINESS, e.getMessage())));
 					idIterator.remove();
 				}
 			}
@@ -806,10 +807,10 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 				if (t != null) {
 					final Party party = buildParty(t, parts, context);
 					if (party == null) {
-						partyOrError.add(new ch.vd.unireg.ws.parties.v1.Error(ErrorType.BUSINESS, "Tiers non exposé.", t.getNumero().intValue()));
+						entries.add(new Entry(t.getNumero().intValue(), null, new ch.vd.unireg.xml.error.v1.Error(ErrorType.BUSINESS, "Tiers non exposé.")));
 					}
 					else {
-						partyOrError.add(party);
+						entries.add(new Entry(t.getNumero().intValue(), party, null));
 					}
 					idLongSet.remove(t.getNumero());
 				}
@@ -817,7 +818,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 			// le reliquat sont des erreurs techniques (= bugs ?)
 			for (long id : idLongSet) {
-				partyOrError.add(new ch.vd.unireg.ws.parties.v1.Error(ErrorType.TECHNICAL, "Erreur inattendue.", (int) id));
+				entries.add(new Entry((int) id, null, new ch.vd.unireg.xml.error.v1.Error(ErrorType.TECHNICAL, "Erreur inattendue.")));
 			}
 
 			return parties;
@@ -851,7 +852,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 				final Future<Parties> future = executor.poll(1, TimeUnit.SECONDS);
 				if (future != null) {
 					-- nbRemainingTasks;
-					finalResult.getPartyOrError().addAll(future.get().getPartyOrError());
+					finalResult.getEntries().addAll(future.get().getEntries());
 				}
 			}
 			catch (InterruptedException e) {

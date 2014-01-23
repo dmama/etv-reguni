@@ -12,10 +12,10 @@ import ch.vd.uniregctb.cache.CacheValueWithParts;
  */
 public class IndividuCacheValueWithParts extends CacheValueWithParts<Individu, AttributeIndividu> implements Serializable {
 
-	private static final long serialVersionUID = -6901410842345964808L;
+	private static final long serialVersionUID = -1690329117513676427L;
 
 	public IndividuCacheValueWithParts(Set<AttributeIndividu> parts, Individu value) {
-		super(parts, value);
+		super(AttributeIndividu.class, parts, value);
 	}
 
 	@Override

@@ -99,4 +99,12 @@
 		   overflowToDisk="false"
 			/>
 
+	<cache name="webService5"
+	       maxElementsInMemory="20000"
+	       eternal="false"
+	       timeToIdleSeconds="86400"
+	       timeToLiveSeconds="86400"
+	       overflowToDisk="false"
+			/>
+
 </ehcache>

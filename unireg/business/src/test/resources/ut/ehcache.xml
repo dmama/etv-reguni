@@ -99,6 +99,14 @@
         overflowToDisk="false"
         />
 
+	<cache name="webService5"
+	       maxElementsInMemory="1000"
+	       eternal="false"
+	       timeToIdleSeconds="300"
+	       timeToLiveSeconds="300"
+	       overflowToDisk="false"
+			/>
+
 	<cache name="autorisationsCache"
 		   maxElementsInMemory="1000"
 		   eternal="false"

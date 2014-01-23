@@ -28,6 +28,7 @@ import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationAckResponse;
 import ch.vd.unireg.ws.deadline.v1.DeadlineRequest;
 import ch.vd.unireg.ws.deadline.v1.DeadlineResponse;
 import ch.vd.unireg.ws.modifiedtaxpayers.v1.PartyNumberList;
+import ch.vd.unireg.ws.parties.v1.Entry;
 import ch.vd.unireg.ws.parties.v1.Parties;
 import ch.vd.unireg.ws.security.v1.SecurityResponse;
 import ch.vd.unireg.ws.taxoffices.v1.TaxOffices;
@@ -314,7 +315,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 					if (parties == null) {
 						return ExecutionResult.with(Response.noContent().build(), 0);
 					}
-					final int nbItems = countParties(parties.getPartyOrError());
+					final int nbItems = countParties(parties.getEntries());
 					final MediaType preferred = getPreferredMediaTypeFromXmlOrJson();
 					if (preferred == WebServiceHelper.APPLICATION_JSON_WITH_UTF8_CHARSET_TYPE) {
 						// TODO que quel format utiliser pour le retour JSON ?
@@ -332,10 +333,10 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 		});
 	}
 
-	private static int countParties(Collection<?> col) {
+	private static int countParties(Collection<Entry> col) {
 		int count = 0;
-		for (Object item : col) {
-			if (item instanceof Party) {
+		for (Entry item : col) {
+			if (item.getParty() != null) {
 				++ count;
 			}
 		}

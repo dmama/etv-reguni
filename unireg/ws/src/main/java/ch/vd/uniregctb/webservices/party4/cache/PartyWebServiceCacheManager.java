@@ -26,7 +26,7 @@ public class PartyWebServiceCacheManager implements WebServiceEventInterface {
 
 	@Override
 	public void onTruncateDatabase() {
-		cache.clearAll();
+		cache.reset();
 	}
 
 	@Override

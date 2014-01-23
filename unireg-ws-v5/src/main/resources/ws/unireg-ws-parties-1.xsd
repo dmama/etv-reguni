@@ -11,23 +11,20 @@
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/error/1" schemaLocation="../unireg-error-1.xsd"/>
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/2" schemaLocation="../unireg-common-2.xsd"/>
 
-	<xs:complexType name="error">
-		<xs:complexContent>
-			<xs:extension base="error:errorType">
-				<xs:sequence>
-					<xs:element name="partyNo" type="common:partyNumberType"/>
-				</xs:sequence>
-			</xs:extension>
-		</xs:complexContent>
+	<xs:complexType name="entryType">
+		<xs:sequence>
+			<xs:element name="partyNo" type="common:partyNumberType"/>
+			<xs:choice>
+				<xs:element name="party" type="party:partyType"/>
+				<xs:element name="error" type="error:errorType"/>
+			</xs:choice>
+		</xs:sequence>
 	</xs:complexType>
 
 	<xs:element name="parties">
 		<xs:complexType>
-			<xs:sequence maxOccurs="unbounded">
-				<xs:choice>
-					<xs:element name="party" type="party:partyType"/>
-					<xs:element name="error" type="parties:error"/>
-				</xs:choice>
+			<xs:sequence>
+				<xs:element name="entries" type="parties:entryType" maxOccurs="unbounded" minOccurs="0"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>

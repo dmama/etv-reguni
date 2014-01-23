@@ -429,13 +429,6 @@ public class PartyWebServiceCache implements UniregCacheInterface, KeyDumpableCa
 	}
 
 	/**
-	 * Efface complétement le cache.
-	 */
-	public void clearAll() {
-		cache.removeAll();
-	}
-
-	/**
 	 * {@inheritDoc}
 	 */
 	@Override

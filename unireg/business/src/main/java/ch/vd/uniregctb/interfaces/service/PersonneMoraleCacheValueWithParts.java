@@ -13,10 +13,10 @@ import ch.vd.uniregctb.interfaces.model.PersonneMorale;
  */
 public class PersonneMoraleCacheValueWithParts extends CacheValueWithParts<PersonneMorale, PartPM> implements Serializable {
 
-	private static final long serialVersionUID = 0L;
+	private static final long serialVersionUID = -7879873578391624243L;
 
 	public PersonneMoraleCacheValueWithParts(Set<PartPM> parts, PersonneMorale value) {
-		super(parts, value);
+		super(PartPM.class, parts, value);
 	}
 
 	@Override

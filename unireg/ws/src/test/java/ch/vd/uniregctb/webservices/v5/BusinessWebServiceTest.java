@@ -42,6 +42,7 @@ import ch.vd.unireg.ws.deadline.v1.DeadlineRequest;
 import ch.vd.unireg.ws.deadline.v1.DeadlineResponse;
 import ch.vd.unireg.ws.deadline.v1.DeadlineStatus;
 import ch.vd.unireg.ws.modifiedtaxpayers.v1.PartyNumberList;
+import ch.vd.unireg.ws.parties.v1.Entry;
 import ch.vd.unireg.ws.parties.v1.Parties;
 import ch.vd.unireg.ws.security.v1.AllowedAccess;
 import ch.vd.unireg.ws.security.v1.SecurityResponse;
@@ -147,7 +148,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
-		service = getBean(BusinessWebService.class, "v5Business");
+		service = getBean(BusinessWebService.class, "wsv5Business");
 	}
 
 	private static void assertValidInteger(long value) {
@@ -2933,7 +2934,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			}
 			final Parties res = service.getParties(user, nos, null);
 			Assert.assertNotNull(res);
-			Assert.assertEquals(max, res.getPartyOrError().size());
+			Assert.assertEquals(max, res.getEntries().size());
 		}
 		{
 			final List<Integer> nos = new ArrayList<>(max + 1);
@@ -2966,7 +2967,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 			final Parties res = service.getParties(user, nos, null);
 			Assert.assertNotNull(res);
-			Assert.assertEquals(max, res.getPartyOrError().size());
+			Assert.assertEquals(max, res.getEntries().size());
 		}
 	}
 
@@ -3004,54 +3005,48 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		final UserLogin user = new UserLogin("TOTO", 22);
 		final Parties parties = service.getParties(user, Arrays.asList(ids.pp1, ids.ppProtege, 4845, ids.pp2), null);
 		Assert.assertNotNull(parties);
-		Assert.assertNotNull(parties.getPartyOrError());
-		Assert.assertEquals(4, parties.getPartyOrError().size());
+		Assert.assertNotNull(parties.getEntries());
+		Assert.assertEquals(4, parties.getEntries().size());
 
-		final List<Object> sorted = new ArrayList<>(parties.getPartyOrError());
-		Collections.sort(sorted, new Comparator<Object>() {
+		final List<Entry> sorted = new ArrayList<>(parties.getEntries());
+		Collections.sort(sorted, new Comparator<Entry>() {
 			@Override
-			public int compare(Object o1, Object o2) {
-				final int i1 = getPartyId(o1);
-				final int i2 = getPartyId(o2);
-				return i1 - i2;
-			}
-
-			private int getPartyId(Object o) {
-				if (o instanceof Party) {
-					return ((Party) o).getNumber();
-				}
-				if (o instanceof ch.vd.unireg.ws.parties.v1.Error) {
-					return ((ch.vd.unireg.ws.parties.v1.Error) o).getPartyNo();
-				}
-				throw new IllegalArgumentException();
+			public int compare(Entry o1, Entry o2) {
+				return o1.getPartyNo() - o2.getPartyNo();
 			}
 		});
 
 		{
-			final Object o = sorted.get(0);
-			Assert.assertEquals(ch.vd.unireg.ws.parties.v1.Error.class, o.getClass());
-			final ch.vd.unireg.ws.parties.v1.Error error = (ch.vd.unireg.ws.parties.v1.Error) o;
-			Assert.assertEquals(4845, error.getPartyNo());
-			Assert.assertEquals("Le tiers n°48.45 n'existe pas", error.getErrorMessage());
-			Assert.assertEquals(ErrorType.BUSINESS, error.getType());
+			final Entry e = sorted.get(0);
+			Assert.assertNull(e.getParty());
+			Assert.assertNotNull(e.getError());
+			Assert.assertEquals(4845, e.getPartyNo());
+			Assert.assertEquals("Le tiers n°48.45 n'existe pas", e.getError().getErrorMessage());
+			Assert.assertEquals(ErrorType.BUSINESS, e.getError().getType());
 		}
 		{
-			final Object o = sorted.get(1);
-			Assert.assertEquals(NaturalPerson.class, o.getClass());
-			Assert.assertEquals(ids.pp1, ((NaturalPerson) o).getNumber());
+			final Entry e = sorted.get(1);
+			Assert.assertNotNull(e.getParty());
+			Assert.assertNull(e.getError());
+			Assert.assertEquals(NaturalPerson.class, e.getParty().getClass());
+			Assert.assertEquals(ids.pp1, e.getPartyNo());
+			Assert.assertEquals(ids.pp1, e.getParty().getNumber());
 		}
 		{
-			final Object o = sorted.get(2);
-			Assert.assertEquals(NaturalPerson.class, o.getClass());
-			Assert.assertEquals(ids.pp2, ((NaturalPerson) o).getNumber());
+			final Entry e = sorted.get(2);
+			Assert.assertNotNull(e.getParty());
+			Assert.assertNull(e.getError());
+			Assert.assertEquals(NaturalPerson.class, e.getParty().getClass());
+			Assert.assertEquals(ids.pp2, e.getPartyNo());
+			Assert.assertEquals(ids.pp2, e.getParty().getNumber());
 		}
 		{
-			final Object o = sorted.get(3);
-			Assert.assertEquals(ch.vd.unireg.ws.parties.v1.Error.class, o.getClass());
-			final ch.vd.unireg.ws.parties.v1.Error error = (ch.vd.unireg.ws.parties.v1.Error) o;
-			Assert.assertEquals(ids.ppProtege, error.getPartyNo());
-			Assert.assertEquals("L'utilisateur UserLogin{userId='TOTO', oid=22} ne possède aucun droit de lecture sur le dossier " + ids.ppProtege, error.getErrorMessage());
-			Assert.assertEquals(ErrorType.ACCESS, error.getType());
+			final Entry e = sorted.get(3);
+			Assert.assertNull(e.getParty());
+			Assert.assertNotNull(e.getError());
+			Assert.assertEquals(ids.ppProtege, e.getPartyNo());
+			Assert.assertEquals("L'utilisateur UserLogin{userId='TOTO', oid=22} ne possède aucun droit de lecture sur le dossier " + ids.ppProtege, e.getError().getErrorMessage());
+			Assert.assertEquals(ErrorType.ACCESS, e.getError().getType());
 		}
 	}
 
@@ -3126,25 +3121,25 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		final UserLogin user = new UserLogin(getDefaultOperateurName(), 22);
 		final Parties parties = service.getParties(user, Arrays.asList(ids.pp, ids.dpi), EnumSet.allOf(PartyPart.class));
 		Assert.assertNotNull(parties);
-		Assert.assertNotNull(parties.getPartyOrError());
-		Assert.assertEquals(2, parties.getPartyOrError().size());
+		Assert.assertNotNull(parties.getEntries());
+		Assert.assertEquals(2, parties.getEntries().size());
 
-		final List<Object> sorted = new ArrayList<>(parties.getPartyOrError());
-		Collections.sort(sorted, new Comparator<Object>() {
+		final List<Entry> sorted = new ArrayList<>(parties.getEntries());
+		Collections.sort(sorted, new Comparator<Entry>() {
 			@Override
-			public int compare(Object o1, Object o2) {
-				final Party p1 = (Party) o1;
-				final Party p2 = (Party) o2;
-				return p1.getNumber() - p2.getNumber();
+			public int compare(Entry o1, Entry o2) {
+				return o1.getPartyNo() - o2.getPartyNo();
 			}
 		});
 
 		{
-			final Object o = sorted.get(0);
-			Assert.assertNotNull(o);
-			Assert.assertEquals(Debtor.class, o.getClass());
+			final Entry e = sorted.get(0);
+			Assert.assertNotNull(e);
+			Assert.assertNull(e.getError());
+			Assert.assertNotNull(e.getParty());
+			Assert.assertEquals(Debtor.class, e.getParty().getClass());
 
-			final Debtor dpi = (Debtor) o;
+			final Debtor dpi = (Debtor) e.getParty();
 			Assert.assertEquals(ids.dpi, dpi.getNumber());
 			Assert.assertEquals("MonTestAdoré", dpi.getName());
 
@@ -3246,11 +3241,13 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			}
 		}
 		{
-			final Object o = sorted.get(1);
+			final Entry o = sorted.get(1);
 			Assert.assertNotNull(o);
-			Assert.assertEquals(NaturalPerson.class, o.getClass());
+			Assert.assertNull(o.getError());
+			Assert.assertNotNull(o.getParty());
+			Assert.assertEquals(NaturalPerson.class, o.getParty().getClass());
 
-			final NaturalPerson np = (NaturalPerson) o;
+			final NaturalPerson np = (NaturalPerson) o.getParty();
 			Assert.assertEquals(ids.pp, np.getNumber());
 			Assert.assertEquals("Mafalda", np.getFirstName());
 			Assert.assertEquals("Gautier", np.getOfficialName());
