@@ -82,9 +82,15 @@
 			<version>${ws.v5.version}</version>
 		</dependency>
 		<dependency>
+			<!-- dépendance vers unireg-jaxb2-ech 2.5+ nécessaire pour le mode "direct" à cause du service UPI -->
 			<groupId>ch.vd.uniregctb</groupId>
 			<artifactId>unireg-jaxb2-ech</artifactId>
-			<version>2.5-SNAPSHOT</version>
+			<version>3.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>ch.vd.uniregctb</groupId>
+			<artifactId>unireg-jaxb2-party</artifactId>
+			<version>3.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>${pom.parent.groupId}</groupId>
@@ -92,14 +98,14 @@
 			<version>${pom.parent.version}</version>
 			<type>test-jar</type>
 			<scope>test</scope>
-	    </dependency>
-	    <dependency>
+		</dependency>
+		<dependency>
 			<groupId>${pom.parent.groupId}</groupId>
 			<artifactId>uniregctb-business</artifactId>
 			<version>${pom.parent.version}</version>
 			<type>test-jar</type>
 			<scope>test</scope>
-	    </dependency>
+		</dependency>
 		<dependency>
 			<groupId>${pom.parent.groupId}</groupId>
 			<artifactId>uniregctb-interfaces</artifactId>
@@ -241,19 +247,13 @@
 			<artifactId>jackson-xc</artifactId>
 			<version>${jackson.version}</version>
 		</dependency>
-		<!-- dépendance vers unireg-jaxb2-ech 2.5+ nécessaire pour le mode "direct" à cause du service UPI -->
-		<dependency>
-			<groupId>ch.vd.uniregctb</groupId>
-			<artifactId>unireg-jaxb2-ech</artifactId>
-			<version>3.0-SNAPSHOT</version>
-		</dependency>
 	</dependencies>
 
 	<build>
 		<plugins>
 			<plugin>
 				<artifactId>maven-antrun-plugin</artifactId>
-				
+
 				<dependencies>
 					<dependency>
 						<groupId>gr.spinellis</groupId>
@@ -261,7 +261,7 @@
 						<version>4.4</version>
 					</dependency>
 				</dependencies>
-				
+
 				<executions>
 
 					<!-- Task ANT qui copie web.xml.xyz sur web.xml -->
@@ -278,7 +278,7 @@
 							</tasks>
 						</configuration>
 					</execution>
-					
+
 					<!-- Task ANT qui génère la javadoc des classes exposées par le web-service tiers v2 -->
 					<execution>
 						<id>ws.tiers2.javadoc</id>
@@ -296,16 +296,16 @@
 									additionalparam="-encoding 'utf-8' -charset 'utf-8'"
 									author="true"
 									classpath="${compile_classpath}"
-									destdir="target/ws.tiers2.javadoc" 
-									doctitle="Unireg - Documentation du web service Tiers v2" 
-									nodeprecated="false" 
-									nodeprecatedlist="false" 
-									noindex="false" 
-									nonavbar="false" 
-									notree="false" 
+									destdir="target/ws.tiers2.javadoc"
+									doctitle="Unireg - Documentation du web service Tiers v2"
+									nodeprecated="false"
+									nodeprecatedlist="false"
+									noindex="false"
+									nonavbar="false"
+									notree="false"
 									source="7"
-									splitindex="true" 
-									use="true" 
+									splitindex="true"
+									use="true"
 									version="true" >
 								    <fileset dir="src/main/java/ch/vd/uniregctb/webservices" defaultexcludes="yes">
 							    		<include name="common/UserLogin.java"/>
@@ -350,16 +350,16 @@
 									additionalparam="-encoding 'utf-8' -charset 'utf-8'"
 									author="true"
 									classpath="${compile_classpath}"
-									destdir="target/ws.securite.javadoc" 
-									doctitle="Unireg - Documentation du web service Tiers" 
-									nodeprecated="false" 
-									nodeprecatedlist="false" 
-									noindex="false" 
-									nonavbar="false" 
-									notree="false" 
+									destdir="target/ws.securite.javadoc"
+									doctitle="Unireg - Documentation du web service Tiers"
+									nodeprecated="false"
+									nodeprecatedlist="false"
+									noindex="false"
+									nonavbar="false"
+									notree="false"
 									source="7"
-									splitindex="true" 
-									use="true" 
+									splitindex="true"
+									use="true"
 									version="true" >
 								    <fileset dir="src/main/java/ch/vd/uniregctb/webservices" defaultexcludes="yes">
 							    		<include name="common/**/*.java"/>
@@ -384,11 +384,11 @@
 							</tasks>
 						</configuration>
 					</execution>
-										
+
 				</executions>
 			</plugin>
-			
-			
+
+
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>buildnumber-maven-plugin</artifactId>
@@ -462,7 +462,7 @@
 					<password>tomcat</password>
 				</configuration>
 			</plugin>
-			
+
 		</plugins>
 
 		<resources>

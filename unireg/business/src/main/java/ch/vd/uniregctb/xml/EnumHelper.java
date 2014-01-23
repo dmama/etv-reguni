@@ -384,7 +384,7 @@ public abstract class EnumHelper {
 		case SEJOUR_SAISONNIER:
 			return ch.vd.unireg.xml.party.taxresidence.v2.TaxLiabilityReason.SEASONAL_JOURNEY;
 		case EFFEUILLEUSES:
-			return ch.vd.unireg.xml.party.taxresidence.v2.TaxLiabilityReason.WINE_FARM_WORKER;
+			return ch.vd.unireg.xml.party.taxresidence.v2.TaxLiabilityReason.WINE_FARM_SEASONAL_WORKER;
 		case PARTICIPATIONS_HORS_SUISSE:
 			return ch.vd.unireg.xml.party.taxresidence.v2.TaxLiabilityReason.PROFIT_SHARING_FOREIGN_COUNTRY_TAXPAYER;
 		default:
