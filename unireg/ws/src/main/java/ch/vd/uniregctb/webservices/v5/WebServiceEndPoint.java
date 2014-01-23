@@ -25,6 +25,9 @@ import ch.vd.uniregctb.webservices.common.WebServiceHelper;
 
 public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 
+	private static final MediaType APPLICATION_JSON_WITH_UTF8_CHARSET_TYPE = MediaType.valueOf(APPLICATION_JSON_WITH_UTF8_CHARSET);
+	private static final MediaType TEXT_PLAIN_WITH_UTF8_CHARSET_TYPE = MediaType.valueOf(TEXT_PLAIN_WITH_UTF8_CHARSET);
+
 	private static final Logger LOGGER = Logger.getLogger(WebServiceEndPoint.class);
 	private static final Logger READ_ACCESS_LOG = Logger.getLogger("ws.v5.read");
 	private static final Logger WRITE_ACCESS_LOG = Logger.getLogger("ws.v5.write");
@@ -138,7 +141,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 			@Override
 			public Response execute(UserLogin userLogin) throws Exception {
 				final boolean blocked = target.getAutomaticRepaymentBlockingFlag(partyNo, userLogin);
-				return Response.ok(Boolean.toString(blocked)).build();
+				return Response.ok(blocked, APPLICATION_JSON_WITH_UTF8_CHARSET_TYPE).build();
 			}
 		});
 	}
@@ -149,7 +152,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 		final long start = loadMeter.start("ping");
 		try {
 			// le nombre de millisecondes depuis le 01.01.1970 0:00:00 GMT
-			return Response.ok(DateHelper.getCurrentDate().getTime()).build();
+			return Response.ok(DateHelper.getCurrentDate().getTime(), TEXT_PLAIN_WITH_UTF8_CHARSET_TYPE).build();
 		}
 		catch (RuntimeException | Error e) {
 			t = e;
@@ -178,12 +181,12 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 
 			final SecurityResponse response = target.getSecurityOnParty(user, partyNo);
 			final MediaType preferred = WebServiceHelper.getPreferedMediaType(messageContext.getHttpHeaders().getAcceptableMediaTypes(),
-			                                                                  new MediaType[] {MediaType.APPLICATION_XML_TYPE, MediaType.APPLICATION_JSON_TYPE});
-			if (preferred == MediaType.APPLICATION_JSON_TYPE) {
-				return Response.ok(response, MediaType.APPLICATION_JSON_TYPE).build();
+			                                                                  new MediaType[] {MediaType.APPLICATION_XML_TYPE, APPLICATION_JSON_WITH_UTF8_CHARSET_TYPE});
+			if (preferred == APPLICATION_JSON_WITH_UTF8_CHARSET_TYPE) {
+				return Response.ok(response, preferred).build();
 			}
 			else if (preferred == MediaType.APPLICATION_XML_TYPE) {
-				return Response.ok(securityObjectFactory.createUserAccess(response), MediaType.APPLICATION_XML_TYPE).build();
+				return Response.ok(securityObjectFactory.createUserAccess(response), preferred).build();
 			}
 			return Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build();
 		}

@@ -18,8 +18,11 @@ import ch.vd.unireg.ws.deadline.v1.DeadlineRequest;
 
 public interface WebService {
 
+	static final String APPLICATION_JSON_WITH_UTF8_CHARSET = MediaType.APPLICATION_JSON + "; charset=UTF-8";
+	static final String TEXT_PLAIN_WITH_UTF8_CHARSET = MediaType.TEXT_PLAIN + "; charset=UTF-8";
+
 	@GET
-	@Produces("text/plain;charset=UTF-8")
+	@Produces(TEXT_PLAIN_WITH_UTF8_CHARSET)
 	@Path("/status/ping")
 	Response ping();
 
@@ -31,13 +34,13 @@ public interface WebService {
 	                                           String value);
 
 	@GET
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(APPLICATION_JSON_WITH_UTF8_CHARSET)
 	@Path("/repayment/{partyNo}/blocked")
 	Response getAutomaticRepaymentBlockingFlag(@PathParam("partyNo") int partyNo,
 	                                           @QueryParam("login") String login);
 
 	@GET
-	@Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+	@Produces({MediaType.APPLICATION_XML, APPLICATION_JSON_WITH_UTF8_CHARSET})
 	@Path("/security/{user}/{partyNo}")
 	Response getSecurityOnParty(@PathParam("user") String user, @PathParam("partyNo") int partyNo);
 
@@ -99,7 +102,7 @@ public interface WebService {
 
 
 	@GET
-	@Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+	@Produces({MediaType.APPLICATION_XML, APPLICATION_JSON_WITH_UTF8_CHARSET})
 	@Path("/taxOffices/{municipalityId}")
 	Response getTaxOffices(@PathParam("municipalityId") int ofsCommune);
 
