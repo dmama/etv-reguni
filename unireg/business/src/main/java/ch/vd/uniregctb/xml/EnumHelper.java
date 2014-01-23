@@ -1870,6 +1870,8 @@ public abstract class EnumHelper {
 			return TiersCriteria.TypeTiers.ENTREPRISE;
 		case NATURAL_PERSON:
 			return TiersCriteria.TypeTiers.PERSONNE_PHYSIQUE;
+		case OTHER_COMMUNITY:
+			return TiersCriteria.TypeTiers.AUTRE_COMMUNAUTE;
 		default:
 			throw new IllegalArgumentException("Type de tiers inconnu = [" + type + ']');
 		}

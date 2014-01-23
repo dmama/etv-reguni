@@ -474,7 +474,7 @@ public abstract class DataHelper {
 			put(NonHabitantIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v3.PartyType.NATURAL_PERSON);
 			put(EntrepriseIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v3.PartyType.CORPORATION);
 			put(MenageCommunIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v3.PartyType.HOUSEHOLD);
-			put(AutreCommunauteIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v3.PartyType.CORPORATION);
+			put(AutreCommunauteIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v3.PartyType.OTHER_COMMUNITY);
 			put(EntrepriseIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v3.PartyType.CORPORATION);
 			put(DebiteurPrestationImposableIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v3.PartyType.DEBTOR);
 			put(CollectiviteAdministrativeIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v3.PartyType.ADMINISTRATIVE_AUTHORITY);

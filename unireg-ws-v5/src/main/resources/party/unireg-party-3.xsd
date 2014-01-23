@@ -614,6 +614,11 @@
 					<xs:documentation>Une collectivité administrative.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
+			<xs:enumeration value="OTHER_COMMUNITY">
+				<xs:annotation>
+					<xs:documentation>Une "autre communauté", i.e. une personne morale inconnue au registre des PM.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
 		</xs:restriction>
 	</xs:simpleType>
 
