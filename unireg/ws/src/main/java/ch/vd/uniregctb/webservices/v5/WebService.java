@@ -45,7 +45,7 @@ public interface WebService {
 	Response getSecurityOnParty(@PathParam("user") String user, @PathParam("partyNo") int partyNo);
 
 	@GET
-	@Produces(MediaType.APPLICATION_XML)
+	@Produces({MediaType.APPLICATION_XML, WebServiceHelper.APPLICATION_JSON_WITH_UTF8_CHARSET})
 	@Path("/party/{partyNo}")
 	Response getParty(@PathParam("partyNo") int partyNo, @QueryParam("user") String user, @QueryParam("part") Set<PartyPart> parts);
 

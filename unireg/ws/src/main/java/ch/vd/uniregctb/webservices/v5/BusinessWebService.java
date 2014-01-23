@@ -25,6 +25,7 @@ import ch.vd.uniregctb.indexer.EmptySearchCriteriaException;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.webservices.common.AccessDeniedException;
 import ch.vd.uniregctb.webservices.common.UserLogin;
+import ch.vd.uniregctb.xml.ServiceException;
 
 /**
  * Partie purement métier du traitement des appels web-service v5
@@ -152,6 +153,8 @@ public interface BusinessWebService {
 	 * @param partyNo numéro du tiers
 	 * @param parts [optionnel] ensemble des parts supplémentaires qui intéressent l'appelant
 	 * @return les informations demandées sur le tiers
+	 * @throws AccessDeniedException si l'opérateur n'a pas le droit de faire ce genre de recherche
+	 * @throws ServiceException en cas de problème à la constitution de l'entité à exporter
 	 */
-	Party getParty(UserLogin user, int partyNo, @Nullable Set<PartyPart> parts) throws AccessDeniedException;
+	Party getParty(UserLogin user, int partyNo, @Nullable Set<PartyPart> parts) throws AccessDeniedException, ServiceException;
 }

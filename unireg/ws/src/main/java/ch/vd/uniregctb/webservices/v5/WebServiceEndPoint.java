@@ -43,6 +43,7 @@ import ch.vd.uniregctb.load.LoadDetail;
 import ch.vd.uniregctb.webservices.common.AccessDeniedException;
 import ch.vd.uniregctb.webservices.common.UserLogin;
 import ch.vd.uniregctb.webservices.common.WebServiceHelper;
+import ch.vd.uniregctb.xml.ServiceException;
 
 public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 
@@ -260,18 +261,23 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 			@NotNull
 			@Override
 			public ExecutionResult execute(UserLogin userLogin) throws Exception {
-				final Party party = target.getParty(userLogin, partyNo, parts);
-				if (party == null) {
-					return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.NOT_FOUND, getAcceptableMediaTypes(), "Le tiers n'existe pas."));
+				try {
+					final Party party = target.getParty(userLogin, partyNo, parts);
+					if (party == null) {
+						return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.NOT_FOUND, getAcceptableMediaTypes(), "Le tiers n'existe pas."));
+					}
+					final MediaType preferred = getPreferredMediaTypeFromXmlOrJson();
+					if (preferred == WebServiceHelper.APPLICATION_JSON_WITH_UTF8_CHARSET_TYPE) {
+						return ExecutionResult.with(Response.ok(party, preferred).build());
+					}
+					else if (preferred == MediaType.APPLICATION_XML_TYPE) {
+						return ExecutionResult.with(Response.ok(partyObjectFactory.createParty(party), preferred).build());
+					}
+					return ExecutionResult.with(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build());
 				}
-				final MediaType preferred = getPreferredMediaTypeFromXmlOrJson();
-				if (preferred == WebServiceHelper.APPLICATION_JSON_WITH_UTF8_CHARSET_TYPE) {
-					return ExecutionResult.with(Response.ok(party, preferred).build());
+				catch (ServiceException e) {
+					return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.INTERNAL_SERVER_ERROR, getAcceptableMediaTypes(), e));
 				}
-				else if (preferred == MediaType.APPLICATION_XML_TYPE) {
-					return ExecutionResult.with(Response.ok(partyObjectFactory.createParty(party), preferred).build());
-				}
-				return ExecutionResult.with(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build());
 			}
 		});
 	}

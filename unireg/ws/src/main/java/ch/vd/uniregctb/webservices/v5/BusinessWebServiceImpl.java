@@ -4,12 +4,14 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
@@ -22,6 +24,8 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.registre.base.tx.TxCallback;
+import ch.vd.registre.base.tx.TxCallbackException;
 import ch.vd.shared.batchtemplate.BatchResults;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
@@ -76,6 +80,9 @@ import ch.vd.uniregctb.situationfamille.SituationFamilleService;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
+import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -88,12 +95,18 @@ import ch.vd.uniregctb.webservices.common.AccessDeniedException;
 import ch.vd.uniregctb.webservices.common.UserLogin;
 import ch.vd.uniregctb.webservices.common.WebServiceHelper;
 import ch.vd.uniregctb.xml.Context;
+import ch.vd.uniregctb.xml.ServiceException;
+import ch.vd.uniregctb.xml.party.v3.PartyBuilder;
 
 public class BusinessWebServiceImpl implements BusinessWebService {
+
+	private static final Logger LOGGER = Logger.getLogger(BusinessWebServiceImpl.class);
 
 	private static final int DECLARATION_ACK_BATCH_SIZE = 50;
 
 	private static final Set<CategorieImpotSource> CIS_SUPPORTEES = EnumHelper.getCategoriesImpotSourceAutorisees();
+
+	private static final Map<Class<? extends Tiers>, PartyFactory<?>> PARTY_FACTORIES = buildPartyFactoryMap();
 
 	private final Context context = new Context();
 	private GlobalTiersSearcher tiersSearcher;
@@ -595,17 +608,94 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 		return DataHelper.coreToXML(list);
 	}
 
+	private static interface PartyFactory<T extends Tiers> {
+		Party buildParty(T tiers, @Nullable Set<PartyPart> parts, Context context) throws ServiceException;
+	}
+
+	private static <T extends Tiers> void addToPartyFactorMap(Map<Class<? extends Tiers>, PartyFactory<?>> map, Class<T> clazz, PartyFactory<T> factory) {
+		map.put(clazz, factory);
+	}
+
+	private static Map<Class<? extends Tiers>, PartyFactory<?>> buildPartyFactoryMap() {
+		final Map<Class<? extends Tiers>, PartyFactory<?>> map = new HashMap<>();
+		addToPartyFactorMap(map, PersonnePhysique.class, new NaturalPersonPartyFactory());
+		addToPartyFactorMap(map, MenageCommun.class, new CommonHouseholdPartyFactory());
+		addToPartyFactorMap(map, DebiteurPrestationImposable.class, new DebtorPartyFactory());
+		addToPartyFactorMap(map, Entreprise.class, new CorporationPartyFactory());
+		addToPartyFactorMap(map, CollectiviteAdministrative.class, new AdministrativeAuthorityPartyFactory());
+		return map;
+	}
+
+	private static final class NaturalPersonPartyFactory implements PartyFactory<PersonnePhysique> {
+		@Override
+		public Party buildParty(PersonnePhysique pp, @Nullable Set<PartyPart> parts, Context context) throws ServiceException {
+			return PartyBuilder.newNaturalPerson(pp, parts, context);
+		}
+	}
+
+	private static final class CommonHouseholdPartyFactory implements PartyFactory<MenageCommun> {
+		@Override
+		public Party buildParty(MenageCommun mc, @Nullable Set<PartyPart> parts, Context context) throws ServiceException {
+			return PartyBuilder.newCommonHousehold(mc, parts, context);
+		}
+	}
+
+	private static final class DebtorPartyFactory implements PartyFactory<DebiteurPrestationImposable> {
+		@Override
+		public Party buildParty(DebiteurPrestationImposable dpi, @Nullable Set<PartyPart> parts, Context context) throws ServiceException {
+			return PartyBuilder.newDebtor(dpi, parts, context);
+		}
+	}
+
+	private static final class CorporationPartyFactory implements PartyFactory<Entreprise> {
+		@Override
+		public Party buildParty(Entreprise pm, @Nullable Set<PartyPart> parts, Context context) throws ServiceException {
+			return PartyBuilder.newCorporation(pm, parts, context);
+		}
+	}
+
+	private static final class AdministrativeAuthorityPartyFactory implements PartyFactory<CollectiviteAdministrative> {
+		@Override
+		public Party buildParty(CollectiviteAdministrative ca, @Nullable Set<PartyPart> parts, Context context) throws ServiceException {
+			return PartyBuilder.newAdministrativeAuthority(ca, parts, context);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private static <T extends Tiers> Party buildParty(Tiers tiers, @Nullable Set<PartyPart> parts, Context context) throws ServiceException {
+		if (tiers == null) {
+			return null;
+		}
+		final PartyFactory<T> factory = (PartyFactory<T>) PARTY_FACTORIES.get(tiers.getClass());
+		if (factory == null) {
+			LOGGER.warn(String.format("Parties of core class %s cannot be externalized (no factory found)", tiers.getClass().getName()));
+			return null;
+		}
+
+		return factory.buildParty((T) tiers, parts, context);
+	}
+
 	@Override
-	public Party getParty(UserLogin user, final int partyNo, @Nullable final Set<PartyPart> parts) throws AccessDeniedException {
+	public Party getParty(UserLogin user, final int partyNo, @Nullable final Set<PartyPart> parts) throws AccessDeniedException, ServiceException {
 		WebServiceHelper.checkAccess(context.securityProvider, user, Role.VISU_ALL);
 		WebServiceHelper.checkPartyReadAccess(context.securityProvider, user, partyNo);
-		return doInTransaction(true, new TransactionCallback<Party>() {
-			@Override
-			public Party doInTransaction(TransactionStatus status) {
-				final Tiers tiers = context.tiersService.getTiers(partyNo);
-				// TODO à implémenter...
-				return null;  //To change body of implemented methods use File | Settings | File Templates.
+		try {
+			return doInTransaction(true, new TxCallback<Party>() {
+				@Override
+				public Party execute(TransactionStatus status) throws ServiceException {
+					final Tiers tiers = context.tiersService.getTiers(partyNo);
+					return buildParty(tiers, parts, context);
+				}
+			});
+		}
+		catch (TxCallbackException e) {
+			final Throwable cause = e.getCause();
+			if (cause instanceof ServiceException) {
+				throw (ServiceException) cause;
 			}
-		});
+			else {
+				throw e;
+			}
+		}
 	}
 }

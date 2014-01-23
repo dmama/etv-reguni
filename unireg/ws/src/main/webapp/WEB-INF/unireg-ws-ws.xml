@@ -141,10 +141,33 @@
 			<entry key="xml" value="application/xml"/>
 		</jaxrs:extensionMappings>
 		<jaxrs:schemaLocations>
-			<jaxrs:schemaLocation>classpath:/unireg-ws-ack-1.xsd</jaxrs:schemaLocation>
-			<jaxrs:schemaLocation>classpath:/unireg-ws-deadline-1.xsd</jaxrs:schemaLocation>
-			<jaxrs:schemaLocation>classpath:/unireg-ws-error-1.xsd</jaxrs:schemaLocation>
-			<jaxrs:schemaLocation>classpath:/unireg-ws-security-1.xsd</jaxrs:schemaLocation>
+			<jaxrs:schemaLocation>classpath:eCH-0044-3-0.xsd</jaxrs:schemaLocation>
+			<jaxrs:schemaLocation>classpath:eCH-0010-5-0.xsd</jaxrs:schemaLocation>
+			<jaxrs:schemaLocation>classpath:unireg-common-2.xsd</jaxrs:schemaLocation>
+			<jaxrs:schemaLocation>classpath:unireg-error-1.xsd</jaxrs:schemaLocation>
+			<jaxrs:schemaLocation>classpath:party/unireg-party-person-3.xsd</jaxrs:schemaLocation>
+			<jaxrs:schemaLocation>classpath:party/unireg-party-immovableproperty-2.xsd</jaxrs:schemaLocation>
+			<jaxrs:schemaLocation>classpath:party/unireg-party-taxdeclaration-3.xsd</jaxrs:schemaLocation>
+			<jaxrs:schemaLocation>classpath:party/unireg-party-corporation-3.xsd</jaxrs:schemaLocation>
+			<jaxrs:schemaLocation>classpath:party/unireg-party-administrativeauthority-3.xsd</jaxrs:schemaLocation>
+			<jaxrs:schemaLocation>classpath:party/unireg-party-taxresidence-2.xsd</jaxrs:schemaLocation>
+			<jaxrs:schemaLocation>classpath:party/unireg-party-address-2.xsd</jaxrs:schemaLocation>
+			<jaxrs:schemaLocation>classpath:party/unireg-party-3.xsd</jaxrs:schemaLocation>
+			<jaxrs:schemaLocation>classpath:party/unireg-party-withholding-1.xsd</jaxrs:schemaLocation>
+			<jaxrs:schemaLocation>classpath:party/unireg-party-relation-2.xsd</jaxrs:schemaLocation>
+			<jaxrs:schemaLocation>classpath:party/unireg-party-debtor-3.xsd</jaxrs:schemaLocation>
+			<jaxrs:schemaLocation>classpath:party/unireg-party-taxpayer-3.xsd</jaxrs:schemaLocation>
+			<jaxrs:schemaLocation>classpath:ws/unireg-ws-security-1.xsd</jaxrs:schemaLocation>
+			<jaxrs:schemaLocation>classpath:ws/unireg-ws-error-1.xsd</jaxrs:schemaLocation>
+			<jaxrs:schemaLocation>classpath:ws/unireg-ws-taxoffices-1.xsd</jaxrs:schemaLocation>
+			<jaxrs:schemaLocation>classpath:ws/unireg-ws-debtorinfo-1.xsd</jaxrs:schemaLocation>
+			<jaxrs:schemaLocation>classpath:ws/unireg-ws-modifiedtaxpayers-1.xsd</jaxrs:schemaLocation>
+			<jaxrs:schemaLocation>classpath:ws/unireg-ws-searchparty-1.xsd</jaxrs:schemaLocation>
+			<jaxrs:schemaLocation>classpath:ws/unireg-ws-parties-1.xsd</jaxrs:schemaLocation>
+			<jaxrs:schemaLocation>classpath:ws/unireg-ws-party-1.xsd</jaxrs:schemaLocation>
+			<jaxrs:schemaLocation>classpath:ws/unireg-ws-deadline-1.xsd</jaxrs:schemaLocation>
+			<jaxrs:schemaLocation>classpath:ws/unireg-ws-ack-1.xsd</jaxrs:schemaLocation>
+			<jaxrs:schemaLocation>classpath:ws/unireg-ws-searchcorporationevent-1.xsd</jaxrs:schemaLocation>
 		</jaxrs:schemaLocations>
 		<jaxrs:providers>
 			<bean class="org.codehaus.jackson.jaxrs.JacksonJaxbJsonProvider"/>
