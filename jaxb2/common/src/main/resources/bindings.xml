@@ -22,6 +22,18 @@
 		</jxb:bindings>
 	</jxb:bindings>
 
+	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/unireg-common-2.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.xml.common.v2" />
+		</jxb:schemaBindings>
+		<jxb:bindings node="//xs:complexType[@name='rangeType']">
+			<inheritance:implements>ch.vd.unireg.xml.common.v2.DateRange</inheritance:implements>
+		</jxb:bindings>
+		<jxb:bindings>
+			<namespace:prefix name="common-2" />
+		</jxb:bindings>
+	</jxb:bindings>
+
 	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/unireg-exception-1.xsd">
 		<jxb:schemaBindings>
 			<jxb:package name="ch.vd.unireg.xml.exception.v1" />

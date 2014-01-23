@@ -9,9 +9,13 @@
 
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/person/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-person-1.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/person/2" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-person-2.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/person/3" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-person-3.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/corporation/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-corporation-1.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/corporation/2" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-corporation-2.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/corporation/3" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-corporation-3.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/adminauth/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-administrativeauthority-1.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/adminauth/2" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-administrativeauthority-2.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/adminauth/3" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-administrativeauthority-3.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/debtor/3" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-debtor-3.xsd" />
 
 </xs:schema>
