@@ -9,6 +9,7 @@
     <column>LOG_MUSER</column>
     <column>DISTRICT_FISCAL_ID</column>
     <column>REGION_FISCALE_ID</column>
+	<column>DEBITEUR_INACTIF</column>
     <column>NUMERO_CA</column>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -19,6 +20,7 @@
       <value>Test</value>
       <value>12</value>
       <null/>
+      <value>0</value>
       <value>16</value>
     </row>
     <row>
@@ -30,6 +32,7 @@
       <value>Test</value>
       <value>14</value>
       <value>3</value>
+      <value>0</value>
       <value>18</value>
     </row>
   </table>

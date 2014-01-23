@@ -91,7 +91,9 @@ public class WebServiceSearchPartyItTest extends AbstractWebServiceItTest {
 		final ResponseEntity<SearchResult> resp = get(SearchResult.class, MediaType.APPLICATION_JSON, params.getLeft(), params.getRight());
 		Assert.assertNotNull(resp);
 		Assert.assertEquals(HttpStatus.OK, resp.getStatusCode());
-		Assert.assertNull(resp.getBody().getError());
+		if (resp.getBody().getError() != null) {
+			Assert.fail(resp.getBody().getError().toString());
+		}
 		Assert.assertNotNull(resp.getBody().getParty());
 		Assert.assertEquals(0, resp.getBody().getParty().size());
 	}
@@ -102,7 +104,9 @@ public class WebServiceSearchPartyItTest extends AbstractWebServiceItTest {
 		final ResponseEntity<SearchResult> resp = get(SearchResult.class, MediaType.APPLICATION_JSON, params.getLeft(), params.getRight());
 		Assert.assertNotNull(resp);
 		Assert.assertEquals(HttpStatus.OK, resp.getStatusCode());
-		Assert.assertNull(resp.getBody().getError());
+		if (resp.getBody().getError() != null) {
+			Assert.fail(resp.getBody().getError().toString());
+		}
 		Assert.assertNotNull(resp.getBody().getParty());
 		Assert.assertEquals(2, resp.getBody().getParty().size());
 	}
