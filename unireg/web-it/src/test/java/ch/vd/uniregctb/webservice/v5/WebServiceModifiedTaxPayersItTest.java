@@ -45,7 +45,7 @@ public class WebServiceModifiedTaxPayersItTest extends AbstractWebServiceItTest 
 			map.put("until", until.getTime());
 			b.append("&until={until}");
 		}
-		return Pair.<String, Map<String, ?>>of(String.format("/modifiedTaxPayers?login=zaizzt/22%s", b.toString()), map);
+		return Pair.<String, Map<String, ?>>of(String.format("/modifiedTaxPayers?user=zaizzt/22%s", b.toString()), map);
 	}
 
 	@Test

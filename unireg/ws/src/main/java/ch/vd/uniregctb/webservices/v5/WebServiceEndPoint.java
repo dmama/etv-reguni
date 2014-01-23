@@ -102,18 +102,18 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 		return r;
 	}
 
-	private static interface ExecutionWithLoginCallback {
+	private static interface ExecutionCallbackWithUser {
 		Response execute(UserLogin userLogin) throws Exception;
 	}
 
-	private Response execute(final String login, Object callDescription, Logger accessLog, final ExecutionWithLoginCallback callback) {
+	private Response execute(final String user, Object callDescription, Logger accessLog, final ExecutionCallbackWithUser callback) {
 		return execute(callDescription, accessLog, new ExecutionCallback() {
 			@Override
 			public Response execute() throws Exception {
-				final UserLogin userLogin = WebServiceHelper.parseLoginParameter(login);
+				final UserLogin userLogin = WebServiceHelper.parseLoginParameter(user);
 				if (userLogin == null) {
-					LOGGER.error("Missing/invalid login (" + login + ")");
-					return WebServiceHelper.buildErrorResponse(Response.Status.BAD_REQUEST, getAcceptableMediaTypes(), "Missing/invalid login parameter.");
+					LOGGER.error("Missing/invalid user (" + user + ")");
+					return WebServiceHelper.buildErrorResponse(Response.Status.BAD_REQUEST, getAcceptableMediaTypes(), "Missing/invalid user parameter.");
 				}
 
 				WebServiceHelper.login(userLogin);
@@ -133,10 +133,10 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 		final Object params = new Object() {
 			@Override
 			public String toString() {
-				return String.format("setAutomaticRepaymentBlockingFlag{partyNo=%d, login='%s', value='%s'}", partyNo, login, value);
+				return String.format("setAutomaticRepaymentBlockingFlag{partyNo=%d, user='%s', value='%s'}", partyNo, login, value);
 			}
 		};
-		return execute(login, params, WRITE_ACCESS_LOG, new ExecutionWithLoginCallback() {
+		return execute(login, params, WRITE_ACCESS_LOG, new ExecutionCallbackWithUser() {
 			@Override
 			public Response execute(UserLogin userLogin) throws Exception {
 				if (value == null || !BOOLEAN_PATTERN.matcher(value).matches()) {
@@ -156,10 +156,10 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 		final Object params = new Object() {
 			@Override
 			public String toString() {
-				return String.format("getAutomaticRepaymentBlockingFlag{partyNo=%d, login='%s'}", partyNo, login);
+				return String.format("getAutomaticRepaymentBlockingFlag{partyNo=%d, user='%s'}", partyNo, login);
 			}
 		};
-		return execute(login, params, READ_ACCESS_LOG, new ExecutionWithLoginCallback() {
+		return execute(login, params, READ_ACCESS_LOG, new ExecutionCallbackWithUser() {
 			@Override
 			public Response execute(UserLogin userLogin) throws Exception {
 				final boolean blocked = target.getAutomaticRepaymentBlockingFlag(partyNo, userLogin);
@@ -203,7 +203,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 	}
 
 	@Override
-	public Response getParty(int partyNo, String login,
+	public Response getParty(int partyNo, String user,
 	                         boolean withAddresses, boolean withTaxResidences, boolean withVirtualTaxResidences, boolean withManagingTaxResidences,
 	                         boolean withHouseholdMembers, boolean withTaxLiabilities, boolean withSimplifiedTaxLiabilities, boolean withTaxationPeriods,
 	                         boolean withRelationsBetweenParties, boolean withFamilyStatuses, boolean withTaxDeclarations, boolean withTaxDeclarationDeadlines,
@@ -215,7 +215,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 	}
 
 	@Override
-	public Response getParties(String login, List<Integer> partyNos,
+	public Response getParties(String user, List<Integer> partyNos,
 	                           boolean withAddresses, boolean withTaxResidences, boolean withVirtualTaxResidences, boolean withManagingTaxResidences,
 	                           boolean withHouseholdMembers, boolean withTaxLiabilities, boolean withSimplifiedTaxLiabilities, boolean withTaxationPeriods,
 	                           boolean withRelationsBetweenParties, boolean withFamilyStatuses, boolean withTaxDeclarations, boolean withTaxDeclarationDeadlines,
@@ -281,10 +281,10 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 		final Object params = new Object() {
 			@Override
 			public String toString() {
-				return String.format("ackOrdinaryTaxDeclarations{login='%s', request='%s'}", login, request);
+				return String.format("ackOrdinaryTaxDeclarations{user='%s', request='%s'}", login, request);
 			}
 		};
-		return execute(login, params, WRITE_ACCESS_LOG, new ExecutionWithLoginCallback() {
+		return execute(login, params, WRITE_ACCESS_LOG, new ExecutionCallbackWithUser() {
 			@Override
 			public Response execute(final UserLogin userLogin) throws Exception {
 				final OrdinaryTaxDeclarationAckResponse response = target.ackOrdinaryTaxDeclarations(userLogin, request);
@@ -295,14 +295,14 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 
 	@Override
 	public Response newOrdinaryTaxDeclarationDeadline(final int partyNo, final int pf, final int seqNo,
-	                                                  final String login, final DeadlineRequest request) {
+	                                                  final String user, final DeadlineRequest request) {
 		final Object params = new Object() {
 			@Override
 			public String toString() {
-				return String.format("newOrdinaryTaxDeclarationDeadline{login='%s', partyNo=%d, pf=%d, seqNo=%d, request=%s}", login, partyNo, pf, seqNo, request);
+				return String.format("newOrdinaryTaxDeclarationDeadline{user='%s', partyNo=%d, pf=%d, seqNo=%d, request=%s}", user, partyNo, pf, seqNo, request);
 			}
 		};
-		return execute(login, params, WRITE_ACCESS_LOG, new ExecutionWithLoginCallback() {
+		return execute(user, params, WRITE_ACCESS_LOG, new ExecutionCallbackWithUser() {
 			@Override
 			public Response execute(UserLogin userLogin) throws Exception {
 				final DeadlineResponse response = target.newOrdinaryTaxDeclarationDeadline(partyNo, pf, seqNo, userLogin, request);
@@ -312,14 +312,14 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 	}
 
 	@Override
-	public Response getModifiedTaxPayers(final String login, final Long since, final Long until) {
+	public Response getModifiedTaxPayers(final String user, final Long since, final Long until) {
 		final Object params = new Object() {
 			@Override
 			public String toString() {
-				return String.format("getModifiedTaxPayers{login='%s', since=%d, until=%d}", login, since, until);
+				return String.format("getModifiedTaxPayers{user='%s', since=%d, until=%d}", user, since, until);
 			}
 		};
-		return execute(login, params, READ_ACCESS_LOG, new ExecutionWithLoginCallback() {
+		return execute(user, params, READ_ACCESS_LOG, new ExecutionCallbackWithUser() {
 			@Override
 			public Response execute(UserLogin userLogin) throws Exception {
 				if (since == null || until == null) {

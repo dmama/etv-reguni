@@ -33,18 +33,18 @@ public class WebServiceRepaymentItTest extends AbstractWebServiceItTest {
 		map.put("partyNo", partyNumber);
 		map.put("user", userLogin.getUserId());
 		map.put("oid", userLogin.getOid());
-		return Pair.<String, Map<String, ?>>of("/repayment/{partyNo}/blocked?login={user}/{oid}", map);
+		return Pair.<String, Map<String, ?>>of("/repayment/{partyNo}/blocked?user={user}/{oid}", map);
 	}
 
 	@Test
 	public void testBlocageFlag() throws Exception {
 
-		final UserLogin login = new UserLogin("zaizzp", 22);
+		final UserLogin user = new UserLogin("zaizzp", 22);
 		final long noTiers = 12100003L;
 
 		// état avant toute modification -> pas bloqué
 		{
-			final Pair<String, Map<String, ?>> params = buildUriAndParamsForBlocked(login, noTiers);
+			final Pair<String, Map<String, ?>> params = buildUriAndParamsForBlocked(user, noTiers);
 			final ResponseEntity<String> resp = get(String.class, MediaType.APPLICATION_JSON, params.getLeft(), params.getRight());
 			Assert.assertNotNull(resp);
 			Assert.assertEquals(HttpStatus.OK, resp.getStatusCode());
@@ -53,14 +53,14 @@ public class WebServiceRepaymentItTest extends AbstractWebServiceItTest {
 
 		// blocage
 		{
-			final Pair<String, Map<String, ?>> params = buildUriAndParamsForBlocked(login, noTiers);
+			final Pair<String, Map<String, ?>> params = buildUriAndParamsForBlocked(user, noTiers);
 			final HttpStatus status = put(params.getLeft(), params.getRight(), Boolean.TRUE, MediaType.APPLICATION_JSON);
 			Assert.assertEquals(HttpStatus.OK, status);
 		}
 
 		// nouvel état -> bloqué
 		{
-			final Pair<String, Map<String, ?>> params = buildUriAndParamsForBlocked(login, noTiers);
+			final Pair<String, Map<String, ?>> params = buildUriAndParamsForBlocked(user, noTiers);
 			final ResponseEntity<String> resp = get(String.class, MediaType.APPLICATION_JSON, params.getLeft(), params.getRight());
 			Assert.assertNotNull(resp);
 			Assert.assertEquals(HttpStatus.OK, resp.getStatusCode());
@@ -69,14 +69,14 @@ public class WebServiceRepaymentItTest extends AbstractWebServiceItTest {
 
 		// déblocage
 		{
-			final Pair<String, Map<String, ?>> params = buildUriAndParamsForBlocked(login, noTiers);
+			final Pair<String, Map<String, ?>> params = buildUriAndParamsForBlocked(user, noTiers);
 			final HttpStatus status = put(params.getLeft(), params.getRight(), Boolean.FALSE, MediaType.APPLICATION_JSON);
 			Assert.assertEquals(HttpStatus.OK, status);
 		}
 
 		// nouvel état -> débloqué
 		{
-			final Pair<String, Map<String, ?>> params = buildUriAndParamsForBlocked(login, noTiers);
+			final Pair<String, Map<String, ?>> params = buildUriAndParamsForBlocked(user, noTiers);
 			final ResponseEntity<String> resp = get(String.class, MediaType.APPLICATION_JSON, params.getLeft(), params.getRight());
 			Assert.assertNotNull(resp);
 			Assert.assertEquals(HttpStatus.OK, resp.getStatusCode());
@@ -85,14 +85,14 @@ public class WebServiceRepaymentItTest extends AbstractWebServiceItTest {
 
 		// encore déblocage -> toujours débloqué
 		{
-			final Pair<String, Map<String, ?>> params = buildUriAndParamsForBlocked(login, noTiers);
+			final Pair<String, Map<String, ?>> params = buildUriAndParamsForBlocked(user, noTiers);
 			final HttpStatus status = put(params.getLeft(), params.getRight(), Boolean.FALSE, MediaType.APPLICATION_JSON);
 			Assert.assertEquals(HttpStatus.OK, status);
 		}
 
 		// état conservé -> débloqué
 		{
-			final Pair<String, Map<String, ?>> params = buildUriAndParamsForBlocked(login, noTiers);
+			final Pair<String, Map<String, ?>> params = buildUriAndParamsForBlocked(user, noTiers);
 			final ResponseEntity<String> resp = get(String.class, MediaType.APPLICATION_JSON, params.getLeft(), params.getRight());
 			Assert.assertNotNull(resp);
 			Assert.assertEquals(HttpStatus.OK, resp.getStatusCode());

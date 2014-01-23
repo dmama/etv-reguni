@@ -28,12 +28,12 @@ public interface WebService {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces({MediaType.APPLICATION_XML, WebServiceHelper.APPLICATION_JSON_WITH_UTF8_CHARSET})
 	@Path("/repayment/{partyNo}/blocked")
-	Response setAutomaticRepaymentBlockingFlag(@PathParam("partyNo") int partyNo, @QueryParam("login") String login, String value);
+	Response setAutomaticRepaymentBlockingFlag(@PathParam("partyNo") int partyNo, @QueryParam("user") String user, String value);
 
 	@GET
 	@Produces(WebServiceHelper.APPLICATION_JSON_WITH_UTF8_CHARSET)
 	@Path("/repayment/{partyNo}/blocked")
-	Response getAutomaticRepaymentBlockingFlag(@PathParam("partyNo") int partyNo, @QueryParam("login") String login);
+	Response getAutomaticRepaymentBlockingFlag(@PathParam("partyNo") int partyNo, @QueryParam("user") String user);
 
 	@GET
 	@Produces({MediaType.APPLICATION_XML, WebServiceHelper.APPLICATION_JSON_WITH_UTF8_CHARSET})
@@ -44,7 +44,7 @@ public interface WebService {
 	@Produces(MediaType.APPLICATION_XML)
 	@Path("/party/{partyNo}")
 	Response getParty(@PathParam("partyNo") int partyNo,
-	                  @QueryParam("login") String login,
+	                  @QueryParam("user") String user,
 	                  @QueryParam("withAddresses") @DefaultValue("false") boolean withAddresses,
 	                  @QueryParam("withTaxResidences") @DefaultValue("false") boolean withTaxResidences,
 	                  @QueryParam("withVirtualTaxResidences") @DefaultValue("false") boolean withVirtualTaxResidences,
@@ -71,7 +71,7 @@ public interface WebService {
 	@GET
 	@Produces(MediaType.APPLICATION_XML)
 	@Path("/parties")
-	Response getParties(@QueryParam("login") String login,
+	Response getParties(@QueryParam("user") String user,
 	                    @QueryParam("partyNo") List<Integer> partyNos,
 	                    @QueryParam("withAddresses") @DefaultValue("false") boolean withAddresses,
 	                    @QueryParam("withTaxResidences") @DefaultValue("false") boolean withTaxResidences,
@@ -106,7 +106,7 @@ public interface WebService {
 	@Consumes(MediaType.APPLICATION_XML)
 	@Produces(MediaType.APPLICATION_XML)
 	@Path("/ackOrdinaryTaxDeclarations")
-	Response ackOrdinaryTaxDeclarations(@QueryParam("login") String login, OrdinaryTaxDeclarationAckRequest request);
+	Response ackOrdinaryTaxDeclarations(@QueryParam("user") String user, OrdinaryTaxDeclarationAckRequest request);
 
 	@POST
 	@Path("/newOrdinaryTaxDeclarationDeadline/{partyNo}/{fiscalPeriod}/{sequenceNo}")
@@ -115,11 +115,11 @@ public interface WebService {
 	Response newOrdinaryTaxDeclarationDeadline(@PathParam("partyNo") int partyNo,
 	                                           @PathParam("fiscalPeriod") int pf,
 	                                           @PathParam("sequenceNo") int seqNo,
-	                                           @QueryParam("login") String login,
+	                                           @QueryParam("user") String user,
 	                                           DeadlineRequest request);
 
 	@GET
 	@Path("/modifiedTaxPayers")
 	@Produces({MediaType.APPLICATION_XML, WebServiceHelper.APPLICATION_JSON_WITH_UTF8_CHARSET})
-	Response getModifiedTaxPayers(@QueryParam("login") String login, @QueryParam("since") Long since, @QueryParam("until") Long until);
+	Response getModifiedTaxPayers(@QueryParam("user") String user, @QueryParam("since") Long since, @QueryParam("until") Long until);
 }
