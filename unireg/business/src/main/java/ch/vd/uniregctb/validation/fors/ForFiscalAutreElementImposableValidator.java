@@ -1,11 +1,18 @@
 package ch.vd.uniregctb.validation.fors;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.tiers.ForFiscalAutreElementImposable;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 public class ForFiscalAutreElementImposableValidator extends ForFiscalRevenuFortuneValidator<ForFiscalAutreElementImposable> {
+
+	private static final Set<MotifRattachement> ALLOWED = EnumSet.of(MotifRattachement.ACTIVITE_LUCRATIVE_CAS, MotifRattachement.ADMINISTRATEUR, MotifRattachement.CREANCIER_HYPOTHECAIRE,
+	                                                                 MotifRattachement.PRESTATION_PREVOYANCE, MotifRattachement.LOI_TRAVAIL_AU_NOIR, MotifRattachement.PARTICIPATIONS_HORS_SUISSE,
+	                                                                 MotifRattachement.EFFEUILLEUSES);
 
 	@Override
 	protected Class<ForFiscalAutreElementImposable> getValidatedClass() {
@@ -26,10 +33,6 @@ public class ForFiscalAutreElementImposableValidator extends ForFiscalRevenuFort
 
 	@Override
 	protected boolean isRattachementCoherent(MotifRattachement motif) {
-		return MotifRattachement.ACTIVITE_LUCRATIVE_CAS == motif
-				|| MotifRattachement.ADMINISTRATEUR == motif
-				|| MotifRattachement.CREANCIER_HYPOTHECAIRE == motif
-				|| MotifRattachement.PRESTATION_PREVOYANCE == motif
-				|| MotifRattachement.LOI_TRAVAIL_AU_NOIR == motif;
+		return ALLOWED.contains(motif);
 	}
 }

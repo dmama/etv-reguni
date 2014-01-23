@@ -25,7 +25,7 @@ public abstract class LengthConstants {
 	public final static int IDENTPERSONNE_CATEGORIE = 10;
 	public final static int IDENT_DEMANDE_TYPE = 30;
 
-	public final static int FOR_RATTACHEMENT = 22;
+	public final static int FOR_RATTACHEMENT = 26;
 	public final static int FOR_MOTIF = 49;
 	public final static int FOR_IMPOSITION = 11;
 	public final static int FOR_GENRE = 29;

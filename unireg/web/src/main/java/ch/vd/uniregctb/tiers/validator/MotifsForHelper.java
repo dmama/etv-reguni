@@ -92,6 +92,8 @@ public class MotifsForHelper {
 		case CREANCIER_HYPOTHECAIRE:
 		case PRESTATION_PREVOYANCE:
 		case LOI_TRAVAIL_AU_NOIR:
+		case PARTICIPATIONS_HORS_SUISSE:
+		case EFFEUILLEUSES:
 			motifs.add(MotifFor.DEBUT_EXPLOITATION);
 			break;
 
@@ -172,6 +174,8 @@ public class MotifsForHelper {
 		case CREANCIER_HYPOTHECAIRE:
 		case PRESTATION_PREVOYANCE:
 		case LOI_TRAVAIL_AU_NOIR:
+		case PARTICIPATIONS_HORS_SUISSE:
+		case EFFEUILLEUSES:
 			motifs.add(MotifFor.FIN_EXPLOITATION);
 			break;
 

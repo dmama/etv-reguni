@@ -322,6 +322,7 @@ public abstract class EnumHelper {
 			return ch.vd.unireg.xml.party.taxresidence.v1.TaxLiabilityReason.INDEPENDANT_ACTIVITY;
 		case ACTIVITE_LUCRATIVE_CAS:
 			return ch.vd.unireg.xml.party.taxresidence.v1.TaxLiabilityReason.GAINFUL_ACTIVITY_SAS;
+		case PARTICIPATIONS_HORS_SUISSE:
 		case ADMINISTRATEUR:
 			return ch.vd.unireg.xml.party.taxresidence.v1.TaxLiabilityReason.ADMINISTRATOR;
 		case CREANCIER_HYPOTHECAIRE:
@@ -342,6 +343,7 @@ public abstract class EnumHelper {
 			return ch.vd.unireg.xml.party.taxresidence.v1.TaxLiabilityReason.LAW_ON_UNDECLARED_WORK;
 		case PRESTATION_PREVOYANCE:
 			return ch.vd.unireg.xml.party.taxresidence.v1.TaxLiabilityReason.PENSION;
+		case EFFEUILLEUSES:
 		case SEJOUR_SAISONNIER:
 			return ch.vd.unireg.xml.party.taxresidence.v1.TaxLiabilityReason.SEASONAL_JOURNEY;
 		default:
@@ -381,6 +383,10 @@ public abstract class EnumHelper {
 			return ch.vd.unireg.xml.party.taxresidence.v2.TaxLiabilityReason.PENSION;
 		case SEJOUR_SAISONNIER:
 			return ch.vd.unireg.xml.party.taxresidence.v2.TaxLiabilityReason.SEASONAL_JOURNEY;
+		case EFFEUILLEUSES:
+			return ch.vd.unireg.xml.party.taxresidence.v2.TaxLiabilityReason.WINE_FARM_WORKER;
+		case PARTICIPATIONS_HORS_SUISSE:
+			return ch.vd.unireg.xml.party.taxresidence.v2.TaxLiabilityReason.PROFIT_SHARING_FOREIGN_COUNTRY_TAXPAYER;
 		default:
 			throw new IllegalArgumentException("Motif de rattachement inconnu = [" + rattachement + ']');
 		}

@@ -832,7 +832,8 @@ public class ForsController {
 		if (motifsRattachementForAutreElementImposable == null) {
 			motifsRattachementForAutreElementImposable =
 					tiersMapHelper.getMapRattachement(MotifRattachement.ACTIVITE_LUCRATIVE_CAS, MotifRattachement.ADMINISTRATEUR, MotifRattachement.CREANCIER_HYPOTHECAIRE,
-					                                  MotifRattachement.PRESTATION_PREVOYANCE, MotifRattachement.LOI_TRAVAIL_AU_NOIR);
+					                                  MotifRattachement.PRESTATION_PREVOYANCE, MotifRattachement.LOI_TRAVAIL_AU_NOIR, MotifRattachement.PARTICIPATIONS_HORS_SUISSE,
+					                                  MotifRattachement.EFFEUILLEUSES);
 		}
 		return motifsRattachementForAutreElementImposable;
 	}

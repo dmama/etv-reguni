@@ -5,7 +5,7 @@ package ch.vd.uniregctb.type;
 
 /**
  * <!-- begin-user-doc -->
- * Longueur de colonne : 22
+ * Longueur de colonne : 26
  * <!-- end-user-doc -->
  * Valeurs permises :
  * - Domicile ou séjour
@@ -32,5 +32,17 @@ public enum MotifRattachement {
 	/**
 	 * Utilisé pour les fors secondaires des PMs
 	 */
-	ETABLISSEMENT_STABLE
+	ETABLISSEMENT_STABLE,
+
+	/**
+	 * Utilisé pour les fors secondaires "source" des bénéficiaires de participations hors-Suisse
+	 * @since 5.8
+	 */
+	PARTICIPATIONS_HORS_SUISSE,
+
+	/**
+	 * Utilisé pour les fors secondaires "source" des ouvriers agricoles viticoles (<i>aka</i> effeuilleuses)
+	 * @since 5.8
+	 */
+	EFFEUILLEUSES
 }
