@@ -1347,9 +1347,13 @@ public abstract class EnumHelper {
 		case FUSION_COMMUNES:
 			return ch.vd.unireg.xml.party.taxresidence.v2.LiabilityChangeReason.MERGE_OF_MUNICIPALITIES;
 		case DEBUT_PRESTATION_IS:
+			return ch.vd.unireg.xml.party.taxresidence.v2.LiabilityChangeReason.START_WITHHOLDING_ACTIVITY;
 		case FIN_PRESTATION_IS:
+			return ch.vd.unireg.xml.party.taxresidence.v2.LiabilityChangeReason.END_WITHHOLDING_ACTIVITY;
 		case CESSATION_ACTIVITE_FUSION_FAILLITE:
+			return ch.vd.unireg.xml.party.taxresidence.v2.LiabilityChangeReason.END_ACTIVITY_MERGER_BANKRUPTCY;
 		case DEMENAGEMENT_SIEGE:
+			return ch.vd.unireg.xml.party.taxresidence.v2.LiabilityChangeReason.MOVE_HEADQUARTERS;
 		case INDETERMINE:
 			return ch.vd.unireg.xml.party.taxresidence.v2.LiabilityChangeReason.UNDETERMINED;
 		case MAJORITE:

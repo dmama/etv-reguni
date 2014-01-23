@@ -131,7 +131,6 @@ import ch.vd.uniregctb.type.TypeDroitAcces;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.type.TypePermis;
 import ch.vd.uniregctb.webservices.common.UserLogin;
-import ch.vd.uniregctb.xml.DataHelper;
 
 public class BusinessWebServiceTest extends WebserviceTest {
 
@@ -396,7 +395,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		expected.put(key2, AckStatus.OK);
 
 		final List<TaxDeclarationKey> keys = Arrays.asList(key1, key2);
-		final OrdinaryTaxDeclarationAckRequest req = new OrdinaryTaxDeclarationAckRequest("ADDO", DataHelper.coreToXMLv2(DateHelper.getCurrentDate()), keys);
+		final OrdinaryTaxDeclarationAckRequest req = new OrdinaryTaxDeclarationAckRequest("ADDO", DataHelper.coreToWeb(DateHelper.getCurrentDate()), keys);
 		final OrdinaryTaxDeclarationAckResponse resp = service.ackOrdinaryTaxDeclarations(new UserLogin(getDefaultOperateurName(), 22), req);
 		Assert.assertNotNull(resp);
 
@@ -489,7 +488,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 		// demande de délai qui échoue (délai plus ancien)
 		{
-			final DeadlineRequest req = new DeadlineRequest(DataHelper.coreToXMLv2(delaiInitial.addMonths(-2)), DataHelper.coreToXMLv2(RegDate.get()));
+			final DeadlineRequest req = new DeadlineRequest(DataHelper.coreToWeb(delaiInitial.addMonths(-2)), DataHelper.coreToWeb(RegDate.get()));
 			final DeadlineResponse resp = service.newOrdinaryTaxDeclarationDeadline((int) ppId, annee, 1, new UserLogin(getDefaultOperateurName(), 22), req);
 			Assert.assertNotNull(resp);
 			Assert.assertEquals(DeadlineStatus.ERROR_INVALID_DEADLINE, resp.getStatus());
@@ -515,7 +514,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		// demande de délai qui marche
 		final RegDate nouveauDelai = RegDateHelper.maximum(delaiInitial.addMonths(1), RegDate.get(), NullDateBehavior.LATEST);
 		{
-			final DeadlineRequest req = new DeadlineRequest(DataHelper.coreToXMLv2(nouveauDelai), DataHelper.coreToXMLv2(RegDate.get()));
+			final DeadlineRequest req = new DeadlineRequest(DataHelper.coreToWeb(nouveauDelai), DataHelper.coreToWeb(RegDate.get()));
 			final DeadlineResponse resp = service.newOrdinaryTaxDeclarationDeadline((int) ppId, annee, 1, new UserLogin(getDefaultOperateurName(), 22), req);
 			Assert.assertNotNull(resp);
 			Assert.assertEquals(resp.getAdditionalMessage(), DeadlineStatus.OK, resp.getStatus());
@@ -726,7 +725,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				Assert.assertEquals(ids.pp, info.getNumber());
 				Assert.assertEquals("Gérard Nietmochevillage", info.getName1());
 				Assert.assertEquals(StringUtils.EMPTY, info.getName2());
-				Assert.assertEquals(date(1979, 5, 31), DataHelper.xmlToCore(info.getDateOfBirth()));
+				Assert.assertEquals(date(1979, 5, 31), DataHelper.webToRegDate(info.getDateOfBirth()));
 				Assert.assertEquals(PartyType.NATURAL_PERSON, info.getType());
 			}
 		}
@@ -745,7 +744,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				Assert.assertEquals(ids.pp, info.getNumber());
 				Assert.assertEquals("Gérard Nietmochevillage", info.getName1());
 				Assert.assertEquals(StringUtils.EMPTY, info.getName2());
-				Assert.assertEquals(date(1979, 5, 31), DataHelper.xmlToCore(info.getDateOfBirth()));
+				Assert.assertEquals(date(1979, 5, 31), DataHelper.webToRegDate(info.getDateOfBirth()));
 				Assert.assertEquals(PartyType.NATURAL_PERSON, info.getType());
 			}
 		}
@@ -791,7 +790,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				Assert.assertEquals(ids.pp, info.getNumber());
 				Assert.assertEquals("Gérard Nietmochevillage", info.getName1());
 				Assert.assertEquals(StringUtils.EMPTY, info.getName2());
-				Assert.assertEquals(date(1979, 5, 31), DataHelper.xmlToCore(info.getDateOfBirth()));
+				Assert.assertEquals(date(1979, 5, 31), DataHelper.webToRegDate(info.getDateOfBirth()));
 				Assert.assertEquals(PartyType.NATURAL_PERSON, info.getType());
 			}
 		}
@@ -828,7 +827,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				Assert.assertEquals(ids.pp, info.getNumber());
 				Assert.assertEquals("Gérard Nietmochevillage", info.getName1());
 				Assert.assertEquals(StringUtils.EMPTY, info.getName2());
-				Assert.assertEquals(date(1979, 5, 31), DataHelper.xmlToCore(info.getDateOfBirth()));
+				Assert.assertEquals(date(1979, 5, 31), DataHelper.webToRegDate(info.getDateOfBirth()));
 				Assert.assertEquals(PartyType.NATURAL_PERSON, info.getType());
 			}
 		}
@@ -874,7 +873,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				Assert.assertEquals(ids.pp, info.getNumber());
 				Assert.assertEquals("Gérard Nietmochevillage", info.getName1());
 				Assert.assertEquals(StringUtils.EMPTY, info.getName2());
-				Assert.assertEquals(date(1979, 5, 31), DataHelper.xmlToCore(info.getDateOfBirth()));
+				Assert.assertEquals(date(1979, 5, 31), DataHelper.webToRegDate(info.getDateOfBirth()));
 				Assert.assertEquals(PartyType.NATURAL_PERSON, info.getType());
 			}
 		}

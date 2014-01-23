@@ -1,23 +1,47 @@
 package ch.vd.uniregctb.webservices.v5;
 
-import java.util.Collections;
 import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 import ch.vd.unireg.ws.security.v1.AllowedAccess;
-import ch.vd.unireg.xml.party.adminauth.v3.AdministrativeAuthority;
-import ch.vd.unireg.xml.party.corporation.v3.Corporation;
-import ch.vd.unireg.xml.party.debtor.v3.Debtor;
-import ch.vd.unireg.xml.party.othercomm.v1.OtherCommunity;
-import ch.vd.unireg.xml.party.person.v3.CommonHousehold;
-import ch.vd.unireg.xml.party.person.v3.NaturalPerson;
-import ch.vd.unireg.xml.party.v3.Party;
+import ch.vd.unireg.xml.party.othercomm.v1.LegalForm;
+import ch.vd.unireg.xml.party.person.v3.NaturalPersonCategoryType;
+import ch.vd.unireg.xml.party.person.v3.Sex;
+import ch.vd.unireg.xml.party.relation.v2.RelationBetweenPartiesType;
+import ch.vd.unireg.xml.party.taxdeclaration.v3.DocumentType;
+import ch.vd.unireg.xml.party.taxdeclaration.v3.TaxDeclarationStatusType;
+import ch.vd.unireg.xml.party.taxpayer.v3.MaritalStatus;
+import ch.vd.unireg.xml.party.taxpayer.v3.WithholdingTaxTariff;
+import ch.vd.unireg.xml.party.taxresidence.v2.LiabilityChangeReason;
+import ch.vd.unireg.xml.party.taxresidence.v2.TaxLiabilityReason;
+import ch.vd.unireg.xml.party.taxresidence.v2.TaxType;
+import ch.vd.unireg.xml.party.taxresidence.v2.TaxationAuthorityType;
+import ch.vd.unireg.xml.party.taxresidence.v2.TaxationMethod;
 import ch.vd.unireg.xml.party.v3.PartyType;
+import ch.vd.unireg.xml.party.withholding.v1.CommunicationMode;
+import ch.vd.unireg.xml.party.withholding.v1.DebtorCategory;
+import ch.vd.unireg.xml.party.withholding.v1.WithholdingTaxDeclarationPeriod;
+import ch.vd.unireg.xml.party.withholding.v1.WithholdingTaxDeclarationPeriodicity;
 import ch.vd.uniregctb.tiers.TiersCriteria;
+import ch.vd.uniregctb.type.CategorieEtranger;
 import ch.vd.uniregctb.type.CategorieImpotSource;
+import ch.vd.uniregctb.type.EtatCivil;
+import ch.vd.uniregctb.type.FormeJuridique;
+import ch.vd.uniregctb.type.GenreImpot;
+import ch.vd.uniregctb.type.ModeCommunication;
+import ch.vd.uniregctb.type.ModeImposition;
+import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.Niveau;
+import ch.vd.uniregctb.type.PeriodeDecompte;
+import ch.vd.uniregctb.type.PeriodiciteDecompte;
+import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.TarifImpotSource;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.uniregctb.type.TypeDocument;
+import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypePermis;
+import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 public abstract class EnumHelper {
 
@@ -64,5 +88,77 @@ public abstract class EnumHelper {
 
 	public static Set<CategorieImpotSource> getCategoriesImpotSourceAutorisees() {
 		return ch.vd.uniregctb.xml.EnumHelper.CIS_SUPPORTEES_V3;
+	}
+
+	public static CommunicationMode coreToWeb(ModeCommunication mode) {
+		return ch.vd.uniregctb.xml.EnumHelper.coreToXMLv3(mode);
+	}
+
+	public static Sex coreToWeb(Sexe sexe) {
+		return ch.vd.uniregctb.xml.EnumHelper.coreToXMLv3(sexe);
+	}
+
+	public static DebtorCategory coreToWeb(CategorieImpotSource cat) {
+		return ch.vd.uniregctb.xml.EnumHelper.coreToXMLv3(cat);
+	}
+
+	public static MaritalStatus coreToWeb(EtatCivil etatCivil) {
+		return ch.vd.uniregctb.xml.EnumHelper.coreToXMLv3(etatCivil);
+	}
+
+	public static LiabilityChangeReason coreToWeb(MotifFor motif) {
+		return ch.vd.uniregctb.xml.EnumHelper.coreToXMLv2(motif);
+	}
+
+	public static NaturalPersonCategoryType coreToWeb(CategorieEtranger cat) {
+		return ch.vd.uniregctb.xml.EnumHelper.coreToXMLv3(cat);
+	}
+
+	public static NaturalPersonCategoryType coreToWeb(TypePermis type) {
+		return ch.vd.uniregctb.xml.EnumHelper.coreToXMLv3(type);
+	}
+
+	public static RelationBetweenPartiesType coreToWeb(TypeRapportEntreTiers type) {
+		return ch.vd.uniregctb.xml.EnumHelper.coreToXMLv2(type);
+	}
+
+	public static TaxDeclarationStatusType coreToWeb(TypeEtatDeclaration type) {
+		return ch.vd.uniregctb.xml.EnumHelper.coreToXMLv3(type);
+	}
+
+	public static TaxType coreToWeb(GenreImpot genre) {
+		return ch.vd.uniregctb.xml.EnumHelper.coreToXMLv2(genre);
+	}
+
+	public static TaxLiabilityReason coreToWeb(MotifRattachement motif) {
+		return ch.vd.uniregctb.xml.EnumHelper.coreToXMLv2(motif);
+	}
+
+	public static TaxationAuthorityType coreToWeb(TypeAutoriteFiscale type) {
+		return ch.vd.uniregctb.xml.EnumHelper.coreToXMLv2(type);
+	}
+
+	public static TaxationMethod coreToWeb(ModeImposition mode) {
+		return ch.vd.uniregctb.xml.EnumHelper.coreToXMLv2(mode);
+	}
+
+	public static DocumentType coreToWeb(TypeDocument type) {
+		return ch.vd.uniregctb.xml.EnumHelper.coreToXMLv3(type);
+	}
+
+	public static WithholdingTaxDeclarationPeriodicity coreToWeb(PeriodiciteDecompte periodicite) {
+		return ch.vd.uniregctb.xml.EnumHelper.coreToXMLv3(periodicite);
+	}
+
+	public static WithholdingTaxDeclarationPeriod coreToWeb(PeriodeDecompte periode) {
+		return ch.vd.uniregctb.xml.EnumHelper.coreToXMLv3(periode);
+	}
+
+	public static WithholdingTaxTariff coreToWeb(TarifImpotSource tarif) {
+		return ch.vd.uniregctb.xml.EnumHelper.coreToXMLv3(tarif);
+	}
+
+	public static LegalForm coreToWeb(FormeJuridique forme) {
+		return ch.vd.uniregctb.xml.EnumHelper.coreToXMLv1(forme);
 	}
 }
