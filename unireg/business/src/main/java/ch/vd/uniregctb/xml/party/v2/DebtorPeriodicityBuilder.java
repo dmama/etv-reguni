@@ -7,9 +7,9 @@ import ch.vd.uniregctb.xml.EnumHelper;
 public class DebtorPeriodicityBuilder {
 	public static DebtorPeriodicity newPeriodicity(ch.vd.uniregctb.declaration.Periodicite periodicite) {
 		final DebtorPeriodicity p = new DebtorPeriodicity();
-		p.setDateFrom(DataHelper.coreToXML(periodicite.getDateDebut()));
-		p.setDateTo(DataHelper.coreToXML(periodicite.getDateFin()));
-		p.setCancellationDate(DataHelper.coreToXML(periodicite.getAnnulationDate()));
+		p.setDateFrom(DataHelper.coreToXMLv1(periodicite.getDateDebut()));
+		p.setDateTo(DataHelper.coreToXMLv1(periodicite.getDateFin()));
+		p.setCancellationDate(DataHelper.coreToXMLv1(periodicite.getAnnulationDate()));
 		p.setPeriodicity(EnumHelper.coreToXMLv2(periodicite.getPeriodiciteDecompte()));
 		p.setSpecificPeriod(EnumHelper.coreToXMLv2(periodicite.getPeriodeDecompte()));
 		return p;

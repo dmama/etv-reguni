@@ -219,7 +219,7 @@ public class IdentificationContribuableRequestHandler implements EsbMessageHandl
 			final NomPrenom nomPrenom = tiersService.getDecompositionNomPrenom(pp);
 			ctb.setNom(tokenize(nomPrenom.getNom(), MAX_NAME_LENGTH));
 			ctb.setPrenom(tokenize(nomPrenom.getPrenom(), MAX_NAME_LENGTH));
-			ctb.setDateNaissance(DataHelper.coreToPartialDateXml(tiersService.getDateNaissance(pp)));
+			ctb.setDateNaissance(DataHelper.coreToPartialDateXmlv1(tiersService.getDateNaissance(pp)));
 
 			response.setContribuable(ctb);
 			LOGGER.info(String.format("Un contribuable trouvé pour le message '%s' : %d.", businessId, idCtb));

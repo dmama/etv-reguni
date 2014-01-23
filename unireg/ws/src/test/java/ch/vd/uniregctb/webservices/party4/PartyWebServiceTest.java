@@ -488,7 +488,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 
 		// quittancement de la DI
 		final AcknowledgeTaxDeclarationRequest demande = new AcknowledgeTaxDeclarationRequest();
-		demande.setAcknowledgeDate(ch.vd.uniregctb.xml.DataHelper.coreToXML(RegDate.get()));
+		demande.setAcknowledgeDate(ch.vd.uniregctb.xml.DataHelper.coreToXMLv1(RegDate.get()));
 		demande.setKey(new OrdinaryTaxDeclarationKey());
 		demande.getKey().setTaxpayerNumber((int) ids.ppId);
 		demande.getKey().setSequenceNumber(1);
@@ -574,7 +574,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 
 		// quittancement de la DI
 		final AcknowledgeTaxDeclarationRequest demande = new AcknowledgeTaxDeclarationRequest();
-		demande.setAcknowledgeDate(ch.vd.uniregctb.xml.DataHelper.coreToXML(RegDate.get()));
+		demande.setAcknowledgeDate(ch.vd.uniregctb.xml.DataHelper.coreToXMLv1(RegDate.get()));
 		demande.setKey(new OrdinaryTaxDeclarationKey());
 		demande.getKey().setTaxpayerNumber((int) ids.ppId);
 		demande.getKey().setSequenceNumber(1);
@@ -681,7 +681,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 
 		for (Ids ids : liste) {
 			final AcknowledgeTaxDeclarationRequest demande = new AcknowledgeTaxDeclarationRequest();
-			demande.setAcknowledgeDate(ch.vd.uniregctb.xml.DataHelper.coreToXML(RegDate.get()));
+			demande.setAcknowledgeDate(ch.vd.uniregctb.xml.DataHelper.coreToXMLv1(RegDate.get()));
 			demande.setKey(new OrdinaryTaxDeclarationKey());
 			demande.getKey().setTaxpayerNumber((int) ids.idCtb);
 			demande.getKey().setSequenceNumber(1);
@@ -806,9 +806,9 @@ public class PartyWebServiceTest extends WebserviceTest {
 	private static void assertTaxResidence(RegDate debut, LiabilityChangeReason motifDebut, @Nullable RegDate fin, @Nullable LiabilityChangeReason motifFin, MockCommune commune, boolean virtuel,
 	                                       TaxResidence forFiscal) {
 		assertNotNull(forFiscal);
-		assertEquals(ch.vd.uniregctb.xml.DataHelper.coreToXML(debut), forFiscal.getDateFrom());
+		assertEquals(ch.vd.uniregctb.xml.DataHelper.coreToXMLv1(debut), forFiscal.getDateFrom());
 		assertEquals(motifDebut, forFiscal.getStartReason());
-		assertEquals(ch.vd.uniregctb.xml.DataHelper.coreToXML(fin), forFiscal.getDateTo());
+		assertEquals(ch.vd.uniregctb.xml.DataHelper.coreToXMLv1(fin), forFiscal.getDateTo());
 		assertEquals(motifFin, forFiscal.getEndReason());
 		assertEquals(TaxType.INCOME_WEALTH, forFiscal.getTaxType());
 		assertEquals(TaxationMethod.ORDINARY, forFiscal.getTaxationMethod());
@@ -882,7 +882,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 		});
 
 		final AcknowledgeTaxDeclarationRequest demande = new AcknowledgeTaxDeclarationRequest();
-		demande.setAcknowledgeDate(ch.vd.uniregctb.xml.DataHelper.coreToXML(RegDate.get()));
+		demande.setAcknowledgeDate(ch.vd.uniregctb.xml.DataHelper.coreToXMLv1(RegDate.get()));
 		demande.setKey(new OrdinaryTaxDeclarationKey());
 		demande.getKey().setTaxpayerNumber((int) ids.ppId);
 		demande.getKey().setSequenceNumber(ids.noSequence);
@@ -942,7 +942,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final AcknowledgeTaxDeclarationRequest demande = new AcknowledgeTaxDeclarationRequest();
-				demande.setAcknowledgeDate(ch.vd.uniregctb.xml.DataHelper.coreToXML(RegDate.get()));
+				demande.setAcknowledgeDate(ch.vd.uniregctb.xml.DataHelper.coreToXMLv1(RegDate.get()));
 				demande.setSource("TEST_QUITTANCEMENT");
 				demande.setKey(new OrdinaryTaxDeclarationKey());
 				demande.getKey().setTaxpayerNumber((int) ids.ppId);
@@ -2278,7 +2278,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 			}
 		});
 
-		final Date today = ch.vd.uniregctb.xml.DataHelper.coreToXML(RegDate.get());
+		final Date today = ch.vd.uniregctb.xml.DataHelper.coreToXMLv1(RegDate.get());
 
 		// il ne doit pas être possible d'ajouter un délai sur une déclaration dont l'état est différent d'émise.
 
@@ -2288,7 +2288,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 			params.setLogin(login);
 			params.setKey(new TaxDeclarationKey((int) ids.ppId, 2008, 1));
 			params.setApplicationDate(today);
-			params.setNewDeadline(ch.vd.uniregctb.xml.DataHelper.coreToXML(RegDate.get().addMonths(1)));
+			params.setNewDeadline(ch.vd.uniregctb.xml.DataHelper.coreToXMLv1(RegDate.get().addMonths(1)));
 
 			final ExtendDeadlineResponse results = service.extendDeadline(params);
 			assertNotNull(results);
@@ -2302,7 +2302,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 			params.setLogin(login);
 			params.setKey(new TaxDeclarationKey((int) ids.ppId, 2009, 1));
 			params.setApplicationDate(today);
-			params.setNewDeadline(ch.vd.uniregctb.xml.DataHelper.coreToXML(RegDate.get().addMonths(1)));
+			params.setNewDeadline(ch.vd.uniregctb.xml.DataHelper.coreToXMLv1(RegDate.get().addMonths(1)));
 
 			final ExtendDeadlineResponse results = service.extendDeadline(params);
 			assertNotNull(results);
@@ -2316,7 +2316,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 			params.setLogin(login);
 			params.setKey(new TaxDeclarationKey((int) ids.ppId, 2010, 1));
 			params.setApplicationDate(today);
-			params.setNewDeadline(ch.vd.uniregctb.xml.DataHelper.coreToXML(RegDate.get().addMonths(1)));
+			params.setNewDeadline(ch.vd.uniregctb.xml.DataHelper.coreToXMLv1(RegDate.get().addMonths(1)));
 
 			final ExtendDeadlineResponse results = service.extendDeadline(params);
 			assertNotNull(results);
@@ -2331,8 +2331,8 @@ public class PartyWebServiceTest extends WebserviceTest {
 			final ExtendDeadlineRequest params = new ExtendDeadlineRequest();
 			params.setLogin(login);
 			params.setKey(new TaxDeclarationKey((int) ids.ppId, 2011, 1));
-			params.setApplicationDate(ch.vd.uniregctb.xml.DataHelper.coreToXML(RegDate.get().addMonths(1)));
-			params.setNewDeadline(ch.vd.uniregctb.xml.DataHelper.coreToXML(RegDate.get().addMonths(1)));
+			params.setApplicationDate(ch.vd.uniregctb.xml.DataHelper.coreToXMLv1(RegDate.get().addMonths(1)));
+			params.setNewDeadline(ch.vd.uniregctb.xml.DataHelper.coreToXMLv1(RegDate.get().addMonths(1)));
 
 			final ExtendDeadlineResponse results = service.extendDeadline(params);
 			assertNotNull(results);
@@ -2362,7 +2362,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 			params.setLogin(login);
 			params.setKey(new TaxDeclarationKey((int) ids.ppId, 2011, 1));
 			params.setApplicationDate(today);
-			params.setNewDeadline(ch.vd.uniregctb.xml.DataHelper.coreToXML(nouveauDelai));
+			params.setNewDeadline(ch.vd.uniregctb.xml.DataHelper.coreToXMLv1(nouveauDelai));
 
 			final ExtendDeadlineResponse results = service.extendDeadline(params);
 			assertNotNull(results);
@@ -2394,7 +2394,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 			params.setKey(new TaxDeclarationKey((int) ids.ppId, 2011, 1));
 			params.setApplicationDate(today);
 			final RegDate newDeadline = RegDate.get().addDays(10);
-			params.setNewDeadline(ch.vd.uniregctb.xml.DataHelper.coreToXML(newDeadline));
+			params.setNewDeadline(ch.vd.uniregctb.xml.DataHelper.coreToXMLv1(newDeadline));
 
 			final ExtendDeadlineResponse results = service.extendDeadline(params);
 			assertNotNull(results);
@@ -2517,7 +2517,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 		final List<NaturalPersonCategoryPeriod> permis = pp.getCategories();
 		assertNotNull(permis);
 		assertEquals(1, permis.size());
-		assertPermis(DataHelper.coreToXML(dateDebutPermis), null, NaturalPersonCategory.C_02_B_PERMIT, permis.get(0));
+		assertPermis(DataHelper.coreToXMLv1(dateDebutPermis), null, NaturalPersonCategory.C_02_B_PERMIT, permis.get(0));
 
 		// l'attribut 'category' contient le type du dernier permis
 		assertEquals(NaturalPersonCategory.C_02_B_PERMIT, pp.getCategory());

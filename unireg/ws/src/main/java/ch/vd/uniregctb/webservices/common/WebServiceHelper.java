@@ -12,7 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.unireg.ws.error.v1.Error;
+import ch.vd.unireg.xml.error.v1.Error;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProviderInterface;

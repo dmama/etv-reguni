@@ -77,9 +77,9 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 		corp.setName1(hostCorp.getRaisonSociale1());
 		corp.setName2(hostCorp.getRaisonSociale2());
 		corp.setName3(hostCorp.getRaisonSociale3());
-		corp.setActivityStartDate(DataHelper.coreToXML(hostCorp.getDateConstitution()));
-		corp.setActivityEndDate(DataHelper.coreToXML(hostCorp.getDateFinActivite()));
-		corp.setEndDateOfNextBusinessYear(DataHelper.coreToXML(hostCorp.getDateBouclementFuture()));
+		corp.setActivityStartDate(DataHelper.coreToXMLv1(hostCorp.getDateConstitution()));
+		corp.setActivityEndDate(DataHelper.coreToXMLv1(hostCorp.getDateFinActivite()));
+		corp.setEndDateOfNextBusinessYear(DataHelper.coreToXMLv1(hostCorp.getDateBouclementFuture()));
 		corp.setIpmroNumber(hostCorp.getNumeroIPMRO());
 
 		// [UNIREG-2040] on va chercher l'information de blocage dans notre base si elle existe
@@ -97,27 +97,27 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 			}
 
 			if (adresses != null) {
-				final List<Address> adressesCourrier = DataHelper.coreToXML(adresses.courrier, null, AddressType.MAIL);
+				final List<Address> adressesCourrier = DataHelper.coreToXMLv1(adresses.courrier, null, AddressType.MAIL);
 				if (adressesCourrier != null) {
 					corp.getMailAddresses().addAll(adressesCourrier);
 				}
 
-				final List<Address> adressesRepresentation = DataHelper.coreToXML(adresses.representation, null, AddressType.REPRESENTATION);
+				final List<Address> adressesRepresentation = DataHelper.coreToXMLv1(adresses.representation, null, AddressType.REPRESENTATION);
 				if (adressesRepresentation != null) {
 					corp.getRepresentationAddresses().addAll(adressesRepresentation);
 				}
 
-				final List<Address> adressesDomicile = DataHelper.coreToXML(adresses.domicile, null, AddressType.RESIDENCE);
+				final List<Address> adressesDomicile = DataHelper.coreToXMLv1(adresses.domicile, null, AddressType.RESIDENCE);
 				if (adressesDomicile != null) {
 					corp.getResidenceAddresses().addAll(adressesDomicile);
 				}
 
-				final List<Address> adressesPoursuite = DataHelper.coreToXML(adresses.poursuite, null, AddressType.DEBT_PROSECUTION);
+				final List<Address> adressesPoursuite = DataHelper.coreToXMLv1(adresses.poursuite, null, AddressType.DEBT_PROSECUTION);
 				if (adressesPoursuite != null) {
 					corp.getDebtProsecutionAddresses().addAll(adressesPoursuite);
 				}
 
-				final List<AddressOtherParty> adresseAutreTiers = DataHelper.coreToXMLAT(adresses.poursuiteAutreTiers, null, AddressType.DEBT_PROSECUTION_OF_OTHER_PARTY);
+				final List<AddressOtherParty> adresseAutreTiers = DataHelper.coreToXMLATv1(adresses.poursuiteAutreTiers, null, AddressType.DEBT_PROSECUTION_OF_OTHER_PARTY);
 				if (adresseAutreTiers != null) {
 					corp.getDebtProsecutionAddressesOfOtherParty().addAll(adresseAutreTiers);
 				}
@@ -176,8 +176,8 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 				if (m.getCode().equals("T")) { // on ignore tous les autres types de mandataire
 
 					BankAccount cb = new BankAccount();
-					cb.setDateFrom(DataHelper.coreToXML(m.getDateDebut())); // [SIFISC-3373]
-					cb.setDateTo(DataHelper.coreToXML(m.getDateFin()));
+					cb.setDateFrom(DataHelper.coreToXMLv1(m.getDateDebut())); // [SIFISC-3373]
+					cb.setDateTo(DataHelper.coreToXMLv1(m.getDateFin()));
 					cb.setOwnerPartyNumber((int) m.getNumeroMandataire());
 
 					// on rempli les informations à partir du mandataire
@@ -328,8 +328,8 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 	private LegalSeat host2web(ch.vd.uniregctb.interfaces.model.Siege s) {
 		Assert.notNull(s);
 		LegalSeat siege = new LegalSeat();
-		siege.setDateFrom(DataHelper.coreToXML(s.getDateDebut()));
-		siege.setDateTo(DataHelper.coreToXML(s.getDateFin()));
+		siege.setDateFrom(DataHelper.coreToXMLv1(s.getDateDebut()));
+		siege.setDateTo(DataHelper.coreToXMLv1(s.getDateFin()));
 		siege.setFsoId(s.getNoOfsSiege());
 		siege.setType(seatType2web(s.getType()));
 		return siege;
@@ -361,8 +361,8 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 	private static TaxSystem host2web(ch.vd.uniregctb.interfaces.model.RegimeFiscal r) {
 		Assert.notNull(r);
 		TaxSystem regime = new TaxSystem();
-		regime.setDateFrom(DataHelper.coreToXML(r.getDateDebut()));
-		regime.setDateTo(DataHelper.coreToXML(r.getDateFin()));
+		regime.setDateFrom(DataHelper.coreToXMLv1(r.getDateDebut()));
+		regime.setDateTo(DataHelper.coreToXMLv1(r.getDateFin()));
 		regime.setCode(r.getCode());
 		return regime;
 	}
@@ -382,8 +382,8 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 	private TaxResidence secondaryTaxResidence2web(ch.vd.uniregctb.interfaces.model.ForPM f) {
 		Assert.notNull(f);
 		TaxResidence ffs = new TaxResidence();
-		ffs.setDateFrom(DataHelper.coreToXML(f.getDateDebut()));
-		ffs.setDateTo(DataHelper.coreToXML(f.getDateFin()));
+		ffs.setDateFrom(DataHelper.coreToXMLv1(f.getDateDebut()));
+		ffs.setDateTo(DataHelper.coreToXMLv1(f.getDateFin()));
 		ffs.setTaxType(TaxType.PROFITS_CAPITAL);
 		ffs.setTaxLiabilityReason(TaxLiabilityReason.STABLE_ESTABLISHMENT);
 		ffs.setTaxationAuthorityFSOId(f.getNoOfsAutoriteFiscale());
@@ -406,8 +406,8 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 	private TaxResidence mainTaxResidence2web(ch.vd.uniregctb.interfaces.model.ForPM f, ServiceInfrastructureService serviceInfra) {
 		Assert.notNull(f);
 		TaxResidence ffp = new TaxResidence();
-		ffp.setDateFrom(DataHelper.coreToXML(f.getDateDebut()));
-		ffp.setDateTo(DataHelper.coreToXML(f.getDateFin()));
+		ffp.setDateFrom(DataHelper.coreToXMLv1(f.getDateDebut()));
+		ffp.setDateTo(DataHelper.coreToXMLv1(f.getDateFin()));
 		ffp.setTaxType(TaxType.PROFITS_CAPITAL);
 		ffp.setTaxLiabilityReason(TaxLiabilityReason.RESIDENCE);
 		ffp.setTaxationAuthorityType(host2web(f.getTypeAutoriteFiscale(), f.getNoOfsAutoriteFiscale(), serviceInfra));
@@ -462,8 +462,8 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 	private LegalForm legalForm2web(ch.vd.uniregctb.interfaces.model.FormeJuridique f) {
 		Assert.notNull(f);
 		LegalForm forme = new LegalForm();
-		forme.setDateFrom(DataHelper.coreToXML(f.getDateDebut()));
-		forme.setDateTo(DataHelper.coreToXML(f.getDateFin()));
+		forme.setDateFrom(DataHelper.coreToXMLv1(f.getDateDebut()));
+		forme.setDateTo(DataHelper.coreToXMLv1(f.getDateFin()));
 		forme.setCode(f.getCode());
 		return forme;
 	}
@@ -483,8 +483,8 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 	private static CorporationStatus corporationStatus2web(ch.vd.uniregctb.interfaces.model.EtatPM e) {
 		Assert.notNull(e);
 		CorporationStatus etat = new CorporationStatus();
-		etat.setDateFrom(DataHelper.coreToXML(e.getDateDebut()));
-		etat.setDateTo(DataHelper.coreToXML(e.getDateFin()));
+		etat.setDateFrom(DataHelper.coreToXMLv1(e.getDateDebut()));
+		etat.setDateTo(DataHelper.coreToXMLv1(e.getDateFin()));
 		etat.setCode(e.getCode());
 		return etat;
 	}
@@ -504,8 +504,8 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 	private static Capital capital2web(ch.vd.uniregctb.interfaces.model.Capital c) {
 		Assert.notNull(c);
 		Capital capital = new Capital();
-		capital.setDateFrom(DataHelper.coreToXML(c.getDateDebut()));
-		capital.setDateTo(DataHelper.coreToXML(c.getDateFin()));
+		capital.setDateFrom(DataHelper.coreToXMLv1(c.getDateDebut()));
+		capital.setDateTo(DataHelper.coreToXMLv1(c.getDateFin()));
 		capital.setShareCapital(c.getCapitalAction());
 		capital.setPaidInCapital(c.getCapitalLibere());
 		capital.setSogcEdition(host2web(c.getEditionFosc()));
@@ -532,8 +532,8 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 	private static SimplifiedTaxLiability taxLiability2web(ch.vd.uniregctb.interfaces.model.AssujettissementPM a) {
 		Assert.notNull(a);
 		SimplifiedTaxLiability assujet = new SimplifiedTaxLiability();
-		assujet.setDateFrom(DataHelper.coreToXML(a.getDateDebut()));
-		assujet.setDateTo(DataHelper.coreToXML(a.getDateFin()));
+		assujet.setDateFrom(DataHelper.coreToXMLv1(a.getDateDebut()));
+		assujet.setDateTo(DataHelper.coreToXMLv1(a.getDateFin()));
 		assujet.setType(SimplifiedTaxLiabilityType.UNLIMITED);
 		return assujet;
 	}

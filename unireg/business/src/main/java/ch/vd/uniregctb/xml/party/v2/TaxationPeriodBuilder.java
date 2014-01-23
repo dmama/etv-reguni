@@ -6,8 +6,8 @@ import ch.vd.uniregctb.xml.DataHelper;
 public class TaxationPeriodBuilder {
 	public static TaxationPeriod newTaxationPeriod(ch.vd.uniregctb.metier.assujettissement.PeriodeImposition periode) {
 		final TaxationPeriod p = new TaxationPeriod();
-		p.setDateFrom(DataHelper.coreToXML(periode.getDateDebut()));
-		p.setDateTo(DataHelper.coreToXML(periode.getDateFin()));
+		p.setDateFrom(DataHelper.coreToXMLv1(periode.getDateDebut()));
+		p.setDateTo(DataHelper.coreToXMLv1(periode.getDateFin()));
 		p.setTaxDeclarationId(DataHelper.getAssociatedDi(periode));
 		return p;
 	}

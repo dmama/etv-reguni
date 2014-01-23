@@ -59,9 +59,9 @@ public class TaxDeclarationBuilder {
 
 	private static void fillTaxDeclarationBase(TaxDeclaration d, ch.vd.uniregctb.declaration.Declaration declaration) {
 		d.setId(declaration.getId()); // [SIFISC-2392]
-		d.setDateFrom(DataHelper.coreToXML(declaration.getDateDebut()));
-		d.setDateTo(DataHelper.coreToXML(declaration.getDateFin()));
-		d.setCancellationDate(DataHelper.coreToXML(declaration.getAnnulationDate()));
+		d.setDateFrom(DataHelper.coreToXMLv1(declaration.getDateDebut()));
+		d.setDateTo(DataHelper.coreToXMLv1(declaration.getDateFin()));
+		d.setCancellationDate(DataHelper.coreToXMLv1(declaration.getAnnulationDate()));
 		d.setTaxPeriod(TaxPeriodBuilder.newTaxPeriod(declaration.getPeriode()));
 	}
 
@@ -81,10 +81,10 @@ public class TaxDeclarationBuilder {
 
 	private static TaxDeclarationDeadline newTaxDeclarationDeadline(DelaiDeclaration delai) {
 		final TaxDeclarationDeadline d = new TaxDeclarationDeadline();
-		d.setApplicationDate(DataHelper.coreToXML(delai.getDateDemande()));
-		d.setProcessingDate(DataHelper.coreToXML(delai.getDateTraitement()));
-		d.setDeadline(DataHelper.coreToXML(delai.getDelaiAccordeAu()));
-		d.setCancellationDate(DataHelper.coreToXML(delai.getAnnulationDate()));
+		d.setApplicationDate(DataHelper.coreToXMLv1(delai.getDateDemande()));
+		d.setProcessingDate(DataHelper.coreToXMLv1(delai.getDateTraitement()));
+		d.setDeadline(DataHelper.coreToXMLv1(delai.getDelaiAccordeAu()));
+		d.setCancellationDate(DataHelper.coreToXMLv1(delai.getAnnulationDate()));
 		d.setWrittenConfirmation(delai.getConfirmationEcrite() != null && delai.getConfirmationEcrite());
 		return d;
 	}
@@ -92,8 +92,8 @@ public class TaxDeclarationBuilder {
 	public static TaxDeclarationStatus newTaxDeclarationStatus(ch.vd.uniregctb.declaration.EtatDeclaration etat) {
 		final TaxDeclarationStatus e = new TaxDeclarationStatus();
 		e.setType(EnumHelper.coreToXMLv1(etat.getEtat()));
-		e.setDateFrom(DataHelper.coreToXML(getAdjustedStatusDateFrom(etat)));
-		e.setCancellationDate(DataHelper.coreToXML(etat.getAnnulationDate()));
+		e.setDateFrom(DataHelper.coreToXMLv1(getAdjustedStatusDateFrom(etat)));
+		e.setCancellationDate(DataHelper.coreToXMLv1(etat.getAnnulationDate()));
 		if (etat instanceof EtatDeclarationRetournee) {
 			e.setSource(((EtatDeclarationRetournee) etat).getSource());
 		}

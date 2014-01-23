@@ -71,7 +71,7 @@ public abstract class PartyStrategy<T extends Party> {
 	protected void initBase(T to, ch.vd.uniregctb.tiers.Tiers from, Context context) throws ServiceException {
 		to.setNumber(from.getNumero().intValue());
 		to.setComplementaryName(from.getComplementNom());
-		to.setCancellationDate(DataHelper.coreToXML(from.getAnnulationDate()));
+		to.setCancellationDate(DataHelper.coreToXMLv1(from.getAnnulationDate()));
 		to.setContactPerson(from.getPersonneContact());
 		to.setPrivatePhoneNumber(from.getNumeroTelephonePrive());
 		to.setBusinessPhoneNumber(from.getNumeroTelephoneProfessionnel());
@@ -187,27 +187,27 @@ public abstract class PartyStrategy<T extends Party> {
 		}
 
 		if (adresses != null) {
-			final List<Address> adressesCourrier = DataHelper.coreToXML(adresses.courrier, null, AddressType.MAIL);
+			final List<Address> adressesCourrier = DataHelper.coreToXMLv1(adresses.courrier, null, AddressType.MAIL);
 			if (adressesCourrier != null) {
 				tiers.getMailAddresses().addAll(adressesCourrier);
 			}
 
-			final List<Address> adressesRepresentation = DataHelper.coreToXML(adresses.representation, null, AddressType.REPRESENTATION);
+			final List<Address> adressesRepresentation = DataHelper.coreToXMLv1(adresses.representation, null, AddressType.REPRESENTATION);
 			if (adressesRepresentation != null) {
 				tiers.getRepresentationAddresses().addAll(adressesRepresentation);
 			}
 
-			final List<Address> adressesDomicile = DataHelper.coreToXML(adresses.domicile, null, AddressType.RESIDENCE);
+			final List<Address> adressesDomicile = DataHelper.coreToXMLv1(adresses.domicile, null, AddressType.RESIDENCE);
 			if (adressesDomicile != null) {
 				tiers.getResidenceAddresses().addAll(adressesDomicile);
 			}
 
-			final List<Address> adressesPoursuite = DataHelper.coreToXML(adresses.poursuite, null, AddressType.DEBT_PROSECUTION);
+			final List<Address> adressesPoursuite = DataHelper.coreToXMLv1(adresses.poursuite, null, AddressType.DEBT_PROSECUTION);
 			if (adressesPoursuite != null) {
 				tiers.getDebtProsecutionAddresses().addAll(adressesPoursuite);
 			}
 
-			final List<AddressOtherParty> adresseAutreTiers = DataHelper.coreToXMLAT(adresses.poursuiteAutreTiers, null, AddressType.DEBT_PROSECUTION_OF_OTHER_PARTY);
+			final List<AddressOtherParty> adresseAutreTiers = DataHelper.coreToXMLATv1(adresses.poursuiteAutreTiers, null, AddressType.DEBT_PROSECUTION_OF_OTHER_PARTY);
 			if (adresseAutreTiers != null) {
 				tiers.getDebtProsecutionAddressesOfOtherParty().addAll(adresseAutreTiers);
 			}
@@ -332,8 +332,8 @@ public abstract class PartyStrategy<T extends Party> {
 	private static void initTaxResidences(Party party, ch.vd.uniregctb.tiers.Tiers right, final Set<PartyPart> parts, Context context) {
 
 		// le calcul de ces dates nécessite d'accéder aux fors fiscaux, initialisé ici pour des raisons de performances.
-		party.setActivityStartDate(DataHelper.coreToXML(right.getDateDebutActivite()));
-		party.setActivityEndDate(DataHelper.coreToXML(right.getDateFinActivite()));
+		party.setActivityStartDate(DataHelper.coreToXMLv1(right.getDateDebutActivite()));
+		party.setActivityEndDate(DataHelper.coreToXMLv1(right.getDateFinActivite()));
 
 		for (ch.vd.uniregctb.tiers.ForFiscal forFiscal : right.getForsFiscauxSorted()) {
 			if (forFiscal instanceof ch.vd.uniregctb.tiers.ForFiscalPrincipal

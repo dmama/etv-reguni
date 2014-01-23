@@ -12,18 +12,18 @@ public class ImmovablePropertyBuilder {
 	public static ImmovableProperty newImmovableProperty(Immeuble immeuble) {
 		final ImmovableProperty immo = new ImmovableProperty();
 		immo.setNumber(immeuble.getNumero());
-		immo.setDateFrom(DataHelper.coreToXML(immeuble.getDateDebut()));
-		immo.setDateTo(DataHelper.coreToXML(immeuble.getDateFin()));
-		immo.setEntryDate(DataHelper.coreToXML(immeuble.getDateValidRF()));
+		immo.setDateFrom(DataHelper.coreToXMLv1(immeuble.getDateDebut()));
+		immo.setDateTo(DataHelper.coreToXMLv1(immeuble.getDateFin()));
+		immo.setEntryDate(DataHelper.coreToXMLv1(immeuble.getDateValidRF()));
 		immo.setMunicipalityName(immeuble.getNomCommune());
 		immo.setEstimatedTaxValue(immeuble.getEstimationFiscale());
 		immo.setEstimatedTaxValueReference(immeuble.getReferenceEstimationFiscale());
 		immo.setNature(immeuble.getNature());
-		immo.setOwnershipType(EnumHelper.coreToXML(immeuble.getGenrePropriete()));
+		immo.setOwnershipType(EnumHelper.coreToXMLv1(immeuble.getGenrePropriete()));
 		immo.setShare(coreToXML(immeuble.getPartPropriete()));
-		immo.setType(EnumHelper.coreToXML(immeuble.getTypeImmeuble()));
-		immo.setLastMutationDate(DataHelper.coreToXML(immeuble.getDateDerniereMutation()));
-		immo.setLastMutationType(EnumHelper.coreToXML(immeuble.getDerniereMutation()));
+		immo.setType(EnumHelper.coreToXMLv1(immeuble.getTypeImmeuble()));
+		immo.setLastMutationDate(DataHelper.coreToXMLv1(immeuble.getDateDerniereMutation()));
+		immo.setLastMutationType(EnumHelper.coreToXMLv1(immeuble.getDerniereMutation()));
 		return immo;
 	}
 

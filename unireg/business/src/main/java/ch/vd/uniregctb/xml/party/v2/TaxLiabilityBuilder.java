@@ -142,13 +142,13 @@ public abstract class TaxLiabilityBuilder {
 
 	private static void fillWithholding(Withholding left, ch.vd.uniregctb.metier.assujettissement.Sourcier right) {
 		fillTaxLiability(left, right);
-		left.setTaxationAuthority(EnumHelper.coreToXML(right.getTypeAutoriteFiscale()));
+		left.setTaxationAuthority(EnumHelper.coreToXMLv1(right.getTypeAutoriteFiscale()));
 	}
 
 	private static void fillTaxLiability(TaxLiability left, ch.vd.uniregctb.metier.assujettissement.Assujettissement right) {
-		left.setDateFrom(DataHelper.coreToXML(right.getDateDebut()));
-		left.setDateTo(DataHelper.coreToXML(right.getDateFin()));
-		left.setStartReason(EnumHelper.coreToXML(right.getMotifFractDebut()));
-		left.setEndReason(EnumHelper.coreToXML(right.getMotifFractFin()));
+		left.setDateFrom(DataHelper.coreToXMLv1(right.getDateDebut()));
+		left.setDateTo(DataHelper.coreToXMLv1(right.getDateFin()));
+		left.setStartReason(EnumHelper.coreToXMLv1(right.getMotifFractDebut()));
+		left.setEndReason(EnumHelper.coreToXMLv1(right.getMotifFractFin()));
 	}
 }

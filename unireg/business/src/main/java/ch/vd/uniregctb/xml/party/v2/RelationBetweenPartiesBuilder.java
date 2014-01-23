@@ -10,16 +10,16 @@ public class RelationBetweenPartiesBuilder {
 
 	public static RelationBetweenParties newRelationBetweenParties(ch.vd.uniregctb.tiers.RapportEntreTiers rapport, Long autreTiersNumero) {
 		final RelationBetweenParties r = new RelationBetweenParties();
-		r.setType(EnumHelper.coreToXML(rapport.getType()));
-		r.setDateFrom(DataHelper.coreToXML(rapport.getDateDebut()));
-		r.setDateTo(DataHelper.coreToXML(rapport.getDateFin()));
-		r.setCancellationDate(DataHelper.coreToXML(rapport.getAnnulationDate()));
+		r.setType(EnumHelper.coreToXMLv1(rapport.getType()));
+		r.setDateFrom(DataHelper.coreToXMLv1(rapport.getDateDebut()));
+		r.setDateTo(DataHelper.coreToXMLv1(rapport.getDateFin()));
+		r.setCancellationDate(DataHelper.coreToXMLv1(rapport.getAnnulationDate()));
 		r.setOtherPartyNumber(autreTiersNumero.intValue());
 
 		if (rapport instanceof ch.vd.uniregctb.tiers.RapportPrestationImposable) {
 			final ch.vd.uniregctb.tiers.RapportPrestationImposable rpi = (ch.vd.uniregctb.tiers.RapportPrestationImposable) rapport;
 
-			r.setEndDateOfLastTaxableItem(DataHelper.coreToXML(rpi.getFinDernierElementImposable()));
+			r.setEndDateOfLastTaxableItem(DataHelper.coreToXMLv1(rpi.getFinDernierElementImposable()));
 		}
 
 		// [UNIREG-2662] ajout de l'attribut extensionExecutionForcee
@@ -49,8 +49,8 @@ public class RelationBetweenPartiesBuilder {
 	private static RelationBetweenParties newFiliation(Parente parente, boolean towardsChild) {
 		final RelationBetweenParties r = new RelationBetweenParties();
 		r.setType(towardsChild ? RelationBetweenPartiesType.CHILD : RelationBetweenPartiesType.PARENT);
-		r.setDateFrom(DataHelper.coreToXML(parente.getDateDebut()));
-		r.setDateTo(DataHelper.coreToXML(parente.getDateFin()));
+		r.setDateFrom(DataHelper.coreToXMLv1(parente.getDateDebut()));
+		r.setDateTo(DataHelper.coreToXMLv1(parente.getDateFin()));
 		r.setOtherPartyNumber(towardsChild ? parente.getSujetId().intValue() : parente.getObjetId().intValue());
 		return r;
 	}

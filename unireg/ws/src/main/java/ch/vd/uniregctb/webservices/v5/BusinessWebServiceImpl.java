@@ -28,15 +28,15 @@ import ch.vd.unireg.ws.ack.v1.AckStatus;
 import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationAckRequest;
 import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationAckResponse;
 import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationAckResult;
-import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationKey;
 import ch.vd.unireg.ws.deadline.v1.DeadlineRequest;
 import ch.vd.unireg.ws.deadline.v1.DeadlineResponse;
 import ch.vd.unireg.ws.deadline.v1.DeadlineStatus;
-import ch.vd.unireg.ws.debtorinfo.v1.DebtorInfo;
 import ch.vd.unireg.ws.modifiedtaxpayers.v1.PartyNumberList;
 import ch.vd.unireg.ws.security.v1.SecurityResponse;
 import ch.vd.unireg.ws.taxoffices.v1.TaxOffice;
 import ch.vd.unireg.ws.taxoffices.v1.TaxOffices;
+import ch.vd.unireg.xml.party.taxdeclaration.v3.TaxDeclarationKey;
+import ch.vd.unireg.xml.party.withholding.v1.DebtorInfo;
 import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.TiersNotFoundException;
@@ -162,14 +162,14 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 		final String source = request.getSource();
 
 		final OrdinaryTaxDeclarationAckBatchResult result = new OrdinaryTaxDeclarationAckBatchResult();
-		final BatchTransactionTemplateWithResults<OrdinaryTaxDeclarationKey, OrdinaryTaxDeclarationAckBatchResult> template = new BatchTransactionTemplateWithResults<>(request.getDeclaration(),
+		final BatchTransactionTemplateWithResults<TaxDeclarationKey, OrdinaryTaxDeclarationAckBatchResult> template = new BatchTransactionTemplateWithResults<>(request.getDeclaration(),
 		                                                                                                                                                                DECLARATION_ACK_BATCH_SIZE,
 		                                                                                                                                                                Behavior.REPRISE_AUTOMATIQUE,
 		                                                                                                                                                                transactionManager, null);
-		template.execute(result, new BatchWithResultsCallback<OrdinaryTaxDeclarationKey, OrdinaryTaxDeclarationAckBatchResult>() {
+		template.execute(result, new BatchWithResultsCallback<TaxDeclarationKey, OrdinaryTaxDeclarationAckBatchResult>() {
 			@Override
-			public boolean doInTransaction(List<OrdinaryTaxDeclarationKey> keys, OrdinaryTaxDeclarationAckBatchResult result) throws Exception {
-				for (OrdinaryTaxDeclarationKey key : keys) {
+			public boolean doInTransaction(List<TaxDeclarationKey> keys, OrdinaryTaxDeclarationAckBatchResult result) throws Exception {
+				for (TaxDeclarationKey key : keys) {
 					quittancerDeclaration(login, key, source, dateRetour, result);
 				}
 				return true;
@@ -187,16 +187,16 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	/**
 	 * Classe de résultats pour l'utilisation du {@link ch.vd.uniregctb.common.BatchTransactionTemplateWithResults} dans le quittancement de DI
 	 */
-	private static final class OrdinaryTaxDeclarationAckBatchResult implements BatchResults<OrdinaryTaxDeclarationKey, OrdinaryTaxDeclarationAckBatchResult> {
+	private static final class OrdinaryTaxDeclarationAckBatchResult implements BatchResults<TaxDeclarationKey, OrdinaryTaxDeclarationAckBatchResult> {
 
 		private final List<OrdinaryTaxDeclarationAckResult> list = new LinkedList<>();
 
 		@Override
-		public void addErrorException(OrdinaryTaxDeclarationKey key, Exception e) {
+		public void addErrorException(TaxDeclarationKey key, Exception e) {
 			list.add(new OrdinaryTaxDeclarationAckResult(key, AckStatus.UNEXPECTED_ERROR, WebServiceHelper.buildExceptionMessage(e), 0, null));
 		}
 
-		public void addCasTraite(OrdinaryTaxDeclarationKey key, AckStatus status, String message) {
+		public void addCasTraite(TaxDeclarationKey key, AckStatus status, String message) {
 			list.add(new OrdinaryTaxDeclarationAckResult(key, status, message, 0, null));
 		}
 
@@ -210,11 +210,11 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 		}
 	}
 
-	private void quittancerDeclaration(UserLogin userLogin, OrdinaryTaxDeclarationKey key, String source, RegDate dateRetour, OrdinaryTaxDeclarationAckBatchResult result) {
+	private void quittancerDeclaration(UserLogin userLogin, TaxDeclarationKey key, String source, RegDate dateRetour, OrdinaryTaxDeclarationAckBatchResult result) {
 		try {
-			final int partyNo = key.getPartyNo();
+			final int partyNo = key.getTaxpayerNumber();
 			final int pf = key.getTaxPeriod();
-			final int noSeq = key.getSequenceNo();
+			final int noSeq = key.getSequenceNumber();
 
 			// TODO JDE : faut-il faire ce test ? Il n'était pas fait dans les versions précédentes du service...
 			WebServiceHelper.checkPartyReadWriteAccess(securityProvider, userLogin, partyNo);

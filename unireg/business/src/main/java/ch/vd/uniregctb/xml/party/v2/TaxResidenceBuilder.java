@@ -10,7 +10,7 @@ public class TaxResidenceBuilder {
 
 		if (forFiscal instanceof ch.vd.uniregctb.tiers.ForFiscalPrincipal) {
 			final ch.vd.uniregctb.tiers.ForFiscalPrincipal forPrincipal = (ch.vd.uniregctb.tiers.ForFiscalPrincipal) forFiscal;
-			f.setTaxationMethod(EnumHelper.coreToXML(forPrincipal.getModeImposition()));
+			f.setTaxationMethod(EnumHelper.coreToXMLv1(forPrincipal.getModeImposition()));
 		}
 		return f;
 	}
@@ -18,19 +18,19 @@ public class TaxResidenceBuilder {
 	public static TaxResidence newOtherTaxResidence(ch.vd.uniregctb.tiers.ForFiscal forFiscal, boolean virtuel) {
 		final TaxResidence f = new TaxResidence();
 
-		f.setDateFrom(DataHelper.coreToXML(forFiscal.getDateDebut()));
-		f.setDateTo(DataHelper.coreToXML(forFiscal.getDateFin()));
-		f.setCancellationDate(DataHelper.coreToXML(forFiscal.getAnnulationDate()));
-		f.setTaxType(EnumHelper.coreToXML(forFiscal.getGenreImpot()));
-		f.setTaxationAuthorityType(EnumHelper.coreToXML(forFiscal.getTypeAutoriteFiscale()));
+		f.setDateFrom(DataHelper.coreToXMLv1(forFiscal.getDateDebut()));
+		f.setDateTo(DataHelper.coreToXMLv1(forFiscal.getDateFin()));
+		f.setCancellationDate(DataHelper.coreToXMLv1(forFiscal.getAnnulationDate()));
+		f.setTaxType(EnumHelper.coreToXMLv1(forFiscal.getGenreImpot()));
+		f.setTaxationAuthorityType(EnumHelper.coreToXMLv1(forFiscal.getTypeAutoriteFiscale()));
 		f.setTaxationAuthorityFSOId(forFiscal.getNumeroOfsAutoriteFiscale());
 		f.setVirtual(virtuel);
 
 		if (forFiscal instanceof ch.vd.uniregctb.tiers.ForFiscalRevenuFortune) {
 			final ch.vd.uniregctb.tiers.ForFiscalRevenuFortune forRevenu = (ch.vd.uniregctb.tiers.ForFiscalRevenuFortune) forFiscal;
-			f.setTaxLiabilityReason(EnumHelper.coreToXML(forRevenu.getMotifRattachement()));
-			f.setStartReason(EnumHelper.coreToXML(forRevenu.getMotifOuverture()));
-			f.setEndReason(EnumHelper.coreToXML(forRevenu.getMotifFermeture()));
+			f.setTaxLiabilityReason(EnumHelper.coreToXMLv1(forRevenu.getMotifRattachement()));
+			f.setStartReason(EnumHelper.coreToXMLv1(forRevenu.getMotifOuverture()));
+			f.setEndReason(EnumHelper.coreToXMLv1(forRevenu.getMotifFermeture()));
 		}
 
 		return f;

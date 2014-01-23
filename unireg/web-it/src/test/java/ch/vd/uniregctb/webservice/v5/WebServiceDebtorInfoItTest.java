@@ -1,23 +1,16 @@
 package ch.vd.uniregctb.webservice.v5;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import edu.emory.mathcs.backport.java.util.Collections;
 import org.apache.commons.lang3.tuple.Pair;
-import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
-import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.ws.debtorinfo.v1.DebtorInfo;
-import ch.vd.unireg.ws.modifiedtaxpayers.v1.PartyNumberList;
+import ch.vd.unireg.xml.party.withholding.v1.DebtorInfo;
 
 public class WebServiceDebtorInfoItTest extends AbstractWebServiceItTest {
 
@@ -54,7 +47,7 @@ public class WebServiceDebtorInfoItTest extends AbstractWebServiceItTest {
 			Assert.assertEquals(HttpStatus.OK, resp.getStatusCode());
 
 			final DebtorInfo body = resp.getBody();
-			Assert.assertEquals(noTiers, body.getDebtorNo());
+			Assert.assertEquals(noTiers, body.getNumber());
 			Assert.assertEquals(2009, body.getTaxPeriod());
 			Assert.assertEquals(1, body.getNumberOfWithholdingTaxDeclarationsIssued());
 			Assert.assertEquals(12, body.getTheoreticalNumberOfWithholdingTaxDeclarations());
@@ -66,7 +59,7 @@ public class WebServiceDebtorInfoItTest extends AbstractWebServiceItTest {
 			Assert.assertEquals(HttpStatus.OK, resp.getStatusCode());
 
 			final DebtorInfo body = resp.getBody();
-			Assert.assertEquals(noTiers, body.getDebtorNo());
+			Assert.assertEquals(noTiers, body.getNumber());
 			Assert.assertEquals(2009, body.getTaxPeriod());
 			Assert.assertEquals(1, body.getNumberOfWithholdingTaxDeclarationsIssued());
 			Assert.assertEquals(12, body.getTheoreticalNumberOfWithholdingTaxDeclarations());

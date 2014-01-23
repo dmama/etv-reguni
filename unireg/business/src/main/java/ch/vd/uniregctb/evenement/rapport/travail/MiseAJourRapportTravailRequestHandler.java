@@ -580,7 +580,7 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 
 	private MiseAJourRapportTravailResponse createResponse(MiseAjourRapportTravail request) {
 		MiseAJourRapportTravailResponse response = new MiseAJourRapportTravailResponse();
-		response.setDatePriseEnCompte(DataHelper.coreToXML(RegDate.get()));
+		response.setDatePriseEnCompte(DataHelper.coreToXMLv1(RegDate.get()));
 		return response;
 	}
 

@@ -117,9 +117,9 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 
 		final RegDate dateFinPeriode = date(2012, 12, 31);
 
-		identifiantRapportTravail.setDateDebutPeriodeDeclaration(DataHelper.coreToXML(dateDebutPeriode));
+		identifiantRapportTravail.setDateDebutPeriodeDeclaration(DataHelper.coreToXMLv1(dateDebutPeriode));
 
-		identifiantRapportTravail.setDateFinPeriodeDeclaration(DataHelper.coreToXML(dateFinPeriode));
+		identifiantRapportTravail.setDateFinPeriodeDeclaration(DataHelper.coreToXMLv1(dateFinPeriode));
 		request.setIdentifiantRapportTravail(identifiantRapportTravail);
 
 		try {
@@ -175,7 +175,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 				return handler.handle(MiseAjourRapportTravail.get(request, null));
 			}
 		});
-		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
+		assertEquals(DataHelper.coreToXMLv1(RegDate.get()),response.getDatePriseEnCompte());
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(idDebiteur);
 		final PersonnePhysique sourcier = (PersonnePhysique) tiersService.getTiers(idSourcier);
 		List<RapportPrestationImposable> rapports = tiersService.getAllRapportPrestationImposable(dpi, sourcier, true, true);
@@ -225,7 +225,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 				return handler.handle(MiseAjourRapportTravail.get(request, null));
 			}
 		});
-		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
+		assertEquals(DataHelper.coreToXMLv1(RegDate.get()),response.getDatePriseEnCompte());
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
 		final PersonnePhysique sourcier = (PersonnePhysique) tiersService.getTiers(ids.idSourcier);
 		List<RapportPrestationImposable> rapports = tiersService.getAllRapportPrestationImposable(dpi, sourcier, true, true);
@@ -280,7 +280,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 				return handler.handle(MiseAjourRapportTravail.get(request, null));
 			}
 		});
-		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
+		assertEquals(DataHelper.coreToXMLv1(RegDate.get()),response.getDatePriseEnCompte());
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(idDebiteur);
 		final PersonnePhysique sourcier = (PersonnePhysique) tiersService.getTiers(idSourcier);
 		List<RapportPrestationImposable> rapports = tiersService.getAllRapportPrestationImposable(dpi, sourcier, true, true);
@@ -333,7 +333,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 				return handler.handle(MiseAjourRapportTravail.get(request, null));
 			}
 		});
-		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
+		assertEquals(DataHelper.coreToXMLv1(RegDate.get()),response.getDatePriseEnCompte());
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
 		List<RapportEntreTiers> rapportPrestations = new ArrayList<>();
 		rapportPrestations.addAll(dpi.getRapportsObjet());
@@ -386,7 +386,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 				return handler.handle(MiseAjourRapportTravail.get(request, null));
 			}
 		});
-		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
+		assertEquals(DataHelper.coreToXMLv1(RegDate.get()),response.getDatePriseEnCompte());
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
 		List<RapportEntreTiers> rapportPrestations = new ArrayList<>();
 		rapportPrestations.addAll(dpi.getRapportsObjet());
@@ -429,8 +429,8 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		final RegDate dateFinPeriode = date(2012, 12, 31);
 		final RegDate dateDebutVersementSalaire = date(2012, 1, 1);
 		final RegDate dateFinCore = date(2012, 6, 30);
-		final Date dateFinVersementSalaire = DataHelper.coreToXML(dateFinCore);
-		final Date dateEvenement = DataHelper.coreToXML(dateFinCore);
+		final Date dateFinVersementSalaire = DataHelper.coreToXMLv1(dateFinCore);
+		final Date dateEvenement = DataHelper.coreToXMLv1(dateFinCore);
 		final DateRange periodeDeclaration = new DateRangeHelper.Range(dateDebutPeriode,dateFinPeriode);
 
 
@@ -447,7 +447,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 				return handler.handle(MiseAjourRapportTravail.get(request, null));
 			}
 		});
-		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
+		assertEquals(DataHelper.coreToXMLv1(RegDate.get()),response.getDatePriseEnCompte());
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
 		List<RapportEntreTiers> rapportPrestations = new ArrayList<>();
 		rapportPrestations.addAll(dpi.getRapportsObjet());
@@ -489,8 +489,8 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		final RegDate dateFinPeriode = date(2012, 12, 31);
 		final RegDate dateDebutVersementSalaire = date(2012, 1, 1);
 		final RegDate dateFinCore = date(2012, 6, 30);
-		final Date dateFinVersementSalaire = DataHelper.coreToXML(dateFinCore);
-		final Date dateEvenement = DataHelper.coreToXML(dateFinCore);
+		final Date dateFinVersementSalaire = DataHelper.coreToXMLv1(dateFinCore);
+		final Date dateEvenement = DataHelper.coreToXMLv1(dateFinCore);
 		final DateRange periodeDeclaration = new DateRangeHelper.Range(dateDebutPeriode,dateFinPeriode);
 
 
@@ -502,7 +502,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 				return handler.handle(MiseAjourRapportTravail.get(request, null));
 			}
 		});
-		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
+		assertEquals(DataHelper.coreToXMLv1(RegDate.get()),response.getDatePriseEnCompte());
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
 		List<RapportEntreTiers> rapportPrestations = new ArrayList<>();
 		rapportPrestations.addAll(dpi.getRapportsObjet());
@@ -544,7 +544,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		final RegDate dateFinPeriode = date(2011, 12, 31);
 		final RegDate dateDebutVersementSalaire = date(2011, 1, 1);
 		final RegDate dateFinCore = date(2012, 6, 30);
-		final Date dateFinVersementSalaire = DataHelper.coreToXML(dateFinCore);
+		final Date dateFinVersementSalaire = DataHelper.coreToXMLv1(dateFinCore);
 		final DateRange periodeDeclaration = new DateRangeHelper.Range(dateDebutPeriode,dateFinPeriode);
 
 
@@ -557,7 +557,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 				return handler.handle(MiseAjourRapportTravail.get(request, null));
 			}
 		});
-		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
+		assertEquals(DataHelper.coreToXMLv1(RegDate.get()),response.getDatePriseEnCompte());
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
 		List<RapportEntreTiers> rapportPrestations = new ArrayList<>();
 		rapportPrestations.addAll(dpi.getRapportsObjet());
@@ -606,7 +606,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 				return handler.handle(MiseAjourRapportTravail.get(request, null));
 			}
 		});
-		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
+		assertEquals(DataHelper.coreToXMLv1(RegDate.get()),response.getDatePriseEnCompte());
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override
@@ -677,7 +677,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 				return handler.handle(MiseAjourRapportTravail.get(request, null));
 			}
 		});
-		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
+		assertEquals(DataHelper.coreToXMLv1(RegDate.get()),response.getDatePriseEnCompte());
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override
@@ -752,7 +752,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 				return handler.handle(MiseAjourRapportTravail.get(request, null));
 			}
 		});
-		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
+		assertEquals(DataHelper.coreToXMLv1(RegDate.get()),response.getDatePriseEnCompte());
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
 		List<RapportEntreTiers> rapportPrestations = new ArrayList<>();
 		rapportPrestations.addAll(dpi.getRapportsObjet());
@@ -816,7 +816,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 				return handler.handle(MiseAjourRapportTravail.get(request, null));
 			}
 		});
-		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
+		assertEquals(DataHelper.coreToXMLv1(RegDate.get()),response.getDatePriseEnCompte());
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
 		final PersonnePhysique sourcier = (PersonnePhysique)tiersService.getTiers(ids.idSourcier);
 		List<RapportPrestationImposable> rapportPrestations = tiersService.getAllRapportPrestationImposable(dpi,sourcier, true, true);
@@ -878,7 +878,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 				return handler.handle(MiseAjourRapportTravail.get(request, null));
 			}
 		});
-		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
+		assertEquals(DataHelper.coreToXMLv1(RegDate.get()),response.getDatePriseEnCompte());
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
 		final PersonnePhysique sourcier = (PersonnePhysique)tiersService.getTiers(ids.idSourcier);
 		List<RapportPrestationImposable> rapportPrestations = tiersService.getAllRapportPrestationImposable(dpi,sourcier, true, true);
@@ -934,7 +934,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		FinRapportTravail finRapportTravail = new FinRapportTravail();
 		finRapportTravail.setCode(FinRapportTravailType.DECES);
 		final RegDate dateDeces = date(2012, 6, 30);
-		final Date dateEvenement = DataHelper.coreToXML(dateDeces);
+		final Date dateEvenement = DataHelper.coreToXMLv1(dateDeces);
 		finRapportTravail.setDateEvenement(dateEvenement);
 		request.setFinRapportTravail(finRapportTravail);
 
@@ -944,7 +944,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 				return handler.handle(MiseAjourRapportTravail.get(request, null));
 			}
 		});
-		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
+		assertEquals(DataHelper.coreToXMLv1(RegDate.get()),response.getDatePriseEnCompte());
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
 		List<RapportEntreTiers> rapportPrestations = new ArrayList<>();
 		rapportPrestations.addAll(dpi.getRapportsObjet());
@@ -996,7 +996,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 				return handler.handle(MiseAjourRapportTravail.get(request, null));
 			}
 		});
-		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
+		assertEquals(DataHelper.coreToXMLv1(RegDate.get()),response.getDatePriseEnCompte());
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
 		List<RapportEntreTiers> rapportPrestations = new ArrayList<>();
 		rapportPrestations.addAll(dpi.getRapportsObjet());
@@ -1050,7 +1050,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 
 		FinRapportTravail finRapportTravail = new FinRapportTravail();
 		finRapportTravail.setCode(FinRapportTravailType.SORTIE);
-		finRapportTravail.setDateEvenement(DataHelper.coreToXML(dateFinVersementSalaire));
+		finRapportTravail.setDateEvenement(DataHelper.coreToXMLv1(dateFinVersementSalaire));
 		request.setFinRapportTravail(finRapportTravail);
 
 		MiseAJourRapportTravailResponse response =  doInNewTransaction(new TxCallback<MiseAJourRapportTravailResponse>() {
@@ -1059,7 +1059,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 				return handler.handle(MiseAjourRapportTravail.get(request, null));
 			}
 		});
-		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
+		assertEquals(DataHelper.coreToXMLv1(RegDate.get()),response.getDatePriseEnCompte());
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
 		List<RapportEntreTiers> rapportPrestations = new ArrayList<>();
 		rapportPrestations.addAll(dpi.getRapportsObjet());
@@ -1118,7 +1118,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 				return handler.handle(MiseAjourRapportTravail.get(request, null));
 			}
 		});
-		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
+		assertEquals(DataHelper.coreToXMLv1(RegDate.get()),response.getDatePriseEnCompte());
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
 		PersonnePhysique sourcier = (PersonnePhysique) tiersService.getTiers(ids.idSourcier);
 		List<RapportPrestationImposable> rapportPrestations = tiersService.getAllRapportPrestationImposable(dpi,sourcier, true, true);
@@ -1168,8 +1168,8 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		final RegDate dateFinPeriode = dateFermetureFor;
 		final RegDate dateDebutVersementSalaire = date(2012, 1, 1);
 		final RegDate dateFinCore = date(2012, 6, 30);
-		final Date dateFinVersementSalaire = DataHelper.coreToXML(dateFinCore);
-		final Date dateEvenement = DataHelper.coreToXML(dateFinCore);
+		final Date dateFinVersementSalaire = DataHelper.coreToXMLv1(dateFinCore);
+		final Date dateEvenement = DataHelper.coreToXMLv1(dateFinCore);
 		final DateRange periodeDeclaration = new DateRangeHelper.Range(dateDebutPeriode,dateFinPeriode);
 
 
@@ -1181,7 +1181,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 				return handler.handle(MiseAjourRapportTravail.get(request, null));
 			}
 		});
-		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
+		assertEquals(DataHelper.coreToXMLv1(RegDate.get()),response.getDatePriseEnCompte());
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
 		List<RapportEntreTiers> rapportPrestations = new ArrayList<>();
 		rapportPrestations.addAll(dpi.getRapportsObjet());
@@ -1198,14 +1198,14 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		identifiantRapportTravail.setNumeroDebiteur(idDebiteur.intValue());
 
 
-		identifiantRapportTravail.setDateDebutPeriodeDeclaration(DataHelper.coreToXML(periodeDeclaration.getDateDebut()));
+		identifiantRapportTravail.setDateDebutPeriodeDeclaration(DataHelper.coreToXMLv1(periodeDeclaration.getDateDebut()));
 
-		identifiantRapportTravail.setDateFinPeriodeDeclaration(DataHelper.coreToXML(periodeDeclaration.getDateFin()));
+		identifiantRapportTravail.setDateFinPeriodeDeclaration(DataHelper.coreToXMLv1(periodeDeclaration.getDateFin()));
 
 		identifiantRapportTravail.setNumeroContribuable(idSourcier.intValue());
 		request.setIdentifiantRapportTravail(identifiantRapportTravail);
-		request.setDateDebutVersementSalaire(DataHelper.coreToXML(dateDebutVersementSalaire));
-		request.setDateFinVersementSalaire(DataHelper.coreToXML(dateFinVersementSalaire));
+		request.setDateDebutVersementSalaire(DataHelper.coreToXMLv1(dateDebutVersementSalaire));
+		request.setDateFinVersementSalaire(DataHelper.coreToXMLv1(dateFinVersementSalaire));
 		return request;
 	}
 
@@ -1261,7 +1261,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 				return handler.handle(MiseAjourRapportTravail.get(req, null));
 			}
 		});
-		assertEquals(DataHelper.coreToXML(RegDate.get()), response.getDatePriseEnCompte());
+		assertEquals(DataHelper.coreToXMLv1(RegDate.get()), response.getDatePriseEnCompte());
 		assertNull(response.getExceptionInfo());
 
 		// vérification du résultat...
@@ -1339,16 +1339,16 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		});
 
 		final MiseAJourRapportTravailRequest req = createMiseAJourRapportTravailRequest(ids.idDebiteur, ids.idSourcier, new DateRangeHelper.Range(date(2013, 1, 1), date(2013, 1, 31)), null, null);
-		req.setFinRapportTravail(new FinRapportTravail(FinRapportTravailType.SORTIE, DataHelper.coreToXML(date(2013, 1, 12))));
-		req.setDateDebutVersementSalaire(DataHelper.coreToXML(date(2013, 1, 1)));
-		req.setDateFinVersementSalaire(DataHelper.coreToXML(date(2013, 1, 12)));
+		req.setFinRapportTravail(new FinRapportTravail(FinRapportTravailType.SORTIE, DataHelper.coreToXMLv1(date(2013, 1, 12))));
+		req.setDateDebutVersementSalaire(DataHelper.coreToXMLv1(date(2013, 1, 1)));
+		req.setDateFinVersementSalaire(DataHelper.coreToXMLv1(date(2013, 1, 12)));
 		final MiseAJourRapportTravailResponse response =  doInNewTransaction(new TxCallback<MiseAJourRapportTravailResponse>() {
 			@Override
 			public MiseAJourRapportTravailResponse execute(TransactionStatus status) throws Exception {
 				return handler.handle(MiseAjourRapportTravail.get(req, null));
 			}
 		});
-		assertEquals(DataHelper.coreToXML(RegDate.get()), response.getDatePriseEnCompte());
+		assertEquals(DataHelper.coreToXMLv1(RegDate.get()), response.getDatePriseEnCompte());
 		assertNull(response.getExceptionInfo());
 
 		// vérification du résultat...
@@ -1426,16 +1426,16 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		});
 
 		final MiseAJourRapportTravailRequest req = createMiseAJourRapportTravailRequest(ids.idDebiteur, ids.idSourcier, new DateRangeHelper.Range(date(2013, 1, 1), date(2013, 1, 31)), null, null);
-		req.setFinRapportTravail(new FinRapportTravail(FinRapportTravailType.SORTIE, DataHelper.coreToXML(date(2013, 1, 10))));
-		req.setDateDebutVersementSalaire(DataHelper.coreToXML(date(2013, 1, 1)));
-		req.setDateFinVersementSalaire(DataHelper.coreToXML(date(2013, 1, 10)));
+		req.setFinRapportTravail(new FinRapportTravail(FinRapportTravailType.SORTIE, DataHelper.coreToXMLv1(date(2013, 1, 10))));
+		req.setDateDebutVersementSalaire(DataHelper.coreToXMLv1(date(2013, 1, 1)));
+		req.setDateFinVersementSalaire(DataHelper.coreToXMLv1(date(2013, 1, 10)));
 		final MiseAJourRapportTravailResponse response =  doInNewTransaction(new TxCallback<MiseAJourRapportTravailResponse>() {
 			@Override
 			public MiseAJourRapportTravailResponse execute(TransactionStatus status) throws Exception {
 				return handler.handle(MiseAjourRapportTravail.get(req, null));
 			}
 		});
-		assertEquals(DataHelper.coreToXML(RegDate.get()), response.getDatePriseEnCompte());
+		assertEquals(DataHelper.coreToXMLv1(RegDate.get()), response.getDatePriseEnCompte());
 		assertNull(response.getExceptionInfo());
 
 		// vérification du résultat...
@@ -1523,17 +1523,17 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		});
 
 		final MiseAJourRapportTravailRequest req = createMiseAJourRapportTravailRequest(ids.idDebiteur, ids.idSourcier, new DateRangeHelper.Range(date(2013, 1, 1), date(2013, 1, 31)), null, null);
-		req.setFinRapportTravail(new FinRapportTravail(FinRapportTravailType.SORTIE, DataHelper.coreToXML(date(2013, 1, 20))));
+		req.setFinRapportTravail(new FinRapportTravail(FinRapportTravailType.SORTIE, DataHelper.coreToXMLv1(date(2013, 1, 20))));
 		req.setCreationProlongationRapportTravail(new CreationProlongationRapportTravail());
-		req.setDateDebutVersementSalaire(DataHelper.coreToXML(date(2013, 1, 10)));
-		req.setDateFinVersementSalaire(DataHelper.coreToXML(date(2013, 1, 20)));
+		req.setDateDebutVersementSalaire(DataHelper.coreToXMLv1(date(2013, 1, 10)));
+		req.setDateFinVersementSalaire(DataHelper.coreToXMLv1(date(2013, 1, 20)));
 		final MiseAJourRapportTravailResponse response =  doInNewTransaction(new TxCallback<MiseAJourRapportTravailResponse>() {
 			@Override
 			public MiseAJourRapportTravailResponse execute(TransactionStatus status) throws Exception {
 				return handler.handle(MiseAjourRapportTravail.get(req, null));
 			}
 		});
-		assertEquals(DataHelper.coreToXML(RegDate.get()), response.getDatePriseEnCompte());
+		assertEquals(DataHelper.coreToXMLv1(RegDate.get()), response.getDatePriseEnCompte());
 		assertNull(response.getExceptionInfo());
 
 		// vérification du résultat...
@@ -1610,17 +1610,17 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		});
 
 		final MiseAJourRapportTravailRequest req = createMiseAJourRapportTravailRequest(ids.idDebiteur, ids.idSourcier, new DateRangeHelper.Range(date(2013, 1, 1), date(2013, 1, 31)), null, null);
-		req.setFinRapportTravail(new FinRapportTravail(FinRapportTravailType.SORTIE, DataHelper.coreToXML(date(2013, 1, 20))));
+		req.setFinRapportTravail(new FinRapportTravail(FinRapportTravailType.SORTIE, DataHelper.coreToXMLv1(date(2013, 1, 20))));
 		req.setCreationProlongationRapportTravail(new CreationProlongationRapportTravail());
-		req.setDateDebutVersementSalaire(DataHelper.coreToXML(date(2013, 1, 10)));
-		req.setDateFinVersementSalaire(DataHelper.coreToXML(date(2013, 1, 20)));
+		req.setDateDebutVersementSalaire(DataHelper.coreToXMLv1(date(2013, 1, 10)));
+		req.setDateFinVersementSalaire(DataHelper.coreToXMLv1(date(2013, 1, 20)));
 		final MiseAJourRapportTravailResponse response =  doInNewTransaction(new TxCallback<MiseAJourRapportTravailResponse>() {
 			@Override
 			public MiseAJourRapportTravailResponse execute(TransactionStatus status) throws Exception {
 				return handler.handle(MiseAjourRapportTravail.get(req, null));
 			}
 		});
-		assertEquals(DataHelper.coreToXML(RegDate.get()), response.getDatePriseEnCompte());
+		assertEquals(DataHelper.coreToXMLv1(RegDate.get()), response.getDatePriseEnCompte());
 		assertNull(response.getExceptionInfo());
 
 		// vérification du résultat...
@@ -1711,7 +1711,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 				return handler.handle(MiseAjourRapportTravail.get(req, null));
 			}
 		});
-		assertEquals(DataHelper.coreToXML(RegDate.get()), response.getDatePriseEnCompte());
+		assertEquals(DataHelper.coreToXMLv1(RegDate.get()), response.getDatePriseEnCompte());
 		assertNull(response.getExceptionInfo());
 
 		// allons voir en base
@@ -1787,7 +1787,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		});
 
 		final MiseAJourRapportTravailRequest req = createMiseAJourRapportTravailRequest(ids.dpi, ids.pp, new DateRangeHelper.Range(date(2013, 5, 1), date(2013, 5, 31)), date(2013, 5, 1), date(2013, 5, 31));
-		req.setFinRapportTravail(new FinRapportTravail(FinRapportTravailType.SORTIE, DataHelper.coreToXML(date(2013, 5, 15))));
+		req.setFinRapportTravail(new FinRapportTravail(FinRapportTravailType.SORTIE, DataHelper.coreToXMLv1(date(2013, 5, 15))));
 
 		final MiseAJourRapportTravailResponse response =  doInNewTransaction(new TxCallback<MiseAJourRapportTravailResponse>() {
 			@Override
@@ -1795,7 +1795,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 				return handler.handle(MiseAjourRapportTravail.get(req, null));
 			}
 		});
-		assertEquals(DataHelper.coreToXML(RegDate.get()), response.getDatePriseEnCompte());
+		assertEquals(DataHelper.coreToXMLv1(RegDate.get()), response.getDatePriseEnCompte());
 		assertNull(response.getExceptionInfo());
 
 		// vérification des rapports au final -> les deux existants doivent avoir été annulés et remplacé par leur fusion, sans autre modification
@@ -1876,7 +1876,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		});
 
 		final MiseAJourRapportTravailRequest req = createMiseAJourRapportTravailRequest(ids.dpi, ids.pp, new DateRangeHelper.Range(date(2013, 5, 1), date(2013, 5, 31)), date(2013, 5, 1), date(2013, 5, 31));
-		req.setFinRapportTravail(new FinRapportTravail(FinRapportTravailType.SORTIE, DataHelper.coreToXML(date(2013, 5, 15))));
+		req.setFinRapportTravail(new FinRapportTravail(FinRapportTravailType.SORTIE, DataHelper.coreToXMLv1(date(2013, 5, 15))));
 
 		final MiseAJourRapportTravailResponse response =  doInNewTransaction(new TxCallback<MiseAJourRapportTravailResponse>() {
 			@Override
@@ -1884,7 +1884,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 				return handler.handle(MiseAjourRapportTravail.get(req, null));
 			}
 		});
-		assertEquals(DataHelper.coreToXML(RegDate.get()), response.getDatePriseEnCompte());
+		assertEquals(DataHelper.coreToXMLv1(RegDate.get()), response.getDatePriseEnCompte());
 		assertNull(response.getExceptionInfo());
 
 		// vérification des rapports au final -> les deux existants doivent avoir été annulés et remplacé par leur fusion, sans autre modification
@@ -1963,7 +1963,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 				return handler.handle(MiseAjourRapportTravail.get(req, null));
 			}
 		});
-		assertEquals(DataHelper.coreToXML(RegDate.get()), response.getDatePriseEnCompte());
+		assertEquals(DataHelper.coreToXMLv1(RegDate.get()), response.getDatePriseEnCompte());
 		assertNull(response.getExceptionInfo());
 
 		// vérification des rapports au final -> les deux existants doivent avoir été annulés et remplacé par leur fusion, sans autre modification

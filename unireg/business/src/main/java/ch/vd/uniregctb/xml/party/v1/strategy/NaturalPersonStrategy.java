@@ -55,12 +55,12 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 		final ch.vd.uniregctb.tiers.PersonnePhysique personne = (ch.vd.uniregctb.tiers.PersonnePhysique) from;
 		if (!personne.isHabitantVD()) {
 			to.setIdentification(newPersonIdentification(personne));
-			to.setDateOfBirth(DataHelper.coreToXML(personne.getDateNaissance()));
-			to.setDateOfDeath(DataHelper.coreToXML(personne.getDateDeces()));
+			to.setDateOfBirth(DataHelper.coreToXMLv1(personne.getDateNaissance()));
+			to.setDateOfDeath(DataHelper.coreToXMLv1(personne.getDateDeces()));
 
 			final NaturalPersonCategory category = EnumHelper.coreToXMLv1(personne.getCategorieEtranger());
 			to.setCategory(category);
-			to.getCategories().add(new NaturalPersonCategoryPeriod(DataHelper.coreToXML(personne.getDateDebutValiditeAutorisation()), null, category, null));
+			to.getCategories().add(new NaturalPersonCategoryPeriod(DataHelper.coreToXMLv1(personne.getDateDebutValiditeAutorisation()), null, category, null));
 		}
 		else {
 			final Individu individu = context.serviceCivilService.getIndividu(personne.getNumeroIndividu(), null, AttributeIndividu.PERMIS);
@@ -73,8 +73,8 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 			}
 
 			to.setIdentification(newPersonIdentification(individu, personne.getNumero()));
-			to.setDateOfBirth(DataHelper.coreToXML(individu.getDateNaissance()));
-			to.setDateOfDeath(DataHelper.coreToXML(personne.getDateDeces() == null ? individu.getDateDeces() : personne.getDateDeces()));
+			to.setDateOfBirth(DataHelper.coreToXMLv1(individu.getDateNaissance()));
+			to.setDateOfDeath(DataHelper.coreToXMLv1(personne.getDateDeces() == null ? individu.getDateDeces() : personne.getDateDeces()));
 
 			final PermisList list = individu.getPermis();
 			if (list == null || list.isEmpty()) {
@@ -94,8 +94,8 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 
 				// l'historique des permis (SIFISC-8072)
 				for (Permis permis : list) {
-					to.getCategories().add(new NaturalPersonCategoryPeriod(DataHelper.coreToXML(permis.getDateDebut()),
-					                                                          DataHelper.coreToXML(permis.getDateFin()),
+					to.getCategories().add(new NaturalPersonCategoryPeriod(DataHelper.coreToXMLv1(permis.getDateDebut()),
+					                                                          DataHelper.coreToXMLv1(permis.getDateFin()),
 					                                                          EnumHelper.coreToXMLv1(permis.getTypePermis()), null));
 				}
 			}

@@ -24,12 +24,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.unireg.interfaces.infra.data.TypeAffranchissement;
-import ch.vd.unireg.xml.common.v1.Date;
-import ch.vd.unireg.xml.common.v1.PartialDate;
-import ch.vd.unireg.xml.party.address.v1.Address;
-import ch.vd.unireg.xml.party.address.v1.AddressOtherParty;
-import ch.vd.unireg.xml.party.address.v1.AddressType;
-import ch.vd.unireg.xml.party.address.v1.TariffZone;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
@@ -57,7 +51,7 @@ public abstract class DataHelper {
 		return value != null && value;
 	}
 
-	public static Date coreToXML(java.util.Date date) {
+	public static ch.vd.unireg.xml.common.v1.Date coreToXMLv1(java.util.Date date) {
 		if (date == null) {
 			return null;
 		}
@@ -68,32 +62,72 @@ public abstract class DataHelper {
 			final int year = cal.get(Calendar.YEAR);
 			final int month = cal.get(Calendar.MONTH) + 1;
 			final int day = cal.get(Calendar.DAY_OF_MONTH);
-			return new Date(year, month, day);
+			return new ch.vd.unireg.xml.common.v1.Date(year, month, day);
 		}
 	}
 
-	public static Date coreToXML(RegDate date) {
+	public static ch.vd.unireg.xml.common.v2.Date coreToXMLv2(java.util.Date date) {
 		if (date == null) {
 			return null;
 		}
 		else {
-			return new Date(date.year(), date.month(), date.day());
+			Calendar cal = GregorianCalendar.getInstance();
+			cal.setTime(date);
+
+			final int year = cal.get(Calendar.YEAR);
+			final int month = cal.get(Calendar.MONTH) + 1;
+			final int day = cal.get(Calendar.DAY_OF_MONTH);
+			return new ch.vd.unireg.xml.common.v2.Date(year, month, day);
 		}
 	}
 
-	public static RegDate xmlToCore(Date date) {
+	public static ch.vd.unireg.xml.common.v1.Date coreToXMLv1(RegDate date) {
+		if (date == null) {
+			return null;
+		}
+		else {
+			return new ch.vd.unireg.xml.common.v1.Date(date.year(), date.month(), date.day());
+		}
+	}
+
+	public static ch.vd.unireg.xml.common.v2.Date coreToXMLv2(RegDate date) {
+		if (date == null) {
+			return null;
+		}
+		else {
+			return new ch.vd.unireg.xml.common.v2.Date(date.year(), date.month(), date.day());
+		}
+	}
+
+	public static RegDate xmlToCore(ch.vd.unireg.xml.common.v1.Date date) {
 		if (date == null) {
 			return null;
 		}
 		return RegDateHelper.get(date.getYear(), date.getMonth(), date.getDay(), DateConstants.EXTENDED_VALIDITY_RANGE);
 	}
 
-	public static PartialDate coreToPartialDateXml(RegDate date) {
+	public static RegDate xmlToCore(ch.vd.unireg.xml.common.v2.Date date) {
+		if (date == null) {
+			return null;
+		}
+		return RegDateHelper.get(date.getYear(), date.getMonth(), date.getDay(), DateConstants.EXTENDED_VALIDITY_RANGE);
+	}
+
+	public static ch.vd.unireg.xml.common.v1.PartialDate coreToPartialDateXmlv1(RegDate date) {
 		if (date == null) {
 			return null;
 		}
 		else {
-			return new PartialDate(date.year(), date.month() == RegDate.UNDEFINED ? null : date.month(), date.day() == RegDate.UNDEFINED ? null : date.day());
+			return new ch.vd.unireg.xml.common.v1.PartialDate(date.year(), date.month() == RegDate.UNDEFINED ? null : date.month(), date.day() == RegDate.UNDEFINED ? null : date.day());
+		}
+	}
+
+	public static ch.vd.unireg.xml.common.v2.PartialDate coreToPartialDateXmlv2(RegDate date) {
+		if (date == null) {
+			return null;
+		}
+		else {
+			return new ch.vd.unireg.xml.common.v2.PartialDate(date.year(), date.month() == RegDate.UNDEFINED ? null : date.month(), date.day() == RegDate.UNDEFINED ? null : date.day());
 		}
 	}
 
@@ -102,7 +136,7 @@ public abstract class DataHelper {
 	 * @return la date convertie
 	 * @throws IllegalArgumentException en cas de souci à la conversion (date résultante invalide, mauvais type de "date partielle" dont le mois  est inconnu mais pas le jour, par exemple...)
 	 */
-	public static RegDate xmlToCore(PartialDate date) throws IllegalArgumentException {
+	public static RegDate xmlToCore(ch.vd.unireg.xml.common.v1.PartialDate date) throws IllegalArgumentException {
 		if (date == null) {
 			return null;
 		}
@@ -123,12 +157,39 @@ public abstract class DataHelper {
 		}
 	}
 
-	public static List<Address> coreToXML(List<AdresseEnvoiDetaillee> adresses, @Nullable DateRangeHelper.Range range, AddressType type) throws ServiceException {
+	/**
+	 * @param date une date partielle à convertir en {@link RegDate}
+	 * @return la date convertie
+	 * @throws IllegalArgumentException en cas de souci à la conversion (date résultante invalide, mauvais type de "date partielle" dont le mois  est inconnu mais pas le jour, par exemple...)
+	 */
+	public static RegDate xmlToCore(ch.vd.unireg.xml.common.v2.PartialDate date) throws IllegalArgumentException {
+		if (date == null) {
+			return null;
+		}
+		final int year = date.getYear();
+		final Integer month = date.getMonth();
+		final Integer day = date.getDay();
+		if (day == null && month == null) {
+			return RegDateHelper.get(year, DateConstants.EXTENDED_VALIDITY_RANGE);
+		}
+		else if (day == null) {
+			return RegDateHelper.get(year, month, DateConstants.EXTENDED_VALIDITY_RANGE);
+		}
+		else if (month == null) {
+			throw new IllegalArgumentException("Date partielle avec jour connu mais pas le mois : " + date);
+		}
+		else {
+			return RegDateHelper.get(year, month, day, DateConstants.EXTENDED_VALIDITY_RANGE);
+		}
+	}
+
+	public static List<ch.vd.unireg.xml.party.address.v1.Address> coreToXMLv1(List<AdresseEnvoiDetaillee> adresses, @Nullable DateRangeHelper.Range range,
+	                                                                          ch.vd.unireg.xml.party.address.v1.AddressType type) throws ServiceException {
 		if (adresses == null || adresses.isEmpty()) {
 			return null;
 		}
 
-		List<Address> list = new ArrayList<>();
+		final List<ch.vd.unireg.xml.party.address.v1.Address> list = new ArrayList<>();
 		for (AdresseEnvoiDetaillee a : adresses) {
 			if (range == null || DateRangeHelper.intersect(a, range)) {
 				list.add(AddressBuilder.newAddress(a, type));
@@ -138,12 +199,29 @@ public abstract class DataHelper {
 		return list.isEmpty() ? null : list;
 	}
 
-	public static List<AddressOtherParty> coreToXMLAT(List<AdresseEnvoiDetaillee> adresses, @Nullable DateRangeHelper.Range range, AddressType type) throws ServiceException {
+	public static List<ch.vd.unireg.xml.party.address.v2.Address> coreToXMLv2(List<AdresseEnvoiDetaillee> adresses, @Nullable DateRangeHelper.Range range,
+	                                                                          ch.vd.unireg.xml.party.address.v2.AddressType type) throws ServiceException {
 		if (adresses == null || adresses.isEmpty()) {
 			return null;
 		}
 
-		List<AddressOtherParty> list = new ArrayList<>();
+		final List<ch.vd.unireg.xml.party.address.v2.Address> list = new ArrayList<>();
+		for (AdresseEnvoiDetaillee a : adresses) {
+			if (range == null || DateRangeHelper.intersect(a, range)) {
+				list.add(AddressBuilder.newAddress(a, type));
+			}
+		}
+
+		return list.isEmpty() ? null : list;
+	}
+
+	public static List<ch.vd.unireg.xml.party.address.v1.AddressOtherParty> coreToXMLATv1(List<AdresseEnvoiDetaillee> adresses, @Nullable DateRangeHelper.Range range,
+	                                                                                      ch.vd.unireg.xml.party.address.v1.AddressType type) throws ServiceException {
+		if (adresses == null || adresses.isEmpty()) {
+			return null;
+		}
+
+		final List<ch.vd.unireg.xml.party.address.v1.AddressOtherParty> list = new ArrayList<>();
 		for (AdresseEnvoiDetaillee a : adresses) {
 			if (range == null || DateRangeHelper.intersect(a, range)) {
 				list.add(AddressBuilder.newOtherPartyAddress(a, type));
@@ -153,24 +231,77 @@ public abstract class DataHelper {
 		return list.isEmpty() ? null : list;
 	}
 
-	public static TariffZone coreToXML(TypeAffranchissement t) {
+	public static List<ch.vd.unireg.xml.party.address.v2.AddressOtherParty> coreToXMLATv2(List<AdresseEnvoiDetaillee> adresses, @Nullable DateRangeHelper.Range range,
+	                                                                                      ch.vd.unireg.xml.party.address.v2.AddressType type) throws ServiceException {
+		if (adresses == null || adresses.isEmpty()) {
+			return null;
+		}
+
+		final List<ch.vd.unireg.xml.party.address.v2.AddressOtherParty> list = new ArrayList<>();
+		for (AdresseEnvoiDetaillee a : adresses) {
+			if (range == null || DateRangeHelper.intersect(a, range)) {
+				list.add(AddressBuilder.newOtherPartyAddress(a, type));
+			}
+		}
+
+		return list.isEmpty() ? null : list;
+	}
+
+	public static ch.vd.unireg.xml.party.address.v1.TariffZone coreToXMLv1(TypeAffranchissement t) {
 		if (t == null) {
 			return null;
 		}
 
 		switch (t) {
 		case SUISSE:
-			return TariffZone.SWITZERLAND;
+			return ch.vd.unireg.xml.party.address.v1.TariffZone.SWITZERLAND;
 		case EUROPE:
-			return TariffZone.EUROPE;
+			return ch.vd.unireg.xml.party.address.v1.TariffZone.EUROPE;
 		case MONDE:
-			return TariffZone.OTHER_COUNTRIES;
+			return ch.vd.unireg.xml.party.address.v1.TariffZone.OTHER_COUNTRIES;
 		default:
 			throw new IllegalArgumentException("Type d'affranchissement inconnu = [" + t + ']');
 		}
 	}
 
-	public static TypeAdresseFiscale xmlToCore(AddressType type) {
+	public static ch.vd.unireg.xml.party.address.v2.TariffZone coreToXMLv2(TypeAffranchissement t) {
+		if (t == null) {
+			return null;
+		}
+
+		switch (t) {
+		case SUISSE:
+			return ch.vd.unireg.xml.party.address.v2.TariffZone.SWITZERLAND;
+		case EUROPE:
+			return ch.vd.unireg.xml.party.address.v2.TariffZone.EUROPE;
+		case MONDE:
+			return ch.vd.unireg.xml.party.address.v2.TariffZone.OTHER_COUNTRIES;
+		default:
+			throw new IllegalArgumentException("Type d'affranchissement inconnu = [" + t + ']');
+		}
+	}
+
+	public static TypeAdresseFiscale xmlToCore(ch.vd.unireg.xml.party.address.v1.AddressType type) {
+		if (type == null) {
+			return null;
+		}
+		switch (type) {
+		case MAIL:
+			return TypeAdresseFiscale.COURRIER;
+		case REPRESENTATION:
+			return TypeAdresseFiscale.REPRESENTATION;
+		case RESIDENCE:
+			return TypeAdresseFiscale.DOMICILE;
+		case DEBT_PROSECUTION:
+			return TypeAdresseFiscale.POURSUITE;
+		case DEBT_PROSECUTION_OF_OTHER_PARTY:
+			return TypeAdresseFiscale.POURSUITE_AUTRE_TIERS;
+		default:
+			throw new IllegalArgumentException("Unknown AddressType = [" + type + ']');
+		}
+	}
+
+	public static TypeAdresseFiscale xmlToCore(ch.vd.unireg.xml.party.address.v2.AddressType type) {
 		if (type == null) {
 			return null;
 		}
@@ -212,7 +343,7 @@ public abstract class DataHelper {
 		i.setZipCode(value.getNpa());
 		i.setTown(value.getLocalite());
 		i.setCountry(value.getPays());
-		i.setDateOfBirth(DataHelper.coreToXML(value.getRegDateNaissance()));
+		i.setDateOfBirth(DataHelper.coreToXMLv1(value.getRegDateNaissance()));
 		i.setType(DataHelper.getPartyTypeV1(value));
 		i.setDebtorCategory(EnumHelper.coreToXMLv1(value.getCategorieImpotSource()));
 		i.setDebtorCommunicationMode(EnumHelper.coreToXMLv1(value.getModeCommunication()));
@@ -232,12 +363,12 @@ public abstract class DataHelper {
 		i.setZipCode(value.getNpa());
 		i.setTown(value.getLocalite());
 		i.setCountry(value.getPays());
-		i.setDateOfBirth(DataHelper.coreToXML(value.getRegDateNaissance()));
+		i.setDateOfBirth(DataHelper.coreToXMLv1(value.getRegDateNaissance()));
 		i.setType(DataHelper.getPartyTypeV2(value));
 		i.setDebtorCategory(EnumHelper.coreToXMLv2(value.getCategorieImpotSource()));
 		i.setDebtorCommunicationMode(EnumHelper.coreToXMLv2(value.getModeCommunication()));
-		i.setLastTaxResidenceBeginDate(DataHelper.coreToXML(value.getDateOuvertureFor()));
-		i.setLastTaxResidenceEndDate(DataHelper.coreToXML(value.getDateFermetureFor()));
+		i.setLastTaxResidenceBeginDate(DataHelper.coreToXMLv1(value.getDateOuvertureFor()));
+		i.setLastTaxResidenceEndDate(DataHelper.coreToXMLv1(value.getDateFermetureFor()));
 		if (StringUtils.isNotBlank(value.getNavs13_1())) {
 			i.setVn1(Long.valueOf(value.getNavs13_1()));
 		}
@@ -503,8 +634,8 @@ public abstract class DataHelper {
 		return forsVirtuels;
 	}
 
-	public static Date coreToXML(String s) {
-		return coreToXML(RegDateHelper.dashStringToDate(s));
+	public static ch.vd.unireg.xml.common.v1.Date coreToXML(String s) {
+		return coreToXMLv1(RegDateHelper.dashStringToDate(s));
 	}
 
 	public static <T extends Enum<T>> Set<T> toSet(List<T> parts) {

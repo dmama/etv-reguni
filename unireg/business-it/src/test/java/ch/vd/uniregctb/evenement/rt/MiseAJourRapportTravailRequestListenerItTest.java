@@ -67,9 +67,9 @@ public class MiseAJourRapportTravailRequestListenerItTest extends RapportTravail
 		final IdentifiantRapportTravail identifiant = new IdentifiantRapportTravail();
 		identifiant.setNumeroDebiteur(ids.idDebiteur.intValue());
 		identifiant.setNumeroContribuable(ids.idSourcier.intValue());
-		final Date dateDebutPeriodeDeclaration = DataHelper.coreToXML(date(2012, 1, 1));
+		final Date dateDebutPeriodeDeclaration = DataHelper.coreToXMLv1(date(2012, 1, 1));
 		identifiant.setDateDebutPeriodeDeclaration(dateDebutPeriodeDeclaration);
-		final Date dateFinPeriodeDeclaration = DataHelper.coreToXML(date(2012, 12, 31));
+		final Date dateFinPeriodeDeclaration = DataHelper.coreToXMLv1(date(2012, 12, 31));
 		identifiant.setDateFinPeriodeDeclaration(dateFinPeriodeDeclaration);
 
 		request.setIdentifiantRapportTravail(identifiant);
@@ -90,7 +90,7 @@ public class MiseAJourRapportTravailRequestListenerItTest extends RapportTravail
 
 		final MiseAJourRapportTravailResponse response = parseResponse(message);
 		assertNotNull(response);
-		assertEquals(DataHelper.coreToXML(RegDate.get()), response.getDatePriseEnCompte());
+		assertEquals(DataHelper.coreToXMLv1(RegDate.get()), response.getDatePriseEnCompte());
 
 	}
 
@@ -124,9 +124,9 @@ public class MiseAJourRapportTravailRequestListenerItTest extends RapportTravail
 		final IdentifiantRapportTravail identifiant = new IdentifiantRapportTravail();
 		identifiant.setNumeroDebiteur(ids.idDebiteur.intValue());
 		identifiant.setNumeroContribuable(ids.idSourcier.intValue());
-		final Date dateDebutPeriodeDeclaration = DataHelper.coreToXML(date(2012, 1, 1));
+		final Date dateDebutPeriodeDeclaration = DataHelper.coreToXMLv1(date(2012, 1, 1));
 		identifiant.setDateDebutPeriodeDeclaration(dateDebutPeriodeDeclaration);
-		final Date dateFinPeriodeDeclaration = DataHelper.coreToXML(date(2012, 12, 31));
+		final Date dateFinPeriodeDeclaration = DataHelper.coreToXMLv1(date(2012, 12, 31));
 		identifiant.setDateFinPeriodeDeclaration(dateFinPeriodeDeclaration);
 
 		request.setIdentifiantRapportTravail(identifiant);
@@ -168,9 +168,9 @@ public class MiseAJourRapportTravailRequestListenerItTest extends RapportTravail
 		final IdentifiantRapportTravail identifiant = new IdentifiantRapportTravail();
 		identifiant.setNumeroDebiteur(ids.idDebiteur.intValue());
 		identifiant.setNumeroContribuable(ids.idSourcier.intValue());
-		final Date dateDebutPeriodeDeclaration = DataHelper.coreToXML(date(2012, 1, 1));
+		final Date dateDebutPeriodeDeclaration = DataHelper.coreToXMLv1(date(2012, 1, 1));
 		identifiant.setDateDebutPeriodeDeclaration(dateDebutPeriodeDeclaration);
-		final Date dateFinPeriodeDeclaration = DataHelper.coreToXML(date(2012, 12, 31));
+		final Date dateFinPeriodeDeclaration = DataHelper.coreToXMLv1(date(2012, 12, 31));
 		identifiant.setDateFinPeriodeDeclaration(dateFinPeriodeDeclaration);
 
 		request.setIdentifiantRapportTravail(identifiant);
@@ -230,9 +230,9 @@ public class MiseAJourRapportTravailRequestListenerItTest extends RapportTravail
 		final IdentifiantRapportTravail identifiant = new IdentifiantRapportTravail();
 		identifiant.setNumeroDebiteur(ids.idDebiteur.intValue());
 		identifiant.setNumeroContribuable(ids.idSourcier.intValue());
-		final Date dateDebutPeriodeDeclaration = DataHelper.coreToXML(date(2012, 1, 1));
+		final Date dateDebutPeriodeDeclaration = DataHelper.coreToXMLv1(date(2012, 1, 1));
 		identifiant.setDateDebutPeriodeDeclaration(dateDebutPeriodeDeclaration);
-		final Date dateFinPeriodeDeclaration = DataHelper.coreToXML(date(2012, 12, 31));
+		final Date dateFinPeriodeDeclaration = DataHelper.coreToXMLv1(date(2012, 12, 31));
 		identifiant.setDateFinPeriodeDeclaration(dateFinPeriodeDeclaration);
 
 		request.setIdentifiantRapportTravail(identifiant);
@@ -254,7 +254,7 @@ public class MiseAJourRapportTravailRequestListenerItTest extends RapportTravail
 
 		final MiseAJourRapportTravailResponse response = (MiseAJourRapportTravailResponse) parseResponse(message);
 		assertNotNull(response);
-		assertEquals(DataHelper.coreToXML(RegDate.get()), response.getDatePriseEnCompte());
+		assertEquals(DataHelper.coreToXMLv1(RegDate.get()), response.getDatePriseEnCompte());
 
 	}
 

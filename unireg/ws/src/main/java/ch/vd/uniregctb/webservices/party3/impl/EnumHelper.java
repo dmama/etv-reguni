@@ -53,19 +53,19 @@ public abstract class EnumHelper {
 	}
 
 	public static TaxType coreToWeb(ch.vd.uniregctb.type.GenreImpot genreImpot) {
-		return ch.vd.uniregctb.xml.EnumHelper.coreToXML(genreImpot);
+		return ch.vd.uniregctb.xml.EnumHelper.coreToXMLv1(genreImpot);
 	}
 
 	public static TaxLiabilityReason coreToWeb(ch.vd.uniregctb.type.MotifRattachement rattachement) {
-		return ch.vd.uniregctb.xml.EnumHelper.coreToXML(rattachement);
+		return ch.vd.uniregctb.xml.EnumHelper.coreToXMLv1(rattachement);
 	}
 
 	public static TaxationAuthorityType coreToWeb(ch.vd.uniregctb.type.TypeAutoriteFiscale typeForFiscal) {
-		return ch.vd.uniregctb.xml.EnumHelper.coreToXML(typeForFiscal);
+		return ch.vd.uniregctb.xml.EnumHelper.coreToXMLv1(typeForFiscal);
 	}
 
 	public static TaxationMethod coreToWeb(ch.vd.uniregctb.type.ModeImposition mode) {
-		return ch.vd.uniregctb.xml.EnumHelper.coreToXML(mode);
+		return ch.vd.uniregctb.xml.EnumHelper.coreToXMLv1(mode);
 	}
 
 	public static CommunicationMode coreToWeb(ch.vd.uniregctb.type.ModeCommunication mode) {
@@ -89,7 +89,7 @@ public abstract class EnumHelper {
 	}
 
 	public static RelationBetweenPartiesType coreToWeb(ch.vd.uniregctb.type.TypeRapportEntreTiers type) {
-		return ch.vd.uniregctb.xml.EnumHelper.coreToXML(type);
+		return ch.vd.uniregctb.xml.EnumHelper.coreToXMLv1(type);
 	}
 
 	public static WithholdingTaxTariff coreToWeb(ch.vd.uniregctb.type.TarifImpotSource tarif) {
@@ -101,7 +101,7 @@ public abstract class EnumHelper {
 	}
 
 	public static LiabilityChangeReason coreToWeb(ch.vd.uniregctb.type.MotifFor ouverture) {
-		return ch.vd.uniregctb.xml.EnumHelper.coreToXML(ouverture);
+		return ch.vd.uniregctb.xml.EnumHelper.coreToXMLv1(ouverture);
 	}
 
 	public static SearchMode coreToWeb(ch.vd.uniregctb.tiers.TiersCriteria.TypeRecherche type) {
@@ -143,7 +143,7 @@ public abstract class EnumHelper {
 	}
 
 	public static TariffZone coreToWeb(TypeAffranchissement t) {
-		return ch.vd.uniregctb.xml.EnumHelper.coreToXML(t);
+		return ch.vd.uniregctb.xml.EnumHelper.coreToXMLv1(t);
 	}
 
 	public static AccountNumberFormat coreToWeb(CompteBancaire.Format format) {
@@ -151,15 +151,15 @@ public abstract class EnumHelper {
 	}
 
 	public static OwnershipType coreToWeb(GenrePropriete genre) {
-		return ch.vd.uniregctb.xml.EnumHelper.coreToXML(genre);
+		return ch.vd.uniregctb.xml.EnumHelper.coreToXMLv1(genre);
 	}
 
 	public static ImmovablePropertyType coreToWeb(TypeImmeuble type) {
-		return ch.vd.uniregctb.xml.EnumHelper.coreToXML(type);
+		return ch.vd.uniregctb.xml.EnumHelper.coreToXMLv1(type);
 	}
 
 	public static MutationType coreToWeb(TypeMutation type) {
-		return ch.vd.uniregctb.xml.EnumHelper.coreToXML(type);
+		return ch.vd.uniregctb.xml.EnumHelper.coreToXMLv1(type);
 	}
 
 	public static CategorieImpotSource webToCore(DebtorCategory category) {

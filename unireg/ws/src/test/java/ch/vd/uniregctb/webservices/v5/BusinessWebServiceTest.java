@@ -26,15 +26,15 @@ import ch.vd.unireg.ws.ack.v1.AckStatus;
 import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationAckRequest;
 import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationAckResponse;
 import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationAckResult;
-import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationKey;
 import ch.vd.unireg.ws.deadline.v1.DeadlineRequest;
 import ch.vd.unireg.ws.deadline.v1.DeadlineResponse;
 import ch.vd.unireg.ws.deadline.v1.DeadlineStatus;
-import ch.vd.unireg.ws.debtorinfo.v1.DebtorInfo;
 import ch.vd.unireg.ws.modifiedtaxpayers.v1.PartyNumberList;
 import ch.vd.unireg.ws.security.v1.AllowedAccess;
 import ch.vd.unireg.ws.security.v1.SecurityResponse;
 import ch.vd.unireg.ws.taxoffices.v1.TaxOffices;
+import ch.vd.unireg.xml.party.taxdeclaration.v3.TaxDeclarationKey;
+import ch.vd.unireg.xml.party.withholding.v1.DebtorInfo;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.WebserviceTest;
 import ch.vd.uniregctb.declaration.Declaration;
@@ -316,15 +316,15 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		assertValidInteger(data.pp2);
 
 		// quittancement
-		final OrdinaryTaxDeclarationKey key1 = new OrdinaryTaxDeclarationKey((int) data.pp1, annee, 2);
-		final OrdinaryTaxDeclarationKey key2 = new OrdinaryTaxDeclarationKey((int) data.pp2, annee, 1);
+		final TaxDeclarationKey key1 = new TaxDeclarationKey((int) data.pp1, annee, 2);
+		final TaxDeclarationKey key2 = new TaxDeclarationKey((int) data.pp2, annee, 1);
 
-		final Map<OrdinaryTaxDeclarationKey, AckStatus> expected = new HashMap<>();
+		final Map<TaxDeclarationKey, AckStatus> expected = new HashMap<>();
 		expected.put(key1, AckStatus.ERROR_UNKNOWN_TAX_DECLARATION);
 		expected.put(key2, AckStatus.OK);
 
-		final List<OrdinaryTaxDeclarationKey> keys = Arrays.asList(key1, key2);
-		final OrdinaryTaxDeclarationAckRequest req = new OrdinaryTaxDeclarationAckRequest("ADDO", DataHelper.coreToXML(DateHelper.getCurrentDate()), keys);
+		final List<TaxDeclarationKey> keys = Arrays.asList(key1, key2);
+		final OrdinaryTaxDeclarationAckRequest req = new OrdinaryTaxDeclarationAckRequest("ADDO", DataHelper.coreToXMLv2(DateHelper.getCurrentDate()), keys);
 		final OrdinaryTaxDeclarationAckResponse resp = service.ackOrdinaryTaxDeclarations(new UserLogin(getDefaultOperateurName(), 22), req);
 		Assert.assertNotNull(resp);
 
@@ -344,8 +344,8 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
-				for (Map.Entry<OrdinaryTaxDeclarationKey, AckStatus> entry : expected.entrySet()) {
-					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(entry.getKey().getPartyNo(), false);
+				for (Map.Entry<TaxDeclarationKey, AckStatus> entry : expected.entrySet()) {
+					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(entry.getKey().getTaxpayerNumber(), false);
 					final List<Declaration> decls = pp.getDeclarationsForPeriode(annee, false);
 					Assert.assertNotNull(decls);
 					Assert.assertEquals(1, decls.size());
@@ -417,7 +417,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 		// demande de délai qui échoue (délai plus ancien)
 		{
-			final DeadlineRequest req = new DeadlineRequest(DataHelper.coreToXML(delaiInitial.addMonths(-2)), DataHelper.coreToXML(RegDate.get()));
+			final DeadlineRequest req = new DeadlineRequest(DataHelper.coreToXMLv2(delaiInitial.addMonths(-2)), DataHelper.coreToXMLv2(RegDate.get()));
 			final DeadlineResponse resp = service.newOrdinaryTaxDeclarationDeadline((int) ppId, annee, 1, new UserLogin(getDefaultOperateurName(), 22), req);
 			Assert.assertNotNull(resp);
 			Assert.assertEquals(DeadlineStatus.ERROR_INVALID_DEADLINE, resp.getStatus());
@@ -443,7 +443,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		// demande de délai qui marche
 		final RegDate nouveauDelai = RegDateHelper.maximum(delaiInitial.addMonths(1), RegDate.get(), NullDateBehavior.LATEST);
 		{
-			final DeadlineRequest req = new DeadlineRequest(DataHelper.coreToXML(nouveauDelai), DataHelper.coreToXML(RegDate.get()));
+			final DeadlineRequest req = new DeadlineRequest(DataHelper.coreToXMLv2(nouveauDelai), DataHelper.coreToXMLv2(RegDate.get()));
 			final DeadlineResponse resp = service.newOrdinaryTaxDeclarationDeadline((int) ppId, annee, 1, new UserLogin(getDefaultOperateurName(), 22), req);
 			Assert.assertNotNull(resp);
 			Assert.assertEquals(resp.getAdditionalMessage(), DeadlineStatus.OK, resp.getStatus());
@@ -591,14 +591,14 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		Assert.assertTrue(dpiId >= Integer.MIN_VALUE && dpiId <= Integer.MAX_VALUE);
 		{
 			final DebtorInfo info = service.getDebtorInfo(new UserLogin(getDefaultOperateurName(), 22), (int) dpiId, 2012);
-			Assert.assertEquals((int) dpiId, info.getDebtorNo());
+			Assert.assertEquals((int) dpiId, info.getNumber());
 			Assert.assertEquals(2012, info.getTaxPeriod());
 			Assert.assertEquals(0, info.getNumberOfWithholdingTaxDeclarationsIssued());
 			Assert.assertEquals(12, info.getTheoreticalNumberOfWithholdingTaxDeclarations());
 		}
 		{
 			final DebtorInfo info = service.getDebtorInfo(new UserLogin(getDefaultOperateurName(), 22), (int) dpiId, 2013);
-			Assert.assertEquals((int) dpiId, info.getDebtorNo());
+			Assert.assertEquals((int) dpiId, info.getNumber());
 			Assert.assertEquals(2013, info.getTaxPeriod());
 			Assert.assertEquals(2, info.getNumberOfWithholdingTaxDeclarationsIssued());
 			Assert.assertEquals(12, info.getTheoreticalNumberOfWithholdingTaxDeclarations());

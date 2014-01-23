@@ -254,7 +254,7 @@ public class DataHelper {
 		for (ch.vd.uniregctb.interfaces.model.EvenementPM e : events) {
 			CorporationEvent event = new CorporationEvent();
 			event.setPartyNumber(e.getNumeroPM().intValue());
-			event.setDate(ch.vd.uniregctb.xml.DataHelper.coreToXML(e.getDate()));
+			event.setDate(ch.vd.uniregctb.xml.DataHelper.coreToXMLv1(e.getDate()));
 			event.setCode(e.getCode());
 			response.getEvents().add(event);
 		}

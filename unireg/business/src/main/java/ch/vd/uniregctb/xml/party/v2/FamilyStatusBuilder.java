@@ -8,9 +8,9 @@ import ch.vd.uniregctb.xml.EnumHelper;
 public class FamilyStatusBuilder {
 	public static FamilyStatus newFamilyStatus(VueSituationFamille situation) {
 		final FamilyStatus s = new FamilyStatus();
-		s.setDateFrom(DataHelper.coreToXML(situation.getDateDebut()));
-		s.setDateTo(DataHelper.coreToXML(situation.getDateFin()));
-		s.setCancellationDate(DataHelper.coreToXML(situation.getAnnulationDate()));
+		s.setDateFrom(DataHelper.coreToXMLv1(situation.getDateDebut()));
+		s.setDateTo(DataHelper.coreToXMLv1(situation.getDateFin()));
+		s.setCancellationDate(DataHelper.coreToXMLv1(situation.getAnnulationDate()));
 		s.setNumberOfChildren(situation.getNombreEnfants());
 
 		if (situation instanceof ch.vd.uniregctb.situationfamille.VueSituationFamilleMenageCommun) {

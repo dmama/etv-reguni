@@ -9,8 +9,8 @@ import ch.vd.uniregctb.xml.DataHelper;
 public class SimplifiedTaxLiabilityBuilder {
 	public static SimplifiedTaxLiability newSimplifiedTaxLiability(ch.vd.uniregctb.metier.assujettissement.Assujettissement assujettissement, SimplifiedTaxLiabilityType type) {
 		final SimplifiedTaxLiability a = new SimplifiedTaxLiability();
-		a.setDateFrom(DataHelper.coreToXML(assujettissement.getDateDebut()));
-		a.setDateTo(DataHelper.coreToXML(assujettissement.getDateFin()));
+		a.setDateFrom(DataHelper.coreToXMLv1(assujettissement.getDateDebut()));
+		a.setDateTo(DataHelper.coreToXMLv1(assujettissement.getDateFin()));
 		a.setType(type);
 		return a;
 	}
