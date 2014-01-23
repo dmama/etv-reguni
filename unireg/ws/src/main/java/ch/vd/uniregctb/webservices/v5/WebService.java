@@ -24,10 +24,17 @@ public interface WebService {
 	Response ping();
 
 	@PUT
+	@Consumes(MediaType.APPLICATION_JSON)
 	@Path("/repayment/{partyNo}/blocked")
-	Response setBlocageRemboursementAuto(@PathParam("partyNo") int partyNo,
-	                                     @QueryParam("login") String login,
-	                                     @QueryParam("value") Boolean blocked);
+	Response setAutomaticRepaymentBlockingFlag(@PathParam("partyNo") int partyNo,
+	                                           @QueryParam("login") String login,
+	                                           String value);
+
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/repayment/{partyNo}/blocked")
+	Response getAutomaticRepaymentBlockingFlag(@PathParam("partyNo") int partyNo,
+	                                           @QueryParam("login") String login);
 
 	@GET
 	@Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
@@ -100,15 +107,15 @@ public interface WebService {
 	@Consumes(MediaType.APPLICATION_XML)
 	@Produces(MediaType.APPLICATION_XML)
 	@Path("/ackOrdinaryTaxDeclarations")
-	Response quittancerDeclarations(@QueryParam("login") String login, OrdinaryTaxDeclarationAckRequest request);
+	Response ackOrdinaryTaxDeclarations(@QueryParam("login") String login, OrdinaryTaxDeclarationAckRequest request);
 
 	@POST
 	@Path("/newOrdinaryTaxDeclarationDeadline/{partyNo}/{fiscalPeriod}/{sequenceNo}")
 	@Consumes(MediaType.APPLICATION_XML)
 	@Produces(MediaType.APPLICATION_XML)
-	Response nouveauDelaiPourDeclarationOrdinaire(@PathParam("partyNo") int partyNo,
-	                                              @PathParam("fiscalPeriod") int pf,
-	                                              @PathParam("sequenceNo") int seqNo,
-	                                              @QueryParam("login") String login,
-	                                              DeadlineRequest request);
+	Response newOrdinaryTaxDeclarationDeadline(@PathParam("partyNo") int partyNo,
+	                                           @PathParam("fiscalPeriod") int pf,
+	                                           @PathParam("sequenceNo") int seqNo,
+	                                           @QueryParam("login") String login,
+	                                           DeadlineRequest request);
 }

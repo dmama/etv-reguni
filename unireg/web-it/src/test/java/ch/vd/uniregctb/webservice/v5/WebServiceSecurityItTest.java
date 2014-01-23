@@ -1,13 +1,14 @@
 package ch.vd.uniregctb.webservice.v5;
 
-import org.jetbrains.annotations.NotNull;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.HttpStatusCodeException;
-import org.springframework.web.client.RestTemplate;
 
 import ch.vd.unireg.ws.security.v1.AllowedAccess;
 import ch.vd.unireg.ws.security.v1.SecurityResponse;
@@ -34,20 +35,16 @@ public class WebServiceSecurityItTest extends AbstractWebServiceItTest {
 		}
 	}
 
-	private ResponseEntity<SecurityResponse> callService(UserLogin login, long noTiers, @NotNull MediaType mediaType) {
-		final RestTemplate template = buildTemplateWithAcceptHeader(mediaType);
-		try {
-			final ResponseEntity<SecurityResponse> response = template.getForEntity(v5Url + "/security/{user}/{partyNo}", SecurityResponse.class, login.getUserId(), noTiers);
-			Assert.assertNotNull(response);
-			return response;
-		}
-		catch (HttpStatusCodeException e) {
-			return new ResponseEntity<>(e.getStatusCode());
-		}
+	private static Pair<String, Map<String, ?>> buildUriAndParams(UserLogin userLogin, long partyNumber) {
+		final Map<String, Object> map = new HashMap<>();
+		map.put("user", userLogin.getUserId());
+		map.put("partyNo", partyNumber);
+		return Pair.<String, Map<String, ?>>of("/security/{user}/{partyNo}", map);
 	}
 
 	private void doTest(UserLogin login, long noTiers, AllowedAccess expected, MediaType mediaType) {
-		final ResponseEntity<SecurityResponse> response = callService(login, noTiers, mediaType);
+		final Pair<String, Map<String, ?>> params = buildUriAndParams(login, noTiers);
+		final ResponseEntity<SecurityResponse> response = get(SecurityResponse.class, mediaType, params.getLeft(), params.getRight());
 		Assert.assertEquals(HttpStatus.OK, response.getStatusCode());
 
 		final SecurityResponse body = response.getBody();
@@ -59,12 +56,13 @@ public class WebServiceSecurityItTest extends AbstractWebServiceItTest {
 
 	@Test
 	public void testTiersInconnu() throws Exception {
+		final Pair<String, Map<String, ?>> params = buildUriAndParams(zaiptf, 0L);
 		{
-			final ResponseEntity<SecurityResponse> response = callService(zaiptf, 0L, MediaType.APPLICATION_XML);
+			final ResponseEntity<SecurityResponse> response = get(SecurityResponse.class, MediaType.APPLICATION_XML, params.getLeft(), params.getRight());
 			Assert.assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
 		}
 		{
-			final ResponseEntity<SecurityResponse> response = callService(zaiptf, 0L, MediaType.APPLICATION_JSON);
+			final ResponseEntity<SecurityResponse> response = get(SecurityResponse.class, MediaType.APPLICATION_JSON, params.getLeft(), params.getRight());
 			Assert.assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
 		}
 	}

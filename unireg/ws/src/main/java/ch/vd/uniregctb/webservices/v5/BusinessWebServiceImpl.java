@@ -90,7 +90,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	}
 
 	@Override
-	public void setBlocageRemboursementAuto(final int partyNo, UserLogin login, final boolean blocked) throws AccessDeniedException {
+	public void setAutomaticRepaymentBlockingFlag(final int partyNo, UserLogin login, final boolean blocked) throws AccessDeniedException {
 		WebServiceHelper.checkAccess(securityProvider, login, Role.VISU_ALL);
 		WebServiceHelper.checkPartyReadWriteAccess(securityProvider, login, partyNo);
 
@@ -98,13 +98,33 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 			@Override
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
 				final Tiers tiers = tiersService.getTiers(partyNo);
+				if (tiers == null) {
+					throw new TiersNotFoundException(partyNo);
+				}
 				tiers.setBlocageRemboursementAutomatique(blocked);
 			}
 		});
 	}
 
 	@Override
-	public OrdinaryTaxDeclarationAckResponse quittancerDeclarations(final UserLogin login, OrdinaryTaxDeclarationAckRequest request) throws AccessDeniedException {
+	public boolean getAutomaticRepaymentBlockingFlag(final int partyNo, UserLogin login) throws AccessDeniedException {
+		WebServiceHelper.checkAccess(securityProvider, login, Role.VISU_ALL);
+		WebServiceHelper.checkPartyReadAccess(securityProvider, login, partyNo);
+
+		return doInTransaction(true, new TransactionCallback<Boolean>() {
+			@Override
+			public Boolean doInTransaction(TransactionStatus status) {
+				final Tiers tiers = tiersService.getTiers(partyNo);
+				if (tiers == null) {
+					throw new TiersNotFoundException(partyNo);
+				}
+				return tiers.getBlocageRemboursementAutomatique() != null && tiers.getBlocageRemboursementAutomatique() ? Boolean.TRUE : Boolean.FALSE;
+			}
+		});
+	}
+
+	@Override
+	public OrdinaryTaxDeclarationAckResponse ackOrdinaryTaxDeclarations(final UserLogin login, OrdinaryTaxDeclarationAckRequest request) throws AccessDeniedException {
 		WebServiceHelper.checkAccess(securityProvider, login, Role.DI_QUIT_PP);
 
 		final RegDate dateRetour = ch.vd.uniregctb.xml.DataHelper.xmlToCore(request.getDate());
@@ -284,7 +304,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	}
 
 	@Override
-	public DeadlineResponse nouveauDelaiPourDeclarationOrdinaire(final int partyNo, final int pf, final int seqNo, UserLogin login, DeadlineRequest request) throws AccessDeniedException {
+	public DeadlineResponse newOrdinaryTaxDeclarationDeadline(final int partyNo, final int pf, final int seqNo, UserLogin login, DeadlineRequest request) throws AccessDeniedException {
 		WebServiceHelper.checkAccess(securityProvider, login, Role.DI_DELAI_PP);
 
 		final RegDate nouveauDelai = ch.vd.uniregctb.xml.DataHelper.xmlToCore(request.getNewDeadline());

@@ -4,6 +4,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.apache.cxf.jaxrs.ext.MessageContext;
 import org.apache.log4j.Logger;
@@ -27,6 +28,8 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 	private static final Logger LOGGER = Logger.getLogger(WebServiceEndPoint.class);
 	private static final Logger READ_ACCESS_LOG = Logger.getLogger("ws.v5.read");
 	private static final Logger WRITE_ACCESS_LOG = Logger.getLogger("ws.v5.write");
+
+	private static final Pattern BOOLEAN_PATTERN = Pattern.compile("(true|false)", Pattern.CASE_INSENSITIVE);
 
 	@Context
 	private MessageContext messageContext;
@@ -100,25 +103,42 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 	}
 
 	@Override
-	public Response setBlocageRemboursementAuto(final int partyNo, final String login, final Boolean blocked) {
+	public Response setAutomaticRepaymentBlockingFlag(final int partyNo, final String login, final String value) {
 
 		final Object params = new Object() {
 			@Override
 			public String toString() {
-				return String.format("setBlockageRemboursementAuto{partyNo=%d, login='%s', blocked=%s}", partyNo, login, blocked);
+				return String.format("setAutomaticRepaymentBlockingFlag{partyNo=%d, login='%s', value='%s'}", partyNo, login, value);
 			}
 		};
 		return execute(login, params, WRITE_ACCESS_LOG, new ExecutionCallback() {
 			@Override
 			public Response execute(UserLogin userLogin) throws Exception {
-
-				if (blocked == null) {
-					LOGGER.error("Missing 'value' parameter");
-					return WebServiceHelper.buildErrorResponse(Response.Status.BAD_REQUEST, "Missing 'value' parameter.");
+				if (value == null || !BOOLEAN_PATTERN.matcher(value).matches()) {
+					LOGGER.error("Wrong or missing new flag value");
+					return WebServiceHelper.buildErrorResponse(Response.Status.BAD_REQUEST, "Wrong or missing new flag value.");
 				}
 
-				target.setBlocageRemboursementAuto(partyNo, userLogin, blocked);
+				final boolean blocked = Boolean.parseBoolean(value);
+				target.setAutomaticRepaymentBlockingFlag(partyNo, userLogin, blocked);
 				return Response.ok().build();
+			}
+		});
+	}
+
+	@Override
+	public Response getAutomaticRepaymentBlockingFlag(final int partyNo, final String login) {
+		final Object params = new Object() {
+			@Override
+			public String toString() {
+				return String.format("getAutomaticRepaymentBlockingFlag{partyNo=%d, login='%s'}", partyNo, login);
+			}
+		};
+		return execute(login, params, READ_ACCESS_LOG, new ExecutionCallback() {
+			@Override
+			public Response execute(UserLogin userLogin) throws Exception {
+				final boolean blocked = target.getAutomaticRepaymentBlockingFlag(partyNo, userLogin);
+				return Response.ok(Boolean.toString(blocked)).build();
 			}
 		});
 	}
@@ -213,37 +233,37 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 	}
 
 	@Override
-	public Response quittancerDeclarations(final String login, final OrdinaryTaxDeclarationAckRequest request) {
+	public Response ackOrdinaryTaxDeclarations(final String login, final OrdinaryTaxDeclarationAckRequest request) {
 
 		final Object params = new Object() {
 			@Override
 			public String toString() {
-				return String.format("quittancerDeclarations{login='%s', request='%s'}", login, request);
+				return String.format("ackOrdinaryTaxDeclarations{login='%s', request='%s'}", login, request);
 			}
 		};
 		return execute(login, params, WRITE_ACCESS_LOG, new ExecutionCallback() {
 			@Override
 			public Response execute(final UserLogin userLogin) throws Exception {
-				final OrdinaryTaxDeclarationAckResponse response = target.quittancerDeclarations(userLogin, request);
+				final OrdinaryTaxDeclarationAckResponse response = target.ackOrdinaryTaxDeclarations(userLogin, request);
 				return Response.ok(ackObjectFactory.createOrdinaryTaxDeclarationAckResponse(response)).build();
 			}
 		});
 	}
 
 	@Override
-	public Response nouveauDelaiPourDeclarationOrdinaire(final int partyNo, final int pf, final int seqNo,
-	                                                     final String login, final DeadlineRequest request) {
+	public Response newOrdinaryTaxDeclarationDeadline(final int partyNo, final int pf, final int seqNo,
+	                                                  final String login, final DeadlineRequest request) {
 
 		final Object params = new Object() {
 			@Override
 			public String toString() {
-				return String.format("nouveauDelaiPourDeclarationOrdinaire{login='%s', partyNo=%d, pf=%d, seqNo=%d, request=%s", login, partyNo, pf, seqNo, request);
+				return String.format("newOrdinaryTaxDeclarationDeadline{login='%s', partyNo=%d, pf=%d, seqNo=%d, request=%s", login, partyNo, pf, seqNo, request);
 			}
 		};
 		return execute(login, params, WRITE_ACCESS_LOG, new ExecutionCallback() {
 			@Override
 			public Response execute(UserLogin userLogin) throws Exception {
-				final DeadlineResponse response = target.nouveauDelaiPourDeclarationOrdinaire(partyNo, pf, seqNo, userLogin, request);
+				final DeadlineResponse response = target.newOrdinaryTaxDeclarationDeadline(partyNo, pf, seqNo, userLogin, request);
 				return Response.ok(deadlineObjectFactory.createDeadlineResponse(response)).build();
 			}
 		});

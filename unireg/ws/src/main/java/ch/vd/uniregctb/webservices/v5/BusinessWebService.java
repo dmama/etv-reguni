@@ -28,7 +28,16 @@ public interface BusinessWebService {
 	 * @param blocked nouvel état du flag
 	 * @throws AccessDeniedException si l'opérateur n'a pas le droit de faire ça
 	 */
-	void setBlocageRemboursementAuto(int partyNo, UserLogin login, boolean blocked) throws AccessDeniedException;
+	void setAutomaticRepaymentBlockingFlag(int partyNo, UserLogin login, boolean blocked) throws AccessDeniedException;
+
+	/**
+	 * Interrogation du flag de blocage de remboursement automatique sur un tiers donné
+	 * @param partyNo numéro du tiers
+	 * @param login désination de l'opérateur qui veut savoir
+	 * @return <code>true</code> si le blocage est actif, <code>false</code> sinon
+	 * @throws AccessDeniedException si l'opérateur n'a pas le droit de lecture sur le dossier
+	 */
+	boolean getAutomaticRepaymentBlockingFlag(int partyNo, UserLogin login) throws AccessDeniedException;
 
 	/**
 	 * Quittancement d'une série de déclarations d'impôt
@@ -37,7 +46,7 @@ public interface BusinessWebService {
 	 * @return un statut sur les quittancements opérés
 	 * @throws AccessDeniedException si l'opérateur n'a pas le droit de faire ça
 	 */
-	OrdinaryTaxDeclarationAckResponse quittancerDeclarations(UserLogin login, OrdinaryTaxDeclarationAckRequest request) throws AccessDeniedException;
+	OrdinaryTaxDeclarationAckResponse ackOrdinaryTaxDeclarations(UserLogin login, OrdinaryTaxDeclarationAckRequest request) throws AccessDeniedException;
 
 	/**
 	 * Demande de nouveau délai de dépôt pour une déclaration d'impôt
@@ -49,6 +58,6 @@ public interface BusinessWebService {
 	 * @return un statut sur le délai demandé
 	 * @throws AccessDeniedException si l'opérateur n'a pas le droit de faire ça
 	 */
-	DeadlineResponse nouveauDelaiPourDeclarationOrdinaire(int partyNo, int pf, int seqNo, UserLogin login, DeadlineRequest request) throws AccessDeniedException;
+	DeadlineResponse newOrdinaryTaxDeclarationDeadline(int partyNo, int pf, int seqNo, UserLogin login, DeadlineRequest request) throws AccessDeniedException;
 
 }

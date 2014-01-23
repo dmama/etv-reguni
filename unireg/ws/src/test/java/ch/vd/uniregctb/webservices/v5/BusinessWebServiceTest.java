@@ -63,7 +63,9 @@ public class BusinessWebServiceTest extends WebserviceTest {
 	}
 
 	@Test
-	public void testSetBlocageRemboursementAuto() throws Exception {
+	public void testBlocageRemboursementAuto() throws Exception {
+
+		final UserLogin login = new UserLogin(getDefaultOperateurName(), 22);
 
 		// mise en place civile
 		serviceCivil.setUp(new MockServiceCivil() {
@@ -94,10 +96,13 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			}
 		});
 
+		Assert.assertFalse(service.getAutomaticRepaymentBlockingFlag((int) ppId, login));
+
 		// appel du WS (= sans changement)
-		service.setBlocageRemboursementAuto((int) ppId, new UserLogin(getDefaultOperateurName(), 22), false);
+		service.setAutomaticRepaymentBlockingFlag((int) ppId, login, false);
 
 		// vérification
+		Assert.assertFalse(service.getAutomaticRepaymentBlockingFlag((int) ppId, login));
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
@@ -108,9 +113,10 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		});
 
 		// appel du WS (= avec changement)
-		service.setBlocageRemboursementAuto((int) ppId, new UserLogin(getDefaultOperateurName(), 22), true);
+		service.setAutomaticRepaymentBlockingFlag((int) ppId, login, true);
 
 		// vérification
+		Assert.assertTrue(service.getAutomaticRepaymentBlockingFlag((int) ppId, login));
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
@@ -121,9 +127,10 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		});
 
 		// appel du WS (= avec changement)
-		service.setBlocageRemboursementAuto((int) ppId, new UserLogin(getDefaultOperateurName(), 22), false);
+		service.setAutomaticRepaymentBlockingFlag((int) ppId, login, false);
 
 		// vérification
+		Assert.assertFalse(service.getAutomaticRepaymentBlockingFlag((int) ppId, login));
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
@@ -305,7 +312,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 		final List<OrdinaryTaxDeclarationKey> keys = Arrays.asList(key1, key2);
 		final OrdinaryTaxDeclarationAckRequest req = new OrdinaryTaxDeclarationAckRequest("ADDO", DataHelper.coreToXML(DateHelper.getCurrentDate()), keys);
-		final OrdinaryTaxDeclarationAckResponse resp = service.quittancerDeclarations(new UserLogin(getDefaultOperateurName(), 22), req);
+		final OrdinaryTaxDeclarationAckResponse resp = service.ackOrdinaryTaxDeclarations(new UserLogin(getDefaultOperateurName(), 22), req);
 		Assert.assertNotNull(resp);
 
 		// vérification des codes retour
@@ -398,7 +405,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		// demande de délai qui échoue (délai plus ancien)
 		{
 			final DeadlineRequest req = new DeadlineRequest(DataHelper.coreToXML(delaiInitial.addMonths(-2)), DataHelper.coreToXML(RegDate.get()));
-			final DeadlineResponse resp = service.nouveauDelaiPourDeclarationOrdinaire((int) ppId, annee, 1, new UserLogin(getDefaultOperateurName(), 22), req);
+			final DeadlineResponse resp = service.newOrdinaryTaxDeclarationDeadline((int) ppId, annee, 1, new UserLogin(getDefaultOperateurName(), 22), req);
 			Assert.assertNotNull(resp);
 			Assert.assertEquals(DeadlineStatus.ERROR_INVALID_DEADLINE, resp.getStatus());
 		}
@@ -424,7 +431,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		final RegDate nouveauDelai = RegDateHelper.maximum(delaiInitial.addMonths(1), RegDate.get(), NullDateBehavior.LATEST);
 		{
 			final DeadlineRequest req = new DeadlineRequest(DataHelper.coreToXML(nouveauDelai), DataHelper.coreToXML(RegDate.get()));
-			final DeadlineResponse resp = service.nouveauDelaiPourDeclarationOrdinaire((int) ppId, annee, 1, new UserLogin(getDefaultOperateurName(), 22), req);
+			final DeadlineResponse resp = service.newOrdinaryTaxDeclarationDeadline((int) ppId, annee, 1, new UserLogin(getDefaultOperateurName(), 22), req);
 			Assert.assertNotNull(resp);
 			Assert.assertEquals(resp.getAdditionalMessage(), DeadlineStatus.OK, resp.getStatus());
 		}
