@@ -268,7 +268,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 					}
 					final MediaType preferred = getPreferredMediaTypeFromXmlOrJson();
 					if (preferred == WebServiceHelper.APPLICATION_JSON_WITH_UTF8_CHARSET_TYPE) {
-						return ExecutionResult.with(Response.ok(party, preferred).build());
+						return ExecutionResult.with(Response.ok(new PartyJsonContainer(party), preferred).build());
 					}
 					else if (preferred == MediaType.APPLICATION_XML_TYPE) {
 						return ExecutionResult.with(Response.ok(partyObjectFactory.createParty(party), preferred).build());

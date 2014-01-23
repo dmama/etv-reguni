@@ -26,6 +26,7 @@ import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.indexer.tiers.AutreCommunauteIndexable;
+import ch.vd.uniregctb.indexer.tiers.CollectiviteAdministrativeIndexable;
 import ch.vd.uniregctb.indexer.tiers.DebiteurPrestationImposableIndexable;
 import ch.vd.uniregctb.indexer.tiers.EntrepriseIndexable;
 import ch.vd.uniregctb.indexer.tiers.HabitantIndexable;
@@ -476,6 +477,7 @@ public abstract class DataHelper {
 			put(AutreCommunauteIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v3.PartyType.CORPORATION);
 			put(EntrepriseIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v3.PartyType.CORPORATION);
 			put(DebiteurPrestationImposableIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v3.PartyType.DEBTOR);
+			put(CollectiviteAdministrativeIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v3.PartyType.ADMINISTRATIVE_AUTHORITY);
 		}
 	};
 
