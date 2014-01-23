@@ -28,6 +28,8 @@
 	<system systemId="http://resources.etat-de-vaud.ch/fiscalite/registre/unireg-ws-debtorinfo-1.xsd" uri="ws/unireg-ws-debtorinfo-1.xsd" />
 	<system systemId="http://resources.etat-de-vaud.ch/fiscalite/registre/unireg-ws-parties-1.xsd" uri="ws/unireg-ws-parties-1.xsd" />
 	<system systemId="http://resources.etat-de-vaud.ch/fiscalite/registre/unireg-ws-party-1.xsd" uri="ws/unireg-ws-party-1.xsd" />
+	<system systemId="http://resources.etat-de-vaud.ch/fiscalite/registre/unireg-ws-searchparty-1.xsd" uri="ws/unireg-ws-searchparty-1.xsd" />
+	<system systemId="http://resources.etat-de-vaud.ch/fiscalite/registre/unireg-ws-searchcorporationevent-1.xsd" uri="ws/unireg-ws-searchcorporationevent-1.xsd" />
 
 	<!--<delegateSystem systemIdStartString="http://www.ech.ch/xmlns/" catalog="../../../../ech/src/main/resources/catalog.xml" />-->
 

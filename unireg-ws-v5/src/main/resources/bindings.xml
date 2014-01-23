@@ -310,4 +310,22 @@
 		</jxb:bindings>
 	</jxb:bindings>
 
+	<jxb:bindings schemaLocation="http://resources.etat-de-vaud.ch/fiscalite/registre/unireg-ws-searchparty-1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.ws.search.party.v1" />
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="ws-searchparty-1" />
+		</jxb:bindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="http://resources.etat-de-vaud.ch/fiscalite/registre/unireg-ws-searchcorporationevent-1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.ws.search.corpevent.v1" />
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="ws-searchcorpevent-1" />
+		</jxb:bindings>
+	</jxb:bindings>
+
 </jxb:bindings>
