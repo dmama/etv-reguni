@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+							http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<bean id="identificationContribuableRequestHandler" class="ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableRequestHandler">
+		<property name="esbTemplate" ref="esbJmsTemplate" />
+		<property name="identCtbService" ref="identCtbService" />
+		<property name="tiersService" ref="tiersService" />
+	</bean>
+
+	<bean id="identCtbMessageListenerAutomatique" class="ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener" parent="esbMessageListener">
+		<property name="handler" ref="identificationContribuableRequestHandler" />
+	</bean>
+
+	<bean id="jmsIdentCtbEndpointManagerAutomatique" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">
+		<property name="resourceAdapter" ref="jmsResourceAdapter"/>
+		<property name="activationSpec">
+			<bean class="org.apache.activemq.ra.ActiveMQActivationSpec">
+				<property name="destination" value="${testprop.jms.queue.ident.ctb.input}"/>
+				<property name="destinationType" value="javax.jms.Queue"/>
+				<property name="maxSessions" value="1"/>
+				<property name="maxMessagesPerSessions" value="1"/>
+			</bean>
+		</property>
+		<property name="messageListener" ref="identCtbMessageListenerAutomatique" />
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="autoStartup" value="true" />
+	</bean>
+
+</beans>
