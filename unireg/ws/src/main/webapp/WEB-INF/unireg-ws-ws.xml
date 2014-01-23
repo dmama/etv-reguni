@@ -2,9 +2,11 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
 	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	   xmlns:jaxws="http://cxf.apache.org/jaxws"
+	   xmlns:jaxrs="http://cxf.apache.org/jaxrs"
 	   xmlns:util="http://www.springframework.org/schema/util"
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
 							http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd
+							http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd
 							http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
 
 	<import resource="classpath:META-INF/cxf/cxf.xml" />
@@ -128,6 +130,30 @@
 	<bean id="securiteServiceBean" class="ch.vd.uniregctb.webservices.securite.impl.SecuriteWebServiceImpl">
 		<property name="dao" ref="droitAccesDAO" />
 		<property name="securityProvider" ref="securityProviderInterface"/>
+	</bean>
+
+	<!-- WS REST v5 -->
+	<jaxrs:server address="/v5">
+		<jaxrs:serviceBeans>
+			<ref bean="v5EndPoint"/>
+		</jaxrs:serviceBeans>
+		<jaxrs:extensionMappings>
+			<entry key="xml" value="application/xml"/>
+		</jaxrs:extensionMappings>
+		<jaxrs:schemaLocations>
+			<jaxrs:schemaLocation>classpath:/unireg-ws-ack-1.xsd</jaxrs:schemaLocation>
+			<jaxrs:schemaLocation>classpath:/unireg-ws-deadline-1.xsd</jaxrs:schemaLocation>
+			<jaxrs:schemaLocation>classpath:/unireg-ws-error-1.xsd</jaxrs:schemaLocation>
+			<jaxrs:schemaLocation>classpath:/unireg-ws-security-1.xsd</jaxrs:schemaLocation>
+		</jaxrs:schemaLocations>
+	</jaxrs:server>
+
+	<bean id="v5EndPoint" class="ch.vd.uniregctb.webservices.v5.WebServiceEndPoint">
+		<property name="securityProvider" ref="securityProviderInterface"/>
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="tiersService" ref="tiersService"/>
+		<property name="diService" ref="diService"/>
+		<property name="bamSender" ref="bamMessageSender"/>
 	</bean>
 
 </beans>

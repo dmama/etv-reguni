@@ -77,6 +77,16 @@
 			<version>${wsparty3.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>ch.vd.uniregctb</groupId>
+			<artifactId>unireg-ws-v5</artifactId>
+			<version>${ws.v5.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>ch.vd.uniregctb</groupId>
+			<artifactId>unireg-jaxb2-ech</artifactId>
+			<version>2.5-SNAPSHOT</version>
+		</dependency>
+		<dependency>
 			<groupId>${pom.parent.groupId}</groupId>
 			<artifactId>uniregctb-core</artifactId>
 			<version>${pom.parent.version}</version>

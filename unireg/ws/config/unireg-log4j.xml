@@ -21,7 +21,7 @@
 		<param name="Threshold" value="DEBUG" />
 		<param name="File" value="ws-access.log" />
 		<layout class="org.apache.log4j.PatternLayout">
-			<param name="ConversionPattern" value="[%c] %-5p [%d{yyyy-MM-dd HH:mm:ss.SSS}] %m%n" />
+			<param name="ConversionPattern" value="[%c{2}] %-5p [%d{yyyy-MM-dd HH:mm:ss.SSS}] %m%n" />
 		</layout>
 	</appender>
 
@@ -112,6 +112,16 @@
 	</category>
 
 	<category name="party4.write" additivity="false">
+	  <priority value="INFO"/>
+	  <appender-ref ref="WS_ACCESS"/>
+	</category>
+
+	<category name="ws.v5.read" additivity="false">
+	  <priority value="INFO"/>
+	  <appender-ref ref="WS_ACCESS"/>
+	</category>
+
+	<category name="ws.v5.write" additivity="false">
 	  <priority value="INFO"/>
 	  <appender-ref ref="WS_ACCESS"/>
 	</category>

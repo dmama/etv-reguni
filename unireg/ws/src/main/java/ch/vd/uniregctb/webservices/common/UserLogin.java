@@ -4,6 +4,8 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Cette classe doit contenir toutes les informations nécessaires à l'identification d'un utilisateur.
@@ -17,6 +19,8 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "UserLogin")
 public class UserLogin {
+
+	private static final Pattern FROM_STRING_PATTERN = Pattern.compile("([a-zA-Z0-9]{6,})/([0-9]{1,8})");
 
 	/**
 	 * L'identification de l'utilisateur telle que définie par IAM.
@@ -40,6 +44,20 @@ public class UserLogin {
 	public UserLogin(String userId, Integer oid) {
 		this.userId = userId;
 		this.oid = oid;
+	}
+
+	/**
+	 * Construit une instance de {@link UserLogin} à partir d'une chaîne de caractères qui suit le pattern {@link #FROM_STRING_PATTERN}
+	 * @param str la chaîne de caractères
+	 * @return une instance de {@link UserLogin}
+	 * @throws IllegalArgumentException si la chaîne de caractères en entrée ne suit pas le pattern {@link #FROM_STRING_PATTERN}
+	 */
+	public static UserLogin fromString(String str) {
+		final Matcher matcher = FROM_STRING_PATTERN.matcher(str);
+		if (!matcher.matches()) {
+			throw new IllegalArgumentException("Invalid value for user login");
+		}
+		return new UserLogin(matcher.group(1), Integer.parseInt(matcher.group(2)));
 	}
 
 	@Override
