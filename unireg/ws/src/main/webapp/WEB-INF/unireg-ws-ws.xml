@@ -164,6 +164,7 @@
 		<property name="bamSender" ref="bamMessageSender"/>
 		<property name="infraService" ref="serviceInfrastructureService" />
 		<property name="lrService" ref="lrService"/>
+		<property name="tiersSearcher" ref="globalTiersSearcher"/>
 	</bean>
 
 </beans>

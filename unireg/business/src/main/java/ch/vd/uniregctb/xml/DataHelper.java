@@ -378,6 +378,34 @@ public abstract class DataHelper {
 		return i;
 	}
 
+	public static ch.vd.unireg.xml.party.v3.PartyInfo coreToXMLv3(ch.vd.uniregctb.indexer.tiers.TiersIndexedData value) {
+		if (value == null) {
+			return null;
+		}
+
+		final ch.vd.unireg.xml.party.v3.PartyInfo i = new ch.vd.unireg.xml.party.v3.PartyInfo();
+		i.setNumber(value.getNumero().intValue());
+		i.setName1(value.getNom1());
+		i.setName2(value.getNom2());
+		i.setStreet(value.getRue());
+		i.setZipCode(value.getNpa());
+		i.setTown(value.getLocalite());
+		i.setCountry(value.getPays());
+		i.setDateOfBirth(DataHelper.coreToPartialDateXmlv2(value.getRegDateNaissance()));
+		i.setType(DataHelper.getPartyTypeV3(value));
+		i.setDebtorCategory(EnumHelper.coreToXMLv3(value.getCategorieImpotSource()));
+		i.setDebtorCommunicationMode(EnumHelper.coreToXMLv3(value.getModeCommunication()));
+		i.setLastTaxResidenceBeginDate(DataHelper.coreToXMLv2(value.getDateOuvertureFor()));
+		i.setLastTaxResidenceEndDate(DataHelper.coreToXMLv2(value.getDateFermetureFor()));
+		if (StringUtils.isNotBlank(value.getNavs13_1())) {
+			i.setVn1(Long.valueOf(value.getNavs13_1()));
+		}
+		if (StringUtils.isNotBlank(value.getNavs13_2())) {
+			i.setVn2(Long.valueOf(value.getNavs13_2()));
+		}
+		return i;
+	}
+
 	/**
 	 * Retourne le numéro de la déclaration d'impôt associée avec une période d'imposition.
 	 *
@@ -439,6 +467,20 @@ public abstract class DataHelper {
 		}
 	};
 
+	private static final Map<String, ch.vd.unireg.xml.party.v3.PartyType> indexedData2TypeV3 = new HashMap<String, ch.vd.unireg.xml.party.v3.PartyType>() {
+		private static final long serialVersionUID = -6977238534201838137L;
+
+		{
+			put(HabitantIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v3.PartyType.NATURAL_PERSON);
+			put(NonHabitantIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v3.PartyType.NATURAL_PERSON);
+			put(EntrepriseIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v3.PartyType.CORPORATION);
+			put(MenageCommunIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v3.PartyType.HOUSEHOLD);
+			put(AutreCommunauteIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v3.PartyType.CORPORATION);
+			put(EntrepriseIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v3.PartyType.CORPORATION);
+			put(DebiteurPrestationImposableIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v3.PartyType.DEBTOR);
+		}
+	};
+
 	/**
 	 * Détermine le type d'un tiers à partir de ses données indexées.
 	 *
@@ -471,6 +513,17 @@ public abstract class DataHelper {
 		}
 
 		return indexedData2TypeV2.get(typeAsString);
+	}
+
+	public static ch.vd.unireg.xml.party.v3.PartyType getPartyTypeV3(ch.vd.uniregctb.indexer.tiers.TiersIndexedData tiers) {
+
+		final String typeAsString = tiers.getTiersType();
+
+		if (StringUtils.isEmpty(typeAsString)) {
+			return null;
+		}
+
+		return indexedData2TypeV3.get(typeAsString);
 	}
 
 	public static Set<TiersDAO.Parts> xmlToCoreV1(Set<ch.vd.unireg.xml.party.v1.PartyPart> parts) {

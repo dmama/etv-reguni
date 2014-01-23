@@ -2,12 +2,15 @@ package ch.vd.uniregctb.webservices.v5;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import edu.emory.mathcs.backport.java.util.Collections;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 import org.junit.Test;
@@ -34,6 +37,8 @@ import ch.vd.unireg.ws.security.v1.AllowedAccess;
 import ch.vd.unireg.ws.security.v1.SecurityResponse;
 import ch.vd.unireg.ws.taxoffices.v1.TaxOffices;
 import ch.vd.unireg.xml.party.taxdeclaration.v3.TaxDeclarationKey;
+import ch.vd.unireg.xml.party.v3.PartyInfo;
+import ch.vd.unireg.xml.party.v3.PartyType;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorInfo;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.WebserviceTest;
@@ -602,6 +607,226 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			Assert.assertEquals(2013, info.getTaxPeriod());
 			Assert.assertEquals(2, info.getNumberOfWithholdingTaxDeclarationsIssued());
 			Assert.assertEquals(12, info.getTheoreticalNumberOfWithholdingTaxDeclarations());
+		}
+	}
+
+	@Test
+	public void testSearchParty() throws Exception {
+
+		final class Ids {
+			long pp;
+			long dpi;
+		}
+
+		final boolean onTheFly = globalTiersIndexer.isOnTheFlyIndexation();
+		globalTiersIndexer.setOnTheFlyIndexation(true);
+		final Ids ids;
+		try {
+			ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+				@Override
+				public Ids doInTransaction(TransactionStatus status) {
+					final PersonnePhysique pp = addNonHabitant("Gérard", "Nietmochevillage", date(1979, 5, 31), Sexe.MASCULIN);
+					final DebiteurPrestationImposable dpi = addDebiteur(null, pp, date(2013, 1, 1));
+					addForDebiteur(dpi, date(2013, 1, 1), MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Bussigny);
+
+					final Ids ids = new Ids();
+					ids.pp = pp.getNumero();
+					ids.dpi = dpi.getNumero();
+					return ids;
+				}
+			});
+
+			// attente de la fin de l'indexation des deux tiers
+			globalTiersIndexer.sync();
+		}
+		finally {
+			globalTiersIndexer.setOnTheFlyIndexation(onTheFly);
+		}
+
+		// recherche avec le numéro
+		{
+			final List<PartyInfo> res = service.searchParty(new UserLogin(getDefaultOperateurName(), 22), Long.toString(ids.pp),
+			                                                null, SearchMode.IS_EXACTLY, null, null, null, null, false, null, null, null, null);
+
+			Assert.assertNotNull(res);
+			Assert.assertEquals(1, res.size());
+
+			{
+				final PartyInfo info = res.get(0);
+				Assert.assertNotNull(info);
+				Assert.assertEquals(ids.pp, info.getNumber());
+				Assert.assertEquals("Gérard Nietmochevillage", info.getName1());
+				Assert.assertEquals(StringUtils.EMPTY, info.getName2());
+				Assert.assertEquals(date(1979, 5, 31), DataHelper.xmlToCore(info.getDateOfBirth()));
+				Assert.assertEquals(PartyType.NATURAL_PERSON, info.getType());
+			}
+		}
+
+		// recherche avec le numéro et une donnée bidon à côté (qui doit donc être ignorée)
+		{
+			final List<PartyInfo> res = service.searchParty(new UserLogin(getDefaultOperateurName(), 22), Long.toString(ids.pp),
+			                                                "Daboville", SearchMode.IS_EXACTLY, null, null, null, null, false, null, null, null, null);
+
+			Assert.assertNotNull(res);
+			Assert.assertEquals(1, res.size());
+
+			{
+				final PartyInfo info = res.get(0);
+				Assert.assertNotNull(info);
+				Assert.assertEquals(ids.pp, info.getNumber());
+				Assert.assertEquals("Gérard Nietmochevillage", info.getName1());
+				Assert.assertEquals(StringUtils.EMPTY, info.getName2());
+				Assert.assertEquals(date(1979, 5, 31), DataHelper.xmlToCore(info.getDateOfBirth()));
+				Assert.assertEquals(PartyType.NATURAL_PERSON, info.getType());
+			}
+		}
+
+		// recherche sans le numéro et une donnée bidon à côté -> aucun résultat
+		{
+			final List<PartyInfo> res = service.searchParty(new UserLogin(getDefaultOperateurName(), 22), null,
+			                                                "Daboville", SearchMode.IS_EXACTLY, null, null, null, null, false, null, null, null, null);
+
+			Assert.assertNotNull(res);
+			Assert.assertEquals(0, res.size());
+		}
+
+		// recherche par nom -> les deux viennent
+		{
+			final List<PartyInfo> res = service.searchParty(new UserLogin(getDefaultOperateurName(), 22), null,
+			                                                "Nietmochevillage", SearchMode.IS_EXACTLY, null, null, null, null, false, null, null, null, null);
+
+			Assert.assertNotNull(res);
+			Assert.assertEquals(2, res.size());
+
+			// triage des résultats par ordre croissant de numéro de tiers (le DPI viendra donc toujours devant)
+			final List<PartyInfo> sortedRes = new ArrayList<>(res);
+			Collections.sort(sortedRes, new Comparator<PartyInfo>() {
+				@Override
+				public int compare(PartyInfo o1, PartyInfo o2) {
+					return o1.getNumber() - o2.getNumber();
+				}
+			});
+
+			{
+				final PartyInfo info = sortedRes.get(0);
+				Assert.assertNotNull(info);
+				Assert.assertEquals(ids.dpi, info.getNumber());
+				Assert.assertEquals("Gérard Nietmochevillage", info.getName1());
+				Assert.assertEquals(StringUtils.EMPTY, info.getName2());
+				Assert.assertNull(info.getDateOfBirth());
+				Assert.assertEquals(PartyType.DEBTOR, info.getType());
+			}
+			{
+				final PartyInfo info = sortedRes.get(1);
+				Assert.assertNotNull(info);
+				Assert.assertEquals(ids.pp, info.getNumber());
+				Assert.assertEquals("Gérard Nietmochevillage", info.getName1());
+				Assert.assertEquals(StringUtils.EMPTY, info.getName2());
+				Assert.assertEquals(date(1979, 5, 31), DataHelper.xmlToCore(info.getDateOfBirth()));
+				Assert.assertEquals(PartyType.NATURAL_PERSON, info.getType());
+			}
+		}
+
+		// recherche par nom avec liste de types vide -> les deux viennent
+		{
+			final List<PartyInfo> res = service.searchParty(new UserLogin(getDefaultOperateurName(), 22), null,
+			                                                "Nietmochevillage", SearchMode.IS_EXACTLY, null, null, null, null, false, Collections.<PartyType>emptySet(), null, null, null);
+
+			Assert.assertNotNull(res);
+			Assert.assertEquals(2, res.size());
+
+			// triage des résultats par ordre croissant de numéro de tiers (le DPI viendra donc toujours devant)
+			final List<PartyInfo> sortedRes = new ArrayList<>(res);
+			Collections.sort(sortedRes, new Comparator<PartyInfo>() {
+				@Override
+				public int compare(PartyInfo o1, PartyInfo o2) {
+					return o1.getNumber() - o2.getNumber();
+				}
+			});
+
+			{
+				final PartyInfo info = sortedRes.get(0);
+				Assert.assertNotNull(info);
+				Assert.assertEquals(ids.dpi, info.getNumber());
+				Assert.assertEquals("Gérard Nietmochevillage", info.getName1());
+				Assert.assertEquals(StringUtils.EMPTY, info.getName2());
+				Assert.assertNull(info.getDateOfBirth());
+				Assert.assertEquals(PartyType.DEBTOR, info.getType());
+			}
+			{
+				final PartyInfo info = sortedRes.get(1);
+				Assert.assertNotNull(info);
+				Assert.assertEquals(ids.pp, info.getNumber());
+				Assert.assertEquals("Gérard Nietmochevillage", info.getName1());
+				Assert.assertEquals(StringUtils.EMPTY, info.getName2());
+				Assert.assertEquals(date(1979, 5, 31), DataHelper.xmlToCore(info.getDateOfBirth()));
+				Assert.assertEquals(PartyType.NATURAL_PERSON, info.getType());
+			}
+		}
+
+		// recherche par nom avec liste de types mauvaise -> aucun ne vient
+		{
+			final List<PartyInfo> res = service.searchParty(new UserLogin(getDefaultOperateurName(), 22), null,
+			                                                "Nietmochevillage", SearchMode.IS_EXACTLY, null, null, null, null, false, EnumSet.of(PartyType.HOUSEHOLD), null, null, null);
+
+			Assert.assertNotNull(res);
+			Assert.assertEquals(0, res.size());
+		}
+
+		// recherche par nom avec liste de types des deux -> les deux viennent
+		{
+			final List<PartyInfo> res = service.searchParty(new UserLogin(getDefaultOperateurName(), 22), null,
+			                                                "Nietmochevillage", SearchMode.IS_EXACTLY, null, null, null, null, false, EnumSet.of(PartyType.DEBTOR, PartyType.NATURAL_PERSON), null, null, null);
+
+			Assert.assertNotNull(res);
+			Assert.assertEquals(2, res.size());
+
+			// triage des résultats par ordre croissant de numéro de tiers (le DPI viendra donc toujours devant)
+			final List<PartyInfo> sortedRes = new ArrayList<>(res);
+			Collections.sort(sortedRes, new Comparator<PartyInfo>() {
+				@Override
+				public int compare(PartyInfo o1, PartyInfo o2) {
+					return o1.getNumber() - o2.getNumber();
+				}
+			});
+
+			{
+				final PartyInfo info = sortedRes.get(0);
+				Assert.assertNotNull(info);
+				Assert.assertEquals(ids.dpi, info.getNumber());
+				Assert.assertEquals("Gérard Nietmochevillage", info.getName1());
+				Assert.assertEquals(StringUtils.EMPTY, info.getName2());
+				Assert.assertNull(info.getDateOfBirth());
+				Assert.assertEquals(PartyType.DEBTOR, info.getType());
+			}
+			{
+				final PartyInfo info = sortedRes.get(1);
+				Assert.assertNotNull(info);
+				Assert.assertEquals(ids.pp, info.getNumber());
+				Assert.assertEquals("Gérard Nietmochevillage", info.getName1());
+				Assert.assertEquals(StringUtils.EMPTY, info.getName2());
+				Assert.assertEquals(date(1979, 5, 31), DataHelper.xmlToCore(info.getDateOfBirth()));
+				Assert.assertEquals(PartyType.NATURAL_PERSON, info.getType());
+			}
+		}
+
+		// recherche par nom avec liste de types d'un seul -> seul celui-là vient
+		{
+			final List<PartyInfo> res = service.searchParty(new UserLogin(getDefaultOperateurName(), 22), null,
+			                                                "Nietmochevillage", SearchMode.IS_EXACTLY, null, null, null, null, false, EnumSet.of(PartyType.DEBTOR), null, null, null);
+
+			Assert.assertNotNull(res);
+			Assert.assertEquals(1, res.size());
+
+			{
+				final PartyInfo info = res.get(0);
+				Assert.assertNotNull(info);
+				Assert.assertEquals(ids.dpi, info.getNumber());
+				Assert.assertEquals("Gérard Nietmochevillage", info.getName1());
+				Assert.assertEquals(StringUtils.EMPTY, info.getName2());
+				Assert.assertNull(info.getDateOfBirth());
+				Assert.assertEquals(PartyType.DEBTOR, info.getType());
+			}
 		}
 	}
 }

@@ -7,7 +7,9 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
@@ -36,6 +38,9 @@ import ch.vd.unireg.ws.security.v1.SecurityResponse;
 import ch.vd.unireg.ws.taxoffices.v1.TaxOffice;
 import ch.vd.unireg.ws.taxoffices.v1.TaxOffices;
 import ch.vd.unireg.xml.party.taxdeclaration.v3.TaxDeclarationKey;
+import ch.vd.unireg.xml.party.v3.PartyInfo;
+import ch.vd.unireg.xml.party.v3.PartyType;
+import ch.vd.unireg.xml.party.withholding.v1.DebtorCategory;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorInfo;
 import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
@@ -45,6 +50,10 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.declaration.source.ListeRecapService;
+import ch.vd.uniregctb.indexer.EmptySearchCriteriaException;
+import ch.vd.uniregctb.indexer.IndexerException;
+import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
+import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.jms.BamMessageHelper;
 import ch.vd.uniregctb.jms.BamMessageSender;
@@ -54,9 +63,11 @@ import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
+import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.Niveau;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.webservices.common.AccessDeniedException;
@@ -67,6 +78,8 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 	private static final int DECLARATION_ACK_BATCH_SIZE = 50;
 
+	private static final Set<CategorieImpotSource> CIS_SUPPORTEES = EnumHelper.getCategoriesImpotSourceAutorisees();
+
 	private SecurityProviderInterface securityProvider;
 	private PlatformTransactionManager transactionManager;
 	private TiersService tiersService;
@@ -75,6 +88,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	private BamMessageSender bamSender;
 	private ServiceInfrastructureService infraService;
 	private ListeRecapService lrService;
+	private GlobalTiersSearcher tiersSearcher;
 
 	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
 		this.securityProvider = securityProvider;
@@ -108,6 +122,10 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 		this.lrService = lrService;
 	}
 
+	public void setTiersSearcher(GlobalTiersSearcher tiersSearcher) {
+		this.tiersSearcher = tiersSearcher;
+	}
+
 	private <T> T doInTransaction(boolean readonly, TransactionCallback<T> callback) {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(readonly);
@@ -121,9 +139,9 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	}
 
 	@Override
-	public void setAutomaticRepaymentBlockingFlag(final int partyNo, UserLogin login, final boolean blocked) throws AccessDeniedException {
-		WebServiceHelper.checkAccess(securityProvider, login, Role.VISU_ALL);
-		WebServiceHelper.checkPartyReadWriteAccess(securityProvider, login, partyNo);
+	public void setAutomaticRepaymentBlockingFlag(final int partyNo, UserLogin user, final boolean blocked) throws AccessDeniedException {
+		WebServiceHelper.checkAccess(securityProvider, user, Role.VISU_ALL);
+		WebServiceHelper.checkPartyReadWriteAccess(securityProvider, user, partyNo);
 
 		doInTransaction(false, new TransactionCallbackWithoutResult() {
 			@Override
@@ -138,9 +156,9 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	}
 
 	@Override
-	public boolean getAutomaticRepaymentBlockingFlag(final int partyNo, UserLogin login) throws AccessDeniedException {
-		WebServiceHelper.checkAccess(securityProvider, login, Role.VISU_ALL);
-		WebServiceHelper.checkPartyReadAccess(securityProvider, login, partyNo);
+	public boolean getAutomaticRepaymentBlockingFlag(final int partyNo, UserLogin user) throws AccessDeniedException {
+		WebServiceHelper.checkAccess(securityProvider, user, Role.VISU_ALL);
+		WebServiceHelper.checkPartyReadAccess(securityProvider, user, partyNo);
 
 		return doInTransaction(true, new TransactionCallback<Boolean>() {
 			@Override
@@ -155,8 +173,8 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	}
 
 	@Override
-	public OrdinaryTaxDeclarationAckResponse ackOrdinaryTaxDeclarations(final UserLogin login, OrdinaryTaxDeclarationAckRequest request) throws AccessDeniedException {
-		WebServiceHelper.checkAccess(securityProvider, login, Role.DI_QUIT_PP);
+	public OrdinaryTaxDeclarationAckResponse ackOrdinaryTaxDeclarations(final UserLogin user, OrdinaryTaxDeclarationAckRequest request) throws AccessDeniedException {
+		WebServiceHelper.checkAccess(securityProvider, user, Role.DI_QUIT_PP);
 
 		final RegDate dateRetour = ch.vd.uniregctb.xml.DataHelper.xmlToCore(request.getDate());
 		final String source = request.getSource();
@@ -170,7 +188,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 			@Override
 			public boolean doInTransaction(List<TaxDeclarationKey> keys, OrdinaryTaxDeclarationAckBatchResult result) throws Exception {
 				for (TaxDeclarationKey key : keys) {
-					quittancerDeclaration(login, key, source, dateRetour, result);
+					quittancerDeclaration(user, key, source, dateRetour, result);
 				}
 				return true;
 			}
@@ -335,8 +353,8 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	}
 
 	@Override
-	public DeadlineResponse newOrdinaryTaxDeclarationDeadline(final int partyNo, final int pf, final int seqNo, UserLogin login, DeadlineRequest request) throws AccessDeniedException {
-		WebServiceHelper.checkAccess(securityProvider, login, Role.DI_DELAI_PP);
+	public DeadlineResponse newOrdinaryTaxDeclarationDeadline(final int partyNo, final int pf, final int seqNo, UserLogin user, DeadlineRequest request) throws AccessDeniedException {
+		WebServiceHelper.checkAccess(securityProvider, user, Role.DI_DELAI_PP);
 
 		final RegDate nouveauDelai = ch.vd.uniregctb.xml.DataHelper.xmlToCore(request.getNewDeadline());
 		final RegDate dateObtention = ch.vd.uniregctb.xml.DataHelper.xmlToCore(request.getGrantedOn());
@@ -424,8 +442,8 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	}
 
 	@Override
-	public PartyNumberList getModifiedTaxPayers(UserLogin login, final Date since, final Date until) throws AccessDeniedException {
-		WebServiceHelper.checkAccess(securityProvider, login, Role.VISU_ALL);
+	public PartyNumberList getModifiedTaxPayers(UserLogin user, final Date since, final Date until) throws AccessDeniedException {
+		WebServiceHelper.checkAccess(securityProvider, user, Role.VISU_ALL);
 		return doInTransaction(true, new TransactionCallback<PartyNumberList>() {
 			@Override
 			public PartyNumberList doInTransaction(TransactionStatus status) {
@@ -453,8 +471,8 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	}
 
 	@Override
-	public DebtorInfo getDebtorInfo(UserLogin login, final int debtorNo, final int pf) throws AccessDeniedException {
-		WebServiceHelper.checkAccess(securityProvider, login, Role.VISU_ALL);
+	public DebtorInfo getDebtorInfo(UserLogin user, final int debtorNo, final int pf) throws AccessDeniedException {
+		WebServiceHelper.checkAccess(securityProvider, user, Role.VISU_ALL);
 		return doInTransaction(true, new TransactionCallback<DebtorInfo>() {
 			@Override
 			public DebtorInfo doInTransaction(TransactionStatus status) {
@@ -470,5 +488,50 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 				return new DebtorInfo(debtorNo, pf, lrManquantesInPf.size() + lrEmises.size(), lrEmises.size(), null);
 			}
 		});
+	}
+
+	@Override
+	public List<PartyInfo> searchParty(UserLogin user, @Nullable String partyNo, @Nullable String name, SearchMode nameSearchMode, @Nullable String townOrCountry,
+	                                   @Nullable RegDate dateOfBirth, @Nullable String socialInsuranceNumber, @Nullable Integer taxResidenceFSOId,
+	                                   boolean onlyActiveMainTaxResidence, @Nullable Set<PartyType> partyTypes, @Nullable DebtorCategory debtorCategory,
+	                                   @Nullable Boolean activeParty, @Nullable Long oldWithholdingNumber) throws AccessDeniedException, IndexerException {
+		WebServiceHelper.checkAnyAccess(securityProvider, user, Role.VISU_ALL, Role.VISU_LIMITE);
+		final TiersCriteria criteria = new TiersCriteria();
+		if (partyNo != null && StringUtils.isNotBlank(partyNo)) {
+			// tous les autres critères sont ignorés si le numéro est renseigné
+			final String pureNo = StringUtils.trimToNull(partyNo.replaceAll("[^0-9]", StringUtils.EMPTY));
+			if (pureNo != null) {
+				criteria.setNumero(Long.parseLong(pureNo));
+			}
+		}
+		else {
+			criteria.setNomRaison(StringUtils.trimToNull(name));
+			criteria.setTypeRechercheDuNom(EnumHelper.toCore(nameSearchMode));
+			criteria.setLocaliteOuPays(StringUtils.trimToNull(townOrCountry));
+			criteria.setDateNaissance(dateOfBirth);
+			criteria.setNumeroAVS(StringUtils.trimToNull(socialInsuranceNumber));
+			if (taxResidenceFSOId != null) {
+				criteria.setNoOfsFor(Integer.toString(taxResidenceFSOId));
+				criteria.setForPrincipalActif(onlyActiveMainTaxResidence);
+			}
+			criteria.setTypesTiers(EnumHelper.toCore(partyTypes));
+			criteria.setCategorieDebiteurIs(ch.vd.uniregctb.xml.EnumHelper.xmlToCore(debtorCategory));
+			criteria.setTiersActif(activeParty);
+			criteria.setAncienNumeroSourcier(oldWithholdingNumber);
+		}
+
+		if (criteria.isEmpty()) {
+			throw new EmptySearchCriteriaException("Les critères de recherche sont vides");
+		}
+
+		final List<TiersIndexedData> coreResult = tiersSearcher.search(criteria);
+		final List<PartyInfo> result = new ArrayList<>(coreResult.size());
+		for (TiersIndexedData data : coreResult) {
+			if (data != null && (data.getCategorieImpotSource() == null || CIS_SUPPORTEES.contains(data.getCategorieImpotSource()))) {
+				final PartyInfo info = ch.vd.uniregctb.xml.DataHelper.coreToXMLv3(data);
+				result.add(info);
+			}
+		}
+		return result;
 	}
 }

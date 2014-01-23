@@ -107,16 +107,16 @@ public interface WebService {
 	Response searchParty(@QueryParam("user") String user,
 	                     @QueryParam("partyNo") String partyNo,
 	                     @QueryParam("name") String name,
+	                     @QueryParam("nameSearchMode") @DefaultValue("IS_EXACTLY") SearchMode nameSearchMode,
 	                     @QueryParam("townOrCountry") String townOrCountry,
 	                     @QueryParam("dateOfBirth") String dateOfBirth,
 	                     @QueryParam("vn") String socialInsuranceNumber,
 	                     @QueryParam("taxResidenceFSOId") Integer taxResidenceFSOId,
-	                     @QueryParam("activeMainTaxResidence") Boolean activeMainTaxResidence,
-	                     @QueryParam("nameSearchMode") SearchMode nameSearchMode,
+	                     @QueryParam("onlyActiveMainTaxResidence") @DefaultValue("false") boolean onlyActiveMainTaxResidence,
 	                     @QueryParam("partyType") Set<PartyType> partyTypes,
 	                     @QueryParam("debtorCategory") DebtorCategory debtorCategory,
 	                     @QueryParam("activeParty") Boolean activeParty,
-	                     @QueryParam("oldWithholdingNumber") Integer oldWithholdingNumber);
+	                     @QueryParam("oldWithholdingNumber") Long oldWithholdingNumber);
 
 	@GET
 	@Produces({MediaType.APPLICATION_XML, WebServiceHelper.APPLICATION_JSON_WITH_UTF8_CHARSET})

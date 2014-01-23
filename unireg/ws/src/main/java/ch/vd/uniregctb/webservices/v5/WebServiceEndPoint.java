@@ -24,12 +24,16 @@ import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationAckResponse;
 import ch.vd.unireg.ws.deadline.v1.DeadlineRequest;
 import ch.vd.unireg.ws.deadline.v1.DeadlineResponse;
 import ch.vd.unireg.ws.modifiedtaxpayers.v1.PartyNumberList;
+import ch.vd.unireg.ws.search.party.v1.SearchResult;
 import ch.vd.unireg.ws.security.v1.SecurityResponse;
 import ch.vd.unireg.ws.taxoffices.v1.TaxOffices;
+import ch.vd.unireg.xml.error.v1.Error;
+import ch.vd.unireg.xml.party.v3.PartyInfo;
 import ch.vd.unireg.xml.party.v3.PartyType;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorCategory;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorInfo;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
+import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.load.DetailedLoadMeter;
 import ch.vd.uniregctb.load.DetailedLoadMonitorable;
 import ch.vd.uniregctb.load.LoadDetail;
@@ -59,6 +63,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 	private final ch.vd.unireg.ws.taxoffices.v1.ObjectFactory taxOfficesObjectFactory = new ch.vd.unireg.ws.taxoffices.v1.ObjectFactory();
 	private final ch.vd.unireg.ws.modifiedtaxpayers.v1.ObjectFactory modifiedTaxPayersFactory = new ch.vd.unireg.ws.modifiedtaxpayers.v1.ObjectFactory();
 	private final ch.vd.unireg.ws.debtorinfo.v1.ObjectFactory debtorInfoFactory = new ch.vd.unireg.ws.debtorinfo.v1.ObjectFactory();
+	private final ch.vd.unireg.ws.search.party.v1.ObjectFactory searchObjectFactory = new ch.vd.unireg.ws.search.party.v1.ObjectFactory();
 
 	private BusinessWebService target;
 
@@ -265,27 +270,57 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 	}
 
 	@Override
-	public Response searchParty(final String user, final String partyNo, final String name, final String townOrCountry,
+	public Response searchParty(final String user, final String partyNo, final String name, final SearchMode nameSearchMode, final String townOrCountry,
 	                            final String dateOfBirthStr, final String socialInsuranceNumber, final Integer taxResidenceFSOId,
-	                            final Boolean activeMainTaxResidence, final SearchMode nameSearchMode,
-	                            final Set<PartyType> partyTypes, final DebtorCategory debtorCategory, final Boolean activeParty,
-	                            final Integer oldWithholdingNumber) {
+	                            final boolean onlyActiveMainTaxResidence, final Set<PartyType> partyTypes, final DebtorCategory debtorCategory, final Boolean activeParty,
+	                            final Long oldWithholdingNumber) {
 
 		final Object params = new Object() {
 			@Override
 			public String toString() {
 				final String partyTypesStr = Arrays.toString(partyTypes.toArray(new PartyType[partyTypes.size()]));
-				return String.format("searchParty{user=%s, partyNo=%s, name=%s, townOrCountry=%s, dateOfBirth=%s, vn=%s, taxResidenceFSOId=%d, activeMainTaxResidence=%s, nameSearchMode=%s, partyTypes=%s, debtorCategory=%s, activeParty=%s, oldWithholdingNumber=%d}",
-				                     WebServiceHelper.enquote(user), WebServiceHelper.enquote(partyNo), WebServiceHelper.enquote(name), WebServiceHelper.enquote(townOrCountry),
+				return String.format("searchParty{user=%s, partyNo=%s, name=%s, nameSearchMode=%s, townOrCountry=%s, dateOfBirth=%s, vn=%s, taxResidenceFSOId=%d, onlyActiveMainTaxResidence=%s, partyTypes=%s, debtorCategory=%s, activeParty=%s, oldWithholdingNumber=%d}",
+				                     WebServiceHelper.enquote(user), WebServiceHelper.enquote(partyNo), WebServiceHelper.enquote(name), nameSearchMode, WebServiceHelper.enquote(townOrCountry),
 				                     WebServiceHelper.enquote(dateOfBirthStr), WebServiceHelper.enquote(socialInsuranceNumber), taxResidenceFSOId,
-				                     activeMainTaxResidence, nameSearchMode, partyTypesStr, debtorCategory, activeParty, oldWithholdingNumber);
+				                     onlyActiveMainTaxResidence, partyTypesStr, debtorCategory, activeParty, oldWithholdingNumber);
 			}
 		};
 		return execute(user, params, READ_ACCESS_LOG, new ExecutionCallbackWithUser() {
 			@NotNull
 			@Override
 			public ExecutionResult execute(UserLogin userLogin) throws Exception {
-				return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.SERVICE_UNAVAILABLE, getAcceptableMediaTypes(), "Implémentation encore en cours..."));
+				final RegDate dateNaissance;
+				if (StringUtils.isNotBlank(dateOfBirthStr)) {
+					try {
+						dateNaissance = RegDateHelper.displayStringToRegDate(dateOfBirthStr, true);
+					}
+					catch (ParseException | IllegalArgumentException e) {
+						return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.BAD_REQUEST, getAcceptableMediaTypes(), e));
+					}
+				}
+				else {
+					dateNaissance = null;
+				}
+
+				SearchResult result;
+				try {
+					final List<PartyInfo> infos = target.searchParty(userLogin, partyNo, name, nameSearchMode, townOrCountry, dateNaissance, socialInsuranceNumber, taxResidenceFSOId, onlyActiveMainTaxResidence,
+					                                                 partyTypes, debtorCategory, activeParty, oldWithholdingNumber);
+					result = new SearchResult(null, infos);
+				}
+				catch (IndexerException e) {
+					result = new SearchResult(new Error(WebServiceHelper.buildExceptionMessage(e)), null);
+				}
+
+				final int nbItems = result.getParty() != null ? result.getParty().size() : 0;
+				final MediaType preferred = getPreferredMediaTypeFromXmlOrJson();
+				if (preferred == WebServiceHelper.APPLICATION_JSON_WITH_UTF8_CHARSET_TYPE) {
+					return ExecutionResult.with(Response.ok(result, preferred).build(), nbItems);
+				}
+				else if (preferred == MediaType.APPLICATION_XML_TYPE) {
+					return ExecutionResult.with(Response.ok(searchObjectFactory.createSearchResult(result), preferred).build(), nbItems);
+				}
+				return ExecutionResult.with(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build());
 			}
 		});
 	}
