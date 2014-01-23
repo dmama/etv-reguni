@@ -311,6 +311,17 @@
 			<value>2007</value>
 			<value>0</value>
 		</row>
+		<row>
+			<value>8</value>
+			<null/>
+			<null/>
+			<null/>
+			<null/>
+			<value><![CDATA[2011-05-27 10:26:00.461]]></value>
+			<value>[system]</value>
+			<value>2009</value>
+			<value>0</value>
+		</row>
 	</table>
 	<table name="PARAMETRE_PERIODE_FISCALE">
 		<column>ID</column>
@@ -1208,7 +1219,7 @@
 			<value>MENSUEL</value>
 			<null/>
 			<value>1</value>
-			<value>1</value>
+			<value>8</value>
 			<value>12500001</value>
 		</row>
 	</table>

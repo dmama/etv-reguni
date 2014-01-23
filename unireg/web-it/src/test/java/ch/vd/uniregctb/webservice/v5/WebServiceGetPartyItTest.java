@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.codehaus.jackson.annotate.JsonProperty;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
 import org.junit.Test;
@@ -74,7 +73,8 @@ public class WebServiceGetPartyItTest extends AbstractWebServiceItTest {
 			final Party party = resp.getBody();
 			Assert.assertNotNull(party);
 			Assert.assertEquals(NaturalPerson.class, party.getClass());
-			Assert.assertEquals("De Wit Tummers Elisabeth", ((NaturalPerson) party).getOfficialName());
+			Assert.assertEquals("Tummers-De Wit Wouter", ((NaturalPerson) party).getOfficialName());
+			Assert.assertEquals("Elisabeth", ((NaturalPerson) party).getFirstName());
 		}
 		{
 			final Pair<String, Map<String, ?>> params = buildUriAndParams(noTiers, null);
@@ -91,7 +91,8 @@ public class WebServiceGetPartyItTest extends AbstractWebServiceItTest {
 			Assert.assertNotNull(partyContainer.naturalPerson);
 			Assert.assertNull(partyContainer.otherCommunity);
 
-			Assert.assertEquals("De Wit Tummers Elisabeth", partyContainer.naturalPerson.getOfficialName());
+			Assert.assertEquals("Tummers-De Wit Wouter", partyContainer.naturalPerson.getOfficialName());
+			Assert.assertEquals("Elisabeth", partyContainer.naturalPerson.getFirstName());
 		}
 	}
 
@@ -107,7 +108,8 @@ public class WebServiceGetPartyItTest extends AbstractWebServiceItTest {
 			final Party party = resp.getBody();
 			Assert.assertNotNull(party);
 			Assert.assertEquals(NaturalPerson.class, party.getClass());
-			Assert.assertEquals("Cédric Allora", ((NaturalPerson) party).getOfficialName());
+			Assert.assertEquals("Allora", ((NaturalPerson) party).getOfficialName());
+			Assert.assertEquals("Cédric", ((NaturalPerson) party).getFirstName());
 			Assert.assertEquals("CH7400243243G15379860", party.getBankAccounts().get(0).getAccountNumber());
 		}
 		{
@@ -125,7 +127,8 @@ public class WebServiceGetPartyItTest extends AbstractWebServiceItTest {
 			Assert.assertNotNull(partyContainer.naturalPerson);
 			Assert.assertNull(partyContainer.otherCommunity);
 
-			Assert.assertEquals("Cédric Allora", partyContainer.naturalPerson.getOfficialName());
+			Assert.assertEquals("Allora", partyContainer.naturalPerson.getOfficialName());
+			Assert.assertEquals("Cédric", partyContainer.naturalPerson.getFirstName());
 			Assert.assertEquals("CH7400243243G15379860", partyContainer.naturalPerson.getBankAccounts().get(0).getAccountNumber());
 		}
 	}
