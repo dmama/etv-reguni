@@ -3,10 +3,12 @@
 <xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/party/person/3" elementFormDefault="qualified"
 		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:eCH-0044="http://www.ech.ch/xmlns/eCH-0044/3"
 		   xmlns:common="http://www.vd.ch/fiscalite/unireg/common/2" xmlns:person="http://www.vd.ch/fiscalite/unireg/party/person/3"
-		   xmlns:taxpayer="http://www.vd.ch/fiscalite/unireg/party/taxpayer/3" xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0">
+		   xmlns:taxpayer="http://www.vd.ch/fiscalite/unireg/party/taxpayer/3" xmlns:taxresidence="http://www.vd.ch/fiscalite/unireg/party/taxresidence/2"
+		   xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0">
 
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/2" schemaLocation="../unireg-common-2.xsd" />
 	<xs:import namespace="http://www.ech.ch/xmlns/eCH-0044/3" schemaLocation="../eCH-0044-3-0.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/taxresidence/2" schemaLocation="unireg-party-taxresidence-2.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/taxpayer/3" schemaLocation="unireg-party-taxpayer-3.xsd" />
 
 	<xs:complexType name="naturalPersonType">
@@ -95,6 +97,17 @@
 								<jxb:property>
 									<jxb:javadoc>L'historique complet des catégories de la personne physique. Cet historique est généralement disponible sur les personnes physiques qui habitent dans
 										le canton de Vaud.
+									</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="withholdingTaxationPeriods" type="taxresidence:withholdingTaxationPeriodType">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>La liste des périodes d'imposition IS. Cette liste peut être vide si le tiers n'est pas assujetti.
+										Attention ! Cette collection n'est renseignée qui si la part WITHHOLDING_TAXATION_PERIODS est demandée.
 									</jxb:javadoc>
 								</jxb:property>
 							</xs:appinfo>
