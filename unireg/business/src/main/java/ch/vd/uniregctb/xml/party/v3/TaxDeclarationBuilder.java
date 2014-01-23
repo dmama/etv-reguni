@@ -71,10 +71,9 @@ public class TaxDeclarationBuilder {
 				d.getStatuses().add(newTaxDeclarationStatus(etat));
 			}
 		}
-		if (parts != null && parts.contains(PartyPart.TAX_DECLARATIONS_DEADLINES) && d instanceof OrdinaryTaxDeclaration) {
-			final OrdinaryTaxDeclaration otd = (OrdinaryTaxDeclaration) d;
+		if (parts != null && parts.contains(PartyPart.TAX_DECLARATIONS_DEADLINES)) {
 			for (DelaiDeclaration delai : declaration.getDelaisSorted()) {
-				otd.getDeadlines().add(newTaxDeclarationDeadline(delai));
+				d.getDeadlines().add(newTaxDeclarationDeadline(delai));
 			}
 		}
 	}

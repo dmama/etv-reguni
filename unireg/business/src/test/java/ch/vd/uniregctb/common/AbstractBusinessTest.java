@@ -697,7 +697,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
         return true;
     }
 
-    protected SituationFamillePersonnePhysique addSituation(PersonnePhysique pp, RegDate debut, @Nullable RegDate fin, Integer nombreEnfants) {
+    protected SituationFamillePersonnePhysique addSituation(PersonnePhysique pp, RegDate debut, @Nullable RegDate fin, int nombreEnfants) {
         SituationFamille situation = new SituationFamillePersonnePhysique();
         situation.setDateDebut(debut);
         situation.setDateFin(fin);
@@ -705,7 +705,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
         return (SituationFamillePersonnePhysique) tiersDAO.addAndSave(pp, situation);
     }
 
-	protected SituationFamillePersonnePhysique addSituation(PersonnePhysique pp, RegDate debut, @Nullable RegDate fin, Integer nombreEnfants, ch.vd.uniregctb.type.EtatCivil etatCivil) {
+	protected SituationFamillePersonnePhysique addSituation(PersonnePhysique pp, RegDate debut, @Nullable RegDate fin, int nombreEnfants, ch.vd.uniregctb.type.EtatCivil etatCivil) {
 		SituationFamille situation = new SituationFamillePersonnePhysique();
 		situation.setDateDebut(debut);
 		situation.setDateFin(fin);

@@ -93,6 +93,8 @@ import ch.vd.unireg.xml.party.v3.Party;
 import ch.vd.unireg.xml.party.v3.PartyInfo;
 import ch.vd.unireg.xml.party.v3.PartyPart;
 import ch.vd.unireg.xml.party.v3.PartyType;
+import ch.vd.unireg.xml.party.withholding.v1.CommunicationMode;
+import ch.vd.unireg.xml.party.withholding.v1.DebtorCategory;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorInfo;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorPeriodicity;
 import ch.vd.unireg.xml.party.withholding.v1.WithholdingTaxDeclarationPeriodicity;
@@ -100,6 +102,7 @@ import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.WebserviceTest;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.ModeleDocument;
@@ -120,6 +123,7 @@ import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.CategorieImpotSource;
+import ch.vd.uniregctb.type.EtatCivil;
 import ch.vd.uniregctb.type.FormeJuridique;
 import ch.vd.uniregctb.type.ModeCommunication;
 import ch.vd.uniregctb.type.ModeImposition;
@@ -333,7 +337,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			assertAllowedAccess(visaVoyeur, (int) ids.idCoupleNormal, AllowedAccess.READ_WRITE);
 		}
 
-		// le voyeur, lui, ne peut pas voir ce qui est protégé
+		// le grouillot, lui, ne peut pas voir ce qui est protégé
 		{
 			assertAllowedAccess(visaGrouillot, (int) ids.idProtege, AllowedAccess.NONE);
 			assertAllowedAccess(visaGrouillot, (int) ids.idConjointDeProtege, AllowedAccess.READ_WRITE);
@@ -2488,6 +2492,430 @@ public class BusinessWebServiceTest extends WebserviceTest {
 	}
 
 	@Test
+	public void testGetPartyAllPartsOnNaturalPerson() throws Exception {
+		final long noIndividu = 320327L;
+		final RegDate dateNaissance = date(1990, 10, 25);
+		final int anneeDI = 2013;
+		final RegDate dateEmissionDI = date(anneeDI + 1, 1, 6);
+		final RegDate dateDelaiDI = date(anneeDI + 1, 6, 30);
+		final RegDate dateEmissionLR = date(anneeDI, 1, 20);
+		final RegDate dateDelaiLR = date(anneeDI, 2, 28);
+		final RegDate dateSommationLR = date(anneeDI, 4, 10);
+		final RegDate dateDebutRT = date(2009, 5, 1);
+		final RegDate dateFinRT = date(2010, 9, 12);
+		final RegDate dateDepartHS = date(anneeDI + 1, 1, 12);
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Gautier", "Mafalda", Sexe.FEMININ);
+				addNationalite(ind, MockPays.France, dateNaissance, null);
+				addPermis(ind, TypePermis.ETABLISSEMENT, dateNaissance, null, false);
+			}
+		});
+
+		final class Ids {
+			int pp;
+			int dpi;
+			long di;
+		}
+
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				addSituation(pp, dateNaissance, null, 0, EtatCivil.CELIBATAIRE);
+				addForPrincipal(pp, dateNaissance.addYears(18), MotifFor.MAJORITE, dateDepartHS, MotifFor.DEPART_HS, MockCommune.Lausanne);
+				final CollectiviteAdministrative cedi = addCedi();
+				final PeriodeFiscale pf = addPeriodeFiscale(anneeDI);
+				final ModeleDocument mdDi = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
+				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(anneeDI, 1, 1), date(anneeDI, 12, 31), cedi, TypeContribuable.VAUDOIS_ORDINAIRE, mdDi);
+				addEtatDeclarationEmise(di, dateEmissionDI);
+				addDelaiDeclaration(di, dateEmissionDI, dateDelaiDI);
+
+				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+				addForDebiteur(dpi, date(2009, 1, 1), MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Aubonne);
+				dpi.setNom1("MonTestAdoré");
+				dpi.setModeCommunication(ModeCommunication.ELECTRONIQUE);
+				addRapportPrestationImposable(dpi, pp, dateDebutRT, dateFinRT, false);
+				final ModeleDocument mdLr = addModeleDocument(TypeDocument.LISTE_RECAPITULATIVE, pf);
+				final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, date(anneeDI, 1, 1), date(anneeDI, 1, 31), mdLr);
+				addEtatDeclarationEmise(lr, dateEmissionLR);
+				addDelaiDeclaration(lr, dateEmissionLR, dateDelaiLR);
+				addEtatDeclarationSommee(lr, dateSommationLR, dateSommationLR.addDays(3));
+
+				assertValidInteger(pp.getNumero());
+				assertValidInteger(dpi.getNumero());
+
+				final Ids ids = new Ids();
+				ids.pp = pp.getNumero().intValue();
+				ids.dpi = dpi.getNumero().intValue();
+				ids.di = di.getId();
+				return ids;
+			}
+		});
+
+		final UserLogin user = new UserLogin(getDefaultOperateurName(), 22);
+		final Party party = service.getParty(user, ids.pp, EnumSet.allOf(PartyPart.class));
+		Assert.assertNotNull(party);
+
+		{
+			Assert.assertEquals(NaturalPerson.class, party.getClass());
+
+			final NaturalPerson np = (NaturalPerson) party;
+			Assert.assertEquals(ids.pp, np.getNumber());
+			Assert.assertEquals("Mafalda", np.getFirstName());
+			Assert.assertEquals("Gautier", np.getOfficialName());
+			Assert.assertEquals(Sex.FEMALE, np.getSex());
+
+			final List<TaxDeclaration> decls = np.getTaxDeclarations();
+			Assert.assertNotNull(decls);
+			Assert.assertEquals(1, decls.size());
+			{
+				final TaxDeclaration decl = decls.get(0);
+				Assert.assertNotNull(decl);
+				Assert.assertEquals(date(anneeDI, 1, 1), ch.vd.uniregctb.xml.DataHelper.xmlToCore(decl.getDateFrom()));
+				Assert.assertEquals(date(anneeDI, 12, 31), ch.vd.uniregctb.xml.DataHelper.xmlToCore(decl.getDateTo()));
+				Assert.assertNull(decl.getCancellationDate());
+
+				final List<TaxDeclarationDeadline> deadlines = decl.getDeadlines();
+				Assert.assertNotNull(deadlines);
+				Assert.assertEquals(1, deadlines.size());
+				{
+					final TaxDeclarationDeadline deadline = deadlines.get(0);
+					Assert.assertNotNull(deadline);
+					Assert.assertEquals(dateEmissionDI, ch.vd.uniregctb.xml.DataHelper.xmlToCore(deadline.getApplicationDate()));
+					Assert.assertEquals(dateEmissionDI, ch.vd.uniregctb.xml.DataHelper.xmlToCore(deadline.getProcessingDate()));
+					Assert.assertEquals(dateDelaiDI, ch.vd.uniregctb.xml.DataHelper.xmlToCore(deadline.getDeadline()));
+					Assert.assertNull(deadline.getCancellationDate());
+				}
+
+				final List<TaxDeclarationStatus> statuses = decl.getStatuses();
+				Assert.assertNotNull(statuses);
+				Assert.assertEquals(1, statuses.size());
+				{
+					final TaxDeclarationStatus status = statuses.get(0);
+					Assert.assertNotNull(status);
+					Assert.assertNull(status.getCancellationDate());
+					Assert.assertNull(status.getSource());
+					Assert.assertEquals(dateEmissionDI, ch.vd.uniregctb.xml.DataHelper.xmlToCore(status.getDateFrom()));
+					Assert.assertEquals(TaxDeclarationStatusType.SENT, status.getType());
+				}
+			}
+
+			Assert.assertEquals(dateNaissance, ch.vd.uniregctb.xml.DataHelper.xmlToCore(np.getDateOfBirth()));
+			Assert.assertNull(np.getDateOfDeath());
+
+			final List<NaturalPersonCategory> cats = np.getCategories();
+			Assert.assertNotNull(cats);
+			Assert.assertEquals(1, cats.size());
+			{
+				final NaturalPersonCategory cat = cats.get(0);
+				Assert.assertNotNull(cat);
+				Assert.assertEquals(NaturalPersonCategoryType.C_03_C_PERMIT, cat.getCategory());
+				Assert.assertEquals(dateNaissance, ch.vd.uniregctb.xml.DataHelper.xmlToCore(cat.getDateFrom()));
+				Assert.assertNull(cat.getDateTo());
+			}
+
+			final List<WithholdingTaxationPeriod> wtps = np.getWithholdingTaxationPeriods();
+			Assert.assertNotNull(wtps);
+			Assert.assertEquals(2, wtps.size());
+			{
+				final WithholdingTaxationPeriod wtp = wtps.get(0);
+				Assert.assertNotNull(wtp);
+				Assert.assertEquals(date(2009, 1, 1), ch.vd.uniregctb.xml.DataHelper.xmlToCore(wtp.getDateFrom()));
+				Assert.assertEquals(date(2009, 12, 31), ch.vd.uniregctb.xml.DataHelper.xmlToCore(wtp.getDateTo()));
+				Assert.assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, wtp.getTaxationAuthority());
+				Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), wtp.getTaxationAuthorityFSOId());
+				Assert.assertEquals(WithholdingTaxationPeriodType.MIXED, wtp.getType());
+			}
+			{
+				final WithholdingTaxationPeriod wtp = wtps.get(1);
+				Assert.assertNotNull(wtp);
+				Assert.assertEquals(date(2010, 1, 1), ch.vd.uniregctb.xml.DataHelper.xmlToCore(wtp.getDateFrom()));
+				Assert.assertEquals(date(2010, 12, 31), ch.vd.uniregctb.xml.DataHelper.xmlToCore(wtp.getDateTo()));
+				Assert.assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, wtp.getTaxationAuthority());
+				Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), wtp.getTaxationAuthorityFSOId());
+				Assert.assertEquals(WithholdingTaxationPeriodType.MIXED, wtp.getType());
+			}
+
+			Assert.assertEquals(dateNaissance.addYears(18), ch.vd.uniregctb.xml.DataHelper.xmlToCore(np.getActivityStartDate()));
+			Assert.assertEquals(dateDepartHS, ch.vd.uniregctb.xml.DataHelper.xmlToCore(np.getActivityEndDate()));
+
+			final List<TaxResidence> fors = np.getMainTaxResidences();
+			Assert.assertNotNull(fors);
+			Assert.assertEquals(1, fors.size());
+			{
+				final TaxResidence ff = fors.get(0);
+				Assert.assertNotNull(ff);
+				Assert.assertNull(ff.getCancellationDate());
+				Assert.assertEquals(dateNaissance.addYears(18), ch.vd.uniregctb.xml.DataHelper.xmlToCore(ff.getDateFrom()));
+				Assert.assertEquals(dateDepartHS, ch.vd.uniregctb.xml.DataHelper.xmlToCore(ff.getDateTo()));
+				Assert.assertEquals(LiabilityChangeReason.MAJORITY, ff.getStartReason());
+				Assert.assertEquals(LiabilityChangeReason.DEPARTURE_TO_FOREIGN_COUNTRY, ff.getEndReason());
+				Assert.assertEquals(TaxType.INCOME_WEALTH, ff.getTaxType());
+				Assert.assertEquals(MockCommune.Lausanne.getNoOFS(), ff.getTaxationAuthorityFSOId());
+				Assert.assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, ff.getTaxationAuthorityType());
+				Assert.assertEquals(TaxationMethod.ORDINARY, ff.getTaxationMethod());
+				Assert.assertEquals(TaxLiabilityReason.RESIDENCE, ff.getTaxLiabilityReason());
+				Assert.assertFalse(ff.isVirtual());
+			}
+
+			final List<RelationBetweenParties> rels = np.getRelationsBetweenParties();
+			Assert.assertNotNull(rels);
+			Assert.assertEquals(1, rels.size());
+			{
+				final RelationBetweenParties rel = rels.get(0);
+				Assert.assertNotNull(rel);
+				Assert.assertNull(rel.getCancellationDate());
+				Assert.assertEquals(dateDebutRT, ch.vd.uniregctb.xml.DataHelper.xmlToCore(rel.getDateFrom()));
+				Assert.assertEquals(dateFinRT, ch.vd.uniregctb.xml.DataHelper.xmlToCore(rel.getDateTo()));
+				Assert.assertEquals(ids.dpi, rel.getOtherPartyNumber());
+				Assert.assertEquals(RelationBetweenPartiesType.TAXABLE_REVENUE, rel.getType());
+			}
+
+			final List<TaxLiability> tls = np.getTaxLiabilities();
+			Assert.assertNotNull(tls);
+			Assert.assertEquals(1, tls.size());
+			{
+				final TaxLiability tl = tls.get(0);
+				Assert.assertNotNull(tl);
+				Assert.assertEquals(OrdinaryResident.class, tl.getClass());
+				Assert.assertEquals(date(dateNaissance.addYears(18).year(), 1, 1), ch.vd.uniregctb.xml.DataHelper.xmlToCore(tl.getDateFrom()));
+				Assert.assertEquals(dateDepartHS, ch.vd.uniregctb.xml.DataHelper.xmlToCore(tl.getDateTo()));
+				Assert.assertEquals(LiabilityChangeReason.MAJORITY, tl.getStartReason());
+				Assert.assertEquals(LiabilityChangeReason.DEPARTURE_TO_FOREIGN_COUNTRY, tl.getEndReason());
+			}
+
+			final List<TaxationPeriod> tps = np.getTaxationPeriods();
+			Assert.assertNotNull(tps);
+			Assert.assertEquals(7, tps.size());
+			{
+				final TaxationPeriod tp = tps.get(0);
+				Assert.assertNotNull(tp);
+				Assert.assertEquals(date(2008, 1, 1), ch.vd.uniregctb.xml.DataHelper.xmlToCore(tp.getDateFrom()));
+				Assert.assertEquals(date(2008, 12, 31), ch.vd.uniregctb.xml.DataHelper.xmlToCore(tp.getDateTo()));
+				Assert.assertNull(tp.getTaxDeclarationId());
+			}
+			{
+				final TaxationPeriod tp = tps.get(1);
+				Assert.assertNotNull(tp);
+				Assert.assertEquals(date(2009, 1, 1), ch.vd.uniregctb.xml.DataHelper.xmlToCore(tp.getDateFrom()));
+				Assert.assertEquals(date(2009, 12, 31), ch.vd.uniregctb.xml.DataHelper.xmlToCore(tp.getDateTo()));
+				Assert.assertNull(tp.getTaxDeclarationId());
+			}
+			{
+				final TaxationPeriod tp = tps.get(2);
+				Assert.assertNotNull(tp);
+				Assert.assertEquals(date(2010, 1, 1), ch.vd.uniregctb.xml.DataHelper.xmlToCore(tp.getDateFrom()));
+				Assert.assertEquals(date(2010, 12, 31), ch.vd.uniregctb.xml.DataHelper.xmlToCore(tp.getDateTo()));
+				Assert.assertNull(tp.getTaxDeclarationId());
+			}
+			{
+				final TaxationPeriod tp = tps.get(3);
+				Assert.assertNotNull(tp);
+				Assert.assertEquals(date(2011, 1, 1), ch.vd.uniregctb.xml.DataHelper.xmlToCore(tp.getDateFrom()));
+				Assert.assertEquals(date(2011, 12, 31), ch.vd.uniregctb.xml.DataHelper.xmlToCore(tp.getDateTo()));
+				Assert.assertNull(tp.getTaxDeclarationId());
+			}
+			{
+				final TaxationPeriod tp = tps.get(4);
+				Assert.assertNotNull(tp);
+				Assert.assertEquals(date(2012, 1, 1), ch.vd.uniregctb.xml.DataHelper.xmlToCore(tp.getDateFrom()));
+				Assert.assertEquals(date(2012, 12, 31), ch.vd.uniregctb.xml.DataHelper.xmlToCore(tp.getDateTo()));
+				Assert.assertNull(tp.getTaxDeclarationId());
+			}
+			{
+				final TaxationPeriod tp = tps.get(5);
+				Assert.assertNotNull(tp);
+				Assert.assertEquals(date(2013, 1, 1), ch.vd.uniregctb.xml.DataHelper.xmlToCore(tp.getDateFrom()));
+				Assert.assertEquals(date(2013, 12, 31), ch.vd.uniregctb.xml.DataHelper.xmlToCore(tp.getDateTo()));
+				Assert.assertEquals((Long) ids.di, tp.getTaxDeclarationId());
+			}
+			{
+				final TaxationPeriod tp = tps.get(6);
+				Assert.assertNotNull(tp);
+				Assert.assertEquals(date(2014, 1, 1), ch.vd.uniregctb.xml.DataHelper.xmlToCore(tp.getDateFrom()));
+				Assert.assertEquals(dateDepartHS, ch.vd.uniregctb.xml.DataHelper.xmlToCore(tp.getDateTo()));
+				Assert.assertNull(tp.getTaxDeclarationId());
+			}
+		}
+	}
+
+	@Test
+	public void testGetPartyAllPartsOnDebtor() throws Exception {
+		final long noIndividu = 320327L;
+		final RegDate dateNaissance = date(1990, 10, 25);
+		final int anneeDI = 2013;
+		final RegDate dateEmissionDI = date(anneeDI + 1, 1, 6);
+		final RegDate dateDelaiDI = date(anneeDI + 1, 6, 30);
+		final RegDate dateEmissionLR = date(anneeDI, 1, 20);
+		final RegDate dateDelaiLR = date(anneeDI, 2, 28);
+		final RegDate dateSommationLR = date(anneeDI, 4, 10);
+		final RegDate dateDebutRT = date(2009, 5, 1);
+		final RegDate dateFinRT = date(2010, 9, 12);
+		final RegDate dateDepartHS = date(anneeDI + 1, 1, 12);
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Gautier", "Mafalda", Sexe.FEMININ);
+				addNationalite(ind, MockPays.France, dateNaissance, null);
+				addPermis(ind, TypePermis.ETABLISSEMENT, dateNaissance, null, false);
+			}
+		});
+
+		final class Ids {
+			int pp;
+			int dpi;
+			long di;
+		}
+
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				addSituation(pp, dateNaissance, null, 0, EtatCivil.CELIBATAIRE);
+				addForPrincipal(pp, dateNaissance.addYears(18), MotifFor.MAJORITE, dateDepartHS, MotifFor.DEPART_HS, MockCommune.Lausanne);
+				final CollectiviteAdministrative cedi = addCedi();
+				final PeriodeFiscale pf = addPeriodeFiscale(anneeDI);
+				final ModeleDocument mdDi = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
+				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(anneeDI, 1, 1), date(anneeDI, 12, 31), cedi, TypeContribuable.VAUDOIS_ORDINAIRE, mdDi);
+				addEtatDeclarationEmise(di, dateEmissionDI);
+				addDelaiDeclaration(di, dateEmissionDI, dateDelaiDI);
+
+				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+				addForDebiteur(dpi, date(2009, 1, 1), MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Aubonne);
+				dpi.setNom1("MonTestAdoré");
+				dpi.setModeCommunication(ModeCommunication.ELECTRONIQUE);
+				addRapportPrestationImposable(dpi, pp, dateDebutRT, dateFinRT, false);
+				final ModeleDocument mdLr = addModeleDocument(TypeDocument.LISTE_RECAPITULATIVE, pf);
+				final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, date(anneeDI, 1, 1), date(anneeDI, 1, 31), mdLr);
+				addEtatDeclarationEmise(lr, dateEmissionLR);
+				addDelaiDeclaration(lr, dateEmissionLR, dateDelaiLR);
+				addEtatDeclarationSommee(lr, dateSommationLR, dateSommationLR.addDays(3));
+
+				assertValidInteger(pp.getNumero());
+				assertValidInteger(dpi.getNumero());
+
+				final Ids ids = new Ids();
+				ids.pp = pp.getNumero().intValue();
+				ids.dpi = dpi.getNumero().intValue();
+				ids.di = di.getId();
+				return ids;
+			}
+		});
+
+		final UserLogin user = new UserLogin(getDefaultOperateurName(), 22);
+		final Party party = service.getParty(user, ids.dpi, EnumSet.allOf(PartyPart.class));
+		Assert.assertNotNull(party);
+		{
+			Assert.assertEquals(Debtor.class, party.getClass());
+
+			final Debtor dpi = (Debtor) party;
+			Assert.assertEquals(ids.dpi, dpi.getNumber());
+			Assert.assertEquals("MonTestAdoré", dpi.getName());
+
+			final List<TaxDeclaration> decls = dpi.getTaxDeclarations();
+			Assert.assertNotNull(decls);
+			Assert.assertEquals(1, decls.size());
+			{
+				final TaxDeclaration decl = decls.get(0);
+				Assert.assertNotNull(decl);
+				Assert.assertEquals(date(anneeDI, 1, 1), ch.vd.uniregctb.xml.DataHelper.xmlToCore(decl.getDateFrom()));
+				Assert.assertEquals(date(anneeDI, 1, 31), ch.vd.uniregctb.xml.DataHelper.xmlToCore(decl.getDateTo()));
+				Assert.assertNull(decl.getCancellationDate());
+
+				final List<TaxDeclarationDeadline> deadlines = decl.getDeadlines();
+				Assert.assertNotNull(deadlines);
+				Assert.assertEquals(1, deadlines.size());
+				{
+					final TaxDeclarationDeadline deadline = deadlines.get(0);
+					Assert.assertNotNull(deadline);
+					Assert.assertEquals(dateEmissionLR, ch.vd.uniregctb.xml.DataHelper.xmlToCore(deadline.getApplicationDate()));
+					Assert.assertEquals(dateEmissionLR, ch.vd.uniregctb.xml.DataHelper.xmlToCore(deadline.getProcessingDate()));
+					Assert.assertEquals(dateDelaiLR, ch.vd.uniregctb.xml.DataHelper.xmlToCore(deadline.getDeadline()));
+					Assert.assertNull(deadline.getCancellationDate());
+				}
+
+				final List<TaxDeclarationStatus> statuses = decl.getStatuses();
+				Assert.assertNotNull(statuses);
+				Assert.assertEquals(2, statuses.size());
+				{
+					final TaxDeclarationStatus status = statuses.get(0);
+					Assert.assertNotNull(status);
+					Assert.assertNull(status.getCancellationDate());
+					Assert.assertNull(status.getSource());
+					Assert.assertEquals(dateEmissionLR, ch.vd.uniregctb.xml.DataHelper.xmlToCore(status.getDateFrom()));
+					Assert.assertEquals(TaxDeclarationStatusType.SENT, status.getType());
+				}
+				{
+					final TaxDeclarationStatus status = statuses.get(1);
+					Assert.assertNotNull(status);
+					Assert.assertNull(status.getCancellationDate());
+					Assert.assertNull(status.getSource());
+					Assert.assertEquals(dateSommationLR.addDays(3), ch.vd.uniregctb.xml.DataHelper.xmlToCore(status.getDateFrom()));
+					Assert.assertEquals(TaxDeclarationStatusType.SUMMONS_SENT, status.getType());
+				}
+			}
+
+			final List<DebtorPeriodicity> periodicities = dpi.getPeriodicities();
+			Assert.assertNotNull(periodicities);
+			Assert.assertEquals(1, periodicities.size());
+			{
+				final DebtorPeriodicity periodicity = periodicities.get(0);
+				Assert.assertNotNull(periodicity);
+				Assert.assertNull(periodicity.getCancellationDate());
+				Assert.assertEquals(date(2009, 1, 1), ch.vd.uniregctb.xml.DataHelper.xmlToCore(periodicity.getDateFrom()));
+				Assert.assertNull(periodicity.getDateTo());
+				Assert.assertEquals(WithholdingTaxDeclarationPeriodicity.MONTHLY, periodicity.getPeriodicity());
+				Assert.assertNull(periodicity.getSpecificPeriod());
+			}
+
+			Assert.assertNull(dpi.getAssociatedTaxpayerNumber());
+			Assert.assertEquals(DebtorCategory.REGULAR, dpi.getCategory());
+			Assert.assertEquals(CommunicationMode.UPLOAD, dpi.getCommunicationMode());
+			Assert.assertFalse(dpi.isWithoutReminder());
+			Assert.assertFalse(dpi.isWithoutWithholdingTaxDeclaration());
+
+			Assert.assertEquals(date(2009, 1, 1), ch.vd.uniregctb.xml.DataHelper.xmlToCore(dpi.getActivityStartDate()));
+			Assert.assertNull(dpi.getActivityEndDate());
+
+			final List<TaxResidence> fors = dpi.getMainTaxResidences();
+			Assert.assertNotNull(fors);
+			Assert.assertEquals(1, fors.size());
+			{
+				final TaxResidence ff = fors.get(0);
+				Assert.assertNotNull(ff);
+				Assert.assertNull(ff.getCancellationDate());
+				Assert.assertEquals(date(2009, 1, 1), ch.vd.uniregctb.xml.DataHelper.xmlToCore(ff.getDateFrom()));
+				Assert.assertNull(ff.getDateTo());
+				Assert.assertEquals(LiabilityChangeReason.START_WITHHOLDING_ACTIVITY, ff.getStartReason());
+				Assert.assertNull(ff.getEndReason());
+				Assert.assertEquals(TaxType.DEBTOR_TAXABLE_INCOME, ff.getTaxType());
+				Assert.assertEquals(MockCommune.Aubonne.getNoOFS(), ff.getTaxationAuthorityFSOId());
+				Assert.assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, ff.getTaxationAuthorityType());
+				Assert.assertNull(ff.getTaxationMethod());
+				Assert.assertNull(ff.getTaxLiabilityReason());
+				Assert.assertFalse(ff.isVirtual());
+			}
+
+			final List<RelationBetweenParties> rels = dpi.getRelationsBetweenParties();
+			Assert.assertNotNull(rels);
+			Assert.assertEquals(1, rels.size());
+			{
+				final RelationBetweenParties rel = rels.get(0);
+				Assert.assertNotNull(rel);
+				Assert.assertNull(rel.getCancellationDate());
+				Assert.assertEquals(dateDebutRT, ch.vd.uniregctb.xml.DataHelper.xmlToCore(rel.getDateFrom()));
+				Assert.assertEquals(dateFinRT, ch.vd.uniregctb.xml.DataHelper.xmlToCore(rel.getDateTo()));
+				Assert.assertEquals(ids.pp, rel.getOtherPartyNumber());
+				Assert.assertEquals(RelationBetweenPartiesType.TAXABLE_REVENUE, rel.getType());
+			}
+		}
+	}
+
+	@Test
 	public void testGetPartiesMaxNumber() throws Exception {
 
 		// la limite du nombre de tiers demandables en une fois est de 100 -> "100" fonctionne, "101" ne doit plus fonctionner
@@ -2497,8 +2925,11 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		final Random rnd = new Random();
 		{
 			final List<Integer> nos = new ArrayList<>(max);
-			for (int i = 0 ; i < max ; ++ i) {
-				nos.add(rnd.nextInt(100000000));
+			while (nos.size() < max) {
+				final int data = rnd.nextInt(100000000);
+				if (!nos.contains(data)) {
+					nos.add(data);
+				}
 			}
 			final Parties res = service.getParties(user, nos, null);
 			Assert.assertNotNull(res);
@@ -2506,8 +2937,11 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		}
 		{
 			final List<Integer> nos = new ArrayList<>(max + 1);
-			for (int i = 0 ; i < max + 1 ; ++ i) {
-				nos.add(rnd.nextInt(100000000));
+			while (nos.size() <= max) {
+				final int data = rnd.nextInt(100000000);
+				if (!nos.contains(data)) {
+					nos.add(data);
+				}
 			}
 
 			try {
@@ -2517,6 +2951,22 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			catch (BadRequestException e) {
 				Assert.assertEquals("Le nombre de tiers demandés ne peut dépasser " + max, e.getMessage());
 			}
+		}
+
+		// 101 peut passer s'il n'y a que 100 (ou moins) éléments distincts
+		{
+			final List<Integer> nos = new ArrayList<>(max + 1);
+			while (nos.size() < max) {
+				final int data = rnd.nextInt(100000000);
+				if (!nos.contains(data)) {
+					nos.add(data);
+				}
+			}
+			nos.add(nos.get(0));
+
+			final Parties res = service.getParties(user, nos, null);
+			Assert.assertNotNull(res);
+			Assert.assertEquals(max, res.getPartyOrError().size());
 		}
 	}
 
@@ -2602,6 +3052,381 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			Assert.assertEquals(ids.ppProtege, error.getPartyNo());
 			Assert.assertEquals("L'utilisateur UserLogin{userId='TOTO', oid=22} ne possède aucun droit de lecture sur le dossier " + ids.ppProtege, error.getErrorMessage());
 			Assert.assertEquals(ErrorType.ACCESS, error.getType());
+		}
+	}
+
+	/**
+	 *	Pour vérifier que les requêtes SQL sur toutes les parts fonctionnent
+	 */
+	@Test
+	public void testGetPartiesAllParts() throws Exception {
+
+		final long noIndividu = 320327L;
+		final RegDate dateNaissance = date(1990, 10, 25);
+		final int anneeDI = 2013;
+		final RegDate dateEmissionDI = date(anneeDI + 1, 1, 6);
+		final RegDate dateDelaiDI = date(anneeDI + 1, 6, 30);
+		final RegDate dateEmissionLR = date(anneeDI, 1, 20);
+		final RegDate dateDelaiLR = date(anneeDI, 2, 28);
+		final RegDate dateSommationLR = date(anneeDI, 4, 10);
+		final RegDate dateDebutRT = date(2009, 5, 1);
+		final RegDate dateFinRT = date(2010, 9, 12);
+		final RegDate dateDepartHS = date(anneeDI + 1, 1, 12);
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Gautier", "Mafalda", Sexe.FEMININ);
+				addNationalite(ind, MockPays.France, dateNaissance, null);
+				addPermis(ind, TypePermis.ETABLISSEMENT, dateNaissance, null, false);
+			}
+		});
+
+		final class Ids {
+			int pp;
+			int dpi;
+			long di;
+		}
+
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				addSituation(pp, dateNaissance, null, 0, EtatCivil.CELIBATAIRE);
+				addForPrincipal(pp, dateNaissance.addYears(18), MotifFor.MAJORITE, dateDepartHS, MotifFor.DEPART_HS, MockCommune.Lausanne);
+				final CollectiviteAdministrative cedi = addCedi();
+				final PeriodeFiscale pf = addPeriodeFiscale(anneeDI);
+				final ModeleDocument mdDi = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
+				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(anneeDI, 1, 1), date(anneeDI, 12, 31), cedi, TypeContribuable.VAUDOIS_ORDINAIRE, mdDi);
+				addEtatDeclarationEmise(di, dateEmissionDI);
+				addDelaiDeclaration(di, dateEmissionDI, dateDelaiDI);
+
+				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+				addForDebiteur(dpi, date(2009, 1, 1), MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Aubonne);
+				dpi.setNom1("MonTestAdoré");
+				dpi.setModeCommunication(ModeCommunication.ELECTRONIQUE);
+				addRapportPrestationImposable(dpi, pp, dateDebutRT, dateFinRT, false);
+				final ModeleDocument mdLr = addModeleDocument(TypeDocument.LISTE_RECAPITULATIVE, pf);
+				final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, date(anneeDI, 1, 1), date(anneeDI, 1, 31), mdLr);
+				addEtatDeclarationEmise(lr, dateEmissionLR);
+				addDelaiDeclaration(lr, dateEmissionLR, dateDelaiLR);
+				addEtatDeclarationSommee(lr, dateSommationLR, dateSommationLR.addDays(3));
+
+				assertValidInteger(pp.getNumero());
+				assertValidInteger(dpi.getNumero());
+
+				final Ids ids = new Ids();
+				ids.pp = pp.getNumero().intValue();
+				ids.dpi = dpi.getNumero().intValue();
+				ids.di = di.getId();
+				return ids;
+			}
+		});
+
+		final UserLogin user = new UserLogin(getDefaultOperateurName(), 22);
+		final Parties parties = service.getParties(user, Arrays.asList(ids.pp, ids.dpi), EnumSet.allOf(PartyPart.class));
+		Assert.assertNotNull(parties);
+		Assert.assertNotNull(parties.getPartyOrError());
+		Assert.assertEquals(2, parties.getPartyOrError().size());
+
+		final List<Object> sorted = new ArrayList<>(parties.getPartyOrError());
+		Collections.sort(sorted, new Comparator<Object>() {
+			@Override
+			public int compare(Object o1, Object o2) {
+				final Party p1 = (Party) o1;
+				final Party p2 = (Party) o2;
+				return p1.getNumber() - p2.getNumber();
+			}
+		});
+
+		{
+			final Object o = sorted.get(0);
+			Assert.assertNotNull(o);
+			Assert.assertEquals(Debtor.class, o.getClass());
+
+			final Debtor dpi = (Debtor) o;
+			Assert.assertEquals(ids.dpi, dpi.getNumber());
+			Assert.assertEquals("MonTestAdoré", dpi.getName());
+
+			final List<TaxDeclaration> decls = dpi.getTaxDeclarations();
+			Assert.assertNotNull(decls);
+			Assert.assertEquals(1, decls.size());
+			{
+				final TaxDeclaration decl = decls.get(0);
+				Assert.assertNotNull(decl);
+				Assert.assertEquals(date(anneeDI, 1, 1), ch.vd.uniregctb.xml.DataHelper.xmlToCore(decl.getDateFrom()));
+				Assert.assertEquals(date(anneeDI, 1, 31), ch.vd.uniregctb.xml.DataHelper.xmlToCore(decl.getDateTo()));
+				Assert.assertNull(decl.getCancellationDate());
+
+				final List<TaxDeclarationDeadline> deadlines = decl.getDeadlines();
+				Assert.assertNotNull(deadlines);
+				Assert.assertEquals(1, deadlines.size());
+				{
+					final TaxDeclarationDeadline deadline = deadlines.get(0);
+					Assert.assertNotNull(deadline);
+					Assert.assertEquals(dateEmissionLR, ch.vd.uniregctb.xml.DataHelper.xmlToCore(deadline.getApplicationDate()));
+					Assert.assertEquals(dateEmissionLR, ch.vd.uniregctb.xml.DataHelper.xmlToCore(deadline.getProcessingDate()));
+					Assert.assertEquals(dateDelaiLR, ch.vd.uniregctb.xml.DataHelper.xmlToCore(deadline.getDeadline()));
+					Assert.assertNull(deadline.getCancellationDate());
+				}
+
+				final List<TaxDeclarationStatus> statuses = decl.getStatuses();
+				Assert.assertNotNull(statuses);
+				Assert.assertEquals(2, statuses.size());
+				{
+					final TaxDeclarationStatus status = statuses.get(0);
+					Assert.assertNotNull(status);
+					Assert.assertNull(status.getCancellationDate());
+					Assert.assertNull(status.getSource());
+					Assert.assertEquals(dateEmissionLR, ch.vd.uniregctb.xml.DataHelper.xmlToCore(status.getDateFrom()));
+					Assert.assertEquals(TaxDeclarationStatusType.SENT, status.getType());
+				}
+				{
+					final TaxDeclarationStatus status = statuses.get(1);
+					Assert.assertNotNull(status);
+					Assert.assertNull(status.getCancellationDate());
+					Assert.assertNull(status.getSource());
+					Assert.assertEquals(dateSommationLR.addDays(3), ch.vd.uniregctb.xml.DataHelper.xmlToCore(status.getDateFrom()));
+					Assert.assertEquals(TaxDeclarationStatusType.SUMMONS_SENT, status.getType());
+				}
+			}
+
+			final List<DebtorPeriodicity> periodicities = dpi.getPeriodicities();
+			Assert.assertNotNull(periodicities);
+			Assert.assertEquals(1, periodicities.size());
+			{
+				final DebtorPeriodicity periodicity = periodicities.get(0);
+				Assert.assertNotNull(periodicity);
+				Assert.assertNull(periodicity.getCancellationDate());
+				Assert.assertEquals(date(2009, 1, 1), ch.vd.uniregctb.xml.DataHelper.xmlToCore(periodicity.getDateFrom()));
+				Assert.assertNull(periodicity.getDateTo());
+				Assert.assertEquals(WithholdingTaxDeclarationPeriodicity.MONTHLY, periodicity.getPeriodicity());
+				Assert.assertNull(periodicity.getSpecificPeriod());
+			}
+
+			Assert.assertNull(dpi.getAssociatedTaxpayerNumber());
+			Assert.assertEquals(DebtorCategory.REGULAR, dpi.getCategory());
+			Assert.assertEquals(CommunicationMode.UPLOAD, dpi.getCommunicationMode());
+			Assert.assertFalse(dpi.isWithoutReminder());
+			Assert.assertFalse(dpi.isWithoutWithholdingTaxDeclaration());
+
+			Assert.assertEquals(date(2009, 1, 1), ch.vd.uniregctb.xml.DataHelper.xmlToCore(dpi.getActivityStartDate()));
+			Assert.assertNull(dpi.getActivityEndDate());
+
+			final List<TaxResidence> fors = dpi.getMainTaxResidences();
+			Assert.assertNotNull(fors);
+			Assert.assertEquals(1, fors.size());
+			{
+				final TaxResidence ff = fors.get(0);
+				Assert.assertNotNull(ff);
+				Assert.assertNull(ff.getCancellationDate());
+				Assert.assertEquals(date(2009, 1, 1), ch.vd.uniregctb.xml.DataHelper.xmlToCore(ff.getDateFrom()));
+				Assert.assertNull(ff.getDateTo());
+				Assert.assertEquals(LiabilityChangeReason.START_WITHHOLDING_ACTIVITY, ff.getStartReason());
+				Assert.assertNull(ff.getEndReason());
+				Assert.assertEquals(TaxType.DEBTOR_TAXABLE_INCOME, ff.getTaxType());
+				Assert.assertEquals(MockCommune.Aubonne.getNoOFS(), ff.getTaxationAuthorityFSOId());
+				Assert.assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, ff.getTaxationAuthorityType());
+				Assert.assertNull(ff.getTaxationMethod());
+				Assert.assertNull(ff.getTaxLiabilityReason());
+				Assert.assertFalse(ff.isVirtual());
+			}
+
+			final List<RelationBetweenParties> rels = dpi.getRelationsBetweenParties();
+			Assert.assertNotNull(rels);
+			Assert.assertEquals(1, rels.size());
+			{
+				final RelationBetweenParties rel = rels.get(0);
+				Assert.assertNotNull(rel);
+				Assert.assertNull(rel.getCancellationDate());
+				Assert.assertEquals(dateDebutRT, ch.vd.uniregctb.xml.DataHelper.xmlToCore(rel.getDateFrom()));
+				Assert.assertEquals(dateFinRT, ch.vd.uniregctb.xml.DataHelper.xmlToCore(rel.getDateTo()));
+				Assert.assertEquals(ids.pp, rel.getOtherPartyNumber());
+				Assert.assertEquals(RelationBetweenPartiesType.TAXABLE_REVENUE, rel.getType());
+			}
+		}
+		{
+			final Object o = sorted.get(1);
+			Assert.assertNotNull(o);
+			Assert.assertEquals(NaturalPerson.class, o.getClass());
+
+			final NaturalPerson np = (NaturalPerson) o;
+			Assert.assertEquals(ids.pp, np.getNumber());
+			Assert.assertEquals("Mafalda", np.getFirstName());
+			Assert.assertEquals("Gautier", np.getOfficialName());
+			Assert.assertEquals(Sex.FEMALE, np.getSex());
+
+			final List<TaxDeclaration> decls = np.getTaxDeclarations();
+			Assert.assertNotNull(decls);
+			Assert.assertEquals(1, decls.size());
+			{
+				final TaxDeclaration decl = decls.get(0);
+				Assert.assertNotNull(decl);
+				Assert.assertEquals(date(anneeDI, 1, 1), ch.vd.uniregctb.xml.DataHelper.xmlToCore(decl.getDateFrom()));
+				Assert.assertEquals(date(anneeDI, 12, 31), ch.vd.uniregctb.xml.DataHelper.xmlToCore(decl.getDateTo()));
+				Assert.assertNull(decl.getCancellationDate());
+
+				final List<TaxDeclarationDeadline> deadlines = decl.getDeadlines();
+				Assert.assertNotNull(deadlines);
+				Assert.assertEquals(1, deadlines.size());
+				{
+					final TaxDeclarationDeadline deadline = deadlines.get(0);
+					Assert.assertNotNull(deadline);
+					Assert.assertEquals(dateEmissionDI, ch.vd.uniregctb.xml.DataHelper.xmlToCore(deadline.getApplicationDate()));
+					Assert.assertEquals(dateEmissionDI, ch.vd.uniregctb.xml.DataHelper.xmlToCore(deadline.getProcessingDate()));
+					Assert.assertEquals(dateDelaiDI, ch.vd.uniregctb.xml.DataHelper.xmlToCore(deadline.getDeadline()));
+					Assert.assertNull(deadline.getCancellationDate());
+				}
+
+				final List<TaxDeclarationStatus> statuses = decl.getStatuses();
+				Assert.assertNotNull(statuses);
+				Assert.assertEquals(1, statuses.size());
+				{
+					final TaxDeclarationStatus status = statuses.get(0);
+					Assert.assertNotNull(status);
+					Assert.assertNull(status.getCancellationDate());
+					Assert.assertNull(status.getSource());
+					Assert.assertEquals(dateEmissionDI, ch.vd.uniregctb.xml.DataHelper.xmlToCore(status.getDateFrom()));
+					Assert.assertEquals(TaxDeclarationStatusType.SENT, status.getType());
+				}
+			}
+
+			Assert.assertEquals(dateNaissance, ch.vd.uniregctb.xml.DataHelper.xmlToCore(np.getDateOfBirth()));
+			Assert.assertNull(np.getDateOfDeath());
+
+			final List<NaturalPersonCategory> cats = np.getCategories();
+			Assert.assertNotNull(cats);
+			Assert.assertEquals(1, cats.size());
+			{
+				final NaturalPersonCategory cat = cats.get(0);
+				Assert.assertNotNull(cat);
+				Assert.assertEquals(NaturalPersonCategoryType.C_03_C_PERMIT, cat.getCategory());
+				Assert.assertEquals(dateNaissance, ch.vd.uniregctb.xml.DataHelper.xmlToCore(cat.getDateFrom()));
+				Assert.assertNull(cat.getDateTo());
+			}
+
+			final List<WithholdingTaxationPeriod> wtps = np.getWithholdingTaxationPeriods();
+			Assert.assertNotNull(wtps);
+			Assert.assertEquals(2, wtps.size());
+			{
+				final WithholdingTaxationPeriod wtp = wtps.get(0);
+				Assert.assertNotNull(wtp);
+				Assert.assertEquals(date(2009, 1, 1), ch.vd.uniregctb.xml.DataHelper.xmlToCore(wtp.getDateFrom()));
+				Assert.assertEquals(date(2009, 12, 31), ch.vd.uniregctb.xml.DataHelper.xmlToCore(wtp.getDateTo()));
+				Assert.assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, wtp.getTaxationAuthority());
+				Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), wtp.getTaxationAuthorityFSOId());
+				Assert.assertEquals(WithholdingTaxationPeriodType.MIXED, wtp.getType());
+			}
+			{
+				final WithholdingTaxationPeriod wtp = wtps.get(1);
+				Assert.assertNotNull(wtp);
+				Assert.assertEquals(date(2010, 1, 1), ch.vd.uniregctb.xml.DataHelper.xmlToCore(wtp.getDateFrom()));
+				Assert.assertEquals(date(2010, 12, 31), ch.vd.uniregctb.xml.DataHelper.xmlToCore(wtp.getDateTo()));
+				Assert.assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, wtp.getTaxationAuthority());
+				Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), wtp.getTaxationAuthorityFSOId());
+				Assert.assertEquals(WithholdingTaxationPeriodType.MIXED, wtp.getType());
+			}
+
+			Assert.assertEquals(dateNaissance.addYears(18), ch.vd.uniregctb.xml.DataHelper.xmlToCore(np.getActivityStartDate()));
+			Assert.assertEquals(dateDepartHS, ch.vd.uniregctb.xml.DataHelper.xmlToCore(np.getActivityEndDate()));
+
+			final List<TaxResidence> fors = np.getMainTaxResidences();
+			Assert.assertNotNull(fors);
+			Assert.assertEquals(1, fors.size());
+			{
+				final TaxResidence ff = fors.get(0);
+				Assert.assertNotNull(ff);
+				Assert.assertNull(ff.getCancellationDate());
+				Assert.assertEquals(dateNaissance.addYears(18), ch.vd.uniregctb.xml.DataHelper.xmlToCore(ff.getDateFrom()));
+				Assert.assertEquals(dateDepartHS, ch.vd.uniregctb.xml.DataHelper.xmlToCore(ff.getDateTo()));
+				Assert.assertEquals(LiabilityChangeReason.MAJORITY, ff.getStartReason());
+				Assert.assertEquals(LiabilityChangeReason.DEPARTURE_TO_FOREIGN_COUNTRY, ff.getEndReason());
+				Assert.assertEquals(TaxType.INCOME_WEALTH, ff.getTaxType());
+				Assert.assertEquals(MockCommune.Lausanne.getNoOFS(), ff.getTaxationAuthorityFSOId());
+				Assert.assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, ff.getTaxationAuthorityType());
+				Assert.assertEquals(TaxationMethod.ORDINARY, ff.getTaxationMethod());
+				Assert.assertEquals(TaxLiabilityReason.RESIDENCE, ff.getTaxLiabilityReason());
+				Assert.assertFalse(ff.isVirtual());
+			}
+
+			final List<RelationBetweenParties> rels = np.getRelationsBetweenParties();
+			Assert.assertNotNull(rels);
+			Assert.assertEquals(1, rels.size());
+			{
+				final RelationBetweenParties rel = rels.get(0);
+				Assert.assertNotNull(rel);
+				Assert.assertNull(rel.getCancellationDate());
+				Assert.assertEquals(dateDebutRT, ch.vd.uniregctb.xml.DataHelper.xmlToCore(rel.getDateFrom()));
+				Assert.assertEquals(dateFinRT, ch.vd.uniregctb.xml.DataHelper.xmlToCore(rel.getDateTo()));
+				Assert.assertEquals(ids.dpi, rel.getOtherPartyNumber());
+				Assert.assertEquals(RelationBetweenPartiesType.TAXABLE_REVENUE, rel.getType());
+			}
+
+			final List<TaxLiability> tls = np.getTaxLiabilities();
+			Assert.assertNotNull(tls);
+			Assert.assertEquals(1, tls.size());
+			{
+				final TaxLiability tl = tls.get(0);
+				Assert.assertNotNull(tl);
+				Assert.assertEquals(OrdinaryResident.class, tl.getClass());
+				Assert.assertEquals(date(dateNaissance.addYears(18).year(), 1, 1), ch.vd.uniregctb.xml.DataHelper.xmlToCore(tl.getDateFrom()));
+				Assert.assertEquals(dateDepartHS, ch.vd.uniregctb.xml.DataHelper.xmlToCore(tl.getDateTo()));
+				Assert.assertEquals(LiabilityChangeReason.MAJORITY, tl.getStartReason());
+				Assert.assertEquals(LiabilityChangeReason.DEPARTURE_TO_FOREIGN_COUNTRY, tl.getEndReason());
+			}
+
+			final List<TaxationPeriod> tps = np.getTaxationPeriods();
+			Assert.assertNotNull(tps);
+			Assert.assertEquals(7, tps.size());
+			{
+				final TaxationPeriod tp = tps.get(0);
+				Assert.assertNotNull(tp);
+				Assert.assertEquals(date(2008, 1, 1), ch.vd.uniregctb.xml.DataHelper.xmlToCore(tp.getDateFrom()));
+				Assert.assertEquals(date(2008, 12, 31), ch.vd.uniregctb.xml.DataHelper.xmlToCore(tp.getDateTo()));
+				Assert.assertNull(tp.getTaxDeclarationId());
+			}
+			{
+				final TaxationPeriod tp = tps.get(1);
+				Assert.assertNotNull(tp);
+				Assert.assertEquals(date(2009, 1, 1), ch.vd.uniregctb.xml.DataHelper.xmlToCore(tp.getDateFrom()));
+				Assert.assertEquals(date(2009, 12, 31), ch.vd.uniregctb.xml.DataHelper.xmlToCore(tp.getDateTo()));
+				Assert.assertNull(tp.getTaxDeclarationId());
+			}
+			{
+				final TaxationPeriod tp = tps.get(2);
+				Assert.assertNotNull(tp);
+				Assert.assertEquals(date(2010, 1, 1), ch.vd.uniregctb.xml.DataHelper.xmlToCore(tp.getDateFrom()));
+				Assert.assertEquals(date(2010, 12, 31), ch.vd.uniregctb.xml.DataHelper.xmlToCore(tp.getDateTo()));
+				Assert.assertNull(tp.getTaxDeclarationId());
+			}
+			{
+				final TaxationPeriod tp = tps.get(3);
+				Assert.assertNotNull(tp);
+				Assert.assertEquals(date(2011, 1, 1), ch.vd.uniregctb.xml.DataHelper.xmlToCore(tp.getDateFrom()));
+				Assert.assertEquals(date(2011, 12, 31), ch.vd.uniregctb.xml.DataHelper.xmlToCore(tp.getDateTo()));
+				Assert.assertNull(tp.getTaxDeclarationId());
+			}
+			{
+				final TaxationPeriod tp = tps.get(4);
+				Assert.assertNotNull(tp);
+				Assert.assertEquals(date(2012, 1, 1), ch.vd.uniregctb.xml.DataHelper.xmlToCore(tp.getDateFrom()));
+				Assert.assertEquals(date(2012, 12, 31), ch.vd.uniregctb.xml.DataHelper.xmlToCore(tp.getDateTo()));
+				Assert.assertNull(tp.getTaxDeclarationId());
+			}
+			{
+				final TaxationPeriod tp = tps.get(5);
+				Assert.assertNotNull(tp);
+				Assert.assertEquals(date(2013, 1, 1), ch.vd.uniregctb.xml.DataHelper.xmlToCore(tp.getDateFrom()));
+				Assert.assertEquals(date(2013, 12, 31), ch.vd.uniregctb.xml.DataHelper.xmlToCore(tp.getDateTo()));
+				Assert.assertEquals((Long) ids.di, tp.getTaxDeclarationId());
+			}
+			{
+				final TaxationPeriod tp = tps.get(6);
+				Assert.assertNotNull(tp);
+				Assert.assertEquals(date(2014, 1, 1), ch.vd.uniregctb.xml.DataHelper.xmlToCore(tp.getDateFrom()));
+				Assert.assertEquals(dateDepartHS, ch.vd.uniregctb.xml.DataHelper.xmlToCore(tp.getDateTo()));
+				Assert.assertNull(tp.getTaxDeclarationId());
+			}
 		}
 	}
 }

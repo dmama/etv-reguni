@@ -26,13 +26,16 @@ public class TaxResidenceBuilder {
 		f.setTaxationAuthorityFSOId(forFiscal.getNumeroOfsAutoriteFiscale());
 		f.setVirtual(virtuel);
 
+		if (forFiscal instanceof ch.vd.uniregctb.tiers.ForFiscalAvecMotifs) {
+			final ch.vd.uniregctb.tiers.ForFiscalAvecMotifs forMotifs = (ch.vd.uniregctb.tiers.ForFiscalAvecMotifs) forFiscal;
+			f.setStartReason(EnumHelper.coreToXMLv2(forMotifs.getMotifOuverture()));
+			f.setEndReason(EnumHelper.coreToXMLv2(forMotifs.getMotifFermeture()));
+		}
+
 		if (forFiscal instanceof ch.vd.uniregctb.tiers.ForFiscalRevenuFortune) {
 			final ch.vd.uniregctb.tiers.ForFiscalRevenuFortune forRevenu = (ch.vd.uniregctb.tiers.ForFiscalRevenuFortune) forFiscal;
 			f.setTaxLiabilityReason(EnumHelper.coreToXMLv2(forRevenu.getMotifRattachement()));
-			f.setStartReason(EnumHelper.coreToXMLv2(forRevenu.getMotifOuverture()));
-			f.setEndReason(EnumHelper.coreToXMLv2(forRevenu.getMotifFermeture()));
 		}
-
 		return f;
 	}
 }
