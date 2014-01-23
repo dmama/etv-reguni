@@ -8,6 +8,7 @@
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/corporation/3" schemaLocation="party/unireg-party-corporation-3.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/adminauth/3" schemaLocation="party/unireg-party-administrativeauthority-3.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/debtor/3" schemaLocation="party/unireg-party-debtor-3.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/othercommunity/1" schemaLocation="party/unireg-party-othercommunity-1.xsd" />
 
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/ws/security/1" schemaLocation="http://resources.etat-de-vaud.ch/fiscalite/registre/unireg-ws-security-1.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/ws/error/1" schemaLocation="http://resources.etat-de-vaud.ch/fiscalite/registre/unireg-ws-error-1.xsd" />
