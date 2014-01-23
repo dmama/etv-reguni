@@ -174,7 +174,7 @@
 									splitindex="true"
 									use="true"
 									version="true" >
-								    <fileset dir="target/generated-cxf/src/main/java/" defaultexcludes="yes">
+								    <fileset dir="target/generated-sources/xjc/" defaultexcludes="yes">
 							    		<include name="**/*.java"/>
 							    		<exclude name="**/ObjectFactory.java"/>
 								    </fileset>
