@@ -100,4 +100,14 @@
 		<property name="cache" ref="partyService4Cache" />
 	</bean>
 
+	<!-- Beans du web-service v5 mais sans le end-point jaxrs -->
+
+	<bean id="v5Business" class="ch.vd.uniregctb.webservices.v5.BusinessWebServiceImpl">
+		<property name="securityProvider" ref="securityProviderInterface"/>
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="tiersService" ref="tiersService"/>
+		<property name="diService" ref="diService"/>
+		<property name="bamSender" ref="bamMessageSender"/>
+	</bean>
+
 </beans>

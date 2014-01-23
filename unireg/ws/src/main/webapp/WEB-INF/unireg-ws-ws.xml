@@ -152,6 +152,10 @@
 	</jaxrs:server>
 
 	<bean id="v5EndPoint" class="ch.vd.uniregctb.webservices.v5.WebServiceEndPoint">
+		<property name="target" ref="v5Business"/>
+	</bean>
+
+	<bean id="v5Business" class="ch.vd.uniregctb.webservices.v5.BusinessWebServiceImpl">
 		<property name="securityProvider" ref="securityProviderInterface"/>
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="tiersService" ref="tiersService"/>
