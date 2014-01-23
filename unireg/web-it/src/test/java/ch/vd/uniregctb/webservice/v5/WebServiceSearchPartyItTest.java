@@ -87,7 +87,7 @@ public class WebServiceSearchPartyItTest extends AbstractWebServiceItTest {
 
 	@Test
 	public void searchByTypeSansResultat() throws Exception {
-		final Pair<String, Map<String, ?>> params = buildUriAndParams(null, null, EnumSet.of(PartyType.DEBTOR, PartyType.CORPORATION, PartyType.HOUSEHOLD));
+		final Pair<String, Map<String, ?>> params = buildUriAndParams(null, "Emery", EnumSet.of(PartyType.DEBTOR, PartyType.CORPORATION, PartyType.HOUSEHOLD));
 		final ResponseEntity<SearchResult> resp = get(SearchResult.class, MediaType.APPLICATION_JSON, params.getLeft(), params.getRight());
 		Assert.assertNotNull(resp);
 		Assert.assertEquals(HttpStatus.OK, resp.getStatusCode());
@@ -100,7 +100,7 @@ public class WebServiceSearchPartyItTest extends AbstractWebServiceItTest {
 
 	@Test
 	public void searchByTypeAvecResultat() throws Exception {
-		final Pair<String, Map<String, ?>> params = buildUriAndParams(null, null, EnumSet.of(PartyType.DEBTOR, PartyType.NATURAL_PERSON));
+		final Pair<String, Map<String, ?>> params = buildUriAndParams(null, "Emery", EnumSet.of(PartyType.DEBTOR, PartyType.NATURAL_PERSON));
 		final ResponseEntity<SearchResult> resp = get(SearchResult.class, MediaType.APPLICATION_JSON, params.getLeft(), params.getRight());
 		Assert.assertNotNull(resp);
 		Assert.assertEquals(HttpStatus.OK, resp.getStatusCode());
