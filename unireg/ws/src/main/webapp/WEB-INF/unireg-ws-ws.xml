@@ -169,7 +169,12 @@
 	</jaxrs:server>
 
 	<bean id="wsv5EndPoint" class="ch.vd.uniregctb.webservices.v5.WebServiceEndPoint">
+		<property name="target" ref="wsv5Tracing"/>
+	</bean>
+
+	<bean id="wsv5Tracing" class="ch.vd.uniregctb.webservices.v5.BusinessWebServiceTracing">
 		<property name="target" ref="wsv5Access"/>
+		<property name="statsService" ref="statsService"/>
 	</bean>
 
 	<bean id="wsv5Access" class="ch.vd.uniregctb.webservices.v5.BusinessWebServiceAccessChecker">

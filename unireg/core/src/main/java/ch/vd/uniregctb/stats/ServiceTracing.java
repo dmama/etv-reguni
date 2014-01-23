@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -20,7 +21,7 @@ import ch.vd.registre.base.utils.NotImplementedException;
  */
 public final class ServiceTracing implements ServiceTracingInterface {
 
-	private static final long NANO_TO_MILLI = 1000000;
+	private static final long NANO_TO_MILLI = TimeUnit.MILLISECONDS.toNanos(1);
 	private static final int RECENTS_SIZE = 5; // 5 minutes d'activité récente
 
 	/**
@@ -220,13 +221,18 @@ public final class ServiceTracing implements ServiceTracingInterface {
 	/**
 	 * Le logger utilisé dans les traces détaillées
 	 */
+	@Nullable
 	private final Logger detailLogger;
 
 	private int index;
 
 	public ServiceTracing(String serviceName) {
+		this(serviceName, true);
+	}
+
+	public ServiceTracing(String serviceName, boolean withDetailLogging) {
 		this.index = 0;
-		this.detailLogger = Logger.getLogger(String.format("%s.%s", ServiceTracing.class.getSimpleName(), serviceName));
+		this.detailLogger = withDetailLogging ? Logger.getLogger(String.format("%s.%s", ServiceTracing.class.getSimpleName(), serviceName)) : null;
 	}
 
 	@Override
@@ -395,7 +401,7 @@ public final class ServiceTracing implements ServiceTracingInterface {
 		final long nanoTime = System.nanoTime();
 		lastCallTime = nanoTime;
 		addTime(nanoTime - start, name);
-		if (detailLogger.isInfoEnabled()) {
+		if (detailLogger != null && detailLogger.isInfoEnabled()) {
 			final String paramString;
 			if (params != null) {
 				paramString = params.toString();
@@ -433,7 +439,7 @@ public final class ServiceTracing implements ServiceTracingInterface {
 		final long nanoTime = System.nanoTime();
 		lastCallTime = nanoTime;
 		addTime(nanoTime - start, items, name);
-		if (detailLogger.isInfoEnabled()) {
+		if (detailLogger != null && detailLogger.isInfoEnabled()) {
 			final String paramString;
 			if (params != null) {
 				paramString = params.toString();
@@ -457,7 +463,7 @@ public final class ServiceTracing implements ServiceTracingInterface {
 	 * @return <code>true</code> si le logguer est actif au niveau {@link org.apache.log4j.Level#DEBUG DEBUG}, <code>false</code> sinon
 	 */
 	public boolean isDebugEnabled() {
-		return detailLogger.isDebugEnabled();
+		return detailLogger != null && detailLogger.isDebugEnabled();
 	}
 
 	@Override
