@@ -169,7 +169,6 @@ public class WebServiceEndPoint implements DetailedLoadMonitorable {
 		}
 	}
 
-
 	@PUT
 	@Path("/repayment/{partyNo}/blocked")
 	public Response setBlocageRemboursementAuto(@PathParam("partyNo") final int partyNo,
@@ -230,7 +229,7 @@ public class WebServiceEndPoint implements DetailedLoadMonitorable {
 	}
 
 	@GET
-	@Produces(MediaType.APPLICATION_XML)
+	@Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
 	@Path("/security/{user}/{partyNo}")
 	public Response getSecurityOnParty(@PathParam("user") final String user, @PathParam("partyNo") final int partyNo) {
 		Throwable t = null;
@@ -244,7 +243,17 @@ public class WebServiceEndPoint implements DetailedLoadMonitorable {
 		final long start = loadMeter.start(params);
 		try {
 			final Niveau niveau = securityProvider.getDroitAcces(user, partyNo);
-			return Response.ok(securityObjectFactory.createUserAccess(new SecurityResponse(user, partyNo, EnumHelper.toXml(niveau)))).build();
+			final SecurityResponse response = new SecurityResponse(user, partyNo, EnumHelper.toXml(niveau));
+
+			final MediaType preferred = WebServiceHelper.getPreferedMediaType(messageContext.getHttpHeaders().getAcceptableMediaTypes(),
+			                                                                  new MediaType[] {MediaType.APPLICATION_XML_TYPE, MediaType.APPLICATION_JSON_TYPE});
+			if (preferred == MediaType.APPLICATION_JSON_TYPE) {
+				return Response.ok(response, MediaType.APPLICATION_JSON_TYPE).build();
+			}
+			else if (preferred == MediaType.APPLICATION_XML_TYPE) {
+				return Response.ok(securityObjectFactory.createUserAccess(response), MediaType.APPLICATION_XML_TYPE).build();
+			}
+			return Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build();
 		}
 		catch (ObjectNotFoundException e) {
 			t = e;
@@ -325,7 +334,7 @@ public class WebServiceEndPoint implements DetailedLoadMonitorable {
 	}
 
 	@GET
-	@Produces(MediaType.APPLICATION_XML)
+	@Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
 	@Path("/taxOffices/{municipalityId}")
 	public Response getTaxOffices(@PathParam("municipalityId") int ofsCommune) {
 		return WebServiceHelper.buildErrorResponse(Response.Status.SERVICE_UNAVAILABLE, "Implémentation encore en cours...");

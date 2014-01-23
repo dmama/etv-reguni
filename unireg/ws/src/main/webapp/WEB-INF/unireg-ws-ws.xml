@@ -146,6 +146,9 @@
 			<jaxrs:schemaLocation>classpath:/unireg-ws-error-1.xsd</jaxrs:schemaLocation>
 			<jaxrs:schemaLocation>classpath:/unireg-ws-security-1.xsd</jaxrs:schemaLocation>
 		</jaxrs:schemaLocations>
+		<jaxrs:providers>
+			<bean class="org.codehaus.jackson.jaxrs.JacksonJaxbJsonProvider"/>
+		</jaxrs:providers>
 	</jaxrs:server>
 
 	<bean id="v5EndPoint" class="ch.vd.uniregctb.webservices.v5.WebServiceEndPoint">

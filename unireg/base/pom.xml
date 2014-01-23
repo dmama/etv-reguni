@@ -591,6 +591,7 @@
 		<cxf.version>2.6.0.fuse-71-047</cxf.version>
 		<activemq.version>5.8.0.redhat-60024</activemq.version>
 		<jencks.version>2.2</jencks.version>
+		<jackson.version>1.9.13</jackson.version>
 		<wsparty3.version>3.8</wsparty3.version>
 		<wsparty4.version>4.1</wsparty4.version>
 		<ws.v5.version>5.0-SNAPSHOT</ws.v5.version>

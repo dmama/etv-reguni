@@ -1,9 +1,11 @@
 package ch.vd.uniregctb.webservices.common;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.security.Principal;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
@@ -174,5 +176,25 @@ public abstract class WebServiceHelper {
 		else {
 			return t.getClass().getName();
 		}
+	}
+
+	/**
+	 * Renvoie le type préféré pour une réponse pour laquelle le client a déclaré accepter certains types et le server propose une liste
+	 * @param sortedAcceptHeaders les types acceptés par le client, par ordre de préférence décroissante
+	 * @param producedTypes les types proposés par le serveur, par ordre de préférence décroissante (= la valeur par défaut en premier)
+	 * @return le type choisi, ou <code>null</code> si aucun type n'est compatible
+	 */
+	public static MediaType getPreferedMediaType(List<MediaType> sortedAcceptHeaders, MediaType[] producedTypes) {
+		if (sortedAcceptHeaders == null || sortedAcceptHeaders.isEmpty()) {
+			return producedTypes[0];
+		}
+		for (MediaType acceptedMediaType : sortedAcceptHeaders) {
+			for (MediaType producedMediaType : producedTypes) {
+				if (producedMediaType.isCompatible(acceptedMediaType)) {
+					return producedMediaType;
+				}
+			}
+		}
+		return null;
 	}
 }

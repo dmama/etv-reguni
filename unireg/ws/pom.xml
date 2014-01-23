@@ -231,6 +231,16 @@
 			<artifactId>uniregctb-wlw</artifactId>
 			<version>1.0.0</version>
 		</dependency>
+		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-jaxrs</artifactId>
+			<version>${jackson.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-xc</artifactId>
+			<version>${jackson.version}</version>
+		</dependency>
 		<!-- dépendance vers unireg-jaxb2-ech 2.5+ nécessaire pour le mode "direct" à cause du service UPI -->
 		<dependency>
 			<groupId>ch.vd.uniregctb</groupId>
