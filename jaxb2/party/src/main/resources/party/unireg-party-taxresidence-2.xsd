@@ -338,9 +338,9 @@
 					<xs:documentation>Participations Hors-Suisse.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
-			<xs:enumeration value="WINE_FARM_WORKER">
+			<xs:enumeration value="WINE_FARM_SEASONAL_WORKER">
 				<xs:annotation>
-					<xs:documentation>Ouvrier agricole viticole (effeuilleuse).</xs:documentation>
+					<xs:documentation>Saisonnier agricole viticole (effeuilleuse).</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
 		</xs:restriction>
