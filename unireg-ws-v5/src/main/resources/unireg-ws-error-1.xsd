@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/ws/error/1" elementFormDefault="qualified"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:tns="http://www.vd.ch/fiscalite/unireg/ws/error/1"
+           xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0">
+
+	<xs:complexType name="errorType">
+		<xs:sequence>
+			<xs:element name="errorMessage" type="xs:string"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:element name="error" type="tns:errorType"/>
+
+</xs:schema>

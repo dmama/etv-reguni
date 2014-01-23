@@ -1,0 +1,89 @@
+<?xml version="1.0"?>
+<jxb:bindings version="2.1"
+              xmlns:xs="http://www.w3.org/2001/XMLSchema"
+              xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
+			  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			  xmlns:namespace="http://jaxb2-commons.dev.java.net/namespace-prefix"
+			  xmlns:inheritance="http://jaxb2-commons.dev.java.net/basic/inheritance"
+			  xsi:schemaLocation="http://java.sun.com/xml/ns/jaxb http://java.sun.com/xml/ns/jaxb/bindingschema_2_0.xsd
+			  http://jaxb2-commons.dev.java.net/namespace-prefix http://java.net/projects/jaxb2-commons/sources/svn/content/namespace-prefix/trunk/src/main/resources/prefix-namespace-schema.xsd">
+
+
+	<!-- commons -->
+
+	<jxb:bindings schemaLocation="unireg-common-1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.xml.common.v1" />
+		</jxb:schemaBindings>
+		<jxb:bindings node="//xs:complexType[@name='rangeType']">
+			<inheritance:implements>ch.vd.unireg.xml.common.v1.DateRange</inheritance:implements>
+		</jxb:bindings>
+	</jxb:bindings>
+
+
+	<!-- local XSDs -->
+
+	<jxb:bindings schemaLocation="http://resources.etat-de-vaud.ch/fiscalite/registre/unireg-ws-security-1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.ws.security.v1" />
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="ws-security-1" />
+		</jxb:bindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="http://resources.etat-de-vaud.ch/fiscalite/registre/unireg-ws-error-1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.ws.error.v1" />
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="ws-error-1" />
+		</jxb:bindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="http://resources.etat-de-vaud.ch/fiscalite/registre/unireg-ws-ack-1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.ws.ack.v1" />
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="ws-ack-1" />
+		</jxb:bindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="http://resources.etat-de-vaud.ch/fiscalite/registre/unireg-ws-deadline-1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.ws.deadline.v1" />
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="ws-deadline-1" />
+		</jxb:bindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="http://resources.etat-de-vaud.ch/fiscalite/registre/unireg-ws-taxoffices-1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.ws.taxoffices.v1" />
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="ws-taxoffices-1" />
+		</jxb:bindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="http://resources.etat-de-vaud.ch/fiscalite/registre/unireg-ws-modifiedtaxpayers-1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.ws.modifiedtaxpayers.v1" />
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="ws-modifiedtaxpayers-1" />
+		</jxb:bindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="http://resources.etat-de-vaud.ch/fiscalite/registre/unireg-ws-debtorinfo-1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.ws.debtorinfo.v1" />
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="ws-debtor-1" />
+		</jxb:bindings>
+	</jxb:bindings>
+
+</jxb:bindings>

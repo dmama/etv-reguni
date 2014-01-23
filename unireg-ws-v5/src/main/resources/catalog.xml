@@ -1,0 +1,14 @@
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog" prefer="public">
+
+	<system systemId="http://resources.etat-de-vaud.ch/fiscalite/registre/unireg-common-1.xsd" uri="unireg-common-1.xsd" />
+	<system systemId="http://resources.etat-de-vaud.ch/fiscalite/registre/unireg-ws-security-1.xsd" uri="unireg-ws-security-1.xsd" />
+	<system systemId="http://resources.etat-de-vaud.ch/fiscalite/registre/unireg-ws-error-1.xsd" uri="unireg-ws-error-1.xsd" />
+	<system systemId="http://resources.etat-de-vaud.ch/fiscalite/registre/unireg-ws-ack-1.xsd" uri="unireg-ws-ack-1.xsd" />
+	<system systemId="http://resources.etat-de-vaud.ch/fiscalite/registre/unireg-ws-deadline-1.xsd" uri="unireg-ws-deadline-1.xsd" />
+	<system systemId="http://resources.etat-de-vaud.ch/fiscalite/registre/unireg-ws-taxoffices-1.xsd" uri="unireg-ws-taxoffices-1.xsd" />
+	<system systemId="http://resources.etat-de-vaud.ch/fiscalite/registre/unireg-ws-modifiedtaxpayers-1.xsd" uri="unireg-ws-modifiedtaxpayers-1.xsd" />
+	<system systemId="http://resources.etat-de-vaud.ch/fiscalite/registre/unireg-ws-debtorinfo-1.xsd" uri="unireg-ws-debtorinfo-1.xsd" />
+
+	<!--<delegateSystem systemIdStartString="http://www.ech.ch/xmlns/" catalog="../../../../ech/src/main/resources/catalog.xml" />-->
+
+</catalog>
