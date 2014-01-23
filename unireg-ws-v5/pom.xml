@@ -65,9 +65,9 @@
 					<target>1.7</target>
 					<excludes>
 						<!-- on exclut les répertoires des beans qui correspondent aux XSDs du projet unireg-jaxb-common, car ils ont déjà été compilés dans ce dernier -->
-						<exclude>ch/ech/ech0010/v4/**</exclude>
-						<exclude>ch/ech/ech0044/v2/**</exclude>
-						<exclude>ch/vd/unireg/xml/common/v1/**</exclude>
+						<exclude>ch/ech/ech0010/v5/**</exclude>
+						<exclude>ch/ech/ech0044/v3/**</exclude>
+						<exclude>ch/vd/unireg/xml/common/v2/**</exclude>
 						<exclude>ch/vd/unireg/xml/exception/v1/**</exclude>
 						<exclude>ch/vd/unireg/xml/party/**</exclude>
 					</excludes>
