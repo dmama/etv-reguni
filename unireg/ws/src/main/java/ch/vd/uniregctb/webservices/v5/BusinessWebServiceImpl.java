@@ -74,7 +74,6 @@ import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.metier.piis.PeriodeImpositionImpotSourceService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
-import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.situationfamille.SituationFamilleService;
 import ch.vd.uniregctb.tiers.AutreCommunaute;
@@ -202,9 +201,6 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 	@Override
 	public void setAutomaticRepaymentBlockingFlag(final int partyNo, UserLogin user, final boolean blocked) throws AccessDeniedException {
-		WebServiceHelper.checkAccess(context.securityProvider, user, Role.VISU_ALL);
-		WebServiceHelper.checkPartyReadWriteAccess(context.securityProvider, user, partyNo);
-
 		doInTransaction(false, new TransactionCallbackWithoutResult() {
 			@Override
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
@@ -219,9 +215,6 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 	@Override
 	public boolean getAutomaticRepaymentBlockingFlag(final int partyNo, UserLogin user) throws AccessDeniedException {
-		WebServiceHelper.checkAccess(context.securityProvider, user, Role.VISU_ALL);
-		WebServiceHelper.checkPartyReadAccess(context.securityProvider, user, partyNo);
-
 		return doInTransaction(true, new TransactionCallback<Boolean>() {
 			@Override
 			public Boolean doInTransaction(TransactionStatus status) {
@@ -236,8 +229,6 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 	@Override
 	public OrdinaryTaxDeclarationAckResponse ackOrdinaryTaxDeclarations(final UserLogin user, OrdinaryTaxDeclarationAckRequest request) throws AccessDeniedException {
-		WebServiceHelper.checkAccess(context.securityProvider, user, Role.DI_QUIT_PP);
-
 		final RegDate dateRetour = ch.vd.uniregctb.xml.DataHelper.xmlToCore(request.getDate());
 		final String source = request.getSource();
 
@@ -416,8 +407,6 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 	@Override
 	public DeadlineResponse newOrdinaryTaxDeclarationDeadline(final int partyNo, final int pf, final int seqNo, UserLogin user, DeadlineRequest request) throws AccessDeniedException {
-		WebServiceHelper.checkAccess(context.securityProvider, user, Role.DI_DELAI_PP);
-
 		final RegDate nouveauDelai = ch.vd.uniregctb.xml.DataHelper.xmlToCore(request.getNewDeadline());
 		final RegDate dateObtention = ch.vd.uniregctb.xml.DataHelper.xmlToCore(request.getGrantedOn());
 		final RegDate today = RegDate.get();
@@ -505,7 +494,6 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 	@Override
 	public PartyNumberList getModifiedTaxPayers(UserLogin user, final Date since, final Date until) throws AccessDeniedException {
-		WebServiceHelper.checkAccess(context.securityProvider, user, Role.VISU_ALL);
 		return doInTransaction(true, new TransactionCallback<PartyNumberList>() {
 			@Override
 			public PartyNumberList doInTransaction(TransactionStatus status) {
@@ -534,7 +522,6 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 	@Override
 	public DebtorInfo getDebtorInfo(UserLogin user, final int debtorNo, final int pf) throws AccessDeniedException {
-		WebServiceHelper.checkAccess(context.securityProvider, user, Role.VISU_ALL);
 		return doInTransaction(true, new TransactionCallback<DebtorInfo>() {
 			@Override
 			public DebtorInfo doInTransaction(TransactionStatus status) {
@@ -557,7 +544,6 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	                                   @Nullable RegDate dateOfBirth, @Nullable String socialInsuranceNumber, @Nullable Integer taxResidenceFSOId,
 	                                   boolean onlyActiveMainTaxResidence, @Nullable Set<PartyType> partyTypes, @Nullable DebtorCategory debtorCategory,
 	                                   @Nullable Boolean activeParty, @Nullable Long oldWithholdingNumber) throws AccessDeniedException, IndexerException {
-		WebServiceHelper.checkAnyAccess(context.securityProvider, user, Role.VISU_ALL, Role.VISU_LIMITE);
 		final TiersCriteria criteria = new TiersCriteria();
 		if (partyNo != null && StringUtils.isNotBlank(partyNo)) {
 			// tous les autres critères sont ignorés si le numéro est renseigné
@@ -600,7 +586,6 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	@Override
 	public List<CorporationEvent> searchCorporationEvent(UserLogin user, @Nullable Integer corporationId, @Nullable String eventCode,
 	                                                     @Nullable RegDate startDate, @Nullable RegDate endDate) throws AccessDeniedException, EmptySearchCriteriaException {
-		WebServiceHelper.checkAccess(context.securityProvider, user, Role.VISU_ALL);
 		if (corporationId == null && StringUtils.isBlank(eventCode) && startDate == null && endDate == null) {
 			throw new EmptySearchCriteriaException("Les critères de recherche sont vides.");
 		}
@@ -686,8 +671,6 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 	@Override
 	public Party getParty(UserLogin user, final int partyNo, @Nullable final Set<PartyPart> parts) throws AccessDeniedException, ServiceException {
-		WebServiceHelper.checkAccess(context.securityProvider, user, Role.VISU_ALL);
-		WebServiceHelper.checkPartyReadAccess(context.securityProvider, user, partyNo);
 		try {
 			return doInTransaction(true, new TxCallback<Party>() {
 				@Override

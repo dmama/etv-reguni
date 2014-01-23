@@ -168,6 +168,11 @@
 	</jaxrs:server>
 
 	<bean id="v5EndPoint" class="ch.vd.uniregctb.webservices.v5.WebServiceEndPoint">
+		<property name="target" ref="v5Access"/>
+	</bean>
+
+	<bean id="v5Access" class="ch.vd.uniregctb.webservices.v5.BusinessWebServiceAccessChecker">
+		<property name="securityProvider" ref="securityProviderInterface"/>
 		<property name="target" ref="v5Business"/>
 	</bean>
 
