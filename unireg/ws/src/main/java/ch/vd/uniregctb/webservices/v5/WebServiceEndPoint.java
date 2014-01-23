@@ -12,8 +12,6 @@ import org.apache.cxf.jaxrs.ext.MessageContext;
 import org.apache.log4j.Logger;
 
 import ch.vd.registre.base.date.DateHelper;
-import ch.vd.registre.base.date.DateValidityRange;
-import ch.vd.registre.base.date.DateValidityRangeImpl;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationAckRequest;
@@ -76,29 +74,32 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 
 	private Response execute(Object callDescription, Logger accessLog, ExecutionCallback callback) {
 		Throwable t = null;
+		Response r = null;
 		final long start = loadMeter.start(callDescription);
 		try {
-			return callback.execute();
+			r = callback.execute();
 		}
 		catch (AccessDeniedException e) {
 			t = e;
 			LOGGER.error(e.getMessage());
-			return WebServiceHelper.buildErrorResponse(Response.Status.FORBIDDEN, e);
+			r = WebServiceHelper.buildErrorResponse(Response.Status.FORBIDDEN, e);
 		}
 		catch (ObjectNotFoundException e) {
 			t = e;
 			LOGGER.error(e.getMessage());
-			return WebServiceHelper.buildErrorResponse(Response.Status.NOT_FOUND, e);
+			r = WebServiceHelper.buildErrorResponse(Response.Status.NOT_FOUND, e);
 		}
 		catch (Throwable e) {
 			t = e;
 			LOGGER.error(e, e);
-			return WebServiceHelper.buildErrorResponse(Response.Status.INTERNAL_SERVER_ERROR, e);
+			r = WebServiceHelper.buildErrorResponse(Response.Status.INTERNAL_SERVER_ERROR, e);
 		}
 		finally {
 			final long end = loadMeter.end();
-			WebServiceHelper.logAccessInfo(accessLog, messageContext.getHttpServletRequest(), callDescription, end - start, getLoad() + 1, t);
+			final Response.Status status = (r == null ? null : Response.Status.fromStatusCode(r.getStatus()));
+			WebServiceHelper.logAccessInfo(accessLog, messageContext.getHttpServletRequest(), callDescription, end - start, getLoad() + 1, status, t);
 		}
+		return r;
 	}
 
 	private static interface ExecutionWithLoginCallback {

@@ -37,13 +37,15 @@ public abstract class WebServiceHelper {
 	 * @param params un objet dont la méthode {@link #toString()} sera appelée pour la documentation de l'appel
 	 * @param duration durée de l'appel, en nano-secondes
 	 * @param load nombre d'appel en cours (y compris celui-ci)
+	 * @param status le statut HTTP de la réponse
 	 * @param t éventuelle exception lancée pendant l'appel
 	 */
-	public static void logAccessInfo(Logger accessLogger, HttpServletRequest request, Object params, long duration, int load, @Nullable Throwable t) {
+	public static void logAccessInfo(Logger accessLogger, HttpServletRequest request, Object params, long duration, int load, @Nullable Response.Status status, @Nullable Throwable t) {
 		if (accessLogger.isInfoEnabled()) {
 			final String user = getBasicAuthenticationUser(request);
 			final String exceptionString = (t == null ? StringUtils.EMPTY : String.format(", %s thrown", t.getClass()));
-			accessLogger.info(String.format("[%s] (%d ms) %s load=%d%s", user, TimeUnit.NANOSECONDS.toMillis(duration), params.toString(), load, exceptionString));
+			final String statusString = (status == null ? StringUtils.EMPTY : String.format(" status='%d %s'", status.getStatusCode(), status.getReasonPhrase()));
+			accessLogger.info(String.format("[%s] (%d ms) %s load=%d%s%s", user, TimeUnit.NANOSECONDS.toMillis(duration), params.toString(), load, statusString, exceptionString));
 		}
 	}
 
