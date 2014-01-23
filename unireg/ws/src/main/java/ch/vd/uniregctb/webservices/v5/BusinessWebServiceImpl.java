@@ -1,17 +1,30 @@
 package ch.vd.uniregctb.webservices.v5;
 
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorCompletionService;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.hibernate.FlushMode;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
@@ -38,6 +51,7 @@ import ch.vd.unireg.ws.deadline.v1.DeadlineRequest;
 import ch.vd.unireg.ws.deadline.v1.DeadlineResponse;
 import ch.vd.unireg.ws.deadline.v1.DeadlineStatus;
 import ch.vd.unireg.ws.modifiedtaxpayers.v1.PartyNumberList;
+import ch.vd.unireg.ws.parties.v1.Parties;
 import ch.vd.unireg.ws.security.v1.SecurityResponse;
 import ch.vd.unireg.ws.taxoffices.v1.TaxOffice;
 import ch.vd.unireg.ws.taxoffices.v1.TaxOffices;
@@ -50,14 +64,17 @@ import ch.vd.unireg.xml.party.v3.PartyType;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorCategory;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorInfo;
 import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.common.BatchIterator;
 import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
+import ch.vd.uniregctb.common.StandardBatchIterator;
 import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.declaration.source.ListeRecapService;
+import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.iban.IbanValidator;
 import ch.vd.uniregctb.indexer.EmptySearchCriteriaException;
@@ -103,6 +120,9 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	private static final Logger LOGGER = Logger.getLogger(BusinessWebServiceImpl.class);
 
 	private static final int DECLARATION_ACK_BATCH_SIZE = 50;
+	private static final int PARTIES_BATCH_SIZE = 20;
+
+	protected static final int MAX_BATCH_SIZE = 100;
 
 	private static final Set<CategorieImpotSource> CIS_SUPPORTEES = EnumHelper.getCategoriesImpotSourceAutorisees();
 
@@ -110,6 +130,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 	private final Context context = new Context();
 	private GlobalTiersSearcher tiersSearcher;
+	private ExecutorService threadPool;
 
 	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
 		this.context.securityProvider = securityProvider;
@@ -185,6 +206,10 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 	public void setParametreService(ParametreAppService parametreService) {
 		context.parametreService = parametreService;
+	}
+
+	public void setThreadPool(ExecutorService threadPool) {
+		this.threadPool = threadPool;
 	}
 
 	private <T> T doInTransaction(boolean readonly, TransactionCallback<T> callback) {
@@ -689,5 +714,152 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 				throw e;
 			}
 		}
+	}
+
+	private static Set<TiersDAO.Parts> toCoreAvecForsFiscaux(Set<PartyPart> parts) {
+		Set<TiersDAO.Parts> set = ch.vd.uniregctb.xml.DataHelper.xmlToCoreV3(parts);
+		if (set == null) {
+			set = EnumSet.noneOf(TiersDAO.Parts.class);
+		}
+		// les fors fiscaux sont nécessaires pour déterminer les dates de début et de fin d'activité.
+		set.add(TiersDAO.Parts.FORS_FISCAUX);
+		return set;
+	}
+
+	private static class PartiesTask implements Callable<Parties> {
+
+		private final Set<Integer> partyNos;
+		private final Set<PartyPart> parts;
+		private final UserLogin user;
+		private final Context context;
+
+		private PartiesTask(List<Integer> partyNos, Set<PartyPart> parts, UserLogin user, Context context) {
+			this.partyNos = new HashSet<>(partyNos);
+			this.parts = parts;
+			this.user = user;
+			this.context = context;
+		}
+
+		@Override
+		public Parties call() throws ServiceException {
+			// mode read-only..
+			final TransactionTemplate template = new TransactionTemplate(context.transactionManager);
+			template.setReadOnly(true);
+			try {
+				return template.execute(new TxCallback<Parties>() {
+					@Override
+					public Parties execute(TransactionStatus status) throws Exception {
+						// on ne veut vraiment pas modifier la base
+						return context.hibernateTemplate.execute(FlushMode.MANUAL, new HibernateCallback<Parties>() {
+							@Override
+							public Parties doInHibernate(Session session) throws HibernateException, SQLException {
+								try {
+									return doExtract();
+								}
+								catch (ServiceException e) {
+									throw new TxCallbackException(e);
+								}
+							}
+						});
+					}
+				});
+			}
+			catch (TxCallbackException e) {
+				final Throwable cause = e.getCause();
+				if (cause instanceof ServiceException) {
+					throw (ServiceException) cause;
+				}
+				else {
+					throw e;
+				}
+			}
+		}
+
+		private Parties doExtract() throws ServiceException {
+
+			final Parties parties = new Parties();
+			final List<Object> partyOrError = parties.getPartyOrError();
+
+			// vérification des droits d'accès et de l'existence des tiers
+			final Iterator<Integer> idIterator = partyNos.iterator();
+			final Set<Long> idLongSet = new HashSet<>(partyNos.size());
+			while (idIterator.hasNext()) {
+				final int id = idIterator.next();
+				try {
+					WebServiceHelper.checkPartyReadAccess(context.securityProvider, user, id);
+					idLongSet.add((long) id);
+				}
+				catch (AccessDeniedException | TiersNotFoundException e) {
+					partyOrError.add(new ch.vd.unireg.ws.parties.v1.Error(e.getMessage(), id));
+					idIterator.remove();
+				}
+			}
+
+			// récupération des données autorisées
+			final List<Tiers> batchResult = context.tiersDAO.getBatch(idLongSet, toCoreAvecForsFiscaux(parts));
+			for (Tiers t : batchResult) {
+				if (t != null) {
+					final Party party = buildParty(t, parts, context);
+					if (party == null) {
+						partyOrError.add(new ch.vd.unireg.ws.parties.v1.Error("Tiers non exposé.", t.getNumero().intValue()));
+					}
+					else {
+						partyOrError.add(party);
+					}
+				}
+			}
+
+			return parties;
+		}
+	}
+
+	@Override
+	public Parties getParties(UserLogin user, List<Integer> partyNos, @Nullable Set<PartyPart> parts) throws AccessDeniedException, ServiceException {
+
+		// on enlève les doublons sur les numéros de tiers (et les éventuels <i>null</i>)
+		final Set<Integer> nos = new HashSet<>(partyNos);
+		nos.remove(null);
+
+		if (nos.size() > MAX_BATCH_SIZE) {
+			throw new BadRequestException("Le nombre de tiers demandés ne peut dépasser " + MAX_BATCH_SIZE);
+		}
+
+		// on envoie la sauce sur plusieurs threads
+		final ExecutorCompletionService<Parties> executor = new ExecutorCompletionService<>(threadPool);
+		final BatchIterator<Integer> iterator = new StandardBatchIterator<>(nos, PARTIES_BATCH_SIZE);
+		int nbRemainingTasks = 0;
+		while (iterator.hasNext()) {
+			executor.submit(new PartiesTask(iterator.next(), parts, user, context));
+			++ nbRemainingTasks;
+		}
+
+		// et on récolte ce que l'on a semé
+		final Parties finalResult = new Parties();
+		while (nbRemainingTasks > 0) {
+			try {
+				final Future<Parties> future = executor.poll(1, TimeUnit.SECONDS);
+				if (future != null) {
+					-- nbRemainingTasks;
+					finalResult.getPartyOrError().addAll(future.get().getPartyOrError());
+				}
+			}
+			catch (InterruptedException e) {
+				throw new RuntimeException("Method execution was interrupted", e);
+			}
+			catch (ExecutionException e) {
+				final Throwable cause = e.getCause();
+				try {
+					throw cause;
+				}
+				catch (RuntimeException | Error | ServiceException c) {
+					throw c;
+				}
+				catch (Throwable t) {
+					throw new RuntimeException("Exception lancée pendant le traitement", t);
+				}
+			}
+		}
+
+		return finalResult;
 	}
 }

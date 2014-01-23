@@ -13,6 +13,7 @@ import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationAckResponse;
 import ch.vd.unireg.ws.deadline.v1.DeadlineRequest;
 import ch.vd.unireg.ws.deadline.v1.DeadlineResponse;
 import ch.vd.unireg.ws.modifiedtaxpayers.v1.PartyNumberList;
+import ch.vd.unireg.ws.parties.v1.Parties;
 import ch.vd.unireg.ws.security.v1.SecurityResponse;
 import ch.vd.unireg.ws.taxoffices.v1.TaxOffices;
 import ch.vd.unireg.xml.party.corporation.v3.CorporationEvent;
@@ -103,5 +104,10 @@ public abstract class BusinessWebServiceWrapper implements BusinessWebService {
 	@Override
 	public Party getParty(UserLogin user, int partyNo, @Nullable Set<PartyPart> parts) throws AccessDeniedException, ServiceException {
 		return getTarget().getParty(user, partyNo, parts);
+	}
+
+	@Override
+	public Parties getParties(UserLogin user, List<Integer> partyNos, @Nullable Set<PartyPart> parts) throws AccessDeniedException, ServiceException {
+		return getTarget().getParties(user, partyNos, parts);
 	}
 }

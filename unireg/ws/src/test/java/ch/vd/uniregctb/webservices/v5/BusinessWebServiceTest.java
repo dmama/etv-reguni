@@ -9,6 +9,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -41,6 +42,7 @@ import ch.vd.unireg.ws.deadline.v1.DeadlineRequest;
 import ch.vd.unireg.ws.deadline.v1.DeadlineResponse;
 import ch.vd.unireg.ws.deadline.v1.DeadlineStatus;
 import ch.vd.unireg.ws.modifiedtaxpayers.v1.PartyNumberList;
+import ch.vd.unireg.ws.parties.v1.Parties;
 import ch.vd.unireg.ws.security.v1.AllowedAccess;
 import ch.vd.unireg.ws.security.v1.SecurityResponse;
 import ch.vd.unireg.ws.taxoffices.v1.TaxOffices;
@@ -111,6 +113,7 @@ import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.tiers.AutreCommunaute;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
+import ch.vd.uniregctb.tiers.DroitAcces;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -2480,6 +2483,120 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				Assert.assertNull(rel.getCancellationDate());
 				Assert.assertNull(rel.isExtensionToForcedExecution());
 			}
+		}
+	}
+
+	@Test
+	public void testGetPartiesMaxNumber() throws Exception {
+
+		// la limite du nombre de tiers demandables en une fois est de 100 -> "100" fonctionne, "101" ne doit plus fonctionner
+		final int max = BusinessWebServiceImpl.MAX_BATCH_SIZE;
+		final UserLogin user = new UserLogin(getDefaultOperateurName(), 22);
+
+		final Random rnd = new Random();
+		{
+			final List<Integer> nos = new ArrayList<>(max);
+			for (int i = 0 ; i < max ; ++ i) {
+				nos.add(rnd.nextInt(100000000));
+			}
+			final Parties res = service.getParties(user, nos, null);
+			Assert.assertNotNull(res);
+			Assert.assertEquals(max, res.getPartyOrError().size());
+		}
+		{
+			final List<Integer> nos = new ArrayList<>(max + 1);
+			for (int i = 0 ; i < max + 1 ; ++ i) {
+				nos.add(rnd.nextInt(100000000));
+			}
+
+			try {
+				service.getParties(user, nos, null);
+				Assert.fail("Nombre de tiers demandés trop élevé... L'appel aurait dû échouer.");
+			}
+			catch (BadRequestException e) {
+				Assert.assertEquals("Le nombre de tiers demandés ne peut dépasser " + max, e.getMessage());
+			}
+		}
+	}
+
+	@Test
+	public void testGetParties() throws Exception {
+
+		final class Ids {
+			int pp1;
+			int pp2;
+			int ppProtege;
+		}
+		
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp1 = addNonHabitant("Daubet", "Philibert", null, Sexe.MASCULIN);
+				final PersonnePhysique pp2 = addNonHabitant("Baudet", "Ernestine", null, Sexe.FEMININ);
+				final PersonnePhysique ppProtege = addNonHabitant("Knox", "Fort", null, null);
+				final DroitAcces da = new DroitAcces();
+				da.setDateDebut(date(2000, 1, 1));
+				da.setNiveau(Niveau.LECTURE);
+				da.setNoIndividuOperateur(798455L);
+				da.setType(TypeDroitAcces.AUTORISATION);
+				da.setTiers(ppProtege);
+				hibernateTemplate.merge(da);
+				
+				final Ids ids = new Ids();
+				ids.pp1 = pp1.getNumero().intValue();
+				ids.pp2 = pp2.getNumero().intValue();
+				ids.ppProtege = ppProtege.getNumero().intValue();
+				return ids;
+			}
+		});
+
+		final UserLogin user = new UserLogin("TOTO", 22);
+		final Parties parties = service.getParties(user, Arrays.asList(ids.pp1, ids.ppProtege, 4845, ids.pp2), null);
+		Assert.assertNotNull(parties);
+		Assert.assertNotNull(parties.getPartyOrError());
+		Assert.assertEquals(4, parties.getPartyOrError().size());
+
+		final List<Object> sorted = new ArrayList<>(parties.getPartyOrError());
+		Collections.sort(sorted, new Comparator<Object>() {
+			@Override
+			public int compare(Object o1, Object o2) {
+				final int i1 = getPartyId(o1);
+				final int i2 = getPartyId(o2);
+				return i1 - i2;
+			}
+
+			private int getPartyId(Object o) {
+				if (o instanceof Party) {
+					return ((Party) o).getNumber();
+				}
+				if (o instanceof ch.vd.unireg.ws.parties.v1.Error) {
+					return ((ch.vd.unireg.ws.parties.v1.Error) o).getPartyNo();
+				}
+				throw new IllegalArgumentException();
+			}
+		});
+
+		{
+			final Object o = sorted.get(0);
+			Assert.assertEquals(ch.vd.unireg.ws.parties.v1.Error.class, o.getClass());
+			Assert.assertEquals(4845, ((ch.vd.unireg.ws.parties.v1.Error) o).getPartyNo());
+			Assert.assertEquals("Le tiers n°48.45 n'existe pas", ((ch.vd.unireg.ws.parties.v1.Error) o).getErrorMessage());
+		}
+		{
+			final Object o = sorted.get(1);
+			Assert.assertEquals(NaturalPerson.class, o.getClass());
+			Assert.assertEquals(ids.pp1, ((NaturalPerson) o).getNumber());
+		}
+		{
+			final Object o = sorted.get(2);
+			Assert.assertEquals(NaturalPerson.class, o.getClass());
+			Assert.assertEquals(ids.pp2, ((NaturalPerson) o).getNumber());
+		}
+		{
+			final Object o = sorted.get(3);
+			Assert.assertEquals(ch.vd.unireg.ws.parties.v1.Error.class, o.getClass());
+			Assert.assertEquals(ids.ppProtege, ((ch.vd.unireg.ws.parties.v1.Error) o).getPartyNo());
+			Assert.assertEquals("L'utilisateur UserLogin{userId='TOTO', oid=22} ne possède aucun droit de lecture sur le dossier " + ids.ppProtege, ((ch.vd.unireg.ws.parties.v1.Error) o).getErrorMessage());
 		}
 	}
 }

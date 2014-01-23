@@ -235,11 +235,11 @@ public abstract class WebServiceHelper {
 	}
 
 	/**
-	 * @param col collection d'énums
-	 * @param <T> type d'énum
-	 * @return chaîne de caractères "[enum1, enum2, enum3]"
+	 * @param col collection d'éléments
+	 * @param <T> type des éléments de la collection
+	 * @return chaîne de caractères "[elt1, elt2, elt3]"
 	 */
-	public static <T extends Enum<T>> String toString(Collection<T> col) {
+	public static <T> String toString(Collection<T> col) {
 		if (col == null) {
 			return NULL;
 		}

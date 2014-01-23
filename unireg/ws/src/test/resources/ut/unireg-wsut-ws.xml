@@ -102,6 +102,11 @@
 
 	<!-- Beans du web-service v5 mais sans le end-point jaxrs -->
 
+	<bean id="wsThreadPoolv5" class="org.springframework.scheduling.concurrent.ThreadPoolExecutorFactoryBean">
+		<property name="corePoolSize" value="10"/> <!-- nombre minimum de threads -->
+		<property name="maxPoolSize" value="20"/> <!-- nombre maximum de threads -->
+	</bean>
+
 	<bean id="v5Business" class="ch.vd.uniregctb.webservices.v5.BusinessWebServiceImpl">
 		<property name="securityProvider" ref="securityProviderInterface"/>
 		<property name="transactionManager" ref="transactionManager"/>
@@ -122,6 +127,7 @@
 		<property name="assujettissementService" ref="assujettissementService" />
 		<property name="periodeImpositionService" ref="periodeImpositionService" />
 		<property name="periodeImpositionImpotSourceService" ref="periodeImpositionImpotSourceService"/>
+		<property name="threadPool" ref="wsThreadPoolv5"/>
 	</bean>
 
 </beans>

@@ -12,6 +12,7 @@ import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationAckResponse;
 import ch.vd.unireg.ws.deadline.v1.DeadlineRequest;
 import ch.vd.unireg.ws.deadline.v1.DeadlineResponse;
 import ch.vd.unireg.ws.modifiedtaxpayers.v1.PartyNumberList;
+import ch.vd.unireg.ws.parties.v1.Parties;
 import ch.vd.unireg.xml.party.corporation.v3.CorporationEvent;
 import ch.vd.unireg.xml.party.v3.Party;
 import ch.vd.unireg.xml.party.v3.PartyInfo;
@@ -99,5 +100,11 @@ public class BusinessWebServiceAccessChecker extends BusinessWebServiceWrapper {
 		WebServiceHelper.checkAccess(securityProvider, user, Role.VISU_ALL);
 		WebServiceHelper.checkPartyReadAccess(securityProvider, user, partyNo);
 		return super.getParty(user, partyNo, parts);
+	}
+
+	@Override
+	public Parties getParties(UserLogin user, List<Integer> partyNos, @Nullable Set<PartyPart> parts) throws AccessDeniedException, ServiceException {
+		WebServiceHelper.checkAccess(securityProvider, user, Role.VISU_ALL);
+		return super.getParties(user, partyNos, parts);
 	}
 }

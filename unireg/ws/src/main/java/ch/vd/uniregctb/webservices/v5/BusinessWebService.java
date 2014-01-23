@@ -12,6 +12,7 @@ import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationAckResponse;
 import ch.vd.unireg.ws.deadline.v1.DeadlineRequest;
 import ch.vd.unireg.ws.deadline.v1.DeadlineResponse;
 import ch.vd.unireg.ws.modifiedtaxpayers.v1.PartyNumberList;
+import ch.vd.unireg.ws.parties.v1.Parties;
 import ch.vd.unireg.ws.security.v1.SecurityResponse;
 import ch.vd.unireg.ws.taxoffices.v1.TaxOffices;
 import ch.vd.unireg.xml.party.corporation.v3.CorporationEvent;
@@ -157,4 +158,15 @@ public interface BusinessWebService {
 	 * @throws ServiceException en cas de problème à la constitution de l'entité à exporter
 	 */
 	Party getParty(UserLogin user, int partyNo, @Nullable Set<PartyPart> parts) throws AccessDeniedException, ServiceException;
+
+	/**
+	 * Récupère les informations sur les tiers demandés
+	 * @param user désignation de l'opérateur pour le compte duquel les informations sont glânées
+	 * @param partyNos numéro des tiers
+	 * @param parts [optionnel] ensemble des parts supplémentaires qui intéressent l'appelant
+	 * @return les informations demandées sur les tiers (<code>null</code> si la liste d'identifiants en entrée était vide)
+	 * @throws AccessDeniedException si l'opérateur n'a pas le droit de faire ce genre de recherche
+	 * @throws ServiceException en cas de problème à la constitution de l'entité à exporter
+	 */
+	Parties getParties(UserLogin user, List<Integer> partyNos, @Nullable Set<PartyPart> parts) throws AccessDeniedException, ServiceException;
 }

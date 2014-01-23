@@ -5,6 +5,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.text.ParseException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.EnumSet;
@@ -21,11 +22,13 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationAckRequest;
 import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationAckResponse;
 import ch.vd.unireg.ws.deadline.v1.DeadlineRequest;
 import ch.vd.unireg.ws.deadline.v1.DeadlineResponse;
 import ch.vd.unireg.ws.modifiedtaxpayers.v1.PartyNumberList;
+import ch.vd.unireg.ws.parties.v1.Parties;
 import ch.vd.unireg.ws.security.v1.SecurityResponse;
 import ch.vd.unireg.ws.taxoffices.v1.TaxOffices;
 import ch.vd.unireg.xml.error.v1.Error;
@@ -131,6 +134,11 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 			t = e;
 			LOGGER.error(e.getMessage());
 			r = WebServiceHelper.buildErrorResponse(Response.Status.NOT_FOUND, getAcceptableMediaTypes(), e);
+		}
+		catch (BadRequestException e) {
+			t = e;
+			LOGGER.error(e.getMessage());
+			r = WebServiceHelper.buildErrorResponse(Response.Status.BAD_REQUEST, getAcceptableMediaTypes(), e);
 		}
 		catch (Throwable e) {
 			t = e;
@@ -287,8 +295,50 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 	}
 
 	@Override
-	public Response getParties(String user, List<Integer> partyNos, Set<PartyPart> parts) {
-		return WebServiceHelper.buildErrorResponse(Response.Status.SERVICE_UNAVAILABLE, getAcceptableMediaTypes(), "Implémentation encore en cours...");
+	public Response getParties(final String user, final List<Integer> partyNos, final Set<PartyPart> parts) {
+		final Object params = new Object() {
+			@Override
+			public String toString() {
+				// petite combine pour que les modalités de l'énum soient toujours logguées dans le même ordre...
+				final Set<PartyPart> sortedParts = parts == null || parts.isEmpty() ? Collections.<PartyPart>emptySet() : EnumSet.copyOf(parts);
+				return String.format("getParties{user=%s, partyNo=%s, parts=%s}", WebServiceHelper.enquote(user), WebServiceHelper.toString(partyNos), WebServiceHelper.toString(sortedParts));
+			}
+		};
+		return execute(user, params, READ_ACCESS_LOG, new ExecutionCallbackWithUser() {
+			@NotNull
+			@Override
+			public ExecutionResult execute(UserLogin userLogin) throws Exception {
+				try {
+					final Parties parties = target.getParties(userLogin, partyNos, parts);
+					if (parties == null) {
+						return ExecutionResult.with(Response.noContent().build(), 0);
+					}
+					final int nbItems = countParties(parties.getPartyOrError());
+					final MediaType preferred = getPreferredMediaTypeFromXmlOrJson();
+					if (preferred == WebServiceHelper.APPLICATION_JSON_WITH_UTF8_CHARSET_TYPE) {
+						// TODO que quel format utiliser pour le retour JSON ?
+						throw new NotImplementedException();
+					}
+					else if (preferred == MediaType.APPLICATION_XML_TYPE) {
+						return ExecutionResult.with(Response.ok(parties, preferred).build(), nbItems);
+					}
+					return ExecutionResult.with(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build());
+				}
+				catch (ServiceException e) {
+					return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.INTERNAL_SERVER_ERROR, getAcceptableMediaTypes(), e));
+				}
+			}
+		});
+	}
+
+	private static int countParties(Collection<?> col) {
+		int count = 0;
+		for (Object item : col) {
+			if (item instanceof Party) {
+				++ count;
+			}
+		}
+		return count;
 	}
 
 	@Override

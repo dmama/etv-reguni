@@ -3,6 +3,7 @@ package ch.vd.uniregctb.webservices.party4.impl;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -514,7 +515,7 @@ public class PartyWebServiceImpl implements PartyWebService {
 	protected static Set<Parts> xmlToCoreWithForsFiscaux(Set<ch.vd.unireg.xml.party.v2.PartyPart> parts) {
 		Set<Parts> coreParts = ch.vd.uniregctb.xml.DataHelper.xmlToCoreV2(parts);
 		if (coreParts == null) {
-			coreParts = new HashSet<>();
+			coreParts = EnumSet.noneOf(Parts.class);
 		}
 		// les fors fiscaux sont nécessaires pour déterminer les dates de début et de fin d'activité.
 		coreParts.add(Parts.FORS_FISCAUX);

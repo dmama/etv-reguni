@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -532,7 +533,7 @@ public abstract class DataHelper {
 			return null;
 		}
 
-		final Set<TiersDAO.Parts> results = new HashSet<>(parts.size());
+		final Set<TiersDAO.Parts> results = EnumSet.noneOf(TiersDAO.Parts.class);
 		for (ch.vd.unireg.xml.party.v1.PartyPart p : parts) {
 			switch (p) {
 			case ADDRESSES:
@@ -553,6 +554,8 @@ public abstract class DataHelper {
 				results.add(TiersDAO.Parts.FORS_FISCAUX);
 				break;
 			case RELATIONS_BETWEEN_PARTIES:
+			case CHILDREN:
+			case PARENTS:
 			case HOUSEHOLD_MEMBERS:
 				results.add(TiersDAO.Parts.RAPPORTS_ENTRE_TIERS);
 				break;
@@ -571,8 +574,6 @@ public abstract class DataHelper {
 			case LEGAL_FORMS:
 			case TAX_SYSTEMS:
 			case LEGAL_SEATS:
-			case CHILDREN:
-			case PARENTS:
 				// rien à faire
 				break;
 			default:
@@ -589,7 +590,7 @@ public abstract class DataHelper {
 			return null;
 		}
 
-		final Set<TiersDAO.Parts> results = new HashSet<>(parts.size());
+		final Set<TiersDAO.Parts> results = EnumSet.noneOf(TiersDAO.Parts.class);
 		for (ch.vd.unireg.xml.party.v2.PartyPart p : parts) {
 			switch (p) {
 			case ADDRESSES:
@@ -610,6 +611,8 @@ public abstract class DataHelper {
 				results.add(TiersDAO.Parts.FORS_FISCAUX);
 				break;
 			case RELATIONS_BETWEEN_PARTIES:
+			case CHILDREN:
+			case PARENTS:
 			case HOUSEHOLD_MEMBERS:
 				results.add(TiersDAO.Parts.RAPPORTS_ENTRE_TIERS);
 				break;
@@ -628,8 +631,67 @@ public abstract class DataHelper {
 			case LEGAL_FORMS:
 			case TAX_SYSTEMS:
 			case LEGAL_SEATS:
+				// rien à faire
+				break;
+			default:
+				throw new IllegalArgumentException("Type de parts inconnue = [" + p + ']');
+			}
+		}
+
+		return results;
+	}
+
+	public static Set<TiersDAO.Parts> xmlToCoreV3(Set<ch.vd.unireg.xml.party.v3.PartyPart> parts) {
+
+		if (parts == null) {
+			return null;
+		}
+
+		final Set<TiersDAO.Parts> results = EnumSet.noneOf(TiersDAO.Parts.class);
+		for (ch.vd.unireg.xml.party.v3.PartyPart p : parts) {
+			switch (p) {
+			case ADDRESSES:
+				results.add(TiersDAO.Parts.ADRESSES);
+				results.add(TiersDAO.Parts.RAPPORTS_ENTRE_TIERS);
+				break;
+			case TAX_DECLARATIONS:
+			case TAX_DECLARATIONS_STATUSES:
+			case TAX_DECLARATIONS_DEADLINES:
+				results.add(TiersDAO.Parts.DECLARATIONS);
+				break;
+			case TAX_RESIDENCES:
+			case VIRTUAL_TAX_RESIDENCES:
+			case MANAGING_TAX_RESIDENCES:
+			case TAX_LIABILITIES:
+			case SIMPLIFIED_TAX_LIABILITIES:
+			case TAXATION_PERIODS:
+				results.add(TiersDAO.Parts.FORS_FISCAUX);
+				break;
+			case WITHHOLDING_TAXATION_PERIODS:
+				results.add(TiersDAO.Parts.FORS_FISCAUX);
+				results.add(TiersDAO.Parts.RAPPORTS_ENTRE_TIERS);
+				break;
 			case CHILDREN:
 			case PARENTS:
+			case RELATIONS_BETWEEN_PARTIES:
+			case HOUSEHOLD_MEMBERS:
+				results.add(TiersDAO.Parts.RAPPORTS_ENTRE_TIERS);
+				break;
+			case FAMILY_STATUSES:
+				results.add(TiersDAO.Parts.SITUATIONS_FAMILLE);
+				break;
+			case DEBTOR_PERIODICITIES:
+				results.add(TiersDAO.Parts.PERIODICITES);
+				break;
+			case IMMOVABLE_PROPERTIES:
+				results.add(TiersDAO.Parts.IMMEUBLES);
+				break;
+			case BANK_ACCOUNTS:
+			case CAPITALS:
+			case CORPORATION_STATUSES:
+			case LEGAL_FORMS:
+			case TAX_SYSTEMS:
+			case LEGAL_SEATS:
 				// rien à faire
 				break;
 			default:
