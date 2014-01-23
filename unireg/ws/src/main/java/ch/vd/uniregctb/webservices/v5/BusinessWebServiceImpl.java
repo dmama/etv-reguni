@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.jetbrains.annotations.Nullable;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -17,6 +18,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.shared.batchtemplate.BatchResults;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
+import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.ws.ack.v1.AckStatus;
 import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationAckRequest;
 import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationAckResponse;
@@ -26,6 +28,8 @@ import ch.vd.unireg.ws.deadline.v1.DeadlineRequest;
 import ch.vd.unireg.ws.deadline.v1.DeadlineResponse;
 import ch.vd.unireg.ws.deadline.v1.DeadlineStatus;
 import ch.vd.unireg.ws.security.v1.SecurityResponse;
+import ch.vd.unireg.ws.taxoffices.v1.TaxOffice;
+import ch.vd.unireg.ws.taxoffices.v1.TaxOffices;
 import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.TiersNotFoundException;
@@ -33,12 +37,15 @@ import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.jms.BamMessageHelper;
 import ch.vd.uniregctb.jms.BamMessageSender;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
+import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.type.Niveau;
@@ -54,8 +61,10 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	private SecurityProviderInterface securityProvider;
 	private PlatformTransactionManager transactionManager;
 	private TiersService tiersService;
+	private TiersDAO tiersDAO;
 	private DeclarationImpotService diService;
 	private BamMessageSender bamSender;
+	private ServiceInfrastructureService infraService;
 
 	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
 		this.securityProvider = securityProvider;
@@ -69,12 +78,20 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 		this.tiersService = tiersService;
 	}
 
+	public void setTiersDAO(TiersDAO tiersDAO) {
+		this.tiersDAO = tiersDAO;
+	}
+
 	public void setDiService(DeclarationImpotService diService) {
 		this.diService = diService;
 	}
 
 	public void setBamSender(BamMessageSender bamSender) {
 		this.bamSender = bamSender;
+	}
+
+	public void setInfraService(ServiceInfrastructureService infraService) {
+		this.infraService = infraService;
 	}
 
 	private <T> T doInTransaction(boolean readonly, TransactionCallback<T> callback) {
@@ -162,11 +179,11 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 		@Override
 		public void addErrorException(OrdinaryTaxDeclarationKey key, Exception e) {
-			list.add(new OrdinaryTaxDeclarationAckResult(key, AckStatus.UNEXPECTED_ERROR, WebServiceHelper.buildExceptionMessage(e)));
+			list.add(new OrdinaryTaxDeclarationAckResult(key, AckStatus.UNEXPECTED_ERROR, WebServiceHelper.buildExceptionMessage(e), 0, null));
 		}
 
 		public void addCasTraite(OrdinaryTaxDeclarationKey key, AckStatus status, String message) {
-			list.add(new OrdinaryTaxDeclarationAckResult(key, status, message));
+			list.add(new OrdinaryTaxDeclarationAckResult(key, status, message, 0, null));
 		}
 
 		@Override
@@ -362,6 +379,32 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 				else {
 					throw new ObjectNotFoundException("Le tiers donné n'est pas un contribuable.");
 				}
+			}
+		});
+	}
+
+	@Override
+	public TaxOffices getTaxOffices(int municipalityId, @Nullable RegDate date) {
+
+		final Commune commune = infraService.getCommuneByNumeroOfs(municipalityId, date);
+		if (commune == null || !commune.isVaudoise()) {
+			throw new ObjectNotFoundException(String.format("Commune %d inconnue dans le canton de Vaud.", municipalityId));
+		}
+
+		final Integer codeRegion = commune.getCodeRegion();
+		final Integer codeDistrict = commune.getCodeDistrict();
+		if (codeRegion == null || codeDistrict == null) {
+			throw new ObjectNotFoundException("Code(s) région et/ou district inconnu(s) pour la commune.");
+		}
+
+		return doInTransaction(true, new TransactionCallback<TaxOffices>() {
+			@Override
+			public TaxOffices doInTransaction(TransactionStatus status) {
+				final CollectiviteAdministrative oid = tiersDAO.getCollectiviteAdministrativeForDistrict(codeDistrict);
+				final CollectiviteAdministrative oir = tiersDAO.getCollectiviteAdministrativeForRegion(codeRegion);
+				return new TaxOffices(new TaxOffice(oid.getNumero().intValue(), oid.getNumeroCollectiviteAdministrative()),
+				                      new TaxOffice(oir.getNumero().intValue(), oir.getNumeroCollectiviteAdministrative()),
+				                      null);
 			}
 		});
 	}

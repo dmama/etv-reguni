@@ -3,18 +3,25 @@ package ch.vd.uniregctb.webservices.v5;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.text.ParseException;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.jaxrs.ext.MessageContext;
 import org.apache.log4j.Logger;
 
 import ch.vd.registre.base.date.DateHelper;
+import ch.vd.registre.base.date.DateValidityRange;
+import ch.vd.registre.base.date.DateValidityRangeImpl;
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationAckRequest;
 import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationAckResponse;
 import ch.vd.unireg.ws.deadline.v1.DeadlineRequest;
 import ch.vd.unireg.ws.deadline.v1.DeadlineResponse;
 import ch.vd.unireg.ws.security.v1.SecurityResponse;
+import ch.vd.unireg.ws.taxoffices.v1.TaxOffices;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.load.DetailedLoadMeter;
 import ch.vd.uniregctb.load.DetailedLoadMonitorable;
@@ -45,6 +52,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 	private final ch.vd.unireg.ws.security.v1.ObjectFactory securityObjectFactory = new ch.vd.unireg.ws.security.v1.ObjectFactory();
 	private final ch.vd.unireg.ws.ack.v1.ObjectFactory ackObjectFactory = new ch.vd.unireg.ws.ack.v1.ObjectFactory();
 	private final ch.vd.unireg.ws.deadline.v1.ObjectFactory deadlineObjectFactory = new ch.vd.unireg.ws.deadline.v1.ObjectFactory();
+	private final ch.vd.unireg.ws.taxoffices.v1.ObjectFactory taxOfficesObjectFactory = new ch.vd.unireg.ws.taxoffices.v1.ObjectFactory();
 
 	private BusinessWebService target;
 
@@ -63,26 +71,14 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 	}
 
 	private static interface ExecutionCallback {
-		Response execute(UserLogin userLogin) throws Exception;
+		Response execute() throws Exception;
 	}
 
-	private Response execute(String login, Object callDescription, Logger accessLog, ExecutionCallback callback) {
+	private Response execute(Object callDescription, Logger accessLog, ExecutionCallback callback) {
 		Throwable t = null;
 		final long start = loadMeter.start(callDescription);
 		try {
-			final UserLogin userLogin = WebServiceHelper.parseLoginParameter(login);
-			if (userLogin == null) {
-				LOGGER.error("Missing/invalid login (" + login + ")");
-				return WebServiceHelper.buildErrorResponse(Response.Status.BAD_REQUEST, "Missing/invalid login parameter.");
-			}
-
-			WebServiceHelper.login(userLogin);
-			try {
-				return callback.execute(userLogin);
-			}
-			finally {
-				WebServiceHelper.logout();
-			}
+			return callback.execute();
 		}
 		catch (AccessDeniedException e) {
 			t = e;
@@ -105,6 +101,31 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 		}
 	}
 
+	private static interface ExecutionWithLoginCallback {
+		Response execute(UserLogin userLogin) throws Exception;
+	}
+
+	private Response execute(final String login, Object callDescription, Logger accessLog, final ExecutionWithLoginCallback callback) {
+		return execute(callDescription, accessLog, new ExecutionCallback() {
+			@Override
+			public Response execute() throws Exception {
+				final UserLogin userLogin = WebServiceHelper.parseLoginParameter(login);
+				if (userLogin == null) {
+					LOGGER.error("Missing/invalid login (" + login + ")");
+					return WebServiceHelper.buildErrorResponse(Response.Status.BAD_REQUEST, "Missing/invalid login parameter.");
+				}
+
+				WebServiceHelper.login(userLogin);
+				try {
+					return callback.execute(userLogin);
+				}
+				finally {
+					WebServiceHelper.logout();
+				}
+			}
+		});
+	}
+
 	@Override
 	public Response setAutomaticRepaymentBlockingFlag(final int partyNo, final String login, final String value) {
 
@@ -114,7 +135,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 				return String.format("setAutomaticRepaymentBlockingFlag{partyNo=%d, login='%s', value='%s'}", partyNo, login, value);
 			}
 		};
-		return execute(login, params, WRITE_ACCESS_LOG, new ExecutionCallback() {
+		return execute(login, params, WRITE_ACCESS_LOG, new ExecutionWithLoginCallback() {
 			@Override
 			public Response execute(UserLogin userLogin) throws Exception {
 				if (value == null || !BOOLEAN_PATTERN.matcher(value).matches()) {
@@ -137,7 +158,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 				return String.format("getAutomaticRepaymentBlockingFlag{partyNo=%d, login='%s'}", partyNo, login);
 			}
 		};
-		return execute(login, params, READ_ACCESS_LOG, new ExecutionCallback() {
+		return execute(login, params, READ_ACCESS_LOG, new ExecutionWithLoginCallback() {
 			@Override
 			public Response execute(UserLogin userLogin) throws Exception {
 				final boolean blocked = target.getAutomaticRepaymentBlockingFlag(partyNo, userLogin);
@@ -148,62 +169,37 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 
 	@Override
 	public Response ping() {
-		Throwable t = null;
-		final long start = loadMeter.start("ping");
-		try {
-			// le nombre de millisecondes depuis le 01.01.1970 0:00:00 GMT
-			return Response.ok(DateHelper.getCurrentDate().getTime(), TEXT_PLAIN_WITH_UTF8_CHARSET_TYPE).build();
-		}
-		catch (RuntimeException | Error e) {
-			t = e;
-			LOGGER.error(e, e);
-			return WebServiceHelper.buildErrorResponse(Response.Status.INTERNAL_SERVER_ERROR, e);
-		}
-		finally {
-			final long end = loadMeter.end();
-			// getLoad()+1 : +1 car le end() a déjà décompté l'appel courant
-			WebServiceHelper.logAccessInfo(READ_ACCESS_LOG, messageContext.getHttpServletRequest(), "ping", end - start, getLoad() + 1, t);
-		}
+		return execute("ping", READ_ACCESS_LOG, new ExecutionCallback() {
+			@Override
+			public Response execute() throws Exception {
+				return Response.ok(DateHelper.getCurrentDate().getTime(), TEXT_PLAIN_WITH_UTF8_CHARSET_TYPE).build();
+			}
+		});
 	}
 
 	@Override
 	public Response getSecurityOnParty(final String user, final int partyNo) {
-		Throwable t = null;
 		final Object params = new Object() {
 			@Override
 			public String toString() {
 				return String.format("getSecurityOnParty{user='%s', partyNo=%d}", user, partyNo);
 			}
 		};
-
-		final long start = loadMeter.start(params);
-		try {
-
-			final SecurityResponse response = target.getSecurityOnParty(user, partyNo);
-			final MediaType preferred = WebServiceHelper.getPreferedMediaType(messageContext.getHttpHeaders().getAcceptableMediaTypes(),
-			                                                                  new MediaType[] {MediaType.APPLICATION_XML_TYPE, APPLICATION_JSON_WITH_UTF8_CHARSET_TYPE});
-			if (preferred == APPLICATION_JSON_WITH_UTF8_CHARSET_TYPE) {
-				return Response.ok(response, preferred).build();
+		return execute(params, READ_ACCESS_LOG, new ExecutionCallback() {
+			@Override
+			public Response execute() throws Exception {
+				final SecurityResponse response = target.getSecurityOnParty(user, partyNo);
+				final MediaType preferred = WebServiceHelper.getPreferedMediaType(messageContext.getHttpHeaders().getAcceptableMediaTypes(),
+				                                                                  new MediaType[] {MediaType.APPLICATION_XML_TYPE, APPLICATION_JSON_WITH_UTF8_CHARSET_TYPE});
+				if (preferred == APPLICATION_JSON_WITH_UTF8_CHARSET_TYPE) {
+					return Response.ok(response, preferred).build();
+				}
+				else if (preferred == MediaType.APPLICATION_XML_TYPE) {
+					return Response.ok(securityObjectFactory.createUserAccess(response), preferred).build();
+				}
+				return Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build();
 			}
-			else if (preferred == MediaType.APPLICATION_XML_TYPE) {
-				return Response.ok(securityObjectFactory.createUserAccess(response), preferred).build();
-			}
-			return Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build();
-		}
-		catch (ObjectNotFoundException e) {
-			t = e;
-			LOGGER.error(e.getMessage());
-			return WebServiceHelper.buildErrorResponse(Response.Status.NOT_FOUND, e);
-		}
-		catch (RuntimeException | Error e) {
-			t = e;
-			LOGGER.error(e, e);
-			return WebServiceHelper.buildErrorResponse(Response.Status.INTERNAL_SERVER_ERROR, e);
-		}
-		finally {
-			final long end = loadMeter.end();
-			WebServiceHelper.logAccessInfo(READ_ACCESS_LOG, messageContext.getHttpServletRequest(), params, end - start, getLoad() + 1, t);
-		}
+		});
 	}
 
 	@Override
@@ -231,20 +227,52 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 	}
 
 	@Override
-	public Response getTaxOffices(int ofsCommune) {
-		return WebServiceHelper.buildErrorResponse(Response.Status.SERVICE_UNAVAILABLE, "Implémentation encore en cours...");
+	public Response getTaxOffices(final int municipalityId, final String dateStr) {
+		final Object params = new Object() {
+			@Override
+			public String toString() {
+				return String.format("getTaxOffices{municipalityId=%d, date='%s'}", municipalityId, dateStr);
+			}
+		};
+		return execute(params, READ_ACCESS_LOG, new ExecutionCallback() {
+			@Override
+			public Response execute() throws Exception {
+				final RegDate date;
+				if (StringUtils.isNotBlank(dateStr)) {
+					try {
+						date = RegDateHelper.displayStringToRegDate(dateStr, false);
+					}
+					catch (ParseException | IllegalArgumentException e) {
+						return WebServiceHelper.buildErrorResponse(Response.Status.BAD_REQUEST, e);
+					}
+				}
+				else {
+					date = null;
+				}
+
+				final TaxOffices taxOffices = target.getTaxOffices(municipalityId, date);
+				final MediaType preferred = WebServiceHelper.getPreferedMediaType(messageContext.getHttpHeaders().getAcceptableMediaTypes(),
+				                                                                  new MediaType[] {MediaType.APPLICATION_XML_TYPE, APPLICATION_JSON_WITH_UTF8_CHARSET_TYPE});
+				if (preferred == APPLICATION_JSON_WITH_UTF8_CHARSET_TYPE) {
+					return Response.ok(taxOffices, preferred).build();
+				}
+				else if (preferred == MediaType.APPLICATION_XML_TYPE) {
+					return Response.ok(taxOfficesObjectFactory.createTaxOffices(taxOffices), preferred).build();
+				}
+				return Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build();
+			}
+		});
 	}
 
 	@Override
 	public Response ackOrdinaryTaxDeclarations(final String login, final OrdinaryTaxDeclarationAckRequest request) {
-
 		final Object params = new Object() {
 			@Override
 			public String toString() {
 				return String.format("ackOrdinaryTaxDeclarations{login='%s', request='%s'}", login, request);
 			}
 		};
-		return execute(login, params, WRITE_ACCESS_LOG, new ExecutionCallback() {
+		return execute(login, params, WRITE_ACCESS_LOG, new ExecutionWithLoginCallback() {
 			@Override
 			public Response execute(final UserLogin userLogin) throws Exception {
 				final OrdinaryTaxDeclarationAckResponse response = target.ackOrdinaryTaxDeclarations(userLogin, request);
@@ -256,14 +284,13 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 	@Override
 	public Response newOrdinaryTaxDeclarationDeadline(final int partyNo, final int pf, final int seqNo,
 	                                                  final String login, final DeadlineRequest request) {
-
 		final Object params = new Object() {
 			@Override
 			public String toString() {
 				return String.format("newOrdinaryTaxDeclarationDeadline{login='%s', partyNo=%d, pf=%d, seqNo=%d, request=%s", login, partyNo, pf, seqNo, request);
 			}
 		};
-		return execute(login, params, WRITE_ACCESS_LOG, new ExecutionCallback() {
+		return execute(login, params, WRITE_ACCESS_LOG, new ExecutionWithLoginCallback() {
 			@Override
 			public Response execute(UserLogin userLogin) throws Exception {
 				final DeadlineResponse response = target.newOrdinaryTaxDeclarationDeadline(partyNo, pf, seqNo, userLogin, request);

@@ -106,8 +106,10 @@
 		<property name="securityProvider" ref="securityProviderInterface"/>
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="tiersService" ref="tiersService"/>
+		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="diService" ref="diService"/>
 		<property name="bamSender" ref="bamMessageSender"/>
+		<property name="infraService" ref="serviceInfrastructureService" />
 	</bean>
 
 </beans>

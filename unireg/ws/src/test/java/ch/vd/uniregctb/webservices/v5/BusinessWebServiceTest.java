@@ -17,6 +17,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.unireg.ws.ack.v1.AckStatus;
 import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationAckRequest;
 import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationAckResponse;
@@ -27,6 +28,8 @@ import ch.vd.unireg.ws.deadline.v1.DeadlineResponse;
 import ch.vd.unireg.ws.deadline.v1.DeadlineStatus;
 import ch.vd.unireg.ws.security.v1.AllowedAccess;
 import ch.vd.unireg.ws.security.v1.SecurityResponse;
+import ch.vd.unireg.ws.taxoffices.v1.TaxOffices;
+import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.WebserviceTest;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
@@ -36,6 +39,7 @@ import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceSecuriteService;
 import ch.vd.uniregctb.security.Role;
+import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.MotifFor;
@@ -451,5 +455,58 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				Assert.assertEquals(nouveauDelai, delai.getDelaiAccordeAu());
 			}
 		});
+	}
+
+	@Test
+	public void testGetTaxOffices() throws Exception {
+
+		final class Ids {
+			long idVevey;
+			long idPaysDEnhaut;
+		}
+
+		// préparation
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final CollectiviteAdministrative pays = addCollAdm(MockOfficeImpot.OID_PAYS_D_ENHAUT);
+				final CollectiviteAdministrative vevey = addCollAdm(MockOfficeImpot.OID_VEVEY);
+
+				final Ids ids = new Ids();
+				ids.idVevey = vevey.getNumero();
+				ids.idPaysDEnhaut = pays.getNumero();
+				return ids;
+			}
+		});
+
+		// une commune vaudoise
+		{
+			final TaxOffices taxOffices = service.getTaxOffices(MockCommune.ChateauDoex.getNoOFS(), null);
+			Assert.assertNotNull(taxOffices);
+			Assert.assertNotNull(taxOffices.getDistrict());
+			Assert.assertNotNull(taxOffices.getRegion());
+			Assert.assertEquals(ids.idPaysDEnhaut, taxOffices.getDistrict().getPartyNo());
+			Assert.assertEquals(MockOfficeImpot.OID_PAYS_D_ENHAUT.getNoColAdm(), taxOffices.getDistrict().getAdmCollNo());
+			Assert.assertEquals(ids.idVevey, taxOffices.getRegion().getPartyNo());
+			Assert.assertEquals(MockOfficeImpot.OID_VEVEY.getNoColAdm(), taxOffices.getRegion().getAdmCollNo());
+		}
+
+		// une commune hors-canton
+		try {
+			final TaxOffices taxOffices = service.getTaxOffices(MockCommune.Bern.getNoOFS(), null);
+			Assert.fail();
+		}
+		catch (ObjectNotFoundException e) {
+			Assert.assertEquals(String.format("Commune %d inconnue dans le canton de Vaud.", MockCommune.Bern.getNoOFS()), e.getMessage());
+		}
+
+		// une commune inconnue
+		try {
+			final TaxOffices taxOffices = service.getTaxOffices(99999, null);
+			Assert.fail();
+		}
+		catch (ObjectNotFoundException e) {
+			Assert.assertEquals("Commune 99999 inconnue dans le canton de Vaud.", e.getMessage());
+		}
 	}
 }

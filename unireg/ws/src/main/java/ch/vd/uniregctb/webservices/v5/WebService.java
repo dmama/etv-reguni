@@ -29,15 +29,12 @@ public interface WebService {
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Path("/repayment/{partyNo}/blocked")
-	Response setAutomaticRepaymentBlockingFlag(@PathParam("partyNo") int partyNo,
-	                                           @QueryParam("login") String login,
-	                                           String value);
+	Response setAutomaticRepaymentBlockingFlag(@PathParam("partyNo") int partyNo, @QueryParam("login") String login, String value);
 
 	@GET
 	@Produces(APPLICATION_JSON_WITH_UTF8_CHARSET)
 	@Path("/repayment/{partyNo}/blocked")
-	Response getAutomaticRepaymentBlockingFlag(@PathParam("partyNo") int partyNo,
-	                                           @QueryParam("login") String login);
+	Response getAutomaticRepaymentBlockingFlag(@PathParam("partyNo") int partyNo, @QueryParam("login") String login);
 
 	@GET
 	@Produces({MediaType.APPLICATION_XML, APPLICATION_JSON_WITH_UTF8_CHARSET})
@@ -104,7 +101,7 @@ public interface WebService {
 	@GET
 	@Produces({MediaType.APPLICATION_XML, APPLICATION_JSON_WITH_UTF8_CHARSET})
 	@Path("/taxOffices/{municipalityId}")
-	Response getTaxOffices(@PathParam("municipalityId") int ofsCommune);
+	Response getTaxOffices(@PathParam("municipalityId") int municipalityId, @QueryParam("date") String date);
 
 	@POST
 	@Consumes(MediaType.APPLICATION_XML)

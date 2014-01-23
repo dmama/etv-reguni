@@ -1,10 +1,14 @@
 package ch.vd.uniregctb.webservices.v5;
 
+import org.jetbrains.annotations.Nullable;
+
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationAckRequest;
 import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationAckResponse;
 import ch.vd.unireg.ws.deadline.v1.DeadlineRequest;
 import ch.vd.unireg.ws.deadline.v1.DeadlineResponse;
 import ch.vd.unireg.ws.security.v1.SecurityResponse;
+import ch.vd.unireg.ws.taxoffices.v1.TaxOffices;
 import ch.vd.uniregctb.webservices.common.AccessDeniedException;
 import ch.vd.uniregctb.webservices.common.UserLogin;
 
@@ -60,4 +64,12 @@ public interface BusinessWebService {
 	 */
 	DeadlineResponse newOrdinaryTaxDeclarationDeadline(int partyNo, int pf, int seqNo, UserLogin login, DeadlineRequest request) throws AccessDeniedException;
 
+	/**
+	 * Récupère les offices d'impôt de la commune identifiée par son numéro OFS et la date de validité
+	 * @param municipalityId numéro OFS de la commune
+	 * @param date date de validité du numéro OFS (si <code>null</code>, on prendra la date du jour)
+	 * @return une description des offices d'impôt (de district et de région) liés à la commune indiquée
+	 * @throws ch.vd.uniregctb.common.ObjectNotFoundException si la commune est inconnue ou n'est pas vaudoise
+	 */
+	TaxOffices getTaxOffices(int municipalityId, @Nullable RegDate date);
 }
