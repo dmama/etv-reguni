@@ -1,7 +1,9 @@
 package ch.vd.uniregctb.webservices.v5;
 
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import java.text.ParseException;
 import java.util.Arrays;
@@ -150,9 +152,24 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 		finally {
 			final long end = loadMeter.end();
 			final Response.Status status = (r == null ? null : Response.Status.fromStatusCode(r.getStatus()));
-			WebServiceHelper.logAccessInfo(accessLog, messageContext.getHttpServletRequest(), callDescription, end - start, getLoad() + 1, status, nbItems, t);
+			final String type = extractContentType(r);
+			WebServiceHelper.logAccessInfo(accessLog, messageContext.getHttpServletRequest(), callDescription, end - start, getLoad() + 1, type, status, nbItems, t);
 		}
 		return r;
+	}
+
+	@Nullable
+	private static String extractContentType(@Nullable Response r) {
+		if (r != null) {
+			final MultivaluedMap<String, Object> metadata = r.getMetadata();
+			if (metadata != null) {
+				final List<Object> typeList = metadata.get(HttpHeaders.CONTENT_TYPE);
+				if (typeList != null && !typeList.isEmpty()) {
+					return (String) typeList.get(0);
+				}
+			}
+		}
+		return null;
 	}
 
 	private static interface ExecutionCallbackWithUser {
@@ -282,10 +299,10 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 					}
 					final MediaType preferred = getPreferredMediaTypeFromXmlOrJson();
 					if (preferred == WebServiceHelper.APPLICATION_JSON_WITH_UTF8_CHARSET_TYPE) {
-						return ExecutionResult.with(Response.ok(PartyJsonContainer.fromValue(party), preferred).build());
+						return ExecutionResult.with(Response.ok(PartyJsonContainer.fromValue(party), preferred).build(), 1);
 					}
 					else if (preferred == MediaType.APPLICATION_XML_TYPE) {
-						return ExecutionResult.with(Response.ok(partyObjectFactory.createParty(party), preferred).build());
+						return ExecutionResult.with(Response.ok(partyObjectFactory.createParty(party), preferred).build(), 1);
 					}
 					return ExecutionResult.with(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build());
 				}
@@ -318,7 +335,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 					final int nbItems = countParties(parties.getEntries());
 					final MediaType preferred = getPreferredMediaTypeFromXmlOrJson();
 					if (preferred == WebServiceHelper.APPLICATION_JSON_WITH_UTF8_CHARSET_TYPE) {
-						// TODO que quel format utiliser pour le retour JSON ?
+						// TODO quel format utiliser pour le retour JSON ?
 						throw new NotImplementedException();
 					}
 					else if (preferred == MediaType.APPLICATION_XML_TYPE) {
