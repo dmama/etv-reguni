@@ -27,8 +27,8 @@ public class VaudoisDepense extends Assujettissement {
 	}
 
 	@Override
-	public String getDescription() {
-		return "Imposition d'après la dépense";
+	public TypeAssujettissement getType() {
+		return TypeAssujettissement.VAUDOIS_DEPENSE;
 	}
 
 	@Override

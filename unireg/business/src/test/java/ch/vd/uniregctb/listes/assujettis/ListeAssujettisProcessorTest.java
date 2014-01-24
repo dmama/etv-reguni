@@ -13,6 +13,7 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
+import ch.vd.uniregctb.metier.assujettissement.TypeAssujettissement;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -70,7 +71,7 @@ public class ListeAssujettisProcessorTest extends BusinessTest {
 		Assert.assertEquals(ppId, a.noCtb);
 		Assert.assertEquals(date(2010, 1, 1), a.debutAssujettissement);
 		Assert.assertEquals(date(2010, 12, 31), a.finAssujettissement);
-		Assert.assertEquals("Imposition ordinaire VD", a.typeAssujettissement);
+		Assert.assertEquals(TypeAssujettissement.VAUDOIS_ORDINAIRE, a.typeAssujettissement);
 		Assert.assertNull(a.motifDebut);
 		Assert.assertNull(a.motifFin);
 	}
@@ -164,7 +165,7 @@ public class ListeAssujettisProcessorTest extends BusinessTest {
 		Assert.assertEquals(ids.mcId, a.noCtb);
 		Assert.assertEquals(date(2010, 1, 1), a.debutAssujettissement);
 		Assert.assertEquals(date(2010, 12, 31), a.finAssujettissement);
-		Assert.assertEquals("Imposition ordinaire VD", a.typeAssujettissement);
+		Assert.assertEquals(TypeAssujettissement.VAUDOIS_ORDINAIRE, a.typeAssujettissement);
 		Assert.assertEquals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, a.motifDebut);
 		Assert.assertNull(a.motifFin);
 	}
@@ -205,7 +206,7 @@ public class ListeAssujettisProcessorTest extends BusinessTest {
 		Assert.assertEquals(ppId, a.noCtb);
 		Assert.assertEquals(date(2010, 1, 1), a.debutAssujettissement);
 		Assert.assertEquals(date(2010, 12, 31), a.finAssujettissement);
-		Assert.assertEquals("Imposition ordinaire HC", a.typeAssujettissement);
+		Assert.assertEquals(TypeAssujettissement.HORS_CANTON, a.typeAssujettissement);
 		Assert.assertNull(a.motifDebut);
 		Assert.assertNull(a.motifFin);
 	}
@@ -246,7 +247,7 @@ public class ListeAssujettisProcessorTest extends BusinessTest {
 		Assert.assertEquals(ppId, a.noCtb);
 		Assert.assertEquals(date(2010, 1, 1), a.debutAssujettissement);
 		Assert.assertEquals(date(2010, 12, 31), a.finAssujettissement);
-		Assert.assertEquals("Imposition ordinaire HS", a.typeAssujettissement);
+		Assert.assertEquals(TypeAssujettissement.HORS_SUISSE, a.typeAssujettissement);
 		Assert.assertNull(a.motifDebut);
 		Assert.assertNull(a.motifFin);
 	}
@@ -288,7 +289,7 @@ public class ListeAssujettisProcessorTest extends BusinessTest {
 		Assert.assertEquals(ppId, hs.noCtb);
 		Assert.assertEquals(date(2010, 1, 1), hs.debutAssujettissement);
 		Assert.assertEquals(date(2010, 3, 11), hs.finAssujettissement);
-		Assert.assertEquals("Imposition ordinaire HS", hs.typeAssujettissement);
+		Assert.assertEquals(TypeAssujettissement.HORS_SUISSE, hs.typeAssujettissement);
 		Assert.assertNull(hs.motifDebut);
 		Assert.assertEquals(MotifFor.ARRIVEE_HS, hs.motifFin);
 
@@ -297,7 +298,7 @@ public class ListeAssujettisProcessorTest extends BusinessTest {
 		Assert.assertEquals(ppId, vd.noCtb);
 		Assert.assertEquals(date(2010, 3, 12), vd.debutAssujettissement);
 		Assert.assertEquals(date(2010, 12, 31), vd.finAssujettissement);
-		Assert.assertEquals("Imposition ordinaire VD", vd.typeAssujettissement);
+		Assert.assertEquals(TypeAssujettissement.VAUDOIS_ORDINAIRE, vd.typeAssujettissement);
 		Assert.assertEquals(MotifFor.ARRIVEE_HS, vd.motifDebut);
 		Assert.assertNull(vd.motifFin);
 	}
@@ -337,7 +338,7 @@ public class ListeAssujettisProcessorTest extends BusinessTest {
 		Assert.assertEquals(ppId, a.noCtb);
 		Assert.assertEquals(date(2010, 1, 1), a.debutAssujettissement);
 		Assert.assertEquals(date(2010, 12, 31), a.finAssujettissement);
-		Assert.assertEquals("Imposition à la source", a.typeAssujettissement);
+		Assert.assertEquals(TypeAssujettissement.SOURCE_PURE, a.typeAssujettissement);
 		Assert.assertNull(a.motifDebut);
 		Assert.assertNull(a.motifFin);
 	}
@@ -413,7 +414,7 @@ public class ListeAssujettisProcessorTest extends BusinessTest {
 		Assert.assertEquals(ppId, a.noCtb);
 		Assert.assertEquals(date(2010, 1, 1), a.debutAssujettissement);
 		Assert.assertEquals(date(2010, 5, 12), a.finAssujettissement);
-		Assert.assertEquals("Imposition ordinaire VD", a.typeAssujettissement);
+		Assert.assertEquals(TypeAssujettissement.VAUDOIS_ORDINAIRE, a.typeAssujettissement);
 		Assert.assertNull(a.motifDebut);
 		Assert.assertEquals(MotifFor.DEPART_HS, a.motifFin);
 	}

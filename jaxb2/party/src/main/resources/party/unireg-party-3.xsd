@@ -567,6 +567,15 @@
 					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
+			<xs:element minOccurs="0" name="individualTaxLiability" type="taxresidence:individualTaxLiabilityTypeType">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Le type d'assujettissement "personnes physiques", vide si le tiers ne représente pas une personne physique ou un ménage commun</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
 			<xs:element name="padding" type="xs:int">
 				<xs:annotation>
 					<xs:appinfo>

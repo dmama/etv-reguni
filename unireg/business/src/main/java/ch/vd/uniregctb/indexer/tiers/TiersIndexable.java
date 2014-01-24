@@ -54,6 +54,7 @@ public abstract class TiersIndexable {
 		fillBaseData(data);
 		fillAdresseData(data);
 		fillForsData(data);
+		fillAssujettissementData(data);
 
 		return data;
 	}
@@ -64,10 +65,13 @@ public abstract class TiersIndexable {
 		data.setDebiteurInactif(IndexerFormatHelper.booleanToString(tiers.isDebiteurInactif()));
 		data.setAnnule(IndexerFormatHelper.booleanToString(tiers.isDesactive(null)));
 		data.setRoleLigne1(tiers.getRoleLigne1());
-		data.setRoleLigne2(tiersService.getRoleAssujettissement(tiers, RegDate.get()));
 
 		final Long millisecondes = DateHelper.getCurrentDate().getTime();
 		data.setIndexationDate(IndexerFormatHelper.numberToString(millisecondes));
+	}
+
+	protected void fillAssujettissementData(TiersIndexableData data) {
+		data.setRoleLigne2(tiersService.getRoleAssujettissement(tiers, RegDate.get()));
 	}
 
 	protected abstract void fillForsData(TiersIndexableData data);

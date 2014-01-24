@@ -7,6 +7,7 @@ import java.util.Set;
 import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
 import ch.vd.unireg.interfaces.infra.data.TypeAffranchissement;
 import ch.vd.uniregctb.interfaces.model.CompteBancaire;
+import ch.vd.uniregctb.metier.assujettissement.TypeAssujettissement;
 import ch.vd.uniregctb.metier.piis.PeriodeImpositionImpotSource;
 import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.rf.TypeImmeuble;
@@ -2185,6 +2186,37 @@ public abstract class EnumHelper {
 			return ch.vd.unireg.xml.party.othercomm.v1.LegalForm.GENERAL_PARTNERSHIP;
 		default:
 			throw new IllegalArgumentException("unknown FormeJuridique = [" + formeJuridique + ']');
+		}
+	}
+
+	public static ch.vd.unireg.xml.party.taxresidence.v2.IndividualTaxLiabilityType coreToXMLv2(TypeAssujettissement t) {
+		if (t == null) {
+			return null;
+		}
+
+		switch (t) {
+		case DIPLOMATE_SUISSE:
+			return ch.vd.unireg.xml.party.taxresidence.v2.IndividualTaxLiabilityType.SWISS_DIPLOMAT;
+		case HORS_CANTON:
+			return ch.vd.unireg.xml.party.taxresidence.v2.IndividualTaxLiabilityType.OTHER_CANTON;
+		case HORS_SUISSE:
+			return ch.vd.unireg.xml.party.taxresidence.v2.IndividualTaxLiabilityType.FOREIGN_COUNTRY;
+		case INDIGENT:
+			return ch.vd.unireg.xml.party.taxresidence.v2.IndividualTaxLiabilityType.INDIGENT;
+		case MIXTE_137_1:
+			return ch.vd.unireg.xml.party.taxresidence.v2.IndividualTaxLiabilityType.MIXED_WITHHOLDING_137_1;
+		case MIXTE_137_2:
+			return ch.vd.unireg.xml.party.taxresidence.v2.IndividualTaxLiabilityType.MIXED_WITHHOLDING_137_2;
+		case NON_ASSUJETTI:
+			return ch.vd.unireg.xml.party.taxresidence.v2.IndividualTaxLiabilityType.NONE;
+		case SOURCE_PURE:
+			return ch.vd.unireg.xml.party.taxresidence.v2.IndividualTaxLiabilityType.PURE_WITHHOLDING;
+		case VAUDOIS_DEPENSE:
+			return ch.vd.unireg.xml.party.taxresidence.v2.IndividualTaxLiabilityType.EXPENDITURE_BASED;
+		case VAUDOIS_ORDINAIRE:
+			return ch.vd.unireg.xml.party.taxresidence.v2.IndividualTaxLiabilityType.ORDINARY_RESIDENT;
+		default:
+			throw new IllegalArgumentException("Type d'assujettissement inconnu = [" + t + ']');
 		}
 	}
 }

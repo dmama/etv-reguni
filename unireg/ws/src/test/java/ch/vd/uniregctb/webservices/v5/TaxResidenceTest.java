@@ -2,10 +2,12 @@ package ch.vd.uniregctb.webservices.v5;
 
 import org.junit.Test;
 
+import ch.vd.unireg.xml.party.taxresidence.v2.IndividualTaxLiabilityType;
 import ch.vd.unireg.xml.party.taxresidence.v2.TaxLiabilityReason;
 import ch.vd.unireg.xml.party.taxresidence.v2.TaxType;
 import ch.vd.unireg.xml.party.taxresidence.v2.TaxationAuthorityType;
 import ch.vd.unireg.xml.party.taxresidence.v2.TaxationMethod;
+import ch.vd.uniregctb.metier.assujettissement.TypeAssujettissement;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifRattachement;
@@ -110,4 +112,28 @@ public class TaxResidenceTest extends EnumTest {
 		assertEquals(TaxationMethod.INDIGENT, EnumHelper.coreToWeb(ModeImposition.INDIGENT));
 	}
 
+	@Test
+	public void testTypeAssujettissementCoherence() {
+		assertEnumLengthEquals(IndividualTaxLiabilityType.class, TypeAssujettissement.class);
+
+		// vérification que toutes les valeurs sont mappées sur quelque chose
+		for (TypeAssujettissement type : TypeAssujettissement.values()) {
+			assertNotNull(type.name(), EnumHelper.coreToWeb(type));
+		}
+	}
+
+	@Test
+	public void testTypeAssujettissementFromValue() {
+		assertNull(EnumHelper.coreToWeb((TypeAssujettissement) null));
+		assertEquals(IndividualTaxLiabilityType.SWISS_DIPLOMAT, EnumHelper.coreToWeb(TypeAssujettissement.DIPLOMATE_SUISSE));
+		assertEquals(IndividualTaxLiabilityType.OTHER_CANTON, EnumHelper.coreToWeb(TypeAssujettissement.HORS_CANTON));
+		assertEquals(IndividualTaxLiabilityType.FOREIGN_COUNTRY, EnumHelper.coreToWeb(TypeAssujettissement.HORS_SUISSE));
+		assertEquals(IndividualTaxLiabilityType.INDIGENT, EnumHelper.coreToWeb(TypeAssujettissement.INDIGENT));
+		assertEquals(IndividualTaxLiabilityType.MIXED_WITHHOLDING_137_1, EnumHelper.coreToWeb(TypeAssujettissement.MIXTE_137_1));
+		assertEquals(IndividualTaxLiabilityType.MIXED_WITHHOLDING_137_2, EnumHelper.coreToWeb(TypeAssujettissement.MIXTE_137_2));
+		assertEquals(IndividualTaxLiabilityType.NONE, EnumHelper.coreToWeb(TypeAssujettissement.NON_ASSUJETTI));
+		assertEquals(IndividualTaxLiabilityType.PURE_WITHHOLDING, EnumHelper.coreToWeb(TypeAssujettissement.SOURCE_PURE));
+		assertEquals(IndividualTaxLiabilityType.EXPENDITURE_BASED, EnumHelper.coreToWeb(TypeAssujettissement.VAUDOIS_DEPENSE));
+		assertEquals(IndividualTaxLiabilityType.ORDINARY_RESIDENT, EnumHelper.coreToWeb(TypeAssujettissement.VAUDOIS_ORDINAIRE));
+	}
 }

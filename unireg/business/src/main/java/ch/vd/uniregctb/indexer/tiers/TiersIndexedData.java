@@ -14,12 +14,13 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.Constants;
 import ch.vd.uniregctb.indexer.IndexerFormatHelper;
 import ch.vd.uniregctb.indexer.lucene.LuceneHelper;
+import ch.vd.uniregctb.metier.assujettissement.TypeAssujettissement;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.ModeCommunication;
 
 public class TiersIndexedData implements Serializable {
 
-	private static final long serialVersionUID = -6570908488594414646L;
+	private static final long serialVersionUID = 1549012269648391839L;
 
 	//private static final Logger LOGGER = Logger.getLogger(TiersIndexableData.class);
 
@@ -44,6 +45,7 @@ public class TiersIndexedData implements Serializable {
 	private final String forPrincipal;
 	private final CategorieImpotSource categorieImpotSource;
 	private final ModeCommunication modeCommunication;
+	private final TypeAssujettissement assujettissementPP;
 	private final boolean annule;
 	private final boolean debiteurInactif;
 	private final Boolean dansLeCanton;
@@ -77,6 +79,7 @@ public class TiersIndexedData implements Serializable {
 		noOfsCommuneDomicile = getIntegerValue(TiersIndexableData.NO_OFS_DOMICILE_VD, doc);
 		categorieImpotSource = getEnumValue(TiersIndexableData.CATEGORIE_DEBITEUR_IS, doc, CategorieImpotSource.class);
 		modeCommunication = getEnumValue(TiersIndexableData.MODE_COMMUNICATION, doc, ModeCommunication.class);
+		assujettissementPP = getEnumValue(TiersIndexableData.ASSUJETTISSEMENT_PP, doc, TypeAssujettissement.class);
 	}
 
 	private static boolean isBlank(String value) {
@@ -190,6 +193,13 @@ public class TiersIndexedData implements Serializable {
 	 */
 	public ModeCommunication getModeCommunication() {
 		return modeCommunication;
+	}
+
+	/**
+	 * @return le type d'assujettissement "PP" du contribuable; <b>null</b> si le tiers n'est ni une personne physique ni un ménage commun.
+	 */
+	public TypeAssujettissement getAssujettissementPP() {
+		return assujettissementPP;
 	}
 
 	public boolean isAnnule() {

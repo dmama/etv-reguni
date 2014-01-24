@@ -403,6 +403,7 @@ public abstract class DataHelper {
 		if (StringUtils.isNotBlank(value.getNavs13_2())) {
 			i.setVn2(Long.valueOf(value.getNavs13_2()));
 		}
+		i.setIndividualTaxLiability(EnumHelper.coreToXMLv2(value.getAssujettissementPP()));
 		return i;
 	}
 

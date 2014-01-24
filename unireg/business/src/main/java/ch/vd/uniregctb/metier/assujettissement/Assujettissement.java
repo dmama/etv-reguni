@@ -135,7 +135,7 @@ public abstract class Assujettissement implements CollatableDateRange {
 	/**
 	 * @return une description orienté utilisateur du type d'assujettissement
 	 */
-	public abstract String getDescription();
+	public abstract TypeAssujettissement getType();
 
 	/**
 	 * Un assujettissement est dit "actif" sur une commune donnée si cette commune doit recevoir des sous par la répartition inter-communale concernant ce contribuable, donc dans le cas d'un contribuable

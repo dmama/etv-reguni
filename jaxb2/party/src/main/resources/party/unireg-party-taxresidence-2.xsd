@@ -832,6 +832,68 @@
 		</xs:complexContent>
 	</xs:complexType>
 
+	<xs:simpleType name="individualTaxLiabilityTypeType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:typesafeEnumClass>
+					<jxb:javadoc>Type d'assujettissement "PP"</jxb:javadoc>
+				</jxb:typesafeEnumClass>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="NONE">
+				<xs:annotation>
+					<xs:documentation>Non assujetti</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PURE_WITHHOLDING">
+				<xs:annotation>
+					<xs:documentation>Source pure</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="MIXED_WITHHOLDING_137_1">
+				<xs:annotation>
+					<xs:documentation>Mixte art. 137 al. 1</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="MIXED_WITHHOLDING_137_2">
+				<xs:annotation>
+					<xs:documentation>Mixte art. 137 al. 2</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ORDINARY_RESIDENT">
+				<xs:annotation>
+					<xs:documentation>Vaudois ordinaire</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="EXPENDITURE_BASED">
+				<xs:annotation>
+					<xs:documentation>Dépense</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="INDIGENT">
+				<xs:annotation>
+					<xs:documentation>Indigent</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="FOREIGN_COUNTRY">
+				<xs:annotation>
+					<xs:documentation>Hors-Suisse</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="OTHER_CANTON">
+				<xs:annotation>
+					<xs:documentation>Hors-Canton</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SWISS_DIPLOMAT">
+				<xs:annotation>
+					<xs:documentation>Diplomate suisse</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+
 	<xs:complexType name="withholdingTaxationPeriodType">
 		<xs:annotation>
 			<xs:appinfo>

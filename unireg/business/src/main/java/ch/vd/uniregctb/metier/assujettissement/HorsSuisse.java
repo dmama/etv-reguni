@@ -27,8 +27,8 @@ public class HorsSuisse extends Assujettissement {
 	}
 
 	@Override
-	public String getDescription() {
-		return "Imposition ordinaire HS";
+	public TypeAssujettissement getType() {
+		return TypeAssujettissement.HORS_SUISSE;
 	}
 
 	@Override

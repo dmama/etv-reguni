@@ -12,6 +12,7 @@ import ch.vd.unireg.xml.party.taxdeclaration.v3.DocumentType;
 import ch.vd.unireg.xml.party.taxdeclaration.v3.TaxDeclarationStatusType;
 import ch.vd.unireg.xml.party.taxpayer.v3.MaritalStatus;
 import ch.vd.unireg.xml.party.taxpayer.v3.WithholdingTaxTariff;
+import ch.vd.unireg.xml.party.taxresidence.v2.IndividualTaxLiabilityType;
 import ch.vd.unireg.xml.party.taxresidence.v2.LiabilityChangeReason;
 import ch.vd.unireg.xml.party.taxresidence.v2.TaxLiabilityReason;
 import ch.vd.unireg.xml.party.taxresidence.v2.TaxType;
@@ -22,6 +23,7 @@ import ch.vd.unireg.xml.party.withholding.v1.CommunicationMode;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorCategory;
 import ch.vd.unireg.xml.party.withholding.v1.WithholdingTaxDeclarationPeriod;
 import ch.vd.unireg.xml.party.withholding.v1.WithholdingTaxDeclarationPeriodicity;
+import ch.vd.uniregctb.metier.assujettissement.TypeAssujettissement;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.type.CategorieEtranger;
 import ch.vd.uniregctb.type.CategorieImpotSource;
@@ -160,5 +162,9 @@ public abstract class EnumHelper {
 
 	public static LegalForm coreToWeb(FormeJuridique forme) {
 		return ch.vd.uniregctb.xml.EnumHelper.coreToXMLv1(forme);
+	}
+
+	public static IndividualTaxLiabilityType coreToWeb(TypeAssujettissement type) {
+		return ch.vd.uniregctb.xml.EnumHelper.coreToXMLv2(type);
 	}
 }

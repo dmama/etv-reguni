@@ -22,6 +22,7 @@ import ch.vd.uniregctb.metier.assujettissement.HorsCanton;
 import ch.vd.uniregctb.metier.assujettissement.HorsSuisse;
 import ch.vd.uniregctb.metier.assujettissement.Indigent;
 import ch.vd.uniregctb.metier.assujettissement.SourcierMixteArt137Al1;
+import ch.vd.uniregctb.metier.assujettissement.TypeAssujettissement;
 import ch.vd.uniregctb.metier.assujettissement.VaudoisDepense;
 import ch.vd.uniregctb.metier.assujettissement.VaudoisOrdinaire;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -130,9 +131,9 @@ public class AcomptesResults extends ListesResults<AcomptesResults> {
 	public static class InfoContribuableNonSoumisAuxAcomptes extends InfoContribuableIgnore {
 		private final String descriptionAssujettissement;
 
-		public InfoContribuableNonSoumisAuxAcomptes(long numeroCtb, int anneeFiscale, String descriptionAssujettissement) {
+		public InfoContribuableNonSoumisAuxAcomptes(long numeroCtb, int anneeFiscale, TypeAssujettissement typeAssujettissement) {
 			super(numeroCtb, anneeFiscale);
-			this.descriptionAssujettissement = descriptionAssujettissement;
+			this.descriptionAssujettissement = typeAssujettissement.getDescription();
 		}
 
 		@Override
@@ -274,7 +275,7 @@ public class AcomptesResults extends ListesResults<AcomptesResults> {
 						typeContribuable = TypeContribuableAcompte.VAUDOIS_MIXTE_137_1;
 					}
 					else {
-						addContribuableIgnoreNonSoumisAuxAcomptes(ctb, anneeFiscale, assujettissement.getDescription());
+						addContribuableIgnoreNonSoumisAuxAcomptes(ctb, anneeFiscale, assujettissement.getType());
 						return null;
 					}
 
@@ -334,7 +335,7 @@ public class AcomptesResults extends ListesResults<AcomptesResults> {
 		this.contribuablesIgnores.add(new InfoContribuableNonAssujetti(ctb.getNumero(), anneeFiscale));
 	}
 
-	public void addContribuableIgnoreNonSoumisAuxAcomptes(Contribuable ctb, int anneeFiscale, String assujettissement) {
+	public void addContribuableIgnoreNonSoumisAuxAcomptes(Contribuable ctb, int anneeFiscale, TypeAssujettissement assujettissement) {
 	    this.contribuablesIgnores.add(new InfoContribuableNonSoumisAuxAcomptes(ctb.getNumero(), anneeFiscale, assujettissement));
     }
 

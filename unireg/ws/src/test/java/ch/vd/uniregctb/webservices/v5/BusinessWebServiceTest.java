@@ -76,6 +76,7 @@ import ch.vd.unireg.xml.party.taxdeclaration.v3.TaxPeriod;
 import ch.vd.unireg.xml.party.taxpayer.v3.FamilyStatus;
 import ch.vd.unireg.xml.party.taxpayer.v3.MaritalStatus;
 import ch.vd.unireg.xml.party.taxpayer.v3.Taxpayer;
+import ch.vd.unireg.xml.party.taxresidence.v2.IndividualTaxLiabilityType;
 import ch.vd.unireg.xml.party.taxresidence.v2.LiabilityChangeReason;
 import ch.vd.unireg.xml.party.taxresidence.v2.ManagingTaxResidence;
 import ch.vd.unireg.xml.party.taxresidence.v2.OrdinaryResident;
@@ -736,6 +737,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				Assert.assertEquals(StringUtils.EMPTY, info.getName2());
 				Assert.assertEquals(date(1979, 5, 31), DataHelper.webToRegDate(info.getDateOfBirth()));
 				Assert.assertEquals(PartyType.NATURAL_PERSON, info.getType());
+				Assert.assertEquals(IndividualTaxLiabilityType.NONE, info.getIndividualTaxLiability());
 			}
 		}
 
@@ -755,6 +757,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				Assert.assertEquals(StringUtils.EMPTY, info.getName2());
 				Assert.assertEquals(date(1979, 5, 31), DataHelper.webToRegDate(info.getDateOfBirth()));
 				Assert.assertEquals(PartyType.NATURAL_PERSON, info.getType());
+				Assert.assertEquals(IndividualTaxLiabilityType.NONE, info.getIndividualTaxLiability());
 			}
 		}
 
@@ -792,6 +795,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				Assert.assertEquals(StringUtils.EMPTY, info.getName2());
 				Assert.assertNull(info.getDateOfBirth());
 				Assert.assertEquals(PartyType.DEBTOR, info.getType());
+				Assert.assertNull(info.getIndividualTaxLiability());
 			}
 			{
 				final PartyInfo info = sortedRes.get(1);
@@ -801,6 +805,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				Assert.assertEquals(StringUtils.EMPTY, info.getName2());
 				Assert.assertEquals(date(1979, 5, 31), DataHelper.webToRegDate(info.getDateOfBirth()));
 				Assert.assertEquals(PartyType.NATURAL_PERSON, info.getType());
+				Assert.assertEquals(IndividualTaxLiabilityType.NONE, info.getIndividualTaxLiability());
 			}
 		}
 
@@ -829,6 +834,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				Assert.assertEquals(StringUtils.EMPTY, info.getName2());
 				Assert.assertNull(info.getDateOfBirth());
 				Assert.assertEquals(PartyType.DEBTOR, info.getType());
+				Assert.assertNull(info.getIndividualTaxLiability());
 			}
 			{
 				final PartyInfo info = sortedRes.get(1);
@@ -838,6 +844,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				Assert.assertEquals(StringUtils.EMPTY, info.getName2());
 				Assert.assertEquals(date(1979, 5, 31), DataHelper.webToRegDate(info.getDateOfBirth()));
 				Assert.assertEquals(PartyType.NATURAL_PERSON, info.getType());
+				Assert.assertEquals(IndividualTaxLiabilityType.NONE, info.getIndividualTaxLiability());
 			}
 		}
 
@@ -875,6 +882,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				Assert.assertEquals(StringUtils.EMPTY, info.getName2());
 				Assert.assertNull(info.getDateOfBirth());
 				Assert.assertEquals(PartyType.DEBTOR, info.getType());
+				Assert.assertNull(info.getIndividualTaxLiability());
 			}
 			{
 				final PartyInfo info = sortedRes.get(1);
@@ -884,6 +892,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				Assert.assertEquals(StringUtils.EMPTY, info.getName2());
 				Assert.assertEquals(date(1979, 5, 31), DataHelper.webToRegDate(info.getDateOfBirth()));
 				Assert.assertEquals(PartyType.NATURAL_PERSON, info.getType());
+				Assert.assertEquals(IndividualTaxLiabilityType.NONE, info.getIndividualTaxLiability());
 			}
 		}
 
@@ -903,6 +912,91 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				Assert.assertEquals(StringUtils.EMPTY, info.getName2());
 				Assert.assertNull(info.getDateOfBirth());
 				Assert.assertEquals(PartyType.DEBTOR, info.getType());
+				Assert.assertNull(info.getIndividualTaxLiability());
+			}
+		}
+	}
+
+	@Test
+	public void testSearchPartyIndividualTaxLiability() throws Exception {
+
+		final class Ids {
+			long pp;
+			long mc;
+		}
+
+		final RegDate dateNaissance = date(1979, 5, 31);
+		final RegDate dateMariage = date(2008, 5, 1);
+
+		final boolean onTheFly = globalTiersIndexer.isOnTheFlyIndexation();
+		globalTiersIndexer.setOnTheFlyIndexation(true);
+		final Ids ids;
+		try {
+			globalTiersIndexer.overwriteIndex();
+
+			ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+				@Override
+				public Ids doInTransaction(TransactionStatus status) {
+					final PersonnePhysique pp = addNonHabitant("Gérard", "Nietmochevillage", dateNaissance, Sexe.MASCULIN);
+					addForPrincipal(pp, dateNaissance.addYears(18), MotifFor.MAJORITE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Aubonne, ModeImposition.MIXTE_137_1);
+					final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, dateMariage, null);
+					final MenageCommun mc = couple.getMenage();
+					addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Aubonne, ModeImposition.ORDINAIRE);
+
+					final Ids ids = new Ids();
+					ids.pp = pp.getNumero();
+					ids.mc = mc.getNumero();
+					return ids;
+				}
+			});
+
+			// attente de la fin de l'indexation des deux tiers
+			globalTiersIndexer.sync();
+		}
+		finally {
+			globalTiersIndexer.setOnTheFlyIndexation(onTheFly);
+		}
+
+		// recherche par nom avec liste de types vide -> les deux viennent
+		{
+			final List<PartyInfo> res = service.searchParty(new UserLogin(getDefaultOperateurName(), 22), null,
+			                                                "Nietmochevillage", SearchMode.IS_EXACTLY, null, null, null, null, false, Collections.<PartyType>emptySet(), null, null, null);
+
+			Assert.assertNotNull(res);
+			Assert.assertEquals(2, res.size());
+
+			// triage des résultats par ordre croissant de numéro de tiers (le DPI viendra donc toujours devant)
+			final List<PartyInfo> sortedRes = new ArrayList<>(res);
+			Collections.sort(sortedRes, new Comparator<PartyInfo>() {
+				@Override
+				public int compare(PartyInfo o1, PartyInfo o2) {
+					return o1.getNumber() - o2.getNumber();
+				}
+			});
+
+			{
+				final PartyInfo info = sortedRes.get(0);
+				Assert.assertNotNull(info);
+				Assert.assertEquals(ids.pp, info.getNumber());
+				Assert.assertEquals("Gérard Nietmochevillage", info.getName1());
+				Assert.assertEquals(StringUtils.EMPTY, info.getName2());
+				Assert.assertEquals(dateNaissance, DataHelper.webToRegDate(info.getDateOfBirth()));
+				Assert.assertEquals(PartyType.NATURAL_PERSON, info.getType());
+				Assert.assertEquals(IndividualTaxLiabilityType.NONE, info.getIndividualTaxLiability());     // il est maintenant marié
+				Assert.assertEquals(dateNaissance.addYears(18), DataHelper.webToRegDate(info.getLastTaxResidenceBeginDate()));
+				Assert.assertEquals(dateMariage.getOneDayBefore(), DataHelper.webToRegDate(info.getLastTaxResidenceEndDate()));
+			}
+			{
+				final PartyInfo info = sortedRes.get(1);
+				Assert.assertNotNull(info);
+				Assert.assertEquals(ids.mc, info.getNumber());
+				Assert.assertEquals("Gérard Nietmochevillage", info.getName1());
+				Assert.assertEquals(StringUtils.EMPTY, info.getName2());
+				Assert.assertNull(info.getDateOfBirth());
+				Assert.assertEquals(PartyType.HOUSEHOLD, info.getType());
+				Assert.assertEquals(IndividualTaxLiabilityType.ORDINARY_RESIDENT, info.getIndividualTaxLiability());
+				Assert.assertEquals(dateMariage, DataHelper.webToRegDate(info.getLastTaxResidenceBeginDate()));
+				Assert.assertNull(DataHelper.webToRegDate(info.getLastTaxResidenceEndDate()));
 			}
 		}
 	}

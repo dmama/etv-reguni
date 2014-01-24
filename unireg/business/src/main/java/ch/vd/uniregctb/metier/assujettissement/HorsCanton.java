@@ -27,8 +27,8 @@ public class HorsCanton extends Assujettissement {
 	}
 
 	@Override
-	public String getDescription() {
-		return "Imposition ordinaire HC";
+	public TypeAssujettissement getType() {
+		return TypeAssujettissement.HORS_CANTON;
 	}
 
 	@Override

@@ -25,8 +25,8 @@ public class SourcierMixteArt137Al1 extends SourcierMixte {
 	}
 
 	@Override
-	public String getDescription() {
-		return "Imposition mixte Art. 137 Al. 1";
+	public TypeAssujettissement getType() {
+		return TypeAssujettissement.MIXTE_137_1;
 	}
 
 	@Override

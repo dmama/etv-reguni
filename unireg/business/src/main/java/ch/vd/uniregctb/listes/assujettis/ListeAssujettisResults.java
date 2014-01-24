@@ -13,6 +13,7 @@ import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.assujettissement.SourcierPur;
+import ch.vd.uniregctb.metier.assujettissement.TypeAssujettissement;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -46,13 +47,13 @@ public class ListeAssujettisResults extends ListesResults<ListeAssujettisResults
 	}
 
 	public static class InfoCtbAssujetti extends InfoCtb<InfoCtbAssujetti> {
-		public final String typeAssujettissement;
+		public final TypeAssujettissement typeAssujettissement;
 		public final RegDate debutAssujettissement;
 		public final RegDate finAssujettissement;
 		public final MotifFor motifDebut;
 		public final MotifFor motifFin;
 
-		public InfoCtbAssujetti(long noCtb, String typeAssujettissement, RegDate debutAssujettissement, RegDate finAssujettissement, MotifFor motifDebut, MotifFor motifFin) {
+		public InfoCtbAssujetti(long noCtb, TypeAssujettissement typeAssujettissement, RegDate debutAssujettissement, RegDate finAssujettissement, MotifFor motifDebut, MotifFor motifFin) {
 			super(noCtb);
 			this.typeAssujettissement = typeAssujettissement;
 			this.debutAssujettissement = debutAssujettissement;
@@ -155,7 +156,7 @@ public class ListeAssujettisResults extends ListesResults<ListeAssujettisResults
 		else {
 			++ nbCtbAssujettis;
 			for (Assujettissement a : assujettissements) {
-				assujettis.add(new InfoCtbAssujetti(ctb.getNumero(), a.getDescription(), a.getDateDebut(), a.getDateFin(), a.getMotifFractDebut(), a.getMotifFractFin()));
+				assujettis.add(new InfoCtbAssujetti(ctb.getNumero(), a.getType(), a.getDateDebut(), a.getDateFin(), a.getMotifFractDebut(), a.getMotifFractFin()));
 			}
 		}
 	}

@@ -17,6 +17,7 @@ import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
+import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantResults;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
@@ -954,6 +955,14 @@ public interface TiersService {
      * @return une dénomination de l'assujettissement du tiers
      */
     String getRoleAssujettissement(Tiers tiers, @Nullable RegDate date);
+
+	/**
+	 * Retourne l'assujettissement calculé à la date donnée (ou "maintenant" si aucune date n'est donnée)
+	 * @param contribuable un contribuable
+	 * @param date une date de référence
+	 * @return l'assujettissement du contribuable valide à la date demandée (ou <code>null</code> si le contribuable n'est pas assujetti à la date en question)
+	 */
+	Assujettissement getAssujettissement(Contribuable contribuable, @Nullable RegDate date);
 
     /**
      * Défini la date limite d'exclusion sur les contribuables spécifiés par leur numéros.

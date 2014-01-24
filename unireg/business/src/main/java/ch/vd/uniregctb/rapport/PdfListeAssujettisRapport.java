@@ -111,7 +111,7 @@ public class PdfListeAssujettisRapport extends PdfRapport {
 			@Override
 			public boolean fillLine(CsvHelper.LineFiller b, ListeAssujettisResults.InfoCtbAssujetti elt) {
 				b.append(elt.noCtb).append(COMMA);
-				b.append(elt.typeAssujettissement).append(COMMA);
+				b.append(elt.typeAssujettissement != null ? elt.typeAssujettissement.getDescription() : StringUtils.EMPTY).append(COMMA);
 				b.append(RegDateHelper.dateToDisplayString(elt.debutAssujettissement)).append(COMMA);
 				b.append(RegDateHelper.dateToDisplayString(elt.finAssujettissement)).append(COMMA);
 				b.append(elt.motifDebut != null ? elt.motifDebut.getDescription(true) : StringUtils.EMPTY).append(COMMA);

@@ -17,6 +17,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.indexer.IndexableData;
 import ch.vd.uniregctb.indexer.IndexerFormatHelper;
+import ch.vd.uniregctb.metier.assujettissement.TypeAssujettissement;
 import ch.vd.uniregctb.type.ModeCommunication;
 import ch.vd.uniregctb.type.Sexe;
 
@@ -66,6 +67,7 @@ public class TiersIndexableData extends IndexableData {
 	public static final String INDEXATION_DATE = "D_INDEXATION_DATE";
 	public static final String MODE_COMMUNICATION = "D_MODE_COMMUNICATION";
 	public static final String D_DATE_NAISSANCE = "D_DATE_NAISSANCE";
+	public static final String ASSUJETTISSEMENT_PP = "D_ASSUJETTISSEMENT_PP";
 
 	// champs de recherche
 	private String numeros;
@@ -108,6 +110,7 @@ public class TiersIndexableData extends IndexableData {
 	private String noOfsDomicileVd;
 	private String indexationDate;
 	private String modeCommunication;   // uniquement renseigné sur les débiteurs (SIFISC-6587)
+	private String assujettissementPP;  // seulement sur les PP/MC (SIFISC-11102)
 
 	public TiersIndexableData(Long id, String type, String subType) {
 		super(id, type, subType);
@@ -165,6 +168,7 @@ public class TiersIndexableData extends IndexableData {
 		addStoredValue(d, TiersIndexableData.INDEXATION_DATE, indexationDate);
 		addStoredValue(d, TiersIndexableData.MODE_COMMUNICATION, modeCommunication);
 		addStoredValue(d, TiersIndexableData.D_DATE_NAISSANCE, IndexerFormatHelper.dateCollectionToString(datesNaissance, IndexerFormatHelper.DateStringMode.STORAGE));
+		addStoredValue(d, TiersIndexableData.ASSUJETTISSEMENT_PP, assujettissementPP);
 
 		return d;
 	}
@@ -571,6 +575,10 @@ public class TiersIndexableData extends IndexableData {
 
 	public void setModeCommunication(ModeCommunication modeCommunication) {
 		this.modeCommunication = (modeCommunication == null ? StringUtils.EMPTY : modeCommunication.name());
+	}
+
+	public void setAssujettissementPP(TypeAssujettissement assujettissement) {
+		this.assujettissementPP = (assujettissement == null ? StringUtils.EMPTY : assujettissement.name());
 	}
 
 	private static String add(String left, String right) {

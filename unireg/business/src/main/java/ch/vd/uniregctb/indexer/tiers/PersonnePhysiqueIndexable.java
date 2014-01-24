@@ -8,7 +8,7 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.NatureJuridique;
 
-public abstract class PersonnePhysiqueIndexable extends ContribuableIndexable {
+public abstract class PersonnePhysiqueIndexable extends AssujettissablePersonnePhysiqueIndexable {
 
 	public PersonnePhysiqueIndexable(AdresseService adresseService, TiersService tiersService, ServiceInfrastructureService serviceInfra, PersonnePhysique pp) throws IndexerException {
 		super(adresseService, tiersService, serviceInfra, pp);

@@ -27,8 +27,8 @@ public class VaudoisOrdinaire extends Assujettissement {
 	}
 
 	@Override
-	public String getDescription() {
-		return "Imposition ordinaire VD";
+	public TypeAssujettissement getType() {
+		return TypeAssujettissement.VAUDOIS_ORDINAIRE;
 	}
 
 	@Override

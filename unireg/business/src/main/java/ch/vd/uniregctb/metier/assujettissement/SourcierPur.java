@@ -28,8 +28,8 @@ public class SourcierPur extends Sourcier {
 	}
 
 	@Override
-	public String getDescription() {
-		return "Imposition à la source";
+	public TypeAssujettissement getType() {
+		return TypeAssujettissement.SOURCE_PURE;
 	}
 
 	@Override

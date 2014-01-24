@@ -89,6 +89,7 @@ import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.parentes.ParenteUpdateInfo;
 import ch.vd.uniregctb.situationfamille.SituationFamilleService;
@@ -3827,8 +3828,8 @@ public class TiersServiceImpl implements TiersService {
                 final List<Assujettissement> assujettissements = assujettissementService.determine((Contribuable) tiers, date.year());
                 if (assujettissements != null && !assujettissements.isEmpty()) {
                     final Assujettissement valide = DateRangeHelper.rangeAt(assujettissements, date);
-                    if (valide != null) {
-                        str = valide.getDescription();
+                    if (valide != null && valide.getType() != null) {
+                        str = valide.getType().getDescription();
                     }
                 }
 
@@ -3848,7 +3849,30 @@ public class TiersServiceImpl implements TiersService {
         return str;
     }
 
-    /**
+	@Override
+	public Assujettissement getAssujettissement(Contribuable contribuable, @Nullable RegDate date) {
+		if (date == null) {
+			date = RegDate.get();
+		}
+
+		try {
+			final List<Assujettissement> assujettissements = assujettissementService.determine(contribuable, date.year());
+			if (assujettissements != null && !assujettissements.isEmpty()) {
+				final Assujettissement valide = DateRangeHelper.rangeAt(assujettissements, date);
+				if (valide != null) {
+					return valide;
+				}
+			}
+		}
+		catch (AssujettissementException e) {
+			LOGGER.warn("Impossible de calculer l'assujettissement du tiers " + contribuable.getNumero(), e);
+		}
+
+		// non-assujetti...
+		return null;
+	}
+
+	/**
      * {@inheritDoc}
      */
     @Override

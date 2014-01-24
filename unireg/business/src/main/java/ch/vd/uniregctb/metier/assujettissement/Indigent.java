@@ -27,8 +27,8 @@ public class Indigent extends Assujettissement {
 	}
 
 	@Override
-	public String getDescription() {
-		return "Indigent";
+	public TypeAssujettissement getType() {
+		return TypeAssujettissement.INDIGENT;
 	}
 
 	@Override

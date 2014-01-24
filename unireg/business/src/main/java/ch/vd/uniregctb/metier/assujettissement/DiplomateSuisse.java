@@ -27,8 +27,8 @@ public class DiplomateSuisse extends Assujettissement {
 	}
 
 	@Override
-	public String getDescription() {
-		return "Diplomate Suisse";
+	public TypeAssujettissement getType() {
+		return TypeAssujettissement.DIPLOMATE_SUISSE;
 	}
 
 	@Override
