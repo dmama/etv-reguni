@@ -10,7 +10,9 @@ import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockPersonneMorale;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServicePM;
+import ch.vd.uniregctb.interfaces.service.mock.MockServicePM;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
+import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -20,6 +22,7 @@ import ch.vd.uniregctb.type.Sexe;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityTest {
@@ -452,6 +455,107 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 					fail(res.getEchec().toString());
 				}
 				assertEquals((Long) ids.idMaman, res.getIdTiersAssujetti());
+				return null;
+			}
+		});
+	}
+
+	/**
+	 * Pour le moment, les contrôles d'assujettissement sur les PM doivent toujours être négatifs
+	 */
+	@Test
+	public void testControlePM() throws Exception {
+
+		// mise en place civile
+		servicePM.setUp(new MockServicePM() {
+			@Override
+			protected void init() {
+				addPM(MockPersonneMorale.BCV);
+			}
+		});
+
+		// mise en place fiscale
+		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final Entreprise pm = addEntreprise(MockPersonneMorale.BCV.getNumeroEntreprise());
+				return pm.getNumero();
+			}
+		});
+
+		// demande de contrôle apériodique
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final Entreprise pm = (Entreprise) tiersDAO.get(pmId);
+				final TaxLiabilityControlResult res = controlService.doControlOnDate(pm, date(2013, 5, 12), true, true);
+				assertNotNull(res);
+				assertNotNull(res.getEchec());
+				assertEquals(TaxLiabilityControlEchec.EchecType.CONTROLE_NUMERO_KO, res.getEchec().getType());
+				assertNull(res.getIdTiersAssujetti());
+				return null;
+			}
+		});
+
+		// demande de contrôle périodique
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final Entreprise pm = (Entreprise) tiersDAO.get(pmId);
+				final TaxLiabilityControlResult res = controlService.doControlOnPeriod(pm, 2013, true, true);
+				assertNotNull(res);
+				assertNotNull(res.getEchec());
+				assertEquals(TaxLiabilityControlEchec.EchecType.CONTROLE_NUMERO_KO, res.getEchec().getType());
+				assertNull(res.getIdTiersAssujetti());
+				return null;
+			}
+		});
+	}
+
+	/**
+	 * Pour le moment, les contrôles d'assujettissement sur les DPI doivent toujours être négatifs
+	 */
+	@Test
+	public void testControleDPI() throws Exception {
+
+		// mise en place fiscale
+		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Alfredo", "Malaga", null, Sexe.MASCULIN);
+				addForPrincipal(pp, date(2009, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.ChateauDoex);
+
+				final DebiteurPrestationImposable dpi = addDebiteur("Débiteur", pp, date(2009, 1, 1));
+				addForDebiteur(dpi, date(2009, 1, 1), MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Aigle);
+
+				return dpi.getNumero();
+			}
+		});
+
+		// demande de contrôle apériodique
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
+				final TaxLiabilityControlResult res = controlService.doControlOnDate(dpi, date(2013, 5, 12), true, true);
+				assertNotNull(res);
+				assertNotNull(res.getEchec());
+				assertEquals(TaxLiabilityControlEchec.EchecType.CONTROLE_NUMERO_KO, res.getEchec().getType());
+				assertNull(res.getIdTiersAssujetti());
+				return null;
+			}
+		});
+
+		// demande de contrôle périodique
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
+				final TaxLiabilityControlResult res = controlService.doControlOnPeriod(dpi, 2013, true, true);
+				assertNotNull(res);
+				assertNotNull(res.getEchec());
+				assertEquals(TaxLiabilityControlEchec.EchecType.CONTROLE_NUMERO_KO, res.getEchec().getType());
+				assertNull(res.getIdTiersAssujetti());
 				return null;
 			}
 		});
