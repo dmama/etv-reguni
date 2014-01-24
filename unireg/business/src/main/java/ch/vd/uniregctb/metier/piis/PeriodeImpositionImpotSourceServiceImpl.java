@@ -225,11 +225,15 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 	/**
 	 * @param ffp un for principal
 	 * @param forSuivant l'éventuel for principal suivant
+	 * @param pf période fiscale concernée par la PIIS en cours de construction
 	 * @return si oui ou non on peut considérer que le for principal se termine avec un départ HC
 	 */
-	private boolean isDepartHC(ForFiscalPrincipal ffp, @Nullable ForFiscalPrincipal forSuivant) {
+	private boolean isDepartHC(ForFiscalPrincipal ffp, @Nullable ForFiscalPrincipal forSuivant, int pf) {
 		final MotifFor motive;
-		if (forSuivant != null && forSuivant.getDateDebut().getOneDayBefore() == ffp.getDateFin()) {
+		if (RegDateHelper.isAfter(ffp.getDateFin(), RegDate.get(pf, 12, 31), NullDateBehavior.LATEST)) {
+			motive = null;
+		}
+		else if (forSuivant != null && forSuivant.getDateDebut().getOneDayBefore() == ffp.getDateFin()) {
 			motive = computeActualMotive(ffp.getMotifFermeture(), forSuivant.getMotifOuverture(), forSuivant.getDateDebut(), forSuivant.getTypeAutoriteFiscale(), forSuivant.getNumeroOfsAutoriteFiscale(),
 			                             ffp.getTypeAutoriteFiscale(), ffp.getNumeroOfsAutoriteFiscale());
 		}
@@ -242,11 +246,12 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 	/**
 	 * @param ffp un for principal
 	 * @param forSuivant l'éventuel for principal suivant
+	 * @param pf la période fiscale concernée par la PIIS en construction
 	 * @return le type ({@link PeriodeImpositionImpotSource.Type#MIXTE MIXTE} ou {@link PeriodeImpositionImpotSource.Type#SOURCE SOURCE}) de la période d'imposition IS à créer pour le for principal
 	 */
-	private PeriodeImpositionImpotSource.Type determineTypePeriode(ForFiscalPrincipal ffp, @Nullable ForFiscalPrincipal forSuivant) {
+	private PeriodeImpositionImpotSource.Type determineTypePeriode(ForFiscalPrincipal ffp, @Nullable ForFiscalPrincipal forSuivant, int pf) {
 		final PeriodeImpositionImpotSource.Type type;
-		if (ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && ffp.getModeImposition() != ModeImposition.MIXTE_137_2 && isDepartHC(ffp, forSuivant)) {
+		if (ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && ffp.getModeImposition() != ModeImposition.MIXTE_137_2 && isDepartHC(ffp, forSuivant, pf)) {
 			type = PeriodeImpositionImpotSource.Type.SOURCE;
 		}
 		else if (ffp.getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD || ffp.getModeImposition() == ModeImposition.SOURCE) {
@@ -394,7 +399,7 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 				final Triplet<ForFiscalPrincipal> triplet = tripletIterator.next();
 				final ForFiscalPrincipalContext forPrincipal = new ForFiscalPrincipalContext(triplet);
 
-				final PeriodeImpositionImpotSource.Type type = determineTypePeriode(forPrincipal.current, forPrincipal.next);
+				final PeriodeImpositionImpotSource.Type type = determineTypePeriode(forPrincipal.current, forPrincipal.next, pf);
 				final RegDate dateDebut = determineDateDebut(forPrincipal.current, pf, fracs);
 				final Fraction fractionDebut = fracs.getAt(forPrincipal.current.getDateDebut());
 				final RegDate dateFin = determineDateFin(forPrincipal.current, pf, fracs);
