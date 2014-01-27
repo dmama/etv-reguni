@@ -205,6 +205,12 @@ public class TiersListControllerTest extends WebMockMvcTest {
 		params.put("typeTiers", "CONTRIBUABLE");
 		{
 			final List<TiersIndexedDataView> list = doSearch(params);
+			assertEquals(3, list.size());
+		}
+
+		params.put("typeTiers", "CONTRIBUABLE_PP");
+		{
+			final List<TiersIndexedDataView> list = doSearch(params);
 			assertEquals(2, list.size());
 		}
 	}
