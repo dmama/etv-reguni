@@ -1876,6 +1876,8 @@ public abstract class EnumHelper {
 			return TiersCriteria.TypeTiers.ENTREPRISE;
 		case NATURAL_PERSON:
 			return TiersCriteria.TypeTiers.PERSONNE_PHYSIQUE;
+		case ADMINISTRATIVE_AUTHORITY:
+			return TiersCriteria.TypeTiers.COLLECTIVITE_ADMINISTRATIVE;
 		case OTHER_COMMUNITY:
 			return TiersCriteria.TypeTiers.AUTRE_COMMUNAUTE;
 		default:
