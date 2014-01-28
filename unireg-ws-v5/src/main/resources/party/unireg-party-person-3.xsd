@@ -128,16 +128,6 @@
 		</xs:complexContent>
 	</xs:complexType>
 
-	<xs:complexType name="personIdentificationType">
-		<xs:sequence>
-			<xs:element name="vn" type="eCH-0044:vnType" minOccurs="0"/>
-			<xs:element name="localPersonId" type="eCH-0044:namedPersonIdType"/>
-			<xs:element name="otherPersonId" type="eCH-0044:namedPersonIdType" minOccurs="0" maxOccurs="unbounded"/>
-			<xs:element name="officialName" type="eCH-0044:baseNameType"/>
-			<xs:element name="firstName" type="eCH-0044:baseNameType" minOccurs="0"/>
-		</xs:sequence>
-	</xs:complexType>
-
 	<xs:complexType name="naturalPersonCategoryType">
 		<xs:annotation>
 			<xs:appinfo>
