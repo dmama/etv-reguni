@@ -286,7 +286,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 	private static Pair<Integer, Set<PartyPart>> getLastCallParametersToGetParty(Map<String, List<Object[]>> calls) {
 		final Object[] lastCall = getLastCallParameters(calls, "getParty");
 		assertEquals(3, lastCall.length);
-		return Pair.of((Integer)lastCall[1], (Set<PartyPart>)lastCall[2]);
+		return Pair.of((Integer) lastCall[1], (Set<PartyPart>) lastCall[2]);
 	}
 
 	@Override
@@ -577,6 +577,69 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 		}
 	}
 
+	/**
+	 * La <i>part</i> non-gérée par le cache doit toujours être récupérée depuis le véritable service
+	 */
+	@Test
+	public void testGetPartyOnNonCacheablePart() throws Exception {
+
+		final UserLogin userLogin = new UserLogin(getDefaultOperateurName(), 22);
+
+		// état initial -> aucun appel au web-service
+		assertEquals(0, getNumberOfCalls(calls));
+
+		// parts to ask for
+		final Set<PartyPart> parts = EnumSet.of(PartyPart.TAX_RESIDENCES, PartyPart.EBILLING_STATUSES, PartyPart.ADDRESSES);
+
+		// 1er appel
+		{
+			final Party party = cache.getParty(userLogin, ids.eric.intValue(), parts);
+			assertNotNull(party);
+			assertInstanceOf(NaturalPerson.class, party);
+			assertEquals(2, ((Taxpayer) party).getEbillingStatuses().size());
+			assertEquals(1, party.getMainTaxResidences().size());
+			assertEquals(1, party.getOtherTaxResidences().size());
+			assertEquals(1, party.getResidenceAddresses().size());
+
+			assertEquals(1, getNumberOfCallsToGetParty(calls));
+			final Pair<Integer, Set<PartyPart>> lastCall = getLastCallParametersToGetParty(calls);
+			assertEquals((Integer) ids.eric.intValue(), lastCall.getLeft());
+			assertEquals(parts, lastCall.getRight());
+		}
+
+		// 2ème appel
+		{
+			final Party party = cache.getParty(userLogin, ids.eric.intValue(), parts);
+			assertNotNull(party);
+			assertInstanceOf(NaturalPerson.class, party);
+			assertEquals(2, ((Taxpayer) party).getEbillingStatuses().size());
+			assertEquals(1, party.getMainTaxResidences().size());
+			assertEquals(1, party.getOtherTaxResidences().size());
+			assertEquals(1, party.getResidenceAddresses().size());
+
+			assertEquals(2, getNumberOfCallsToGetParty(calls));
+			final Pair<Integer, Set<PartyPart>> lastCall = getLastCallParametersToGetParty(calls);
+			assertEquals((Integer) ids.eric.intValue(), lastCall.getLeft());
+			assertEquals(EnumSet.of(PartyPart.EBILLING_STATUSES), lastCall.getRight());
+		}
+
+		// 3ème appel
+		{
+			final Party party = cache.getParty(userLogin, ids.eric.intValue(), parts);
+			assertNotNull(party);
+			assertInstanceOf(NaturalPerson.class, party);
+			assertEquals(2, ((Taxpayer) party).getEbillingStatuses().size());
+			assertEquals(1, party.getMainTaxResidences().size());
+			assertEquals(1, party.getOtherTaxResidences().size());
+			assertEquals(1, party.getResidenceAddresses().size());
+
+			assertEquals(3, getNumberOfCallsToGetParty(calls));
+			final Pair<Integer, Set<PartyPart>> lastCall = getLastCallParametersToGetParty(calls);
+			assertEquals((Integer) ids.eric.intValue(), lastCall.getLeft());
+			assertEquals(EnumSet.of(PartyPart.EBILLING_STATUSES), lastCall.getRight());
+		}
+	}
+
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testGetParties() throws Exception {
@@ -665,6 +728,199 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 			assertEquals(2, getNumberOfCalls(calls));
 			assertEquals(2, getNumberOfCallsToGetParties(calls));
 			assertEquals(Arrays.asList(ids.eric.intValue()), getLastCallParametersToGetParties(calls).getLeft());
+		}
+	}
+
+	/**
+	 * Le cache est systématiquemene ignoré pour les appels qui font référence à des <i>parts</i> non-gérées par le cache
+	 */
+	@Test
+	public void testGetPartiesOnNonCacheablePart() throws Exception {
+
+		final UserLogin userLogin = new UserLogin(getDefaultOperateurName(), 22);
+
+		// état initial -> aucun appel au web-service
+		assertEquals(0, getNumberOfCalls(calls));
+
+		// parts to ask for
+		final EnumSet<PartyPart> parts = EnumSet.of(PartyPart.TAX_RESIDENCES, PartyPart.EBILLING_STATUSES, PartyPart.ADDRESSES);
+
+		// parties to ask those parts on
+		final List<Integer> partyNos = Arrays.asList(ids.menage.intValue(), ids.eric.intValue());
+
+		// 1er appel
+		{
+			final Parties parties = cache.getParties(userLogin, partyNos, parts);
+			assertNotNull(parties);
+			assertEquals(2, parties.getEntries().size());
+
+			assertEquals(1, getNumberOfCallsToGetParties(calls));
+			final Pair<List<Integer>, Set<PartyPart>> lastCall = getLastCallParametersToGetParties(calls);
+			assertEquals(partyNos, lastCall.getLeft());
+			assertEquals(parts, lastCall.getRight());
+
+			final List<Entry> sortedEntries = new ArrayList<>(parties.getEntries());
+			Collections.sort(sortedEntries, new Comparator<Entry>() {
+				@Override
+				public int compare(Entry o1, Entry o2) {
+					return o1.getPartyNo() - o2.getPartyNo();
+				}
+			});
+
+			// eric d'abord
+			{
+				final Party party = sortedEntries.get(0).getParty();
+				assertNotNull(party);
+				assertEquals(ids.eric.intValue(), party.getNumber());
+
+				assertEquals(2, ((Taxpayer) party).getEbillingStatuses().size());
+				assertEquals(1, party.getMainTaxResidences().size());
+				assertEquals(1, party.getOtherTaxResidences().size());
+				assertEquals(1, party.getResidenceAddresses().size());
+			}
+
+			// ménage commun ensuite
+			{
+				final Party party = sortedEntries.get(1).getParty();
+				assertNotNull(party);
+				assertEquals(ids.menage.intValue(), party.getNumber());
+
+				assertEquals(0, ((Taxpayer) party).getEbillingStatuses().size());
+				assertEquals(1, party.getMainTaxResidences().size());
+				assertEquals(1, party.getOtherTaxResidences().size());
+				assertEquals(1, party.getResidenceAddresses().size());
+			}
+		}
+
+		// 2ème appel
+		{
+			final Parties parties = cache.getParties(userLogin, partyNos, parts);
+			assertNotNull(parties);
+			assertEquals(2, parties.getEntries().size());
+
+			assertEquals(2, getNumberOfCallsToGetParties(calls));
+			final Pair<List<Integer>, Set<PartyPart>> lastCall = getLastCallParametersToGetParties(calls);
+			assertEquals(partyNos, lastCall.getLeft());
+			assertEquals(parts, lastCall.getRight());
+
+			final List<Entry> sortedEntries = new ArrayList<>(parties.getEntries());
+			Collections.sort(sortedEntries, new Comparator<Entry>() {
+				@Override
+				public int compare(Entry o1, Entry o2) {
+					return o1.getPartyNo() - o2.getPartyNo();
+				}
+			});
+
+			// eric d'abord
+			{
+				final Party party = sortedEntries.get(0).getParty();
+				assertNotNull(party);
+				assertEquals(ids.eric.intValue(), party.getNumber());
+
+				assertEquals(2, ((Taxpayer) party).getEbillingStatuses().size());
+				assertEquals(1, party.getMainTaxResidences().size());
+				assertEquals(1, party.getOtherTaxResidences().size());
+				assertEquals(1, party.getResidenceAddresses().size());
+			}
+
+			// ménage commun ensuite
+			{
+				final Party party = sortedEntries.get(1).getParty();
+				assertNotNull(party);
+				assertEquals(ids.menage.intValue(), party.getNumber());
+
+				assertEquals(0, ((Taxpayer) party).getEbillingStatuses().size());
+				assertEquals(1, party.getMainTaxResidences().size());
+				assertEquals(1, party.getOtherTaxResidences().size());
+				assertEquals(1, party.getResidenceAddresses().size());
+			}
+		}
+
+		// 3ème appel
+		{
+			final Parties parties = cache.getParties(userLogin, partyNos, parts);
+			assertNotNull(parties);
+			assertEquals(2, parties.getEntries().size());
+
+			assertEquals(3, getNumberOfCallsToGetParties(calls));
+			final Pair<List<Integer>, Set<PartyPart>> lastCall = getLastCallParametersToGetParties(calls);
+			assertEquals(partyNos, lastCall.getLeft());
+			assertEquals(parts, lastCall.getRight());
+
+			final List<Entry> sortedEntries = new ArrayList<>(parties.getEntries());
+			Collections.sort(sortedEntries, new Comparator<Entry>() {
+				@Override
+				public int compare(Entry o1, Entry o2) {
+					return o1.getPartyNo() - o2.getPartyNo();
+				}
+			});
+
+			// eric d'abord
+			{
+				final Party party = sortedEntries.get(0).getParty();
+				assertNotNull(party);
+				assertEquals(ids.eric.intValue(), party.getNumber());
+
+				assertEquals(2, ((Taxpayer) party).getEbillingStatuses().size());
+				assertEquals(1, party.getMainTaxResidences().size());
+				assertEquals(1, party.getOtherTaxResidences().size());
+				assertEquals(1, party.getResidenceAddresses().size());
+			}
+
+			// ménage commun ensuite
+			{
+				final Party party = sortedEntries.get(1).getParty();
+				assertNotNull(party);
+				assertEquals(ids.menage.intValue(), party.getNumber());
+
+				assertEquals(0, ((Taxpayer) party).getEbillingStatuses().size());
+				assertEquals(1, party.getMainTaxResidences().size());
+				assertEquals(1, party.getOtherTaxResidences().size());
+				assertEquals(1, party.getResidenceAddresses().size());
+			}
+		}
+
+		// appel sans la part non-gérée -> là le cache intervient sans problème
+		{
+			final Set<PartyPart> cachedParts = EnumSet.copyOf(parts);
+			cachedParts.remove(PartyPart.EBILLING_STATUSES);
+
+			final Parties parties = cache.getParties(userLogin, partyNos, cachedParts);
+			assertNotNull(parties);
+			assertEquals(2, parties.getEntries().size());
+			assertEquals(3, getNumberOfCallsToGetParties(calls));       // <- = pas de nouvel appel, car tout ce qui est demandé est déjà dans le cache
+
+			final List<Entry> sortedEntries = new ArrayList<>(parties.getEntries());
+			Collections.sort(sortedEntries, new Comparator<Entry>() {
+				@Override
+				public int compare(Entry o1, Entry o2) {
+					return o1.getPartyNo() - o2.getPartyNo();
+				}
+			});
+
+			// eric d'abord
+			{
+				final Party party = sortedEntries.get(0).getParty();
+				assertNotNull(party);
+				assertEquals(ids.eric.intValue(), party.getNumber());
+
+				assertEquals(0, ((Taxpayer) party).getEbillingStatuses().size());
+				assertEquals(1, party.getMainTaxResidences().size());
+				assertEquals(1, party.getOtherTaxResidences().size());
+				assertEquals(1, party.getResidenceAddresses().size());
+			}
+
+			// ménage commun ensuite
+			{
+				final Party party = sortedEntries.get(1).getParty();
+				assertNotNull(party);
+				assertEquals(ids.menage.intValue(), party.getNumber());
+
+				assertEquals(0, ((Taxpayer) party).getEbillingStatuses().size());
+				assertEquals(1, party.getMainTaxResidences().size());
+				assertEquals(1, party.getOtherTaxResidences().size());
+				assertEquals(1, party.getResidenceAddresses().size());
+			}
 		}
 	}
 
