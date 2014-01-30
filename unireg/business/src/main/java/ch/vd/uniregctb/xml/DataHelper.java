@@ -693,6 +693,7 @@ public abstract class DataHelper {
 			case LEGAL_FORMS:
 			case TAX_SYSTEMS:
 			case LEGAL_SEATS:
+			case EBILLING_STATUSES:
 				// rien à faire
 				break;
 			default:

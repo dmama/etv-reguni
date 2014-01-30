@@ -52,6 +52,10 @@ public abstract class TaxPayerStrategy<T extends Taxpayer> extends PartyStrategy
 		if (parts != null && parts.contains(PartyPart.IMMOVABLE_PROPERTIES)) {
 			initImmovableProperties(to, ctb);
 		}
+
+		if (parts != null && parts.contains(PartyPart.EBILLING_STATUSES)) {
+			initEBillingStatuses(to, ctb, context);
+		}
 	}
 
 	@Override
@@ -77,6 +81,10 @@ public abstract class TaxPayerStrategy<T extends Taxpayer> extends PartyStrategy
 
 		if (parts != null && parts.contains(PartyPart.IMMOVABLE_PROPERTIES)) {
 			copyColl(to.getImmovableProperties(), from.getImmovableProperties());
+		}
+
+		if (parts != null && parts.contains(PartyPart.EBILLING_STATUSES)) {
+			copyColl(to.getEbillingStatuses(), from.getEbillingStatuses());
 		}
 	}
 
@@ -168,5 +176,10 @@ public abstract class TaxPayerStrategy<T extends Taxpayer> extends PartyStrategy
 		for (Immeuble immeuble : immeubles) {
 			left.getImmovableProperties().add(ImmovablePropertyBuilder.newImmovableProperty(immeuble));
 		}
+	}
+
+	// [SIFISC-11134] Ajout de la part "e-facture"
+	private static void initEBillingStatuses(Taxpayer left, Contribuable contribuable, Context context) {
+		// TODO jde...
 	}
 }

@@ -15,6 +15,7 @@ import ch.vd.unireg.xml.party.v3.PartyPart;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.declaration.source.ListeRecapService;
+import ch.vd.uniregctb.efacture.EFactureService;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.iban.IbanValidator;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
@@ -116,6 +117,10 @@ public class PartyRequestHandlerV3 implements RequestHandler<PartyRequest> {
 
 	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
 		context.securityProvider = securityProvider;
+	}
+
+	public void setEFactureService(EFactureService eFactureService) {
+		context.eFactureService = eFactureService;
 	}
 
 	@Override

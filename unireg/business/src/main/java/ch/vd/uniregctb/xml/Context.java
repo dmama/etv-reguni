@@ -5,6 +5,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.declaration.source.ListeRecapService;
+import ch.vd.uniregctb.efacture.EFactureService;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.iban.IbanValidator;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
@@ -60,4 +61,6 @@ public class Context {
 	public PeriodeImpositionImpotSourceService periodeImpositionImpotSourceService;
 
 	public SecurityProviderInterface securityProvider;
+
+	public EFactureService eFactureService;
 }
