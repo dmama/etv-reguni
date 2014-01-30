@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<bean id="eFactureClientRaw" class="ch.vd.unireg.wsclient.efacture.EFactureClientImpl">
+		<property name="baseUrl" value="${extprop.webservice.efacture.url}" />
+		<property name="username" value="${extprop.webservice.efacture.username}" />
+		<property name="password" value="${extprop.webservice.efacture.password}" />
+		<property name="historyPath" value="${extprop.webservice.efacture.historyPath}" />
+	</bean>
+
+	<bean id="eFactureClientTracing" class="ch.vd.uniregctb.wsclient.efacture.EFactureClientTracing">
+		<property name="target" ref="eFactureClientRaw"/>
+		<property name="statsService" ref="statsService"/>
+	</bean>
+
+	<alias alias="eFactureClient" name="eFactureClientTracing"/>
+
+	<bean id="efactureService" class="ch.vd.uniregctb.efacture.ReadOnlyEFactureServiceImpl" depends-on="uniregModeHelper">
+		<property name="eFactureClient" ref="eFactureClient"/>
+	</bean>
+
+</beans>
