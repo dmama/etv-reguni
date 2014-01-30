@@ -7,7 +7,6 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.context.ContextConfiguration;
 
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceSecurite;
 import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceCivil;
 import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceInfrastructureService;
@@ -21,7 +20,7 @@ import ch.vd.uniregctb.security.Role;
  * @author <a href="mailto:akram.ben-aissi@vd.ch">Akram BEN AISSI</a>
  */
 @ContextConfiguration(locations = {
-		"classpath:WEB-INF/unireg-ws-config.xml",
+		BusinessTestingConstants.UNIREG_BUSINESS_UT_CONFIG,
 		"classpath:ut/unireg-wsut-ws.xml",
 		"classpath:ut/unireg-wsut-mock.xml",
 		"classpath:ut/unireg-wsut-security.xml"

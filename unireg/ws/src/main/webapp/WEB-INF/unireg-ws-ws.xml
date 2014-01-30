@@ -215,6 +215,7 @@
 		<property name="assujettissementService" ref="assujettissementService" />
 		<property name="periodeImpositionService" ref="periodeImpositionService" />
 		<property name="periodeImpositionImpotSourceService" ref="periodeImpositionImpotSourceService"/>
+		<property name="EFactureService" ref="efactureService"/>
 		<property name="threadPool" ref="wsThreadPool"/>
 	</bean>
 

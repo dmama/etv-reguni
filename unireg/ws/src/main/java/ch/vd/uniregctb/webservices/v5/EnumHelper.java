@@ -3,7 +3,9 @@ package ch.vd.uniregctb.webservices.v5;
 import java.util.EnumSet;
 import java.util.Set;
 
+import ch.vd.unireg.interfaces.efacture.data.TypeEtatDestinataire;
 import ch.vd.unireg.ws.security.v1.AllowedAccess;
+import ch.vd.unireg.xml.party.ebilling.v1.EbillingStatusType;
 import ch.vd.unireg.xml.party.othercomm.v1.LegalForm;
 import ch.vd.unireg.xml.party.person.v3.NaturalPersonCategoryType;
 import ch.vd.unireg.xml.party.person.v3.Sex;
@@ -166,5 +168,9 @@ public abstract class EnumHelper {
 
 	public static IndividualTaxLiabilityType coreToWeb(TypeAssujettissement type) {
 		return ch.vd.uniregctb.xml.EnumHelper.coreToXMLv2(type);
+	}
+
+	public static EbillingStatusType coreToWeb(TypeEtatDestinataire type) {
+		return ch.vd.uniregctb.xml.EnumHelper.coreToXMLv1(type);
 	}
 }

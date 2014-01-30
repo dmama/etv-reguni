@@ -8,6 +8,8 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.efacture.data.DestinataireAvecHisto;
+import ch.vd.unireg.interfaces.efacture.data.EtatDestinataire;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
 import ch.vd.unireg.xml.party.taxpayer.v3.Taxpayer;
 import ch.vd.unireg.xml.party.taxresidence.v2.SimplifiedTaxLiability;
@@ -22,6 +24,7 @@ import ch.vd.uniregctb.xml.Context;
 import ch.vd.uniregctb.xml.DataHelper;
 import ch.vd.uniregctb.xml.ExceptionHelper;
 import ch.vd.uniregctb.xml.ServiceException;
+import ch.vd.uniregctb.xml.party.v3.EBillingStatusBuilder;
 import ch.vd.uniregctb.xml.party.v3.FamilyStatusBuilder;
 import ch.vd.uniregctb.xml.party.v3.ImmovablePropertyBuilder;
 import ch.vd.uniregctb.xml.party.v3.SimplifiedTaxLiabilityBuilder;
@@ -180,6 +183,11 @@ public abstract class TaxPayerStrategy<T extends Taxpayer> extends PartyStrategy
 
 	// [SIFISC-11134] Ajout de la part "e-facture"
 	private static void initEBillingStatuses(Taxpayer left, Contribuable contribuable, Context context) {
-		// TODO jde...
+		final DestinataireAvecHisto histo = context.eFactureService.getDestinataireAvecSonHistorique(contribuable.getNumero());
+		if (histo != null && histo.getHistoriquesEtats() != null) {
+			for (EtatDestinataire etat : histo.getHistoriquesEtats()) {
+				left.getEbillingStatuses().add(EBillingStatusBuilder.newEBillingStatus(etat));
+			}
+		}
 	}
 }

@@ -5,6 +5,7 @@ import java.util.EnumSet;
 import java.util.Set;
 
 import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
+import ch.vd.unireg.interfaces.efacture.data.TypeEtatDestinataire;
 import ch.vd.unireg.interfaces.infra.data.TypeAffranchissement;
 import ch.vd.uniregctb.interfaces.model.CompteBancaire;
 import ch.vd.uniregctb.metier.assujettissement.TypeAssujettissement;
@@ -2219,6 +2220,29 @@ public abstract class EnumHelper {
 			return ch.vd.unireg.xml.party.taxresidence.v2.IndividualTaxLiabilityType.ORDINARY_RESIDENT;
 		default:
 			throw new IllegalArgumentException("Type d'assujettissement inconnu = [" + t + ']');
+		}
+	}
+
+	public static ch.vd.unireg.xml.party.ebilling.v1.EbillingStatusType coreToXMLv1(TypeEtatDestinataire etat) {
+		if (etat == null) {
+			return null;
+		}
+
+		switch (etat) {
+		case NON_INSCRIT:
+			return ch.vd.unireg.xml.party.ebilling.v1.EbillingStatusType.NOT_REGISTERED;
+		case NON_INSCRIT_SUSPENDU:
+			return ch.vd.unireg.xml.party.ebilling.v1.EbillingStatusType.NOT_REGISTERED_SUSPENDED;
+		case INSCRIT:
+			return ch.vd.unireg.xml.party.ebilling.v1.EbillingStatusType.REGISTERED;
+		case INSCRIT_SUSPENDU:
+			return ch.vd.unireg.xml.party.ebilling.v1.EbillingStatusType.REGISTERED_SUSPENDED;
+		case DESINSCRIT:
+			return ch.vd.unireg.xml.party.ebilling.v1.EbillingStatusType.UNREGISTERED;
+		case DESINSCRIT_SUSPENDU:
+			return ch.vd.unireg.xml.party.ebilling.v1.EbillingStatusType.UNREGISTERED_SUSPENDED;
+		default:
+			throw new IllegalArgumentException("Type d'état de destinataire efacture inconnu = [" + etat + ']');
 		}
 	}
 }

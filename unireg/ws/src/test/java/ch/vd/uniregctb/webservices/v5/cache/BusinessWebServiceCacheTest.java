@@ -23,10 +23,12 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
+import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.efacture.data.TypeEtatDestinataire;
 import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
@@ -49,6 +51,8 @@ import ch.vd.unireg.xml.party.withholding.v1.DebtorInfo;
 import ch.vd.uniregctb.common.WebserviceTest;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
+import ch.vd.uniregctb.efacture.EFactureServiceProxy;
+import ch.vd.uniregctb.efacture.MockEFactureService;
 import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.rf.TypeImmeuble;
 import ch.vd.uniregctb.rf.TypeMutation;
@@ -207,6 +211,16 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 				ids.madame = madame.getNumero();
 				ids.menage = mc.getNumero();
 				return null;
+			}
+		});
+
+
+		final EFactureServiceProxy eFactureProxy = getBean(EFactureServiceProxy.class, "efactureService");
+		eFactureProxy.setUp(new MockEFactureService() {
+			@Override
+			public void init() {
+				addDestinataire(ids.eric);
+				addEtatDestinataire(ids.eric, DateHelper.getCalendar(2013, 5, 12, 22, 24, 38).getTime(), "C'est maintenant ou jamais", null, TypeEtatDestinataire.INSCRIT, "toto@titi.com", null);
 			}
 		});
 	}
@@ -857,10 +871,11 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 		boolean checkChildren = PartyPart.CHILDREN == p;
 		boolean checkParents = PartyPart.PARENTS == p;
 		boolean checkWithholdingTaxDeclarationPeriods = PartyPart.WITHHOLDING_TAXATION_PERIODS == p;
+		boolean checkEbillingStatuses = PartyPart.EBILLING_STATUSES == p;
 		Assert.isTrue(checkAddresses || checkTaxLiabilities || checkHouseholdMembers || checkBankAccounts || checkTaxDeclarations || checkTaxDeclarationsStatuses || checkTaxDeclarationsDeadlines
 				              || checkTaxResidences || checkVirtualTaxResidences || checkManagingTaxResidences || checkTaxationPeriods || checkRelationsBetweenParties || checkFamilyStatuses || checkCapitals
 				              || checkCorporationStatuses || checkLegalForms || checkTaxSystems || checkLegalSeats || checkDebtorPeriodicities || checkSimplifiedTaxLiabilities || checkImmovableProperties ||
-				              checkChildren || checkParents || checkWithholdingTaxDeclarationPeriods, "La partie [" + p + "] est inconnue");
+				              checkChildren || checkParents || checkWithholdingTaxDeclarationPeriods || checkEbillingStatuses, "La partie [" + p + "] est inconnue");
 
 		assertNullOrNotNull(checkAddresses, tiers.getMailAddresses(), "mailAddresses");
 		assertNullOrNotNull(checkAddresses, tiers.getResidenceAddresses(), "residenceAddresses");
@@ -881,6 +896,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 			assertNullOrNotNull(checkTaxationPeriods, ctb.getTaxationPeriods(), "taxationPeriods");
 			assertNullOrNotNull(checkFamilyStatuses, ctb.getFamilyStatuses(), "familyStatuses");
 			assertNullOrNotNull(checkImmovableProperties, ctb.getImmovableProperties(), "immovableProperties");
+			assertNullOrNotNull(checkEbillingStatuses, ctb.getEbillingStatuses(), "ebillingStatuses");
 		}
 
 		if (tiers instanceof CommonHousehold) {

@@ -76,6 +76,7 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.declaration.source.ListeRecapService;
+import ch.vd.uniregctb.efacture.EFactureService;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.iban.IbanValidator;
@@ -208,6 +209,10 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 	public void setParametreService(ParametreAppService parametreService) {
 		context.parametreService = parametreService;
+	}
+
+	public void setEFactureService(EFactureService eFactureService) {
+		context.eFactureService = eFactureService;
 	}
 
 	public void setThreadPool(ExecutorService threadPool) {
