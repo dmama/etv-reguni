@@ -72,11 +72,6 @@
 					<xs:documentation>Tiers mineur non assujetti sans parents assujettis.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="dateOrPeriodeInFuture">
-				<xs:annotation>
-					<xs:documentation>Date ou période demandée située dans le futur</xs:documentation>
-				</xs:annotation>
-			</xs:element>
 		</xs:choice>
 	</xs:complexType>
 
