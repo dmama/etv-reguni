@@ -72,6 +72,15 @@
 		</jxb:bindings>
 	</jxb:bindings>
 
+	<jxb:bindings schemaLocation="party/unireg-party-ebilling-1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.xml.party.ebilling.v1" />
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="ebilling-1" />
+		</jxb:bindings>
+	</jxb:bindings>
+
 	<jxb:bindings schemaLocation="party/unireg-party-immovableproperty-2.xsd">
 		<jxb:schemaBindings>
 			<jxb:package name="ch.vd.unireg.xml.party.immovableproperty.v2" />

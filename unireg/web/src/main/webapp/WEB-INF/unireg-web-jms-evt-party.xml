@@ -111,6 +111,7 @@
 		<property name="periodeImpositionService" ref="periodeImpositionService" />
 		<property name="periodeImpositionImpotSourceService" ref="periodeImpositionImpotSourceService" />
 		<property name="securityProvider" ref="securityProviderInterface"/>
+		<property name="EFactureService" ref="efactureService"/>
 	</bean>
 
 	<bean id="createNonresidentRequestHandlerV1" class="ch.vd.uniregctb.evenement.party.CreateNonresidentRequestHandlerV1">

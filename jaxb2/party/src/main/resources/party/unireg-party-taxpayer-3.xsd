@@ -4,12 +4,14 @@
 		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:taxpayer="http://www.vd.ch/fiscalite/unireg/party/taxpayer/3"
 		   xmlns:common="http://www.vd.ch/fiscalite/unireg/common/2" xmlns:party="http://www.vd.ch/fiscalite/unireg/party/party/3"
 		   xmlns:taxresidence="http://www.vd.ch/fiscalite/unireg/party/taxresidence/2" xmlns:immo="http://www.vd.ch/fiscalite/unireg/party/immovableproperty/2"
+		   xmlns:ebilling="http://www.vd.ch/fiscalite/unireg/party/ebilling/1"
 		   xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0">
 
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/2" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/unireg-common-2.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/party/3" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-3.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/taxresidence/2" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-taxresidence-2.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/immovableproperty/2" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-immovableproperty-2.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/ebilling/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-ebilling-1.xsd" />
 
 	<xs:complexType abstract="true" name="taxpayerType">
 		<xs:annotation>
@@ -85,6 +87,17 @@
 								<jxb:property>
 									<jxb:javadoc>La liste des immeubles. Cette liste peut être vide si le tiers ne possède pas d'immeuble.
 										Attention ! Cette collection n'est renseignée qui si la part IMMOVABLE_PROPERTIES est demandée.
+									</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="ebillingStatuses" type="ebilling:ebillingStatusType">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>La liste des états d'inscription e-Facture. Cette liste peut être vide si le tiers n'a jamais été lié à la fonctionnalité e-Facture.
+										Attention ! Cette collection n'est renseignée qui si la part EBILLING_STATUSES est demandée.
 									</jxb:javadoc>
 								</jxb:property>
 							</xs:appinfo>
