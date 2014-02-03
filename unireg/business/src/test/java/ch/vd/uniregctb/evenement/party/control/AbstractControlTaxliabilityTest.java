@@ -40,6 +40,13 @@ public abstract class AbstractControlTaxliabilityTest extends BusinessTest{
 		assertNotNull(result.getEchec());
 		assertEquals(TaxLiabilityControlEchec.EchecType.CONTROLE_NUMERO_KO, result.getEchec().getType());
 	}
+
+	protected void assertDatePeriodeDansFutur(TaxLiabilityControlResult result) {
+		final Long idTiersAssujetti = result.getIdTiersAssujetti();
+		assertNull(idTiersAssujetti);
+		assertNotNull(result.getEchec());
+		assertEquals(TaxLiabilityControlEchec.EchecType.DATE_OU_PF_DANS_FUTURE, result.getEchec().getType());
+	}
 	protected void assertPasDeParent(TaxLiabilityControlResult result) {
 		final Long idTiersAssujetti = result.getIdTiersAssujetti();
 		assertNull(idTiersAssujetti);

@@ -8,11 +8,11 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.core.io.ClassPathResource;
 
 import ch.vd.unireg.xml.common.v1.UserLogin;
-import ch.vd.unireg.xml.event.party.taxliab.v2.CommonHouseholdInfo;
-import ch.vd.unireg.xml.event.party.taxliab.v2.Failure;
-import ch.vd.unireg.xml.event.party.taxliab.v2.MinorInfo;
+import ch.vd.unireg.xml.event.party.taxliab.v3.CommonHouseholdInfo;
+import ch.vd.unireg.xml.event.party.taxliab.v3.Failure;
+import ch.vd.unireg.xml.event.party.taxliab.v3.MinorInfo;
 import ch.vd.unireg.xml.event.party.taxliab.v2.TaxLiabilityRequest;
-import ch.vd.unireg.xml.event.party.taxliab.v2.TaxLiabilityResponse;
+import ch.vd.unireg.xml.event.party.taxliab.v3.TaxLiabilityResponse;
 import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
@@ -26,7 +26,7 @@ import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.xml.ServiceException;
 
-public abstract class TaxLiabilityRequestHandler<T extends TaxLiabilityRequest> implements RequestHandler<T> {
+public abstract class TaxLiabilityRequestHandlerV3<T extends TaxLiabilityRequest> implements RequestHandler<T> {
 
 	private TiersDAO tiersDAO;
 	private SecurityProviderInterface securityProvider;
@@ -78,7 +78,7 @@ public abstract class TaxLiabilityRequestHandler<T extends TaxLiabilityRequest> 
 	 * @param request la requête en entrée
 	 * @param tiers le tiers concerné en premier lieu
 	 * @return le résultat du contrôle
-	 * @throws ControlRuleException en cas de souci
+	 * @throws ch.vd.uniregctb.evenement.party.control.ControlRuleException en cas de souci
 	 */
 	protected abstract TaxLiabilityControlResult doControl(T request, @NotNull Tiers tiers) throws ControlRuleException;
 
@@ -131,8 +131,13 @@ public abstract class TaxLiabilityRequestHandler<T extends TaxLiabilityRequest> 
 					break;
 				}
 
+				case DATE_OU_PF_DANS_FUTURE:{
+					failure.setDateOrPeriodeInFuture("La date ou la période fiscale demandée est située dans le futur.");
+					break;
+				}
+
 				default:
-					throw new IllegalArgumentException("Value not supported : " + echec.getType());
+					throw new IllegalArgumentException("Value not supported for TaxliabilityRequest V3: " + echec.getType());
 			}
 		}
 		else if (result.getIdTiersAssujetti() != null) {
@@ -156,6 +161,6 @@ public abstract class TaxLiabilityRequestHandler<T extends TaxLiabilityRequest> 
 
 	@Override
 	public List<ClassPathResource> getResponseXSD() {
-		return Arrays.asList(new ClassPathResource("event/party/taxliab-response-2.xsd"));
+		return Arrays.asList(new ClassPathResource("event/party/taxliab-response-3.xsd"));
 	}
 }

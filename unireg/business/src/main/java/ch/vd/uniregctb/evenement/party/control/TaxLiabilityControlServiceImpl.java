@@ -28,21 +28,34 @@ public class TaxLiabilityControlServiceImpl implements TaxLiabilityControlServic
 		this.assujettissementService = assujettissementService;
 	}
 
-	public TaxLiabilityControlResult doControlOnDate(@NotNull Tiers tiers, RegDate date, boolean rechercheMenageCommun, boolean rechercheParent) throws ControlRuleException {
+	public TaxLiabilityControlResult doControlOnDate(@NotNull Tiers tiers, RegDate date, boolean rechercheMenageCommun, boolean rechercheParent, boolean controleDateDansFuture) throws ControlRuleException {
 		if (LOGGER.isDebugEnabled()) {
 			final String message = String.format("Contrôle d'assujettissement à une date => tiers %d, date %s, menage? %b, parent? %b",
 			                                     tiers.getNumero(), RegDateHelper.dateToDashString(date), rechercheMenageCommun, rechercheParent);
 			LOGGER.debug(message);
 		}
+
+		//Contrôle sur la date activé avec date dans le futur
+		if (controleDateDansFuture && date.isAfter(RegDate.get())) {
+				TaxLiabilityControlResult result = new TaxLiabilityControlResult();
+				result.setEchec(new TaxLiabilityControlEchec(TaxLiabilityControlEchec.EchecType.DATE_OU_PF_DANS_FUTURE));
+			return result;
+		}
 		final List<TaxLiabilityControlRule> rules = getControlRulesForDate(tiers, date, rechercheMenageCommun, rechercheParent);
 		return doControl(tiers, rules);
 	}
 
-	public TaxLiabilityControlResult doControlOnPeriod(@NotNull Tiers tiers, int periode, boolean rechercheMenageCommun, boolean rechercheParent) throws ControlRuleException {
+	public TaxLiabilityControlResult doControlOnPeriod(@NotNull Tiers tiers, int periode, boolean rechercheMenageCommun, boolean rechercheParent, boolean controlePeriodDansFutur) throws ControlRuleException {
 		if (LOGGER.isDebugEnabled()) {
 			final String message = String.format("Contrôle d'assujettissement sur periode => tiers %d, periode %d, menage? %b, parent? %b",
 			                                     tiers.getNumero(), periode, rechercheMenageCommun, rechercheParent);
 			LOGGER.debug(message);
+		}
+		//Contrôle sur la Période activé avec la période dans le futur
+		if (controlePeriodDansFutur && periode > RegDate.get().year()) {
+			TaxLiabilityControlResult result = new TaxLiabilityControlResult();
+			result.setEchec(new TaxLiabilityControlEchec(TaxLiabilityControlEchec.EchecType.DATE_OU_PF_DANS_FUTURE));
+			return result;
 		}
 		final List<TaxLiabilityControlRule> rules = getControlRulesForPeriod(tiers, periode, rechercheMenageCommun, rechercheParent);
 		return doControl(tiers, rules);
