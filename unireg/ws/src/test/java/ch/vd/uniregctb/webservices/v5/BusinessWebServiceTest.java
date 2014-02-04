@@ -28,6 +28,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.efacture.data.TypeEtatDestinataire;
 import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
@@ -57,6 +58,8 @@ import ch.vd.unireg.xml.party.address.v2.TariffZone;
 import ch.vd.unireg.xml.party.adminauth.v3.AdministrativeAuthority;
 import ch.vd.unireg.xml.party.corporation.v3.Corporation;
 import ch.vd.unireg.xml.party.debtor.v3.Debtor;
+import ch.vd.unireg.xml.party.ebilling.v1.EbillingStatus;
+import ch.vd.unireg.xml.party.ebilling.v1.EbillingStatusType;
 import ch.vd.unireg.xml.party.immovableproperty.v2.ImmovableProperty;
 import ch.vd.unireg.xml.party.othercomm.v1.LegalForm;
 import ch.vd.unireg.xml.party.othercomm.v1.OtherCommunity;
@@ -102,6 +105,7 @@ import ch.vd.unireg.xml.party.withholding.v1.DebtorPeriodicity;
 import ch.vd.unireg.xml.party.withholding.v1.WithholdingTaxDeclarationPeriodicity;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.WebserviceTest;
+import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
@@ -110,6 +114,8 @@ import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.Periodicite;
+import ch.vd.uniregctb.efacture.EFactureServiceProxy;
+import ch.vd.uniregctb.efacture.MockEFactureService;
 import ch.vd.uniregctb.interfaces.service.mock.MockServicePM;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceSecuriteService;
 import ch.vd.uniregctb.rf.GenrePropriete;
@@ -145,11 +151,13 @@ import ch.vd.uniregctb.webservices.common.UserLogin;
 public class BusinessWebServiceTest extends WebserviceTest {
 
 	private BusinessWebService service;
+	private EFactureServiceProxy efactureService;
 
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 		service = getBean(BusinessWebService.class, "wsv5Business");
+		efactureService = getBean(EFactureServiceProxy.class, "efactureService");
 	}
 
 	private static void assertValidInteger(long value) {
@@ -2599,6 +2607,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		final RegDate dateDebutRT = date(2009, 5, 1);
 		final RegDate dateFinRT = date(2010, 9, 12);
 		final RegDate dateDepartHS = date(anneeDI + 1, 1, 12);
+		final Date dateInscriptionEfacture = DateHelper.getDateTime(2014, 1, 23, 22, 10, 46);
 
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
@@ -2647,6 +2656,14 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				ids.dpi = dpi.getNumero().intValue();
 				ids.di = di.getId();
 				return ids;
+			}
+		});
+
+		efactureService.setUp(new MockEFactureService() {
+			@Override
+			public void init() {
+				addDestinataire(ids.pp);
+				addEtatDestinataire(ids.pp, dateInscriptionEfacture, "Incription validée", null, TypeEtatDestinataire.INSCRIT, "mafalda@gautier.me", null);
 			}
 		});
 
@@ -2710,6 +2727,22 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				Assert.assertEquals(NaturalPersonCategoryType.C_03_C_PERMIT, cat.getCategory());
 				Assert.assertEquals(dateNaissance, ch.vd.uniregctb.xml.DataHelper.xmlToCore(cat.getDateFrom()));
 				Assert.assertNull(cat.getDateTo());
+			}
+
+			final List<EbillingStatus> ebillingStatuses = np.getEbillingStatuses();
+			Assert.assertNotNull(ebillingStatuses);
+			Assert.assertEquals(2, ebillingStatuses.size());
+			{
+				final EbillingStatus st = ebillingStatuses.get(0);
+				Assert.assertNotNull(st);
+				Assert.assertEquals(EbillingStatusType.NOT_REGISTERED, st.getType());
+				Assert.assertNull(st.getSince());
+			}
+			{
+				final EbillingStatus st = ebillingStatuses.get(1);
+				Assert.assertNotNull(st);
+				Assert.assertEquals(EbillingStatusType.REGISTERED, st.getType());
+				Assert.assertEquals(dateInscriptionEfacture, XmlUtils.xmlcal2date(st.getSince()));
 			}
 
 			final List<WithholdingTaxationPeriod> wtps = np.getWithholdingTaxationPeriods();
@@ -3161,6 +3194,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		final RegDate dateDebutRT = date(2009, 5, 1);
 		final RegDate dateFinRT = date(2010, 9, 12);
 		final RegDate dateDepartHS = date(anneeDI + 1, 1, 12);
+		final Date dateInscriptionEfacture = DateHelper.getDateTime(2014, 1, 23, 22, 10, 46);
 
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
@@ -3209,6 +3243,14 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				ids.dpi = dpi.getNumero().intValue();
 				ids.di = di.getId();
 				return ids;
+			}
+		});
+
+		efactureService.setUp(new MockEFactureService() {
+			@Override
+			public void init() {
+				addDestinataire(ids.pp);
+				addEtatDestinataire(ids.pp, dateInscriptionEfacture, "Incription validée", null, TypeEtatDestinataire.INSCRIT, "mafalda@gautier.me", null);
 			}
 		});
 
@@ -3394,6 +3436,22 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				Assert.assertEquals(NaturalPersonCategoryType.C_03_C_PERMIT, cat.getCategory());
 				Assert.assertEquals(dateNaissance, ch.vd.uniregctb.xml.DataHelper.xmlToCore(cat.getDateFrom()));
 				Assert.assertNull(cat.getDateTo());
+			}
+
+			final List<EbillingStatus> ebillingStatuses = np.getEbillingStatuses();
+			Assert.assertNotNull(ebillingStatuses);
+			Assert.assertEquals(2, ebillingStatuses.size());
+			{
+				final EbillingStatus st = ebillingStatuses.get(0);
+				Assert.assertNotNull(st);
+				Assert.assertEquals(EbillingStatusType.NOT_REGISTERED, st.getType());
+				Assert.assertNull(st.getSince());
+			}
+			{
+				final EbillingStatus st = ebillingStatuses.get(1);
+				Assert.assertNotNull(st);
+				Assert.assertEquals(EbillingStatusType.REGISTERED, st.getType());
+				Assert.assertEquals(dateInscriptionEfacture, XmlUtils.xmlcal2date(st.getSince()));
 			}
 
 			final List<WithholdingTaxationPeriod> wtps = np.getWithholdingTaxationPeriods();
