@@ -3520,4 +3520,94 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			}
 		}
 	}
+
+	/**
+	 * On vérifie ici que les fors fiscaux du ménage sont bien pris en compte malgré un "préchauffage" des données
+	 * extraites de la base qui ne va justement pas jusqu'à aller chercher les fors sur un contribuable non demandé en entrée
+	 */
+	@Test
+	public void testGetPartiesIndividuMariePeriodesImpositionIS() throws Exception {
+
+		final long noIndividu = 427842L;
+		final RegDate dateNaissance = date(1975, 7, 31);
+		final RegDate dateMariage = date(2005, 4, 12);
+		final RegDate dateDebutRT = date(2003, 2, 1);
+		final RegDate dateFinRT = date(2006, 6, 30);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Labaffe", "Melchior", Sexe.MASCULIN);
+				marieIndividu(ind, dateMariage);
+			}
+		});
+
+		final class Ids {
+			int ppHabitant;
+			int ppNonHabitant;
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				final PersonnePhysique conjoint = addNonHabitant("Mariam", "Labaffe", null, Sexe.FEMININ);
+				final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, conjoint, dateMariage, null);
+
+				addForPrincipal(pp, dateNaissance.addYears(18), MotifFor.MAJORITE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.ChateauDoex);
+				addForPrincipal(couple.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.ChateauDoex);
+
+				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+				addRapportPrestationImposable(dpi, pp, dateDebutRT, dateFinRT, false);
+
+				assertValidInteger(pp.getNumero());
+				assertValidInteger(conjoint.getNumero());
+				final Ids ids = new Ids();
+				ids.ppHabitant = pp.getNumero().intValue();
+				ids.ppNonHabitant = conjoint.getNumero().intValue();
+				return ids;
+			}
+		});
+
+		final UserLogin user = new UserLogin(getDefaultOperateurName(), 22);
+		final Parties parties = service.getParties(user, Arrays.asList(ids.ppHabitant, ids.ppNonHabitant), EnumSet.of(PartyPart.WITHHOLDING_TAXATION_PERIODS));
+		Assert.assertNotNull(parties);
+		Assert.assertNotNull(parties.getEntries());
+		Assert.assertEquals(2, parties.getEntries().size());
+
+		final List<Entry> sorted = new ArrayList<>(parties.getEntries());
+		Collections.sort(sorted, new Comparator<Entry>() {
+			@Override
+			public int compare(Entry o1, Entry o2) {
+				return o1.getPartyNo() - o2.getPartyNo();
+			}
+		});
+
+		{
+			final Entry entry = sorted.get(0);
+			Assert.assertEquals(ids.ppHabitant, entry.getPartyNo());
+
+			final Party party = entry.getParty();
+			Assert.assertNotNull(party);
+			Assert.assertEquals(NaturalPerson.class, party.getClass());
+
+			final NaturalPerson np = (NaturalPerson) party;
+			Assert.assertNotNull(np.getWithholdingTaxationPeriods());
+			Assert.assertEquals(4, np.getWithholdingTaxationPeriods().size());      // on vérifie juste qu'elles sont bien là... 2003 à 2006 = 4
+		}
+		{
+			final Entry entry = sorted.get(1);
+			Assert.assertEquals(ids.ppNonHabitant, entry.getPartyNo());
+
+			final Party party = entry.getParty();
+			Assert.assertNotNull(party);
+			Assert.assertEquals(NaturalPerson.class, party.getClass());
+
+			final NaturalPerson np = (NaturalPerson) party;
+			Assert.assertNotNull(np.getWithholdingTaxationPeriods());
+			Assert.assertEquals(0, np.getWithholdingTaxationPeriods().size());      // elle n'a rien du tout
+		}
+	}
 }
