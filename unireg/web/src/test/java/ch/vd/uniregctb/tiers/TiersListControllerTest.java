@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import junit.framework.Assert;
+import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MvcResult;
@@ -74,8 +75,8 @@ public class TiersListControllerTest extends WebMockMvcTest {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<TiersIndexedDataView> getTiersList(Map<String, String> params) throws Exception {
-		final ResultActions resActions = get("/tiers/list.do", params, null);
+	private List<TiersIndexedDataView> getTiersList(Map<String, String> params, @Nullable MockHttpSession session) throws Exception {
+		final ResultActions resActions = get("/tiers/list.do", params, session);
 		final MvcResult result = resActions.andReturn();
 		Assert.assertNotNull(result);
 		return (List<TiersIndexedDataView>) result.getModelAndView().getModel().get("list");
@@ -93,13 +94,71 @@ public class TiersListControllerTest extends WebMockMvcTest {
 		else if (result.getResponse().getStatus() == 302) {       // redirect
 			final String location = result.getResponse().getHeader("Location");
 			Assert.assertEquals("/tiers/list.do", location);
-
-			final ResultActions getAction = get("/tiers/list.do", params, session);
-			final MvcResult getResult = getAction.andReturn();
-			Assert.assertNotNull(getResult);
-			return (List<TiersIndexedDataView>) getResult.getModelAndView().getModel().get("list");
+			return getTiersList(params, session);
 		}
 		throw new IllegalArgumentException("Wrong status: " + result.getResponse().getStatus());
+	}
+
+	/**
+	 * [SIFISC-11341] branchement sur la page de recherche depuis une autre application (avec utilisation de urlRetour) -> le deuxième appel renvoyait toujours les mêmes réponses
+	 * que le premier, quels que soient les changements de paramètres opérés entre les deux
+	 */
+	@Test
+	public void testSearchThroughGetAndUrlRetour() throws Exception {
+		final MockHttpSession session = new MockHttpSession();      // nécessaire pour que les deux appels soient assimilés à la même session
+
+		loadDatabase();
+
+		// premier appel
+		{
+			final Map<String, String> params = new HashMap<>();
+			params.put(TiersListController.URL_RETOUR_PARAMETER_NAME, "http://backHome");     // juste histoire de mettre quelque chose
+			params.put(TiersListController.NUMERO_PARAMETER_NAME, "12300003");
+
+			final List<TiersIndexedDataView> list = getTiersList(params, session);
+			assertEquals(1, list.size());
+			assertEquals((Long) 12300003L, list.get(0).getNumero());
+		}
+
+		// deuxième appel
+		{
+			final Map<String, String> params = new HashMap<>();
+			params.put(TiersListController.URL_RETOUR_PARAMETER_NAME, "http://backHome");     // juste histoire de mettre quelque chose
+			params.put(TiersListController.NUMERO_PARAMETER_NAME, "1678439");
+
+			final List<TiersIndexedDataView> list = getTiersList(params, session);
+			assertEquals(1, list.size());
+			assertEquals((Long) 1678439L, list.get(0).getNumero());
+		}
+	}
+
+	/**
+	 * Vérification que l'arrivée sur la page de recherche (en interne dans l'application, i.e. sans "urlRetour") ré-utilise bien les critères précédemment utilisés
+	 * même s'ils ne sont plus précisés la deuxième fois
+	 */
+	@Test
+	public void testSearchThroughGetSansUrlRetour() throws Exception {
+		final MockHttpSession session = new MockHttpSession();      // nécessaire pour que les deux appels soient assimilés à la même session
+
+		loadDatabase();
+
+		// premier appel
+		{
+			final Map<String, String> params = new HashMap<>();
+			params.put(TiersListController.NUMERO_PARAMETER_NAME, "12300003");
+
+			final List<TiersIndexedDataView> list = getTiersList(params, session);
+			assertEquals(1, list.size());
+			assertEquals((Long) 12300003L, list.get(0).getNumero());
+		}
+
+		// deuxième appel dans la même session sans paramètre à la requête cette fois -> les mêmes critères qu'auparavant doivent être utilisés car ils ont été sauvegardés en session
+		{
+			final Map<String, String> params = new HashMap<>();
+			final List<TiersIndexedDataView> list = getTiersList(params, session);
+			assertEquals(1, list.size());
+			assertEquals((Long) 12300003L, list.get(0).getNumero());
+		}
 	}
 
 	@Test
@@ -110,8 +169,8 @@ public class TiersListControllerTest extends WebMockMvcTest {
 		// Recherche tous les fors y compris les inactifs
 		{
 			HashMap<String, String> params = new HashMap<>();
-			params.put("noOfsFor", Integer.toString(MockCommune.Bussigny.getNoOFS()));
-			List<TiersIndexedDataView> list = getTiersList(params);
+			params.put(TiersListController.NO_OFS_FOR_PARAMETER_NAME, Integer.toString(MockCommune.Bussigny.getNoOFS()));
+			List<TiersIndexedDataView> list = getTiersList(params, null);
 			assertEquals(3, list.size());
 		}
 	}
@@ -123,9 +182,9 @@ public class TiersListControllerTest extends WebMockMvcTest {
 
 		// Recherche seulement les fors actifs
 		HashMap<String, String> params = new HashMap<>();
-		params.put("noOfsFor", Integer.toString(MockCommune.Bussigny.getNoOFS()));
-		params.put("forPrincipalActif", "true");
-		List<TiersIndexedDataView> list = getTiersList(params);
+		params.put(TiersListController.NO_OFS_FOR_PARAMETER_NAME, Integer.toString(MockCommune.Bussigny.getNoOFS()));
+		params.put(TiersListController.FOR_PRINCIPAL_ACTIF_PARAMETER_NAME, "true");
+		List<TiersIndexedDataView> list = getTiersList(params, null);
 		assertEquals(1, list.size());
 	}
 
