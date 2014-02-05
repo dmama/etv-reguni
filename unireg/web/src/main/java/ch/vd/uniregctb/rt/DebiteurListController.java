@@ -62,7 +62,8 @@ public class DebiteurListController  extends  AbstractTiersListController implem
 		}
 
 		DebiteurListView bean = (DebiteurListView) session.getAttribute(DEBITEUR_CRITERIA_NAME);
-		if (bean == null) {
+		if (bean == null || bean.getNumeroSourcier() == null || !bean.getNumeroSourcier().equals(numeroSrc)) {
+			session.removeAttribute(DEBITEUR_CRITERIA_NAME);
 			bean = rapportPrestationEditManager.getDebiteurList(numeroSrc);
 		}
 
@@ -77,7 +78,6 @@ public class DebiteurListController  extends  AbstractTiersListController implem
 	@SuppressWarnings("unchecked")
 	@Override
 	protected ModelAndView showForm(HttpServletRequest request, HttpServletResponse response, BindException errors, Map model) throws Exception {
-
 		final HttpSession session = request.getSession();
 		final DebiteurListView bean = (DebiteurListView) session.getAttribute(DEBITEUR_CRITERIA_NAME);
 		return showFormForList(request, response, errors, model, DEBITEUR_CRITERIA_NAME, DEBITEUR_LIST_ATTRIBUTE_NAME, bean, true);
