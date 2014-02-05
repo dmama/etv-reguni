@@ -58,7 +58,8 @@ public class SourcierListController  extends  AbstractTiersListController implem
 		final HttpSession session = request.getSession();
 
 		SourcierListView bean = (SourcierListView) session.getAttribute(SOURCIER_CRITERIA_NAME);
-		if (bean == null) {
+		if (bean == null || bean.getNumeroDebiteur() == null || !bean.getNumeroDebiteur().equals(numeroDpi)) {
+			session.removeAttribute(SOURCIER_CRITERIA_NAME);
 			bean = rapportPrestationEditManager.getSourcierList(numeroDpi);
 	 	}
 
