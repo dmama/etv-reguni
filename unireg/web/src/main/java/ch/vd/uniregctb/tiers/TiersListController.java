@@ -135,14 +135,18 @@ public class TiersListController implements MessageSourceAware {
 			dateNaissance = RegDateHelper.displayStringToRegDate(dateNaissanceParam.trim(), true);
 		}
 
+		if (StringUtils.isNotBlank(urlRetour)) {
+			session.setAttribute(URL_RETOUR_SESSION_NAME, StringUtils.trim(urlRetour));
+
+			// [SIFISC-11341] le comportement avant SIFISC-10049 était qu'en cas de urlRetour demandée, le contenu stocké en session était complètement écrasé par les critères entrants
+			// -> il faut bien-sûr retrouver ce comportement afin que les appels depuis l'extérieurs ne se réduisent pas tous à leur première instance...
+			session.removeAttribute(TIERS_CRITERIA_SESSION_NAME);
+		}
+
 		final TiersCriteria.TypeVisualisation typeVisualisation = SecurityHelper.isGranted(securityProvider, Role.VISU_ALL) ? TiersCriteria.TypeVisualisation.COMPLETE : TiersCriteria.TypeVisualisation.LIMITEE;
 		final TiersCriteriaView criteria = helper.getCriteria(session, TIERS_CRITERIA_SESSION_NAME, numeroParam, nomRaisonParam, localitePaysParam, noOfsForParam, dateNaissance,
 		                                                      numeroAssureSocialParam, typeTiers, seulementForPrincipalActif, typeVisualisation);
 		session.setAttribute(TIERS_CRITERIA_SESSION_NAME, criteria);
-
-		if (StringUtils.isNotBlank(urlRetour)) {
-			session.setAttribute(URL_RETOUR_SESSION_NAME, StringUtils.trim(urlRetour));
-		}
 
 		List<TiersIndexedDataView> result = null;
 		try {
