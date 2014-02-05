@@ -15,7 +15,6 @@ import ch.vd.evd0001.v5.Parent;
 import ch.vd.evd0001.v5.Person;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.civil.data.IndividuRCPers;
 import ch.vd.unireg.interfaces.civil.rcpers.EchHelper;
 import ch.vd.unireg.wsclient.rcpers.RcPersClientImpl;
@@ -99,13 +98,15 @@ public class RcPersServiceTest {
 		{
 			final Parent parent = parentSorted.get(0);
 			assertEquals("347148", parent.getIdentification().getIdentification().getLocalPersonId().getPersonId());
-			assertEquals(dateNaissance, XmlUtils.xmlcal2regdate(parent.getParentFrom()));
+//			assertEquals(dateNaissance, XmlUtils.xmlcal2regdate(parent.getParentFrom()));       // apparemment, RCPers ne fournit plus l'information
+			assertNull(parent.getParentFrom());
 			assertNull(parent.getParentTill());
 		}
 		{
 			final Parent parent = parentSorted.get(1);
 			assertEquals("347149", parent.getIdentification().getIdentification().getLocalPersonId().getPersonId());
-			assertEquals(dateNaissance, XmlUtils.xmlcal2regdate(parent.getParentFrom()));
+//			assertEquals(dateNaissance, XmlUtils.xmlcal2regdate(parent.getParentFrom()));       // apparemment, RCPers ne fournit plus l'information
+			assertNull(parent.getParentFrom());
 			assertNull(parent.getParentTill());
 		}
 
