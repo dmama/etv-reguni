@@ -2,16 +2,20 @@ package ch.vd.uniregctb.evenement.party.control;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
+import ch.vd.uniregctb.metier.assujettissement.TypeAssujettissement;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.type.ModeImposition;
 
 public class TaxLiabilityControlServiceImpl implements TaxLiabilityControlService {
 
@@ -28,7 +32,8 @@ public class TaxLiabilityControlServiceImpl implements TaxLiabilityControlServic
 		this.assujettissementService = assujettissementService;
 	}
 
-	public TaxLiabilityControlResult doControlOnDate(@NotNull Tiers tiers, RegDate date, boolean rechercheMenageCommun, boolean rechercheParent, boolean controleDateDansFuture) throws ControlRuleException {
+	public TaxLiabilityControlResult doControlOnDate(@NotNull Tiers tiers, RegDate date, boolean rechercheMenageCommun, boolean rechercheParent, boolean controleDateDansFuture,
+	                                                 @Nullable Set<ModeImposition> modeImpositionARejeter) throws ControlRuleException {
 		if (LOGGER.isDebugEnabled()) {
 			final String message = String.format("Contrôle d'assujettissement à une date => tiers %d, date %s, menage? %b, parent? %b",
 			                                     tiers.getNumero(), RegDateHelper.dateToDashString(date), rechercheMenageCommun, rechercheParent);
@@ -41,11 +46,12 @@ public class TaxLiabilityControlServiceImpl implements TaxLiabilityControlServic
 				result.setEchec(new TaxLiabilityControlEchec(TaxLiabilityControlEchec.EchecType.DATE_OU_PF_DANS_FUTURE));
 			return result;
 		}
-		final List<TaxLiabilityControlRule> rules = getControlRulesForDate(tiers, date, rechercheMenageCommun, rechercheParent);
+		final List<TaxLiabilityControlRule> rules = getControlRulesForDate(tiers, date, rechercheMenageCommun, rechercheParent,modeImpositionARejeter);
 		return doControl(tiers, rules);
 	}
 
-	public TaxLiabilityControlResult doControlOnPeriod(@NotNull Tiers tiers, int periode, boolean rechercheMenageCommun, boolean rechercheParent, boolean controlePeriodDansFutur) throws ControlRuleException {
+	public TaxLiabilityControlResult doControlOnPeriod(@NotNull Tiers tiers, int periode, boolean rechercheMenageCommun, boolean rechercheParent, boolean controlePeriodDansFutur,
+	                                                   Set<TypeAssujettissement> assujettissementsARejeter) throws ControlRuleException {
 		if (LOGGER.isDebugEnabled()) {
 			final String message = String.format("Contrôle d'assujettissement sur periode => tiers %d, periode %d, menage? %b, parent? %b",
 			                                     tiers.getNumero(), periode, rechercheMenageCommun, rechercheParent);
@@ -57,7 +63,7 @@ public class TaxLiabilityControlServiceImpl implements TaxLiabilityControlServic
 			result.setEchec(new TaxLiabilityControlEchec(TaxLiabilityControlEchec.EchecType.DATE_OU_PF_DANS_FUTURE));
 			return result;
 		}
-		final List<TaxLiabilityControlRule> rules = getControlRulesForPeriod(tiers, periode, rechercheMenageCommun, rechercheParent);
+		final List<TaxLiabilityControlRule> rules = getControlRulesForPeriod(tiers, periode, rechercheMenageCommun, rechercheParent,assujettissementsARejeter);
 		return doControl(tiers, rules);
 	}
 
@@ -104,17 +110,19 @@ public class TaxLiabilityControlServiceImpl implements TaxLiabilityControlServic
 		return rules;
 	}
 
-	private List<TaxLiabilityControlRule> getControlRulesForPeriod(@NotNull Tiers tiers, int periode, boolean rechercheMenageCommun, boolean rechercheParent) throws ControlRuleException {
-		final ControlRuleForTiersPeriode controlRuleForTiers = new ControlRuleForTiersPeriode(periode, tiersService, assujettissementService);
-		final ControlRuleForMenagePeriode controlRuleForMenage = rechercheMenageCommun ? new ControlRuleForMenagePeriode(periode, tiersService, assujettissementService) : null;
-		final ControlRuleForParentPeriode controlRuleForParent = rechercheParent ? new ControlRuleForParentPeriode(periode, tiersService, assujettissementService) : null;
+	private List<TaxLiabilityControlRule> getControlRulesForPeriod(@NotNull Tiers tiers, int periode, boolean rechercheMenageCommun,
+	                                                               boolean rechercheParent,Set<TypeAssujettissement> assujettissementsARejeter) throws ControlRuleException {
+		final ControlRuleForTiersPeriode controlRuleForTiers = new ControlRuleForTiersPeriode(periode, tiersService, assujettissementService,assujettissementsARejeter);
+		final ControlRuleForMenagePeriode controlRuleForMenage = rechercheMenageCommun ? new ControlRuleForMenagePeriode(periode, tiersService, assujettissementService,assujettissementsARejeter) : null;
+		final ControlRuleForParentPeriode controlRuleForParent = rechercheParent ? new ControlRuleForParentPeriode(periode, tiersService, assujettissementService,assujettissementsARejeter) : null;
 		return buildRuleList(tiers, controlRuleForTiers, controlRuleForMenage, controlRuleForParent);
 	}
 
-	private List<TaxLiabilityControlRule> getControlRulesForDate(@NotNull Tiers tiers, RegDate date, boolean rechercheMenageCommun, boolean rechercheParent) {
-		final ControlRuleForTiersDate controlRuleForTiers = new ControlRuleForTiersDate(date, tiersService);
-		final ControleRuleForMenageDate controlRuleForMenage = rechercheMenageCommun ? new ControleRuleForMenageDate(date, tiersService) : null;
-		final ControlRuleForParentDate controlRuleForParent = rechercheParent ? new ControlRuleForParentDate(date, tiersService) : null;
+	private List<TaxLiabilityControlRule> getControlRulesForDate(@NotNull Tiers tiers, RegDate date, boolean rechercheMenageCommun, boolean rechercheParent,
+	                                                             Set<ModeImposition> modeImpositionARejeter) {
+		final ControlRuleForTiersDate controlRuleForTiers = new ControlRuleForTiersDate(date, tiersService,modeImpositionARejeter);
+		final ControleRuleForMenageDate controlRuleForMenage = rechercheMenageCommun ? new ControleRuleForMenageDate(date, tiersService,modeImpositionARejeter) : null;
+		final ControlRuleForParentDate controlRuleForParent = rechercheParent ? new ControlRuleForParentDate(date, tiersService,modeImpositionARejeter) : null;
 		return buildRuleList(tiers, controlRuleForTiers, controlRuleForMenage, controlRuleForParent);
 	}
 }

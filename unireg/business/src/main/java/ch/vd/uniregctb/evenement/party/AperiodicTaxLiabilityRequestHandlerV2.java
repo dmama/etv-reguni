@@ -22,6 +22,6 @@ public class AperiodicTaxLiabilityRequestHandlerV2 extends TaxLiabilityRequestHa
 		final RegDate dateControle = DataHelper.xmlToCore(request.getDate());
 		final boolean rechercheMenageCommun = request.isSearchCommonHouseHolds();
 		final boolean rechercheParents = request.isSearchParents();
-		return getTaxliabilityControlService().doControlOnDate(tiers, dateControle, rechercheMenageCommun, rechercheParents, false);
+		return getTaxliabilityControlService().doControlOnDate(tiers, dateControle, rechercheMenageCommun, rechercheParents, false,null);
 	}
 }

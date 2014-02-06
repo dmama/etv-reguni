@@ -2,14 +2,13 @@ package ch.vd.uniregctb.evenement.party.control;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import org.jetbrains.annotations.NotNull;
+import java.util.Set;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.type.ModeImposition;
 
 /**
  * Règle MC.2 - Recherche de l'appartenance à un ménage commun (CTB couple) pour le numéro d'individu à la date déterminante :
@@ -17,19 +16,10 @@ import ch.vd.uniregctb.tiers.TiersService;
 public class ControleRuleForMenageDate extends ControlRuleForMenage {
 
 	private final RegDate date;
-	private final AbstractControlRule ruleForTiers;
 
-	public ControleRuleForMenageDate(RegDate date, TiersService tiersService) {
-		super(tiersService);
+	public ControleRuleForMenageDate(RegDate date, TiersService tiersService,Set<ModeImposition> listeMode) {
+		super(tiersService,new ControlRuleForTiersDate(date, tiersService,listeMode));
 		this.date = date;
-		this.ruleForTiers = new ControlRuleForTiersDate(date, tiersService);
-	}
-
-	//Si un num CTB couple est en vigueur à la date déterminante, lancement du contrôle d'assujettissement sur ce numéro (A1.3)
-	@Override
-	public boolean isAssujetti(@NotNull Tiers tiers) throws ControlRuleException {
-		final TaxLiabilityControlResult result = ruleForTiers.check(tiers);
-		return result.getIdTiersAssujetti() != null;
 	}
 
 	@Override

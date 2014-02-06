@@ -10,6 +10,7 @@ import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public abstract class AbstractControlTaxliabilityTest extends BusinessTest{
 
@@ -47,6 +48,13 @@ public abstract class AbstractControlTaxliabilityTest extends BusinessTest{
 		assertNotNull(result.getEchec());
 		assertEquals(TaxLiabilityControlEchec.EchecType.DATE_OU_PF_DANS_FUTURE, result.getEchec().getType());
 	}
+	protected void assertAssujetissmentModeImpositionNonConforme(TaxLiabilityControlResult result) {
+		final Long idTiersAssujetti = result.getIdTiersAssujetti();
+		assertNull(idTiersAssujetti);
+		assertNotNull(result.getEchec());
+		assertTrue(result.getEchec().isAssujetissementNonConforme());
+	}
+
 	protected void assertPasDeParent(TaxLiabilityControlResult result) {
 		final Long idTiersAssujetti = result.getIdTiersAssujetti();
 		assertNull(idTiersAssujetti);

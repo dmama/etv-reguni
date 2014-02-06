@@ -12,11 +12,16 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 
-public abstract class ControlRuleForParent extends AbstractControlRule {
+public abstract class ControlRuleForParent extends ControleRuleForTiersComposite {
 
-	protected ControlRuleForParent(TiersService tiersService) {
-		super(tiersService);
+	protected final ControlRuleForMenage ruleForMenage;
+
+	protected ControlRuleForParent(TiersService tiersService,ControlRuleForTiers ruleForTiers,ControlRuleForMenage ruleForMenage) {
+		super(tiersService, ruleForTiers);
+		this.ruleForMenage = ruleForMenage;
+
 	}
+
 
 	@Override
 	public TaxLiabilityControlResult check(@NotNull Tiers tiers) throws ControlRuleException {
@@ -25,7 +30,7 @@ public abstract class ControlRuleForParent extends AbstractControlRule {
 		//Recherche des parents:
 		final List<Parente> parentes = tiers instanceof PersonnePhysique ? extractParents(tiersService.getParents((PersonnePhysique) tiers, false)) : Collections.<Parente>emptyList();
 		if (parentes.isEmpty()) {
-			setErreur(result, TaxLiabilityControlEchec.EchecType.CONTROLE_SUR_PARENTS_KO, null, null, null);
+			setErreur(result, TaxLiabilityControlEchec.EchecType.CONTROLE_SUR_PARENTS_KO, null, null, null,false);
 		}
 		else if (parentes.size() == 1) {
 			final Parente parente = parentes.get(0);
@@ -34,22 +39,43 @@ public abstract class ControlRuleForParent extends AbstractControlRule {
 			if (parent != null) {
 				// le parent est assujetti tout va bien
 				if (isAssujetti(parent)) {
-					result.setIdTiersAssujetti(parentId);
+					final boolean nonConforme = isAssujettissementNonConforme(parent);
+					if (nonConforme) {
+						setErreur(result, TaxLiabilityControlEchec.EchecType.CONTROLE_SUR_PARENTS_KO, null, null, null,nonConforme);
+					}else{
+						result.setIdTiersAssujetti(parentId);
+					}
+
 				}
 				else {
 					final TaxLiabilityControlResult result1ForMenageParent = rechercheAssujettisementSurMenage(parent);
-					if (result1ForMenageParent.getIdTiersAssujetti() != null) {
-						result.setIdTiersAssujetti(result1ForMenageParent.getIdTiersAssujetti());
+					final Long idTiersAssujetti = result1ForMenageParent.getIdTiersAssujetti();
+					if (idTiersAssujetti != null) {
+						Tiers menage = tiersService.getTiers(idTiersAssujetti);
+						final boolean nonConforme = isAssujettissementNonConforme(menage);
+						if (nonConforme) {
+							setErreur(result, TaxLiabilityControlEchec.EchecType.CONTROLE_SUR_PARENTS_KO, null, null, null,nonConforme);
+						}else{
+							result.setIdTiersAssujetti(idTiersAssujetti);
+						}
+
 					}
 					else{
-						//on est dans un echec du controle d'assujetissement sur le ménage du parent
-						final List<Long> ParentmenageCommunIds = result1ForMenageParent.getEchec().getMenageCommunIds();
-						setErreur(result, TaxLiabilityControlEchec.EchecType.CONTROLE_SUR_PARENTS_KO, null, ParentmenageCommunIds, Arrays.asList(parentId));
+						//Si on a un echec à cause d'un assujetissement non conforme, on renvoie l'erreur
+						if (result1ForMenageParent.getEchec().isAssujetissementNonConforme()) {
+							setErreur(result, TaxLiabilityControlEchec.EchecType.CONTROLE_SUR_PARENTS_KO, null, null, Arrays.asList(parentId),true);
+						}
+						else{
+							//on est dans un echec du controle d'assujetissement sur le ménage du parent
+							final List<Long> ParentmenageCommunIds = result1ForMenageParent.getEchec().getMenageCommunIds();
+							setErreur(result, TaxLiabilityControlEchec.EchecType.CONTROLE_SUR_PARENTS_KO, null, ParentmenageCommunIds, Arrays.asList(parentId),false);
+						}
+
 					}
 				}
 			}
 			else {
-				setErreur(result, TaxLiabilityControlEchec.EchecType.CONTROLE_SUR_PARENTS_KO, null, null, null);
+				setErreur(result, TaxLiabilityControlEchec.EchecType.CONTROLE_SUR_PARENTS_KO, null, null, null,false);
 			}
 		}
 		else if (parentes.size() == 2) {
@@ -60,7 +86,7 @@ public abstract class ControlRuleForParent extends AbstractControlRule {
 			for (Parente parenteParent : parentes) {
 				parentsIds.add(parenteParent.getObjetId());
 			}
-			setErreur(result, TaxLiabilityControlEchec.EchecType.CONTROLE_SUR_PARENTS_KO, null, null, parentsIds);
+			setErreur(result, TaxLiabilityControlEchec.EchecType.CONTROLE_SUR_PARENTS_KO, null, null, parentsIds,false);
 		}
 		return result;
 	}
@@ -82,7 +108,13 @@ public abstract class ControlRuleForParent extends AbstractControlRule {
 		final Long idMenageAssujettiParent2 = resultMenageParent2.getIdTiersAssujetti();
 
 		if (idMenageAssujettiParent1 != null && idMenageAssujettiParent2 != null && idMenageAssujettiParent1.longValue() == idMenageAssujettiParent2.longValue()) {
-			result.setIdTiersAssujetti(idMenageAssujettiParent1);
+			Tiers menage = tiersService.getTiers(idMenageAssujettiParent1);
+			final boolean nonConforme = isAssujettissementNonConforme(menage);
+			if (nonConforme) {
+				setErreur(result, TaxLiabilityControlEchec.EchecType.CONTROLE_SUR_PARENTS_KO, null, null, null,nonConforme);
+			}else{
+				result.setIdTiersAssujetti(idMenageAssujettiParent1);
+			}
 		}
 		else {
 			//Liste des parents
@@ -101,21 +133,28 @@ public abstract class ControlRuleForParent extends AbstractControlRule {
 			}
 
 			//On recupere les menages communs trouvés Pour les parents en cas d'erreur
-			if (resultMenageParent1.getEchec() != null && resultMenageParent1.getEchec().getMenageCommunIds() != null) {
-				listeMenage.addAll(resultMenageParent1.getEchec().getMenageCommunIds());
+			final TaxLiabilityControlEchec echecParent1 = resultMenageParent1.getEchec();
+			if (echecParent1 != null && echecParent1.getMenageCommunIds() != null) {
+				listeMenage.addAll(echecParent1.getMenageCommunIds());
 			}
 
-			if (resultMenageParent2.getEchec() != null &&  resultMenageParent2.getEchec().getMenageCommunIds() != null) {
-				listeMenage.addAll(resultMenageParent2.getEchec().getMenageCommunIds());
+			final TaxLiabilityControlEchec echecParent2 = resultMenageParent2.getEchec();
+			if (echecParent2 != null &&  echecParent2.getMenageCommunIds() != null) {
+				listeMenage.addAll(echecParent2.getMenageCommunIds());
 			}
 
 			final List<Long> menageCommunParentsIds = listeMenage.isEmpty() ? null : listeMenage;
-			setErreur(result, TaxLiabilityControlEchec.EchecType.CONTROLE_SUR_PARENTS_KO, null, menageCommunParentsIds, parentsIds);
+			final boolean assujetissementNonConforme1 = echecParent1 != null && echecParent1.isAssujetissementNonConforme();
+			final boolean assujetissementNonConforme2 = echecParent2 !=null && echecParent2.isAssujetissementNonConforme();
+			final boolean nonConforme = assujetissementNonConforme1 ||	assujetissementNonConforme2;
+			setErreur(result, TaxLiabilityControlEchec.EchecType.CONTROLE_SUR_PARENTS_KO, null, menageCommunParentsIds, parentsIds,nonConforme);
 		}
 	}
 
 	protected abstract List<Parente> extractParents(List<Parente> parentes);
 
-	protected abstract TaxLiabilityControlResult rechercheAssujettisementSurMenage(@NotNull PersonnePhysique parent) throws ControlRuleException;
+	private TaxLiabilityControlResult rechercheAssujettisementSurMenage(@NotNull PersonnePhysique parent) throws ControlRuleException{
+		return ruleForMenage.check(parent);
+	};
 
 }

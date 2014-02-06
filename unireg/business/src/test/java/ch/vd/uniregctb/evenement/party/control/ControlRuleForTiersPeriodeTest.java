@@ -1,11 +1,16 @@
 package ch.vd.uniregctb.evenement.party.control;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.uniregctb.metier.assujettissement.TypeAssujettissement;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Sexe;
 
@@ -33,7 +38,7 @@ public class ControlRuleForTiersPeriodeTest extends AbstractControlTaxliabilityT
 		});
 
 		final Integer periode = 2012;
-		final ControlRuleForTiersPeriode controlRuleForTiersPeriode = new ControlRuleForTiersPeriode(periode, tiersService, assujettissementService);
+		final ControlRuleForTiersPeriode controlRuleForTiersPeriode = new ControlRuleForTiersPeriode(periode, tiersService, assujettissementService,null);
 		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
 			@Override
 			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
@@ -43,7 +48,39 @@ public class ControlRuleForTiersPeriodeTest extends AbstractControlTaxliabilityT
 		});
 		assertTiersAssujetti(idPP, result);
 	}
+	@Test
+	public void testCheckAssujetissementNonConforme() throws Exception {
+		final long noInd = 1244;
 
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				addIndividu(noInd, date(1983, 3, 12), "RuppertPeriode", "Jeroma", Sexe.FEMININ);
+			}
+		});
+
+		// on crée un habitant vaudois ordinaire
+		final Long idPP = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = addHabitant(noInd);
+				addForPrincipal(pp, date(2001, 3, 12), MotifFor.MAJORITE, MockCommune.Moudon, ModeImposition.MIXTE_137_1);
+				return pp.getNumero();
+			}
+		});
+
+		final Integer periode = 2012;
+		Set<TypeAssujettissement> toReject = EnumSet.of(TypeAssujettissement.SOURCE_PURE, TypeAssujettissement.MIXTE_137_1, TypeAssujettissement.MIXTE_137_2);
+		final ControlRuleForTiersPeriode controlRuleForTiersPeriode = new ControlRuleForTiersPeriode(periode, tiersService, assujettissementService,toReject);
+		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
+			@Override
+			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idPP);
+				return controlRuleForTiersPeriode.check(pp);
+			}
+		});
+		assertAssujetissmentModeImpositionNonConforme(result);
+	}
 	@Test
 	public void testCheckAssujetissementUnJour() throws Exception {
 		final long noInd = 1244;
@@ -66,7 +103,7 @@ public class ControlRuleForTiersPeriodeTest extends AbstractControlTaxliabilityT
 		});
 
 		final Integer periode = 2012;
-		final ControlRuleForTiersPeriode controlRuleForTiersPeriode = new ControlRuleForTiersPeriode(periode, tiersService, assujettissementService);
+		final ControlRuleForTiersPeriode controlRuleForTiersPeriode = new ControlRuleForTiersPeriode(periode, tiersService, assujettissementService,null);
 		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
 			@Override
 			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
@@ -100,7 +137,7 @@ public class ControlRuleForTiersPeriodeTest extends AbstractControlTaxliabilityT
 		});
 
 		final Integer periode = 2012;
-		final ControlRuleForTiersPeriode controlRuleForTiersPeriode = new ControlRuleForTiersPeriode(periode, tiersService, assujettissementService);
+		final ControlRuleForTiersPeriode controlRuleForTiersPeriode = new ControlRuleForTiersPeriode(periode, tiersService, assujettissementService,null);
 		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
 			@Override
 			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {

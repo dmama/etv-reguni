@@ -18,6 +18,7 @@ import ch.vd.uniregctb.type.CategorieEtranger;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.FormeJuridique;
 import ch.vd.uniregctb.type.ModeCommunication;
+import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.StatutMenageCommun;
 import ch.vd.uniregctb.type.TypePermis;
@@ -1776,6 +1777,59 @@ public abstract class EnumHelper {
 		}
 	}
 
+	public static ModeImposition xmlToCore(ch.vd.unireg.xml.party.taxresidence.v2.TaxationMethod taxationMethod){
+		if (taxationMethod == null) {
+			return null;
+		}
+		switch (taxationMethod){
+			case EXPENDITURE_BASED:
+				return ModeImposition.DEPENSE;
+			case INDIGENT:
+				return ModeImposition.INDIGENT;
+			case MIXED_137_1:
+				return ModeImposition.MIXTE_137_1;
+			case MIXED_137_2:
+				return ModeImposition.MIXTE_137_2;
+			case ORDINARY:
+				return ModeImposition.ORDINAIRE;
+			case WITHHOLDING:
+				return ModeImposition.SOURCE;
+			default:
+				throw new IllegalArgumentException("Mode d'imposition inconnue = [" + taxationMethod + "]");
+		}
+	}
+
+	public static TypeAssujettissement xmlToCore(ch.vd.unireg.xml.party.taxresidence.v2.IndividualTaxLiabilityType taxLiabilityType){
+		if (taxLiabilityType == null) {
+			return null;
+		}
+		switch (taxLiabilityType){
+		case EXPENDITURE_BASED:
+			return TypeAssujettissement.VAUDOIS_DEPENSE;
+		case INDIGENT:
+			return TypeAssujettissement.INDIGENT;
+		case FOREIGN_COUNTRY:
+			return TypeAssujettissement.HORS_SUISSE;
+		case MIXED_WITHHOLDING_137_1:
+			return TypeAssujettissement.MIXTE_137_1;
+		case MIXED_WITHHOLDING_137_2:
+			return TypeAssujettissement.MIXTE_137_2;
+		case NONE:
+			return TypeAssujettissement.NON_ASSUJETTI;
+		case ORDINARY_RESIDENT:
+			return TypeAssujettissement.VAUDOIS_ORDINAIRE;
+		case OTHER_CANTON:
+			return TypeAssujettissement.HORS_CANTON;
+		case PURE_WITHHOLDING:
+			return TypeAssujettissement.SOURCE_PURE;
+		case SWISS_DIPLOMAT:
+			return TypeAssujettissement.DIPLOMATE_SUISSE;
+
+		default:
+			throw new IllegalArgumentException("Type d'assujetissement inconnu = [" + taxLiabilityType + "]");
+		}
+	}
+
 	public static CategorieImpotSource xmlToCore(ch.vd.unireg.xml.party.debtor.v2.DebtorCategory category) {
 		if (category == null) {
 			return null;
@@ -2145,6 +2199,8 @@ public abstract class EnumHelper {
 			throw new IllegalArgumentException("unknown PeriodeImpositionImpotSource.Type = [" + setc + ']');
 		}
 	}
+
+
 
 	public static ch.vd.unireg.xml.party.othercomm.v1.LegalForm coreToXMLv1(FormeJuridique formeJuridique) {
 		if (formeJuridique == null) {

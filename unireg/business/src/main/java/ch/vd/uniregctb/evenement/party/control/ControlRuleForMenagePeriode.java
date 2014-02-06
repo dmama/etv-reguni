@@ -1,13 +1,12 @@
 package ch.vd.uniregctb.evenement.party.control;
 
 import java.util.List;
-
-import org.jetbrains.annotations.NotNull;
+import java.util.Set;
 
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
+import ch.vd.uniregctb.metier.assujettissement.TypeAssujettissement;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 
 /**
@@ -16,20 +15,14 @@ import ch.vd.uniregctb.tiers.TiersService;
 public class ControlRuleForMenagePeriode extends ControlRuleForMenage {
 
 	private final int periode;
-	private final AbstractControlRule ruleForTiers;
 
-	public ControlRuleForMenagePeriode(int periode, TiersService tiersService, AssujettissementService assService) {
-		super(tiersService);
+	public ControlRuleForMenagePeriode(int periode, TiersService tiersService, AssujettissementService assService,Set<TypeAssujettissement> aRejeter) {
+		super(tiersService,new ControlRuleForTiersPeriode(periode, tiersService, assService,aRejeter));
 		this.periode = periode;
-		this.ruleForTiers = new ControlRuleForTiersPeriode(periode, tiersService, assService);
+
 	}
 
-	//Lancer le CTRL d'assujettissement (A1.1) pour chacun des numéros de couple trouvés
-	@Override
-	public boolean isAssujetti(@NotNull Tiers tiers) throws ControlRuleException {
-		final TaxLiabilityControlResult result = ruleForTiers.check(tiers);
-		return result.getIdTiersAssujetti() != null;
-	}
+
 
 	@Override
 	public List<EnsembleTiersCouple> getEnsembleTiersCouple(PersonnePhysique pp) {

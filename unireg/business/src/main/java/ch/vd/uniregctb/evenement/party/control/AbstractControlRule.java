@@ -20,14 +20,18 @@ public abstract class AbstractControlRule implements TaxLiabilityControlRule {
 	}
 
 	protected static void setErreur(TaxLiabilityControlResult result, TaxLiabilityControlEchec.EchecType type,
-	                                @Nullable List<Long> menageCommunsIds, @Nullable List<Long> mcParentsIds, @Nullable List<Long> parentsIds) {
+	                                @Nullable List<Long> menageCommunsIds, @Nullable List<Long> mcParentsIds, @Nullable List<Long> parentsIds, boolean assuNonConforme) {
 		final TaxLiabilityControlEchec echec = new TaxLiabilityControlEchec(type);
 		echec.setMenageCommunIds(menageCommunsIds);
 		echec.setMenageCommunParentsIds(mcParentsIds);
 		echec.setParentsIds(parentsIds);
+		echec.setAssujetissementNonConforme(assuNonConforme);
 		result.setEchec(echec);
 	}
 
-	public abstract boolean isAssujetti(@NotNull Tiers tiersId) throws ControlRuleException;
+
+	public abstract boolean isAssujetti(@NotNull Tiers tiers) throws ControlRuleException;
+
+	public abstract  boolean isAssujettissementNonConforme(@NotNull Tiers tiers) throws ControlRuleException;
 
 }

@@ -19,13 +19,14 @@ public abstract class ControlRuleForTiers extends AbstractControlRule {
 	@Override
 	public TaxLiabilityControlResult check(@NotNull Tiers tiers) throws ControlRuleException {
 		final TaxLiabilityControlResult result = new TaxLiabilityControlResult();
-		//S'il y a un assujettissement sur tout ou partie de la PF (au moins 1 jour) -> CTRL OK
-		if (isAssujetti(tiers)) {
+		//S'il y a un assujettissement sur tout ou partie de la PF (au moins 1 jour) -> CTRL OK et que l'assujetissement est conforme à la demande
+		final boolean assujettissementNonConforme = isAssujettissementNonConforme(tiers);
+		if (isAssujetti(tiers) && !assujettissementNonConforme) {
 			result.setIdTiersAssujetti(tiers.getId());
 		}
 		//	Dans le cas contraire (pas un seul jour d'assujettissement)-> CTRL KO
 		else {
-			setErreur(result, TaxLiabilityControlEchec.EchecType.CONTROLE_NUMERO_KO, null, null, null);
+			setErreur(result, TaxLiabilityControlEchec.EchecType.CONTROLE_NUMERO_KO, null, null, null,assujettissementNonConforme);
 		}
 		return result;
 	}

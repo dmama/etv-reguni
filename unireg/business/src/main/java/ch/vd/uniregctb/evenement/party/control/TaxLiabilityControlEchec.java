@@ -20,6 +20,7 @@ public class TaxLiabilityControlEchec {
 	private List<Long> MenageCommunIds;
 	private List<Long> parentsIds;
 	private List<Long> MenageCommunParentsIds;
+	private boolean assujetissementNonConforme;
 
 	public TaxLiabilityControlEchec(EchecType type) {
 		this.type = type;
@@ -55,6 +56,14 @@ public class TaxLiabilityControlEchec {
 
 	public void setType(EchecType type) {
 		this.type = type;
+	}
+
+	public boolean isAssujetissementNonConforme() {
+		return assujetissementNonConforme;
+	}
+
+	public void setAssujetissementNonConforme(boolean assujetissementNonConforme) {
+		this.assujetissementNonConforme = assujetissementNonConforme;
 	}
 
 	@Override

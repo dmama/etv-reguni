@@ -20,6 +20,6 @@ public class PeriodicTaxLiabilityRequestHandlerV2 extends TaxLiabilityRequestHan
 		final int periode = request.getFiscalPeriod();
 		final boolean rechercheMenageCommun = request.isSearchCommonHouseHolds();
 		final boolean rechercheParents = request.isSearchParents();
-		return getTaxliabilityControlService().doControlOnPeriod(tiers, periode, rechercheMenageCommun, rechercheParents, false);
+		return getTaxliabilityControlService().doControlOnPeriod(tiers, periode, rechercheMenageCommun, rechercheParents, false, null);
 	}
 }

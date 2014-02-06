@@ -68,7 +68,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 			@Override
 			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idPP);
-				return controlService.doControlOnPeriod(pp, periode, rechercheMenageCommun, rechercheParent, false);
+				return controlService.doControlOnPeriod(pp, periode, rechercheMenageCommun, rechercheParent, false, null);
 			}
 		});
 
@@ -104,7 +104,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 			@Override
 			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idPP);
-				return controlService.doControlOnPeriod(pp, periode, rechercheMenageCommun, rechercheParent, false);
+				return controlService.doControlOnPeriod(pp, periode, rechercheMenageCommun, rechercheParent, false, null);
 			}
 		});
 
@@ -141,7 +141,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 			@Override
 			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idPP);
-				return controlService.doControlOnDate(pp, dateRef, rechercheMenageCommun, rechercheParent, false);
+				return controlService.doControlOnDate(pp, dateRef, rechercheMenageCommun, rechercheParent, false,null);
 			}
 		});
 
@@ -177,7 +177,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 			@Override
 			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idPP);
-				return controlService.doControlOnPeriod(pp, periode, rechercheMenageCommun, rechercheParent, true);
+				return controlService.doControlOnPeriod(pp, periode, rechercheMenageCommun, rechercheParent, true, null);
 			}
 		});
 
@@ -214,7 +214,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 			@Override
 			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idPP);
-				return controlService.doControlOnDate(pp, dateRef, rechercheMenageCommun, rechercheParent, true);
+				return controlService.doControlOnDate(pp, dateRef, rechercheMenageCommun, rechercheParent, true,null);
 			}
 		});
 
@@ -250,7 +250,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 			@Override
 			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idPP);
-				return controlService.doControlOnPeriod(pp, periode, rechercheMenageCommun, rechercheParent, false);
+				return controlService.doControlOnPeriod(pp, periode, rechercheMenageCommun, rechercheParent, false, null);
 			}
 		});
 
@@ -298,7 +298,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 			@Override
 			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idpp);
-				return controlService.doControlOnPeriod(pp, periode, rechercheMenageCommun, rechercheParent, false);
+				return controlService.doControlOnPeriod(pp, periode, rechercheMenageCommun, rechercheParent, false, null);
 			}
 		});
 
@@ -347,7 +347,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 			@Override
 			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idpp);
-				return controlService.doControlOnPeriod(pp, periode, rechercheMenageCommun, rechercheParent, false);
+				return controlService.doControlOnPeriod(pp, periode, rechercheMenageCommun, rechercheParent, false, null);
 			}
 		});
 
@@ -384,7 +384,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 			@Override
 			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				return controlService.doControlOnPeriod(pp, periode, rechercheMenageCommun, rechercheParent, false);
+				return controlService.doControlOnPeriod(pp, periode, rechercheMenageCommun, rechercheParent, false, null);
 			}
 		});
 
@@ -421,7 +421,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 			@Override
 			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idPP);
-				return controlService.doControlOnPeriod(pp, periode, rechercheMenageCommun, rechercheParent, false);
+				return controlService.doControlOnPeriod(pp, periode, rechercheMenageCommun, rechercheParent, false, null);
 			}
 		});
 
@@ -473,7 +473,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 			@Override
 			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
-				return controlService.doControlOnPeriod(pp, periode, true, true, false);
+				return controlService.doControlOnPeriod(pp, periode, true, true, false, null);
 			}
 		});
 
@@ -487,7 +487,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 			@Override
 			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
-				return controlService.doControlOnPeriod(pp, periode, true, false, false);
+				return controlService.doControlOnPeriod(pp, periode, true, false, false, null);
 			}
 		});
 
@@ -515,7 +515,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 			@Override
 			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
 				final Entreprise pm = (Entreprise) tiersDAO.get(idPm);
-				return controlService.doControlOnPeriod(pm, periode, true, true, false);
+				return controlService.doControlOnPeriod(pm, periode, true, true, false, null);
 			}
 		});
 
@@ -595,7 +595,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique mineur = (PersonnePhysique) tiersDAO.get(ids.idMineur);
-				final TaxLiabilityControlResult res = controlService.doControlOnDate(mineur, dateDemandeControle, true, true, false);
+				final TaxLiabilityControlResult res = controlService.doControlOnDate(mineur, dateDemandeControle, true, true, false,null);
 				assertNotNull(res);
 				if (res.getEchec() != null) {
 					fail(res.getEchec().toString());
@@ -634,7 +634,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final Entreprise pm = (Entreprise) tiersDAO.get(pmId);
-				final TaxLiabilityControlResult res = controlService.doControlOnDate(pm, date(2013, 5, 12), true, true, false);
+				final TaxLiabilityControlResult res = controlService.doControlOnDate(pm, date(2013, 5, 12), true, true, false,null);
 				assertNotNull(res);
 				assertNotNull(res.getEchec());
 				assertEquals(TaxLiabilityControlEchec.EchecType.CONTROLE_NUMERO_KO, res.getEchec().getType());
@@ -648,7 +648,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final Entreprise pm = (Entreprise) tiersDAO.get(pmId);
-				final TaxLiabilityControlResult res = controlService.doControlOnPeriod(pm, 2013, true, true, false);
+				final TaxLiabilityControlResult res = controlService.doControlOnPeriod(pm, 2013, true, true, false, null);
 				assertNotNull(res);
 				assertNotNull(res.getEchec());
 				assertEquals(TaxLiabilityControlEchec.EchecType.CONTROLE_NUMERO_KO, res.getEchec().getType());
@@ -683,7 +683,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
-				final TaxLiabilityControlResult res = controlService.doControlOnDate(dpi, date(2013, 5, 12), true, true, false);
+				final TaxLiabilityControlResult res = controlService.doControlOnDate(dpi, date(2013, 5, 12), true, true, false,null);
 				assertNotNull(res);
 				assertNotNull(res.getEchec());
 				assertEquals(TaxLiabilityControlEchec.EchecType.CONTROLE_NUMERO_KO, res.getEchec().getType());
@@ -697,7 +697,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
-				final TaxLiabilityControlResult res = controlService.doControlOnPeriod(dpi, 2013, true, true, false);
+				final TaxLiabilityControlResult res = controlService.doControlOnPeriod(dpi, 2013, true, true, false, null);
 				assertNotNull(res);
 				assertNotNull(res.getEchec());
 				assertEquals(TaxLiabilityControlEchec.EchecType.CONTROLE_NUMERO_KO, res.getEchec().getType());

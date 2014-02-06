@@ -139,6 +139,9 @@ public abstract class TaxLiabilityRequestHandlerV3<T extends TaxLiabilityRequest
 				default:
 					throw new IllegalArgumentException("Value not supported for TaxliabilityRequest V3: " + echec.getType());
 			}
+			if (echec.isAssujetissementNonConforme()) {
+				failure.setImproperTaxliability("Assujetissement ou mode d'imposition non conforme");
+			}
 		}
 		else if (result.getIdTiersAssujetti() != null) {
 			partyNumber = result.getIdTiersAssujetti().intValue();

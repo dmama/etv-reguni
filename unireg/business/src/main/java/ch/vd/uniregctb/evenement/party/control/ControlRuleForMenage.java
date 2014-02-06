@@ -11,14 +11,14 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 
-public abstract class ControlRuleForMenage extends AbstractControlRule {
+public abstract class ControlRuleForMenage extends ControleRuleForTiersComposite {
 
-	protected ControlRuleForMenage(TiersService tiersService) {
-		super(tiersService);
+	protected ControlRuleForMenage(TiersService tiersService,ControlRuleForTiers ruleForTiers) {
+		super(tiersService,ruleForTiers);
 	}
 
 	@Override
-	public TaxLiabilityControlResult check(@NotNull Tiers tiers) throws ControlRuleException {
+	public TaxLiabilityControlResult  check(@NotNull Tiers tiers) throws ControlRuleException {
 		final TaxLiabilityControlResult result = new TaxLiabilityControlResult();
 		final List<EnsembleTiersCouple> listeCouples = tiers instanceof PersonnePhysique ? getEnsembleTiersCouple((PersonnePhysique) tiers) : null;
 		if (listeCouples != null && !listeCouples.isEmpty()) {
@@ -38,7 +38,16 @@ public abstract class ControlRuleForMenage extends AbstractControlRule {
 			}
 			//Si un seul numéro de couple est assujetti >> CTRL OK (num CTB assujetti renvoyé = num CTB couple)
 			if (menageCommunsAssujettis.size() == 1) {
-				result.setIdTiersAssujetti(menageCommunsAssujettis.get(0));
+				final Long idTiersAssujetti = menageCommunsAssujettis.get(0);
+				Tiers tiersCandidat = tiersService.getTiers(idTiersAssujetti);
+				final boolean nonConforme = isAssujettissementNonConforme(tiersCandidat);
+				if (nonConforme) {
+					setErreur(result, TaxLiabilityControlEchec.EchecType.AUCUN_MC_ASSOCIE_TROUVE, null, null, null,nonConforme);
+				}
+				else{
+					result.setIdTiersAssujetti(idTiersAssujetti);
+
+				}
 			}
 			//Si plusieurs numéros de couples sont assujettis >> CTRL KO
 			else if (menageCommunsAssujettis.size() > 1) {
@@ -51,15 +60,15 @@ public abstract class ControlRuleForMenage extends AbstractControlRule {
 			else if (menageCommunsAssujettis.isEmpty()) {
 				//Dans le cas de ménage trouvé non assujetti, on doit en renvoyer la liste
 				if (!menageCommunsNonAssujettis.isEmpty()) {
-					setErreur(result, TaxLiabilityControlEchec.EchecType.UN_PLUSIEURS_MC_NON_ASSUJETTI_TROUVES,menageCommunsNonAssujettis,null,null);
+					setErreur(result, TaxLiabilityControlEchec.EchecType.UN_PLUSIEURS_MC_NON_ASSUJETTI_TROUVES,menageCommunsNonAssujettis,null,null,false);
 				}
 				else {
-					setErreur(result, TaxLiabilityControlEchec.EchecType.AUCUN_MC_ASSOCIE_TROUVE, null, null, null);
+					setErreur(result, TaxLiabilityControlEchec.EchecType.AUCUN_MC_ASSOCIE_TROUVE, null, null, null,false);
 				}
 			}
 		}
 		else {
-			setErreur(result, TaxLiabilityControlEchec.EchecType.AUCUN_MC_ASSOCIE_TROUVE, null, null, null);
+			setErreur(result, TaxLiabilityControlEchec.EchecType.AUCUN_MC_ASSOCIE_TROUVE, null, null, null,false);
 		}
 
 		return result;

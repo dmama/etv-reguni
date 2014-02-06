@@ -12,10 +12,12 @@ import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.xml.common.v1.UserLogin;
 import ch.vd.unireg.xml.event.party.taxliab.periodic.v3.PeriodicTaxLiabilityRequest;
 import ch.vd.unireg.xml.event.party.taxliab.v3.TaxLiabilityResponse;
+import ch.vd.unireg.xml.party.taxresidence.v2.IndividualTaxLiabilityType;
 import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.security.MockSecurityProvider;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Sexe;
 
@@ -99,6 +101,52 @@ public class PartyPeriodicTaxLiabilityRequestV3EsbHandlerItTest extends PartyReq
 		assertNotNull(response.getFailure().getDateOrPeriodeInFuture());
 	}
 
+	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
+	public void testRequestKOAssujetissementNonConforme() throws Exception {
+
+		final MockSecurityProvider provider = new MockSecurityProvider(Role.VISU_ALL);
+		handlerV3.setSecurityProvider(provider);
+
+		// on crée un habitant vaudois ordinaire
+		final Long idPP = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = addNonHabitant("Jacques", "Ramaldadji", date(1965, 3, 12), Sexe.MASCULIN);
+				addForPrincipal(pp, date(1986, 3, 12), MotifFor.MAJORITE, MockCommune.Vevey, ModeImposition.MIXTE_137_1);
+				return pp.getNumero();
+			}
+		});
+
+		final PeriodicTaxLiabilityRequest request = new PeriodicTaxLiabilityRequest();
+		final UserLogin login = new UserLogin("xxxxx", 22);
+		request.setLogin(login);
+		request.setPartyNumber(idPP.intValue());
+		int periode = RegDate.get().year();
+		request.setFiscalPeriod(periode);
+		request.setSearchCommonHouseHolds(false);
+		request.setSearchParents(false);
+		request.getIndividualTaxLiabilityToReject().add(IndividualTaxLiabilityType.MIXED_WITHHOLDING_137_1);
+		request.getIndividualTaxLiabilityToReject().add(IndividualTaxLiabilityType.MIXED_WITHHOLDING_137_2);
+
+		// Envoie le message
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				sendTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
+				return null;
+			}
+		});
+
+		final EsbMessage message = getEsbMessage(getOutputQueue());
+		assertNotNull(message);
+
+		// on s'assure que la réponse est bien positive
+		final TaxLiabilityResponse response = (TaxLiabilityResponse) parseResponse(message);
+		assertNotNull(response);
+		assertNull(response.getPartyNumber());
+		assertNotNull(response.getFailure());
+		assertNotNull(response.getFailure().getImproperTaxliability());
+	}
 
 
 }
