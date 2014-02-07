@@ -426,14 +426,13 @@ public class QueryConstructor {
 
 		BooleanQuery fullQuery = new BooleanQuery();
 
-		addTypeTiers(fullQuery, criteria);
-
 		if (criteria.getNumero() != null) {
 			// Si on a un NUMERO CTB, on ne recherche que sur celui-ci
 			addNumero(fullQuery);
 		}
 		else {
 			// Sinon, on recherche sur les autres critères
+			addTypeTiers(fullQuery, criteria);
 			addNomRaison(fullQuery);
 			addFors(fullQuery);
 			addLocalitePays(fullQuery);
