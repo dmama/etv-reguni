@@ -36,15 +36,6 @@ public class TiersActivationListController extends AbstractTiersListController {
 	public static final String ACTIVATION_CRITERIA_NAME = "ActivationCriteria";
 	public static final String ACTIVATION_LIST_ATTRIBUTE_NAME = "list";
 
-	private static String getCriteriaSessionAttributeName(HttpServletRequest request) {
-		final String activation = request.getParameter(ACTIVATION_PARAMETER_NAME);
-		return getCriteriaSessionAttributeName(activation);
-	}
-
-	public static String getCriteriaSessionAttributeName(String activation) {
-		return String.format("%s_%s", ACTIVATION_CRITERIA_NAME, activation);
-	}
-
 	/**
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
@@ -54,7 +45,7 @@ public class TiersActivationListController extends AbstractTiersListController {
 		final HttpSession session = request.getSession();
 		final String activation = request.getParameter(ACTIVATION_PARAMETER_NAME);
 
-		TiersActivationListView bean = (TiersActivationListView) session.getAttribute(getCriteriaSessionAttributeName(activation));
+		TiersActivationListView bean = (TiersActivationListView) session.getAttribute(ACTIVATION_CRITERIA_NAME);
 		if (bean == null) {
 			bean = tiersActivationListManager.get(activation);
 	 	}
@@ -70,7 +61,7 @@ public class TiersActivationListController extends AbstractTiersListController {
 	@Override
 	protected ModelAndView showForm(HttpServletRequest request, HttpServletResponse response, BindException errors, Map model) throws Exception {
 		final HttpSession session = request.getSession();
-		final TiersActivationListView bean = (TiersActivationListView) session.getAttribute(getCriteriaSessionAttributeName(request));
+		final TiersActivationListView bean = (TiersActivationListView) session.getAttribute(ACTIVATION_CRITERIA_NAME);
 		final ModelAndView mav = super.showForm(request, response, errors, model);
 		if (errors.getErrorCount() == 0) {
 			if (bean != null && !bean.isEmpty()) {
@@ -108,7 +99,7 @@ public class TiersActivationListController extends AbstractTiersListController {
 
 		TiersActivationListView bean = (TiersActivationListView) command;
 		HttpSession session = request.getSession();
-		session.setAttribute(getCriteriaSessionAttributeName(activation), bean);
+		session.setAttribute(ACTIVATION_CRITERIA_NAME, bean);
 
 		mav.setView(new RedirectView("list.do?activation=" + activation));
 		return mav;
