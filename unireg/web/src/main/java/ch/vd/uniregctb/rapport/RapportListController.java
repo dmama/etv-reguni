@@ -40,9 +40,10 @@ public class RapportListController extends AbstractTiersListController {
 		Long numeroTiers = Long.parseLong(numeroTiersParam);
 
 		RapportListView rapportListView = (RapportListView) session.getAttribute(TIERS_LIE_CRITERIA_NAME);
-		if (rapportListView == null) {
+		if (rapportListView == null || !numeroTiers.equals(rapportListView.getNumero())) {
 			//gestion des droits par rapportListeManager
 			rapportListView = rapportListManager.get(numeroTiers);
+			session.removeAttribute(TIERS_LIE_CRITERIA_NAME);
 		}
 		return rapportListView;
 	}
