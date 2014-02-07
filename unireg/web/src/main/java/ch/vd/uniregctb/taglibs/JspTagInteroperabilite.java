@@ -129,11 +129,11 @@ public class JspTagInteroperabilite extends BodyTagSupport implements MessageSou
 		final Set<NatureTiers> naturesTiersPP = EnumSet.of(NatureTiers.Habitant, NatureTiers.NonHabitant, NatureTiers.MenageCommun);
 		final boolean isEntreprise = natureTiers == NatureTiers.Entreprise;
 		final boolean isPP = naturesTiersPP.contains(natureTiers);
-		final boolean showTAOPP = !debiteurInactif;
-		final boolean showTAOBA = !isEntreprise && !debiteurInactif;
-		final boolean showTAOIS = !isEntreprise && !debiteurInactif;
+		final boolean showTAOPP = !debiteurInactif || isPP;
+		final boolean showTAOBA = !isEntreprise && (!debiteurInactif || isPP);
+		final boolean showTAOIS = !isEntreprise && (!debiteurInactif || isPP);
 		final boolean showSIPF = true;
-		final boolean showDPERM = !debiteurInactif && isPP;
+		final boolean showDPERM = isPP;
 
 		//
 		// voir également le fichier unireg.js, fonction Search._build_html_simple_results()
@@ -141,6 +141,7 @@ public class JspTagInteroperabilite extends BodyTagSupport implements MessageSou
 
 		// [UNIREG-1949] débranchement uniquement vers SIPF pour les PMs
 		// [SIFISC-10805] en fait, TAO-PP est souhaité également
+		// [SIFISC-11392] les débiteurs inactifs PP doivent pouvoir aller aux mêmes endroits que les PP actives
 
 		final Set<ApplicationFiscale> apps = EnumSet.noneOf(ApplicationFiscale.class);
 		if (showTAOPP) {

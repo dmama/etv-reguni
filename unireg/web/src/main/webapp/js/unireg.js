@@ -2741,17 +2741,19 @@ var Search = {
 				table += '<td>';
 				if (!e.annule) {
 					if (!Search.urlRetour) {
+						var isPP = (e.tiersType === 'habitant' || e.tiersType === 'nonhabitant' || e.tiersType === 'menagecommun');
+
 						table += '<select name="AppSelect" onchange="App.gotoExternalApp(this);">';
 						table += '<option value="">---</option>';
-						if (!e.debiteurInactif) {
+						if (!e.debiteurInactif || isPP) {
 							table += '<option value="' + App.curl('/redirect/TAO_PP.do?id=' + e.numero) + '">TAO-PP</option>';
 						}
-						if (!e.debiteurInactif && e.tiersType != 'entreprise') {
+						if ((!e.debiteurInactif || isPP) && e.tiersType != 'entreprise') {
 							table += '<option value="' + App.curl('/redirect/TAO_BA.do?id=' + e.numero) + '">TAO-BA</option>';
 							table += '<option value="' + App.curl('/redirect/TAO_IS.do?id=' + e.numero) + '">TAO-IS</option>';
 						}
 						table += '<option value="' + App.curl('/redirect/SIPF.do?id=' + e.numero) + '">SIPF</option>';
-						if (!e.debiteurInactif && (e.tiersType === 'habitant' || e.tiersType === 'nonhabitant' || e.tiersType === 'menagecommun')) {
+						if (isPP) {
 							table += '<option value="' + App.curl('/redirect/DPERM.do?id=' + e.numero) + '">DPERM</option>';
 						}
 						if (e.tiersType != 'entreprise') {
