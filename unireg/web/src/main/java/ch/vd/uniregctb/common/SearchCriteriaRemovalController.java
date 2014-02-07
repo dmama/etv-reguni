@@ -34,7 +34,7 @@ public class SearchCriteriaRemovalController {
 
 	@RequestMapping(value = "/activation/reset-search.do", method = RequestMethod.GET)
 	public String effacerCriteresRechercheActivation(HttpSession session, @RequestParam("activation") String mode) {
-		session.removeAttribute(TiersActivationListController.ACTIVATION_CRITERIA_NAME);
+		session.removeAttribute(TiersActivationListController.getCriteriaSessionAttributeName(mode));
 		return "redirect:/activation/list.do?activation=" + (TiersActivationListController.ACTIVATION_REACTIVATION_VALUE.equalsIgnoreCase(mode)
 				? TiersActivationListController.ACTIVATION_REACTIVATION_VALUE
 				: TiersActivationListController.ACTIVATION_ANNULATION_VALUE);
