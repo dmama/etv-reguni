@@ -20,7 +20,7 @@ PWD=$(grep "^password=" "$CRED_FILE" | sed -e 's/^password=//')
 
 # modification de ~/.netrc
 NETRC_FILE=~/.netrc
-MACHINES="logapp.etat-de-vaud.ch subversion.etat-de-vaud.ch"
+MACHINES="logapp.etat-de-vaud.ch subversion.etat-de-vaud.ch svn.etat-de-vaud.ch"
 for MACHINE in $MACHINES; do
 	sed -i -e "/machine $MACHINE/,+2 D" "$NETRC_FILE"
 	touch "$NETRC_FILE"
