@@ -44,6 +44,10 @@ import ch.vd.unireg.xml.party.taxdeclaration.v3.OrdinaryTaxDeclaration;
 import ch.vd.unireg.xml.party.taxdeclaration.v3.TaxDeclarationStatus;
 import ch.vd.unireg.xml.party.taxdeclaration.v3.TaxDeclarationStatusType;
 import ch.vd.unireg.xml.party.taxpayer.v3.Taxpayer;
+import ch.vd.unireg.xml.party.taxresidence.v2.ExpenditureBased;
+import ch.vd.unireg.xml.party.taxresidence.v2.LiabilityChangeReason;
+import ch.vd.unireg.xml.party.taxresidence.v2.OrdinaryResident;
+import ch.vd.unireg.xml.party.taxresidence.v2.TaxLiability;
 import ch.vd.unireg.xml.party.taxresidence.v2.TaxResidence;
 import ch.vd.unireg.xml.party.v3.Party;
 import ch.vd.unireg.xml.party.v3.PartyPart;
@@ -637,6 +641,54 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 			final Pair<Integer, Set<PartyPart>> lastCall = getLastCallParametersToGetParty(calls);
 			assertEquals((Integer) ids.eric.intValue(), lastCall.getLeft());
 			assertEquals(EnumSet.of(PartyPart.EBILLING_STATUSES), lastCall.getRight());
+		}
+	}
+
+	/**
+	 * Pour le renvoi des données en JSON, on modifie la donnée retournée par le cache avant de la renvoyer
+	 * --> il faut donc vérifier que cette modification n'impacte pas le contenu du cache (autrement dit :
+	 * que le cache nous renvoie toujours une copie de son contenu interne)
+	 */
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testGetPartyModificationCollectionRenvoyeeEtValeurCachee() throws Exception {
+
+		final UserLogin userLogin = new UserLogin(getDefaultOperateurName(), 21);
+
+		// 1. on demande le tiers avec les assujettissements
+		{
+			final Party tiers = cache.getParty(userLogin, ids.eric.intValue(), EnumSet.of(PartyPart.TAX_LIABILITIES));
+			assertNotNull(tiers);
+			assertEquals(NaturalPerson.class, tiers.getClass());
+
+			final NaturalPerson np = (NaturalPerson) tiers;
+			assertNotNull(np.getTaxLiabilities());
+			assertEquals(1, np.getTaxLiabilities().size());
+
+			final TaxLiability tl = np.getTaxLiabilities().get(0);
+			assertNotNull(tl);
+			assertEquals(OrdinaryResident.class, tl.getClass());
+			assertEquals(LiabilityChangeReason.MAJORITY, tl.getStartReason());
+
+			// ok, maintenant on modifie la collection des assujettissements en changeant la classe de l'élément (c'est ce que l'on fait
+			// dans la manipulation JSON, au final)
+			np.getTaxLiabilities().set(0, new ExpenditureBased(tl.getStartReason(), tl.getEndReason(), tl.getDateTo(), tl.getDateFrom(), null));
+		}
+
+		// 2. même appel -> rien ne doit avoir changé
+		{
+			final Party tiers = cache.getParty(userLogin, ids.eric.intValue(), EnumSet.of(PartyPart.TAX_LIABILITIES));
+			assertNotNull(tiers);
+			assertEquals(NaturalPerson.class, tiers.getClass());
+
+			final NaturalPerson np = (NaturalPerson) tiers;
+			assertNotNull(np.getTaxLiabilities());
+			assertEquals(1, np.getTaxLiabilities().size());
+
+			final TaxLiability tl = np.getTaxLiabilities().get(0);
+			assertNotNull(tl);
+			assertEquals(OrdinaryResident.class, tl.getClass());
+			assertEquals(LiabilityChangeReason.MAJORITY, tl.getStartReason());
 		}
 	}
 

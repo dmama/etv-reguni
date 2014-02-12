@@ -156,10 +156,14 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 			final Party party;
 			final Element element = cache.get(key);
 			if (element == null) {
-				party = target.getParty(user, partyNo, parts);
-				if (party != null) {
-					final GetPartyValue value = new GetPartyValue(parts, party);
+				final Party found = target.getParty(user, partyNo, parts);
+				if (found != null) {
+					final GetPartyValue value = new GetPartyValue(parts, found);
 					cache.put(new Element(key, value));
+					party = value.restrictTo(found, parts);
+				}
+				else {
+					party = null;
 				}
 			}
 			else {

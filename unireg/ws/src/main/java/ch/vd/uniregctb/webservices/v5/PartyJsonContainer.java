@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.webservices.v5;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.codehaus.jackson.annotate.JsonProperty;
@@ -13,6 +14,8 @@ import ch.vd.unireg.xml.party.debtor.v3.Debtor;
 import ch.vd.unireg.xml.party.othercomm.v1.OtherCommunity;
 import ch.vd.unireg.xml.party.person.v3.CommonHousehold;
 import ch.vd.unireg.xml.party.person.v3.NaturalPerson;
+import ch.vd.unireg.xml.party.taxpayer.v3.Taxpayer;
+import ch.vd.unireg.xml.party.taxresidence.v2.TaxLiability;
 import ch.vd.unireg.xml.party.v3.Party;
 
 public class PartyJsonContainer {
@@ -118,7 +121,7 @@ public class PartyJsonContainer {
 		PartyJsonContainer build(T party);
 	}
 
-	private static final Map<Class<? extends Party>, ContainerBuilder<? extends Party>> builders = buildBuilders();
+	private static final Map<Class<? extends Party>, ContainerBuilder<? extends Party>> BUILDERS = buildBuilders();
 
 	private static <T extends Party> void registerBuilder(Map<Class<? extends Party>, ContainerBuilder<? extends Party>> map, Class<T> clazz, ContainerBuilder<T> builder) {
 		map.put(clazz, builder);
@@ -138,6 +141,7 @@ public class PartyJsonContainer {
 	private static final class NaturalPersonContainerBuilder implements ContainerBuilder<NaturalPerson> {
 		@Override
 		public PartyJsonContainer build(NaturalPerson naturalPerson) {
+			replacePolymorphicTaxLiabilites(naturalPerson);
 			return new PartyJsonContainer(naturalPerson);
 		}
 	}
@@ -145,6 +149,7 @@ public class PartyJsonContainer {
 	private static final class CommonHouseholdContainerBuilder implements ContainerBuilder<CommonHousehold> {
 		@Override
 		public PartyJsonContainer build(CommonHousehold household) {
+			replacePolymorphicTaxLiabilites(household);
 			return new PartyJsonContainer(household);
 		}
 	}
@@ -159,6 +164,7 @@ public class PartyJsonContainer {
 	private static final class CorporationContainerBuilder implements ContainerBuilder<Corporation> {
 		@Override
 		public PartyJsonContainer build(Corporation corporation) {
+			replacePolymorphicTaxLiabilites(corporation);
 			return new PartyJsonContainer(corporation);
 		}
 	}
@@ -166,6 +172,7 @@ public class PartyJsonContainer {
 	private static final class AdministrativeAuthorityContainerBuilder implements ContainerBuilder<AdministrativeAuthority> {
 		@Override
 		public PartyJsonContainer build(AdministrativeAuthority admAuth) {
+			replacePolymorphicTaxLiabilites(admAuth);
 			return new PartyJsonContainer(admAuth);
 		}
 	}
@@ -173,6 +180,7 @@ public class PartyJsonContainer {
 	private static final class OtherCommunityContainerBuilder implements ContainerBuilder<OtherCommunity> {
 		@Override
 		public PartyJsonContainer build(OtherCommunity otherCommunity) {
+			replacePolymorphicTaxLiabilites(otherCommunity);
 			return new PartyJsonContainer(otherCommunity);
 		}
 	}
@@ -180,7 +188,16 @@ public class PartyJsonContainer {
 	@SuppressWarnings("unchecked")
 	public static <T extends Party> PartyJsonContainer fromValue(Party party) {
 		final Class<? extends Party> clazz = party.getClass();
-		final ContainerBuilder<T> builder = (ContainerBuilder<T>) builders.get(clazz);
+		final ContainerBuilder<T> builder = (ContainerBuilder<T>) BUILDERS.get(clazz);
 		return builder.build((T) party);
+	}
+
+	private static void replacePolymorphicTaxLiabilites(Taxpayer taxpayer) {
+		final List<TaxLiability> tls = taxpayer.getTaxLiabilities();
+		if (tls != null) {
+			for (int i = 0 ; i < tls.size() ; ++ i) {
+				tls.set(i, JsonTaxLiabilityHelper.jsonEquivalentOf(tls.get(i)));
+			}
+		}
 	}
 }
