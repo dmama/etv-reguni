@@ -156,7 +156,7 @@
 		<tr class="<unireg:nextRowClass/>" >
 			<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
 			<td width="25%"><fmt:message key="label.origine.i107" />&nbsp;:</td>
-			<td width="25%"><form:checkbox path="inclureI107" /></td>
+			<td width="25%"><form:checkbox path="inclureI107" /><span class="jTip formInfo" title="<c:url value="/htm/debiteurInactif.htm?width=375"/>" id="debiteurInactif">?</span></td>
 			</authz:authorize>
 			<td width="25%"><fmt:message key="label.inclure.tiers.annules" />&nbsp;:</td>
 			<td width="25%"><form:checkbox path="inclureTiersAnnules" /></td>
