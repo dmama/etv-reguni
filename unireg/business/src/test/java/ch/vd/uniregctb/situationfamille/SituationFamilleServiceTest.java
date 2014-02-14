@@ -13,6 +13,7 @@ import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.situationfamille.VueSituationFamille.Source;
@@ -27,6 +28,7 @@ import ch.vd.uniregctb.tiers.SituationFamillePersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.EtatCivil;
+import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TarifImpotSource;
@@ -937,6 +939,69 @@ public class SituationFamilleServiceTest extends BusinessTest {
 					assertEquals(date(1960, 5, 1), vue.getDateDebut());
 					assertNull(vue.getDateFin());
 					assertEquals(EtatCivil.CELIBATAIRE, vue.getEtatCivil());
+				}
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-11460] la "zone continue" de fors n'est pas correctement prise en compte
+	 */
+	@Test
+	public void testRattrapageDatesEtatsCivilsAvecDemenagements() throws Exception {
+
+		final long noIndividu = 234678245273L;
+		final RegDate dateNaissance = RegDate.get(1978, 6, 3);
+		final RegDate dateArrivee1 = RegDate.get(2012, 6, 11);
+		final RegDate dateDepartHS = RegDate.get(2012, 12, 31);
+		final RegDate dateArrivee2 = RegDate.get(2013, 3, 1);
+		final RegDate dateDemenagement = RegDate.get(2013, 4, 1);
+
+		// mise en place du service civil
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Pranlaporte", "Philibert", Sexe.MASCULIN);
+				addEtatCivil(ind, null, TypeEtatCivil.MARIE);
+				addEtatCivil(ind, null, TypeEtatCivil.SEPARE);
+				addEtatCivil(ind, null, TypeEtatCivil.SEPARE);
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				addForPrincipal(pp, dateArrivee1, MotifFor.ARRIVEE_HS, dateDepartHS, MotifFor.DEPART_HS, MockCommune.Fraction.LeSentier, ModeImposition.SOURCE);
+				addForPrincipal(pp, dateDepartHS.getOneDayAfter(), MotifFor.DEPART_HS, dateArrivee2.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockPays.Espagne, ModeImposition.SOURCE);
+				addForPrincipal(pp, dateArrivee2, MotifFor.ARRIVEE_HS, dateDemenagement.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockCommune.Fraction.LeSentier, ModeImposition.SOURCE);
+				addForPrincipal(pp, dateDemenagement, MotifFor.ARRIVEE_HS, MockCommune.Fraction.LeSolliat, ModeImposition.SOURCE);
+				return pp.getNumero();
+			}
+		});
+
+		// calcul des situations de famille
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				final List<VueSituationFamille> histo = service.getVueHisto(pp);
+				assertNotNull(histo);
+				assertEquals(2, histo.size());
+				{
+					final VueSituationFamille vue = histo.get(0);
+					assertNotNull(vue);
+					assertNull(vue.getDateDebut());
+					assertEquals(dateArrivee1.getOneDayBefore(), vue.getDateFin());
+					assertEquals(EtatCivil.SEPARE, vue.getEtatCivil());
+				}
+				{
+					final VueSituationFamille vue = histo.get(1);
+					assertNotNull(vue);
+					assertEquals(dateArrivee1, vue.getDateDebut());
+					assertNull(vue.getDateFin());
+					assertEquals(EtatCivil.SEPARE, vue.getEtatCivil());
 				}
 			}
 		});

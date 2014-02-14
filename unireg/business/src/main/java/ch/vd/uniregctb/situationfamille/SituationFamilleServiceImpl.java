@@ -268,10 +268,10 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 				for (ForFiscalPrincipal ffp : fors) {
 					ranges.add(new DateRangeHelper.Range(ffp));
 				}
-				DateRangeHelper.collate(ranges);
+				final List<CollatableDateRange> collated = DateRangeHelper.collate(ranges);
 
 				// on prend la première date de début d'une zone continue qui se situe avant (ou à) la date "max"
-				for (DateRange ff : CollectionsUtils.revertedOrder(ranges)) {
+				for (DateRange ff : CollectionsUtils.revertedOrder(collated)) {
 					if (RegDateHelper.isBeforeOrEqual(ff.getDateDebut(), max, NullDateBehavior.LATEST)) {
 						dateDebutEtatCivil = ff.getDateDebut();
 						break;
