@@ -279,7 +279,7 @@
 								<c:when test="${!ligne.assujettissementSource.span && !ligne.assujettissementSource.filler}">
 									<c:set var="a" value="${ligne.assujettissementSource.range}" />
 									<td class="assujettissement tooltip_cell" id="a-<unireg:regdate regdate="${a.dateDebut}" format="yyyyMMdd"/>" rowspan="<c:out value="${ligne.assujettissementSource.longueurAffichage}" />">
-	                                    <c:out value="${a.description}" />
+	                                    <c:out value="${a.type.description}" />
 		                                <div id="a-<unireg:regdate regdate="${a.dateDebut}" format="yyyyMMdd"/>-tooltip" style="display:none;">
 		                                    Début : <b><unireg:date date="${a.dateDebut}"/></b>
 		                                    <c:if test="${a.motifFractDebut != null}">
@@ -312,7 +312,7 @@
 								<c:when test="${!ligne.assujettissementRole.span && !ligne.assujettissementRole.filler}">
 									<c:set var="a" value="${ligne.assujettissementRole.range}" />
 									<td class="assujettissement tooltip_cell" id="a-<unireg:regdate regdate="${a.dateDebut}" format="yyyyMMdd"/>" rowspan="<c:out value="${ligne.assujettissementRole.longueurAffichage}" />">
-	                                    <c:out value="${a.description}" />
+	                                    <c:out value="${a.type.description}" />
 		                                <div id="a-<unireg:regdate regdate="${a.dateDebut}" format="yyyyMMdd"/>-tooltip" style="display:none;">
 		                                    Début : <b><unireg:date date="${a.dateDebut}"/></b>
 		                                    <c:if test="${a.motifFractDebut != null}">
@@ -346,7 +346,7 @@
 							<c:when test="${!ligne.assujettissement.span && !ligne.assujettissement.filler}">
 								<c:set var="a" value="${ligne.assujettissement.range}" />
 								<td class="assujettissement tooltip_cell" id="a-<unireg:regdate regdate="${a.dateDebut}" format="yyyyMMdd"/>" rowspan="<c:out value="${ligne.assujettissement.longueurAffichage}" />">
-                                    <c:out value="${a.description}" />
+                                    <c:out value="${a.type.description}" />
 	                                <div id="a-<unireg:regdate regdate="${a.dateDebut}" format="yyyyMMdd"/>-tooltip" style="display:none;">
 	                                    Début : <b><unireg:date date="${a.dateDebut}"/></b>
 	                                    <c:if test="${a.motifFractDebut != null}">
