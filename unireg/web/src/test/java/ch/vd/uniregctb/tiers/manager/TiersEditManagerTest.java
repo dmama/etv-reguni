@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -1157,6 +1158,46 @@ public class TiersEditManagerTest extends WebTest {
 				return null;
 			}
 		});
+	}
+
+	/**
+	 * [SIFISC-11532]
+	 */
+	@Test
+	public void testRetourMemePeriodiciteAvecAnnulation() throws Exception {
+		final RegDate dateDebut = date(2012, 1, 1);
+		final RegDate dateChangement = date(2013, 1, 1);
+
+		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1980, 10, 25), Sexe.MASCULIN);
+				final DebiteurPrestationImposable dpi = addDebiteur(null, pp, dateDebut);
+				addForDebiteur(dpi, dateDebut, MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Bussigny);
+
+				// les périodicités
+				dpi.setPeriodicites(new HashSet<>(Arrays.asList(new Periodicite(PeriodiciteDecompte.TRIMESTRIEL, null, dateDebut, dateChangement.getOneDayBefore()),
+				                                                new Periodicite(PeriodiciteDecompte.ANNUEL, null, dateChangement, null))));
+
+				final PeriodeFiscale pf = addPeriodeFiscale(2012);
+				final ModeleDocument md = addModeleDocument(TypeDocument.LISTE_RECAPITULATIVE, pf);
+
+				// les LRs sur 2012
+				for (int i = 0 ; i < 4 ; ++ i) {
+					final RegDate debutLr = date(2012, i * 3 + 1, 1);
+					final RegDate finLr = debutLr.addMonths(3).getOneDayBefore();
+					addListeRecapitulative(dpi, pf, debutLr, finLr, md);
+				}
+				return dpi.getNumero();
+			}
+		});
+
+		final List<RegDate> dates = tiersEditManager.getDatesPossiblesPourDebutNouvellePeriodicite(dpiId, PeriodiciteDecompte.TRIMESTRIEL, RegDate.get().addYears(1), false);
+		assertNotNull(dates);
+		assertEquals(3, dates.size());
+		assertEquals(date(2013, 1, 1), dates.get(0));
+		assertEquals(date(2014, 1, 1), dates.get(1));
+		assertEquals(date(2015, 1, 1), dates.get(2));
 	}
 
 	public TiersEditManager getTiersEditManager() {

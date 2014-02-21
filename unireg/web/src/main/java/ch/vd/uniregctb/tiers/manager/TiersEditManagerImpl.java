@@ -170,8 +170,11 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 							final RegDate candidate = active.getPeriodiciteDecompte().getDebutPeriodeSuivante(current);
 							if (active.getDateFin() != null && candidate.isAfter(active.getDateFin())) {
 								active = DateRangeHelper.rangeAt(periodicites, candidate);
+								current = active.getDateDebut();
 							}
-							current = candidate;
+							else {
+								current = candidate;
+							}
 							if (nouvellePeriodicite.getDebutPeriode(candidate) == candidate) {
 								break;
 							}
