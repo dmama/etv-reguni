@@ -1192,7 +1192,7 @@ public class TiersEditManagerTest extends WebTest {
 			}
 		});
 
-		final List<RegDate> dates = tiersEditManager.getDatesPossiblesPourDebutNouvellePeriodicite(dpiId, PeriodiciteDecompte.TRIMESTRIEL, RegDate.get().addYears(1), false);
+		final List<RegDate> dates = tiersEditManager.getDatesPossiblesPourDebutNouvellePeriodicite(dpiId, PeriodiciteDecompte.TRIMESTRIEL, date(2015, 1, 1), false);
 		assertNotNull(dates);
 		assertEquals(3, dates.size());
 		assertEquals(date(2013, 1, 1), dates.get(0));
