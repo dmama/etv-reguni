@@ -3814,12 +3814,9 @@ public class TiersServiceImpl implements TiersService {
 		    date = RegDate.get();
 	    }
 
-        // les I107 sont "inactifs" (mais attention, ce flag est un peu galvaudé ces temps... donc je
-        // teste aussi l'absence de fors fiscaux non annulés)
-        if (tiers instanceof PersonnePhysique
-                && tiers.isDebiteurInactif()
-                && tiers.getForsFiscauxNonAnnules(false).isEmpty()) {
-            str = "inactif";
+	    // [SIFISC-11465] La mention "Inactif" doit apparaître dès que le flag "débiteur inactif" est levé
+        if (tiers instanceof PersonnePhysique && tiers.isDebiteurInactif()) {
+            str = "Inactif";
         }
 
         // seuls les contribuables peuvent avoir un assujettissement
@@ -3836,10 +3833,12 @@ public class TiersServiceImpl implements TiersService {
                 if (str == null) {
                     str = "Non assujetti";
                 }
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 LOGGER.warn("Impossible de calculer l'assujettissement du tiers " + tiers.getNumero(), e);
             }
-        } else if (tiers instanceof DebiteurPrestationImposable) {
+        }
+        else if (tiers instanceof DebiteurPrestationImposable) {
             final CategorieImpotSource categorie = ((DebiteurPrestationImposable) tiers).getCategorieImpotSource();
             if (categorie != null) {
                 str = categorie.texte();
