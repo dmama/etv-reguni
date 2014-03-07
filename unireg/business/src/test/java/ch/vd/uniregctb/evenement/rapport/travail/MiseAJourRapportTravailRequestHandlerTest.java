@@ -93,7 +93,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		final Long idDebiteur = doInNewTransaction(new TxCallback<Long>() {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
-				DebiteurPrestationImposable debiteur = addDebiteur();
+				DebiteurPrestationImposable debiteur = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2012, 1, 1));
 				addForDebiteur(debiteur, date(2012, 1, 1), MotifFor.INDETERMINE, date(2012, 6, 20), MotifFor.INDETERMINE, MockCommune.Echallens);
 				return debiteur.getNumero();
 			}
@@ -1151,7 +1151,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				DebiteurPrestationImposable debiteur = addDebiteur();
+				DebiteurPrestationImposable debiteur = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2012, 1, 1));
 
 				addForDebiteur(debiteur, date(2012, 1, 1), MotifFor.INDETERMINE, dateFermetureFor, MotifFor.INDETERMINE, MockCommune.Echallens);
 				ids.idDebiteur= debiteur.getNumero();

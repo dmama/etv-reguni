@@ -10,6 +10,7 @@ import ch.vd.uniregctb.common.WebTest;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.lr.view.ListeRecapDetailView;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
+import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.PeriodeDecompte;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
@@ -189,8 +190,7 @@ public class ListeRecapManagerTest extends WebTest {
 		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
-				DebiteurPrestationImposable dpi = addDebiteur();
-				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.TRIMESTRIEL, null, date(anneeReference, 9, 1), null);
+				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(anneeReference, 9, 1));
 				addForDebiteur(dpi, date(anneeReference, 1, 1), MotifFor.INDETERMINE, date(anneeReference, 6, 30), MotifFor.INDETERMINE, MockCommune.Bex);
 				addForDebiteur(dpi, date(anneeSuivante, 10, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bex);
 
@@ -220,8 +220,7 @@ public class ListeRecapManagerTest extends WebTest {
 		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
-				DebiteurPrestationImposable dpi = addDebiteur();
-				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.TRIMESTRIEL, null, date(anneeReference, 1, 1), null);
+				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(anneeReference, 1, 1));
 				addForDebiteur(dpi, date(anneeReference, 1, 1), MotifFor.INDETERMINE, date(anneeReference, 6, 30), MotifFor.INDETERMINE, MockCommune.Bex);
 				addForDebiteur(dpi, date(anneeSuivante, 10, 1), MotifFor.INDETERMINE, date(anneeSuivante, 12, 31), MotifFor.INDETERMINE, MockCommune.Bex);
 
@@ -256,8 +255,7 @@ public class ListeRecapManagerTest extends WebTest {
 		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
-				DebiteurPrestationImposable dpi = addDebiteur();
-				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.TRIMESTRIEL, null, date(anneeReference, 1, 1), null);
+				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(anneeReference, 1, 1));
 				addForDebiteur(dpi, date(anneeReference, 1, 1), MotifFor.INDETERMINE, date(anneeReference, 6, 30), MotifFor.INDETERMINE, MockCommune.Bex);
 				addForDebiteur(dpi, date(anneeSuivante, 10, 1), MotifFor.INDETERMINE, date(anneeSuivante, 12, 31), MotifFor.INDETERMINE, MockCommune.Bex);
 				addForDebiteur(dpi, date(anneePostSuivante, 3, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bex);

@@ -3131,11 +3131,8 @@ public class TiersServiceTest extends BusinessTest {
 		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
-				DebiteurPrestationImposable dpi = addDebiteur();
+				DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
 				tiersService.addForDebiteur(dpi, date(2009,6,22), MotifFor.INDETERMINE, null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Bex.getNoOFS());
-
-
-
 				return dpi.getNumero();
 			}
 		});

@@ -1,11 +1,16 @@
 package ch.vd.uniregctb.validation.fors;
 
+import java.util.Collections;
+import java.util.EnumMap;
 import java.util.EnumSet;
+import java.util.Map;
 import java.util.Set;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
+import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
@@ -16,8 +21,32 @@ public class ForDebiteurPrestationImposableValidator extends ForFiscalAvecMotifs
 	private static final Set<MotifFor> ALLOWED_CLOSING_CAUSES = EnumSet.of(MotifFor.INDETERMINE, MotifFor.FIN_PRESTATION_IS, MotifFor.CESSATION_ACTIVITE_FUSION_FAILLITE, MotifFor.FUSION_COMMUNES, MotifFor.ANNULATION, MotifFor.DEMENAGEMENT_SIEGE);
 
 	private static final Set<MotifFor> OPENING_MONTH_BEGINNING = EnumSet.of(MotifFor.DEBUT_PRESTATION_IS, MotifFor.DEMENAGEMENT_SIEGE);
-	private static final Set<MotifFor> CLOSING_MONTH_END = EnumSet.of(MotifFor.CESSATION_ACTIVITE_FUSION_FAILLITE, MotifFor.DEMENAGEMENT_SIEGE);
-	private static final Set<MotifFor> CLOSING_YEAR_END = EnumSet.of(MotifFor.FIN_PRESTATION_IS);
+	private static final Map<CategorieImpotSource, Set<MotifFor>> CLOSING_MONTH_END = buildClosingMonthEndMap();
+	private static final Map<CategorieImpotSource, Set<MotifFor>> CLOSING_YEAR_END = buildClosingYearEndMap();
+
+	private static Map<CategorieImpotSource, Set<MotifFor>> buildClosingMonthEndMap() {
+		final Set<MotifFor> regs = EnumSet.of(MotifFor.CESSATION_ACTIVITE_FUSION_FAILLITE, MotifFor.DEMENAGEMENT_SIEGE);
+		final Set<MotifFor> others = EnumSet.of(MotifFor.CESSATION_ACTIVITE_FUSION_FAILLITE, MotifFor.DEMENAGEMENT_SIEGE, MotifFor.FIN_PRESTATION_IS);
+
+		final Map<CategorieImpotSource, Set<MotifFor>> map = new EnumMap<>(CategorieImpotSource.class);
+		for (CategorieImpotSource cis : CategorieImpotSource.values()) {
+			final Set<MotifFor> motifs = (cis == CategorieImpotSource.REGULIERS ? regs : others);
+			map.put(cis, motifs);
+		}
+		return map;
+	}
+
+	private static Map<CategorieImpotSource, Set<MotifFor>> buildClosingYearEndMap() {
+		final Set<MotifFor> regs = EnumSet.of(MotifFor.FIN_PRESTATION_IS);
+		final Set<MotifFor> others = Collections.emptySet();
+
+		final Map<CategorieImpotSource, Set<MotifFor>> map = new EnumMap<>(CategorieImpotSource.class);
+		for (CategorieImpotSource cis : CategorieImpotSource.values()) {
+			final Set<MotifFor> motifs = (cis == CategorieImpotSource.REGULIERS ? regs : others);
+			map.put(cis, motifs);
+		}
+		return map;
+	}
 
 	@Override
 	protected Class<ForDebiteurPrestationImposable> getValidatedClass() {
@@ -81,12 +110,16 @@ public class ForDebiteurPrestationImposableValidator extends ForFiscalAvecMotifs
 				if (ff.getMotifFermeture() == null) {
 					vr.addError("Le motif de fermeture est une donnée obligatoire sur les fors fiscaux 'débiteur prestation imposable' fermés.");
 				}
-				// [SIFISC-8712] conformité du motif de fermeture avec la date correspondante
-				else if (CLOSING_YEAR_END.contains(ff.getMotifFermeture()) && ff.getDateFin() != RegDate.get(ff.getDateFin().year(), 12, 31)) {
-					vr.addError("Les fors fermés avec le motif '" + ff.getMotifFermeture().getDescription(false) + "' doivent être fermés à une fin d'année.");
-				}
-				else if (CLOSING_MONTH_END.contains(ff.getMotifFermeture()) && ff.getDateFin() != ff.getDateFin().getLastDayOfTheMonth()) {
-					vr.addError("Les fors fermés avec le motif '" + ff.getMotifFermeture().getDescription(false) + "' doivent être fermés à une fin de mois.");
+				else {
+					// [SIFISC-8712] conformité du motif de fermeture avec la date correspondante
+					// [SIFISC-11622] la règle change en fonction de la catégorie du débiteur
+					final CategorieImpotSource cis = ((DebiteurPrestationImposable) ff.getTiers()).getCategorieImpotSource();
+					if (CLOSING_YEAR_END.get(cis).contains(ff.getMotifFermeture()) && ff.getDateFin() != RegDate.get(ff.getDateFin().year(), 12, 31)) {
+						vr.addError("Les fors fermés avec le motif '" + ff.getMotifFermeture().getDescription(false) + "' doivent être fermés à une fin d'année.");
+					}
+					else if (CLOSING_MONTH_END.get(cis).contains(ff.getMotifFermeture()) && ff.getDateFin() != ff.getDateFin().getLastDayOfTheMonth()) {
+						vr.addError("Les fors fermés avec le motif '" + ff.getMotifFermeture().getDescription(false) + "' doivent être fermés à une fin de mois.");
+					}
 				}
 			}
 		}

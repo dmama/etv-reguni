@@ -11,6 +11,7 @@ import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
+import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeCommunication;
 import ch.vd.uniregctb.type.MotifFor;
@@ -32,10 +33,7 @@ public class DebiteurPrestationImposableValidatorTest extends AbstractValidatorT
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDetectionChevauchementForsDebiteurForIntermediateOuvert() {
 
-
-
-		final DebiteurPrestationImposable debiteur = new DebiteurPrestationImposable();
-		debiteur.addPeriodicite(new Periodicite(PeriodiciteDecompte.TRIMESTRIEL,null,date(2003,12,1),null));
+		final DebiteurPrestationImposable debiteur = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2003, 12, 1));
 		{
 			final ForDebiteurPrestationImposable forFiscal = new ForDebiteurPrestationImposable();
 			forFiscal.setDateDebut(date(2003, 12, 1));
@@ -126,12 +124,7 @@ public class DebiteurPrestationImposableValidatorTest extends AbstractValidatorT
 	@Transactional(rollbackFor = Throwable.class)
 	public void testValidationLRNonCouvertesParFor() {
 
-
-		final DebiteurPrestationImposable debiteur = new DebiteurPrestationImposable();
-
-		debiteur.addPeriodicite(new Periodicite(PeriodiciteDecompte.SEMESTRIEL, null, date(2006, 10, 2), null));
-
-
+		final DebiteurPrestationImposable debiteur = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.SEMESTRIEL, date(2006, 10, 2));
 		{
 			final ForDebiteurPrestationImposable forFiscal = new ForDebiteurPrestationImposable();
 			forFiscal.setDateDebut(date(2006, 10, 2));
