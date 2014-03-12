@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:util="http://www.springframework.org/schema/util"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+							http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+							http://www.springframework.org/schema/util
+							http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+
+	<bean id="partyRequestListener" class="ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener" parent="esbMessageListener">
+		<property name="handler" ref="partyRequestEsbHandler"/>
+		<property name="esbErrorHandler" ref="partyRequestErrorCollector"/>
+	</bean>
+
+	<bean id="partyRequestErrorCollector" class="ch.vd.uniregctb.jms.EsbBusinessErrorCollector"/>
+
+	<bean id="partyRequestEsbHandler" class="ch.vd.uniregctb.evenement.party.PartyRequestEsbHandler">
+		<property name="handlers">
+			<util:map>
+				<entry key="ch.vd.unireg.xml.event.party.address.v1.AddressRequest" value-ref="addressRequestHandler" />
+				<entry key="ch.vd.unireg.xml.event.party.numbers.v1.NumbersRequest" value-ref="numberRequestHandler" />
+				<entry key="ch.vd.unireg.xml.event.party.party.v1.PartyRequest" value-ref="partyRequestHandlerV1" />
+				<entry key="ch.vd.unireg.xml.event.party.party.v2.PartyRequest" value-ref="partyRequestHandlerV2" />
+				<entry key="ch.vd.unireg.xml.event.party.party.v3.PartyRequest" value-ref="partyRequestHandlerV3" />
+				<entry key="ch.vd.unireg.xml.event.party.nonresident.v1.CreateNonresidentRequest" value-ref="createNonresidentRequestHandlerV1" />
+				<entry key="ch.vd.unireg.xml.event.party.nonresident.v2.CreateNonresidentRequest" value-ref="createNonresidentRequestHandlerV2" />
+				<entry key="ch.vd.unireg.xml.event.party.taxliab.aperiodic.v1.AperiodicTaxLiabilityRequest" value-ref="aperiodicTaxLiabilityRequestHandlerV1" />
+				<entry key="ch.vd.unireg.xml.event.party.taxliab.aperiodic.v2.AperiodicTaxLiabilityRequest" value-ref="aperiodicTaxLiabilityRequestHandlerV2" />
+				<entry key="ch.vd.unireg.xml.event.party.taxliab.periodic.v2.PeriodicTaxLiabilityRequest" value-ref="periodicTaxLiabilityRequestHandlerV2" />
+				<entry key="ch.vd.unireg.xml.event.party.taxliab.aperiodic.v3.AperiodicTaxLiabilityRequest" value-ref="aperiodicTaxLiabilityRequestHandlerV3" />
+				<entry key="ch.vd.unireg.xml.event.party.taxliab.periodic.v3.PeriodicTaxLiabilityRequest" value-ref="periodicTaxLiabilityRequestHandlerV3" />
+			</util:map>
+		</property>
+		<property name="esbTemplate" ref="esbJmsTemplate"/>
+	</bean>
+
+	<bean id="partyRequestEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">
+		<property name="resourceAdapter" ref="jmsResourceAdapter"/>
+		<property name="activationSpec">
+			<bean class="org.apache.activemq.ra.ActiveMQActivationSpec">
+				<property name="destination" value="${testprop.jms.queue.party.service}"/>
+				<property name="destinationType" value="javax.jms.Queue"/>
+				<property name="maxSessions" value="1"/>
+				<property name="maxMessagesPerSessions" value="1"/>
+			</bean>
+		</property>
+		<property name="messageListener" ref="partyRequestListener" />
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="autoStartup" value="true" />
+	</bean>
+
+	<bean id="addressRequestHandler" class="ch.vd.uniregctb.evenement.party.AddressRequestHandler">
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="adresseService" ref="adresseService" />
+	</bean>
+
+	<bean id="numberRequestHandler" class="ch.vd.uniregctb.evenement.party.NumbersRequestHandler">
+		<property name="tiersDAO" ref="tiersDAO" />
+	</bean>
+
+	<bean id="partyRequestHandlerV1" class="ch.vd.uniregctb.evenement.party.PartyRequestHandlerV1">
+		<property name="adresseService" ref="adresseService" />
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="tiersService" ref="tiersService" />
+		<property name="infraService" ref="serviceInfrastructureService" />
+		<property name="situationService" ref="situationFamilleService" />
+		<property name="ibanValidator" ref="ibanValidator" />
+		<property name="parametreService" ref="parametreAppService" />
+		<property name="serviceCivil" ref="serviceCivilService" />
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="lrService" ref="lrService" />
+		<property name="diService" ref="diService" />
+		<property name="bamMessageSender" ref="bamMessageSender" />
+		<property name="servicePM" ref="servicePersonneMoraleService" />
+		<property name="assujettissementService" ref="assujettissementService" />
+		<property name="periodeImpositionService" ref="periodeImpositionService" />
+	</bean>
+
+	<bean id="partyRequestHandlerV2" class="ch.vd.uniregctb.evenement.party.PartyRequestHandlerV2">
+		<property name="adresseService" ref="adresseService" />
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="tiersService" ref="tiersService" />
+		<property name="infraService" ref="serviceInfrastructureService" />
+		<property name="situationService" ref="situationFamilleService" />
+		<property name="ibanValidator" ref="ibanValidator" />
+		<property name="parametreService" ref="parametreAppService" />
+		<property name="serviceCivil" ref="serviceCivilService" />
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="lrService" ref="lrService" />
+		<property name="diService" ref="diService" />
+		<property name="bamMessageSender" ref="bamMessageSender" />
+		<property name="servicePM" ref="servicePersonneMoraleService" />
+		<property name="assujettissementService" ref="assujettissementService" />
+		<property name="periodeImpositionService" ref="periodeImpositionService" />
+	</bean>
+
+	<bean id="partyRequestHandlerV3" class="ch.vd.uniregctb.evenement.party.PartyRequestHandlerV3">
+		<property name="adresseService" ref="adresseService" />
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="tiersService" ref="tiersService" />
+		<property name="infraService" ref="serviceInfrastructureService" />
+		<property name="situationService" ref="situationFamilleService" />
+		<property name="ibanValidator" ref="ibanValidator" />
+		<property name="parametreService" ref="parametreAppService" />
+		<property name="serviceCivil" ref="serviceCivilService" />
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="lrService" ref="lrService" />
+		<property name="diService" ref="diService" />
+		<property name="bamMessageSender" ref="bamMessageSender" />
+		<property name="servicePM" ref="servicePersonneMoraleService" />
+		<property name="assujettissementService" ref="assujettissementService" />
+		<property name="periodeImpositionService" ref="periodeImpositionService" />
+		<property name="periodeImpositionImpotSourceService" ref="periodeImpositionImpotSourceService" />
+		<property name="securityProvider" ref="securityProviderInterface"/>
+	</bean>
+
+	<bean id="createNonresidentRequestHandlerV1" class="ch.vd.uniregctb.evenement.party.CreateNonresidentRequestHandlerV1">
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
+	</bean>
+
+	<bean id="createNonresidentRequestHandlerV2" class="ch.vd.uniregctb.evenement.party.CreateNonresidentRequestHandlerV2">
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
+	</bean>
+
+	<bean id="aperiodicTaxLiabilityRequestHandlerV1" class="ch.vd.uniregctb.evenement.party.AperiodicTaxLiabilityRequestHandler">
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="tiersService" ref="tiersService" />
+	</bean>
+
+	<bean id="aperiodicTaxLiabilityRequestHandlerV2" class="ch.vd.uniregctb.evenement.party.AperiodicTaxLiabilityRequestHandlerV2">
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="securityProvider" ref="securityProviderInterface"/>
+		<property name="taxliabilityControlService" ref="taxLiabilityControlService"/>
+	</bean>
+
+	<bean id="periodicTaxLiabilityRequestHandlerV2" class="ch.vd.uniregctb.evenement.party.PeriodicTaxLiabilityRequestHandlerV2">
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="securityProvider" ref="securityProviderInterface"/>
+		<property name="taxliabilityControlService" ref="taxLiabilityControlService"/>
+	</bean>
+	<bean id="aperiodicTaxLiabilityRequestHandlerV3" class="ch.vd.uniregctb.evenement.party.AperiodicTaxLiabilityRequestHandlerV3">
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="securityProvider" ref="securityProviderInterface"/>
+		<property name="taxliabilityControlService" ref="taxLiabilityControlService"/>
+	</bean>
+
+	<bean id="periodicTaxLiabilityRequestHandlerV3" class="ch.vd.uniregctb.evenement.party.PeriodicTaxLiabilityRequestHandlerV3">
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="securityProvider" ref="securityProviderInterface"/>
+		<property name="taxliabilityControlService" ref="taxLiabilityControlService"/>
+	</bean>
+
+
+</beans>

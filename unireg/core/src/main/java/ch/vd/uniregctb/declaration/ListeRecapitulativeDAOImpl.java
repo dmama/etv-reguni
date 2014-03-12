@@ -1,0 +1,233 @@
+package ch.vd.uniregctb.declaration;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.log4j.Logger;
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.jetbrains.annotations.Nullable;
+import org.springframework.dao.support.DataAccessUtils;
+
+import ch.vd.registre.base.dao.GenericDAOImpl;
+import ch.vd.registre.base.date.DateRange;
+import ch.vd.registre.base.date.DateRangeHelper;
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.common.ParamPagination;
+import ch.vd.uniregctb.dbutils.QueryFragment;
+import ch.vd.uniregctb.type.CategorieImpotSource;
+import ch.vd.uniregctb.type.ModeCommunication;
+import ch.vd.uniregctb.type.PeriodiciteDecompte;
+import ch.vd.uniregctb.type.TypeEtatDeclaration;
+
+public class ListeRecapitulativeDAOImpl extends GenericDAOImpl< DeclarationImpotSource, Long> implements  ListeRecapitulativeDAO {
+
+	private static final Logger LOGGER = Logger.getLogger(ListeRecapitulativeDAOImpl.class);
+
+	public ListeRecapitulativeDAOImpl() {
+		super(DeclarationImpotSource.class);
+	}
+
+
+	/**
+	 * Recherche des listes recapitulatives selon des criteres
+	 *
+	 * @param criterion
+	 * @return
+	 */
+	@Override
+	public List<DeclarationImpotSource> find(final ListeRecapCriteria criterion, @Nullable final ParamPagination paramPagination) {
+
+		final Session session = getCurrentSession();
+		final List<Object> paramsWhereClause = new ArrayList<>();
+		final String whereClause = buildWhereClauseFromCriteria(criterion, paramsWhereClause);
+
+		final QueryFragment fragment = new QueryFragment("SELECT lr FROM DeclarationImpotSource lr WHERE 1=1 " + whereClause, paramsWhereClause);
+		if (paramPagination != null) {
+			fragment.add(paramPagination.buildOrderClause("lr", null, true, null));
+		}
+		else {
+			fragment.add("ORDER BY lr.id ASC");
+		}
+
+		final Query queryObject = fragment.createQuery(session);
+
+		if (paramPagination != null) {
+			final int firstResult = paramPagination.getSqlFirstResult();
+			final int maxResult = paramPagination.getSqlMaxResults();
+			queryObject.setFirstResult(firstResult);
+			queryObject.setMaxResults(maxResult);
+		}
+
+		//noinspection unchecked
+		return queryObject.list();
+	}
+
+	/**
+	 * @see ch.vd.uniregctb.declaration.ListeRecapitulativeDAO#count(ch.vd.uniregctb.declaration.ListeRecapCriteria)
+	 */
+	@Override
+	public int count(ListeRecapCriteria criterion) {
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("Start of ListeRecapitulativeDAO : count");
+		}
+
+		final List<Object> parameters = new ArrayList<>();
+		final String query = String.format("SELECT COUNT(lr) FROM DeclarationImpotSource lr WHERE 1=1 %s",
+											buildWhereClauseFromCriteria(criterion, parameters));
+
+		return DataAccessUtils.intResult(find(query, parameters.toArray(), null));
+	}
+
+
+	/**
+	 * Construit une clause where avec les critères demandés et remplit la liste passée en paramètre en conséquence
+	 * @param criterion
+	 * @param parameters
+	 * @return " and ... and ... "
+	 */
+    private String buildWhereClauseFromCriteria(ListeRecapCriteria criterion, List<Object> parameters) {
+
+    	final StringBuilder builder = new StringBuilder();
+
+	    final PeriodiciteDecompte periodicite = criterion.getPeriodicite();
+	    if (periodicite != null) {
+			builder.append(" and lr.periodicite = ? ");
+			parameters.add(periodicite.name());
+		}
+
+	    final CategorieImpotSource categorie = criterion.getCategorie();
+	    if (categorie != null) {
+			builder.append(" and lr.tiers.categorieImpotSource = ? ");
+			parameters.add(categorie.name());
+		}
+
+	    final ModeCommunication modeCommunication = criterion.getModeCommunication();
+	    if (modeCommunication != null) {
+			builder.append(" and lr.modeCommunication = ? ");
+			parameters.add(modeCommunication.name());
+		}
+
+		final RegDate periode = criterion.getPeriode();
+		if (periode != null) {
+			builder.append(" and lr.dateDebut = ? ");
+			parameters.add(periode.index());
+		}
+
+	    final TypeEtatDeclaration etat = criterion.getEtat();
+	    if (etat != null) {
+			if (etat != TypeEtatDeclaration.EMISE) {
+				builder.append(" and exists (select etat.id from EtatDeclaration etat where etat.declaration.id = lr.id and etat.class = ");
+
+				final Class<? extends EtatDeclaration> classeOfEtatDeclaration = EtatDeclarationHelper.getClasseOfEtatDeclaration(etat);
+				builder.append(classeOfEtatDeclaration.getName());
+				builder.append(" and etat.annulationDate is null)");
+			}
+
+			if (etat != TypeEtatDeclaration.RETOURNEE) {
+
+				final List<Class<? extends EtatDeclaration>> classesEtatDeclarationsInterdits = new ArrayList<>(3);
+				classesEtatDeclarationsInterdits.add(EtatDeclarationRetournee.class);
+				switch (etat) {
+					case EMISE:
+						classesEtatDeclarationsInterdits.add(EtatDeclarationSommee.class);
+						classesEtatDeclarationsInterdits.add(EtatDeclarationEchue.class);
+						break;
+					case SOMMEE:
+						classesEtatDeclarationsInterdits.add(EtatDeclarationEchue.class);
+						break;
+					case ECHUE:
+						break;
+					default:
+						throw new IllegalArgumentException("Valeur de l'état non-supportée : " + etat);
+				}
+
+				builder.append(" and not exists (select etat.id from EtatDeclaration etat where etat.declaration.id = lr.id and etat.class in (");
+				boolean first = true;
+				for (Class<? extends EtatDeclaration> classeEtatInterdit : classesEtatDeclarationsInterdits) {
+					if (!first) {
+						builder.append(" ,");
+					}
+					builder.append(classeEtatInterdit.getName());
+					first = false;
+				}
+				builder.append(") and etat.annulationDate is null)");
+			}
+		}
+
+		return builder.toString();
+    }
+
+	/**
+	 * Recherche toutes les LR en fonction du numero de debiteur
+	 *
+	 * @param numero
+	 * @return
+	 */
+	@Override
+	@SuppressWarnings("unchecked")
+	public List<DeclarationImpotSource> findByNumero(Long numero) {
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("Start of ListeRecapitulativeDAO : find");
+		}
+
+		final String query = " select lr from DeclarationImpotSource lr where lr.tiers.numero = ? ";
+		return (List<DeclarationImpotSource>) find(query, new Object[] {numero}, null);
+
+	}
+
+	/**
+	 * Retourne le dernier EtatPeriodeDeclaration envoyé et non annulé
+	 *
+	 * @param numeroDpi
+	 * @return
+	 */
+	@Override
+	@SuppressWarnings("unchecked")
+	public EtatDeclaration findDerniereLrEnvoyee(Long numeroDpi) {
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("Start of ListeRecapitulativeDAO : findDerniereLrEnvoyee");
+		}
+
+		final String query = "select etatPeriode from EtatDeclarationEmise etatPeriode where etatPeriode.declaration.tiers.numero = ?  and etatPeriode.declaration.annulationDate is null order by etatPeriode.dateObtention desc";
+		final List<EtatDeclaration> list = (List<EtatDeclaration>) find(query, new Object[]{numeroDpi}, null);
+		EtatDeclaration etat = null;
+		for (EtatDeclaration etatCourant : list) {
+			if(etat == null || etat.getDeclaration().getDateDebut().isBefore(etatCourant.getDeclaration().getDateDebut())) {
+				etat = etatCourant;
+			}
+		}
+		return etat;
+
+	}
+
+
+	/**
+	 * Retourne une liste de date ranges représentant des LR qui intersectent
+	 * avec la période donnée pour le débiteur donné
+	 *
+	 * @param numeroDpi
+	 * @param range
+	 * @return
+	 */
+	@Override
+	@SuppressWarnings("unchecked")
+	public List<DateRange> findIntersection(long numeroDpi, DateRange range) {
+
+		Assert.notNull(range.getDateDebut());
+		Assert.notNull(range.getDateFin());
+
+		final String query = "SELECT lr.dateDebut, lr.dateFin FROM DeclarationImpotSource lr WHERE lr.tiers.numero = ? AND lr.dateDebut <= ? AND lr.dateFin >= ? AND lr.annulationDate IS NULL ORDER BY lr.dateDebut ASC";
+		final Object[] criteres = {numeroDpi, range.getDateFin().index(), range.getDateDebut().index() };
+		final List<Object[]> queryResult = (List<Object[]>) find(query, criteres, null);
+		final List<DateRange> resultat = new ArrayList<>(queryResult.size());
+		for (Object[] intersection : queryResult) {
+			resultat.add(new DateRangeHelper.Range((RegDate) intersection[0], (RegDate) intersection[1]));
+		}
+		return resultat;
+	}
+
+
+
+}

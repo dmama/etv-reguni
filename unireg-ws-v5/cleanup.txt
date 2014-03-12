@@ -1,0 +1,4 @@
+Cleanup à faire pour une éventuelle version 6 du web-service
+------------------------------------------------------------
+
+?
