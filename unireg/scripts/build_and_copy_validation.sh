@@ -7,6 +7,10 @@ fi
 
 DATE=$(date "+%Y-%m-%d_%H_%M_%S")
 
+DEPOSANT=""
+while [[ ! "$DEPOSANT" =~ ^[a-zA-Z0-9]+$ ]]; do
+	read -p "Hexagramme du déposant : " DEPOSANT
+done
 
 # On fait l'update au début pour le numéro de version
 svn update unireg
@@ -91,5 +95,18 @@ scp unireg/web/target/$relFileDest $user:$REM_DIR
 scp unireg/ws/target/$wsFileDest $user:$REM_DIR
 scp unireg/ubr/target/$ubrFileDest $user:$REM_DIR
 echo "Les fichiers sont sur: $user:$REM_DIR/*-${env}-${version}-${DATE}.zip"
+
+# dépôt direct dans le système du CEI
+URL_DEPOT=http://exploitation.etat-de-vaud.ch/outils/web/ws/rest/file/upload
+CEI_GROUPE_CIBLE=WEB
+curl -X POST --form from=$DEPOSANT --form to=$CEI_GROUPE_CIBLE --form file=@$(pwd)/unireg/nexus/target/$nexusFileDest $URL_DEPOT
+echo
+curl -X POST --form from=$DEPOSANT --form to=$CEI_GROUPE_CIBLE --form file=@$(pwd)/unireg/web/target/$relFileDest $URL_DEPOT
+echo
+curl -X POST --form from=$DEPOSANT --form to=$CEI_GROUPE_CIBLE --form file=@$(pwd)/unireg/ws/target/$wsFileDest $URL_DEPOT
+echo
+curl -X POST --form from=$DEPOSANT --form to=$CEI_GROUPE_CIBLE --form file=@$(pwd)/unireg/ubr/target/$ubrFileDest $URL_DEPOT
+echo
+
 
 echo "Fin du déploiement at: $(date)"
