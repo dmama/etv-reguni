@@ -70,6 +70,7 @@
 				<h4>Spécifications :</h4>
 				<ul>
 					<li>Christophe Ollivier</li>
+					<li>Laurent Bourgeat</li>
 				</ul>
 
 				<h4>Développement :</h4>
@@ -80,7 +81,7 @@
 
 				<h4>Assurance qualité :</h4>
 				<ul>
-					<li>Jérome Jacques</li>
+					<li>John Gibson</li>
 				</ul>
 
 				<h3>Personnes ayant contribué à Unireg par le passé</h3>
@@ -96,6 +97,7 @@
 					<li>Frédéric Noguier</li>
 					<li>Gilles Dubey</li>
 					<li>Jean-Eric Cuendet</li>
+					<li>Jérôme Jacques</li>
 					<li>Kamel Chabane</li>
 					<li>Laurent Perret</li>
 					<li>Ludovic Bertin</li>
