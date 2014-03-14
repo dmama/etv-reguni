@@ -8,11 +8,11 @@ elif [ ! -e "$JAVA_HOME/bin/java" ]; then
 	exit 1
 fi
 
-dir=lib
-cp=ubr.jar
-for i in $(ls $dir); do
-	cp=$cp:$dir/$i
-done
+basedir=$(dirname "$0")
+cp=""
+while read jar; do
+	cp="$cp:${jar}"
+done < <(find "${basedir}/../lib" -type f -name "*.jar")
 
-#echo "CLasspath: $cp"
+#echo "Classpath: $cp"
 $JAVA_HOME/bin/java -cp "$cp" ch.vd.uniregctb.rapport.RapportCsvExtractorApp "$@"

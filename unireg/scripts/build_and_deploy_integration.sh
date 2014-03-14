@@ -106,11 +106,11 @@ function deploy_app() {
 
   # copie des fichiers de config
   ssh $user "mkdir -p $appDir/config"
-  ssh $user "cp $upDir/explode/config/$env/* $appDir/config"
+  ssh $user "config=\$(find ${upDir}/explode -maxdepth 2 -name config -type d); cp \${config}/${env}/* $appDir/config"
 
   # copie du war
   ssh $user "mkdir -p $deployDir/deployment"
-  ssh $user "cp $upDir/explode/deployment/*.war $deployDir/deployment/"
+  ssh $user "depl=\$(find ${upDir}/explode -maxdepth 2 -name deployment -type d); cp \${depl}/*.war $deployDir/deployment/"
 
   # mise-à-jour du lien symbolique
   ssh $user "cd $appDir && rm -f deployment && ln -s $deployDir/deployment deployment"

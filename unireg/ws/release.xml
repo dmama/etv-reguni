@@ -8,7 +8,7 @@
 		<!-- Documentation -->
 		<fileSet>
 			<directory>../base/doc</directory>
-			<outputDirectory>docs</outputDirectory>
+			<outputDirectory>unireg-ws-${pom.version}/doc</outputDirectory>
 			<useDefaultExcludes>true</useDefaultExcludes>
 			<includes>
 				<include>INSTALL.doc</include>
@@ -21,22 +21,22 @@
 		<!-- Fichier properties et ehcache.xml -->
 		<fileSet>
 			<directory>config/integration</directory>
-			<outputDirectory>config/integration</outputDirectory>
+			<outputDirectory>unireg-ws-${pom.version}/config/integration</outputDirectory>
 			<useDefaultExcludes>true</useDefaultExcludes>
 		</fileSet>
 		<fileSet>
 			<directory>config/integration-po</directory>
-			<outputDirectory>config/integration-po</outputDirectory>
+			<outputDirectory>unireg-ws-${pom.version}/config/integration-po</outputDirectory>
 			<useDefaultExcludes>true</useDefaultExcludes>
 		</fileSet>
 		<fileSet>
 			<directory>config/integration-te</directory>
-			<outputDirectory>config/integration-te</outputDirectory>
+			<outputDirectory>unireg-ws-${pom.version}/config/integration-te</outputDirectory>
 			<useDefaultExcludes>true</useDefaultExcludes>
 		</fileSet>
 		<fileSet>
 			<directory>config/validation</directory>
-			<outputDirectory>config/validation</outputDirectory>
+			<outputDirectory>unireg-ws-${pom.version}/config/validation</outputDirectory>
 			<useDefaultExcludes>true</useDefaultExcludes>
 		</fileSet>
 		<!-- Fichier unireg-log4j.xml -->
@@ -45,36 +45,34 @@
 			<includes>
 				<include>unireg-log4j.xml</include>
 			</includes>
-			<outputDirectory>config/integration</outputDirectory>
+			<outputDirectory>unireg-ws-${pom.version}/config/integration</outputDirectory>
 		</fileSet>
 		<fileSet>
 			<directory>config/</directory>
 			<includes>
 				<include>unireg-log4j.xml</include>
 			</includes>
-			<outputDirectory>config/integration-po</outputDirectory>
+			<outputDirectory>unireg-ws-${pom.version}/config/integration-po</outputDirectory>
 		</fileSet>
 		<fileSet>
 			<directory>config/</directory>
 			<includes>
 				<include>unireg-log4j.xml</include>
 			</includes>
-			<outputDirectory>config/integration-te</outputDirectory>
+			<outputDirectory>unireg-ws-${pom.version}/config/integration-te</outputDirectory>
 		</fileSet>
 		<fileSet>
 			<directory>config/</directory>
 			<includes>
 				<include>unireg-log4j.xml</include>
 			</includes>
-			<outputDirectory>config/validation</outputDirectory>
+			<outputDirectory>unireg-ws-${pom.version}/config/validation</outputDirectory>
 		</fileSet>
 	</fileSets>
 	<files>
 		<file>
-			<!-- BEGIN_LVERSION -->
-			<source>target/uniregctb-ws-5.8.0-SNAPSHOT.war</source>
-			<!-- END_LVERSION -->
-			<outputDirectory>deployment</outputDirectory>
+			<source>target/uniregctb-ws-${pom.version}.war</source>
+			<outputDirectory>unireg-ws-${pom.version}/deployment</outputDirectory>
 			<destName>unireg-ws.war</destName>
 		</file>
 	</files>
