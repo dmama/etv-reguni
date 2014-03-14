@@ -21,23 +21,20 @@ fi
 
 #########
 # Version
-env=Valid
-release=0
 version=$(grep "long=" unireg/base/version.txt|awk -F= '{ print $2; }')
-version=$version.$release
 #########
 
-echo "Building version $version ($env)"
+echo "Building version $version"
 
 user=dsi_unireg@ssv0309v
 relFileOrig=unireg-web-release.zip
-relFileDest=unireg-web-release-${env}-${version}-${DATE}.zip
+relFileDest=unireg-web-release-${version}-${DATE}.zip
 wsFileOrig=unireg-ws-release.zip	
-wsFileDest=unireg-ws-release-${env}-${version}-${DATE}.zip
+wsFileDest=unireg-ws-release-${version}-${DATE}.zip
 nexusFileOrig=unireg-nexus-release.zip	
-nexusFileDest=unireg-nexus-release-${env}-${version}-${DATE}.zip
+nexusFileDest=unireg-nexus-release-${version}-${DATE}.zip
 ubrFileOrig=ubr-release.zip
-ubrFileDest=ubr-release-${env}-${version}-${DATE}.zip
+ubrFileDest=ubr-release-${version}-${DATE}.zip
 MVN_OPTS="-Pnot,build.source,oracle,all,jspc"
 
 # on vérifie que l'on ne dépend pas de librairies SNAPSHOT
@@ -94,7 +91,7 @@ scp unireg/nexus/target/$nexusFileDest $user:$REM_DIR
 scp unireg/web/target/$relFileDest $user:$REM_DIR
 scp unireg/ws/target/$wsFileDest $user:$REM_DIR
 scp unireg/ubr/target/$ubrFileDest $user:$REM_DIR
-echo "Les fichiers sont sur: $user:$REM_DIR/*-${env}-${version}-${DATE}.zip"
+echo "Les fichiers sont sur: $user:$REM_DIR/*-${version}-${DATE}.zip"
 
 # dépôt direct dans le système du CEI
 URL_DEPOT=http://exploitation.etat-de-vaud.ch/outils/web/ws/rest/file/upload
