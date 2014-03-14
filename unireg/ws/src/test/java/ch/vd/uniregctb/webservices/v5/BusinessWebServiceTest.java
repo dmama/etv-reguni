@@ -48,6 +48,7 @@ import ch.vd.unireg.ws.parties.v1.Parties;
 import ch.vd.unireg.ws.security.v1.AllowedAccess;
 import ch.vd.unireg.ws.security.v1.SecurityResponse;
 import ch.vd.unireg.ws.taxoffices.v1.TaxOffices;
+import ch.vd.unireg.xml.error.v1.Error;
 import ch.vd.unireg.xml.error.v1.ErrorType;
 import ch.vd.unireg.xml.party.address.v2.Address;
 import ch.vd.unireg.xml.party.address.v2.AddressInformation;
@@ -147,6 +148,7 @@ import ch.vd.uniregctb.type.TypeDroitAcces;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.type.TypePermis;
 import ch.vd.uniregctb.webservices.common.UserLogin;
+import ch.vd.uniregctb.xml.ServiceException;
 
 public class BusinessWebServiceTest extends WebserviceTest {
 
@@ -3666,6 +3668,112 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			final NaturalPerson np = (NaturalPerson) party;
 			Assert.assertNotNull(np.getWithholdingTaxationPeriods());
 			Assert.assertEquals(0, np.getWithholdingTaxationPeriods().size());      // elle n'a rien du tout
+		}
+	}
+
+	/**
+	 * SIFISC-11713: appel de /parties avec un tiers dont le numéro d'individu est inconnu au civil
+	 */
+	@Test
+	public void testGetPartiesAvecIndividuInconnu() throws Exception {
+
+		final long noIndividu = 427842L;
+		final long noIndividuAbsent = 4538735674L;
+		final RegDate dateNaissance = date(1975, 7, 31);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				addIndividu(noIndividu, dateNaissance, "Labaffe", "Melchior", Sexe.MASCULIN);
+			}
+		});
+
+		final class Ids {
+			int ppConnu;
+			int ppInconnu;
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique connu = addHabitant(noIndividu);
+				final PersonnePhysique inconnu = addHabitant(noIndividuAbsent);
+				final Ids ids = new Ids();
+				ids.ppConnu = connu.getNumero().intValue();
+				ids.ppInconnu = inconnu.getNumero().intValue();
+				return ids;
+			}
+		});
+
+		final UserLogin user = new UserLogin(getDefaultOperateurName(), 22);
+		final Parties parties = service.getParties(user, Arrays.asList(ids.ppConnu, ids.ppInconnu), null);
+		Assert.assertNotNull(parties);
+		Assert.assertNotNull(parties.getEntries());
+		Assert.assertEquals(2, parties.getEntries().size());
+
+		final List<Entry> sorted = new ArrayList<>(parties.getEntries());
+		Collections.sort(sorted, new Comparator<Entry>() {
+			@Override
+			public int compare(Entry o1, Entry o2) {
+				return o1.getPartyNo() - o2.getPartyNo();
+			}
+		});
+
+		{
+			final Entry entry = sorted.get(0);
+			Assert.assertEquals(ids.ppConnu, entry.getPartyNo());
+
+			final Party party = entry.getParty();
+			Assert.assertNotNull(party);
+			Assert.assertEquals(NaturalPerson.class, party.getClass());
+		}
+		{
+			final Entry entry = sorted.get(1);
+			Assert.assertEquals(ids.ppInconnu, entry.getPartyNo());
+
+			final Party party = entry.getParty();
+			Assert.assertNull(party);
+
+			final Error error = entry.getError();
+			Assert.assertEquals("Impossible de trouver l'individu n°" + noIndividuAbsent + " pour l'habitant n°" + ids.ppInconnu, error.getErrorMessage());
+			Assert.assertEquals(ErrorType.BUSINESS, error.getType());
+		}
+	}
+
+	/**
+	 * SIFISC-11713: appel de /party avec un tiers dont le numéro d'individu est inconnu au civil
+	 */
+	@Test
+	public void testGetPartyAvecIndividuInconnu() throws Exception {
+
+		final long noIndividuAbsent = 4538735674L;
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				// persone...
+			}
+		});
+
+		// mise en place fiscale
+		final int ppId = doInNewTransactionAndSession(new TransactionCallback<Integer>() {
+			@Override
+			public Integer doInTransaction(TransactionStatus status) {
+				final PersonnePhysique inconnu = addHabitant(noIndividuAbsent);
+				return inconnu.getNumero().intValue();
+			}
+		});
+
+		final UserLogin user = new UserLogin(getDefaultOperateurName(), 22);
+		try {
+			final Party party = service.getParty(user, ppId, null);
+			Assert.fail("Aurait dû partir en erreur...");
+		}
+		catch (ServiceException e) {
+			Assert.assertEquals("Impossible de trouver l'individu n°" + noIndividuAbsent + " pour l'habitant n°" + ppId, e.getInfo().getMessage());
 		}
 	}
 }

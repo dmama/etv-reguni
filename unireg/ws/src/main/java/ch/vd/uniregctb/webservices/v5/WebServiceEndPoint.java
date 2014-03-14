@@ -36,6 +36,8 @@ import ch.vd.unireg.ws.security.v1.SecurityResponse;
 import ch.vd.unireg.ws.taxoffices.v1.TaxOffices;
 import ch.vd.unireg.xml.error.v1.Error;
 import ch.vd.unireg.xml.error.v1.ErrorType;
+import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
+import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
 import ch.vd.unireg.xml.party.corporation.v3.CorporationEvent;
 import ch.vd.unireg.xml.party.v3.Party;
 import ch.vd.unireg.xml.party.v3.PartyInfo;
@@ -307,7 +309,17 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 					return ExecutionResult.with(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build());
 				}
 				catch (ServiceException e) {
-					return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.INTERNAL_SERVER_ERROR, getAcceptableMediaTypes(), ErrorType.TECHNICAL, e));
+					final ErrorType errorType;
+					final Response.Status status;
+					if (e.getInfo() instanceof AccessDeniedExceptionInfo) {
+						errorType = ErrorType.ACCESS;
+						status = Response.Status.FORBIDDEN;
+					}
+					else {
+						errorType = e.getInfo() instanceof BusinessExceptionInfo ? ErrorType.BUSINESS : ErrorType.TECHNICAL;
+						status = Response.Status.INTERNAL_SERVER_ERROR;
+					}
+					return ExecutionResult.with(WebServiceHelper.buildErrorResponse(status, getAcceptableMediaTypes(), errorType, e));
 				}
 			}
 		});
