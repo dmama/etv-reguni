@@ -57,6 +57,8 @@ import ch.vd.unireg.ws.security.v1.SecurityResponse;
 import ch.vd.unireg.ws.taxoffices.v1.TaxOffice;
 import ch.vd.unireg.ws.taxoffices.v1.TaxOffices;
 import ch.vd.unireg.xml.error.v1.ErrorType;
+import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
+import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
 import ch.vd.unireg.xml.party.corporation.v3.CorporationEvent;
 import ch.vd.unireg.xml.party.taxdeclaration.v3.TaxDeclarationKey;
 import ch.vd.unireg.xml.party.v3.Party;
@@ -810,12 +812,35 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 			final List<Tiers> batchResult = context.tiersDAO.getBatch(idLongSet, toCoreAvecForsFiscaux(parts));
 			for (Tiers t : batchResult) {
 				if (t != null) {
-					final Party party = buildParty(t, parts, context);
-					if (party == null) {
-						entries.add(new Entry(t.getNumero().intValue(), null, new ch.vd.unireg.xml.error.v1.Error(ErrorType.BUSINESS, "Tiers non exposé.")));
+					try {
+						final Party party = buildParty(t, parts, context);
+						if (party == null) {
+							entries.add(new Entry(t.getNumero().intValue(), null, new ch.vd.unireg.xml.error.v1.Error(ErrorType.BUSINESS, "Tiers non exposé.")));
+						}
+						else {
+							entries.add(new Entry(t.getNumero().intValue(), party, null));
+						}
 					}
-					else {
-						entries.add(new Entry(t.getNumero().intValue(), party, null));
+					catch (Exception e) {
+						final ErrorType errorType;
+						if (e instanceof ServiceException) {
+							final ServiceException se = (ServiceException) e;
+							if (se.getInfo() instanceof BusinessExceptionInfo) {
+								errorType = ErrorType.BUSINESS;
+							}
+							else if (se.getInfo() instanceof AccessDeniedExceptionInfo) {
+								errorType = ErrorType.ACCESS;
+							}
+							else {
+								errorType = ErrorType.TECHNICAL;
+							}
+						}
+						else {
+							errorType = ErrorType.TECHNICAL;
+						}
+
+						LOGGER.error("Exception au mapping xml du tiers " + t.getNumero(), e);
+						entries.add(new Entry(t.getNumero().intValue(), null, new ch.vd.unireg.xml.error.v1.Error(errorType, e.getMessage())));
 					}
 					idLongSet.remove(t.getNumero());
 				}
