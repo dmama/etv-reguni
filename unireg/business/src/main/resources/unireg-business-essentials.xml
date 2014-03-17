@@ -70,7 +70,8 @@
 		<property name="validationInterceptor" ref="validationInterceptor" />
 		<property name="assujettissementService" ref="assujettissementService" />
 		<property name="rapportEntreTiersDAO" ref="rapportEntreTiersDAO" />
-
+		<property name="ibanValidator" ref="ibanValidator" />
+		<property name="periodeImpositionImpotSourceService" ref="periodeImpositionImpotSourceService" />
 	</bean>
 
 	<bean id="metierService" class="ch.vd.uniregctb.metier.MetierServiceImpl">

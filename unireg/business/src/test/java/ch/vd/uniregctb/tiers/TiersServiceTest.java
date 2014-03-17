@@ -7829,5 +7829,210 @@ public class TiersServiceTest extends BusinessTest {
 			}
 		});
 	}
+
+	/**
+	 * [SIFISC-9993] Gestion du flag de remboursement automatique sur les non-vaudois
+	 */
+	@Test
+	public void testBlocageRemboursementAutomatiqueNonVaudoisAvecPeriodeImpositionISSourceEtIBAN() throws Exception {
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				// vide...
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Albert", "Dayatsu", null, Sexe.MASCULIN);
+				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+				addRapportPrestationImposable(dpi, pp, date(2009, 1, 1), date(2011, 12, 31), false);
+				addForPrincipal(pp, date(2009, 1, 1), MotifFor.ARRIVEE_HS, date(2010, 12, 31), MotifFor.DEPART_HC, MockCommune.Lausanne, ModeImposition.SOURCE);
+				pp.setNumeroCompteBancaire("CH8109000000177448451");
+				pp.setBlocageRemboursementAutomatique(true);        // pour partir d'une situation bloquée
+				return pp.getNumero();
+			}
+		});
+
+		// vérification que l'ajout d'un for HC après le for lausannois fermé débloque bien la situation
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				assertTrue(pp.getBlocageRemboursementAutomatique());
+
+				tiersService.addForPrincipal(pp, date(2012, 1, 1), MotifFor.DEPART_HC, null, null, MotifRattachement.DOMICILE, MockCommune.Bern.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC, ModeImposition.SOURCE);
+				assertFalse(pp.getBlocageRemboursementAutomatique());
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-9993] Gestion du flag de remboursement automatique sur les non-vaudois
+	 */
+	@Test
+	public void testBlocageRemboursementAutomatiqueNonVaudoisAvecPeriodeImpositionISSourceSansIBAN() throws Exception {
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				// vide...
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Albert", "Dayatsu", null, Sexe.MASCULIN);
+				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+				addRapportPrestationImposable(dpi, pp, date(2009, 1, 1), date(2011, 12, 31), false);
+				addForPrincipal(pp, date(2009, 1, 1), MotifFor.ARRIVEE_HS, date(2010, 12, 31), MotifFor.DEPART_HC, MockCommune.Lausanne, ModeImposition.SOURCE);
+				pp.setNumeroCompteBancaire("CH810900000017744845123");      // trop long!
+				pp.setBlocageRemboursementAutomatique(false);        // pour partir d'une situation débloquée
+				return pp.getNumero();
+			}
+		});
+
+		// vérification que l'ajout d'un for HC après le for lausannois fermé débloque bien la situation
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				assertFalse(pp.getBlocageRemboursementAutomatique());
+
+				tiersService.addForPrincipal(pp, date(2012, 1, 1), MotifFor.DEPART_HC, null, null, MotifRattachement.DOMICILE, MockCommune.Bern.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC, ModeImposition.SOURCE);
+				assertTrue(pp.getBlocageRemboursementAutomatique());
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-9993] Gestion du flag de remboursement automatique sur les non-vaudois
+	 */
+	@Test
+	public void testBlocageRemboursementAutomatiqueNonVaudoisAvecPeriodeImpositionISSourceAvecIBANMaisDecede() throws Exception {
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				// vide...
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Albert", "Dayatsu", null, Sexe.MASCULIN);
+				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+				addRapportPrestationImposable(dpi, pp, date(2009, 1, 1), date(2011, 12, 31), false);
+				addForPrincipal(pp, date(2009, 1, 1), MotifFor.ARRIVEE_HS, date(2010, 12, 31), MotifFor.DEPART_HC, MockCommune.Lausanne, ModeImposition.SOURCE);
+				pp.setNumeroCompteBancaire("CH8109000000177448451");
+				pp.setBlocageRemboursementAutomatique(false);        // pour partir d'une situation débloquée
+				return pp.getNumero();
+			}
+		});
+
+		// vérification que l'ajout d'un for HC après le for lausannois fermé débloque bien la situation
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				assertFalse(pp.getBlocageRemboursementAutomatique());
+
+				final RegDate dateDeces = date(2013, 5, 2);
+				pp.setDateDeces(dateDeces);
+				tiersService.addForPrincipal(pp, date(2012, 1, 1), MotifFor.DEPART_HC, dateDeces, MotifFor.VEUVAGE_DECES, MotifRattachement.DOMICILE, MockCommune.Bern.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC, ModeImposition.SOURCE);
+				assertTrue(pp.getBlocageRemboursementAutomatique());
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-9993] Gestion du flag de remboursement automatique sur les non-vaudois
+	 */
+	@Test
+	public void testBlocageRemboursementAutomatiqueNonVaudoisSansPeriodeImpositionISEtIBAN() throws Exception {
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				// vide...
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Albert", "Dayatsu", null, Sexe.MASCULIN);
+				addForPrincipal(pp, date(2009, 1, 1), MotifFor.ARRIVEE_HS, date(2010, 12, 31), MotifFor.DEPART_HC, MockCommune.Lausanne, ModeImposition.ORDINAIRE);
+				pp.setNumeroCompteBancaire("CH8109000000177448451");
+				pp.setBlocageRemboursementAutomatique(false);        // pour partir d'une situation débloquée
+				return pp.getNumero();
+			}
+		});
+
+		// vérification que l'ajout d'un for HC après le for lausannois fermé débloque bien la situation
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				assertFalse(pp.getBlocageRemboursementAutomatique());
+
+				tiersService.addForPrincipal(pp, date(2012, 1, 1), MotifFor.DEPART_HC, null, null, MotifRattachement.DOMICILE, MockCommune.Bern.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC, ModeImposition.SOURCE);
+				assertTrue(pp.getBlocageRemboursementAutomatique());
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-9993] Gestion du flag de remboursement automatique sur les non-vaudois
+	 */
+	@Test
+	public void testBlocageRemboursementAutomatiqueNonVaudoisAvecPeriodeImpositionISMixteEtIBAN() throws Exception {
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				// vide...
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Albert", "Dayatsu", null, Sexe.MASCULIN);
+				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+				addRapportPrestationImposable(dpi, pp, date(2009, 1, 1), null, false);
+				addForPrincipal(pp, date(2009, 1, 1), MotifFor.ARRIVEE_HS, date(2010, 12, 31), MotifFor.DEPART_HC, MockCommune.Lausanne, ModeImposition.ORDINAIRE);
+				pp.setNumeroCompteBancaire("CH8109000000177448451");
+				pp.setBlocageRemboursementAutomatique(false);        // pour partir d'une situation débloquée
+				return pp.getNumero();
+			}
+		});
+
+		// vérification que l'ajout d'un for HC après le for lausannois fermé débloque bien la situation
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				assertFalse(pp.getBlocageRemboursementAutomatique());
+
+				tiersService.addForPrincipal(pp, date(2012, 1, 1), MotifFor.DEPART_HC, null, null, MotifRattachement.DOMICILE, MockCommune.Bern.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC, ModeImposition.SOURCE);
+				assertTrue(pp.getBlocageRemboursementAutomatique());
+			}
+		});
+	}
 }
 
