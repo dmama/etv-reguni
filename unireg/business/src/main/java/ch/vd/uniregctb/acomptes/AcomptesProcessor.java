@@ -81,7 +81,7 @@ public class AcomptesProcessor extends ListesProcessor<AcomptesResults, Acomptes
 	@SuppressWarnings("unchecked")
 	protected Iterator<Long> createIteratorOnIDsOfCtbs(Session session, Integer annee) {
 		final RegDate debutAnnee = RegDate.get(annee - 1, 1, 1);
-		final RegDate finAnnee = RegDate.get(annee - 1, 12, 31);
+		final RegDate finAnnee = RegDate.get(annee, 12, 31);
 		final String queryString = "SELECT DISTINCT                                                                     "
 									+ "    cont.id                                                                     	"
 									+ "FROM                                                                          	"

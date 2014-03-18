@@ -611,4 +611,99 @@ public class AcomptesProcessorTest extends BusinessTest {
 			Assert.assertEquals(anneeAcomptes, info.getAnneeFiscale());
 		}
 	}
+
+	@Test
+	public void testAcomptesAnneeCouranteAvecArriveeAnneeAnterieure() throws Exception {
+		final int anneeAcomptes = RegDate.get().year();
+
+		// mise en place civile
+		serviceCivil.setUp(new DefaultMockServiceCivil() {
+			@Override
+			protected void init() {
+			}
+		});
+
+		// mise en place fiscale
+		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Alastair", "Rogers", null, Sexe.MASCULIN);
+				addForPrincipal(pp, date(2000, 1, 1), MotifFor.ARRIVEE_HS, null, null, MockCommune.Bex, MotifRattachement.DOMICILE);
+				return pp.getId();
+			}
+		});
+
+		// calcul des acomptes
+		final AcomptesResults results = processor.run(RegDate.get(), 1, anneeAcomptes, null);
+		Assert.assertNotNull(results);
+
+		final List<AcomptesResults.InfoContribuableAssujetti> assujettis = results.getListeContribuablesAssujettis();
+		Assert.assertNotNull(assujettis);
+		Assert.assertEquals(1, assujettis.size());
+
+		final AcomptesResults.InfoContribuableAssujetti ctb = assujettis.get(0);
+		Assert.assertEquals(id, ctb.getNumeroCtb());
+
+		Assert.assertNotNull(ctb.getAssujettissementIcc());
+		Assert.assertEquals(anneeAcomptes, ctb.getAssujettissementIcc().anneeFiscale);
+		Assert.assertEquals((Integer) MockCommune.Bex.getNoOFS(), ctb.getAssujettissementIcc().noOfsForGestion);
+		Assert.assertEquals((Integer) MockCommune.Bex.getNoOFS(), ctb.getAssujettissementIcc().noOfsForPrincipal);
+		Assert.assertEquals(AcomptesResults.TypeContribuableAcompte.VAUDOIS_ORDINAIRE, ctb.getAssujettissementIcc().typeContribuable);
+		Assert.assertEquals(0, ctb.getAssujettissementIcc().ofsForsSecondaires.size());
+
+		Assert.assertNotNull(ctb.getAssujettissementIfd());
+		Assert.assertEquals(anneeAcomptes - 1, ctb.getAssujettissementIfd().anneeFiscale);
+		Assert.assertEquals((Integer) MockCommune.Bex.getNoOFS(), ctb.getAssujettissementIfd().noOfsForGestion);
+		Assert.assertEquals((Integer) MockCommune.Bex.getNoOFS(), ctb.getAssujettissementIfd().noOfsForPrincipal);
+		Assert.assertEquals(AcomptesResults.TypeContribuableAcompte.VAUDOIS_ORDINAIRE, ctb.getAssujettissementIfd().typeContribuable);
+		Assert.assertEquals(0, ctb.getAssujettissementIfd().ofsForsSecondaires.size());
+	}
+
+	/**
+	 * La population arrivée après le début d'année doit être listée quand-même (après coup = rattrapage)
+	 */
+	@Test
+	public void testAcomptesAnneeCouranteAvecArriveeMemeAnnee() throws Exception {
+		final int anneeAcomptes = RegDate.get().year();
+		final RegDate arrivee = date(anneeAcomptes, 1, 1);
+
+		// mise en place civile
+		serviceCivil.setUp(new DefaultMockServiceCivil() {
+			@Override
+			protected void init() {
+			}
+		});
+
+		// mise en place fiscale
+		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Alastair", "Rogers", null, Sexe.MASCULIN);
+				addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HS, null, null, MockCommune.Bex, MotifRattachement.DOMICILE);
+				return pp.getId();
+			}
+		});
+
+		// calcul des acomptes
+		final AcomptesResults results = processor.run(RegDate.get(), 1, anneeAcomptes, null);
+		Assert.assertNotNull(results);
+
+		final List<AcomptesResults.InfoContribuableAssujetti> assujettis = results.getListeContribuablesAssujettis();
+		Assert.assertNotNull(assujettis);
+		Assert.assertEquals(1, assujettis.size());
+
+		final AcomptesResults.InfoContribuableAssujetti ctb = assujettis.get(0);
+		Assert.assertEquals(id, ctb.getNumeroCtb());
+
+		// assujettissement ICC ok...
+		Assert.assertNotNull(ctb.getAssujettissementIcc());
+		Assert.assertEquals(anneeAcomptes, ctb.getAssujettissementIcc().anneeFiscale);
+		Assert.assertEquals((Integer) MockCommune.Bex.getNoOFS(), ctb.getAssujettissementIcc().noOfsForGestion);
+		Assert.assertEquals((Integer) MockCommune.Bex.getNoOFS(), ctb.getAssujettissementIcc().noOfsForPrincipal);
+		Assert.assertEquals(AcomptesResults.TypeContribuableAcompte.VAUDOIS_ORDINAIRE, ctb.getAssujettissementIcc().typeContribuable);
+		Assert.assertEquals(0, ctb.getAssujettissementIcc().ofsForsSecondaires.size());
+
+		// ... mais pas d'IFD (on calcule ici la population pour les acomptes IFD de l'année dernière, et le contribuable n'était pas encore là...)
+		Assert.assertNull(ctb.getAssujettissementIfd());
+	}
 }
