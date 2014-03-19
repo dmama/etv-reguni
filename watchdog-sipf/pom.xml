@@ -8,7 +8,7 @@
 
 	<groupId>ch.vd.watchdog</groupId>
 	<artifactId>watchdog-sipf</artifactId>
-	<version>0.2</version>
+	<version>0.3</version>
 	
 	<packaging>jar</packaging>
 
@@ -91,7 +91,7 @@
 	<properties>
 
 		<!-- Application settings -->
-		<copyright.year>2013</copyright.year>
+		<copyright.year>2014</copyright.year>
 		<amp.genericCore>true</amp.genericCore>
 		<amp.fullSource>false</amp.fullSource>
 
