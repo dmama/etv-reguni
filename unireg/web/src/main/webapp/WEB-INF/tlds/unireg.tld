@@ -50,6 +50,18 @@
 		</attribute>
 	</tag>
 	<tag>
+		<description>display numIDE</description>
+		<name>numIDE</name>
+		<tag-class>ch.vd.uniregctb.taglibs.JspTagNoIDE</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<description>field advertiser object</description>
+			<name>numeroIDE</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+	<tag>
 		<description>display date</description>
 		<name>date</name>
 		<tag-class>ch.vd.uniregctb.taglibs.JspTagFormatDate</tag-class>

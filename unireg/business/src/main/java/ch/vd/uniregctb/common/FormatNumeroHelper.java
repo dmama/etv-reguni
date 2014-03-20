@@ -57,6 +57,19 @@ public class FormatNumeroHelper {
 	}
 
 	/**
+	 * Formattage d'un numéro IDE : CHE123456789 devient alors CHE-123.456.789
+	 * @param numero numéro IDE sous sa forme compacte
+	 * @return le numéro sous une forme agréable à l'oeil
+	 */
+	public static String formatNumIDE(String numero) {
+		numero = removeSpaceAndDash(numero);
+		if (numero != null && Pattern.matches("[A-Z]{3}[0-9]{9}", numero)) {
+			return numero.substring(0, 3) + "-" + numero.substring(3, 6) + "." + numero.substring(6, 9) + "." + numero.substring(9);
+		}
+		return StringUtils.trimToEmpty(numero);
+	}
+
+	/**
 	 *
 	 * Format Nouveau Numero AVS
 	 *

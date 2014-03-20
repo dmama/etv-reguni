@@ -1,10 +1,11 @@
 package ch.vd.uniregctb.tiers;
-import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.WithoutSpringTest;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Test unitaire pour le FormatNumeroHelper
@@ -135,4 +136,11 @@ public class FormatNumeroHelperTest extends WithoutSpringTest {
 		assertEquals(noReferenceAttendu, noReference);
 	}
 
+	@Test
+	public void testFormatNumIDE() throws Exception {
+		assertEquals("", FormatNumeroHelper.formatNumIDE(null));
+		assertEquals("CHE-123.456.789", FormatNumeroHelper.formatNumIDE("CHE123456789"));
+		assertEquals("CHE-123.456.789", FormatNumeroHelper.formatNumIDE("CHE-123..45.6789"));
+		assertEquals("CHE-789.456.123", FormatNumeroHelper.formatNumIDE("CHE/789-456-123"));
+	}
 }
