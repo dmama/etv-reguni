@@ -14,20 +14,18 @@ import ch.vd.unireg.xml.event.party.taxliab.aperiodic.v1.AperiodicTaxLiabilityRe
 import ch.vd.unireg.xml.event.party.taxliab.aperiodic.v1.AperiodicTaxLiabilityResponse;
 import ch.vd.unireg.xml.event.party.taxliab.common.v1.ResponseType;
 import ch.vd.unireg.xml.event.party.taxliab.common.v1.Scope;
-import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
 import ch.vd.unireg.xml.party.taxresidence.v1.TaxResidence;
 import ch.vd.unireg.xml.party.taxresidence.v1.TaxationAuthorityType;
 import ch.vd.uniregctb.common.BusinessItTest;
+import ch.vd.uniregctb.jms.EsbBusinessCode;
 import ch.vd.uniregctb.security.MockSecurityProvider;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.xml.ServiceException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
 
 /**
  * [SIFISC-7731] Classe de test du listener de résolution de l'assujettissement apériodique des contribuables. Cette classe nécessite une connexion à l'ESB de développement pour fonctionner.
@@ -74,22 +72,18 @@ public class PartyAperiodicTaxLiabilityRequestV1EsbHandlerItTest extends PartyRe
 		request.setScope(Scope.VD_RESIDENT_AND_WITHHOLDING);
 
 		// Envoie le message
-		doInNewTransaction(new TxCallback<Object>() {
+		final String businessId = doInNewTransaction(new TxCallback<String>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				sendTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
-				return null;
+			public String execute(TransactionStatus status) throws Exception {
+				return sendTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
 			}
 		});
 
-		try {
-			parseResponse(getEsbMessage(getOutputQueue()));
-			fail();
-		}
-		catch (ServiceException e) {
-			assertInstanceOf(AccessDeniedExceptionInfo.class, e.getInfo());
-			assertEquals("L'utilisateur spécifié (xxxxx/22) n'a pas les droits d'accès en lecture complète sur l'application.", e.getMessage());
-		}
+		final EsbMessage msg = getEsbBusinessErrorMessage();
+		assertNotNull(msg);
+		assertEquals(businessId, msg.getBusinessId());
+		assertEquals(EsbBusinessCode.DROITS_INSUFFISANTS.getCode(), msg.getErrorCode());
+		assertEquals("L'utilisateur spécifié (xxxxx/22) n'a pas les droits d'accès en lecture complète sur l'application.", msg.getExceptionMessage());
 	}
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)

@@ -15,7 +15,6 @@ import ch.vd.unireg.xml.common.v1.Date;
 import ch.vd.unireg.xml.common.v1.UserLogin;
 import ch.vd.unireg.xml.event.party.address.v1.AddressRequest;
 import ch.vd.unireg.xml.event.party.address.v1.AddressResponse;
-import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
 import ch.vd.unireg.xml.exception.v1.ServiceExceptionInfo;
@@ -27,6 +26,7 @@ import ch.vd.unireg.xml.party.address.v1.PersonMailAddressInfo;
 import ch.vd.unireg.xml.party.address.v1.TariffZone;
 import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceCivil;
+import ch.vd.uniregctb.jms.EsbBusinessCode;
 import ch.vd.uniregctb.security.MockSecurityProvider;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -85,22 +85,18 @@ public class PartyAddressRequestEsbHandlerItTest extends PartyRequestEsbHandlerI
 		request.getTypes().add(AddressType.RESIDENCE);
 
 		// Envoie le message
-		doInNewTransaction(new TxCallback<Object>() {
+		final String businessId = doInNewTransaction(new TxCallback<String>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				sendTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
-				return null;
+			public String execute(TransactionStatus status) throws Exception {
+				return sendTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
 			}
 		});
 
-		try {
-			parseResponse(getEsbMessage(getOutputQueue()));
-			fail();
-		}
-		catch (ServiceException e) {
-			assertInstanceOf(AccessDeniedExceptionInfo.class, e.getInfo());
-			assertEquals("L'utilisateur spécifié (xxxxx/22) n'a pas les droits d'accès en lecture complète sur l'application.", e.getMessage());
-		}
+		final EsbMessage msg = getEsbBusinessErrorMessage();
+		assertNotNull(msg);
+		assertEquals(businessId, msg.getBusinessId());
+		assertEquals(EsbBusinessCode.DROITS_INSUFFISANTS.getCode(), msg.getErrorCode());
+		assertEquals("L'utilisateur spécifié (xxxxx/22) n'a pas les droits d'accès en lecture complète sur l'application.", msg.getExceptionMessage());
 	}
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
@@ -117,22 +113,18 @@ public class PartyAddressRequestEsbHandlerItTest extends PartyRequestEsbHandlerI
 		request.getTypes().add(AddressType.RESIDENCE);
 
 		// Envoie le message
-		doInNewTransaction(new TxCallback<Object>() {
+		final String businessId = doInNewTransaction(new TxCallback<String>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				sendTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
-				return null;
+			public String execute(TransactionStatus status) throws Exception {
+				return sendTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
 			}
 		});
 
-		try {
-			parseResponse(getEsbMessage(getOutputQueue()));
-			fail();
-		}
-		catch (ServiceException e) {
-			assertInstanceOf(AccessDeniedExceptionInfo.class, e.getInfo());
-			assertEquals("L'utilisateur spécifié (xxxxx/22) n'a pas les droits d'accès en lecture sur le tiers n° 222.", e.getMessage());
-		}
+		final EsbMessage msg = getEsbBusinessErrorMessage();
+		assertNotNull(msg);
+		assertEquals(businessId, msg.getBusinessId());
+		assertEquals(EsbBusinessCode.DROITS_INSUFFISANTS.getCode(), msg.getErrorCode());
+		assertEquals("L'utilisateur spécifié (xxxxx/22) n'a pas les droits d'accès en lecture sur le tiers n° 222.", msg.getExceptionMessage());
 	}
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
@@ -148,22 +140,18 @@ public class PartyAddressRequestEsbHandlerItTest extends PartyRequestEsbHandlerI
 		request.getTypes().add(AddressType.RESIDENCE);
 
 		// Envoie le message
-		doInNewTransaction(new TxCallback<Object>() {
+		final String businessId = doInNewTransaction(new TxCallback<String>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				sendTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
-				return null;
+			public String execute(TransactionStatus status) throws Exception {
+				return sendTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
 			}
 		});
 
-		try {
-			parseResponse(getEsbMessage(getOutputQueue()));
-			fail();
-		}
-		catch (ServiceException e) {
-			assertInstanceOf(BusinessExceptionInfo.class, e.getInfo());
-			assertEquals("Le tiers n°222 n'existe pas.", e.getMessage());
-		}
+		final EsbMessage msg = getEsbBusinessErrorMessage();
+		assertNotNull(msg);
+		assertEquals(businessId, msg.getBusinessId());
+		assertEquals(EsbBusinessCode.CTB_INEXISTANT.getCode(), msg.getErrorCode());
+		assertEquals("Le tiers n°222 n'existe pas.", msg.getExceptionMessage());
 	}
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)

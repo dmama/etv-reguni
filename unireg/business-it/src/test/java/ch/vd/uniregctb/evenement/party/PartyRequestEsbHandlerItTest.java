@@ -31,6 +31,7 @@ import ch.vd.uniregctb.evenement.EvenementHelper;
 import ch.vd.uniregctb.jms.EsbBusinessErrorCollector;
 import ch.vd.uniregctb.xml.ServiceException;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 /**
@@ -139,6 +140,13 @@ abstract class PartyRequestEsbHandlerItTest extends BusinessItTest {
 		final EsbMessage msg = getEsbTemplate().receive(queue);
 		assertNotNull("L'événement n'a pas été reçu.", msg);
 		return msg;
+	}
+
+	protected EsbMessage getEsbBusinessErrorMessage() throws Exception {
+		final List<EsbMessage> collected = errorCollector.waitForIncomingMessages(1, 10000);       // on attend le message jusqu'à 10 secondes
+		assertNotNull("L'événement n'a pas été posé en queue d'erreur", collected);
+		assertEquals(1, collected.size());
+		return collected.get(0);
 	}
 
 	protected Response parseResponse(EsbMessage message) throws Exception {

@@ -12,7 +12,6 @@ import ch.vd.unireg.xml.common.v1.Date;
 import ch.vd.unireg.xml.common.v1.UserLogin;
 import ch.vd.unireg.xml.event.party.nonresident.v2.CreateNonresidentRequest;
 import ch.vd.unireg.xml.event.party.nonresident.v2.CreateNonresidentResponse;
-import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
 import ch.vd.unireg.xml.party.person.v2.NaturalPersonCategory;
 import ch.vd.unireg.xml.party.person.v2.Sex;
 import ch.vd.uniregctb.common.BusinessItTest;
@@ -20,14 +19,12 @@ import ch.vd.uniregctb.jms.EsbBusinessCode;
 import ch.vd.uniregctb.security.MockSecurityProvider;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.xml.ServiceException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 /**
  * Classe de test du listener de requêtes de création de non-habitant. Cette classe nécessite une connexion à l'ESB de développement pour fonctionner.
@@ -61,20 +58,12 @@ public class PartyCreateNonresidentRequestV2EsbHandlerItTest extends PartyReques
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
 	public void testCreateNonresidentRequestUserSansDroitAcces() throws Exception {
-		try {
-			test(false, true, true, false);
-			fail();
-		}
-		catch (ServiceException e) {
-			assertInstanceOf(AccessDeniedExceptionInfo.class, e.getInfo());
-			assertEquals("L'utilisateur spécifié (xxxxx/22) n'a pas le droit de création de non-habitant sur l'application.", e.getMessage());
-		}
-
+		testError(false, true, true, false, "L'utilisateur spécifié (xxxxx/22) n'a pas le droit de création de non-habitant sur l'application.");
 	}
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
 	public void testCreateNonresident() throws Exception {
-		final long nhId = test(true, true, true, false);
+		final long nhId = testRetour(true, true, true, false);
 		doInNewTransaction(new TransactionCallbackWithoutResult() {
 			@Override
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
@@ -90,7 +79,7 @@ public class PartyCreateNonresidentRequestV2EsbHandlerItTest extends PartyReques
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
 	public void testCreateNonresidentSansPrenom() throws Exception {
-		final long nhId = test(true, false, true, false);
+		final long nhId = testRetour(true, false, true, false);
 		doInNewTransaction(new TransactionCallbackWithoutResult() {
 			@Override
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
@@ -104,7 +93,7 @@ public class PartyCreateNonresidentRequestV2EsbHandlerItTest extends PartyReques
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
 	public void testCreateNonresidentSansAvs13MaisAvecAvs11() throws Exception {
-		final long nhId = test(true, true, false, true);
+		final long nhId = testRetour(true, true, false, true);
 		doInNewTransaction(new TransactionCallbackWithoutResult() {
 			@Override
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
@@ -119,7 +108,7 @@ public class PartyCreateNonresidentRequestV2EsbHandlerItTest extends PartyReques
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
 	public void testCreateNonresidentAvecAvs13EtAvecAvs11() throws Exception {
-		final long nhId = test(true, true, true, true);
+		final long nhId = testRetour(true, true, true, true);
 		doInNewTransaction(new TransactionCallbackWithoutResult() {
 			@Override
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
@@ -132,20 +121,10 @@ public class PartyCreateNonresidentRequestV2EsbHandlerItTest extends PartyReques
 		});
 	}
 
-	private int test(boolean avecDroit, boolean avecPrenom, boolean avecAvs13, boolean avecAvs11) throws Exception {
-
-		final MockSecurityProvider provider = avecDroit ? new MockSecurityProvider(Role.CREATE_NONHAB) : new MockSecurityProvider();
-		handler.setSecurityProvider(provider);
-
-		final CreateNonresidentRequest request = createRequest(avecPrenom, avecAvs13, avecAvs11);
+	private int testRetour(boolean avecDroit, boolean avecPrenom, boolean avecAvs13, boolean avecAvs11) throws Exception {
 
 		// Envoie le message
-		final String businessId = doInNewTransaction(new TxCallback<String>() {
-			@Override
-			public String execute(TransactionStatus status) throws Exception {
-				return sendTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
-			}
-		});
+		final String businessId = sendMessage(avecDroit, avecPrenom, avecAvs13, avecAvs11);
 
 		final EsbMessage response = getEsbMessage(getOutputQueue());
 		assertEquals(businessId, response.getBusinessCorrelationId());
@@ -155,6 +134,30 @@ public class PartyCreateNonresidentRequestV2EsbHandlerItTest extends PartyReques
 		final CreateNonresidentResponse res = (CreateNonresidentResponse) parseResponse(response);
 		assertNotNull("Le non-habitant devrait être créé", res.getNumber());
 		return res.getNumber();
+	}
+
+	private void testError(boolean avecDroit, boolean avecPrenom, boolean avecAvs13, boolean avecAvs11, String msg) throws Exception {
+		// Envoie le message
+		final String businessId = sendMessage(avecDroit, avecPrenom, avecAvs13, avecAvs11);
+
+		final EsbMessage error = getEsbBusinessErrorMessage();
+		assertEquals(businessId, error.getBusinessId());
+		assertEquals(msg, error.getExceptionMessage());
+	}
+
+	private String sendMessage(boolean avecDroit, boolean avecPrenom, boolean avecAvs13, boolean avecAvs11) throws Exception {
+		final MockSecurityProvider provider = avecDroit ? new MockSecurityProvider(Role.CREATE_NONHAB) : new MockSecurityProvider();
+		handler.setSecurityProvider(provider);
+
+		final CreateNonresidentRequest request = createRequest(avecPrenom, avecAvs13, avecAvs11);
+
+		// Envoie le message
+		return doInNewTransaction(new TxCallback<String>() {
+			@Override
+			public String execute(TransactionStatus status) throws Exception {
+				return sendTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
+			}
+		});
 	}
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)

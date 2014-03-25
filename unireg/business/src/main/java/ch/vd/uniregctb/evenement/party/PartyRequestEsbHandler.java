@@ -36,12 +36,13 @@ import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.util.EsbDataHandler;
 import ch.vd.technical.esb.util.exception.ESBValidationException;
 import ch.vd.technical.esb.validation.EsbXmlValidation;
-import ch.vd.unireg.xml.event.party.v1.ExceptionResponse;
 import ch.vd.unireg.xml.event.party.v1.ObjectFactory;
 import ch.vd.unireg.xml.event.party.v1.Request;
 import ch.vd.unireg.xml.event.party.v1.Response;
+import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
+import ch.vd.unireg.xml.exception.v1.ServiceExceptionInfo;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.jms.EsbBusinessCode;
@@ -91,6 +92,22 @@ public class PartyRequestEsbHandler implements EsbMessageHandler, InitializingBe
 		}
 	}
 
+	private static EsbBusinessCode extractCode(ServiceExceptionInfo info) {
+		if (info instanceof AccessDeniedExceptionInfo) {
+			return EsbBusinessCode.DROITS_INSUFFISANTS;
+		}
+		if (info instanceof BusinessExceptionInfo) {
+			final BusinessExceptionCode infoCode = BusinessExceptionCode.fromValue(((BusinessExceptionInfo) info).getCode());
+			switch (infoCode) {
+				case UNKNOWN_PARTY:
+					return EsbBusinessCode.CTB_INEXISTANT;
+				default:
+					return EsbBusinessCode.REPONSE_IMPOSSIBLE;
+			}
+		}
+		return EsbBusinessCode.REPONSE_IMPOSSIBLE;
+	}
+
 	private void onMessage(EsbMessage message) throws Exception {
 
 		RequestHandlerResult result;
@@ -102,9 +119,9 @@ public class PartyRequestEsbHandler implements EsbMessageHandler, InitializingBe
 			result = handle(request);
 		}
 		catch (ServiceException e) {
-			final ExceptionResponse r = new ExceptionResponse();
-			r.setExceptionInfo(e.getInfo());
-			result = new RequestHandlerResult(r);
+			final ServiceExceptionInfo info = e.getInfo();
+			final EsbBusinessCode code = extractCode(info);
+			throw new EsbBusinessException(code, info.getMessage(), e);
 		}
 		catch (UnmarshalException e) {
 			throw new EsbBusinessException(EsbBusinessCode.XML_INVALIDE, e.getMessage(), e);
@@ -116,7 +133,7 @@ public class PartyRequestEsbHandler implements EsbMessageHandler, InitializingBe
 		}
 		catch (ESBValidationException e) {
 			LOGGER.error(e, e);
-			answerValidationException(e, result.getAttachments(), message);
+			throw new EsbBusinessException(EsbBusinessCode.REPONSE_IMPOSSIBLE, e.getMessage(), e);
 		}
 	}
 
@@ -205,14 +222,6 @@ public class PartyRequestEsbHandler implements EsbMessageHandler, InitializingBe
 		catch (Exception e) {
 			throw new RuntimeException(e);
 		}
-	}
-
-	private void answerValidationException(ESBValidationException exception, Map<String, EsbDataHandler> attachments, EsbMessage message) throws ESBValidationException {
-
-		final ExceptionResponse er = new ExceptionResponse();
-		er.setExceptionInfo(new BusinessExceptionInfo(exception.getMessage(), BusinessExceptionCode.INVALID_RESPONSE.name(), null));
-
-		answer(true, er, attachments, message);
 	}
 
 	@Override
