@@ -8,12 +8,13 @@ import java.util.Set;
 import org.springframework.context.MessageSource;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.avatars.AvatarService;
+import ch.vd.unireg.avatars.TypeAvatar;
 import ch.vd.unireg.interfaces.infra.data.ApplicationFiscale;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
-import ch.vd.uniregctb.general.view.TypeAvatar;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.taglibs.JspTagBandeauTiers;
 import ch.vd.uniregctb.taglibs.JspTagInteroperabilite;
@@ -48,7 +49,7 @@ public class VignetteView {
 	private String accessDenied;
 
 	public VignetteView(Tiers tiers, boolean fillEnsemble, boolean fillAdresses, boolean fillRoles, boolean fillUrlVers, boolean fillActions, TiersService tiersService,
-	                    AdresseService adresseService,
+	                    AdresseService adresseService, AvatarService avatarService,
 	                    ServiceInfrastructureService infraService, MessageSource messageSource) {
 
 		this.numero = tiers.getNumero();
@@ -77,7 +78,7 @@ public class VignetteView {
 			}
 		}
 
-		this.typeAvatar = JspTagBandeauTiers.getTypeAvatar(tiers);
+		this.typeAvatar = avatarService.getTypeAvatar(tiers);
 
 		// le ménage et consort
 		EnsembleTiersCouple ensemble = null;
@@ -88,7 +89,7 @@ public class VignetteView {
 			else if (tiers instanceof MenageCommun) {
 				ensemble = tiersService.getEnsembleTiersCouple((MenageCommun) tiers, null);
 			}
-			this.ensemble = (ensemble == null ? null : new EnsembleTiersCoupleView(ensemble, tiersService, adresseService, infraService, messageSource));
+			this.ensemble = (ensemble == null ? null : new EnsembleTiersCoupleView(ensemble, tiersService, adresseService, avatarService, infraService, messageSource));
 		}
 
 		// les urls vers les autres applications

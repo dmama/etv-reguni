@@ -62,6 +62,11 @@
 			<version>${pom.parent.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>${pom.parent.groupId}</groupId>
+			<artifactId>uniregctb-avatars</artifactId>
+			<version>${pom.parent.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>ch.vd.registre</groupId>
 			<artifactId>shared-web</artifactId>
 			<version>2.10.0</version>

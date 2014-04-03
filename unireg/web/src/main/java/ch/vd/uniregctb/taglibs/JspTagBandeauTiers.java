@@ -18,20 +18,17 @@ import org.springframework.web.util.HtmlUtils;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.unireg.avatars.TypeAvatar;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.declaration.Periodicite;
-import ch.vd.uniregctb.general.view.TypeAvatar;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityHelper;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
-import ch.vd.uniregctb.tiers.AutreCommunaute;
-import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.EvenementsCivilsNonTraites;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -42,7 +39,6 @@ import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.type.PeriodeDecompte;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
-import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.utils.WebContextUtils;
 
@@ -533,11 +529,31 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		return s.toString();
 	}
 
+	private String buildImageUrl(Tiers tiers, TypeAvatar type, boolean withLink) {
+		final List<String> params = new ArrayList<>();
+		if (tiers != null) {
+			params.add("noTiers=" + tiers.getNumero());
+		}
+		if (type != null) {
+			params.add("type=" + type);
+		}
+		if (withLink) {
+			params.add("link=true");
+		}
+		final StringBuilder b = new StringBuilder();
+		for (String param : params) {
+			if (b.length() > 0) {
+				b.append('&');
+			}
+			b.append(param);
+		}
+
+		return String.format("/tiers/avatar.do?%s", b.toString());
+	}
+
 	private String buildImageTiers(Tiers tiers) {
 
-		final TypeAvatar type = forceAvatar == null ? getTypeAvatar(tiers) : TypeAvatar.valueOf(forceAvatar);
-		final String image = getImageUrl(type, false);
-
+		final String image = buildImageUrl(tiers, forceAvatar == null ? null : TypeAvatar.valueOf(forceAvatar), false);
 		final StringBuilder s = new StringBuilder();
 		s.append("<img class=\"iepngfix\" src=\"").append(url(image)).append("\">\n");
 
@@ -555,9 +571,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 
 		if (tiers == ensemble.getConjoint() || tiers == ensemble.getPrincipal()) {
 			final MenageCommun menage = ensemble.getMenage();
-			final TypeAvatar type = getTypeAvatar(menage);
-
-			final String image = getImageUrl(type, true);
+			final String image = buildImageUrl(menage, null, true);
 
 			final StringBuilder s = new StringBuilder();
 			s.append("<a title=\"Aller vers le ménage du tiers\" href=\"").append(url("/tiers/visu.do?id=")).append(menage.getId()).append("\">");
@@ -571,8 +585,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 
 			final PersonnePhysique principal = ensemble.getPrincipal();
 			if (principal != null) {
-				final TypeAvatar type = getTypeAvatar(principal);
-				final String image = getImageUrl(type, true);
+				final String image = buildImageUrl(principal, null, true);
 				s = new StringBuilder();
 				s.append("<a title=\"Aller vers le tiers principal du ménage\" href=\"").append(url("/tiers/visu.do?id=")).append(principal.getId()).append("\">");
 				s.append("<img class=\"iepngfix avatar\" src=\"").append(url(image)).append("\">\n");
@@ -581,8 +594,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 
 			final PersonnePhysique conjoint = ensemble.getConjoint();
 			if (conjoint != null) {
-				final TypeAvatar type = getTypeAvatar(conjoint);
-				final String image = getImageUrl(type, true);
+				final String image = buildImageUrl(conjoint, null, true);
 				if (s == null) {
 					s = new StringBuilder();
 				}
@@ -596,132 +608,6 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		else {
 			return null;
 		}
-	}
-
-	private static String getImageUrl(TypeAvatar type, boolean forLink) {
-		final String image;
-		switch (type) {
-		case HOMME:
-			image = "homme.png";
-			break;
-		case FEMME:
-			image = "femme.png";
-			break;
-		case SEXE_INCONNU:
-			image = "inconnu.png";
-			break;
-		case MC_MIXTE:
-			image = "menagecommun.png";
-			break;
-		case MC_HOMME_SEUL:
-			image = "homme_seul.png";
-			break;
-		case MC_FEMME_SEULE:
-			image = "femme_seule.png";
-			break;
-		case MC_HOMME_HOMME:
-			image = "homme_homme.png";
-			break;
-		case MC_FEMME_FEMME:
-			image = "femme_femme.png";
-			break;
-		case MC_SEXE_INCONNU:
-			image = "mc_inconnu.png";
-			break;
-		case ENTREPRISE:
-			image = "entreprise.png";
-			break;
-		case ETABLISSEMENT:
-			image = "etablissement.png";
-			break;
-		case AUTRE_COMM:
-			image = "autrecommunaute.png";
-			break;
-		case COLLECT_ADMIN:
-			image = "collectiviteadministrative.png";
-			break;
-		case DEBITEUR:
-			image = "debiteur.png";
-			break;
-		default:
-			throw new IllegalArgumentException("Type de tiers inconnu = [" + type + ']');
-		}
-
-		final String basePath = (forLink ? "/images/tiers/links/" : "/images/tiers/");
-		return basePath + image;
-	}
-
-	public static TypeAvatar getTypeAvatar(Tiers tiers) {
-
-		final TypeAvatar type;
-
-		if (tiers instanceof PersonnePhysique) {
-			final Sexe sexe = tiersService.getSexe((PersonnePhysique) tiers);
-			if (sexe == null) {
-				type = TypeAvatar.SEXE_INCONNU;
-			}
-			else if (sexe == Sexe.MASCULIN) {
-				type = TypeAvatar.HOMME;
-			}
-			else {
-				type = TypeAvatar.FEMME;
-			}
-		}
-		else if (tiers instanceof Entreprise) {
-			type = TypeAvatar.ENTREPRISE;
-		}
-		else if (tiers instanceof AutreCommunaute) {
-			type = TypeAvatar.AUTRE_COMM;
-		}
-		else if (tiers instanceof MenageCommun) {
-			final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple((MenageCommun) tiers, null);
-			final PersonnePhysique principal = ensemble.getPrincipal();
-			final PersonnePhysique conjoint = ensemble.getConjoint();
-
-			Sexe sexePrincipal = tiersService.getSexe(principal);
-			Sexe sexeConjoint = tiersService.getSexe(conjoint);
-			if (sexePrincipal == null && sexeConjoint != null) {
-				// Le conjoint passe principal si son sexe est connu mais que celui du principal ne l'est pas
-				sexePrincipal = sexeConjoint;
-				sexeConjoint = null;
-			}
-
-			if (sexePrincipal == null) {
-				type = TypeAvatar.MC_SEXE_INCONNU;
-			}
-			else if (sexeConjoint == null) {
-				if (sexePrincipal == Sexe.MASCULIN) {
-					type = TypeAvatar.MC_HOMME_SEUL;
-				}
-				else {
-					type = TypeAvatar.MC_FEMME_SEULE;
-				}
-			}
-			else {
-				if (sexePrincipal == sexeConjoint) {
-					if (sexePrincipal == Sexe.MASCULIN) {
-						type = TypeAvatar.MC_HOMME_HOMME;
-					}
-					else {
-						type = TypeAvatar.MC_FEMME_FEMME;
-					}
-				}
-				else {
-					type = TypeAvatar.MC_MIXTE;
-				}
-			}
-		}
-		else if (tiers instanceof CollectiviteAdministrative) {
-			type = TypeAvatar.COLLECT_ADMIN;
-		}
-		else if (tiers instanceof DebiteurPrestationImposable) {
-			type = TypeAvatar.DEBITEUR;
-		}
-		else {
-			type = null;
-		}
-
-		return type;
 	}
 
 	public static interface Action {

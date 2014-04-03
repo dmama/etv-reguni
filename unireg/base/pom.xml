@@ -20,6 +20,7 @@
 		<module>../core</module>
 		<module>../interfaces</module>
 		<module>../business</module>
+		<module>../avatars</module>
 		<module>../nexus</module>
 		<module>../web</module>
 		<module>../ws</module>

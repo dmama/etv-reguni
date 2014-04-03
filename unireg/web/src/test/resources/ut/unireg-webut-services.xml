@@ -18,4 +18,8 @@
 
 	<bean id="editiqueDownloadService" class="ch.vd.uniregctb.common.MockEditiqueDownloadService"/>
 
+	<bean id="avatarService" class="ch.vd.unireg.avatars.AvatarServiceImpl">
+		<property name="tiersService" ref="tiersService"/>
+	</bean>
+
 </beans>

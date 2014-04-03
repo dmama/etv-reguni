@@ -24,6 +24,8 @@ public abstract class MimeTypeHelper {
 	public static final String MIME_MSWORD = "application/msword";
 	public static final String MIME_TIFF = "image/tiff";
 	public static final String MIME_AFP = "application/afp";
+	public static final String MIME_JPEG = "image/jpeg";
+	public static final String MIME_PNG = "image/png";
 
 	private static final Map<String, String> fileSuffixes;
 
@@ -43,6 +45,8 @@ public abstract class MimeTypeHelper {
 		fileSuffixes.put(MIME_MSWORD, ".doc");
 		fileSuffixes.put(MIME_TIFF, ".tiff");
 		fileSuffixes.put(MIME_AFP, ".afp");
+		fileSuffixes.put(MIME_JPEG, ".jpg");
+		fileSuffixes.put(MIME_PNG, ".png");
 	}
 
 	/**

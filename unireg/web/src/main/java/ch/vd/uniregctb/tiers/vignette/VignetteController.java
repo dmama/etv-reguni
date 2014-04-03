@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import ch.vd.unireg.avatars.AvatarService;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -28,6 +29,7 @@ public class VignetteController {
 	private ServiceInfrastructureService infraService;
 	private MessageSource messageSource;
 	private SecurityProviderInterface securityProvider;
+	private AvatarService avatarService;
 
 	public void setTiersDAO(TiersDAO tiersDAO) {
 		this.tiersDAO = tiersDAO;
@@ -51,6 +53,10 @@ public class VignetteController {
 
 	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
 		this.securityProvider = securityProvider;
+	}
+
+	public void setAvatarService(AvatarService avatarService) {
+		this.avatarService = avatarService;
 	}
 
 	/**
@@ -83,6 +89,6 @@ public class VignetteController {
 			return new VignetteView(String.format("Vous ne possédez pas les droits de visualisation sur le contribuable n°%s.", FormatNumeroHelper.numeroCTBToDisplay(numero)));
 		}
 
-		return new VignetteView(tiers, fillEnsemble, fillAdresses, fillRoles, fillUrlVers, fillActions, tiersService, adresseService, infraService, messageSource);
+		return new VignetteView(tiers, fillEnsemble, fillAdresses, fillRoles, fillUrlVers, fillActions, tiersService, adresseService, avatarService, infraService, messageSource);
 	}
 }

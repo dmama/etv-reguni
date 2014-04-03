@@ -34,6 +34,7 @@
 		<property name="infraService" ref="serviceInfrastructureService" />
 		<property name="messageSource" ref="messageSource" />
 		<property name="securityProvider" ref="securityProviderInterface" />
+		<property name="avatarService" ref="avatarService"/>
 	</bean>
 
 	<bean id="validationController" class="ch.vd.uniregctb.validation.ValidationController">
@@ -229,6 +230,11 @@
 
 	<bean id="redirectController" class="ch.vd.uniregctb.redirect.RedirectController">
 		<property name="infraService" ref="serviceInfrastructureService" />
+	</bean>
+
+	<bean id="avatarController" class="ch.vd.uniregctb.tiers.AvatarController">
+		<property name="avatarService" ref="avatarService"/>
+		<property name="tiersService" ref="tiersService"/>
 	</bean>
 
 </beans>

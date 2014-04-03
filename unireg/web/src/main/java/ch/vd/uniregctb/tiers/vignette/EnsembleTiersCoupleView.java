@@ -3,6 +3,7 @@ package ch.vd.uniregctb.tiers.vignette;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.context.MessageSource;
 
+import ch.vd.unireg.avatars.AvatarService;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
@@ -14,14 +15,14 @@ public class EnsembleTiersCoupleView {
 	private VignetteView conjoint;
 	private VignetteView menage;
 
-	public EnsembleTiersCoupleView(@NotNull EnsembleTiersCouple ensemble, TiersService tiersService, AdresseService adresseService, ServiceInfrastructureService infraService, MessageSource messageSource) {
+	public EnsembleTiersCoupleView(@NotNull EnsembleTiersCouple ensemble, TiersService tiersService, AdresseService adresseService, AvatarService avatarService, ServiceInfrastructureService infraService, MessageSource messageSource) {
 		if (ensemble.getPrincipal() != null) {
-			this.principal = new VignetteView(ensemble.getPrincipal(), false, false, false, false, false, tiersService, adresseService, infraService, messageSource);
+			this.principal = new VignetteView(ensemble.getPrincipal(), false, false, false, false, false, tiersService, adresseService, avatarService, infraService, messageSource);
 		}
 		if (ensemble.getConjoint() != null) {
-			this.conjoint = new VignetteView(ensemble.getConjoint(), false, false, false, false, false, tiersService, adresseService, infraService, messageSource);
+			this.conjoint = new VignetteView(ensemble.getConjoint(), false, false, false, false, false, tiersService, adresseService, avatarService, infraService, messageSource);
 		}
-		this.menage = new VignetteView(ensemble.getMenage(), false, false, false, false, false, tiersService, adresseService, infraService, messageSource);
+		this.menage = new VignetteView(ensemble.getMenage(), false, false, false, false, false, tiersService, adresseService, avatarService, infraService, messageSource);
 	}
 
 	public VignetteView getPrincipal() {

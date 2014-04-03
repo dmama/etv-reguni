@@ -962,54 +962,7 @@ var Tiers = {
 	},
 
 	_getImageUrl : function(typeAvatar, forLink) {
-		var image;
-		switch (typeAvatar) {
-		case 'HOMME':
-			image = "homme.png";
-			break;
-		case 'FEMME':
-			image = "femme.png";
-			break;
-		case 'SEXE_INCONNU':
-			image = "inconnu.png";
-			break;
-		case 'MC_MIXTE':
-			image = "menagecommun.png";
-			break;
-		case 'MC_HOMME_SEUL':
-			image = "homme_seul.png";
-			break;
-		case 'MC_FEMME_SEULE':
-			image = "femme_seule.png";
-			break;
-		case 'MC_HOMME_HOMME':
-			image = "homme_homme.png";
-			break;
-		case 'MC_FEMME_FEMME':
-			image = "femme_femme.png";
-			break;
-		case 'MC_SEXE_INCONNU':
-			image = "mc_inconnu.png";
-			break;
-		case 'ENTREPRISE':
-			image = "entreprise.png";
-			break;
-		case 'ETABLISSEMENT':
-			image = "etablissement.png";
-			break;
-		case 'AUTRE_COMM':
-			image = "autrecommunaute.png";
-			break;
-		case 'COLLECT_ADMIN':
-			image = "collectiviteadministrative.png";
-			break;
-		case 'DEBITEUR':
-			image = "debiteur.png";
-			break;
-		}
-
-		var basePath = (forLink ? "/images/tiers/links/" : "/images/tiers/");
-		return basePath + image;
+		return "/tiers/avatar.do?type=" + typeAvatar + (forLink ? "&link=true" : "");
 	},
 
 	/**

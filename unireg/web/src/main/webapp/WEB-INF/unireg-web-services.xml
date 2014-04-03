@@ -30,4 +30,8 @@
 		<property name="printPCLManager" ref="printPCLManager"/>
 	</bean>
 
+	<bean id="avatarService" class="ch.vd.unireg.avatars.AvatarServiceImpl">
+		<property name="tiersService" ref="tiersService"/>
+	</bean>
+
 </beans>
