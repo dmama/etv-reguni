@@ -42,6 +42,8 @@ import ch.vd.registre.base.tx.TxCallbackException;
 import ch.vd.shared.batchtemplate.BatchResults;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
+import ch.vd.unireg.avatars.AvatarService;
+import ch.vd.unireg.avatars.ImageData;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.ws.ack.v1.AckStatus;
 import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationAckRequest;
@@ -136,6 +138,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	private final Context context = new Context();
 	private GlobalTiersSearcher tiersSearcher;
 	private ExecutorService threadPool;
+	private AvatarService avatarService;
 
 	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
 		this.context.securityProvider = securityProvider;
@@ -219,6 +222,10 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 	public void setThreadPool(ExecutorService threadPool) {
 		this.threadPool = threadPool;
+	}
+
+	public void setAvatarService(AvatarService avatarService) {
+		this.avatarService = avatarService;
 	}
 
 	private <T> T doInTransaction(boolean readonly, TransactionCallback<T> callback) {
@@ -903,5 +910,31 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 		}
 
 		return finalResult;
+	}
+
+	@Override
+	public ImageData getAvatar(final int partyNo) throws ServiceException {
+		try {
+			return doInTransaction(true, new TxCallback<ImageData>() {
+				@Override
+				public ImageData execute(TransactionStatus status) throws ServiceException {
+					final Tiers tiers = context.tiersService.getTiers(partyNo);
+					if (tiers == null) {
+						throw new TiersNotFoundException(partyNo);
+					}
+
+					return avatarService.getAvatar(tiers, false);
+				}
+			});
+		}
+		catch (TxCallbackException e) {
+			final Throwable cause = e.getCause();
+			if (cause instanceof ServiceException) {
+				throw (ServiceException) cause;
+			}
+			else {
+				throw e;
+			}
+		}
 	}
 }

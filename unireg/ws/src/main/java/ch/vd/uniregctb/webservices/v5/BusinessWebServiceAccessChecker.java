@@ -7,6 +7,7 @@ import java.util.Set;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.avatars.ImageData;
 import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationAckRequest;
 import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationAckResponse;
 import ch.vd.unireg.ws.deadline.v1.DeadlineRequest;
@@ -123,5 +124,10 @@ public class BusinessWebServiceAccessChecker implements BusinessWebService {
 	@Override
 	public TaxOffices getTaxOffices(int municipalityId, @Nullable RegDate date) {
 		return target.getTaxOffices(municipalityId, date);
+	}
+
+	@Override
+	public ImageData getAvatar(int partyNo) throws ServiceException {
+		return target.getAvatar(partyNo);
 	}
 }

@@ -19,6 +19,7 @@ import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.unireg.avatars.ImageData;
 import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationAckRequest;
 import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationAckResponse;
 import ch.vd.unireg.ws.deadline.v1.DeadlineRequest;
@@ -359,6 +360,11 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 	public List<CorporationEvent> searchCorporationEvent(UserLogin user, @Nullable Integer corporationId, @Nullable String eventCode,
 	                                                     @Nullable RegDate startDate, @Nullable RegDate endDate) throws AccessDeniedException, EmptySearchCriteriaException {
 		return target.searchCorporationEvent(user, corporationId, eventCode, startDate, endDate);
+	}
+
+	@Override
+	public ImageData getAvatar(int partyNo) throws ServiceException {
+		return target.getAvatar(partyNo);
 	}
 
 	/**

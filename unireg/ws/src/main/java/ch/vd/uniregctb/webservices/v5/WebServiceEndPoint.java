@@ -5,6 +5,7 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
+import java.io.ByteArrayOutputStream;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collection;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.jaxrs.ext.MessageContext;
 import org.apache.log4j.Logger;
@@ -25,6 +27,7 @@ import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.NotImplementedException;
+import ch.vd.unireg.avatars.ImageData;
 import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationAckRequest;
 import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationAckResponse;
 import ch.vd.unireg.ws.deadline.v1.DeadlineRequest;
@@ -618,6 +621,25 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 				return ExecutionResult.with(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build());
 			}
 		});
+	}
 
+	@Override
+	public Response getAvatar(final int partyNo) {
+		final Object params = new Object() {
+			@Override
+			public String toString() {
+				return String.format("getAvatar{partyNo=%d}", partyNo);
+			}
+		};
+		return execute(params, READ_ACCESS_LOG, new ExecutionCallback() {
+			@NotNull
+			@Override
+			public ExecutionResult execute() throws Exception {
+				try (ImageData data = target.getAvatar(partyNo); ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
+					IOUtils.copy(data.getDataStream(), bos);
+					return ExecutionResult.with(Response.ok(bos.toByteArray(), data.getMimeType()).build());
+				}
+			}
+		});
 	}
 }

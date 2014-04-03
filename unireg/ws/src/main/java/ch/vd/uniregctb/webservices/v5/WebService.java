@@ -110,4 +110,9 @@ public interface WebService {
 	@Path("/debtor/{debtorNo}/{taxPeriod}")
 	@Produces({MediaType.APPLICATION_XML, WebServiceHelper.APPLICATION_JSON_WITH_UTF8_CHARSET})
 	Response getDebtorInfo(@PathParam("debtorNo") int debtorNo, @PathParam("taxPeriod") int pf, @QueryParam("user") String user);
+
+	@GET
+	@Path("/avatar/{partyNo}")
+	@Produces(MediaType.APPLICATION_OCTET_STREAM)
+	Response getAvatar(@PathParam("partyNo") int partyNo);
 }

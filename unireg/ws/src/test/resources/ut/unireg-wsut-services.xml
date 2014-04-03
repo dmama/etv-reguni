@@ -8,4 +8,8 @@
 
 	<bean id="efactureService" class="ch.vd.uniregctb.efacture.EFactureServiceProxy"/>
 
+	<bean id="avatarService" class="ch.vd.unireg.avatars.AvatarServiceImpl">
+		<property name="tiersService" ref="tiersService"/>
+	</bean>
+
 </beans>

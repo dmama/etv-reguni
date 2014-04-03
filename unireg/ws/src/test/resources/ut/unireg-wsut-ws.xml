@@ -148,6 +148,7 @@
 		<property name="periodeImpositionImpotSourceService" ref="periodeImpositionImpotSourceService"/>
 		<property name="EFactureService" ref="efactureService"/>
 		<property name="threadPool" ref="wsThreadPoolv5"/>
+		<property name="avatarService" ref="avatarService"/>
 	</bean>
 
 </beans>

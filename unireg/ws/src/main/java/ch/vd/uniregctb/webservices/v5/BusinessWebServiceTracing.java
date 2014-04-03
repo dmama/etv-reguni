@@ -9,6 +9,7 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.avatars.ImageData;
 import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationAckRequest;
 import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationAckResponse;
 import ch.vd.unireg.ws.deadline.v1.DeadlineRequest;
@@ -207,6 +208,17 @@ public class BusinessWebServiceTracing implements BusinessWebService, Initializi
 		}
 		finally {
 			tracing.end(time, null, "getParties", resultSize, null);
+		}
+	}
+
+	@Override
+	public ImageData getAvatar(int partyNo) throws ServiceException {
+		final long time = tracing.start();
+		try {
+			return target.getAvatar(partyNo);
+		}
+		finally {
+			tracing.end(time, "getAvatar", null);
 		}
 	}
 }

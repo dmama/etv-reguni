@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.avatars.ImageData;
 import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationAckRequest;
 import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationAckResponse;
 import ch.vd.unireg.ws.deadline.v1.DeadlineRequest;
@@ -130,6 +131,12 @@ class BusinessWebServiceCrashingWrapper implements BusinessWebService {
 			result.getEntries().add(new Entry(partyNo, null, new ch.vd.unireg.xml.error.v1.Error(ErrorType.TECHNICAL, EXCEPTION_TEXT)));
 		}
 		return result;
+	}
+
+	@Override
+	public ImageData getAvatar(int partyNo) throws ServiceException {
+		check(partyNo);
+		return target.getAvatar(partyNo);
 	}
 
 	private void check(int partyNo) {

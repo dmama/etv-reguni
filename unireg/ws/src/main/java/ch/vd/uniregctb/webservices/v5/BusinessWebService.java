@@ -7,6 +7,7 @@ import java.util.Set;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.avatars.ImageData;
 import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationAckRequest;
 import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationAckResponse;
 import ch.vd.unireg.ws.deadline.v1.DeadlineRequest;
@@ -169,4 +170,12 @@ public interface BusinessWebService {
 	 * @throws ServiceException en cas de problème à la constitution de l'entité à exporter
 	 */
 	Parties getParties(UserLogin user, List<Integer> partyNos, @Nullable Set<PartyPart> parts) throws AccessDeniedException, ServiceException;
+
+	/**
+	 * Récupère l'image de l'avatar du tiers demandé
+	 * @param partyNo numéro du tiers
+	 * @return l'image de l'avatar
+	 * @throws ServiceException en cas de problème
+	 */
+	ImageData getAvatar(int partyNo) throws ServiceException;
 }

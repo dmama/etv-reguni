@@ -21,9 +21,9 @@ import ch.vd.uniregctb.security.Role;
  */
 @ContextConfiguration(locations = {
 		BusinessTestingConstants.UNIREG_BUSINESS_UT_CONFIG,
-		"classpath:ut/unireg-wsut-ws.xml",
-		"classpath:ut/unireg-wsut-mock.xml",
-		"classpath:ut/unireg-wsut-security.xml"
+		WebserviceTestingConstants.UNIREG_WSUT_WS,
+		WebserviceTestingConstants.UNIREG_WSUT_SERVICES,
+		WebserviceTestingConstants.UNIREG_WSUT_SECURITY
 })
 public abstract class WebserviceTest extends AbstractBusinessTest {
 
