@@ -134,6 +134,7 @@
 		<property name="adresseService" ref="adresseService" />
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="securityProvider" ref="securityProviderInterface"/>
+		<property name="avatarService" ref="avatarService"/>
 	</bean>
 
 	<bean id="jspTagInteroperabilite" class="ch.vd.uniregctb.taglibs.JspTagInteroperabilite"/>

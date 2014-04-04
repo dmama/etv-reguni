@@ -18,6 +18,7 @@ import org.springframework.web.util.HtmlUtils;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.unireg.avatars.AvatarService;
 import ch.vd.unireg.avatars.TypeAvatar;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseService;
@@ -58,6 +59,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 	private static AdresseService adresseService;
 	private static PlatformTransactionManager transactionManager;
 	private static SecurityProviderInterface securityProvider;
+	private static AvatarService avatarService;
 
 	public static final List<Action> actions;
 
@@ -174,6 +176,10 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 
 	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
 		JspTagBandeauTiers.securityProvider = securityProvider;
+	}
+
+	public void setAvatarService(AvatarService avatarService) {
+		JspTagBandeauTiers.avatarService = avatarService;
 	}
 
 	private String buidHtlm() {
@@ -529,14 +535,9 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		return s.toString();
 	}
 
-	private String buildImageUrl(Tiers tiers, TypeAvatar type, boolean withLink) {
+	private String buildImageUrl(TypeAvatar type, boolean withLink) {
 		final List<String> params = new ArrayList<>();
-		if (tiers != null) {
-			params.add("noTiers=" + tiers.getNumero());
-		}
-		if (type != null) {
-			params.add("type=" + type);
-		}
+		params.add("type=" + type);
 		if (withLink) {
 			params.add("link=true");
 		}
@@ -552,11 +553,9 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 	}
 
 	private String buildImageTiers(Tiers tiers) {
-
-		final String image = buildImageUrl(tiers, forceAvatar == null ? null : TypeAvatar.valueOf(forceAvatar), false);
+		final String image = buildImageUrl(forceAvatar == null ? avatarService.getTypeAvatar(tiers) : TypeAvatar.valueOf(forceAvatar), false);
 		final StringBuilder s = new StringBuilder();
 		s.append("<img class=\"iepngfix\" src=\"").append(url(image)).append("\">\n");
-
 		return s.toString();
 	}
 
@@ -571,7 +570,8 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 
 		if (tiers == ensemble.getConjoint() || tiers == ensemble.getPrincipal()) {
 			final MenageCommun menage = ensemble.getMenage();
-			final String image = buildImageUrl(menage, null, true);
+			final TypeAvatar typeAvatar = avatarService.getTypeAvatar(menage);
+			final String image = buildImageUrl(typeAvatar, true);
 
 			final StringBuilder s = new StringBuilder();
 			s.append("<a title=\"Aller vers le ménage du tiers\" href=\"").append(url("/tiers/visu.do?id=")).append(menage.getId()).append("\">");
@@ -585,7 +585,8 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 
 			final PersonnePhysique principal = ensemble.getPrincipal();
 			if (principal != null) {
-				final String image = buildImageUrl(principal, null, true);
+				final TypeAvatar typeAvatar = avatarService.getTypeAvatar(principal);
+				final String image = buildImageUrl(typeAvatar, true);
 				s = new StringBuilder();
 				s.append("<a title=\"Aller vers le tiers principal du ménage\" href=\"").append(url("/tiers/visu.do?id=")).append(principal.getId()).append("\">");
 				s.append("<img class=\"iepngfix avatar\" src=\"").append(url(image)).append("\">\n");
@@ -594,7 +595,8 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 
 			final PersonnePhysique conjoint = ensemble.getConjoint();
 			if (conjoint != null) {
-				final String image = buildImageUrl(conjoint, null, true);
+				final TypeAvatar typeAvatar = avatarService.getTypeAvatar(conjoint);
+				final String image = buildImageUrl(typeAvatar, true);
 				if (s == null) {
 					s = new StringBuilder();
 				}

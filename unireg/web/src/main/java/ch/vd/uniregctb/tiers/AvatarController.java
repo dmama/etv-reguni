@@ -2,6 +2,7 @@ package ch.vd.uniregctb.tiers;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.core.HttpHeaders;
 
 import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Controller;
@@ -16,6 +17,10 @@ import ch.vd.unireg.avatars.TypeAvatar;
 
 @Controller
 public class AvatarController {
+
+	private static final String CACHE_CONTROL = HttpHeaders.CACHE_CONTROL;
+	private static final String CONTENT_DISPOSITION = "Content-Disposition";
+	private static final String PRAGMA = "Pragma";
 
 	private AvatarService avatarService;
 	private TiersService tiersService;
@@ -42,10 +47,15 @@ public class AvatarController {
 		try (ImageData data = getImageData(noTiers, type, withLink)) {
 			response.reset(); // pour éviter l'exception 'getOutputStream() has already been called for this response'
 
-			response.setHeader("Content-disposition", "inline");
-			response.setHeader("Pragma", "public");
-			response.setHeader("cache-control", "no-cache");
-			response.setHeader("Cache-control", "must-revalidate");
+			response.setHeader(CONTENT_DISPOSITION, "inline");
+			if (type == null) {
+				response.setHeader(CACHE_CONTROL, "no-cache, must-revalidate");
+				response.setHeader(PRAGMA, "no-cache");
+			}
+			else {
+				response.setHeader(CACHE_CONTROL, "public");
+				response.setHeader(PRAGMA, "public");
+			}
 			response.setContentType(data.getMimeType());
 
 			try (ServletOutputStream out = response.getOutputStream()) {
