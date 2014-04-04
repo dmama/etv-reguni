@@ -635,7 +635,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 			@NotNull
 			@Override
 			public ExecutionResult execute() throws Exception {
-				try (ImageData data = target.getAvatar(partyNo); ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
+				try (ImageData data = target.getAvatar(partyNo); ByteArrayOutputStream bos = new ByteArrayOutputStream(16 * 1024)) {
 					IOUtils.copy(data.getDataStream(), bos);
 					return ExecutionResult.with(Response.ok(bos.toByteArray(), data.getMimeType()).build());
 				}
