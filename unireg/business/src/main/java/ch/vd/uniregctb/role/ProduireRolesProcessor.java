@@ -747,6 +747,10 @@ public class ProduireRolesProcessor {
 				}
 			}
 		}
+		catch (AssujettissementCommunalException e) {
+			// --> on met le calcul sur ce groupe de communes en erreur, mais cela ne doit pas péjorer les autres communes éventuelles où ce contribuable pourrait intervenir
+			rapport.addErrorErreurAssujettissement(contribuable, e.getMessage());
+		}
 		catch (AssujettissementException e) {
 			rapport.addErrorErreurAssujettissement(contribuable, e.getMessage());
 			throw new TraitementException();
@@ -910,6 +914,28 @@ public class ProduireRolesProcessor {
 		return new DebutFinFor(dateOuverture, motifOuverture, dateFermeture, motifFermeture);
 	}
 
+	private static class AssujettissementCommunalException extends AssujettissementException {
+
+		private static final long serialVersionUID = 2637719390064882251L;
+
+		public AssujettissementCommunalException(Set<Integer> ofsCommunes) {
+			super(buildMessage(ofsCommunes));
+		}
+
+		private static String buildMessage(Set<Integer> ofsCommunes) {
+			final String communesExploded;
+			if (ofsCommunes.size() == 1) {
+				communesExploded = String.format("de la commune %d", ofsCommunes.iterator().next());
+			}
+			else {
+				final Integer[] ofsArray = ofsCommunes.toArray(new Integer[ofsCommunes.size()]);
+				communesExploded = String.format("des communes %s", Arrays.toString(ofsArray));
+			}
+
+			return String.format("Assujettissement non calculable pour les rôles %s (incohérence de fors ?)", communesExploded);
+		}
+	}
+
 	private TypeAssujettissement getTypeAssujettissementPourCommunes(Set<Integer> communes, Assujettissement assujettissement) throws AssujettissementException {
 
 		// l'assujettissement est-il actif sur au moins une commune du groupement ?
@@ -933,7 +959,7 @@ public class ProduireRolesProcessor {
 				// bizarre : on a au moins une commune de l'ensemble qui est "active" (voir communeActive plus haut) mais on ne trouve pas
 				// d'assujettissement... on a eu le cas une fois avec un sourcier pur vaudois qui avait aussi un for secondaire sur une autre commune (les rôles
 				// de cette autre commune posent problème) - SIFISC-8671
-				throw new AssujettissementException("Assujettissement non calculable pour les rôles (incohérence de fors ?)");
+				throw new AssujettissementCommunalException(communes);
 			}
 			final Assujettissement assujettissementApres = DateRangeHelper.rangeAt(assujettissementsCommune, RegDateHelper.getFirstDayOfNextMonth(assujettissement.getDateFin()));
 			if (assujettissementApres == null) {

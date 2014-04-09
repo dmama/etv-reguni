@@ -53,10 +53,10 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypePermis;
 import ch.vd.uniregctb.validation.ValidationService;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 @SuppressWarnings({"JavaDoc"})
 public class ProduireRolesProcessorTest extends BusinessTest {
@@ -1685,8 +1685,189 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 			final Erreur erreur = erreurs.get(0);
 			assertNotNull(erreur);
 			assertEquals(ProduireRolesResults.ErreurType.ASSUJETTISSEMENT, erreur.raison);
-			assertEquals("Assujettissement non calculable pour les rôles (incohérence de fors ?)", erreur.details);
+			assertEquals("Assujettissement non calculable pour les rôles de la commune " + MockCommune.Aigle.getNoOFS() + " (incohérence de fors ?)", erreur.details);
 		}
 	}
 
+	/**
+	 * [SIFISC-11991] Trouvé deux cas en production lors du tir des rôles 2013, les deux sont des PP dont l'assujettissement est "Source Pure", qui
+	 * se marient avec une personne pour constituer un couple à l'ordinaire dans l'année des rôles
+	 * <p/>
+	 * Cas 1 : cas de la personne qui était HC (source), arrive sur VD en début d'année (= ordinaire) et se marie, toujours la même année
+	 */
+	@Test
+	public void testArriveeHCSourceVersOrdinairePuisMariageAnneeRole() throws Exception {
+
+		final long noIndividu = 125626L;
+		final int anneeRoles = 2013;
+		final RegDate dateArrivee = date(anneeRoles, 1, 15);
+		final RegDate dateMariage = date(anneeRoles, 5, 3);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu individu = addIndividu(noIndividu, null, "Dupont", "Philippe", Sexe.MASCULIN);
+				marieIndividu(individu, dateMariage);
+			}
+		});
+
+		final class Ids {
+			long ppId;
+			long mcId;
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				addForPrincipal(pp, date(2000, 1, 1), MotifFor.DEPART_HC, dateArrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bern, ModeImposition.SOURCE);
+				addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HC, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Leysin, ModeImposition.ORDINAIRE);
+
+				final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, dateMariage, null);
+				final MenageCommun mc = couple.getMenage();
+				addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Leysin, ModeImposition.ORDINAIRE);
+
+				final Ids ids = new Ids();
+				ids.ppId = pp.getNumero();
+				ids.mcId = mc.getNumero();
+				return ids;
+			}
+		});
+
+		// calcul des rôles
+		final ProduireRolesResults<?> results = processor.runPourToutesCommunes(anneeRoles, 1, null);
+		assertNotNull(results);
+		assertEquals(2, results.ctbsTraites);
+		assertEquals(1, results.ctbsEnErrors.size());
+		assertEquals(0, results.ctbsIgnores.size());
+		assertEquals(1, results.infosCommunes.size());
+
+		// quelle erreur ?
+		{
+			final Erreur erreur = results.ctbsEnErrors.get(0);
+			assertNotNull(erreur);
+			assertEquals(ids.ppId, erreur.noCtb);
+			assertEquals(ProduireRolesResults.ErreurType.ASSUJETTISSEMENT, erreur.raison);
+			assertEquals("Assujettissement non calculable pour les rôles de la commune " + MockCommune.Leysin.getNoOFS() + " (incohérence de fors ?)", erreur.details);
+		}
+
+		// quelle information obtenue sur la commune de Leysin ?
+		{
+			final InfoCommune infoCommune = results.infosCommunes.get(MockCommune.Leysin.getNoOFS());
+			assertNotNull(infoCommune);
+			assertEquals(1, infoCommune.getInfosContribuables().size());
+
+			final InfoContribuable info = infoCommune.getInfoPourContribuable(ids.mcId);
+			assertNotNull(info);
+
+			assertInfo(ids.mcId, TypeContribuable.ORDINAIRE, MockCommune.Leysin.getNoOFS(), dateMariage, null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
+		}
+	}
+
+	/**
+	 * [SIFISC-11991] Trouvé deux cas en production lors du tir des rôles 2013, les deux sont des PP dont l'assujettissement est "Source Pure", qui
+	 * se marient avec une personne pour constituer un couple à l'ordinaire dans l'année des rôles
+	 * <p/>
+	 * Cas 2 : mixte 1 avec immeuble (acheté en début d'année) qui se marie et forme un couple à l'ordinaire
+	 */
+	@Test
+	public void testMixte1AchatImmeublePuisMariageAnneeRole() throws Exception {
+
+		final long noIndividu = 125626L;
+		final int anneeRoles = 2013;
+		final RegDate dateChangementModeImposition = date(anneeRoles, 1, 1);
+		final RegDate dateAchat = date(anneeRoles, 2, 15);
+		final RegDate dateMariage = date(anneeRoles, 5, 3);
+		final RegDate dateDemenagement = date(anneeRoles, 10, 6);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu individu = addIndividu(noIndividu, null, "Dupont", "Philippe", Sexe.MASCULIN);
+				marieIndividu(individu, dateMariage);
+			}
+		});
+
+		final class Ids {
+			long ppId;
+			long mcId;
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				addForPrincipal(pp, date(2000, 1, 1), MotifFor.INDETERMINE, dateChangementModeImposition.getOneDayBefore(), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Fraction.LeSentier, ModeImposition.SOURCE);
+				addForPrincipal(pp, dateChangementModeImposition, MotifFor.CHGT_MODE_IMPOSITION, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Fraction.LeSentier, ModeImposition.MIXTE_137_1);
+				addForSecondaire(pp, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Fraction.LAbbaye.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+
+				final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, dateMariage, null);
+				final MenageCommun mc = couple.getMenage();
+				addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateDemenagement.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, MockCommune.Fraction.LeSentier, ModeImposition.ORDINAIRE);
+				addForPrincipal(mc, dateDemenagement, MotifFor.DEMENAGEMENT_VD, MockCommune.Fraction.LePont, ModeImposition.ORDINAIRE);
+				addForSecondaire(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Fraction.LAbbaye.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+
+				final Ids ids = new Ids();
+				ids.ppId = pp.getNumero();
+				ids.mcId = mc.getNumero();
+				return ids;
+			}
+		});
+
+		// calcul des rôles
+		final ProduireRolesResults<?> results = processor.runPourToutesCommunes(anneeRoles, 1, null);
+		assertNotNull(results);
+		assertEquals(2, results.ctbsTraites);
+		assertEquals(1, results.ctbsEnErrors.size());
+		assertEquals(0, results.ctbsIgnores.size());
+		assertEquals(3, results.infosCommunes.size());      // le sentier, l'abbaye et le pont
+
+		// quelle erreur ?
+		{
+			final Erreur erreur = results.ctbsEnErrors.get(0);
+			assertNotNull(erreur);
+			assertEquals(ids.ppId, erreur.noCtb);
+			assertEquals(ProduireRolesResults.ErreurType.ASSUJETTISSEMENT, erreur.raison);
+			assertEquals("Assujettissement non calculable pour les rôles de la commune " + MockCommune.Fraction.LAbbaye.getNoOFS() + " (incohérence de fors ?)", erreur.details);
+		}
+
+		// informations obtenues sur les communes ?
+		{
+			// le sentier
+			final InfoCommune infoCommune = results.getInfoPourCommune(MockCommune.Fraction.LeSentier.getNoOFS());
+			assertNotNull(infoCommune);
+			assertEquals(1, infoCommune.getInfosContribuables().size());
+
+			final InfoContribuable info = infoCommune.getInfoPourContribuable(ids.ppId);
+			assertNotNull(info);
+
+			assertInfo(ids.ppId, TypeContribuable.SOURCE, MockCommune.Fraction.LeSentier.getNoOFS(), date(2000, 1, 1), dateMariage.getOneDayBefore(), MotifFor.INDETERMINE, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, info);
+		}
+		{
+			// l'abbaye
+			final InfoCommune infoCommune = results.getInfoPourCommune(MockCommune.Fraction.LAbbaye.getNoOFS());
+			assertNotNull(infoCommune);
+    		assertEquals(1, infoCommune.getInfosContribuables().size());
+
+			final InfoContribuable info = infoCommune.getInfoPourContribuable(ids.mcId);
+			assertNotNull(info);
+
+			assertInfo(ids.mcId, TypeContribuable.ORDINAIRE, MockCommune.Fraction.LAbbaye.getNoOFS(), dateMariage, null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
+		}
+		{
+			// le pont
+			final InfoCommune infoCommune = results.getInfoPourCommune(MockCommune.Fraction.LePont.getNoOFS());
+			assertNotNull(infoCommune);
+			assertEquals(1, infoCommune.getInfosContribuables().size());
+
+			final InfoContribuable info = infoCommune.getInfoPourContribuable(ids.mcId);
+			assertNotNull(info);
+
+			assertInfo(ids.mcId, TypeContribuable.ORDINAIRE, MockCommune.Fraction.LePont.getNoOFS(), dateDemenagement, null, MotifFor.DEMENAGEMENT_VD, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
+		}
+	}
 }
