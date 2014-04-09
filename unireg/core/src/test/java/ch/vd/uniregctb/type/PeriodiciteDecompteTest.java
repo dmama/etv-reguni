@@ -3,10 +3,8 @@ package ch.vd.uniregctb.type;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.NotImplementedException;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 public class PeriodiciteDecompteTest {
 
@@ -143,32 +141,35 @@ public class PeriodiciteDecompteTest {
 	}
 
 	@Test
-	public void testGetDebutPeriodePonctuel() {
-		try {
-
-			PeriodiciteDecompte.UNIQUE.getDebutPeriode(RegDate.get(2000, 1, 1));
-			fail("Veuillez implémenter ce test si la périodicité PONCTUEL est implémentée");
-		}
-		catch (NotImplementedException e) {
-			// ok pour le moment
-		}
+	public void testGetDebutPeriodeUnique() {
+		assertEquals(RegDate.get(2000, 1, 1), PeriodiciteDecompte.UNIQUE.getDebutPeriode(RegDate.get(2000, 1, 1)));
+		assertEquals(RegDate.get(2000, 1, 1), PeriodiciteDecompte.UNIQUE.getDebutPeriode(RegDate.get(2000, 1, 15)));
+		assertEquals(RegDate.get(2000, 1, 1), PeriodiciteDecompte.UNIQUE.getDebutPeriode(RegDate.get(2000, 2, 1)));
+		assertEquals(RegDate.get(2000, 1, 1), PeriodiciteDecompte.UNIQUE.getDebutPeriode(RegDate.get(2000, 4, 1)));
+		assertEquals(RegDate.get(2000, 1, 1), PeriodiciteDecompte.UNIQUE.getDebutPeriode(RegDate.get(2000, 5, 1)));
+		assertEquals(RegDate.get(2000, 1, 1), PeriodiciteDecompte.UNIQUE.getDebutPeriode(RegDate.get(2000, 7, 1)));
+		assertEquals(RegDate.get(2000, 1, 1), PeriodiciteDecompte.UNIQUE.getDebutPeriode(RegDate.get(2000, 10, 1)));
+		assertEquals(RegDate.get(2000, 1, 1), PeriodiciteDecompte.UNIQUE.getDebutPeriode(RegDate.get(2000, 12, 31)));
+		assertEquals(RegDate.get(2001, 1, 1), PeriodiciteDecompte.UNIQUE.getDebutPeriode(RegDate.get(2001, 1, 1)));
 	}
 
 	@Test
-	public void testGetFinPeriodePonctuel() {
-		try {
-
-			PeriodiciteDecompte.UNIQUE.getDebutPeriode(RegDate.get(2000, 1, 1));
-			fail("Veuillez implémenter ce test si la périodicité PONCTUEL est implémentée");
-		}
-		catch (NotImplementedException e) {
-			// ok pour le moment
-		}
+	public void testGetFinPeriodeUnique() {
+		assertEquals(RegDate.get(2000, 12, 31), PeriodiciteDecompte.UNIQUE.getFinPeriode(RegDate.get(2000, 1, 1)));
+		assertEquals(RegDate.get(2000, 12, 31), PeriodiciteDecompte.UNIQUE.getFinPeriode(RegDate.get(2000, 1, 15)));
+		assertEquals(RegDate.get(2000, 12, 31), PeriodiciteDecompte.UNIQUE.getFinPeriode(RegDate.get(2000, 2, 1)));
+		assertEquals(RegDate.get(2000, 12, 31), PeriodiciteDecompte.UNIQUE.getFinPeriode(RegDate.get(2000, 4, 1)));
+		assertEquals(RegDate.get(2000, 12, 31), PeriodiciteDecompte.UNIQUE.getFinPeriode(RegDate.get(2000, 5, 1)));
+		assertEquals(RegDate.get(2000, 12, 31), PeriodiciteDecompte.UNIQUE.getFinPeriode(RegDate.get(2000, 7, 1)));
+		assertEquals(RegDate.get(2000, 12, 31), PeriodiciteDecompte.UNIQUE.getFinPeriode(RegDate.get(2000, 10, 1)));
+		assertEquals(RegDate.get(2000, 12, 31), PeriodiciteDecompte.UNIQUE.getFinPeriode(RegDate.get(2000, 12, 31)));
+		assertEquals(RegDate.get(2001, 12, 31), PeriodiciteDecompte.UNIQUE.getFinPeriode(RegDate.get(2001, 1, 1)));
 	}
 
 	/**
 	 * Test la methode qui calcule la date de debut de periode en fonction de la date de fin de periode et de la periodicite
 	 */
+	@Test
 	public void testGetDateDebutPeriode() throws Exception {
 		assertEquals(RegDate.get(2008, 1, 1), PeriodiciteDecompte.ANNUEL.getDebutPeriode(RegDate.get(2008, 12, 31)));
 		assertEquals(RegDate.get(2008, 1, 1), PeriodiciteDecompte.SEMESTRIEL.getDebutPeriode(RegDate.get(2008, 6, 30)));
@@ -179,6 +180,7 @@ public class PeriodiciteDecompteTest {
 	/**
 	 * Test la methode qui calcule la date de fin de periode en fonction de la date de debut de periode et de la periodicite
 	 */
+	@Test
 	public void testGetDateFinPeriode() throws Exception {
         assertEquals(RegDate.get(2008,12,31), PeriodiciteDecompte.ANNUEL.getFinPeriode(RegDate.get(2008, 1, 1)));
 		assertEquals(RegDate.get(2008,12,31), PeriodiciteDecompte.SEMESTRIEL.getFinPeriode(RegDate.get(2008, 7, 1)));
@@ -189,20 +191,14 @@ public class PeriodiciteDecompteTest {
 
 	/**
 	 * Vérifie que la date de la fin de période est toujours la veille du debut de la période suivante
-	 * @throws Exception
 	 */
 	@Test
 	public void testCoherenceFinPeriodeDebutPeriodeSuivante() throws Exception {
 		final RegDate reference = RegDate.get(2008,10,15);
 		for (PeriodiciteDecompte periodicite : PeriodiciteDecompte.values()) {
-			if (periodicite == PeriodiciteDecompte.UNIQUE) {
-				// celle-là n'est pas implémentée
-			}
-			else {
-				final RegDate finPeriode = periodicite.getFinPeriode(reference);
-				final RegDate debutPeriodeSuivante = periodicite.getDebutPeriodeSuivante(reference);
-				assertEquals("Périodicité " + periodicite, finPeriode, debutPeriodeSuivante.addDays(-1));
-			}
+			final RegDate finPeriode = periodicite.getFinPeriode(reference);
+			final RegDate debutPeriodeSuivante = periodicite.getDebutPeriodeSuivante(reference);
+			assertEquals("Périodicité " + periodicite, finPeriode, debutPeriodeSuivante.addDays(-1));
 		}
 	}
 }

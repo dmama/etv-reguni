@@ -4,7 +4,6 @@ import java.util.EnumSet;
 import java.util.Set;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.NotImplementedException;
 
 /**
  * Périodicité du décompte IS (listes récapitulatives)
@@ -136,12 +135,14 @@ public enum PeriodiciteDecompte {
 	UNIQUE() {
 		@Override
 		public RegDate getDebutPeriode(RegDate reference) {
-			throw new NotImplementedException();
+			// [SIFISC-12027] on est quand-même sur une sorte de périodicité annuelle
+			return RegDate.get(reference.year(), 1, 1);
 		}
 
 		@Override
 		public RegDate getDebutPeriodeSuivante(RegDate reference) {
-			throw new NotImplementedException();
+			// [SIFISC-12027] on est quand-même sur une sorte de périodicité annuelle
+			return RegDate.get(reference.year() + 1, 1, 1);
 		}
 
 		@Override
