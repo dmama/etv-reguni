@@ -9,7 +9,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.web.servlet.ModelAndView;
 
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
+import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceSecurite;
 import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceCivil;
 import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceInfrastructureService;
@@ -96,7 +97,7 @@ public abstract class WebTest extends AbstractBusinessTest {
 			protected void init() {
 				// on définit l'opérateur par défaut
 				super.init();
-				addOperateur(getDefaultOperateurName(), 0, Role.VISU_ALL.getIfosecCode());
+				addOperateur(getDefaultOperateurName(), 0, Role.VISU_ALL);
 			}
 		});
 	}
@@ -122,8 +123,25 @@ public abstract class WebTest extends AbstractBusinessTest {
 	 * @return l'objet BeanPropertyBindingResult renseigné par spring suite à l'exécution d'une méthode 'onSubmit' d'un controller.
 	 */
 	protected BeanPropertyBindingResult getBindingResult(final ModelAndView mav) {
-		final BeanPropertyBindingResult exception = (BeanPropertyBindingResult) mav.getModel().get(
-				"org.springframework.validation.BindingResult.command");
-		return exception;
+		return (BeanPropertyBindingResult) mav.getModel().get("org.springframework.validation.BindingResult.command");
+	}
+
+	protected static interface IndividuModification {
+		void modifyIndividu(MockIndividu individu);
+	}
+
+	protected static interface IndividusModification {
+		void modifyIndividus(MockIndividu individu, MockIndividu other);
+	}
+
+	protected void doModificationIndividu(long noIndividu, IndividuModification modifier) {
+		final MockIndividu ind = ((MockServiceCivil) serviceCivil.getUltimateTarget()).getIndividu(noIndividu);
+		modifier.modifyIndividu(ind);
+	}
+
+	protected void doModificationIndividus(long noIndividu, long noOther, IndividusModification modifier) {
+		final MockIndividu ind = ((MockServiceCivil) serviceCivil.getUltimateTarget()).getIndividu(noIndividu);
+		final MockIndividu other = ((MockServiceCivil) serviceCivil.getUltimateTarget()).getIndividu(noOther);
+		modifier.modifyIndividus(ind, other);
 	}
 }

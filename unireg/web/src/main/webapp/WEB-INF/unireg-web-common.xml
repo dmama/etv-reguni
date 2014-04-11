@@ -140,17 +140,7 @@
 	<bean id="jspTagInteroperabilite" class="ch.vd.uniregctb.taglibs.JspTagInteroperabilite"/>
 
 	<bean id="jspTagSetAutorisations" class="ch.vd.uniregctb.taglibs.JspTagSetAutorisations">
-		<property name="cache">
-			<bean class="ch.vd.uniregctb.tiers.manager.AutorisationCacheImpl">
-				<property name="tiersDAO" ref="tiersDAO" />
-				<property name="autorisationManager" ref="autorisationManager" />
-				<property name="transactionManager" ref="transactionManager" />
-				<property name="dataEventService" ref="dataEventService" />
-				<property name="uniregCacheManager" ref="uniregCacheManager" />
-				<property name="cacheManager" ref="ehCacheManager" />
-				<property name="cacheName" value="autorisationsCache" />
-			</bean>
-		</property>
+		<property name="cache" ref="autorisationCache"/>
 	</bean>
 
 	<bean id="printPCLManager" class="ch.vd.uniregctb.print.PrintPCLManagerImpl">

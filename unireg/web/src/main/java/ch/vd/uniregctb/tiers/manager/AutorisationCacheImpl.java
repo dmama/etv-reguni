@@ -1,7 +1,10 @@
 package ch.vd.uniregctb.tiers.manager;
 
 import java.io.Serializable;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
@@ -25,8 +28,11 @@ import ch.vd.uniregctb.cache.UniregCacheInterface;
 import ch.vd.uniregctb.cache.UniregCacheManager;
 import ch.vd.uniregctb.data.DataEventListener;
 import ch.vd.uniregctb.data.DataEventService;
+import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
@@ -86,6 +92,7 @@ public class AutorisationCacheImpl implements AutorisationCache, DataEventListen
 	}
 
 	private TiersDAO tiersDAO;
+	private TiersService tiersService;
 	private AutorisationManager autorisationManager;
 	private PlatformTransactionManager transactionManager;
 	private DataEventService dataEventService;
@@ -104,6 +111,10 @@ public class AutorisationCacheImpl implements AutorisationCache, DataEventListen
 
 	public void setTiersDAO(TiersDAO tiersDAO) {
 		this.tiersDAO = tiersDAO;
+	}
+
+	public void setTiersService(TiersService tiersService) {
+		this.tiersService = tiersService;
 	}
 
 	public void setAutorisationManager(AutorisationManager autorisationManager) {
@@ -148,6 +159,15 @@ public class AutorisationCacheImpl implements AutorisationCache, DataEventListen
 		return auth;
 	}
 
+	/**
+	 * Pour les tests seulement, permet de savoir si le cache contient bien une donnée ou pas
+	 */
+	protected boolean hasCachedData(Long tiersId, String visa, int oid) {
+		final AutorisationKey key = new AutorisationKey(tiersId, visa, oid);
+		final Element element = cache.get(key);
+		return element != null;
+	}
+
 	private Autorisations loadAutorisations(final Long tiersId, final String visa, final int oid) {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
@@ -171,13 +191,11 @@ public class AutorisationCacheImpl implements AutorisationCache, DataEventListen
 		}
 		final List<?> keys = cache.getKeys();
 		for (Object k : keys) {
-			boolean remove = false;
 			if (k instanceof AutorisationKey) {
 				final Long tiersId = ((AutorisationKey) k).getTiersId();
-				remove = (tiersId != null && tiersId.equals(id));
-			}
-			if (remove) {
-				cache.remove(k);
+				if (tiersId != null && tiersId.equals(id)) {
+					cache.remove(k);
+				}
 			}
 		}
 	}
@@ -185,6 +203,43 @@ public class AutorisationCacheImpl implements AutorisationCache, DataEventListen
 	@Override
 	public void onTiersChange(long id) {
 		evictTiers(id);
+
+		// [SIFISC-12035] le changement sur un tiers ménage commun peut avoir des conséquences (en termes d'accès) sur les membres du couple
+		evictHouseholdMembers(id);
+	}
+
+	/**
+	 * Si le tiers identifié est un ménage commun, force l'éviction du cache de toutes les personnes physiques qui lui sont liées par un rapport
+	 * d'appartenance ménage non-annulé
+	 * @param id identifiant de tiers
+	 */
+	private void evictHouseholdMembers(final long id) {
+
+		// récupération des membres qui composent l'éventuel ménage
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
+		final Set<Long> otherIds = template.execute(new TxCallback<Set<Long>>() {
+			@Override
+			public Set<Long> execute(TransactionStatus status) throws Exception {
+				final Tiers tiers = tiersDAO.get(id);
+				if (tiers instanceof MenageCommun) {
+					final Set<PersonnePhysique> pps = tiersService.getComposantsMenage((MenageCommun) tiers, null);
+					if (pps != null && !pps.isEmpty()) {
+						final Set<Long> ids = new HashSet<>(pps.size());
+						for (PersonnePhysique pp : pps) {
+							ids.add(pp.getNumero());
+						}
+						return ids;
+					}
+				}
+				return Collections.emptySet();
+			}
+		});
+
+		// éviction du cache des personnes physiques trouvées
+		for (long otherId : otherIds) {
+			evictTiers(otherId);
+		}
 	}
 
 	@Override

@@ -12,7 +12,7 @@ public abstract class SecurityTest extends WebTest {
 		serviceSecurite.setUp(new MockServiceSecuriteService() {
 			@Override
 			protected void init() {
-				addOperateur(TEST_OP_NAME, TEST_OP_NO_IND, Role.VISU_ALL.getIfosecCode());
+				addOperateur(TEST_OP_NAME, TEST_OP_NO_IND, Role.VISU_ALL);
 			}
 		});
 	}

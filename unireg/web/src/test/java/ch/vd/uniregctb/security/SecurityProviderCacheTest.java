@@ -93,8 +93,8 @@ public class SecurityProviderCacheTest extends SecurityTest {
 		serviceSecurite.setUp(new MockServiceSecuriteService() {
 			@Override
 			protected void init() {
-				addOperateur("X", 111, Role.VISU_ALL.getIfosecCode());
-				addOperateur("Z", 333, Role.VISU_ALL.getIfosecCode());
+				addOperateur("X", 111, Role.VISU_ALL);
+				addOperateur("Z", 333, Role.VISU_ALL);
 			}
 		});
 

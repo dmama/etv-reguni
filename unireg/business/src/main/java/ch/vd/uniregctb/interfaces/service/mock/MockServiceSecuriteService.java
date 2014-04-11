@@ -15,6 +15,7 @@ import ch.vd.uniregctb.interfaces.service.host.IfoSecProcedureImpl;
 import ch.vd.uniregctb.interfaces.service.host.IfoSecProfilImpl;
 import ch.vd.uniregctb.security.IfoSecProcedure;
 import ch.vd.uniregctb.security.IfoSecProfil;
+import ch.vd.uniregctb.security.Role;
 
 public abstract class MockServiceSecuriteService implements ServiceSecuriteService {
 
@@ -58,17 +59,17 @@ public abstract class MockServiceSecuriteService implements ServiceSecuriteServi
 		return operatorsByVisa.get(visa);
 	}
 
-	protected void addOperateur(String visa, long noIndividu, String... roles) {
-		final MockOperateur o = new MockOperateur(visa, noIndividu);
-		operatorsByIndividu.put(noIndividu, o);
+	protected void addOperateur(String visa, long noIndividuOperateur, Role... roles) {
+		final MockOperateur o = new MockOperateur(visa, noIndividuOperateur);
+		operatorsByIndividu.put(noIndividuOperateur, o);
 		operatorsByVisa.put(visa, o);
 
 		final IfoSecProfilImpl profile = new IfoSecProfilImpl();
 		final List<IfoSecProcedure> procedures = new ArrayList<>();
 		if (roles != null) {
-			for (String r : roles) {
+			for (Role r : roles) {
 				IfoSecProcedureImpl p = new IfoSecProcedureImpl();
-				p.setCode(r);
+				p.setCode(r.getIfosecCode());
 				procedures.add(p);
 			}
 		}

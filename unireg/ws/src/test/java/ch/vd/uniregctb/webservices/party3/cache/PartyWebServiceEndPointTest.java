@@ -59,7 +59,7 @@ public class PartyWebServiceEndPointTest extends WebserviceTest {
 		serviceSecurite.setUp(new MockServiceSecuriteService() {
 			@Override
 			protected void init() {
-				addOperateur("test", 1234, Role.VISU_LIMITE.getIfosecCode());
+				addOperateur("test", 1234, Role.VISU_LIMITE);
 			}
 		});
 

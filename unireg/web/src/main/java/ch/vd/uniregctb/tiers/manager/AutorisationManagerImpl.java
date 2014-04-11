@@ -14,6 +14,7 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.unireg.interfaces.civil.data.EtatCivil;
 import ch.vd.unireg.interfaces.civil.data.Individu;
+import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityHelper;
@@ -102,7 +103,10 @@ public class AutorisationManagerImpl implements AutorisationManager {
 
 	@Override
 	public boolean isEditAllowedPP(Tiers tiers) {
+		return isEditAllowedPP(tiers, AuthenticationHelper.getCurrentPrincipal(), AuthenticationHelper.getCurrentOID());
+	}
 
+	private boolean isEditAllowedPP(Tiers tiers, String visa, int oid) {
 		boolean isHabitant = false;
 		Tiers tiersAssujetti;
 
@@ -137,20 +141,20 @@ public class AutorisationManagerImpl implements AutorisationManager {
 		final TypeCtb typeCtb = getTypeCtb(tiersAssujetti);
 		switch (typeCtb) {
 		case NON_ASSUJETTI:
-			allowed = (SecurityHelper.isGranted(securityProvider, Role.MODIF_NONHAB_DEBPUR) && !isHabitant) ||
-					(SecurityHelper.isGranted(securityProvider, Role.MODIF_HAB_DEBPUR) && isHabitant);
+			allowed = (SecurityHelper.isGranted(securityProvider, Role.MODIF_NONHAB_DEBPUR, visa, oid) && !isHabitant) ||
+					(SecurityHelper.isGranted(securityProvider, Role.MODIF_HAB_DEBPUR, visa, oid) && isHabitant);
 			break;
 		case HC_HS:
-			allowed = SecurityHelper.isGranted(securityProvider, Role.MODIF_HC_HS);
+			allowed = SecurityHelper.isGranted(securityProvider, Role.MODIF_HC_HS, visa, oid);
 			break;
 		case ORDINAIRE:
-			allowed = SecurityHelper.isGranted(securityProvider, Role.MODIF_VD_ORD);
+			allowed = SecurityHelper.isGranted(securityProvider, Role.MODIF_VD_ORD, visa, oid);
 			break;
 		case SOURCIER:
-			allowed = SecurityHelper.isGranted(securityProvider, Role.MODIF_VD_SOURC);
+			allowed = SecurityHelper.isGranted(securityProvider, Role.MODIF_VD_SOURC, visa, oid);
 			break;
 		case MIXTE:
-			allowed = SecurityHelper.isAnyGranted(securityProvider, Role.MODIF_VD_ORD, Role.MODIF_VD_SOURC);
+			allowed = SecurityHelper.isAnyGranted(securityProvider, visa, oid, Role.MODIF_VD_ORD, Role.MODIF_VD_SOURC);
 			break;
 		default:
 			throw new IllegalArgumentException("Type de contribuable inconnu = [" + typeCtb + ']');
@@ -550,7 +554,7 @@ public class AutorisationManagerImpl implements AutorisationManager {
 
 		//les habitants n'ont jamais les onglets civil et rapport prestation
 		boolean isEditable = codeFactorise1(tiers, visa, oid, allowedOnglet);
-		if (isEditAllowedPP(tiers)) {
+		if (isEditAllowedPP(tiers, visa, oid)) {
 			codeFactorise2(visa, oid, allowedOnglet);
 			isEditable = true;
 		}
@@ -620,7 +624,7 @@ public class AutorisationManagerImpl implements AutorisationManager {
 			}
 		}
 		else {
-			if (isEditAllowedPP(tiers)) {
+			if (isEditAllowedPP(tiers, visa, oid)) {
 				if (isPersonnePhysique) {
 					allowedOnglet.put(MODIF_CIVIL, Boolean.TRUE);
 				}

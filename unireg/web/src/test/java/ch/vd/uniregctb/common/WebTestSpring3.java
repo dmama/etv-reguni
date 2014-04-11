@@ -18,7 +18,6 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.ModelAndView;
 
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceSecurite;
 import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceCivil;
 import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceInfrastructureService;
@@ -105,7 +104,7 @@ public abstract class WebTestSpring3 extends AbstractBusinessTest {
 			protected void init() {
 				// on définit l'opérateur par défaut
 				super.init();
-				addOperateur(getDefaultOperateurName(), 0, Role.VISU_ALL.getIfosecCode());
+				addOperateur(getDefaultOperateurName(), 0, Role.VISU_ALL);
 			}
 		});
 	}

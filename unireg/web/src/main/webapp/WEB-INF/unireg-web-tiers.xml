@@ -23,6 +23,17 @@
 		<property name="securityProvider" ref="securityProviderInterface" />
 	</bean>
 
+	<bean id="autorisationCache" class="ch.vd.uniregctb.tiers.manager.AutorisationCacheImpl">
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="tiersService" ref="tiersService" />
+		<property name="autorisationManager" ref="autorisationManager" />
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="dataEventService" ref="dataEventService" />
+		<property name="uniregCacheManager" ref="uniregCacheManager" />
+		<property name="cacheManager" ref="ehCacheManager" />
+		<property name="cacheName" value="autorisationsCache" />
+	</bean>
+
 	<bean id="tiersCriteriaValidator" class="ch.vd.uniregctb.tiers.validator.TiersCriteriaValidator" />
 
 	<bean id="tiersLaunchCatController" class="ch.vd.uniregctb.tiers.TiersLaunchCatController" />

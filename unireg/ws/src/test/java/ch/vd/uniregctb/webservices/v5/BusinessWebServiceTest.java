@@ -269,10 +269,10 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		serviceSecurite.setUp(new MockServiceSecuriteService() {
 			@Override
 			protected void init() {
-				addOperateur(visaOmnipotent, noIndividuOmnipotent, Role.VISU_ALL.getIfosecCode(), Role.ECRITURE_DOSSIER_PROTEGE.getIfosecCode());
-				addOperateur(visaActeur, noIndividuActeur, Role.VISU_ALL.getIfosecCode());
-				addOperateur(visaVoyeur, noIndividuVoyeur, Role.VISU_ALL.getIfosecCode());
-				addOperateur(visaGrouillot, noIndividuGrouillot, Role.VISU_ALL.getIfosecCode());
+				addOperateur(visaOmnipotent, noIndividuOmnipotent, Role.VISU_ALL, Role.ECRITURE_DOSSIER_PROTEGE);
+				addOperateur(visaActeur, noIndividuActeur, Role.VISU_ALL);
+				addOperateur(visaVoyeur, noIndividuVoyeur, Role.VISU_ALL);
+				addOperateur(visaGrouillot, noIndividuGrouillot, Role.VISU_ALL);
 			}
 		});
 

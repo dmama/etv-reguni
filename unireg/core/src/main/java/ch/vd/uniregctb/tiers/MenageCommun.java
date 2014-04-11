@@ -15,8 +15,6 @@ import javax.persistence.Transient;
 @DiscriminatorValue("MenageCommun")
 public class MenageCommun extends Contribuable {
 
-    private static final long serialVersionUID = -2860998550744237583L;
-
     @Transient
     @Override
     public NatureTiers getNatureTiers() {
