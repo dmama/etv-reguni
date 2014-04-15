@@ -5,7 +5,7 @@
 <c:set var="showEditLink" value="${autorisations.donneesFiscales && empty param['message'] && empty param['retour']}" />
 <c:set var="showTimelineLink" value="${false}" />
 <authz:authorize ifAnyGranted="ROLE_VISU_ALL,ROLE_VISU_FORS">
-	<c:set var="showTimelineLink" value="${not empty command.forsFiscaux}" />
+	<c:set var="showTimelineLink" value="${not empty command.forsFiscaux && command.natureTiers != 'DebiteurPrestationImposable'}" />
 </authz:authorize>
 <authz:authorize ifAnyGranted="ROLE_SUPERGRA">
 	<c:set var="showTimelineLink" value="${showTimelineLink || command.natureTiers == 'Habitant' || command.natureTiers == 'NonHabitant'}"/>
