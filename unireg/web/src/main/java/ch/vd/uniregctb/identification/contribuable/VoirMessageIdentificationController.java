@@ -12,11 +12,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import ch.vd.uniregctb.common.Flash;
+import ch.vd.uniregctb.common.HttpDocumentFetcher;
 import ch.vd.uniregctb.common.MimeTypeHelper;
 import ch.vd.uniregctb.identification.contribuable.manager.IdentificationMessagesEditManager;
 import ch.vd.uniregctb.identification.contribuable.view.DemandeIdentificationView;
 import ch.vd.uniregctb.servlet.ServletService;
-import ch.vd.uniregctb.utils.HttpDocumentFetcher;
 
 @Controller
 @RequestMapping(value = "/identification/gestion-messages")
@@ -38,6 +38,7 @@ public class VoirMessageIdentificationController {
 
 	private IdentificationMessagesEditManager identificationMessagesEditManager;
 	private ServletService servletService;
+	private HttpDocumentFetcher documentFetcher;
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setIdentificationMessagesEditManager(IdentificationMessagesEditManager identificationMessagesEditManager) {
@@ -47,6 +48,11 @@ public class VoirMessageIdentificationController {
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setServletService(ServletService servletService) {
 		this.servletService = servletService;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setDocumentFetcher(HttpDocumentFetcher documentFetcher) {
+		this.documentFetcher = documentFetcher;
 	}
 
 	@RequestMapping(value = "voirMessage.do", method = RequestMethod.GET)
@@ -66,7 +72,7 @@ public class VoirMessageIdentificationController {
 		if (documentUrl != null) {
 			final URL url = new URL(documentUrl);
 			try {
-				try (HttpDocumentFetcher.HttpDocument document = HttpDocumentFetcher.fetch(url, GET_TIMEOUT)) {
+				try (HttpDocumentFetcher.HttpDocument document = documentFetcher.fetch(url, GET_TIMEOUT)) {
 					if (document != null) {
 						final String proposedFilename = document.getProposedContentFilename();
 						final String filename;

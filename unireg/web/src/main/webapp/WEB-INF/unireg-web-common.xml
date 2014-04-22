@@ -84,6 +84,13 @@
 		<property name="host" value="smtp.vd.ch" />
 	</bean>
 
+	<bean id="httpDocumentFetcherRaw" class="ch.vd.uniregctb.common.HttpDocumentFetcherImpl"/>
+	<bean id="httpDocumentFetcherTracing" class="ch.vd.uniregctb.common.HttpDocumentFetcherTracing">
+		<property name="statsService" ref="statsService"/>
+		<property name="target" ref="httpDocumentFetcherRaw"/>
+	</bean>
+	<alias alias="httpDocumentFetcher" name="httpDocumentFetcherTracing"/>
+
 	<!-- this is a template message that we can pre-load with default state -->
 	<bean id="templateMessage" class="org.springframework.mail.SimpleMailMessage">
 		<property name="to" value="${extprop.exception.notification.email}" />
@@ -92,12 +99,8 @@
 	</bean>
 
 	<bean id="emailNotificationService" class="ch.vd.uniregctb.common.EmailNotificationService">
-		<constructor-arg>
-			<ref bean="mailSender" />
-		</constructor-arg>
-		<constructor-arg>
-			<ref bean="templateMessage" />
-		</constructor-arg>
+		<constructor-arg ref="mailSender" />
+		<constructor-arg ref="templateMessage" />
 	</bean>
 
 	<bean id="jspTagInfra" class="ch.vd.uniregctb.taglibs.JspTagInfra">
