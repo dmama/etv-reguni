@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.transaction.annotation.Transactional;
@@ -132,7 +133,7 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 			final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiers;
 			final RegDate minDate = tiersService.getDateDebutNouvellePeriodicite(dpi, nouvellePeriodicite);
 
-			final List<RegDate> datesPossibles = new ArrayList<>();
+			final Set<RegDate> datesPossibles = new TreeSet<>();
 
 			// périodicité active à la veille de la date minimale = périodicité avec laquelle il faut composer
 			final List<Periodicite> periodicites = dpi.getPeriodicitesSorted();
@@ -183,7 +184,7 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 				}
 			}
 
-			return datesPossibles;
+			return new ArrayList<>(datesPossibles);
 		}
 		else {
             return Collections.emptyList();

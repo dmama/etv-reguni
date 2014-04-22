@@ -50,8 +50,7 @@ public class TiersEditManagerTest extends WebTest {
 
 	private final static String DB_UNIT_FILE = "TiersEditManagerTest.xml";
 
-	TiersEditManager tiersEditManager ;
-
+	private TiersEditManager tiersEditManager ;
 
 	/**
 	 * @see ch.vd.uniregctb.common.AbstractCoreDAOTest#onSetUp()
@@ -1200,11 +1199,46 @@ public class TiersEditManagerTest extends WebTest {
 		assertEquals(date(2015, 1, 1), dates.get(2));
 	}
 
-	public TiersEditManager getTiersEditManager() {
-		return tiersEditManager;
-	}
+	/**
+	 * [SIFISC-11532] Trimestriel, puis annuel et passage en mensuel (qui écraserait l'annuel)
+	 * --> une même date était proposée deux fois dans la liste déroulante
+	 */
+	@Test
+	public void testMensuelApresAnnuelDepuisLongtemps() throws Exception {
 
-	public void setTiersEditManager(TiersEditManager tiersEditManager) {
-		this.tiersEditManager = tiersEditManager;
+		final RegDate dateDebut = date(2009, 1, 1);
+		final int lastPfWithLrs = 2012;
+		final RegDate dateChangementAnnuel = date(lastPfWithLrs + 1, 1, 1);
+
+		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1980, 10, 25), Sexe.MASCULIN);
+				final DebiteurPrestationImposable dpi = addDebiteur(null, pp, dateDebut);
+				addForDebiteur(dpi, dateDebut, MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Bussigny);
+
+				// les périodicités
+				dpi.setPeriodicites(new HashSet<>(Arrays.asList(new Periodicite(PeriodiciteDecompte.TRIMESTRIEL, null, dateDebut, dateChangementAnnuel.getOneDayBefore()),
+				                                                new Periodicite(PeriodiciteDecompte.ANNUEL, null, dateChangementAnnuel, null))));
+
+				final PeriodeFiscale pf = addPeriodeFiscale(lastPfWithLrs);
+				final ModeleDocument md = addModeleDocument(TypeDocument.LISTE_RECAPITULATIVE, pf);
+
+				// les LRs sur 2012
+				for (int i = 0 ; i < 4 ; ++ i) {
+					final RegDate debutLr = date(lastPfWithLrs, i * 3 + 1, 1);
+					final RegDate finLr = debutLr.addMonths(3).getOneDayBefore();
+					addListeRecapitulative(dpi, pf, debutLr, finLr, md);
+				}
+				return dpi.getNumero();
+			}
+		});
+
+		final List<RegDate> dates = tiersEditManager.getDatesPossiblesPourDebutNouvellePeriodicite(dpiId, PeriodiciteDecompte.MENSUEL, date(2015, 1, 1), false);
+		assertNotNull(dates);
+		assertEquals(3, dates.size());
+		assertEquals(date(2013, 1, 1), dates.get(0));
+		assertEquals(date(2014, 1, 1), dates.get(1));
+		assertEquals(date(2015, 1, 1), dates.get(2));
 	}
 }
