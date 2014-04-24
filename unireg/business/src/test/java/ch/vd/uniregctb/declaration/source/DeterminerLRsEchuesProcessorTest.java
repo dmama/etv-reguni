@@ -3,7 +3,6 @@ package ch.vd.uniregctb.declaration.source;
 import junit.framework.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
@@ -43,7 +42,6 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testDebiteurAvecLrNonSommees() throws Exception {
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
@@ -71,7 +69,6 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testDebiteurRegulierAvecLrSommeeMaisUneLrNonEmise() throws Exception {
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
@@ -102,7 +99,6 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testDebiteurNonRegulierAvecLrSommeeMaisUneLrNonEmise() throws Exception {
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
@@ -135,7 +131,6 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testDebiteurRegulierAvecLrSommeeToutesEmises() throws Exception {
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
@@ -169,7 +164,6 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testDebiteurNonRegulierAvecLrSommeeToutesEmises() throws Exception {
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
@@ -203,7 +197,6 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testDebiteurAvecLrSommeeTresRecemment() throws Exception {
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
@@ -233,7 +226,6 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testDebiteurAvecLrSommeeEtDejaEchue() throws Exception {
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
@@ -264,7 +256,6 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testDebiteurAvecUneLrSommeeEtUneDejaEchue() throws Exception {
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
@@ -303,7 +294,6 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testDebiteurAvecUneLrRetourneeApresSommation() throws Exception {
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
@@ -336,7 +326,6 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testDebiteurAvecPlusieursLrSommees() throws Exception {
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
@@ -377,4 +366,128 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 		Assert.assertEquals(date(2009, 6, 30), lr2.finPeriode);
 	}
 
+	@Test
+	public void testPlusieursPfConcerneesMaisUneSeuleDemandee() throws Exception {
+
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
+				addForDebiteur(dpi, date(2009, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bussigny);
+
+				// LR 2009
+				final PeriodeFiscale pf2009 = addPeriodeFiscale(2009);
+				{
+					final DeclarationImpotSource lr1 = addLR(dpi, date(2009, 1, 1), PeriodiciteDecompte.TRIMESTRIEL, pf2009);
+					lr1.addEtat(new EtatDeclarationSommee(date(2009, 12, 4),date(2009, 12, 4)));
+
+					final DeclarationImpotSource lr2 = addLR(dpi, date(2009, 4, 1), PeriodiciteDecompte.TRIMESTRIEL, pf2009);
+					lr2.addEtat(new EtatDeclarationSommee(date(2009, 12, 4),date(2009, 12, 4)));
+
+					addLR(dpi, date(2009, 7, 1), PeriodiciteDecompte.TRIMESTRIEL, pf2009);
+					addLR(dpi, date(2009, 10, 1), PeriodiciteDecompte.TRIMESTRIEL, pf2009);
+				}
+
+				// LR 2010
+				final PeriodeFiscale pf2010 = addPeriodeFiscale(2010);
+				{
+					final DeclarationImpotSource lr1 = addLR(dpi, date(2010, 1, 1), PeriodiciteDecompte.TRIMESTRIEL, pf2010);
+					lr1.addEtat(new EtatDeclarationSommee(date(2010, 12, 4),date(2010, 12, 4)));
+
+					final DeclarationImpotSource lr2 = addLR(dpi, date(2010, 4, 1), PeriodiciteDecompte.TRIMESTRIEL, pf2010);
+					lr2.addEtat(new EtatDeclarationSommee(date(2010, 12, 4),date(2010, 12, 4)));
+
+					addLR(dpi, date(2010, 7, 1), PeriodiciteDecompte.TRIMESTRIEL, pf2010);
+					addLR(dpi, date(2010, 10, 1), PeriodiciteDecompte.TRIMESTRIEL, pf2010);
+				}
+				return null;
+			}
+		});
+
+		final DeterminerLRsEchuesResults results = processor.run(2009, RegDate.get(), null);
+		Assert.assertNotNull(results);
+		Assert.assertNotNull(results.ignores);
+		Assert.assertEquals(0, results.ignores.size());
+		Assert.assertNotNull(results.erreurs);
+		Assert.assertEquals(0, results.erreurs.size());
+		Assert.assertNotNull(results.lrEchues);
+		Assert.assertEquals(2, results.lrEchues.size());
+
+		final DeterminerLRsEchuesResults.ResultLrEchue lr1 = results.lrEchues.get(0);
+		Assert.assertEquals(date(2009, 1, 1), lr1.debutPeriode);
+		Assert.assertEquals(date(2009, 3, 31), lr1.finPeriode);
+
+		final DeterminerLRsEchuesResults.ResultLrEchue lr2 = results.lrEchues.get(1);
+		Assert.assertEquals(date(2009, 4, 1), lr2.debutPeriode);
+		Assert.assertEquals(date(2009, 6, 30), lr2.finPeriode);
+	}
+
+	@Test
+	public void testPlusieursPfConcerneesEtDemandees() throws Exception {
+
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
+				addForDebiteur(dpi, date(2009, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bussigny);
+
+				// LR 2009
+				final PeriodeFiscale pf2009 = addPeriodeFiscale(2009);
+				{
+					final DeclarationImpotSource lr1 = addLR(dpi, date(2009, 1, 1), PeriodiciteDecompte.TRIMESTRIEL, pf2009);
+					lr1.addEtat(new EtatDeclarationSommee(date(2009, 12, 4),date(2009, 12, 4)));
+
+					final DeclarationImpotSource lr2 = addLR(dpi, date(2009, 4, 1), PeriodiciteDecompte.TRIMESTRIEL, pf2009);
+					lr2.addEtat(new EtatDeclarationSommee(date(2009, 12, 4),date(2009, 12, 4)));
+
+					addLR(dpi, date(2009, 7, 1), PeriodiciteDecompte.TRIMESTRIEL, pf2009);
+					addLR(dpi, date(2009, 10, 1), PeriodiciteDecompte.TRIMESTRIEL, pf2009);
+				}
+
+				// LR 2010
+				final PeriodeFiscale pf2010 = addPeriodeFiscale(2010);
+				{
+					final DeclarationImpotSource lr1 = addLR(dpi, date(2010, 1, 1), PeriodiciteDecompte.TRIMESTRIEL, pf2010);
+					lr1.addEtat(new EtatDeclarationSommee(date(2010, 12, 4),date(2010, 12, 4)));
+
+					final DeclarationImpotSource lr2 = addLR(dpi, date(2010, 4, 1), PeriodiciteDecompte.TRIMESTRIEL, pf2010);
+					lr2.addEtat(new EtatDeclarationSommee(date(2010, 12, 4),date(2010, 12, 4)));
+
+					addLR(dpi, date(2010, 7, 1), PeriodiciteDecompte.TRIMESTRIEL, pf2010);
+					addLR(dpi, date(2010, 10, 1), PeriodiciteDecompte.TRIMESTRIEL, pf2010);
+				}
+				return null;
+			}
+		});
+
+		final DeterminerLRsEchuesResults results = processor.run(null, RegDate.get(), null);
+		Assert.assertNotNull(results);
+		Assert.assertNotNull(results.ignores);
+		Assert.assertEquals(0, results.ignores.size());
+		Assert.assertNotNull(results.erreurs);
+		Assert.assertEquals(0, results.erreurs.size());
+		Assert.assertNotNull(results.lrEchues);
+		Assert.assertEquals(4, results.lrEchues.size());
+
+		{
+			final DeterminerLRsEchuesResults.ResultLrEchue lr = results.lrEchues.get(0);
+			Assert.assertEquals(date(2009, 1, 1), lr.debutPeriode);
+			Assert.assertEquals(date(2009, 3, 31), lr.finPeriode);
+		}
+		{
+			final DeterminerLRsEchuesResults.ResultLrEchue lr = results.lrEchues.get(1);
+			Assert.assertEquals(date(2009, 4, 1), lr.debutPeriode);
+			Assert.assertEquals(date(2009, 6, 30), lr.finPeriode);
+		}
+		{
+			final DeterminerLRsEchuesResults.ResultLrEchue lr = results.lrEchues.get(2);
+			Assert.assertEquals(date(2010, 1, 1), lr.debutPeriode);
+			Assert.assertEquals(date(2010, 3, 31), lr.finPeriode);
+		}
+		{
+			final DeterminerLRsEchuesResults.ResultLrEchue lr = results.lrEchues.get(3);
+			Assert.assertEquals(date(2010, 4, 1), lr.debutPeriode);
+			Assert.assertEquals(date(2010, 6, 30), lr.finPeriode);
+		}
+	}
 }

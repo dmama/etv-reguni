@@ -3,9 +3,12 @@ package ch.vd.uniregctb.declaration.source;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
@@ -71,7 +74,7 @@ public class DeterminerLRsEchuesProcessor {
 		this.adresseService = adresseService;
 	}
 
-	public DeterminerLRsEchuesResults run(final int periodeFiscale, final RegDate dateTraitement, StatusManager status) {
+	public DeterminerLRsEchuesResults run(final Integer periodeFiscale, final RegDate dateTraitement, StatusManager status) {
 
 		if (status == null) {
 			status = new LoggingStatusManager(LOGGER);
@@ -81,7 +84,6 @@ public class DeterminerLRsEchuesProcessor {
 		s.setMessage("Récupération des listes récapitulatives...");
 
 		final DeterminerLRsEchuesResults rapportFinal = new DeterminerLRsEchuesResults(periodeFiscale, dateTraitement, tiersService, adresseService);
-		final DateRange pf = new DateRangeHelper.Range(RegDate.get(periodeFiscale, 1, 1), RegDate.get(periodeFiscale, 12, 31));
 
 		// liste de toutes les débiteurs à passer en revue
 		final List<DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue> list = getListeInfosSurCandidats(periodeFiscale, dateTraitement);
@@ -97,7 +99,7 @@ public class DeterminerLRsEchuesProcessor {
 				s.setMessage(String.format("Débiteurs analysés : %d/%d...", rapportFinal.getNbDebiteursAnalyses(), list.size()), progressMonitor.getProgressInPercent());
 
 				for (DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue debiteur : batch) {
-					traiteDebiteur(rapport, debiteur, pf, dateTraitement);
+					traiteDebiteur(rapport, debiteur, dateTraitement);
 					if (s.interrupted()) {
 						break;
 					}
@@ -111,16 +113,16 @@ public class DeterminerLRsEchuesProcessor {
 			}
 		}, progressMonitor);
 
+		final String baseMessage = String.format("La génération de la liste des débiteurs ayant au moins une LR échue%s au %s",
+		                                         periodeFiscale != null ? String.format(" pour la période fiscale %d", periodeFiscale) : StringUtils.EMPTY,
+		                                         RegDateHelper.dateToDisplayString(dateTraitement));
+
 		if (status.interrupted()) {
-			status.setMessage(String.format(
-					"La génération de la liste des débiteurs ayant au moins une LR échue pour la période fiscale %d au %s a été interrompue. Nombre de listes identifiées au moment de l'interruption : %d",
-					periodeFiscale, RegDateHelper.dateToDisplayString(dateTraitement), rapportFinal.lrEchues.size()));
+			status.setMessage(String.format("%s a été interrompue. Nombre de listes identifiées au moment de l'interruption : %d", baseMessage, rapportFinal.lrEchues.size()));
 			rapportFinal.setInterrompu(true);
 		}
 		else {
-			status.setMessage(String.format(
-					"La génération de la liste des débiteurs ayant au moins une LR échue pour la période fiscale %d au %s est terminée. Nombre de listes concernées : %d (%d erreur(s))",
-					periodeFiscale, RegDateHelper.dateToDisplayString(dateTraitement), rapportFinal.lrEchues.size(), rapportFinal.erreurs.size()));
+			status.setMessage(String.format("%s est terminée. Nombre de listes concernées : %d (%d erreur(s))", baseMessage, rapportFinal.lrEchues.size(), rapportFinal.erreurs.size()));
 		}
 
 		rapportFinal.end();
@@ -132,33 +134,38 @@ public class DeterminerLRsEchuesProcessor {
 	 * envoie des événements fiscaux "LR_MANQUANTE" pour toutes les LR échues
 	 * @param rapport
 	 * @param infoDebiteur
-	 * @param periodeFiscale
 	 * @param dateTraitement
 	 */
-	private void traiteDebiteur(DeterminerLRsEchuesResults rapport, DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue infoDebiteur, DateRange periodeFiscale, RegDate dateTraitement) {
+	private void traiteDebiteur(DeterminerLRsEchuesResults rapport, DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue infoDebiteur, RegDate dateTraitement) {
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(infoDebiteur.idDebiteur, true);
-		final List<DateRange> emises = new ArrayList<>(6);
-		final List<DateRange> nonEmises = lrService.findLRsManquantes(dpi, periodeFiscale.getDateFin(), emises);
+		final SortedSet<Integer> pfConcernees = infoDebiteur.getPfConcernees();
+		final int lastPeriodeFiscale = pfConcernees.last();
 
-		// on se concentre uniquement sur la période fiscale donnée : si toutes les LR ont été émises
-		// alors on peut échoir les LR de cette période (SIFISC-7709 : valable seulement pour les réguliers)
-		final List<DateRange> intersection = DateRangeHelper.intersections(periodeFiscale, nonEmises);
-		if (intersection != null && !intersection.isEmpty() && dpi.getCategorieImpotSource() == CategorieImpotSource.REGULIERS) {
-			rapport.addDebiteurIgnoreResteLrAEmettre(dpi, intersection);
-		}
-		else {
-			for (DeterminerLRsEchuesResults.InfoLrEchue infoLrEchue : infoDebiteur.getLrEchues()) {
-				final DeclarationImpotSource lr = lrDAO.get(infoLrEchue.id);
+		final List<DateRange> emises = new LinkedList<>();
+		final List<DateRange> nonEmises = lrService.findLRsManquantes(dpi, RegDate.get(lastPeriodeFiscale, 12, 31), emises);
 
-				// création d'un état "ECHUE"
-				final EtatDeclaration etat = new EtatDeclarationEchue(RegDate.get());
-				lr.addEtat(etat);
+		for (int pf : pfConcernees) {
+			// on se concentre uniquement sur la période fiscale donnée : si toutes les LR ont été émises
+			// alors on peut échoir les LR de cette période (SIFISC-7709 : valable seulement pour les réguliers)
+			final DateRange periodeFiscale = new DateRangeHelper.Range(RegDate.get(pf, 1, 1), RegDate.get(pf, 12, 31));
+			final List<DateRange> intersection = DateRangeHelper.intersections(periodeFiscale, nonEmises);
+			if (intersection != null && !intersection.isEmpty() && dpi.getCategorieImpotSource() == CategorieImpotSource.REGULIERS) {
+				rapport.addDebiteurIgnoreResteLrAEmettre(dpi, intersection);
+			}
+			else {
+				for (DeterminerLRsEchuesResults.InfoLrEchue infoLrEchue : infoDebiteur.getLrEchues(pf)) {
+					final DeclarationImpotSource lr = lrDAO.get(infoLrEchue.id);
 
-				// publication d'un événement fiscal
-				evenementFiscalService.publierEvenementFiscalLRManquante(dpi, lr, dateTraitement);
+					// création d'un état "ECHUE"
+					final EtatDeclaration etat = new EtatDeclarationEchue(RegDate.get());
+					lr.addEtat(etat);
 
-				// génération du rapport d'exécution
-				rapport.addLrEchue(dpi, lr);
+					// publication d'un événement fiscal
+					evenementFiscalService.publierEvenementFiscalLRManquante(dpi, lr, dateTraitement);
+
+					// génération du rapport d'exécution
+					rapport.addLrEchue(dpi, lr);
+				}
 			}
 		}
 
@@ -170,7 +177,7 @@ public class DeterminerLRsEchuesProcessor {
 	 * Renvoi une liste d'information sur les LR sommées (non-retournées) qui concernent la période fiscale donnée, et
 	 * pour lesquelle la date de sommation est "assez loin" dans le passé de la date de traitement
 	 */
-	private List<DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue> getListeInfosSurCandidats(final int periodeFiscale, final RegDate dateTraitement) {
+	private List<DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue> getListeInfosSurCandidats(final Integer periodeFiscale, final RegDate dateTraitement) {
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
@@ -178,7 +185,9 @@ public class DeterminerLRsEchuesProcessor {
 		final StringBuilder b = new StringBuilder();
 		b.append("SELECT LR.ID, LR.TIERS_ID, LR.DATE_DEBUT, LR.DATE_FIN, ES.DATE_OBTENTION FROM DECLARATION LR");
 		b.append(" JOIN ETAT_DECLARATION ES ON ES.DECLARATION_ID = LR.ID AND ES.ANNULATION_DATE IS NULL AND ES.TYPE='SOMMEE'");
-		b.append(" JOIN PERIODE_FISCALE PF ON LR.PERIODE_ID = PF.ID AND PF.ANNEE=:pf");
+		if (periodeFiscale != null) {
+			b.append(" JOIN PERIODE_FISCALE PF ON LR.PERIODE_ID = PF.ID AND PF.ANNEE=:pf");
+		}
 		b.append(" WHERE LR.DOCUMENT_TYPE='LR' AND LR.ANNULATION_DATE IS NULL");
 		b.append(" AND NOT EXISTS (SELECT 1 FROM ETAT_DECLARATION ED WHERE ED.DECLARATION_ID = LR.ID AND ED.ANNULATION_DATE IS NULL AND ED.TYPE IN ('RETOURNEE', 'ECHUE'))");
 		b.append(" ORDER BY LR.TIERS_ID, LR.DATE_DEBUT");
@@ -192,7 +201,9 @@ public class DeterminerLRsEchuesProcessor {
 					public List<DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue> doInHibernate(Session session) throws HibernateException {
 
 						final Query query = session.createSQLQuery(sql);
-						query.setParameter("pf", periodeFiscale);
+						if (periodeFiscale != null) {
+							query.setParameter("pf", periodeFiscale);
+						}
 
 						@SuppressWarnings({"unchecked"}) final List<Object[]> rows = query.list();
 						if (rows != null && !rows.isEmpty()) {

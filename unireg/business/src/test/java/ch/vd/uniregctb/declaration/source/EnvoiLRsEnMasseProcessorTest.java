@@ -72,7 +72,7 @@ public class EnvoiLRsEnMasseProcessorTest extends BusinessTest {
 		}
 
 		@Override
-		public DeterminerLRsEchuesResults determineLRsEchues(int periodeFiscale, RegDate dateTraitement, StatusManager status) throws Exception {
+		public DeterminerLRsEchuesResults determineLRsEchues(Integer periodeFiscale, RegDate dateTraitement, StatusManager status) throws Exception {
 			return target.determineLRsEchues(periodeFiscale, dateTraitement, status);
 		}
 	}

@@ -37,13 +37,12 @@ public class DeterminerLRsEchuesJob extends JobDefinition {
 		super(NAME, CATEGORIE, sortOrder, description);
 
 		{
-			final RegDate today = RegDate.get();
 			final JobParam param = new JobParam();
 			param.setDescription("Période fiscale");
 			param.setName(PERIODE_FISCALE);
-			param.setMandatory(true);
+			param.setMandatory(false);
 			param.setType(new JobParamInteger());
-			addParameterDefinition(param, today.year() - 1);
+			addParameterDefinition(param, null);
 		}
 		{
 			final JobParam param = new JobParam();
@@ -77,7 +76,7 @@ public class DeterminerLRsEchuesJob extends JobDefinition {
 	protected void doExecute(Map<String, Object> params) throws Exception {
 
 		// Récupération des paramètres
-		final int periodeFiscale = getIntegerValue(params, PERIODE_FISCALE);
+		final Integer periodeFiscale = getOptionalIntegerValue(params, PERIODE_FISCALE);
 		final RegDate dateTraitement = getDateTraitement(params);
 		final StatusManager statusManager = getStatusManager();
 		final DeterminerLRsEchuesResults results = lrService.determineLRsEchues(periodeFiscale, dateTraitement, statusManager);

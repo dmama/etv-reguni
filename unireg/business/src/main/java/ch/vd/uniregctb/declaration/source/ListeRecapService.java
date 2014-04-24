@@ -75,8 +75,8 @@ public interface ListeRecapService {
 	 * Pour chacun des débiteurs à qui on a envoyé toutes les LR de la période fiscale donnée, et pour lesquels il existe au
 	 * moins une LR échue (dont le délai de retour de la sommation a été bien dépassé à la date de traitement),
 	 * envoie un événement fiscal "liste récapitulative manquante"
-	 * @param periodeFiscale période fiscale sur laquelle les LR sont inspectées
+	 * @param periodeFiscale période fiscale sur laquelle les LR sont inspectées (<code>null</code> si toutes doivent l'être)
 	 * @param dateTraitement date déterminante pour savoir si un délai a été dépassé
 	 */
-	DeterminerLRsEchuesResults determineLRsEchues(int periodeFiscale, RegDate dateTraitement, StatusManager status) throws Exception;
+	DeterminerLRsEchuesResults determineLRsEchues(Integer periodeFiscale, RegDate dateTraitement, StatusManager status) throws Exception;
 }

@@ -4,8 +4,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.NavigableMap;
+import java.util.SortedSet;
+import java.util.TreeMap;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
@@ -35,18 +39,35 @@ public class DeterminerLRsEchuesResults extends JobResults<DeterminerLRsEchuesRe
 
 	public static class InfoDebiteurAvecLrEchue {
 		public final long idDebiteur;
-		private final List<InfoLrEchue> lrEchues = new LinkedList<>();
+		private final NavigableMap<Integer, List<InfoLrEchue>> lrEchues = new TreeMap<>();
 
 		public InfoDebiteurAvecLrEchue(long idDebiteur) {
 			this.idDebiteur = idDebiteur;
 		}
 
 		public void addLrEchue(long id, RegDate dateDebut, RegDate dateFin, RegDate dateSommation) {
-			lrEchues.add(new InfoLrEchue(id, dateDebut, dateFin, dateSommation));
+			final InfoLrEchue infoLrEchue = new InfoLrEchue(id, dateDebut, dateFin, dateSommation);
+			final Integer key = dateDebut.year();
+			final List<InfoLrEchue> list = getOrCreateMapEntry(key);
+			list.add(infoLrEchue);
 		}
 
-		public List<InfoLrEchue> getLrEchues() {
-			return Collections.unmodifiableList(lrEchues);
+		@NotNull
+		private List<InfoLrEchue> getOrCreateMapEntry(Integer key) {
+			List<InfoLrEchue> list = lrEchues.get(key);
+			if (list == null) {
+				list = new LinkedList<>();
+				lrEchues.put(key, list);
+			}
+			return list;
+		}
+
+		public List<InfoLrEchue> getLrEchues(int pf) {
+			return lrEchues.get(pf);
+		}
+
+		public SortedSet<Integer> getPfConcernees() {
+			return lrEchues.navigableKeySet();
 		}
 	}
 
@@ -210,7 +231,7 @@ public class DeterminerLRsEchuesResults extends JobResults<DeterminerLRsEchuesRe
 		return concat(raisonSociale, " ");
 	}
 
-	private final int periodeFiscale;
+	private final Integer periodeFiscale;
 	private final RegDate dateTraitement;
 	private final TiersService tiersService;
 
@@ -220,7 +241,7 @@ public class DeterminerLRsEchuesResults extends JobResults<DeterminerLRsEchuesRe
 	public final List<ResultDebiteurNonTraite> ignores = new ArrayList<>();
 	public final List<ResultErreurDebiteur> erreurs = new ArrayList<>();
 
-	public DeterminerLRsEchuesResults(int periodeFiscale, RegDate dateTraitement, TiersService tiersService, AdresseService adresseService) {
+	public DeterminerLRsEchuesResults(Integer periodeFiscale, RegDate dateTraitement, TiersService tiersService, AdresseService adresseService) {
 		super(tiersService, adresseService);
 		this.periodeFiscale = periodeFiscale;
 		this.dateTraitement = dateTraitement;
@@ -264,7 +285,7 @@ public class DeterminerLRsEchuesResults extends JobResults<DeterminerLRsEchuesRe
 		this.interrompu = interrompu;
 	}
 
-	public int getPeriodeFiscale() {
+	public Integer getPeriodeFiscale() {
 		return periodeFiscale;
 	}
 
