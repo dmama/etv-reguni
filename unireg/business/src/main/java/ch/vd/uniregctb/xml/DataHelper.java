@@ -404,6 +404,9 @@ public abstract class DataHelper {
 			i.setVn2(Long.valueOf(value.getNavs13_2()));
 		}
 		i.setIndividualTaxLiability(EnumHelper.coreToXMLv2(value.getAssujettissementPP()));
+		if (i.getType() == ch.vd.unireg.xml.party.v3.PartyType.NATURAL_PERSON) {
+			i.setNaturalPersonSubtype(DataHelper.getNaturalPersonSubtype(value));
+		}
 		return i;
 	}
 
@@ -441,8 +444,6 @@ public abstract class DataHelper {
 	}
 
 	private static final Map<String, ch.vd.unireg.xml.party.v1.PartyType> indexedData2TypeV1 = new HashMap<String, ch.vd.unireg.xml.party.v1.PartyType>() {
-		private static final long serialVersionUID = -6977238534201838137L;
-
 		{
 			put(HabitantIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v1.PartyType.NATURAL_PERSON);
 			put(NonHabitantIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v1.PartyType.NATURAL_PERSON);
@@ -455,8 +456,6 @@ public abstract class DataHelper {
 	};
 
 	private static final Map<String, ch.vd.unireg.xml.party.v2.PartyType> indexedData2TypeV2 = new HashMap<String, ch.vd.unireg.xml.party.v2.PartyType>() {
-		private static final long serialVersionUID = -6977238534201838137L;
-
 		{
 			put(HabitantIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v2.PartyType.NATURAL_PERSON);
 			put(NonHabitantIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v2.PartyType.NATURAL_PERSON);
@@ -469,8 +468,6 @@ public abstract class DataHelper {
 	};
 
 	private static final Map<String, ch.vd.unireg.xml.party.v3.PartyType> indexedData2TypeV3 = new HashMap<String, ch.vd.unireg.xml.party.v3.PartyType>() {
-		private static final long serialVersionUID = -6977238534201838137L;
-
 		{
 			put(HabitantIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v3.PartyType.NATURAL_PERSON);
 			put(NonHabitantIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v3.PartyType.NATURAL_PERSON);
@@ -480,6 +477,13 @@ public abstract class DataHelper {
 			put(EntrepriseIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v3.PartyType.CORPORATION);
 			put(DebiteurPrestationImposableIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v3.PartyType.DEBTOR);
 			put(CollectiviteAdministrativeIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v3.PartyType.ADMINISTRATIVE_AUTHORITY);
+		}
+	};
+
+	private static final Map<String, ch.vd.unireg.xml.party.v3.NaturalPersonSubtype> indexedData2NaturalPersonSubtypeV3 = new HashMap<String, ch.vd.unireg.xml.party.v3.NaturalPersonSubtype>() {
+		{
+			put(HabitantIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v3.NaturalPersonSubtype.RESIDENT);
+			put(NonHabitantIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v3.NaturalPersonSubtype.NON_RESIDENT);
 		}
 	};
 
@@ -526,6 +530,16 @@ public abstract class DataHelper {
 		}
 
 		return indexedData2TypeV3.get(typeAsString);
+	}
+
+	public static ch.vd.unireg.xml.party.v3.NaturalPersonSubtype getNaturalPersonSubtype(ch.vd.uniregctb.indexer.tiers.TiersIndexedData tiers) {
+		final String typeAsString = tiers.getTiersType();
+
+		if (StringUtils.isEmpty(typeAsString)) {
+			return null;
+		}
+
+		return indexedData2NaturalPersonSubtypeV3.get(typeAsString);
 	}
 
 	public static Set<TiersDAO.Parts> xmlToCoreV1(Set<ch.vd.unireg.xml.party.v1.PartyPart> parts) {

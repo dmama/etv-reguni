@@ -34,7 +34,6 @@ import ch.vd.unireg.xml.party.corporation.v3.CorporationEvent;
 import ch.vd.unireg.xml.party.v3.Party;
 import ch.vd.unireg.xml.party.v3.PartyInfo;
 import ch.vd.unireg.xml.party.v3.PartyPart;
-import ch.vd.unireg.xml.party.v3.PartyType;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorCategory;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorInfo;
 import ch.vd.uniregctb.cache.CacheHelper;
@@ -52,6 +51,7 @@ import ch.vd.uniregctb.webservices.common.AccessDeniedException;
 import ch.vd.uniregctb.webservices.common.UserLogin;
 import ch.vd.uniregctb.webservices.common.WebServiceHelper;
 import ch.vd.uniregctb.webservices.v5.BusinessWebService;
+import ch.vd.uniregctb.webservices.v5.PartySearchType;
 import ch.vd.uniregctb.webservices.v5.SearchMode;
 import ch.vd.uniregctb.xml.ServiceException;
 
@@ -350,7 +350,7 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 	@Override
 	public List<PartyInfo> searchParty(UserLogin user, @Nullable String partyNo, @Nullable String name, SearchMode nameSearchMode,
 	                                   @Nullable String townOrCountry, @Nullable RegDate dateOfBirth, @Nullable String socialInsuranceNumber,
-	                                   @Nullable Integer taxResidenceFSOId, boolean onlyActiveMainTaxResidence, @Nullable Set<PartyType> partyTypes,
+	                                   @Nullable Integer taxResidenceFSOId, boolean onlyActiveMainTaxResidence, @Nullable Set<PartySearchType> partyTypes,
 	                                   @Nullable DebtorCategory debtorCategory, @Nullable Boolean activeParty, @Nullable Long oldWithholdingNumber) throws AccessDeniedException, IndexerException {
 		return target.searchParty(user, partyNo, name, nameSearchMode, townOrCountry, dateOfBirth, socialInsuranceNumber, taxResidenceFSOId, onlyActiveMainTaxResidence, partyTypes, debtorCategory,
 		                          activeParty, oldWithholdingNumber);

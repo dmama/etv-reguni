@@ -17,7 +17,6 @@ import java.util.Set;
 import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationAckRequest;
 import ch.vd.unireg.ws.deadline.v1.DeadlineRequest;
 import ch.vd.unireg.xml.party.v3.PartyPart;
-import ch.vd.unireg.xml.party.v3.PartyType;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorCategory;
 import ch.vd.uniregctb.webservices.common.WebServiceHelper;
 
@@ -66,7 +65,7 @@ public interface WebService {
 	                     @QueryParam("vn") String socialInsuranceNumber,
 	                     @QueryParam("taxResidenceFSOId") Integer taxResidenceFSOId,
 	                     @QueryParam("onlyActiveMainTaxResidence") @DefaultValue("false") boolean onlyActiveMainTaxResidence,
-	                     @QueryParam("partyType") Set<PartyType> partyTypes,
+	                     @QueryParam("partyType") Set<PartySearchType> partyTypes,
 	                     @QueryParam("debtorCategory") DebtorCategory debtorCategory,
 	                     @QueryParam("activeParty") Boolean activeParty,
 	                     @QueryParam("oldWithholdingNumber") Long oldWithholdingNumber);

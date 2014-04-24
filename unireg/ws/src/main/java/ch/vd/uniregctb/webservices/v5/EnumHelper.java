@@ -20,7 +20,6 @@ import ch.vd.unireg.xml.party.taxresidence.v2.TaxLiabilityReason;
 import ch.vd.unireg.xml.party.taxresidence.v2.TaxType;
 import ch.vd.unireg.xml.party.taxresidence.v2.TaxationAuthorityType;
 import ch.vd.unireg.xml.party.taxresidence.v2.TaxationMethod;
-import ch.vd.unireg.xml.party.v3.PartyType;
 import ch.vd.unireg.xml.party.withholding.v1.CommunicationMode;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorCategory;
 import ch.vd.unireg.xml.party.withholding.v1.WithholdingTaxDeclarationPeriod;
@@ -79,15 +78,41 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static Set<TiersCriteria.TypeTiers> toCore(Set<PartyType> types) {
+	public static Set<TiersCriteria.TypeTiers> toCore(Set<PartySearchType> types) {
 		if (types == null || types.isEmpty()) {
 			return null;
 		}
 		final Set<TiersCriteria.TypeTiers> res = EnumSet.noneOf(TiersCriteria.TypeTiers.class);
-		for (PartyType type : types) {
-			res.add(ch.vd.uniregctb.xml.EnumHelper.xmlToCore(type));
+		for (PartySearchType type : types) {
+			res.add(toCore(type));
 		}
 		return res;
+	}
+
+	public static TiersCriteria.TypeTiers toCore(PartySearchType type) {
+		if (type == null) {
+			return null;
+		}
+		switch (type) {
+		case DEBTOR:
+			return TiersCriteria.TypeTiers.DEBITEUR_PRESTATION_IMPOSABLE;
+		case HOUSEHOLD:
+			return TiersCriteria.TypeTiers.MENAGE_COMMUN;
+		case CORPORATION:
+			return TiersCriteria.TypeTiers.ENTREPRISE;
+		case NATURAL_PERSON:
+			return TiersCriteria.TypeTiers.PERSONNE_PHYSIQUE;
+		case NON_RESIDENT_NATURAL_PERSON:
+			return TiersCriteria.TypeTiers.NON_HABITANT;
+		case RESIDENT_NATURAL_PERSON:
+			return TiersCriteria.TypeTiers.HABITANT;
+		case ADMINISTRATIVE_AUTHORITY:
+			return TiersCriteria.TypeTiers.COLLECTIVITE_ADMINISTRATIVE;
+		case OTHER_COMMUNITY:
+			return TiersCriteria.TypeTiers.AUTRE_COMMUNAUTE;
+		default:
+			throw new IllegalArgumentException("Type de tiers inconnu = [" + type + ']');
+		}
 	}
 
 	public static Set<CategorieImpotSource> getCategoriesImpotSourceAutorisees() {

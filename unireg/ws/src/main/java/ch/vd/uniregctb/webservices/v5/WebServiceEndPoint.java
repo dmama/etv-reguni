@@ -45,7 +45,6 @@ import ch.vd.unireg.xml.party.corporation.v3.CorporationEvent;
 import ch.vd.unireg.xml.party.v3.Party;
 import ch.vd.unireg.xml.party.v3.PartyInfo;
 import ch.vd.unireg.xml.party.v3.PartyPart;
-import ch.vd.unireg.xml.party.v3.PartyType;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorCategory;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorInfo;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
@@ -378,13 +377,13 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 	@Override
 	public Response searchParty(final String user, final String partyNo, final String name, final SearchMode nameSearchMode, final String townOrCountry,
 	                            final String dateOfBirthStr, final String socialInsuranceNumber, final Integer taxResidenceFSOId,
-	                            final boolean onlyActiveMainTaxResidence, final Set<PartyType> partyTypes, final DebtorCategory debtorCategory, final Boolean activeParty,
+	                            final boolean onlyActiveMainTaxResidence, final Set<PartySearchType> partyTypes, final DebtorCategory debtorCategory, final Boolean activeParty,
 	                            final Long oldWithholdingNumber) {
 
 		final Object params = new Object() {
 			@Override
 			public String toString() {
-				final String partyTypesStr = Arrays.toString(partyTypes.toArray(new PartyType[partyTypes.size()]));
+				final String partyTypesStr = Arrays.toString(partyTypes.toArray(new PartySearchType[partyTypes.size()]));
 				return String.format("searchParty{user=%s, partyNo=%s, name=%s, nameSearchMode=%s, townOrCountry=%s, dateOfBirth=%s, vn=%s, taxResidenceFSOId=%d, onlyActiveMainTaxResidence=%s, partyTypes=%s, debtorCategory=%s, activeParty=%s, oldWithholdingNumber=%d}",
 				                     WebServiceHelper.enquote(user), WebServiceHelper.enquote(partyNo), WebServiceHelper.enquote(name), nameSearchMode, WebServiceHelper.enquote(townOrCountry),
 				                     WebServiceHelper.enquote(dateOfBirthStr), WebServiceHelper.enquote(socialInsuranceNumber), taxResidenceFSOId,

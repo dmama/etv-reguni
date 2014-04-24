@@ -95,6 +95,7 @@ import ch.vd.unireg.xml.party.taxresidence.v2.TaxationMethod;
 import ch.vd.unireg.xml.party.taxresidence.v2.TaxationPeriod;
 import ch.vd.unireg.xml.party.taxresidence.v2.WithholdingTaxationPeriod;
 import ch.vd.unireg.xml.party.taxresidence.v2.WithholdingTaxationPeriodType;
+import ch.vd.unireg.xml.party.v3.NaturalPersonSubtype;
 import ch.vd.unireg.xml.party.v3.Party;
 import ch.vd.unireg.xml.party.v3.PartyInfo;
 import ch.vd.unireg.xml.party.v3.PartyPart;
@@ -747,6 +748,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				Assert.assertEquals(StringUtils.EMPTY, info.getName2());
 				Assert.assertEquals(date(1979, 5, 31), DataHelper.webToRegDate(info.getDateOfBirth()));
 				Assert.assertEquals(PartyType.NATURAL_PERSON, info.getType());
+				Assert.assertEquals(NaturalPersonSubtype.NON_RESIDENT, info.getNaturalPersonSubtype());
 				Assert.assertEquals(IndividualTaxLiabilityType.NONE, info.getIndividualTaxLiability());
 			}
 		}
@@ -767,6 +769,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				Assert.assertEquals(StringUtils.EMPTY, info.getName2());
 				Assert.assertEquals(date(1979, 5, 31), DataHelper.webToRegDate(info.getDateOfBirth()));
 				Assert.assertEquals(PartyType.NATURAL_PERSON, info.getType());
+				Assert.assertEquals(NaturalPersonSubtype.NON_RESIDENT, info.getNaturalPersonSubtype());
 				Assert.assertEquals(IndividualTaxLiabilityType.NONE, info.getIndividualTaxLiability());
 			}
 		}
@@ -805,6 +808,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				Assert.assertEquals(StringUtils.EMPTY, info.getName2());
 				Assert.assertNull(info.getDateOfBirth());
 				Assert.assertEquals(PartyType.DEBTOR, info.getType());
+				Assert.assertNull(info.getNaturalPersonSubtype());
 				Assert.assertNull(info.getIndividualTaxLiability());
 			}
 			{
@@ -815,6 +819,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				Assert.assertEquals(StringUtils.EMPTY, info.getName2());
 				Assert.assertEquals(date(1979, 5, 31), DataHelper.webToRegDate(info.getDateOfBirth()));
 				Assert.assertEquals(PartyType.NATURAL_PERSON, info.getType());
+				Assert.assertEquals(NaturalPersonSubtype.NON_RESIDENT, info.getNaturalPersonSubtype());
 				Assert.assertEquals(IndividualTaxLiabilityType.NONE, info.getIndividualTaxLiability());
 			}
 		}
@@ -822,7 +827,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		// recherche par nom avec liste de types vide -> les deux viennent
 		{
 			final List<PartyInfo> res = service.searchParty(new UserLogin(getDefaultOperateurName(), 22), null,
-			                                                "Nietmochevillage", SearchMode.IS_EXACTLY, null, null, null, null, false, Collections.<PartyType>emptySet(), null, null, null);
+			                                                "Nietmochevillage", SearchMode.IS_EXACTLY, null, null, null, null, false, Collections.<PartySearchType>emptySet(), null, null, null);
 
 			Assert.assertNotNull(res);
 			Assert.assertEquals(2, res.size());
@@ -844,6 +849,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				Assert.assertEquals(StringUtils.EMPTY, info.getName2());
 				Assert.assertNull(info.getDateOfBirth());
 				Assert.assertEquals(PartyType.DEBTOR, info.getType());
+				Assert.assertNull(info.getNaturalPersonSubtype());
 				Assert.assertNull(info.getIndividualTaxLiability());
 			}
 			{
@@ -854,6 +860,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				Assert.assertEquals(StringUtils.EMPTY, info.getName2());
 				Assert.assertEquals(date(1979, 5, 31), DataHelper.webToRegDate(info.getDateOfBirth()));
 				Assert.assertEquals(PartyType.NATURAL_PERSON, info.getType());
+				Assert.assertEquals(NaturalPersonSubtype.NON_RESIDENT, info.getNaturalPersonSubtype());
 				Assert.assertEquals(IndividualTaxLiabilityType.NONE, info.getIndividualTaxLiability());
 			}
 		}
@@ -861,7 +868,16 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		// recherche par nom avec liste de types mauvaise -> aucun ne vient
 		{
 			final List<PartyInfo> res = service.searchParty(new UserLogin(getDefaultOperateurName(), 22), null,
-			                                                "Nietmochevillage", SearchMode.IS_EXACTLY, null, null, null, null, false, EnumSet.of(PartyType.HOUSEHOLD), null, null, null);
+			                                                "Nietmochevillage", SearchMode.IS_EXACTLY, null, null, null, null, false, EnumSet.of(PartySearchType.HOUSEHOLD), null, null, null);
+
+			Assert.assertNotNull(res);
+			Assert.assertEquals(0, res.size());
+		}
+
+		// recherche par nom avec liste de types mauvaise -> aucun ne vient
+		{
+			final List<PartyInfo> res = service.searchParty(new UserLogin(getDefaultOperateurName(), 22), null,
+			                                                "Nietmochevillage", SearchMode.IS_EXACTLY, null, null, null, null, false, EnumSet.of(PartySearchType.RESIDENT_NATURAL_PERSON), null, null, null);
 
 			Assert.assertNotNull(res);
 			Assert.assertEquals(0, res.size());
@@ -870,7 +886,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		// recherche par nom avec liste de types des deux -> les deux viennent
 		{
 			final List<PartyInfo> res = service.searchParty(new UserLogin(getDefaultOperateurName(), 22), null,
-			                                                "Nietmochevillage", SearchMode.IS_EXACTLY, null, null, null, null, false, EnumSet.of(PartyType.DEBTOR, PartyType.NATURAL_PERSON), null, null, null);
+			                                                "Nietmochevillage", SearchMode.IS_EXACTLY, null, null, null, null, false, EnumSet.of(PartySearchType.DEBTOR, PartySearchType.NATURAL_PERSON), null, null, null);
 
 			Assert.assertNotNull(res);
 			Assert.assertEquals(2, res.size());
@@ -892,6 +908,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				Assert.assertEquals(StringUtils.EMPTY, info.getName2());
 				Assert.assertNull(info.getDateOfBirth());
 				Assert.assertEquals(PartyType.DEBTOR, info.getType());
+				Assert.assertNull(info.getNaturalPersonSubtype());
 				Assert.assertNull(info.getIndividualTaxLiability());
 			}
 			{
@@ -902,6 +919,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				Assert.assertEquals(StringUtils.EMPTY, info.getName2());
 				Assert.assertEquals(date(1979, 5, 31), DataHelper.webToRegDate(info.getDateOfBirth()));
 				Assert.assertEquals(PartyType.NATURAL_PERSON, info.getType());
+				Assert.assertEquals(NaturalPersonSubtype.NON_RESIDENT, info.getNaturalPersonSubtype());
 				Assert.assertEquals(IndividualTaxLiabilityType.NONE, info.getIndividualTaxLiability());
 			}
 		}
@@ -909,7 +927,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		// recherche par nom avec liste de types d'un seul -> seul celui-là vient
 		{
 			final List<PartyInfo> res = service.searchParty(new UserLogin(getDefaultOperateurName(), 22), null,
-			                                                "Nietmochevillage", SearchMode.IS_EXACTLY, null, null, null, null, false, EnumSet.of(PartyType.DEBTOR), null, null, null);
+			                                                "Nietmochevillage", SearchMode.IS_EXACTLY, null, null, null, null, false, EnumSet.of(PartySearchType.DEBTOR), null, null, null);
 
 			Assert.assertNotNull(res);
 			Assert.assertEquals(1, res.size());
@@ -922,7 +940,29 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				Assert.assertEquals(StringUtils.EMPTY, info.getName2());
 				Assert.assertNull(info.getDateOfBirth());
 				Assert.assertEquals(PartyType.DEBTOR, info.getType());
+				Assert.assertNull(info.getNaturalPersonSubtype());
 				Assert.assertNull(info.getIndividualTaxLiability());
+			}
+		}
+
+		// recherche par nom avec liste de types d'un seul -> seul celui-là vient
+		{
+			final List<PartyInfo> res = service.searchParty(new UserLogin(getDefaultOperateurName(), 22), null,
+			                                                "Nietmochevillage", SearchMode.IS_EXACTLY, null, null, null, null, false, EnumSet.of(PartySearchType.NON_RESIDENT_NATURAL_PERSON), null, null, null);
+
+			Assert.assertNotNull(res);
+			Assert.assertEquals(1, res.size());
+
+			{
+				final PartyInfo info = res.get(0);
+				Assert.assertNotNull(info);
+				Assert.assertEquals(ids.pp, info.getNumber());
+				Assert.assertEquals("Gérard Nietmochevillage", info.getName1());
+				Assert.assertEquals(StringUtils.EMPTY, info.getName2());
+				Assert.assertEquals(date(1979, 5, 31), DataHelper.webToRegDate(info.getDateOfBirth()));
+				Assert.assertEquals(PartyType.NATURAL_PERSON, info.getType());
+				Assert.assertEquals(NaturalPersonSubtype.NON_RESIDENT, info.getNaturalPersonSubtype());
+				Assert.assertEquals(IndividualTaxLiabilityType.NONE, info.getIndividualTaxLiability());
 			}
 		}
 	}
@@ -970,7 +1010,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		// recherche par nom avec liste de types vide -> les deux viennent
 		{
 			final List<PartyInfo> res = service.searchParty(new UserLogin(getDefaultOperateurName(), 22), null,
-			                                                "Nietmochevillage", SearchMode.IS_EXACTLY, null, null, null, null, false, Collections.<PartyType>emptySet(), null, null, null);
+			                                                "Nietmochevillage", SearchMode.IS_EXACTLY, null, null, null, null, false, Collections.<PartySearchType>emptySet(), null, null, null);
 
 			Assert.assertNotNull(res);
 			Assert.assertEquals(2, res.size());
