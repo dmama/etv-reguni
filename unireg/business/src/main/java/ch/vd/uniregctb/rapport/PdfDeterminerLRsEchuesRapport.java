@@ -30,7 +30,13 @@ public class PdfDeterminerLRsEchuesRapport extends PdfRapport {
 		addEnteteUnireg();
 
 		// Titre
-		addTitrePrincipal("Rapport d'exécution du job d'échéance des LR pour la période fiscale " + results.getPeriodeFiscale());
+		final Integer periodeFiscale = results.getPeriodeFiscale();
+		if (periodeFiscale == null) {
+			addTitrePrincipal("Rapport d'exécution du job d'échéance des LR");
+		}
+		else {
+			addTitrePrincipal("Rapport d'exécution du job d'échéance des LR pour la période fiscale " + periodeFiscale);
+		}
 
 		// Paramètres
 		addEntete1("Paramètres");
@@ -38,7 +44,7 @@ public class PdfDeterminerLRsEchuesRapport extends PdfRapport {
 			addTableSimple(2, new TableSimpleCallback() {
 				@Override
 				public void fillTable(PdfTableSimple table) throws DocumentException {
-					table.addLigne("Période fiscale considérée :", String.valueOf(results.getPeriodeFiscale()));
+					table.addLigne("Période fiscale considérée :", periodeFiscale == null ? "Toutes" : String.valueOf(periodeFiscale));
 					table.addLigne("Date de traitement :", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
 				}
 			});
