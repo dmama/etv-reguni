@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- v3.0 : version initiale dépendante de common/2 -->
+<!-- v3.1 : ajout du type naturalPersonSubtypeType utilisé dans le type partyInfoType -->
 <xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/party/party/3" elementFormDefault="qualified"
 		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:party="http://www.vd.ch/fiscalite/unireg/party/party/3"
 		   xmlns:common="http://www.vd.ch/fiscalite/unireg/common/2" xmlns:address="http://www.vd.ch/fiscalite/unireg/party/address/2"
@@ -585,6 +586,24 @@
 					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
+			<xs:element minOccurs="0" name="naturalPersonSubtype" type="party:naturalPersonSubtypeType">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Dans le cas des personnes physiques, renseigné avec le type de personne physique (habitant / non-habitant)</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="padding2" type="xs:int">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Padding pour supporter l'élément xs:any ci-dessous. A ignorer.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
 			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
 		</xs:sequence>
 	</xs:complexType>
@@ -626,6 +645,28 @@
 			<xs:enumeration value="OTHER_COMMUNITY">
 				<xs:annotation>
 					<xs:documentation>Une "autre communauté", i.e. une personne morale inconnue au registre des PM.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="naturalPersonSubtypeType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:typesafeEnumClass>
+					<jxb:javadoc>Les différents types de personnes physiques existants.</jxb:javadoc>
+				</jxb:typesafeEnumClass>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="RESIDENT">
+				<xs:annotation>
+					<xs:documentation>Une personne physique résidente sur le canton de Vaud (= habitante).</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="NON_RESIDENT">
+				<xs:annotation>
+					<xs:documentation>Une personne physique non-résidente sur le canton de Vaud (= non-habitante).</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
 		</xs:restriction>

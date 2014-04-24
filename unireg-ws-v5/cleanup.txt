@@ -1,4 +1,5 @@
 Cleanup à faire pour une éventuelle version 6 du web-service
 ------------------------------------------------------------
 
-?
+- Ré-assembler les type party-3:naturalPersonSubtypeType et party-3:partyTypeType
+- Utiliser le nouveau "partyTypeType" comme critère de recherche dans le /searchParty
