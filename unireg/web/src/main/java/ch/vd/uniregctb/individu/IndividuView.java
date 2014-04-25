@@ -12,7 +12,7 @@ import ch.vd.uniregctb.type.Sexe;
  */
 public class IndividuView implements Serializable {
 
-	private static final long serialVersionUID = -5696025184502707663L;
+	private static final long serialVersionUID = -1535474897341022151L;
 
 	private Long numeroIndividu;
 	private String nom;
@@ -28,6 +28,10 @@ public class IndividuView implements Serializable {
 	private String numeroRCE;
 	private String origine;
 	private List<NationaliteView> nationalites;
+	private String prenomsPere;
+	private String nomPere;
+	private String prenomsMere;
+	private String nomMere;
 
 	private boolean canceled;
 	private Long numeroIndividuRemplacant;
@@ -191,6 +195,42 @@ public class IndividuView implements Serializable {
 
 	public void setNumeroIndividuRemplacant(Long numeroIndividuRemplacant) {
 		this.numeroIndividuRemplacant = numeroIndividuRemplacant;
+	}
+
+	@SuppressWarnings("UnusedDeclaration")
+	public String getPrenomsPere() {
+		return prenomsPere;
+	}
+
+	public void setPrenomsPere(String prenomsPere) {
+		this.prenomsPere = prenomsPere;
+	}
+
+	@SuppressWarnings("UnusedDeclaration")
+	public String getNomPere() {
+		return nomPere;
+	}
+
+	public void setNomPere(String nomPere) {
+		this.nomPere = nomPere;
+	}
+
+	@SuppressWarnings("UnusedDeclaration")
+	public String getPrenomsMere() {
+		return prenomsMere;
+	}
+
+	public void setPrenomsMere(String prenomsMere) {
+		this.prenomsMere = prenomsMere;
+	}
+
+	@SuppressWarnings("UnusedDeclaration")
+	public String getNomMere() {
+		return nomMere;
+	}
+
+	public void setNomMere(String nomMere) {
+		this.nomMere = nomMere;
 	}
 
 	/**

@@ -8,6 +8,7 @@ import java.util.List;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 
+import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.EtatCivil;
 import ch.vd.unireg.interfaces.civil.data.Individu;
@@ -99,7 +100,22 @@ public class WebCivilServiceImpl implements WebCivilService, MessageSourceAware 
 		traiteEtatCivil(indSource, indCible);
 		traiteOrigine(indSource.getOrigines(), indCible);
 		traiteNationalite(indSource, indCible);
+		traiteNomPrenomsParents(indSource, indCible);
 		return indCible;
+	}
+
+	private void traiteNomPrenomsParents(Individu indSource, IndividuView indCible) {
+		final NomPrenom mere = indSource.getNomOfficielMere();
+		if (mere != null) {
+			indCible.setNomMere(mere.getNom());
+			indCible.setPrenomsMere(mere.getPrenom());
+		}
+
+		final NomPrenom pere = indSource.getNomOfficielPere();
+		if (pere != null) {
+			indCible.setNomPere(pere.getNom());
+			indCible.setPrenomsPere(pere.getPrenom());
+		}
 	}
 
 	/**

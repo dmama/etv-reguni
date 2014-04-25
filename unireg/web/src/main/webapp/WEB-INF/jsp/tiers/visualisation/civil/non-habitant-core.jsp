@@ -173,5 +173,42 @@
 		</td>
 	</tr>
 
+	<tr class="<unireg:nextRowClass/>" >
+		<td width="50%"><fmt:message key="label.prenoms.pere"/>&nbsp;:</td>
+		<td>
+			<c:set var="bind" value="command.${param.path}.prenomsPere" scope="request"/>
+			<spring:bind path="${bind}" >
+				<c:out value="${status.value}"/>
+			</spring:bind>
+		</td>
+	</tr>
+	<tr class="<unireg:nextRowClass/>" >
+		<td width="50%"><fmt:message key="label.nom.pere"/>&nbsp;:</td>
+		<td>
+			<c:set var="bind" value="command.${param.path}.nomPere" scope="request"/>
+			<spring:bind path="${bind}" >
+				<c:out value="${status.value}"/>
+			</spring:bind>
+		</td>
+	</tr>
+	<tr class="<unireg:nextRowClass/>" >
+		<td width="50%"><fmt:message key="label.prenoms.mere"/>&nbsp;:</td>
+		<td>
+			<c:set var="bind" value="command.${param.path}.prenomsMere" scope="request"/>
+			<spring:bind path="${bind}" >
+				<c:out value="${status.value}"/>
+			</spring:bind>
+		</td>
+	</tr>
+	<tr class="<unireg:nextRowClass/>" >
+		<td width="50%"><fmt:message key="label.nom.mere"/>&nbsp;:</td>
+		<td>
+			<c:set var="bind" value="command.${param.path}.nomMere" scope="request"/>
+			<spring:bind path="${bind}" >
+				<c:out value="${status.value}"/>
+			</spring:bind>
+		</td>
+	</tr>
+
 </table>
 

@@ -158,7 +158,41 @@
 			</script>
 			<form:errors path="tiers.libelleCommuneOrigine" cssClass="error" />
 	</tr>
-	
+
+	<c:set var="lengthnomparents" value="<%=LengthConstants.TIERS_NOM_PRENOMS_PARENT%>" scope="request" />
+	<tr class="<unireg:nextRowClass/>">
+		<td width="40%"><fmt:message key="label.prenoms.pere" />&nbsp;:</td>
+		<td width="60%">
+			<form:input path="tiers.prenomsPere" tabindex="12" id="tiers_prenomsPere" cssErrorClass="input-with-errors"
+			            size="20" maxlength="${lengthnomparents}" />
+			<form:errors path="tiers.prenomsPere" cssClass="error" />
+		</td>
+	</tr>
+	<tr class="<unireg:nextRowClass/>">
+		<td width="40%"><fmt:message key="label.nom.pere" />&nbsp;:</td>
+		<td width="60%">
+			<form:input path="tiers.nomPere" tabindex="13" id="tiers_nomPere" cssErrorClass="input-with-errors"
+			            size="20" maxlength="${lengthnomparents}" />
+			<form:errors path="tiers.nomPere" cssClass="error" />
+		</td>
+	</tr>
+	<tr class="<unireg:nextRowClass/>">
+		<td width="40%"><fmt:message key="label.prenoms.mere" />&nbsp;:</td>
+		<td width="60%">
+			<form:input path="tiers.prenomsMere" tabindex="14" id="tiers_prenomsMere" cssErrorClass="input-with-errors"
+			            size="20" maxlength="${lengthnomparents}" />
+			<form:errors path="tiers.prenomsMere" cssClass="error" />
+		</td>
+	</tr>
+	<tr class="<unireg:nextRowClass/>">
+		<td width="40%"><fmt:message key="label.nom.mere" />&nbsp;:</td>
+		<td width="60%">
+			<form:input path="tiers.nomMere" tabindex="15" id="tiers_nomMere" cssErrorClass="input-with-errors"
+			            size="20" maxlength="${lengthnomparents}" />
+			<form:errors path="tiers.nomMere" cssClass="error" />
+		</td>
+	</tr>
+
 </table>
 
 <script>
