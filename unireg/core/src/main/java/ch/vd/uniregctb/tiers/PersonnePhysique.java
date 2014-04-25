@@ -11,6 +11,7 @@ import javax.persistence.Transient;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Parameter;
@@ -455,7 +456,7 @@ public class PersonnePhysique extends Contribuable {
 	}
 
 	public void setNomPere(String nomPere) {
-		this.nomPere = nomPere;
+		this.nomPere = StringUtils.trimToNull(nomPere);
 	}
 
 	@Column(name = "NH_PRENOMS_PERE", length = LengthConstants.TIERS_NOM_PRENOMS_PARENT)
@@ -464,7 +465,7 @@ public class PersonnePhysique extends Contribuable {
 	}
 
 	public void setPrenomsPere(String prenomsPere) {
-		this.prenomsPere = prenomsPere;
+		this.prenomsPere = StringUtils.trimToNull(prenomsPere);
 	}
 
 	@Column(name = "NH_NOM_MERE", length = LengthConstants.TIERS_NOM_PRENOMS_PARENT)
@@ -473,7 +474,7 @@ public class PersonnePhysique extends Contribuable {
 	}
 
 	public void setNomMere(String nomMere) {
-		this.nomMere = nomMere;
+		this.nomMere = StringUtils.trimToNull(nomMere);
 	}
 
 	@Column(name = "NH_PRENOMS_MERE", length = LengthConstants.TIERS_NOM_PRENOMS_PARENT)
@@ -482,7 +483,7 @@ public class PersonnePhysique extends Contribuable {
 	}
 
 	public void setPrenomsMere(String prenomsMere) {
-		this.prenomsMere = prenomsMere;
+		this.prenomsMere = StringUtils.trimToNull(prenomsMere);
 	}
 
 	/**

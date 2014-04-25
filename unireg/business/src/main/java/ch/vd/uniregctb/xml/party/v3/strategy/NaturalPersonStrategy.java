@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.data.Permis;
@@ -17,6 +18,7 @@ import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
 import ch.vd.unireg.xml.party.person.v3.NaturalPerson;
 import ch.vd.unireg.xml.party.person.v3.NaturalPersonCategory;
 import ch.vd.unireg.xml.party.person.v3.NaturalPersonCategoryType;
+import ch.vd.unireg.xml.party.person.v3.ParentFullName;
 import ch.vd.unireg.xml.party.taxresidence.v2.WithholdingTaxationPeriod;
 import ch.vd.unireg.xml.party.v3.PartyPart;
 import ch.vd.uniregctb.metier.piis.PeriodeImpositionImpotSource;
@@ -71,6 +73,14 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 
 			final NaturalPersonCategoryType categoryType = EnumHelper.coreToXMLv3(personne.getCategorieEtranger());
 			to.getCategories().add(new NaturalPersonCategory(DataHelper.coreToXMLv2(personne.getDateDebutValiditeAutorisation()), null, categoryType, null));
+
+			// les noms et prénoms des parents (SIFISC-12136)
+			if (StringUtils.isNotBlank(personne.getPrenomsMere()) || StringUtils.isNotBlank(personne.getNomMere())) {
+				to.setMotherName(new ParentFullName(personne.getPrenomsMere(), personne.getNomMere()));
+			}
+			if (StringUtils.isNotBlank(personne.getPrenomsPere()) || StringUtils.isNotBlank(personne.getNomPere())) {
+				to.setFatherName(new ParentFullName(personne.getPrenomsPere(), personne.getNomPere()));
+			}
 		}
 		else {
 			final Individu individu = context.serviceCivilService.getIndividu(personne.getNumeroIndividu(), null, AttributeIndividu.PERMIS);
@@ -107,6 +117,16 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 					                                                 EnumHelper.coreToXMLv3(permis.getTypePermis()), null));
 				}
 			}
+
+			// les noms et prénoms des parents (SIFISC-12136)
+			final NomPrenom npMere = individu.getNomOfficielMere();
+			if (npMere != null) {
+				to.setMotherName(new ParentFullName(npMere.getPrenom(), npMere.getNom()));
+			}
+			final NomPrenom npPere = individu.getNomOfficielPere();
+			if (npPere != null) {
+				to.setFatherName(new ParentFullName(npPere.getPrenom(), npPere.getNom()));
+			}
 		}
 	}
 
@@ -121,6 +141,10 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 		to.getOtherPersonId().addAll(DataHelper.deepCloneV3(from.getOtherPersonId()));
 		to.setDateOfBirth(from.getDateOfBirth());
 		to.setDateOfDeath(from.getDateOfDeath());
+
+		// les noms et prénoms des parents (SIFISC-12136)
+		to.setMotherName(from.getMotherName());
+		to.setFatherName(from.getFatherName());
 
 		// les permis sont toujours renseignés (pas de PART spécifique)
 		copyColl(to.getCategories(), from.getCategories());

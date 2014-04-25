@@ -26,6 +26,7 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
+import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.efacture.data.TypeEtatDestinataire;
@@ -1068,6 +1069,8 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Dufoin", "Balthazar", Sexe.MASCULIN);
 				addNationalite(ind, MockPays.France, dateNaissance, null);
 				addPermis(ind, TypePermis.ETABLISSEMENT, datePermisC, null, false);
+				ind.setNomOfficielMere(new NomPrenom("Delagrange", "Martine"));
+				ind.setNomOfficielPere(new NomPrenom("Dufoin", "Melchior"));
 				marieIndividu(ind, dateMariage);
 			}
 		});
@@ -1136,6 +1139,13 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			Assert.assertEquals(NaturalPersonCategoryType.C_03_C_PERMIT, category.getCategory());
 			Assert.assertEquals(datePermisC, ch.vd.uniregctb.xml.DataHelper.xmlToCore(category.getDateFrom()));
 			Assert.assertNull(category.getDateTo());
+
+			Assert.assertNotNull(pp.getMotherName());
+			Assert.assertEquals("Delagrange", pp.getMotherName().getLastName());
+			Assert.assertEquals("Martine", pp.getMotherName().getFirstNames());
+			Assert.assertNotNull(pp.getFatherName());
+			Assert.assertEquals("Dufoin", pp.getFatherName().getLastName());
+			Assert.assertEquals("Melchior", pp.getFatherName().getFirstNames());
 		}
 		// get MC
 		{
