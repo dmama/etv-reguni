@@ -103,6 +103,8 @@ import ch.vd.uniregctb.tiers.Contribuable.FirstForsList;
 import ch.vd.uniregctb.tiers.dao.RemarqueDAO;
 import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantProcessor;
 import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantResults;
+import ch.vd.uniregctb.tiers.rattrapage.nomsparents.RecuperationNomsParentsAnciensHabitantsProcessor;
+import ch.vd.uniregctb.tiers.rattrapage.nomsparents.RecuperationNomsParentsAnciensHabitantsResults;
 import ch.vd.uniregctb.type.CategorieEtranger;
 import ch.vd.uniregctb.type.CategorieIdentifiant;
 import ch.vd.uniregctb.type.CategorieImpotSource;
@@ -3951,7 +3953,7 @@ public class TiersServiceImpl implements TiersService {
      */
     @Override
     public ExclureContribuablesEnvoiResults setDateLimiteExclusion(List<Long> ctbIds, RegDate dateLimite, StatusManager s) {
-        ExclureContribuablesEnvoiProcessor processor = new ExclureContribuablesEnvoiProcessor(hibernateTemplate, transactionManager, this, adresseService);
+        final ExclureContribuablesEnvoiProcessor processor = new ExclureContribuablesEnvoiProcessor(hibernateTemplate, transactionManager, this, adresseService);
         return processor.run(ctbIds, dateLimite, s);
     }
 
@@ -3964,7 +3966,13 @@ public class TiersServiceImpl implements TiersService {
         return processor.corrigeFlagSurPersonnesPhysiques(nbThreads);
     }
 
-    @Override
+	@Override
+	public RecuperationNomsParentsAnciensHabitantsResults recupereNomsParentsSurAnciensHabitants(int nbThreads, boolean forceEcrasement, StatusManager statusManager) {
+		final RecuperationNomsParentsAnciensHabitantsProcessor processor = new RecuperationNomsParentsAnciensHabitantsProcessor(hibernateTemplate, transactionManager, tiersDAO, serviceCivilService);
+		return processor.run(nbThreads, forceEcrasement, statusManager);
+	}
+
+	@Override
     public boolean isSourcierGris(Contribuable ctb, RegDate date) {
 
         if (date == null) {

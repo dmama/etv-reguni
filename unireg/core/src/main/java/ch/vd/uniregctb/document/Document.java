@@ -25,8 +25,6 @@ import ch.vd.uniregctb.common.LengthConstants;
 @DiscriminatorColumn(name = "DOC_TYPE", discriminatorType = DiscriminatorType.STRING, length = 50)
 public abstract class Document extends HibernateEntity {
 
-	private static final long serialVersionUID = 6233482437200891946L;
-
 	// Données utilisateur
 	private String nom;
 	private String description;

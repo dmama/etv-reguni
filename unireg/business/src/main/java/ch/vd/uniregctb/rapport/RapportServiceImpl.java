@@ -63,6 +63,7 @@ import ch.vd.uniregctb.document.MigrationCoquillesPMRapport;
 import ch.vd.uniregctb.document.PassageNouveauxRentiersSourciersEnMixteRapport;
 import ch.vd.uniregctb.document.RapprocherCtbRapport;
 import ch.vd.uniregctb.document.RecalculTachesRapport;
+import ch.vd.uniregctb.document.RecuperationNomsParentsAnciensHabitantsRapport;
 import ch.vd.uniregctb.document.ReinitialiserBaremeDoubleGainRapport;
 import ch.vd.uniregctb.document.ResolutionAdresseRapport;
 import ch.vd.uniregctb.document.RolesCommunesRapport;
@@ -103,6 +104,7 @@ import ch.vd.uniregctb.tache.TacheSyncResults;
 import ch.vd.uniregctb.tiers.ExclureContribuablesEnvoiResults;
 import ch.vd.uniregctb.tiers.rattrapage.etatdeclaration.CorrectionEtatDeclarationResults;
 import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantResults;
+import ch.vd.uniregctb.tiers.rattrapage.nomsparents.RecuperationNomsParentsAnciensHabitantsResults;
 import ch.vd.uniregctb.tiers.rattrapage.pm.MigrationCoquillesPM;
 import ch.vd.uniregctb.validation.ValidationJobResults;
 
@@ -1160,6 +1162,28 @@ public class RapportServiceImpl implements RapportService {
 				@Override
 				public void writeDoc(DumpPeriodesImpositionImpotSourceRapport doc, OutputStream os) throws Exception {
 					final PdfDumpPeriodesImpositionImpotSourceRapport document = new PdfDumpPeriodesImpositionImpotSourceRapport();
+					document.write(results, nom, description, dateGeneration, os, status);
+				}
+			});
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public RecuperationNomsParentsAnciensHabitantsRapport generateRapport(final RecuperationNomsParentsAnciensHabitantsResults results, StatusManager s) {
+		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
+
+		final String nom = "RapportRecuperationNomsParentsAnciensHabitants";
+		final String description = "Rapport d'exécution du job de récupération des noms/prénoms des anciens habitants depuis les données civiles";
+		final Date dateGeneration = DateHelper.getCurrentDate();
+
+		try {
+			return docService.newDoc(RecuperationNomsParentsAnciensHabitantsRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<RecuperationNomsParentsAnciensHabitantsRapport>() {
+				@Override
+				public void writeDoc(RecuperationNomsParentsAnciensHabitantsRapport doc, OutputStream os) throws Exception {
+					final PdfRecuperationNomsParentsAnciensHabitantsRapport document = new PdfRecuperationNomsParentsAnciensHabitantsRapport();
 					document.write(results, nom, description, dateGeneration, os, status);
 				}
 			});

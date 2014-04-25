@@ -19,6 +19,7 @@ import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantResults;
+import ch.vd.uniregctb.tiers.rattrapage.nomsparents.RecuperationNomsParentsAnciensHabitantsResults;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
@@ -1013,10 +1014,19 @@ public interface TiersService {
     /**
      * Lance la correction des flags "habitant" sur les personnes physiques en fonction de leur for fiscal principal actif
      *
-     * @param nbThreads
-     * @param statusManager
+     * @param nbThreads     nombre de threads du traitement
+     * @param statusManager status manager
      */
     CorrectionFlagHabitantResults corrigeFlagHabitantSurPersonnesPhysiques(int nbThreads, StatusManager statusManager);
+
+	/**
+	 * Lance le job de récupération des noms des parents des anciens habitants depuis le registre civil
+	 * @param nbThreads nombre de threads du traitement
+	 * @param forceEcrasement <code>true</code> si les valeurs existantes trouvées peuvent être écrasées, <code>false</code> si on ne se permet de changer que les valeurs vides
+	 * @param statusManager status manager
+	 * @return le rapport du traitement
+	 */
+	RecuperationNomsParentsAnciensHabitantsResults recupereNomsParentsSurAnciensHabitants(int nbThreads, boolean forceEcrasement, StatusManager statusManager);
 
     /**
      * Renvoie <code>true</code> si la personne physique est un sourcier gris à la date donnée
