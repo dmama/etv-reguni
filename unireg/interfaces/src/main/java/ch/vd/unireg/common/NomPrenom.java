@@ -1,11 +1,15 @@
-package ch.vd.uniregctb.common;
+package ch.vd.unireg.common;
+
+import java.io.Serializable;
 
 import org.apache.commons.lang3.StringUtils;
 
 /**
  * Container pour les informations dissociées de nom/prénom sur une personne physique
  */
-public class NomPrenom {
+public class NomPrenom implements Serializable {
+
+	private static final long serialVersionUID = 7618933901404175521L;
 
 	public static final NomPrenom VIDE = new NomPrenom(null, null);
 

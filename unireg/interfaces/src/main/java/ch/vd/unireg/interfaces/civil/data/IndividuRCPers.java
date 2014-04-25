@@ -21,6 +21,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.evd0001.v5.Contact;
+import ch.vd.evd0001.v5.FullName;
 import ch.vd.evd0001.v5.Identity;
 import ch.vd.evd0001.v5.MaritalData;
 import ch.vd.evd0001.v5.Nationality;
@@ -38,6 +39,7 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.civil.mock.CollectionLimitator;
 import ch.vd.unireg.interfaces.civil.rcpers.EchHelper;
@@ -50,7 +52,7 @@ import ch.vd.uniregctb.type.TypeAdresseCivil;
 
 public class IndividuRCPers implements Individu, Serializable {
 
-	private static final long serialVersionUID = -7537323239424744173L;
+	private static final long serialVersionUID = 4166419752790065558L;
 
 	private long noTechnique;
 	private StatutIndividu statut;
@@ -73,6 +75,8 @@ public class IndividuRCPers implements Individu, Serializable {
 	private PermisList permis;
 	private Collection<Nationalite> nationalites;
 	private final Set<AttributeIndividu> availableParts = EnumSet.noneOf(AttributeIndividu.class);
+	private NomPrenom nomOfficielMere;
+	private NomPrenom nomOfficielPere;
 
 	public static Individu get(Person target, boolean history, ServiceInfrastructureRaw infraService) {
 		if (target == null) {
@@ -99,6 +103,8 @@ public class IndividuRCPers implements Individu, Serializable {
 		this.noAVS11 = initNumeroAVS11(identity.getOtherPersonId(), this.naissance, this.sexe);
 		if (upiPerson != null) {
 			this.nouveauNoAVS = EchHelper.avs13FromEch(upiPerson.getVn());
+			this.nomOfficielMere = buildNomPrenom(upiPerson.getMothersName());
+			this.nomOfficielPere = buildNomPrenom(upiPerson.getFathersName());
 		}
 		this.numeroRCE = initNumeroRCE(identity.getOtherPersonId());
 		this.dateArriveeVD = initDateArriveeVD(person.getResidenceHistory());
@@ -160,6 +166,8 @@ public class IndividuRCPers implements Individu, Serializable {
 		this.naissance = right.naissance;
 		this.dateArriveeVD = right.dateArriveeVD;
 		this.etatsCivils = right.etatsCivils;
+		this.nomOfficielMere = right.nomOfficielMere;
+		this.nomOfficielPere = right.nomOfficielPere;
 
 		if (parts != null && parts.contains(AttributeIndividu.ADRESSES)) {
 			this.adresses = right.adresses;
@@ -201,6 +209,8 @@ public class IndividuRCPers implements Individu, Serializable {
 		this.dateArriveeVD = right.dateArriveeVD;
 		this.origines = right.origines;
 		this.nationalites = right.nationalites;
+		this.nomOfficielMere = right.nomOfficielMere;
+		this.nomOfficielPere = right.nomOfficielPere;
 
 		this.adresses = right.adresses;
 		this.parents = right.parents;
@@ -673,6 +683,10 @@ public class IndividuRCPers implements Individu, Serializable {
 		return dateArrivee == RegDateHelper.getLateDate() ? null : dateArrivee;
 	}
 
+	private static NomPrenom buildNomPrenom(FullName fullName) {
+		return fullName == null ? null : new NomPrenom(fullName.getLastName(), fullName.getFirstNames());
+	}
+
 	@Override
 	public StatutIndividu getStatut() {
 		return statut;
@@ -781,6 +795,16 @@ public class IndividuRCPers implements Individu, Serializable {
 	@Override
 	public Sexe getSexe() {
 		return sexe;
+	}
+
+	@Override
+	public NomPrenom getNomOfficielMere() {
+		return nomOfficielMere;
+	}
+
+	@Override
+	public NomPrenom getNomOfficielPere() {
+		return nomOfficielPere;
 	}
 
 	@Override

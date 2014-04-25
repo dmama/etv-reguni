@@ -37,6 +37,7 @@ import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.util.exception.ESBValidationException;
 import ch.vd.technical.esb.validation.EsbXmlValidation;
+import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.xml.event.identification.request.v2.IdentificationContribuableRequest;
 import ch.vd.unireg.xml.event.identification.request.v2.NPA;
 import ch.vd.unireg.xml.event.identification.response.v2.Erreur;
@@ -44,7 +45,6 @@ import ch.vd.unireg.xml.event.identification.response.v2.IdentificationContribua
 import ch.vd.unireg.xml.event.identification.response.v2.ObjectFactory;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.identification.contribuable.IdentificationContribuableService;
 import ch.vd.uniregctb.identification.contribuable.TooManyIdentificationPossibilitiesException;
 import ch.vd.uniregctb.jms.EsbBusinessCode;

@@ -3,13 +3,13 @@ package ch.vd.uniregctb.xml.address;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.xml.party.address.v1.Address;
 import ch.vd.unireg.xml.party.address.v1.AddressInformation;
 import ch.vd.unireg.xml.party.address.v1.TariffZone;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
-import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.common.NpaEtLocalite;
 import ch.vd.uniregctb.common.RueEtNumero;
 import ch.vd.uniregctb.common.WithoutSpringTest;

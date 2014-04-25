@@ -125,6 +125,14 @@ public class PersonnePhysique extends Contribuable {
 	 */
 	private Boolean parenteDirty;
 
+	/**
+	 * [SIFISC-12136] Noms officiels des parents
+	 */
+	private String nomPere;
+	private String prenomsPere;
+	private String nomMere;
+	private String prenomsMere;
+
 	@Transient
 	@Override
 	public NatureTiers getNatureTiers() {
@@ -439,6 +447,42 @@ public class PersonnePhysique extends Contribuable {
 	@Transient
 	public boolean isParenteDirty() {
 		return parenteDirty != null && parenteDirty;
+	}
+
+	@Column(name = "NH_NOM_PERE", length = LengthConstants.TIERS_NOM_PRENOMS_PARENT)
+	public String getNomPere() {
+		return nomPere;
+	}
+
+	public void setNomPere(String nomPere) {
+		this.nomPere = nomPere;
+	}
+
+	@Column(name = "NH_PRENOMS_PERE", length = LengthConstants.TIERS_NOM_PRENOMS_PARENT)
+	public String getPrenomsPere() {
+		return prenomsPere;
+	}
+
+	public void setPrenomsPere(String prenomsPere) {
+		this.prenomsPere = prenomsPere;
+	}
+
+	@Column(name = "NH_NOM_MERE", length = LengthConstants.TIERS_NOM_PRENOMS_PARENT)
+	public String getNomMere() {
+		return nomMere;
+	}
+
+	public void setNomMere(String nomMere) {
+		this.nomMere = nomMere;
+	}
+
+	@Column(name = "NH_PRENOMS_MERE", length = LengthConstants.TIERS_NOM_PRENOMS_PARENT)
+	public String getPrenomsMere() {
+		return prenomsMere;
+	}
+
+	public void setPrenomsMere(String prenomsMere) {
+		this.prenomsMere = prenomsMere;
 	}
 
 	/**

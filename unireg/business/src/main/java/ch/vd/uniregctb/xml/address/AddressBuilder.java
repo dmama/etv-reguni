@@ -4,11 +4,11 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
+import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.interfaces.civil.data.CasePostale;
 import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
-import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.common.NpaEtLocalite;
 import ch.vd.uniregctb.common.RueEtNumero;
 import ch.vd.uniregctb.tiers.MenageCommun;

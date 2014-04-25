@@ -7,6 +7,7 @@ import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.common.NomPrenom;
 import ch.vd.uniregctb.type.Sexe;
 
 public interface Individu extends EntiteCivile {
@@ -121,6 +122,16 @@ public interface Individu extends EntiteCivile {
 	 * @return les parents de l'individu courant.
 	 */
 	List<RelationVersIndividu> getParents();
+
+	/**
+	 * @return le nom officiel de la mère
+	 */
+	NomPrenom getNomOfficielMere();
+
+	/**
+	 * @return le nom officiel du père
+	 */
+	NomPrenom getNomOfficielPere();
 
 	/**
 	 * @return l'historique des conjoints de l'individu.

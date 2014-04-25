@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.EtatCivil;
 import ch.vd.unireg.interfaces.civil.data.Individu;
@@ -46,6 +47,8 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 	private RegDate dateArriveeVD;
 	private final Set<AttributeIndividu> availableParts = new HashSet<>();
 	private boolean nonHabitantNonRenvoye = false;
+	private NomPrenom nomOfficielMere;
+	private NomPrenom nomOfficielPere;
 
 	public MockIndividu() {
 		// à priori, toutes les parts *peuvent* être renseignées
@@ -72,6 +75,8 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 		this.origines = right.origines;
 		this.sexe = right.sexe;
 		this.nationalites = right.nationalites;
+		this.nomOfficielMere = right.nomOfficielMere;
+		this.nomOfficielPere = right.nomOfficielPere;
 
 		this.parents = right.parents;
 		this.conjoints = right.conjoints;
@@ -120,6 +125,8 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 		this.numeroRCE = right.numeroRCE;
 		this.sexe = right.sexe;
 		this.nationalites = right.nationalites;
+		this.nomOfficielMere = right.nomOfficielMere;
+		this.nomOfficielPere = right.nomOfficielPere;
 
 		copyPartsFrom(right, parts);
 
@@ -292,6 +299,24 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 
 	public void setNumeroRCE(String numeroRCE) {
 		this.numeroRCE = numeroRCE;
+	}
+
+	@Override
+	public NomPrenom getNomOfficielMere() {
+		return nomOfficielMere;
+	}
+
+	public void setNomOfficielMere(NomPrenom nomOfficielMere) {
+		this.nomOfficielMere = nomOfficielMere;
+	}
+
+	@Override
+	public NomPrenom getNomOfficielPere() {
+		return nomOfficielPere;
+	}
+
+	public void setNomOfficielPere(NomPrenom nomOfficielPere) {
+		this.nomOfficielPere = nomOfficielPere;
 	}
 
 	@Override

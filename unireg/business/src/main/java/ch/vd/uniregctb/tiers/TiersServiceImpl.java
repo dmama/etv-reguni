@@ -41,6 +41,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.shared.batchtemplate.StatusManager;
+import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.interfaces.civil.data.Adresse;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
@@ -69,7 +70,6 @@ import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.common.NationaliteHelper;
-import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.Periodicite;
@@ -331,6 +331,28 @@ public class TiersServiceImpl implements TiersService {
 	    final Individu individu = serviceCivilService.getIndividu(habitant.getNumeroIndividu(), null, AttributeIndividu.NATIONALITES, AttributeIndividu.PERMIS, AttributeIndividu.ORIGINE);
 	    if (individu == null) {
 		    throw new IndividuNotFoundException(habitant.getNumeroIndividu());
+	    }
+
+	    // noms et prénoms officiels de la mère
+	    final NomPrenom nomOfficielMere = individu.getNomOfficielMere();
+	    if (nomOfficielMere != null) {
+	        habitant.setNomMere(nomOfficielMere.getNom());
+	        habitant.setPrenomsMere(nomOfficielMere.getPrenom());
+        }
+	    else {
+		    habitant.setNomMere(null);
+		    habitant.setPrenomsMere(null);
+	    }
+
+	    // nom et prénoms officiels du père
+	    final NomPrenom nomOfficielPere = individu.getNomOfficielPere();
+	    if (nomOfficielPere != null) {
+		    habitant.setNomPere(nomOfficielPere.getNom());
+		    habitant.setPrenomsPere(nomOfficielPere.getPrenom());
+	    }
+	    else {
+		    habitant.setNomPere(null);
+		    habitant.setPrenomsPere(null);
 	    }
 
 	    // nationalité

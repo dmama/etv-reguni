@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
@@ -50,6 +51,22 @@ public class ChangementIdentificateur extends ChangementBase {
 			final String navs13 = individu.getNouveauNoAVS();
 			if (shouldOverwriteAvs(navs13)) {
 				pp.setNumeroAssureSocial(StringUtils.trimToNull(navs13));
+			}
+
+			// .. et aussi les noms officiels des parents (qui viennent aussi des données UPI)
+
+			// noms et prénoms officiels de la mère
+			final NomPrenom nomOfficielMere = individu.getNomOfficielMere();
+			if (nomOfficielMere != null) {
+				pp.setNomMere(nomOfficielMere.getNom());
+				pp.setPrenomsMere(nomOfficielMere.getPrenom());
+			}
+
+			// nom et prénoms officiels du père
+			final NomPrenom nomOfficielPere = individu.getNomOfficielPere();
+			if (nomOfficielPere != null) {
+				pp.setNomPere(nomOfficielPere.getNom());
+				pp.setPrenomsPere(nomOfficielPere.getPrenom());
 			}
 		}
 
