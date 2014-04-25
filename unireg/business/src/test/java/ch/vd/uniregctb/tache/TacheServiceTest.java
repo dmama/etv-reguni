@@ -12,15 +12,19 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.registre.base.validation.ValidationMessage;
+import ch.vd.unireg.interfaces.civil.data.Localisation;
+import ch.vd.unireg.interfaces.civil.data.LocalisationType;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
@@ -5577,6 +5581,162 @@ public class TacheServiceTest extends BusinessTest {
 				assertEquals(TypeContribuable.HORS_SUISSE, tacheDi.getTypeContribuable());
 				assertEquals(TypeDocument.DECLARATION_IMPOT_VAUDTAX, tacheDi.getTypeDocument());
 				return null;
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-11939] Tâche de contrôle de dossier générée au départ HC dans la période fiscale courante
+	 */
+	@Test
+	public void testControleDossierPourDepartHorsCantonPeriodeFiscaleCourante() throws Exception {
+
+		final long noIndividu = 565798L;
+		final RegDate dateDepart = RegDate.get();
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noIndividu, null, "Pasquier", "Baudouin", Sexe.MASCULIN);
+				final MockAdresse adresseVd = addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Bussigny.RueDeLIndustrie, null, date(2000, 4, 1), dateDepart);
+				adresseVd.setLocalisationSuivante(new Localisation(LocalisationType.HORS_CANTON, MockCommune.Bern.getNoOFS(), null));
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				addForPrincipal(pp, date(2000, 4, 1), MotifFor.ARRIVEE_HS, MockCommune.Bussigny);
+				return pp.getNumero();
+			}
+		});
+
+		// fermeture du for pour le départ
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+				ffp.setDateFin(dateDepart);
+				ffp.setMotifFermeture(MotifFor.DEPART_HC);
+				tacheService.genereTacheDepuisFermetureForPrincipal(pp, ffp);
+			}
+		});
+
+		// récupération de la tâche de contrôle de dossier (il doit y en avoir une et une seule)
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final TacheCriteria criteria = new TacheCriteria();
+				criteria.setNumeroCTB(ppId);
+				verifieControleDossier(criteria, 1);
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-11939] Tâche de contrôle de dossier générée au départ HC dans la période fiscale antérieure à la période fiscale courante
+	 */
+	@Test
+	public void testControleDossierPourDepartHorsCantonPeriodeFiscaleJusteAvantCourante() throws Exception {
+
+		final long noIndividu = 565798L;
+		final RegDate dateDepart = RegDate.get().addYears(-1);          // l'année dernière
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noIndividu, null, "Pasquier", "Baudouin", Sexe.MASCULIN);
+				final MockAdresse adresseVd = addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Bussigny.RueDeLIndustrie, null, date(2000, 4, 1), dateDepart);
+				adresseVd.setLocalisationSuivante(new Localisation(LocalisationType.HORS_CANTON, MockCommune.Bern.getNoOFS(), null));
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				addForPrincipal(pp, date(2000, 4, 1), MotifFor.ARRIVEE_HS, MockCommune.Bussigny);
+				return pp.getNumero();
+			}
+		});
+
+		// fermeture du for pour le départ
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+				ffp.setDateFin(dateDepart);
+				ffp.setMotifFermeture(MotifFor.DEPART_HC);
+				tacheService.genereTacheDepuisFermetureForPrincipal(pp, ffp);
+			}
+		});
+
+		// récupération de la tâche de contrôle de dossier (il doit y en avoir une et une seule)
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final TacheCriteria criteria = new TacheCriteria();
+				criteria.setNumeroCTB(ppId);
+				verifieControleDossier(criteria, 1);
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-11939] Aucune tâche de contrôle de dossier générée au départ HC dans la période fiscale deux ans avant la période courante
+	 */
+	@Test
+	public void testControleDossierPourDepartHorsCantonPeriodeFiscaleDeuxAnsAvantCourante() throws Exception {
+
+		final long noIndividu = 565798L;
+		final RegDate dateDepart = RegDate.get().addYears(-2);          // il y a deux ans
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noIndividu, null, "Pasquier", "Baudouin", Sexe.MASCULIN);
+				final MockAdresse adresseVd = addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Bussigny.RueDeLIndustrie, null, date(2000, 4, 1), dateDepart);
+				adresseVd.setLocalisationSuivante(new Localisation(LocalisationType.HORS_CANTON, MockCommune.Bern.getNoOFS(), null));
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				addForPrincipal(pp, date(2000, 4, 1), MotifFor.ARRIVEE_HS, MockCommune.Bussigny);
+				return pp.getNumero();
+			}
+		});
+
+		// fermeture du for pour le départ
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+				ffp.setDateFin(dateDepart);
+				ffp.setMotifFermeture(MotifFor.DEPART_HC);
+				tacheService.genereTacheDepuisFermetureForPrincipal(pp, ffp);
+			}
+		});
+
+		// récupération de la tâche de contrôle de dossier (il ne doit pas y en avoir)
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final TacheCriteria criteria = new TacheCriteria();
+				criteria.setNumeroCTB(ppId);
+				verifieControleDossier(criteria, 0);
 			}
 		});
 	}

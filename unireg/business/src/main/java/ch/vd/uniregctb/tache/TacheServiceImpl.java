@@ -286,8 +286,9 @@ public class TacheServiceImpl implements TacheService {
 			/*
 			 * Si ce départ a lieu lors de la période courante, une tâche de contrôle du dossier est engendrée,
 			 * pour que l’utilisateur puisse vérifier si les fors secondaires éventuels ont bien été enregistrés.
+			 * [SIFISC-11939] cela doit être fait également en cas de départ dans la PF précédente
 			 */
-			if (dateFermeture.year() == RegDate.get().year()) {
+			if (dateFermeture.year() == RegDate.get().year() || dateFermeture.year() == RegDate.get().year() - 1) {
 				genereTacheControleDossier(contribuable);
 			}
 			// [UNIREG-1262] La génération de tâches d'annulation de DI doit se faire aussi sur l'année du départ
