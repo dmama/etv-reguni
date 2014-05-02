@@ -15,6 +15,7 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
+import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.declaration.Periodicite;
@@ -30,7 +31,9 @@ import ch.vd.uniregctb.tiers.IdentificationPersonne;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
+import ch.vd.uniregctb.tiers.Remarque;
 import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.dao.RemarqueDAO;
 import ch.vd.uniregctb.tiers.view.ComplementView;
 import ch.vd.uniregctb.tiers.view.CompteBancaireView;
 import ch.vd.uniregctb.tiers.view.DebiteurEditView;
@@ -42,12 +45,19 @@ import ch.vd.uniregctb.type.ModeCommunication;
 import ch.vd.uniregctb.type.PeriodeDecompte;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.utils.BeanUtils;
+import ch.vd.uniregctb.utils.WebContextUtils;
 
 /**
  * Service qui fournit les methodes pour editer un tiers
  *
  */
 public class TiersEditManagerImpl extends TiersManager implements TiersEditManager {
+
+	private RemarqueDAO remarqueDAO;
+
+	public void setRemarqueDAO(RemarqueDAO remarqueDAO) {
+		this.remarqueDAO = remarqueDAO;
+	}
 
 	/**
 	 * Charge les informations dans TiersView
@@ -489,13 +499,44 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 		return getTiersDAO().save(tiersEnrichi);
 	}
 
+	private Remarque addRemarque(Tiers tiers, String visa, String texteRemarque) {
+		final Remarque remarque = new Remarque();
+		remarque.setTiers(tiers);
+		remarque.setTexte(texteRemarque);
+
+		AuthenticationHelper.pushPrincipal(visa);
+		try {
+			return remarqueDAO.save(remarque);
+		}
+		finally {
+			AuthenticationHelper.popPrincipal();
+		}
+	}
+
+	private String getModeCommunicationDisplayString(ModeCommunication modeCommunication) {
+		if (modeCommunication == null) {
+			return StringUtils.EMPTY;
+		}
+		final String key = String.format("option.mode.communication.%s", modeCommunication.name());
+		return messageSource.getMessage(key, null, WebContextUtils.getDefaultLocale());
+	}
+
 	@Override
 	public void save(DebiteurEditView view) {
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(view.getId());
 		if (dpi.isSansLREmises()) {
 			dpi.setCategorieImpotSource(view.getCategorieImpotSource());
 		}
-		dpi.setModeCommunication(view.getModeCommunication());
+
+		// [SIFISC-12197] en cas de changement de mode de communication, il faut inscrire une remarque sur le débiteur
+		if (dpi.getModeCommunication() != view.getModeCommunication()) {
+			final String texteRemarque = String.format("Changement de mode de communication :\n'%s' --> '%s'",
+			                                           getModeCommunicationDisplayString(dpi.getModeCommunication()),
+			                                           getModeCommunicationDisplayString(view.getModeCommunication()));
+			addRemarque(dpi, String.format("%s-auto", AuthenticationHelper.getCurrentPrincipal()), texteRemarque);
+			dpi.setModeCommunication(view.getModeCommunication());
+		}
+
 		dpi.setLogicielId(view.getLogicielId());
 		changePeriodicite(dpi, view.getNouvellePeriodicite(), view.getPeriodeDecompte(), view.getDateDebutNouvellePeriodicite());
 	}

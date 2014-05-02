@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
@@ -28,7 +29,9 @@ import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.tiers.AutreCommunaute;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.Remarque;
 import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.dao.RemarqueDAO;
 import ch.vd.uniregctb.tiers.view.DebiteurEditView;
 import ch.vd.uniregctb.tiers.view.TiersEditView;
 import ch.vd.uniregctb.type.CategorieImpotSource;
@@ -51,6 +54,7 @@ public class TiersEditManagerTest extends WebTest {
 	private final static String DB_UNIT_FILE = "TiersEditManagerTest.xml";
 
 	private TiersEditManager tiersEditManager ;
+	private RemarqueDAO remarqueDAO;
 
 	/**
 	 * @see ch.vd.uniregctb.common.AbstractCoreDAOTest#onSetUp()
@@ -74,6 +78,7 @@ public class TiersEditManagerTest extends WebTest {
 
 		loadDatabase(DB_UNIT_FILE);
 		tiersEditManager = getBean(TiersEditManager.class, "tiersEditManager");
+		remarqueDAO = getBean(RemarqueDAO.class, "remarqueDAO");
 	}
 
 	/**
@@ -172,12 +177,58 @@ public class TiersEditManagerTest extends WebTest {
 			tiersEditManager.save(view);
 			view = tiersEditManager.getDebiteurEditView(dpiId);
 			assertEquals(ModeCommunication.ELECTRONIQUE, view.getModeCommunication());
+
+			// [SIFISC-12197] vérifions l'insertion de la remarque
+			doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+				@Override
+				protected void doInTransactionWithoutResult(TransactionStatus status) {
+					final List<Remarque> remarques = remarqueDAO.getRemarques(dpiId);
+					assertNotNull(remarques);
+					assertEquals(1, remarques.size());
+
+					final Remarque remarque = remarques.get(0);
+					assertNotNull(remarque);
+					assertEquals("Changement de mode de communication :\n'Papier' --> 'Echange de fichier'", remarque.getTexte());
+					assertTrue(remarque.getLogCreationUser(), remarque.getLogCreationUser().endsWith("-auto"));
+				}
+			});
 		}
 		{
 			view.setModeCommunication(ModeCommunication.SITE_WEB);
 			tiersEditManager.save(view);
 			view = tiersEditManager.getDebiteurEditView(dpiId);
 			assertEquals(ModeCommunication.SITE_WEB, view.getModeCommunication());
+
+			// [SIFISC-12197] vérifions l'insertion de la remarque
+			doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+				@Override
+				protected void doInTransactionWithoutResult(TransactionStatus status) {
+					final List<Remarque> remarques = remarqueDAO.getRemarques(dpiId);
+					assertNotNull(remarques);
+					assertEquals(2, remarques.size());
+
+					final List<Remarque> sorted = new ArrayList<>(remarques);
+					Collections.sort(sorted, new Comparator<Remarque>() {
+						@Override
+						public int compare(Remarque o1, Remarque o2) {
+							return Long.compare(o1.getId(), o2.getId());
+						}
+					});
+
+					{
+						final Remarque remarque = sorted.get(0);
+						assertNotNull(remarque);
+						assertEquals("Changement de mode de communication :\n'Papier' --> 'Echange de fichier'", remarque.getTexte());
+						assertTrue(remarque.getLogCreationUser(), remarque.getLogCreationUser().endsWith("-auto"));
+					}
+					{
+						final Remarque remarque = sorted.get(1);
+						assertNotNull(remarque);
+						assertEquals("Changement de mode de communication :\n'Echange de fichier' --> 'Saisie en ligne'", remarque.getTexte());
+						assertTrue(remarque.getLogCreationUser(), remarque.getLogCreationUser().endsWith("-auto"));
+					}
+				}
+			});
 		}
 	}
 

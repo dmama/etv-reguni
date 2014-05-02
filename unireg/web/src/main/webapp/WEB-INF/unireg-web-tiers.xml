@@ -131,6 +131,7 @@
 	</bean>
 
 	<bean id="tiersEditManager" class="ch.vd.uniregctb.tiers.manager.TiersEditManagerImpl"  parent="tiersManager">
+		<property name="remarqueDAO" ref="remarqueDAO"/>
 	</bean>
 
 	<bean id="tiersVisuManager" class="ch.vd.uniregctb.tiers.manager.TiersVisuManagerImpl" parent="tiersManager">

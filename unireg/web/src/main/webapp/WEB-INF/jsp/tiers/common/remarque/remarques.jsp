@@ -20,7 +20,7 @@
 <script>
 
 	function refreshRemarques() {
-		$.get('<c:url value="/remarque/list.do?tiersId="/>' + ${tiersId} + '&' + new Date().getTime(), function(list) {
+		$.get('<c:url value="/remarque/list.do?tiersId="/>${tiersId}&' + new Date().getTime(), function(list) {
 
 			var count = list.length;
 			if (count == 0) {
