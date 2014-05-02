@@ -35,7 +35,7 @@
 				for (var i = 0; i < count; ++i) {
 					var rem = list[i];
 					table += '<tr class="' + (i % 2 == 0 ? 'even' : 'odd') + '">';
-					table += '<td class="entete">le ' + escapeHTML(rem.date) + ' par ' + escapeHTML(rem.user) + '</td><td class="texte">' + escapeHTML(rem.text) + '</td>';
+					table += '<td class="entete">le ' + escapeHTML(rem.date) + ' par ' + escapeHTML(rem.user) + '</td><td class="texte">' + rem.htmlText + '</td>';
 					table += '</tr>';
 				}
 				table += '</tbody></table>';

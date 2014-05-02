@@ -21,9 +21,10 @@ public class HtmlHelper {
 		if (string == null) {
 			return null;
 		}
-		string = StringEscapeUtils.escapeXml(string);
-		string = string.replaceAll("\n", "<br/>");
-		string = string.replaceAll(" ", "&nbsp;");
+		string = StringEscapeUtils.escapeHtml4(string);
+		string = string.replaceAll("\r\n?|\n", "<br/>");
+		string = string.replaceAll(" :", "&nbsp;:");
+		string = string.replaceAll("    ", "\t");
 		string = string.replaceAll("\t", "&nbsp;&nbsp;&nbsp;&nbsp;");
 		return string;
 	}
