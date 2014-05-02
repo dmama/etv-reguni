@@ -256,6 +256,8 @@
 
 	<bean id="parenteValidator" class="ch.vd.uniregctb.validation.rapport.ParenteValidator" parent="rapportEntreTiersValidator"/>
 
+	<bean id="rapportPrestationImposableValidator" class="ch.vd.uniregctb.validation.rapport.RapportPrestationImposableValidator" parent="rapportEntreTiersValidator"/>
+
 	<bean id="defaultRapportEntreTiersValidator" class="ch.vd.uniregctb.validation.rapport.DefaultRapportEntreTiersValidator" parent="rapportEntreTiersValidator" />
 
 	<bean id="representationLegaleValidator" class="ch.vd.uniregctb.validation.rapport.RepresentationLegaleValidator" abstract="true" parent="rapportEntreTiersValidator"/>
