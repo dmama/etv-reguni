@@ -68,8 +68,7 @@ public class EntrepriseIndexable extends ContribuableIndexable<Entreprise> {
 		// "coquilles vides" les données autres que celles du registre des PM
 		//
 
-		// TODO IDE ajouter l'IDE
-//		data.addIde(pm.getIde());
+		data.addIde(pm.getNumeroIDE());
 	}
 
 	private boolean isAssujettiAt(List<AssujettissementPM> list, RegDate date) {

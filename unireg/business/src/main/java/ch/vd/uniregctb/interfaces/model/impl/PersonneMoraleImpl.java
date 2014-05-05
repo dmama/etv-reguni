@@ -6,6 +6,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.interfaces.model.AdresseEntreprise;
 import ch.vd.uniregctb.interfaces.model.AdresseEntrepriseImpl;
@@ -24,7 +26,7 @@ import ch.vd.uniregctb.interfaces.model.helper.EntrepriseHelper;
 
 public class PersonneMoraleImpl implements PersonneMorale, Serializable {
 
-	private static final long serialVersionUID = 8851449527201576037L;
+	private static final long serialVersionUID = 1123857829949640852L;
 
 	private final RegDate dateDebut;
 	private final RegDate dateFin;
@@ -40,6 +42,7 @@ public class PersonneMoraleImpl implements PersonneMorale, Serializable {
 	private final String raisonSociale;
 	private final long numeroEntreprise;
 	private final String nomContact;
+	private final String numeroIDE;
 
 	private Collection<AdresseEntreprise> adresses = null;
 	private List<FormeJuridique> formesJuridiques = null;
@@ -78,6 +81,7 @@ public class PersonneMoraleImpl implements PersonneMorale, Serializable {
 		this.raisonSociale = target.getRaisonSociale();
 		this.numeroEntreprise = target.getNumeroEntreprise();
 		this.nomContact = target.getNomContact();
+		this.numeroIDE = buildNumeroIDE(target.getCategorieIDE(), target.getNumeroIDE());
 
 		this.adresses = initAdresses(target.getAdresses());
 		this.formesJuridiques = initFormesJuridiques(target.getFormesJuridiques());
@@ -109,6 +113,7 @@ public class PersonneMoraleImpl implements PersonneMorale, Serializable {
 		this.raisonSociale = right.raisonSociale;
 		this.numeroEntreprise = right.numeroEntreprise;
 		this.nomContact = right.nomContact;
+		this.numeroIDE = right.numeroIDE;
 		this.comptesBancaires = right.comptesBancaires;
 
 		if (parts != null && parts.contains(PartPM.ADRESSES)) {
@@ -141,6 +146,13 @@ public class PersonneMoraleImpl implements PersonneMorale, Serializable {
 		if (parts != null && parts.contains(PartPM.MANDATS)) {
 			this.mandats = right.mandats;
 		}
+	}
+
+	private static String buildNumeroIDE(String categorieIDE, Long numero) {
+		if (StringUtils.isNotBlank(categorieIDE) && numero != null) {
+			return String.format("%s%d", StringUtils.trim(categorieIDE), numero);
+		}
+		return null;
 	}
 	
 	@Override
@@ -411,6 +423,11 @@ public class PersonneMoraleImpl implements PersonneMorale, Serializable {
 	@Override
 	public List<Mandat> getMandats() {
 		return mandats;
+	}
+
+	@Override
+	public String getNumeroIDE() {
+		return numeroIDE;
 	}
 
 	private List<Mandat> initMandats(List<ch.vd.registre.pm.model.Mandat> targetMandats) {

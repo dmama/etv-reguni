@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.entreprise;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -73,9 +74,9 @@ public class HostPersonneMoraleServiceImpl implements HostPersonneMoraleService 
 			entrepriseView.setRegimesFiscauxVD(getRegimesFiscaux(pm.getRegimesVD()));
 			entrepriseView.setRegimesFiscauxCH(getRegimesFiscaux(pm.getRegimesCH()));
 			entrepriseView.setEtats(getEtatsPM(pm.getEtats()));
-
-			// TODO IDE placer les numéros IDE associés à la PM dans la vue
-//			entrepriseView.setNumeroIDE(???);
+			if (pm.getNumeroIDE() != null) {
+				entrepriseView.setNumerosIDE(Arrays.asList(pm.getNumeroIDE()));
+			}
 		}
 
 		return entrepriseView;

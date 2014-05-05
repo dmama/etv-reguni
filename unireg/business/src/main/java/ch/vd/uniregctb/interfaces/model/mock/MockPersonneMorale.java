@@ -39,6 +39,7 @@ public class MockPersonneMorale implements PersonneMorale {
 	private String designationAbregee;
 	private RegDate dateBouclementFuture;
 	private String numeroIPMRO;
+	private String numeroIDE;
 	private Collection<AdresseEntreprise> adresses = new ArrayList<>();
 	private List<FormeJuridique> formesJuridiques = new ArrayList<>();
 	private List<CompteBancaire> comptesBancaires = new ArrayList<>();
@@ -53,14 +54,14 @@ public class MockPersonneMorale implements PersonneMorale {
 	private List<ForPM> forsFiscauxSecondaires = new ArrayList<>();
 	private List<Mandat> mandats = new ArrayList<>();
 
-	public static final MockPersonneMorale NestleSuisse = new MockPersonneMorale(27769, "Nestlé Suisse S.A.", "S.A.", "Myriam Steiner", RegDate.get(1996, 12, 18), null);
-	public static final MockPersonneMorale BCV = new MockPersonneMorale(20222, "Banque Cantonale Vaudoise", "S.A.", "Daniel Kuffer", null, null);
-	public static final MockPersonneMorale KPMG = new MockPersonneMorale(2058, "KPMG SA", "S.A.", null, RegDate.get(1901, 1, 1), null);
-	public static final MockPersonneMorale CuriaTreuhand = new MockPersonneMorale(21038, "Curia Treuhand AG", "S.A.", null, RegDate.get(1901, 1, 1), null);
-	public static final MockPersonneMorale JalHolding = new MockPersonneMorale(1314, "JAL HOLDING", "Jal holding S.A.", null, "en liquidation", "S.A.", "R. Borgo", RegDate.get(1975, 12, 24), null);
-	public static final MockPersonneMorale EvianRussie = new MockPersonneMorale(7777, "Evian Water Russia", "Distributor (Evian Water)", "LLC PepsiCo Holdings", "Free Economic Zone Sherrizone", "S.A.", "Dimitri Vokda", RegDate.get(1966, 11, 10), null);
-	public static final MockPersonneMorale BanqueCoopBale = new MockPersonneMorale(15489, "BANQUE COOP", "Bank Coop AG (Banque Coop SA)", "(Banca Coop SA)", "(Bank Coop Ltd)", "S.A.", "H. Roller", null, null);
-	public static final MockPersonneMorale KhatAnstalt = new MockPersonneMorale(13433, "KHAT ANSTALT", "Khat Anstalt", null, null, "S.A.", null, null, null);
+	public static final MockPersonneMorale NestleSuisse = new MockPersonneMorale(27769, "Nestlé Suisse S.A.", "S.A.", "Myriam Steiner", "CHE10123723", RegDate.get(1996, 12, 18), null);
+	public static final MockPersonneMorale BCV = new MockPersonneMorale(20222, "Banque Cantonale Vaudoise", "S.A.", "Daniel Kuffer", "CHE105934376", null, null);
+	public static final MockPersonneMorale KPMG = new MockPersonneMorale(2058, "KPMG SA", "S.A.", null, "CHE269292664", RegDate.get(1901, 1, 1), null);
+	public static final MockPersonneMorale CuriaTreuhand = new MockPersonneMorale(21038, "Curia Treuhand AG", "S.A.", null, "CHE107060819", RegDate.get(1901, 1, 1), null);
+	public static final MockPersonneMorale JalHolding = new MockPersonneMorale(1314, "JAL HOLDING", "Jal holding S.A.", null, "en liquidation", "S.A.", "R. Borgo", "CHE102392906", RegDate.get(1975, 12, 24), null);
+	public static final MockPersonneMorale EvianRussie = new MockPersonneMorale(7777, "Evian Water Russia", "Distributor (Evian Water)", "LLC PepsiCo Holdings", "Free Economic Zone Sherrizone", "S.A.", "Dimitri Vokda", null, RegDate.get(1966, 11, 10), null);
+	public static final MockPersonneMorale BanqueCoopBale = new MockPersonneMorale(15489, "BANQUE COOP", "Bank Coop AG (Banque Coop SA)", "(Banca Coop SA)", "(Bank Coop Ltd)", "S.A.", "H. Roller", "CHE101390939", null, null);
+	public static final MockPersonneMorale KhatAnstalt = new MockPersonneMorale(13433, "KHAT ANSTALT", "Khat Anstalt", null, null, "S.A.", null, null, null, null);
 
 	static {
 		{
@@ -255,18 +256,19 @@ public class MockPersonneMorale implements PersonneMorale {
 	public MockPersonneMorale() {
 	}
 
-	public MockPersonneMorale(long numeroEntreprise, String raisonSociale, String codeFormeJuridique, String nomContact, RegDate debut, RegDate fin) {
+	public MockPersonneMorale(long numeroEntreprise, String raisonSociale, String codeFormeJuridique, String nomContact, String numeroIDE, RegDate debut, RegDate fin) {
 		this.numeroEntreprise = numeroEntreprise;
 		this.raisonSociale = raisonSociale;
 		this.raisonSociale1 = raisonSociale;
 		this.formesJuridiques.add(new MockFormeJuridique(null, null, codeFormeJuridique));
 		this.nomContact = nomContact;
+		this.numeroIDE = numeroIDE;
 		this.debut = debut;
 		this.fin = fin;
 	}
 
 	public MockPersonneMorale(long numeroEntreprise, String raisonSociale, String raisonSociale1, String raisonSociale2, String raisonSociale3, String codeFormeJuridique, String nomContact,
-	                          RegDate debut, RegDate fin) {
+	                          String numeroIDE,  RegDate debut, RegDate fin) {
 		this.numeroEntreprise = numeroEntreprise;
 		this.raisonSociale = raisonSociale;
 		this.raisonSociale1 = raisonSociale1;
@@ -274,6 +276,7 @@ public class MockPersonneMorale implements PersonneMorale {
 		this.raisonSociale3 = raisonSociale3;
 		this.formesJuridiques.add(new MockFormeJuridique(null, null, codeFormeJuridique));
 		this.nomContact = nomContact;
+		this.numeroIDE = numeroIDE;
 		this.debut = debut;
 		this.fin = fin;
 	}
@@ -282,6 +285,7 @@ public class MockPersonneMorale implements PersonneMorale {
 		this.debut = right.debut;
 		this.fin = right.fin;
 		this.nomContact = right.nomContact;
+		this.numeroIDE = right.numeroIDE;
 		this.numeroEntreprise = right.numeroEntreprise;
 		this.raisonSociale = right.raisonSociale;
 		this.telecopieContact = right.telecopieContact;
@@ -561,6 +565,11 @@ public class MockPersonneMorale implements PersonneMorale {
 	@Override
 	public List<Mandat> getMandats() {
 		return mandats;
+	}
+
+	@Override
+	public String getNumeroIDE() {
+		return numeroIDE;
 	}
 
 	@Override

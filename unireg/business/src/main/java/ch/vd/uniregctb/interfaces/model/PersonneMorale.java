@@ -146,6 +146,11 @@ public interface PersonneMorale {
 	List<Mandat> getMandats();
 
 	/**
+	 * @return le numéro IDE (genre "CHE999999996"), si connu
+	 */
+	String getNumeroIDE();
+
+	/**
 	 * Copie les parties spécifiées à partir de la PM spécifiée.
 	 *
 	 * @param pm    la personne morale sur laquelle il faut copier les parties.
