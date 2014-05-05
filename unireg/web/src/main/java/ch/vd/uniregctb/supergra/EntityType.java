@@ -13,6 +13,7 @@ public enum EntityType {
 	DelaiDeclaration(ch.vd.uniregctb.declaration.DelaiDeclaration.class, "délai de déclaration", "le délai de la déclaration", "du délai de la déclaration"),
 	RapportEntreTiers(ch.vd.uniregctb.tiers.RapportEntreTiers.class, "rapport entre tiers", "le rapport entre tiers", "du rapport en tiers"),
 	IdentificationPersonne(ch.vd.uniregctb.tiers.IdentificationPersonne.class, "identification de personne", "l'identification de personne", "de l'identification de personne"),
+	IdentificationEntreprise(ch.vd.uniregctb.tiers.IdentificationEntreprise.class, "identification d'entreprise", "l'identification d'entreprise", "de l'identification d'entreprise"),
 	Periodicite(ch.vd.uniregctb.declaration.Periodicite.class, "périodicité", "la périodicité", "de la périodicité"),
 	SituationFamille(ch.vd.uniregctb.tiers.SituationFamille.class, "situation de famille", "la situation de famille", "de la situation de famille"),
 	ModeleDocument(ch.vd.uniregctb.declaration.ModeleDocument.class, "modèle de document", "le modèle de document", "du modèle de document"),

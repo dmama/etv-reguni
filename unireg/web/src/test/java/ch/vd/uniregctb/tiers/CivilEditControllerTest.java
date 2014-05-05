@@ -10,27 +10,22 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.servlet.ModelAndView;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.common.WebTest;
-import ch.vd.uniregctb.tiers.view.TiersEditView;
+import ch.vd.uniregctb.common.WebTestSpring3;
+import ch.vd.uniregctb.tiers.view.NonHabitantCivilView;
 import ch.vd.uniregctb.type.Sexe;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 @SuppressWarnings({"JavaDoc"})
-public class CivilEditControllerTest extends WebTest {
+public class CivilEditControllerTest extends WebTestSpring3 {
 
-	private CivilEditController controller;
-
-	@Override
-	public void onSetUp() throws Exception {
-		super.onSetUp();
-		controller = getBean(CivilEditController.class, "civilEditController");
-	}
+	private static final String NH_URI = "/civil/nonhabitant/edit.do";
 
 	/**
 	 * [UNIREG-2233] Vérifie qu'il n'est pas possible de mettre un nom vide sur un non-habitant
@@ -50,33 +45,36 @@ public class CivilEditControllerTest extends WebTest {
 		{
 			request.setMethod("GET");
 			request.addParameter("id", id.toString());
+			request.setRequestURI(NH_URI);
 
-			final ModelAndView mav = controller.handleRequest(request, response);
+			final ModelAndView mav = handle(request, response);
 			assertNotNull(mav);
 
-			final TiersEditView view = (TiersEditView) mav.getModel().get("command");
+			final NonHabitantCivilView view = (NonHabitantCivilView) mav.getModel().get("data");
 			assertNotNull(view);
 		}
 
 		// essaie de modifier le nom par des espaces -> opération non-autorisée
 		{
 			request = new MockHttpServletRequest();
-			request.setSession(session); // note: le form backing object est conservé dans la session
+			request.setSession(session);
+			request.addParameter("id", id.toString());
 			request.addParameter("tiers.nom", "      ");
 			request.setMethod("POST");
+			request.setRequestURI(NH_URI);
 
-			final ModelAndView mav = controller.handleRequest(request, response);
+			final ModelAndView mav = handle(request, response);
 			assertNotNull(mav);
 
 			// vérification que l'erreur a bien été catchée et qu'on va afficher un gentil message à l'utilisateur.
-			final BeanPropertyBindingResult exception = getBindingResult(mav);
+			final BeanPropertyBindingResult exception = getBindingResult(mav, "data");
 			assertNotNull(exception);
 			assertEquals(1, exception.getErrorCount());
 
-			final List<?> errors = exception.getAllErrors();
+			final List<ObjectError> errors = exception.getAllErrors();
 			final FieldError error = (FieldError) errors.get(0);
 			assertNotNull(error);
-			assertEquals("tiers.nom", error.getField());
+			assertEquals("nom", error.getField());
 			assertEquals("error.tiers.nom.vide", error.getCode());
 		}
 	}
@@ -93,11 +91,12 @@ public class CivilEditControllerTest extends WebTest {
 		});
 
 		request.addParameter("id", Long.toString(ppId));
-		request.addParameter("tiers.nom", "Kamel");
-		request.addParameter(CivilEditController.BUTTON_SAVE, CivilEditController.BUTTON_SAVE);
+		request.addParameter("nom", "Kamel");
 		request.setMethod("POST");
-		final ModelAndView mav = controller.handleRequest(request, response);
-		final Map<?, ?> model = mav.getModel();
+		request.setRequestURI(NH_URI);
+
+		final ModelAndView mav = handle(request, response);
+		final Map<String, Object> model = mav.getModel();
 		Assert.assertNotNull(model);
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
@@ -128,12 +127,13 @@ public class CivilEditControllerTest extends WebTest {
 		final RegDate dateN = RegDate.get(1956, 11);
 
 		request.addParameter("id", Long.toString(ppId));
-		request.addParameter("tiers.nom", nom);
-		request.addParameter("tiers.dateNaissance", RegDateHelper.dateToDisplayString(dateN));
-		request.addParameter(CivilEditController.BUTTON_SAVE, CivilEditController.BUTTON_SAVE);
+		request.addParameter("nom", nom);
+		request.addParameter("dateNaissance", RegDateHelper.dateToDisplayString(dateN));
 		request.setMethod("POST");
-		final ModelAndView mav = controller.handleRequest(request, response);
-		final Map<?, ?> model = mav.getModel();
+		request.setRequestURI(NH_URI);
+
+		final ModelAndView mav = handle(request, response);
+		final Map<String, Object> model = mav.getModel();
 		Assert.assertNotNull(model);
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
@@ -161,11 +161,12 @@ public class CivilEditControllerTest extends WebTest {
 		});
 
 		request.addParameter("id", Long.toString(ppId));
-		request.addParameter("tiers.dateNaissance", "12/*/.2008");
-		request.addParameter(CivilEditController.BUTTON_SAVE, CivilEditController.BUTTON_SAVE);
+		request.addParameter("dateNaissance", "12/*/.2008");
 		request.setMethod("POST");
-		final ModelAndView mav = controller.handleRequest(request, response);
-		final Map<?, ?> model = mav.getModel();
+		request.setRequestURI(NH_URI);
+
+		final ModelAndView mav = handle(request, response);
+		final Map<String, Object> model = mav.getModel();
 		Assert.assertNotNull(model);
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
@@ -192,14 +193,13 @@ public class CivilEditControllerTest extends WebTest {
 		});
 
 		request.addParameter("id", Long.toString(ppId));
-		request.addParameter("tiers.nom", "TestKamel");
+		request.addParameter("nom", "TestKamel");
 		final RegDate dateN = RegDate.get(2008, 4, 12);
-		request.addParameter("tiers.dateNaissance", RegDateHelper.dateToDisplayString(dateN));
-		request.addParameter(CivilEditController.BUTTON_SAVE, CivilEditController.BUTTON_SAVE);
-
+		request.addParameter("dateNaissance", RegDateHelper.dateToDisplayString(dateN));
 		request.setMethod("POST");
-		controller.handleRequest(request, response);
+		request.setRequestURI(NH_URI);
 
+		handle(request, response);
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
@@ -235,11 +235,11 @@ public class CivilEditControllerTest extends WebTest {
 		});
 
 		request.addParameter("id", Long.toString(ppId));
-		request.addParameter("tiers.nom", "Kamel");
-		request.addParameter("tiers.prenom", "toto");
-		request.addParameter(CivilEditController.BUTTON_SAVE, CivilEditController.BUTTON_SAVE);
+		request.addParameter("nom", "Kamel");
+		request.addParameter("prenom", "toto");
 		request.setMethod("POST");
-		controller.handleRequest(request, response);
+		request.setRequestURI(NH_URI);
+		handle(request, response);
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override

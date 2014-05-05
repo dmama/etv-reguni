@@ -1,13 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 <unireg:setAuth var="autorisations" tiersId="${command.tiers.numero}"/>
-<c:if test="${autorisations.donneesCiviles}">
+<c:if test="${autorisations.donneesCiviles && empty param['message'] && empty param['retour']}">
 	<table border="0">
 		<tr>
 			<td>
-				<c:if test="${empty param['message'] && empty param['retour']}">
-					<unireg:raccourciModifier link="../civil/edit.do?id=${command.tiers.numero}" tooltip="Modifier la partie fiscale" display="label.bouton.modifier"/>
-				</c:if>	
+				<unireg:raccourciModifier link="../civil/${fn:toLowerCase(command.natureTiers)}/edit.do?id=${command.tiers.numero}" tooltip="Modifier la partie fiscale" display="label.bouton.modifier"/>
 			</td>
 		</tr>
 	</table>

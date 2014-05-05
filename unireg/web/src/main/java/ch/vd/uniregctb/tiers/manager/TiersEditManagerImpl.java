@@ -27,7 +27,6 @@ import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.IdentificationPersonne;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
@@ -302,22 +301,7 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 	 */
 	private void setNonHabitant(TiersEditView tiersEditView, PersonnePhysique nonHabitant) throws ServiceInfrastructureException {
 
-		IdentificationPersonneView idPersonneView = new IdentificationPersonneView();
-
-		final Set<IdentificationPersonne> ips = nonHabitant.getIdentificationsPersonnes();
-		for (IdentificationPersonne ip : ips) {
-			switch (ip.getCategorieIdentifiant()) {
-			case CH_AHV_AVS:
-				idPersonneView.setAncienNumAVS((ip.getIdentifiant()));
-				break;
-			case CH_ZAR_RCE:
-				idPersonneView.setNumRegistreEtranger((ip.getIdentifiant()));
-				break;
-			default:
-				Assert.fail("Catégorie d'identifiant inconnu :" + ip.getCategorieIdentifiant());
-			}
-		}
-
+		final IdentificationPersonneView idPersonneView = new IdentificationPersonneView(nonHabitant);
 		final Integer numeroOfsNationalite = nonHabitant.getNumeroOfsNationalite();
 		if (numeroOfsNationalite != null) {
 			tiersEditView.setLibelleOfsPaysOrigine(getServiceInfrastructureService().getPays(numeroOfsNationalite, null).getNomCourt());

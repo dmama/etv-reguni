@@ -158,9 +158,15 @@ public abstract class WebTestSpring3 extends AbstractBusinessTest {
 	/**
 	 * @return l'objet BeanPropertyBindingResult renseigné par spring suite à l'exécution d'une méthode 'onSubmit' d'un controller.
 	 */
-	protected BeanPropertyBindingResult getBindingResult(final ModelAndView mav) {
-		final BeanPropertyBindingResult exception = (BeanPropertyBindingResult) mav.getModel().get(
-				"org.springframework.validation.BindingResult.command");
-		return exception;
+	protected BeanPropertyBindingResult getBindingResult(ModelAndView mav) {
+		return getBindingResult(mav, "command");
+	}
+
+	/**
+	 * @return l'objet BeanPropertyBindingResult renseigné par spring suite à l'exécution d'une méthode 'onSubmit' d'un controller.
+	 */
+	protected BeanPropertyBindingResult getBindingResult(ModelAndView mav, String commandName) {
+		final String key = String.format("org.springframework.validation.BindingResult.%s", commandName);
+		return (BeanPropertyBindingResult) mav.getModel().get(key);
 	}
 }

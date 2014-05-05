@@ -108,7 +108,6 @@
 				<entry key="/fiscal/edit-for-debiteur.do" value-ref="fiscalEditForDebiteurController" />
 				<entry key="/adresses/edit.do" value-ref="adressesEditController" />
 				<entry key="/adresses/adresse-close.do" value-ref="closeAdressesController" />
-				<entry key="/civil/edit.do" value-ref="civilEditController" />
 				<entry key="/dossiers-apparentes/edit.do" value-ref="dossiersApparentesEditController" />
 				<entry key="/rapports-prestation/edit.do" value-ref="rapportsPrestationEditController" />
 				<entry key="/rapports-prestation/list.do" value-ref="rapportsPrestationListController" />
