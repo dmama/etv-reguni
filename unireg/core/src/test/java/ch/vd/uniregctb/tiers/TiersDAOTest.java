@@ -20,6 +20,7 @@ import org.springframework.test.annotation.ExpectedException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
@@ -1468,6 +1469,107 @@ public class TiersDAOTest extends CoreDAOTest {
 			b.append((char) ((c - '0') + 'A'));
 		}
 		return b.toString();
+	}
+
+	@Test
+	public void testGetBatchAvecNumerosIDE() throws Exception {
+
+		final class Ids {
+			long ppUn;
+			long ppDeux;
+			long ppSans;
+		}
+
+		// mise en place des données
+		final Ids ids = doInNewTransaction(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+
+				final PersonnePhysique ppUn = addNonHabitant("Alphonse", "Baudet", null, Sexe.MASCULIN);
+				{
+					final IdentificationEntreprise ie = new IdentificationEntreprise();
+					ie.setNumeroIde("CHE123456789");
+					ie.setCtb(ppUn);
+					dao.addAndSave(ppUn, ie);
+				}
+
+				final PersonnePhysique ppDeux = addNonHabitant("Albertine", "Fauvert", null, Sexe.FEMININ);
+				{
+					final IdentificationEntreprise ie1 = new IdentificationEntreprise();
+					ie1.setNumeroIde("CHE789456123");
+					ppDeux.addIdentificationEntreprise(ie1);
+
+					final IdentificationEntreprise ie2 = new IdentificationEntreprise();
+					ie2.setNumeroIde("CHE456789123");
+					ppDeux.addIdentificationEntreprise(ie2);
+				}
+
+				final PersonnePhysique ppSans = addNonHabitant("Maurice", "Jacquart", null, Sexe.MASCULIN);
+
+				final Ids ids = new Ids();
+				ids.ppUn = ppUn.getNumero();
+				ids.ppDeux = ppDeux.getNumero();
+				ids.ppSans = ppSans.getNumero();
+				return ids;
+			}
+		});
+
+		// recherche en groupe et vérification des résultats
+		doInNewReadOnlyTransaction(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final List<Tiers> tiers = dao.getBatch(Arrays.asList(ids.ppUn, ids.ppDeux, ids.ppSans), Collections.<Parts>emptySet());
+				assertNotNull(tiers);
+				assertEquals(3, tiers.size());
+
+				final List<Tiers> sorted = new ArrayList<>(tiers);
+				Collections.sort(sorted, new Comparator<Tiers>() {
+					@Override
+					public int compare(Tiers o1, Tiers o2) {
+						return Long.compare(o1.getNumero(), o2.getNumero());
+					}
+				});
+
+				{
+					final Tiers t = sorted.get(0);
+					assertNotNull(t);
+					assertEquals((Long) ids.ppUn, t.getNumero());
+					assertInstanceOf(Contribuable.class, t);
+
+					final Contribuable ctb = (Contribuable) t;
+					assertNotNull(ctb.getIdentificationsEntreprise());
+					assertEquals(1, ctb.getIdentificationsEntreprise().size());
+					assertEquals("CHE123456789", ctb.getIdentificationsEntreprise().iterator().next().getNumeroIde());
+				}
+				{
+					final Tiers t = sorted.get(1);
+					assertNotNull(t);
+					assertEquals((Long) ids.ppDeux, t.getNumero());
+					assertInstanceOf(Contribuable.class, t);
+
+					final Contribuable ctb = (Contribuable) t;
+					assertNotNull(ctb.getIdentificationsEntreprise());
+					assertEquals(2, ctb.getIdentificationsEntreprise().size());
+
+					final List<String> ides = new ArrayList<>();
+					for (IdentificationEntreprise ie : ctb.getIdentificationsEntreprise()) {
+						ides.add(ie.getNumeroIde());
+					}
+					Collections.sort(ides);
+					assertEquals("CHE456789123", ides.get(0));
+					assertEquals("CHE789456123", ides.get(1));
+				}
+				{
+					final Tiers t = sorted.get(2);
+					assertNotNull(t);
+					assertEquals((Long) ids.ppSans, t.getNumero());
+					assertInstanceOf(Contribuable.class, t);
+
+					final Contribuable ctb = (Contribuable) t;
+//					assertEmpty(ctb.getIdentificationsEntreprise());
+				}
+			}
+		});
 	}
 
 	/**

@@ -63,6 +63,7 @@ public interface WebService {
 	                     @QueryParam("townOrCountry") String townOrCountry,
 	                     @QueryParam("dateOfBirth") String dateOfBirth,
 	                     @QueryParam("vn") String socialInsuranceNumber,
+	                     @QueryParam("uid") String uidNumber,
 	                     @QueryParam("taxResidenceFSOId") Integer taxResidenceFSOId,
 	                     @QueryParam("onlyActiveMainTaxResidence") @DefaultValue("false") boolean onlyActiveMainTaxResidence,
 	                     @QueryParam("partyType") Set<PartySearchType> partyTypes,

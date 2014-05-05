@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- v3.0 : version initiale dépendante de common/2 -->
 <!-- v3.1 : ajout du type naturalPersonSubtypeType utilisé dans le type partyInfoType -->
+<!-- v3.1 : ajout des numéros IDE associés au tiers dans le type partyInfoType -->
 <xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/party/party/3" elementFormDefault="qualified"
 		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:party="http://www.vd.ch/fiscalite/unireg/party/party/3"
 		   xmlns:common="http://www.vd.ch/fiscalite/unireg/common/2" xmlns:address="http://www.vd.ch/fiscalite/unireg/party/address/2"
@@ -595,6 +596,15 @@
 					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
+			<xs:element minOccurs="0" name="uidNumbers" type="party:uidNumberListType">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Dans le cas des personnes morales (et plus généralement des entités assimilables à des personnes morales), la liste des numéros IDE</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
 			<xs:element name="padding2" type="xs:int">
 				<xs:annotation>
 					<xs:appinfo>
@@ -607,6 +617,36 @@
 			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
 		</xs:sequence>
 	</xs:complexType>
+
+	<xs:complexType name="uidNumberListType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:property>
+					<jxb:javadoc>Liste de numéros IDE.</jxb:javadoc>
+				</jxb:property>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="uidNumber" type="party:uidNumberType" minOccurs="1" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Numéros IDE (sans points ni tirets).</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:simpleType name="uidNumberType">
+		<xs:annotation>
+			<xs:documentation>Valeur d'un numéro IDE d'entreprise (sans points ni tirets).</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[A-Z]{3}[0-9]{9}"/>
+		</xs:restriction>
+	</xs:simpleType>
 
 	<xs:simpleType name="partyTypeType">
 		<xs:annotation>

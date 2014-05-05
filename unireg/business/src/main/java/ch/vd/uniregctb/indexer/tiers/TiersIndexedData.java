@@ -2,7 +2,10 @@ package ch.vd.uniregctb.indexer.tiers;
 
 import java.io.Serializable;
 import java.text.ParseException;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.document.Document;
@@ -51,6 +54,7 @@ public class TiersIndexedData implements Serializable {
 	private final Boolean dansLeCanton;
 	private final Integer noOfsCommuneDomicile;
 	private final Long ancienNumeroSourcier;
+	private final List<String> numerosIDE;
 
 	public TiersIndexedData(Document doc) {
 		tiersType = getDocValue(LuceneHelper.F_DOCSUBTYPE, doc);
@@ -80,6 +84,7 @@ public class TiersIndexedData implements Serializable {
 		categorieImpotSource = getEnumValue(TiersIndexableData.CATEGORIE_DEBITEUR_IS, doc, CategorieImpotSource.class);
 		modeCommunication = getEnumValue(TiersIndexableData.MODE_COMMUNICATION, doc, ModeCommunication.class);
 		assujettissementPP = getEnumValue(TiersIndexableData.ASSUJETTISSEMENT_PP, doc, TypeAssujettissement.class);
+		numerosIDE = getList(getDocValue(TiersIndexableData.IDE, doc));
 	}
 
 	private static boolean isBlank(String value) {
@@ -229,6 +234,13 @@ public class TiersIndexedData implements Serializable {
 	}
 
 	/**
+	 * @return la liste des numéros IDE associés au tiers
+	 */
+	public List<String> getNumerosIDE() {
+		return numerosIDE;
+	}
+
+	/**
 	 * Renvoie la valeur dans le document Lucene Ou chaine vide si non trouvé Ne renvoie jamais NULL
 	 *
 	 * @param key
@@ -270,5 +282,14 @@ public class TiersIndexedData implements Serializable {
 	private static <T extends Enum<T>> T getEnumValue(String key, Document document, Class<T> clazz) {
 		final String str = document.get(key);
 		return isBlank(str) ? null : Enum.valueOf(clazz, str);
+	}
+
+	private static List<String> getList(String str) {
+		if (isBlank(str)) {
+			return Collections.emptyList();
+		}
+
+		final String[] splitted = StringUtils.split(str);
+		return Arrays.asList(splitted);
 	}
 }

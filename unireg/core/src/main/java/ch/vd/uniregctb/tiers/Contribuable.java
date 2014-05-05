@@ -34,6 +34,7 @@ public abstract class Contribuable extends Tiers {
 	private Set<SituationFamille> situationsFamille;
 	private Set<MouvementDossier> mouvementsDossier;
 	private Set<Immeuble> immeubles;
+	private Set<IdentificationEntreprise> identificationsEntreprise;
 
 	private RegDate dateLimiteExclusionEnvoiDeclarationImpot;
 
@@ -271,6 +272,12 @@ public abstract class Contribuable extends Tiers {
 		}
 		else if (!situationsFamille.equals(other.situationsFamille))
 			return false;
+		if (identificationsEntreprise == null) {
+			if (other.identificationsEntreprise != null)
+				return false;
+		}
+		else if (!identificationsEntreprise.equals(other.identificationsEntreprise))
+			return false;
 		return true;
 	}
 
@@ -306,5 +313,46 @@ public abstract class Contribuable extends Tiers {
 			date = null;
 		}
 		return date;
+	}
+
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+	@JoinColumn(name = "TIERS_ID", nullable = false)
+	@ForeignKey(name = "FK_IDE_TIERS_ID")
+	public Set<IdentificationEntreprise> getIdentificationsEntreprise() {
+		return identificationsEntreprise;
+	}
+
+	/**
+	 * @see PersonnePhysique#setIdentificationsPersonnes(java.util.Set)
+	 */
+	public void setIdentificationsEntreprise(@Nullable Set<IdentificationEntreprise> identificationsEntreprise) {
+		if (this.identificationsEntreprise == null || this.identificationsEntreprise instanceof HashSet) {
+			this.identificationsEntreprise = identificationsEntreprise;
+		}
+		else if (this.identificationsEntreprise == identificationsEntreprise) {
+			// pas de changement -> rien à faire
+		}
+		else {
+			this.identificationsEntreprise.clear();
+			if (identificationsEntreprise != null) {
+				this.identificationsEntreprise.addAll(identificationsEntreprise);
+			}
+		}
+	}
+
+	/**
+	 * Version simple du setter pour la méthode getBatch() du TiersDAO.
+	 * @param set un ensemble
+	 */
+	public void setIdentificationsEntrepriseForGetBatch(@Nullable Set<IdentificationEntreprise> set) {
+		this.identificationsEntreprise = set;
+	}
+
+	public void addIdentificationEntreprise(IdentificationEntreprise ident) {
+		if (this.identificationsEntreprise == null) {
+			this.identificationsEntreprise = new HashSet<>();
+		}
+		ident.setCtb(this);
+		this.identificationsEntreprise.add(ident);
 	}
 }

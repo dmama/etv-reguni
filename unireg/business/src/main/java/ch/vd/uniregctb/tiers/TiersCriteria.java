@@ -40,7 +40,7 @@ public class TiersCriteria implements Serializable, TiersFilter {
 		}
 	}
 
-	private static final long serialVersionUID = -932640814088778277L;
+	private static final long serialVersionUID = 4997424146812883522L;
 
 	public enum TypeRecherche {
 		CONTIENT,
@@ -235,7 +235,15 @@ public class TiersCriteria implements Serializable, TiersFilter {
 	 */
 	private Boolean tiersActif;
 
+	/**
+	 * Ancien numéro de sourcier
+	 */
 	private Long ancienNumeroSourcier;
+
+	/**
+	 * Numéro IDE assotié au tiers
+	 */
+	private String numeroIDE;
 
 	/**
 	 * @return true si aucun paramétre de recherche n'est renseigné. false
@@ -260,7 +268,8 @@ public class TiersCriteria implements Serializable, TiersFilter {
 				&& modeImposition == null
 				&& categorieDebiteurIs == null
 				&& tiersActif == null
-				&& ancienNumeroSourcier == null;
+				&& ancienNumeroSourcier == null
+				&& StringUtils.isBlank(numeroIDE);
 	}
 
 	/**
@@ -618,5 +627,13 @@ public class TiersCriteria implements Serializable, TiersFilter {
 
 	public void setAncienNumeroSourcier(Long ancienNumeroSourcier) {
 		this.ancienNumeroSourcier = ancienNumeroSourcier;
+	}
+
+	public String getNumeroIDE() {
+		return numeroIDE;
+	}
+
+	public void setNumeroIDE(String numeroIDE) {
+		this.numeroIDE = numeroIDE;
 	}
 }

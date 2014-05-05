@@ -119,6 +119,7 @@ public interface BusinessWebService {
 	 * @param townOrCountry [optionnel] nom de la localité ou du pays du tiers recherché (adresse courrier)
 	 * @param dateOfBirth [optionnel] date de naissance (peut être partielle) du tiers recherché
 	 * @param socialInsuranceNumber [optionnel] numéro AVS (à 11 ou 13 positions) du tiers recherché
+	 * @param uidNumber [optionnel] numéro IDE associé au tiers recherché
 	 * @param taxResidenceFSOId [optionnel] numéro OFS du for du tiers recherché
 	 * @param onlyActiveMainTaxResidence [optionnel] si le critère du fors est renseigné, impose une contrainte sur la présence d'un for principal actif
 	 * @param partyTypes [optionnel] ensemble des types de tiers recherchés (si vide ou <code>null</code>, tous les types seront considérés)
@@ -130,7 +131,7 @@ public interface BusinessWebService {
 	 * @throws IndexerException si une erreur est levée dans la recherche (critères vides, trop de résultats...)
 	 */
 	List<PartyInfo> searchParty(UserLogin user, @Nullable String partyNo, @Nullable String name, SearchMode nameSearchMode, @Nullable String townOrCountry,
-	                            @Nullable RegDate dateOfBirth, @Nullable String socialInsuranceNumber, @Nullable Integer taxResidenceFSOId,
+	                            @Nullable RegDate dateOfBirth, @Nullable String socialInsuranceNumber, @Nullable String uidNumber, @Nullable Integer taxResidenceFSOId,
 	                            boolean onlyActiveMainTaxResidence, @Nullable Set<PartySearchType> partyTypes, @Nullable DebtorCategory debtorCategory, @Nullable Boolean activeParty,
 	                            @Nullable Long oldWithholdingNumber) throws AccessDeniedException, IndexerException;
 

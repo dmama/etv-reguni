@@ -405,6 +405,14 @@ public class QueryConstructor {
 		}
 	}
 
+	private static void addNumeroIDE(BooleanQuery fullQuery, TiersCriteria criteria) throws IndexerException {
+
+		if (StringUtils.isNotBlank(criteria.getNumeroIDE())) {
+			final Query q = new TermQuery(new Term(TiersIndexableData.IDE, criteria.getNumeroIDE().toLowerCase()));
+			fullQuery.add(q, must);
+		}
+	}
+
 	private void addCategorieDebiteurIs(BooleanQuery fullQuery) throws IndexerException {
 
 		if (criteria.getCategorieDebiteurIs() != null) {
@@ -449,6 +457,7 @@ public class QueryConstructor {
 			addAncienNumeroSourcier(fullQuery, criteria);
 			addCategorieDebiteurIs(fullQuery);
 			addTiersActif(fullQuery, criteria);
+			addNumeroIDE(fullQuery, criteria);
 		}
 
 		addLimitation(fullQuery, criteria);

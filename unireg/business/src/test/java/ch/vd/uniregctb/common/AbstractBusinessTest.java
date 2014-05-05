@@ -49,6 +49,7 @@ import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.ForFiscalAutreElementImposable;
 import ch.vd.uniregctb.tiers.ForFiscalAutreImpot;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.IdentificationEntreprise;
 import ch.vd.uniregctb.tiers.IdentificationPersonne;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -743,4 +744,10 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
         ident.setIdentifiant(identifiant);
         return tiersDAO.addAndSave(pp, ident);
     }
+
+	protected IdentificationEntreprise addIdentificationEntreprise(Contribuable ctb, String numeroIDE) {
+		final IdentificationEntreprise ie = new IdentificationEntreprise();
+		ie.setNumeroIde(numeroIDE);
+		return tiersDAO.addAndSave(ctb, ie);
+	}
 }

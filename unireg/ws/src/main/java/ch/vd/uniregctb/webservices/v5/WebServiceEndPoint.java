@@ -376,7 +376,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 
 	@Override
 	public Response searchParty(final String user, final String partyNo, final String name, final SearchMode nameSearchMode, final String townOrCountry,
-	                            final String dateOfBirthStr, final String socialInsuranceNumber, final Integer taxResidenceFSOId,
+	                            final String dateOfBirthStr, final String socialInsuranceNumber, final String uidNumber, final Integer taxResidenceFSOId,
 	                            final boolean onlyActiveMainTaxResidence, final Set<PartySearchType> partyTypes, final DebtorCategory debtorCategory, final Boolean activeParty,
 	                            final Long oldWithholdingNumber) {
 
@@ -384,9 +384,9 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 			@Override
 			public String toString() {
 				final String partyTypesStr = Arrays.toString(partyTypes.toArray(new PartySearchType[partyTypes.size()]));
-				return String.format("searchParty{user=%s, partyNo=%s, name=%s, nameSearchMode=%s, townOrCountry=%s, dateOfBirth=%s, vn=%s, taxResidenceFSOId=%d, onlyActiveMainTaxResidence=%s, partyTypes=%s, debtorCategory=%s, activeParty=%s, oldWithholdingNumber=%d}",
+				return String.format("searchParty{user=%s, partyNo=%s, name=%s, nameSearchMode=%s, townOrCountry=%s, dateOfBirth=%s, vn=%s, uidNumber=%s, taxResidenceFSOId=%d, onlyActiveMainTaxResidence=%s, partyTypes=%s, debtorCategory=%s, activeParty=%s, oldWithholdingNumber=%d}",
 				                     WebServiceHelper.enquote(user), WebServiceHelper.enquote(partyNo), WebServiceHelper.enquote(name), nameSearchMode, WebServiceHelper.enquote(townOrCountry),
-				                     WebServiceHelper.enquote(dateOfBirthStr), WebServiceHelper.enquote(socialInsuranceNumber), taxResidenceFSOId,
+				                     WebServiceHelper.enquote(dateOfBirthStr), WebServiceHelper.enquote(socialInsuranceNumber), WebServiceHelper.enquote(uidNumber), taxResidenceFSOId,
 				                     onlyActiveMainTaxResidence, partyTypesStr, debtorCategory, activeParty, oldWithholdingNumber);
 			}
 		};
@@ -404,8 +404,8 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 
 				ch.vd.unireg.ws.search.party.v1.SearchResult result;
 				try {
-					final List<PartyInfo> infos = target.searchParty(userLogin, partyNo, name, nameSearchMode, townOrCountry, dateNaissance, socialInsuranceNumber, taxResidenceFSOId, onlyActiveMainTaxResidence,
-					                                                 partyTypes, debtorCategory, activeParty, oldWithholdingNumber);
+					final List<PartyInfo> infos = target.searchParty(userLogin, partyNo, name, nameSearchMode, townOrCountry, dateNaissance, socialInsuranceNumber, uidNumber, taxResidenceFSOId,
+					                                                 onlyActiveMainTaxResidence, partyTypes, debtorCategory, activeParty, oldWithholdingNumber);
 					result = new ch.vd.unireg.ws.search.party.v1.SearchResult(null, infos);
 				}
 				catch (IndexerException e) {

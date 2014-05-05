@@ -10,6 +10,7 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.IdentificationEntreprise;
 import ch.vd.uniregctb.tiers.TiersService;
 
 public abstract class ContribuableIndexable<T extends Contribuable> extends TiersIndexable<T> {
@@ -32,6 +33,17 @@ public abstract class ContribuableIndexable<T extends Contribuable> extends Tier
 		}
 		else {
 			data.setTiersActif(IndexerFormatHelper.booleanToString(false));
+		}
+
+		fillIdeData(data);
+	}
+
+	protected void fillIdeData(TiersIndexableData data) {
+		final Set<IdentificationEntreprise> ides = tiers.getIdentificationsEntreprise();
+		if (ides != null && !ides.isEmpty()) {
+			for (IdentificationEntreprise ide : ides) {
+				data.addIde(ide.getNumeroIde());
+			}
 		}
 	}
 

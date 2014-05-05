@@ -407,6 +407,11 @@ public abstract class DataHelper {
 		if (i.getType() == ch.vd.unireg.xml.party.v3.PartyType.NATURAL_PERSON) {
 			i.setNaturalPersonSubtype(DataHelper.getNaturalPersonSubtype(value));
 		}
+
+		final List<String> numerosIDE = value.getNumerosIDE();
+		if (!numerosIDE.isEmpty()) {
+			i.setUidNumbers(new ch.vd.unireg.xml.party.v3.UidNumberList(numerosIDE));
+		}
 		return i;
 	}
 

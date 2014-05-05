@@ -581,7 +581,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 	@Override
 	public List<PartyInfo> searchParty(UserLogin user, @Nullable String partyNo, @Nullable String name, SearchMode nameSearchMode, @Nullable String townOrCountry,
-	                                   @Nullable RegDate dateOfBirth, @Nullable String socialInsuranceNumber, @Nullable Integer taxResidenceFSOId,
+	                                   @Nullable RegDate dateOfBirth, @Nullable String socialInsuranceNumber, @Nullable String uidNumber, @Nullable Integer taxResidenceFSOId,
 	                                   boolean onlyActiveMainTaxResidence, @Nullable Set<PartySearchType> partyTypes, @Nullable DebtorCategory debtorCategory,
 	                                   @Nullable Boolean activeParty, @Nullable Long oldWithholdingNumber) throws AccessDeniedException, IndexerException {
 		final TiersCriteria criteria = new TiersCriteria();
@@ -606,6 +606,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 			criteria.setCategorieDebiteurIs(ch.vd.uniregctb.xml.EnumHelper.xmlToCore(debtorCategory));
 			criteria.setTiersActif(activeParty);
 			criteria.setAncienNumeroSourcier(oldWithholdingNumber);
+			criteria.setNumeroIDE(uidNumber);
 		}
 
 		if (criteria.isEmpty()) {

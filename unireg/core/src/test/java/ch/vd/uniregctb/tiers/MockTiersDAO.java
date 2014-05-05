@@ -234,6 +234,11 @@ public class MockTiersDAO implements TiersDAO {
 	}
 
 	@Override
+	public IdentificationEntreprise addAndSave(Contribuable ctb, IdentificationEntreprise ident) {
+		throw new NotImplementedException();
+	}
+
+	@Override
 	public List<Long> getListeCtbModifies(Date dateDebutRech, Date dateFinRech) {
 		throw new NotImplementedException();
 	}

@@ -299,6 +299,30 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 			associate(session, identifications, tiers, getter, setter);
 		}
 
+		{
+			// on charge les identifications d'entreprises en vrac
+			final List<IdentificationEntreprise> identifications = queryObjectsByIds("from IdentificationEntreprise as a where a.ctb.id in (:ids)", ids, session);
+
+			final TiersIdGetter<IdentificationEntreprise> getter = new TiersIdGetter<IdentificationEntreprise>() {
+				@Override
+				public Long getTiersId(IdentificationEntreprise entity) {
+					return entity.getCtb().getId();
+				}
+			};
+
+			final EntitySetSetter<IdentificationEntreprise> setter = new EntitySetSetter<IdentificationEntreprise>() {
+				@Override
+				public void setEntitySet(Tiers tiers, Set<IdentificationEntreprise> set) {
+					if (tiers instanceof Contribuable) {
+						((Contribuable) tiers).setIdentificationsEntrepriseForGetBatch(set);
+					}
+				}
+			};
+
+			// on associe les identifications d'entreprises avec les tiers à la main
+			associate(session, identifications, tiers, getter, setter);
+		}
+
 		if (parts != null && parts.contains(Parts.ADRESSES)) {
 
 			// on charge toutes les adresses en vrac
@@ -1239,6 +1263,28 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 	@Override
 	public IdentificationPersonne addAndSave(PersonnePhysique pp, IdentificationPersonne ident) {
 		return addAndSave(pp, ident, IDENTIFICATION_PERSONNE_ACCESSOR);
+	}
+
+	private static final EntityAccessor<Contribuable, IdentificationEntreprise> IDENTIFICATION_ENTREPRISE_ACCESSOR = new EntityAccessor<Contribuable, IdentificationEntreprise>() {
+		@Override
+		public Collection<IdentificationEntreprise> getEntities(Contribuable ctb) {
+			return ctb.getIdentificationsEntreprise();
+		}
+
+		@Override
+		public void addEntity(Contribuable ctb, IdentificationEntreprise entity) {
+			ctb.addIdentificationEntreprise(entity);
+		}
+
+		@Override
+		public void assertSame(IdentificationEntreprise entity1, IdentificationEntreprise entity2) {
+			Assert.isSame(entity1.getNumeroIde(), entity2.getNumeroIde());
+		}
+	};
+
+	@Override
+	public IdentificationEntreprise addAndSave(Contribuable ctb, IdentificationEntreprise ident) {
+		return addAndSave(ctb, ident, IDENTIFICATION_ENTREPRISE_ACCESSOR);
 	}
 
 	@SuppressWarnings({"unchecked"})

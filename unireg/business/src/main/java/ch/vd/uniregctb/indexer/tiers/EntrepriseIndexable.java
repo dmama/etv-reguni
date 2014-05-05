@@ -59,6 +59,14 @@ public class EntrepriseIndexable extends ContribuableIndexable<Entreprise> {
 			role = "Non assujetti";
 		}
 		data.setRoleLigne2(role);
+	}
+
+	@Override
+	protected void fillIdeData(TiersIndexableData data) {
+		//
+		// on n'appelle pas la méthode de la classe parente pour ne pas prendre en compte, pour les entreprises
+		// "coquilles vides" les données autres que celles du registre des PM
+		//
 
 		// TODO IDE ajouter l'IDE
 //		data.addIde(pm.getIde());

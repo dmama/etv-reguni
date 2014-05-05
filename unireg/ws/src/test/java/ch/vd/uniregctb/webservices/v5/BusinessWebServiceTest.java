@@ -131,6 +131,7 @@ import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.DroitAcces;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.IdentificationEntreprise;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.CategorieImpotSource;
@@ -736,7 +737,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		// recherche avec le numéro
 		{
 			final List<PartyInfo> res = service.searchParty(new UserLogin(getDefaultOperateurName(), 22), Long.toString(ids.pp),
-			                                                null, SearchMode.IS_EXACTLY, null, null, null, null, false, null, null, null, null);
+			                                                null, SearchMode.IS_EXACTLY, null, null, null, null, null, false, null, null, null, null);
 
 			Assert.assertNotNull(res);
 			Assert.assertEquals(1, res.size());
@@ -757,7 +758,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		// recherche avec le numéro et une donnée bidon à côté (qui doit donc être ignorée)
 		{
 			final List<PartyInfo> res = service.searchParty(new UserLogin(getDefaultOperateurName(), 22), Long.toString(ids.pp),
-			                                                "Daboville", SearchMode.IS_EXACTLY, null, null, null, null, false, null, null, null, null);
+			                                                "Daboville", SearchMode.IS_EXACTLY, null, null, null, null, null, false, null, null, null, null);
 
 			Assert.assertNotNull(res);
 			Assert.assertEquals(1, res.size());
@@ -778,7 +779,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		// recherche sans le numéro et une donnée bidon à côté -> aucun résultat
 		{
 			final List<PartyInfo> res = service.searchParty(new UserLogin(getDefaultOperateurName(), 22), null,
-			                                                "Daboville", SearchMode.IS_EXACTLY, null, null, null, null, false, null, null, null, null);
+			                                                "Daboville", SearchMode.IS_EXACTLY, null, null, null, null, null, false, null, null, null, null);
 
 			Assert.assertNotNull(res);
 			Assert.assertEquals(0, res.size());
@@ -787,7 +788,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		// recherche par nom -> les deux viennent
 		{
 			final List<PartyInfo> res = service.searchParty(new UserLogin(getDefaultOperateurName(), 22), null,
-			                                                "Nietmochevillage", SearchMode.IS_EXACTLY, null, null, null, null, false, null, null, null, null);
+			                                                "Nietmochevillage", SearchMode.IS_EXACTLY, null, null, null, null, null, false, null, null, null, null);
 
 			Assert.assertNotNull(res);
 			Assert.assertEquals(2, res.size());
@@ -828,7 +829,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		// recherche par nom avec liste de types vide -> les deux viennent
 		{
 			final List<PartyInfo> res = service.searchParty(new UserLogin(getDefaultOperateurName(), 22), null,
-			                                                "Nietmochevillage", SearchMode.IS_EXACTLY, null, null, null, null, false, Collections.<PartySearchType>emptySet(), null, null, null);
+			                                                "Nietmochevillage", SearchMode.IS_EXACTLY, null, null, null, null, null, false, Collections.<PartySearchType>emptySet(), null, null, null);
 
 			Assert.assertNotNull(res);
 			Assert.assertEquals(2, res.size());
@@ -869,7 +870,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		// recherche par nom avec liste de types mauvaise -> aucun ne vient
 		{
 			final List<PartyInfo> res = service.searchParty(new UserLogin(getDefaultOperateurName(), 22), null,
-			                                                "Nietmochevillage", SearchMode.IS_EXACTLY, null, null, null, null, false, EnumSet.of(PartySearchType.HOUSEHOLD), null, null, null);
+			                                                "Nietmochevillage", SearchMode.IS_EXACTLY, null, null, null, null, null, false, EnumSet.of(PartySearchType.HOUSEHOLD), null, null, null);
 
 			Assert.assertNotNull(res);
 			Assert.assertEquals(0, res.size());
@@ -878,7 +879,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		// recherche par nom avec liste de types mauvaise -> aucun ne vient
 		{
 			final List<PartyInfo> res = service.searchParty(new UserLogin(getDefaultOperateurName(), 22), null,
-			                                                "Nietmochevillage", SearchMode.IS_EXACTLY, null, null, null, null, false, EnumSet.of(PartySearchType.RESIDENT_NATURAL_PERSON), null, null, null);
+			                                                "Nietmochevillage", SearchMode.IS_EXACTLY, null, null, null, null, null, false, EnumSet.of(PartySearchType.RESIDENT_NATURAL_PERSON), null, null, null);
 
 			Assert.assertNotNull(res);
 			Assert.assertEquals(0, res.size());
@@ -887,7 +888,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		// recherche par nom avec liste de types des deux -> les deux viennent
 		{
 			final List<PartyInfo> res = service.searchParty(new UserLogin(getDefaultOperateurName(), 22), null,
-			                                                "Nietmochevillage", SearchMode.IS_EXACTLY, null, null, null, null, false, EnumSet.of(PartySearchType.DEBTOR, PartySearchType.NATURAL_PERSON), null, null, null);
+			                                                "Nietmochevillage", SearchMode.IS_EXACTLY, null, null, null, null, null, false, EnumSet.of(PartySearchType.DEBTOR, PartySearchType.NATURAL_PERSON), null, null, null);
 
 			Assert.assertNotNull(res);
 			Assert.assertEquals(2, res.size());
@@ -928,7 +929,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		// recherche par nom avec liste de types d'un seul -> seul celui-là vient
 		{
 			final List<PartyInfo> res = service.searchParty(new UserLogin(getDefaultOperateurName(), 22), null,
-			                                                "Nietmochevillage", SearchMode.IS_EXACTLY, null, null, null, null, false, EnumSet.of(PartySearchType.DEBTOR), null, null, null);
+			                                                "Nietmochevillage", SearchMode.IS_EXACTLY, null, null, null, null, null, false, EnumSet.of(PartySearchType.DEBTOR), null, null, null);
 
 			Assert.assertNotNull(res);
 			Assert.assertEquals(1, res.size());
@@ -949,7 +950,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		// recherche par nom avec liste de types d'un seul -> seul celui-là vient
 		{
 			final List<PartyInfo> res = service.searchParty(new UserLogin(getDefaultOperateurName(), 22), null,
-			                                                "Nietmochevillage", SearchMode.IS_EXACTLY, null, null, null, null, false, EnumSet.of(PartySearchType.NON_RESIDENT_NATURAL_PERSON), null, null, null);
+			                                                "Nietmochevillage", SearchMode.IS_EXACTLY, null, null, null, null, null, false, EnumSet.of(PartySearchType.NON_RESIDENT_NATURAL_PERSON), null, null, null);
 
 			Assert.assertNotNull(res);
 			Assert.assertEquals(1, res.size());
@@ -965,6 +966,158 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				Assert.assertEquals(NaturalPersonSubtype.NON_RESIDENT, info.getNaturalPersonSubtype());
 				Assert.assertEquals(IndividualTaxLiabilityType.NONE, info.getIndividualTaxLiability());
 			}
+		}
+	}
+
+	@Test
+	public void testSearchPartyByNumeroIDE() throws Exception {
+
+		final class Ids {
+			int ppAvecUn;
+			int ppAvecAutre;
+			int ppSans;
+		}
+
+		final boolean onTheFly = globalTiersIndexer.isOnTheFlyIndexation();
+		globalTiersIndexer.setOnTheFlyIndexation(true);
+		final Ids ids;
+		try {
+			globalTiersIndexer.overwriteIndex();
+
+			ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+				@Override
+				public Ids doInTransaction(TransactionStatus status) {
+					final PersonnePhysique ppUn = addNonHabitant("Gérard", "AvecUn", null, Sexe.MASCULIN);
+					final IdentificationEntreprise identUn = new IdentificationEntreprise();
+					identUn.setNumeroIde("CHE123456789");
+					ppUn.addIdentificationEntreprise(identUn);
+
+					final PersonnePhysique ppAutre = addNonHabitant("Gérard", "AvecAutre", null, Sexe.MASCULIN);
+					final IdentificationEntreprise identAutre = new IdentificationEntreprise();
+					identAutre.setNumeroIde("CHE987654321");
+					ppAutre.addIdentificationEntreprise(identAutre);
+
+					final PersonnePhysique ppSans = addNonHabitant("Gérard", "Sans", null, Sexe.MASCULIN);
+
+					final Ids ids = new Ids();
+					ids.ppAvecUn = ppUn.getNumero().intValue();
+					ids.ppAvecAutre = ppAutre.getNumero().intValue();
+					ids.ppSans = ppSans.getNumero().intValue();
+					return ids;
+				}
+			});
+
+			// attente de la fin de l'indexation des deux tiers
+			globalTiersIndexer.sync();
+		}
+		finally {
+			globalTiersIndexer.setOnTheFlyIndexation(onTheFly);
+		}
+
+		// recherche sans critère d'IDE
+		{
+			final List<PartyInfo> res = service.searchParty(new UserLogin(getDefaultOperateurName(), 22), null,
+			                                                "Gérard", SearchMode.IS_EXACTLY, null, null, null, null, null, false, null, null, null, null);
+
+			Assert.assertNotNull(res);
+			Assert.assertEquals(3, res.size());
+
+			final List<PartyInfo> sortedRes = new ArrayList<>(res);
+			Collections.sort(sortedRes, new Comparator<PartyInfo>() {
+				@Override
+				public int compare(PartyInfo o1, PartyInfo o2) {
+					return o1.getNumber() - o2.getNumber();
+				}
+			});
+
+			{
+				final PartyInfo info = sortedRes.get(0);
+				Assert.assertNotNull(info);
+				Assert.assertEquals(ids.ppAvecUn, info.getNumber());
+				Assert.assertEquals("Gérard AvecUn", info.getName1());
+				Assert.assertEquals(StringUtils.EMPTY, info.getName2());
+				Assert.assertEquals(PartyType.NATURAL_PERSON, info.getType());
+				Assert.assertEquals(NaturalPersonSubtype.NON_RESIDENT, info.getNaturalPersonSubtype());
+				Assert.assertEquals(IndividualTaxLiabilityType.NONE, info.getIndividualTaxLiability());
+				Assert.assertNotNull(info.getUidNumbers());
+				Assert.assertEquals(Arrays.asList("CHE123456789"), info.getUidNumbers().getUidNumber());
+			}
+			{
+				final PartyInfo info = sortedRes.get(1);
+				Assert.assertNotNull(info);
+				Assert.assertEquals(ids.ppAvecAutre, info.getNumber());
+				Assert.assertEquals("Gérard AvecAutre", info.getName1());
+				Assert.assertEquals(StringUtils.EMPTY, info.getName2());
+				Assert.assertEquals(PartyType.NATURAL_PERSON, info.getType());
+				Assert.assertEquals(NaturalPersonSubtype.NON_RESIDENT, info.getNaturalPersonSubtype());
+				Assert.assertEquals(IndividualTaxLiabilityType.NONE, info.getIndividualTaxLiability());
+				Assert.assertNotNull(info.getUidNumbers());
+				Assert.assertEquals(Arrays.asList("CHE987654321"), info.getUidNumbers().getUidNumber());
+			}
+			{
+				final PartyInfo info = sortedRes.get(2);
+				Assert.assertNotNull(info);
+				Assert.assertEquals(ids.ppSans, info.getNumber());
+				Assert.assertEquals("Gérard Sans", info.getName1());
+				Assert.assertEquals(StringUtils.EMPTY, info.getName2());
+				Assert.assertEquals(PartyType.NATURAL_PERSON, info.getType());
+				Assert.assertEquals(NaturalPersonSubtype.NON_RESIDENT, info.getNaturalPersonSubtype());
+				Assert.assertEquals(IndividualTaxLiabilityType.NONE, info.getIndividualTaxLiability());
+				Assert.assertNull(info.getUidNumbers());
+			}
+		}
+
+		// recherche avec critère d'IDE CHE123456789 -> un résultat
+		{
+			final List<PartyInfo> res = service.searchParty(new UserLogin(getDefaultOperateurName(), 22), null,
+			                                                "Gérard", SearchMode.IS_EXACTLY, null, null, null, "CHE123456789", null, false, null, null, null, null);
+
+			Assert.assertNotNull(res);
+			Assert.assertEquals(1, res.size());
+
+			{
+				final PartyInfo info = res.get(0);
+				Assert.assertNotNull(info);
+				Assert.assertEquals(ids.ppAvecUn, info.getNumber());
+				Assert.assertEquals("Gérard AvecUn", info.getName1());
+				Assert.assertEquals(StringUtils.EMPTY, info.getName2());
+				Assert.assertEquals(PartyType.NATURAL_PERSON, info.getType());
+				Assert.assertEquals(NaturalPersonSubtype.NON_RESIDENT, info.getNaturalPersonSubtype());
+				Assert.assertEquals(IndividualTaxLiabilityType.NONE, info.getIndividualTaxLiability());
+				Assert.assertNotNull(info.getUidNumbers());
+				Assert.assertEquals(Arrays.asList("CHE123456789"), info.getUidNumbers().getUidNumber());
+			}
+		}
+
+		// recherche avec critère d'IDE CHE987654321 -> un autre résultat
+		{
+			final List<PartyInfo> res = service.searchParty(new UserLogin(getDefaultOperateurName(), 22), null,
+			                                                "Gérard", SearchMode.IS_EXACTLY, null, null, null, "CHE987654321", null, false, null, null, null, null);
+
+			Assert.assertNotNull(res);
+			Assert.assertEquals(1, res.size());
+
+			{
+				final PartyInfo info = res.get(0);
+				Assert.assertNotNull(info);
+				Assert.assertEquals(ids.ppAvecAutre, info.getNumber());
+				Assert.assertEquals("Gérard AvecAutre", info.getName1());
+				Assert.assertEquals(StringUtils.EMPTY, info.getName2());
+				Assert.assertEquals(PartyType.NATURAL_PERSON, info.getType());
+				Assert.assertEquals(NaturalPersonSubtype.NON_RESIDENT, info.getNaturalPersonSubtype());
+				Assert.assertEquals(IndividualTaxLiabilityType.NONE, info.getIndividualTaxLiability());
+				Assert.assertNotNull(info.getUidNumbers());
+				Assert.assertEquals(Arrays.asList("CHE987654321"), info.getUidNumbers().getUidNumber());
+			}
+		}
+
+		// recherche avec critère d'IDE CHE111222333 -> aucun résultat
+		{
+			final List<PartyInfo> res = service.searchParty(new UserLogin(getDefaultOperateurName(), 22), null,
+			                                                "Gérard", SearchMode.IS_EXACTLY, null, null, null, "CHE111222333", null, false, null, null, null, null);
+
+			Assert.assertNotNull(res);
+			Assert.assertEquals(0, res.size());
 		}
 	}
 
@@ -1011,7 +1164,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		// recherche par nom avec liste de types vide -> les deux viennent
 		{
 			final List<PartyInfo> res = service.searchParty(new UserLogin(getDefaultOperateurName(), 22), null,
-			                                                "Nietmochevillage", SearchMode.IS_EXACTLY, null, null, null, null, false, Collections.<PartySearchType>emptySet(), null, null, null);
+			                                                "Nietmochevillage", SearchMode.IS_EXACTLY, null, null, null, null, null, false, Collections.<PartySearchType>emptySet(), null, null, null);
 
 			Assert.assertNotNull(res);
 			Assert.assertEquals(2, res.size());

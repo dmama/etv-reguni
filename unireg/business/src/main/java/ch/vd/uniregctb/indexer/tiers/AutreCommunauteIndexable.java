@@ -34,8 +34,5 @@ public class AutreCommunauteIndexable extends ContribuableIndexable<AutreCommuna
 		data.setNom1(tiers.getNom());
 		data.setNom2(tiers.getComplementNom());
 		data.setNatureJuridique(IndexerFormatHelper.enumToString(NatureJuridique.PM));
-
-		// TODO IDE : ajouter l'IDE
-//		data.addIde(ac.getIde());
 	}
 }

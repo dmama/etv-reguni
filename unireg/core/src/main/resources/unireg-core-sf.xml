@@ -56,6 +56,7 @@
 		<value>ch.vd.uniregctb.tiers.ForFiscalAutreElementImposable</value>
 		<value>ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable</value>
 		<value>ch.vd.uniregctb.tiers.IdentificationPersonne</value>
+		<value>ch.vd.uniregctb.tiers.IdentificationEntreprise</value>
 		<value>ch.vd.uniregctb.tiers.MenageCommun</value>
 		<value>ch.vd.uniregctb.tiers.PersonnePhysique</value>
 		<value>ch.vd.uniregctb.tiers.RapportEntreTiers</value>

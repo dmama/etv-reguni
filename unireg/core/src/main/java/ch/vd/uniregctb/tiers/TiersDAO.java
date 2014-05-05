@@ -333,6 +333,14 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 	IdentificationPersonne addAndSave(PersonnePhysique pp, IdentificationPersonne ident);
 
 	/**
+	 * Ajoute un nouvel identifiant d'entreprise à un contribuable
+	 * @param ctb   un contribuable
+	 * @param ident le numéro IDE à ajouter
+	 * @return une nouvelle instance de l'identifiant avec son ID renseigné
+	 */
+	IdentificationEntreprise addAndSave(Contribuable ctb, IdentificationEntreprise ident);
+
+	/**
 	 * Retourne les numéros des contribuables modifiés entre un intervalle de temps passé en paramètre.
 	 *
 	 *
