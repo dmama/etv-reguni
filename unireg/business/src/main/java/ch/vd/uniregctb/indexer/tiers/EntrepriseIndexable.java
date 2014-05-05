@@ -59,6 +59,9 @@ public class EntrepriseIndexable extends ContribuableIndexable {
 			role = "Non assujetti";
 		}
 		data.setRoleLigne2(role);
+
+		// TODO IDE ajouter l'IDE
+//		data.addIde(pm.getIde());
 	}
 
 	private boolean isAssujettiAt(List<AssujettissementPM> list, RegDate date) {

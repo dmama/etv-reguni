@@ -14,8 +14,6 @@ import ch.vd.uniregctb.type.NatureJuridique;
  */
 public class AutreCommunauteIndexable extends ContribuableIndexable {
 
-	//private static final Logger LOGGER = Logger.getLogger(AutreCommunauteIndexable.class);
-
 	public static final String SUB_TYPE = "autrecommunaute";
 
 	public AutreCommunauteIndexable(AdresseService adresseService, TiersService tiersService, ServiceInfrastructureService serviceInfra, AutreCommunaute autreCommunaute) throws IndexerException {
@@ -38,5 +36,8 @@ public class AutreCommunauteIndexable extends ContribuableIndexable {
 		data.setNom1(ac.getNom());
 		data.setNom2(ac.getComplementNom());
 		data.setNatureJuridique(IndexerFormatHelper.enumToString(NatureJuridique.PM));
+
+		// TODO IDE : ajouter l'IDE
+//		data.addIde(ac.getIde());
 	}
 }

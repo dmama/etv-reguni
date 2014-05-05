@@ -46,6 +46,7 @@ public class TiersIndexableData extends IndexableData {
 	public static final String MODE_IMPOSITION = "S_MODE_IMPOSITION";
 	public static final String NO_SYMIC = "S_NO_SYMIC";
 	public static final String TIERS_ACTIF = "S_TIERS_ACTIF";
+	public static final String IDE = "S_IDE";
 	public static final String TOUT = "S_TOUT";
 
 	// champs de stockage (pas recherchables)
@@ -91,6 +92,7 @@ public class TiersIndexableData extends IndexableData {
 	private String tiersActif;
 	private String annule;
 	private String debiteurInactif;
+	private String ide;                     // identifiant d'entreprise [SIFISC-11689]
 
 	// champs de stockage (pas recherchables)
 	private String nom1;
@@ -145,9 +147,10 @@ public class TiersIndexableData extends IndexableData {
 		addNotAnalyzedValue(d, TiersIndexableData.TIERS_ACTIF, tiersActif);
 		addNotAnalyzedValue(d, TiersIndexableData.ANNULE, annule);
 		addNotAnalyzedValue(d, TiersIndexableData.DEBITEUR_INACTIF, debiteurInactif);
+		addAnalyzedValue(d, IDE, ide);
 
 		// on aggrège tous les valeurs utiles dans un seul champ pour une recherche de type google
-		addToutValues(d, numeros, nomRaison, autresNom, toSearchString(datesNaissance), forPrincipal, rue, npaCourrier, localiteEtPays, natureJuridique, navs11, navs13, ancienNumeroSourcier, categorieDebiteurIs, noSymic);
+		addToutValues(d, numeros, nomRaison, autresNom, toSearchString(datesNaissance), forPrincipal, rue, npaCourrier, localiteEtPays, natureJuridique, navs11, navs13, ancienNumeroSourcier, categorieDebiteurIs, noSymic, ide);
 
 		// champs de stockage (pas recherchables)
 		addStoredValue(d, TiersIndexableData.NOM1, nom1);
@@ -579,6 +582,18 @@ public class TiersIndexableData extends IndexableData {
 
 	public void setAssujettissementPP(TypeAssujettissement assujettissement) {
 		this.assujettissementPP = (assujettissement == null ? StringUtils.EMPTY : assujettissement.name());
+	}
+
+	public String getIde() {
+		return ide;
+	}
+
+	public void setIde(String ide) {
+		this.ide = ide;
+	}
+
+	public void addIde(String ide) {
+		this.ide = add(this.ide, ide);
 	}
 
 	private static String add(String left, String right) {

@@ -12,6 +12,7 @@ import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdressesFiscales;
 import ch.vd.uniregctb.common.RueEtNumero;
+import ch.vd.uniregctb.indexer.Indexable;
 import ch.vd.uniregctb.indexer.IndexableData;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.IndexerFormatHelper;
@@ -21,7 +22,7 @@ import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
-public abstract class TiersIndexable {
+public abstract class TiersIndexable implements Indexable {
 
 	private final Logger LOGGER = Logger.getLogger(TiersIndexable.class);
 
@@ -47,9 +48,9 @@ public abstract class TiersIndexable {
 
 	public abstract String getSubType();
 
-	public IndexableData getIndexableData() {
+	public final IndexableData getIndexableData() {
 
-		TiersIndexableData data = new TiersIndexableData(tiers.getNumero(), TYPE, getSubType());
+		final TiersIndexableData data = new TiersIndexableData(tiers.getNumero(), TYPE, getSubType());
 
 		fillBaseData(data);
 		fillAdresseData(data);
