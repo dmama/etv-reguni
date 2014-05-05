@@ -4,7 +4,6 @@
 
 	<bean id="complementValidator" class="ch.vd.uniregctb.complements.ComplementsValidator" >
 		<property name="ibanValidator" ref="ibanValidator" />
-		<property name="hibernateTemplate" ref="hibernateTemplate" />
 	</bean>
 
 	<bean id="complementController" class="ch.vd.uniregctb.complements.ComplementsController">

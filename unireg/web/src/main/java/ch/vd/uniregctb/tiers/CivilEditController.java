@@ -1,9 +1,6 @@
 package ch.vd.uniregctb.tiers;
 
 import javax.validation.Valid;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
@@ -20,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.DelegatingValidator;
-import ch.vd.uniregctb.common.NumeroIDEHelper;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.security.AccessDeniedException;
@@ -32,6 +29,7 @@ import ch.vd.uniregctb.tiers.manager.Autorisations;
 import ch.vd.uniregctb.tiers.validator.AutreCommunauteCivilViewValidator;
 import ch.vd.uniregctb.tiers.validator.NonHabitantCivilViewValidator;
 import ch.vd.uniregctb.tiers.view.AutreCommunauteCivilView;
+import ch.vd.uniregctb.tiers.view.IdentificationPersonneView;
 import ch.vd.uniregctb.tiers.view.NonHabitantCivilView;
 import ch.vd.uniregctb.utils.RegDateEditor;
 
@@ -49,6 +47,7 @@ public class CivilEditController {
 
 	private TiersDAO tiersDAO;
 	private TiersMapHelper tiersMapHelper;
+	private TiersService tiersService;
 	private ServiceInfrastructureService infraService;
 	private SecurityProviderInterface securityProvider;
 	private AutorisationManager autorisationManager;
@@ -63,6 +62,10 @@ public class CivilEditController {
 
 	public void setInfraService(ServiceInfrastructureService infraService) {
 		this.infraService = infraService;
+	}
+
+	public void setTiersService(TiersService tiersService) {
+		this.tiersService = tiersService;
 	}
 
 	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
@@ -142,16 +145,7 @@ public class CivilEditController {
 			ac.setFormeJuridique(view.getFormeJuridique());
 			ac.setNom(view.getNom());
 
-			final String ide = NumeroIDEHelper.normalize(view.getIde());
-			if (StringUtils.isBlank(ide)) {
-				ac.setIdentificationsEntreprise(Collections.<IdentificationEntreprise>emptySet());
-			}
-			else {
-				final IdentificationEntreprise ie = new IdentificationEntreprise();
-				ie.setNumeroIde(ide);
-				ie.setCtb(ac);
-				ac.setIdentificationsEntreprise(new HashSet<>(Arrays.<IdentificationEntreprise>asList(ie)));
-			}
+			tiersService.setIdentifiantEntreprise(ac, StringUtils.trimToNull(view.getIde()));
 		}
 		else {
 			throw new TiersNotFoundException(id);
@@ -204,7 +198,7 @@ public class CivilEditController {
 			final PersonnePhysique pp = (PersonnePhysique) tiers;
 			pp.setNom(view.getNom());
 			pp.setPrenom(view.getPrenom());
-			pp.setNumeroAssureSocial(view.getNumeroAssureSocial());
+			pp.setNumeroAssureSocial(FormatNumeroHelper.removeSpaceAndDash(view.getNumeroAssureSocial()));
 			pp.setSexe(view.getSexe());
 			pp.setDateNaissance(view.getDateNaissance());
 			pp.setCategorieEtranger(view.getCategorieEtranger());
@@ -215,6 +209,9 @@ public class CivilEditController {
 			pp.setNomPere(view.getNomPere());
 			pp.setPrenomsMere(view.getPrenomsMere());
 			pp.setNomMere(view.getNomMere());
+
+			final IdentificationPersonneView idPersonneView = view.getIdentificationPersonne();
+			tiersService.setIdentifiantsPersonne(pp, idPersonneView.getAncienNumAVS(), idPersonneView.getNumRegistreEtranger());
 		}
 		else {
 			throw new TiersNotFoundException(id);

@@ -40,6 +40,7 @@
 								<span class="jTip formInfo" title="<c:url value="/htm/nom2.htm?width=375"/>" id="tipNom2">?</span>
 							</td>
 						</tr>
+						<form:hidden path="debiteurWithoutCtb"/>
 					</c:if>
 					<tr class="<unireg:nextRowClass/>" >
 						<td width="30%"><fmt:message key="label.complement.contact" />&nbsp;:</td>

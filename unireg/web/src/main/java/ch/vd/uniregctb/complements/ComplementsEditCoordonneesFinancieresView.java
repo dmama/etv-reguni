@@ -9,6 +9,7 @@ public class ComplementsEditCoordonneesFinancieresView {
 	private long id;
 
 	// coordonnées financières
+	private String oldIban;
 	private String iban;
 	private String titulaireCompteBancaire;
 	private String adresseBicSwift;
@@ -19,6 +20,7 @@ public class ComplementsEditCoordonneesFinancieresView {
 	public ComplementsEditCoordonneesFinancieresView(Tiers tiers) {
 		initReadOnlyData(tiers);
 
+		this.oldIban = IbanHelper.normalize(tiers.getNumeroCompteBancaire());
 		this.iban = IbanHelper.normalize(tiers.getNumeroCompteBancaire());
 		this.titulaireCompteBancaire = tiers.getTitulaireCompteBancaire();
 		this.adresseBicSwift = tiers.getAdresseBicSwift();
@@ -42,6 +44,14 @@ public class ComplementsEditCoordonneesFinancieresView {
 
 	public void setIban(String iban) {
 		this.iban = IbanHelper.normalize(iban);
+	}
+
+	public String getOldIban() {
+		return oldIban;
+	}
+
+	public void setOldIban(String oldIban) {
+		this.oldIban = oldIban;
 	}
 
 	public String getTitulaireCompteBancaire() {

@@ -99,18 +99,14 @@
 		<property name="controllerUtils" ref="controllerUtils"/>
 	</bean>
 
-	<bean id="tiersCreateController" class="ch.vd.uniregctb.tiers.TiersCreateController" parent="abstractTiersController">
-		<property name="sessionForm" value="true" />
-		<property name="commandClass" value="ch.vd.uniregctb.tiers.view.TiersEditView" />
-		<property name="formView" value="tiers/edition/edit" />
-		<property name="tiersEditManager" ref="tiersEditManager" />
-		<property name="validator" ref="tiersEditValidator" />
+	<bean id="tersCreateController" class="ch.vd.uniregctb.tiers.TiersCreateController">
+		<property name="securityProvider" ref="securityProviderInterface"/>
+		<property name="tiersMapHelper" ref="tiersMapHelper"/>
+		<property name="tiersDAO" ref="tiersDAO"/>
+		<property name="tiersService" ref="tiersService"/>
+		<property name="ibanValidator" ref="ibanValidator"/>
 	</bean>
-	
-	<bean id="tiersEditValidator" class="ch.vd.uniregctb.tiers.validator.TiersEditValidator" >
-		<property name="validationService" ref="validationService" />
-	</bean>
-	
+
 	<bean id="tiersManager" class="ch.vd.uniregctb.tiers.manager.TiersManager">
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="adresseTiersDAO" ref="adresseTiersDAO" />

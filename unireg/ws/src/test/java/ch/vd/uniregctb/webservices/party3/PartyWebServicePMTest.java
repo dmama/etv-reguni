@@ -458,7 +458,7 @@ public class PartyWebServicePMTest extends WebserviceTest {
 		servicePM.setUp(new MockServicePM() {
 			@Override
 			protected void init() {
-				final MockPersonneMorale pm = new MockPersonneMorale(noPM, "Groland Corp", "S.A.", "Ehud Mollo", date(1996, 12, 18), null);
+				final MockPersonneMorale pm = new MockPersonneMorale(noPM, "Groland Corp", "S.A.", "Ehud Mollo", null, date(1996, 12, 18), null);
 				addCompteBancaire(pm, CompteBancaire.Format.SPECIFIQUE_CH, "1-12345-56", "La Poste");
 				addMandatCCP(pm, date(2000, 1, 1), date(2003, 12, 31), "3-24343-22", noMandataire, TypeMandataire.INDIVIDU);
 				addPM(pm);

@@ -70,6 +70,7 @@ import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.common.NationaliteHelper;
+import ch.vd.uniregctb.common.NumeroIDEHelper;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.Periodicite;
@@ -469,31 +470,66 @@ public class TiersServiceImpl implements TiersService {
         final Set<IdentificationPersonne> set = new HashSet<>(2);
 
         // numéro avs à 11 positions
-        if (StringUtils.isNotEmpty(navs11)) {
+        if (StringUtils.isNotBlank(navs11)) {
             navs11 = FormatNumeroHelper.removeSpaceAndDash(navs11);
-            final IdentificationPersonne id = new IdentificationPersonne();
-            id.setCategorieIdentifiant(CategorieIdentifiant.CH_AHV_AVS);
-            id.setPersonnePhysique(nonHabitant);
-            if (navs11.length() == 8) {
-                id.setIdentifiant(navs11.concat("000"));
-            } else {
-                id.setIdentifiant(navs11);
-            }
-            set.add(id);
+	        if (navs11.length() == 8) {
+		        navs11 = navs11.concat("000");
+	        }
+	        set.add(getOrCreateIdentifiantPersonne(nonHabitant, CategorieIdentifiant.CH_AHV_AVS, navs11));
         }
 
         // numéro du registre des étrangers
-        if (StringUtils.isNotEmpty(numRce) && !"0".equals(StringUtils.trimToEmpty(numRce))) {
-            final IdentificationPersonne id = new IdentificationPersonne();
-            id.setCategorieIdentifiant(CategorieIdentifiant.CH_ZAR_RCE);
-            id.setPersonnePhysique(nonHabitant);
-            id.setIdentifiant(numRce.trim());
-            set.add(id);
+        if (StringUtils.isNotBlank(numRce) && !"0".equals(StringUtils.trimToEmpty(numRce))) {
+	        set.add(getOrCreateIdentifiantPersonne(nonHabitant, CategorieIdentifiant.CH_ZAR_RCE, numRce.trim()));
         }
 
         // assignation des identifiants
         nonHabitant.setIdentificationsPersonnes(set);
     }
+
+	private static IdentificationPersonne getOrCreateIdentifiantPersonne(PersonnePhysique nonHabitant, CategorieIdentifiant categorie, String nouvelleValeur) {
+		final Set<IdentificationPersonne> ips = nonHabitant.getIdentificationsPersonnes();
+		if (ips != null) {
+			for (IdentificationPersonne ip : ips) {
+				if (ip.getCategorieIdentifiant() == categorie) {
+					ip.setIdentifiant(nouvelleValeur);
+					return ip;
+				}
+			}
+		}
+
+		final IdentificationPersonne newIp = new IdentificationPersonne();
+		newIp.setCategorieIdentifiant(categorie);
+		newIp.setIdentifiant(nouvelleValeur);
+		newIp.setPersonnePhysique(nonHabitant);
+		return newIp;
+	}
+
+	@Override
+	public void setIdentifiantEntreprise(Contribuable contribuable, String ide) {
+		final Set<IdentificationEntreprise> set = new HashSet<>(1);
+		final String normalizedIde = NumeroIDEHelper.normalize(ide);
+		if (StringUtils.isNotBlank(normalizedIde)) {
+			set.add(getOrCreateIdentifiantEntreprise(contribuable, normalizedIde));
+		}
+		contribuable.setIdentificationsEntreprise(set);
+	}
+
+	private static IdentificationEntreprise getOrCreateIdentifiantEntreprise(Contribuable contribuable, String ide) {
+		final Set<IdentificationEntreprise> ies = contribuable.getIdentificationsEntreprise();
+		if (ies != null) {
+			for (IdentificationEntreprise ie : ies) {
+				if (ide.equals(ie.getNumeroIde())) {
+					return ie;
+				}
+			}
+		}
+
+		final IdentificationEntreprise newIe = new IdentificationEntreprise();
+		newIe.setNumeroIde(ide);
+		newIe.setCtb(contribuable);
+		return newIe;
+	}
 
     /* (non-Javadoc)
 	 * @see ch.vd.uniregctb.tiers.TiersService#changeNHenMenage(long)

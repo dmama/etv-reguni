@@ -49,7 +49,7 @@ public class NonHabitantCivilViewValidator implements Validator {
 			else if (StringUtils.isNotBlank(ancienNumAVS)) {
 				ancienNumAVS = FormatNumeroHelper.completeAncienNumAvs(ancienNumAVS);
 
-				if (!AvsHelper.isValidAncienNumAVS(ancienNumAVS, dateNais, view.getSexe()== Sexe.MASCULIN)) {
+				if (!AvsHelper.isValidAncienNumAVS(ancienNumAVS, dateNais, view.getSexe() == Sexe.MASCULIN)) {
 					errors.rejectValue("identificationPersonne.ancienNumAVS", "error.ancienNumeroAssureSocial");
 				}
 				else {

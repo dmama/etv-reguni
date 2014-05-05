@@ -32,6 +32,7 @@
 							<form:input path="iban" cssErrorClass="input-with-errors" size ="${lengthnumcompte}" tabindex="1" maxlength="${lengthnumcompte}"/>
 							<span class="jTip formInfo" title="<c:url value="/htm/iban.htm?width=375"/>" id="tipIban">?</span>
 							<form:errors path="iban" cssClass="error"/>
+							<form:hidden path="oldIban"/>
 						</td>
 					</tr>
 					<tr class="<unireg:nextRowClass/>" >

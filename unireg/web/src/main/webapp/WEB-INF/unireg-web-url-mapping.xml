@@ -114,9 +114,6 @@
 				<entry key="/contribuable-associe/list.do" value-ref="contribuableAssocieListController" />
 				<entry key="/contribuable-associe/edit.do" value-ref="contribuableAssocieEditController" />
 
-				<!-- Tiers - edit -->
-				<entry key="/tiers/create.do" value-ref="tiersCreateController" />
-
 				<!-- LR -->
 				<entry key="/lr/list.do" value-ref="lrListController" />
 				<entry key="/lr/edit.do" value-ref="lrEditController" />

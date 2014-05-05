@@ -71,6 +71,14 @@ public interface TiersService {
     void setIdentifiantsPersonne(PersonnePhysique nonHabitant, String navs11, String numRce);
 
     /**
+     * Ré-initialise les champs IDE
+     *
+     * @param contribuable  le contribuable sur lequel changer cette valeur
+     * @param ide           le numéro IDE (potentiellement avec des points, tirets...)
+     */
+    void setIdentifiantEntreprise(Contribuable contribuable, String ide);
+
+    /**
      * Change un non Habitant (qui n'a jamais été habitant) en ménage. Méthode a utiliser qu'en cas de strict necessité
      *
      * @param numeroTiers le numéro de tiers (= numéro de contribuable de la PP non habitant)

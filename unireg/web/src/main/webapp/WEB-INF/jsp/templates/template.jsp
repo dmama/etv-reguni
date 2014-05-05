@@ -64,10 +64,10 @@
 						<li><fmt:message key="label.action.creation" />
 							<ul>
 								<authz:authorize ifAnyGranted="ROLE_CREATE_NONHAB">
-									<li><a href="<c:url value='/tiers/create.do'/>?nature=NonHabitant"><fmt:message key="title.inconnu.controle.habitants" /></a></li>
+									<li><a href="<c:url value='/tiers/nonhabitant/create.do'/>"><fmt:message key="title.inconnu.controle.habitants" /></a></li>
 								</authz:authorize>
 								<authz:authorize ifAnyGranted="ROLE_CREATE_AC">
-									<li><a href="<c:url value='/tiers/create.do'/>?nature=AutreCommunaute"><fmt:message key="title.inconnu.pm" /></a></li>
+									<li><a href="<c:url value='/tiers/autrecommunaute/create.do'/>"><fmt:message key="title.inconnu.pm" /></a></li>
 								</authz:authorize>
 								<c:if test="${false}"><!-- La fusion est désactivée -->
 								<authz:authorize ifAnyGranted="ROLE_MODIF_VD_ORD, ROLE_MODIF_VD_SOURC, ROLE_MODIF_HC_HS, ROLE_MODIF_HAB_DEBPUR, ROLE_MODIF_NONHAB_DEBPUR, ROLE_MODIF_NONHAB_INACTIF">

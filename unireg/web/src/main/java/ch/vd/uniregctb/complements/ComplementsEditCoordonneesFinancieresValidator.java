@@ -5,21 +5,16 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-import ch.vd.uniregctb.common.TiersNotFoundException;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.iban.IbanHelper;
 import ch.vd.uniregctb.iban.IbanValidationException;
 import ch.vd.uniregctb.iban.IbanValidator;
-import ch.vd.uniregctb.tiers.Tiers;
 
 public class ComplementsEditCoordonneesFinancieresValidator implements Validator {
 
 	private IbanValidator ibanValidator;
-	private HibernateTemplate hibernateTemplate;
 
-	public ComplementsEditCoordonneesFinancieresValidator(IbanValidator ibanValidator, HibernateTemplate hibernateTemplate) {
+	public ComplementsEditCoordonneesFinancieresValidator(IbanValidator ibanValidator) {
 		this.ibanValidator = ibanValidator;
-		this.hibernateTemplate = hibernateTemplate;
 	}
 
 	@Override
@@ -32,17 +27,10 @@ public class ComplementsEditCoordonneesFinancieresValidator implements Validator
 	public void validate(Object obj, Errors errors) {
 		final ComplementsEditCoordonneesFinancieresView view = (ComplementsEditCoordonneesFinancieresView) obj;
 
-		final long id = view.getId();
-		final Tiers tiers = hibernateTemplate.get(Tiers.class, id);
-		if (tiers == null) {
-			throw new TiersNotFoundException(id);
-		}
-		view.initReadOnlyData(tiers);
-
 		final String iban = view.getIban();
 		if (StringUtils.isNotBlank(iban)) {
 			//[UNIREG-1449] il ne faudrait pas bloquer la sauvegarde de la page des "compléments" si l'IBAN, inchangé, est invalide.
-			if (!IbanHelper.areSame(iban, tiers.getNumeroCompteBancaire())) {
+			if (!IbanHelper.areSame(iban, view.getOldIban())) {
 				try {
 					ibanValidator.validate(iban);
 				}
