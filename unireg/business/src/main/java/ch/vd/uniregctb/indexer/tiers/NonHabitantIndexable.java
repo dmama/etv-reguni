@@ -30,10 +30,8 @@ public class NonHabitantIndexable extends PersonnePhysiqueIndexable {
 	protected void fillBaseData(TiersIndexableData data) {
 		super.fillBaseData(data);
 
-		final PersonnePhysique pp =(PersonnePhysique) tiers;
-
 		String ancienNumAVS = null;
-		final Set<IdentificationPersonne> ident = pp.getIdentificationsPersonnes();
+		final Set<IdentificationPersonne> ident = tiers.getIdentificationsPersonnes();
 		if (ident != null) {
 			for (IdentificationPersonne idPersonne : ident) {
 				if (idPersonne.getCategorieIdentifiant() == CategorieIdentifiant.CH_AHV_AVS) {
@@ -42,16 +40,16 @@ public class NonHabitantIndexable extends PersonnePhysiqueIndexable {
 			}
 		}
 
-		data.setNomRaison(pp.getNom());
-		data.addAutresNom(pp.getPrenom());
-		data.addAutresNom(pp.getNom());
-		data.addDateNaissance(pp.getDateNaissance());
-		data.addSexe(pp.getSexe());
-		data.addNavs13(StringUtils.trimToNull(pp.getNumeroAssureSocial()));
+		data.setNomRaison(tiers.getNom());
+		data.addAutresNom(tiers.getPrenom());
+		data.addAutresNom(tiers.getNom());
+		data.addDateNaissance(tiers.getDateNaissance());
+		data.addSexe(tiers.getSexe());
+		data.addNavs13(StringUtils.trimToNull(tiers.getNumeroAssureSocial()));
 		data.addNavs11(StringUtils.trimToNull(ancienNumAVS));
-		data.addNom1(pp.getPrenom());
-		data.addNom1(pp.getNom());
-		data.setNavs13_1(pp.getNumeroAssureSocial());
-		data.setDateDeces(IndexerFormatHelper.dateToString(pp.getDateDeces(), IndexerFormatHelper.DateStringMode.STORAGE));
+		data.addNom1(tiers.getPrenom());
+		data.addNom1(tiers.getNom());
+		data.setNavs13_1(tiers.getNumeroAssureSocial());
+		data.setDateDeces(IndexerFormatHelper.dateToString(tiers.getDateDeces(), IndexerFormatHelper.DateStringMode.STORAGE));
 	}
 }

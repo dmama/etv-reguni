@@ -11,14 +11,14 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.TiersService;
 
-public class CollectiviteAdministrativeIndexable extends ContribuableIndexable {
+public class CollectiviteAdministrativeIndexable extends ContribuableIndexable<CollectiviteAdministrative> {
 
 //	private static final Logger LOGGER = Logger.getLogger(CollectiviteAdministrativeIndexable.class);
 
 	public static final String SUB_TYPE = "collectiviteadministrative";
 
-	public CollectiviteAdministrativeIndexable(AdresseService adresseService, TiersService tiersService, ServiceInfrastructureService serviceInfra, CollectiviteAdministrative collectivite) throws
-			IndexerException {
+	public CollectiviteAdministrativeIndexable(AdresseService adresseService, TiersService tiersService,
+	                                           ServiceInfrastructureService serviceInfra, CollectiviteAdministrative collectivite) throws IndexerException {
 		super(adresseService, tiersService, serviceInfra, collectivite);
 	}
 
@@ -31,8 +31,7 @@ public class CollectiviteAdministrativeIndexable extends ContribuableIndexable {
 	protected void fillBaseData(TiersIndexableData data) {
 		super.fillBaseData(data);
 
-		final CollectiviteAdministrative ca = (CollectiviteAdministrative) tiers;
-		final long noColAdm = ca.getNumeroCollectiviteAdministrative();
+		final long noColAdm = tiers.getNumeroCollectiviteAdministrative();
 		final ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative collectiviteCivile;
 		collectiviteCivile = serviceInfra.getCollectivite((int) noColAdm);
 		if (collectiviteCivile == null) {

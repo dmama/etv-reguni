@@ -27,7 +27,7 @@ import ch.vd.uniregctb.tiers.TiersService;
  *
  * @author Akram BEN AISSI <mailto:akram.ben-aissi@vd.ch>
  */
-public class MenageCommunIndexable extends AssujettissablePersonnePhysiqueIndexable {
+public class MenageCommunIndexable extends AssujettissablePersonnePhysiqueIndexable<MenageCommun> {
 
 	// private final Logger LOGGER = Logger.getLogger(MenageCommunIndexable.class);
 
@@ -65,7 +65,7 @@ public class MenageCommunIndexable extends AssujettissablePersonnePhysiqueIndexa
 		// 2. s'ils sont tous annulés, alors on trie les liens et on en prend au maximum deux
 		final Set<PersonnePhysique> personnesPhysiques;
 		final Map<PersonnePhysique, RapportEntreTiers> personnes = tiersService.getToutesPersonnesPhysiquesImpliquees(menage);
-		if (personnes != null && !personnes.isEmpty()) {
+		if (!personnes.isEmpty()) {
 			final Set<PersonnePhysique> nonAnnules = new HashSet<>(2);
 			for (Map.Entry<PersonnePhysique, RapportEntreTiers> entry : personnes.entrySet()) {
 				if (!entry.getValue().isAnnule()) {

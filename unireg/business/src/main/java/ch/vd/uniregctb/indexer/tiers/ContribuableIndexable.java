@@ -12,11 +12,11 @@ import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.TiersService;
 
-public abstract class ContribuableIndexable extends TiersIndexable {
+public abstract class ContribuableIndexable<T extends Contribuable> extends TiersIndexable<T> {
 
 	// private static final Logger LOGGER = Logger.getLogger(ContribuableIndexable.class);
 
-	public ContribuableIndexable(AdresseService adresseService, TiersService tiersService, ServiceInfrastructureService serviceInfra, Contribuable contribuable) throws IndexerException {
+	public ContribuableIndexable(AdresseService adresseService, TiersService tiersService, ServiceInfrastructureService serviceInfra, T contribuable) throws IndexerException {
 		super(adresseService, tiersService, serviceInfra, contribuable);
 	}
 

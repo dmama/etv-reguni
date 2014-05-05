@@ -22,18 +22,18 @@ import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
-public abstract class TiersIndexable implements Indexable {
+public abstract class TiersIndexable<T extends Tiers> implements Indexable {
 
 	private final Logger LOGGER = Logger.getLogger(TiersIndexable.class);
 
 	public static final String TYPE = "tiers";
 
-	protected final Tiers tiers;
+	protected final T tiers;
 	protected final TiersService tiersService;
 	protected final AdresseService adresseService;
 	protected final ServiceInfrastructureService serviceInfra;
 
-	public TiersIndexable(AdresseService adresseService, TiersService tiersService, ServiceInfrastructureService serviceInfra, Tiers tiers) throws IndexerException {
+	public TiersIndexable(AdresseService adresseService, TiersService tiersService, ServiceInfrastructureService serviceInfra, T tiers) throws IndexerException {
 		Assert.notNull(tiers);
 		Assert.notNull(adresseService);
 		this.tiers = tiers;

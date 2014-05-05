@@ -6,24 +6,12 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.metier.assujettissement.TypeAssujettissement;
 import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.MenageCommun;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersService;
 
-public abstract class AssujettissablePersonnePhysiqueIndexable extends ContribuableIndexable {
+public abstract class AssujettissablePersonnePhysiqueIndexable<T extends Contribuable> extends ContribuableIndexable<T> {
 
 	protected AssujettissablePersonnePhysiqueIndexable(AdresseService adresseService, TiersService tiersService,
-	                                                   ServiceInfrastructureService serviceInfra, MenageCommun mc) throws IndexerException {
-		this(adresseService, tiersService, serviceInfra, (Contribuable) mc);
-	}
-
-	protected AssujettissablePersonnePhysiqueIndexable(AdresseService adresseService, TiersService tiersService,
-	                                                   ServiceInfrastructureService serviceInfra, PersonnePhysique pp) throws IndexerException {
-		this(adresseService, tiersService, serviceInfra, (Contribuable) pp);
-	}
-
-	private AssujettissablePersonnePhysiqueIndexable(AdresseService adresseService, TiersService tiersService,
-	                                                 ServiceInfrastructureService serviceInfra, Contribuable contribuable) throws IndexerException {
+	                                                 ServiceInfrastructureService serviceInfra, T contribuable) throws IndexerException {
 		super(adresseService, tiersService, serviceInfra, contribuable);
 	}
 

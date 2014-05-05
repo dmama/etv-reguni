@@ -12,7 +12,7 @@ import ch.vd.uniregctb.type.NatureJuridique;
  * @author Sean Paul
  *
  */
-public class AutreCommunauteIndexable extends ContribuableIndexable {
+public class AutreCommunauteIndexable extends ContribuableIndexable<AutreCommunaute> {
 
 	public static final String SUB_TYPE = "autrecommunaute";
 
@@ -29,12 +29,10 @@ public class AutreCommunauteIndexable extends ContribuableIndexable {
 	protected void fillBaseData(TiersIndexableData data) {
 		super.fillBaseData(data);
 
-		final AutreCommunaute ac = (AutreCommunaute) tiers;
-
-		data.addNomRaison(ac.getNom());
-		data.addNomRaison(ac.getComplementNom());
-		data.setNom1(ac.getNom());
-		data.setNom2(ac.getComplementNom());
+		data.addNomRaison(tiers.getNom());
+		data.addNomRaison(tiers.getComplementNom());
+		data.setNom1(tiers.getNom());
+		data.setNom2(tiers.getComplementNom());
 		data.setNatureJuridique(IndexerFormatHelper.enumToString(NatureJuridique.PM));
 
 		// TODO IDE : ajouter l'IDE

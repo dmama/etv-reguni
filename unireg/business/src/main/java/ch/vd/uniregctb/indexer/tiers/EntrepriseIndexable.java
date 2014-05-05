@@ -19,7 +19,7 @@ import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.NatureJuridique;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
-public class EntrepriseIndexable extends ContribuableIndexable {
+public class EntrepriseIndexable extends ContribuableIndexable<Entreprise> {
 
 	public static final String SUB_TYPE = "entreprise";
 

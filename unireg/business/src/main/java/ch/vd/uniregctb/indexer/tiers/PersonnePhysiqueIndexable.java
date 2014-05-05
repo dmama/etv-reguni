@@ -8,7 +8,7 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.NatureJuridique;
 
-public abstract class PersonnePhysiqueIndexable extends AssujettissablePersonnePhysiqueIndexable {
+public abstract class PersonnePhysiqueIndexable extends AssujettissablePersonnePhysiqueIndexable<PersonnePhysique> {
 
 	public PersonnePhysiqueIndexable(AdresseService adresseService, TiersService tiersService, ServiceInfrastructureService serviceInfra, PersonnePhysique pp) throws IndexerException {
 		super(adresseService, tiersService, serviceInfra, pp);
@@ -18,8 +18,6 @@ public abstract class PersonnePhysiqueIndexable extends AssujettissablePersonneP
 	protected void fillBaseData(TiersIndexableData data) {
 		super.fillBaseData(data);
 		data.setNatureJuridique(IndexerFormatHelper.enumToString(NatureJuridique.PP));
-
-		final PersonnePhysique pp = (PersonnePhysique) tiers;
-		data.setAncienNumeroSourcier(IndexerFormatHelper.numberToString(pp.getAncienNumeroSourcier()));
+		data.setAncienNumeroSourcier(IndexerFormatHelper.numberToString(tiers.getAncienNumeroSourcier()));
 	}
 }

@@ -25,7 +25,7 @@ import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersService;
 
-public class DebiteurPrestationImposableIndexable extends TiersIndexable {
+public class DebiteurPrestationImposableIndexable extends TiersIndexable<DebiteurPrestationImposable> {
 
 	public static final String SUB_TYPE = "debiteurprestationimposable";
 
@@ -94,13 +94,11 @@ public class DebiteurPrestationImposableIndexable extends TiersIndexable {
 	protected void fillBaseData(TiersIndexableData data) {
 		super.fillBaseData(data);
 
-		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiers;
-
-		final List<String> raisonSociale = tiersService.getRaisonSociale(dpi);
+		final List<String> raisonSociale = tiersService.getRaisonSociale(tiers);
 		data.setNomRaison(concat(raisonSociale, " "));
-		data.setCategorieDebiteurIs(IndexerFormatHelper.enumToString(dpi.getCategorieImpotSource()));
-		data.setModeCommunication(dpi.getModeCommunication());
-		data.addNomRaison(dpi.getComplementNom());
+		data.setCategorieDebiteurIs(IndexerFormatHelper.enumToString(tiers.getCategorieImpotSource()));
+		data.setModeCommunication(tiers.getModeCommunication());
+		data.addNomRaison(tiers.getComplementNom());
 
 		if (ctbIndexable == null) {
 
@@ -120,7 +118,7 @@ public class DebiteurPrestationImposableIndexable extends TiersIndexable {
 			data.setNom2(ctbData.getNom2());
 		}
 
-		final ForDebiteurPrestationImposable fdpi = dpi.getDernierForDebiteur();
+		final ForDebiteurPrestationImposable fdpi = tiers.getDernierForDebiteur();
 		final boolean isActif = (fdpi != null && fdpi.isValidAt(null));
 		data.setTiersActif(IndexerFormatHelper.booleanToString(isActif));
 	}

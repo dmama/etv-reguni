@@ -36,7 +36,6 @@ public class HabitantIndexable extends PersonnePhysiqueIndexable {
 	protected void fillBaseData(TiersIndexableData data) {
 		super.fillBaseData(data);
 
-		final PersonnePhysique pp =(PersonnePhysique) tiers;
 		data.addAutresNom(individu.getPrenom());
 		data.addAutresNom(individu.getNom());
 		data.addAutresNom(individu.getNomNaissance());
@@ -50,8 +49,8 @@ public class HabitantIndexable extends PersonnePhysiqueIndexable {
 		data.addNom1(individu.getNom());
 		data.setNavs13_1(individu.getNouveauNoAVS());
 
-		if (pp.getDateDeces() != null) { //surcharge de la date de décès
-			data.setDateDeces(IndexerFormatHelper.dateToString(pp.getDateDeces(), IndexerFormatHelper.DateStringMode.STORAGE));
+		if (tiers.getDateDeces() != null) { //surcharge de la date de décès
+			data.setDateDeces(IndexerFormatHelper.dateToString(tiers.getDateDeces(), IndexerFormatHelper.DateStringMode.STORAGE));
 		}
 		else {
 			data.setDateDeces(IndexerFormatHelper.dateToString(individu.getDateDeces(), IndexerFormatHelper.DateStringMode.STORAGE));
