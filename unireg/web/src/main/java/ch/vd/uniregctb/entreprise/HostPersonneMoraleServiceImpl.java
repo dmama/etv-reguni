@@ -73,6 +73,9 @@ public class HostPersonneMoraleServiceImpl implements HostPersonneMoraleService 
 			entrepriseView.setRegimesFiscauxVD(getRegimesFiscaux(pm.getRegimesVD()));
 			entrepriseView.setRegimesFiscauxCH(getRegimesFiscaux(pm.getRegimesCH()));
 			entrepriseView.setEtats(getEtatsPM(pm.getEtats()));
+
+			// TODO IDE placer les numéros IDE associés à la PM dans la vue
+//			entrepriseView.setNumeroIDE(???);
 		}
 
 		return entrepriseView;

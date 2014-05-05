@@ -7,6 +7,14 @@
 	<unireg:nextRowClass reset="1"/>
 	<table>
 		<tr class="<unireg:nextRowClass/>" >
+			<td width="30%"><fmt:message key="label.numero.ide"/>&nbsp;:</td>
+			<td>
+				<c:forEach var="noIde" items="${command.entreprise.numerosIDE}">
+					<unireg:numIDE numeroIDE="${noIde}"/><br/>
+				</c:forEach>
+			</td>
+		</tr>
+		<tr class="<unireg:nextRowClass/>" >
 			<td width="30%"><fmt:message key="label.numero.ipmro"/>&nbsp;:</td>
 			<td><c:out value="${command.entreprise.numeroIPMRO}"/></td>
 		</tr>

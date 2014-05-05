@@ -6,6 +6,11 @@
 	<legend><span><fmt:message key="label.organisation" /></span></legend>
 	<unireg:nextRowClass reset="1"/>
 	<table>
+		<tr class="<unireg:nextRowClass/>" >
+			<td width="30%"><fmt:message key="label.numero.ide"/>&nbsp;:</td>
+			<td><span class="error">Edition du champ IDE à implémenter...</span></td>
+		</tr>
+
 		<c:set var="lengthnom" value="<%=LengthConstants.TIERS_NOM%>" scope="request" />
 		<tr class="<unireg:nextRowClass/>" >
 			<td><fmt:message key="label.nom" />&nbsp;:</td>
@@ -15,6 +20,7 @@
 				<form:errors path="tiers.nom" cssClass="error"/>
 			</td>
 		</tr>
+
 		<tr class="<unireg:nextRowClass/>" >
 			<td><fmt:message key="label.forme.juridique" />&nbsp;:</td>
 			<td>

@@ -6,6 +6,14 @@
 	<unireg:nextRowClass reset="1"/>
 	<table>
 		<tr class="<unireg:nextRowClass/>" >
+			<td width="30%"><fmt:message key="label.numero.ide"/>&nbsp;:</td>
+			<td>
+				<c:forEach var="noIde" items="${command.tiers.identificationsEntreprise}">
+					<unireg:numIDE numeroIDE="${noIde.numeroIde}"/><br/>
+				</c:forEach>
+			</td>
+		</tr>
+		<tr class="<unireg:nextRowClass/>" >
 			<td width="50%"><fmt:message key="label.nom" />&nbsp;:</td>
 			<td width="50%">${command.tiers.nom}</td>
 		</tr>

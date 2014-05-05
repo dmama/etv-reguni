@@ -25,6 +25,7 @@ public class EntrepriseView {
 	private List<RegimeFiscalView> regimesFiscauxVD;
 	private List<RegimeFiscalView> regimesFiscauxCH;
 	private List<EtatPMView> etats;
+	private List<String> numerosIDE;
 
 	public String getNumeroIPMRO() {
 		return numeroIPMRO;
@@ -144,5 +145,13 @@ public class EntrepriseView {
 
 	public void setEtats(List<EtatPMView> etats) {
 		this.etats = etats;
+	}
+
+	public List<String> getNumerosIDE() {
+		return numerosIDE;
+	}
+
+	public void setNumerosIDE(List<String> numerosIDE) {
+		this.numerosIDE = numerosIDE;
 	}
 }
