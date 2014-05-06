@@ -9,6 +9,8 @@
 	</tiles:put>
 
 	<tiles:put name="body">
+
+		<unireg:setAuth var="autorisations" tiersId=""/>
 		<form:form method="post" id="creationForm" name="createDPI" commandName="data" action="create.do?numeroCtbAss=${ctbAssocie}">
 
 			<!--onglets-->
@@ -20,120 +22,124 @@
 
 				<div id="tabContent_fiscalTab" class="editTiers">
 
-					<fieldset><legend><span><fmt:message key="label.fiscal" /></span></legend>
-						<table border="0">
-							<tr class="<unireg:nextRowClass/>" >
-								<td width="25%"><fmt:message key="label.mode.communication"/>&nbsp;:</td>
-								<td width="25%"><form:select id="modeCommunication" path="fiscal.modeCommunication" items="${modesCommunication}"/></td>
-								<td width="25%"><fmt:message key="label.categorie.impot.source"/>&nbsp;:</td>
-								<td width="25%">
-									<form:select path="fiscal.categorieImpotSource" items="${categoriesImpotSource}" />
-								</td>
-							</tr>
-							<tr class="<unireg:nextRowClass/>" >
-								<td width="25%"><fmt:message key="label.periodicite.decompte"/>&nbsp;:</td>
-								<td width="25%">
-									<form:select id="periodiciteCourante" path="fiscal.periodiciteDecompte" items="${periodicitesDecompte}"
-									             onchange="CreateDebiteur.selectPeriodeDecompte(this.options[this.selectedIndex].value);"/>
-								</td>
-								<td width="25%">
-									<div id="div_periodeDecompte_label" style="display:none;" ><fmt:message key="label.periode.decompte"/>&nbsp;:</div>
-								</td>
-								<td width="25%">
-									<div id="div_periodeDecompte_input" style="display:none;" ><form:select path="fiscal.periodeDecompte" items="${periodesDecompte}" /></div>
-								</td>
-							</tr>
+					<c:if test="${autorisations.donneesFiscales}">
+						<fieldset><legend><span><fmt:message key="label.fiscal" /></span></legend>
+							<table border="0">
+								<tr class="<unireg:nextRowClass/>" >
+									<td width="25%"><fmt:message key="label.mode.communication"/>&nbsp;:</td>
+									<td width="25%"><form:select id="modeCommunication" path="fiscal.modeCommunication" items="${modesCommunication}"/></td>
+									<td width="25%"><fmt:message key="label.categorie.impot.source"/>&nbsp;:</td>
+									<td width="25%">
+										<form:select path="fiscal.categorieImpotSource" items="${categoriesImpotSource}" />
+									</td>
+								</tr>
+								<tr class="<unireg:nextRowClass/>" >
+									<td width="25%"><fmt:message key="label.periodicite.decompte"/>&nbsp;:</td>
+									<td width="25%">
+										<form:select id="periodiciteCourante" path="fiscal.periodiciteDecompte" items="${periodicitesDecompte}"
+										             onchange="CreateDebiteur.selectPeriodeDecompte(this.options[this.selectedIndex].value);"/>
+									</td>
+									<td width="25%">
+										<div id="div_periodeDecompte_label" style="display:none;" ><fmt:message key="label.periode.decompte"/>&nbsp;:</div>
+									</td>
+									<td width="25%">
+										<div id="div_periodeDecompte_input" style="display:none;" ><form:select path="fiscal.periodeDecompte" items="${periodesDecompte}" /></div>
+									</td>
+								</tr>
 
-						</table>
-					</fieldset>
+							</table>
+						</fieldset>
 
-					<script type="text/javascript">
-						var CreateDebiteur = {
+						<script type="text/javascript">
+							var CreateDebiteur = {
 
-							selectPeriodeDecompte: function(name) {
-								if( name == 'UNIQUE' ){
-									$('#div_periodeDecompte_label').show();
-									$('#div_periodeDecompte_input').show();
-								} else {
-									$('#div_periodeDecompte_label').hide();
-									$('#div_periodeDecompte_input').hide();
+								selectPeriodeDecompte: function(name) {
+									if( name == 'UNIQUE' ){
+										$('#div_periodeDecompte_label').show();
+										$('#div_periodeDecompte_input').show();
+									} else {
+										$('#div_periodeDecompte_label').hide();
+										$('#div_periodeDecompte_input').hide();
+									}
 								}
-							}
-						};
-						CreateDebiteur.selectPeriodeDecompte('${data.fiscal.periodiciteDecompte}');
-					</script>
+							};
+							CreateDebiteur.selectPeriodeDecompte('${data.fiscal.periodiciteDecompte}');
+						</script>
+					</c:if>
 
 				</div>
 
 				<div id="tabContent_complementsTab" class="editTiers">
 
-					<fieldset>
-						<legend><span><fmt:message key="label.complement.pointCommunication" /></span></legend>
-						<unireg:nextRowClass reset="1"/>
-						<c:set var="lengthnumTel" value="<%=LengthConstants.TIERS_NUMTEL%>" scope="request" />
-						<c:set var="lengthnom" value="<%=LengthConstants.TIERS_NOM%>" scope="request" />
-						<c:set var="lengthemail" value="<%=LengthConstants.TIERS_EMAIL%>" scope="request" />
-						<table border="0">
-							<tr class="<unireg:nextRowClass/>" >
-								<td width="30%"><fmt:message key="label.complement.contact" />&nbsp;:</td>
-								<td width="70%">
-									<form:input path="complementCommunication.personneContact" id="tiers_personneContact" cssErrorClass="input-with-errors" size ="35" tabindex="3" onfocus="true" maxlength="${lengthpersonne}" />
-									<span class="jTip formInfo" title="<c:url value="/htm/personneContact.htm?width=375"/>" id="tipPersonneContact">?</span>
-									<form:errors path="complementCommunication.personneContact" cssClass="error"/>
-								</td>
-							</tr>
-							<tr class="<unireg:nextRowClass/>" >
-								<td width="30%"><fmt:message key="label.complement" />&nbsp;:</td>
-								<td width="70%">
-									<form:input path="complementCommunication.complementNom" id="tiers_complementNom" cssErrorClass="input-with-errors" size ="35" tabindex="4" maxlength="${lengthnom}" />
-									<span class="jTip formInfo" title="<c:url value="/htm/complementNom.htm?width=375"/>" id="tipComplementNom">?</span>
-									<form:errors path="complementCommunication.complementNom" cssClass="error"/>
-								</td>
-							</tr>
-							<tr class="<unireg:nextRowClass/>" >
-								<td width="30%"><fmt:message key="label.complement.numeroTelFixe" />&nbsp;:</td>
-								<td width="70%">
-									<form:input path="complementCommunication.numeroTelephonePrive" tabindex="5" id="tiers_numeroTelephonePrive" cssErrorClass="input-with-errors" size ="20" maxlength="${lengthnumTel}" />
-									<span class="jTip formInfo" title="<c:url value="/htm/numeroTelephone.htm?width=375"/>" id="telPrive">?</span>
-									<form:errors path="complementCommunication.numeroTelephonePrive" cssClass="error"/>
-								</td>
-							</tr>
-							<tr class="<unireg:nextRowClass/>" >
-								<td width="30%"><fmt:message key="label.complement.numeroTelPortable" />&nbsp;:</td>
-								<td width="70%">
-									<form:input path="complementCommunication.numeroTelephonePortable" tabindex="6" id="tiers_numeroTelephonePortable" cssErrorClass="input-with-errors" size ="20" maxlength="${lengthnumTel}" />
-									<span class="jTip formInfo" title="<c:url value="/htm/numeroTelephone.htm?width=375"/>" id="telPortable">?</span>
-									<form:errors path="complementCommunication.numeroTelephonePortable" cssClass="error"/>
-								</td>
-							</tr>
-							<tr class="<unireg:nextRowClass/>" >
-								<td width="30%"><fmt:message key="label.complement.numeroTelProfessionnel" />&nbsp;:</td>
-								<td width="70%">
-									<form:input path="complementCommunication.numeroTelephoneProfessionnel" tabindex="7" id="tiers_numeroTelephoneProfessionnel" cssErrorClass="input-with-errors" size ="20" maxlength="${lengthnumTel}" />
-									<span class="jTip formInfo" title="<c:url value="/htm/numeroTelephone.htm?width=375"/>" id="telProfessionnel">?</span>
-									<form:errors path="complementCommunication.numeroTelephoneProfessionnel" cssClass="error"/>
-								</td>
-							</tr>
-							<tr class="<unireg:nextRowClass/>" >
-								<td width="30%"><fmt:message key="label.complement.numeroFax" />&nbsp;:</td>
-								<td width="70%">
-									<form:input path="complementCommunication.numeroTelecopie" id="tiers_numeroTelecopie" tabindex="8" cssErrorClass="input-with-errors" size ="20" maxlength="${lengthnumTel}" />
-									<span class="jTip formInfo" title="<c:url value="/htm/numeroTelephone.htm?width=375"/>" id="fax">?</span>
-									<form:errors path="complementCommunication.numeroTelecopie" cssClass="error"/>
-								</td>
-							</tr>
-							<tr class="<unireg:nextRowClass/>" >
-								<td width="30%"><fmt:message key="label.complement.email" />&nbsp;:</td>
-								<td width="70%">
-									<form:input path="complementCommunication.adresseCourrierElectronique" tabindex="9" id="tiers_adresseCourrierElectronique" cssErrorClass="input-with-errors" size ="35" maxlength="${lengthpersonne}" />
-									<span class="jTip formInfo" title="<c:url value="/htm/email.htm?width=375"/>" id="email">?</span>
-									<form:errors path="complementCommunication.adresseCourrierElectronique" cssClass="error"/>
-								</td>
-							</tr>
-						</table>
-					</fieldset>
+					<c:if test="${autorisations.complementsCommunications}">
+						<fieldset>
+							<legend><span><fmt:message key="label.complement.pointCommunication" /></span></legend>
+							<unireg:nextRowClass reset="1"/>
+							<c:set var="lengthnumTel" value="<%=LengthConstants.TIERS_NUMTEL%>" scope="request" />
+							<c:set var="lengthnom" value="<%=LengthConstants.TIERS_NOM%>" scope="request" />
+							<c:set var="lengthemail" value="<%=LengthConstants.TIERS_EMAIL%>" scope="request" />
+							<table border="0">
+								<tr class="<unireg:nextRowClass/>" >
+									<td width="30%"><fmt:message key="label.complement.contact" />&nbsp;:</td>
+									<td width="70%">
+										<form:input path="complementCommunication.personneContact" id="tiers_personneContact" cssErrorClass="input-with-errors" size ="35" tabindex="3" onfocus="true" maxlength="${lengthpersonne}" />
+										<span class="jTip formInfo" title="<c:url value="/htm/personneContact.htm?width=375"/>" id="tipPersonneContact">?</span>
+										<form:errors path="complementCommunication.personneContact" cssClass="error"/>
+									</td>
+								</tr>
+								<tr class="<unireg:nextRowClass/>" >
+									<td width="30%"><fmt:message key="label.complement" />&nbsp;:</td>
+									<td width="70%">
+										<form:input path="complementCommunication.complementNom" id="tiers_complementNom" cssErrorClass="input-with-errors" size ="35" tabindex="4" maxlength="${lengthnom}" />
+										<span class="jTip formInfo" title="<c:url value="/htm/complementNom.htm?width=375"/>" id="tipComplementNom">?</span>
+										<form:errors path="complementCommunication.complementNom" cssClass="error"/>
+									</td>
+								</tr>
+								<tr class="<unireg:nextRowClass/>" >
+									<td width="30%"><fmt:message key="label.complement.numeroTelFixe" />&nbsp;:</td>
+									<td width="70%">
+										<form:input path="complementCommunication.numeroTelephonePrive" tabindex="5" id="tiers_numeroTelephonePrive" cssErrorClass="input-with-errors" size ="20" maxlength="${lengthnumTel}" />
+										<span class="jTip formInfo" title="<c:url value="/htm/numeroTelephone.htm?width=375"/>" id="telPrive">?</span>
+										<form:errors path="complementCommunication.numeroTelephonePrive" cssClass="error"/>
+									</td>
+								</tr>
+								<tr class="<unireg:nextRowClass/>" >
+									<td width="30%"><fmt:message key="label.complement.numeroTelPortable" />&nbsp;:</td>
+									<td width="70%">
+										<form:input path="complementCommunication.numeroTelephonePortable" tabindex="6" id="tiers_numeroTelephonePortable" cssErrorClass="input-with-errors" size ="20" maxlength="${lengthnumTel}" />
+										<span class="jTip formInfo" title="<c:url value="/htm/numeroTelephone.htm?width=375"/>" id="telPortable">?</span>
+										<form:errors path="complementCommunication.numeroTelephonePortable" cssClass="error"/>
+									</td>
+								</tr>
+								<tr class="<unireg:nextRowClass/>" >
+									<td width="30%"><fmt:message key="label.complement.numeroTelProfessionnel" />&nbsp;:</td>
+									<td width="70%">
+										<form:input path="complementCommunication.numeroTelephoneProfessionnel" tabindex="7" id="tiers_numeroTelephoneProfessionnel" cssErrorClass="input-with-errors" size ="20" maxlength="${lengthnumTel}" />
+										<span class="jTip formInfo" title="<c:url value="/htm/numeroTelephone.htm?width=375"/>" id="telProfessionnel">?</span>
+										<form:errors path="complementCommunication.numeroTelephoneProfessionnel" cssClass="error"/>
+									</td>
+								</tr>
+								<tr class="<unireg:nextRowClass/>" >
+									<td width="30%"><fmt:message key="label.complement.numeroFax" />&nbsp;:</td>
+									<td width="70%">
+										<form:input path="complementCommunication.numeroTelecopie" id="tiers_numeroTelecopie" tabindex="8" cssErrorClass="input-with-errors" size ="20" maxlength="${lengthnumTel}" />
+										<span class="jTip formInfo" title="<c:url value="/htm/numeroTelephone.htm?width=375"/>" id="fax">?</span>
+										<form:errors path="complementCommunication.numeroTelecopie" cssClass="error"/>
+									</td>
+								</tr>
+								<tr class="<unireg:nextRowClass/>" >
+									<td width="30%"><fmt:message key="label.complement.email" />&nbsp;:</td>
+									<td width="70%">
+										<form:input path="complementCommunication.adresseCourrierElectronique" tabindex="9" id="tiers_adresseCourrierElectronique" cssErrorClass="input-with-errors" size ="35" maxlength="${lengthpersonne}" />
+										<span class="jTip formInfo" title="<c:url value="/htm/email.htm?width=375"/>" id="email">?</span>
+										<form:errors path="complementCommunication.adresseCourrierElectronique" cssClass="error"/>
+									</td>
+								</tr>
+							</table>
+						</fieldset>
+					</c:if>
 
-					<authz:authorize ifAnyGranted="ROLE_COOR_FIN">
+					<c:if test="${autorisations.complementsCoordonneesFinancieres}">
 						<fieldset>
 							<legend><span><fmt:message key="label.complement.coordFinancieres" /></span></legend>
 							<unireg:nextRowClass reset="1"/>
@@ -169,7 +175,7 @@
 							</table>
 
 						</fieldset>
-					</authz:authorize>
+					</c:if>
 
 				</div>
 			</div>
