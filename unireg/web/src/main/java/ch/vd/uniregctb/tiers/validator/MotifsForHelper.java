@@ -82,9 +82,24 @@ public class MotifsForHelper {
 
 		case IMMEUBLE_PRIVE:
 			motifs.add(MotifFor.ACHAT_IMMOBILIER);
+			if (NatureTiers.Habitant == type.natureTiers || NatureTiers.NonHabitant == type.natureTiers) {
+				motifs.add(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT);
+			}
+			else if (NatureTiers.MenageCommun == type.natureTiers) {
+				motifs.add(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
+			}
 			break;
 
 		case ACTIVITE_INDEPENDANTE:
+			motifs.add(MotifFor.DEBUT_EXPLOITATION);
+			if (NatureTiers.Habitant == type.natureTiers || NatureTiers.NonHabitant == type.natureTiers) {
+				motifs.add(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT);
+			}
+			else if (NatureTiers.MenageCommun == type.natureTiers) {
+				motifs.add(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
+			}
+			break;
+
 		case ETABLISSEMENT_STABLE:
 		case DIRIGEANT_SOCIETE:
 		case ACTIVITE_LUCRATIVE_CAS:
@@ -164,9 +179,24 @@ public class MotifsForHelper {
 
 		case IMMEUBLE_PRIVE:
 			motifs.add(MotifFor.VENTE_IMMOBILIER);
+			if (NatureTiers.Habitant == type.natureTiers || NatureTiers.NonHabitant == type.natureTiers) {
+				motifs.add(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
+			}
+			else if (NatureTiers.MenageCommun == type.natureTiers) {
+				motifs.add(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT);
+			}
 			break;
 
 		case ACTIVITE_INDEPENDANTE:
+			motifs.add(MotifFor.FIN_EXPLOITATION);
+			if (NatureTiers.Habitant == type.natureTiers || NatureTiers.NonHabitant == type.natureTiers) {
+				motifs.add(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
+			}
+			else if (NatureTiers.MenageCommun == type.natureTiers) {
+				motifs.add(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT);
+			}
+			break;
+
 		case ETABLISSEMENT_STABLE:
 		case DIRIGEANT_SOCIETE:
 		case ACTIVITE_LUCRATIVE_CAS:
