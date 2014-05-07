@@ -316,4 +316,14 @@ public class MockTiersDAO implements TiersDAO {
 	public void evict(Object o) {
 		throw new NotImplementedException();
 	}
+
+	@Override
+	public boolean setFlagBlocageRemboursementAutomatique(long tiersId, boolean newFlag) {
+		final Tiers tiers = store.get(tiersId);
+		if (tiers != null && (tiers.getBlocageRemboursementAutomatique() == null || newFlag != tiers.getBlocageRemboursementAutomatique())) {
+			tiers.setBlocageRemboursementAutomatique(newFlag);
+			return true;
+		}
+		return false;
+	}
 }

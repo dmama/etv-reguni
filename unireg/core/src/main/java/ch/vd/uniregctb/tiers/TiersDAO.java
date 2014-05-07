@@ -359,4 +359,12 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 	 * @return la liste des identifiants de tiers personnes physiques dont le flag "parentesDirty" est vrai
 	 */
 	List<Long> getIdsParenteDirty();
+
+	/**
+	 * Assigne la valeur donnée du flag de blocage de remboursement automatique sur le tiers indiqué
+	 * @param tiersId identifiant du tiers concerné
+	 * @param newFlag nouvelle valeur du flag de blocage de remboursement automatique
+	 * @return <code>true</code> si le tiers a été modifié, <code>false</code> sinon
+	 */
+	boolean setFlagBlocageRemboursementAutomatique(long tiersId, boolean newFlag);
 }

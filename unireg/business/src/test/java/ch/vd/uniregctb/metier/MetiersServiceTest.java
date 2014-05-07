@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
@@ -57,6 +58,7 @@ import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 import ch.vd.uniregctb.validation.fors.ForFiscalValidator;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -104,7 +106,7 @@ public class MetiersServiceTest extends BusinessTest {
 				addForPrincipal(fabrice, date(2001, 1, 6), MotifFor.ARRIVEE_HC, date(2004, 8, 15), MotifFor.DEPART_HC, MockCommune.Cossonay);
 				addForPrincipal(fabrice, date(2004, 8, 16), MotifFor.DEPART_HC, MockCommune.Neuchatel);
 				addForSecondaire(fabrice, date(2005, 1, 1), MotifFor.DEBUT_EXPLOITATION, MockCommune.Renens.getNoOFS(),
-						MotifRattachement.ACTIVITE_INDEPENDANTE);
+				                 MotifRattachement.ACTIVITE_INDEPENDANTE);
 				ids.fabrice = fabrice.getNumero();
 				return null;
 			}
@@ -132,10 +134,10 @@ public class MetiersServiceTest extends BusinessTest {
 		assertEquals(1, fors.principaux.size());
 		assertEquals(1, fors.secondaires.size());
 		assertForPrincipal(date(2008, 11, 23), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, TypeAutoriteFiscale.COMMUNE_HC,
-				MockCommune.Neuchatel.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, fors.principaux.get(0));
+		                   MockCommune.Neuchatel.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, fors.principaux.get(0));
 		assertForSecondaire(date(2008, 11, 23), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
-				TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Renens.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE,
-				fors.secondaires.get(0));
+		                    TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Renens.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE,
+		                    fors.secondaires.get(0));
 	}
 
 	/**
@@ -196,14 +198,14 @@ public class MetiersServiceTest extends BusinessTest {
 			assertNotNull(fors);
 			assertEquals(1, fors.principaux.size());
 			assertForPrincipal(date(2008, 11, 23), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, TypeAutoriteFiscale.COMMUNE_HC,
-					MockCommune.Neuchatel.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, fors.principaux.get(0));
+			                   MockCommune.Neuchatel.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, fors.principaux.get(0));
 		}
 		{
 			final ForsParType fors = georgette.getForsParType(true);
 			assertNotNull(fors);
 			assertEquals(1, fors.principaux.size());
 			assertForPrincipal(date(2008, 11, 23), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, TypeAutoriteFiscale.COMMUNE_HC,
-					MockCommune.Neuchatel.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, fors.principaux.get(0));
+			                   MockCommune.Neuchatel.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, fors.principaux.get(0));
 		}
 	}
 
@@ -265,14 +267,14 @@ public class MetiersServiceTest extends BusinessTest {
 			assertNotNull(fors);
 			assertEquals(1, fors.principaux.size());
 			assertForPrincipal(date(2008, 11, 23), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, TypeAutoriteFiscale.PAYS_HS,
-					MockPays.Allemagne.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, fors.principaux.get(0));
+			                   MockPays.Allemagne.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, fors.principaux.get(0));
 		}
 		{
 			final ForsParType fors = georgette.getForsParType(true);
 			assertNotNull(fors);
 			assertEquals(1, fors.principaux.size());
 			assertForPrincipal(date(2008, 11, 23), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, TypeAutoriteFiscale.PAYS_HS,
-					MockPays.Allemagne.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, fors.principaux.get(0));
+			                   MockPays.Allemagne.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, fors.principaux.get(0));
 		}
 	}
 
@@ -305,14 +307,14 @@ public class MetiersServiceTest extends BusinessTest {
 					ids.noMenageAlfredo = menage.getNumero();
 					tiersService.addTiersToCouple(menage, alfredo, dateMariageAlfredo, null);
 
-					final ForFiscalPrincipal f = addForPrincipal(menage,dateMariageAlfredo,MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
-							date(2009,3,1),MotifFor.INDETERMINE, MockCommune.Lausanne, MotifRattachement.DOMICILE);
+					final ForFiscalPrincipal f = addForPrincipal(menage, dateMariageAlfredo, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
+					                                             date(2009, 3, 1), MotifFor.INDETERMINE, MockCommune.Lausanne, MotifRattachement.DOMICILE);
 					f.setModeImposition(ModeImposition.ORDINAIRE);
 					menage.setBlocageRemboursementAutomatique(false);
 				}
 
 				// Armando
-				final PersonnePhysique armando =  addNonHabitant("Armando", "Dunant", date(1970, 1, 1), Sexe.MASCULIN);
+				final PersonnePhysique armando = addNonHabitant("Armando", "Dunant", date(1970, 1, 1), Sexe.MASCULIN);
 
 				// ménage Armando
 				{
@@ -321,8 +323,8 @@ public class MetiersServiceTest extends BusinessTest {
 					ids.noMenageArmando = menage.getNumero();
 					tiersService.addTiersToCouple(menage, armando, dateMariageArmando, null);
 
-					final ForFiscalPrincipal f = addForPrincipal(menage,dateMariageArmando,MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
-							date(2009,3,1),MotifFor.INDETERMINE, MockCommune.Lausanne, MotifRattachement.DOMICILE);
+					final ForFiscalPrincipal f = addForPrincipal(menage, dateMariageArmando, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
+					                                             date(2009, 3, 1), MotifFor.INDETERMINE, MockCommune.Lausanne, MotifRattachement.DOMICILE);
 
 					f.setModeImposition(ModeImposition.ORDINAIRE);
 					menage.setBlocageRemboursementAutomatique(false);
@@ -396,7 +398,7 @@ public class MetiersServiceTest extends BusinessTest {
 		assertNotNull(fors);
 		assertEquals(1, fors.principaux.size());
 		assertForPrincipal(date(2008, 11, 24), MotifFor.VEUVAGE_DECES, TypeAutoriteFiscale.COMMUNE_HC, MockCommune.Neuchatel.getNoOFS(),
-				MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, fors.principaux.get(0));
+		                   MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, fors.principaux.get(0));
 	}
 
 	@Test
@@ -652,7 +654,7 @@ public class MetiersServiceTest extends BusinessTest {
 		assertNotNull(fors);
 		assertEquals(1, fors.principaux.size());
 		assertForPrincipal(date(2008, 11, 24), MotifFor.VEUVAGE_DECES, TypeAutoriteFiscale.COMMUNE_HC, MockCommune.Neuchatel.getNoOFS(),
-				MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, fors.principaux.get(0));
+		                   MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, fors.principaux.get(0));
 	}
 
 	/**
@@ -1121,7 +1123,8 @@ public class MetiersServiceTest extends BusinessTest {
 						assertNull(adresse.getDateFin());
 						assertEquals(dateMariage, adresse.getDateDebut());
 						adresse.setDateFinValidite(dateSeparation.getOneDayBefore());
-						adresse.setLocalisationSuivante(new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFS(), null)); // cette localisation ne doit pas être prise en compte puisqu'une adresse suivante existe
+						adresse.setLocalisationSuivante(new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFS(),
+						                                                 null)); // cette localisation ne doit pas être prise en compte puisqu'une adresse suivante existe
 
 						// domicile passe à Bex -> le for devra s'ouvrir là
 						individu.getAdresses().add(new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateSeparation, null));
@@ -1402,7 +1405,7 @@ public class MetiersServiceTest extends BusinessTest {
 
 				final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
 				assertForPrincipal(dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateSeparation.getOneDayBefore(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
-						MockCommune.Grandvaux, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp);
+				                   MockCommune.Grandvaux, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp);
 			}
 
 			// For ouvert sur Monsieur : à Riex, car sa nouvelle adresse de domicile est là-bas
@@ -1481,7 +1484,8 @@ public class MetiersServiceTest extends BusinessTest {
 				ids.georgette = georgette.getNumero();
 				ids.menage = menage.getNumero();
 
-				addForPrincipal(menage, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Grandvaux.getDateFinValidite(), MotifFor.FUSION_COMMUNES, MockCommune.Grandvaux);
+				addForPrincipal(menage, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Grandvaux.getDateFinValidite(), MotifFor.FUSION_COMMUNES,
+				                MockCommune.Grandvaux);
 				addForPrincipal(menage, MockCommune.Grandvaux.getDateFinValidite().getOneDayAfter(), MotifFor.FUSION_COMMUNES, MockCommune.BourgEnLavaux);
 				return null;
 			}
@@ -1506,8 +1510,9 @@ public class MetiersServiceTest extends BusinessTest {
 			assertNotNull(mc);
 
 			final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
-			assertForPrincipal(MockCommune.Grandvaux.getDateFinValidite().getOneDayAfter(), MotifFor.FUSION_COMMUNES, dateSeparation.getOneDayBefore(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
-					MockCommune.BourgEnLavaux, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp);
+			assertForPrincipal(MockCommune.Grandvaux.getDateFinValidite().getOneDayAfter(), MotifFor.FUSION_COMMUNES, dateSeparation.getOneDayBefore(),
+			                   MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
+			                   MockCommune.BourgEnLavaux, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp);
 		}
 
 		// For ouvert sur Monsieur : à Riex, car sa nouvelle adresse de domicile est là-bas
@@ -1877,7 +1882,7 @@ public class MetiersServiceTest extends BusinessTest {
 				final EnsembleTiersCouple couple = addEnsembleTiersCouple(fabrice, patricia, dateMariage, dateSeparation.getOneDayBefore());
 				final MenageCommun menage = couple.getMenage();
 				addForPrincipal(menage, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateSeparation.getOneDayBefore(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
-						MockCommune.Lausanne);
+				                MockCommune.Lausanne);
 				addForPrincipal(fabrice, dateSeparation, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Lausanne);
 				return fabrice.getNumero();
 			}
@@ -1936,7 +1941,7 @@ public class MetiersServiceTest extends BusinessTest {
 				final EnsembleTiersCouple couple = addEnsembleTiersCouple(fabrice, patricia, dateMariage, dateSeparation.getOneDayBefore());
 				final MenageCommun menage = couple.getMenage();
 				addForPrincipal(menage, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateSeparation.getOneDayBefore(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
-						MockCommune.Lausanne);
+				                MockCommune.Lausanne);
 				return fabrice.getNumero();
 			}
 		});
@@ -2099,8 +2104,8 @@ public class MetiersServiceTest extends BusinessTest {
 	}
 
 	/**
-	 * Cas UNIREG-2653 le décès fiscal d'un habitant également décédé au civil doit faire passer la personne physique en non-habitant
-	 * [SIFISC-6841] la gestion du flag habitant est désormais séparée de la gestion des fors fiscaux, le test a été mis-à-jour pour appeler tiersService.updateHabitantFlag() lorsque c'est nécessaire.
+	 * Cas UNIREG-2653 le décès fiscal d'un habitant également décédé au civil doit faire passer la personne physique en non-habitant [SIFISC-6841] la gestion du flag habitant est désormais séparée de la
+	 * gestion des fors fiscaux, le test a été mis-à-jour pour appeler tiersService.updateHabitantFlag() lorsque c'est nécessaire.
 	 */
 	@Test
 	public void testDecesFiscalHabitantDecedeDansLeCivil() throws Exception {
@@ -2151,8 +2156,8 @@ public class MetiersServiceTest extends BusinessTest {
 	}
 
 	/**
-	 * UNIREG-2653 une annulation de décès dans le civil doit repasser la personne physique en habitant
-	 * [SIFISC-6841] la gestion du flag habitant est désormais séparée de la gestion des fors fiscaux, le test a été mis-à-jour pour appeler tiersService.updateHabitantFlag() lorsque c'est nécessaire.
+	 * UNIREG-2653 une annulation de décès dans le civil doit repasser la personne physique en habitant [SIFISC-6841] la gestion du flag habitant est désormais séparée de la gestion des fors fiscaux, le
+	 * test a été mis-à-jour pour appeler tiersService.updateHabitantFlag() lorsque c'est nécessaire.
 	 */
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
@@ -2331,8 +2336,8 @@ public class MetiersServiceTest extends BusinessTest {
 	}
 
 	/**
-	 * UNIREG-2653 une annulation de décès seulement fiscale ne doit pas repasser la personne physique en habitant
-	 * [SIFISC-6841] la gestion du flag habitant est désormais séparée de la gestion des fors fiscaux, le test a été mis-à-jour pour appeler tiersService.updateHabitantFlag() lorsque c'est nécessaire.
+	 * UNIREG-2653 une annulation de décès seulement fiscale ne doit pas repasser la personne physique en habitant [SIFISC-6841] la gestion du flag habitant est désormais séparée de la gestion des fors
+	 * fiscaux, le test a été mis-à-jour pour appeler tiersService.updateHabitantFlag() lorsque c'est nécessaire.
 	 */
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
@@ -2437,7 +2442,7 @@ public class MetiersServiceTest extends BusinessTest {
 				final PersonnePhysique m = addHabitant(noIndividuMonsieur);
 				addForPrincipal(m, date(2000, 4, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
 				addForSecondaire(m, date(2004, 4, 28), MotifFor.ACHAT_IMMOBILIER, dateMariage.getOneDayBefore(), MotifFor.VENTE_IMMOBILIER, MockCommune.Echallens.getNoOFS(),
-						MotifRattachement.IMMEUBLE_PRIVE);
+				                 MotifRattachement.IMMEUBLE_PRIVE);
 
 				final PersonnePhysique mme = addHabitant(noIndividuMadame);
 				addForPrincipal(mme, date(2002, 8, 12), MotifFor.ARRIVEE_HS, MockCommune.Renens);
@@ -3250,8 +3255,7 @@ public class MetiersServiceTest extends BusinessTest {
 	}
 
 	/**
-	 * SIFISC-5323 : en cas d'annulation de séparation, pour un "partenaire" seul, sa situation de famille doit
-	 * revenir à partenariat enregistré
+	 * SIFISC-5323 : en cas d'annulation de séparation, pour un "partenaire" seul, sa situation de famille doit revenir à partenariat enregistré
 	 */
 	@Test
 	public void testAnnulationSeparationPartenariatSeul() throws Exception {
@@ -3279,14 +3283,14 @@ public class MetiersServiceTest extends BusinessTest {
 				addForPrincipal(pp, dateMajorite, MotifFor.MAJORITE, datePartenariat.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bex);
 				addForPrincipal(pp, dateSeparation.getOneDayAfter(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Bex);
 
-				EnsembleTiersCouple etc = addEnsembleTiersCouple(pp,null, datePartenariat, dateSeparation);
+				EnsembleTiersCouple etc = addEnsembleTiersCouple(pp, null, datePartenariat, dateSeparation);
 				final MenageCommun mc = etc.getMenage();
 				addForPrincipal(mc, datePartenariat, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateSeparation, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Bex);
 				SituationFamilleMenageCommun sfmc = addSituation(mc, datePartenariat, dateSeparation, 0, TarifImpotSource.NORMAL);
 				sfmc.setEtatCivil(EtatCivil.LIE_PARTENARIAT_ENREGISTRE);
 				SituationFamillePersonnePhysique sfpp = addSituation(pp, dateSeparation.getOneDayAfter(), null, 0);
 				sfpp.setEtatCivil(EtatCivil.SEPARE);
-				return new Long[] {pp.getNumero(), mc.getNumero()};
+				return new Long[]{pp.getNumero(), mc.getNumero()};
 			}
 		});
 
@@ -3315,20 +3319,20 @@ public class MetiersServiceTest extends BusinessTest {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 
 				assertEquals("Le ménage commun devrait avoir 2 situations de famille, 1 annulée et 1 active",
-						2, mc.getSituationsFamille().size());
+				             2, mc.getSituationsFamille().size());
 
 				assertEquals("La personne physique devrait avoir 1 situation de famille annulée",
-						1, pp.getSituationsFamille().size());
+				             1, pp.getSituationsFamille().size());
 
 				final SituationFamille sfmcActive = mc.getSituationFamilleActive();
-				final SituationFamille sfppActive =  pp.getSituationFamilleActive();
+				final SituationFamille sfppActive = pp.getSituationFamilleActive();
 
 				assertEquals("La situation de famille active sur le ménage commun doit etre " + EtatCivil.LIE_PARTENARIAT_ENREGISTRE,
-						EtatCivil.LIE_PARTENARIAT_ENREGISTRE,
-						sfmcActive.getEtatCivil());
+				             EtatCivil.LIE_PARTENARIAT_ENREGISTRE,
+				             sfmcActive.getEtatCivil());
 				assertNull("Il ne doit pas y avoir de situation de famille active sur la personne physique", sfppActive);
 
-				final SituationFamille sfppAnnulee =  pp.getSituationsFamille().iterator().next();
+				final SituationFamille sfppAnnulee = pp.getSituationsFamille().iterator().next();
 				assertTrue("La situation de famille doit etre annulée sur la personne physique", sfppAnnulee.isAnnule());
 
 				return null;
@@ -3701,8 +3705,7 @@ public class MetiersServiceTest extends BusinessTest {
 	}
 
 	/**
-	 * Montre que le for du couple d'anciens habitants qui se marient à l'étranger vient du for de Monsieur même en présence
-	 * d'anciennes adresses de domicile vaudoises avec GoesTo
+	 * Montre que le for du couple d'anciens habitants qui se marient à l'étranger vient du for de Monsieur même en présence d'anciennes adresses de domicile vaudoises avec GoesTo
 	 */
 	@Test
 	public void testForCoupleApresMariageContribuablesAnciensHabitantsHorsSuisse() throws Exception {
@@ -3781,6 +3784,299 @@ public class MetiersServiceTest extends BusinessTest {
 				Assert.assertEquals((Integer) MockPays.Allemagne.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
 				Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, ffp.getTypeAutoriteFiscale());
 				return null;
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-12290] NPE àa la sauvegarde dans le calcul de PIIS d'un des deux jeunes mariés (pour le calcul du flag de remboursement automatique) car le couple n'est pas encore en base
+	 * (Cas de contribuables au rôle ordinaire)
+	 */
+	@Test
+	public void testCreationNouveauCoupleOrdinaire() throws Exception {
+
+		final long noIndividuLui = 26721454712L;
+		final long noIndividuElle = 4378435L;
+		final RegDate dateMariage = date(2014, 1, 5);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				addIndividu(noIndividuLui, null, "Katayama", "Igor", Sexe.MASCULIN);
+				addIndividu(noIndividuElle, null, "Katayama", "Iko", Sexe.FEMININ);
+			}
+		});
+
+		final class Ids {
+			long lui;
+			long elle;
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique lui = addHabitant(noIndividuLui);
+				final PersonnePhysique elle = addHabitant(noIndividuElle);
+
+				addForPrincipal(lui, date(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aigle);
+				addForPrincipal(elle, date(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aigle);
+
+				lui.setNumeroCompteBancaire("CH9308440717427290198");
+				elle.setNumeroCompteBancaire("CH9308440717427290198");
+
+				final Ids ids = new Ids();
+				ids.lui = lui.getNumero();
+				ids.elle = elle.getNumero();
+				return ids;
+			}
+		});
+
+		// mariage
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique lui = (PersonnePhysique) tiersDAO.get(ids.lui);
+				final PersonnePhysique elle = (PersonnePhysique) tiersDAO.get(ids.elle);
+				metierService.marie(dateMariage, lui, elle, null, EtatCivil.MARIE, null);
+			}
+		});
+
+		// vérification du couple créé
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final PersonnePhysique lui = (PersonnePhysique) tiersDAO.get(ids.lui);
+				final PersonnePhysique elle = (PersonnePhysique) tiersDAO.get(ids.elle);
+
+				assertTrue(lui.getBlocageRemboursementAutomatique());
+				assertTrue(elle.getBlocageRemboursementAutomatique());
+
+				final ForFiscalPrincipal ffpLui = lui.getDernierForFiscalPrincipal();
+				assertNotNull(ffpLui);
+				assertEquals(dateMariage.getOneDayBefore(), ffpLui.getDateFin());
+				assertEquals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, ffpLui.getMotifFermeture());
+				assertEquals(ModeImposition.ORDINAIRE, ffpLui.getModeImposition());
+
+				final ForFiscalPrincipal ffpElle = elle.getDernierForFiscalPrincipal();
+				assertNotNull(ffpElle);
+				assertEquals(dateMariage.getOneDayBefore(), ffpElle.getDateFin());
+				assertEquals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, ffpElle.getMotifFermeture());
+				assertEquals(ModeImposition.ORDINAIRE, ffpElle.getModeImposition());
+
+				final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(lui, null);
+				assertNotNull(couple);
+				assertEquals((Long) ids.lui, couple.getPrincipal().getNumero());
+				assertEquals((Long) ids.elle, couple.getConjoint().getNumero());
+
+				final MenageCommun mc = couple.getMenage();
+				assertNotNull(mc);
+				assertFalse(mc.getBlocageRemboursementAutomatique());
+
+				final ForFiscalPrincipal ffpMc = mc.getDernierForFiscalPrincipal();
+				assertNotNull(ffpMc);
+				assertEquals(dateMariage, ffpMc.getDateDebut());
+				assertEquals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, ffpMc.getMotifOuverture());
+				assertNull(ffpMc.getDateFin());
+				assertNull(ffpMc.getMotifFermeture());
+				assertEquals(ModeImposition.ORDINAIRE, ffpMc.getModeImposition());
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-12290] NPE àa la sauvegarde dans le calcul de PIIS d'un des deux jeunes mariés (pour le calcul du flag de remboursement automatique) car le couple n'est pas encore en base
+	 * (Cas de contribuables sourciers purs)
+	 */
+	@Test
+	public void testCreationNouveauCoupleSourciers() throws Exception {
+
+		final long noIndividuLui = 26721454712L;
+		final long noIndividuElle = 4378435L;
+		final RegDate dateMariage = date(2014, 1, 5);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				addIndividu(noIndividuLui, null, "Katayama", "Igor", Sexe.MASCULIN);
+				addIndividu(noIndividuElle, null, "Katayama", "Iko", Sexe.FEMININ);
+			}
+		});
+
+		final class Ids {
+			long lui;
+			long elle;
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique lui = addHabitant(noIndividuLui);
+				final PersonnePhysique elle = addHabitant(noIndividuElle);
+
+				addForPrincipal(lui, date(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aigle, ModeImposition.SOURCE);
+				addForPrincipal(elle, date(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aigle, ModeImposition.SOURCE);
+
+				lui.setNumeroCompteBancaire("CH9308440717427290198");
+				elle.setNumeroCompteBancaire("CH9308440717427290198");
+
+				final Ids ids = new Ids();
+				ids.lui = lui.getNumero();
+				ids.elle = elle.getNumero();
+				return ids;
+			}
+		});
+
+		// mariage
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique lui = (PersonnePhysique) tiersDAO.get(ids.lui);
+				final PersonnePhysique elle = (PersonnePhysique) tiersDAO.get(ids.elle);
+				metierService.marie(dateMariage, lui, elle, null, EtatCivil.MARIE, null);
+			}
+		});
+
+		// vérification du couple créé
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final PersonnePhysique lui = (PersonnePhysique) tiersDAO.get(ids.lui);
+				final PersonnePhysique elle = (PersonnePhysique) tiersDAO.get(ids.elle);
+
+				// PIIS source pure -> pas bloqué
+				assertFalse(lui.getBlocageRemboursementAutomatique());
+				assertFalse(elle.getBlocageRemboursementAutomatique());
+
+				final ForFiscalPrincipal ffpLui = lui.getDernierForFiscalPrincipal();
+				assertNotNull(ffpLui);
+				assertEquals(dateMariage.getOneDayBefore(), ffpLui.getDateFin());
+				assertEquals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, ffpLui.getMotifFermeture());
+				assertEquals(ModeImposition.SOURCE, ffpLui.getModeImposition());
+
+				final ForFiscalPrincipal ffpElle = elle.getDernierForFiscalPrincipal();
+				assertNotNull(ffpElle);
+				assertEquals(dateMariage.getOneDayBefore(), ffpElle.getDateFin());
+				assertEquals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, ffpElle.getMotifFermeture());
+				assertEquals(ModeImposition.SOURCE, ffpElle.getModeImposition());
+
+				final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(lui, null);
+				assertNotNull(couple);
+				assertEquals((Long) ids.lui, couple.getPrincipal().getNumero());
+				assertEquals((Long) ids.elle, couple.getConjoint().getNumero());
+
+				final MenageCommun mc = couple.getMenage();
+				assertNotNull(mc);
+				assertFalse(mc.getBlocageRemboursementAutomatique());
+
+				final ForFiscalPrincipal ffpMc = mc.getDernierForFiscalPrincipal();
+				assertNotNull(ffpMc);
+				assertEquals(dateMariage, ffpMc.getDateDebut());
+				assertEquals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, ffpMc.getMotifOuverture());
+				assertNull(ffpMc.getDateFin());
+				assertNull(ffpMc.getMotifFermeture());
+				assertEquals(ModeImposition.SOURCE, ffpMc.getModeImposition());
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-12290] NPE àa la sauvegarde dans le calcul de PIIS d'un des deux jeunes mariés (pour le calcul du flag de remboursement automatique) car le couple n'est pas encore en base
+	 * (Cas d'un contribuable sourcier pur alors que l'autre est au rôle ordinaire)
+	 */
+	@Test
+	public void testCreationNouveauCoupleSourcierPlusOrdinaire() throws Exception {
+
+		final long noIndividuLui = 26721454712L;
+		final long noIndividuElle = 4378435L;
+		final RegDate dateMariage = date(2014, 1, 5);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				addIndividu(noIndividuLui, null, "Katayama", "Igor", Sexe.MASCULIN);
+				addIndividu(noIndividuElle, null, "Katayama", "Iko", Sexe.FEMININ);
+			}
+		});
+
+		final class Ids {
+			long lui;
+			long elle;
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique lui = addHabitant(noIndividuLui);
+				final PersonnePhysique elle = addHabitant(noIndividuElle);
+
+				addForPrincipal(lui, date(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aigle);
+				addForPrincipal(elle, date(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aigle, ModeImposition.SOURCE);
+
+				lui.setNumeroCompteBancaire("CH9308440717427290198");
+				elle.setNumeroCompteBancaire("CH9308440717427290198");
+
+				final Ids ids = new Ids();
+				ids.lui = lui.getNumero();
+				ids.elle = elle.getNumero();
+				return ids;
+			}
+		});
+
+		// mariage
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique lui = (PersonnePhysique) tiersDAO.get(ids.lui);
+				final PersonnePhysique elle = (PersonnePhysique) tiersDAO.get(ids.elle);
+				metierService.marie(dateMariage, lui, elle, null, EtatCivil.MARIE, null);
+			}
+		});
+
+		// vérification du couple créé
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final PersonnePhysique lui = (PersonnePhysique) tiersDAO.get(ids.lui);
+				final PersonnePhysique elle = (PersonnePhysique) tiersDAO.get(ids.elle);
+
+				// Lui est à l'ordinaire -> bloqué... Elle était à la source, mais ses PIIS ne sont plus "source pure" seulement -> bloqué
+				assertTrue(lui.getBlocageRemboursementAutomatique());
+				assertTrue(elle.getBlocageRemboursementAutomatique());
+
+				final ForFiscalPrincipal ffpLui = lui.getDernierForFiscalPrincipal();
+				assertNotNull(ffpLui);
+				assertEquals(dateMariage.getOneDayBefore(), ffpLui.getDateFin());
+				assertEquals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, ffpLui.getMotifFermeture());
+				assertEquals(ModeImposition.ORDINAIRE, ffpLui.getModeImposition());
+
+				final ForFiscalPrincipal ffpElle = elle.getDernierForFiscalPrincipal();
+				assertNotNull(ffpElle);
+				assertEquals(dateMariage.getOneDayBefore(), ffpElle.getDateFin());
+				assertEquals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, ffpElle.getMotifFermeture());
+				assertEquals(ModeImposition.SOURCE, ffpElle.getModeImposition());
+
+				final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(lui, null);
+				assertNotNull(couple);
+				assertEquals((Long) ids.lui, couple.getPrincipal().getNumero());
+				assertEquals((Long) ids.elle, couple.getConjoint().getNumero());
+
+				final MenageCommun mc = couple.getMenage();
+				assertNotNull(mc);
+				assertFalse(mc.getBlocageRemboursementAutomatique());
+
+				final ForFiscalPrincipal ffpMc = mc.getDernierForFiscalPrincipal();
+				assertNotNull(ffpMc);
+				assertEquals(dateMariage, ffpMc.getDateDebut());
+				assertEquals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, ffpMc.getMotifOuverture());
+				assertNull(ffpMc.getDateFin());
+				assertNull(ffpMc.getMotifFermeture());
+				assertEquals(ModeImposition.ORDINAIRE, ffpMc.getModeImposition());
 			}
 		});
 	}

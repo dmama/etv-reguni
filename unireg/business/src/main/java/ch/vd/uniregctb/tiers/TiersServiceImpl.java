@@ -81,7 +81,6 @@ import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPDAO;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.iban.IbanValidator;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
@@ -93,9 +92,6 @@ import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
-import ch.vd.uniregctb.metier.piis.PeriodeImpositionImpotSource;
-import ch.vd.uniregctb.metier.piis.PeriodeImpositionImpotSourceService;
-import ch.vd.uniregctb.metier.piis.PeriodeImpositionImpotSourceServiceException;
 import ch.vd.uniregctb.parentes.ParenteUpdateInfo;
 import ch.vd.uniregctb.situationfamille.SituationFamilleService;
 import ch.vd.uniregctb.situationfamille.VueSituationFamille;
@@ -150,8 +146,7 @@ public class TiersServiceImpl implements TiersService {
 	private PlatformTransactionManager transactionManager;
 	private AssujettissementService assujettissementService;
 	private RapportEntreTiersDAO rapportEntreTiersDAO;
-	private IbanValidator ibanValidator;
-	private PeriodeImpositionImpotSourceService periodeImpositionImpotSourceService;
+	private FlagBlocageRemboursementAutomatiqueCalculationRegister flagBlocageRembAutoCalculateurDecale;
 
     /**
      * Recherche les Tiers correspondants aux critères dans le data model de Unireg
@@ -229,12 +224,8 @@ public class TiersServiceImpl implements TiersService {
 		this.rapportEntreTiersDAO = rapportEntreTiersDAO;
 	}
 
-	public void setIbanValidator(IbanValidator ibanValidator) {
-		this.ibanValidator = ibanValidator;
-	}
-
-	public void setPeriodeImpositionImpotSourceService(PeriodeImpositionImpotSourceService periodeImpositionImpotSourceService) {
-		this.periodeImpositionImpotSourceService = periodeImpositionImpotSourceService;
+	public void setFlagBlocageRembAutoCalculateurDecale(FlagBlocageRemboursementAutomatiqueCalculationRegister flagBlocageRembAutoCalculateurDecale) {
+		this.flagBlocageRembAutoCalculateurDecale = flagBlocageRembAutoCalculateurDecale;
 	}
 
 	/**
@@ -3129,53 +3120,12 @@ public class TiersServiceImpl implements TiersService {
 
     /**
      * [UNIREG-2794] déblocage en cas d'ouverture de for fiscal principal vaudois, blocage en cas de fermeture de for principal vaudois
-     *
+     * [SIFISC-12290] Calcul décalé en fin de transaction
      * @param tiers le tiers dont on veut débloquer le reboursement automatique.
      */
     private void resetFlagBlocageRemboursementAutomatiqueSelonFors(Tiers tiers) {
         if (tiers instanceof PersonnePhysique || tiers instanceof MenageCommun) {
-            final Contribuable ctb = (Contribuable) tiers;
-            final ForFiscalPrincipal forVaudois = ctb.getDernierForFiscalPrincipalVaudois();
-
-	        final boolean bloque;
-	        if (forVaudois != null && forVaudois.getDateFin() == null) {
-		        // for vaudois ouvert -> débloqué
-		        bloque = false;
-	        }
-	        else {
-		        // pas de for vaudois ouvert -> a prori bloqué, mais il y a des exceptions
-		        // SIFISC-9993 : si le tiers est une PP qui a un IBAN valide et qui a des PIIS (source uniquement), alors on laisse débloqué
-		        if (tiers instanceof PersonnePhysique && getDateDeces((PersonnePhysique) tiers) == null && ibanValidator.isValidIban(tiers.getNumeroCompteBancaire())) {
-			        Boolean hasSeultSrc = null;
-			        try {
-				        final List<PeriodeImpositionImpotSource> piis = periodeImpositionImpotSourceService.determine((PersonnePhysique) tiers);
-				        for (PeriodeImpositionImpotSource pi : piis) {
-					        if (pi.getType() != PeriodeImpositionImpotSource.Type.SOURCE) {
-						        hasSeultSrc = Boolean.FALSE;
-						        break;
-					        }
-					        else if (hasSeultSrc == null) {
-						        hasSeultSrc = Boolean.TRUE;
-					        }
-				        }
-			        }
-			        catch (PeriodeImpositionImpotSourceServiceException e) {
-				        LOGGER.warn(String.format("Impossible de calculer les périodes d'imposition IS du contribuable %d sans for vaudois ouvert, les remboursements automatiques seront bloqués",
-				                                  tiers.getNumero()),
-				                    e);
-			        }
-
-			        // pas de piis, ou piis non-source trouvée -> bloqué
-			        bloque = hasSeultSrc == null || !hasSeultSrc;
-		        }
-		        else {
-			        // pas une personne physique vivante ou pas d'IBAN valide -> bloqué
-			        bloque = true;
-		        }
-	        }
-
-	        // sauvegarde du flag
-            ctb.setBlocageRemboursementAutomatique(bloque);
+	        flagBlocageRembAutoCalculateurDecale.enregistrerDemandeRecalcul(tiers.getNumero());
         }
     }
 

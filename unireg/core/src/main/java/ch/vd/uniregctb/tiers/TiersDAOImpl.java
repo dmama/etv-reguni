@@ -28,9 +28,11 @@ import org.hibernate.internal.SessionImpl;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.dao.GenericDAOImpl;
+import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.adresse.AdresseTiers;
+import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.Periodicite;
@@ -1397,6 +1399,25 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 		final Session session = getCurrentSession();
 		final Query query = session.createQuery(hql);
 		return query.list();
+	}
+
+	@Override
+	public boolean setFlagBlocageRemboursementAutomatique(long tiersId, boolean newFlag) {
+		final Session session = getCurrentSession();
+		final FlushMode mode = session.getFlushMode();
+		session.setFlushMode(FlushMode.MANUAL);
+		try {
+			final String sql = "UPDATE TIERS SET BLOC_REMB_AUTO=:newFlag, LOG_MDATE=:now, LOG_MUSER=:user WHERE NUMERO=:numero AND (BLOC_REMB_AUTO IS NULL OR BLOC_REMB_AUTO != :newFlag)";
+			final SQLQuery query = getCurrentSession().createSQLQuery(sql);
+			query.setParameter("newFlag", newFlag);
+			query.setParameter("user", AuthenticationHelper.getCurrentPrincipal());
+			query.setParameter("now", DateHelper.getCurrentDate());
+			query.setParameter("numero", tiersId);
+			return query.executeUpdate() > 0;
+		}
+		finally {
+			session.setFlushMode(mode);
+		}
 	}
 
 	private static interface EntityAccessor<T extends Tiers, E extends HibernateEntity> {

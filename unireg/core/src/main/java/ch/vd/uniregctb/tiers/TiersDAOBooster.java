@@ -335,6 +335,11 @@ public class TiersDAOBooster implements TiersDAO, InitializingBean {
 		return target.getIdsParenteDirty();
 	}
 
+	@Override
+	public boolean setFlagBlocageRemboursementAutomatique(long tiersId, boolean newFlag) {
+		return target.setFlagBlocageRemboursementAutomatique(tiersId, newFlag);
+	}
+
 	private static final String poppins = "Supercalifragilisticexpialidocious";
 
 	private void boostMePlenty(long id) {

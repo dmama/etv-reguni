@@ -3748,6 +3748,15 @@ public class TiersServiceTest extends BusinessTest {
 				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
 				tiersService.openForFiscalPrincipal(pp, date(2000, 5, 12), MotifRattachement.DOMICILE, MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 						ModeImposition.ORDINAIRE, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT);
+				return null;
+			}
+		});
+
+		// valeur du flag de blocage de remboursement automatique
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				Assert.assertFalse(pp.getBlocageRemboursementAutomatique());
 				return null;
 			}
@@ -3778,8 +3787,16 @@ public class TiersServiceTest extends BusinessTest {
 				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
 				tiersService.annuleForFiscal(ffp);
 				Assert.assertNull(pp.getDernierForFiscalPrincipal());
-				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
+				return null;
+			}
+		});
 
+		// valeur du flag de blocage de remboursement automatique
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
 				return null;
 			}
 		});
@@ -3852,8 +3869,16 @@ public class TiersServiceTest extends BusinessTest {
 				Assert.assertNotNull(autreFfp);
 				Assert.assertNull("Le for précédent n'a pas été ré-ouvert ?", autreFfp.getDateFin());
 				Assert.assertEquals(MockCommune.Bern.getNoOFS(), (int) autreFfp.getNumeroOfsAutoriteFiscale());
-				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
+				return null;
+			}
+		});
 
+		// valeur du flag de blocage de remboursement automatique
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
 				return null;
 			}
 		});
@@ -3890,8 +3915,16 @@ public class TiersServiceTest extends BusinessTest {
 				Assert.assertNotNull(autreFfp);
 				Assert.assertNull("Le for précédent n'a pas été ré-ouvert ?", autreFfp.getDateFin());
 				Assert.assertEquals(MockPays.Allemagne.getNoOFS(), (int) autreFfp.getNumeroOfsAutoriteFiscale());
-				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
+				return null;
+			}
+		});
 
+		// valeur du flag de blocage de remboursement automatique
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
 				return null;
 			}
 		});
@@ -3923,8 +3956,16 @@ public class TiersServiceTest extends BusinessTest {
 				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
 				Assert.assertNotNull(ffp);
 				Assert.assertEquals(MockCommune.Renens.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
-				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
+				return null;
+			}
+		});
 
+		// valeur du flag de blocage de remboursement automatique
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
 				return null;
 			}
 		});
@@ -3956,8 +3997,16 @@ public class TiersServiceTest extends BusinessTest {
 				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
 				Assert.assertNotNull(ffp);
 				Assert.assertEquals(MockCommune.Renens.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
-				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
+				return null;
+			}
+		});
 
+		// valeur du flag de blocage de remboursement automatique
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
 				return null;
 			}
 		});
@@ -3989,8 +4038,16 @@ public class TiersServiceTest extends BusinessTest {
 				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
 				Assert.assertNotNull(ffp);
 				Assert.assertEquals(MockCommune.Renens.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
-				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
+				return null;
+			}
+		});
 
+		// valeur du flag de blocage de remboursement automatique
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
 				return null;
 			}
 		});
@@ -4024,8 +4081,16 @@ public class TiersServiceTest extends BusinessTest {
 				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
 				Assert.assertNotNull(ffp);
 				Assert.assertEquals(MockCommune.Bex.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
-				Assert.assertFalse(pp.getBlocageRemboursementAutomatique());
+				return null;
+			}
+		});
 
+		// valeur du flag de blocage de remboursement automatique
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertFalse(pp.getBlocageRemboursementAutomatique());
 				return null;
 			}
 		});
@@ -7866,7 +7931,16 @@ public class TiersServiceTest extends BusinessTest {
 				assertTrue(pp.getBlocageRemboursementAutomatique());
 
 				tiersService.addForPrincipal(pp, date(2012, 1, 1), MotifFor.DEPART_HC, null, null, MotifRattachement.DOMICILE, MockCommune.Bern.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC, ModeImposition.SOURCE);
-				assertFalse(pp.getBlocageRemboursementAutomatique());
+			}
+		});
+
+		// valeur du flag de blocage de remboursement automatique
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertFalse(pp.getBlocageRemboursementAutomatique());
+				return null;
 			}
 		});
 	}
@@ -7907,7 +7981,16 @@ public class TiersServiceTest extends BusinessTest {
 				assertFalse(pp.getBlocageRemboursementAutomatique());
 
 				tiersService.addForPrincipal(pp, date(2012, 1, 1), MotifFor.DEPART_HC, null, null, MotifRattachement.DOMICILE, MockCommune.Bern.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC, ModeImposition.SOURCE);
-				assertTrue(pp.getBlocageRemboursementAutomatique());
+			}
+		});
+
+		// valeur du flag de blocage de remboursement automatique
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
+				return null;
 			}
 		});
 	}
@@ -7950,7 +8033,16 @@ public class TiersServiceTest extends BusinessTest {
 				final RegDate dateDeces = date(2013, 5, 2);
 				pp.setDateDeces(dateDeces);
 				tiersService.addForPrincipal(pp, date(2012, 1, 1), MotifFor.DEPART_HC, dateDeces, MotifFor.VEUVAGE_DECES, MotifRattachement.DOMICILE, MockCommune.Bern.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC, ModeImposition.SOURCE);
-				assertTrue(pp.getBlocageRemboursementAutomatique());
+			}
+		});
+
+		// valeur du flag de blocage de remboursement automatique
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
+				return null;
 			}
 		});
 	}
@@ -7989,7 +8081,16 @@ public class TiersServiceTest extends BusinessTest {
 				assertFalse(pp.getBlocageRemboursementAutomatique());
 
 				tiersService.addForPrincipal(pp, date(2012, 1, 1), MotifFor.DEPART_HC, null, null, MotifRattachement.DOMICILE, MockCommune.Bern.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC, ModeImposition.SOURCE);
-				assertTrue(pp.getBlocageRemboursementAutomatique());
+			}
+		});
+
+		// valeur du flag de blocage de remboursement automatique
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
+				return null;
 			}
 		});
 	}
@@ -8030,7 +8131,16 @@ public class TiersServiceTest extends BusinessTest {
 				assertFalse(pp.getBlocageRemboursementAutomatique());
 
 				tiersService.addForPrincipal(pp, date(2012, 1, 1), MotifFor.DEPART_HC, null, null, MotifRattachement.DOMICILE, MockCommune.Bern.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC, ModeImposition.SOURCE);
-				assertTrue(pp.getBlocageRemboursementAutomatique());
+			}
+		});
+
+		// valeur du flag de blocage de remboursement automatique
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
+				return null;
 			}
 		});
 	}
