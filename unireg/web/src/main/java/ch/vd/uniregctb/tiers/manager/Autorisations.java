@@ -114,9 +114,11 @@ public class Autorisations {
 	 * @return vrai si au moins une donnée est éditable; faux si ce n'est pas le cas
 	 */
 	public boolean isEditable() {
-		return donneesFiscales || forsPrincipaux || forsSecondaires || forsAutresElementsImposables || forsAutresImpots || declarationImpots || adresses || adressesDomicile || adressesCourrier ||
-				adressesRepresentation || adressesPoursuite || complements || complementsCommunications || complementsCoordonneesFinancieres || rapports || rapportsDePrestations ||
-				rapportsDeTravail || autresRapports || donneesCiviles || debiteurs || mouvements || situationsFamille;
+		return (donneesFiscales && (forsPrincipaux || forsSecondaires || forsAutresElementsImposables || forsAutresImpots || declarationImpots))
+				|| (adresses && (adressesDomicile || adressesCourrier || adressesRepresentation || adressesPoursuite))
+				|| (complements && (complementsCommunications || complementsCoordonneesFinancieres))
+				|| (rapports && (rapportsDePrestations || rapportsDeTravail || autresRapports))
+				|| donneesCiviles || debiteurs || mouvements || situationsFamille;
 	}
 
 	public boolean isDonneesFiscales() {
@@ -124,23 +126,23 @@ public class Autorisations {
 	}
 
 	public boolean isForsPrincipaux() {
-		return forsPrincipaux;
+		return forsPrincipaux && donneesFiscales;
 	}
 
 	public boolean isForsSecondaires() {
-		return forsSecondaires;
+		return forsSecondaires && donneesFiscales;
 	}
 
 	public boolean isForsAutresElementsImposables() {
-		return forsAutresElementsImposables;
+		return forsAutresElementsImposables && donneesFiscales;
 	}
 
 	public boolean isForsAutresImpots() {
-		return forsAutresImpots;
+		return forsAutresImpots && donneesFiscales;
 	}
 
 	public boolean isDeclarationImpots() {
-		return declarationImpots;
+		return declarationImpots && donneesFiscales;
 	}
 
 	public boolean isAdresses() {
@@ -148,19 +150,19 @@ public class Autorisations {
 	}
 
 	public boolean isAdressesDomicile() {
-		return adressesDomicile;
+		return adressesDomicile && adresses;
 	}
 
 	public boolean isAdressesCourrier() {
-		return adressesCourrier;
+		return adressesCourrier && adresses;
 	}
 
 	public boolean isAdressesRepresentation() {
-		return adressesRepresentation;
+		return adressesRepresentation && adresses;
 	}
 
 	public boolean isAdressesPoursuite() {
-		return adressesPoursuite;
+		return adressesPoursuite && adresses;
 	}
 
 	public boolean isComplements() {
@@ -168,11 +170,11 @@ public class Autorisations {
 	}
 
 	public boolean isComplementsCommunications() {
-		return complementsCommunications;
+		return complementsCommunications && complements;
 	}
 
 	public boolean isComplementsCoordonneesFinancieres() {
-		return complementsCoordonneesFinancieres;
+		return complementsCoordonneesFinancieres && complements;
 	}
 
 	public boolean isRapports() {
@@ -180,15 +182,15 @@ public class Autorisations {
 	}
 
 	public boolean isRapportsDePrestations() {
-		return rapportsDePrestations;
+		return rapportsDePrestations && rapports;
 	}
 
 	public boolean isRapportsDeTravail() {
-		return rapportsDeTravail;
+		return rapportsDeTravail && rapports;
 	}
 
 	public boolean isAutresRapports() {
-		return autresRapports;
+		return autresRapports && rapports;
 	}
 
 	public boolean isDonneesCiviles() {

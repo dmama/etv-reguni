@@ -334,9 +334,12 @@ public class AutorisationManagerImpl implements AutorisationManager {
 		if (tiers == null) {
 			// cas spécial du tiers nul : le tiers est entrain d'être crée. Les droits ci-dessous sont appliqués dans ce cas-là.
 			map.put(MODIF_CIVIL, Boolean.TRUE);
-			map.put(MODIF_COMPLEMENT, Boolean.TRUE);
-			map.put(COMPLEMENT_COMMUNICATION, Boolean.TRUE);
+			if (SecurityHelper.isGranted(securityProvider, Role.COMPLT_COMM, visa, oid)) {
+				map.put(MODIF_COMPLEMENT, Boolean.TRUE);
+				map.put(COMPLEMENT_COMMUNICATION, Boolean.TRUE);
+			}
 			if (SecurityHelper.isGranted(securityProvider, Role.COOR_FIN, visa, oid)) {
+				map.put(MODIF_COMPLEMENT, Boolean.TRUE);
 				map.put(COMPLEMENT_COOR_FIN, Boolean.TRUE);
 			}
 			map.put(MODIF_FISCAL, Boolean.TRUE); // pour la création de débiteur
@@ -374,6 +377,11 @@ public class AutorisationManagerImpl implements AutorisationManager {
 			map.put(COMPLEMENT_COOR_FIN, Boolean.TRUE);
 		}
 
+		if (SecurityHelper.isGranted(securityProvider, Role.COMPLT_COMM, visa, oid)) {
+			map.put(MODIF_COMPLEMENT, Boolean.TRUE);
+			map.put(COMPLEMENT_COMMUNICATION, Boolean.TRUE);
+		}
+
 		if (SecurityHelper.isGranted(securityProvider, Role.SUIVI_DOSS, visa, oid)) {
 			map.put(MODIF_MOUVEMENT, Boolean.TRUE);
 		}
@@ -381,8 +389,6 @@ public class AutorisationManagerImpl implements AutorisationManager {
 		if (tiers.isDesactive(null)) {
 			// droits pour un contribuable annulé
 			if (SecurityHelper.isGranted(securityProvider, Role.MODIF_NONHAB_INACTIF, visa, oid)) {
-				map.put(MODIF_COMPLEMENT, Boolean.TRUE);
-				map.put(COMPLEMENT_COMMUNICATION, Boolean.TRUE);
 				map.put(MODIF_DOSSIER, Boolean.FALSE);
 				map.put(MODIF_FISCAL, Boolean.FALSE);
 				map.put(MODIF_DI, Boolean.FALSE);
@@ -469,8 +475,6 @@ public class AutorisationManagerImpl implements AutorisationManager {
 			//les autres communautés n'ont jamais les onglets fiscal, rapport prestation et dossier apparenté
 			if (SecurityHelper.isGranted(securityProvider, Role.MODIF_AC, visa, oid)) {
 				map.put(MODIF_CIVIL, Boolean.TRUE);
-				map.put(MODIF_COMPLEMENT, Boolean.TRUE);
-				map.put(COMPLEMENT_COMMUNICATION, Boolean.TRUE);
 				if (SecurityHelper.isGranted(securityProvider, Role.ADR_PM_D, visa, oid)) {
 					map.put(MODIF_ADRESSE, Boolean.TRUE);
 					map.put(ADR_D, Boolean.TRUE);
@@ -497,8 +501,6 @@ public class AutorisationManagerImpl implements AutorisationManager {
 				map.put(ADR_B, Boolean.TRUE);
 				map.put(ADR_C, Boolean.TRUE);
 				map.put(ADR_D, Boolean.TRUE);
-				map.put(MODIF_COMPLEMENT, Boolean.TRUE);
-				map.put(COMPLEMENT_COMMUNICATION, Boolean.TRUE);
 			}
 			if (SecurityHelper.isGranted(securityProvider, Role.RT, visa, oid)) {
 				map.put(MODIF_RAPPORT, Boolean.TRUE);
