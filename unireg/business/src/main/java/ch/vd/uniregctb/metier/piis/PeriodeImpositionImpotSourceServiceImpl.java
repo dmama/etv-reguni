@@ -84,10 +84,13 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 
 	/**
 	 * @param ctb un contribuable
+	 * @param rw <code>true</code> si la collection retournée doit être accessible en écriture, <code>false</code> si lecture seule suffit
 	 * @return la liste des fors fiscaux principaux non-annulés de ce contribuables, triés par date
 	 */
-	private static List<ForFiscalPrincipal> getForsPrincipaux(Contribuable ctb) {
-		return ctb.getForsFiscauxPrincipauxActifsSorted();
+	@NotNull
+	private static List<ForFiscalPrincipal> getForsPrincipaux(Contribuable ctb, boolean rw) {
+		final List<ForFiscalPrincipal> ffps = ctb.getForsFiscauxPrincipauxActifsSorted();
+		return ffps != null ? ffps : (rw ? new ArrayList<ForFiscalPrincipal>() : Collections.<ForFiscalPrincipal>emptyList());
 	}
 
 	/**
@@ -110,11 +113,11 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 		// 1. des rapports de travail de la personne
 		// 2. des fors de la personne et de ses ménages communs
 
-		final List<ForFiscalPrincipal> fors = getForsPrincipaux(pp);
+		final List<ForFiscalPrincipal> fors = getForsPrincipaux(pp, true);
 		final Set<Long> idsMenages = getIdsMenagesCommuns(pp);
 		for (Long idMenage : idsMenages) {
 			final MenageCommun mc = (MenageCommun) tiersDAO.get(idMenage, true);
-			fors.addAll(getForsPrincipaux(mc));
+			fors.addAll(getForsPrincipaux(mc, false));
 		}
 
 		// il est important que les fors soient triés y compris si plusieurs contribuables sont impliqués
