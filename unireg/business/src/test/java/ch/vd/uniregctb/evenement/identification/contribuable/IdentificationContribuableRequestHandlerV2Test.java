@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.evenement.identification.contribuable;
 
+import javax.xml.bind.JAXBElement;
+
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
@@ -21,11 +23,11 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-public class IdentificationContribuableRequestHandlerTest extends BusinessTest {
+public class IdentificationContribuableRequestHandlerV2Test extends BusinessTest {
 
-	private IdentificationContribuableRequestHandler handler;
+	private IdentificationContribuableRequestHandlerV2 handler;
 
-	public IdentificationContribuableRequestHandlerTest() {
+	public IdentificationContribuableRequestHandlerV2Test() {
 		setWantIndexation(true);
 	}
 
@@ -33,11 +35,9 @@ public class IdentificationContribuableRequestHandlerTest extends BusinessTest {
 	protected void runOnSetUp() throws Exception {
 		super.runOnSetUp();
 
-		handler = new IdentificationContribuableRequestHandler();
-		handler.setEsbTemplate(null);       // comme ça, ça pête si on envoie un message dans l'ESB, ce que ce test n'est pas censé faire...
+		handler = new IdentificationContribuableRequestHandlerV2();
 		handler.setIdentCtbService(getBean(IdentificationContribuableService.class, "identCtbService"));
 		handler.setTiersService(tiersService);
-		handler.afterPropertiesSet();
 	}
 
 	/**
@@ -69,8 +69,10 @@ public class IdentificationContribuableRequestHandlerTest extends BusinessTest {
 				request.setNom("Pittet");
 				request.setDateNaissance(new PartialDate(1980, 1, 24));
 
-				final IdentificationContribuableResponse response = handler.handle(request, "toto");
-				assertNotNull(response);
+				final JAXBElement<IdentificationContribuableResponse> jaxbResponse = handler.handle(request, "toto");
+				assertNotNull(jaxbResponse);
+
+				final IdentificationContribuableResponse response = jaxbResponse.getValue();
 				assertNotNull(response.getErreur());
 				assertNull(response.getContribuable());
 				assertNull("Pourquoi aucun, il y en a deux...", response.getErreur().getAucun());            // on en a trouvé deux...
@@ -109,8 +111,10 @@ public class IdentificationContribuableRequestHandlerTest extends BusinessTest {
 				request.setNom("Pittet");
 				request.setDateNaissance(new PartialDate(1980, 1, 24));
 
-				final IdentificationContribuableResponse response = handler.handle(request, "toto");
-				assertNotNull(response);
+				final JAXBElement<IdentificationContribuableResponse> jaxbResponse = handler.handle(request, "toto");
+				assertNotNull(jaxbResponse);
+
+				final IdentificationContribuableResponse response = jaxbResponse.getValue();
 				assertNull(response.getErreur());
 				assertNotNull(response.getContribuable());
 				return null;
@@ -146,8 +150,10 @@ public class IdentificationContribuableRequestHandlerTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final IdentificationContribuableRequest request = new IdentificationContribuableRequest(null, null, nom, prenom, null, null);
-				final IdentificationContribuableResponse response = handler.handle(request, "toto");
-				assertNotNull(response);
+				final JAXBElement<IdentificationContribuableResponse> jaxbResponse = handler.handle(request, "toto");
+				assertNotNull(jaxbResponse);
+
+				final IdentificationContribuableResponse response = jaxbResponse.getValue();
 				assertNull(response.getErreur());
 
 				final IdentificationContribuableResponse.Contribuable ctb = response.getContribuable();
