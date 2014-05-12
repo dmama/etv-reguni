@@ -73,7 +73,7 @@ public class IdentificationContribuableRequestHandlerV3Test extends BusinessTest
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final IdentificationData data = new IdentificationData(null, null, "Pittet", null, new PartialDate(1980, 1, 24), null);
+				final IdentificationData data = new IdentificationData(null, null, "Pittet", null, new PartialDate(1980, 1, 24), null, null);
 				final IdentificationContribuableRequest request = new IdentificationContribuableRequest(Arrays.asList(data));
 
 				final JAXBElement<IdentificationContribuableResponse> jaxbResponse = handler.handle(request, "toto");
@@ -119,7 +119,7 @@ public class IdentificationContribuableRequestHandlerV3Test extends BusinessTest
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final IdentificationData data = new IdentificationData(null, null, "Pittet", null, new PartialDate(1980, 1, 24), null);
+				final IdentificationData data = new IdentificationData(null, null, "Pittet", null, new PartialDate(1980, 1, 24), null, null);
 				final IdentificationContribuableRequest request = new IdentificationContribuableRequest(Arrays.asList(data));
 
 				final JAXBElement<IdentificationContribuableResponse> jaxbResponse = handler.handle(request, "toto");
@@ -165,7 +165,7 @@ public class IdentificationContribuableRequestHandlerV3Test extends BusinessTest
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final IdentificationData data = new IdentificationData(null, null, nom, prenom, null, null);
+				final IdentificationData data = new IdentificationData(null, null, nom, prenom, null, null, "Très grand");
 				final IdentificationContribuableRequest request = new IdentificationContribuableRequest(Arrays.asList(data));
 				final JAXBElement<IdentificationContribuableResponse> jaxbResponse = handler.handle(request, "toto");
 				assertNotNull(jaxbResponse);
@@ -177,6 +177,7 @@ public class IdentificationContribuableRequestHandlerV3Test extends BusinessTest
 
 				final IdentificationResult result = response.getIdentificationResult().get(0);
 				assertNull(result.getErreur());
+				assertEquals("Très grand", result.getId());
 
 				final IdentificationResult.Contribuable ctb = result.getContribuable();
 				assertNotNull(ctb);
@@ -191,7 +192,7 @@ public class IdentificationContribuableRequestHandlerV3Test extends BusinessTest
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDateNaissancePartielleInvalide() throws Exception {
 		final PartialDate dateNaissanceBidon = new PartialDate(2000, null, 20);     // cette date ne devrait pas être acceptée... notre XSD est trop lâche...
-		final IdentificationData data = new IdentificationData(null, null, "Tartempion", null, dateNaissanceBidon, null);
+		final IdentificationData data = new IdentificationData(null, null, "Tartempion", null, dateNaissanceBidon, null, null);
 		final IdentificationContribuableRequest request = new IdentificationContribuableRequest(Arrays.asList(data));
 		try {
 			handler.handle(request, "toto");
@@ -255,32 +256,38 @@ public class IdentificationContribuableRequestHandlerV3Test extends BusinessTest
 					for (int idx = 0; idx < tailleGroupe; ++idx) {
 						final String nom;
 						final String prenom;
+						final String id;
 						switch (idx) {
 						case 0:
 							nom = "Baudet";
 							prenom = "Alphonse";
+							id = null;
 							break;
 						case 1:
 							nom = "Basquette";
 							prenom = "Richard";
+							id = "RB";
 							break;
 						case 2:
 							nom = "Trumbledaure";
 							prenom = "Albus";
+							id = null;
 							break;
 						case 3:
 							nom = "Peticlou";
 							prenom = "Justin";
+							id = null;
 							break;
 						case 4:
 							nom = "Pittet";
 							prenom = "Georges";
+							id = "GP";
 							break;
 						default:
 							throw new RuntimeException("On a prévu des groupes de 5... s'ils sont plus gros, il y a des choses à changer ici...");
 						}
 
-						final IdentificationData data = new IdentificationData(null, null, nom, prenom, null, null);
+						final IdentificationData data = new IdentificationData(null, null, nom, prenom, null, null, id);
 						dataList.add(data);
 					}
 				}
@@ -302,30 +309,36 @@ public class IdentificationContribuableRequestHandlerV3Test extends BusinessTest
 						assertNotNull(Integer.toString(index), result.getContribuable());
 						assertNull(Integer.toString(index), result.getErreur());
 						assertEquals(Integer.toString(index), ids.ppUn, result.getContribuable().getNumeroContribuableIndividuel());
+						assertEquals(Integer.toString(index), ids.ppUn, result.getContribuable().getNumeroContribuableIndividuel());
+						assertNull(result.getId());
 						break;
 					case 1:
 						// Richard Basquette doit avoir été trouvé
 						assertNotNull(Integer.toString(index), result.getContribuable());
 						assertNull(Integer.toString(index), result.getErreur());
 						assertEquals(Integer.toString(index), ids.ppDeux, result.getContribuable().getNumeroContribuableIndividuel());
+						assertEquals("RB", result.getId());
 						break;
 					case 2:
 						// Albus Trumbledaure doit avoir été trouvé
 						assertNotNull(Integer.toString(index), result.getContribuable());
 						assertNull(Integer.toString(index), result.getErreur());
 						assertEquals(Integer.toString(index), ids.ppTrois, result.getContribuable().getNumeroContribuableIndividuel());
+						assertNull(result.getId());
 						break;
 					case 3:
 						// Personne ne doit avoir été trouvé (aucun)
 						assertNull(Integer.toString(index), result.getContribuable());
 						assertNotNull(Integer.toString(index), result.getErreur());
 						assertNotNull(Integer.toString(index), result.getErreur().getAucun());
+						assertNull(result.getId());
 						break;
 					case 4:
 						// Personne ne doit avoir été trouvé (plusieurs)
 						assertNull(Integer.toString(index), result.getContribuable());
 						assertNotNull(Integer.toString(index), result.getErreur());
 						assertNotNull(Integer.toString(index), result.getErreur().getPlusieurs());
+						assertEquals("GP", result.getId());
 						break;
 					default:
 						throw new RuntimeException("On a prévu des groupes de 5... s'ils sont plus gros, il y a des choses à changer ici...");

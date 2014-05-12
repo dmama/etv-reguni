@@ -72,7 +72,7 @@ public class IdentificationContribuableRequestV3ListenerItTest extends Identific
 		});
 		globalTiersIndexer.sync();
 
-		final IdentificationData data = new IdentificationData(7569396525489L, null, "Monnier", "Christophe", null, null);
+		final IdentificationData data = new IdentificationData(7569396525489L, null, "Monnier", "Christophe", null, null, null);
 		final IdentificationContribuableRequest request = new IdentificationContribuableRequest(Arrays.asList(data));
 
 		// Envoie le message
@@ -95,6 +95,7 @@ public class IdentificationContribuableRequestV3ListenerItTest extends Identific
 		if (result.getErreur() != null) {
 			fail(result.getErreur().toString());
 		}
+		assertNull(result.getId());
 
 		final IdentificationResult.Contribuable infoCtb = result.getContribuable();
 		assertNotNull(infoCtb);
@@ -124,7 +125,7 @@ public class IdentificationContribuableRequestV3ListenerItTest extends Identific
 
 		globalTiersIndexer.sync();
 
-		final IdentificationData data = new IdentificationData(null, null, "Monnier", "Christophe", null, null);
+		final IdentificationData data = new IdentificationData(null, null, "Monnier", "Christophe", null, null, "Monnier, tu dors...?");
 		final IdentificationContribuableRequest request = new IdentificationContribuableRequest(Arrays.asList(data));
 
 		// Envoie le message
@@ -148,6 +149,7 @@ public class IdentificationContribuableRequestV3ListenerItTest extends Identific
 		assertNotNull(result.getErreur());
 		assertNull(result.getContribuable());
 		assertNotNull(result.getErreur().getPlusieurs());
+		assertEquals("Monnier, tu dors...?", result.getId());
 	}
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
@@ -163,7 +165,7 @@ public class IdentificationContribuableRequestV3ListenerItTest extends Identific
 
 		globalTiersIndexer.sync();
 
-		final IdentificationData data = new IdentificationData(null, null, "Adam", "Raphaël", null, null);
+		final IdentificationData data = new IdentificationData(null, null, "Adam", "Raphaël", null, null, "Raphaello");
 		final IdentificationContribuableRequest request = new IdentificationContribuableRequest(Arrays.asList(data));
 
 		// Envoie le message
@@ -187,6 +189,7 @@ public class IdentificationContribuableRequestV3ListenerItTest extends Identific
 		assertNotNull(result.getErreur());
 		assertNull(result.getContribuable());
 		assertNotNull(result.getErreur().getAucun());
+		assertEquals("Raphaello", result.getId());
 	}
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
@@ -227,32 +230,38 @@ public class IdentificationContribuableRequestV3ListenerItTest extends Identific
 			for (int idx = 0; idx < tailleGroupe; ++idx) {
 				final String nom;
 				final String prenom;
+				final String id;
 				switch (idx) {
 				case 0:
 					nom = "Baudet";
 					prenom = "Alphonse";
+					id = "AB";
 					break;
 				case 1:
 					nom = "Basquette";
 					prenom = "Richard";
+					id = "Riri";
 					break;
 				case 2:
 					nom = "Trumbledaure";
 					prenom = "Albus";
+					id = "Shazam";
 					break;
 				case 3:
 					nom = "Peticlou";
 					prenom = "Justin";
+					id = null;
 					break;
 				case 4:
 					nom = "Pittet";
 					prenom = "Georges";
+					id = "pg";
 					break;
 				default:
 					throw new RuntimeException("On a prévu des groupes de 5... s'ils sont plus gros, il y a des choses à changer ici...");
 				}
 
-				final IdentificationData data = new IdentificationData(null, null, nom, prenom, null, null);
+				final IdentificationData data = new IdentificationData(null, null, nom, prenom, null, null, id);
 				identificationDataList.add(data);
 			}
 		}
@@ -285,30 +294,35 @@ public class IdentificationContribuableRequestV3ListenerItTest extends Identific
 				assertNotNull(Integer.toString(index), result.getContribuable());
 				assertNull(Integer.toString(index), result.getErreur());
 				assertEquals(Integer.toString(index), ids.ppUn, result.getContribuable().getNumeroContribuableIndividuel());
+				assertEquals("AB", result.getId());
 				break;
 			case 1:
 				// Richard Basquette doit avoir été trouvé
 				assertNotNull(Integer.toString(index), result.getContribuable());
 				assertNull(Integer.toString(index), result.getErreur());
 				assertEquals(Integer.toString(index), ids.ppDeux, result.getContribuable().getNumeroContribuableIndividuel());
+				assertEquals("Riri", result.getId());
 				break;
 			case 2:
 				// Albus Trumbledaure doit avoir été trouvé
 				assertNotNull(Integer.toString(index), result.getContribuable());
 				assertNull(Integer.toString(index), result.getErreur());
 				assertEquals(Integer.toString(index), ids.ppTrois, result.getContribuable().getNumeroContribuableIndividuel());
+				assertEquals("Shazam", result.getId());
 				break;
 			case 3:
 				// Personne ne doit avoir été trouvé (aucun)
 				assertNull(Integer.toString(index), result.getContribuable());
 				assertNotNull(Integer.toString(index), result.getErreur());
 				assertNotNull(Integer.toString(index), result.getErreur().getAucun());
+				assertNull(result.getId());
 				break;
 			case 4:
 				// Personne ne doit avoir été trouvé (plusieurs)
 				assertNull(Integer.toString(index), result.getContribuable());
 				assertNotNull(Integer.toString(index), result.getErreur());
 				assertNotNull(Integer.toString(index), result.getErreur().getPlusieurs());
+				assertEquals("pg", result.getId());
 				break;
 			default:
 				throw new RuntimeException("On a prévu des groupes de 5... s'ils sont plus gros, il y a des choses à changer ici...");

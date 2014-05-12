@@ -30,8 +30,18 @@
 			<xs:element name="dateNaissance" type="common:partialDateType" minOccurs="0" />
 			<xs:element name="NPA" type="NPAType" minOccurs="0" />
 		</xs:sequence>
+		<xs:attribute name="id" use="optional" type="identificationDataIdType">
+			<xs:annotation>
+				<xs:documentation>Identifiant optionnel de ce groupe de données d'identification, qui sera retourné avec la réponse correspondante.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 	</xs:complexType>
 
+	<xs:simpleType name="identificationDataIdType">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="100"/>
+		</xs:restriction>
+	</xs:simpleType>
 	<xs:simpleType name="navs13Type">
 		<xs:restriction base="xs:unsignedLong">
 			<xs:minInclusive value="7560000000001" />
@@ -62,18 +72,10 @@
 		</xs:choice>
 	</xs:complexType>
 
-	<xs:simpleType name="NPASuisseIdType">
-		<xs:restriction base="xs:int" />
-	</xs:simpleType>
 	<xs:simpleType name="NPASuisseType">
 		<xs:restriction base="xs:unsignedInt">
 			<xs:minInclusive value="1000" />
 			<xs:maxInclusive value="9999" />
-		</xs:restriction>
-	</xs:simpleType>
-	<xs:simpleType name="ChiffreComplementaireType">
-		<xs:restriction base="xs:string">
-			<xs:maxLength value="2" />
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="NPAEtrangerType">

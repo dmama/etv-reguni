@@ -35,7 +35,18 @@
 			</xs:element>
 			<xs:element name="erreur" type="erreurType"/>
 		</xs:choice>
+		<xs:attribute name="id" use="optional" type="identificationDataIdType">
+			<xs:annotation>
+				<xs:documentation>Identifiant optionnel du groupe de données d'identification tel qu'indiqué dans la requête.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 	</xs:complexType>
+
+	<xs:simpleType name="identificationDataIdType">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="100"/>
+		</xs:restriction>
+	</xs:simpleType>
 
 	<xs:simpleType name="nomType">
 		<xs:restriction base="xs:token">

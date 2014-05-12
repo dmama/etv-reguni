@@ -63,7 +63,7 @@ public class IdentificationContribuableRequestHandlerV3 implements Identificatio
 		return objectFactory.createIdentificationContribuableResponse(response);
 	}
 
-	private IdentificationResult doIdentification(IdentificationData data, String identifier) throws EsbBusinessException {
+	private IdentificationResult doIdentification(IdentificationData data, String businessIdPart) throws EsbBusinessException {
 
 		final IdentificationResult result = new IdentificationResult();
 		final CriteresPersonne criteresPersonne;
@@ -98,7 +98,7 @@ public class IdentificationContribuableRequestHandlerV3 implements Identificatio
 		}
 
 		if (status == IdentificationResultKind.FOUND_NONE) {
-			final String message = String.format("Aucun contribuable trouvé pour le message '%s'.", identifier);
+			final String message = String.format("Aucun contribuable trouvé pour le message '%s'.", businessIdPart);
 			final Erreur aucun = new Erreur(message, null);
 			result.setErreur(aucun);
 			LOGGER.info(message);
@@ -111,7 +111,7 @@ public class IdentificationContribuableRequestHandlerV3 implements Identificatio
 			else {
 				detail = StringUtils.EMPTY;
 			}
-			final String message = String.format("Plusieurs contribuables trouvés pour le message '%s'%s.", identifier, detail);
+			final String message = String.format("Plusieurs contribuables trouvés pour le message '%s'%s.", businessIdPart, detail);
 			final Erreur plusieurs = new Erreur(null, message);
 			result.setErreur(plusieurs);
 			LOGGER.info(message);
@@ -130,8 +130,11 @@ public class IdentificationContribuableRequestHandlerV3 implements Identificatio
 			ctb.setDateNaissance(DataHelper.coreToPartialDateXmlv2(tiersService.getDateNaissance(pp)));
 
 			result.setContribuable(ctb);
-			LOGGER.info(String.format("Un contribuable trouvé pour le message '%s' : %d.", identifier, idCtb));
+			LOGGER.info(String.format("Un contribuable trouvé pour le message '%s' : %d.", businessIdPart, idCtb));
 		}
+
+		// si on veut se baser sur autre chose que l'ordre et passer une clé quelconque à chaque demande, c'est possible...
+		result.setId(data.getId());
 
 		return result;
 	}
