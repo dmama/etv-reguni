@@ -286,7 +286,8 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 			return RegDate.get(pf, 12, 31);
 		}
 
-		final Fraction fraction = fractionnements.getAt(dateFin);
+		final RegDate lendemainDateFin = dateFin.getOneDayAfter();
+		final Fraction fraction = fractionnements.getAt(lendemainDateFin);
 		if (fraction != null) {
 			return fraction.getDate().getOneDayBefore();
 		}
@@ -362,8 +363,7 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 		}
 
 		// on avance pf par pf
-		final int size = interval.getRight() - interval.getLeft() + 1;
-		final List<PeriodeImpositionImpotSource> piis = new ArrayList<>(size);
+		final List<PeriodeImpositionImpotSource> piis = new ArrayList<>();
 		for (int pf = interval.getLeft() ; pf <= interval.getRight() ; ++ pf) {
 			final DateRange pfRange = new DateRangeHelper.Range(RegDate.get(pf, 1, 1), RegDate.get(pf, 12, 31));
 			final List<ForFiscalPrincipal> forsPf = extractIntersectionWithFiscalPeriod(pfRange, fors);
