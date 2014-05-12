@@ -42,7 +42,12 @@
 					list += '<option value="' + str + '"' + (str === '<unireg:regdate regdate="${command.dateDebutNouvellePeriodicite}"/>' ? ' selected=true' : '') + '">' + str + '</option>';
 				}
 				selectDate.html(list);
-				$('#periodiciteDepuis').show();
+				if (dates.length > 0) {
+					$('#periodiciteDepuis').show();
+				}
+				else {
+					$('#periodiciteDepuis').hide();
+				}
 			}, 'json').error(Ajax.popupErrorHandler);
 		},
 
