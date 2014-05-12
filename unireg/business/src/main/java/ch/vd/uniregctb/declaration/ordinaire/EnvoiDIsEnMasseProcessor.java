@@ -291,11 +291,11 @@ public class EnvoiDIsEnMasseProcessor {
 					// concernant les contribuables spécifiés et on peut donc sans risque ne pas flusher la session.
 					session.setFlushMode(FlushMode.MANUAL);
 					final Query queryObject = session.createQuery(queryTacheEnvoiEnInstance);
-					queryObject.setParameter("typeContribuable", typeContribuable.name());
-					queryObject.setParameter("typeDocument", typeDocument.name());
+					queryObject.setParameter("typeContribuable", typeContribuable);
+					queryObject.setParameter("typeDocument", typeDocument);
 					queryObject.setParameterList("ids", ids);
-					queryObject.setParameter("debutPeriode", debutAnnee.index());
-					queryObject.setParameter("finPeriode", finAnnee.index());
+					queryObject.setParameter("debutPeriode", debutAnnee);
+					queryObject.setParameter("finPeriode", finAnnee);
 					//noinspection unchecked
 					return queryObject.iterate();
 				}
@@ -350,10 +350,10 @@ public class EnvoiDIsEnMasseProcessor {
 						builder.append(" ORDER BY tache.contribuable.id ASC");
 
 						final Query queryObject = session.createQuery(builder.toString());
-						queryObject.setParameter("typeContribuable", typeContribuable.name());
-						queryObject.setParameter("typeDocument", typeDocument.name());
-						queryObject.setParameter("debutPeriode", debutAnnee.index());
-						queryObject.setParameter("finPeriode", finAnnee.index());
+						queryObject.setParameter("typeContribuable", typeContribuable);
+						queryObject.setParameter("typeDocument", typeDocument);
+						queryObject.setParameter("debutPeriode", debutAnnee);
+						queryObject.setParameter("finPeriode", finAnnee);
 						if (noCtbMin != null) {
 							queryObject.setParameter("noCtbMin", noCtbMin);
 						}

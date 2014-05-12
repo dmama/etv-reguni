@@ -147,7 +147,7 @@ public class DumpAssujettissementsJob extends JobDefinition {
 			@Override
 			public List<Long> doInTransaction(TransactionStatus status) {
 				status.setRollbackOnly();
-				final List<Long> ids = hibernateTemplate.find("select cont.numero from Contribuable as cont order by cont.numero asc", null, null);
+				final List<Long> ids = hibernateTemplate.find("select cont.numero from Contribuable as cont order by cont.numero asc", null);
 				statusManager.setMessage(String.format("%d contribuables trouvés", ids.size()));
 				return ids;
 			}

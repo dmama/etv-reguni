@@ -520,8 +520,8 @@ public class OuvertureForsContribuablesMajeursProcessor {
 					@Override
 					public List<Long> doInHibernate(Session session) throws HibernateException {
 						final Query queryObject = session.createQuery(queryHabitantWithoutFor);
-						queryObject.setParameter("pivot", datePivot.index());
-						queryObject.setParameter("date", date.index());
+						queryObject.setParameter("pivot", datePivot);
+						queryObject.setParameter("date", date);
 						//noinspection unchecked
 						return queryObject.list();
 					}

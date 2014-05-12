@@ -1,9 +1,10 @@
 package ch.vd.uniregctb.evenement.identification.contribuable;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -15,15 +16,15 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.springframework.dao.support.DataAccessUtils;
 
-import ch.vd.registre.base.dao.GenericDAOImpl;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.common.BaseDAOImpl;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.dbutils.QueryFragment;
 import ch.vd.uniregctb.evenement.identification.contribuable.Demande.PrioriteEmetteur;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable.Etat;
 
-public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, Long> implements IdentCtbDAO {
+public class IdentCtbDAOImpl extends BaseDAOImpl<IdentificationContribuable, Long> implements IdentCtbDAO {
 
 	private static final Logger LOGGER = Logger.getLogger(IdentCtbDAOImpl.class);
 
@@ -40,7 +41,7 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 			LOGGER.trace("Start of IdentificationContribuableDAO:find");
 		}
 
-		final List<Object> criteria = new ArrayList<>();
+		final Map<String, Object> criteria = new HashMap<>();
 		final String queryWhere = buildCriterion(criteria, identificationContribuableCriteria, nonTraiteOnly, archiveOnly, suspenduOnly);
 		return executeSearch(paramPagination, criteria, queryWhere, typeDemande);
 	}
@@ -51,7 +52,7 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 			LOGGER.trace("Start of IdentificationContribuableDAO:find");
 		}
 
-		final List<Object> criteria = new ArrayList<>();
+		final Map<String, Object> criteria = new HashMap<>();
 		final String queryWhere = buildCriterion(criteria, identificationContribuableCriteria,filter);
 		return executeSearch(paramPagination, criteria, queryWhere, typeDemande);
 	}
@@ -81,7 +82,7 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<IdentificationContribuable> executeSearch(final ParamPagination paramPagination, final List<Object> criteriaWhere, String queryWhere, TypeDemande... typeDemande) {
+	private List<IdentificationContribuable> executeSearch(final ParamPagination paramPagination, final Map<String, ?> criteriaWhere, String queryWhere, TypeDemande... typeDemande) {
 		final QueryFragment fragment = new QueryFragment("select identificationContribuable from IdentificationContribuable identificationContribuable where");
 		fragment.add(buildWhereAvecTypeDemande("identificationContribuable", typeDemande));
 		fragment.add(queryWhere, criteriaWhere);
@@ -109,17 +110,16 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 			LOGGER.trace("Start of IdentificationContribuableDAO:count");
 		}
 		Assert.notNull(identificationContribuableCriteria, "Les critères de recherche peuvent pas être nuls");
-		final List<Object> criteria = new ArrayList<>();
+		final Map<String, Object> criteria = new HashMap<>();
 		String queryWhere = buildCriterion(criteria, identificationContribuableCriteria, nonTraiteOnly, archiveOnly, suspenduOnly);
 
 		final String selectBase = "select count(*) from IdentificationContribuable identificationContribuable where";
 		final String whereTypeDemande = buildWhereAvecTypeDemande("identificationContribuable", typeDemande);
 		final String query = selectBase + whereTypeDemande + queryWhere;
-		return DataAccessUtils.intResult(find(query, criteria.toArray(), null));
+		return DataAccessUtils.intResult(find(query, criteria, null));
 	}
 
 	/**
-	 * @param nonTraiteOnly
 	 * @param typeDemande
 	 */
 	@Override
@@ -128,13 +128,13 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 			LOGGER.trace("Start of IdentificationContribuableDAO:count");
 		}
 		Assert.notNull(identificationContribuableCriteria, "Les critères de recherche peuvent pas être nuls");
-		final List<Object> criteria = new ArrayList<>();
+		final Map<String, Object> criteria = new HashMap<>();
 		String queryWhere = buildCriterion(criteria, identificationContribuableCriteria,filter);
 
 		final String selectBase = "select count(*) from IdentificationContribuable identificationContribuable where";
 		final String whereTypeDemande = buildWhereAvecTypeDemande("identificationContribuable", typeDemande);
 		final String query = selectBase + whereTypeDemande + queryWhere;
-		return DataAccessUtils.intResult(find(query, criteria.toArray(), null));
+		return DataAccessUtils.intResult(find(query, criteria, null));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -240,10 +240,10 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<String> getTraitementUser() {
-		String query = " select distinct identificationContribuable.traitementUser " +
+		final String query = " select distinct identificationContribuable.traitementUser " +
 				"from IdentificationContribuable identificationContribuable where identificationContribuable.traitementUser is not null " +
 				"and identificationContribuable.traitementUser not like '%JMS-EvtIdentCtb%' ";
-		return (List<String>) find(query, null, null);
+		return find(query, null);
 	}
 
 	@Override
@@ -259,238 +259,94 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 	/**
 	 * Construit la clause Where
 	 */
-	private String buildCriterion(List<Object> criteria, IdentificationContribuableCriteria identificationContribuableCriteria, boolean nonTraiteOnly, boolean archiveOnly,
-	                              boolean suspenduOnly) {
-		String queryWhere = "";
+	private String buildCriterion(Map<String, Object> criteria, IdentificationContribuableCriteria identificationContribuableCriteria, boolean nonTraiteOnly, boolean archiveOnly, boolean suspenduOnly) {
 
-		String typeMessage = identificationContribuableCriteria.getTypeMessage();
-		if ((typeMessage != null) && (!TOUS.equals(typeMessage))) {
-			queryWhere += " and identificationContribuable.demande.typeMessage = ? ";
-			criteria.add(typeMessage);
-		}
-
-		Integer periodeFiscale = identificationContribuableCriteria.getPeriodeFiscale();
-		if ((periodeFiscale != null) && (periodeFiscale != -1)) {
-			queryWhere += " and identificationContribuable.demande.periodeFiscale = ? ";
-			criteria.add(periodeFiscale);
-		}
-
-		String visaUser = identificationContribuableCriteria.getTraitementUser();
-		if ((visaUser != null) && (!TOUS.equals(visaUser))) {
-			if ("Traitement automatique".equals(visaUser)) {
-				visaUser = "%JMS-EvtIdentCtb%";
-				queryWhere += " and identificationContribuable.traitementUser like ? ";
-
-			}
-			else {
-				queryWhere += " and identificationContribuable.traitementUser = ? ";
-			}
-
-			criteria.add(visaUser);
-		}
-
-		Date dateTraitementDebut = identificationContribuableCriteria.getDateTraitementDebut();
-		if (dateTraitementDebut != null) {
-			queryWhere += " and identificationContribuable.dateTraitement >= ? ";
-			// On prends la date a Zero Hour
-			criteria.add(dateTraitementDebut);
-		}
-		Date dateTraitementFin = identificationContribuableCriteria.getDateTraitementFin();
-		if (dateTraitementFin != null) {
-			queryWhere += " and identificationContribuable.dateTraitement <= ? ";
-			// On prends la date a 24 Hour
-			criteria.add(dateTraitementFin);
-		}
-
-
-		String emetteurId = identificationContribuableCriteria.getEmetteurId();
-		if ((emetteurId != null) && (!TOUS.equals(emetteurId))) {
-			queryWhere += " and identificationContribuable.demande.emetteurId = ? ";
-			criteria.add(emetteurId);
-		}
-
-		// Si la valeur n'existe pas (TOUS par exemple), etat = null
-		PrioriteEmetteur prioriteEmetteur;
-		try {
-			prioriteEmetteur = PrioriteEmetteur.valueOf(identificationContribuableCriteria.getPrioriteEmetteur());
-		}
-		catch (Exception e) {
-			prioriteEmetteur = null; // pas de priorité => TOUS
-		}
-
-		if (prioriteEmetteur != null) {
-			queryWhere += " and identificationContribuable.demande.prioriteEmetteur = ? ";
-			if (LOGGER.isTraceEnabled()) {
-				LOGGER.trace("Priorité émetteur : " + prioriteEmetteur);
-			}
-			criteria.add(prioriteEmetteur.name());
-		}
-
-		Date dateMessageDebut = identificationContribuableCriteria.getDateMessageDebut();
-		if (dateMessageDebut != null) {
-			queryWhere += " and identificationContribuable.demande.date >= ? ";
-			// On prends la date a Zero Hour
-			criteria.add(dateMessageDebut);
-		}
-		Date dateMessageFin = identificationContribuableCriteria.getDateMessageFin();
-		if (dateMessageFin != null) {
-			queryWhere += " and identificationContribuable.demande.date <= ? ";
-			// On prends la date a 24 Hour
-			Calendar calendar = Calendar.getInstance();
-			// Initialisé à la date de fin.
-			calendar.setTime(dateMessageFin);
-			calendar.add(Calendar.HOUR, 23);
-			calendar.add(Calendar.MINUTE, 59);
-			dateMessageFin = calendar.getTime();
-
-			criteria.add(dateMessageFin);
-		}
-
+		final IdentificationContribuableEtatFilter filter;
 		if (nonTraiteOnly) {
-			queryWhere = buildCriterionEtatNonTraite(criteria, queryWhere, identificationContribuableCriteria);
+			filter = IdentificationContribuableEtatFilter.SEULEMENT_NON_TRAITES;
 		}
 		else if (archiveOnly) {
-			queryWhere = buildCriterionEtatArchive(criteria, queryWhere, identificationContribuableCriteria);
+			filter = IdentificationContribuableEtatFilter.SEULEMENT_TRAITES;
 		}
 		else if (suspenduOnly) {
-			queryWhere = buildCriterionEtatSuspendu(criteria, queryWhere, identificationContribuableCriteria);
+			filter = IdentificationContribuableEtatFilter.SEULEMENT_SUSPENDUS;
 		}
 		else {
-			queryWhere = buildCriterionEtat(criteria, queryWhere, identificationContribuableCriteria);
+			filter = null;
 		}
-
-
-		String nom = identificationContribuableCriteria.getNom();
-		if (StringUtils.isNotEmpty(nom)) {
-			queryWhere += " and upper(identificationContribuable.demande.personne.nom) = upper(?) ";
-			criteria.add(nom);
-		}
-
-		String prenoms = identificationContribuableCriteria.getPrenoms();
-		if (StringUtils.isNotEmpty(prenoms)) {
-			queryWhere += " and upper(identificationContribuable.demande.personne.prenoms) = upper(?) ";
-			criteria.add(prenoms);
-		}
-
-		String navs13 = identificationContribuableCriteria.getNAVS13();
-		String navs13WithoutDot = StringUtils.replace(navs13, ".", "");
-		if (StringUtils.isNotEmpty(navs13)) {
-			queryWhere += " and (identificationContribuable.demande.personne.NAVS13 = ? or identificationContribuable.demande.personne.NAVS13 = ?) ";
-			criteria.add(navs13);
-			criteria.add(navs13WithoutDot);
-		}
-		String navs11 = identificationContribuableCriteria.getNAVS11();
-		String navs11WithoutDot = StringUtils.replace(navs11, ".", "");
-		if (StringUtils.isNotEmpty(navs11)) {
-			queryWhere += " and (identificationContribuable.demande.personne.NAVS11 = ? or identificationContribuable.demande.personne.NAVS11 = ?) ";
-			criteria.add(navs11);
-			criteria.add(navs11WithoutDot);
-		}
-
-		RegDate dateNaissance = identificationContribuableCriteria.getDateNaissance();
-		if (dateNaissance != null) {
-			if (dateNaissance.isPartial()) {
-				RegDate[] partialDateRange = dateNaissance.getPartialDateRange();
-				queryWhere += " and ((identificationContribuable.demande.personne.dateNaissance = ?) " +
-						"or ((identificationContribuable.demande.personne.dateNaissance >= ?) and (identificationContribuable.demande.personne.dateNaissance <= ?)))";
-				criteria.add(dateNaissance.index());
-				criteria.add(partialDateRange[0].index());
-				criteria.add(partialDateRange[1].index());
-			}
-			else {
-				queryWhere += " and (identificationContribuable.demande.personne.dateNaissance = ?) ";
-				criteria.add(dateNaissance.index());
-			}
-
-		}
-
-		if (LOGGER.isTraceEnabled()) {
-			LOGGER.trace("IdentificationContribuableCriteria Query: " + queryWhere);
-			LOGGER.trace("IdentificationContribuableCriteria Table size: " + criteria.toArray().length);
-		}
-		return queryWhere;
+		return buildCriterion(criteria, identificationContribuableCriteria, filter);
 	}
-
 
 	/**
 	 * Construit la clause Where
 	 */
-	private String buildCriterion(List<Object> criteria, IdentificationContribuableCriteria identificationContribuableCriteria,
-	                              IdentificationContribuableEtatFilter filter) {
+	private String buildCriterion(Map<String, Object> criteria, IdentificationContribuableCriteria identificationContribuableCriteria, IdentificationContribuableEtatFilter filter) {
 		String queryWhere = "";
 
-		String typeMessage = identificationContribuableCriteria.getTypeMessage();
+		final String typeMessage = identificationContribuableCriteria.getTypeMessage();
 		if ((typeMessage != null) && (!TOUS.equals(typeMessage))) {
-			queryWhere += " and identificationContribuable.demande.typeMessage = ? ";
-			criteria.add(typeMessage);
+			queryWhere += " and identificationContribuable.demande.typeMessage = :typeMessage";
+			criteria.put("typeMessage", typeMessage);
 		}
 
-		Integer periodeFiscale = identificationContribuableCriteria.getPeriodeFiscale();
+		final Integer periodeFiscale = identificationContribuableCriteria.getPeriodeFiscale();
 		if ((periodeFiscale != null) && (periodeFiscale != -1)) {
-			queryWhere += " and identificationContribuable.demande.periodeFiscale = ? ";
-			criteria.add(periodeFiscale);
+			queryWhere += " and identificationContribuable.demande.periodeFiscale = :pf";
+			criteria.put("pf", periodeFiscale);
 		}
 
 		String visaUser = identificationContribuableCriteria.getTraitementUser();
 		if ((visaUser != null) && (!TOUS.equals(visaUser))) {
 			if ("Traitement automatique".equals(visaUser)) {
 				visaUser = "%JMS-EvtIdentCtb%";
-				queryWhere += " and identificationContribuable.traitementUser like ? ";
+				queryWhere += " and identificationContribuable.traitementUser like :visaUser";
 
 			}
 			else {
-				queryWhere += " and identificationContribuable.traitementUser = ? ";
+				queryWhere += " and identificationContribuable.traitementUser = :visaUser";
 			}
 
-			criteria.add(visaUser);
+			criteria.put("visaUser", visaUser);
 		}
 
-		Date dateTraitementDebut = identificationContribuableCriteria.getDateTraitementDebut();
+		final Date dateTraitementDebut = identificationContribuableCriteria.getDateTraitementDebut();
 		if (dateTraitementDebut != null) {
-			queryWhere += " and identificationContribuable.dateTraitement >= ? ";
+			queryWhere += " and identificationContribuable.dateTraitement >= :dateTraitementMin";
 			// On prends la date a Zero Hour
-			criteria.add(dateTraitementDebut);
+			criteria.put("dateTraitementMin", dateTraitementDebut);
 		}
-		Date dateTraitementFin = identificationContribuableCriteria.getDateTraitementFin();
+		final Date dateTraitementFin = identificationContribuableCriteria.getDateTraitementFin();
 		if (dateTraitementFin != null) {
-			queryWhere += " and identificationContribuable.dateTraitement <= ? ";
+			queryWhere += " and identificationContribuable.dateTraitement <= :dateTraitementMax";
 			// On prends la date a 24 Hour
-			criteria.add(dateTraitementFin);
+			criteria.put("dateTraitementMax", dateTraitementFin);
 		}
 
-
-		String emetteurId = identificationContribuableCriteria.getEmetteurId();
+		final String emetteurId = identificationContribuableCriteria.getEmetteurId();
 		if ((emetteurId != null) && (!TOUS.equals(emetteurId))) {
-			queryWhere += " and identificationContribuable.demande.emetteurId = ? ";
-			criteria.add(emetteurId);
+			queryWhere += " and identificationContribuable.demande.emetteurId = :emetteurId";
+			criteria.put("emetteurId", emetteurId);
 		}
 
 		// Si la valeur n'existe pas (TOUS par exemple), etat = null
-		PrioriteEmetteur prioriteEmetteur;
-		try {
-			prioriteEmetteur = PrioriteEmetteur.valueOf(identificationContribuableCriteria.getPrioriteEmetteur());
-		}
-		catch (Exception e) {
-			prioriteEmetteur = null; // pas de priorité => TOUS
-		}
-
+		final PrioriteEmetteur prioriteEmetteur = identificationContribuableCriteria.getPrioriteEmetteur();
 		if (prioriteEmetteur != null) {
-			queryWhere += " and identificationContribuable.demande.prioriteEmetteur = ? ";
+			queryWhere += " and identificationContribuable.demande.prioriteEmetteur = :prioEmetteur";
 			if (LOGGER.isTraceEnabled()) {
 				LOGGER.trace("Priorité émetteur : " + prioriteEmetteur);
 			}
-			criteria.add(prioriteEmetteur.name());
+			criteria.put("prioEmetteur", prioriteEmetteur);
 		}
 
 		Date dateMessageDebut = identificationContribuableCriteria.getDateMessageDebut();
 		if (dateMessageDebut != null) {
-			queryWhere += " and identificationContribuable.demande.date >= ? ";
+			queryWhere += " and identificationContribuable.demande.date >= :dateDemandeMin";
 			// On prends la date a Zero Hour
-			criteria.add(dateMessageDebut);
+			criteria.put("dateDemandeMin", dateMessageDebut);
 		}
 		Date dateMessageFin = identificationContribuableCriteria.getDateMessageFin();
 		if (dateMessageFin != null) {
-			queryWhere += " and identificationContribuable.demande.date <= ? ";
+			queryWhere += " and identificationContribuable.demande.date <= :dateDemandeMax";
 			// On prends la date a 24 Hour
 			Calendar calendar = Calendar.getInstance();
 			// Initialisé à la date de fin.
@@ -499,7 +355,7 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 			calendar.add(Calendar.MINUTE, 59);
 			dateMessageFin = calendar.getTime();
 
-			criteria.add(dateMessageFin);
+			criteria.put("dateDemandeMax", dateMessageFin);
 		}
 
 		if (filter == IdentificationContribuableEtatFilter.SEULEMENT_NON_TRAITES) {
@@ -518,54 +374,49 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 			queryWhere = buildCriterionEtat(criteria, queryWhere, identificationContribuableCriteria);
 		}
 
-
 		String nom = identificationContribuableCriteria.getNom();
 		if (StringUtils.isNotEmpty(nom)) {
-			queryWhere += " and upper(identificationContribuable.demande.personne.nom) = upper(?) ";
-			criteria.add(nom);
+			queryWhere += " and upper(identificationContribuable.demande.personne.nom) = upper(:nom) ";
+			criteria.put("nom", nom);
 		}
 
 		String prenoms = identificationContribuableCriteria.getPrenoms();
 		if (StringUtils.isNotEmpty(prenoms)) {
-			queryWhere += " and upper(identificationContribuable.demande.personne.prenoms) = upper(?) ";
-			criteria.add(prenoms);
+			queryWhere += " and upper(identificationContribuable.demande.personne.prenoms) = upper(:prenoms) ";
+			criteria.put("prenoms", prenoms);
 		}
 
 		String navs13 = identificationContribuableCriteria.getNAVS13();
 		String navs13WithoutDot = StringUtils.replace(navs13, ".", "");
 		if (StringUtils.isNotEmpty(navs13)) {
-			queryWhere += " and (identificationContribuable.demande.personne.NAVS13 = ? or identificationContribuable.demande.personne.NAVS13 = ?) ";
-			criteria.add(navs13);
-			criteria.add(navs13WithoutDot);
+			queryWhere += " and identificationContribuable.demande.personne.NAVS13 in (:navs13)";
+			criteria.put("navs13", Arrays.asList(navs13, navs13WithoutDot));
 		}
 		String navs11 = identificationContribuableCriteria.getNAVS11();
 		String navs11WithoutDot = StringUtils.replace(navs11, ".", "");
 		if (StringUtils.isNotEmpty(navs11)) {
-			queryWhere += " and (identificationContribuable.demande.personne.NAVS11 = ? or identificationContribuable.demande.personne.NAVS11 = ?) ";
-			criteria.add(navs11);
-			criteria.add(navs11WithoutDot);
+			queryWhere += " and identificationContribuable.demande.personne.NAVS11 in (:navs11)";
+			criteria.put("navs11", Arrays.asList(navs11, navs11WithoutDot));
 		}
 
 		RegDate dateNaissance = identificationContribuableCriteria.getDateNaissance();
 		if (dateNaissance != null) {
 			if (dateNaissance.isPartial()) {
 				RegDate[] partialDateRange = dateNaissance.getPartialDateRange();
-				queryWhere += " and ((identificationContribuable.demande.personne.dateNaissance = ?) " +
-						"or ((identificationContribuable.demande.personne.dateNaissance >= ?) and (identificationContribuable.demande.personne.dateNaissance <= ?)))";
-				criteria.add(dateNaissance.index());
-				criteria.add(partialDateRange[0].index());
-				criteria.add(partialDateRange[1].index());
+				queryWhere += " and (identificationContribuable.demande.personne.dateNaissance = :dateNaissance or identificationContribuable.demande.personne.dateNaissance between :dateNaissanceMin and :dateNaissanceMax)";
+				criteria.put("dateNaissance", dateNaissance);
+				criteria.put("dateNaissanceMin", partialDateRange[0]);
+				criteria.put("dateNaissanceMax", partialDateRange[1]);
 			}
 			else {
-				queryWhere += " and (identificationContribuable.demande.personne.dateNaissance = ?) ";
-				criteria.add(dateNaissance.index());
+				queryWhere += " and identificationContribuable.demande.personne.dateNaissance = :dateNaissance";
+				criteria.put("dateNaissance", dateNaissance);
 			}
-
 		}
 
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("IdentificationContribuableCriteria Query: " + queryWhere);
-			LOGGER.trace("IdentificationContribuableCriteria Table size: " + criteria.toArray().length);
+			LOGGER.trace("IdentificationContribuableCriteria Table size: " + criteria.size());
 		}
 		return queryWhere;
 	}
@@ -579,71 +430,51 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 	 * @param queryWhere
 	 * @return
 	 */
-	private String buildCriterionEtatNonTraite(List<Object> criteria, String queryWhere, IdentificationContribuableCriteria identificationContribuableCriteria) {
+	private String buildCriterionEtatNonTraite(Map<String, Object> criteria, String queryWhere, IdentificationContribuableCriteria identificationContribuableCriteria) {
 
 
 		// Si la valeur n'existe pas (TOUS par exemple), etat = null
-		Etat etat;
-		try {
-			etat = Etat.valueOf(identificationContribuableCriteria.getEtatMessage());
-		}
-		catch (Exception e) {
-			etat = null; // Etat inconnu => TOUS
-		}
+		final Etat etat = identificationContribuableCriteria.getEtatMessage();
 		if (etat == null) {
 			// la valeur de l'etat est a expertiser ou en cours
-			Etat aTraiterManuellement = Etat.A_TRAITER_MANUELLEMENT;
-			Etat aExpertiser = Etat.A_EXPERTISER;
-			queryWhere += " and identificationContribuable.etat in(?,?) ";
+			final List<Etat> etats = Arrays.asList(Etat.A_TRAITER_MANUELLEMENT, Etat.A_EXPERTISER);
+			queryWhere += " and identificationContribuable.etat in (:etats)";
 			if (LOGGER.isTraceEnabled()) {
-
-				LOGGER.trace("Etat identification CTB: " + aTraiterManuellement + " - " + aExpertiser);
+				LOGGER.trace("Etat identification CTB: " + Arrays.toString(etats.toArray(new Etat[etats.size()])));
 			}
-			criteria.add(aTraiterManuellement.name());
-			criteria.add(aExpertiser.name());
+			criteria.put("etats", etats);
 		}
 		else {
-			queryWhere += " and identificationContribuable.etat = ? ";
+			queryWhere += " and identificationContribuable.etat = :etat";
 			if (LOGGER.isTraceEnabled()) {
 				LOGGER.trace("Etat identification CTB: " + etat);
 			}
-			criteria.add(etat.name());
+			criteria.put("etat", etat);
 		}
 
 		return queryWhere;
 	}
 
-	private String buildCriterionEtatNonTraiteEtException(List<Object> criteria, String queryWhere, IdentificationContribuableCriteria identificationContribuableCriteria) {
+	private String buildCriterionEtatNonTraiteEtException(Map<String, Object> criteria, String queryWhere, IdentificationContribuableCriteria identificationContribuableCriteria) {
 
 
 		// Si la valeur n'existe pas (TOUS par exemple), etat = null
-		Etat etat;
-		try {
-			etat = Etat.valueOf(identificationContribuableCriteria.getEtatMessage());
-		}
-		catch (Exception e) {
-			etat = null; // Etat inconnu => TOUS
-		}
+		final Etat etat = identificationContribuableCriteria.getEtatMessage();
 		if (etat == null) {
 			// la valeur de l'etat est a expertiser ou en cours
-			Etat aTraiterManuellement = Etat.A_TRAITER_MANUELLEMENT;
-			Etat aExpertiser = Etat.A_EXPERTISER;
-			Etat enException = Etat.EXCEPTION;
-			queryWhere += " and identificationContribuable.etat in(?,?,?) ";
+			final List<Etat> etats = Arrays.asList(Etat.A_TRAITER_MANUELLEMENT, Etat.A_EXPERTISER, Etat.EXCEPTION);
+			queryWhere += " and identificationContribuable.etat in (:etats)";
 			if (LOGGER.isTraceEnabled()) {
-
-				LOGGER.trace("Etat identification CTB: " + aTraiterManuellement + " - " + aExpertiser+" - "+enException);
+				LOGGER.trace("Etat identification CTB: " + Arrays.asList(etats.toArray(new Etat[etats.size()])));
 			}
-			criteria.add(aTraiterManuellement.name());
-			criteria.add(aExpertiser.name());
-			criteria.add(enException.name());
+			criteria.put("etats", etats);
 		}
 		else {
-			queryWhere += " and identificationContribuable.etat = ? ";
+			queryWhere += " and identificationContribuable.etat = :etat";
 			if (LOGGER.isTraceEnabled()) {
 				LOGGER.trace("Etat identification CTB: " + etat);
 			}
-			criteria.add(etat.name());
+			criteria.put("etat", etat);
 		}
 
 		return queryWhere;
@@ -658,39 +489,26 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 	 * @param queryWhere
 	 * @return
 	 */
-	private String buildCriterionEtatArchive(List<Object> criteria, String queryWhere, IdentificationContribuableCriteria identificationContribuableCriteria) {
-
+	private String buildCriterionEtatArchive(Map<String, Object> criteria, String queryWhere, IdentificationContribuableCriteria identificationContribuableCriteria) {
 
 		// Si la valeur n'existe pas (TOUS par exemple), etat = null
-		Etat etat;
-		try {
-			etat = Etat.valueOf(identificationContribuableCriteria.getEtatMessage());
-		}
-		catch (Exception e) {
-			etat = null; // Etat inconnu => TOUS
-		}
+		final Etat etat = identificationContribuableCriteria.getEtatMessage();
 		if (etat == null) {
 			// la valeur de l'etat est a expertiser ou en cours
-			Etat traiterAutomatique = Etat.TRAITE_AUTOMATIQUEMENT;
-			Etat nonIdentifie = Etat.NON_IDENTIFIE;
-			Etat traiteManuellementCBO = Etat.TRAITE_MANUELLEMENT;
-			Etat traiteManuellementGBO = Etat.TRAITE_MAN_EXPERT;
-			queryWhere += " and identificationContribuable.etat in(?,?,?,?) ";
+			final List<Etat> etats = Arrays.asList(Etat.TRAITE_AUTOMATIQUEMENT, Etat.NON_IDENTIFIE, Etat.TRAITE_MANUELLEMENT, Etat.TRAITE_MAN_EXPERT);
+			queryWhere += " and identificationContribuable.etat in (:etats)";
 			if (LOGGER.isTraceEnabled()) {
 
-				LOGGER.trace("Etat identification CTB: " + traiterAutomatique + " - " + nonIdentifie + " - " + traiteManuellementCBO + " - " + traiteManuellementGBO);
+				LOGGER.trace("Etat identification CTB: " + Arrays.toString(etats.toArray(new Etat[etats.size()])));
 			}
-			criteria.add(traiterAutomatique.name());
-			criteria.add(nonIdentifie.name());
-			criteria.add(traiteManuellementCBO.name());
-			criteria.add(traiteManuellementGBO.name());
+			criteria.put("etats", etats);
 		}
 		else {
-			queryWhere += " and identificationContribuable.etat = ? ";
+			queryWhere += " and identificationContribuable.etat = :etat";
 			if (LOGGER.isTraceEnabled()) {
 				LOGGER.trace("Etat identification CTB: " + etat);
 			}
-			criteria.add(etat.name());
+			criteria.put("etat", etat);
 		}
 
 		return queryWhere;
@@ -706,40 +524,26 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 	 * @param queryWhere
 	 * @return
 	 */
-	private String buildCriterionEtatNonTraiteOrSuspendu(List<Object> criteria, String queryWhere, IdentificationContribuableCriteria identificationContribuableCriteria) {
+	private String buildCriterionEtatNonTraiteOrSuspendu(Map<String, Object> criteria, String queryWhere, IdentificationContribuableCriteria identificationContribuableCriteria) {
 
 
 		// Si la valeur n'existe pas (TOUS par exemple), etat = null
-		Etat etat;
-		try {
-			etat = Etat.valueOf(identificationContribuableCriteria.getEtatMessage());
-		}
-		catch (Exception e) {
-			etat = null; // Etat inconnu => TOUS
-		}
+		final Etat etat = identificationContribuableCriteria.getEtatMessage();
 		if (etat == null) {
 			// la valeur de l'etat est a expertiser ou en cours
-			Etat aExpertiser = Etat.A_EXPERTISER;
-			Etat aExpertiserSuspendu = Etat.A_EXPERTISER_SUSPENDU;
-			Etat aTraiterManuellement = Etat.A_TRAITER_MANUELLEMENT;
-			Etat aTraiterManSuspendu = Etat.A_TRAITER_MAN_SUSPENDU;
-
-			queryWhere += " and identificationContribuable.etat in(?,?,?,?) ";
+			final List<Etat> etats = Arrays.asList(Etat.A_EXPERTISER, Etat.A_EXPERTISER_SUSPENDU, Etat.A_TRAITER_MANUELLEMENT, Etat.A_TRAITER_MAN_SUSPENDU);
+			queryWhere += " and identificationContribuable.etat in (:etats)";
 			if (LOGGER.isTraceEnabled()) {
-
-				LOGGER.trace("Etat identification CTB: " + aExpertiser + " - " + aExpertiserSuspendu + " - " + aTraiterManuellement + " - " + aTraiterManSuspendu);
+				LOGGER.trace("Etat identification CTB: " + Arrays.toString(etats.toArray(new Etat[etats.size()])));
 			}
-			criteria.add(aExpertiser.name());
-			criteria.add(aExpertiserSuspendu.name());
-			criteria.add(aTraiterManuellement.name());
-			criteria.add(aTraiterManSuspendu.name());
+			criteria.put("etats", etats);
 		}
 		else {
-			queryWhere += " and identificationContribuable.etat = ? ";
+			queryWhere += " and identificationContribuable.etat = :etat";
 			if (LOGGER.isTraceEnabled()) {
 				LOGGER.trace("Etat identification CTB: " + etat);
 			}
-			criteria.add(etat.name());
+			criteria.put("etat", etat);
 		}
 
 		return queryWhere;
@@ -754,36 +558,26 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 	 * @param queryWhere
 	 * @return
 	 */
-	private String buildCriterionEtatSuspendu(List<Object> criteria, String queryWhere, IdentificationContribuableCriteria identificationContribuableCriteria) {
+	private String buildCriterionEtatSuspendu(Map<String, Object> criteria, String queryWhere, IdentificationContribuableCriteria identificationContribuableCriteria) {
 
 
 		// Si la valeur n'existe pas (TOUS par exemple), etat = null
-		Etat etat;
-		try {
-			etat = Etat.valueOf(identificationContribuableCriteria.getEtatMessage());
-		}
-		catch (Exception e) {
-			etat = null; // Etat inconnu => TOUS
-		}
+		final Etat etat = identificationContribuableCriteria.getEtatMessage();
 		if (etat == null) {
 			// la valeur de l'etat est a expertiser ou en cours
-			Etat aExpertiserSuspendu = Etat.A_EXPERTISER_SUSPENDU;
-			Etat aTraiterManSuspendu = Etat.A_TRAITER_MAN_SUSPENDU;
-
-			queryWhere += " and identificationContribuable.etat in(?,?) ";
+			final List<Etat> etats = Arrays.asList(Etat.A_EXPERTISER_SUSPENDU, Etat.A_TRAITER_MAN_SUSPENDU);
+			queryWhere += " and identificationContribuable.etat in (:etats) ";
 			if (LOGGER.isTraceEnabled()) {
-
-				LOGGER.trace("Etat identification CTB: " + aExpertiserSuspendu + " - " + aTraiterManSuspendu);
+				LOGGER.trace("Etat identification CTB: " + Arrays.toString(etats.toArray(new Etat[etats.size()])));
 			}
-			criteria.add(aExpertiserSuspendu.name());
-			criteria.add(aTraiterManSuspendu.name());
+			criteria.put("etats", etats);
 		}
 		else {
-			queryWhere += " and identificationContribuable.etat = ? ";
+			queryWhere += " and identificationContribuable.etat = :etat";
 			if (LOGGER.isTraceEnabled()) {
 				LOGGER.trace("Etat identification CTB: " + etat);
 			}
-			criteria.add(etat.name());
+			criteria.put("etat", etat);
 		}
 
 		return queryWhere;
@@ -799,40 +593,27 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 	 * @param queryWhere
 	 * @return
 	 */
-	private String buildCriterionEtat(List<Object> criteria, String queryWhere, IdentificationContribuableCriteria identificationContribuableCriteria) {
+	private String buildCriterionEtat(Map<String, Object> criteria, String queryWhere, IdentificationContribuableCriteria identificationContribuableCriteria) {
 
 
 		// Si la valeur n'existe pas (TOUS par exemple), etat = null
-		Etat etat;
-		try {
-			etat = Etat.valueOf(identificationContribuableCriteria.getEtatMessage());
-		}
-		catch (Exception e) {
-			etat = null; // Etat inconnu => TOUS
-		}
-
+		final Etat etat = identificationContribuableCriteria.getEtatMessage();
 		if (etat != null) {
 			if (Etat.SUSPENDU == etat) {
-				Etat aTraiterManuellementSuspendu = Etat.A_TRAITER_MAN_SUSPENDU;
-				Etat aExpertiserSuspendu = Etat.A_EXPERTISER_SUSPENDU;
-				queryWhere += " and identificationContribuable.etat in(?,?,?) ";
+				final List<Etat> etats = Arrays.asList(Etat.A_TRAITER_MAN_SUSPENDU, Etat.A_EXPERTISER_SUSPENDU, Etat.SUSPENDU);
+				queryWhere += " and identificationContribuable.etat in (:etats)";
 				if (LOGGER.isTraceEnabled()) {
-
-					LOGGER.trace("Etat identification CTB: " + aTraiterManuellementSuspendu + " - " + aExpertiserSuspendu + " - " + etat);
+					LOGGER.trace("Etat identification CTB: " + Arrays.toString(etats.toArray(new Etat[etats.size()])));
 				}
-				criteria.add(aTraiterManuellementSuspendu.name());
-				criteria.add(aExpertiserSuspendu.name());
-				criteria.add(etat.name());
+				criteria.put("etats", etats);
 			}
 			else {
-				queryWhere += " and identificationContribuable.etat = ? ";
+				queryWhere += " and identificationContribuable.etat = :etat";
 				if (LOGGER.isTraceEnabled()) {
 					LOGGER.trace("Etat identification CTB: " + etat);
 				}
-				criteria.add(etat.name());
-
+				criteria.put("etat", etat);
 			}
-
 		}
 
 		return queryWhere;

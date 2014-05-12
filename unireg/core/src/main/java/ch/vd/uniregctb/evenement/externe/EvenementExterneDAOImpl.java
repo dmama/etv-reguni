@@ -9,7 +9,7 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
-import ch.vd.registre.base.dao.GenericDAOImpl;
+import ch.vd.uniregctb.common.BaseDAOImpl;
 
 /**
  * DAO des événements externes.
@@ -17,7 +17,7 @@ import ch.vd.registre.base.dao.GenericDAOImpl;
  * @author xcicfh
  *
  */
-public class EvenementExterneDAOImpl extends GenericDAOImpl<EvenementExterne, Long> implements EvenementExterneDAO {
+public class EvenementExterneDAOImpl extends BaseDAOImpl<EvenementExterne, Long> implements EvenementExterneDAO {
 
 	public EvenementExterneDAOImpl() {
 		super(EvenementExterne.class);
@@ -53,6 +53,6 @@ public class EvenementExterneDAOImpl extends GenericDAOImpl<EvenementExterne, Lo
 	@Override
 	@SuppressWarnings({"unchecked"})
 	public List<Long> getIdsQuittancesLRToMigrate() {
-		return (List<Long>) find("select q.id from QuittanceLR q where q.type is null", null, null);
+		return find("select q.id from QuittanceLR q where q.type is null", null);
 	}
 }

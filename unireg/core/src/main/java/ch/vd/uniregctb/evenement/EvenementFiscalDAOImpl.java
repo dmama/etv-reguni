@@ -6,7 +6,7 @@ import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 
-import ch.vd.registre.base.dao.GenericDAOImpl;
+import ch.vd.uniregctb.common.BaseDAOImpl;
 import ch.vd.uniregctb.tiers.Tiers;
 
 /**
@@ -15,7 +15,7 @@ import ch.vd.uniregctb.tiers.Tiers;
  * @author Akram BEN AISSI <mailto:akram.ben-aissi@vd.ch>
  *
  */
-public class EvenementFiscalDAOImpl extends GenericDAOImpl<EvenementFiscal, Long> implements EvenementFiscalDAO {
+public class EvenementFiscalDAOImpl extends BaseDAOImpl<EvenementFiscal, Long> implements EvenementFiscalDAO {
 
 	//private static final Logger LOGGER = Logger.getLogger(EvenementFiscalDAOImpl.class);
 

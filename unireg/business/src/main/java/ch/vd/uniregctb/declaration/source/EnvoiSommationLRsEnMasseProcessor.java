@@ -178,12 +178,12 @@ private final Logger LOGGER = Logger.getLogger(EnvoiLRsEnMasseProcessor.class);
 
 						final Query query = session.createQuery(sql);
 						if (dateFinPeriode != null) {
-							query.setParameter("dateFin", dateFinPeriode.index());
+							query.setParameter("dateFin", dateFinPeriode);
 						}
 						if (categorie != null) {
-							query.setParameter("categorie", categorie.name());
+							query.setParameter("categorie", categorie);
 						}
-						query.setParameter("dateLimite", dateLimite.index());
+						query.setParameter("dateLimite", dateLimite);
 						//noinspection unchecked
 						return query.list();
 					}

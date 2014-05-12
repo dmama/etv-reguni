@@ -170,7 +170,7 @@ public class ValidationJob extends JobDefinition {
 			@Override
 			public List<Long> doInTransaction(TransactionStatus status) {
 				//noinspection unchecked
-				return hibernateTemplate.find("select t.numero from Tiers t order by t.numero asc", null, null);
+				return hibernateTemplate.find("select t.numero from Tiers t order by t.numero asc", null);
 			}
 		});
 

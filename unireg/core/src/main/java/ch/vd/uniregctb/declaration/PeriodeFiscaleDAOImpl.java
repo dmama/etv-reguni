@@ -1,15 +1,17 @@
 package ch.vd.uniregctb.declaration;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.hibernate.FlushMode;
 
-import ch.vd.registre.base.dao.GenericDAOImpl;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.common.BaseDAOImpl;
 
-public class PeriodeFiscaleDAOImpl extends GenericDAOImpl< PeriodeFiscale, Long> implements  PeriodeFiscaleDAO {
+public class PeriodeFiscaleDAOImpl extends BaseDAOImpl< PeriodeFiscale, Long> implements  PeriodeFiscaleDAO {
 
 
 	private static final Logger LOGGER = Logger.getLogger(PeriodeFiscaleDAOImpl.class);
@@ -32,7 +34,7 @@ public class PeriodeFiscaleDAOImpl extends GenericDAOImpl< PeriodeFiscale, Long>
 		}
 
 		final String query = " select periode from PeriodeFiscale periode order by periode.annee desc";
-		return (List<PeriodeFiscale>) find(query, null, null);
+		return find(query, null);
 	}
 
 
@@ -41,10 +43,6 @@ public class PeriodeFiscaleDAOImpl extends GenericDAOImpl< PeriodeFiscale, Long>
 	 */
 	@Override
 	public PeriodeFiscale getPeriodeFiscaleByYear(final int year) {
-
-		final Object[] params = new Object[] {
-				year
-		};
 
 		/**
 		 * FlushMode.MANUAL => Ici, on applique un petit hack pour éviter un side-effect indésirable de l'intercepteur de validation des
@@ -67,7 +65,9 @@ public class PeriodeFiscaleDAOImpl extends GenericDAOImpl< PeriodeFiscale, Long>
 		 * par année..
 		 * </pre>
 		 */
-		final Iterator<?> i = iterate("from PeriodeFiscale periode where periode.annee = ?", params, FlushMode.MANUAL);
+		final Map<String, Integer> params = new HashMap<>(1);
+		params.put("year", year);
+		final Iterator<?> i = iterate("from PeriodeFiscale periode where periode.annee = :year", params, FlushMode.MANUAL);
 
 		PeriodeFiscale periode = null;
 

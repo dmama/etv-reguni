@@ -35,7 +35,7 @@ public class HibernateEntityIteratorTest extends CoreDAOTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testHibernateTemplateFind() {
 
-		final List<?> list = hibernateTemplate.find("from Tiers", null, null);
+		final List<?> list = hibernateTemplate.find("from Tiers", null);
 		assertNotNull(list);
 		assertEquals(4, list.size());
 
@@ -55,7 +55,7 @@ public class HibernateEntityIteratorTest extends CoreDAOTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testHibernateTemplateIterate() {
 
-		Iterator<?> iter = hibernateTemplate.iterate("from Tiers", null, null);
+		Iterator<?> iter = hibernateTemplate.iterate("from Tiers", null);
 		assertNotNull(iter);
 
 		while (iter.hasNext()) {
@@ -88,7 +88,7 @@ public class HibernateEntityIteratorTest extends CoreDAOTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testHibernateEntityIterator() {
 
-		final Iterator<Tiers> iter = new HibernateEntityIterator<>(hibernateTemplate.<Tiers>iterate("from Tiers", null, null));
+		final Iterator<Tiers> iter = new HibernateEntityIterator<>(hibernateTemplate.<Tiers>iterate("from Tiers", null));
 		assertNotNull(iter);
 
 		while (iter.hasNext()) {

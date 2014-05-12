@@ -1038,8 +1038,8 @@ public class ProduireRolesProcessor {
 						final RegDate finPeriode = RegDate.get(annee, 12, 31);
 
 						final Query query = session.createQuery(hql);
-						query.setParameter("debutPeriode", debutPeriode.index());
-						query.setParameter("finPeriode", finPeriode.index());
+						query.setParameter("debutPeriode", debutPeriode);
+						query.setParameter("finPeriode", finPeriode);
 						//noinspection unchecked
 						return query.list();
 					}
@@ -1082,8 +1082,8 @@ public class ProduireRolesProcessor {
 							final RegDate finPeriode = RegDate.get(annee, 12, 31);
 
 							final Query query = session.createQuery(hql);
-							query.setParameter("debutPeriode", debutPeriode.index());
-							query.setParameter("finPeriode", finPeriode.index());
+							query.setParameter("debutPeriode", debutPeriode);
+							query.setParameter("finPeriode", finPeriode);
 							query.setParameterList("noOfsCommune", noOfsCommunes);
 							//noinspection unchecked
 							return query.list();

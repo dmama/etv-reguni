@@ -544,15 +544,15 @@ public class TiersServiceImpl implements TiersService {
             @Override
             public Object doInHibernate(Session session) throws HibernateException, SQLException {
                 {
-                    final String deleteQuery = "DELETE FROM IDENTIFICATION_PERSONNE WHERE NON_HABITANT_ID=?";
+                    final String deleteQuery = "DELETE FROM IDENTIFICATION_PERSONNE WHERE NON_HABITANT_ID=:tiersId";
                     final SQLQuery query = session.createSQLQuery(deleteQuery);
-                    query.setLong(0, numeroTiers);
+                    query.setLong("tiersId", numeroTiers);
                     query.executeUpdate();
                 }
                 {
-                    final String deleteQuery = "DELETE FROM DROIT_ACCES WHERE TIERS_ID=?";
+                    final String deleteQuery = "DELETE FROM DROIT_ACCES WHERE TIERS_ID=:tiersId";
                     final SQLQuery query = session.createSQLQuery(deleteQuery);
-                    query.setLong(0, numeroTiers);
+                    query.setLong("tiersId", numeroTiers);
                     query.executeUpdate();
                 }
                 return null;

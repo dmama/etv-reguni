@@ -1,11 +1,12 @@
 package ch.vd.uniregctb.tiers;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.hibernate.FlushMode;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -13,15 +14,15 @@ import org.hibernate.engine.spi.EntityKey;
 import org.hibernate.internal.SessionImpl;
 import org.springframework.dao.support.DataAccessUtils;
 
-import ch.vd.registre.base.dao.GenericDAOImpl;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.BaseDAOImpl;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.dbutils.QueryFragment;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.type.TypeEtatTache;
 import ch.vd.uniregctb.type.TypeTache;
 
-public class TacheDAOImpl extends GenericDAOImpl<Tache, Long> implements TacheDAO {
+public class TacheDAOImpl extends BaseDAOImpl<Tache, Long> implements TacheDAO {
 
 	//private static final Logger LOGGER = Logger.getLogger(TacheDAOImpl.class);
 
@@ -44,12 +45,11 @@ public class TacheDAOImpl extends GenericDAOImpl<Tache, Long> implements TacheDA
 	@SuppressWarnings("unchecked")
 	public List<Tache> find(TacheCriteria criterion, boolean doNotAutoFlush) {
 
-		List<Object> params = new ArrayList<>();
+		final Map<String, Object> params = new HashMap<>();
 		final String query = "select tache " + buildFromWhereClause(criterion, params) + " order by tache.id asc";
 
 		final FlushMode mode = (doNotAutoFlush ? FlushMode.MANUAL : null);
-		final List<Tache> list = (List<Tache>) find(query, params.toArray(), mode);
-		return list;
+		return find(query, params, mode);
 	}
 
 	/**
@@ -59,15 +59,13 @@ public class TacheDAOImpl extends GenericDAOImpl<Tache, Long> implements TacheDA
 	@SuppressWarnings("unchecked")
 	public List<Tache> find(long noContribuable) {
 		final String query = "select t from Tache t where t.contribuable.id=" + noContribuable + " order by t.id asc";
-		return (List<Tache>) find(query, null, null);
+		return find(query, null);
 	}
 
 	/**
 	 * Recherche d'un range de toutes les tâches correspondant au critère de sélection
 	 *
 	 * @param criterion
-	 * @param page
-	 * @param pageSize
 	 * @return
 	 */
 	@Override
@@ -75,7 +73,7 @@ public class TacheDAOImpl extends GenericDAOImpl<Tache, Long> implements TacheDA
 	public List<Tache> find(final TacheCriteria criterion, final ParamPagination paramPagination) {
 
 		final Session session = getCurrentSession();
-		final List<Object> paramsWhere = new ArrayList<>();
+		final Map<String, Object> paramsWhere = new HashMap<>();
 		final String whereClause = buildFromWhereClause(criterion, paramsWhere);
 		final QueryFragment fragment = new QueryFragment("select tache " + whereClause, paramsWhere);
 		fragment.add(paramPagination.buildOrderClause("tache", null, true, null));
@@ -104,7 +102,7 @@ public class TacheDAOImpl extends GenericDAOImpl<Tache, Long> implements TacheDA
 	@Override
 	public int count(long noContribuable) {
 		final String query = "select count(*) from Tache t where t.contribuable.id=" + noContribuable;
-		return DataAccessUtils.intResult(find(query, null, null));
+		return DataAccessUtils.intResult(find(query, null));
 	}
 
 	/**
@@ -112,18 +110,17 @@ public class TacheDAOImpl extends GenericDAOImpl<Tache, Long> implements TacheDA
 	 */
 	@Override
 	public int count(TacheCriteria criterion, boolean doNotAutoFlush) {
-		List<Object> params = new ArrayList<>();
+		final Map<String, Object> params = new HashMap<>();
 		final String query = "select count(*) " + buildFromWhereClause(criterion, params);
 
 		final FlushMode mode = (doNotAutoFlush ? FlushMode.MANUAL : null);
-		int count = DataAccessUtils.intResult(find(query, params.toArray(), mode));
-		return count;
+		return DataAccessUtils.intResult(find(query, params, mode));
 	}
 
 	/**
 	 * Construit les clauses 'from' et 'where' de la requête de recherche des tâches.
 	 */
-	private String buildFromWhereClause(TacheCriteria criterion, List<Object> params) {
+	private String buildFromWhereClause(TacheCriteria criterion, Map<String, Object> params) {
 
 		String clause = "";
 
@@ -142,21 +139,21 @@ public class TacheDAOImpl extends GenericDAOImpl<Tache, Long> implements TacheDA
 		// Contribuable
 		final Contribuable contribuable = criterion.getContribuable();
 		if (contribuable != null) {
-			clause += " and tache.contribuable = ? ";
-			params.add(contribuable);
+			clause += " and tache.contribuable = :ctb";
+			params.put("ctb", contribuable);
 		}
 
 		// Numéro de contribuable
 		if (criterion.getNumeroCTB() != null) {
-			clause += " and tache.contribuable.numero = ? ";
-			params.add(criterion.getNumeroCTB());
+			clause += " and tache.contribuable.id = :ctbId";
+			params.put("ctbId", criterion.getNumeroCTB());
 		}
 
 		// Etat tache
 		final TypeEtatTache etatTache = criterion.getEtatTache();
 		if (etatTache != null) {
-			clause += " and tache.etat = ? ";
-			params.add(etatTache.name());
+			clause += " and tache.etat = :etat";
+			params.put("etat", etatTache);
 		}
 
 		// Année de la période d'imposition
@@ -166,16 +163,16 @@ public class TacheDAOImpl extends GenericDAOImpl<Tache, Long> implements TacheDA
 			final RegDate dateFinPeriode = RegDate.get(annee, 12, 31);
 
 			if (TypeTache.TacheEnvoiDeclarationImpot == typeTache) {
-				clause += " and tache.dateDebut >= ? ";
-				clause += " and tache.dateFin <= ? ";
-				params.add(dateDebutPeriode.index());
-				params.add(dateFinPeriode.index());
+				clause += " and tache.dateDebut >= :dateDebut";
+				clause += " and tache.dateFin <= :dateFin";
+				params.put("dateDebut", dateDebutPeriode);
+				params.put("dateFin", dateFinPeriode);
 			}
 			else if (TypeTache.TacheAnnulationDeclarationImpot == typeTache) {
-				clause += " and tache.declarationImpotOrdinaire.dateDebut >= ? ";
-				clause += " and tache.declarationImpotOrdinaire.dateFin <= ? ";
-				params.add(dateDebutPeriode.index());
-				params.add(dateFinPeriode.index());
+				clause += " and tache.declarationImpotOrdinaire.dateDebut >= :dateDebut";
+				clause += " and tache.declarationImpotOrdinaire.dateFin <= :dateFin";
+				params.put("dateDebut", dateDebutPeriode);
+				params.put("dateFin", dateFinPeriode);
 			}
 		}
 
@@ -183,39 +180,33 @@ public class TacheDAOImpl extends GenericDAOImpl<Tache, Long> implements TacheDA
 		final Integer oid = criterion.getOid();
 		if (oid != null) {
 			// [UNIREG-1850]
-			clause += " and tache.collectiviteAdministrativeAssignee.numeroCollectiviteAdministrative = ? ";
-			params.add(oid);
+			clause += " and tache.collectiviteAdministrativeAssignee.numeroCollectiviteAdministrative = :oid";
+			params.put("oid", oid);
 		}
 
 		// Office d'impot de l'utilisateur
 		final Integer[] oidUser = criterion.getOidUser();
 		if (oidUser != null && oidUser.length > 0) {
-			clause += " and (tache.collectiviteAdministrativeAssignee is null or " +
-					"tache.collectiviteAdministrativeAssignee.numeroCollectiviteAdministrative in (?";
-			params.add(oidUser[0]);
-			for (int i = 1; i < oidUser.length; i++) {
-				clause += ",?";
-				params.add(oidUser[i]);
-			}
-			clause += "))";
+			clause += " and (tache.collectiviteAdministrativeAssignee is null or tache.collectiviteAdministrativeAssignee.numeroCollectiviteAdministrative in (:oidUser))";
+			params.put("oidUser", Arrays.asList(oidUser));
 		}
 
 		final Date dateCreationDepuis = criterion.getDateCreationDepuis();
 		if (dateCreationDepuis != null) {
-			clause += " and tache.logCreationDate >= ? ";
-			params.add(dateCreationDepuis);
+			clause += " and tache.logCreationDate >= :cdateMin";
+			params.put("cdateMin", dateCreationDepuis);
 		}
 
 		final Date dateCreationJusqua = criterion.getDateCreationJusqua();
 		if (dateCreationJusqua != null) {
-			clause += " and tache.logCreationDate <= ? ";
-			params.add(dateCreationJusqua);
+			clause += " and tache.logCreationDate <= :cdateMax";
+			params.put("cdateMax", dateCreationJusqua);
 		}
 
 		final RegDate dateEcheanceJusqua = criterion.getDateEcheanceJusqua();
 		if (dateEcheanceJusqua != null) {
-			clause += " and tache.dateEcheance <= ? ";
-			params.add(dateEcheanceJusqua.index());
+			clause += " and tache.dateEcheance <= :dateEcheanceMax";
+			params.put("dateEcheanceMax", dateEcheanceJusqua);
 		}
 
 		final boolean inclureTachesAnnulees = criterion.isInclureTachesAnnulees();
@@ -225,8 +216,8 @@ public class TacheDAOImpl extends GenericDAOImpl<Tache, Long> implements TacheDA
 
 		final DeclarationImpotOrdinaire declarationAnnulee = criterion.getDeclarationAnnulee();
 		if (declarationAnnulee != null && typeTache == TypeTache.TacheAnnulationDeclarationImpot) {
-			clause += " and tache.declarationImpotOrdinaire = ?";
-			params.add(declarationAnnulee);
+			clause += " and tache.declarationImpotOrdinaire = :diAnnulee";
+			params.put("diAnnulee", declarationAnnulee);
 		}
 
 		return clause;
@@ -251,11 +242,10 @@ public class TacheDAOImpl extends GenericDAOImpl<Tache, Long> implements TacheDA
 		}
 
 		// Recherche dans la base de données
-		final Object[] params = {noCtb};
 		final String query = "from "
 				+ type.name()
-				+ " tache where tache.contribuable = ? and tache.annulationDate is null and (tache.etat = 'EN_INSTANCE' or tache.etat = 'EN_COURS')";
-		final List<Tache> list = (List<Tache>) find(query, params, FlushMode.MANUAL);
+				+ " tache where tache.contribuable.id = :noCtb and tache.annulationDate is null and (tache.etat = 'EN_INSTANCE' or tache.etat = 'EN_COURS')";
+		final List<Tache> list = find(query, buildNamedParameters(Pair.of("noCtb", noCtb)), FlushMode.MANUAL);
 		return !list.isEmpty();
 	}
 
@@ -282,11 +272,12 @@ public class TacheDAOImpl extends GenericDAOImpl<Tache, Long> implements TacheDA
 		}
 
 		// Recherche dans la base de données
-		Object[] params = {
-				noCtb, dateDebut.index(), dateFin.index()
-		};
-		final String query = "from TacheEnvoiDeclarationImpot tache where tache.contribuable = ? and tache.dateDebut = ?  and tache.dateFin = ? and tache.annulationDate is null and (tache.etat = 'EN_INSTANCE' or tache.etat = 'EN_COURS')";
-		final List<Tache> list = (List<Tache>) find(query, params, FlushMode.MANUAL);
+		final String query = "from TacheEnvoiDeclarationImpot tache where tache.contribuable.id = :noCtb and tache.dateDebut = :debut and tache.dateFin = :fin and tache.annulationDate is null and (tache.etat = 'EN_INSTANCE' or tache.etat = 'EN_COURS')";
+		final List<Tache> list = find(query,
+		                              buildNamedParameters(Pair.<String, Object>of("noCtb", noCtb),
+		                                                   Pair.<String, Object>of("debut", dateDebut),
+		                                                   Pair.<String, Object>of("fin", dateFin)),
+		                              FlushMode.MANUAL);
 		return !list.isEmpty();
 	}
 
@@ -314,12 +305,11 @@ public class TacheDAOImpl extends GenericDAOImpl<Tache, Long> implements TacheDA
 
 		// Recherche dans la base de données
 
-		final Object[] params = {
-				noCtb, noDi
-		};
-		final String query = "from TacheAnnulationDeclarationImpot tache where tache.contribuable = ? and "
-				+ "tache.declarationImpotOrdinaire.id = ? and tache.annulationDate is null and (tache.etat = 'EN_INSTANCE' or tache.etat = 'EN_COURS')";
-		final List<Tache> list = (List<Tache>) find(query, params, FlushMode.MANUAL);
+		final String query = "from TacheAnnulationDeclarationImpot tache where tache.contribuable.id = :ctb and "
+				+ "tache.declarationImpotOrdinaire.id = :noDi and tache.annulationDate is null and (tache.etat = 'EN_INSTANCE' or tache.etat = 'EN_COURS')";
+		final List<Tache> list = find(query,
+		                              buildNamedParameters(Pair.of("ctb", noCtb), Pair.of("noDi", noDi)),
+		                              FlushMode.MANUAL);
 		return !list.isEmpty();
 	}
 
@@ -330,12 +320,8 @@ public class TacheDAOImpl extends GenericDAOImpl<Tache, Long> implements TacheDA
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T extends Tache> List<T> listTaches(long noCtb, TypeTache type) {
-		Object[] params = {
-				noCtb
-		};
-		final String query = "from " + type.name() + " tache where tache.contribuable = ?";
-		final List<T> list = (List<T>) find(query, params, FlushMode.MANUAL);
-		return list;
+		final String query = "from " + type.name() + " tache where tache.contribuable.id = :noCtb";
+		return find(query, buildNamedParameters(Pair.of("noCtb", noCtb)) , FlushMode.MANUAL);
 	}
 
 	private static final String updateCollAdm =
@@ -397,7 +383,7 @@ public class TacheDAOImpl extends GenericDAOImpl<Tache, Long> implements TacheDA
 		// récupère les stats des tâches en instance
 		{
 			final Query query = session.createQuery(queryTaches);
-			query.setParameter("dateEcheance", RegDate.get().index());
+			query.setParameter("dateEcheance", RegDate.get());
 
 			final List list = query.list();
 			for (Object o : list) {
@@ -418,7 +404,7 @@ public class TacheDAOImpl extends GenericDAOImpl<Tache, Long> implements TacheDA
 		// récupère les stats des dossiers en instance
 		{
 			final Query query = session.createQuery(queryDossiers);
-			query.setParameter("dateEcheance", RegDate.get().index());
+			query.setParameter("dateEcheance", RegDate.get());
 
 			final List list = query.list();
 			for (Object o : list) {

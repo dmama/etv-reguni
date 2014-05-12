@@ -295,8 +295,8 @@ public class ProduireStatsCtbsProcessor {
 					@Override
 					public List<Long> doInHibernate(Session session) throws HibernateException {
 						final Query queryObject = session.createQuery(queryCtbs);
-						queryObject.setParameter("debutAnnee", debutAnnee.index());
-						queryObject.setParameter("finAnnee", finAnnee.index());
+						queryObject.setParameter("debutAnnee", debutAnnee);
+						queryObject.setParameter("finAnnee", finAnnee);
 						//noinspection unchecked
 						return queryObject.list();
 					}

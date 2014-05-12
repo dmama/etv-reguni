@@ -38,6 +38,7 @@ import ch.vd.uniregctb.common.Flash;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.common.WebParamPagination;
 import ch.vd.uniregctb.evenement.identification.contribuable.Demande;
+import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableEtatFilter;
 import ch.vd.uniregctb.evenement.identification.contribuable.TypeDemande;
 import ch.vd.uniregctb.identification.contribuable.manager.IdentificationMessagesEditManager;
@@ -323,9 +324,9 @@ public class IdentificationController {
 	@SecurityCheck(rolesToCheck = {Role.MW_IDENT_CTB_VISU, Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_CELLULE_BO,
 			Role.MW_IDENT_CTB_GEST_BO, Role.NCS_IDENT_CTB_CELLULE_BO, Role.LISTE_IS_IDENT_CTB_CELLULE_BO}, accessDeniedMessage = ACCESS_DENIED_VISU_MESSAGE)
 	protected ModelAndView listerEnCoursFromStats(HttpServletRequest request,
-	                                              @RequestParam(value = "etat", required = true) String etat,
-	                                              @RequestParam(value = "periode", required = true) String periode,
-	                                              @RequestParam(value = "typeMessage", required = true) String typeMessage,
+	                                              @RequestParam(value = "etat", required = false) IdentificationContribuable.Etat etat,
+	                                              @RequestParam(value = "periode", required = false) Integer periode,
+	                                              @RequestParam(value = "typeMessage", required = false) String typeMessage,
 	                                              ModelMap model) throws AdressesResolutionException {
 
 
@@ -346,9 +347,9 @@ public class IdentificationController {
 	@RequestMapping(value = {"/gestion-messages/listSuspenduFromStats.do"}, method = {RequestMethod.POST, RequestMethod.GET})
 	@SecurityCheck(rolesToCheck = {Role.MW_IDENT_CTB_CELLULE_BO, Role.MW_IDENT_CTB_ADMIN}, accessDeniedMessage = ACCESS_DENIED_VISU_MESSAGE)
 	protected ModelAndView listerSuspenduFromStats(HttpServletRequest request,
-	                                              @RequestParam(value = "etat", required = true) String etat,
-	                                              @RequestParam(value = "periode", required = true) String periode,
-	                                              @RequestParam(value = "typeMessage", required = true) String typeMessage,
+	                                              @RequestParam(value = "etat", required = false) IdentificationContribuable.Etat etat,
+	                                              @RequestParam(value = "periode", required = false) Integer periode,
+	                                              @RequestParam(value = "typeMessage", required = false) String typeMessage,
 	                                              ModelMap model) throws AdressesResolutionException {
 
 		setUpModelForListMessageSuspendu(model);
@@ -386,9 +387,9 @@ public class IdentificationController {
 	@SecurityCheck(rolesToCheck = {Role.MW_IDENT_CTB_VISU, Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_CELLULE_BO,
 			Role.MW_IDENT_CTB_GEST_BO, Role.NCS_IDENT_CTB_CELLULE_BO, Role.LISTE_IS_IDENT_CTB_CELLULE_BO}, accessDeniedMessage = ACCESS_DENIED_VISU_MESSAGE)
 	protected ModelAndView listerTraiteFromStats(HttpServletRequest request,
-	                                              @RequestParam(value = "etat", required = true) String etat,
-	                                              @RequestParam(value = "periode", required = true) String periode,
-	                                              @RequestParam(value = "typeMessage", required = true) String typeMessage,
+	                                              @RequestParam(value = "etat", required = false) IdentificationContribuable.Etat etat,
+	                                              @RequestParam(value = "periode", required = false) Integer periode,
+	                                              @RequestParam(value = "typeMessage", required = false) String typeMessage,
 	                                              ModelMap model) throws AdressesResolutionException {
 
 		setUpModelForListMessageTraites(model);

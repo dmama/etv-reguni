@@ -1,8 +1,8 @@
 package ch.vd.uniregctb.adresse;
 
-import ch.vd.registre.base.dao.GenericDAOImpl;
+import ch.vd.uniregctb.common.BaseDAOImpl;
 
-public class AdresseTiersDAOImpl extends GenericDAOImpl<AdresseTiers, Long> implements AdresseTiersDAO {
+public class AdresseTiersDAOImpl extends BaseDAOImpl<AdresseTiers, Long> implements AdresseTiersDAO {
 
 	public AdresseTiersDAOImpl() {
 		super(AdresseTiers.class);

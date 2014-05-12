@@ -1,8 +1,8 @@
 package ch.vd.uniregctb.tiers;
 
-import ch.vd.registre.base.dao.GenericDAOImpl;
+import ch.vd.uniregctb.common.BaseDAOImpl;
 
-public class SituationFamilleDAOImpl extends GenericDAOImpl<SituationFamille, Long> implements SituationFamilleDAO {
+public class SituationFamilleDAOImpl extends BaseDAOImpl<SituationFamille, Long> implements SituationFamilleDAO {
 
 	public SituationFamilleDAOImpl() {
 		super(SituationFamille.class);

@@ -1014,7 +1014,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	public Map<IdentificationContribuable.Etat, Integer> calculerStats(IdentificationContribuableCriteria identificationContribuableCriteria) {
 		final Map<IdentificationContribuable.Etat, Integer> resultatStats = new EnumMap<>(IdentificationContribuable.Etat.class);
 		for (IdentificationContribuable.Etat etat : IdentificationContribuable.Etat.values()) {
-			identificationContribuableCriteria.setEtatMessage(etat.name());
+			identificationContribuableCriteria.setEtatMessage(etat);
 			final int res = count(identificationContribuableCriteria, IdentificationContribuableEtatFilter.TOUS);
 			resultatStats.put(etat, res);
 		}

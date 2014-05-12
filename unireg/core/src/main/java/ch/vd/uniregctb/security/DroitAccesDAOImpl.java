@@ -5,16 +5,17 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.springframework.dao.support.DataAccessUtils;
 
-import ch.vd.registre.base.dao.GenericDAOImpl;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.BaseDAOImpl;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.tiers.DroitAcces;
 
-public class DroitAccesDAOImpl extends GenericDAOImpl<DroitAcces, Long> implements DroitAccesDAO {
+public class DroitAccesDAOImpl extends BaseDAOImpl<DroitAcces, Long> implements DroitAccesDAO {
 
 	public DroitAccesDAOImpl() {
 		super(DroitAcces.class);
@@ -23,11 +24,12 @@ public class DroitAccesDAOImpl extends GenericDAOImpl<DroitAcces, Long> implemen
 	@Override
 	@SuppressWarnings("unchecked")
 	public DroitAcces getDroitAcces(long operateurId, long tiersId, RegDate date) {
-		final Object[] criteria = {
-				tiersId, operateurId, date.index(), date.index()
-		};
-		final String query = "from DroitAcces da where da.tiers.id = ? and da.noIndividuOperateur = ? and da.annulationDate is null and da.dateDebut <= ? and (da.dateFin is null or da.dateFin >= ?) order by da.dateDebut desc";
-		final List<DroitAcces> list = (List<DroitAcces>) find(query, criteria, null);
+		final String query = "from DroitAcces da where da.tiers.id = :tiersId and da.noIndividuOperateur = :operId and da.annulationDate is null and da.dateDebut <= :dateRef and (da.dateFin is null or da.dateFin >= :dateRef) order by da.dateDebut desc";
+		final List<DroitAcces> list = find(query,
+		                                   buildNamedParameters(Pair.<String, Object>of("tiersId", tiersId),
+		                                                        Pair.<String, Object>of("operId", operateurId),
+		                                                        Pair.<String, Object>of("dateRef", date)),
+		                                   null);
 		if (list.isEmpty()) {
 			return null;
 		}
@@ -50,16 +52,15 @@ public class DroitAccesDAOImpl extends GenericDAOImpl<DroitAcces, Long> implemen
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<DroitAcces> getDroitsAcces(final long noIndividuOperateur, final ParamPagination paramPagination) {
-		final Object[] criteria = {noIndividuOperateur};
-		final String query = "from DroitAcces da where da.noIndividuOperateur = ? order by da.annulationDate desc, da.dateDebut desc, da.id";
+		final String query = "from DroitAcces da where da.noIndividuOperateur = :operId order by da.annulationDate desc, da.dateDebut desc, da.id";
 		final List<DroitAcces> list;
 		if (paramPagination == null) {
-			list = (List<DroitAcces>) find(query, criteria, null);
+			list = find(query, buildNamedParameters(Pair.of("operId", noIndividuOperateur)), null);
 		}
 		else {
 			final Session session = getCurrentSession();
-			Query q = session.createQuery(query);
-			q.setLong(0, noIndividuOperateur);
+			final Query q = session.createQuery(query);
+			q.setLong("operId", noIndividuOperateur);
 			q.setFirstResult(paramPagination.getSqlFirstResult());
 			q.setMaxResults(paramPagination.getSqlMaxResults());
 			list = q.list();
@@ -69,16 +70,16 @@ public class DroitAccesDAOImpl extends GenericDAOImpl<DroitAcces, Long> implemen
 
 	@Override
 	public Integer getDroitAccesCount(long noIndividuOperateur) {
-		Object[] criteria = {noIndividuOperateur};
-		return DataAccessUtils.intResult(find("select count (*) from DroitAcces da where da.noIndividuOperateur = ?", criteria, null));
+		return DataAccessUtils.intResult(find("select count(*) from DroitAcces da where da.noIndividuOperateur = :operId",
+		                                      buildNamedParameters(Pair.of("operId", noIndividuOperateur)),
+		                                      null));
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Long> getIdsDroitsAcces(long noIndividuOperateur) {
-		final Object[] criteria = {noIndividuOperateur};
-		final String query = " select da.id from DroitAcces da where da.noIndividuOperateur = ? ";
-		return (List<Long>) find(query, criteria, null);
+		final String query = " select da.id from DroitAcces da where da.noIndividuOperateur = :operId";
+		return find(query, buildNamedParameters(Pair.of("operId", noIndividuOperateur)), null);
 	}
 
 	/**
@@ -87,9 +88,8 @@ public class DroitAccesDAOImpl extends GenericDAOImpl<DroitAcces, Long> implemen
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<DroitAcces> getDroitsAccessTiers(long tiersId) {
-		final Object[] criteria = {tiersId};
-		final String query = "from DroitAcces da where da.tiers.id = ?";
-		return (List<DroitAcces>) find(query, criteria, null);
+		final String query = "from DroitAcces da where da.tiers.id = :tiersId";
+		return find(query, buildNamedParameters(Pair.of("tiersId", tiersId)), null);
 	}
 
 
@@ -101,9 +101,11 @@ public class DroitAccesDAOImpl extends GenericDAOImpl<DroitAcces, Long> implemen
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<DroitAcces> getDroitsAccessTiers(long tiersId, RegDate date) {
-		final Object[] criteria = {tiersId, date.index(), date.index()};
-		final String query = "from DroitAcces da where da.tiers.id = ? and da.dateDebut <= ? and (da.dateFin is null or da.dateFin >= ?)";
-		return (List<DroitAcces>) find(query, criteria, null);
+		final String query = "from DroitAcces da where da.tiers.id = :tiersId and da.dateDebut <= :dateRef and (da.dateFin is null or da.dateFin >= :dateRef)";
+		return find(query,
+		            buildNamedParameters(Pair.<String, Object>of("tiersId", tiersId),
+		                                 Pair.<String, Object>of("dateRef", date)),
+		            null);
 	}
 
 	/**
@@ -118,7 +120,7 @@ public class DroitAccesDAOImpl extends GenericDAOImpl<DroitAcces, Long> implemen
 		final Session session = getCurrentSession();
 		final Query query = session.createQuery("from DroitAcces da where da.tiers.id in (:ids) and da.dateDebut <= :date and (da.dateFin is null or da.dateFin >= :date)");
 		query.setParameterList("ids", ids);
-		query.setParameter("date", date.index());
+		query.setParameter("date", date);
 		return query.list();
 	}
 
@@ -138,7 +140,7 @@ public class DroitAccesDAOImpl extends GenericDAOImpl<DroitAcces, Long> implemen
 			final RegDate today = RegDate.get();
 
 			final Query queryObject = session.createQuery(query);
-			queryObject.setParameter("today", today.index());
+			queryObject.setParameter("today", today);
 			results.addAll(queryObject.list());
 		}
 
@@ -148,7 +150,7 @@ public class DroitAccesDAOImpl extends GenericDAOImpl<DroitAcces, Long> implemen
 			final RegDate today = RegDate.get();
 
 			final Query queryObject = session.createQuery(query);
-			queryObject.setParameter("today", today.index());
+			queryObject.setParameter("today", today);
 			results.addAll(queryObject.list());
 		}
 

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -21,13 +22,13 @@ import ch.vd.uniregctb.type.TypeEvenementCivil;
  */
 public class EvenementCivilRegPPDAOImpl extends AbstractEvenementCivilDAOImpl<EvenementCivilRegPP, TypeEvenementCivil> implements EvenementCivilRegPPDAO {
 
-	private static final List<String> ETATS_NON_TRAITES;
+	private static final List<EtatEvenementCivil> ETATS_NON_TRAITES;
 
 	static {
-		final List<String> etats = new ArrayList<>(EtatEvenementCivil.values().length);
+		final List<EtatEvenementCivil> etats = new ArrayList<>(EtatEvenementCivil.values().length);
 		for (EtatEvenementCivil etat : EtatEvenementCivil.values()) {
 			if (!etat.isTraite()) {
-				etats.add(etat.name());
+				etats.add(etat);
 			}
 		}
 		ETATS_NON_TRAITES = Collections.unmodifiableList(etats);
@@ -55,8 +56,8 @@ public class EvenementCivilRegPPDAOImpl extends AbstractEvenementCivilDAOImpl<Ev
 
 		final Session session = getCurrentSession();
 		final Query query = session.createQuery(sql);
-		query.setParameter("date", dateEvenement.index());
-		query.setParameter("type", typeEvenement.name());
+		query.setParameter("date", dateEvenement);
+		query.setParameter("type", typeEvenement);
 		query.setParameter("noIndividu", noIndividu);
 		query.setParameterList("etats", ETATS_NON_TRAITES);
 		return query.list();
@@ -122,20 +123,19 @@ public class EvenementCivilRegPPDAOImpl extends AbstractEvenementCivilDAOImpl<Ev
 	}
 
 	@Override
-	protected String buildCriterion(List<Object> criteria, EvenementCivilCriteria<TypeEvenementCivil> criterion) {
+	protected String buildCriterion(Map<String, Object> criteria, EvenementCivilCriteria<TypeEvenementCivil> criterion) {
 		String queryWhere = super.buildCriterion(criteria, criterion);
 
 		Long numero = criterion.getNumeroIndividu();
 		if (numero != null) {
-			queryWhere += " and (evenement.numeroIndividuPrincipal = ? or evenement.numeroIndividuConjoint = ?) ";
-			criteria.add(numero);
-			criteria.add(numero);
+			queryWhere += " and (evenement.numeroIndividuPrincipal = :noIndividu or evenement.numeroIndividuConjoint = :noIndividu)";
+			criteria.put("noIndividu", numero);
 		}
 
 		Long numeroCTB = criterion.getNumeroCTB();
 		if (numeroCTB != null) {
-			queryWhere += "and (evenement.numeroIndividuPrincipal = pp.numeroIndividu or evenement.numeroIndividuConjoint = pp.numeroIndividu) and pp.numero = ?";
-			criteria.add(numeroCTB);
+			queryWhere += "and (evenement.numeroIndividuPrincipal = pp.numeroIndividu or evenement.numeroIndividuConjoint = pp.numeroIndividu) and pp.numero = :noCtb";
+			criteria.put("noCtb", numeroCTB);
 		}
 
 		return queryWhere;

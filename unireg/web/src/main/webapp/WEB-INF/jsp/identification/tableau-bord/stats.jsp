@@ -35,25 +35,20 @@
 				</display:column>
 				<display:column sortable ="false" titleKey="label.identification.nombre">				
 				<c:choose>
-					<c:when test="${(resultat.etatTechnique == 'A_TRAITER_MANUELLEMENT') || 
-					 (resultat.etatTechnique == 'A_EXPERTISER')}">
+					<c:when test="${resultat.etatTechnique == 'A_TRAITER_MANUELLEMENT' || resultat.etatTechnique == 'A_EXPERTISER'}">
                         <unireg:linkTo name="${resultat.nombre}" action="/identification/gestion-messages/listEnCoursFromStats.do"
                                        params="{etat:'${resultat.etatTechnique}',typeMessage:'${resultat.typeMessage}',periode:${resultat.periode}}" method="GET"/>
 					</c:when>
-                    <c:when test="${(resultat.etatTechnique == 'A_EXPERTISER_SUSPENDU') ||
-					   (resultat.etatTechnique == 'A_TRAITER_MAN_SUSPENDU')}">
+                    <c:when test="${resultat.etatTechnique == 'A_EXPERTISER_SUSPENDU' || resultat.etatTechnique == 'A_TRAITER_MAN_SUSPENDU'}">
                         <unireg:linkTo name="${resultat.nombre}" action="/identification/gestion-messages/listSuspenduFromStats.do"
                                        params="{etat:'${resultat.etatTechnique}',typeMessage:'${resultat.typeMessage}',periode:${resultat.periode}}" method="GET"/>
                     </c:when>
 					
-					<c:when test="${(resultat.etatTechnique == 'TRAITE_AUTOMATIQUEMENT') || 
-					 (resultat.etatTechnique == 'TRAITE_MANUELLEMENT') ||
-					  (resultat.etatTechnique == 'TRAITE_MAN_EXPERT') ||
-					   (resultat.etatTechnique == 'NON_IDENTIFIE')}">
+					<c:when test="${resultat.etatTechnique == 'TRAITE_AUTOMATIQUEMENT' || resultat.etatTechnique == 'TRAITE_MANUELLEMENT' || resultat.etatTechnique == 'TRAITE_MAN_EXPERT' || resultat.etatTechnique == 'NON_IDENTIFIE'}">
                         <unireg:linkTo name="${resultat.nombre}" action="/identification/gestion-messages/listTraiteFromStats.do"
                                        params="{etat:'${resultat.etatTechnique}',typeMessage:'${resultat.typeMessage}',periode:${resultat.periode}}" method="GET"/>
 					</c:when>
-					<c:when test="${(resultat.etatTechnique == 'EXCEPTION')}">
+					<c:when test="${resultat.etatTechnique == 'EXCEPTION'}">
                         <unireg:linkTo name="${resultat.nombre}" action="/identification/gestion-messages/listEnCoursFromStats.do"
                                        params="{etat:'${resultat.etatTechnique}',typeMessage:'${resultat.typeMessage}',periode:${resultat.periode}}" method="GET"/>
 					</c:when>

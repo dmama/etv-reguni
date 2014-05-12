@@ -1,13 +1,13 @@
 package ch.vd.uniregctb.dbutils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
+
+import ch.vd.uniregctb.common.HibernateQueryHelper;
 
 /**
  * Cette classe permet d'encapsuler un fragment (ou la totalité) d'une requête sql avec les paramètres dynamiques à utiliser.
@@ -15,7 +15,7 @@ import org.hibernate.Session;
 public class QueryFragment {
 
 	private final StringBuilder query = new StringBuilder();
-	private final List<Object> params = new ArrayList<>();
+	private final Map<String, Object> params = new HashMap<>();
 
 	public QueryFragment() {
 	}
@@ -24,25 +24,30 @@ public class QueryFragment {
 		this.query.append(query);
 	}
 
-	public QueryFragment(String query, List<Object> params) {
+	public QueryFragment(String query, Map<String, ?> params) {
 		this.query.append(query);
-		this.params.addAll(params);
+		this.params.putAll(params);
+	}
+
+	public QueryFragment(String query, String paramName, Object paramValue) {
+		this.query.append(query);
+		this.params.put(paramName, paramValue);
 	}
 
 	public QueryFragment(QueryFragment right) {
 		this.query.append(right.query);
-		this.params.addAll(right.params);
+		this.params.putAll(right.params);
 	}
 
 	public QueryFragment add(String query) {
 		return add(new QueryFragment(query));
 	}
 
-	public QueryFragment add(String query, Object param) {
-		return add(new QueryFragment(query, Arrays.asList(param)));
+	public QueryFragment add(String query, String paramName, Object paramValue) {
+		return add(new QueryFragment(query, paramName, paramValue));
 	}
 
-	public QueryFragment add(String query, List<Object> params) {
+	public QueryFragment add(String query, Map<String, ?> params) {
 		return add(new QueryFragment(query, params));
 	}
 
@@ -51,7 +56,7 @@ public class QueryFragment {
 			this.query.append(" ");     // separator
 		}
 		this.query.append(fragment.query);
-		this.params.addAll(fragment.params);
+		mergeParameters(fragment.params);
 		return this;
 	}
 
@@ -59,8 +64,8 @@ public class QueryFragment {
 		return query.toString();
 	}
 
-	public List<Object> getParams() {
-		return Collections.unmodifiableList(params);
+	public Map<String, Object> getParams() {
+		return Collections.unmodifiableMap(params);
 	}
 
 	/**
@@ -71,15 +76,23 @@ public class QueryFragment {
 	 */
 	public Query createQuery(Session session) {
 		final Query queryObject = session.createQuery(query.toString());
-		for (int i = 0; i < params.size(); i++) {
-			final Object val = params.get(i);
-			if (val instanceof Date) {
-				queryObject.setTimestamp(i, (Date) val);
+		HibernateQueryHelper.assignNamedParameterValues(queryObject, params);
+		return queryObject;
+	}
+
+	private void mergeParameters(Map<String, ?> newParameters) {
+		for (Map.Entry<String, ?> newEntry : newParameters.entrySet()) {
+			final String parameterName = newEntry.getKey();
+			if (this.params.containsKey(parameterName)) {
+				final Object oldValue = this.params.get(parameterName);
+				final Object newValue = newEntry.getValue();
+				if (oldValue != newValue && (oldValue == null || !oldValue.equals(newValue))) {
+					throw new IllegalArgumentException("Paramètre '" + parameterName + "' utilisé avec au moins deux valeurs différentes : '" + oldValue + "' et '" + newValue + "'");
+				}
 			}
 			else {
-				queryObject.setParameter(i, val);
+				this.params.put(newEntry.getKey(), newEntry.getValue());
 			}
 		}
-		return queryObject;
 	}
 }

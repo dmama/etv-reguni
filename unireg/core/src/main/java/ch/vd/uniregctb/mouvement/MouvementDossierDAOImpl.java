@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -16,13 +15,14 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.registre.base.dao.GenericDAOImpl;
 import ch.vd.registre.base.date.DateRange;
+import ch.vd.uniregctb.common.BaseDAOImpl;
+import ch.vd.uniregctb.common.HibernateQueryHelper;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.common.ParamSorting;
 import ch.vd.uniregctb.type.TypeMouvement;
 
-public class MouvementDossierDAOImpl extends GenericDAOImpl<MouvementDossier, Long> implements MouvementDossierDAO {
+public class MouvementDossierDAOImpl extends BaseDAOImpl<MouvementDossier, Long> implements MouvementDossierDAO {
 
 	private static final Logger LOGGER = Logger.getLogger(MouvementDossierDAOImpl.class);
 
@@ -59,7 +59,7 @@ public class MouvementDossierDAOImpl extends GenericDAOImpl<MouvementDossier, Lo
 	 * @param params Paramètres à remplir
 	 * @return Requête HQL
 	 */
-	private static String buildFindHql(MouvementDossierCriteria criteria, boolean idsOnly, @Nullable ParamSorting sorting, List<Object> params) {
+	private static String buildFindHql(MouvementDossierCriteria criteria, boolean idsOnly, @Nullable ParamSorting sorting, Map<String, Object> params) {
 		final StringBuilder b = new StringBuilder("SELECT mvt");
 		if (idsOnly) {
 			b.append(".id");
@@ -70,7 +70,7 @@ public class MouvementDossierDAOImpl extends GenericDAOImpl<MouvementDossier, Lo
 		return b.toString();
 	}
 
-	private static String buildCountHql(MouvementDossierCriteria criteria, List<Object> params) {
+	private static String buildCountHql(MouvementDossierCriteria criteria, Map<String, Object> params) {
 		final StringBuilder b = new StringBuilder("SELECT COUNT(mvt)");
 		buildFromClause(criteria, b);
 		buildWhereClause(criteria, b, params);
@@ -89,7 +89,7 @@ public class MouvementDossierDAOImpl extends GenericDAOImpl<MouvementDossier, Lo
 		}
 	}
 
-	private static void buildWhereClause(MouvementDossierCriteria criteria, StringBuilder b, List<Object> params) {
+	private static void buildWhereClause(MouvementDossierCriteria criteria, StringBuilder b, Map<String, Object> params) {
 
 		b.append(" WHERE 1=1");
 
@@ -121,67 +121,54 @@ public class MouvementDossierDAOImpl extends GenericDAOImpl<MouvementDossier, Lo
 		buildWhereClausePartieEtatActuelSeulement(criteria, b, params);
 	}
 
-	private static void buildWhereClausePartieEtatActuelSeulement(MouvementDossierCriteria criteria, StringBuilder b, List<Object> params) {
+	private static void buildWhereClausePartieEtatActuelSeulement(MouvementDossierCriteria criteria, StringBuilder b, Map<String, Object> params) {
 		if (criteria.isSeulementDerniersMouvements()) {
 			b.append(" AND NOT EXISTS (");
 			{
-				b.append("SELECT other.id FROM MouvementDossier other WHERE other.annulationDate IS NULL AND other.contribuable.numero = mvt.contribuable.numero AND other.etat IN (");
-
 				// tous les états dits "traités"
-				final List<EtatMouvementDossier> etatsTraites = EtatMouvementDossier.getEtatsTraites();
-				final Iterator<EtatMouvementDossier> iterator = etatsTraites.iterator();
-				while (iterator.hasNext()) {
-					final EtatMouvementDossier etat = iterator.next();
-					b.append('?');
-					params.add(etat.name());
-					if (iterator.hasNext()) {
-						b.append(',');
-					}
-				}
-
-				b.append(") AND (other.dateMouvement > mvt.dateMouvement OR (other.dateMouvement = mvt.dateMouvement AND other.logModifDate > mvt.logModifDate))");
+				b.append("SELECT other.id FROM MouvementDossier other WHERE other.annulationDate IS NULL AND other.contribuable.numero = mvt.contribuable.numero AND other.etat IN (:etats) AND (other.dateMouvement > mvt.dateMouvement OR (other.dateMouvement = mvt.dateMouvement AND other.logModifDate > mvt.logModifDate))");
+				params.put("etats", EtatMouvementDossier.getEtatsTraites());
 			}
 			b.append(')');
 		}
 	}
 
-	private static void buildWhereClausePartieCollectiviteAdministrativeInitiatrice(MouvementDossierCriteria criteria, StringBuilder b, List<Object> params) {
+	private static void buildWhereClausePartieCollectiviteAdministrativeInitiatrice(MouvementDossierCriteria criteria, StringBuilder b, Map<String, Object> params) {
 		if (criteria.getIdCollAdministrativeInitiatrice() != null) {
 			if (criteria.getTypeMouvement() == null) {
-				final String part = String.format(" AND (EXISTS (SELECT reception.id FROM %s reception WHERE reception.id=mvt.id AND reception.collectiviteAdministrativeReceptrice.id = ?) OR EXISTS (SELECT envoi.id FROM %s envoi WHERE envoi.id=mvt.id AND envoi.collectiviteAdministrativeEmettrice.id = ?))",
+				final String part = String.format(" AND (EXISTS (SELECT reception.id FROM %s reception WHERE reception.id=mvt.id AND reception.collectiviteAdministrativeReceptrice.id = :colAdmInit) OR EXISTS (SELECT envoi.id FROM %s envoi WHERE envoi.id=mvt.id AND envoi.collectiviteAdministrativeEmettrice.id = :colAdmInit))",
 												ReceptionDossier.class.getSimpleName(), EnvoiDossier.class.getSimpleName());
 				b.append(part);
-				params.add(criteria.getIdCollAdministrativeInitiatrice());
-				params.add(criteria.getIdCollAdministrativeInitiatrice());
+				params.put("colAdmInit", criteria.getIdCollAdministrativeInitiatrice());
 			}
 			else if (criteria.getTypeMouvement() == TypeMouvement.EnvoiDossier) {
-				b.append(" AND mvt.collectiviteAdministrativeEmettrice.id = ?");
-				params.add(criteria.getIdCollAdministrativeInitiatrice());
+				b.append(" AND mvt.collectiviteAdministrativeEmettrice.id = :colAdmInit");
+				params.put("colAdmInit", criteria.getIdCollAdministrativeInitiatrice());
 			}
 			else if (criteria.getTypeMouvement() == TypeMouvement.ReceptionDossier) {
-				b.append(" AND mvt.collectiviteAdministrativeReceptrice.id = ?");
-				params.add(criteria.getIdCollAdministrativeInitiatrice());
+				b.append(" AND mvt.collectiviteAdministrativeReceptrice.id = :colAdmInit");
+				params.put("colAdmInit", criteria.getIdCollAdministrativeInitiatrice());
 			}
 		}
 	}
 
-	private static void buildWhereClausePartieCollectiviteAdministrativeDestinataire(MouvementDossierCriteria criteria, StringBuilder b, List<Object> params) {
+	private static void buildWhereClausePartieCollectiviteAdministrativeDestinataire(MouvementDossierCriteria criteria, StringBuilder b, Map<String, Object> params) {
 		if (criteria.getIdCollAdministrativeDestinataire() != null) {
 			b.append(" AND mvt.class = ").append(EnvoiDossierVersCollectiviteAdministrative.class.getSimpleName());
-			b.append(" AND mvt.collectiviteAdministrativeDestinataire.id = ?");
-			params.add(criteria.getIdCollAdministrativeDestinataire());
+			b.append(" AND mvt.collectiviteAdministrativeDestinataire.id = :colAdmDest");
+			params.put("colAdmDest", criteria.getIdCollAdministrativeDestinataire());
 		}
 	}
 
-	private static void buildWhereClausePartieIndividuDestinataire(MouvementDossierCriteria criteria, StringBuilder b, List<Object> params) {
+	private static void buildWhereClausePartieIndividuDestinataire(MouvementDossierCriteria criteria, StringBuilder b, Map<String, Object> params) {
 		if (criteria.getNoIndividuDestinataire() != null) {
 			b.append(" AND mvt.class = ").append(EnvoiDossierVersCollaborateur.class.getSimpleName());
-			b.append(" AND mvt.noIndividuDestinataire = ?");
-			params.add(criteria.getNoIndividuDestinataire());
+			b.append(" AND mvt.noIndividuDestinataire = :noIndDest");
+			params.put("noIndDest", criteria.getNoIndividuDestinataire());
 		}
 	}
 
-	private static void buildWhereClausePartieLocalisationReception(MouvementDossierCriteria criteria, StringBuilder b, List<Object> params) {
+	private static void buildWhereClausePartieLocalisationReception(MouvementDossierCriteria criteria, StringBuilder b, Map<String, Object> params) {
 		if (criteria.getLocalisation() != null) {
 			final Class<? extends ReceptionDossier> clazz;
 			switch (criteria.getLocalisation()) {
@@ -203,14 +190,14 @@ public class MouvementDossierDAOImpl extends GenericDAOImpl<MouvementDossier, Lo
 
 			b.append(" AND mvt.class = ").append(clazz.getSimpleName());
 			if (criteria.getNoIndividuRecepteur() != null) {
-				b.append(" AND mvt.noIndividuRecepteur = ?");
-				params.add(criteria.getNoIndividuRecepteur());
+				b.append(" AND mvt.noIndividuRecepteur = :noIndRecepteur");
+				params.put("noIndRecepteur", criteria.getNoIndividuRecepteur());
 			}
 		}
 	}
 
 	@SuppressWarnings({"unchecked"})
-	private static void buildWhereClausePartieEtatMouvement(MouvementDossierCriteria criteria, StringBuilder b, List<Object> params) {
+	private static void buildWhereClausePartieEtatMouvement(MouvementDossierCriteria criteria, StringBuilder b, Map<String, Object> params) {
 
 		final Collection<EtatMouvementDossier> etatsDemandes;
 		if (criteria.isSeulementDerniersMouvements()) {
@@ -240,24 +227,9 @@ public class MouvementDossierDAOImpl extends GenericDAOImpl<MouvementDossier, Lo
 				// aucun etat!
 				b.append(" AND 1=0");
 			}
-			else if (etatsDemandes.size() > 1) {
-				b.append(" AND mvt.etat in (");
-				boolean first = true;
-				for (EtatMouvementDossier etat : etatsDemandes) {
-					if (first) {
-						b.append('?');
-						first = false;
-					}
-					else {
-						b.append(",?");
-					}
-					params.add(etat.name());
-				}
-				b.append(')');
-			}
 			else {
-				b.append(" AND mvt.etat = ?");
-				params.add(etatsDemandes.iterator().next().name());
+				b.append(" AND mvt.etat in (:etats)");
+				params.put("etats", etatsDemandes);
 			}
 		}
 	}
@@ -269,31 +241,31 @@ public class MouvementDossierDAOImpl extends GenericDAOImpl<MouvementDossier, Lo
 	}
 
 	@SuppressWarnings({"unchecked"})
-	private static void buildWhereClausePartieDateMouvement(MouvementDossierCriteria criteria, StringBuilder b, List<Object> params) {
+	private static void buildWhereClausePartieDateMouvement(MouvementDossierCriteria criteria, StringBuilder b, Map<String, Object> params) {
 		final DateRange rangeDateMvt = criteria.getRangeDateMouvement();
 		if (rangeDateMvt != null && (rangeDateMvt.getDateDebut() != null || rangeDateMvt.getDateFin() != null)) {
 			b.append(" AND mvt.dateMouvement");
 			if (rangeDateMvt.getDateDebut() != null && rangeDateMvt.getDateFin() != null) {
-				b.append(" BETWEEN ? AND ?");
-				params.add(rangeDateMvt.getDateDebut().index());
-				params.add(rangeDateMvt.getDateFin().index());
+				b.append(" BETWEEN :dateMin AND :dateMax");
+				params.put("dateMin", rangeDateMvt.getDateDebut());
+				params.put("dateMax", rangeDateMvt.getDateFin());
 			}
 			else if (rangeDateMvt.getDateDebut() != null) {
-				b.append(" >= ?");
-				params.add(rangeDateMvt.getDateDebut().index());
+				b.append(" >= :dateMin");
+				params.put("dateMin", rangeDateMvt.getDateDebut());
 			}
 			else {
-				b.append(" <= ?");
-				params.add(rangeDateMvt.getDateFin().index());
+				b.append(" <= :dateMax");
+				params.put("dateMax", rangeDateMvt.getDateFin());
 			}
 		}
 	}
 
 	@SuppressWarnings({"unchecked"})
-	private static void buildWhereClausePartieCtb(MouvementDossierCriteria criteria, StringBuilder b, List<Object> params) {
+	private static void buildWhereClausePartieCtb(MouvementDossierCriteria criteria, StringBuilder b, Map<String, Object> params) {
 		if (criteria.getNoCtb() != null) {
-			b.append(" AND mvt.contribuable.numero=?");
-			params.add(criteria.getNoCtb());
+			b.append(" AND mvt.contribuable.numero=:noCtb");
+			params.put("noCtb", criteria.getNoCtb());
 		}
 	}
 
@@ -315,13 +287,11 @@ public class MouvementDossierDAOImpl extends GenericDAOImpl<MouvementDossier, Lo
 	@SuppressWarnings({"unchecked"})
 	public List<MouvementDossier> find(MouvementDossierCriteria criteria, @Nullable final ParamPagination paramPagination) {
 
-		final List<Object> params = new ArrayList<>();
+		final Map<String, Object> params = new HashMap<>();
 		final String hql = buildFindHql(criteria, false, paramPagination != null ? paramPagination.getSorting() : null, params);
 		final Session session = getCurrentSession();
 		final Query query = session.createQuery(hql);
-		for (int i = 0 ; i < params.size() ; ++ i) {
-			query.setParameter(i, params.get(i));
-		}
+		HibernateQueryHelper.assignNamedParameterValues(query, params);
 		if (paramPagination != null) {
 			final int firstResult = paramPagination.getSqlFirstResult();
 			final int maxResult = paramPagination.getSqlMaxResults();
@@ -334,25 +304,21 @@ public class MouvementDossierDAOImpl extends GenericDAOImpl<MouvementDossier, Lo
 	@Override
 	@SuppressWarnings({"unchecked"})
 	public List<Long> findIds(MouvementDossierCriteria criteria, @Nullable ParamSorting sorting) {
-		final List<Object> params = new ArrayList<>();
+		final Map<String, Object> params = new HashMap<>();
 		final String hql = buildFindHql(criteria, true, sorting, params);
 		final Session session = getCurrentSession();
 		final Query query = session.createQuery(hql);
-		for (int i = 0 ; i < params.size() ; ++ i) {
-			query.setParameter(i, params.get(i));
-		}
+		HibernateQueryHelper.assignNamedParameterValues(query, params);
 		return query.list();
 	}
 
 	@Override
 	public int count(MouvementDossierCriteria criteria) {
-		final List<Object> params = new ArrayList<>();
+		final Map<String, Object> params = new HashMap<>();
 		final String hql = buildCountHql(criteria, params);
 		final Session session = getCurrentSession();
 		final Query query = session.createQuery(hql);
-		for (int i = 0 ; i < params.size() ; ++ i) {
-			query.setParameter(i, params.get(i));
-		}
+		HibernateQueryHelper.assignNamedParameterValues(query, params);
 		return ((Number) query.uniqueResult()).intValue();
 	}
 
@@ -361,28 +327,27 @@ public class MouvementDossierDAOImpl extends GenericDAOImpl<MouvementDossier, Lo
 	public List<MouvementDossier> get(final long[] ids) {
 		final StringBuilder builder = new StringBuilder();
 		builder.append("FROM MouvementDossier WHERE id");
+
+		final Map<String, Object> params;
 		if (ids == null || ids.length == 0) {
 			builder.append(" IS NULL");     // il n'y en a pas!
-		}
-		else if (ids.length == 1) {
-			builder.append("=?");
+			params = null;
 		}
 		else {
-			builder.append(" IN (?");
-			for (int i = 1 ; i < ids.length ; ++ i) {
-				builder.append(",?");
+			builder.append(" IN (:ids)");
+
+			final Set<Long> idSet = new HashSet<>(ids.length);
+			for (int i = 0 ; i < ids.length ; ++ i) {
+				idSet.add(ids[i]);
 			}
-			builder.append(')');
+			params = new HashMap<>(1);
+			params.put("ids", idSet);
 		}
 
 		final String hql = builder.toString();
 		final Session session = getCurrentSession();
 		final Query query = session.createQuery(hql);
-		if (ids != null) {
-			for (int i = 0 ; i < ids.length ; ++ i) {
-				query.setParameter(i, ids[i]);
-			}
-		}
+		HibernateQueryHelper.assignNamedParameterValues(query, params);
 		final List<MouvementDossier> found = query.list();
 
 		// [UNIREG-2872] tri dans l'ordre des ids donnés en entrée

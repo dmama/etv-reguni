@@ -6,7 +6,7 @@
 	<!-- hibernateProperties specifiques à cette datasource. -->
 	<util:map id="hibernateProperties">
 		<entry key="hibernate.connection.autocommit" value="false" />
-		<entry key="hibernate.query.factory_class" value="org.hibernate.hql.internal.classic.ClassicQueryTranslatorFactory" />
+		<entry key="hibernate.query.factory_class" value="org.hibernate.hql.internal.ast.ASTQueryTranslatorFactory" />
 		<entry key="hibernate.dialect" value="${oracle.hibernate.dialect}" />
 		<entry key="hibernate.query.substitutions" value="${oracle.hibernate.query.substitutions}" />
 		<entry key="hibernate.show_sql" value="false" />

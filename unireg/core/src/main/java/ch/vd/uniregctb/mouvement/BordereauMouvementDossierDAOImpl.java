@@ -1,17 +1,15 @@
 package ch.vd.uniregctb.mouvement;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import org.hibernate.Query;
-import org.hibernate.Session;
-
-import ch.vd.registre.base.dao.GenericDAOImpl;
+import ch.vd.uniregctb.common.BaseDAOImpl;
 
 /**
  * Implémentation du DAO pour les bordereaux d'envoi de dossiers
  */
-public class BordereauMouvementDossierDAOImpl extends GenericDAOImpl<BordereauMouvementDossier, Long> implements BordereauMouvementDossierDAO {
+public class BordereauMouvementDossierDAOImpl extends BaseDAOImpl<BordereauMouvementDossier, Long> implements BordereauMouvementDossierDAO {
 
 	public BordereauMouvementDossierDAOImpl() {
 		super(BordereauMouvementDossier.class);
@@ -22,22 +20,16 @@ public class BordereauMouvementDossierDAOImpl extends GenericDAOImpl<BordereauMo
 	public List<BordereauMouvementDossier> getBordereauxAReceptionner(Integer noCollAdmReceptrice) {
 
 		final StringBuilder b = new StringBuilder();
-		final List<Object> params = new ArrayList();
+		final Map<String, Object> params = new HashMap<>();
 		b.append("SELECT bordereau FROM BordereauMouvementDossier bordereau");
-		b.append(" WHERE EXISTS (SELECT mvt.id FROM EnvoiDossierVersCollectiviteAdministrative mvt WHERE bordereau = mvt.bordereau AND mvt.etat = ? and mvt.annulationDate IS NULL");
-		params.add(EtatMouvementDossier.TRAITE.name());
+		b.append(" WHERE EXISTS (SELECT mvt.id FROM EnvoiDossierVersCollectiviteAdministrative mvt WHERE bordereau = mvt.bordereau AND mvt.etat = :etat and mvt.annulationDate IS NULL");
+		params.put("etat", EtatMouvementDossier.TRAITE);
 		if (noCollAdmReceptrice != null) {
-			b.append(" AND mvt.collectiviteAdministrativeDestinataire.numeroCollectiviteAdministrative = ?");
-			params.add(noCollAdmReceptrice);
+			b.append(" AND mvt.collectiviteAdministrativeDestinataire.numeroCollectiviteAdministrative = :noCollAdm");
+			params.put("noCollAdm", noCollAdmReceptrice);
 		}
 		b.append(')');
 		final String hql = b.toString();
-
-		final Session session = getCurrentSession();
-		final Query query = session.createQuery(hql);
-		for (int i = 0 ; i < params.size() ; ++ i) {
-			query.setParameter(i, params.get(i));
-		}
-		return query.list();
+		return find(hql, params, null);
 	}
 }

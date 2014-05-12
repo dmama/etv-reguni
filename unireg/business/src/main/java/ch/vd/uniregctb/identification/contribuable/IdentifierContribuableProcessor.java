@@ -2,7 +2,9 @@ package ch.vd.uniregctb.identification.contribuable;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
@@ -148,12 +150,11 @@ public class IdentifierContribuableProcessor {
 						@Override
 						public List<Long> doInHibernate(Session session) throws HibernateException {
 							final Query queryObject = session.createQuery(queryMessage);
-							final List<String> etats = new ArrayList<>();
-							etats.add(IdentificationContribuable.Etat.A_EXPERTISER.name());
-							etats.add(IdentificationContribuable.Etat.A_EXPERTISER_SUSPENDU.name());
-							etats.add(IdentificationContribuable.Etat.A_TRAITER_MANUELLEMENT.name());
-							etats.add(IdentificationContribuable.Etat.A_TRAITER_MAN_SUSPENDU.name());
-							etats.add(IdentificationContribuable.Etat.EXCEPTION.name());
+							final Set<IdentificationContribuable.Etat> etats = EnumSet.of(IdentificationContribuable.Etat.A_EXPERTISER,
+							                                                              IdentificationContribuable.Etat.A_EXPERTISER_SUSPENDU,
+							                                                              IdentificationContribuable.Etat.A_TRAITER_MANUELLEMENT,
+							                                                              IdentificationContribuable.Etat.A_TRAITER_MAN_SUSPENDU,
+							                                                              IdentificationContribuable.Etat.EXCEPTION);
 							queryObject.setParameterList("etats", etats);
 							//noinspection unchecked
 							return queryObject.list();

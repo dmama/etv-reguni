@@ -35,8 +35,6 @@ import ch.vd.uniregctb.tiers.Contribuable;
 @org.hibernate.annotations.Table(appliesTo = "MOUVEMENT_DOSSIER", indexes = { @Index(name = "IDX_MOUVEMENT_DOSSIER_ETAT_CTB", columnNames = {"ETAT", "CTB_ID"})})
 public abstract class MouvementDossier extends HibernateEntity {
 
-	private static final long serialVersionUID = -2711289657913151774L;
-
 	/**
 	 * The ID
 	 */

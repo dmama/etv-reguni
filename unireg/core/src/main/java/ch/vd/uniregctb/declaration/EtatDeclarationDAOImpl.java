@@ -1,8 +1,8 @@
 package ch.vd.uniregctb.declaration;
 
-import ch.vd.registre.base.dao.GenericDAOImpl;
+import ch.vd.uniregctb.common.BaseDAOImpl;
 
-public class EtatDeclarationDAOImpl extends GenericDAOImpl<EtatDeclaration, Long> implements EtatDeclarationDAO {
+public class EtatDeclarationDAOImpl extends BaseDAOImpl<EtatDeclaration, Long> implements EtatDeclarationDAO {
 	public EtatDeclarationDAOImpl() {
 		super(EtatDeclaration.class);
 	}

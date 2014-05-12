@@ -107,8 +107,8 @@ public class AcomptesProcessor extends ListesProcessor<AcomptesResults, Acomptes
 									+ "        )                                                                     	"
 									+ "ORDER BY cont.id ASC                                                          	";
 		final Query query = session.createQuery(queryString);
-		query.setParameter("debutAnnee", debutAnnee.index());
-		query.setParameter("finAnnee", finAnnee.index());
+		query.setParameter("debutAnnee", debutAnnee);
+		query.setParameter("finAnnee", finAnnee);
 		return query.iterate();
 	}
 

@@ -6,8 +6,9 @@
 
 	<bean id="applicationContext" class="ch.vd.uniregctb.common.ApplicationContextInjector"/>
 	
-	<bean id="hibernateDao" class="ch.vd.registre.base.dao.GenericDAOImpl" abstract="true">
+	<bean id="hibernateDao" class="ch.vd.uniregctb.common.BaseDAOImpl" abstract="true">
 		<property name="sessionFactory" ref="sessionFactory" />
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 	</bean>
 	<bean id="hibernateTemplate" class="ch.vd.uniregctb.hibernate.HibernateTemplateImpl">
 		<property name="sessionFactory" ref="sessionFactory" />

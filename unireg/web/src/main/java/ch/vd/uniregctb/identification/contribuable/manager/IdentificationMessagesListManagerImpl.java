@@ -27,8 +27,6 @@ import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesRe
 
 public class IdentificationMessagesListManagerImpl implements IdentificationMessagesListManager {
 
-	private static final String TOUS = "TOUS";
-
 	protected static final Logger LOGGER = Logger.getLogger(IdentificationMessagesListManagerImpl.class);
 
 	private IdentCtbDAO identCtbDAO;
@@ -50,30 +48,13 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 	 * @return
 	 */
 	@Override
-	public IdentificationContribuableListCriteria getView(String parametreTypeMessage, String parametrePeriode, String parametreEtat) {
-		IdentificationContribuableListCriteria identificationContribuableListCriteria = new IdentificationContribuableListCriteria();
+	public IdentificationContribuableListCriteria getView(String parametreTypeMessage, Integer parametrePeriode, Etat parametreEtat) {
+		final IdentificationContribuableListCriteria identificationContribuableListCriteria = new IdentificationContribuableListCriteria();
 		identificationContribuableListCriteria.setUserCourant(AuthenticationHelper.getCurrentPrincipal());
-
-		if (parametreTypeMessage == null && parametrePeriode == null && parametreEtat == null) {
-			identificationContribuableListCriteria.setTypeMessage(TOUS);
-			identificationContribuableListCriteria.setPeriodeFiscale(-1);
-			identificationContribuableListCriteria.setPrioriteEmetteur(TOUS);
-			identificationContribuableListCriteria.setEtatMessage(TOUS);
-		}
-		else {
-			if (parametreTypeMessage != null) {
-				identificationContribuableListCriteria.setTypeMessage(parametreTypeMessage);
-			}
-
-			if (parametrePeriode != null) {
-				identificationContribuableListCriteria.setPeriodeFiscale(Integer.valueOf(parametrePeriode));
-			}
-
-			if (parametreEtat != null) {
-				identificationContribuableListCriteria.setEtatMessage(parametreEtat);
-			}
-		}
-
+		identificationContribuableListCriteria.setPrioriteEmetteur(null);
+		identificationContribuableListCriteria.setTypeMessage(parametreTypeMessage);
+		identificationContribuableListCriteria.setPeriodeFiscale(parametrePeriode);
+		identificationContribuableListCriteria.setEtatMessage(parametreEtat);
 
 		return identificationContribuableListCriteria;
 	}
@@ -120,7 +101,7 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 	public List<IdentificationMessagesResultView> findEncoursSeul(IdentificationContribuableCriteria bean, WebParamPagination pagination, TypeDemande... typeDemande)
 			throws AdressesResolutionException, ServiceInfrastructureException {
 
-		bean.setEtatMessage(Etat.A_TRAITER_MANUELLEMENT.name());
+		bean.setEtatMessage(Etat.A_TRAITER_MANUELLEMENT);
 		return find(bean, pagination, IdentificationContribuableEtatFilter.SEULEMENT_A_TRAITER_MANUELLEMENT, typeDemande);
 	}
 
@@ -148,7 +129,7 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 	@Override
 	@Transactional(readOnly = true)
 	public int countEnCoursSeul(IdentificationContribuableCriteria criterion, TypeDemande... typeDemande) {
-		criterion.setEtatMessage(Etat.A_TRAITER_MANUELLEMENT.name());
+		criterion.setEtatMessage(Etat.A_TRAITER_MANUELLEMENT);
 		return identCtbService.count(criterion, IdentificationContribuableEtatFilter.SEULEMENT_A_TRAITER_MANUELLEMENT, typeDemande);
 	}
 

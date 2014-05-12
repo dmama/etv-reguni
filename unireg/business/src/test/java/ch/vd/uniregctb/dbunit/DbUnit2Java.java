@@ -135,7 +135,7 @@ public class DbUnit2Java extends BusinessTest {
 
 	private void printData() throws Exception {
 		for (Class baseClass : hibernateBaseClasses) {
-			final List<?> entities = hibernateTemplate.find("from " + baseClass.getSimpleName(), null, null);
+			final List<?> entities = hibernateTemplate.find("from " + baseClass.getSimpleName(), null);
 			for (Object o : entities) {
 				print((HibernateEntity) o);
 				System.out.println();

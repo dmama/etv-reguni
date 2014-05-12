@@ -368,7 +368,7 @@ public class EnvoiSommationsDIsProcessor  {
 						b.append(" GROUP BY delai.declaration.id HAVING MAX(delai.delaiAccordeAu) < :dateLimite)");
 						final String sql = b.toString();
 						final Query query = session.createQuery(sql);
-						query.setParameter("dateLimite", dateLimite.index());
+						query.setParameter("dateLimite", dateLimite);
 						return query.list();
 					}
 				});

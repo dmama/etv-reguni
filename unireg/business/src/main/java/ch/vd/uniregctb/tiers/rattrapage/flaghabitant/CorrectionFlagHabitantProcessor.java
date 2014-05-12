@@ -50,7 +50,7 @@ public class CorrectionFlagHabitantProcessor {
 			@Override
 			public List<Long> doInTransaction(TransactionStatus status) {
 				//noinspection unchecked
-				return hibernateTemplate.find(hql, null, null);
+				return hibernateTemplate.find(hql, null);
 			}
 		});
 	}

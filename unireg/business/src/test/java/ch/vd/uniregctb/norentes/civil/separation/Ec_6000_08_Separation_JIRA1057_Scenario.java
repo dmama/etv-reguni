@@ -7,7 +7,6 @@ import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
-import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.norentes.annotation.Check;
 import ch.vd.uniregctb.norentes.annotation.Etape;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
@@ -59,7 +58,7 @@ public class Ec_6000_08_Separation_JIRA1057_Scenario extends EvenementCivilScena
 	private final class LocalServiceCivil extends DefaultMockServiceCivil {
 		
 		void separeIndividus(RegDate dateSeparation) {
-			super.separeIndividus(getIndividu(noIndMomo), getIndividu(noIndBea), dateSeparation);
+			separeIndividus(getIndividu(noIndMomo), getIndividu(noIndBea), dateSeparation);
 		}
 		
 	}

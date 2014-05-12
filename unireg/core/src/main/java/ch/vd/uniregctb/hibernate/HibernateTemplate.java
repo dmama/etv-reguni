@@ -3,6 +3,7 @@ package ch.vd.uniregctb.hibernate;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.hibernate.FlushMode;
 import org.hibernate.HibernateException;
@@ -58,22 +59,41 @@ public interface HibernateTemplate {
 	void flush();
 
 	/**
-	 * Returns the list of entities corresponding to the given HQL request
+	 * Returns the list of entities corresponding to the given HQL request (using named parameters)
 	 * @param hql HQL request
-	 * @param params parameters in the HQL request
+	 * @param namedParams named parameters in the HQL request
 	 * @param flushMode if set, flushMode to use during the HQL treatment
 	 * @param <T> entities' type
 	 * @return list of found entities
 	 */
-	<T> List<T> find(String hql, @Nullable Object[] params, @Nullable FlushMode flushMode);
+	<T> List<T> find(String hql, @Nullable Map<String, ?> namedParams, @Nullable FlushMode flushMode);
 
 	/**
-	 * Returns an iterator on the list of entities corresponding to the given HQL request
+	 * Returns an iterator on the list of entities corresponding to the given HQL request (using named parameters)
 	 * @param hql HQL request
-	 * @param params parameters in the HQL request
+	 * @param namedParams named parameters in the HQL request
 	 * @param flushMode if set, flushMode to use during the HQL treatment
 	 * @param <T> entities' type
 	 * @return list of found entities
 	 */
-	<T> Iterator<T> iterate(String hql, @Nullable Object[] params, @Nullable FlushMode flushMode);
+	<T> Iterator<T> iterate(String hql, @Nullable Map<String, ?> namedParams, @Nullable FlushMode flushMode);
+
+	/**
+	 * Returns the list of entities corresponding to the given HQL request (no parameters)
+	 * @param hql HQL request
+	 * @param flushMode if set, flushMode to use during the HQL treatment
+	 * @param <T> entities' type
+	 * @return list of found entities
+	 */
+	<T> List<T> find(String hql, @Nullable FlushMode flushMode);
+
+	/**
+	 * Returns an iterator on the list of entities corresponding to the given HQL request (no parameters)
+	 * @param hql HQL request
+	 * @param flushMode if set, flushMode to use during the HQL treatment
+	 * @param <T> entities' type
+	 * @return list of found entities
+	 */
+	<T> Iterator<T> iterate(String hql, @Nullable FlushMode flushMode);
+
 }

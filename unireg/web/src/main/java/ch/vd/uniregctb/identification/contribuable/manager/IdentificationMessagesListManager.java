@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.WebParamPagination;
+import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableCriteria;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableEtatFilter;
 import ch.vd.uniregctb.evenement.identification.contribuable.TypeDemande;
@@ -45,7 +46,7 @@ public interface IdentificationMessagesListManager {
 	/**
 	 * Alimente la vue
 	 */
-	public IdentificationContribuableListCriteria getView(String parametreTypeMessage, String parametrePeriode, String parametreEtat);
+	public IdentificationContribuableListCriteria getView(String parametreTypeMessage, Integer parametrePeriode, IdentificationContribuable.Etat parametreEtat);
 
 	/**
 	 * Recherche des identifications correspondant seulement à l'état en cours

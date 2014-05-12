@@ -258,7 +258,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 		final Set<Long> pasDeNouveauNosAvs = new HashSet<>();
 
 		final List infoNonHabitants = hibernateTemplate.find("select pp.numero, pp.prenom, pp.nom, pp.numeroAssureSocial from PersonnePhysique pp, RapportPrestationImposable rpi "
-				                                                     + "where pp.habitant = false and pp.numero = rpi.sujetId and rpi.objetId =  " + noDebiteur, null, null);
+				                                                     + "where pp.habitant = false and pp.numero = rpi.sujetId and rpi.objetId =  " + noDebiteur, null);
 		for (Object o : infoNonHabitants) {
 			final Object line[] = (Object[]) o;
 			final Long numero = (Long) line[0];
@@ -321,7 +321,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 		final Map<Long, List<RapportsPrestationView.Rapport>> rapportsByNumeroIndividu = new HashMap<>();
 
 		final List infoHabitants = hibernateTemplate.find("select pp.numero, pp.numeroIndividu from PersonnePhysique pp, RapportPrestationImposable rpi "
-				                                                  + "where pp.habitant = true and pp.numero = rpi.sujetId and rpi.objetId =  " + noDebiteur, null, null);
+				                                                  + "where pp.habitant = true and pp.numero = rpi.sujetId and rpi.objetId =  " + noDebiteur, null);
 		for (Object o : infoHabitants) {
 			final Object line[] = (Object[]) o;
 			final Long numero = (Long) line[0];

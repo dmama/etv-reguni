@@ -96,10 +96,10 @@ public class DocumentServiceImpl implements DocumentService {
 	private void ramasseFile(File f, String subpath, String dirname, List<Document> docs) {
 
 		// on vérifie que le fichier courant existe bien dans la base
-		Object[] params = new Object[] {
-				subpath, f.getName()
-		};
-		List<Document> list = hibernateTemplate.find("from Document as doc where doc.subPath = ? and doc.fileName = ?", params, null);
+		final Map<String, String> params = new HashMap<>(2);
+		params.put("subPath", subpath);
+		params.put("fileName", f.getName());
+		List<Document> list = hibernateTemplate.find("from Document as doc where doc.subPath=:subPath and doc.fileName=:fileName", params, null);
 		if (list != null && !list.isEmpty()) {
 			// le fichier existe -> ok
 			return;
@@ -176,13 +176,13 @@ public class DocumentServiceImpl implements DocumentService {
 	@Override
 	@SuppressWarnings("unchecked")
 	public Collection<Document> getDocuments() throws Exception {
-		return hibernateTemplate.find("FROM Document AS doc WHERE doc.annulationDate IS null", null, null);
+		return hibernateTemplate.find("FROM Document AS doc WHERE doc.annulationDate IS null", null);
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T extends Document> Collection<T> getDocuments(Class<T> clazz) throws Exception {
-		return hibernateTemplate.find("FROM " + clazz.getSimpleName() + " AS doc WHERE doc.annulationDate IS null", null, null);
+		return hibernateTemplate.find("FROM " + clazz.getSimpleName() + " AS doc WHERE doc.annulationDate IS null", null);
 	}
 
 	/**

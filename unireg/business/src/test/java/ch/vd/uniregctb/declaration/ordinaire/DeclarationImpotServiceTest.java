@@ -2,9 +2,11 @@ package ch.vd.uniregctb.declaration.ordinaire;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Level;
@@ -1602,11 +1604,13 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 	@SuppressWarnings("unchecked")
 	private List<TacheEnvoiDeclarationImpot> getTachesEnvoiDeclarationImpot(Contribuable contribuable, int annee) {
 
-		final Integer debutAnnee = date(annee, 1, 1).index();
-		final Integer finAnnee = date(annee, 12, 31).index();
+		final Map<String, Object> params = new HashMap<>(3);
+		params.put("ctb", contribuable);
+		params.put("debutAnnee", date(annee, 1, 1));
+		params.put("finAnnee", date(annee, 12, 31));
 
-		final String query = "FROM TacheEnvoiDeclarationImpot AS t WHERE t.contribuable = ? AND ? <= t.dateDebut AND t.dateFin <= ? ORDER BY t.dateDebut ASC";
-		return hibernateTemplate.find(query, new Object[] {contribuable, debutAnnee, finAnnee}, null);
+		final String query = "FROM TacheEnvoiDeclarationImpot AS t WHERE t.contribuable = :ctb AND t.dateDebut >= :debutAnnee AND t.dateFin <= :finAnnee ORDER BY t.dateDebut ASC";
+		return hibernateTemplate.find(query, params, null);
 	}
 
 	private static void assertResults(int ctbsTraites, DeterminationDIsResults results) {

@@ -15,15 +15,15 @@ import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
-import ch.vd.registre.base.dao.GenericDAOImpl;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.common.BaseDAOImpl;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.dbutils.QueryFragment;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 
-public class AuditLineDAOImpl extends GenericDAOImpl<AuditLine, Long> implements AuditLineDAO, InitializingBean {
+public class AuditLineDAOImpl extends BaseDAOImpl<AuditLine, Long> implements AuditLineDAO, InitializingBean {
 
 	private Dialect dialect;
 	private PlatformTransactionManager transactionManager;
@@ -72,7 +72,7 @@ public class AuditLineDAOImpl extends GenericDAOImpl<AuditLine, Long> implements
 	@Override
 	public int count(AuditLineCriteria criteria) {
 		final String query = "select count(*) " + buildSql(criteria);
-		return DataAccessUtils.intResult(find(query, null, null));
+		return DataAccessUtils.intResult(find(query, null));
 	}
 
 	@Override
@@ -150,8 +150,8 @@ public class AuditLineDAOImpl extends GenericDAOImpl<AuditLine, Long> implements
 	@Override
 	public int purge(RegDate seuilPurge) {
 		final Timestamp seuilTimestamp = new Timestamp(seuilPurge.asJavaDate().getTime());
-		final Query query = getCurrentSession().createSQLQuery("delete from AUDIT_LOG WHERE LOG_DATE < ?");
-		query.setTimestamp(0, seuilTimestamp);
+		final Query query = getCurrentSession().createSQLQuery("delete from AUDIT_LOG WHERE LOG_DATE < :seuil");
+		query.setTimestamp("seuil", seuilTimestamp);
 		return query.executeUpdate();
 	}
 }

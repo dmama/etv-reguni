@@ -89,8 +89,8 @@ public class ListeAssujettisProcessor extends ListesProcessor<ListeAssujettisRes
 		final String hql = b.toString();
 
 		final Query query = session.createQuery(hql);
-		query.setParameter("debutAnnee", RegDate.get(anneeFiscale, 1, 1).index());
-		query.setParameter("finAnnee", RegDate.get(anneeFiscale, 12, 31).index());
+		query.setParameter("debutAnnee", RegDate.get(anneeFiscale, 1, 1));
+		query.setParameter("finAnnee", RegDate.get(anneeFiscale, 12, 31));
 		return query.iterate();
 	}
 }

@@ -57,18 +57,18 @@ public class IdentCtbDAOTest extends CoreDAOTest {
 
 		IdentificationContribuableCriteria identificationContribuableCriteria = new IdentificationContribuableCriteria();
 		Calendar cal = new GregorianCalendar();
-		cal.set(2000, 0, 1);
+		cal.set(2000, Calendar.JANUARY, 1);
 		identificationContribuableCriteria.setDateMessageDebut(cal.getTime());
-		cal.set(2020, 0, 1);
+		cal.set(2020, Calendar.JANUARY, 1);
 		identificationContribuableCriteria.setDateMessageFin(cal.getTime());
 		identificationContribuableCriteria.setDateNaissance(RegDate.get(1973, 7, 11));
 		identificationContribuableCriteria.setEmetteurId("Test");
-		identificationContribuableCriteria.setEtatMessage("EXCEPTION");
+		identificationContribuableCriteria.setEtatMessage(IdentificationContribuable.Etat.EXCEPTION);
 		identificationContribuableCriteria.setNAVS13("1234567890123");
 		identificationContribuableCriteria.setNom("Larousse");
-		identificationContribuableCriteria.setPeriodeFiscale(Integer.valueOf(2008));
+		identificationContribuableCriteria.setPeriodeFiscale(2008);
 		identificationContribuableCriteria.setPrenoms("Lora");
-		identificationContribuableCriteria.setPrioriteEmetteur("NON_PRIORITAIRE");
+		identificationContribuableCriteria.setPrioriteEmetteur(Demande.PrioriteEmetteur.NON_PRIORITAIRE);
 		identificationContribuableCriteria.setTypeMessage("ssk-3001-000101");
 
 		final ParamPagination paramPagination = new ParamPagination(1, 100, null, true);
@@ -93,12 +93,12 @@ public class IdentCtbDAOTest extends CoreDAOTest {
 		identificationContribuableCriteria.setDateMessageFin(cal.getTime());
 		identificationContribuableCriteria.setDateNaissance(RegDate.get(1973, 7, 11));
 		identificationContribuableCriteria.setEmetteurId("Test");
-		identificationContribuableCriteria.setEtatMessage("EXCEPTION");
+		identificationContribuableCriteria.setEtatMessage(IdentificationContribuable.Etat.EXCEPTION);
 		identificationContribuableCriteria.setNAVS13("1234567890123");
 		identificationContribuableCriteria.setNom("Larousse");
 		identificationContribuableCriteria.setPeriodeFiscale(2008);
 		identificationContribuableCriteria.setPrenoms("Lora");
-		identificationContribuableCriteria.setPrioriteEmetteur("NON_PRIORITAIRE");
+		identificationContribuableCriteria.setPrioriteEmetteur(Demande.PrioriteEmetteur.NON_PRIORITAIRE);
 
 		final ParamPagination paramPagination = new ParamPagination(1, 100, null, true);
 

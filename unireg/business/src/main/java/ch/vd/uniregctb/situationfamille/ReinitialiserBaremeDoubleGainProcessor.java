@@ -161,7 +161,7 @@ public class ReinitialiserBaremeDoubleGainProcessor {
 					@Override
 					public List<Long> doInHibernate(Session session) throws HibernateException {
 						final Query query = session.createQuery(QUERY_STRING);
-						query.setParameter("date", dateValidite.index());
+						query.setParameter("date", dateValidite);
 						//noinspection unchecked
 						return query.list();
 					}

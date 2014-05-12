@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -181,25 +182,28 @@ public class SuppressionOIDJob extends JobDefinition {
 			@Override
 			public Set<Long> doInTransaction(TransactionStatus status) {
 
-				final Object[] oidParam = new Object[] { oid };
-				final Object[] officeImpotIdParam = new Object[] { officeImpotId };
+				final Map<String, Integer> oidParam = new HashMap<>(1);
+				oidParam.put("oid", oid);
+
+				final Map<String, Long> officeImpotIdParam = new HashMap<>(1);
+				officeImpotIdParam.put("officeImpotId", officeImpotId);
 
 				final Set<Long> ids = new TreeSet<>();
 
 				// sur le tiers lui-même
-				ids.addAll(hibernateTemplate.<Long>find("select tiers.id from Tiers tiers where tiers.officeImpotId = ?", oidParam, null));
+				ids.addAll(hibernateTemplate.<Long>find("select tiers.id from Tiers tiers where tiers.officeImpotId=:oid", oidParam, null));
 
 				// sur ces déclarations
-				ids.addAll(hibernateTemplate.<Long>find("select di.tiers.id from DeclarationImpotOrdinaire di where di.retourCollectiviteAdministrativeId = ?", officeImpotIdParam, null));
+				ids.addAll(hibernateTemplate.<Long>find("select di.tiers.id from DeclarationImpotOrdinaire di where di.retourCollectiviteAdministrativeId=:officeImpotId", officeImpotIdParam, null));
 
 				// sur les mouvements de dossier
-				ids.addAll(hibernateTemplate.<Long>find("select ed.contribuable.id from EnvoiDossier ed where ed.collectiviteAdministrativeEmettrice = ?", officeImpotIdParam, null));
-				ids.addAll(hibernateTemplate.<Long>find("select ed.contribuable.id from EnvoiDossierVersCollectiviteAdministrative ed where ed.collectiviteAdministrativeDestinataire= ?",
+				ids.addAll(hibernateTemplate.<Long>find("select ed.contribuable.id from EnvoiDossier ed where ed.collectiviteAdministrativeEmettrice.id=:officeImpotId", officeImpotIdParam, null));
+				ids.addAll(hibernateTemplate.<Long>find("select ed.contribuable.id from EnvoiDossierVersCollectiviteAdministrative ed where ed.collectiviteAdministrativeDestinataire.id=:officeImpotId",
 				                                        officeImpotIdParam, null));
-				ids.addAll(hibernateTemplate.<Long>find("select rd.contribuable.id from ReceptionDossier rd where rd.collectiviteAdministrativeReceptrice= ?", officeImpotIdParam, null));
+				ids.addAll(hibernateTemplate.<Long>find("select rd.contribuable.id from ReceptionDossier rd where rd.collectiviteAdministrativeReceptrice.id=:officeImpotId", officeImpotIdParam, null));
 
 				// sur les tâches
-				ids.addAll(hibernateTemplate.<Long>find("select t.contribuable.id from Tache t where t.collectiviteAdministrativeAssignee = ?", officeImpotIdParam, null));
+				ids.addAll(hibernateTemplate.<Long>find("select t.contribuable.id from Tache t where t.collectiviteAdministrativeAssignee.id=:officeImpotId", officeImpotIdParam, null));
 
 				return ids;
 			}

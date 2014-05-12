@@ -293,7 +293,7 @@ public class CalculParentesProcessorTest extends BusinessTest {
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
-				final List<Parente> parentes = hibernateTemplate.find("from Parente", null, FlushMode.AUTO);
+				final List<Parente> parentes = hibernateTemplate.find("from Parente", FlushMode.AUTO);
 				Assert.assertNotNull(parentes);
 				Assert.assertEquals(4, parentes.size());
 				final List<Parente> copyToSort = new ArrayList<>(parentes);
@@ -427,7 +427,7 @@ public class CalculParentesProcessorTest extends BusinessTest {
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
-				final List<Parente> parentes = hibernateTemplate.find("from Parente", null, FlushMode.AUTO);
+				final List<Parente> parentes = hibernateTemplate.find("from Parente", FlushMode.AUTO);
 				Assert.assertNotNull(parentes);
 				Assert.assertEquals(2, parentes.size());
 				final List<Parente> copyToSort = new ArrayList<>(parentes);
@@ -549,7 +549,7 @@ public class CalculParentesProcessorTest extends BusinessTest {
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
-				final List<Parente> parentes = hibernateTemplate.find("from Parente", null, FlushMode.AUTO);
+				final List<Parente> parentes = hibernateTemplate.find("from Parente", FlushMode.AUTO);
 				Assert.assertNotNull(parentes);
 				Assert.assertEquals(2, parentes.size());
 				final List<Parente> copyToSort = new ArrayList<>(parentes);

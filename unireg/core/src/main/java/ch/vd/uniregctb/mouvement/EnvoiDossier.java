@@ -18,8 +18,6 @@ import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 @Entity
 public abstract class EnvoiDossier extends MouvementDossier {
 
-	private static final long serialVersionUID = -5706327466542251428L;
-
 	private CollectiviteAdministrative collectiviteAdministrativeEmettrice;
 
 	@ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})

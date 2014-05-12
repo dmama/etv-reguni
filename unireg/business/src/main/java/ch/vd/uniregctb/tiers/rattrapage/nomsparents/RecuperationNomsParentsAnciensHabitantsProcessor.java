@@ -161,7 +161,7 @@ public class RecuperationNomsParentsAnciensHabitantsProcessor {
 			@Override
 			public List<Long> doInTransaction(TransactionStatus status) {
 				final String hql = "select nh.id from PersonnePhysique nh where nh.habitant=false and nh.numeroIndividu is not null";
-				return hibernateTemplate.find(hql, null, null);
+				return hibernateTemplate.find(hql, null);
 			}
 		});
 	}

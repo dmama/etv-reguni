@@ -12,7 +12,7 @@ public class IdentificationContribuableCriteria {
 
 	private String emetteurId;
 
-	private String prioriteEmetteur;
+	private Demande.PrioriteEmetteur prioriteEmetteur;
 
 	private Date dateMessageDebut;
 
@@ -22,7 +22,7 @@ public class IdentificationContribuableCriteria {
 
 	private Date dateTraitementFin;
 
-	private String etatMessage;
+	private IdentificationContribuable.Etat etatMessage;
 
 	private String nom;
 
@@ -60,11 +60,11 @@ public class IdentificationContribuableCriteria {
 		this.emetteurId = emetteurId;
 	}
 
-	public String getPrioriteEmetteur() {
+	public Demande.PrioriteEmetteur getPrioriteEmetteur() {
 		return prioriteEmetteur;
 	}
 
-	public void setPrioriteEmetteur(String prioriteEmetteur) {
+	public void setPrioriteEmetteur(Demande.PrioriteEmetteur prioriteEmetteur) {
 		this.prioriteEmetteur = prioriteEmetteur;
 	}
 
@@ -84,11 +84,11 @@ public class IdentificationContribuableCriteria {
 		this.dateMessageFin = dateMessageFin;
 	}
 
-	public String getEtatMessage() {
+	public IdentificationContribuable.Etat getEtatMessage() {
 		return etatMessage;
 	}
 
-	public void setEtatMessage(String etatMessage) {
+	public void setEtatMessage(IdentificationContribuable.Etat etatMessage) {
 		this.etatMessage = etatMessage;
 	}
 

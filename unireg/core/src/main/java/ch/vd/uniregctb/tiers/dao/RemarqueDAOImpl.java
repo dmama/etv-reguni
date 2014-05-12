@@ -5,10 +5,10 @@ import java.util.List;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
-import ch.vd.registre.base.dao.GenericDAOImpl;
+import ch.vd.uniregctb.common.BaseDAOImpl;
 import ch.vd.uniregctb.tiers.Remarque;
 
-public class RemarqueDAOImpl extends GenericDAOImpl<Remarque, Long> implements RemarqueDAO {
+public class RemarqueDAOImpl extends BaseDAOImpl<Remarque, Long> implements RemarqueDAO {
 
 	public RemarqueDAOImpl() {
 		super(Remarque.class);

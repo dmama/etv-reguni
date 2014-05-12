@@ -80,8 +80,8 @@ public class ProduireListeTachesEnInstanceParOIDProcessor {
 												" AND tache.dateEcheance <="+dateTraitement.index()+ ')';
 
 
-		double nombreTotalTaches = DataAccessUtils.intResult(hibernateTemplate.find(queryNombreTache, null, null));
-		double nombreTotalContribuable = DataAccessUtils.intResult(hibernateTemplate.find(queryNombreContribuable, null, null));
+		double nombreTotalTaches = DataAccessUtils.intResult(hibernateTemplate.find(queryNombreTache, null));
+		double nombreTotalContribuable = DataAccessUtils.intResult(hibernateTemplate.find(queryNombreContribuable, null));
 		double moyenne = 0;
 		if (nombreTotalContribuable>0) {
 

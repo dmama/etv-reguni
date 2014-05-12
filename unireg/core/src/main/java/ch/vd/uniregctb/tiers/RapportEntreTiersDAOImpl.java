@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.tiers;
 
 import javax.persistence.DiscriminatorValue;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -14,12 +13,12 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.springframework.dao.support.DataAccessUtils;
 
-import ch.vd.registre.base.dao.GenericDAOImpl;
+import ch.vd.uniregctb.common.BaseDAOImpl;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.dbutils.QueryFragment;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
-public class RapportEntreTiersDAOImpl extends GenericDAOImpl<RapportEntreTiers, Long> implements RapportEntreTiersDAO {
+public class RapportEntreTiersDAOImpl extends BaseDAOImpl<RapportEntreTiers, Long> implements RapportEntreTiersDAO {
 
 	public RapportEntreTiersDAOImpl() {
 		super(RapportEntreTiers.class);
@@ -34,11 +33,12 @@ public class RapportEntreTiersDAOImpl extends GenericDAOImpl<RapportEntreTiers, 
 	@SuppressWarnings("unchecked")
 	public List<RapportEntreTiers> getRepresentationLegaleAvecTuteurEtPupille(Long noTiersTuteur, Long noTiersPupille, boolean doNotAutoFlush) {
 
-		Object[] criteria = {noTiersTuteur, noTiersPupille};
-		String query = "from RapportEntreTiers ret where ret.objetId = ? and ret.sujetId = ?";
+		String query = "from RapportEntreTiers ret where ret.objetId = :tuteur and ret.sujetId = :pupille";
 		final FlushMode mode = (doNotAutoFlush ? FlushMode.MANUAL : null);
-
-		return (List<RapportEntreTiers>) find(query, criteria, mode);
+		return find(query,
+		            buildNamedParameters(Pair.of("tuteur", noTiersTuteur),
+		                                 Pair.of("pupille", noTiersPupille)),
+		            mode);
 	}
 
 	/**
@@ -48,7 +48,7 @@ public class RapportEntreTiersDAOImpl extends GenericDAOImpl<RapportEntreTiers, 
 	@SuppressWarnings("unchecked")
 	public List<RapportPrestationImposable> getRapportsPrestationImposable(final Long numeroDebiteur, ParamPagination paramPagination, boolean activesOnly) {
 
-		final QueryFragment fragment = new QueryFragment("SELECT rapport FROM RapportPrestationImposable rapport WHERE rapport.objetId = ?", Arrays.<Object>asList(numeroDebiteur));
+		final QueryFragment fragment = new QueryFragment("SELECT rapport FROM RapportPrestationImposable rapport WHERE rapport.objetId = :debiteurId", "debiteurId", numeroDebiteur);
 		if (activesOnly) {
 			fragment.add("and rapport.dateFin is null and rapport.annulationDate is null");
 		}
@@ -95,7 +95,7 @@ public class RapportEntreTiersDAOImpl extends GenericDAOImpl<RapportEntreTiers, 
 		if (activesOnly) {
 			query += " and rapport.dateFin is null and rapport.annulationDate is null";
 		}
-		return DataAccessUtils.intResult(find(query, null, null));
+		return DataAccessUtils.intResult(find(query, null));
 	}
 
 	private static String buildWhereClassFragment(Set<TypeRapportEntreTiers> types, String alias) {
@@ -161,7 +161,7 @@ public class RapportEntreTiersDAOImpl extends GenericDAOImpl<RapportEntreTiers, 
 		if (!showHisto) {
 			fragment.add("and r.dateFin is null and r.annulationDate is null");
 		}
-		return DataAccessUtils.intResult(find(fragment.getQuery(), null, null));
+		return DataAccessUtils.intResult(find(fragment.getQuery(), null));
 	}
 
 	@Override

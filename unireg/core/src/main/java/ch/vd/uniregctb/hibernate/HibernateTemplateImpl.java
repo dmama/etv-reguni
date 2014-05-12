@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.hibernate.FlushMode;
 import org.hibernate.HibernateException;
@@ -11,6 +12,8 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.jetbrains.annotations.Nullable;
+
+import ch.vd.uniregctb.common.HibernateQueryHelper;
 
 public class HibernateTemplateImpl implements HibernateTemplate {
 
@@ -83,7 +86,7 @@ public class HibernateTemplateImpl implements HibernateTemplate {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T> List<T> find(String hql, @Nullable Object[] params, @Nullable FlushMode flushMode) {
+	public <T> List<T> find(String hql, @Nullable Map<String, ?> namedParams, @Nullable FlushMode flushMode) {
 		final Session session = getCurrentSession();
 		final FlushMode oldFlushMode = session.getFlushMode();
 		if (flushMode != null) {
@@ -91,11 +94,7 @@ public class HibernateTemplateImpl implements HibernateTemplate {
 		}
 		try {
 			final Query query = session.createQuery(hql);
-			if (params != null && params.length > 0) {
-				for (int i = 0 ; i < params.length ; ++ i) {
-					query.setParameter(i, params[i]);
-				}
-			}
+			HibernateQueryHelper.assignNamedParameterValues(query, namedParams);
 			return query.list();
 		}
 		finally {
@@ -107,7 +106,7 @@ public class HibernateTemplateImpl implements HibernateTemplate {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T> Iterator<T> iterate(String hql, @Nullable Object[] params, @Nullable FlushMode flushMode) {
+	public <T> Iterator<T> iterate(String hql, @Nullable Map<String, ?> namedParams, @Nullable FlushMode flushMode) {
 		final Session session = getCurrentSession();
 		final FlushMode oldFlushMode = session.getFlushMode();
 		if (flushMode != null) {
@@ -115,11 +114,7 @@ public class HibernateTemplateImpl implements HibernateTemplate {
 		}
 		try {
 			final Query query = session.createQuery(hql);
-			if (params != null && params.length > 0) {
-				for (int i = 0 ; i < params.length ; ++ i) {
-					query.setParameter(i, params[i]);
-				}
-			}
+			HibernateQueryHelper.assignNamedParameterValues(query, namedParams);
 			return query.iterate();
 		}
 		finally {
@@ -127,5 +122,15 @@ public class HibernateTemplateImpl implements HibernateTemplate {
 				session.setFlushMode(oldFlushMode);
 			}
 		}
+	}
+
+	@Override
+	public <T> List<T> find(String hql, @Nullable FlushMode flushMode) {
+		return find(hql, (Map<String, ?>) null, flushMode);
+	}
+
+	@Override
+	public <T> Iterator<T> iterate(String hql, @Nullable FlushMode flushMode) {
+		return iterate(hql, (Map<String, ?>) null, flushMode);
 	}
 }

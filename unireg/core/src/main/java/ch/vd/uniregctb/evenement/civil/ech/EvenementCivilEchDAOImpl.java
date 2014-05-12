@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -23,17 +25,16 @@ import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 
 public class EvenementCivilEchDAOImpl extends AbstractEvenementCivilDAOImpl<EvenementCivilEch, TypeEvenementCivilEch> implements EvenementCivilEchDAO {
 
-	private static final List<String> ETATS_NON_TRAITES;
+	private static final Set<EtatEvenementCivil> ETATS_NON_TRAITES;
 	
-
 	static {
-		final List<String> etats = new ArrayList<>(EtatEvenementCivil.values().length);
+		final Set<EtatEvenementCivil> etats = EnumSet.noneOf(EtatEvenementCivil.class);
 		for (EtatEvenementCivil etat : EtatEvenementCivil.values()) {
 			if (!etat.isTraite()) {
-				etats.add(etat.name());
+				etats.add(etat);
 			}
 		}
-		ETATS_NON_TRAITES = Collections.unmodifiableList(etats);
+		ETATS_NON_TRAITES = Collections.unmodifiableSet(etats);
 	}
 
 	public EvenementCivilEchDAOImpl() {
@@ -98,7 +99,7 @@ public class EvenementCivilEchDAOImpl extends AbstractEvenementCivilDAOImpl<Even
 		final String hql = "from EvenementCivilEch as ec where ec.annulationDate is null and ec.etat = :etat";
 		final Session session = getCurrentSession();
 		final Query query = session.createQuery(hql);
-		query.setParameter("etat", EtatEvenementCivil.A_TRAITER.name());
+		query.setParameter("etat", EtatEvenementCivil.A_TRAITER);
 		return query.list();
 	}
 
@@ -128,27 +129,26 @@ public class EvenementCivilEchDAOImpl extends AbstractEvenementCivilDAOImpl<Even
 		return EvenementCivilEch.class;
 	}
 
-
 	@Override
-	protected String buildCriterion(List<Object> criteria, EvenementCivilCriteria<TypeEvenementCivilEch> criterion) {
+	protected String buildCriterion(Map<String, Object> criteria, EvenementCivilCriteria<TypeEvenementCivilEch> criterion) {
 		String queryWhere = super.buildCriterion(criteria, criterion);
 
 		ActionEvenementCivilEch action = criterion.getAction();
 		if (action != null) {
-			queryWhere += " and evenement.action = ? ";
-			criteria.add(action.name());
+			queryWhere += " and evenement.action = :action";
+			criteria.put("action", action);
 		}
 
 		Long numero = criterion.getNumeroIndividu();
 		if (numero != null) {
-			queryWhere += " and evenement.numeroIndividu = ? ";
-			criteria.add(numero);
+			queryWhere += " and evenement.numeroIndividu = :noIndividu";
+			criteria.put("noIndividu", numero);
 		}
 
 		Long numeroCTB = criterion.getNumeroCTB();
 		if (numeroCTB != null) {
-			queryWhere += " and (evenement.numeroIndividu = pp.numeroIndividu) and pp.numero = ? ";
-			criteria.add(numeroCTB);
+			queryWhere += " and (evenement.numeroIndividu = pp.numeroIndividu) and pp.numero = :noCtb";
+			criteria.put("noCtb", numeroCTB);
 		}
 
 		return queryWhere;

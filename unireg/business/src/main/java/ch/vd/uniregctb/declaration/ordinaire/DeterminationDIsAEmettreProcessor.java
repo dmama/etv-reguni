@@ -708,8 +708,8 @@ public class DeterminationDIsAEmettreProcessor {
 					@Override
 					public List<Long> doInHibernate(Session session) throws HibernateException {
 						final Query queryObject = session.createQuery(queryIdsCtbWithFors);
-						queryObject.setParameter("debutAnnee", debutAnnee.index());
-						queryObject.setParameter("finAnnee", finAnnee.index());
+						queryObject.setParameter("debutAnnee", debutAnnee);
+						queryObject.setParameter("finAnnee", finAnnee);
 						return queryObject.list();
 					}
 				});
@@ -718,8 +718,8 @@ public class DeterminationDIsAEmettreProcessor {
 					@Override
 					public List<Long> doInHibernate(Session session) throws HibernateException {
 						final Query queryObject = session.createQuery(queryIdsCtbWithTasks);
-						queryObject.setParameter("debutAnnee", debutAnnee.index());
-						queryObject.setParameter("finAnnee", finAnnee.index());
+						queryObject.setParameter("debutAnnee", debutAnnee);
+						queryObject.setParameter("finAnnee", finAnnee);
 						return queryObject.list();
 					}
 				});
@@ -728,8 +728,8 @@ public class DeterminationDIsAEmettreProcessor {
 					@Override
 					public List<Long> doInHibernate(Session session) throws HibernateException {
 						final Query queryObject = session.createQuery(queryIdsCtbWithDeclarations);
-						queryObject.setParameter("debutAnnee", debutAnnee.index());
-						queryObject.setParameter("finAnnee", finAnnee.index());
+						queryObject.setParameter("debutAnnee", debutAnnee);
+						queryObject.setParameter("finAnnee", finAnnee);
 						return queryObject.list();
 					}
 				});

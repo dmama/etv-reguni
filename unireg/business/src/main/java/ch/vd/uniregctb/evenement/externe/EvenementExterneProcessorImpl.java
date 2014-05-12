@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.evenement.externe;
 
-import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -124,11 +124,8 @@ public class EvenementExterneProcessorImpl implements EvenementExterneProcessor 
 				final List<Long> idsEvenement = hibernateTemplate.executeWithNewSession(new HibernateCallback<List<Long>>() {
 					@Override
 					public List<Long> doInHibernate(Session session) throws HibernateException {
-						Query queryObject = session.createQuery(queryMessage);
-						List<String> etats = new ArrayList<>();
-						etats.add(EtatEvenementExterne.ERREUR.name());
-						etats.add(EtatEvenementExterne.NON_TRAITE.name());
-						queryObject.setParameterList("etats", etats);
+						final Query queryObject = session.createQuery(queryMessage);
+						queryObject.setParameterList("etats", EnumSet.of(EtatEvenementExterne.ERREUR, EtatEvenementExterne.NON_TRAITE));
 						//noinspection unchecked
 						return queryObject.list();
 					}

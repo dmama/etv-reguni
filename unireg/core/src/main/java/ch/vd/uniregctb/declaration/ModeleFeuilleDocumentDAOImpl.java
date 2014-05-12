@@ -2,9 +2,11 @@ package ch.vd.uniregctb.declaration;
 
 import java.util.List;
 
-import ch.vd.registre.base.dao.GenericDAOImpl;
+import org.apache.commons.lang3.tuple.Pair;
 
-public class ModeleFeuilleDocumentDAOImpl extends GenericDAOImpl<ModeleFeuilleDocument, Long> implements ModeleFeuilleDocumentDAO {
+import ch.vd.uniregctb.common.BaseDAOImpl;
+
+public class ModeleFeuilleDocumentDAOImpl extends BaseDAOImpl<ModeleFeuilleDocument, Long> implements ModeleFeuilleDocumentDAO {
 
 	public ModeleFeuilleDocumentDAOImpl() {
 		super(ModeleFeuilleDocument.class);
@@ -13,11 +15,7 @@ public class ModeleFeuilleDocumentDAOImpl extends GenericDAOImpl<ModeleFeuilleDo
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<ModeleFeuilleDocument> getByModeleDocument(ModeleDocument modeleDocument) {
-		Object[] values = new Object[] {
-			modeleDocument
-		};
-		List<?> list = find("FROM ModeleFeuilleDocument m WHERE m.modeleDocument = ?", values, null);
-		return (List<ModeleFeuilleDocument>) list;
+		return find("FROM ModeleFeuilleDocument m WHERE m.modeleDocument = :md", buildNamedParameters(Pair.of("md", modeleDocument)), null);
 	}
 
 }

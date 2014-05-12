@@ -210,8 +210,8 @@ public class ListeNoteProcessor {
 					@Override
 					public List<Object[]> doInHibernate(Session session) throws HibernateException {
 						Query queryObject = session.createQuery(queryIdsCtbForsSecondaire);
-						queryObject.setParameter("debutAnnee", debutAnnee.index());
-						queryObject.setParameter("finAnnee", finAnnee.index());
+						queryObject.setParameter("debutAnnee", debutAnnee);
+						queryObject.setParameter("finAnnee", finAnnee);
 						//noinspection unchecked
 						return queryObject.list();
 					}
@@ -219,13 +219,13 @@ public class ListeNoteProcessor {
 
 
 				//Construction de la map <numeroctb;Liste des fors secondaires fermés>
-				final Map<Long, List<ForFiscalSecondaire>> mapInfo = new HashMap<Long, List<ForFiscalSecondaire>>();
+				final Map<Long, List<ForFiscalSecondaire>> mapInfo = new HashMap<>();
 				for (Object[] listeId : listeFors) {
 					final long numeroCtb = ((Number) listeId[0]).longValue();
 					final ForFiscalSecondaire forSecondaire = (ForFiscalSecondaire) listeId[1];
 					List<ForFiscalSecondaire> listeForSecondaire = mapInfo.get(numeroCtb);
 					if (listeForSecondaire == null) {
-						listeForSecondaire = new ArrayList<ForFiscalSecondaire>();
+						listeForSecondaire = new ArrayList<>();
 
 					}
 					listeForSecondaire.add(forSecondaire);

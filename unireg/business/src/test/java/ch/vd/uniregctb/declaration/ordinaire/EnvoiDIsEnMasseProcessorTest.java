@@ -440,7 +440,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 
 		// vérification des DIs
 		{
-			final List<DeclarationImpotOrdinaire> dis = hibernateTemplate.find("from DeclarationImpotOrdinaire", null, null);
+			final List<DeclarationImpotOrdinaire> dis = hibernateTemplate.find("from DeclarationImpotOrdinaire", null);
 			assertNotNull(dis);
 			assertEquals(2, dis.size());
 
@@ -625,7 +625,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		final TacheEnvoiDeclarationImpot secondeTache = hibernateTemplate.get(TacheEnvoiDeclarationImpot.class, ids.secondeTacheId);
 		assertEquals(TypeEtatTache.TRAITE, secondeTache.getEtat());
 
-		final List<DeclarationImpotOrdinaire> declarations = hibernateTemplate.find("from DeclarationImpotOrdinaire", null, null);
+		final List<DeclarationImpotOrdinaire> declarations = hibernateTemplate.find("from DeclarationImpotOrdinaire", null);
 		assertNotNull(declarations);
 		assertEquals(1, declarations.size());
 
@@ -742,7 +742,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		final TacheEnvoiDeclarationImpot secondeTache = hibernateTemplate.get(TacheEnvoiDeclarationImpot.class, ids.secondeTacheId);
 		assertEquals(TypeEtatTache.TRAITE, secondeTache.getEtat());
 
-		final List<DeclarationImpotOrdinaire> declarations = hibernateTemplate.find("from DeclarationImpotOrdinaire", null, null);
+		final List<DeclarationImpotOrdinaire> declarations = hibernateTemplate.find("from DeclarationImpotOrdinaire", null);
 		assertNotNull(declarations);
 		assertEquals(1, declarations.size());
 
@@ -801,7 +801,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		assertNotNull(results);
 		assertEquals(1, results.nbCtbsTotal);
 
-		final List<DeclarationImpotOrdinaire> declarations = hibernateTemplate.find("from DeclarationImpotOrdinaire", null, null);
+		final List<DeclarationImpotOrdinaire> declarations = hibernateTemplate.find("from DeclarationImpotOrdinaire", null);
 		assertNotNull(declarations);
 		assertEquals(1, declarations.size());
 
@@ -859,7 +859,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		assertNotNull(results);
 		assertEquals(1, results.nbCtbsTotal);
 
-		final List<DeclarationImpotOrdinaire> declarations = hibernateTemplate.find("from DeclarationImpotOrdinaire", null, null);
+		final List<DeclarationImpotOrdinaire> declarations = hibernateTemplate.find("from DeclarationImpotOrdinaire", null);
 		assertNotNull(declarations);
 		assertEquals(1, declarations.size());
 
@@ -1120,7 +1120,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		assertNotNull(results);
 		assertEquals(1, results.nbCtbsTotal);
 
-		final List<DeclarationImpotOrdinaire> declarations = hibernateTemplate.find("from DeclarationImpotOrdinaire", null, null);
+		final List<DeclarationImpotOrdinaire> declarations = hibernateTemplate.find("from DeclarationImpotOrdinaire", null);
 		assertNotNull(declarations);
 		assertEquals(1, declarations.size());
 
@@ -1186,7 +1186,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		assertEquals("Décédé en fin d'année",ignore.details);
 
 
-		final List<DeclarationImpotOrdinaire> declarations = hibernateTemplate.find("from DeclarationImpotOrdinaire", null, null);
+		final List<DeclarationImpotOrdinaire> declarations = hibernateTemplate.find("from DeclarationImpotOrdinaire", null);
 		//[UNIREG-1952] il ne doit pas y avoir de DI émise
 		assertEmpty(declarations);
 	}
@@ -1243,7 +1243,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		assertNotNull(results);
 		assertEquals(1, results.nbCtbsTotal);
 
-		final List<DeclarationImpotOrdinaire> declarations = hibernateTemplate.find("from DeclarationImpotOrdinaire", null, null);
+		final List<DeclarationImpotOrdinaire> declarations = hibernateTemplate.find("from DeclarationImpotOrdinaire", null);
 		//[UNIREG-1952] Dans le cas ou l'exclusion des décédés est activée, il faut qu'un décédé avant la date d'eclusion soit traité normalement 
 		assertNotNull(declarations);
 		assertEquals(1, declarations.size());
@@ -1302,7 +1302,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		assertNotNull(results);
 		assertEquals(1, results.nbCtbsTotal);
 
-		final List<DeclarationImpotOrdinaire> declarations = hibernateTemplate.find("from DeclarationImpotOrdinaire", null, null);
+		final List<DeclarationImpotOrdinaire> declarations = hibernateTemplate.find("from DeclarationImpotOrdinaire", null);
 		assertNotNull(declarations);
 		assertEquals(1, declarations.size());
 

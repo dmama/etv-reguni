@@ -80,7 +80,7 @@ public class ListeDroitsAccesJob extends JobDefinition {
 			@Override
 			public List<Number> execute(TransactionStatus status) throws Exception {
 				//noinspection unchecked
-				return hibernateTemplate.find("select distinct da.id from DroitAcces da where da.annulationDate is null order by da.tiers.id asc", null, null);
+				return hibernateTemplate.find("select distinct da.id from DroitAcces da where da.annulationDate is null order by da.tiers.id asc", null);
 			}
 		});
 

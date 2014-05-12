@@ -6,10 +6,10 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.springframework.dao.support.DataAccessUtils;
 
-import ch.vd.registre.base.dao.GenericDAOImpl;
+import ch.vd.uniregctb.common.BaseDAOImpl;
 import ch.vd.uniregctb.common.ParamPagination;
 
-public class ImmeubleDAOImpl extends GenericDAOImpl<Immeuble, Long> implements ImmeubleDAO {
+public class ImmeubleDAOImpl extends BaseDAOImpl<Immeuble, Long> implements ImmeubleDAO {
 
 	public ImmeubleDAOImpl() {
 		super(Immeuble.class);

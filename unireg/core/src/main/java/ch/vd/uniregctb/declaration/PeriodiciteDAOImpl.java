@@ -1,9 +1,9 @@
 package ch.vd.uniregctb.declaration;
 
 
-import ch.vd.registre.base.dao.GenericDAOImpl;
+import ch.vd.uniregctb.common.BaseDAOImpl;
 
-public class PeriodiciteDAOImpl extends GenericDAOImpl<Periodicite,Long> implements PeriodiciteDAO {
+public class PeriodiciteDAOImpl extends BaseDAOImpl<Periodicite,Long> implements PeriodiciteDAO {
 	public PeriodiciteDAOImpl(){
 		super(Periodicite.class);
 	}

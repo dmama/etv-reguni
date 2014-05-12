@@ -145,8 +145,8 @@ public class ExtractionDonneesRptProcessor extends ListesProcessor<ExtractionDon
 		final String hql = b.toString();
 
 		final Query query = session.createQuery(hql);
-		query.setParameter("finPeriode", RegDate.get(pf, 12, 31).index());
-		query.setParameter("debutPeriode", RegDate.get(pf, 1, 1).index());
+		query.setParameter("finPeriode", RegDate.get(pf, 12, 31));
+		query.setParameter("debutPeriode", RegDate.get(pf, 1, 1));
 		return query.iterate();
 	}
 
@@ -177,8 +177,8 @@ public class ExtractionDonneesRptProcessor extends ListesProcessor<ExtractionDon
 		final String hql = b.toString();
 
 		final Query query = session.createQuery(hql);
-		query.setParameter("finPeriode", RegDate.get(pf, 12, 31).index());
-		query.setParameter("debutPeriode", RegDate.get(pf, 1, 1).index());
+		query.setParameter("finPeriode", RegDate.get(pf, 12, 31));
+		query.setParameter("debutPeriode", RegDate.get(pf, 1, 1));
 		return query.iterate();
 	}
 }

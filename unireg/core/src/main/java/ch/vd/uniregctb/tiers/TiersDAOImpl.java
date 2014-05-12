@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
@@ -27,12 +28,12 @@ import org.hibernate.engine.spi.EntityKey;
 import org.hibernate.internal.SessionImpl;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.registre.base.dao.GenericDAOImpl;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.common.BaseDAOImpl;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.Periodicite;
@@ -40,7 +41,7 @@ import ch.vd.uniregctb.rf.Immeuble;
 import ch.vd.uniregctb.tracing.TracePoint;
 import ch.vd.uniregctb.tracing.TracingManager;
 
-public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDAO {
+public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 
 	private static final Logger LOGGER = Logger.getLogger(TiersDAOImpl.class);
 	private static final int MAX_IN_SIZE = 500;
@@ -60,15 +61,11 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 	@Override
 	public Tiers get(long id, boolean doNotAutoFlush) {
 
-		Object[] criteria = {
-				id
-		};
-		String query = "from Tiers t where t.numero = ?";
-
+		final String query = "from Tiers t where t.numero = :id";
 		final FlushMode mode = (doNotAutoFlush ? FlushMode.MANUAL : null);
-		final List<?> list = find(query, criteria, mode);
+		final List<Tiers> list = find(query, buildNamedParameters(Pair.of("id", id)), mode);
 		if (!list.isEmpty()) {
-			return (Tiers) list.get(0);
+			return list.get(0);
 		}
 		else {
 			return null;
@@ -570,17 +567,24 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 
 		List<Long> list;
 		if (ctbStart > 0 && ctbEnd > 0) {
-			list = (List<Long>) find("SELECT tiers.numero FROM Tiers AS tiers WHERE tiers.numero >= ? AND tiers.numero <= ?", new Object[]{ctbStart, ctbEnd}, null);
+			list = find("SELECT tiers.numero FROM Tiers AS tiers WHERE tiers.numero >= :min AND tiers.numero <= :max",
+			            buildNamedParameters(Pair.of("min", (long) ctbStart),
+			                                 Pair.of("max", (long) ctbEnd)),
+			            null);
 		}
 		else if (ctbStart > 0) {
-			list = (List<Long>) find("SELECT tiers.numero FROM Tiers AS tiers WHERE tiers.numero >= ?", new Object[] {ctbStart}, null);
+			list = find("SELECT tiers.numero FROM Tiers AS tiers WHERE tiers.numero >= :min",
+			            buildNamedParameters(Pair.of("min", (long) ctbStart)),
+			            null);
 		}
 		else if (ctbEnd > 0) {
-			list = (List<Long>) find("SELECT tiers.numero FROM Tiers AS tiers WHERE tiers.numero <= ?", new Object[] {ctbEnd}, null);
+			list = find("SELECT tiers.numero FROM Tiers AS tiers WHERE tiers.numero <= :max",
+			            buildNamedParameters(Pair.of("max", (long) ctbEnd)),
+			            null);
 		}
 		else {
 			Assert.isTrue(ctbStart < 0 && ctbEnd < 0);
-			list = (List<Long>) find("SELECT tiers.numero FROM Tiers AS tiers", null, null);
+			list = find("SELECT tiers.numero FROM Tiers AS tiers", null);
 		}
 		return list;
 	}
@@ -588,7 +592,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<Long> getAllIds() {
-		return (List<Long>) find("select tiers.numero from Tiers as tiers", null, null);
+		return find("select tiers.numero from Tiers as tiers", null);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -616,7 +620,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 			whereClause.append(")");
 		}
 
-		return (List<Long>) find("select tiers.numero from Tiers as tiers " + whereClause, null, null);
+		return find("select tiers.numero from Tiers as tiers " + whereClause, null);
 	}
 
 	private static String typeToSimpleClassname(TypeTiers type) {
@@ -647,7 +651,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 		//      1) en cas de deux demandes réindexations dans le futur, celle plus éloignée gagne : on compense donc 
 		//         cette limitation en réindexant automatiquement les tiers flaggés comme tels
 		//      2) ça ne mange pas de pain
-		return (List<Long>) find("select tiers.numero from Tiers as tiers where tiers.indexDirty = true or tiers.reindexOn is not null", null, null);
+		return find("select tiers.numero from Tiers as tiers where tiers.indexDirty = true or tiers.reindexOn is not null", null);
 	}
 
 	/**
@@ -656,7 +660,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<Long> getAllNumeroIndividu() {
-		return (List<Long>) find("select habitant.numeroIndividu from PersonnePhysique as habitant where habitant.habitant = true", null, null);
+		return find("select habitant.numeroIndividu from PersonnePhysique as habitant where habitant.habitant = true", null);
 	}
 
 	private static final String QUERY_GET_NOS_IND =
@@ -964,53 +968,38 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 
 	@Override
 	public CollectiviteAdministrative getCollectiviteAdministrativeForDistrict(int numeroDistrict) {
-		Object[] criteria = {
-				Long.valueOf(numeroDistrict)
-		};
-		String query = "from CollectiviteAdministrative col where col.identifiantDistrictFiscal = ?";
-
-		final List<?> list = find(query, criteria, null);
-
+		final String query = "from CollectiviteAdministrative col where col.identifiantDistrictFiscal = :noDistrict";
+		final List<CollectiviteAdministrative> list = find(query, buildNamedParameters(Pair.of("noDistrict", numeroDistrict)), null);
 		if (list == null || list.isEmpty()) {
 			return null;
 		}
 		Assert.isEqual(1, list.size()); // une seule collectivité administrative de regroupement par district
-		return (CollectiviteAdministrative) list.get(0);
+		return list.get(0);
 	}
 
 	@Override
 	public CollectiviteAdministrative getCollectiviteAdministrativeForRegion(int numeroRegion) {
-		Object[] criteria = {
-				Long.valueOf(numeroRegion)
-		};
-		String query = "from CollectiviteAdministrative col where col.identifiantRegionFiscale = ?";
-
-		final List<?> list = find(query, criteria, null);
-
+		final String query = "from CollectiviteAdministrative col where col.identifiantRegionFiscale = :noRegion";
+		final List<CollectiviteAdministrative> list = find(query, buildNamedParameters(Pair.of("noRegion", numeroRegion)), null);
 		if (list == null || list.isEmpty()) {
 			return null;
 		}
 		Assert.isEqual(1, list.size()); // une seule collectivité administrative de regroupement par Region
-		return (CollectiviteAdministrative) list.get(0);
+		return list.get(0);
 	}
 
 	@Override
 	@SuppressWarnings({"UnnecessaryBoxing"})
 	public CollectiviteAdministrative getCollectiviteAdministrativesByNumeroTechnique(int numeroTechnique, boolean doNotAutoFlush) {
 
-		Object[] criteria = {
-				Integer.valueOf(numeroTechnique)
-		};
-		String query = "from CollectiviteAdministrative col where col.numeroCollectiviteAdministrative = ?";
-
+		final String query = "from CollectiviteAdministrative col where col.numeroCollectiviteAdministrative = :noTechnique";
 		final FlushMode mode = (doNotAutoFlush ? FlushMode.MANUAL : null);
-		final List<?> list = find(query, criteria, mode);
-
+		final List<CollectiviteAdministrative> list = find(query, buildNamedParameters(Pair.of("noTechnique", numeroTechnique)), mode);
 		if (list == null || list.isEmpty()) {
 			return null;
 		}
 		Assert.isEqual(1, list.size()); // le numéro de collectivité administrative est défini comme 'unique' sur la base
-		return (CollectiviteAdministrative) list.get(0);
+		return list.get(0);
 	}
 
 	@Override
@@ -1043,9 +1032,8 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("Recherche d'un sourcier dont le numéro est:" + noSourcier);
 		}
-		Object[] criteria = {noSourcier};
-		String query = "from PersonnePhysique pp where pp.ancienNumeroSourcier = ?";
-		return (List<PersonnePhysique>) find(query, criteria, null);
+		final String query = "from PersonnePhysique pp where pp.ancienNumeroSourcier = :noSourcier";
+		return find(query, buildNamedParameters(Pair.of("noSourcier", noSourcier)), null);
 	}
 
 	@Override
@@ -1054,8 +1042,8 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("Recherche de tous les sourciers migrés");
 		}
-		String query = "from PersonnePhysique pp where pp.ancienNumeroSourcier > 0";
-		return (List<PersonnePhysique>) find(query, null, null);
+		final String query = "from PersonnePhysique pp where pp.ancienNumeroSourcier > 0";
+		return find(query, null);
 	}
 
 	@Override

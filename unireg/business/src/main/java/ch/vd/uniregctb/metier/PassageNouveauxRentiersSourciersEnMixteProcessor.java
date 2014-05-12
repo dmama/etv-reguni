@@ -398,10 +398,10 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessor {
 					@Override
 					public List<Long> doInHibernate(Session session) throws HibernateException {
 						final Query queryObject = session.createQuery(QUERY_SOURCIERS);
-						queryObject.setParameter("pivot", datePivotLaPlusAncienne.index());
-						queryObject.setParameter("pivotHomme", datePivotHomme.index());
-						queryObject.setParameter("pivotFemme", datePivotFemme.index());
-						queryObject.setParameter("date", date.index());
+						queryObject.setParameter("pivot", datePivotLaPlusAncienne);
+						queryObject.setParameter("pivotHomme", datePivotHomme);
+						queryObject.setParameter("pivotFemme", datePivotFemme);
+						queryObject.setParameter("date", date);
 						//noinspection unchecked
 						return queryObject.list();
 					}

@@ -284,7 +284,7 @@ public class CorrectionEtatDeclarationJob extends JobDefinition {
 			@Override
 			public List<Long> doInTransaction(TransactionStatus status) {
 				//noinspection unchecked
-				return hibernateTemplate.find(QUERY_STRING, null, null);
+				return hibernateTemplate.find(QUERY_STRING, null);
 			}
 		});
 		Collections.sort(ids);

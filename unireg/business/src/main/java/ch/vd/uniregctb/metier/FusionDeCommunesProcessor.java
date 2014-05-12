@@ -375,7 +375,7 @@ public class FusionDeCommunesProcessor {
 					@Override
 					public List<Long> doInHibernate(Session session) throws HibernateException {
 						final Query queryObject = session.createQuery(queryTiers);
-						queryObject.setParameter("dateFusion", dateFusion.index());
+						queryObject.setParameter("dateFusion", dateFusion);
 						queryObject.setParameterList("nosOfs", anciensNoOfs);
 						//noinspection unchecked
 						return queryObject.list();

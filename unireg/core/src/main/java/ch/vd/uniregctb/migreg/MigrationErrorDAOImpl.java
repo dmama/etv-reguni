@@ -2,6 +2,7 @@ package ch.vd.uniregctb.migreg;
 
 import java.util.List;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.hibernate.Criteria;
 import org.hibernate.FlushMode;
 import org.hibernate.Query;
@@ -9,11 +10,11 @@ import org.hibernate.Session;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
-import ch.vd.registre.base.dao.GenericDAOImpl;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.common.BaseDAOImpl;
 import ch.vd.uniregctb.type.TypeMigRegError;
 
-public class MigrationErrorDAOImpl extends GenericDAOImpl<MigrationError, Long> implements MigrationErrorDAO {
+public class MigrationErrorDAOImpl extends BaseDAOImpl<MigrationError, Long> implements MigrationErrorDAO {
 
 	public MigrationErrorDAOImpl() {
 		super(MigrationError.class);
@@ -23,16 +24,11 @@ public class MigrationErrorDAOImpl extends GenericDAOImpl<MigrationError, Long> 
 	public MigrationError getErrorForContribuable(long numeroCtb) {
 
 		MigrationError error = null;
-
-		Object[] criteria = {
-				numeroCtb
-			};
-		String query = "from MigrationError m where m.noContribuable = ?";
-
-		final List<?> list = find(query, criteria, FlushMode.MANUAL);
+		final String query = "from MigrationError m where m.noContribuable = :noCtb";
+		final List<MigrationError> list = find(query, buildNamedParameters(Pair.of("noCtb", numeroCtb)), FlushMode.MANUAL);
 		if (!list.isEmpty()) {
 			Assert.isEqual(1, list.size());
-			error = (MigrationError) list.get(0);
+			error = list.get(0);
 		}
 
 		return error;
@@ -59,7 +55,7 @@ public class MigrationErrorDAOImpl extends GenericDAOImpl<MigrationError, Long> 
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<Long> getAllNoCtb() {
-		return (List<Long>) find("select migreg_error.noContribuable from MigrationError as migreg_error", null, null);
+		return find("select migreg_error.noContribuable from MigrationError as migreg_error", null);
 	}
 
 	@Override
@@ -85,17 +81,23 @@ public class MigrationErrorDAOImpl extends GenericDAOImpl<MigrationError, Long> 
 	public List<MigrationError> getMigregErrorsInCtbRange(int ctbStart, int ctbEnd) {
 		final List<MigrationError> list;
 		if (ctbStart > 0 && ctbEnd > 0) {
-			list = (List<MigrationError>) find("FROM MigrationError AS migreg WHERE migreg.noContribuable >= ? AND migreg.noContribuable <= ?", new Object[]{ctbStart, ctbEnd}, null);
+			list = find("FROM MigrationError AS migreg WHERE migreg.noContribuable >= :min AND migreg.noContribuable <= :max",
+			            buildNamedParameters(Pair.of("min", ctbStart), Pair.of("max", ctbEnd)),
+			            null);
 		}
 		else if (ctbStart > 0) {
-			list = (List<MigrationError>) find("FROM MigrationError AS migreg WHERE migreg.noContribuable >= ?", new Object[]{ctbStart}, null);
+			list = find("FROM MigrationError AS migreg WHERE migreg.noContribuable >= :min",
+			            buildNamedParameters(Pair.of("min", ctbStart)),
+			            null);
 		}
 		else if (ctbEnd > 0) {
-			list = (List<MigrationError>) find("FROM MigrationError AS migreg WHERE migreg.noContribuable <= ?", new Object[] {ctbEnd}, null);
+			list = find("FROM MigrationError AS migreg WHERE migreg.noContribuable <= :max",
+			            buildNamedParameters(Pair.of("max", ctbEnd)),
+			            null);
 		}
 		else {
 			Assert.isTrue(ctbStart < 0 && ctbEnd < 0);
-			list = (List<MigrationError>) find("FROM MigrationError AS migreg", null, null);
+			list = find("FROM MigrationError AS migreg", null);
 		}
 		return list;
 	}

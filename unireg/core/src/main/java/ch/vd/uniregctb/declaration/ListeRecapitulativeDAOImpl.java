@@ -1,7 +1,9 @@
 package ch.vd.uniregctb.declaration;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
@@ -9,11 +11,11 @@ import org.hibernate.Session;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.dao.support.DataAccessUtils;
 
-import ch.vd.registre.base.dao.GenericDAOImpl;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.common.BaseDAOImpl;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.dbutils.QueryFragment;
 import ch.vd.uniregctb.type.CategorieImpotSource;
@@ -21,7 +23,7 @@ import ch.vd.uniregctb.type.ModeCommunication;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
-public class ListeRecapitulativeDAOImpl extends GenericDAOImpl< DeclarationImpotSource, Long> implements  ListeRecapitulativeDAO {
+public class ListeRecapitulativeDAOImpl extends BaseDAOImpl< DeclarationImpotSource, Long> implements  ListeRecapitulativeDAO {
 
 	private static final Logger LOGGER = Logger.getLogger(ListeRecapitulativeDAOImpl.class);
 
@@ -40,7 +42,7 @@ public class ListeRecapitulativeDAOImpl extends GenericDAOImpl< DeclarationImpot
 	public List<DeclarationImpotSource> find(final ListeRecapCriteria criterion, @Nullable final ParamPagination paramPagination) {
 
 		final Session session = getCurrentSession();
-		final List<Object> paramsWhereClause = new ArrayList<>();
+		final Map<String, Object> paramsWhereClause = new HashMap<>();
 		final String whereClause = buildWhereClauseFromCriteria(criterion, paramsWhereClause);
 
 		final QueryFragment fragment = new QueryFragment("SELECT lr FROM DeclarationImpotSource lr WHERE 1=1 " + whereClause, paramsWhereClause);
@@ -73,11 +75,11 @@ public class ListeRecapitulativeDAOImpl extends GenericDAOImpl< DeclarationImpot
 			LOGGER.trace("Start of ListeRecapitulativeDAO : count");
 		}
 
-		final List<Object> parameters = new ArrayList<>();
+		final Map<String, Object> parameters = new HashMap<>();
 		final String query = String.format("SELECT COUNT(lr) FROM DeclarationImpotSource lr WHERE 1=1 %s",
 											buildWhereClauseFromCriteria(criterion, parameters));
 
-		return DataAccessUtils.intResult(find(query, parameters.toArray(), null));
+		return DataAccessUtils.intResult(find(query, parameters, null));
 	}
 
 
@@ -87,32 +89,32 @@ public class ListeRecapitulativeDAOImpl extends GenericDAOImpl< DeclarationImpot
 	 * @param parameters
 	 * @return " and ... and ... "
 	 */
-    private String buildWhereClauseFromCriteria(ListeRecapCriteria criterion, List<Object> parameters) {
+    private String buildWhereClauseFromCriteria(ListeRecapCriteria criterion, Map<String, Object> parameters) {
 
     	final StringBuilder builder = new StringBuilder();
 
 	    final PeriodiciteDecompte periodicite = criterion.getPeriodicite();
 	    if (periodicite != null) {
-			builder.append(" and lr.periodicite = ? ");
-			parameters.add(periodicite.name());
+			builder.append(" and lr.periodicite = :periodicite");
+			parameters.put("periodicite", periodicite);
 		}
 
 	    final CategorieImpotSource categorie = criterion.getCategorie();
 	    if (categorie != null) {
-			builder.append(" and lr.tiers.categorieImpotSource = ? ");
-			parameters.add(categorie.name());
+			builder.append(" and lr.tiers.categorieImpotSource = :categorieIS");
+			parameters.put("categorieIS", categorie);
 		}
 
 	    final ModeCommunication modeCommunication = criterion.getModeCommunication();
 	    if (modeCommunication != null) {
-			builder.append(" and lr.modeCommunication = ? ");
-			parameters.add(modeCommunication.name());
+			builder.append(" and lr.modeCommunication = :modeCommunication");
+			parameters.put("modeCommunication", modeCommunication);
 		}
 
 		final RegDate periode = criterion.getPeriode();
 		if (periode != null) {
-			builder.append(" and lr.dateDebut = ? ");
-			parameters.add(periode.index());
+			builder.append(" and lr.dateDebut = :dateDebut");
+			parameters.put("dateDebut", periode);
 		}
 
 	    final TypeEtatDeclaration etat = criterion.getEtat();
@@ -172,8 +174,10 @@ public class ListeRecapitulativeDAOImpl extends GenericDAOImpl< DeclarationImpot
 			LOGGER.trace("Start of ListeRecapitulativeDAO : find");
 		}
 
-		final String query = " select lr from DeclarationImpotSource lr where lr.tiers.numero = ? ";
-		return (List<DeclarationImpotSource>) find(query, new Object[] {numero}, null);
+		final String query = " select lr from DeclarationImpotSource lr where lr.tiers.numero = :tiersId";
+		final Map<String, Long> params = new HashMap<>(1);
+		params.put("tiersId", numero);
+		return find(query, params, null);
 
 	}
 
@@ -190,8 +194,10 @@ public class ListeRecapitulativeDAOImpl extends GenericDAOImpl< DeclarationImpot
 			LOGGER.trace("Start of ListeRecapitulativeDAO : findDerniereLrEnvoyee");
 		}
 
-		final String query = "select etatPeriode from EtatDeclarationEmise etatPeriode where etatPeriode.declaration.tiers.numero = ?  and etatPeriode.declaration.annulationDate is null order by etatPeriode.dateObtention desc";
-		final List<EtatDeclaration> list = (List<EtatDeclaration>) find(query, new Object[]{numeroDpi}, null);
+		final Map<String, Long> params = new HashMap<>(1);
+		params.put("noDpi", numeroDpi);
+		final String query = "select etatPeriode from EtatDeclarationEmise etatPeriode where etatPeriode.declaration.tiers.numero = :noDpi and etatPeriode.declaration.annulationDate is null order by etatPeriode.dateObtention desc";
+		final List<EtatDeclaration> list = find(query, params, null);
 		EtatDeclaration etat = null;
 		for (EtatDeclaration etatCourant : list) {
 			if(etat == null || etat.getDeclaration().getDateDebut().isBefore(etatCourant.getDeclaration().getDateDebut())) {
@@ -218,9 +224,12 @@ public class ListeRecapitulativeDAOImpl extends GenericDAOImpl< DeclarationImpot
 		Assert.notNull(range.getDateDebut());
 		Assert.notNull(range.getDateFin());
 
-		final String query = "SELECT lr.dateDebut, lr.dateFin FROM DeclarationImpotSource lr WHERE lr.tiers.numero = ? AND lr.dateDebut <= ? AND lr.dateFin >= ? AND lr.annulationDate IS NULL ORDER BY lr.dateDebut ASC";
-		final Object[] criteres = {numeroDpi, range.getDateFin().index(), range.getDateDebut().index() };
-		final List<Object[]> queryResult = (List<Object[]>) find(query, criteres, null);
+		final Map<String, Object> params = new HashMap<>(3);
+		params.put("noDpi", numeroDpi);
+		params.put("debutMax", range.getDateFin());
+		params.put("finMin", range.getDateDebut());
+		final String query = "SELECT lr.dateDebut, lr.dateFin FROM DeclarationImpotSource lr WHERE lr.tiers.numero = :noDpi AND lr.dateDebut <= :debutMax AND lr.dateFin >= :finMin AND lr.annulationDate IS NULL ORDER BY lr.dateDebut ASC";
+		final List<Object[]> queryResult = find(query, params, null);
 		final List<DateRange> resultat = new ArrayList<>(queryResult.size());
 		for (Object[] intersection : queryResult) {
 			resultat.add(new DateRangeHelper.Range((RegDate) intersection[0], (RegDate) intersection[1]));

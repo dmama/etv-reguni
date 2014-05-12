@@ -111,7 +111,7 @@ public class CorrectionForsHCJob extends JobDefinition {
 			+ " and ffp.dateFin is null and ffp.annulationDate is null"
 			+ " and ffp.tiers.class=MenageCommun";
 		
-		return hibernateTemplate.find(queryStr, null, null);
+		return hibernateTemplate.find(queryStr, null);
 
 	}
 
