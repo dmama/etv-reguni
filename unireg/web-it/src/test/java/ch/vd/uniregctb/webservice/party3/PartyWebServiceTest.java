@@ -229,16 +229,17 @@ public class PartyWebServiceTest extends AbstractPartyWebServiceTest {
 
 		final List<Address> adressesCourrier = debiteur.getMailAddresses();
 		assertNotNull(adressesCourrier);
-		assertEquals(2, adressesCourrier.size());
+		assertEquals(3, adressesCourrier.size());
 
 		final Address courrier0 = adressesCourrier.get(0);
 		assertNotNull(courrier0);
 		assertNull(courrier0.getDateFrom());
-		assertSameDay(newDate(2004, 1, 28), courrier0.getDateTo());
+		assertSameDay(newDate(1961, 2, 8), courrier0.getDateTo());
 
 		final AddressInformation courrierInfo0 = courrier0.getAddressInformation();
 		assertNotNull(courrierInfo0);
 		assertNull(courrierInfo0.getStreetId());
+		assertEquals("La Tuilière", courrierInfo0.getStreet());
 		assertNull(courrierInfo0.getHouseNumber());
 		assertEquals(Integer.valueOf(283), courrierInfo0.getSwissZipCodeId());
 		assertEquals(Long.valueOf(1168), courrierInfo0.getSwissZipCode());
@@ -246,16 +247,30 @@ public class PartyWebServiceTest extends AbstractPartyWebServiceTest {
 
 		final Address courrier1 = adressesCourrier.get(1);
 		assertNotNull(courrier1);
-		assertSameDay(newDate(2004, 1, 29), courrier1.getDateFrom());
-		assertNull(courrier1.getDateTo());
+		assertSameDay(newDate(1961, 2, 9), courrier1.getDateFrom());
+		assertSameDay(newDate(2004, 1, 28), courrier1.getDateTo());
 
 		final AddressInformation courrierInfo1 = courrier1.getAddressInformation();
 		assertNotNull(courrierInfo1);
-		assertEquals(new Integer(141554), courrierInfo1.getStreetId());
-		assertEquals("12", courrierInfo1.getHouseNumber());
-		assertEquals(Integer.valueOf(1000), courrierInfo1.getSwissZipCodeId());
-		assertEquals(Long.valueOf(1753), courrierInfo1.getSwissZipCode());
-		assertEquals("Matran", courrierInfo1.getTown());
+		assertNull(courrierInfo1.getStreetId());
+		assertEquals("Route de Saint-Prex", courrierInfo1.getStreet());
+		assertEquals("10", courrierInfo1.getHouseNumber());
+		assertEquals(Integer.valueOf(283), courrierInfo1.getSwissZipCodeId());
+		assertEquals(Long.valueOf(1168), courrierInfo1.getSwissZipCode());
+		assertEquals("Villars-sous-Yens", courrierInfo1.getTown());
+
+		final Address courrier2 = adressesCourrier.get(2);
+		assertNotNull(courrier2);
+		assertSameDay(newDate(2004, 1, 29), courrier2.getDateFrom());
+		assertNull(courrier2.getDateTo());
+
+		final AddressInformation courrierInfo2 = courrier2.getAddressInformation();
+		assertNotNull(courrierInfo2);
+		assertEquals(new Integer(141554), courrierInfo2.getStreetId());
+		assertEquals("12", courrierInfo2.getHouseNumber());
+		assertEquals(Integer.valueOf(1000), courrierInfo2.getSwissZipCodeId());
+		assertEquals(Long.valueOf(1753), courrierInfo2.getSwissZipCode());
+		assertEquals("Matran", courrierInfo2.getTown());
 
 		final List<Address> adressesRepresentation = debiteur.getRepresentationAddresses();
 		assertNotNull(adressesRepresentation);
