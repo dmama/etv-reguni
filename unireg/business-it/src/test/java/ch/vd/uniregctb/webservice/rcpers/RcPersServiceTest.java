@@ -98,13 +98,13 @@ public class RcPersServiceTest {
 		{
 			final Parent parent = parentSorted.get(0);
 			assertEquals("347148", parent.getIdentification().getIdentification().getLocalPersonId().getPersonId());
-			assertEquals(dateNaissance, XmlUtils.xmlcal2regdate(parent.getParentFrom()));
+			assertNull(parent.getParentFrom());
 			assertNull(parent.getParentTill());
 		}
 		{
 			final Parent parent = parentSorted.get(1);
 			assertEquals("347149", parent.getIdentification().getIdentification().getLocalPersonId().getPersonId());
-			assertEquals(dateNaissance, XmlUtils.xmlcal2regdate(parent.getParentFrom()));
+			assertNull(parent.getParentFrom());
 			assertNull(parent.getParentTill());
 		}
 
