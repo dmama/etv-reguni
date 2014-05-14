@@ -269,7 +269,7 @@ public class PartyWebServicePoursuiteTest extends AbstractPartyWebServiceTest {
 		// Teste les adresses formattées
 		final List<Address> residenceAddresses = tiers.getResidenceAddresses();
 		final Address domicile = residenceAddresses.get(residenceAddresses.size() - 1);
-		assertFormattedAddress(domicile.getFormattedAddress(), "Monsieur", "Marcello Pesci", "Domaine de Sien", "1026 Echandens");
+		assertFormattedAddress(domicile.getFormattedAddress(), "Monsieur", "Marcello Pesci", "Domaine de Sien", "1027 Lonay");
 		assertEquals(TariffZone.SWITZERLAND, domicile.getAddressInformation().getTariffZone());
 
 		final List<Address> mailAddresses = tiers.getMailAddresses();

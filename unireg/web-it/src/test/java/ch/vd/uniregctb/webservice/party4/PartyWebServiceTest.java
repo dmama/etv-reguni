@@ -274,12 +274,12 @@ public class PartyWebServiceTest extends AbstractPartyWebServiceTest {
 
 		final List<Address> adressesRepresentation = debiteur.getRepresentationAddresses();
 		assertNotNull(adressesRepresentation);
-		assertEquals(2, adressesRepresentation.size());
+		assertEquals(3, adressesRepresentation.size());
 
 		final Address repres0 = adressesRepresentation.get(0);
 		assertNotNull(repres0);
 		assertNull(repres0.getDateFrom());
-		assertSameDay(newDate(2004, 1, 28), repres0.getDateTo());
+		assertSameDay(newDate(1961, 2, 8), repres0.getDateTo());
 
 		final AddressInformation represInfo0 = repres0.getAddressInformation();
 		assertNotNull(represInfo0);
@@ -292,17 +292,31 @@ public class PartyWebServiceTest extends AbstractPartyWebServiceTest {
 
 		final Address repres1 = adressesRepresentation.get(1);
 		assertNotNull(repres1);
-		assertSameDay(newDate(2004, 1, 29), repres1.getDateFrom());
-		assertNull(repres1.getDateTo());
+		assertSameDay(newDate(1961, 2, 9), repres1.getDateFrom());
+		assertSameDay(newDate(2004, 1, 28), repres1.getDateTo());
 
 		final AddressInformation represInfo1 = repres1.getAddressInformation();
 		assertNotNull(represInfo1);
-		assertEquals(new Integer(32296), represInfo1.getStreetId());
-		assertEquals("1", represInfo1.getHouseNumber());
-		assertEquals(Integer.valueOf(528), represInfo1.getSwissZipCodeId());
-		assertEquals("Avenue du Funiculaire", represInfo1.getStreet());
-		assertEquals(Long.valueOf(1304), represInfo1.getSwissZipCode());
-		assertEquals("Cossonay-Ville", represInfo1.getTown());
+		assertNull(represInfo1.getStreetId());
+		assertEquals("Route de Saint-Prex", represInfo1.getStreet());
+		assertEquals("10", represInfo1.getHouseNumber());
+		assertEquals(Integer.valueOf(283), represInfo1.getSwissZipCodeId());
+		assertEquals(Long.valueOf(1168), represInfo1.getSwissZipCode());
+		assertEquals("Villars-sous-Yens", represInfo1.getTown());
+
+		final Address repres2 = adressesRepresentation.get(1);
+		assertNotNull(repres2);
+		assertSameDay(newDate(2004, 1, 29), repres2.getDateFrom());
+		assertNull(repres2.getDateTo());
+
+		final AddressInformation represInfo2 = repres2.getAddressInformation();
+		assertNotNull(represInfo2);
+		assertEquals(new Integer(32296), represInfo2.getStreetId());
+		assertEquals("1", represInfo2.getHouseNumber());
+		assertEquals(Integer.valueOf(528), represInfo2.getSwissZipCodeId());
+		assertEquals("Avenue du Funiculaire", represInfo2.getStreet());
+		assertEquals(Long.valueOf(1304), represInfo2.getSwissZipCode());
+		assertEquals("Cossonay-Ville", represInfo2.getTown());
 	}
 
 	@Test
