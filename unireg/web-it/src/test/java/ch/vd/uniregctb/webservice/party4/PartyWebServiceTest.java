@@ -304,7 +304,7 @@ public class PartyWebServiceTest extends AbstractPartyWebServiceTest {
 		assertEquals(Long.valueOf(1168), represInfo1.getSwissZipCode());
 		assertEquals("Villars-sous-Yens", represInfo1.getTown());
 
-		final Address repres2 = adressesRepresentation.get(1);
+		final Address repres2 = adressesRepresentation.get(2);
 		assertNotNull(repres2);
 		assertSameDay(newDate(2004, 1, 29), repres2.getDateFrom());
 		assertNull(repres2.getDateTo());
