@@ -2,8 +2,9 @@ package ch.vd.uniregctb.stats;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
@@ -216,7 +217,7 @@ public final class ServiceTracing implements ServiceTracingInterface {
 	/**
 	 * Les données détaillées et cumulées depuis le démarrage de l'application
 	 */
-	private final Map<String, Data> details = new HashMap<>();
+	private final Map<String, Data> details = new TreeMap<>();
 
 	/**
 	 * Le logger utilisé dans les traces détaillées
@@ -471,7 +472,7 @@ public final class ServiceTracing implements ServiceTracingInterface {
 		Map<String, Data> copy;
 		// fait une copie complète des données pour éviter des problèmes d'accès concurrents
 		synchronized (total) {
-			copy = new HashMap<>(details.size());
+			copy = new LinkedHashMap<>(details.size());
 			for (Map.Entry<String, Data> e: details.entrySet()) {
 				copy.put(e.getKey(), new Data(e.getValue()));
 			}

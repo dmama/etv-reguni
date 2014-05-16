@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.stats;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -11,6 +10,7 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -247,8 +247,8 @@ public class StatsServiceImpl implements InitializingBean, DisposableBean, Stats
 
 	private String buildCacheStats() {
 
-		// on récupère les noms des caches
-		final Set<String> keys = new HashSet<>();
+		// on récupère les noms des caches (triés)
+		final Set<String> keys = new TreeSet<>();
 		synchronized (cachedServices) {
 			keys.addAll(cachedServices.keySet());
 		}
@@ -259,12 +259,8 @@ public class StatsServiceImpl implements InitializingBean, DisposableBean, Stats
 				new Column("time-to-live"), new Column("max elements")));
 		final Table table = new Table(new Options(false), headers);
 
-		// on trie les clés avant de les afficher
-		final List<String> sortedKeys = new ArrayList<>(keys);
-		Collections.sort(sortedKeys);
-
 		// extrait et analyse les stats des services
-		for (String k : sortedKeys) {
+		for (String k : keys) {
 			final CacheStats data = getCacheStats(k);
 			table.addRow(buildRow(k, data));
 		}
@@ -300,8 +296,8 @@ public class StatsServiceImpl implements InitializingBean, DisposableBean, Stats
 
 	public String buildServiceStats() {
 
-		// on récupère les noms des services
-		final Set<String> keys = new HashSet<>();
+		// on récupère les noms des services (triés)
+		final Set<String> keys = new TreeSet<>();
 		synchronized (rawServices) {
 			keys.addAll(rawServices.keySet());
 		}
@@ -313,12 +309,8 @@ public class StatsServiceImpl implements InitializingBean, DisposableBean, Stats
 				new Column("ping"), new Column("ping/item"), new Column("hits count"), new Column("items count")));
 		final Table table = new Table(new Options(false), headers);
 
-		// on trie les clés avant de les afficher
-		List<String> sortedKeys = new ArrayList<>(keys);
-		Collections.sort(sortedKeys);
-
 		// extrait et analyse les stats des services
-		for (String k : sortedKeys) {
+		for (String k : keys) {
 			final ServiceStats data = getServiceStats(k);
 			table.addRow(buildRow(k, data));
 
@@ -365,8 +357,8 @@ public class StatsServiceImpl implements InitializingBean, DisposableBean, Stats
 
 	private String buildLoadMonitorStats() {
 
-		// on récupère les noms des caches
-		final Set<String> keys = new HashSet<>();
+		// on récupère les noms des services (triés)
+		final Set<String> keys = new TreeSet<>();
 		synchronized (loadMonitors) {
 			keys.addAll(loadMonitors.keySet());
 		}
@@ -380,12 +372,8 @@ public class StatsServiceImpl implements InitializingBean, DisposableBean, Stats
 		headers.add(new Header(new Column("Load", AlignMode.LEFT), new Column("current"), new Column("5-min average")));
 		final Table table = new Table(new Options(false), headers);
 
-		// on trie les clés avant de les afficher
-		final List<String> sortedKeys = new ArrayList<>(keys);
-		Collections.sort(sortedKeys);
-
 		// extrait et analyse les stats des services
-		for (String k : sortedKeys) {
+		for (String k : keys) {
 			final LoadMonitorStats data = getLoadMonitorStats(k);
 			table.addRow(buildRow(k, data));
 		}

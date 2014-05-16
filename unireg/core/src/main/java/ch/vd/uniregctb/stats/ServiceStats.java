@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.stats;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -21,7 +21,7 @@ public class ServiceStats {
 	private final long recentCount;
 	private final Long recentItemsCount;
 	private final Long recentItemsPing;
-	private final Map<String, ServiceStats> detailedData = new HashMap<>();
+	private final Map<String, ServiceStats> detailedData = new LinkedHashMap<>();
 
 	public ServiceStats(ServiceTracingInterface rawService) {
 		this.lastCallTime = rawService.getLastCallTime();

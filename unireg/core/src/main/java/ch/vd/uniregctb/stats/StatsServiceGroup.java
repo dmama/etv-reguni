@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.stats;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -22,7 +22,7 @@ public class StatsServiceGroup implements StatsService, ServiceTracingInterface,
 
 	private StatsService statsService;
 	private String groupName;
-	private final Map<String, ServiceTracingInterface> subServices = new HashMap<>();
+	private final Map<String, ServiceTracingInterface> subServices = new TreeMap<>();
 
 	public void setStatsService(StatsService statsService) {
 		this.statsService = statsService;
