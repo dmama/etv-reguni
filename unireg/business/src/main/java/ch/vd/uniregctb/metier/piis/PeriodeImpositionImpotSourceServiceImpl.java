@@ -2,7 +2,9 @@ package ch.vd.uniregctb.metier.piis;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -250,18 +252,25 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 	 * @param ffp un for principal
 	 * @param forSuivant l'éventuel for principal suivant
 	 * @param pf la période fiscale concernée par la PIIS en construction
-	 * @return le type ({@link PeriodeImpositionImpotSource.Type#MIXTE MIXTE} ou {@link PeriodeImpositionImpotSource.Type#SOURCE SOURCE}) de la période d'imposition IS à créer pour le for principal
+	 * @return le type ({@link ProtoPeriodeImpositionImpotSource.Type#MIXTE MIXTE}, {@link ProtoPeriodeImpositionImpotSource.Type#SOURCE SOURCE}
+	 * ou {@link ProtoPeriodeImpositionImpotSource.Type#MIXTE_COMMUE_EN_SOURCE MIXTE_COMMUE_EN_SOURCE}) qui sera utilisé pour au final connaître
+	 * le type réel de la période d'imposition IS à créer pour le for principal
 	 */
-	private PeriodeImpositionImpotSource.Type determineTypePeriode(ForFiscalPrincipal ffp, @Nullable ForFiscalPrincipal forSuivant, int pf) {
-		final PeriodeImpositionImpotSource.Type type;
-		if (ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && ffp.getModeImposition() != ModeImposition.MIXTE_137_2 && isDepartHC(ffp, forSuivant, pf)) {
-			type = PeriodeImpositionImpotSource.Type.SOURCE;
-		}
-		else if (ffp.getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD || ffp.getModeImposition() == ModeImposition.SOURCE) {
-			type = PeriodeImpositionImpotSource.Type.SOURCE;
+	private ProtoPeriodeImpositionImpotSource.Type determineTypePeriode(ForFiscalPrincipal ffp, @Nullable ForFiscalPrincipal forSuivant, int pf) {
+		final ProtoPeriodeImpositionImpotSource.Type type;
+		if (ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+			if (ffp.getModeImposition() == ModeImposition.SOURCE) {
+				type = ProtoPeriodeImpositionImpotSource.Type.SOURCE;
+			}
+			else if (ffp.getModeImposition() != ModeImposition.MIXTE_137_2 && isDepartHC(ffp, forSuivant, pf)) {
+				type = ProtoPeriodeImpositionImpotSource.Type.MIXTE_COMMUE_EN_SOURCE;
+			}
+			else {
+				type = ProtoPeriodeImpositionImpotSource.Type.MIXTE;
+			}
 		}
 		else {
-			type = PeriodeImpositionImpotSource.Type.MIXTE;
+			type = ProtoPeriodeImpositionImpotSource.Type.SOURCE;
 		}
 		return type;
 	}
@@ -295,10 +304,42 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 		return dateFin;
 	}
 
-	private static final class ProtoPeriodeImpositionImpotSource {
+	private static final class ProtoPeriodeImpositionImpotSource implements DateRange {
+
+		private static enum Type {
+			/**
+			 * Source, sans aucun doute
+			 */
+			SOURCE {
+				@Override
+				public PeriodeImpositionImpotSource.Type toFinalType() {
+					return PeriodeImpositionImpotSource.Type.SOURCE;
+				}
+			},
+			/**
+			 * Mixte, sans aucun doute
+			 */
+			MIXTE {
+				@Override
+				public PeriodeImpositionImpotSource.Type toFinalType() {
+					return PeriodeImpositionImpotSource.Type.MIXTE;
+				}
+			},
+			/**
+			 * Mixte commué en Source, et susceptible de redevenir mixte si certaines conditions sont remplies
+			 */
+			MIXTE_COMMUE_EN_SOURCE {
+				@Override
+				public PeriodeImpositionImpotSource.Type toFinalType() {
+					return PeriodeImpositionImpotSource.Type.SOURCE;
+				}
+			};
+
+			public abstract PeriodeImpositionImpotSource.Type toFinalType();
+		}
 
 		public final PersonnePhysique pp;
-		public final PeriodeImpositionImpotSource.Type type;
+		public final Type type;
 		public final TypeAutoriteFiscale typeAutoriteFiscale;
 		public final Integer noOfs;
 		public final RegDate dateDebut;
@@ -307,7 +348,7 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 		public final Fraction fractionDebut;
 		public final Fraction fractionFin;
 
-		private ProtoPeriodeImpositionImpotSource(PersonnePhysique pp, PeriodeImpositionImpotSource.Type type, ForFiscalPrincipal forFiscal,
+		private ProtoPeriodeImpositionImpotSource(PersonnePhysique pp, Type type, ForFiscalPrincipal forFiscal,
 		                                          RegDate dateDebut, RegDate dateFin, Fraction fractionDebut, Fraction fractionFin,
 		                                          ServiceInfrastructureService infraService) {
 			this.pp = pp;
@@ -333,16 +374,47 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 			this.fractionFin = src.fractionFin;
 		}
 
+		private ProtoPeriodeImpositionImpotSource(ProtoPeriodeImpositionImpotSource src, Type type) {
+			this.pp = src.pp;
+			this.type = type;
+			this.typeAutoriteFiscale = src.typeAutoriteFiscale;
+			this.noOfs = src.noOfs;
+			this.dateDebut = src.dateDebut;
+			this.dateFin = src.dateFin;
+			this.localisation = src.localisation;
+			this.fractionDebut = src.fractionDebut;
+			this.fractionFin = src.fractionFin;
+		}
+
 		public boolean isValid() {
 			return dateDebut.compareTo(dateFin) <= 0;
 		}
 
 		public PeriodeImpositionImpotSource project() {
-			return new PeriodeImpositionImpotSource(pp, type, dateDebut, dateFin, typeAutoriteFiscale, noOfs, localisation, fractionDebut, fractionFin);
+			return new PeriodeImpositionImpotSource(pp, type.toFinalType(), dateDebut, dateFin, typeAutoriteFiscale, noOfs, localisation, fractionDebut, fractionFin);
 		}
 
 		public ProtoPeriodeImpositionImpotSource withNoOfs(int noOfs) {
 			return new ProtoPeriodeImpositionImpotSource(this, noOfs);
+		}
+
+		public ProtoPeriodeImpositionImpotSource withType(Type type) {
+			return new ProtoPeriodeImpositionImpotSource(this, type);
+		}
+
+		@Override
+		public boolean isValidAt(RegDate date) {
+			return isValid() && RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
+		}
+
+		@Override
+		public RegDate getDateDebut() {
+			return dateDebut;
+		}
+
+		@Override
+		public RegDate getDateFin() {
+			return dateFin;
 		}
 	}
 
@@ -402,7 +474,7 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 				final Triplet<ForFiscalPrincipal> triplet = tripletIterator.next();
 				final ForFiscalPrincipalContext forPrincipal = new ForFiscalPrincipalContext(triplet);
 
-				final PeriodeImpositionImpotSource.Type type = determineTypePeriode(forPrincipal.current, forPrincipal.next, pf);
+				final ProtoPeriodeImpositionImpotSource.Type type = determineTypePeriode(forPrincipal.current, forPrincipal.next, pf);
 				final RegDate dateDebut = determineDateDebut(forPrincipal.current, pf, fracs);
 				final Fraction fractionDebut = fracs.getAt(forPrincipal.current.getDateDebut());
 				final RegDate dateFin = determineDateFin(forPrincipal.current, pf, fracs);
@@ -426,12 +498,55 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 				dateFinAttendue = proto.dateDebut.getOneDayBefore();
 			}
 
-			// maintenant on peut projeter les proto-périodes en véritables périodes
-			final List<PeriodeImpositionImpotSource> piisPf = new ArrayList<>();
-			for (ProtoPeriodeImpositionImpotSource proto : protos) {
-				if (proto.isValid()) {
-					piisPf.add(proto.project());
+			// supprimons les périodes invalides
+			final Iterator<ProtoPeriodeImpositionImpotSource> iterProtos = protos.iterator();
+			while (iterProtos.hasNext()) {
+				final ProtoPeriodeImpositionImpotSource proto = iterProtos.next();
+				if (!proto.isValid()) {
+					iterProtos.remove();
 				}
+			}
+
+			// [SIFISC-12326] passage éventuel d'une période vaudoise SOURCE à MIXTE en fonction des autres périodes de la PF
+			// 1. on commence à la fin et on cherche toutes les périodes mixtes (vaudoises, forcément)
+			// 2. pour chacune d'entre elles, on recule encore jusqu'à trouver une autre période vaudoise mixte (on peut s'arrêter, le cas sera traité par une autre étape),
+			//      ou un trou, ou une période HS, ou un fractionnement qui correspond à un passage au rôle
+			// 3. les PF vaudoises "SOURCE" trouvées en passant deviennent "MIXTE"
+			final Set<MotifFor> motifsObtentionRole = EnumSet.of(MotifFor.PERMIS_C_SUISSE,
+			                                                     MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
+			                                                     MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
+			                                                     MotifFor.VEUVAGE_DECES);
+			for (int i = protos.size() - 1 ; i >= 0 ; -- i) {
+				final ProtoPeriodeImpositionImpotSource proto = protos.get(i);
+				if (proto.type == ProtoPeriodeImpositionImpotSource.Type.MIXTE) {
+					for (int j = i - 1 ; j >= 0 ; -- j) {
+						final ProtoPeriodeImpositionImpotSource next = (j == i - 1 ? proto : protos.get(j + 1));
+						final ProtoPeriodeImpositionImpotSource current = protos.get(j);
+						if (!DateRangeHelper.isCollatable(current, next)                            // il y a un trou, là...
+								|| current.type == ProtoPeriodeImpositionImpotSource.Type.MIXTE     // on verra dans la prochaine boucle de "i"
+								|| current.localisation.isInconnue()                                // trou bouché ?
+								|| current.localisation.isHS()                                      // passage par hors-Suisse
+								|| (current.fractionFin != null && motifsObtentionRole.contains(current.fractionFin.getMotif()))) {       // passage de SOURCE à MIXTE normal
+
+							// pas la peine d'aller plus loin depuis cette période-là (i)
+							break;
+						}
+
+						// si la localisation est vaudoise, on transforme le type SOURCE en MIXTE
+						if (current.localisation.isVD()) {
+							if (current.type == ProtoPeriodeImpositionImpotSource.Type.MIXTE_COMMUE_EN_SOURCE) {
+								protos.set(j, current.withType(ProtoPeriodeImpositionImpotSource.Type.MIXTE));
+							}
+							break;
+						}
+					}
+				}
+			}
+
+			// maintenant on peut projeter les proto-périodes en véritables périodes
+			final List<PeriodeImpositionImpotSource> piisPf = new ArrayList<>(protos.size());
+			for (ProtoPeriodeImpositionImpotSource proto : protos) {
+				piisPf.add(proto.project());
 			}
 
 			// il faut remplir les trous avec des périodes "SOURCE" sur toute la période (sauf en cas de décès)
