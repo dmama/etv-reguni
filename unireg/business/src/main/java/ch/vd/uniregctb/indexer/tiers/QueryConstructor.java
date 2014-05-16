@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.indexer.tiers;
 
 import java.io.Serializable;
+import java.util.Locale;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -408,7 +409,7 @@ public class QueryConstructor {
 	private static void addNumeroIDE(BooleanQuery fullQuery, TiersCriteria criteria) throws IndexerException {
 
 		if (StringUtils.isNotBlank(criteria.getNumeroIDE())) {
-			final Query q = new TermQuery(new Term(TiersIndexableData.IDE, criteria.getNumeroIDE().toLowerCase()));
+			final Query q = new TermQuery(new Term(TiersIndexableData.IDE, IndexerFormatHelper.noIdeToString(criteria.getNumeroIDE()).toLowerCase(Locale.getDefault())));
 			fullQuery.add(q, must);
 		}
 	}

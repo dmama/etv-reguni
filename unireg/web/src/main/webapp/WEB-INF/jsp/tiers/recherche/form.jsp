@@ -154,6 +154,14 @@
 			</td>
 		</tr>
 		<tr class="<unireg:nextRowClass/>" >
+			<td width="25%"><fmt:message key="label.numero.ide" />&nbsp;:</td>
+			<td width="25%">
+				<form:input path="numeroIDE" id="numeroIDE" />
+			</td>
+			<td width="25%">&nbsp;</td>
+			<td width="25%">&nbsp;</td>
+		</tr>
+		<tr class="<unireg:nextRowClass/>" >
 			<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
 			<td width="25%"><fmt:message key="label.origine.i107" />&nbsp;:</td>
 			<td width="25%"><form:checkbox path="inclureI107" /><span class="jTip formInfo" title="<c:url value="/htm/debiteurInactif.htm?width=375"/>" id="debiteurInactif">?</span></td>

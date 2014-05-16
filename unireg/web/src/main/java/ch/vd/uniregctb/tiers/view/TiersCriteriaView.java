@@ -16,7 +16,7 @@ import ch.vd.uniregctb.type.ModeImposition;
  */
 public class TiersCriteriaView implements Serializable {
 
-	private static final long serialVersionUID = -1356109968828773937L;
+	private static final long serialVersionUID = -1194729108396598302L;
 
 	// Valeurs utilisées en sortie seulement
 	private Long numeroSourcier;
@@ -282,6 +282,14 @@ public class TiersCriteriaView implements Serializable {
 
 	public void setTiersActif(Boolean tiersActif) {
 		criteria.setTiersActif(tiersActif);
+	}
+
+	public String getNumeroIDE() {
+		return criteria.getNumeroIDE();
+	}
+
+	public void setNumeroIDE(String numeroIDE) {
+		criteria.setNumeroIDE(numeroIDE);
 	}
 
 	public boolean isEmpty() {

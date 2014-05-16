@@ -147,7 +147,7 @@ public class TiersIndexableData extends IndexableData {
 		addNotAnalyzedValue(d, TiersIndexableData.TIERS_ACTIF, tiersActif);
 		addNotAnalyzedValue(d, TiersIndexableData.ANNULE, annule);
 		addNotAnalyzedValue(d, TiersIndexableData.DEBITEUR_INACTIF, debiteurInactif);
-		addAnalyzedValue(d, IDE, ide);
+		addAnalyzedValue(d, TiersIndexableData.IDE, ide);
 
 		// on aggrège tous les valeurs utiles dans un seul champ pour une recherche de type google
 		addToutValues(d, numeros, nomRaison, autresNom, toSearchString(datesNaissance), forPrincipal, rue, npaCourrier, localiteEtPays, natureJuridique, navs11, navs13, ancienNumeroSourcier, categorieDebiteurIs, noSymic, ide);
@@ -593,7 +593,7 @@ public class TiersIndexableData extends IndexableData {
 	}
 
 	public void addIde(String ide) {
-		this.ide = add(this.ide, ide);
+		this.ide = add(this.ide, IndexerFormatHelper.noIdeToString(ide));
 	}
 
 	private static String add(String left, String right) {

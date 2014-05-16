@@ -106,6 +106,16 @@ public class IndexerFormatHelper {
 	};
 
 	/**
+	 * Supression des blancs, points et autres tirets
+	 */
+	public static final StringRenderer<String> IDE_RENDERER = new AbstractStringRendererImpl<String>() {
+		@Override
+		protected String toStringFromNotNull(@NotNull String object) {
+			return DOT_DASH_BLANK.matcher(object).replaceAll(StringUtils.EMPTY);
+		}
+	};
+
+	/**
 	 * Utilisation de {@link Constants#OUI} et {@link Constants#NON}
 	 */
 	public static final StringRenderer<Boolean> BOOLEAN_RENDERER = new AbstractStringRendererImpl<Boolean>() {
@@ -166,6 +176,10 @@ public class IndexerFormatHelper {
 
 	public static String noAvsToString(String avs) {
 		return AVS_RENDERER.toString(avs);
+	}
+
+	public static String noIdeToString(String ide) {
+		return IDE_RENDERER.toString(ide);
 	}
 
 	private static String dateToSearchableString(RegDate date) {
