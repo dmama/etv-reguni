@@ -80,7 +80,7 @@ public class ForsControllerTest extends WebTestSpring3 {
 		request.addParameter("tiersId", String.valueOf(noCtb));
 		request.addParameter("dateDebut", "01.01.2007");
 		request.addParameter("dateFin", "01.01.2008");
-		request.addParameter("motifFin", "DEPART_HC");
+		request.addParameter("motifFin", "FUSION_COMMUNES");
 		request.addParameter("genreImpot", "REVENU_FORTUNE");
 		request.addParameter("motifRattachement", "DOMICILE");
 		request.addParameter("typeAutoriteFiscale", "COMMUNE_OU_FRACTION_VD");
@@ -176,7 +176,7 @@ public class ForsControllerTest extends WebTestSpring3 {
 		request.addParameter("tiersId", String.valueOf(noCtb));
 		request.addParameter("dateFin", "01.01.2008");
 		request.addParameter("motifDebut", "ARRIVEE_HC");
-		request.addParameter("motifFin", "DEPART_HC");
+		request.addParameter("motifFin", "FUSION_COMMUNES");
 		request.addParameter("genreImpot", "REVENU_FORTUNE");
 		request.addParameter("motifRattachement", "DOMICILE");
 		request.addParameter("typeAutoriteFiscale", "COMMUNE_OU_FRACTION_VD");
@@ -272,7 +272,7 @@ public class ForsControllerTest extends WebTestSpring3 {
 		request.addParameter("dateDebut", "01.01.2007");
 		request.addParameter("dateFin", "01.01.2028");
 		request.addParameter("motifDebut", "ARRIVEE_HC");
-		request.addParameter("motifFin", "DEPART_HC");
+		request.addParameter("motifFin", "FUSION_COMMUNES");
 		request.addParameter("genreImpot", "REVENU_FORTUNE");
 		request.addParameter("motifRattachement", "DOMICILE");
 		request.addParameter("typeAutoriteFiscale", "COMMUNE_OU_FRACTION_VD");
@@ -321,7 +321,7 @@ public class ForsControllerTest extends WebTestSpring3 {
 		request.addParameter("dateDebut", "01.01.2008");
 		request.addParameter("dateFin", "01.01.2007");
 		request.addParameter("motifDebut", "ARRIVEE_HC");
-		request.addParameter("motifFin", "DEPART_HC");
+		request.addParameter("motifFin", "FUSION_COMMUNES");
 		request.addParameter("genreImpot", "REVENU_FORTUNE");
 		request.addParameter("motifRattachement", "DOMICILE");
 		request.addParameter("typeAutoriteFiscale", "COMMUNE_OU_FRACTION_VD");
@@ -370,7 +370,7 @@ public class ForsControllerTest extends WebTestSpring3 {
 		request.addParameter("dateDebut", "01.01.2007");
 		request.addParameter("dateFin", "01.01.2008");
 		request.addParameter("motifDebut", "ARRIVEE_HC");
-		request.addParameter("motifFin", "DEPART_HC");
+		request.addParameter("motifFin", "FUSION_COMMUNES");
 		request.addParameter("genreImpot", "REVENU_FORTUNE");
 		request.addParameter("motifRattachement", "DOMICILE");
 		request.addParameter("typeAutoriteFiscale", "COMMUNE_OU_FRACTION_VD");
@@ -398,7 +398,7 @@ public class ForsControllerTest extends WebTestSpring3 {
 				assertEquals(1, fors.size());
 
 				final ForFiscalPrincipal ffp0 = (ForFiscalPrincipal) fors.iterator().next();
-				assertForPrincipal(date(2007, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 1, 1), MotifFor.DEPART_HC, MockCommune.Lausanne, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp0);
+				assertForPrincipal(date(2007, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 1, 1), MotifFor.FUSION_COMMUNES, MockCommune.Lausanne, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp0);
 			}
 		});
 	}
@@ -921,7 +921,7 @@ public class ForsControllerTest extends WebTestSpring3 {
 		request.addParameter("dateFin", "01.01.1970");
 		request.addParameter("modeImposition", ModeImposition.ORDINAIRE.name());
 		request.addParameter("motifDebut", MotifFor.DEPART_HS.name());
-		request.addParameter("motifFin", MotifFor.ARRIVEE_HS.name());
+		request.addParameter("motifFin", MotifFor.FUSION_COMMUNES.name());
 		request.setRequestURI("/fors/principal/edit.do");
 		request.setMethod("POST");
 
