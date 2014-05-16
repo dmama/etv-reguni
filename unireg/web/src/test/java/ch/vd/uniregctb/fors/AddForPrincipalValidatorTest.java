@@ -150,7 +150,7 @@ public class AddForPrincipalValidatorTest extends WebTestSpring3 {
 			view.setNoAutoriteFiscale(MockPays.France.getNoOFS());
 			view.setDateDebut(date(1990, 1, 1));
 			view.setDateFin(date(1990, 12, 31));
-			view.setMotifFin(MotifFor.DEPART_HC);
+			view.setMotifFin(MotifFor.FUSION_COMMUNES);
 			final Errors errors = validate(view);
 			assertNotNull(errors);
 			assertEquals(0, errors.getFieldErrorCount());
@@ -162,7 +162,7 @@ public class AddForPrincipalValidatorTest extends WebTestSpring3 {
 			view.setNoAutoriteFiscale(MockCommune.Bale.getNoOFS());
 			view.setDateDebut(date(1990, 1, 1));
 			view.setDateFin(date(1990, 12, 31));
-			view.setMotifFin(MotifFor.DEPART_HC);
+			view.setMotifFin(MotifFor.FUSION_COMMUNES);
 			final Errors errors = validate(view);
 			assertNotNull(errors);
 			assertEquals(0, errors.getFieldErrorCount());
@@ -174,7 +174,7 @@ public class AddForPrincipalValidatorTest extends WebTestSpring3 {
 			view.setNoAutoriteFiscale(MockCommune.Lausanne.getNoOFS());
 			view.setDateDebut(date(1990, 1, 1));
 			view.setDateFin(date(1990, 12, 31));
-			view.setMotifFin(MotifFor.DEPART_HC);
+			view.setMotifFin(MotifFor.FUSION_COMMUNES);
 			final Errors errors = validate(view);
 			assertNotNull(errors);
 			assertEquals(1, errors.getFieldErrorCount());
@@ -217,7 +217,7 @@ public class AddForPrincipalValidatorTest extends WebTestSpring3 {
 			Assert.assertNotNull(error);
 			Assert.assertEquals("error.motif.fermeture.vide", error.getCode());
 
-			view.setMotifFin(MotifFor.DEPART_HC);
+			view.setMotifFin(MotifFor.FUSION_COMMUNES);
 			final Errors validationReussie = validate(view);
 			Assert.assertNotNull(validationReussie);
 			Assert.assertEquals(0, validationReussie.getErrorCount());
@@ -236,7 +236,7 @@ public class AddForPrincipalValidatorTest extends WebTestSpring3 {
 			Assert.assertNotNull(error);
 			Assert.assertEquals("error.motif.fermeture.vide", error.getCode());
 
-			view.setMotifFin(MotifFor.ARRIVEE_HC);
+			view.setMotifFin(MotifFor.FUSION_COMMUNES);
 			final Errors validationReussie = validate(view);
 			Assert.assertNotNull(validationReussie);
 			Assert.assertEquals(0, validationReussie.getErrorCount());
@@ -255,7 +255,7 @@ public class AddForPrincipalValidatorTest extends WebTestSpring3 {
 			Assert.assertNotNull(error);
 			Assert.assertEquals("error.motif.fermeture.vide", error.getCode());
 
-			view.setMotifFin(MotifFor.ARRIVEE_HS);
+			view.setMotifFin(MotifFor.FUSION_COMMUNES);
 			final Errors validationReussie = validate(view);
 			Assert.assertNotNull(validationReussie);
 			Assert.assertEquals(0, validationReussie.getErrorCount());
