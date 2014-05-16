@@ -148,6 +148,14 @@ public class MotifsForHelper {
 		// Motifs interdits depuis la GUI
 		// motifs.add(MotifFor.CHGT_MODE_IMPOSITION);
 
+		// [SIFISC-11145] nouveaux motifs interdits depuis la GUI en fermeture de for "domicile"
+		// motifs.add(MotifFor.DEMENAGEMENT_VD);
+		// motifs.add(MotifFor.PERMIS_C_SUISSE);
+		// motifs.add(MotifFor.ARRIVEE_HS);
+		// motifs.add(MotifFor.ARRIVEE_HC);
+		// motifs.add(MotifFor.DEPART_HS);
+		// motifs.add(MotifFor.DEPART_HC);
+
 		// Motifs impossibles en fermeture
 		// motifs.add(MotifFor.ACHAT_IMMOBILIER);
 		// motifs.add(MotifFor.DEBUT_EXPLOITATION);
@@ -160,21 +168,14 @@ public class MotifsForHelper {
 			motifs.add(MotifFor.FIN_ACTIVITE_DIPLOMATIQUE);
 		case DIPLOMATE_ETRANGER:
 		case DOMICILE:
-			// for principal
-			motifs.add(MotifFor.DEMENAGEMENT_VD);
+			// for principal                                                                  MN
 			if (NatureTiers.Habitant == type.natureTiers || NatureTiers.NonHabitant == type.natureTiers) {
-				motifs.add(MotifFor.PERMIS_C_SUISSE);
 				motifs.add(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
 			}
 			else if (NatureTiers.MenageCommun == type.natureTiers) {
-				motifs.add(MotifFor.PERMIS_C_SUISSE);
 				motifs.add(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT);
 				motifs.add(MotifFor.VEUVAGE_DECES);
 			}
-			motifs.add(MotifFor.ARRIVEE_HS);
-			motifs.add(MotifFor.ARRIVEE_HC);
-			motifs.add(MotifFor.DEPART_HS);
-			motifs.add(MotifFor.DEPART_HC);
 			break;
 
 		case IMMEUBLE_PRIVE:
