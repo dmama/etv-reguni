@@ -87,9 +87,9 @@ public class WebCivilServiceImpl implements WebCivilService, MessageSourceAware 
 		final IndividuView indCible = new IndividuView();
 		indCible.setNumeroIndividu(indSource.getNoTechnique());
 		indCible.setNom(indSource.getNom());
-		indCible.setPrenom(indSource.getPrenom());
+		indCible.setPrenomUsuel(indSource.getPrenomUsuel());
 		indCible.setNomNaissance(indSource.getNomNaissance());
-		indCible.setAutresPrenoms(indSource.getAutresPrenoms());
+		indCible.setTousPrenoms(indSource.getTousPrenoms());
 		indCible.setDateNaissance(indSource.getDateNaissance());
 		indCible.setAncienNumeroAVS(indSource.getNoAVS11());
 		indCible.setNumeroAssureSocial(indSource.getNouveauNoAVS());

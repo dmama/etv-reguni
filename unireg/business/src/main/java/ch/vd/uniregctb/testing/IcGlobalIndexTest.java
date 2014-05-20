@@ -42,14 +42,14 @@ public class IcGlobalIndexTest extends InContainerTest {
 				{
 					PersonnePhysique nh = new PersonnePhysique(false);
 					nh.setNom(nom);
-					nh.setPrenom(prenom1);
+					nh.setPrenomUsuel(prenom1);
 					getTiersDAO().save(nh);
 				}
 
 				{
 					PersonnePhysique nh = new PersonnePhysique(false);
 					nh.setNom(nom);
-					nh.setPrenom(prenom2);
+					nh.setPrenomUsuel(prenom2);
 					getTiersDAO().save(nh);
 				}
 				return null;
@@ -86,7 +86,7 @@ public class IcGlobalIndexTest extends InContainerTest {
 		{
 			PersonnePhysique nh = new PersonnePhysique(false);
 			nh.setNom(nom);
-			nh.setPrenom(prenom1);
+			nh.setPrenomUsuel(prenom1);
 			nh = (PersonnePhysique)getTiersDAO().save(nh);
 
 			@SuppressWarnings("unused")
@@ -115,14 +115,14 @@ public class IcGlobalIndexTest extends InContainerTest {
 			PersonnePhysique nh = new PersonnePhysique(false);
 			nh.setNumero(num);
 			nh.setNom(nom);
-			nh.setPrenom(prenom1);
+			nh.setPrenomUsuel(prenom1);
 			save(nh);
 		}
 		{
 			PersonnePhysique nh = new PersonnePhysique(false);
 			nh.setNumero(num);
 			nh.setNom(nom);
-			nh.setPrenom(prenom1);
+			nh.setPrenomUsuel(prenom1);
 			try {
 				LOGGER.warn("L'exception générée ci-dessous est normale!");
 				save(nh);

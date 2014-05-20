@@ -162,4 +162,35 @@ public class TiersCreateControllerTest extends WebTestSpring3 {
 			}
 		});
 	}
+
+	@Test
+	public void testOnSubmitWithTousPrenoms() throws Exception {
+
+		request.addParameter("civil.nom", "Petiot");
+		request.addParameter("civil.tousPrenoms", "Pierre Alain Gérard");
+		request.addParameter("civil.prenomUsuel", "Alain");
+		request.setMethod("POST");
+		request.setRequestURI(NH_URI);
+
+		final ModelAndView mav = handle(request, response);
+		assertNotNull(mav);
+
+		final String viewName = mav.getViewName();
+		final Matcher matcher = REDIRECT_VIEW_NAME.matcher(viewName);
+		assertTrue(viewName, matcher.matches());
+		final long id = Long.parseLong(matcher.group(1));
+
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final List<Tiers> l = tiersDAO.getAll();
+				assertEquals(1, l.size());
+				final PersonnePhysique nh = (PersonnePhysique) l.get(0);
+				assertEquals((Long) id, nh.getNumero());
+				assertEquals("Petiot", nh.getNom());
+				assertEquals("Alain", nh.getPrenomUsuel());
+				assertEquals("Pierre Alain Gérard", nh.getTousPrenoms());
+			}
+		});
+	}
 }

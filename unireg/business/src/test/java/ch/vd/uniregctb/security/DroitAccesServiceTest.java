@@ -44,7 +44,7 @@ public class DroitAccesServiceTest extends BusinessTest {
 	private PersonnePhysique createTiersPourDossier() {
 		final PersonnePhysique nonhabitant = new PersonnePhysique(false);
 		nonhabitant.setNom("Khan");
-		nonhabitant.setPrenom("Gengis");
+		nonhabitant.setPrenomUsuel("Gengis");
 		return (PersonnePhysique) tiersDAO.save(nonhabitant);
 	}
 

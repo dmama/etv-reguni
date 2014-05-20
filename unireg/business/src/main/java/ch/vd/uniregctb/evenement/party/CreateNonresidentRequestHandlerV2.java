@@ -45,7 +45,7 @@ public class CreateNonresidentRequestHandlerV2 implements RequestHandler<CreateN
 		}
 		PersonnePhysique nh = new PersonnePhysique(false);
 		nh.setNom(request.getLastName());
-		nh.setPrenom(request.getFirstName());
+		nh.setPrenomUsuel(request.getFirstName());
 		nh.setDateNaissance(DataHelper.xmlToCore(request.getDateOfBirth()));
 		nh.setSexe(EnumHelper.xmlToCore(request.getGender()));
 		if (request.getSocialNumber() != null) {

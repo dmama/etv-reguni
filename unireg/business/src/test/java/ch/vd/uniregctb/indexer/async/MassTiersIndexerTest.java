@@ -107,7 +107,7 @@ public class MassTiersIndexerTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 				PersonnePhysique nh = (PersonnePhysique) tiersDAO.get(id);
 				nh.setNom("Bidon");
-				nh.setPrenom("Machin");
+				nh.setPrenomUsuel("Machin");
 				return null;
 			}
 		});

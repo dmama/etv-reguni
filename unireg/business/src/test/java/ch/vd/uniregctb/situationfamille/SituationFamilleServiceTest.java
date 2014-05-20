@@ -68,7 +68,7 @@ public class SituationFamilleServiceTest extends BusinessTest {
 
 		PersonnePhysique nonhabitant = new PersonnePhysique(false);
 		nonhabitant.setNom("Khan");
-		nonhabitant.setPrenom("Gengis");
+		nonhabitant.setPrenomUsuel("Gengis");
 		nonhabitant = (PersonnePhysique) tiersDAO.save(nonhabitant);
 
 		final List<VueSituationFamille> vueHisto = service.getVueHisto(nonhabitant);
@@ -89,7 +89,7 @@ public class SituationFamilleServiceTest extends BusinessTest {
 
 		PersonnePhysique nonhabitant = new PersonnePhysique(false);
 		nonhabitant.setNom("Khan");
-		nonhabitant.setPrenom("Gengis");
+		nonhabitant.setPrenomUsuel("Gengis");
 
 		{
 			SituationFamille situation = new SituationFamillePersonnePhysique();
@@ -579,7 +579,7 @@ public class SituationFamilleServiceTest extends BusinessTest {
 
 			// non-habitant marié
 			PersonnePhysique arnold = new PersonnePhysique(false);
-			arnold.setPrenom("Arnold");
+			arnold.setPrenomUsuel("Arnold");
 			arnold.setNom("Schwarzie");
 			arnold.setSexe(Sexe.MASCULIN);
 			SituationFamille situation = new SituationFamillePersonnePhysique();
@@ -592,7 +592,7 @@ public class SituationFamilleServiceTest extends BusinessTest {
 
 			// non-habitant célibataire
 			PersonnePhysique nolwen = new PersonnePhysique(false);
-			nolwen.setPrenom("Nowlen");
+			nolwen.setPrenomUsuel("Nowlen");
 			nolwen.setNom("Raflss");
 			nolwen.setSexe(Sexe.FEMININ);
 			situation = new SituationFamillePersonnePhysique();
@@ -605,7 +605,7 @@ public class SituationFamilleServiceTest extends BusinessTest {
 
 			// non-habitant sans situation de famille
 			PersonnePhysique alf = new PersonnePhysique(false);
-			alf.setPrenom("Alf");
+			alf.setPrenomUsuel("Alf");
 			alf.setNom("Alf");
 			alf.setSexe(null);
 			alf = (PersonnePhysique) tiersDAO.save(alf);

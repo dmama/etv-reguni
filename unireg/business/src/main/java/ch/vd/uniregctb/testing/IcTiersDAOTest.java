@@ -16,7 +16,7 @@ public class IcTiersDAOTest extends InContainerTest {
 		{
 			PersonnePhysique nh = new PersonnePhysique(false);
 			nh.setNom("Bla");
-			nh.setPrenom("Bli");
+			nh.setPrenomUsuel("Bli");
 			nh = (PersonnePhysique)getTiersDAO().save(nh);
 			id = nh.getNumero();
 		}

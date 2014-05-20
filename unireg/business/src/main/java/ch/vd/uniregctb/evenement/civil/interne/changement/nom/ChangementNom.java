@@ -63,9 +63,11 @@ public class ChangementNom extends ChangementBase {
 
 			// nom / prénom
 			final String nom = individu.getNom();
-			final String prenom = individu.getPrenom();
+			final String prenomUsuel = individu.getPrenomUsuel();
+			final String tousPrenoms = individu.getTousPrenoms();
 			pp.setNom(StringUtils.trimToEmpty(nom));
-			pp.setPrenom(StringUtils.trimToEmpty(prenom));
+			pp.setPrenomUsuel(StringUtils.trimToEmpty(prenomUsuel));
+			pp.setTousPrenoms(StringUtils.trimToEmpty(tousPrenoms));
 		}
 
 		return super.handle(warnings);

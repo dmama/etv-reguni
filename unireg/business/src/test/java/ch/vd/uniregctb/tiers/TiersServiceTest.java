@@ -485,12 +485,12 @@ public class TiersServiceTest extends BusinessTest {
 		gudrun.setNumeroIndividu(numeroGudrun);
 
 		PersonnePhysique alf = new PersonnePhysique(false);
-		alf.setPrenom("Alf");
+		alf.setPrenomUsuel("Alf");
 		alf.setNom("Alf");
 		alf.setSexe(null);
 
 		PersonnePhysique esc = new PersonnePhysique(false);
-		esc.setPrenom("Escar");
+		esc.setPrenomUsuel("Escar");
 		esc.setNom("Got");
 		esc.setSexe(null);
 
@@ -1237,21 +1237,21 @@ public class TiersServiceTest extends BusinessTest {
 			NO_CTB_MOMO = momo.getNumero();
 
 			PersonnePhysique arnold = new PersonnePhysique(false);
-			arnold.setPrenom("Arnold");
+			arnold.setPrenomUsuel("Arnold");
 			arnold.setNom("Schwarzie");
 			arnold.setSexe(Sexe.MASCULIN);
 			arnold = (PersonnePhysique) tiersDAO.save(arnold);
 			NO_CTB_ARNOLD = arnold.getNumero();
 
 			PersonnePhysique nolwen = new PersonnePhysique(false);
-			nolwen.setPrenom("Nowlen");
+			nolwen.setPrenomUsuel("Nowlen");
 			nolwen.setNom("Raflss");
 			nolwen.setSexe(Sexe.FEMININ);
 			nolwen = (PersonnePhysique) tiersDAO.save(nolwen);
 			NO_CTB_NOLWEN = nolwen.getNumero();
 
 			PersonnePhysique alf = new PersonnePhysique(false);
-			alf.setPrenom("Alf");
+			alf.setPrenomUsuel("Alf");
 			alf.setNom("Alf");
 			alf.setSexe(null);
 			alf = (PersonnePhysique) tiersDAO.save(alf);

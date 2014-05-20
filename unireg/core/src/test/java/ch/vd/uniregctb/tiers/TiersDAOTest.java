@@ -337,7 +337,7 @@ public class TiersDAOTest extends CoreDAOTest {
 		PersonnePhysique nonHab = (PersonnePhysique) dao.get(10001111L);
 		assertEquals(new Long(10001111L), nonHab.getNumero());
 		assertEquals("Conchita", nonHab.getNom());
-		assertEquals("Andrea", nonHab.getPrenom());
+		assertEquals("Andrea", nonHab.getPrenomUsuel());
 		assertFalse(nonHab.isHabitantVD());
 	}
 
@@ -353,7 +353,7 @@ public class TiersDAOTest extends CoreDAOTest {
 				PersonnePhysique nonHab = new PersonnePhysique(false);
 				nonHab.setNumero(id);
 				nonHab.setNom("Bla");
-				nonHab.setPrenom("Bli");
+				nonHab.setPrenomUsuel("Bli");
 
 				dao.save(nonHab);
 				return null;
@@ -364,7 +364,7 @@ public class TiersDAOTest extends CoreDAOTest {
 			PersonnePhysique nonHab = (PersonnePhysique) dao.get(id);
 			assertEquals(new Long(id), nonHab.getNumero());
 			assertEquals("Bla", nonHab.getNom());
-			assertEquals("Bli", nonHab.getPrenom());
+			assertEquals("Bli", nonHab.getPrenomUsuel());
 			assertFalse(nonHab.isHabitantVD());
 		}
 	}

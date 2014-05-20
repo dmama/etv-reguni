@@ -245,7 +245,7 @@ public class ServiceCivilImpl implements ServiceCivilService, ServiceCivilServic
 			return null;
 		}
 
-		return new NomPrenom(individu.getNom(), individu.getPrenom());
+		return new NomPrenom(individu.getNom(), individu.getPrenomUsuel());
 	}
 
 	/**

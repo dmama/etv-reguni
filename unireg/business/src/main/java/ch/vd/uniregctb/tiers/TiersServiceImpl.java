@@ -257,13 +257,18 @@ public class TiersServiceImpl implements TiersService {
         nonHabitant.setNumeroIndividu(numInd);
         nonHabitant.setNumeroAssureSocial(null);
         nonHabitant.setNom(null);
-        nonHabitant.setPrenom(null);
+        nonHabitant.setPrenomUsuel(null);
+        nonHabitant.setTousPrenoms(null);
         nonHabitant.setDateNaissance(null);
         nonHabitant.setSexe(null);
         nonHabitant.setNumeroOfsNationalite(null);
         nonHabitant.setCategorieEtranger(null);
         nonHabitant.setDateDebutValiditeAutorisation(null);
         nonHabitant.setIdentificationsPersonnes(null);
+		nonHabitant.setNomPere(null);
+		nonHabitant.setPrenomsPere(null);
+		nonHabitant.setNomMere(null);
+		nonHabitant.setPrenomsMere(null);
 
 		// si on a donné une date de référence, on s'attaque aux situations de famille et aux adresses surchargées non-permanentes
 	    if (date != null) {
@@ -317,7 +322,8 @@ public class TiersServiceImpl implements TiersService {
         final Individu ind = getIndividu(habitant);
         habitant.setNumeroAssureSocial(ind.getNouveauNoAVS());
         habitant.setNom(ind.getNom());
-        habitant.setPrenom(ind.getPrenom());
+        habitant.setPrenomUsuel(ind.getPrenomUsuel());
+        habitant.setTousPrenoms(ind.getTousPrenoms());
         habitant.setDateNaissance(ind.getDateNaissance());
         habitant.setDateDeces(ind.getDateDeces());
 	    habitant.setSexe(ind.getSexe());
@@ -1399,7 +1405,7 @@ public class TiersServiceImpl implements TiersService {
 			return serviceCivilService.getDecompositionNomPrenom(individu);
 		}
 		else {
-			return new NomPrenom(pp.getNom(), pp.getPrenom());
+			return new NomPrenom(pp.getNom(), pp.getPrenomUsuel());
 		}
 	}
 

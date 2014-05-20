@@ -27,8 +27,8 @@ import ch.vd.uniregctb.type.Sexe;
 public class MockIndividu extends MockEntiteCivile implements Individu {
 
 	private StatutIndividu statut;
-	private String prenom;
-	private String autresPrenoms;
+	private String prenomUsuel;
+	private String tousPrenoms;
 	private String nom;
 	private String nomNaissance;
 	private RegDate dateDeces;
@@ -59,8 +59,8 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 	public MockIndividu(MockIndividu right, @NotNull RegDate upTo) {
 		super(right, right.availableParts);
 		this.statut = right.statut;
-		this.prenom = right.prenom;
-		this.autresPrenoms = right.autresPrenoms;
+		this.prenomUsuel = right.prenomUsuel;
+		this.tousPrenoms = right.tousPrenoms;
 		this.nom = right.nom;
 		this.nomNaissance = right.nomNaissance;
 		this.dateDeces = right.dateDeces;
@@ -110,8 +110,8 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 	public MockIndividu(MockIndividu right, Set<AttributeIndividu> parts) {
 		super(right, parts);
 		this.statut = right.statut;
-		this.prenom = right.prenom;
-		this.autresPrenoms = right.autresPrenoms;
+		this.prenomUsuel = right.prenomUsuel;
+		this.tousPrenoms = right.tousPrenoms;
 		this.nom = right.nom;
 		this.nomNaissance = right.nomNaissance;
 		this.dateDeces = right.dateDeces;
@@ -146,21 +146,21 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 	}
 
 	@Override
-	public String getPrenom() {
-		return prenom;
+	public String getPrenomUsuel() {
+		return prenomUsuel;
 	}
 
-	public void setPrenom(String prenom) {
-		this.prenom = prenom;
+	public void setPrenomUsuel(String prenomUsuel) {
+		this.prenomUsuel = prenomUsuel;
 	}
 
 	@Override
-	public String getAutresPrenoms() {
-		return autresPrenoms;
+	public String getTousPrenoms() {
+		return tousPrenoms;
 	}
 
-	public void setAutresPrenoms(String autresPrenoms) {
-		this.autresPrenoms = autresPrenoms;
+	public void setTousPrenoms(String tousPrenoms) {
+		this.tousPrenoms = tousPrenoms;
 	}
 
 	@Override

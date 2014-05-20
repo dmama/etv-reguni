@@ -13,7 +13,7 @@ import ch.vd.uniregctb.type.TypeEvenementCivil;
  */
 public class EvenementCivilRegPPDetailView extends EvenementCivilDetailView implements Serializable {
 
-	private static final long serialVersionUID = 2886171493023303888L;
+	private static final long serialVersionUID = -4451123042411337791L;
 	
 	private TypeEvenementCivil evtType;
 	private Integer evtNumeroOfsCommuneAnnonce;

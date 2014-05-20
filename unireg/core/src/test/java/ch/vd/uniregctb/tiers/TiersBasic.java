@@ -128,7 +128,7 @@ public class TiersBasic {
 				pp2.setNom("Conchita");
 				pp2.setNumeroOfsNationalite(8212);
 				pp2.setNumeroAssureSocial("1245100071000");
-				pp2.setPrenom("Andrea");
+				pp2.setPrenomUsuel("Andrea");
 				pp2.setSexe(Sexe.FEMININ);
 				pp2.setIdentificationsPersonnes(new HashSet());
 				pp2.setNumeroIndividu(10001111L);

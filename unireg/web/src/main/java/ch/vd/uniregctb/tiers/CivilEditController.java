@@ -197,7 +197,8 @@ public class CivilEditController {
 
 			final PersonnePhysique pp = (PersonnePhysique) tiers;
 			pp.setNom(view.getNom());
-			pp.setPrenom(view.getPrenom());
+			pp.setPrenomUsuel(view.getPrenomUsuel());
+			pp.setTousPrenoms(view.getTousPrenoms());
 			pp.setNumeroAssureSocial(FormatNumeroHelper.removeSpaceAndDash(view.getNumeroAssureSocial()));
 			pp.setSexe(view.getSexe());
 			pp.setDateNaissance(view.getDateNaissance());

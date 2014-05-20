@@ -71,7 +71,7 @@ public class PartyCreateNonresidentRequestV1EsbHandlerItTest extends PartyReques
 				assertNotNull(nh);
 				assertFalse(nh.isHabitantVD());
 				assertNotNull(nh.getNom());
-				assertNotNull(nh.getPrenom());
+				assertNotNull(nh.getPrenomUsuel());
 				assertNotNull(nh.getNumeroAssureSocial());
 			}
 		});
@@ -86,7 +86,7 @@ public class PartyCreateNonresidentRequestV1EsbHandlerItTest extends PartyReques
 				final PersonnePhysique nh = (PersonnePhysique) tiersDAO.get(nhId);
 				assertNotNull(nh);
 				assertFalse(nh.isHabitantVD());
-				assertNull(nh.getPrenom());
+				assertNull(nh.getPrenomUsuel());
 			}
 		});
 	}

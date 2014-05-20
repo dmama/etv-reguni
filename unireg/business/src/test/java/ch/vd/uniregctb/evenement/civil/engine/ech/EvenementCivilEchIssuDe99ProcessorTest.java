@@ -78,7 +78,7 @@ public class EvenementCivilEchIssuDe99ProcessorTest extends AbstractEvenementCiv
 		doModificationIndividu(noIndividu, new IndividuModification() {
 			@Override
 			public void modifyIndividu(MockIndividu individu) {
-				individu.setPrenom("Adriana");
+				individu.setPrenomUsuel("Adriana");
 			}
 		});
 
@@ -184,7 +184,7 @@ public class EvenementCivilEchIssuDe99ProcessorTest extends AbstractEvenementCiv
 		doModificationIndividu(noIndividu, new IndividuModification() {
 			@Override
 			public void modifyIndividu(MockIndividu individu) {
-				individu.setPrenom("Adriana");
+				individu.setPrenomUsuel("Adriana");
 			}
 		});
 

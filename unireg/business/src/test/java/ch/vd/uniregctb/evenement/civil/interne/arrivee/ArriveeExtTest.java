@@ -2831,7 +2831,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 
 	private static PersonnePhysique newNonHabitant(String nom, String prenom, RegDate dateNaissance, Sexe sexe) {
 		PersonnePhysique nonHabitant = new PersonnePhysique(false);
-		nonHabitant.setPrenom(prenom);
+		nonHabitant.setPrenomUsuel(prenom);
 		nonHabitant.setNom(nom);
 		nonHabitant.setSexe(sexe);
 		nonHabitant.setDateNaissance(dateNaissance);

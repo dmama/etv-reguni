@@ -51,7 +51,7 @@ public class MouvementDossierDAOTest extends AbstractMouvementDossierDAOTest {
 		Assert.assertTrue(mvt.getContribuable() instanceof PersonnePhysique);
 
 		final PersonnePhysique pp = (PersonnePhysique) mvt.getContribuable();
-		Assert.assertEquals("Gudule", pp.getPrenom());
+		Assert.assertEquals("Gudule", pp.getPrenomUsuel());
 	}
 
 	@Test

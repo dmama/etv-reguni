@@ -36,7 +36,7 @@ public class HabitantIndexable extends PersonnePhysiqueIndexable {
 	protected void fillBaseData(TiersIndexableData data) {
 		super.fillBaseData(data);
 
-		data.addAutresNom(individu.getPrenom());
+		data.addAutresNom(individu.getPrenomUsuel());
 		data.addAutresNom(individu.getNom());
 		data.addAutresNom(individu.getNomNaissance());
 		data.addDateNaissance(individu.getDateNaissance());
@@ -45,7 +45,7 @@ public class HabitantIndexable extends PersonnePhysiqueIndexable {
 		data.addNavs13(StringUtils.trimToNull(individu.getNouveauNoAVS()));
 		data.addNavs11(StringUtils.trimToNull(individu.getNoAVS11()));
 		data.setNoSymic(individu.getNumeroRCE());
-		data.addNom1(individu.getPrenom());
+		data.addNom1(individu.getPrenomUsuel());
 		data.addNom1(individu.getNom());
 		data.setNavs13_1(individu.getNouveauNoAVS());
 

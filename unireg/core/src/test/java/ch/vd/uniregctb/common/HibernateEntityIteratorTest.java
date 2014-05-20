@@ -110,14 +110,14 @@ public class HibernateEntityIteratorTest extends CoreDAOTest {
 			case 12600001: {
 				assertTrue(tiers instanceof PersonnePhysique);
 				PersonnePhysique nh = (PersonnePhysique) tiers;
-				assertEquals("Isidor", nh.getPrenom());
+				assertEquals("Isidor", nh.getPrenomUsuel());
 				assertEquals("Pirez", nh.getNom());
 				break;
 			}
 			case 12900001: {
 				assertTrue(tiers instanceof PersonnePhysique);
 				PersonnePhysique nh = (PersonnePhysique) tiers;
-				assertEquals("Michel", nh.getPrenom());
+				assertEquals("Michel", nh.getPrenomUsuel());
 				assertEquals("Lederet", nh.getNom());
 				break;
 			}

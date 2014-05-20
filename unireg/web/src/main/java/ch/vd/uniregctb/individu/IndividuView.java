@@ -17,8 +17,8 @@ public class IndividuView implements Serializable {
 	private Long numeroIndividu;
 	private String nom;
 	private String nomNaissance;
-	private String prenom;
-	private String autresPrenoms;
+	private String prenomUsuel;
+	private String tousPrenoms;
 	private RegDate dateNaissance;
 	private Sexe sexe;
 	private String etatCivil;
@@ -64,21 +64,21 @@ public class IndividuView implements Serializable {
 	}
 
 	@SuppressWarnings("unused")
-	public String getPrenom() {
-		return prenom;
+	public String getPrenomUsuel() {
+		return prenomUsuel;
 	}
 
-	public void setPrenom(String prenom) {
-		this.prenom = prenom;
+	public void setPrenomUsuel(String prenomUsuel) {
+		this.prenomUsuel = prenomUsuel;
 	}
 
 	@SuppressWarnings("unused")
-	public String getAutresPrenoms() {
-		return autresPrenoms;
+	public String getTousPrenoms() {
+		return tousPrenoms;
 	}
 
-	public void setAutresPrenoms(String autresPrenoms) {
-		this.autresPrenoms = autresPrenoms;
+	public void setTousPrenoms(String tousPrenoms) {
+		this.tousPrenoms = tousPrenoms;
 	}
 
 	public RegDate getDateNaissance() {

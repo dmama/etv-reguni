@@ -160,7 +160,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		nonHab.setNumero(1234L);
 		nonHab.setDateNaissance(RegDate.get(1965, 3, 12));
 		nonHab.setNom("Poncet");
-		nonHab.setPrenom("Charles");
+		nonHab.setPrenomUsuel("Charles");
 		nonHab.setNumeroAssureSocial("432.23.654.345");
 		nonHab.setAdresseCourrierElectronique(null); // Volontaire, on teste que on recoit chaine vide pour une valeur null
 
@@ -204,7 +204,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 
 		// Individu
 		assertEquals(Arrays.asList(individu.getDateNaissance()), values.getDatesNaissance());
-		assertEquals(String.format("%s %s", individu.getPrenom(), individu.getNom()), values.getNom1());
+		assertEquals(String.format("%s %s", individu.getPrenomUsuel(), individu.getNom()), values.getNom1());
 		assertContains(IndexerFormatHelper.noAvsToString(individu.getNouveauNoAVS()), values.getNavs13());
 	}
 
@@ -237,7 +237,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 
 		// Individu
 		assertEquals(Arrays.asList(individu.getDateNaissance()), values.getDatesNaissance());
-		assertEquals(String.format("%s %s", individu.getPrenom(), individu.getNom()), values.getNom1());
+		assertEquals(String.format("%s %s", individu.getPrenomUsuel(), individu.getNom()), values.getNom1());
 		assertContains(IndexerFormatHelper.noAvsToString(individu.getNouveauNoAVS()), values.getNavs13());
 	}
 
@@ -276,10 +276,10 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		assertContains("Réguliers", values.getRoleLigne2());
 		assertContains(ind.getNom(), values.getNomRaison());
 		assertContains(ind.getNom(), values.getAutresNom());
-		assertContains(ind.getPrenom(), values.getAutresNom());
+		assertContains(ind.getPrenomUsuel(), values.getAutresNom());
 
 		// Display (quel que soit le nom1 et nom2, si le débiteur a un contact impôt source, sa raison sociale est tirée de là)
-		assertEquals(String.format("%s %s", ind.getPrenom(), ind.getNom()), values.getNom1());
+		assertEquals(String.format("%s %s", ind.getPrenomUsuel(), ind.getNom()), values.getNom1());
 		assertNull(values.getNom2());
 	}
 
@@ -289,7 +289,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		PersonnePhysique nhab = new PersonnePhysique(false);
 		nhab.setNumero(1234L);
 		nhab.setNom("Bli");
-		nhab.setPrenom("Bla");
+		nhab.setPrenomUsuel("Bla");
 		tiersDAO.save(nhab);
 
 		DebiteurPrestationImposable dpi = new DebiteurPrestationImposable();
@@ -315,7 +315,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		assertContains("Réguliers", values.getRoleLigne2());
 		assertContains(nhab.getNom(), values.getNomRaison());
 		assertContains(nhab.getNom(), values.getAutresNom());
-		assertContains(nhab.getPrenom(), values.getAutresNom());
+		assertContains(nhab.getPrenomUsuel(), values.getAutresNom());
 
 		// Display (quel que soit le nom1 et nom2, si le débiteur a un contact impôt source, sa raison sociale est tirée de là)
 		assertEquals("Bla Bli", values.getNom1());
@@ -790,14 +790,14 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		PersonnePhysique nhab1 = new PersonnePhysique(false);
 		nhab1.setNumero(numCtb1);
 		nhab1.setNom("Maillard");
-		nhab1.setPrenom("Philippe");
+		nhab1.setPrenomUsuel("Philippe");
 		nhab1.setNumeroAssureSocial(noAVS1);
 		nhab1.setDateNaissance(dateN1);
 		nhab1.setSexe(Sexe.MASCULIN);
 		PersonnePhysique nhab2 = new PersonnePhysique(false);
 		nhab2.setNumero(numCtb2);
 		nhab2.setNom("Maillard-Gallet");
-		nhab2.setPrenom("Gladys");
+		nhab2.setPrenomUsuel("Gladys");
 		nhab2.setNumeroAssureSocial(noAVS2);
 		nhab2.setDateNaissance(dateN2);
 		nhab2.setSexe(Sexe.FEMININ);
@@ -837,7 +837,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		PersonnePhysique pp = new PersonnePhysique(false);
 		pp.setNumero(1234L);
 		pp.setNom("Ruth");
-		pp.setPrenom("Laurent");
+		pp.setPrenomUsuel("Laurent");
 
 		// Ajout des adresses
 		AdresseSuisse adresse = new AdresseSuisse();

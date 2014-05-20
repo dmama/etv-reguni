@@ -25,7 +25,7 @@ public class IdentificationParPrenomEtNom implements StrategieIdentification {
 
 	@Override
 	public List<Long> identifieIndividuRcPers(Individu individu) {
-		final String prenom = individu.getPrenom();
+		final String prenom = individu.getPrenomUsuel();
 		final String nom = IdentificationHelper.removePonctuation(IdentificationHelper.removeDoublonSuffixe(individu.getNom()));
 		return findPersons(prenom, nom);
 	}

@@ -52,12 +52,12 @@ import ch.vd.uniregctb.type.TypeAdresseCivil;
 
 public class IndividuRCPers implements Individu, Serializable {
 
-	private static final long serialVersionUID = 4166419752790065558L;
+	private static final long serialVersionUID = 9048462821163407226L;
 
 	private long noTechnique;
 	private StatutIndividu statut;
-	private String prenom;
-	private String autresPrenoms;
+	private String prenomUsuel;
+	private String tousPrenoms;
 	private String nom;
 	private String nomNaissance;
 	private String noAVS11;
@@ -93,8 +93,8 @@ public class IndividuRCPers implements Individu, Serializable {
 		final Identity identity = person.getIdentity();
 		final UpiPerson upiPerson = person.getUpiPerson();
 
-		this.prenom = initPrenom(identity.getCallName(), identity.getFirstNames());
-		this.autresPrenoms = identity.getFirstNames();
+		this.prenomUsuel = initPrenom(identity.getCallName(), identity.getFirstNames());
+		this.tousPrenoms = identity.getFirstNames();
 		this.nom = identity.getOfficialName();
 		this.nomNaissance = identity.getOriginalName();
 		this.sexe = EchHelper.sexeFromEch44(identity.getSex());
@@ -154,8 +154,8 @@ public class IndividuRCPers implements Individu, Serializable {
 	public IndividuRCPers(IndividuRCPers right, Set<AttributeIndividu> parts) {
 		this.noTechnique = right.noTechnique;
 		this.statut = right.statut;
-		this.prenom = right.getPrenom();
-		this.autresPrenoms = right.getAutresPrenoms();
+		this.prenomUsuel = right.getPrenomUsuel();
+		this.tousPrenoms = right.getTousPrenoms();
 		this.nom = right.getNom();
 		this.nomNaissance = right.getNomNaissance();
 		this.noAVS11 = right.getNoAVS11();
@@ -196,8 +196,8 @@ public class IndividuRCPers implements Individu, Serializable {
 	public IndividuRCPers(IndividuRCPers right, @NotNull RegDate date) {
 		this.noTechnique = right.noTechnique;
 		this.statut = right.statut;
-		this.prenom = right.getPrenom();
-		this.autresPrenoms = right.getAutresPrenoms();
+		this.prenomUsuel = right.getPrenomUsuel();
+		this.tousPrenoms = right.getTousPrenoms();
 		this.nom = right.getNom();
 		this.nomNaissance = right.getNomNaissance();
 		this.noAVS11 = right.getNoAVS11();
@@ -693,13 +693,13 @@ public class IndividuRCPers implements Individu, Serializable {
 	}
 
 	@Override
-	public String getPrenom() {
-		return prenom;
+	public String getPrenomUsuel() {
+		return prenomUsuel;
 	}
 
 	@Override
-	public String getAutresPrenoms() {
-		return autresPrenoms;
+	public String getTousPrenoms() {
+		return tousPrenoms;
 	}
 
 	@Override

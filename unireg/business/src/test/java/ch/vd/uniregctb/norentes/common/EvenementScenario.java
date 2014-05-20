@@ -235,7 +235,7 @@ public abstract class EvenementScenario extends NorentesScenario {
 	protected PersonnePhysique addNonHabitant(final String nom, final String prenom, RegDate dateNaissance, Sexe sexe) {
 		PersonnePhysique nonHab = new PersonnePhysique(false);
 		nonHab.setNom(nom);
-		nonHab.setPrenom(prenom);
+		nonHab.setPrenomUsuel(prenom);
 		nonHab.setDateNaissance(dateNaissance);
 		nonHab.setSexe(sexe);
 

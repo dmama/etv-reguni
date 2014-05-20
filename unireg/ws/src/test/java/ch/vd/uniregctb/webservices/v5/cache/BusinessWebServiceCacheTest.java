@@ -412,13 +412,13 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 					final PersonnePhysique pp = hibernateTemplate.get(PersonnePhysique.class, am.getSujetId());
 					assertNotNull(pp);
 
-					if (pp.getPrenom().equals("Monique")) {
+					if (pp.getPrenomUsuel().equals("Monique")) {
 						madame = pp;
 						break;
 					}
 				}
 				assertNotNull(madame);
-				madame.setPrenom("Gudrun");
+				madame.setPrenomUsuel("Gudrun");
 				return null;
 			}
 		});

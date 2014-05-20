@@ -120,7 +120,7 @@
 		        <td width="50%" class="error"><c:out value="${command.individuError}"/></td>
 	        </c:if>
 	        <c:if test="${command.individu != null}">
-		        <td width="50%">${command.individu.nom}&nbsp;${command.individu.prenom}</td>
+		        <td width="50%">${command.individu.nom}&nbsp;${command.individu.prenomUsuel}</td>
 	        </c:if>
         </tr>
         <c:if test="${command.adresse.ligne1 != null}">

@@ -48,7 +48,7 @@ public class ModificationLogInterceptorTest extends CoreDAOTest {
 				public Long execute(TransactionStatus status) throws Exception {
 					PersonnePhysique nhab = new PersonnePhysique(false);
 					nhab.setNom("Broulis");
-					nhab.setPrenom("Broulis");
+					nhab.setPrenomUsuel("Broulis");
 
 					nhab = (PersonnePhysique) dao.save(nhab);
 					return nhab.getNumero();
@@ -83,7 +83,7 @@ public class ModificationLogInterceptorTest extends CoreDAOTest {
 				public Long execute(TransactionStatus status) throws Exception {
 					PersonnePhysique nhab = new PersonnePhysique(false);
 					nhab.setNom("Broulis");
-					nhab.setPrenom("Broulis");
+					nhab.setPrenomUsuel("Broulis");
 					nhab.setLogCreationUser(oldUser);
 					nhab.setLogCreationDate(modifInitalDate);
 					nhab.setLogModifUser(oldUser);
@@ -147,7 +147,7 @@ public class ModificationLogInterceptorTest extends CoreDAOTest {
 				public Long execute(TransactionStatus status) throws Exception {
 					PersonnePhysique nhab = new PersonnePhysique(false);
 					nhab.setNom("Broulis");
-					nhab.setPrenom("Broulis");
+					nhab.setPrenomUsuel("Broulis");
 					nhab.setLogCreationUser(oldUser);
 					nhab.setLogCreationDate(modifInitalDate);
 					nhab.setLogModifUser(oldUser);

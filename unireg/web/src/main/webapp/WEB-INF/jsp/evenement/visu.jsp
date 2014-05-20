@@ -68,7 +68,7 @@
 				</tr>
 				<tr class="<unireg:nextRowClass/>" >
 					<td width="50%"><fmt:message key="label.nom.prenom" /> :</td>
-					<td width="50%">${command.individuPrincipal.nom}&nbsp;${command.individuPrincipal.prenom}</td>
+					<td width="50%">${command.individuPrincipal.nom}&nbsp;${command.individuPrincipal.prenomUsuel}</td>
 				</tr>
 				<c:if test="${command.adressePrincipal.ligne1 != null}">
 				<tr class="<unireg:nextRowClass/>" >
@@ -125,7 +125,7 @@
 					</tr>
 					<tr class="<unireg:nextRowClass/>" >
 						<td width="50%"><fmt:message key="label.nom.prenom" /> :</td>
-						<td width="50%">${command.individuConjoint.nom}&nbsp;${command.individuConjoint.prenom}</td>
+						<td width="50%">${command.individuConjoint.nom}&nbsp;${command.individuConjoint.prenomUsuel}</td>
 					</tr>
 					<c:if test="${command.adresseConjoint.ligne1 != null}">
 					<tr class="<unireg:nextRowClass/>" >

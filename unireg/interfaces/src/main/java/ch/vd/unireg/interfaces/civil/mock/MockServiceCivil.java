@@ -163,7 +163,7 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 		individu.setNoTechnique(numero);
 		individu.setDateNaissance(dateNaissance);
 		individu.setSexe(sexe);
-		individu.setPrenom(prenom);
+		individu.setPrenomUsuel(prenom);
 		individu.setNom(nom);
 
 		// Etats civils

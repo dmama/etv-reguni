@@ -584,7 +584,7 @@ public class TacheDAOTest extends CoreDAOTest {
 		pp0.setDateNaissance(RegDate.get(1953, 12, 18));
 		pp0.setNom("Gomez");
 		pp0.setNumeroOfsNationalite(8231);
-		pp0.setPrenom("Mario");
+		pp0.setPrenomUsuel("Mario");
 		pp0.setSexe(Sexe.MASCULIN);
 		pp0.setIdentificationsPersonnes(new HashSet());
 		pp0.setHabitant(false);
@@ -606,7 +606,7 @@ public class TacheDAOTest extends CoreDAOTest {
 		pp1.setDateNaissance(RegDate.get(1989, 5, 29));
 		pp1.setNom("Pelcrus");
 		pp1.setNumeroOfsNationalite(8231);
-		pp1.setPrenom("Jules");
+		pp1.setPrenomUsuel("Jules");
 		pp1.setSexe(Sexe.MASCULIN);
 		pp1.setIdentificationsPersonnes(new HashSet());
 		pp1.setHabitant(false);

@@ -225,26 +225,26 @@ public class TranslationStrategyWithRelationshipCacheCleanupTest extends Abstrac
 			doModificationIndividu(noIndividuFils, new IndividuModification() {
 				@Override
 				public void modifyIndividu(MockIndividu individu) {
-					individu.setPrenom("Johnny");
+					individu.setPrenomUsuel("Johnny");
 				}
 			});
 			doModificationIndividu(noIndividuGrandPere, new IndividuModification() {
 				@Override
 				public void modifyIndividu(MockIndividu individu) {
-					individu.setPrenom("John Senior");
+					individu.setPrenomUsuel("John Senior");
 				}
 			});
 			doModificationIndividu(noIndividuMere, new IndividuModification() {
 				@Override
 				public void modifyIndividu(MockIndividu individu) {
-					individu.setPrenom("Barbara");
+					individu.setPrenomUsuel("Barbara");
 				}
 			});
 
 			// le cache n'a pas été notifié des changements donc on doit encore voir les anciens prénoms
-			Assert.assertEquals("Junior", serviceCivil.getIndividu(noIndividuFils, null).getPrenom());
-			Assert.assertEquals("Senior", serviceCivil.getIndividu(noIndividuGrandPere, null).getPrenom());
-			Assert.assertEquals("Rita", serviceCivil.getIndividu(noIndividuMere, null).getPrenom());
+			Assert.assertEquals("Junior", serviceCivil.getIndividu(noIndividuFils, null).getPrenomUsuel());
+			Assert.assertEquals("Senior", serviceCivil.getIndividu(noIndividuGrandPere, null).getPrenomUsuel());
+			Assert.assertEquals("Rita", serviceCivil.getIndividu(noIndividuMere, null).getPrenomUsuel());
 
 			// mise en place de la stratégie
 			final EvenementCivilEchTranslationStrategy strategy = new TranslationStrategyWithRelationshipCacheCleanup(finalStrategy, serviceCivil, dataEventService, tiersService);
@@ -285,11 +285,11 @@ public class TranslationStrategyWithRelationshipCacheCleanupTest extends Abstrac
 			});
 
 			// la relation père -> enfant n'est pas fournie par le civil, donc le cache de l'enfant n'a pas été rafraîchi
-			Assert.assertEquals("Junior", serviceCivil.getIndividu(noIndividuFils, null).getPrenom());
+			Assert.assertEquals("Junior", serviceCivil.getIndividu(noIndividuFils, null).getPrenomUsuel());
 
 			// le cache des relations du père doit avoir été invalidé, les nouveaux prénoms doivent apparaître
-			Assert.assertEquals("John Senior", serviceCivil.getIndividu(noIndividuGrandPere, null).getPrenom());
-			Assert.assertEquals("Barbara", serviceCivil.getIndividu(noIndividuMere, null).getPrenom());
+			Assert.assertEquals("John Senior", serviceCivil.getIndividu(noIndividuGrandPere, null).getPrenomUsuel());
+			Assert.assertEquals("Barbara", serviceCivil.getIndividu(noIndividuMere, null).getPrenomUsuel());
 		}
 		finally {
 			cache.destroy();
@@ -352,26 +352,26 @@ public class TranslationStrategyWithRelationshipCacheCleanupTest extends Abstrac
 			doModificationIndividu(noIndividuFils, new IndividuModification() {
 				@Override
 				public void modifyIndividu(MockIndividu individu) {
-					individu.setPrenom("Johnny");
+					individu.setPrenomUsuel("Johnny");
 				}
 			});
 			doModificationIndividu(noIndividuGrandPere, new IndividuModification() {
 				@Override
 				public void modifyIndividu(MockIndividu individu) {
-					individu.setPrenom("John Senior");
+					individu.setPrenomUsuel("John Senior");
 				}
 			});
 			doModificationIndividu(noIndividuMere, new IndividuModification() {
 				@Override
 				public void modifyIndividu(MockIndividu individu) {
-					individu.setPrenom("Barbara");
+					individu.setPrenomUsuel("Barbara");
 				}
 			});
 
 			// le cache n'a pas été notifié des changements donc on doit encore voir les anciens prénoms
-			Assert.assertEquals("Junior", serviceCivil.getIndividu(noIndividuFils, null).getPrenom());
-			Assert.assertEquals("Senior", serviceCivil.getIndividu(noIndividuGrandPere, null).getPrenom());
-			Assert.assertEquals("Rita", serviceCivil.getIndividu(noIndividuMere, null).getPrenom());
+			Assert.assertEquals("Junior", serviceCivil.getIndividu(noIndividuFils, null).getPrenomUsuel());
+			Assert.assertEquals("Senior", serviceCivil.getIndividu(noIndividuGrandPere, null).getPrenomUsuel());
+			Assert.assertEquals("Rita", serviceCivil.getIndividu(noIndividuMere, null).getPrenomUsuel());
 
 			// mise en place de la stratégie
 			final EvenementCivilEchTranslationStrategy strategy = new TranslationStrategyWithRelationshipCacheCleanup(finalStrategy, serviceCivil, dataEventService, tiersService);
@@ -412,11 +412,11 @@ public class TranslationStrategyWithRelationshipCacheCleanupTest extends Abstrac
 			});
 
 			// la relation père -> enfant n'est pas fournie par le civil, mais par le fiscal, oui -> le nouveau prénom doit apparaître aussi
-			Assert.assertEquals("Johnny", serviceCivil.getIndividu(noIndividuFils, null).getPrenom());
+			Assert.assertEquals("Johnny", serviceCivil.getIndividu(noIndividuFils, null).getPrenomUsuel());
 
 			// le cache des relations du père (parents + conjoints) doit avoir été invalidé, les nouveaux prénoms doivent apparaître
-			Assert.assertEquals("John Senior", serviceCivil.getIndividu(noIndividuGrandPere, null).getPrenom());
-			Assert.assertEquals("Barbara", serviceCivil.getIndividu(noIndividuMere, null).getPrenom());
+			Assert.assertEquals("John Senior", serviceCivil.getIndividu(noIndividuGrandPere, null).getPrenomUsuel());
+			Assert.assertEquals("Barbara", serviceCivil.getIndividu(noIndividuMere, null).getPrenomUsuel());
 		}
 		finally {
 			cache.destroy();

@@ -85,7 +85,7 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 
 		PersonnePhysique nh = new PersonnePhysique(false);
 		nh.setNom("Bla");
-		nh.setPrenom("Blo");
+		nh.setPrenomUsuel("Blo");
 		nh.setDateNaissance(dateNaissance1);
 
 		ForFiscalPrincipal ffp = createForPrincipal(5586, RegDate.get(2008, 3, 3));
@@ -468,7 +468,7 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 				@Override
 				public Object execute(TransactionStatus status) throws Exception {
 					PersonnePhysique nhab = (PersonnePhysique) tiersDAO.get(id);
-					nhab.setPrenom("Marcel");
+					nhab.setPrenomUsuel("Marcel");
 					return null;
 				}
 			});
@@ -528,7 +528,7 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				PersonnePhysique nhab = (PersonnePhysique) tiersDAO.get(id);
-				nhab.setPrenom("Marcel");
+				nhab.setPrenomUsuel("Marcel");
 				return null;
 			}
 		});

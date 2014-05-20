@@ -942,7 +942,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 			doModificationIndividu(noIndividu, new IndividuModification() {
 				@Override
 				public void modifyIndividu(MockIndividu individu) {
-					individu.setPrenom("Alfred");        // sans le "o"
+					individu.setPrenomUsuel("Alfred");        // sans le "o"
 				}
 			});
 
@@ -1047,7 +1047,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 			doModificationIndividu(noIndividu, new IndividuModification() {
 				@Override
 				public void modifyIndividu(MockIndividu individu) {
-					individu.setPrenom("Alfred");        // sans le "o"
+					individu.setPrenomUsuel("Alfred");        // sans le "o"
 				}
 			});
 
@@ -1166,7 +1166,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 			doModificationIndividu(noIndividu, new IndividuModification() {
 				@Override
 				public void modifyIndividu(MockIndividu individu) {
-					individu.setPrenom("Alfred");        // sans le "o"
+					individu.setPrenomUsuel("Alfred");        // sans le "o"
 				}
 			});
 

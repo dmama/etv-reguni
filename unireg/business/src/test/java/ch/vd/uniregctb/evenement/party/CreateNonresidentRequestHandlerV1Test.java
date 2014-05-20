@@ -93,7 +93,7 @@ public class CreateNonresidentRequestHandlerV1Test extends BusinessTest {
 				assertFalse("On est sensé avoir créer un non-habitant !", pp.isHabitantVD());
 				assertNull("le non-habitant ne devrait pas avoir de numéro d'indiv", pp.getNumeroIndividu());
 				assertEquals("Le nom du non-habitant ne correspond pas à celui de la demande de création", "Nabit", pp.getNom());
-				assertEquals("Le prénom du non-habitant ne correspond pas à celui de la demande de création", "Pala", pp.getPrenom());
+				assertEquals("Le prénom du non-habitant ne correspond pas à celui de la demande de création", "Pala", pp.getPrenomUsuel());
 				assertEquals("Le date de naissance du non-habitant ne correspond pas à celui de la demande de création", date(1980, 1, 2), pp.getDateNaissance());
 				assertEquals("Le sexe du non-habitant ne correspond pas à celui de la demande de création", Sexe.MASCULIN, pp.getSexe());
 				if (category == NaturalPersonCategory.SWISS) {

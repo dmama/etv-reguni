@@ -65,7 +65,7 @@ public class MenageCommunIndexableTest extends BusinessTest {
 
 				PersonnePhysique nhab1 = new PersonnePhysique(false);
 				nhab1.setNom("Maillard");
-				nhab1.setPrenom("Philippe");
+				nhab1.setPrenomUsuel("Philippe");
 				nhab1.setNumeroAssureSocial(noAVS1);
 				nhab1.setDateNaissance(dateN1);
 				nhab1.setSexe(Sexe.MASCULIN);
@@ -74,7 +74,7 @@ public class MenageCommunIndexableTest extends BusinessTest {
 
 				PersonnePhysique nhab2 = new PersonnePhysique(false);
 				nhab2.setNom("Maillard-Gallet");
-				nhab2.setPrenom("Gladys");
+				nhab2.setPrenomUsuel("Gladys");
 				nhab2.setNumeroAssureSocial(noAVS2);
 				nhab2.setDateNaissance(dateN2);
 				nhab2.setSexe(Sexe.FEMININ);
@@ -128,7 +128,7 @@ public class MenageCommunIndexableTest extends BusinessTest {
 
 				PersonnePhysique nhab1 = new PersonnePhysique(false);
 				nhab1.setNom("Maillard");
-				nhab1.setPrenom("Philippe");
+				nhab1.setPrenomUsuel("Philippe");
 				nhab1.setNumeroAssureSocial(noAVS1);
 				nhab1.setDateNaissance(dateN1);
 				nhab1.setSexe(Sexe.MASCULIN);
@@ -137,7 +137,7 @@ public class MenageCommunIndexableTest extends BusinessTest {
 
 				PersonnePhysique nhab3 = new PersonnePhysique(false);
 				nhab3.setNom("Casanova");
-				nhab3.setPrenom("Giacomo");
+				nhab3.setPrenomUsuel("Giacomo");
 				nhab3.setNumeroAssureSocial(noAVS3);
 				nhab3.setDateNaissance(dateN3);
 				nhab3.setSexe(Sexe.MASCULIN);
@@ -193,7 +193,7 @@ public class MenageCommunIndexableTest extends BusinessTest {
 
 				PersonnePhysique nhab1 = new PersonnePhysique(false);
 				nhab1.setNom("Maillard");
-				nhab1.setPrenom("Philippe");
+				nhab1.setPrenomUsuel("Philippe");
 				nhab1.setNumeroAssureSocial(noAVS1);
 				nhab1.setDateNaissance(dateN1);
 				nhab1.setSexe(Sexe.MASCULIN);
@@ -202,7 +202,7 @@ public class MenageCommunIndexableTest extends BusinessTest {
 
 				PersonnePhysique nhab2 = new PersonnePhysique(false);
 				nhab2.setNom("Maillard-Gallet");
-				nhab2.setPrenom("Gladys");
+				nhab2.setPrenomUsuel("Gladys");
 				nhab2.setNumeroAssureSocial(noAVS2);
 				nhab2.setDateNaissance(dateN2);
 				nhab2.setSexe(Sexe.FEMININ);
@@ -211,7 +211,7 @@ public class MenageCommunIndexableTest extends BusinessTest {
 
 				PersonnePhysique nhab3 = new PersonnePhysique(false);
 				nhab3.setNom("Casanova");
-				nhab3.setPrenom("Giacomo");
+				nhab3.setPrenomUsuel("Giacomo");
 				nhab3.setNumeroAssureSocial(noAVS3);
 				nhab3.setDateNaissance(dateN3);
 				nhab3.setSexe(Sexe.MASCULIN);
@@ -276,7 +276,7 @@ public class MenageCommunIndexableTest extends BusinessTest {
 
 				PersonnePhysique nhab1 = new PersonnePhysique(false);
 				nhab1.setNom("Maillard");
-				nhab1.setPrenom("Philippe");
+				nhab1.setPrenomUsuel("Philippe");
 				nhab1.setNumeroAssureSocial(noAVS1);
 				nhab1.setDateNaissance(dateN1);
 				nhab1.setSexe(Sexe.MASCULIN);
@@ -285,7 +285,7 @@ public class MenageCommunIndexableTest extends BusinessTest {
 
 				PersonnePhysique nhab2 = new PersonnePhysique(false);
 				nhab2.setNom("Maillard-Gallet");
-				nhab2.setPrenom("Gladys");
+				nhab2.setPrenomUsuel("Gladys");
 				nhab2.setNumeroAssureSocial(noAVS2);
 				nhab2.setDateNaissance(dateN2);
 				nhab2.setSexe(Sexe.FEMININ);
@@ -294,7 +294,7 @@ public class MenageCommunIndexableTest extends BusinessTest {
 
 				PersonnePhysique nhab3 = new PersonnePhysique(false);
 				nhab3.setNom("Casanova");
-				nhab3.setPrenom("Giacomo");
+				nhab3.setPrenomUsuel("Giacomo");
 				nhab3.setNumeroAssureSocial(noAVS3);
 				nhab3.setDateNaissance(dateN3);
 				nhab3.setSexe(Sexe.MASCULIN);

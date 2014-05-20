@@ -8,7 +8,7 @@ import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 
 public class EvenementCivilEchCriteriaView extends EvenementCivilCriteriaView<TypeEvenementCivilEch> {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -6323007189633411343L;
 
 	private String actionEvenement;
 

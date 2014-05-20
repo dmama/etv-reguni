@@ -15,8 +15,8 @@ public class IdentificationIndividuTooltipView {
 	private Long numeroIndividu;
 	private String nom;
 	private String nomNaissance;
-	private String prenom;
-	private String autresPrenoms;
+	private String prenomUsuel;
+	private String tousPrenoms;
 	private RegDate dateNaissance;
 	private Sexe sexe;
 	private EtatCivil etatCivil;
@@ -28,10 +28,10 @@ public class IdentificationIndividuTooltipView {
 	public IdentificationIndividuTooltipView(Individu individu) {
 		if (individu != null) {
 			this.numeroIndividu = individu.getNoTechnique();
-			this.prenom = individu.getPrenom();
+			this.prenomUsuel = individu.getPrenomUsuel();
 			this.nom = individu.getNom();
 			this.nomNaissance = individu.getNomNaissance();
-			this.autresPrenoms = individu.getAutresPrenoms();
+			this.tousPrenoms = individu.getTousPrenoms();
 			this.dateNaissance = individu.getDateNaissance();
 			this.sexe = individu.getSexe();
 			this.etatCivil = EtatCivilHelper.civil2core(individu.getEtatCivilCourant().getTypeEtatCivil());
@@ -68,12 +68,12 @@ public class IdentificationIndividuTooltipView {
 		return nomNaissance;
 	}
 
-	public String getPrenom() {
-		return prenom;
+	public String getPrenomUsuel() {
+		return prenomUsuel;
 	}
 
-	public String getAutresPrenoms() {
-		return autresPrenoms;
+	public String getTousPrenoms() {
+		return tousPrenoms;
 	}
 
 	public RegDate getDateNaissance() {

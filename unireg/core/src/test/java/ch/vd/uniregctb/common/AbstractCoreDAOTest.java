@@ -822,7 +822,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	protected PersonnePhysique addNonHabitant(@Nullable Long noTiers, String prenom, String nom, RegDate dateNaissance, Sexe sexe) {
 		final PersonnePhysique nh = new PersonnePhysique(false);
 		nh.setNumero(noTiers);
-		nh.setPrenom(prenom);
+		nh.setPrenomUsuel(prenom);
 		nh.setNom(nom);
 		nh.setDateNaissance(dateNaissance);
 		nh.setSexe(sexe);

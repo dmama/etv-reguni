@@ -46,18 +46,18 @@
 		</td>
 	</tr>
 	<tr class="<unireg:nextRowClass/>" >
-		<td><fmt:message key="label.prenom" />&nbsp;:</td>
+		<td><fmt:message key="label.prenom.usuel" />&nbsp;:</td>
 		<td>
-			<c:set var="bind" value="command.${param.path}.prenom" scope="request"/>
+			<c:set var="bind" value="command.${param.path}.prenomUsuel" scope="request"/>
 			<spring:bind path="${bind}" >
 				<c:out value="${status.value}"/>
 			</spring:bind>
 		</td>
 	</tr>
 	<tr class="<unireg:nextRowClass/>" >
-		<td><fmt:message key="label.autres.prenoms" />&nbsp;:</td>
+		<td><fmt:message key="label.prenoms" />&nbsp;:</td>
 		<td>
-			<c:set var="bind" value="command.${param.path}.autresPrenoms" scope="request"/>
+			<c:set var="bind" value="command.${param.path}.tousPrenoms" scope="request"/>
 			<spring:bind path="${bind}" >
 				<c:out value="${status.value}"/>
 			</spring:bind>

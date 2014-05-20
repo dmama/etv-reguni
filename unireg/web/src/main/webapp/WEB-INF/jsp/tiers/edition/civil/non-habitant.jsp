@@ -7,15 +7,26 @@
 <unireg:nextRowClass reset="1"/>
 <table border="0">
 
+	<c:set var="lengthtousprenoms" value="<%=LengthConstants.TIERS_TOUS_PRENOMS%>" scope="request" />
+	<tr class="<unireg:nextRowClass/>">
+		<td width="40%"><fmt:message key="label.prenoms" />&nbsp;:</td>
+		<td width="60%">
+			<form:input path="tiers.tousPrenoms" tabindex="1" id="tiers_prenoms" cssErrorClass="input-with-errors"
+			            size="20" maxlength="${lengthnom}" />
+			<span class="jTip formInfo" title="<c:url value="/htm/prenom.htm?width=375"/>" id="tousPrenoms">?</span>
+			<form:errors path="tiers.tousPrenoms" cssClass="error" />
+		</td>
+	</tr>
+
 	<c:set var="lengthnom" value="<%=LengthConstants.TIERS_NOM%>" scope="request" />
 	<tr class="<unireg:nextRowClass/>">
-		<td width="40%"><fmt:message key="label.prenom" />&nbsp;:</td>
+		<td width="40%"><fmt:message key="label.prenom.usuel" />&nbsp;:</td>
 		<td width="60%">
-			<form:input path="tiers.prenom" tabindex="1" id="tiers_prenom" cssErrorClass="input-with-errors"
+			<form:input path="tiers.prenomUsuel" tabindex="1" id="tiers_prenom" cssErrorClass="input-with-errors"
 			            size="20" maxlength="${lengthnom}" />
-			<span class="jTip formInfo" title="<c:url value="/htm/prenom.htm?width=375"/>" id="prenom">?</span>
+			<span class="jTip formInfo" title="<c:url value="/htm/prenom.htm?width=375"/>" id="prenomUsuel">?</span>
 			<div id="empty_tiers_prenom_warning" style="display:none;" class="warn warning_icon"><fmt:message key="warning.prenom.vide"/></div>
-			<form:errors path="tiers.prenom" cssClass="error" />
+			<form:errors path="tiers.prenomUsuel" cssClass="error" />
 		</td>
 	</tr>
 

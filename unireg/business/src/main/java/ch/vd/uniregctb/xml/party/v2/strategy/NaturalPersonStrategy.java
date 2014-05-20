@@ -123,7 +123,7 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 		final PersonIdentification identification = new PersonIdentification();
 		identification.setLocalPersonId(new NamedPersonId(VD_UNIREG, String.valueOf(personne.getNumero())));
 		identification.setOfficialName(personne.getNom());
-		identification.setFirstName(personne.getPrenom());
+		identification.setFirstName(personne.getPrenomUsuel());
 		identification.setSex(EchHelper.sexeToEch44(personne.getSexe()));
 		identification.setVn(EchHelper.avs13ToEch(personne.getNumeroAssureSocial()));
 		for (IdentificationPersonne ident : personne.getIdentificationsPersonnes()) {
@@ -152,7 +152,7 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 		final PersonIdentification identification = new PersonIdentification();
 		identification.setLocalPersonId(new NamedPersonId(VD_UNIREG, String.valueOf(numero)));
 		identification.setOfficialName(individu.getNom());
-		identification.setFirstName(individu.getPrenom());
+		identification.setFirstName(individu.getPrenomUsuel());
 		identification.setSex(EchHelper.sexeToEch44(individu.getSexe()));
 		identification.setVn(EchHelper.avs13ToEch(individu.getNouveauNoAVS()));
 		if (StringUtils.isNotBlank(individu.getNoAVS11())) {

@@ -18,14 +18,14 @@ public interface Individu extends EntiteCivile {
 	StatutIndividu getStatut();
 
 	/**
-	 * @return le prénom de l'individu
+	 * @return le prénom usuel de l'individu
 	 */
-	String getPrenom();
+	String getPrenomUsuel();
 
 	/**
-	 * @return les autres prénom de l'individu.
+	 * @return tous les prénoms de l'individu.(comprend normalement également le prénom usuel)
 	 */
-	String getAutresPrenoms();
+	String getTousPrenoms();
 
 	/**
 	 * @return le nom de famille de l'individu

@@ -59,7 +59,7 @@ public class CivilEditControllerTest extends WebTestSpring3 {
 			request = new MockHttpServletRequest();
 			request.setSession(session);
 			request.addParameter("id", id.toString());
-			request.addParameter("tiers.nom", "      ");
+			request.addParameter("nom", "      ");
 			request.setMethod("POST");
 			request.setRequestURI(NH_URI);
 
@@ -229,14 +229,15 @@ public class CivilEditControllerTest extends WebTestSpring3 {
 				final Tiers tiers = tiersDAO.get(ppId);
 				final PersonnePhysique nh = (PersonnePhysique)tiers;
 				Assert.assertEquals("Kamel", nh.getNom());
-				Assert.assertEquals(null, nh.getPrenom());
+				Assert.assertEquals(null, nh.getPrenomUsuel());
 				return null;
 			}
 		});
 
 		request.addParameter("id", Long.toString(ppId));
 		request.addParameter("nom", "Kamel");
-		request.addParameter("prenom", "toto");
+		request.addParameter("prenomUsuel", "toto");
+		request.addParameter("tousPrenoms", "toto titi tata");
 		request.setMethod("POST");
 		request.setRequestURI(NH_URI);
 		handle(request, response);
@@ -247,7 +248,8 @@ public class CivilEditControllerTest extends WebTestSpring3 {
 				final Tiers tiers = tiersDAO.get(ppId);
 				final PersonnePhysique nh = (PersonnePhysique)tiers;
 				Assert.assertEquals("Kamel", nh.getNom());
-				Assert.assertEquals("toto", nh.getPrenom());
+				Assert.assertEquals("toto", nh.getPrenomUsuel());
+				Assert.assertEquals("toto titi tata", nh.getTousPrenoms());
 				return null;
 			}
 		});

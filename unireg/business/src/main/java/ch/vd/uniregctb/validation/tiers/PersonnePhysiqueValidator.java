@@ -47,7 +47,7 @@ public class PersonnePhysiqueValidator extends ContribuableValidator<PersonnePhy
 		else if (!habitant) {
 
 			final String nom = pp.getNom();
-			final String prenom = pp.getPrenom();
+			final String prenom = pp.getPrenomUsuel();
 
 			// nom : obligatoire
 			if (StringUtils.isBlank(nom)) {

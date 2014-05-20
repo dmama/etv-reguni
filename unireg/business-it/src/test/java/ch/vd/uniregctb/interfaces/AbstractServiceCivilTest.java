@@ -42,7 +42,7 @@ public abstract class AbstractServiceCivilTest extends BusinessItTest {
 
 		Individu jean = service.getIndividu(333528, date(2007, 12, 31));
 		assertNotNull(jean);
-		assertEquals("Jean-Eric", jean.getPrenom());
+		assertEquals("Jean-Eric", jean.getPrenomUsuel());
 
 		jean = service.getIndividu(333528, date(2001, 12, 31));
 		assertNotNull(jean);
@@ -53,7 +53,7 @@ public abstract class AbstractServiceCivilTest extends BusinessItTest {
 
 		final Individu individu = service.getIndividu(692185, null, AttributeIndividu.ADRESSES, AttributeIndividu.ORIGINE, AttributeIndividu.NATIONALITES, AttributeIndividu.PARENTS, AttributeIndividu.PERMIS);
 		assertNotNull(individu);
-		assertEquals("Jean-Marc", individu.getPrenom());
+		assertEquals("Jean-Marc", individu.getPrenomUsuel());
 		assertEquals("Delacrétaz", individu.getNom());
 		assertEquals("Delacrétaz", individu.getNomNaissance());
 		assertEquals(date(1982, 2, 18), individu.getDateNaissance());
@@ -180,7 +180,7 @@ public abstract class AbstractServiceCivilTest extends BusinessItTest {
 		Individu conjoint = service.getConjoint(individu.getNoTechnique(), null);
 		assertNotNull(conjoint);
 		assertEquals(590369, conjoint.getNoTechnique());
-		assertEquals("Théodora", conjoint.getPrenom());
+		assertEquals("Théodora", conjoint.getPrenomUsuel());
 	}
 
 	@Test(timeout = 10000)
@@ -209,13 +209,13 @@ public abstract class AbstractServiceCivilTest extends BusinessItTest {
 		//Marié
 		conjoint = service.getConjoint(jeanMarc.getNoTechnique(), date(2007, 6, 24));
 		assertNotNull(conjoint);
-		assertEquals("Amélie", conjoint.getPrenom());
+		assertEquals("Amélie", conjoint.getPrenomUsuel());
 		assertEquals(845875, conjoint.getNoTechnique());
 
 		//Séparé
 		conjoint = service.getConjoint(jeanMarc.getNoTechnique(), date(2008, 6, 28));
 		assertNotNull(conjoint);
-		assertEquals("Amélie", conjoint.getPrenom());
+		assertEquals("Amélie", conjoint.getPrenomUsuel());
 		assertEquals(845875, conjoint.getNoTechnique());
 
 		//Divorcé

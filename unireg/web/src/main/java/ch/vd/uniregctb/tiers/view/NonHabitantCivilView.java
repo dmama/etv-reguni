@@ -11,7 +11,8 @@ import ch.vd.uniregctb.type.Sexe;
 public class NonHabitantCivilView {
 
 	private String nom;
-	private String prenom;
+	private String prenomUsuel;
+	private String tousPrenoms;
 	private String numeroAssureSocial;
 	private final IdentificationPersonneView identificationPersonne;
 	private Sexe sexe;
@@ -36,7 +37,8 @@ public class NonHabitantCivilView {
 
 	public NonHabitantCivilView(ServiceInfrastructureService infraService, PersonnePhysique pp) {
 		this.nom = pp.getNom();
-		this.prenom = pp.getPrenom();
+		this.prenomUsuel = pp.getPrenomUsuel();
+		this.tousPrenoms = pp.getTousPrenoms();
 		this.numeroAssureSocial = pp.getNumeroAssureSocial();
 		this.identificationPersonne = new IdentificationPersonneView(pp);
 		this.sexe = pp.getSexe();
@@ -68,12 +70,20 @@ public class NonHabitantCivilView {
 		this.nom = nom;
 	}
 
-	public String getPrenom() {
-		return prenom;
+	public String getPrenomUsuel() {
+		return prenomUsuel;
 	}
 
-	public void setPrenom(String prenom) {
-		this.prenom = prenom;
+	public void setPrenomUsuel(String prenomUsuel) {
+		this.prenomUsuel = prenomUsuel;
+	}
+
+	public String getTousPrenoms() {
+		return tousPrenoms;
+	}
+
+	public void setTousPrenoms(String tousPrenoms) {
+		this.tousPrenoms = tousPrenoms;
 	}
 
 	public String getNumeroAssureSocial() {

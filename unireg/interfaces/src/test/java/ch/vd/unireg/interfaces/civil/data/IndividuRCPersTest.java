@@ -670,7 +670,7 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		final Individu ind = IndividuRCPers.get(person, true, infraService);
 		assertNotNull(ind);
 		assertEquals(123345L, ind.getNoTechnique());
-		assertEquals("Jean", ind.getPrenom());
+		assertEquals("Jean", ind.getPrenomUsuel());
 		assertEquals("Rucher", ind.getNom());
 		assertEquals(date(1965, 3, 12), ind.getDateNaissance());
 		assertEquals(Sexe.MASCULIN, ind.getSexe());
@@ -744,7 +744,7 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		final Individu ind = IndividuRCPers.get(person, false, infraService);
 		assertNotNull(ind);
 		assertEquals(123345L, ind.getNoTechnique());
-		assertEquals("Jean", ind.getPrenom());
+		assertEquals("Jean", ind.getPrenomUsuel());
 		assertEquals("Rucher", ind.getNom());
 		assertEquals(date(1965, 3, 12), ind.getDateNaissance());
 		assertEquals(Sexe.MASCULIN, ind.getSexe());

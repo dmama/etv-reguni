@@ -497,7 +497,7 @@ public class TableFillerWithCivilValues {
 		// l'individu lui-même
 		ps.setLong(1, ind.getNoTechnique());
 		ps.setString(2, ind.getNom());
-		ps.setString(3, ind.getPrenom());
+		ps.setString(3, ind.getPrenomUsuel());
 		setRegDateParam(4, ps, ind.getDateNaissance());
 		setRegDateParam(5, ps, ind.getDateDeces());
 		setEnumParam(6, ps, ind.getSexe());
@@ -577,7 +577,7 @@ public class TableFillerWithCivilValues {
 			ps.setLong(17, pere.individu.getNoTechnique());
 			ps.setNull(18, Types.NVARCHAR);
 			ps.setString(19, pere.individu.getNom());
-			ps.setString(20, pere.individu.getPrenom());
+			ps.setString(20, pere.individu.getPrenomUsuel());
 			setRegDateParam(21, ps, pere.individu.getDateNaissance());
 			setEnumParam(22, ps, pere.individu.getSexe());
 			ps.setString(23, pere.individu.getNouveauNoAVS());
@@ -604,7 +604,7 @@ public class TableFillerWithCivilValues {
 			ps.setLong(25, mere.individu.getNoTechnique());
 			ps.setNull(26, Types.NVARCHAR);
 			ps.setString(27, mere.individu.getNom());
-			ps.setString(28, mere.individu.getPrenom());
+			ps.setString(28, mere.individu.getPrenomUsuel());
 			setRegDateParam(29, ps, mere.individu.getDateNaissance());
 			setEnumParam(30, ps, mere.individu.getSexe());
 			ps.setString(31, mere.individu.getNouveauNoAVS());

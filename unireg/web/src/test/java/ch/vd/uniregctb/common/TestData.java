@@ -812,7 +812,7 @@ public class TestData {
 		pp0.setDateNaissance(RegDate.get(1953, 12, 18));
 		pp0.setNom("Mme");
 		pp0.setNumeroOfsNationalite(8231);
-		pp0.setPrenom("Mario");
+		pp0.setPrenomUsuel("Mario");
 		pp0.setSexe(Sexe.MASCULIN);
 		pp0.setIdentificationsPersonnes(new HashSet());
 		pp0.setOfficeImpotId(10);
@@ -836,7 +836,7 @@ public class TestData {
 		pp1.setDateNaissance(RegDate.get(1977, 2, 12));
 		pp1.setNom("Tardy");
 		pp1.setNumeroOfsNationalite(8201);
-		pp1.setPrenom("Alain (HS)");
+		pp1.setPrenomUsuel("Alain (HS)");
 		pp1.setSexe(Sexe.MASCULIN);
 		pp1.setIdentificationsPersonnes(new HashSet());
 		pp1.setOfficeImpotId(10);
@@ -864,7 +864,7 @@ public class TestData {
 		pp2.setNom("Pirez");
 		pp2.setNumeroOfsNationalite(8212);
 		pp2.setNumeroAssureSocial("7561234567897");
-		pp2.setPrenom("Isidor (sourcier gris)");
+		pp2.setPrenomUsuel("Isidor (sourcier gris)");
 		pp2.setSexe(Sexe.MASCULIN);
 		pp2.setIdentificationsPersonnes(new HashSet());
 		pp2.setNumeroCompteBancaire("CH9308440717427290198");
@@ -998,7 +998,7 @@ public class TestData {
 		pp6.setNom("Lederet");
 		pp6.setNumeroOfsNationalite(8100);
 		pp6.setNumeroAssureSocial("7561234567897");
-		pp6.setPrenom("Michel");
+		pp6.setPrenomUsuel("Michel");
 		pp6.setSexe(Sexe.MASCULIN);
 		pp6.setIdentificationsPersonnes(new HashSet());
 		pp6.setNumeroCompteBancaire("CH9308440717427290198");
@@ -1172,7 +1172,7 @@ public class TestData {
 		pp12.setNom("The full i107");
 		pp12.setNumeroOfsNationalite(8212);
 		pp12.setNumeroAssureSocial("7561234567897");
-		pp12.setPrenom("De la mort");
+		pp12.setPrenomUsuel("De la mort");
 		pp12.setSexe(Sexe.MASCULIN);
 		pp12.setIdentificationsPersonnes(new HashSet());
 		pp12.setNumeroCompteBancaire("CH9308440717427290198");
@@ -1207,7 +1207,7 @@ public class TestData {
 		pp13.setNom("Martinez");
 		pp13.setNumeroOfsNationalite(8212);
 		pp13.setNumeroAssureSocial("7561234567897");
-		pp13.setPrenom("Conchita");
+		pp13.setPrenomUsuel("Conchita");
 		pp13.setSexe(Sexe.FEMININ);
 		pp13.setIdentificationsPersonnes(new HashSet());
 		pp13.setNumeroCompteBancaire("CH9308440717427290198");

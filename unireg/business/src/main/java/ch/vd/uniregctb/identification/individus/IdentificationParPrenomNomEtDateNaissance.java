@@ -30,7 +30,7 @@ public class IdentificationParPrenomNomEtDateNaissance implements StrategieIdent
 		if (dateNaissance == null) {
 			return Collections.emptyList();
 		}
-		final String prenom = individu.getPrenom();
+		final String prenom = individu.getPrenomUsuel();
 		final String nom = IdentificationHelper.removePonctuation(IdentificationHelper.removeDoublonSuffixe(individu.getNom()));
 		return findPersons(prenom, nom, dateNaissance);
 	}

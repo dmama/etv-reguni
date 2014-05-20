@@ -62,7 +62,7 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 		final ch.vd.uniregctb.tiers.PersonnePhysique personne = (ch.vd.uniregctb.tiers.PersonnePhysique) from;
 		if (!personne.isHabitantVD()) {
 			to.setOfficialName(personne.getNom());
-			to.setFirstName(personne.getPrenom());
+			to.setFirstName(personne.getPrenomUsuel());
 			to.setSex(EnumHelper.coreToXMLv3(personne.getSexe()));
 			to.setVn(EchHelper.avs13ToEch(personne.getNumeroAssureSocial()));
 			for (IdentificationPersonne ident : personne.getIdentificationsPersonnes()) {
@@ -93,7 +93,7 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 			}
 
 			to.setOfficialName(individu.getNom());
-			to.setFirstName(individu.getPrenom());
+			to.setFirstName(individu.getPrenomUsuel());
 			to.setSex(EnumHelper.coreToXMLv3(individu.getSexe()));
 			to.setVn(EchHelper.avs13ToEch(individu.getNouveauNoAVS()));
 			if (StringUtils.isNotBlank(individu.getNoAVS11())) {

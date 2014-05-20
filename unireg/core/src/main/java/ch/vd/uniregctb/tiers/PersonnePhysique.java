@@ -77,7 +77,8 @@ public class PersonnePhysique extends Contribuable {
 	 */
 	private String numeroAssureSocial;
 	private String nom;
-	private String prenom;
+	private String prenomUsuel;
+	private String tousPrenoms;
 	private RegDate dateNaissance;
 	private Sexe sexe;
 	private String libelleCommuneOrigine;
@@ -267,12 +268,21 @@ public class PersonnePhysique extends Contribuable {
 	}
 
 	@Column(name = "NH_PRENOM", length = LengthConstants.TIERS_NOM)
-	public String getPrenom() {
-		return prenom;
+	public String getPrenomUsuel() {
+		return prenomUsuel;
 	}
 
-	public void setPrenom(@Nullable String thePrenom) {
-		prenom = thePrenom;
+	public void setPrenomUsuel(@Nullable String thePrenom) {
+		prenomUsuel = thePrenom;
+	}
+
+	@Column(name = "NH_TOUS_PRENOMS", length = LengthConstants.TIERS_TOUS_PRENOMS)
+	public String getTousPrenoms() {
+		return tousPrenoms;
+	}
+
+	public void setTousPrenoms(@Nullable String tousPrenoms) {
+		this.tousPrenoms = tousPrenoms;
 	}
 
 	/**
@@ -570,11 +580,17 @@ public class PersonnePhysique extends Contribuable {
 		}
 		else if (!numeroOfsNationalite.equals(other.numeroOfsNationalite))
 			return false;
-		if (prenom == null) {
-			if (other.prenom != null)
+		if (prenomUsuel == null) {
+			if (other.prenomUsuel != null)
 				return false;
 		}
-		else if (!prenom.equals(other.prenom))
+		else if (!prenomUsuel.equals(other.prenomUsuel))
+			return false;
+		if (tousPrenoms == null) {
+			if (other.tousPrenoms != null)
+				return false;
+		}
+		else if (!tousPrenoms.equals(other.tousPrenoms))
 			return false;
 		if (sexe == null) {
 			if (other.sexe != null)

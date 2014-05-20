@@ -92,7 +92,7 @@ public class AdresseServiceTest extends BusinessTest {
 
 		PersonnePhysique nonhabitant = new PersonnePhysique(false);
 		nonhabitant.setNom("Khan");
-		nonhabitant.setPrenom("Gengis");
+		nonhabitant.setPrenomUsuel("Gengis");
 		{
 			AdresseSuisse adresse = new AdresseSuisse();
 			adresse.setDateDebut(date(2003, 1, 3));
@@ -173,7 +173,7 @@ public class AdresseServiceTest extends BusinessTest {
 
 		PersonnePhysique nonhabitant = new PersonnePhysique(false);
 		nonhabitant.setNom("Khan");
-		nonhabitant.setPrenom("Gengis");
+		nonhabitant.setPrenomUsuel("Gengis");
 		{
 			AdresseSuisse adresse = new AdresseSuisse();
 			adresse.setDateDebut(dateDebut1);
@@ -314,7 +314,7 @@ public class AdresseServiceTest extends BusinessTest {
 		// Crée un non-habitant (= n'existe pas dans le registre civil)
 		PersonnePhysique nonhabitant = new PersonnePhysique(false);
 		nonhabitant.setNom("Khan");
-		nonhabitant.setPrenom("Gengis");
+		nonhabitant.setPrenomUsuel("Gengis");
 		{
 			AdresseSuisse adresse = new AdresseSuisse();
 			adresse.setDateDebut(date(1974, 1, 3));
@@ -533,7 +533,7 @@ public class AdresseServiceTest extends BusinessTest {
 		// Crée un non-habitant (= n'existe pas dans le registre civil)
 		PersonnePhysique nonhabitant = new PersonnePhysique(false);
 		nonhabitant.setNom("Khan");
-		nonhabitant.setPrenom("Gengis");
+		nonhabitant.setPrenomUsuel("Gengis");
 		{
 			AdresseSuisse adresse = new AdresseSuisse();
 			adresse.setDateDebut(date(1974, 1, 3));
@@ -1867,7 +1867,7 @@ public class AdresseServiceTest extends BusinessTest {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
 				PersonnePhysique principal = new PersonnePhysique(false);
-				principal.setPrenom("Tommy");
+				principal.setPrenomUsuel("Tommy");
 				principal.setNom("Zrwg");
 				principal.setSexe(Sexe.MASCULIN);
 				principal.setDateNaissance(date(1977, 1, 1));
@@ -1880,7 +1880,7 @@ public class AdresseServiceTest extends BusinessTest {
 				principal.addAdresseTiers(adresse);
 
 				PersonnePhysique conjoint = new PersonnePhysique(false);
-				conjoint.setPrenom("Lolo");
+				conjoint.setPrenomUsuel("Lolo");
 				conjoint.setNom("Zrwg");
 				conjoint.setSexe(Sexe.FEMININ);
 				conjoint.setDateNaissance(date(1978, 1, 1));
@@ -2529,7 +2529,7 @@ public class AdresseServiceTest extends BusinessTest {
 				final PersonnePhysique principal = addHabitant(noPrincipal);
 				principal.setHabitant(false);
 				principal.setNom("Cochand");
-				principal.setPrenom("Gilbert");
+				principal.setPrenomUsuel("Gilbert");
 				principal.setDateNaissance(dateNaissance);
 				principal.setDateDeces(dateDeces);
 				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(principal, conjoint, dateMariage, dateDeces);
@@ -3622,12 +3622,12 @@ public class AdresseServiceTest extends BusinessTest {
 		// Ménage homme-femme
 		{
 			PersonnePhysique arnold = new PersonnePhysique(false);
-			arnold.setPrenom("Arnold");
+			arnold.setPrenomUsuel("Arnold");
 			arnold.setNom("Schwarzie");
 			arnold.setSexe(Sexe.MASCULIN);
 
 			PersonnePhysique nolwen = new PersonnePhysique(false);
-			nolwen.setPrenom("Nowlen");
+			nolwen.setPrenomUsuel("Nowlen");
 			nolwen.setNom("Raflss");
 			nolwen.setSexe(Sexe.FEMININ);
 
@@ -3638,12 +3638,12 @@ public class AdresseServiceTest extends BusinessTest {
 		// Ménage femme-femme
 		{
 			PersonnePhysique cora = new PersonnePhysique(false);
-			cora.setPrenom("Cora");
+			cora.setPrenomUsuel("Cora");
 			cora.setNom("Hildebrand");
 			cora.setSexe(Sexe.FEMININ);
 
 			PersonnePhysique nolwen = new PersonnePhysique(false);
-			nolwen.setPrenom("Nowlen");
+			nolwen.setPrenomUsuel("Nowlen");
 			nolwen.setNom("Raflss");
 			nolwen.setSexe(Sexe.FEMININ);
 
@@ -3654,12 +3654,12 @@ public class AdresseServiceTest extends BusinessTest {
 		// Ménage homme-homme
 		{
 			PersonnePhysique arnold = new PersonnePhysique(false);
-			arnold.setPrenom("Arnold");
+			arnold.setPrenomUsuel("Arnold");
 			arnold.setNom("Schwarzie");
 			arnold.setSexe(Sexe.MASCULIN);
 
 			PersonnePhysique roch = new PersonnePhysique(false);
-			roch.setPrenom("Roch");
+			roch.setPrenomUsuel("Roch");
 			roch.setNom("Wouazine");
 			roch.setSexe(Sexe.MASCULIN);
 
@@ -3670,12 +3670,12 @@ public class AdresseServiceTest extends BusinessTest {
 		// Ménage homme-<sexe inconnu>
 		{
 			PersonnePhysique arnold = new PersonnePhysique(false);
-			arnold.setPrenom("Arnold");
+			arnold.setPrenomUsuel("Arnold");
 			arnold.setNom("Schwarzie");
 			arnold.setSexe(Sexe.MASCULIN);
 
 			PersonnePhysique alf = new PersonnePhysique(false);
-			alf.setPrenom("Alf");
+			alf.setPrenomUsuel("Alf");
 			alf.setNom("Alf");
 			alf.setSexe(null);
 
@@ -3686,12 +3686,12 @@ public class AdresseServiceTest extends BusinessTest {
 		// Ménage femme-<sexe inconnu>
 		{
 			PersonnePhysique cora = new PersonnePhysique(false);
-			cora.setPrenom("Cora");
+			cora.setPrenomUsuel("Cora");
 			cora.setNom("Hildebrand");
 			cora.setSexe(Sexe.FEMININ);
 
 			PersonnePhysique alf = new PersonnePhysique(false);
-			alf.setPrenom("Alf");
+			alf.setPrenomUsuel("Alf");
 			alf.setNom("Alf");
 			alf.setSexe(null);
 
@@ -3702,12 +3702,12 @@ public class AdresseServiceTest extends BusinessTest {
 		// Ménage <sexe inconnu>-<sexe inconnu>
 		{
 			PersonnePhysique esc = new PersonnePhysique(false);
-			esc.setPrenom("Escar");
+			esc.setPrenomUsuel("Escar");
 			esc.setNom("Got");
 			esc.setSexe(null);
 
 			PersonnePhysique alf = new PersonnePhysique(false);
-			alf.setPrenom("Alf");
+			alf.setPrenomUsuel("Alf");
 			alf.setNom("Alf");
 			alf.setSexe(null);
 
@@ -3726,7 +3726,7 @@ public class AdresseServiceTest extends BusinessTest {
 		// Données d'entrées
 		PersonnePhysique nh = new PersonnePhysique(false);
 		nh.setNom("Pauly");
-		nh.setPrenom("Marco");
+		nh.setPrenomUsuel("Marco");
 		nh.setDateNaissance(date(1970, 3, 2));
 
 		AdresseSuisse courrier = new AdresseSuisse();
@@ -3796,7 +3796,7 @@ public class AdresseServiceTest extends BusinessTest {
 		// Données d'entrées
 		PersonnePhysique nh = new PersonnePhysique(false);
 		nh.setNom("Pauly");
-		nh.setPrenom("Marco");
+		nh.setPrenomUsuel("Marco");
 		nh.setDateNaissance(date(1970, 3, 2));
 
 		nh = (PersonnePhysique) tiersDAO.save(nh);
@@ -3823,7 +3823,7 @@ public class AdresseServiceTest extends BusinessTest {
 		// Données d'entrées
 		PersonnePhysique nh = new PersonnePhysique(false);
 		nh.setNom("Pauly");
-		nh.setPrenom("Marco");
+		nh.setPrenomUsuel("Marco");
 		nh.setDateNaissance(date(1970, 3, 2));
 
 		AdresseSuisse courrier = new AdresseSuisse();
@@ -3962,7 +3962,7 @@ public class AdresseServiceTest extends BusinessTest {
 				// Données d'entrées
 				PersonnePhysique nh = new PersonnePhysique(false);
 				nh.setNom("Pauly");
-				nh.setPrenom("Marco");
+				nh.setPrenomUsuel("Marco");
 				nh.setDateNaissance(date(1970, 3, 2));
 
 				AdresseSuisse adresse = new AdresseSuisse();
@@ -4002,7 +4002,7 @@ public class AdresseServiceTest extends BusinessTest {
 				// Données d'entrées
 				PersonnePhysique nh = new PersonnePhysique(false);
 				nh.setNom("Pauly");
-				nh.setPrenom("Marco");
+				nh.setPrenomUsuel("Marco");
 				nh.setDateNaissance(date(1970, 3, 2));
 
 				AdresseSuisse adresse1 = new AdresseSuisse();
@@ -4081,7 +4081,7 @@ public class AdresseServiceTest extends BusinessTest {
 				// Données d'entrées
 				PersonnePhysique nh = new PersonnePhysique(false);
 				nh.setNom("Pauly");
-				nh.setPrenom("Marco");
+				nh.setPrenomUsuel("Marco");
 				nh.setDateNaissance(date(1970, 3, 2));
 
 				AdresseSuisse adresse1 = new AdresseSuisse();

@@ -1625,7 +1625,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 			public Object doInTransaction(TransactionStatus status) {
 				for (Long ctbId : results.ctbsAvecDiGeneree) {
 					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ctbId);
-					final String prenom = pp.getPrenom();
+					final String prenom = pp.getPrenomUsuel();
 					assertTrue(prenom.startsWith("Jean-"));
 					final int index = Integer.parseInt(prenom.substring(5)) - 1;
 					final List<Declaration> dis = pp.getDeclarationsForPeriode(annee, false);

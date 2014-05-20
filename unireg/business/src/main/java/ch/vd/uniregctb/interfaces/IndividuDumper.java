@@ -84,7 +84,6 @@ public abstract class IndividuDumper {
 		StringBuilder s = new StringBuilder();
 		s.append("Individu{\n");
 		s.append(tab(depth + 1)).append("adresses=").append(dumpAdresses(individu.getAdresses(), ignoreSpecific, depth + 1)).append(", \n");
-		s.append(tab(depth + 1)).append("autresPrenoms=").append(dumpString(individu.getAutresPrenoms())).append(", \n");
 		s.append(tab(depth + 1)).append("conjoints=").append(dumpRelationsVersIndividus(individu.getConjoints(), false, depth + 1)).append(", \n");
 		s.append(tab(depth + 1)).append("dateDeces=").append(individu.getDateDeces()).append(", \n");
 		s.append(tab(depth + 1)).append("dateNaissance=").append(individu.getDateNaissance()).append(", \n");
@@ -104,8 +103,9 @@ public abstract class IndividuDumper {
 		s.append(tab(depth + 1)).append("origines=").append(dumpOrigines(individu.getOrigines(), depth + 1)).append(", \n");
 		s.append(tab(depth + 1)).append("parents=").append(dumpRelationsVersIndividus(individu.getParents(), false, depth + 1)).append(", \n");
 		s.append(tab(depth + 1)).append("permis=").append(dumpPermis(individu.getPermis(), ignoreSpecific, depth + 1)).append(", \n");
-		s.append(tab(depth + 1)).append("prenom=").append(dumpString(individu.getPrenom())).append(", \n");
+		s.append(tab(depth + 1)).append("prenomUsuel=").append(dumpString(individu.getPrenomUsuel())).append(", \n");
 		s.append(tab(depth + 1)).append("sexe=").append(dumpSexe(individu.getSexe())).append(", \n");
+		s.append(tab(depth + 1)).append("tousPrenoms=").append(dumpString(individu.getTousPrenoms())).append(", \n");
 		s.append(tab(depth)).append("}");
 
 		return s.toString();

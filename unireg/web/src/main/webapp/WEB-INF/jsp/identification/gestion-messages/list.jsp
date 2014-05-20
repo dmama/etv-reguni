@@ -83,7 +83,7 @@
 				<display:column sortable ="true" titleKey="label.nom" sortName="demande.personne.nom">
 						<c:out value="${message.nom}" />
 				</display:column>
-				<display:column sortable ="true" titleKey="label.prenom"  sortName="demande.personne.prenoms">
+				<display:column sortable ="true" titleKey="label.prenoms"  sortName="demande.personne.prenoms">
 						<c:out value="${message.prenoms}" />
 				</display:column>
 				<c:if test="${messageTraite}">
