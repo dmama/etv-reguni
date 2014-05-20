@@ -29,7 +29,7 @@ import ch.vd.uniregctb.cache.CacheStats;
 import ch.vd.uniregctb.cache.UniregCacheInterface;
 import ch.vd.uniregctb.common.TimeHelper;
 
-public class StatsServiceImpl implements InitializingBean, DisposableBean, StatsService {
+public class StatsServiceImpl implements InitializingBean, DisposableBean, StatsService, StatsExposureInterface {
 
 	private static final Logger LOGGER = Logger.getLogger(StatsServiceImpl.class);
 
@@ -454,5 +454,33 @@ public class StatsServiceImpl implements InitializingBean, DisposableBean, Stats
 	@Override
 	public void destroy() throws Exception {
 		timer.cancel();
+	}
+
+	@Override
+	public Map<String, ServiceTracingInterface> getServices() {
+		synchronized (rawServices) {
+			return new HashMap<>(rawServices);
+		}
+	}
+
+	@Override
+	public Map<String, UniregCacheInterface> getCaches() {
+		synchronized (cachedServices) {
+			return new HashMap<>(cachedServices);
+		}
+	}
+
+	@Override
+	public Map<String, LoadMonitor> getLoadMonitors() {
+		synchronized (loadMonitors) {
+			return new HashMap<>(loadMonitors);
+		}
+	}
+
+	@Override
+	public Map<String, JobMonitor> getJobMonitors() {
+		synchronized (jobMonitors) {
+			return new HashMap<>(jobMonitors);
+		}
 	}
 }

@@ -83,6 +83,12 @@
 		</property>
 	</bean>
 
+	<bean id="statsJmxBeanContainer" class="ch.vd.uniregctb.stats.JmxStatContainer">
+		<property name="exporter" ref="jmxExporter"/>
+		<property name="statsService" ref="statsService"/>
+		<property name="objectName" value="ch.vd.uniregctb-ws:type=Monitoring,name=Performances"/>
+	</bean>
+
 	<bean name="oracleConnectionJmxBean" class="ch.vd.registre.jmx.ConnectionJmxBeanImpl">
 		<constructor-arg ref="dataSource" />
 	</bean>

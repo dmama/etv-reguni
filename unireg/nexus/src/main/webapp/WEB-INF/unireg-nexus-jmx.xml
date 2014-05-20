@@ -51,6 +51,12 @@
 		</property>
 	</bean>
 
+	<bean id="statsJmxBeanContainer" class="ch.vd.uniregctb.stats.JmxStatContainer">
+		<property name="exporter" ref="jmxExporter"/>
+		<property name="statsService" ref="statsService"/>
+		<property name="objectName" value="ch.vd.uniregctb-nexus:type=Monitoring,name=Performances"/>
+	</bean>
+
 	<bean name="applicationMonitoringJmxBean" class="ch.vd.unireg.app.ApplicationMonitoringJMXBeanImpl">
 		<property name="checker" ref="applicationChecker" />
 	</bean>
