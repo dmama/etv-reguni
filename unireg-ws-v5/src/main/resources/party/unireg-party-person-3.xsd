@@ -122,6 +122,15 @@
 							</xs:appinfo>
 						</xs:annotation>
 					</xs:element>
+					<xs:element name="firstNames" type="eCH-0044:baseNameType" minOccurs="0">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Tous les prénoms connus de la personne.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
 					<xs:element name="motherName" type="person:parentFullNameType" minOccurs="0">
 						<xs:annotation>
 							<xs:appinfo>
