@@ -63,6 +63,7 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 		if (!personne.isHabitantVD()) {
 			to.setOfficialName(personne.getNom());
 			to.setFirstName(personne.getPrenomUsuel());
+			to.setFirstNames(personne.getTousPrenoms());
 			to.setSex(EnumHelper.coreToXMLv3(personne.getSexe()));
 			to.setVn(EchHelper.avs13ToEch(personne.getNumeroAssureSocial()));
 			for (IdentificationPersonne ident : personne.getIdentificationsPersonnes()) {
@@ -94,6 +95,7 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 
 			to.setOfficialName(individu.getNom());
 			to.setFirstName(individu.getPrenomUsuel());
+			to.setFirstNames(individu.getTousPrenoms());
 			to.setSex(EnumHelper.coreToXMLv3(individu.getSexe()));
 			to.setVn(EchHelper.avs13ToEch(individu.getNouveauNoAVS()));
 			if (StringUtils.isNotBlank(individu.getNoAVS11())) {
@@ -135,6 +137,7 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 		super.copyBase(to, from);
 		to.setOfficialName(from.getOfficialName());
 		to.setFirstName(from.getFirstName());
+		to.setFirstNames(from.getFirstNames());
 		to.setSex(from.getSex());
 		to.setVn(from.getVn());
 		to.getOtherPersonId().clear();

@@ -75,6 +75,7 @@ public class WebServiceGetPartyItTest extends AbstractWebServiceItTest {
 			Assert.assertEquals(NaturalPerson.class, party.getClass());
 			Assert.assertEquals("Tummers-De Wit Wouter", ((NaturalPerson) party).getOfficialName());
 			Assert.assertEquals("Elisabeth", ((NaturalPerson) party).getFirstName());
+			Assert.assertEquals("Elisabeth Astrid Mary", ((NaturalPerson) party).getFirstNames());
 		}
 		{
 			final Pair<String, Map<String, ?>> params = buildUriAndParams(noTiers, null);

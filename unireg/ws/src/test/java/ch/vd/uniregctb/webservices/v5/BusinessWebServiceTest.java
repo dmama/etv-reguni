@@ -2818,6 +2818,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Gautier", "Mafalda", Sexe.FEMININ);
+				ind.setTousPrenoms("Mafalda Henriette");
 				addNationalite(ind, MockPays.France, dateNaissance, null);
 				addPermis(ind, TypePermis.ETABLISSEMENT, dateNaissance, null, false);
 			}
@@ -2881,6 +2882,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 			final NaturalPerson np = (NaturalPerson) party;
 			Assert.assertEquals(ids.pp, np.getNumber());
+			Assert.assertEquals("Mafalda Henriette", np.getFirstNames());
 			Assert.assertEquals("Mafalda", np.getFirstName());
 			Assert.assertEquals("Gautier", np.getOfficialName());
 			Assert.assertEquals(Sex.FEMALE, np.getSex());
