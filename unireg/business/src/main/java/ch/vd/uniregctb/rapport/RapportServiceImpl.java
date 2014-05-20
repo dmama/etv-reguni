@@ -63,7 +63,7 @@ import ch.vd.uniregctb.document.MigrationCoquillesPMRapport;
 import ch.vd.uniregctb.document.PassageNouveauxRentiersSourciersEnMixteRapport;
 import ch.vd.uniregctb.document.RapprocherCtbRapport;
 import ch.vd.uniregctb.document.RecalculTachesRapport;
-import ch.vd.uniregctb.document.RecuperationNomsParentsAnciensHabitantsRapport;
+import ch.vd.uniregctb.document.RecuperationDonneesAnciensHabitantsRapport;
 import ch.vd.uniregctb.document.ReinitialiserBaremeDoubleGainRapport;
 import ch.vd.uniregctb.document.ResolutionAdresseRapport;
 import ch.vd.uniregctb.document.RolesCommunesRapport;
@@ -102,9 +102,9 @@ import ch.vd.uniregctb.stats.evenements.StatsEvenementsIdentificationContribuabl
 import ch.vd.uniregctb.tache.ListeTachesEnInstanceParOID;
 import ch.vd.uniregctb.tache.TacheSyncResults;
 import ch.vd.uniregctb.tiers.ExclureContribuablesEnvoiResults;
+import ch.vd.uniregctb.tiers.rattrapage.ancienshabitants.RecuperationDonneesAnciensHabitantsResults;
 import ch.vd.uniregctb.tiers.rattrapage.etatdeclaration.CorrectionEtatDeclarationResults;
 import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantResults;
-import ch.vd.uniregctb.tiers.rattrapage.nomsparents.RecuperationNomsParentsAnciensHabitantsResults;
 import ch.vd.uniregctb.tiers.rattrapage.pm.MigrationCoquillesPM;
 import ch.vd.uniregctb.validation.ValidationJobResults;
 
@@ -1172,7 +1172,7 @@ public class RapportServiceImpl implements RapportService {
 	}
 
 	@Override
-	public RecuperationNomsParentsAnciensHabitantsRapport generateRapport(final RecuperationNomsParentsAnciensHabitantsResults results, StatusManager s) {
+	public RecuperationDonneesAnciensHabitantsRapport generateRapport(final RecuperationDonneesAnciensHabitantsResults results, StatusManager s) {
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
 		final String nom = "RapportRecuperationNomsParentsAnciensHabitants";
@@ -1180,10 +1180,10 @@ public class RapportServiceImpl implements RapportService {
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
-			return docService.newDoc(RecuperationNomsParentsAnciensHabitantsRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<RecuperationNomsParentsAnciensHabitantsRapport>() {
+			return docService.newDoc(RecuperationDonneesAnciensHabitantsRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<RecuperationDonneesAnciensHabitantsRapport>() {
 				@Override
-				public void writeDoc(RecuperationNomsParentsAnciensHabitantsRapport doc, OutputStream os) throws Exception {
-					final PdfRecuperationNomsParentsAnciensHabitantsRapport document = new PdfRecuperationNomsParentsAnciensHabitantsRapport();
+				public void writeDoc(RecuperationDonneesAnciensHabitantsRapport doc, OutputStream os) throws Exception {
+					final PdfRecuperationDonneesAnciensHabitantsRapport document = new PdfRecuperationDonneesAnciensHabitantsRapport();
 					document.write(results, nom, description, dateGeneration, os, status);
 				}
 			});

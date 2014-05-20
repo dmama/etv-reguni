@@ -98,10 +98,10 @@ import ch.vd.uniregctb.situationfamille.VueSituationFamille;
 import ch.vd.uniregctb.tache.TacheService;
 import ch.vd.uniregctb.tiers.Contribuable.FirstForsList;
 import ch.vd.uniregctb.tiers.dao.RemarqueDAO;
+import ch.vd.uniregctb.tiers.rattrapage.ancienshabitants.RecuperationDonneesAnciensHabitantsProcessor;
+import ch.vd.uniregctb.tiers.rattrapage.ancienshabitants.RecuperationDonneesAnciensHabitantsResults;
 import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantProcessor;
 import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantResults;
-import ch.vd.uniregctb.tiers.rattrapage.nomsparents.RecuperationNomsParentsAnciensHabitantsProcessor;
-import ch.vd.uniregctb.tiers.rattrapage.nomsparents.RecuperationNomsParentsAnciensHabitantsResults;
 import ch.vd.uniregctb.type.CategorieEtranger;
 import ch.vd.uniregctb.type.CategorieIdentifiant;
 import ch.vd.uniregctb.type.CategorieImpotSource;
@@ -3959,9 +3959,9 @@ public class TiersServiceImpl implements TiersService {
     }
 
 	@Override
-	public RecuperationNomsParentsAnciensHabitantsResults recupereNomsParentsSurAnciensHabitants(int nbThreads, boolean forceEcrasement, StatusManager statusManager) {
-		final RecuperationNomsParentsAnciensHabitantsProcessor processor = new RecuperationNomsParentsAnciensHabitantsProcessor(hibernateTemplate, transactionManager, tiersDAO, serviceCivilService);
-		return processor.run(nbThreads, forceEcrasement, statusManager);
+	public RecuperationDonneesAnciensHabitantsResults recupereDonneesSurAnciensHabitants(int nbThreads, boolean forceEcrasement, boolean parents, boolean prenoms, StatusManager statusManager) {
+		final RecuperationDonneesAnciensHabitantsProcessor processor = new RecuperationDonneesAnciensHabitantsProcessor(hibernateTemplate, transactionManager, tiersDAO, serviceCivilService);
+		return processor.run(nbThreads, forceEcrasement, parents, prenoms, statusManager);
 	}
 
 	@Override

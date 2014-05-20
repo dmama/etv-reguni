@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers.rattrapage.nomsparents;
+package ch.vd.uniregctb.tiers.rattrapage.ancienshabitants;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -17,14 +17,14 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 
-public class RecuperationNomsParentsAnciensHabitantsProcessorTest extends BusinessTest {
+public class RecuperationDonneesAnciensHabitantsProcessorTest extends BusinessTest {
 
-	private RecuperationNomsParentsAnciensHabitantsProcessor processor;
+	private RecuperationDonneesAnciensHabitantsProcessor processor;
 
 	@Override
 	protected void runOnSetUp() throws Exception {
 		super.runOnSetUp();
-		processor = new RecuperationNomsParentsAnciensHabitantsProcessor(hibernateTemplate, transactionManager, tiersDAO, serviceCivil);
+		processor = new RecuperationDonneesAnciensHabitantsProcessor(hibernateTemplate, transactionManager, tiersDAO, serviceCivil);
 	}
 
 	@Test
@@ -101,7 +101,7 @@ public class RecuperationNomsParentsAnciensHabitantsProcessorTest extends Busine
 		});
 
 		// lancement du processus
-		final RecuperationNomsParentsAnciensHabitantsResults res = processor.run(1, false, null);
+		final RecuperationDonneesAnciensHabitantsResults res = processor.run(1, false, true, false, null);
 		Assert.assertNotNull(res);
 		Assert.assertEquals(0, res.getErreurs().size());
 		Assert.assertEquals(4, res.getIgnores().size());        // les habitant, jamais habitant et ménage commun ne sont même pas pris en compte
@@ -109,28 +109,28 @@ public class RecuperationNomsParentsAnciensHabitantsProcessorTest extends Busine
 
 		// vérification des résultats du rapport
 		{
-			final RecuperationNomsParentsAnciensHabitantsResults.InfoIgnore info = res.getIgnores().get(0);
+			final RecuperationDonneesAnciensHabitantsResults.InfoIgnore info = res.getIgnores().get(0);
 			Assert.assertNotNull(info);
 			Assert.assertEquals(ids.idSansDonneesCiviles, info.noCtb);
-			Assert.assertEquals(RecuperationNomsParentsAnciensHabitantsResults.RaisonIgnorement.RIEN_DANS_CIVIL, info.raison);
+			Assert.assertEquals(RecuperationDonneesAnciensHabitantsResults.RaisonIgnorement.RIEN_DANS_CIVIL, info.raison);
 		}
 		{
-			final RecuperationNomsParentsAnciensHabitantsResults.InfoIgnore info = res.getIgnores().get(1);
+			final RecuperationDonneesAnciensHabitantsResults.InfoIgnore info = res.getIgnores().get(1);
 			Assert.assertNotNull(info);
 			Assert.assertEquals(ids.idToutConnu, info.noCtb);
-			Assert.assertEquals(RecuperationNomsParentsAnciensHabitantsResults.RaisonIgnorement.VALEUR_DEJA_PRESENTE, info.raison);
+			Assert.assertEquals(RecuperationDonneesAnciensHabitantsResults.RaisonIgnorement.VALEUR_DEJA_PRESENTE, info.raison);
 		}
 		{
-			final RecuperationNomsParentsAnciensHabitantsResults.InfoIgnore info = res.getIgnores().get(2);
+			final RecuperationDonneesAnciensHabitantsResults.InfoIgnore info = res.getIgnores().get(2);
 			Assert.assertNotNull(info);
 			Assert.assertEquals(ids.idMereSeuleConnue, info.noCtb);
-			Assert.assertEquals(RecuperationNomsParentsAnciensHabitantsResults.RaisonIgnorement.VALEUR_DEJA_PRESENTE, info.raison);
+			Assert.assertEquals(RecuperationDonneesAnciensHabitantsResults.RaisonIgnorement.VALEUR_DEJA_PRESENTE, info.raison);
 		}
 		{
-			final RecuperationNomsParentsAnciensHabitantsResults.InfoIgnore info = res.getIgnores().get(3);
+			final RecuperationDonneesAnciensHabitantsResults.InfoIgnore info = res.getIgnores().get(3);
 			Assert.assertNotNull(info);
 			Assert.assertEquals(ids.idPereSeulConnu, info.noCtb);
-			Assert.assertEquals(RecuperationNomsParentsAnciensHabitantsResults.RaisonIgnorement.VALEUR_DEJA_PRESENTE, info.raison);
+			Assert.assertEquals(RecuperationDonneesAnciensHabitantsResults.RaisonIgnorement.VALEUR_DEJA_PRESENTE, info.raison);
 		}
 
 		// vérification des résultats en base (= rien ne doit avoir bougé)
@@ -290,7 +290,7 @@ public class RecuperationNomsParentsAnciensHabitantsProcessorTest extends Busine
 		});
 
 		// lancement du processus
-		final RecuperationNomsParentsAnciensHabitantsResults res = processor.run(1, false, null);
+		final RecuperationDonneesAnciensHabitantsResults res = processor.run(1, false, true, false, null);
 		Assert.assertNotNull(res);
 		Assert.assertEquals(0, res.getErreurs().size());
 		Assert.assertEquals(0, res.getIgnores().size());
@@ -298,7 +298,7 @@ public class RecuperationNomsParentsAnciensHabitantsProcessorTest extends Busine
 
 		// vérification des résultats dans le rapport
 		{
-			final RecuperationNomsParentsAnciensHabitantsResults.InfoTraite info = res.getTraites().get(0);
+			final RecuperationDonneesAnciensHabitantsResults.InfoTraite info = res.getTraites().get(0);
 			Assert.assertNotNull(info);
 			Assert.assertEquals(ids.idMereSeule, info.noCtb);
 			Assert.assertTrue(info.majMere);
@@ -309,7 +309,7 @@ public class RecuperationNomsParentsAnciensHabitantsProcessorTest extends Busine
 			Assert.assertNull(info.nomPere);
 		}
 		{
-			final RecuperationNomsParentsAnciensHabitantsResults.InfoTraite info = res.getTraites().get(1);
+			final RecuperationDonneesAnciensHabitantsResults.InfoTraite info = res.getTraites().get(1);
 			Assert.assertNotNull(info);
 			Assert.assertEquals(ids.idPereSeul, info.noCtb);
 			Assert.assertFalse(info.majMere);
@@ -320,7 +320,7 @@ public class RecuperationNomsParentsAnciensHabitantsProcessorTest extends Busine
 			Assert.assertEquals("Deschamps", info.nomPere);
 		}
 		{
-			final RecuperationNomsParentsAnciensHabitantsResults.InfoTraite info = res.getTraites().get(2);
+			final RecuperationDonneesAnciensHabitantsResults.InfoTraite info = res.getTraites().get(2);
 			Assert.assertNotNull(info);
 			Assert.assertEquals(ids.idTout, info.noCtb);
 			Assert.assertTrue(info.majMere);
@@ -331,7 +331,7 @@ public class RecuperationNomsParentsAnciensHabitantsProcessorTest extends Busine
 			Assert.assertEquals("Deschamps", info.nomPere);
 		}
 		{
-			final RecuperationNomsParentsAnciensHabitantsResults.InfoTraite info = res.getTraites().get(3);
+			final RecuperationDonneesAnciensHabitantsResults.InfoTraite info = res.getTraites().get(3);
 			Assert.assertNotNull(info);
 			Assert.assertEquals(ids.idToutMereRafraichie, info.noCtb);
 			Assert.assertTrue(info.majMere);
@@ -342,7 +342,7 @@ public class RecuperationNomsParentsAnciensHabitantsProcessorTest extends Busine
 			Assert.assertEquals("Duchesne", info.nomPere);
 		}
 		{
-			final RecuperationNomsParentsAnciensHabitantsResults.InfoTraite info = res.getTraites().get(4);
+			final RecuperationDonneesAnciensHabitantsResults.InfoTraite info = res.getTraites().get(4);
 			Assert.assertNotNull(info);
 			Assert.assertEquals(ids.idToutPereRafraichi, info.noCtb);
 			Assert.assertFalse(info.majMere);
@@ -478,7 +478,7 @@ public class RecuperationNomsParentsAnciensHabitantsProcessorTest extends Busine
 		});
 
 		// lancement du processus
-		final RecuperationNomsParentsAnciensHabitantsResults res = processor.run(1, true, null);
+		final RecuperationDonneesAnciensHabitantsResults res = processor.run(1, true, true, false, null);
 		Assert.assertNotNull(res);
 		Assert.assertEquals(0, res.getErreurs().size());
 		Assert.assertEquals(0, res.getIgnores().size());
@@ -486,7 +486,7 @@ public class RecuperationNomsParentsAnciensHabitantsProcessorTest extends Busine
 
 		// vérification des résultats dans le rapport
 		{
-			final RecuperationNomsParentsAnciensHabitantsResults.InfoTraite info = res.getTraites().get(0);
+			final RecuperationDonneesAnciensHabitantsResults.InfoTraite info = res.getTraites().get(0);
 			Assert.assertNotNull(info);
 			Assert.assertEquals(ids.idMereSeule, info.noCtb);
 			Assert.assertTrue(info.majMere);
@@ -497,7 +497,7 @@ public class RecuperationNomsParentsAnciensHabitantsProcessorTest extends Busine
 			Assert.assertNull(info.nomPere);
 		}
 		{
-			final RecuperationNomsParentsAnciensHabitantsResults.InfoTraite info = res.getTraites().get(1);
+			final RecuperationDonneesAnciensHabitantsResults.InfoTraite info = res.getTraites().get(1);
 			Assert.assertNotNull(info);
 			Assert.assertEquals(ids.idPereSeul, info.noCtb);
 			Assert.assertFalse(info.majMere);
@@ -508,7 +508,7 @@ public class RecuperationNomsParentsAnciensHabitantsProcessorTest extends Busine
 			Assert.assertEquals("Deschamps", info.nomPere);
 		}
 		{
-			final RecuperationNomsParentsAnciensHabitantsResults.InfoTraite info = res.getTraites().get(2);
+			final RecuperationDonneesAnciensHabitantsResults.InfoTraite info = res.getTraites().get(2);
 			Assert.assertNotNull(info);
 			Assert.assertEquals(ids.idTout, info.noCtb);
 			Assert.assertTrue(info.majMere);
@@ -519,7 +519,7 @@ public class RecuperationNomsParentsAnciensHabitantsProcessorTest extends Busine
 			Assert.assertEquals("Deschamps", info.nomPere);
 		}
 		{
-			final RecuperationNomsParentsAnciensHabitantsResults.InfoTraite info = res.getTraites().get(3);
+			final RecuperationDonneesAnciensHabitantsResults.InfoTraite info = res.getTraites().get(3);
 			Assert.assertNotNull(info);
 			Assert.assertEquals(ids.idToutMereRafraichie, info.noCtb);
 			Assert.assertTrue(info.majMere);
@@ -530,7 +530,7 @@ public class RecuperationNomsParentsAnciensHabitantsProcessorTest extends Busine
 			Assert.assertEquals("Deschamps", info.nomPere);
 		}
 		{
-			final RecuperationNomsParentsAnciensHabitantsResults.InfoTraite info = res.getTraites().get(4);
+			final RecuperationDonneesAnciensHabitantsResults.InfoTraite info = res.getTraites().get(4);
 			Assert.assertNotNull(info);
 			Assert.assertEquals(ids.idToutPereRafraichi, info.noCtb);
 			Assert.assertTrue(info.majMere);
@@ -585,6 +585,228 @@ public class RecuperationNomsParentsAnciensHabitantsProcessorTest extends Busine
 					Assert.assertEquals("Gérard", pp.getPrenomsPere());
 					Assert.assertEquals("Deschamps", pp.getNomPere());
 				}
+			}
+		});
+	}
+
+	@Test
+	public void testIgnorePrenomsRienDansCivil() throws Exception {
+
+		final long noIndividu = 2367342L;
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu individu = addIndividu(noIndividu, null, "De Saint André", "Mercédes", Sexe.FEMININ);
+			}
+		});
+
+		// mise en place fisccale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
+				return pp.getNumero();
+			}
+		});
+
+		// lancement du rattrapage
+		final RecuperationDonneesAnciensHabitantsResults res = processor.run(1, false, false, true, null);
+		Assert.assertNotNull(res);
+		Assert.assertEquals(0, res.getErreurs().size());
+		Assert.assertEquals(1, res.getIgnores().size());
+		Assert.assertEquals(0, res.getTraites().size());
+
+		// vérification des résultats dans le rapport
+		{
+			final RecuperationDonneesAnciensHabitantsResults.InfoIgnore info = res.getIgnores().get(0);
+			Assert.assertNotNull(info);
+			Assert.assertEquals(ppId, info.noCtb);
+			Assert.assertEquals(RecuperationDonneesAnciensHabitantsResults.RaisonIgnorement.RIEN_DANS_CIVIL, info.raison);
+		}
+
+		// vérification en base
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertNull(pp.getTousPrenoms());
+			}
+		});
+	}
+
+	@Test
+	public void testIgnorePrenomsDejaConnus() throws Exception {
+
+		final long noIndividu = 2367342L;
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu individu = addIndividu(noIndividu, null, "De Saint André", "Mercédes", Sexe.FEMININ);
+				individu.setTousPrenoms("Mercédes Anne Marie");
+			}
+		});
+
+		// mise en place fisccale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
+				pp.setTousPrenoms("Mercédes");
+				return pp.getNumero();
+			}
+		});
+
+		// lancement du rattrapage
+		final RecuperationDonneesAnciensHabitantsResults res = processor.run(1, false, false, true, null);
+		Assert.assertNotNull(res);
+		Assert.assertEquals(0, res.getErreurs().size());
+		Assert.assertEquals(1, res.getIgnores().size());
+		Assert.assertEquals(0, res.getTraites().size());
+
+		// vérification des résultats dans le rapport
+		{
+			final RecuperationDonneesAnciensHabitantsResults.InfoIgnore info = res.getIgnores().get(0);
+			Assert.assertNotNull(info);
+			Assert.assertEquals(ppId, info.noCtb);
+			Assert.assertEquals(RecuperationDonneesAnciensHabitantsResults.RaisonIgnorement.VALEUR_DEJA_PRESENTE, info.raison);
+		}
+
+		// vérification en base
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertEquals("Mercédes", pp.getTousPrenoms());
+			}
+		});
+	}
+
+	@Test
+	public void testReprisePrenomsVides() throws Exception {
+
+		final long noIndividu = 2367342L;
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu individu = addIndividu(noIndividu, null, "De Saint André", "Mercédes", Sexe.FEMININ);
+				individu.setTousPrenoms("Mercédes Anne Marie");
+				individu.setNomOfficielMere(new NomPrenom("De Saint André", "Alix"));
+				individu.setNomOfficielPere(new NomPrenom("De Saint André", "Godefroy"));
+			}
+		});
+
+		// mise en place fisccale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
+				pp.setTousPrenoms(null);
+				resetDataNomsParents(pp, true, true);
+				return pp.getNumero();
+			}
+		});
+
+		// lancement du rattrapage
+		final RecuperationDonneesAnciensHabitantsResults res = processor.run(1, false, false, true, null);
+		Assert.assertNotNull(res);
+		Assert.assertEquals(0, res.getErreurs().size());
+		Assert.assertEquals(0, res.getIgnores().size());
+		Assert.assertEquals(1, res.getTraites().size());
+
+		// vérification des résultats dans le rapport
+		{
+			final RecuperationDonneesAnciensHabitantsResults.InfoTraite info = res.getTraites().get(0);
+			Assert.assertNotNull(info);
+			Assert.assertFalse(info.majMere);
+			Assert.assertNull(info.prenomsMere);
+			Assert.assertNull(info.nomMere);
+			Assert.assertFalse(info.majPere);
+			Assert.assertNull(info.prenomsPere);
+			Assert.assertNull(info.nomPere);
+			Assert.assertEquals(ppId, info.noCtb);
+			Assert.assertTrue(info.majPrenoms);
+			Assert.assertEquals("Mercédes Anne Marie", info.tousPrenoms);
+		}
+
+		// vérification en base
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertEquals("Mercédes Anne Marie", pp.getTousPrenoms());
+				Assert.assertNull(pp.getPrenomsMere());
+				Assert.assertNull(pp.getNomMere());
+				Assert.assertNull(pp.getPrenomsPere());
+				Assert.assertNull(pp.getNomPere());
+			}
+		});
+	}
+
+	@Test
+	public void testReprisePrenomsForcage() throws Exception {
+
+		final long noIndividu = 2367342L;
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu individu = addIndividu(noIndividu, null, "De Saint André", "Mercédes", Sexe.FEMININ);
+				individu.setTousPrenoms("Mercédes Anne Marie");
+				individu.setNomOfficielMere(new NomPrenom("De Saint André", "Alix"));
+				individu.setNomOfficielPere(new NomPrenom("De Saint André", "Godefroy"));
+			}
+		});
+
+		// mise en place fisccale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
+				pp.setTousPrenoms("Mercédes");
+				resetDataNomsParents(pp, true, true);
+				return pp.getNumero();
+			}
+		});
+
+		// lancement du rattrapage
+		final RecuperationDonneesAnciensHabitantsResults res = processor.run(1, true, false, true, null);
+		Assert.assertNotNull(res);
+		Assert.assertEquals(0, res.getErreurs().size());
+		Assert.assertEquals(0, res.getIgnores().size());
+		Assert.assertEquals(1, res.getTraites().size());
+
+		// vérification des résultats dans le rapport
+		{
+			final RecuperationDonneesAnciensHabitantsResults.InfoTraite info = res.getTraites().get(0);
+			Assert.assertNotNull(info);
+			Assert.assertEquals(ppId, info.noCtb);
+			Assert.assertFalse(info.majMere);
+			Assert.assertNull(info.prenomsMere);
+			Assert.assertNull(info.nomMere);
+			Assert.assertFalse(info.majPere);
+			Assert.assertNull(info.prenomsPere);
+			Assert.assertNull(info.nomPere);
+			Assert.assertTrue(info.majPrenoms);
+			Assert.assertEquals("Mercédes Anne Marie", info.tousPrenoms);
+		}
+
+		// vérification en base
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertEquals("Mercédes Anne Marie", pp.getTousPrenoms());
+				Assert.assertNull(pp.getPrenomsMere());
+				Assert.assertNull(pp.getNomMere());
+				Assert.assertNull(pp.getPrenomsPere());
+				Assert.assertNull(pp.getNomPere());
 			}
 		});
 	}

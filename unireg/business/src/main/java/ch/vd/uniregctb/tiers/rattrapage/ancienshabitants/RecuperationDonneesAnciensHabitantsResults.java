@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers.rattrapage.nomsparents;
+package ch.vd.uniregctb.tiers.rattrapage.ancienshabitants;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -9,19 +9,23 @@ import org.apache.commons.lang.StringUtils;
 import ch.vd.uniregctb.common.AbstractJobResults;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 
-public class RecuperationNomsParentsAnciensHabitantsResults extends AbstractJobResults<Long, RecuperationNomsParentsAnciensHabitantsResults> {
+public class RecuperationDonneesAnciensHabitantsResults extends AbstractJobResults<Long, RecuperationDonneesAnciensHabitantsResults> {
 
 	public final int nbThreads;
 	public final boolean forceEcrasement;
+	public final boolean parents;
+	public final boolean prenoms;
 
 	private boolean interrupted = false;
 	private final List<InfoIgnore> ignores = new LinkedList<>();
 	private final List<InfoErreur> erreurs = new LinkedList<>();
 	private final List<InfoTraite> traites = new LinkedList<>();
 
-	public RecuperationNomsParentsAnciensHabitantsResults(int nbThreads, boolean forceEcrasement) {
+	public RecuperationDonneesAnciensHabitantsResults(int nbThreads, boolean forceEcrasement, boolean parents, boolean prenoms) {
 		this.nbThreads = nbThreads;
 		this.forceEcrasement = forceEcrasement;
+		this.parents = parents;
+		this.prenoms = prenoms;
 	}
 
 	public boolean isInterrupted() {
@@ -93,8 +97,10 @@ public class RecuperationNomsParentsAnciensHabitantsResults extends AbstractJobR
 		public final boolean majPere;
 		public final String prenomsPere;
 		public final String nomPere;
+		public final boolean majPrenoms;
+		public final String tousPrenoms;
 
-		private InfoTraite(long noCtb, boolean majMere, String prenomsMere, String nomMere, boolean majPere, String prenomsPere, String nomPere) {
+		private InfoTraite(long noCtb, boolean majMere, String prenomsMere, String nomMere, boolean majPere, String prenomsPere, String nomPere, boolean majPrenoms, String tousPrenoms) {
 			super(noCtb);
 			this.prenomsMere = prenomsMere;
 			this.nomMere = nomMere;
@@ -102,11 +108,13 @@ public class RecuperationNomsParentsAnciensHabitantsResults extends AbstractJobR
 			this.prenomsPere = prenomsPere;
 			this.nomPere = nomPere;
 			this.majPere = majPere;
+			this.majPrenoms = majPrenoms;
+			this.tousPrenoms = tousPrenoms;
 		}
 	}
 
-	public void addCasTraite(PersonnePhysique pp, boolean majMere, boolean majPere) {
-		this.traites.add(new InfoTraite(pp.getNumero(), majMere, pp.getPrenomsMere(), pp.getNomMere(), majPere, pp.getPrenomsPere(), pp.getNomPere()));
+	public void addCasTraite(PersonnePhysique pp, boolean majMere, boolean majPere, boolean majPrenoms) {
+		this.traites.add(new InfoTraite(pp.getNumero(), majMere, pp.getPrenomsMere(), pp.getNomMere(), majPere, pp.getPrenomsPere(), pp.getNomPere(), majPrenoms, pp.getTousPrenoms()));
 	}
 
 	public void addIgnore(long id, RaisonIgnorement raison) {
@@ -119,7 +127,7 @@ public class RecuperationNomsParentsAnciensHabitantsResults extends AbstractJobR
 	}
 
 	@Override
-	public void addAll(RecuperationNomsParentsAnciensHabitantsResults right) {
+	public void addAll(RecuperationDonneesAnciensHabitantsResults right) {
 		this.ignores.addAll(right.ignores);
 		this.erreurs.addAll(right.erreurs);
 		this.traites.addAll(right.traites);

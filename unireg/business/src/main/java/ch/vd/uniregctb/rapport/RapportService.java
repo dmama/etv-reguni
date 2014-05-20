@@ -54,7 +54,7 @@ import ch.vd.uniregctb.document.MigrationCoquillesPMRapport;
 import ch.vd.uniregctb.document.PassageNouveauxRentiersSourciersEnMixteRapport;
 import ch.vd.uniregctb.document.RapprocherCtbRapport;
 import ch.vd.uniregctb.document.RecalculTachesRapport;
-import ch.vd.uniregctb.document.RecuperationNomsParentsAnciensHabitantsRapport;
+import ch.vd.uniregctb.document.RecuperationDonneesAnciensHabitantsRapport;
 import ch.vd.uniregctb.document.ReinitialiserBaremeDoubleGainRapport;
 import ch.vd.uniregctb.document.ResolutionAdresseRapport;
 import ch.vd.uniregctb.document.RolesCommunesRapport;
@@ -92,9 +92,9 @@ import ch.vd.uniregctb.stats.evenements.StatsEvenementsIdentificationContribuabl
 import ch.vd.uniregctb.tache.ListeTachesEnInstanceParOID;
 import ch.vd.uniregctb.tache.TacheSyncResults;
 import ch.vd.uniregctb.tiers.ExclureContribuablesEnvoiResults;
+import ch.vd.uniregctb.tiers.rattrapage.ancienshabitants.RecuperationDonneesAnciensHabitantsResults;
 import ch.vd.uniregctb.tiers.rattrapage.etatdeclaration.CorrectionEtatDeclarationResults;
 import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantResults;
-import ch.vd.uniregctb.tiers.rattrapage.nomsparents.RecuperationNomsParentsAnciensHabitantsResults;
 import ch.vd.uniregctb.tiers.rattrapage.pm.MigrationCoquillesPM;
 import ch.vd.uniregctb.validation.ValidationJobResults;
 
@@ -484,5 +484,5 @@ public interface RapportService {
 	 * @param status le status manager
 	 * @return le rapport
 	 */
-	RecuperationNomsParentsAnciensHabitantsRapport generateRapport(RecuperationNomsParentsAnciensHabitantsResults results, StatusManager status);
+	RecuperationDonneesAnciensHabitantsRapport generateRapport(RecuperationDonneesAnciensHabitantsResults results, StatusManager status);
 }

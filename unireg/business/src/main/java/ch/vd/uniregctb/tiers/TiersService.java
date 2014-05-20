@@ -18,8 +18,8 @@ import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
+import ch.vd.uniregctb.tiers.rattrapage.ancienshabitants.RecuperationDonneesAnciensHabitantsResults;
 import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantResults;
-import ch.vd.uniregctb.tiers.rattrapage.nomsparents.RecuperationNomsParentsAnciensHabitantsResults;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
@@ -1028,13 +1028,15 @@ public interface TiersService {
     CorrectionFlagHabitantResults corrigeFlagHabitantSurPersonnesPhysiques(int nbThreads, StatusManager statusManager);
 
 	/**
-	 * Lance le job de récupération des noms des parents des anciens habitants depuis le registre civil
+	 * Lance le job de récupération des données des anciens habitants depuis le registre civil
 	 * @param nbThreads nombre de threads du traitement
 	 * @param forceEcrasement <code>true</code> si les valeurs existantes trouvées peuvent être écrasées, <code>false</code> si on ne se permet de changer que les valeurs vides
+	 * @param parents <code>true</code> si les noms/prénoms des parents doivent être récupérés
+	 * @param prenoms <code>true</code> si la liste complète des prénoms de l'individu doit être récupérée
 	 * @param statusManager status manager
 	 * @return le rapport du traitement
 	 */
-	RecuperationNomsParentsAnciensHabitantsResults recupereNomsParentsSurAnciensHabitants(int nbThreads, boolean forceEcrasement, StatusManager statusManager);
+	RecuperationDonneesAnciensHabitantsResults recupereDonneesSurAnciensHabitants(int nbThreads, boolean forceEcrasement, boolean parents, boolean prenoms, StatusManager statusManager);
 
     /**
      * Renvoie <code>true</code> si la personne physique est un sourcier gris à la date donnée

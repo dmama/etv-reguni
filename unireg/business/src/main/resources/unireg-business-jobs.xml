@@ -515,9 +515,9 @@
 		</property>
 	</bean>
 
-	<bean id="recupNomsParentsAnciensHabitantsJob" parent="schedulerJob" class="ch.vd.uniregctb.tiers.rattrapage.nomsparents.RecuperationNomsParentsAnciensHabitantsJob">
+	<bean id="recupDonneesAnciensHabitantsJob" parent="schedulerJob" class="ch.vd.uniregctb.tiers.rattrapage.ancienshabitants.RecuperationDonneesAnciensHabitantsJob">
 		<constructor-arg value="712"/>
-		<constructor-arg value="Récupérer les noms des parents des anciens habitants depuis le registre civil"/>
+		<constructor-arg value="Récupérer les données des anciens habitants depuis le registre civil"/>
 		<property name="tiersService" ref="tiersService"/>
 		<property name="rapportService" ref="rapportService"/>
 	</bean>
