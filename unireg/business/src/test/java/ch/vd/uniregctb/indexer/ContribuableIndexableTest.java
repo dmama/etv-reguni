@@ -30,12 +30,11 @@ import ch.vd.uniregctb.indexer.tiers.NonHabitantIndexable;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexable;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexableData;
 import ch.vd.uniregctb.interfaces.model.mock.MockPersonneMorale;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilImpl;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureImpl;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServicePM;
+import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceCivil;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementServiceImpl;
 import ch.vd.uniregctb.tiers.AppartenanceMenage;
 import ch.vd.uniregctb.tiers.AutreCommunaute;
@@ -71,7 +70,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 
 	private AdresseServiceImpl adresseService;
 	private TiersServiceImpl tiersService;
-	private ServiceCivilService serviceCivil;
+	private ProxyServiceCivil serviceCivil;
 	private ServiceInfrastructureService serviceInfra;
 	private ServicePersonneMoraleService servicePM;
 	private MockTiersDAO tiersDAO;
@@ -79,8 +78,8 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 	@Override
 	public void onSetUp() {
 
-		serviceCivil = new ServiceCivilImpl(serviceInfra, new MockServiceCivil() {
-
+		serviceCivil = new ProxyServiceCivil(serviceInfra);
+		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
 
@@ -861,7 +860,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		tiersDAO.save(tiers);
 		tiersDAO.save(menage);
 
-		RapportEntreTiers appartenance = new AppartenanceMenage();
+		final RapportEntreTiers appartenance = new AppartenanceMenage();
 		appartenance.setDateDebut(dateDebut);
 		appartenance.setDateFin(null);
 		appartenance.setObjet(menage);
@@ -871,5 +870,44 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		tiers.addRapportSujet(appartenance);
 
 		return appartenance;
+	}
+
+	@Test
+	public void testIndexationTousPrenomsHabitant() throws Exception {
+
+		final long noIndividu = 4378546L;
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu individu = addIndividu(noIndividu, null, "Beretta", "Tim", Sexe.MASCULIN);
+				individu.setTousPrenoms("Timothée Philibert");
+			}
+		});
+
+		final PersonnePhysique hab = new PersonnePhysique(true);
+		hab.setNumero(1234L);
+		hab.setNumeroIndividu(noIndividu);
+
+		final HabitantIndexable indexable = new HabitantIndexable(adresseService, tiersService, serviceInfra, hab, serviceCivil.getIndividu(noIndividu, null));
+		final TiersIndexableData values = (TiersIndexableData) indexable.getIndexableData();
+		assertEquals("Beretta", values.getNomRaison());
+		assertEquals("Tim Timothée Philibert Beretta", values.getAutresNom());  // prénom usuel, tous prénoms, nom, nom de naissance (absent)
+	}
+
+	@Test
+	public void testIndexationTousPrenomsNonHabitant() throws Exception {
+
+		final PersonnePhysique pp = new PersonnePhysique(false);
+		pp.setNumero(1234L);
+		pp.setNom("Ruth");
+		pp.setPrenomUsuel("Lolo");
+		pp.setTousPrenoms("Laurent Philippe");
+
+		final NonHabitantIndexable indexable = new NonHabitantIndexable(adresseService, tiersService, serviceInfra, pp);
+		final TiersIndexableData values = (TiersIndexableData) indexable.getIndexableData();
+		assertEquals("Ruth", values.getNomRaison());
+		assertEquals("Lolo Laurent Philippe Ruth", values.getAutresNom());  // prénom usuel, tous prénoms, nom
 	}
 }

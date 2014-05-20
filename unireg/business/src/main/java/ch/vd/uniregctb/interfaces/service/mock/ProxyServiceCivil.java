@@ -43,8 +43,7 @@ public class ProxyServiceCivil implements ServiceCivilService, ServiceCivilServi
 
 	public ProxyServiceCivil(ServiceInfrastructureService infraService) {
 		this.target = null;
-		this.service = new ServiceCivilImpl();
-		this.service.setInfraService(infraService);
+		this.service = new ServiceCivilImpl(infraService);
 	}
 
 	public void setInfraService(ServiceInfrastructureService infraService) {
