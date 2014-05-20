@@ -208,7 +208,6 @@ public class JmxStatContainer implements SmartLifecycle {
 
 		public ServiceStatsJmxBean(StatsExposureInterface statsService) {
 			super(statsService.getServices(), buildDataType());
-			buildDataType();
 		}
 
 		private static TabularType buildDataType() {
@@ -230,6 +229,7 @@ public class JmxStatContainer implements SmartLifecycle {
 			// global times
 			data.put(new CompositeDataSupport(rowType, ROW_NAMES, buildValues("Global", service)));
 
+			// specific methods/sub-categories
 			for (Map.Entry<String, ? extends ServiceTracingInterface> detail : service.getDetailedData().entrySet()) {
 				data.put(new CompositeDataSupport(rowType, ROW_NAMES, buildValues(detail.getKey(), detail.getValue())));
 			}
