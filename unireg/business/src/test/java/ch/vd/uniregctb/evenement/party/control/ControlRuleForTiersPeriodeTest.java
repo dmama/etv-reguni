@@ -149,4 +149,39 @@ public class ControlRuleForTiersPeriodeTest extends AbstractControlTaxliabilityT
 		assertControlNumeroKO(result);
 	}
 
+	@Test
+	public void testCheckPasAssujettiWithAssujToReject() throws Exception {
+		final long noInd = 1244;
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				addIndividu(noInd, date(1994, 3, 12), "RuppertPeriode", "Jeroma", Sexe.FEMININ);
+			}
+		});
+
+		// on crée un habitant vaudois ordinaire
+		final Long idPP = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = addHabitant(noInd);
+				addForPrincipal(pp, date(2011, 1, 12), MotifFor.MAJORITE,date(2011,12,12),MotifFor.DEPART_HS, MockCommune.Moudon);
+				return pp.getNumero();
+			}
+		});
+
+		final Integer periode = 2012;
+		Set<TypeAssujettissement> toReject = EnumSet.of(TypeAssujettissement.SOURCE_PURE, TypeAssujettissement.MIXTE_137_1, TypeAssujettissement.MIXTE_137_2);
+		final ControlRuleForTiersPeriode controlRuleForTiersPeriode = new ControlRuleForTiersPeriode(periode, tiersService, assujettissementService,toReject);
+		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
+			@Override
+			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idPP);
+				return controlRuleForTiersPeriode.check(pp);
+			}
+		});
+
+		assertControlNumeroKO(result);
+	}
+
 }

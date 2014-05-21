@@ -125,6 +125,40 @@ public class ControlRuleForTiersDateTest extends AbstractControlTaxliabilityTest
 	}
 
 	@Test
+	public void testCheckForFiscalAbsentWhithImpositionToReject() throws Exception {
+		final long noInd = 1234;
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				addIndividu(noInd, date(1956, 3, 12), "Ruppert", "Jerome", Sexe.MASCULIN);
+			}
+		});
+
+		// on crée un habitant vaudois ordinaire
+		final Long idPP = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = addHabitant(noInd);
+				return pp.getNumero();
+			}
+		});
+
+		final RegDate dateControle = RegDate.get(2010,12,3);
+		Set<ModeImposition> toReject = EnumSet.of(ModeImposition.SOURCE);
+		final ControlRuleForTiersDate controlRuleForTiersDate = new ControlRuleForTiersDate(dateControle, tiersService,toReject);
+		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
+			@Override
+			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idPP);
+				return controlRuleForTiersDate.check(pp);
+			}
+		});
+
+		assertControlNumeroKO(result);
+	}
+
+	@Test
 	public void testCheckForFiscalHorsCanton() throws Exception {
 		final long noInd = 1234;
 

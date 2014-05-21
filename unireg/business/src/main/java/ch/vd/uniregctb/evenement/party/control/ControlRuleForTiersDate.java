@@ -35,7 +35,7 @@ public class ControlRuleForTiersDate extends ControlRuleForTiers {
 	@Override
 	public boolean isAssujettissementNonConforme(@NotNull Tiers tiers) throws ControlRuleException {
 		final ForFiscalPrincipal forFiscalPrincipal = tiers.getForFiscalPrincipalAt(date);
-		return modeImpositionARejeter!= null && modeImpositionARejeter.contains(forFiscalPrincipal.getModeImposition());
+		return modeImpositionARejeter!= null && forFiscalPrincipal!=null && modeImpositionARejeter.contains(forFiscalPrincipal.getModeImposition());
 	}
 
 	private boolean hasForPrincipalVaudois(@NotNull Tiers tiers) throws ControlRuleException {
