@@ -549,7 +549,8 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 			b.append(param);
 		}
 
-		return String.format("/tiers/avatar.do?%s", b.toString());
+		// [SIFISC-12447] l'affichage des images des avatars ne doit pas être considéré comme la dernière page consultée !!
+		return String.format("/tiers/avatar.do?%s&url_memorize=false", b.toString());
 	}
 
 	private String buildImageTiers(Tiers tiers) {
