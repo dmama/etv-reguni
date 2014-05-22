@@ -13,6 +13,7 @@
 		<property name="formView" value="tiers/edition/rt/debiteur/list" />
 		<property name="successView" value="edit.do" />
 		<property name="rapportPrestationEditManager" ref="rapportPrestationEditManager" />
+		<property name="validator" ref="tiersCriteriaValidator"/>
 	</bean>
 
 	<bean id="sourcierListController" class="ch.vd.uniregctb.rt.SourcierListController" parent="abstractTiersListController">
@@ -22,6 +23,7 @@
 		<property name="formView" value="tiers/edition/rt/sourcier/list" />
 		<property name="successView" value="edit.do" />
 		<property name="rapportPrestationEditManager" ref="rapportPrestationEditManager" />
+		<property name="validator" ref="tiersCriteriaValidator"/>
 	</bean>
 
 	<bean id="rapportPrestationEditController" class="ch.vd.uniregctb.rt.RapportPrestationEditController" parent="abstractRapportPrestationController">
@@ -63,6 +65,7 @@
 		<property name="rapportListManager" ref="rapportListManager" />
 		<property name="formView" value="tiers/edition/rapport/recherche/list" />
 		<property name="successView" value="edit.do" />
+		<property name="validator" ref="tiersCriteriaValidator"/>
 	</bean>
 
 	<bean id="rapportListManager" class="ch.vd.uniregctb.rapport.manager.RapportListManagerImpl" parent="tiersManager" >
@@ -125,6 +128,7 @@
 		<property name="formView" value="tiers/edition/contribuable-associe/list" />
 		<property name="successView" value="edit.do" />
 		<property name="contribuableAssocieEditManager" ref="contribuableAssocieEditManager" />
+		<property name="validator" ref="tiersCriteriaValidator"/>
 	</bean>
 
 	<bean id="contribuableAssocieEditController" class="ch.vd.uniregctb.contribuableAssocie.ContribuableAssocieEditController" parent="abstractSimpleFormController">

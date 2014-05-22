@@ -47,6 +47,7 @@
 		<property name="formView" value="identification/identification" />
 		<property name="successView" value="edit.do" />
 		<property name="identificationMessagesEditManager" ref="identificationMessagesEditManager" />
+		<property name="validator" ref="tiersCriteriaValidator"/>
 	</bean>
 	<bean id="identificationMessagesNonIdentifieController" class="ch.vd.uniregctb.identification.contribuable.IdentificationMessagesNonIdentifieController" parent="abstractIdentificationController">
 		<property name="sessionForm" value="true" />
@@ -55,6 +56,7 @@
 		<property name="formView" value="identification/gestion-messages/nonIdentifie" />
 		<property name="successView" value="nonIdentifie.do" />
 		<property name="identificationMessagesEditManager" ref="identificationMessagesEditManager" />
+		<property name="validator" ref="tiersCriteriaValidator"/>
 	</bean>
 	
 	<bean id="identificationMessagesEditManager" class="ch.vd.uniregctb.identification.contribuable.manager.IdentificationMessagesEditManagerImpl">

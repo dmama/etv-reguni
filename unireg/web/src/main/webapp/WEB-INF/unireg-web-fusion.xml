@@ -9,6 +9,7 @@
 		<property name="formView" value="tiers/edition/fusion/habitant/list" />
 		<property name="successView" value="list-habitant.do" />
 		<property name="fusionListManager" ref="fusionListManager" />
+		<property name="validator" ref="tiersCriteriaValidator"/>
 	</bean>
 
 	<bean id="fusionListManager" class="ch.vd.uniregctb.fusion.manager.FusionListManagerImpl">
