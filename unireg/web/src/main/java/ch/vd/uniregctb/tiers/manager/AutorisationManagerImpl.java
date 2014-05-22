@@ -441,6 +441,7 @@ public class AutorisationManagerImpl implements AutorisationManager {
 				}
 				if (SecurityHelper.isAnyGranted(securityProvider, visa, oid,  Role.DI_EMIS_PP, Role.DI_DELAI_PM, Role.DI_DUPLIC_PP, Role.DI_QUIT_PP, Role.DI_SOM_PP)) {
 					map.put(MODIF_DI, Boolean.TRUE);
+					map.put(MODIF_FISCAL, Boolean.TRUE);
 				}
 			}
 		}
@@ -504,6 +505,7 @@ public class AutorisationManagerImpl implements AutorisationManager {
 			}
 			if (SecurityHelper.isGranted(securityProvider, Role.RT, visa, oid)) {
 				map.put(MODIF_RAPPORT, Boolean.TRUE);
+				map.put(MODIF_DOSSIER, Boolean.TRUE);
 			}
 			if (SecurityHelper.isGranted(securityProvider, Role.ADR_P, visa, oid)) {
 				map.put(MODIF_ADRESSE, Boolean.TRUE);
