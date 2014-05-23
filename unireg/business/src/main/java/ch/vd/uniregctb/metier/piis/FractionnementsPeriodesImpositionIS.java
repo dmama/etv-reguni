@@ -89,8 +89,8 @@ public class FractionnementsPeriodesImpositionIS implements Iterable<Fraction> {
 	}
 
 	private Fraction isFractionOuverture(ForFiscalPrincipalContext forPrincipal) {
-		final ForFiscalPrincipal current = forPrincipal.current;
-		final ForFiscalPrincipal previous = forPrincipal.previous;
+		final ForFiscalPrincipal current = forPrincipal.getCurrent();
+		final ForFiscalPrincipal previous = forPrincipal.getPrevious();
 
 		Fraction fraction = null;
 
@@ -133,8 +133,8 @@ public class FractionnementsPeriodesImpositionIS implements Iterable<Fraction> {
 
 	private Fraction isFractionFermeture(ForFiscalPrincipalContext forPrincipal) {
 
-		final ForFiscalPrincipal current = forPrincipal.current;
-		final ForFiscalPrincipal next = forPrincipal.next;
+		final ForFiscalPrincipal current = forPrincipal.getCurrent();
+		final ForFiscalPrincipal next = forPrincipal.getNext();
 
 		Fraction fraction = null;
 

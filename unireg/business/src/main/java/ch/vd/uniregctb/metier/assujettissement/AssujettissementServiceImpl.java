@@ -22,8 +22,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.common.Triplet;
-import ch.vd.uniregctb.common.TripletIterator;
+import ch.vd.uniregctb.common.MovingWindow;
 import ch.vd.uniregctb.metier.common.DecalageDateHelper;
 import ch.vd.uniregctb.metier.common.ForFiscalPrincipalContext;
 import ch.vd.uniregctb.metier.common.Fraction;
@@ -254,10 +253,10 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 
 		List<SourcierPur> list = new ArrayList<>();
 
-		final TripletIterator<ForFiscalPrincipal> iter = new TripletIterator<>(fors.principaux.iterator());
+		final MovingWindow<ForFiscalPrincipal> iter = new MovingWindow<>(fors.principaux);
 		while (iter.hasNext()) {
-			final Triplet<ForFiscalPrincipal> triplet = iter.next();
-			final ForFiscalPrincipal ffp = triplet.current;
+			final MovingWindow.Snapshot<ForFiscalPrincipal> snapshot = iter.next();
+			final ForFiscalPrincipal ffp = snapshot.getCurrent();
 			final boolean forVaudois = ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
 
 			// de manière générale, un for fiscal avec un mode d'imposition source va générer un assujettissement source
@@ -265,7 +264,7 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 					// [SIFISC-1769] l'assujettissement source hors-canton/hors-Suisse est seulement pris en compte d'un point de vue cantonal (= pas en cas de point de vue communes vaudoises)
 					(noOfsCommunesVaudoises == null || (forVaudois && noOfsCommunesVaudoises.contains(ffp.getNumeroOfsAutoriteFiscale())))) {
 
-				final ForFiscalPrincipalContext ffpContext = new ForFiscalPrincipalContext(triplet);
+				final ForFiscalPrincipalContext ffpContext = new ForFiscalPrincipalContext(snapshot);
 				final RegDate dateDebut = determineDateDebutAssujettissementSource(ffpContext, fractionnements);
 				final RegDate dateFin = determineDateFinAssujettissementSource(ffpContext, fractionnements);
 
@@ -393,8 +392,8 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 
 	private static RegDate determineDateDebutAssujettissementSource(ForFiscalPrincipalContext ffpContext, Fractionnements fractionnements) {
 
-		final ForFiscalPrincipal precedent = ffpContext.previous;
-		final ForFiscalPrincipal courant = ffpContext.current;
+		final ForFiscalPrincipal precedent = ffpContext.getPrevious();
+		final ForFiscalPrincipal courant = ffpContext.getCurrent();
 		final RegDate debut = courant.getDateDebut();
 
 		final Fraction fraction = fractionnements.getAt(debut);
@@ -421,8 +420,8 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 
 	private static RegDate determineDateFinAssujettissementSource(ForFiscalPrincipalContext ffpContext, Fractionnements fractionnements) {
 
-		final ForFiscalPrincipal suivant = ffpContext.next;
-		final ForFiscalPrincipal courant = ffpContext.current;
+		final ForFiscalPrincipal suivant = ffpContext.getNext();
+		final ForFiscalPrincipal courant = ffpContext.getCurrent();
 		final RegDate fin = courant.getDateFin();
 
 		final Fraction fraction = (fin == null ? null : fractionnements.getAt(fin.getOneDayAfter()));
@@ -482,21 +481,24 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 		// [UNIREG-2444] si un for fiscal principal possède un motif d'ouverture d'obtention de permis C et qu'il n'y a pas de for fiscal principal précédent,
 		// on suppose que le contribuable était sourcier et qu'il y a passage du rôle source pur au rôle ordinaire. Dans les faits pour ne pas casser l'algorithme général,
 		// on ajoute artificiellement un for principal avec le mode d'imposition source.
-		final TripletIterator<ForFiscalPrincipal> iter = new TripletIterator<>(forsPrincipaux.iterator());
+		final MovingWindow<ForFiscalPrincipal> iter = new MovingWindow<>(forsPrincipaux);
 		while (iter.hasNext()) {
-			final Triplet<ForFiscalPrincipal> triplet = iter.next();
-			if (triplet.current.getMotifOuverture() == MotifFor.PERMIS_C_SUISSE && (triplet.previous == null || !DateRangeHelper.isCollatable(triplet.previous, triplet.current))) {
+			final MovingWindow.Snapshot<ForFiscalPrincipal> snapshot = iter.next();
+			final ForFiscalPrincipal current = snapshot.getCurrent();
+			final ForFiscalPrincipal previous = snapshot.getPrevious();
+
+			if (current.getMotifOuverture() == MotifFor.PERMIS_C_SUISSE && (previous == null || !DateRangeHelper.isCollatable(previous, current))) {
 				// On ajoute un for principal source compris entre le début de l'année et la date d'ouverture du for principal courant. Cette période est raccourcie si nécessaire.
 				final RegDate debut;
-				final RegDate fin = triplet.current.getDateDebut().getOneDayBefore();
-				if (triplet.previous == null) {
-					debut = RegDate.get(triplet.current.getDateDebut().year(), 1, 1);
+				final RegDate fin = current.getDateDebut().getOneDayBefore();
+				if (previous == null) {
+					debut = RegDate.get(current.getDateDebut().year(), 1, 1);
 				}
 				else {
-					debut = RegDateHelper.maximum(RegDate.get(triplet.current.getDateDebut().year(), 1, 1), triplet.previous.getDateFin().getOneDayAfter(), NullDateBehavior.EARLIEST);
+					debut = RegDateHelper.maximum(RegDate.get(current.getDateDebut().year(), 1, 1), previous.getDateFin().getOneDayAfter(), NullDateBehavior.EARLIEST);
 				}
-				final ForFiscalPrincipal forFictif = new ForFiscalPrincipal(debut, MotifFor.INDETERMINE, fin, MotifFor.PERMIS_C_SUISSE, triplet.current.getNumeroOfsAutoriteFiscale(),
-						triplet.current.getTypeAutoriteFiscale(), triplet.current.getMotifRattachement(), ModeImposition.SOURCE);
+				final ForFiscalPrincipal forFictif = new ForFiscalPrincipal(debut, MotifFor.INDETERMINE, fin, MotifFor.PERMIS_C_SUISSE, current.getNumeroOfsAutoriteFiscale(),
+						current.getTypeAutoriteFiscale(), current.getMotifRattachement(), ModeImposition.SOURCE);
 				if (forsFictifs == null) {
 					forsFictifs = new ArrayList<>();
 				}
@@ -726,12 +728,12 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 		final DataList domicile = new DataList();
 
 		// Détermine les assujettissements pour le rattachement de type domicile
-		TripletIterator<ForFiscalPrincipal> iter = new TripletIterator<>(principaux.iterator());
+		final MovingWindow<ForFiscalPrincipal> iter = new MovingWindow<>(principaux);
 		while (iter.hasNext()) {
-			final Triplet<ForFiscalPrincipal> triplet = iter.next();
+			final MovingWindow.Snapshot<ForFiscalPrincipal> snapshot = iter.next();
 
 			// on détermine les fors principaux qui précèdent et suivent immédiatement
-			final ForFiscalPrincipalContext forPrincipal = new ForFiscalPrincipalContext(triplet);
+			final ForFiscalPrincipalContext forPrincipal = new ForFiscalPrincipalContext(snapshot);
 
 			// on détermine l'assujettissement pour le for principal courant
 			Data a = determine(forPrincipal, fractionnements, noOfsCommunesVaudoises);
@@ -740,7 +742,7 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 			}
 
 			// on fractionne l'assujettissement, si nécessaire
-			a = fractionner(a, forPrincipal.current, fractionnements);
+			a = fractionner(a, forPrincipal.getCurrent(), fractionnements);
 			if (a == null) {
 				continue;
 			}
@@ -1028,13 +1030,14 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 
 	/**
 	 * [UNIREG-2759] Détermine si le for fiscal se ferme avec un départ hors-canton la même année qu'il s'est ouvert avec une arrivée de hors-Suisse
+	 * [SIFISC-12325] Attention : en cas de retour HC dans la même PF (sans passage HS intermédiaire), il doit y avoir fractionnement quand-même
 	 *
-	 * @param current le for fiscal principal à tester
-	 * @param next    le for fiscal principal qui suit immédiatement; ou <b>null</b> s'il n'y en a pas
+	 * @param ctxt context à tester (depuis current vers le futur)
 	 * @return <b>vrai</b> si le for fiscal se ferme avec un départ hors-canton la même année qu'une arrivée de hors-Suisse; <b>faux</b> autrement.
 	 */
-	protected static boolean isDepartHCApresArriveHSMemeAnnee(ForFiscalPrincipal current, ForFiscalPrincipal next) {
+	protected static boolean isDepartHCApresArriveHSMemeAnnee(ForFiscalPrincipalContext ctxt) {
 
+		final ForFiscalPrincipal current = ctxt.getCurrent();
 		if (current == null) {
 			return false;
 		}
@@ -1048,14 +1051,52 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 			return false;
 		}
 
-		if (next != null) {
-			// autant que possible, on se base sur les types d'autorités fiscales pour déterminer le départ HC plutôt que les motifs (qui sont souvent faux)
-			return current.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && next.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_HC;
+		if (current.getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+			return false;
+		}
+
+		if (ctxt.hasNext()) {
+			final List<ForFiscalPrincipal> thisYear = extractDebutDansPeriodeFiscale(fin.year(), ctxt.getAllNext());
+			for (int i = 0 ; i < thisYear.size() ; ++ i) {
+				// [SIFISC-12325] on s'arrête au premier for HS de toute façon, et ce qui nous intéresse au final, c'est le type d'autorité fiscale du
+				// for juste avant le départ HS ou la fin d'assujettissement
+				final ForFiscalPrincipal ffp = thisYear.get(i);
+				if (ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS) {
+					// si c'est le premier for, il s'agit d'une arrivée puis d'un départ HS tout de suite -> il n'y a pas de départ HS qui tienne
+					if (i == 0) {
+						return false;
+					}
+					else {
+						final ForFiscalPrincipal precedent = thisYear.get(i - 1);
+						return precedent.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_HC;
+					}
+				}
+			}
+
+			// si on est ici, c'est qu'on n'a pas trouvé de for HS... où sommes nous donc en fin d'année ?
+			final ForFiscalPrincipal lastInYear = thisYear.get(thisYear.size() - 1);
+			return lastInYear.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_HC;
 		}
 		else {
 			// pas de for fiscal immédiatement suivant, on se rabat sur le motif de fermeture
 			return current.getMotifFermeture() == MotifFor.DEPART_HC;
 		}
+	}
+
+	/**
+	 * Extrait de la collection donnée tous les fors dont la date de début est dans la PF donnée
+	 * @param pf période fiscale qui nous intéresse
+	 * @param fors liste des fors à analyser
+	 * @return une nouvelle liste avec tous les fors de la source qui ont une date de début dans la période fiscale donnée (l'ordre est conservé)
+	 */
+	private static List<ForFiscalPrincipal> extractDebutDansPeriodeFiscale(int pf, List<ForFiscalPrincipal> fors) {
+		final List<ForFiscalPrincipal> extracted = new ArrayList<>(fors.size());
+		for (ForFiscalPrincipal candidate : fors) {
+			if (candidate.getDateDebut().year() == pf) {
+				extracted.add(candidate);
+			}
+		}
+		return extracted;
 	}
 
 	/**
@@ -1065,7 +1106,6 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 	 *         départs hors-canton.
 	 */
 	protected static boolean isDepartDansHorsCanton(@NotNull ForFiscalPrincipal current, @Nullable ForFiscalPrincipal next) {
-
 		if (next == null) {
 			return current.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && current.getMotifFermeture() == MotifFor.DEPART_HC;
 		}
@@ -1084,8 +1124,8 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 	private static RegDate determineDateDebutAssujettissement(ForFiscalPrincipalContext forPrincipal, Fractionnements fractionnements) {
 
 		final RegDate debut;
-		final ForFiscalPrincipal current = forPrincipal.current;
-		final ForFiscalPrincipal previous = forPrincipal.previous;
+		final ForFiscalPrincipal current = forPrincipal.getCurrent();
+		final ForFiscalPrincipal previous = forPrincipal.getPrevious();
 
 		final MotifFor motifOuverture = current.getMotifOuverture();
 		final ModeImposition modeImposition = current.getModeImposition();
@@ -1119,7 +1159,7 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 	 */
 	private static RegDate determineDateFinAssujettissement(ForFiscalPrincipalContext forPrincipal, Fractionnements fractionnements) {
 
-		final ForFiscalPrincipal current = forPrincipal.current;
+		final ForFiscalPrincipal current = forPrincipal.getCurrent();
 		final RegDate fin = current.getDateFin();
 
 		final Fraction fraction = (fin == null ? null : fractionnements.getAt(fin.getOneDayAfter()));
@@ -1155,14 +1195,13 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 	 */
 	private static RegDate determineDateDebutNonAssujettissement(ForFiscalPrincipalContext forPrincipal) {
 
-		final ForFiscalPrincipal previous = forPrincipal.previous;
-		final ForFiscalPrincipal current = forPrincipal.current;
-		final ForFiscalPrincipal next = forPrincipal.next;
+		final ForFiscalPrincipal previous = forPrincipal.getPrevious();
+		final ForFiscalPrincipal current = forPrincipal.getCurrent();
 
 		final RegDate debut = current.getDateDebut();
 
 		final RegDate adebut;
-		if (isDepartOuArriveeHorsSuisse(previous, current) && (!isDepartDepuisOuArriveeVersVaud(current, previous) || isDepartHCApresArriveHSMemeAnnee(current, next))) {
+		if (isDepartOuArriveeHorsSuisse(previous, current) && (!isDepartDepuisOuArriveeVersVaud(current, previous) || isDepartHCApresArriveHSMemeAnnee(forPrincipal))) {
 			// cas du départ/arrivée HS depuis hors-canton : on ignore le fractionnement est on applique l'assujettissement depuis le début de l'année
 			// [UNIREG-1742] le départ hors-Suisse depuis hors-canton ne doit pas fractionner la période d'assujettissement (car le rattachement économique n'est pas interrompu)
 			// [UNIREG-2759] l'arrivée de hors-Suisse ne doit pas fractionner si le for se ferme dans la même année avec un départ hors-canton
@@ -1199,8 +1238,8 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 	 */
 	private static RegDate determineDateFinNonAssujettissement(ForFiscalPrincipalContext forPrincipal) {
 
-		final ForFiscalPrincipal current = forPrincipal.current;
-		final ForFiscalPrincipal next = forPrincipal.next;
+		final ForFiscalPrincipal current = forPrincipal.getCurrent();
+		final ForFiscalPrincipal next = forPrincipal.getNext();
 
 		final RegDate fin = current.getDateFin();
 
@@ -1208,7 +1247,7 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 		if (fin == null) {
 			afin = null;
 		}
-		else if (isDepartOuArriveeHorsSuisse(current, next) && (!isDepartDepuisOuArriveeVersVaud(current, next) || isDepartHCApresArriveHSMemeAnnee(next, forPrincipal.nextnext))) {
+		else if (isDepartOuArriveeHorsSuisse(current, next) && (!isDepartDepuisOuArriveeVersVaud(current, next) || isDepartHCApresArriveHSMemeAnnee(forPrincipal.slideToNext()))) {
 			// cas du départ/arrivée HS depuis hors-canton : on ignore le fractionnement est on applique l'assujettissement jusqu'au 31 décembre précédant
 			// [UNIREG-1742] le départ hors-Suisse depuis hors-canton ne doit pas fractionner la période d'assujettissement (car le rattachement économique n'est pas interrompu)
 			// [UNIREG-2759] l'arrivée de hors-Suisse ne doit pas fractionner si le for se ferme dans la même année avec un départ hors-canton
@@ -1247,14 +1286,14 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 	 */
 	private static boolean isDernierForPrincipalDansAnnee(ForFiscalPrincipalContext forPrincipal) {
 
-		final RegDate dateFin = forPrincipal.current.getDateFin();
-		if (forPrincipal.next != null || dateFin == null) {
+		final RegDate dateFin = forPrincipal.getCurrent().getDateFin();
+		if (forPrincipal.getNext() != null || dateFin == null) {
 			return false;
 		}
 
 		// (msi 7.11.2011), c'est pas génial de remonter sur le tiers pour récupérer tous les fors fiscaux, c'est clair. Mais d'un
 		// autre côté, on le fait tellement peu souvent dans le cas réel que ça n'a pas d'impact négatif sur les performances.
-		final List<ForFiscalPrincipal> all = forPrincipal.current.getTiers().getForsFiscauxPrincipauxActifsSorted();
+		final List<ForFiscalPrincipal> all = forPrincipal.getCurrent().getTiers().getForsFiscauxPrincipauxActifsSorted();
 
 		// si on ne trouve aucun for principal entre la date de fin du for spécifié et la fin de l'année, alors c'est que le for spécifié est le dernier dans l'année
 		final RegDate finAnnee = getProchain31Decembre(dateFin);
@@ -1296,19 +1335,6 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 
 	private static RegDate getProchain1Janvier(RegDate debut) {
 		return RegDate.get(debut.year() + 1, 1, 1);
-	}
-
-	/**
-	 * @param date une date
-	 * @return le 1er de mois le plus proche. Si la date spécifiée est un 1er janvier, elle est retournée telle quelle.
-	 */
-	public static RegDate getProchain1DeMois(RegDate date) {
-		if (date.day() == 1) {
-			return date;
-		}
-		else {
-			return RegDate.get(date.year(), date.month(), 1).addMonths(1);
-		}
 	}
 
 	private enum Type {
@@ -1509,7 +1535,7 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 	private static Data determine(ForFiscalPrincipalContext forPrincipal, Fractionnements fractionnements, @Nullable Set<Integer> noOfsCommunesVaudoises) throws AssujettissementException {
 
 		final Data data;
-		final ForFiscalPrincipal current = forPrincipal.current;
+		final ForFiscalPrincipal current = forPrincipal.getCurrent();
 
 		if (!current.getModeImposition().isRole()) {
 			// seule la vue 'rôle' nous intéresse
@@ -1525,7 +1551,7 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 			if (RegDateHelper.isBeforeOrEqual(adebut, afin, NullDateBehavior.LATEST)) {
 				final MotifRattachement motifRattachement = current.getMotifRattachement();
 
-				if (noOfsCommunesVaudoises != null && !noOfsCommunesVaudoises.contains(forPrincipal.current.getNumeroOfsAutoriteFiscale())) {
+				if (noOfsCommunesVaudoises != null && !noOfsCommunesVaudoises.contains(current.getNumeroOfsAutoriteFiscale())) {
 					// [SIFISC-1769] le for principal est sur une autre commune : non-assujetti du point de vue des communes vaudoises spécifiées.
 					data = new Data(adebut, afin, null, null, Type.NonAssujetti, current.getTypeAutoriteFiscale());
 				}

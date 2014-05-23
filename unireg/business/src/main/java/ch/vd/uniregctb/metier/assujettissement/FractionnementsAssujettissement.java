@@ -15,9 +15,11 @@ public abstract class FractionnementsAssujettissement extends Fractionnements {
 
 	protected static void checkMotifSurFractionOuverture(ForFiscalPrincipalContext forPrincipal, Fraction fraction) {
 		if (fraction != null) {
-			if (forPrincipal.next != null && AssujettissementServiceImpl.isArriveeHCApresDepartHSMemeAnnee(forPrincipal.current) && !AssujettissementServiceImpl.roleSourcierPur(forPrincipal.current)) {
+			final ForFiscalPrincipal current = forPrincipal.getCurrent();
+			final ForFiscalPrincipal next = forPrincipal.getNext();
+			if (next != null && AssujettissementServiceImpl.isArriveeHCApresDepartHSMemeAnnee(current) && !AssujettissementServiceImpl.roleSourcierPur(current)) {
 				// dans ce cas précis, on veut utiliser le motif d'ouverture du for suivant comme motif de fractionnement
-				fraction.setMotifOuverture(forPrincipal.next.getMotifOuverture());
+				fraction.setMotifOuverture(next.getMotifOuverture());
 			}
 		}
 	}

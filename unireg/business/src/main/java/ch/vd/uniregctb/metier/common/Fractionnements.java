@@ -12,8 +12,7 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.Triplet;
-import ch.vd.uniregctb.common.TripletIterator;
+import ch.vd.uniregctb.common.MovingWindow;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 
 /**
@@ -31,12 +30,12 @@ public abstract class Fractionnements implements Iterable<Fraction> {
 	protected Fractionnements(List<ForFiscalPrincipal> principaux) {
 
 		// Détermine les assujettissements pour le rattachement de type domicile
-		final TripletIterator<ForFiscalPrincipal> iter = new TripletIterator<>(principaux.iterator());
+		final MovingWindow<ForFiscalPrincipal> iter = new MovingWindow<>(principaux);
 		while (iter.hasNext()) {
-			final Triplet<ForFiscalPrincipal> triplet = iter.next();
+			final MovingWindow.Snapshot<ForFiscalPrincipal> snapshot = iter.next();
 
 			// on détermine les fors principaux qui précèdent et suivent immédiatement
-			final ForFiscalPrincipalContext forPrincipal = new ForFiscalPrincipalContext(triplet);
+			final ForFiscalPrincipalContext forPrincipal = new ForFiscalPrincipalContext(snapshot);
 
 			// on détecte une éventuelle date de fractionnement à l'ouverture
 			final Fraction fractionOuverture = isFractionOuverture(forPrincipal);

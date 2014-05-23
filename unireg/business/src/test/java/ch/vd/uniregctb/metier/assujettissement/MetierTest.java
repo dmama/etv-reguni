@@ -66,11 +66,11 @@ public abstract class MetierTest extends BusinessTest {
 		return paul;
 	}
 
-	protected Contribuable createContribuableSansFor() throws Exception {
+	protected PersonnePhysique createContribuableSansFor() throws Exception {
 		return createContribuableSansFor(null);
 	}
 
-	protected Contribuable createContribuableSansFor(@Nullable Long noTiers) throws Exception {
+	protected PersonnePhysique createContribuableSansFor(@Nullable Long noTiers) throws Exception {
 		return addNonHabitant(noTiers, "Paul", "Duchêne", date(1965, 4, 13), Sexe.MASCULIN);
 	}
 

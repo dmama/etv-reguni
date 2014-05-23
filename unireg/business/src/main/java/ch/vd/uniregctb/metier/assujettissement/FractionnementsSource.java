@@ -16,8 +16,8 @@ public class FractionnementsSource extends FractionnementsAssujettissement {
 
 	@Override
 	protected Fraction isFractionOuverture(ForFiscalPrincipalContext forPrincipal) {
-		final ForFiscalPrincipal previous = forPrincipal.previous;
-		final ForFiscalPrincipal current = forPrincipal.current;
+		final ForFiscalPrincipal previous = forPrincipal.getPrevious();
+		final ForFiscalPrincipal current = forPrincipal.getCurrent();
 
 		final MotifFor motifOuverture = current.getMotifOuverture();
 
@@ -38,8 +38,8 @@ public class FractionnementsSource extends FractionnementsAssujettissement {
 
 	@Override
 	protected Fraction isFractionFermeture(ForFiscalPrincipalContext forPrincipal) {
-		final ForFiscalPrincipal current = forPrincipal.current;
-		final ForFiscalPrincipal next = forPrincipal.next;
+		final ForFiscalPrincipal current = forPrincipal.getCurrent();
+		final ForFiscalPrincipal next = forPrincipal.getNext();
 
 		if (current.getDateFin() == null) {
 			return null;

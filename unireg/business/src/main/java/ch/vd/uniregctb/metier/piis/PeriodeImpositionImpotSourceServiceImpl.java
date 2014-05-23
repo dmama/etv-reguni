@@ -21,8 +21,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.common.Triplet;
-import ch.vd.uniregctb.common.TripletIterator;
+import ch.vd.uniregctb.common.MovingWindow;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.common.ForFiscalPrincipalContext;
 import ch.vd.uniregctb.metier.common.Fraction;
@@ -469,17 +468,18 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 			// il y a des fors, nous voici donc dans le vif du sujet...
 			final List<ProtoPeriodeImpositionImpotSource> protos = new ArrayList<>(forsPf.size());
 			final FractionnementsPeriodesImpositionIS fracs = new FractionnementsPeriodesImpositionIS(forsPf, pf, infraService);
-			final TripletIterator<ForFiscalPrincipal> tripletIterator = new TripletIterator<>(fors.iterator());
-			while (tripletIterator.hasNext()) {
-				final Triplet<ForFiscalPrincipal> triplet = tripletIterator.next();
-				final ForFiscalPrincipalContext forPrincipal = new ForFiscalPrincipalContext(triplet);
+			final MovingWindow<ForFiscalPrincipal> iterator = new MovingWindow<>(fors);
+			while (iterator.hasNext()) {
+				final MovingWindow.Snapshot<ForFiscalPrincipal> snapshot = iterator.next();
+				final ForFiscalPrincipalContext forPrincipal = new ForFiscalPrincipalContext(snapshot);
 
-				final ProtoPeriodeImpositionImpotSource.Type type = determineTypePeriode(forPrincipal.current, forPrincipal.next, pf);
-				final RegDate dateDebut = determineDateDebut(forPrincipal.current, pf, fracs);
-				final Fraction fractionDebut = fracs.getAt(forPrincipal.current.getDateDebut());
-				final RegDate dateFin = determineDateFin(forPrincipal.current, pf, fracs);
-				final Fraction fractionFin = fracs.getAt(forPrincipal.current.getDateFin());
-				protos.add(new ProtoPeriodeImpositionImpotSource(pp, type, forPrincipal.current, dateDebut, dateFin, fractionDebut, fractionFin, infraService));
+				final ForFiscalPrincipal current = forPrincipal.getCurrent();
+				final ProtoPeriodeImpositionImpotSource.Type type = determineTypePeriode(current, forPrincipal.getNext(), pf);
+				final RegDate dateDebut = determineDateDebut(current, pf, fracs);
+				final Fraction fractionDebut = fracs.getAt(current.getDateDebut());
+				final RegDate dateFin = determineDateFin(current, pf, fracs);
+				final Fraction fractionFin = fracs.getAt(current.getDateFin());
+				protos.add(new ProtoPeriodeImpositionImpotSource(pp, type, current, dateDebut, dateFin, fractionDebut, fractionFin, infraService));
 			}
 
 			// pour chaque localisation continue, toutes les périodes doivent prendre LE DERNIER FOR de la localisation

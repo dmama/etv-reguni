@@ -23,9 +23,9 @@ public class FractionnementsRole extends FractionnementsAssujettissement {
 
 	@Override
 	protected Fraction isFractionOuverture(ForFiscalPrincipalContext forPrincipal) {
-		final ForFiscalPrincipal previous = forPrincipal.previous;
-		final ForFiscalPrincipal current = forPrincipal.current;
-		final ForFiscalPrincipal next = forPrincipal.next;
+		final ForFiscalPrincipal previous = forPrincipal.getPrevious();
+		final ForFiscalPrincipal current = forPrincipal.getCurrent();
+		final ForFiscalPrincipal next = forPrincipal.getNext();
 
 		final MotifFor motifOuverture = current.getMotifOuverture();
 
@@ -37,7 +37,7 @@ public class FractionnementsRole extends FractionnementsAssujettissement {
 		}
 		else if (AssujettissementServiceImpl.isDepartOuArriveeHorsSuisse(previous, current) &&
 				AssujettissementServiceImpl.isDepartDepuisOuArriveeVersVaud(current, previous) &&
-				!AssujettissementServiceImpl.isDepartHCApresArriveHSMemeAnnee(current, next)) {
+				!AssujettissementServiceImpl.isDepartHCApresArriveHSMemeAnnee(forPrincipal)) {
 			// De manière générale, les transitions Suisse <-> Hors-Suisse provoquent des fractionnements
 			// [UNIREG-1742] le départ hors-Suisse depuis hors-canton ne doit pas fractionner la période d'assujettissement (car le rattachement économique n'est pas interrompu)
 			// [UNIREG-2759] l'arrivée de hors-Suisse ne doit pas fractionner si le for se ferme dans la même année avec un départ hors-canton
@@ -55,8 +55,8 @@ public class FractionnementsRole extends FractionnementsAssujettissement {
 
 	@Override
 	protected Fraction isFractionFermeture(ForFiscalPrincipalContext forPrincipal) {
-		final ForFiscalPrincipal current = forPrincipal.current;
-		final ForFiscalPrincipal next = forPrincipal.next;
+		final ForFiscalPrincipal current = forPrincipal.getCurrent();
+		final ForFiscalPrincipal next = forPrincipal.getNext();
 
 		if (current.getDateFin() == null) {
 			return null;
@@ -72,7 +72,7 @@ public class FractionnementsRole extends FractionnementsAssujettissement {
 		}
 		else if (AssujettissementServiceImpl.isDepartOuArriveeHorsSuisse(current, next) &&
 				AssujettissementServiceImpl.isDepartDepuisOuArriveeVersVaud(current, next) &&
-				!AssujettissementServiceImpl.isDepartHCApresArriveHSMemeAnnee(next, forPrincipal.nextnext)) {
+				!AssujettissementServiceImpl.isDepartHCApresArriveHSMemeAnnee(forPrincipal.slideToNext())) {
 			// De manière générale, les transitions Suisse <-> Hors-Suisse provoquent des fractionnements
 			// [UNIREG-1742] le départ hors-Suisse depuis hors-canton ne doit pas fractionner la période d'assujettissement (car le rattachement économique n'est pas interrompu)
 			// [UNIREG-2759] l'arrivée de hors-Suisse ne doit pas fractionner si le for se ferme dans la même année avec un départ hors-canton

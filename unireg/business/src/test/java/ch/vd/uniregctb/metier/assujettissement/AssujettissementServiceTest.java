@@ -4487,6 +4487,107 @@ public class AssujettissementServiceTest extends MetierTest {
 		assertOrdinaire(arrivee, depart, MotifFor.ARRIVEE_HS, MotifFor.DEPART_HC, ass.get(0));
 	}
 
+	/**
+	 * [SIFISC-12325] Arrivée HS, départ HC puis retour HC dans la même année
+	 * --> l'assujettissement ne doit commencer qu'à l'arrivée HS
+	 */
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testArriveeHSetPassageHCavecRetourLaMemeAnnee() throws Exception {
+		final RegDate arriveeHS = date(2012, 4, 6);
+		final RegDate departHC = date(2012, 7, 25);
+		final RegDate retourHC = date(2012, 11, 9);
+
+		final Contribuable ctb = createContribuableSansFor();
+		addForPrincipal(ctb, arriveeHS, MotifFor.ARRIVEE_HS, departHC, MotifFor.DEPART_HC, MockCommune.Lausanne);
+		addForPrincipal(ctb, departHC.getOneDayAfter(), MotifFor.DEPART_HC, retourHC.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bern);
+		addForPrincipal(ctb, retourHC, MotifFor.ARRIVEE_HC, MockCommune.Aigle);
+
+		final List<Assujettissement> ass = service.determine(ctb, 2012);
+		assertNotNull(ass);
+		assertEquals(1, ass.size());
+		assertOrdinaire(arriveeHS, date(2012, 12, 31), MotifFor.ARRIVEE_HS, null, ass.get(0));
+	}
+
+	/**
+	 * [SIFISC-12325] Arrivée HS, départ HC puis retour HC dans la même année avec un passage HS dans le passage HC
+	 * --> l'assujettissement ne doit commencer qu'au retour HS->HC
+	 */
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testArriveeHSetPassageHCentrecoupePassageHSavecRetourLaMemeAnnee() throws Exception {
+		final RegDate arriveeHS = date(2012, 4, 6);
+		final RegDate departHC = date(2012, 7, 25);
+		final RegDate departHSdepuisHC = date(2012, 8, 12);
+		final RegDate retourHSversHC = date(2012, 10, 24);
+		final RegDate retourHC = date(2012, 11, 9);
+
+		final Contribuable ctb = createContribuableSansFor();
+		addForPrincipal(ctb, arriveeHS, MotifFor.ARRIVEE_HS, departHC, MotifFor.DEPART_HC, MockCommune.Lausanne);
+		addForPrincipal(ctb, departHC.getOneDayAfter(), MotifFor.DEPART_HC, departHSdepuisHC, MotifFor.DEPART_HS, MockCommune.Bern);
+		addForPrincipal(ctb, departHSdepuisHC.getOneDayAfter(), MotifFor.DEPART_HS, retourHSversHC.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockPays.Allemagne);
+		addForPrincipal(ctb, retourHSversHC, MotifFor.ARRIVEE_HS, retourHC.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Zurich);
+		addForPrincipal(ctb, retourHC, MotifFor.ARRIVEE_HC, MockCommune.Aigle);
+
+		final List<Assujettissement> ass = service.determine(ctb, 2012);
+		assertNotNull(ass);
+		assertEquals(1, ass.size());
+		assertOrdinaire(retourHSversHC, date(2012, 12, 31), MotifFor.ARRIVEE_HS, null, ass.get(0));
+	}
+
+	/**
+	 * [SIFISC-12325] Arrivée HS, mariage puis séparation dans la même année
+	 * --> l'assujettissement ne doit commencer qu'à l'arrivée HS
+	 */
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testArriveeHSetMariagePuisSeparationLaMemeAnnee() throws Exception {
+		final RegDate arriveeHS = date(2012, 4, 6);
+		final RegDate mariage = date(2012, 7, 25);
+		final RegDate separation = date(2012, 11, 9);
+
+		final PersonnePhysique pp = createContribuableSansFor();
+		addForPrincipal(pp, arriveeHS, MotifFor.ARRIVEE_HS, mariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
+		addForPrincipal(pp, separation, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Lausanne);
+
+		final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, mariage, separation.getOneDayBefore());
+		addForPrincipal(couple.getMenage(), mariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, separation.getOneDayBefore(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Lausanne);
+
+		final List<Assujettissement> ass = service.determine(pp, 2012);
+		assertNotNull(ass);
+		assertEquals(1, ass.size());
+		assertOrdinaire(arriveeHS, date(2012, 12, 31), MotifFor.ARRIVEE_HS, null, ass.get(0));
+	}
+
+	/**
+	 * [SIFISC-12325] Arrivée HS, mariage puis séparation dans la même année avec un passage HS dans la période de mariage
+	 * --> l'assujettissement ne doit commencer qu'au retour HS
+	 */
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testArriveeHSetMariageEntrecoupePassageHSavecSeparationLaMemeAnnee() throws Exception {
+		final RegDate arriveeHS = date(2012, 4, 6);
+		final RegDate mariage = date(2012, 7, 25);
+		final RegDate departHScouple = date(2012, 8, 12);
+		final RegDate retourHScouple = date(2012, 10, 24);
+		final RegDate separation = date(2012, 11, 9);
+
+		final PersonnePhysique pp = createContribuableSansFor();
+		addForPrincipal(pp, arriveeHS, MotifFor.ARRIVEE_HS, mariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
+		addForPrincipal(pp, separation, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Lausanne);
+
+		final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, mariage, separation.getOneDayBefore());
+		final MenageCommun mc = couple.getMenage();
+		addForPrincipal(mc, mariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, departHScouple, MotifFor.DEPART_HS, MockCommune.Lausanne);
+		addForPrincipal(mc, departHScouple.getOneDayAfter(), MotifFor.DEPART_HS, retourHScouple.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockPays.Allemagne);
+		addForPrincipal(mc, retourHScouple, MotifFor.ARRIVEE_HS, separation.getOneDayBefore(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Lausanne);
+
+		final List<Assujettissement> ass = service.determine(pp, 2012);
+		assertNotNull(ass);
+		assertEquals(1, ass.size());
+		assertOrdinaire(retourHScouple, date(2012, 12, 31), MotifFor.ARRIVEE_HS, null, ass.get(0));
+	}
+
 	private static void assertCommunesActives(Assujettissement assujettissement, List<Integer> noOfsCommunesActives) {
 		final Set<Integer> actives;
 		if (noOfsCommunesActives != null && !noOfsCommunesActives.isEmpty()) {
