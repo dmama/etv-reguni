@@ -119,6 +119,7 @@ import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.efacture.EFactureServiceProxy;
 import ch.vd.uniregctb.efacture.MockEFactureService;
+import ch.vd.uniregctb.interfaces.model.mock.MockPersonneMorale;
 import ch.vd.uniregctb.interfaces.service.mock.MockServicePM;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceSecuriteService;
 import ch.vd.uniregctb.rf.GenrePropriete;
@@ -1231,7 +1232,8 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		servicePM.setUp(new MockServicePM() {
 			@Override
 			protected void init() {
-				addPM(noEntreprise, "Au petit coin", "SA", pmActivityStartDate, null);
+				final MockPersonneMorale pm = addPM(noEntreprise, "Au petit coin", "SA", pmActivityStartDate, null);
+				pm.setNumeroIDE("CHE123456788");
 			}
 		});
 
@@ -1256,6 +1258,9 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				final CollectiviteAdministrative ca = addCollAdm(MockCollectiviteAdministrative.CAT);
 				final AutreCommunaute ac = addAutreCommunaute("Tata!!");
 				ac.setFormeJuridique(FormeJuridique.ASS);
+				final IdentificationEntreprise ide = new IdentificationEntreprise();
+				ide.setNumeroIde("CHE999999996");
+				ac.addIdentificationEntreprise(ide);
 
 				final Ids ids = new Ids();
 				ids.pp = pp.getNumero();
@@ -1331,6 +1336,9 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			Assert.assertNull(pm.getName2());
 			Assert.assertNull(pm.getName3());
 			Assert.assertEquals(pmActivityStartDate, ch.vd.uniregctb.xml.DataHelper.xmlToCore(pm.getActivityStartDate()));
+			Assert.assertNotNull(pm.getUidNumbers());
+			Assert.assertEquals(1, pm.getUidNumbers().getUidNumber().size());
+			Assert.assertEquals("CHE123456788", pm.getUidNumbers().getUidNumber().get(0));
 		}
 		// get CA
 		{
@@ -1353,6 +1361,10 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			final OtherCommunity ac = (OtherCommunity) party;
 			Assert.assertEquals("Tata!!", ac.getName());
 			Assert.assertEquals(LegalForm.ASSOCIATION, ac.getLegalForm());
+
+			Assert.assertNotNull(ac.getUidNumbers());
+			Assert.assertEquals(1, ac.getUidNumbers().getUidNumber().size());
+			Assert.assertEquals("CHE999999996", ac.getUidNumbers().getUidNumber().get(0));
 		}
 	}
 
@@ -3308,12 +3320,25 @@ public class BusinessWebServiceTest extends WebserviceTest {
 	@Test
 	public void testGetParties() throws Exception {
 
+		final long noEntreprise = 423672L;
+		final RegDate pmActivityStartDate = date(2000, 1, 1);
+
+		servicePM.setUp(new MockServicePM() {
+			@Override
+			protected void init() {
+				final MockPersonneMorale pm = addPM(noEntreprise, "Au petit coin", "SA", pmActivityStartDate, null);
+				pm.setNumeroIDE("CHE123456788");
+			}
+		});
+
 		final class Ids {
 			int pp1;
 			int pp2;
 			int ppProtege;
+			int pm;
+			int ac;
 		}
-		
+
 		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
 			@Override
 			public Ids doInTransaction(TransactionStatus status) {
@@ -3327,20 +3352,30 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				da.setType(TypeDroitAcces.AUTORISATION);
 				da.setTiers(ppProtege);
 				hibernateTemplate.merge(da);
-				
+
+				final Entreprise entreprise = addEntreprise(noEntreprise);
+
+				final AutreCommunaute ac = addAutreCommunaute("Tata!!");
+				ac.setFormeJuridique(FormeJuridique.ASS);
+				final IdentificationEntreprise ide = new IdentificationEntreprise();
+				ide.setNumeroIde("CHE999999996");
+				ac.addIdentificationEntreprise(ide);
+
 				final Ids ids = new Ids();
 				ids.pp1 = pp1.getNumero().intValue();
 				ids.pp2 = pp2.getNumero().intValue();
 				ids.ppProtege = ppProtege.getNumero().intValue();
+				ids.pm = entreprise.getNumero().intValue();
+				ids.ac = ac.getNumero().intValue();
 				return ids;
 			}
 		});
 
 		final UserLogin user = new UserLogin("TOTO", 22);
-		final Parties parties = service.getParties(user, Arrays.asList(ids.pp1, ids.ppProtege, 4845, ids.pp2), null);
+		final Parties parties = service.getParties(user, Arrays.asList(ids.pp1, ids.ppProtege, 4845, ids.pp2, ids.pm, ids.ac), null);
 		Assert.assertNotNull(parties);
 		Assert.assertNotNull(parties.getEntries());
-		Assert.assertEquals(4, parties.getEntries().size());
+		Assert.assertEquals(6, parties.getEntries().size());
 
 		final List<Entry> sorted = new ArrayList<>(parties.getEntries());
 		Collections.sort(sorted, new Comparator<Entry>() {
@@ -3362,12 +3397,38 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			final Entry e = sorted.get(1);
 			Assert.assertNotNull(e.getParty());
 			Assert.assertNull(e.getError());
+			Assert.assertEquals(Corporation.class, e.getParty().getClass());
+			Assert.assertEquals(ids.pm, e.getPartyNo());
+			Assert.assertEquals(ids.pm, e.getParty().getNumber());
+
+			final Corporation corp = (Corporation) e.getParty();
+			Assert.assertNotNull(corp.getUidNumbers());
+			Assert.assertEquals(1, corp.getUidNumbers().getUidNumber().size());
+			Assert.assertEquals("CHE123456788", corp.getUidNumbers().getUidNumber().get(0));
+		}
+		{
+			final Entry e = sorted.get(2);
+			Assert.assertNotNull(e.getParty());
+			Assert.assertNull(e.getError());
+			Assert.assertEquals(OtherCommunity.class, e.getParty().getClass());
+			Assert.assertEquals(ids.ac, e.getPartyNo());
+			Assert.assertEquals(ids.ac, e.getParty().getNumber());
+
+			final OtherCommunity otherComm = (OtherCommunity) e.getParty();
+			Assert.assertNotNull(otherComm.getUidNumbers());
+			Assert.assertEquals(1, otherComm.getUidNumbers().getUidNumber().size());
+			Assert.assertEquals("CHE999999996", otherComm.getUidNumbers().getUidNumber().get(0));
+		}
+		{
+			final Entry e = sorted.get(3);
+			Assert.assertNotNull(e.getParty());
+			Assert.assertNull(e.getError());
 			Assert.assertEquals(NaturalPerson.class, e.getParty().getClass());
 			Assert.assertEquals(ids.pp1, e.getPartyNo());
 			Assert.assertEquals(ids.pp1, e.getParty().getNumber());
 		}
 		{
-			final Entry e = sorted.get(2);
+			final Entry e = sorted.get(4);
 			Assert.assertNotNull(e.getParty());
 			Assert.assertNull(e.getError());
 			Assert.assertEquals(NaturalPerson.class, e.getParty().getClass());
@@ -3375,7 +3436,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			Assert.assertEquals(ids.pp2, e.getParty().getNumber());
 		}
 		{
-			final Entry e = sorted.get(3);
+			final Entry e = sorted.get(5);
 			Assert.assertNull(e.getParty());
 			Assert.assertNotNull(e.getError());
 			Assert.assertEquals(ids.ppProtege, e.getPartyNo());

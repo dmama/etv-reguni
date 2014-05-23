@@ -572,6 +572,10 @@ public class MockPersonneMorale implements PersonneMorale {
 		return numeroIDE;
 	}
 
+	public void setNumeroIDE(String numeroIDE) {
+		this.numeroIDE = numeroIDE;
+	}
+
 	@Override
 	public void copyPartsFrom(PersonneMorale pm, Set<PartPM> parts) {
 		if (parts != null && parts.contains(PartPM.ADRESSES)) {

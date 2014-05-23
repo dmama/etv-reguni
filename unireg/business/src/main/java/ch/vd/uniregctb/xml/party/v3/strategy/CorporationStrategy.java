@@ -1,11 +1,13 @@
 package ch.vd.uniregctb.xml.party.v3.strategy;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.annotations.NotFound;
 import org.jetbrains.annotations.NotNull;
@@ -37,6 +39,7 @@ import ch.vd.unireg.xml.party.taxresidence.v2.TaxationAuthorityType;
 import ch.vd.unireg.xml.party.v3.AccountNumberFormat;
 import ch.vd.unireg.xml.party.v3.BankAccount;
 import ch.vd.unireg.xml.party.v3.PartyPart;
+import ch.vd.unireg.xml.party.v3.UidNumberList;
 import ch.vd.uniregctb.interfaces.model.CompteBancaire;
 import ch.vd.uniregctb.interfaces.model.Etablissement;
 import ch.vd.uniregctb.interfaces.model.Mandat;
@@ -81,6 +84,11 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 		corp.setActivityEndDate(DataHelper.coreToXMLv2(hostCorp.getDateFinActivite()));
 		corp.setEndDateOfNextBusinessYear(DataHelper.coreToXMLv2(hostCorp.getDateBouclementFuture()));
 		corp.setIpmroNumber(hostCorp.getNumeroIPMRO());
+
+		// [SIFISC-11689] Exposition du numéro IDE d'une PM du host dans le WS v5
+		if (StringUtils.isNotBlank(hostCorp.getNumeroIDE())) {
+			corp.setUidNumbers(new UidNumberList(Arrays.asList(hostCorp.getNumeroIDE())));
+		}
 
 		// [UNIREG-2040] on va chercher l'information de blocage dans notre base si elle existe
 		corp.setAutomaticReimbursementBlocked(right.getBlocageRemboursementAutomatique() != null && right.getBlocageRemboursementAutomatique());
@@ -175,7 +183,7 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 			for (Mandat m : mandats) {
 				if (m.getCode().equals("T")) { // on ignore tous les autres types de mandataire
 
-					BankAccount cb = new BankAccount();
+					final BankAccount cb = new BankAccount();
 					cb.setDateFrom(DataHelper.coreToXMLv2(m.getDateDebut())); // [SIFISC-3373]
 					cb.setDateTo(DataHelper.coreToXMLv2(m.getDateFin()));
 					cb.setOwnerPartyNumber((int) m.getNumeroMandataire());
@@ -594,6 +602,7 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 		to.setEndDateOfLastBusinessYear(from.getEndDateOfLastBusinessYear());
 		to.setEndDateOfNextBusinessYear(from.getEndDateOfNextBusinessYear());
 		to.setIpmroNumber(from.getIpmroNumber());
+		to.setUidNumbers(from.getUidNumbers());
 	}
 
 	@Override
