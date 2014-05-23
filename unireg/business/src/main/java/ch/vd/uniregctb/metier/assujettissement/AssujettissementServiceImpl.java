@@ -1201,7 +1201,7 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 		final RegDate debut = current.getDateDebut();
 
 		final RegDate adebut;
-		if (isDepartOuArriveeHorsSuisse(previous, current) && (!isDepartDepuisOuArriveeVersVaud(current, previous) || isDepartHCApresArriveHSMemeAnnee(forPrincipal))) {
+		if (isDepartOuArriveeHorsSuisse(previous, current) && (!isDepartDepuisOuArriveeVersVaud(forPrincipal.slideToPrevious()) || isDepartHCApresArriveHSMemeAnnee(forPrincipal))) {
 			// cas du départ/arrivée HS depuis hors-canton : on ignore le fractionnement est on applique l'assujettissement depuis le début de l'année
 			// [UNIREG-1742] le départ hors-Suisse depuis hors-canton ne doit pas fractionner la période d'assujettissement (car le rattachement économique n'est pas interrompu)
 			// [UNIREG-2759] l'arrivée de hors-Suisse ne doit pas fractionner si le for se ferme dans la même année avec un départ hors-canton
@@ -1247,7 +1247,7 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 		if (fin == null) {
 			afin = null;
 		}
-		else if (isDepartOuArriveeHorsSuisse(current, next) && (!isDepartDepuisOuArriveeVersVaud(current, next) || isDepartHCApresArriveHSMemeAnnee(forPrincipal.slideToNext()))) {
+		else if (isDepartOuArriveeHorsSuisse(current, next) && (!isDepartDepuisOuArriveeVersVaud(forPrincipal) || isDepartHCApresArriveHSMemeAnnee(forPrincipal.slideToNext()))) {
 			// cas du départ/arrivée HS depuis hors-canton : on ignore le fractionnement est on applique l'assujettissement jusqu'au 31 décembre précédant
 			// [UNIREG-1742] le départ hors-Suisse depuis hors-canton ne doit pas fractionner la période d'assujettissement (car le rattachement économique n'est pas interrompu)
 			// [UNIREG-2759] l'arrivée de hors-Suisse ne doit pas fractionner si le for se ferme dans la même année avec un départ hors-canton
@@ -1749,10 +1749,59 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 		return (typeAutoriteFiscale == TypeAutoriteFiscale.PAYS_HS ? Type.HorsSuisse : Type.HorsCanton);
 	}
 
-	protected static boolean isDepartDepuisOuArriveeVersVaud(ForFiscalPrincipal left, ForFiscalPrincipal right) {
-		// un des deux fors fiscaux doit être dans le canton de Vaud
-		return (left != null && left.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) ||
-				(right != null && right.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+	protected static boolean isDepartDepuisOuArriveeVersVaud(ForFiscalPrincipalContext ctxt) {
+		final ForFiscalPrincipal current = ctxt.getCurrent();
+		final ForFiscalPrincipal next = ctxt.getNext();
+
+		// si au moins l'un des deux fors est vaudois, il n'y a pas photo, c'est OUI
+		if ((current != null && current.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD)
+				|| (next != null && next.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD)) {
+			return true;
+		}
+
+		// [SIFISC-12325]
+		// si on est ici, c'est qu'aucun des deux fors fiscaux n'est vaudois
+		// si l'un des deux est hors-Suisse et l'autre hors-canton, il faut vérifier que on n'arrive pas sur un vaudois du côté du hors-Canton dans le même période fiscale sans passer par HS
+		if (current != null && next != null) {
+		    if (current.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS && next.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_HC) {
+			    return isArriveeVaudDepuisHorsCantonMemePeriodeApres(ctxt, next.getDateDebut().year());
+		    }
+			else if (current.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_HC && next.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS) {
+			    return isDepartVaudVersHorsCantonMemePeriodeAvant(ctxt, current.getDateFin().year());
+		    }
+		}
+		else if (current == null && next != null && next.getMotifOuverture() == MotifFor.ARRIVEE_HS && next.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_HC) {
+			return isArriveeVaudDepuisHorsCantonMemePeriodeApres(ctxt, next.getDateDebut().year());
+		}
+		else if (next == null && current != null && current.getMotifFermeture() == MotifFor.DEPART_HS && current.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_HC) {
+			return isDepartVaudVersHorsCantonMemePeriodeAvant(ctxt, current.getDateFin().year());
+		}
+
+		return false;
+	}
+
+	private static boolean isArriveeVaudDepuisHorsCantonMemePeriodeApres(ForFiscalPrincipalContext ctxt, int pf) {
+		for (ForFiscalPrincipal ffp : ctxt.getAllNext()) {
+			if (ffp.getDateDebut().year() != pf || ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS) {
+				break;
+			}
+			else if (ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static boolean isDepartVaudVersHorsCantonMemePeriodeAvant(ForFiscalPrincipalContext ctxt, int pf) {
+		for (ForFiscalPrincipal ffp : ctxt.getAllPrevious()) {
+			if (ffp.getDateFin().year() != pf || ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS) {
+				break;
+			}
+			else if (ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private static Type getAType(ModeImposition modeImposition) throws AssujettissementException {

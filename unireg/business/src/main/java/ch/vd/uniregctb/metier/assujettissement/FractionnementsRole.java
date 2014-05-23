@@ -25,7 +25,6 @@ public class FractionnementsRole extends FractionnementsAssujettissement {
 	protected Fraction isFractionOuverture(ForFiscalPrincipalContext forPrincipal) {
 		final ForFiscalPrincipal previous = forPrincipal.getPrevious();
 		final ForFiscalPrincipal current = forPrincipal.getCurrent();
-		final ForFiscalPrincipal next = forPrincipal.getNext();
 
 		final MotifFor motifOuverture = current.getMotifOuverture();
 
@@ -36,7 +35,7 @@ public class FractionnementsRole extends FractionnementsAssujettissement {
 			fraction = new FractionSimple(current.getDateDebut(), motifOuverture, null);
 		}
 		else if (AssujettissementServiceImpl.isDepartOuArriveeHorsSuisse(previous, current) &&
-				AssujettissementServiceImpl.isDepartDepuisOuArriveeVersVaud(current, previous) &&
+				AssujettissementServiceImpl.isDepartDepuisOuArriveeVersVaud(forPrincipal.slideToPrevious()) &&
 				!AssujettissementServiceImpl.isDepartHCApresArriveHSMemeAnnee(forPrincipal)) {
 			// De manière générale, les transitions Suisse <-> Hors-Suisse provoquent des fractionnements
 			// [UNIREG-1742] le départ hors-Suisse depuis hors-canton ne doit pas fractionner la période d'assujettissement (car le rattachement économique n'est pas interrompu)
@@ -71,7 +70,7 @@ public class FractionnementsRole extends FractionnementsAssujettissement {
 			fraction = new FractionSimple(current.getDateFin().getOneDayAfter(), null, motifFermeture);
 		}
 		else if (AssujettissementServiceImpl.isDepartOuArriveeHorsSuisse(current, next) &&
-				AssujettissementServiceImpl.isDepartDepuisOuArriveeVersVaud(current, next) &&
+				AssujettissementServiceImpl.isDepartDepuisOuArriveeVersVaud(forPrincipal) &&
 				!AssujettissementServiceImpl.isDepartHCApresArriveHSMemeAnnee(forPrincipal.slideToNext())) {
 			// De manière générale, les transitions Suisse <-> Hors-Suisse provoquent des fractionnements
 			// [UNIREG-1742] le départ hors-Suisse depuis hors-canton ne doit pas fractionner la période d'assujettissement (car le rattachement économique n'est pas interrompu)

@@ -104,4 +104,16 @@ public final class ForFiscalPrincipalContext {
 		final ForFiscalPrincipal newCurrent = nexts.isEmpty() ? null : nexts.get(0);
 		return new ForFiscalPrincipalContext(newCurrent, newNext, newPrevious);
 	}
+
+	public ForFiscalPrincipalContext slideToPrevious() {
+		if (current == null) {
+			throw new IllegalStateException("Je refuse de glisser vers l'abîme !");
+		}
+		final List<ForFiscalPrincipal> newNext = new ArrayList<>(nexts.size() + 1);
+		newNext.add(current);
+		newNext.addAll(nexts);
+		final List<ForFiscalPrincipal> newPrevious = previouses.size() > 1 ? new ArrayList<>(previouses.subList(1, previouses.size())) : Collections.<ForFiscalPrincipal>emptyList();
+		final ForFiscalPrincipal newCurrent = previouses.isEmpty() ? null : previouses.get(0);
+		return new ForFiscalPrincipalContext(newCurrent, newNext, newPrevious);
+	}
 }

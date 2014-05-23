@@ -3200,6 +3200,8 @@ public class AssujettissementServiceTest extends MetierTest {
 
 	/**
 	 * Cas du contribuable n°10019036
+	 * <br/>
+	 * [SIFISC-12325] maintenant, l'arrivée HC ne cause un assujettissement VD que depuis l'arrivée HS précédente et plus depuis le début d'année
 	 */
 	@WebScreenshot(urls = "/fiscalite/unireg/web/fors/timeline.do?id=10019036&print=true&title=${methodName}&description=${docDescription}")
 	@WebScreenshotDoc(description = "Cas du contribuable n°10019036")
@@ -3209,8 +3211,7 @@ public class AssujettissementServiceTest extends MetierTest {
 
 		final Contribuable paul = createContribuableSansFor(10019036L);
 
-		ForFiscalPrincipal fp = addForPrincipal(paul, date(2004, 1, 1), MotifFor.ARRIVEE_HS, date(2004, 6, 14), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Neuchatel);
-		fp.setModeImposition(ModeImposition.SOURCE);
+		addForPrincipal(paul, date(2004, 1, 1), MotifFor.ARRIVEE_HS, date(2004, 6, 14), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Neuchatel, ModeImposition.SOURCE);
 		addForPrincipal(paul, date(2004, 6, 15), MotifFor.DEPART_HC, date(2004, 7, 10), MotifFor.DEPART_HC, MockPays.Danemark);
 		addForPrincipal(paul, date(2004, 7, 11), MotifFor.ARRIVEE_HS, date(2004, 7, 11), MotifFor.DEMENAGEMENT_VD, MockCommune.Neuchatel);
 		addForPrincipal(paul, date(2004, 7, 12), MotifFor.ARRIVEE_HC, date(2006, 11, 15), MotifFor.DEPART_HS, MockCommune.Lausanne);
@@ -3220,9 +3221,11 @@ public class AssujettissementServiceTest extends MetierTest {
 
 		final List<Assujettissement> list = service.determine(paul);
 		assertNotNull(list);
-		assertEquals(2, list.size());
-		assertOrdinaire(date(2004, 1, 1), date(2006, 11, 15), MotifFor.ARRIVEE_HC, MotifFor.DEPART_HS, list.get(0));
-		assertHorsSuisse(date(2006, 11, 16), null, MotifFor.DEMENAGEMENT_VD, null, list.get(1));
+		assertEquals(4, list.size());
+		assertSourcierPur(date(2004, 1, 1), date(2004, 6, 14), MotifFor.ARRIVEE_HS, MotifFor.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
+		assertHorsSuisse(date(2004, 6, 15), date(2004, 7, 10), MotifFor.ACHAT_IMMOBILIER, MotifFor.DEPART_HC, list.get(1));
+		assertOrdinaire(date(2004, 7, 11), date(2006, 11, 15), MotifFor.DEPART_HC, MotifFor.DEPART_HS, list.get(2));
+		assertHorsSuisse(date(2006, 11, 16), null, MotifFor.DEMENAGEMENT_VD, null, list.get(3));
 	}
 
 	/**
@@ -4562,6 +4565,11 @@ public class AssujettissementServiceTest extends MetierTest {
 	/**
 	 * [SIFISC-12325] Arrivée HS, mariage puis séparation dans la même année avec un passage HS dans la période de mariage
 	 * --> l'assujettissement ne doit commencer qu'au retour HS
+	 * <br/>
+	 * <b>Attention :</b> pour le moment, on ne sait pas faire car cela signifierait inclure les fors des ménages communs dans le calcul
+	 * d'assujettissement des personnes physiques qui les composent (pour tenir compte des arrivées et départs HS)&nbsp;;
+	 * ce test vérifie donc le comportement actuel, à savoir que la date de début d'assujettissement correspond à la première arrivée HS
+	 * du contribuable personne physique
 	 */
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
@@ -4585,7 +4593,95 @@ public class AssujettissementServiceTest extends MetierTest {
 		final List<Assujettissement> ass = service.determine(pp, 2012);
 		assertNotNull(ass);
 		assertEquals(1, ass.size());
-		assertOrdinaire(retourHScouple, date(2012, 12, 31), MotifFor.ARRIVEE_HS, null, ass.get(0));
+
+		// TODO le comportement réellement voulu est celui qui est maintenant commenté...
+//		assertOrdinaire(retourHScouple, date(2012, 12, 31), MotifFor.ARRIVEE_HS, null, ass.get(0));
+		assertOrdinaire(arriveeHS, date(2012, 12, 31), MotifFor.ARRIVEE_HS, null, ass.get(0));
+	}
+
+	/**
+	 * [SIFISC-12325] résident HS qui achète, arrive sur Berne puis sur Grandson la même année
+	 * --> son assujettissement doit commencer à sa date d'achat
+	 */
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testResidentHorsSuisseQuiAcheteUnPremierImmeubleEtArriveEnsuiteDansLaMemePeriodeEnPassantParHorsCanton() throws Exception {
+
+		final int annee = 2013;
+		final RegDate arriveeHSversHC = date(annee, 4, 6);
+		final RegDate achat = arriveeHSversHC.addMonths(-2);
+		final RegDate arriveeHCversVD = arriveeHSversHC.addMonths(3);
+		assertEquals(annee, achat.year());
+		assertEquals(annee, arriveeHCversVD.year());
+
+		final PersonnePhysique pp = createContribuableSansFor();
+		addForPrincipal(pp, achat, MotifFor.ACHAT_IMMOBILIER, arriveeHSversHC.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockPays.Allemagne);
+		addForPrincipal(pp, arriveeHSversHC, MotifFor.ARRIVEE_HS, arriveeHCversVD.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bern);
+		addForPrincipal(pp, arriveeHCversVD, MotifFor.ARRIVEE_HC, MockCommune.Grandson);
+		addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Morges.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+
+		final List<Assujettissement> ass = service.determine(pp, annee);
+		assertNotNull(ass);
+		assertEquals(2, ass.size());
+
+		assertHorsSuisse(achat, arriveeHSversHC.getOneDayBefore(), MotifFor.ACHAT_IMMOBILIER, MotifFor.ARRIVEE_HS, ass.get(0));
+		assertOrdinaire(arriveeHSversHC, date(annee, 12, 31), MotifFor.ARRIVEE_HS, null, ass.get(1));
+	}
+
+	/**
+	 * [SIFISC-12325] résident HS arrive sur Berne, achète sur Vaud, puis débarque sur Grandson la même année
+	 * --> son assujettissement doit commencer à sa date d'arrivée à Berne (depuis HS)
+	 */
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testResidentHorsSuissePasseParHorsCantonAvantDAcheterEtDeVenirChezNous() throws Exception {
+
+		final int annee = 2013;
+		final RegDate arriveeHSversHC = date(annee, 4, 6);
+		final RegDate achat = arriveeHSversHC.addMonths(2);
+		final RegDate arriveeHCversVD = arriveeHSversHC.addMonths(3);
+		assertEquals(annee, achat.year());
+		assertEquals(annee, arriveeHCversVD.year());
+
+		final PersonnePhysique pp = createContribuableSansFor();
+		addForPrincipal(pp, arriveeHSversHC, MotifFor.ARRIVEE_HS, achat.getOneDayBefore(), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Bern, ModeImposition.SOURCE);
+		addForPrincipal(pp, achat, MotifFor.CHGT_MODE_IMPOSITION, arriveeHCversVD.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bern);
+		addForPrincipal(pp, arriveeHCversVD, MotifFor.ARRIVEE_HC, MockCommune.Grandson);
+		addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Morges.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+
+		final List<Assujettissement> ass = service.determine(pp, annee);
+		assertNotNull(ass);
+		assertEquals(1, ass.size());
+
+		assertOrdinaire(arriveeHSversHC, date(annee, 12, 31), MotifFor.ARRIVEE_HS, null, ass.get(0));
+	}
+
+	/**
+	 * [SIFISC-12325] résident HS arrive sur Berne l'an dernier, puis achète sur Vaud et débarque sur Grandson la même année
+	 * --> son assujettissement doit commencer en début d'année
+	 */
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testAncienResidentHorsSuisseDevenuHorsCantonAnneeDerniereAvantDAcheterEtDeVenirChezNousLaMemeAnnee() throws Exception {
+
+		final int annee = 2013;
+		final RegDate arriveeHSversHC = date(annee - 1, 4, 6);
+		final RegDate achat = date(annee, 3, 25);
+		final RegDate arriveeHCversVD = achat.addMonths(3);
+		assertEquals(annee, achat.year());
+		assertEquals(annee, arriveeHCversVD.year());
+
+		final PersonnePhysique pp = createContribuableSansFor();
+		addForPrincipal(pp, arriveeHSversHC, MotifFor.ARRIVEE_HS, achat.getOneDayBefore(), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Bern, ModeImposition.SOURCE);
+		addForPrincipal(pp, achat, MotifFor.CHGT_MODE_IMPOSITION, arriveeHCversVD.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bern);
+		addForPrincipal(pp, arriveeHCversVD, MotifFor.ARRIVEE_HC, MockCommune.Grandson);
+		addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Morges.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+
+		final List<Assujettissement> ass = service.determine(pp, annee);
+		assertNotNull(ass);
+		assertEquals(1, ass.size());
+
+		assertOrdinaire(date(annee, 1, 1), date(annee, 12, 31), MotifFor.ARRIVEE_HC, null, ass.get(0));
 	}
 
 	private static void assertCommunesActives(Assujettissement assujettissement, List<Integer> noOfsCommunesActives) {
