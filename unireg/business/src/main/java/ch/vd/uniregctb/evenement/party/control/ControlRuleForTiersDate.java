@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.evenement.party.control;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
@@ -46,5 +48,15 @@ public class ControlRuleForTiersDate extends ControlRuleForTiers {
 	@Override
 	public boolean isMineur(PersonnePhysique personne) {
 		return tiersService.isMineur(personne, date);
+	}
+
+	@Override
+	public List<ModeImposition> getSourceAssujettissement(@NotNull Tiers tiers) {
+		final List<ModeImposition> modeImpositions = new ArrayList<>();
+		final ForFiscalPrincipal forFiscalPrincipal = tiers.getForFiscalPrincipalAt(date);
+		if (forFiscalPrincipal != null) {
+			modeImpositions.add(forFiscalPrincipal.getModeImposition());
+		}
+		return modeImpositions;
 	}
 }

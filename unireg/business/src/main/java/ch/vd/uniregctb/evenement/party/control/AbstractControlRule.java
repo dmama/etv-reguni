@@ -34,4 +34,5 @@ public abstract class AbstractControlRule implements TaxLiabilityControlRule {
 
 	public abstract  boolean isAssujettissementNonConforme(@NotNull Tiers tiers) throws ControlRuleException;
 
+	public abstract <T> List<T> getSourceAssujettissement(@NotNull Tiers tiers) throws ControlRuleException;
 }

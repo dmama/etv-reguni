@@ -44,6 +44,8 @@ public abstract class ControlRuleForParent extends ControleRuleForTiersComposite
 						setErreur(result, TaxLiabilityControlEchec.EchecType.CONTROLE_SUR_PARENTS_KO, null, null, null,nonConforme);
 					}else{
 						result.setIdTiersAssujetti(parentId);
+						result.setOrigine(TaxLiabilityControlResult.Origine.PARENT);
+						result.setSourceAssujettissements(getSourceAssujettissement(parent));
 					}
 
 				}
@@ -57,6 +59,8 @@ public abstract class ControlRuleForParent extends ControleRuleForTiersComposite
 							setErreur(result, TaxLiabilityControlEchec.EchecType.CONTROLE_SUR_PARENTS_KO, null, null, null,nonConforme);
 						}else{
 							result.setIdTiersAssujetti(idTiersAssujetti);
+							result.setOrigine(TaxLiabilityControlResult.Origine.MENAGE_COMMUN_PARENT);
+							result.setSourceAssujettissements(getSourceAssujettissement(menage));
 						}
 
 					}
@@ -114,6 +118,8 @@ public abstract class ControlRuleForParent extends ControleRuleForTiersComposite
 				setErreur(result, TaxLiabilityControlEchec.EchecType.CONTROLE_SUR_PARENTS_KO, null, null, null,nonConforme);
 			}else{
 				result.setIdTiersAssujetti(idMenageAssujettiParent1);
+				result.setOrigine(TaxLiabilityControlResult.Origine.MENAGE_COMMUN_PARENT);
+				result.setSourceAssujettissements(getSourceAssujettissement(menage));
 			}
 		}
 		else {

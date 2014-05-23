@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.evenement.party.control;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -34,6 +35,13 @@ public class ControlRuleForTiersPeriode extends ControlRuleForTiers {
 	@Override
 	public boolean isAssujetti(@NotNull Tiers tiers) throws ControlRuleException {
 		return isAssujettiSurPeriode(tiers);
+	}
+
+	@Override
+	public  List<Assujettissement> getSourceAssujettissement(@NotNull Tiers tiers) throws ControlRuleException {
+		final List<Assujettissement> assujettissements = new ArrayList<>();
+		assujettissements.addAll(getAssujettissements(tiers));
+		return assujettissements;
 	}
 
 	@Override

@@ -46,6 +46,8 @@ public abstract class ControlRuleForMenage extends ControleRuleForTiersComposite
 				}
 				else{
 					result.setIdTiersAssujetti(idTiersAssujetti);
+					result.setOrigine(TaxLiabilityControlResult.Origine.MENAGE_COMMUN);
+					result.setSourceAssujettissements(getSourceAssujettissement(tiersCandidat));
 
 				}
 			}

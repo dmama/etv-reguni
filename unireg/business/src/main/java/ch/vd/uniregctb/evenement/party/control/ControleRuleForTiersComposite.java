@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.evenement.party.control;
 
+import java.util.List;
+
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.uniregctb.tiers.Tiers;
@@ -22,6 +24,11 @@ public abstract class ControleRuleForTiersComposite extends AbstractControlRule 
 	public boolean isAssujetti(@NotNull Tiers tiers) throws ControlRuleException{
 		return controlRule.isAssujetti(tiers);
 	};
+
+	@Override
+	public <T> List<T> getSourceAssujettissement(@NotNull Tiers tiers) throws ControlRuleException {
+		return controlRule.getSourceAssujettissement(tiers);
+	}
 
 	public  boolean isAssujettissementNonConforme(@NotNull Tiers tiers) throws ControlRuleException{
 		return controlRule.isAssujettissementNonConforme(tiers);

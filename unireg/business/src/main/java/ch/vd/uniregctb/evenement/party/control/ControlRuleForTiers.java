@@ -23,6 +23,8 @@ public abstract class ControlRuleForTiers extends AbstractControlRule {
 		final boolean assujettissementNonConforme = isAssujettissementNonConforme(tiers);
 		if (isAssujetti(tiers) && !assujettissementNonConforme) {
 			result.setIdTiersAssujetti(tiers.getId());
+			result.setOrigine(TaxLiabilityControlResult.Origine.INITIAL);
+			result.setSourceAssujettissements(getSourceAssujettissement(tiers));
 		}
 		//	Dans le cas contraire (pas un seul jour d'assujettissement)-> CTRL KO
 		else {
