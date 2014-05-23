@@ -962,7 +962,7 @@ var Tiers = {
 	},
 
 	_getImageUrl : function(typeAvatar, forLink) {
-		return "/tiers/avatar.do?type=" + typeAvatar + (forLink ? "&link=true" : "");
+		return "/tiers/avatar.do?type=" + typeAvatar + (forLink ? "&link=true" : "") + "&url_memorize=false";
 	},
 
 	/**
