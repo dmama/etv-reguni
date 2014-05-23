@@ -2,8 +2,10 @@
 <!-- v1.0 : version initiale, apparue dans la version 3.0 du composant -->
 <xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/party/othercommunity/1" elementFormDefault="qualified"
 		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:othercomm="http://www.vd.ch/fiscalite/unireg/party/othercommunity/1"
-		   xmlns:taxpayer="http://www.vd.ch/fiscalite/unireg/party/taxpayer/3" xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0">
+		   xmlns:taxpayer="http://www.vd.ch/fiscalite/unireg/party/taxpayer/3" xmlns:party="http://www.vd.ch/fiscalite/unireg/party/party/3"
+		   xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0">
 
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/party/3" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-3.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/taxpayer/3" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-taxpayer-3.xsd" />
 
 	<xs:complexType name="otherCommunityType">
@@ -33,6 +35,24 @@
 							<xs:appinfo>
 								<jxb:property>
 									<jxb:javadoc>Raison sociale.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="uidNumbers" type="party:uidNumberListType" minOccurs="0">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>La liste des numéros IDE.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="padding" type="xs:int">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Padding pour supporter l'élément xs:any ci-dessous. A ignorer.</jxb:javadoc>
 								</jxb:property>
 							</xs:appinfo>
 						</xs:annotation>
