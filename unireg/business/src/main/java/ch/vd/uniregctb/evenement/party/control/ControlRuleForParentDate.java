@@ -2,7 +2,6 @@ package ch.vd.uniregctb.evenement.party.control;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.tiers.Parente;
@@ -13,14 +12,14 @@ import ch.vd.uniregctb.type.ModeImposition;
  * Régle PA.2:Déclenchée si demande porte sur date déterminante.
  *Recherche d’un parent assujetti à une date déterminante (PCAP) :
  */
-public class ControlRuleForParentDate extends ControlRuleForParent {
+public class ControlRuleForParentDate extends ControlRuleForParent<ModeImposition> {
 
 	private final RegDate date;
 
-	public ControlRuleForParentDate(RegDate date, TiersService tiersService, Set<ModeImposition> listeMode) {
+	public ControlRuleForParentDate(RegDate date, TiersService tiersService) {
 		super(tiersService,
-				new ControlRuleForTiersDate(date, tiersService,listeMode),
-				new ControleRuleForMenageDate(date, tiersService,listeMode));
+		      new ControlRuleForTiersDate(date, tiersService),
+		      new ControlRuleForMenageDate(date, tiersService));
 		this.date = date;
 	}
 
@@ -34,5 +33,4 @@ public class ControlRuleForParentDate extends ControlRuleForParent {
 		}
 		return extraction;
 	}
-
 }

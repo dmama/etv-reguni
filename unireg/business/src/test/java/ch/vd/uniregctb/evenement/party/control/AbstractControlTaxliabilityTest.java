@@ -12,7 +12,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-public abstract class AbstractControlTaxliabilityTest extends BusinessTest{
+public abstract class AbstractControlTaxliabilityTest extends BusinessTest {
 
 	protected AssujettissementService assujettissementService;
 
@@ -22,11 +22,7 @@ public abstract class AbstractControlTaxliabilityTest extends BusinessTest{
 		assujettissementService = getBean(AssujettissementService.class,"assujettissementService");
 	}
 
-	@Override
-	public void onTearDown() throws Exception {
-	}
-
-	protected void assertListTiers(List<Long> expected,List<Long> actual){
+	protected static void assertListTiers(List<Long> expected,List<Long> actual){
 		Collections.sort(expected);
 		Collections.sort(actual);
 		assertEquals(expected.size(),actual.size());
@@ -35,27 +31,28 @@ public abstract class AbstractControlTaxliabilityTest extends BusinessTest{
 		}
 	}
 
-	protected void assertControlNumeroKO(TaxLiabilityControlResult result) {
+	protected static void assertControlNumeroKO(TaxLiabilityControlResult result) {
 		final Long idTiersAssujetti = result.getIdTiersAssujetti();
 		assertNull(idTiersAssujetti);
 		assertNotNull(result.getEchec());
 		assertEquals(TaxLiabilityControlEchec.EchecType.CONTROLE_NUMERO_KO, result.getEchec().getType());
 	}
 
-	protected void assertDatePeriodeDansFutur(TaxLiabilityControlResult result) {
+	protected static void assertDatePeriodeDansFutur(TaxLiabilityControlResult result) {
 		final Long idTiersAssujetti = result.getIdTiersAssujetti();
 		assertNull(idTiersAssujetti);
 		assertNotNull(result.getEchec());
-		assertEquals(TaxLiabilityControlEchec.EchecType.DATE_OU_PF_DANS_FUTURE, result.getEchec().getType());
+		assertEquals(TaxLiabilityControlEchec.EchecType.DATE_OU_PF_DANS_FUTUR, result.getEchec().getType());
 	}
-	protected void assertAssujetissmentModeImpositionNonConforme(TaxLiabilityControlResult result) {
+
+	protected static void assertAssujetissmentModeImpositionNonConforme(TaxLiabilityControlResult result) {
 		final Long idTiersAssujetti = result.getIdTiersAssujetti();
 		assertNull(idTiersAssujetti);
 		assertNotNull(result.getEchec());
 		assertTrue(result.getEchec().isAssujetissementNonConforme());
 	}
 
-	protected void assertPasDeParent(TaxLiabilityControlResult result) {
+	protected static void assertPasDeParent(TaxLiabilityControlResult result) {
 		final Long idTiersAssujetti = result.getIdTiersAssujetti();
 		assertNull(idTiersAssujetti);
 		assertNotNull(result.getEchec());
@@ -65,7 +62,7 @@ public abstract class AbstractControlTaxliabilityTest extends BusinessTest{
 		assertNull(result.getEchec().getParentsIds());
 	}
 
-	protected void assertUnParentNonAssujetti(Long idPere, TaxLiabilityControlResult result) {
+	protected static void assertUnParentNonAssujetti(Long idPere, TaxLiabilityControlResult result) {
 		final Long idTiersAssujetti = result.getIdTiersAssujetti();
 		assertNull(idTiersAssujetti);
 		assertNotNull(result.getEchec());
@@ -76,14 +73,14 @@ public abstract class AbstractControlTaxliabilityTest extends BusinessTest{
 		assertEquals(idPere, parentsIds.get(0));
 	}
 
-	protected void assertTiersAssujetti(Long idTiers, TaxLiabilityControlResult result) {
+	protected static void assertTiersAssujetti(Long idTiers, TaxLiabilityControlResult<?> result) {
 		final Long idTiersAssujetti = result.getIdTiersAssujetti();
 		assertNotNull(idTiersAssujetti);
 		assertNull(result.getEchec());
 		assertEquals(idTiers, idTiersAssujetti);
 	}
 
-	protected void assertUnParentWithMCNonAssujetti(Long idParent,Long idMenage, TaxLiabilityControlResult result) {
+	protected static void assertUnParentWithMCNonAssujetti(Long idParent,Long idMenage, TaxLiabilityControlResult result) {
 		final Long idTiersAssujetti = result.getIdTiersAssujetti();
 		assertNull(idTiersAssujetti);
 		assertNotNull(result.getEchec());
@@ -98,9 +95,7 @@ public abstract class AbstractControlTaxliabilityTest extends BusinessTest{
 		assertEquals(idParent, parentsIds.get(0));
 	}
 
-
-
-	protected void assertDeuxParentsNonAssujettis(Long idPere,Long idMere, TaxLiabilityControlResult result) {
+	protected static void assertDeuxParentsNonAssujettis(Long idPere,Long idMere, TaxLiabilityControlResult result) {
 		final Long idTiersAssujetti = result.getIdTiersAssujetti();
 		assertNull(idTiersAssujetti);
 		assertNotNull(result.getEchec());
@@ -114,7 +109,7 @@ public abstract class AbstractControlTaxliabilityTest extends BusinessTest{
 		assertListTiers(expected, parentsIds);
 	}
 
-	protected void assertDeuxParentUnMCNonAssujetti(Long idPere, Long idMere, Long idMenagePere, TaxLiabilityControlResult result) {
+	protected static void assertDeuxParentUnMCNonAssujetti(Long idPere, Long idMere, Long idMenagePere, TaxLiabilityControlResult result) {
 		final Long idTiersAssujetti = result.getIdTiersAssujetti();
 		assertNull(idTiersAssujetti);
 		assertNotNull(result.getEchec());
@@ -132,15 +127,15 @@ public abstract class AbstractControlTaxliabilityTest extends BusinessTest{
 		assertEquals(idMenagePere, menageCommunParentsIds.get(0));
 	}
 
-	protected void assertDeuxParentsDeuxMCNonAssujetti(Long idPere,Long idMere, Long idMenagePere,Long idMenageMere, TaxLiabilityControlResult result) {
+	protected static void assertDeuxParentsDeuxMCNonAssujetti(Long idPere,Long idMere, Long idMenagePere,Long idMenageMere, TaxLiabilityControlResult result) {
 		assertDeuxPArentsWithDeuxMenagesFail(idPere, idMere, idMenagePere, idMenageMere, result);
 	}
 
-	protected void assertDeuxPArentsWithDeuxMenagesAssujetti(Long idPere,Long idMere, Long idMenagePere,Long idMenageMere, TaxLiabilityControlResult result) {
+	protected static void assertDeuxPArentsWithDeuxMenagesAssujetti(Long idPere,Long idMere, Long idMenagePere,Long idMenageMere, TaxLiabilityControlResult result) {
 		assertDeuxPArentsWithDeuxMenagesFail(idPere, idMere, idMenagePere, idMenageMere, result);
 	}
 
-	protected void assertDeuxPArentsWithDeuxMenagesFail(Long idPere, Long idMere, Long idMenagePere, Long idMenageMere, TaxLiabilityControlResult result) {
+	protected static void assertDeuxPArentsWithDeuxMenagesFail(Long idPere, Long idMere, Long idMenagePere, Long idMenageMere, TaxLiabilityControlResult result) {
 		final Long idTiersAssujetti = result.getIdTiersAssujetti();
 		assertNull(idTiersAssujetti);
 		assertNotNull(result.getEchec());
@@ -162,7 +157,7 @@ public abstract class AbstractControlTaxliabilityTest extends BusinessTest{
 		assertListTiers(expectedMenageParentIds, menageParentsIds);
 	}
 
-	protected void assertDeuxParentsWithUnMCNonAssujetti(Long idPere,Long idMere,Long idMenage, TaxLiabilityControlResult result) {
+	protected static void assertDeuxParentsWithUnMCNonAssujetti(Long idPere,Long idMere,Long idMenage, TaxLiabilityControlResult result) {
 		final Long idTiersAssujetti = result.getIdTiersAssujetti();
 		assertNull(idTiersAssujetti);
 		assertNotNull(result.getEchec());

@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.evenement.party.control;
 
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Set;
 
@@ -26,6 +27,7 @@ import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Sexe;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -70,9 +72,9 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 		final boolean rechercheMenageCommun = false;
 		final boolean rechercheParent = false;
 
-		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
+		final TaxLiabilityControlResult<TypeAssujettissement> result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<TypeAssujettissement>>() {
 			@Override
-			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idPP);
 				return controlService.doControlOnPeriod(pp, periode, rechercheMenageCommun, rechercheParent, false, null);
 			}
@@ -81,15 +83,15 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 		assertTiersAssujetti(idPP, result);
 
 		final Set<TypeAssujettissement> toReject = EnumSet.of(TypeAssujettissement.SOURCE_PURE);
-		TaxLiabilityControlResult resOK = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
+		final TaxLiabilityControlResult<TypeAssujettissement> resOK = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<TypeAssujettissement>>() {
 			@Override
-			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idPP);
 				return controlService.doControlOnPeriod(pp, periode, rechercheMenageCommun, rechercheParent, false, toReject);
 			}
 		});
-		assertTiersAssujetti(idPP, resOK);
 
+		assertTiersAssujetti(idPP, resOK);
 	}
 
 	@Test
@@ -118,29 +120,29 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 		final boolean rechercheParent = false;
 
 		final Set<TypeAssujettissement> toRejectMixte = EnumSet.of(TypeAssujettissement.MIXTE_137_1);
-		TaxLiabilityControlResult resFail = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
+		final TaxLiabilityControlResult<TypeAssujettissement> resPeriode = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<TypeAssujettissement>>() {
 			@Override
-			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idPP);
 				return controlService.doControlOnPeriod(pp, periode, rechercheMenageCommun, rechercheParent, false, toRejectMixte);
 			}
 		});
 
-		assertEquals(TaxLiabilityControlEchec.EchecType.CONTROLE_NUMERO_KO,resFail.getEchec().getType());
-		assertTrue(resFail.getEchec().isAssujetissementNonConforme());
+		assertEquals(TaxLiabilityControlEchec.EchecType.CONTROLE_NUMERO_KO, resPeriode.getEchec().getType());
+		assertTrue(resPeriode.getEchec().isAssujetissementNonConforme());
 
-		final RegDate date= date(2012,3,1);
+		final RegDate date= date(2012, 3, 1);
 		final Set<ModeImposition> modeToReject = EnumSet.of(ModeImposition.MIXTE_137_1);
-		resFail = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
+		final TaxLiabilityControlResult<ModeImposition> resDate = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<ModeImposition>>() {
 			@Override
-			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+			public TaxLiabilityControlResult<ModeImposition> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idPP);
 				return controlService.doControlOnDate(pp, date, rechercheMenageCommun, rechercheParent, false, modeToReject);
 			}
 		});
 
-		assertEquals(TaxLiabilityControlEchec.EchecType.CONTROLE_NUMERO_KO,resFail.getEchec().getType());
-		assertTrue(resFail.getEchec().isAssujetissementNonConforme());
+		assertEquals(TaxLiabilityControlEchec.EchecType.CONTROLE_NUMERO_KO, resDate.getEchec().getType());
+		assertTrue(resDate.getEchec().isAssujetissementNonConforme());
 	}
 
 	@Test
@@ -168,9 +170,9 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 		final boolean rechercheMenageCommun = false;
 		final boolean rechercheParent = false;
 
-		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
+		final TaxLiabilityControlResult<TypeAssujettissement> result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<TypeAssujettissement>>() {
 			@Override
-			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idPP);
 				return controlService.doControlOnPeriod(pp, periode, rechercheMenageCommun, rechercheParent, false, null);
 			}
@@ -205,9 +207,9 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 		final boolean rechercheMenageCommun = false;
 		final boolean rechercheParent = false;
 
-		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
+		final TaxLiabilityControlResult<ModeImposition> result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<ModeImposition>>() {
 			@Override
-			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+			public TaxLiabilityControlResult<ModeImposition> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idPP);
 				return controlService.doControlOnDate(pp, dateRef, rechercheMenageCommun, rechercheParent, false,null);
 			}
@@ -241,9 +243,9 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 		final boolean rechercheMenageCommun = false;
 		final boolean rechercheParent = false;
 
-		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
+		final TaxLiabilityControlResult<TypeAssujettissement> result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<TypeAssujettissement>>() {
 			@Override
-			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idPP);
 				return controlService.doControlOnPeriod(pp, periode, rechercheMenageCommun, rechercheParent, true, null);
 			}
@@ -278,9 +280,9 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 		final boolean rechercheMenageCommun = false;
 		final boolean rechercheParent = false;
 
-		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
+		final TaxLiabilityControlResult<ModeImposition> result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<ModeImposition>>() {
 			@Override
-			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+			public TaxLiabilityControlResult<ModeImposition> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idPP);
 				return controlService.doControlOnDate(pp, dateRef, rechercheMenageCommun, rechercheParent, true,null);
 			}
@@ -314,9 +316,9 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 		final boolean rechercheMenageCommun = false;
 		final boolean rechercheParent = false;
 
-		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
+		final TaxLiabilityControlResult<TypeAssujettissement> result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<TypeAssujettissement>>() {
 			@Override
-			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idPP);
 				return controlService.doControlOnPeriod(pp, periode, rechercheMenageCommun, rechercheParent, false, null);
 			}
@@ -362,9 +364,9 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 		final boolean rechercheMenageCommun = true;
 		final boolean rechercheParent = false;
 
-		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
+		final TaxLiabilityControlResult<TypeAssujettissement> result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<TypeAssujettissement>>() {
 			@Override
-			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idpp);
 				return controlService.doControlOnPeriod(pp, periode, rechercheMenageCommun, rechercheParent, false, null);
 			}
@@ -411,9 +413,9 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 		final boolean rechercheMenageCommun = true;
 		final boolean rechercheParent = false;
 
-		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
+		final TaxLiabilityControlResult<TypeAssujettissement> result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<TypeAssujettissement>>() {
 			@Override
-			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idpp);
 				return controlService.doControlOnPeriod(pp, periode, rechercheMenageCommun, rechercheParent, false, null);
 			}
@@ -448,9 +450,9 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 		final boolean rechercheMenageCommun = true;
 		final boolean rechercheParent = false;
 
-		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
+		final TaxLiabilityControlResult<TypeAssujettissement> result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<TypeAssujettissement>>() {
 			@Override
-			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				return controlService.doControlOnPeriod(pp, periode, rechercheMenageCommun, rechercheParent, false, null);
 			}
@@ -485,9 +487,9 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 		final boolean rechercheMenageCommun = true;
 		final boolean rechercheParent = true;
 
-		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
+		final TaxLiabilityControlResult<TypeAssujettissement> result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<TypeAssujettissement>>() {
 			@Override
-			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idPP);
 				return controlService.doControlOnPeriod(pp, periode, rechercheMenageCommun, rechercheParent, false, null);
 			}
@@ -537,9 +539,9 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 		});
 
 		final Integer periode = 2012;
-		TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
+		TaxLiabilityControlResult<TypeAssujettissement> result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<TypeAssujettissement>>() {
 			@Override
-			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
 				return controlService.doControlOnPeriod(pp, periode, true, true, false, null);
 			}
@@ -551,9 +553,9 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 		assertEquals(ids.idPere,result.getEchec().getParentsIds().get(0));
 
 		//On ne demande pas le parent mais que le menage commun
-		result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
+		result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<TypeAssujettissement>>() {
 			@Override
-			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
 				return controlService.doControlOnPeriod(pp, periode, true, false, false, null);
 			}
@@ -603,34 +605,34 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 		//test sur ériode
 		final Integer periode = 2012;
 		final Set<TypeAssujettissement> toReject = EnumSet.of(TypeAssujettissement.SOURCE_PURE, TypeAssujettissement.MIXTE_137_1, TypeAssujettissement.MIXTE_137_2);
-		TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
+		final TaxLiabilityControlResult<TypeAssujettissement> resultPeriode = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<TypeAssujettissement>>() {
 			@Override
-			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
 				return controlService.doControlOnPeriod(pp, periode, true, true, false, toReject);
 			}
 		});
 
 		// le controle sest KO sur le parent a cause des assujetissements a rejeter
-		assertEquals(TaxLiabilityControlEchec.EchecType.CONTROLE_SUR_PARENTS_KO,result.getEchec().getType());
-		assertEquals(ids.idPere,result.getEchec().getParentsIds().get(0));
-		assertTrue(result.getEchec().isAssujetissementNonConforme());
+		assertEquals(TaxLiabilityControlEchec.EchecType.CONTROLE_SUR_PARENTS_KO, resultPeriode.getEchec().getType());
+		assertEquals(ids.idPere, resultPeriode.getEchec().getParentsIds().get(0));
+		assertTrue(resultPeriode.getEchec().isAssujetissementNonConforme());
 
 		//Test sur Date
 		final RegDate date =date(2012,2,12);
 		final Set<ModeImposition> toRejectMode = EnumSet.of(ModeImposition.SOURCE, ModeImposition.MIXTE_137_1, ModeImposition.MIXTE_137_2);
-		 result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
+		final TaxLiabilityControlResult<ModeImposition> resultDate = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<ModeImposition>>() {
 			@Override
-			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+			public TaxLiabilityControlResult<ModeImposition> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
 				return controlService.doControlOnDate(pp, date, true, true, false, toRejectMode);
 			}
 		});
 
 		// le controle sest KO sur le parent a cause des mode d'imposition a rejeter
-		assertEquals(TaxLiabilityControlEchec.EchecType.CONTROLE_SUR_PARENTS_KO,result.getEchec().getType());
-		assertEquals(ids.idPere,result.getEchec().getParentsIds().get(0));
-		assertTrue(result.getEchec().isAssujetissementNonConforme());
+		assertEquals(TaxLiabilityControlEchec.EchecType.CONTROLE_SUR_PARENTS_KO, resultDate.getEchec().getType());
+		assertEquals(ids.idPere, resultDate.getEchec().getParentsIds().get(0));
+		assertTrue(resultDate.getEchec().isAssujetissementNonConforme());
 
 	}
 
@@ -673,9 +675,9 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 
 		final RegDate date =date(2012,2,12);
 		final Set<ModeImposition> toReject = EnumSet.of(ModeImposition.SOURCE, ModeImposition.MIXTE_137_1, ModeImposition.MIXTE_137_2);
-		TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
+		final TaxLiabilityControlResult<ModeImposition> result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<ModeImposition>>() {
 			@Override
-			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+			public TaxLiabilityControlResult<ModeImposition> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
 				return controlService.doControlOnDate(pp, date, true, true, false, toReject);
 			}
@@ -706,9 +708,9 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 		});
 
 		final int periode = 2012;
-		final TaxLiabilityControlResult res = doInNewTransactionAndSession(new TxCallback<TaxLiabilityControlResult>() {
+		final TaxLiabilityControlResult<TypeAssujettissement> res = doInNewTransactionAndSession(new TxCallback<TaxLiabilityControlResult<TypeAssujettissement>>() {
 			@Override
-			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
 				final Entreprise pm = (Entreprise) tiersDAO.get(idPm);
 				return controlService.doControlOnPeriod(pm, periode, true, true, false, null);
 			}
@@ -790,7 +792,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique mineur = (PersonnePhysique) tiersDAO.get(ids.idMineur);
-				final TaxLiabilityControlResult res = controlService.doControlOnDate(mineur, dateDemandeControle, true, true, false,null);
+				final TaxLiabilityControlResult<ModeImposition> res = controlService.doControlOnDate(mineur, dateDemandeControle, true, true, false, null);
 				assertNotNull(res);
 				if (res.getEchec() != null) {
 					fail(res.getEchec().toString());
@@ -829,7 +831,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final Entreprise pm = (Entreprise) tiersDAO.get(pmId);
-				final TaxLiabilityControlResult res = controlService.doControlOnDate(pm, date(2013, 5, 12), true, true, false,null);
+				final TaxLiabilityControlResult<ModeImposition> res = controlService.doControlOnDate(pm, date(2013, 5, 12), true, true, false,null);
 				assertNotNull(res);
 				assertNotNull(res.getEchec());
 				assertEquals(TaxLiabilityControlEchec.EchecType.CONTROLE_NUMERO_KO, res.getEchec().getType());
@@ -843,7 +845,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final Entreprise pm = (Entreprise) tiersDAO.get(pmId);
-				final TaxLiabilityControlResult res = controlService.doControlOnPeriod(pm, 2013, true, true, false, null);
+				final TaxLiabilityControlResult<TypeAssujettissement> res = controlService.doControlOnPeriod(pm, 2013, true, true, false, null);
 				assertNotNull(res);
 				assertNotNull(res.getEchec());
 				assertEquals(TaxLiabilityControlEchec.EchecType.CONTROLE_NUMERO_KO, res.getEchec().getType());
@@ -878,7 +880,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
-				final TaxLiabilityControlResult res = controlService.doControlOnDate(dpi, date(2013, 5, 12), true, true, false,null);
+				final TaxLiabilityControlResult<ModeImposition> res = controlService.doControlOnDate(dpi, date(2013, 5, 12), true, true, false,null);
 				assertNotNull(res);
 				assertNotNull(res.getEchec());
 				assertEquals(TaxLiabilityControlEchec.EchecType.CONTROLE_NUMERO_KO, res.getEchec().getType());
@@ -892,7 +894,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
-				final TaxLiabilityControlResult res = controlService.doControlOnPeriod(dpi, 2013, true, true, false, null);
+				final TaxLiabilityControlResult<TypeAssujettissement> res = controlService.doControlOnPeriod(dpi, 2013, true, true, false, null);
 				assertNotNull(res);
 				assertNotNull(res.getEchec());
 				assertEquals(TaxLiabilityControlEchec.EchecType.CONTROLE_NUMERO_KO, res.getEchec().getType());
@@ -928,18 +930,374 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 		final boolean rechercheMenageCommun = true;
 		final boolean rechercheParent = false;
 
-		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
+		final TaxLiabilityControlResult<TypeAssujettissement> result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<TypeAssujettissement>>() {
 			@Override
-			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				Set<TypeAssujettissement> toReject = EnumSet.of(TypeAssujettissement.SOURCE_PURE, TypeAssujettissement.MIXTE_137_1, TypeAssujettissement.MIXTE_137_2);
+				final Set<TypeAssujettissement> toReject = EnumSet.of(TypeAssujettissement.SOURCE_PURE, TypeAssujettissement.MIXTE_137_1, TypeAssujettissement.MIXTE_137_2);
 				return controlService.doControlOnPeriod(pp, periode, rechercheMenageCommun, rechercheParent, false, toReject);
 			}
 		});
 
 		assertTrue(result.getEchec().isAssujetissementNonConforme());
-		assertEquals(TaxLiabilityControlEchec.EchecType.CONTROLE_NUMERO_KO,result.getEchec().getType());
+		assertEquals(TaxLiabilityControlEchec.EchecType.CONTROLE_NUMERO_KO, result.getEchec().getType());
 	}
 
+	@Test
+	public void testRunControlAssujettissementMenageRejet() throws Exception {
+		final long noInd = 1244;
+		class Ids {
+			Long idpp;
+			Long idMc;
+		}
+		final Ids ids = new Ids();
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				addIndividu(noInd, date(1994, 3, 12), "RuppertPeriode", "Jeroma", Sexe.FEMININ);
+			}
+		});
+
+		// on crée un habitant vaudois ordinaire
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = addHabitant(noInd);
+				ids.idpp = pp.getId();
+
+				EnsembleTiersCouple ensemble = addEnsembleTiersCouple(pp,null,date(2000,5,5),null);
+				final MenageCommun menage = ensemble.getMenage();
+				ids.idMc = menage.getId();
+
+				addForPrincipal(menage, date(2000, 5, 5), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,MockCommune.Moudon, ModeImposition.MIXTE_137_1);
+
+				return null;
+
+			}
+		});
+
+		final RegDate dateControle = RegDate.get(2012,12,3);
+		final boolean rechercheMenageCommun = true;
+		final boolean rechercheParent = false;
+
+		final TaxLiabilityControlResult<ModeImposition> result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<ModeImposition>>() {
+			@Override
+			public TaxLiabilityControlResult<ModeImposition> execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idpp);
+				final Set<ModeImposition> toReject = EnumSet.of(ModeImposition.SOURCE, ModeImposition.MIXTE_137_1, ModeImposition.MIXTE_137_2);
+				return controlService.doControlOnDate(pp, dateControle, rechercheMenageCommun, rechercheParent, false, toReject);
+			}
+		});
+
+		assertAssujetissmentModeImpositionNonConforme(result);
+		assertEquals(Arrays.asList(ids.idMc), result.getEchec().getMenageCommunIds());
+		assertEquals(TaxLiabilityControlEchec.EchecType.UN_PLUSIEURS_MC_NON_ASSUJETTI_TROUVES, result.getEchec().getType());
+	}
+
+	@Test
+	public void testRunControlRejetParent() throws Exception {
+		final long noIndFille = 1244;
+		final long noIndParent = 1245;
+		final RegDate dateNaissance = date(2005, 3, 12);
+		class Ids {
+			Long idFille;
+			Long idPere;
+		}
+		final Ids ids = new Ids();
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertPeriode", "Jeroma", Sexe.FEMININ);
+				final MockIndividu parent = addIndividu(noIndParent, date(1974, 8, 16), "RuppertPeriode", "PereJeroma", Sexe.MASCULIN);
+				addLiensFiliation(fille, parent, null, dateNaissance, null);
+			}
+		});
+
+		// on crée un habitant vaudois ordinaire
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique ppFille = addHabitant(noIndFille);
+				final PersonnePhysique ppParent = addHabitant(noIndParent);
+				ids.idFille = ppFille.getId();
+				ids.idPere = ppParent.getId();
+				addForPrincipal(ppParent, date(2000, 1, 5), MotifFor.ARRIVEE_HS, MockCommune.Moudon, ModeImposition.SOURCE);
+				addParente(ppFille, ppParent, dateNaissance, null);
+				return null;
+			}
+		});
+
+		final Integer periode = 2012;
+		final TaxLiabilityControlResult<TypeAssujettissement> result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<TypeAssujettissement>>() {
+			@Override
+			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
+				final Set<TypeAssujettissement> toReject = EnumSet.of(TypeAssujettissement.SOURCE_PURE);
+				return controlService.doControlOnPeriod(pp, periode, false, true, false, toReject);
+			}
+		});
+
+		assertAssujetissmentModeImpositionNonConforme(result);
+		assertEquals(Arrays.asList(ids.idPere), result.getEchec().getParentsIds());
+		assertEquals(TaxLiabilityControlEchec.EchecType.CONTROLE_SUR_PARENTS_KO, result.getEchec().getType());
+	}
+
+	@Test
+	public void testRunControleRejetMenageParent() throws Exception {
+		final long noIndFille = 1244;
+		final long noIndParent = 1245;
+		final RegDate dateNaissance = date(2005, 3, 12);
+		class Ids {
+			Long idFille;
+			Long idPere;
+			Long idMenagePere;
+		}
+		final Ids ids = new Ids();
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertPeriode", "Jeroma", Sexe.FEMININ);
+				final MockIndividu parent = addIndividu(noIndParent, date(1974, 8, 16), "RuppertPeriode", "PereJeroma", Sexe.MASCULIN);
+				addLiensFiliation(fille, parent, null, dateNaissance, null);
+			}
+		});
+
+		// on crée un habitant vaudois ordinaire
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique ppFille = addHabitant(noIndFille);
+				final PersonnePhysique ppPere = addHabitant(noIndParent);
+				ids.idFille = ppFille.getId();
+				ids.idPere = ppPere.getId();
+				addParente(ppFille, ppPere, dateNaissance, null);
+
+				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(ppPere, null, date(2000, 1, 5), null);
+				final MenageCommun menage = ensemble.getMenage();
+				ids.idMenagePere = menage.getId();
+				addForPrincipal(menage, date(2000, 1, 5), MotifFor.ARRIVEE_HS, MockCommune.Moudon, ModeImposition.MIXTE_137_1);
+
+				return null;
+			}
+		});
+
+		final Integer periode = 2012;
+		final TaxLiabilityControlResult<TypeAssujettissement> result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<TypeAssujettissement>>() {
+			@Override
+			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
+				final Set<TypeAssujettissement> toReject = EnumSet.of(TypeAssujettissement.MIXTE_137_1);
+				return controlService.doControlOnPeriod(pp, periode, false, true, false, toReject);
+			}
+		});
+
+		assertAssujetissmentModeImpositionNonConforme(result);
+		assertEquals(Arrays.asList(ids.idMenagePere), result.getEchec().getMenageCommunParentsIds());
+		assertEquals(TaxLiabilityControlEchec.EchecType.CONTROLE_SUR_PARENTS_KO, result.getEchec().getType());
+	}
+
+	@Test
+	public void testRunControleRejetMenageCommunDeuxParents() throws Exception {
+		final long noIndFille = 1244;
+		final long noIndPere = 1245;
+		final long noIndMere = 1246;
+		final RegDate dateNaissance = date(2005, 3, 12);
+		class Ids {
+			Long idFille;
+			Long idPere;
+			Long idMere;
+			Long idMenage;
+
+		}
+		final Ids ids = new Ids();
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu fille = addIndividu(noIndFille, dateNaissance, "RuppertPeriode", "Jeroma", Sexe.FEMININ);
+				final MockIndividu pere = addIndividu(noIndPere, date(1974, 8, 16), "RuppertPeriode", "PereJeroma", Sexe.MASCULIN);
+				final MockIndividu mere = addIndividu(noIndMere, date(1978, 10, 19), "RuppertPeriode", "MereJeroma", Sexe.FEMININ);
+				addLiensFiliation(fille, pere, mere, dateNaissance, null);
+			}
+		});
+
+		// on crée un habitant vaudois ordinaire
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique ppFille = addHabitant(noIndFille);
+				final PersonnePhysique ppPere = addHabitant(noIndPere);
+				final PersonnePhysique ppMere = addHabitant(noIndMere);
+				addParente(ppFille, ppPere, dateNaissance, null);
+				addParente(ppFille, ppMere, dateNaissance, null);
+				ids.idFille = ppFille.getId();
+				ids.idPere = ppPere.getId();
+				ids.idMere = ppMere.getId();
+
+				final EnsembleTiersCouple ensembleTiersCouple = addEnsembleTiersCouple(ppPere, ppMere, date(2006, 7, 8), null);
+				final MenageCommun menageCommun = ensembleTiersCouple.getMenage();
+				ids.idMenage = menageCommun.getId();
+				addForPrincipal(menageCommun, date(2006, 7, 8), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Moudon, ModeImposition.SOURCE);
+
+				return null;
+			}
+		});
+
+		final Integer periode = 2012;
+		final TaxLiabilityControlResult<TypeAssujettissement> result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<TypeAssujettissement>>() {
+			@Override
+			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
+				final Set<TypeAssujettissement> toReject = EnumSet.of(TypeAssujettissement.SOURCE_PURE);
+				return controlService.doControlOnPeriod(pp, periode, false, true, false, toReject);
+			}
+		});
+
+		assertAssujetissmentModeImpositionNonConforme(result);
+		assertEquals(Arrays.asList(ids.idMenage), result.getEchec().getMenageCommunParentsIds());
+		assertEquals(TaxLiabilityControlEchec.EchecType.CONTROLE_SUR_PARENTS_KO, result.getEchec().getType());
+	}
+
+	@Test
+	public void testRunControleDateSansForPresentMaisRejetPresent() throws Exception {
+		final long noInd = 1234;
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				addIndividu(noInd, date(1956, 3, 12), "Ruppert", "Jerome", Sexe.MASCULIN);
+			}
+		});
+
+		// on crée un habitant vaudois ordinaire
+		final Long idPP = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = addHabitant(noInd);
+				return pp.getNumero();
+			}
+		});
+
+		final RegDate dateControle = RegDate.get(2010,12,3);
+		final TaxLiabilityControlResult<ModeImposition> result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<ModeImposition>>() {
+			@Override
+			public TaxLiabilityControlResult<ModeImposition> execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idPP);
+				final Set<ModeImposition> toReject = EnumSet.of(ModeImposition.SOURCE);
+				return controlService.doControlOnDate(pp, dateControle, false, true, false, toReject);
+			}
+		});
+
+		assertControlNumeroKO(result);
+		assertFalse(result.getEchec().isAssujetissementNonConforme());
+	}
+
+	@Test
+	public void testRunControleDateAvecForPresentPasConcerneParRejets() throws Exception {
+		final long noInd = 1234;
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				addIndividu(noInd, date(1956, 3, 12), "Ruppert", "Jerome", Sexe.MASCULIN);
+			}
+		});
+
+		// on crée un habitant vaudois ordinaire
+		final Long idPP = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = addHabitant(noInd);
+				addForPrincipal(pp, date(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aigle);  // ORDINAIRE
+				return pp.getNumero();
+			}
+		});
+
+		final RegDate dateControle = RegDate.get(2010,12,3);
+		final TaxLiabilityControlResult<ModeImposition> result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<ModeImposition>>() {
+			@Override
+			public TaxLiabilityControlResult<ModeImposition> execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idPP);
+				final Set<ModeImposition> toReject = EnumSet.of(ModeImposition.SOURCE);
+				return controlService.doControlOnDate(pp, dateControle, false, true, false, toReject);
+			}
+		});
+
+		assertTiersAssujetti(idPP, result);
+		assertEquals(TaxLiabilityControlResult.Origine.INITIAL, result.getOrigine());
+		assertEquals(EnumSet.of(ModeImposition.ORDINAIRE), result.getSourceAssujettissements());
+	}
+
+	@Test
+	public void testRunControlePeriodeNonAssujettiAvecRejets() throws Exception {
+		final long noInd = 1244;
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				addIndividu(noInd, date(1994, 3, 12), "RuppertPeriode", "Jeroma", Sexe.FEMININ);
+			}
+		});
+
+		// on crée un habitant vaudois ordinaire
+		final Long idPP = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = addHabitant(noInd);
+				return pp.getNumero();
+			}
+		});
+
+		final Integer periode = 2012;
+		final TaxLiabilityControlResult<TypeAssujettissement> result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<TypeAssujettissement>>() {
+			@Override
+			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idPP);
+				final Set<TypeAssujettissement> toReject = EnumSet.of(TypeAssujettissement.SOURCE_PURE);
+				return controlService.doControlOnPeriod(pp, periode, false, true, false, toReject);
+			}
+		});
+
+		assertControlNumeroKO(result);
+	}
+
+	@Test
+	public void testRunControlePeriodeAssujettiNonConcerneParRejets() throws Exception {
+		final long noInd = 1244;
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				addIndividu(noInd, date(1994, 3, 12), "RuppertPeriode", "Jeroma", Sexe.FEMININ);
+			}
+		});
+
+		// on crée un habitant vaudois ordinaire
+		final Long idPP = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = addHabitant(noInd);
+				addForPrincipal(pp, date(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aubonne, ModeImposition.MIXTE_137_2);
+				return pp.getNumero();
+			}
+		});
+
+		final Integer periode = 2012;
+		final TaxLiabilityControlResult<TypeAssujettissement> result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<TypeAssujettissement>>() {
+			@Override
+			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idPP);
+				final Set<TypeAssujettissement> toReject = EnumSet.of(TypeAssujettissement.SOURCE_PURE);
+				return controlService.doControlOnPeriod(pp, periode, false, true, false, toReject);
+			}
+		});
+
+		assertTiersAssujetti(idPP, result);
+		assertEquals(TaxLiabilityControlResult.Origine.INITIAL, result.getOrigine());
+		assertEquals(EnumSet.of(TypeAssujettissement.MIXTE_137_2), result.getSourceAssujettissements());
+	}
 
 }

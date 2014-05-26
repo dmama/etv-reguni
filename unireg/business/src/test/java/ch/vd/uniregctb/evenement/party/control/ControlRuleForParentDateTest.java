@@ -10,6 +10,7 @@ import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Sexe;
 
@@ -37,10 +38,10 @@ public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTes
 		});
 
 		final RegDate dateDemande = RegDate.get(2012,2,2);
-		final ControlRuleForParentDate controlRuleForParentDate = new ControlRuleForParentDate(dateDemande, tiersService,null);
-		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
+		final ControlRuleForParentDate controlRuleForParentDate = new ControlRuleForParentDate(dateDemande, tiersService);
+		final TaxLiabilityControlResult<ModeImposition> result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<ModeImposition>>() {
 			@Override
-			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+			public TaxLiabilityControlResult<ModeImposition> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idPP);
 				return controlRuleForParentDate.check(pp);
 			}
@@ -85,10 +86,10 @@ public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTes
 		});
 
 		final RegDate dateDemande = RegDate.get(2012,2,2);
-		final ControlRuleForParentDate controlRuleForParentDate = new ControlRuleForParentDate(dateDemande, tiersService,null);
-		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
+		final ControlRuleForParentDate controlRuleForParentDate = new ControlRuleForParentDate(dateDemande, tiersService);
+		final TaxLiabilityControlResult<ModeImposition> result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<ModeImposition>>() {
 			@Override
-			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+			public TaxLiabilityControlResult<ModeImposition> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
 				return controlRuleForParentDate.check(pp);
 			}
@@ -135,10 +136,10 @@ public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTes
 		});
 
 		final RegDate dateDemande = RegDate.get(2012,2,2);
-		final ControlRuleForParentDate controlRuleForParentDate = new ControlRuleForParentDate(dateDemande, tiersService,null);
-		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
+		final ControlRuleForParentDate controlRuleForParentDate = new ControlRuleForParentDate(dateDemande, tiersService);
+		final TaxLiabilityControlResult<ModeImposition> result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<ModeImposition>>() {
 			@Override
-			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+			public TaxLiabilityControlResult<ModeImposition> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
 				return controlRuleForParentDate.check(pp);
 			}
@@ -187,10 +188,10 @@ public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTes
 		});
 
 		final RegDate dateDemande = RegDate.get(2012,2,2);
-		final ControlRuleForParentDate controlRuleForParentDate = new ControlRuleForParentDate(dateDemande, tiersService,null);
-		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
+		final ControlRuleForParentDate controlRuleForParentDate = new ControlRuleForParentDate(dateDemande, tiersService);
+		final TaxLiabilityControlResult<ModeImposition> result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<ModeImposition>>() {
 			@Override
-			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+			public TaxLiabilityControlResult<ModeImposition> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
 				return controlRuleForParentDate.check(pp);
 			}
@@ -240,10 +241,10 @@ public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTes
 		});
 
 		final RegDate dateDemande = RegDate.get(2012,2,2);
-		final ControlRuleForParentDate controlRuleForParentDate = new ControlRuleForParentDate(dateDemande, tiersService,null);
-		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
+		final ControlRuleForParentDate controlRuleForParentDate = new ControlRuleForParentDate(dateDemande, tiersService);
+		final TaxLiabilityControlResult<ModeImposition> result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<ModeImposition>>() {
 			@Override
-			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+			public TaxLiabilityControlResult<ModeImposition> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
 				return controlRuleForParentDate.check(pp);
 			}
@@ -294,10 +295,10 @@ public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTes
 			}
 		});
 		final RegDate dateDemande = RegDate.get(2012,2,2);
-		final ControlRuleForParentDate controlRuleForParentDate = new ControlRuleForParentDate(dateDemande, tiersService,null);
-		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
+		final ControlRuleForParentDate controlRuleForParentDate = new ControlRuleForParentDate(dateDemande, tiersService);
+		final TaxLiabilityControlResult<ModeImposition> result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<ModeImposition>>() {
 			@Override
-			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+			public TaxLiabilityControlResult<ModeImposition> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
 				return controlRuleForParentDate.check(pp);
 			}
@@ -353,10 +354,10 @@ public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTes
 			}
 		});
 		final RegDate dateDemande = RegDate.get(2012,2,2);
-		final ControlRuleForParentDate controlRuleForParentDate = new ControlRuleForParentDate(dateDemande, tiersService,null);
-		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
+		final ControlRuleForParentDate controlRuleForParentDate = new ControlRuleForParentDate(dateDemande, tiersService);
+		final TaxLiabilityControlResult<ModeImposition> result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<ModeImposition>>() {
 			@Override
-			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+			public TaxLiabilityControlResult<ModeImposition> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
 				return controlRuleForParentDate.check(pp);
 			}
@@ -417,10 +418,10 @@ public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTes
 			}
 		});
 		final RegDate dateDemande = RegDate.get(2012,2,2);
-		final ControlRuleForParentDate controlRuleForParentDate = new ControlRuleForParentDate(dateDemande, tiersService,null);
-		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
+		final ControlRuleForParentDate controlRuleForParentDate = new ControlRuleForParentDate(dateDemande, tiersService);
+		final TaxLiabilityControlResult<ModeImposition> result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<ModeImposition>>() {
 			@Override
-			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+			public TaxLiabilityControlResult<ModeImposition> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
 				return controlRuleForParentDate.check(pp);
 			}
@@ -483,10 +484,10 @@ public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTes
 			}
 		});
 		final RegDate dateDemande = RegDate.get(2012,2,2);
-		final ControlRuleForParentDate controlRuleForParentDate = new ControlRuleForParentDate(dateDemande, tiersService,null);
-		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
+		final ControlRuleForParentDate controlRuleForParentDate = new ControlRuleForParentDate(dateDemande, tiersService);
+		final TaxLiabilityControlResult<ModeImposition> result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<ModeImposition>>() {
 			@Override
-			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+			public TaxLiabilityControlResult<ModeImposition> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
 				return controlRuleForParentDate.check(pp);
 			}
@@ -544,10 +545,10 @@ public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTes
 			}
 		});
 		final RegDate dateDemande = RegDate.get(2012,2,2);
-		final ControlRuleForParentDate controlRuleForParentDate = new ControlRuleForParentDate(dateDemande, tiersService,null);
-		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
+		final ControlRuleForParentDate controlRuleForParentDate = new ControlRuleForParentDate(dateDemande, tiersService);
+		final TaxLiabilityControlResult<ModeImposition> result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<ModeImposition>>() {
 			@Override
-			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+			public TaxLiabilityControlResult<ModeImposition> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
 				return controlRuleForParentDate.check(pp);
 			}
@@ -604,10 +605,10 @@ public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTes
 			}
 		});
 		final RegDate dateDemande = RegDate.get(2012,2,2);
-		final ControlRuleForParentDate controlRuleForParentDate = new ControlRuleForParentDate(dateDemande, tiersService,null);
-		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
+		final ControlRuleForParentDate controlRuleForParentDate = new ControlRuleForParentDate(dateDemande, tiersService);
+		final TaxLiabilityControlResult<ModeImposition> result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<ModeImposition>>() {
 			@Override
-			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+			public TaxLiabilityControlResult<ModeImposition> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
 				return controlRuleForParentDate.check(pp);
 			}

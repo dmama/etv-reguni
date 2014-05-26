@@ -1,8 +1,5 @@
 package ch.vd.uniregctb.evenement.party.control;
 
-import java.util.EnumSet;
-import java.util.Set;
-
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 
@@ -44,51 +41,16 @@ public class ControlRuleForTiersDateTest extends AbstractControlTaxliabilityTest
 		});
 
 		final RegDate dateControle = RegDate.get(2010,12,3);
-		final ControlRuleForTiersDate controlRuleForTiersDate = new ControlRuleForTiersDate(dateControle, tiersService,null);
-		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
+		final ControlRuleForTiersDate controlRuleForTiersDate = new ControlRuleForTiersDate(dateControle, tiersService);
+		final TaxLiabilityControlResult<ModeImposition> result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<ModeImposition>>() {
 			@Override
-			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+			public TaxLiabilityControlResult<ModeImposition> execute(TransactionStatus status) throws Exception {
 			    final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idPP);
 				return controlRuleForTiersDate.check(pp);
 			}
 		});
 
 		assertTiersAssujetti(idPP, result);
-	}
-
-	@Test
-	public void testCheckForFiscalSourceToReject() throws Exception {
-		final long noInd = 1234;
-
-		serviceCivil.setUp(new MockServiceCivil() {
-			@Override
-			protected void init() {
-				addIndividu(noInd, date(1956, 3, 12), "Ruppert", "Jerome", Sexe.MASCULIN);
-			}
-		});
-
-		// on crée un habitant vaudois sourcier
-		final Long idPP = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = addHabitant(noInd);
-				addForPrincipal(pp, date(1986, 3, 12), MotifFor.MAJORITE, MockCommune.Moudon, ModeImposition.SOURCE);
-				return pp.getNumero();
-			}
-		});
-
-		final RegDate dateControle = RegDate.get(2010,12,3);
-		Set<ModeImposition> toReject = EnumSet.of(ModeImposition.SOURCE,ModeImposition.MIXTE_137_1,ModeImposition.MIXTE_137_2);
-		final ControlRuleForTiersDate controlRuleForTiersDate = new ControlRuleForTiersDate(dateControle, tiersService,toReject);
-		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
-			@Override
-			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idPP);
-				return controlRuleForTiersDate.check(pp);
-			}
-		});
-
-		assertAssujetissmentModeImpositionNonConforme(result);
 	}
 
 	@Test
@@ -111,45 +73,11 @@ public class ControlRuleForTiersDateTest extends AbstractControlTaxliabilityTest
 			}
 		});
 
-		final RegDate dateControle = RegDate.get(2010,12,3);
-		final ControlRuleForTiersDate controlRuleForTiersDate = new ControlRuleForTiersDate(dateControle, tiersService,null);
-		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
+		final RegDate dateControle = RegDate.get(2010, 12, 3);
+		final ControlRuleForTiersDate controlRuleForTiersDate = new ControlRuleForTiersDate(dateControle, tiersService);
+		final TaxLiabilityControlResult<ModeImposition> result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<ModeImposition>>() {
 			@Override
-			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idPP);
-				return controlRuleForTiersDate.check(pp);
-			}
-		});
-
-		assertControlNumeroKO(result);
-	}
-
-	@Test
-	public void testCheckForFiscalAbsentWhithImpositionToReject() throws Exception {
-		final long noInd = 1234;
-
-		serviceCivil.setUp(new MockServiceCivil() {
-			@Override
-			protected void init() {
-				addIndividu(noInd, date(1956, 3, 12), "Ruppert", "Jerome", Sexe.MASCULIN);
-			}
-		});
-
-		// on crée un habitant vaudois ordinaire
-		final Long idPP = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = addHabitant(noInd);
-				return pp.getNumero();
-			}
-		});
-
-		final RegDate dateControle = RegDate.get(2010,12,3);
-		Set<ModeImposition> toReject = EnumSet.of(ModeImposition.SOURCE);
-		final ControlRuleForTiersDate controlRuleForTiersDate = new ControlRuleForTiersDate(dateControle, tiersService,toReject);
-		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
-			@Override
-			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+			public TaxLiabilityControlResult<ModeImposition> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idPP);
 				return controlRuleForTiersDate.check(pp);
 			}
@@ -180,10 +108,10 @@ public class ControlRuleForTiersDateTest extends AbstractControlTaxliabilityTest
 		});
 
 		final RegDate dateControle = RegDate.get(2010,12,3);
-		final ControlRuleForTiersDate controlRuleForTiersDate = new ControlRuleForTiersDate(dateControle, tiersService,null);
-		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
+		final ControlRuleForTiersDate controlRuleForTiersDate = new ControlRuleForTiersDate(dateControle, tiersService);
+		final TaxLiabilityControlResult<ModeImposition> result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<ModeImposition>>() {
 			@Override
-			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+			public TaxLiabilityControlResult<ModeImposition> execute(TransactionStatus status) throws Exception {
 		        final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idPP);
 				return controlRuleForTiersDate.check(pp);
 			}

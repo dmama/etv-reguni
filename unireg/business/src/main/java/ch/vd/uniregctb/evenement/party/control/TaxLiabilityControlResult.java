@@ -1,53 +1,64 @@
 package ch.vd.uniregctb.evenement.party.control;
 
-import java.util.List;
+import java.util.Set;
 
-public class TaxLiabilityControlResult<T> {
+/**
+ * @param <T> type de valeurs collectées ({@link ch.vd.uniregctb.type.ModeImposition} ou {@link ch.vd.uniregctb.metier.assujettissement.TypeAssujettissement})
+ */
+public class TaxLiabilityControlResult<T extends Enum<T>> {
 
-	private Origine origine;
-	private List<T> sourceAssujettissements;
+	public static enum Origine {
+		INITIAL,
+		MENAGE_COMMUN,
+		PARENT,
+		MENAGE_COMMUN_PARENT
+	}
 
+	private final Origine origine;
+	private final Long idTiersAssujetti;
+	private final Set<T> sourceAssujettissements;
 
-	private Long idTiersAssujetti;
-	private TaxLiabilityControlEchec echec;
+	private final TaxLiabilityControlEchec echec;
+
+	public TaxLiabilityControlResult(Origine origine, long idTiersAssujetti, Set<T> sourceAssujettissements) {
+		this.origine = origine;
+		this.sourceAssujettissements = sourceAssujettissements;
+		this.idTiersAssujetti = idTiersAssujetti;
+		this.echec = null;
+	}
+
+	public TaxLiabilityControlResult(TaxLiabilityControlEchec echec) {
+		this.origine = null;
+		this.sourceAssujettissements = null;
+		this.idTiersAssujetti = null;
+		this.echec = echec;
+	}
+
+	/**
+	 * Surcharge de l'origine
+	 * @param origine nouvelle origine
+	 * @param result résultat dont les informations sont à conserver
+	 */
+	public TaxLiabilityControlResult(Origine origine, TaxLiabilityControlResult<T> result) {
+		this.origine = origine;
+		this.sourceAssujettissements = result.getSourceAssujettissements();
+		this.idTiersAssujetti = result.getIdTiersAssujetti();
+		this.echec = result.getEchec();
+	}
 
 	public Long getIdTiersAssujetti() {
 		return idTiersAssujetti;
-	}
-
-	public void setIdTiersAssujetti(Long idTiersAssujetti) {
-		this.idTiersAssujetti = idTiersAssujetti;
 	}
 
 	public TaxLiabilityControlEchec getEchec() {
 		return echec;
 	}
 
-	public void setEchec(TaxLiabilityControlEchec echec) {
-		this.echec = echec;
-	}
-
 	public Origine getOrigine() {
 		return origine;
 	}
 
-	public void setOrigine(Origine origine) {
-		this.origine = origine;
-	}
-
-	public List<T> getSourceAssujettissements() {
+	public Set<T> getSourceAssujettissements() {
 		return sourceAssujettissements;
-	}
-
-	public void setSourceAssujettissements(List<T> sourceAssujettissements) {
-		this.sourceAssujettissements = sourceAssujettissements;
-	}
-
-
-	public enum Origine{
-		INITIAL,
-		MENAGE_COMMUN,
-		PARENT,
-		MENAGE_COMMUN_PARENT;
 	}
 }

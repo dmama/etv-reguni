@@ -8,10 +8,10 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.core.io.ClassPathResource;
 
 import ch.vd.unireg.xml.common.v1.UserLogin;
+import ch.vd.unireg.xml.event.party.taxliab.v2.TaxLiabilityRequest;
 import ch.vd.unireg.xml.event.party.taxliab.v3.CommonHouseholdInfo;
 import ch.vd.unireg.xml.event.party.taxliab.v3.Failure;
 import ch.vd.unireg.xml.event.party.taxliab.v3.MinorInfo;
-import ch.vd.unireg.xml.event.party.taxliab.v2.TaxLiabilityRequest;
 import ch.vd.unireg.xml.event.party.taxliab.v3.TaxLiabilityResponse;
 import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
@@ -65,7 +65,7 @@ public abstract class TaxLiabilityRequestHandlerV3<T extends TaxLiabilityRequest
 		}
 
 		try {
-			final TaxLiabilityControlResult result = doControl(request, tiers);
+			final TaxLiabilityControlResult<?> result = doControl(request, tiers);
 			return builtRequestHandler(result);
 		}
 		catch (ControlRuleException e) {
@@ -80,9 +80,9 @@ public abstract class TaxLiabilityRequestHandlerV3<T extends TaxLiabilityRequest
 	 * @return le résultat du contrôle
 	 * @throws ch.vd.uniregctb.evenement.party.control.ControlRuleException en cas de souci
 	 */
-	protected abstract TaxLiabilityControlResult doControl(T request, @NotNull Tiers tiers) throws ControlRuleException;
+	protected abstract TaxLiabilityControlResult<?> doControl(T request, @NotNull Tiers tiers) throws ControlRuleException;
 
-	private RequestHandlerResult builtRequestHandler(TaxLiabilityControlResult result) {
+	private RequestHandlerResult builtRequestHandler(TaxLiabilityControlResult<?> result) {
 
 		Integer partyNumber = null;
 		Failure failure = null;
@@ -131,10 +131,9 @@ public abstract class TaxLiabilityRequestHandlerV3<T extends TaxLiabilityRequest
 					break;
 				}
 
-				case DATE_OU_PF_DANS_FUTURE:{
+				case DATE_OU_PF_DANS_FUTUR:
 					failure.setDateOrPeriodeInFuture("La date ou la période fiscale demandée est située dans le futur.");
 					break;
-				}
 
 				default:
 					throw new IllegalArgumentException("Value not supported for TaxliabilityRequest V3: " + echec.getType());
@@ -155,7 +154,7 @@ public abstract class TaxLiabilityRequestHandlerV3<T extends TaxLiabilityRequest
 	}
 
 	private List<Integer> getListOfInteger(List<Long> menageCommunIds) {
-		final List<Integer> result = new ArrayList<Integer>();
+		final List<Integer> result = new ArrayList<>();
 		for (Long menageCommunId : menageCommunIds) {
 			result.add(menageCommunId.intValue());
 		}

@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.evenement.party;
 
-import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
@@ -26,12 +25,12 @@ public class AperiodicTaxLiabilityRequestHandlerV3 extends TaxLiabilityRequestHa
 	}
 
 	@Override
-	public TaxLiabilityControlResult doControl(AperiodicTaxLiabilityRequest request, @NotNull Tiers tiers) throws ControlRuleException {
+	public TaxLiabilityControlResult<ModeImposition> doControl(AperiodicTaxLiabilityRequest request, @NotNull Tiers tiers) throws ControlRuleException {
 		final RegDate dateControle = DataHelper.xmlToCore(request.getDate());
 		final boolean rechercheMenageCommun = request.isSearchCommonHouseHolds();
 		final boolean rechercheParents = request.isSearchParents();
 		final List<TaxationMethod> taxationMethodToReject= request.getTaxationMethodToReject();
-		Set<ModeImposition> modeImpositionARejeter = getModeImpositionARejeter(taxationMethodToReject);
+		final Set<ModeImposition> modeImpositionARejeter = getModeImpositionARejeter(taxationMethodToReject);
 		return getTaxliabilityControlService().doControlOnDate(tiers, dateControle, rechercheMenageCommun, rechercheParents, true, modeImpositionARejeter);
 	}
 
@@ -39,10 +38,10 @@ public class AperiodicTaxLiabilityRequestHandlerV3 extends TaxLiabilityRequestHa
 		if (taxationMethodToReject.isEmpty()) {
 			return null;
 		}
-		final List<ModeImposition> result = new ArrayList<>();
+		final Set<ModeImposition> result = EnumSet.noneOf(ModeImposition.class);
 		for (TaxationMethod taxationMethod : taxationMethodToReject) {
 			 result.add(EnumHelper.xmlToCore(taxationMethod));
 		}
-		return EnumSet.copyOf(result);
+		return result;
 	}
 }

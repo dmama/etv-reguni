@@ -8,6 +8,7 @@ import ch.vd.unireg.xml.event.party.taxliab.aperiodic.v2.AperiodicTaxLiabilityRe
 import ch.vd.uniregctb.evenement.party.control.ControlRuleException;
 import ch.vd.uniregctb.evenement.party.control.TaxLiabilityControlResult;
 import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.xml.DataHelper;
 
 public class AperiodicTaxLiabilityRequestHandlerV2 extends TaxLiabilityRequestHandlerV2<AperiodicTaxLiabilityRequest> {
@@ -18,7 +19,7 @@ public class AperiodicTaxLiabilityRequestHandlerV2 extends TaxLiabilityRequestHa
 	}
 
 	@Override
-	public TaxLiabilityControlResult doControl(AperiodicTaxLiabilityRequest request, @NotNull Tiers tiers) throws ControlRuleException {
+	public TaxLiabilityControlResult<ModeImposition> doControl(AperiodicTaxLiabilityRequest request, @NotNull Tiers tiers) throws ControlRuleException {
 		final RegDate dateControle = DataHelper.xmlToCore(request.getDate());
 		final boolean rechercheMenageCommun = request.isSearchCommonHouseHolds();
 		final boolean rechercheParents = request.isSearchParents();

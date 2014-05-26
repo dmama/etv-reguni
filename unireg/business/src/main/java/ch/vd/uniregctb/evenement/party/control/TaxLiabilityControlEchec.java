@@ -13,13 +13,13 @@ public class TaxLiabilityControlEchec {
 		UN_PLUSIEURS_MC_NON_ASSUJETTI_TROUVES,
 		PLUSIEURS_MC_ASSUJETTI_TROUVES,
 		CONTROLE_SUR_PARENTS_KO,
-		DATE_OU_PF_DANS_FUTURE
+		DATE_OU_PF_DANS_FUTUR
 	}
 
 	private EchecType type;
-	private List<Long> MenageCommunIds;
+	private List<Long> menageCommunIds;
 	private List<Long> parentsIds;
-	private List<Long> MenageCommunParentsIds;
+	private List<Long> menageCommunParentsIds;
 	private boolean assujetissementNonConforme;
 
 	public TaxLiabilityControlEchec(EchecType type) {
@@ -27,11 +27,11 @@ public class TaxLiabilityControlEchec {
 	}
 
 	public List<Long> getMenageCommunIds() {
-		return MenageCommunIds;
+		return menageCommunIds;
 	}
 
 	public void setMenageCommunIds(List<Long> menageCommunIds) {
-		MenageCommunIds = menageCommunIds;
+		this.menageCommunIds = menageCommunIds;
 	}
 
 	public List<Long> getParentsIds() {
@@ -43,11 +43,11 @@ public class TaxLiabilityControlEchec {
 	}
 
 	public List<Long> getMenageCommunParentsIds() {
-		return MenageCommunParentsIds;
+		return menageCommunParentsIds;
 	}
 
 	public void setMenageCommunParentsIds(List<Long> menageCommunParentsIds) {
-		MenageCommunParentsIds = menageCommunParentsIds;
+		this.menageCommunParentsIds = menageCommunParentsIds;
 	}
 
 	public EchecType getType() {

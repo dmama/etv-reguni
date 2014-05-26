@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.evenement.party;
 
-import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
@@ -24,7 +23,7 @@ public class PeriodicTaxLiabilityRequestHandlerV3 extends TaxLiabilityRequestHan
 	}
 
 	@Override
-	public TaxLiabilityControlResult doControl(PeriodicTaxLiabilityRequest request, @NotNull Tiers tiers) throws ControlRuleException {
+	public TaxLiabilityControlResult<TypeAssujettissement> doControl(PeriodicTaxLiabilityRequest request, @NotNull Tiers tiers) throws ControlRuleException {
 		final int periode = request.getFiscalPeriod();
 		final boolean rechercheMenageCommun = request.isSearchCommonHouseHolds();
 		final boolean rechercheParents = request.isSearchParents();
@@ -35,10 +34,10 @@ public class PeriodicTaxLiabilityRequestHandlerV3 extends TaxLiabilityRequestHan
 		if (taxliabilityToReject.isEmpty()) {
 			return null;
 		}
-		final List<TypeAssujettissement> result = new ArrayList<>();
+		final Set<TypeAssujettissement> result = EnumSet.noneOf(TypeAssujettissement.class);
 		for (IndividualTaxLiabilityType taxliability : taxliabilityToReject) {
 			result.add(EnumHelper.xmlToCore(taxliability));
 		}
-		return EnumSet.copyOf(result);
+		return result;
 	}
 }

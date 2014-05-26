@@ -4,8 +4,10 @@ import org.jetbrains.annotations.NotNull;
 
 import ch.vd.uniregctb.tiers.Tiers;
 
-public interface TaxLiabilityControlRule {
+/**
+ * @param <T> type de valeurs collectées ({@link ch.vd.uniregctb.type.ModeImposition} ou {@link ch.vd.uniregctb.metier.assujettissement.TypeAssujettissement})
+ */
+public interface TaxLiabilityControlRule<T extends Enum<T>> {
 
-	public TaxLiabilityControlResult check(@NotNull Tiers tiers) throws ControlRuleException;
-
+	TaxLiabilityControlResult<T> check(@NotNull Tiers tiers) throws ControlRuleException;
 }

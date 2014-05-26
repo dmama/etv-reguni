@@ -2,7 +2,6 @@ package ch.vd.uniregctb.evenement.party.control;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
@@ -15,15 +14,14 @@ import ch.vd.uniregctb.tiers.TiersService;
 /**
  * Régle PA.1: Recherche d’un parent assujetti sur la PF (ARI) : Détermination de toutes les relations parentales en vigueur sur la PF concernée
  */
-public class ControlRuleForParentPeriode extends ControlRuleForParent {
+public class ControlRuleForParentPeriode extends ControlRuleForParent<TypeAssujettissement> {
 
 	private final DateRange periode;
 
-
-	public ControlRuleForParentPeriode(int periode, TiersService tiersService, AssujettissementService assService, Set<TypeAssujettissement> assujettissementsARejeter) {
+	public ControlRuleForParentPeriode(int periode, TiersService tiersService, AssujettissementService assService) {
 		super(tiersService,
-				new ControlRuleForTiersPeriode(periode, tiersService, assService,assujettissementsARejeter),
-				new ControlRuleForMenagePeriode(periode, tiersService, assService,assujettissementsARejeter));
+		      new ControlRuleForTiersPeriode(periode, tiersService, assService),
+		      new ControlRuleForMenagePeriode(periode, tiersService, assService));
 		this.periode = new DateRangeHelper.Range(RegDate.get(periode, 1, 1), RegDate.get(periode, 12, 31));
 	}
 

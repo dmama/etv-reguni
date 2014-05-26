@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.evenement.party.control;
 
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -11,7 +12,6 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.assujettissement.TypeAssujettissement;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -34,131 +34,97 @@ public class TaxLiabilityControlServiceImpl implements TaxLiabilityControlServic
 		this.assujettissementService = assujettissementService;
 	}
 
-	public TaxLiabilityControlResult doControlOnDate(@NotNull Tiers tiers, RegDate date, boolean rechercheMenageCommun, boolean rechercheParent, boolean controleDateDansFuture,
-	                                                 @Nullable Set<ModeImposition> modeImpositionARejeter) throws ControlRuleException {
+	public TaxLiabilityControlResult<ModeImposition> doControlOnDate(@NotNull Tiers tiers, RegDate date, boolean rechercheMenageCommun, boolean rechercheParent, boolean controleDateDansFuture,
+	                                                                       @Nullable Set<ModeImposition> modeImpositionARejeter) throws ControlRuleException {
 		if (LOGGER.isDebugEnabled()) {
 			final String message = String.format("Contrôle d'assujettissement à une date => tiers %d, date %s, menage? %b, parent? %b",
-					tiers.getNumero(), RegDateHelper.dateToDashString(date), rechercheMenageCommun, rechercheParent);
+			                                     tiers.getNumero(), RegDateHelper.dateToDashString(date), rechercheMenageCommun, rechercheParent);
 			LOGGER.debug(message);
 		}
 
 		//Contrôle sur la date activé avec date dans le futur
 		if (controleDateDansFuture && date.isAfter(RegDate.get())) {
-			TaxLiabilityControlResult result = new TaxLiabilityControlResult();
-			result.setEchec(new TaxLiabilityControlEchec(TaxLiabilityControlEchec.EchecType.DATE_OU_PF_DANS_FUTURE));
-			return result;
+			return new TaxLiabilityControlResult<>(new TaxLiabilityControlEchec(TaxLiabilityControlEchec.EchecType.DATE_OU_PF_DANS_FUTUR));
 		}
-		final List<TaxLiabilityControlRule> rules = getControlRulesForDate(tiers, date, rechercheMenageCommun, rechercheParent, null);
-		final TaxLiabilityControlResult analyse = doControl(tiers, rules);
-		TaxLiabilityControlResult result = null;
+
+		final List<TaxLiabilityControlRule<ModeImposition>> rules = getControlRulesForDate(tiers, date, rechercheMenageCommun, rechercheParent);
+		final TaxLiabilityControlResult<ModeImposition> analyse = doControl(tiers, rules);
+		final TaxLiabilityControlResult<ModeImposition> result;
 		if (modeImpositionARejeter == null || modeImpositionARejeter.isEmpty()) {
 			result = analyse;
 		}
 		else {
-			result = verifierAssujettissement(analyse, null,modeImpositionARejeter);
+			result = verifierAssujettissement(analyse, modeImpositionARejeter);
 		}
 		return result;
 	}
 
-	public TaxLiabilityControlResult doControlOnPeriod(@NotNull Tiers tiers, int periode, boolean rechercheMenageCommun, boolean rechercheParent, boolean controlePeriodDansFutur,
-	                                                   Set<TypeAssujettissement> assujettissementsARejeter) throws ControlRuleException {
+	public TaxLiabilityControlResult<TypeAssujettissement> doControlOnPeriod(@NotNull Tiers tiers, int periode, boolean rechercheMenageCommun, boolean rechercheParent, boolean controlePeriodDansFutur,
+	                                                                   Set<TypeAssujettissement> assujettissementsARejeter) throws ControlRuleException {
 		if (LOGGER.isDebugEnabled()) {
 			final String message = String.format("Contrôle d'assujettissement sur periode => tiers %d, periode %d, menage? %b, parent? %b",
-					tiers.getNumero(), periode, rechercheMenageCommun, rechercheParent);
+			                                     tiers.getNumero(), periode, rechercheMenageCommun, rechercheParent);
 			LOGGER.debug(message);
 		}
 		//Contrôle sur la Période activé avec la période dans le futur
 		if (controlePeriodDansFutur && periode > RegDate.get().year()) {
-			TaxLiabilityControlResult result = new TaxLiabilityControlResult();
-			result.setEchec(new TaxLiabilityControlEchec(TaxLiabilityControlEchec.EchecType.DATE_OU_PF_DANS_FUTURE));
-			return result;
+			return new TaxLiabilityControlResult<>(new TaxLiabilityControlEchec(TaxLiabilityControlEchec.EchecType.DATE_OU_PF_DANS_FUTUR));
 		}
-		final List<TaxLiabilityControlRule> rules = getControlRulesForPeriod(tiers, periode, rechercheMenageCommun, rechercheParent, null);
-		final TaxLiabilityControlResult analyse = doControl(tiers, rules);
-		TaxLiabilityControlResult result = null;
+
+		final List<TaxLiabilityControlRule<TypeAssujettissement>> rules = getControlRulesForPeriod(tiers, periode, rechercheMenageCommun, rechercheParent);
+		final TaxLiabilityControlResult<TypeAssujettissement> analyse = doControl(tiers, rules);
+		final TaxLiabilityControlResult<TypeAssujettissement> result;
 		if (assujettissementsARejeter == null || assujettissementsARejeter.isEmpty()) {
 			result = analyse;
 		}
 		else {
-			result = verifierAssujettissement(analyse, assujettissementsARejeter,null);
+			result = verifierAssujettissement(analyse, assujettissementsARejeter);
 		}
 		return result;
 	}
 
-	private TaxLiabilityControlResult verifierAssujettissement(TaxLiabilityControlResult analyse, Set<TypeAssujettissement> assujettissementsARejeter,Set<ModeImposition> modeImpositionARejeter) {
+	private <T extends Enum<T>> TaxLiabilityControlResult<T> verifierAssujettissement(TaxLiabilityControlResult<T> analyse, Set<T> aRejeter) {
 		//Si le contrôle est en echec, on le renvoie tel quel
 		if (analyse.getEchec() != null) {
 			return analyse;
 		}
 
-		//Verification de la conformité des ssujettissements trouvés
-		final boolean nonConforme = assujettissementsARejeter!=null?
-				isAssujettissementNonComforme(analyse, assujettissementsARejeter):isModeImpositionNonComforme(analyse,modeImpositionARejeter);
-
-
-		if (nonConforme) {
-			//on construit une nouveau résultat en Echec avec les informations adéquates
-			final TaxLiabilityControlResult result = new TaxLiabilityControlResult();
-			 TaxLiabilityControlEchec echec =null;
-
-			switch (analyse.getOrigine()) {
-			case MENAGE_COMMUN:
-				echec = new TaxLiabilityControlEchec(TaxLiabilityControlEchec.EchecType.UN_PLUSIEURS_MC_NON_ASSUJETTI_TROUVES);
-				echec.setMenageCommunIds(Arrays.asList(analyse.getIdTiersAssujetti()));
-				break;
-			case PARENT:
-				echec = new TaxLiabilityControlEchec(TaxLiabilityControlEchec.EchecType.CONTROLE_SUR_PARENTS_KO);
-				echec.setParentsIds(Arrays.asList(analyse.getIdTiersAssujetti()));
-				break;
-			case MENAGE_COMMUN_PARENT:
-				echec = new TaxLiabilityControlEchec(TaxLiabilityControlEchec.EchecType.CONTROLE_SUR_PARENTS_KO);
-				echec.setMenageCommunParentsIds(Arrays.asList(analyse.getIdTiersAssujetti()));
-				break;
-			default:
-				echec = new TaxLiabilityControlEchec(TaxLiabilityControlEchec.EchecType.CONTROLE_NUMERO_KO);
-				break;
-
-			}
-			echec.setAssujetissementNonConforme(true);
-			result.setEchec(echec);
-			return result;
-		}
-		else{
-			//Tout est ok on renvoi le résultat initial
-			return analyse;
-		}
-
-	}
-
-	private boolean isAssujettissementNonComforme(TaxLiabilityControlResult analyse, Set<TypeAssujettissement> assujettissementsARejeter) {
-
-		List<Assujettissement> assujettissements = analyse.getSourceAssujettissements();
-		for (TypeAssujettissement typeAssujettissement : assujettissementsARejeter) {
-			for (Assujettissement assujettissement : assujettissements) {
-				if (assujettissement.getType() == typeAssujettissement) {
-					return true;
+		// Vérification de la conformité des assujettissements trouvés
+		final Set<T> trouves = analyse.getSourceAssujettissements();
+		if (trouves != null && !trouves.isEmpty() && aRejeter != null && !aRejeter.isEmpty()) {
+			final Set<T> intersection = EnumSet.copyOf(aRejeter);
+			intersection.retainAll(trouves);
+			if (!intersection.isEmpty()) {
+				final TaxLiabilityControlEchec echec;
+				switch (analyse.getOrigine()) {
+				case MENAGE_COMMUN:
+					echec = new TaxLiabilityControlEchec(TaxLiabilityControlEchec.EchecType.UN_PLUSIEURS_MC_NON_ASSUJETTI_TROUVES);
+					echec.setMenageCommunIds(Arrays.asList(analyse.getIdTiersAssujetti()));
+					break;
+				case PARENT:
+					echec = new TaxLiabilityControlEchec(TaxLiabilityControlEchec.EchecType.CONTROLE_SUR_PARENTS_KO);
+					echec.setParentsIds(Arrays.asList(analyse.getIdTiersAssujetti()));
+					break;
+				case MENAGE_COMMUN_PARENT:
+					echec = new TaxLiabilityControlEchec(TaxLiabilityControlEchec.EchecType.CONTROLE_SUR_PARENTS_KO);
+					echec.setMenageCommunParentsIds(Arrays.asList(analyse.getIdTiersAssujetti()));
+					break;
+				default:
+					echec = new TaxLiabilityControlEchec(TaxLiabilityControlEchec.EchecType.CONTROLE_NUMERO_KO);
+					break;
 				}
+
+				echec.setAssujetissementNonConforme(true);
+				return new TaxLiabilityControlResult<>(echec);
 			}
 		}
-		return false;
+
+		return analyse;
 	}
 
-	private boolean isModeImpositionNonComforme(TaxLiabilityControlResult analyse, Set<ModeImposition> modeImpositionsARejeter) {
-
-		List<ModeImposition> modeImpositionsTrouves = analyse.getSourceAssujettissements();
-		for (ModeImposition modeARejeter : modeImpositionsARejeter) {
-			for (ModeImposition impositionTrouve : modeImpositionsTrouves) {
-				if (modeARejeter == impositionTrouve) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-
-	private TaxLiabilityControlResult doControl(@NotNull Tiers tiers, List<TaxLiabilityControlRule> rules) throws ControlRuleException {
-		TaxLiabilityControlResult result = null;
-		for (TaxLiabilityControlRule taxLiabilityControlRule : rules) {
+	private <T extends Enum<T>> TaxLiabilityControlResult<T> doControl(@NotNull Tiers tiers, List<TaxLiabilityControlRule<T>> rules) throws ControlRuleException {
+		TaxLiabilityControlResult<T> result = null;
+		for (TaxLiabilityControlRule<T> taxLiabilityControlRule : rules) {
 			result = taxLiabilityControlRule.check(tiers);
 			if (result.getIdTiersAssujetti() != null) {
 				// on a trouvé un controle OK on retourne le résultat
@@ -170,10 +136,10 @@ public class TaxLiabilityControlServiceImpl implements TaxLiabilityControlServic
 		return result;
 	}
 
-	private List<TaxLiabilityControlRule> buildRuleList(Tiers tiers, ControlRuleForTiers ruleTiers, ControlRuleForMenage ruleMenage, ControlRuleForParent ruleParents) {
+	private <T extends Enum<T>> List<TaxLiabilityControlRule<T>> buildRuleList(Tiers tiers, ControlRuleForTiers<T> ruleTiers, ControlRuleForMenage<T> ruleMenage, ControlRuleForParent<T> ruleParents) {
 
 		//Construction de la liste d'exécution
-		final List<TaxLiabilityControlRule> rules = new LinkedList<>();
+		final List<TaxLiabilityControlRule<T>> rules = new LinkedList<>();
 
 		//Contrôle d'assujetissement sur le tiers en entrée
 		rules.add(ruleTiers);
@@ -199,20 +165,17 @@ public class TaxLiabilityControlServiceImpl implements TaxLiabilityControlServic
 		return rules;
 	}
 
-	private List<TaxLiabilityControlRule> getControlRulesForPeriod(@NotNull Tiers tiers, int periode, boolean rechercheMenageCommun,
-	                                                               boolean rechercheParent, Set<TypeAssujettissement> assujettissementsARejeter) throws ControlRuleException {
-		final ControlRuleForTiersPeriode controlRuleForTiers = new ControlRuleForTiersPeriode(periode, tiersService, assujettissementService, assujettissementsARejeter);
-		final ControlRuleForMenagePeriode controlRuleForMenage =
-				rechercheMenageCommun ? new ControlRuleForMenagePeriode(periode, tiersService, assujettissementService, assujettissementsARejeter) : null;
-		final ControlRuleForParentPeriode controlRuleForParent = rechercheParent ? new ControlRuleForParentPeriode(periode, tiersService, assujettissementService, assujettissementsARejeter) : null;
+	private List<TaxLiabilityControlRule<TypeAssujettissement>> getControlRulesForPeriod(@NotNull Tiers tiers, int periode, boolean rechercheMenageCommun, boolean rechercheParent) throws ControlRuleException {
+		final ControlRuleForTiersPeriode controlRuleForTiers = new ControlRuleForTiersPeriode(periode, tiersService, assujettissementService);
+		final ControlRuleForMenagePeriode controlRuleForMenage = rechercheMenageCommun ? new ControlRuleForMenagePeriode(periode, tiersService, assujettissementService) : null;
+		final ControlRuleForParentPeriode controlRuleForParent = rechercheParent ? new ControlRuleForParentPeriode(periode, tiersService, assujettissementService) : null;
 		return buildRuleList(tiers, controlRuleForTiers, controlRuleForMenage, controlRuleForParent);
 	}
 
-	private List<TaxLiabilityControlRule> getControlRulesForDate(@NotNull Tiers tiers, RegDate date, boolean rechercheMenageCommun, boolean rechercheParent,
-	                                                             Set<ModeImposition> modeImpositionARejeter) {
-		final ControlRuleForTiersDate controlRuleForTiers = new ControlRuleForTiersDate(date, tiersService, modeImpositionARejeter);
-		final ControleRuleForMenageDate controlRuleForMenage = rechercheMenageCommun ? new ControleRuleForMenageDate(date, tiersService, modeImpositionARejeter) : null;
-		final ControlRuleForParentDate controlRuleForParent = rechercheParent ? new ControlRuleForParentDate(date, tiersService, modeImpositionARejeter) : null;
+	private List<TaxLiabilityControlRule<ModeImposition>> getControlRulesForDate(@NotNull Tiers tiers, RegDate date, boolean rechercheMenageCommun, boolean rechercheParent) {
+		final ControlRuleForTiersDate controlRuleForTiers = new ControlRuleForTiersDate(date, tiersService);
+		final ControlRuleForMenageDate controlRuleForMenage = rechercheMenageCommun ? new ControlRuleForMenageDate(date, tiersService) : null;
+		final ControlRuleForParentDate controlRuleForParent = rechercheParent ? new ControlRuleForParentDate(date, tiersService) : null;
 		return buildRuleList(tiers, controlRuleForTiers, controlRuleForMenage, controlRuleForParent);
 	}
 }

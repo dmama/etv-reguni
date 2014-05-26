@@ -65,7 +65,7 @@ public abstract class TaxLiabilityRequestHandlerV2<T extends TaxLiabilityRequest
 		}
 
 		try {
-			final TaxLiabilityControlResult result = doControl(request, tiers);
+			final TaxLiabilityControlResult<?> result = doControl(request, tiers);
 			return builtRequestHandler(result);
 		}
 		catch (ControlRuleException e) {
@@ -80,9 +80,9 @@ public abstract class TaxLiabilityRequestHandlerV2<T extends TaxLiabilityRequest
 	 * @return le résultat du contrôle
 	 * @throws ControlRuleException en cas de souci
 	 */
-	protected abstract TaxLiabilityControlResult doControl(T request, @NotNull Tiers tiers) throws ControlRuleException;
+	protected abstract TaxLiabilityControlResult<?> doControl(T request, @NotNull Tiers tiers) throws ControlRuleException;
 
-	private RequestHandlerResult builtRequestHandler(TaxLiabilityControlResult result) {
+	private RequestHandlerResult builtRequestHandler(TaxLiabilityControlResult<?> result) {
 
 		Integer partyNumber = null;
 		Failure failure = null;

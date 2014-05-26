@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.evenement.party.control;
 
+import java.util.Set;
+
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -8,27 +10,26 @@ import ch.vd.uniregctb.tiers.TiersService;
 
 /**
  * Régle A1.3:Déclenchée si demande porte sur date déterminante.
- * Vérification du for fiscal principal Unireg en vigueur * à la date déterminante sur le numéro tiers fourni
+ * Vérification du for fiscal principal Unireg en vigueur à la date déterminante sur le numéro tiers fourni
+ * @param <T> type de valeurs collectées ({@link ch.vd.uniregctb.type.ModeImposition} ou {@link ch.vd.uniregctb.metier.assujettissement.TypeAssujettissement})
  */
-public abstract class ControlRuleForTiers extends AbstractControlRule {
+public abstract class ControlRuleForTiers<T extends Enum<T>> extends AbstractControlRule<T> {
 
 	protected ControlRuleForTiers(TiersService tiersService) {
 		super(tiersService);
 	}
 
 	@Override
-	public TaxLiabilityControlResult check(@NotNull Tiers tiers) throws ControlRuleException {
-		final TaxLiabilityControlResult result = new TaxLiabilityControlResult();
-		//S'il y a un assujettissement sur tout ou partie de la PF (au moins 1 jour) -> CTRL OK et que l'assujetissement est conforme à la demande
-		final boolean assujettissementNonConforme = isAssujettissementNonConforme(tiers);
-		if (isAssujetti(tiers) && !assujettissementNonConforme) {
-			result.setIdTiersAssujetti(tiers.getId());
-			result.setOrigine(TaxLiabilityControlResult.Origine.INITIAL);
-			result.setSourceAssujettissements(getSourceAssujettissement(tiers));
+	public TaxLiabilityControlResult<T> check(@NotNull Tiers tiers) throws ControlRuleException {
+		//S'il y a un assujettissement sur tout ou partie de la PF (au moins 1 jour) -> CTRL OK
+		final TaxLiabilityControlResult<T> result;
+		if (isAssujetti(tiers)) {
+			final Set<T> sourceAssujettissement = getSourceAssujettissement(tiers);
+			result = new TaxLiabilityControlResult<>(TaxLiabilityControlResult.Origine.INITIAL, tiers.getId(), sourceAssujettissement);
 		}
 		//	Dans le cas contraire (pas un seul jour d'assujettissement)-> CTRL KO
 		else {
-			setErreur(result, TaxLiabilityControlEchec.EchecType.CONTROLE_NUMERO_KO, null, null, null,assujettissementNonConforme);
+			result = new TaxLiabilityControlResult<>(createEchec(TaxLiabilityControlEchec.EchecType.CONTROLE_NUMERO_KO, null, null, null));
 		}
 		return result;
 	}

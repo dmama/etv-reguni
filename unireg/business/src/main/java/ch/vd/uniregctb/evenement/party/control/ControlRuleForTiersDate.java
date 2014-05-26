@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.evenement.party.control;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.EnumSet;
 import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
@@ -16,28 +15,20 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 /**
  * Régle A1.3:Déclenchée si demande porte sur date déterminante.
- * Vérification du for fiscal principal Unireg en vigueur * à la date déterminante sur le numéro tiers fourni
+ * Vérification du for fiscal principal Unireg en vigueur à la date déterminante sur le numéro tiers fourni
  */
-public class ControlRuleForTiersDate extends ControlRuleForTiers {
+public class ControlRuleForTiersDate extends ControlRuleForTiers<ModeImposition> {
 
 	private final RegDate date;
-	private Set<ModeImposition> modeImpositionARejeter;
 
-	public ControlRuleForTiersDate(RegDate date, TiersService tiersService, Set<ModeImposition> listeMode) {
+	public ControlRuleForTiersDate(RegDate date, TiersService tiersService) {
 		super(tiersService);
 		this.date = date;
-		this.modeImpositionARejeter = listeMode;
 	}
 
 	@Override
 	public boolean isAssujetti(@NotNull Tiers tiers) throws ControlRuleException {
 		return hasForPrincipalVaudois(tiers);
-	}
-
-	@Override
-	public boolean isAssujettissementNonConforme(@NotNull Tiers tiers) throws ControlRuleException {
-		final ForFiscalPrincipal forFiscalPrincipal = tiers.getForFiscalPrincipalAt(date);
-		return modeImpositionARejeter!= null && forFiscalPrincipal!=null && modeImpositionARejeter.contains(forFiscalPrincipal.getModeImposition());
 	}
 
 	private boolean hasForPrincipalVaudois(@NotNull Tiers tiers) throws ControlRuleException {
@@ -51,8 +42,8 @@ public class ControlRuleForTiersDate extends ControlRuleForTiers {
 	}
 
 	@Override
-	public List<ModeImposition> getSourceAssujettissement(@NotNull Tiers tiers) {
-		final List<ModeImposition> modeImpositions = new ArrayList<>();
+	public Set<ModeImposition> getSourceAssujettissement(@NotNull Tiers tiers) {
+		final Set<ModeImposition> modeImpositions = EnumSet.noneOf(ModeImposition.class);
 		final ForFiscalPrincipal forFiscalPrincipal = tiers.getForFiscalPrincipalAt(date);
 		if (forFiscalPrincipal != null) {
 			modeImpositions.add(forFiscalPrincipal.getModeImposition());

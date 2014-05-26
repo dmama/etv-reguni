@@ -5,6 +5,7 @@ import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.uniregctb.metier.assujettissement.TypeAssujettissement;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -15,7 +16,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-public class ControleRuleForMenagePeriodeTest extends AbstractControlTaxliabilityTest {
+public class ControlRuleForMenagePeriodeTest extends AbstractControlTaxliabilityTest {
 
 	@Test
 	public void testCheckTiersNonAssujettiSansMenageCommun() throws Exception {
@@ -38,10 +39,10 @@ public class ControleRuleForMenagePeriodeTest extends AbstractControlTaxliabilit
 		});
 
 		final Integer periode = 2012;
-		final ControlRuleForMenagePeriode controlRuleForMenagePeriode = new ControlRuleForMenagePeriode(periode, tiersService, assujettissementService,null);
-		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
+		final ControlRuleForMenagePeriode controlRuleForMenagePeriode = new ControlRuleForMenagePeriode(periode, tiersService, assujettissementService);
+		final TaxLiabilityControlResult<TypeAssujettissement> result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<TypeAssujettissement>>() {
 			@Override
-			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idPP);
 				return controlRuleForMenagePeriode.check(pp);
 			}
@@ -86,10 +87,10 @@ public class ControleRuleForMenagePeriodeTest extends AbstractControlTaxliabilit
 		});
 
 		final Integer periode = 2012;
-		final ControlRuleForMenagePeriode controlRuleForMenagePeriode = new ControlRuleForMenagePeriode(periode, tiersService, assujettissementService,null);
-		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
+		final ControlRuleForMenagePeriode controlRuleForMenagePeriode = new ControlRuleForMenagePeriode(periode, tiersService, assujettissementService);
+		final TaxLiabilityControlResult<TypeAssujettissement> result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<TypeAssujettissement>>() {
 			@Override
-			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idpp);
 				return controlRuleForMenagePeriode.check(pp);
 			}
@@ -140,10 +141,10 @@ public class ControleRuleForMenagePeriodeTest extends AbstractControlTaxliabilit
 		});
 
 		final Integer periode = 2012;
-		final ControlRuleForMenagePeriode controlRuleForMenagePeriode = new ControlRuleForMenagePeriode(periode, tiersService, assujettissementService,null);
-		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
+		final ControlRuleForMenagePeriode controlRuleForMenagePeriode = new ControlRuleForMenagePeriode(periode, tiersService, assujettissementService);
+		final TaxLiabilityControlResult<TypeAssujettissement> result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<TypeAssujettissement>>() {
 			@Override
-			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idpp);
 				return controlRuleForMenagePeriode.check(pp);
 			}
@@ -199,10 +200,10 @@ public class ControleRuleForMenagePeriodeTest extends AbstractControlTaxliabilit
 		});
 
 		final Integer periode = 2012;
-		final ControlRuleForMenagePeriode controlRuleForMenagePeriode = new ControlRuleForMenagePeriode(periode, tiersService, assujettissementService,null);
-		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
+		final ControlRuleForMenagePeriode controlRuleForMenagePeriode = new ControlRuleForMenagePeriode(periode, tiersService, assujettissementService);
+		final TaxLiabilityControlResult<TypeAssujettissement> result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<TypeAssujettissement>>() {
 			@Override
-			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idpp);
 				return controlRuleForMenagePeriode.check(pp);
 			}
@@ -253,10 +254,10 @@ public class ControleRuleForMenagePeriodeTest extends AbstractControlTaxliabilit
 		});
 
 		final Integer periode = 2012;
-		final ControlRuleForMenagePeriode controlRuleForMenagePeriode = new ControlRuleForMenagePeriode(periode, tiersService, assujettissementService,null);
-		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
+		final ControlRuleForMenagePeriode controlRuleForMenagePeriode = new ControlRuleForMenagePeriode(periode, tiersService, assujettissementService);
+		final TaxLiabilityControlResult<TypeAssujettissement> result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<TypeAssujettissement>>() {
 			@Override
-			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idpp);
 				return controlRuleForMenagePeriode.check(pp);
 			}
@@ -300,10 +301,10 @@ public class ControleRuleForMenagePeriodeTest extends AbstractControlTaxliabilit
 		});
 
 		final Integer periode = 2012;
-		final ControlRuleForMenagePeriode controlRuleForMenagePeriode = new ControlRuleForMenagePeriode(periode, tiersService, assujettissementService,null);
-		final TaxLiabilityControlResult result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult>() {
+		final ControlRuleForMenagePeriode controlRuleForMenagePeriode = new ControlRuleForMenagePeriode(periode, tiersService, assujettissementService);
+		final TaxLiabilityControlResult<TypeAssujettissement> result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<TypeAssujettissement>>() {
 			@Override
-			public TaxLiabilityControlResult execute(TransactionStatus status) throws Exception {
+			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idpp);
 				return controlRuleForMenagePeriode.check(pp);
 			}

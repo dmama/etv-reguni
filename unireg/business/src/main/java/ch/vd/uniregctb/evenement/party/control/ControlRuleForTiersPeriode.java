@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.evenement.party.control;
 
-import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
@@ -19,17 +19,15 @@ import ch.vd.uniregctb.tiers.TiersService;
 /**
  * Régle A1.1: Utilisation de l'algorithme Unireg de détermination des assujettissements d'un numéro de tiers sur la PF
  */
-public class ControlRuleForTiersPeriode extends ControlRuleForTiers {
+public class ControlRuleForTiersPeriode extends ControlRuleForTiers<TypeAssujettissement> {
 
 	private final int periode;
 	private final AssujettissementService assService;
-	private final Set<TypeAssujettissement> assujettissementsARejeter;
 
-	public ControlRuleForTiersPeriode(int periode, TiersService tiersService, AssujettissementService assService,Set<TypeAssujettissement> assujettissementsARejeter) {
+	public ControlRuleForTiersPeriode(int periode, TiersService tiersService, AssujettissementService assService) {
 		super(tiersService);
 		this.periode = periode;
 		this.assService = assService;
-		this.assujettissementsARejeter = assujettissementsARejeter;
 	}
 
 	@Override
@@ -38,20 +36,15 @@ public class ControlRuleForTiersPeriode extends ControlRuleForTiers {
 	}
 
 	@Override
-	public  List<Assujettissement> getSourceAssujettissement(@NotNull Tiers tiers) throws ControlRuleException {
-		final List<Assujettissement> assujettissements = new ArrayList<>();
-		assujettissements.addAll(getAssujettissements(tiers));
-		return assujettissements;
-	}
-
-	@Override
-	public boolean isAssujettissementNonConforme(@NotNull Tiers tiers) throws ControlRuleException {
+	public  Set<TypeAssujettissement> getSourceAssujettissement(@NotNull Tiers tiers) throws ControlRuleException {
+		final Set<TypeAssujettissement> types = EnumSet.noneOf(TypeAssujettissement.class);
 		final List<Assujettissement> assujetissements = getAssujettissements(tiers);
-
-		//return vrai si il existe un assujetissement non conforme sur la période
-		final boolean nonConforme = assujetissements != null && !assujetissements.isEmpty() &&
-				assujettissementsARejeter != null && existAssujetissementNonConforme(assujetissements, assujettissementsARejeter);
-		return nonConforme;
+		if (assujetissements != null) {
+			for (Assujettissement a : assujetissements) {
+				types.add(a.getType());
+			}
+		}
+		return types;
 	}
 
 	private boolean isAssujettiSurPeriode(@NotNull Tiers tiers) throws ControlRuleException {
@@ -62,28 +55,17 @@ public class ControlRuleForTiersPeriode extends ControlRuleForTiers {
 	}
 
 	private List<Assujettissement> getAssujettissements(Tiers tiers) throws ControlRuleException {
-		final List<Assujettissement> assujetissements;
 		try {
-			assujetissements = tiers instanceof Contribuable ? assService.determine((Contribuable) tiers, periode) : null;
+			return tiers instanceof Contribuable ? assService.determine((Contribuable) tiers, periode) : null;
 		}
 		catch (AssujettissementException e) {
 			final String message = String.format("Exception lors du calcul d'assujetissement pour le tiers %d", tiers.getId());
 			throw new ControlRuleException(message, e);
 		}
-		return assujetissements;
 	}
 
 	@Override
 	public boolean isMineur(PersonnePhysique personne ) {
 		return tiersService.isMineur(personne, RegDate.get(periode, 12, 31));
-	}
-
-	private boolean existAssujetissementNonConforme(List<Assujettissement>assujettissements, Set<TypeAssujettissement> toReject){
-		for (Assujettissement assujettissement : assujettissements) {
-			if (toReject.contains(assujettissement.getType())) {
-				return true;
-			}
-		}
-		return false;
 	}
 }

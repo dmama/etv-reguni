@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.evenement.party.control;
 
-import java.util.List;
+import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -12,25 +12,21 @@ import ch.vd.uniregctb.tiers.TiersService;
  * Elle a besoin d'une règle de contrôle tierce(règle Tiers pour l'instant) pour calculer ses propres règles de contrôle
  *
  */
-public abstract class ControleRuleForTiersComposite extends AbstractControlRule {
+public abstract class ControlRuleForTiersComposite<T extends Enum<T>> extends AbstractControlRule<T> {
 
-	protected AbstractControlRule controlRule;
+	protected AbstractControlRule<T> controlRule;
 
-	protected ControleRuleForTiersComposite(TiersService tiersService,AbstractControlRule controlRule) {
+	protected ControlRuleForTiersComposite(TiersService tiersService, @NotNull AbstractControlRule<T> controlRule) {
 		super(tiersService);
 		this.controlRule = controlRule;
 	}
 
-	public boolean isAssujetti(@NotNull Tiers tiers) throws ControlRuleException{
+	public final boolean isAssujetti(@NotNull Tiers tiers) throws ControlRuleException {
 		return controlRule.isAssujetti(tiers);
-	};
-
-	@Override
-	public <T> List<T> getSourceAssujettissement(@NotNull Tiers tiers) throws ControlRuleException {
-		return controlRule.getSourceAssujettissement(tiers);
 	}
 
-	public  boolean isAssujettissementNonConforme(@NotNull Tiers tiers) throws ControlRuleException{
-		return controlRule.isAssujettissementNonConforme(tiers);
-	};
+	@Override
+	public final Set<T> getSourceAssujettissement(@NotNull Tiers tiers) throws ControlRuleException {
+		return controlRule.getSourceAssujettissement(tiers);
+	}
 }
