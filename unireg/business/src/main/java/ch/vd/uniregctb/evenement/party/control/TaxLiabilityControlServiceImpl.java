@@ -34,8 +34,8 @@ public class TaxLiabilityControlServiceImpl implements TaxLiabilityControlServic
 		this.assujettissementService = assujettissementService;
 	}
 
-	public TaxLiabilityControlResult<ModeImposition> doControlOnDate(@NotNull Tiers tiers, RegDate date, boolean rechercheMenageCommun, boolean rechercheParent, boolean controleDateDansFuture,
-	                                                                       @Nullable Set<ModeImposition> modeImpositionARejeter) throws ControlRuleException {
+	public TaxLiabilityControlResult<ModeImposition> doControlOnDate(@NotNull Tiers tiers, RegDate date, boolean rechercheMenageCommun, boolean rechercheParent, boolean controleDateDansFutur,
+	                                                                 @Nullable Set<ModeImposition> modeImpositionARejeter) throws ControlRuleException {
 		if (LOGGER.isDebugEnabled()) {
 			final String message = String.format("Contrôle d'assujettissement à une date => tiers %d, date %s, menage? %b, parent? %b",
 			                                     tiers.getNumero(), RegDateHelper.dateToDashString(date), rechercheMenageCommun, rechercheParent);
@@ -43,44 +43,36 @@ public class TaxLiabilityControlServiceImpl implements TaxLiabilityControlServic
 		}
 
 		//Contrôle sur la date activé avec date dans le futur
-		if (controleDateDansFuture && date.isAfter(RegDate.get())) {
+		if (controleDateDansFutur && date.isAfter(RegDate.get())) {
 			return new TaxLiabilityControlResult<>(new TaxLiabilityControlEchec(TaxLiabilityControlEchec.EchecType.DATE_OU_PF_DANS_FUTUR));
 		}
 
 		final List<TaxLiabilityControlRule<ModeImposition>> rules = getControlRulesForDate(tiers, date, rechercheMenageCommun, rechercheParent);
-		final TaxLiabilityControlResult<ModeImposition> analyse = doControl(tiers, rules);
-		final TaxLiabilityControlResult<ModeImposition> result;
-		if (modeImpositionARejeter == null || modeImpositionARejeter.isEmpty()) {
-			result = analyse;
-		}
-		else {
-			result = verifierAssujettissement(analyse, modeImpositionARejeter);
-		}
-		return result;
+		return doControl(tiers, rules, modeImpositionARejeter);
 	}
 
-	public TaxLiabilityControlResult<TypeAssujettissement> doControlOnPeriod(@NotNull Tiers tiers, int periode, boolean rechercheMenageCommun, boolean rechercheParent, boolean controlePeriodDansFutur,
-	                                                                   Set<TypeAssujettissement> assujettissementsARejeter) throws ControlRuleException {
+	public TaxLiabilityControlResult<TypeAssujettissement> doControlOnPeriod(@NotNull Tiers tiers, int periode, boolean rechercheMenageCommun, boolean rechercheParent, boolean controlePeriodeDansFutur,
+	                                                                         @Nullable Set<TypeAssujettissement> assujettissementsARejeter) throws ControlRuleException {
 		if (LOGGER.isDebugEnabled()) {
 			final String message = String.format("Contrôle d'assujettissement sur periode => tiers %d, periode %d, menage? %b, parent? %b",
 			                                     tiers.getNumero(), periode, rechercheMenageCommun, rechercheParent);
 			LOGGER.debug(message);
 		}
 		//Contrôle sur la Période activé avec la période dans le futur
-		if (controlePeriodDansFutur && periode > RegDate.get().year()) {
+		if (controlePeriodeDansFutur && periode > RegDate.get().year()) {
 			return new TaxLiabilityControlResult<>(new TaxLiabilityControlEchec(TaxLiabilityControlEchec.EchecType.DATE_OU_PF_DANS_FUTUR));
 		}
 
 		final List<TaxLiabilityControlRule<TypeAssujettissement>> rules = getControlRulesForPeriod(tiers, periode, rechercheMenageCommun, rechercheParent);
-		final TaxLiabilityControlResult<TypeAssujettissement> analyse = doControl(tiers, rules);
-		final TaxLiabilityControlResult<TypeAssujettissement> result;
-		if (assujettissementsARejeter == null || assujettissementsARejeter.isEmpty()) {
-			result = analyse;
+		return doControl(tiers, rules, assujettissementsARejeter);
+	}
+
+	private <T extends Enum<T>> TaxLiabilityControlResult<T> doControl(@NotNull Tiers tiers, List<TaxLiabilityControlRule<T>> rules, Set<T> aRejeter) throws ControlRuleException {
+		final TaxLiabilityControlResult<T> analyse = doControl(tiers, rules);
+		if (aRejeter == null || aRejeter.isEmpty()) {
+			return analyse;
 		}
-		else {
-			result = verifierAssujettissement(analyse, assujettissementsARejeter);
-		}
-		return result;
+		return verifierAssujettissement(analyse, aRejeter);
 	}
 
 	private <T extends Enum<T>> TaxLiabilityControlResult<T> verifierAssujettissement(TaxLiabilityControlResult<T> analyse, Set<T> aRejeter) {
