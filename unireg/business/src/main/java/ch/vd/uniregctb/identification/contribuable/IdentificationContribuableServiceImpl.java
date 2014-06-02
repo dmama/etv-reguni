@@ -393,10 +393,10 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 					criteria.setNavs11OrNull(StringUtils.left(criteres.getNAVS11(), 8));
 				}
 				if (criteres.getSexe() != null) {
-					criteria.setSexeOrNull(criteres.getSexe());
+					criteria.setSexe(criteres.getSexe());
 				}
 				if (criteres.getDateNaissance() != null) {
-					criteria.setDateNaissanceOrNull(criteres.getDateNaissance());
+					criteria.setDateNaissance(criteres.getDateNaissance());
 				}
 				if (criteres.getAdresse() != null) {
 					final CriteresAdresse adresse = criteres.getAdresse();
