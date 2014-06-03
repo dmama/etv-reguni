@@ -707,6 +707,86 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 	}
 
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testContribuableSurDateNaissanceAvecNavs13() throws Exception {
+		final long noIndividuClaude = 151658;
+		final long noIndividuClaudeAnne = 2345;
+
+		serviceUpi.setUp(new DefaultMockServiceUpi());
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu indClaude = addIndividu(noIndividuClaude, date(1978,5,6), "Rosat", "Claude", true);
+				MockIndividu indClaudeAnne = addIndividu(noIndividuClaudeAnne, null, "Rosat", "Claude", false);
+				addFieldsIndividu(indClaude, "7568174973276", "", "");
+				addFieldsIndividu(indClaudeAnne, "7568174973276", "", "");
+			}
+		});
+
+		class Ids {
+			Long claude;
+			Long claudeAnne;
+
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				final PersonnePhysique habClaude = addHabitant(noIndividuClaude);
+				final PersonnePhysique habClaudeAnne = addHabitant(noIndividuClaudeAnne);
+				ids.claude = habClaude.getNumero();
+				ids.claudeAnne = habClaudeAnne.getNumero();
+				return null;
+			}
+		});
+
+		globalTiersIndexer.sync();
+
+		assertCountDemandes(0);
+
+		// création et traitement du message d'identification
+		CriteresPersonne criteres = new CriteresPersonne();
+		criteres.setPrenoms("Claude");
+		criteres.setNom("Rosat");
+		criteres.setNAVS13("7568174973276");
+
+		criteres.setDateNaissance(date(1978,5,6));
+
+		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
+		message.setLogCreationDate(RegDate.get().asJavaDate());
+		doInTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				service.handleDemande(message);
+				return null;
+			}
+		});
+
+		final List<IdentificationContribuable> list = identCtbDAO.getAll();
+		assertEquals(1, list.size());
+
+		final IdentificationContribuable ic = list.get(0);
+		assertNotNull(ic);
+		assertEquals(Etat.TRAITE_AUTOMATIQUEMENT, ic.getEtat());
+		assertEquals(Integer.valueOf(1), ic.getNbContribuablesTrouves());
+
+		final Reponse reponse = ic.getReponse();
+		assertNotNull(reponse);
+		assertNull(reponse.getErreur());
+		assertEquals(ids.claude, reponse.getNoContribuable());
+
+		// La demande doit avoir reçu une réponse automatiquement
+		assertEquals(1, messageHandler.getSentMessages().size());
+		final IdentificationContribuable sent = messageHandler.getSentMessages().get(0);
+		assertEquals(ic.getId(), sent.getId());
+
+
+	}
+
 
 	@Test
 	@Transactional(rollbackFor = Throwable.class)

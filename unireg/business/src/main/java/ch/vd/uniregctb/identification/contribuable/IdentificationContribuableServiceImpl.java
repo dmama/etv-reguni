@@ -966,7 +966,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 				public boolean evaluate(Object object) {
 					final PersonnePhysique pp = (PersonnePhysique) object;
 					final Sexe sexe = tiersService.getSexe(pp);
-					return (sexe == sexeCritere || sexe == null);
+					return (sexe!=null && sexe == sexeCritere);
 				}
 			});
 		}
@@ -1001,12 +1001,15 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	private boolean matchDateNaissance(PersonnePhysique pp, RegDate critereDateNaissance) {
 		final RegDate dateNaissance = tiersService.getDateNaissance(pp);
 		final RegDate dateLimite = RegDate.get(1901, 1, 1);
-		if (dateNaissance != null && critereDateNaissance.isAfterOrEqual(dateLimite)) {
+		if (critereDateNaissance.isBefore(dateLimite) || critereDateNaissance.isAfter(RegDate.get())) {
+			return true;
+		}
+		if (dateNaissance != null) {
 			//SIFISC-9006 les dates partiels doivent être prises en compte et comparées
 			return dateNaissance.compareTo(critereDateNaissance)==0;
 		}
 		else {
-			return true;
+			return false;
 		}
 	}
 
