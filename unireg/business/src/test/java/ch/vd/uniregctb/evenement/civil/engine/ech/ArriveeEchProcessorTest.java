@@ -988,6 +988,422 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		}
 	}
 
+	@Test
+	public void testArriveeNonHabitantNAVS13() throws Exception {
+
+		try {
+			final long noIndividu = 126673246L;
+			final RegDate dateNaissance = date(1956, 4, 23);
+			final RegDate dateMariage = date(2010, 1, 15);
+			final RegDate dateArrivee = date(2011, 10, 31);
+			final String navs13 = "3218526549783";
+			setWantIndexation(true);
+
+			// le p'tit nouveau
+			serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+				@Override
+				protected void init() {
+					final MockIndividu ind = addIndividu(noIndividu, null, "", "Ignacio", true);
+					final MockAdresse adresse = addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Echallens.GrandRue, null, dateArrivee, null);
+					adresse.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_CANTON, MockCommune.Geneve.getNoOFS(), null));
+					addNationalite(ind, MockPays.Suisse, dateNaissance, null);
+
+					ind.setNouveauNoAVS(navs13);
+
+					marieIndividu(ind, dateMariage);
+				}
+			});
+
+			// Mise en place du fiscal
+			final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+				@Override
+				public Long doInTransaction(TransactionStatus status) {
+					final PersonnePhysique pp = addNonHabitant("Ignacio", "Chollet", dateNaissance, Sexe.MASCULIN);
+					pp.setNumeroAssureSocial(navs13);
+					addForPrincipal(pp, dateArrivee.addYears(-5), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Geneve, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
+					addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, dateArrivee.addYears(-5), null, MockRue.Geneve.AvenueGuiseppeMotta);
+					return pp.getNumero();
+				}
+			});
+
+			globalTiersIndexer.sync();
+
+			// événement d'arrivée
+			final long evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+				@Override
+				public Long doInTransaction(TransactionStatus status) {
+					final EvenementCivilEch evt = new EvenementCivilEch();
+					evt.setId(14532L);
+					evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+					evt.setDateEvenement(dateArrivee);
+					evt.setEtat(EtatEvenementCivil.A_TRAITER);
+					evt.setNumeroIndividu(noIndividu);
+					evt.setType(TypeEvenementCivilEch.ARRIVEE);
+					return hibernateTemplate.merge(evt).getId();
+				}
+			});
+
+			// traitement de l'événement
+			traiterEvenements(noIndividu);
+
+			// vérification du traitement
+			doInNewTransactionAndSession(new TransactionCallback<Object>() {
+				@Override
+				public Object doInTransaction(TransactionStatus status) {
+					final EvenementCivilEch evt = evtCivilDAO.get(evtId);
+					assertNotNull(evt);
+					assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+					final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
+					assertNotNull(pp);
+					assertEquals((Long) ppId, pp.getNumero());
+					return null;
+				}
+			});
+		}
+		finally {
+			globalTiersIndexer.overwriteIndex();
+		}
+	}
+
+	@Test
+	public void testArriveeNonHabitantNAVS13Doublon() throws Exception {
+
+		try {
+			final long noIndividu = 126673246L;
+			final RegDate dateNaissance = date(1956, 4, 23);
+			final RegDate dateMariage = date(2010, 1, 15);
+			final RegDate dateArrivee = date(2011, 10, 31);
+			final String navs13 = "3218526549783";
+			setWantIndexation(true);
+
+			// le p'tit nouveau
+			serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+				@Override
+				protected void init() {
+					final MockIndividu ind = addIndividu(noIndividu, null, "", "Ignacio", true);
+					final MockAdresse adresse = addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Echallens.GrandRue, null, dateArrivee, null);
+					adresse.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_CANTON, MockCommune.Geneve.getNoOFS(), null));
+					addNationalite(ind, MockPays.Suisse, dateNaissance, null);
+
+					ind.setNouveauNoAVS(navs13);
+
+					marieIndividu(ind, dateMariage);
+				}
+			});
+
+			// Mise en place du fiscal
+			final long ppId1 = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+				@Override
+				public Long doInTransaction(TransactionStatus status) {
+					final PersonnePhysique pp = addNonHabitant("Ignacio", "Chollet", dateNaissance, Sexe.MASCULIN);
+					pp.setNumeroAssureSocial(navs13);
+					addForPrincipal(pp, dateArrivee.addYears(-5), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Geneve, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
+					addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, dateArrivee.addYears(-5), null, MockRue.Geneve.AvenueGuiseppeMotta);
+					return pp.getNumero();
+				}
+			});
+
+			// Mise en place du fiscal
+			final long ppId2 = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+				@Override
+				public Long doInTransaction(TransactionStatus status) {
+					final PersonnePhysique pp = addNonHabitant("Hortense", "Hipelnik", dateNaissance, Sexe.FEMININ);
+					pp.setNumeroAssureSocial(navs13);
+					addForPrincipal(pp, dateArrivee.addYears(-5), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Geneve, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
+					addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, dateArrivee.addYears(-5), null, MockRue.Geneve.AvenueGuiseppeMotta);
+					return pp.getNumero();
+				}
+			});
+
+			globalTiersIndexer.sync();
+
+			// événement d'arrivée
+			final long evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+				@Override
+				public Long doInTransaction(TransactionStatus status) {
+					final EvenementCivilEch evt = new EvenementCivilEch();
+					evt.setId(14532L);
+					evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+					evt.setDateEvenement(dateArrivee);
+					evt.setEtat(EtatEvenementCivil.A_TRAITER);
+					evt.setNumeroIndividu(noIndividu);
+					evt.setType(TypeEvenementCivilEch.ARRIVEE);
+					return hibernateTemplate.merge(evt).getId();
+				}
+			});
+
+			// traitement de l'événement
+			traiterEvenements(noIndividu);
+
+			// vérification du traitement
+			doInNewTransactionAndSession(new TransactionCallback<Object>() {
+				@Override
+				public Object doInTransaction(TransactionStatus status) {
+					final EvenementCivilEch evt = evtCivilDAO.get(evtId);
+					assertNotNull(evt);
+					assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
+					List<EvenementCivilEchErreur> erreurs = new ArrayList<>(evt.getErreurs());
+					assertEquals(1,erreurs.size());
+					final EvenementCivilEchErreur erreur = erreurs.get(0);
+					assertEquals("Plusieurs tiers non-habitants assujettis potentiels trouvés ("+FormatNumeroHelper.numeroCTBToDisplay(ppId1)+
+							", "+FormatNumeroHelper.numeroCTBToDisplay(ppId2)+")",erreur.getMessage());
+					return null;
+				}
+			});
+		}
+		finally {
+			globalTiersIndexer.overwriteIndex();
+		}
+	}
+
+
+	@Test
+	public void testArriveeNonHabitantSansNAVS13Doublon() throws Exception {
+
+		try {
+			final long noIndividu = 126673246L;
+			final RegDate dateNaissance = date(1956, 4, 23);
+			final RegDate dateMariage = date(2010, 1, 15);
+			final RegDate dateArrivee = date(2011, 10, 31);
+			final String navs13 = "3218526549783";
+			setWantIndexation(true);
+
+			// le p'tit nouveau
+			serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+				@Override
+				protected void init() {
+					final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Chollet", "Ignacio", true);
+					final MockAdresse adresse = addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Echallens.GrandRue, null, dateArrivee, null);
+					adresse.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_CANTON, MockCommune.Geneve.getNoOFS(), null));
+					addNationalite(ind, MockPays.Suisse, dateNaissance, null);
+
+					ind.setNouveauNoAVS(navs13);
+
+					marieIndividu(ind, dateMariage);
+				}
+			});
+
+			// Mise en place du fiscal
+			final long ppId1 = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+				@Override
+				public Long doInTransaction(TransactionStatus status) {
+					final PersonnePhysique pp = addNonHabitant("Ignacio", "Chollet", dateNaissance, Sexe.MASCULIN);
+					addForPrincipal(pp, dateArrivee.addYears(-5), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Geneve, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
+					addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, dateArrivee.addYears(-5), null, MockRue.Geneve.AvenueGuiseppeMotta);
+					return pp.getNumero();
+				}
+			});
+
+			// Mise en place du fiscal
+			final long ppId2 = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+				@Override
+				public Long doInTransaction(TransactionStatus status) {
+					final PersonnePhysique pp = addNonHabitant("Ignacio", "Chollet", dateNaissance, Sexe.MASCULIN);
+					addForPrincipal(pp, dateArrivee.addYears(-5), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Geneve, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
+					addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, dateArrivee.addYears(-5), null, MockRue.Geneve.AvenueGuiseppeMotta);
+					return pp.getNumero();
+				}
+			});
+
+			globalTiersIndexer.sync();
+
+			// événement d'arrivée
+			final long evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+				@Override
+				public Long doInTransaction(TransactionStatus status) {
+					final EvenementCivilEch evt = new EvenementCivilEch();
+					evt.setId(14532L);
+					evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+					evt.setDateEvenement(dateArrivee);
+					evt.setEtat(EtatEvenementCivil.A_TRAITER);
+					evt.setNumeroIndividu(noIndividu);
+					evt.setType(TypeEvenementCivilEch.ARRIVEE);
+					return hibernateTemplate.merge(evt).getId();
+				}
+			});
+
+			// traitement de l'événement
+			traiterEvenements(noIndividu);
+
+			// vérification du traitement
+			doInNewTransactionAndSession(new TransactionCallback<Object>() {
+				@Override
+				public Object doInTransaction(TransactionStatus status) {
+					final EvenementCivilEch evt = evtCivilDAO.get(evtId);
+					assertNotNull(evt);
+					assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
+					List<EvenementCivilEchErreur> erreurs = new ArrayList<>(evt.getErreurs());
+					assertEquals(1,erreurs.size());
+					final EvenementCivilEchErreur erreur = erreurs.get(0);
+					assertEquals("Plusieurs tiers non-habitants assujettis potentiels trouvés ("+FormatNumeroHelper.numeroCTBToDisplay(ppId1)+
+							", "+FormatNumeroHelper.numeroCTBToDisplay(ppId2)+")",erreur.getMessage());
+					return null;
+				}
+			});
+		}
+		finally {
+			globalTiersIndexer.overwriteIndex();
+		}
+	}
+
+
+
+	@Test
+	public void testArriveeNonHabitantNAVS13Different() throws Exception {
+
+		try {
+			final long noIndividu = 126673246L;
+			final RegDate dateNaissance = date(1956, 4, 23);
+			final RegDate dateMariage = date(2010, 1, 15);
+			final RegDate dateArrivee = date(2011, 10, 31);
+			final String navs13 = "3218526549783";
+			setWantIndexation(true);
+
+			// le p'tit nouveau
+			serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+				@Override
+				protected void init() {
+					final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Chollet", "Ignacio", true);
+					final MockAdresse adresse = addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Echallens.GrandRue, null, dateArrivee, null);
+					adresse.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_CANTON, MockCommune.Geneve.getNoOFS(), null));
+					addNationalite(ind, MockPays.Suisse, dateNaissance, null);
+
+					ind.setNouveauNoAVS(navs13);
+
+					marieIndividu(ind, dateMariage);
+				}
+			});
+
+			// Mise en place du fiscal
+			final long ppId1 = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+				@Override
+				public Long doInTransaction(TransactionStatus status) {
+					final PersonnePhysique pp = addNonHabitant("Ignacio", "Chollet", dateNaissance, Sexe.MASCULIN);
+					pp.setNumeroAssureSocial("9518526549783");
+					addForPrincipal(pp, dateArrivee.addYears(-5), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Geneve, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
+					addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, dateArrivee.addYears(-5), null, MockRue.Geneve.AvenueGuiseppeMotta);
+					return pp.getNumero();
+				}
+			});
+
+			globalTiersIndexer.sync();
+
+			// événement d'arrivée
+			final long evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+				@Override
+				public Long doInTransaction(TransactionStatus status) {
+					final EvenementCivilEch evt = new EvenementCivilEch();
+					evt.setId(14532L);
+					evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+					evt.setDateEvenement(dateArrivee);
+					evt.setEtat(EtatEvenementCivil.A_TRAITER);
+					evt.setNumeroIndividu(noIndividu);
+					evt.setType(TypeEvenementCivilEch.ARRIVEE);
+					return hibernateTemplate.merge(evt).getId();
+				}
+			});
+
+			// traitement de l'événement
+			traiterEvenements(noIndividu);
+
+			// vérification du traitement
+			doInNewTransactionAndSession(new TransactionCallback<Object>() {
+				@Override
+				public Object doInTransaction(TransactionStatus status) {
+					final EvenementCivilEch evt = evtCivilDAO.get(evtId);
+					assertNotNull(evt);
+					assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
+					List<EvenementCivilEchErreur> erreurs = new ArrayList<>(evt.getErreurs());
+					assertEquals(1,erreurs.size());
+					final EvenementCivilEchErreur erreur = erreurs.get(0);
+					assertEquals("Le non-habitant trouvé ("+FormatNumeroHelper.numeroCTBToDisplay(ppId1)+") a un numero d'assure social qui ne correspond pas à celui de l'individu de l'évènement",erreur.getMessage());
+					return null;
+				}
+			});
+		}
+		finally {
+			globalTiersIndexer.overwriteIndex();
+		}
+	}
+
+	@Test
+	public void testArriveeNonHabitantNAVS13Absent() throws Exception {
+
+		try {
+			final long noIndividu = 126673246L;
+			final RegDate dateNaissance = date(1956, 4, 23);
+			final RegDate dateMariage = date(2010, 1, 15);
+			final RegDate dateArrivee = date(2011, 10, 31);
+			final String navs13 = "3218526549783";
+			setWantIndexation(true);
+
+			// le p'tit nouveau
+			serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+				@Override
+				protected void init() {
+					final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Chollet", "Ignacio", true);
+					final MockAdresse adresse = addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Echallens.GrandRue, null, dateArrivee, null);
+					adresse.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_CANTON, MockCommune.Geneve.getNoOFS(), null));
+					addNationalite(ind, MockPays.Suisse, dateNaissance, null);
+
+					ind.setNouveauNoAVS(navs13);
+
+					marieIndividu(ind, dateMariage);
+				}
+			});
+
+			// Mise en place du fiscal
+			final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+				@Override
+				public Long doInTransaction(TransactionStatus status) {
+					final PersonnePhysique pp = addNonHabitant("Ignacio", "Chollet", dateNaissance, Sexe.MASCULIN);
+					addForPrincipal(pp, dateArrivee.addYears(-5), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Geneve, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
+					addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, dateArrivee.addYears(-5), null, MockRue.Geneve.AvenueGuiseppeMotta);
+					return pp.getNumero();
+				}
+			});
+
+			globalTiersIndexer.sync();
+
+			// événement d'arrivée
+			final long evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+				@Override
+				public Long doInTransaction(TransactionStatus status) {
+					final EvenementCivilEch evt = new EvenementCivilEch();
+					evt.setId(14532L);
+					evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+					evt.setDateEvenement(dateArrivee);
+					evt.setEtat(EtatEvenementCivil.A_TRAITER);
+					evt.setNumeroIndividu(noIndividu);
+					evt.setType(TypeEvenementCivilEch.ARRIVEE);
+					return hibernateTemplate.merge(evt).getId();
+				}
+			});
+
+			// traitement de l'événement
+			traiterEvenements(noIndividu);
+
+			// vérification du traitement
+			doInNewTransactionAndSession(new TransactionCallback<Object>() {
+				@Override
+				public Object doInTransaction(TransactionStatus status) {
+					final EvenementCivilEch evt = evtCivilDAO.get(evtId);
+					assertNotNull(evt);
+					assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+					final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
+					assertNotNull(pp);
+					assertEquals((Long) ppId, pp.getNumero());
+					return null;
+				}
+			});
+		}
+		finally {
+			globalTiersIndexer.overwriteIndex();
+		}
+	}
+
+
+
 	/**
 	 * [SIFISC-6109] Vérifie qu'un événement d'arrivée pour un seul membre d'un couple de non-habitants (ancien habitant donc connu du civil) ne passe pas les 2 en habitant
 	 */

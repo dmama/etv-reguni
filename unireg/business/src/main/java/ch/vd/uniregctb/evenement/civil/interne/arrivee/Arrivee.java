@@ -2,7 +2,6 @@ package ch.vd.uniregctb.evenement.civil.interne.arrivee;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -236,17 +235,76 @@ public abstract class Arrivee extends Mouvement {
 	 * [UNIREG-3073] Recherche un ou plusieurs non-habitants à partir du prénom, du nom, de la date de naissance et du sexe d'un individu.
 	 * [UNIREG-770] le non habitant doit être assujetti
 	 * [SIFISC-9279] on abandonne cette histoire d'assujettissement mais il faut filtrer les annulés, désactivés et i107...
-	 *
+	 * [SIFISC-11358] on introduit la recherche par le navs13
 	 * @param individu                    un individu
 	 * @return une liste de non-habitants qui correspondent aux critères.
 	 */
 	protected static List<PersonnePhysique> findNonHabitants(TiersService tiersService, Individu individu, @Nullable Long numeroEvenement) throws EvenementCivilException {
 
 		// les critères de recherche
+		final List<PersonnePhysique> nonHabitants = new ArrayList<>();
 		final String nomPrenom = tiersService.getNomPrenom(individu);
 		final RegDate dateNaissance = individu.getDateNaissance();
 		final Sexe sexe = individu.getSexe();
+		final String navs13 = individu.getNouveauNoAVS();
+		final TiersCriteria criteria = getTiersCriteriaComplet(nomPrenom, dateNaissance, sexe);
+		if (navs13 != null) {
+			//Recherche par navs13
+			final TiersCriteria criteriaNavs13 = getTiersCriteriaNavs13(navs13);
+			final List<PersonnePhysique> resultNavs13 = searchPersonne(tiersService, numeroEvenement, nomPrenom, criteriaNavs13);
+			if (resultNavs13.isEmpty()) {
+				//aucun resultat trouvé on lance la recherche par les autres critères
+				final List<PersonnePhysique> resultComplet = searchPersonne(tiersService, numeroEvenement, nomPrenom, criteria);
+				if (resultComplet.isEmpty() || resultComplet.size() != 1 || candidatAvecNavs13Conforme(navs13, resultComplet)) {
+					//Aucun, plusieurs conadidats  ou 1 contribuable avec navs 13 conforme: on retourne le resultat trouvé
+					nonHabitants.addAll(resultComplet);
+				}
+				else {
+					//le seul candidat trouvé n'a pas le même numéro AVS que celui del'individu de l'évènement
+					PersonnePhysique candidat = resultComplet.get(0);
+					throw new EvenementCivilException(String.format("Le non-habitant trouvé (%s) a un numero d'assure social qui ne correspond pas à celui de l'individu de l'évènement",
+							FormatNumeroHelper.numeroCTBToDisplay(candidat.getNumero())));
+				}
 
+
+			}
+			else {
+				//La recherche par NAVS13 est poistive, on retourne le resultat
+				nonHabitants.addAll(resultNavs13);
+			}
+		}
+		else {
+
+			nonHabitants.addAll(searchPersonne(tiersService, numeroEvenement, nomPrenom, criteria));
+		}
+
+		return nonHabitants;
+	}
+
+	/**Determine si la liste des personnes physiques passée en paramètre contient
+	 * un membre avec un navs13 null ou equivalent à celui passé en paramètre
+	 *
+	 * @param navs13 de l'individu concerné par l'évenement
+	 * @param candidats la liste des nonhabitants trouvé
+	 * @return <b>True</b> si on a trouve une personne avec le bon navs13, <b>False</b> sinon
+	 */
+	private static boolean candidatAvecNavs13Conforme(String navs13, List<PersonnePhysique> candidats) {
+		if (!candidats.isEmpty() && candidats.size() == 1) {
+			PersonnePhysique candidat = candidats.get(0);
+			return candidat.getNumeroAssureSocial()==null || navs13.equals(candidat.getNumeroAssureSocial());
+		}
+		return false;
+
+	}
+
+	/**Créé un objet critère pour l'indexeur a partir des informations concerant l'individu renseigné dans l'evenement
+	 *
+	 * @param nomPrenom nom et prenom de l'individu
+	 * @param dateNaissance la date de naissance d el'individuu
+	 * @param sexe le sexe de l'individu
+	 * @return un objet critere
+	 */
+	private static TiersCriteria getTiersCriteriaComplet(String nomPrenom, RegDate dateNaissance, Sexe sexe) {
 		final TiersCriteria criteria = new TiersCriteria();
 		criteria.setTypeTiers(TiersCriteria.TypeTiers.NON_HABITANT);
 		criteria.setTypeRechercheDuNom(TiersCriteria.TypeRecherche.EST_EXACTEMENT);
@@ -255,15 +313,41 @@ public abstract class Arrivee extends Mouvement {
 		criteria.setDateNaissanceOrNull(dateNaissance);
 		criteria.setInclureI107(false);
 		criteria.setInclureTiersAnnules(false);
+		return criteria;
+	}
 
+	/**Créé un objet critère pour l'indexeur a partir du navs13 de l'individu renseigné dans l'evenement
+	 *
+	 * @param navs13 de l'individu
+	 * @return un objet critère
+	 */
+	private static TiersCriteria getTiersCriteriaNavs13(String navs13) {
+		final TiersCriteria criteria = new TiersCriteria();
+		criteria.setTypeTiers(TiersCriteria.TypeTiers.NON_HABITANT);
+		criteria.setNavs13(navs13);
+		criteria.setInclureI107(false);
+		criteria.setInclureTiersAnnules(false);
+		return criteria;
+	}
+
+	/**
+	 * Recherche des personnes physiques dans l'indexeur
+	 * @param tiersService service des tiers
+	 * @param numeroEvenement numero de l'évènement
+	 * @param nomPrenom le nom et premon de l'individu
+	 * @param criteria les critères de recherche
+	 * @return une liste de personne correspondantes aux critères
+	 * @throws EvenementCivilException
+	 */
+	private static List<PersonnePhysique> searchPersonne(TiersService tiersService, Long numeroEvenement, String nomPrenom, TiersCriteria criteria) throws EvenementCivilException {
 		final List<TiersIndexedData> results;
-        try {
-            results = tiersService.search(criteria);
-        }
-        catch (TooManyResultsIndexerException e) {
-            // [SIFISC-4876] On catch cette runtime exception de l'indexeur pour fournir à l'utilisateur un message plus parlant
-            throw new EvenementCivilException (String.format("Trop de non-habitants (%d au total) correspondent à: %s", e.getNbResults(), nomPrenom), e);
-        }
+		try {
+		    results = tiersService.search(criteria);
+		}
+		catch (TooManyResultsIndexerException e) {
+		    // [SIFISC-4876] On catch cette runtime exception de l'indexeur pour fournir à l'utilisateur un message plus parlant
+		    throw new EvenementCivilException (String.format("Trop de non-habitants (%d au total) correspondent à: %s", e.getNbResults(), nomPrenom), e);
+		}
 
 		final List<PersonnePhysique> nonHabitants = new ArrayList<>();
 		for (final TiersIndexedData tiersIndexedData : results) {
