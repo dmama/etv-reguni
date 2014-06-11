@@ -3,8 +3,8 @@ package ch.vd.uniregctb.evenement.party.control;
 import java.util.List;
 import java.util.Set;
 
-import com.sun.istack.Nullable;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
