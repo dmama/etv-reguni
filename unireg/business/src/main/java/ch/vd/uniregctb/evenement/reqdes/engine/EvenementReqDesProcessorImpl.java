@@ -69,7 +69,6 @@ import ch.vd.uniregctb.reqdes.EvenementReqDes;
 import ch.vd.uniregctb.reqdes.InformationsActeur;
 import ch.vd.uniregctb.reqdes.PartiePrenante;
 import ch.vd.uniregctb.reqdes.RolePartiePrenante;
-import ch.vd.uniregctb.reqdes.TransactionImmobiliere;
 import ch.vd.uniregctb.reqdes.TypeInscription;
 import ch.vd.uniregctb.reqdes.TypeRole;
 import ch.vd.uniregctb.reqdes.UniteTraitement;
@@ -655,19 +654,20 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 			final ProcessingDataPartiePrenante data = processingData.get(partiePrenante.getId());
 			if (data != null) {
 
-				// s'il y a un rôle acquéreur de propriété, on doit placer le for principal correctement
-				if (hasRoleAcquereurPropriete(partiePrenante)) {
+				// sur qui faut-il mettre un éventuel for ?
+				final Contribuable assujetti;
+				final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(data.personnePhysique, dateActe);
+				if (couple != null) {
+					assujetti = couple.getMenage();
+				}
+				else {
+					assujetti = data.personnePhysique;
+				}
+				final ForsParTypeAt forsAt = assujetti.getForsParTypeAt(dateActe, false);
+				final boolean hasRoleAcquereurPropriete = hasRoleAcquereurPropriete(partiePrenante);
 
-					// sur qui faut-il mettre un éventuel for for ?
-					final Contribuable assujetti;
-					final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(data.personnePhysique, dateActe);
-					if (couple != null) {
-						assujetti = couple.getMenage();
-					}
-					else {
-						assujetti = data.personnePhysique;
-					}
-					final ForsParTypeAt forsAt = assujetti.getForsParTypeAt(dateActe, false);
+				// s'il y a un rôle acquéreur de propriété, on doit placer le for principal correctement (
+				if (hasRoleAcquereurPropriete || forsAt.principal != null) {
 
 					//
 					// d'abord on se préoccupe du for principal
@@ -678,13 +678,24 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 					// 1.2.2. si oui, on ferme/annule le for précédent pour créer le nouveau
 					//
 
-					final Pair<Integer, TypeAutoriteFiscale> newLocalisation = computeNewLocalisation(partiePrenante.getOfsCommune(), partiePrenante.getOfsPays());
 					final ForFiscalPrincipal ffpExistant = forsAt.principal;
+					final ModeImposition modeImposition;
+					if (hasRoleAcquereurPropriete || !forsAt.secondaires.isEmpty()) {
+						modeImposition = ModeImposition.ORDINAIRE;
+					}
+					else if (ffpExistant != null) {
+						modeImposition = ffpExistant.getModeImposition();
+					}
+					else {
+						// on ne met pas à jour un for inexistant (seule la mise à jour de for principal se fait sur les non-"acquéreurs de propriété")
+						continue;
+					}
+
+					final Pair<Integer, TypeAutoriteFiscale> newLocalisation = computeNewLocalisation(partiePrenante.getOfsCommune(), partiePrenante.getOfsPays());
 					if (ffpExistant != null) {
 						if (ffpExistant.getTypeAutoriteFiscale() != newLocalisation.getRight() || !ffpExistant.getNumeroOfsAutoriteFiscale().equals(newLocalisation.getLeft())) {
 							final MotifRattachement motifRattachement;
 							final MotifFor motifOuverture;
-							final ModeImposition modeImposition;
 							if (ffpExistant.getTypeAutoriteFiscale() != newLocalisation.getRight()) {
 								// changement de HS->HC ou HC->HS
 								motifOuverture = ffpExistant.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS ? MotifFor.ARRIVEE_HS : MotifFor.DEPART_HS;
@@ -694,18 +705,17 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 								motifOuverture = MotifFor.DEMENAGEMENT_VD;
 							}
 							motifRattachement = ffpExistant.getMotifRattachement();
-							modeImposition = ffpExistant.getModeImposition();
 							tiersService.closeForFiscalPrincipal(ffpExistant, dateActe.getOneDayBefore(), motifOuverture);
 							tiersService.openForFiscalPrincipal(assujetti, dateActe, motifRattachement, newLocalisation.getLeft(), newLocalisation.getRight(), modeImposition, motifOuverture);
 						}
 					}
 					else {
-						tiersService.openForFiscalPrincipal(assujetti, dateActe, MotifRattachement.DOMICILE, newLocalisation.getLeft(), newLocalisation.getRight(), ModeImposition.ORDINAIRE, MotifFor.ACHAT_IMMOBILIER);
+						tiersService.openForFiscalPrincipal(assujetti, dateActe, MotifRattachement.DOMICILE, newLocalisation.getLeft(), newLocalisation.getRight(), modeImposition, MotifFor.ACHAT_IMMOBILIER);
 					}
+				}
 
-					//
-					// puis des fors secondaires
-					//
+				// les fors secondaires ne sont créés que sur les acquéreurs de propriété
+				if (hasRoleAcquereurPropriete) {
 
 					// fors fiscaux existants
 					final List<ForFiscalSecondaire> forsSecondaires = forsAt.secondaires;
@@ -720,10 +730,9 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 					// parcours de tous les rôles de la partie prenante
 					for (RolePartiePrenante role : roles) {
 						// on ne s'intéresse qu'aux acquisitions de propriété
-						final TransactionImmobiliere transactionImmobiliere = role.getTransaction();
-						if (role.getRole() == TypeRole.ACQUEREUR && transactionImmobiliere.getTypeInscription() == TypeInscription.PROPRIETE) {
-							final Pair<Integer, MotifRattachement> key = Pair.of(transactionImmobiliere.getOfsCommune(), MotifRattachement.IMMEUBLE_PRIVE);
-							final Integer ofsCommune = transactionImmobiliere.getOfsCommune();
+						if (isRoleAcquereurPropriete(role)) {
+							final Integer ofsCommune = role.getTransaction().getOfsCommune();
+							final Pair<Integer, MotifRattachement> key = Pair.of(ofsCommune, MotifRattachement.IMMEUBLE_PRIVE);
 							if (!ofsCommunesExistantes.contains(key)) {
 								// et finalement on crée les fors secondaires sur les communes où il n'y en a pas encore
 								tiersService.openForFiscalSecondaire(assujetti, dateActe, MotifRattachement.IMMEUBLE_PRIVE, ofsCommune, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifFor.ACHAT_IMMOBILIER);
@@ -757,11 +766,15 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 	private static boolean hasRoleAcquereurPropriete(PartiePrenante partiePrenante) {
 		// parcours de tous les rôles de la partie prenante
 		for (RolePartiePrenante role : partiePrenante.getRoles()) {
-			if (role.getRole() == TypeRole.ACQUEREUR && role.getTransaction().getTypeInscription() == TypeInscription.PROPRIETE) {
+			if (isRoleAcquereurPropriete(role)) {
 				return true;
 			}
 		}
 		return false;
+	}
+
+	private static boolean isRoleAcquereurPropriete(RolePartiePrenante role) {
+		return role.getRole() == TypeRole.ACQUEREUR && role.getTransaction().getTypeInscription() == TypeInscription.PROPRIETE;
 	}
 
 	/**
@@ -1210,7 +1223,7 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 					b.append(" / ").append(lignes.get(i));
 				}
 
-				// pour mettre l'unité de traitement au mieux dans l'état "A_VERIFIER"
+				// pour signaler la non-prise en compte de l'adresse
 				warningCollector.addNewMessage(String.format("Adresse non modifiée sur un contribuable assujetti, uniquement reprise dans les remarques du tiers."));
 
 				// ce texte sera inclu dans la remarque

@@ -5137,6 +5137,118 @@ public class EvenementReqDesProcessorTest extends BusinessTest {
 	}
 
 	@Test(timeout = 10000)
+	public void testChangementForPrincipalAlienateur() throws Exception {
+
+		final RegDate dateNaissance = date(1985, 10, 20);
+		final RegDate dateActe = date(2014, 6, 9);
+
+		final class Ids {
+			long ppId;
+			long utId;
+		}
+
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique ctb = addNonHabitant("Alain", "Zigotto", dateNaissance, Sexe.MASCULIN);
+				addForPrincipal(ctb, date(2000, 5, 13), MotifFor.INDETERMINE, MockCommune.Geneve);
+
+				final EvenementReqDes evt = addEvenementReqDes(new InformationsActeur("tabou", "Taboumata", "Oli"), null, dateActe, "541154651");
+				final UniteTraitement ut = addUniteTraitement(evt, EtatTraitement.A_TRAITER, null);
+				final PartiePrenante pp = addPartiePrenante(ut, "Zigotto", "Alain");
+				pp.setNumeroContribuable(ctb.getNumero());
+				pp.setNomMere("Delaplanche");
+				pp.setPrenomsMere("Sophie Mafalda");
+				pp.setNomPere("Dumoulin");
+				pp.setPrenomsPere("François Robert");
+				pp.setOfsPaysNationalite(MockPays.Suisse.getNoOFS());
+				pp.setSexe(Sexe.MASCULIN);
+				pp.setDateNaissance(dateNaissance);
+				pp.setDateEtatCivil(dateNaissance);
+				pp.setEtatCivil(EtatCivil.CELIBATAIRE);
+
+				pp.setRue("Nizzaallee");
+				pp.setNumeroMaison("7");
+				pp.setOfsPays(MockPays.Allemagne.getNoOFS());
+				pp.setLocalite("Aachen");
+				pp.setNumeroPostal("52064");
+				pp.setOfsPays(MockPays.Allemagne.getNoOFS());
+
+				final TransactionImmobiliere ti1 = addTransactionImmobiliere(evt, "Propriété Morges", ModeInscription.INSCRIPTION, TypeInscription.PROPRIETE, MockCommune.Morges.getNoOFS());
+				addRole(pp, ti1, TypeRole.ALIENATEUR);
+
+				final Ids ids = new Ids();
+				ids.ppId = ctb.getNumero();
+				ids.utId = ut.getId();
+				return ids;
+			}
+		});
+
+		// traiter l'unité
+		traiteUniteTraitement(ids.utId);
+
+		// vérification des fors
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final UniteTraitement ut = uniteTraitementDAO.get(ids.utId);
+				Assert.assertNotNull(ut);
+				Assert.assertEquals(EtatTraitement.TRAITE, ut.getEtat());
+				Assert.assertEquals(0, ut.getErreurs().size());
+
+				final List<Tiers> allTiers = tiersDAO.getAll();
+				Assert.assertNotNull(allTiers);
+				Assert.assertEquals(1, allTiers.size());
+
+				final Tiers tiers = allTiers.get(0);
+				Assert.assertEquals(PersonnePhysique.class, tiers.getClass());
+				Assert.assertEquals((Long) ids.ppId, tiers.getNumero());
+
+				final Set<ForFiscal> ffs = tiers.getForsFiscaux();
+				Assert.assertNotNull(ffs);
+				Assert.assertEquals(2, ffs.size());
+
+				final List<ForFiscal> sortedFors = new ArrayList<>(ffs);
+				Collections.sort(sortedFors, new DateRangeComparator<ForFiscal>());
+
+				// seulement des fors principaux (rôle aliénateur -> pas de création de for secondaire)
+				{
+					final ForFiscal ff = sortedFors.get(0);
+					Assert.assertNotNull(ff);
+					Assert.assertEquals(ForFiscalPrincipal.class, ff.getClass());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, ff.getTypeAutoriteFiscale());
+					Assert.assertEquals(date(2000, 5, 13), ff.getDateDebut());
+					Assert.assertEquals(dateActe.getOneDayBefore(), ff.getDateFin());
+					Assert.assertEquals((Integer) MockCommune.Geneve.getNoOFS(), ff.getNumeroOfsAutoriteFiscale());
+					Assert.assertEquals(GenreImpot.REVENU_FORTUNE, ff.getGenreImpot());
+
+					final ForFiscalPrincipal ffp = (ForFiscalPrincipal) ff;
+					Assert.assertEquals(MotifFor.INDETERMINE, ffp.getMotifOuverture());
+					Assert.assertEquals(MotifFor.DEPART_HS, ffp.getMotifFermeture());
+					Assert.assertEquals(MotifRattachement.DOMICILE, ffp.getMotifRattachement());
+					Assert.assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition());
+				}
+				{
+					final ForFiscal ff = sortedFors.get(1);
+					Assert.assertNotNull(ff);
+					Assert.assertEquals(ForFiscalPrincipal.class, ff.getClass());
+					Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, ff.getTypeAutoriteFiscale());
+					Assert.assertEquals(dateActe, ff.getDateDebut());
+					Assert.assertNull(ff.getDateFin());
+					Assert.assertEquals((Integer) MockPays.Allemagne.getNoOFS(), ff.getNumeroOfsAutoriteFiscale());
+					Assert.assertEquals(GenreImpot.REVENU_FORTUNE, ff.getGenreImpot());
+
+					final ForFiscalPrincipal ffp = (ForFiscalPrincipal) ff;
+					Assert.assertEquals(MotifFor.DEPART_HS, ffp.getMotifOuverture());
+					Assert.assertNull(ffp.getMotifFermeture());
+					Assert.assertEquals(MotifRattachement.DOMICILE, ffp.getMotifRattachement());
+					Assert.assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition());
+				}
+			}
+		});
+	}
+
+	@Test(timeout = 10000)
 	public void testForSecondaireDejaPresentSurCoupleAcquereurMarieSeul() throws Exception {
 
 		final RegDate dateNaissance = date(1975, 10, 20);
