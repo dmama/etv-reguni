@@ -57,4 +57,6 @@
 	<xs:import namespace="http://www.vd.ch/fiscalite/taxation/dossier-electronique/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/taxation/DossierElectronique-1-0.xsd"/>
 	<xs:import namespace="http://www.vd.ch/fiscalite/taxation/dossier-electronique/2" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/taxation/DossierElectronique-2-0.xsd"/>
 
+	<xs:import namespace="http://www.vd.ch/fiscalite/reqdes/creation-modification/1" schemaLocation="http://resources.etat-de-vaud.ch/fiscalite/reqdes/creation-modification-contribuables-1.xsd"/>
+
 </xs:schema>
