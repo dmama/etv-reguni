@@ -394,15 +394,20 @@ public class ReqDesEventHandler implements EsbMessageHandler {
 	protected static List<ReqDesTransactionImmobiliere> extractTransactionsImmobilieres(List<Transaction> transactions) throws EsbBusinessException {
 		final List<ReqDesTransactionImmobiliere> list = new ArrayList<>(transactions.size());
 		for (Transaction t : transactions) {
-			list.add(buildTransactionImmobiliere(t));
+			list.addAll(buildTransactionsImmobilieres(t));
 		}
 		return list;
 	}
 
-	private static ReqDesTransactionImmobiliere buildTransactionImmobiliere(Transaction transaction) throws EsbBusinessException {
+	private static List<ReqDesTransactionImmobiliere> buildTransactionsImmobilieres(Transaction transaction) throws EsbBusinessException {
 		final ModeInscriptionDansActe mode = ModeInscriptionDansActe.valueOf(transaction.getInscriptionMode());
 		final TypeInscriptionDansActe type = TypeInscriptionDansActe.valueOf(transaction.getInscriptionType());
-		return new ReqDesTransactionImmobiliere(transaction.getDescription(), transaction.getMunicipalityId(), mode, type);
+		final List<Integer> ofsCommunes = transaction.getMunicipalityId();
+		final List<ReqDesTransactionImmobiliere> liste = new ArrayList<>(ofsCommunes.size());
+		for (int ofsCommune : ofsCommunes) {
+			liste.add(new ReqDesTransactionImmobiliere(transaction.getDescription(), ofsCommune, mode, type));
+		}
+		return liste;
 	}
 
 	protected static Map<Integer, ReqDesPartiePrenante> extractPartiesPrenantes(List<Stakeholder> stakeholders, ServiceInfrastructureService infraService) throws EsbBusinessException {
@@ -531,24 +536,27 @@ public class ReqDesEventHandler implements EsbMessageHandler {
 	}
 
 	/**
-	 * En sortie, la map est indexée par identifiant de partie prenante, et les valeurs sont des couples role/index transaction (l'indexe de la
-	 * transaction étant l'indexe dans la liste des transactions passées en paramètre)
+	 * En sortie, la map est indexée par identifiant de partie prenante, et les valeurs sont des couples role/index transaction (l'index de la
+	 * transaction étant l'index dans la liste des transactions immobilières générées à partir des transactions passées en paramètre)
 	 * @param transactions la liste des transactions présentes dans l'acte
 	 * @return une map des rôles de chacune des parties prenantes
 	 * @throws EsbBusinessException en cas de souci d'interprétation des données
 	 */
 	protected static Map<Integer, List<Pair<RoleDansActe, Integer>>> extractRoles(List<Transaction> transactions) throws EsbBusinessException {
 		final Map<Integer, List<Pair<RoleDansActe, Integer>>> map = new HashMap<>();
-		for (int index = 0 ; index < transactions.size() ; ++ index) {
-			final Transaction t = transactions.get(index);
-			for (StakeholderReferenceWithRole sh : t.getStakeholder()) {
-				final Pair<RoleDansActe, Integer> role = Pair.of(RoleDansActe.valueOf(sh.getRole()), index);
-				List<Pair<RoleDansActe, Integer>> roles = map.get(sh.getStakeholderId());
-				if (roles == null) {
-					roles = new LinkedList<>();
-					map.put(sh.getStakeholderId(), roles);
+		int index = 0;
+		for (Transaction t : transactions) {
+			for (Integer ofsCommune : t.getMunicipalityId()) {
+				for (StakeholderReferenceWithRole sh : t.getStakeholder()) {
+					final Pair<RoleDansActe, Integer> role = Pair.of(RoleDansActe.valueOf(sh.getRole()), index);
+					List<Pair<RoleDansActe, Integer>> roles = map.get(sh.getStakeholderId());
+					if (roles == null) {
+						roles = new LinkedList<>();
+						map.put(sh.getStakeholderId(), roles);
+					}
+					roles.add(role);
 				}
-				roles.add(role);
+				++ index;
 			}
 		}
 		return map;

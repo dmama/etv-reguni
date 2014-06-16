@@ -180,6 +180,7 @@
 	<ns:transaction inscriptionMode="INSCRIPTION" inscriptionType="EASEMENT">
 		<ns:description>Droit de passage</ns:description>
 		<ns:municipalityId>5477</ns:municipalityId>
+		<ns:municipalityId>5613</ns:municipalityId>
 		<ns:stakeholder stakeholderId="2" role="OTHER"/>
 	</ns:transaction>
 </ns:creationModification>

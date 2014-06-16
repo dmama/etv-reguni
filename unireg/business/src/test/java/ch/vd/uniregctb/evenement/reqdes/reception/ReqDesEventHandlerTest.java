@@ -146,7 +146,7 @@ public class ReqDesEventHandlerTest extends BusinessTest {
 		{
 			final List<Pair<RoleDansActe, Integer>> roles = map.get(2);
 			Assert.assertNotNull(roles);
-			Assert.assertEquals(2, roles.size());
+			Assert.assertEquals(3, roles.size());
 
 			final List<Pair<RoleDansActe, Integer>> sortedRoles = new ArrayList<>(roles);
 			Collections.sort(sortedRoles, new Comparator<Pair<RoleDansActe, Integer>>() {
@@ -164,7 +164,12 @@ public class ReqDesEventHandlerTest extends BusinessTest {
 			{
 				final Pair<RoleDansActe, Integer> role = sortedRoles.get(1);
 				Assert.assertEquals(RoleDansActe.AUTRE, role.getLeft());
-				Assert.assertEquals((Integer) 1, role.getRight());      // deuxième transaction du fichier -> 1
+				Assert.assertEquals((Integer) 1, role.getRight());      // deuxième transaction du fichier/1ère commune -> 1
+			}
+			{
+				final Pair<RoleDansActe, Integer> role = sortedRoles.get(2);
+				Assert.assertEquals(RoleDansActe.AUTRE, role.getLeft());
+				Assert.assertEquals((Integer) 2, role.getRight());      // deuxième transaction du fichier/2ème commune -> 2
 			}
 		}
 
@@ -281,7 +286,7 @@ public class ReqDesEventHandlerTest extends BusinessTest {
 						Assert.assertNull(pp.getNumeroContribuable());
 						Assert.assertEquals((Integer) MockPays.Apatridie.getNoOFS(), pp.getOfsPaysNationalite());
 						Assert.assertEquals(CategorieEtranger._03_ETABLI_C, pp.getCategorieEtranger());
-						Assert.assertEquals(2, pp.getRoles().size());
+						Assert.assertEquals(3, pp.getRoles().size());
 
 						final List<RolePartiePrenante> sortedRoles = new ArrayList<>(pp.getRoles());
 						Collections.sort(sortedRoles, new Comparator<RolePartiePrenante>() {
@@ -302,6 +307,12 @@ public class ReqDesEventHandlerTest extends BusinessTest {
 							Assert.assertNotNull(rpp);
 							Assert.assertEquals(MockCommune.Lausanne.getNoOFS(), rpp.getTransaction().getOfsCommune());
 							Assert.assertEquals(TypeRole.ACQUEREUR, rpp.getRole());
+						}
+						{
+							final RolePartiePrenante rpp = sortedRoles.get(2);
+							Assert.assertNotNull(rpp);
+							Assert.assertEquals(MockCommune.BourgEnLavaux.getNoOFS(), rpp.getTransaction().getOfsCommune());
+							Assert.assertEquals(TypeRole.AUTRE, rpp.getRole());
 						}
 					}
 					{
@@ -343,7 +354,7 @@ public class ReqDesEventHandlerTest extends BusinessTest {
 						return o1.getOfsCommune() - o2.getOfsCommune();
 					}
 				});
-				Assert.assertEquals(2, transactions.size());
+				Assert.assertEquals(3, transactions.size());
 
 				{
 					final TransactionImmobiliere t = transactions.get(0);
@@ -360,6 +371,14 @@ public class ReqDesEventHandlerTest extends BusinessTest {
 					Assert.assertEquals(ModeInscription.INSCRIPTION, t.getModeInscription());
 					Assert.assertEquals(TypeInscription.PROPRIETE, t.getTypeInscription());
 					Assert.assertEquals(MockCommune.Lausanne.getNoOFS(), t.getOfsCommune());
+				}
+				{
+					final TransactionImmobiliere t = transactions.get(2);
+					Assert.assertNotNull(t);
+					Assert.assertEquals("Droit de passage", t.getDescription());
+					Assert.assertEquals(ModeInscription.INSCRIPTION, t.getModeInscription());
+					Assert.assertEquals(TypeInscription.SERVITUDE, t.getTypeInscription());
+					Assert.assertEquals(MockCommune.BourgEnLavaux.getNoOFS(), t.getOfsCommune());
 				}
 			}
 		});
