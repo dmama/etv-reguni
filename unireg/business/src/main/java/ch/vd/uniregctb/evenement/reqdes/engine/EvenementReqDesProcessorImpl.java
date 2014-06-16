@@ -18,6 +18,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -68,12 +69,17 @@ import ch.vd.uniregctb.reqdes.EvenementReqDes;
 import ch.vd.uniregctb.reqdes.InformationsActeur;
 import ch.vd.uniregctb.reqdes.PartiePrenante;
 import ch.vd.uniregctb.reqdes.RolePartiePrenante;
+import ch.vd.uniregctb.reqdes.TransactionImmobiliere;
+import ch.vd.uniregctb.reqdes.TypeInscription;
+import ch.vd.uniregctb.reqdes.TypeRole;
 import ch.vd.uniregctb.reqdes.UniteTraitement;
 import ch.vd.uniregctb.reqdes.UniteTraitementDAO;
 import ch.vd.uniregctb.tiers.AppartenanceMenage;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
+import ch.vd.uniregctb.tiers.ForsParTypeAt;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
@@ -85,6 +91,9 @@ import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.type.CategorieEtranger;
 import ch.vd.uniregctb.type.EtatCivil;
+import ch.vd.uniregctb.type.ModeImposition;
+import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TexteCasePostale;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
@@ -513,6 +522,13 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 					errorCollector.addNewMessage(String.format("La commune de résidence (%s/%d) est vaudoise.", commune.getNomOfficiel(), ofsCommuneDomicile));
 				}
 			}
+			else {
+				// dans ce cas, le pays est obligatoire et ne peut pas être la Suisse
+				final Integer ofsPays = pp.getOfsPays();
+				if (ofsPays != null && ofsPays == ServiceInfrastructureService.noOfsSuisse) {
+					errorCollector.addNewMessage("Le pays de résidence ne peut pas être la Suisse en l'absence de commune de résidence.");
+				}
+			}
 
 			// problématique des fractions (-> les fors ne peuvent pas être ouverts sur les communes faîtières de fractions)
 			for (RolePartiePrenante role : pp.getRoles()) {
@@ -601,7 +617,8 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 		// gestion des états civils : on lie éventuellement les contribuables ensemble
 		final List<ProcessingDataPartiePrenante> nouvellesCreations = gererEtatsCivils(evt, partiesPrenantes, processingData);
 
-		// TODO reste enfin à metre à jour les fors fiscaux
+		// mise à jour des fors fiscaux
+		gererForsFiscaux(evt, partiesPrenantes, processingData);
 
 		// finalement, on ajoute les remarques sur les parties prenantes créées ou modifiées
 		for (ProcessingDataPartiePrenante data : nouvellesCreations) {
@@ -624,6 +641,132 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 	}
 
 	/**
+	 * Création / modification des fors fiscaux
+	 * @param evt événement reçu de eReqDes
+	 * @param partiesPrenantes liste des parties prenantes de l'unité de traitement
+	 * @param processingData données des personnes physiques indexées par identifiant de partie prenante
+	 * @throws EvenementReqDesException en cas d'erreur
+	 */
+	private void gererForsFiscaux(EvenementReqDes evt, Set<PartiePrenante> partiesPrenantes, Map<Long, ProcessingDataPartiePrenante> processingData) throws EvenementReqDesException {
+		final RegDate dateActe = evt.getDateActe();
+
+		// parcours de toutes les parties prenantes qui ont un contribuable associé
+		for (PartiePrenante partiePrenante : partiesPrenantes) {
+
+			// on ne s'intéresse qu'aux parties prenantes qui ont un pendant fiscal
+			final ProcessingDataPartiePrenante data = processingData.get(partiePrenante.getId());
+			if (data != null) {
+
+				// s'il y a un rôle acquéreur de propriété, on doit placer le for principal correctement
+				if (hasRoleAcquereurPropriete(partiePrenante)) {
+
+					// sur qui faut-il mettre un éventuel for for ?
+					final Contribuable assujetti;
+					final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(data.personnePhysique, dateActe);
+					if (couple != null) {
+						assujetti = couple.getMenage();
+					}
+					else {
+						assujetti = data.personnePhysique;
+					}
+					final ForsParTypeAt forsAt = assujetti.getForsParTypeAt(dateActe, false);
+
+					//
+					// d'abord on se préoccupe du for principal
+					// 1. y en a-t-il déjà un ?
+					// 1.1. si non, on le crée, c'est fini
+					// 1.2. si oui, est-il fondamentalement différent de celui que l'on veut créer ?
+					// 1.2.1. si non, one ne change rien
+					// 1.2.2. si oui, on ferme/annule le for précédent pour créer le nouveau
+					//
+
+					final Pair<Integer, TypeAutoriteFiscale> newLocalisation = computeNewLocalisation(partiePrenante.getOfsCommune(), partiePrenante.getOfsPays());
+					final ForFiscalPrincipal ffpExistant = forsAt.principal;
+					if (ffpExistant != null) {
+						if (ffpExistant.getTypeAutoriteFiscale() != newLocalisation.getRight() || !ffpExistant.getNumeroOfsAutoriteFiscale().equals(newLocalisation.getLeft())) {
+							final MotifRattachement motifRattachement;
+							final MotifFor motifOuverture;
+							final ModeImposition modeImposition;
+							if (ffpExistant.getTypeAutoriteFiscale() != newLocalisation.getRight()) {
+								// changement de HS->HC ou HC->HS
+								motifOuverture = ffpExistant.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS ? MotifFor.ARRIVEE_HS : MotifFor.DEPART_HS;
+							}
+							else {
+								// on reste dans le même type d'autorité fiscale -> HC->HC ou HS->HS
+								motifOuverture = MotifFor.DEMENAGEMENT_VD;
+							}
+							motifRattachement = ffpExistant.getMotifRattachement();
+							modeImposition = ffpExistant.getModeImposition();
+							tiersService.closeForFiscalPrincipal(ffpExistant, dateActe.getOneDayBefore(), motifOuverture);
+							tiersService.openForFiscalPrincipal(assujetti, dateActe, motifRattachement, newLocalisation.getLeft(), newLocalisation.getRight(), modeImposition, motifOuverture);
+						}
+					}
+					else {
+						tiersService.openForFiscalPrincipal(assujetti, dateActe, MotifRattachement.DOMICILE, newLocalisation.getLeft(), newLocalisation.getRight(), ModeImposition.ORDINAIRE, MotifFor.ACHAT_IMMOBILIER);
+					}
+
+					//
+					// puis des fors secondaires
+					//
+
+					// fors fiscaux existants
+					final List<ForFiscalSecondaire> forsSecondaires = forsAt.secondaires;
+
+					// on récupère la liste des numéros OFS des communes des fors secondaires, pour ne pas créer de doublon
+					final Set<RolePartiePrenante> roles = partiePrenante.getRoles();
+					final Set<Pair<Integer, MotifRattachement>> ofsCommunesExistantes = new HashSet<>(forsSecondaires.size() + roles.size());
+					for (ForFiscalSecondaire ffs : forsSecondaires) {
+						ofsCommunesExistantes.add(Pair.of(ffs.getNumeroOfsAutoriteFiscale(), ffs.getMotifRattachement()));
+					}
+
+					// parcours de tous les rôles de la partie prenante
+					for (RolePartiePrenante role : roles) {
+						// on ne s'intéresse qu'aux acquisitions de propriété
+						final TransactionImmobiliere transactionImmobiliere = role.getTransaction();
+						if (role.getRole() == TypeRole.ACQUEREUR && transactionImmobiliere.getTypeInscription() == TypeInscription.PROPRIETE) {
+							final Pair<Integer, MotifRattachement> key = Pair.of(transactionImmobiliere.getOfsCommune(), MotifRattachement.IMMEUBLE_PRIVE);
+							final Integer ofsCommune = transactionImmobiliere.getOfsCommune();
+							if (!ofsCommunesExistantes.contains(key)) {
+								// et finalement on crée les fors secondaires sur les communes où il n'y en a pas encore
+								tiersService.openForFiscalSecondaire(assujetti, dateActe, MotifRattachement.IMMEUBLE_PRIVE, ofsCommune, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifFor.ACHAT_IMMOBILIER);
+								ofsCommunesExistantes.add(key);
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	private static Pair<Integer, TypeAutoriteFiscale> computeNewLocalisation(@Nullable Integer ofsCommune, @Nullable Integer ofsPays) {
+		final int noOfs;
+		final TypeAutoriteFiscale typeAutoriteFiscale;
+		if (ofsCommune != null) {
+			noOfs = ofsCommune;
+			typeAutoriteFiscale = TypeAutoriteFiscale.COMMUNE_HC;
+		}
+		else if (ofsPays != null) {
+			noOfs = ofsPays;
+			typeAutoriteFiscale = TypeAutoriteFiscale.PAYS_HS;
+		}
+		else {
+			noOfs = ServiceInfrastructureService.noPaysInconnu;
+			typeAutoriteFiscale = TypeAutoriteFiscale.PAYS_HS;
+		}
+		return Pair.of(noOfs, typeAutoriteFiscale);
+	}
+
+	private static boolean hasRoleAcquereurPropriete(PartiePrenante partiePrenante) {
+		// parcours de tous les rôles de la partie prenante
+		for (RolePartiePrenante role : partiePrenante.getRoles()) {
+			if (role.getRole() == TypeRole.ACQUEREUR && role.getTransaction().getTypeInscription() == TypeInscription.PROPRIETE) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
 	 * Gestion des états civils (= création/modification de couples...)
 	 * @param evt événement reçu de eReqDes
 	 * @param partiesPrenantes liste des parties prenantes de l'unité de traitement
@@ -632,6 +775,7 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 	 * @throws EvenementReqDesException en cas d'erreur
 	 */
 	private List<ProcessingDataPartiePrenante> gererEtatsCivils(EvenementReqDes evt, Set<PartiePrenante> partiesPrenantes, Map<Long, ProcessingDataPartiePrenante> processingData) throws EvenementReqDesException {
+		final RegDate dateActe = evt.getDateActe();
 		final List<ProcessingDataPartiePrenante> nouvellesCreations = new LinkedList<>();
 		for (PartiePrenante ppSrc : partiesPrenantes) {
 			final ProcessingDataPartiePrenante data = processingData.get(ppSrc.getId());
@@ -710,35 +854,77 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 						}
 					}
 					else if (modeTraitementCouple == ModeTraitementCouple.MODIFICATION_PURE) {
+
+						final boolean avecSeparation = ppSrc.getDateSeparation() != null;
+
 						// ou bien les deux sont en modification, ou bien on a affaire à un marié seul
 						if (conjointData != null) {
+
+							// pour les tests, c'est mieux d'avoir les deux numéros de contribuables dans un ordre déterministe... et cela ne gêne absolument pas pour la production -> on le fait
+							final List<Long> ids = Arrays.asList(data.personnePhysique.getNumero(), conjointData.personnePhysique.getNumero());
+							Collections.sort(ids);
+
+							// s'il y a déclaration de séparation dans l'acte et que le couple n'est pas séparé dans le fiscal à la date déclarée de séparation, on arrête
+							if (avecSeparation) {
+								final EnsembleTiersCouple couplePrincipal = tiersService.getEnsembleTiersCouple(data.personnePhysique, ppSrc.getDateSeparation());
+								final EnsembleTiersCouple coupleConjoint = tiersService.getEnsembleTiersCouple(conjointData.personnePhysique, ppSrc.getDateSeparation());
+								if (couplePrincipal != null || coupleConjoint != null) {
+									throw new EvenementReqDesException(String.format("Les tiers %s et %s ne sont pas séparés fiscalement au %s.",
+									                                                 FormatNumeroHelper.numeroCTBToDisplay(ids.get(0)),
+									                                                 FormatNumeroHelper.numeroCTBToDisplay(ids.get(1)),
+									                                                 RegDateHelper.dateToDisplayString(ppSrc.getDateSeparation())));
+								}
+							}
+							else {
+								// pas de séparation -> ils sont donc toujours en couple, normalement
+								final EnsembleTiersCouple couplePrincipal = tiersService.getEnsembleTiersCouple(data.personnePhysique, dateActe);
+								final EnsembleTiersCouple coupleConjoint = tiersService.getEnsembleTiersCouple(conjointData.personnePhysique, dateActe);
+								if (couplePrincipal == null || coupleConjoint == null || couplePrincipal.getMenage() != coupleConjoint.getMenage()) {
+									throw new EvenementReqDesException(String.format("Les tiers %s et %s ne forment pas un couple au %s.",
+									                                                 FormatNumeroHelper.numeroCTBToDisplay(ids.get(0)),
+									                                                 FormatNumeroHelper.numeroCTBToDisplay(ids.get(1)),
+									                                                 RegDateHelper.dateToDisplayString(dateActe)));
+								}
+							}
+
 							// les deux sont en modification... il faut juste vérifier que c'est le bon couple et c'est bon
 							final EnsembleTiersCouple couplePrincipal = tiersService.getEnsembleTiersCouple(data.personnePhysique, ppSrc.getDateEtatCivil());
 							final EnsembleTiersCouple coupleConjoint = tiersService.getEnsembleTiersCouple(conjointData.personnePhysique, ppSrc.getDateEtatCivil());
 							if (couplePrincipal == null || coupleConjoint == null || couplePrincipal.getMenage() != coupleConjoint.getMenage()) {
-
-								// pour les tests, c'est mieux d'avoir les deux numéros de contribuables dans un ordre déterministe... et cela ne gêne absolument pas pour la production -> on le fait
-								final List<Long> ids = Arrays.asList(data.personnePhysique.getNumero(), conjointData.personnePhysique.getNumero());
-								Collections.sort(ids);
-
 								throw new EvenementReqDesException(String.format("Les tiers %s et %s ne forment pas un couple au %s.",
 								                                                 FormatNumeroHelper.numeroCTBToDisplay(ids.get(0)),
 								                                                 FormatNumeroHelper.numeroCTBToDisplay(ids.get(1)),
 								                                                 RegDateHelper.dateToDisplayString(ppSrc.getDateEtatCivil())));
 							}
-
-							// TODO Quid du cas de séparation annoncée par l'acte ?
 						}
 						else {
+
+							// s'il y a déclaration de séparation dans l'acte, il ne doit pas y avoir de couple actif fiscalement à la date de séparation déclarée
+							if (avecSeparation) {
+								final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(data.personnePhysique, ppSrc.getDateSeparation());
+								if (couple != null) {
+									throw new EvenementReqDesException(String.format("Le tiers %s est en couple au %s.",
+									                                                 FormatNumeroHelper.numeroCTBToDisplay(data.personnePhysique.getNumero()),
+									                                                 RegDateHelper.dateToDisplayString(ppSrc.getDateSeparation())));
+								}
+							}
+							else {
+								// pas de séparation, le couple doit donc exister au moment de l'acte
+								final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(data.personnePhysique, dateActe);
+								if (couple == null) {
+									throw new EvenementReqDesException(String.format("Le tiers %s n'est pas en couple au %s.",
+									                                                 FormatNumeroHelper.numeroCTBToDisplay(data.personnePhysique.getNumero()),
+									                                                 RegDateHelper.dateToDisplayString(dateActe)));
+								}
+							}
+
 							// marié seul -> si le tiers connu est en couple en base, c'est tout bon
 							final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(data.personnePhysique, ppSrc.getDateEtatCivil());
 							if (couple == null) {
-								throw new EvenementReqDesException(String.format("Le tiers %s n'est pas connu en couple au %s.",
+								throw new EvenementReqDesException(String.format("Le tiers %s n'est pas en couple au %s.",
 								                                                 FormatNumeroHelper.numeroCTBToDisplay(data.personnePhysique.getNumero()),
 								                                                 RegDateHelper.dateToDisplayString(ppSrc.getDateEtatCivil())));
 							}
-
-							// TODO Quid du cas de séparation annoncée par l'acte ?
 						}
 					}
 					else {

@@ -15,6 +15,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
+import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
@@ -42,7 +43,11 @@ import ch.vd.uniregctb.reqdes.TypeRole;
 import ch.vd.uniregctb.reqdes.UniteTraitement;
 import ch.vd.uniregctb.reqdes.UniteTraitementDAO;
 import ch.vd.uniregctb.tiers.AppartenanceMenage;
+import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
+import ch.vd.uniregctb.tiers.ForFiscal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
@@ -53,10 +58,12 @@ import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.dao.RemarqueDAO;
 import ch.vd.uniregctb.type.CategorieEtranger;
 import ch.vd.uniregctb.type.EtatCivil;
+import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 public class EvenementReqDesProcessorTest extends BusinessTest {
 
@@ -884,9 +891,7 @@ public class EvenementReqDesProcessorTest extends BusinessTest {
 				Assert.assertEquals(CategorieEtranger._06_FRONTALIER_G, found.getCategorieEtranger());
 				Assert.assertNull(found.getDateDebutValiditeAutorisation());
 
-				final Set<AdresseTiers> adresses = found.getAdressesTiers();
-				Assert.assertNotNull(adresses);
-				Assert.assertEquals(0, adresses.size());
+				checkNoAdresse(found);
 
 				final List<Remarque> remarques = remarqueDAO.getRemarques(found.getNumero());
 				Assert.assertNotNull(remarques);
@@ -1167,9 +1172,7 @@ public class EvenementReqDesProcessorTest extends BusinessTest {
 					Assert.assertEquals("petit-reqdes", mc.getLogCreationUser());
 					Assert.assertEquals("petit-reqdes", mc.getLogModifUser());
 
-					final Set<AdresseTiers> adresses = mc.getAdressesTiers();
-					Assert.assertNotNull(adresses);
-					Assert.assertEquals(0, adresses.size());
+					checkNoAdresse(mc);
 
 					final List<Remarque> remarques = remarqueDAO.getRemarques(mc.getNumero());
 					Assert.assertNotNull(remarques);
@@ -1191,9 +1194,7 @@ public class EvenementReqDesProcessorTest extends BusinessTest {
 					Assert.assertSame(allSortedTiers.get(1), couple.getConjoint());
 
 					// situation de famille
-					final Set<SituationFamille> situations = mc.getSituationsFamille();
-					Assert.assertNotNull(situations);
-					Assert.assertEquals(0, situations.size());
+					checkNoSituationFamille(mc);
 				}
 			}
 		});
@@ -1392,9 +1393,7 @@ public class EvenementReqDesProcessorTest extends BusinessTest {
 					Assert.assertNull(pp.getDateDebutValiditeAutorisation());
 
 					// sur les sources civiles, l'adresse n'est pas recopiée (elle est a priori vaudoise)
-					final Set<AdresseTiers> adresses = pp.getAdressesTiers();
-					Assert.assertNotNull(adresses);
-					Assert.assertEquals(0, adresses.size());
+					checkNoAdresse(pp);
 
 					final List<Remarque> remarques = remarqueDAO.getRemarques(pp.getNumero());
 					Assert.assertNotNull(remarques);
@@ -1438,9 +1437,7 @@ public class EvenementReqDesProcessorTest extends BusinessTest {
 					Assert.assertEquals("petit-reqdes", mc.getLogCreationUser());
 					Assert.assertEquals("petit-reqdes", mc.getLogModifUser());
 
-					final Set<AdresseTiers> adresses = mc.getAdressesTiers();
-					Assert.assertNotNull(adresses);
-					Assert.assertEquals(0, adresses.size());
+					checkNoAdresse(mc);
 
 					final List<Remarque> remarques = remarqueDAO.getRemarques(mc.getNumero());
 					Assert.assertNotNull(remarques);
@@ -1462,9 +1459,7 @@ public class EvenementReqDesProcessorTest extends BusinessTest {
 					Assert.assertSame(allSortedTiers.get(1), couple.getConjoint());
 
 					// situation de famille
-					final Set<SituationFamille> situations = mc.getSituationsFamille();
-					Assert.assertNotNull(situations);
-					Assert.assertEquals(0, situations.size());
+					checkNoSituationFamille(mc);
 				}
 			}
 		});
@@ -1568,9 +1563,7 @@ public class EvenementReqDesProcessorTest extends BusinessTest {
 					Assert.assertNull(pp.getCategorieEtranger());
 					Assert.assertNull(pp.getDateDebutValiditeAutorisation());
 
-					final Set<AdresseTiers> adresses = pp.getAdressesTiers();
-					Assert.assertNotNull(adresses);
-					Assert.assertEquals(0, adresses.size());
+					checkNoAdresse(pp);
 
 					final List<Remarque> remarques = remarqueDAO.getRemarques(pp.getNumero());
 					Assert.assertNotNull(remarques);
@@ -1685,9 +1678,7 @@ public class EvenementReqDesProcessorTest extends BusinessTest {
 					Assert.assertEquals("petit-reqdes", mc.getLogCreationUser());
 					Assert.assertEquals("petit-reqdes", mc.getLogModifUser());
 
-					final Set<AdresseTiers> adresses = mc.getAdressesTiers();
-					Assert.assertNotNull(adresses);
-					Assert.assertEquals(0, adresses.size());
+					checkNoAdresse(mc);
 
 					final List<Remarque> remarques = remarqueDAO.getRemarques(mc.getNumero());
 					Assert.assertNotNull(remarques);
@@ -1709,9 +1700,7 @@ public class EvenementReqDesProcessorTest extends BusinessTest {
 					Assert.assertSame(allSortedTiers.get(1), couple.getConjoint());
 
 					// situation de famille
-					final Set<SituationFamille> situations = mc.getSituationsFamille();
-					Assert.assertNotNull(situations);
-					Assert.assertEquals(0, situations.size());
+					checkNoSituationFamille(mc);
 				}
 			}
 		});
@@ -1863,9 +1852,7 @@ public class EvenementReqDesProcessorTest extends BusinessTest {
 					Assert.assertEquals("petit-reqdes", mc.getLogCreationUser());
 					Assert.assertEquals("petit-reqdes", mc.getLogModifUser());
 
-					final Set<AdresseTiers> adresses = mc.getAdressesTiers();
-					Assert.assertNotNull(adresses);
-					Assert.assertEquals(0, adresses.size());
+					checkNoAdresse(mc);
 
 					final List<Remarque> remarques = remarqueDAO.getRemarques(mc.getNumero());
 					Assert.assertNotNull(remarques);
@@ -1887,9 +1874,7 @@ public class EvenementReqDesProcessorTest extends BusinessTest {
 					Assert.assertNull(couple.getConjoint());
 
 					// situation de famille
-					final Set<SituationFamille> situations = mc.getSituationsFamille();
-					Assert.assertNotNull(situations);
-					Assert.assertEquals(0, situations.size());
+					checkNoSituationFamille(mc);
 				}
 			}
 		});
@@ -2173,13 +2158,9 @@ public class EvenementReqDesProcessorTest extends BusinessTest {
 					Assert.assertEquals(getDefaultOperateurName(), pp.getLogCreationUser());
 					Assert.assertEquals(getDefaultOperateurName(), pp.getLogModifUser());
 
-					final Set<AdresseTiers> adresses = pp.getAdressesTiers();
-					Assert.assertNotNull(adresses);
-					Assert.assertEquals(0, adresses.size());
+					checkNoAdresse(pp);
 
-					final List<Remarque> remarques = remarqueDAO.getRemarques(pp.getNumero());
-					Assert.assertNotNull(remarques);
-					Assert.assertEquals(0, remarques.size());
+					checkNoRemarque(pp);
 				}
 			}
 		});
@@ -2281,7 +2262,7 @@ public class EvenementReqDesProcessorTest extends BusinessTest {
 				final String expectedMessage = String.format("Les tiers %s et %s ne forment pas un couple au %s.",
 				                                             FormatNumeroHelper.numeroCTBToDisplay(ids.idLui),
 				                                             FormatNumeroHelper.numeroCTBToDisplay(ids.idElle),
-				                                             RegDateHelper.dateToDisplayString(dateMariage));
+				                                             RegDateHelper.dateToDisplayString(dateActe));
 				Assert.assertEquals(expectedMessage, erreur.getMessage());
 
 				{
@@ -2293,13 +2274,9 @@ public class EvenementReqDesProcessorTest extends BusinessTest {
 					Assert.assertEquals("Alfred", pp.getPrenomUsuel());
 					Assert.assertEquals("Dumoulin", pp.getNom());
 
-					final Set<AdresseTiers> adresses = pp.getAdressesTiers();
-					Assert.assertNotNull(adresses);
-					Assert.assertEquals(0, adresses.size());
-
-					final List<Remarque> remarques = remarqueDAO.getRemarques(pp.getNumero());
-					Assert.assertNotNull(remarques);
-					Assert.assertEquals(0, remarques.size());
+					checkNoAdresse(pp);
+					checkNoRemarque(pp);
+					checkNoSituationFamille(pp);
     			}
 				{
 					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idElle);
@@ -2310,13 +2287,9 @@ public class EvenementReqDesProcessorTest extends BusinessTest {
 					Assert.assertEquals("Pascaline", pp.getPrenomUsuel());
 					Assert.assertEquals("Dumoulin", pp.getNom());
 
-					final Set<AdresseTiers> adresses = pp.getAdressesTiers();
-					Assert.assertNotNull(adresses);
-					Assert.assertEquals(0, adresses.size());
-
-					final List<Remarque> remarques = remarqueDAO.getRemarques(pp.getNumero());
-					Assert.assertNotNull(remarques);
-					Assert.assertEquals(0, remarques.size());
+					checkNoAdresse(pp);
+					checkNoRemarque(pp);
+					checkNoSituationFamille(pp);
 				}
 			}
 		});
@@ -2464,13 +2437,9 @@ public class EvenementReqDesProcessorTest extends BusinessTest {
 					Assert.assertEquals(getDefaultOperateurName(), mc.getLogCreationUser());
 					Assert.assertEquals("nOtAir-reqdes", mc.getLogModifUser());     // modifié par l'introduction du deuxième conjoint
 
-					final Set<AdresseTiers> adresses = mc.getAdressesTiers();
-					Assert.assertNotNull(adresses);
-					Assert.assertEquals(0, adresses.size());
+					checkNoAdresse(mc);
 
-					final List<Remarque> remarques = remarqueDAO.getRemarques(mc.getNumero());
-					Assert.assertNotNull(remarques);
-					Assert.assertEquals(0, remarques.size());
+					checkNoRemarque(mc);
 
 					final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(mc, dateMariage);
 					Assert.assertNotNull(couple);
@@ -2646,13 +2615,9 @@ public class EvenementReqDesProcessorTest extends BusinessTest {
 					Assert.assertEquals("Pascaline", pp.getPrenomUsuel());
 					Assert.assertEquals("Dumoulin", pp.getNom());
 
-					final Set<AdresseTiers> adresses = pp.getAdressesTiers();
-					Assert.assertNotNull(adresses);
-					Assert.assertEquals(0, adresses.size());
-
-					final List<Remarque> remarques = remarqueDAO.getRemarques(pp.getNumero());
-					Assert.assertNotNull(remarques);
-					Assert.assertEquals(0, remarques.size());
+					checkNoAdresse(pp);
+					checkNoRemarque(pp);
+					checkNoSituationFamille(pp);
 				}
 				{
 					final MenageCommun pp = (MenageCommun) tiersDAO.get(ids.idMenage);
@@ -2660,13 +2625,9 @@ public class EvenementReqDesProcessorTest extends BusinessTest {
 					Assert.assertEquals(getDefaultOperateurName(), pp.getLogCreationUser());
 					Assert.assertEquals(getDefaultOperateurName(), pp.getLogModifUser());
 
-					final Set<AdresseTiers> adresses = pp.getAdressesTiers();
-					Assert.assertNotNull(adresses);
-					Assert.assertEquals(0, adresses.size());
-
-					final List<Remarque> remarques = remarqueDAO.getRemarques(pp.getNumero());
-					Assert.assertNotNull(remarques);
-					Assert.assertEquals(0, remarques.size());
+					checkNoAdresse(pp);
+					checkNoRemarque(pp);
+					checkNoSituationFamille(pp);
 				}
 			}
 		});
@@ -2800,13 +2761,9 @@ public class EvenementReqDesProcessorTest extends BusinessTest {
 					Assert.assertEquals("Pascaline", pp.getPrenomUsuel());
 					Assert.assertEquals("Dumoulin", pp.getNom());
 
-					final Set<AdresseTiers> adresses = pp.getAdressesTiers();
-					Assert.assertNotNull(adresses);
-					Assert.assertEquals(0, adresses.size());
-
-					final List<Remarque> remarques = remarqueDAO.getRemarques(pp.getNumero());
-					Assert.assertNotNull(remarques);
-					Assert.assertEquals(0, remarques.size());
+					checkNoAdresse(pp);
+					checkNoRemarque(pp);
+					checkNoSituationFamille(pp);
 				}
 				{
 					final MenageCommun pp = (MenageCommun) tiersDAO.get(ids.idMenage);
@@ -2814,13 +2771,9 @@ public class EvenementReqDesProcessorTest extends BusinessTest {
 					Assert.assertEquals(getDefaultOperateurName(), pp.getLogCreationUser());
 					Assert.assertEquals(getDefaultOperateurName(), pp.getLogModifUser());
 
-					final Set<AdresseTiers> adresses = pp.getAdressesTiers();
-					Assert.assertNotNull(adresses);
-					Assert.assertEquals(0, adresses.size());
-
-					final List<Remarque> remarques = remarqueDAO.getRemarques(pp.getNumero());
-					Assert.assertNotNull(remarques);
-					Assert.assertEquals(0, remarques.size());
+					checkNoAdresse(pp);
+					checkNoRemarque(pp);
+					checkNoSituationFamille(pp);
 				}
 
 				// il faut de plus vérifier que l'on a bien 3 tiers seulement en base (= ceux vus plus haut) sans création d'un autre avec les données de l'acte
@@ -2915,14 +2868,9 @@ public class EvenementReqDesProcessorTest extends BusinessTest {
 					Assert.assertEquals("Alfred", pp.getPrenomUsuel());
 					Assert.assertEquals("Dumoulin", pp.getNom());
 
-					final Set<AdresseTiers> adresses = pp.getAdressesTiers();
-					Assert.assertNotNull(adresses);
-					Assert.assertEquals(0, adresses.size());
-
-					final List<Remarque> remarques = remarqueDAO.getRemarques(pp.getNumero());
-					Assert.assertNotNull(remarques);
-					Assert.assertEquals(0, remarques.size());
-
+					checkNoAdresse(pp);
+					checkNoRemarque(pp);
+					checkNoSituationFamille(pp);
 				}
 				{
 					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idElle);
@@ -2933,13 +2881,9 @@ public class EvenementReqDesProcessorTest extends BusinessTest {
 					Assert.assertEquals("Pascaline", pp.getPrenomUsuel());
 					Assert.assertEquals("Dumoulin", pp.getNom());
 
-					final Set<AdresseTiers> adresses = pp.getAdressesTiers();
-					Assert.assertNotNull(adresses);
-					Assert.assertEquals(0, adresses.size());
-
-					final List<Remarque> remarques = remarqueDAO.getRemarques(pp.getNumero());
-					Assert.assertNotNull(remarques);
-					Assert.assertEquals(0, remarques.size());
+					checkNoAdresse(pp);
+					checkNoRemarque(pp);
+					checkNoSituationFamille(pp);
 				}
 				{
 					final MenageCommun pp = (MenageCommun) tiersDAO.get(ids.idMenage);
@@ -2947,13 +2891,9 @@ public class EvenementReqDesProcessorTest extends BusinessTest {
 					Assert.assertEquals(getDefaultOperateurName(), pp.getLogCreationUser());
 					Assert.assertEquals(getDefaultOperateurName(), pp.getLogModifUser());
 
-					final Set<AdresseTiers> adresses = pp.getAdressesTiers();
-					Assert.assertNotNull(adresses);
-					Assert.assertEquals(0, adresses.size());
-
-					final List<Remarque> remarques = remarqueDAO.getRemarques(pp.getNumero());
-					Assert.assertNotNull(remarques);
-					Assert.assertEquals(0, remarques.size());
+					checkNoAdresse(pp);
+					checkNoRemarque(pp);
+					checkNoSituationFamille(pp);
 				}
 			}
 		});
@@ -3020,7 +2960,7 @@ public class EvenementReqDesProcessorTest extends BusinessTest {
 				final ErreurTraitement erreur = ut.getErreurs().iterator().next();
 				Assert.assertNotNull(erreur);
 				Assert.assertEquals(ErreurTraitement.TypeErreur.ERROR, erreur.getType());
-				Assert.assertEquals("Le tiers " + FormatNumeroHelper.numeroCTBToDisplay(ids.idLui) + " n'est pas connu en couple au " + RegDateHelper.dateToDisplayString(dateMariage) + ".", erreur.getMessage());
+				Assert.assertEquals("Le tiers " + FormatNumeroHelper.numeroCTBToDisplay(ids.idLui) + " n'est pas en couple au " + RegDateHelper.dateToDisplayString(dateActe) + ".", erreur.getMessage());
 
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idLui);
 				Assert.assertNotNull(pp);
@@ -3030,13 +2970,9 @@ public class EvenementReqDesProcessorTest extends BusinessTest {
 				Assert.assertEquals("Alfred", pp.getPrenomUsuel());
 				Assert.assertEquals("Dumoulin", pp.getNom());
 
-				final Set<AdresseTiers> adresses = pp.getAdressesTiers();
-				Assert.assertNotNull(adresses);
-				Assert.assertEquals(0, adresses.size());
-
-				final List<Remarque> remarques = remarqueDAO.getRemarques(pp.getNumero());
-				Assert.assertNotNull(remarques);
-				Assert.assertEquals(0, remarques.size());
+				checkNoAdresse(pp);
+				checkNoRemarque(pp);
+				checkNoSituationFamille(pp);
 			}
 		});
 	}
@@ -3114,13 +3050,9 @@ public class EvenementReqDesProcessorTest extends BusinessTest {
 				Assert.assertEquals("Alfred", pp.getPrenomUsuel());
 				Assert.assertEquals("Dumoulin", pp.getNom());
 
-				final Set<AdresseTiers> adresses = pp.getAdressesTiers();
-				Assert.assertNotNull(adresses);
-				Assert.assertEquals(0, adresses.size());
-
-				final List<Remarque> remarques = remarqueDAO.getRemarques(pp.getNumero());
-				Assert.assertNotNull(remarques);
-				Assert.assertEquals(0, remarques.size());
+				checkNoAdresse(pp);
+				checkNoRemarque(pp);
+				checkNoSituationFamille(pp);
 
 				// pas de nouveau tiers
 				final List<Tiers> allTiers = tiersDAO.getAll();
@@ -3167,6 +3099,7 @@ public class EvenementReqDesProcessorTest extends BusinessTest {
 				pp.setLocalite(MockLocalite.Zurich.getNomCompletMinuscule());
 				pp.setNumeroPostal(Integer.toString(MockLocalite.Zurich.getNPA()));
 				pp.setNumeroPostalComplementaire(MockLocalite.Zurich.getComplementNPA());
+				pp.setOfsCommune(MockCommune.Zurich.getNoOFS());
 
 				return ut.getId();
 			}
@@ -3223,9 +3156,7 @@ public class EvenementReqDesProcessorTest extends BusinessTest {
 					Assert.assertNull(pp.getNumeroAssureSocial());
 
 					// adresses
-					final Set<AdresseTiers> adresses = pp.getAdressesTiers();
-					Assert.assertNotNull(adresses);
-					Assert.assertEquals(0, adresses.size());
+					checkNoAdresse(pp);
 
 					// remarques
 					final List<Remarque> remarques = remarqueDAO.getRemarques(pp.getNumero());
@@ -3340,9 +3271,7 @@ public class EvenementReqDesProcessorTest extends BusinessTest {
 					Assert.assertEquals("zainotaire-reqdes", mc.getLogModifUser());
 
 					// adresses
-					final Set<AdresseTiers> adresses = mc.getAdressesTiers();
-					Assert.assertNotNull(adresses);
-					Assert.assertEquals(0, adresses.size());
+					checkNoAdresse(mc);
 
 					// remarque
 					final List<Remarque> remarques = remarqueDAO.getRemarques(mc.getNumero());
@@ -3361,9 +3290,2490 @@ public class EvenementReqDesProcessorTest extends BusinessTest {
 					Assert.assertEquals(b.toString(), remarque.getTexte());
 
 					// situation de famille
-					final Set<SituationFamille> situations = mc.getSituationsFamille();
+					checkNoSituationFamille(mc);
+				}
+			}
+		});
+	}
+
+	@Test(timeout = 10000)
+	public void testModificationContribuableMarieSeulSepare() throws Exception {
+
+		final RegDate today = RegDate.get();
+		final RegDate dateNaissance = date(1973, 2, 12);
+		final RegDate dateMariage = date(2005, 7, 12);
+		final RegDate dateSeparation = date(2010, 9, 28);
+		final RegDate dateActe = date(2014, 6, 10);
+		final String noAvs = "7561912776368";
+
+		final class Ids {
+			long ppid;
+			long utId;
+		}
+
+		// création de l'unité de traitement
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+
+				final PersonnePhysique elle = addNonHabitant("Valentine", "Cordoba", dateNaissance, Sexe.FEMININ);
+				addEnsembleTiersCouple(elle, null, dateMariage, dateSeparation.getOneDayBefore());
+
+				final EvenementReqDes evt = addEvenementReqDes(new InformationsActeur("zainotaire", "Duchmol", "Alexandra"), null, dateActe, "4879846498");
+				final UniteTraitement ut = addUniteTraitement(evt, EtatTraitement.A_TRAITER, null);
+				final PartiePrenante pp = addPartiePrenante(ut, "Cordoba",  "Valentine Catherine Julie");
+				pp.setNumeroContribuable(elle.getNumero());
+				pp.setNomMere("Delaplanche");
+				pp.setPrenomsMere("Sophie Mafalda");
+				pp.setNomPere("Dumoulin");
+				pp.setPrenomsPere("François Robert");
+				pp.setOfsPaysNationalite(MockPays.Suisse.getNoOFS());
+				pp.setSexe(Sexe.FEMININ);
+				pp.setDateNaissance(dateNaissance);
+				pp.setDateEtatCivil(dateMariage);
+				pp.setDateSeparation(dateSeparation);
+				pp.setEtatCivil(EtatCivil.MARIE);
+				pp.setAvs(noAvs);
+				pp.setNomConjoint("Cordoba");
+				pp.setPrenomConjoint("Marcel");
+
+				pp.setRue("Eisentürstrasse");
+				pp.setNumeroMaison("42");
+				pp.setOfsPays(MockPays.Suisse.getNoOFS());
+				pp.setLocalite(MockLocalite.Zurich.getNomCompletMinuscule());
+				pp.setNumeroPostal(Integer.toString(MockLocalite.Zurich.getNPA()));
+				pp.setNumeroPostalComplementaire(MockLocalite.Zurich.getComplementNPA());
+				pp.setOfsCommune(MockCommune.Zurich.getNoOFS());
+
+				final Ids ids = new Ids();
+				ids.ppid = elle.getNumero();
+				ids.utId = ut.getId();
+				return ids;
+			}
+		});
+
+		// traitement de l'unité
+		traiteUniteTraitement(ids.utId);
+
+		// vérification du résultat
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+
+				final UniteTraitement ut = uniteTraitementDAO.get(ids.utId);
+				Assert.assertNotNull(ut);
+				Assert.assertEquals(EtatTraitement.TRAITE, ut.getEtat());
+				Assert.assertNotNull(ut.getDateTraitement());
+				Assert.assertEquals(0, ut.getErreurs().size());
+
+				// 3 contribuables en base
+				// - madame Valentine Cordoba (modifiée)
+				// - monsieur Marcel Cordoba (créé avec les données minimales)
+				// - couple Cordoba fermé à la veille de la date de séparation (laissé en l'état)
+				final List<Tiers> allTiers = tiersDAO.getAll();
+				Assert.assertNotNull(allTiers);
+				Assert.assertEquals(3, allTiers.size());        // 2 PP + 1 MC
+
+				final List<Tiers> allSortedTiers = new ArrayList<>(allTiers);
+				Collections.sort(allSortedTiers, new Comparator<Tiers>() {
+					@Override
+					public int compare(Tiers o1, Tiers o2) {
+						int result = o1.getNatureTiers().compareTo(o2.getNatureTiers());
+						if (result == 0) {
+							// les seuls qui ont la même nature sont les deux personnes physiques
+							final PersonnePhysique pp1 = (PersonnePhysique) o1;
+							final PersonnePhysique pp2 = (PersonnePhysique) o2;
+							result = pp1.getPrenomUsuel().compareTo(pp2.getPrenomUsuel());
+						}
+						return result;
+					}
+				});
+
+				// et l'ordre est finalement 1. Marcel, 2. Valentine, 3 le couple
+				{
+					final PersonnePhysique pp = (PersonnePhysique) allSortedTiers.get(0);
+					Assert.assertNotNull(pp);
+					Assert.assertEquals("zainotaire-reqdes", pp.getLogCreationUser());
+					Assert.assertEquals("zainotaire-reqdes", pp.getLogModifUser());
+					Assert.assertEquals("Cordoba", pp.getNom());
+					Assert.assertEquals("Marcel", pp.getPrenomUsuel());
+					Assert.assertEquals("Marcel", pp.getTousPrenoms());
+					Assert.assertNull(pp.getDateNaissance());
+					Assert.assertNull(pp.getSexe());
+					Assert.assertNull(pp.getNumeroAssureSocial());
+
+					// adresses
+					final Set<AdresseTiers> adresses = pp.getAdressesTiers();
+					Assert.assertNotNull(adresses);
+					Assert.assertEquals(0, adresses.size());
+
+					// remarques
+					final List<Remarque> remarques = remarqueDAO.getRemarques(pp.getNumero());
+					Assert.assertNotNull(remarques);
+					Assert.assertEquals(1, remarques.size());
+
+					final Remarque remarque = remarques.get(0);
+					Assert.assertNotNull(remarque);
+					Assert.assertEquals("zainotaire-reqdes", remarque.getLogCreationUser());
+					Assert.assertEquals("zainotaire-reqdes", remarque.getLogModifUser());
+
+					final StringBuilder b = new StringBuilder();
+					b.append("Contribuable créé le ").append(RegDateHelper.dateToDisplayString(today));
+					b.append(" par l'acte notarial du ").append(RegDateHelper.dateToDisplayString(dateActe));
+					b.append(" par le notaire Alexandra Duchmol (zainotaire) et enregistré par lui-même.");
+					Assert.assertEquals(b.toString(), remarque.getTexte());
+
+					// situation de famille
+					final Set<SituationFamille> situations = pp.getSituationsFamille();
 					Assert.assertNotNull(situations);
-					Assert.assertEquals(0, situations.size());
+					Assert.assertEquals(1, situations.size());
+					final SituationFamille situ = situations.iterator().next();
+					Assert.assertNotNull(situ);
+					Assert.assertEquals(SituationFamillePersonnePhysique.class, situ.getClass());
+					Assert.assertEquals(EtatCivil.SEPARE, situ.getEtatCivil());
+					Assert.assertEquals(dateSeparation, situ.getDateDebut());
+					Assert.assertNull(situ.getDateFin());
+
+					// couple
+					final Set<RapportEntreTiers> rapports = pp.getRapportsSujet();
+					Assert.assertNotNull(rapports);
+					Assert.assertEquals(1, rapports.size());
+
+					final RapportEntreTiers rapport = rapports.iterator().next();
+					Assert.assertNotNull(rapport);
+					Assert.assertFalse(rapport.isAnnule());
+					Assert.assertEquals(dateMariage, rapport.getDateDebut());
+					Assert.assertEquals(dateSeparation.getOneDayBefore(), rapport.getDateFin());
+					Assert.assertEquals(allSortedTiers.get(2).getNumero(), rapport.getObjetId());
+				}
+				{
+					final PersonnePhysique pp = (PersonnePhysique) allSortedTiers.get(1);
+					Assert.assertNotNull(pp);
+					Assert.assertEquals(getDefaultOperateurName(), pp.getLogCreationUser());
+					Assert.assertEquals("zainotaire-reqdes", pp.getLogModifUser());
+					Assert.assertEquals("Cordoba", pp.getNom());
+					Assert.assertEquals("Valentine", pp.getPrenomUsuel());
+					Assert.assertEquals("Valentine Catherine Julie", pp.getTousPrenoms());
+					Assert.assertEquals(dateNaissance, pp.getDateNaissance());
+					Assert.assertEquals(Sexe.FEMININ, pp.getSexe());
+					Assert.assertEquals(noAvs, pp.getNumeroAssureSocial());
+
+					// adresses
+					final Set<AdresseTiers> adresses = pp.getAdressesTiers();
+					Assert.assertNotNull(adresses);
+					Assert.assertEquals(1, adresses.size());
+
+					final AdresseTiers adresse = adresses.iterator().next();
+					Assert.assertNotNull(adresse);
+					Assert.assertFalse(adresse.isAnnule());
+					Assert.assertEquals(AdresseSuisse.class, adresse.getClass());
+
+					final AdresseSuisse adresseSuisse = (AdresseSuisse) adresse;
+					Assert.assertEquals(MockLocalite.Zurich.getNoOrdre(), adresseSuisse.getNumeroOrdrePoste());
+					Assert.assertEquals("42", adresseSuisse.getNumeroMaison());
+					Assert.assertEquals("Eisentürstrasse", adresseSuisse.getRue());
+					Assert.assertNull(adresseSuisse.getNumeroRue());
+
+					// remarque
+					final List<Remarque> remarques = remarqueDAO.getRemarques(pp.getNumero());
+					Assert.assertNotNull(remarques);
+					Assert.assertEquals(1, remarques.size());
+
+					final Remarque remarque = remarques.get(0);
+					Assert.assertNotNull(remarque);
+					Assert.assertEquals("zainotaire-reqdes", remarque.getLogCreationUser());
+					Assert.assertEquals("zainotaire-reqdes", remarque.getLogModifUser());
+
+					final StringBuilder b = new StringBuilder();
+					b.append("Contribuable mis à jour le ").append(RegDateHelper.dateToDisplayString(today));
+					b.append(" par l'acte notarial du ").append(RegDateHelper.dateToDisplayString(dateActe));
+					b.append(" par le notaire Alexandra Duchmol (zainotaire) et enregistré par lui-même.");
+					b.append("\n- Prénoms : vide -> \"Valentine Catherine Julie\"");
+					b.append("\n- Nom de la mère : vide -> \"Delaplanche\"");
+					b.append("\n- Prénoms de la mère : vide -> \"Sophie Mafalda\"");
+					b.append("\n- Nom du père : vide -> \"Dumoulin\"");
+					b.append("\n- Prénoms du père : vide -> \"François Robert\"");
+					b.append("\n- NAVS13 : vide -> ").append(FormatNumeroHelper.formatNumAVS(noAvs));
+					b.append("\n- Nationalité : vide -> ").append(MockPays.Suisse.getNomCourt());
+					b.append("\n- Etat civil au ").append(RegDateHelper.dateToDisplayString(dateSeparation)).append(" : vide -> ").append(EtatCivil.SEPARE.format());
+					Assert.assertEquals(b.toString(), remarque.getTexte());
+
+					// situation de famille
+					final Set<SituationFamille> situations = pp.getSituationsFamille();
+					Assert.assertNotNull(situations);
+					Assert.assertEquals(1, situations.size());
+					final SituationFamille situ = situations.iterator().next();
+					Assert.assertNotNull(situ);
+					Assert.assertEquals(SituationFamillePersonnePhysique.class, situ.getClass());
+					Assert.assertEquals(EtatCivil.SEPARE, situ.getEtatCivil());
+					Assert.assertEquals(dateSeparation, situ.getDateDebut());
+					Assert.assertNull(situ.getDateFin());
+
+					// couple
+					final Set<RapportEntreTiers> rapports = pp.getRapportsSujet();
+					Assert.assertNotNull(rapports);
+					Assert.assertEquals(1, rapports.size());
+
+					final RapportEntreTiers rapport = rapports.iterator().next();
+					Assert.assertNotNull(rapport);
+					Assert.assertFalse(rapport.isAnnule());
+					Assert.assertEquals(dateMariage, rapport.getDateDebut());
+					Assert.assertEquals(dateSeparation.getOneDayBefore(), rapport.getDateFin());
+					Assert.assertEquals(allSortedTiers.get(2).getNumero(), rapport.getObjetId());
+				}
+				{
+					final MenageCommun mc = (MenageCommun) allSortedTiers.get(2);
+					Assert.assertNotNull(mc);
+					Assert.assertEquals(getDefaultOperateurName(), mc.getLogCreationUser());
+					Assert.assertEquals("zainotaire-reqdes", mc.getLogModifUser());     // modifié par l'ajout du conjoint
+
+					// adresses
+					checkNoAdresse(mc);
+
+					// remarque
+					checkNoRemarque(mc);
+
+					// situation de famille
+					checkNoSituationFamille(mc);
+				}
+			}
+		});
+	}
+
+	@Test(timeout = 10000)
+	public void testModificationContribuableSepareCompletementConnuFiscalement() throws Exception {
+
+		final RegDate today = RegDate.get();
+		final RegDate dateNaissance = date(1973, 2, 12);
+		final RegDate dateMariage = date(2005, 7, 12);
+		final RegDate dateSeparation = date(2010, 9, 28);
+		final RegDate dateActe = date(2014, 6, 10);
+		final String noAvs = "7561912776368";
+
+		final class Ids {
+			long ppid;
+			long utId;
+		}
+
+		// création de l'unité de traitement
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+
+				final PersonnePhysique elle = addNonHabitant("Valentine", "Cordoba", dateNaissance, Sexe.FEMININ);
+				final PersonnePhysique lui = addNonHabitant("Philippe", "Cordoba", null, Sexe.MASCULIN);
+				addEnsembleTiersCouple(elle, lui, dateMariage, dateSeparation.getOneDayBefore());
+
+				final EvenementReqDes evt = addEvenementReqDes(new InformationsActeur("zainotaire", "Duchmol", "Alexandra"), null, dateActe, "4879846498");
+				final UniteTraitement ut = addUniteTraitement(evt, EtatTraitement.A_TRAITER, null);
+				final PartiePrenante ppElle = addPartiePrenante(ut, "Cordoba",  "Valentine Catherine Julie");
+				ppElle.setNumeroContribuable(elle.getNumero());
+				ppElle.setNomMere("Delaplanche");
+				ppElle.setPrenomsMere("Sophie Mafalda");
+				ppElle.setNomPere("Dumoulin");
+				ppElle.setPrenomsPere("François Robert");
+				ppElle.setOfsPaysNationalite(MockPays.Suisse.getNoOFS());
+				ppElle.setSexe(Sexe.FEMININ);
+				ppElle.setDateNaissance(dateNaissance);
+				ppElle.setDateEtatCivil(dateMariage);
+				ppElle.setDateSeparation(dateSeparation);
+				ppElle.setEtatCivil(EtatCivil.MARIE);
+				ppElle.setAvs(noAvs);
+
+				ppElle.setRue("Eisentürstrasse");
+				ppElle.setNumeroMaison("42");
+				ppElle.setOfsPays(MockPays.Suisse.getNoOFS());
+				ppElle.setLocalite(MockLocalite.Zurich.getNomCompletMinuscule());
+				ppElle.setNumeroPostal(Integer.toString(MockLocalite.Zurich.getNPA()));
+				ppElle.setNumeroPostalComplementaire(MockLocalite.Zurich.getComplementNPA());
+				ppElle.setOfsCommune(MockCommune.Zurich.getNoOFS());
+
+				final PartiePrenante ppLui = addPartiePrenante(ut, "Cordoba", "Philippe");
+				ppLui.setNumeroContribuable(lui.getNumero());
+				ppLui.setOfsPaysNationalite(MockPays.Suisse.getNoOFS());
+				ppLui.setSexe(Sexe.MASCULIN);
+				ppLui.setDateEtatCivil(dateMariage);
+				ppLui.setDateSeparation(dateSeparation);
+				ppLui.setEtatCivil(EtatCivil.MARIE);
+
+				ppLui.setRue("Eisentürstrasse");
+				ppLui.setNumeroMaison("421");
+				ppLui.setOfsPays(MockPays.Suisse.getNoOFS());
+				ppLui.setLocalite(MockLocalite.Zurich.getNomCompletMinuscule());
+				ppLui.setNumeroPostal(Integer.toString(MockLocalite.Zurich.getNPA()));
+				ppLui.setNumeroPostalComplementaire(MockLocalite.Zurich.getComplementNPA());
+				ppLui.setOfsCommune(MockCommune.Zurich.getNoOFS());
+
+				// liens
+				ppElle.setConjointPartiePrenante(ppLui);
+				ppLui.setConjointPartiePrenante(ppElle);
+
+				final Ids ids = new Ids();
+				ids.ppid = elle.getNumero();
+				ids.utId = ut.getId();
+				return ids;
+			}
+		});
+
+		// traitement de l'unité
+		traiteUniteTraitement(ids.utId);
+
+		// vérification du résultat
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+
+				final UniteTraitement ut = uniteTraitementDAO.get(ids.utId);
+				Assert.assertNotNull(ut);
+				Assert.assertEquals(EtatTraitement.TRAITE, ut.getEtat());
+				Assert.assertNotNull(ut.getDateTraitement());
+				Assert.assertEquals(0, ut.getErreurs().size());
+
+				// 3 contribuables en base
+				// - madame Valentine Cordoba (modifiée)
+				// - monsieur Marcel Cordoba (modifié)
+				// - couple Cordoba fermé à la veille de la date de séparation (laissé en l'état)
+				final List<Tiers> allTiers = tiersDAO.getAll();
+				Assert.assertNotNull(allTiers);
+				Assert.assertEquals(3, allTiers.size());        // 2 PP + 1 MC
+
+				final List<Tiers> allSortedTiers = new ArrayList<>(allTiers);
+				Collections.sort(allSortedTiers, new Comparator<Tiers>() {
+					@Override
+					public int compare(Tiers o1, Tiers o2) {
+						int result = o1.getNatureTiers().compareTo(o2.getNatureTiers());
+						if (result == 0) {
+							// les seuls qui ont la même nature sont les deux personnes physiques
+							final PersonnePhysique pp1 = (PersonnePhysique) o1;
+							final PersonnePhysique pp2 = (PersonnePhysique) o2;
+							result = pp1.getPrenomUsuel().compareTo(pp2.getPrenomUsuel());
+						}
+						return result;
+					}
+				});
+
+				// et l'ordre est finalement 1. Philippe, 2. Valentine, 3 le couple
+				{
+					final PersonnePhysique pp = (PersonnePhysique) allSortedTiers.get(0);
+					Assert.assertNotNull(pp);
+					Assert.assertEquals(getDefaultOperateurName(), pp.getLogCreationUser());
+					Assert.assertEquals("zainotaire-reqdes", pp.getLogModifUser());
+					Assert.assertEquals("Cordoba", pp.getNom());
+					Assert.assertEquals("Philippe", pp.getPrenomUsuel());
+					Assert.assertEquals("Philippe", pp.getTousPrenoms());
+					Assert.assertNull(pp.getDateNaissance());
+					Assert.assertEquals(Sexe.MASCULIN, pp.getSexe());
+					Assert.assertNull(pp.getNumeroAssureSocial());
+
+					// adresses
+					final Set<AdresseTiers> adresses = pp.getAdressesTiers();
+					Assert.assertNotNull(adresses);
+					Assert.assertEquals(1, adresses.size());
+
+					final AdresseTiers adresse = adresses.iterator().next();
+					Assert.assertNotNull(adresse);
+					Assert.assertFalse(adresse.isAnnule());
+					Assert.assertEquals(AdresseSuisse.class, adresse.getClass());
+
+					final AdresseSuisse adresseSuisse = (AdresseSuisse) adresse;
+					Assert.assertEquals(MockLocalite.Zurich.getNoOrdre(), adresseSuisse.getNumeroOrdrePoste());
+					Assert.assertEquals("421", adresseSuisse.getNumeroMaison());
+					Assert.assertEquals("Eisentürstrasse", adresseSuisse.getRue());
+					Assert.assertNull(adresseSuisse.getNumeroRue());
+
+					// remarques
+					final List<Remarque> remarques = remarqueDAO.getRemarques(pp.getNumero());
+					Assert.assertNotNull(remarques);
+					Assert.assertEquals(1, remarques.size());
+
+					final Remarque remarque = remarques.get(0);
+					Assert.assertNotNull(remarque);
+					Assert.assertEquals("zainotaire-reqdes", remarque.getLogCreationUser());
+					Assert.assertEquals("zainotaire-reqdes", remarque.getLogModifUser());
+
+					final StringBuilder b = new StringBuilder();
+					b.append("Contribuable mis à jour le ").append(RegDateHelper.dateToDisplayString(today));
+					b.append(" par l'acte notarial du ").append(RegDateHelper.dateToDisplayString(dateActe));
+					b.append(" par le notaire Alexandra Duchmol (zainotaire) et enregistré par lui-même.");
+					b.append("\n- Prénoms : vide -> \"Philippe\"");
+					b.append("\n- Nationalité : vide -> ").append(MockPays.Suisse.getNomCourt());
+					b.append("\n- Etat civil au ").append(RegDateHelper.dateToDisplayString(dateSeparation)).append(" : vide -> ").append(EtatCivil.SEPARE.format());
+					Assert.assertEquals(b.toString(), remarque.getTexte());
+
+					// situation de famille
+					final Set<SituationFamille> situations = pp.getSituationsFamille();
+					Assert.assertNotNull(situations);
+					Assert.assertEquals(1, situations.size());
+					final SituationFamille situ = situations.iterator().next();
+					Assert.assertNotNull(situ);
+					Assert.assertEquals(SituationFamillePersonnePhysique.class, situ.getClass());
+					Assert.assertEquals(EtatCivil.SEPARE, situ.getEtatCivil());
+					Assert.assertEquals(dateSeparation, situ.getDateDebut());
+					Assert.assertNull(situ.getDateFin());
+
+					// couple
+					final Set<RapportEntreTiers> rapports = pp.getRapportsSujet();
+					Assert.assertNotNull(rapports);
+					Assert.assertEquals(1, rapports.size());
+
+					final RapportEntreTiers rapport = rapports.iterator().next();
+					Assert.assertNotNull(rapport);
+					Assert.assertFalse(rapport.isAnnule());
+					Assert.assertEquals(dateMariage, rapport.getDateDebut());
+					Assert.assertEquals(dateSeparation.getOneDayBefore(), rapport.getDateFin());
+					Assert.assertEquals(allSortedTiers.get(2).getNumero(), rapport.getObjetId());
+				}
+				{
+					final PersonnePhysique pp = (PersonnePhysique) allSortedTiers.get(1);
+					Assert.assertNotNull(pp);
+					Assert.assertEquals(getDefaultOperateurName(), pp.getLogCreationUser());
+					Assert.assertEquals("zainotaire-reqdes", pp.getLogModifUser());
+					Assert.assertEquals("Cordoba", pp.getNom());
+					Assert.assertEquals("Valentine", pp.getPrenomUsuel());
+					Assert.assertEquals("Valentine Catherine Julie", pp.getTousPrenoms());
+					Assert.assertEquals(dateNaissance, pp.getDateNaissance());
+					Assert.assertEquals(Sexe.FEMININ, pp.getSexe());
+					Assert.assertEquals(noAvs, pp.getNumeroAssureSocial());
+
+					// adresses
+					final Set<AdresseTiers> adresses = pp.getAdressesTiers();
+					Assert.assertNotNull(adresses);
+					Assert.assertEquals(1, adresses.size());
+
+					final AdresseTiers adresse = adresses.iterator().next();
+					Assert.assertNotNull(adresse);
+					Assert.assertFalse(adresse.isAnnule());
+					Assert.assertEquals(AdresseSuisse.class, adresse.getClass());
+
+					final AdresseSuisse adresseSuisse = (AdresseSuisse) adresse;
+					Assert.assertEquals(MockLocalite.Zurich.getNoOrdre(), adresseSuisse.getNumeroOrdrePoste());
+					Assert.assertEquals("42", adresseSuisse.getNumeroMaison());
+					Assert.assertEquals("Eisentürstrasse", adresseSuisse.getRue());
+					Assert.assertNull(adresseSuisse.getNumeroRue());
+
+					// remarque
+					final List<Remarque> remarques = remarqueDAO.getRemarques(pp.getNumero());
+					Assert.assertNotNull(remarques);
+					Assert.assertEquals(1, remarques.size());
+
+					final Remarque remarque = remarques.get(0);
+					Assert.assertNotNull(remarque);
+					Assert.assertEquals("zainotaire-reqdes", remarque.getLogCreationUser());
+					Assert.assertEquals("zainotaire-reqdes", remarque.getLogModifUser());
+
+					final StringBuilder b = new StringBuilder();
+					b.append("Contribuable mis à jour le ").append(RegDateHelper.dateToDisplayString(today));
+					b.append(" par l'acte notarial du ").append(RegDateHelper.dateToDisplayString(dateActe));
+					b.append(" par le notaire Alexandra Duchmol (zainotaire) et enregistré par lui-même.");
+					b.append("\n- Prénoms : vide -> \"Valentine Catherine Julie\"");
+					b.append("\n- Nom de la mère : vide -> \"Delaplanche\"");
+					b.append("\n- Prénoms de la mère : vide -> \"Sophie Mafalda\"");
+					b.append("\n- Nom du père : vide -> \"Dumoulin\"");
+					b.append("\n- Prénoms du père : vide -> \"François Robert\"");
+					b.append("\n- NAVS13 : vide -> ").append(FormatNumeroHelper.formatNumAVS(noAvs));
+					b.append("\n- Nationalité : vide -> ").append(MockPays.Suisse.getNomCourt());
+					b.append("\n- Etat civil au ").append(RegDateHelper.dateToDisplayString(dateSeparation)).append(" : vide -> ").append(EtatCivil.SEPARE.format());
+					Assert.assertEquals(b.toString(), remarque.getTexte());
+
+					// situation de famille
+					final Set<SituationFamille> situations = pp.getSituationsFamille();
+					Assert.assertNotNull(situations);
+					Assert.assertEquals(1, situations.size());
+					final SituationFamille situ = situations.iterator().next();
+					Assert.assertNotNull(situ);
+					Assert.assertEquals(SituationFamillePersonnePhysique.class, situ.getClass());
+					Assert.assertEquals(EtatCivil.SEPARE, situ.getEtatCivil());
+					Assert.assertEquals(dateSeparation, situ.getDateDebut());
+					Assert.assertNull(situ.getDateFin());
+
+					// couple
+					final Set<RapportEntreTiers> rapports = pp.getRapportsSujet();
+					Assert.assertNotNull(rapports);
+					Assert.assertEquals(1, rapports.size());
+
+					final RapportEntreTiers rapport = rapports.iterator().next();
+					Assert.assertNotNull(rapport);
+					Assert.assertFalse(rapport.isAnnule());
+					Assert.assertEquals(dateMariage, rapport.getDateDebut());
+					Assert.assertEquals(dateSeparation.getOneDayBefore(), rapport.getDateFin());
+					Assert.assertEquals(allSortedTiers.get(2).getNumero(), rapport.getObjetId());
+				}
+				{
+					final MenageCommun mc = (MenageCommun) allSortedTiers.get(2);
+					Assert.assertNotNull(mc);
+					Assert.assertEquals(getDefaultOperateurName(), mc.getLogCreationUser());
+					Assert.assertEquals(getDefaultOperateurName(), mc.getLogModifUser());     // pas modifié du tout
+
+					// adresses
+					checkNoAdresse(mc);
+
+					// remarque
+					checkNoRemarque(mc);
+
+					// situation de famille
+					checkNoSituationFamille(mc);
+				}
+			}
+		});
+	}
+
+	@Test(timeout = 10000)
+	public void testModificationContribuableCoupleMarieMaisFiscalementSepare() throws Exception {
+
+		final RegDate dateNaissance = date(1973, 2, 12);
+		final RegDate dateMariage = date(2005, 7, 12);
+		final RegDate dateSeparation = date(2010, 9, 28);
+		final RegDate dateActe = date(2014, 6, 10);
+		final String noAvs = "7561912776368";
+
+		final class Ids {
+			long idElle;
+			long idLui;
+			long utId;
+		}
+
+		// création de l'unité de traitement
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+
+				final PersonnePhysique elle = addNonHabitant("Valentine", "Cordoba", dateNaissance, Sexe.FEMININ);
+				final PersonnePhysique lui = addNonHabitant("Philippe", "Cordoba", null, Sexe.MASCULIN);
+				addEnsembleTiersCouple(elle, lui, dateMariage, dateSeparation.getOneDayBefore());
+
+				final EvenementReqDes evt = addEvenementReqDes(new InformationsActeur("zainotaire", "Duchmol", "Alexandra"), null, dateActe, "4879846498");
+				final UniteTraitement ut = addUniteTraitement(evt, EtatTraitement.A_TRAITER, null);
+				final PartiePrenante ppElle = addPartiePrenante(ut, "Cordoba",  "Valentine Catherine Julie");
+				ppElle.setNumeroContribuable(elle.getNumero());
+				ppElle.setNomMere("Delaplanche");
+				ppElle.setPrenomsMere("Sophie Mafalda");
+				ppElle.setNomPere("Dumoulin");
+				ppElle.setPrenomsPere("François Robert");
+				ppElle.setOfsPaysNationalite(MockPays.Suisse.getNoOFS());
+				ppElle.setSexe(Sexe.FEMININ);
+				ppElle.setDateNaissance(dateNaissance);
+				ppElle.setDateEtatCivil(dateMariage);
+				ppElle.setEtatCivil(EtatCivil.MARIE);
+				ppElle.setAvs(noAvs);
+
+				ppElle.setRue("Eisentürstrasse");
+				ppElle.setNumeroMaison("42");
+				ppElle.setOfsPays(MockPays.Suisse.getNoOFS());
+				ppElle.setLocalite(MockLocalite.Zurich.getNomCompletMinuscule());
+				ppElle.setNumeroPostal(Integer.toString(MockLocalite.Zurich.getNPA()));
+				ppElle.setNumeroPostalComplementaire(MockLocalite.Zurich.getComplementNPA());
+				ppElle.setOfsCommune(MockCommune.Zurich.getNoOFS());
+
+				final PartiePrenante ppLui = addPartiePrenante(ut, "Cordoba", "Philippe");
+				ppLui.setNumeroContribuable(lui.getNumero());
+				ppLui.setOfsPaysNationalite(MockPays.Suisse.getNoOFS());
+				ppLui.setSexe(Sexe.MASCULIN);
+				ppLui.setDateEtatCivil(dateMariage);
+				ppLui.setEtatCivil(EtatCivil.MARIE);
+
+				ppLui.setRue("Eisentürstrasse");
+				ppLui.setNumeroMaison("421");
+				ppLui.setOfsPays(MockPays.Suisse.getNoOFS());
+				ppLui.setLocalite(MockLocalite.Zurich.getNomCompletMinuscule());
+				ppLui.setNumeroPostal(Integer.toString(MockLocalite.Zurich.getNPA()));
+				ppLui.setNumeroPostalComplementaire(MockLocalite.Zurich.getComplementNPA());
+				ppLui.setOfsCommune(MockCommune.Zurich.getNoOFS());
+
+				// liens
+				ppElle.setConjointPartiePrenante(ppLui);
+				ppLui.setConjointPartiePrenante(ppElle);
+
+				final Ids ids = new Ids();
+				ids.idElle = elle.getNumero();
+				ids.idLui = lui.getNumero();
+				ids.utId = ut.getId();
+				return ids;
+			}
+		});
+
+		// traitement de l'unité
+		traiteUniteTraitement(ids.utId);
+
+		// vérification du résultat
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+
+				final UniteTraitement ut = uniteTraitementDAO.get(ids.utId);
+				Assert.assertNotNull(ut);
+				Assert.assertEquals(EtatTraitement.EN_ERREUR, ut.getEtat());
+				Assert.assertNotNull(ut.getDateTraitement());
+				Assert.assertEquals(1, ut.getErreurs().size());
+
+				final ErreurTraitement erreur = ut.getErreurs().iterator().next();
+				Assert.assertNotNull(erreur);
+				Assert.assertEquals(ErreurTraitement.TypeErreur.ERROR, erreur.getType());
+
+				final String expectedMessage = String.format("Les tiers %s et %s ne forment pas un couple au %s.",
+				                                             FormatNumeroHelper.numeroCTBToDisplay(ids.idElle),
+				                                             FormatNumeroHelper.numeroCTBToDisplay(ids.idLui),
+				                                             RegDateHelper.dateToDisplayString(dateActe));
+				Assert.assertEquals(expectedMessage, erreur.getMessage());
+
+				// 3 contribuables en base (aucun n'est modifié)
+				// - madame Valentine Cordoba
+				// - monsieur Marcel Cordoba
+				// - couple Cordoba fermé à la veille de la date de séparation
+				final List<Tiers> allTiers = tiersDAO.getAll();
+				Assert.assertNotNull(allTiers);
+				Assert.assertEquals(3, allTiers.size());        // 2 PP + 1 MC
+
+				final List<Tiers> allSortedTiers = new ArrayList<>(allTiers);
+				Collections.sort(allSortedTiers, new Comparator<Tiers>() {
+					@Override
+					public int compare(Tiers o1, Tiers o2) {
+						int result = o1.getNatureTiers().compareTo(o2.getNatureTiers());
+						if (result == 0) {
+							// les seuls qui ont la même nature sont les deux personnes physiques
+							final PersonnePhysique pp1 = (PersonnePhysique) o1;
+							final PersonnePhysique pp2 = (PersonnePhysique) o2;
+							result = pp1.getPrenomUsuel().compareTo(pp2.getPrenomUsuel());
+						}
+						return result;
+					}
+				});
+
+				// et l'ordre est finalement 1. Philippe, 2. Valentine, 3 le couple
+				{
+					final PersonnePhysique pp = (PersonnePhysique) allSortedTiers.get(0);
+					Assert.assertNotNull(pp);
+					Assert.assertEquals(getDefaultOperateurName(), pp.getLogCreationUser());
+					Assert.assertEquals(getDefaultOperateurName(), pp.getLogModifUser());
+					Assert.assertEquals("Cordoba", pp.getNom());
+					Assert.assertEquals("Philippe", pp.getPrenomUsuel());
+					Assert.assertNull(pp.getTousPrenoms());
+					Assert.assertNull(pp.getDateNaissance());
+					Assert.assertEquals(Sexe.MASCULIN, pp.getSexe());
+					Assert.assertNull(pp.getNumeroAssureSocial());
+
+					// adresses
+					checkNoAdresse(pp);
+
+					// remarques
+					checkNoRemarque(pp);
+
+					// situation de famille
+					checkNoSituationFamille(pp);
+
+					// couple
+					final Set<RapportEntreTiers> rapports = pp.getRapportsSujet();
+					Assert.assertNotNull(rapports);
+					Assert.assertEquals(1, rapports.size());
+
+					final RapportEntreTiers rapport = rapports.iterator().next();
+					Assert.assertNotNull(rapport);
+					Assert.assertFalse(rapport.isAnnule());
+					Assert.assertEquals(dateMariage, rapport.getDateDebut());
+					Assert.assertEquals(dateSeparation.getOneDayBefore(), rapport.getDateFin());
+					Assert.assertEquals(allSortedTiers.get(2).getNumero(), rapport.getObjetId());
+				}
+				{
+					final PersonnePhysique pp = (PersonnePhysique) allSortedTiers.get(1);
+					Assert.assertNotNull(pp);
+					Assert.assertEquals(getDefaultOperateurName(), pp.getLogCreationUser());
+					Assert.assertEquals(getDefaultOperateurName(), pp.getLogModifUser());
+					Assert.assertEquals("Cordoba", pp.getNom());
+					Assert.assertEquals("Valentine", pp.getPrenomUsuel());
+					Assert.assertNull(pp.getTousPrenoms());
+					Assert.assertEquals(dateNaissance, pp.getDateNaissance());
+					Assert.assertEquals(Sexe.FEMININ, pp.getSexe());
+					Assert.assertNull(pp.getNumeroAssureSocial());
+
+					// adresses
+					checkNoAdresse(pp);
+
+					// remarques
+					checkNoRemarque(pp);
+
+					// situation de famille
+					checkNoSituationFamille(pp);
+
+					// couple
+					final Set<RapportEntreTiers> rapports = pp.getRapportsSujet();
+					Assert.assertNotNull(rapports);
+					Assert.assertEquals(1, rapports.size());
+
+					final RapportEntreTiers rapport = rapports.iterator().next();
+					Assert.assertNotNull(rapport);
+					Assert.assertFalse(rapport.isAnnule());
+					Assert.assertEquals(dateMariage, rapport.getDateDebut());
+					Assert.assertEquals(dateSeparation.getOneDayBefore(), rapport.getDateFin());
+					Assert.assertEquals(allSortedTiers.get(2).getNumero(), rapport.getObjetId());
+				}
+				{
+					final MenageCommun mc = (MenageCommun) allSortedTiers.get(2);
+					Assert.assertNotNull(mc);
+					Assert.assertEquals(getDefaultOperateurName(), mc.getLogCreationUser());
+					Assert.assertEquals(getDefaultOperateurName(), mc.getLogModifUser());     // pas modifié du tout
+
+					// adresses
+					checkNoAdresse(mc);
+
+					// remarque
+					checkNoRemarque(mc);
+
+					// situation de famille
+					checkNoSituationFamille(mc);
+				}
+			}
+		});
+	}
+
+	@Test(timeout = 10000)
+	public void testModificationContribuableCoupleMarieSeulMaisFiscalementSepare() throws Exception {
+
+		final RegDate dateNaissance = date(1973, 2, 12);
+		final RegDate dateMariage = date(2005, 7, 12);
+		final RegDate dateSeparation = date(2010, 9, 28);
+		final RegDate dateActe = date(2014, 6, 10);
+		final String noAvs = "7561912776368";
+
+		final class Ids {
+			long idElle;
+			long idLui;
+			long utId;
+		}
+
+		// création de l'unité de traitement
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+
+				final PersonnePhysique elle = addNonHabitant("Valentine", "Cordoba", dateNaissance, Sexe.FEMININ);
+				final PersonnePhysique lui = addNonHabitant("Philippe", "Cordoba", null, Sexe.MASCULIN);
+				addEnsembleTiersCouple(elle, lui, dateMariage, dateSeparation.getOneDayBefore());
+
+				final EvenementReqDes evt = addEvenementReqDes(new InformationsActeur("zainotaire", "Duchmol", "Alexandra"), null, dateActe, "4879846498");
+				final UniteTraitement ut = addUniteTraitement(evt, EtatTraitement.A_TRAITER, null);
+				final PartiePrenante ppElle = addPartiePrenante(ut, "Cordoba",  "Valentine Catherine Julie");
+				ppElle.setNumeroContribuable(elle.getNumero());
+				ppElle.setNomMere("Delaplanche");
+				ppElle.setPrenomsMere("Sophie Mafalda");
+				ppElle.setNomPere("Dumoulin");
+				ppElle.setPrenomsPere("François Robert");
+				ppElle.setOfsPaysNationalite(MockPays.Suisse.getNoOFS());
+				ppElle.setSexe(Sexe.FEMININ);
+				ppElle.setDateNaissance(dateNaissance);
+				ppElle.setDateEtatCivil(dateMariage);
+				ppElle.setEtatCivil(EtatCivil.MARIE);
+				ppElle.setAvs(noAvs);
+
+				ppElle.setRue("Eisentürstrasse");
+				ppElle.setNumeroMaison("42");
+				ppElle.setOfsPays(MockPays.Suisse.getNoOFS());
+				ppElle.setLocalite(MockLocalite.Zurich.getNomCompletMinuscule());
+				ppElle.setNumeroPostal(Integer.toString(MockLocalite.Zurich.getNPA()));
+				ppElle.setNumeroPostalComplementaire(MockLocalite.Zurich.getComplementNPA());
+				ppElle.setOfsCommune(MockCommune.Zurich.getNoOFS());
+
+				final Ids ids = new Ids();
+				ids.idElle = elle.getNumero();
+				ids.idLui = lui.getNumero();
+				ids.utId = ut.getId();
+				return ids;
+			}
+		});
+
+		// traitement de l'unité
+		traiteUniteTraitement(ids.utId);
+
+		// vérification du résultat
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+
+				final UniteTraitement ut = uniteTraitementDAO.get(ids.utId);
+				Assert.assertNotNull(ut);
+				Assert.assertEquals(EtatTraitement.EN_ERREUR, ut.getEtat());
+				Assert.assertNotNull(ut.getDateTraitement());
+				Assert.assertEquals(1, ut.getErreurs().size());
+
+				final ErreurTraitement erreur = ut.getErreurs().iterator().next();
+				Assert.assertNotNull(erreur);
+				Assert.assertEquals(ErreurTraitement.TypeErreur.ERROR, erreur.getType());
+
+				final String expectedMessage = String.format("Le tiers %s n'est pas en couple au %s.",
+				                                             FormatNumeroHelper.numeroCTBToDisplay(ids.idElle),
+				                                             RegDateHelper.dateToDisplayString(dateActe));
+				Assert.assertEquals(expectedMessage, erreur.getMessage());
+
+				// 3 contribuables en base (aucun n'est modifié)
+				// - madame Valentine Cordoba
+				// - monsieur Marcel Cordoba
+				// - couple Cordoba fermé à la veille de la date de séparation
+				final List<Tiers> allTiers = tiersDAO.getAll();
+				Assert.assertNotNull(allTiers);
+				Assert.assertEquals(3, allTiers.size());        // 2 PP + 1 MC
+
+				final List<Tiers> allSortedTiers = new ArrayList<>(allTiers);
+				Collections.sort(allSortedTiers, new Comparator<Tiers>() {
+					@Override
+					public int compare(Tiers o1, Tiers o2) {
+						int result = o1.getNatureTiers().compareTo(o2.getNatureTiers());
+						if (result == 0) {
+							// les seuls qui ont la même nature sont les deux personnes physiques
+							final PersonnePhysique pp1 = (PersonnePhysique) o1;
+							final PersonnePhysique pp2 = (PersonnePhysique) o2;
+							result = pp1.getPrenomUsuel().compareTo(pp2.getPrenomUsuel());
+						}
+						return result;
+					}
+				});
+
+				// et l'ordre est finalement 1. Philippe, 2. Valentine, 3 le couple
+				{
+					final PersonnePhysique pp = (PersonnePhysique) allSortedTiers.get(0);
+					Assert.assertNotNull(pp);
+					Assert.assertEquals(getDefaultOperateurName(), pp.getLogCreationUser());
+					Assert.assertEquals(getDefaultOperateurName(), pp.getLogModifUser());
+					Assert.assertEquals("Cordoba", pp.getNom());
+					Assert.assertEquals("Philippe", pp.getPrenomUsuel());
+					Assert.assertNull(pp.getTousPrenoms());
+					Assert.assertNull(pp.getDateNaissance());
+					Assert.assertEquals(Sexe.MASCULIN, pp.getSexe());
+					Assert.assertNull(pp.getNumeroAssureSocial());
+
+					checkNoAdresse(pp);
+					checkNoRemarque(pp);
+					checkNoSituationFamille(pp);
+
+					// couple
+					final Set<RapportEntreTiers> rapports = pp.getRapportsSujet();
+					Assert.assertNotNull(rapports);
+					Assert.assertEquals(1, rapports.size());
+
+					final RapportEntreTiers rapport = rapports.iterator().next();
+					Assert.assertNotNull(rapport);
+					Assert.assertFalse(rapport.isAnnule());
+					Assert.assertEquals(dateMariage, rapport.getDateDebut());
+					Assert.assertEquals(dateSeparation.getOneDayBefore(), rapport.getDateFin());
+					Assert.assertEquals(allSortedTiers.get(2).getNumero(), rapport.getObjetId());
+				}
+				{
+					final PersonnePhysique pp = (PersonnePhysique) allSortedTiers.get(1);
+					Assert.assertNotNull(pp);
+					Assert.assertEquals(getDefaultOperateurName(), pp.getLogCreationUser());
+					Assert.assertEquals(getDefaultOperateurName(), pp.getLogModifUser());
+					Assert.assertEquals("Cordoba", pp.getNom());
+					Assert.assertEquals("Valentine", pp.getPrenomUsuel());
+					Assert.assertNull(pp.getTousPrenoms());
+					Assert.assertEquals(dateNaissance, pp.getDateNaissance());
+					Assert.assertEquals(Sexe.FEMININ, pp.getSexe());
+					Assert.assertNull(pp.getNumeroAssureSocial());
+
+					// adresses
+					checkNoAdresse(pp);
+
+					// remarques
+					checkNoRemarque(pp);
+
+					// situation de famille
+					checkNoSituationFamille(pp);
+
+					// couple
+					final Set<RapportEntreTiers> rapports = pp.getRapportsSujet();
+					Assert.assertNotNull(rapports);
+					Assert.assertEquals(1, rapports.size());
+
+					final RapportEntreTiers rapport = rapports.iterator().next();
+					Assert.assertNotNull(rapport);
+					Assert.assertFalse(rapport.isAnnule());
+					Assert.assertEquals(dateMariage, rapport.getDateDebut());
+					Assert.assertEquals(dateSeparation.getOneDayBefore(), rapport.getDateFin());
+					Assert.assertEquals(allSortedTiers.get(2).getNumero(), rapport.getObjetId());
+				}
+				{
+					final MenageCommun mc = (MenageCommun) allSortedTiers.get(2);
+					Assert.assertNotNull(mc);
+					Assert.assertEquals(getDefaultOperateurName(), mc.getLogCreationUser());
+					Assert.assertEquals(getDefaultOperateurName(), mc.getLogModifUser());     // pas modifié du tout
+
+					// adresses
+					checkNoAdresse(mc);
+
+					// remarque
+					checkNoRemarque(mc);
+
+					// situation de famille
+					checkNoSituationFamille(mc);
+				}
+			}
+		});
+	}
+
+	@Test(timeout = 10000)
+	public void testModificationContribuableCoupleSepareMaisFiscalementMarie() throws Exception {
+
+		final RegDate dateNaissance = date(1973, 2, 12);
+		final RegDate dateMariage = date(2005, 7, 12);
+		final RegDate dateSeparation = date(2010, 9, 28);
+		final RegDate dateActe = date(2014, 6, 10);
+		final String noAvs = "7561912776368";
+
+		final class Ids {
+			long idElle;
+			long idLui;
+			long utId;
+		}
+
+		// création de l'unité de traitement
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+
+				final PersonnePhysique elle = addNonHabitant("Valentine", "Cordoba", dateNaissance, Sexe.FEMININ);
+				final PersonnePhysique lui = addNonHabitant("Philippe", "Cordoba", null, Sexe.MASCULIN);
+				addEnsembleTiersCouple(elle, lui, dateMariage, null);
+
+				final EvenementReqDes evt = addEvenementReqDes(new InformationsActeur("zainotaire", "Duchmol", "Alexandra"), null, dateActe, "4879846498");
+				final UniteTraitement ut = addUniteTraitement(evt, EtatTraitement.A_TRAITER, null);
+				final PartiePrenante ppElle = addPartiePrenante(ut, "Cordoba",  "Valentine Catherine Julie");
+				ppElle.setNumeroContribuable(elle.getNumero());
+				ppElle.setNomMere("Delaplanche");
+				ppElle.setPrenomsMere("Sophie Mafalda");
+				ppElle.setNomPere("Dumoulin");
+				ppElle.setPrenomsPere("François Robert");
+				ppElle.setOfsPaysNationalite(MockPays.Suisse.getNoOFS());
+				ppElle.setSexe(Sexe.FEMININ);
+				ppElle.setDateNaissance(dateNaissance);
+				ppElle.setDateEtatCivil(dateMariage);
+				ppElle.setDateSeparation(dateSeparation);
+				ppElle.setEtatCivil(EtatCivil.MARIE);
+				ppElle.setAvs(noAvs);
+
+				ppElle.setRue("Eisentürstrasse");
+				ppElle.setNumeroMaison("42");
+				ppElle.setOfsPays(MockPays.Suisse.getNoOFS());
+				ppElle.setLocalite(MockLocalite.Zurich.getNomCompletMinuscule());
+				ppElle.setNumeroPostal(Integer.toString(MockLocalite.Zurich.getNPA()));
+				ppElle.setNumeroPostalComplementaire(MockLocalite.Zurich.getComplementNPA());
+				ppElle.setOfsCommune(MockCommune.Zurich.getNoOFS());
+
+				final PartiePrenante ppLui = addPartiePrenante(ut, "Cordoba", "Philippe");
+				ppLui.setNumeroContribuable(lui.getNumero());
+				ppLui.setOfsPaysNationalite(MockPays.Suisse.getNoOFS());
+				ppLui.setSexe(Sexe.MASCULIN);
+				ppLui.setDateSeparation(dateSeparation);
+				ppLui.setDateEtatCivil(dateMariage);
+				ppLui.setEtatCivil(EtatCivil.MARIE);
+
+				ppLui.setRue("Eisentürstrasse");
+				ppLui.setNumeroMaison("421");
+				ppLui.setOfsPays(MockPays.Suisse.getNoOFS());
+				ppLui.setLocalite(MockLocalite.Zurich.getNomCompletMinuscule());
+				ppLui.setNumeroPostal(Integer.toString(MockLocalite.Zurich.getNPA()));
+				ppLui.setNumeroPostalComplementaire(MockLocalite.Zurich.getComplementNPA());
+				ppLui.setOfsCommune(MockCommune.Zurich.getNoOFS());
+
+				// liens
+				ppElle.setConjointPartiePrenante(ppLui);
+				ppLui.setConjointPartiePrenante(ppElle);
+
+				final Ids ids = new Ids();
+				ids.idElle = elle.getNumero();
+				ids.idLui = lui.getNumero();
+				ids.utId = ut.getId();
+				return ids;
+			}
+		});
+
+		// traitement de l'unité
+		traiteUniteTraitement(ids.utId);
+
+		// vérification du résultat
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+
+				final UniteTraitement ut = uniteTraitementDAO.get(ids.utId);
+				Assert.assertNotNull(ut);
+				Assert.assertEquals(EtatTraitement.EN_ERREUR, ut.getEtat());
+				Assert.assertNotNull(ut.getDateTraitement());
+				Assert.assertEquals(1, ut.getErreurs().size());
+
+				final ErreurTraitement erreur = ut.getErreurs().iterator().next();
+				Assert.assertNotNull(erreur);
+				Assert.assertEquals(ErreurTraitement.TypeErreur.ERROR, erreur.getType());
+
+				final String expectedMessage = String.format("Les tiers %s et %s ne sont pas séparés fiscalement au %s.",
+				                                             FormatNumeroHelper.numeroCTBToDisplay(ids.idElle),
+				                                             FormatNumeroHelper.numeroCTBToDisplay(ids.idLui),
+				                                             RegDateHelper.dateToDisplayString(dateSeparation));
+				Assert.assertEquals(expectedMessage, erreur.getMessage());
+
+				// 3 contribuables en base (aucun n'est modifié)
+				// - madame Valentine Cordoba
+				// - monsieur Marcel Cordoba
+				// - couple Cordoba fermé à la veille de la date de séparation
+				final List<Tiers> allTiers = tiersDAO.getAll();
+				Assert.assertNotNull(allTiers);
+				Assert.assertEquals(3, allTiers.size());        // 2 PP + 1 MC
+
+				final List<Tiers> allSortedTiers = new ArrayList<>(allTiers);
+				Collections.sort(allSortedTiers, new Comparator<Tiers>() {
+					@Override
+					public int compare(Tiers o1, Tiers o2) {
+						int result = o1.getNatureTiers().compareTo(o2.getNatureTiers());
+						if (result == 0) {
+							// les seuls qui ont la même nature sont les deux personnes physiques
+							final PersonnePhysique pp1 = (PersonnePhysique) o1;
+							final PersonnePhysique pp2 = (PersonnePhysique) o2;
+							result = pp1.getPrenomUsuel().compareTo(pp2.getPrenomUsuel());
+						}
+						return result;
+					}
+				});
+
+				// et l'ordre est finalement 1. Philippe, 2. Valentine, 3 le couple
+				{
+					final PersonnePhysique pp = (PersonnePhysique) allSortedTiers.get(0);
+					Assert.assertNotNull(pp);
+					Assert.assertEquals(getDefaultOperateurName(), pp.getLogCreationUser());
+					Assert.assertEquals(getDefaultOperateurName(), pp.getLogModifUser());
+					Assert.assertEquals("Cordoba", pp.getNom());
+					Assert.assertEquals("Philippe", pp.getPrenomUsuel());
+					Assert.assertNull(pp.getTousPrenoms());
+					Assert.assertNull(pp.getDateNaissance());
+					Assert.assertEquals(Sexe.MASCULIN, pp.getSexe());
+					Assert.assertNull(pp.getNumeroAssureSocial());
+
+					// adresses
+					checkNoAdresse(pp);
+
+					// remarques
+					checkNoRemarque(pp);
+
+					// situation de famille
+					checkNoSituationFamille(pp);
+
+					// couple
+					final Set<RapportEntreTiers> rapports = pp.getRapportsSujet();
+					Assert.assertNotNull(rapports);
+					Assert.assertEquals(1, rapports.size());
+
+					final RapportEntreTiers rapport = rapports.iterator().next();
+					Assert.assertNotNull(rapport);
+					Assert.assertFalse(rapport.isAnnule());
+					Assert.assertEquals(dateMariage, rapport.getDateDebut());
+					Assert.assertNull(rapport.getDateFin());
+					Assert.assertEquals(allSortedTiers.get(2).getNumero(), rapport.getObjetId());
+				}
+				{
+					final PersonnePhysique pp = (PersonnePhysique) allSortedTiers.get(1);
+					Assert.assertNotNull(pp);
+					Assert.assertEquals(getDefaultOperateurName(), pp.getLogCreationUser());
+					Assert.assertEquals(getDefaultOperateurName(), pp.getLogModifUser());
+					Assert.assertEquals("Cordoba", pp.getNom());
+					Assert.assertEquals("Valentine", pp.getPrenomUsuel());
+					Assert.assertNull(pp.getTousPrenoms());
+					Assert.assertEquals(dateNaissance, pp.getDateNaissance());
+					Assert.assertEquals(Sexe.FEMININ, pp.getSexe());
+					Assert.assertNull(pp.getNumeroAssureSocial());
+
+					// adresses
+					checkNoAdresse(pp);
+
+					// remarques
+					checkNoRemarque(pp);
+
+					// situation de famille
+					checkNoSituationFamille(pp);
+
+					// couple
+					final Set<RapportEntreTiers> rapports = pp.getRapportsSujet();
+					Assert.assertNotNull(rapports);
+					Assert.assertEquals(1, rapports.size());
+
+					final RapportEntreTiers rapport = rapports.iterator().next();
+					Assert.assertNotNull(rapport);
+					Assert.assertFalse(rapport.isAnnule());
+					Assert.assertEquals(dateMariage, rapport.getDateDebut());
+					Assert.assertNull(rapport.getDateFin());
+					Assert.assertEquals(allSortedTiers.get(2).getNumero(), rapport.getObjetId());
+				}
+				{
+					final MenageCommun mc = (MenageCommun) allSortedTiers.get(2);
+					Assert.assertNotNull(mc);
+					Assert.assertEquals(getDefaultOperateurName(), mc.getLogCreationUser());
+					Assert.assertEquals(getDefaultOperateurName(), mc.getLogModifUser());     // pas modifié du tout
+
+					// adresses
+					checkNoAdresse(mc);
+
+					// remarque
+					checkNoRemarque(mc);
+
+					// situation de famille
+					checkNoSituationFamille(mc);
+				}
+			}
+		});
+	}
+
+	@Test(timeout = 10000)
+	public void testModificationContribuableSepareSeulMaisFiscalementMarie() throws Exception {
+
+		final RegDate dateNaissance = date(1973, 2, 12);
+		final RegDate dateMariage = date(2005, 7, 12);
+		final RegDate dateSeparation = date(2010, 9, 28);
+		final RegDate dateActe = date(2014, 6, 10);
+		final String noAvs = "7561912776368";
+
+		final class Ids {
+			long idElle;
+			long idLui;
+			long utId;
+		}
+
+		// création de l'unité de traitement
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+
+				final PersonnePhysique elle = addNonHabitant("Valentine", "Cordoba", dateNaissance, Sexe.FEMININ);
+				final PersonnePhysique lui = addNonHabitant("Philippe", "Cordoba", null, Sexe.MASCULIN);
+				addEnsembleTiersCouple(elle, lui, dateMariage, null);
+
+				final EvenementReqDes evt = addEvenementReqDes(new InformationsActeur("zainotaire", "Duchmol", "Alexandra"), null, dateActe, "4879846498");
+				final UniteTraitement ut = addUniteTraitement(evt, EtatTraitement.A_TRAITER, null);
+				final PartiePrenante ppElle = addPartiePrenante(ut, "Cordoba",  "Valentine Catherine Julie");
+				ppElle.setNumeroContribuable(elle.getNumero());
+				ppElle.setNomMere("Delaplanche");
+				ppElle.setPrenomsMere("Sophie Mafalda");
+				ppElle.setNomPere("Dumoulin");
+				ppElle.setPrenomsPere("François Robert");
+				ppElle.setOfsPaysNationalite(MockPays.Suisse.getNoOFS());
+				ppElle.setSexe(Sexe.FEMININ);
+				ppElle.setDateNaissance(dateNaissance);
+				ppElle.setDateEtatCivil(dateMariage);
+				ppElle.setDateSeparation(dateSeparation);
+				ppElle.setEtatCivil(EtatCivil.MARIE);
+				ppElle.setAvs(noAvs);
+
+				ppElle.setRue("Eisentürstrasse");
+				ppElle.setNumeroMaison("42");
+				ppElle.setOfsPays(MockPays.Suisse.getNoOFS());
+				ppElle.setLocalite(MockLocalite.Zurich.getNomCompletMinuscule());
+				ppElle.setNumeroPostal(Integer.toString(MockLocalite.Zurich.getNPA()));
+				ppElle.setNumeroPostalComplementaire(MockLocalite.Zurich.getComplementNPA());
+				ppElle.setOfsCommune(MockCommune.Zurich.getNoOFS());
+
+				final Ids ids = new Ids();
+				ids.idElle = elle.getNumero();
+				ids.idLui = lui.getNumero();
+				ids.utId = ut.getId();
+				return ids;
+			}
+		});
+
+		// traitement de l'unité
+		traiteUniteTraitement(ids.utId);
+
+		// vérification du résultat
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+
+				final UniteTraitement ut = uniteTraitementDAO.get(ids.utId);
+				Assert.assertNotNull(ut);
+				Assert.assertEquals(EtatTraitement.EN_ERREUR, ut.getEtat());
+				Assert.assertNotNull(ut.getDateTraitement());
+				Assert.assertEquals(1, ut.getErreurs().size());
+
+				final ErreurTraitement erreur = ut.getErreurs().iterator().next();
+				Assert.assertNotNull(erreur);
+				Assert.assertEquals(ErreurTraitement.TypeErreur.ERROR, erreur.getType());
+
+				final String expectedMessage = String.format("Le tiers %s est en couple au %s.",
+				                                             FormatNumeroHelper.numeroCTBToDisplay(ids.idElle),
+				                                             RegDateHelper.dateToDisplayString(dateSeparation));
+				Assert.assertEquals(expectedMessage, erreur.getMessage());
+
+				// 3 contribuables en base (aucun n'est modifié)
+				// - madame Valentine Cordoba
+				// - monsieur Marcel Cordoba
+				// - couple Cordoba fermé à la veille de la date de séparation
+				final List<Tiers> allTiers = tiersDAO.getAll();
+				Assert.assertNotNull(allTiers);
+				Assert.assertEquals(3, allTiers.size());        // 2 PP + 1 MC
+
+				final List<Tiers> allSortedTiers = new ArrayList<>(allTiers);
+				Collections.sort(allSortedTiers, new Comparator<Tiers>() {
+					@Override
+					public int compare(Tiers o1, Tiers o2) {
+						int result = o1.getNatureTiers().compareTo(o2.getNatureTiers());
+						if (result == 0) {
+							// les seuls qui ont la même nature sont les deux personnes physiques
+							final PersonnePhysique pp1 = (PersonnePhysique) o1;
+							final PersonnePhysique pp2 = (PersonnePhysique) o2;
+							result = pp1.getPrenomUsuel().compareTo(pp2.getPrenomUsuel());
+						}
+						return result;
+					}
+				});
+
+				// et l'ordre est finalement 1. Philippe, 2. Valentine, 3 le couple
+				{
+					final PersonnePhysique pp = (PersonnePhysique) allSortedTiers.get(0);
+					Assert.assertNotNull(pp);
+					Assert.assertEquals(getDefaultOperateurName(), pp.getLogCreationUser());
+					Assert.assertEquals(getDefaultOperateurName(), pp.getLogModifUser());
+					Assert.assertEquals("Cordoba", pp.getNom());
+					Assert.assertEquals("Philippe", pp.getPrenomUsuel());
+					Assert.assertNull(pp.getTousPrenoms());
+					Assert.assertNull(pp.getDateNaissance());
+					Assert.assertEquals(Sexe.MASCULIN, pp.getSexe());
+					Assert.assertNull(pp.getNumeroAssureSocial());
+
+					// adresses
+					checkNoAdresse(pp);
+
+					// remarques
+					checkNoRemarque(pp);
+
+					// situation de famille
+					checkNoSituationFamille(pp);
+
+					// couple
+					final Set<RapportEntreTiers> rapports = pp.getRapportsSujet();
+					Assert.assertNotNull(rapports);
+					Assert.assertEquals(1, rapports.size());
+
+					final RapportEntreTiers rapport = rapports.iterator().next();
+					Assert.assertNotNull(rapport);
+					Assert.assertFalse(rapport.isAnnule());
+					Assert.assertEquals(dateMariage, rapport.getDateDebut());
+					Assert.assertNull(rapport.getDateFin());
+					Assert.assertEquals(allSortedTiers.get(2).getNumero(), rapport.getObjetId());
+				}
+				{
+					final PersonnePhysique pp = (PersonnePhysique) allSortedTiers.get(1);
+					Assert.assertNotNull(pp);
+					Assert.assertEquals(getDefaultOperateurName(), pp.getLogCreationUser());
+					Assert.assertEquals(getDefaultOperateurName(), pp.getLogModifUser());
+					Assert.assertEquals("Cordoba", pp.getNom());
+					Assert.assertEquals("Valentine", pp.getPrenomUsuel());
+					Assert.assertNull(pp.getTousPrenoms());
+					Assert.assertEquals(dateNaissance, pp.getDateNaissance());
+					Assert.assertEquals(Sexe.FEMININ, pp.getSexe());
+					Assert.assertNull(pp.getNumeroAssureSocial());
+
+					checkNoAdresse(pp);
+					checkNoRemarque(pp);
+					checkNoSituationFamille(pp);
+
+					// couple
+					final Set<RapportEntreTiers> rapports = pp.getRapportsSujet();
+					Assert.assertNotNull(rapports);
+					Assert.assertEquals(1, rapports.size());
+
+					final RapportEntreTiers rapport = rapports.iterator().next();
+					Assert.assertNotNull(rapport);
+					Assert.assertFalse(rapport.isAnnule());
+					Assert.assertEquals(dateMariage, rapport.getDateDebut());
+					Assert.assertNull(rapport.getDateFin());
+					Assert.assertEquals(allSortedTiers.get(2).getNumero(), rapport.getObjetId());
+				}
+				{
+					final MenageCommun mc = (MenageCommun) allSortedTiers.get(2);
+					Assert.assertNotNull(mc);
+					Assert.assertEquals(getDefaultOperateurName(), mc.getLogCreationUser());
+					Assert.assertEquals(getDefaultOperateurName(), mc.getLogModifUser());     // pas modifié du tout
+
+					// adresses
+					checkNoAdresse(mc);
+
+					// remarque
+					checkNoRemarque(mc);
+
+					// situation de famille
+					checkNoSituationFamille(mc);
+				}
+			}
+		});
+	}
+
+	private static void checkNoSituationFamille(Contribuable ctb) {
+		final Set<SituationFamille> situations = ctb.getSituationsFamille();
+		Assert.assertNotNull(situations);
+		Assert.assertEquals(0, situations.size());
+	}
+
+	private static void checkNoAdresse(Contribuable ctb) {
+		final Set<AdresseTiers> adresses = ctb.getAdressesTiers();
+		Assert.assertNotNull(adresses);
+		Assert.assertEquals(0, adresses.size());
+	}
+
+	private void checkNoRemarque(Contribuable ctb) {
+		final List<Remarque> remarques = remarqueDAO.getRemarques(ctb.getNumero());
+		Assert.assertNotNull(remarques);
+		Assert.assertEquals(0, remarques.size());
+	}
+
+	@Test(timeout = 10000)
+	public void testCreationForNouvelAcquereur() throws Exception {
+
+		final RegDate dateNaissance = date(1985, 10, 20);
+		final RegDate dateActe = date(2014, 6, 9);
+
+		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementReqDes evt = addEvenementReqDes(new InformationsActeur("tabou", "Taboumata", "Oli"), null, dateActe, "541154651");
+				final UniteTraitement ut = addUniteTraitement(evt, EtatTraitement.A_TRAITER, null);
+				final PartiePrenante pp = addPartiePrenante(ut, "Zigotto", "Alain");
+
+				pp.setNomMere("Delaplanche");
+				pp.setPrenomsMere("Sophie Mafalda");
+				pp.setNomPere("Dumoulin");
+				pp.setPrenomsPere("François Robert");
+				pp.setOfsPaysNationalite(MockPays.Suisse.getNoOFS());
+				pp.setSexe(Sexe.MASCULIN);
+				pp.setDateNaissance(dateNaissance);
+				pp.setDateEtatCivil(dateNaissance);
+				pp.setEtatCivil(EtatCivil.CELIBATAIRE);
+
+				pp.setRue("Eisentürstrasse");
+				pp.setNumeroMaison("42");
+				pp.setOfsPays(MockPays.Suisse.getNoOFS());
+				pp.setLocalite(MockLocalite.Zurich.getNomCompletMinuscule());
+				pp.setNumeroPostal(Integer.toString(MockLocalite.Zurich.getNPA()));
+				pp.setNumeroPostalComplementaire(MockLocalite.Zurich.getComplementNPA());
+				pp.setOfsCommune(MockCommune.Zurich.getNoOFS());
+
+				final TransactionImmobiliere ti1 = addTransactionImmobiliere(evt, "Servitude Lausanne", ModeInscription.INSCRIPTION, TypeInscription.SERVITUDE, MockCommune.Lausanne.getNoOFS());
+				final TransactionImmobiliere ti2 = addTransactionImmobiliere(evt, "Propriété Morges", ModeInscription.INSCRIPTION, TypeInscription.PROPRIETE, MockCommune.Morges.getNoOFS());
+				final TransactionImmobiliere ti3 = addTransactionImmobiliere(evt, "Propriété Vevey", ModeInscription.INSCRIPTION, TypeInscription.PROPRIETE, MockCommune.Vevey.getNoOFS());
+
+				addRole(pp, ti1, TypeRole.ACQUEREUR);
+				addRole(pp, ti2, TypeRole.ACQUEREUR);
+				addRole(pp, ti3, TypeRole.ALIENATEUR);
+
+				return ut.getId();
+			}
+		});
+
+		// traiter l'unité
+		traiteUniteTraitement(id);
+
+		// vérification des fors
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final UniteTraitement ut = uniteTraitementDAO.get(id);
+				Assert.assertNotNull(ut);
+				Assert.assertEquals(EtatTraitement.TRAITE, ut.getEtat());
+				Assert.assertEquals(0, ut.getErreurs().size());
+
+				final List<Tiers> allTiers = tiersDAO.getAll();
+				Assert.assertNotNull(allTiers);
+				Assert.assertEquals(1, allTiers.size());
+
+				final Tiers tiers = allTiers.get(0);
+				Assert.assertEquals(PersonnePhysique.class, tiers.getClass());
+
+				final Set<ForFiscal> ffs = tiers.getForsFiscaux();
+				Assert.assertNotNull(ffs);
+				Assert.assertEquals(2, ffs.size());
+
+				final List<ForFiscal> sortedFors = new ArrayList<>(ffs);
+				Collections.sort(sortedFors, new Comparator<ForFiscal>() {
+					@Override
+					public int compare(ForFiscal o1, ForFiscal o2) {
+						return Boolean.compare(o1.isPrincipal(), o2.isPrincipal());
+					}
+				});
+
+				// d'abord le secondaire, ensuite le principal
+				{
+					final ForFiscal ff = sortedFors.get(0);
+					Assert.assertNotNull(ff);
+					Assert.assertEquals(ForFiscalSecondaire.class, ff.getClass());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ff.getTypeAutoriteFiscale());
+					Assert.assertEquals(dateActe, ff.getDateDebut());
+					Assert.assertNull(ff.getDateFin());
+					Assert.assertEquals((Integer) MockCommune.Morges.getNoOFS(), ff.getNumeroOfsAutoriteFiscale());
+					Assert.assertEquals(GenreImpot.REVENU_FORTUNE, ff.getGenreImpot());
+
+					final ForFiscalSecondaire ffsec = (ForFiscalSecondaire) ff;
+					Assert.assertEquals(MotifFor.ACHAT_IMMOBILIER, ffsec.getMotifOuverture());
+					Assert.assertNull(ffsec.getMotifFermeture());
+					Assert.assertEquals(MotifRattachement.IMMEUBLE_PRIVE, ffsec.getMotifRattachement());
+				}
+				{
+					final ForFiscal ff = sortedFors.get(1);
+					Assert.assertNotNull(ff);
+					Assert.assertEquals(ForFiscalPrincipal.class, ff.getClass());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, ff.getTypeAutoriteFiscale());
+					Assert.assertEquals(dateActe, ff.getDateDebut());
+					Assert.assertNull(ff.getDateFin());
+					Assert.assertEquals((Integer) MockCommune.Zurich.getNoOFS(), ff.getNumeroOfsAutoriteFiscale());
+					Assert.assertEquals(GenreImpot.REVENU_FORTUNE, ff.getGenreImpot());
+
+					final ForFiscalPrincipal ffp = (ForFiscalPrincipal) ff;
+					Assert.assertEquals(MotifFor.ACHAT_IMMOBILIER, ffp.getMotifOuverture());
+					Assert.assertNull(ffp.getMotifFermeture());
+					Assert.assertEquals(MotifRattachement.DOMICILE, ffp.getMotifRattachement());
+					Assert.assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition());
+				}
+			}
+		});
+	}
+
+	@Test(timeout = 10000)
+	public void testChangementForPrincipalHorsSuisseVersHorsCantonNouvelAcquereur() throws Exception {
+
+		final RegDate dateNaissance = date(1985, 10, 20);
+		final RegDate dateActe = date(2014, 6, 9);
+
+		final class Ids {
+			long ppId;
+			long utId;
+		}
+
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique ctb = addNonHabitant("Alain", "Zigotto", dateNaissance, Sexe.MASCULIN);
+				addForPrincipal(ctb, date(2000, 5, 13), MotifFor.INDETERMINE, MockPays.Allemagne);
+
+				final EvenementReqDes evt = addEvenementReqDes(new InformationsActeur("tabou", "Taboumata", "Oli"), null, dateActe, "541154651");
+				final UniteTraitement ut = addUniteTraitement(evt, EtatTraitement.A_TRAITER, null);
+				final PartiePrenante pp = addPartiePrenante(ut, "Zigotto", "Alain");
+				pp.setNumeroContribuable(ctb.getNumero());
+				pp.setNomMere("Delaplanche");
+				pp.setPrenomsMere("Sophie Mafalda");
+				pp.setNomPere("Dumoulin");
+				pp.setPrenomsPere("François Robert");
+				pp.setOfsPaysNationalite(MockPays.Suisse.getNoOFS());
+				pp.setSexe(Sexe.MASCULIN);
+				pp.setDateNaissance(dateNaissance);
+				pp.setDateEtatCivil(dateNaissance);
+				pp.setEtatCivil(EtatCivil.CELIBATAIRE);
+
+				pp.setRue("Eisentürstrasse");
+				pp.setNumeroMaison("42");
+				pp.setOfsPays(MockPays.Suisse.getNoOFS());
+				pp.setLocalite(MockLocalite.Zurich.getNomCompletMinuscule());
+				pp.setNumeroPostal(Integer.toString(MockLocalite.Zurich.getNPA()));
+				pp.setNumeroPostalComplementaire(MockLocalite.Zurich.getComplementNPA());
+				pp.setOfsCommune(MockCommune.Zurich.getNoOFS());
+
+				final TransactionImmobiliere ti1 = addTransactionImmobiliere(evt, "Propriété Morges", ModeInscription.INSCRIPTION, TypeInscription.PROPRIETE, MockCommune.Morges.getNoOFS());
+				addRole(pp, ti1, TypeRole.ACQUEREUR);
+
+				final Ids ids = new Ids();
+				ids.ppId = ctb.getNumero();
+				ids.utId = ut.getId();
+				return ids;
+			}
+		});
+
+		// traiter l'unité
+		traiteUniteTraitement(ids.utId);
+
+		// vérification des fors
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final UniteTraitement ut = uniteTraitementDAO.get(ids.utId);
+				Assert.assertNotNull(ut);
+				Assert.assertEquals(EtatTraitement.TRAITE, ut.getEtat());
+				Assert.assertEquals(0, ut.getErreurs().size());
+
+				final List<Tiers> allTiers = tiersDAO.getAll();
+				Assert.assertNotNull(allTiers);
+				Assert.assertEquals(1, allTiers.size());
+
+				final Tiers tiers = allTiers.get(0);
+				Assert.assertEquals(PersonnePhysique.class, tiers.getClass());
+				Assert.assertEquals((Long) ids.ppId, tiers.getNumero());
+
+				final Set<ForFiscal> ffs = tiers.getForsFiscaux();
+				Assert.assertNotNull(ffs);
+				Assert.assertEquals(3, ffs.size());
+
+				final List<ForFiscal> sortedFors = new ArrayList<>(ffs);
+				Collections.sort(sortedFors, new DateRangeComparator<ForFiscal>() {
+					@Override
+					public int compare(ForFiscal o1, ForFiscal o2) {
+						int comparison = Boolean.compare(o1.isPrincipal(), o2.isPrincipal());
+						if (comparison == 0) {
+							comparison = super.compare(o1, o2);
+						}
+						return comparison;
+					}
+				});
+
+				// d'abord le secondaire, ensuite les principaux
+				{
+					final ForFiscal ff = sortedFors.get(0);
+					Assert.assertNotNull(ff);
+					Assert.assertEquals(ForFiscalSecondaire.class, ff.getClass());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ff.getTypeAutoriteFiscale());
+					Assert.assertEquals(dateActe, ff.getDateDebut());
+					Assert.assertNull(ff.getDateFin());
+					Assert.assertEquals((Integer) MockCommune.Morges.getNoOFS(), ff.getNumeroOfsAutoriteFiscale());
+					Assert.assertEquals(GenreImpot.REVENU_FORTUNE, ff.getGenreImpot());
+
+					final ForFiscalSecondaire ffsec = (ForFiscalSecondaire) ff;
+					Assert.assertEquals(MotifFor.ACHAT_IMMOBILIER, ffsec.getMotifOuverture());
+					Assert.assertNull(ffsec.getMotifFermeture());
+					Assert.assertEquals(MotifRattachement.IMMEUBLE_PRIVE, ffsec.getMotifRattachement());
+				}
+				{
+					final ForFiscal ff = sortedFors.get(1);
+					Assert.assertNotNull(ff);
+					Assert.assertEquals(ForFiscalPrincipal.class, ff.getClass());
+					Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, ff.getTypeAutoriteFiscale());
+					Assert.assertEquals(date(2000, 5, 13), ff.getDateDebut());
+					Assert.assertEquals(dateActe.getOneDayBefore(), ff.getDateFin());
+					Assert.assertEquals((Integer) MockPays.Allemagne.getNoOFS(), ff.getNumeroOfsAutoriteFiscale());
+					Assert.assertEquals(GenreImpot.REVENU_FORTUNE, ff.getGenreImpot());
+
+					final ForFiscalPrincipal ffp = (ForFiscalPrincipal) ff;
+					Assert.assertEquals(MotifFor.INDETERMINE, ffp.getMotifOuverture());
+					Assert.assertEquals(MotifFor.ARRIVEE_HS, ffp.getMotifFermeture());
+					Assert.assertEquals(MotifRattachement.DOMICILE, ffp.getMotifRattachement());
+					Assert.assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition());
+				}
+				{
+					final ForFiscal ff = sortedFors.get(2);
+					Assert.assertNotNull(ff);
+					Assert.assertEquals(ForFiscalPrincipal.class, ff.getClass());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, ff.getTypeAutoriteFiscale());
+					Assert.assertEquals(dateActe, ff.getDateDebut());
+					Assert.assertNull(ff.getDateFin());
+					Assert.assertEquals((Integer) MockCommune.Zurich.getNoOFS(), ff.getNumeroOfsAutoriteFiscale());
+					Assert.assertEquals(GenreImpot.REVENU_FORTUNE, ff.getGenreImpot());
+
+					final ForFiscalPrincipal ffp = (ForFiscalPrincipal) ff;
+					Assert.assertEquals(MotifFor.ARRIVEE_HS, ffp.getMotifOuverture());
+					Assert.assertNull(ffp.getMotifFermeture());
+					Assert.assertEquals(MotifRattachement.DOMICILE, ffp.getMotifRattachement());
+					Assert.assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition());
+				}
+			}
+		});
+	}
+
+	@Test(timeout = 10000)
+	public void testChangementForPrincipalHorsCantonVersHorsCantonNouvelAcquereur() throws Exception {
+
+		final RegDate dateNaissance = date(1985, 10, 20);
+		final RegDate dateActe = date(2014, 6, 9);
+
+		final class Ids {
+			long ppId;
+			long utId;
+		}
+
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique ctb = addNonHabitant("Alain", "Zigotto", dateNaissance, Sexe.MASCULIN);
+				addForPrincipal(ctb, date(2000, 5, 13), MotifFor.INDETERMINE, MockCommune.Geneve);
+
+				final EvenementReqDes evt = addEvenementReqDes(new InformationsActeur("tabou", "Taboumata", "Oli"), null, dateActe, "541154651");
+				final UniteTraitement ut = addUniteTraitement(evt, EtatTraitement.A_TRAITER, null);
+				final PartiePrenante pp = addPartiePrenante(ut, "Zigotto", "Alain");
+				pp.setNumeroContribuable(ctb.getNumero());
+				pp.setNomMere("Delaplanche");
+				pp.setPrenomsMere("Sophie Mafalda");
+				pp.setNomPere("Dumoulin");
+				pp.setPrenomsPere("François Robert");
+				pp.setOfsPaysNationalite(MockPays.Suisse.getNoOFS());
+				pp.setSexe(Sexe.MASCULIN);
+				pp.setDateNaissance(dateNaissance);
+				pp.setDateEtatCivil(dateNaissance);
+				pp.setEtatCivil(EtatCivil.CELIBATAIRE);
+
+				pp.setRue("Eisentürstrasse");
+				pp.setNumeroMaison("42");
+				pp.setOfsPays(MockPays.Suisse.getNoOFS());
+				pp.setLocalite(MockLocalite.Zurich.getNomCompletMinuscule());
+				pp.setNumeroPostal(Integer.toString(MockLocalite.Zurich.getNPA()));
+				pp.setNumeroPostalComplementaire(MockLocalite.Zurich.getComplementNPA());
+				pp.setOfsCommune(MockCommune.Zurich.getNoOFS());
+
+				final TransactionImmobiliere ti1 = addTransactionImmobiliere(evt, "Propriété Morges", ModeInscription.INSCRIPTION, TypeInscription.PROPRIETE, MockCommune.Morges.getNoOFS());
+				addRole(pp, ti1, TypeRole.ACQUEREUR);
+
+				final Ids ids = new Ids();
+				ids.ppId = ctb.getNumero();
+				ids.utId = ut.getId();
+				return ids;
+			}
+		});
+
+		// traiter l'unité
+		traiteUniteTraitement(ids.utId);
+
+		// vérification des fors
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final UniteTraitement ut = uniteTraitementDAO.get(ids.utId);
+				Assert.assertNotNull(ut);
+				Assert.assertEquals(EtatTraitement.TRAITE, ut.getEtat());
+				Assert.assertEquals(0, ut.getErreurs().size());
+
+				final List<Tiers> allTiers = tiersDAO.getAll();
+				Assert.assertNotNull(allTiers);
+				Assert.assertEquals(1, allTiers.size());
+
+				final Tiers tiers = allTiers.get(0);
+				Assert.assertEquals(PersonnePhysique.class, tiers.getClass());
+				Assert.assertEquals((Long) ids.ppId, tiers.getNumero());
+
+				final Set<ForFiscal> ffs = tiers.getForsFiscaux();
+				Assert.assertNotNull(ffs);
+				Assert.assertEquals(3, ffs.size());
+
+				final List<ForFiscal> sortedFors = new ArrayList<>(ffs);
+				Collections.sort(sortedFors, new DateRangeComparator<ForFiscal>() {
+					@Override
+					public int compare(ForFiscal o1, ForFiscal o2) {
+						int comparison = Boolean.compare(o1.isPrincipal(), o2.isPrincipal());
+						if (comparison == 0) {
+							comparison = super.compare(o1, o2);
+						}
+						return comparison;
+					}
+				});
+
+				// d'abord le secondaire, ensuite les principaux
+				{
+					final ForFiscal ff = sortedFors.get(0);
+					Assert.assertNotNull(ff);
+					Assert.assertEquals(ForFiscalSecondaire.class, ff.getClass());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ff.getTypeAutoriteFiscale());
+					Assert.assertEquals(dateActe, ff.getDateDebut());
+					Assert.assertNull(ff.getDateFin());
+					Assert.assertEquals((Integer) MockCommune.Morges.getNoOFS(), ff.getNumeroOfsAutoriteFiscale());
+					Assert.assertEquals(GenreImpot.REVENU_FORTUNE, ff.getGenreImpot());
+
+					final ForFiscalSecondaire ffsec = (ForFiscalSecondaire) ff;
+					Assert.assertEquals(MotifFor.ACHAT_IMMOBILIER, ffsec.getMotifOuverture());
+					Assert.assertNull(ffsec.getMotifFermeture());
+					Assert.assertEquals(MotifRattachement.IMMEUBLE_PRIVE, ffsec.getMotifRattachement());
+				}
+				{
+					final ForFiscal ff = sortedFors.get(1);
+					Assert.assertNotNull(ff);
+					Assert.assertEquals(ForFiscalPrincipal.class, ff.getClass());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, ff.getTypeAutoriteFiscale());
+					Assert.assertEquals(date(2000, 5, 13), ff.getDateDebut());
+					Assert.assertEquals(dateActe.getOneDayBefore(), ff.getDateFin());
+					Assert.assertEquals((Integer) MockCommune.Geneve.getNoOFS(), ff.getNumeroOfsAutoriteFiscale());
+					Assert.assertEquals(GenreImpot.REVENU_FORTUNE, ff.getGenreImpot());
+
+					final ForFiscalPrincipal ffp = (ForFiscalPrincipal) ff;
+					Assert.assertEquals(MotifFor.INDETERMINE, ffp.getMotifOuverture());
+					Assert.assertEquals(MotifFor.DEMENAGEMENT_VD, ffp.getMotifFermeture());
+					Assert.assertEquals(MotifRattachement.DOMICILE, ffp.getMotifRattachement());
+					Assert.assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition());
+				}
+				{
+					final ForFiscal ff = sortedFors.get(2);
+					Assert.assertNotNull(ff);
+					Assert.assertEquals(ForFiscalPrincipal.class, ff.getClass());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, ff.getTypeAutoriteFiscale());
+					Assert.assertEquals(dateActe, ff.getDateDebut());
+					Assert.assertNull(ff.getDateFin());
+					Assert.assertEquals((Integer) MockCommune.Zurich.getNoOFS(), ff.getNumeroOfsAutoriteFiscale());
+					Assert.assertEquals(GenreImpot.REVENU_FORTUNE, ff.getGenreImpot());
+
+					final ForFiscalPrincipal ffp = (ForFiscalPrincipal) ff;
+					Assert.assertEquals(MotifFor.DEMENAGEMENT_VD, ffp.getMotifOuverture());
+					Assert.assertNull(ffp.getMotifFermeture());
+					Assert.assertEquals(MotifRattachement.DOMICILE, ffp.getMotifRattachement());
+					Assert.assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition());
+				}
+			}
+		});
+	}
+
+	@Test(timeout = 10000)
+	public void testChangementForPrincipalHorsCantonVersHorsSuisseNouvelAcquereur() throws Exception {
+
+		final RegDate dateNaissance = date(1985, 10, 20);
+		final RegDate dateActe = date(2014, 6, 9);
+
+		final class Ids {
+			long ppId;
+			long utId;
+		}
+
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique ctb = addNonHabitant("Alain", "Zigotto", dateNaissance, Sexe.MASCULIN);
+				addForPrincipal(ctb, date(2000, 5, 13), MotifFor.INDETERMINE, MockCommune.Geneve);
+
+				final EvenementReqDes evt = addEvenementReqDes(new InformationsActeur("tabou", "Taboumata", "Oli"), null, dateActe, "541154651");
+				final UniteTraitement ut = addUniteTraitement(evt, EtatTraitement.A_TRAITER, null);
+				final PartiePrenante pp = addPartiePrenante(ut, "Zigotto", "Alain");
+				pp.setNumeroContribuable(ctb.getNumero());
+				pp.setNomMere("Delaplanche");
+				pp.setPrenomsMere("Sophie Mafalda");
+				pp.setNomPere("Dumoulin");
+				pp.setPrenomsPere("François Robert");
+				pp.setOfsPaysNationalite(MockPays.Suisse.getNoOFS());
+				pp.setSexe(Sexe.MASCULIN);
+				pp.setDateNaissance(dateNaissance);
+				pp.setDateEtatCivil(dateNaissance);
+				pp.setEtatCivil(EtatCivil.CELIBATAIRE);
+
+				pp.setRue("Nizzaallee");
+				pp.setNumeroMaison("7");
+				pp.setOfsPays(MockPays.Allemagne.getNoOFS());
+				pp.setLocalite("Aachen");
+				pp.setNumeroPostal("52064");
+				pp.setOfsPays(MockPays.Allemagne.getNoOFS());
+
+				final TransactionImmobiliere ti1 = addTransactionImmobiliere(evt, "Propriété Morges", ModeInscription.INSCRIPTION, TypeInscription.PROPRIETE, MockCommune.Morges.getNoOFS());
+				addRole(pp, ti1, TypeRole.ACQUEREUR);
+
+				final Ids ids = new Ids();
+				ids.ppId = ctb.getNumero();
+				ids.utId = ut.getId();
+				return ids;
+			}
+		});
+
+		// traiter l'unité
+		traiteUniteTraitement(ids.utId);
+
+		// vérification des fors
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final UniteTraitement ut = uniteTraitementDAO.get(ids.utId);
+				Assert.assertNotNull(ut);
+				Assert.assertEquals(EtatTraitement.TRAITE, ut.getEtat());
+				Assert.assertEquals(0, ut.getErreurs().size());
+
+				final List<Tiers> allTiers = tiersDAO.getAll();
+				Assert.assertNotNull(allTiers);
+				Assert.assertEquals(1, allTiers.size());
+
+				final Tiers tiers = allTiers.get(0);
+				Assert.assertEquals(PersonnePhysique.class, tiers.getClass());
+				Assert.assertEquals((Long) ids.ppId, tiers.getNumero());
+
+				final Set<ForFiscal> ffs = tiers.getForsFiscaux();
+				Assert.assertNotNull(ffs);
+				Assert.assertEquals(3, ffs.size());
+
+				final List<ForFiscal> sortedFors = new ArrayList<>(ffs);
+				Collections.sort(sortedFors, new DateRangeComparator<ForFiscal>() {
+					@Override
+					public int compare(ForFiscal o1, ForFiscal o2) {
+						int comparison = Boolean.compare(o1.isPrincipal(), o2.isPrincipal());
+						if (comparison == 0) {
+							comparison = super.compare(o1, o2);
+						}
+						return comparison;
+					}
+				});
+
+				// d'abord le secondaire, ensuite les principaux
+				{
+					final ForFiscal ff = sortedFors.get(0);
+					Assert.assertNotNull(ff);
+					Assert.assertEquals(ForFiscalSecondaire.class, ff.getClass());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ff.getTypeAutoriteFiscale());
+					Assert.assertEquals(dateActe, ff.getDateDebut());
+					Assert.assertNull(ff.getDateFin());
+					Assert.assertEquals((Integer) MockCommune.Morges.getNoOFS(), ff.getNumeroOfsAutoriteFiscale());
+					Assert.assertEquals(GenreImpot.REVENU_FORTUNE, ff.getGenreImpot());
+
+					final ForFiscalSecondaire ffsec = (ForFiscalSecondaire) ff;
+					Assert.assertEquals(MotifFor.ACHAT_IMMOBILIER, ffsec.getMotifOuverture());
+					Assert.assertNull(ffsec.getMotifFermeture());
+					Assert.assertEquals(MotifRattachement.IMMEUBLE_PRIVE, ffsec.getMotifRattachement());
+				}
+				{
+					final ForFiscal ff = sortedFors.get(1);
+					Assert.assertNotNull(ff);
+					Assert.assertEquals(ForFiscalPrincipal.class, ff.getClass());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, ff.getTypeAutoriteFiscale());
+					Assert.assertEquals(date(2000, 5, 13), ff.getDateDebut());
+					Assert.assertEquals(dateActe.getOneDayBefore(), ff.getDateFin());
+					Assert.assertEquals((Integer) MockCommune.Geneve.getNoOFS(), ff.getNumeroOfsAutoriteFiscale());
+					Assert.assertEquals(GenreImpot.REVENU_FORTUNE, ff.getGenreImpot());
+
+					final ForFiscalPrincipal ffp = (ForFiscalPrincipal) ff;
+					Assert.assertEquals(MotifFor.INDETERMINE, ffp.getMotifOuverture());
+					Assert.assertEquals(MotifFor.DEPART_HS, ffp.getMotifFermeture());
+					Assert.assertEquals(MotifRattachement.DOMICILE, ffp.getMotifRattachement());
+					Assert.assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition());
+				}
+				{
+					final ForFiscal ff = sortedFors.get(2);
+					Assert.assertNotNull(ff);
+					Assert.assertEquals(ForFiscalPrincipal.class, ff.getClass());
+					Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, ff.getTypeAutoriteFiscale());
+					Assert.assertEquals(dateActe, ff.getDateDebut());
+					Assert.assertNull(ff.getDateFin());
+					Assert.assertEquals((Integer) MockPays.Allemagne.getNoOFS(), ff.getNumeroOfsAutoriteFiscale());
+					Assert.assertEquals(GenreImpot.REVENU_FORTUNE, ff.getGenreImpot());
+
+					final ForFiscalPrincipal ffp = (ForFiscalPrincipal) ff;
+					Assert.assertEquals(MotifFor.DEPART_HS, ffp.getMotifOuverture());
+					Assert.assertNull(ffp.getMotifFermeture());
+					Assert.assertEquals(MotifRattachement.DOMICILE, ffp.getMotifRattachement());
+					Assert.assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition());
+				}
+			}
+		});
+	}
+
+	@Test(timeout = 10000)
+	public void testForSecondaireDejaPresentSurCoupleAcquereurMarieSeul() throws Exception {
+
+		final RegDate dateNaissance = date(1975, 10, 20);
+		final RegDate dateMariage = date(1998, 4, 25);
+		final RegDate dateAchatPrecedent = date(2000, 6, 12);
+		final RegDate dateActe = date(2014, 6, 9);
+
+		final class Ids {
+			long ctbId;
+			long utId;
+		}
+
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique ctb = addNonHabitant("Alain", "Zigotto", dateNaissance, Sexe.MASCULIN);
+				final EnsembleTiersCouple couple = addEnsembleTiersCouple(ctb, null, dateMariage, null);
+				final MenageCommun mc = couple.getMenage();
+				addForPrincipal(mc, dateAchatPrecedent, MotifFor.INDETERMINE, MockCommune.Geneve);
+				addForSecondaire(mc, dateAchatPrecedent, MotifFor.ACHAT_IMMOBILIER, MockCommune.Morges.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);          // on ne devrait pas créer de nouveau for secondaire
+
+				final EvenementReqDes evt = addEvenementReqDes(new InformationsActeur("tabou", "Taboumata", "Oli"), null, dateActe, "541154651");
+				final UniteTraitement ut = addUniteTraitement(evt, EtatTraitement.A_TRAITER, null);
+				final PartiePrenante pp = addPartiePrenante(ut, "Zigotto", "Alain");
+				pp.setNumeroContribuable(ctb.getNumero());
+				pp.setNomMere("Delaplanche");
+				pp.setPrenomsMere("Sophie Mafalda");
+				pp.setNomPere("Dumoulin");
+				pp.setPrenomsPere("François Robert");
+				pp.setOfsPaysNationalite(MockPays.Suisse.getNoOFS());
+				pp.setSexe(Sexe.MASCULIN);
+				pp.setDateNaissance(dateNaissance);
+				pp.setDateEtatCivil(dateMariage);
+				pp.setEtatCivil(EtatCivil.MARIE);
+
+				pp.setRue("Nizzaallee");
+				pp.setNumeroMaison("7");
+				pp.setOfsPays(MockPays.Allemagne.getNoOFS());
+				pp.setLocalite("Aachen");
+				pp.setNumeroPostal("52064");
+				pp.setOfsPays(MockPays.Allemagne.getNoOFS());
+
+				final TransactionImmobiliere ti1 = addTransactionImmobiliere(evt, "Propriété Morges", ModeInscription.INSCRIPTION, TypeInscription.PROPRIETE, MockCommune.Morges.getNoOFS());
+				addRole(pp, ti1, TypeRole.ACQUEREUR);
+
+				final Ids ids = new Ids();
+				ids.ctbId = mc.getNumero();
+				ids.utId = ut.getId();
+				return ids;
+			}
+		});
+
+		// traiter l'unité
+		traiteUniteTraitement(ids.utId);
+
+		// vérification des fors
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final UniteTraitement ut = uniteTraitementDAO.get(ids.utId);
+				Assert.assertNotNull(ut);
+				Assert.assertEquals(EtatTraitement.A_VERIFIER, ut.getEtat());       // ben oui, l'adresse n'a pas pu être changée
+				Assert.assertEquals(1, ut.getErreurs().size());
+
+				final List<Tiers> allTiers = tiersDAO.getAll();
+				Assert.assertNotNull(allTiers);
+				Assert.assertEquals(2, allTiers.size());
+
+				final MenageCommun tiers = (MenageCommun) tiersDAO.get(ids.ctbId);
+				final Set<ForFiscal> ffs = tiers.getForsFiscaux();
+				Assert.assertNotNull(ffs);
+				Assert.assertEquals(3, ffs.size());
+
+				final List<ForFiscal> sortedFors = new ArrayList<>(ffs);
+				Collections.sort(sortedFors, new DateRangeComparator<ForFiscal>() {
+					@Override
+					public int compare(ForFiscal o1, ForFiscal o2) {
+						int comparison = Boolean.compare(o1.isPrincipal(), o2.isPrincipal());
+						if (comparison == 0) {
+							comparison = super.compare(o1, o2);
+						}
+						return comparison;
+					}
+				});
+
+				// d'abord le secondaire, ensuite les principaux
+				{
+					final ForFiscal ff = sortedFors.get(0);
+					Assert.assertNotNull(ff);
+					Assert.assertEquals(ForFiscalSecondaire.class, ff.getClass());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ff.getTypeAutoriteFiscale());
+					Assert.assertEquals(dateAchatPrecedent, ff.getDateDebut());
+					Assert.assertNull(ff.getDateFin());
+					Assert.assertEquals((Integer) MockCommune.Morges.getNoOFS(), ff.getNumeroOfsAutoriteFiscale());
+					Assert.assertEquals(GenreImpot.REVENU_FORTUNE, ff.getGenreImpot());
+
+					final ForFiscalSecondaire ffsec = (ForFiscalSecondaire) ff;
+					Assert.assertEquals(MotifFor.ACHAT_IMMOBILIER, ffsec.getMotifOuverture());
+					Assert.assertNull(ffsec.getMotifFermeture());
+					Assert.assertEquals(MotifRattachement.IMMEUBLE_PRIVE, ffsec.getMotifRattachement());
+				}
+				{
+					final ForFiscal ff = sortedFors.get(1);
+					Assert.assertNotNull(ff);
+					Assert.assertEquals(ForFiscalPrincipal.class, ff.getClass());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, ff.getTypeAutoriteFiscale());
+					Assert.assertEquals(dateAchatPrecedent, ff.getDateDebut());
+					Assert.assertEquals(dateActe.getOneDayBefore(), ff.getDateFin());
+					Assert.assertEquals((Integer) MockCommune.Geneve.getNoOFS(), ff.getNumeroOfsAutoriteFiscale());
+					Assert.assertEquals(GenreImpot.REVENU_FORTUNE, ff.getGenreImpot());
+
+					final ForFiscalPrincipal ffp = (ForFiscalPrincipal) ff;
+					Assert.assertEquals(MotifFor.INDETERMINE, ffp.getMotifOuverture());
+					Assert.assertEquals(MotifFor.DEPART_HS, ffp.getMotifFermeture());
+					Assert.assertEquals(MotifRattachement.DOMICILE, ffp.getMotifRattachement());
+					Assert.assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition());
+				}
+				{
+					final ForFiscal ff = sortedFors.get(2);
+					Assert.assertNotNull(ff);
+					Assert.assertEquals(ForFiscalPrincipal.class, ff.getClass());
+					Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, ff.getTypeAutoriteFiscale());
+					Assert.assertEquals(dateActe, ff.getDateDebut());
+					Assert.assertNull(ff.getDateFin());
+					Assert.assertEquals((Integer) MockPays.Allemagne.getNoOFS(), ff.getNumeroOfsAutoriteFiscale());
+					Assert.assertEquals(GenreImpot.REVENU_FORTUNE, ff.getGenreImpot());
+
+					final ForFiscalPrincipal ffp = (ForFiscalPrincipal) ff;
+					Assert.assertEquals(MotifFor.DEPART_HS, ffp.getMotifOuverture());
+					Assert.assertNull(ffp.getMotifFermeture());
+					Assert.assertEquals(MotifRattachement.DOMICILE, ffp.getMotifRattachement());
+					Assert.assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition());
+				}
+			}
+		});
+	}
+
+	@Test(timeout = 10000)
+	public void testForSecondaireDejaPresentAutreMotifRattachementSurCoupleAcquereurMarieSeul() throws Exception {
+
+		final RegDate dateNaissance = date(1975, 10, 20);
+		final RegDate dateMariage = date(1998, 4, 25);
+		final RegDate dateDebutExploitation = date(2000, 5, 13);
+		final RegDate dateActe = date(2014, 6, 9);
+
+		final class Ids {
+			long ctbId;
+			long utId;
+		}
+
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique ctb = addNonHabitant("Alain", "Zigotto", dateNaissance, Sexe.MASCULIN);
+				final EnsembleTiersCouple couple = addEnsembleTiersCouple(ctb, null, dateMariage, null);
+				final MenageCommun mc = couple.getMenage();
+				addForPrincipal(mc, dateDebutExploitation, MotifFor.INDETERMINE, MockCommune.Geneve);
+				addForSecondaire(mc, dateDebutExploitation, MotifFor.DEBUT_EXPLOITATION, MockCommune.Morges.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);          // on devrait créer un nouveau for secondaire car le motif de rattachement est différent !
+
+				final EvenementReqDes evt = addEvenementReqDes(new InformationsActeur("tabou", "Taboumata", "Oli"), null, dateActe, "541154651");
+				final UniteTraitement ut = addUniteTraitement(evt, EtatTraitement.A_TRAITER, null);
+				final PartiePrenante pp = addPartiePrenante(ut, "Zigotto", "Alain");
+				pp.setNumeroContribuable(ctb.getNumero());
+				pp.setNomMere("Delaplanche");
+				pp.setPrenomsMere("Sophie Mafalda");
+				pp.setNomPere("Dumoulin");
+				pp.setPrenomsPere("François Robert");
+				pp.setOfsPaysNationalite(MockPays.Suisse.getNoOFS());
+				pp.setSexe(Sexe.MASCULIN);
+				pp.setDateNaissance(dateNaissance);
+				pp.setDateEtatCivil(dateMariage);
+				pp.setEtatCivil(EtatCivil.MARIE);
+
+				pp.setRue("Nizzaallee");
+				pp.setNumeroMaison("7");
+				pp.setOfsPays(MockPays.Allemagne.getNoOFS());
+				pp.setLocalite("Aachen");
+				pp.setNumeroPostal("52064");
+				pp.setOfsPays(MockPays.Allemagne.getNoOFS());
+
+				final TransactionImmobiliere ti1 = addTransactionImmobiliere(evt, "Propriété Morges", ModeInscription.INSCRIPTION, TypeInscription.PROPRIETE, MockCommune.Morges.getNoOFS());
+				addRole(pp, ti1, TypeRole.ACQUEREUR);
+
+				final Ids ids = new Ids();
+				ids.ctbId = mc.getNumero();
+				ids.utId = ut.getId();
+				return ids;
+			}
+		});
+
+		// traiter l'unité
+		traiteUniteTraitement(ids.utId);
+
+		// vérification des fors
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final UniteTraitement ut = uniteTraitementDAO.get(ids.utId);
+				Assert.assertNotNull(ut);
+				Assert.assertEquals(EtatTraitement.A_VERIFIER, ut.getEtat());              // ben oui, l'adresse n'a pas pu être changée
+				Assert.assertEquals(1, ut.getErreurs().size());
+
+				final List<Tiers> allTiers = tiersDAO.getAll();
+				Assert.assertNotNull(allTiers);
+				Assert.assertEquals(2, allTiers.size());
+
+				final MenageCommun tiers = (MenageCommun) tiersDAO.get(ids.ctbId);
+				final Set<ForFiscal> ffs = tiers.getForsFiscaux();
+				Assert.assertNotNull(ffs);
+				Assert.assertEquals(4, ffs.size());
+
+				final List<ForFiscal> sortedFors = new ArrayList<>(ffs);
+				Collections.sort(sortedFors, new DateRangeComparator<ForFiscal>() {
+					@Override
+					public int compare(ForFiscal o1, ForFiscal o2) {
+						int comparison = Boolean.compare(o1.isPrincipal(), o2.isPrincipal());
+						if (comparison == 0) {
+							comparison = super.compare(o1, o2);
+						}
+						return comparison;
+					}
+				});
+
+				// d'abord les secondaires, ensuite les principaux
+				{
+					final ForFiscal ff = sortedFors.get(0);
+					Assert.assertNotNull(ff);
+					Assert.assertEquals(ForFiscalSecondaire.class, ff.getClass());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ff.getTypeAutoriteFiscale());
+					Assert.assertEquals(dateDebutExploitation, ff.getDateDebut());
+					Assert.assertNull(ff.getDateFin());
+					Assert.assertEquals((Integer) MockCommune.Morges.getNoOFS(), ff.getNumeroOfsAutoriteFiscale());
+					Assert.assertEquals(GenreImpot.REVENU_FORTUNE, ff.getGenreImpot());
+
+					final ForFiscalSecondaire ffsec = (ForFiscalSecondaire) ff;
+					Assert.assertEquals(MotifFor.DEBUT_EXPLOITATION, ffsec.getMotifOuverture());
+					Assert.assertNull(ffsec.getMotifFermeture());
+					Assert.assertEquals(MotifRattachement.ACTIVITE_INDEPENDANTE, ffsec.getMotifRattachement());
+				}
+				{
+					final ForFiscal ff = sortedFors.get(1);
+					Assert.assertNotNull(ff);
+					Assert.assertEquals(ForFiscalSecondaire.class, ff.getClass());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ff.getTypeAutoriteFiscale());
+					Assert.assertEquals(dateActe, ff.getDateDebut());
+					Assert.assertNull(ff.getDateFin());
+					Assert.assertEquals((Integer) MockCommune.Morges.getNoOFS(), ff.getNumeroOfsAutoriteFiscale());
+					Assert.assertEquals(GenreImpot.REVENU_FORTUNE, ff.getGenreImpot());
+
+					final ForFiscalSecondaire ffsec = (ForFiscalSecondaire) ff;
+					Assert.assertEquals(MotifFor.ACHAT_IMMOBILIER, ffsec.getMotifOuverture());
+					Assert.assertNull(ffsec.getMotifFermeture());
+					Assert.assertEquals(MotifRattachement.IMMEUBLE_PRIVE, ffsec.getMotifRattachement());
+				}
+				{
+					final ForFiscal ff = sortedFors.get(2);
+					Assert.assertNotNull(ff);
+					Assert.assertEquals(ForFiscalPrincipal.class, ff.getClass());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, ff.getTypeAutoriteFiscale());
+					Assert.assertEquals(date(2000, 5, 13), ff.getDateDebut());
+					Assert.assertEquals(dateActe.getOneDayBefore(), ff.getDateFin());
+					Assert.assertEquals((Integer) MockCommune.Geneve.getNoOFS(), ff.getNumeroOfsAutoriteFiscale());
+					Assert.assertEquals(GenreImpot.REVENU_FORTUNE, ff.getGenreImpot());
+
+					final ForFiscalPrincipal ffp = (ForFiscalPrincipal) ff;
+					Assert.assertEquals(MotifFor.INDETERMINE, ffp.getMotifOuverture());
+					Assert.assertEquals(MotifFor.DEPART_HS, ffp.getMotifFermeture());
+					Assert.assertEquals(MotifRattachement.DOMICILE, ffp.getMotifRattachement());
+					Assert.assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition());
+				}
+				{
+					final ForFiscal ff = sortedFors.get(3);
+					Assert.assertNotNull(ff);
+					Assert.assertEquals(ForFiscalPrincipal.class, ff.getClass());
+					Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, ff.getTypeAutoriteFiscale());
+					Assert.assertEquals(dateActe, ff.getDateDebut());
+					Assert.assertNull(ff.getDateFin());
+					Assert.assertEquals((Integer) MockPays.Allemagne.getNoOFS(), ff.getNumeroOfsAutoriteFiscale());
+					Assert.assertEquals(GenreImpot.REVENU_FORTUNE, ff.getGenreImpot());
+
+					final ForFiscalPrincipal ffp = (ForFiscalPrincipal) ff;
+					Assert.assertEquals(MotifFor.DEPART_HS, ffp.getMotifOuverture());
+					Assert.assertNull(ffp.getMotifFermeture());
+					Assert.assertEquals(MotifRattachement.DOMICILE, ffp.getMotifRattachement());
+					Assert.assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition());
+				}
+			}
+		});
+	}
+
+	@Test(timeout = 10000)
+	public void testCreationPlusieursForsSecondairesSurCoupleDepuisDifferentesPartiesPrenantes() throws Exception {
+
+		final RegDate dateNaissance = date(1975, 10, 20);
+		final RegDate dateMariage = date(1998, 4, 25);
+		final RegDate dateActe = date(2014, 6, 9);
+
+		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementReqDes evt = addEvenementReqDes(new InformationsActeur("tabou", "Taboumata", "Oli"), null, dateActe, "541154651");
+				final UniteTraitement ut = addUniteTraitement(evt, EtatTraitement.A_TRAITER, null);
+				final PartiePrenante pp1 = addPartiePrenante(ut, "Zigotto", "Alain");
+
+				pp1.setNomMere("Delaplanche");
+				pp1.setPrenomsMere("Sophie Mafalda");
+				pp1.setNomPere("Dumoulin");
+				pp1.setPrenomsPere("François Robert");
+				pp1.setOfsPaysNationalite(MockPays.Suisse.getNoOFS());
+				pp1.setSexe(Sexe.MASCULIN);
+				pp1.setDateNaissance(dateNaissance);
+				pp1.setDateEtatCivil(dateMariage);
+				pp1.setEtatCivil(EtatCivil.MARIE);
+
+				pp1.setRue("Nizzaallee");
+				pp1.setNumeroMaison("7");
+				pp1.setOfsPays(MockPays.Allemagne.getNoOFS());
+				pp1.setLocalite("Aachen");
+				pp1.setNumeroPostal("52064");
+				pp1.setOfsPays(MockPays.Allemagne.getNoOFS());
+
+				final PartiePrenante pp2 = addPartiePrenante(ut, "Zigotto", "Francine");
+
+				pp2.setNomMere("Martin");
+				pp2.setPrenomsMere("Carabine");
+				pp2.setNomPere("Zanallo");
+				pp2.setPrenomsPere("Sergio");
+				pp2.setOfsPaysNationalite(MockPays.Suisse.getNoOFS());
+				pp2.setSexe(Sexe.FEMININ);
+				pp2.setDateNaissance(null);
+				pp2.setDateEtatCivil(dateMariage);
+				pp2.setEtatCivil(EtatCivil.MARIE);
+
+				pp2.setRue("Nizzaallee");
+				pp2.setNumeroMaison("7");
+				pp2.setOfsPays(MockPays.Allemagne.getNoOFS());
+				pp2.setLocalite("Aachen");
+				pp2.setNumeroPostal("52064");
+				pp2.setOfsPays(MockPays.Allemagne.getNoOFS());
+
+				pp1.setConjointPartiePrenante(pp2);
+				pp2.setConjointPartiePrenante(pp1);
+
+				final TransactionImmobiliere ti1 = addTransactionImmobiliere(evt, "Propriété Morges", ModeInscription.INSCRIPTION, TypeInscription.PROPRIETE, MockCommune.Morges.getNoOFS());
+				final TransactionImmobiliere ti2 = addTransactionImmobiliere(evt, "Propriété Echallens", ModeInscription.INSCRIPTION, TypeInscription.PROPRIETE, MockCommune.Echallens.getNoOFS());
+				addRole(pp1, ti1, TypeRole.ACQUEREUR);
+				addRole(pp2, ti2, TypeRole.ACQUEREUR);
+
+				return ut.getId();
+			}
+		});
+
+		// traiter l'unité
+		traiteUniteTraitement(id);
+
+		// vérification des fors
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final UniteTraitement ut = uniteTraitementDAO.get(id);
+				Assert.assertNotNull(ut);
+				Assert.assertEquals(EtatTraitement.TRAITE, ut.getEtat());
+				Assert.assertEquals(0, ut.getErreurs().size());
+
+				final List<Tiers> allTiers = tiersDAO.getAll();
+				Assert.assertNotNull(allTiers);
+				Assert.assertEquals(3, allTiers.size());        // 2 PP + 1 MC
+
+				final List<Tiers> allSortedTiers = new ArrayList<>(allTiers);
+				Collections.sort(allSortedTiers, new Comparator<Tiers>() {
+					@Override
+					public int compare(Tiers o1, Tiers o2) {
+						int result = o1.getNatureTiers().compareTo(o2.getNatureTiers());
+						if (result == 0) {
+							// les seuls qui ont la même nature sont les deux personnes physiques
+							final PersonnePhysique pp1 = (PersonnePhysique) o1;
+							final PersonnePhysique pp2 = (PersonnePhysique) o2;
+							result = pp1.getPrenomUsuel().compareTo(pp2.getPrenomUsuel());
+						}
+						return result;
+					}
+				});
+
+				// et finalement, on obtient :
+				// 1. Alain Zigotto
+				// 2. Francine Zigotto
+				// 3. le ménage commun
+				{
+					final PersonnePhysique pp = (PersonnePhysique) allSortedTiers.get(0);
+					Assert.assertNotNull(pp);
+					Assert.assertEquals("Zigotto", pp.getNom());
+					Assert.assertEquals("Alain", pp.getPrenomUsuel());
+					Assert.assertEquals("Alain", pp.getTousPrenoms());
+					Assert.assertEquals(0, pp.getForsFiscaux().size());   // pas de fors fiscaux
+				}
+				{
+					final PersonnePhysique pp = (PersonnePhysique) allSortedTiers.get(1);
+					Assert.assertNotNull(pp);
+					Assert.assertEquals("Zigotto", pp.getNom());
+					Assert.assertEquals("Francine", pp.getPrenomUsuel());
+					Assert.assertEquals("Francine", pp.getTousPrenoms());
+					Assert.assertEquals(0, pp.getForsFiscaux().size());   // pas de fors fiscaux
+				}
+				{
+					final MenageCommun mc = (MenageCommun) allSortedTiers.get(2);
+					Assert.assertNotNull(mc);
+					final Set<ForFiscal> ffs = mc.getForsFiscaux();
+					Assert.assertNotNull(ffs);
+					Assert.assertEquals(3, ffs.size());
+
+					final List<ForFiscal> sortedFors = new ArrayList<>(ffs);
+					Collections.sort(sortedFors, new Comparator<ForFiscal>() {
+						@Override
+						public int compare(ForFiscal o1, ForFiscal o2) {
+							int comparison = Boolean.compare(o1.isPrincipal(), o2.isPrincipal());
+							if (comparison == 0) {
+								comparison = o1.getNumeroOfsAutoriteFiscale() - o2.getNumeroOfsAutoriteFiscale();
+							}
+							return comparison;
+						}
+					});
+
+					// d'abord les secondaires (par ordre de numéro OFS de commune), ensuite le principal
+					{
+						final ForFiscal ff = sortedFors.get(0);
+						Assert.assertNotNull(ff);
+						Assert.assertEquals(ForFiscalSecondaire.class, ff.getClass());
+						Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ff.getTypeAutoriteFiscale());
+						Assert.assertEquals(dateActe, ff.getDateDebut());
+						Assert.assertNull(ff.getDateFin());
+						Assert.assertEquals((Integer) MockCommune.Echallens.getNoOFS(), ff.getNumeroOfsAutoriteFiscale());
+						Assert.assertEquals(GenreImpot.REVENU_FORTUNE, ff.getGenreImpot());
+
+						final ForFiscalSecondaire ffsec = (ForFiscalSecondaire) ff;
+						Assert.assertEquals(MotifFor.ACHAT_IMMOBILIER, ffsec.getMotifOuverture());
+						Assert.assertNull(ffsec.getMotifFermeture());
+						Assert.assertEquals(MotifRattachement.IMMEUBLE_PRIVE, ffsec.getMotifRattachement());
+					}
+					{
+						final ForFiscal ff = sortedFors.get(1);
+						Assert.assertNotNull(ff);
+						Assert.assertEquals(ForFiscalSecondaire.class, ff.getClass());
+						Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ff.getTypeAutoriteFiscale());
+						Assert.assertEquals(dateActe, ff.getDateDebut());
+						Assert.assertNull(ff.getDateFin());
+						Assert.assertEquals((Integer) MockCommune.Morges.getNoOFS(), ff.getNumeroOfsAutoriteFiscale());
+						Assert.assertEquals(GenreImpot.REVENU_FORTUNE, ff.getGenreImpot());
+
+						final ForFiscalSecondaire ffsec = (ForFiscalSecondaire) ff;
+						Assert.assertEquals(MotifFor.ACHAT_IMMOBILIER, ffsec.getMotifOuverture());
+						Assert.assertNull(ffsec.getMotifFermeture());
+						Assert.assertEquals(MotifRattachement.IMMEUBLE_PRIVE, ffsec.getMotifRattachement());
+					}
+					{
+						final ForFiscal ff = sortedFors.get(2);
+						Assert.assertNotNull(ff);
+						Assert.assertEquals(ForFiscalPrincipal.class, ff.getClass());
+						Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, ff.getTypeAutoriteFiscale());
+						Assert.assertEquals(dateActe, ff.getDateDebut());
+						Assert.assertNull(ff.getDateFin());
+						Assert.assertEquals((Integer) MockPays.Allemagne.getNoOFS(), ff.getNumeroOfsAutoriteFiscale());
+						Assert.assertEquals(GenreImpot.REVENU_FORTUNE, ff.getGenreImpot());
+
+						final ForFiscalPrincipal ffp = (ForFiscalPrincipal) ff;
+						Assert.assertEquals(MotifFor.ACHAT_IMMOBILIER, ffp.getMotifOuverture());
+						Assert.assertNull(ffp.getMotifFermeture());
+						Assert.assertEquals(MotifRattachement.DOMICILE, ffp.getMotifRattachement());
+						Assert.assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition());
+					}
+				}
+			}
+		});
+	}
+
+	@Test(timeout = 10000)
+	public void testCreationMemeForSecondaireSurCoupleDepuisDifferentesPartiesPrenantes() throws Exception {
+
+		final RegDate dateNaissance = date(1975, 10, 20);
+		final RegDate dateMariage = date(1998, 4, 25);
+		final RegDate dateActe = date(2014, 6, 9);
+
+		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementReqDes evt = addEvenementReqDes(new InformationsActeur("tabou", "Taboumata", "Oli"), null, dateActe, "541154651");
+				final UniteTraitement ut = addUniteTraitement(evt, EtatTraitement.A_TRAITER, null);
+				final PartiePrenante pp1 = addPartiePrenante(ut, "Zigotto", "Alain");
+
+				pp1.setNomMere("Delaplanche");
+				pp1.setPrenomsMere("Sophie Mafalda");
+				pp1.setNomPere("Dumoulin");
+				pp1.setPrenomsPere("François Robert");
+				pp1.setOfsPaysNationalite(MockPays.Suisse.getNoOFS());
+				pp1.setSexe(Sexe.MASCULIN);
+				pp1.setDateNaissance(dateNaissance);
+				pp1.setDateEtatCivil(dateMariage);
+				pp1.setEtatCivil(EtatCivil.MARIE);
+
+				pp1.setRue("Nizzaallee");
+				pp1.setNumeroMaison("7");
+				pp1.setOfsPays(MockPays.Allemagne.getNoOFS());
+				pp1.setLocalite("Aachen");
+				pp1.setNumeroPostal("52064");
+				pp1.setOfsPays(MockPays.Allemagne.getNoOFS());
+
+				final PartiePrenante pp2 = addPartiePrenante(ut, "Zigotto", "Francine");
+
+				pp2.setNomMere("Martin");
+				pp2.setPrenomsMere("Carabine");
+				pp2.setNomPere("Zanallo");
+				pp2.setPrenomsPere("Sergio");
+				pp2.setOfsPaysNationalite(MockPays.Suisse.getNoOFS());
+				pp2.setSexe(Sexe.FEMININ);
+				pp2.setDateNaissance(null);
+				pp2.setDateEtatCivil(dateMariage);
+				pp2.setEtatCivil(EtatCivil.MARIE);
+
+				pp2.setRue("Nizzaallee");
+				pp2.setNumeroMaison("7");
+				pp2.setOfsPays(MockPays.Allemagne.getNoOFS());
+				pp2.setLocalite("Aachen");
+				pp2.setNumeroPostal("52064");
+				pp2.setOfsPays(MockPays.Allemagne.getNoOFS());
+
+				pp1.setConjointPartiePrenante(pp2);
+				pp2.setConjointPartiePrenante(pp1);
+
+				final TransactionImmobiliere ti1 = addTransactionImmobiliere(evt, "Propriété Morges", ModeInscription.INSCRIPTION, TypeInscription.PROPRIETE, MockCommune.Morges.getNoOFS());
+				addRole(pp1, ti1, TypeRole.ACQUEREUR);
+				addRole(pp2, ti1, TypeRole.ACQUEREUR);
+
+				return ut.getId();
+			}
+		});
+
+		// traiter l'unité
+		traiteUniteTraitement(id);
+
+		// vérification des fors
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final UniteTraitement ut = uniteTraitementDAO.get(id);
+				Assert.assertNotNull(ut);
+				Assert.assertEquals(EtatTraitement.TRAITE, ut.getEtat());
+				Assert.assertEquals(0, ut.getErreurs().size());
+
+				final List<Tiers> allTiers = tiersDAO.getAll();
+				Assert.assertNotNull(allTiers);
+				Assert.assertEquals(3, allTiers.size());        // 2 PP + 1 MC
+
+				final List<Tiers> allSortedTiers = new ArrayList<>(allTiers);
+				Collections.sort(allSortedTiers, new Comparator<Tiers>() {
+					@Override
+					public int compare(Tiers o1, Tiers o2) {
+						int result = o1.getNatureTiers().compareTo(o2.getNatureTiers());
+						if (result == 0) {
+							// les seuls qui ont la même nature sont les deux personnes physiques
+							final PersonnePhysique pp1 = (PersonnePhysique) o1;
+							final PersonnePhysique pp2 = (PersonnePhysique) o2;
+							result = pp1.getPrenomUsuel().compareTo(pp2.getPrenomUsuel());
+						}
+						return result;
+					}
+				});
+
+				// et finalement, on obtient :
+				// 1. Alain Zigotto
+				// 2. Francine Zigotto
+				// 3. le ménage commun
+				{
+					final PersonnePhysique pp = (PersonnePhysique) allSortedTiers.get(0);
+					Assert.assertNotNull(pp);
+					Assert.assertEquals("Zigotto", pp.getNom());
+					Assert.assertEquals("Alain", pp.getPrenomUsuel());
+					Assert.assertEquals("Alain", pp.getTousPrenoms());
+					Assert.assertEquals(0, pp.getForsFiscaux().size());   // pas de fors fiscaux
+				}
+				{
+					final PersonnePhysique pp = (PersonnePhysique) allSortedTiers.get(1);
+					Assert.assertNotNull(pp);
+					Assert.assertEquals("Zigotto", pp.getNom());
+					Assert.assertEquals("Francine", pp.getPrenomUsuel());
+					Assert.assertEquals("Francine", pp.getTousPrenoms());
+					Assert.assertEquals(0, pp.getForsFiscaux().size());   // pas de fors fiscaux
+				}
+				{
+					final MenageCommun mc = (MenageCommun) allSortedTiers.get(2);
+					Assert.assertNotNull(mc);
+					final Set<ForFiscal> ffs = mc.getForsFiscaux();
+					Assert.assertNotNull(ffs);
+					Assert.assertEquals(2, ffs.size());
+
+					final List<ForFiscal> sortedFors = new ArrayList<>(ffs);
+					Collections.sort(sortedFors, new DateRangeComparator<ForFiscal>() {
+						@Override
+						public int compare(ForFiscal o1, ForFiscal o2) {
+							int comparison = Boolean.compare(o1.isPrincipal(), o2.isPrincipal());
+							if (comparison == 0) {
+								comparison = super.compare(o1, o2);
+							}
+							return comparison;
+						}
+					});
+
+					// d'abord le secondaire, ensuite le principal
+					{
+						final ForFiscal ff = sortedFors.get(0);
+						Assert.assertNotNull(ff);
+						Assert.assertEquals(ForFiscalSecondaire.class, ff.getClass());
+						Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ff.getTypeAutoriteFiscale());
+						Assert.assertEquals(dateActe, ff.getDateDebut());
+						Assert.assertNull(ff.getDateFin());
+						Assert.assertEquals((Integer) MockCommune.Morges.getNoOFS(), ff.getNumeroOfsAutoriteFiscale());
+						Assert.assertEquals(GenreImpot.REVENU_FORTUNE, ff.getGenreImpot());
+
+						final ForFiscalSecondaire ffsec = (ForFiscalSecondaire) ff;
+						Assert.assertEquals(MotifFor.ACHAT_IMMOBILIER, ffsec.getMotifOuverture());
+						Assert.assertNull(ffsec.getMotifFermeture());
+						Assert.assertEquals(MotifRattachement.IMMEUBLE_PRIVE, ffsec.getMotifRattachement());
+					}
+					{
+						final ForFiscal ff = sortedFors.get(1);
+						Assert.assertNotNull(ff);
+						Assert.assertEquals(ForFiscalPrincipal.class, ff.getClass());
+						Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, ff.getTypeAutoriteFiscale());
+						Assert.assertEquals(dateActe, ff.getDateDebut());
+						Assert.assertNull(ff.getDateFin());
+						Assert.assertEquals((Integer) MockPays.Allemagne.getNoOFS(), ff.getNumeroOfsAutoriteFiscale());
+						Assert.assertEquals(GenreImpot.REVENU_FORTUNE, ff.getGenreImpot());
+
+						final ForFiscalPrincipal ffp = (ForFiscalPrincipal) ff;
+						Assert.assertEquals(MotifFor.ACHAT_IMMOBILIER, ffp.getMotifOuverture());
+						Assert.assertNull(ffp.getMotifFermeture());
+						Assert.assertEquals(MotifRattachement.DOMICILE, ffp.getMotifRattachement());
+						Assert.assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition());
+					}
 				}
 			}
 		});
