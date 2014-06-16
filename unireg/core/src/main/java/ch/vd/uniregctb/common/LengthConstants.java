@@ -100,6 +100,11 @@ public abstract class LengthConstants {
 	public static final int REF_ESTIM_FISCALE = 255;
 	public static final int LIEN_RF = 500;
 
+	public static final int REQDES_ROLE = 10;
+	public static final int REQDES_ETAT_TRAITEMENT = 10;
+	public static final int REQDES_ERREUR_MESSAGE = 1024;
+	public static final int REQDES_ERREUR_TYPE = 7;
+
 	public final static int MAXLEN = 2000;
 
 	private static final Pattern MULTI_BLANKS = Pattern.compile("\\s{2,}");

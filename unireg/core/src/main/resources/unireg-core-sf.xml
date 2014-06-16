@@ -146,6 +146,12 @@
 		<value>ch.vd.uniregctb.document.RecuperationDonneesAnciensHabitantsRapport</value>
 		<value>ch.vd.uniregctb.parametrage.ParametreApp</value>
 		<value>ch.vd.uniregctb.rf.Immeuble</value>
+		<value>ch.vd.uniregctb.reqdes.ErreurTraitement</value>
+		<value>ch.vd.uniregctb.reqdes.EvenementReqDes</value>
+		<value>ch.vd.uniregctb.reqdes.InformationsActeur</value>
+		<value>ch.vd.uniregctb.reqdes.PartiePrenante</value>
+		<value>ch.vd.uniregctb.reqdes.RolePartiePrenante</value>
+		<value>ch.vd.uniregctb.reqdes.UniteTraitement</value>
 	</util:list>
 
 	<!-- La session factory -->
