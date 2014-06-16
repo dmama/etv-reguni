@@ -2,14 +2,18 @@ package ch.vd.uniregctb.reqdes;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import java.util.Set;
 
 import org.hibernate.annotations.Type;
 
@@ -24,9 +28,10 @@ public class EvenementReqDes extends HibernateEntity {
 	private Long id;
 	private String xml;
 	private RegDate dateActe;
-	private Long numeroMinute;
+	private String numeroMinute;
 	private InformationsActeur notaire;
 	private InformationsActeur operateur;
+	private Set<TransactionImmobiliere> transactions;
 
 	@Transient
 	@Override
@@ -65,12 +70,12 @@ public class EvenementReqDes extends HibernateEntity {
 		this.dateActe = dateActe;
 	}
 
-	@Column(name = "NUMERO_MINUTE", unique = true, nullable = false)
-	public Long getNumeroMinute() {
+	@Column(name = "NUMERO_MINUTE", length = LengthConstants.REQDES_NUMERO_MINUTE, nullable = false)
+	public String getNumeroMinute() {
 		return numeroMinute;
 	}
 
-	public void setNumeroMinute(Long numeroMinute) {
+	public void setNumeroMinute(String numeroMinute) {
 		this.numeroMinute = numeroMinute;
 	}
 
@@ -92,5 +97,14 @@ public class EvenementReqDes extends HibernateEntity {
 
 	public void setOperateur(InformationsActeur operateur) {
 		this.operateur = operateur;
+	}
+
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true, mappedBy = "evenementReqDes")
+	public Set<TransactionImmobiliere> getTransactions() {
+		return transactions;
+	}
+
+	public void setTransactions(Set<TransactionImmobiliere> transactions) {
+		this.transactions = transactions;
 	}
 }

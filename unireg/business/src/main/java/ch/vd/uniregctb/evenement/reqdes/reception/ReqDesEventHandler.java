@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -47,7 +48,7 @@ import ch.vd.unireg.xml.event.reqdes.v1.Partner;
 import ch.vd.unireg.xml.event.reqdes.v1.Residence;
 import ch.vd.unireg.xml.event.reqdes.v1.Stakeholder;
 import ch.vd.unireg.xml.event.reqdes.v1.StakeholderReferenceWithRole;
-import ch.vd.unireg.xml.event.reqdes.v1.Subject;
+import ch.vd.unireg.xml.event.reqdes.v1.Transaction;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.EtatCivilHelper;
@@ -65,6 +66,7 @@ import ch.vd.uniregctb.reqdes.EvenementReqDesDAO;
 import ch.vd.uniregctb.reqdes.InformationsActeur;
 import ch.vd.uniregctb.reqdes.PartiePrenante;
 import ch.vd.uniregctb.reqdes.RolePartiePrenante;
+import ch.vd.uniregctb.reqdes.TransactionImmobiliere;
 import ch.vd.uniregctb.reqdes.UniteTraitement;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.type.CategorieEtranger;
@@ -141,13 +143,17 @@ public class ReqDesEventHandler implements EsbMessageHandler {
 		}
 
 		// a-t-on déjà reçu ce message ?
-		final long noAffaire = data.getNotarialDeed().getDealNumber();
-		final EvenementReqDes dejaPresent = evenementDAO.findByNumeroMinute(noAffaire);
-		if (dejaPresent != null) {
-			LOGGER.warn(String.format("Un message ReqDes avec le même numéro de minute (%d) a déjà été reçu ; cette nouvelle réception est donc ignorée.", noAffaire));
+		final String noAffaire = data.getNotarialDeed().getDealNumber();
+		final String visaNotaire = data.getNotarialInformation().getSollicitor().getVisa();
+		final List<EvenementReqDes> dejaPresent = evenementDAO.findByNumeroMinute(noAffaire, visaNotaire);
+		final boolean doublon = dejaPresent != null && !dejaPresent.isEmpty();
+		if (doublon) {
+			LOGGER.warn(String.format("Un message ReqDes avec le même numéro de minute (%s/%s) a déjà été reçu ; cette nouvelle réception est donc ignorée.", visaNotaire, noAffaire));
 		}
 		else {
 			final Map<Integer, ReqDesPartiePrenante> partiesPrenantes = extractPartiesPrenantes(data.getStakeholder(), infraService);
+			final List<ReqDesTransactionImmobiliere> transactions = extractTransactionsImmobilieres(data.getTransaction());
+
 			final List<Set<Integer>> idGroupes = composeGroupes(partiesPrenantes);
 			final List<List<ReqDesPartiePrenante>> groupes = new ArrayList<>(idGroupes.size());
 			for (Set<Integer> idGroupe : idGroupes) {
@@ -157,10 +163,10 @@ public class ReqDesEventHandler implements EsbMessageHandler {
 				}
 				groupes.add(groupe);
 			}
-			final Map<Integer, Set<Pair<RoleDansActe, Integer>>> roles = extractRoles(data.getSubject());
+			final Map<Integer, List<Pair<RoleDansActe, Integer>>> roles = extractRoles(data.getTransaction());
 
 			// persistence des données reçues avant traitement asynchrone
-			final Set<Long> idsUnitesTraitement = persistData(str, data.getNotarialDeed(), data.getNotarialInformation(), groupes, roles);
+			final Set<Long> idsUnitesTraitement = persistData(str, data.getNotarialDeed(), data.getNotarialInformation(), transactions, groupes, roles);
 			lancementTraitementAsynchrone(idsUnitesTraitement);
 		}
 	}
@@ -176,11 +182,15 @@ public class ReqDesEventHandler implements EsbMessageHandler {
 	 * @param xmlContent contenu du message XML sous forme de chaîne de caractères
 	 * @param acteAuthentique données de l'acte
 	 * @param operateurs données sur le notaire et l'opérateur
+	 * @param transactions transactions immobilières présentes dans l'acte
 	 * @param groupes groupes de parties prenantes qui constituent des unités de traitement
 	 * @param roles les rôles des différentes parties prenantes
 	 * @return l'ensemble des identifiants des unités de traitement générées
 	 */
-	private Set<Long> persistData(final String xmlContent, final NotarialDeed acteAuthentique, final NotarialInformation operateurs, final List<List<ReqDesPartiePrenante>> groupes, final Map<Integer, Set<Pair<RoleDansActe, Integer>>> roles) {
+	private Set<Long> persistData(final String xmlContent, final NotarialDeed acteAuthentique, final NotarialInformation operateurs,
+	                              final List<ReqDesTransactionImmobiliere> transactions,
+	                              final List<List<ReqDesPartiePrenante>> groupes,
+	                              final Map<Integer, List<Pair<RoleDansActe, Integer>>> roles) {
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
@@ -190,6 +200,12 @@ public class ReqDesEventHandler implements EsbMessageHandler {
 
 				// on crée d'abord l'événement lui-même
 				final EvenementReqDes evt = buildEvenementReqDes(acteAuthentique, operateurs, xmlContent);
+
+				// puis les transactions immobilières (dans le même ordre que ce que donne
+				final List<TransactionImmobiliere> transImmobilieres = new ArrayList<>(transactions.size());
+				for (ReqDesTransactionImmobiliere t : transactions) {
+					transImmobilieres.add(buildTransactionImmobiliere(evt, t));
+				}
 
 				// toutes les autres entités seront créées avec un visa spécifique à l'événement
 				AuthenticationHelper.pushPrincipal(String.format("eReqDes-%d", evt.getId()));
@@ -204,7 +220,7 @@ public class ReqDesEventHandler implements EsbMessageHandler {
 						final Map<Integer, PartiePrenante> partiesPrenantes = new HashMap<>(groupe.size());
 						for (ReqDesPartiePrenante src : groupe) {
 							final PartiePrenante pp = buildPartiePrenanteNue(ut, src);
-							ajouterRoles(pp, roles.get(src.getId()));
+							ajouterRoles(pp, transImmobilieres, roles.get(src.getId()));
 							partiesPrenantes.put(src.getId(), pp);
 						}
 
@@ -236,6 +252,16 @@ public class ReqDesEventHandler implements EsbMessageHandler {
 		return hibernateTemplate.merge(evt);
 	}
 
+	private TransactionImmobiliere buildTransactionImmobiliere(EvenementReqDes evt, ReqDesTransactionImmobiliere rdTransaction) {
+		final TransactionImmobiliere ti = new TransactionImmobiliere();
+		ti.setDescription(rdTransaction.getDescription());
+		ti.setModeInscription(rdTransaction.getModeInscription().toCore());
+		ti.setTypeInscription(rdTransaction.getTypeInscription().toCore());
+		ti.setOfsCommune(rdTransaction.getOfsCommune());
+		ti.setEvenementReqDes(evt);
+		return hibernateTemplate.merge(ti);
+	}
+
 	private UniteTraitement buildUniteTraitement(EvenementReqDes evt) {
 		final UniteTraitement ut = new UniteTraitement();
 		ut.setEtat(EtatTraitement.A_TRAITER);
@@ -256,11 +282,14 @@ public class ReqDesEventHandler implements EsbMessageHandler {
 		}
 	}
 
-	private static void ajouterRoles(PartiePrenante pp, Set<Pair<RoleDansActe, Integer>> pairs) {
+	private static void ajouterRoles(PartiePrenante pp, List<TransactionImmobiliere> transactions, List<Pair<RoleDansActe, Integer>> pairs) {
 		if (pairs != null && !pairs.isEmpty()) {
 			final Set<RolePartiePrenante> set = new HashSet<>(pairs.size());
 			for (Pair<RoleDansActe, Integer> role : pairs) {
-				set.add(new RolePartiePrenante(role.getRight(), role.getLeft().toCore()));
+				final RolePartiePrenante rpp = new RolePartiePrenante();
+				rpp.setRole(role.getLeft().toCore());
+				rpp.setTransaction(transactions.get(role.getRight()));
+				set.add(rpp);
 			}
 			pp.setRoles(set);
 		}
@@ -360,6 +389,20 @@ public class ReqDesEventHandler implements EsbMessageHandler {
 			sources[i] = new StreamSource(new ClassPathResource(path).getURL().toExternalForm());
 		}
 		return sources;
+	}
+
+	protected static List<ReqDesTransactionImmobiliere> extractTransactionsImmobilieres(List<Transaction> transactions) throws EsbBusinessException {
+		final List<ReqDesTransactionImmobiliere> list = new ArrayList<>(transactions.size());
+		for (Transaction t : transactions) {
+			list.add(buildTransactionImmobiliere(t));
+		}
+		return list;
+	}
+
+	private static ReqDesTransactionImmobiliere buildTransactionImmobiliere(Transaction transaction) throws EsbBusinessException {
+		final ModeInscriptionDansActe mode = ModeInscriptionDansActe.valueOf(transaction.getInscriptionMode());
+		final TypeInscriptionDansActe type = TypeInscriptionDansActe.valueOf(transaction.getInscriptionType());
+		return new ReqDesTransactionImmobiliere(transaction.getDescription(), transaction.getMunicipalityId(), mode, type);
 	}
 
 	protected static Map<Integer, ReqDesPartiePrenante> extractPartiesPrenantes(List<Stakeholder> stakeholders, ServiceInfrastructureService infraService) throws EsbBusinessException {
@@ -488,20 +531,21 @@ public class ReqDesEventHandler implements EsbMessageHandler {
 	}
 
 	/**
-	 * En sortie, la map est indexée par identifiant de partie prenante, et les valeurs sont des couples role/ofsCommune
-	 * @param subjects la liste des "immeubles" présents dans l'acte
+	 * En sortie, la map est indexée par identifiant de partie prenante, et les valeurs sont des couples role/index transaction (l'indexe de la
+	 * transaction étant l'indexe dans la liste des transactions passées en paramètre)
+	 * @param transactions la liste des transactions présentes dans l'acte
 	 * @return une map des rôles de chacune des parties prenantes
 	 * @throws EsbBusinessException en cas de souci d'interprétation des données
 	 */
-	protected static Map<Integer, Set<Pair<RoleDansActe, Integer>>> extractRoles(List<Subject> subjects) throws EsbBusinessException {
-		final Map<Integer, Set<Pair<RoleDansActe, Integer>>> map = new HashMap<>();
-		for (Subject s : subjects) {
-			final Integer ofsCommune = s.getMunicipalityId();
-			for (StakeholderReferenceWithRole sh : s.getStakeholder()) {
-				final Pair<RoleDansActe, Integer> role = Pair.of(RoleDansActe.valueOf(sh.getRole()), ofsCommune);
-				Set<Pair<RoleDansActe, Integer>> roles = map.get(sh.getStakeholderId());
+	protected static Map<Integer, List<Pair<RoleDansActe, Integer>>> extractRoles(List<Transaction> transactions) throws EsbBusinessException {
+		final Map<Integer, List<Pair<RoleDansActe, Integer>>> map = new HashMap<>();
+		for (int index = 0 ; index < transactions.size() ; ++ index) {
+			final Transaction t = transactions.get(index);
+			for (StakeholderReferenceWithRole sh : t.getStakeholder()) {
+				final Pair<RoleDansActe, Integer> role = Pair.of(RoleDansActe.valueOf(sh.getRole()), index);
+				List<Pair<RoleDansActe, Integer>> roles = map.get(sh.getStakeholderId());
 				if (roles == null) {
-					roles = new HashSet<>();
+					roles = new LinkedList<>();
 					map.put(sh.getStakeholderId(), roles);
 				}
 				roles.add(role);

@@ -170,14 +170,16 @@
 			</ns:foreignCountryResidence>
 		</ns:residence>
 	</ns:stakeholder>
-	<ns:subject>
+	<ns:transaction inscriptionMode="INSCRIPTION" inscriptionType="PROPERTY">
+		<ns:description>Donation</ns:description>
 		<ns:municipalityId>5586</ns:municipalityId>
 		<ns:stakeholder stakeholderId="1" role="DISPOSER"/>
 		<ns:stakeholder stakeholderId="2" role="BUYER"/>
 		<ns:stakeholder stakeholderId="3" role="OTHER"/>
-	</ns:subject>
-	<ns:subject>
+	</ns:transaction>
+	<ns:transaction inscriptionMode="INSCRIPTION" inscriptionType="EASEMENT">
+		<ns:description>Droit de passage</ns:description>
 		<ns:municipalityId>5477</ns:municipalityId>
 		<ns:stakeholder stakeholderId="2" role="OTHER"/>
-	</ns:subject>
+	</ns:transaction>
 </ns:creationModification>

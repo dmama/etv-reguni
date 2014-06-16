@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.reqdes;
 
+import java.util.List;
+
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
 
@@ -11,10 +13,12 @@ public class EvenementReqDesDAOImpl extends BaseDAOImpl<EvenementReqDes, Long> i
 		super(EvenementReqDes.class);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public EvenementReqDes findByNumeroMinute(long noMinute) {
+	public List<EvenementReqDes> findByNumeroMinute(String noMinute, String visaNotaire) {
 		final Criteria criteria = getCurrentSession().createCriteria(getPersistentClass());
 		criteria.add(Restrictions.eq("numeroMinute", noMinute));
-		return (EvenementReqDes) criteria.uniqueResult();
+		criteria.add(Restrictions.eq("notaire.visa", visaNotaire));
+		return criteria.list();
 	}
 }

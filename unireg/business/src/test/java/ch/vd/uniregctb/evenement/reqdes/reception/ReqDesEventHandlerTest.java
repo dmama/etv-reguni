@@ -25,8 +25,11 @@ import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.reqdes.EtatTraitement;
 import ch.vd.uniregctb.reqdes.EvenementReqDes;
 import ch.vd.uniregctb.reqdes.EvenementReqDesDAO;
+import ch.vd.uniregctb.reqdes.ModeInscription;
 import ch.vd.uniregctb.reqdes.PartiePrenante;
 import ch.vd.uniregctb.reqdes.RolePartiePrenante;
+import ch.vd.uniregctb.reqdes.TransactionImmobiliere;
+import ch.vd.uniregctb.reqdes.TypeInscription;
 import ch.vd.uniregctb.reqdes.TypeRole;
 import ch.vd.uniregctb.reqdes.UniteTraitement;
 import ch.vd.uniregctb.reqdes.UniteTraitementDAO;
@@ -124,24 +127,24 @@ public class ReqDesEventHandlerTest extends BusinessTest {
 		final CreationModification cm = buildCreationModificationFromPath("TestEvent.xml");
 		Assert.assertNotNull(cm);
 
-		final Map<Integer, Set<Pair<RoleDansActe, Integer>>> map = ReqDesEventHandler.extractRoles(cm.getSubject());
+		final Map<Integer, List<Pair<RoleDansActe, Integer>>> map = ReqDesEventHandler.extractRoles(cm.getTransaction());
 		Assert.assertNotNull(map);
 		Assert.assertEquals(3, map.size());
 
 		// Albus
 		{
-			final Set<Pair<RoleDansActe, Integer>> roles = map.get(1);
+			final List<Pair<RoleDansActe, Integer>> roles = map.get(1);
 			Assert.assertNotNull(roles);
 			Assert.assertEquals(1, roles.size());
 
 			final Pair<RoleDansActe, Integer> role = roles.iterator().next();
 			Assert.assertEquals(RoleDansActe.ALIENATEUR, role.getLeft());
-			Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), role.getRight());
+			Assert.assertEquals((Integer) 0, role.getRight());      // première transaction du fichier -> 0
 		}
 
 		// Harry
 		{
-			final Set<Pair<RoleDansActe, Integer>> roles = map.get(2);
+			final List<Pair<RoleDansActe, Integer>> roles = map.get(2);
 			Assert.assertNotNull(roles);
 			Assert.assertEquals(2, roles.size());
 
@@ -155,25 +158,25 @@ public class ReqDesEventHandlerTest extends BusinessTest {
 
 			{
 				final Pair<RoleDansActe, Integer> role = sortedRoles.get(0);
-				Assert.assertEquals(RoleDansActe.AUTRE, role.getLeft());
-				Assert.assertEquals((Integer) MockCommune.Cossonay.getNoOFS(), role.getRight());
+				Assert.assertEquals(RoleDansActe.ACQUEREUR, role.getLeft());
+				Assert.assertEquals((Integer) 0, role.getRight());      // première transaction du fichier -> 0
 			}
 			{
 				final Pair<RoleDansActe, Integer> role = sortedRoles.get(1);
-				Assert.assertEquals(RoleDansActe.ACQUEREUR, role.getLeft());
-				Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), role.getRight());
+				Assert.assertEquals(RoleDansActe.AUTRE, role.getLeft());
+				Assert.assertEquals((Integer) 1, role.getRight());      // deuxième transaction du fichier -> 1
 			}
 		}
 
 		// Ginny
 		{
-			final Set<Pair<RoleDansActe, Integer>> roles = map.get(3);
+			final List<Pair<RoleDansActe, Integer>> roles = map.get(3);
 			Assert.assertNotNull(roles);
 			Assert.assertEquals(1, roles.size());
 
 			final Pair<RoleDansActe, Integer> role = roles.iterator().next();
 			Assert.assertEquals(RoleDansActe.AUTRE, role.getLeft());
-			Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), role.getRight());
+			Assert.assertEquals((Integer) 0, role.getRight());      // première transaction du fichier -> 0
 		}
 	}
 
@@ -245,7 +248,7 @@ public class ReqDesEventHandlerTest extends BusinessTest {
 
 					final RolePartiePrenante rpp = pp.getRoles().iterator().next();
 					Assert.assertNotNull(rpp);
-					Assert.assertEquals(MockCommune.Lausanne.getNoOFS(), rpp.getNoOfsCommune());
+					Assert.assertEquals(MockCommune.Lausanne.getNoOFS(), rpp.getTransaction().getOfsCommune());
 					Assert.assertEquals(TypeRole.ALIENATEUR, rpp.getRole());
 				}
 				{
@@ -284,20 +287,20 @@ public class ReqDesEventHandlerTest extends BusinessTest {
 						Collections.sort(sortedRoles, new Comparator<RolePartiePrenante>() {
 							@Override
 							public int compare(RolePartiePrenante o1, RolePartiePrenante o2) {
-								return o1.getNoOfsCommune() - o2.getNoOfsCommune();
+								return o1.getTransaction().getOfsCommune() - o2.getTransaction().getOfsCommune();
 							}
 						});
 
 						{
 							final RolePartiePrenante rpp = sortedRoles.get(0);
 							Assert.assertNotNull(rpp);
-							Assert.assertEquals(MockCommune.Cossonay.getNoOFS(), rpp.getNoOfsCommune());
+							Assert.assertEquals(MockCommune.Cossonay.getNoOFS(), rpp.getTransaction().getOfsCommune());
 							Assert.assertEquals(TypeRole.AUTRE, rpp.getRole());
 						}
 						{
 							final RolePartiePrenante rpp = sortedRoles.get(1);
 							Assert.assertNotNull(rpp);
-							Assert.assertEquals(MockCommune.Lausanne.getNoOFS(), rpp.getNoOfsCommune());
+							Assert.assertEquals(MockCommune.Lausanne.getNoOFS(), rpp.getTransaction().getOfsCommune());
 							Assert.assertEquals(TypeRole.ACQUEREUR, rpp.getRole());
 						}
 					}
@@ -314,14 +317,14 @@ public class ReqDesEventHandlerTest extends BusinessTest {
 
 						final RolePartiePrenante rpp = pp.getRoles().iterator().next();
 						Assert.assertNotNull(rpp);
-						Assert.assertEquals(MockCommune.Lausanne.getNoOFS(), rpp.getNoOfsCommune());
+						Assert.assertEquals(MockCommune.Lausanne.getNoOFS(), rpp.getTransaction().getOfsCommune());
 						Assert.assertEquals(TypeRole.AUTRE, rpp.getRole());
 					}
 				}
 
 				// vérification du contenu de l'événement lui-même
 				Assert.assertEquals(date(2008, 9, 29), evt.getDateActe());
-				Assert.assertEquals((Long) 124846154L, evt.getNumeroMinute());
+				Assert.assertEquals("124846154", evt.getNumeroMinute());
 				Assert.assertEquals("<empty/>", evt.getXml());
 				Assert.assertNotNull(evt.getNotaire());
 				Assert.assertEquals("moinotaire", evt.getNotaire().getVisa());
@@ -331,6 +334,33 @@ public class ReqDesEventHandlerTest extends BusinessTest {
 				Assert.assertEquals("secret", evt.getOperateur().getVisa());
 				Assert.assertEquals("Cecrétère", evt.getOperateur().getNom());
 				Assert.assertEquals("Alicia", evt.getOperateur().getPrenom());
+
+				// et finalement vérification des transactions enregistrées
+				final List<TransactionImmobiliere> transactions = new ArrayList<>(evt.getTransactions());
+				Collections.sort(transactions, new Comparator<TransactionImmobiliere>() {
+					@Override
+					public int compare(TransactionImmobiliere o1, TransactionImmobiliere o2) {
+						return o1.getOfsCommune() - o2.getOfsCommune();
+					}
+				});
+				Assert.assertEquals(2, transactions.size());
+
+				{
+					final TransactionImmobiliere t = transactions.get(0);
+					Assert.assertNotNull(t);
+					Assert.assertEquals("Droit de passage", t.getDescription());
+					Assert.assertEquals(ModeInscription.INSCRIPTION, t.getModeInscription());
+					Assert.assertEquals(TypeInscription.SERVITUDE, t.getTypeInscription());
+					Assert.assertEquals(MockCommune.Cossonay.getNoOFS(), t.getOfsCommune());
+				}
+				{
+					final TransactionImmobiliere t = transactions.get(1);
+					Assert.assertNotNull(t);
+					Assert.assertEquals("Donation", t.getDescription());
+					Assert.assertEquals(ModeInscription.INSCRIPTION, t.getModeInscription());
+					Assert.assertEquals(TypeInscription.PROPRIETE, t.getTypeInscription());
+					Assert.assertEquals(MockCommune.Lausanne.getNoOFS(), t.getOfsCommune());
+				}
 			}
 		});
 	}

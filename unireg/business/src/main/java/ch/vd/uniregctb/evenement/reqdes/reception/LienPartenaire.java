@@ -6,7 +6,7 @@ import ch.vd.unireg.common.NomPrenom;
  * Lien depuis une partie prenante (voir {@link ReqDesPartiePrenante}) vers son conjoint,
  * soit lui-aussi partie prenante à l'acte (champ {@link #link}), soit pas (champ {@link #nomPrenom})
  */
-public class LienPartenaire {
+public final class LienPartenaire {
 
 	private final Integer link;
 	private final NomPrenom nomPrenom;

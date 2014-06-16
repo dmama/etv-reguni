@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.reqdes;
 
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
@@ -32,8 +34,8 @@ public class EvenementReqDesDAOTest extends AbstractReqDesDAOTest {
 		final Ids ids = doInNewTransaction(new TransactionCallback<Ids>() {
 			@Override
 			public Ids doInTransaction(TransactionStatus status) {
-				final EvenementReqDes one = addEvenementReqDes(today, 421L, "gouzigouzi", "Lenotaire", "Clothaire");
-				final EvenementReqDes two = addEvenementReqDes(today.getOneDayBefore(), 124L, "gazougazou", "Pêtimplon", "Je");
+				final EvenementReqDes one = addEvenementReqDes(today, "421", "gouzigouzi", "Lenotaire", "Clothaire");
+				final EvenementReqDes two = addEvenementReqDes(today.getOneDayBefore(), "124B", "gazougazou", "Pêtimplon", "Je");
 				two.setOperateur(new InformationsActeur("xsxdsewqa", "Dugenou", "Pimprelette"));
 
 				final Ids ids = new Ids();
@@ -48,10 +50,15 @@ public class EvenementReqDesDAOTest extends AbstractReqDesDAOTest {
 			@Override
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
 				{
-					final EvenementReqDes evt = dao.findByNumeroMinute(421L);
+					final List<EvenementReqDes> evts = dao.findByNumeroMinute("421", "gouzigouzi");
+					Assert.assertNotNull(evts);
+					Assert.assertEquals(1, evts.size());
+
+					final EvenementReqDes evt = evts.get(0);
 					Assert.assertNotNull(evt);
+					Assert.assertEquals((Long) ids.one, evt.getId());
 					Assert.assertEquals(today, evt.getDateActe());
-					Assert.assertEquals((Long) 421L, evt.getNumeroMinute());
+					Assert.assertEquals("421", evt.getNumeroMinute());
 					Assert.assertNotNull(evt.getNotaire());
 					Assert.assertEquals("gouzigouzi", evt.getNotaire().getVisa());
 					Assert.assertEquals("Lenotaire", evt.getNotaire().getNom());
@@ -59,10 +66,15 @@ public class EvenementReqDesDAOTest extends AbstractReqDesDAOTest {
 					Assert.assertNull(evt.getOperateur());
 				}
 				{
-					final EvenementReqDes evt = dao.findByNumeroMinute(124L);
+					final List<EvenementReqDes> evts = dao.findByNumeroMinute("124B", "gazougazou");
+					Assert.assertNotNull(evts);
+					Assert.assertEquals(1, evts.size());
+
+					final EvenementReqDes evt = evts.get(0);
 					Assert.assertNotNull(evt);
+					Assert.assertEquals((Long) ids.two, evt.getId());
 					Assert.assertEquals(today.getOneDayBefore(), evt.getDateActe());
-					Assert.assertEquals((Long) 124L, evt.getNumeroMinute());
+					Assert.assertEquals("124B", evt.getNumeroMinute());
 					Assert.assertNotNull(evt.getNotaire());
 					Assert.assertEquals("gazougazou", evt.getNotaire().getVisa());
 					Assert.assertEquals("Pêtimplon", evt.getNotaire().getNom());
@@ -73,8 +85,19 @@ public class EvenementReqDesDAOTest extends AbstractReqDesDAOTest {
 					Assert.assertEquals("Pimprelette", evt.getOperateur().getPrenom());
 				}
 				{
-					final EvenementReqDes evt = dao.findByNumeroMinute(42L);
-					Assert.assertNull(evt);
+					final List<EvenementReqDes> evts = dao.findByNumeroMinute("42", "gouzigouzi");
+					Assert.assertNotNull(evts);
+					Assert.assertEquals(0, evts.size());
+				}
+				{
+					final List<EvenementReqDes> evts = dao.findByNumeroMinute("421", "gazougazou");
+					Assert.assertNotNull(evts);
+					Assert.assertEquals(0, evts.size());
+				}
+				{
+					final List<EvenementReqDes> evts = dao.findByNumeroMinute("124B", "toto");
+					Assert.assertNotNull(evts);
+					Assert.assertEquals(0, evts.size());
 				}
 			}
 		});

@@ -8,7 +8,7 @@ import ch.vd.unireg.interfaces.civil.data.Permis;
 import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
 import ch.vd.uniregctb.type.Sexe;
 
-public class ReqDesPartiePrenante {
+public final class ReqDesPartiePrenante {
 
 	private final int id;
 	private NomPrenom nomPrenom;

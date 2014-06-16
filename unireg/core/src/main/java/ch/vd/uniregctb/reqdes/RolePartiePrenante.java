@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.reqdes;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -7,8 +8,12 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.hibernate.annotations.ForeignKey;
 
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
@@ -18,15 +23,10 @@ import ch.vd.uniregctb.common.LengthConstants;
 public class RolePartiePrenante extends HibernateEntity {
 
 	private Long id;
-	private int noOfsCommune;
+	private TransactionImmobiliere transaction;
 	private TypeRole role;
 
 	public RolePartiePrenante() {
-	}
-
-	public RolePartiePrenante(int noOfsCommune, TypeRole role) {
-		this.noOfsCommune = noOfsCommune;
-		this.role = role;
 	}
 
 	@Transient
@@ -46,15 +46,6 @@ public class RolePartiePrenante extends HibernateEntity {
 		this.id = id;
 	}
 
-	@Column(name = "OFS_COMMUNE", nullable = false)
-	public int getNoOfsCommune() {
-		return noOfsCommune;
-	}
-
-	public void setNoOfsCommune(int noOfsCommune) {
-		this.noOfsCommune = noOfsCommune;
-	}
-
 	@Column(name = "ROLE", length = LengthConstants.REQDES_ROLE, nullable = false)
 	@Enumerated(value = EnumType.STRING)
 	public TypeRole getRole() {
@@ -63,5 +54,16 @@ public class RolePartiePrenante extends HibernateEntity {
 
 	public void setRole(TypeRole role) {
 		this.role = role;
+	}
+
+	@ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+	@JoinColumn(name = "TRANSACTION_IMMOBILIERE_ID", nullable = false)
+	@ForeignKey(name = "FK_REQDES_RPP_TI_ID")
+	public TransactionImmobiliere getTransaction() {
+		return transaction;
+	}
+
+	public void setTransaction(TransactionImmobiliere transaction) {
+		this.transaction = transaction;
 	}
 }

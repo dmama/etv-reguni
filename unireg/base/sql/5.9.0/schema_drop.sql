@@ -66,6 +66,8 @@ drop table TIERS cascade constraints;
 
 drop table REQDES_ROLE_PARTIE_PRENANTE cascade constraints;
 
+drop table REQDES_TRANSACTION_IMMOBILIERE cascade constraints;
+
 drop table REQDES_PARTIE_PRENANTE cascade constraints;
 
 drop table REQDES_ERREUR cascade constraints;

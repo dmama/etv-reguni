@@ -104,6 +104,10 @@ public abstract class LengthConstants {
 	public static final int REQDES_ETAT_TRAITEMENT = 10;
 	public static final int REQDES_ERREUR_MESSAGE = 1024;
 	public static final int REQDES_ERREUR_TYPE = 7;
+	public static final int REQDES_NUMERO_MINUTE = 30;
+	public static final int REQDES_TRANSACTION_DESCRIPTION = 100;
+	public static final int REQDES_MODE_INSCRIPTION = 12;
+	public static final int REQDES_TYPE_INSCRIPTION = 15;
 
 	public final static int MAXLEN = 2000;
 
