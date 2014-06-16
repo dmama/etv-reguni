@@ -8,8 +8,6 @@ import javax.persistence.Entity;
 @DiscriminatorValue("AdresseSuisse")
 public class AdresseSuisse extends AdresseSupplementaire {
 
-	private static final long serialVersionUID = 2539958821652480740L;
-
 	/**
 	 * Numéro de la rue du répertoire des rues fourni par DCL Data Care (entreprise de la Poste suisse) pour compléter l'offre NPA.
 	 * Pour plus de détail, consulter le fichier "Répertoire des rues. Description de l'offre et structure des données" disponible sur le site http://www.match.ch
@@ -57,5 +55,20 @@ public class AdresseSuisse extends AdresseSupplementaire {
 
 	public void setNpaCasePostale(Integer npaCasePostale) {
 		NpaCasePostale = npaCasePostale;
+	}
+
+	public AdresseSuisse() {
+	}
+
+	protected AdresseSuisse(AdresseSuisse src) {
+		super(src);
+		this.numeroRue = src.numeroRue;
+		this.numeroOrdrePoste = src.numeroOrdrePoste;
+		this.NpaCasePostale = src.NpaCasePostale;
+	}
+
+	@Override
+	public AdresseSuisse duplicate() {
+		return new AdresseSuisse(this);
 	}
 }

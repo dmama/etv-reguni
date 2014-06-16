@@ -35,6 +35,9 @@
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="uniteTraitementDAO" ref="reqdesUniteTraitementDAO"/>
 		<property name="infraService" ref="serviceInfrastructureService"/>
+		<property name="adresseService" ref="adresseService"/>
+		<property name="assujettissementService" ref="assujettissementService"/>
+		<property name="tiersService" ref="tiersService"/>
 	</bean>
 
 </beans>

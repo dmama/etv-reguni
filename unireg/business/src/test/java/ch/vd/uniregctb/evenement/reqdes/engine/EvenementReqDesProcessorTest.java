@@ -18,8 +18,13 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockPays;
+import ch.vd.uniregctb.adresse.AdresseEtrangere;
+import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.common.Fuse;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.reqdes.ErreurTraitement;
 import ch.vd.uniregctb.reqdes.EtatTraitement;
 import ch.vd.uniregctb.reqdes.EvenementReqDes;
@@ -33,13 +38,23 @@ import ch.vd.uniregctb.reqdes.TypeInscription;
 import ch.vd.uniregctb.reqdes.TypeRole;
 import ch.vd.uniregctb.reqdes.UniteTraitement;
 import ch.vd.uniregctb.reqdes.UniteTraitementDAO;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.Remarque;
+import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.dao.RemarqueDAO;
+import ch.vd.uniregctb.type.CategorieEtranger;
 import ch.vd.uniregctb.type.EtatCivil;
+import ch.vd.uniregctb.type.ModeImposition;
+import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.Sexe;
 
 public class EvenementReqDesProcessorTest extends BusinessTest {
 
 	private EvenementReqDesProcessorImpl processor;
 	private UniteTraitementDAO uniteTraitementDAO;
 	private EvenementReqDesDAO evenementReqDesDAO;
+	private RemarqueDAO remarqueDAO;
 
 	@Override
 	protected void runOnSetUp() throws Exception {
@@ -47,12 +62,16 @@ public class EvenementReqDesProcessorTest extends BusinessTest {
 
 		uniteTraitementDAO = getBean(UniteTraitementDAO.class, "reqdesUniteTraitementDAO");
 		evenementReqDesDAO = getBean(EvenementReqDesDAO.class, "reqdesEvenementDAO");
+		remarqueDAO = getBean(RemarqueDAO.class, "remarqueDAO");
 
 		processor = new EvenementReqDesProcessorImpl();
 		processor.setHibernateTemplate(hibernateTemplate);
 		processor.setInfraService(serviceInfra);
 		processor.setTransactionManager(transactionManager);
 		processor.setUniteTraitementDAO(uniteTraitementDAO);
+		processor.setTiersService(tiersService);
+		processor.setAdresseService(getBean(AdresseService.class, "adresseService"));
+		processor.setAssujettissementService(getBean(AssujettissementService.class, "assujettissementService"));
 		processor.afterPropertiesSet();
 	}
 
@@ -357,6 +376,489 @@ public class EvenementReqDesProcessorTest extends BusinessTest {
 				Assert.assertNotNull(erreur);
 				Assert.assertEquals(ErreurTraitement.TypeErreur.ERROR, erreur.getType());
 				Assert.assertEquals("Liens matrimoniaux incohérents entres les parties prenantes.", erreur.getMessage());
+			}
+		});
+	}
+
+	@Test(timeout = 10000)
+	public void testCreationContribuableCelibataire() throws Exception {
+
+		final RegDate dateNaissance = date(1976, 4, 23);
+		final RegDate today = RegDate.get();
+		final RegDate dateActe = today.addDays(-5);
+
+		// mise en place d'une création de contribuable
+		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementReqDes evt = addEvenementReqDes(new InformationsActeur("moinot", "Petiboulot", "Tranquille"), null, dateActe, "3783");
+				final UniteTraitement ut = addUniteTraitement(evt, EtatTraitement.A_TRAITER, null);
+				final PartiePrenante pp = addPartiePrenante(ut, "O'Batayon", "Incaunu Jean Albert");
+				pp.setNomMere("Delaplanche");
+				pp.setPrenomsMere("Martine Sophie Mafalda");
+				pp.setNomPere("O'Batayon");
+				pp.setPrenomsPere("Iain François Robert");
+				pp.setOfsPays(MockPays.France.getNoOFS());
+				pp.setOfsPaysNationalite(MockPays.RoyaumeUni.getNoOFS());
+				pp.setRue("Rue de la porte en bois");
+				pp.setNumeroMaison("13b");
+				pp.setSexe(Sexe.MASCULIN);
+				pp.setSourceCivile(false);
+				pp.setCategorieEtranger(CategorieEtranger._06_FRONTALIER_G);
+
+				pp.setDateEtatCivil(dateNaissance);
+				pp.setDateNaissance(dateNaissance);
+				pp.setEtatCivil(EtatCivil.CELIBATAIRE);
+				pp.setLocalite("Meulin");
+				pp.setNumeroPostal("77415");
+
+				final TransactionImmobiliere ti = addTransactionImmobiliere(evt, "Truc bidon", ModeInscription.INSCRIPTION, TypeInscription.SERVITUDE, MockCommune.Echallens.getNoOFS());
+				addRole(pp, ti, TypeRole.AUTRE);
+
+				return ut.getId();
+			}
+		});
+
+		// traiter l'unité
+		traiteUniteTraitement(id);
+
+		// vérification de l'existence de ce nouveau contribuable
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final UniteTraitement ut = uniteTraitementDAO.get(id);
+				Assert.assertNotNull(ut);
+				Assert.assertEquals(EtatTraitement.TRAITE, ut.getEtat());
+				Assert.assertNotNull(ut.getDateTraitement());
+
+				final List<Tiers> allTiers = tiersDAO.getAll();
+				PersonnePhysique found = null;
+				for (Tiers tiers : allTiers) {
+					if (tiers instanceof PersonnePhysique) {
+						found = (PersonnePhysique) tiers;
+						break;
+					}
+				}
+
+				Assert.assertNotNull(found);
+				Assert.assertEquals("moinot-reqdes", found.getLogCreationUser());
+				Assert.assertEquals("moinot-reqdes", found.getLogModifUser());
+				Assert.assertEquals("O'Batayon", found.getNom());
+				Assert.assertEquals("Incaunu", found.getPrenomUsuel());
+				Assert.assertEquals("Incaunu Jean Albert", found.getTousPrenoms());
+				Assert.assertEquals("Delaplanche", found.getNomMere());
+				Assert.assertEquals("Martine Sophie Mafalda", found.getPrenomsMere());
+				Assert.assertEquals("O'Batayon", found.getNomPere());
+				Assert.assertEquals("Iain François Robert", found.getPrenomsPere());
+				Assert.assertEquals((Integer) MockPays.RoyaumeUni.getNoOFS(), found.getNumeroOfsNationalite());
+				Assert.assertEquals(Sexe.MASCULIN, found.getSexe());
+				Assert.assertEquals(dateNaissance, found.getDateNaissance());
+				Assert.assertNull(found.getDateDeces());
+				Assert.assertEquals(CategorieEtranger._06_FRONTALIER_G, found.getCategorieEtranger());
+				Assert.assertNull(found.getDateDebutValiditeAutorisation());
+
+				final Set<AdresseTiers> adresses = found.getAdressesTiers();
+				Assert.assertNotNull(adresses);
+				Assert.assertEquals(1, adresses.size());
+
+				final AdresseTiers adresse = adresses.iterator().next();
+				Assert.assertNotNull(adresse);
+				Assert.assertEquals(AdresseEtrangere.class, adresse.getClass());
+
+				final AdresseEtrangere adresseEtrangere = (AdresseEtrangere) adresse;
+				Assert.assertEquals((Integer) MockPays.France.getNoOFS(), adresseEtrangere.getNumeroOfsPays());
+				Assert.assertEquals("77415 Meulin", adresseEtrangere.getNumeroPostalLocalite());
+				Assert.assertEquals("Rue de la porte en bois", adresseEtrangere.getRue());
+				Assert.assertEquals("13b", adresseEtrangere.getNumeroMaison());
+				Assert.assertNull(adresseEtrangere.getTexteCasePostale());
+				Assert.assertNull(adresseEtrangere.getNumeroCasePostale());
+
+				final List<Remarque> remarques = remarqueDAO.getRemarques(found.getNumero());
+				Assert.assertNotNull(remarques);
+				Assert.assertEquals(1, remarques.size());
+
+				final Remarque remarque = remarques.get(0);
+				Assert.assertNotNull(remarque);
+				Assert.assertEquals("Contribuable créé le " + RegDateHelper.dateToDisplayString(today) + " par l'acte notarial du " + RegDateHelper.dateToDisplayString(dateActe)
+						                    + " par le notaire Tranquille Petiboulot (moinot) et enregistré par lui-même.", remarque.getTexte());
+			}
+		});
+	}
+
+	@Test(timeout = 10000)
+	public void testModificationContribuableCelibataireNonAssujetti() throws Exception {
+
+		final RegDate dateNaissance = date(1976, 4, 23);
+		final RegDate today = RegDate.get();
+		final RegDate dateActe = today.addDays(-5);
+
+		// mise en place d'une création de contribuable
+		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+
+				final PersonnePhysique pphysique = addNonHabitant("Inconnu", "Aubataillon", date(dateNaissance.year()), Sexe.FEMININ);
+				pphysique.setNomMere("Delaplanche");
+				pphysique.setPrenomsMere("Martine");
+
+				final EvenementReqDes evt = addEvenementReqDes(new InformationsActeur("moinot", "Petiboulot", "Tranquille"), null, dateActe, "3783");
+				final UniteTraitement ut = addUniteTraitement(evt, EtatTraitement.A_TRAITER, null);
+				final PartiePrenante pp = addPartiePrenante(ut, "O'Batayon", "Incaunu Jean Albert");
+				pp.setNomMere("Delaplanche");
+				pp.setPrenomsMere("Martine Sophie Mafalda");
+				pp.setNomPere("O'Batayon");
+				pp.setPrenomsPere("Iain François Robert");
+				pp.setOfsPays(MockPays.France.getNoOFS());
+				pp.setOfsPaysNationalite(MockPays.RoyaumeUni.getNoOFS());
+				pp.setRue("Rue de la porte en bois");
+				pp.setNumeroMaison("13b");
+				pp.setSexe(Sexe.MASCULIN);
+				pp.setSourceCivile(false);
+				pp.setCategorieEtranger(CategorieEtranger._06_FRONTALIER_G);
+				pp.setNumeroContribuable(pphysique.getNumero());
+
+				pp.setDateEtatCivil(dateNaissance);
+				pp.setDateNaissance(dateNaissance);
+				pp.setEtatCivil(EtatCivil.CELIBATAIRE);
+				pp.setLocalite("Meulin");
+				pp.setNumeroPostal("77415");
+
+				final TransactionImmobiliere ti = addTransactionImmobiliere(evt, "Truc bidon", ModeInscription.INSCRIPTION, TypeInscription.SERVITUDE, MockCommune.Echallens.getNoOFS());
+				addRole(pp, ti, TypeRole.AUTRE);
+
+				return ut.getId();
+			}
+		});
+
+		// traiter l'unité
+		traiteUniteTraitement(id);
+
+		// vérification de l'existence de ce nouveau contribuable
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final UniteTraitement ut = uniteTraitementDAO.get(id);
+				Assert.assertNotNull(ut);
+				Assert.assertEquals(EtatTraitement.TRAITE, ut.getEtat());
+				Assert.assertNotNull(ut.getDateTraitement());
+				Assert.assertEquals(0, ut.getErreurs().size());
+
+				final List<Tiers> allTiers = tiersDAO.getAll();
+				PersonnePhysique found = null;
+				for (Tiers tiers : allTiers) {
+					if (tiers instanceof PersonnePhysique) {
+						found = (PersonnePhysique) tiers;
+						break;
+					}
+				}
+
+				Assert.assertNotNull(found);
+				Assert.assertEquals(getDefaultOperateurName(), found.getLogCreationUser());
+				Assert.assertEquals("moinot-reqdes", found.getLogModifUser());
+				Assert.assertEquals("O'Batayon", found.getNom());
+				Assert.assertEquals("Incaunu", found.getPrenomUsuel());
+				Assert.assertEquals("Incaunu Jean Albert", found.getTousPrenoms());
+				Assert.assertEquals("Delaplanche", found.getNomMere());
+				Assert.assertEquals("Martine Sophie Mafalda", found.getPrenomsMere());
+				Assert.assertEquals("O'Batayon", found.getNomPere());
+				Assert.assertEquals("Iain François Robert", found.getPrenomsPere());
+				Assert.assertEquals((Integer) MockPays.RoyaumeUni.getNoOFS(), found.getNumeroOfsNationalite());
+				Assert.assertEquals(Sexe.MASCULIN, found.getSexe());
+				Assert.assertEquals(dateNaissance, found.getDateNaissance());
+				Assert.assertNull(found.getDateDeces());
+				Assert.assertEquals(CategorieEtranger._06_FRONTALIER_G, found.getCategorieEtranger());
+				Assert.assertNull(found.getDateDebutValiditeAutorisation());
+
+				final Set<AdresseTiers> adresses = found.getAdressesTiers();
+				Assert.assertNotNull(adresses);
+				Assert.assertEquals(1, adresses.size());
+
+				final AdresseTiers adresse = adresses.iterator().next();
+				Assert.assertNotNull(adresse);
+				Assert.assertEquals(AdresseEtrangere.class, adresse.getClass());
+
+				final AdresseEtrangere adresseEtrangere = (AdresseEtrangere) adresse;
+				Assert.assertEquals((Integer) MockPays.France.getNoOFS(), adresseEtrangere.getNumeroOfsPays());
+				Assert.assertEquals("77415 Meulin", adresseEtrangere.getNumeroPostalLocalite());
+				Assert.assertEquals("Rue de la porte en bois", adresseEtrangere.getRue());
+				Assert.assertEquals("13b", adresseEtrangere.getNumeroMaison());
+				Assert.assertNull(adresseEtrangere.getTexteCasePostale());
+				Assert.assertNull(adresseEtrangere.getNumeroCasePostale());
+
+				final List<Remarque> remarques = remarqueDAO.getRemarques(found.getNumero());
+				Assert.assertNotNull(remarques);
+				Assert.assertEquals(1, remarques.size());
+
+				final Remarque remarque = remarques.get(0);
+				Assert.assertNotNull(remarque);
+
+				final StringBuilder b = new StringBuilder();
+				b.append("Contribuable mis à jour le ").append(RegDateHelper.dateToDisplayString(today));
+				b.append(" par l'acte notarial du ").append(RegDateHelper.dateToDisplayString(dateActe));
+				b.append(" par le notaire Tranquille Petiboulot (moinot) et enregistré par lui-même.");
+				b.append("\n- Nom : \"Aubataillon\" -> \"O'Batayon\"");
+				b.append("\n- Prénoms : vide -> \"Incaunu Jean Albert\"");
+				b.append("\n- Prénom usuel : \"Inconnu\" -> \"Incaunu\"");
+				b.append("\n- Catégorie d'étranger : vide -> ").append(CategorieEtranger._06_FRONTALIER_G.name());
+				b.append("\n- Date de naissance : ").append(dateNaissance.year()).append(" -> ").append(RegDateHelper.dateToDisplayString(dateNaissance));
+				b.append("\n- Prénoms de la mère : \"Martine\" -> \"Martine Sophie Mafalda\"");
+				b.append("\n- Nom du père : vide -> \"O'Batayon\"");
+				b.append("\n- Prénoms du père : vide -> \"Iain François Robert\"");
+				b.append("\n- Nationalité : vide -> ").append(MockPays.RoyaumeUni.getNoOFS());
+				b.append("\n- Sexe : ").append(Sexe.FEMININ.name()).append(" -> ").append(Sexe.MASCULIN.name());
+				final String expected = b.toString();
+
+				Assert.assertEquals(expected, remarque.getTexte());
+			}
+		});
+	}
+
+	@Test(timeout = 10000)
+	public void testModificationContribuableCelibataireAssujettiSource() throws Exception {
+
+		final RegDate dateNaissance = date(1976, 4, 23);
+		final RegDate today = RegDate.get();
+		final RegDate dateActe = today.addDays(-5);
+
+		// mise en place d'une création de contribuable
+		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+
+				final PersonnePhysique pphysique = addNonHabitant("Inconnu", "Aubataillon", date(dateNaissance.year()), Sexe.MASCULIN);
+				addForPrincipal(pphysique, dateNaissance.addYears(18), MotifFor.MAJORITE, null, null, MockPays.France, ModeImposition.SOURCE);
+
+				final EvenementReqDes evt = addEvenementReqDes(new InformationsActeur("moinot", "Petiboulot", "Tranquille"), null, dateActe, "3783");
+				final UniteTraitement ut = addUniteTraitement(evt, EtatTraitement.A_TRAITER, null);
+				final PartiePrenante pp = addPartiePrenante(ut, "O'Batayon", "Incaunu Jean Albert");
+				pp.setNomMere("Delaplanche");
+				pp.setPrenomsMere("Martine Sophie Mafalda");
+				pp.setNomPere("O'Batayon");
+				pp.setPrenomsPere("Iain François Robert");
+				pp.setOfsPays(MockPays.France.getNoOFS());
+				pp.setOfsPaysNationalite(MockPays.RoyaumeUni.getNoOFS());
+				pp.setRue("Rue de la porte en bois");
+				pp.setNumeroMaison("13b");
+				pp.setSexe(Sexe.MASCULIN);
+				pp.setSourceCivile(false);
+				pp.setCategorieEtranger(CategorieEtranger._06_FRONTALIER_G);
+				pp.setNumeroContribuable(pphysique.getNumero());
+
+				pp.setDateEtatCivil(dateNaissance);
+				pp.setDateNaissance(dateNaissance);
+				pp.setEtatCivil(EtatCivil.CELIBATAIRE);
+				pp.setLocalite("Meulin");
+				pp.setNumeroPostal("77415");
+
+				final TransactionImmobiliere ti = addTransactionImmobiliere(evt, "Truc bidon", ModeInscription.INSCRIPTION, TypeInscription.SERVITUDE, MockCommune.Echallens.getNoOFS());
+				addRole(pp, ti, TypeRole.AUTRE);
+
+				return ut.getId();
+			}
+		});
+
+		// traiter l'unité
+		traiteUniteTraitement(id);
+
+		// vérification de l'existence de ce nouveau contribuable
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final UniteTraitement ut = uniteTraitementDAO.get(id);
+				Assert.assertNotNull(ut);
+				Assert.assertEquals(EtatTraitement.TRAITE, ut.getEtat());
+				Assert.assertNotNull(ut.getDateTraitement());
+				Assert.assertEquals(0, ut.getErreurs().size());
+
+				final List<Tiers> allTiers = tiersDAO.getAll();
+				PersonnePhysique found = null;
+				for (Tiers tiers : allTiers) {
+					if (tiers instanceof PersonnePhysique) {
+						found = (PersonnePhysique) tiers;
+						break;
+					}
+				}
+
+				Assert.assertNotNull(found);
+				Assert.assertEquals(getDefaultOperateurName(), found.getLogCreationUser());
+				Assert.assertEquals("moinot-reqdes", found.getLogModifUser());
+				Assert.assertEquals("O'Batayon", found.getNom());
+				Assert.assertEquals("Incaunu", found.getPrenomUsuel());
+				Assert.assertEquals("Incaunu Jean Albert", found.getTousPrenoms());
+				Assert.assertEquals("Delaplanche", found.getNomMere());
+				Assert.assertEquals("Martine Sophie Mafalda", found.getPrenomsMere());
+				Assert.assertEquals("O'Batayon", found.getNomPere());
+				Assert.assertEquals("Iain François Robert", found.getPrenomsPere());
+				Assert.assertEquals((Integer) MockPays.RoyaumeUni.getNoOFS(), found.getNumeroOfsNationalite());
+				Assert.assertEquals(Sexe.MASCULIN, found.getSexe());
+				Assert.assertEquals(dateNaissance, found.getDateNaissance());
+				Assert.assertNull(found.getDateDeces());
+				Assert.assertEquals(CategorieEtranger._06_FRONTALIER_G, found.getCategorieEtranger());
+				Assert.assertNull(found.getDateDebutValiditeAutorisation());
+
+				final Set<AdresseTiers> adresses = found.getAdressesTiers();
+				Assert.assertNotNull(adresses);
+				Assert.assertEquals(1, adresses.size());
+
+				final AdresseTiers adresse = adresses.iterator().next();
+				Assert.assertNotNull(adresse);
+				Assert.assertEquals(AdresseEtrangere.class, adresse.getClass());
+
+				final AdresseEtrangere adresseEtrangere = (AdresseEtrangere) adresse;
+				Assert.assertEquals((Integer) MockPays.France.getNoOFS(), adresseEtrangere.getNumeroOfsPays());
+				Assert.assertEquals("77415 Meulin", adresseEtrangere.getNumeroPostalLocalite());
+				Assert.assertEquals("Rue de la porte en bois", adresseEtrangere.getRue());
+				Assert.assertEquals("13b", adresseEtrangere.getNumeroMaison());
+				Assert.assertNull(adresseEtrangere.getTexteCasePostale());
+				Assert.assertNull(adresseEtrangere.getNumeroCasePostale());
+
+				final List<Remarque> remarques = remarqueDAO.getRemarques(found.getNumero());
+				Assert.assertNotNull(remarques);
+				Assert.assertEquals(1, remarques.size());
+
+				final Remarque remarque = remarques.get(0);
+				Assert.assertNotNull(remarque);
+
+				final StringBuilder b = new StringBuilder();
+				b.append("Contribuable mis à jour le ").append(RegDateHelper.dateToDisplayString(today));
+				b.append(" par l'acte notarial du ").append(RegDateHelper.dateToDisplayString(dateActe));
+				b.append(" par le notaire Tranquille Petiboulot (moinot) et enregistré par lui-même.");
+				b.append("\n- Nom : \"Aubataillon\" -> \"O'Batayon\"");
+				b.append("\n- Prénoms : vide -> \"Incaunu Jean Albert\"");
+				b.append("\n- Prénom usuel : \"Inconnu\" -> \"Incaunu\"");
+				b.append("\n- Catégorie d'étranger : vide -> ").append(CategorieEtranger._06_FRONTALIER_G.name());
+				b.append("\n- Date de naissance : ").append(dateNaissance.year()).append(" -> ").append(RegDateHelper.dateToDisplayString(dateNaissance));
+				b.append("\n- Nom de la mère : vide -> \"Delaplanche\"");
+				b.append("\n- Prénoms de la mère : vide -> \"Martine Sophie Mafalda\"");
+				b.append("\n- Nom du père : vide -> \"O'Batayon\"");
+				b.append("\n- Prénoms du père : vide -> \"Iain François Robert\"");
+				b.append("\n- Nationalité : vide -> ").append(MockPays.RoyaumeUni.getNoOFS());
+				final String expected = b.toString();
+
+				Assert.assertEquals(expected, remarque.getTexte());
+			}
+		});
+	}
+
+	@Test(timeout = 10000)
+	public void testModificationContribuableCelibataireAssujettiRole() throws Exception {
+
+		final RegDate dateNaissance = date(1976, 4, 23);
+		final RegDate today = RegDate.get();
+		final RegDate dateAchatPrecedent = date(2005, 3, 12);
+		final RegDate dateActe = today.addDays(-5);
+
+		// mise en place d'une création de contribuable
+		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+
+				final PersonnePhysique pphysique = addNonHabitant("Inconnu", "Aubataillon", date(dateNaissance.year()), Sexe.MASCULIN);
+				addForPrincipal(pphysique, dateAchatPrecedent, MotifFor.ACHAT_IMMOBILIER, MockPays.France);
+				addForSecondaire(pphysique, dateAchatPrecedent, MotifFor.ACHAT_IMMOBILIER, MockCommune.Morges.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+
+				final EvenementReqDes evt = addEvenementReqDes(new InformationsActeur("moinot", "Petiboulot", "Tranquille"), null, dateActe, "3783");
+				final UniteTraitement ut = addUniteTraitement(evt, EtatTraitement.A_TRAITER, null);
+				final PartiePrenante pp = addPartiePrenante(ut, "O'Batayon", "Incaunu Jean Albert");
+				pp.setNomMere("Delaplanche");
+				pp.setPrenomsMere("Martine Sophie Mafalda");
+				pp.setNomPere("O'Batayon");
+				pp.setPrenomsPere("Iain François Robert");
+				pp.setOfsPays(MockPays.France.getNoOFS());
+				pp.setOfsPaysNationalite(MockPays.RoyaumeUni.getNoOFS());
+				pp.setRue("Rue de la porte en bois");
+				pp.setNumeroMaison("13b");
+				pp.setSexe(Sexe.MASCULIN);
+				pp.setSourceCivile(false);
+				pp.setCategorieEtranger(CategorieEtranger._06_FRONTALIER_G);
+				pp.setNumeroContribuable(pphysique.getNumero());
+
+				pp.setDateEtatCivil(dateNaissance);
+				pp.setDateNaissance(dateNaissance);
+				pp.setEtatCivil(EtatCivil.CELIBATAIRE);
+				pp.setLocalite("Meulin");
+				pp.setNumeroPostal("77415");
+
+				final TransactionImmobiliere ti = addTransactionImmobiliere(evt, "Truc bidon", ModeInscription.INSCRIPTION, TypeInscription.SERVITUDE, MockCommune.Echallens.getNoOFS());
+				addRole(pp, ti, TypeRole.AUTRE);
+
+				return ut.getId();
+			}
+		});
+
+		// traiter l'unité
+		traiteUniteTraitement(id);
+
+		// vérification de l'existence de ce nouveau contribuable
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final UniteTraitement ut = uniteTraitementDAO.get(id);
+				Assert.assertNotNull(ut);
+				Assert.assertEquals(EtatTraitement.A_VERIFIER, ut.getEtat());
+				Assert.assertNotNull(ut.getDateTraitement());
+				Assert.assertEquals(1, ut.getErreurs().size());
+
+				final ErreurTraitement erreur = ut.getErreurs().iterator().next();
+				Assert.assertNotNull(erreur);
+				Assert.assertEquals(ErreurTraitement.TypeErreur.WARNING, erreur.getType());
+				Assert.assertEquals("Adresse non modifiée sur un contribuable assujetti, uniquement reprise dans les remarques du tiers.", erreur.getMessage());
+
+				final List<Tiers> allTiers = tiersDAO.getAll();
+				PersonnePhysique found = null;
+				for (Tiers tiers : allTiers) {
+					if (tiers instanceof PersonnePhysique) {
+						found = (PersonnePhysique) tiers;
+						break;
+					}
+				}
+
+				Assert.assertNotNull(found);
+				Assert.assertEquals(getDefaultOperateurName(), found.getLogCreationUser());
+				Assert.assertEquals("moinot-reqdes", found.getLogModifUser());
+				Assert.assertEquals("O'Batayon", found.getNom());
+				Assert.assertEquals("Incaunu", found.getPrenomUsuel());
+				Assert.assertEquals("Incaunu Jean Albert", found.getTousPrenoms());
+				Assert.assertEquals("Delaplanche", found.getNomMere());
+				Assert.assertEquals("Martine Sophie Mafalda", found.getPrenomsMere());
+				Assert.assertEquals("O'Batayon", found.getNomPere());
+				Assert.assertEquals("Iain François Robert", found.getPrenomsPere());
+				Assert.assertEquals((Integer) MockPays.RoyaumeUni.getNoOFS(), found.getNumeroOfsNationalite());
+				Assert.assertEquals(Sexe.MASCULIN, found.getSexe());
+				Assert.assertEquals(dateNaissance, found.getDateNaissance());
+				Assert.assertNull(found.getDateDeces());
+				Assert.assertEquals(CategorieEtranger._06_FRONTALIER_G, found.getCategorieEtranger());
+				Assert.assertNull(found.getDateDebutValiditeAutorisation());
+
+				final Set<AdresseTiers> adresses = found.getAdressesTiers();
+				Assert.assertNotNull(adresses);
+				Assert.assertEquals(0, adresses.size());
+
+				final List<Remarque> remarques = remarqueDAO.getRemarques(found.getNumero());
+				Assert.assertNotNull(remarques);
+				Assert.assertEquals(1, remarques.size());
+
+				final Remarque remarque = remarques.get(0);
+				Assert.assertNotNull(remarque);
+
+				final StringBuilder b = new StringBuilder();
+				b.append("Contribuable mis à jour le ").append(RegDateHelper.dateToDisplayString(today));
+				b.append(" par l'acte notarial du ").append(RegDateHelper.dateToDisplayString(dateActe));
+				b.append(" par le notaire Tranquille Petiboulot (moinot) et enregistré par lui-même.");
+				b.append("\n- Nom : \"Aubataillon\" -> \"O'Batayon\"");
+				b.append("\n- Prénoms : vide -> \"Incaunu Jean Albert\"");
+				b.append("\n- Prénom usuel : \"Inconnu\" -> \"Incaunu\"");
+				b.append("\n- Catégorie d'étranger : vide -> ").append(CategorieEtranger._06_FRONTALIER_G.name());
+				b.append("\n- Date de naissance : ").append(dateNaissance.year()).append(" -> ").append(RegDateHelper.dateToDisplayString(dateNaissance));
+				b.append("\n- Nom de la mère : vide -> \"Delaplanche\"");
+				b.append("\n- Prénoms de la mère : vide -> \"Martine Sophie Mafalda\"");
+				b.append("\n- Nom du père : vide -> \"O'Batayon\"");
+				b.append("\n- Prénoms du père : vide -> \"Iain François Robert\"");
+				b.append("\n- Nationalité : vide -> ").append(MockPays.RoyaumeUni.getNoOFS());
+				b.append("\n- Adresse transmise non enregistrée : Rue de la porte en bois 13b / 77415 Meulin / France");
+				final String expected = b.toString();
+
+				Assert.assertEquals(expected, remarque.getTexte());
 			}
 		});
 	}

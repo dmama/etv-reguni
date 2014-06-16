@@ -14,7 +14,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
@@ -27,6 +26,7 @@ import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.common.Duplicable;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.tiers.LinkedEntity;
@@ -37,48 +37,36 @@ import ch.vd.uniregctb.type.TypeAdresseTiers;
 @Table(name = "ADRESSE_TIERS")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "ADR_TYPE", discriminatorType = DiscriminatorType.STRING)
-public abstract class AdresseTiers extends HibernateEntity implements Comparable<AdresseTiers>, DateRange, Serializable, Cloneable, LinkedEntity {
-
-	//private final Logger LOGGER = Logger.getLogger(AdresseTiers.class);
-
-	/**
-	 * serialVersionUID
-	 */
-	private static final long serialVersionUID = 8636957205659696843L;
+public abstract class AdresseTiers extends HibernateEntity implements Comparable<AdresseTiers>, DateRange, Duplicable<AdresseTiers>, LinkedEntity {
 
 	private Long id;
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
 	 * Date de début de la validité de l'adresse postale du tiers
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi96lx9Edygsbnw9h5bVw"
 	 */
 	private RegDate dateDebut;
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
 	 * Date de fin de la validité de l'adresse postale du tiers
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi97Fx9Edygsbnw9h5bVw"
 	 */
 	private RegDate dateFin;
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_tsWlAJNdEdygKK6Oe0tVlw"
-	 */
 	private TypeAdresseTiers usage;
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_20XgQKfTEdy6qP7Nc3dO8g"
-	 */
 	private Tiers tiers;
+
+	protected AdresseTiers() {
+	}
+
+	/**
+	 * Utilisé par la duplication (on ne recopie ni l'identifiant, ni le tiers associé)
+	 * @param src la source de la duplication
+	 */
+	protected AdresseTiers(AdresseTiers src) {
+		this.dateDebut = src.dateDebut;
+		this.dateFin = src.dateFin;
+		this.usage = src.usage;
+	}
 
 	@Transient
 	@Override
@@ -96,112 +84,48 @@ public abstract class AdresseTiers extends HibernateEntity implements Comparable
 		this.id = theId;
 	}
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the dateDebut
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi96lx9Edygsbnw9h5bVw?GETTER"
-	 */
 	@Override
 	@Column(name = "DATE_DEBUT", nullable = false)
 	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
 	public RegDate getDateDebut() {
-		// begin-user-code
 		return dateDebut;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param theDateDebut the dateDebut to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi96lx9Edygsbnw9h5bVw?SETTER"
-	 */
 	public void setDateDebut(RegDate theDateDebut) {
-		// begin-user-code
 		dateDebut = theDateDebut;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the dateFin
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi97Fx9Edygsbnw9h5bVw?GETTER"
-	 */
 	@Override
 	@Column(name = "DATE_FIN")
 	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
 	public RegDate getDateFin() {
-		// begin-user-code
 		return dateFin;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param theDateFin the dateFin to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi97Fx9Edygsbnw9h5bVw?SETTER"
-	 */
 	public void setDateFin(@Nullable RegDate theDateFin) {
-		// begin-user-code
 		dateFin = theDateFin;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the usage
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_tsWlAJNdEdygKK6Oe0tVlw?GETTER"
-	 */
 	@Column(name = "USAGE_TYPE", length = LengthConstants.ADRESSE_TYPETIERS, nullable = false)
 	// note : USAGE est un mot réservé sous MySql
 	@Type(type = "ch.vd.uniregctb.hibernate.TypeAdresseTiersUserType")
 	public TypeAdresseTiers getUsage() {
-		// begin-user-code
 		return usage;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param theUsage the usage to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_tsWlAJNdEdygKK6Oe0tVlw?SETTER"
-	 */
 	public void setUsage(TypeAdresseTiers theUsage) {
-		// begin-user-code
 		usage = theUsage;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the tiers
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_20XgQKfTEdy6qP7Nc3dO8g?GETTER"
-	 */
 	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH })
 	@JoinColumn(name = "TIERS_ID", insertable = false, updatable = false, nullable = false)
 	@Index(name = "IDX_ADR_TRS_ID", columnNames = "TIERS_ID")
 	public Tiers getTiers() {
-		// begin-user-code
 		return tiers;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param theTiers the tiers to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_20XgQKfTEdy6qP7Nc3dO8g?SETTER"
-	 */
 	public void setTiers(Tiers theTiers) {
-		// begin-user-code
 		tiers = theTiers;
-		// end-user-code
 	}
 
 	/**
@@ -210,7 +134,7 @@ public abstract class AdresseTiers extends HibernateEntity implements Comparable
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
 	@Override
-	public int compareTo(AdresseTiers other) {
+	public final int compareTo(AdresseTiers other) {
 		return DateRangeComparator.compareRanges(this, other);
 	}
 

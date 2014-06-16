@@ -2046,4 +2046,9 @@ public class AdresseServiceImpl implements AdresseService {
 		final ResolutionAdresseProcessor processor = new ResolutionAdresseProcessor(this, serviceInfra, transactionManager, tiersService, hibernateTemplate);
 		return processor.run(dateTraitement, nbThreads, status);
 	}
+
+	@Override
+	public AdresseEnvoi buildAdresseEnvoi(Tiers tiers, AdresseGenerique adresse, RegDate date) throws AdresseException {
+		return createAdresseEnvoi(tiers, adresse, TypeAdresseFiscale.COURRIER, date);
+	}
 }

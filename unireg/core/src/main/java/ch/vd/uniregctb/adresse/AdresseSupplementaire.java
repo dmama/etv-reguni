@@ -17,8 +17,6 @@ import ch.vd.uniregctb.type.TexteCasePostale;
 @Entity
 public abstract class AdresseSupplementaire extends AdresseTiers {
 
-	private static final long serialVersionUID = -9160275750639533984L;
-
 	/**
 	 * Ligne libre additionnelle pour les données d'adresse supplémentaires qui ne trouvent pas leur place dans les autres champs de l'adresse (p. ex. pour la mention c/o, etc.).
 	 * Longueur maximum selon eCH-0010 : 60
@@ -123,4 +121,19 @@ public abstract class AdresseSupplementaire extends AdresseTiers {
 	public void setPermanente(boolean thePermanente) {
 		permanente = thePermanente;
 	}
+
+	protected AdresseSupplementaire() {
+	}
+
+	protected AdresseSupplementaire(AdresseSupplementaire src) {
+		super(src);
+		this.complement = src.complement;
+		this.rue = src.rue;
+		this.numeroMaison = src.numeroMaison;
+		this.numeroAppartement = src.numeroAppartement;
+		this.numeroCasePostale = src.numeroCasePostale;
+		this.permanente = src.permanente;
+		this.texteCasePostale = src.texteCasePostale;
+	}
 }
+

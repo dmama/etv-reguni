@@ -239,7 +239,7 @@ public interface AdresseService {
 	 * @param status
 	 * @return
 	 */
-	ResolutionAdresseResults resoudreAdresse(RegDate dateTraitement, int nbThreads, StatusManager status);
+	public ResolutionAdresseResults resoudreAdresse(RegDate dateTraitement, int nbThreads, StatusManager status);
 
 	/**
 	 * Retourne uniquement les adresses de source purement fiscale stocké en base
@@ -247,4 +247,13 @@ public interface AdresseService {
 	 * @return listes des adresses du tiers
 	 */
 	public AdressesFiscalesHisto getAdressesTiers(Tiers tiers) throws AdresseException;
+
+	/**
+	 * Méthode de conversion entre une adresse générique et une adresse d'envoi
+	 * @param tiers tiers pour lequel l'adresse est calculée
+	 * @param adresse adresse à convertir
+	 * @param date date de référence
+	 * @return une adresse d'envoi détaillée
+	 */
+	public AdresseEnvoi buildAdresseEnvoi(Tiers tiers, AdresseGenerique adresse, RegDate date) throws AdresseException;
 }
