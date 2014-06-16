@@ -82,7 +82,7 @@
 					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
-			<xs:element maxOccurs="unbounded" name="subject" type="subjectType">
+			<xs:element maxOccurs="unbounded" name="transaction" type="transactionType">
 				<xs:annotation>
 					<xs:appinfo>
 						<jxb:property>
@@ -105,7 +105,7 @@
 					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="dealNumber" type="xs:long">
+			<xs:element name="dealNumber" type="dealNumberType">
 				<xs:annotation>
 					<xs:appinfo>
 						<jxb:property>
@@ -116,6 +116,16 @@
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
+
+	<xs:simpleType name="dealNumberType">
+		<xs:annotation>
+			<xs:documentation>Numéro de minute</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:token">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="30"/>
+		</xs:restriction>
+	</xs:simpleType>
 
 	<xs:complexType name="notarialInformationType">
 		<xs:sequence>
@@ -577,16 +587,25 @@
 		</xs:choice>
 	</xs:complexType>
 
-	<!-- les données relatives aux immeubles de l'acte -->
-	<xs:complexType name="subjectType">
+	<!-- les données relatives aux transactions de l'acte -->
+	<xs:complexType name="transactionType">
 		<xs:annotation>
 			<xs:appinfo>
 				<jxb:property>
-					<jxb:javadoc>Donnée d'un immeuble référencé dans l'acte.</jxb:javadoc>
+					<jxb:javadoc>Donnée d'une transaction de l'acte.</jxb:javadoc>
 				</jxb:property>
 			</xs:appinfo>
 		</xs:annotation>
 		<xs:sequence>
+			<xs:element name="description" type="transactionDescriptionType">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Description/libellé de l'inscription.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
 			<xs:element name="municipalityId" type="eCH-0007:municipalityIdType">
 				<xs:annotation>
 					<xs:appinfo>
@@ -606,7 +625,69 @@
 				</xs:annotation>
 			</xs:element>
 		</xs:sequence>
+		<xs:attribute use="required" name="inscriptionMode" type="inscriptionModeType"/>
+		<xs:attribute use="required" name="inscriptionType" type="inscriptionTypeType"/>
 	</xs:complexType>
+
+	<xs:simpleType name="transactionDescriptionType">
+		<xs:annotation>
+			<xs:documentation>Description/libellé d'une transaction</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="100"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="inscriptionModeType">
+		<xs:annotation>
+			<xs:documentation>Mode d'inscription d'une transaction de l'acte.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:token">
+			<xs:enumeration value="INSCRIPTION">
+				<xs:annotation>
+					<xs:documentation>Inscription.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="MODIFICATION">
+				<xs:annotation>
+					<xs:documentation>Modification.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DEREGISTRATION">
+				<xs:annotation>
+					<xs:documentation>Radiation.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="inscriptionTypeType">
+		<xs:annotation>
+			<xs:documentation>Type d'inscription d'une transaction de l'acte</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:token">
+			<xs:enumeration value="PROPERTY">
+				<xs:annotation>
+					<xs:documentation>Propriété.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="EASEMENT">
+				<xs:annotation>
+					<xs:documentation>Servitude.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PROPERTY_RESPONSIBILITY">
+				<xs:annotation>
+					<xs:documentation>Charge foncière.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ANNOTATION">
+				<xs:annotation>
+					<xs:documentation>Annotation.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
 
 	<xs:simpleType name="stakeholderRoleType">
 		<xs:annotation>
