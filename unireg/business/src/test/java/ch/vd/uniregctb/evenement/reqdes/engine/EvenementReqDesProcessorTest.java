@@ -856,7 +856,7 @@ public class EvenementReqDesProcessorTest extends BusinessTest {
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
 				final UniteTraitement ut = uniteTraitementDAO.get(id);
 				Assert.assertNotNull(ut);
-				Assert.assertEquals(EtatTraitement.A_VERIFIER, ut.getEtat());
+				Assert.assertEquals(EtatTraitement.TRAITE, ut.getEtat());
 				Assert.assertNotNull(ut.getDateTraitement());
 				Assert.assertEquals(1, ut.getErreurs().size());
 
@@ -5198,8 +5198,13 @@ public class EvenementReqDesProcessorTest extends BusinessTest {
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
 				final UniteTraitement ut = uniteTraitementDAO.get(ids.utId);
 				Assert.assertNotNull(ut);
-				Assert.assertEquals(EtatTraitement.A_VERIFIER, ut.getEtat());       // ben oui, l'adresse n'a pas pu être changée
+				Assert.assertEquals(EtatTraitement.TRAITE, ut.getEtat());
 				Assert.assertEquals(1, ut.getErreurs().size());
+
+				final ErreurTraitement erreur = ut.getErreurs().iterator().next();
+				Assert.assertNotNull(erreur);
+				Assert.assertEquals(ErreurTraitement.TypeErreur.WARNING, erreur.getType());
+				Assert.assertEquals("Adresse non modifiée sur un contribuable assujetti, uniquement reprise dans les remarques du tiers.", erreur.getMessage());
 
 				final List<Tiers> allTiers = tiersDAO.getAll();
 				Assert.assertNotNull(allTiers);
@@ -5336,8 +5341,13 @@ public class EvenementReqDesProcessorTest extends BusinessTest {
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
 				final UniteTraitement ut = uniteTraitementDAO.get(ids.utId);
 				Assert.assertNotNull(ut);
-				Assert.assertEquals(EtatTraitement.A_VERIFIER, ut.getEtat());              // ben oui, l'adresse n'a pas pu être changée
+				Assert.assertEquals(EtatTraitement.TRAITE, ut.getEtat());
 				Assert.assertEquals(1, ut.getErreurs().size());
+
+				final ErreurTraitement erreur = ut.getErreurs().iterator().next();
+				Assert.assertNotNull(erreur);
+				Assert.assertEquals(ErreurTraitement.TypeErreur.WARNING, erreur.getType());
+				Assert.assertEquals("Adresse non modifiée sur un contribuable assujetti, uniquement reprise dans les remarques du tiers.", erreur.getMessage());
 
 				final List<Tiers> allTiers = tiersDAO.getAll();
 				Assert.assertNotNull(allTiers);

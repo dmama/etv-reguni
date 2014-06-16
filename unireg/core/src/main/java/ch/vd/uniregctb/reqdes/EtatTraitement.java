@@ -8,7 +8,6 @@ package ch.vd.uniregctb.reqdes;
 public enum EtatTraitement {
 	A_TRAITER,
 	TRAITE,
-	A_VERIFIER,
 	EN_ERREUR,
 	FORCE
 }

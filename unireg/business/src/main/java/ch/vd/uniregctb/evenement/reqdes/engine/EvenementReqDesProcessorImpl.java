@@ -106,7 +106,7 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 
 	private static final Logger LOGGER = Logger.getLogger(EvenementReqDesProcessorImpl.class);
 
-	private static final Set<EtatTraitement> ETATS_FINAUX = EnumSet.of(EtatTraitement.A_VERIFIER, EtatTraitement.FORCE, EtatTraitement.TRAITE);
+	private static final Set<EtatTraitement> ETATS_FINAUX = EnumSet.of(EtatTraitement.FORCE, EtatTraitement.TRAITE);
 
 	private final BlockingQueue<QueueElement> queue = new LinkedBlockingQueue<>();
 
@@ -358,9 +358,7 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 	                        LOGGER.error(b.toString());
 						}
 
-						final EtatTraitement nouvelEtat = errorCollector.hasCollectedMessages()
-								? EtatTraitement.EN_ERREUR
-								: (warningCollector.hasCollectedMessages() ? EtatTraitement.A_VERIFIER : EtatTraitement.TRAITE);
+						final EtatTraitement nouvelEtat = errorCollector.hasCollectedMessages() ? EtatTraitement.EN_ERREUR : EtatTraitement.TRAITE;
 						if (LOGGER.isInfoEnabled()) {
 							LOGGER.info(String.format("Traitement de l'unité de traitement %d terminé dans l'état %s", idUniteTraitement, nouvelEtat));
 						}
