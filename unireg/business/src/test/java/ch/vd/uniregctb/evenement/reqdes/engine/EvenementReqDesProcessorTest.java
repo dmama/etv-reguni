@@ -356,6 +356,77 @@ public class EvenementReqDesProcessorTest extends BusinessTest {
 		});
 	}
 
+
+	@Test(timeout = 10000)
+	public void testControlesPreliminairesDoublon() throws Exception {
+
+		final RegDate dateActe = RegDate.get();
+
+		final class Ids {
+			long utId;
+		}
+
+		// mise en place d'une unité de traitement
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				// traitement d'un événement détecté à l'arrivée comme "doublon"
+				final EvenementReqDes evt = addEvenementReqDes(new InformationsActeur("moinot", "Petiboulot", "Francis"), null, dateActe, "56754K");
+				evt.setDoublon(true);
+				final TransactionImmobiliere t1 = addTransactionImmobiliere(evt, "Bonne commune", ModeInscription.INSCRIPTION, TypeInscription.CHARGE_FONCIERE, MockCommune.Lausanne.getNoOFS());
+
+				final UniteTraitement ut = addUniteTraitement(evt, EtatTraitement.A_TRAITER, null);
+				final PartiePrenante pp1 = addPartiePrenante(ut, "Résident", "Vaudois");
+				pp1.setOfsCommune(MockCommune.Echallens.getNoOFS());
+				pp1.setEtatCivil(EtatCivil.CELIBATAIRE);
+				addRole(pp1, t1, TypeRole.ACQUEREUR);
+
+				final Ids ids = new Ids();
+				ids.utId = ut.getId();
+				return ids;
+			}
+		});
+
+		// traitement de l'unité
+		traiteUniteTraitement(ids.utId);
+
+		// vérification des erreurs
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final UniteTraitement ut = uniteTraitementDAO.get(ids.utId);
+				Assert.assertNotNull(ut);
+				Assert.assertEquals(EtatTraitement.EN_ERREUR, ut.getEtat());
+				Assert.assertNotNull(ut.getDateTraitement());
+
+				final Set<ErreurTraitement> erreurs = ut.getErreurs();
+				Assert.assertNotNull(erreurs);
+				Assert.assertEquals(2, erreurs.size());
+
+				final List<ErreurTraitement> sorted = new ArrayList<>(erreurs);
+				Collections.sort(sorted, new Comparator<ErreurTraitement>() {
+					@Override
+					public int compare(ErreurTraitement o1, ErreurTraitement o2) {
+						return o1.getMessage().compareTo(o2.getMessage());
+					}
+				});
+
+				{
+					final ErreurTraitement erreur = sorted.get(0);
+					Assert.assertNotNull(erreur);
+					Assert.assertEquals(ErreurTraitement.TypeErreur.ERROR, erreur.getType());
+					Assert.assertEquals("La commune de résidence (Echallens/5518) est vaudoise.", erreur.getMessage());
+				}
+				{
+					final ErreurTraitement erreur = sorted.get(1);
+					Assert.assertNotNull(erreur);
+					Assert.assertEquals(ErreurTraitement.TypeErreur.ERROR, erreur.getType());
+					Assert.assertEquals("Un événement correspondant au même acte (numéro de minute moinot/56754K) a déjà été reçu auparavant, celui-ci passe donc en traitement manuel.", erreur.getMessage());
+				}
+			}
+		});
+	}
+
 	@Test(timeout = 10000)
 	public void testControlesPreliminairesSurLiensMatrimoniauxUnidirectionel() throws Exception {
 

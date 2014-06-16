@@ -133,7 +133,7 @@ public class ReqDesEventHandler implements EsbMessageHandler {
 		}
 	}
 
-	protected void onMessage(Source xml, String str) throws IOException, EsbBusinessException {
+	protected void onMessage(Source xml, String xmlContent) throws IOException, EsbBusinessException {
 		final CreationModification data;
 		try {
 			data = parse(xml);
@@ -148,27 +148,26 @@ public class ReqDesEventHandler implements EsbMessageHandler {
 		final List<EvenementReqDes> dejaPresent = evenementDAO.findByNumeroMinute(noAffaire, visaNotaire);
 		final boolean doublon = dejaPresent != null && !dejaPresent.isEmpty();
 		if (doublon) {
-			LOGGER.warn(String.format("Un message ReqDes avec le même numéro de minute (%s/%s) a déjà été reçu ; cette nouvelle réception est donc ignorée.", visaNotaire, noAffaire));
+			LOGGER.warn(String.format("Un message ReqDes avec le même numéro de minute (%s/%s) a déjà été reçu -> traitement manuel systématique.", visaNotaire, noAffaire));
 		}
-		else {
-			final Map<Integer, ReqDesPartiePrenante> partiesPrenantes = extractPartiesPrenantes(data.getStakeholder(), infraService);
-			final List<ReqDesTransactionImmobiliere> transactions = extractTransactionsImmobilieres(data.getTransaction());
 
-			final List<Set<Integer>> idGroupes = composeGroupes(partiesPrenantes);
-			final List<List<ReqDesPartiePrenante>> groupes = new ArrayList<>(idGroupes.size());
-			for (Set<Integer> idGroupe : idGroupes) {
-				final List<ReqDesPartiePrenante> groupe = new ArrayList<>(idGroupe.size());
-				for (Integer id : idGroupe) {
-					groupe.add(partiesPrenantes.get(id));
-				}
-				groupes.add(groupe);
+		final Map<Integer, ReqDesPartiePrenante> partiesPrenantes = extractPartiesPrenantes(data.getStakeholder(), infraService);
+		final List<ReqDesTransactionImmobiliere> transactions = extractTransactionsImmobilieres(data.getTransaction());
+
+		final List<Set<Integer>> idGroupes = composeGroupes(partiesPrenantes);
+		final List<List<ReqDesPartiePrenante>> groupes = new ArrayList<>(idGroupes.size());
+		for (Set<Integer> idGroupe : idGroupes) {
+			final List<ReqDesPartiePrenante> groupe = new ArrayList<>(idGroupe.size());
+			for (Integer id : idGroupe) {
+				groupe.add(partiesPrenantes.get(id));
 			}
-			final Map<Integer, List<Pair<RoleDansActe, Integer>>> roles = extractRoles(data.getTransaction());
-
-			// persistence des données reçues avant traitement asynchrone
-			final Set<Long> idsUnitesTraitement = persistData(str, data.getNotarialDeed(), data.getNotarialInformation(), transactions, groupes, roles);
-			lancementTraitementAsynchrone(idsUnitesTraitement);
+			groupes.add(groupe);
 		}
+		final Map<Integer, List<Pair<RoleDansActe, Integer>>> roles = extractRoles(data.getTransaction());
+
+		// persistence des données reçues avant traitement asynchrone
+		final Set<Long> idsUnitesTraitement = persistData(xmlContent, doublon, data.getNotarialDeed(), data.getNotarialInformation(), transactions, groupes, roles);
+		lancementTraitementAsynchrone(idsUnitesTraitement);
 	}
 
 	protected void lancementTraitementAsynchrone(Set<Long> idsUnitesTraitement) {
@@ -180,6 +179,7 @@ public class ReqDesEventHandler implements EsbMessageHandler {
 	/**
 	 * Persiste les données en base et renvoie les identifiants des unités de traitement
 	 * @param xmlContent contenu du message XML sous forme de chaîne de caractères
+	 * @param doublon <code>true</code> si un acte avec les mêmes coordonnées a déjà été reçu auparavant
 	 * @param acteAuthentique données de l'acte
 	 * @param operateurs données sur le notaire et l'opérateur
 	 * @param transactions transactions immobilières présentes dans l'acte
@@ -187,7 +187,7 @@ public class ReqDesEventHandler implements EsbMessageHandler {
 	 * @param roles les rôles des différentes parties prenantes
 	 * @return l'ensemble des identifiants des unités de traitement générées
 	 */
-	private Set<Long> persistData(final String xmlContent, final NotarialDeed acteAuthentique, final NotarialInformation operateurs,
+	private Set<Long> persistData(final String xmlContent, final boolean doublon, final NotarialDeed acteAuthentique, final NotarialInformation operateurs,
 	                              final List<ReqDesTransactionImmobiliere> transactions,
 	                              final List<List<ReqDesPartiePrenante>> groupes,
 	                              final Map<Integer, List<Pair<RoleDansActe, Integer>>> roles) {
@@ -199,7 +199,7 @@ public class ReqDesEventHandler implements EsbMessageHandler {
 			public Set<Long> doInTransaction(TransactionStatus status) {
 
 				// on crée d'abord l'événement lui-même
-				final EvenementReqDes evt = buildEvenementReqDes(acteAuthentique, operateurs, xmlContent);
+				final EvenementReqDes evt = buildEvenementReqDes(acteAuthentique, operateurs, doublon, xmlContent);
 
 				// puis les transactions immobilières (dans le même ordre que ce que donne
 				final List<TransactionImmobiliere> transImmobilieres = new ArrayList<>(transactions.size());
@@ -242,9 +242,10 @@ public class ReqDesEventHandler implements EsbMessageHandler {
 		});
 	}
 
-	private EvenementReqDes buildEvenementReqDes(NotarialDeed acteAuthentique, NotarialInformation operateurs, String xml) {
+	private EvenementReqDes buildEvenementReqDes(NotarialDeed acteAuthentique, NotarialInformation operateurs, boolean doublon, String xml) {
 		final EvenementReqDes evt = new EvenementReqDes();
 		evt.setXml(xml);
+		evt.setDoublon(doublon);
 		evt.setDateActe(XmlUtils.xmlcal2regdate(acteAuthentique.getReferenceDate()));
 		evt.setNumeroMinute(acteAuthentique.getDealNumber());
 		evt.setNotaire(buildInformationActeur(operateurs.getSollicitor()));

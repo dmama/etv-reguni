@@ -27,6 +27,7 @@ public class EvenementReqDes extends HibernateEntity {
 
 	private Long id;
 	private String xml;
+	private boolean doublon;
 	private RegDate dateActe;
 	private String numeroMinute;
 	private InformationsActeur notaire;
@@ -58,6 +59,15 @@ public class EvenementReqDes extends HibernateEntity {
 
 	public void setXml(String xml) {
 		this.xml = xml;
+	}
+
+	@Column(name = "DOUBLON", nullable = false)
+	public boolean isDoublon() {
+		return doublon;
+	}
+
+	public void setDoublon(boolean doublon) {
+		this.doublon = doublon;
 	}
 
 	@Column(name = "DATE_ACTE", nullable = false)

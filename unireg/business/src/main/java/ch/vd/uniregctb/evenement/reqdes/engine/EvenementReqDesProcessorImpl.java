@@ -496,7 +496,14 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 	 * @throws EvenementReqDesException s'il vaut mieux tout arrêter tant la situation est grave
 	 */
 	private void doControlesPreliminaires(UniteTraitement ut, MessageCollector errorCollector, MessageCollector warningCollector) throws EvenementReqDesException {
-		final RegDate dateActe = ut.getEvenement().getDateActe();
+		final EvenementReqDes evenement = ut.getEvenement();
+		final RegDate dateActe = evenement.getDateActe();
+
+		// est-ce un doublon reçu, qui justifie d'un traitement manuel systématique ?
+		if (evenement.isDoublon()) {
+			errorCollector.addNewMessage(String.format("Un événement correspondant au même acte (numéro de minute %s/%s) a déjà été reçu auparavant, celui-ci passe donc en traitement manuel.",
+			                                           evenement.getNotaire().getVisa(), evenement.getNumeroMinute()));
+		}
 
 		// vérification de la date de l'acte, qui ne doit pas être dans le futur
 		final RegDate today = RegDate.get();
