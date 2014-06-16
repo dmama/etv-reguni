@@ -606,7 +606,7 @@
 					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="municipalityId" type="eCH-0007:municipalityIdType">
+			<xs:element name="municipalityId" type="eCH-0007:municipalityIdType" maxOccurs="unbounded">
 				<xs:annotation>
 					<xs:appinfo>
 						<jxb:property>
