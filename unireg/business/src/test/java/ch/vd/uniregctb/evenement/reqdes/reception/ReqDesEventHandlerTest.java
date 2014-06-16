@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.reqdes;
+package ch.vd.uniregctb.evenement.reqdes.reception;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;

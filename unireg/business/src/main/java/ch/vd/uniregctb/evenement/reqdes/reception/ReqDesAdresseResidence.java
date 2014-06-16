@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.reqdes;
+package ch.vd.uniregctb.evenement.reqdes.reception;
 
 import ch.ech.ech0010.v4.AddressInformation;
 import ch.ech.ech0010.v4.SwissAddressInformation;

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.reqdes;
+package ch.vd.uniregctb.evenement.reqdes.reception;
 
 import org.junit.Assert;
 import org.junit.Test;

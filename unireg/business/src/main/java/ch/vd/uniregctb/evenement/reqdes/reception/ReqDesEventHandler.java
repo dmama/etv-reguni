@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.reqdes;
+package ch.vd.uniregctb.evenement.reqdes.reception;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -53,6 +53,7 @@ import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.common.IdentityKey;
 import ch.vd.uniregctb.common.XmlUtils;
+import ch.vd.uniregctb.evenement.reqdes.engine.EvenementReqDesProcessor;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.jms.EsbBusinessCode;
@@ -81,6 +82,7 @@ public class ReqDesEventHandler implements EsbMessageHandler {
 	private EvenementReqDesDAO evenementDAO;
 	private PlatformTransactionManager transactionManager;
 	private HibernateTemplate hibernateTemplate;
+	private EvenementReqDesProcessor processor;
 
 	public void setInfraService(ServiceInfrastructureService infraService) {
 		this.infraService = infraService;
@@ -96,6 +98,10 @@ public class ReqDesEventHandler implements EsbMessageHandler {
 
 	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
 		this.hibernateTemplate = hibernateTemplate;
+	}
+
+	public void setProcessor(EvenementReqDesProcessor processor) {
+		this.processor = processor;
 	}
 
 	@Override
@@ -160,7 +166,9 @@ public class ReqDesEventHandler implements EsbMessageHandler {
 	}
 
 	protected void lancementTraitementAsynchrone(Set<Long> idsUnitesTraitement) {
-		// TODO poster les données sur la queue de traitement pour prise en charge asynchrone
+		for (long id : idsUnitesTraitement) {
+			processor.postUniteTraitement(id);
+		}
 	}
 
 	/**
@@ -235,7 +243,7 @@ public class ReqDesEventHandler implements EsbMessageHandler {
 		return hibernateTemplate.merge(ut);
 	}
 
-	private void tisserLiensConjoint(List<ReqDesPartiePrenante> groupe, Map<Integer, PartiePrenante> partiesPrenantes) {
+	private static void tisserLiensConjoint(List<ReqDesPartiePrenante> groupe, Map<Integer, PartiePrenante> partiesPrenantes) {
 		for (ReqDesPartiePrenante src : groupe) {
 			if (src.getPartner() != null) {
 				final Integer idLink = src.getPartner().getLink();

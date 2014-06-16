@@ -18,6 +18,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.CallbackException;
 import org.hibernate.type.Type;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.SmartLifecycle;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -32,6 +33,7 @@ import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
+import ch.vd.uniregctb.common.PollingThread;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilHelper;
@@ -139,39 +141,34 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 	/**
 	 * Thread de traitement
 	 */
-	private class Processor extends Thread {
+	private class Processor extends PollingThread<EvenementCivilNotificationQueue.Batch> {
 
-		private boolean stopping = false;
-
-		public Processor() {
+		private Processor() {
 			super("EvtCivilEch");
 		}
 
 		@Override
-		public void run() {
-			LOGGER.info(String.format("Démarrage du thread %s de traitement des événements civils e-CH", getName()));
-			try {
-				while (!stopping) {
-					final EvenementCivilNotificationQueue.Batch evts = notificationQueue.poll(1, TimeUnit.SECONDS);
-					if (evts != null) {
-						try {
-							if (evts.contenu.size() > 0) {
-								processEvents(evts.noIndividu, evts.contenu);
-							}
-						}
-						finally {
-							notifyTraitementIndividu(evts.noIndividu);
-						}
-					}
-				}
+		protected EvenementCivilNotificationQueue.Batch poll(long timeout, @NotNull TimeUnit timeUnit) throws InterruptedException {
+			return notificationQueue.poll(timeout, timeUnit);
+		}
+
+		@Override
+		protected void processElement(@NotNull EvenementCivilNotificationQueue.Batch element) {
+			if (element.contenu.size() > 0) {
+				processEvents(element.noIndividu, element.contenu);
 			}
-			catch (InterruptedException e) {
-				LOGGER.warn("Interruption du thread", e);
-			}
-			finally {
-				notifyStop();
-				LOGGER.info(String.format("Arrêt du thread %s", getName()));
-			}
+		}
+
+		@Override
+		protected void onElementProcessed(@NotNull EvenementCivilNotificationQueue.Batch element, @Nullable Throwable t) {
+			super.onElementProcessed(element, t);
+			notifyTraitementIndividu(element.noIndividu);
+		}
+
+		@Override
+		protected void onStop() {
+			super.onStop();
+			notifyStop();
 		}
 
 		/**
@@ -185,7 +182,7 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 			try {
 				LOGGER.info(String.format("Lancement du traitement d'un lot de %d événement(s) pour l'individu %d", evts.size(), noIndividu));
 				for (EvenementCivilEchBasicInfo evt : evts) {
-					if (!stopping) {
+					if (!shouldStop()) {
 						if (!processEventAndDoPostProcessingOnError(evt, evts, pointer)) {
 							break;
 						}
@@ -200,11 +197,6 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 				final long end = System.nanoTime();
 				LOGGER.info(String.format("Lot de %d événement(s) traité en %d ms", evts.size(), TimeUnit.NANOSECONDS.toMillis(end - start)));
 			}
-		}
-
-		public void requestStop() {
-			stopping = true;
-			LOGGER.info(String.format("Demande d'arrêt du thread %s", getName()));
 		}
 	}
 
@@ -828,7 +820,7 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 				processor.interrupt();
 			}
 			else {
-				processor.requestStop();
+				processor.stopIt();
 			}
 			try {
 				processor.join();

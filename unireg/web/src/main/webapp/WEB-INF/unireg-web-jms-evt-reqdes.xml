@@ -7,8 +7,11 @@
 		<property name="handler" ref="reqdesEventHandler"/>
 	</bean>
 
-	<bean id="reqdesEventHandler" class="ch.vd.uniregctb.evenement.reqdes.ReqDesEventHandler">
+	<bean id="reqdesEventHandler" class="ch.vd.uniregctb.evenement.reqdes.reception.ReqDesEventHandler">
 		<property name="infraService" ref="serviceInfrastructureService"/>
+		<property name="evenementDAO" ref="reqdesEvenementDAO"/>
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
+		<property name="transactionManager" ref="transactionManager"/>
 	</bean>
 
 	<bean id="reqdesEventEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">
