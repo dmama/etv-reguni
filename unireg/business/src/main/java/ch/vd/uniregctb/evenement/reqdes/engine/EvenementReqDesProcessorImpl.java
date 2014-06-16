@@ -70,8 +70,11 @@ import ch.vd.uniregctb.reqdes.UniteTraitementDAO;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Remarque;
+import ch.vd.uniregctb.tiers.SituationFamille;
+import ch.vd.uniregctb.tiers.SituationFamillePersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
@@ -476,14 +479,17 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 	/**
 	 * Effectue les contrôles préliminaires sur l'état des données entrantes, en mettant les erreurs/warnings dans l'unité de traitement directement si nécessaire
 	 * @param ut unité de traitement à contrôler
+	 * @param errorCollector collecteur d'erreurs (s'il y en a, le traitement s'arrêtera là)
+	 * @param warningCollector collecteur de <i>warnings</i> (même s'il y en a, le traitement continue)
 	 * @throws EvenementReqDesException s'il vaut mieux tout arrêter tant la situation est grave
 	 */
 	private void doControlesPreliminaires(UniteTraitement ut, MessageCollector errorCollector, MessageCollector warningCollector) throws EvenementReqDesException {
 		final RegDate dateActe = ut.getEvenement().getDateActe();
 
 		// vérification de la date de l'acte, qui ne doit pas être dans le futur
-		if (RegDate.get().isBefore(dateActe)) {
-			errorCollector.addNewMessage("La date de l'acte est dans le futur.");
+		final RegDate today = RegDate.get();
+		if (today.isBefore(dateActe)) {
+			errorCollector.addNewMessage(String.format("La date de l'acte (%s) est dans le futur.", RegDateHelper.dateToDisplayString(dateActe)));
 		}
 
 		final Set<EtatCivil> etatsCivilsSansConjoint = EnumSet.of(EtatCivil.CELIBATAIRE, EtatCivil.VEUF, EtatCivil.DIVORCE, EtatCivil.NON_MARIE,
@@ -509,17 +515,47 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 				checkCommune(ofsCommuneImmeuble, dateActe, commune, errorCollector);
 			}
 
-			// vérification qu'une partie prenante célibataire (ou assimilée comme telle) n'est pas indiquée avec un conjoint
 			final EtatCivil etatCivil = pp.getEtatCivil();
 			if (etatsCivilsSansConjoint.contains(etatCivil)) {
+
+				// vérification qu'une partie prenante célibataire (ou assimilée comme telle) n'est pas indiquée avec un conjoint
 				if (pp.getConjointPartiePrenante() != null || StringUtils.isNotBlank(pp.getNomConjoint()) || StringUtils.isNotBlank(pp.getPrenomConjoint())) {
 					errorCollector.addNewMessage(String.format("Incohérence entre l'état civil (%s) et la présence d'un conjoint.", etatCivil.format()));
 				}
+
+				// vérification qu'aucune date de séparation n'est indiquée pour ces états civils
+				if (pp.getDateSeparation() != null) {
+					errorCollector.addNewMessage(String.format("Date de séparation (%s) indiquée incohérente avec l'état civil (%s)", RegDateHelper.dateToDisplayString(pp.getDateSeparation()), etatCivil.format()));
+				}
+			}
+
+			// aucune date ne doit être dans le futur!
+			if (pp.getDateNaissance() != null && today.isBefore(pp.getDateNaissance())) {
+				errorCollector.addNewMessage(String.format("Date de naissance fournie dans le futur (%s)", RegDateHelper.dateToDisplayString(pp.getDateNaissance())));
+			}
+			if (pp.getDateEtatCivil() != null && today.isBefore(pp.getDateEtatCivil())) {
+				errorCollector.addNewMessage(String.format("Date d'état civil fournie dans le futur (%s)", RegDateHelper.dateToDisplayString(pp.getDateEtatCivil())));
+			}
+			if (pp.getDateSeparation() != null && today.isBefore(pp.getDateSeparation())) {
+				errorCollector.addNewMessage(String.format("Date de séparation fournie dans le futur (%s)", RegDateHelper.dateToDisplayString(pp.getDateSeparation())));
+			}
+			if (pp.getDateDeces() != null && today.isBefore(pp.getDateDeces())) {
+				errorCollector.addNewMessage(String.format("Date de décès fournie dans le futur (%s)", RegDateHelper.dateToDisplayString(pp.getDateDeces())));
+			}
+			if (pp.getDateSeparation() != null && pp.getDateEtatCivil() != null && pp.getDateSeparation().isBefore(pp.getDateEtatCivil())) {
+				errorCollector.addNewMessage(String.format("La date de séparation (%s) devrait être après la date de dernier état civil (%s)",
+				                                           RegDateHelper.dateToDisplayString(pp.getDateSeparation()),
+				                                           RegDateHelper.dateToDisplayString(pp.getDateEtatCivil())));
 			}
 
 			// vérification que les liens sont bien bi-directionnels
 			if (pp.getConjointPartiePrenante() != null && pp.getConjointPartiePrenante().getConjointPartiePrenante() != pp) {
 				errorCollector.addNewMessage("Liens matrimoniaux incohérents entres les parties prenantes.");
+			}
+
+			// vérification que le lien n'est pas sur la partie prenante elle-même
+			if (pp.getConjointPartiePrenante() == pp) {
+				errorCollector.addNewMessage("Partie prenante mariée/pacsée avec elle-même !");
 			}
 		}
 	}
@@ -533,6 +569,17 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 		}
 	}
 
+	private static final class ProcessingDataPartiePrenante {
+		public final PersonnePhysique personnePhysique;
+		public final List<String> elementsRemarque = new LinkedList<>();
+		public final boolean creation;
+
+		private ProcessingDataPartiePrenante(boolean creation, PersonnePhysique personnePhysique) {
+			this.creation = creation;
+			this.personnePhysique = personnePhysique;
+		}
+	}
+
 	/**
 	 * Travail de mise à jour du modèle de données des contribuables par rapports aux données reçues
 	 * @param evt événement reçu de eReqDes
@@ -542,15 +589,171 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 	 */
 	private void doProcessing(EvenementReqDes evt, Set<PartiePrenante> partiesPrenantes, MessageCollector warningCollector) throws EvenementReqDesException {
 
-		final RegDate dateActe = evt.getDateActe();
-
 		// la clé est l'ID de la partie prenante...
-		final Map<Long, PersonnePhysique> personnesPhysiques = new HashMap<>(partiesPrenantes.size());
+		final Map<Long, ProcessingDataPartiePrenante> processingData = findOrCreatePersonnesPhysiques(evt, partiesPrenantes, warningCollector);
+
+		// gestion des états civils : on lie éventuellement les contribuables ensemble
+		gererEtatsCivils(evt, partiesPrenantes, processingData);
+
+		// TODO reste enfin à metre à jour les fors fiscaux
+
+		// finalement, on ajoute les remarques sur les parties prenantes créées ou modifiées
+		for (ProcessingDataPartiePrenante data : processingData.values()) {
+			addRemarque(data, evt);
+		}
+	}
+
+	private void addRemarque(ProcessingDataPartiePrenante data, EvenementReqDes evt) {
+		if (data != null && data.personnePhysique != null) {
+			if (data.creation) {
+				addRemarqueCreation(data.personnePhysique, evt);
+			}
+			else if (!data.elementsRemarque.isEmpty()) {
+				addRemarqueModification(data.personnePhysique, data.elementsRemarque, evt);
+			}
+		}
+	}
+
+	/**
+	 * Gestion des états civils (= création/modification de couples...)
+	 * @param evt événement reçu de eReqDes
+	 * @param partiesPrenantes liste des parties prenantes de l'unité de traitement
+	 * @param processingData données des personnes physiques indexées par identifiant de partie prenante
+	 * @throws EvenementReqDesException en cas d'erreur
+	 */
+	private void gererEtatsCivils(EvenementReqDes evt, Set<PartiePrenante> partiesPrenantes, Map<Long, ProcessingDataPartiePrenante> processingData) throws EvenementReqDesException {
 		for (PartiePrenante ppSrc : partiesPrenantes) {
-			final PersonnePhysique ppDest;
+			final ProcessingDataPartiePrenante data = processingData.get(ppSrc.getId());
+			if (data != null) {
+				final EtatCivil etatCivil = ppSrc.getEtatCivil();
+				final boolean conjointAutrePartiePrenante = ppSrc.getConjointPartiePrenante() != null;
+
+				// cela concerne-t-il un couple ?
+				if (etatCivil == EtatCivil.LIE_PARTENARIAT_ENREGISTRE || etatCivil == EtatCivil.MARIE || etatCivil == EtatCivil.SEPARE || etatCivil == EtatCivil.PARTENARIAT_SEPARE) {
+					// qui est le conjoint ?
+					final PersonnePhysique conjoint;
+					final ProcessingDataPartiePrenante conjointData;
+					if (conjointAutrePartiePrenante) {
+						if (ppSrc.getConjointPartiePrenante().isSourceCivile()) {
+							// on crée un conjoint bidon (a priori un doublon, mais bon...)
+							conjoint = createPersonnePhysique(ppSrc.getConjointPartiePrenante());
+							conjointData = new ProcessingDataPartiePrenante(true, conjoint);
+
+							// nouvelle personne physique qui n'est pas dans la liste des parties prenantes -> on crée la remarque tout de suite
+							addRemarque(conjointData, evt);
+						}
+						else {
+							// c'est l'autre partie prenante, également fiscale
+							conjointData = processingData.get(ppSrc.getConjointPartiePrenante().getId());
+							conjoint = conjointData != null ? conjointData.personnePhysique : null;
+						}
+					}
+					else if (StringUtils.isNotBlank(ppSrc.getNomConjoint())) {
+						conjoint = createConjointMinimal(ppSrc.getNomConjoint(), ppSrc.getPrenomConjoint());
+						conjointData = new ProcessingDataPartiePrenante(true, conjoint);
+
+						// nouvelle personne physique qui n'est pas une partie prenante -> on crée la remarque tout de suite
+						addRemarque(conjointData, evt);
+					}
+					else {
+						conjoint = null;
+						conjointData = null;
+					}
+
+					final ModeTraitementCouple modeTraitementCouple = determineModeTraitementCouple(data.creation, conjointData != null ? conjointData.creation : null);
+					if (modeTraitementCouple == ModeTraitementCouple.CREATION_PURE) {
+						// on ne s'embête pas, on crée le couple
+						final EnsembleTiersCouple couple = tiersService.createEnsembleTiersCouple(data.personnePhysique, conjoint, ppSrc.getDateEtatCivil(), ppSrc.getDateSeparation() != null ? ppSrc.getDateSeparation().getOneDayBefore() : null);
+						final MenageCommun mc = couple.getMenage();
+						addRemarqueCreation(mc, evt);
+					}
+					else {
+						throw new EvenementReqDesException("Pas encore implémenté");
+						// TODO il faut trouver le ou les contribuables concernés et valider qu'ils sont bien en couple ensemble
+					}
+
+					// c'est la dernière fois que l'on voit ce conjoint, il faut dont le mettre à jour complètement dès maintenant
+					if (conjointData != null) {
+						final PartiePrenante conjointPartiePrenante = conjointAutrePartiePrenante ? ppSrc.getConjointPartiePrenante() : ppSrc;
+						gererSituationFamille(conjointPartiePrenante.getDateEtatCivil(), conjointPartiePrenante.getEtatCivil(), conjointPartiePrenante.getDateSeparation(), conjointData);
+					}
+				}
+
+				// couple ou pas couple, on crée la situation de famille fiscale sur la personne physique
+				gererSituationFamille(ppSrc.getDateEtatCivil(), ppSrc.getEtatCivil(), ppSrc.getDateSeparation(), data);
+
+				// pas la peine d'aller regarder l'autre partie prenante si on a déjà constitué un couple avec elle...
+				if (conjointAutrePartiePrenante) {
+					break;
+				}
+			}
+		}
+	}
+
+	private void gererSituationFamille(RegDate dateEtatCivil, EtatCivil etatCivil, @Nullable RegDate dateSeparation, ProcessingDataPartiePrenante data) {
+		final List<SituationFamille> sfs = data.personnePhysique.getSituationsFamilleSorted();
+		final RegDate effDateEtatCivil = getDateEffectiveEtatCivil(dateEtatCivil, dateSeparation);
+		final SituationFamille sf = sfs != null ? DateRangeHelper.rangeAt(sfs, effDateEtatCivil) : null;
+		final EtatCivil effEtatCivil = getEtatCivilEffectif(effDateEtatCivil, etatCivil, dateSeparation);
+		if (sf == null || sf.getEtatCivil() != effEtatCivil) {
+			// fermeture de la situation de famille encore ouverte et annulation des situations de familles éventuelles ultérieures
+			if (sfs != null) {
+				for (SituationFamille curseur : sfs) {
+					if (RegDateHelper.isAfterOrEqual(curseur.getDateDebut(), effDateEtatCivil, NullDateBehavior.EARLIEST)) {
+						curseur.setAnnule(true);
+					}
+					else if (curseur.getDateFin() == null) {
+						curseur.setDateFin(effDateEtatCivil.getOneDayBefore());
+					}
+				}
+			}
+
+			// mise en place de la nouvelle situation de famille
+			final SituationFamille newSf = new SituationFamillePersonnePhysique();
+			newSf.setDateDebut(effDateEtatCivil);
+			newSf.setEtatCivil(effEtatCivil);
+			data.personnePhysique.addSituationFamille(newSf);
+
+			if (!data.creation) {
+				data.elementsRemarque.add(String.format("Etat civil au %s : %s -> %s", RegDateHelper.dateToDisplayString(effDateEtatCivil), toString(sf != null ? sf.getEtatCivil() : null), toString(effEtatCivil)));
+			}
+		}
+	}
+
+	private static RegDate getDateEffectiveEtatCivil(RegDate dateEtatCivil, @Nullable RegDate dateSeparation) {
+		return RegDateHelper.maximum(dateEtatCivil, dateSeparation, NullDateBehavior.EARLIEST);
+	}
+
+	private static EtatCivil getEtatCivilEffectif(RegDate dateReference, EtatCivil etatCivilPartiePrenante, @Nullable RegDate dateSeparation) {
+		if (dateSeparation != null && dateSeparation.compareTo(dateReference) <= 0) {
+			switch (etatCivilPartiePrenante) {
+			case MARIE:
+				return EtatCivil.SEPARE;
+			case LIE_PARTENARIAT_ENREGISTRE:
+				return EtatCivil.PARTENARIAT_SEPARE;
+			}
+
+			// TODO faudrait-il exploser ici, car on a une date de séparation avec un état civil qui ne le supporte pas... ?
+		}
+		return etatCivilPartiePrenante;
+	}
+
+	/**
+	 * Crée (ou trouve et modifie les données simples + adresse) les personnes physiques associées aux parties prenantes
+	 * @param evt événement reçu de eReqDes
+	 * @param partiesPrenantes parties prenantes de l'unité de traitement
+	 * @param warningCollector collecteurs d'avertissements
+	 * @return map (la clé est l'ID de la partie prenante) des personnes physiques créées/trouvées (rien n'est créé si la source de la partie prenante est civile)
+	 * @throws EvenementReqDesException en cas d'erreur
+	 */
+	private Map<Long, ProcessingDataPartiePrenante> findOrCreatePersonnesPhysiques(EvenementReqDes evt, Set<PartiePrenante> partiesPrenantes, MessageCollector warningCollector) throws EvenementReqDesException {
+		final RegDate dateActe = evt.getDateActe();
+		final Map<Long, ProcessingDataPartiePrenante> map = new HashMap<>(partiesPrenantes.size());
+		for (PartiePrenante ppSrc : partiesPrenantes) {
+			final ProcessingDataPartiePrenante data;
 			if (ppSrc.isSourceCivile()) {
 				// on ne fait rien sur une partie prenante qui vient du civil
-				ppDest = null;
+				data = null;
 			}
 			else if (ppSrc.getNumeroContribuable() != null) {
 				final Tiers tiers = tiersService.getTiers(ppSrc.getNumeroContribuable());
@@ -560,35 +763,60 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 				if (!(tiers instanceof PersonnePhysique)) {
 					throw new EvenementReqDesException(String.format("Le tiers %s n'est pas une personne physique.", FormatNumeroHelper.numeroCTBToDisplay(ppSrc.getNumeroContribuable())));
 				}
-				ppDest = (PersonnePhysique) tiers;
+				final PersonnePhysique ppDest = (PersonnePhysique) tiers;
+				data = new ProcessingDataPartiePrenante(false, ppDest);
 
 				// vérification que l'on n'est pas en train de vouloir modifier un Vaudois
 				checkForEtResidenceAvantModification(ppDest, dateActe);
 
 				// mise à jour des informations de base et premiers éléments constitutifs de la remarque éventuelle à ajouter au tiers
-				final List<String> elementsRemarque = updatePersonnePhysiqueConnue(ppSrc, ppDest);
+				data.elementsRemarque.addAll(updatePersonnePhysiqueConnue(ppSrc, ppDest));
 
 				// mise à jour de l'adresse courrier (ou addition d'une nouvelle remarque)
-				elementsRemarque.addAll(updateAdresse(ppSrc, ppDest, dateActe, warningCollector));
-
-				// construction d'une remarque avec les données déjà récoltées
-				if (!elementsRemarque.isEmpty()) {
-					addRemarqueModification(ppDest, elementsRemarque, evt);
-				}
+				data.elementsRemarque.addAll(updateAdresse(ppSrc, ppDest, dateActe, warningCollector));
 			}
 			else {
-				ppDest = createPersonnePhysique(ppSrc);
+				final PersonnePhysique ppDest = createPersonnePhysique(ppSrc);
 				addAdresseCourrier(ppSrc, ppDest, dateActe);
-				addRemarqueCreation(ppDest, evt);
+
+				data = new ProcessingDataPartiePrenante(true, ppDest);
 			}
 
 			// on collecte les personnes physiques concernées
-			personnesPhysiques.put(ppSrc.getId(), ppDest);
+			map.put(ppSrc.getId(), data);
 		}
+		return map;
+	}
 
-		// TODO reste à mettre à jour les états civils et les éventuels liens d'appartenance ménage
+	private static enum ModeTraitementCouple {
+		/**
+		 * les deux conjoints connus viennent d'être créés
+		 */
+		CREATION_PURE,
 
-		// TODO reste enfin à metre à jour les fors fiscaux
+		/**
+		 * les deux conjoints connus existaient déjà
+		 */
+		MODIFICATION_PURE,
+
+		/**
+		 * l'un des conjoints a été créé, l'autre existait déjà
+		 */
+		MIXTE
+	}
+
+	/**
+	 * @param modeCreationPrincipal <code>true</code> si le contribuable principal a été créé par ce traitement, <code>false</code> s'il existait déjà
+	 * @param modeCreationConjoint <code>true</code> si le contribuable principal a été créé par ce traitement, <code>false</code> s'il existait déjà, et <code>null</code> s'il est inconnu
+	 * @return le mode de création du couple
+	 */
+	private static ModeTraitementCouple determineModeTraitementCouple(boolean modeCreationPrincipal, @Nullable Boolean modeCreationConjoint) {
+		if (modeCreationConjoint == null || modeCreationPrincipal == modeCreationConjoint) {
+			return modeCreationPrincipal ? ModeTraitementCouple.CREATION_PURE : ModeTraitementCouple.MODIFICATION_PURE;
+		}
+		else {
+			return ModeTraitementCouple.MIXTE;
+		}
 	}
 
 	/**
@@ -864,6 +1092,14 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 	private PersonnePhysique createPersonnePhysique(PartiePrenante ppSrc) throws EvenementReqDesException {
 		final PersonnePhysique pp = new PersonnePhysique(Boolean.FALSE);
 		dumpBaseDataToPersonnePhysique(ppSrc, pp, false);
+		return hibernateTemplate.merge(pp);
+	}
+
+	private PersonnePhysique createConjointMinimal(String nom, String prenoms) {
+		final PersonnePhysique pp = new PersonnePhysique(Boolean.FALSE);
+		pp.setNom(nom);
+		pp.setTousPrenoms(prenoms);
+		pp.setPrenomUsuel(extractPrenomUsuel(prenoms));
 		return hibernateTemplate.merge(pp);
 	}
 
