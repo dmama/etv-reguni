@@ -17,6 +17,7 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.utils.ExceptionUtils;
+import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.BlockingQueuePollingThread;
 import ch.vd.uniregctb.common.Dated;
@@ -290,5 +291,6 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 	 */
 	private void doProcessing(EvenementReqDes evt, Set<PartiePrenante> partiesPrenantes) throws EvenementReqDesException {
 		// TODO à faire
+		throw new NotImplementedException("Traitement non implémenté");
 	}
 }

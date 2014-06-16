@@ -12,6 +12,7 @@
 		<property name="evenementDAO" ref="reqdesEvenementDAO"/>
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 		<property name="transactionManager" ref="transactionManager"/>
+		<property name="processor" ref="reqdesEventProcessor"/>
 	</bean>
 
 	<bean id="reqdesEventEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">
@@ -27,6 +28,12 @@
 		<property name="messageListener" ref="reqdesEventListener"/>
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="autoStartup" value="${extprop.jms.queue.reqdes.event.enabled}" />
+	</bean>
+
+	<bean id="reqdesEventProcessor" class="ch.vd.uniregctb.evenement.reqdes.engine.EvenementReqDesProcessorImpl">
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="uniteTraitementDAO" ref="reqdesUniteTraitementDAO"/>
 	</bean>
 
 </beans>
