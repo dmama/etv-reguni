@@ -6,6 +6,39 @@ package ch.vd.uniregctb.evenement.reqdes.engine;
 public interface EvenementReqDesProcessor {
 
 	/**
+	 * Interface à implémenter par celui qui veut être notifié de l'avancement des travaux
+	 */
+	public static interface Listener {
+
+		/**
+		 * Appelé à chaque fois qu'une unité de traitement a été traitée
+		 * @param idUniteTraitement identifiant de l'unité traitée
+		 */
+		void onUniteTraite(long idUniteTraitement);
+
+		/**
+		 * Appelé quand l'arrêt du processeur est demandé (= arrêt de l'application)
+		 */
+		void onStop();
+	}
+
+	/**
+	 * Interface de marquage du handle servant à identifier un listener
+	 */
+	static interface ListenerHandle {}
+
+	/**
+	 * @param listener nouveau listener qui veut être notifié
+	 * @return un handle qui devra être fourni à la méthode {@link #unregisterListener} à la fin de la période de notification
+	 */
+	ListenerHandle registerListener(Listener listener);
+
+	/**
+	 * @param handle handle retourné au moment de l'enregistrement du listener qui ne veut plus être notifié
+	 */
+	void unregisterListener(ListenerHandle handle);
+
+	/**
 	 * Demande le traitement asynchrone de l'unité de traitement identifiée par son ID technique
 	 * @param id ID technique de l'unité de traitement à lancer
 	 */

@@ -30,7 +30,6 @@ public class UniteTraitement extends HibernateEntity {
 	private EtatTraitement etat;
 	private Date dateTraitement;
 	private Set<PartiePrenante> partiesPrenantes;
-	private Set<TransactionImmobiliere> transactions;
 	private Set<ErreurTraitement> erreurs;
 	private EvenementReqDes evenement;
 

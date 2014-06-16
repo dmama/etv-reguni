@@ -32,6 +32,14 @@ public class ErreurTraitement extends HibernateEntity {
 	private String callstack;
 	private TypeErreur type;
 
+	public ErreurTraitement() {
+	}
+
+	public ErreurTraitement(TypeErreur type, String message) {
+		this.message = message;
+		this.type = type;
+	}
+
 	@Transient
 	@Override
 	public Object getKey() {

@@ -242,7 +242,7 @@ public class ReqDesEventHandlerTest extends BusinessTest {
 					Assert.assertNull(pp.getConjointPartiePrenante());
 					Assert.assertEquals(date(2012, 5, 24), pp.getDateDeces());
 					Assert.assertNull(pp.getNumeroContribuable());
-					Assert.assertEquals((Integer) MockPays.RoyaumeUni.getNoOFS(), pp.getNoOfsPaysNationalite());
+					Assert.assertEquals((Integer) MockPays.RoyaumeUni.getNoOFS(), pp.getOfsPaysNationalite());
 					Assert.assertEquals(CategorieEtranger._03_ETABLI_C, pp.getCategorieEtranger());
 					Assert.assertEquals(1, pp.getRoles().size());
 
@@ -279,7 +279,7 @@ public class ReqDesEventHandlerTest extends BusinessTest {
 						Assert.assertSame(sortedPPs.get(1), pp.getConjointPartiePrenante());    // même session hibernate + même entité en base -> même objet en mémoire...
 						Assert.assertNull(pp.getDateDeces());
 						Assert.assertNull(pp.getNumeroContribuable());
-						Assert.assertEquals((Integer) MockPays.Apatridie.getNoOFS(), pp.getNoOfsPaysNationalite());
+						Assert.assertEquals((Integer) MockPays.Apatridie.getNoOFS(), pp.getOfsPaysNationalite());
 						Assert.assertEquals(CategorieEtranger._03_ETABLI_C, pp.getCategorieEtranger());
 						Assert.assertEquals(2, pp.getRoles().size());
 
@@ -311,7 +311,7 @@ public class ReqDesEventHandlerTest extends BusinessTest {
 						Assert.assertSame(sortedPPs.get(0), pp.getConjointPartiePrenante());    // même session hibernate + même entité en base -> même objet en mémoire...
 						Assert.assertNull(pp.getDateDeces());
 						Assert.assertEquals((Long) noCtb, pp.getNumeroContribuable());
-						Assert.assertEquals((Integer) MockPays.Suisse.getNoOFS(), pp.getNoOfsPaysNationalite());
+						Assert.assertEquals((Integer) MockPays.Suisse.getNoOFS(), pp.getOfsPaysNationalite());
 						Assert.assertNull(pp.getCategorieEtranger());
 						Assert.assertEquals(1, pp.getRoles().size());
 

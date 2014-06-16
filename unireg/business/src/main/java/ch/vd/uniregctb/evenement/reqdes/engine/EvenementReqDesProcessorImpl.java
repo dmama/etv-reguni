@@ -1,36 +1,50 @@
 package ch.vd.uniregctb.evenement.reqdes.engine;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.DateHelper;
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.ExceptionUtils;
 import ch.vd.registre.base.utils.NotImplementedException;
+import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.BlockingQueuePollingThread;
 import ch.vd.uniregctb.common.Dated;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.reqdes.ErreurTraitement;
 import ch.vd.uniregctb.reqdes.EtatTraitement;
 import ch.vd.uniregctb.reqdes.EvenementReqDes;
 import ch.vd.uniregctb.reqdes.InformationsActeur;
 import ch.vd.uniregctb.reqdes.PartiePrenante;
+import ch.vd.uniregctb.reqdes.RolePartiePrenante;
 import ch.vd.uniregctb.reqdes.UniteTraitement;
 import ch.vd.uniregctb.reqdes.UniteTraitementDAO;
-import ch.vd.uniregctb.transaction.TransactionManager;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
+import ch.vd.uniregctb.type.EtatCivil;
 
 /**
  * Traitement des unités de traitement issues des événements eReqDes
@@ -44,10 +58,23 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 	private final BlockingQueue<QueueElement> queue = new LinkedBlockingQueue<>();
 
 	private WorkerThread workerThread;
+	private final Map<Long, Listener> listeners = new LinkedHashMap<>();      // pour les tests, c'est pratique de conserver l'ordre (pour le reste, cela ne fait pas de mal...)
 
-	private TransactionManager transactionManager;
+	private PlatformTransactionManager transactionManager;
 	private HibernateTemplate hibernateTemplate;
 	private UniteTraitementDAO uniteTraitementDAO;
+	private ServiceInfrastructureService infraService;
+
+	/**
+	 * Handle utilisé pour les listeners de traitement
+	 */
+	private static class HandleImpl implements ListenerHandle {
+		private static final AtomicLong SEQUENCE = new AtomicLong(0L);
+		private final long id;
+		private HandleImpl() {
+			id = SEQUENCE.getAndIncrement();
+		}
+	}
 
 	/**
 	 * Classe des éléments dans la queue de synchronisation (on conserve leur timestamp
@@ -83,9 +110,21 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 		protected void processElement(@NotNull QueueElement element) {
 			processUniteTraitement(element.idUniteTraitement);
 		}
+
+		@Override
+		protected void onElementProcessed(@NotNull QueueElement element, @Nullable Throwable t) {
+			super.onElementProcessed(element, t);
+			notifyTraitementUnite(element.idUniteTraitement);
+		}
+
+		@Override
+		protected void onStop() {
+			notifyStopTraitement();
+			super.onStop();
+		}
 	}
 
-	public void setTransactionManager(TransactionManager transactionManager) {
+	public void setTransactionManager(PlatformTransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
 	}
 
@@ -97,11 +136,77 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 		this.hibernateTemplate = hibernateTemplate;
 	}
 
+	public void setInfraService(ServiceInfrastructureService infraService) {
+		this.infraService = infraService;
+	}
+
 	/**
 	 * @return un timestamp en nano-secondes
 	 */
 	private static long getTimestamp() {
 		return System.nanoTime();
+	}
+
+	@Override
+	public ListenerHandle registerListener(Listener listener) {
+		if (listener == null) {
+			throw new NullPointerException("listener");
+		}
+
+		final HandleImpl handle = new HandleImpl();
+		synchronized (listeners) {
+			listeners.put(handle.id, listener);
+		}
+		return handle;
+	}
+
+	@Override
+	public void unregisterListener(ListenerHandle handle) {
+		if (!(handle instanceof HandleImpl)) {
+			throw new IllegalArgumentException("Invalid handle");
+		}
+		synchronized (listeners) {
+			if (listeners.remove(((HandleImpl) handle).id) == null) {
+				throw new IllegalArgumentException("Unknown handle");
+			}
+		}
+	}
+
+	/**
+	 * Appelé par le thread de traitement à chaque traitement terminé
+	 * @param idUniteTraitement identifiant de l'unité traitée
+	 */
+	private void notifyTraitementUnite(long idUniteTraitement) {
+		synchronized (listeners) {
+			if (!listeners.isEmpty()) {
+				for (Listener listener : listeners.values()) {
+					try {
+						listener.onUniteTraite(idUniteTraitement);
+					}
+					catch (Exception e) {
+						// pas grave...
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Appelé par le thread de traitement avant de s'arrêter
+	 */
+	private void notifyStopTraitement() {
+		synchronized (listeners) {
+			if (!listeners.isEmpty()) {
+				for (Listener listener : listeners.values()) {
+					try {
+						listener.onStop();
+					}
+					catch (Exception e) {
+						// pas grave...
+					}
+				}
+			}
+		}
 	}
 
 	@Override
@@ -182,7 +287,7 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 				}
 			});
 		}
-		catch (final Exception ex) {
+		catch (Exception ex) {
 			final Exception e;
 			if (ex instanceof ExceptionReqDesWrappingException) {
 				e = ((ExceptionReqDesWrappingException) ex).getCause();
@@ -275,12 +380,107 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 	}
 
 	/**
+	 * Classe interne d'aide à la récolte des erreurs (pour dé-doublonner les messages identiques)
+	 */
+	private static final class ErrorInfo {
+
+		private final ErreurTraitement.TypeErreur typeErreur;
+		private final String message;
+
+		private ErrorInfo(ErreurTraitement.TypeErreur typeErreur, String message) {
+			this.typeErreur = typeErreur;
+			this.message = message;
+			if (typeErreur == null || StringUtils.isBlank(message)) {
+				throw new IllegalArgumentException("typeErreur et message doivent être renseignés.");
+			}
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+
+			final ErrorInfo errorInfo = (ErrorInfo) o;
+			return message.equals(errorInfo.message) && typeErreur == errorInfo.typeErreur;
+		}
+
+		@Override
+		public int hashCode() {
+			int result = typeErreur.hashCode();
+			result = 31 * result + message.hashCode();
+			return result;
+		}
+	}
+
+	/**
 	 * Effectue les contrôles préliminaires sur l'état des données entrantes, en mettant les erreurs/warnings dans l'unité de traitement directement si nécessaire
 	 * @param ut unité de traitement à contrôler
 	 * @throws EvenementReqDesException s'il vaut mieux tout arrêter tant la situation est grave
 	 */
 	private void doControlesPreliminaires(UniteTraitement ut) throws EvenementReqDesException {
-		// TODO à faire
+		final RegDate dateActe = ut.getEvenement().getDateActe();
+		final Set<ErrorInfo> protoErreurs = new HashSet<>();      // pour éviter les doublons d'erreurs
+
+		// vérification de la date de l'acte, qui ne doit pas être dans le futur
+		if (RegDate.get().isBefore(dateActe)) {
+			protoErreurs.add(new ErrorInfo(ErreurTraitement.TypeErreur.ERROR, "La date de l'acte est dans le futur."));
+		}
+
+		final Set<EtatCivil> etatsCivilsSansConjoint = EnumSet.of(EtatCivil.CELIBATAIRE, EtatCivil.VEUF, EtatCivil.DIVORCE, EtatCivil.NON_MARIE,
+		                                                          EtatCivil.PARTENARIAT_DISSOUS_DECES, EtatCivil.PARTENARIAT_DISSOUS_JUDICIAIREMENT);
+
+		for (PartiePrenante pp : ut.getPartiesPrenantes()) {
+			final Integer ofsCommuneDomicile = pp.getOfsCommune();
+			if (ofsCommuneDomicile != null) {
+				// problématique des fractions (-> les fors ne peuvent pas être ouverts sur les communes faîtières de fractions)
+				final Commune commune = infraService.getCommuneByNumeroOfs(ofsCommuneDomicile, dateActe);
+				protoErreurs.addAll(getErreursTraitementPourCommune(ofsCommuneDomicile, dateActe, commune));
+
+				// la commune de résidence ne doit pas être vaudoise pour une mise à jour automatique
+				if (commune != null && commune.isVaudoise()) {
+					protoErreurs.add(new ErrorInfo(ErreurTraitement.TypeErreur.ERROR, String.format("La commune de résidence (%s/%d) est vaudoise.", commune.getNomOfficiel(), ofsCommuneDomicile)));
+				}
+			}
+
+			// problématique des fractions (-> les fors ne peuvent pas être ouverts sur les communes faîtières de fractions)
+			for (RolePartiePrenante role : pp.getRoles()) {
+				final int ofsCommuneImmeuble = role.getTransaction().getOfsCommune();
+				final Commune commune = infraService.getCommuneByNumeroOfs(ofsCommuneImmeuble, dateActe);
+				protoErreurs.addAll(getErreursTraitementPourCommune(ofsCommuneImmeuble, dateActe, commune));
+			}
+
+			// vérification qu'une partie prenante célibataire (ou assimilée comme telle) n'est pas indiquée avec un conjoint
+			final EtatCivil etatCivil = pp.getEtatCivil();
+			if (etatsCivilsSansConjoint.contains(etatCivil)) {
+				if (pp.getConjointPartiePrenante() != null || StringUtils.isNotBlank(pp.getNomConjoint()) || StringUtils.isNotBlank(pp.getPrenomConjoint())) {
+					protoErreurs.add(new ErrorInfo(ErreurTraitement.TypeErreur.ERROR, String.format("Incohérence entre l'état civil (%s) et la présence d'un conjoint.", etatCivil.format())));
+				}
+			}
+
+			// vérification que les liens sont bien bi-directionnels
+			if (pp.getConjointPartiePrenante() != null && pp.getConjointPartiePrenante().getConjointPartiePrenante() != pp) {
+				protoErreurs.add(new ErrorInfo(ErreurTraitement.TypeErreur.ERROR, "Liens matrimoniaux incohérents entres les parties prenantes."));
+			}
+		}
+
+		// recopie des erreurs collectées dans l'unité de traitement
+		if (!protoErreurs.isEmpty()) {
+			final Set<ErreurTraitement> erreurs = ut.getErreurs();
+			for (ErrorInfo info : protoErreurs) {
+				erreurs.add(new ErreurTraitement(info.typeErreur, info.message));
+			}
+		}
+	}
+
+	private static List<ErrorInfo> getErreursTraitementPourCommune(int noOfsCommune, RegDate dateActe, Commune commune) throws EvenementReqDesException {
+		final List<ErrorInfo> erreurs = new ArrayList<>(1);
+		if (commune == null) {
+			erreurs.add(new ErrorInfo(ErreurTraitement.TypeErreur.ERROR, String.format("Commune %d inconnue au %s.", noOfsCommune, RegDateHelper.dateToDisplayString(dateActe))));
+		}
+		else if (commune.isPrincipale()) {
+			erreurs.add(new ErrorInfo(ErreurTraitement.TypeErreur.ERROR, String.format("La commune '%s' (%d) est une commune faîtière de fractions.", commune.getNomOfficiel(), noOfsCommune)));
+		}
+		return erreurs;
 	}
 
 	/**

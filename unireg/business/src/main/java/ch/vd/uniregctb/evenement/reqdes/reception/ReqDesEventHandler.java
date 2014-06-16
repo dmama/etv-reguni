@@ -317,7 +317,7 @@ public class ReqDesEventHandler implements EsbMessageHandler {
 		pp.setDateEtatCivil(src.getDateDebutEtatCivil());
 		pp.setDateSeparation(src.getDateSeparation());
 		if (src.getNationalite() != null) {
-			pp.setNoOfsPaysNationalite(src.getNationalite().getPays().getNoOFS());
+			pp.setOfsPaysNationalite(src.getNationalite().getPays().getNoOFS());
 		}
 		if (src.getPermis() != null) {
 			pp.setCategorieEtranger(CategorieEtranger.valueOf(src.getPermis().getTypePermis()));

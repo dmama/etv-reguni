@@ -49,7 +49,7 @@ public class PartiePrenante extends HibernateEntity {
 	private EtatCivil etatCivil;
 	private RegDate dateEtatCivil;
 	private RegDate dateSeparation;
-	private Integer noOfsPaysNationalite;
+	private Integer ofsPaysNationalite;
 	private CategorieEtranger categorieEtranger;
 
 	private String nomConjoint;
@@ -230,12 +230,12 @@ public class PartiePrenante extends HibernateEntity {
 	}
 
 	@Column(name = "OFS_PAYS_NATIONALITE")
-	public Integer getNoOfsPaysNationalite() {
-		return noOfsPaysNationalite;
+	public Integer getOfsPaysNationalite() {
+		return ofsPaysNationalite;
 	}
 
-	public void setNoOfsPaysNationalite(Integer noOfsPaysNationalite) {
-		this.noOfsPaysNationalite = noOfsPaysNationalite;
+	public void setOfsPaysNationalite(Integer ofsPaysNationalite) {
+		this.ofsPaysNationalite = ofsPaysNationalite;
 	}
 
 	@Column(name = "CATEGORIE_ETRANGER", length = LengthConstants.TIERS_CATETRANGER)

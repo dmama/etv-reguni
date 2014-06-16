@@ -34,6 +34,7 @@
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="uniteTraitementDAO" ref="reqdesUniteTraitementDAO"/>
+		<property name="infraService" ref="serviceInfrastructureService"/>
 	</bean>
 
 </beans>
