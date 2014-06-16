@@ -92,7 +92,7 @@ public class ImpressionBordereauMouvementDossierHelperImpl extends EditiqueAbstr
 			dossier.setNumCTB(FormatNumeroHelper.numeroCTBToDisplay(ctb.getNumero()));
 			if (ctb instanceof PersonnePhysique) {
 				final PersonnePhysique pp = (PersonnePhysique) ctb;
-				final NomPrenom nomPrenom = tiersService.getDecompositionNomPrenom(pp);
+				final NomPrenom nomPrenom = tiersService.getDecompositionNomPrenom(pp, false);
 				dossier.setNom1(nomPrenom.getNom());
 				dossier.setPrenom1(nomPrenom.getPrenom());
 				dossier.setNom2(null);
@@ -102,14 +102,14 @@ public class ImpressionBordereauMouvementDossierHelperImpl extends EditiqueAbstr
 				final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple((MenageCommun) ctb, null);
 				final PersonnePhysique principal = ensemble.getPrincipal();
 				if (principal != null) {
-					final NomPrenom nomPrenom = tiersService.getDecompositionNomPrenom(principal);
+					final NomPrenom nomPrenom = tiersService.getDecompositionNomPrenom(principal, false);
 					dossier.setNom1(nomPrenom.getNom());
 					dossier.setPrenom1(nomPrenom.getPrenom());
 				}
 
 				final PersonnePhysique conjoint = ensemble.getConjoint(principal);
 				if (conjoint != null) {
-					final NomPrenom nomPrenom = tiersService.getDecompositionNomPrenom(conjoint);
+					final NomPrenom nomPrenom = tiersService.getDecompositionNomPrenom(conjoint, false);
 					dossier.setNom2(nomPrenom.getNom());
 					dossier.setPrenom2(nomPrenom.getPrenom());
 				}

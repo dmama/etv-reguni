@@ -220,7 +220,7 @@ public abstract class ExtractionDonneesRptResults extends ListesResults<Extracti
 		final Long noCtbConjoint;
 		if (ctb instanceof PersonnePhysique) {
 			final PersonnePhysique pp = (PersonnePhysique) ctb;
-			final NomPrenom nomPrenom = tiersService.getDecompositionNomPrenom(pp);
+			final NomPrenom nomPrenom = tiersService.getDecompositionNomPrenom(pp, false);
 			if (nomPrenom != null) {
 				nom = nomPrenom.getNom();
 				prenom = nomPrenom.getPrenom();
@@ -243,7 +243,7 @@ public abstract class ExtractionDonneesRptResults extends ListesResults<Extracti
 			}
 
 			final PersonnePhysique principal = couple.getPrincipal();
-			final NomPrenom nomPrenom = tiersService.getDecompositionNomPrenom(principal);
+			final NomPrenom nomPrenom = tiersService.getDecompositionNomPrenom(principal, false);
 			if (nomPrenom != null) {
 				nom = nomPrenom.getNom();
 				prenom = nomPrenom.getPrenom();

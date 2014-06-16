@@ -27,6 +27,11 @@ public class HibernateTemplateImpl implements HibernateTemplate {
 		return sessionFactory.getCurrentSession();
 	}
 
+	@Override
+	public <T> void delete(T entity) {
+		getCurrentSession().delete(entity);
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T> T merge(T entity) {

@@ -478,7 +478,7 @@ public class ImportImmeublesProcessor {
 	}
 
 	private String buildPersonnePhysiqueDetails(PersonnePhysique pp) {
-		final NomPrenom nomPrenom = tiersService.getDecompositionNomPrenom(pp);
+		final NomPrenom nomPrenom = tiersService.getDecompositionNomPrenom(pp, false);
 		final Sexe sexe = tiersService.getSexe(pp);
 		return String.format("numéro=%d, prénom='%s', nom='%s', date de naissance=%s, sexe=%s", pp.getNumero(), nomPrenom.getPrenom(), nomPrenom.getNom(),
 				RegDateHelper.dateToDisplayString(tiersService.getDateNaissance(pp)), (sexe == null ? "inconnu" : (sexe == Sexe.MASCULIN ? "masculin" : "féminin")));

@@ -219,9 +219,10 @@ public interface ServiceCivilService {
 	 * Retourne les nom et prénoms de l'individu spécifié, dans deux champs distincts
 	 *
 	 * @param individu un individu
+	 * @param tousPrenoms <code>true</code> si tous les prénoms du tiers doivent être utilisés, <code>false</code> si seul le prénom usuel doit être pris
 	 * @return une pair composée du (ou des) prénom(s) (premier élément) et du nom (deuxième élément) de l'individu (ou {@link NomPrenom#VIDE} si l'individu est inconnu)
 	 */
-	NomPrenom getDecompositionNomPrenom(Individu individu);
+	NomPrenom getDecompositionNomPrenom(Individu individu, boolean tousPrenoms);
 
 	/**
 	 * Renvoie un individu correspondant à l'événement donné

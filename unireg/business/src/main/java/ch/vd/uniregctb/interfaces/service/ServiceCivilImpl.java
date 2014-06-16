@@ -223,7 +223,7 @@ public class ServiceCivilImpl implements ServiceCivilService, ServiceCivilServic
 	@Override
 	public String getNomPrenom(Individu individu) {
 		final String resultat;
-		final NomPrenom nomPrenom = getDecompositionNomPrenom(individu);
+		final NomPrenom nomPrenom = getDecompositionNomPrenom(individu, false);
 		if (nomPrenom != null) {
 			resultat = nomPrenom.getNomPrenom();
 		}
@@ -235,17 +235,19 @@ public class ServiceCivilImpl implements ServiceCivilService, ServiceCivilServic
 
 	/**
 	 * Retourne les nom et prénoms de l'individu spécifié, dans deux champs distincts
+	 *
 	 * @param individu un individu
+	 * @param tousPrenoms <code>true</code> si tous les prénoms du tiers doivent être utilisés, <code>false</code> si seul le prénom usuel doit être pris
 	 * @return une pair composée du (ou des) prénom(s) (premier élément) et du nom (deuxième élément) de l'individu
 	 */
 	@Override
-	public NomPrenom getDecompositionNomPrenom(Individu individu) {
+	public NomPrenom getDecompositionNomPrenom(Individu individu, boolean tousPrenoms) {
 
 		if (individu == null) {
 			return null;
 		}
 
-		return new NomPrenom(individu.getNom(), individu.getPrenomUsuel());
+		return new NomPrenom(individu.getNom(), tousPrenoms ? individu.getTousPrenoms() : individu.getPrenomUsuel());
 	}
 
 	/**

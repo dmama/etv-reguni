@@ -1393,19 +1393,21 @@ public class TiersServiceImpl implements TiersService {
 	 * Retourne les nom et prénoms de la personne physique spécifiée
 	 *
 	 * @param pp personne physique dont on veut le nom
+	 * @param tousPrenoms <code>true</code> si tous les prénoms du tiers doivent être utilisés, <code>false</code> si seul le prénom usuel doit être pris
 	 * @return une pair composée du (ou des) prénom(s) (premier élément) et du nom (deuxième élément) de la personne physique ( ou {@link NomPrenom#VIDE} si la donnée est inconnue)
 	 */
 	@Override
-	public NomPrenom getDecompositionNomPrenom(PersonnePhysique pp) {
+	public NomPrenom getDecompositionNomPrenom(PersonnePhysique pp, boolean tousPrenoms) {
 		if (pp.isHabitantVD()) {
 			final Individu individu = getIndividu(pp);
 			if (individu == null) {
 				throw new IndividuNotFoundException(pp.getNumeroIndividu());
 			}
-			return serviceCivilService.getDecompositionNomPrenom(individu);
+			return serviceCivilService.getDecompositionNomPrenom(individu, tousPrenoms);
 		}
 		else {
-			return new NomPrenom(pp.getNom(), pp.getPrenomUsuel());
+			final String prenoms = tousPrenoms && StringUtils.isNotBlank(pp.getTousPrenoms()) ? pp.getTousPrenoms() : pp.getPrenomUsuel();
+			return new NomPrenom(pp.getNom(), prenoms);
 		}
 	}
 
@@ -3221,12 +3223,12 @@ public class TiersServiceImpl implements TiersService {
     @Override
     public String getNomPrenom(PersonnePhysique personne) {
         Assert.notNull(personne);
-        final NomPrenom nomPrenom = getDecompositionNomPrenom(personne);
+        final NomPrenom nomPrenom = getDecompositionNomPrenom(personne, false);
         return nomPrenom.getNomPrenom();
     }
 
     private String getNom(PersonnePhysique personne) {
-        final NomPrenom nomPrenom = getDecompositionNomPrenom(personne);
+        final NomPrenom nomPrenom = getDecompositionNomPrenom(personne, false);
         return nomPrenom.getNom();
     }
 
@@ -3240,7 +3242,7 @@ public class TiersServiceImpl implements TiersService {
 
     @Override
     public NomPrenom getDecompositionNomPrenom(Individu individu) {
-        return serviceCivilService.getDecompositionNomPrenom(individu);
+        return serviceCivilService.getDecompositionNomPrenom(individu, false);
     }
 
     /**

@@ -12,6 +12,13 @@ import org.jetbrains.annotations.Nullable;
 public interface HibernateTemplate {
 
 	/**
+	 * Remove an entity (to be used with caution !!)
+	 * @param entity entity to remove
+	 * @param <T> type of the entity
+	 */
+	<T> void delete(T entity);
+
+	/**
 	 * Save or update given entity, returning value after save
 	 * @param entity entity to save or update
 	 * @param <T> entity type

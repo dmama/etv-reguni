@@ -372,7 +372,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl extends EditiqueAbstr
 				for (PersonnePhysique enfant : enfants) {
 					final String navs13 = calculAVS(anneeDeclaration, enfant);
 					final String dateNaissance = calculDateNaissance(enfant);
-					final NomPrenom nomPrenom = tiersService.getDecompositionNomPrenom(enfant);
+					final NomPrenom nomPrenom = tiersService.getDecompositionNomPrenom(enfant, false);
 					DIRetourCivilEnfant.Enfants.Enfant diEnfant = diEnfants.addNewEnfant();
 					diEnfant.setNAVS13(navs13);
 					diEnfant.setPRENOM(nomPrenom.getPrenom());

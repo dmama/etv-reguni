@@ -207,7 +207,7 @@ public class RapprocherCtbProcessor {
 	private void traiterPersonnePhysique(ProprietaireRapproche proprietaireRapproche, PersonnePhysique personne) {
 		if (personne.isConnuAuCivil()) {
 			final Long numeroCtb = personne.getNumero();
-			final NomPrenom nomPrenom = tiersService.getDecompositionNomPrenom(personne);
+			final NomPrenom nomPrenom = tiersService.getDecompositionNomPrenom(personne, false);
 			final String nom = nomPrenom.getNom();
 			final String prenom = nomPrenom.getPrenom();
 			final RegDate dateNaissance = tiersService.getDateNaissance(personne);
@@ -253,14 +253,14 @@ public class RapprocherCtbProcessor {
 		else {
 
 			final Long numeroCtbPrincipal = principal.getNumero();
-			final NomPrenom nomPrenomPrincipal = tiersService.getDecompositionNomPrenom(principal);
+			final NomPrenom nomPrenomPrincipal = tiersService.getDecompositionNomPrenom(principal, false);
 			final String nomPrincipal = nomPrenomPrincipal.getNom();
 			final String prenomPrincipal = nomPrenomPrincipal.getPrenom();
 			final RegDate dateNaissancePrincipal = tiersService.getDateNaissance(principal);
 
 			final Long numeroCtbConjoint = conjoint.getNumero();
 
-			final NomPrenom nomPrenomConjoint = tiersService.getDecompositionNomPrenom(conjoint);
+			final NomPrenom nomPrenomConjoint = tiersService.getDecompositionNomPrenom(conjoint, false);
 			final String nomConjoint = nomPrenomConjoint.getNom();
 			final String prenomConjoint = nomPrenomConjoint.getPrenom();
 			final RegDate dateNaissanceConjoint = tiersService.getDateNaissance(conjoint);

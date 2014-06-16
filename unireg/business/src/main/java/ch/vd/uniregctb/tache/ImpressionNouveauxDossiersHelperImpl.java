@@ -115,7 +115,7 @@ public class ImpressionNouveauxDossiersHelperImpl extends EditiqueAbstractHelper
 			final MenageCommun menage = (MenageCommun) contribuable;
 			final EnsembleTiersCouple ensembleTiersCouple = tiersService.getEnsembleTiersCouple(menage, null);
 			final PersonnePhysique principal = ensembleTiersCouple.getPrincipal();
-			final NomPrenom nomPrenomPrincipal = tiersService.getDecompositionNomPrenom(principal);
+			final NomPrenom nomPrenomPrincipal = tiersService.getDecompositionNomPrenom(principal, false);
 			contrib1.setNom1(nomPrenomPrincipal.getNom());
 			contrib1.setPrenom1(nomPrenomPrincipal.getPrenom());
 			final RegDate dateNaissance = tiersService.getDateNaissance(principal);
@@ -130,7 +130,7 @@ public class ImpressionNouveauxDossiersHelperImpl extends EditiqueAbstractHelper
 			final PersonnePhysique conjoint = ensembleTiersCouple.getConjoint();
 			if (conjoint != null) {
 				final Contrib2 contrib2 = ficheOuvertureDossier.addNewContrib2();
-				final NomPrenom nomPrenomConjoint = tiersService.getDecompositionNomPrenom(conjoint);
+				final NomPrenom nomPrenomConjoint = tiersService.getDecompositionNomPrenom(conjoint, false);
 				contrib2.setNom2(nomPrenomConjoint.getNom());
 				contrib2.setPrenom2(nomPrenomConjoint.getPrenom());
 				final RegDate dateNaissance2 = tiersService.getDateNaissance(conjoint);
@@ -142,7 +142,7 @@ public class ImpressionNouveauxDossiersHelperImpl extends EditiqueAbstractHelper
 		}
 		else if (contribuable instanceof PersonnePhysique) {
 			final PersonnePhysique pp = (PersonnePhysique) contribuable;
-			final NomPrenom nomPrenom = tiersService.getDecompositionNomPrenom(pp);
+			final NomPrenom nomPrenom = tiersService.getDecompositionNomPrenom(pp, false);
 			contrib1.setNom1(nomPrenom.getNom());
 			contrib1.setPrenom1(nomPrenom.getPrenom());
 			final RegDate dateNaissance = tiersService.getDateNaissance(pp);

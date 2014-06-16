@@ -232,7 +232,7 @@ public abstract class ProduireRolesResults<T extends ProduireRolesResults<T>> ex
 		private static void fillNomsPrenomsEtNosAvs(Contribuable ctb, int annee, TiersService tiersService, List<NomPrenom> nomsPrenoms, List<String> nosAvs) {
 			if (ctb instanceof PersonnePhysique) {
 				final PersonnePhysique pp = (PersonnePhysique) ctb;
-				final NomPrenom nomPrenom = tiersService.getDecompositionNomPrenom(pp);
+				final NomPrenom nomPrenom = tiersService.getDecompositionNomPrenom(pp, false);
 				final String noAvs = tiersService.getNumeroAssureSocial(pp);
 				nomsPrenoms.add(nomPrenom);
 				nosAvs.add(noAvs);
@@ -242,11 +242,11 @@ public abstract class ProduireRolesResults<T extends ProduireRolesResults<T>> ex
 				final PersonnePhysique principal = ensemble.getPrincipal();
 				final PersonnePhysique conjoint = ensemble.getConjoint();
 				if (principal != null) {
-					nomsPrenoms.add(tiersService.getDecompositionNomPrenom(principal));
+					nomsPrenoms.add(tiersService.getDecompositionNomPrenom(principal, false));
 					nosAvs.add(tiersService.getNumeroAssureSocial(principal));
 				}
 				if (conjoint != null) {
-					nomsPrenoms.add(tiersService.getDecompositionNomPrenom(conjoint));
+					nomsPrenoms.add(tiersService.getDecompositionNomPrenom(conjoint, false));
 					nosAvs.add(tiersService.getNumeroAssureSocial(conjoint));
 				}
 			}

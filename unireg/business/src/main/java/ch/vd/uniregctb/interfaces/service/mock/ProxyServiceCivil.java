@@ -141,9 +141,9 @@ public class ProxyServiceCivil implements ServiceCivilService, ServiceCivilServi
 	}
 
 	@Override
-	public NomPrenom getDecompositionNomPrenom(Individu individu) {
+	public NomPrenom getDecompositionNomPrenom(Individu individu, boolean tousPrenoms) {
 		assertTargetNotNull();
-		return service.getDecompositionNomPrenom(individu);
+		return service.getDecompositionNomPrenom(individu, tousPrenoms);
 	}
 
 	private void assertTargetNotNull() {

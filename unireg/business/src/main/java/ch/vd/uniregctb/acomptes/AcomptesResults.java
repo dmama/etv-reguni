@@ -155,7 +155,7 @@ public class AcomptesResults extends ListesResults<AcomptesResults> {
     public void addContribuable(Contribuable ctb) {
 
         if (ctb instanceof PersonnePhysique) {
-	        final NomPrenom nomPrenom = tiersService.getDecompositionNomPrenom((PersonnePhysique) ctb);
+	        final NomPrenom nomPrenom = tiersService.getDecompositionNomPrenom((PersonnePhysique) ctb, false);
 	        if (nomPrenom != null) {
                 addContribuable(ctb, nomPrenom.getNom(), nomPrenom.getPrenom());
 	        }
@@ -179,7 +179,7 @@ public class AcomptesResults extends ListesResults<AcomptesResults> {
 		        principal = ensembleTiersCouple.getPrincipal();
 	        }
             if (principal != null) {
-	            final NomPrenom nomPrenom = tiersService.getDecompositionNomPrenom(principal);
+	            final NomPrenom nomPrenom = tiersService.getDecompositionNomPrenom(principal, false);
 	            if (nomPrenom != null) {
                     addContribuable(ctb, nomPrenom.getNom(), nomPrenom.getPrenom());
 	            }

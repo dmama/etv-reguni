@@ -748,9 +748,10 @@ public interface TiersService {
      * Retourne les nom et prénoms de la personne physique spécifiée
      *
      * @param pp personne physique dont on veut le nom
+     * @param tousPrenoms <code>true</code> si tous les prénoms du tiers doivent être utilisés, <code>false</code> si seul le prénom usuel doit être pris
      * @return une pair composée du (ou des) prénom(s) (premier élément) et du nom (deuxième élément) de la personne physique ( ou {@link NomPrenom.VIDE} si la donnée est inconnue)
      */
-    NomPrenom getDecompositionNomPrenom(PersonnePhysique pp);
+    NomPrenom getDecompositionNomPrenom(PersonnePhysique pp, boolean tousPrenoms);
 
     /**
      * Retourne les nom et prénoms pour l'adressage de la personne physique spécifiée.

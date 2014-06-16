@@ -124,7 +124,7 @@ public class IdentificationContribuableRequestHandlerV3 implements Identificatio
 			ctb.setNumeroContribuableIndividuel(idCtb.intValue());
 
 			final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(idCtb);
-			final NomPrenom nomPrenom = tiersService.getDecompositionNomPrenom(pp);
+			final NomPrenom nomPrenom = tiersService.getDecompositionNomPrenom(pp, false);
 			ctb.setNom(tokenize(nomPrenom.getNom(), MAX_NAME_LENGTH));
 			ctb.setPrenom(tokenize(nomPrenom.getPrenom(), MAX_NAME_LENGTH));
 			ctb.setDateNaissance(DataHelper.coreToPartialDateXmlv2(tiersService.getDateNaissance(pp)));

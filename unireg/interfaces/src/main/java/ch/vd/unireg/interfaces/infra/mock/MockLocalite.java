@@ -95,6 +95,7 @@ public class MockLocalite implements Localite {
 		this.nomCompletMinuscule = nomCompletMinuscule;
 		this.nomAbregeMinuscule = nomCompletMinuscule;
 		this.communeLocalite = commune;
+		this.valide = true;
 
 		DefaultMockServiceInfrastructureService.addLocalite(this);
 	}
@@ -107,6 +108,7 @@ public class MockLocalite implements Localite {
 		this.nomCompletMinuscule = nomCompletMinuscule;
 		this.nomAbregeMinuscule = nomAbregeMinuscule;
 		this.communeLocalite = commune;
+		this.valide = true;
 
 		DefaultMockServiceInfrastructureService.addLocalite(this);
 	}

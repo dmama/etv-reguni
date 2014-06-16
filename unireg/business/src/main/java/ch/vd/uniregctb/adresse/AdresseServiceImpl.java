@@ -696,7 +696,7 @@ public class AdresseServiceImpl implements AdresseService {
 	 */
 	private NomPrenom getNomPrenom(PersonnePhysique personne, RegDate date) {
 
-		NomPrenom prenomNom = tiersService.getDecompositionNomPrenom(personne);
+		NomPrenom prenomNom = tiersService.getDecompositionNomPrenom(personne, false);
 
 		// [UNIREG-749] on applique un suffixe 'défunt' aux personnes décédées
 		final boolean estDecede = estDecedeAt(personne, date);

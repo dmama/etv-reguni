@@ -1,6 +1,16 @@
 package ch.vd.uniregctb.type;
 
 public enum Sexe {
-	FEMININ,
-	MASCULIN
+	FEMININ("Féminin"),
+	MASCULIN("Masculin");
+
+	private final String displayName;
+
+	private Sexe(String displayName) {
+		this.displayName = displayName;
+	}
+
+	public String getDisplayName() {
+		return displayName;
+	}
 }

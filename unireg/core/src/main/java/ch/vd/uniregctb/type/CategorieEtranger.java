@@ -9,20 +9,30 @@ package ch.vd.uniregctb.type;
  */
 public enum CategorieEtranger {
 
-	_01_SAISONNIER_A,
-	_02_PERMIS_SEJOUR_B,
-	_03_ETABLI_C,
-	_04_CONJOINT_DIPLOMATE_CI,
-	_05_ETRANGER_ADMIS_PROVISOIREMENT_F,
-	_06_FRONTALIER_G,
-	_07_PERMIS_SEJOUR_COURTE_DUREE_L,
-	_08_REQUERANT_ASILE_N,
-	_09_A_PROTEGER_S,
-	_10_TENUE_DE_S_ANNONCER,
-	_11_DIPLOMATE_OU_FONCT_INTER_AVEC_IMMUNITE,
-	_12_FONCT_INTER_SANS_IMMUNITE,
-	_13_NON_ATTRIBUEE;
-	
+	_01_SAISONNIER_A("Saisonnier (A)"),
+	_02_PERMIS_SEJOUR_B("Séjour (B)"),
+	_03_ETABLI_C("Etablissement (C)"),
+	_04_CONJOINT_DIPLOMATE_CI("Conjoint de diplomate (Ci)"),
+	_05_ETRANGER_ADMIS_PROVISOIREMENT_F("Etranger admis provisoirement (F)"),
+	_06_FRONTALIER_G("Frontalier (G)"),
+	_07_PERMIS_SEJOUR_COURTE_DUREE_L("Séjour de courte durée (L)"),
+	_08_REQUERANT_ASILE_N("Requérant d'asile (N)"),
+	_09_A_PROTEGER_S("A protéger (S)"),
+	_10_TENUE_DE_S_ANNONCER("Tenu de s'annoncer"),
+	_11_DIPLOMATE_OU_FONCT_INTER_AVEC_IMMUNITE("Diplomate ou fonctionnaire international"),
+	_12_FONCT_INTER_SANS_IMMUNITE("Fonctionaire international sans immunité"),
+	_13_NON_ATTRIBUEE("Non attribué");
+
+	private final String displayName;
+
+	private CategorieEtranger(String displayName) {
+		this.displayName = displayName;
+	}
+
+	public String getDisplayName() {
+		return displayName;
+	}
+
 	public static CategorieEtranger valueOf(TypePermis permis) {
 		if (permis == null)
 			return null;

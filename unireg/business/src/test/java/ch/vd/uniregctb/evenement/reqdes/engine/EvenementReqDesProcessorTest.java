@@ -18,11 +18,14 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.uniregctb.adresse.AdresseEtrangere;
 import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.Fuse;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.reqdes.ErreurTraitement;
@@ -541,7 +544,7 @@ public class EvenementReqDesProcessorTest extends BusinessTest {
 		final RegDate today = RegDate.get();
 		final RegDate dateActe = today.addDays(-5);
 
-		// mise en place d'une création de contribuable
+		// mise en place d'une modification de contribuable
 		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
@@ -648,14 +651,14 @@ public class EvenementReqDesProcessorTest extends BusinessTest {
 				b.append("\n- Nom : \"Aubataillon\" -> \"O'Batayon\"");
 				b.append("\n- Prénoms : vide -> \"Incaunu Jean Albert\"");
 				b.append("\n- Prénom usuel : \"Inconnu\" -> \"Incaunu\"");
-				b.append("\n- Catégorie d'étranger : vide -> ").append(CategorieEtranger._06_FRONTALIER_G.name());
+				b.append("\n- Catégorie d'étranger : vide -> ").append(CategorieEtranger._06_FRONTALIER_G.getDisplayName());
 				b.append("\n- Date de naissance : ").append(dateNaissance.year()).append(" -> ").append(RegDateHelper.dateToDisplayString(dateNaissance));
 				b.append("\n- Prénoms de la mère : \"Martine\" -> \"Martine Sophie Mafalda\"");
 				b.append("\n- Nom du père : vide -> \"O'Batayon\"");
 				b.append("\n- Prénoms du père : vide -> \"Iain François Robert\"");
-				b.append("\n- Nationalité : vide -> ").append(MockPays.RoyaumeUni.getNoOFS());
-				b.append("\n- Sexe : ").append(Sexe.FEMININ.name()).append(" -> ").append(Sexe.MASCULIN.name());
-				b.append("\n- Etat civil au ").append(RegDateHelper.dateToDisplayString(dateNaissance)).append(" : vide -> ").append(EtatCivil.CELIBATAIRE.name());
+				b.append("\n- Nationalité : vide -> ").append(MockPays.RoyaumeUni.getNomCourt());
+				b.append("\n- Sexe : ").append(Sexe.FEMININ.getDisplayName()).append(" -> ").append(Sexe.MASCULIN.getDisplayName());
+				b.append("\n- Etat civil au ").append(RegDateHelper.dateToDisplayString(dateNaissance)).append(" : vide -> ").append(EtatCivil.CELIBATAIRE.format());
 				final String expected = b.toString();
 
 				Assert.assertEquals(expected, remarque.getTexte());
@@ -670,7 +673,7 @@ public class EvenementReqDesProcessorTest extends BusinessTest {
 		final RegDate today = RegDate.get();
 		final RegDate dateActe = today.addDays(-5);
 
-		// mise en place d'une création de contribuable
+		// mise en place d'une modification de contribuable
 		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
@@ -776,14 +779,14 @@ public class EvenementReqDesProcessorTest extends BusinessTest {
 				b.append("\n- Nom : \"Aubataillon\" -> \"O'Batayon\"");
 				b.append("\n- Prénoms : vide -> \"Incaunu Jean Albert\"");
 				b.append("\n- Prénom usuel : \"Inconnu\" -> \"Incaunu\"");
-				b.append("\n- Catégorie d'étranger : vide -> ").append(CategorieEtranger._06_FRONTALIER_G.name());
+				b.append("\n- Catégorie d'étranger : vide -> ").append(CategorieEtranger._06_FRONTALIER_G.getDisplayName());
 				b.append("\n- Date de naissance : ").append(dateNaissance.year()).append(" -> ").append(RegDateHelper.dateToDisplayString(dateNaissance));
 				b.append("\n- Nom de la mère : vide -> \"Delaplanche\"");
 				b.append("\n- Prénoms de la mère : vide -> \"Martine Sophie Mafalda\"");
 				b.append("\n- Nom du père : vide -> \"O'Batayon\"");
 				b.append("\n- Prénoms du père : vide -> \"Iain François Robert\"");
-				b.append("\n- Nationalité : vide -> ").append(MockPays.RoyaumeUni.getNoOFS());
-				b.append("\n- Etat civil au ").append(RegDateHelper.dateToDisplayString(dateNaissance)).append(" : vide -> ").append(EtatCivil.CELIBATAIRE.name());
+				b.append("\n- Nationalité : vide -> ").append(MockPays.RoyaumeUni.getNomCourt());
+				b.append("\n- Etat civil au ").append(RegDateHelper.dateToDisplayString(dateNaissance)).append(" : vide -> ").append(EtatCivil.CELIBATAIRE.format());
 				final String expected = b.toString();
 
 				Assert.assertEquals(expected, remarque.getTexte());
@@ -799,7 +802,7 @@ public class EvenementReqDesProcessorTest extends BusinessTest {
 		final RegDate dateAchatPrecedent = date(2005, 3, 12);
 		final RegDate dateActe = today.addDays(-5);
 
-		// mise en place d'une création de contribuable
+		// mise en place d'une modification de contribuable
 		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
@@ -899,15 +902,15 @@ public class EvenementReqDesProcessorTest extends BusinessTest {
 				b.append("\n- Nom : \"Aubataillon\" -> \"O'Batayon\"");
 				b.append("\n- Prénoms : vide -> \"Incaunu Jean Albert\"");
 				b.append("\n- Prénom usuel : \"Inconnu\" -> \"Incaunu\"");
-				b.append("\n- Catégorie d'étranger : vide -> ").append(CategorieEtranger._06_FRONTALIER_G.name());
+				b.append("\n- Catégorie d'étranger : vide -> ").append(CategorieEtranger._06_FRONTALIER_G.getDisplayName());
 				b.append("\n- Date de naissance : ").append(dateNaissance.year()).append(" -> ").append(RegDateHelper.dateToDisplayString(dateNaissance));
 				b.append("\n- Nom de la mère : vide -> \"Delaplanche\"");
 				b.append("\n- Prénoms de la mère : vide -> \"Martine Sophie Mafalda\"");
 				b.append("\n- Nom du père : vide -> \"O'Batayon\"");
 				b.append("\n- Prénoms du père : vide -> \"Iain François Robert\"");
-				b.append("\n- Nationalité : vide -> ").append(MockPays.RoyaumeUni.getNoOFS());
+				b.append("\n- Nationalité : vide -> ").append(MockPays.RoyaumeUni.getNomCourt());
 				b.append("\n- Adresse transmise non enregistrée : Rue de la porte en bois 13b / 77415 Meulin / France");
-				b.append("\n- Etat civil au ").append(RegDateHelper.dateToDisplayString(dateNaissance)).append(" : vide -> ").append(EtatCivil.CELIBATAIRE.name());
+				b.append("\n- Etat civil au ").append(RegDateHelper.dateToDisplayString(dateNaissance)).append(" : vide -> ").append(EtatCivil.CELIBATAIRE.format());
 				final String expected = b.toString();
 
 				Assert.assertEquals(expected, remarque.getTexte());
@@ -1882,6 +1885,1480 @@ public class EvenementReqDesProcessorTest extends BusinessTest {
 					Assert.assertNotNull(couple);
 					Assert.assertSame(allSortedTiers.get(0), couple.getPrincipal());
 					Assert.assertNull(couple.getConjoint());
+
+					// situation de famille
+					final Set<SituationFamille> situations = mc.getSituationsFamille();
+					Assert.assertNotNull(situations);
+					Assert.assertEquals(0, situations.size());
+				}
+			}
+		});
+	}
+
+	@Test(timeout = 10000)
+	public void testContribuableConnuEnCoupleEtIndiqueCelibataireDansActe() throws Exception {
+
+		final RegDate dateNaissance = date(1976, 4, 23);
+		final RegDate today = RegDate.get();
+		final RegDate dateActe = today.addDays(-5);
+
+		final class Ids {
+			long utId;
+			long ppId;
+		}
+
+		// mise en place d'une modification de contribuable
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+
+				final PersonnePhysique pphysique = addNonHabitant("Inconnu", "Aubataillon", date(dateNaissance.year()), Sexe.FEMININ);
+				pphysique.setNomMere("Delaplanche");
+				pphysique.setPrenomsMere("Martine");
+				addEnsembleTiersCouple(pphysique, null, dateActe.addYears(-1), null);
+
+				final EvenementReqDes evt = addEvenementReqDes(new InformationsActeur("moinot", "Petiboulot", "Tranquille"), null, dateActe, "3783");
+				final UniteTraitement ut = addUniteTraitement(evt, EtatTraitement.A_TRAITER, null);
+				final PartiePrenante pp = addPartiePrenante(ut, "O'Batayon", "Incaunu Jean Albert");
+				pp.setNomMere("Delaplanche");
+				pp.setPrenomsMere("Martine Sophie Mafalda");
+				pp.setNomPere("O'Batayon");
+				pp.setPrenomsPere("Iain François Robert");
+				pp.setOfsPays(MockPays.France.getNoOFS());
+				pp.setOfsPaysNationalite(MockPays.RoyaumeUni.getNoOFS());
+				pp.setRue("Rue de la porte en bois");
+				pp.setNumeroMaison("13b");
+				pp.setSexe(Sexe.MASCULIN);
+				pp.setSourceCivile(false);
+				pp.setCategorieEtranger(CategorieEtranger._06_FRONTALIER_G);
+				pp.setNumeroContribuable(pphysique.getNumero());
+
+				pp.setDateEtatCivil(dateNaissance);
+				pp.setDateNaissance(dateNaissance);
+				pp.setEtatCivil(EtatCivil.CELIBATAIRE);
+				pp.setLocalite("Meulin");
+				pp.setNumeroPostal("77415");
+
+				final TransactionImmobiliere ti = addTransactionImmobiliere(evt, "Truc bidon", ModeInscription.INSCRIPTION, TypeInscription.SERVITUDE, MockCommune.Echallens.getNoOFS());
+				addRole(pp, ti, TypeRole.AUTRE);
+
+				final Ids ids = new Ids();
+				ids.ppId = pphysique.getId();
+				ids.utId = ut.getId();
+				return ids;
+			}
+		});
+
+		// traitement de l'unité
+		traiteUniteTraitement(ids.utId);
+
+		// vérification du traitement (erreur !)
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final UniteTraitement ut = uniteTraitementDAO.get(ids.utId);
+				Assert.assertNotNull(ut);
+				Assert.assertEquals(EtatTraitement.EN_ERREUR, ut.getEtat());
+
+				final Set<ErreurTraitement> erreurs = ut.getErreurs();
+				Assert.assertNotNull(erreurs);
+				Assert.assertEquals(1, erreurs.size());
+
+				final ErreurTraitement erreur = erreurs.iterator().next();
+				Assert.assertNotNull(erreur);
+				Assert.assertEquals(ErreurTraitement.TypeErreur.ERROR, erreur.getType());
+				Assert.assertEquals(String.format("La personne physique %s est connue en couple après le %s mais est indiquée comme Célibataire dans l'acte.",
+				                                  FormatNumeroHelper.numeroCTBToDisplay(ids.ppId), RegDateHelper.dateToDisplayString(dateNaissance)),
+				                    erreur.getMessage());
+
+				// et on vérifie que le contribuable n'a pas été mis à jour
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.ppId);
+				Assert.assertNotNull(pp);
+				Assert.assertEquals("Aubataillon", pp.getNom());
+			}
+		});
+	}
+
+	@Test(timeout = 10000)
+	public void testModificationCouplePartiesPrenantesCompletementConnu() throws Exception {
+
+		final RegDate today = RegDate.get();
+		final RegDate dateNaissanceLui = date(1979, 7, 31);
+		final RegDate dateNaissanceElle = date(1979, 7, 22);
+		final RegDate dateMariage = date(2005, 5, 12);
+		final RegDate dateActe = date(2014, 6, 2);
+
+		final class Ids {
+			long idLui;
+			long idElle;
+			long idMenage;
+			long idut;
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique lui = addNonHabitant("Alfred", "Dumoulin", dateNaissanceLui, Sexe.MASCULIN);
+				final PersonnePhysique elle = addNonHabitant("Pascaline", "Dumoulin", null, Sexe.FEMININ);
+				final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, dateMariage, null);
+				final MenageCommun mc = couple.getMenage();
+
+				final EvenementReqDes evt = addEvenementReqDes(new InformationsActeur("nOtAir", "Bollomey", "Francis"), null, dateActe, "784156");
+				final UniteTraitement ut = addUniteTraitement(evt, EtatTraitement.A_TRAITER, null);
+				final PartiePrenante ppLui = addPartiePrenante(ut, "Dumoulin", "Alfred Henri");
+				ppLui.setNumeroContribuable(lui.getNumero());
+				ppLui.setNomMere("Delaplanche");
+				ppLui.setPrenomsMere("Sophie Mafalda");
+				ppLui.setNomPere("Dumoulin");
+				ppLui.setPrenomsPere("François Robert");
+				ppLui.setOfsPaysNationalite(MockPays.RoyaumeUni.getNoOFS());
+				ppLui.setSexe(Sexe.MASCULIN);
+				ppLui.setCategorieEtranger(CategorieEtranger._03_ETABLI_C);
+				ppLui.setDateNaissance(dateNaissanceLui);
+				ppLui.setDateEtatCivil(dateMariage);
+				ppLui.setEtatCivil(EtatCivil.MARIE);
+
+				ppLui.setRue("Rue de la porte en fer");
+				ppLui.setNumeroMaison("42");
+				ppLui.setOfsPays(MockPays.France.getNoOFS());
+				ppLui.setLocalite("Paris");
+				ppLui.setNumeroPostal("75016");
+
+				final PartiePrenante ppElle = addPartiePrenante(ut, "Dumoulin", "Marie-Pascaline");
+				ppElle.setNumeroContribuable(elle.getNumero());
+				ppElle.setNomMere("Paradis");
+				ppElle.setPrenomsMere("Corrine");
+				ppElle.setNomPere("Paradis");
+				ppElle.setPrenomsPere("Albert");
+				ppElle.setOfsPaysNationalite(MockPays.France.getNoOFS());
+				ppElle.setSexe(Sexe.FEMININ);
+				ppElle.setCategorieEtranger(CategorieEtranger._03_ETABLI_C);
+				ppElle.setDateNaissance(dateNaissanceElle);
+				ppElle.setDateEtatCivil(dateMariage);
+				ppElle.setEtatCivil(EtatCivil.MARIE);
+
+				ppElle.setRue("Rue de la porte en fer");
+				ppElle.setNumeroMaison("42");
+				ppElle.setOfsPays(MockPays.France.getNoOFS());
+				ppElle.setLocalite("Paris");
+				ppElle.setNumeroPostal("75016");
+
+				// lien entre les parties prenantes
+				ppLui.setConjointPartiePrenante(ppElle);
+				ppElle.setConjointPartiePrenante(ppLui);
+
+				final Ids ids = new Ids();
+				ids.idLui = lui.getNumero();
+				ids.idElle = elle.getNumero();
+				ids.idMenage = mc.getNumero();
+				ids.idut = ut.getId();
+				return ids;
+			}
+		});
+
+		// traitement de l'unité
+		traiteUniteTraitement(ids.idut);
+
+		// vérification des résultats
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final UniteTraitement ut = uniteTraitementDAO.get(ids.idut);
+				Assert.assertNotNull(ut);
+				Assert.assertEquals(EtatTraitement.TRAITE, ut.getEtat());
+				Assert.assertEquals(0, ut.getErreurs().size());
+
+				{
+					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idLui);
+					Assert.assertNotNull(pp);
+					Assert.assertEquals(getDefaultOperateurName(), pp.getLogCreationUser());
+					Assert.assertEquals("nOtAir-reqdes", pp.getLogModifUser());
+					Assert.assertEquals("Alfred Henri", pp.getTousPrenoms());
+					Assert.assertEquals("Alfred", pp.getPrenomUsuel());
+					Assert.assertEquals("Dumoulin", pp.getNom());
+
+					final Set<AdresseTiers> adresses = pp.getAdressesTiers();
+					Assert.assertNotNull(adresses);
+					Assert.assertEquals(1, adresses.size());
+
+					final AdresseTiers adresse = adresses.iterator().next();
+					Assert.assertNotNull(adresse);
+					Assert.assertEquals(AdresseEtrangere.class, adresse.getClass());
+
+					final AdresseEtrangere adresseEtrangere = (AdresseEtrangere) adresse;
+					Assert.assertEquals((Integer) MockPays.France.getNoOFS(), adresseEtrangere.getNumeroOfsPays());
+					Assert.assertEquals("75016 Paris", adresseEtrangere.getNumeroPostalLocalite());
+					Assert.assertEquals("Rue de la porte en fer", adresseEtrangere.getRue());
+					Assert.assertEquals("42", adresseEtrangere.getNumeroMaison());
+					Assert.assertNull(adresseEtrangere.getTexteCasePostale());
+					Assert.assertNull(adresseEtrangere.getNumeroCasePostale());
+
+					final List<Remarque> remarques = remarqueDAO.getRemarques(pp.getNumero());
+					Assert.assertNotNull(remarques);
+					Assert.assertEquals(1, remarques.size());
+
+					final Remarque remarque = remarques.get(0);
+					Assert.assertNotNull(remarque);
+					Assert.assertEquals("nOtAir-reqdes", remarque.getLogCreationUser());
+					Assert.assertEquals("nOtAir-reqdes", remarque.getLogModifUser());
+
+					final StringBuilder b = new StringBuilder();
+					b.append("Contribuable mis à jour le ").append(RegDateHelper.dateToDisplayString(today));
+					b.append(" par l'acte notarial du ").append(RegDateHelper.dateToDisplayString(dateActe));
+					b.append(" par le notaire Francis Bollomey (nOtAir) et enregistré par lui-même.");
+					b.append("\n- Prénoms : vide -> \"Alfred Henri\"");
+					b.append("\n- Catégorie d'étranger : vide -> ").append(CategorieEtranger._03_ETABLI_C.getDisplayName());
+					b.append("\n- Nom de la mère : vide -> \"Delaplanche\"");
+					b.append("\n- Prénoms de la mère : vide -> \"Sophie Mafalda\"");
+					b.append("\n- Nom du père : vide -> \"Dumoulin\"");
+					b.append("\n- Prénoms du père : vide -> \"François Robert\"");
+					b.append("\n- Nationalité : vide -> ").append(MockPays.RoyaumeUni.getNomCourt());
+					b.append("\n- Etat civil au ").append(RegDateHelper.dateToDisplayString(dateMariage)).append(" : vide -> ").append(EtatCivil.MARIE.format());
+					Assert.assertEquals(b.toString(), remarque.getTexte());
+				}
+				{
+					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idElle);
+					Assert.assertNotNull(pp);
+					Assert.assertEquals(getDefaultOperateurName(), pp.getLogCreationUser());
+					Assert.assertEquals("nOtAir-reqdes", pp.getLogModifUser());
+					Assert.assertEquals("Marie-Pascaline", pp.getTousPrenoms());
+					Assert.assertEquals("Marie-Pascaline", pp.getPrenomUsuel());
+					Assert.assertEquals("Dumoulin", pp.getNom());
+
+					final Set<AdresseTiers> adresses = pp.getAdressesTiers();
+					Assert.assertNotNull(adresses);
+					Assert.assertEquals(1, adresses.size());
+
+					final AdresseTiers adresse = adresses.iterator().next();
+					Assert.assertNotNull(adresse);
+					Assert.assertEquals(AdresseEtrangere.class, adresse.getClass());
+
+					final AdresseEtrangere adresseEtrangere = (AdresseEtrangere) adresse;
+					Assert.assertEquals((Integer) MockPays.France.getNoOFS(), adresseEtrangere.getNumeroOfsPays());
+					Assert.assertEquals("75016 Paris", adresseEtrangere.getNumeroPostalLocalite());
+					Assert.assertEquals("Rue de la porte en fer", adresseEtrangere.getRue());
+					Assert.assertEquals("42", adresseEtrangere.getNumeroMaison());
+					Assert.assertNull(adresseEtrangere.getTexteCasePostale());
+					Assert.assertNull(adresseEtrangere.getNumeroCasePostale());
+
+					final List<Remarque> remarques = remarqueDAO.getRemarques(pp.getNumero());
+					Assert.assertNotNull(remarques);
+					Assert.assertEquals(1, remarques.size());
+
+					final Remarque remarque = remarques.get(0);
+					Assert.assertNotNull(remarque);
+					Assert.assertEquals("nOtAir-reqdes", remarque.getLogCreationUser());
+					Assert.assertEquals("nOtAir-reqdes", remarque.getLogModifUser());
+
+					final StringBuilder b = new StringBuilder();
+					b.append("Contribuable mis à jour le ").append(RegDateHelper.dateToDisplayString(today));
+					b.append(" par l'acte notarial du ").append(RegDateHelper.dateToDisplayString(dateActe));
+					b.append(" par le notaire Francis Bollomey (nOtAir) et enregistré par lui-même.");
+					b.append("\n- Prénoms : vide -> \"Marie-Pascaline\"");
+					b.append("\n- Prénom usuel : \"Pascaline\" -> \"Marie-Pascaline\"");
+					b.append("\n- Catégorie d'étranger : vide -> ").append(CategorieEtranger._03_ETABLI_C.getDisplayName());
+					b.append("\n- Date de naissance : vide -> ").append(RegDateHelper.dateToDisplayString(dateNaissanceElle));
+					b.append("\n- Nom de la mère : vide -> \"Paradis\"");
+					b.append("\n- Prénoms de la mère : vide -> \"Corrine\"");
+					b.append("\n- Nom du père : vide -> \"Paradis\"");
+					b.append("\n- Prénoms du père : vide -> \"Albert\"");
+					b.append("\n- Nationalité : vide -> ").append(MockPays.France.getNomCourt());
+					b.append("\n- Etat civil au ").append(RegDateHelper.dateToDisplayString(dateMariage)).append(" : vide -> ").append(EtatCivil.MARIE.format());
+					Assert.assertEquals(b.toString(), remarque.getTexte());
+				}
+				{
+					final MenageCommun pp = (MenageCommun) tiersDAO.get(ids.idMenage);
+					Assert.assertNotNull(pp);
+					Assert.assertEquals(getDefaultOperateurName(), pp.getLogCreationUser());
+					Assert.assertEquals(getDefaultOperateurName(), pp.getLogModifUser());
+
+					final Set<AdresseTiers> adresses = pp.getAdressesTiers();
+					Assert.assertNotNull(adresses);
+					Assert.assertEquals(0, adresses.size());
+
+					final List<Remarque> remarques = remarqueDAO.getRemarques(pp.getNumero());
+					Assert.assertNotNull(remarques);
+					Assert.assertEquals(0, remarques.size());
+				}
+			}
+		});
+	}
+
+	@Test(timeout = 10000)
+	public void testModificationCouplePartiesPrenantesDeuxConnusMariesSeuls() throws Exception {
+
+		final RegDate dateNaissanceLui = date(1979, 7, 31);
+		final RegDate dateNaissanceElle = date(1979, 7, 22);
+		final RegDate dateMariage = date(2005, 5, 12);
+		final RegDate dateActe = date(2014, 6, 2);
+
+		final class Ids {
+			long idLui;
+			long idElle;
+			long idut;
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique lui = addNonHabitant("Alfred", "Dumoulin", dateNaissanceLui, Sexe.MASCULIN);
+				final PersonnePhysique elle = addNonHabitant("Pascaline", "Dumoulin", null, Sexe.FEMININ);
+
+				// deux mariés seuls connus et différents
+				addEnsembleTiersCouple(lui, null, dateMariage, null);
+				addEnsembleTiersCouple(elle, null, dateMariage, null);
+
+				final EvenementReqDes evt = addEvenementReqDes(new InformationsActeur("nOtAir", "Bollomey", "Francis"), null, dateActe, "784156");
+				final UniteTraitement ut = addUniteTraitement(evt, EtatTraitement.A_TRAITER, null);
+				final PartiePrenante ppLui = addPartiePrenante(ut, "Dumoulin", "Alfred Henri");
+				ppLui.setNumeroContribuable(lui.getNumero());
+				ppLui.setNomMere("Delaplanche");
+				ppLui.setPrenomsMere("Sophie Mafalda");
+				ppLui.setNomPere("Dumoulin");
+				ppLui.setPrenomsPere("François Robert");
+				ppLui.setOfsPaysNationalite(MockPays.RoyaumeUni.getNoOFS());
+				ppLui.setSexe(Sexe.MASCULIN);
+				ppLui.setCategorieEtranger(CategorieEtranger._03_ETABLI_C);
+				ppLui.setDateNaissance(dateNaissanceLui);
+				ppLui.setDateEtatCivil(dateMariage);
+				ppLui.setEtatCivil(EtatCivil.MARIE);
+
+				ppLui.setRue("Rue de la porte en fer");
+				ppLui.setNumeroMaison("42");
+				ppLui.setOfsPays(MockPays.France.getNoOFS());
+				ppLui.setLocalite("Paris");
+				ppLui.setNumeroPostal("75016");
+
+				final PartiePrenante ppElle = addPartiePrenante(ut, "Dumoulin", "Marie-Pascaline");
+				ppElle.setNumeroContribuable(elle.getNumero());
+				ppElle.setNomMere("Paradis");
+				ppElle.setPrenomsMere("Corrine");
+				ppElle.setNomPere("Paradis");
+				ppElle.setPrenomsPere("Albert");
+				ppElle.setOfsPaysNationalite(MockPays.France.getNoOFS());
+				ppElle.setSexe(Sexe.FEMININ);
+				ppElle.setCategorieEtranger(CategorieEtranger._03_ETABLI_C);
+				ppElle.setDateNaissance(dateNaissanceElle);
+				ppElle.setDateEtatCivil(dateMariage);
+				ppElle.setEtatCivil(EtatCivil.MARIE);
+
+				ppElle.setRue("Rue de la porte en fer");
+				ppElle.setNumeroMaison("42");
+				ppElle.setOfsPays(MockPays.France.getNoOFS());
+				ppElle.setLocalite("Paris");
+				ppElle.setNumeroPostal("75016");
+
+				// lien entre les parties prenantes
+				ppLui.setConjointPartiePrenante(ppElle);
+				ppElle.setConjointPartiePrenante(ppLui);
+
+				final Ids ids = new Ids();
+				ids.idLui = lui.getNumero();
+				ids.idElle = elle.getNumero();
+				ids.idut = ut.getId();
+				return ids;
+			}
+		});
+
+		// traitement de l'unité
+		traiteUniteTraitement(ids.idut);
+
+		// vérification des résultats
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final UniteTraitement ut = uniteTraitementDAO.get(ids.idut);
+				Assert.assertNotNull(ut);
+				Assert.assertEquals(EtatTraitement.EN_ERREUR, ut.getEtat());
+				Assert.assertEquals(1, ut.getErreurs().size());
+
+				final ErreurTraitement erreur = ut.getErreurs().iterator().next();
+				Assert.assertNotNull(erreur);
+				Assert.assertEquals(ErreurTraitement.TypeErreur.ERROR, erreur.getType());
+
+				final String expectedMessage = String.format("Les tiers %s et %s ne forment pas un couple au %s.",
+				                                             FormatNumeroHelper.numeroCTBToDisplay(ids.idLui),
+				                                             FormatNumeroHelper.numeroCTBToDisplay(ids.idElle),
+				                                             RegDateHelper.dateToDisplayString(dateMariage));
+				Assert.assertEquals(expectedMessage, erreur.getMessage());
+
+				{
+					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idLui);
+					Assert.assertNotNull(pp);
+					Assert.assertEquals(getDefaultOperateurName(), pp.getLogCreationUser());
+					Assert.assertEquals(getDefaultOperateurName(), pp.getLogModifUser());
+					Assert.assertNull(pp.getTousPrenoms());
+					Assert.assertEquals("Alfred", pp.getPrenomUsuel());
+					Assert.assertEquals("Dumoulin", pp.getNom());
+
+					final Set<AdresseTiers> adresses = pp.getAdressesTiers();
+					Assert.assertNotNull(adresses);
+					Assert.assertEquals(0, adresses.size());
+
+					final List<Remarque> remarques = remarqueDAO.getRemarques(pp.getNumero());
+					Assert.assertNotNull(remarques);
+					Assert.assertEquals(0, remarques.size());
+    			}
+				{
+					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idElle);
+					Assert.assertNotNull(pp);
+					Assert.assertEquals(getDefaultOperateurName(), pp.getLogCreationUser());
+					Assert.assertEquals(getDefaultOperateurName(), pp.getLogModifUser());
+					Assert.assertNull(pp.getTousPrenoms());
+					Assert.assertEquals("Pascaline", pp.getPrenomUsuel());
+					Assert.assertEquals("Dumoulin", pp.getNom());
+
+					final Set<AdresseTiers> adresses = pp.getAdressesTiers();
+					Assert.assertNotNull(adresses);
+					Assert.assertEquals(0, adresses.size());
+
+					final List<Remarque> remarques = remarqueDAO.getRemarques(pp.getNumero());
+					Assert.assertNotNull(remarques);
+					Assert.assertEquals(0, remarques.size());
+				}
+			}
+		});
+	}
+
+	@Test(timeout = 10000)
+	public void testModificationCouplePartiesPrenantesUnConnuMarieSeul() throws Exception {
+
+		final RegDate today = RegDate.get();
+		final RegDate dateNaissanceLui = date(1979, 7, 31);
+		final RegDate dateNaissanceElle = date(1979, 7, 22);
+		final RegDate dateMariage = date(2005, 5, 12);
+		final RegDate dateActe = date(2014, 6, 2);
+
+		final class Ids {
+			long idLui;
+			long idMenage;
+			long idut;
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique lui = addNonHabitant("Alfred", "Dumoulin", dateNaissanceLui, Sexe.MASCULIN);
+				final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, null, dateMariage, null);
+				final MenageCommun mc = couple.getMenage();
+
+				final EvenementReqDes evt = addEvenementReqDes(new InformationsActeur("nOtAir", "Bollomey", "Francis"), null, dateActe, "784156");
+				final UniteTraitement ut = addUniteTraitement(evt, EtatTraitement.A_TRAITER, null);
+				final PartiePrenante ppLui = addPartiePrenante(ut, "Dumoulin", "Alfred Henri");
+				ppLui.setNumeroContribuable(lui.getNumero());
+				ppLui.setNomMere("Delaplanche");
+				ppLui.setPrenomsMere("Sophie Mafalda");
+				ppLui.setNomPere("Dumoulin");
+				ppLui.setPrenomsPere("François Robert");
+				ppLui.setOfsPaysNationalite(MockPays.RoyaumeUni.getNoOFS());
+				ppLui.setSexe(Sexe.MASCULIN);
+				ppLui.setCategorieEtranger(CategorieEtranger._03_ETABLI_C);
+				ppLui.setDateNaissance(dateNaissanceLui);
+				ppLui.setDateEtatCivil(dateMariage);
+				ppLui.setEtatCivil(EtatCivil.MARIE);
+
+				ppLui.setRue("Rue de la porte en fer");
+				ppLui.setNumeroMaison("42");
+				ppLui.setOfsPays(MockPays.France.getNoOFS());
+				ppLui.setLocalite("Paris");
+				ppLui.setNumeroPostal("75016");
+
+				final PartiePrenante ppElle = addPartiePrenante(ut, "Dumoulin", "Marie-Pascaline");
+				ppElle.setNomMere("Paradis");
+				ppElle.setPrenomsMere("Corrine");
+				ppElle.setNomPere("Paradis");
+				ppElle.setPrenomsPere("Albert");
+				ppElle.setOfsPaysNationalite(MockPays.France.getNoOFS());
+				ppElle.setSexe(Sexe.FEMININ);
+				ppElle.setCategorieEtranger(CategorieEtranger._03_ETABLI_C);
+				ppElle.setDateNaissance(dateNaissanceElle);
+				ppElle.setDateEtatCivil(dateMariage);
+				ppElle.setEtatCivil(EtatCivil.MARIE);
+
+				ppElle.setRue("Rue de la porte en fer");
+				ppElle.setNumeroMaison("42");
+				ppElle.setOfsPays(MockPays.France.getNoOFS());
+				ppElle.setLocalite("Paris");
+				ppElle.setNumeroPostal("75016");
+
+				// lien entre les parties prenantes
+				ppLui.setConjointPartiePrenante(ppElle);
+				ppElle.setConjointPartiePrenante(ppLui);
+
+				final Ids ids = new Ids();
+				ids.idLui = lui.getNumero();
+				ids.idMenage = mc.getNumero();
+				ids.idut = ut.getId();
+				return ids;
+			}
+		});
+
+		// traitement de l'unité
+		traiteUniteTraitement(ids.idut);
+
+		// vérification des résultats
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final UniteTraitement ut = uniteTraitementDAO.get(ids.idut);
+				Assert.assertNotNull(ut);
+				Assert.assertEquals(EtatTraitement.TRAITE, ut.getEtat());
+				Assert.assertEquals(0, ut.getErreurs().size());
+
+				{
+					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idLui);
+					Assert.assertNotNull(pp);
+					Assert.assertEquals(getDefaultOperateurName(), pp.getLogCreationUser());
+					Assert.assertEquals("nOtAir-reqdes", pp.getLogModifUser());
+					Assert.assertEquals("Alfred Henri", pp.getTousPrenoms());
+					Assert.assertEquals("Alfred", pp.getPrenomUsuel());
+					Assert.assertEquals("Dumoulin", pp.getNom());
+
+					final Set<AdresseTiers> adresses = pp.getAdressesTiers();
+					Assert.assertNotNull(adresses);
+					Assert.assertEquals(1, adresses.size());
+
+					final AdresseTiers adresse = adresses.iterator().next();
+					Assert.assertNotNull(adresse);
+					Assert.assertEquals(AdresseEtrangere.class, adresse.getClass());
+
+					final AdresseEtrangere adresseEtrangere = (AdresseEtrangere) adresse;
+					Assert.assertEquals((Integer) MockPays.France.getNoOFS(), adresseEtrangere.getNumeroOfsPays());
+					Assert.assertEquals("75016 Paris", adresseEtrangere.getNumeroPostalLocalite());
+					Assert.assertEquals("Rue de la porte en fer", adresseEtrangere.getRue());
+					Assert.assertEquals("42", adresseEtrangere.getNumeroMaison());
+					Assert.assertNull(adresseEtrangere.getTexteCasePostale());
+					Assert.assertNull(adresseEtrangere.getNumeroCasePostale());
+
+					final List<Remarque> remarques = remarqueDAO.getRemarques(pp.getNumero());
+					Assert.assertNotNull(remarques);
+					Assert.assertEquals(1, remarques.size());
+
+					final Remarque remarque = remarques.get(0);
+					Assert.assertNotNull(remarque);
+					Assert.assertEquals("nOtAir-reqdes", remarque.getLogCreationUser());
+					Assert.assertEquals("nOtAir-reqdes", remarque.getLogModifUser());
+
+					final StringBuilder b = new StringBuilder();
+					b.append("Contribuable mis à jour le ").append(RegDateHelper.dateToDisplayString(today));
+					b.append(" par l'acte notarial du ").append(RegDateHelper.dateToDisplayString(dateActe));
+					b.append(" par le notaire Francis Bollomey (nOtAir) et enregistré par lui-même.");
+					b.append("\n- Prénoms : vide -> \"Alfred Henri\"");
+					b.append("\n- Catégorie d'étranger : vide -> ").append(CategorieEtranger._03_ETABLI_C.getDisplayName());
+					b.append("\n- Nom de la mère : vide -> \"Delaplanche\"");
+					b.append("\n- Prénoms de la mère : vide -> \"Sophie Mafalda\"");
+					b.append("\n- Nom du père : vide -> \"Dumoulin\"");
+					b.append("\n- Prénoms du père : vide -> \"François Robert\"");
+					b.append("\n- Nationalité : vide -> ").append(MockPays.RoyaumeUni.getNomCourt());
+					b.append("\n- Etat civil au ").append(RegDateHelper.dateToDisplayString(dateMariage)).append(" : vide -> ").append(EtatCivil.MARIE.format());
+					Assert.assertEquals(b.toString(), remarque.getTexte());
+				}
+
+				final long idElle;
+				{
+					final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.idMenage);
+					Assert.assertNotNull(mc);
+					Assert.assertEquals(getDefaultOperateurName(), mc.getLogCreationUser());
+					Assert.assertEquals("nOtAir-reqdes", mc.getLogModifUser());     // modifié par l'introduction du deuxième conjoint
+
+					final Set<AdresseTiers> adresses = mc.getAdressesTiers();
+					Assert.assertNotNull(adresses);
+					Assert.assertEquals(0, adresses.size());
+
+					final List<Remarque> remarques = remarqueDAO.getRemarques(mc.getNumero());
+					Assert.assertNotNull(remarques);
+					Assert.assertEquals(0, remarques.size());
+
+					final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(mc, dateMariage);
+					Assert.assertNotNull(couple);
+					Assert.assertNotNull(couple.getPrincipal());
+					Assert.assertNotNull(couple.getConjoint());
+					Assert.assertEquals((Long) ids.idLui, couple.getPrincipal().getNumero());
+					idElle = couple.getConjoint().getNumero();
+				}
+				{
+					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idElle);
+					Assert.assertNotNull(pp);
+					Assert.assertEquals("nOtAir-reqdes", pp.getLogCreationUser());
+					Assert.assertEquals("nOtAir-reqdes", pp.getLogModifUser());
+					Assert.assertEquals("Marie-Pascaline", pp.getTousPrenoms());
+					Assert.assertEquals("Marie-Pascaline", pp.getPrenomUsuel());
+					Assert.assertEquals("Dumoulin", pp.getNom());
+
+					final Set<AdresseTiers> adresses = pp.getAdressesTiers();
+					Assert.assertNotNull(adresses);
+					Assert.assertEquals(1, adresses.size());
+
+					final AdresseTiers adresse = adresses.iterator().next();
+					Assert.assertNotNull(adresse);
+					Assert.assertEquals(AdresseEtrangere.class, adresse.getClass());
+
+					final AdresseEtrangere adresseEtrangere = (AdresseEtrangere) adresse;
+					Assert.assertEquals((Integer) MockPays.France.getNoOFS(), adresseEtrangere.getNumeroOfsPays());
+					Assert.assertEquals("75016 Paris", adresseEtrangere.getNumeroPostalLocalite());
+					Assert.assertEquals("Rue de la porte en fer", adresseEtrangere.getRue());
+					Assert.assertEquals("42", adresseEtrangere.getNumeroMaison());
+					Assert.assertNull(adresseEtrangere.getTexteCasePostale());
+					Assert.assertNull(adresseEtrangere.getNumeroCasePostale());
+
+					final List<Remarque> remarques = remarqueDAO.getRemarques(pp.getNumero());
+					Assert.assertNotNull(remarques);
+					Assert.assertEquals(1, remarques.size());
+
+					final Remarque remarque = remarques.get(0);
+					Assert.assertNotNull(remarque);
+					Assert.assertEquals("nOtAir-reqdes", remarque.getLogCreationUser());
+					Assert.assertEquals("nOtAir-reqdes", remarque.getLogModifUser());
+
+					final StringBuilder b = new StringBuilder();
+					b.append("Contribuable créé le ").append(RegDateHelper.dateToDisplayString(today));
+					b.append(" par l'acte notarial du ").append(RegDateHelper.dateToDisplayString(dateActe));
+					b.append(" par le notaire Francis Bollomey (nOtAir) et enregistré par lui-même.");
+					Assert.assertEquals(b.toString(), remarque.getTexte());
+				}
+			}
+		});
+	}
+
+	@Test(timeout = 10000)
+	public void testModificationPartiePrenanteMarieeSeuleAvecConjointConnuAuFiscal() throws Exception {
+
+		final RegDate today = RegDate.get();
+		final RegDate dateNaissanceLui = date(1979, 7, 31);
+		final RegDate dateMariage = date(2005, 5, 12);
+		final RegDate dateActe = date(2014, 6, 2);
+
+		final class Ids {
+			long idLui;
+			long idElle;
+			long idMenage;
+			long idut;
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique lui = addNonHabitant("Alfred", "Dumoulin", dateNaissanceLui, Sexe.MASCULIN);
+				final PersonnePhysique elle = addNonHabitant("Pascaline", "Dumoulin", null, Sexe.FEMININ);
+				final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, dateMariage, null);
+				final MenageCommun mc = couple.getMenage();
+
+				final EvenementReqDes evt = addEvenementReqDes(new InformationsActeur("nOtAir", "Bollomey", "Francis"), new InformationsActeur("seCretAir", "Planchet", "Adeline"), dateActe, "784156");
+				final UniteTraitement ut = addUniteTraitement(evt, EtatTraitement.A_TRAITER, null);
+				final PartiePrenante ppLui = addPartiePrenante(ut, "Dumoulin", "Alfred Henri");
+				ppLui.setNumeroContribuable(lui.getNumero());
+				ppLui.setNomMere("Delaplanche");
+				ppLui.setPrenomsMere("Sophie Mafalda");
+				ppLui.setNomPere("Dumoulin");
+				ppLui.setPrenomsPere("François Robert");
+				ppLui.setOfsPaysNationalite(MockPays.RoyaumeUni.getNoOFS());
+				ppLui.setSexe(Sexe.MASCULIN);
+				ppLui.setCategorieEtranger(CategorieEtranger._03_ETABLI_C);
+				ppLui.setDateNaissance(dateNaissanceLui);
+				ppLui.setDateEtatCivil(dateMariage);
+				ppLui.setEtatCivil(EtatCivil.MARIE);
+
+				ppLui.setRue("Rue de la porte en fer");
+				ppLui.setNumeroMaison("42");
+				ppLui.setOfsPays(MockPays.France.getNoOFS());
+				ppLui.setLocalite("Paris");
+				ppLui.setNumeroPostal("75016");
+
+				final Ids ids = new Ids();
+				ids.idLui = lui.getNumero();
+				ids.idElle = elle.getNumero();
+				ids.idMenage = mc.getNumero();
+				ids.idut = ut.getId();
+				return ids;
+			}
+		});
+
+		// traitement de l'unité
+		traiteUniteTraitement(ids.idut);
+
+		// vérification des résultats
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final UniteTraitement ut = uniteTraitementDAO.get(ids.idut);
+				Assert.assertNotNull(ut);
+				Assert.assertEquals(EtatTraitement.TRAITE, ut.getEtat());
+				Assert.assertEquals(0, ut.getErreurs().size());
+
+				{
+					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idLui);
+					Assert.assertNotNull(pp);
+					Assert.assertEquals(getDefaultOperateurName(), pp.getLogCreationUser());
+					Assert.assertEquals("seCretAir-reqdes", pp.getLogModifUser());
+					Assert.assertEquals("Alfred Henri", pp.getTousPrenoms());
+					Assert.assertEquals("Alfred", pp.getPrenomUsuel());
+					Assert.assertEquals("Dumoulin", pp.getNom());
+
+					final Set<AdresseTiers> adresses = pp.getAdressesTiers();
+					Assert.assertNotNull(adresses);
+					Assert.assertEquals(1, adresses.size());
+
+					final AdresseTiers adresse = adresses.iterator().next();
+					Assert.assertNotNull(adresse);
+					Assert.assertEquals(AdresseEtrangere.class, adresse.getClass());
+
+					final AdresseEtrangere adresseEtrangere = (AdresseEtrangere) adresse;
+					Assert.assertEquals((Integer) MockPays.France.getNoOFS(), adresseEtrangere.getNumeroOfsPays());
+					Assert.assertEquals("75016 Paris", adresseEtrangere.getNumeroPostalLocalite());
+					Assert.assertEquals("Rue de la porte en fer", adresseEtrangere.getRue());
+					Assert.assertEquals("42", adresseEtrangere.getNumeroMaison());
+					Assert.assertNull(adresseEtrangere.getTexteCasePostale());
+					Assert.assertNull(adresseEtrangere.getNumeroCasePostale());
+
+					final List<Remarque> remarques = remarqueDAO.getRemarques(pp.getNumero());
+					Assert.assertNotNull(remarques);
+					Assert.assertEquals(1, remarques.size());
+
+					final Remarque remarque = remarques.get(0);
+					Assert.assertNotNull(remarque);
+					Assert.assertEquals("seCretAir-reqdes", remarque.getLogCreationUser());
+					Assert.assertEquals("seCretAir-reqdes", remarque.getLogModifUser());
+
+					final StringBuilder b = new StringBuilder();
+					b.append("Contribuable mis à jour le ").append(RegDateHelper.dateToDisplayString(today));
+					b.append(" par l'acte notarial du ").append(RegDateHelper.dateToDisplayString(dateActe));
+					b.append(" par le notaire Francis Bollomey (nOtAir) et enregistré par Adeline Planchet (seCretAir).");
+					b.append("\n- Prénoms : vide -> \"Alfred Henri\"");
+					b.append("\n- Catégorie d'étranger : vide -> ").append(CategorieEtranger._03_ETABLI_C.getDisplayName());
+					b.append("\n- Nom de la mère : vide -> \"Delaplanche\"");
+					b.append("\n- Prénoms de la mère : vide -> \"Sophie Mafalda\"");
+					b.append("\n- Nom du père : vide -> \"Dumoulin\"");
+					b.append("\n- Prénoms du père : vide -> \"François Robert\"");
+					b.append("\n- Nationalité : vide -> ").append(MockPays.RoyaumeUni.getNomCourt());
+					b.append("\n- Etat civil au ").append(RegDateHelper.dateToDisplayString(dateMariage)).append(" : vide -> ").append(EtatCivil.MARIE.format());
+					Assert.assertEquals(b.toString(), remarque.getTexte());
+				}
+				{
+					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idElle);
+					Assert.assertNotNull(pp);
+					Assert.assertEquals(getDefaultOperateurName(), pp.getLogCreationUser());
+					Assert.assertEquals(getDefaultOperateurName(), pp.getLogModifUser());
+					Assert.assertNull(pp.getTousPrenoms());
+					Assert.assertEquals("Pascaline", pp.getPrenomUsuel());
+					Assert.assertEquals("Dumoulin", pp.getNom());
+
+					final Set<AdresseTiers> adresses = pp.getAdressesTiers();
+					Assert.assertNotNull(adresses);
+					Assert.assertEquals(0, adresses.size());
+
+					final List<Remarque> remarques = remarqueDAO.getRemarques(pp.getNumero());
+					Assert.assertNotNull(remarques);
+					Assert.assertEquals(0, remarques.size());
+				}
+				{
+					final MenageCommun pp = (MenageCommun) tiersDAO.get(ids.idMenage);
+					Assert.assertNotNull(pp);
+					Assert.assertEquals(getDefaultOperateurName(), pp.getLogCreationUser());
+					Assert.assertEquals(getDefaultOperateurName(), pp.getLogModifUser());
+
+					final Set<AdresseTiers> adresses = pp.getAdressesTiers();
+					Assert.assertNotNull(adresses);
+					Assert.assertEquals(0, adresses.size());
+
+					final List<Remarque> remarques = remarqueDAO.getRemarques(pp.getNumero());
+					Assert.assertNotNull(remarques);
+					Assert.assertEquals(0, remarques.size());
+				}
+			}
+		});
+	}
+
+	@Test(timeout = 10000)
+	public void testModificationPartiePrenanteAvecNomConjointEtConjointConnuAuFiscalMemeNom() throws Exception {
+
+		final RegDate today = RegDate.get();
+		final RegDate dateNaissanceLui = date(1979, 7, 31);
+		final RegDate dateMariage = date(2005, 5, 12);
+		final RegDate dateActe = date(2014, 6, 2);
+		final String noAvs = "7567098402251";
+
+		final class Ids {
+			long idLui;
+			long idElle;
+			long idMenage;
+			long idut;
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique lui = addNonHabitant("Alfred", "Dumoulin", dateNaissanceLui, Sexe.MASCULIN);
+				final PersonnePhysique elle = addNonHabitant("Pascaline", "Dumoulin", null, Sexe.FEMININ);
+				final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, dateMariage, null);
+				final MenageCommun mc = couple.getMenage();
+
+				final EvenementReqDes evt = addEvenementReqDes(new InformationsActeur("nOtAir", "Bollomey", "Francis"), new InformationsActeur("seCretAir", "Planchet", "Adeline"), dateActe, "784156");
+				final UniteTraitement ut = addUniteTraitement(evt, EtatTraitement.A_TRAITER, null);
+				final PartiePrenante ppLui = addPartiePrenante(ut, "Dumoulin", "Alfred Henri");
+				ppLui.setNumeroContribuable(lui.getNumero());
+				ppLui.setNomMere("Delaplanche");
+				ppLui.setPrenomsMere("Sophie Mafalda");
+				ppLui.setNomPere("Dumoulin");
+				ppLui.setPrenomsPere("François Robert");
+				ppLui.setOfsPaysNationalite(MockPays.RoyaumeUni.getNoOFS());
+				ppLui.setSexe(Sexe.MASCULIN);
+				ppLui.setCategorieEtranger(CategorieEtranger._03_ETABLI_C);
+				ppLui.setDateNaissance(dateNaissanceLui);
+				ppLui.setDateEtatCivil(dateMariage);
+				ppLui.setEtatCivil(EtatCivil.MARIE);
+				ppLui.setAvs(noAvs);
+				ppLui.setNomConjoint("Dumoulin");
+				ppLui.setPrenomConjoint("Pascaline");
+
+				ppLui.setRue("Rue de la porte en fer");
+				ppLui.setNumeroMaison("42");
+				ppLui.setOfsPays(MockPays.France.getNoOFS());
+				ppLui.setLocalite("Paris");
+				ppLui.setNumeroPostal("75016");
+
+				final Ids ids = new Ids();
+				ids.idLui = lui.getNumero();
+				ids.idElle = elle.getNumero();
+				ids.idMenage = mc.getNumero();
+				ids.idut = ut.getId();
+				return ids;
+			}
+		});
+
+		// traitement de l'unité
+		traiteUniteTraitement(ids.idut);
+
+		// vérification des résultats
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final UniteTraitement ut = uniteTraitementDAO.get(ids.idut);
+				Assert.assertNotNull(ut);
+				Assert.assertEquals(EtatTraitement.TRAITE, ut.getEtat());
+				Assert.assertEquals(0, ut.getErreurs().size());
+
+				{
+					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idLui);
+					Assert.assertNotNull(pp);
+					Assert.assertEquals(getDefaultOperateurName(), pp.getLogCreationUser());
+					Assert.assertEquals("seCretAir-reqdes", pp.getLogModifUser());
+					Assert.assertEquals("Alfred Henri", pp.getTousPrenoms());
+					Assert.assertEquals("Alfred", pp.getPrenomUsuel());
+					Assert.assertEquals("Dumoulin", pp.getNom());
+
+					final Set<AdresseTiers> adresses = pp.getAdressesTiers();
+					Assert.assertNotNull(adresses);
+					Assert.assertEquals(1, adresses.size());
+
+					final AdresseTiers adresse = adresses.iterator().next();
+					Assert.assertNotNull(adresse);
+					Assert.assertEquals(AdresseEtrangere.class, adresse.getClass());
+
+					final AdresseEtrangere adresseEtrangere = (AdresseEtrangere) adresse;
+					Assert.assertEquals((Integer) MockPays.France.getNoOFS(), adresseEtrangere.getNumeroOfsPays());
+					Assert.assertEquals("75016 Paris", adresseEtrangere.getNumeroPostalLocalite());
+					Assert.assertEquals("Rue de la porte en fer", adresseEtrangere.getRue());
+					Assert.assertEquals("42", adresseEtrangere.getNumeroMaison());
+					Assert.assertNull(adresseEtrangere.getTexteCasePostale());
+					Assert.assertNull(adresseEtrangere.getNumeroCasePostale());
+
+					final List<Remarque> remarques = remarqueDAO.getRemarques(pp.getNumero());
+					Assert.assertNotNull(remarques);
+					Assert.assertEquals(1, remarques.size());
+
+					final Remarque remarque = remarques.get(0);
+					Assert.assertNotNull(remarque);
+					Assert.assertEquals("seCretAir-reqdes", remarque.getLogCreationUser());
+					Assert.assertEquals("seCretAir-reqdes", remarque.getLogModifUser());
+
+					final StringBuilder b = new StringBuilder();
+					b.append("Contribuable mis à jour le ").append(RegDateHelper.dateToDisplayString(today));
+					b.append(" par l'acte notarial du ").append(RegDateHelper.dateToDisplayString(dateActe));
+					b.append(" par le notaire Francis Bollomey (nOtAir) et enregistré par Adeline Planchet (seCretAir).");
+					b.append("\n- Prénoms : vide -> \"Alfred Henri\"");
+					b.append("\n- Catégorie d'étranger : vide -> ").append(CategorieEtranger._03_ETABLI_C.getDisplayName());
+					b.append("\n- Nom de la mère : vide -> \"Delaplanche\"");
+					b.append("\n- Prénoms de la mère : vide -> \"Sophie Mafalda\"");
+					b.append("\n- Nom du père : vide -> \"Dumoulin\"");
+					b.append("\n- Prénoms du père : vide -> \"François Robert\"");
+					b.append("\n- NAVS13 : vide -> ").append(FormatNumeroHelper.formatNumAVS(noAvs));
+					b.append("\n- Nationalité : vide -> ").append(MockPays.RoyaumeUni.getNomCourt());
+					b.append("\n- Etat civil au ").append(RegDateHelper.dateToDisplayString(dateMariage)).append(" : vide -> ").append(EtatCivil.MARIE.format());
+					Assert.assertEquals(b.toString(), remarque.getTexte());
+				}
+				{
+					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idElle);
+					Assert.assertNotNull(pp);
+					Assert.assertEquals(getDefaultOperateurName(), pp.getLogCreationUser());
+					Assert.assertEquals(getDefaultOperateurName(), pp.getLogModifUser());
+					Assert.assertNull(pp.getTousPrenoms());
+					Assert.assertEquals("Pascaline", pp.getPrenomUsuel());
+					Assert.assertEquals("Dumoulin", pp.getNom());
+
+					final Set<AdresseTiers> adresses = pp.getAdressesTiers();
+					Assert.assertNotNull(adresses);
+					Assert.assertEquals(0, adresses.size());
+
+					final List<Remarque> remarques = remarqueDAO.getRemarques(pp.getNumero());
+					Assert.assertNotNull(remarques);
+					Assert.assertEquals(0, remarques.size());
+				}
+				{
+					final MenageCommun pp = (MenageCommun) tiersDAO.get(ids.idMenage);
+					Assert.assertNotNull(pp);
+					Assert.assertEquals(getDefaultOperateurName(), pp.getLogCreationUser());
+					Assert.assertEquals(getDefaultOperateurName(), pp.getLogModifUser());
+
+					final Set<AdresseTiers> adresses = pp.getAdressesTiers();
+					Assert.assertNotNull(adresses);
+					Assert.assertEquals(0, adresses.size());
+
+					final List<Remarque> remarques = remarqueDAO.getRemarques(pp.getNumero());
+					Assert.assertNotNull(remarques);
+					Assert.assertEquals(0, remarques.size());
+				}
+
+				// il faut de plus vérifier que l'on a bien 3 tiers seulement en base (= ceux vus plus haut) sans création d'un autre avec les données de l'acte
+				final List<Tiers> allTiers = tiersDAO.getAll();
+				Assert.assertEquals(3, allTiers.size());
+			}
+		});
+	}
+
+	@Test(timeout = 10000)
+	public void testModificationPartiePrenanteAvecNomConjointEtConjointConnuAuFiscalNomDifferent() throws Exception {
+
+		final RegDate dateNaissanceLui = date(1979, 7, 31);
+		final RegDate dateMariage = date(2005, 5, 12);
+		final RegDate dateActe = date(2014, 6, 2);
+
+		final class Ids {
+			long idLui;
+			long idElle;
+			long idMenage;
+			long idut;
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique lui = addNonHabitant("Alfred", "Dumoulin", dateNaissanceLui, Sexe.MASCULIN);
+				final PersonnePhysique elle = addNonHabitant("Pascaline", "Dumoulin", null, Sexe.FEMININ);
+				final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, dateMariage, null);
+				final MenageCommun mc = couple.getMenage();
+
+				final EvenementReqDes evt = addEvenementReqDes(new InformationsActeur("nOtAir", "Bollomey", "Francis"), new InformationsActeur("seCretAir", "Planchet", "Adeline"), dateActe, "784156");
+				final UniteTraitement ut = addUniteTraitement(evt, EtatTraitement.A_TRAITER, null);
+				final PartiePrenante ppLui = addPartiePrenante(ut, "Dumoulin", "Alfred Henri");
+				ppLui.setNumeroContribuable(lui.getNumero());
+				ppLui.setNomMere("Delaplanche");
+				ppLui.setPrenomsMere("Sophie Mafalda");
+				ppLui.setNomPere("Dumoulin");
+				ppLui.setPrenomsPere("François Robert");
+				ppLui.setOfsPaysNationalite(MockPays.RoyaumeUni.getNoOFS());
+				ppLui.setSexe(Sexe.MASCULIN);
+				ppLui.setCategorieEtranger(CategorieEtranger._03_ETABLI_C);
+				ppLui.setDateNaissance(dateNaissanceLui);
+				ppLui.setDateEtatCivil(dateMariage);
+				ppLui.setEtatCivil(EtatCivil.MARIE);
+				ppLui.setNomConjoint("Dumoulin");
+				ppLui.setPrenomConjoint("Pascaline Marie");
+
+				ppLui.setRue("Rue de la porte en fer");
+				ppLui.setNumeroMaison("42");
+				ppLui.setOfsPays(MockPays.France.getNoOFS());
+				ppLui.setLocalite("Paris");
+				ppLui.setNumeroPostal("75016");
+
+				final Ids ids = new Ids();
+				ids.idLui = lui.getNumero();
+				ids.idElle = elle.getNumero();
+				ids.idMenage = mc.getNumero();
+				ids.idut = ut.getId();
+				return ids;
+			}
+		});
+
+		// traitement de l'unité
+		traiteUniteTraitement(ids.idut);
+
+		// vérification des résultats
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final UniteTraitement ut = uniteTraitementDAO.get(ids.idut);
+				Assert.assertNotNull(ut);
+				Assert.assertEquals(EtatTraitement.EN_ERREUR, ut.getEtat());
+				Assert.assertEquals(1, ut.getErreurs().size());
+
+				final ErreurTraitement erreur = ut.getErreurs().iterator().next();
+				Assert.assertNotNull(erreur);
+				Assert.assertEquals(ErreurTraitement.TypeErreur.ERROR, erreur.getType());
+
+				final String expectedMessage = String.format("Le conjoint du tiers %s (%s) n'a pas le même nom que celui qui est annoncé dans l'acte.",
+				                                             FormatNumeroHelper.numeroCTBToDisplay(ids.idLui),
+				                                             FormatNumeroHelper.numeroCTBToDisplay(ids.idElle));
+				Assert.assertEquals(expectedMessage, erreur.getMessage());
+
+				{
+					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idLui);
+					Assert.assertNotNull(pp);
+					Assert.assertEquals(getDefaultOperateurName(), pp.getLogCreationUser());
+					Assert.assertEquals(getDefaultOperateurName(), pp.getLogModifUser());
+					Assert.assertNull(pp.getTousPrenoms());
+					Assert.assertEquals("Alfred", pp.getPrenomUsuel());
+					Assert.assertEquals("Dumoulin", pp.getNom());
+
+					final Set<AdresseTiers> adresses = pp.getAdressesTiers();
+					Assert.assertNotNull(adresses);
+					Assert.assertEquals(0, adresses.size());
+
+					final List<Remarque> remarques = remarqueDAO.getRemarques(pp.getNumero());
+					Assert.assertNotNull(remarques);
+					Assert.assertEquals(0, remarques.size());
+
+				}
+				{
+					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idElle);
+					Assert.assertNotNull(pp);
+					Assert.assertEquals(getDefaultOperateurName(), pp.getLogCreationUser());
+					Assert.assertEquals(getDefaultOperateurName(), pp.getLogModifUser());
+					Assert.assertNull(pp.getTousPrenoms());
+					Assert.assertEquals("Pascaline", pp.getPrenomUsuel());
+					Assert.assertEquals("Dumoulin", pp.getNom());
+
+					final Set<AdresseTiers> adresses = pp.getAdressesTiers();
+					Assert.assertNotNull(adresses);
+					Assert.assertEquals(0, adresses.size());
+
+					final List<Remarque> remarques = remarqueDAO.getRemarques(pp.getNumero());
+					Assert.assertNotNull(remarques);
+					Assert.assertEquals(0, remarques.size());
+				}
+				{
+					final MenageCommun pp = (MenageCommun) tiersDAO.get(ids.idMenage);
+					Assert.assertNotNull(pp);
+					Assert.assertEquals(getDefaultOperateurName(), pp.getLogCreationUser());
+					Assert.assertEquals(getDefaultOperateurName(), pp.getLogModifUser());
+
+					final Set<AdresseTiers> adresses = pp.getAdressesTiers();
+					Assert.assertNotNull(adresses);
+					Assert.assertEquals(0, adresses.size());
+
+					final List<Remarque> remarques = remarqueDAO.getRemarques(pp.getNumero());
+					Assert.assertNotNull(remarques);
+					Assert.assertEquals(0, remarques.size());
+				}
+			}
+		});
+	}
+
+	@Test(timeout = 10000)
+	public void testModificationPartiePrenanteMarieeSeuleEtContribuableCelibataireFiscal() throws Exception {
+
+		final RegDate dateNaissanceLui = date(1979, 7, 31);
+		final RegDate dateMariage = date(2005, 5, 12);
+		final RegDate dateActe = date(2014, 6, 2);
+
+		final class Ids {
+			long idLui;
+			long idut;
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique lui = addNonHabitant("Alfred", "Dumoulin", dateNaissanceLui, Sexe.MASCULIN);
+
+				final EvenementReqDes evt = addEvenementReqDes(new InformationsActeur("nOtAir", "Bollomey", "Francis"), new InformationsActeur("seCretAir", "Planchet", "Adeline"), dateActe, "784156");
+				final UniteTraitement ut = addUniteTraitement(evt, EtatTraitement.A_TRAITER, null);
+				final PartiePrenante ppLui = addPartiePrenante(ut, "Dumoulin", "Alfred Henri");
+				ppLui.setNumeroContribuable(lui.getNumero());
+				ppLui.setNomMere("Delaplanche");
+				ppLui.setPrenomsMere("Sophie Mafalda");
+				ppLui.setNomPere("Dumoulin");
+				ppLui.setPrenomsPere("François Robert");
+				ppLui.setOfsPaysNationalite(MockPays.RoyaumeUni.getNoOFS());
+				ppLui.setSexe(Sexe.MASCULIN);
+				ppLui.setCategorieEtranger(CategorieEtranger._03_ETABLI_C);
+				ppLui.setDateNaissance(dateNaissanceLui);
+				ppLui.setDateEtatCivil(dateMariage);
+				ppLui.setEtatCivil(EtatCivil.MARIE);
+
+				ppLui.setRue("Rue de la porte en fer");
+				ppLui.setNumeroMaison("42");
+				ppLui.setOfsPays(MockPays.France.getNoOFS());
+				ppLui.setLocalite("Paris");
+				ppLui.setNumeroPostal("75016");
+
+				final Ids ids = new Ids();
+				ids.idLui = lui.getNumero();
+				ids.idut = ut.getId();
+				return ids;
+			}
+		});
+
+		// traitement de l'unité
+		traiteUniteTraitement(ids.idut);
+
+		// vérification des résultats
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final UniteTraitement ut = uniteTraitementDAO.get(ids.idut);
+				Assert.assertNotNull(ut);
+				Assert.assertEquals(EtatTraitement.EN_ERREUR, ut.getEtat());
+				Assert.assertEquals(1, ut.getErreurs().size());
+
+				final ErreurTraitement erreur = ut.getErreurs().iterator().next();
+				Assert.assertNotNull(erreur);
+				Assert.assertEquals(ErreurTraitement.TypeErreur.ERROR, erreur.getType());
+				Assert.assertEquals("Le tiers " + FormatNumeroHelper.numeroCTBToDisplay(ids.idLui) + " n'est pas connu en couple au " + RegDateHelper.dateToDisplayString(dateMariage) + ".", erreur.getMessage());
+
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idLui);
+				Assert.assertNotNull(pp);
+				Assert.assertEquals(getDefaultOperateurName(), pp.getLogCreationUser());
+				Assert.assertEquals(getDefaultOperateurName(), pp.getLogModifUser());
+				Assert.assertNull(pp.getTousPrenoms());
+				Assert.assertEquals("Alfred", pp.getPrenomUsuel());
+				Assert.assertEquals("Dumoulin", pp.getNom());
+
+				final Set<AdresseTiers> adresses = pp.getAdressesTiers();
+				Assert.assertNotNull(adresses);
+				Assert.assertEquals(0, adresses.size());
+
+				final List<Remarque> remarques = remarqueDAO.getRemarques(pp.getNumero());
+				Assert.assertNotNull(remarques);
+				Assert.assertEquals(0, remarques.size());
+			}
+		});
+	}
+
+	@Test(timeout = 10000)
+	public void testModificationPartiePrenanteAvecNomConjointEtContribuableCelibataireFiscal() throws Exception {
+
+		final RegDate dateNaissanceLui = date(1979, 7, 31);
+		final RegDate dateMariage = date(2005, 5, 12);
+		final RegDate dateActe = date(2014, 6, 2);
+
+		final class Ids {
+			long idLui;
+			long idut;
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique lui = addNonHabitant("Alfred", "Dumoulin", dateNaissanceLui, Sexe.MASCULIN);
+
+				final EvenementReqDes evt = addEvenementReqDes(new InformationsActeur("nOtAir", "Bollomey", "Francis"), new InformationsActeur("seCretAir", "Planchet", "Adeline"), dateActe, "784156");
+				final UniteTraitement ut = addUniteTraitement(evt, EtatTraitement.A_TRAITER, null);
+				final PartiePrenante ppLui = addPartiePrenante(ut, "Dumoulin", "Alfred Henri");
+				ppLui.setNumeroContribuable(lui.getNumero());
+				ppLui.setNomMere("Delaplanche");
+				ppLui.setPrenomsMere("Sophie Mafalda");
+				ppLui.setNomPere("Dumoulin");
+				ppLui.setPrenomsPere("François Robert");
+				ppLui.setOfsPaysNationalite(MockPays.RoyaumeUni.getNoOFS());
+				ppLui.setSexe(Sexe.MASCULIN);
+				ppLui.setCategorieEtranger(CategorieEtranger._03_ETABLI_C);
+				ppLui.setDateNaissance(dateNaissanceLui);
+				ppLui.setDateEtatCivil(dateMariage);
+				ppLui.setEtatCivil(EtatCivil.MARIE);
+				ppLui.setNomConjoint("Dumoulin");
+				ppLui.setPrenomConjoint("Anne-Lise");
+
+				ppLui.setRue("Rue de la porte en fer");
+				ppLui.setNumeroMaison("42");
+				ppLui.setOfsPays(MockPays.France.getNoOFS());
+				ppLui.setLocalite("Paris");
+				ppLui.setNumeroPostal("75016");
+
+				final Ids ids = new Ids();
+				ids.idLui = lui.getNumero();
+				ids.idut = ut.getId();
+				return ids;
+			}
+		});
+
+		// traitement de l'unité
+		traiteUniteTraitement(ids.idut);
+
+		// vérification des résultats
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final UniteTraitement ut = uniteTraitementDAO.get(ids.idut);
+				Assert.assertNotNull(ut);
+				Assert.assertEquals(EtatTraitement.EN_ERREUR, ut.getEtat());
+				Assert.assertEquals(1, ut.getErreurs().size());
+
+				final ErreurTraitement erreur = ut.getErreurs().iterator().next();
+				Assert.assertNotNull(erreur);
+				Assert.assertEquals(ErreurTraitement.TypeErreur.ERROR, erreur.getType());
+				Assert.assertEquals("Le tiers " + FormatNumeroHelper.numeroCTBToDisplay(ids.idLui) + " n'est pas connu en couple au " + RegDateHelper.dateToDisplayString(dateMariage) + ".", erreur.getMessage());
+
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idLui);
+				Assert.assertNotNull(pp);
+				Assert.assertEquals(getDefaultOperateurName(), pp.getLogCreationUser());
+				Assert.assertEquals(getDefaultOperateurName(), pp.getLogModifUser());
+				Assert.assertNull(pp.getTousPrenoms());
+				Assert.assertEquals("Alfred", pp.getPrenomUsuel());
+				Assert.assertEquals("Dumoulin", pp.getNom());
+
+				final Set<AdresseTiers> adresses = pp.getAdressesTiers();
+				Assert.assertNotNull(adresses);
+				Assert.assertEquals(0, adresses.size());
+
+				final List<Remarque> remarques = remarqueDAO.getRemarques(pp.getNumero());
+				Assert.assertNotNull(remarques);
+				Assert.assertEquals(0, remarques.size());
+
+				// pas de nouveau tiers
+				final List<Tiers> allTiers = tiersDAO.getAll();
+				Assert.assertNotNull(allTiers);
+				Assert.assertEquals(1, allTiers.size());
+			}
+		});
+	}
+
+	@Test(timeout = 10000)
+	public void testCreationContribuableSepare() throws Exception {
+
+		final RegDate today = RegDate.get();
+		final RegDate dateNaissance = date(1973, 2, 12);
+		final RegDate dateMariage = date(2005, 7, 12);
+		final RegDate dateSeparation = date(2010, 9, 28);
+		final RegDate dateActe = date(2014, 6, 10);
+		final String noAvs = "7561912776368";
+
+		// création de l'unité de traitement
+		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementReqDes evt = addEvenementReqDes(new InformationsActeur("zainotaire", "Duchmol", "Alexandra"), null, dateActe, "4879846498");
+				final UniteTraitement ut = addUniteTraitement(evt, EtatTraitement.A_TRAITER, null);
+				final PartiePrenante pp = addPartiePrenante(ut, "Cordoba",  "Valentine Catherine Julie");
+				pp.setNomMere("Delaplanche");
+				pp.setPrenomsMere("Sophie Mafalda");
+				pp.setNomPere("Dumoulin");
+				pp.setPrenomsPere("François Robert");
+				pp.setOfsPaysNationalite(MockPays.Suisse.getNoOFS());
+				pp.setSexe(Sexe.FEMININ);
+				pp.setDateNaissance(dateNaissance);
+				pp.setDateEtatCivil(dateMariage);
+				pp.setDateSeparation(dateSeparation);
+				pp.setEtatCivil(EtatCivil.MARIE);
+				pp.setAvs(noAvs);
+				pp.setNomConjoint("Cordoba");
+				pp.setPrenomConjoint("Marcel");
+
+				pp.setRue("Eisentürstrasse");
+				pp.setNumeroMaison("42");
+				pp.setOfsPays(MockPays.Suisse.getNoOFS());
+				pp.setLocalite(MockLocalite.Zurich.getNomCompletMinuscule());
+				pp.setNumeroPostal(Integer.toString(MockLocalite.Zurich.getNPA()));
+				pp.setNumeroPostalComplementaire(MockLocalite.Zurich.getComplementNPA());
+
+				return ut.getId();
+			}
+		});
+
+		// traitement de l'unité
+		traiteUniteTraitement(id);
+
+		// vérification du résultat
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+
+				final UniteTraitement ut = uniteTraitementDAO.get(id);
+				Assert.assertNotNull(ut);
+				Assert.assertEquals(EtatTraitement.TRAITE, ut.getEtat());
+				Assert.assertNotNull(ut.getDateTraitement());
+				Assert.assertEquals(0, ut.getErreurs().size());
+
+				// 3 contribuables créés
+				// - madame Valentine Cordoba
+				// - monsieur Marcel Cordoba (données minimales)
+				// - couple Cordoba fermé à la veille de la date de séparation
+				final List<Tiers> allTiers = tiersDAO.getAll();
+				Assert.assertNotNull(allTiers);
+				Assert.assertEquals(3, allTiers.size());        // 2 PP + 1 MC
+
+				final List<Tiers> allSortedTiers = new ArrayList<>(allTiers);
+				Collections.sort(allSortedTiers, new Comparator<Tiers>() {
+					@Override
+					public int compare(Tiers o1, Tiers o2) {
+						int result = o1.getNatureTiers().compareTo(o2.getNatureTiers());
+						if (result == 0) {
+							// les seuls qui ont la même nature sont les deux personnes physiques
+							final PersonnePhysique pp1 = (PersonnePhysique) o1;
+							final PersonnePhysique pp2 = (PersonnePhysique) o2;
+							result = pp1.getPrenomUsuel().compareTo(pp2.getPrenomUsuel());
+						}
+						return result;
+					}
+				});
+
+				// et l'ordre est finalement 1. Marcel, 2. Valentine, 3 le couple
+				{
+					final PersonnePhysique pp = (PersonnePhysique) allSortedTiers.get(0);
+					Assert.assertNotNull(pp);
+					Assert.assertEquals("zainotaire-reqdes", pp.getLogCreationUser());
+					Assert.assertEquals("zainotaire-reqdes", pp.getLogModifUser());
+					Assert.assertEquals("Cordoba", pp.getNom());
+					Assert.assertEquals("Marcel", pp.getPrenomUsuel());
+					Assert.assertEquals("Marcel", pp.getTousPrenoms());
+					Assert.assertNull(pp.getDateNaissance());
+					Assert.assertNull(pp.getSexe());
+					Assert.assertNull(pp.getNumeroAssureSocial());
+
+					// adresses
+					final Set<AdresseTiers> adresses = pp.getAdressesTiers();
+					Assert.assertNotNull(adresses);
+					Assert.assertEquals(0, adresses.size());
+
+					// remarques
+					final List<Remarque> remarques = remarqueDAO.getRemarques(pp.getNumero());
+					Assert.assertNotNull(remarques);
+					Assert.assertEquals(1, remarques.size());
+
+					final Remarque remarque = remarques.get(0);
+					Assert.assertNotNull(remarque);
+					Assert.assertEquals("zainotaire-reqdes", remarque.getLogCreationUser());
+					Assert.assertEquals("zainotaire-reqdes", remarque.getLogModifUser());
+
+					final StringBuilder b = new StringBuilder();
+					b.append("Contribuable créé le ").append(RegDateHelper.dateToDisplayString(today));
+					b.append(" par l'acte notarial du ").append(RegDateHelper.dateToDisplayString(dateActe));
+					b.append(" par le notaire Alexandra Duchmol (zainotaire) et enregistré par lui-même.");
+					Assert.assertEquals(b.toString(), remarque.getTexte());
+
+					// situation de famille
+					final Set<SituationFamille> situations = pp.getSituationsFamille();
+					Assert.assertNotNull(situations);
+					Assert.assertEquals(1, situations.size());
+					final SituationFamille situ = situations.iterator().next();
+					Assert.assertNotNull(situ);
+					Assert.assertEquals(SituationFamillePersonnePhysique.class, situ.getClass());
+					Assert.assertEquals(EtatCivil.SEPARE, situ.getEtatCivil());
+					Assert.assertEquals(dateSeparation, situ.getDateDebut());
+					Assert.assertNull(situ.getDateFin());
+
+					// couple
+					final Set<RapportEntreTiers> rapports = pp.getRapportsSujet();
+					Assert.assertNotNull(rapports);
+					Assert.assertEquals(1, rapports.size());
+
+					final RapportEntreTiers rapport = rapports.iterator().next();
+					Assert.assertNotNull(rapport);
+					Assert.assertFalse(rapport.isAnnule());
+					Assert.assertEquals(dateMariage, rapport.getDateDebut());
+					Assert.assertEquals(dateSeparation.getOneDayBefore(), rapport.getDateFin());
+					Assert.assertEquals(allSortedTiers.get(2).getNumero(), rapport.getObjetId());
+				}
+				{
+					final PersonnePhysique pp = (PersonnePhysique) allSortedTiers.get(1);
+					Assert.assertNotNull(pp);
+					Assert.assertEquals("zainotaire-reqdes", pp.getLogCreationUser());
+					Assert.assertEquals("zainotaire-reqdes", pp.getLogModifUser());
+					Assert.assertEquals("Cordoba", pp.getNom());
+					Assert.assertEquals("Valentine", pp.getPrenomUsuel());
+					Assert.assertEquals("Valentine Catherine Julie", pp.getTousPrenoms());
+					Assert.assertEquals(dateNaissance, pp.getDateNaissance());
+					Assert.assertEquals(Sexe.FEMININ, pp.getSexe());
+					Assert.assertEquals(noAvs, pp.getNumeroAssureSocial());
+
+					// adresses
+					final Set<AdresseTiers> adresses = pp.getAdressesTiers();
+					Assert.assertNotNull(adresses);
+					Assert.assertEquals(1, adresses.size());
+
+					final AdresseTiers adresse = adresses.iterator().next();
+					Assert.assertNotNull(adresse);
+					Assert.assertFalse(adresse.isAnnule());
+					Assert.assertEquals(AdresseSuisse.class, adresse.getClass());
+
+					final AdresseSuisse adresseSuisse = (AdresseSuisse) adresse;
+					Assert.assertEquals(MockLocalite.Zurich.getNoOrdre(), adresseSuisse.getNumeroOrdrePoste());
+					Assert.assertEquals("42", adresseSuisse.getNumeroMaison());
+					Assert.assertEquals("Eisentürstrasse", adresseSuisse.getRue());
+					Assert.assertNull(adresseSuisse.getNumeroRue());
+
+					// remarque
+					final List<Remarque> remarques = remarqueDAO.getRemarques(pp.getNumero());
+					Assert.assertNotNull(remarques);
+					Assert.assertEquals(1, remarques.size());
+
+					final Remarque remarque = remarques.get(0);
+					Assert.assertNotNull(remarque);
+					Assert.assertEquals("zainotaire-reqdes", remarque.getLogCreationUser());
+					Assert.assertEquals("zainotaire-reqdes", remarque.getLogModifUser());
+
+					final StringBuilder b = new StringBuilder();
+					b.append("Contribuable créé le ").append(RegDateHelper.dateToDisplayString(today));
+					b.append(" par l'acte notarial du ").append(RegDateHelper.dateToDisplayString(dateActe));
+					b.append(" par le notaire Alexandra Duchmol (zainotaire) et enregistré par lui-même.");
+					Assert.assertEquals(b.toString(), remarque.getTexte());
+
+					// situation de famille
+					final Set<SituationFamille> situations = pp.getSituationsFamille();
+					Assert.assertNotNull(situations);
+					Assert.assertEquals(1, situations.size());
+					final SituationFamille situ = situations.iterator().next();
+					Assert.assertNotNull(situ);
+					Assert.assertEquals(SituationFamillePersonnePhysique.class, situ.getClass());
+					Assert.assertEquals(EtatCivil.SEPARE, situ.getEtatCivil());
+					Assert.assertEquals(dateSeparation, situ.getDateDebut());
+					Assert.assertNull(situ.getDateFin());
+
+					// couple
+					final Set<RapportEntreTiers> rapports = pp.getRapportsSujet();
+					Assert.assertNotNull(rapports);
+					Assert.assertEquals(1, rapports.size());
+
+					final RapportEntreTiers rapport = rapports.iterator().next();
+					Assert.assertNotNull(rapport);
+					Assert.assertFalse(rapport.isAnnule());
+					Assert.assertEquals(dateMariage, rapport.getDateDebut());
+					Assert.assertEquals(dateSeparation.getOneDayBefore(), rapport.getDateFin());
+					Assert.assertEquals(allSortedTiers.get(2).getNumero(), rapport.getObjetId());
+				}
+				{
+					final MenageCommun mc = (MenageCommun) allSortedTiers.get(2);
+					Assert.assertNotNull(mc);
+					Assert.assertEquals("zainotaire-reqdes", mc.getLogCreationUser());
+					Assert.assertEquals("zainotaire-reqdes", mc.getLogModifUser());
+
+					// adresses
+					final Set<AdresseTiers> adresses = mc.getAdressesTiers();
+					Assert.assertNotNull(adresses);
+					Assert.assertEquals(0, adresses.size());
+
+					// remarque
+					final List<Remarque> remarques = remarqueDAO.getRemarques(mc.getNumero());
+					Assert.assertNotNull(remarques);
+					Assert.assertEquals(1, remarques.size());
+
+					final Remarque remarque = remarques.get(0);
+					Assert.assertNotNull(remarque);
+					Assert.assertEquals("zainotaire-reqdes", remarque.getLogCreationUser());
+					Assert.assertEquals("zainotaire-reqdes", remarque.getLogModifUser());
+
+					final StringBuilder b = new StringBuilder();
+					b.append("Contribuable créé le ").append(RegDateHelper.dateToDisplayString(today));
+					b.append(" par l'acte notarial du ").append(RegDateHelper.dateToDisplayString(dateActe));
+					b.append(" par le notaire Alexandra Duchmol (zainotaire) et enregistré par lui-même.");
+					Assert.assertEquals(b.toString(), remarque.getTexte());
 
 					// situation de famille
 					final Set<SituationFamille> situations = mc.getSituationsFamille();

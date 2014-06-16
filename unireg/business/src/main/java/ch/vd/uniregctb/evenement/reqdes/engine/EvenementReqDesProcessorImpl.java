@@ -29,6 +29,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.DateHelper;
+import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
@@ -38,6 +39,7 @@ import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.Localite;
+import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.uniregctb.adresse.AdresseEnvoi;
 import ch.vd.uniregctb.adresse.AdresseEtrangere;
 import ch.vd.uniregctb.adresse.AdresseException;
@@ -53,6 +55,7 @@ import ch.vd.uniregctb.common.BlockingQueuePollingThread;
 import ch.vd.uniregctb.common.Dated;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.LengthConstants;
+import ch.vd.uniregctb.common.StringRenderer;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
@@ -67,11 +70,13 @@ import ch.vd.uniregctb.reqdes.PartiePrenante;
 import ch.vd.uniregctb.reqdes.RolePartiePrenante;
 import ch.vd.uniregctb.reqdes.UniteTraitement;
 import ch.vd.uniregctb.reqdes.UniteTraitementDAO;
+import ch.vd.uniregctb.tiers.AppartenanceMenage;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.Remarque;
 import ch.vd.uniregctb.tiers.SituationFamille;
 import ch.vd.uniregctb.tiers.SituationFamillePersonnePhysique;
@@ -390,6 +395,7 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 					final ErreurTraitement erreur = new ErreurTraitement();
 					erreur.setCallstack(ExceptionUtils.extractCallStack(e));
 					erreur.setMessage(e.getMessage());
+					erreur.setType(ErreurTraitement.TypeErreur.ERROR);
 
 					final Set<ErreurTraitement> erreurs = ut.getErreurs();
 					erreurs.clear();
@@ -593,11 +599,14 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 		final Map<Long, ProcessingDataPartiePrenante> processingData = findOrCreatePersonnesPhysiques(evt, partiesPrenantes, warningCollector);
 
 		// gestion des états civils : on lie éventuellement les contribuables ensemble
-		gererEtatsCivils(evt, partiesPrenantes, processingData);
+		final List<ProcessingDataPartiePrenante> nouvellesCreations = gererEtatsCivils(evt, partiesPrenantes, processingData);
 
 		// TODO reste enfin à metre à jour les fors fiscaux
 
 		// finalement, on ajoute les remarques sur les parties prenantes créées ou modifiées
+		for (ProcessingDataPartiePrenante data : nouvellesCreations) {
+			addRemarque(data, evt);
+		}
 		for (ProcessingDataPartiePrenante data : processingData.values()) {
 			addRemarque(data, evt);
 		}
@@ -619,57 +628,122 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 	 * @param evt événement reçu de eReqDes
 	 * @param partiesPrenantes liste des parties prenantes de l'unité de traitement
 	 * @param processingData données des personnes physiques indexées par identifiant de partie prenante
+	 * @return les données des nouvelles personnes physiques créées exprès ici pour constituer des couples
 	 * @throws EvenementReqDesException en cas d'erreur
 	 */
-	private void gererEtatsCivils(EvenementReqDes evt, Set<PartiePrenante> partiesPrenantes, Map<Long, ProcessingDataPartiePrenante> processingData) throws EvenementReqDesException {
+	private List<ProcessingDataPartiePrenante> gererEtatsCivils(EvenementReqDes evt, Set<PartiePrenante> partiesPrenantes, Map<Long, ProcessingDataPartiePrenante> processingData) throws EvenementReqDesException {
+		final List<ProcessingDataPartiePrenante> nouvellesCreations = new LinkedList<>();
 		for (PartiePrenante ppSrc : partiesPrenantes) {
 			final ProcessingDataPartiePrenante data = processingData.get(ppSrc.getId());
 			if (data != null) {
 				final EtatCivil etatCivil = ppSrc.getEtatCivil();
 				final boolean conjointAutrePartiePrenante = ppSrc.getConjointPartiePrenante() != null;
 
-				// cela concerne-t-il un couple ?
-				if (etatCivil == EtatCivil.LIE_PARTENARIAT_ENREGISTRE || etatCivil == EtatCivil.MARIE || etatCivil == EtatCivil.SEPARE || etatCivil == EtatCivil.PARTENARIAT_SEPARE) {
+				// cela concerne-t-il un couple ? (Attention : les états civils "séparés" sont fournis comme "mariés" avec une date de séparation renseignée)
+				if (etatCivil == EtatCivil.LIE_PARTENARIAT_ENREGISTRE || etatCivil == EtatCivil.MARIE) {
 					// qui est le conjoint ?
-					final PersonnePhysique conjoint;
 					final ProcessingDataPartiePrenante conjointData;
 					if (conjointAutrePartiePrenante) {
 						if (ppSrc.getConjointPartiePrenante().isSourceCivile()) {
 							// on crée un conjoint bidon (a priori un doublon, mais bon...)
-							conjoint = createPersonnePhysique(ppSrc.getConjointPartiePrenante());
+							final PersonnePhysique conjoint = createPersonnePhysique(ppSrc.getConjointPartiePrenante());
 							conjointData = new ProcessingDataPartiePrenante(true, conjoint);
-
-							// nouvelle personne physique qui n'est pas dans la liste des parties prenantes -> on crée la remarque tout de suite
-							addRemarque(conjointData, evt);
+							nouvellesCreations.add(conjointData);
 						}
 						else {
 							// c'est l'autre partie prenante, également fiscale
 							conjointData = processingData.get(ppSrc.getConjointPartiePrenante().getId());
-							conjoint = conjointData != null ? conjointData.personnePhysique : null;
 						}
 					}
 					else if (StringUtils.isNotBlank(ppSrc.getNomConjoint())) {
-						conjoint = createConjointMinimal(ppSrc.getNomConjoint(), ppSrc.getPrenomConjoint());
+						final PersonnePhysique conjoint = createConjointMinimal(ppSrc.getNomConjoint(), ppSrc.getPrenomConjoint());
 						conjointData = new ProcessingDataPartiePrenante(true, conjoint);
-
-						// nouvelle personne physique qui n'est pas une partie prenante -> on crée la remarque tout de suite
-						addRemarque(conjointData, evt);
+						nouvellesCreations.add(conjointData);
 					}
 					else {
-						conjoint = null;
 						conjointData = null;
 					}
 
 					final ModeTraitementCouple modeTraitementCouple = determineModeTraitementCouple(data.creation, conjointData != null ? conjointData.creation : null);
 					if (modeTraitementCouple == ModeTraitementCouple.CREATION_PURE) {
 						// on ne s'embête pas, on crée le couple
+						final PersonnePhysique conjoint = conjointData != null ? conjointData.personnePhysique : null;
 						final EnsembleTiersCouple couple = tiersService.createEnsembleTiersCouple(data.personnePhysique, conjoint, ppSrc.getDateEtatCivil(), ppSrc.getDateSeparation() != null ? ppSrc.getDateSeparation().getOneDayBefore() : null);
 						final MenageCommun mc = couple.getMenage();
 						addRemarqueCreation(mc, evt);
 					}
+					else if (modeTraitementCouple == ModeTraitementCouple.MIXTE) {
+						// ici, on a forcément un couple complet : l'un est nouveau, l'autre déjà connu
+						final PersonnePhysique connu = data.creation ? conjointData.personnePhysique : data.personnePhysique;
+						final PersonnePhysique nouveau = data.creation ? data.personnePhysique : conjointData.personnePhysique;
+
+						// que connait-on pout le moment ?
+						final EnsembleTiersCouple coupleConnu = tiersService.getEnsembleTiersCouple(connu, ppSrc.getDateEtatCivil());
+						if (coupleConnu != null) {
+							final PersonnePhysique conjointConnu = coupleConnu.getConjoint(connu);
+							if (conjointConnu == null) {
+								// connu comme marié seul -> on complète ?
+								tiersService.addTiersToCouple(coupleConnu.getMenage(), nouveau, ppSrc.getDateEtatCivil(), ppSrc.getDateSeparation() != null ? ppSrc.getDateSeparation().getOneDayBefore() : null);
+							}
+							else if (isMemeNom(nouveau, conjointConnu)) {
+								// il faut détruire le nouveau (et en cascade tout ce qu'on a pu faire sur lui), qui ne sert plus à rien (et du coup on ne met pas à jour le conjoint connu !!)
+								hibernateTemplate.delete(nouveau);
+
+								// on l'enlève également des nouveautés (il ne faudrait pas tenter de lui rajouter une remarque alors qu'il est déjà mort...) s'il y est
+								if (!data.creation) {
+									nouvellesCreations.remove(conjointData);
+								}
+
+								// et on l'enlève du mapping des parties prenantes s'il y est
+								processingData.values().remove(data.creation ? data : conjointData);
+							}
+							else {
+								throw new EvenementReqDesException(String.format("Le conjoint du tiers %s (%s) n'a pas le même nom que celui qui est annoncé dans l'acte.",
+								                                                 FormatNumeroHelper.numeroCTBToDisplay(connu.getNumero()),
+								                                                 FormatNumeroHelper.numeroCTBToDisplay(conjointConnu.getNumero())));
+							}
+						}
+						else {
+							throw new EvenementReqDesException(String.format("Le tiers %s n'est pas connu en couple au %s.",
+							                                                 FormatNumeroHelper.numeroCTBToDisplay(data.personnePhysique.getNumero()),
+							                                                 RegDateHelper.dateToDisplayString(ppSrc.getDateEtatCivil())));
+						}
+					}
+					else if (modeTraitementCouple == ModeTraitementCouple.MODIFICATION_PURE) {
+						// ou bien les deux sont en modification, ou bien on a affaire à un marié seul
+						if (conjointData != null) {
+							// les deux sont en modification... il faut juste vérifier que c'est le bon couple et c'est bon
+							final EnsembleTiersCouple couplePrincipal = tiersService.getEnsembleTiersCouple(data.personnePhysique, ppSrc.getDateEtatCivil());
+							final EnsembleTiersCouple coupleConjoint = tiersService.getEnsembleTiersCouple(conjointData.personnePhysique, ppSrc.getDateEtatCivil());
+							if (couplePrincipal == null || coupleConjoint == null || couplePrincipal.getMenage() != coupleConjoint.getMenage()) {
+
+								// pour les tests, c'est mieux d'avoir les deux numéros de contribuables dans un ordre déterministe... et cela ne gêne absolument pas pour la production -> on le fait
+								final List<Long> ids = Arrays.asList(data.personnePhysique.getNumero(), conjointData.personnePhysique.getNumero());
+								Collections.sort(ids);
+
+								throw new EvenementReqDesException(String.format("Les tiers %s et %s ne forment pas un couple au %s.",
+								                                                 FormatNumeroHelper.numeroCTBToDisplay(ids.get(0)),
+								                                                 FormatNumeroHelper.numeroCTBToDisplay(ids.get(1)),
+								                                                 RegDateHelper.dateToDisplayString(ppSrc.getDateEtatCivil())));
+							}
+
+							// TODO Quid du cas de séparation annoncée par l'acte ?
+						}
+						else {
+							// marié seul -> si le tiers connu est en couple en base, c'est tout bon
+							final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(data.personnePhysique, ppSrc.getDateEtatCivil());
+							if (couple == null) {
+								throw new EvenementReqDesException(String.format("Le tiers %s n'est pas connu en couple au %s.",
+								                                                 FormatNumeroHelper.numeroCTBToDisplay(data.personnePhysique.getNumero()),
+								                                                 RegDateHelper.dateToDisplayString(ppSrc.getDateEtatCivil())));
+							}
+
+							// TODO Quid du cas de séparation annoncée par l'acte ?
+						}
+					}
 					else {
-						throw new EvenementReqDesException("Pas encore implémenté");
-						// TODO il faut trouver le ou les contribuables concernés et valider qu'ils sont bien en couple ensemble
+						// ceci est un bug!
+						throw new IllegalArgumentException("Cas non traité de mode de traitement de couple : " + modeTraitementCouple);
 					}
 
 					// c'est la dernière fois que l'on voit ce conjoint, il faut dont le mettre à jour complètement dès maintenant
@@ -678,8 +752,22 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 						gererSituationFamille(conjointPartiePrenante.getDateEtatCivil(), conjointPartiePrenante.getEtatCivil(), conjointPartiePrenante.getDateSeparation(), conjointData);
 					}
 				}
+				else if (!data.creation) {
+					// la partie prenante est indiquée comme "équivalent célibataire" et il s'agit d'une mise à jour -> vérifions qu'on a bien quelque chose de compatible en base
+					final Set<RapportEntreTiers> rapports = data.personnePhysique.getRapportsSujet();
+					final DateRange range = new DateRangeHelper.Range(ppSrc.getDateEtatCivil(), null);
+					for (RapportEntreTiers ret : rapports) {
+						if (!ret.isAnnule() && ret instanceof AppartenanceMenage && DateRangeHelper.intersect(range, ret)) {
+							// visiblement, on connait cette personne en couple après la date de l'acte...
+							throw new EvenementReqDesException(String.format("La personne physique %s est connue en couple après le %s mais est indiquée comme %s dans l'acte.",
+							                                                 FormatNumeroHelper.numeroCTBToDisplay(data.personnePhysique.getNumero()),
+							                                                 RegDateHelper.dateToDisplayString(ppSrc.getDateEtatCivil()),
+							                                                 etatCivil.format()));
+						}
+					}
+				}
 
-				// couple ou pas couple, on crée la situation de famille fiscale sur la personne physique
+				// couple ou pas couple, on crée (resp. met à jour) la situation de famille fiscale sur la personne physique
 				gererSituationFamille(ppSrc.getDateEtatCivil(), ppSrc.getEtatCivil(), ppSrc.getDateSeparation(), data);
 
 				// pas la peine d'aller regarder l'autre partie prenante si on a déjà constitué un couple avec elle...
@@ -688,6 +776,13 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 				}
 			}
 		}
+		return nouvellesCreations;
+	}
+
+	private boolean isMemeNom(PersonnePhysique nouvellementCree, PersonnePhysique dejaDansUnireg) {
+		final NomPrenom nomPrenomExistant = tiersService.getDecompositionNomPrenom(dejaDansUnireg, true);
+		final NomPrenom nomPrenomNouveau = tiersService.getDecompositionNomPrenom(nouvellementCree, true);
+		return nomPrenomExistant.equals(nomPrenomNouveau);
 	}
 
 	private void gererSituationFamille(RegDate dateEtatCivil, EtatCivil etatCivil, @Nullable RegDate dateSeparation, ProcessingDataPartiePrenante data) {
@@ -715,7 +810,10 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 			data.personnePhysique.addSituationFamille(newSf);
 
 			if (!data.creation) {
-				data.elementsRemarque.add(String.format("Etat civil au %s : %s -> %s", RegDateHelper.dateToDisplayString(effDateEtatCivil), toString(sf != null ? sf.getEtatCivil() : null), toString(effEtatCivil)));
+				data.elementsRemarque.add(String.format("Etat civil au %s : %s -> %s",
+				                                        RegDateHelper.dateToDisplayString(effDateEtatCivil),
+				                                        ETAT_CIVIL_RENDERER.toString(sf != null ? sf.getEtatCivil() : null),
+				                                        ETAT_CIVIL_RENDERER.toString(effEtatCivil)));
 			}
 		}
 	}
@@ -869,7 +967,7 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 		for (Localite candidate : localites) {
 			if (candidate.isValide()
 					&& (npa == null || npa.equals(candidate.getNPA()))
-					&& candidate.getNomCompletMinuscule().equalsIgnoreCase(localite)
+					&& (candidate.getNomCompletMinuscule().equalsIgnoreCase(localite) || candidate.getNomAbregeMinuscule().equalsIgnoreCase(localite))
 					&& (npaComplement == null || npaComplement.equals(candidate.getComplementNPA()))) {
 				candidates.add(candidate);
 			}
@@ -1103,21 +1201,21 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 		return hibernateTemplate.merge(pp);
 	}
 
-	private static List<String> dumpBaseDataToPersonnePhysique(PartiePrenante src, PersonnePhysique dest, boolean withRemarqueOnChange) {
+	private List<String> dumpBaseDataToPersonnePhysique(PartiePrenante src, PersonnePhysique dest, boolean withRemarqueOnChange) {
 		final List<String> elementsRemarque = new LinkedList<>();
-		addRemarqueElement(elementsRemarque, updateAttribute(dest, src.getNom(), NOM_ACCESSOR, withRemarqueOnChange));
-		addRemarqueElement(elementsRemarque, updateAttribute(dest, src.getPrenoms(), PRENOMS_ACCESSOR, withRemarqueOnChange));
-		addRemarqueElement(elementsRemarque, updateAttribute(dest, extractPrenomUsuel(src.getPrenoms()), PRENOM_USUEL_ACCESSOR, withRemarqueOnChange));
-		addRemarqueElement(elementsRemarque, updateAttribute(dest, src.getCategorieEtranger(), CATEGORIE_ETRANGER_ACCESSOR, withRemarqueOnChange));
-		addRemarqueElement(elementsRemarque, updateAttribute(dest, src.getDateDeces(), DATE_DECES_ACCESSOR, withRemarqueOnChange));
-		addRemarqueElement(elementsRemarque, updateAttribute(dest, src.getDateNaissance(), DATE_NAISSANCE_ACCESSOR, withRemarqueOnChange));
-		addRemarqueElement(elementsRemarque, updateAttribute(dest, src.getNomMere(), NOM_MERE_ACCESSOR, withRemarqueOnChange));
-		addRemarqueElement(elementsRemarque, updateAttribute(dest, src.getPrenomsMere(), PRENOMS_MERE_ACCESSOR, withRemarqueOnChange));
-		addRemarqueElement(elementsRemarque, updateAttribute(dest, src.getNomPere(), NOM_PERE_ACCESSOR, withRemarqueOnChange));
-		addRemarqueElement(elementsRemarque, updateAttribute(dest, src.getPrenomsPere(), PRENOMS_PERE_ACCESSOR, withRemarqueOnChange));
-		addRemarqueElement(elementsRemarque, updateAttribute(dest, src.getAvs(), NO_AVS_ACCESSOR, withRemarqueOnChange));
-		addRemarqueElement(elementsRemarque, updateAttribute(dest, src.getOfsPaysNationalite(), NATIONALITE_ACCESSOR, withRemarqueOnChange));
-		addRemarqueElement(elementsRemarque, updateAttribute(dest, src.getSexe(), SEXE_ACCESSOR, withRemarqueOnChange));
+		addRemarqueElement(elementsRemarque, updateAttribute(dest, src.getNom(), NOM_ACCESSOR, withRemarqueOnChange, DEFAULT_RENDERER));
+		addRemarqueElement(elementsRemarque, updateAttribute(dest, src.getPrenoms(), PRENOMS_ACCESSOR, withRemarqueOnChange, DEFAULT_RENDERER));
+		addRemarqueElement(elementsRemarque, updateAttribute(dest, extractPrenomUsuel(src.getPrenoms()), PRENOM_USUEL_ACCESSOR, withRemarqueOnChange, DEFAULT_RENDERER));
+		addRemarqueElement(elementsRemarque, updateAttribute(dest, src.getCategorieEtranger(), CATEGORIE_ETRANGER_ACCESSOR, withRemarqueOnChange, CATEGORIE_ETRANGER_RENDERER));
+		addRemarqueElement(elementsRemarque, updateAttribute(dest, src.getDateDeces(), DATE_DECES_ACCESSOR, withRemarqueOnChange, DATE_RENDERER));
+		addRemarqueElement(elementsRemarque, updateAttribute(dest, src.getDateNaissance(), DATE_NAISSANCE_ACCESSOR, withRemarqueOnChange, DATE_RENDERER));
+		addRemarqueElement(elementsRemarque, updateAttribute(dest, src.getNomMere(), NOM_MERE_ACCESSOR, withRemarqueOnChange, DEFAULT_RENDERER));
+		addRemarqueElement(elementsRemarque, updateAttribute(dest, src.getPrenomsMere(), PRENOMS_MERE_ACCESSOR, withRemarqueOnChange, DEFAULT_RENDERER));
+		addRemarqueElement(elementsRemarque, updateAttribute(dest, src.getNomPere(), NOM_PERE_ACCESSOR, withRemarqueOnChange, DEFAULT_RENDERER));
+		addRemarqueElement(elementsRemarque, updateAttribute(dest, src.getPrenomsPere(), PRENOMS_PERE_ACCESSOR, withRemarqueOnChange, DEFAULT_RENDERER));
+		addRemarqueElement(elementsRemarque, updateAttribute(dest, src.getAvs(), NO_AVS_ACCESSOR, withRemarqueOnChange, AVS_RENDERER));
+		addRemarqueElement(elementsRemarque, updateAttribute(dest, src.getOfsPaysNationalite(), NATIONALITE_ACCESSOR, withRemarqueOnChange, PAYS_RENDERER));
+		addRemarqueElement(elementsRemarque, updateAttribute(dest, src.getSexe(), SEXE_ACCESSOR, withRemarqueOnChange, SEXE_RENDERER));
 		return elementsRemarque;
 	}
 
@@ -1187,11 +1285,11 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 		return String.format("%s (%s)", nomPrenom.getNomPrenom(), acteur.getVisa());
 	}
 
-	private static <T> String updateAttribute(PersonnePhysique pp, T newValue, AttributeAccessor<T> accessor, boolean withRemarqueOnChange) {
+	private static <T> String updateAttribute(PersonnePhysique pp, T newValue, AttributeAccessor<T> accessor, boolean withRemarqueOnChange, StringRenderer<? super T> renderer) {
 		final T oldValue = accessor.get(pp);
 		if (oldValue != newValue && (oldValue == null || !oldValue.equals(newValue))) {
 			accessor.set(pp, newValue);
-			return withRemarqueOnChange ? String.format("%s : %s -> %s", accessor.getAttributeDisplayName(), toString(oldValue), toString(newValue)) : null;
+			return withRemarqueOnChange ? String.format("%s : %s -> %s", accessor.getAttributeDisplayName(), renderer.toString(oldValue), renderer.toString(newValue)) : null;
 		}
 		return null;
 	}
@@ -1202,18 +1300,60 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 		}
 	}
 
-	private static <T> String toString(T value) {
-		if (value == null) {
-			return "vide";
+	private static final String VIDE = "vide";
+
+	private static final StringRenderer<Object> DEFAULT_RENDERER = new StringRenderer<Object>() {
+		@Override
+		public String toString(Object value) {
+			return value == null ? VIDE : String.format("\"%s\"", value);
 		}
-		if (value instanceof RegDate) {
-			return RegDateHelper.dateToDisplayString((RegDate) value);
+	};
+
+	private static final StringRenderer<RegDate> DATE_RENDERER = new StringRenderer<RegDate>() {
+		@Override
+		public String toString(RegDate value) {
+			return value == null ? VIDE : RegDateHelper.dateToDisplayString(value);
 		}
-		if (value instanceof Enum || value instanceof Number) {
-			return value.toString();
+	};
+
+	private static final StringRenderer<EtatCivil> ETAT_CIVIL_RENDERER = new StringRenderer<EtatCivil>() {
+		@Override
+		public String toString(EtatCivil value) {
+			return value == null ? VIDE : value.format();
 		}
-		return String.format("\"%s\"", value);
-	}
+	};
+
+	private static final StringRenderer<String> AVS_RENDERER = new StringRenderer<String>() {
+		@Override
+		public String toString(String value) {
+			return value == null ? VIDE : FormatNumeroHelper.formatNumAVS(value);
+		}
+	};
+
+	private static final StringRenderer<Sexe> SEXE_RENDERER = new StringRenderer<Sexe>() {
+		@Override
+		public String toString(Sexe value) {
+			return value == null ? VIDE : value.getDisplayName();
+		}
+	};
+
+	private static final StringRenderer<CategorieEtranger> CATEGORIE_ETRANGER_RENDERER = new StringRenderer<CategorieEtranger>() {
+		@Override
+		public String toString(CategorieEtranger value) {
+			return value == null ? VIDE : value.getDisplayName();
+		}
+	};
+
+	private final StringRenderer<Integer> PAYS_RENDERER = new StringRenderer<Integer>() {
+		@Override
+		public String toString(Integer value) {
+			if (value == null) {
+				return VIDE;
+			}
+			final Pays pays = infraService.getPays(value, null);
+			return pays == null ? value.toString() : pays.getNomCourt();
+		}
+	};
 
 	private static final AttributeAccessor<String> NOM_ACCESSOR = new AttributeAccessor<String>() {
 		@Override
