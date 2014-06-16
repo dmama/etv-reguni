@@ -429,7 +429,9 @@ public class ReqDesEventHandler implements EsbMessageHandler {
 		pp.setNomPrenom(new NomPrenom(name.getOfficialName(), name.getFirstNames()));
 		pp.setSexe(EchHelper.sexeFromEch44(identity.getSex()));
 		pp.setDateNaissance(DataHelper.xmlToCore(identity.getDateOfBirth()));
-		pp.setNoAvs(Long.toString(identity.getVn()));
+		if (identity.getVn() != null) {
+			pp.setNoAvs(Long.toString(identity.getVn()));
+		}
 
 		final FullName motherName = identity.getMotherName();
 		if (motherName != null) {
