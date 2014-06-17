@@ -46,9 +46,9 @@ public class IndexerFormatHelper {
 	 */
 	private static class CollectionStringRenderer<T> extends AbstractStringRendererImpl<Collection<T>> {
 
-		private final StringRenderer<T> renderer;
+		private final StringRenderer<? super T> renderer;
 
-		public CollectionStringRenderer(StringRenderer<T> renderer) {
+		public CollectionStringRenderer(StringRenderer<? super T> renderer) {
 			this.renderer = renderer;
 		}
 
@@ -68,7 +68,7 @@ public class IndexerFormatHelper {
 	/**
 	 * Utilisation de {@link #toString()} ou {@link #nullValue()}
 	 */
-	public static final StringRenderer DEFAULT_RENDERER = new AbstractStringRendererImpl() {
+	public static final StringRenderer<Object> DEFAULT_RENDERER = new AbstractStringRendererImpl<Object>() {
 		@Override
 		protected String toStringFromNotNull(@NotNull Object object) {
 			return object.toString();

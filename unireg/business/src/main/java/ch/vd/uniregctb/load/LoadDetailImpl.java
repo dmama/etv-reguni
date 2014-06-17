@@ -9,9 +9,9 @@ public class LoadDetailImpl<T> implements LoadDetail {
 	private final T descriptor;
 	private final long nanoStart;
 	private final String threadName;
-	private final StringRenderer<T> renderer;
+	private final StringRenderer<? super T> renderer;
 	
-	public LoadDetailImpl(T descriptor, long nanoStart, String threadName, StringRenderer<T> renderer) {
+	public LoadDetailImpl(T descriptor, long nanoStart, String threadName, StringRenderer<? super T> renderer) {
 		this.descriptor = descriptor;
 		this.nanoStart = nanoStart;
 		this.threadName = threadName;

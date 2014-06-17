@@ -235,7 +235,6 @@ public class QueryConstructor {
 			}
 		}
 
-		//noinspection unchecked
 		addCriterionCommence(fullQuery, TiersIndexableData.NPA_TOUS, 0, criteria.getNpaTous(), IndexerFormatHelper.DEFAULT_RENDERER);
 	}
 
@@ -262,11 +261,10 @@ public class QueryConstructor {
 
 	private void addSexe(BooleanQuery fullQuery) throws IndexerException {
 		// Sexe
-		//noinspection unchecked
 		addCriterionExact(fullQuery, TiersIndexableData.SEXE, criteria.getSexe(), IndexerFormatHelper.DEFAULT_RENDERER);
 	}
 
-	private static <T extends Serializable> void addCriterionExact(BooleanQuery fullQuery, String field, TiersCriteria.ValueOrNull<T> criterionValue, StringRenderer<T> renderer) {
+	private static <T extends Serializable> void addCriterionExact(BooleanQuery fullQuery, String field, TiersCriteria.ValueOrNull<T> criterionValue, StringRenderer<? super T> renderer) {
 		if (criterionValue != null) {
 			if (criterionValue.orNull) {
 				final Query bNull = LuceneHelper.getTermsExact(field, IndexerFormatHelper.nullValue());
@@ -299,7 +297,7 @@ public class QueryConstructor {
 		}
 	}
 
-	private static <T extends Serializable> void addCriterionCommence(BooleanQuery fullQuery, String field, int minLength, TiersCriteria.ValueOrNull<T> criterionValue, StringRenderer<T> renderer) {
+	private static <T extends Serializable> void addCriterionCommence(BooleanQuery fullQuery, String field, int minLength, TiersCriteria.ValueOrNull<T> criterionValue, StringRenderer<? super T> renderer) {
 		if (criterionValue != null) {
 			if (criterionValue.orNull) {
 				final Query bNull = LuceneHelper.getTermsExact(field, IndexerFormatHelper.nullValue());

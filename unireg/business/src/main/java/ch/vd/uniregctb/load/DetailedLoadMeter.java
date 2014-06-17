@@ -59,7 +59,7 @@ public class DetailedLoadMeter<T> implements DetailedLoadMonitorable {
 	/**
 	 * Convertisseur en chaîne de caractères
 	 */
-	private final StringRenderer<T> renderer;
+	private final StringRenderer<? super T> renderer;
 	
 	/**
 	 * Container du descripteur de la charge en cours : chacune des instances par thread ne nécessite aucune synchronisation
@@ -82,7 +82,7 @@ public class DetailedLoadMeter<T> implements DetailedLoadMonitorable {
 		}
 	};
 
-	private static final StringRenderer DEFAULT_RENDERER = new StringRenderer<Object>() {
+	private static final StringRenderer<Object> DEFAULT_RENDERER = new StringRenderer<Object>() {
 		@Override
 		public String toString(Object object) {
 			return object != null ? object.toString() : null;
@@ -90,11 +90,10 @@ public class DetailedLoadMeter<T> implements DetailedLoadMonitorable {
 	};
 
 	public DetailedLoadMeter() {
-		//noinspection unchecked
 		this(DEFAULT_RENDERER);
 	}
 	
-	public DetailedLoadMeter(StringRenderer<T> renderer) {
+	public DetailedLoadMeter(StringRenderer<? super T> renderer) {
 		this.renderer = renderer;
 	}
 

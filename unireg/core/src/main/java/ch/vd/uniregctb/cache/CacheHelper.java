@@ -56,27 +56,32 @@ public abstract class CacheHelper {
 		 * @param renderer
 		 * @param <T>
 		 */
-		public <T> void addSpecificRenderer(Class<T> clazz, StringRenderer<T> renderer) {
+		public <T> void addSpecificRenderer(Class<T> clazz, StringRenderer<? super T> renderer) {
 			renderers.put(clazz, renderer);
 		}
 
 		@SuppressWarnings("unchecked")
-		public <T> StringRenderer<T> getRenderer(T value) {
-			StringRenderer<T> found = null;
+		public <T> StringRenderer<? super T> getRenderer(T value) {
+			StringRenderer<? super T> found = null;
 			if (value != null) {
 				final Class<?> clazz = value.getClass();
-				found = (StringRenderer<T>) renderers.get(clazz);
+				found = (StringRenderer<? super T>) renderers.get(clazz);
 				if (found == null) {
 					final Class<?>[] intfs = clazz.getInterfaces();
 					for (Class<?> intf : intfs) {
-						found = (StringRenderer<T>) renderers.get(intf);
+						found = (StringRenderer<? super T>) renderers.get(intf);
 						if (found != null) {
 							break;
 						}
 					}
 				}
 			}
-			return found != null ? found : (StringRenderer<T>) DEFAULT_RENDERER;
+			if (found != null) {
+				return found;
+			}
+			else {
+				return DEFAULT_RENDERER;
+			}
 		}
 	}
 
@@ -210,7 +215,7 @@ public abstract class CacheHelper {
 		return getDisplayedValue(value, rendererFactory);
 	}
 
-	private static String getDisplayedValue(Object value, @Nullable ValueRendererFactory rendererFactory) {
+	private static <T> String getDisplayedValue(T value, @Nullable ValueRendererFactory rendererFactory) {
 		if (value instanceof Collection) {
 			final StringBuilder b = new StringBuilder();
 			b.append("[");
@@ -226,7 +231,7 @@ public abstract class CacheHelper {
 			return b.toString();
 		}
 		else if (rendererFactory != null) {
-			final StringRenderer<Object> renderer = rendererFactory.getRenderer(value);
+			final StringRenderer<? super T> renderer = rendererFactory.getRenderer(value);
 			return renderer.toString(value);
 		}
 		else {
