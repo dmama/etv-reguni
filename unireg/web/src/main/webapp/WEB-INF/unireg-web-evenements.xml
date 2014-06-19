@@ -47,11 +47,8 @@
 	<bean id="evtReqDesController" class="ch.vd.uniregctb.evenement.reqdes.EvenementReqDesController">
 		<property name="controllerUtils" ref="controllerUtils"/>
 		<property name="tiersMapHelper" ref="tiersMapHelper"/>
-		<property name="manager" ref="evtReqDesManager"/>
-	</bean>
-
-	<bean id="evtReqDesManager" class="ch.vd.uniregctb.evenement.reqdes.ReqDesManagerImpl">
 		<property name="uniteTraitementDAO" ref="reqdesUniteTraitementDAO"/>
+		<property name="processor" ref="reqdesEventProcessor"/>
 	</bean>
 
 </beans>

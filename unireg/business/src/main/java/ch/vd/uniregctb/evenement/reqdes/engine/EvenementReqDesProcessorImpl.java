@@ -996,34 +996,36 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 	}
 
 	private void gererSituationFamille(RegDate dateEtatCivil, EtatCivil etatCivil, @Nullable RegDate dateSeparation, ProcessingDataPartiePrenante data) {
-		final List<SituationFamille> sfs = data.personnePhysique.getSituationsFamilleSorted();
-		final RegDate effDateEtatCivil = getDateEffectiveEtatCivil(dateEtatCivil, dateSeparation);
-		final SituationFamille sf = sfs != null ? DateRangeHelper.rangeAt(sfs, effDateEtatCivil) : null;
-		final EtatCivil effEtatCivil = getEtatCivilEffectif(effDateEtatCivil, etatCivil, dateSeparation);
-		if (sf == null || sf.getEtatCivil() != effEtatCivil) {
-			// fermeture de la situation de famille encore ouverte et annulation des situations de familles éventuelles ultérieures
-			if (sfs != null) {
-				for (SituationFamille curseur : sfs) {
-					if (RegDateHelper.isAfterOrEqual(curseur.getDateDebut(), effDateEtatCivil, NullDateBehavior.EARLIEST)) {
-						curseur.setAnnule(true);
-					}
-					else if (curseur.getDateFin() == null) {
-						curseur.setDateFin(effDateEtatCivil.getOneDayBefore());
+		if (etatCivil != null && dateEtatCivil != null) {
+			final List<SituationFamille> sfs = data.personnePhysique.getSituationsFamilleSorted();
+			final RegDate effDateEtatCivil = getDateEffectiveEtatCivil(dateEtatCivil, dateSeparation);
+			final SituationFamille sf = sfs != null ? DateRangeHelper.rangeAt(sfs, effDateEtatCivil) : null;
+			final EtatCivil effEtatCivil = getEtatCivilEffectif(effDateEtatCivil, etatCivil, dateSeparation);
+			if (sf == null || sf.getEtatCivil() != effEtatCivil) {
+				// fermeture de la situation de famille encore ouverte et annulation des situations de familles éventuelles ultérieures
+				if (sfs != null) {
+					for (SituationFamille curseur : sfs) {
+						if (RegDateHelper.isAfterOrEqual(curseur.getDateDebut(), effDateEtatCivil, NullDateBehavior.EARLIEST)) {
+							curseur.setAnnule(true);
+						}
+						else if (curseur.getDateFin() == null) {
+							curseur.setDateFin(effDateEtatCivil.getOneDayBefore());
+						}
 					}
 				}
-			}
 
-			// mise en place de la nouvelle situation de famille
-			final SituationFamille newSf = new SituationFamillePersonnePhysique();
-			newSf.setDateDebut(effDateEtatCivil);
-			newSf.setEtatCivil(effEtatCivil);
-			data.personnePhysique.addSituationFamille(newSf);
+				// mise en place de la nouvelle situation de famille
+				final SituationFamille newSf = new SituationFamillePersonnePhysique();
+				newSf.setDateDebut(effDateEtatCivil);
+				newSf.setEtatCivil(effEtatCivil);
+				data.personnePhysique.addSituationFamille(newSf);
 
-			if (!data.creation) {
-				data.elementsRemarque.add(String.format("Etat civil au %s : %s -> %s",
-				                                        RegDateHelper.dateToDisplayString(effDateEtatCivil),
-				                                        ETAT_CIVIL_RENDERER.toString(sf != null ? sf.getEtatCivil() : null),
-				                                        ETAT_CIVIL_RENDERER.toString(effEtatCivil)));
+				if (!data.creation) {
+					data.elementsRemarque.add(String.format("Etat civil au %s : %s -> %s",
+					                                        RegDateHelper.dateToDisplayString(effDateEtatCivil),
+					                                        ETAT_CIVIL_RENDERER.toString(sf != null ? sf.getEtatCivil() : null),
+					                                        ETAT_CIVIL_RENDERER.toString(effEtatCivil)));
+				}
 			}
 		}
 	}

@@ -265,6 +265,20 @@
 
         <!-- Début des boutons -->
 	    <input type="button" value="<fmt:message key='label.bouton.retour'/>" onClick="document.location='list.do';" />
+	    <c:if test="${uniteTraitement.recyclable}">
+		    <form:form method="post" action="recycler.do" style="display: inline">
+			    <input type="hidden" name="id" value="${uniteTraitement.id}"/>
+			    <fmt:message key="label.bouton.recycler" var="labelBoutonRecyler"/>
+			    <input type="submit" name="recycler" value="${labelBoutonRecyler}"/>
+		    </form:form>
+	    </c:if>
+	    <c:if test="${uniteTraitement.forceable}">
+		    <form:form method="post" action="forcer.do" style="display: inline">
+			    <input type="hidden" name="id" value="${uniteTraitement.id}"/>
+			    <fmt:message key="label.bouton.forcer" var="labelBoutonForcer"/>
+			    <input type="submit" name="forcer" value="${labelBoutonForcer}" onclick="return confirm('Voulez-vous réellement forcer l\'état de cette unité de traitement ?');"/>
+		    </form:form>
+	    </c:if>
 	    <!-- Fin des boutons -->
 
 	</tiles:put>

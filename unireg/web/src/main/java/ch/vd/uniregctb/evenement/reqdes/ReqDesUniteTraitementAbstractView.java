@@ -12,7 +12,7 @@ import ch.vd.uniregctb.reqdes.UniteTraitement;
 
 public abstract class ReqDesUniteTraitementAbstractView implements Serializable {
 
-	private static final long serialVersionUID = -1025747351159618763L;
+	private static final long serialVersionUID = 8744735065807279084L;
 
 	private final long id;
 	private final EtatTraitement etat;
@@ -82,5 +82,13 @@ public abstract class ReqDesUniteTraitementAbstractView implements Serializable 
 
 	public Date getDateTraitement() {
 		return dateTraitement;
+	}
+
+	public boolean isRecyclable() {
+		return etat == EtatTraitement.A_TRAITER || etat == EtatTraitement.EN_ERREUR;
+	}
+
+	public boolean isForceable() {
+		return etat != EtatTraitement.TRAITE && etat != EtatTraitement.FORCE;
 	}
 }

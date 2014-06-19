@@ -4,15 +4,18 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.propertyeditors.CustomBooleanEditor;
 import org.springframework.beans.propertyeditors.CustomCollectionEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
@@ -25,9 +28,16 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.ControllerUtils;
+import ch.vd.uniregctb.common.Flash;
+import ch.vd.uniregctb.common.Fuse;
+import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.common.WebParamPagination;
+import ch.vd.uniregctb.evenement.reqdes.engine.EvenementReqDesProcessor;
 import ch.vd.uniregctb.reqdes.EtatTraitement;
+import ch.vd.uniregctb.reqdes.UniteTraitement;
+import ch.vd.uniregctb.reqdes.UniteTraitementCriteria;
+import ch.vd.uniregctb.reqdes.UniteTraitementDAO;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityCheck;
 import ch.vd.uniregctb.tiers.TiersMapHelper;
@@ -38,7 +48,10 @@ import ch.vd.uniregctb.utils.RegDateEditor;
 @SessionAttributes(value = {EvenementReqDesController.CRITERIA_NAME, EvenementReqDesController.PAGINATION_NAME})
 public class EvenementReqDesController {
 
+	private static final Logger LOGGER = Logger.getLogger(EvenementReqDesController.class);
+
 	private static final String ACCESS_DENIED_MESSAGE = "Vous ne possédez aucun droit IfoSec de gestion des événements des notaires.";
+	private static final int RECYCLING_MAX_WAITING_TIME_MS = 3000;      // 3 secondes
 
 	public static final String CRITERIA_NAME = "reqdesCriteria";
 	public static final String PAGINATION_NAME = "reqdesPagination";
@@ -56,7 +69,8 @@ public class EvenementReqDesController {
 
 	private ControllerUtils controllerUtils;
 	private TiersMapHelper tiersMapHelper;
-	private ReqDesManager manager;
+	private UniteTraitementDAO uniteTraitementDAO;
+	private EvenementReqDesProcessor processor;
 
 	public void setControllerUtils(ControllerUtils controllerUtils) {
 		this.controllerUtils = controllerUtils;
@@ -66,8 +80,12 @@ public class EvenementReqDesController {
 		this.tiersMapHelper = tiersMapHelper;
 	}
 
-	public void setManager(ReqDesManager manager) {
-		this.manager = manager;
+	public void setUniteTraitementDAO(UniteTraitementDAO uniteTraitementDAO) {
+		this.uniteTraitementDAO = uniteTraitementDAO;
+	}
+
+	public void setProcessor(EvenementReqDesProcessor processor) {
+		this.processor = processor;
 	}
 
 	@ModelAttribute
@@ -127,6 +145,7 @@ public class EvenementReqDesController {
 
 	@RequestMapping(value = "/nav-list.do", method = RequestMethod.GET)
 	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
+	@Transactional(rollbackFor = Throwable.class, readOnly = true)
 	public String showList(HttpServletRequest request, Model model, @ModelAttribute(CRITERIA_NAME) @Valid ReqDesCriteriaView criteria, BindingResult bindingResult) {
 		if (bindingResult.hasErrors()) {
 			// on ré-affiche juste la page en effaçant les résultats des recherches précédentes et avec le message d'erreur
@@ -135,7 +154,7 @@ public class EvenementReqDesController {
 		else {
 			// récupération des paramètres de pagination
 			final ParamPagination paramPagination = new WebParamPagination(request, TABLE_NAME, PAGE_SIZE, DEFAULT_FIELD, false);
-			populateSearchModel(model, criteria, paramPagination, manager.find(criteria, paramPagination), manager.count(criteria));
+			populateSearchModel(model, criteria, paramPagination, find(criteria, paramPagination), count(criteria));
 		}
 		return "evenement/reqdes/list";
 	}
@@ -164,9 +183,111 @@ public class EvenementReqDesController {
 
 	@RequestMapping(value = "/visu.do", method = RequestMethod.GET)
 	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
+	@Transactional(rollbackFor = Throwable.class, readOnly = true)
 	public String showDetail(Model model, @RequestParam(ID) long idUniteTraitement) {
-		model.addAttribute(UNITE_TRAITEMENT_NAME, manager.get(idUniteTraitement));
+		model.addAttribute(UNITE_TRAITEMENT_NAME, get(idUniteTraitement));
 		return "evenement/reqdes/visu";
+	}
+
+	@RequestMapping(value = "/recycler.do", method = RequestMethod.POST)
+	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
+	public String recycler(@RequestParam(ID) final long idUniteTraitementARecycler) {
+
+		final Fuse fusible = new Fuse();
+		final EvenementReqDesProcessor.ListenerHandle handle = processor.registerListener(new EvenementReqDesProcessor.Listener() {
+			@Override
+			public void onUniteTraite(long idUniteTraitement) {
+				if (idUniteTraitement == idUniteTraitementARecycler) {
+					synchronized (fusible) {
+						fusible.blow();
+					}
+				}
+			}
+
+			@Override
+			public void onStop() {
+				// rien à faire...
+			}
+		});
+		try {
+			processor.postUniteTraitement(idUniteTraitementARecycler);
+
+			final long start = System.currentTimeMillis();
+			//noinspection SynchronizationOnLocalVariableOrMethodParameter
+			synchronized (fusible) {
+				// on n'attend quand-même pas trop longtemps...
+				long now;
+				while (fusible.isNotBlown() && (now = System.currentTimeMillis()) - start < RECYCLING_MAX_WAITING_TIME_MS) {
+					fusible.wait(RECYCLING_MAX_WAITING_TIME_MS - now + start);
+				}
+			}
+		}
+		catch (InterruptedException e) {
+			// rien de spécial à faire, on verra bien plus bas si le traitement a été fait ou pas...
+		}
+		finally {
+			processor.unregisterListener(handle);
+		}
+
+		// traitement terminé ?
+		if (fusible.isBlown()) {
+			Flash.message("L'unité de traitement a été recyclée.");
+		}
+		else {
+			Flash.warning("Le recyclage de l'unité de traitement a été demandé mais n'a pas encore pu être effectué.");
+		}
+
+		return String.format("redirect:/evenement/reqdes/visu.do?%s=%d", ID, idUniteTraitementARecycler);
+	}
+
+	@RequestMapping(value = "/forcer.do", method = RequestMethod.POST)
+	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
+	@Transactional(rollbackFor = Throwable.class)
+	public String forcer(@RequestParam(ID) long idUniteTraitement) {
+		final UniteTraitement ut = uniteTraitementDAO.get(idUniteTraitement);
+		if (ut == null) {
+			throw new ObjectNotFoundException("Pas d'unité de traitement avec l'identifiant " + idUniteTraitement);
+		}
+		if (ut.getEtat() == EtatTraitement.FORCE || ut.getEtat() == EtatTraitement.TRAITE) {
+			Flash.message("L'unité de traitement est déjà dans un état final.");
+		}
+
+		LOGGER.info(String.format("L'unité de traitement ReqDes %d passe à l'état %s.", idUniteTraitement, EtatTraitement.FORCE));
+		ut.setEtat(EtatTraitement.FORCE);
+
+		return String.format("redirect:/evenement/reqdes/visu.do?%s=%d", ID, idUniteTraitement);
+	}
+
+	private static UniteTraitementCriteria buildCoreCriteria(ReqDesCriteriaView view) {
+		final UniteTraitementCriteria core = new UniteTraitementCriteria();
+		core.setNumeroMinute(StringUtils.trimToNull(view.getNumeroMinute()));
+		core.setVisaNotaire(StringUtils.trimToNull(view.getVisaNotaire()));
+		core.setDateTraitementMin(view.getDateTraitementMin());
+		core.setDateTraitementMax(view.getDateTraitementMax());
+		core.setEtatTraitement(view.getEtat());
+		core.setDateReceptionMin(view.getDateReceptionMax());
+		core.setDateTraitementMax(view.getDateReceptionMax());
+		core.setDateActeMin(view.getDateActeMin());
+		core.setDateActeMax(view.getDateActeMax());
+		return core;
+	}
+
+	private List<ReqDesUniteTraitementListView> find(ReqDesCriteriaView criteria, ParamPagination pagination) {
+		final List<UniteTraitement> uts = uniteTraitementDAO.find(buildCoreCriteria(criteria), pagination);
+		final List<ReqDesUniteTraitementListView> views = new ArrayList<>(uts.size());
+		for (UniteTraitement ut : uts) {
+			views.add(new ReqDesUniteTraitementListView(ut));
+		}
+		return views;
+	}
+
+	private int count(ReqDesCriteriaView criteria) {
+		return uniteTraitementDAO.getCount(buildCoreCriteria(criteria));
+	}
+
+	private ReqDesUniteTraitementDetailedView get(long idUniteTraitement) {
+		final UniteTraitement ut = uniteTraitementDAO.get(idUniteTraitement);
+		return ut == null ? null : new ReqDesUniteTraitementDetailedView(ut);
 	}
 }
 
