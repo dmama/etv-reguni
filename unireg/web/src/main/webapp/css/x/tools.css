@@ -22,6 +22,13 @@ a.start {
 	text-decoration: none;	
 }
 
+a.ellipsis {
+	height: 16px;
+	width: 3em;
+	display: inline-block;
+	background: url(ellipsis.png) no-repeat center;
+	text-decoration: none;
+}
 
 a.add,
 a.copy,

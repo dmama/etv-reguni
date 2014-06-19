@@ -19,39 +19,60 @@
 
 <script>
 
-	function refreshRemarques() {
-		$.get('<c:url value="/remarque/list.do?tiersId="/>${tiersId}&' + new Date().getTime(), function(list) {
+	var Remarque = {
 
-			var count = list.length;
-			if (count == 0) {
-				$('#remarqueTabAnchor').text('Remarques');
-				$('#remarquesContentDiv').text("(aucune remarque n'a été saisie pour l'instant)");
-			}
-			else {
-				$('#remarqueTabAnchor').text('Remarques (' + count + ')');
+		refreshRemarques: function() {
+			$.get('<c:url value="/remarque/list.do?tiersId="/>${tiersId}&' + new Date().getTime(), function(list) {
 
-				// rebuild the table from scratch
-				var table = '<table class="remarques" border="0" cellspacing="0"><tbody>';
-				for (var i = 0; i < count; ++i) {
-					var rem = list[i];
-					table += '<tr class="' + (i % 2 == 0 ? 'even' : 'odd') + '">';
-					table += '<td class="entete">le ' + escapeHTML(rem.date) + ' par ' + escapeHTML(rem.user) + '</td><td class="texte">' + rem.htmlText + '</td>';
-					table += '</tr>';
+				var count = list.length;
+				if (count == 0) {
+					$('#remarqueTabAnchor').text('Remarques');
+					$('#remarquesContentDiv').text("(aucune remarque n'a été saisie pour l'instant)");
 				}
-				table += '</tbody></table>';
-				$('#remarquesContentDiv').html(table);
-			}
+				else {
+					$('#remarqueTabAnchor').text('Remarques (' + count + ')');
 
-			$('#addRemarque').show();
-			$('#newRemarque').hide();
-			$('#newRemarque textarea').val('');
-		}, 'json')
-		.error(Ajax.popupErrorHandler);
-	}
+					// rebuild the table from scratch
+					var table = '<table class="remarques" border="0" cellspacing="0"><tbody>';
+					for (var i = 0; i < count; ++i) {
+						var rem = list[i];
+						table += '<tr class="' + (i % 2 == 0 ? 'even' : 'odd') + '">';
+						table += '<td class="entete">le ' + Remarque.escapeHTML(rem.date) + ' par ' + Remarque.escapeHTML(rem.user) + '</td>';
+						if (rem.nbLines < rem.thresholdNbLines) {
+							table += '<td class="texte">' + rem.htmlText + '</td>';
+						}
+						else {
+							table += '<td class="texte">';
+							table += '<div id="rq-short-' + i + '">' + rem.shortHtmlText + Remarque.buildToggle(i) + '</div>';
+							table += '<div id="rq-long-' + i + '" style="display:none;">' + rem.htmlText + '</div>';
+							table += '</td>';
+						}
+						table += '</tr>';
+					}
+					table += '</tbody></table>';
+					$('#remarquesContentDiv').html(table);
+				}
 
-	function escapeHTML(text) {
-		return StringUtils.escapeHTML(text);
-	}
+				$('#addRemarque').show();
+				$('#newRemarque').hide();
+				$('#newRemarque textarea').val('');
+			}, 'json')
+			.error(Ajax.popupErrorHandler);
+		},
+
+		escapeHTML: function(text) {
+			return StringUtils.escapeHTML(text);
+		},
+
+		buildToggle: function(index) {
+			return '<a title="Visualiser la fin de la remarque" class="ellipsis" href="#" onclick="Remarque.toggleLongVersion(' + index + ')">&nbsp;</a>';
+		},
+
+		toggleLongVersion: function(index) {
+			$('td #rq-short-' + index).hide();
+			$('td #rq-long-' + index).show();
+		}
+	};
 
 	$('#addRemarque').click(function() {
 		$('#addRemarque').hide();
@@ -63,7 +84,7 @@
 		var text = $('#newRemarque textarea').val();
 		$.post('<c:url value="/remarque/add.do"/>', {'tiersId': ${tiersId}, 'text': text}, function() {
 			// on success, refresh all
-			refreshRemarques();
+			Remarque.refreshRemarques();
 		});
 		return false;
 	});
@@ -74,6 +95,6 @@
 		return false;
 	});
 
-	refreshRemarques();
+	Remarque.refreshRemarques();
 
 </script>
