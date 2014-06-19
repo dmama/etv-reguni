@@ -358,14 +358,16 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 						}
 
 						final EtatTraitement nouvelEtat = errorCollector.hasCollectedMessages() ? EtatTraitement.EN_ERREUR : EtatTraitement.TRAITE;
-						if (LOGGER.isInfoEnabled()) {
-							LOGGER.info(String.format("Traitement de l'unité de traitement %d terminé dans l'état %s", idUniteTraitement, nouvelEtat));
-						}
 						ut.setDateTraitement(DateHelper.getCurrentDate());
 						ut.setEtat(nouvelEtat);
 
 						// un petit flush avant de partir (histoire que les visas utilisés soient les bons)
 						hibernateTemplate.flush();
+
+						// log après le flush pour que les éventuels problèmes de validation soient pris en compte
+						if (LOGGER.isInfoEnabled()) {
+							LOGGER.info(String.format("Traitement de l'unité de traitement %d terminé dans l'état %s", idUniteTraitement, nouvelEtat));
+						}
 					}
 					catch (EvenementReqDesException e) {
 						throw new ExceptionReqDesWrappingException(e);
@@ -408,6 +410,10 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 					erreurs.add(erreur);
 				}
 			});
+
+			if (LOGGER.isInfoEnabled()) {
+				LOGGER.info(String.format("Traitement de l'unité de traitement %d terminé dans l'état %s", idUniteTraitement, EtatTraitement.EN_ERREUR));
+			}
 		}
 		finally {
 			AuthenticationHelper.popPrincipal();

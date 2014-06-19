@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.hibernate.Criteria;
+import org.hibernate.criterion.CriteriaSpecification;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
@@ -42,6 +43,7 @@ public class UniteTraitementDAOImpl extends BaseDAOImpl<UniteTraitement, Long> i
 
 	private static void fillCriteria(Criteria dest, UniteTraitementCriteria source) {
 		final Criteria aliasEvenement = dest.createAlias("evenement", "evenement");
+		dest.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
 		if (source.getEtatTraitement() != null) {
 			dest.add(Restrictions.eq("etat", source.getEtatTraitement()));
 		}
@@ -73,7 +75,7 @@ public class UniteTraitementDAOImpl extends BaseDAOImpl<UniteTraitement, Long> i
 		if (paramSorting != null) {
 			dest.addOrder(buildOrder(paramSorting.isAscending(), paramSorting.getField()));
 		}
-		dest.addOrder(buildOrder(true, "id"));     // pour assurer l'unicité du tri
+		dest.addOrder(buildOrder(paramSorting != null && paramSorting.isAscending(), "id"));     // pour assurer l'unicité du tri
 	}
 
 	@SuppressWarnings("unchecked")

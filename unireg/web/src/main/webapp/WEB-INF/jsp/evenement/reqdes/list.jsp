@@ -46,6 +46,16 @@
 				<fmt:message key="option.etat.traitement.reqdes.${tableUnitesTraitement.etat}"/>
 			</display:column>
 
+			<!-- Noms des parties prenantes -->
+			<display:column titleKey="label.reqdes.unite.traitement.parties.prenantes" sortable="false">
+				<c:if test="${tableUnitesTraitement.partiePrenante1 != null}">
+					${tableUnitesTraitement.partiePrenante1.nomPrenom}
+					<c:if test="${tableUnitesTraitement.partiePrenante2 != null}">
+						<br/>${tableUnitesTraitement.partiePrenante2.nomPrenom}
+					</c:if>
+				</c:if>
+			</display:column>
+
 			<!-- Date acte -->
 			<display:column titleKey="label.reqdes.unite.traitement.date.acte" sortable="true" sortName="evenement.dateActe">
 				<unireg:regdate regdate="${tableUnitesTraitement.dateActe}"/>
@@ -58,7 +68,7 @@
 
 			<!-- Notaire -->
 			<display:column titleKey="label.reqdes.notaire" sortable="true" sortName="evenement.notaire.visa">
-				${tableUnitesTraitement.notaire.nomPrenom}" (${tableUnitesTraitement.visaNotaire})
+				${tableUnitesTraitement.notaire.nomPrenom} (${tableUnitesTraitement.visaNotaire})
 			</display:column>
 
 			<!-- Logs -->

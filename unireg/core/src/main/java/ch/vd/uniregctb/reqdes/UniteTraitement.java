@@ -78,7 +78,7 @@ public class UniteTraitement extends HibernateEntity {
 		this.partiesPrenantes = partiesPrenantes;
 	}
 
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
 	@JoinColumn(name = "UNITE_TRAITEMENT_ID", nullable = false)
 	@ForeignKey(name = "FK_REQDES_UT_ERR_UT_ID")
 	public Set<ErreurTraitement> getErreurs() {

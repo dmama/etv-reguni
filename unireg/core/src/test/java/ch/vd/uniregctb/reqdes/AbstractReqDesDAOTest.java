@@ -26,4 +26,12 @@ public abstract class AbstractReqDesDAOTest extends CoreDAOTest {
 		ut.setDateTraitement(dateTraitement);
 		return hibernateTemplate.merge(ut);
 	}
+
+	protected PartiePrenante addPartiePrenante(UniteTraitement ut, String nom, String prenoms) {
+		final PartiePrenante pp = new PartiePrenante();
+		pp.setUniteTraitement(ut);
+		pp.setNom(nom);
+		pp.setPrenoms(prenoms);
+		return hibernateTemplate.merge(pp);
+	}
 }

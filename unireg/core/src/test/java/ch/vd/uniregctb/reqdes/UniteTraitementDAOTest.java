@@ -45,7 +45,13 @@ public class UniteTraitementDAOTest extends AbstractReqDesDAOTest {
 			public Ids doInTransaction(TransactionStatus status) {
 				final EvenementReqDes evt1 = addEvenementReqDes(dateActe1, noMinute1, visaNotaire1, "Notaire", "Clothaire");
 				final UniteTraitement ut1 = addUniteTraitement(evt1, EtatTraitement.A_TRAITER, null);
+				final PartiePrenante pp1 = addPartiePrenante(ut1, "Wallbert", "Gaspard André");
+				final PartiePrenante pp2 = addPartiePrenante(ut1, "Wallbert", "Albertine");
+				pp1.setConjointPartiePrenante(pp2);
+				pp2.setConjointPartiePrenante(pp1);
+
 				final UniteTraitement ut2 = addUniteTraitement(evt1, EtatTraitement.EN_ERREUR, DateHelper.getDateTime(2006, 5, 12, 15, 53, 14));
+				addPartiePrenante(ut2, "Petitbois", "Philippe");
 
 				final EvenementReqDes evt2 = addEvenementReqDes(dateActe2, noMinute2, visaNotaire2, "Notilde", "Clothilde");
 				final UniteTraitement ut3 = addUniteTraitement(evt2, EtatTraitement.FORCE, DateHelper.getDateTime(2008, 6, 30, 18, 12, 14));
@@ -70,10 +76,10 @@ public class UniteTraitementDAOTest extends AbstractReqDesDAOTest {
 					final List<UniteTraitement> result = dao.find(criteria, null);
 					Assert.assertNotNull(result);
 					Assert.assertEquals(4, result.size());
-					Assert.assertEquals((Long) ids.ut1, result.get(0).getId());
-					Assert.assertEquals((Long) ids.ut2, result.get(1).getId());
-					Assert.assertEquals((Long) ids.ut3, result.get(2).getId());
-					Assert.assertEquals((Long) ids.ut4, result.get(3).getId());
+					Assert.assertEquals((Long) ids.ut4, result.get(0).getId());
+					Assert.assertEquals((Long) ids.ut3, result.get(1).getId());
+					Assert.assertEquals((Long) ids.ut2, result.get(2).getId());
+					Assert.assertEquals((Long) ids.ut1, result.get(3).getId());
 
 					Assert.assertEquals(4, dao.getCount(criteria));
 				}
@@ -99,8 +105,8 @@ public class UniteTraitementDAOTest extends AbstractReqDesDAOTest {
 					final List<UniteTraitement> result = dao.find(criteria, null);
 					Assert.assertNotNull(result);
 					Assert.assertEquals(2, result.size());
-					Assert.assertEquals((Long) ids.ut1, result.get(0).getId());
-					Assert.assertEquals((Long) ids.ut2, result.get(1).getId());
+					Assert.assertEquals((Long) ids.ut2, result.get(0).getId());
+					Assert.assertEquals((Long) ids.ut1, result.get(1).getId());
 
 					Assert.assertEquals(2, dao.getCount(criteria));
 				}
@@ -114,8 +120,8 @@ public class UniteTraitementDAOTest extends AbstractReqDesDAOTest {
 					final List<UniteTraitement> result = dao.find(criteria, null);
 					Assert.assertNotNull(result);
 					Assert.assertEquals(2, result.size());
-					Assert.assertEquals((Long) ids.ut1, result.get(0).getId());
-					Assert.assertEquals((Long) ids.ut2, result.get(1).getId());
+					Assert.assertEquals((Long) ids.ut2, result.get(0).getId());
+					Assert.assertEquals((Long) ids.ut1, result.get(1).getId());
 
 					Assert.assertEquals(2, dao.getCount(criteria));
 				}
@@ -128,8 +134,8 @@ public class UniteTraitementDAOTest extends AbstractReqDesDAOTest {
 					final List<UniteTraitement> result = dao.find(criteria, null);
 					Assert.assertNotNull(result);
 					Assert.assertEquals(2, result.size());
-					Assert.assertEquals((Long) ids.ut1, result.get(0).getId());
-					Assert.assertEquals((Long) ids.ut2, result.get(1).getId());
+					Assert.assertEquals((Long) ids.ut2, result.get(0).getId());
+					Assert.assertEquals((Long) ids.ut1, result.get(1).getId());
 
 					Assert.assertEquals(2, dao.getCount(criteria));
 				}
@@ -142,8 +148,8 @@ public class UniteTraitementDAOTest extends AbstractReqDesDAOTest {
 					final List<UniteTraitement> result = dao.find(criteria, null);
 					Assert.assertNotNull(result);
 					Assert.assertEquals(2, result.size());
-					Assert.assertEquals((Long) ids.ut3, result.get(0).getId());
-					Assert.assertEquals((Long) ids.ut4, result.get(1).getId());
+					Assert.assertEquals((Long) ids.ut4, result.get(0).getId());
+					Assert.assertEquals((Long) ids.ut3, result.get(1).getId());
 
 					Assert.assertEquals(2, dao.getCount(criteria));
 				}
@@ -156,8 +162,8 @@ public class UniteTraitementDAOTest extends AbstractReqDesDAOTest {
 					final List<UniteTraitement> result = dao.find(criteria, null);
 					Assert.assertNotNull(result);
 					Assert.assertEquals(2, result.size());
-					Assert.assertEquals((Long) ids.ut1, result.get(0).getId());
-					Assert.assertEquals((Long) ids.ut2, result.get(1).getId());
+					Assert.assertEquals((Long) ids.ut2, result.get(0).getId());
+					Assert.assertEquals((Long) ids.ut1, result.get(1).getId());
 
 					Assert.assertEquals(2, dao.getCount(criteria));
 				}
@@ -182,8 +188,8 @@ public class UniteTraitementDAOTest extends AbstractReqDesDAOTest {
 					final List<UniteTraitement> result = dao.find(criteria, null);
 					Assert.assertNotNull(result);
 					Assert.assertEquals(2, result.size());
-					Assert.assertEquals((Long) ids.ut2, result.get(0).getId());
-					Assert.assertEquals((Long) ids.ut3, result.get(1).getId());
+					Assert.assertEquals((Long) ids.ut3, result.get(0).getId());
+					Assert.assertEquals((Long) ids.ut2, result.get(1).getId());
 
 					Assert.assertEquals(2, dao.getCount(criteria));
 				}
