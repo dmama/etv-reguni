@@ -35,11 +35,11 @@ public class ReqDesManagerImpl implements ReqDesManager {
 
 	@Transactional(rollbackFor = Throwable.class, readOnly = true)
 	@Override
-	public List<ReqDesUniteTraitementBasicView> find(ReqDesCriteriaView criteria, ParamPagination pagination) {
+	public List<ReqDesUniteTraitementListView> find(ReqDesCriteriaView criteria, ParamPagination pagination) {
 		final List<UniteTraitement> uts = uniteTraitementDAO.find(buildCoreCriteria(criteria), pagination);
-		final List<ReqDesUniteTraitementBasicView> views = new ArrayList<>(uts.size());
+		final List<ReqDesUniteTraitementListView> views = new ArrayList<>(uts.size());
 		for (UniteTraitement ut : uts) {
-			views.add(new ReqDesUniteTraitementBasicView(ut));
+			views.add(new ReqDesUniteTraitementListView(ut));
 		}
 		return views;
 	}
@@ -48,5 +48,12 @@ public class ReqDesManagerImpl implements ReqDesManager {
 	@Override
 	public int count(ReqDesCriteriaView criteria) {
 		return uniteTraitementDAO.getCount(buildCoreCriteria(criteria));
+	}
+
+	@Transactional(rollbackFor = Throwable.class, readOnly = true)
+	@Override
+	public ReqDesUniteTraitementDetailedView get(long idUniteTraitement) {
+		final UniteTraitement ut = uniteTraitementDAO.get(idUniteTraitement);
+		return ut == null ? null : new ReqDesUniteTraitementDetailedView(ut);
 	}
 }

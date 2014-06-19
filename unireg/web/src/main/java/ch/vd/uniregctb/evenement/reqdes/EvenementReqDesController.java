@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
 import ch.vd.registre.base.date.RegDate;
@@ -46,8 +47,11 @@ public class EvenementReqDesController {
 	private static final String NB_UNITES_NAME = "nbUnites";
 	private static final String LISTE_UNITES_NAME = "listUnites";
 
+	private static final String ID = "id";
+	private static final String UNITE_TRAITEMENT_NAME = "uniteTraitement";
+
 	private static final int PAGE_SIZE = 25;
-	private static final String DEFAULT_FIELD = "id";
+	private static final String DEFAULT_FIELD = ID;
 	private static final WebParamPagination INITIAL_PAGINATION = new WebParamPagination(1, PAGE_SIZE, DEFAULT_FIELD, false);
 
 	private ControllerUtils controllerUtils;
@@ -101,11 +105,11 @@ public class EvenementReqDesController {
 		binder.registerCustomEditor(RegDate.class, new RegDateEditor(true, true, false));
 	}
 
-	private void populateModel(Model model,
-	                           ReqDesCriteriaView criteres,
-	                           ParamPagination pagination,
-	                           List<ReqDesUniteTraitementBasicView> liste,
-	                           int totalSize) {
+	private void populateSearchModel(Model model,
+	                                 ReqDesCriteriaView criteres,
+	                                 ParamPagination pagination,
+	                                 List<ReqDesUniteTraitementListView> liste,
+	                                 int totalSize) {
 		model.addAttribute(CRITERIA_NAME, criteres);
 		model.addAttribute(PAGINATION_NAME, pagination);
 		model.addAttribute(LISTE_UNITES_NAME, liste);
@@ -126,12 +130,12 @@ public class EvenementReqDesController {
 	public String showList(HttpServletRequest request, Model model, @ModelAttribute(CRITERIA_NAME) @Valid ReqDesCriteriaView criteria, BindingResult bindingResult) {
 		if (bindingResult.hasErrors()) {
 			// on ré-affiche juste la page en effaçant les résultats des recherches précédentes et avec le message d'erreur
-			populateModel(model, criteria, INITIAL_PAGINATION, null, 0);
+			populateSearchModel(model, criteria, INITIAL_PAGINATION, null, 0);
 		}
 		else {
 			// récupération des paramètres de pagination
 			final ParamPagination paramPagination = new WebParamPagination(request, TABLE_NAME, PAGE_SIZE, DEFAULT_FIELD, false);
-			populateModel(model, criteria, paramPagination, manager.find(criteria, paramPagination), manager.count(criteria));
+			populateSearchModel(model, criteria, paramPagination, manager.find(criteria, paramPagination), manager.count(criteria));
 		}
 		return "evenement/reqdes/list";
 	}
@@ -139,7 +143,7 @@ public class EvenementReqDesController {
 	@RequestMapping(value = "/effacer.do", method = RequestMethod.GET)
 	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	protected String effacerFormulaireDeRecherche(Model model) {
-		populateModel(model, initCriteria(), INITIAL_PAGINATION, null, 0);
+		populateSearchModel(model, initCriteria(), INITIAL_PAGINATION, null, 0);
 		return "evenement/reqdes/list";
 	}
 
@@ -147,7 +151,7 @@ public class EvenementReqDesController {
 	@RequestMapping(value = "/rechercher.do", method = RequestMethod.GET)
 	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	public String doSearch(Model model, @ModelAttribute(CRITERIA_NAME) @Valid ReqDesCriteriaView criteria, BindingResult bindingResult) {
-		populateModel(model, criteria, INITIAL_PAGINATION, null, 0);
+		populateSearchModel(model, criteria, INITIAL_PAGINATION, null, 0);
 		if (bindingResult.hasErrors()) {
 			// on ré-affiche juste la page en effaçant les résultats des recherches précédentes et avec le message d'erreur
 			return "evenement/reqdes/list";
@@ -156,6 +160,13 @@ public class EvenementReqDesController {
 			// retour à la première page pour les résultats correspondant à la nouvelle rercherhe
 			return mainEntryPoint(INITIAL_PAGINATION);
 		}
+	}
+
+	@RequestMapping(value = "/visu.do", method = RequestMethod.GET)
+	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
+	public String showDetail(Model model, @RequestParam(ID) long idUniteTraitement) {
+		model.addAttribute(UNITE_TRAITEMENT_NAME, manager.get(idUniteTraitement));
+		return "evenement/reqdes/visu";
 	}
 }
 

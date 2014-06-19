@@ -47,7 +47,7 @@
 	</tr>
 
 	<tr class="<unireg:nextRowClass/>" >
-		<td width="25%"><fmt:message key="label.reqdes.unite.traitement.numero.minute" />&nbsp;:</td>
+		<td width="25%"><fmt:message key="label.reqdes.numero.minute" />&nbsp;:</td>
 		<td width="25%">
 			<form:input path="numeroMinute" id="numeroMinute"/>
 			<form:errors path="numeroMinute" cssClass="error"/>

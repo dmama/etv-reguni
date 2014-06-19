@@ -11,7 +11,7 @@ public interface ReqDesManager {
 	 * @param pagination informations de pagination à utiliser pour le résultat
 	 * @return la liste des unités de traitement correspondant aux critères et à la pagination voulue
 	 */
-	List<ReqDesUniteTraitementBasicView> find(ReqDesCriteriaView criteria, ParamPagination pagination);
+	List<ReqDesUniteTraitementListView> find(ReqDesCriteriaView criteria, ParamPagination pagination);
 
 	/**
 	 * @param criteria critères de recherche des unités de traitement
@@ -19,4 +19,9 @@ public interface ReqDesManager {
 	 */
 	int count(ReqDesCriteriaView criteria);
 
+	/**
+	 * @param idUniteTraitement l'identifiant de l'unité de traitement à visualiser
+	 * @return les données détaillées de cette unité de traitement
+	 */
+	ReqDesUniteTraitementDetailedView get(long idUniteTraitement);
 }
