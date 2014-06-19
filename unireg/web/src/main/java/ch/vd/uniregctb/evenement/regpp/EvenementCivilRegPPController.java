@@ -44,7 +44,7 @@ import ch.vd.uniregctb.type.EtatEvenementCivil;
 
 
 @Controller
-@RequestMapping("/evenement")
+@RequestMapping("/evenement/regpp")
 @SessionAttributes({"evenementCriteria", "evenementPagination"})
 public class EvenementCivilRegPPController extends AbstractEvenementCivilController {
 
@@ -127,7 +127,7 @@ public class EvenementCivilRegPPController extends AbstractEvenementCivilControl
 	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	protected ModelAndView effacerFormulaireDeRecherche(ModelMap model) {
 		populateModel(model, initEvenementCriteria(), INITIAL_PAGINATION, null, 0);
-		return new ModelAndView("evenement/list", model);
+		return new ModelAndView("evenement/regpp/list", model);
 	}
 
 	@RequestMapping(value = "/rechercher.do", method = RequestMethod.GET)
@@ -139,7 +139,7 @@ public class EvenementCivilRegPPController extends AbstractEvenementCivilControl
 		// La recherche en elle meme est faite dans nav-list.do
 		populateModel(model, criteriaInSession,	INITIAL_PAGINATION, null, 0);
 		if (bindingResult.hasErrors()) {
-			return "evenement/list";
+			return "evenement/regpp/list";
 		}
 		// Redirect vers nav-list.do  avec en parametre une pagination reinitialisée
 		return buildNavListRedirect(INITIAL_PAGINATION);
@@ -165,7 +165,7 @@ public class EvenementCivilRegPPController extends AbstractEvenementCivilControl
 					manager.count(criteriaInSession));
 
 		}
-		return new ModelAndView("evenement/list", model);
+		return new ModelAndView("evenement/regpp/list", model);
 	}
 
 	@RequestMapping(value = "/list.do", method = RequestMethod.GET)
@@ -176,7 +176,7 @@ public class EvenementCivilRegPPController extends AbstractEvenementCivilControl
 	}
 
 	private String buildNavListRedirect(ParamPagination pagination) {
-		return buildNavListRedirect(pagination, TABLE_NAME, "/evenement/nav-list.do");
+		return buildNavListRedirect(pagination, TABLE_NAME, "/evenement/regpp/nav-list.do");
 	}
 
 	private void populateModel(ModelMap model,
@@ -193,21 +193,21 @@ public class EvenementCivilRegPPController extends AbstractEvenementCivilControl
 	@RequestMapping(value = {"/visu.do"}, method = RequestMethod.GET)
 	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	protected ModelAndView onGetEvenementCivil(@RequestParam("id") Long id) throws AdresseException {
-		return new ModelAndView ("evenement/visu", "command", manager.get(id));
+		return new ModelAndView ("evenement/regpp/visu", "command", manager.get(id));
 	}
 
 	@RequestMapping(value = {"/forcer.do"}, method = RequestMethod.POST)
 	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	protected String onForcerEvenementCivil(@RequestParam("id") Long id) throws AdresseException {
 		manager.forceEtatTraite(id);
-		return "redirect:/evenement/visu.do?id=" + id;
+		return "redirect:/evenement/regpp/visu.do?id=" + id;
 	}
 
 	@RequestMapping(value = {"/recycler.do"}, method = RequestMethod.POST)
 	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	protected String onRecyclerEvenementCivil(@RequestParam("id")  Long id) throws AdresseException {
 		manager.traiteEvenementCivil(id);
-		return "redirect:/evenement/visu.do?id=" + id;
+		return "redirect:/evenement/regpp/visu.do?id=" + id;
 	}
 }
 

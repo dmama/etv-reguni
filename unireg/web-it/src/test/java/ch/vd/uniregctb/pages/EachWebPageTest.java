@@ -451,18 +451,18 @@ public class EachWebPageTest extends WebitTest {
 	// Page de recherche des événements civils
 	@Test
 	public void testEvtList() throws Exception {
-		assertPage("/evenement/list.do", "Recherche des événements");
+		assertPage("/evenement/regpp/list.do", "Recherche des événements");
 	}
 
 	// Page de visualisation d'un événement civil
 	@Test
 	public void testEvtVisu() throws Exception {
-		assertPage("/evenement/visu.do?id=9876", "Caractéristiques de l'événement");
+		assertPage("/evenement/regpp/visu.do?id=9876", "Caractéristiques de l'événement");
 	}
 
 	@Test
 	public void testEvtVisuInexistant() throws Exception {
-		assertPage("/evenement/visu.do?id=12345678", "Page d'erreur", "L'événement spécifié (no 12345678) n'existe pas");
+		assertPage("/evenement/regpp/visu.do?id=12345678", "Page d'erreur", "L'événement spécifié (no 12345678) n'existe pas");
 	}
 
 	/*----------------------

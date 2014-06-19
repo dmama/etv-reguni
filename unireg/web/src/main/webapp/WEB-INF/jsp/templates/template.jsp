@@ -103,8 +103,8 @@
 					<authz:authorize ifAnyGranted="ROLE_EVEN">
 					<li><fmt:message key="title.evenements" />
 						<ul>
-						<li><a href="<c:url value='/evenement/list.do'/>"><fmt:message key="title.evenements.regpp" /></a></li>
-						<li><a href="<c:url value='/evenement/ech/list.do'/>"><fmt:message key="title.evenements.ech" /></a></li>
+							<li><a href="<c:url value='/evenement/regpp/list.do'/>"><fmt:message key="title.evenements.regpp"/></a></li>
+							<li><a href="<c:url value='/evenement/ech/list.do'/>"><fmt:message key="title.evenements.ech"/></a></li>
 						</ul>
 					</li>
 					</authz:authorize>
