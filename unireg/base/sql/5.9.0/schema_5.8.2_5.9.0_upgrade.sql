@@ -12,7 +12,7 @@ ALTER TABLE IDENTIFICATION_ENTREPRISE ADD CONSTRAINT FK_IDE_TIERS_ID FOREIGN KEY
 -- [SIFISC-12424] Ajout du champs de saisie pour les prénoms multiples des non-habitants
 ALTER TABLE TIERS ADD (NH_TOUS_PRENOMS NVARCHAR2(100));
 
--- [SIFISC-12571] réception des informations de l'application eReqDes
+-- [SIFISC-12571] réception des informations de l'application ReqDes
 CREATE TABLE EVENEMENT_REQDES (
 	ID NUMBER(19,0) NOT NULL,
 	ANNULATION_DATE TIMESTAMP,

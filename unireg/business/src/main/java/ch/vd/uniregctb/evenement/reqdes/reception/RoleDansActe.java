@@ -4,7 +4,7 @@ import ch.vd.unireg.xml.event.reqdes.v1.StakeholderRole;
 import ch.vd.uniregctb.reqdes.TypeRole;
 
 /**
- * Rôles d'une partie prenante dans un acte notarié envoyé de eReqDes
+ * Rôles d'une partie prenante dans un acte notarié envoyé de ReqDes
  */
 public enum RoleDansActe {
 

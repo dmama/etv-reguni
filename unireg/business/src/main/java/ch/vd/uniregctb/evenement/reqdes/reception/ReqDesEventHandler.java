@@ -76,7 +76,7 @@ import ch.vd.uniregctb.xml.DataHelper;
 public class ReqDesEventHandler implements EsbMessageHandler {
 
 	private static final Logger LOGGER = Logger.getLogger(ReqDesEventHandler.class);
-	private static final String VISA = "eReqDesEvent";
+	private static final String VISA = "ReqDesEvent";
 
 	private Schema schemaCache;
 
@@ -110,7 +110,7 @@ public class ReqDesEventHandler implements EsbMessageHandler {
 	public void onEsbMessage(EsbMessage message) throws Exception {
 		final String businessId = message.getBusinessId();
 		if (LOGGER.isInfoEnabled()) {
-			LOGGER.info(String.format("Réception d'un message eReqDes {businessId='%s'}", businessId));
+			LOGGER.info(String.format("Réception d'un message ReqDes {businessId='%s'}", businessId));
 		}
 		final long start = System.nanoTime();
 		try {
@@ -128,7 +128,7 @@ public class ReqDesEventHandler implements EsbMessageHandler {
 		finally {
 			if (LOGGER.isInfoEnabled()) {
 				final long end = System.nanoTime();
-				LOGGER.info(String.format("Réception du message eReqDes {businessId='%s'} traitée en %d ms", businessId, TimeUnit.NANOSECONDS.toMillis(end - start)));
+				LOGGER.info(String.format("Réception du message ReqDes {businessId='%s'} traitée en %d ms", businessId, TimeUnit.NANOSECONDS.toMillis(end - start)));
 			}
 		}
 	}
@@ -208,7 +208,7 @@ public class ReqDesEventHandler implements EsbMessageHandler {
 				}
 
 				// toutes les autres entités seront créées avec un visa spécifique à l'événement
-				AuthenticationHelper.pushPrincipal(String.format("eReqDes-%d", evt.getId()));
+				AuthenticationHelper.pushPrincipal(String.format("ReqDes-%d", evt.getId()));
 				try {
 					final Set<Long> ids = new HashSet<>(groupes.size());
 

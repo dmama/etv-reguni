@@ -15,7 +15,7 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 
 /**
- * Adresse de résidence telle que renvoyée par les messages eReqDes
+ * Adresse de résidence telle que renvoyée par les messages ReqDes
  */
 public final class ReqDesAdresseResidence implements Adresse {
 

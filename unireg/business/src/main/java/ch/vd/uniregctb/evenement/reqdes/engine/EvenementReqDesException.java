@@ -2,7 +2,7 @@ package ch.vd.uniregctb.evenement.reqdes.engine;
 
 /**
  * Exception checkée qui permet d'arrêter le traitement d'une unité de traitement
- * d'événement eReqDes
+ * d'événement ReqDes
  */
 public class EvenementReqDesException extends Exception {
 

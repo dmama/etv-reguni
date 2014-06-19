@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.reqdes;
 
 /**
- * Différents états possibles pour une unité de traitement des données eReqDes
+ * Différents états possibles pour une unité de traitement des données ReqDes
  * <p/>
  * Longueur de colonne : 10
  */

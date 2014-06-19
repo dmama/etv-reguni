@@ -5,7 +5,7 @@ import ch.vd.unireg.interfaces.civil.data.Permis;
 import ch.vd.uniregctb.type.TypePermis;
 
 /**
- * Permis de séjour courant donné par les messages eReqDes
+ * Permis de séjour courant donné par les messages ReqDes
  */
 public final class ReqDesPermis implements Permis {
 

@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.evenement.reqdes.engine;
 
 /**
- * Interface externe du processeur des événements eReqDes
+ * Interface externe du processeur des événements ReqDes
  */
 public interface EvenementReqDesProcessor {
 

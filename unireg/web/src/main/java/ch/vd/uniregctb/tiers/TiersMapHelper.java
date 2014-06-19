@@ -408,7 +408,7 @@ public class TiersMapHelper extends CommonMapHelper {
 	}
 
 	/**
-	 * Initialise la map des états des unités de traitement eReqDes
+	 * Initialise la map des états des unités de traitement ReqDes
 	 * @return la map
 	 */
 	public Map<EtatTraitement, String> getMapEtatsUniteTraitementReqDes() {

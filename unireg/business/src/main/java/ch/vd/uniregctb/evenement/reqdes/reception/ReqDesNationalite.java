@@ -5,7 +5,7 @@ import ch.vd.unireg.interfaces.civil.data.Nationalite;
 import ch.vd.unireg.interfaces.infra.data.Pays;
 
 /**
- * Nationalité courante donnée par les messages eReqDes
+ * Nationalité courante donnée par les messages ReqDes
  */
 public final class ReqDesNationalite implements Nationalite {
 

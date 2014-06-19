@@ -99,7 +99,7 @@ import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 /**
- * Traitement des unités de traitement issues des événements eReqDes
+ * Traitement des unités de traitement issues des événements ReqDes
  */
 public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, InitializingBean, DisposableBean {
 
@@ -614,7 +614,7 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 
 	/**
 	 * Travail de mise à jour du modèle de données des contribuables par rapports aux données reçues
-	 * @param evt événement reçu de eReqDes
+	 * @param evt événement reçu de ReqDes
 	 * @param partiesPrenantes liste des parties prenantes de l'unité de traitement
 	 * @param warningCollector collecteurs d'avertissements
 	 * @throws EvenementReqDesException en cas d'erreur
@@ -652,7 +652,7 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 
 	/**
 	 * Création / modification des fors fiscaux
-	 * @param evt événement reçu de eReqDes
+	 * @param evt événement reçu de ReqDes
 	 * @param partiesPrenantes liste des parties prenantes de l'unité de traitement
 	 * @param processingData données des personnes physiques indexées par identifiant de partie prenante
 	 * @throws EvenementReqDesException en cas d'erreur
@@ -792,7 +792,7 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 
 	/**
 	 * Gestion des états civils (= création/modification de couples...)
-	 * @param evt événement reçu de eReqDes
+	 * @param evt événement reçu de ReqDes
 	 * @param partiesPrenantes liste des parties prenantes de l'unité de traitement
 	 * @param processingData données des personnes physiques indexées par identifiant de partie prenante
 	 * @return les données des nouvelles personnes physiques créées exprès ici pour constituer des couples
@@ -1048,7 +1048,7 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 
 	/**
 	 * Crée (ou trouve et modifie les données simples + adresse) les personnes physiques associées aux parties prenantes
-	 * @param evt événement reçu de eReqDes
+	 * @param evt événement reçu de ReqDes
 	 * @param partiesPrenantes parties prenantes de l'unité de traitement
 	 * @param warningCollector collecteurs d'avertissements
 	 * @return map (la clé est l'ID de la partie prenante) des personnes physiques créées/trouvées (rien n'est créé si la source de la partie prenante est civile)
