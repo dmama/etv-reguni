@@ -1,5 +1,9 @@
 package ch.vd.uniregctb.reqdes;
 
+import java.util.Date;
+
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.CoreDAOTest;
 
@@ -13,5 +17,13 @@ public abstract class AbstractReqDesDAOTest extends CoreDAOTest {
 		evt.setNumeroMinute(noMinute);
 		evt.setNotaire(notaire);
 		return hibernateTemplate.merge(evt);
+	}
+
+	protected UniteTraitement addUniteTraitement(EvenementReqDes evt, EtatTraitement etat, @Nullable Date dateTraitement) {
+		final UniteTraitement ut = new UniteTraitement();
+		ut.setEvenement(evt);
+		ut.setEtat(etat);
+		ut.setDateTraitement(dateTraitement);
+		return hibernateTemplate.merge(ut);
 	}
 }

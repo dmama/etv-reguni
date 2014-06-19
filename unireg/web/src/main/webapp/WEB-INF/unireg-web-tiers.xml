@@ -159,6 +159,7 @@
 		<property name="etatDeclarationDAO" ref="etatDeclarationDAO" />
 		<property name="delaiDeclarationDAO" ref="delaiDeclarationDAO" />
 		<property name="immeubleDAO" ref="immeubleDAO" />
+		<property name="uniteTraitementDAO" ref="reqdesUniteTraitementDAO"/>
 	</bean>
 
 	<bean id="mouvementVisuController" class="ch.vd.uniregctb.tiers.MouvementVisuController">

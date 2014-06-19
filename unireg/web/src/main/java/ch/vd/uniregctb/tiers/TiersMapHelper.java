@@ -16,6 +16,7 @@ import ch.vd.unireg.interfaces.infra.data.LogicielMetier;
 import ch.vd.uniregctb.common.ApplicationConfig;
 import ch.vd.uniregctb.common.CommonMapHelper;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.reqdes.EtatTraitement;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeRecherche;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeRechercheForFiscal;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeRechercheLocalitePays;
@@ -87,6 +88,7 @@ public class TiersMapHelper extends CommonMapHelper {
 	private Map<PeriodeDecompte, String> mapPeriodeDecompte;
 	private Map<TypeDroitAcces, String> mapDroitAcces;
 	private Map<TypeOperation, String> mapTypeOperation;
+	private Map<EtatTraitement, String> mapEtatTraitementReqDes;
 
 	private ServiceInfrastructureService infraService;
 
@@ -403,6 +405,17 @@ public class TiersMapHelper extends CommonMapHelper {
 			mapEtatsEvenementCivil = initMapEnum(ApplicationConfig.masterKeyEtatEvenementCivil, EtatEvenementCivil.class);
 		}
 		return mapEtatsEvenementCivil;
+	}
+
+	/**
+	 * Initialise la map des états des unités de traitement eReqDes
+	 * @return la map
+	 */
+	public Map<EtatTraitement, String> getMapEtatsUniteTraitementReqDes() {
+		if (mapEtatTraitementReqDes == null) {
+			mapEtatTraitementReqDes = initMapEnum(ApplicationConfig.masterKeyEtatTraitementReqDes, EtatTraitement.class);
+		}
+		return mapEtatTraitementReqDes;
 	}
 
 	/**

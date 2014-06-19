@@ -2,6 +2,8 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
+	<!-- Evénements civils -->
+
 	<bean id="evtCivCriteriaValidator" class="ch.vd.uniregctb.evenement.common.EvenementCivilCriteriaValidator" />
 
 	<bean id="evtCivEchCriteriaValidator" class="ch.vd.uniregctb.evenement.ech.EvenementCivilEchCriteriaValidator" />
@@ -38,6 +40,18 @@
 		<property name="evenementService" ref="evtCivilEchService" />
 		<property name="evenementNotificationQueue" ref="evtCivilEchNotificationQueue" />
 		<property name="evenementProcessor" ref="evtCivilEchProcessor" />
+	</bean>
+
+	<!-- Evénements notaires -->
+
+	<bean id="evtReqDesController" class="ch.vd.uniregctb.evenement.reqdes.EvenementReqDesController">
+		<property name="controllerUtils" ref="controllerUtils"/>
+		<property name="tiersMapHelper" ref="tiersMapHelper"/>
+		<property name="manager" ref="evtReqDesManager"/>
+	</bean>
+
+	<bean id="evtReqDesManager" class="ch.vd.uniregctb.evenement.reqdes.ReqDesManagerImpl">
+		<property name="uniteTraitementDAO" ref="reqdesUniteTraitementDAO"/>
 	</bean>
 
 </beans>

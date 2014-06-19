@@ -105,6 +105,7 @@
 						<ul>
 							<li><a href="<c:url value='/evenement/regpp/list.do'/>"><fmt:message key="title.evenements.regpp"/></a></li>
 							<li><a href="<c:url value='/evenement/ech/list.do'/>"><fmt:message key="title.evenements.ech"/></a></li>
+							<li><a href="<c:url value='/evenement/reqdes/list.do'/>"><fmt:message key="title.evenements.reqdes"/></a></li>
 						</ul>
 					</li>
 					</authz:authorize>

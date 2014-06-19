@@ -17,6 +17,7 @@ import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchDAO;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPDAO;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentCtbDAO;
 import ch.vd.uniregctb.mouvement.MouvementDossierDAO;
+import ch.vd.uniregctb.reqdes.UniteTraitementDAO;
 import ch.vd.uniregctb.rf.ImmeubleDAO;
 import ch.vd.uniregctb.security.DroitAccesDAO;
 import ch.vd.uniregctb.tiers.ForFiscalDAO;
@@ -45,6 +46,7 @@ public class ConsultLogController {
 	private EtatDeclarationDAO etatDeclarationDAO;
 	private DelaiDeclarationDAO delaiDeclarationDAO;
 	private ImmeubleDAO immeubleDAO;
+	private UniteTraitementDAO uniteTraitementDAO;
 
 	public final static String NATURE_FOR_PARAMETER_VALUE = "ForFiscal";
 	public final static String NATURE_SITUATION_PARAMETER_VALUE = "SituationFamille";
@@ -63,6 +65,7 @@ public class ConsultLogController {
 	public final static String NATURE_IDENTIFICATION_PARAMETER_VALUE = "identification";
 	public final static String NATURE_PERIODICITE_PARAMETER_VALUE = "periodicite";
 	public final static String NATURE_IMMEUBLE = "Immeuble";
+	public final static String NATURE_UNITE_TRAITEMENT_REQDES = "UniteTraitementReqDes";
 
 	@ResponseBody
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
@@ -71,56 +74,61 @@ public class ConsultLogController {
 
 		HibernateEntity objet = null;
 
-		if (nature.equals(NATURE_FOR_PARAMETER_VALUE)) {
+		switch (nature) {
+		case NATURE_FOR_PARAMETER_VALUE:
 			objet = forFiscalDAO.get(id);
-		}
-		else if (nature.equals(NATURE_SITUATION_PARAMETER_VALUE)) {
+			break;
+		case NATURE_SITUATION_PARAMETER_VALUE:
 			objet = situationFamilleDAO.get(id);
-		}
-		else if (nature.equals(NATURE_ADRESSE_PARAMETER_VALUE)) {
+			break;
+		case NATURE_ADRESSE_PARAMETER_VALUE:
 			objet = adresseTiersDAO.get(id);
-		}
-		else if (nature.equals(NATURE_RAPPORT_PARAMETER_VALUE)) {
+			break;
+		case NATURE_RAPPORT_PARAMETER_VALUE:
 			objet = rapportEntreTiersDAO.get(id);
-		}
-		else if (nature.equals(NATURE_DI_PARAMETER_VALUE)) {
+			break;
+		case NATURE_DI_PARAMETER_VALUE:
 			objet = diDAO.get(id);
-		}
-		else if (nature.equals(NATURE_LR_PARAMETER_VALUE)) {
+			break;
+		case NATURE_LR_PARAMETER_VALUE:
 			objet = lrDAO.get(id);
-		}
-		else if (nature.equals(NATURE_TIERS_PARAMETER_VALUE)) {
+			break;
+		case NATURE_TIERS_PARAMETER_VALUE:
 			objet = tiersDAO.get(id);
-		}
-		else if (nature.equals(NATURE_MOUVEMENT_PARAMETER_VALUE)) {
+			break;
+		case NATURE_MOUVEMENT_PARAMETER_VALUE:
 			objet = mouvementDossierDAO.get(id);
-		}
-		else if (nature.equals(NATURE_TACHE_PARAMETER_VALUE)) {
+			break;
+		case NATURE_TACHE_PARAMETER_VALUE:
 			objet = tacheDAO.get(id);
-		}
-		else if (nature.equals(NATURE_DROIT_ACCES_PARAMETER_VALUE)) {
+			break;
+		case NATURE_DROIT_ACCES_PARAMETER_VALUE:
 			objet = droitAccesDAO.get(id);
-		}
-		else if (nature.equals(NATURE_EVENEMENT_PARAMETER_VALUE)) {
+			break;
+		case NATURE_EVENEMENT_PARAMETER_VALUE:
 			objet = evenementCivilRegPPDAO.get(id);
-		}
-		else if (nature.equals(NATURE_EVENEMENT_ECH_PARAMETER_VALUE)) {
+			break;
+		case NATURE_EVENEMENT_ECH_PARAMETER_VALUE:
 			objet = evenementCivilEchDAO.get(id);
-		}
-		else if (nature.equals(NATURE_IDENTIFICATION_PARAMETER_VALUE)) {
+			break;
+		case NATURE_IDENTIFICATION_PARAMETER_VALUE:
 			objet = identCtbDAO.get(id);
-		}
-		else if (nature.equals(NATURE_PERIODICITE_PARAMETER_VALUE)) {
+			break;
+		case NATURE_PERIODICITE_PARAMETER_VALUE:
 			objet = periodiciteDAO.get(id);
-		}
-		else if (nature.equals(NATURE_ETAT_PARAMETER_VALUE)) {
+			break;
+		case NATURE_ETAT_PARAMETER_VALUE:
 			objet = etatDeclarationDAO.get(id);
-		}
-		else if (nature.equals(NATURE_DELAI_PARAMETER_VALUE)) {
+			break;
+		case NATURE_DELAI_PARAMETER_VALUE:
 			objet = delaiDeclarationDAO.get(id);
-		}
-		else if (nature.equals(NATURE_IMMEUBLE)) {
+			break;
+		case NATURE_IMMEUBLE:
 			objet = immeubleDAO.get(id);
+			break;
+		case NATURE_UNITE_TRAITEMENT_REQDES:
+			objet = uniteTraitementDAO.get(id);
+			break;
 		}
 
 		return objet == null ? null : new ConsultLogView(objet);
@@ -207,5 +215,9 @@ public class ConsultLogController {
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setImmeubleDAO(ImmeubleDAO immeubleDAO) {
 		this.immeubleDAO = immeubleDAO;
+	}
+
+	public void setUniteTraitementDAO(UniteTraitementDAO uniteTraitementDAO) {
+		this.uniteTraitementDAO = uniteTraitementDAO;
 	}
 }
