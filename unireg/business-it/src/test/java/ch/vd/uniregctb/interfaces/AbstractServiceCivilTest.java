@@ -21,6 +21,7 @@ import ch.vd.unireg.interfaces.civil.data.Permis;
 import ch.vd.unireg.interfaces.civil.data.PermisList;
 import ch.vd.unireg.interfaces.civil.data.RelationVersIndividu;
 import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
@@ -77,7 +78,7 @@ public abstract class AbstractServiceCivilTest extends BusinessItTest {
 		// On vérifie les adresses
 		final Collection<Adresse> adresses = individu.getAdresses();
 		assertNotNull(adresses);
-		assertEquals(4, adresses.size());
+		assertEquals(6, adresses.size());
 
 		final List<Adresse> principales = new ArrayList<>();
 		final List<Adresse> courriers = new ArrayList<>();
@@ -96,7 +97,7 @@ public abstract class AbstractServiceCivilTest extends BusinessItTest {
 		Collections.sort(courriers, new DateRangeComparator<Adresse>());
 
 		// On vérifie les adresses principales
-		assertEquals(2, principales.size());
+		assertEquals(3, principales.size());
 
 		final Adresse principale0 = principales.get(0);
 		assertNotNull(principale0);
@@ -110,21 +111,21 @@ public abstract class AbstractServiceCivilTest extends BusinessItTest {
 
 		final Adresse principale1 = principales.get(1);
 		assertNotNull(principale1);
-		assertAdresseCivile(date(2010, 1, 15), null, "Rue Jean-Louis-de-Bons", "1006", "Lausanne", 885742, principale1);
+		assertAdresseCivile(date(2010, 1, 15), date(2014, 6, 15), "Rue Jean-Louis-de-Bons", "1006", "Lausanne", 885742, principale1);
 		assertNull(principale1.getLocalisationPrecedente());
-		assertNull(principale1.getLocalisationSuivante());
+		assertLocalisation(LocalisationType.CANTON_VD, MockCommune.YverdonLesBains.getNoOFS(), principale1.getLocalisationSuivante());
+
+		final Adresse principale2 = principales.get(2);
+		assertNotNull(principale2);
+		assertAdresseCivile(date(2014, 6, 16), null, "Rue Saint-Georges", "1400", "Yverdon-les-Bains", 280093095, principale2);
+		assertLocalisation(LocalisationType.CANTON_VD, MockCommune.Lausanne.getNoOFS(), principale2.getLocalisationPrecedente());
+		assertNull(principale2.getLocalisationSuivante());
 
 		// On vérifie les adresses courrier
-		assertEquals(2, courriers.size());
+		assertEquals(3, courriers.size());
 		assertAdresseCivile(null, date(2010, 1, 14), "Av. d'Ouchy 24C", "1006", "Lausanne", null, null, courriers.get(0));
-		if (courriers.get(1).getNumeroRue() != null) {
-			// host-interface retourne simplement le numéro technique de la rue
-			assertEquals(Integer.valueOf(30553), courriers.get(1).getNumeroRue());
-		}
-		else {
-			// rcpers retourne toutes les infos résolues, mais pas le numéro technique
-			assertAdresseCivile(date(2010, 1, 15), null, "Rue Jean-Louis-de- Bons", "1006", "Lausanne", null, null, courriers.get(1));
-		}
+		assertAdresseCivile(date(2010, 1, 15), date(2014, 6, 15), "Rue Jean-Louis-de- Bons", "1006", "Lausanne", null, null, courriers.get(1));
+		assertAdresseCivile(date(2014, 6, 16), null, "Rue Saint-Georges", "1400", "Yverdon-les-Bains", null, null, courriers.get(2));
 
 		// On vérifie les parents
 		final List<RelationVersIndividu> parents = individu.getParents();
