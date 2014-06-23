@@ -275,22 +275,37 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	}
 
 	private List<PersonnePhysique> filterCoherenceAfterIdentificationAvs13(List<PersonnePhysique> list, CriteresPersonne criteres) {
-		//Contrôle des résultats avec le sexe et la date de naissance
-		filterSexe(list, criteres);
-		filterDateNaissance(list, criteres);
+		//SIFISC-10914
+		//Le controle ne se fera que sur le nom /prenom si on a pas de date de naissance dans la demande
+		if (criteres.getDateNaissance()==null) {
+			return controleNomPrenom(list, criteres);
+		}
 
+
+		//Contrôle des résultats avec la date de naissance qui est renseigné.
+		filterDateNaissance(list, criteres);
 		if (isIdentificationOK(list)) {
 			return list;
 		}
 		else {
 			//Controle des résultats avec le nom et le prénom
-			filterNomPrenom(list, criteres);
-			if (isIdentificationOK(list)) {
-				return list;
-			}
-			else {
-				return Collections.emptyList();
-			}
+			return controleNomPrenom(list, criteres);
+		}
+	}
+
+	/**
+	 * Effectue le contrôle de cohérence sur le nom prénom
+	 * @param list liste de personne sphysiques à vérifier
+	 * @param criteres de recherche tel qu'indiqué dans la demande notamment avec le nom / prenom
+	 * @return liste des personnes correspondantes aux nom /prenom ou liste vide si aucune personne ne correspond
+	 */
+	private List<PersonnePhysique> controleNomPrenom(List<PersonnePhysique> list, CriteresPersonne criteres) {
+		filterNomPrenom(list, criteres);
+		if (isIdentificationOK(list)) {
+			return list;
+		}
+		else {
+			return Collections.emptyList();
 		}
 	}
 
