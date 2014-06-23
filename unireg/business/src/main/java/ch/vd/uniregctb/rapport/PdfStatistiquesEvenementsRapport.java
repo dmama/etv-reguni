@@ -23,10 +23,12 @@ import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.GentilIterator;
 import ch.vd.uniregctb.evenement.externe.EtatEvenementExterne;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
+import ch.vd.uniregctb.reqdes.EtatTraitement;
 import ch.vd.uniregctb.stats.evenements.StatistiqueEvenementInfo;
 import ch.vd.uniregctb.stats.evenements.StatsEvenementsCivilsEchResults;
 import ch.vd.uniregctb.stats.evenements.StatsEvenementsExternesResults;
 import ch.vd.uniregctb.stats.evenements.StatsEvenementsIdentificationContribuableResults;
+import ch.vd.uniregctb.stats.evenements.StatsEvenementsNotairesResults;
 import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
@@ -48,6 +50,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 
 	public void write(final StatsEvenementsCivilsEchResults civilsEch,
 	                  final StatsEvenementsExternesResults externes, final StatsEvenementsIdentificationContribuableResults identCtb,
+	                  final StatsEvenementsNotairesResults notaires,
 	                  final RegDate dateReference, String nom, String description, final Date dateGeneration, OutputStream os,
 	                  StatusManager status) throws Exception {
 
@@ -71,6 +74,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 					table.addLigne("Evénements civils:", String.valueOf(civilsEch != null));
 					table.addLigne("Evénements externes:", String.valueOf(externes != null));
 					table.addLigne("Evénements identification:", String.valueOf(identCtb != null));
+					table.addLigne("Evénements notaires:", String.valueOf(notaires != null));
 					table.addLigne("Date de référence:", RegDateHelper.dateToDisplayString(dateReference));
 					table.addLigne("Date de génération du rapport:", formatTimestamp(dateGeneration));
 				}
@@ -231,6 +235,55 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 				final String filename = "identification_ctb_a_traiter.csv";
 				final String contenu = asCsvStatFile(identCtb.getATraiter(), filename, status);
 				final String titre = "Evénements d'identification à traiter";
+				final String listVide = "(aucun)";
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
+		}
+
+		// événements notaires
+		if (notaires != null) {
+
+			newPage();
+			addTitrePrincipal("Evénements \"Notaires\" (ReqDes)");
+
+			// événements ReqDes : états
+			addEntete1("Répartition par état");
+			{
+				addTableSimple(new float[] {60f, 20f, 20f}, new PdfRapport.TableSimpleCallback() {
+					@Override
+					public void fillTable(PdfTableSimple table) throws DocumentException {
+
+						table.addLigne("Etat", "Total", "Reçus depuis " + RegDateHelper.dateToDisplayString(dateReference));
+						table.setHeaderRows(1);
+
+						final Map<EtatTraitement, Integer> etats = notaires.getEtats();
+						final Map<EtatTraitement, Integer> etatsNouveaux = notaires.getEtatsNouveaux();
+						for (EtatTraitement etat : EtatTraitement.values()) {
+							final Integer nombre = etats.get(etat);
+							final Integer nombreNouveaux = etatsNouveaux.get(etat);
+
+							final String total = toStringInt(nombre, 0);
+							final String totalNouveaux = toStringInt(nombreNouveaux, 0);
+							table.addLigne(String.format("%s", etat.toString()), total, totalNouveaux);
+						}
+					}
+				});
+			}
+
+			// événements ReqDes : erreurs
+			{
+				final String filename = "reqdes_erreurs.csv";
+				final String contenu = asCsvStatFile(notaires.getToutesErreurs(), filename, status);
+				final String titre = "Evénements ReqDes en erreur";
+				final String listVide = "(aucun)";
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
+
+			// événements ReqDes : manipulations manuelles
+			{
+				final String filename = "reqdes_forces.csv";
+				final String contenu = asCsvStatFile(notaires.getManipulationsManuelles(), filename, status);
+				final String titre = "Evénements ReqDes forcés";
 				final String listVide = "(aucun)";
 				addListeDetaillee(writer, titre, listVide, filename, contenu);
 			}

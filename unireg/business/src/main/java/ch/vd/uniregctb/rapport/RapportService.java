@@ -89,6 +89,7 @@ import ch.vd.uniregctb.situationfamille.ReinitialiserBaremeDoubleGainResults;
 import ch.vd.uniregctb.stats.evenements.StatsEvenementsCivilsEchResults;
 import ch.vd.uniregctb.stats.evenements.StatsEvenementsExternesResults;
 import ch.vd.uniregctb.stats.evenements.StatsEvenementsIdentificationContribuableResults;
+import ch.vd.uniregctb.stats.evenements.StatsEvenementsNotairesResults;
 import ch.vd.uniregctb.tache.ListeTachesEnInstanceParOID;
 import ch.vd.uniregctb.tache.TacheSyncResults;
 import ch.vd.uniregctb.tiers.ExclureContribuablesEnvoiResults;
@@ -334,6 +335,7 @@ public interface RapportService {
 	 */
 	StatistiquesEvenementsRapport generateRapport(StatsEvenementsCivilsEchResults civilsEch,
 	                                              StatsEvenementsExternesResults externes, StatsEvenementsIdentificationContribuableResults identCtb,
+	                                              StatsEvenementsNotairesResults notaires,
 	                                              RegDate dateReference, StatusManager statusManager);
 
 	/**

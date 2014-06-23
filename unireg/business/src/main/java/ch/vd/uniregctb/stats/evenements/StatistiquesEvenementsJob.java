@@ -32,6 +32,7 @@ public class StatistiquesEvenementsJob extends JobDefinition {
 	private static final String EVTS_CIVILS = "EVTS_CIVILS";
 	private static final String EVTS_EXTERNES = "EVTS_EXTERNES";
 	private static final String EVTS_IDENT_CTB = "EVTS_IDENT_CTB";
+	private static final String EVTS_NOTAIRES = "EVTS_NOTAIRES";
 	private static final String DUREE_REFERENCE = "DUREE";
 
 	public StatistiquesEvenementsJob(int sortOrder, String description) {
@@ -66,6 +67,15 @@ public class StatistiquesEvenementsJob extends JobDefinition {
 
 		{
 			final JobParam param = new JobParam();
+			param.setDescription("Evénements notaires");
+			param.setName(EVTS_NOTAIRES);
+			param.setMandatory(true);
+			param.setType(new JobParamBoolean());
+			addParameterDefinition(param, Boolean.TRUE);
+		}
+
+		{
+			final JobParam param = new JobParam();
 			param.setDescription("Durée de référence (jours)");
 			param.setName(DUREE_REFERENCE);
 			param.setMandatory(true);
@@ -93,6 +103,7 @@ public class StatistiquesEvenementsJob extends JobDefinition {
 		final boolean civils = getBooleanValue(params, EVTS_CIVILS);
 		final boolean externes = getBooleanValue(params, EVTS_EXTERNES);
 		final boolean identCtb = getBooleanValue(params, EVTS_IDENT_CTB);
+		final boolean notaires = getBooleanValue(params, EVTS_NOTAIRES);
 		final int dureeReference = getStrictlyPositiveIntegerValue(params, DUREE_REFERENCE);
 		final RegDate debutActivite = RegDate.get().addDays(- dureeReference);
 
@@ -121,13 +132,21 @@ public class StatistiquesEvenementsJob extends JobDefinition {
 			resultatsIdentCtb = null;
 		}
 
+		final StatsEvenementsNotairesResults resultatsNotaires;
+		if (notaires) {
+			resultatsNotaires = service.getStatistiquesEvenementsNotaires(debutActivite);
+		}
+		else {
+			resultatsNotaires = null;
+		}
+
 		// Produit le rapport dans une transaction read-write
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(false);
 		final StatistiquesEvenementsRapport rapport = template.execute(new TransactionCallback<StatistiquesEvenementsRapport>() {
 			@Override
 			public StatistiquesEvenementsRapport doInTransaction(TransactionStatus status) {
-				return rapportService.generateRapport(resultatsCivilsEch, resultatsExternes, resultatsIdentCtb, debutActivite, getStatusManager());
+				return rapportService.generateRapport(resultatsCivilsEch, resultatsExternes, resultatsIdentCtb, resultatsNotaires, debutActivite, getStatusManager());
 			}
 		});
 

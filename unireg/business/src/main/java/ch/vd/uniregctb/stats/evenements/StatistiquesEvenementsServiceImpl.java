@@ -15,11 +15,14 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.Pair;
+import ch.vd.unireg.common.NomPrenom;
 import ch.vd.uniregctb.evenement.externe.EtatEvenementExterne;
 import ch.vd.uniregctb.evenement.identification.contribuable.CriteresAdresse;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
+import ch.vd.uniregctb.reqdes.ErreurTraitement;
+import ch.vd.uniregctb.reqdes.EtatTraitement;
 import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.Sexe;
@@ -319,6 +322,87 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 				return new StatsEvenementsIdentificationContribuableResults.EvenementInfo(dateDemande, emetteurId, etat, messageId, pf, typeMessage, businessId, nbCtbTrouves, navs11, navs13,
 						adresseChiffreComplementaire, adresseCodePays, adresseLieu, adresseLigne1, adresseLigne2, adresseLocalite, adresseNumeroAppartement, adresseNumeroOrdrePoste, adresseNumeroPolice, adresseNpaEtranger,
 						adresseNpaSuisse, adresseNumeroCasePostale, adresseRue, adresseTexteCasePostale, adresseType, dateNaissance, nom, prenoms, sexe);
+			}
+		});
+	}
+
+	@Override
+	public StatsEvenementsNotairesResults getStatistiquesEvenementsNotaires(RegDate debutActivite) {
+		final Map<EtatTraitement, Integer> etats = getEtatsUnitesTraitementReqDes(null);
+		final Map<EtatTraitement, Integer> etatsRecents = getEtatsUnitesTraitementReqDes(debutActivite);
+		final List<StatsEvenementsNotairesResults.UniteTraitementEnErreurInfo> erreurs = getErreursUnitesTraitementReqDes();
+		final List<StatsEvenementsNotairesResults.UniteTraitementForceesInfo> manipulationsManuelles = getManipulationsManuellesReqDes();
+		return new StatsEvenementsNotairesResults(etats, etatsRecents, erreurs, manipulationsManuelles);
+	}
+
+	private Map<EtatTraitement, Integer> getEtatsUnitesTraitementReqDes(@Nullable RegDate debutActivite) {
+		final String sql;
+		final Map<String, Object> sqlParameters;
+		if (debutActivite != null) {
+			sql = "SELECT ETAT, COUNT(*) FROM REQDES_UNITE_TRAITEMENT WHERE LOG_CDATE > TO_DATE(:debutActivite, 'YYYYMMDD') GROUP BY ETAT";
+			sqlParameters = new HashMap<>(1);
+			sqlParameters.put("debutActivite", debutActivite.index());
+		}
+		else {
+			sql = "SELECT ETAT, COUNT(*) FROM REQDES_UNITE_TRAITEMENT GROUP BY ETAT";
+			sqlParameters = null;
+		}
+		return getNombreParModalite(EtatTraitement.class, sql, sqlParameters);
+	}
+
+	private List<StatsEvenementsNotairesResults.UniteTraitementEnErreurInfo> getErreursUnitesTraitementReqDes() {
+		final StringBuilder b = new StringBuilder();
+		b.append("SELECT UT.ID, EVT.VISA_NOTAIRE, EVT.NUMERO_MINUTE, EVT.DATE_ACTE, UT.DATE_TRAITEMENT, UT.ETAT, PP1.NOM AS NOM_PP1, PP1.PRENOMS AS PRENOMS_PP1, PP2.NOM AS NOM_PP2, PP2.PRENOMS AS PRENOMS_PP2, E.TYPE, E.MESSAGE");
+		b.append(" FROM REQDES_ERREUR E");
+		b.append(" JOIN REQDES_UNITE_TRAITEMENT UT ON E.UNITE_TRAITEMENT_ID=UT.ID");
+		b.append(" JOIN EVENEMENT_REQDES EVT ON UT.EVENEMENT_ID=EVT.ID");
+		b.append(" JOIN REQDES_PARTIE_PRENANTE PP1 ON PP1.UNITE_TRAITEMENT_ID=UT.ID");
+		b.append(" LEFT OUTER JOIN REQDES_PARTIE_PRENANTE PP2 ON PP2.UNITE_TRAITEMENT_ID=UT.ID");
+		b.append(" WHERE (PP2.ID IS NULL OR PP2.ID > PP1.ID)");
+		b.append(" AND UT.ETAT='").append(EtatTraitement.EN_ERREUR).append("'");
+		final String sql = b.toString();
+		return executeSelect(sql, new SelectCallback<StatsEvenementsNotairesResults.UniteTraitementEnErreurInfo>() {
+			@Override
+			public StatsEvenementsNotairesResults.UniteTraitementEnErreurInfo onRow(Object[] row) {
+				final long id = ((Number) row[0]).longValue();
+				final String visaNotaire = (String) row[1];
+				final String numeroMinute = (String) row[2];
+				final RegDate dateActe = row[3] != null ? RegDate.fromIndex(((Number) row[3]).intValue(), false) : null;
+				final Date dateTraitement = (Date) row[4];
+				final EtatTraitement etat = row[5] != null ? EtatTraitement.valueOf((String) row[5]) : null;
+				final NomPrenom pp1 = row[6] != null ? new NomPrenom((String) row[6], (String) row[7]) : null;
+				final NomPrenom pp2 = row[8] != null ? new NomPrenom((String) row[8], (String) row[9]) : null;
+				final ErreurTraitement.TypeErreur typeErreur = ErreurTraitement.TypeErreur.valueOf((String) row[10]);
+				final String msgErreur = (String) row[11];
+				return new StatsEvenementsNotairesResults.UniteTraitementEnErreurInfo(id, etat, visaNotaire, numeroMinute, dateActe, dateTraitement, pp1, pp2, typeErreur, msgErreur);
+			}
+		});
+	}
+
+	private List<StatsEvenementsNotairesResults.UniteTraitementForceesInfo> getManipulationsManuellesReqDes() {
+		final StringBuilder b = new StringBuilder();
+		b.append("SELECT UT.ID, EVT.VISA_NOTAIRE, EVT.NUMERO_MINUTE, EVT.DATE_ACTE, UT.LOG_CDATE, UT.LOG_MDATE, UT.LOG_MUSER, UT.ETAT, PP1.NOM AS NOM_PP1, PP1.PRENOMS AS PRENOMS_PP1, PP2.NOM AS NOM_PP2, PP2.PRENOMS AS PRENOMS_PP2");
+		b.append(" FROM REQDES_UNITE_TRAITEMENT UT");
+		b.append(" JOIN EVENEMENT_REQDES EVT ON UT.EVENEMENT_ID=EVT.ID");
+		b.append(" JOIN REQDES_PARTIE_PRENANTE PP1 ON PP1.UNITE_TRAITEMENT_ID=UT.ID");
+		b.append(" LEFT OUTER JOIN REQDES_PARTIE_PRENANTE PP2 ON PP2.UNITE_TRAITEMENT_ID=UT.ID");
+		b.append(" WHERE (PP2.ID IS NULL OR PP2.ID > PP1.ID)");
+		b.append(" AND UT.ETAT='").append(EtatTraitement.FORCE).append("'");
+		final String sql = b.toString();
+		return executeSelect(sql, new SelectCallback<StatsEvenementsNotairesResults.UniteTraitementForceesInfo>() {
+			@Override
+			public StatsEvenementsNotairesResults.UniteTraitementForceesInfo onRow(Object[] row) {
+				final long id = ((Number) row[0]).longValue();
+				final String visaNotaire = (String) row[1];
+				final String numeroMinute = (String) row[2];
+				final RegDate dateActe = row[3] != null ? RegDate.fromIndex(((Number) row[3]).intValue(), false) : null;
+				final Date dateReception = (Date) row[4];
+				final Date dateModification = (Date) row[5];
+				final String visaForcage = (String) row[6];
+				final EtatTraitement etat = row[7] != null ? EtatTraitement.valueOf((String) row[7]) : null;
+				final NomPrenom pp1 = row[8] != null ? new NomPrenom((String) row[8], (String) row[9]) : null;
+				final NomPrenom pp2 = row[10] != null ? new NomPrenom((String) row[10], (String) row[11]) : null;
+				return new StatsEvenementsNotairesResults.UniteTraitementForceesInfo(id, etat, visaNotaire, numeroMinute, dateActe, pp1, pp2, visaForcage, dateReception, dateModification);
 			}
 		});
 	}

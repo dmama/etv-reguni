@@ -27,4 +27,11 @@ public interface StatistiquesEvenementsService {
 	 * @param debutActivite date à partir de laquelle on liste les modifications récentes
 	 */
 	StatsEvenementsIdentificationContribuableResults getStatistiquesEvenementsIdentificationContribuable(RegDate debutActivite);
+
+	/**
+	 * Renvoie les statistiques sur les unités de traitement des événements ReqDes (notaires)
+	 * @param debutActivite date à partir de laquelle on liste des modifications récentes
+	 * @return les données nécessaire à l'établissement du rapport
+	 */
+	StatsEvenementsNotairesResults getStatistiquesEvenementsNotaires(RegDate debutActivite);
 }
