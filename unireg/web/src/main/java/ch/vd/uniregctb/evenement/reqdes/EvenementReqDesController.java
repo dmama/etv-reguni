@@ -198,9 +198,7 @@ public class EvenementReqDesController {
 			@Override
 			public void onUniteTraite(long idUniteTraitement) {
 				if (idUniteTraitement == idUniteTraitementARecycler) {
-					synchronized (fusible) {
-						fusible.blow();
-					}
+					fusible.blow();
 				}
 			}
 
