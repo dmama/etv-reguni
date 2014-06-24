@@ -2,6 +2,7 @@ package ch.vd.uniregctb.evenement.civil.engine.ech;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.DelayQueue;
@@ -190,10 +191,11 @@ import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 	@Override
 	public void postAll(Collection<Long> nosIndividus) {
-		if (nosIndividus != null && nosIndividus.size() > 0) {
+		if (nosIndividus != null && !nosIndividus.isEmpty()) {
 			lock.lock();
 			try {
-				for (Long noIndividu : nosIndividus) {
+				// élimination des doublons et découplage des collections (en cas de manipulation - sur le thread de traitement, par exemple - pendant l'insertion)
+				for (Long noIndividu : new HashSet<>(nosIndividus)) {
 					internalPost(noIndividu, EvenementCivilEchProcessingMode.BATCH);
 				}
 			}
