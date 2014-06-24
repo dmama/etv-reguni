@@ -3,12 +3,9 @@ package ch.vd.uniregctb.evenement.reqdes.engine;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
@@ -25,23 +22,19 @@ import ch.vd.uniregctb.adresse.AdresseEtrangere;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.adresse.AdresseTiers;
-import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.Fuse;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.reqdes.ErreurTraitement;
 import ch.vd.uniregctb.reqdes.EtatTraitement;
 import ch.vd.uniregctb.reqdes.EvenementReqDes;
-import ch.vd.uniregctb.reqdes.EvenementReqDesDAO;
 import ch.vd.uniregctb.reqdes.InformationsActeur;
 import ch.vd.uniregctb.reqdes.ModeInscription;
 import ch.vd.uniregctb.reqdes.PartiePrenante;
-import ch.vd.uniregctb.reqdes.RolePartiePrenante;
 import ch.vd.uniregctb.reqdes.TransactionImmobiliere;
 import ch.vd.uniregctb.reqdes.TypeInscription;
 import ch.vd.uniregctb.reqdes.TypeRole;
 import ch.vd.uniregctb.reqdes.UniteTraitement;
-import ch.vd.uniregctb.reqdes.UniteTraitementDAO;
 import ch.vd.uniregctb.tiers.AppartenanceMenage;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
@@ -65,19 +58,15 @@ import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
-public class EvenementReqDesProcessorTest extends BusinessTest {
+public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcessingTest {
 
 	private EvenementReqDesProcessorImpl processor;
-	private UniteTraitementDAO uniteTraitementDAO;
-	private EvenementReqDesDAO evenementReqDesDAO;
 	private RemarqueDAO remarqueDAO;
 
 	@Override
 	protected void runOnSetUp() throws Exception {
 		super.runOnSetUp();
 
-		uniteTraitementDAO = getBean(UniteTraitementDAO.class, "reqdesUniteTraitementDAO");
-		evenementReqDesDAO = getBean(EvenementReqDesDAO.class, "reqdesEvenementDAO");
 		remarqueDAO = getBean(RemarqueDAO.class, "remarqueDAO");
 
 		processor = new EvenementReqDesProcessorImpl();
@@ -111,7 +100,7 @@ public class EvenementReqDesProcessorTest extends BusinessTest {
 		final Fuse done = new Fuse();
 		final EvenementReqDesProcessor.ListenerHandle handle = processor.registerListener(new EvenementReqDesProcessor.Listener() {
 			@Override
-			public void onUniteTraite(long idUniteTraitement) {
+			public void onUniteTraitee(long idUniteTraitement) {
 				if (idUniteTraitement == id) {
 					done.blow();
 				}
@@ -137,57 +126,6 @@ public class EvenementReqDesProcessorTest extends BusinessTest {
 		finally {
 			processor.unregisterListener(handle);
 		}
-	}
-
-	protected EvenementReqDes addEvenementReqDes(InformationsActeur notaire, @Nullable InformationsActeur operateur, RegDate dateActe, String noMinute) {
-		final EvenementReqDes evt = new EvenementReqDes();
-		evt.setNotaire(notaire);
-		evt.setOperateur(operateur);
-		evt.setDateActe(dateActe);
-		evt.setNumeroMinute(noMinute);
-		evt.setXml("<tubidu/>");
-		return evenementReqDesDAO.save(evt);
-	}
-
-	protected UniteTraitement addUniteTraitement(EvenementReqDes evt, EtatTraitement etat, @Nullable Date dateTraitement) {
-		final UniteTraitement ut = new UniteTraitement();
-		ut.setEvenement(evt);
-		ut.setDateTraitement(dateTraitement);
-		ut.setEtat(etat);
-		return uniteTraitementDAO.save(ut);
-	}
-
-	protected PartiePrenante addPartiePrenante(UniteTraitement ut, String nom, String prenoms) {
-		final PartiePrenante pp = new PartiePrenante();
-		pp.setUniteTraitement(ut);
-		pp.setNom(nom);
-		pp.setPrenoms(prenoms);
-		return hibernateTemplate.merge(pp);
-	}
-
-	protected TransactionImmobiliere addTransactionImmobiliere(EvenementReqDes evt, String description, ModeInscription modeInscription, TypeInscription typeInscription, int noOfsCommune) {
-		final TransactionImmobiliere ti = new TransactionImmobiliere();
-		ti.setEvenementReqDes(evt);
-		ti.setDescription(description);
-		ti.setModeInscription(modeInscription);
-		ti.setTypeInscription(typeInscription);
-		ti.setOfsCommune(noOfsCommune);
-		return hibernateTemplate.merge(ti);
-	}
-
-	protected RolePartiePrenante addRole(PartiePrenante pp, TransactionImmobiliere transactionImmobiliere, TypeRole typeRole) {
-		final RolePartiePrenante role = new RolePartiePrenante();
-		role.setTransaction(transactionImmobiliere);
-		role.setRole(typeRole);
-		addRole(pp, role);
-		return role;
-	}
-
-	protected void addRole(PartiePrenante pp, RolePartiePrenante role) {
-		if (pp.getRoles() == null) {
-			pp.setRoles(new HashSet<RolePartiePrenante>());
-		}
-		pp.getRoles().add(role);
 	}
 
 	@Test(timeout = 10000)

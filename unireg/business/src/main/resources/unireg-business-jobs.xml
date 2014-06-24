@@ -156,6 +156,12 @@
 		<property name="transactionManager" ref="transactionManager"/>
 	</bean>
 
+	<bean id="evenementReqDesHandlerJob" parent="schedulerJob" class="ch.vd.uniregctb.evenement.reqdes.engine.EvenementReqDesHandlerJob">
+		<constructor-arg value="204"/>
+		<constructor-arg value="Relancer le traitement automatique des événements issus de l'application des notaires"/>
+		<property name="processor" ref="evtReqDesRetryProcessor"/>
+	</bean>
+
     <bean id="editiqueListeRecapJob" parent="schedulerJob" class="ch.vd.uniregctb.editique.batch.EditiqueListeRecapJob">
         <constructor-arg value="300"/>
         <property name="listeRecapService" ref="lrService"/>

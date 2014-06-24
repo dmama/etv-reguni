@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.evenement.reqdes.engine;
 
+import java.util.Collection;
+
 /**
  * Interface externe du processeur des événements ReqDes
  */
@@ -14,7 +16,7 @@ public interface EvenementReqDesProcessor {
 		 * Appelé à chaque fois qu'une unité de traitement a été traitée
 		 * @param idUniteTraitement identifiant de l'unité traitée
 		 */
-		void onUniteTraite(long idUniteTraitement);
+		void onUniteTraitee(long idUniteTraitement);
 
 		/**
 		 * Appelé quand l'arrêt du processeur est demandé (= arrêt de l'application)
@@ -43,4 +45,10 @@ public interface EvenementReqDesProcessor {
 	 * @param id ID technique de l'unité de traitement à lancer
 	 */
 	void postUniteTraitement(long id);
+
+	/**
+	 * Demande le traitement asynchrone des unités de traitement identifiées par les IDs techniques présents dans la collection
+	 * @param ids collection d'IDs techniques des unités de traitement à lancer
+	 */
+	void postUnitesTraitement(Collection<Long> ids);
 }

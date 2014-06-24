@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.evenement.reqdes;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -21,6 +22,11 @@ public class MockReqDesEventProcessor implements EvenementReqDesProcessor, Initi
 	@Override
 	public void postUniteTraitement(long id) {
 		collectedUniteTraitementIds.add(id);
+	}
+
+	@Override
+	public void postUnitesTraitement(Collection<Long> ids) {
+		collectedUniteTraitementIds.addAll(ids);
 	}
 
 	@Override

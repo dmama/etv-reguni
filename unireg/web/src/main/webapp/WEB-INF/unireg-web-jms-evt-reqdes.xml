@@ -40,4 +40,10 @@
 		<property name="tiersService" ref="tiersService"/>
 	</bean>
 
+	<bean id="evtReqDesRetryProcessor" class="ch.vd.uniregctb.evenement.reqdes.engine.EvenementReqDesRetryProcessorImpl">
+		<property name="mainProcessor" ref="reqdesEventProcessor"/>
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
+		<property name="transactionManager" ref="transactionManager"/>
+	</bean>
+
 </beans>

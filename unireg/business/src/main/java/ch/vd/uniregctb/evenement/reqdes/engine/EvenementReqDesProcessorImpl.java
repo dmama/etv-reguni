@@ -2,6 +2,7 @@ package ch.vd.uniregctb.evenement.reqdes.engine;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -248,7 +249,7 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 			if (!listeners.isEmpty()) {
 				for (Listener listener : listeners.values()) {
 					try {
-						listener.onUniteTraite(idUniteTraitement);
+						listener.onUniteTraitee(idUniteTraitement);
 					}
 					catch (Exception e) {
 						// pas grave...
@@ -279,6 +280,16 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 	@Override
 	public void postUniteTraitement(long id) {
 		queue.add(new QueueElement(id));
+	}
+
+	@Override
+	public void postUnitesTraitement(Collection<Long> ids) {
+		if (ids != null && !ids.isEmpty()) {
+			// élimination des doublons et découplage des collections (en cas de manipulation - sur le thread de traitement, par exemple - pendant l'insertion)
+			for (Long id : new HashSet<>(ids)) {
+				queue.add(new QueueElement(id));
+			}
+		}
 	}
 
 	@Override

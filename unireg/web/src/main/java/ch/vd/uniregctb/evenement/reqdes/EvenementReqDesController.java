@@ -196,7 +196,7 @@ public class EvenementReqDesController {
 		final Fuse fusible = new Fuse();
 		final EvenementReqDesProcessor.ListenerHandle handle = processor.registerListener(new EvenementReqDesProcessor.Listener() {
 			@Override
-			public void onUniteTraite(long idUniteTraitement) {
+			public void onUniteTraitee(long idUniteTraitement) {
 				if (idUniteTraitement == idUniteTraitementARecycler) {
 					fusible.blow();
 				}
