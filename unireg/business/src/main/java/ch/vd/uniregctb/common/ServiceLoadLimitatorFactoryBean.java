@@ -13,8 +13,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.log4j.Logger;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -22,12 +20,10 @@ import org.springframework.beans.factory.InitializingBean;
 import ch.vd.uniregctb.load.BasicLoadMonitor;
 import ch.vd.uniregctb.load.LoadAverager;
 import ch.vd.uniregctb.load.LoadMonitorable;
+import ch.vd.uniregctb.stats.ServiceTracing;
 import ch.vd.uniregctb.stats.StatsService;
 
 public class ServiceLoadLimitatorFactoryBean<T> implements FactoryBean<T>, InitializingBean, DisposableBean {
-
-	private static final Logger LOGGER = Logger.getLogger(ServiceLoadLimitatorFactoryBean.class);
-	private static final long WAITING_TIME_LOG_THRESHOLD_MS = 1000;     // millisecondes
 
 	private Class<T> serviceInterfaceClass;
 	private int nbThreadsMin;
@@ -42,6 +38,7 @@ public class ServiceLoadLimitatorFactoryBean<T> implements FactoryBean<T>, Initi
 	private T proxy;
 	private LoadAverager runningAverager;
 	private LoadAverager waitingAverager;
+	private ServiceTracing waitingTracing;
 
 	public void setServiceInterfaceClass(Class<T> serviceInterfaceClass) {
 		this.serviceInterfaceClass = serviceInterfaceClass;
@@ -121,14 +118,23 @@ public class ServiceLoadLimitatorFactoryBean<T> implements FactoryBean<T>, Initi
 				statsService.registerLoadMonitor(name, new BasicLoadMonitor(service, waitingAverager));
 			}
 		}
+
+		// 3. le temps d'attente avant de faire l'appel pour cause de pool de threads plein
+		{
+			final String name = buildWaitingServiceName();
+			waitingTracing = new ServiceTracing(name);
+			if (statsService != null) {
+				statsService.registerService(name, waitingTracing);
+			}
+		}
 	}
 
 	private String buildWaitingServiceName() {
-		return String.format("%s-Waiting", serviceName);
+		return String.format("%s-Wait", serviceName);
 	}
 
 	private String buildRunningServiceName() {
-		return String.format("%s-Running", serviceName);
+		return serviceName;
 	}
 
 	@Override
@@ -141,6 +147,9 @@ public class ServiceLoadLimitatorFactoryBean<T> implements FactoryBean<T>, Initi
 			waitingAverager.stop();
 			statsService.unregisterLoadMonitor(buildWaitingServiceName());
 		}
+		if (statsService != null) {
+			statsService.unregisterService(buildWaitingServiceName());
+		}
 		if (executor != null) {
 			executor.shutdownNow();
 			while (!executor.isTerminated()) {
@@ -149,9 +158,9 @@ public class ServiceLoadLimitatorFactoryBean<T> implements FactoryBean<T>, Initi
 		}
 	}
 
-	private final class Invocator implements Callable<Object>, Dated {
+	private final class Invocator implements Callable<Object> {
 
-		private final long birth = getNowSystemNanos();
+		private final long birth = waitingTracing.start();
 		private final Method method;
 		private final Object[] args;
 
@@ -162,11 +171,8 @@ public class ServiceLoadLimitatorFactoryBean<T> implements FactoryBean<T>, Initi
 
 		@Override
 		public Object call() throws Exception {
-			// délai de plus d'une seconde, on le note
-			final long waitingTime = getAge(TimeUnit.MILLISECONDS);
-			if (waitingTime >= WAITING_TIME_LOG_THRESHOLD_MS) {
-				LOGGER.warn(String.format("Attente constatée de %d ms avant l'appel à la méthode %s du service %s", waitingTime, method.getName(), serviceName));
-			}
+			// l'attente est terminée
+			waitingTracing.end(birth);
 
 			// maintenant, on fait effectivement l'appel...
 			load.incrementAndGet();
@@ -177,16 +183,6 @@ public class ServiceLoadLimitatorFactoryBean<T> implements FactoryBean<T>, Initi
 				load.decrementAndGet();
 			}
 		}
-
-		@Override
-		public long getAge(@NotNull TimeUnit unit) {
-			final long now = getNowSystemNanos();
-			return unit.convert(now - birth, TimeUnit.NANOSECONDS);
-		}
-	}
-
-	private static long getNowSystemNanos() {
-		return System.nanoTime();
 	}
 
 	/**

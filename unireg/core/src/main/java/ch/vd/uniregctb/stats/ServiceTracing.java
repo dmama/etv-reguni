@@ -299,15 +299,7 @@ public final class ServiceTracing implements ServiceTracingInterface {
 	}
 
 	protected void addTime(long time) {
-		synchronized (total) {
-			total.time += time;
-			total.calls++;
-			total.items++;
-
-			total.recents[index].time += time;
-			total.recents[index].calls++;
-			total.recents[index].items++;
-		}
+		addTime(time, null);
 	}
 
 	protected void addTime(long time, String name) {
@@ -320,23 +312,25 @@ public final class ServiceTracing implements ServiceTracingInterface {
 			total.calls++;
 			total.items += items;
 
-			Data d = details.get(name);
-			if (d == null) {
-				d = new Data(true);
-				details.put(name, d);
-			}
+			if (name != null) {
+				Data d = details.get(name);
+				if (d == null) {
+					d = new Data(true);
+					details.put(name, d);
+				}
 
-			d.time += time;
-			d.calls++;
-			d.items += items;
+				d.time += time;
+				d.calls++;
+				d.items += items;
+
+				d.recents[index].time += time;
+				d.recents[index].calls++;
+				d.recents[index].items += items;
+			}
 
 			total.recents[index].time += time;
 			total.recents[index].calls++;
 			total.recents[index].items += items;
-
-			d.recents[index].time += time;
-			d.recents[index].calls++;
-			d.recents[index].items += items;
 		}
 	}
 
@@ -373,9 +367,7 @@ public final class ServiceTracing implements ServiceTracingInterface {
 	 * @param start la valeur retournée par la méthode {@link #start()}.
 	 */
 	public void end(long start) {
-		final long nanoTime = System.nanoTime();
-		lastCallTime = nanoTime;
-		addTime(nanoTime - start);
+		end(start, null, null);
 	}
 
 	/**
@@ -418,10 +410,10 @@ public final class ServiceTracing implements ServiceTracingInterface {
 				throwableString = StringUtils.EMPTY;
 			}
 			if (StringUtils.isBlank(paramString)) {
-				detailLogger.info(String.format("(%d ms) %s%s", (nanoTime - start) / 1000000, name, throwableString));
+				detailLogger.info(String.format("(%d ms) %s%s", TimeUnit.NANOSECONDS.toMillis(nanoTime - start), StringUtils.trimToEmpty(name), throwableString));
 			}
 			else {
-				detailLogger.info(String.format("(%d ms) %s{%s}%s", (nanoTime - start) / 1000000, name, paramString, throwableString));
+				detailLogger.info(String.format("(%d ms) %s{%s}%s", TimeUnit.NANOSECONDS.toMillis(nanoTime - start), StringUtils.trimToEmpty(name), paramString, throwableString));
 			}
 		}
 	}
@@ -450,10 +442,10 @@ public final class ServiceTracing implements ServiceTracingInterface {
 			}
 			final String returnInfo = (thrown == null ? String.format(" => %d item(s)", items) : String.format(", %s thrown", thrown.getClass().getName()));
 			if (StringUtils.isBlank(paramString)) {
-				detailLogger.info(String.format("(%d ms) %s%s", (nanoTime - start) / 1000000, name, returnInfo));
+				detailLogger.info(String.format("(%d ms) %s%s", TimeUnit.NANOSECONDS.toMillis(nanoTime - start), StringUtils.trimToEmpty(name), returnInfo));
 			}
 			else {
-				detailLogger.info(String.format("(%d ms) %s{%s}%s", (nanoTime - start) / 1000000, name, paramString, returnInfo));
+				detailLogger.info(String.format("(%d ms) %s{%s}%s", TimeUnit.NANOSECONDS.toMillis(nanoTime - start), StringUtils.trimToEmpty(name), paramString, returnInfo));
 			}
 		}
 	}

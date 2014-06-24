@@ -10,7 +10,7 @@ import ch.vd.uniregctb.stats.StatsService;
 
 public class EFactureClientTracing implements EFactureClient, InitializingBean, DisposableBean {
 
-	public static final String SERVICE_NAME = "EfactureClient";
+	public static final String SERVICE_NAME = "EFactureClient";
 
 	private EFactureClient target;
 
