@@ -3,9 +3,7 @@ package ch.vd.uniregctb.evenement.reqdes;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
@@ -36,7 +34,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.ControllerUtils;
 import ch.vd.uniregctb.common.Flash;
 import ch.vd.uniregctb.common.Fuse;
-import ch.vd.uniregctb.common.MimeTypeHelper;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.common.WebParamPagination;
@@ -287,20 +284,14 @@ public class EvenementReqDesController {
 
 		final UniteTraitementPdfDocumentGenerator document = new UniteTraitementPdfDocumentGenerator(ut);
 		try {
-			final File tempFile = File.createTempFile("ut-pdf", "pdf");
-			try {
-				try (FileOutputStream fos = new FileOutputStream(tempFile)) {
-					document.generatePdf(fos, infraService);
-				}
+			final byte[] content;
+			try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
+				document.generatePdf(os, infraService);
+				os.flush();
+				content = os.toByteArray();
+			}
 
-				try (FileInputStream fis = new FileInputStream(tempFile)) {
-					servletService.downloadAsFile("reqdes.pdf", MimeTypeHelper.MIME_PDF, fis, null, response);
-				}
-			}
-			finally {
-				//noinspection ResultOfMethodCallIgnored
-				tempFile.delete();
-			}
+			servletService.downloadAsFile("reqdes-" + idUniteTraitement + ".pdf", content, response);
 		}
 		catch (IOException | DocumentException e) {
 			Flash.error("Une erreur est survenue : " + e.getMessage());
