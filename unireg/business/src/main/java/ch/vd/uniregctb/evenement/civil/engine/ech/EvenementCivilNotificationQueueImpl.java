@@ -2,7 +2,7 @@ package ch.vd.uniregctb.evenement.civil.engine.ech;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.DelayQueue;
@@ -195,7 +195,8 @@ import ch.vd.uniregctb.transaction.TransactionTemplate;
 			lock.lock();
 			try {
 				// élimination des doublons et découplage des collections (en cas de manipulation - sur le thread de traitement, par exemple - pendant l'insertion)
-				for (Long noIndividu : new HashSet<>(nosIndividus)) {
+				// tout en conservant l'ordre initial (pour les tests)
+				for (Long noIndividu : new LinkedHashSet<>(nosIndividus)) {
 					internalPost(noIndividu, EvenementCivilEchProcessingMode.BATCH);
 				}
 			}

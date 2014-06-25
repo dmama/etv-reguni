@@ -8,6 +8,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -286,7 +287,8 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 	public void postUnitesTraitement(Collection<Long> ids) {
 		if (ids != null && !ids.isEmpty()) {
 			// élimination des doublons et découplage des collections (en cas de manipulation - sur le thread de traitement, par exemple - pendant l'insertion)
-			for (Long id : new HashSet<>(ids)) {
+			// tout en conservant l'ordre initial (pour les tests)
+			for (Long id : new LinkedHashSet<>(ids)) {
 				queue.add(new QueueElement(id));
 			}
 		}
