@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.reqdes;
+package ch.vd.uniregctb.evenement.reqdes.engine;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -8,9 +8,8 @@ import java.util.List;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.registre.base.utils.NotImplementedException;
-import ch.vd.uniregctb.evenement.reqdes.engine.EvenementReqDesProcessor;
 
-public class MockReqDesEventProcessor implements EvenementReqDesProcessor, InitializingBean {
+public class MockEvenementReqDesProcessor implements EvenementReqDesProcessor, InitializingBean {
 
 	private final List<Long> collectedUniteTraitementIds = new LinkedList<>();
 

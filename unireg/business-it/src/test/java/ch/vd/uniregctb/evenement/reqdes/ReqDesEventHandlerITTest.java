@@ -54,6 +54,7 @@ import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.evenement.EvenementHelper;
+import ch.vd.uniregctb.evenement.reqdes.engine.MockEvenementReqDesProcessor;
 import ch.vd.uniregctb.reqdes.EtatTraitement;
 import ch.vd.uniregctb.reqdes.EvenementReqDes;
 import ch.vd.uniregctb.reqdes.InformationsActeur;
@@ -77,7 +78,7 @@ public class ReqDesEventHandlerITTest extends BusinessItTest {
 	private EsbJmsTemplate esbTemplate;
 	private EsbXmlValidation esbValidator;
 	private String inputQueue;
-	private MockReqDesEventProcessor processor;
+	private MockEvenementReqDesProcessor processor;
 
 	private static NotarialDeed buildNotarialDeed(RegDate refDate, String numeroMinute) {
 		return new NotarialDeed(XmlUtils.regdate2xmlcal(refDate), numeroMinute);
@@ -100,7 +101,7 @@ public class ReqDesEventHandlerITTest extends BusinessItTest {
 		super.runOnSetUp();
 
 		esbTemplate = getBean(EsbJmsTemplate.class, "esbJmsTemplate");
-		processor = getBean(MockReqDesEventProcessor.class, "reqdesEventProcessor");
+		processor = getBean(MockEvenementReqDesProcessor.class, "reqdesEventProcessor");
 
 		esbValidator = new EsbXmlValidation();
 		esbValidator.setResourceResolver(new ClasspathCatalogResolver());

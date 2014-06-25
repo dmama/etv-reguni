@@ -30,6 +30,6 @@
 		<property name="autoStartup" value="true" />
 	</bean>
 
-	<bean id="reqdesEventProcessor" class="ch.vd.uniregctb.evenement.reqdes.MockReqDesEventProcessor"/>
+	<bean id="reqdesEventProcessor" class="ch.vd.uniregctb.evenement.reqdes.engine.MockEvenementReqDesProcessor"/>
 
 </beans>
