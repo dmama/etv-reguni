@@ -49,6 +49,8 @@
 		<property name="tiersMapHelper" ref="tiersMapHelper"/>
 		<property name="uniteTraitementDAO" ref="reqdesUniteTraitementDAO"/>
 		<property name="processor" ref="reqdesEventProcessor"/>
+		<property name="servletService" ref="servletService"/>
+		<property name="infraService" ref="serviceInfrastructureService"/>
 	</bean>
 
 </beans>

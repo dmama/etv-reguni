@@ -1,7 +1,12 @@
 package ch.vd.uniregctb.evenement.reqdes;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -9,6 +14,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import com.lowagie.text.DocumentException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.propertyeditors.CustomBooleanEditor;
@@ -30,16 +36,20 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.ControllerUtils;
 import ch.vd.uniregctb.common.Flash;
 import ch.vd.uniregctb.common.Fuse;
+import ch.vd.uniregctb.common.MimeTypeHelper;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.common.WebParamPagination;
 import ch.vd.uniregctb.evenement.reqdes.engine.EvenementReqDesProcessor;
+import ch.vd.uniregctb.evenement.reqdes.pdf.UniteTraitementPdfDocumentGenerator;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.reqdes.EtatTraitement;
 import ch.vd.uniregctb.reqdes.UniteTraitement;
 import ch.vd.uniregctb.reqdes.UniteTraitementCriteria;
 import ch.vd.uniregctb.reqdes.UniteTraitementDAO;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityCheck;
+import ch.vd.uniregctb.servlet.ServletService;
 import ch.vd.uniregctb.tiers.TiersMapHelper;
 import ch.vd.uniregctb.utils.RegDateEditor;
 
@@ -71,6 +81,8 @@ public class EvenementReqDesController {
 	private TiersMapHelper tiersMapHelper;
 	private UniteTraitementDAO uniteTraitementDAO;
 	private EvenementReqDesProcessor processor;
+	private ServletService servletService;
+	private ServiceInfrastructureService infraService;
 
 	public void setControllerUtils(ControllerUtils controllerUtils) {
 		this.controllerUtils = controllerUtils;
@@ -86,6 +98,14 @@ public class EvenementReqDesController {
 
 	public void setProcessor(EvenementReqDesProcessor processor) {
 		this.processor = processor;
+	}
+
+	public void setServletService(ServletService servletService) {
+		this.servletService = servletService;
+	}
+
+	public void setInfraService(ServiceInfrastructureService infraService) {
+		this.infraService = infraService;
 	}
 
 	@ModelAttribute
@@ -256,6 +276,41 @@ public class EvenementReqDesController {
 		return String.format("redirect:/evenement/reqdes/visu.do?%s=%d", ID, idUniteTraitement);
 	}
 
+	@RequestMapping(value = "/doc-ut.do", method = RequestMethod.GET)
+	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
+	@Transactional(rollbackFor = Throwable.class, readOnly = true)
+	public String getDocUniteTraitement(@RequestParam(ID) long idUniteTraitement, HttpServletResponse response) {
+		final UniteTraitement ut = uniteTraitementDAO.get(idUniteTraitement);
+		if (ut == null) {
+			throw new ObjectNotFoundException("Pas d'unité de traitement avec l'identifiant " + idUniteTraitement);
+		}
+
+		final UniteTraitementPdfDocumentGenerator document = new UniteTraitementPdfDocumentGenerator(ut);
+		try {
+			final File tempFile = File.createTempFile("ut-pdf", "pdf");
+			try {
+				try (FileOutputStream fos = new FileOutputStream(tempFile)) {
+					document.generatePdf(fos, infraService);
+				}
+
+				try (FileInputStream fis = new FileInputStream(tempFile)) {
+					servletService.downloadAsFile("reqdes.pdf", MimeTypeHelper.MIME_PDF, fis, null, response);
+				}
+			}
+			finally {
+				//noinspection ResultOfMethodCallIgnored
+				tempFile.delete();
+			}
+		}
+		catch (IOException | DocumentException e) {
+			Flash.error("Une erreur est survenue : " + e.getMessage());
+			LOGGER.error(e.getMessage(), e);
+			return String.format("redirect:/evenement/reqdes/visu.do?%s=%d", ID, idUniteTraitement);
+		}
+
+		return null;
+	}
+
 	private static UniteTraitementCriteria buildCoreCriteria(ReqDesCriteriaView view) {
 		final UniteTraitementCriteria core = new UniteTraitementCriteria();
 		core.setNumeroMinute(StringUtils.trimToNull(view.getNumeroMinute()));
@@ -288,4 +343,3 @@ public class EvenementReqDesController {
 		return ut == null ? null : new ReqDesUniteTraitementDetailedView(ut);
 	}
 }
-

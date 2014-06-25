@@ -134,24 +134,11 @@ public abstract class PdfRapport extends Document {
 	 * Charge un image PNG iText depuis une ressource
 	 */
 	protected Image getPngImage(String path) throws DocumentException {
-		InputStream is = null;
-		try {
-			is = getClass().getClassLoader().getResourceAsStream(path);
+		try (InputStream is = getClass().getClassLoader().getResourceAsStream(path)) {
 			return PngImage.getImage(is);
 		}
 		catch (IOException e) {
 			throw new DocumentException(e);
-		}
-		finally {
-			if (is != null) {
-				try {
-					is.close();
-				}
-				catch (IOException e) {
-					// que faire de plus ?
-					LOGGER.error(e);
-				}
-			}
 		}
 	}
 

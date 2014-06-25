@@ -2,7 +2,11 @@
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
-	<tiles:put name="title"><fmt:message key="title.reqdes.unite.traitement.caracteristiques" /></tiles:put>
+	<tiles:put name="title">
+		<fmt:message key="title.reqdes.unite.traitement.caracteristiques" />
+		<a href="doc-ut.do?id=${uniteTraitement.id}&url_memorize=false" class="pdf" id="print-doc-${uniteTraitement.id}" onclick="Link.tempSwap(this, '#disabled-print-doc-${uniteTraitement.id}');">&nbsp;</a>
+		<span class="pdf-grayed" id="disabled-print-doc-${uniteTraitement.id}" style="display: none;">&nbsp;</span>
+	</tiles:put>
   	<tiles:put name="body">
 
 	  	<unireg:nextRowClass reset="1"/>
