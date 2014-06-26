@@ -1,18 +1,18 @@
 package ch.vd.uniregctb.evenement.reqdes.pdf;
 
-import java.awt.Color;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import com.lowagie.text.Chunk;
-import com.lowagie.text.Document;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.Element;
-import com.lowagie.text.Phrase;
-import com.lowagie.text.Rectangle;
-import com.lowagie.text.pdf.PdfPCell;
-import com.lowagie.text.pdf.PdfPTable;
-import com.lowagie.text.pdf.PdfWriter;
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Chunk;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.Rectangle;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
 import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.registre.base.date.RegDate;
@@ -94,7 +94,7 @@ public class UniteTraitementPdfDocumentGenerator extends ReqDesPdfDocumentGenera
 				tableGauche.setHeaderRows(1);
 
 				final PdfPCell headerCell = new PdfPCell(new Phrase(new Chunk("Identification", TABLE_HEADER_FONT)));
-				headerCell.setBackgroundColor(Color.LIGHT_GRAY);
+				headerCell.setBackgroundColor(BaseColor.LIGHT_GRAY);
 				headerCell.setColspan(2);
 				headerCell.setHorizontalAlignment(Element.ALIGN_CENTER);
 				tableGauche.addCell(headerCell);
@@ -153,7 +153,7 @@ public class UniteTraitementPdfDocumentGenerator extends ReqDesPdfDocumentGenera
 				tableDroite.setHeaderRows(1);
 
 				final PdfPCell headerCell = new PdfPCell(new Phrase(new Chunk("Résidence", TABLE_HEADER_FONT)));
-				headerCell.setBackgroundColor(Color.LIGHT_GRAY);
+				headerCell.setBackgroundColor(BaseColor.LIGHT_GRAY);
 				headerCell.setColspan(2);
 				headerCell.setHorizontalAlignment(Element.ALIGN_CENTER);
 				tableDroite.addCell(headerCell);
@@ -206,7 +206,7 @@ public class UniteTraitementPdfDocumentGenerator extends ReqDesPdfDocumentGenera
 			tableRoles.setHeaderRows(2);
 
 			final PdfPCell headerCell = new PdfPCell(new Phrase(new Chunk("Rôle(s) dans l'acte", TABLE_HEADER_FONT)));
-			headerCell.setBackgroundColor(Color.LIGHT_GRAY);
+			headerCell.setBackgroundColor(BaseColor.LIGHT_GRAY);
 			headerCell.setColspan(5);
 			headerCell.setHorizontalAlignment(Element.ALIGN_CENTER);
 			tableRoles.addCell(headerCell);

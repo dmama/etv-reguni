@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.rapport;
 
-import com.lowagie.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfPTable;
 
 import ch.vd.registre.base.utils.Assert;
 

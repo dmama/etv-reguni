@@ -1,20 +1,20 @@
 package ch.vd.uniregctb.evenement.reqdes.pdf;
 
-import com.lowagie.text.Document;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.Element;
-import com.lowagie.text.Font;
-import com.lowagie.text.PageSize;
-import com.lowagie.text.Paragraph;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.Paragraph;
 
 import ch.vd.uniregctb.common.ApplicationInfo;
 
 public abstract class ReqDesPdfDocumentGenerator {
 
-	protected static final Font MAIN_TITLE_FONT = new Font(Font.HELVETICA, 20);
-	protected static final Font TITLE_FONT = new Font(Font.HELVETICA, 14, Font.UNDERLINE);
-	protected static final Font NORMAL_FONT = new Font(Font.HELVETICA, 10);
-	protected static final Font TABLE_HEADER_FONT = new Font(Font.HELVETICA, 10, Font.BOLD);
+	protected static final Font MAIN_TITLE_FONT = new Font(Font.FontFamily.HELVETICA, 20);
+	protected static final Font TITLE_FONT = new Font(Font.FontFamily.HELVETICA, 14, Font.UNDERLINE);
+	protected static final Font NORMAL_FONT = new Font(Font.FontFamily.HELVETICA, 10);
+	protected static final Font TABLE_HEADER_FONT = new Font(Font.FontFamily.HELVETICA, 10, Font.BOLD);
 
 	protected static Document newDocument() {
 		return new Document(PageSize.A4);

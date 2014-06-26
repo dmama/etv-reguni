@@ -1,26 +1,25 @@
 package ch.vd.uniregctb.rapport;
 
-import java.awt.Color;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-import com.lowagie.text.Cell;
-import com.lowagie.text.Chunk;
-import com.lowagie.text.Document;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.Element;
-import com.lowagie.text.Font;
-import com.lowagie.text.Image;
-import com.lowagie.text.PageSize;
-import com.lowagie.text.Paragraph;
-import com.lowagie.text.Rectangle;
-import com.lowagie.text.pdf.PdfAnnotation;
-import com.lowagie.text.pdf.PdfFileSpecification;
-import com.lowagie.text.pdf.PdfWriter;
-import com.lowagie.text.pdf.codec.PngImage;
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Chunk;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Rectangle;
+import com.itextpdf.text.pdf.PdfAnnotation;
+import com.itextpdf.text.pdf.PdfFileSpecification;
+import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.text.pdf.codec.PngImage;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -39,16 +38,16 @@ import ch.vd.uniregctb.common.TimeHelper;
  */
 public abstract class PdfRapport extends Document {
 
-	private static final Font WARNING_FONT = new Font(Font.HELVETICA, 12, Font.BOLD);
+	private static final Font WARNING_FONT = new Font(Font.FontFamily.HELVETICA, 12, Font.BOLD);
 	private static final SimpleDateFormat TIMESTAMP_FORMAT = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
 	public static final char COMMA = CsvHelper.COMMA;
 	public static final String EMPTY = StringUtils.EMPTY;
 
 	private final Logger LOGGER = Logger.getLogger(PdfRapport.class);
 
-	protected final Font titreFont = new Font(Font.HELVETICA, 20);
+	protected final Font titreFont = new Font(Font.FontFamily.HELVETICA, 20);
 	protected final Font entete1 = WARNING_FONT;
-	protected final Font normalFont = new Font(Font.HELVETICA, 10);
+	protected final Font normalFont = new Font(Font.FontFamily.HELVETICA, 10);
 
 	public PdfRapport() {
 		super(PageSize.A4);
@@ -100,7 +99,7 @@ public abstract class PdfRapport extends Document {
 	public void addWarning(String warning) throws DocumentException {
 		Paragraph p = new Paragraph();
 		Chunk c = new Chunk(warning, WARNING_FONT);
-		c.setBackground(Color.RED);
+		c.setBackground(BaseColor.RED);
 		p.setAlignment(Element.ALIGN_CENTER);
 		p.setSpacingAfter(10);
 		p.add(c);
@@ -125,7 +124,7 @@ public abstract class PdfRapport extends Document {
 	}
 
 	protected void fillTableSimple(PdfTableSimple table, TableSimpleCallback callback) throws DocumentException {
-		table.getDefaultCell().setBorder(Cell.NO_BORDER);
+		table.getDefaultCell().setBorder(Rectangle.NO_BORDER);
 		callback.fillTable(table);
 		add(table);
 	}
