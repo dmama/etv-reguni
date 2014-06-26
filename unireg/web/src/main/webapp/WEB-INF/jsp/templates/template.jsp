@@ -304,7 +304,7 @@
 
 					<%@ include file="/WEB-INF/jsp/include/ie6-warning.jsp" %>
 
-					<h1><tiles:getAsString name='title' ignore='true'/></h1>
+					<h1><tiles:getAsString name='title' ignore='true'/><tiles:getAsString name="displayedTitleSuffix" ignore="true"/></h1>
 					<div id="globalErrors">
 						<c:set var="globalErrorCount" value="0"/>
 						<spring:hasBindErrors name="command">
