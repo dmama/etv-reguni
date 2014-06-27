@@ -19,7 +19,7 @@ public abstract class AssujettissablePersonnePhysiqueIndexable<T extends Contrib
 	protected void fillAssujettissementData(TiersIndexableData data) {
 		super.fillAssujettissementData(data);
 
-		final Assujettissement assujettissement = tiersService.getAssujettissement((Contribuable) tiers, null);
+		final Assujettissement assujettissement = tiersService.getAssujettissement(tiers, null);
 		final TypeAssujettissement type = assujettissement != null ? assujettissement.getType() : TypeAssujettissement.NON_ASSUJETTI;
 		data.setAssujettissementPP(type);
 	}
