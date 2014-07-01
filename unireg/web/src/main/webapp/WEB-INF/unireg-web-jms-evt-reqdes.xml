@@ -15,7 +15,7 @@
 		<property name="processor" ref="reqdesEventProcessor"/>
 	</bean>
 
-	<bean id="reqdesEventEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">
+	<bean id="reqdesEventEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareMasterSwitchableEsbMessageEndpointManager">
 		<property name="resourceAdapter" ref="jmsResourceAdapter"/>
 		<property name="activationSpec">
 			<bean class="org.apache.activemq.ra.ActiveMQActivationSpec">
@@ -27,7 +27,8 @@
 		</property>
 		<property name="messageListener" ref="reqdesEventListener"/>
 		<property name="transactionManager" ref="transactionManager"/>
-		<property name="autoStartup" value="${extprop.jms.queue.reqdes.event.enabled}" />
+		<property name="autoStartup" value="${extprop.jms.queue.reqdes.event.enabled}"/>
+		<property name="masterSwitch" value="${extprop.reqdes.enabled}"/>
 	</bean>
 
 	<bean id="reqdesEventProcessor" class="ch.vd.uniregctb.evenement.reqdes.engine.EvenementReqDesProcessorImpl">

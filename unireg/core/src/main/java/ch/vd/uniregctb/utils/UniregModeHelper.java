@@ -15,6 +15,7 @@ public class UniregModeHelper implements InitializingBean {
 
 	private static final Logger LOGGER = Logger.getLogger(UniregModeHelper.class);
 
+	private static boolean reqdesEnabled = false;
 	private static boolean efactureEnabled = false;
 	private static boolean testMode = false;
 	private static boolean standalone = false;
@@ -25,6 +26,10 @@ public class UniregModeHelper implements InitializingBean {
 	 */
 	public static boolean isEfactureEnabled() {
 		return efactureEnabled;
+	}
+
+	public static boolean isReqdesEnabled() {
+		return reqdesEnabled;
 	}
 
 	/**
@@ -59,6 +64,10 @@ public class UniregModeHelper implements InitializingBean {
 
 	public void setEfactureEnabled(boolean enabled) {
 		UniregModeHelper.efactureEnabled = enabled;
+	}
+
+	public void setReqdesEnabled(boolean reqdesEnabled) {
+		UniregModeHelper.reqdesEnabled = reqdesEnabled;
 	}
 
 	@Override
