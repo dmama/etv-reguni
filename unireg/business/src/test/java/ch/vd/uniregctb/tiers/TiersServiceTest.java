@@ -8144,5 +8144,82 @@ public class TiersServiceTest extends BusinessTest {
 			}
 		});
 	}
+
+	/**
+	 * [SIFISC-12580] Recalcul du flag sur une personne physique membre d'un couple dont on modifie le for (mais pas sur la PP)
+	 */
+	@Test
+	public void testBlocageRemboursementAutomatiqueSurPersonnePhysiqueMembreDeCouple() throws Exception {
+
+		final RegDate dateMariage = date(2012, 7, 13);
+		final RegDate dateArrivee = date(2013, 10, 3);
+		final RegDate dateDepart = date(2014, 3, 12);
+
+		final class Ids {
+			long ppM;
+			long ppMme;
+			long mc;
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique m = addNonHabitant("Albert", "Dubourg", null, Sexe.MASCULIN);
+				final PersonnePhysique mme = addNonHabitant("Philomène", "Dubourg", null, Sexe.FEMININ);
+
+				// il faut un IBAN pour débloquer la situation...
+				m.setNumeroCompteBancaire("CH6100767000K51392545");
+				mme.setNumeroCompteBancaire("CH250025525510075340X");
+
+				final EnsembleTiersCouple couple = addEnsembleTiersCouple(m, mme, dateMariage, null);
+				final MenageCommun menage = couple.getMenage();
+				addForPrincipal(menage, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Lausanne, ModeImposition.SOURCE);
+				menage.setBlocageRemboursementAutomatique(false);
+
+				final Ids ids = new Ids();
+				ids.ppM = m.getNumero();
+				ids.ppMme = mme.getNumero();
+				ids.mc = menage.getNumero();
+				return ids;
+			}
+		});
+
+		// vérification de l'état de départ du flag et départ du couple à l'étranger
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.mc);
+				Assert.assertNotNull(mc);
+
+				final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(mc, null);
+				Assert.assertNotNull(couple);
+
+				Assert.assertFalse(mc.getBlocageRemboursementAutomatique());
+				Assert.assertTrue(couple.getPrincipal().getBlocageRemboursementAutomatique());
+				Assert.assertTrue(couple.getConjoint().getBlocageRemboursementAutomatique());
+
+				// départ du couple vers l'étranger
+				tiersService.closeForFiscalPrincipal(mc, dateDepart, MotifFor.DEPART_HS);
+				tiersService.openForFiscalPrincipal(mc, dateDepart.getOneDayAfter(), MotifRattachement.DOMICILE, MockPays.Allemagne.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, ModeImposition.SOURCE, MotifFor.DEPART_HS);
+			}
+		});
+
+		// vérification de l'état après départ
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.mc);
+				Assert.assertNotNull(mc);
+
+				final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(mc, null);
+				Assert.assertNotNull(couple);
+
+				Assert.assertTrue(mc.getBlocageRemboursementAutomatique());                     // parti -> bloqué
+				Assert.assertFalse(couple.getPrincipal().getBlocageRemboursementAutomatique()); // parti mais PIIS source avec IBAN -> débloqué
+				Assert.assertFalse(couple.getConjoint().getBlocageRemboursementAutomatique());  // parti mais PIIS source avec IBAN -> débloqué
+			}
+		});
+	}
 }
 

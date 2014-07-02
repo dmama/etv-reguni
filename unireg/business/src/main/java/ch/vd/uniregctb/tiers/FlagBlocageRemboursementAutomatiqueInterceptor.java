@@ -1,8 +1,10 @@
 package ch.vd.uniregctb.tiers;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -86,10 +88,39 @@ public class FlagBlocageRemboursementAutomatiqueInterceptor implements Modificat
 	}
 
 	private void computeFlags() {
-		for (Long id : idsTiersFlagACalculer.get()) {
-			final Tiers tiers = tiersDAO.get(id);
-			if (tiers instanceof PersonnePhysique || tiers instanceof MenageCommun) {
-				final Contribuable ctb = (Contribuable) tiers;
+
+		final Set<Long> ids = idsTiersFlagACalculer.get();
+		if (!ids.isEmpty()) {
+
+			// [SIFISC-12580] un re-calcul sur un couple doit forcer le re-calcul sur les personnes physiques qui le composent
+			// -> phase 1 : on récupère tous les contribuables concernés
+			final Map<Long, Contribuable> map = new HashMap<>(ids.size() * 3);      // un MC devient un MC + max 2 PP
+			for (Long id : ids) {
+				final Tiers tiers = tiersDAO.get(id);
+				if (tiers instanceof PersonnePhysique) {
+					map.put(id, (Contribuable) tiers);
+				}
+				else if (tiers instanceof MenageCommun) {
+					map.put(id, (Contribuable) tiers);
+
+					// et les personnes physiques qui le composent
+					final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple((MenageCommun) tiers, null);
+					if (couple != null) {
+						final PersonnePhysique principal = couple.getPrincipal();
+						if (principal != null) {
+							map.put(principal.getId(), principal);
+						}
+
+						final PersonnePhysique conjoint = couple.getConjoint();
+						if (conjoint != null) {
+							map.put(conjoint.getId(), conjoint);
+						}
+					}
+				}
+			}
+
+			// et phase 2 : on lance le recalcul sur tous ces contribuables
+			for (Contribuable ctb : map.values()) {
 				final ForFiscalPrincipal forVaudois = ctb.getDernierForFiscalPrincipalVaudois();
 
 				final boolean bloque;
@@ -100,10 +131,10 @@ public class FlagBlocageRemboursementAutomatiqueInterceptor implements Modificat
 				else {
 					// pas de for vaudois ouvert -> a prori bloqué, mais il y a des exceptions
 					// SIFISC-9993 : si le tiers est une PP qui a un IBAN valide et qui a des PIIS (source uniquement), alors on laisse débloqué
-					if (tiers instanceof PersonnePhysique && tiersService.getDateDeces((PersonnePhysique) tiers) == null && ibanValidator.isValidIban(tiers.getNumeroCompteBancaire())) {
+					if (ctb instanceof PersonnePhysique && tiersService.getDateDeces((PersonnePhysique) ctb) == null && ibanValidator.isValidIban(ctb.getNumeroCompteBancaire())) {
 						Boolean hasSeultSrc = null;
 						try {
-							final List<PeriodeImpositionImpotSource> piis = periodeImpositionImpotSourceService.determine((PersonnePhysique) tiers);
+							final List<PeriodeImpositionImpotSource> piis = periodeImpositionImpotSourceService.determine((PersonnePhysique) ctb);
 							for (PeriodeImpositionImpotSource pi : piis) {
 								if (pi.getType() != PeriodeImpositionImpotSource.Type.SOURCE) {
 									hasSeultSrc = Boolean.FALSE;
@@ -116,7 +147,7 @@ public class FlagBlocageRemboursementAutomatiqueInterceptor implements Modificat
 						}
 						catch (PeriodeImpositionImpotSourceServiceException e) {
 							LOGGER.warn(String.format("Impossible de calculer les périodes d'imposition IS du contribuable %d sans for vaudois ouvert, les remboursements automatiques seront bloqués",
-							                          tiers.getNumero()),
+							                          ctb.getNumero()),
 							            e);
 						}
 
@@ -130,7 +161,7 @@ public class FlagBlocageRemboursementAutomatiqueInterceptor implements Modificat
 				}
 
 				// sauvegarde du flag (directement en base parce que nous sommes ici en phase de "postFlush()" et que modifier l'entité se sert plus à rien)
-				tiersDAO.setFlagBlocageRemboursementAutomatique(tiers.getNumero(), bloque);
+				tiersDAO.setFlagBlocageRemboursementAutomatique(ctb.getNumero(), bloque);
 
 				// TODO JDE faut-il "évicter" le tiers de la session ici ? (en cas de multiple flushes dans la transaction, pour forcer un reload du tiers avec son flag modifié)
 			}
