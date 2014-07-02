@@ -608,8 +608,6 @@ public class AutorisationManagerImpl implements AutorisationManager {
 				if (isPersonnePhysique) {
 					allowedOnglet.put(MODIF_CIVIL, Boolean.TRUE);
 				}
-				allowedOnglet.put(MODIF_COMPLEMENT, Boolean.TRUE);
-				allowedOnglet.put(COMPLEMENT_COMMUNICATION, Boolean.TRUE);
 				allowedOnglet.put(MODIF_DOSSIER, Boolean.FALSE);
 				allowedOnglet.put(MODIF_FISCAL, Boolean.FALSE);
 				if (SecurityHelper.isGranted(securityProvider, Role.ADR_PP_D, visa, oid)) {
@@ -707,8 +705,6 @@ public class AutorisationManagerImpl implements AutorisationManager {
 	 * Code commun pour les méthodes setDroitNonHabitant et setDroitHabitant
 	 */
 	private void codeFactorise2(String visa, int oid, Map<String, Boolean> allowedOnglet) {
-		allowedOnglet.put(MODIF_COMPLEMENT, Boolean.TRUE);
-		allowedOnglet.put(COMPLEMENT_COMMUNICATION, Boolean.TRUE);
 		allowedOnglet.put(MODIF_DOSSIER, Boolean.TRUE);
 		allowedOnglet.put(DOSSIER_NO_TRAVAIL, Boolean.TRUE);
 		if (SecurityHelper.isGranted(securityProvider, Role.ADR_PP_D, visa, oid)) {
