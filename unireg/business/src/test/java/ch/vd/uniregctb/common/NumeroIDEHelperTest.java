@@ -17,6 +17,9 @@ public class NumeroIDEHelperTest extends WithoutSpringTest {
 		assertEquals(1, NumeroIDEHelper.computeControlDigit("10596039"));       // Agip
 		assertEquals(2, NumeroIDEHelper.computeControlDigit("10624451"));       // Landi Gros-de-Vaud
 		assertEquals(3, NumeroIDEHelper.computeControlDigit("42911124"));       // Fly
+		assertEquals(0, NumeroIDEHelper.computeControlDigit("10000100"));       // ?
+		assertEquals(0, NumeroIDEHelper.computeControlDigit("10000337"));       // ?
+		assertEquals(0, NumeroIDEHelper.computeControlDigit("10001101"));       // ?
 	}
 
 	@Test
