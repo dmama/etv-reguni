@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.indexer.tiers;
 
 import java.io.Serializable;
+import java.util.EnumSet;
 import java.util.Locale;
 import java.util.Set;
 
@@ -10,6 +11,8 @@ import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.uniregctb.common.Constants;
 import ch.vd.uniregctb.common.StringRenderer;
@@ -47,10 +50,9 @@ public class QueryConstructor {
 		this.tokenMinLength = tokenMinLength;
 	}
 
-	public static void addTypeTiers(BooleanQuery fullQuery, TiersFilter filter) throws IndexerException {
+	public static void addTypeTiers(BooleanQuery fullQuery, Set<TypeTiers> set) throws IndexerException {
 
 		// Type de tiers
-		final Set<TypeTiers> set = filter.getTypesTiers();
 		if (set != null && !set.isEmpty()) {
 
 			BooleanQuery query = new BooleanQuery();
@@ -429,9 +431,19 @@ public class QueryConstructor {
 		}
 	}
 
+	private static void merge(@NotNull Set<TypeTiers> inout, @Nullable Set<TypeTiers> addition) {
+		if (addition != null) {
+			inout.addAll(addition);
+		}
+	}
+
 	public Query constructQuery() throws IndexerException {
 
-		BooleanQuery fullQuery = new BooleanQuery();
+		final BooleanQuery fullQuery = new BooleanQuery();
+		final Set<TypeTiers> typesTiers = EnumSet.noneOf(TypeTiers.class);
+		if (criteria.getTypesTiersImperatifs() != null) {
+			typesTiers.addAll(criteria.getTypesTiersImperatifs());
+		}
 
 		if (criteria.getNumero() != null) {
 			// Si on a un NUMERO CTB, on ne recherche que sur celui-ci
@@ -439,7 +451,6 @@ public class QueryConstructor {
 		}
 		else {
 			// Sinon, on recherche sur les autres critères
-			addTypeTiers(fullQuery, criteria);
 			addNomRaison(fullQuery);
 			addFors(fullQuery);
 			addLocalitePays(fullQuery);
@@ -457,11 +468,24 @@ public class QueryConstructor {
 			addCategorieDebiteurIs(fullQuery);
 			addTiersActif(fullQuery, criteria);
 			addNumeroIDE(fullQuery, criteria);
+
+			final Set<TypeTiers> typesTiersUtilisateur = criteria.getTypesTiers();
+			if (typesTiersUtilisateur != null && !typesTiersUtilisateur.isEmpty()) {
+				if (typesTiers.isEmpty()) {
+					// pas de contraintes métiers (= recherche globale) -> on prend en compte les demandes utilisateurs telles qu'elles
+					typesTiers.addAll(typesTiersUtilisateur);
+				}
+				else {
+					// s'il y avait des contraintes "métiers" sur le type de tiers, il ne faut pas les dépasser
+					typesTiers.retainAll(typesTiersUtilisateur);
+				}
+			}
 		}
 
+		addTypeTiers(fullQuery, typesTiers);
 		addLimitation(fullQuery, criteria);
 
-		BooleanClause[] clauses = fullQuery.getClauses();
+		final BooleanClause[] clauses = fullQuery.getClauses();
 		if (clauses != null && clauses.length > 0) {
 			return fullQuery;
 		}

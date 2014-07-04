@@ -112,7 +112,7 @@ public class SearchTiersController {
 
 				if (filter != null) {
 					criteria.setTypeVisualisation(filter.getTypeVisualisation());
-					criteria.setTypesTiers(filter.getTypesTiers());
+					criteria.setTypesTiersImperatifs(filter.getTypesTiers());
 					criteria.setInclureI107(filter.isInclureI107());
 					criteria.setInclureTiersAnnules(filter.isInclureTiersAnnules());
 					criteria.setTiersAnnulesSeulement(filter.isTiersAnnulesSeulement());

@@ -79,7 +79,7 @@ public class FusionListManagerImpl implements FusionListManager, MessageSourceAw
 		fusionListView.setNonHabitant(nonHabView);
 		fusionListView.setNumeroNonHabitant(numeroNonHab);
 		fusionListView.setTypeRechercheDuNom(TiersCriteria.TypeRecherche.EST_EXACTEMENT);
-		fusionListView.setTypeTiers(TiersCriteria.TypeTiers.HABITANT);
+		fusionListView.setTypeTiersImperatif(TiersCriteria.TypeTiers.HABITANT);
 		return fusionListView;
 	}
 

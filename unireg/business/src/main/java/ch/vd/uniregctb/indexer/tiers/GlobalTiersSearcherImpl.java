@@ -128,7 +128,7 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher, Initializin
 		final BooleanQuery query = new BooleanQuery();
 
 		if (filter != null) {
-			QueryConstructor.addTypeTiers(query, filter);
+			QueryConstructor.addTypeTiers(query, filter.getTypesTiers());
 			QueryConstructor.addLimitation(query, filter);
 			QueryConstructor.addAnnule(query, filter);
 			QueryConstructor.addActif(query, filter);

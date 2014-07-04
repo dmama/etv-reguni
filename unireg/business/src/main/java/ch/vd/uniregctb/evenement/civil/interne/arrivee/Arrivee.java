@@ -306,7 +306,7 @@ public abstract class Arrivee extends Mouvement {
 	 */
 	private static TiersCriteria getTiersCriteriaComplet(String nomPrenom, RegDate dateNaissance, Sexe sexe) {
 		final TiersCriteria criteria = new TiersCriteria();
-		criteria.setTypeTiers(TiersCriteria.TypeTiers.NON_HABITANT);
+		criteria.setTypeTiersImperatif(TiersCriteria.TypeTiers.NON_HABITANT);
 		criteria.setTypeRechercheDuNom(TiersCriteria.TypeRecherche.EST_EXACTEMENT);
 		criteria.setNomRaison(nomPrenom);
 		criteria.setSexeOrNull(sexe);
@@ -323,7 +323,7 @@ public abstract class Arrivee extends Mouvement {
 	 */
 	private static TiersCriteria getTiersCriteriaNavs13(String navs13) {
 		final TiersCriteria criteria = new TiersCriteria();
-		criteria.setTypeTiers(TiersCriteria.TypeTiers.NON_HABITANT);
+		criteria.setTypeTiersImperatif(TiersCriteria.TypeTiers.NON_HABITANT);
 		criteria.setNavs13(navs13);
 		criteria.setInclureI107(false);
 		criteria.setInclureTiersAnnules(false);

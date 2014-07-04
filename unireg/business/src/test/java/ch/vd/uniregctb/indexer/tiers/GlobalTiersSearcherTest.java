@@ -142,6 +142,15 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		{
 			TiersCriteria criteria = new TiersCriteria();
 			// Le numero prime sur tout le reste
+			criteria.setNumero(5434L);
+			// mais le type de tiers impératif est utilisé
+			criteria.setTypeTiersImperatif(TypeTiers.AUTRE_COMMUNAUTE);
+			List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
+			assertEquals(0, list.size());
+		}
+		{
+			TiersCriteria criteria = new TiersCriteria();
+			// Le numero prime sur tout le reste
 			criteria.setNumero(1234456L); // Inexistant
 			criteria.setNomRaison("Bolomido"); // Bolomido n'est pas utilisé
 			List<TiersIndexedData> list = globalTiersSearcher.search(criteria);

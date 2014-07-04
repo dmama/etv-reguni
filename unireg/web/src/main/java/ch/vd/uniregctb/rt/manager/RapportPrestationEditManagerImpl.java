@@ -202,7 +202,7 @@ public class RapportPrestationEditManagerImpl implements RapportPrestationEditMa
 		TiersGeneralView sourcierView = tiersGeneralManager.getPersonnePhysique(pp, true);
 		bean.setSourcier(sourcierView);
 		bean.setTypeRechercheDuNom(TiersCriteria.TypeRecherche.EST_EXACTEMENT);
-		bean.setTypeTiers(TiersCriteria.TypeTiers.DEBITEUR_PRESTATION_IMPOSABLE);
+		bean.setTypeTiersImperatif(TiersCriteria.TypeTiers.DEBITEUR_PRESTATION_IMPOSABLE);
 		bean.setNumeroSourcier(numeroSrc);
 		return bean;
 	}
@@ -221,7 +221,7 @@ public class RapportPrestationEditManagerImpl implements RapportPrestationEditMa
 		TiersGeneralView dpiView = tiersGeneralManager.getDebiteur(dpi, true);
 		bean.setDebiteur(dpiView);
 		bean.setTypeRechercheDuNom(TiersCriteria.TypeRecherche.EST_EXACTEMENT);
-		bean.setTypeTiers(TiersCriteria.TypeTiers.PERSONNE_PHYSIQUE);
+		bean.setTypeTiersImperatif(TiersCriteria.TypeTiers.PERSONNE_PHYSIQUE);
 		bean.setNumeroDebiteur(numeroDpi);
 		return bean;
 	}

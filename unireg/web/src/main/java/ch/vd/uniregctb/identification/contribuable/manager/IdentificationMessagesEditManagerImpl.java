@@ -54,7 +54,7 @@ public class IdentificationMessagesEditManagerImpl implements IdentificationMess
 	@Transactional(readOnly = true)
 	public IdentificationMessagesEditView getView(Long id) throws Exception {
 		final IdentificationMessagesEditView identificationMessagesEditView = new IdentificationMessagesEditView();
-		identificationMessagesEditView.setTypeTiers(TypeTiers.PERSONNE_PHYSIQUE);
+		identificationMessagesEditView.setTypeTiersImperatif(TypeTiers.PERSONNE_PHYSIQUE);
 		identificationMessagesEditView.setTypeRechercheDuNom(TiersCriteria.TypeRecherche.EST_EXACTEMENT);
 		identificationMessagesEditView.setDemandeIdentificationView(getDemandeIdentificationView(id));
 		final IdentificationContribuable identificationContribuable = identCtbDAO.get(id);

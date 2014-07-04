@@ -161,7 +161,7 @@ public class DroitAccesController {
 		if (criteria == null) {
 			criteria = new TiersCriteriaView();
 			criteria.setTypeRechercheDuNom(TiersCriteria.TypeRecherche.EST_EXACTEMENT);
-			criteria.setTypeTiers(TiersCriteria.TypeTiers.PERSONNE_PHYSIQUE);
+			criteria.setTypeTiersImperatif(TiersCriteria.TypeTiers.PERSONNE_PHYSIQUE);
 		}
 		else if (!error) {
 			// lancement de la recherche selon les critères donnés
@@ -384,7 +384,7 @@ public class DroitAccesController {
 		if (bean == null) {
 			bean = new UtilisateurListPersonneView();
 			bean.setTypeRechercheDuNom(TiersCriteria.TypeRecherche.EST_EXACTEMENT);
-			bean.setTypeTiers(TiersCriteria.TypeTiers.PERSONNE_PHYSIQUE);
+			bean.setTypeTiersImperatif(TiersCriteria.TypeTiers.PERSONNE_PHYSIQUE);
 		}
 		else if (!error) {
 			// recherche selon les critères donnés

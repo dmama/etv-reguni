@@ -123,7 +123,7 @@ public abstract class IdentificationContribuableHelper {
 		// critères statiques
 		criteria.setInclureI107(false);
 		criteria.setInclureTiersAnnules(false);
-		criteria.setTypeTiers(TiersCriteria.TypeTiers.PERSONNE_PHYSIQUE);
+		criteria.setTypeTiersImperatif(TiersCriteria.TypeTiers.PERSONNE_PHYSIQUE);
 		criteria.setTypeVisualisation(TiersCriteria.TypeVisualisation.COMPLETE);
 	}
 

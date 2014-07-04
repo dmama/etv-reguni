@@ -66,7 +66,7 @@ public class ContribuableAssocieEditManagerImpl extends TiersManager  implements
 		TiersGeneralView dpiView = tiersGeneralManager.getDebiteur(dpi, true);
 		bean.setDebiteur(dpiView);
 		bean.setTypeRechercheDuNom(TiersCriteria.TypeRecherche.EST_EXACTEMENT);
-		bean.setTypeTiers(TiersCriteria.TypeTiers.CONTRIBUABLE);
+		bean.setTypeTiersImperatif(TiersCriteria.TypeTiers.CONTRIBUABLE);
 		bean.setNumeroDebiteur(numeroDpi);
 		return bean;
 	}

@@ -47,7 +47,7 @@ public class AnnulationSeparationListController extends AbstractTiersListControl
 		if (bean == null) {
 			bean = new TiersCriteriaView();
 			bean.setTypeRechercheDuNom(TiersCriteria.TypeRecherche.EST_EXACTEMENT);
-			bean.setTypeTiers(TiersCriteria.TypeTiers.MENAGE_COMMUN);
+			bean.setTypeTiersImperatif(TiersCriteria.TypeTiers.MENAGE_COMMUN);
 	 	}
 		return bean;
 	}

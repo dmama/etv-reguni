@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.tiers;
 
 import java.io.Serializable;
-import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -111,9 +111,14 @@ public class TiersCriteria implements Serializable, TiersFilter {
 	private Long numero;
 
 	/**
-	 * Les types de tiers
+	 * Les types de tiers (ignoré si le numéro de contribuable est donné) demandé par un utilisateur
 	 */
 	private Set<TypeTiers> typesTiers;
+
+	/**
+	 * Les types de tiers pris en compte dans tous les cas (même si un numéro de contribuable est donné), contraintes métiers plutôt...
+	 */
+	private Set<TypeTiers> typesTiersImperatifs;
 
 	/**
 	 * Le type de recherche du nom
@@ -531,8 +536,24 @@ public class TiersCriteria implements Serializable, TiersFilter {
 			this.typesTiers = null;
 		}
 		else {
-			this.typesTiers = new HashSet<>();
-			this.typesTiers.add(type);
+			this.typesTiers = EnumSet.of(type);
+		}
+	}
+
+	public Set<TypeTiers> getTypesTiersImperatifs() {
+		return typesTiersImperatifs;
+	}
+
+	public void setTypesTiersImperatifs(Set<TypeTiers> typesTiersImperatifs) {
+		this.typesTiersImperatifs = typesTiersImperatifs;
+	}
+
+	public void setTypeTiersImperatif(TypeTiers type) {
+		if (type == null) {
+			this.typesTiersImperatifs = null;
+		}
+		else {
+			this.typesTiersImperatifs = EnumSet.of(type);
 		}
 	}
 

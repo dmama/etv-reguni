@@ -48,7 +48,7 @@ public class DecesListController extends  AbstractTiersListController {
 		if (bean == null) {
 			bean = new TiersCriteriaView();
 			bean.setTypeRechercheDuNom(TiersCriteria.TypeRecherche.EST_EXACTEMENT);
-			bean.setTypeTiers(TiersCriteria.TypeTiers.PERSONNE_PHYSIQUE);
+			bean.setTypeTiersImperatif(TiersCriteria.TypeTiers.PERSONNE_PHYSIQUE);
 	 	}
 		return bean;
 	}

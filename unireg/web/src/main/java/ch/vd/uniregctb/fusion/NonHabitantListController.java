@@ -33,7 +33,7 @@ public class NonHabitantListController  extends  AbstractTiersListController {
 		if (bean == null) {
 			bean = (TiersCriteriaView) super.formBackingObject(request);
 			bean.setTypeRechercheDuNom(TiersCriteria.TypeRecherche.EST_EXACTEMENT);
-			bean.setTypeTiers(TiersCriteria.TypeTiers.NON_HABITANT);
+			bean.setTypeTiersImperatif(TiersCriteria.TypeTiers.NON_HABITANT);
 		}
 
 		return bean;
