@@ -14,6 +14,7 @@ import org.apache.lucene.search.TermQuery;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.uniregctb.common.Constants;
 import ch.vd.uniregctb.common.StringRenderer;
 import ch.vd.uniregctb.indexer.IndexerException;
@@ -476,8 +477,13 @@ public class QueryConstructor {
 					typesTiers.addAll(typesTiersUtilisateur);
 				}
 				else {
-					// s'il y avait des contraintes "métiers" sur le type de tiers, il ne faut pas les dépasser
-					typesTiers.retainAll(typesTiersUtilisateur);
+					// en raison des recouvrements qui existent entre les différents types de tiers tels qu'exprimables
+					// par l'énuméré TypeTiers, c'est un peu compliqué de faire l'intersection entre ces deux ensembles
+					// (par exemple si l'un des ensemble contient PersonnePhysique et l'autre Habitant, ils ne sont pas
+					// du tout incompatibles, car l'un est un sous-ensemble de l'autre, mais cela ne se voit pas sans une
+					// analyse plus approfondie, analyse que nous ne ferons pas ici pour le moment parce que le cas où ces deux
+					// critères existent en même temps n'est pas (encore ?) utilisé dans Unireg)
+					throw new NotImplementedException("Utilisation simultanée des critères de type de tiers métier et utilisateur");
 				}
 			}
 		}
