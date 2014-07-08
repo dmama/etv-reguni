@@ -4,11 +4,13 @@
 		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:eCH-0044="http://www.ech.ch/xmlns/eCH-0044/3"
 		   xmlns:common="http://www.vd.ch/fiscalite/unireg/common/2" xmlns:person="http://www.vd.ch/fiscalite/unireg/party/person/3"
 		   xmlns:taxpayer="http://www.vd.ch/fiscalite/unireg/party/taxpayer/3" xmlns:taxresidence="http://www.vd.ch/fiscalite/unireg/party/taxresidence/2"
+		   xmlns:party="http://www.vd.ch/fiscalite/unireg/party/party/3"
 		   xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0">
 
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/2" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/unireg-common-2.xsd" />
 	<xs:import namespace="http://www.ech.ch/xmlns/eCH-0044/3" schemaLocation="http://www.ech.ch/xmlns/eCH-0044/3/eCH-0044-3-0.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/taxresidence/2" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-taxresidence-2.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/party/3" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-3.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/taxpayer/3" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-taxpayer-3.xsd" />
 
 	<xs:complexType name="naturalPersonType">
@@ -150,6 +152,24 @@
 						</xs:annotation>
 					</xs:element>
 					<xs:element name="padding2" type="xs:int">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Padding pour supporter l'élément xs:any ci-dessous. A ignorer.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="uidNumbers" type="party:uidNumberListType" minOccurs="0">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>La liste des numéros IDE.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="padding3" type="xs:int">
 						<xs:annotation>
 							<xs:appinfo>
 								<jxb:property>
