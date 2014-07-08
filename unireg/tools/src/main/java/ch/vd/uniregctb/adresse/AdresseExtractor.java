@@ -1,33 +1,25 @@
 package ch.vd.uniregctb.adresse;
 
-import javax.xml.ws.BindingProvider;
 import java.io.BufferedReader;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
-import java.net.URL;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.cxf.message.Message;
 import org.jetbrains.annotations.Nullable;
-import org.springframework.util.ResourceUtils;
 
-import ch.vd.unireg.webservices.party4.BatchParty;
-import ch.vd.unireg.webservices.party4.BatchPartyEntry;
-import ch.vd.unireg.webservices.party4.GetBatchPartyRequest;
-import ch.vd.unireg.webservices.party4.GetPartyRequest;
-import ch.vd.unireg.webservices.party4.PartyPart;
-import ch.vd.unireg.webservices.party4.PartyWebService;
-import ch.vd.unireg.webservices.party4.PartyWebServiceFactory;
-import ch.vd.unireg.webservices.party4.WebServiceException;
-import ch.vd.unireg.xml.common.v1.UserLogin;
-import ch.vd.unireg.xml.party.address.v1.Address;
-import ch.vd.unireg.xml.party.address.v1.FormattedAddress;
-import ch.vd.unireg.xml.party.v2.Party;
+import ch.vd.unireg.ws.parties.v1.Entry;
+import ch.vd.unireg.ws.parties.v1.Parties;
+import ch.vd.unireg.xml.party.address.v2.Address;
+import ch.vd.unireg.xml.party.address.v2.FormattedAddress;
+import ch.vd.unireg.xml.party.v3.Party;
+import ch.vd.unireg.xml.party.v3.PartyPart;
+import ch.vd.uniregctb.utils.WebServiceV5Helper;
 
 /**
  * Outil pour aller chercher les adresses d'envoi (sur six lignes, donc) des tiers
@@ -36,17 +28,17 @@ import ch.vd.unireg.xml.party.v2.Party;
 public class AdresseExtractor {
 
 	// INTEGRATION
-//	private static final String urlWebService = "http://unireg-in.etat-de-vaud.ch/fiscalite/int-unireg/ws/party4";
+//	private static final String urlWebService = "http://unireg-in.etat-de-vaud.ch/fiscalite/int-unireg/ws/v5";
 //	private static final String userWebService = "unireg";
 //	private static final String pwdWebService = "unireg_1014";
 
 	// PRE-PRODUCTION
-	private static final String urlWebService = "http://unireg-pp.etat-de-vaud.ch/fiscalite/unireg/ws/party4";
+	private static final String urlWebService = "http://unireg-pp.etat-de-vaud.ch/fiscalite/unireg/ws/v5";
 	private static final String userWebService = "web-it";
 	private static final String pwdWebService = "unireg_1014";
 
 	// PRODUCTION
-//	private static final String urlWebService = "http://unireg-pr.etat-de-vaud.ch/fiscalite/unireg/ws/party4";
+//	private static final String urlWebService = "http://unireg-pr.etat-de-vaud.ch/fiscalite/unireg/ws/v5";
 //	private static final String userWebService = "se renseigner...";
 //	private static final String pwdWebService = "se renseigner...";
 
@@ -58,16 +50,6 @@ public class AdresseExtractor {
 	private static final String fichierDestination = "/tmp/tiers-avec-adresse.csv";
 
 	public static void main(String[] args) throws Exception {
-
-		final PartyWebService service = initWebService(urlWebService, userWebService, pwdWebService);
-		final GetBatchPartyRequest batchPartyRequest = new GetBatchPartyRequest();
-		final UserLogin login = new UserLogin(userId, oid);
-		batchPartyRequest.setLogin(login);
-		batchPartyRequest.getParts().add(PartyPart.ADDRESSES);
-
-		final GetPartyRequest partyRequest = new GetPartyRequest();
-		partyRequest.setLogin(login);
-		partyRequest.getParts().add(PartyPart.ADDRESSES);
 
 		// on lit le contenu du fichier
 		final List<Integer> ctbs = new ArrayList<>();
@@ -105,28 +87,26 @@ public class AdresseExtractor {
 			closeStream = true;
 		}
 
+		final Set<PartyPart> parts = EnumSet.of(PartyPart.ADDRESSES);
+
 		// et on boucle sur les lots
 		try {
 			for (List<Integer> lot : lots) {
-				batchPartyRequest.getPartyNumbers().clear();
-				batchPartyRequest.getPartyNumbers().addAll(lot);
-
 				try {
-					final BatchParty result = service.getBatchParty(batchPartyRequest);
-					for (BatchPartyEntry entry : result.getEntries()) {
-						final Party tiers = entry.getParty();
-						dumpTiers(tiers, entry.getNumber(), entry.getExceptionInfo(), ps);
+					final Parties parties = WebServiceV5Helper.getParties(urlWebService, userWebService, pwdWebService, userId, oid, lot, parts);
+					for (Entry entry : parties.getEntries()) {
+						final Party party = entry.getParty();
+						dumpTiers(party, entry.getPartyNo(), entry.getError(), ps);
 					}
 				}
-				catch (WebServiceException e) {
+				catch (Exception e) {
 					// problème... on essaie un par un
 					for (Integer id : lot) {
-						partyRequest.setPartyNumber(id);
 						try {
-							final Party indivResult = service.getParty(partyRequest);
+							final Party indivResult = WebServiceV5Helper.getParty(urlWebService, userWebService, pwdWebService, userId, oid, id, parts);
 							dumpTiers(indivResult, id, null, ps);
 						}
-						catch (WebServiceException e1) {
+						catch (Exception e1) {
 							dumpTiers(null, id, e1.getMessage(), ps);
 						}
 					}
@@ -169,23 +149,4 @@ public class AdresseExtractor {
 			}
 		}
 	}
-
-	private static PartyWebService initWebService(String serviceUrl, String username, String password) throws Exception {
-		final URL wsdlUrl = ResourceUtils.getURL("classpath:PartyService4.wsdl");
-		final PartyWebServiceFactory ts = new PartyWebServiceFactory(wsdlUrl);
-		final PartyWebService service = ts.getService();
-		final Map<String, Object> context = ((BindingProvider) service).getRequestContext();
-		if (StringUtils.isNotBlank(username)) {
-			context.put(BindingProvider.USERNAME_PROPERTY, username);
-			context.put(BindingProvider.PASSWORD_PROPERTY, password);
-		}
-		context.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, serviceUrl);
-
-		// Désactive la validation du schéma (= ignore silencieusement les éléments inconnus), de manière à permettre l'évolution ascendante-compatible du WSDL.
-		context.put(Message.SCHEMA_VALIDATION_ENABLED, false);
-		context.put("set-jaxb-validation-event-handler", false);
-		
-		return service;
-	}
-	
 }

@@ -42,6 +42,16 @@
 			<version>${wsparty4.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>${pom.parent.groupId}</groupId>
+			<artifactId>unireg-ws-v5</artifactId>
+			<version>${ws.v5.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${pom.parent.groupId}</groupId>
+			<artifactId>unireg-jaxb2-party</artifactId>
+			<version>3.1</version>
+		</dependency>
+		<dependency>
 			<groupId>jfree</groupId>
 			<artifactId>jfreechart</artifactId>
 			<version>1.0.13</version>
