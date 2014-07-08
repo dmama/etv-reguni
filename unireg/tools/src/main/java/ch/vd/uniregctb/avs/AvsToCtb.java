@@ -45,7 +45,7 @@ public class AvsToCtb {
 	private static final String userId = "usrfis06";
 	private static final int oid = 22;
 
-	private static final String nomFichier = "input.csv";
+	private static final String nomFichier = "input-avs.csv";
 	private static final String fichierDestination = "/tmp/tiers-from-avs.csv";
 
 	public static void main(String[] args) throws Exception {
