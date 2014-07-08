@@ -141,9 +141,9 @@
 
 		</tr>
 		<tr class="<unireg:nextRowClass/>" >
-			<td width="25%"><fmt:message key="label.numero.symic" />&nbsp;:</td>
+			<td width="25%"><fmt:message key="label.numero.ide" />&nbsp;:</td>
 			<td width="25%">
-				<form:input  path="noSymic" id="noSymic" />
+				<form:input path="numeroIDE" id="numeroIDE" />
 			</td>
 			<td width="25%"><fmt:message key="label.mode.imposition" />&nbsp;:</td>
 			<td width="25%">
@@ -154,9 +154,9 @@
 			</td>
 		</tr>
 		<tr class="<unireg:nextRowClass/>" >
-			<td width="25%"><fmt:message key="label.numero.ide" />&nbsp;:</td>
+			<td width="25%"><fmt:message key="label.numero.symic" />&nbsp;:</td>
 			<td width="25%">
-				<form:input path="numeroIDE" id="numeroIDE" />
+				<form:input  path="noSymic" id="noSymic" />
 			</td>
 			<td width="25%">&nbsp;</td>
 			<td width="25%">&nbsp;</td>
