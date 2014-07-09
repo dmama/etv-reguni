@@ -45,7 +45,7 @@ public class ListeRecapManagerTest extends WebTest {
 		loadDatabase(DB_UNIT_FILE);
 
 		{
-			ListeRecapDetailView lrView = lrEditManager.creerLr(new Long(12500001));
+			ListeRecapDetailView lrView = lrEditManager.creerLr(12500001L);
 			RegDate dateDebutPeriodeAttendue = RegDate.get(2008, 2, 1);
 			RegDate dateFinPeriodeAttendue = RegDate.get(2008, 2, 29);
 			assertNotNull(lrView);
@@ -54,7 +54,7 @@ public class ListeRecapManagerTest extends WebTest {
 		}
 
 		{
-			ListeRecapDetailView lrView = lrEditManager.creerLr(new Long(12500002));
+			ListeRecapDetailView lrView = lrEditManager.creerLr(12500002L);
 			assertNotNull(lrView);
 			RegDate dateDebutPeriodeAttendue = RegDate.get(2008, 3, 1);
 			RegDate dateFinPeriodeAttendue = RegDate.get(2008, 3, 31);
@@ -63,7 +63,7 @@ public class ListeRecapManagerTest extends WebTest {
 		}
 
 		{
-			ListeRecapDetailView lrView = lrEditManager.creerLr(new Long(12500003));
+			ListeRecapDetailView lrView = lrEditManager.creerLr(12500003L);
 			assertNotNull(lrView);
 			RegDate dateDebutPeriodeAttendue = RegDate.get(2007, 3, 1);
 			RegDate dateFinPeriodeAttendue = RegDate.get(2007, 3, 31);
@@ -83,7 +83,7 @@ public class ListeRecapManagerTest extends WebTest {
 		loadDatabase(DB_UNIT_FILE);
 
 		{
-			ListeRecapDetailView lrView = lrEditManager.creerLr(new Long(12500004));
+			ListeRecapDetailView lrView = lrEditManager.creerLr(12500004L);
 			RegDate dateDebutPeriodeAttendue = RegDate.get(2007, 4, 1);
 			RegDate dateFinPeriodeAttendue = RegDate.get(2007, 4, 30);
 			assertNotNull(lrView);
@@ -92,7 +92,7 @@ public class ListeRecapManagerTest extends WebTest {
 		}
 
 		{
-			ListeRecapDetailView lrView = lrEditManager.creerLr(new Long(12500005));
+			ListeRecapDetailView lrView = lrEditManager.creerLr(12500005L);
 			assertNotNull(lrView);
 			RegDate dateDebutPeriodeAttendue = RegDate.get(2008, 4, 1);
 			RegDate dateFinPeriodeAttendue = RegDate.get(2008, 6, 30);
@@ -101,7 +101,7 @@ public class ListeRecapManagerTest extends WebTest {
 		}
 
 		{
-			ListeRecapDetailView lrView = lrEditManager.creerLr(new Long(12500006));
+			ListeRecapDetailView lrView = lrEditManager.creerLr(12500006L);
 			assertNotNull(lrView);
 			RegDate dateDebutPeriodeAttendue = RegDate.get(2007, 7, 1);
 			RegDate dateFinPeriodeAttendue = RegDate.get(2007, 12, 31);
@@ -110,10 +110,10 @@ public class ListeRecapManagerTest extends WebTest {
 		}
 
 		{
-			ListeRecapDetailView lrView = lrEditManager.creerLr(new Long(12500007));
+			ListeRecapDetailView lrView = lrEditManager.creerLr(12500007L);
 			assertNotNull(lrView);
-			RegDate dateDebutPeriodeAttendue = RegDate.get(2008, 1, 1);
-			RegDate dateFinPeriodeAttendue = RegDate.get(2008, 12, 31);
+			RegDate dateDebutPeriodeAttendue = RegDate.get(2007, 1, 1);
+			RegDate dateFinPeriodeAttendue = RegDate.get(2007, 12, 31);
 			assertEquals(dateDebutPeriodeAttendue, lrView.getRegDateDebutPeriode());
 			assertEquals(dateFinPeriodeAttendue, lrView.getRegDateFinPeriode());
 		}

@@ -14,7 +14,6 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.ActionException;
@@ -320,17 +319,16 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 			}
 			final PeriodiciteDecompte periodicite = dpi.getPeriodiciteAt(debutActivite).getPeriodiciteDecompte();
 			if (PeriodiciteDecompte.UNIQUE == periodicite) {
-				setLRViewPeriodiciteUnique(lrEditView, null, dpi);
+				setLRViewPremiereLrAvecPeriodiciteUnique(lrEditView, dpi);
 			}
 			else {
 				final RegDate nouvDateDebut = periodicite.getDebutPeriode(dateDebutActivite);
-				lrEditView.setImprimable(true);
 				lrEditView.setDateDebutPeriode(nouvDateDebut);
 				lrEditView.setPeriodicite(periodicite);
 				lrEditView.setDateFinPeriode(periodicite.getFinPeriode(nouvDateDebut));
 			}
 		}
-		if(lrEditView.getDateDebutPeriode()!=null){
+		if (lrEditView.getDateDebutPeriode() != null) {
 			lrEditView.setImprimable(true);
 			lrEditView.setDelaiAccorde(delaisService.getDateFinDelaiRetourListeRecapitulative(aujourdhui, lrEditView.getRegDateFinPeriode()));
 			setDroitLR(lrEditView, dpi);
@@ -340,15 +338,15 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 	}
 
 	private DateRange getPeriodeSuivante(DebiteurPrestationImposable dpi, Periodicite periodiciteSuivante, DeclarationImpotSource lrPrecedente) {
-		RegDate dateDebutPeriode = null;
-		RegDate dateFinPeriode = null;
-		RegDate dateFinLR = lrPrecedente.getDateFin();
-		Periodicite periodicitePrecedente = dpi.getPeriodiciteAt(dateFinLR);
-		if(periodicitePrecedente.getPeriodiciteDecompte()!=periodiciteSuivante.getPeriodiciteDecompte()){
+		final RegDate dateDebutPeriode;
+		final RegDate dateFinPeriode;
+		final RegDate dateFinLR = lrPrecedente.getDateFin();
+		final Periodicite periodicitePrecedente = dpi.getPeriodiciteAt(dateFinLR);
+		if (periodicitePrecedente.getPeriodiciteDecompte() != periodiciteSuivante.getPeriodiciteDecompte()) {
 			//Changement de periodicite,
-			RegDate dateDebut = periodiciteSuivante.getDateDebut();
+			final RegDate dateDebut = periodiciteSuivante.getDateDebut();
 			if(periodiciteSuivante.getPeriodiciteDecompte() == PeriodiciteDecompte.UNIQUE){
-				PeriodeDecompte periode = periodiciteSuivante.getPeriodeDecompte();
+				final PeriodeDecompte periode = periodiciteSuivante.getPeriodeDecompte();
 				final DateRange periodeUnique = periode.getPeriodeCourante(dateDebut);
 				dateDebutPeriode = periodeUnique.getDateDebut();
 				dateFinPeriode =  periodeUnique.getDateFin();
@@ -356,32 +354,27 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 			else{
 				dateDebutPeriode = periodiciteSuivante.getDebutPeriode(dateDebut);
 				dateFinPeriode =  periodiciteSuivante.getFinPeriode(dateDebutPeriode);
-
 			}
-
-
-		}else{
-
-			if(periodiciteSuivante.getPeriodiciteDecompte() == PeriodiciteDecompte.UNIQUE){
-				PeriodeDecompte periode = periodicitePrecedente.getPeriodeDecompte();
+		}
+		else {
+			if (periodiciteSuivante.getPeriodiciteDecompte() == PeriodiciteDecompte.UNIQUE) {
+				final PeriodeDecompte periode = periodicitePrecedente.getPeriodeDecompte();
 				final DateRange periodeUnique = periode.getPeriodeSuivante(dateFinLR);
 				dateDebutPeriode = periodeUnique.getDateDebut();
 				dateFinPeriode =  periodeUnique.getDateFin();
 			}
-			else{
+			else {
 				dateDebutPeriode = periodicitePrecedente.getDebutPeriodeSuivante(dateFinLR);
 				dateFinPeriode =  periodicitePrecedente.getFinPeriode(dateDebutPeriode);
-
 			}
-
 		}
 
-		return new DateRangeHelper.Range(dateDebutPeriode,dateFinPeriode); 
+		return new DateRangeHelper.Range(dateDebutPeriode, dateFinPeriode);
 	}
 
 	private Periodicite getPeriodiciteSuivante(DebiteurPrestationImposable dpi, DeclarationImpotSource lr) {
 		final Periodicite periodiciteCourante = dpi.getPeriodiciteAt(lr.getDateDebut());
-		DateRange rangeSuivant = null;
+		final DateRange rangeSuivant;
 		final RegDate dateFinLR = lr.getDateFin();
 		if (PeriodiciteDecompte.UNIQUE == periodiciteCourante.getPeriodiciteDecompte()) {
 			PeriodeDecompte periodeDecompte = periodiciteCourante.getPeriodeDecompte();
@@ -392,72 +385,25 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 			RegDate finPeriode = periodiciteCourante.getFinPeriode(debutPeriode);
 			rangeSuivant = new DateRangeHelper.Range(debutPeriode, finPeriode);
 		}
-		Periodicite periodiciteSuivante = dpi.getPeriodiciteAt(rangeSuivant.getDateDebut());
-		return periodiciteSuivante;
+		return dpi.getPeriodiciteAt(rangeSuivant.getDateDebut());
 	}
 
-
-	private void setLRViewPeriodiciteUnique(ListeRecapDetailView lrEditView, DeclarationImpotSource lr, DebiteurPrestationImposable dpi) {
-		PeriodiciteDecompte periodicite = PeriodiciteDecompte.UNIQUE;
-		RegDate nouvDateDebut = null;
-		RegDate nouvDateFin = null;
-		RegDate precDateFin = null;
-		if (lr != null) {
-			precDateFin = lr.getDateFin();
+	private void setLRViewPremiereLrAvecPeriodiciteUnique(ListeRecapDetailView lrEditView, DebiteurPrestationImposable dpi) {
+		final RegDate dateDebutActivite = dpi.getDateDebutActivite();
+		final PeriodeDecompte periode = dpi.getPeriodiciteAt(dateDebutActivite).getPeriodeDecompte();
+		final DateRange rangePeriode;
+		final DateRange rangePeriodeCourante = periode.getPeriodeCourante(dateDebutActivite);
+		if (rangePeriodeCourante.getDateFin().isBefore(dateDebutActivite)) {
+			rangePeriode = periode.getPeriodeSuivante(dateDebutActivite);
 		}
 		else {
-			RegDate dateDebutActivite = dpi.getDateDebutActivite();
-			precDateFin = dateDebutActivite.addDays(-1);
-		}
-		PeriodeDecompte periodeCourante = dpi.getPeriodiciteAt(precDateFin).getPeriodeDecompte();
-		DateRange rangeNextPeriode = periodeCourante.getPeriodeSuivante(precDateFin);
-		lrEditView.setDateDebutPeriode(rangeNextPeriode.getDateDebut());
-		lrEditView.setPeriodicite(periodicite);
-		lrEditView.setDateFinPeriode(rangeNextPeriode.getDateFin());
-	}
-
-	/**
-	 * Détermine la périodicité à appliquer à la LR
-	 *
-	 * @param lr
-	 * @param dateDebut
-	 * @return
-	 */
-	private PeriodiciteDecompte getPeriodicite(DeclarationImpotSource lr, RegDate dateDebut) {
-
-		DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) lr.getTiers();
-		PeriodiciteDecompte periodiciteDPI = dpi.getPeriodiciteAt(lr.getDateDebut()).getPeriodiciteDecompte();
-		PeriodiciteDecompte periodiciteLR = lr.getPeriodicite();
-		Assert.notNull(periodiciteLR);
-
-		final RegDate nouvelleDateDebut = periodiciteLR.getDebutPeriodeSuivante(dateDebut);
-		final int month = nouvelleDateDebut.month();
-
-		if (periodiciteDPI != periodiciteLR) {
-			if (periodiciteDPI == PeriodiciteDecompte.TRIMESTRIEL
-					&& periodiciteLR == PeriodiciteDecompte.MENSUEL
-					&&		(month != 1) && (month != 4)
-						&& 	(month != 7) && (month != 10) ) {
-				return periodiciteLR;
-			}
-			if (periodiciteDPI == PeriodiciteDecompte.SEMESTRIEL
-					&& 	(periodiciteLR == PeriodiciteDecompte.MENSUEL
-							|| periodiciteLR == PeriodiciteDecompte.TRIMESTRIEL)
-					&&		(month != 1) && (month != 7)  ) {
-				return periodiciteLR;
-			}
-			if (periodiciteDPI == PeriodiciteDecompte.ANNUEL
-					&& 	(periodiciteLR == PeriodiciteDecompte.MENSUEL
-							|| periodiciteLR == PeriodiciteDecompte.TRIMESTRIEL
-							|| periodiciteLR == PeriodiciteDecompte.SEMESTRIEL)
-					&&	month != 1) {
-				return periodiciteLR;
-			}
+			rangePeriode = rangePeriodeCourante;
 		}
 
-		return periodiciteDPI;
+		lrEditView.setDateDebutPeriode(rangePeriode.getDateDebut());
+		lrEditView.setDateFinPeriode(rangePeriode.getDateFin());
+		lrEditView.setPeriodicite(PeriodiciteDecompte.UNIQUE);
 	}
-
 
 	/**
 	 * Cree le debiteur pour la LR

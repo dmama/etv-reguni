@@ -348,7 +348,6 @@ public class DebiteurPrestationImposable extends Tiers {
 			return new Periodicite(periodiciteDecompteAvantMigration, periodeDecompteAvantMigration, RegDateHelper.get(getLogCreationDate()), null);
 		}
 		else {
-
 			for (Periodicite p : periodicites) {
 				if (p.isValidAt(date)) {
 					return p;
@@ -356,15 +355,12 @@ public class DebiteurPrestationImposable extends Tiers {
 			}
 			//Si aucune périodicité n'est trouvé et que la date spécifé se trouve avant la date de début de validité
 			//de la première periodicité et que celle ci est unique, on la renvoie
-			List<Periodicite> periodicitesTriees = new ArrayList<>(periodicites.size());
-			periodicitesTriees.addAll(periodicites);
-			Collections.sort(periodicitesTriees,new DateRangeComparator<Periodicite>());
-			Periodicite premiere = periodicitesTriees.get(0);
-			if(premiere.getPeriodiciteDecompte() == PeriodiciteDecompte.UNIQUE && date!=null && date.isBefore(premiere.getDateDebut())){
+			final List<Periodicite> periodicitesTriees = getPeriodicitesNonAnnules(true);
+			final Periodicite premiere = periodicitesTriees.get(0);
+			if (premiere.getPeriodiciteDecompte() == PeriodiciteDecompte.UNIQUE && date != null && date.isBefore(premiere.getDateDebut())) {
 				return premiere;
 			}
 			
-
 			return null;
 		}
 	}
