@@ -356,9 +356,11 @@ public class DebiteurPrestationImposable extends Tiers {
 			//Si aucune périodicité n'est trouvé et que la date spécifé se trouve avant la date de début de validité
 			//de la première periodicité et que celle ci est unique, on la renvoie
 			final List<Periodicite> periodicitesTriees = getPeriodicitesNonAnnules(true);
-			final Periodicite premiere = periodicitesTriees.get(0);
-			if (premiere.getPeriodiciteDecompte() == PeriodiciteDecompte.UNIQUE && date != null && date.isBefore(premiere.getDateDebut())) {
-				return premiere;
+			if (!periodicitesTriees.isEmpty()) {
+				final Periodicite premiere = periodicitesTriees.get(0);
+				if (premiere.getPeriodiciteDecompte() == PeriodiciteDecompte.UNIQUE && date != null && date.isBefore(premiere.getDateDebut())) {
+					return premiere;
+				}
 			}
 			
 			return null;
