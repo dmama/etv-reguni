@@ -23,6 +23,7 @@
 				<div id="tabContent_fiscalTab" class="editTiers">
 
 					<c:if test="${autorisations.donneesFiscales}">
+						<span><%-- span vide pour que IE8 calcul correctement la hauteur du fieldset (voir fieldsets-workaround.jsp) --%></span>
 						<fieldset><legend><span><fmt:message key="label.fiscal" /></span></legend>
 							<table border="0">
 								<tr class="<unireg:nextRowClass/>" >
@@ -72,6 +73,7 @@
 				<div id="tabContent_complementsTab" class="editTiers">
 
 					<c:if test="${autorisations.complementsCommunications}">
+						<span><%-- span vide pour que IE8 calcul correctement la hauteur du fieldset (voir fieldsets-workaround.jsp) --%></span>
 						<fieldset>
 							<legend><span><fmt:message key="label.complement.pointCommunication" /></span></legend>
 							<unireg:nextRowClass reset="1"/>
@@ -140,6 +142,7 @@
 					</c:if>
 
 					<c:if test="${autorisations.complementsCoordonneesFinancieres}">
+						<span><%-- span vide pour que IE8 calcul correctement la hauteur du fieldset (voir fieldsets-workaround.jsp) --%></span>
 						<fieldset>
 							<legend><span><fmt:message key="label.complement.coordFinancieres" /></span></legend>
 							<unireg:nextRowClass reset="1"/>

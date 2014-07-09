@@ -5,6 +5,7 @@
 <c:set var="lengthpersonne" value="<%=LengthConstants.TIERS_PERSONNE%>" scope="request" />
 <unireg:setAuth var="autorisations" tiersId="${command.tiersGeneral.numero}"/>
 <c:if test="${autorisations.complementsCommunications}">
+<span><%-- span vide pour que IE8 calcul correctement la hauteur du fieldset (voir fieldsets-workaround.jsp) --%></span>
 <fieldset>
 	<legend><span><fmt:message key="label.complement.pointCommunication" /></span></legend>
 	<unireg:nextRowClass reset="1"/>
@@ -89,6 +90,7 @@
 </c:if>
 <c:if test="${autorisations.complementsCoordonneesFinancieres}">
 <fieldset>
+	<span><%-- span vide pour que IE8 calcul correctement la hauteur du fieldset (voir fieldsets-workaround.jsp) --%></span>
 	<legend><span><fmt:message key="label.complement.coordFinancieres" /></span></legend>
 	<unireg:nextRowClass reset="1"/>
 	<table>
