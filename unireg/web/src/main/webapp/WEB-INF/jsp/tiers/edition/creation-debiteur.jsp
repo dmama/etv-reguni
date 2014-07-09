@@ -184,6 +184,9 @@
 				$(function() {
 					$("#tiersCreationTabs").tabs();
 				});
+				$(function() {
+					Tooltips.activate_ajax_tooltips();
+				});
 			</script>
 
 			<!-- Fin onglets -->
