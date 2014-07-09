@@ -7,7 +7,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -33,7 +34,7 @@ import ch.vd.uniregctb.transaction.TransactionTemplate;
  */
 public class ValidationJobThread extends Thread {
 
-	private static final Logger LOGGER = Logger.getLogger(ValidationJobThread.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ValidationJobThread.class);
 
 	private static final int BATCH_SIZE = 100;
 

@@ -33,7 +33,7 @@ import static org.junit.Assert.assertTrue;
 @SuppressWarnings({"JavaDoc"})
 public class PartyWebServiceCEDITest extends AbstractPartyWebServiceTest {
 
-	// private static final Logger LOGGER = Logger.getLogger(PartyWebServiceTest.class);
+	// private static final Logger LOGGER = LoggerFactory.getLogger(PartyWebServiceTest.class);
 
 	private static final String DB_UNIT_DATA_FILE = "PartyWebServiceCEDITest.xml";
 

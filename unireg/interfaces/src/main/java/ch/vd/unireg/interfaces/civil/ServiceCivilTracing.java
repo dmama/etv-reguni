@@ -19,7 +19,7 @@ import ch.vd.uniregctb.stats.StatsService;
  */
 public class ServiceCivilTracing implements ServiceCivilRaw, InitializingBean, DisposableBean, ServiceCivilServiceWrapper {
 
-//	private static final Logger LOGGER = Logger.getLogger(ServiceCivilTracing.class);
+//	private static final Logger LOGGER = LoggerFactory.getLogger(ServiceCivilTracing.class);
 	
 	private ServiceCivilRaw target;
 	private StatsService statsService;

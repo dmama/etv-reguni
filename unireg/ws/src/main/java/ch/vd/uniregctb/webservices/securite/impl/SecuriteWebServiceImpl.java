@@ -16,7 +16,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.transport.http.AbstractHTTPDestination;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.common.AuthenticationHelper;
@@ -37,8 +38,8 @@ import ch.vd.uniregctb.webservices.securite.SecuriteWebService;
 @WebService(targetNamespace = "http://www.vd.ch/uniregctb/webservices/security", name = "SecuritePort", serviceName = "SecuriteService")
 public class SecuriteWebServiceImpl implements SecuriteWebService, DetailedLoadMonitorable {
 
-	private static final Logger LOGGER = Logger.getLogger(SecuriteWebServiceImpl.class);
-	private static final Logger ACCESS_LOG = Logger.getLogger("securite.read");
+	private static final Logger LOGGER = LoggerFactory.getLogger(SecuriteWebServiceImpl.class);
+	private static final Logger ACCESS_LOG = LoggerFactory.getLogger("securite.read");
 
 	private DroitAccesDAO dao;
 	private SecurityProviderInterface securityProvider;
@@ -82,12 +83,12 @@ public class SecuriteWebServiceImpl implements SecuriteWebService, DetailedLoadM
 			}
 		}
 		catch (WebServiceException e) {
-			LOGGER.error(e, e);
+			LOGGER.error(e.getMessage(), e);
 			t = e;
 			throw e;
 		}
 		catch (Exception e) {
-			LOGGER.error(e, e);
+			LOGGER.error(e.getMessage(), e);
 			t = e;
 			throw new WebServiceException(e);
 		}

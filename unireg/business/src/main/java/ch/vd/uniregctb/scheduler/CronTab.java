@@ -4,7 +4,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
 /**
@@ -12,7 +13,7 @@ import org.springframework.beans.factory.InitializingBean;
  */
 public class CronTab implements InitializingBean {
 
-	private static final Logger LOGGER = Logger.getLogger(CronTab.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(CronTab.class);
 
 	public static class CronDefinition {
 		private JobDefinition job;

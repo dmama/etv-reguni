@@ -5,7 +5,8 @@ import java.io.InputStream;
 import java.net.URL;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -22,7 +23,7 @@ import ch.vd.uniregctb.servlet.ServletService;
 @RequestMapping(value = "/identification/gestion-messages")
 public class VoirMessageIdentificationController {
 
-	private static final Logger LOGGER = Logger.getLogger(VoirMessageIdentificationController.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(VoirMessageIdentificationController.class);
 
 	private static final String ID_PARAMETER_NAME = "id";
 

@@ -7,9 +7,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.hibernate.CallbackException;
 import org.hibernate.type.Type;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -27,7 +28,7 @@ import ch.vd.uniregctb.metier.piis.PeriodeImpositionImpotSourceServiceException;
  */
 public class FlagBlocageRemboursementAutomatiqueInterceptor implements ModificationSubInterceptor, FlagBlocageRemboursementAutomatiqueCalculationRegister, InitializingBean, DisposableBean {
 
-	private static final Logger LOGGER = Logger.getLogger(FlagBlocageRemboursementAutomatiqueInterceptor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(FlagBlocageRemboursementAutomatiqueInterceptor.class);
 
 	private final ThreadLocal<Set<Long>> idsTiersFlagACalculer = new ThreadLocal<Set<Long>>() {
 		@Override

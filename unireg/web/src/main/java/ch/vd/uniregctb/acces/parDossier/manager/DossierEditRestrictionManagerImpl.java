@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.securite.model.Operateur;
@@ -31,7 +32,7 @@ import ch.vd.uniregctb.type.TypeDroitAcces;
  */
 public class DossierEditRestrictionManagerImpl implements DossierEditRestrictionManager {
 
-	private static final Logger LOGGER = Logger.getLogger(DossierEditRestrictionManagerImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(DossierEditRestrictionManagerImpl.class);
 
 	private TiersDAO tiersDAO;
 	private TiersGeneralManager tiersGeneralManager;

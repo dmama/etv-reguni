@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
 import org.hibernate.HibernateException;
@@ -14,6 +13,8 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -62,7 +63,7 @@ public class DeterminationDIsAEmettreProcessor {
 
 	private static final int BATCH_SIZE = 100;
 
-	final Logger LOGGER = Logger.getLogger(DeterminationDIsAEmettreProcessor.class);
+	final Logger LOGGER = LoggerFactory.getLogger(DeterminationDIsAEmettreProcessor.class);
 
 	private final HibernateTemplate hibernateTemplate;
 	private final PeriodeFiscaleDAO periodeDAO;

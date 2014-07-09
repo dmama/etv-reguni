@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.utils;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.registre.base.date.DateConstants;
@@ -13,7 +14,7 @@ import ch.vd.registre.base.date.DateHelper;
  */
 public class UniregModeHelper implements InitializingBean {
 
-	private static final Logger LOGGER = Logger.getLogger(UniregModeHelper.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(UniregModeHelper.class);
 
 	private static boolean reqdesEnabled = false;
 	private static boolean efactureEnabled = false;

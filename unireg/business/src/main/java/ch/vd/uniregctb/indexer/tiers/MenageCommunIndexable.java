@@ -29,7 +29,7 @@ import ch.vd.uniregctb.tiers.TiersService;
  */
 public class MenageCommunIndexable extends AssujettissablePersonnePhysiqueIndexable<MenageCommun> {
 
-	// private final Logger LOGGER = Logger.getLogger(MenageCommunIndexable.class);
+	// private final Logger LOGGER = LoggerFactory.getLogger(MenageCommunIndexable.class);
 
 	private final PersonnePhysiqueIndexable ppIndexable1;
 	private final PersonnePhysiqueIndexable ppIndexable2;

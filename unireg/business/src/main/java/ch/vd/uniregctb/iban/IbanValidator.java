@@ -6,9 +6,11 @@ import java.math.BigInteger;
 import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.uniregctb.common.FormatNumeroHelper;
+import ch.vd.uniregctb.utils.LogLevel;
 
 
 /**
@@ -24,7 +26,7 @@ public class IbanValidator {
 	 */
 	private static final String ISO_3166_1_PROPERTIES_FILENAME = "iban/ISO-3166-1.properties";
 
-	private static final Logger LOGGER = Logger.getLogger(IbanValidator.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(IbanValidator.class);
 
 	private static final BigInteger MODULO = BigInteger.valueOf(97L);
 
@@ -51,8 +53,9 @@ public class IbanValidator {
 			if (LOGGER.isDebugEnabled())
 				LOGGER.debug("Le service IbanValidator a été initialisé avec succès");
 
-		} catch (IOException e) {
-			LOGGER.fatal("Problème lors du chargement du fichier ISO-3166-1.properties", e);
+		}
+		catch (IOException e) {
+			LogLevel.log(LOGGER, LogLevel.Level.FATAL, "Problème lors du chargement du fichier ISO-3166-1.properties", e);
 		}
 	}
 

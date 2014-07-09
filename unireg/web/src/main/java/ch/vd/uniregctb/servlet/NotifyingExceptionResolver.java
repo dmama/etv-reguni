@@ -6,7 +6,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.Ordered;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
@@ -34,7 +35,7 @@ public class NotifyingExceptionResolver implements HandlerExceptionResolver, Ord
 	/** map des exceptions (indexées par leur sha1) déjà envoyées + le nombre d'envois */
 	private final Map<String, Integer> exceptions = new HashMap<>();
 
-	protected final Logger LOGGER = Logger.getLogger(NotifyingExceptionResolver.class);
+	protected final Logger LOGGER = LoggerFactory.getLogger(NotifyingExceptionResolver.class);
 
 	@SuppressWarnings("UnusedDeclaration")
 	public void setNotificationService(NotificationService notificationService) {

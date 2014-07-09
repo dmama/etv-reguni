@@ -12,9 +12,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.dbunit.DatabaseUnitException;
 import org.dbunit.dataset.DataSetException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -52,7 +53,7 @@ import ch.vd.uniregctb.utils.UniregModeHelper;
 @RequestMapping(value = "/admin/tiersImport")
 public class TiersImportController {
 
-	private static final Logger LOGGER = Logger.getLogger(TiersImportController.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(TiersImportController.class);
 
 	private static final String SCRIPTS_FOLDER_PATH = "DBUnit4Import";
 	private static final String SCRIPTS_LIST_FILES = SCRIPTS_FOLDER_PATH + "/files-list.txt";

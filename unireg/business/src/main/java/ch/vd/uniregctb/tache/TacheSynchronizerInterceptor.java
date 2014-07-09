@@ -4,9 +4,10 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.hibernate.CallbackException;
 import org.hibernate.type.Type;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.uniregctb.common.AuthenticationHelper;
@@ -25,7 +26,7 @@ import ch.vd.uniregctb.tiers.TiersService;
  */
 public class TacheSynchronizerInterceptor implements ModificationSubInterceptor, InitializingBean, Switchable {
 
-	private static final Logger LOGGER = Logger.getLogger(TacheSynchronizerInterceptor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(TacheSynchronizerInterceptor.class);
 
 	private ModificationInterceptor parent;
 	private TacheService tacheService;
@@ -99,7 +100,7 @@ public class TacheSynchronizerInterceptor implements ModificationSubInterceptor,
                 tacheService.annuleTachesObsoletes(set);
 			}
 			catch (RuntimeException e) {
-				LOGGER.error(e, e);
+				LOGGER.error(e.getMessage(), e);
 				throw e;
 			}
 			finally {

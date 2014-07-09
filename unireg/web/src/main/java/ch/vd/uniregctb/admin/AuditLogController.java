@@ -24,7 +24,7 @@ import ch.vd.uniregctb.transaction.TransactionTemplate;
  */
 public class AuditLogController extends AbstractSimpleFormController {
 
-	//private final Logger LOGGER = Logger.getLogger(AuditLogController.class);
+	//private final Logger LOGGER = LoggerFactory.getLogger(AuditLogController.class);
 
 	private static final String TABLE_NAME = "logs";
 	private static final int PAGE_SIZE = 50;

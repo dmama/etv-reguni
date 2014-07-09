@@ -6,8 +6,9 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
 import ch.vd.evd0025.v1.ObjectFactory;
@@ -37,7 +38,7 @@ public class EFactureMessageSenderImpl implements EFactureMessageSender {
 	private String serviceReplyTo;
 
 	private final static ThreadSafeSimpleDateFormat SDF = new ThreadSafeSimpleDateFormat("MMddHHmmssSSS");
-	private final static Logger LOGGER = Logger.getLogger(EFactureMessageSenderImpl.class);
+	private final static Logger LOGGER = LoggerFactory.getLogger(EFactureMessageSenderImpl.class);
 
 	public void setEsbTemplate(EsbJmsTemplate esbTemplate) {
 		this.esbTemplate = esbTemplate;

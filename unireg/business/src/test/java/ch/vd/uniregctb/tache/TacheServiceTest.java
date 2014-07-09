@@ -102,7 +102,7 @@ import static org.junit.Assert.fail;
 })
 public class TacheServiceTest extends BusinessTest {
 
-	//private static final Logger LOGGER = Logger.getLogger(TacheServiceTest.class);
+	//private static final Logger LOGGER = LoggerFactory.getLogger(TacheServiceTest.class);
 
 	/**
 	 * Les tâches sont par défaut créées avec une date d'échéance au prochain dimanche...

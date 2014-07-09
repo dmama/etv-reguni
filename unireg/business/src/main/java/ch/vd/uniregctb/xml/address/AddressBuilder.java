@@ -17,7 +17,7 @@ import ch.vd.uniregctb.xml.DataHelper;
 
 public class AddressBuilder {
 
-//	private static final Logger LOGGER = Logger.getLogger(AddressBuilder.class);
+//	private static final Logger LOGGER = LoggerFactory.getLogger(AddressBuilder.class);
 
 	public static ch.vd.unireg.xml.party.address.v1.Address newAddress(AdresseEnvoiDetaillee adresse, ch.vd.unireg.xml.party.address.v1.AddressType type) {
 		final ch.vd.unireg.xml.party.address.v1.Address a = new ch.vd.unireg.xml.party.address.v1.Address();

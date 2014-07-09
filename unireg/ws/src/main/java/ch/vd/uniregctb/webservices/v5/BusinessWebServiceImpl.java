@@ -21,11 +21,12 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 import org.hibernate.FlushMode;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -123,7 +124,7 @@ import ch.vd.uniregctb.xml.party.v3.PartyBuilder;
 
 public class BusinessWebServiceImpl implements BusinessWebService {
 
-	private static final Logger LOGGER = Logger.getLogger(BusinessWebServiceImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(BusinessWebServiceImpl.class);
 
 	private static final int DECLARATION_ACK_BATCH_SIZE = 50;
 	private static final int PARTIES_BATCH_SIZE = 20;

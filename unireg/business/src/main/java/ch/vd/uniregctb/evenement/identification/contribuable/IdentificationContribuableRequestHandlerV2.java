@@ -7,7 +7,8 @@ import java.util.List;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 
 import ch.vd.unireg.common.NomPrenom;
@@ -26,7 +27,7 @@ import ch.vd.uniregctb.xml.DataHelper;
 
 public class IdentificationContribuableRequestHandlerV2 implements IdentificationContribuableRequestHandler<IdentificationContribuableRequest, IdentificationContribuableResponse> {
 
-	private final static Logger LOGGER = Logger.getLogger(IdentificationContribuableRequestHandlerV2.class);
+	private final static Logger LOGGER = LoggerFactory.getLogger(IdentificationContribuableRequestHandlerV2.class);
 
 	private static final int MAX_NAME_LENGTH = 100;
 

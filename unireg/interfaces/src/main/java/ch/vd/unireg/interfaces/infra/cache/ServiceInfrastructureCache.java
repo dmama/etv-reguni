@@ -3,16 +3,14 @@ package ch.vd.unireg.interfaces.infra.cache;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -45,11 +43,12 @@ import ch.vd.uniregctb.cache.KeyValueDumpableCache;
 import ch.vd.uniregctb.cache.UniregCacheInterface;
 import ch.vd.uniregctb.cache.UniregCacheManager;
 import ch.vd.uniregctb.stats.StatsService;
+import ch.vd.uniregctb.utils.LogLevel;
 
 @SuppressWarnings({"SimplifiableIfStatement"})
 public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, UniregCacheInterface, KeyDumpableCache, KeyValueDumpableCache, InitializingBean, DisposableBean {
 
-	//private static final Logger LOGGER = Logger.getLogger(ServiceInfrastructureCache.class);
+	//private static final Logger LOGGER = LoggerFactory.getLogger(ServiceInfrastructureCache.class);
 
 	private CacheManager cacheManager;
 	private String cacheName;
@@ -1794,13 +1793,13 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 	}
 
 	@Override
-	public void dumpCacheKeys(Logger logger, Level level) {
+	public void dumpCacheKeys(Logger logger, LogLevel.Level level) {
 		CacheHelper.dumpCacheKeys(cache, logger, level);
 		CacheHelper.dumpCacheKeys(shortLivedCache, logger, level);
 	}
 
 	@Override
-	public void dumpCacheContent(Logger logger, Level level) {
+	public void dumpCacheContent(Logger logger, LogLevel.Level level) {
 		CacheHelper.dumpCacheKeysAndValues(cache, logger, level, null);
 		CacheHelper.dumpCacheKeysAndValues(shortLivedCache, logger, level, null);
 	}

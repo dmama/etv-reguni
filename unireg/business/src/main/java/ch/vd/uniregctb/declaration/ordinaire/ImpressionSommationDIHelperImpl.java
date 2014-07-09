@@ -17,7 +17,8 @@ import noNamespace.TypPeriode.Entete;
 import noNamespace.TypPeriode.Entete.ImpCcn;
 import noNamespace.TypPeriode.Entete.Tit;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.civil.data.Adresse;
@@ -57,7 +58,7 @@ public class ImpressionSommationDIHelperImpl extends EditiqueAbstractHelper impl
 	private static final String VERSION_XSD = "1.0";
 	private static final int OID_LA_VALLEE = 8;
 
-	private static final Logger LOGGER = Logger.getLogger(ImpressionSommationDIHelperImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ImpressionSommationDIHelperImpl.class);
 
 	private ServiceInfrastructureService serviceInfrastructureService;
 	private DelaisService delaisService;

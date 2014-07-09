@@ -4,7 +4,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -16,7 +17,7 @@ import ch.vd.uniregctb.security.SecurityHelper;
 
 public class ListeRecapEditDelaiController extends AbstractListeRecapController {
 
-	protected static final Logger LOGGER = Logger.getLogger(ListeRecapEditDelaiController.class);
+	protected static final Logger LOGGER = LoggerFactory.getLogger(ListeRecapEditDelaiController.class);
 
 	private ListeRecapEditManager lrEditManager;
 

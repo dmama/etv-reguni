@@ -5,10 +5,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
@@ -61,7 +62,7 @@ import static org.junit.Assert.fail;
 @SuppressWarnings({"JavaDoc"})
 public class DepartTest extends AbstractEvenementCivilInterneTest {
 
-	private static final Logger LOGGER = Logger.getLogger(DepartTest.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(DepartTest.class);
 
 	private static final int NUMERO_INDIVIDU_SEUL = 1234;
 	private static final int NO_IND_RAMONA = 1242;

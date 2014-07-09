@@ -7,9 +7,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
@@ -26,7 +27,7 @@ import static junit.framework.Assert.assertTrue;
 
 public class IdentCtbDAOTest extends CoreDAOTest {
 
-	protected static final Logger LOGGER = Logger.getLogger(IdentCtbDAOTest.class);
+	protected static final Logger LOGGER = LoggerFactory.getLogger(IdentCtbDAOTest.class);
 
 	private static final String DAO_NAME = "identCtbDAO";
 

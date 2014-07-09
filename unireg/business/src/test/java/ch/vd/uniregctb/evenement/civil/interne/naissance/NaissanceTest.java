@@ -4,8 +4,9 @@ import java.util.List;
 
 import junit.framework.Assert;
 import net.sf.ehcache.CacheManager;
-import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
@@ -39,7 +40,7 @@ import static org.junit.Assert.assertNull;
 @SuppressWarnings({"JavaDoc"})
 public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 
-	private static final Logger LOGGER = Logger.getLogger(NaissanceTest.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(NaissanceTest.class);
 
 	/**
 	 * Le numéro d'individu du nouveau né.

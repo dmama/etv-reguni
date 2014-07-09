@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.declaration.ordinaire;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.AuthenticationHelper;
@@ -12,7 +13,7 @@ import ch.vd.uniregctb.common.BusinessItTestApplication;
  */
 public class DetermineDIsAEmettreTestApp extends BusinessItTestApplication {
 
-	private static final Logger LOGGER = Logger.getLogger(DetermineDIsAEmettreTestApp.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(DetermineDIsAEmettreTestApp.class);
 
 	private final static String DB_UNIT_DATA_FILE = "DetermineDIsAEmettreTestApp.zip";
 
@@ -25,7 +26,7 @@ public class DetermineDIsAEmettreTestApp extends BusinessItTestApplication {
 			app.run();
 		}
 		catch (Exception e) {
-			LOGGER.error(e, e);
+			LOGGER.error(e.getMessage(), e);
 		}
 
 		System.exit(0);

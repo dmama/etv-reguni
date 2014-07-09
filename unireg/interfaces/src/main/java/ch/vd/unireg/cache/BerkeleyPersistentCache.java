@@ -32,7 +32,7 @@ import ch.vd.uniregctb.cache.SimpleCacheStats;
 
 public class BerkeleyPersistentCache<T extends Serializable> implements PersistentCache<T>, InitializingBean, DisposableBean {
 
-//	private static final Logger LOGGER = Logger.getLogger(BerkeleyPersistentCache.class);
+//	private static final Logger LOGGER = LoggerFactory.getLogger(BerkeleyPersistentCache.class);
 
 	private Class<T> clazz;
 	private Environment env;

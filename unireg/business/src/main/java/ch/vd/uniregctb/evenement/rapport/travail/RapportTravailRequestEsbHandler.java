@@ -22,7 +22,8 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -55,7 +56,7 @@ import ch.vd.uniregctb.xml.ServiceException;
 //Listener qui écoute les demandes sur les rapports de travail pour le moment on a que des demandes de mise à jour
 public class RapportTravailRequestEsbHandler implements EsbMessageHandler, InitializingBean {
 
-	private static final Logger LOGGER = Logger.getLogger(RapportTravailRequestEsbHandler.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(RapportTravailRequestEsbHandler.class);
 
 	private EsbXmlValidation esbValidator;
 	private final ObjectFactory objectFactory = new ObjectFactory();
@@ -86,7 +87,7 @@ public class RapportTravailRequestEsbHandler implements EsbMessageHandler, Initi
 		}
 		catch (Exception e) {
 			// toutes les erreurs levées ici sont des erreurs transientes ou des bugs
-			LOGGER.error(e, e);
+			LOGGER.error(e.getMessage(), e);
 			throw e;
 		}
 		finally {
@@ -149,7 +150,7 @@ public class RapportTravailRequestEsbHandler implements EsbMessageHandler, Initi
 			answer(result, message);
 		}
 		catch (ESBValidationException e) {
-			LOGGER.error(e, e);
+			LOGGER.error(e.getMessage(), e);
 			answerValidationException(e, message);
 		}
 	}

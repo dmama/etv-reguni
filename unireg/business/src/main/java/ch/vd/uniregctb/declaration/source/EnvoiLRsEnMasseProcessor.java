@@ -3,10 +3,11 @@ package ch.vd.uniregctb.declaration.source;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -33,7 +34,7 @@ import ch.vd.uniregctb.type.PeriodiciteDecompte;
 
 public class EnvoiLRsEnMasseProcessor {
 
-	private final Logger LOGGER = Logger.getLogger(EnvoiLRsEnMasseProcessor.class);
+	private final Logger LOGGER = LoggerFactory.getLogger(EnvoiLRsEnMasseProcessor.class);
 
 	private static final int BATCH_SIZE = 100;
 

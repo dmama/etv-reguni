@@ -2,7 +2,8 @@ package ch.vd.uniregctb.evenement.cedi;
 
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 
 import ch.vd.registre.base.date.DateHelper;
@@ -12,7 +13,7 @@ import ch.vd.uniregctb.jms.EsbBusinessException;
 
 public class V2Handler extends AbstractDossierElectroniqueHandler implements DossierElectroniqueHandler<DossierElectronique> {
 
-	private static final Logger LOGGER = Logger.getLogger(V2Handler.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(V2Handler.class);
 
 	@Override
 	public ClassPathResource getRequestXSD() {

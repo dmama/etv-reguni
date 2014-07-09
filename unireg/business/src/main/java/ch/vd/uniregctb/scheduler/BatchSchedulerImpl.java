@@ -23,7 +23,6 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 import org.quartz.CronScheduleBuilder;
 import org.quartz.JobBuilder;
@@ -38,9 +37,10 @@ import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
 import org.quartz.TriggerKey;
 import org.quartz.UnableToInterruptJobException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.security.core.Authentication;
 
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.NotImplementedException;
@@ -53,7 +53,7 @@ import ch.vd.uniregctb.stats.StatsService;
  */
 public class BatchSchedulerImpl implements BatchScheduler, InitializingBean, DisposableBean, DynamicMBean {
 
-	private static final Logger LOGGER = Logger.getLogger(BatchSchedulerImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(BatchSchedulerImpl.class);
 
 	public static final String IMMEDIATE_TRIGGER = "ImmediateTrigger";
 

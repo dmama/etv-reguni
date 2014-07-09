@@ -21,7 +21,7 @@ import ch.vd.uniregctb.parametrage.ParametreAppService;
 
 public abstract class AbstractEvenementCivilInterneTest extends BusinessTest {
 
-	//private static final Logger LOGGER = Logger.getLogger(AbstractEvenementCivilInterneTest.class);
+	//private static final Logger LOGGER = LoggerFactory.getLogger(AbstractEvenementCivilInterneTest.class);
 
 	protected GlobalTiersIndexer indexer;
 	protected MockEvenementFiscalSender eventSender;

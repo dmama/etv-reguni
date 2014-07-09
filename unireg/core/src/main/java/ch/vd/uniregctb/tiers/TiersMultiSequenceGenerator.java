@@ -27,7 +27,7 @@ public class TiersMultiSequenceGenerator implements Configurable, PersistentIden
 	/**
 	 * Un logger.
 	 */
-	//private static final Logger LOGGER = Logger.getLogger(MultiSequenceGenerator.class);
+	//private static final Logger LOGGER = LoggerFactory.getLogger(MultiSequenceGenerator.class);
 
 	private static final String CTB_SEQ_NAME = "S_CTB";
 	private static final String DPI_SEQ_NAME = "S_DPI";

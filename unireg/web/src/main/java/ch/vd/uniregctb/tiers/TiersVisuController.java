@@ -6,7 +6,8 @@ import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -30,7 +31,7 @@ public class TiersVisuController extends AbstractTiersController {
 	/**
 	 * Un LOGGER.
 	 */
-	protected final Logger LOGGER = Logger.getLogger(TiersVisuController.class);
+	protected final Logger LOGGER = LoggerFactory.getLogger(TiersVisuController.class);
 
 	public final static String BUTTON_ANNULER_TIERS = "annulerTiers";
 	private final static String ADRESSES_HISTO_PARAM = "adressesHisto";

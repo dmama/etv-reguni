@@ -7,7 +7,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.hibernate.FlushMode;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
@@ -15,6 +14,8 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.dialect.Dialect;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -39,7 +40,7 @@ import ch.vd.uniregctb.worker.BatchWorker;
 
 public class TiersIndexerWorker implements BatchWorker<Long> {
 
-	private static final Logger LOGGER = Logger.getLogger(TiersIndexerWorker.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(TiersIndexerWorker.class);
 
 	public static final int BATCH_SIZE = 20;
 
@@ -153,7 +154,7 @@ public class TiersIndexerWorker implements BatchWorker<Long> {
 						session.flush();
 					}
 					catch (Exception e) {
-						LOGGER.error(e, e);
+						LOGGER.error(e.getMessage(), e);
 					}
 					finally {
 						session.close();
@@ -217,7 +218,7 @@ public class TiersIndexerWorker implements BatchWorker<Long> {
 			// 1 ou plusieurs tiers n'ont pas pu être indexés (selon la liste fournie par l'exception)
 			LOGGER.error(e.getMessage());
 			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug(e, e);
+				LOGGER.debug(e.getMessage(), e);
 			}
 
 			// la plupart des tiers ont pu être indexés...
@@ -241,7 +242,7 @@ public class TiersIndexerWorker implements BatchWorker<Long> {
 			// potentiellement aucun des tiers n'a pu être indexés
 			LOGGER.error("Impossible d'indexer les tiers n°" + buildTiersNumeros(tiers), e);
 			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug(e, e);
+				LOGGER.debug(e.getMessage(), e);
 			}
 
 			setDirtyFlag(extractIds(tiers), true, session);

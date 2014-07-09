@@ -2,8 +2,9 @@ package ch.vd.uniregctb.evenement.civil.interne.obtentionpermis;
 
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
@@ -30,7 +31,7 @@ public abstract class ObtentionNationalite extends ObtentionPermisCOuNationalite
 	/**
 	 * LOGGER log4J
 	 */
-	protected static Logger LOGGER = Logger.getLogger(ObtentionNationalite.class);
+	protected static Logger LOGGER = LoggerFactory.getLogger(ObtentionNationalite.class);
 
 	/**
 	 * le numero OFS de la commune de l'adresse principale

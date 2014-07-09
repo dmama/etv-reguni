@@ -2,9 +2,9 @@ package ch.vd.uniregctb.indexer.tiers;
 
 import java.util.List;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,8 +13,6 @@ import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.indexer.GlobalIndexInterface;
-import ch.vd.uniregctb.indexer.async.OnTheFlyTiersIndexer;
-import ch.vd.uniregctb.indexer.async.TiersIndexerWorker;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -36,7 +34,7 @@ import static junit.framework.Assert.fail;
 @SuppressWarnings({"JavaDoc"})
 public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 
-	private static final Logger LOGGER = Logger.getLogger(TiersIndexerHibernateInterceptorTest.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(TiersIndexerHibernateInterceptorTest.class);
 
 	private static final String DB_UNIT_DATA_FILE = "TiersIndexerHibernateInterceptorTest.xml";
 
@@ -283,10 +281,6 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 	public void testIndexationOnModifyFor() throws Exception {
 
 		LOGGER.info("==== testIndexationOnModifyFor START ====");
-
-		// On force le à TRACE pour déugger ce test qui fail de temps en temps avec Hudson
-		Logger.getLogger(OnTheFlyTiersIndexer.class).setLevel(Level.TRACE);
-		Logger.getLogger(TiersIndexerWorker.class).setLevel(Level.TRACE);
 
 		LOGGER.info("==== testIndexationOnModifyFor MODIF 1 ====");
 		final long id = doInNewTransaction(new TxCallback<Long>() {

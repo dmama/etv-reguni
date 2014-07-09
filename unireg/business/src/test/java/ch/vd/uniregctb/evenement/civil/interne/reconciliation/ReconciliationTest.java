@@ -3,8 +3,9 @@ package ch.vd.uniregctb.evenement.civil.interne.reconciliation;
 import java.util.Arrays;
 import java.util.Comparator;
 
-import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,7 +29,7 @@ import static junit.framework.Assert.assertNull;
 
 public class ReconciliationTest extends AbstractEvenementCivilInterneTest {
 
-	private static final Logger LOGGER = Logger.getLogger(ReconciliationTest.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ReconciliationTest.class);
 
 	/**
 	 * Le numéro d'individu celibataire.

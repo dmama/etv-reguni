@@ -10,10 +10,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang3.mutable.MutableInt;
-import org.apache.log4j.Logger;
 import org.hibernate.FlushMode;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -32,7 +33,7 @@ import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 public abstract class ListesThread<T extends ListesResults<T>> extends Thread {
 
-	public static final Logger LOGGER = Logger.getLogger(ListesThread.class);
+	public static final Logger LOGGER = LoggerFactory.getLogger(ListesThread.class);
 
     private final BlockingQueue<List<Long>> queue;
 

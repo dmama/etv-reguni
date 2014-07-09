@@ -3,8 +3,9 @@ package ch.vd.uniregctb.evenement.fiscal;
 import java.util.EnumSet;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,6 +44,7 @@ import ch.vd.uniregctb.evenement.EvenementFiscalLR;
 import ch.vd.uniregctb.evenement.EvenementFiscalNaissance;
 import ch.vd.uniregctb.evenement.EvenementFiscalSituationFamille;
 import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.utils.LogLevel;
 
 /**
  * Bean qui permet d'envoyer des événements externes.
@@ -51,7 +53,7 @@ import ch.vd.uniregctb.type.MotifFor;
  */
 public final class EvenementFiscalSenderImpl implements EvenementFiscalSender {
 
-	private static final Logger LOGGER = Logger.getLogger(EvenementFiscalSenderImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementFiscalSenderImpl.class);
 
 	private String outputQueue;
 	private EsbJmsTemplate esbTemplate;
@@ -106,7 +108,7 @@ public final class EvenementFiscalSenderImpl implements EvenementFiscalSender {
 		}
 		catch (Exception e) {
 			final String message = "Exception lors du processus d'envoi d'un événement fiscal.";
-			LOGGER.fatal(message, e);
+			LogLevel.log(LOGGER, LogLevel.Level.FATAL, message, e);
 
 			throw new EvenementFiscalException(message, e);
 		}

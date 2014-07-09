@@ -13,7 +13,7 @@ import static junit.framework.Assert.assertNotNull;
 })
 public abstract class NorentesTest extends AbstractBusinessTest {
 
-	//private static final Logger LOGGER = Logger.getLogger(NorentesTest.class);
+	//private static final Logger LOGGER = LoggerFactory.getLogger(NorentesTest.class);
 
 	protected NorentesManager norentesManager;
 

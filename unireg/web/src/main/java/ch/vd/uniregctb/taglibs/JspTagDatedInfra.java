@@ -5,7 +5,8 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 import java.io.IOException;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.util.HtmlUtils;
 
 import ch.vd.registre.base.date.RegDate;
@@ -18,7 +19,7 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
  */
 public abstract class JspTagDatedInfra<T> extends BodyTagSupport {
 
-	private static final Logger LOGGER = Logger.getLogger(JspTagDatedInfra.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(JspTagDatedInfra.class);
 
 	private final Class<T> clazz;
 

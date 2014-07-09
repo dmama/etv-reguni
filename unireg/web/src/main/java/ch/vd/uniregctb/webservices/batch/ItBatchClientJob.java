@@ -2,7 +2,8 @@ package ch.vd.uniregctb.webservices.batch;
 
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.batchtemplate.StatusManager;
@@ -15,7 +16,7 @@ import ch.vd.uniregctb.scheduler.JobParamRegDate;
 
 public class ItBatchClientJob extends JobDefinition {
 
-	private static final Logger LOGGER = Logger.getLogger(ItBatchClientJob.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ItBatchClientJob.class);
 
 	public static final String NAME = "IT-BatchClientJob";
 	private static final String CATEGORIE = "Test";

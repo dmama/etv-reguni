@@ -11,8 +11,9 @@ import java.util.Date;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.mutable.Mutable;
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.utils.ObjectGetterHelper;
@@ -23,7 +24,7 @@ import ch.vd.registre.base.utils.ObjectGetterHelper;
 @MappedSuperclass
 public abstract class HibernateEntity implements Loggable, Annulable {
 
-	public static final Logger DDUMP = Logger.getLogger("debug");
+	public static final Logger DDUMP = LoggerFactory.getLogger("debug");
 	private String logCreationUser;
 	private Date logCreationDate;
 	private String logModifUser;

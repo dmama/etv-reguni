@@ -63,7 +63,7 @@ import ch.vd.uniregctb.type.TypeAdresseTiers;
 
 public class AdresseServiceImpl implements AdresseService {
 
-	// private final Logger LOGGER = Logger.getLogger(AdresseServiceImpl.class);
+	// private final Logger LOGGER = LoggerFactory.getLogger(AdresseServiceImpl.class);
 
 	private static final String SUFFIXE_DEFUNT_MASCULIN = ", défunt";
 	private static final String SUFFIXE_DEFUNT_FEMININ = ", défunte";

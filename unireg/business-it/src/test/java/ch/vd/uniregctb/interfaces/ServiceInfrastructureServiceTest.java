@@ -7,8 +7,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.evd0007.v1.Country;
 import ch.vd.registre.base.date.RegDate;
@@ -29,7 +30,7 @@ import static junit.framework.Assert.fail;
 
 public class ServiceInfrastructureServiceTest extends BusinessItTest {
 
-	private static final Logger LOGGER = Logger.getLogger(ServiceInfrastructureServiceTest.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ServiceInfrastructureServiceTest.class);
 
 	private ServiceInfrastructureService service;
 

@@ -11,7 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -69,7 +70,7 @@ import ch.vd.uniregctb.utils.RegDateEditor;
 @RequestMapping(value = "/acces")
 public class DroitAccesController {
 
-	private static final Logger LOGGER = Logger.getLogger(DroitAccesController.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(DroitAccesController.class);
 
 	public static final String DOSSIER_CRITERIA_NAME = "DossierCriteria";
 	public static final String UTILISATEUR_CRITERIA_NAME = "PersonneCriteria";

@@ -5,10 +5,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -49,7 +50,7 @@ public class EnvoiSommationsDIsProcessor  {
 	/**
 	 * Un logger pour {@link EnvoiSommationsDIsProcessor}
 	 */
-	private static final Logger LOGGER = Logger.getLogger(EnvoiSommationsDIsProcessor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EnvoiSommationsDIsProcessor.class);
 
 	private static final int BATCH_SIZE = 100;
 

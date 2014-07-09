@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,7 +40,7 @@ public class ListeRecapVisuManagerImpl implements ListeRecapVisuManager,MessageS
 
 	private MessageSource messageSource;
 
-	protected final Logger LOGGER = Logger.getLogger(ListeRecapVisuManagerImpl.class);
+	protected final Logger LOGGER = LoggerFactory.getLogger(ListeRecapVisuManagerImpl.class);
 
 	/**
 	 * Charge les informations dans ListeRecapitulativeView

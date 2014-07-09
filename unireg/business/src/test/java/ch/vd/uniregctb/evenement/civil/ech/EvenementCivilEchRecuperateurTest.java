@@ -4,9 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import junit.framework.Assert;
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
@@ -22,7 +23,7 @@ import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 
 public class EvenementCivilEchRecuperateurTest extends BusinessTest {
 
-	private static final Logger LOGGER = Logger.getLogger(EvenementCivilEchRecuperateurTest.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementCivilEchRecuperateurTest.class);
 
 	private EvenementCivilEchDAO evtCivilDao;
 	private EvenementCivilEchService evtCivilService;

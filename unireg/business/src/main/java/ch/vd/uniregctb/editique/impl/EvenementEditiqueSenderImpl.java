@@ -3,10 +3,11 @@ package ch.vd.uniregctb.editique.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlError;
 import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.XmlOptions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.editique.service.enumeration.TypeFormat;
 import ch.vd.editique.service.enumeration.TypeImpression;
@@ -29,7 +30,7 @@ import ch.vd.uniregctb.editique.TypeDocumentEditique;
  */
 public class EvenementEditiqueSenderImpl implements EvenementEditiqueSender {
 
-	private static final Logger LOGGER = Logger.getLogger(EvenementEditiqueSenderImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementEditiqueSenderImpl.class);
 
 	private EsbJmsTemplate esbTemplate; // ESB template standard
 	private EsbJmsTemplate noTxEsbTemplate; // ESB template non-rattaché au transaction manager

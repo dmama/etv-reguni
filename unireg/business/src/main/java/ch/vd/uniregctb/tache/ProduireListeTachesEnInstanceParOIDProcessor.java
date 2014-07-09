@@ -3,10 +3,11 @@ package ch.vd.uniregctb.tache;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.support.DataAccessUtils;
 
 import ch.vd.registre.base.date.RegDate;
@@ -20,7 +21,7 @@ import ch.vd.uniregctb.type.TypeTache;
 
 public class ProduireListeTachesEnInstanceParOIDProcessor {
 
-	final Logger LOGGER = Logger.getLogger(ProduireListeTachesEnInstanceParOIDProcessor.class);
+	final Logger LOGGER = LoggerFactory.getLogger(ProduireListeTachesEnInstanceParOIDProcessor.class);
 
 	private final HibernateTemplate hibernateTemplate;
 

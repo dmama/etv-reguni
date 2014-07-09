@@ -5,8 +5,9 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.ServiceCivilException;
@@ -19,7 +20,7 @@ import ch.vd.uniregctb.tiers.TiersDAO;
  */
 public class ServiceCivilCacheWarmerImpl implements ServiceCivilCacheWarmer {
 
-	private static final Logger LOGGER = Logger.getLogger(ServiceCivilCacheWarmerImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ServiceCivilCacheWarmerImpl.class);
 
 	private TiersDAO tiersDAO;
 

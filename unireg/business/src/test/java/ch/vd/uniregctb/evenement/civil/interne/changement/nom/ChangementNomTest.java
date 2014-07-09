@@ -4,8 +4,9 @@ import java.sql.Connection;
 import java.sql.Statement;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.util.Assert;
 
@@ -30,7 +31,7 @@ public class ChangementNomTest extends AbstractEvenementCivilInterneTest {
 	private static final long NUMERO_CONTRIBUABLE = 6791L;
 	private static final long NUMERO_CONTRIBUABLE_DIRTY = 6792L;
 
-	private static final Logger LOGGER = Logger.getLogger(ChangementNomTest.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ChangementNomTest.class);
 
 	private static final Long NO_INDIVIDU = 34567L;
 	private static final Long NO_INDIVIDU_DIRTY = 6789L;

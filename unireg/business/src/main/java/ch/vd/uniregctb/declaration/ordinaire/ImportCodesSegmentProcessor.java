@@ -3,11 +3,12 @@ package ch.vd.uniregctb.declaration.ordinaire;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.registre.base.date.DateHelper;
@@ -29,7 +30,7 @@ import ch.vd.uniregctb.tiers.TiersService;
 
 public class ImportCodesSegmentProcessor {
 
-	private static final Logger LOGGER = Logger.getLogger(ImportCodesSegmentProcessor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ImportCodesSegmentProcessor.class);
 
 	private static final int BATCH_SIZE = 200;
 

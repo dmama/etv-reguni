@@ -3,9 +3,10 @@ package ch.vd.uniregctb.declaration.ordinaire;
 import java.util.List;
 
 import org.apache.commons.lang3.mutable.MutableInt;
-import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.common.LoggingStatusManager;
@@ -13,7 +14,7 @@ import ch.vd.uniregctb.common.LoggingStatusManager;
 public class ImportCodesSegmentJobTest extends BusinessTest {
 
 	private static final String ENCODING = "ISO-8859-1";
-	private static final Logger LOGGER = Logger.getLogger(ImportCodesSegmentJobTest.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ImportCodesSegmentJobTest.class);
 
 	@Test
 	public void testNullInputFileParsing() throws Exception {

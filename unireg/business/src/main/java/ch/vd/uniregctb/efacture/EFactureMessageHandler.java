@@ -10,8 +10,9 @@ import javax.xml.validation.SchemaFactory;
 import java.io.IOException;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.xml.sax.SAXException;
 
@@ -29,7 +30,7 @@ import ch.vd.uniregctb.jms.EsbMessageHelper;
 
 public class EFactureMessageHandler implements EsbMessageHandler {
 
-	private static final Logger LOGGER = Logger.getLogger(EFactureMessageHandler.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EFactureMessageHandler.class);
 
 	private Schema schemaCache;
 
@@ -61,7 +62,7 @@ public class EFactureMessageHandler implements EsbMessageHandler {
 			throw new EsbBusinessException(EsbBusinessCode.XML_INVALIDE, e.getMessage(), e);
 		}
 		catch (Exception e) {
-			LOGGER.error(e, e);
+			LOGGER.error(e.getMessage(), e);
 			hibernateTemplate.flush();  // Flush la session hibernate avant de poper le principal (sinon NullPointerException dans ModificationLogInterceptor)
 			throw e;
 		}

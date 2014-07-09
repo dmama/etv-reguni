@@ -9,8 +9,9 @@ import java.util.Set;
 import net.java.dev.jaxb.array.LongArray;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.message.Message;
-import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.ResourceUtils;
 
 import ch.vd.uniregctb.common.WebitTest;
@@ -36,7 +37,7 @@ import static org.junit.Assert.fail;
 @SuppressWarnings({"JavaDoc"})
 public class SecuriteWebServiceTest extends WebitTest {
 
-	private static final Logger LOGGER = Logger.getLogger(SecuriteWebServiceTest.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(SecuriteWebServiceTest.class);
 
 	private static final String DB_UNIT_DATA_FILE = "SecuriteWebServiceTest.xml";
 

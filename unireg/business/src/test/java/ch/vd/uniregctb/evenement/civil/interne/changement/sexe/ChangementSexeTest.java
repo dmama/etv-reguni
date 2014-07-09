@@ -3,8 +3,9 @@ package ch.vd.uniregctb.evenement.civil.interne.changement.sexe;
 import java.util.List;
 
 import junit.framework.Assert;
-import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
@@ -21,7 +22,7 @@ import ch.vd.uniregctb.type.Sexe;
 public class ChangementSexeTest extends AbstractEvenementCivilInterneTest {
 	private static final long NUMERO_CONTRIBUABLE = 6791L;
 
-	private static final Logger LOGGER = Logger.getLogger(ChangementSexeTest.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ChangementSexeTest.class);
 
 	/**
 	 * Le numéro d'individu

@@ -14,7 +14,8 @@ import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.uniregctb.cache.CacheStats;
@@ -30,7 +31,7 @@ import ch.vd.uniregctb.cache.SimpleCacheStats;
  */
 public class SimpleDiskCache<T extends Serializable> implements PersistentCache<T>, InitializingBean {
 
-	private static final Logger LOGGER = Logger.getLogger(SimpleDiskCache.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(SimpleDiskCache.class);
 
 	private String storeDir;
 	private static final String jvmName = ManagementFactory.getRuntimeMXBean().getName();

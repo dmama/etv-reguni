@@ -3,9 +3,10 @@ package ch.vd.uniregctb.editique;
 import javax.resource.spi.ResourceAdapter;
 import java.util.Arrays;
 
-import org.apache.log4j.Logger;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,7 +46,7 @@ import static org.junit.Assert.assertTrue;
 })
 public class EditiqueServiceTest extends BusinessItTest {
 
-	public static final Logger LOGGER = Logger.getLogger(EditiqueServiceTest.class);
+	public static final Logger LOGGER = LoggerFactory.getLogger(EditiqueServiceTest.class);
 
 	private static final String OUTPUT_QUEUE = "imprimer";
 

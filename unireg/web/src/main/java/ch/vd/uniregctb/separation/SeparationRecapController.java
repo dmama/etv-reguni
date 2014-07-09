@@ -4,7 +4,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
@@ -17,7 +18,7 @@ import ch.vd.uniregctb.separation.view.SeparationRecapView;
 
 public class SeparationRecapController extends AbstractSimpleFormController {
 
-	protected final Logger LOGGER = Logger.getLogger(SeparationRecapController.class);
+	protected final Logger LOGGER = LoggerFactory.getLogger(SeparationRecapController.class);
 
 	private static final String NUMERO_COUPLE_PARAMETER_NAME = "numeroCple";
 

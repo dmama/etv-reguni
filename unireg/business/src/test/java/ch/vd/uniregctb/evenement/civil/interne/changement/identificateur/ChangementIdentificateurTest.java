@@ -2,9 +2,10 @@ package ch.vd.uniregctb.evenement.civil.interne.changement.identificateur;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
@@ -26,7 +27,7 @@ import ch.vd.uniregctb.type.TypeAdresseCivil;
 
 public class ChangementIdentificateurTest extends AbstractEvenementCivilInterneTest {
 
-	private static final Logger LOGGER = Logger.getLogger(ChangementIdentificateurTest.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ChangementIdentificateurTest.class);
 
 	public ChangementIdentificateurTest() {
 		setWantIndexation(true);

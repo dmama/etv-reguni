@@ -8,10 +8,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -42,7 +43,7 @@ import ch.vd.uniregctb.transaction.TransactionTemplate;
  */
 public class MigrationCoquillesPM extends JobDefinition {
 
-	private static final Logger LOGGER = Logger.getLogger(MigrationCoquillesPM.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(MigrationCoquillesPM.class);
 
 	public static final String NAME = "MigrationCoquillesPM";
 	private static final String CATEGORIE = "Database";

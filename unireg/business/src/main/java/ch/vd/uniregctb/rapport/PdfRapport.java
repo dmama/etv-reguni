@@ -21,7 +21,8 @@ import com.itextpdf.text.pdf.PdfFileSpecification;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.text.pdf.codec.PngImage;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.StatusManager;
@@ -43,7 +44,7 @@ public abstract class PdfRapport extends Document {
 	public static final char COMMA = CsvHelper.COMMA;
 	public static final String EMPTY = StringUtils.EMPTY;
 
-	private final Logger LOGGER = Logger.getLogger(PdfRapport.class);
+	private final Logger LOGGER = LoggerFactory.getLogger(PdfRapport.class);
 
 	protected final Font titreFont = new Font(Font.FontFamily.HELVETICA, 20);
 	protected final Font entete1 = WARNING_FONT;

@@ -3,7 +3,8 @@ package ch.vd.uniregctb.contribuableAssocie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
@@ -14,7 +15,7 @@ import ch.vd.uniregctb.contribuableAssocie.view.ContribuableAssocieEditView;
 
 public class ContribuableAssocieEditController extends AbstractSimpleFormController {
 
-	protected final Logger LOGGER = Logger.getLogger(ContribuableAssocieEditController.class);
+	protected final Logger LOGGER = LoggerFactory.getLogger(ContribuableAssocieEditController.class);
 
 	private static final String NUMERO_DEBITEUR_PARAMETER_NAME = "numeroDpi";
 	private static final String NUMERO_CONTRIBUABLE_PARAMETER_NAME = "numeroContribuable";
@@ -62,7 +63,7 @@ public class ContribuableAssocieEditController extends AbstractSimpleFormControl
 			contribuableAssocieEditManager.save(contribuableAssocieEditView);
 		}
 		catch (Exception e) {
-			LOGGER.error(e, e);
+			LOGGER.error(e.getMessage(), e);
 			errors.reject(e.getMessage());
 			return showForm(request, response, errors);
 		}

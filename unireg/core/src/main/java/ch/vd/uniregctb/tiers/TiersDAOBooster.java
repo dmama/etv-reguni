@@ -12,9 +12,10 @@ import java.util.Scanner;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 import org.hibernate.FlushMode;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.registre.base.date.RegDate;
@@ -29,7 +30,7 @@ import ch.vd.uniregctb.rf.Immeuble;
  */
 public class TiersDAOBooster implements TiersDAO, InitializingBean {
 
-	private static final Logger LOGGER = Logger.getLogger(TiersDAOBooster.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(TiersDAOBooster.class);
 
 	private TiersDAO target;
 	private String filename;

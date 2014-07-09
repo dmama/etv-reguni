@@ -4,8 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.mutable.Mutable;
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchBasicInfo;
@@ -14,7 +15,7 @@ import ch.vd.uniregctb.type.EtatEvenementCivil;
 
 public class ErrorPostProcessingIndexationPureStrategy implements ErrorPostProcessingStrategy<List<EvenementCivilEchBasicInfo>> {
 
-	private static final Logger LOGGER = Logger.getLogger(ErrorPostProcessingIndexationPureStrategy.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ErrorPostProcessingIndexationPureStrategy.class);
 
 	private final EvenementCivilEchDAO evtCivilDAO;
 	private final EvenementCivilEchTranslator translator;

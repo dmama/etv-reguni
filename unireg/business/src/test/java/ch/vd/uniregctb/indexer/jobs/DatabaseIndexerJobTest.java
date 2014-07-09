@@ -27,7 +27,7 @@ import static junit.framework.Assert.assertTrue;
 
 public class DatabaseIndexerJobTest extends BusinessTest {
 
-	//private static final Logger LOGGER = Logger.getLogger(DatabaseIndexerJobTest.class);
+	//private static final Logger LOGGER = LoggerFactory.getLogger(DatabaseIndexerJobTest.class);
 
 	private static final String DBUNIT_FILE = "DatabaseIndexerJobTest.xml";
 

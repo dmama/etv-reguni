@@ -18,7 +18,7 @@ import ch.vd.uniregctb.utils.ValidatorUtils;
  */
 public class TiersCriteriaValidator implements Validator {
 
-	//private static final Logger LOGGER = Logger.getLogger(TiersCriteriaValidator.class);
+	//private static final Logger LOGGER = LoggerFactory.getLogger(TiersCriteriaValidator.class);
 
 	/**
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)

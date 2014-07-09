@@ -25,7 +25,7 @@ import static junit.framework.Assert.assertTrue;
 
 public class ModificationLogInterceptorTest extends CoreDAOTest {
 
-	// private static final Logger LOGGER = Logger.getLogger(ModificationLogInterceptorTest.class);
+	// private static final Logger LOGGER = LoggerFactory.getLogger(ModificationLogInterceptorTest.class);
 
 	private TiersDAO dao;
 

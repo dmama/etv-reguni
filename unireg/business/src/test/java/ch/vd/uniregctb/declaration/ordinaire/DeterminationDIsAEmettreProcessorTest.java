@@ -2,8 +2,6 @@ package ch.vd.uniregctb.declaration.ordinaire;
 
 import java.util.List;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
@@ -83,10 +81,6 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		// création du processeur à la main de manière à pouvoir appeler les méthodes protégées
 		service = new DeterminationDIsAEmettreProcessor(hibernateTemplate, periodeDAO, tacheDAO, parametres, tiersService, transactionManager, validationService, periodeImpositionService,
 				adresseService);
-
-		// évite de logger plein d'erreurs pendant qu'on teste le comportement du processor
-		final Logger serviceLogger = Logger.getLogger(DeclarationImpotServiceImpl.class);
-		serviceLogger.setLevel(Level.FATAL);
 
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override

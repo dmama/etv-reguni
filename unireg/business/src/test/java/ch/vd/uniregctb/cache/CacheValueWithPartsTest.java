@@ -4,8 +4,9 @@ import java.util.EnumSet;
 import java.util.Random;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.uniregctb.common.WithoutSpringTest;
 
@@ -14,7 +15,7 @@ import static org.junit.Assert.assertEquals;
 @SuppressWarnings("JavaDoc")
 public class CacheValueWithPartsTest extends WithoutSpringTest {
 
-	private final Logger LOGGER = Logger.getLogger(CacheValueWithPartsTest.class);
+	private final Logger LOGGER = LoggerFactory.getLogger(CacheValueWithPartsTest.class);
 
 	private static final int ITERATIONS = 1000;
 
@@ -161,7 +162,7 @@ public class CacheValueWithPartsTest extends WithoutSpringTest {
 
 	private static class ExceptionHandler implements Thread.UncaughtExceptionHandler {
 
-		private final Logger LOGGER = Logger.getLogger(ExceptionHandler.class);
+		private final Logger LOGGER = LoggerFactory.getLogger(ExceptionHandler.class);
 
 		private Exception exception = null;
 

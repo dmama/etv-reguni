@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
@@ -129,10 +127,6 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		service = new DeclarationImpotServiceImpl(editiqueService, hibernateTemplate, periodeDAO, tacheDAO, modeleDAO, delaisService, infraService, tiersService, impressionDIHelper,
 				transactionManager, parametres, cacheWarmer, validationService, evenementFiscalService, evenementDeclarationSender, periodeImpositionService, assujettissementService);
 
-		// évite de logger plein d'erreurs pendant qu'on teste le comportement du service
-		final Logger serviceLogger = Logger.getLogger(DeclarationImpotServiceImpl.class);
-		serviceLogger.setLevel(Level.FATAL);
-
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
@@ -145,15 +139,6 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				return null;
 			}
 		});
-	}
-
-	@Override
-	public void onTearDown() throws Exception {
-		super.onTearDown();
-
-		// réactive le log normal
-		Logger serviceLogger = Logger.getLogger(DeclarationImpotServiceImpl.class);
-		serviceLogger.setLevel(Level.ERROR);
 	}
 
 	/**

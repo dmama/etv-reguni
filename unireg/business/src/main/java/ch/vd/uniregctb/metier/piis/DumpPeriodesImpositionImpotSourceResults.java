@@ -5,8 +5,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
@@ -18,7 +19,7 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 public class DumpPeriodesImpositionImpotSourceResults extends AbstractJobResults<Long, DumpPeriodesImpositionImpotSourceResults> {
 
-	private static final Logger LOGGER = Logger.getLogger(DumpPeriodesImpositionImpotSourceResults.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(DumpPeriodesImpositionImpotSourceResults.class);
 
 	public static class Info implements Comparable<Info>, DateRange {
 

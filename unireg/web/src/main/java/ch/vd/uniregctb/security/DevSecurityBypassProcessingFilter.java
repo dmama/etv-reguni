@@ -12,7 +12,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -31,7 +32,7 @@ import ch.vd.uniregctb.utils.UniregModeHelper;
  */
 public class DevSecurityBypassProcessingFilter extends GenericFilterBean {
 
-	private static final Logger LOGGER = Logger.getLogger(DevSecurityBypassProcessingFilter.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(DevSecurityBypassProcessingFilter.class);
 	
 	private static final Set<String> DEV_ENVS = new HashSet<>(Arrays.asList("Developpement", "Hudson", "Standalone", "Integration TE"));
 

@@ -9,8 +9,9 @@ import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 import org.springframework.transaction.annotation.Transactional;
@@ -79,7 +80,7 @@ import ch.vd.uniregctb.validation.ValidationService;
  */
 public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditManager, MessageSourceAware {
 
-	protected static final Logger LOGGER = Logger.getLogger(DeclarationImpotEditManagerImpl.class);
+	protected static final Logger LOGGER = LoggerFactory.getLogger(DeclarationImpotEditManagerImpl.class);
 
 	private DeclarationImpotOrdinaireDAO diDAO;
 	private PeriodeFiscaleDAO periodeFiscaleDAO;

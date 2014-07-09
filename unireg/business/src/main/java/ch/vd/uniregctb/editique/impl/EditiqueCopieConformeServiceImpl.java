@@ -3,7 +3,8 @@ package ch.vd.uniregctb.editique.impl;
 import javax.activation.DataHandler;
 import java.io.InputStream;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageException;
@@ -22,7 +23,7 @@ import ch.vd.uniregctb.editique.TypeDocumentEditique;
  */
 public class EditiqueCopieConformeServiceImpl implements EditiqueCopieConformeService {
 
-	public static final Logger LOGGER = Logger.getLogger(EditiqueCopieConformeServiceImpl.class);
+	public static final Logger LOGGER = LoggerFactory.getLogger(EditiqueCopieConformeServiceImpl.class);
 
 	private static final String PDF = "pdf";
 

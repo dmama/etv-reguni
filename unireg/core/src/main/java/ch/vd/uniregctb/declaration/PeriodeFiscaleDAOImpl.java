@@ -5,8 +5,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.hibernate.FlushMode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.BaseDAOImpl;
@@ -14,7 +15,7 @@ import ch.vd.uniregctb.common.BaseDAOImpl;
 public class PeriodeFiscaleDAOImpl extends BaseDAOImpl< PeriodeFiscale, Long> implements  PeriodeFiscaleDAO {
 
 
-	private static final Logger LOGGER = Logger.getLogger(PeriodeFiscaleDAOImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(PeriodeFiscaleDAOImpl.class);
 
 
 	public PeriodeFiscaleDAOImpl() {

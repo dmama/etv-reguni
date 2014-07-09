@@ -2,8 +2,9 @@ package ch.vd.uniregctb.efacture;
 
 import java.math.BigInteger;
 
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.evd0025.v1.PayerWithHistory;
@@ -18,7 +19,7 @@ import ch.vd.uniregctb.utils.UniregModeHelper;
 
 public class ReadOnlyEFactureServiceImpl implements EFactureService, InitializingBean {
 
-	private static final Logger LOGGER = Logger.getLogger(ReadOnlyEFactureServiceImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ReadOnlyEFactureServiceImpl.class);
 
 	private EFactureClient eFactureClient;
 

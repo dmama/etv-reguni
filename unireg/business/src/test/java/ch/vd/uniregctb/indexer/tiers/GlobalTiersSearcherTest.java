@@ -52,7 +52,7 @@ import static junit.framework.Assert.fail;
 @SuppressWarnings({"JavaDoc"})
 public class GlobalTiersSearcherTest extends BusinessTest {
 
-	//private static final Logger LOGGER = Logger.getLogger(GlobalTiersSearcherTest.class);
+	//private static final Logger LOGGER = LoggerFactory.getLogger(GlobalTiersSearcherTest.class);
 
 	private static final String DB_UNIT_DATA_FILE = "GlobalTiersSearcherTest.xml";
 

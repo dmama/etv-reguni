@@ -5,7 +5,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 import org.springframework.validation.BindException;
@@ -24,7 +25,7 @@ import ch.vd.uniregctb.utils.WebContextUtils;
 
 public class DebiteurListController  extends  AbstractTiersListController implements MessageSourceAware {
 
-	protected final Logger LOGGER = Logger.getLogger(DebiteurListController.class);
+	protected final Logger LOGGER = LoggerFactory.getLogger(DebiteurListController.class);
 
 	private static final String NUMERO_SOURCIER_PARAMETER_NAME = "numeroSrc";
 

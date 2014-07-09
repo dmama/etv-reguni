@@ -7,7 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
@@ -29,7 +30,7 @@ public class GestionTracingController extends AbstractSimpleFormController {
 	/**
 	 * Un LOGGER.
 	 */
-	protected final Logger LOGGER = Logger.getLogger(GestionTracingController.class);
+	protected final Logger LOGGER = LoggerFactory.getLogger(GestionTracingController.class);
 
 	public static final String LIST_TRACES = "traces";
 

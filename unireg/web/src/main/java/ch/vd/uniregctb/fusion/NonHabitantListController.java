@@ -5,7 +5,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
@@ -16,7 +17,7 @@ import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
 
 public class NonHabitantListController  extends  AbstractTiersListController {
 
-	protected final Logger LOGGER = Logger.getLogger(NonHabitantListController.class);
+	protected final Logger LOGGER = LoggerFactory.getLogger(NonHabitantListController.class);
 
 	public static final String NON_HABITANT_CRITERIA_NAME = "nonHabitantCriteria";
 	public static final String NON_HABITANT_LIST_ATTRIBUTE_NAME = "list";

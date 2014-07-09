@@ -3,7 +3,8 @@ package ch.vd.uniregctb.evenement.ech.manager;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
@@ -30,7 +31,7 @@ import ch.vd.uniregctb.tiers.PlusieursPersonnesPhysiquesAvecMemeNumeroIndividuEx
 
 public class EvenementCivilEchManagerImpl extends EvenementCivilManagerImpl implements EvenementCivilEchManager {
 
-	private static final Logger LOGGER = Logger.getLogger(EvenementCivilEchManagerImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementCivilEchManagerImpl.class);
 
 	private static final long TIMEOUT_RECYCLAGE = 5000; // ms
 

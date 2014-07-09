@@ -3,12 +3,13 @@ package ch.vd.uniregctb.metier;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -37,7 +38,7 @@ public class ComparerForFiscalEtCommuneProcessor {
 
 	private static final int BATCH_SIZE = 100;
 
-	final Logger LOGGER = Logger.getLogger(ComparerForFiscalEtCommuneProcessor.class);
+	final Logger LOGGER = LoggerFactory.getLogger(ComparerForFiscalEtCommuneProcessor.class);
 
 	private final PlatformTransactionManager transactionManager;
 	private final HibernateTemplate hibernateTemplate;

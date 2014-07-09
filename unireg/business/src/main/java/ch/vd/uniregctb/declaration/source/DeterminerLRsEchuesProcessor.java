@@ -9,10 +9,11 @@ import java.util.Map;
 import java.util.SortedSet;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -48,7 +49,7 @@ import ch.vd.uniregctb.type.CategorieImpotSource;
 public class DeterminerLRsEchuesProcessor {
 
 	private static final int BATCH_SIZE = 100;
-	private static final Logger LOGGER = Logger.getLogger(DeterminerLRsEchuesProcessor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(DeterminerLRsEchuesProcessor.class);
 
 	private final PlatformTransactionManager transactionManager;
 	private final HibernateTemplate hibernateTemplate;

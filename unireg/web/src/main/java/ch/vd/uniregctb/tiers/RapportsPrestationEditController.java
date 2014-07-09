@@ -5,7 +5,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -24,7 +25,7 @@ public class RapportsPrestationEditController extends AbstractTiersController {
 	/**
 	 * Un LOGGER.
 	 */
-	protected final Logger LOGGER = Logger.getLogger(DossiersApparentesEditController.class);
+	protected final Logger LOGGER = LoggerFactory.getLogger(DossiersApparentesEditController.class);
 
 	public final static String TARGET_ANNULER_RAPPORT = "annulerRapport";
 

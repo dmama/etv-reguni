@@ -1,10 +1,11 @@
 package ch.vd.uniregctb.jms;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class JmxAwareMasterSwitchableEsbMessageEndpointManager extends JmxAwareEsbMessageEndpointManager {
 
-	private static final Logger LOGGER = Logger.getLogger(JmxAwareMasterSwitchableEsbMessageEndpointManager.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(JmxAwareMasterSwitchableEsbMessageEndpointManager.class);
 
 	private boolean masterSwitch;
 

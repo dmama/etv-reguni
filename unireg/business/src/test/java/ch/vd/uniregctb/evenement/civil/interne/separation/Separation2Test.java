@@ -1,8 +1,9 @@
 package ch.vd.uniregctb.evenement.civil.interne.separation;
 
 import junit.framework.Assert;
-import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
@@ -41,7 +42,7 @@ import static junit.framework.Assert.assertTrue;
  */
 public class Separation2Test extends AbstractEvenementCivilInterneTest {
 	
-	private static final Logger LOGGER = Logger.getLogger(Separation2Test.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(Separation2Test.class);
 	
 	final static private RegDate DATE_SEPARATION = date(2008, 10, 10);
 

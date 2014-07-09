@@ -2,9 +2,10 @@ package ch.vd.uniregctb.evenement.civil.interne.depart;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -54,7 +55,7 @@ public abstract class Depart extends Mouvement {
 	/**
 	 * LOGGER log4J
 	 */
-	protected static Logger LOGGER = Logger.getLogger(Depart.class);
+	protected static Logger LOGGER = LoggerFactory.getLogger(Depart.class);
 
 	protected Commune nouvelleCommune;
 	protected Localisation nouvelleLocalisation;

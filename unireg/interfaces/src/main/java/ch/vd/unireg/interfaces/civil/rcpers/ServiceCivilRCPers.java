@@ -31,7 +31,7 @@ import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 
 public class ServiceCivilRCPers implements ServiceCivilRaw {
 
-//	private static final Logger LOGGER = Logger.getLogger(ServiceCivilRCPers.class);
+//	private static final Logger LOGGER = LoggerFactory.getLogger(ServiceCivilRCPers.class);
 
 	private RcPersClient client;
 	private ServiceInfrastructureRaw infraService;

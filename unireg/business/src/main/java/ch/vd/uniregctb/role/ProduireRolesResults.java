@@ -10,7 +10,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.NullDateBehavior;
@@ -41,7 +42,7 @@ import ch.vd.uniregctb.type.MotifRattachement;
  */
 public abstract class ProduireRolesResults<T extends ProduireRolesResults<T>> extends JobResults<Long, T> {
 	
-	private static final Logger LOGGER = Logger.getLogger(ProduireRolesResults.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ProduireRolesResults.class);
 
 	public enum ErreurType {
 		CTB_INVALIDE("le contribuable ne valide pas."), // ---------------------------------------------------

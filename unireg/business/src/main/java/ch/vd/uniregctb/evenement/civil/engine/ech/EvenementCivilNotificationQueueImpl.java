@@ -12,9 +12,10 @@ import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -74,7 +75,7 @@ import ch.vd.uniregctb.transaction.TransactionTemplate;
  */
  public class EvenementCivilNotificationQueueImpl implements EvenementCivilNotificationQueue, InitializingBean, DisposableBean {
 
-	private static final Logger LOGGER = Logger.getLogger(EvenementCivilNotificationQueueImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementCivilNotificationQueueImpl.class);
 
 	private final BlockingQueue<DelayedIndividu> batchQueue = new DelayQueue<>();
 	private final BlockingQueue<DelayedIndividu> manualQueue = new DelayQueue<>();

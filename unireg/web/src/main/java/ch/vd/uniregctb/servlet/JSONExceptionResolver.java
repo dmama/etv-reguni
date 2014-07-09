@@ -4,7 +4,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.Ordered;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
@@ -21,7 +22,7 @@ import org.springframework.web.util.WebUtils;
  */
 public class JSONExceptionResolver implements HandlerExceptionResolver, Ordered {
 
-	protected final Logger LOGGER = Logger.getLogger(JSONExceptionResolver.class);
+	protected final Logger LOGGER = LoggerFactory.getLogger(JSONExceptionResolver.class);
 
 	private int order = Ordered.LOWEST_PRECEDENCE;
 	private MappingJacksonHttpMessageConverter jsonConverter = new MappingJacksonHttpMessageConverter();

@@ -3,13 +3,13 @@ package ch.vd.uniregctb.mouvement;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -48,7 +48,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessor {
 
 	private static final int BATCH_SIZE = 100;
 
-	public static final Logger LOGGER = Logger.getLogger(DeterminerMouvementsDossiersEnMasseProcessor.class);
+	public static final Logger LOGGER = LoggerFactory.getLogger(DeterminerMouvementsDossiersEnMasseProcessor.class);
 
 	private final TiersService tiersService;
 	private final TiersDAO tiersDAO;

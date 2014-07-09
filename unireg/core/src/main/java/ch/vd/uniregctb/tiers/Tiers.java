@@ -20,14 +20,14 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
@@ -62,7 +62,7 @@ import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 @DiscriminatorColumn(name = "TIERS_TYPE", discriminatorType = DiscriminatorType.STRING)
 public abstract class Tiers extends HibernateEntity implements BusinessComparable<Tiers> {
 
-	private static final Logger LOGGER = Logger.getLogger(Tiers.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(Tiers.class);
 
 	/**
 	 * Numero unique attribue au tiers, qui correspond pour les contribuables PP au numero de contribuable.
@@ -1055,7 +1055,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 			tiersClone.setForsFiscaux(null);
 		}
 		catch (CloneNotSupportedException cnse) {
-			LOGGER.debug(cnse);
+			LOGGER.debug("Clone not supported", cnse);
 		}
 		// tiersClone.setAdressesTiers(null);
 

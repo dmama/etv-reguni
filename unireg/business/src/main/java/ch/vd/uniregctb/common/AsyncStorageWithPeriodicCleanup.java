@@ -8,12 +8,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableObject;
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AsyncStorageWithPeriodicCleanup<K, V> extends AsyncStorage<K, V> {
 
-	private static final Logger LOGGER = Logger.getLogger(AsyncStorageWithPeriodicCleanup.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(AsyncStorageWithPeriodicCleanup.class);
 
 	/**
 	 * Timer utilisé pour le lancement régulier des tâches de cleanup

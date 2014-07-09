@@ -8,7 +8,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.unireg.webservices.party3.GetPartyRequest;
 import ch.vd.unireg.webservices.party3.PartyPart;
@@ -33,7 +34,7 @@ import ch.vd.uniregctb.perfs.PerfsAccessFileIterator;
  */
 public class EtatCivilCompThread extends Thread {
 
-	private static final Logger LOGGER = Logger.getLogger(EtatCivilCompThread.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EtatCivilCompThread.class);
 
 	private long queryTime = 0;
 	private int queryCount = 0;

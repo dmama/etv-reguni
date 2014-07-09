@@ -14,11 +14,12 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableObject;
-import org.apache.log4j.Logger;
 import org.hibernate.CallbackException;
 import org.hibernate.type.Type;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.SmartLifecycle;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -65,8 +66,8 @@ import ch.vd.uniregctb.type.EtatEvenementCivil;
  */
 public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcessor, EvenementCivilEchInternalProcessor, SmartLifecycle, InitializingBean {
 
-	private static final Logger LOGGER = Logger.getLogger(EvenementCivilEchProcessorImpl.class);
-	private static final Logger EVT_INTERNE_LOGGER = Logger.getLogger(EvenementCivilInterne.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementCivilEchProcessorImpl.class);
+	private static final Logger EVT_INTERNE_LOGGER = LoggerFactory.getLogger(EvenementCivilInterne.class);
 
 	private static final String COMMENTAIRE_ANNULATION_GROUPEE = "Groupe d'événements annulés alors qu'ils étaient encore en attente.";
 	private static final String COMMENTAIRE_CORRECTION_GROUPEE = "Evénement directement pris en compte dans le traitement de l'événement référencé.";

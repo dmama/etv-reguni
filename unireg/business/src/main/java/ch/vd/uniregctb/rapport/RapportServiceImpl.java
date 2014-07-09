@@ -3,7 +3,8 @@ package ch.vd.uniregctb.rapport;
 import java.io.OutputStream;
 import java.util.Date;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
@@ -114,7 +115,7 @@ import ch.vd.uniregctb.validation.ValidationJobResults;
  */
 public class RapportServiceImpl implements RapportService {
 
-	private static final Logger LOGGER = Logger.getLogger(RapportServiceImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(RapportServiceImpl.class);
 
 	private DocumentService docService;
 	private ServiceInfrastructureService infraService;

@@ -8,10 +8,11 @@ import java.util.concurrent.ExecutorService;
 
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
-import org.apache.log4j.Logger;
 import org.hibernate.SessionFactory;
 import org.hibernate.dialect.Dialect;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
@@ -45,7 +46,7 @@ import static org.junit.Assert.fail;
 @SuppressWarnings({"JavaDoc"})
 public class PartyWebServiceBatchTest extends WebserviceTest {
 
-	public static final Logger LOGGER = Logger.getLogger(PartyWebServiceBatchTest.class);
+	public static final Logger LOGGER = LoggerFactory.getLogger(PartyWebServiceBatchTest.class);
 
 	private PartyWebServiceCache cache;
 	private CrashingTiersDAO crashingTiersDAO;

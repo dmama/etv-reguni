@@ -11,8 +11,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -105,7 +106,7 @@ import ch.vd.uniregctb.xml.party.v1.PartyBuilder;
 
 public class PartyWebServiceImpl implements PartyWebService {
 
-	private static final Logger LOGGER = Logger.getLogger(PartyWebServiceImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(PartyWebServiceImpl.class);
 
 	private static final int MAX_BATCH_SIZE = 500;
 	// la limite Oracle est à 1'000, mais comme on peut recevoir des ménages communs, il faut garder une bonne marge pour charger les personnes physiques associées.
@@ -239,11 +240,11 @@ public class PartyWebServiceImpl implements PartyWebService {
 			throw ExceptionHelper.newBusinessException(e, BusinessExceptionCode.INDEXER_EMPTY_CRITERIA);
 		}
 		catch (IndexerException e) {
-			LOGGER.error(e, e);
+			LOGGER.error(e.getMessage(), e);
 			throw ExceptionHelper.newBusinessException(e, BusinessExceptionCode.INDEXER);
 		}
 		catch (RuntimeException e) {
-			LOGGER.error(e, e);
+			LOGGER.error(e.getMessage(), e);
 			throw ExceptionHelper.newTechnicalException(e);
 		}
 	}
@@ -289,7 +290,7 @@ public class PartyWebServiceImpl implements PartyWebService {
 			return data;
 		}
 		catch (RuntimeException e) {
-			LOGGER.error(e, e);
+			LOGGER.error(e.getMessage(), e);
 			throw ExceptionHelper.newTechnicalException(e);
 		}
 		catch (ServiceException e) {
@@ -348,7 +349,7 @@ public class PartyWebServiceImpl implements PartyWebService {
 						return ExceptionHelper.newException(e);
 					}
 					catch (RuntimeException e) {
-						LOGGER.error(e, e);
+						LOGGER.error(e.getMessage(), e);
 						return ExceptionHelper.newTechnicalException(e);
 					}
 				}
@@ -357,7 +358,7 @@ public class PartyWebServiceImpl implements PartyWebService {
 			return BatchPartyBuilder.newBatchParty(results);
 		}
 		catch (RuntimeException e) {
-			LOGGER.error(e, e);
+			LOGGER.error(e.getMessage(), e);
 			throw ExceptionHelper.newTechnicalException(e);
 		}
 	}
@@ -547,7 +548,7 @@ public class PartyWebServiceImpl implements PartyWebService {
 			return type;
 		}
 		catch (RuntimeException e) {
-			LOGGER.error(e, e);
+			LOGGER.error(e.getMessage(), e);
 			throw ExceptionHelper.newTechnicalException(e);
 		}
 	}
@@ -564,7 +565,7 @@ public class PartyWebServiceImpl implements PartyWebService {
 			return new GetTaxOfficesResponse((int) offices.getOid(), (int) offices.getOir(), null);
 		}
 		catch (RuntimeException e) {
-			LOGGER.error(e, e);
+			LOGGER.error(e.getMessage(), e);
 			throw ExceptionHelper.newTechnicalException(e);
 		}
 	}
@@ -585,7 +586,7 @@ public class PartyWebServiceImpl implements PartyWebService {
 			tiers.setBlocageRemboursementAutomatique(params.isBlocked());
 		}
 		catch (RuntimeException e) {
-			LOGGER.error(e, e);
+			LOGGER.error(e.getMessage(), e);
 			throw ExceptionHelper.newTechnicalException(e);
 		}
 	}
@@ -624,7 +625,7 @@ public class PartyWebServiceImpl implements PartyWebService {
 			return DebtorInfoBuilder.newDebtorInfo(params, lrEmises, lrManquantes);
 		}
 		catch (RuntimeException e) {
-			LOGGER.error(e, e);
+			LOGGER.error(e.getMessage(), e);
 			throw ExceptionHelper.newTechnicalException(e);
 		}
 	}
@@ -691,7 +692,7 @@ public class PartyWebServiceImpl implements PartyWebService {
 			return finalReport.getReponses();
 		}
 		catch (RuntimeException e) {
-			LOGGER.error(e, e);
+			LOGGER.error(e.getMessage(), e);
 			throw ExceptionHelper.newTechnicalException(e);
 		}
 	}
@@ -708,11 +709,11 @@ public class PartyWebServiceImpl implements PartyWebService {
 			r = ExtendDeadlineBuilder.newExtendDeadlineResponse(request.getKey(), e);
 		}
 		catch (ValidationException e) {
-			LOGGER.error(e, e);
+			LOGGER.error(e.getMessage(), e);
 			r = new ExtendDeadlineResponse(request.getKey(), ExtendDeadlineCode.EXCEPTION, new BusinessExceptionInfo(e.getMessage(), BusinessExceptionCode.VALIDATION.name(), null));
 		}
 		catch (RuntimeException e) {
-			LOGGER.error(e, e);
+			LOGGER.error(e.getMessage(), e);
 			r = new ExtendDeadlineResponse(request.getKey(), ExtendDeadlineCode.EXCEPTION, new TechnicalExceptionInfo(e.getMessage(), null));
 		}
 		return r;
@@ -795,7 +796,7 @@ public class PartyWebServiceImpl implements PartyWebService {
 			return list;
 		}
 		catch (RuntimeException e) {
-			LOGGER.error(e, e);
+			LOGGER.error(e.getMessage(), e);
 			throw ExceptionHelper.newTechnicalException(e);
 		}
 	}
@@ -809,11 +810,11 @@ public class PartyWebServiceImpl implements PartyWebService {
 			r = AcknowledgeTaxDeclarationBuilder.newAcknowledgeTaxDeclarationResponse(demande.getKey(), e);
 		}
 		catch (ValidationException e) {
-			LOGGER.error(e, e);
+			LOGGER.error(e.getMessage(), e);
 			r = new AcknowledgeTaxDeclarationResponse(demande.getKey(), TaxDeclarationAcknowledgeCode.EXCEPTION, new BusinessExceptionInfo(e.getMessage(), BusinessExceptionCode.VALIDATION.name(), null));
 		}
 		catch (RuntimeException e) {
-			LOGGER.error(e, e);
+			LOGGER.error(e.getMessage(), e);
 			r = new AcknowledgeTaxDeclarationResponse(demande.getKey(), TaxDeclarationAcknowledgeCode.EXCEPTION, new TechnicalExceptionInfo(e.getMessage(), null));
 		}
 		return r;

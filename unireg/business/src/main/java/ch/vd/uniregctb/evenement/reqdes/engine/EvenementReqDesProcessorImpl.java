@@ -21,9 +21,10 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -105,7 +106,7 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
  */
 public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, InitializingBean, DisposableBean {
 
-	private static final Logger LOGGER = Logger.getLogger(EvenementReqDesProcessorImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementReqDesProcessorImpl.class);
 
 	private static final Set<EtatTraitement> ETATS_FINAUX = EnumSet.of(EtatTraitement.FORCE, EtatTraitement.TRAITE);
 

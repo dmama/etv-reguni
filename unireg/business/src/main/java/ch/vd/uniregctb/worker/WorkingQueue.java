@@ -13,13 +13,14 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.mutable.MutableBoolean;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.uniregctb.common.ProgrammingException;
 
 public class WorkingQueue<T> {
 
-	private static final Logger LOGGER = Logger.getLogger(WorkingQueue.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(WorkingQueue.class);
 
 	private static class Element<T> {
 		private long creationTime = System.nanoTime();
@@ -514,7 +515,7 @@ public class WorkingQueue<T> {
 				doRun();
 			}
 			catch (Exception e) {
-				LOGGER.error(e);
+				LOGGER.error(e.getMessage(), e);
 			}
 			finally {
 				executionTime = System.nanoTime() - start;

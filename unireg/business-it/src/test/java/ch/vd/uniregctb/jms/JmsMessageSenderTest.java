@@ -15,8 +15,9 @@ import java.util.Scanner;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.pool.PooledConnectionFactoryBean;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 
@@ -30,7 +31,7 @@ import ch.vd.technical.esb.store.raft.RaftEsbStore;
  */
 public class JmsMessageSenderTest {
 
-	private static final Logger LOGGER = Logger.getLogger(JmsMessageSenderTest.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(JmsMessageSenderTest.class);
 
 	@Test
 	public void testSendMessage() throws Exception {

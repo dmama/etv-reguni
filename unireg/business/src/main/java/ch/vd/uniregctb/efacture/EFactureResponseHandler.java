@@ -1,13 +1,14 @@
 package ch.vd.uniregctb.efacture;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.uniregctb.jms.EsbMessageHandler;
 
 public class EFactureResponseHandler implements EsbMessageHandler {
 
-	private static final Logger LOGGER = Logger.getLogger(EFactureResponseHandler.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EFactureResponseHandler.class);
 
 	private EFactureResponseService responseService;
 
@@ -23,7 +24,7 @@ public class EFactureResponseHandler implements EsbMessageHandler {
 			onResponse(esbMessage.getBusinessCorrelationId());
 		}
 		catch (RuntimeException e) {
-			LOGGER.error(e, e);
+			LOGGER.error(e.getMessage(), e);
 			throw e;
 		}
 	}

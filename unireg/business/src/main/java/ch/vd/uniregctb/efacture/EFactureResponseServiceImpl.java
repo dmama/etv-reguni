@@ -2,7 +2,8 @@ package ch.vd.uniregctb.efacture;
 
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -15,7 +16,7 @@ public class EFactureResponseServiceImpl implements EFactureResponseService, Ini
 
 	private static final String SERVICE_NAME = "ReponseEFacture";
 
-	private static final Logger LOGGER = Logger.getLogger(EFactureResponseServiceImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EFactureResponseServiceImpl.class);
 
 	private ResponseStorage storage;
 

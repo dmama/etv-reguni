@@ -24,7 +24,7 @@ import ch.vd.uniregctb.type.TypeTache;
 
 public class TacheDAOImpl extends BaseDAOImpl<Tache, Long> implements TacheDAO {
 
-	//private static final Logger LOGGER = Logger.getLogger(TacheDAOImpl.class);
+	//private static final Logger LOGGER = LoggerFactory.getLogger(TacheDAOImpl.class);
 
 	public TacheDAOImpl() {
 		super(Tache.class);

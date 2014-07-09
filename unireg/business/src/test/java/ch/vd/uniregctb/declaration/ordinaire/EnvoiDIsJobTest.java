@@ -3,8 +3,9 @@ package ch.vd.uniregctb.declaration.ordinaire;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
@@ -19,7 +20,7 @@ import static junit.framework.Assert.fail;
 
 public class EnvoiDIsJobTest extends JobTest {
 
-	private final Logger LOGGER = Logger.getLogger(EnvoiDIsJobTest.class);
+	private final Logger LOGGER = LoggerFactory.getLogger(EnvoiDIsJobTest.class);
 
 	// Copie du fichier tiers-basic sans les données relatives aux déclarations
 	private final static String DB_UNIT_DATA_FILE = "EnvoiDIsJobTest.xml";

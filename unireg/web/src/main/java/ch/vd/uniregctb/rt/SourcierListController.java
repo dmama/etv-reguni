@@ -6,7 +6,8 @@ import javax.servlet.http.HttpSession;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 import org.springframework.validation.BindException;
@@ -24,7 +25,7 @@ import ch.vd.uniregctb.utils.WebContextUtils;
 
 public class SourcierListController  extends  AbstractTiersListController implements MessageSourceAware {
 
-	protected final Logger LOGGER = Logger.getLogger(SourcierListController.class);
+	protected final Logger LOGGER = LoggerFactory.getLogger(SourcierListController.class);
 
 	private static final String NUMERO_DEBITEUR_PARAMETER_NAME = "numeroDpi";
 

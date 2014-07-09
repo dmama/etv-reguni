@@ -6,8 +6,9 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.message.Message;
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.ResourceUtils;
 
 import ch.vd.unireg.webservices.party4.PartyWebService;
@@ -23,7 +24,7 @@ import static junit.framework.Assert.fail;
 
 public abstract class AbstractPartyWebServiceTest extends WebitTest {
 
-	private static final Logger LOGGER = Logger.getLogger(AbstractPartyWebServiceTest.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractPartyWebServiceTest.class);
 
 	protected static PartyWebService service;
 

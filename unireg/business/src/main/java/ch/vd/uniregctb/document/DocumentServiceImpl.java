@@ -14,9 +14,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.ResourceUtils;
 
 import ch.vd.registre.base.date.DateHelper;
@@ -31,7 +32,7 @@ import ch.vd.uniregctb.hibernate.HibernateTemplate;
  */
 public class DocumentServiceImpl implements DocumentService {
 
-	private final Logger LOGGER = Logger.getLogger(DocumentServiceImpl.class);
+	private final Logger LOGGER = LoggerFactory.getLogger(DocumentServiceImpl.class);
 
 	private HibernateTemplate hibernateTemplate;
 

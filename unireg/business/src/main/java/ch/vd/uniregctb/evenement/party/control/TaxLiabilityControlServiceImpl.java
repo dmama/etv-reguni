@@ -6,9 +6,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -21,7 +22,7 @@ import ch.vd.uniregctb.type.ModeImposition;
 
 public class TaxLiabilityControlServiceImpl implements TaxLiabilityControlService {
 
-	private static final Logger LOGGER = Logger.getLogger(TaxLiabilityControlServiceImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(TaxLiabilityControlServiceImpl.class);
 
 	private TiersService tiersService;
 	private AssujettissementService assujettissementService;

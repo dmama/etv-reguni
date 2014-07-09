@@ -3,8 +3,9 @@ package ch.vd.uniregctb.oid;
 import javax.sql.DataSource;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.support.TransactionCallback;
@@ -43,7 +44,7 @@ import static org.junit.Assert.fail;
 
 public class SuppressionOIDJobTest extends BusinessTest {
 
-	private final Logger LOGGER = Logger.getLogger(SuppressionOIDJobTest.class);
+	private final Logger LOGGER = LoggerFactory.getLogger(SuppressionOIDJobTest.class);
 
 	private SuppressionOIDJob job;
 	private LoggingStatusManager status;

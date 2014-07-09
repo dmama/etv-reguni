@@ -8,7 +8,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
@@ -24,7 +25,7 @@ import ch.vd.uniregctb.common.URLHelper;
  */
 public class ActionExceptionFilter extends GenericFilterBean {
 
-	private static final Logger LOGGER = Logger.getLogger(ActionExceptionFilter.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ActionExceptionFilter.class);
 
 	public static final String LAST_GET_URL = "last-get-url";
 

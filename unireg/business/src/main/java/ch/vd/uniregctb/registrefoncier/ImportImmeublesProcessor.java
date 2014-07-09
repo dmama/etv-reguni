@@ -16,9 +16,10 @@ import java.util.regex.Pattern;
 
 import au.com.bytecode.opencsv.CSVParser;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 
@@ -58,7 +59,7 @@ import static ch.vd.uniregctb.registrefoncier.ImportImmeublesResults.IgnoreType;
  */
 public class ImportImmeublesProcessor {
 
-	private static final Logger LOGGER = Logger.getLogger(RapprocherCtbProcessor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(RapprocherCtbProcessor.class);
 
 	private static final int BATCH_SIZE = 100;
 

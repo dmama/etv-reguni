@@ -4,7 +4,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -24,7 +25,7 @@ import ch.vd.uniregctb.transaction.TransactionTemplate;
  */
 public class CheckCoherenceIndexerJob extends JobDefinition {
 
-	private final Logger LOGGER = Logger.getLogger(CheckCoherenceIndexerJob.class);
+	private final Logger LOGGER = LoggerFactory.getLogger(CheckCoherenceIndexerJob.class);
 
 	public static final String NAME = "CheckCoherenceIndexerJob";
 	private static final String CATEGORIE = "Indexeur";

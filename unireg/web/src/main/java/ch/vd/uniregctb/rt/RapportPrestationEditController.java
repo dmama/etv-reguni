@@ -4,7 +4,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
@@ -17,7 +18,7 @@ import ch.vd.uniregctb.security.SecurityHelper;
 
 public class RapportPrestationEditController  extends AbstractRapportPrestationController {
 
-	protected final Logger LOGGER = Logger.getLogger(RapportPrestationEditController.class);
+	protected final Logger LOGGER = LoggerFactory.getLogger(RapportPrestationEditController.class);
 
 	private static final String NUMERO_SOURCIER_PARAMETER_NAME = "numeroSrc";
 	private static final String NUMERO_DEBITEUR_PARAMETER_NAME = "numeroDpi";

@@ -17,7 +17,7 @@ import ch.vd.uniregctb.tiers.Tiers;
  */
 public class EvenementFiscalDAOImpl extends BaseDAOImpl<EvenementFiscal, Long> implements EvenementFiscalDAO {
 
-	//private static final Logger LOGGER = Logger.getLogger(EvenementFiscalDAOImpl.class);
+	//private static final Logger LOGGER = LoggerFactory.getLogger(EvenementFiscalDAOImpl.class);
 
 	public EvenementFiscalDAOImpl() {
 		super(EvenementFiscal.class);

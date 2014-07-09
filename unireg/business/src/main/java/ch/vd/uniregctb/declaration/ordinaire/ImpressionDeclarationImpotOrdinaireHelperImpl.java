@@ -28,8 +28,9 @@ import noNamespace.TypAdresse;
 import noNamespace.TypFichierImpression;
 import noNamespace.TypFichierImpression.Document;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.DateHelper;
@@ -68,7 +69,7 @@ import ch.vd.uniregctb.type.TypeDocument;
 
 public class ImpressionDeclarationImpotOrdinaireHelperImpl extends EditiqueAbstractHelper implements ImpressionDeclarationImpotOrdinaireHelper {
 
-	public static final Logger LOGGER = Logger.getLogger(ImpressionDeclarationImpotOrdinaireHelperImpl.class);
+	public static final Logger LOGGER = LoggerFactory.getLogger(ImpressionDeclarationImpotOrdinaireHelperImpl.class);
 
 	private static final Integer NBRE_COPIE_ANNEXE_DEFAUT = 1;
 

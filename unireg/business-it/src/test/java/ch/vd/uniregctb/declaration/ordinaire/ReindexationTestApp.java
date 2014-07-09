@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.declaration.ordinaire;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.BusinessItTestApplication;
@@ -12,7 +13,7 @@ import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
  */
 public class ReindexationTestApp extends BusinessItTestApplication {
 
-	private static final Logger LOGGER = Logger.getLogger(ReindexationTestApp.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ReindexationTestApp.class);
 
 	private final static String DB_UNIT_DATA_FILE = "EnvoiDIsEnMasseTestApp.xml";
 

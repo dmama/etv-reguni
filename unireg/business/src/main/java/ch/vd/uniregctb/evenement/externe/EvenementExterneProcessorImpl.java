@@ -3,13 +3,14 @@ package ch.vd.uniregctb.evenement.externe;
 import java.util.EnumSet;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -32,7 +33,7 @@ public class EvenementExterneProcessorImpl implements EvenementExterneProcessor 
 
 	private static final int BATCH_SIZE = 100;
 
-	private static final Logger LOGGER = Logger.getLogger(EvenementExterneProcessorImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementExterneProcessorImpl.class);
 
 	private HibernateTemplate hibernateTemplate;
 	private EvenementExterneService evenementExterneService;

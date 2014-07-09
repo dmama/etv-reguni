@@ -5,8 +5,9 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
@@ -35,7 +36,7 @@ import ch.vd.uniregctb.xml.party.v3.TaxResidenceBuilder;
 
 public abstract class PartyStrategy<T extends Party> {
 
-	private static final Logger LOGGER = Logger.getLogger(PartyStrategy.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(PartyStrategy.class);
 
 	/**
 	 * Crée une nouvelle instance d'un tiers web à partir d'un tiers business.
@@ -182,7 +183,7 @@ public abstract class PartyStrategy<T extends Party> {
 			adresses = context.adresseService.getAdressesEnvoiHisto(right, false);
 		}
 		catch (ch.vd.uniregctb.adresse.AdresseException e) {
-			LOGGER.error(e, e);
+			LOGGER.error(e.getMessage(), e);
 			throw ExceptionHelper.newBusinessException(e, BusinessExceptionCode.ADDRESSES);
 		}
 

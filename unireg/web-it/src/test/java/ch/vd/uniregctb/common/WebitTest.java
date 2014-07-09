@@ -17,9 +17,10 @@ import com.gargoylesoftware.htmlunit.html.HtmlInput;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.Before;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -28,7 +29,7 @@ import static org.junit.Assert.fail;
 
 public abstract class WebitTest {
 
-	private static final Logger LOGGER = Logger.getLogger(WebitTest.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(WebitTest.class);
 	private static final Pattern valiPattern = Pattern.compile("( *---.{4}-)");
 
 	protected String baseUrl;

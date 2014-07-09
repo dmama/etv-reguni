@@ -14,7 +14,7 @@ import static org.junit.Assert.assertTrue;
 
 public class BVRPlusServiceTest {
 
-	//private static final Logger LOGGER = Logger.getLogger(BVRPlusServiceTest.class);
+	//private static final Logger LOGGER = LoggerFactory.getLogger(BVRPlusServiceTest.class);
 
 	@Ignore(value = "le service est down pour une durée indéterminée")
 	@Test

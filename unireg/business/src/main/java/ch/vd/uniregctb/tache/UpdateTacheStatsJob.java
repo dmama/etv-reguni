@@ -2,17 +2,17 @@ package ch.vd.uniregctb.tache;
 
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.uniregctb.scheduler.JobDefinition;
-import ch.vd.uniregctb.scheduler.JobParam;
 
 /**
  * Job qui met-à-jour les statistiques des tâches.
  */
 public class UpdateTacheStatsJob extends JobDefinition {
 
-	private static final Logger LOGGER = Logger.getLogger(UpdateTacheStatsJob.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(UpdateTacheStatsJob.class);
 
 	public static final String NAME = "UpdateTacheStatsJob";
 	private static final String CATEGORIE = "Tache";

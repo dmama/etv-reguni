@@ -9,10 +9,10 @@ import java.util.Set;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
@@ -35,10 +35,11 @@ import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+import ch.vd.uniregctb.utils.LogLevel;
 
 public class AutorisationCacheImpl implements AutorisationCache, DataEventListener, InitializingBean, UniregCacheInterface, KeyDumpableCache, KeyValueDumpableCache {
 
-	private static final Logger LOGGER = Logger.getLogger(AutorisationCacheImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(AutorisationCacheImpl.class);
 
 	private static class AutorisationKey implements Serializable {
 
@@ -293,12 +294,12 @@ public class AutorisationCacheImpl implements AutorisationCache, DataEventListen
 	}
 
 	@Override
-	public void dumpCacheKeys(Logger logger, Level level) {
+	public void dumpCacheKeys(Logger logger, LogLevel.Level level) {
 		CacheHelper.dumpCacheKeys(cache, logger, level);
 	}
 
 	@Override
-	public void dumpCacheContent(Logger logger, Level level) {
+	public void dumpCacheContent(Logger logger, LogLevel.Level level) {
 		CacheHelper.dumpCacheKeysAndValues(cache, logger, level, null);
 	}
 }

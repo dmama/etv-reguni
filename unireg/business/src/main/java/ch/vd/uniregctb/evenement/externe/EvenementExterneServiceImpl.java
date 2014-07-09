@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.evenement.externe;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.DateRangeHelper;
@@ -16,7 +17,7 @@ import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
 public class EvenementExterneServiceImpl implements EvenementExterneService {
 
-	private static final Logger LOGGER = Logger.getLogger(EvenementExterneServiceImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementExterneServiceImpl.class);
 
 	private EvenementExterneDAO evenementExterneDAO;
 	private TiersDAO tiersDAO;

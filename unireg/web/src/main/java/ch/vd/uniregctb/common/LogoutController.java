@@ -5,7 +5,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.servlet.ModelAndView;
@@ -21,7 +22,7 @@ import ch.vd.uniregctb.utils.UniregProperties;
  * @author <a href="mailto:abenaissi@cross-systems.com">Akram BEN AISSI </a>
  */
 public class LogoutController implements Controller {
-	private static final Logger logger = Logger.getLogger(LogoutController.class);
+	private static final Logger logger = LoggerFactory.getLogger(LogoutController.class);
 
 	private UniregProperties uniregProperties;
 

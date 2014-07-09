@@ -13,7 +13,8 @@ import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.message.Message;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.ResourceUtils;
 
 import ch.vd.uniregctb.webservices.batch.BatchPort;
@@ -40,7 +41,7 @@ public class BatchRunnerClient {
 
 	private final BatchPort service;
 	
-	static private final Logger LOGGER = Logger.getLogger(BatchRunnerClient.class);
+	static private final Logger LOGGER = LoggerFactory.getLogger(BatchRunnerClient.class);
 
 	public BatchRunnerClient(String serviceUrl, String username, String password) throws Exception {
 		service = initWebService(serviceUrl, username, password);

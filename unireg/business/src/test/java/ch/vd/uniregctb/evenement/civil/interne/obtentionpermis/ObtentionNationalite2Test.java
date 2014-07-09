@@ -1,8 +1,9 @@
 package ch.vd.uniregctb.evenement.civil.interne.obtentionpermis;
 
-import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
@@ -39,7 +40,7 @@ import static junit.framework.Assert.assertNull;
  */
 public class ObtentionNationalite2Test extends AbstractEvenementCivilInterneTest {
 
-	private static final Logger LOGGER = Logger.getLogger(ObtentionNationalite2Test.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ObtentionNationalite2Test.class);
 
 	/**
 	 * Le numéro d'individu celibataire.

@@ -8,9 +8,10 @@ import java.util.List;
 import java.util.Set;
 
 import net.sf.ehcache.CacheManager;
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
@@ -60,7 +61,7 @@ import static junit.framework.Assert.fail;
 @SuppressWarnings({"JavaDoc"})
 public class EvenementCivilProcessorTest extends BusinessTest {
 
-	private static final Logger LOGGER = Logger.getLogger(EvenementCivilProcessorTest.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementCivilProcessorTest.class);
 
 	private EvenementCivilProcessor evenementCivilProcessor;
 	private EvenementCivilRegPPDAO evenementCivilRegPPDAO;

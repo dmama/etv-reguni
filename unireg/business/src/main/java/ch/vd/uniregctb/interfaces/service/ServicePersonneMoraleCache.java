@@ -11,9 +11,9 @@ import java.util.Set;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -34,13 +34,14 @@ import ch.vd.uniregctb.interfaces.model.PartPM;
 import ch.vd.uniregctb.interfaces.model.PersonneMorale;
 import ch.vd.uniregctb.stats.StatsService;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+import ch.vd.uniregctb.utils.LogLevel;
 
 /**
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
 public class ServicePersonneMoraleCache extends ServicePersonneMoraleBase implements UniregCacheInterface, KeyDumpableCache, InitializingBean, DisposableBean, DataEventListener {
 
-	private static final Logger LOGGER = Logger.getLogger(ServicePersonneMoraleCache.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ServicePersonneMoraleCache.class);
 
 	private CacheManager cacheManager;
 	private String cacheName;
@@ -124,7 +125,7 @@ public class ServicePersonneMoraleCache extends ServicePersonneMoraleBase implem
 	}
 
 	@Override
-	public void dumpCacheKeys(Logger logger, Level level) {
+	public void dumpCacheKeys(Logger logger, LogLevel.Level level) {
 		CacheHelper.dumpCacheKeys(cache, logger, level);
 	}
 

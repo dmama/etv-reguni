@@ -1,23 +1,24 @@
 package ch.vd.uniregctb.audit;
 
-import org.apache.log4j.Level;
+import ch.vd.uniregctb.utils.LogLevel;
+
 /*
  * Longueur de colonne : 14
  */
 public enum AuditLevel {
 
-	SUCCESS(Level.INFO),
-	INFO(Level.INFO),
-	WARN(Level.WARN),
-	ERROR(Level.ERROR);
+	SUCCESS(LogLevel.Level.INFO),
+	INFO(LogLevel.Level.INFO),
+	WARN(LogLevel.Level.WARN),
+	ERROR(LogLevel.Level.ERROR);
 
-	private final Level log4jLevel;
+	private final LogLevel.Level logLevel;
 
-	AuditLevel(Level log4jLevel) {
-		this.log4jLevel = log4jLevel;
+	AuditLevel(LogLevel.Level logLevel) {
+		this.logLevel = logLevel;
 	}
 
-	public Level asLog4j() {
-		return log4jLevel;
+	public LogLevel.Level asLogLevel() {
+		return logLevel;
 	}
 }

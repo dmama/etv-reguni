@@ -2,9 +2,10 @@ package ch.vd.uniregctb.couple;
 
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
@@ -28,7 +29,7 @@ import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 public class CoupleManagerImpl implements CoupleManager {
 
-	private final Logger LOGGER = Logger.getLogger(CoupleManagerImpl.class);
+	private final Logger LOGGER = LoggerFactory.getLogger(CoupleManagerImpl.class);
 
 	private TiersDAO tiersDAO;
 	private TiersService tiersService;

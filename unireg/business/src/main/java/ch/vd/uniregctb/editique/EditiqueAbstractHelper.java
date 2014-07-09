@@ -2,8 +2,9 @@ package ch.vd.uniregctb.editique;
 
 import noNamespace.InfoDocumentDocument1;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
@@ -14,7 +15,7 @@ import ch.vd.uniregctb.tiers.TiersService;
 
 public abstract class EditiqueAbstractHelper {
 
-	public static final Logger LOGGER = Logger.getLogger(EditiqueAbstractHelper.class);
+	public static final Logger LOGGER = LoggerFactory.getLogger(EditiqueAbstractHelper.class);
 
 	//
 	// Différents types de préfixes à générer

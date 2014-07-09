@@ -21,11 +21,11 @@ import java.util.Map;
 
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 import ch.vd.uniregctb.common.StringRenderer;
+import ch.vd.uniregctb.utils.LogLevel;
 
 /**
  * Ensemble de méthodes disponibles pour la gestion des données en cache
@@ -85,36 +85,36 @@ public abstract class CacheHelper {
 		}
 	}
 
-	public static void dumpCacheKeys(Ehcache cache, Logger logger, Level level) {
-		if (logger.isEnabledFor(level)) {
+	public static void dumpCacheKeys(Ehcache cache, Logger logger, LogLevel.Level level) {
+		if (LogLevel.isEnabledFor(logger, level)) {
 			try (BufferedReader reader = dumpKeys(cache.getKeys())) {
-				logger.log(level, "Dump des clés du cache " + cache.getName() + " :");
+				LogLevel.log(logger, level, "Dump des clés du cache " + cache.getName() + " :");
 				log(logger, level, reader);
-				logger.log(level, "Dump des clés du cache " + cache.getName() + " terminé.");
+				LogLevel.log(logger, level, "Dump des clés du cache " + cache.getName() + " terminé.");
 			}
 			catch (IOException e) {
-				logger.log(level, "Impossible de dumper toutes les clés du cache " + cache.getName(), e);
+				LogLevel.log(logger, level, "Impossible de dumper toutes les clés du cache " + cache.getName(), e);
 			}
 		}
 	}
 
-	public static void dumpCacheKeysAndValues(Ehcache cache, Logger logger, Level level, @Nullable ValueRendererFactory rendererFactory) {
-		if (logger.isEnabledFor(level)) {
+	public static void dumpCacheKeysAndValues(Ehcache cache, Logger logger, LogLevel.Level level, @Nullable ValueRendererFactory rendererFactory) {
+		if (LogLevel.isEnabledFor(logger, level)) {
 			try (BufferedReader reader = dumpKeysValues(cache, rendererFactory)) {
-				logger.log(level, "Dump du contenu du cache " + cache.getName() + " :");
+				LogLevel.log(logger, level, "Dump du contenu du cache " + cache.getName() + " :");
 				log(logger, level, reader);
-				logger.log(level, "Dump du contenu du cache " + cache.getName() + " terminé.");
+				LogLevel.log(logger, level, "Dump du contenu du cache " + cache.getName() + " terminé.");
 			}
 			catch (IOException e) {
-				logger.log(level, "Impossible de dumper toutes le contenu du cache " + cache.getName(), e);
+				LogLevel.log(logger, level, "Impossible de dumper toutes le contenu du cache " + cache.getName(), e);
 			}
 		}
 	}
 
-	private static void log(Logger logger, Level level, BufferedReader reader) throws IOException {
+	private static void log(Logger logger, LogLevel.Level level, BufferedReader reader) throws IOException {
 		String line;
 		while ((line = reader.readLine()) != null) {
-			logger.log(level, line);
+			LogLevel.log(logger, level, line);
 		}
 	}
 

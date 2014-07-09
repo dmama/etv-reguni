@@ -3,12 +3,12 @@ package ch.vd.uniregctb.efacture;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 
 import ch.vd.registre.base.avs.AvsHelper;
@@ -20,7 +20,6 @@ import ch.vd.unireg.interfaces.efacture.data.DemandeAvecHisto;
 import ch.vd.unireg.interfaces.efacture.data.DestinataireAvecHisto;
 import ch.vd.unireg.interfaces.efacture.data.TypeAttenteDemande;
 import ch.vd.unireg.interfaces.efacture.data.TypeEtatDemande;
-import ch.vd.unireg.interfaces.efacture.data.TypeEtatDestinataire;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
@@ -33,7 +32,7 @@ import ch.vd.uniregctb.type.TypeDocument;
 
 public class EFactureEventHandlerImpl implements EFactureEventHandler {
 
-	private static final Logger LOGGER = Logger.getLogger(EFactureEventHandlerImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EFactureEventHandlerImpl.class);
 
 	private static final String TRAITEMENT_NOUVELLE_DEMANDE = "Traitement d'une nouvelle demande d'inscription.";
 

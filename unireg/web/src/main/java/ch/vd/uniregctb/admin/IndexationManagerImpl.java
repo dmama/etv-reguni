@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.admin;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.data.DataEventService;
@@ -11,7 +12,7 @@ import ch.vd.uniregctb.tiers.TiersDAO;
 
 public class IndexationManagerImpl implements IndexationManager {
 
-	private final Logger LOGGER = Logger.getLogger(IndexationManagerImpl.class);
+	private final Logger LOGGER = LoggerFactory.getLogger(IndexationManagerImpl.class);
 
 	private GlobalTiersIndexer tiersIndexer;
 	private DataEventService dataEventService;

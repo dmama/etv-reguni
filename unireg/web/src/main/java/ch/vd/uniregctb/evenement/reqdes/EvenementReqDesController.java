@@ -14,7 +14,8 @@ import java.util.Set;
 
 import com.itextpdf.text.DocumentException;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.propertyeditors.CustomBooleanEditor;
 import org.springframework.beans.propertyeditors.CustomCollectionEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
@@ -55,7 +56,7 @@ import ch.vd.uniregctb.utils.RegDateEditor;
 @SessionAttributes(value = {EvenementReqDesController.CRITERIA_NAME, EvenementReqDesController.PAGINATION_NAME})
 public class EvenementReqDesController {
 
-	private static final Logger LOGGER = Logger.getLogger(EvenementReqDesController.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementReqDesController.class);
 
 	private static final String ACCESS_DENIED_MESSAGE = "Vous ne possédez aucun droit IfoSec de gestion des événements des notaires.";
 	private static final int RECYCLING_MAX_WAITING_TIME_MS = 3000;      // 3 secondes

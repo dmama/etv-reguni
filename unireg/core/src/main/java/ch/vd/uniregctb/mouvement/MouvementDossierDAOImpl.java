@@ -10,10 +10,11 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.uniregctb.common.BaseDAOImpl;
@@ -24,7 +25,7 @@ import ch.vd.uniregctb.type.TypeMouvement;
 
 public class MouvementDossierDAOImpl extends BaseDAOImpl<MouvementDossier, Long> implements MouvementDossierDAO {
 
-	private static final Logger LOGGER = Logger.getLogger(MouvementDossierDAOImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(MouvementDossierDAOImpl.class);
 
 	public MouvementDossierDAOImpl() {
 		super(MouvementDossier.class);

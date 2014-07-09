@@ -7,12 +7,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Stack;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
 public class TracingManager {
 
-	public static final Logger LOGGER = Logger.getLogger(TracingManager.class);
+	public static final Logger LOGGER = LoggerFactory.getLogger(TracingManager.class);
 
 	private static boolean isActive = false;
 

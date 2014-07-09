@@ -4,11 +4,10 @@ import java.util.Map;
 
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.scheduler.JobDefinition;
-import ch.vd.uniregctb.scheduler.JobParam;
 
 public class OptimizeIndexJob extends JobDefinition {
 
-	// private final Logger LOGGER = Logger.getLogger(UpdateSequencesJob.class);
+	// private final Logger LOGGER = LoggerFactory.getLogger(UpdateSequencesJob.class);
 
 	public static final String NAME = "OptimizeIndexJob";
 	private static final String CATEGORIE = "Indexeur";

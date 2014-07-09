@@ -99,7 +99,7 @@ import static org.junit.Assert.assertNull;
 })
 public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 
-    // private static final Logger LOGGER = Logger.getLogger(AbstractBusinessTest.class);
+    // private static final Logger LOGGER = LoggerFactory.getLogger(AbstractBusinessTest.class);
 
     protected boolean wantIndexation = false;
     protected boolean wantSynchroTache = false;

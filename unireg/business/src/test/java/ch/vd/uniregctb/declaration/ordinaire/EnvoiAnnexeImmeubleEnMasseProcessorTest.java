@@ -1,7 +1,5 @@
 package ch.vd.uniregctb.declaration.ordinaire;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,18 +52,6 @@ public class EnvoiAnnexeImmeubleEnMasseProcessorTest extends BusinessTest {
 		// création du processeur à la main de manière à pouvoir appeler les méthodes protégées
 		processor = new EnvoiAnnexeImmeubleEnMasseProcessor(tiersService, modeleDAO, periodeDAO, diService, 100, transactionManager, serviceCivilCacheWarmer,
 				periodeImpositionService, adresseService);
-		// évite de logger plein d'erreurs pendant qu'on teste le comportement du processor
-		Logger serviceLogger = Logger.getLogger(DeclarationImpotServiceImpl.class);
-		serviceLogger.setLevel(Level.FATAL);
-	}
-
-	@Override
-	public void onTearDown() throws Exception {
-		super.onTearDown();
-
-		// réactive le log normal
-		Logger serviceLogger = Logger.getLogger(DeclarationImpotServiceImpl.class);
-		serviceLogger.setLevel(Level.ERROR);
 	}
 
 	@Test

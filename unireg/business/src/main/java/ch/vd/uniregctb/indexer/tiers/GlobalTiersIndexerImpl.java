@@ -8,11 +8,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.hibernate.SessionFactory;
 import org.hibernate.dialect.Dialect;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -62,6 +62,7 @@ import ch.vd.uniregctb.tiers.TiersHelper;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+import ch.vd.uniregctb.utils.LogLevel;
 
 public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingBean, DisposableBean {
 
@@ -69,7 +70,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 
 	private static final String ON_THE_FLY_SERVICE_NAME = "OnTheFlyIndexerQueueSize";
 
-    private static final Logger LOGGER = Logger.getLogger(GlobalTiersIndexerImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(GlobalTiersIndexerImpl.class);
 
     private GlobalIndexInterface globalIndex;
     private GlobalTiersSearcher tiersSearcher;
@@ -215,7 +216,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 			IndexerException {
 
 		if (statusManager == null) {
-			statusManager = new LoggingStatusManager(LOGGER, Level.DEBUG);
+			statusManager = new LoggingStatusManager(LOGGER, LogLevel.Level.DEBUG);
 		}
 
 		Audit.info("Réindexation de la base de données (mode = " + mode + ')');

@@ -15,7 +15,7 @@ public class ServiceSecuriteTest extends BusinessItTest {
 
 	private ServiceSecuriteService service;
 
-	// private static final Logger LOGGER = Logger.getLogger(ServiceSecuriteTest.class);
+	// private static final Logger LOGGER = LoggerFactory.getLogger(ServiceSecuriteTest.class);
 
 	@Override
 	public void onSetUp() throws Exception {

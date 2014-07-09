@@ -11,7 +11,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.ClassPathResource;
 import org.xml.sax.SAXException;
@@ -38,7 +39,7 @@ import ch.vd.uniregctb.type.TypeRapportEntreTiers;
  */
 public class DataEventJmsHandler implements EsbMessageHandler, InitializingBean {
 
-	private static final Logger LOGGER = Logger.getLogger(DataEventJmsHandler.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(DataEventJmsHandler.class);
 
 	private DataEventService dataEventService;
 

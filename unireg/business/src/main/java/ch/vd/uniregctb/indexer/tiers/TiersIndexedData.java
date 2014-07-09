@@ -25,7 +25,7 @@ public class TiersIndexedData implements Serializable {
 
 	private static final long serialVersionUID = 1549012269648391839L;
 
-	//private static final Logger LOGGER = Logger.getLogger(TiersIndexableData.class);
+	//private static final Logger LOGGER = LoggerFactory.getLogger(TiersIndexableData.class);
 
 	private final String tiersType;
 	private final String numero;

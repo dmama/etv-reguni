@@ -5,7 +5,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 import org.springframework.transaction.annotation.Transactional;
@@ -64,7 +65,7 @@ import ch.vd.uniregctb.utils.WebContextUtils;
  */
 public class ListeRecapEditManagerImpl implements ListeRecapEditManager, MessageSourceAware {
 
-	protected static final Logger LOGGER = Logger.getLogger(ListeRecapEditManagerImpl.class);
+	protected static final Logger LOGGER = LoggerFactory.getLogger(ListeRecapEditManagerImpl.class);
 
 	private ListeRecapitulativeDAO lrDAO;
 

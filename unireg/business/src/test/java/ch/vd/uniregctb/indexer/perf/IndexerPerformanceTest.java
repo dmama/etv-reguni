@@ -2,12 +2,13 @@ package ch.vd.uniregctb.indexer.perf;
 
 import java.util.Date;
 
-import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.search.TopDocs;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.DateHelper;
@@ -21,7 +22,7 @@ import static junit.framework.Assert.assertEquals;
 
 public class IndexerPerformanceTest extends BusinessTest {
 
-	private final Logger LOGGER = Logger.getLogger(IndexerPerformanceTest.class);
+	private final Logger LOGGER = LoggerFactory.getLogger(IndexerPerformanceTest.class);
 
 	private GlobalIndexInterface globalIndex;
 	private static final int maxHits = 100;

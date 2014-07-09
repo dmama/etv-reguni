@@ -9,7 +9,8 @@ import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument.Destinataire;
 import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument.Expediteur;
 import noNamespace.TypAdresse;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
@@ -39,7 +40,7 @@ import static noNamespace.InfoDocumentDocument1.InfoDocument.Affranchissement;
 
 public class EditiqueHelperImpl extends EditiqueAbstractHelper implements EditiqueHelper {
 
-	public static final Logger LOGGER = Logger.getLogger(EditiqueHelperImpl.class);
+	public static final Logger LOGGER = LoggerFactory.getLogger(EditiqueHelperImpl.class);
 
 	private static final String IMPOT_A_LA_SOURCE_MIN = "Impôt à la source";
 

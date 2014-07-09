@@ -3,8 +3,9 @@ package ch.vd.uniregctb.evenement.civil.interne.deces;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
@@ -225,7 +226,7 @@ public class DecesTest extends AbstractEvenementCivilInterneTest {
 
 	private EvenementCivilContext contextSimple;
 
-	private static final Logger LOGGER = Logger.getLogger(DecesTest.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(DecesTest.class);
 
 	/**
 	 * Le fichier de données de test.

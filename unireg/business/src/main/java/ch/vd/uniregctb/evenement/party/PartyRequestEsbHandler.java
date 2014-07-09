@@ -23,7 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -56,7 +57,7 @@ import ch.vd.uniregctb.xml.ServiceException;
  */
 public class PartyRequestEsbHandler implements EsbMessageHandler, InitializingBean {
 
-	private static final Logger LOGGER = Logger.getLogger(PartyRequestEsbHandler.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(PartyRequestEsbHandler.class);
 
 	private EsbXmlValidation esbValidator;
 	private EsbJmsTemplate esbTemplate;
@@ -84,7 +85,7 @@ public class PartyRequestEsbHandler implements EsbMessageHandler, InitializingBe
 		}
 		catch (Exception e) {
 			// toutes les erreurs levées ici sont des erreurs transientes ou des bugs
-			LOGGER.error(e, e);
+			LOGGER.error(e.getMessage(), e);
 			throw e;
 		}
 		finally {
@@ -132,7 +133,7 @@ public class PartyRequestEsbHandler implements EsbMessageHandler, InitializingBe
 			answer(result.isValidable(), result.getResponse(), result.getAttachments(), message);
 		}
 		catch (ESBValidationException e) {
-			LOGGER.error(e, e);
+			LOGGER.error(e.getMessage(), e);
 			throw new EsbBusinessException(EsbBusinessCode.REPONSE_IMPOSSIBLE, e.getMessage(), e);
 		}
 	}

@@ -9,7 +9,8 @@ import java.util.Set;
 
 import noNamespace.FichierImpressionDocument;
 import noNamespace.TypFichierImpression;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
 import ch.vd.editique.service.enumeration.TypeFormat;
@@ -51,7 +52,7 @@ import ch.vd.uniregctb.type.TypeDocument;
 
 public class EditiqueCompositionServiceImpl implements EditiqueCompositionService {
 
-	public static final Logger LOGGER = Logger.getLogger(EditiqueCompositionServiceImpl.class);
+	public static final Logger LOGGER = LoggerFactory.getLogger(EditiqueCompositionServiceImpl.class);
 
 	private EditiqueService editiqueService;
 

@@ -2,11 +2,12 @@ package ch.vd.uniregctb.scheduler;
 
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ExceptionThrowingJob extends JobDefinition {
 
-	private final Logger LOGGER = Logger.getLogger(ExceptionThrowingJob.class);
+	private final Logger LOGGER = LoggerFactory.getLogger(ExceptionThrowingJob.class);
 
 	public static final String NAME = "ExceptionThrowing";
 	private static final String CATEGORIE = "Debug";

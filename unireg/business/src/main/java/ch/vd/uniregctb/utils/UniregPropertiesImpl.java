@@ -10,12 +10,13 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.configuration.reloading.FileChangedReloadingStrategy;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
 public class UniregPropertiesImpl implements UniregProperties, InitializingBean {
 
-	private static final Logger LOGGER = Logger.getLogger(UniregPropertiesImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(UniregPropertiesImpl.class);
 
 	private static final Pattern PASSWORD_PATTERN = Pattern.compile("(password|psswd)", Pattern.CASE_INSENSITIVE);
 

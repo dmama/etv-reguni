@@ -4,7 +4,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -13,7 +14,7 @@ import ch.vd.uniregctb.tiers.view.SituationFamilleView;
 
 public class TiersSituationFamilleController extends AbstractTiersController {
 
-	protected final Logger LOGGER = Logger.getLogger(TiersSituationFamilleController.class);
+	protected final Logger LOGGER = LoggerFactory.getLogger(TiersSituationFamilleController.class);
 
 	private static final String NUMERO_CTB_PARAMETER_NAME = "numero";
 

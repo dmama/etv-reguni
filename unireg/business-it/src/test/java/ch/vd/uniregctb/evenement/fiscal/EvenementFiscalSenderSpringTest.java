@@ -1,9 +1,10 @@
 package ch.vd.uniregctb.evenement.fiscal;
 
 import org.apache.commons.lang3.mutable.MutableLong;
-import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
@@ -32,7 +33,7 @@ import static org.junit.Assert.assertNull;
 })
 public class EvenementFiscalSenderSpringTest extends BusinessItTest {
 
-	public static final Logger LOGGER = Logger.getLogger(EvenementFiscalSenderSpringTest.class);
+	public static final Logger LOGGER = LoggerFactory.getLogger(EvenementFiscalSenderSpringTest.class);
 
 	private EsbJmsTemplate esbTemplate;
 	private EvenementFiscalSender sender;

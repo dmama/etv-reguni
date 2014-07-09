@@ -4,8 +4,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.lang3.mutable.MutableBoolean;
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
@@ -19,7 +20,7 @@ import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 public class EvenementCivilEchRetryProcessorImpl implements EvenementCivilEchRetryProcessor {
 	
-	private static final Logger LOGGER = Logger.getLogger(EvenementCivilEchRetryProcessorImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementCivilEchRetryProcessorImpl.class);
 	
 	private EvenementCivilNotificationQueue notificationQueue;
 	private EvenementCivilEchDAO evtCivilDAO;

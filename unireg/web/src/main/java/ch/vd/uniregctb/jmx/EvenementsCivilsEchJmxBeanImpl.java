@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.jmx;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedOperation;
 import org.springframework.jmx.export.annotation.ManagedResource;
@@ -12,7 +13,7 @@ import ch.vd.uniregctb.evenement.civil.engine.ech.EvenementCivilEchProcessor;
 @ManagedResource
 public class EvenementsCivilsEchJmxBeanImpl implements EvenementsCivilsEchJmxBean {
 
-	private static final Logger LOGGER = Logger.getLogger(EvenementsCivilsEchJmxBeanImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementsCivilsEchJmxBeanImpl.class);
 
 	private EvenementCivilEchReceptionMonitor monitor;
 

@@ -29,7 +29,7 @@ import ch.vd.uniregctb.transaction.TransactionTemplate;
  */
 public class DumpAssujettissementsJob extends JobDefinition {
 
-	//private final Logger LOGGER = Logger.getLogger(DumpAssujettissementsJob.class);
+	//private final Logger LOGGER = LoggerFactory.getLogger(DumpAssujettissementsJob.class);
 
 	public static final String NAME = "DumpAssujettissementsJob";
 	private static final String CATEGORIE = "Debug";

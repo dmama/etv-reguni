@@ -3,12 +3,14 @@ package ch.vd.uniregctb.common;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.mail.MailException;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 
 import ch.vd.registre.base.utils.ExceptionUtils;
+import ch.vd.uniregctb.utils.LogLevel;
 
 /**
  * Service de notification d'exceptions par email.
@@ -19,7 +21,7 @@ public class EmailNotificationService implements NotificationService {
 
 	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
 
-	protected final Logger LOGGER = Logger.getLogger(EmailNotificationService.class);
+	protected final Logger LOGGER = LoggerFactory.getLogger(EmailNotificationService.class);
 
 	private final MailSender mailSender;
 	private final SimpleMailMessage templateMessage;
@@ -71,7 +73,7 @@ public class EmailNotificationService implements NotificationService {
 		}
 		catch (MailException ex) {
 			// simply log it and go on…
-			LOGGER.fatal("Email notification message could not sent", ex);
+			LogLevel.log(LOGGER, LogLevel.Level.FATAL, "Email notification message could not sent", ex);
 		}
 	}
 

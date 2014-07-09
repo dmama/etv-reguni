@@ -1,13 +1,14 @@
 package ch.vd.uniregctb.indexer.concurrent;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.uniregctb.indexer.GlobalIndexInterface;
 import ch.vd.uniregctb.indexer.MockIndexable;
 
 public class ConcurrentAccessIndexerThread extends AbstractConcurrentAccessThread {
 
-	private final Logger LOGGER = Logger.getLogger(ConcurrentAccessIndexerThread.class);
+	private final Logger LOGGER = LoggerFactory.getLogger(ConcurrentAccessIndexerThread.class);
 
 	public ConcurrentAccessIndexerThread(GlobalIndexInterface globalIndex) {
 

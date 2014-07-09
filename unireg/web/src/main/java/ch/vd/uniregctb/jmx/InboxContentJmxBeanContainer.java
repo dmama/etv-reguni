@@ -3,7 +3,8 @@ package ch.vd.uniregctb.jmx;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.jmx.export.MBeanExportOperations;
 
@@ -15,7 +16,7 @@ import ch.vd.uniregctb.inbox.InboxService;
  */
 public class InboxContentJmxBeanContainer implements InboxManagementListener, InitializingBean {
 
-	private static final Logger LOGGER = Logger.getLogger(InboxContentJmxBeanContainer.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(InboxContentJmxBeanContainer.class);
 
 	private InboxService inboxService;
 

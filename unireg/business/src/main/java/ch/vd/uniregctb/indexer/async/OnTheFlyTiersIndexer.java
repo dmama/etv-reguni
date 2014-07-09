@@ -4,9 +4,10 @@ import java.util.Collection;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.apache.log4j.Logger;
 import org.hibernate.SessionFactory;
 import org.hibernate.dialect.Dialect;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.uniregctb.indexer.IndexerException;
@@ -19,7 +20,7 @@ import ch.vd.uniregctb.worker.WorkingQueue;
  */
 public class OnTheFlyTiersIndexer {
 
-	private static final Logger LOGGER = Logger.getLogger(OnTheFlyTiersIndexer.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(OnTheFlyTiersIndexer.class);
 
 	private static final int MIN_THREADS = 1; // nombre minimal de threads d'indexation
 	private static final int MAX_THREADS = 4; // nombre maximal de threads d'indexation

@@ -6,9 +6,10 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
@@ -50,7 +51,7 @@ import ch.vd.uniregctb.webservice.fidor.v5.FidorClientException;
  */
 public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, UniregCacheInterface, InitializingBean {
 
-	private static final Logger LOGGER = Logger.getLogger(ServiceInfrastructureFidor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ServiceInfrastructureFidor.class);
 
 	/**
 	 * Cache des URLs de Fidor

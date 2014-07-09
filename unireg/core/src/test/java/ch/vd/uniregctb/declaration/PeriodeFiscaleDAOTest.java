@@ -2,8 +2,9 @@ package ch.vd.uniregctb.declaration;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.common.CoreDAOTest;
@@ -13,7 +14,7 @@ import static junit.framework.Assert.assertEquals;
 @SuppressWarnings({"JavaDoc"})
 public class PeriodeFiscaleDAOTest extends CoreDAOTest {
 
-	protected static final Logger LOGGER = Logger.getLogger(PeriodeFiscaleDAOTest.class);
+	protected static final Logger LOGGER = LoggerFactory.getLogger(PeriodeFiscaleDAOTest.class);
 
 	private static final String DAO_NAME = "periodeFiscaleDAO";
 

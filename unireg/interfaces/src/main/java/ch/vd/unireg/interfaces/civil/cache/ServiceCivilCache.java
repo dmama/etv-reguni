@@ -13,9 +13,9 @@ import java.util.Set;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -38,13 +38,14 @@ import ch.vd.uniregctb.data.DataEventListener;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.stats.StatsService;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+import ch.vd.uniregctb.utils.LogLevel;
 
 /**
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
 public class ServiceCivilCache implements ServiceCivilRaw, UniregCacheInterface, KeyDumpableCache, DataEventListener, InitializingBean, DisposableBean, ServiceCivilServiceWrapper {
 
-	private static final Logger LOGGER = Logger.getLogger(ServiceCivilCache.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ServiceCivilCache.class);
 
 	private CacheManager cacheManager;
 	private String cacheName;
@@ -395,7 +396,7 @@ public class ServiceCivilCache implements ServiceCivilRaw, UniregCacheInterface,
 	}
 
 	@Override
-	public void dumpCacheKeys(Logger logger, Level level) {
+	public void dumpCacheKeys(Logger logger, LogLevel.Level level) {
 		CacheHelper.dumpCacheKeys(cache, logger, level);
 	}
 }

@@ -5,7 +5,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -23,7 +24,7 @@ public class IdentificationMessagesStatsManagerImpl implements IdentificationMes
 
 	private static final String TOUS = "TOUS";
 
-	protected static final Logger LOGGER = Logger.getLogger(IdentificationMessagesStatsManagerImpl.class);
+	protected static final Logger LOGGER = LoggerFactory.getLogger(IdentificationMessagesStatsManagerImpl.class);
 
 	private IdentificationContribuableService identCtbService;
 

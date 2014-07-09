@@ -10,8 +10,9 @@ import java.io.IOException;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.web.filter.GenericFilterBean;
 
@@ -27,7 +28,7 @@ import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
  */
 public class ChooseOIDProcessingFilter extends GenericFilterBean {
 
-	private final static Logger LOGGER = Logger.getLogger(ChooseOIDProcessingFilter.class);
+	private final static Logger LOGGER = LoggerFactory.getLogger(ChooseOIDProcessingFilter.class);
 
 	public static final String IFOSEC_OID_PARAM = "ifosec-oid";
 
@@ -51,7 +52,7 @@ public class ChooseOIDProcessingFilter extends GenericFilterBean {
 				collectivites = serviceSecurite.getCollectivitesUtilisateur(username);
 			}
 			catch (ServiceSecuriteException e) {
-				LOGGER.error(e, e);
+				LOGGER.error(e.getMessage(), e);
 				throw e;
 			}
 			if (collectivites == null || collectivites.isEmpty()) {

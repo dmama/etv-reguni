@@ -10,7 +10,6 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
@@ -19,6 +18,8 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.registre.simpleindexer.DocGetter;
@@ -44,7 +45,7 @@ import ch.vd.uniregctb.tiers.TiersFilter;
  */
 public class GlobalTiersSearcherImpl implements GlobalTiersSearcher, InitializingBean {
 
-	private static final Logger LOGGER = Logger.getLogger(GlobalTiersSearcherImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(GlobalTiersSearcherImpl.class);
 
 	private ParametreAppService parametreAppService;
 	private int maxHits = 100;

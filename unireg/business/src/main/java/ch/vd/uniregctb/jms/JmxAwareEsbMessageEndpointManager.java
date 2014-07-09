@@ -3,7 +3,8 @@ package ch.vd.uniregctb.jms;
 import javax.jms.MessageListener;
 
 import org.apache.activemq.ra.MessageActivationSpec;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.technical.esb.jms.EsbMessageEndpointManager;
 
@@ -16,7 +17,7 @@ import ch.vd.technical.esb.jms.EsbMessageEndpointManager;
  */
 public class JmxAwareEsbMessageEndpointManager extends EsbMessageEndpointManager implements MessageEndpointManagerJmxInterface {
 
-	private static final Logger LOGGER = Logger.getLogger(JmxAwareEsbMessageEndpointManager.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(JmxAwareEsbMessageEndpointManager.class);
 
 	private MonitorableMessageListener messageListener;
 

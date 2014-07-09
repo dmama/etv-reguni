@@ -12,7 +12,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.propertyeditors.CustomBooleanEditor;
 import org.springframework.beans.propertyeditors.CustomCollectionEditor;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
@@ -33,7 +34,7 @@ import ch.vd.uniregctb.utils.RegDateEditor;
 
 public class AbstractIdentificationController extends AbstractSimpleFormController {
 
-	protected static final Logger LOGGER = Logger.getLogger(AbstractIdentificationController.class);
+	protected static final Logger LOGGER = LoggerFactory.getLogger(AbstractIdentificationController.class);
 
 	protected TacheMapHelper tacheMapHelper;
 	protected IdentificationMapHelper identificationMapHelper;

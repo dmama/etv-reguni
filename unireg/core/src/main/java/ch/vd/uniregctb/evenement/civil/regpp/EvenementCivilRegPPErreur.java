@@ -11,8 +11,9 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.apache.log4j.Logger;
 import org.hibernate.annotations.Type;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.utils.ExceptionUtils;
 import ch.vd.uniregctb.common.HibernateEntity;
@@ -29,7 +30,7 @@ public class EvenementCivilRegPPErreur extends HibernateEntity implements Evenem
 
 	private static final long serialVersionUID = -1077312693852919409L;
 
-	private static final Logger LOGGER = Logger.getLogger(EvenementCivilRegPPErreur.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementCivilRegPPErreur.class);
 
 	public EvenementCivilRegPPErreur() {
 	}

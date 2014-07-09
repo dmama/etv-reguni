@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
@@ -27,7 +28,7 @@ import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesRe
 
 public class IdentificationMessagesListManagerImpl implements IdentificationMessagesListManager {
 
-	protected static final Logger LOGGER = Logger.getLogger(IdentificationMessagesListManagerImpl.class);
+	protected static final Logger LOGGER = LoggerFactory.getLogger(IdentificationMessagesListManagerImpl.class);
 
 	private IdentCtbDAO identCtbDAO;
 

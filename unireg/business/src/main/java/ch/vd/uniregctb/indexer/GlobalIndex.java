@@ -3,10 +3,11 @@ package ch.vd.uniregctb.indexer;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.apache.lucene.search.Collector;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TopDocs;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -27,7 +28,7 @@ import ch.vd.uniregctb.indexer.lucene.IndexProvider;
  */
 public class GlobalIndex implements InitializingBean, DisposableBean, GlobalIndexInterface {
 
-	private static final Logger LOGGER = Logger.getLogger(GlobalIndex.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(GlobalIndex.class);
 
 	private final IndexProvider provider;
 	protected LuceneIndex index = null;
@@ -59,7 +60,7 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 			// optimize(); // Prends bcp de temps, pas possible lors de l'open
 		}
 		catch (Exception e) {
-			LOGGER.error(e, e);
+			LOGGER.error(e.getMessage(), e);
 			throw new IndexerException(e);
 		}
 	}

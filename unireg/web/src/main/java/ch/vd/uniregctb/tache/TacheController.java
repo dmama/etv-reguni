@@ -11,7 +11,8 @@ import java.util.List;
 import java.util.Locale;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -46,7 +47,7 @@ import ch.vd.uniregctb.type.TypeEtatTache;
 @RequestMapping("/tache")
 public class TacheController {
 
-	private static final Logger LOGGER = Logger.getLogger(TacheController.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(TacheController.class);
 
 	private static final String COMMAND_NAME = "command";
 
@@ -244,7 +245,7 @@ public class TacheController {
 			return editiqueControllerHelper.traiteRetourEditique(res, response, "dossier", null, erreur, erreur);
 		}
 		catch (EditiqueException e) {
-			LOGGER.error(e, e);
+			LOGGER.error(e.getMessage(), e);
 			// UNIREG-1218 : on affiche le message d'erreur de manière sympa
 			throw new ActionException(e.getMessage());
 		}

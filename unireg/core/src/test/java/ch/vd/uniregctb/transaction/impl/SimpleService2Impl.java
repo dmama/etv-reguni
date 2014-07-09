@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.transaction.impl;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -9,7 +10,7 @@ import ch.vd.uniregctb.transaction.SimpleService2;
 
 public class SimpleService2Impl extends SimpleServiceImpl implements SimpleService2 {
 
-	private static Logger LOGGER = Logger.getLogger(SimpleService2Impl.class);
+	private static Logger LOGGER = LoggerFactory.getLogger(SimpleService2Impl.class);
 
 	private SimpleService1 service1 = null;
 

@@ -5,7 +5,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
@@ -22,7 +23,7 @@ import ch.vd.uniregctb.tiers.TiersCriteria;
 
 public class IdentificationMessagesEditController extends AbstractTiersListController {
 
-	protected static final Logger LOGGER = Logger.getLogger(IdentificationMessagesEditController.class);
+	protected static final Logger LOGGER = LoggerFactory.getLogger(IdentificationMessagesEditController.class);
 
 	private IdentificationMessagesEditManager identificationMessagesEditManager;
 

@@ -19,8 +19,10 @@ import net.sf.ehcache.exceptionhandler.CacheExceptionHandler;
 import net.sf.ehcache.extension.CacheExtension;
 import net.sf.ehcache.loader.CacheLoader;
 import net.sf.ehcache.store.MemoryStoreEvictionPolicy;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import ch.vd.uniregctb.utils.LogLevel;
 
 /**
  * Wrapper autour d'un ehcache qui en plus tient des statistiques détaillées par appel.
@@ -28,7 +30,7 @@ import org.apache.log4j.Logger;
 @SuppressWarnings("unchecked")
 public class TracingCache implements Ehcache {
 
-	private static final Logger LOGGER = Logger.getLogger(TracingCache.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(TracingCache.class);
 
 	private final Ehcache target;
 
@@ -41,19 +43,18 @@ public class TracingCache implements Ehcache {
 		int nbMisses = 0;
 	}
 
-	public void dumpStats(Level level) {
+	public void dumpStats(LogLevel.Level level) {
 		int misses = 0;
 		int hits = 0;
 		int total = 0;
-		if (LOGGER.isEnabledFor(level) || LOGGER.isInfoEnabled()) {
-			if (LOGGER.isEnabledFor(level)) {
-				LOGGER.log(level, "Statistiques du cache " + getName());
+		if (LogLevel.isEnabledFor(LOGGER, level) || LOGGER.isInfoEnabled()) {
+			if (LogLevel.isEnabledFor(LOGGER, level)) {
+				LogLevel.log(LOGGER, level, "Statistiques du cache " + getName());
 			}
 			for (String name : stats.keySet()) {
-				Stats stat = stats.get(name);
-				if (LOGGER.isEnabledFor(level)) {
-					LOGGER.log(level, "   " + name + " : total=" + (stat.nbHits + stat.nbMisses) + " hits=" + stat.nbHits + " misses="
-							+ stat.nbMisses);
+				final Stats stat = stats.get(name);
+				if (LogLevel.isEnabledFor(LOGGER, level)) {
+					LogLevel.log(LOGGER, level, "   " + name + " : total=" + (stat.nbHits + stat.nbMisses) + " hits=" + stat.nbHits + " misses=" + stat.nbMisses);
 				}
 				misses += stat.nbMisses;
 				hits += stat.nbHits;
@@ -63,8 +64,7 @@ public class TracingCache implements Ehcache {
 		if (LOGGER.isInfoEnabled() && total > 0) {
 			int percentHits = (hits * 100) / total;
 			int percentMisses = 100 - percentHits;
-			String message = String.format("Statistiques du cache %s: hits=%3d%% misses=%3d%% total=%d", getName(), percentHits,
-					percentMisses, total);
+			final String message = String.format("Statistiques du cache %s: hits=%3d%% misses=%3d%% total=%d", getName(), percentHits, percentMisses, total);
 			LOGGER.info(message);
 		}
 	}
@@ -72,7 +72,7 @@ public class TracingCache implements Ehcache {
 	private void dumpStatsIfNeeded() {
 		long now = System.currentTimeMillis();
 		if (now - lastDumpStats > 30000) { // Toutes les 30 secondes
-			dumpStats(Level.DEBUG);
+			dumpStats(LogLevel.Level.DEBUG);
 			lastDumpStats = now;
 		}
 	}

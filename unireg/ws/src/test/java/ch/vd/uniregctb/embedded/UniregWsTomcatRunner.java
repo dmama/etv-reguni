@@ -20,7 +20,7 @@ import ch.vd.registre.embedded.tomcat.TomcatRunnerParameters;
  */
 public class UniregWsTomcatRunner {
 
-	// private static final Logger log = Logger.getLogger(UniregTomcatRunner.class);
+	// private static final Logger log = LoggerFactory.getLogger(UniregTomcatRunner.class);
 
 	public static void main(String[] args) throws Exception {
 

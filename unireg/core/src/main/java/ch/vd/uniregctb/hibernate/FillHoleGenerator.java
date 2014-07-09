@@ -31,7 +31,7 @@ import ch.vd.uniregctb.tiers.Contribuable;
 
 public class FillHoleGenerator implements IdentifierGenerator, PersistentIdentifierGenerator, Configurable {
 
-	//private static final Logger LOGGER = Logger.getLogger(FillHoleGenerator.class);
+	//private static final Logger LOGGER = LoggerFactory.getLogger(FillHoleGenerator.class);
 
 	private final String tableName;
 	private final String seqName;

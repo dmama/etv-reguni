@@ -4,9 +4,10 @@ import java.util.Collections;
 import java.util.GregorianCalendar;
 
 import noNamespace.FichierImpressionDocument;
-import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
@@ -42,7 +43,7 @@ import static org.junit.Assert.assertNull;
 
 public class ImpressionSommationDIHelperTest extends BusinessTest {
 
-	private static final Logger LOGGER = Logger.getLogger(ImpressionDeclarationImpotOrdinaireHelperTest.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ImpressionDeclarationImpotOrdinaireHelperTest.class);
 
 	private ImpressionSommationDIHelperImpl impressionSommationDIHelper;
 	private AdresseService adresseService;

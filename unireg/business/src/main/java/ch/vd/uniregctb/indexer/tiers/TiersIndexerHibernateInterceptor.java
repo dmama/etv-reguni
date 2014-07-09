@@ -6,13 +6,14 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 
-import org.apache.log4j.Logger;
 import org.hibernate.CallbackException;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.type.Type;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
@@ -33,7 +34,7 @@ import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 public class TiersIndexerHibernateInterceptor implements ModificationSubInterceptor, InitializingBean {
 
-	private static final Logger LOGGER = Logger.getLogger(TiersIndexerHibernateInterceptor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(TiersIndexerHibernateInterceptor.class);
 
 	private ModificationInterceptor parent;
 	private SessionFactory sessionFactory;

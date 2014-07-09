@@ -5,7 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.editique.service.enumeration.TypeMessagePropertiesNames;
 import ch.vd.technical.esb.EsbMessage;
@@ -20,7 +21,7 @@ import ch.vd.uniregctb.jms.EsbMessageHandler;
  */
 public class EvenementEditiqueEsbHandler implements EsbMessageHandler {
 
-	private static final Logger LOGGER = Logger.getLogger(EvenementEditiqueEsbHandler.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementEditiqueEsbHandler.class);
 
 	private static final String DEFAULT_ATTACHEMENT_NAME = "data";
 
@@ -55,7 +56,7 @@ public class EvenementEditiqueEsbHandler implements EsbMessageHandler {
 			}
 		}
 		catch (Exception e) {
-			LOGGER.error(e, e);
+			LOGGER.error(e.getMessage(), e);
 			throw e;
 		}
 	}

@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.declaration.ordinaire;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.audit.Audit;
@@ -17,7 +18,7 @@ import ch.vd.uniregctb.rapport.RapportService;
  */
 public class OuvertureForsMajeursTestApp extends BusinessItTestApplication {
 
-	private static final Logger LOGGER = Logger.getLogger(OuvertureForsMajeursTestApp.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(OuvertureForsMajeursTestApp.class);
 
 	private final static String DB_UNIT_DATA_FILE = "OuvertureForsMajeurs.zip";
 

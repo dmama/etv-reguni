@@ -3,7 +3,8 @@ package ch.vd.uniregctb.servlet;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.context.WebApplicationContext;
 
 import ch.vd.uniregctb.scheduler.BatchScheduler;
@@ -16,7 +17,7 @@ import ch.vd.uniregctb.scheduler.BatchScheduler;
  */
 public class JobMonitoringServletListener implements ServletContextListener {
 
-	private final static Logger LOGGER = Logger.getLogger(JobMonitoringServletListener.class);
+	private final static Logger LOGGER = LoggerFactory.getLogger(JobMonitoringServletListener.class);
 
 	private final static String beanName = "batchScheduler";
 

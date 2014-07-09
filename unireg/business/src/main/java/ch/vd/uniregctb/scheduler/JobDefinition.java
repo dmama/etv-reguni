@@ -8,8 +8,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.registre.base.date.DateHelper;
@@ -29,7 +30,7 @@ import ch.vd.uniregctb.utils.UniregModeHelper;
  */
 public abstract class JobDefinition implements InitializingBean, Comparable<JobDefinition> {
 
-	private final Logger LOGGER = Logger.getLogger(JobDefinition.class);
+	private final Logger LOGGER = LoggerFactory.getLogger(JobDefinition.class);
 
 	public static final String DATE_TRAITEMENT = "DATE_TRAITEMENT"; // pour le testing uniquement
 

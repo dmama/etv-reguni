@@ -8,7 +8,7 @@ import ch.vd.uniregctb.scheduler.JobParamBoolean;
 
 public class UpdateSequencesJob extends JobDefinition {
 
-	// private final Logger LOGGER = Logger.getLogger(UpdateSequencesJob.class);
+	// private final Logger LOGGER = LoggerFactory.getLogger(UpdateSequencesJob.class);
 
 	public static final String NAME = "UpdateSequencesJob";
 	private static final String CATEGORIE = "Database";

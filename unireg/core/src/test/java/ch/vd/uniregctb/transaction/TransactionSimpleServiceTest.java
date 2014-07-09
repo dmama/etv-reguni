@@ -14,7 +14,7 @@ import static org.junit.Assert.fail;
 })
 public class TransactionSimpleServiceTest extends CoreDAOTest {
 
-	//private static Logger LOGGER = Logger.getLogger(TransactionSimpleServiceTest.class);
+	//private static Logger LOGGER = LoggerFactory.getLogger(TransactionSimpleServiceTest.class);
 
 	private SimpleService1 service1 = null;
 	private SimpleService2 service2 = null;

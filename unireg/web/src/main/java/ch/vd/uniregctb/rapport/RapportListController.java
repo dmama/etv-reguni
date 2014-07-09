@@ -5,7 +5,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
@@ -16,7 +17,7 @@ import ch.vd.uniregctb.tiers.AbstractTiersListController;
 
 public class RapportListController extends AbstractTiersListController {
 
-	protected final Logger LOGGER = Logger.getLogger(RapportListController.class);
+	protected final Logger LOGGER = LoggerFactory.getLogger(RapportListController.class);
 
 	public static final String TIERS_LIE_CRITERIA_NAME = "tiersLieCriteria";
 	public static final String TIERS_LIE_LIST_ATTRIBUTE_NAME = "list";

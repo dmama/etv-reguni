@@ -5,7 +5,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.utils.Assert;
@@ -30,7 +31,7 @@ import ch.vd.uniregctb.validation.ValidationService;
 
 public class EvenementCediServiceImpl implements EvenementCediService {
 
-	private static final Logger LOGGER = Logger.getLogger(EvenementCediServiceImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementCediServiceImpl.class);
 
 	private TiersDAO tiersDAO;
 	private PeriodeFiscaleDAO periodeFiscaleDAO;

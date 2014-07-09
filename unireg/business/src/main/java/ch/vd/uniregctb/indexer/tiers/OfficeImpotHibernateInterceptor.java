@@ -25,7 +25,7 @@ import ch.vd.uniregctb.tiers.TiersService;
  */
 public class OfficeImpotHibernateInterceptor extends AbstractLinkedInterceptor implements Switchable {
 
-	//private static final Logger LOGGER = Logger.getLogger(OfficeImpotHibernateInterceptor.class);
+	//private static final Logger LOGGER = LoggerFactory.getLogger(OfficeImpotHibernateInterceptor.class);
 
 	private TiersService tiersService;
 	private TacheDAO tacheDAO;

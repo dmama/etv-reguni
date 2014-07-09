@@ -20,7 +20,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
@@ -75,7 +76,7 @@ import ch.vd.uniregctb.xml.DataHelper;
 
 public class ReqDesEventHandler implements EsbMessageHandler {
 
-	private static final Logger LOGGER = Logger.getLogger(ReqDesEventHandler.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ReqDesEventHandler.class);
 	private static final String VISA = "ReqDesEvent";
 
 	private Schema schemaCache;

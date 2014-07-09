@@ -5,9 +5,10 @@ import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.registre.base.date.RegDate;
@@ -23,7 +24,7 @@ import ch.vd.uniregctb.tiers.TiersService;
 
 public class ListeAssujettisProcessor extends ListesProcessor<ListeAssujettisResults, ListeAssujettisThreads> {
 
-	private static final Logger LOGGER = Logger.getLogger(ListeAssujettisProcessor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ListeAssujettisProcessor.class);
 
 	private final HibernateTemplate hibernateTemplate;
 	private final TiersService tiersService;

@@ -38,7 +38,7 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
  */
 public abstract class EvenementCivilInterne {
 
-//	private static final Logger LOGGER = Logger.getLogger(EvenementCivilInterne.class);
+//	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementCivilInterne.class);
 
 	public static final long NO_OFS_FRACTION_SENTIER = 8000;
 

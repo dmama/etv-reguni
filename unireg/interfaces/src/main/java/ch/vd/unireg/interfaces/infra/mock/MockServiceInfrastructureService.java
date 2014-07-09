@@ -1,7 +1,6 @@
 package ch.vd.unireg.interfaces.infra.mock;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -54,7 +53,7 @@ import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
  */
 public abstract class MockServiceInfrastructureService implements ServiceInfrastructureRaw {
 
-	// private static final Logger LOGGER = Logger.getLogger(MockServiceInfrastructureService.class);
+	// private static final Logger LOGGER = LoggerFactory.getLogger(MockServiceInfrastructureService.class);
 
 	protected final List<Pays> pays = new ArrayList<>();
 	protected final List<Canton> cantons = new ArrayList<>();

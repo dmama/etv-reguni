@@ -15,7 +15,7 @@ import ch.vd.uniregctb.tiers.TiersService;
 
 public abstract class ContribuableIndexable<T extends Contribuable> extends TiersIndexable<T> {
 
-	// private static final Logger LOGGER = Logger.getLogger(ContribuableIndexable.class);
+	// private static final Logger LOGGER = LoggerFactory.getLogger(ContribuableIndexable.class);
 
 	public ContribuableIndexable(AdresseService adresseService, TiersService tiersService, ServiceInfrastructureService serviceInfra, T contribuable) throws IndexerException {
 		super(adresseService, tiersService, serviceInfra, contribuable);

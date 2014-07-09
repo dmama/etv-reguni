@@ -1,7 +1,8 @@
 package ch.vd.uniregctb.evenement.civil.interne.fin.nationalite;
 
-import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
@@ -15,7 +16,7 @@ import static org.junit.Assert.assertTrue;
 
 public class FinNationaliteTest extends AbstractEvenementCivilInterneTest {
 	
-	private static final Logger LOGGER = Logger.getLogger(FinNationaliteTest.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(FinNationaliteTest.class);
 	
 	private static final long NUMERO_INDIVIDU = 34567;
 	

@@ -29,10 +29,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.hibernate.usertype.UserType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.NotImplementedException;
@@ -47,7 +48,7 @@ import ch.vd.uniregctb.hibernate.URLUserType;
  */
 public class MetaEntity {
 
-	protected static final Logger LOGGER = Logger.getLogger(MetaEntity.class);
+	protected static final Logger LOGGER = LoggerFactory.getLogger(MetaEntity.class);
 
 	private final String table;
 	private final String discriminant;

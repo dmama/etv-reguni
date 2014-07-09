@@ -11,8 +11,8 @@ import java.util.Set;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
@@ -34,10 +34,11 @@ import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.type.Niveau;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+import ch.vd.uniregctb.utils.LogLevel;
 
 public class SecurityProviderCache implements UniregCacheInterface, KeyDumpableCache, KeyValueDumpableCache, SecurityProviderInterface, DataEventListener, InitializingBean {
 
-	private static final Logger LOGGER = Logger.getLogger(SecurityProviderCache.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(SecurityProviderCache.class);
 
 	private CacheManager cacheManager;
 	private String cacheName;
@@ -537,12 +538,12 @@ public class SecurityProviderCache implements UniregCacheInterface, KeyDumpableC
 	}
 
 	@Override
-	public void dumpCacheKeys(Logger logger, Level level) {
+	public void dumpCacheKeys(Logger logger, LogLevel.Level level) {
 		CacheHelper.dumpCacheKeys(cache, logger, level);
 	}
 
 	@Override
-	public void dumpCacheContent(Logger logger, Level level) {
+	public void dumpCacheContent(Logger logger, LogLevel.Level level) {
 		CacheHelper.dumpCacheKeysAndValues(cache, logger, level, null);
 	}
 }

@@ -4,9 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -49,7 +50,7 @@ import ch.vd.uniregctb.type.TypeRapportEntreTiers;
  */
 public abstract class Arrivee extends Mouvement {
 
-	protected static Logger LOGGER = Logger.getLogger(Arrivee.class);
+	protected static Logger LOGGER = LoggerFactory.getLogger(Arrivee.class);
 
 	protected Arrivee(EvenementCivilRegPP evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		super(evenement, context, options);

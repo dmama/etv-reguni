@@ -12,11 +12,12 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
@@ -36,7 +37,7 @@ import ch.vd.uniregctb.type.TypeEtatTache;
 
 public class RecalculTachesProcessor {
 
-	private static final Logger LOGGER = Logger.getLogger(RecalculTachesProcessor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(RecalculTachesProcessor.class);
 	private static final int BATCH_SIZE = 100;
 
 	private final PlatformTransactionManager transactionManager;
@@ -160,7 +161,7 @@ public class RecalculTachesProcessor {
 			if (ids.size() == 1) {
 				// on ne peut rien faire de plus...
 				results.addErrorException(ids.get(0), e);
-				LOGGER.error(e, e);
+				LOGGER.error(e.getMessage(), e);
 			}
 			else {
 				// on essaie un par un

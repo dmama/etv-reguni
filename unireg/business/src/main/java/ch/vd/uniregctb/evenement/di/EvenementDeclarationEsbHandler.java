@@ -11,7 +11,8 @@ import javax.xml.validation.SchemaFactory;
 import java.io.IOException;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.xml.sax.SAXException;
 
@@ -30,7 +31,7 @@ import ch.vd.uniregctb.jms.EsbMessageHelper;
 
 public class EvenementDeclarationEsbHandler implements EsbMessageHandler {
 
-	private static final Logger LOGGER = Logger.getLogger(EvenementDeclarationEsbHandler.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementDeclarationEsbHandler.class);
 
 	private EvenementDeclarationHandler handler;
 
@@ -75,7 +76,7 @@ public class EvenementDeclarationEsbHandler implements EsbMessageHandler {
 			throw new EsbBusinessException(EsbBusinessCode.XML_INVALIDE, e.getMessage(), e);
 		}
 		catch (RuntimeException e) {
-			LOGGER.error(e, e);
+			LOGGER.error(e.getMessage(), e);
 			throw e;
 		}
 		finally {

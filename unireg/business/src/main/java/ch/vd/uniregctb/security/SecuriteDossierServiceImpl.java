@@ -9,7 +9,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
@@ -31,7 +32,7 @@ import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 public class SecuriteDossierServiceImpl implements SecuriteDossierService {
 
-	private static final Logger LOGGER = Logger.getLogger(SecuriteDossierServiceImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(SecuriteDossierServiceImpl.class);
 
 	private SecurityProviderInterface securityProvider;
 	private ServiceSecuriteService serviceSecurite;

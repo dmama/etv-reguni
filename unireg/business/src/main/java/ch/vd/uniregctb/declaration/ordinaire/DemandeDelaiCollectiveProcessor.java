@@ -2,7 +2,8 @@ package ch.vd.uniregctb.declaration.ordinaire;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -38,7 +39,7 @@ public class DemandeDelaiCollectiveProcessor {
 
 	private static final int BATCH_SIZE = 100;
 
-	final Logger LOGGER = Logger.getLogger(DemandeDelaiCollectiveProcessor.class);
+	final Logger LOGGER = LoggerFactory.getLogger(DemandeDelaiCollectiveProcessor.class);
 
 	private final PlatformTransactionManager transactionManager;
 	private final HibernateTemplate hibernateTemplate;

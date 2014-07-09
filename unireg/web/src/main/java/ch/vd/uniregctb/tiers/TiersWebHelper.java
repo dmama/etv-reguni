@@ -2,14 +2,15 @@ package ch.vd.uniregctb.tiers;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
 
 public abstract class TiersWebHelper {
 
-	private static final Logger LOGGER = Logger.getLogger(TiersWebHelper.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(TiersWebHelper.class);
 
 	/**
 	 * Construit et retourne une string qui résume de manière compréhensible pour un humain un rapport entre deux tiers.

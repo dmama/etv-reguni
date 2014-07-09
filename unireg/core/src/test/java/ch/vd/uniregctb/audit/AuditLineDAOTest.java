@@ -3,8 +3,9 @@ package ch.vd.uniregctb.audit;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +23,7 @@ import static junit.framework.Assert.fail;
 })
 public class AuditLineDAOTest extends CoreDAOTest {
 
-	private static Logger LOGGER = Logger.getLogger(AuditLineDAOTest.class);
+	private static Logger LOGGER = LoggerFactory.getLogger(AuditLineDAOTest.class);
 
 	private AuditLineDAO auditLineDAO;
 

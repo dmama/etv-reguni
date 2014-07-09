@@ -7,7 +7,8 @@ import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -17,7 +18,7 @@ import org.springframework.beans.factory.InitializingBean;
  */
 public class InboxServiceImpl implements InboxService, InitializingBean, DisposableBean {
 
-	private static final Logger LOGGER = Logger.getLogger(InboxServiceImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(InboxServiceImpl.class);
 
 	/**
 	 * Contenu de l'inbox

@@ -18,8 +18,9 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.message.Message;
-import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.ResourceUtils;
 
 import ch.vd.unireg.webservices.party3.PartyWebService;
@@ -37,7 +38,7 @@ import static ch.vd.uniregctb.etatcivilcomp.EtatCivilCompThread.Query;
  */
 public class EtatCivilCompClient {
 
-	private static final Logger LOGGER = Logger.getLogger(EtatCivilCompClient.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EtatCivilCompClient.class);
 
 	public static final long NANO_TO_MILLI = 1000000;
 
@@ -99,7 +100,7 @@ public class EtatCivilCompClient {
 			client.run();
 		}
 		catch (Exception e) {
-			LOGGER.error(e, e);
+			LOGGER.error(e.getMessage(), e);
 		}
 	}
 
@@ -176,7 +177,7 @@ public class EtatCivilCompClient {
 				thread.join();
 			}
 			catch (Exception e) {
-				LOGGER.warn(e, e);
+				LOGGER.warn(e.getMessage(), e);
 			}
 		}
 	}

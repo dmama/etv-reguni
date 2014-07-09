@@ -3,7 +3,8 @@ package ch.vd.uniregctb.tiers.rattrapage.ancienshabitants;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -30,7 +31,7 @@ import ch.vd.uniregctb.transaction.TransactionTemplate;
  */
 public class RecuperationDonneesAnciensHabitantsProcessor {
 
-	private static final Logger LOGGER = Logger.getLogger(RecuperationDonneesAnciensHabitantsProcessor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(RecuperationDonneesAnciensHabitantsProcessor.class);
 
 	private static final int TAILLE_LOT = 10;
 

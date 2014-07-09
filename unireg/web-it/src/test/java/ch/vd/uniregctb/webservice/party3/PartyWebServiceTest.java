@@ -90,7 +90,7 @@ import static org.junit.Assert.fail;
 @SuppressWarnings({"JavaDoc"})
 public class PartyWebServiceTest extends AbstractPartyWebServiceTest {
 
-	// private static final Logger LOGGER = Logger.getLogger(PartyWebServiceTest.class);
+	// private static final Logger LOGGER = LoggerFactory.getLogger(PartyWebServiceTest.class);
 
 	private static final String DB_UNIT_DATA_FILE = "PartyWebServiceTest.xml";
 	private static final int PREMIERE_ANNEE_FISCALE = 2003;

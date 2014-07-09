@@ -6,7 +6,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
@@ -50,7 +51,7 @@ import ch.vd.uniregctb.type.TypeTache;
  */
 public class TacheListManagerImpl implements TacheListManager {
 
-	protected static final Logger LOGGER = Logger.getLogger(TacheListManagerImpl.class);
+	protected static final Logger LOGGER = LoggerFactory.getLogger(TacheListManagerImpl.class);
 
 	private static final int DELAI_RETOUR_DI = 60;
 

@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.tiers.validator;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
@@ -22,7 +23,7 @@ import ch.vd.uniregctb.type.TypeAdresseTiers;
 
 public class CloseAdresseValidator implements Validator {
 
-	protected final Logger LOGGER = Logger.getLogger(CloseAdresseValidator.class);
+	protected final Logger LOGGER = LoggerFactory.getLogger(CloseAdresseValidator.class);
 
 	private TiersService tiersService;
 	private SecurityProviderInterface securityProvider;

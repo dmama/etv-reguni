@@ -35,7 +35,7 @@ import ch.vd.uniregctb.tiers.IndividuNotFoundException;
 
 public class ServiceCivilImpl implements ServiceCivilService, ServiceCivilServiceWrapper {
 
-	//private static final Logger LOGGER = Logger.getLogger(ServiceCivilImpl.class);
+	//private static final Logger LOGGER = LoggerFactory.getLogger(ServiceCivilImpl.class);
 
 	private ServiceInfrastructureService infraService;
 	private ServiceCivilRaw target;

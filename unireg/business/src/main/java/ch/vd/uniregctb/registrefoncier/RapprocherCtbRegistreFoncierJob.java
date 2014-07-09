@@ -11,7 +11,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -31,7 +32,7 @@ import ch.vd.uniregctb.scheduler.JobParamInteger;
  */
 public class RapprocherCtbRegistreFoncierJob extends JobDefinition {
 
-	private static final Logger LOGGER = Logger.getLogger(RapprocherCtbRegistreFoncierJob.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(RapprocherCtbRegistreFoncierJob.class);
 
 	public static final String NAME = "RapprocherCtbRegistreFoncierJob";
 	private static final String CATEGORIE = "RF";

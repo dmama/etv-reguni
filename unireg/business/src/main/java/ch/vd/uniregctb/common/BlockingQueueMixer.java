@@ -5,9 +5,10 @@ import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Active object which takes elements from several input queues and transfers them into a single ouput queue
@@ -18,7 +19,7 @@ public class BlockingQueueMixer<T> {
 	private static final int POLL_TIMEOUT = 100;    // ms
 	private static final int OFFER_TIMEOUT = 100;    // ms
 
-	private static final Logger LOGGER = Logger.getLogger(BlockingQueueMixer.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(BlockingQueueMixer.class);
 
 	private final List<BlockingQueue<T>> input;
 	private final BlockingQueue<T> output;

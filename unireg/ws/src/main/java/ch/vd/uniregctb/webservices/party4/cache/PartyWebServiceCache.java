@@ -8,8 +8,8 @@ import java.util.Set;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -47,13 +47,14 @@ import ch.vd.uniregctb.cache.KeyDumpableCache;
 import ch.vd.uniregctb.cache.UniregCacheInterface;
 import ch.vd.uniregctb.cache.UniregCacheManager;
 import ch.vd.uniregctb.stats.StatsService;
+import ch.vd.uniregctb.utils.LogLevel;
 import ch.vd.uniregctb.webservices.party4.impl.ExceptionHelper;
 
 public class PartyWebServiceCache implements UniregCacheInterface, KeyDumpableCache, PartyWebService, InitializingBean, DisposableBean {
 
 	private static final String SERVICE_NAME = "PartyWebService4";
 
-	private static final Logger LOGGER = Logger.getLogger(PartyWebServiceCache.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(PartyWebServiceCache.class);
 
 	private CacheManager cacheManager;
 	private String cacheName;
@@ -150,7 +151,7 @@ public class PartyWebServiceCache implements UniregCacheInterface, KeyDumpableCa
 			throw e;
 		}
 		catch (Exception e) {
-			LOGGER.error(e, e);
+			LOGGER.error(e.getMessage(), e);
 			throw ExceptionHelper.newTechnicalException(e);
 		}
 
@@ -197,7 +198,7 @@ public class PartyWebServiceCache implements UniregCacheInterface, KeyDumpableCa
 			return batch;
 		}
 		catch (RuntimeException e) {
-			LOGGER.error(e, e);
+			LOGGER.error(e.getMessage(), e);
 			throw ExceptionHelper.newTechnicalException(e);
 		}
 	}
@@ -313,7 +314,7 @@ public class PartyWebServiceCache implements UniregCacheInterface, KeyDumpableCa
 			}
 		}
 		catch (RuntimeException e) {
-			LOGGER.error(e, e);
+			LOGGER.error(e.getMessage(), e);
 			throw ExceptionHelper.newTechnicalException(e);
 		}
 
@@ -337,7 +338,7 @@ public class PartyWebServiceCache implements UniregCacheInterface, KeyDumpableCa
 			}
 		}
 		catch (RuntimeException e) {
-			LOGGER.error(e, e);
+			LOGGER.error(e.getMessage(), e);
 			throw ExceptionHelper.newTechnicalException(e);
 		}
 
@@ -380,7 +381,7 @@ public class PartyWebServiceCache implements UniregCacheInterface, KeyDumpableCa
 			}
 		}
 		catch (RuntimeException e) {
-			LOGGER.error(e, e);
+			LOGGER.error(e.getMessage(), e);
 			throw ExceptionHelper.newTechnicalException(e);
 		}
 
@@ -453,7 +454,7 @@ public class PartyWebServiceCache implements UniregCacheInterface, KeyDumpableCa
 	}
 
 	@Override
-	public void dumpCacheKeys(Logger logger, Level level) {
+	public void dumpCacheKeys(Logger logger, LogLevel.Level level) {
 		CacheHelper.dumpCacheKeys(cache, logger, level);
 	}
 }

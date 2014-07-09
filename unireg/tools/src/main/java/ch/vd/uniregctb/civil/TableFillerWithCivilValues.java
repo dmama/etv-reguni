@@ -24,8 +24,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.pool.BasePoolableObjectFactory;
 import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.impl.GenericObjectPool;
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.Log4jConfigurer;
 
 import ch.vd.registre.base.date.RegDate;
@@ -68,7 +69,7 @@ public class TableFillerWithCivilValues {
 	private static final String SQL_INSERT_INDIVIDU = buildInsertIndividuSql();
 	private static final String SQL_INSERT_EXCEPTION = buildInsertExceptionSql();
 
-	private static final Logger LOGGER = Logger.getLogger(TableFillerWithCivilValues.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(TableFillerWithCivilValues.class);
 
 	private final ServiceCivilRaw serviceCivil;
 

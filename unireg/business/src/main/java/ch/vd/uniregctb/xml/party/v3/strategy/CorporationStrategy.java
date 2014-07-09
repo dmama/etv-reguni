@@ -8,10 +8,11 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 import org.hibernate.annotations.NotFound;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.civil.data.Individu;
@@ -56,7 +57,7 @@ import ch.vd.uniregctb.xml.ServiceException;
 
 public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 
-	private static final Logger LOGGER = Logger.getLogger(CorporationStrategy.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(CorporationStrategy.class);
 
 	@Override
 	public Corporation newFrom(ch.vd.uniregctb.tiers.Tiers right, @Nullable Set<PartyPart> parts, Context context) throws ServiceException {
@@ -100,7 +101,7 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 				adresses = context.adresseService.getAdressesEnvoiHisto(right, false);
 			}
 			catch (ch.vd.uniregctb.adresse.AdresseException e) {
-				LOGGER.error(e, e);
+				LOGGER.error(e.getMessage(), e);
 				throw ExceptionHelper.newBusinessException(e, BusinessExceptionCode.ADDRESSES);
 			}
 

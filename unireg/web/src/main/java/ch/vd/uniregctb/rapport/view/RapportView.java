@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
@@ -33,7 +34,7 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
  */
 public class RapportView implements Comparable<RapportView>, Annulable {
 
-	protected final static Logger LOGGER = Logger.getLogger(RapportView.class);
+	protected final static Logger LOGGER = LoggerFactory.getLogger(RapportView.class);
 
 	private static BaseComparator<RapportView> comparator = new BaseComparator<>(new String[]{"annule", "dateDebut"}, new Boolean[]{true, true});
 

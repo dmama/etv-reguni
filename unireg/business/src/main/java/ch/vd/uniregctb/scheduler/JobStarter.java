@@ -2,19 +2,21 @@ package ch.vd.uniregctb.scheduler;
 
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.quartz.InterruptableJob;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.UnableToInterruptJobException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.utils.LogLevel;
 
 public class JobStarter implements Job, InterruptableJob {
 
-	private final Logger LOGGER = Logger.getLogger(JobStarter.class);
+	private final Logger LOGGER = LoggerFactory.getLogger(JobStarter.class);
 
 	private volatile JobDefinition job;
 
@@ -70,7 +72,7 @@ public class JobStarter implements Job, InterruptableJob {
 			job.setRunningMessage(e.getMessage());
 		}
 		catch (Error e) {
-			LOGGER.fatal("Job <" + job.getName() + "> error: " + e.getMessage(), e);
+			LogLevel.log(LOGGER, LogLevel.Level.FATAL, "Job <" + job.getName() + "> error: " + e.getMessage(), e);
 			job.setStatut(JobDefinition.JobStatut.JOB_EXCEPTION);
 			job.setRunningMessage(e.getMessage());
 			throw e;

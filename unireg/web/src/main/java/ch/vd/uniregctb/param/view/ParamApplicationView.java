@@ -9,7 +9,7 @@ import ch.vd.uniregctb.parametrage.ParametreEnum;
  */
 @SuppressWarnings({"UnusedDeclaration"})
 public class ParamApplicationView {
-//	private static final Logger LOGGER = Logger.getLogger(ParamApplicationView.class);
+//	private static final Logger LOGGER = LoggerFactory.getLogger(ParamApplicationView.class);
 
 	public enum Action {
 		save,

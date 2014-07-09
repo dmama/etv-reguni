@@ -3,13 +3,14 @@ package ch.vd.uniregctb.indexer.jdbc;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.search.TopDocs;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
@@ -26,7 +27,7 @@ import static junit.framework.Assert.assertEquals;
 
 public class IndexerTransactionalTest extends BusinessTest {
 
-	private final Logger LOGGER = Logger.getLogger(IndexerTransactionalTest.class);
+	private final Logger LOGGER = LoggerFactory.getLogger(IndexerTransactionalTest.class);
 
 	private GlobalIndexInterface globalIndex;
 	private static final String TYPE = "perfi";

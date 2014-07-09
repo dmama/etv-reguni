@@ -14,13 +14,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.type.StandardBasicTypes;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
@@ -72,7 +73,7 @@ import ch.vd.uniregctb.validation.ValidationService;
 
 public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 
-	protected final Logger LOGGER = Logger.getLogger(SuperGraManagerImpl.class);
+	protected final Logger LOGGER = LoggerFactory.getLogger(SuperGraManagerImpl.class);
 
 	private static final String DISCRIMINATOR_ATTNAME = "<discriminator>";
 

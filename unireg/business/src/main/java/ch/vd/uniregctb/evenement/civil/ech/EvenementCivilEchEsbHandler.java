@@ -14,7 +14,8 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.SmartLifecycle;
 import org.springframework.core.io.ClassPathResource;
@@ -38,7 +39,7 @@ import ch.vd.uniregctb.type.TypeEvenementCivilEch;
  */
 public class EvenementCivilEchEsbHandler implements EsbMessageHandler, InitializingBean, SmartLifecycle {
 
-	private static final Logger LOGGER = Logger.getLogger(EvenementCivilEchEsbHandler.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementCivilEchEsbHandler.class);
 
 	private Schema schemaCache;
 
@@ -103,7 +104,7 @@ public class EvenementCivilEchEsbHandler implements EsbMessageHandler, Initializ
 		}
 		catch (RuntimeException e) {
 			// boom technique (bug ou problème avec la DB) -> départ dans la DLQ
-			LOGGER.error(e, e);
+			LOGGER.error(e.getMessage(), e);
 			throw e;
 		}
 		finally {

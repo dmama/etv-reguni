@@ -7,7 +7,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
@@ -23,7 +24,7 @@ import ch.vd.uniregctb.tiers.TiersIndexedDataView;
 
 public class ContribuableAssocieListController  extends  AbstractTiersListController {
 
-	protected final Logger LOGGER = Logger.getLogger(DecesListController.class);
+	protected final Logger LOGGER = LoggerFactory.getLogger(DecesListController.class);
 
 	private static final String NUMERO_DEBITEUR_PARAMETER_NAME = "numeroDpi";
 

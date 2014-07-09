@@ -5,7 +5,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 
 import ch.vd.registre.base.date.DateRange;
@@ -35,7 +36,7 @@ import ch.vd.uniregctb.xml.ServiceException;
 
 public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequestHandler {
 
-	private static final Logger LOGGER = Logger.getLogger(MiseAJourRapportTravailRequestHandler.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(MiseAJourRapportTravailRequestHandler.class);
 
 	private TiersService tiersService;
 	private final Context context = new Context();

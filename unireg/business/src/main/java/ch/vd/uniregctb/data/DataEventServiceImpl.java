@@ -3,13 +3,14 @@ package ch.vd.uniregctb.data;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 public class DataEventServiceImpl implements DataEventService {
 
-	private static final Logger LOGGER = Logger.getLogger(DataEventServiceImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(DataEventServiceImpl.class);
 	
 	private final List<DataEventListener> listeners = new ArrayList<>();
 

@@ -5,8 +5,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.technical.esb.EsbMessage;
@@ -22,8 +23,8 @@ import ch.vd.uniregctb.load.LoadDetail;
  */
 public class GentilEsbMessageEndpointListener extends EsbMessageEndpointListener implements InitializingBean, DetailedLoadMonitorable, MonitorableMessageListener {
 
-	private static final Logger APP_LOGGER = Logger.getLogger(GentilEsbMessageEndpointListener.class);
-	private static final Logger JMS_LOGGER = Logger.getLogger("unireg.jms");
+	private static final Logger APP_LOGGER = LoggerFactory.getLogger(GentilEsbMessageEndpointListener.class);
+	private static final Logger JMS_LOGGER = LoggerFactory.getLogger("unireg.jms");
 
 	private static final StringRenderer<EsbMessage> RENDERER = new StringRenderer<EsbMessage>() {
 		@Override

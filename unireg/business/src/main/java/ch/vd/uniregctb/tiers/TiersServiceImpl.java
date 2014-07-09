@@ -22,13 +22,14 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.transaction.PlatformTransactionManager;
 
@@ -125,7 +126,7 @@ import ch.vd.uniregctb.validation.ValidationService;
  */
 public class TiersServiceImpl implements TiersService {
 
-    private static final Logger LOGGER = Logger.getLogger(TiersServiceImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TiersServiceImpl.class);
 
 	private TiersDAO tiersDAO;
 	private EvenementFiscalService evenementFiscalService;

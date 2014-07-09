@@ -5,8 +5,9 @@ import java.util.Set;
 
 import ch.ech.ech0044.v3.NamedPersonId;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
@@ -35,7 +36,7 @@ import ch.vd.uniregctb.xml.party.v3.WithholdingTaxationPeriodBuilder;
 
 public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 
-	private static final Logger LOGGER = Logger.getLogger(NaturalPersonStrategy.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(NaturalPersonStrategy.class);
 	private static final String CH_AHV = "CH.AHV"; // voir spécification eCH-0044
 	private static final String CH_ZAR = "CH.ZAR";
 
@@ -194,7 +195,7 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 			list = context.periodeImpositionImpotSourceService.determine(pp);
 		}
 		catch (PeriodeImpositionImpotSourceServiceException e) {
-			LOGGER.error(e, e);
+			LOGGER.error(e.getMessage(), e);
 			throw ExceptionHelper.newBusinessException(e, BusinessExceptionCode.TAX_LIABILITY);
 		}
 

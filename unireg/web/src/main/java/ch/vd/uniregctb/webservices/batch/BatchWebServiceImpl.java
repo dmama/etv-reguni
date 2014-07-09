@@ -15,8 +15,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
 import org.quartz.SchedulerException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.document.Document;
@@ -38,7 +39,7 @@ public class BatchWebServiceImpl implements BatchWebService {
 	private BatchScheduler batchScheduler;
 	private DocumentService documentService;
 
-	protected final Logger LOGGER = Logger.getLogger(BatchWebServiceImpl.class);
+	protected final Logger LOGGER = LoggerFactory.getLogger(BatchWebServiceImpl.class);
 
 	@Override
 	@SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
@@ -51,7 +52,7 @@ public class BatchWebServiceImpl implements BatchWebService {
 		AuthenticationHelper.pushPrincipal(BATCH_VISA);
 		try {
 			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug(params);
+				LOGGER.debug(params.toString());
 			}
 
 			final JobDefinition job = batchScheduler.getJob(params.name);
@@ -97,11 +98,11 @@ public class BatchWebServiceImpl implements BatchWebService {
 			throw new BatchWSException("The job  is already started");
 		}
 		catch (BatchWSException e) {
-			LOGGER.error(e, e);
+			LOGGER.error(e.getMessage(), e);
 			throw e;
 		}
 		catch (Exception e) {
-			LOGGER.error(e, e);
+			LOGGER.error(e.getMessage(), e);
 			throw new BatchWSException(e.getMessage());
 		}
 		finally {
@@ -162,7 +163,7 @@ public class BatchWebServiceImpl implements BatchWebService {
 		AuthenticationHelper.pushPrincipal(BATCH_VISA);
 		try {
 			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug(params);
+				LOGGER.debug(params.toString());
 			}
 			batchScheduler.stopJob(params.name);
 		}

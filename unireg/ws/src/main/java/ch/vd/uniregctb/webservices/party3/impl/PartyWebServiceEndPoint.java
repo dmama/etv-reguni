@@ -14,7 +14,8 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.interceptor.InInterceptors;
 import org.apache.cxf.transport.http.AbstractHTTPDestination;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
 import ch.vd.unireg.webservices.party3.AcknowledgeTaxDeclarationResponse;
@@ -66,9 +67,9 @@ import ch.vd.uniregctb.type.Niveau;
 		endpointInterface = "ch.vd.unireg.webservices.party3.PartyWebService")
 public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMonitorable {
 
-	private static final Logger LOGGER = Logger.getLogger(PartyWebServiceEndPoint.class);
-	private static final Logger READ_ACCESS = Logger.getLogger("party3.read");
-	private static final Logger WRITE_ACCESS = Logger.getLogger("party3.write");
+	private static final Logger LOGGER = LoggerFactory.getLogger(PartyWebServiceEndPoint.class);
+	private static final Logger READ_ACCESS = LoggerFactory.getLogger("party3.read");
+	private static final Logger WRITE_ACCESS = LoggerFactory.getLogger("party3.write");
 
 	/**
 	 * Moniteur des appels actuellements en cours

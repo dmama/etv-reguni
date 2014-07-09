@@ -6,7 +6,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.text.NumberFormat;
 import java.util.Locale;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -19,7 +20,7 @@ import ch.vd.uniregctb.common.AbstractSimpleFormController;
 
 public class TiersAnnulationRecapController extends AbstractSimpleFormController {
 
-	protected final Logger LOGGER = Logger.getLogger(TiersAnnulationRecapController.class);
+	protected final Logger LOGGER = LoggerFactory.getLogger(TiersAnnulationRecapController.class);
 
 	private static final String NUMERO_PARAMETER_NAME = "numero";
 	private static final String NUMERO_REMPLACANT_PARAMETER_NAME = "numeroRemplacant";

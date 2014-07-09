@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.declaration.ordinaire;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
@@ -17,7 +18,7 @@ import ch.vd.uniregctb.transaction.TransactionTemplate;
  */
 public class EnvoiDIsEnMasseTestApp extends BusinessItTestApplication {
 
-	private static final Logger LOGGER = Logger.getLogger(EnvoiDIsEnMasseTestApp.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EnvoiDIsEnMasseTestApp.class);
 
 	private final static String DB_UNIT_DATA_FILE = "EnvoiDIsEnMasseTestApp.zip";
 

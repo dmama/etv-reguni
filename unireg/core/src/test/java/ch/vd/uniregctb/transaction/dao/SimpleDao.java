@@ -2,13 +2,14 @@ package ch.vd.uniregctb.transaction.dao;
 
 import javax.sql.DataSource;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 public class SimpleDao {
 
-	private static Logger LOGGER = Logger.getLogger(SimpleDao.class);
+	private static Logger LOGGER = LoggerFactory.getLogger(SimpleDao.class);
 
 	private JdbcTemplate jdbcTemplate = null;
 
@@ -45,7 +46,7 @@ public class SimpleDao {
 			//jdbcTemplate.update("insert into test (id, data) values (2,'test2')");
 		}
 		catch(DataAccessException e) {
-			LOGGER.error(e,e);
+			LOGGER.error(e.getMessage(), e);
 			throw e;
 		}
 	}

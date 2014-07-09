@@ -5,8 +5,9 @@ import javax.validation.Valid;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 import org.springframework.stereotype.Controller;
@@ -40,7 +41,7 @@ import ch.vd.uniregctb.utils.WebContextUtils;
 @Controller
 public class TiersListController implements MessageSourceAware {
 
-	private static final Logger LOGGER = Logger.getLogger(TiersListController.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(TiersListController.class);
 
 	private TiersSearchHelper helper;
 	private SecurityProviderInterface securityProvider;

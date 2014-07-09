@@ -6,8 +6,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -48,8 +49,8 @@ import ch.vd.uniregctb.type.EtatEvenementCivil;
  */
 public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 
-	private static final Logger LOGGER = Logger.getLogger(EvenementCivilProcessorImpl.class);
-	private static final Logger EVT_INTERNE_LOGGER = Logger.getLogger(EvenementCivilInterne.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementCivilProcessorImpl.class);
+	private static final Logger EVT_INTERNE_LOGGER = LoggerFactory.getLogger(EvenementCivilInterne.class);
 
 	private static final EvenementCivilRegPPErreurFactory ERREUR_FACTORY = new EvenementCivilRegPPErreurFactory();
 
@@ -220,7 +221,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 				c = serviceInfrastructureService.getCommuneByNumeroOfs(numeroOFS, event.getDateEvenement());
 			}
 			catch (ServiceInfrastructureException e) {
-				LOGGER.error(e, e);
+				LOGGER.error(e.getMessage(), e);
 				c = null;
 			}
 			if (c == null) {

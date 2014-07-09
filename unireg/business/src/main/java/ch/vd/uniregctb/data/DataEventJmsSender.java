@@ -5,7 +5,8 @@ import javax.xml.bind.Marshaller;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.annotation.Transactional;
 import org.w3c.dom.Document;
@@ -32,7 +33,7 @@ import ch.vd.uniregctb.type.TypeRapportEntreTiers;
  */
 public class DataEventJmsSender implements DataEventListener, InitializingBean {
 
-	private static final Logger LOGGER = Logger.getLogger(DataEventJmsSender.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(DataEventJmsSender.class);
 
 	private String outputQueue;
 	private EsbJmsTemplate esbTemplate;

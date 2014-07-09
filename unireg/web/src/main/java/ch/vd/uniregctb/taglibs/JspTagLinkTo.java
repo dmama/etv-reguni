@@ -12,10 +12,11 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonToken;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.util.HtmlUtils;
 
 /**
@@ -24,7 +25,7 @@ import org.springframework.web.util.HtmlUtils;
 @SuppressWarnings("UnusedDeclaration")
 public class JspTagLinkTo extends BodyTagSupport {
 
-	private static final Logger LOGGER = Logger.getLogger(JspTagLinkTo.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(JspTagLinkTo.class);
 
 	private static final long serialVersionUID = 4115565970912710828L;
 
@@ -237,7 +238,7 @@ public class JspTagLinkTo extends BodyTagSupport {
 			return map;
 		}
 		catch (IOException e) {
-			LOGGER.error(e);
+			LOGGER.error(e.getMessage(), e);
 			return Collections.emptyMap();
 		}
 	}

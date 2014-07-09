@@ -2,8 +2,9 @@ package ch.vd.uniregctb.xml.party.v3.strategy;
 
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
 import ch.vd.unireg.xml.party.adminauth.v3.AdministrativeAuthority;
@@ -16,7 +17,7 @@ import ch.vd.uniregctb.xml.ServiceException;
 
 public class AdminAuthStrategy extends TaxPayerStrategy<AdministrativeAuthority> {
 
-	private static final Logger LOGGER = Logger.getLogger(AdminAuthStrategy.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(AdminAuthStrategy.class);
 
 	@Override
 	public AdministrativeAuthority newFrom(Tiers right, @Nullable Set<PartyPart> parts, Context context) throws ServiceException {

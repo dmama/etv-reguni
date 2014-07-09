@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.evenement.civil.interne.divorce;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.Individu;
@@ -18,7 +19,7 @@ import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
  */
 public class Divorce extends SeparationOuDivorce {
 
-	protected static Logger LOGGER = Logger.getLogger(Divorce.class);
+	protected static Logger LOGGER = LoggerFactory.getLogger(Divorce.class);
 
 	protected Divorce(EvenementCivilRegPP evenement, EvenementCivilContext context, DivorceTranslationStrategy handler, EvenementCivilOptions options) throws EvenementCivilException {
 		super(evenement, context, options);

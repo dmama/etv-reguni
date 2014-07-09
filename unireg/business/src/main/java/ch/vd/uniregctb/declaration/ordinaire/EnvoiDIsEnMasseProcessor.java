@@ -7,12 +7,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.hibernate.FlushMode;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -69,7 +70,7 @@ import ch.vd.uniregctb.type.TypeEtatTache;
 
 public class EnvoiDIsEnMasseProcessor {
 
-	private static final Logger LOGGER = Logger.getLogger(EnvoiDIsEnMasseProcessor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EnvoiDIsEnMasseProcessor.class);
 
 	private final TiersService tiersService;
 

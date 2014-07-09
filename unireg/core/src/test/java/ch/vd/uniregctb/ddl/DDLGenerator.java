@@ -3,9 +3,10 @@ package ch.vd.uniregctb.ddl;
 import java.io.FileWriter;
 import java.net.URL;
 
-import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.hibernate.dialect.Oracle10gDialect;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.util.ResourceUtils;
 
@@ -15,7 +16,7 @@ import ch.vd.uniregctb.hibernate.dialect.Oracle10gDialectWithNVarChar;
 
 public class DDLGenerator {
 
-	private static Logger LOGGER = Logger.getLogger(DDLGenerator.class);
+	private static Logger LOGGER = LoggerFactory.getLogger(DDLGenerator.class);
 
 	private static String[] contextFiles = {ClientConstants.UNIREG_CORE_DAO,
 			ClientConstants.UNIREG_CORE_SF,

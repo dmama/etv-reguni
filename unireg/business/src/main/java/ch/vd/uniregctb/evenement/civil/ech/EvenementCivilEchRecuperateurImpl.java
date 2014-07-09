@@ -2,7 +2,8 @@ package ch.vd.uniregctb.evenement.civil.ech;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
@@ -13,7 +14,7 @@ import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 public class EvenementCivilEchRecuperateurImpl implements EvenementCivilEchRecuperateur {
 
-	private static final Logger LOGGER = Logger.getLogger(EvenementCivilEchRecuperateurImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementCivilEchRecuperateurImpl.class);
 
 	private PlatformTransactionManager transactionManager;
 	private EvenementCivilEchDAO evtCivilDAO;

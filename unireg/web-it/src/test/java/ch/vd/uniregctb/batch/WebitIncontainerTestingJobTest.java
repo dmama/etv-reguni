@@ -1,7 +1,8 @@
 package ch.vd.uniregctb.batch;
 
-import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.uniregctb.common.WebitTest;
 import ch.vd.uniregctb.ubr.BatchRunnerClient;
@@ -16,7 +17,7 @@ import static org.junit.Assert.assertNotNull;
  */
 public class WebitIncontainerTestingJobTest extends WebitTest {
 
-	private static final Logger LOGGER = Logger.getLogger(WebitIncontainerTestingJobTest.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(WebitIncontainerTestingJobTest.class);
 
 	private static BatchRunnerClient client;
 

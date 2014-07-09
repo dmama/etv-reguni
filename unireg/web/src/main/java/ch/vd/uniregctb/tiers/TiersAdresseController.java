@@ -3,7 +3,8 @@ package ch.vd.uniregctb.tiers;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -12,7 +13,7 @@ import ch.vd.uniregctb.tiers.view.AdresseView;
 
 public class TiersAdresseController extends AbstractTiersController {
 
-	protected final Logger LOGGER = Logger.getLogger(TiersAdresseController.class);
+	protected final Logger LOGGER = LoggerFactory.getLogger(TiersAdresseController.class);
 
 	private final static String NUMERO_CTB_PARAMETER_NAME = "numero";
 	private final static String ID_ADRESSE_PARAMETER_NAME = "idAdresse";

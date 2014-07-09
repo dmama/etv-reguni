@@ -3,7 +3,8 @@ package ch.vd.uniregctb.tiers;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -20,7 +21,7 @@ public class DossiersApparentesEditController extends AbstractTiersController {
 	/**
 	 * Un LOGGER.
 	 */
-	protected final Logger LOGGER = Logger.getLogger(DossiersApparentesEditController.class);
+	protected final Logger LOGGER = LoggerFactory.getLogger(DossiersApparentesEditController.class);
 
 	public final static String TARGET_ANNULER_RAPPORT = "annulerRapport";
 

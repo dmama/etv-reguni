@@ -8,8 +8,7 @@ import java.util.Set;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -29,6 +28,7 @@ import ch.vd.uniregctb.common.StringRenderer;
 import ch.vd.uniregctb.security.IfoSecProcedure;
 import ch.vd.uniregctb.security.IfoSecProfil;
 import ch.vd.uniregctb.stats.StatsService;
+import ch.vd.uniregctb.utils.LogLevel;
 
 public class ServiceSecuriteCache implements UniregCacheInterface, KeyDumpableCache, KeyValueDumpableCache, ServiceSecuriteService, InitializingBean, DisposableBean {
 
@@ -514,12 +514,12 @@ public class ServiceSecuriteCache implements UniregCacheInterface, KeyDumpableCa
 	}
 
 	@Override
-	public void dumpCacheKeys(Logger logger, Level level) {
+	public void dumpCacheKeys(Logger logger, LogLevel.Level level) {
 		CacheHelper.dumpCacheKeys(cache, logger, level);
 	}
 
 	@Override
-	public void dumpCacheContent(Logger logger, Level level) {
+	public void dumpCacheContent(Logger logger, LogLevel.Level level) {
 		CacheHelper.dumpCacheKeysAndValues(cache, logger, level, RENDERER_FACTORY);
 	}
 }

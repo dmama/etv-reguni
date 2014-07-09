@@ -1,7 +1,8 @@
 package ch.vd.uniregctb.evenement.civil.interne.fin.permis;
 
-import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
@@ -19,7 +20,7 @@ import static org.junit.Assert.assertTrue;
 
 public class FinPermis2Test extends AbstractEvenementCivilInterneTest {
 
-	private static final Logger LOGGER = Logger.getLogger(FinPermis2Test.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(FinPermis2Test.class);
 
 	private static final long NUMERO_INDIVIDU = 97136; // Roberto
 	private static final long NUMERO_INDIVIDU_2 = 238947; // Rosa

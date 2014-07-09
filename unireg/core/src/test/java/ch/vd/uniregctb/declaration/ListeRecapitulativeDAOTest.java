@@ -2,8 +2,9 @@ package ch.vd.uniregctb.declaration;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
@@ -24,7 +25,7 @@ import static junit.framework.Assert.assertNull;
 @SuppressWarnings({"JavaDoc"})
 public class ListeRecapitulativeDAOTest extends CoreDAOTest {
 
-	protected static final Logger LOGGER = Logger.getLogger(ListeRecapitulativeDAOTest.class);
+	protected static final Logger LOGGER = LoggerFactory.getLogger(ListeRecapitulativeDAOTest.class);
 
 	private static final String DAO_NAME = "lrDAO";
 

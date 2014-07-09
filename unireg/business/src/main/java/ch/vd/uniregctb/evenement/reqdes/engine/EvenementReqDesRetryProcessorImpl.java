@@ -5,11 +5,12 @@ import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -24,7 +25,7 @@ import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 public class EvenementReqDesRetryProcessorImpl implements EvenementReqDesRetryProcessor {
 
-	private static final Logger LOGGER = Logger.getLogger(EvenementReqDesRetryProcessorImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementReqDesRetryProcessorImpl.class);
 
 	private EvenementReqDesProcessor mainProcessor;
 	private PlatformTransactionManager transactionManager;

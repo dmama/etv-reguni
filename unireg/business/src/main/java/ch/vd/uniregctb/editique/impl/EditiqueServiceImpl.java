@@ -2,8 +2,9 @@ package ch.vd.uniregctb.editique.impl;
 
 import java.io.InputStream;
 
-import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.editique.service.enumeration.TypeFormat;
@@ -27,7 +28,7 @@ import ch.vd.uniregctb.inbox.InboxService;
  */
 public final class EditiqueServiceImpl implements EditiqueService, InitializingBean {
 
-	private static final Logger LOGGER = Logger.getLogger(EditiqueServiceImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EditiqueServiceImpl.class);
 
 	private EvenementEditiqueSender sender;
 

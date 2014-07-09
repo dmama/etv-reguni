@@ -5,7 +5,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 
 import ch.vd.registre.base.date.DateHelper;
@@ -24,7 +25,7 @@ import ch.vd.uniregctb.validation.ValidationService;
 
 public class EvenementDeclarationServiceImpl implements EvenementDeclarationService, EvenementDeclarationHandler {
 
-	private static final Logger LOGGER = Logger.getLogger(EvenementDeclarationServiceImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementDeclarationServiceImpl.class);
 
 	private TiersDAO tiersDAO;
 	private ValidationService validationService;

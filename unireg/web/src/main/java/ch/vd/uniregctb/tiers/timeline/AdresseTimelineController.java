@@ -6,7 +6,8 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -39,7 +40,7 @@ import ch.vd.uniregctb.tiers.timeline.AdresseTimelineView.Table;
 @Controller
 public class AdresseTimelineController {
 
-	private final Logger LOGGER = Logger.getLogger(AdresseTimelineController.class);
+	private final Logger LOGGER = LoggerFactory.getLogger(AdresseTimelineController.class);
 
 	public final static String ID_PARAMETER = "id";
 

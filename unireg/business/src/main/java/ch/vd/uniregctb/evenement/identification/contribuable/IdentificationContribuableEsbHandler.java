@@ -25,7 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -47,7 +48,7 @@ import ch.vd.uniregctb.xml.ServiceException;
 
 public class IdentificationContribuableEsbHandler implements EsbMessageHandler, InitializingBean {
 
-	private static final Logger LOGGER = Logger.getLogger(IdentificationContribuableEsbHandler.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(IdentificationContribuableEsbHandler.class);
 
 	private EsbXmlValidation esbValidator;
 	private EsbJmsTemplate esbTemplate;
@@ -71,7 +72,7 @@ public class IdentificationContribuableEsbHandler implements EsbMessageHandler, 
 			onMessage(message);
 		}
 		catch (Exception e) {
-			LOGGER.error(e, e);
+			LOGGER.error(e.getMessage(), e);
 			throw e;
 		}
 		finally {

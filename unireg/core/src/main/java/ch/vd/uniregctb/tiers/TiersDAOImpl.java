@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
 import org.hibernate.FlushMode;
@@ -27,6 +26,8 @@ import org.hibernate.dialect.Dialect;
 import org.hibernate.engine.spi.EntityKey;
 import org.hibernate.internal.SessionImpl;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
@@ -43,7 +44,7 @@ import ch.vd.uniregctb.tracing.TracingManager;
 
 public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 
-	private static final Logger LOGGER = Logger.getLogger(TiersDAOImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(TiersDAOImpl.class);
 	private static final int MAX_IN_SIZE = 500;
 	private static final ImmeubleAccessor IMMEUBLE_ACCESSOR = new ImmeubleAccessor();
 

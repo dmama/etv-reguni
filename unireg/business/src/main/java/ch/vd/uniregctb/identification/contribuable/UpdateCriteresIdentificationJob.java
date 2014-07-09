@@ -2,13 +2,14 @@ package ch.vd.uniregctb.identification.contribuable;
 
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.uniregctb.scheduler.JobDefinition;
 
 public class UpdateCriteresIdentificationJob extends JobDefinition {
 
-	private static final Logger LOGGER = Logger.getLogger(UpdateCriteresIdentificationJob.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(UpdateCriteresIdentificationJob.class);
 
 	public static final String NAME = "UpdateCriteresIdentificationJob";
 	private static final String CATEGORIE = "Identification";

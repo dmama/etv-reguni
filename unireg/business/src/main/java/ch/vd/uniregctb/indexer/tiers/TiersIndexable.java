@@ -1,7 +1,8 @@
 package ch.vd.uniregctb.indexer.tiers;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.DateHelper;
@@ -24,7 +25,7 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 public abstract class TiersIndexable<T extends Tiers> implements Indexable {
 
-	private final Logger LOGGER = Logger.getLogger(TiersIndexable.class);
+	private final Logger LOGGER = LoggerFactory.getLogger(TiersIndexable.class);
 
 	public static final String TYPE = "tiers";
 

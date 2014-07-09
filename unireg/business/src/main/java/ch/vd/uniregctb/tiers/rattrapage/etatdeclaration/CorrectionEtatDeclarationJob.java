@@ -9,10 +9,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -42,7 +43,7 @@ import ch.vd.uniregctb.validation.ValidationInterceptor;
  */
 public class CorrectionEtatDeclarationJob extends JobDefinition {
 
-	private static final Logger LOGGER = Logger.getLogger(CorrectionEtatDeclarationJob.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(CorrectionEtatDeclarationJob.class);
 
 	public static final String NAME = "CorrectionEtatDeclarationJob";
 	private static final String CATEGORIE = "Database";

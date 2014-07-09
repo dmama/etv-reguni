@@ -3,8 +3,9 @@ package ch.vd.uniregctb.evenement.civil.interne.demenagement;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -59,7 +60,7 @@ import static org.junit.Assert.fail;
 })
 public class DemenagementTest extends AbstractEvenementCivilInterneTest {
 
-	private static final Logger LOGGER = Logger.getLogger(DemenagementTest.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(DemenagementTest.class);
 
 	/**
 	 * Le fichier de données de test.

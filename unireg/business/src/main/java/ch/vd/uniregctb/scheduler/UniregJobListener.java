@@ -1,16 +1,17 @@
 package ch.vd.uniregctb.scheduler;
 
-import org.apache.log4j.Logger;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.JobListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class UniregJobListener implements JobListener {
 
 	public static final UniregJobListener INSTANCE = new UniregJobListener();
 
 	private static final String NAME = "JobListener";
-	private static final Logger LOGGER = Logger.getLogger(UniregJobListener.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(UniregJobListener.class);
 
 	@Override
 	public String getName() {

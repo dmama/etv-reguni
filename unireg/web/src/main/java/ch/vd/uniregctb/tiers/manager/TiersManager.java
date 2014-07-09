@@ -10,7 +10,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 
@@ -114,7 +115,7 @@ import ch.vd.uniregctb.type.TypeRapportEntreTiers;
  */
 public class TiersManager implements MessageSourceAware {
 
-	protected final Logger LOGGER = Logger.getLogger(TiersManager.class);
+	protected final Logger LOGGER = LoggerFactory.getLogger(TiersManager.class);
 
 	private final List<TypeAdresseCivil> typesAdressesCiviles = Arrays.asList(TypeAdresseCivil.COURRIER, TypeAdresseCivil.PRINCIPALE, TypeAdresseCivil.SECONDAIRE, TypeAdresseCivil.TUTEUR);
 

@@ -8,7 +8,8 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.util.HtmlUtils;
 
 /**
@@ -17,7 +18,7 @@ import org.springframework.web.util.HtmlUtils;
 @SuppressWarnings("UnusedDeclaration")
 public class JspTagButtonTo extends BodyTagSupport {
 
-	private static final Logger LOGGER = Logger.getLogger(JspTagButtonTo.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(JspTagButtonTo.class);
 
 	private static final long serialVersionUID = 4115565970912710828L;
 

@@ -8,10 +8,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
@@ -41,7 +42,7 @@ import ch.vd.uniregctb.tracing.TracingManager;
  */
 public class GestionIndexationController extends AbstractSimpleFormController {
 
-	private final Logger LOGGER = Logger.getLogger(GestionIndexationController.class);
+	private final Logger LOGGER = LoggerFactory.getLogger(GestionIndexationController.class);
 
 	private GlobalIndexInterface globalIndex;
 	private IndexationManager indexationManager;
@@ -204,7 +205,7 @@ public class GestionIndexationController extends AbstractSimpleFormController {
 						doc = docGetter.get(h.doc);
 					}
 					catch (Exception e) {
-						LOGGER.error(e);
+						LOGGER.error(e.getMessage(), e);
 						continue; // rien de mieux à faire
 					}
 					final IndexDocument indexDocument = new IndexDocument();

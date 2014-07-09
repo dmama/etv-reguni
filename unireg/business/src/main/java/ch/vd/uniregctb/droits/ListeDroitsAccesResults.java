@@ -15,7 +15,7 @@ import ch.vd.uniregctb.type.TypeDroitAcces;
 
 public class ListeDroitsAccesResults extends JobResults<Number, ListeDroitsAccesResults> {
 
-//	private static final Logger LOGGER = Logger.getLogger(ListeDroitsAccesResults.class);
+//	private static final Logger LOGGER = LoggerFactory.getLogger(ListeDroitsAccesResults.class);
 
 	public static enum ErreurType {
 		EXCEPTION(EXCEPTION_DESCRIPTION);

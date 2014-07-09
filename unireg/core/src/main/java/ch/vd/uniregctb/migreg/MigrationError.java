@@ -7,7 +7,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.uniregctb.type.TypeMigRegError;
 
@@ -15,7 +16,7 @@ import ch.vd.uniregctb.type.TypeMigRegError;
 @Table(name = "MIGREG_ERROR")
 public class MigrationError {
 
-	private static final Logger LOGGER = Logger.getLogger(MigrationError.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(MigrationError.class);
 
 	private static final int MESSAGE_MAX_LENGTH = 255;
 

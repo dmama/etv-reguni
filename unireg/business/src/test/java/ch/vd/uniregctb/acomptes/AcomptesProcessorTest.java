@@ -6,11 +6,12 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
@@ -45,7 +46,7 @@ import static junit.framework.Assert.fail;
 
 public class AcomptesProcessorTest extends BusinessTest {
 
-	public static final Logger LOGGER = Logger.getLogger(AcomptesProcessorTest.class);
+	public static final Logger LOGGER = LoggerFactory.getLogger(AcomptesProcessorTest.class);
 
 	private AcomptesProcessor processor;
 

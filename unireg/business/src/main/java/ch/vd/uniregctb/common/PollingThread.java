@@ -2,16 +2,17 @@ package ch.vd.uniregctb.common;
 
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Classe de base d'un thread de polling d'une queue, par exemple pour produire un traitement
  */
 public abstract class PollingThread<T> extends Thread {
 
-	private static final Logger LOGGER = Logger.getLogger(PollingThread.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(PollingThread.class);
 
 	private final long pollingTimeout;
 	private final TimeUnit pollingTimeoutUnit;

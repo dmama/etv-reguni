@@ -2,9 +2,10 @@ package ch.vd.uniregctb.declaration.ordinaire;
 
 import java.util.GregorianCalendar;
 
-import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.common.BusinessTest;
@@ -14,7 +15,7 @@ import ch.vd.uniregctb.declaration.PeriodeFiscale;
 
 public class ImpressionConfirmationDelaiHelperTest extends BusinessTest {
 
-	private static final Logger LOGGER = Logger.getLogger(ImpressionDeclarationImpotOrdinaireHelperTest.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ImpressionDeclarationImpotOrdinaireHelperTest.class);
 
 	private ImpressionConfirmationDelaiHelperImpl impressionConfirmationDelaiHelper;
 

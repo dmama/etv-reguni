@@ -15,7 +15,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 import ch.vd.technical.esb.EsbMessage;
@@ -33,7 +34,7 @@ import ch.vd.uniregctb.jms.EsbMessageHandler;
  */
 public class EvenementExterneEsbHandler implements EsbMessageHandler {
 
-	private static final Logger LOGGER = Logger.getLogger(EvenementExterneEsbHandler.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementExterneEsbHandler.class);
 
 	private EvenementExterneHandler handler;
 	private HibernateTemplate hibernateTemplate;
@@ -87,7 +88,7 @@ public class EvenementExterneEsbHandler implements EsbMessageHandler {
 			throw new EsbBusinessException(EsbBusinessCode.EVT_EXTERNE, e.getMessage(), e);
 		}
 		catch (RuntimeException e) {
-			LOGGER.error(e, e);
+			LOGGER.error(e.getMessage(), e);
 			throw e;
 		}
 		finally {

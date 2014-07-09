@@ -4,10 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlError;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlOptions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
@@ -34,7 +35,7 @@ import ch.vd.uniregctb.jms.EsbMessageHelper;
  */
 public class IdentificationContribuableV1EsbHandler implements IdentificationContribuableMessageHandler, EsbMessageHandler {
 
-	private static final Logger LOGGER = Logger.getLogger(IdentificationContribuableV1EsbHandler.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(IdentificationContribuableV1EsbHandler.class);
 
 	protected static final String DOCUMENT_URL_ATTRIBUTE_NAME = "documentUrl";
 
@@ -136,7 +137,7 @@ public class IdentificationContribuableV1EsbHandler implements IdentificationCon
 			}
 			catch (RuntimeException e) {
 				// Départ en DLQ, mais on log avant...
-				LOGGER.error(e, e);
+				LOGGER.error(e.getMessage(), e);
 				throw e;
 			}
 		}

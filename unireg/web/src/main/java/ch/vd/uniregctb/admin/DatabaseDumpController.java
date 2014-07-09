@@ -40,7 +40,7 @@ import ch.vd.uniregctb.utils.UniregModeHelper;
  */
 public class DatabaseDumpController extends AbstractSimpleFormController {
 
-	// private final Logger LOGGER = Logger.getLogger(DatabaseDumpController.class);
+	// private final Logger LOGGER = LoggerFactory.getLogger(DatabaseDumpController.class);
 
 	private static final int MAX_TIERS_TO_DUMP = 1000;
 

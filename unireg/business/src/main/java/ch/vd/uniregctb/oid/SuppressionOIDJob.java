@@ -12,7 +12,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -42,7 +43,7 @@ import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 public class SuppressionOIDJob extends JobDefinition {
 
-	private static final Logger LOGGER = Logger.getLogger(SuppressionOIDJob.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(SuppressionOIDJob.class);
 
 	public static final String NAME = "SuppressionOIDJob";
 	private static final String CATEGORIE = "OID";

@@ -3,7 +3,8 @@ package ch.vd.uniregctb.utils;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jndi.JndiTemplate;
 
 /**
@@ -16,7 +17,7 @@ import org.springframework.jndi.JndiTemplate;
  */
 public class UniregJndiTemplate extends JndiTemplate {
 
-	private static final Logger LOGGER = Logger.getLogger(UniregJndiTemplate.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(UniregJndiTemplate.class);
 
 	@Override
 	public void setEnvironment(Properties environment) {

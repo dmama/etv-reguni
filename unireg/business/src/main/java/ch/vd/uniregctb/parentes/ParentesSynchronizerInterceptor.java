@@ -5,9 +5,10 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.hibernate.CallbackException;
 import org.hibernate.type.Type;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -32,7 +33,7 @@ import ch.vd.uniregctb.transaction.TransactionTemplate;
  */
 public class ParentesSynchronizerInterceptor implements ModificationSubInterceptor, InitializingBean, Switchable {
 
-	private static final Logger LOGGER = Logger.getLogger(ParentesSynchronizerInterceptor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ParentesSynchronizerInterceptor.class);
 
 	private ModificationInterceptor parent;
 	private TiersService tiersService;
@@ -134,7 +135,7 @@ public class ParentesSynchronizerInterceptor implements ModificationSubIntercept
 				}
 			}
 			catch (RuntimeException e) {
-				LOGGER.error(e, e);
+				LOGGER.error(e.getMessage(), e);
 				markParentesDirty(set);
 				throw e;
 			}

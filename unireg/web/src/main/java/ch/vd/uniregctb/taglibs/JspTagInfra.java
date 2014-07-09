@@ -9,7 +9,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.util.HtmlUtils;
 
 import ch.vd.registre.base.utils.ReadOnlyPropertyDescriptor;
@@ -24,7 +25,7 @@ public class JspTagInfra extends BodyTagSupport {
 
 	private static final long serialVersionUID = -8958197495549589352L;
 
-	private final Logger LOGGER = Logger.getLogger(JspTagInfra.class);
+	private final Logger LOGGER = LoggerFactory.getLogger(JspTagInfra.class);
 
 	private String entityType;
 	private Integer entityId;

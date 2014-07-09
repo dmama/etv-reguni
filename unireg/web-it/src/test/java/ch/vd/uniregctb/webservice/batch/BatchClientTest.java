@@ -5,8 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -25,7 +26,7 @@ import static org.junit.Assert.fail;
 @SuppressWarnings({"JavaDoc"})
 public class BatchClientTest extends WebitTest {
 
-	private static final Logger LOGGER = Logger.getLogger(BatchClientTest.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(BatchClientTest.class);
 
 	private static final String BATCH_NAME = "IT-BatchClientJob";
 

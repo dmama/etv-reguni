@@ -1,7 +1,8 @@
 package ch.vd.uniregctb.param.validator;
 
 import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
@@ -13,7 +14,7 @@ public class ParametrePeriodeFiscaleValidator implements Validator{
 	/**
 	 * Un logger pour {@link ParametrePeriodeFiscaleValidator}
 	 */
-	private static final Logger LOGGER = Logger.getLogger(ParametrePeriodeFiscaleValidator.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ParametrePeriodeFiscaleValidator.class);
 
 	@Override
 	@SuppressWarnings("unchecked")

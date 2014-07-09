@@ -9,7 +9,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
 /**
@@ -60,7 +61,7 @@ import org.springframework.beans.factory.InitializingBean;
  */
 public class LocaliteInvalideMatcher implements InitializingBean {
 
-	private static Logger LOGGER = Logger.getLogger(LocaliteInvalideMatcher.class);
+	private static Logger LOGGER = LoggerFactory.getLogger(LocaliteInvalideMatcher.class);
 
 	private static boolean enabled;
 	private static String localitesInvalides;

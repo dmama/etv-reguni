@@ -12,10 +12,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.hibernate.collection.internal.PersistentSet;
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.test.annotation.ExpectedException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
@@ -56,7 +57,7 @@ import static org.junit.Assert.fail;
 @SuppressWarnings({"JavaDoc"})
 public class TiersDAOTest extends CoreDAOTest {
 
-	protected static final Logger LOGGER = Logger.getLogger(TiersDAOTest.class);
+	protected static final Logger LOGGER = LoggerFactory.getLogger(TiersDAOTest.class);
 
 	private static final String DAO_NAME = "tiersDAO";
 

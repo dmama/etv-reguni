@@ -2,8 +2,9 @@ package ch.vd.uniregctb.evenement.civil.interne.adoption;
 
 import java.util.Date;
 
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
@@ -22,7 +23,7 @@ import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
  */
 public class Adoption extends EvenementCivilInterne {
 
-	protected static Logger LOGGER = Logger.getLogger(Adoption.class);
+	protected static Logger LOGGER = LoggerFactory.getLogger(Adoption.class);
 
 	/**
 	 * La date de début d'adoption.

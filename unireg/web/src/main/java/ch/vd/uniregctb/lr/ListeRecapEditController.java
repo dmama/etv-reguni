@@ -4,7 +4,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.validation.BindException;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.web.servlet.ModelAndView;
@@ -21,7 +22,7 @@ import ch.vd.uniregctb.security.SecurityHelper;
 
 public class ListeRecapEditController extends AbstractListeRecapController {
 
-	protected static final Logger LOGGER = Logger.getLogger(ListeRecapListController.class);
+	protected static final Logger LOGGER = LoggerFactory.getLogger(ListeRecapListController.class);
 
 	/**
 	 * Le nom du parametre utilise dans la request.

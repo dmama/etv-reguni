@@ -9,7 +9,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,7 +51,7 @@ import ch.vd.uniregctb.utils.WebContextUtils;
 
 public class AbstractMouvementManagerImpl implements AbstractMouvementManager, MessageSourceAware {
 
-	public static final Logger LOGGER = Logger.getLogger(AbstractMouvementManagerImpl.class);
+	public static final Logger LOGGER = LoggerFactory.getLogger(AbstractMouvementManagerImpl.class);
 
 	private TiersGeneralManager tiersGeneralManager;
 	private TiersService tiersService;

@@ -8,8 +8,9 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.apache.log4j.Logger;
 import org.hibernate.annotations.Type;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
@@ -20,7 +21,7 @@ import ch.vd.uniregctb.type.TypeEvenementErreur;
 @Table(name = "EVENEMENT_CIVIL_ECH_ERREUR")
 public class EvenementCivilEchErreur extends HibernateEntity implements EvenementCivilErreur {
 
-	private static final Logger LOGGER = Logger.getLogger(EvenementCivilEchErreur.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementCivilEchErreur.class);
 
 	private Long id;
 	private String message;

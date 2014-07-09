@@ -5,8 +5,9 @@ import java.util.Set;
 import ch.ech.ech0044.v2.NamedPersonId;
 import ch.ech.ech0044.v2.PersonIdentification;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
@@ -27,7 +28,7 @@ import ch.vd.uniregctb.xml.ServiceException;
 
 public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 
-	private static final Logger LOGGER = Logger.getLogger(NaturalPersonStrategy.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(NaturalPersonStrategy.class);
 	private static final String CH_AHV = "CH.AHV"; // voir spécification eCH-0044
 	private static final String CH_ZAR = "CH.ZAR";
 	private static final String VD_UNIREG = "VD.UNIREG";

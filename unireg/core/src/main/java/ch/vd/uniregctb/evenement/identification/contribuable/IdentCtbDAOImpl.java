@@ -11,9 +11,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.support.DataAccessUtils;
 
 import ch.vd.registre.base.date.RegDate;
@@ -26,7 +27,7 @@ import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContr
 
 public class IdentCtbDAOImpl extends BaseDAOImpl<IdentificationContribuable, Long> implements IdentCtbDAO {
 
-	private static final Logger LOGGER = Logger.getLogger(IdentCtbDAOImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(IdentCtbDAOImpl.class);
 
 	private static final String TOUS = "TOUS";
 

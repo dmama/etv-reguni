@@ -9,12 +9,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
 import org.hibernate.FlushMode;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Pair;
@@ -23,7 +24,7 @@ import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
 public class DeclarationImpotOrdinaireDAOImpl extends BaseDAOImpl< DeclarationImpotOrdinaire, Long> implements DeclarationImpotOrdinaireDAO {
 
-	private static final Logger LOGGER = Logger.getLogger(DeclarationImpotOrdinaireDAOImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(DeclarationImpotOrdinaireDAOImpl.class);
 
 	private static final String TOUS = "TOUS";
 

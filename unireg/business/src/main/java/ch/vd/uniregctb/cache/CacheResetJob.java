@@ -20,7 +20,7 @@ import ch.vd.uniregctb.scheduler.JobParamBoolean;
  */
 public class CacheResetJob extends JobDefinition {
 
-	// private final Logger LOGGER = Logger.getLogger(CacheResetJob.class);
+	// private final Logger LOGGER = LoggerFactory.getLogger(CacheResetJob.class);
 
 	public static final String NAME = "CacheResetJob";
 	private static final String CATEGORIE = "Cache";

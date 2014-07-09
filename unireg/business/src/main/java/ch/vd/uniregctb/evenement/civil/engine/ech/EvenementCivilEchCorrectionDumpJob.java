@@ -10,7 +10,8 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableObject;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -31,7 +32,7 @@ import ch.vd.uniregctb.utils.UniregModeHelper;
 
 public class EvenementCivilEchCorrectionDumpJob extends JobDefinition {
 
-	private static final Logger LOGGER = Logger.getLogger(EvenementCivilEchCorrectionDumpJob.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementCivilEchCorrectionDumpJob.class);
 
 	private static final String NAME = "EvenementCivilEchCorrectionDumpJob";
 	private static final String CATEGORY = "Events";

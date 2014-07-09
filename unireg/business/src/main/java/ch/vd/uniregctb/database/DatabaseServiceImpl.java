@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.dbunit.database.DatabaseConfig;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.QueryDataSet;
@@ -36,6 +35,8 @@ import org.hibernate.dialect.Oracle8iDialect;
 import org.hibernate.mapping.Column;
 import org.hibernate.mapping.ForeignKey;
 import org.hibernate.mapping.Table;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
@@ -56,7 +57,7 @@ import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 public class DatabaseServiceImpl implements DatabaseService {
 
-	private static final Logger LOGGER = Logger.getLogger(DatabaseServiceImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(DatabaseServiceImpl.class);
 	private static final String CORE_TRUNCATE_SQL = "/sql/core_truncate_tables.sql";
 
 	private DescriptiveSessionFactoryBean sessionFactoryBean;
@@ -342,7 +343,7 @@ public class DatabaseServiceImpl implements DatabaseService {
 			LOGGER.info("La base de données à été exportée.");
 		}
 		catch (Exception e) {
-			LOGGER.error(e, e);
+			LOGGER.error(e.getMessage(), e);
 			throw e;
 		}
 		finally {
@@ -435,7 +436,7 @@ public class DatabaseServiceImpl implements DatabaseService {
 			return dataSet.getTable("TIERS").getRowCount();
 		}
 		catch (Exception e) {
-			LOGGER.error(e, e);
+			LOGGER.error(e.getMessage(), e);
 			throw e;
 		}
 		finally {
@@ -676,7 +677,7 @@ public class DatabaseServiceImpl implements DatabaseService {
 			LOGGER.info("La base de données à été importée.");
 		}
 		catch (Exception e) {
-			LOGGER.error(e, e);
+			LOGGER.error(e.getMessage(), e);
 			throw e;
 		}
 		finally {

@@ -4,7 +4,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
@@ -28,7 +29,7 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 	/**
 	 * Un logger pour {@link ParamPeriodeManagerImpl}
 	 */
-	private static final Logger LOGGER = Logger.getLogger(ParamPeriodeManagerImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ParamPeriodeManagerImpl.class);
 
 	private PeriodeFiscaleDAO periodeFiscaleDAO;
 	private ModeleDocumentDAO modeleDocumentDAO;

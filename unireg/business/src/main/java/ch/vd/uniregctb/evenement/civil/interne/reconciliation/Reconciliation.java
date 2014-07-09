@@ -1,7 +1,8 @@
 package ch.vd.uniregctb.evenement.civil.interne.reconciliation;
 
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationResults;
@@ -26,7 +27,7 @@ import ch.vd.uniregctb.type.MotifFor;
 
 public class Reconciliation extends EvenementCivilInterne {
 
-	private static final Logger LOGGER = Logger.getLogger(Reconciliation.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(Reconciliation.class);
 
 	protected Reconciliation(EvenementCivilRegPP evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		super(evenement, context, options);

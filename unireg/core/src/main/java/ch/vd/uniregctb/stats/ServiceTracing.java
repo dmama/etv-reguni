@@ -8,8 +8,9 @@ import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -233,7 +234,7 @@ public final class ServiceTracing implements ServiceTracingInterface {
 
 	public ServiceTracing(String serviceName, boolean withDetailLogging) {
 		this.index = 0;
-		this.detailLogger = withDetailLogging ? Logger.getLogger(String.format("%s.%s", ServiceTracing.class.getSimpleName(), serviceName)) : null;
+		this.detailLogger = withDetailLogging ? LoggerFactory.getLogger(String.format("%s.%s", ServiceTracing.class.getSimpleName(), serviceName)) : null;
 	}
 
 	@Override
@@ -371,7 +372,7 @@ public final class ServiceTracing implements ServiceTracingInterface {
 	}
 
 	/**
-	 * Signale la fin d'un appel d'une méthode nommée (le temps de réponse est loggué en niveau {@link org.apache.log4j.Level#INFO INFO})
+	 * Signale la fin d'un appel d'une méthode nommée (le temps de réponse est loggué en niveau INFO)
 	 *
 	 * @param start la valeur retournée par la méthode {@link #start()}.
 	 * @param name  le nom de la méthode
@@ -382,7 +383,7 @@ public final class ServiceTracing implements ServiceTracingInterface {
 	}
 
 	/**
-	 * Signale la fin d'un appel d'une méthode nommée (le temps de réponse est loggué en niveau {@link org.apache.log4j.Level#INFO INFO}),
+	 * Signale la fin d'un appel d'une méthode nommée (le temps de réponse est loggué en niveau INFO),
 	 * en ajoutant, le cas échéant, la classe de l'exception levée par l'appel
 	 *
 	 * @param start la valeur retournée par la méthode {@link #start()}.
@@ -419,7 +420,7 @@ public final class ServiceTracing implements ServiceTracingInterface {
 	}
 
 	/**
-	 * Signale la fin d'un appel d'une méthode nommée (le temps de réponse est loggué en niveau {@link org.apache.log4j.Level#INFO INFO}),
+	 * Signale la fin d'un appel d'une méthode nommée (le temps de réponse est loggué en niveau INFO),
 	 * en ajoutant, le cas échéant, la classe de l'exception levée par l'appel
 	 *
 	 * @param start la valeur retournée par la méthode {@link #start()}.
@@ -451,9 +452,9 @@ public final class ServiceTracing implements ServiceTracingInterface {
 	}
 
 	/**
-	 * Les temps de réponses (voir méthode {@link #end(long, String, Object) end()}) sont loggués en niveau {@link org.apache.log4j.Level#INFO INFO} ;
+	 * Les temps de réponses (voir méthode {@link #end(long, String, Object) end()}) sont loggués en niveau INFO ;
 	 * cette méthode permet d'inclure un peu plus de détails seulement en mode debug
-	 * @return <code>true</code> si le logguer est actif au niveau {@link org.apache.log4j.Level#DEBUG DEBUG}, <code>false</code> sinon
+	 * @return <code>true</code> si le logguer est actif au niveau DEBUG, <code>false</code> sinon
 	 */
 	public boolean isDebugEnabled() {
 		return detailLogger != null && detailLogger.isDebugEnabled();

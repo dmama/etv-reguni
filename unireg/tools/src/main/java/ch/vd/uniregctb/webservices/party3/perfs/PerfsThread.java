@@ -9,7 +9,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.unireg.webservices.party3.BatchParty;
@@ -34,7 +35,7 @@ import ch.vd.uniregctb.perfs.PerfsAccessFileIterator;
  */
 public class PerfsThread extends Thread {
 
-	private static final Logger LOGGER = Logger.getLogger(PerfsThread.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(PerfsThread.class);
 
 	private long queryTime = 0;
 	private int queryCount = 0;

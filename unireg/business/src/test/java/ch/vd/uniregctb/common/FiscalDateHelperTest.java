@@ -1,20 +1,21 @@
 package ch.vd.uniregctb.common;
 
-import static junit.framework.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import java.util.GregorianCalendar;
 
-import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 
+import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 public class FiscalDateHelperTest extends WithoutSpringTest {
 
-	protected static final Logger LOGGER = Logger.getLogger(FiscalDateHelperTest.class);
+	protected static final Logger LOGGER = LoggerFactory.getLogger(FiscalDateHelperTest.class);
 
 	@Test
 	public void testGetAnneeCourante() {

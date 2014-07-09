@@ -1,7 +1,8 @@
 package ch.vd.uniregctb.indexer.concurrent;
 
-import org.apache.log4j.Logger;
 import org.apache.lucene.search.TopDocs;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.simpleindexer.DocGetter;
 import ch.vd.uniregctb.indexer.GlobalIndexInterface;
@@ -9,7 +10,7 @@ import ch.vd.uniregctb.indexer.SearchCallback;
 
 public class ConcurrentAccessSearcherThread extends AbstractConcurrentAccessThread {
 
-	private static final Logger LOGGER = Logger.getLogger(ConcurrentAccessSearcherThread.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ConcurrentAccessSearcherThread.class);
 	private static final int maxHits = 100;
 
 	public ConcurrentAccessSearcherThread(GlobalIndexInterface globalIndex) {

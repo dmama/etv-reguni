@@ -13,7 +13,7 @@ import ch.vd.uniregctb.tiers.TiersService;
 
 public class CollectiviteAdministrativeIndexable extends ContribuableIndexable<CollectiviteAdministrative> {
 
-//	private static final Logger LOGGER = Logger.getLogger(CollectiviteAdministrativeIndexable.class);
+//	private static final Logger LOGGER = LoggerFactory.getLogger(CollectiviteAdministrativeIndexable.class);
 
 	public static final String SUB_TYPE = "collectiviteadministrative";
 

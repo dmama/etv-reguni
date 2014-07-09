@@ -9,9 +9,10 @@ import java.util.Map;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpRequest;
@@ -29,7 +30,7 @@ import ch.vd.uniregctb.common.WebitTest;
 
 public abstract class AbstractWebServiceItTest extends WebitTest {
 
-	private static final Logger LOGGER = Logger.getLogger(AbstractWebServiceItTest.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractWebServiceItTest.class);
 
 	/**
 	 * Un intercepteur qui permet de spécifier des media-type acceptés

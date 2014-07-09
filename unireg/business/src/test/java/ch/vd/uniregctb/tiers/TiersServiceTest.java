@@ -13,9 +13,10 @@ import java.util.Set;
 import junit.framework.Assert;
 import org.apache.commons.lang3.mutable.MutableLong;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
@@ -90,7 +91,7 @@ import static junit.framework.Assert.fail;
 @SuppressWarnings({"JavaDoc"})
 public class TiersServiceTest extends BusinessTest {
 
-	private static final Logger LOGGER = Logger.getLogger(TiersServiceTest.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(TiersServiceTest.class);
 
 	private static final long NUMERO_INDIVIDU = 12345L;
 	private TiersService tiersService;

@@ -3,9 +3,10 @@ package ch.vd.uniregctb.common;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 import org.displaytag.tags.TableTagParameters;
 import org.displaytag.util.ParamEncoder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.util.HtmlUtils;
 
 import ch.vd.uniregctb.security.AccessDeniedException;
@@ -14,7 +15,7 @@ import ch.vd.uniregctb.type.Niveau;
 
 public class ControllerUtilsImpl implements ControllerUtils {
 
-	private static final Logger LOGGER = Logger.getLogger(ControllerUtilsImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ControllerUtilsImpl.class);
 	
 	private SecurityProviderInterface securityProvider;
 

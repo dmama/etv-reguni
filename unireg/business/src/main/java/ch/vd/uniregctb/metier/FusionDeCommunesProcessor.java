@@ -5,11 +5,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -53,7 +54,7 @@ import ch.vd.uniregctb.validation.ValidationService;
  */
 public class FusionDeCommunesProcessor {
 
-	private final Logger LOGGER = Logger.getLogger(OuvertureForsContribuablesMajeursProcessor.class);
+	private final Logger LOGGER = LoggerFactory.getLogger(OuvertureForsContribuablesMajeursProcessor.class);
 
 	private static final int BATCH_SIZE = 100;
 

@@ -12,8 +12,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.registre.base.date.RegDateHelper;
@@ -35,7 +36,7 @@ import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 
 public class EvenementCivilEchServiceImpl implements EvenementCivilEchService, InitializingBean {
 
-	private static final Logger LOGGER = Logger.getLogger(EvenementCivilEchServiceImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementCivilEchServiceImpl.class);
 
 	private static final Comparator<ActionEvenementCivilEch> ACTION_PRIORITY_COMPARATOR = new ActionEvenementCivilEchComparator();
 

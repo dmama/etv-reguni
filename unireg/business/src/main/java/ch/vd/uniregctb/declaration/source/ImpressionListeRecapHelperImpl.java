@@ -26,7 +26,8 @@ import noNamespace.TypPeriode.Entete;
 import noNamespace.TypPeriode.Entete.ImpCcn;
 import noNamespace.TypPeriode.Entete.Tit;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.service.sipf.wsdl.sipfbvrplus_v1.BvrDemande;
 import ch.vd.service.sipf.wsdl.sipfbvrplus_v1.BvrReponse;
@@ -49,7 +50,7 @@ import ch.vd.uniregctb.webservice.sipf.BVRPlusClient;
 
 public class ImpressionListeRecapHelperImpl extends EditiqueAbstractHelper implements ImpressionListeRecapHelper {
 
-	public static final Logger LOGGER = Logger.getLogger(ImpressionListeRecapHelperImpl.class);
+	public static final Logger LOGGER = LoggerFactory.getLogger(ImpressionListeRecapHelperImpl.class);
 
 	private static final String TYPE_DOC_LR = "LR";
 

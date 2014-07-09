@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.transaction.impl;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -9,7 +10,7 @@ import ch.vd.uniregctb.transaction.SimpleService1;
 @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
 public class SimpleService1Impl extends SimpleServiceImpl implements SimpleService1 {
 
-	private static Logger LOGGER = Logger.getLogger(SimpleService1Impl.class);
+	private static Logger LOGGER = LoggerFactory.getLogger(SimpleService1Impl.class);
 
 	@Override
 	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Throwable.class)

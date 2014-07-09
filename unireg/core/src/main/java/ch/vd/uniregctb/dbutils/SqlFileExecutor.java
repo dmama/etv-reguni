@@ -6,7 +6,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
@@ -16,7 +17,7 @@ import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 public class SqlFileExecutor {
 
-    private final static Logger LOGGER = Logger.getLogger(SqlFileExecutor.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(SqlFileExecutor.class);
 
     public static void execute(PlatformTransactionManager transactionManager, DataSource ds, final String fileResource) throws Exception {
 
@@ -51,7 +52,7 @@ public class SqlFileExecutor {
 	                }
                 }
                 catch (IOException e) {
-                	LOGGER.error(e, e);
+                	LOGGER.error(e.getMessage(), e);
                     throw new RuntimeException(e);
                 }
                 return null;

@@ -14,7 +14,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.xml.sax.SAXException;
 
@@ -29,7 +30,7 @@ import ch.vd.uniregctb.jms.EsbMessageHelper;
 
 public class EvenementCediEsbMessageHandler implements EsbMessageHandler {
 
-	private static final Logger LOGGER = Logger.getLogger(EvenementCediEsbMessageHandler.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementCediEsbMessageHandler.class);
 
 	private Map<Class<?>, DossierElectroniqueHandler<?>> handlers;
 	private Schema schemaCache;
@@ -79,7 +80,7 @@ public class EvenementCediEsbMessageHandler implements EsbMessageHandler {
 			throw new EsbBusinessException(EsbBusinessCode.XML_INVALIDE, e.getMessage(), e);
 		}
 		catch (Exception e) {
-			LOGGER.error(e, e);
+			LOGGER.error(e.getMessage(), e);
 			throw e;
 		}
 		finally {

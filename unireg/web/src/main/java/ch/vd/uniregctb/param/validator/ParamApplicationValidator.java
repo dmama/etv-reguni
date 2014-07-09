@@ -1,7 +1,8 @@
 package ch.vd.uniregctb.param.validator;
 
 import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
@@ -11,7 +12,7 @@ import ch.vd.uniregctb.parametrage.ParametreEnum.ValeurInvalideException;
 
 public class ParamApplicationValidator implements Validator {
 	
-	private static final Logger L = Logger.getLogger(ParamApplicationValidator.class);
+	private static final Logger L = LoggerFactory.getLogger(ParamApplicationValidator.class);
 
 	@Override
 	@SuppressWarnings("unchecked")

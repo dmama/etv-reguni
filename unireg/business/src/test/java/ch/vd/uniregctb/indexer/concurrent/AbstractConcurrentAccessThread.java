@@ -1,12 +1,13 @@
 package ch.vd.uniregctb.indexer.concurrent;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.uniregctb.indexer.GlobalIndexInterface;
 
 public abstract class AbstractConcurrentAccessThread extends Thread {
 
-	private Logger LOGGER = Logger.getLogger(AbstractConcurrentAccessThread.class);
+	private Logger LOGGER = LoggerFactory.getLogger(AbstractConcurrentAccessThread.class);
 	
 	private boolean stopPlease = false;
 	protected GlobalIndexInterface globalIndex;
@@ -31,7 +32,7 @@ public abstract class AbstractConcurrentAccessThread extends Thread {
 			doRun();
 		}
 		catch (Exception e) {
-			LOGGER.error(e,e);
+			LOGGER.error(e.getMessage(), e);
 			inError = true;
 		}
 	}

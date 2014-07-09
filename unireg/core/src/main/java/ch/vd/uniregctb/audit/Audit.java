@@ -1,15 +1,17 @@
 package ch.vd.uniregctb.audit;
 
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.document.Document;
+import ch.vd.uniregctb.utils.LogLevel;
 
 public class Audit {
 
-	private static final Logger LOGGER = Logger.getLogger(Audit.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(Audit.class);
 
 	private static AuditLineDAO dao;
 	private static final String PREFIX = "[AUDIT] ";
@@ -151,7 +153,7 @@ public class Audit {
 	}
 
 	private static void logAuditLine(AuditLevel level, String message, @Nullable Long evtId, @Nullable Long docId) {
-		LOGGER.log(level.asLog4j(), PREFIX + message);
+		LogLevel.log(LOGGER, level.asLogLevel(), PREFIX + message);
 
 		try {
 			Assert.notNull(dao, "La DAO est Nulle! Le logging ne peut se faire que pendant que le contexte Spring se met en place");

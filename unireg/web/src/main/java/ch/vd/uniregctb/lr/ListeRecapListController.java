@@ -6,7 +6,8 @@ import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
@@ -23,7 +24,7 @@ import ch.vd.uniregctb.tracing.TracingManager;
 
 public class ListeRecapListController extends AbstractListeRecapController {
 
-	protected static final Logger LOGGER = Logger.getLogger(ListeRecapListController.class);
+	protected static final Logger LOGGER = LoggerFactory.getLogger(ListeRecapListController.class);
 
 	private ListeRecapListManager lrListManager;
 

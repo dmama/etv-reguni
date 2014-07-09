@@ -3,9 +3,10 @@ package ch.vd.uniregctb.norentes.common;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionException;
 import org.springframework.transaction.TransactionStatus;
@@ -59,7 +60,7 @@ import ch.vd.uniregctb.type.TypeDocument;
 
 public abstract class EvenementScenario extends NorentesScenario {
 
-	private static final Logger LOGGER = Logger.getLogger(EvenementScenario.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementScenario.class);
 
 	protected GlobalTiersSearcher globalSearcher;
 	protected GlobalTiersIndexer globalIndexer;

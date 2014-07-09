@@ -6,12 +6,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.FlushMode;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.registre.base.date.RegDate;
@@ -34,7 +35,7 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 public class CorrectionForsHCJob extends JobDefinition {
 
-	private static final Logger LOGGER = Logger.getLogger(CorrectionForsHCJob.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(CorrectionForsHCJob.class);
 	
 	public static final String NAME = "CorrectionForsHCJob";
 	

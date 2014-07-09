@@ -63,7 +63,7 @@ import static junit.framework.Assert.assertNull;
 
 public class ContribuableIndexableTest extends WithoutSpringTest {
 
-	//private static final Logger LOGGER = Logger.getLogger(ContribuableIndexableTest.class);
+	//private static final Logger LOGGER = LoggerFactory.getLogger(ContribuableIndexableTest.class);
 
 	private static final long noIndPhilippeMaillard = 3333L;
 	private static final long noIndGladysMaillard = 3334L;

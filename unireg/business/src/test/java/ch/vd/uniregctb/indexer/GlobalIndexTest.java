@@ -5,7 +5,6 @@ import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StringField;
@@ -18,6 +17,8 @@ import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.WildcardQuery;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.simpleindexer.DocGetter;
@@ -36,7 +37,7 @@ import static junit.framework.Assert.fail;
 @SuppressWarnings({"JavaDoc"})
 public class GlobalIndexTest extends BusinessTest {
 
-	private static final Logger LOGGER = Logger.getLogger(GlobalIndexTest.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(GlobalIndexTest.class);
 
 	private static final String indexPath = "target/lucene/index";
 
@@ -612,7 +613,7 @@ public class GlobalIndexTest extends BusinessTest {
 		thread4.join();
 
 		for (Throwable t : throwables) {
-			LOGGER.error(t, t);
+			LOGGER.error(t.getMessage(), t);
 		}
 		assertEmpty(throwables);
 	}

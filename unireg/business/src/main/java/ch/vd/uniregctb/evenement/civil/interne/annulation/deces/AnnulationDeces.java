@@ -1,7 +1,8 @@
 package ch.vd.uniregctb.evenement.civil.interne.annulation.deces;
 
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.EtatCivil;
@@ -27,7 +28,7 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
  */
 public class AnnulationDeces extends EvenementCivilInterne {
 
-	protected static Logger LOGGER = Logger.getLogger(AnnulationDeces.class);
+	protected static Logger LOGGER = LoggerFactory.getLogger(AnnulationDeces.class);
 
 	/**
 	 * Le conjoint Survivant.

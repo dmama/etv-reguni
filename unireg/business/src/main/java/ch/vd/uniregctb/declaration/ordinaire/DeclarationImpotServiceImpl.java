@@ -55,7 +55,7 @@ import ch.vd.uniregctb.validation.ValidationService;
 
 public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 
-	// private final Logger LOGGER = Logger.getLogger(DeclarationImpotServiceImpl.class);
+	// private final Logger LOGGER = LoggerFactory.getLogger(DeclarationImpotServiceImpl.class);
 
 	private EvenementFiscalService evenementFiscalService;
 	private EditiqueCompositionService editiqueCompositionService;

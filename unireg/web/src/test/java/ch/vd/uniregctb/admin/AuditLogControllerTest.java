@@ -21,7 +21,7 @@ import static org.junit.Assert.assertNotNull;
  */
 public class AuditLogControllerTest extends WebTest {
 
-	// private static final Logger LOGGER = Logger.getLogger(AuditLogControllerTest.class);
+	// private static final Logger LOGGER = LoggerFactory.getLogger(AuditLogControllerTest.class);
 
 	private final static String DB_UNIT_FILE = "AuditLogControllerTest.xml";
 

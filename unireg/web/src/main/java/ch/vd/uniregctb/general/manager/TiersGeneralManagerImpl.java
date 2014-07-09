@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.general.manager;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
@@ -18,7 +19,7 @@ import ch.vd.uniregctb.tiers.TiersService;
  */
 public class TiersGeneralManagerImpl implements TiersGeneralManager{
 
-	private static final Logger LOGGER = Logger.getLogger(TiersGeneralManagerImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(TiersGeneralManagerImpl.class);
 
 	private TiersService tiersService;
 

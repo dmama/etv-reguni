@@ -8,12 +8,13 @@ import java.util.Map;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections.ListUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
 public abstract class BeanUtils {
 
-	private static final Logger LOGGER = Logger.getLogger(BeanUtils.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(BeanUtils.class);
 	private static final String [] EMPTY_STRING_ARRAY = new String[0];
 
 	public static void simpleMerge( Object dest, Object src)  {

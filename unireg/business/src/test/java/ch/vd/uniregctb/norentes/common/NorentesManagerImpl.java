@@ -11,7 +11,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.builder.CompareToBuilder;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.DisposableBean;
@@ -28,7 +29,7 @@ import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 public class NorentesManagerImpl implements NorentesManager, NorentesRegistrar, DisposableBean, ApplicationContextAware {
 
-	private static final Logger LOGGER = Logger.getLogger(NorentesManagerImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(NorentesManagerImpl.class);
 
 	private final List<String> scenariosBeanNames = new ArrayList<>();
 	private final Map<String, Collection<EtapeAttribute>> metadata = new HashMap<>();

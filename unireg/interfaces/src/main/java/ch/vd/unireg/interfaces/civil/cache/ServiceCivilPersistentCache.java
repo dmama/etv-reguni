@@ -9,8 +9,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -37,7 +38,7 @@ import ch.vd.uniregctb.type.TypeRapportEntreTiers;
  */
 public class ServiceCivilPersistentCache implements ServiceCivilRaw, UniregCacheInterface, DataEventListener, InitializingBean, DisposableBean, ServiceCivilServiceWrapper {
 
-	private static final Logger LOGGER = Logger.getLogger(ServiceCivilPersistentCache.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ServiceCivilPersistentCache.class);
 
 	public static final String CACHE_NAME = "ServiceCivilPersistent";
 

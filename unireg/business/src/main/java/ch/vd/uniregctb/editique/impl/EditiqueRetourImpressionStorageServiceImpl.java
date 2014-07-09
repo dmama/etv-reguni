@@ -4,7 +4,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -23,7 +24,7 @@ import ch.vd.uniregctb.stats.StatsService;
  */
 public class EditiqueRetourImpressionStorageServiceImpl implements EditiqueRetourImpressionStorageService, InitializingBean, DisposableBean {
 
-	public static final Logger LOGGER = Logger.getLogger(EditiqueRetourImpressionStorageServiceImpl.class);
+	public static final Logger LOGGER = LoggerFactory.getLogger(EditiqueRetourImpressionStorageServiceImpl.class);
 
 	private static final String SERVICE_NAME = "ImpressionLocale";
 

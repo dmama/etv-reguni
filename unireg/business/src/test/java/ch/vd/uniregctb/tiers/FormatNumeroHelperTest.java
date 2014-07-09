@@ -12,7 +12,7 @@ import static org.junit.Assert.assertEquals;
  */
 public class FormatNumeroHelperTest extends WithoutSpringTest {
 
-	// private static final Logger LOGGER = Logger.getLogger(FormatNumeroHelperTest.class);
+	// private static final Logger LOGGER = LoggerFactory.getLogger(FormatNumeroHelperTest.class);
 
 	@Test
 	public void testFormatNumAVS() throws Exception {

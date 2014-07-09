@@ -5,10 +5,11 @@ import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.registre.base.date.RegDate;
@@ -24,7 +25,7 @@ import ch.vd.uniregctb.tiers.TiersService;
 
 public class AcomptesProcessor extends ListesProcessor<AcomptesResults, AcomptesThread> {
 
-	private final Logger LOGGER = Logger.getLogger(AcomptesProcessor.class);
+	private final Logger LOGGER = LoggerFactory.getLogger(AcomptesProcessor.class);
 
 	private final HibernateTemplate hibernateTemplate;
 	private final TiersService tiersService;

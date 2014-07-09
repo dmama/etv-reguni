@@ -38,7 +38,7 @@ import ch.vd.uniregctb.type.PeriodiciteDecompte;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class Periodicite extends HibernateEntity implements CollatableDateRange, LinkedEntity {
 
-	//private static final Logger LOGGER = Logger.getLogger(Periodicite.class);
+	//private static final Logger LOGGER = LoggerFactory.getLogger(Periodicite.class);
 
 	private static final long serialVersionUID = 956376828051331469L;
 

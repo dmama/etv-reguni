@@ -3,12 +3,13 @@ package ch.vd.uniregctb.adresse;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -34,7 +35,7 @@ public class ResolutionAdresseProcessor {
 
 	private static final int BATCH_SIZE = 100;
 
-	private static final Logger LOGGER = Logger.getLogger(ResolutionAdresseProcessor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ResolutionAdresseProcessor.class);
 
 	private final AdresseService adresseService;
 	private final ServiceInfrastructureService infraService;

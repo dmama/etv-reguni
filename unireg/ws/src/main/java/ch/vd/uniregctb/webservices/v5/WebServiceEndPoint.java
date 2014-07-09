@@ -19,9 +19,10 @@ import java.util.regex.Pattern;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.jaxrs.ext.MessageContext;
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
@@ -60,9 +61,9 @@ import ch.vd.uniregctb.xml.ServiceException;
 
 public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 
-	private static final Logger LOGGER = Logger.getLogger(WebServiceEndPoint.class);
-	private static final Logger READ_ACCESS_LOG = Logger.getLogger("ws.v5.read");
-	private static final Logger WRITE_ACCESS_LOG = Logger.getLogger("ws.v5.write");
+	private static final Logger LOGGER = LoggerFactory.getLogger(WebServiceEndPoint.class);
+	private static final Logger READ_ACCESS_LOG = LoggerFactory.getLogger("ws.v5.read");
+	private static final Logger WRITE_ACCESS_LOG = LoggerFactory.getLogger("ws.v5.write");
 
 	private static final Pattern BOOLEAN_PATTERN = Pattern.compile("(true|false)", Pattern.CASE_INSENSITIVE);
 
@@ -150,7 +151,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 		}
 		catch (Throwable e) {
 			t = e;
-			LOGGER.error(e, e);
+			LOGGER.error(e.getMessage(), e);
 			r = WebServiceHelper.buildErrorResponse(Response.Status.INTERNAL_SERVER_ERROR, getAcceptableMediaTypes(), ErrorType.TECHNICAL, e);
 		}
 		finally {

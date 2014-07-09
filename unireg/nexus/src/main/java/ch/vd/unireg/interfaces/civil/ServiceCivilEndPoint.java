@@ -5,7 +5,8 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
@@ -22,7 +23,7 @@ import ch.vd.uniregctb.load.MethodCallDescriptor;
  */
 public class ServiceCivilEndPoint implements ServiceCivilRaw, ServiceCivilServiceWrapper, DetailedLoadMonitorable {
 
-	private static final Logger LOGGER = Logger.getLogger(ServiceCivilEndPoint.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ServiceCivilEndPoint.class);
 
 	private ServiceCivilRaw target;
 

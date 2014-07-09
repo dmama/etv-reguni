@@ -3,7 +3,8 @@ package ch.vd.uniregctb.rapport;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
@@ -14,7 +15,7 @@ import ch.vd.uniregctb.rt.AbstractRapportPrestationController;
 
 public class RapportEditController extends AbstractRapportPrestationController {
 
-	protected final Logger LOGGER = Logger.getLogger(RapportEditController.class);
+	protected final Logger LOGGER = LoggerFactory.getLogger(RapportEditController.class);
 
 	private static final String NUMERO_TIERS_PARAMETER_NAME = "numeroTiers";
 	private static final String NUMERO_TIERS_LIE_PARAMETER_NAME = "numeroTiersLie";
@@ -66,7 +67,7 @@ public class RapportEditController extends AbstractRapportPrestationController {
 			rapportEditManager.save(rapportView);
 		}
 		catch (Exception e) {
-			LOGGER.error(e, e);
+			LOGGER.error(e.getMessage(), e);
 			errors.reject("", e.getMessage());
 			return showForm(request, response, errors);
 		}

@@ -2,8 +2,9 @@ package ch.vd.uniregctb.evenement;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
@@ -20,7 +21,7 @@ import static junit.framework.Assert.assertNotNull;
 @SuppressWarnings({"JavaDoc", "unchecked"})
 public class EvenementCivilDAOTest extends CoreDAOTest {
 
-	protected static final Logger LOGGER = Logger.getLogger(EvenementCivilDAOTest.class);
+	protected static final Logger LOGGER = LoggerFactory.getLogger(EvenementCivilDAOTest.class);
 
 	private static final String DAO_NAME = "evenementCivilRegPPDAO";
 

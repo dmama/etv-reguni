@@ -1,7 +1,8 @@
 package ch.vd.uniregctb.ejb;
 
 import org.aopalliance.intercept.MethodInvocation;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.ejb.access.SimpleRemoteStatelessSessionProxyFactoryBean;
 import org.springframework.remoting.RemoteLookupFailureException;
 
@@ -10,7 +11,7 @@ import org.springframework.remoting.RemoteLookupFailureException;
  */
 public class GentilRemoteStatelessSessionProxyFactoryBean extends SimpleRemoteStatelessSessionProxyFactoryBean {
 
-	private static final Logger LOGGER = Logger.getLogger(GentilRemoteStatelessSessionProxyFactoryBean.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(GentilRemoteStatelessSessionProxyFactoryBean.class);
 
 	@Override
 	public Object invoke(MethodInvocation invocation) throws Throwable {

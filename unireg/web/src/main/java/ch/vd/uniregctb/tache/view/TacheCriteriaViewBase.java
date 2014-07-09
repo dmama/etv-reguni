@@ -4,7 +4,8 @@ import java.io.Serializable;
 import java.util.Date;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.tiers.TacheCriteria;
@@ -14,7 +15,7 @@ import ch.vd.uniregctb.type.TypeTache;
 public class TacheCriteriaViewBase implements Serializable {
 
 	private static final long serialVersionUID = 6380103088232048687L;
-	private static final Logger LOGGER = Logger.getLogger(TacheCriteriaViewBase.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(TacheCriteriaViewBase.class);
 
 	private TypeTache typeTache;
 	private TypeEtatTache etatTache;

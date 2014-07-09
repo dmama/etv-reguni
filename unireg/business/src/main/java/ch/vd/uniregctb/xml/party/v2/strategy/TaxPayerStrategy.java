@@ -3,8 +3,9 @@ package ch.vd.uniregctb.xml.party.v2.strategy;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
@@ -30,7 +31,7 @@ import ch.vd.uniregctb.xml.party.v2.TaxationPeriodBuilder;
 
 public abstract class TaxPayerStrategy<T extends Taxpayer> extends PartyStrategy<T> {
 
-	private static final Logger LOGGER = Logger.getLogger(TaxPayerStrategy.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(TaxPayerStrategy.class);
 
 	@Override
 	protected void initParts(T to, Tiers from, @Nullable Set<PartyPart> parts, Context context) throws ServiceException {
@@ -99,7 +100,7 @@ public abstract class TaxPayerStrategy<T extends Taxpayer> extends PartyStrategy
 			list = context.assujettissementService.determine(right, null, true /* collate */);
 		}
 		catch (AssujettissementException e) {
-			LOGGER.error(e, e);
+			LOGGER.error(e.getMessage(), e);
 			throw ExceptionHelper.newBusinessException(e, BusinessExceptionCode.TAX_LIABILITY);
 		}
 
@@ -140,7 +141,7 @@ public abstract class TaxPayerStrategy<T extends Taxpayer> extends PartyStrategy
 			list = context.periodeImpositionService.determine(contribuable, range);
 		}
 		catch (AssujettissementException e) {
-			LOGGER.error(e, e);
+			LOGGER.error(e.getMessage(), e);
 			throw ExceptionHelper.newBusinessException(e, BusinessExceptionCode.TAX_LIABILITY);
 		}
 		if (list != null) {

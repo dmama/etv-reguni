@@ -2,7 +2,8 @@ package ch.vd.uniregctb.indexer.lucene;
 
 import java.io.File;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.simpleindexer.LuceneIndex;
 import ch.vd.registre.simpleindexer.LuceneIndexImpl;
@@ -11,7 +12,7 @@ import ch.vd.uniregctb.indexer.OurOwnFrenchAnalyzer;
 
 public class FSIndexProvider implements IndexProvider {
 
-	private static final Logger LOGGER = Logger.getLogger(FSIndexProvider.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(FSIndexProvider.class);
 
 	private final String indexPath;
 

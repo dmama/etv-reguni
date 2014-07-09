@@ -2,11 +2,12 @@ package ch.vd.uniregctb.hibernate;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.orm.hibernate4.HibernateOptimisticLockingFailureException;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
@@ -22,7 +23,7 @@ import static junit.framework.Assert.fail;
 
 public class OptimisticLockingTest extends CoreDAOTest {
 
-	private static final Logger LOGGER = Logger.getLogger(OptimisticLockingTest.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(OptimisticLockingTest.class);
 
 	private SessionFactory sessionFactory;
 	private PlatformTransactionManager transactionManager;

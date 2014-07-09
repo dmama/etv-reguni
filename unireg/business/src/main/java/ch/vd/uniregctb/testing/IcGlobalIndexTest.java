@@ -2,8 +2,9 @@ package ch.vd.uniregctb.testing;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.hibernate.Session;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
@@ -17,7 +18,7 @@ import ch.vd.uniregctb.tiers.TiersCriteria;
 
 public class IcGlobalIndexTest extends InContainerTest {
 
-	private static final Logger LOGGER = Logger.getLogger(IcGlobalIndexTest.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(IcGlobalIndexTest.class);
 
 	private GlobalTiersSearcher globalTiersSearcher;
 	private GlobalTiersIndexer globalTiersIndexer;

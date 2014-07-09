@@ -11,8 +11,9 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.unireg.xml.error.v1.Error;
 import ch.vd.unireg.xml.error.v1.ErrorType;
@@ -29,7 +30,7 @@ public abstract class WebServiceHelper {
 	public static final MediaType APPLICATION_JSON_WITH_UTF8_CHARSET_TYPE = MediaType.valueOf(APPLICATION_JSON_WITH_UTF8_CHARSET);
 	public static final MediaType TEXT_PLAIN_WITH_UTF8_CHARSET_TYPE = MediaType.valueOf(TEXT_PLAIN_WITH_UTF8_CHARSET);
 
-	private static final Logger LOGGER = Logger.getLogger(WebServiceHelper.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(WebServiceHelper.class);
 
 	private static final String NULL = "null";
 
@@ -43,7 +44,7 @@ public abstract class WebServiceHelper {
 
 	/**
 	 * Utilisé pour le log d'un appel web-service
-	 * @param accessLogger le logger dans lequel (au niveau {@link org.apache.log4j.Level#INFO}) on enverra les informations de l'appel
+	 * @param accessLogger le logger dans lequel (au niveau INFO) on enverra les informations de l'appel
 	 * @param request requête HTTP entrante (pour y récupérer l'éventuelle donnée d'authentification)
 	 * @param params un objet dont la méthode {@link #toString()} sera appelée pour la documentation de l'appel
 	 * @param duration durée de l'appel, en nano-secondes
@@ -76,7 +77,7 @@ public abstract class WebServiceHelper {
 				return UserLogin.fromString(login);
 			}
 			catch (IllegalArgumentException e) {
-				LOGGER.error(e, e);
+				LOGGER.error(e.getMessage(), e);
 			}
 		}
 		return null;

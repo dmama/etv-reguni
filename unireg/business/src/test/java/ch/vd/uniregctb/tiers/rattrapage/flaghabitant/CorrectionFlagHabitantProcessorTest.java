@@ -2,8 +2,9 @@ package ch.vd.uniregctb.tiers.rattrapage.flaghabitant;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,7 +28,7 @@ import static org.junit.Assert.assertEquals;
  */
 public class CorrectionFlagHabitantProcessorTest extends BusinessTest {
 
-	public static final Logger LOGGER = Logger.getLogger(CorrectionFlagHabitantProcessorTest.class);
+	public static final Logger LOGGER = LoggerFactory.getLogger(CorrectionFlagHabitantProcessorTest.class);
 
 	private AdresseService adresseService;
 

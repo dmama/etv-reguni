@@ -4,8 +4,9 @@ import javax.jms.JMSException;
 import java.math.BigInteger;
 import java.util.Date;
 
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.evd0025.v1.PayerWithHistory;
@@ -29,7 +30,7 @@ import ch.vd.uniregctb.utils.UniregModeHelper;
 
 public class EFactureServiceImpl implements EFactureService, InitializingBean {
 
-	public static final Logger LOGGER = Logger.getLogger(EFactureServiceImpl.class);
+	public static final Logger LOGGER = LoggerFactory.getLogger(EFactureServiceImpl.class);
 
 	private TiersService tiersService;
 	private EditiqueCompositionService editiqueCompositionService;

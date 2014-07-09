@@ -3,10 +3,11 @@ package ch.vd.uniregctb.pm;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlError;
 import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.XmlOptions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.fiscalite.registre.entrepriseEvent.EvtEntrepriseDocument;
 import ch.vd.technical.esb.EsbMessage;
@@ -26,7 +27,7 @@ import ch.vd.uniregctb.tiers.Entreprise;
  */
 public class EntrepriseEventHandler implements EsbMessageHandler {
 
-	private static final Logger LOGGER = Logger.getLogger(EntrepriseEventHandler.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EntrepriseEventHandler.class);
 
 	private GlobalTiersIndexer indexer;
 	private DataEventService dataEventService;

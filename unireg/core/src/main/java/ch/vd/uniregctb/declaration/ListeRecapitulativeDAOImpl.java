@@ -5,10 +5,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.support.DataAccessUtils;
 
 import ch.vd.registre.base.date.DateRange;
@@ -25,7 +26,7 @@ import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
 public class ListeRecapitulativeDAOImpl extends BaseDAOImpl< DeclarationImpotSource, Long> implements  ListeRecapitulativeDAO {
 
-	private static final Logger LOGGER = Logger.getLogger(ListeRecapitulativeDAOImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ListeRecapitulativeDAOImpl.class);
 
 	public ListeRecapitulativeDAOImpl() {
 		super(DeclarationImpotSource.class);

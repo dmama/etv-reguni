@@ -3,7 +3,8 @@ package ch.vd.uniregctb.evenement.regpp.manager;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSourceAware;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,7 +33,7 @@ import ch.vd.uniregctb.type.EtatEvenementCivil;
  */
 public class EvenementCivilRegPPManagerImpl extends EvenementCivilManagerImpl implements EvenementCivilRegPPManager, MessageSourceAware {
 
-	private final Logger LOGGER = Logger.getLogger(EvenementCivilRegPPManagerImpl.class);
+	private final Logger LOGGER = LoggerFactory.getLogger(EvenementCivilRegPPManagerImpl.class);
 
 	private EvenementCivilProcessor evenementCivilProcessor;
 	private EvenementCivilRegPPDAO evenementDAO;

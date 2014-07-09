@@ -12,7 +12,8 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.utils.Pair;
 
@@ -22,7 +23,7 @@ import ch.vd.registre.base.utils.Pair;
  */
 public class InboxContainer {
 
-	public static final Logger LOGGER = Logger.getLogger(InboxContainer.class);
+	public static final Logger LOGGER = LoggerFactory.getLogger(InboxContainer.class);
 
 	/**
 	 * Map des éléments indexés par le visa de l'utilisateur propriétaire

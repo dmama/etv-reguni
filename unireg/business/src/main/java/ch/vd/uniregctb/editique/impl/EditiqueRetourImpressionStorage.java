@@ -9,8 +9,9 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.mutable.Mutable;
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.Pair;
@@ -21,7 +22,7 @@ import ch.vd.uniregctb.editique.RetourImpressionTrigger;
 
 public class EditiqueRetourImpressionStorage extends AsyncStorageWithPeriodicCleanup<String, EditiqueResultatRecu> {
 
-	private static final Logger LOGGER = Logger.getLogger(EditiqueRetourImpressionStorage.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EditiqueRetourImpressionStorage.class);
 
 	/**
 	 * Thread de gestion des triggers des actions à faire si le document arrive alors que personne ne l'attend plus

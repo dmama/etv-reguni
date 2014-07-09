@@ -10,10 +10,10 @@ import java.util.Set;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -47,6 +47,7 @@ import ch.vd.uniregctb.indexer.EmptySearchCriteriaException;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.stats.StatsService;
+import ch.vd.uniregctb.utils.LogLevel;
 import ch.vd.uniregctb.webservices.common.AccessDeniedException;
 import ch.vd.uniregctb.webservices.common.UserLogin;
 import ch.vd.uniregctb.webservices.common.WebServiceHelper;
@@ -59,7 +60,7 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 
 	private static final String SERVICE_NAME = "WebService5";
 
-	private static final Logger LOGGER = Logger.getLogger(BusinessWebServiceCache.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(BusinessWebServiceCache.class);
 
 	private CacheManager cacheManager;
 	private String cacheName;
@@ -126,7 +127,7 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 	}
 
 	@Override
-	public void dumpCacheKeys(Logger logger, Level level) {
+	public void dumpCacheKeys(Logger logger, LogLevel.Level level) {
 		CacheHelper.dumpCacheKeys(cache, logger, level);
 	}
 
@@ -183,7 +184,7 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 			throw e;
 		}
 		catch (Exception e) {
-			LOGGER.error(e, e);
+			LOGGER.error(e.getMessage(), e);
 			throw new RuntimeException(e);
 		}
 	}

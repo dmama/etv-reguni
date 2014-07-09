@@ -13,7 +13,8 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -31,7 +32,7 @@ import ch.vd.uniregctb.common.TimeHelper;
 
 public class StatsServiceImpl implements InitializingBean, DisposableBean, StatsService, StatsExposureInterface {
 
-	private static final Logger LOGGER = Logger.getLogger(StatsServiceImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(StatsServiceImpl.class);
 
 	private static final String CR = System.lineSeparator();
 

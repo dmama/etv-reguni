@@ -7,7 +7,6 @@ import java.io.InputStream;
 import java.sql.Connection;
 import java.util.zip.ZipInputStream;
 
-import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.dbunit.database.DatabaseConfig;
 import org.dbunit.database.DatabaseConnection;
@@ -17,6 +16,8 @@ import org.dbunit.dataset.stream.StreamingDataSet;
 import org.dbunit.dataset.xml.XmlProducer;
 import org.dbunit.ext.oracle.OracleDataTypeFactory;
 import org.dbunit.operation.DatabaseOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -34,7 +35,7 @@ import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer.Mode;
  */
 public abstract class BusinessItTestApplication {
 
-	private static final Logger LOGGER = Logger.getLogger(BusinessItTestApplication.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(BusinessItTestApplication.class);
 
 	protected DataSource dataSource;
 
@@ -174,7 +175,7 @@ public abstract class BusinessItTestApplication {
 				loadDataSet(zipstream);
 			}
 			catch (Exception e) {
-				LOGGER.error(e, e);
+				LOGGER.error(e.getMessage(), e);
 				throw e;
 			}
 		}
@@ -184,7 +185,7 @@ public abstract class BusinessItTestApplication {
 				loadDataSet(is);
 			}
 			catch (Exception e) {
-				LOGGER.error(e, e);
+				LOGGER.error(e.getMessage(), e);
 				throw e;
 			}
 		}

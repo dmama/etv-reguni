@@ -1,7 +1,8 @@
 package ch.vd.uniregctb.evenement.civil.interne.demenagement;
 
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.Adresse;
@@ -24,7 +25,7 @@ import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 public class DemenagementSecondaire extends EvenementCivilInterneAvecAdresses {
 
 	/** LOGGER log4J */
-	protected static Logger LOGGER = Logger.getLogger(DemenagementSecondaire.class);
+	protected static Logger LOGGER = LoggerFactory.getLogger(DemenagementSecondaire.class);
 
 
 

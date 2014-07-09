@@ -26,7 +26,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.SmartLifecycle;
 import org.springframework.jmx.export.MBeanExportOperations;
 
@@ -34,7 +35,7 @@ import ch.vd.registre.base.utils.NotImplementedException;
 
 public class JmxStatContainer implements SmartLifecycle {
 
-	private static final Logger LOGGER = Logger.getLogger(JmxStatContainer.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(JmxStatContainer.class);
 
 	private StatsExposureInterface statsService;
 	private MBeanExportOperations exporter;

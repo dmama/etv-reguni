@@ -5,8 +5,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,7 +33,7 @@ import static org.junit.Assert.assertNotNull;
 
 public class TacheDAOTest extends CoreDAOTest {
 
-	protected static final Logger LOGGER = Logger.getLogger(TacheDAOTest.class);
+	protected static final Logger LOGGER = LoggerFactory.getLogger(TacheDAOTest.class);
 
 	private static final String DAO_NAME = "tacheDAO";
 

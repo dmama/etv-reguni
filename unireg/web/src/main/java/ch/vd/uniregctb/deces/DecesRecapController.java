@@ -4,7 +4,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
@@ -15,7 +16,7 @@ import ch.vd.uniregctb.deces.view.DecesRecapView;
 
 public class DecesRecapController extends AbstractSimpleFormController {
 
-	protected final Logger LOGGER = Logger.getLogger(DecesRecapController.class);
+	protected final Logger LOGGER = LoggerFactory.getLogger(DecesRecapController.class);
 
 	private static final String NUMERO_PARAMETER_NAME = "numero";
 

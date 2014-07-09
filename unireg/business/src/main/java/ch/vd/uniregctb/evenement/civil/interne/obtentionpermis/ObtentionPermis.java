@@ -2,8 +2,9 @@ package ch.vd.uniregctb.evenement.civil.interne.obtentionpermis;
 
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.Adresse;
@@ -34,7 +35,7 @@ import ch.vd.uniregctb.type.TypePermis;
 public class ObtentionPermis extends ObtentionPermisCOuNationaliteSuisse {
 
 	/** LOGGER log4J */
-	protected static final Logger LOGGER = Logger.getLogger(ObtentionPermis.class);
+	protected static final Logger LOGGER = LoggerFactory.getLogger(ObtentionPermis.class);
 
 	/**
 	 * le numero OFS de la commune vaudoise de l'adresse principale

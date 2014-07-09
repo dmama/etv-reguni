@@ -26,7 +26,7 @@ import ch.vd.uniregctb.tiers.TiersDAO;
 @Controller
 public class StatusController {
 
-	// private static final Logger LOGGER = Logger.getLogger(InfoController.class);
+	// private static final Logger LOGGER = LoggerFactory.getLogger(InfoController.class);
 
 	private TiersDAO dao;
 	private GlobalTiersSearcher globalSearcher;

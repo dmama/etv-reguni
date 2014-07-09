@@ -13,7 +13,7 @@ import static junit.framework.Assert.assertEquals;
 
 public class EachWebPageTest extends WebitTest {
 
-	//private static final Logger LOGGER = Logger.getLogger(EachWebPageTest.class);
+	//private static final Logger LOGGER = LoggerFactory.getLogger(EachWebPageTest.class);
 
 	private static final String DBUNIT_FILENAME = "EachWebPageTest.xml";
 

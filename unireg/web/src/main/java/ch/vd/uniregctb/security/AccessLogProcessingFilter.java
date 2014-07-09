@@ -9,7 +9,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.filter.GenericFilterBean;
 
 import ch.vd.uniregctb.common.AuthenticationHelper;
@@ -24,11 +25,11 @@ import ch.vd.uniregctb.load.LoadDetail;
  */
 public class AccessLogProcessingFilter extends GenericFilterBean implements DetailedLoadMonitorable {
 
-	private static final Logger GET = Logger.getLogger("web-access.get");
-	private static final Logger POST = Logger.getLogger("web-access.post");
-	private static final Logger PUT = Logger.getLogger("web-access.put");
-	private static final Logger DELETE = Logger.getLogger("web-access.delete");
-	private static final Logger OTHER = Logger.getLogger("web-access.other");
+	private static final Logger GET = LoggerFactory.getLogger("web-access.get");
+	private static final Logger POST = LoggerFactory.getLogger("web-access.post");
+	private static final Logger PUT = LoggerFactory.getLogger("web-access.put");
+	private static final Logger DELETE = LoggerFactory.getLogger("web-access.delete");
+	private static final Logger OTHER = LoggerFactory.getLogger("web-access.other");
 
 	/**
 	 * Les requêtes doivent être affichées par leur URL

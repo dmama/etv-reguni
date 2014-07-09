@@ -19,7 +19,7 @@ import ch.vd.uniregctb.tiers.TiersDAO.Parts;
  */
 public class DataHelper {
 
-	//private static final Logger LOGGER = Logger.getLogger(DataHelper.class);
+	//private static final Logger LOGGER = LoggerFactory.getLogger(DataHelper.class);
 
 	public static List<TiersCriteria> webToCore(SearchPartyRequest criteria) {
 		if (criteria == null) {

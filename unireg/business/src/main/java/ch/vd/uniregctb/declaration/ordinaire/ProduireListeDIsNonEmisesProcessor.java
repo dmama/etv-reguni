@@ -3,8 +3,9 @@ package ch.vd.uniregctb.declaration.ordinaire;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 
@@ -42,7 +43,7 @@ public class ProduireListeDIsNonEmisesProcessor {
 
 	private static final int BATCH_SIZE = 100;
 
-	final Logger LOGGER = Logger.getLogger(ProduireListeDIsNonEmisesProcessor.class);
+	final Logger LOGGER = LoggerFactory.getLogger(ProduireListeDIsNonEmisesProcessor.class);
 
 	private final HibernateTemplate hibernateTemplate;
 	private final PlatformTransactionManager transactionManager;

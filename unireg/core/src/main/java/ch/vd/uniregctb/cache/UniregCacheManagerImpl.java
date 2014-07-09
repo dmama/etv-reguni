@@ -18,15 +18,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.utils.NotImplementedException;
+import ch.vd.uniregctb.utils.LogLevel;
 
 public class UniregCacheManagerImpl implements UniregCacheManager, DynamicMBean {
 
-	private final Logger LOGGER = Logger.getLogger(UniregCacheManagerImpl.class);
+	private final Logger LOGGER = LoggerFactory.getLogger(UniregCacheManagerImpl.class);
 
 	private final Map<String, UniregCacheInterface> map = new HashMap<>();
 
@@ -110,7 +110,7 @@ public class UniregCacheManagerImpl implements UniregCacheManager, DynamicMBean 
 				if (cache == null || !(cache instanceof KeyDumpableCache)) {
 					throw new NoSuchMethodException(actionName);
 				}
-				((KeyDumpableCache) cache).dumpCacheKeys(LOGGER, Level.INFO);
+				((KeyDumpableCache) cache).dumpCacheKeys(LOGGER, LogLevel.Level.INFO);
 				return null;
 			}
 			else if (actionName.startsWith("dumpValues")) {
@@ -119,7 +119,7 @@ public class UniregCacheManagerImpl implements UniregCacheManager, DynamicMBean 
 				if (cache == null || !(cache instanceof KeyValueDumpableCache)) {
 					throw new NoSuchMethodException(actionName);
 				}
-				((KeyValueDumpableCache) cache).dumpCacheContent(LOGGER, Level.INFO);
+				((KeyValueDumpableCache) cache).dumpCacheContent(LOGGER, LogLevel.Level.INFO);
 				return null;
 			}
 			else {

@@ -15,7 +15,7 @@ import static junit.framework.Assert.assertEquals;
 
 public class SimpleGlobalIndexTest extends WithoutSpringTest {
 
-	//private static final Logger LOGGER = Logger.getLogger(SimpleGlobalIndexTest.class);
+	//private static final Logger LOGGER = LoggerFactory.getLogger(SimpleGlobalIndexTest.class);
 
 	private static final String path = "tmp/globalIndex";
 	private GlobalIndex globalIndex;

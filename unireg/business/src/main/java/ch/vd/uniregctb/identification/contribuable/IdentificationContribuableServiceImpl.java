@@ -17,9 +17,10 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableObject;
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -79,7 +80,7 @@ import ch.vd.uniregctb.type.TypeAdresseTiers;
 
 public class IdentificationContribuableServiceImpl implements IdentificationContribuableService, DemandeHandler, InitializingBean, DisposableBean {
 
-	private static final Logger LOGGER = Logger.getLogger(IdentificationContribuableServiceImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(IdentificationContribuableServiceImpl.class);
 
 	private static final String REPARTITION_INTERCANTONALE = "ssk-3001-000101";
 

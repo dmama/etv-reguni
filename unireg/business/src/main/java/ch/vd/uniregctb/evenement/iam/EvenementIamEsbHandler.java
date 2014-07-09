@@ -4,11 +4,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlError;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.XmlOptions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.fiscalite.empaci.demandeUtilisateurV2.DemandeUtilisateurDocument;
 import ch.vd.registre.base.date.DateHelper;
@@ -21,7 +22,7 @@ import ch.vd.uniregctb.jms.EsbMessageHandler;
 
 public class EvenementIamEsbHandler implements EsbMessageHandler {
 
-	private static final Logger LOGGER = Logger.getLogger(EvenementIamEsbHandler.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementIamEsbHandler.class);
 
 	protected static final String ACTION = "action";
 	protected static final String CREATE = "Create";
@@ -77,7 +78,7 @@ public class EvenementIamEsbHandler implements EsbMessageHandler {
 			throw new EsbBusinessException(EsbBusinessCode.XML_INVALIDE, e.getMessage(), e);
 		}
 		catch (Exception e) {
-			LOGGER.error(e, e);
+			LOGGER.error(e.getMessage(), e);
 			throw e;
 		}
 		finally {

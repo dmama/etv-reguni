@@ -7,7 +7,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
@@ -28,7 +29,7 @@ import ch.vd.uniregctb.utils.RegDateEditor;
  */
 public abstract class AbstractTiersListController extends AbstractTiersController {
 
-	protected final Logger LOGGER = Logger.getLogger(AbstractTiersListController.class);
+	protected final Logger LOGGER = LoggerFactory.getLogger(AbstractTiersListController.class);
 
 	protected ServiceInfrastructureService infraService;
 

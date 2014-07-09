@@ -9,7 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.unireg.interfaces.infra.data.Logiciel;
 import ch.vd.unireg.interfaces.infra.data.LogicielMetier;
@@ -52,7 +53,7 @@ import ch.vd.uniregctb.type.TypeRapportEntreTiers;
  */
 public class TiersMapHelper extends CommonMapHelper {
 
-	private static final Logger LOGGER = Logger.getLogger(TiersMapHelper.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(TiersMapHelper.class);
 
 	private Map<FormeJuridique, String> mapFormeJuridique;
 	private Map<NatureJuridique, String> mapNatureJuridique;

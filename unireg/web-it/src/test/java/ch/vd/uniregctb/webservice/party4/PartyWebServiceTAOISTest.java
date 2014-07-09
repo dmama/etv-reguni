@@ -63,7 +63,7 @@ import static org.junit.Assert.fail;
 @SuppressWarnings({"JavaDoc"})
 public class PartyWebServiceTAOISTest extends AbstractPartyWebServiceTest {
 
-	//private static final Logger LOGGER = Logger.getLogger(WebitTest.class);
+	//private static final Logger LOGGER = LoggerFactory.getLogger(WebitTest.class);
 
 	private static final String DB_UNIT_DATA_FILE = "PartyWebServiceTAOISTest.xml";
 

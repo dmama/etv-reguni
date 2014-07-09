@@ -3,7 +3,8 @@ package ch.vd.uniregctb.tiers.validator;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
@@ -41,7 +42,7 @@ import ch.vd.uniregctb.type.TypeAdresseTiers;
 
 public class TiersAdresseValidator implements Validator {
 
-	protected final Logger LOGGER = Logger.getLogger(TiersAdresseValidator.class);
+	protected final Logger LOGGER = LoggerFactory.getLogger(TiersAdresseValidator.class);
 
 	private AdresseService adresseService;
 	private TiersService tiersService;
@@ -156,7 +157,7 @@ public class TiersAdresseValidator implements Validator {
 				adressesFiscales = adresseService.getAdressesFiscales(tiers, null, false);
 			}
 			catch (AdresseException e) {
-				LOGGER.debug(e, e);
+				LOGGER.debug(e.getMessage(), e);
 			}
 			if (adressesFiscales != null) {
 				final AdresseGenerique adresse = adressesFiscales.ofType(usage);

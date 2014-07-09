@@ -5,8 +5,9 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 
-import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.uniregctb.common.JobTest;
 
@@ -20,7 +21,7 @@ import static org.junit.Assert.fail;
 @SuppressWarnings({"JavaDoc"})
 public class BatchSchedulerTest extends JobTest {
 
-	private final static Logger LOGGER = Logger.getLogger(BatchSchedulerTest.class);
+	private final static Logger LOGGER = LoggerFactory.getLogger(BatchSchedulerTest.class);
 
 	private BatchScheduler batchScheduler;
 

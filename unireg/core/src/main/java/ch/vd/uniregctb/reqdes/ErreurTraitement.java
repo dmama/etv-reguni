@@ -11,7 +11,8 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
@@ -20,7 +21,7 @@ import ch.vd.uniregctb.common.LengthConstants;
 @Table(name = "REQDES_ERREUR")
 public class ErreurTraitement extends HibernateEntity {
 
-	private static final Logger LOGGER = Logger.getLogger(ErreurTraitement.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ErreurTraitement.class);
 
 	public static enum TypeErreur {
 		ERROR,

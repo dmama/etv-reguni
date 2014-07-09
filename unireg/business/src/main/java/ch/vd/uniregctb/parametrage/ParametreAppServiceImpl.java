@@ -3,7 +3,8 @@ package ch.vd.uniregctb.parametrage;
 import java.util.EnumMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
@@ -24,7 +25,7 @@ public class ParametreAppServiceImpl implements ParametreAppService, Initializin
 	/**
 	 * Un logger pour {@link ParametreAppServiceImpl}
 	 */
-	private static final Logger LOGGER = Logger.getLogger(ParametreAppServiceImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ParametreAppServiceImpl.class);
 
 	private ParametreAppDAO dao;
 	private PlatformTransactionManager transactionManager;

@@ -8,10 +8,11 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.mutable.MutableBoolean;
-import org.apache.log4j.Logger;
 import org.hibernate.FlushMode;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
@@ -28,7 +29,7 @@ import ch.vd.uniregctb.xml.Context;
  */
 public class MappingThread implements Runnable {
 
-	private static final Logger LOGGER = Logger.getLogger(MappingThread.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(MappingThread.class);
 
 	private final Set<Long> ids;
 	private final RegDate date;
@@ -73,7 +74,7 @@ public class MappingThread implements Runnable {
 			});
 		}
 		catch (RuntimeException e) {
-			LOGGER.warn(e, e);
+			LOGGER.warn(e.getMessage(), e);
 			processingException = e;
 		}
 		finally {

@@ -24,8 +24,9 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.message.Message;
-import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.ResourceUtils;
 
 import ch.vd.uniregctb.perfs.PerfsAccessFile;
@@ -47,7 +48,7 @@ import ch.vd.uniregctb.webservices.tiers2.perfs.PerfsThread.SearchQuery;
  */
 public class PerfsClient {
 
-	private static final Logger LOGGER = Logger.getLogger(PerfsClient.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(PerfsClient.class);
 
 	public static final long NANO_TO_MILLI = 1000000;
 
@@ -172,7 +173,7 @@ public class PerfsClient {
 			}
 		}
 		catch (Exception e) {
-			LOGGER.error(e, e);
+			LOGGER.error(e.getMessage(), e);
 		}
 	}
 
@@ -293,7 +294,7 @@ public class PerfsClient {
 				thread.join();
 			}
 			catch (Exception e) {
-				LOGGER.warn(e, e);
+				LOGGER.warn(e.getMessage(), e);
 			}
 		}
 	}

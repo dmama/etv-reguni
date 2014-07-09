@@ -2,8 +2,9 @@ package ch.vd.uniregctb.evenement.civil.interne.naissance;
 
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
@@ -24,7 +25,7 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 
 public class Naissance extends EvenementCivilInterne {
 
-	private static final Logger LOGGER = Logger.getLogger(Naissance.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(Naissance.class);
 
 	private final boolean okSiContribuableExiste;
 

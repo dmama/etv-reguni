@@ -45,7 +45,7 @@ import ch.vd.uniregctb.xml.address.AddressBuilder;
  */
 public abstract class DataHelper {
 
-	//private static final Logger LOGGER = Logger.getLogger(DataHelper.class);
+	//private static final Logger LOGGER = LoggerFactory.getLogger(DataHelper.class);
 
 	public static boolean coreToXML(Boolean value) {
 		return value != null && value;

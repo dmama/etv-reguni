@@ -13,10 +13,11 @@ import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.apache.log4j.Logger;
 import org.hibernate.CallbackException;
 import org.hibernate.collection.internal.AbstractPersistentCollection;
 import org.hibernate.type.Type;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
 import ch.vd.uniregctb.common.HibernateEntity;
@@ -30,7 +31,7 @@ import ch.vd.uniregctb.common.ThreadSwitch;
  */
 public class ModificationInterceptor extends AbstractLinkedInterceptor {
 
-	private static final Logger LOGGER = Logger.getLogger(ModificationInterceptor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ModificationInterceptor.class);
 
 	private final ThreadSwitch activationSwitch = new ThreadSwitch(true);
 	private final ReentrantReadWriteLock rwlock = new ReentrantReadWriteLock();

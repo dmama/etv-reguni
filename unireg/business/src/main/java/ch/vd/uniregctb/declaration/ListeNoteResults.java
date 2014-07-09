@@ -3,7 +3,8 @@ package ch.vd.uniregctb.declaration;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.NomPrenom;
@@ -28,7 +29,7 @@ import ch.vd.uniregctb.type.MotifFor;
 
 public class ListeNoteResults extends JobResults<Long, ListeNoteResults> {
 
-	private static final Logger LOGGER = Logger.getLogger(ListeNoteResults.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ListeNoteResults.class);
 
 	public ListeNoteResults(RegDate dateTraitement, TiersService tiersService, AdresseService adresseService) {
 		super(tiersService, adresseService);

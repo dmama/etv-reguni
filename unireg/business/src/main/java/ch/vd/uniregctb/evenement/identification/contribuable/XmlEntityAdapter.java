@@ -5,8 +5,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.fiscalite.registre.identificationContribuable.DatePartielleType;
 import ch.vd.fiscalite.registre.identificationContribuable.EnAttenteIdentifManuelType;
@@ -39,7 +40,7 @@ public abstract class XmlEntityAdapter {
 	public static final String TYPE_MESSAGE_NCS = "CS_EMPLOYEUR";
 	public static final String TYPE_MESSAGE_EFACTURE = "CYBER_EFACTURE";
 	public static final String TYPE_MESSAGE_LISTE_IS = "LISTE_IS";
-	private static final Logger LOGGER = Logger.getLogger(XmlEntityAdapter.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(XmlEntityAdapter.class);
 
 	public static IdentificationCTBDocument entity2xml(IdentificationContribuable message) {
 

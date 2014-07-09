@@ -2,7 +2,8 @@ package ch.vd.uniregctb.evenement.common.manager;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 
@@ -43,7 +44,7 @@ abstract public class EvenementCivilManagerImpl implements MessageSourceAware {
 	protected ServiceInfrastructureService serviceInfrastructureService;
 	protected MessageSource messageSource;
 	protected WebCivilService webCivilService;
-	private final Logger LOGGER = Logger.getLogger(EvenementCivilManagerImpl.class);
+	private final Logger LOGGER = LoggerFactory.getLogger(EvenementCivilManagerImpl.class);
 
 	@SuppressWarnings("unused")
 	public void setWebCivilService(WebCivilService webCivilService) {

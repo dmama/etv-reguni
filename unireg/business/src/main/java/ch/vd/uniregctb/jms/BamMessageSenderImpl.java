@@ -3,8 +3,9 @@ package ch.vd.uniregctb.jms;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.technical.esb.BamMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
@@ -13,7 +14,7 @@ import ch.vd.uniregctb.common.AuthenticationHelper;
 
 public class BamMessageSenderImpl implements BamMessageSender {
 
-	private static final Logger LOGGER = Logger.getLogger(BamMessageSenderImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(BamMessageSenderImpl.class);
 
 	private static final String RECEIVE_EVENT_TYPE = "RECEIVE";
 

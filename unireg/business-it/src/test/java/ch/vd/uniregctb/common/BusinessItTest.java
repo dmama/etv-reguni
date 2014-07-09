@@ -18,7 +18,7 @@ import ch.vd.uniregctb.utils.UniregPropertiesImpl;
 })
 public abstract class BusinessItTest extends AbstractBusinessTest {
 
-	//private final static Logger LOGGER = Logger.getLogger(AbstractBusinessItTest.class);
+	//private final static Logger LOGGER = LoggerFactory.getLogger(AbstractBusinessItTest.class);
 
 	/**
 	 * Timeout par défaut pour les attentes de messages JMS dans les tests BIT

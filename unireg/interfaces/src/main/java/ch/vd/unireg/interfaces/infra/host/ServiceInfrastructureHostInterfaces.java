@@ -53,7 +53,7 @@ import ch.vd.uniregctb.common.JvmVersionHelper;
  */
 public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructureRaw {
 
-	//private static final Logger LOGGER = Logger.getLogger(ServiceInfrastructureHostInterfaces.class);
+	//private static final Logger LOGGER = LoggerFactory.getLogger(ServiceInfrastructureHostInterfaces.class);
 
 	private ServiceInfrastructure serviceInfrastructure;
 	private ServiceInfrastructureFiscal serviceInfrastructureFiscal;

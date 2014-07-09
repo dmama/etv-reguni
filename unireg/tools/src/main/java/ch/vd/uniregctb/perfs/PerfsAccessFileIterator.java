@@ -3,7 +3,8 @@ package ch.vd.uniregctb.perfs;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
 import ch.vd.uniregctb.perfs.PerfsAccessFile.Call;
@@ -15,7 +16,7 @@ import ch.vd.uniregctb.perfs.PerfsAccessFile.Call;
  */
 public class PerfsAccessFileIterator {
 
-	private static final Logger LOGGER = Logger.getLogger(PerfsAccessFileIterator.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(PerfsAccessFileIterator.class);
 
 	private final long startTime;
 	private final ArrayList<Call> calls;

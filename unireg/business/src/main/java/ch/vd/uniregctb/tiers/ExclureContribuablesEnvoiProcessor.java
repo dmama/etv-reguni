@@ -2,7 +2,8 @@ package ch.vd.uniregctb.tiers;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.registre.base.date.RegDate;
@@ -23,7 +24,7 @@ import ch.vd.uniregctb.hibernate.HibernateTemplate;
  */
 public class ExclureContribuablesEnvoiProcessor {
 
-	private static final Logger LOGGER = Logger.getLogger(ExclureContribuablesEnvoiProcessor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ExclureContribuablesEnvoiProcessor.class);
 
 	private static final int BATCH_SIZE = 100;
 

@@ -6,7 +6,8 @@ import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.util.HtmlUtils;
 
 import ch.vd.unireg.interfaces.civil.data.LocalisationType;
@@ -21,7 +22,7 @@ import ch.vd.uniregctb.tiers.view.LocalisationView;
  */
 public class JspTagLocalisation extends BodyTagSupport {
 
-	private final Logger LOGGER = Logger.getLogger(JspTagLocalisation.class);
+	private final Logger LOGGER = LoggerFactory.getLogger(JspTagLocalisation.class);
 
 	private final static AtomicInteger counter = new AtomicInteger();
 

@@ -7,7 +7,8 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
@@ -19,7 +20,7 @@ import ch.vd.uniregctb.scheduler.JobDefinition;
 
 public class InContainerTestingJob extends JobDefinition {
 
-	private static final Logger LOGGER = Logger.getLogger(InContainerTestingJob.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(InContainerTestingJob.class);
 
 	public static final String NAME = "IT-InContainerTestingJob";
 	private static final String CATEGORIE = "Test";
@@ -88,7 +89,7 @@ public class InContainerTestingJob extends JobDefinition {
 			catch (Exception e) {
 				error = true;
 				LOGGER.error("Method "+test.getClass().getSimpleName()+ '.' +method.getName()+" : "+e.getMessage());
-				LOGGER.debug(e, e);
+				LOGGER.debug(e.getMessage(), e);
 			}
 			finally {
 				if (transactionListener != null)
@@ -112,7 +113,7 @@ public class InContainerTestingJob extends JobDefinition {
 
 	public class TransactionListener {
 
-		private final Logger logger = Logger.getLogger(TransactionListener.class);
+		private final Logger logger = LoggerFactory.getLogger(TransactionListener.class);
 
 		private volatile int transactionsStarted = 0;
 

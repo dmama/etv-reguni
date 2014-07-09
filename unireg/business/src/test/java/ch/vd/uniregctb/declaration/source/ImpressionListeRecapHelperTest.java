@@ -6,8 +6,9 @@ import java.util.Date;
 import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument;
 import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument.Expediteur;
 import noNamespace.TypAdresse.Adresse;
-import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.DateHelper;
@@ -28,7 +29,7 @@ import static org.junit.Assert.assertNull;
 @SuppressWarnings({"JavaDoc"})
 public class ImpressionListeRecapHelperTest extends BusinessTest {
 
-	private static final Logger LOGGER = Logger.getLogger(ImpressionListeRecapHelperTest.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ImpressionListeRecapHelperTest.class);
 
 
 	private ImpressionListeRecapHelperImpl impressionLRHelper;

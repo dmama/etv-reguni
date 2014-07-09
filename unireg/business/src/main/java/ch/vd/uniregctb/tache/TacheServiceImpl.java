@@ -11,10 +11,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
@@ -87,7 +88,7 @@ import ch.vd.uniregctb.type.TypeTache;
  */
 public class TacheServiceImpl implements TacheService {
 
-	private static final Logger LOGGER = Logger.getLogger(TacheServiceImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(TacheServiceImpl.class);
 
 	private TacheDAO tacheDAO;
 	private DeclarationImpotOrdinaireDAO diDAO;
@@ -652,7 +653,7 @@ public class TacheServiceImpl implements TacheService {
 					Audit.warn("Impossible de calculer les périodes d'imposition théoriques du contribuable n°" + id
 							+ " lors de la mise-à-jour des tâches d'envoi et d'annulation des déclarations d'impôt:"
 							+ " aucune action n'est effectuée.");
-					LOGGER.warn(e, e);
+					LOGGER.warn(e.getMessage(), e);
 					actions = null;
 				}
 				if (actions != null && !actions.isEmpty()) {

@@ -9,7 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -34,7 +35,7 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 @Controller
 public class AutoCompleteInfraController {
 
-	protected final Logger LOGGER = Logger.getLogger(AutoCompleteInfraController.class);
+	protected final Logger LOGGER = LoggerFactory.getLogger(AutoCompleteInfraController.class);
 
 	private ServiceInfrastructureService serviceInfrastructureService;
 

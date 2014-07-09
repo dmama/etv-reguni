@@ -7,7 +7,8 @@ import java.io.InputStream;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.ResourceUtils;
 
 import ch.vd.registre.base.date.RegDate;
@@ -19,7 +20,7 @@ import ch.vd.uniregctb.rapport.RapportService;
 
 
 public class RapprochementCtbTestApp extends BusinessItTestApplication {
-	private static final Logger LOGGER = Logger.getLogger(RapprochementCtbTestApp.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(RapprochementCtbTestApp.class);
 
 	private final static String RAPPROCHEMENT_FILE = "rf_dev1000.csv";
 
