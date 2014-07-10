@@ -85,9 +85,9 @@ public class TaxLiabilityControlServiceImpl implements TaxLiabilityControlServic
 		// Vérification de la conformité des assujettissements trouvés
 		final Set<T> trouves = analyse.getSourceAssujettissements();
 		if (trouves != null && !trouves.isEmpty() && aRejeter != null && !aRejeter.isEmpty()) {
-			final Set<T> intersection = EnumSet.copyOf(aRejeter);
-			intersection.retainAll(trouves);
-			if (!intersection.isEmpty()) {
+			final Set<T> remaining = EnumSet.copyOf(trouves);
+			remaining.removeAll(aRejeter);
+			if (remaining.isEmpty()) {
 				final TaxLiabilityControlEchec echec;
 				switch (analyse.getOrigine()) {
 				case MENAGE_COMMUN:

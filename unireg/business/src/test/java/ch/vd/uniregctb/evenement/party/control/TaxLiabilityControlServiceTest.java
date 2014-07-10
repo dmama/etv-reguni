@@ -68,7 +68,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 				return pp.getNumero();
 			}
 		});
-		final Integer periode = 2012;
+		final int periode = 2012;
 		final boolean rechercheMenageCommun = false;
 		final boolean rechercheParent = false;
 
@@ -115,7 +115,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 				return pp.getNumero();
 			}
 		});
-		final Integer periode = 2012;
+		final int periode = 2012;
 		final boolean rechercheMenageCommun = false;
 		final boolean rechercheParent = false;
 
@@ -166,7 +166,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 				return pp.getNumero();
 			}
 		});
-		final Integer periode = RegDate.get().year()+1;
+		final int periode = RegDate.get().year()+1;
 		final boolean rechercheMenageCommun = false;
 		final boolean rechercheParent = false;
 
@@ -239,7 +239,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 				return pp.getNumero();
 			}
 		});
-		final Integer periode = RegDate.get().year()+1;
+		final int periode = RegDate.get().year()+1;
 		final boolean rechercheMenageCommun = false;
 		final boolean rechercheParent = false;
 
@@ -312,7 +312,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 				return pp.getNumero();
 			}
 		});
-		final Integer periode = 2012;
+		final int periode = 2012;
 		final boolean rechercheMenageCommun = false;
 		final boolean rechercheParent = false;
 
@@ -360,7 +360,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 				return null;
 			}
 		});
-		final Integer periode = 2012;
+		final int periode = 2012;
 		final boolean rechercheMenageCommun = true;
 		final boolean rechercheParent = false;
 
@@ -409,7 +409,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 
 			}
 		});
-		final Integer periode = 2012;
+		final int periode = 2012;
 		final boolean rechercheMenageCommun = true;
 		final boolean rechercheParent = false;
 
@@ -446,7 +446,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 				return pp.getNumero();
 			}
 		});
-		final Integer periode = 2012;
+		final int periode = 2012;
 		final boolean rechercheMenageCommun = true;
 		final boolean rechercheParent = false;
 
@@ -483,7 +483,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 				return pp.getNumero();
 			}
 		});
-		final Integer periode = 2012;
+		final int periode = 2012;
 		final boolean rechercheMenageCommun = true;
 		final boolean rechercheParent = true;
 
@@ -538,7 +538,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 			}
 		});
 
-		final Integer periode = 2012;
+		final int periode = 2012;
 		TaxLiabilityControlResult<TypeAssujettissement> result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<TypeAssujettissement>>() {
 			@Override
 			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
@@ -603,7 +603,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 		});
 
 		//test sur ériode
-		final Integer periode = 2012;
+		final int periode = 2012;
 		final Set<TypeAssujettissement> toReject = EnumSet.of(TypeAssujettissement.SOURCE_PURE, TypeAssujettissement.MIXTE_137_1, TypeAssujettissement.MIXTE_137_2);
 		final TaxLiabilityControlResult<TypeAssujettissement> resultPeriode = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<TypeAssujettissement>>() {
 			@Override
@@ -926,7 +926,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 				return pp.getNumero();
 			}
 		});
-		final Integer periode = 2013;
+		final int periode = 2013;
 		final boolean rechercheMenageCommun = true;
 		final boolean rechercheParent = false;
 
@@ -1029,7 +1029,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 			}
 		});
 
-		final Integer periode = 2012;
+		final int periode = 2012;
 		final TaxLiabilityControlResult<TypeAssujettissement> result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<TypeAssujettissement>>() {
 			@Override
 			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
@@ -1084,7 +1084,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 			}
 		});
 
-		final Integer periode = 2012;
+		final int periode = 2012;
 		final TaxLiabilityControlResult<TypeAssujettissement> result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<TypeAssujettissement>>() {
 			@Override
 			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
@@ -1146,7 +1146,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 			}
 		});
 
-		final Integer periode = 2012;
+		final int periode = 2012;
 		final TaxLiabilityControlResult<TypeAssujettissement> result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<TypeAssujettissement>>() {
 			@Override
 			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
@@ -1251,7 +1251,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 			}
 		});
 
-		final Integer periode = 2012;
+		final int periode = 2012;
 		final TaxLiabilityControlResult<TypeAssujettissement> result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<TypeAssujettissement>>() {
 			@Override
 			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
@@ -1285,7 +1285,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 			}
 		});
 
-		final Integer periode = 2012;
+		final int periode = 2012;
 		final TaxLiabilityControlResult<TypeAssujettissement> result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<TypeAssujettissement>>() {
 			@Override
 			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
@@ -1300,4 +1300,77 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 		assertEquals(EnumSet.of(TypeAssujettissement.MIXTE_137_2), result.getSourceAssujettissements());
 	}
 
+	/**
+	 * [SIFISC-12861] il suffit d'une période d'imposition non-rejetée sur la période fiscale pour que le contrôle soit OK
+	 */
+	@Test
+	public void testControleAssujetissementPeriodeMultiplesTypesAvecRejet() throws Exception {
+		final long noInd = 1244;
+		final int periode = 2012;
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				addIndividu(noInd, date(1994, 3, 12), "RuppertPeriode", "Jeroma", Sexe.FEMININ);
+			}
+		});
+
+		// on crée un habitant vaudois ordinaire
+		final Long idPP = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = addHabitant(noInd);
+				addForPrincipal(pp, date(2010, 1, 1), MotifFor.ARRIVEE_HS, date(periode, 5, 13), MotifFor.PERMIS_C_SUISSE, MockCommune.Aubonne, ModeImposition.SOURCE);
+				addForPrincipal(pp, date(periode, 5, 14), MotifFor.PERMIS_C_SUISSE, MockCommune.Aubonne, ModeImposition.ORDINAIRE);
+				return pp.getNumero();
+			}
+		});
+
+		//
+		// premier test -> on refuse les sourciers purs (contrôle OK car le tiers est aussi à l'ordinaire sur la période)
+		//
+		final TaxLiabilityControlResult<TypeAssujettissement> resultSourceRejete = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<TypeAssujettissement>>() {
+			@Override
+			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idPP);
+				final Set<TypeAssujettissement> toReject = EnumSet.of(TypeAssujettissement.SOURCE_PURE);
+				return controlService.doControlOnPeriod(pp, periode, false, true, false, toReject);
+			}
+		});
+
+		assertTiersAssujetti(idPP, resultSourceRejete);
+		assertEquals(TaxLiabilityControlResult.Origine.INITIAL, resultSourceRejete.getOrigine());
+		assertEquals(EnumSet.of(TypeAssujettissement.VAUDOIS_ORDINAIRE, TypeAssujettissement.SOURCE_PURE), resultSourceRejete.getSourceAssujettissements());
+
+		//
+		// deuxième test -> on refuse les vaudois ordinaires (contrôle OK car le tiers est aussi sourcier pur sur la période)
+		//
+		final TaxLiabilityControlResult<TypeAssujettissement> resultOrdinaireRejete = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<TypeAssujettissement>>() {
+			@Override
+			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idPP);
+				final Set<TypeAssujettissement> toReject = EnumSet.of(TypeAssujettissement.VAUDOIS_ORDINAIRE);
+				return controlService.doControlOnPeriod(pp, periode, false, true, false, toReject);
+			}
+		});
+
+		assertTiersAssujetti(idPP, resultOrdinaireRejete);
+		assertEquals(TaxLiabilityControlResult.Origine.INITIAL, resultOrdinaireRejete.getOrigine());
+		assertEquals(EnumSet.of(TypeAssujettissement.VAUDOIS_ORDINAIRE, TypeAssujettissement.SOURCE_PURE), resultOrdinaireRejete.getSourceAssujettissements());
+
+		//
+		// troisième test -> on refuse les sourciers purs ET les vaudois ordinaires (contrôle KO)
+		//
+		final TaxLiabilityControlResult<TypeAssujettissement> resultSourceEtOrdinaireRejetes = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<TypeAssujettissement>>() {
+			@Override
+			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idPP);
+				final Set<TypeAssujettissement> toReject = EnumSet.of(TypeAssujettissement.VAUDOIS_ORDINAIRE, TypeAssujettissement.SOURCE_PURE);
+				return controlService.doControlOnPeriod(pp, periode, false, true, false, toReject);
+			}
+		});
+
+		assertAssujetissmentModeImpositionNonConforme(resultSourceEtOrdinaireRejetes);
+		assertEquals(TaxLiabilityControlEchec.EchecType.CONTROLE_NUMERO_KO, resultSourceEtOrdinaireRejetes.getEchec().getType());
+	}
 }
