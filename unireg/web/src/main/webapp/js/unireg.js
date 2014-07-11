@@ -176,10 +176,10 @@ var Dialog = {
 
 						var buttonId = $(button).attr('id');
 
-						var queryString = '/search/quick.do?query=' + encodeURIComponent(current);
+						var queryString = '/search/quick.do?query=' + StringUtils.encodeURIComponent(current);
 						if (filter_bean) {
-							queryString += '&filterBean=' + encodeURIComponent(filter_bean);
-							queryString += '&filterParams=' + encodeURIComponent(filter_params);
+							queryString += '&filterBean=' + StringUtils.encodeURIComponent(filter_bean);
+							queryString += '&filterParams=' + StringUtils.encodeURIComponent(filter_params);
 						}
 						queryString += '&' + new Date().getTime();
 
@@ -203,14 +203,14 @@ var Dialog = {
 				var buttonId = $(button).attr('id');
 
 				var queryString = '/search/full.do?';
-				queryString += 'id=' + encodeURIComponent($('#tiers-picker-id').val());
-				queryString += '&nomRaison=' + encodeURIComponent($('#tiers-picker-nomraison').val());
-				queryString += '&localite=' + encodeURIComponent($('#tiers-picker-localite').val());
-				queryString += '&dateNaissance=' + encodeURIComponent($('#tiers-picker-datenaissance').val());
-				queryString += '&noAvs=' + encodeURIComponent($('#tiers-picker-noavs').val());
+				queryString += 'id=' + StringUtils.encodeURIComponent($('#tiers-picker-id').val());
+				queryString += '&nomRaison=' + StringUtils.encodeURIComponent($('#tiers-picker-nomraison').val());
+				queryString += '&localite=' + StringUtils.encodeURIComponent($('#tiers-picker-localite').val());
+				queryString += '&dateNaissance=' + StringUtils.encodeURIComponent($('#tiers-picker-datenaissance').val());
+				queryString += '&noAvs=' + StringUtils.encodeURIComponent($('#tiers-picker-noavs').val());
 				if (filter_bean) {
-					queryString += '&filterBean=' + encodeURIComponent(filter_bean);
-					queryString += '&filterParams=' + encodeURIComponent(filter_params);
+					queryString += '&filterBean=' + StringUtils.encodeURIComponent(filter_bean);
+					queryString += '&filterParams=' + StringUtils.encodeURIComponent(filter_params);
 				}
  				queryString += '&' + new Date().getTime();
 
@@ -1336,6 +1336,13 @@ var StringUtils = {
 		car = car || ' ';
 		while (val.length < len) val = car + val;
 		return val;
+	},
+
+	encodeURIComponent: function(str) {
+		// la méthode javascript encodeURIComponent n'encode pas les caractères -_.!~*'() ... il faut donc le faire à sa place
+		// voir http://stackoverflow.com/questions/75980/best-practice-escape-or-encodeuri-encodeuricomponent
+		var jsEncoded = str ? encodeURIComponent(str) : '';
+		return jsEncoded.replace(/\-/g, "%2D").replace(/_/g, "%5F").replace(/\./g, "%2E").replace(/!/g, "%21").replace(/~/g, "%7E").replace(/\*/g, "%2A").replace(/'/g, "%27").replace(/\(/g, "%28").replace(/\)/g, "%29");
 	}
 };
 
@@ -2176,7 +2183,7 @@ var Batch = {
 		}, 2500); // 2.5s, le temps que l'affichage des batches en cours s'actualise
 
 		var form = $('#' + name);
-		form.attr('action', App.curl('/admin/batch/start.do?name=') + encodeURIComponent(name));
+		form.attr('action', App.curl('/admin/batch/start.do?name=') + StringUtils.encodeURIComponent(name));
 		// cet appel nécessite la plugin jquery.form.js pour gérer l'upload ajax de fichiers dans les formulaires (voir http://malsup.com/jquery/form/)
 		form.ajaxSubmit({
 			success: function(responseText) {
@@ -2195,7 +2202,7 @@ var Batch = {
 	},
 
 	stop: function(name) {
-		$.post(App.curl('/admin/batch/stop.do?name=') + encodeURIComponent(name), function(returnCode) {
+		$.post(App.curl('/admin/batch/stop.do?name=') + StringUtils.encodeURIComponent(name), function(returnCode) {
 			if (returnCode) {
 				alert(returnCode);
 			}
@@ -2623,7 +2630,7 @@ var Search = {
 	 * @param query les critères de recherche.
 	 */
 	executeSimpleQuery: function(query) {
-		var queryString = App.curl('/search/quick.do?query=' + encodeURIComponent(query) + '&saveQueryTo=simpleSearchQuery&' + new Date().getTime());
+		var queryString = App.curl('/search/quick.do?query=' + StringUtils.encodeURIComponent(query) + '&saveQueryTo=simpleSearchQuery&' + new Date().getTime());
 
 		// on effectue la recherche par ajax
 		$.get(queryString, function(results) {
