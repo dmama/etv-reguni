@@ -221,4 +221,18 @@
 	</tr>
 
 </table>
+<fieldset class="information">
+    <legend><span><fmt:message key="label.tiers.information.entreprise"/></span></legend>
+    <c:if test="${param.path=='tiers'}">
+        <table border="0">
+            <tr>
+                <td>
+                    <unireg:raccourciModifier link="../civil/personnephysique/ide/edit.do?id=${command.tiers.numero}" tooltip="Modifier le numéro entreprise"
+                                              display="label.bouton.modifier"/>
+                </td>
+            </tr>
+        </table>
+    </c:if>
+    <jsp:include page="ide.jsp"/>
+</fieldset>
 

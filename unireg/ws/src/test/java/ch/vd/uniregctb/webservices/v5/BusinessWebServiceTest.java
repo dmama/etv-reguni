@@ -1262,6 +1262,10 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				ide.setNumeroIde("CHE999999996");
 				ac.addIdentificationEntreprise(ide);
 
+				final IdentificationEntreprise idePP = new IdentificationEntreprise();
+				idePP.setNumeroIde("CHE100001000");
+				pp.addIdentificationEntreprise(idePP);
+
 				final Ids ids = new Ids();
 				ids.pp = pp.getNumero();
 				ids.mc = mc.getNumero();
@@ -1281,6 +1285,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			Assert.assertNotNull(party);
 			Assert.assertEquals(NaturalPerson.class, party.getClass());
 			Assert.assertEquals(ids.pp, party.getNumber());
+
 
 			final NaturalPerson pp = (NaturalPerson) party;
 			Assert.assertEquals(dateNaissance, ch.vd.uniregctb.xml.DataHelper.xmlToCore(pp.getDateOfBirth()));
@@ -1304,6 +1309,9 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			Assert.assertNotNull(pp.getFatherName());
 			Assert.assertEquals("Dufoin", pp.getFatherName().getLastName());
 			Assert.assertEquals("Melchior", pp.getFatherName().getFirstNames());
+			Assert.assertNotNull(pp.getUidNumbers());
+			Assert.assertEquals(1, pp.getUidNumbers().getUidNumber().size());
+			Assert.assertEquals("CHE100001000", pp.getUidNumbers().getUidNumber().get(0));
 		}
 		// get MC
 		{

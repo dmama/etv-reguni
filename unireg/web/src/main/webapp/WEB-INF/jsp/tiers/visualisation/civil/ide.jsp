@@ -8,11 +8,8 @@
                 <c:when test="${param.pathTiers !=null}">
                     <c:set var="bind" value="command.${param.pathTiers}.identificationsEntreprise" scope="request"/>
                 </c:when>
-                <c:when test="${param.pathTiersPrincipal !=null}">
-                    <c:set var="bind" value="command.${param.pathTiersPrincipal}.identificationsEntreprise" scope="request"/>
-                </c:when>
-                <c:when test="${param.pathTiersConjoint !=null}">
-                    <c:set var="bind" value="command.${param.pathTiersConjoint}.identificationsEntreprise" scope="request"/>
+                <c:when test="${param.path !=null}">
+                    <c:set var="bind" value="command.${param.path}.identificationsEntreprise" scope="request"/>
                 </c:when>
                 <c:otherwise>
 

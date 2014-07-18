@@ -8,7 +8,7 @@
 				<c:when test="${command.natureMembrePrincipal == 'Habitant'}">
 					<jsp:include page="individu-core.jsp">
 						<jsp:param name="path" value="individu" />
-                        <jsp:param name="pathTiersPrincipal" value="tiersPrincipal" />
+                        <jsp:param name="pathTiers" value="tiersPrincipal" />
 					</jsp:include>
 				</c:when>
 				<c:when test="${command.natureMembrePrincipal == 'NonHabitant'}">
@@ -28,7 +28,7 @@
 				<c:when test="${command.natureMembreConjoint == 'Habitant'}">
 					<jsp:include page="individu-core.jsp">
 						<jsp:param name="path" value="individuConjoint" />
-                        <jsp:param name="pathTiersConjoint" value="tiersConjoint" />
+                        <jsp:param name="pathTiers" value="tiersConjoint" />
 					</jsp:include>
 				</c:when>
 				<c:when test="${command.natureMembreConjoint == 'NonHabitant'}">

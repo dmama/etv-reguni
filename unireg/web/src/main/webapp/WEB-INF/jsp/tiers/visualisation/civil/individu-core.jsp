@@ -228,11 +228,11 @@
 </table>
 <fieldset class="information">
     <legend><span><fmt:message key="label.tiers.information.entreprise"/></span></legend>
-    <c:if test="${param.pathTiers!=null}">
+    <c:if test="${param.pathTiers=='tiers'}">
         <table border="0">
             <tr>
                 <td>
-                    <unireg:raccourciModifier link="../civil/habitant/ide/edit.do?id=${command.tiers.numero}" tooltip="Modifier le numéro entreprise"
+                    <unireg:raccourciModifier link="../civil/personnephysique/ide/edit.do?id=${command.tiers.numero}" tooltip="Modifier le numéro entreprise"
                                               display="label.bouton.modifier"/>
                 </td>
             </tr>

@@ -119,7 +119,7 @@ public class CivilEditController {
 	}
 
 	@Transactional(rollbackFor = Throwable.class)
-	@RequestMapping(value = "/habitant/ide/edit.do", method = RequestMethod.GET)
+	@RequestMapping(value = "/personnephysique/ide/edit.do", method = RequestMethod.GET)
 	public String editIdeHabitant(Model model, @RequestParam(value = ID) long id) {
 	//TODO XSIBNM ROLE a changer
 		if (!SecurityHelper.isGranted(securityProvider, Role.VISU_ALL)) {
@@ -138,7 +138,7 @@ public class CivilEditController {
 	}
 
 	@Transactional(rollbackFor = Throwable.class)
-	@RequestMapping(value = "/habitant/ide/edit.do", method = RequestMethod.POST)
+	@RequestMapping(value = "/personnephysique/ide/edit.do", method = RequestMethod.POST)
 	public String doEditIdeHabitant(@RequestParam(value = ID) long id, Model model, @Valid @ModelAttribute(DATA) ContribuableInfosEntrepriseView view, BindingResult bindingResult) {
 		//TODO XSIBNM role a changer
 		if (!SecurityHelper.isGranted(securityProvider, Role.VISU_ALL)) {

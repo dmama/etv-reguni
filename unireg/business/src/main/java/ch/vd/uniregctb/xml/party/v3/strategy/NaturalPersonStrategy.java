@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.xml.party.v3.strategy;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -22,8 +23,10 @@ import ch.vd.unireg.xml.party.person.v3.NaturalPersonCategoryType;
 import ch.vd.unireg.xml.party.person.v3.ParentFullName;
 import ch.vd.unireg.xml.party.taxresidence.v2.WithholdingTaxationPeriod;
 import ch.vd.unireg.xml.party.v3.PartyPart;
+import ch.vd.unireg.xml.party.v3.UidNumberList;
 import ch.vd.uniregctb.metier.piis.PeriodeImpositionImpotSource;
 import ch.vd.uniregctb.metier.piis.PeriodeImpositionImpotSourceServiceException;
+import ch.vd.uniregctb.tiers.IdentificationEntreprise;
 import ch.vd.uniregctb.tiers.IdentificationPersonne;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -131,6 +134,16 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 				to.setFatherName(new ParentFullName(npPere.getPrenom(), npPere.getNom()));
 			}
 		}
+
+		//L'exposition du numéro IDE
+		final Set<IdentificationEntreprise> ides = personne.getIdentificationsEntreprise();
+		if (ides != null && !ides.isEmpty()) {
+			final List<String> ideList = new ArrayList<>(ides.size());
+			for (IdentificationEntreprise ide : ides) {
+				ideList.add(ide.getNumeroIde());
+			}
+			to.setUidNumbers(new UidNumberList(ideList));
+		}
 	}
 
 	@Override
@@ -152,6 +165,9 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 
 		// les permis sont toujours renseignés (pas de PART spécifique)
 		copyColl(to.getCategories(), from.getCategories());
+
+		//la liste des IDE
+		to.setUidNumbers(from.getUidNumbers());
 	}
 
 	@Override
