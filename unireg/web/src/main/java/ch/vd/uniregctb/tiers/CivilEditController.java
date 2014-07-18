@@ -27,8 +27,10 @@ import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.manager.AutorisationManager;
 import ch.vd.uniregctb.tiers.manager.Autorisations;
 import ch.vd.uniregctb.tiers.validator.AutreCommunauteCivilViewValidator;
+import ch.vd.uniregctb.tiers.validator.ContribuableInfosEntrepriseViewValidator;
 import ch.vd.uniregctb.tiers.validator.NonHabitantCivilViewValidator;
 import ch.vd.uniregctb.tiers.view.AutreCommunauteCivilView;
+import ch.vd.uniregctb.tiers.view.ContribuableInfosEntrepriseView;
 import ch.vd.uniregctb.tiers.view.IdentificationPersonneView;
 import ch.vd.uniregctb.tiers.view.NonHabitantCivilView;
 import ch.vd.uniregctb.utils.RegDateEditor;
@@ -80,6 +82,7 @@ public class CivilEditController {
 		private CivilEditValidator() {
 			addSubValidator(AutreCommunauteCivilView.class, new AutreCommunauteCivilViewValidator());
 			addSubValidator(NonHabitantCivilView.class, new NonHabitantCivilViewValidator());
+			addSubValidator(ContribuableInfosEntrepriseView.class, new ContribuableInfosEntrepriseViewValidator());
 		}
 	}
 
@@ -99,6 +102,66 @@ public class CivilEditController {
 		if (!auth.isEditable() || !auth.isDonneesCiviles()) {
 			throw new AccessDeniedException("Vous ne possédez pas les droits d'accès suffisants à la modification des données civiles des tiers de ce type.");
 		}
+	}
+
+	private void checkDroitEditionIDE(Tiers tiers) {
+		final Autorisations auth = getAutorisations(tiers);
+		//TODO droit a préciser
+		if (!auth.isEditable()) {
+			throw new AccessDeniedException("Vous ne possédez pas les droits d'accès suffisants à la modification des informations entreprise des tiers de ce type.");
+		}
+	}
+
+	private String showEditIdeHabitant(Model model, long id, ContribuableInfosEntrepriseView view) {
+		model.addAttribute(DATA, view);
+		model.addAttribute(TIERS_ID, id);
+		return "/tiers/edition/civil/edit-ide";
+	}
+
+	@Transactional(rollbackFor = Throwable.class)
+	@RequestMapping(value = "/habitant/ide/edit.do", method = RequestMethod.GET)
+	public String editIdeHabitant(Model model, @RequestParam(value = ID) long id) {
+	//TODO XSIBNM ROLE a changer
+		if (!SecurityHelper.isGranted(securityProvider, Role.VISU_ALL)) {
+			throw new AccessDeniedException("Vous ne possédez pas les droits d'accès suffisants à la modification des tiers de ce type.");
+		}
+
+		final Tiers tiers = tiersDAO.get(id);
+		if (tiers != null && tiers instanceof PersonnePhysique) {
+			checkDroitEditionIDE(tiers);
+			final ContribuableInfosEntrepriseView view = new ContribuableInfosEntrepriseView((PersonnePhysique) tiers);
+			return showEditIdeHabitant(model, id, view);
+		}
+		else {
+			throw new TiersNotFoundException(id);
+		}
+	}
+
+	@Transactional(rollbackFor = Throwable.class)
+	@RequestMapping(value = "/habitant/ide/edit.do", method = RequestMethod.POST)
+	public String doEditIdeHabitant(@RequestParam(value = ID) long id, Model model, @Valid @ModelAttribute(DATA) ContribuableInfosEntrepriseView view, BindingResult bindingResult) {
+		//TODO XSIBNM role a changer
+		if (!SecurityHelper.isGranted(securityProvider, Role.VISU_ALL)) {
+			throw new AccessDeniedException("Vous ne possédez pas les droits d'accès suffisants à la modification des tiers de ce type.");
+		}
+
+		if (bindingResult.hasErrors()) {
+			return showEditIdeHabitant(model, id, view);
+		}
+
+		final Tiers tiers = tiersDAO.get(id);
+		if (tiers != null && tiers instanceof PersonnePhysique) {
+			checkDroitEditionIDE(tiers);
+
+			final PersonnePhysique personnePhysique = (PersonnePhysique) tiers;
+
+			tiersService.setIdentifiantEntreprise(personnePhysique, StringUtils.trimToNull(view.getIde()));
+		}
+		else {
+			throw new TiersNotFoundException(id);
+		}
+
+		return "redirect:/tiers/visu.do?id=" + id;
 	}
 
 	@Transactional(rollbackFor = Throwable.class)

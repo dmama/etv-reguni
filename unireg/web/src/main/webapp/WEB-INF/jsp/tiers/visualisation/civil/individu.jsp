@@ -4,6 +4,7 @@
 	<legend><span><fmt:message key="label.habitant" /></span></legend>
 	<jsp:include page="individu-core.jsp">
 		<jsp:param name="path" value="individu" />
+        <jsp:param name="pathTiers" value="tiers" />
 	</jsp:include>
 </fieldset>
 
