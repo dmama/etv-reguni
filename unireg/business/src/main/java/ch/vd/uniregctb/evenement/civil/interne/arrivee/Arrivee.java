@@ -2,6 +2,7 @@ package ch.vd.uniregctb.evenement.civil.interne.arrivee;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -420,11 +421,16 @@ public abstract class Arrivee extends Mouvement {
 				// [UNIREG-2650] Message d'erreur un peu plus explicite...
 				final StringBuilder b = new StringBuilder();
 				boolean first = true;
-				for (PersonnePhysique candidat : nonHabitants) {
+				final List<Long> numerosCtb = new ArrayList<>();
+				for (PersonnePhysique nonHabitant : nonHabitants) {
+					numerosCtb.add(nonHabitant.getNumero());
+				}
+				Collections.sort(numerosCtb);
+				for (long numero : numerosCtb) {
 					if (!first) {
 						b.append(", ");
 					}
-					b.append(FormatNumeroHelper.numeroCTBToDisplay(candidat.getNumero()));
+					b.append(FormatNumeroHelper.numeroCTBToDisplay(numero));
 					first = false;
 				}
 
