@@ -1065,6 +1065,158 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		}
 	}
 
+	//SIFISC_12951
+	@Test
+	public void testArriveeNonHabitantNAVS13_SansSexe_sans_DateNaisance() throws Exception {
+
+		try {
+			final long noIndividu = 695860;
+			final RegDate dateNaissance = date(1982, 6, 14);
+			final RegDate dateArrivee = date(2014, 7, 10);
+			final String navs13 = "7565683992644";
+			setWantIndexation(true);
+
+			// le p'tit nouveau
+			serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+				@Override
+				protected void init() {
+					final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Bocktaels", "Jérémie Daniel Gabriel", true);
+					final MockAdresse adresse = addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Echallens.GrandRue, null, dateArrivee, null);
+					adresse.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_CANTON, MockCommune.Geneve.getNoOFS(), null));
+					addNationalite(ind, MockPays.France, dateNaissance, null);
+
+					ind.setNouveauNoAVS(navs13);
+
+				}
+			});
+
+			// Mise en place du fiscal
+			final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+				@Override
+				public Long doInTransaction(TransactionStatus status) {
+					final PersonnePhysique pp = addNonHabitant("Bocktaels", "Chollet", null, null);
+					pp.setNumeroAssureSocial(navs13);
+					addForPrincipal(pp, dateArrivee.addYears(-5), MotifFor.DEPART_HC, null, null, MockCommune.Bern, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
+					addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, dateArrivee.addYears(-5), null, MockRue.Zurich.GloriaStrasse);
+					return pp.getNumero();
+				}
+			});
+
+			globalTiersIndexer.sync();
+
+			// événement d'arrivée
+			final long evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+				@Override
+				public Long doInTransaction(TransactionStatus status) {
+					final EvenementCivilEch evt = new EvenementCivilEch();
+					evt.setId(14532L);
+					evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+					evt.setDateEvenement(dateArrivee);
+					evt.setEtat(EtatEvenementCivil.A_TRAITER);
+					evt.setNumeroIndividu(noIndividu);
+					evt.setType(TypeEvenementCivilEch.ARRIVEE);
+					return hibernateTemplate.merge(evt).getId();
+				}
+			});
+
+			// traitement de l'événement
+			traiterEvenements(noIndividu);
+
+			// vérification du traitement
+			doInNewTransactionAndSession(new TransactionCallback<Object>() {
+				@Override
+				public Object doInTransaction(TransactionStatus status) {
+					final EvenementCivilEch evt = evtCivilDAO.get(evtId);
+					assertNotNull(evt);
+					assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+					final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
+					assertNotNull(pp);
+					assertEquals((Long) ppId, pp.getNumero());
+					return null;
+				}
+			});
+		}
+		finally {
+			globalTiersIndexer.overwriteIndex();
+		}
+	}
+
+	//SIFISC_12951
+	@Test
+	public void testArriveeNonHabitantNAVS13_SansSexe() throws Exception {
+
+		try {
+			final long noIndividu = 695860;
+			final RegDate dateNaissance = date(1982, 6, 14);
+			final RegDate dateArrivee = date(2014, 7, 10);
+			final String navs13 = "7565683992644";
+			setWantIndexation(true);
+
+			// le p'tit nouveau
+			serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+				@Override
+				protected void init() {
+					final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Bocktaels", "Jérémie Daniel Gabriel", true);
+					final MockAdresse adresse = addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Echallens.GrandRue, null, dateArrivee, null);
+					adresse.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_CANTON, MockCommune.Geneve.getNoOFS(), null));
+					addNationalite(ind, MockPays.France, dateNaissance, null);
+
+					ind.setNouveauNoAVS(navs13);
+
+				}
+			});
+
+			// Mise en place du fiscal
+			final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+				@Override
+				public Long doInTransaction(TransactionStatus status) {
+					final PersonnePhysique pp = addNonHabitant("Bocktaels", "Chollet", dateNaissance, null);
+					pp.setNumeroAssureSocial(navs13);
+					addForPrincipal(pp, dateArrivee.addYears(-5), MotifFor.DEPART_HC, null, null, MockCommune.Bern, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
+					addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, dateArrivee.addYears(-5), null, MockRue.Zurich.GloriaStrasse);
+					return pp.getNumero();
+				}
+			});
+
+			globalTiersIndexer.sync();
+
+			// événement d'arrivée
+			final long evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+				@Override
+				public Long doInTransaction(TransactionStatus status) {
+					final EvenementCivilEch evt = new EvenementCivilEch();
+					evt.setId(14532L);
+					evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+					evt.setDateEvenement(dateArrivee);
+					evt.setEtat(EtatEvenementCivil.A_TRAITER);
+					evt.setNumeroIndividu(noIndividu);
+					evt.setType(TypeEvenementCivilEch.ARRIVEE);
+					return hibernateTemplate.merge(evt).getId();
+				}
+			});
+
+			// traitement de l'événement
+			traiterEvenements(noIndividu);
+
+			// vérification du traitement
+			doInNewTransactionAndSession(new TransactionCallback<Object>() {
+				@Override
+				public Object doInTransaction(TransactionStatus status) {
+					final EvenementCivilEch evt = evtCivilDAO.get(evtId);
+					assertNotNull(evt);
+					assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+					final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
+					assertNotNull(pp);
+					assertEquals((Long) ppId, pp.getNumero());
+					return null;
+				}
+			});
+		}
+		finally {
+			globalTiersIndexer.overwriteIndex();
+		}
+	}
+
 	@Test
 	public void testArriveeNonHabitantNAVS13Doublon() throws Exception {
 

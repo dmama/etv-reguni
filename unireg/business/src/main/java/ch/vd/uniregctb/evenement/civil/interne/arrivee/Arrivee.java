@@ -1,7 +1,9 @@
 package ch.vd.uniregctb.evenement.civil.interne.arrivee;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
@@ -228,7 +230,7 @@ public abstract class Arrivee extends Mouvement {
 	 */
 	protected abstract void doHandleCreationForMenage(PersonnePhysique arrivant, MenageCommun menageCommun, EvenementCivilWarningCollector warnings) throws EvenementCivilException;
 
-	private List<PersonnePhysique> findNonHabitants(Individu individu) throws EvenementCivilException {
+	private Map.Entry<ModeDetection,List<PersonnePhysique>> findNonHabitants(Individu individu) throws EvenementCivilException {
 		return findNonHabitants(getService(), individu, getNumeroEvenement());
 	}
 
@@ -240,10 +242,11 @@ public abstract class Arrivee extends Mouvement {
 	 * @param individu                    un individu
 	 * @return une liste de non-habitants qui correspondent aux critères.
 	 */
-	protected static List<PersonnePhysique> findNonHabitants(TiersService tiersService, Individu individu, @Nullable Long numeroEvenement) throws EvenementCivilException {
+	protected static Map.Entry<ModeDetection,List<PersonnePhysique>> findNonHabitants(TiersService tiersService, Individu individu, @Nullable Long numeroEvenement) throws EvenementCivilException {
 
 		// les critères de recherche
 		final List<PersonnePhysique> nonHabitants = new ArrayList<>();
+		final ModeDetection modeDetection;
 		final String nomPrenom = tiersService.getNomPrenom(individu);
 		final RegDate dateNaissance = individu.getDateNaissance();
 		final Sexe sexe = individu.getSexe();
@@ -259,6 +262,7 @@ public abstract class Arrivee extends Mouvement {
 				if (resultComplet.isEmpty() || resultComplet.size() != 1 || candidatAvecNavs13Conforme(navs13, resultComplet)) {
 					//Aucun, plusieurs conadidats  ou 1 contribuable avec navs 13 conforme: on retourne le resultat trouvé
 					nonHabitants.addAll(resultComplet);
+					modeDetection = ModeDetection.COMPLET;
 				}
 				else {
 					//le seul candidat trouvé n'a pas le même numéro AVS que celui del'individu de l'évènement
@@ -272,14 +276,17 @@ public abstract class Arrivee extends Mouvement {
 			else {
 				//La recherche par NAVS13 est poistive, on retourne le resultat
 				nonHabitants.addAll(resultNavs13);
+				modeDetection = ModeDetection.NAVS13;
 			}
 		}
 		else {
 
 			nonHabitants.addAll(searchPersonne(tiersService, numeroEvenement, nomPrenom, criteria));
+			modeDetection = ModeDetection.COMPLET;
 		}
 
-		return nonHabitants;
+		final Map.Entry resultat = new AbstractMap.SimpleEntry(modeDetection,nonHabitants);
+		return resultat;
 	}
 
 	/**Determine si la liste des personnes physiques passée en paramètre contient
@@ -373,30 +380,33 @@ public abstract class Arrivee extends Mouvement {
 			personnePhysiqueResultante = pp;
 		}
 		else {
-			final List<PersonnePhysique> nonHabitants = findNonHabitants(individu);
+			final Map.Entry<ModeDetection,List<PersonnePhysique>> resultat = findNonHabitants(individu);
+			final List<PersonnePhysique> nonHabitants = resultat.getValue();
+			final ModeDetection modeDetection = resultat.getKey();
 			if (nonHabitants.size() == 1) {
 				final PersonnePhysique candidat = nonHabitants.get(0);
-				if (candidat.getDateNaissance() == null || candidat.getSexe() == null) {
-					// [UNIREG-3073] si le prénom/nom correspondent mais que la date de naissance ou le sexe manquent, on lève une erreur pour que l'utilisateur puisse gérer le cas manuellement.
-					final StringBuilder message = new StringBuilder();
-					message.append("Un non-habitant (n°").append(candidat.getNumero()).append(") qui possède le même prénom/nom que l'individu a été trouvé, mais ");
-					if (candidat.getDateNaissance() == null && candidat.getSexe() == null) {
-						message.append("la date de naissance et le sexe ne sont pas renseignés.");
-					}
-					else if (candidat.getDateNaissance() == null) {
-						message.append("la date de naissance n'est pas renseignée.");
-					}
-					else {
-						message.append("le sexe n'est pas renseigné.");
-					}
-					message.append(" Veuillez vérifier manuellement.");
-					throw new EvenementCivilException(message.toString());
-				}
-				else {
-					// [UNIREG-1603] le candidat correspond parfaitement aux critères
+				if (modeDetection == ModeDetection.NAVS13 || candidatAvecDateNaissanceEtSexe(candidat)) {
+					//SIFISC-12951 Si un seul tiers trouvé avec le navs13, on prend directement ce tiers même si d'autres valeurs comme la date de naissance ou le sexe sont manquantes.
+					// OU [UNIREG-1603] le candidat correspond parfaitement aux critères
 					personnePhysiqueResultante = candidat;
 					// Meme si on ne passe pas en Habitant le conjoint, on fait le lien avec le civil (Decision prise suite au traitement de SIFISC-6109)
 					personnePhysiqueResultante.setNumeroIndividu(individu.getNoTechnique());
+				}
+				else {
+						// [UNIREG-3073] si le prénom/nom correspondent mais que la date de naissance ou le sexe manquent, on lève une erreur pour que l'utilisateur puisse gérer le cas manuellement.
+						final StringBuilder message = new StringBuilder();
+						message.append("Un non-habitant (n°").append(candidat.getNumero()).append(") qui possède le même prénom/nom que l'individu a été trouvé, mais ");
+						if (candidat.getDateNaissance() == null && candidat.getSexe() == null) {
+							message.append("la date de naissance et le sexe ne sont pas renseignés.");
+						}
+						else if (candidat.getDateNaissance() == null) {
+							message.append("la date de naissance n'est pas renseignée.");
+						}
+						else {
+							message.append("le sexe n'est pas renseigné.");
+						}
+						message.append(" Veuillez vérifier manuellement.");
+						throw new EvenementCivilException(message.toString());
 				}
 			}
 			else if (nonHabitants.isEmpty()) {
@@ -424,6 +434,10 @@ public abstract class Arrivee extends Mouvement {
 		}
 
 		return personnePhysiqueResultante;
+	}
+
+	private boolean candidatAvecDateNaissanceEtSexe(PersonnePhysique candidat){
+		return candidat.getDateNaissance() != null && candidat.getSexe() != null;
 	}
 
 	private static RegDate findDateDebutMenageAvant(Individu individu, RegDate limiteSuperieureEtDefaut) {
@@ -837,5 +851,10 @@ public abstract class Arrivee extends Mouvement {
 
 	protected static boolean isDansLeCanton(Commune commune) {
 		return commune != null && commune.isVaudoise();
+	}
+
+	private enum ModeDetection{
+		NAVS13,
+		COMPLET;
 	}
 }

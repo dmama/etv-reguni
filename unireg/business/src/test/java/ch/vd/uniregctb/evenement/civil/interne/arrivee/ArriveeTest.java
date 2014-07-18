@@ -459,7 +459,7 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 		// Si on recherche un Jean Dupneu né le 1er janvier 1960 et de sexe masculin, on doit trouver tous les Jean Dupneu assujettis nés un 1er janvier 1960 <b>ou</b>
 		// de date de naissance inconnue et de sexe masculin <b>ou</b> de sexe inconnu. On ne doit pas trouver les Jean Dupneu nés un autre jour ou avec un autre sexe.
 		{
-			final List<PersonnePhysique> list = Arrivee.findNonHabitants(context.getTiersService(), civil.jean, null);
+			final List<PersonnePhysique> list = Arrivee.findNonHabitants(context.getTiersService(), civil.jean, null).getValue();
 			assertEquals(8, list.size());
 			assertListContains(list, ids.jeanNomPrenomAssujetti, ids.jeanNomPrenomDateAssujetti, ids.jeanNomPrenomDateSexeAssujetti, ids.jeanNomPrenomSexeAssujetti,
 			                         ids.jeanNomPrenom, ids.jeanNomPrenomDate, ids.jeanNomPrenomDateSexe, ids.jeanNomPrenomSexe);
@@ -467,14 +467,14 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 
 		// Si on recherche un Jaques Dupneu né le 1er janvier 1960 et de sexe masculin, on doit le trouver puisqu'il y en a qu'un et qu'il est complet.
 		{
-			final List<PersonnePhysique> list = Arrivee.findNonHabitants(context.getTiersService(), civil.jacques, null);
+			final List<PersonnePhysique> list = Arrivee.findNonHabitants(context.getTiersService(), civil.jacques, null).getValue();
 			assertEquals(1, list.size());
 			assertListContains(list, ids.jacquesNomPrenomDateSexeAssujetti);
 		}
 
 		// [UNIREG-3073] Si on recherche un Roger Dupneu né le 1er janvier 1960 et de sexe masculin, on doit trouver le seul candidat malgré le fait qu'il ne possède pas de date de naissance
 		{
-			final List<PersonnePhysique> list = Arrivee.findNonHabitants(context.getTiersService(), civil.roger, null);
+			final List<PersonnePhysique> list = Arrivee.findNonHabitants(context.getTiersService(), civil.roger, null).getValue();
 			assertEquals(1, list.size());
 			assertListContains(list, ids.rogerNomPrenomSexeAssujetti);
 		}
@@ -482,7 +482,7 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 		// Si on recherche un Cédric Dupneu né le 1er janvier 1960 et de sexe masculin, on ne doit pas le trouver parce que
 		// le candidat possède un numéro d'individu (malgré le fait que tous les critères de recherche correspondent bien)
 		{
-			final List<PersonnePhysique> list = Arrivee.findNonHabitants(context.getTiersService(), civil.cedric, null);
+			final List<PersonnePhysique> list = Arrivee.findNonHabitants(context.getTiersService(), civil.cedric, null).getValue();
 			assertEmpty(list);
 		}
 
