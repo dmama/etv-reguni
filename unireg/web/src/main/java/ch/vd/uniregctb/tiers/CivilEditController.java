@@ -106,10 +106,17 @@ public class CivilEditController {
 
 	private void checkDroitEditionIDE(Tiers tiers) {
 		final Autorisations auth = getAutorisations(tiers);
-		//TODO droit a préciser
-		if (!auth.isEditable()) {
+		if (!auth.isEditable() || !auth.isDonneesFiscales()) {
 			throw new AccessDeniedException("Vous ne possédez pas les droits d'accès suffisants à la modification des informations entreprise des tiers de ce type.");
 		}
+	}
+	private boolean hasDroitsModificationsCtb(){
+		return SecurityHelper.isGranted(securityProvider, Role.MODIF_HAB_DEBPUR) ||
+				SecurityHelper.isGranted(securityProvider,Role.MODIF_HC_HS) ||
+				SecurityHelper.isGranted(securityProvider,Role.MODIF_NONHAB_DEBPUR) ||
+				SecurityHelper.isGranted(securityProvider,Role.MODIF_NONHAB_INACTIF) ||
+				SecurityHelper.isGranted(securityProvider,Role.MODIF_VD_ORD) ||
+				SecurityHelper.isGranted(securityProvider,Role.MODIF_VD_SOURC);
 	}
 
 	private String showEditIdeHabitant(Model model, long id, ContribuableInfosEntrepriseView view) {
@@ -121,8 +128,7 @@ public class CivilEditController {
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/personnephysique/ide/edit.do", method = RequestMethod.GET)
 	public String editIdeHabitant(Model model, @RequestParam(value = ID) long id) {
-	//TODO XSIBNM ROLE a changer
-		if (!SecurityHelper.isGranted(securityProvider, Role.VISU_ALL)) {
+		if (!hasDroitsModificationsCtb()) {
 			throw new AccessDeniedException("Vous ne possédez pas les droits d'accès suffisants à la modification des tiers de ce type.");
 		}
 
@@ -140,8 +146,7 @@ public class CivilEditController {
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/personnephysique/ide/edit.do", method = RequestMethod.POST)
 	public String doEditIdeHabitant(@RequestParam(value = ID) long id, Model model, @Valid @ModelAttribute(DATA) ContribuableInfosEntrepriseView view, BindingResult bindingResult) {
-		//TODO XSIBNM role a changer
-		if (!SecurityHelper.isGranted(securityProvider, Role.VISU_ALL)) {
+		if (!hasDroitsModificationsCtb()) {
 			throw new AccessDeniedException("Vous ne possédez pas les droits d'accès suffisants à la modification des tiers de ce type.");
 		}
 
