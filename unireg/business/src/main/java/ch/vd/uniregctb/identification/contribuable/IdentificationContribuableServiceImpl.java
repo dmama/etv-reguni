@@ -264,9 +264,9 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		final List<TiersIndexedData> indexedAvs13 = findByNavs13(criteres, avsUpi);
 		if (indexedAvs13 != null && !indexedAvs13.isEmpty()) {
 			final List<PersonnePhysique> ppList = getListePersonneFromIndexedData(indexedAvs13);
-			filterCoherenceAfterIdentificationAvs13(ppList, criteres);
-			if (isIdentificationOK(ppList)) {
-				return buildIdListFromPP(ppList);
+			final List<PersonnePhysique> listeFiltree = filterCoherenceAfterIdentificationAvs13(ppList, criteres);
+			if (isIdentificationOK(listeFiltree)) {
+				return buildIdListFromPP(listeFiltree);
 			}
 		}
 
@@ -283,14 +283,19 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		}
 
 
-		//Contrôle des résultats avec la date de naissance qui est renseigné.
-		filterDateNaissance(list, criteres);
-		if (isIdentificationOK(list)) {
-			return list;
+		//SIFISC-13033
+		//Contrôle des résultats avec la date de naissance qui est renseigné.on passe une liste de copie
+		// si le controle est ko on a notre liste de départ qui est intacte
+
+		final List<PersonnePhysique> listPourControleDateNaissance = new ArrayList<>(list);
+		final List<PersonnePhysique> listPourControleNomPrenom = new ArrayList<>(list);
+		filterDateNaissance(listPourControleDateNaissance, criteres);
+		if (isIdentificationOK(listPourControleDateNaissance)) {
+			return listPourControleDateNaissance;
 		}
 		else {
 			//Controle des résultats avec le nom et le prénom
-			return controleNomPrenom(list, criteres);
+			return controleNomPrenom(listPourControleNomPrenom, criteres);
 		}
 	}
 

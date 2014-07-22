@@ -856,6 +856,139 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 	}
 
+	//SIFISC-13033
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testNavs13MonsieurDateNaissanceFausse() throws Exception {
+		final long noIndividuClaude = 151658;
+
+		serviceUpi.setUp(new DefaultMockServiceUpi());
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu indClaude = addIndividu(noIndividuClaude, date(1990,10,11), "Farge", "Thomas", true);
+				addFieldsIndividu(indClaude, "7564259784591", "", "");
+			}
+		});
+
+		class Ids {
+			Long claude;
+
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				final PersonnePhysique habClaude = addHabitant(noIndividuClaude);
+				ids.claude = habClaude.getNumero();
+				return null;
+			}
+		});
+
+		globalTiersIndexer.sync();
+
+		assertCountDemandes(0);
+
+		// création et traitement du message d'identification
+		CriteresPersonne criteres = new CriteresPersonne();
+		criteres.setPrenoms("Thomas");
+		criteres.setNom("Farge");
+		criteres.setNAVS13("7564259784591");
+		criteres.setDateNaissance(date(1990,10,10));
+
+
+		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
+		message.setLogCreationDate(RegDate.get().asJavaDate());
+		doInTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				service.handleDemande(message);
+				return null;
+			}
+		});
+
+		final List<IdentificationContribuable> list = identCtbDAO.getAll();
+		assertEquals(1, list.size());
+
+		final IdentificationContribuable ic = list.get(0);
+		assertNotNull(ic);
+		assertEquals(Etat.TRAITE_AUTOMATIQUEMENT, ic.getEtat());
+
+	}
+
+	//SIFISC-13033
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testNavs13MonsieurDoublonDateNaissanceFausse() throws Exception {
+		final long noIndividuClaude = 151658;
+		final long noIndividuHenri = 151657;
+
+		serviceUpi.setUp(new DefaultMockServiceUpi());
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu indClaude = addIndividu(noIndividuClaude, date(1990,10,11), "Farge", "Thomas", true);
+				MockIndividu indHenri = addIndividu(noIndividuHenri, date(1991,10,11), "Farge", "Henri", true);
+				addFieldsIndividu(indClaude, "7564259784591", "", "");
+				addFieldsIndividu(indHenri, "7564259784591", "", "");
+			}
+		});
+
+		class Ids {
+			Long claude;
+			Long henri;
+
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				final PersonnePhysique habClaude = addHabitant(noIndividuClaude);
+				final PersonnePhysique habHenri = addHabitant(noIndividuHenri);
+				ids.claude = habClaude.getNumero();
+				ids.henri = habHenri.getNumero();
+				return null;
+			}
+		});
+
+		globalTiersIndexer.sync();
+
+		assertCountDemandes(0);
+
+		// création et traitement du message d'identification
+		CriteresPersonne criteres = new CriteresPersonne();
+		criteres.setPrenoms("Henri");
+		criteres.setNom("Farge");
+		criteres.setNAVS13("7564259784591");
+		criteres.setDateNaissance(date(1954,10,10));
+
+
+		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
+		message.setLogCreationDate(RegDate.get().asJavaDate());
+		doInTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				service.handleDemande(message);
+				return null;
+			}
+		});
+
+		final List<IdentificationContribuable> list = identCtbDAO.getAll();
+		assertEquals(1, list.size());
+
+		final IdentificationContribuable ic = list.get(0);
+		assertNotNull(ic);
+		assertEquals(Etat.TRAITE_AUTOMATIQUEMENT, ic.getEtat());
+		assertEquals(ids.henri,ic.getReponse().getNoContribuable());
+
+	}
+
 
 
 	@Test
