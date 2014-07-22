@@ -20,7 +20,7 @@ public class ParametrePeriodeFiscaleDAOImpl extends BaseDAOImpl<ParametrePeriode
 
 	@SuppressWarnings("unchecked")
 	private ParametrePeriodeFiscale getByPeriodeFiscaleAndTypeContribuable(PeriodeFiscale periodeFiscale, TypeContribuable typeCtb) {
-		final List<ParametrePeriodeFiscale> list = find("FROM ParametrePeriodeFiscale p WHERE p.periodefiscale = _pf and p.typeContribuable = :typeCtb",
+		final List<ParametrePeriodeFiscale> list = find("FROM ParametrePeriodeFiscale p WHERE p.periodefiscale = :pf and p.typeContribuable = :typeCtb",
 		                                                buildNamedParameters(Pair.<String, Object>of("pf", periodeFiscale),
 		                                                                     Pair.<String, Object>of("typeCtb", typeCtb)),
 		                                                null);
