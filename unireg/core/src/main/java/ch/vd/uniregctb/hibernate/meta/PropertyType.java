@@ -24,6 +24,7 @@ public abstract class PropertyType {
 
 	static {
 		byJavaType.put(longPropType.getJavaType(), longPropType);
+		byJavaType.put(Long.TYPE, longPropType);
 		byJavaType.put(integerPropType.getJavaType(), integerPropType);
 		byJavaType.put(Integer.TYPE, integerPropType);
 		byJavaType.put(stringPropType.getJavaType(), stringPropType);
