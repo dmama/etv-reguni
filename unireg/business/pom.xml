@@ -70,7 +70,7 @@
 		<dependency>
 			<groupId>ch.vd.uniregctb</groupId>
 			<artifactId>unireg-jaxb2-events</artifactId>
-			<version>3.2-SNAPSHOT</version>
+			<version>3.2</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.vd.uniregctb</groupId>
