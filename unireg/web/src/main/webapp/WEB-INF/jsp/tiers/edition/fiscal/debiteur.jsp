@@ -60,6 +60,28 @@
 				$('#div_logiciel_label').hide();
 				$('#div_logiciel_input').hide();
 			}
+		},
+
+		selectPeriodiciteDecompte: function(cis, periodiciteCourante) {
+			var url = App.curl('/debiteur/periodicites-autorisees.do?categorieImpotSource=') + cis;
+			if (periodiciteCourante != null && cis === '${command.categorieImpotSource}') {
+				url += '&periodicite=' + periodiciteCourante;
+			}
+			var periodiciteSelect = $('#periodiciteCourante');
+			var selectedPeriodicite = periodiciteSelect[0].value != '' ? periodiciteSelect[0].value : '${command.nouvellePeriodicite}';
+
+			// appels ajax pour mettre-à-jour les périodicités autorisées
+			$.get(url, function(periodicites) {
+				var list = '';
+				if (!(selectedPeriodicite in periodicites)) {
+					selectedPeriodicite = 'MENSUEL';
+					EditDebiteur.selectPeriodeDecompte(selectedPeriodicite);
+				}
+				$.each(periodicites, function(key, value) {
+					list += '<option value="' + key + '"' + (key === selectedPeriodicite ? ' selected=true' : '') + '>' + StringUtils.escapeHTML(value) + '</option>';
+				});
+				periodiciteSelect.html(list);
+			}, 'json').error(Ajax.popupErrorHandler);
 		}
 	};
 
@@ -75,10 +97,11 @@
 			<td width="25%">
             <c:choose>
                 <c:when test="${command.sansLREmises}">
-                    <form:select path="categorieImpotSource" items="${categoriesImpotSource}"/>
+                    <form:select id="categorieImpotSource" path="categorieImpotSource" items="${categoriesImpotSource}"
+		                         onchange="EditDebiteur.selectPeriodiciteDecompte(this.options[this.selectedIndex].value, '${command.nouvellePeriodicite}');"/>
                 </c:when>
              <c:otherwise>
-                    <form:select path="categorieImpotSource" items="${categoriesImpotSource}" disabled="true"/>
+                    <form:select id="categorieImpotSource" path="categorieImpotSource" items="${categoriesImpotSource}" disabled="true"/>
              </c:otherwise>
             </c:choose>
 			</td>
@@ -86,7 +109,7 @@
 		<tr class="<unireg:nextRowClass/>" >
 			<td width="20%"><fmt:message key="label.periodicite.decompte"/>&nbsp;:</td>
 			<td width="35%">
-				<form:select id="periodiciteCourante" path="nouvellePeriodicite" items="${periodicitesDecomptes}" onchange="EditDebiteur.selectPeriodeDecompte(this.options[this.selectedIndex].value);"/>
+				<form:select id="periodiciteCourante" path="nouvellePeriodicite" onchange="EditDebiteur.selectPeriodeDecompte(this.options[this.selectedIndex].value);"/>
 				<span id="periodiciteDepuis" style="display: none;">
 					&nbsp;<fmt:message key="label.des.le"/>&nbsp;
 					<form:select id="dateDebutPeriodicite" path="dateDebutNouvellePeriodicite"/>
@@ -116,6 +139,8 @@
 </fieldset>
 
 <script type="text/javascript">
+	$('#categorieImpotSource')[0].value = '${command.categorieImpotSource}';
+	EditDebiteur.selectPeriodiciteDecompte('${command.categorieImpotSource}', '${command.nouvellePeriodicite}');
 	EditDebiteur.selectPeriodeDecompte('${command.nouvellePeriodicite}');
 	EditDebiteur.selectLogiciel('${command.modeCommunication}');
 </script>

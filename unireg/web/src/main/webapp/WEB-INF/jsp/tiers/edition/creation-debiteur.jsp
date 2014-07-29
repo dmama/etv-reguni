@@ -31,7 +31,8 @@
 									<td width="25%"><form:select id="modeCommunication" path="fiscal.modeCommunication" items="${modesCommunication}"/></td>
 									<td width="25%"><fmt:message key="label.categorie.impot.source"/>&nbsp;:</td>
 									<td width="25%">
-										<form:select path="fiscal.categorieImpotSource" items="${categoriesImpotSource}" />
+										<form:select id="categorieImpotSource" path="fiscal.categorieImpotSource" items="${categoriesImpotSource}"
+										             onchange="CreateDebiteur.selectPeriodiciteDecompte(this.options[this.selectedIndex].value);"/>
 									</td>
 								</tr>
 								<tr class="<unireg:nextRowClass/>" >
@@ -62,9 +63,32 @@
 										$('#div_periodeDecompte_label').hide();
 										$('#div_periodeDecompte_input').hide();
 									}
+								},
+
+								selectPeriodiciteDecompte: function(cis) {
+									var url = App.curl('/debiteur/periodicites-autorisees.do?categorieImpotSource=') + cis;
+									var periodiciteSelect = $('#periodiciteCourante');
+									var selectedPeriodicite = periodiciteSelect[0].value;
+
+									// appels ajax pour mettre-à-jour les périodicités autorisées
+									$.get(url, function(periodicites) {
+										var list = '';
+										if (!(selectedPeriodicite in periodicites)) {
+											selectedPeriodicite = 'MENSUEL';
+											CreateDebiteur.selectPeriodeDecompte(selectedPeriodicite);
+										}
+										$.each(periodicites, function(key, value) {
+											list += '<option value="' + key + '"' + (key === selectedPeriodicite ? ' selected=true' : '') + '>' + StringUtils.escapeHTML(value) + '</option>';
+										});
+										periodiciteSelect.html(list);
+									}, 'json').error(Ajax.popupErrorHandler);
 								}
 							};
+
+							$('#categorieImpotSource')[0].value = '${data.fiscal.categorieImpotSource}';
+							CreateDebiteur.selectPeriodiciteDecompte('${data.fiscal.categorieImpotSource}');
 							CreateDebiteur.selectPeriodeDecompte('${data.fiscal.periodiciteDecompte}');
+
 						</script>
 					</c:if>
 
