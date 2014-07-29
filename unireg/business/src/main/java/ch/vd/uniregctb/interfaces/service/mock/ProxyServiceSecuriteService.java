@@ -5,7 +5,6 @@ import java.util.List;
 import ch.vd.infrastructure.model.CollectiviteAdministrative;
 import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.securite.model.Operateur;
-import ch.vd.securite.model.ProfilOperateur;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
 import ch.vd.uniregctb.security.IfoSecProfil;
 
@@ -24,11 +23,6 @@ public class ProxyServiceSecuriteService implements ServiceSecuriteService {
 	@Override
 	public List<CollectiviteAdministrative> getCollectivitesUtilisateur(String visaOperateur) {
 		return target.getCollectivitesUtilisateur(visaOperateur);
-	}
-
-	@Override
-	public List<ProfilOperateur> getListeOperateursPourFonctionCollectivite(String codeFonction, int noCollectivite) {
-		return target.getListeOperateursPourFonctionCollectivite(codeFonction, noCollectivite);
 	}
 
 	@Override

@@ -54,22 +54,6 @@ public class ServiceSecuriteHostInterfaces implements ServiceSecuriteService {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public List<ProfilOperateur> getListeOperateursPourFonctionCollectivite(String codeFonction, int noCollectivite) {
-		try {
-			return serviceSecurite.getListeOperateursPourFonctionCollectivite(codeFonction, noCollectivite);
-		}
-		catch (RemoteException e) {
-			throw new ServiceSecuriteException("impossible de récupérer la list des utilisateurs pour la fonction " + codeFonction
-					+ " et l'OID " + noCollectivite, e);
-		}
-		catch (SecuriteException e) {
-			throw new ServiceSecuriteException("impossible de récupérer la list des utilisateurs pour la fonction " + codeFonction
-					+ " et l'OID " + noCollectivite, e);
-		}
-	}
-
-	@Override
 	public IfoSecProfil getProfileUtilisateur(String visaOperateur, int codeCollectivite) {
 		try {
 			final ProfilOperateur profile = serviceSecurite.getProfileUtilisateur(visaOperateur, codeCollectivite);

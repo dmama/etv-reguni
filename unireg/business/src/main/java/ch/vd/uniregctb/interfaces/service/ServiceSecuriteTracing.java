@@ -8,7 +8,6 @@ import org.springframework.beans.factory.InitializingBean;
 import ch.vd.infrastructure.model.CollectiviteAdministrative;
 import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.securite.model.Operateur;
-import ch.vd.securite.model.ProfilOperateur;
 import ch.vd.uniregctb.security.IfoSecProfil;
 import ch.vd.uniregctb.stats.ServiceTracing;
 import ch.vd.uniregctb.stats.StatsService;
@@ -52,30 +51,6 @@ public class ServiceSecuriteTracing implements ServiceSecuriteService, Initializ
 				@Override
 				public String toString() {
 					return String.format("visaOperateur=%s", visaOperateur);
-				}
-			});
-		}
-	}
-
-	@Override
-	public List<ProfilOperateur> getListeOperateursPourFonctionCollectivite(final String codeFonction, final int noCollectivite) {
-		Throwable t = null;
-		int items = 0;
-		final long time = tracing.start();
-		try {
-			final List<ProfilOperateur> list = target.getListeOperateursPourFonctionCollectivite(codeFonction, noCollectivite);
-			items = list == null ? 0 : list.size();
-			return list;
-		}
-		catch (RuntimeException e) {
-			t = e;
-			throw e;
-		}
-		finally {
-			tracing.end(time, t, "getListeOperateursPourFonctionCollectivite", items, new Object() {
-				@Override
-				public String toString() {
-					return String.format("codeFonction=%s, noCollectivite=%d", codeFonction, noCollectivite);
 				}
 			});
 		}

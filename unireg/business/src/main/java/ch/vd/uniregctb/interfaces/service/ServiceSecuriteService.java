@@ -6,7 +6,6 @@ import java.util.List;
 import ch.vd.infrastructure.model.CollectiviteAdministrative;
 import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.securite.model.Operateur;
-import ch.vd.securite.model.ProfilOperateur;
 import ch.vd.securite.service.SecuriteException;
 import ch.vd.uniregctb.security.IfoSecProfil;
 
@@ -26,21 +25,6 @@ public interface ServiceSecuriteService {
 	 *             si un problème technique survient durant l'invocation du service.
 	 */
 	List<CollectiviteAdministrative> getCollectivitesUtilisateur(String visaOperateur);
-
-	/**
-	 * Retourne la liste des operateurs valides exercant une fonction dans une collectivité données administrative.
-	 *
-	 * @param codeFonction
-	 *            le code de la fonction.
-	 * @param noCollectivite
-	 *            l'identifiant de la collectivité administrative.
-	 * @return la liste des operateurs valides.
-	 * @throws SecuriteException
-	 *             si un problème métier survient lors de l'invocation du service.
-	 * @throws RemoteException
-	 *             si un problème technique survient durant l'invocation du service.
-	 */
-	List<ProfilOperateur> getListeOperateursPourFonctionCollectivite(String codeFonction, int noCollectivite);
 
 	/**
 	 * Retourne le profil que possède un opérateur pour une collectivité administrative.

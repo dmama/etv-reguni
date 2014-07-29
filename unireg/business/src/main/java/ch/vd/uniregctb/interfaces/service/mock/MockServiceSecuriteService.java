@@ -8,7 +8,6 @@ import java.util.Map;
 import ch.vd.infrastructure.model.CollectiviteAdministrative;
 import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.securite.model.Operateur;
-import ch.vd.securite.model.ProfilOperateur;
 import ch.vd.uniregctb.interfaces.model.mock.MockOperateur;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
 import ch.vd.uniregctb.interfaces.service.host.IfoSecProcedureImpl;
@@ -31,11 +30,6 @@ public abstract class MockServiceSecuriteService implements ServiceSecuriteServi
 
 	@Override
 	public List<CollectiviteAdministrative> getCollectivitesUtilisateur(String visaOperateur) {
-		return null;
-	}
-
-	@Override
-	public List<ProfilOperateur> getListeOperateursPourFonctionCollectivite(String codeFonction, int noCollectivite) {
 		return null;
 	}
 
