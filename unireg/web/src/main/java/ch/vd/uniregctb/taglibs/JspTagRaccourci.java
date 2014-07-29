@@ -12,7 +12,7 @@ import ch.vd.uniregctb.utils.WebContextUtils;
 
 public class JspTagRaccourci extends BodyTagSupport implements MessageSourceAware {
 
-	private static final long serialVersionUID = -8430389192865302785L;
+	private static final long serialVersionUID = -8109093180921197899L;
 
 	private static final String NBSP = "&nbsp;";
 
@@ -158,6 +158,19 @@ public class JspTagRaccourci extends BodyTagSupport implements MessageSourceAwar
 	@Override
 	public void setMessageSource(MessageSource messageSource) {
 		JspTagRaccourci.messageSource = messageSource;
+	}
+
+	/**
+	 * Raccourci d'impression
+	 */
+	public static class Imprimer extends JspTagRaccourci {
+
+		private static final long serialVersionUID = -6003446344537681460L;
+
+		@Override
+		protected String getCssClass() {
+			return "printer";
+		}
 	}
 
 	/**

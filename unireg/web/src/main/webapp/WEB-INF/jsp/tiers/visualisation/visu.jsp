@@ -12,6 +12,11 @@
 
 <tiles:insert template="${templatePath}">
 	<tiles:put name="title"><fmt:message key="title.visualisation.tiers" /></tiles:put>
+	<tiles:put name="displayedTitleSuffix">
+		<span style="display:none;" id="print-button">
+			<unireg:raccourciImprimer onClick="window.print();" tooltip="Imprimer la page"/>
+		</span>
+	</tiles:put>
 	
 	<tiles:put name="fichierAide">
 		<a href="#" onClick="ouvrirAide('<c:url value='/docs/visualisation.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
@@ -291,6 +296,7 @@
 		 		$('.ui-tabs-hide').removeClass('ui-tabs-hide');
 		 		$("#tabnav-disable").hide();
 		 		$("#tabnav-enable").show();
+			    $('#print-button').show();
 		 	}
 
 		 	/**
@@ -302,6 +308,7 @@
 		 		$('.tabs_previously_hidden').removeClass('tabs_previously_hidden');
 		 		$("#tabnav-disable").show();
 		 		$("#tabnav-enable").hide();
+			    $('#print-button').hide();
 		 	}
 
 		 	// [UNIREG-3290] Sélection de la vue imprimable par l'url

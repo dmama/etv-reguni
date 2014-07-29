@@ -57,6 +57,7 @@ a.pdf,
 span.pdf-grayed,
 a.key,
 a.save,
+a.printer,
 a.calendar {
 	/* Ne pas optimiser ces "background-xxx" en "background:" car cela surcharge implicitement l'élément "background-image" que l'on ne veut pas surcharger */
 	background-position: left top;
@@ -96,6 +97,7 @@ a.pdf:hover,
 span.pdf-grayed:hover
 a.key:hover,
 a.save:hover,
+a.printer:hover,
 a.calendar:hover {
 	background-repeat: no-repeat;
 	text-decoration: none;
@@ -175,6 +177,14 @@ a.save {
 
 a.save:hover {
 	background-image: url(save_on.png);
+}
+
+a.printer {
+	background-image: url(print_off.png);
+}
+
+a.printer:hover {
+	background-image: url(print_on.png);
 }
 
 .correctionOrigine {
