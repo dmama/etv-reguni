@@ -39,7 +39,7 @@ public class DebtorStrategy extends PartyStrategy<Debtor> {
 		super.initBase(to, from, context);
 
 		final DebiteurPrestationImposable debiteur =(DebiteurPrestationImposable) from;
-		to.setName(BusinessHelper.getDebtorName(debiteur, null, context.adresseService));
+		to.setName(BusinessHelper.getDebtorName(debiteur, context.tiersService));
 		to.setCategory(EnumHelper.coreToXMLv3(debiteur.getCategorieImpotSource()));
 		to.setCommunicationMode(EnumHelper.coreToXMLv3(debiteur.getModeCommunication()));
 		to.setWithoutReminder(DataHelper.coreToXML(debiteur.getSansRappel()));

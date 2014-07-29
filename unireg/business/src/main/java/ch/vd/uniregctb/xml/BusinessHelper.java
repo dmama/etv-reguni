@@ -4,19 +4,17 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.jetbrains.annotations.Nullable;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
-import ch.vd.uniregctb.adresse.AdresseException;
-import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.tiers.AppartenanceMenage;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
+import ch.vd.uniregctb.tiers.TiersService;
 
 public class BusinessHelper {
 
@@ -25,23 +23,24 @@ public class BusinessHelper {
 	/**
 	 * @return retourne la raison sociale du débiteur spécifié.
 	 */
-	public static String getDebtorName(final DebiteurPrestationImposable debiteur, @Nullable RegDate date, AdresseService service) {
+	public static String getDebtorName(final DebiteurPrestationImposable debiteur, TiersService service) {
 
-		if (date == null) {
-			date = RegDate.get();
-		}
-
-		String raison = "";
-		try {
-			List<String> list = service.getNomCourrier(debiteur, date, false);
-			if (!list.isEmpty()) {
-				raison = list.get(0); // on ignore joyeusement une éventuelle deuxième ligne
+		final String raison;
+		final List<String> list = service.getRaisonSociale(debiteur);
+		if (!list.isEmpty())  {
+			final StringBuilder b = new StringBuilder();
+			for (String elt : list) {
+				if (b.length() > 0) {
+					b.append(" ");
+				}
+				b.append(elt);
 			}
+			raison = b.toString();
 		}
-		catch (AdresseException e) {
-			// Si on a une exception on renvoie une raison sociale nulle
-			raison = "";
+		else {
+			raison = StringUtils.EMPTY;
 		}
+
 		return raison;
 	}
 
