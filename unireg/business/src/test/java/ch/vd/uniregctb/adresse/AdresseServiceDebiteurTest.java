@@ -1,10 +1,13 @@
 package ch.vd.uniregctb.adresse;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
@@ -70,7 +73,7 @@ public class AdresseServiceDebiteurTest extends BusinessTest {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(noIndividu, date(1953, 11, 2), "Dupont", "Pierre", true);
-				MockAdresse adresse = (MockAdresse) addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, date(1980, 1, 1), null);
+				MockAdresse adresse = addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, date(1980, 1, 1), null);
 				adresse.setNumero("3bis");
 			}
 		});
@@ -226,7 +229,7 @@ public class AdresseServiceDebiteurTest extends BusinessTest {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(noIndividu, date(1953, 11, 2), "Dupont", "Pierre", true);
-				MockAdresse adresse = (MockAdresse) addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, date(1980, 1, 1), null);
+				MockAdresse adresse = addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, date(1980, 1, 1), null);
 				adresse.setNumero("3bis");
 			}
 		});
@@ -362,5 +365,48 @@ public class AdresseServiceDebiteurTest extends BusinessTest {
 		assertAdressesEquals(adresses.representation, adresseService.getAdresseFiscale(tiers, TypeAdresseFiscale.REPRESENTATION, date, false));
 		assertAdressesEquals(adresses.poursuite, adresseService.getAdresseFiscale(tiers, TypeAdresseFiscale.POURSUITE, date, false));
 		assertAdressesEquals(adresses.domicile, adresseService.getAdresseFiscale(tiers, TypeAdresseFiscale.DOMICILE, date, false));
+	}
+
+	/**
+	 * [SIFISC-12400] les mentions "Aux héritiers de" et ", défunt(e)" doivent également apparaître dans les adresses du débiteur
+	 */
+	@Test
+	public void testAdresseDebiteurAvecReferentDecede() throws Exception {
+
+		// mise en place civile (= vide)
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				// vide...
+			}
+		});
+
+		// mise en place fiscale
+		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Alphonse", "Baudet", null, Sexe.MASCULIN);
+				pp.setDateDeces(date(2014, 6, 12));
+				addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(2000, 1, 1), null, MockRue.CossonayVille.AvenueDuFuniculaire);
+
+				final DebiteurPrestationImposable dpi = addDebiteur("MonComplément", pp, date(2006, 1, 1));
+				return dpi.getNumero();
+			}
+		});
+
+		// demande de l'adresse du débiteur
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
+				final AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(dpi, null, TypeAdresseFiscale.COURRIER, false);
+				Assert.assertEquals("Aux héritiers de", adresse.getLigne1());
+				Assert.assertEquals("Alphonse Baudet, défunt", adresse.getLigne2());
+				Assert.assertEquals("MonComplément", adresse.getLigne3());
+				Assert.assertEquals("Avenue du Funiculaire", adresse.getLigne4());
+				Assert.assertEquals("1304 Cossonay-Ville", adresse.getLigne5());
+				Assert.assertNull(adresse.getLigne6());
+			}
+		});
 	}
 }

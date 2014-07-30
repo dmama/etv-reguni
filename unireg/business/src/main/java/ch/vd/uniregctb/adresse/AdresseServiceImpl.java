@@ -433,9 +433,15 @@ public class AdresseServiceImpl implements AdresseService {
 		}
 		else if (tiers instanceof DebiteurPrestationImposable) {
 			final DebiteurPrestationImposable debiteur = (DebiteurPrestationImposable) tiers;
-			final List<String> raisonSociale = tiersService.getRaisonSociale(debiteur);
-			for (String ligne : raisonSociale) {
-				adresse.addRaisonSociale(ligne);
+			final Contribuable ctb = tiersService.getContribuable(debiteur);
+			if (getFormulePolitesse(ctb) == FormulePolitesse.HERITIERS) {
+				fillDestinataire(adresse, ctb, null, date, fillFormulePolitesse);
+			}
+			else {
+				final List<String> raisonSociale = tiersService.getRaisonSociale(debiteur);
+				for (String ligne : raisonSociale) {
+					adresse.addRaisonSociale(ligne);
+				}
 			}
 			if (debiteur.getComplementNom() != null) {
 				adresse.addPourAdresse(debiteur.getComplementNom());
