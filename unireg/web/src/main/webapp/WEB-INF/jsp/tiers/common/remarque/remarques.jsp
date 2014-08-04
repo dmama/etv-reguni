@@ -5,7 +5,7 @@
 
 	<div id="remarques">
 
-		<authz:authorize ifAnyGranted="ROLE_COOR_FIN, ROLE_MODIF_AC, ROLE_MODIF_VD_ORD, ROLE_MODIF_VD_SOURC, ROLE_MODIF_HC_HS, ROLE_MODIF_HAB_DEBPUR, ROLE_MODIF_NONHAB_DEBPUR, ROLE_MODIF_PM, ROLE_MODIF_CA, ROLE_MODIF_NONHAB_INACTIF">
+		<authz:authorize ifAnyGranted="ROLE_REMARQUE_TIERS">
 			<a id="addRemarque" class="add noprint" href="#">Ajouter une remarque</a>
 			<div id="newRemarque" class="new_remarque" style="display:none;">
 				<textarea cols="80" rows="3"></textarea><br>

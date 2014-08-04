@@ -148,7 +148,7 @@
 					</authz:authorize>
 				</c:if>
 
-				<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
+				<authz:authorize ifAnyGranted="ROLE_VISU_ALL, ROLE_REMARQUE_TIERS">
 					<li id="remarqueTab">
 						<a id="remarqueTabAnchor" href="#tabContent_remarqueTab"><fmt:message key="label.remarques" /></a>
 					</li>
@@ -227,7 +227,7 @@
 	            </c:if>
 			</unireg:ifEfacture>
 
-            <authz:authorize ifAnyGranted="ROLE_VISU_ALL">
+            <authz:authorize ifAnyGranted="ROLE_VISU_ALL, ROLE_REMARQUE_TIERS">
 				<div id="tabContent_remarqueTab" class="visuTiers">
 						<jsp:include page="../common/remarque/remarques.jsp">
 							<jsp:param name="tiersId" value="${command.tiersGeneral.numero}" />
