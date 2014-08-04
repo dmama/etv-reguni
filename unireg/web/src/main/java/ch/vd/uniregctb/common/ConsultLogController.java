@@ -25,6 +25,7 @@ import ch.vd.uniregctb.tiers.RapportEntreTiersDAO;
 import ch.vd.uniregctb.tiers.SituationFamilleDAO;
 import ch.vd.uniregctb.tiers.TacheDAO;
 import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.tiers.dao.RemarqueDAO;
 
 @Controller
 public class ConsultLogController {
@@ -47,6 +48,7 @@ public class ConsultLogController {
 	private DelaiDeclarationDAO delaiDeclarationDAO;
 	private ImmeubleDAO immeubleDAO;
 	private UniteTraitementDAO uniteTraitementDAO;
+	private RemarqueDAO remarqueDAO;
 
 	public final static String NATURE_FOR_PARAMETER_VALUE = "ForFiscal";
 	public final static String NATURE_SITUATION_PARAMETER_VALUE = "SituationFamille";
@@ -66,6 +68,7 @@ public class ConsultLogController {
 	public final static String NATURE_PERIODICITE_PARAMETER_VALUE = "periodicite";
 	public final static String NATURE_IMMEUBLE = "Immeuble";
 	public final static String NATURE_UNITE_TRAITEMENT_REQDES = "UniteTraitementReqDes";
+	public final static String NATURE_REMARQUE = "Remarque";
 
 	@ResponseBody
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
@@ -128,6 +131,9 @@ public class ConsultLogController {
 			break;
 		case NATURE_UNITE_TRAITEMENT_REQDES:
 			objet = uniteTraitementDAO.get(id);
+			break;
+		case NATURE_REMARQUE:
+			objet = remarqueDAO.get(id);
 			break;
 		}
 
@@ -219,5 +225,9 @@ public class ConsultLogController {
 
 	public void setUniteTraitementDAO(UniteTraitementDAO uniteTraitementDAO) {
 		this.uniteTraitementDAO = uniteTraitementDAO;
+	}
+
+	public void setRemarqueDAO(RemarqueDAO remarqueDAO) {
+		this.remarqueDAO = remarqueDAO;
 	}
 }

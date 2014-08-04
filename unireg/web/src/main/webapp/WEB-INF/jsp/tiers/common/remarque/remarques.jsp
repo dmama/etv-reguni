@@ -47,6 +47,7 @@
 							table += '<div id="rq-long-' + i + '" style="display:none;">' + rem.htmlText + '</div>';
 							table += '</td>';
 						}
+						table += '<td style="width:2em;"><a href="#" class="consult" title="Consultation des logs" onclick="return Dialog.open_consulter_log(\'Remarque\', ' + rem.id + ');">&nbsp;</a></td>';
 						table += '</tr>';
 					}
 					table += '</tbody></table>';

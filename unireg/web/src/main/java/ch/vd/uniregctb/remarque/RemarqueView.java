@@ -17,6 +17,7 @@ public class RemarqueView implements Annulable {
 	private static final Pattern HEAD_LINE_TRIMING_PATTERN = Pattern.compile("^([\\s]*(\n|\r|\r\n))+");
 	private static final Pattern TAIL_LINE_TRIMING_PATTERN = Pattern.compile("((\n|\r|\r\n)[\\s]*)+$");
 
+	private final Long id;
 	private final String date;
 	private final String user;
 	private final boolean annule;
@@ -25,6 +26,7 @@ public class RemarqueView implements Annulable {
 	private final String shortHtmlText;
 
 	public RemarqueView(Remarque remarque) {
+		this.id = remarque.getId();
 		this.date = DateHelper.dateTimeToDisplayString(remarque.getLogCreationDate());
 		this.user = remarque.getLogCreationUser();
 		this.annule = remarque.isAnnule();
@@ -33,6 +35,10 @@ public class RemarqueView implements Annulable {
 		this.htmlText = HtmlHelper.renderMultilines(text);
 		this.nbLines = countLines(text);
 		this.shortHtmlText = HtmlHelper.renderMultilines(forgetExtraLines(text, getThresholdNbLines() - 1));
+	}
+
+	public Long getId() {
+		return id;
 	}
 
 	public String getDate() {
