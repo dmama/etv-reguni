@@ -1,10 +1,12 @@
 package ch.vd.uniregctb.validation.tiers;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
 import ch.vd.registre.base.date.DateRange;
+import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -242,7 +244,9 @@ public abstract class TiersValidator<T extends Tiers> extends EntityValidatorImp
 		// On valide tous les fors pour eux-mêmes
 		final Set<ForFiscal> forsFiscaux = tiers.getForsFiscaux();
 		if (forsFiscaux != null) {
-			for (ForFiscal f : forsFiscaux) {
+			final List<ForFiscal> forsTries = new ArrayList<>(forsFiscaux);
+			Collections.sort(forsTries, new DateRangeComparator<ForFiscal>());
+			for (ForFiscal f : forsTries) {
 				results.merge(getValidationService().validate(f));
 			}
 		}

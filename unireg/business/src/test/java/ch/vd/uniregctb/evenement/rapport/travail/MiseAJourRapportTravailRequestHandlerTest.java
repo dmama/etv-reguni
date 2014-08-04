@@ -94,7 +94,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
 				DebiteurPrestationImposable debiteur = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2012, 1, 1));
-				addForDebiteur(debiteur, date(2012, 1, 1), MotifFor.INDETERMINE, date(2012, 6, 20), MotifFor.INDETERMINE, MockCommune.Echallens);
+				addForDebiteur(debiteur, date(2012, 1, 1), MotifFor.INDETERMINE, date(2012, 6, 30), MotifFor.INDETERMINE, MockCommune.Echallens);
 				return debiteur.getNumero();
 			}
 		});
@@ -1146,7 +1146,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 			Long idSourcier;
 		}
 		final Ids ids = new Ids();
-		final RegDate dateFermetureFor = date(2012, 11, 15);
+		final RegDate dateFermetureFor = date(2012, 11, 30);
 
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override

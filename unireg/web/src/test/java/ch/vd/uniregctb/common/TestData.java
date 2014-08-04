@@ -1361,7 +1361,7 @@ public class TestData {
 
 		ForDebiteurPrestationImposable fdpi0 = new ForDebiteurPrestationImposable();
 		fdpi0.setId(11L);
-		fdpi0.setDateFin(RegDate.get(2008,3,22));
+		fdpi0.setDateFin(RegDate.get(2008, 3, 31));
 		fdpi0.setDateDebut(RegDate.get(2007, 1, 1));
 		fdpi0.setMotifFermeture(MotifFor.INDETERMINE);
 		fdpi0.setMotifOuverture(MotifFor.INDETERMINE);
@@ -1374,7 +1374,7 @@ public class TestData {
 
 		ForDebiteurPrestationImposable fdpi1 = new ForDebiteurPrestationImposable();
 		fdpi1.setId(12L);
-		fdpi1.setDateDebut(RegDate.get(2008, 3, 23));
+		fdpi1.setDateDebut(RegDate.get(2008, 4, 1));
 		fdpi1.setMotifOuverture(MotifFor.INDETERMINE);
 		fdpi1.setGenreImpot(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE);
 		fdpi1.setLogModifDate(new Timestamp(1199142000000L));
@@ -1395,8 +1395,6 @@ public class TestData {
 		dis0.setPeriode(pf6);
 		dis0.setPeriodicite(PeriodiciteDecompte.TRIMESTRIEL);
 		dpi0.addDeclaration(dis0);
-
-
 
 		DeclarationImpotSource dis1 = new DeclarationImpotSource();
 		dis1.setId(5L);

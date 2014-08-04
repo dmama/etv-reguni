@@ -14,6 +14,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
@@ -283,7 +284,9 @@ public class ForDebiteurPrestationImposableValidatorTest extends AbstractValidat
 								throw new ValidationException(cis.name() + '/' + motif.name() + "-" + fermeture.toString(), vr);
 							}
 							assertEquals(cis.name() + '/' + motif.name() + "-" + fermeture.toString(),
-							             "La date de fermeture du for débiteur est incohérente avec sa date de début ainsi que les LR et périodicités du débiteur.", errors.get(0));
+							             String.format("La date de fermeture du for débiteur ForDebiteurPrestationImposable (01.01.2000 - %s) est incohérente avec sa date de début ainsi que les LR et périodicités du débiteur.",
+							                           RegDateHelper.dateToDisplayString(fermeture)),
+							             errors.get(0));
 						}
 					}
 				}
@@ -313,7 +316,9 @@ public class ForDebiteurPrestationImposableValidatorTest extends AbstractValidat
 								throw new ValidationException(cis.name() + '/' + motif.name() + "-" + fermeture.toString(), vr);
 							}
 							assertEquals(cis.name() + '/' + motif.name() + "-" + fermeture.toString(),
-							             "La date de fermeture du for débiteur est incohérente avec sa date de début ainsi que les LR et périodicités du débiteur.", errors.get(0));
+							             String.format("La date de fermeture du for débiteur ForDebiteurPrestationImposable (01.01.2000 - %s) est incohérente avec sa date de début ainsi que les LR et périodicités du débiteur.",
+							                           RegDateHelper.dateToDisplayString(fermeture)),
+						                 errors.get(0));
 						}
 					}
 				}

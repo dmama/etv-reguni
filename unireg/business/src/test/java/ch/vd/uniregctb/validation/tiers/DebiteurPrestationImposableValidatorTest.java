@@ -109,17 +109,17 @@ public class DebiteurPrestationImposableValidatorTest extends AbstractValidatorT
 			Assert.assertFalse(validate(tiers).hasErrors());
 		}
 	}
+
 	//Test ajout de LR en dehors période de for
 	/**
-	 *               +-----------------------+                              +-----------------------+     +-----------------------+   +-----------------------+
-	 *    For        |2006.10.02   2008.2.12 |                              |2010.10.02   2010.12.25|     |2011.6.24     2011.9.20|   |2011.12.1        null-
-	 *               +-----------------------+                              +-----------------------+     +-----------------------+   +-----------------------+
-	 *               +---------------------------+  +---------------------+                            +---------------------+  +---------------------+
-	 *  Périodicité  |2006.10.02        2008.6.30|  |2008.8.1   2008.12.31|                            |2011.1.1    2011.6.30|  |2011.9.1   2011.12.31|
-	 *               +---------------------------+  +---------------------+                            +---------------------+  +---------------------+
+	 *               +-----------------------+                                +-----------------------+     +---------------------+              +-----------------------+
+	 *    For        |2006.10.02  2007.12.31 |                                |2010.10.02   2010.12.31|     |2011.6.24   2011.9.30|              |2011.12.1          null|
+	 *               +-----------------------+                                +-----------------------+     +---------------------+              +-----------------------+
+	 *               +-----------------------------+  +---------------------+                          +---------------------+  +---------------------+
+	 *  Périodicité  |2006.10.02          2008.6.30|  |2008.8.1   2008.12.31|                          |2011.1.1    2011.6.30|  |2011.9.1   2011.12.31|
+	 *               +-----------------------------+  +---------------------+                          +---------------------+  +---------------------+
 	 *
 	 */
-
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testValidationLRNonCouvertesParFor() {
@@ -128,7 +128,7 @@ public class DebiteurPrestationImposableValidatorTest extends AbstractValidatorT
 		{
 			final ForDebiteurPrestationImposable forFiscal = new ForDebiteurPrestationImposable();
 			forFiscal.setDateDebut(date(2006, 10, 2));
-			forFiscal.setDateFin(date(2008, 2, 12));
+			forFiscal.setDateFin(date(2007, 12, 31));
 			forFiscal.setMotifOuverture(MotifFor.INDETERMINE);
 			forFiscal.setMotifFermeture(MotifFor.INDETERMINE);
 			forFiscal.setGenreImpot(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE);
@@ -137,11 +137,10 @@ public class DebiteurPrestationImposableValidatorTest extends AbstractValidatorT
 			debiteur.addForFiscal(forFiscal);
 		}
 
-
 		{
 			final ForDebiteurPrestationImposable forFiscal = new ForDebiteurPrestationImposable();
 			forFiscal.setDateDebut(date(2010, 10, 2));
-			forFiscal.setDateFin(date(2010, 12, 25));
+			forFiscal.setDateFin(date(2010, 12, 31));
 			forFiscal.setMotifOuverture(MotifFor.INDETERMINE);
 			forFiscal.setMotifFermeture(MotifFor.INDETERMINE);
 			forFiscal.setGenreImpot(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE);
@@ -154,7 +153,7 @@ public class DebiteurPrestationImposableValidatorTest extends AbstractValidatorT
 		{
 			final ForDebiteurPrestationImposable forFiscal = new ForDebiteurPrestationImposable();
 			forFiscal.setDateDebut(date(2011, 6, 24));
-			forFiscal.setDateFin(date(2011, 9, 20));
+			forFiscal.setDateFin(date(2011, 9, 30));
 			forFiscal.setMotifOuverture(MotifFor.INDETERMINE);
 			forFiscal.setMotifFermeture(MotifFor.INDETERMINE);
 			forFiscal.setGenreImpot(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE);
@@ -208,11 +207,14 @@ public class DebiteurPrestationImposableValidatorTest extends AbstractValidatorT
 			debiteur.addDeclaration(lr);
 		}
 
-		assertValidation(Arrays.asList("La période qui débute le (13.02.2008) et se termine le (30.06.2008) contient des LRs alors qu'elle n'est couverte par aucun for valide",
-				"La période qui débute le (01.08.2008) et se termine le (31.12.2008) contient des LRs alors qu'elle n'est couverte par aucun for valide",
-				"La période qui débute le (01.01.2011) et se termine le (23.06.2011) contient des LRs alors qu'elle n'est couverte par aucun for valide",
-				"La période qui débute le (21.09.2011) et se termine le (30.11.2011) contient des LRs alors qu'elle n'est couverte par aucun for valide"),
-				null, validate(debiteur));
+		assertValidation(Arrays.asList("La date de fermeture du for débiteur ForDebiteurPrestationImposable (02.10.2006 - 31.12.2007) est incohérente avec sa date de début ainsi que les LR et périodicités du débiteur.",
+		                               "La date de fermeture du for débiteur ForDebiteurPrestationImposable (02.10.2010 - 31.12.2010) est incohérente avec sa date de début ainsi que les LR et périodicités du débiteur.",
+		                               "La date de fermeture du for débiteur ForDebiteurPrestationImposable (24.06.2011 - 30.09.2011) est incohérente avec sa date de début ainsi que les LR et périodicités du débiteur.",
+		                               "La période qui débute le (01.01.2008) et se termine le (30.06.2008) contient des LRs alors qu'elle n'est couverte par aucun for valide",
+		                               "La période qui débute le (01.08.2008) et se termine le (31.12.2008) contient des LRs alors qu'elle n'est couverte par aucun for valide",
+		                               "La période qui débute le (01.01.2011) et se termine le (23.06.2011) contient des LRs alors qu'elle n'est couverte par aucun for valide",
+		                               "La période qui débute le (01.10.2011) et se termine le (30.11.2011) contient des LRs alors qu'elle n'est couverte par aucun for valide"),
+		                 null, validate(debiteur));
 	}
 
 	@Test
