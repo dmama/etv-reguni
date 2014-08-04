@@ -6,11 +6,12 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.registre.base.date.DateHelper;
+import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.common.HtmlHelper;
 import ch.vd.uniregctb.tiers.Remarque;
 
 @SuppressWarnings("UnusedDeclaration")
-public class RemarqueView {
+public class RemarqueView implements Annulable {
 
 	private static final Pattern EOL_PATTERN = Pattern.compile("\n|\r|\r\n");
 	private static final Pattern HEAD_LINE_TRIMING_PATTERN = Pattern.compile("^([\\s]*(\n|\r|\r\n))+");
@@ -18,13 +19,15 @@ public class RemarqueView {
 
 	private final String date;
 	private final String user;
+	private final boolean annule;
 	private final int nbLines;
 	private final String htmlText;
 	private final String shortHtmlText;
 
 	public RemarqueView(Remarque remarque) {
-		this.date = DateHelper.dateTimeToDisplayString(remarque.getLogModifDate());
-		this.user = remarque.getLogModifUser();
+		this.date = DateHelper.dateTimeToDisplayString(remarque.getLogCreationDate());
+		this.user = remarque.getLogCreationUser();
+		this.annule = remarque.isAnnule();
 
 		final String text = trimLines(remarque.getTexte());
 		this.htmlText = HtmlHelper.renderMultilines(text);
@@ -38,6 +41,10 @@ public class RemarqueView {
 
 	public String getUser() {
 		return user;
+	}
+
+	public boolean isAnnule() {
+		return annule;
 	}
 
 	public String getHtmlText() {

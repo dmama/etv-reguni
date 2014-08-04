@@ -52,6 +52,7 @@ public class JspTagFormInput extends AbstractHtmlInputElementTag {
 		commonEditors.put(Boolean.class, BooleanEditor.class);
 		commonEditors.put(Date.class, DateEditor.class);
 		commonEditors.put(RegDate.class, DateEditor.class);
+		commonEditors.put(MultilineString.class, MultilineStringEditor.class);
 
 		// les types SuperGra
 		for (EntityType type : EntityType.values()) {

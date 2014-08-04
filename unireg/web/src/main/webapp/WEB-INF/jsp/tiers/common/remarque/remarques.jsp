@@ -6,7 +6,7 @@
 	<div id="remarques">
 
 		<authz:authorize ifAnyGranted="ROLE_COOR_FIN, ROLE_MODIF_AC, ROLE_MODIF_VD_ORD, ROLE_MODIF_VD_SOURC, ROLE_MODIF_HC_HS, ROLE_MODIF_HAB_DEBPUR, ROLE_MODIF_NONHAB_DEBPUR, ROLE_MODIF_PM, ROLE_MODIF_CA, ROLE_MODIF_NONHAB_INACTIF">
-			<a id="addRemarque" class="add noprint" classname="add noprint" href="#">Ajouter une remarque</a>
+			<a id="addRemarque" class="add noprint" href="#">Ajouter une remarque</a>
 			<div id="newRemarque" class="new_remarque" style="display:none;">
 				<textarea cols="80" rows="3"></textarea><br>
 				<input type="button" value="Ajouter"/>&nbsp;ou&nbsp;<a href="#">annuler</a>
@@ -36,7 +36,7 @@
 					var table = '<table class="remarques" border="0" cellspacing="0"><tbody>';
 					for (var i = 0; i < count; ++i) {
 						var rem = list[i];
-						table += '<tr class="' + (i % 2 == 0 ? 'even' : 'odd') + '">';
+						table += '<tr class="' + (i % 2 == 0 ? 'even' : 'odd') + (rem.annule ? ' strike' : '') + '">';
 						table += '<td class="entete">le ' + Remarque.escapeHTML(rem.date) + ' par ' + Remarque.escapeHTML(rem.user) + '</td>';
 						if (rem.nbLines < rem.thresholdNbLines) {
 							table += '<td class="texte">' + rem.htmlText + '</td>';
@@ -54,8 +54,9 @@
 				}
 
 				$('#addRemarque').show();
-				$('#newRemarque').hide();
-				$('#newRemarque textarea').val('');
+				var newRemarque = $('#newRemarque');
+				newRemarque.hide();
+				newRemarque.find('textarea').val('');
 			}, 'json')
 			.error(Ajax.popupErrorHandler);
 		},
@@ -80,8 +81,8 @@
 		return false;
 	});
 
-	$('#newRemarque input').click(function() {
-		var text = $('#newRemarque textarea').val();
+	$('#newRemarque').find('input').click(function() {
+		var text = $('#newRemarque').find('textarea').val();
 		$.post('<c:url value="/remarque/add.do"/>', {'tiersId': ${tiersId}, 'text': text}, function() {
 			// on success, refresh all
 			Remarque.refreshRemarques();
@@ -89,7 +90,7 @@
 		return false;
 	});
 
-	$('#newRemarque a').click(function() {
+	$('#newRemarque').find('a').click(function() {
 		$('#addRemarque').show();
 		$('#newRemarque').hide();
 		return false;

@@ -50,6 +50,7 @@ import ch.vd.uniregctb.supergra.delta.Delta;
 import ch.vd.uniregctb.supergra.view.AttributeView;
 import ch.vd.uniregctb.supergra.view.CollectionView;
 import ch.vd.uniregctb.supergra.view.EntityView;
+import ch.vd.uniregctb.taglibs.formInput.MultilineString;
 import ch.vd.uniregctb.tiers.AnnuleEtRemplace;
 import ch.vd.uniregctb.tiers.AppartenanceMenage;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
@@ -62,6 +63,7 @@ import ch.vd.uniregctb.tiers.LinkedEntity;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportPrestationImposable;
+import ch.vd.uniregctb.tiers.Remarque;
 import ch.vd.uniregctb.tiers.RepresentationConventionnelle;
 import ch.vd.uniregctb.tiers.SituationFamilleMenageCommun;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -954,6 +956,14 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 			@Override
 			public AttributeView build(Property p, Object value, SuperGraContext context) {
 				return new AttributeView("rue", p.getName(), "rue", Integer.class, value, InfraCategory.RUE, false);
+			}
+		});
+
+		// [SIFISC-12519] le texte des remarques des tiers est éditable dans une textarea
+		attributeCustomBuilders.put(new AttributeKey(Remarque.class, "texte"), new AttributeBuilder() {
+			@Override
+			public AttributeView build(Property p, Object value, SuperGraContext context) {
+				return new AttributeView("texte", MultilineString.class, value, false, false, false);
 			}
 		});
 	}

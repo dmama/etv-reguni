@@ -55,7 +55,8 @@ public class RemarqueController {
 	@RequestMapping(value = "/list.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	@ResponseBody
-	public List<RemarqueView> list(@RequestParam(value = "tiersId", required = true) Long tiersId) throws Exception {
+	public List<RemarqueView> list(@RequestParam(value = "tiersId", required = true) Long tiersId,
+	                               @RequestParam(value = "avecAnnulees", defaultValue = "false") boolean avecAnnulees) throws Exception {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.VISU_ALL)) {
 			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
@@ -74,7 +75,9 @@ public class RemarqueController {
 
 		final List<RemarqueView> list = new ArrayList<>();
 		for (Remarque remarque : remarques) {
-			list.add(new RemarqueView(remarque));
+			if (avecAnnulees || !remarque.isAnnule()) {
+				list.add(new RemarqueView(remarque));
+			}
 		}
 
 		return list;

@@ -112,6 +112,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	private Set<AdresseTiers> adressesTiers;
 	private Set<Declaration> declarations;
 	private Set<ForFiscal> forsFiscaux;
+	private Set<Remarque> remarques;
 
 	public Tiers() {
 	}
@@ -1040,6 +1041,25 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 		// begin-user-code
 		this.officeImpotId = officeImpotID;
 		// end-user-code
+	}
+
+	/**
+	 * Propriété présente pour afficher les données dans SuperGRA, ne doit pas être utilisée autrement
+	 * @see ch.vd.uniregctb.tiers.dao.RemarqueDAO#getRemarques(Long)
+	 */
+	@Deprecated
+	@OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, mappedBy = "tiers")
+	public Set<Remarque> getRemarques() {
+		return this.remarques;
+	}
+
+	/**
+	 * Propriété présente pour afficher les données dans SuperGRA, ne doit pas être utilisée autrement
+	 * @see ch.vd.uniregctb.tiers.dao.RemarqueDAO#save(Object)
+	 */
+	@Deprecated
+	public void setRemarques(Set<Remarque> remarques) {
+		this.remarques = remarques;
 	}
 
 	/**
