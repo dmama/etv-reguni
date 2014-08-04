@@ -17,6 +17,7 @@ public class EditForDebiteurView implements EditForAvecMotifsView {
 	private MotifFor motifFin;
 	private boolean ouvertureEditable;
 	private boolean fermetureEditable;
+	private boolean forFerme;
 
 	private TypeAutoriteFiscale typeAutoriteFiscale;
 	private Integer noAutoriteFiscale;
@@ -33,6 +34,7 @@ public class EditForDebiteurView implements EditForAvecMotifsView {
 		this.motifFin = fdpi.getMotifFermeture();
 		this.ouvertureEditable = fdpi.getDateDebut() == null;
 		this.fermetureEditable = fdpi.getDateFin() == null || fdpi.getDateFin().isAfter(RegDate.get());
+		this.forFerme = fdpi.getDateFin() != null;
 		this.typeAutoriteFiscale = fdpi.getTypeAutoriteFiscale();
 		this.noAutoriteFiscale = fdpi.getNumeroOfsAutoriteFiscale();
 	}
@@ -50,6 +52,7 @@ public class EditForDebiteurView implements EditForAvecMotifsView {
 			this.dateFin = fdpi.getDateFin();
 			this.motifFin = fdpi.getMotifFermeture();
 		}
+		this.forFerme = fdpi.getDateFin() != null;
 		this.typeAutoriteFiscale = fdpi.getTypeAutoriteFiscale();
 		this.noAutoriteFiscale = fdpi.getNumeroOfsAutoriteFiscale();
 	}
@@ -97,6 +100,14 @@ public class EditForDebiteurView implements EditForAvecMotifsView {
 
 	public boolean isFermetureEditable() {
 		return fermetureEditable;
+	}
+
+	public boolean isForFerme() {
+		return forFerme;
+	}
+
+	public void setForFerme(boolean forFerme) {
+		this.forFerme = forFerme;
 	}
 
 	public MotifFor getMotifFin() {

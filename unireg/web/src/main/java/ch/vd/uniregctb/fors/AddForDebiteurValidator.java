@@ -7,6 +7,7 @@ import org.springframework.validation.Errors;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -16,6 +17,7 @@ import ch.vd.uniregctb.tiers.NatureTiers;
 import ch.vd.uniregctb.tiers.validator.MotifsForHelper;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.uniregctb.validation.fors.ForDebiteurPrestationImposableValidator;
 
 public class AddForDebiteurValidator extends AddForAvecMotifsValidator {
 
@@ -79,6 +81,23 @@ public class AddForDebiteurValidator extends AddForAvecMotifsValidator {
 			final NatureTiers natureTiers = dpi.getNatureTiers();
 			final MotifsForHelper.TypeFor typeFor = new MotifsForHelper.TypeFor(natureTiers, GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE, null);
 			ForValidatorHelper.validateMotifFin(typeFor, view.getMotifFin(), errors);
+		}
+
+		// validation de la date de fin
+		if (view.getDateFin() != null) {
+
+			// [SIFISC-12888] la date ne doit pas dépasser le 31.12 de la PF en cours
+			if (view.getDateFin().isAfter(RegDate.get(RegDate.get().year(), 12, 31))) {
+				errors.rejectValue("dateFin", "error.date.fermeture.posterieure.pf.courante");
+			}
+
+			// [SIFISC-12888] ... et doit correspondre à une date qui va bien
+			if (view.getDateDebut() != null) {
+				final List<RegDate> autorisees = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, view.getDateDebut(), view.getDateFin());
+				if (!autorisees.contains(view.getDateFin())) {
+					errors.rejectValue("dateFin", "error.date.fermeture.invalide");
+				}
+			}
 		}
 	}
 

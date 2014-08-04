@@ -13,6 +13,7 @@
 		<form:form name="formFor" id="formFor" action="edit.do">
 
 			<form:hidden path="id"/>
+			<form:hidden path="forFerme"/>
 
 			<fieldset>
 				<legend><span><fmt:message key="label.for.fiscal"/></span></legend>
@@ -35,10 +36,25 @@
 						<td><fmt:message key="label.date.fermeture"/>&nbsp;:</td>
 						<td>
 							<c:if test="${command.fermetureEditable}">
-								<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
-									<jsp:param name="path" value="dateFin"/>
-									<jsp:param name="id" value="dateFin"/>
-								</jsp:include>
+								<form:select path="dateFin" id="optionDatesFin" cssStyle="width:15ex"/>
+								<form:errors path="dateFin" cssClass="error"/>
+
+								<script type="application/javascript">
+									$.get(App.curl('/fors/debiteur/datesFermeture.do?forId=') + ${command.id}, function(dates) {
+										var options;
+										var selected = '<unireg:regdate regdate="${command.dateFin}"/>';
+										<c:if test="${!command.forFerme}">
+											options += '<option value=""' + (selected == null || selected === '' ? ' selected="true"' : "") + '/>';
+										</c:if>
+										var count = dates.length;
+										for (var i = 0 ; i < count ; ++ i) {
+											var date = dates[i];
+											var str = RegDate.format(date);
+											options += '<option value="' + str + '"' + (selected === str ? ' selected="true"' : '') + '>' + str + '</option>';
+										}
+										$('#optionDatesFin').html(options);
+									}, 'json').error(Ajax.popupErrorHandler);
+								</script>
 							</c:if>
 							<c:if test="${!command.fermetureEditable}">
 								<unireg:regdate regdate="${command.dateFin}"/>

@@ -55,6 +55,7 @@ import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.utils.RegDateEditor;
+import ch.vd.uniregctb.validation.fors.ForDebiteurPrestationImposableValidator;
 
 @Controller
 @RequestMapping(value = "/fors")
@@ -718,6 +719,27 @@ public class ForsController {
 		tiersService.addForDebiteur(debiteur, view.getDateDebut(), view.getMotifDebut(), view.getDateFin(), view.getMotifFin(), view.getTypeAutoriteFiscale(), view.getNoAutoriteFiscale());
 
 		return "redirect:/fiscal/edit-for-debiteur.do?id=" + dpiId;
+	}
+
+	@RequestMapping(value = "/debiteur/datesFermeture.do", method = RequestMethod.GET)
+	@Transactional(readOnly = true, rollbackFor = Throwable.class)
+	@ResponseBody
+	public List<RegDate> datesFermetureForDebiteur(@RequestParam(value = "forId") long forId) {
+
+		final ForDebiteurPrestationImposable fdpi = hibernateTemplate.get(ForDebiteurPrestationImposable.class, forId);
+		if (fdpi == null) {
+			throw new ObjectNotFoundException("Le for débiteur avec l'id = " + forId + " n'existe pas.");
+		}
+
+		final Tiers tiers = fdpi.getTiers();
+		controllerUtils.checkAccesDossierEnLecture(tiers.getNumero());
+
+		// validation du type de tiers...
+		if (!(tiers instanceof DebiteurPrestationImposable)) {
+			throw new ObjectNotFoundException(String.format("Le for débiteur %d n'est pas associé à un débiteur de prestation imposable (%s)", forId, tiers));
+		}
+		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiers;
+		return ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, fdpi, RegDate.get(RegDate.get().year(), 12, 31), false);
 	}
 
 	@RequestMapping(value = "/debiteur/edit.do", method = RequestMethod.GET)

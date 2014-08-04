@@ -63,22 +63,22 @@ public enum MotifFor {
 	FIN_ACTIVITE_DIPLOMATIQUE("Fin d'activité diplomatique"),
 
 	/**
-	 * Début d'activité d'un débiteur IS (date de début correspondante toujours un premier de mois)
+	 * Début d'activité d'un débiteur IS
 	 */
 	DEBUT_PRESTATION_IS("Début de prestation IS"),
 
 	/**
-	 * Fin d'activité d'un débiteur IS (date de fin correspondante toujours en fin d'année)
+	 * Fin d'activité d'un débiteur IS
 	 */
 	FIN_PRESTATION_IS("Fin de prestation IS"),
 
 	/**
-	 * Cessation d'activité / fusion / faillite d'un débiteur IS (date de fin correspondante toujours en fin de mois)
+	 * Cessation d'activité / fusion / faillite d'un débiteur IS
 	 */
 	CESSATION_ACTIVITE_FUSION_FAILLITE("Cessation d'activité / fusion / faillite"),
 
 	/**
-	 * Déménagement du siège social d'un débiteur IS (date de debut/fin sur debut/fin de mois)
+	 * Déménagement du siège social d'un débiteur IS
 	 */
 	DEMENAGEMENT_SIEGE("Déménagement de siège");
 
