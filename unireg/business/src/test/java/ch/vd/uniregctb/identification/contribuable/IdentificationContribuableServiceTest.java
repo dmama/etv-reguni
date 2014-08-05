@@ -65,6 +65,7 @@ import ch.vd.uniregctb.type.TypeAdresseTiers;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 /**
@@ -2681,7 +2682,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 				final IdentificationContribuable ic = list.get(0);
 				assertNotNull(ic);
 				assertEquals(Etat.EXCEPTION, ic.getEtat());
-				assertEquals(Integer.valueOf(0), ic.getNbContribuablesTrouves());
+				assertNull(ic.getNbContribuablesTrouves());
 
 				final Reponse reponse = ic.getReponse();
 				assertNotNull(reponse);
@@ -2913,6 +2914,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 				assertNotNull(ic);
 				assertEquals(Etat.A_TRAITER_MANUELLEMENT, ic.getEtat());
 				assertEquals(Integer.valueOf(0), ic.getNbContribuablesTrouves());
+				assertEquals("Aucun contribuable trouvé.", ic.getCommentaireTraitement());
 
 				final Reponse reponse = ic.getReponse();
 				assertNull(reponse);
@@ -2965,7 +2967,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 				assertNotNull(ic);
 				assertEquals(Etat.A_TRAITER_MANUELLEMENT, ic.getEtat());
 				assertEquals(Integer.valueOf(3), ic.getNbContribuablesTrouves());
-
+				assertTrue(ic.getCommentaireTraitement(), ic.getCommentaireTraitement().startsWith("3 contribuables trouvés : "));
 				return null;
 			}
 		});
@@ -3022,6 +3024,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 				assertNotNull(ic);
 				assertEquals(Etat.EXCEPTION, ic.getEtat());
 				assertNull(ic.getNbContribuablesTrouves());
+				assertNull(ic.getCommentaireTraitement());
 
 				final Reponse reponse = ic.getReponse();
 				assertNotNull(reponse);

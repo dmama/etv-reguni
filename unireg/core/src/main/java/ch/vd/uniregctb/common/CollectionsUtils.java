@@ -8,6 +8,7 @@ import java.util.ListIterator;
 import java.util.RandomAccess;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.registre.base.utils.Assert;
 
@@ -161,5 +162,26 @@ public class CollectionsUtils extends CollectionUtils {
 		else {
 			return list.listIterator(list.size()).previous();
 		}
+	}
+
+	/**
+	 * @param list liste à transformer en chaîne de caractères
+	 * @param renderer le {@link ch.vd.uniregctb.common.StringRenderer} à utiliser pour les éléments de la liste
+	 * @param separator le séparateur à placer entre la représentation de chacun des éléments de la liste
+	 * @param <T> type des éléments de la liste
+	 * @return une chaîne de caractère qui énumère les éléments de la liste, séparés par le séparateur donné
+	 */
+	public static <T> String toString(List<T> list, StringRenderer<? super T> renderer, String separator) {
+		if (list == null || list.isEmpty()) {
+			return StringUtils.EMPTY;
+		}
+		final StringBuilder b = new StringBuilder();
+		for (T elt : list) {
+			if (b.length() > 0) {
+				b.append(separator);
+			}
+			b.append(renderer.toString(elt));
+		}
+		return b.toString();
 	}
 }

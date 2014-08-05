@@ -24,8 +24,6 @@ import ch.vd.uniregctb.common.HibernateEntity;
 @Table(name = "EVENEMENT_IDENTIFICATION_CTB")
 public class IdentificationContribuable extends HibernateEntity {
 
-	private static final long serialVersionUID = 1427507963093696325L;
-
 	public enum Etat {
 		/**
 		 * L'événement a été reçu et va être traité automatiquement. Cet état est transient et il ne devrait donc jamais être persisté.
@@ -138,6 +136,11 @@ public class IdentificationContribuable extends HibernateEntity {
 	private Integer nbContribuablesTrouves;
 
 	/**
+	 * Eventuel commentaire généré par la phase automatique du traitement
+	 */
+	private String commentaireTraitement;
+
+	/**
 	 * Etat courant du traitement du message
 	 */
 	private Etat etat;
@@ -150,12 +153,9 @@ public class IdentificationContribuable extends HibernateEntity {
 	/**
 	 * l'id de l'utilisateur qui est en train d'identifier le message
 	 */
-
 	private String utilisateurTraitant;
 
-
 	private String traitementUser;
-
 
 	private Date dateTraitement;
 
@@ -205,6 +205,15 @@ public class IdentificationContribuable extends HibernateEntity {
 
 	public void setNbContribuablesTrouves(Integer nbContribuablesTrouves) {
 		this.nbContribuablesTrouves = nbContribuablesTrouves;
+	}
+
+	@Column(name = "COMMENTAIRE_TRAITEMENT", length = 255)
+	public String getCommentaireTraitement() {
+		return commentaireTraitement;
+	}
+
+	public void setCommentaireTraitement(String commentaireTraitement) {
+		this.commentaireTraitement = commentaireTraitement;
 	}
 
 	@Column(name = "ETAT", length = 23, nullable = false)

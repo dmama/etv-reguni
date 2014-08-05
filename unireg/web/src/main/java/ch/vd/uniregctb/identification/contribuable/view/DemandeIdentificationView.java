@@ -16,6 +16,7 @@ public class DemandeIdentificationView implements Annulable {
 	private String businessId;
 	private Date dateMessage;
 	private Etat etatMessage;
+	private String commentaireTraitement;
 	private String navs13;
 	private String navs13Upi;
 	private String navs11;
@@ -80,6 +81,14 @@ public class DemandeIdentificationView implements Annulable {
 
 	public void setEtatMessage(Etat etatMessage) {
 		this.etatMessage = etatMessage;
+	}
+
+	public String getCommentaireTraitement() {
+		return commentaireTraitement;
+	}
+
+	public void setCommentaireTraitement(String commentaireTraitement) {
+		this.commentaireTraitement = commentaireTraitement;
 	}
 
 	public String getNavs13() {

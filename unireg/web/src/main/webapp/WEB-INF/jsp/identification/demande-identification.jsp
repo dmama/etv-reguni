@@ -54,20 +54,6 @@
 			<td>${message.prenoms}</td>
 		</tr>
 		<tr class="<unireg:nextRowClass/>" >
-			<td><fmt:message key="label.etat.message" />&nbsp;:</td>
-			<td>
-				<c:if test="${message.etatMessage != null }">
-					<fmt:message key="option.etat.message.${message.etatMessage}" />
-				</c:if>
-			</td>
-			<td><fmt:message key="label.date.naissance" />&nbsp;:</td>
-			<td>
-				<c:if test="${message.dateNaissance != null }">
-					<unireg:date date="${message.dateNaissance}" />
-				</c:if>
-			</td>
-		</tr>
-		<tr class="<unireg:nextRowClass/>" >
 			<td>
 				<c:if test="${message.typeMessage == 'CS_EMPLOYEUR'}">
 					<fmt:message key="label.transmetteur.message"/>
@@ -78,10 +64,10 @@
 					<c:out value="${message.transmetteur}"/>
 				</c:if>
 			</td>
-			<td><fmt:message key="label.sexe" />&nbsp;:</td>
+			<td><fmt:message key="label.date.naissance" />&nbsp;:</td>
 			<td>
-				<c:if test="${message.sexe != null }">
-					<fmt:message key="option.sexe.${message.sexe}" />
+				<c:if test="${message.dateNaissance != null }">
+					<unireg:date date="${message.dateNaissance}" />
 				</c:if>
 			</td>
 		</tr>
@@ -96,8 +82,12 @@
 					<c:out value="${message.montant}"/>
 				</c:if>
 			</td>
-			<td></td>
-			<td></td>
+			<td><fmt:message key="label.sexe" />&nbsp;:</td>
+			<td>
+				<c:if test="${message.sexe != null }">
+					<fmt:message key="option.sexe.${message.sexe}" />
+				</c:if>
+			</td>
 		</tr>
 		<tr class="<unireg:nextRowClass/>" >
 			<td>
@@ -150,7 +140,26 @@
 			</tr>
 		</c:if>
 	</table>
-	
+
+	<fieldset>
+		<legend><fmt:message key="label.etat.courant"/></legend>
+		<table>
+			<tr class="<unireg:nextRowClass/>">
+				<td width="25%"><fmt:message key="label.etat.message" />&nbsp;:</td>
+				<td width="25%">
+					<c:if test="${message.etatMessage != null }">
+						<fmt:message key="option.etat.message.${message.etatMessage}" />
+					</c:if>
+				</td>
+				<td colspan="2">&nbsp;</td>
+			</tr>
+			<tr class="<unireg:nextRowClass/>">
+				<td><fmt:message key="label.commentaire.traitement"/>&nbsp;:</td>
+				<td colspan="3"><em>${message.commentaireTraitement}</em></td>
+			</tr>
+		</table>
+	</fieldset>
+
 </fieldset>
 
 <script type="text/javascript" language="javascript">

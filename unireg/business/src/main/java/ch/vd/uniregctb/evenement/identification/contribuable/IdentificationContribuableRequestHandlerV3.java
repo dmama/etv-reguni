@@ -3,10 +3,8 @@ package ch.vd.uniregctb.evenement.identification.contribuable;
 import javax.xml.bind.JAXBElement;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +18,8 @@ import ch.vd.unireg.xml.event.identification.response.v3.Erreur;
 import ch.vd.unireg.xml.event.identification.response.v3.IdentificationContribuableResponse;
 import ch.vd.unireg.xml.event.identification.response.v3.IdentificationResult;
 import ch.vd.unireg.xml.event.identification.response.v3.ObjectFactory;
+import ch.vd.uniregctb.common.CollectionsUtils;
+import ch.vd.uniregctb.common.NumeroCtbStringRenderer;
 import ch.vd.uniregctb.identification.contribuable.IdentificationContribuableService;
 import ch.vd.uniregctb.identification.contribuable.TooManyIdentificationPossibilitiesException;
 import ch.vd.uniregctb.jms.EsbBusinessCode;
@@ -50,7 +50,8 @@ public class IdentificationContribuableRequestHandlerV3 implements Identificatio
 	private static enum IdentificationResultKind {
 		FOUND_ONE,
 		FOUND_NONE,
-		FOUND_SEVERAL
+		FOUND_SEVERAL,
+		FOUND_MANY
 	}
 
 	public JAXBElement<IdentificationContribuableResponse> handle(IdentificationContribuableRequest request, String businessId) throws EsbBusinessException {
@@ -94,8 +95,8 @@ public class IdentificationContribuableRequestHandlerV3 implements Identificatio
 			}
 		}
 		catch (TooManyIdentificationPossibilitiesException e) {
-			found = Collections.emptyList();
-			status = IdentificationResultKind.FOUND_SEVERAL;
+			found = e.getExamplesFound();
+			status = IdentificationResultKind.FOUND_MANY;
 		}
 
 		if (status == IdentificationResultKind.FOUND_NONE) {
@@ -104,10 +105,10 @@ public class IdentificationContribuableRequestHandlerV3 implements Identificatio
 			result.setErreur(aucun);
 			LOGGER.info(message);
 		}
-		else if (status == IdentificationResultKind.FOUND_SEVERAL) {
+		else if (status == IdentificationResultKind.FOUND_SEVERAL || status == IdentificationResultKind.FOUND_MANY) {
 			final String detail;
 			if (found.size() > 0) {
-				detail = String.format(" (%s)", ArrayUtils.toString(found.toArray(new Long[found.size()])));
+				detail = String.format(" (%s%s)", CollectionsUtils.toString(found, new NumeroCtbStringRenderer(), ", "), status == IdentificationResultKind.FOUND_MANY ? ", ..." : StringUtils.EMPTY);
 			}
 			else {
 				detail = StringUtils.EMPTY;

@@ -89,9 +89,8 @@ public interface IdentificationContribuableService {
 	IdentifiantUtilisateur getNomUtilisateurFromVisaUser(String visaUser);
 
 	/**
-	 * Retente une identification automatique sur les messages present en base
-	 *
-	 * @return 1 si l 'identification a réussi, 0 Sinon
+	 * Retente une identification automatique sur les messages présents en base
+	 * @return <code>true</code> si l'identification a réussi, <code>false</code> sinon
 	 */
 
 	boolean tenterIdentificationAutomatiqueContribuable(IdentificationContribuable message) throws Exception;

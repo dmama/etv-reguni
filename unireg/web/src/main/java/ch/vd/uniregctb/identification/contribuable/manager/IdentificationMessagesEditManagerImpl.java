@@ -104,6 +104,7 @@ public class IdentificationMessagesEditManagerImpl implements IdentificationMess
 		final DemandeIdentificationView demandeIdentificationView = new DemandeIdentificationView();
 		demandeIdentificationView.setId(identificationContribuable.getId());
 		demandeIdentificationView.setEtatMessage(identificationContribuable.getEtat());
+		demandeIdentificationView.setCommentaireTraitement(identificationContribuable.getCommentaireTraitement());
 		demandeIdentificationView.setNavs13Upi(StringUtils.trimToNull(FormatNumeroHelper.formatNumAVS(identificationContribuable.getNAVS13Upi())));
 
 		final Demande demande = identificationContribuable.getDemande();

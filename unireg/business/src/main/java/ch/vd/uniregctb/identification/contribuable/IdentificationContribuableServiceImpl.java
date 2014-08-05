@@ -13,7 +13,6 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableObject;
@@ -31,7 +30,6 @@ import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.securite.model.Operateur;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
@@ -42,11 +40,13 @@ import ch.vd.unireg.interfaces.upi.ServiceUpiException;
 import ch.vd.unireg.interfaces.upi.ServiceUpiRaw;
 import ch.vd.unireg.interfaces.upi.data.UpiPersonInfo;
 import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.DefaultThreadFactory;
 import ch.vd.uniregctb.common.DefaultThreadNameGenerator;
+import ch.vd.uniregctb.common.NumeroCtbStringRenderer;
 import ch.vd.uniregctb.common.ParamPagination;
+import ch.vd.uniregctb.common.StringRenderer;
 import ch.vd.uniregctb.evenement.identification.contribuable.CriteresAdresse;
 import ch.vd.uniregctb.evenement.identification.contribuable.CriteresPersonne;
 import ch.vd.uniregctb.evenement.identification.contribuable.Demande;
@@ -76,13 +76,13 @@ import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.type.TypeAdresseTiers;
 
 public class IdentificationContribuableServiceImpl implements IdentificationContribuableService, DemandeHandler, InitializingBean, DisposableBean {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(IdentificationContribuableServiceImpl.class);
 
 	private static final String REPARTITION_INTERCANTONALE = "ssk-3001-000101";
+	private static final StringRenderer<Long> NO_CTB_RENDERER = new NumeroCtbStringRenderer();
 
 	private GlobalTiersSearcher searcher;
 	private TiersDAO tiersDAO;
@@ -444,7 +444,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 					indexedData = searcher.searchTop(criteria, maxNumberForList + 1);
 					if (indexedData != null && !indexedData.isEmpty()) {
 						if (indexedData.size() > maxNumberForList) {
-							throw new TooManyIdentificationPossibilitiesException(maxNumberForList);
+							throw new TooManyIdentificationPossibilitiesException(maxNumberForList, indexedData);
 						}
 						break;
 					}
@@ -545,19 +545,19 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		messageReponse.setId(message.getId());
 		messageReponse.setHeader(message.getHeader());
 		messageReponse.setNbContribuablesTrouves(1);
+		messageReponse.setCommentaireTraitement(null);
 		messageReponse.setReponse(reponse);
 		messageReponse.setEtat(etat);
 		messageReponse.getHeader().setBusinessUser(traduireBusinessUser(user));
 
 		message.setNbContribuablesTrouves(1);
+		message.setCommentaireTraitement(null);
 		message.setReponse(reponse);
 		message.setEtat(etat);
 		message.setDateTraitement(DateHelper.getCurrentDate());
 		message.setTraitementUser(user);
 
-		LOGGER.info("Le message n°" + messageReponse.getId() + " est passé dans l'état [" + etat
-				+ "]. Numéro du contribuable trouvé = " + personne.getNumero());
-
+		LOGGER.info(String.format("Le message n°%d est passé dans l'état [%s]. Numéro du contribuable trouvé = %d", messageReponse.getId(), etat, personne.getNumero()));
 		messageHandler.sendReponse(messageReponse);
 	}
 
@@ -580,27 +580,6 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 			}
 		}
 
-	}
-
-	private void setUpAdresse(IdentificationContribuable message, CriteresAdresse criteresAdresse, Integer onrp,
-	                          AdresseSuisse adresseCourrier) {
-		adresseCourrier.setUsage(TypeAdresseTiers.COURRIER);
-		adresseCourrier.setDateDebut(RegDateHelper.get(message.getLogCreationDate()));
-		String complement = null;
-		if (criteresAdresse.getLigneAdresse1() != null) {
-			complement = criteresAdresse.getLigneAdresse1();
-
-		}
-		if (criteresAdresse.getLigneAdresse2() != null) {
-			complement = complement + ' ' + criteresAdresse.getLigneAdresse2();
-
-		}
-		adresseCourrier.setComplement(complement);
-		adresseCourrier.setRue(criteresAdresse.getRue());
-		adresseCourrier.setNumeroAppartement(criteresAdresse.getNoAppartement());
-		adresseCourrier.setNumeroMaison(criteresAdresse.getNoPolice());
-		adresseCourrier.setNumeroOrdrePoste(onrp);
-		adresseCourrier.setNumeroCasePostale(criteresAdresse.getNumeroCasePostale());
 	}
 
 	/**
@@ -656,18 +635,20 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		messageReponse.setId(message.getId());
 		messageReponse.setHeader(message.getHeader());
 		messageReponse.setNbContribuablesTrouves(0);
+		messageReponse.setCommentaireTraitement(null);
 		messageReponse.setReponse(reponse);
 		messageReponse.setEtat(etat);
 		messageReponse.getHeader().setBusinessUser(traduireBusinessUser(user));
 
 		message.setNbContribuablesTrouves(0);
+		message.setCommentaireTraitement(null);
 		message.setReponse(reponse);
 		message.setEtat(etat);
 		message.setDateTraitement(DateHelper.getCurrentDate());
 		message.setTraitementUser(user);
 
 		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug("Le message n°" + messageReponse.getId() + " est passé dans l'état [" + etat + "]. Aucun contribuable trouvé.");
+			LOGGER.debug(String.format("Le message n°%d est passé dans l'état [%s]. Aucun contribuable trouvé.", messageReponse.getId(), etat));
 		}
 
 		messageHandler.sendReponse(messageReponse);
@@ -681,23 +662,20 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	private void notifieAttenteIdentifManuel(IdentificationContribuable message) throws Exception {
 		final Etat etat = Etat.A_TRAITER_MANUELLEMENT; // par définition
 
-		Reponse reponse = new Reponse();
+		final Reponse reponse = new Reponse();
 		reponse.setDate(DateHelper.getCurrentDate());
 		reponse.setEnAttenteIdentifManuel(true);
-		IdentificationContribuable messageReponse = new IdentificationContribuable();
+		message.setReponse(reponse);
+
+		final IdentificationContribuable messageReponse = new IdentificationContribuable();
 		messageReponse.setId(message.getId());
 		messageReponse.setHeader(message.getHeader());
 		messageReponse.setReponse(reponse);
 		messageReponse.setEtat(etat);
 
-		message.setNbContribuablesTrouves(0);
-		message.setReponse(reponse);
-		message.setEtat(etat);
-
 		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug("Le message n°" + messageReponse.getId() + " est passé dans l'état [" + etat + "], le demandeur va en être notifié.");
+			LOGGER.debug(String.format("Le message n°%d est passé dans l'état [%s], le demandeur va en être notifié.", messageReponse.getId(), etat));
 		}
-
 		messageHandler.sendReponse(messageReponse);
 	}
 
@@ -800,6 +778,44 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		soumettreMessage(message);
 	}
 
+	private static enum IdentificationResultKind {
+		FOUND_NONE,
+		FOUND_ONE,
+		FOUND_SEVERAL,
+		FOUND_MANY
+	}
+
+	private static String getMessageNonIdentification(List<Long> found, IdentificationResultKind resultKind) {
+		final String str;
+		if (resultKind == IdentificationResultKind.FOUND_ONE) {
+			str = null;
+		}
+		else if (resultKind == IdentificationResultKind.FOUND_NONE) {
+			str = "Aucun contribuable trouvé.";
+		}
+		else if (resultKind == IdentificationResultKind.FOUND_SEVERAL || resultKind == IdentificationResultKind.FOUND_MANY) {
+			final StringBuilder b = new StringBuilder();
+			if (resultKind == IdentificationResultKind.FOUND_SEVERAL) {
+				b.append(found.size());
+			}
+			else {
+				b.append("Plus de ").append(NB_MAX_RESULTS_POUR_LISTE_IDENTIFICATION);
+			}
+			b.append(" contribuables trouvés : ").append(CollectionsUtils.toString(found, NO_CTB_RENDERER, ", "));
+			if (resultKind == IdentificationResultKind.FOUND_MANY) {
+				b.append(", ...");
+			}
+			else {
+				b.append(".");
+			}
+			str = b.toString();
+		}
+		else {
+			throw new IllegalArgumentException("Valeur non prévue : " + resultKind);
+		}
+		return str;
+	}
+
 	//Methode à spécialiser pour les differentes types de demande dans l'avenir. Pour l'instant elle est
 	// utilisée pour traiter tout type de messages
 	private void soumettreMessage(IdentificationContribuable message) {
@@ -812,18 +828,29 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 			Assert.notNull(demande, "Le message ne contient aucun critère sur la personne à identifier.");
 
 			final Mutable<String> avsUpi = new MutableObject<>();
-			Integer foundSize;
+			IdentificationResultKind resultKind;
 			List<Long> found;
 			try {
 				found = identifie(criteresPersonne, avsUpi);
-				foundSize = found.size();
+				switch (found.size()) {
+				case 0:
+					resultKind = IdentificationResultKind.FOUND_NONE;
+					break;
+				case 1:
+					resultKind = IdentificationResultKind.FOUND_ONE;
+					break;
+				default:
+					resultKind = IdentificationResultKind.FOUND_SEVERAL;
+					break;
+				}
 			}
 			catch (TooManyIdentificationPossibilitiesException e) {
-				found = Collections.emptyList();
-				foundSize = null;
+				found = e.getExamplesFound();
+				resultKind = IdentificationResultKind.FOUND_MANY;
 			}
 			message.setNAVS13Upi(avsUpi.getValue());
-			if (found.size() == 1) {
+
+			if (resultKind == IdentificationResultKind.FOUND_ONE) {
 				// on a trouvé un et un seul contribuable:
 				final PersonnePhysique personne = (PersonnePhysique) tiersDAO.get(found.get(0));
 
@@ -843,24 +870,12 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 					}
 
 					// dans le cas MANUEL_AVEC_ACK et MANUEL_SANS_ACK le message est mis en traitement manuel
-					message.setNbContribuablesTrouves(foundSize);
+					message.setNbContribuablesTrouves(resultKind != IdentificationResultKind.FOUND_MANY ? found.size() : null);
+					message.setCommentaireTraitement(getMessageNonIdentification(found, resultKind));
 					message.setEtat(Etat.A_TRAITER_MANUELLEMENT);
 
 					if (LOGGER.isDebugEnabled()) {
-						final StringBuilder b = new StringBuilder();
-						b.append("Le message ").append(message.getId()).append(" doit être traité manuellement. ");
-						if (foundSize != null) {
-							if (foundSize == 0) {
-								b.append("Aucun contribuable trouvé.");
-							}
-							else {
-								b.append(foundSize).append(" contribuables trouvés : ").append(ArrayUtils.toString(found.toArray(new Long[foundSize]))).append('.');
-							}
-						}
-						else {
-							b.append("Plus de ").append(NB_MAX_RESULTS_POUR_LISTE_IDENTIFICATION).append(" contribuables trouvés.");
-						}
-						LOGGER.debug(b.toString());
+						LOGGER.debug(String.format("Le message %d doit être traité manuellement. %s", message.getId(), message.getCommentaireTraitement()));
 					}
 				}
 			}
@@ -873,7 +888,6 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	private void traiterException(IdentificationContribuable message, Exception e) {
 		LOGGER.warn("Exception lors du traitement du message n°" + message.getId() + ". Le message sera traité manuellement.", e);
 
-
 		final Demande demande = message.getDemande();
 		// toute exception aura pour conséquence de provoquer un traitement manuel: on n'envoie donc pas de réponse immédiatement,sauf en cas de demande d'accusé de reception
 		if (demande != null && Demande.ModeIdentificationType.MANUEL_AVEC_ACK == demande.getModeIdentification()) {
@@ -885,19 +899,16 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 			catch (Exception ex) {
 				LOGGER.warn("Exception lors de l'envoi de l'accusée de reception du message n°" + message.getId() + ". Le message sera traité manuellement.", ex);
 			}
-
 		}
 		else {
-
-			// on stocke le message d'erreur dans le champs reponse.erreur.message par commodité dans le cas ou aucun accusé de reception est demandé
-
-			Reponse reponse = new Reponse();
+			// on stocke le message d'erreur dans le champs reponse.erreur.message par commodité dans le cas ou aucun accusé de reception n'est demandé
+			final Reponse reponse = new Reponse();
 			reponse.setErreur(new Erreur(TypeErreur.TECHNIQUE, null, e.getMessage()));
-
-			message.setNbContribuablesTrouves(null);
 			message.setReponse(reponse);
-
 		}
+
+		message.setNbContribuablesTrouves(null);
+		message.setCommentaireTraitement(null);
 		message.setEtat(Etat.EXCEPTION);
 	}
 
@@ -1104,18 +1115,32 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		Assert.notNull(demande, "Le message ne contient aucune demande.");
 
 		final CriteresPersonne criteresPersonne = demande.getPersonne();
-		Assert.notNull(demande, "Le message ne contient aucun critère sur la personne à identifier.");
 		if (criteresPersonne != null) {
 			final Mutable<String> avsUpi = new MutableObject<>();
 			List<Long> found;
+			IdentificationResultKind resultKind;
 			try {
 				found = identifie(criteresPersonne, avsUpi);
+				switch (found.size()) {
+				case 0:
+					resultKind = IdentificationResultKind.FOUND_NONE;
+					break;
+				case 1:
+					resultKind = IdentificationResultKind.FOUND_ONE;
+					break;
+				default:
+					resultKind = IdentificationResultKind.FOUND_SEVERAL;
+					break;
+				}
 			}
 			catch (TooManyIdentificationPossibilitiesException e) {
-				found = Collections.emptyList();
+				found = e.getExamplesFound();
+				resultKind = IdentificationResultKind.FOUND_MANY;
 			}
 			message.setNAVS13Upi(avsUpi.getValue());
-			if (found.size() == 1) {
+
+			// un résultat trouvé -> on a réussi !
+			if (resultKind == IdentificationResultKind.FOUND_ONE) {
 				// on a trouvé un et un seul contribuable:
 				final PersonnePhysique personne = (PersonnePhysique) tiersDAO.get(found.get(0));
 
@@ -1123,33 +1148,30 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 				identifieAutomatiquement(message, personne);
 				return true;
 			}
-			else {
-				//Dans le cas d'un message en exception,non traité automatiquement, on le met a traiter manuellement et on envoie une notification d'attente
-				//si besoin
-				if (Etat.EXCEPTION == message.getEtat()) {
-					message.setEtat(Etat.A_TRAITER_MANUELLEMENT);
-					//SIFISC-4873
-					if (Demande.ModeIdentificationType.MANUEL_AVEC_ACK == demande.getModeIdentification()) {
-						notifieAttenteIdentifManuel(message);
-					}
-				}
-				return false;
+
+			// pas ou trop de résultats -> mettre à jour la valeur associée à l'erreur
+			message.setNbContribuablesTrouves(resultKind != IdentificationResultKind.FOUND_MANY ? found.size() : null);
+			message.setCommentaireTraitement(getMessageNonIdentification(found, resultKind));
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug(String.format("Le message %d doit être traité manuellement. %s", message.getId(), message.getCommentaireTraitement()));
 			}
 		}
 		else {
-			LOGGER.info(String.format("Le message %s ne contient aucun critère sur la personne à identifier, il est passé en traitement manuel.", message.getId()));
-			//Dans le cas d'un message en exception,non traité automatiquement, on le met a traiter manuellement et on envoie une notification d'attente
-			//si besoin
-			if (Etat.EXCEPTION == message.getEtat()) {
-				message.setEtat(Etat.A_TRAITER_MANUELLEMENT);
-				//SIFISC-4873
-				if (Demande.ModeIdentificationType.MANUEL_AVEC_ACK == demande.getModeIdentification()) {
-					notifieAttenteIdentifManuel(message);
-				}
-			}
-
-			return false;
+			LOGGER.info(String.format("Le message %d ne contient aucun critère sur la personne à identifier, il est passé en traitement manuel.", message.getId()));
+			message.setNbContribuablesTrouves(null);
+			message.setCommentaireTraitement("Aucun critère.");
 		}
+
+		//Dans le cas d'un message en exception,non traité automatiquement, on le met a traiter manuellement et on envoie une notification d'attente si besoin
+		if (Etat.EXCEPTION == message.getEtat()) {
+
+			message.setEtat(Etat.A_TRAITER_MANUELLEMENT);
+			//SIFISC-4873
+			if (Demande.ModeIdentificationType.MANUEL_AVEC_ACK == demande.getModeIdentification()) {
+				notifieAttenteIdentifManuel(message);
+			}
+		}
+		return false;
 	}
 
 	@Override
