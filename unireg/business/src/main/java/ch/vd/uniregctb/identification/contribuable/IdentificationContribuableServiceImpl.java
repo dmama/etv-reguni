@@ -162,9 +162,16 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 			final Thread thread = new Thread() {
 				@Override
 				public void run() {
-					LOGGER.info("Préchargement des valeurs pour les critères de recherche pour l'identification des contribuables");
-					updateCriteres();
-					LOGGER.info("Préchargement terminé.");
+					LOGGER.info("Préchargement des valeurs pour les critères de recherche pour l'identification des contribuables.");
+					try {
+						updateCriteres();
+					}
+					catch (Throwable t) {
+						LOGGER.error("Exception lors du pré-chargement des valeurs pour les critères de recherche des messages d'identification de contribuable", t);
+					}
+					finally {
+						LOGGER.info("Préchargement terminé.");
+					}
 				}
 			};
 			thread.start();
