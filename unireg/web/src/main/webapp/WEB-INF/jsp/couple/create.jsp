@@ -130,7 +130,11 @@
 
 			<div id="buttons">
 				<input type="submit" value="<fmt:message key="label.bouton.sauver"/>" onclick="return confirmMessage == null || confirm(confirmMessage);"/>
-				<input type="button" value="<fmt:message key="label.bouton.retour"/>" onclick="javascript:history.go(-1);" />
+
+				<c:set var="libelleBoutonRetour">
+					<fmt:message key="label.bouton.retour"/>
+				</c:set>
+				<unireg:buttonTo method="get" action="/tiers/list.do" name="${libelleBoutonRetour}"/>
 			</div>
 
 		</form:form>
