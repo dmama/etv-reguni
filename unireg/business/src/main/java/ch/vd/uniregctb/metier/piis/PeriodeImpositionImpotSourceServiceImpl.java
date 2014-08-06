@@ -13,6 +13,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.registre.base.date.CollatableDateRange;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
@@ -303,9 +304,9 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 		return dateFin;
 	}
 
-	private static final class ProtoPeriodeImpositionImpotSource implements DateRange {
+	private static final class ProtoPeriodeImpositionImpotSource extends AbstractCollatablePeriodeImpositionImpotSource<ProtoPeriodeImpositionImpotSource.Type> {
 
-		private static enum Type {
+		public static enum Type {
 			/**
 			 * Source, sans aucun doute
 			 */
@@ -337,60 +338,38 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 			public abstract PeriodeImpositionImpotSource.Type toFinalType();
 		}
 
-		public final PersonnePhysique pp;
-		public final Type type;
-		public final TypeAutoriteFiscale typeAutoriteFiscale;
-		public final Integer noOfs;
-		public final RegDate dateDebut;
-		public final RegDate dateFin;
-		public final Localisation localisation;
-		public final Fraction fractionDebut;
-		public final Fraction fractionFin;
-
 		private ProtoPeriodeImpositionImpotSource(PersonnePhysique pp, Type type, ForFiscalPrincipal forFiscal,
 		                                          RegDate dateDebut, RegDate dateFin, Fraction fractionDebut, Fraction fractionFin,
 		                                          ServiceInfrastructureService infraService) {
-			this.pp = pp;
-			this.type = type;
-			this.typeAutoriteFiscale = forFiscal != null ? forFiscal.getTypeAutoriteFiscale() : null;
-			this.noOfs = forFiscal != null ? forFiscal.getNumeroOfsAutoriteFiscale() : null;
-			this.dateDebut = dateDebut;
-			this.dateFin = dateFin;
-			this.localisation = Localisation.get(forFiscal, infraService);
-			this.fractionDebut = fractionDebut;
-			this.fractionFin = fractionFin;
+			super(pp, type, dateDebut, dateFin,
+			      forFiscal != null ? forFiscal.getTypeAutoriteFiscale() : null, forFiscal != null ? forFiscal.getNumeroOfsAutoriteFiscale() : null,
+			      Localisation.get(forFiscal, infraService), fractionDebut, fractionFin);
+		}
+
+		private ProtoPeriodeImpositionImpotSource(ProtoPeriodeImpositionImpotSource courant, ProtoPeriodeImpositionImpotSource suivant) {
+			super(courant, suivant);
 		}
 
 		private ProtoPeriodeImpositionImpotSource(ProtoPeriodeImpositionImpotSource src, int noOfs) {
-			this.pp = src.pp;
-			this.type = src.type;
-			this.typeAutoriteFiscale = src.typeAutoriteFiscale;
-			this.noOfs = noOfs;
-			this.dateDebut = src.dateDebut;
-			this.dateFin = src.dateFin;
-			this.localisation = src.localisation;
-			this.fractionDebut = src.fractionDebut;
-			this.fractionFin = src.fractionFin;
+			super(src.getContribuable(), src.getType(), src.getDateDebut(), src.getDateFin(),
+			      src.getTypeAutoriteFiscale(), noOfs,
+			      src.getLocalisation(), src.getFractionDebut(), src.getFractionFin());
 		}
 
 		private ProtoPeriodeImpositionImpotSource(ProtoPeriodeImpositionImpotSource src, Type type) {
-			this.pp = src.pp;
-			this.type = type;
-			this.typeAutoriteFiscale = src.typeAutoriteFiscale;
-			this.noOfs = src.noOfs;
-			this.dateDebut = src.dateDebut;
-			this.dateFin = src.dateFin;
-			this.localisation = src.localisation;
-			this.fractionDebut = src.fractionDebut;
-			this.fractionFin = src.fractionFin;
+			super(src.getContribuable(), type, src.getDateDebut(), src.getDateFin(),
+			      src.getTypeAutoriteFiscale(), src.getNoOfs(),
+			      src.getLocalisation(), src.getFractionDebut(), src.getFractionFin());
 		}
 
 		public boolean isValid() {
-			return dateDebut.compareTo(dateFin) <= 0;
+			return getDateDebut().compareTo(getDateFin()) <= 0;
 		}
 
 		public PeriodeImpositionImpotSource project() {
-			return new PeriodeImpositionImpotSource(pp, type.toFinalType(), dateDebut, dateFin, typeAutoriteFiscale, noOfs, localisation, fractionDebut, fractionFin);
+			return new PeriodeImpositionImpotSource(getContribuable(), getType().toFinalType(), getDateDebut(), getDateFin(),
+			                                        getTypeAutoriteFiscale(), getNoOfs(),
+			                                        getLocalisation(), getFractionDebut(), getFractionFin());
 		}
 
 		public ProtoPeriodeImpositionImpotSource withNoOfs(int noOfs) {
@@ -403,17 +382,12 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 
 		@Override
 		public boolean isValidAt(RegDate date) {
-			return isValid() && RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
+			return isValid() && super.isValidAt(date);
 		}
 
 		@Override
-		public RegDate getDateDebut() {
-			return dateDebut;
-		}
-
-		@Override
-		public RegDate getDateFin() {
-			return dateFin;
+		public DateRange collate(DateRange next) {
+			return new ProtoPeriodeImpositionImpotSource(this, (ProtoPeriodeImpositionImpotSource) next);
 		}
 	}
 
@@ -488,14 +462,14 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 			RegDate dateFinAttendue = null;
 			for (int i = protos.size() - 1 ; i >= 0 ; -- i) {
 				final ProtoPeriodeImpositionImpotSource proto = protos.get(i);
-				if (localisationCourante == null || !localisationCourante.equals(proto.localisation) || (dateFinAttendue != null && dateFinAttendue != proto.dateFin)) {
-					localisationCourante = proto.localisation;
-					noOfsCourant = proto.noOfs;
+				if (localisationCourante == null || !localisationCourante.equals(proto.getLocalisation()) || (dateFinAttendue != null && dateFinAttendue != proto.getDateFin())) {
+					localisationCourante = proto.getLocalisation();
+					noOfsCourant = proto.getNoOfs();
 				}
-				else if (noOfsCourant != null && !noOfsCourant.equals(proto.noOfs)) {
+				else if (noOfsCourant != null && !noOfsCourant.equals(proto.getNoOfs())) {
 					protos.set(i, proto.withNoOfs(noOfsCourant));
 				}
-				dateFinAttendue = proto.dateDebut.getOneDayBefore();
+				dateFinAttendue = proto.getDateDebut().getOneDayBefore();
 			}
 
 			// supprimons les périodes invalides
@@ -507,6 +481,9 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 				}
 			}
 
+			// [SIFISC-12981] on regroupe déjà les proto-périodes
+			final List<ProtoPeriodeImpositionImpotSource> collatedProtos = collate(protos);
+
 			// [SIFISC-12326] passage éventuel d'une période vaudoise SOURCE à MIXTE en fonction des autres périodes de la PF
 			// 1. on commence à la fin et on cherche toutes les périodes mixtes (vaudoises, forcément)
 			// 2. pour chacune d'entre elles, on recule encore jusqu'à trouver une autre période vaudoise mixte (on peut s'arrêter, le cas sera traité par une autre étape),
@@ -516,26 +493,26 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 			                                                     MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
 			                                                     MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
 			                                                     MotifFor.VEUVAGE_DECES);
-			for (int i = protos.size() - 1 ; i >= 0 ; -- i) {
-				final ProtoPeriodeImpositionImpotSource proto = protos.get(i);
-				if (proto.type == ProtoPeriodeImpositionImpotSource.Type.MIXTE) {
+			for (int i = collatedProtos.size() - 1 ; i >= 0 ; -- i) {
+				final ProtoPeriodeImpositionImpotSource proto = collatedProtos.get(i);
+				if (proto.getType() == ProtoPeriodeImpositionImpotSource.Type.MIXTE) {
 					for (int j = i - 1 ; j >= 0 ; -- j) {
-						final ProtoPeriodeImpositionImpotSource next = (j == i - 1 ? proto : protos.get(j + 1));
-						final ProtoPeriodeImpositionImpotSource current = protos.get(j);
+						final ProtoPeriodeImpositionImpotSource next = (j == i - 1 ? proto : collatedProtos.get(j + 1));
+						final ProtoPeriodeImpositionImpotSource current = collatedProtos.get(j);
 						if (!DateRangeHelper.isCollatable(current, next)                            // il y a un trou, là...
-								|| current.type == ProtoPeriodeImpositionImpotSource.Type.MIXTE     // on verra dans la prochaine boucle de "i"
-								|| current.localisation.isInconnue()                                // trou bouché ?
-								|| current.localisation.isHS()                                      // passage par hors-Suisse
-								|| (current.fractionFin != null && motifsObtentionRole.contains(current.fractionFin.getMotif()))) {       // passage de SOURCE à MIXTE normal
+								|| current.getType() == ProtoPeriodeImpositionImpotSource.Type.MIXTE     // on verra dans la prochaine boucle de "i"
+								|| current.getLocalisation().isInconnue()                                // trou bouché ?
+								|| current.getLocalisation().isHS()                                      // passage par hors-Suisse
+								|| (current.getFractionFin() != null && motifsObtentionRole.contains(current.getFractionFin().getMotif()))) {       // passage de SOURCE à MIXTE normal
 
 							// pas la peine d'aller plus loin depuis cette période-là (i)
 							break;
 						}
 
 						// si la localisation est vaudoise, on transforme le type SOURCE en MIXTE
-						if (current.localisation.isVD()) {
-							if (current.type == ProtoPeriodeImpositionImpotSource.Type.MIXTE_COMMUE_EN_SOURCE) {
-								protos.set(j, current.withType(ProtoPeriodeImpositionImpotSource.Type.MIXTE));
+						if (current.getLocalisation().isVD()) {
+							if (current.getType() == ProtoPeriodeImpositionImpotSource.Type.MIXTE_COMMUE_EN_SOURCE) {
+								collatedProtos.set(j, current.withType(ProtoPeriodeImpositionImpotSource.Type.MIXTE));
 							}
 							break;
 						}
@@ -544,8 +521,8 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 			}
 
 			// maintenant on peut projeter les proto-périodes en véritables périodes
-			final List<PeriodeImpositionImpotSource> piisPf = new ArrayList<>(protos.size());
-			for (ProtoPeriodeImpositionImpotSource proto : protos) {
+			final List<PeriodeImpositionImpotSource> piisPf = new ArrayList<>(collatedProtos.size());
+			for (ProtoPeriodeImpositionImpotSource proto : collatedProtos) {
 				piisPf.add(proto.project());
 			}
 
@@ -587,8 +564,8 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 	 * @param src liste de base
 	 * @return liste collatée (on arrête les boucles dès que le nombre d'éléments dans la liste ne bouge plus)
 	 */
-	private static List<PeriodeImpositionImpotSource> collate(@NotNull List<PeriodeImpositionImpotSource> src) {
-		List<PeriodeImpositionImpotSource> collated = src;
+	private static <T extends CollatableDateRange> List<T> collate(@NotNull List<T> src) {
+		List<T> collated = src;
 		while (!collated.isEmpty()) {
 			final int size = collated.size();
 			collated = DateRangeHelper.collate(collated);
