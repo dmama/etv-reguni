@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp"%>
 
+<span><%-- span vide pour que IE8 calcule correctement la hauteur du fieldset (voir fieldsets-workaround.jsp) --%></span>
 <fieldset>
 <legend><span><fmt:message key="label.fors.fiscaux" /></span></legend>
 		
