@@ -315,18 +315,21 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 		else {
 			RegDate debutActivite = dpi.getDateDebutActivite();
 			if (debutActivite == null) {
-				throw new IllegalArgumentException("Le débiteur n°" + dpi.getNumero() +
-						" ne possède pas de date de début d'activité. Absence de for fiscal  ?");
+				throw new IllegalArgumentException(String.format("Le débiteur n°%d ne possède pas de date de début d'activité. Absence de for fiscal  ?", dpi.getNumero()));
 			}
-			final PeriodiciteDecompte periodicite = dpi.getPeriodiciteAt(debutActivite).getPeriodiciteDecompte();
-			if (PeriodiciteDecompte.UNIQUE == periodicite) {
+			final Periodicite periodicite = dpi.getPeriodiciteAt(debutActivite);
+			if (periodicite == null) {
+				throw new ObjectNotFoundException("Aucune périodicité exploitable pour le débiteur à la date de début d'activité");
+			}
+			final PeriodiciteDecompte periodiciteDecompte = periodicite.getPeriodiciteDecompte();
+			if (PeriodiciteDecompte.UNIQUE == periodiciteDecompte) {
 				setLRViewPremiereLrAvecPeriodiciteUnique(lrEditView, dpi);
 			}
 			else {
-				final RegDate nouvDateDebut = periodicite.getDebutPeriode(dateDebutActivite);
+				final RegDate nouvDateDebut = periodiciteDecompte.getDebutPeriode(dateDebutActivite);
 				lrEditView.setDateDebutPeriode(nouvDateDebut);
-				lrEditView.setPeriodicite(periodicite);
-				lrEditView.setDateFinPeriode(periodicite.getFinPeriode(nouvDateDebut));
+				lrEditView.setPeriodicite(periodiciteDecompte);
+				lrEditView.setDateFinPeriode(periodiciteDecompte.getFinPeriode(nouvDateDebut));
 			}
 		}
 		if (lrEditView.getDateDebutPeriode() != null) {
