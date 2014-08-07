@@ -315,7 +315,7 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 		return adresse;
 	}
 
-	public static void addLienVersParent(MockIndividu enfant, MockIndividu parent, RegDate dateDebut, @Nullable RegDate dateFin) {
+	public static void addLienVersParent(MockIndividu enfant, Individu parent, RegDate dateDebut, @Nullable RegDate dateFin) {
 		if (parent.getSexe() == null) {
 			throw new IllegalArgumentException("Le sexe du parent doit être connu");
 		}
@@ -323,7 +323,7 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 		enfant.getParents().add(new RelationVersIndividuImpl(parent.getNoTechnique(), typeRelation, dateDebut, dateFin));
 	}
 
-	public static void addLiensFiliation(MockIndividu enfant, @Nullable MockIndividu papa, @Nullable MockIndividu maman, RegDate dateDebut, @Nullable RegDate dateFin) {
+	public static void addLiensFiliation(MockIndividu enfant, @Nullable Individu papa, @Nullable Individu maman, RegDate dateDebut, @Nullable RegDate dateFin) {
 		if (papa != null) {
 			addLienVersParent(enfant, papa, dateDebut, dateFin);
 		}

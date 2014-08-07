@@ -20,25 +20,22 @@ import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.tiers.TiersService;
 
 /**
- * Façade d'une stratégie de translation d'événement civil ECH qui invalide le cache des individus qui
- * possèdent ou ont possédé une relation civile (parents, enfants, conjoints) avec l'individu de l'événement à traiter
+ * Classe de base des stratégies qui commencent par vider les caches civils des individus concernés
  */
-public class TranslationStrategyWithRelationshipCacheCleanup implements EvenementCivilEchTranslationStrategy {
+public abstract class AbstractTranslationStrategyWithRelationshipCacheCleanup implements EvenementCivilEchTranslationStrategy {
 
-	private final EvenementCivilEchTranslationStrategy target;
 	private final ServiceCivilService serviceCivil;
 	private final DataEventService dataEventService;
 	private final TiersService tiersService;
 
-	public TranslationStrategyWithRelationshipCacheCleanup(EvenementCivilEchTranslationStrategy target, ServiceCivilService serviceCivil, DataEventService dataEventService, TiersService tiersService) {
-		this.target = target;
+	protected AbstractTranslationStrategyWithRelationshipCacheCleanup(ServiceCivilService serviceCivil, DataEventService dataEventService, TiersService tiersService) {
 		this.serviceCivil = serviceCivil;
 		this.dataEventService = dataEventService;
 		this.tiersService = tiersService;
 	}
 
 	@Override
-	public EvenementCivilInterne create(EvenementCivilEchFacade event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
+	public final EvenementCivilInterne create(EvenementCivilEchFacade event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 
 		// invalidation du cache de tous les individus en relation avec celui de l'événement
 		final long noIndividu = event.getNumeroIndividu();
@@ -50,13 +47,10 @@ public class TranslationStrategyWithRelationshipCacheCleanup implements Evenemen
 		invalidateCache(individusLies);
 
 		// création de l'événement interne de traitement de l'événement
-		return target.create(event, context, options);
+		return doCreate(event, context, options);
 	}
 
-	@Override
-	public boolean isPrincipalementIndexation(EvenementCivilEchFacade event, EvenementCivilContext context) throws EvenementCivilException {
-		return target.isPrincipalementIndexation(event, context);
-	}
+	protected abstract EvenementCivilInterne doCreate(EvenementCivilEchFacade event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException;
 
 	private void invalidateCache(Set<Long> individus) {
 		if (individus != null && individus.size() > 0) {

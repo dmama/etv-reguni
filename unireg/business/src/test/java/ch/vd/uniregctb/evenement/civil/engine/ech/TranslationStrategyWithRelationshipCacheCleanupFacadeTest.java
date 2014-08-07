@@ -28,7 +28,7 @@ import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 
-public class TranslationStrategyWithRelationshipCacheCleanupTest extends AbstractEvenementCivilEchProcessorTest {
+public class TranslationStrategyWithRelationshipCacheCleanupFacadeTest extends AbstractEvenementCivilEchProcessorTest {
 
 	@Test
 	public void testNettoyageCacheCivilSurEvenementTraite() throws Exception {
@@ -247,7 +247,7 @@ public class TranslationStrategyWithRelationshipCacheCleanupTest extends Abstrac
 			Assert.assertEquals("Rita", serviceCivil.getIndividu(noIndividuMere, null).getPrenomUsuel());
 
 			// mise en place de la stratégie
-			final EvenementCivilEchTranslationStrategy strategy = new TranslationStrategyWithRelationshipCacheCleanup(finalStrategy, serviceCivil, dataEventService, tiersService);
+			final EvenementCivilEchTranslationStrategy strategy = new TranslationStrategyWithRelationshipCacheCleanupFacade(finalStrategy, serviceCivil, dataEventService, tiersService);
 			buildStrategyOverridingTranslatorAndProcessor(true, new StrategyOverridingCallback() {
 				@Override
 				public void overrideStrategies(EvenementCivilEchTranslatorImplOverride translator) {
@@ -374,7 +374,7 @@ public class TranslationStrategyWithRelationshipCacheCleanupTest extends Abstrac
 			Assert.assertEquals("Rita", serviceCivil.getIndividu(noIndividuMere, null).getPrenomUsuel());
 
 			// mise en place de la stratégie
-			final EvenementCivilEchTranslationStrategy strategy = new TranslationStrategyWithRelationshipCacheCleanup(finalStrategy, serviceCivil, dataEventService, tiersService);
+			final EvenementCivilEchTranslationStrategy strategy = new TranslationStrategyWithRelationshipCacheCleanupFacade(finalStrategy, serviceCivil, dataEventService, tiersService);
 			buildStrategyOverridingTranslatorAndProcessor(true, new StrategyOverridingCallback() {
 				@Override
 				public void overrideStrategies(EvenementCivilEchTranslatorImplOverride translator) {

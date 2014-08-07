@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.evenement.civil.interne;
 
-import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.Set;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -293,7 +293,7 @@ public abstract class EvenementCivilInterne {
 		 * Récupération des informations sur l'individu depuis le host. En plus des états civils, on peut vouloir les adresses, le conjoint,
 		 * les enfants... (enfin, chaque adapteur d'événement sait ce dont il a besoin en plus...)
 		 */
-		final Set<AttributeIndividu> requiredParts = new HashSet<>();
+		final Set<AttributeIndividu> requiredParts = EnumSet.noneOf(AttributeIndividu.class);
 		fillRequiredParts(requiredParts);
 		parts = requiredParts.toArray(new AttributeIndividu[requiredParts.size()]);
 	}

@@ -33,6 +33,7 @@ import ch.vd.uniregctb.evenement.civil.interne.changement.nom.ChangementNomTrans
 import ch.vd.uniregctb.evenement.civil.interne.changement.origine.CorrectionOrigineTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.interne.correction.identification.CorrectionAutresNomsTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.interne.correction.identification.CorrectionIdentificationTranslationStrategy;
+import ch.vd.uniregctb.evenement.civil.interne.correction.relation.CorrectionRelationTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.interne.deces.DecesTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.interne.demenagement.DemenagementTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.interne.depart.DepartEchTranslationStrategy;
@@ -126,7 +127,7 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 
 		final EvenementCivilEchTranslationStrategy defaultCorrectionStrategy = new DefaultCorrectionTranslationStrategy(context.getServiceCivil(), context.getServiceInfra(), context.getTiersService());
 		final EvenementCivilEchTranslationStrategy cacheCleaningCorrectionStrategy = embedInRelationshipCacheCleanupStrategy(defaultCorrectionStrategy, context);
-		final EvenementCivilEchTranslationStrategy notImplementedWithRelationshipCacheCleanup = embedInRelationshipCacheCleanupStrategy(NOT_IMPLEMENTED, context);
+		final EvenementCivilEchTranslationStrategy correctionRelationTranslationStrategy = new CorrectionRelationTranslationStrategy(context.getServiceCivil(), context.getDataEventService(), context.getTiersService());
 
 		final Map<EventTypeKey, EvenementCivilEchTranslationStrategy> strategies = new HashMap<>();
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON), new NaissanceTranslationStrategy());
@@ -210,9 +211,9 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CORR_RELATION_ANNONCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON), new CorrectionAdresseTranslationStrategy());
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CORR_RELATION_ANNONCE, ActionEvenementCivilEch.ANNULATION), NOT_IMPLEMENTED);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CORR_RELATION_ANNONCE, ActionEvenementCivilEch.CORRECTION), defaultCorrectionStrategy);
-		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CORR_RELATIONS, ActionEvenementCivilEch.PREMIERE_LIVRAISON), notImplementedWithRelationshipCacheCleanup);
-		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CORR_RELATIONS, ActionEvenementCivilEch.ANNULATION), notImplementedWithRelationshipCacheCleanup);
-		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CORR_RELATIONS, ActionEvenementCivilEch.CORRECTION), cacheCleaningCorrectionStrategy);
+		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CORR_RELATIONS, ActionEvenementCivilEch.PREMIERE_LIVRAISON), correctionRelationTranslationStrategy);
+		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CORR_RELATIONS, ActionEvenementCivilEch.ANNULATION), correctionRelationTranslationStrategy);
+		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CORR_RELATIONS, ActionEvenementCivilEch.CORRECTION), correctionRelationTranslationStrategy);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CHGT_DROIT_CITE, ActionEvenementCivilEch.PREMIERE_LIVRAISON), INDEXATION_ONLY);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CHGT_DROIT_CITE, ActionEvenementCivilEch.ANNULATION), INDEXATION_ONLY);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CHGT_DROIT_CITE, ActionEvenementCivilEch.CORRECTION), INDEXATION_ONLY);
@@ -269,7 +270,7 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 	}
 
 	private static EvenementCivilEchTranslationStrategy embedInRelationshipCacheCleanupStrategy(EvenementCivilEchTranslationStrategy strategy, EvenementCivilContext context) {
-		return new TranslationStrategyWithRelationshipCacheCleanup(strategy, context.getServiceCivil(), context.getDataEventService(), context.getTiersService());
+		return new TranslationStrategyWithRelationshipCacheCleanupFacade(strategy, context.getServiceCivil(), context.getDataEventService(), context.getTiersService());
 	}
 
 	private ServiceCivilService serviceCivilService;
