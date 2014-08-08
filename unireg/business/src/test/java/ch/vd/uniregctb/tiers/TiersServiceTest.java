@@ -28,10 +28,13 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.unireg.interfaces.civil.data.Adresse;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
+import ch.vd.unireg.interfaces.civil.data.Localisation;
+import ch.vd.unireg.interfaces.civil.data.LocalisationType;
 import ch.vd.unireg.interfaces.civil.data.Nationalite;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
@@ -8219,6 +8222,154 @@ public class TiersServiceTest extends BusinessTest {
 				Assert.assertTrue(mc.getBlocageRemboursementAutomatique());                     // parti -> bloqué
 				Assert.assertFalse(couple.getPrincipal().getBlocageRemboursementAutomatique()); // parti mais PIIS source avec IBAN -> débloqué
 				Assert.assertFalse(couple.getConjoint().getBlocageRemboursementAutomatique());  // parti mais PIIS source avec IBAN -> débloqué
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-9600] Cas où un contribuable apparemment parti HC est pourtant toujours indiqué comme habitant même après un recalcul.
+	 * <br/>Le problème, après analyse, était le suivant:
+	 * <ul>
+	 *     <li>bien avant le départ HC, le contribuable avait une adresse secondaire fermée avec une localisation suivante vaudoise</li>
+	 *     <li>du coup, la <i>dernière adresse secondaire</i> est considérée comme un départ VD sans annonce d'arrivée reçue, et donc la résidence est toujours estimée vaudoise</li>
+	 * </ul>
+	 * La solution passe forcément par l'introduction d'une dépendance entre les adresses secondaires et principales dans ce calcul...
+	 * <br/>En l'occurrence, ici, le problème est insoluble, car l'adresse secondaire se ferme en indiquant la commune suivante comme étant celle de l'ancienne adresse
+	 * principale (qui se ferme le même jour). En fait, il y a en pratique un échange des répartitions des communes principales et secondaires à la date du déménagement principal.
+	 * <pre>
+	 *     Principal
+	 *           Orbe ------------------|---------- Romainmôtier-Envy --------------|------- Genève --------
+	 *                              -> Romainmôtier                            -> Genève
+	 *
+	 *     Secondaire
+	 *           Romainmôtier-Envy -----|.......... Orbe ?? ................................................
+	 *                              -> Orbe
+	 * </pre>
+	 */
+	@Test
+	public void testRecalculFlagHabitantAvecVieilleAdresseSecondaireFermeeVersVaudEchangeCommunes() throws Exception {
+
+		final long noIndividuLui = 236723537L;
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu lui = addIndividu(noIndividuLui, null, "Bollomey", "Francis", Sexe.MASCULIN);
+				addAdresse(lui, TypeAdresseCivil.PRINCIPALE, MockRue.Orbe.GrandRue, null, date(1994, 6, 1), date(2010, 5, 31));
+				final MockAdresse derniereAdressePrincipaleVaudoiseLui = addAdresse(lui, TypeAdresseCivil.PRINCIPALE, MockRue.Romainmotier.CheminDuCochet, null, date(2010, 6, 1), date(2013, 7, 31));
+				derniereAdressePrincipaleVaudoiseLui.setLocalisationSuivante(new Localisation(LocalisationType.HORS_CANTON, MockCommune.Geneve.getNoOFS(),
+				                                                                              new MockAdresse(TypeAdresseCivil.COURRIER, MockRue.Geneve.AvenueGuiseppeMotta, null, date(2013, 8, 1),
+				                                                                                              null)));
+				final MockAdresse adresseSecondaire = addAdresse(lui, TypeAdresseCivil.SECONDAIRE, MockRue.Romainmotier.CheminDuCochet, null, date(2009, 10, 1), date(2010, 5, 31));
+				adresseSecondaire.setLocalisationSuivante(new Localisation(LocalisationType.CANTON_VD, MockCommune.Orbe.getNoOFS(), null));     // <-- ici est la cause de nos maux...
+
+				// l'adresse principale change, et à la même date l'adresse secondaire se ferme et déclare partir vers la commune de l'ancienne
+				// adresse principale... Unireg va donc considérer que
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique lui = addHabitant(noIndividuLui);
+				addForPrincipal(lui, date(2007, 8, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, date(2010, 5, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Orbe);
+				addForPrincipal(lui, date(2010, 6, 1), MotifFor.DEMENAGEMENT_VD, date(2013, 7, 31), MotifFor.DEPART_HC, MockCommune.RomainmotierEnvy);
+				addForPrincipal(lui, date(2013, 8, 1), MotifFor.DEPART_HC, MockCommune.Geneve);
+				return lui.getNumero();
+			}
+		});
+
+		// recalcul du flag habitant
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertNotNull(pp);
+				Assert.assertTrue(pp.isHabitantVD());
+
+				// force le recalcul
+				tiersService.updateHabitantFlag(pp, noIndividuLui, null);
+			}
+		});
+
+		// vérification du nouveau flag (devrait être non-habitant !!)
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertNotNull(pp);
+				Assert.assertTrue(pp.isHabitantVD());       // <-- la personne est toujours considérée comme habitante car il existe une présomption de présence sur Orbe
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-9600] Cas hérité de celui du jira, dans le cas où il n'y accord entre les communes de destinations principales et secondaires
+	 * <pre>
+	 *     Principal
+	 *           Orbe ------------------|---------- Lausanne --------------|------- Genève --------
+	 *                              -> Lausanne    _                   -> Genève
+	 *                                             /|
+	 *     Secondaire                             /
+	 *           Romainmôtier-Envy -----|        /
+	 *                              -> Lausanne
+	 * </pre>
+	 * Ici, on peut peut-être s'en sortir puisqu'il n'y a plus qu'une seule commune vaudoise lors du dernier départ...
+	 */
+	@Test
+	public void testRecalculFlagHabitantAvecVieilleAdresseSecondaireFermeeVersCommuneVaudoisePrincipale() throws Exception {
+
+		final long noIndividuLui = 236723537L;
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu lui = addIndividu(noIndividuLui, null, "Bollomey", "Francis", Sexe.MASCULIN);
+				addAdresse(lui, TypeAdresseCivil.PRINCIPALE, MockRue.Orbe.GrandRue, null, date(1994, 6, 1), date(2010, 5, 31));
+				final MockAdresse derniereAdressePrincipaleVaudoiseLui = addAdresse(lui, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeLaGare, null, date(2010, 6, 1), date(2013, 7, 31));
+				derniereAdressePrincipaleVaudoiseLui.setLocalisationSuivante(new Localisation(LocalisationType.HORS_CANTON, MockCommune.Geneve.getNoOFS(),
+				                                                                              new MockAdresse(TypeAdresseCivil.COURRIER, MockRue.Geneve.AvenueGuiseppeMotta, null, date(2013, 8, 1),
+				                                                                                              null)));
+				final MockAdresse adresseSecondaire = addAdresse(lui, TypeAdresseCivil.SECONDAIRE, MockRue.Romainmotier.CheminDuCochet, null, date(2009, 10, 1), date(2010, 5, 31));
+				adresseSecondaire.setLocalisationSuivante(new Localisation(LocalisationType.CANTON_VD, MockCommune.Lausanne.getNoOFS(), null));     // <-- ici est la cause de nos maux...
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique lui = addHabitant(noIndividuLui);
+				addForPrincipal(lui, date(2007, 8, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, date(2010, 5, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Orbe);
+				addForPrincipal(lui, date(2010, 6, 1), MotifFor.DEMENAGEMENT_VD, date(2013, 7, 31), MotifFor.DEPART_HC, MockCommune.Lausanne);
+				addForPrincipal(lui, date(2013, 8, 1), MotifFor.DEPART_HC, MockCommune.Geneve);
+				return lui.getNumero();
+			}
+		});
+
+		// recalcul du flag habitant
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertNotNull(pp);
+				Assert.assertTrue(pp.isHabitantVD());
+
+				// force le recalcul
+				tiersService.updateHabitantFlag(pp, noIndividuLui, null);
+			}
+		});
+
+		// vérification du nouveau flag (devrait être non-habitant !!)
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertNotNull(pp);
+				Assert.assertFalse("Le flag habitant n'a pas été remis à false", pp.isHabitantVD());
 			}
 		});
 	}
