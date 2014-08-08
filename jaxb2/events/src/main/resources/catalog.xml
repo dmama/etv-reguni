@@ -10,8 +10,10 @@
 
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/identification/identification-contribuable-request-2.xsd" uri="event/identification/identification-contribuable-request-2.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/identification/identification-contribuable-request-3.xsd" uri="event/identification/identification-contribuable-request-3.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/identification/identification-contribuable-request-4.xsd" uri="event/identification/identification-contribuable-request-4.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/identification/identification-contribuable-response-2.xsd" uri="event/identification/identification-contribuable-response-2.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/identification/identification-contribuable-response-3.xsd" uri="event/identification/identification-contribuable-response-3.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/identification/identification-contribuable-response-4.xsd" uri="event/identification/identification-contribuable-response-4.xsd"/>
 
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/address-request-1.xsd" uri="event/party/address-request-1.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/address-response-1.xsd" uri="event/party/address-response-1.xsd"/>
