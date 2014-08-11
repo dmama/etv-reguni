@@ -189,7 +189,6 @@
 							<ul>
 								<li><a href="<c:url value='/admin/indexation.do'/>"><fmt:message key="title.indexation" /></a></li>
 								<li><a href="<c:url value='/admin/batch.do'/>"><fmt:message key="title.batchs" /></a></li>
-								<li><a href="<c:url value='/admin/performance.do'/>"><fmt:message key="title.statistique.performances" /></a></li>
 								<li><a href="<c:url value='/admin/audit.do'/>"><fmt:message key="title.admin.audit" /></a></li>
 							</ul>
 						</li>
