@@ -258,6 +258,15 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		});
 	}
 
+	public boolean criteresEmptyForReChercheComplete(CriteresPersonne criteres){
+		return criteres.getAdresse()==null &&
+				criteres.getDateNaissance()==null &&
+				criteres.getSexe() ==null &&
+				StringUtils.isBlank(criteres.getNom()) &&
+				StringUtils.isBlank(criteres.getPrenoms()) &&
+				StringUtils.isBlank(criteres.getNAVS11()) ;
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -273,11 +282,19 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 			final List<PersonnePhysique> ppList = getListePersonneFromIndexedData(indexedAvs13);
 			final List<PersonnePhysique> listeFiltree = filterCoherenceAfterIdentificationAvs13(ppList, criteres);
 			if (isIdentificationOK(listeFiltree)) {
+				LOGGER.info("Identification par phase avs13 réussi");
 				return buildIdListFromPP(listeFiltree);
 			}
 		}
 
+		//Si aucun autre critères que le navs13 n'est renseigné, on s'arrete la.
+		if (criteresEmptyForReChercheComplete(criteres)) {
+			LOGGER.info("Phase de recherche complète non effectuée car les critères necessaires  à la recherche sont vides.");
+			return Collections.emptyList();
+		}
+
 		// 2. si rien trouvé d'unique, on passe à la phase noms/prénoms...
+		LOGGER.info("Début de phase de recherche complète");
 		final List<TiersIndexedData> indexedComplets = findAvecCriteresComplets(criteres, avsUpi.getValue(), NB_MAX_RESULTS_POUR_LISTE_IDENTIFICATION);
 		return buildIdListFromIndex(indexedComplets);
 	}
@@ -411,6 +428,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	private List<TiersIndexedData> findAvecCriteresComplets(CriteresPersonne criteres, @Nullable String avsUpi, int maxNumberForList) throws TooManyIdentificationPossibilitiesException {
 
 		List<TiersIndexedData> indexedData = null;
+		String controleNavs13 = null;
 
 		// [SIFISC-147] effectue la recherche sur les nom et prénoms en plusieurs phase
 		for (PhaseRechercheSurNomPrenom phase : PhaseRechercheSurNomPrenom.values()) {
@@ -433,12 +451,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 						criteria.setNpaTousOrNull(npa);
 					}
 				}
-				if (avsUpi != null) {
-					criteria.setNavs13OrNull(avsUpi);
-				}
-				else if (criteres.getNAVS13() != null) {
-					criteria.setNavs13OrNull(criteres.getNAVS13());
-				}
+
 
 				if (!criteria.isEmpty()) {
 					indexedData = searcher.searchTop(criteria, maxNumberForList + 1);
@@ -457,12 +470,35 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 			}
 		}
 
-		if (indexedData == null || indexedData.isEmpty()) {
+		if (avsUpi != null) {
+			controleNavs13 = avsUpi;
+		}
+		else if (criteres.getNAVS13() != null) {
+			controleNavs13 = criteres.getNAVS13();
+		}
+
+		if (indexedData == null || indexedData.isEmpty() || isNavs13NonConforme(indexedData, controleNavs13)) {
 			return Collections.emptyList();
 		}
 		return indexedData;
 	}
 
+	/**
+	 * Controle final sur le NAVS13
+	 */
+	boolean isNavs13NonConforme(List<TiersIndexedData> tiersIndexedData, String navs13){
+		if (tiersIndexedData == null || tiersIndexedData.isEmpty() || StringUtils.isEmpty(navs13)){
+			return false;
+		}
+
+		final String navs13Candidat = tiersIndexedData.get(0).getNavs13_1();
+		final boolean resultatUnique = tiersIndexedData.size()==1;
+		final boolean navs13CandidatRenseigne = StringUtils.isNotEmpty(navs13Candidat);
+		final boolean navs13Differents = !navs13.equals(navs13Candidat);
+		//L
+		return resultatUnique && navs13CandidatRenseigne && navs13Differents;
+
+	}
 
 	/**
 	 * Sauve la demande en base, identifie le ou les contribuables et retourne une réponse immédiatement si un seul contribuable est trouvé. Dans tous les autres cas (0, >1 ou en cas d'erreur), la
