@@ -856,6 +856,142 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 	}
 
+	//SIFISC-13180
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testNavs13SansDateNaissancePassageModeComplet() throws Exception {
+		final long noIndividuAndre = 151658;
+
+		final long noIndividuRoger = 151659;
+
+		serviceUpi.setUp(new DefaultMockServiceUpi());
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu indAndre = addIndividu(noIndividuAndre, date(1913,9,10), "Gailloud", "André", true);
+				addFieldsIndividu(indAndre, "7560710570956", "", "");
+
+				MockIndividu indRoger = addIndividu(noIndividuRoger, date(1953,9,10), "Gailloud", "Roger", true);
+				addFieldsIndividu(indRoger, "7561131354156 ", "", "");
+			}
+		});
+
+		class Ids {
+			Long andre;
+			Long roger;
+
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				final PersonnePhysique habAndre = addHabitant(noIndividuAndre);
+				final PersonnePhysique habRoger = addHabitant(noIndividuRoger);
+				ids.andre = habAndre.getNumero();
+				ids.roger = habRoger.getNumero();
+				return null;
+			}
+		});
+
+		globalTiersIndexer.sync();
+
+		assertCountDemandes(0);
+
+		// création et traitement du message d'identification
+		CriteresPersonne criteres = new CriteresPersonne();
+		criteres.setNom("Gailloud Roger");
+		criteres.setNAVS13("7560710570956");
+
+
+		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
+		message.setLogCreationDate(RegDate.get().asJavaDate());
+		doInTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				service.handleDemande(message);
+				return null;
+			}
+		});
+
+		final List<IdentificationContribuable> list = identCtbDAO.getAll();
+		assertEquals(1, list.size());
+
+		final IdentificationContribuable ic = list.get(0);
+		assertNotNull(ic);
+		assertEquals(Etat.A_TRAITER_MANUELLEMENT, ic.getEtat());
+
+	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testSeulCritereNavs13() throws Exception{
+		final long noIndividuAndre = 151658;
+
+		final long noIndividuRoger = 151659;
+
+		serviceUpi.setUp(new DefaultMockServiceUpi());
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu indAndre = addIndividu(noIndividuAndre, date(1913,9,10), "Gailloud", "André", true);
+				addFieldsIndividu(indAndre, "7560710570956", "", "");
+
+				MockIndividu indRoger = addIndividu(noIndividuRoger, date(1953,9,10), "Gailloud", "Roger", true);
+				addFieldsIndividu(indRoger, "7561131354156 ", "", "");
+			}
+		});
+
+		class Ids {
+			Long andre;
+			Long roger;
+
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				final PersonnePhysique habAndre = addHabitant(noIndividuAndre);
+				final PersonnePhysique habRoger = addHabitant(noIndividuRoger);
+				ids.andre = habAndre.getNumero();
+				ids.roger = habRoger.getNumero();
+				return null;
+			}
+		});
+
+		globalTiersIndexer.sync();
+
+		assertCountDemandes(0);
+
+		// création et traitement du message d'identification
+		CriteresPersonne criteres = new CriteresPersonne();
+		criteres.setNAVS13("7560710570226");
+
+
+		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
+		message.setLogCreationDate(RegDate.get().asJavaDate());
+		doInTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				service.handleDemande(message);
+				return null;
+			}
+		});
+
+		final List<IdentificationContribuable> list = identCtbDAO.getAll();
+		assertEquals(1, list.size());
+
+		final IdentificationContribuable ic = list.get(0);
+		assertNotNull(ic);
+		assertEquals(Etat.A_TRAITER_MANUELLEMENT, ic.getEtat());
+	}
+
+
 	//SIFISC-13033
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
@@ -4293,10 +4429,11 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 				final CriteresPersonne criteres = new CriteresPersonne();
 				criteres.setNAVS13(oldAvs);
+				criteres.setDateNaissance(date(2000,5,3));
 				final Mutable<String> upiAvs = new MutableObject<>("titi");
 				final List<Long> res = service.identifie(criteres, upiAvs);
 				assertNotNull(res);
-				assertEquals(2, res.size());
+				assertEquals(3, res.size());
 				assertNull(upiAvs.getValue());
 
 				final List<Long> resSorted = new ArrayList<>(res);
