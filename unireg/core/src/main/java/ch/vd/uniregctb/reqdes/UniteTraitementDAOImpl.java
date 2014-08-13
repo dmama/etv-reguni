@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.reqdes;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -58,15 +59,6 @@ public class UniteTraitementDAOImpl extends BaseDAOImpl<UniteTraitement, Long> i
 		fillCriteriaDates(dest, "logCreationDate", source.getDateReceptionMin(), source.getDateReceptionMax(), true);
 	}
 
-	private static void paginateCriteria(Criteria dest, ParamPagination pagination) {
-		if (pagination != null) {
-			final int firstResult = pagination.getSqlFirstResult();
-			final int maxResult = pagination.getSqlMaxResults();
-			dest.setFirstResult(firstResult);
-			dest.setMaxResults(maxResult);
-		}
-	}
-
 	private static Order buildOrder(boolean ascending, String field) {
 		return ascending ? Order.asc(field) : Order.desc(field);
 	}
@@ -75,7 +67,9 @@ public class UniteTraitementDAOImpl extends BaseDAOImpl<UniteTraitement, Long> i
 		if (paramSorting != null) {
 			dest.addOrder(buildOrder(paramSorting.isAscending(), paramSorting.getField()));
 		}
-		dest.addOrder(buildOrder(paramSorting != null && paramSorting.isAscending(), "id"));     // pour assurer l'unicité du tri
+		if (paramSorting == null || !"id".equals(paramSorting.getField())) {
+			dest.addOrder(buildOrder(paramSorting != null && paramSorting.isAscending(), "id"));     // pour assurer l'unicité du tri
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -83,9 +77,29 @@ public class UniteTraitementDAOImpl extends BaseDAOImpl<UniteTraitement, Long> i
 	public List<UniteTraitement> find(UniteTraitementCriteria utCriteria, ParamPagination pagination) {
 		final Criteria criteria = getCurrentSession().createCriteria(UniteTraitement.class);
 		fillCriteria(criteria, utCriteria);
-		paginateCriteria(criteria, pagination);
 		sortCriteria(criteria, pagination != null ? pagination.getSorting() : null);
-		return criteria.list();
+
+		/**
+		 * [SIFISC-13200] La pagination est gérée à la main car dans le cas où le nombre de lignes
+		 * retournées par la requête avant projection par "root entity" est plus grand que le nombre
+		 * de lignes maximal par page, certains éléments ne sont pas visibles...
+		 */
+		final List<UniteTraitement> sansPagination = criteria.list();
+		final List<UniteTraitement> avecPagination;
+		if (pagination != null) {
+			final int skip = pagination.getSqlFirstResult();
+			final int size = pagination.getSqlMaxResults();
+			if (skip > 0 || size < sansPagination.size()) {
+				avecPagination = new ArrayList<>(sansPagination.subList(skip, Math.min(skip + size, sansPagination.size())));
+			}
+			else {
+				avecPagination = sansPagination;
+			}
+		}
+		else {
+			avecPagination = sansPagination;
+		}
+		return avecPagination;
 	}
 
 	@Override

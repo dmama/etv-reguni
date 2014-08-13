@@ -385,7 +385,7 @@ public class PartiePrenante extends HibernateEntity {
 		this.conjointPartiePrenante = conjointPartiePrenante;
 	}
 
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
 	@JoinColumn(name = "PARTIE_PRENANTE_ID", nullable = false)
 	@ForeignKey(name = "FK_REQDES_RPP_PP_ID")
 	public Set<RolePartiePrenante> getRoles() {
