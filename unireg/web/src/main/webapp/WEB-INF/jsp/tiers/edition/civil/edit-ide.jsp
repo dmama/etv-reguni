@@ -11,8 +11,7 @@
     <tiles:put name="body">
 
         <unireg:setAuth var="autorisations" tiersId="${tiersId}"/>
-        <!--DEBUUUUUG A CHANGER AVANT LIVRAISON-->
-        <c:if test="true">
+        <c:if test="${autorisations.identificationEntreprise}">
 
             <unireg:bandeauTiers numero="${tiersId}" showLinks="false" showComplements="false" showEvenementsCivils="false" showValidation="false"/>
 
@@ -58,8 +57,7 @@
             </form:form>
 
         </c:if>
-        <!--DEBUUUUUG A CHANGER AVANT LIVRAISON-->
-        <c:if test="false">
+        <c:if test="${!autorisations.identificationEntreprise}">
             <span class="error"><fmt:message key="error.tiers.interdit" /></span>
         </c:if>
 

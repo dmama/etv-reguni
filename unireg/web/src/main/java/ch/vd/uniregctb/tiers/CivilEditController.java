@@ -106,7 +106,7 @@ public class CivilEditController {
 
 	private void checkDroitEditionIDE(Tiers tiers) {
 		final Autorisations auth = getAutorisations(tiers);
-		if (!auth.isEditable() || !auth.isDonneesFiscales()) {
+		if (!auth.isEditable() || !auth.isIdentificationEntreprise()) {
 			throw new AccessDeniedException("Vous ne possédez pas les droits d'accès suffisants à la modification des informations entreprise des tiers de ce type.");
 		}
 	}

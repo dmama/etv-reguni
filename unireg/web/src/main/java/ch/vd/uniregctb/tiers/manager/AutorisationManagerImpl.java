@@ -50,6 +50,7 @@ public class AutorisationManagerImpl implements AutorisationManager {
 	static final String MODIF_DOSSIER = "DOS";
 	static final String MODIF_DEBITEUR = "DBT";
 	static final String MODIF_DI = "DI";
+	static final String MODIF_IDE = "IDE";
 	static final String MODIF_MOUVEMENT = "MVT";
 	static final String FISCAL_FOR_PRINC = "FOR_PRINC";
 	static final String FISCAL_FOR_SEC = "FOR_SEC";
@@ -392,6 +393,7 @@ public class AutorisationManagerImpl implements AutorisationManager {
 				map.put(MODIF_DOSSIER, Boolean.FALSE);
 				map.put(MODIF_FISCAL, Boolean.FALSE);
 				map.put(MODIF_DI, Boolean.FALSE);
+				map.put(MODIF_IDE, Boolean.FALSE);
 				if (SecurityHelper.isGranted(securityProvider, Role.ADR_PP_D, visa, oid)) {
 					map.put(MODIF_ADRESSE, Boolean.TRUE);
 					map.put(ADR_D, Boolean.TRUE);
@@ -476,6 +478,7 @@ public class AutorisationManagerImpl implements AutorisationManager {
 			//les autres communautés n'ont jamais les onglets fiscal, rapport prestation et dossier apparenté
 			if (SecurityHelper.isGranted(securityProvider, Role.MODIF_AC, visa, oid)) {
 				map.put(MODIF_CIVIL, Boolean.TRUE);
+				map.put(MODIF_IDE, Boolean.TRUE);
 				if (SecurityHelper.isGranted(securityProvider, Role.ADR_PM_D, visa, oid)) {
 					map.put(MODIF_ADRESSE, Boolean.TRUE);
 					map.put(ADR_D, Boolean.TRUE);
@@ -561,6 +564,7 @@ public class AutorisationManagerImpl implements AutorisationManager {
 		if (isEditAllowedPP(tiers, visa, oid)) {
 			codeFactorise2(visa, oid, allowedOnglet);
 			isEditable = true;
+			allowedOnglet.put(MODIF_IDE, Boolean.TRUE);
 		}
 		isEditable = codeFactorise3(tiers, visa, oid, allowedOnglet, isEditable);
 
@@ -607,6 +611,7 @@ public class AutorisationManagerImpl implements AutorisationManager {
 			if (SecurityHelper.isGranted(securityProvider, Role.MODIF_NONHAB_INACTIF, visa, oid)) {
 				if (isPersonnePhysique) {
 					allowedOnglet.put(MODIF_CIVIL, Boolean.TRUE);
+					allowedOnglet.put(MODIF_IDE, Boolean.TRUE);
 				}
 				allowedOnglet.put(MODIF_DOSSIER, Boolean.FALSE);
 				allowedOnglet.put(MODIF_FISCAL, Boolean.FALSE);
@@ -629,6 +634,7 @@ public class AutorisationManagerImpl implements AutorisationManager {
 			if (isEditAllowedPP(tiers, visa, oid)) {
 				if (isPersonnePhysique) {
 					allowedOnglet.put(MODIF_CIVIL, Boolean.TRUE);
+					allowedOnglet.put(MODIF_IDE, Boolean.TRUE);
 				}
 				codeFactorise2(visa, oid, allowedOnglet);
 				isEditable = true;
