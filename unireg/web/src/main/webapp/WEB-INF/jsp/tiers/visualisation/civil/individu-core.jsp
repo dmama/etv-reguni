@@ -229,7 +229,7 @@
 <fieldset class="information">
     <legend><span><fmt:message key="label.tiers.information.entreprise"/></span></legend>
     <unireg:setAuth var="autorisations" tiersId="${command.tiers.numero}"/>
-    <c:if test="${param.pathTiers=='tiers' && autorisations.donneesFiscales}">
+    <c:if test="${param.pathTiers=='tiers' && autorisations.identificationEntreprise}">
         <table border="0">
             <tr>
                 <td>
