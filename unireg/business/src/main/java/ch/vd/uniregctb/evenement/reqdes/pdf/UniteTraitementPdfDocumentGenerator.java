@@ -278,13 +278,13 @@ public class UniteTraitementPdfDocumentGenerator extends ReqDesPdfDocumentGenera
 
 	private static String getSource(PartiePrenante pp) {
 		if (pp.isSourceCivile()) {
-			return "Civile";
+			return "Données Civiles";
 		}
 		else if (pp.getNumeroContribuable() != null) {
 			return String.format("Contribuable %s", FormatNumeroHelper.numeroCTBToDisplay(pp.getNumeroContribuable()));
 		}
 		else {
-			return DASH;
+			return "Création";
 		}
 	}
 
