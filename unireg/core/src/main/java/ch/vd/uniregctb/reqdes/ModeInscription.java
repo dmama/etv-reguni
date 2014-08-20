@@ -6,7 +6,17 @@ package ch.vd.uniregctb.reqdes;
  * Longueur de colonne : 12
  */
 public enum ModeInscription {
-	INSCRIPTION,
-	MODIFICATION,
-	RADIATION
+	INSCRIPTION("Inscription"),
+	MODIFICATION("Modification"),
+	RADIATION("Radiation");
+
+	private final String displayName;
+
+	private ModeInscription(String displayName) {
+		this.displayName = displayName;
+	}
+
+	public String getDisplayName() {
+		return displayName;
+	}
 }

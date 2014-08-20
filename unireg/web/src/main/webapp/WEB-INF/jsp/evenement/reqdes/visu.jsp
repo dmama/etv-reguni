@@ -113,10 +113,6 @@
 								    <td width="50%"><c:if test="${partiePrenante.nomPrenomsPere != null}"><c:out value="${partiePrenante.nomPrenomsPere.nomPrenom}"/></c:if></td>
 							    </tr>
 							    <tr class="<unireg:nextRowClass/>">
-								    <td width="50%"><fmt:message key="label.date.dernier.changement.etat.civil"/>&nbsp;:</td>
-								    <td width="50%"><unireg:regdate regdate="${partiePrenante.dateEtatCivil}"/></td>
-							    </tr>
-							    <tr class="<unireg:nextRowClass/>">
 								    <td width="50%"><fmt:message key="label.etat.civil"/>&nbsp;:</td>
 								    <td width="50%">
 									    <c:if test="${partiePrenante.etatCivil != null}">
@@ -125,6 +121,10 @@
 											    (<fmt:message key="label.reqdes.separation.le"><fmt:param><unireg:regdate regdate="${partiePrenante.dateSeparation}"/></fmt:param></fmt:message>)
 										    </c:if>
 									    </c:if></td>
+							    </tr>
+							    <tr class="<unireg:nextRowClass/>">
+								    <td width="50%"><fmt:message key="label.date.dernier.changement.etat.civil"/>&nbsp;:</td>
+								    <td width="50%"><unireg:regdate regdate="${partiePrenante.dateEtatCivil}"/></td>
 							    </tr>
 							    <tr class="<unireg:nextRowClass/>">
 								    <td width="50%"><fmt:message key="label.nationalite"/>&nbsp;:</td>

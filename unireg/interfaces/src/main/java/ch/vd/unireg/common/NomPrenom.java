@@ -44,7 +44,7 @@ public class NomPrenom implements Serializable {
 			resultat = prenom;
 		}
 		else {
-			resultat = "";
+			resultat = StringUtils.EMPTY;
 		}
 		return resultat;
 	}
