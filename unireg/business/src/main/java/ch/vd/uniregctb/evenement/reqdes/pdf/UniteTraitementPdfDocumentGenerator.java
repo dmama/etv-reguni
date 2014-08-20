@@ -2,6 +2,10 @@ package ch.vd.uniregctb.evenement.reqdes.pdf;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Chunk;
@@ -14,6 +18,7 @@ import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -79,7 +84,14 @@ public class UniteTraitementPdfDocumentGenerator extends ReqDesPdfDocumentGenera
 		}
 
 		// données des parties prenantes
-		for (PartiePrenante pp : ut.getPartiesPrenantes()) {
+		final List<PartiePrenante> sortedPartiesPrenantes = new ArrayList<>(ut.getPartiesPrenantes());
+		Collections.sort(sortedPartiesPrenantes, new Comparator<PartiePrenante>() {
+			@Override
+			public int compare(PartiePrenante o1, PartiePrenante o2) {
+				return Long.compare(o1.getId(), o2.getId());
+			}
+		});
+		for (PartiePrenante pp : sortedPartiesPrenantes) {
 			addEntete(doc, "Partie prenante");
 
 			final PdfPTable tablePrincipale = new PdfPTable(new float[] {.5f, .5f});
@@ -111,14 +123,15 @@ public class UniteTraitementPdfDocumentGenerator extends ReqDesPdfDocumentGenera
 				tableGauche.addCell(new Phrase(new Chunk(RegDateHelper.dateToDisplayString(pp.getDateDeces()), NORMAL_FONT)));
 				tableGauche.addCell(new Phrase(new Chunk("N° AVS :", TABLE_HEADER_FONT)));
 				tableGauche.addCell(new Phrase(new Chunk(FormatNumeroHelper.formatNumAVS(pp.getAvs()), NORMAL_FONT)));
+
+				final NomPrenom mere = new NomPrenom(pp.getNomMere(), pp.getPrenomsMere());
 				tableGauche.addCell(new Phrase(new Chunk("Nom de la mère :", TABLE_HEADER_FONT)));
-				tableGauche.addCell(new Phrase(new Chunk(StringUtils.trimToEmpty(pp.getNomMere()), NORMAL_FONT)));
-				tableGauche.addCell(new Phrase(new Chunk("Prénoms de la mère :", TABLE_HEADER_FONT)));
-				tableGauche.addCell(new Phrase(new Chunk(StringUtils.trimToEmpty(pp.getPrenomsMere()), NORMAL_FONT)));
+				tableGauche.addCell(new Phrase(new Chunk(mere.getNomPrenom(), NORMAL_FONT)));
+
+				final NomPrenom pere = new NomPrenom(pp.getNomPere(), pp.getPrenomsPere());
 				tableGauche.addCell(new Phrase(new Chunk("Nom du père :", TABLE_HEADER_FONT)));
-				tableGauche.addCell(new Phrase(new Chunk(StringUtils.trimToEmpty(pp.getNomPere()), NORMAL_FONT)));
-				tableGauche.addCell(new Phrase(new Chunk("Prénoms du père :", TABLE_HEADER_FONT)));
-				tableGauche.addCell(new Phrase(new Chunk(StringUtils.trimToEmpty(pp.getPrenomsPere()), NORMAL_FONT)));
+				tableGauche.addCell(new Phrase(new Chunk(pere.getNomPrenom(), NORMAL_FONT)));
+
 				tableGauche.addCell(new Phrase(new Chunk("Etat civil :", TABLE_HEADER_FONT)));
 				tableGauche.addCell(new Phrase(new Chunk(pp.getEtatCivil() != null ? pp.getEtatCivil().format() : StringUtils.EMPTY, NORMAL_FONT)));
 				tableGauche.addCell(new Phrase(new Chunk("Changement d'état civil :", TABLE_HEADER_FONT)));
@@ -217,11 +230,30 @@ public class UniteTraitementPdfDocumentGenerator extends ReqDesPdfDocumentGenera
 			tableRoles.addCell(new Phrase(new Chunk("Description", TABLE_HEADER_FONT)));
 			tableRoles.addCell(new Phrase(new Chunk("Commune", TABLE_HEADER_FONT)));
 
-			for (RolePartiePrenante role : pp.getRoles()) {
+			final List<RolePartiePrenante> sortedRoles = new ArrayList<>(pp.getRoles());
+			Collections.sort(sortedRoles, new Comparator<RolePartiePrenante>() {
+				@Override
+				public int compare(RolePartiePrenante o1, RolePartiePrenante o2) {
+					int comparison = compareNullableValues(o1.getRole(), o2.getRole());
+					if (comparison == 0) {
+						final TransactionImmobiliere ti1 = o1.getTransaction();
+						final TransactionImmobiliere ti2 = o2.getTransaction();
+						comparison = compareNullableValues(ti1.getModeInscription(), ti2.getModeInscription());
+						if (comparison == 0) {
+							comparison = compareNullableValues(ti1.getTypeInscription(), ti2.getTypeInscription());
+							if (comparison == 0) {
+								comparison = ti1.getOfsCommune() - ti2.getOfsCommune();
+							}
+						}
+					}
+					return comparison;
+				}
+			});
+			for (RolePartiePrenante role : sortedRoles) {
 				final TransactionImmobiliere transaction = role.getTransaction();
-				tableRoles.addCell(new Phrase(new Chunk(role.getRole().name(), NORMAL_FONT)));
-				tableRoles.addCell(new Phrase(new Chunk(transaction.getModeInscription().name(), NORMAL_FONT)));
-				tableRoles.addCell(new Phrase(new Chunk(transaction.getTypeInscription().name(), NORMAL_FONT)));
+				tableRoles.addCell(new Phrase(new Chunk(role.getRole().getDisplayName(), NORMAL_FONT)));
+				tableRoles.addCell(new Phrase(new Chunk(transaction.getModeInscription().getDisplayName(), NORMAL_FONT)));
+				tableRoles.addCell(new Phrase(new Chunk(transaction.getTypeInscription().getDisplayName(), NORMAL_FONT)));
 				tableRoles.addCell(new Phrase(new Chunk(StringUtils.trimToEmpty(transaction.getDescription()), NORMAL_FONT)));
 				tableRoles.addCell(new Phrase(new Chunk(getNomCommune(transaction.getOfsCommune(), false, dateActe, infraService), NORMAL_FONT)));
 			}
@@ -230,6 +262,21 @@ public class UniteTraitementPdfDocumentGenerator extends ReqDesPdfDocumentGenera
 		}
 
 		doc.close();
+	}
+
+	private static <T extends Comparable<T>> int compareNullableValues(@Nullable T o1, @Nullable T o2) {
+		if (o1 == null && o2 == null) {
+			return 0;
+		}
+		else if (o1 == null) {
+			return 1;
+		}
+		else if (o2 == null) {
+			return -1;
+		}
+		else {
+			return o1.compareTo(o2);
+		}
 	}
 
 	private static String toDisplayString(InformationsActeur info) {
@@ -278,7 +325,7 @@ public class UniteTraitementPdfDocumentGenerator extends ReqDesPdfDocumentGenera
 
 	private static String getSource(PartiePrenante pp) {
 		if (pp.isSourceCivile()) {
-			return "Données Civiles";
+			return "Données civiles";
 		}
 		else if (pp.getNumeroContribuable() != null) {
 			return String.format("Contribuable %s", FormatNumeroHelper.numeroCTBToDisplay(pp.getNumeroContribuable()));

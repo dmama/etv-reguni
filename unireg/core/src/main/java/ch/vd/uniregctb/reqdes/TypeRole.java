@@ -6,7 +6,17 @@ package ch.vd.uniregctb.reqdes;
  * Longueur de colonne : 10
  */
 public enum TypeRole {
-	ACQUEREUR,
-	ALIENATEUR,
-	AUTRE
+	ACQUEREUR("Acquéreur"),
+	ALIENATEUR("Aliénateur"),
+	AUTRE("Autre");
+
+	private final String displayName;
+
+	private TypeRole(String displayName) {
+		this.displayName = displayName;
+	}
+
+	public String getDisplayName() {
+		return displayName;
+	}
 }
