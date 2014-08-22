@@ -203,18 +203,18 @@ public class ReqDesEventHandler implements EsbMessageHandler {
 				// on crée d'abord l'événement lui-même
 				final EvenementReqDes evt = buildEvenementReqDes(acteAuthentique, operateurs, doublon, xmlContent);
 
-				// puis les transactions immobilières (dans le même ordre que ce que donne
-				final List<TransactionImmobiliere> transImmobilieres = new ArrayList<>(transactions.size());
-				for (ReqDesTransactionImmobiliere t : transactions) {
-					transImmobilieres.add(buildTransactionImmobiliere(evt, t));
-				}
-
 				// toutes les autres entités seront créées avec un visa spécifique à l'événement
 				AuthenticationHelper.pushPrincipal(String.format("ReqDes-%d", evt.getId()));
 				try {
+					// les transactions immobilières (dans le même ordre que ce que donne le message entrant)
+					final List<TransactionImmobiliere> transImmobilieres = new ArrayList<>(transactions.size());
+					for (ReqDesTransactionImmobiliere t : transactions) {
+						transImmobilieres.add(buildTransactionImmobiliere(evt, t));
+					}
+
 					final Set<Long> ids = new HashSet<>(groupes.size());
 
-					// on commence donc par créer les unités de traitement
+					// on peut maintenant créer les unités de traitement
 					for (List<ReqDesPartiePrenante> groupe : groupes) {
 						final UniteTraitement ut = buildUniteTraitement(evt);
 
