@@ -1282,194 +1282,18 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
 			@Override
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
-
 				final UniteTraitement ut = uniteTraitementDAO.get(id);
 				Assert.assertNotNull(ut);
-				Assert.assertEquals(EtatTraitement.TRAITE, ut.getEtat());
+				Assert.assertEquals(EtatTraitement.EN_ERREUR, ut.getEtat());
+				Assert.assertEquals(1, ut.getErreurs().size());
+
+				final ErreurTraitement erreur = ut.getErreurs().iterator().next();
+				Assert.assertNotNull(erreur);
+				Assert.assertEquals("Parties prenantes en couple avec divergence des sources de données, dont l'une est civile.", erreur.getMessage());
 
 				final List<Tiers> allTiers = tiersDAO.getAll();
 				Assert.assertNotNull(allTiers);
-				Assert.assertEquals(3, allTiers.size());        // 2 PP + 1 MC
-
-				final List<Tiers> allSortedTiers = new ArrayList<>(allTiers);
-				Collections.sort(allSortedTiers, new Comparator<Tiers>() {
-					@Override
-					public int compare(Tiers o1, Tiers o2) {
-						int result = o1.getNatureTiers().compareTo(o2.getNatureTiers());
-						if (result == 0) {
-							// les seuls qui ont la même nature sont les deux personnes physiques
-							final PersonnePhysique pp1 = (PersonnePhysique) o1;
-							final PersonnePhysique pp2 = (PersonnePhysique) o2;
-							result = pp1.getNom().compareTo(pp2.getNom());
-						}
-						return result;
-					}
-				});
-
-				// et finalement, on obtient :
-				// 1. Arthur Bataillard
-				// 2. Marie O'Batayon
-				// 3. le ménage commun
-				{
-					final PersonnePhysique pp = (PersonnePhysique) allSortedTiers.get(0);
-					Assert.assertNotNull(pp);
-					Assert.assertEquals("Bataillard", pp.getNom());
-					Assert.assertEquals("Arthur", pp.getTousPrenoms());
-					Assert.assertEquals("Arthur", pp.getPrenomUsuel());
-
-					Assert.assertEquals("petit-reqdes", pp.getLogCreationUser());
-					Assert.assertEquals("petit-reqdes", pp.getLogModifUser());
-					Assert.assertEquals("Bataillard", pp.getNomMere());
-					Assert.assertEquals("Françoise Alicia", pp.getPrenomsMere());
-					Assert.assertEquals("Bataillard", pp.getNomPere());
-					Assert.assertEquals("Francis Patrice", pp.getPrenomsPere());
-					Assert.assertEquals((Integer) MockPays.Allemagne.getNoOFS(), pp.getNumeroOfsNationalite());
-					Assert.assertEquals(Sexe.MASCULIN, pp.getSexe());
-					Assert.assertEquals(date(1965, 9, 28), pp.getDateNaissance());
-					Assert.assertNull(pp.getDateDeces());
-					Assert.assertEquals(CategorieEtranger._01_SAISONNIER_A, pp.getCategorieEtranger());
-					Assert.assertNull(pp.getDateDebutValiditeAutorisation());
-
-					final Set<AdresseTiers> adresses = pp.getAdressesTiers();
-					Assert.assertNotNull(adresses);
-					Assert.assertEquals(1, adresses.size());
-
-					final AdresseTiers adresse = adresses.iterator().next();
-					Assert.assertNotNull(adresse);
-					Assert.assertEquals(AdresseEtrangere.class, adresse.getClass());
-
-					final AdresseEtrangere adresseEtrangere = (AdresseEtrangere) adresse;
-					Assert.assertEquals((Integer) MockPays.France.getNoOFS(), adresseEtrangere.getNumeroOfsPays());
-					Assert.assertEquals("77415 Meulin-Tatard", adresseEtrangere.getNumeroPostalLocalite());
-					Assert.assertEquals("Rue de la porte en bois", adresseEtrangere.getRue());
-					Assert.assertEquals("13b", adresseEtrangere.getNumeroMaison());
-					Assert.assertNull(adresseEtrangere.getTexteCasePostale());
-					Assert.assertNull(adresseEtrangere.getNumeroCasePostale());
-
-					final List<Remarque> remarques = remarqueDAO.getRemarques(pp.getNumero());
-					Assert.assertNotNull(remarques);
-					Assert.assertEquals(1, remarques.size());
-
-					final Remarque remarque = remarques.get(0);
-					Assert.assertNotNull(remarque);
-
-					final StringBuilder b = new StringBuilder();
-					b.append("Contribuable créé le ").append(RegDateHelper.dateToDisplayString(today));
-					b.append(" par l'acte notarial du ").append(RegDateHelper.dateToDisplayString(dateActe));
-					b.append(" par le notaire Tranquille Petiboulot (moinot) et enregistré par Albertine Tabasco (petit).");
-					Assert.assertEquals(b.toString(), remarque.getTexte());
-
-					// couple
-					final Set<RapportEntreTiers> rapports = pp.getRapportsSujet();
-					Assert.assertNotNull(rapports);
-					Assert.assertEquals(1, rapports.size());
-					final AppartenanceMenage am = (AppartenanceMenage) rapports.iterator().next();
-					Assert.assertNotNull(am);
-					Assert.assertFalse(am.isAnnule());
-					Assert.assertEquals(dateMariage, am.getDateDebut());
-					Assert.assertNull(am.getDateFin());
-					Assert.assertEquals(allSortedTiers.get(2).getNumero(), am.getObjetId());
-
-					// situation de famille
-					final Set<SituationFamille> situations = pp.getSituationsFamille();
-					Assert.assertNotNull(situations);
-					Assert.assertEquals(1, situations.size());
-					final SituationFamille situ = situations.iterator().next();
-					Assert.assertNotNull(situ);
-					Assert.assertEquals(SituationFamillePersonnePhysique.class, situ.getClass());
-					Assert.assertEquals(EtatCivil.MARIE, situ.getEtatCivil());
-					Assert.assertEquals(dateMariage, situ.getDateDebut());
-					Assert.assertNull(situ.getDateFin());
-				}
-				{
-					final PersonnePhysique pp = (PersonnePhysique) allSortedTiers.get(1);
-					Assert.assertNotNull(pp);
-					Assert.assertEquals("O'Batayon", pp.getNom());
-					Assert.assertEquals("Marie Constantine", pp.getTousPrenoms());
-					Assert.assertEquals("Marie", pp.getPrenomUsuel());
-
-					Assert.assertEquals("petit-reqdes", pp.getLogCreationUser());
-					Assert.assertEquals("petit-reqdes", pp.getLogModifUser());
-					Assert.assertEquals("Delaplanche", pp.getNomMere());
-					Assert.assertEquals("Martine Sophie Mafalda", pp.getPrenomsMere());
-					Assert.assertEquals("O'Batayon", pp.getNomPere());
-					Assert.assertEquals("Iain François Robert", pp.getPrenomsPere());
-					Assert.assertEquals((Integer) MockPays.RoyaumeUni.getNoOFS(), pp.getNumeroOfsNationalite());
-					Assert.assertEquals(Sexe.FEMININ, pp.getSexe());
-					Assert.assertEquals(date(1965, 9, 27), pp.getDateNaissance());
-					Assert.assertNull(pp.getDateDeces());
-					Assert.assertEquals(CategorieEtranger._06_FRONTALIER_G, pp.getCategorieEtranger());
-					Assert.assertNull(pp.getDateDebutValiditeAutorisation());
-
-					// sur les sources civiles, l'adresse n'est pas recopiée (elle est a priori vaudoise)
-					checkNoAdresse(pp);
-
-					final List<Remarque> remarques = remarqueDAO.getRemarques(pp.getNumero());
-					Assert.assertNotNull(remarques);
-					Assert.assertEquals(1, remarques.size());
-
-					final Remarque remarque = remarques.get(0);
-					Assert.assertNotNull(remarque);
-
-					final StringBuilder b = new StringBuilder();
-					b.append("Contribuable créé le ").append(RegDateHelper.dateToDisplayString(today));
-					b.append(" par l'acte notarial du ").append(RegDateHelper.dateToDisplayString(dateActe));
-					b.append(" par le notaire Tranquille Petiboulot (moinot) et enregistré par Albertine Tabasco (petit).");
-					Assert.assertEquals(b.toString(), remarque.getTexte());
-
-					// couple
-					final Set<RapportEntreTiers> rapports = pp.getRapportsSujet();
-					Assert.assertNotNull(rapports);
-					Assert.assertEquals(1, rapports.size());
-					final AppartenanceMenage am = (AppartenanceMenage) rapports.iterator().next();
-					Assert.assertNotNull(am);
-					Assert.assertFalse(am.isAnnule());
-					Assert.assertEquals(dateMariage, am.getDateDebut());
-					Assert.assertNull(am.getDateFin());
-					Assert.assertEquals(allSortedTiers.get(2).getNumero(), am.getObjetId());
-
-					// situation de famille
-					final Set<SituationFamille> situations = pp.getSituationsFamille();
-					Assert.assertNotNull(situations);
-					Assert.assertEquals(1, situations.size());
-					final SituationFamille situ = situations.iterator().next();
-					Assert.assertNotNull(situ);
-					Assert.assertEquals(SituationFamillePersonnePhysique.class, situ.getClass());
-					Assert.assertEquals(EtatCivil.MARIE, situ.getEtatCivil());
-					Assert.assertEquals(dateMariage, situ.getDateDebut());
-					Assert.assertNull(situ.getDateFin());
-				}
-				{
-					final MenageCommun mc = (MenageCommun) allSortedTiers.get(2);
-					Assert.assertNotNull(mc);
-
-					Assert.assertEquals("petit-reqdes", mc.getLogCreationUser());
-					Assert.assertEquals("petit-reqdes", mc.getLogModifUser());
-
-					checkNoAdresse(mc);
-
-					final List<Remarque> remarques = remarqueDAO.getRemarques(mc.getNumero());
-					Assert.assertNotNull(remarques);
-					Assert.assertEquals(1, remarques.size());
-
-					final Remarque remarque = remarques.get(0);
-					Assert.assertNotNull(remarque);
-
-					final StringBuilder b = new StringBuilder();
-					b.append("Contribuable créé le ").append(RegDateHelper.dateToDisplayString(today));
-					b.append(" par l'acte notarial du ").append(RegDateHelper.dateToDisplayString(dateActe));
-					b.append(" par le notaire Tranquille Petiboulot (moinot) et enregistré par Albertine Tabasco (petit).");
-					Assert.assertEquals(b.toString(), remarque.getTexte());
-
-					// couple
-					final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(mc, dateMariage);
-					Assert.assertNotNull(couple);
-					Assert.assertSame(allSortedTiers.get(0), couple.getPrincipal());
-					Assert.assertSame(allSortedTiers.get(1), couple.getConjoint());
-
-					// situation de famille
-					checkNoSituationFamille(mc);
-				}
+				Assert.assertEquals(0, allTiers.size());
 			}
 		});
 	}
@@ -5045,7 +4869,6 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				pp.setOfsPays(MockPays.Allemagne.getNoOFS());
 				pp.setLocalite("Aachen");
 				pp.setNumeroPostal("52064");
-				pp.setOfsPays(MockPays.Allemagne.getNoOFS());
 
 				final TransactionImmobiliere ti1 = addTransactionImmobiliere(evt, "Propriété Morges", ModeInscription.INSCRIPTION, TypeInscription.PROPRIETE, MockCommune.Morges.getNoOFS());
 				addRole(pp, ti1, TypeRole.ACQUEREUR);
@@ -5181,7 +5004,6 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				pp.setOfsPays(MockPays.Allemagne.getNoOFS());
 				pp.setLocalite("Aachen");
 				pp.setNumeroPostal("52064");
-				pp.setOfsPays(MockPays.Allemagne.getNoOFS());
 
 				final TransactionImmobiliere ti1 = addTransactionImmobiliere(evt, "Propriété Morges", ModeInscription.INSCRIPTION, TypeInscription.PROPRIETE, MockCommune.Morges.getNoOFS());
 				addRole(pp, ti1, TypeRole.ALIENATEUR);
@@ -5298,7 +5120,6 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				pp.setOfsPays(MockPays.Allemagne.getNoOFS());
 				pp.setLocalite("Aachen");
 				pp.setNumeroPostal("52064");
-				pp.setOfsPays(MockPays.Allemagne.getNoOFS());
 
 				final TransactionImmobiliere ti1 = addTransactionImmobiliere(evt, "Propriété Morges", ModeInscription.INSCRIPTION, TypeInscription.PROPRIETE, MockCommune.Morges.getNoOFS());
 				addRole(pp, ti1, TypeRole.ACQUEREUR);
@@ -5441,7 +5262,6 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				pp.setOfsPays(MockPays.Allemagne.getNoOFS());
 				pp.setLocalite("Aachen");
 				pp.setNumeroPostal("52064");
-				pp.setOfsPays(MockPays.Allemagne.getNoOFS());
 
 				final TransactionImmobiliere ti1 = addTransactionImmobiliere(evt, "Propriété Morges", ModeInscription.INSCRIPTION, TypeInscription.PROPRIETE, MockCommune.Morges.getNoOFS());
 				addRole(pp, ti1, TypeRole.ACQUEREUR);
@@ -5587,7 +5407,6 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				pp1.setOfsPays(MockPays.Allemagne.getNoOFS());
 				pp1.setLocalite("Aachen");
 				pp1.setNumeroPostal("52064");
-				pp1.setOfsPays(MockPays.Allemagne.getNoOFS());
 
 				final PartiePrenante pp2 = addPartiePrenante(ut, "Zigotto", "Francine");
 
@@ -5606,7 +5425,6 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				pp2.setOfsPays(MockPays.Allemagne.getNoOFS());
 				pp2.setLocalite("Aachen");
 				pp2.setNumeroPostal("52064");
-				pp2.setOfsPays(MockPays.Allemagne.getNoOFS());
 
 				pp1.setConjointPartiePrenante(pp2);
 				pp2.setConjointPartiePrenante(pp1);
@@ -5771,7 +5589,6 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				pp1.setOfsPays(MockPays.Allemagne.getNoOFS());
 				pp1.setLocalite("Aachen");
 				pp1.setNumeroPostal("52064");
-				pp1.setOfsPays(MockPays.Allemagne.getNoOFS());
 
 				final PartiePrenante pp2 = addPartiePrenante(ut, "Zigotto", "Francine");
 
@@ -5790,7 +5607,6 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				pp2.setOfsPays(MockPays.Allemagne.getNoOFS());
 				pp2.setLocalite("Aachen");
 				pp2.setNumeroPostal("52064");
-				pp2.setOfsPays(MockPays.Allemagne.getNoOFS());
 
 				pp1.setConjointPartiePrenante(pp2);
 				pp2.setConjointPartiePrenante(pp1);

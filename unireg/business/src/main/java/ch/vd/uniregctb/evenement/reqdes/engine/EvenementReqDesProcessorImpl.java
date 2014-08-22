@@ -534,7 +534,30 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 		final Set<EtatCivil> etatsCivilsSansConjoint = EnumSet.of(EtatCivil.CELIBATAIRE, EtatCivil.VEUF, EtatCivil.DIVORCE, EtatCivil.NON_MARIE,
 		                                                          EtatCivil.PARTENARIAT_DISSOUS_DECES, EtatCivil.PARTENARIAT_DISSOUS_JUDICIAIREMENT);
 
-		for (PartiePrenante pp : ut.getPartiesPrenantes()) {
+		// [SIFISC-13278] S'il y a plusieurs sources différentes (civile, création, fiscale) parmi les parties prenantes et que l'une d'entre elles est "civile",
+		// alors on passe en traitement manuel
+		final Set<PartiePrenante> partiesPrenantes = ut.getPartiesPrenantes();
+		if (partiesPrenantes.size() > 1) {
+			boolean hasSourceCivile = false;
+			boolean hasSourceFiscale = false;
+			boolean hasSourceCreation = false;
+			for (PartiePrenante pp : partiesPrenantes) {
+				if (pp.isSourceCivile()) {
+					hasSourceCivile = true;
+				}
+				else if (pp.getNumeroContribuable() != null) {
+					hasSourceFiscale = true;
+				}
+				else {
+					hasSourceCreation = true;
+				}
+			}
+			if (hasSourceCivile && (hasSourceFiscale || hasSourceCreation)) {
+				errorCollector.addNewMessage(String.format("Parties prenantes en couple avec divergence des sources de données, dont l'une est civile."));
+			}
+		}
+
+		for (PartiePrenante pp : partiesPrenantes) {
 			final Integer ofsCommuneDomicile = pp.getOfsCommune();
 			if (ofsCommuneDomicile != null) {
 				// problématique des fractions (-> les fors ne peuvent pas être ouverts sur les communes faîtières de fractions)
