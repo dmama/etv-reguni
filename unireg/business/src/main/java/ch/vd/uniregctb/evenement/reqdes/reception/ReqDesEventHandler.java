@@ -140,6 +140,7 @@ public class ReqDesEventHandler implements EsbMessageHandler {
 			data = parse(xml);
 		}
 		catch (SAXException | JAXBException e) {
+			LOGGER.error(String.format("Format XML invalide : %s", e.getMessage()), e);
 			throw new EsbBusinessException(EsbBusinessCode.XML_INVALIDE, e.getMessage(), e);
 		}
 
