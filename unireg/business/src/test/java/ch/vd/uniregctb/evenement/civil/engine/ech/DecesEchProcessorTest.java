@@ -167,6 +167,14 @@ public class DecesEchProcessorTest extends AbstractEvenementCivilEchProcessorTes
 		final long monsieurId = ids[1];
 		final long madameId = ids[2];
 
+		// décès civil
+		doModificationIndividu(noMonsieur, new IndividuModification() {
+			@Override
+			public void modifyIndividu(MockIndividu individu) {
+				individu.setDateDeces(dateDecesMonsieur);
+			}
+		});
+
 		// 2. Création d'un evenement de "changement d'état civil" pour la survivante
 		final long veuvageId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
@@ -299,6 +307,14 @@ public class DecesEchProcessorTest extends AbstractEvenementCivilEchProcessorTes
 		final long monsieurId = ids[1];
 		final long madameId = ids[2];
 
+		// décès civil
+		doModificationIndividu(noMadame, new IndividuModification() {
+			@Override
+			public void modifyIndividu(MockIndividu individu) {
+				individu.setDateDeces(dateDeces);
+			}
+		});
+
 		// 2. Création d'un evenement de "deces" pour un membre du couple (ici madame)
 		final long decesMadameId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
@@ -355,6 +371,14 @@ public class DecesEchProcessorTest extends AbstractEvenementCivilEchProcessorTes
 				assertNull("le for de monsieur doit être ouvert (motif de fermeture null)",ffp.getMotifFermeture());
 
 				return null;
+			}
+		});
+
+		// décès civil
+		doModificationIndividu(noMonsieur, new IndividuModification() {
+			@Override
+			public void modifyIndividu(MockIndividu individu) {
+				individu.setDateDeces(dateDeces);
 			}
 		});
 
@@ -639,6 +663,14 @@ public class DecesEchProcessorTest extends AbstractEvenementCivilEchProcessorTes
 				ids.mme = mme.getNumero();
 				ids.mc = mc.getNumero();
 				return ids;
+			}
+		});
+
+		// décès civil
+		doModificationIndividu(noIndividuMadame, new IndividuModification() {
+			@Override
+			public void modifyIndividu(MockIndividu individu) {
+				individu.setDateDeces(dateDeces);
 			}
 		});
 
