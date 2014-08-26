@@ -90,6 +90,14 @@ public class Ec_2000_01_Deces_Celibataire_Scenario extends EvenementCivilScenari
 
 	@Etape(id = 2, descr = "Déclaration de décès")
 	public void etape2() throws Exception {
+
+		doModificationIndividu(noIndGuillaume, new IndividuModification() {
+			@Override
+			public void modifyIndividu(MockIndividu individu) {
+				individu.setDateDeces(dateDeces);
+			}
+		});
+
 		long id = addEvenementCivil(TypeEvenementCivil.DECES, noIndGuillaume, dateDeces, MockCommune.Lausanne.getNoOFS());
 		commitAndStartTransaction();
 		traiteEvenements(id);

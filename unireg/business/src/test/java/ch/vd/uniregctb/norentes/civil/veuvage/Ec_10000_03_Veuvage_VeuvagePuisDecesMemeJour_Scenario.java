@@ -171,6 +171,14 @@ public class Ec_10000_03_Veuvage_VeuvagePuisDecesMemeJour_Scenario extends Evene
 
 	@Etape(id=3, descr="Envi de l'événement Décès")
 	public void step3() throws Exception {
+
+		doModificationIndividu(noIndPierre, new IndividuModification() {
+			@Override
+			public void modifyIndividu(MockIndividu individu) {
+				individu.setDateDeces(dateDeces);
+			}
+		});
+
 		long id = addEvenementCivil(TypeEvenementCivil.DECES, noIndPierre, dateDeces, communeMariage.getNoOFS());
 		commitAndStartTransaction();
 		traiteEvenements(id);
