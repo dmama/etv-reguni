@@ -733,12 +733,13 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 					if (hasRoleAcquereurPropriete || !forsAt.secondaires.isEmpty()) {
 						modeImposition = ModeImposition.ORDINAIRE;
 					}
-					else if (ffpExistant != null) {
+					else {
 						modeImposition = ffpExistant.getModeImposition();
 					}
-					else {
-						// on ne met pas à jour un for inexistant (seule la mise à jour de for principal se fait sur les non-"acquéreurs de propriété")
-						continue;
+
+					// si le for principal actif au moment de la date de l'acte est déjà fermé, on part en erreur -> à résoudre manuellement
+					if (ffpExistant != null && ffpExistant.getDateFin() != null) {
+						throw new EvenementReqDesException(String.format("Le for principal actif du tiers %s à la date de l'acte est déjà fermé. Cas à traiter manuellement.", FormatNumeroHelper.numeroCTBToDisplay(assujetti.getNumero())));
 					}
 
 					final Pair<Integer, TypeAutoriteFiscale> newLocalisation = computeNewLocalisation(partiePrenante.getOfsCommune(), partiePrenante.getOfsPays());
@@ -1110,6 +1111,12 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 				if (!(tiers instanceof PersonnePhysique)) {
 					throw new EvenementReqDesException(String.format("Le tiers %s n'est pas une personne physique.", FormatNumeroHelper.numeroCTBToDisplay(ppSrc.getNumeroContribuable())));
 				}
+
+				// [SIFISC-13300] si le contribuable est annulé, i107 ou désactivé à la date de l'acte, on refuse la mise à jour automatique
+				if (tiers.isDesactive(evt.getDateActe()) || tiers.isDebiteurInactif()) {
+					throw new EvenementReqDesException(String.format("Le tiers %s est inactif à la date de l'acte.", FormatNumeroHelper.numeroCTBToDisplay(ppSrc.getNumeroContribuable())));
+				}
+
 				final PersonnePhysique ppDest = (PersonnePhysique) tiers;
 				data = new ProcessingDataPartiePrenante(false, ppDest);
 

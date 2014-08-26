@@ -5725,4 +5725,291 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 			}
 		});
 	}
+
+	@Test(timeout = 10000)
+	public void testTiersAnnule() throws Exception {
+
+		final RegDate dateNaissance = date(1985, 10, 20);
+		final RegDate dateActe = date(2014, 6, 9);
+
+		final class Ids {
+			long ppId;
+			long utId;
+		}
+
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique ctb = addNonHabitant("Alain", "Zigotto", dateNaissance, Sexe.MASCULIN);
+				addForPrincipal(ctb, date(2000, 5, 13), MotifFor.INDETERMINE, MockCommune.Geneve);
+				ctb.setAnnule(true);
+
+				final EvenementReqDes evt = addEvenementReqDes(new InformationsActeur("tabou", "Taboumata", "Oli"), null, dateActe, "541154651");
+				final UniteTraitement ut = addUniteTraitement(evt, EtatTraitement.A_TRAITER, null);
+				final PartiePrenante pp = addPartiePrenante(ut, "Lezigotto", "Pierre-Alain");
+				pp.setNumeroContribuable(ctb.getNumero());
+				pp.setNomMere("Delaplanche");
+				pp.setPrenomsMere("Sophie Mafalda");
+				pp.setNomPere("Dumoulin");
+				pp.setPrenomsPere("François Robert");
+				pp.setOfsPaysNationalite(MockPays.Suisse.getNoOFS());
+				pp.setSexe(Sexe.MASCULIN);
+				pp.setDateNaissance(dateNaissance);
+				pp.setDateEtatCivil(dateNaissance);
+				pp.setEtatCivil(EtatCivil.CELIBATAIRE);
+
+				pp.setRue("Nizzaallee");
+				pp.setNumeroMaison("7");
+				pp.setOfsPays(MockPays.Allemagne.getNoOFS());
+				pp.setLocalite("Aachen");
+				pp.setNumeroPostal("52064");
+
+				final TransactionImmobiliere ti1 = addTransactionImmobiliere(evt, "Propriété Morges", ModeInscription.INSCRIPTION, TypeInscription.PROPRIETE, MockCommune.Morges.getNoOFS());
+				addRole(pp, ti1, TypeRole.ACQUEREUR);
+
+				final Ids ids = new Ids();
+				ids.ppId = ctb.getNumero();
+				ids.utId = ut.getId();
+				return ids;
+			}
+		});
+
+		// traiter l'unité
+		traiteUniteTraitement(ids.utId);
+
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final UniteTraitement ut = uniteTraitementDAO.get(ids.utId);
+				Assert.assertNotNull(ut);
+				Assert.assertEquals(EtatTraitement.EN_ERREUR, ut.getEtat());
+				Assert.assertEquals(1, ut.getErreurs().size());
+
+				final ErreurTraitement erreur = ut.getErreurs().iterator().next();
+				Assert.assertNotNull(erreur);
+				Assert.assertEquals(String.format("Le tiers %s est inactif à la date de l'acte.", FormatNumeroHelper.numeroCTBToDisplay(ids.ppId)), erreur.getMessage());
+
+			    final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.ppId);
+				Assert.assertNotNull(pp);
+				Assert.assertTrue(pp.isAnnule());
+				Assert.assertEquals("Zigotto", pp.getNom());
+				Assert.assertEquals("Alain", pp.getPrenomUsuel());
+			}
+		});
+	}
+
+	@Test(timeout = 10000)
+	public void testTiersI107() throws Exception {
+
+		final RegDate dateNaissance = date(1985, 10, 20);
+		final RegDate dateActe = date(2014, 6, 9);
+
+		final class Ids {
+			long ppId;
+			long utId;
+		}
+
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique ctb = addNonHabitant("Alain", "Zigotto", dateNaissance, Sexe.MASCULIN);
+				addForPrincipal(ctb, date(2000, 5, 13), MotifFor.INDETERMINE, MockCommune.Geneve);
+				ctb.setDebiteurInactif(true);
+
+				final EvenementReqDes evt = addEvenementReqDes(new InformationsActeur("tabou", "Taboumata", "Oli"), null, dateActe, "541154651");
+				final UniteTraitement ut = addUniteTraitement(evt, EtatTraitement.A_TRAITER, null);
+				final PartiePrenante pp = addPartiePrenante(ut, "Lezigotto", "Pierre-Alain");
+				pp.setNumeroContribuable(ctb.getNumero());
+				pp.setNomMere("Delaplanche");
+				pp.setPrenomsMere("Sophie Mafalda");
+				pp.setNomPere("Dumoulin");
+				pp.setPrenomsPere("François Robert");
+				pp.setOfsPaysNationalite(MockPays.Suisse.getNoOFS());
+				pp.setSexe(Sexe.MASCULIN);
+				pp.setDateNaissance(dateNaissance);
+				pp.setDateEtatCivil(dateNaissance);
+				pp.setEtatCivil(EtatCivil.CELIBATAIRE);
+
+				pp.setRue("Nizzaallee");
+				pp.setNumeroMaison("7");
+				pp.setOfsPays(MockPays.Allemagne.getNoOFS());
+				pp.setLocalite("Aachen");
+				pp.setNumeroPostal("52064");
+
+				final TransactionImmobiliere ti1 = addTransactionImmobiliere(evt, "Propriété Morges", ModeInscription.INSCRIPTION, TypeInscription.PROPRIETE, MockCommune.Morges.getNoOFS());
+				addRole(pp, ti1, TypeRole.ACQUEREUR);
+
+				final Ids ids = new Ids();
+				ids.ppId = ctb.getNumero();
+				ids.utId = ut.getId();
+				return ids;
+			}
+		});
+
+		// traiter l'unité
+		traiteUniteTraitement(ids.utId);
+
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final UniteTraitement ut = uniteTraitementDAO.get(ids.utId);
+				Assert.assertNotNull(ut);
+				Assert.assertEquals(EtatTraitement.EN_ERREUR, ut.getEtat());
+				Assert.assertEquals(1, ut.getErreurs().size());
+
+				final ErreurTraitement erreur = ut.getErreurs().iterator().next();
+				Assert.assertNotNull(erreur);
+				Assert.assertEquals(String.format("Le tiers %s est inactif à la date de l'acte.", FormatNumeroHelper.numeroCTBToDisplay(ids.ppId)), erreur.getMessage());
+
+			    final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.ppId);
+				Assert.assertNotNull(pp);
+				Assert.assertTrue(pp.isDebiteurInactif());
+				Assert.assertEquals("Zigotto", pp.getNom());
+				Assert.assertEquals("Alain", pp.getPrenomUsuel());
+			}
+		});
+	}
+
+	@Test(timeout = 10000)
+	public void testTiersDesactiveAvantDateActe() throws Exception {
+
+		final RegDate dateNaissance = date(1985, 10, 20);
+		final RegDate dateActe = date(2014, 6, 9);
+
+		final class Ids {
+			long ppId;
+			long utId;
+		}
+
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique ctb = addNonHabitant("Alain", "Zigotto", dateNaissance, Sexe.MASCULIN);
+				addForPrincipal(ctb, date(2000, 5, 13), MotifFor.INDETERMINE, date(2013, 12, 31), MotifFor.ANNULATION, MockCommune.Geneve);
+
+				final EvenementReqDes evt = addEvenementReqDes(new InformationsActeur("tabou", "Taboumata", "Oli"), null, dateActe, "541154651");
+				final UniteTraitement ut = addUniteTraitement(evt, EtatTraitement.A_TRAITER, null);
+				final PartiePrenante pp = addPartiePrenante(ut, "Lezigotto", "Pierre-Alain");
+				pp.setNumeroContribuable(ctb.getNumero());
+				pp.setNomMere("Delaplanche");
+				pp.setPrenomsMere("Sophie Mafalda");
+				pp.setNomPere("Dumoulin");
+				pp.setPrenomsPere("François Robert");
+				pp.setOfsPaysNationalite(MockPays.Suisse.getNoOFS());
+				pp.setSexe(Sexe.MASCULIN);
+				pp.setDateNaissance(dateNaissance);
+				pp.setDateEtatCivil(dateNaissance);
+				pp.setEtatCivil(EtatCivil.CELIBATAIRE);
+
+				pp.setRue("Nizzaallee");
+				pp.setNumeroMaison("7");
+				pp.setOfsPays(MockPays.Allemagne.getNoOFS());
+				pp.setLocalite("Aachen");
+				pp.setNumeroPostal("52064");
+
+				final TransactionImmobiliere ti1 = addTransactionImmobiliere(evt, "Propriété Morges", ModeInscription.INSCRIPTION, TypeInscription.PROPRIETE, MockCommune.Morges.getNoOFS());
+				addRole(pp, ti1, TypeRole.ACQUEREUR);
+
+				final Ids ids = new Ids();
+				ids.ppId = ctb.getNumero();
+				ids.utId = ut.getId();
+				return ids;
+			}
+		});
+
+		// traiter l'unité
+		traiteUniteTraitement(ids.utId);
+
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final UniteTraitement ut = uniteTraitementDAO.get(ids.utId);
+				Assert.assertNotNull(ut);
+				Assert.assertEquals(EtatTraitement.EN_ERREUR, ut.getEtat());
+				Assert.assertEquals(1, ut.getErreurs().size());
+
+				final ErreurTraitement erreur = ut.getErreurs().iterator().next();
+				Assert.assertNotNull(erreur);
+				Assert.assertEquals(String.format("Le tiers %s est inactif à la date de l'acte.", FormatNumeroHelper.numeroCTBToDisplay(ids.ppId)), erreur.getMessage());
+
+			    final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.ppId);
+				Assert.assertNotNull(pp);
+				Assert.assertTrue(pp.isDesactive(dateActe));
+				Assert.assertEquals("Zigotto", pp.getNom());
+				Assert.assertEquals("Alain", pp.getPrenomUsuel());
+			}
+		});
+	}
+
+	@Test(timeout = 10000)
+	public void testTiersDesactiveApresDateActe() throws Exception {
+
+		final RegDate dateNaissance = date(1985, 10, 20);
+		final RegDate dateActe = date(2013, 6, 9);
+
+		final class Ids {
+			long ppId;
+			long utId;
+		}
+
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique ctb = addNonHabitant("Alain", "Zigotto", dateNaissance, Sexe.MASCULIN);
+				addForPrincipal(ctb, date(2000, 5, 13), MotifFor.INDETERMINE, date(2013, 12, 31), MotifFor.ANNULATION, MockCommune.Geneve);
+
+				final EvenementReqDes evt = addEvenementReqDes(new InformationsActeur("tabou", "Taboumata", "Oli"), null, dateActe, "541154651");
+				final UniteTraitement ut = addUniteTraitement(evt, EtatTraitement.A_TRAITER, null);
+				final PartiePrenante pp = addPartiePrenante(ut, "Lezigotto", "Pierre-Alain");
+				pp.setNumeroContribuable(ctb.getNumero());
+				pp.setNomMere("Delaplanche");
+				pp.setPrenomsMere("Sophie Mafalda");
+				pp.setNomPere("Dumoulin");
+				pp.setPrenomsPere("François Robert");
+				pp.setOfsPaysNationalite(MockPays.Suisse.getNoOFS());
+				pp.setSexe(Sexe.MASCULIN);
+				pp.setDateNaissance(dateNaissance);
+				pp.setDateEtatCivil(dateNaissance);
+				pp.setEtatCivil(EtatCivil.CELIBATAIRE);
+
+				pp.setRue("Nizzaallee");
+				pp.setNumeroMaison("7");
+				pp.setOfsPays(MockPays.Allemagne.getNoOFS());
+				pp.setLocalite("Aachen");
+				pp.setNumeroPostal("52064");
+
+				final TransactionImmobiliere ti1 = addTransactionImmobiliere(evt, "Propriété Morges", ModeInscription.INSCRIPTION, TypeInscription.PROPRIETE, MockCommune.Morges.getNoOFS());
+				addRole(pp, ti1, TypeRole.ACQUEREUR);
+
+				final Ids ids = new Ids();
+				ids.ppId = ctb.getNumero();
+				ids.utId = ut.getId();
+				return ids;
+			}
+		});
+
+		// traiter l'unité
+		traiteUniteTraitement(ids.utId);
+
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final UniteTraitement ut = uniteTraitementDAO.get(ids.utId);
+				Assert.assertNotNull(ut);
+				Assert.assertEquals(EtatTraitement.EN_ERREUR, ut.getEtat());
+				Assert.assertEquals(1, ut.getErreurs().size());
+
+				final ErreurTraitement erreur = ut.getErreurs().iterator().next();
+				Assert.assertNotNull(erreur);
+				Assert.assertEquals(String.format("Le for principal actif du tiers %s à la date de l'acte est déjà fermé. Cas à traiter manuellement.", FormatNumeroHelper.numeroCTBToDisplay(ids.ppId)), erreur.getMessage());
+
+			    final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.ppId);
+				Assert.assertNotNull(pp);
+				Assert.assertFalse(pp.isDesactive(dateActe));
+				Assert.assertTrue(pp.isDesactive(null));
+				Assert.assertEquals("Zigotto", pp.getNom());
+				Assert.assertEquals("Alain", pp.getPrenomUsuel());
+			}
+		});
+	}
 }
