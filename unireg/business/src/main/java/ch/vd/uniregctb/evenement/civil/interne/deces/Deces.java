@@ -94,7 +94,11 @@ public class Deces extends EvenementCivilInterne {
 	@Override
 	public void validateSpecific(EvenementCivilErreurCollector erreurs, EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
-		// Aucune validation spécifique
+		// [SIFISC-13311] Nous avons ici une suspicion d'absence de date de décès dans les données de l'individu... curieux, hein ?
+		final Individu individuDefunt = getIndividu();
+		if (individuDefunt.getDateDeces() == null) {
+			erreurs.addErreur("La date de décès dans les données renvoyées par le registre civil est nulle.");
+		}
 
 		/*
 		 * Obtention du tiers correspondant au defunt.
