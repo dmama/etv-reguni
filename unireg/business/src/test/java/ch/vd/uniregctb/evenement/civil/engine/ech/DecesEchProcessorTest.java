@@ -6,6 +6,7 @@ import junit.framework.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.Localisation;
@@ -696,7 +697,7 @@ public class DecesEchProcessorTest extends AbstractEvenementCivilEchProcessorTes
 	/**
 	 * SIFISC-9244
 	 */
-	@Test
+	@Test(timeout = 10000L)
 	public void testVeuvageSurEtrangerHorsCantonAvecImmeuble() throws Exception {
 
 		final RegDate dateMariage = date(1986, 2, 12);
@@ -778,6 +779,80 @@ public class DecesEchProcessorTest extends AbstractEvenementCivilEchProcessorTes
 				assertEquals(TypeAutoriteFiscale.COMMUNE_HC, ffp.getTypeAutoriteFiscale());
 				assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition());
 				return null;
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-13311] décès reçu du civil (sans date de décès dans les données de l'individu ?)
+	 */
+	@Test(timeout = 10000L)
+	public void testDecesRecuSurIndividuNonDecede() throws Exception {
+
+		final long noIndividu = 43267842257L;
+		final RegDate dateNaissance = date(1934, 5, 12);
+		final RegDate dateDeces = date(2014, 7, 20);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				addIndividu(noIndividu, dateNaissance, "Duplancher", "Hara", Sexe.FEMININ);
+			}
+		});
+
+		// mise en place ficale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				addForPrincipal(pp, dateNaissance.addYears(18), MotifFor.MAJORITE, MockCommune.Aigle);
+				return pp.getNumero();
+			}
+		});
+
+		// création de l'événement civil de décès
+		final long evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch deces = new EvenementCivilEch();
+				deces.setId(45455L);
+				deces.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				deces.setDateEvenement(dateDeces);
+				deces.setEtat(EtatEvenementCivil.A_TRAITER);
+				deces.setNumeroIndividu(noIndividu);
+				deces.setType(TypeEvenementCivilEch.DECES);
+				return hibernateTemplate.merge(deces).getId();
+			}
+		});
+
+		// traitement de l'événement civil
+		traiterEvenements(noIndividu);
+
+		// vérification du départ en erreur
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final EvenementCivilEch evt = evtCivilDAO.get(evtId);
+				Assert.assertNotNull(evt);
+				Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
+
+				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
+				Assert.assertNotNull(erreurs);
+				Assert.assertEquals(1, erreurs.size());
+
+				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
+				Assert.assertNotNull(erreur);
+				Assert.assertEquals("La date de décès dans les données renvoyées par le registre civil est nulle.", erreur.getMessage());
+
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertNotNull(pp);
+				Assert.assertTrue(pp.isHabitantVD());
+
+				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+				Assert.assertNotNull(ffp);
+				Assert.assertFalse(ffp.isAnnule());
+				Assert.assertNull(ffp.getDateFin());
 			}
 		});
 	}
