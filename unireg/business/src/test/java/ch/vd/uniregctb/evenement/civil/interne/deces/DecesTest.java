@@ -238,7 +238,18 @@ public class DecesTest extends AbstractEvenementCivilInterneTest {
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 
-		serviceCivil.setUp(new DefaultMockServiceCivil(false));
+		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+			@Override
+			protected void init() {
+				super.init();
+
+				getIndividu(NO_INDIVIDU_DEFUNT_CELIBATAIRE).setDateDeces(DATE_DECES);
+				getIndividu(NO_INDIVIDU_DEFUNT_MARIE_SEUL).setDateDeces(DATE_DECES);
+				getIndividu(NO_INDIVIDU_DEFUNT_MARIE).setDateDeces(DATE_DECES);
+				getIndividu(NO_INDIVIDU_DEFUNT_PACSE).setDateDeces(DATE_DECES);
+				getIndividu(NO_INDIVIDU_DEFUNT_MARIE_AVEC_ETRANGER).setDateDeces(DATE_DECES);
+			}
+		});
 		contextSimple = new EvenementCivilContext(serviceCivilSimple, infrastructureService, tiersDAO);
 		loadDatabase(DB_UNIT_DATA_FILE);
 	}
@@ -493,7 +504,8 @@ public class DecesTest extends AbstractEvenementCivilInterneTest {
 		serviceCivil.setUp(new DefaultMockServiceCivil() {
 			@Override
 			protected void init() {
-				addIndividu(noIndividu, date(1934, 2, 4), "Riddle", "Tom", true);
+				final MockIndividu individu = addIndividu(noIndividu, date(1934, 2, 4), "Riddle", "Tom", true);
+				individu.setDateDeces(dateDeces);
 			}
 		});
 
