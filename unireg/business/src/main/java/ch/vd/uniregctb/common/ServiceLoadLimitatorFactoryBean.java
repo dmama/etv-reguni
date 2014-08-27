@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.common;
 
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.concurrent.BlockingQueue;
@@ -26,8 +27,7 @@ import ch.vd.uniregctb.stats.StatsService;
 public class ServiceLoadLimitatorFactoryBean<T> implements FactoryBean<T>, InitializingBean, DisposableBean {
 
 	private Class<T> serviceInterfaceClass;
-	private int nbThreadsMin;
-	private int nbThreadsMax;
+	private int poolSize;
 	private long keepAliveTime = TimeUnit.SECONDS.toMillis(30);
 	private String serviceName;
 	private Object target;
@@ -48,12 +48,8 @@ public class ServiceLoadLimitatorFactoryBean<T> implements FactoryBean<T>, Initi
 		this.serviceName = serviceName;
 	}
 
-	public void setNbThreadsMin(int nbThreadsMin) {
-		this.nbThreadsMin = nbThreadsMin;
-	}
-
-	public void setNbThreadsMax(int nbThreadsMax) {
-		this.nbThreadsMax = nbThreadsMax;
+	public void setPoolSize(int poolSize) {
+		this.poolSize = poolSize;
 	}
 
 	public void setKeepAliveTime(long keepAliveTime) {
@@ -70,8 +66,8 @@ public class ServiceLoadLimitatorFactoryBean<T> implements FactoryBean<T>, Initi
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		if (nbThreadsMin < 0 || nbThreadsMax < 1 || nbThreadsMin > nbThreadsMax) {
-			throw new IllegalArgumentException(String.format("Invalid pair min/max threads : %d/%d", nbThreadsMin, nbThreadsMax));
+		if (poolSize < 1) {
+			throw new IllegalArgumentException(String.format("Invalid pool size : %d", poolSize));
 		}
 		if (serviceInterfaceClass == null || !serviceInterfaceClass.isInterface()) {
 			throw new IllegalArgumentException("Service interface class attribute should be set with an interface.");
@@ -84,7 +80,7 @@ public class ServiceLoadLimitatorFactoryBean<T> implements FactoryBean<T>, Initi
 		}
 
 		final BlockingQueue<Runnable> workQueue = new LinkedBlockingQueue<>();
-		this.executor = new ThreadPoolExecutor(nbThreadsMin, nbThreadsMax, keepAliveTime, TimeUnit.MILLISECONDS, workQueue, new DefaultThreadFactory(new DefaultThreadNameGenerator(serviceName)));
+		this.executor = new ThreadPoolExecutor(poolSize, poolSize, keepAliveTime, TimeUnit.MILLISECONDS, workQueue, new DefaultThreadFactory(new DefaultThreadNameGenerator(serviceName)));
 
 		//noinspection unchecked
 		this.proxy = (T) Proxy.newProxyInstance(target.getClass().getClassLoader(), new Class[] {serviceInterfaceClass}, new ServiceInvocationHandler());
@@ -178,6 +174,19 @@ public class ServiceLoadLimitatorFactoryBean<T> implements FactoryBean<T>, Initi
 			load.incrementAndGet();
 			try {
 				return method.invoke(target, args);
+			}
+			catch (InvocationTargetException e) {
+				final Throwable t  = e.getCause();
+				if (t instanceof Exception) {
+					throw (Exception) t;
+				}
+				else if (t instanceof Error) {
+					throw (Error) t;
+				}
+				else {
+					// on laisse passer la InvocationTargetException car la cause n'est pas exposable ici...
+					throw e;
+				}
 			}
 			finally {
 				load.decrementAndGet();
