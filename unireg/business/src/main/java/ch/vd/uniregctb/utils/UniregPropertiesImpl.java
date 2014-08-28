@@ -21,6 +21,7 @@ public class UniregPropertiesImpl implements UniregProperties, InitializingBean 
 	private static final Pattern PASSWORD_PATTERN = Pattern.compile("(password|psswd)", Pattern.CASE_INSENSITIVE);
 
 	private String filename;
+	private String fileEncoding;
 
 	private PropertiesConfiguration properties;
 
@@ -29,6 +30,10 @@ public class UniregPropertiesImpl implements UniregProperties, InitializingBean 
 
 	public void setFilename(String filename) throws Exception {
 		this.filename = filename;
+	}
+
+	public void setFileEncoding(String fileEncoding) {
+		this.fileEncoding = fileEncoding;
 	}
 
 	@Override
@@ -57,6 +62,7 @@ public class UniregPropertiesImpl implements UniregProperties, InitializingBean 
 
 		properties = new PropertiesConfiguration();
 		properties.setReloadingStrategy(new FileChangedReloadingStrategy());
+		properties.setEncoding(fileEncoding);
 		properties.setListDelimiter((char) 0); // Disabled
 		// Fais le chargement a la fin quand on a disabled le delimiter
 		properties.setFileName(filename);
