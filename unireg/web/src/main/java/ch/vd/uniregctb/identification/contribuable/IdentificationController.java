@@ -71,6 +71,7 @@ public class IdentificationController {
 	private static final String TABLE_NAME = "message";
 	private static final int PAGE_SIZE = 25;
 	private static final String DEFAULT_FIELD = "id";
+	private static final String IDENTIFICATION_PAGINATION = "identificationPagination";
 	private static final WebParamPagination INITIAL_PAGINATION = new WebParamPagination(1, PAGE_SIZE, DEFAULT_FIELD, false);
 	private IdentificationMessagesStatsManager identificationMessagesStatsManager;
 	private IdentificationMapHelper identificationMapHelper;
@@ -278,7 +279,7 @@ public class IdentificationController {
 
 	private void addPaginationToModel(HttpServletRequest request, ModelMap model) {
 		final ParamPagination pagination = new WebParamPagination(request, TABLE_NAME, PAGE_SIZE, DEFAULT_FIELD, false);
-		model.put("identificationPagination",pagination);
+		model.put(IDENTIFICATION_PAGINATION,pagination);
 	}
 
 	/**Permet de conserver les critères sélectionneées des messages dans la session
@@ -456,7 +457,9 @@ public class IdentificationController {
 
 	private void construireModelMessageEnCours(HttpServletRequest request, ModelMap model, IdentificationContribuableListCriteria criteria) throws AdressesResolutionException {
 		// Récupération de la pagination
-		final WebParamPagination pagination = new WebParamPagination(request, "message", 25);
+		//final WebParamPagination pagination = new WebParamPagination(request, "message", 25);
+		final WebParamPagination paginationStockee = (WebParamPagination)model.get(IDENTIFICATION_PAGINATION);
+		final WebParamPagination pagination = paginationStockee !=null? paginationStockee: new WebParamPagination(request, "message", 25);
 		final List<IdentificationMessagesResultView> listIdentifications;
 		final int nombreElements;
 
@@ -483,7 +486,8 @@ public class IdentificationController {
 
 	private void construireModelMessageSuspendu(HttpServletRequest request, ModelMap model, IdentificationContribuableListCriteria criteria) throws AdressesResolutionException {
 		// Récupération de la pagination
-		final WebParamPagination pagination = new WebParamPagination(request, "message", 25);
+		final WebParamPagination paginationStockee = (WebParamPagination)model.get(IDENTIFICATION_PAGINATION);
+		final WebParamPagination pagination = paginationStockee !=null? paginationStockee: new WebParamPagination(request, "message", 25);
 		final List<IdentificationMessagesResultView> listIdentifications;
 		final int nombreElements;
 
@@ -500,7 +504,8 @@ public class IdentificationController {
 
 	private void construireModelMessageTraite(HttpServletRequest request, ModelMap model, IdentificationContribuableListCriteria criteria) throws AdressesResolutionException {
 		// Récupération de la pagination
-		final WebParamPagination pagination = new WebParamPagination(request, "message", 25);
+		final WebParamPagination paginationStockee = (WebParamPagination)model.get(IDENTIFICATION_PAGINATION);
+		final WebParamPagination pagination = paginationStockee !=null? paginationStockee: new WebParamPagination(request, "message", 25);
 		final List<IdentificationMessagesResultView> listIdentifications;
 		int nombreElements;
 
