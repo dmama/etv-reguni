@@ -1,8 +1,10 @@
 package ch.vd.uniregctb.identification.contribuable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -16,6 +18,7 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
@@ -30,6 +33,7 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.evenement.identification.contribuable.CriteresAdresse;
 import ch.vd.uniregctb.evenement.identification.contribuable.CriteresAdresse.TypeAdresse;
+import ch.vd.uniregctb.evenement.identification.contribuable.CriteresEntreprise;
 import ch.vd.uniregctb.evenement.identification.contribuable.CriteresPersonne;
 import ch.vd.uniregctb.evenement.identification.contribuable.Demande;
 import ch.vd.uniregctb.evenement.identification.contribuable.Demande.PrioriteEmetteur;
@@ -49,8 +53,12 @@ import ch.vd.uniregctb.indexer.tiers.MenageCommunIndexable;
 import ch.vd.uniregctb.indexer.tiers.NonHabitantIndexable;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.indexer.tiers.TopList;
+import ch.vd.uniregctb.interfaces.model.mock.MockPersonneMorale;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.interfaces.service.mock.MockServicePM;
+import ch.vd.uniregctb.tiers.AutreCommunaute;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
+import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersCriteria;
@@ -153,6 +161,8 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		service.setIdentCtbDAO(identCtbDAO);
 		service.setTransactionManager(transactionManager);
 		service.setServiceUpi(serviceUpi);
+		service.setCaracteresSpeciauxIdentificationEntreprise(new LinkedHashSet<>(Arrays.asList(",", ";", ".", ",", "-")));
+		service.setMotsReservesIdentificationEntreprise(new LinkedHashSet<>(Arrays.asList("de", "du", "des", "le", "la", "les", "sa", "sàrl", "gmbh", "ag")));
 
 		messageHandler = new TestMessageHandler();
 		service.setMessageHandler(messageHandler);
@@ -176,14 +186,14 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		{
 			CriteresPersonne criteres = new CriteresPersonne();
 			criteres.setNom("Dupneu"); // du contentieux
-			assertEmpty(service.identifie(criteres, null));
+			assertEmpty(service.identifiePersonnePhysique(criteres, null));
 		}
 		{
 			CriteresPersonne criteres = new CriteresPersonne();
 			criteres.setNom("A");
 			criteres.setPrenoms("B");
 			criteres.setDateNaissance(date(1970, 2, 2));
-			assertEmpty(service.identifie(criteres, null));
+			assertEmpty(service.identifiePersonnePhysique(criteres, null));
 		}
 	}
 
@@ -239,38 +249,38 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			CriteresPersonne criteres = new CriteresPersonne();
 			criteres.setNom("Planck");
 			criteres.setPrenoms("Max");
-			assertEmpty(service.identifie(criteres, null));
+			assertEmpty(service.identifiePersonnePhysique(criteres, null));
 		}
 
 		{
 			CriteresPersonne criteres = new CriteresPersonne();
 			criteres.setNom("Zweistein"); // l'identification sur le nom doit être stricte
-			assertEmpty(service.identifie(criteres, null));
+			assertEmpty(service.identifiePersonnePhysique(criteres, null));
 		}
 
 		{
 			CriteresPersonne criteres = new CriteresPersonne();
 			criteres.setPrenoms("Alberto"); // l'identification sur le prénom doit être stricte
-			assertEmpty(service.identifie(criteres, null));
+			assertEmpty(service.identifiePersonnePhysique(criteres, null));
 		}
 
 		{
 			CriteresPersonne criteres = new CriteresPersonne();
 			criteres.setDateNaissance(date(1953, 3, 4)); // mauvaise date de naissance
-			assertEmpty(service.identifie(criteres, null));
+			assertEmpty(service.identifiePersonnePhysique(criteres, null));
 		}
 
 		{
 			CriteresPersonne criteres = new CriteresPersonne();
 			criteres.setNom("Zweisteinen");
 			criteres.setSexe(Sexe.FEMININ);
-			assertEmpty(service.identifie(criteres, null));
+			assertEmpty(service.identifiePersonnePhysique(criteres, null));
 		}
 
 		{
 			CriteresPersonne criteres = new CriteresPersonne();
 			criteres.setNom("Zweisteinen");
-			final List<Long> list = service.identifie(criteres, null);
+			final List<Long> list = service.identifiePersonnePhysique(criteres, null);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 
@@ -281,7 +291,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		{
 			CriteresPersonne criteres = new CriteresPersonne();
 			criteres.setPrenoms("Albert");
-			final List<Long> list = service.identifie(criteres, null);
+			final List<Long> list = service.identifiePersonnePhysique(criteres, null);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 
@@ -292,7 +302,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		{
 			CriteresPersonne criteres = new CriteresPersonne();
 			criteres.setDateNaissance(date(1953, 4, 3));
-			final List<Long> list = service.identifie(criteres, null);
+			final List<Long> list = service.identifiePersonnePhysique(criteres, null);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 
@@ -306,7 +316,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			criteres.setNom("Zweisteinen");
 			criteres.setSexe(Sexe.MASCULIN);
 			criteres.setDateNaissance(date(1953, 4, 3));
-			final List<Long> list = service.identifie(criteres, null);
+			final List<Long> list = service.identifiePersonnePhysique(criteres, null);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 
@@ -2241,7 +2251,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		{
 			CriteresPersonne criteres = new CriteresPersonne();
 			criteres.setPrenoms("Albert");
-			final List<Long> list = service.identifie(criteres, null);
+			final List<Long> list = service.identifiePersonnePhysique(criteres, null);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 
@@ -2254,7 +2264,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			CriteresPersonne criteres = new CriteresPersonne();
 			criteres.setNom("Zweisteinen");
 			criteres.setSexe(Sexe.MASCULIN);
-			final List<Long> list = service.identifie(criteres, null);
+			final List<Long> list = service.identifiePersonnePhysique(criteres, null);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 
@@ -2266,7 +2276,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		{
 			CriteresPersonne criteres = new CriteresPersonne();
 			criteres.setNom("Zweisteinen");
-			final List<Long> list = service.identifie(criteres, null);
+			final List<Long> list = service.identifiePersonnePhysique(criteres, null);
 			assertNotNull(list);
 			assertEquals(2, list.size());
 			Collections.sort(list);
@@ -2331,7 +2341,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			criteres.setPrenoms("Alberto");
 
 			try {
-				final List<Long> list = service.identifie(criteres, null);
+				final List<Long> list = service.identifiePersonnePhysique(criteres, null);
 				fail(ArrayUtils.toString(list.toArray()));
 			}
 			catch (TooManyIdentificationPossibilitiesException e) {
@@ -2418,7 +2428,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			adresse.setNpaSuisse(1000);
 			criteres.setAdresse(adresse);
 
-			final List<Long> list = service.identifie(criteres, null);
+			final List<Long> list = service.identifiePersonnePhysique(criteres, null);
 			assertNotNull(list);
 			assertEquals(2, list.size());
 			Collections.sort(list);
@@ -2438,7 +2448,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			adresse.setNpaSuisse(1000);
 			criteres.setAdresse(adresse);
 
-			final List<Long> list = service.identifie(criteres, null);
+			final List<Long> list = service.identifiePersonnePhysique(criteres, null);
 			assertNotNull(list);
 			assertEquals(2, list.size());
 		}
@@ -2452,7 +2462,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			adresse.setNpaSuisse(1000);
 			criteres.setAdresse(adresse);
 
-			final List<Long> list = service.identifie(criteres, null);
+			final List<Long> list = service.identifiePersonnePhysique(criteres, null);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 
@@ -2465,7 +2475,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			CriteresPersonne criteres = new CriteresPersonne();
 			criteres.setNom("Haddoque");
 
-			final List<Long> list = service.identifie(criteres, null);
+			final List<Long> list = service.identifiePersonnePhysique(criteres, null);
 			assertNotNull(list);
 			assertEquals(2, list.size());
 			Collections.sort(list);
@@ -2485,7 +2495,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			adresse.setNpaSuisse(1350);
 			criteres.setAdresse(adresse);
 
-			final List<Long> list = service.identifie(criteres, null);
+			final List<Long> list = service.identifiePersonnePhysique(criteres, null);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 
@@ -2502,7 +2512,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			adresse.setNpaSuisse(1337);
 			criteres.setAdresse(adresse);
 
-			final List<Long> list = service.identifie(criteres, null);
+			final List<Long> list = service.identifiePersonnePhysique(criteres, null);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 
@@ -2543,7 +2553,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			adresse.setNpaSuisse(1000);
 			criteres.setAdresse(adresse);
 
-			final List<Long> list = service.identifie(criteres, null);
+			final List<Long> list = service.identifiePersonnePhysique(criteres, null);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			Collections.sort(list);
@@ -3481,7 +3491,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			criteres.setNom("MUELLER");
 			criteres.setPrenoms("Maya");
 			criteres.setNAVS11("67142770412");
-			final List<Long> list = service.identifie(criteres, null);
+			final List<Long> list = service.identifiePersonnePhysique(criteres, null);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 
@@ -3523,7 +3533,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			criteres.setNom("OHLENSCHLAEGER");
 			criteres.setPrenoms("Alex");
 			criteres.setNAVS11("69447258153");
-			final List<Long> list = service.identifie(criteres, null);
+			final List<Long> list = service.identifiePersonnePhysique(criteres, null);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 
@@ -3564,7 +3574,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			criteres.setNom("Schoenenberg");
 			criteres.setPrenoms("Peter");
 			criteres.setNAVS11("83143380117");
-			final List<Long> list = service.identifie(criteres, null);
+			final List<Long> list = service.identifiePersonnePhysique(criteres, null);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 
@@ -3605,7 +3615,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			criteres.setNom("STEVENSON");
 			criteres.setPrenoms("Hugh Clark");
 			criteres.setNAVS11("85948265155");
-			final List<Long> list = service.identifie(criteres, null);
+			final List<Long> list = service.identifiePersonnePhysique(criteres, null);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 
@@ -3646,7 +3656,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			criteres.setNom("RICHOZ-VINCENT");
 			criteres.setPrenoms("Jean-Pierre");
 			criteres.setNAVS11("74150388116");
-			final List<Long> list = service.identifie(criteres, null);
+			final List<Long> list = service.identifiePersonnePhysique(criteres, null);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 
@@ -3687,7 +3697,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			criteres.setNom("Schoenenberg");
 			criteres.setPrenoms("Peter Hanz");
 			criteres.setNAVS11("83143380117");
-			final List<Long> list = service.identifie(criteres, null);
+			final List<Long> list = service.identifiePersonnePhysique(criteres, null);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 
@@ -3728,7 +3738,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			criteres.setNom("Schoenenberg-Mueller");
 			criteres.setPrenoms("Peter");
 			criteres.setNAVS11("83143380117");
-			final List<Long> list = service.identifie(criteres, null);
+			final List<Long> list = service.identifiePersonnePhysique(criteres, null);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 
@@ -3769,7 +3779,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			criteres.setNom("Schoenenberg-Mueller");
 			criteres.setPrenoms("Ülrich");
 			criteres.setNAVS11("83143380117");
-			final List<Long> list = service.identifie(criteres, null);
+			final List<Long> list = service.identifiePersonnePhysique(criteres, null);
 			assertNotNull(list);
 			assertEquals(1, list.size());
 
@@ -4257,7 +4267,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			critere.setNAVS11(navs11);
 
 			try {
-				final List<Long> res = service.identifie(critere, null);
+				final List<Long> res = service.identifiePersonnePhysique(critere, null);
 				fail("D'après l'agorithme de la spécification, on aurait dû récupérer toutes les personnes physiques sans navs11 également, donc beaucoup!");
 			}
 			catch (TooManyIdentificationPossibilitiesException e) {
@@ -4308,7 +4318,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 				final CriteresPersonne criteres = new CriteresPersonne();
 				criteres.setNAVS13(oldAvs);
 				final Mutable<String> upiAvs = new MutableObject<>();
-				final List<Long> res = service.identifie(criteres, upiAvs);
+				final List<Long> res = service.identifiePersonnePhysique(criteres, upiAvs);
 				assertNotNull(res);
 				assertEquals(1, res.size());
 				assertEquals((Long) ppId, res.get(0));
@@ -4362,7 +4372,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 				final CriteresPersonne criteres = new CriteresPersonne();
 				criteres.setNAVS13(oldAvs);
 				final Mutable<String> upiAvs = new MutableObject<>("toto");
-				final List<Long> res = service.identifie(criteres, upiAvs);
+				final List<Long> res = service.identifiePersonnePhysique(criteres, upiAvs);
 				assertNotNull(res);
 				assertEquals(1, res.size());
 				assertEquals((Long) ppId, res.get(0));
@@ -4434,7 +4444,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 				criteres.setNAVS13(oldAvs);
 				criteres.setDateNaissance(date(2000,5,3));
 				final Mutable<String> upiAvs = new MutableObject<>("titi");
-				final List<Long> res = service.identifie(criteres, upiAvs);
+				final List<Long> res = service.identifiePersonnePhysique(criteres, upiAvs);
 				assertNotNull(res);
 				assertEquals(3, res.size());
 				assertNull(upiAvs.getValue());
@@ -4729,6 +4739,382 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 				assertEquals(Integer.valueOf(0), ic.getNbContribuablesTrouves());
 				assertNull(ic.getReponse().getNoContribuable());
 				return null;
+			}
+		});
+	}
+
+	@Test
+	public void testIdentificationEntrepriseParIde() throws Exception {
+
+		// mise en place des PM
+		servicePM.setUp(new MockServicePM() {
+			@Override
+			protected void init() {
+				addPM(MockPersonneMorale.BanqueCoopBale);
+				addPM(MockPersonneMorale.BCV);
+				addPM(MockPersonneMorale.NestleSuisse);
+			}
+		});
+
+		// mise en place fiscale
+		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				// personne physique avec le même numéro IDE que la banque coop de Bâle (pour vérifier que seules les entreprises sont prises en compte dans la recherche)
+				final PersonnePhysique ppBidon = addNonHabitant("Albert", "Coop", null, Sexe.MASCULIN);
+				addIdentificationEntreprise(ppBidon, MockPersonneMorale.BanqueCoopBale.getNumeroIDE());
+
+				final Entreprise pm = addEntreprise(MockPersonneMorale.BanqueCoopBale.getNumeroEntreprise());
+				addEntreprise(MockPersonneMorale.BCV.getNumeroEntreprise());
+				addEntreprise(MockPersonneMorale.NestleSuisse.getNumeroEntreprise());
+				return pm.getNumero();
+			}
+		});
+
+		// on attend la fin de l'indexation
+		globalTiersIndexer.sync();
+
+		// lancement de l'identification par numéro IDE seul
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final CriteresEntreprise criteres = new CriteresEntreprise();
+				criteres.setIde(MockPersonneMorale.BanqueCoopBale.getNumeroIDE());
+
+				final List<Long> found = service.identifieEntreprise(criteres);
+				Assert.assertNotNull(found);
+				Assert.assertEquals(Arrays.asList(pmId), found);
+			}
+		});
+	}
+
+	@Test
+	public void testIdentificationEntrepriseParIdeInconnu() throws Exception {
+
+		// mise en place des PM
+		servicePM.setUp(new MockServicePM() {
+			@Override
+			protected void init() {
+				addPM(MockPersonneMorale.BanqueCoopBale);
+				addPM(MockPersonneMorale.BCV);
+				addPM(MockPersonneMorale.NestleSuisse);
+			}
+		});
+
+		// mise en place fiscale
+		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				// personne physique avec le même numéro IDE que la banque coop de Bâle (pour vérifier que seules les entreprises sont prises en compte dans la recherche)
+				final PersonnePhysique ppBidon = addNonHabitant("Albert", "Coop", null, Sexe.MASCULIN);
+				addIdentificationEntreprise(ppBidon, MockPersonneMorale.BanqueCoopBale.getNumeroIDE());
+
+				final Entreprise pm = addEntreprise(MockPersonneMorale.BanqueCoopBale.getNumeroEntreprise());
+				addEntreprise(MockPersonneMorale.BCV.getNumeroEntreprise());
+				addEntreprise(MockPersonneMorale.NestleSuisse.getNumeroEntreprise());
+				return pm.getNumero();
+			}
+		});
+
+		// on attend la fin de l'indexation
+		globalTiersIndexer.sync();
+
+		// lancement de l'identification par numéro IDE seul
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final CriteresEntreprise criteres = new CriteresEntreprise();
+				criteres.setIde("CHE999999996");            // non attribué aux entités connues
+
+				final List<Long> found = service.identifieEntreprise(criteres);
+				Assert.assertNotNull(found);
+				Assert.assertEquals(Collections.<Long>emptyList(), found);
+			}
+		});
+	}
+
+	@Test
+	public void testIdentificationEntrepriseParIdeAvecNomNonConforme() throws Exception {
+
+		// mise en place des PM
+		servicePM.setUp(new MockServicePM() {
+			@Override
+			protected void init() {
+				addPM(MockPersonneMorale.BanqueCoopBale);
+				addPM(MockPersonneMorale.BCV);
+				addPM(MockPersonneMorale.NestleSuisse);
+			}
+		});
+
+		// mise en place fiscale
+		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				// personne physique avec le même numéro IDE que la banque coop de Bâle (pour vérifier que seules les entreprises sont prises en compte dans la recherche)
+				final PersonnePhysique ppBidon = addNonHabitant("Albert", "Coop", null, Sexe.MASCULIN);
+				addIdentificationEntreprise(ppBidon, MockPersonneMorale.BanqueCoopBale.getNumeroIDE());
+
+				final Entreprise pm = addEntreprise(MockPersonneMorale.BanqueCoopBale.getNumeroEntreprise());
+				addEntreprise(MockPersonneMorale.BCV.getNumeroEntreprise());
+				addEntreprise(MockPersonneMorale.NestleSuisse.getNumeroEntreprise());
+				return pm.getNumero();
+			}
+		});
+
+		// on attend la fin de l'indexation
+		globalTiersIndexer.sync();
+
+		// lancement de l'identification
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final CriteresEntreprise criteres = new CriteresEntreprise();
+				criteres.setIde(MockPersonneMorale.BanqueCoopBale.getNumeroIDE());
+				criteres.setRaisonSociale("Nestlé");            // ce n'est pas le bon nom
+
+				final List<Long> found = service.identifieEntreprise(criteres);
+				Assert.assertNotNull(found);
+				Assert.assertEquals(Collections.<Long>emptyList(), found);
+			}
+		});
+	}
+
+	@Test
+	public void testIdentificationEntrepriseParRaisonSociale() throws Exception {
+
+		// mise en place des PM
+		servicePM.setUp(new MockServicePM() {
+			@Override
+			protected void init() {
+				addPM(MockPersonneMorale.BanqueCoopBale);
+				addPM(MockPersonneMorale.BCV);
+				addPM(MockPersonneMorale.NestleSuisse);
+			}
+		});
+
+		// mise en place fiscale
+		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				// personne physique avec le même nom que la banque coop de Bâle (pour vérifier que seules les entreprises sont prises en compte dans la recherche)
+				addNonHabitant("Albert", "Coop", null, Sexe.MASCULIN);
+
+				final Entreprise pm = addEntreprise(MockPersonneMorale.BanqueCoopBale.getNumeroEntreprise());
+				addEntreprise(MockPersonneMorale.BCV.getNumeroEntreprise());
+				addEntreprise(MockPersonneMorale.NestleSuisse.getNumeroEntreprise());
+				return pm.getNumero();
+			}
+		});
+
+		// on attend la fin de l'indexation
+		globalTiersIndexer.sync();
+
+		// lancement de l'identification
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final CriteresEntreprise criteres = new CriteresEntreprise();
+				criteres.setRaisonSociale("coop");
+
+				final List<Long> found = service.identifieEntreprise(criteres);
+				Assert.assertNotNull(found);
+				Assert.assertEquals(Arrays.asList(pmId), found);
+			}
+		});
+	}
+
+	@Test
+	public void testIdentificationEntrepriseParRaisonSocialeAvecIdeNonConforme() throws Exception {
+
+		// mise en place des PM
+		servicePM.setUp(new MockServicePM() {
+			@Override
+			protected void init() {
+				addPM(MockPersonneMorale.BanqueCoopBale);
+				addPM(MockPersonneMorale.BCV);
+				addPM(MockPersonneMorale.NestleSuisse);
+			}
+		});
+
+		// mise en place fiscale
+		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				// personne physique avec le même nom que la banque coop de Bâle (pour vérifier que seules les entreprises sont prises en compte dans la recherche)
+				addNonHabitant("Albert", "Coop", null, Sexe.MASCULIN);
+
+				final Entreprise pm = addEntreprise(MockPersonneMorale.BanqueCoopBale.getNumeroEntreprise());
+				addEntreprise(MockPersonneMorale.BCV.getNumeroEntreprise());
+				addEntreprise(MockPersonneMorale.NestleSuisse.getNumeroEntreprise());
+				return pm.getNumero();
+			}
+		});
+
+		// on attend la fin de l'indexation
+		globalTiersIndexer.sync();
+
+		// lancement de l'identification
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final CriteresEntreprise criteres = new CriteresEntreprise();
+				criteres.setRaisonSociale("coop");
+				criteres.setIde("CHE999999996");        // celui-ci n'est attribué à aucune des entités connues dans le registre
+
+				final List<Long> found = service.identifieEntreprise(criteres);
+				Assert.assertNotNull(found);
+				Assert.assertEquals(Collections.<Long>emptyList(), found);      // pas d'identification
+			}
+		});
+	}
+
+	@Test
+	public void testIdentificationEntrepriseParRaisonSocialeAvecMotsCles() throws Exception {
+
+		// mise en place des PM
+		servicePM.setUp(new MockServicePM() {
+			@Override
+			protected void init() {
+				addPM(MockPersonneMorale.BanqueCoopBale);
+				addPM(MockPersonneMorale.BCV);
+				addPM(MockPersonneMorale.NestleSuisse);
+			}
+		});
+
+		// mise en place fiscale
+		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				// personne physique avec le même nom que la banque coop de Bâle (pour vérifier que seules les entreprises sont prises en compte dans la recherche)
+				addNonHabitant("Albert", "Coop", null, Sexe.MASCULIN);
+
+				final Entreprise pm = addEntreprise(MockPersonneMorale.BanqueCoopBale.getNumeroEntreprise());
+				addEntreprise(MockPersonneMorale.BCV.getNumeroEntreprise());
+				addEntreprise(MockPersonneMorale.NestleSuisse.getNumeroEntreprise());
+				return pm.getNumero();
+			}
+		});
+
+		// on attend la fin de l'indexation
+		globalTiersIndexer.sync();
+
+		// lancement de l'identification
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final CriteresEntreprise criteres = new CriteresEntreprise();
+				criteres.setRaisonSociale("banque de la coop");
+
+				final List<Long> found = service.identifieEntreprise(criteres);
+				Assert.assertNotNull(found);
+				Assert.assertEquals(Arrays.asList(pmId), found);
+			}
+		});
+	}
+
+	@Test
+	public void testIdentificationEntrepriseParRaisonSocialeAvecFrancisationNecessaire() throws Exception {
+
+		// mise en place des PM
+		servicePM.setUp(new MockServicePM() {
+			@Override
+			protected void init() {
+				addPM(MockPersonneMorale.BanqueCoopBale);
+				addPM(MockPersonneMorale.BCV);
+				addPM(MockPersonneMorale.NestleSuisse);
+			}
+		});
+
+		// mise en place fiscale
+		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				// personne physique avec le même nom que la banque coop de Bâle (pour vérifier que seules les entreprises sont prises en compte dans la recherche)
+				addNonHabitant("Albert", "Müller Mueller", null, Sexe.MASCULIN);
+
+				final AutreCommunaute ac = addAutreCommunaute("Mueller GmbH");
+
+				addEntreprise(MockPersonneMorale.BanqueCoopBale.getNumeroEntreprise());
+				addEntreprise(MockPersonneMorale.BCV.getNumeroEntreprise());
+				addEntreprise(MockPersonneMorale.NestleSuisse.getNumeroEntreprise());
+				return ac.getNumero();
+			}
+		});
+
+		// on attend la fin de l'indexation
+		globalTiersIndexer.sync();
+
+		// lancement de l'identification
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final CriteresEntreprise criteres = new CriteresEntreprise();
+				criteres.setRaisonSociale("müller");
+
+				final List<Long> found = service.identifieEntreprise(criteres);
+				Assert.assertNotNull(found);
+				Assert.assertEquals(Arrays.asList(pmId), found);
+			}
+		});
+	}
+
+	@Test
+	public void testIdentificationEntrepriseParRaisonSocialeEtNPA() throws Exception {
+
+		// mise en place des PM
+		servicePM.setUp(new MockServicePM() {
+			@Override
+			protected void init() {
+				addPM(MockPersonneMorale.BanqueCoopBale);
+				addPM(MockPersonneMorale.BCV);
+				addPM(MockPersonneMorale.NestleSuisse);
+			}
+		});
+
+		// mise en place fiscale
+		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				// personne physique avec le même nom que la banque coop de Bâle (pour vérifier que seules les entreprises sont prises en compte dans la recherche)
+				addNonHabitant("Albert", "Müller Mueller", null, Sexe.MASCULIN);
+
+				final AutreCommunaute one = addAutreCommunaute("Favre GmbH");
+				addAdresseSuisse(one, TypeAdresseTiers.COURRIER, date(2011, 1, 1), null, MockRue.Echallens.GrandRue);
+
+				final AutreCommunaute two = addAutreCommunaute("Favre & Co AG");
+				addAdresseSuisse(two, TypeAdresseTiers.COURRIER, date(2013, 4, 12), null, MockRue.Lausanne.AvenueDeLaGare);
+
+				addEntreprise(MockPersonneMorale.BanqueCoopBale.getNumeroEntreprise());
+				addEntreprise(MockPersonneMorale.BCV.getNumeroEntreprise());
+				addEntreprise(MockPersonneMorale.NestleSuisse.getNumeroEntreprise());
+				return one.getNumero();
+			}
+		});
+
+		// on attend la fin de l'indexation
+		globalTiersIndexer.sync();
+
+		// lancement de l'identification, d'abord avec le nom seul (2 candidats) puis avec le nom et le NPA
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final CriteresEntreprise criteres = new CriteresEntreprise();
+				criteres.setRaisonSociale("favre");
+
+				{
+					final List<Long> found = service.identifieEntreprise(criteres);
+					Assert.assertNotNull(found);
+					Assert.assertEquals(2, found.size());
+				}
+				{
+					final CriteresAdresse critAdresse = new CriteresAdresse();
+					critAdresse.setNpaSuisse(MockRue.Echallens.GrandRue.getLocalite().getNPA());
+					criteres.setAdresse(critAdresse);
+
+					final List<Long> found = service.identifieEntreprise(criteres);
+					Assert.assertNotNull(found);
+					Assert.assertEquals(Arrays.asList(pmId), found);
+				}
 			}
 		});
 	}

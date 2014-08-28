@@ -11,6 +11,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.uniregctb.common.ParamPagination;
+import ch.vd.uniregctb.evenement.identification.contribuable.CriteresEntreprise;
 import ch.vd.uniregctb.evenement.identification.contribuable.CriteresPersonne;
 import ch.vd.uniregctb.evenement.identification.contribuable.Erreur;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
@@ -42,19 +43,27 @@ public interface IdentificationContribuableService {
 	 * @throws TooManyIdentificationPossibilitiesException si le nombre de résultats de l'identification dépasse le seuil {@link #NB_MAX_RESULTS_POUR_LISTE_IDENTIFICATION}
 	 * @see #NB_MAX_RESULTS_POUR_LISTE_IDENTIFICATION
 	 */
-	List<Long> identifie(CriteresPersonne criteres, @Nullable Mutable<String> upiAutreNavs) throws TooManyIdentificationPossibilitiesException;
+	List<Long> identifiePersonnePhysique(CriteresPersonne criteres, @Nullable Mutable<String> upiAutreNavs) throws TooManyIdentificationPossibilitiesException;
+
+	/**
+	 * Effectue une recherche des contribuables (= entreprises et autres communautés) en utilisant les critères spécifiés
+	 * @param criteres les critères de recherche
+	 * @return une liste contenant 0 ou plus numéros de contribuable
+	 * @throws TooManyIdentificationPossibilitiesException si le nombre de résultats de l'identification dépasse le seuil {@link #NB_MAX_RESULTS_POUR_LISTE_IDENTIFICATION}
+	 * @see #NB_MAX_RESULTS_POUR_LISTE_IDENTIFICATION
+	 */
+	List<Long> identifieEntreprise(CriteresEntreprise criteres) throws TooManyIdentificationPossibilitiesException;
 
 	/**
 	 * Recherche une liste d'IdentificationContribuable en fonction de critères
 	 */
 	List<IdentificationContribuable> find(IdentificationContribuableCriteria identificationContribuableCriteria, ParamPagination paramPagination,
-	                                             IdentificationContribuableEtatFilter filter, TypeDemande... typeDemande);
+	                                      IdentificationContribuableEtatFilter filter, TypeDemande... typeDemande);
 
 	/**
 	 * Nombre d'IdentificationContribuable en fonction de critères
 	 */
-	int count(IdentificationContribuableCriteria identificationContribuableCriteria,
-	                 IdentificationContribuableEtatFilter filter, TypeDemande... typeDemande);
+	int count(IdentificationContribuableCriteria identificationContribuableCriteria, IdentificationContribuableEtatFilter filter, TypeDemande... typeDemande);
 
 	/**
 	 * Force l'identification du contribuable
@@ -98,7 +107,6 @@ public interface IdentificationContribuableService {
 	/**
 	 * Relance l'identification automatique sur les messages en etat intermediaire: A TRAITER, A EXPERTISER, SUSPENDU
 	 */
-
 	IdentifierContribuableResults relancerIdentificationAutomatique(RegDate dateTraitement, int nbThreads, StatusManager status, Long idMessage);
 
 	/**

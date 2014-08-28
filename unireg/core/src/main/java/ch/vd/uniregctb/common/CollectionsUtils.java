@@ -184,4 +184,15 @@ public class CollectionsUtils extends CollectionUtils {
 		}
 		return b.toString();
 	}
+
+	private static final StringRenderer<String> STRING_TRIMMER = new StringRenderer<String>() {
+		@Override
+		public String toString(String str) {
+			return StringUtils.trimToEmpty(str);
+		}
+	};
+
+	public static String concat(List<String> list, String separator) {
+		return toString(list, STRING_TRIMMER, separator);
+	}
 }

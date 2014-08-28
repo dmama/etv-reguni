@@ -4,8 +4,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
+import java.util.EnumSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
@@ -15,6 +18,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.mutable.Mutable;
+import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -46,8 +50,10 @@ import ch.vd.uniregctb.common.DefaultThreadFactory;
 import ch.vd.uniregctb.common.DefaultThreadNameGenerator;
 import ch.vd.uniregctb.common.NumeroCtbStringRenderer;
 import ch.vd.uniregctb.common.ParamPagination;
+import ch.vd.uniregctb.common.StringComparator;
 import ch.vd.uniregctb.common.StringRenderer;
 import ch.vd.uniregctb.evenement.identification.contribuable.CriteresAdresse;
+import ch.vd.uniregctb.evenement.identification.contribuable.CriteresEntreprise;
 import ch.vd.uniregctb.evenement.identification.contribuable.CriteresPersonne;
 import ch.vd.uniregctb.evenement.identification.contribuable.Demande;
 import ch.vd.uniregctb.evenement.identification.contribuable.DemandeHandler;
@@ -68,7 +74,9 @@ import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
+import ch.vd.uniregctb.tiers.AutreCommunaute;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
+import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersCriteria;
@@ -99,6 +107,9 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 
 	private IdentificationContribuableCache identificationContribuableCache = new IdentificationContribuableCache();        // cache vide à l'initialisation
 	private ExecutorService asynchronousFlowSearchExecutor;
+
+	private Set<String> caracteresSpeciauxIdentificationEntreprise = Collections.emptySet();
+	private Set<Pattern> motsReservesIdentificationEntreprise = Collections.emptySet();
 
 	public void setTransactionManager(PlatformTransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
@@ -146,6 +157,28 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 
 	public void setFlowSearchThreadPoolSize(int flowSearchThreadPoolSize) {
 		this.flowSearchThreadPoolSize = flowSearchThreadPoolSize;
+	}
+
+	public void setCaracteresSpeciauxIdentificationEntreprise(Set<String> caracteresSpeciauxIdentificationEntreprise) {
+		if (caracteresSpeciauxIdentificationEntreprise == null || caracteresSpeciauxIdentificationEntreprise.isEmpty()) {
+			this.caracteresSpeciauxIdentificationEntreprise = Collections.emptySet();
+		}
+		else {
+			this.caracteresSpeciauxIdentificationEntreprise = caracteresSpeciauxIdentificationEntreprise;
+		}
+	}
+
+	public void setMotsReservesIdentificationEntreprise(Set<String> motsReservesIdentificationEntreprise) {
+		if (motsReservesIdentificationEntreprise == null || motsReservesIdentificationEntreprise.isEmpty()) {
+			this.motsReservesIdentificationEntreprise = Collections.emptySet();
+		}
+		else {
+			this.motsReservesIdentificationEntreprise = new LinkedHashSet<>(motsReservesIdentificationEntreprise.size());
+			for (String mr : motsReservesIdentificationEntreprise) {
+				final Pattern pattern = Pattern.compile(String.format("\\b%s\\b", Pattern.quote(mr)), Pattern.CASE_INSENSITIVE);
+				this.motsReservesIdentificationEntreprise.add(pattern);
+			}
+		}
 	}
 
 	@Override
@@ -224,6 +257,29 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		SANS_DERNIER_PRENOM_SANS_E
 	}
 
+	private static enum PhaseRechercheSurRaisonSociale {
+
+		/**
+		 * Première phase de recherche sur la raison sociale
+		 */
+		STANDARD,
+
+		/**
+		 * Phase en enlevant les caractères spéciaux
+		 */
+		SANS_CARACTERES_SPECIAUX,
+
+		/**
+		 * Phase qui consiste à franciser les ä, ö, et ü en ae, oe et ue
+		 */
+		FRANCISATION,
+
+		/**
+		 * Phase qui consiste à enlever quelques mots réservés des critères de la demande
+		 */
+		SANS_MOTS_RESERVES
+	}
+
 	private static interface IdFetcher<T> {
 		Long getId(T element);
 	}
@@ -258,20 +314,21 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		});
 	}
 
-	public boolean criteresEmptyForReChercheComplete(CriteresPersonne criteres){
-		return criteres.getAdresse()==null &&
-				criteres.getDateNaissance()==null &&
-				criteres.getSexe() ==null &&
+	public static boolean criteresEmptyForReChercheComplete(CriteresPersonne criteres) {
+		return criteres.getAdresse() == null &&
+				criteres.getDateNaissance() == null &&
+				criteres.getSexe() == null &&
 				StringUtils.isBlank(criteres.getNom()) &&
 				StringUtils.isBlank(criteres.getPrenoms()) &&
 				StringUtils.isBlank(criteres.getNAVS11()) ;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	public static boolean criteresEmptyForReChercheComplete(CriteresEntreprise criteres) {
+		return criteres.getAdresse() == null && StringUtils.isBlank(criteres.getRaisonSociale());
+	}
+
 	@Override
-	public List<Long> identifie(CriteresPersonne criteres, Mutable<String> upiAutreNavs) throws TooManyIdentificationPossibilitiesException {
+	public List<Long> identifiePersonnePhysique(CriteresPersonne criteres, Mutable<String> upiAutreNavs) throws TooManyIdentificationPossibilitiesException {
 
 		final Mutable<String> avsUpi = upiAutreNavs != null ? upiAutreNavs : new MutableObject<String>();
 		avsUpi.setValue(null);
@@ -282,14 +339,14 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 			final List<PersonnePhysique> ppList = getListePersonneFromIndexedData(indexedAvs13);
 			final List<PersonnePhysique> listeFiltree = filterCoherenceAfterIdentificationAvs13(ppList, criteres);
 			if (isIdentificationOK(listeFiltree)) {
-				LOGGER.info("Identification par phase avs13 réussi");
+				LOGGER.info("Identification par phase avs13 réussie.");
 				return buildIdListFromPP(listeFiltree);
 			}
 		}
 
 		//Si aucun autre critères que le navs13 n'est renseigné, on s'arrete la.
 		if (criteresEmptyForReChercheComplete(criteres)) {
-			LOGGER.info("Phase de recherche complète non effectuée car les critères necessaires  à la recherche sont vides.");
+			LOGGER.info("Phase de recherche complète non effectuée car les critères nécessaires à la recherche sont vides.");
 			return Collections.emptyList();
 		}
 
@@ -299,13 +356,92 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		return buildIdListFromIndex(indexedComplets);
 	}
 
+	@Override
+	public List<Long> identifieEntreprise(CriteresEntreprise criteres) throws TooManyIdentificationPossibilitiesException {
+		// 1. phase IDE
+		final List<TiersIndexedData> indexedIde = findByIde(criteres);
+		if (indexedIde != null && indexedIde.size() == 1) {
+			// 1 seul résultat -> c'est peut-être lui
+			if (checkRaisonSocialeEntreprise(criteres.getRaisonSociale(), indexedIde.get(0))) {
+				// c'est lui !
+				LOGGER.info("Indentification par phase IDE réussie.");
+				return buildIdListFromIndex(indexedIde);
+			}
+		}
+
+		// si aucun autre critère que le numéro IDE n'est renseigné, pas la peine d'aller plus loin
+		if (criteresEmptyForReChercheComplete(criteres)) {
+			LOGGER.info("Phase de recherche complète non effectuée car les critères nécessaires à la recherche sont vides.");
+			return Collections.emptyList();
+		}
+
+		// 2. phase raison sociale / npa
+		LOGGER.info("Début de phase de recherche complète");
+		final List<TiersIndexedData> indexedComplets = findAvecCriteresComplets(criteres, NB_MAX_RESULTS_POUR_LISTE_IDENTIFICATION);
+		return buildIdListFromIndex(indexedComplets);
+	}
+
+	private List<TiersIndexedData> findByIde(CriteresEntreprise criteres) {
+		final TiersCriteria criteria = new TiersCriteria();
+		criteria.setTypesTiersImperatifs(EnumSet.of(TiersCriteria.TypeTiers.AUTRE_COMMUNAUTE, TiersCriteria.TypeTiers.ENTREPRISE));
+		criteria.setNumeroIDE(criteres.getIde());
+		if (!criteria.isEmpty()) {
+			try {
+				return searcher.search(criteria);
+			}
+			catch (TooManyResultsIndexerException e) {
+				// dans la phase IDE, trop de résultats = aucun résultat
+			}
+		}
+		return Collections.emptyList();
+	}
+
+	private boolean checkRaisonSocialeEntreprise(String askedRaisonSociale, @NotNull TiersIndexedData found) {
+		if (StringUtils.isBlank(askedRaisonSociale)) {
+			// pas de besoin spécifique, on accepte...
+			return true;
+		}
+
+		final Tiers tiers = tiersDAO.get(found.getNumero());
+		final String knownRaisonSociale = getRaisonSocialeEntreprise(tiers);
+		return knownRaisonSociale != null && containedIn(knownRaisonSociale, askedRaisonSociale);
+	}
+
+	private static boolean containedIn(String container, String containee) {
+		final String normalizedContainer = normalize(container);
+		final String normalizedContainee = normalize(containee);
+		return normalizedContainer.contains(normalizedContainee);
+	}
+
+	@NotNull
+	private static String normalize(String str) {
+		// on enlève les accents, on met tout en minuscules, et on enlèves les espaces multiples
+		if (str == null) {
+			return StringUtils.EMPTY;
+		}
+		final String lowercases = StringComparator.toLowerCaseWithoutAccent(str);
+		return lowercases.replaceAll("\\s+", " ").trim();
+	}
+
+	private String getRaisonSocialeEntreprise(Tiers tiers) {
+		if (tiers instanceof Entreprise) {
+			final List<String> multiLineRaisonSociale = tiersService.getRaisonSociale((Entreprise) tiers);
+			return CollectionsUtils.concat(multiLineRaisonSociale, " ");
+		}
+		else if (tiers instanceof AutreCommunaute) {
+			return ((AutreCommunaute) tiers).getNom();
+		}
+		else {
+			return null;
+		}
+	}
+
 	private List<PersonnePhysique> filterCoherenceAfterIdentificationAvs13(List<PersonnePhysique> list, CriteresPersonne criteres) {
 		//SIFISC-10914
 		//Le controle ne se fera que sur le nom /prenom si on a pas de date de naissance dans la demande
 		if (criteres.getDateNaissance()==null) {
 			return controleNomPrenom(list, criteres);
 		}
-
 
 		//SIFISC-13033
 		//Contrôle des résultats avec la date de naissance qui est renseigné.on passe une liste de copie
@@ -417,6 +553,155 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	}
 
 	/**
+	 * Phase de recherche sur tous les critères (parce que la phase sur les critères IDE a échoué)
+	 * @param criteres les critères de l'identification tels que fournis dans la demande
+	 * @param maxNumberForList le nombre maximal de donner à renvoyer au delà duquel tout se termine en {@link TooManyIdentificationPossibilitiesException}
+	 * @return une liste de contribuables qui satisfont aux critères
+	 * @throws TooManyIdentificationPossibilitiesException si le nombre de résultats trouvés est plus grand que <code>maxNumberForList</code>
+	 */
+	@NotNull
+	private List<TiersIndexedData> findAvecCriteresComplets(CriteresEntreprise criteres, int maxNumberForList) throws TooManyIdentificationPossibilitiesException {
+
+		List<TiersIndexedData> indexedData = null;
+
+		for (PhaseRechercheSurRaisonSociale phase : PhaseRechercheSurRaisonSociale.values()) {
+			try {
+				final TiersCriteria criteria = asTiersCriteriaForRaisonSociale(criteres.getRaisonSociale(), phase);
+				if (criteres.getAdresse() != null) {
+					final CriteresAdresse adresse = criteres.getAdresse();
+					final String npa = adresse.getNpaSuisse() == null ? StringUtils.trimToNull(adresse.getNpaEtranger()) : Integer.toString(adresse.getNpaSuisse());
+					if (StringUtils.isNotBlank(npa)) {
+						criteria.setNpaTousOrNull(npa);
+					}
+				}
+
+				if (!criteria.isEmpty()) {
+					indexedData = searcher.searchTop(criteria, maxNumberForList + 1);
+					if (indexedData != null && !indexedData.isEmpty()) {
+						if (indexedData.size() > maxNumberForList) {
+							throw new TooManyIdentificationPossibilitiesException(maxNumberForList, indexedData);
+						}
+						break;
+					}
+				}
+			}
+			catch (IgnoredPhaseException e) {
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug(String.format("Phase %s ignorée : %s", phase, e.getMessage()));
+				}
+			}
+		}
+
+		if (indexedData == null || indexedData.isEmpty() || isIdeNonConforme(indexedData, criteres.getIde())) {
+			return Collections.emptyList();
+		}
+		return indexedData;
+	}
+
+	private TiersCriteria asTiersCriteriaForRaisonSociale(String critereRaisonSociale, PhaseRechercheSurRaisonSociale phase) throws IgnoredPhaseException {
+		final String consigne;
+		final Mutable<Boolean> actionEffective = new MutableBoolean(true);
+		switch (phase) {
+		case STANDARD:
+			consigne = critereRaisonSociale;
+			break;
+		case SANS_CARACTERES_SPECIAUX:
+			consigne = enleverCaracteresSpeciaux(critereRaisonSociale, actionEffective);
+			break;
+		case FRANCISATION:
+			consigne = franciser(enleverCaracteresSpeciaux(critereRaisonSociale, null), actionEffective);
+			break;
+		case SANS_MOTS_RESERVES:
+			consigne = enleverMotsReserves(franciser(enleverCaracteresSpeciaux(critereRaisonSociale, null), null), actionEffective);
+			break;
+		default:
+			throw new IllegalArgumentException("Invalid phase : " + phase);
+		}
+
+		if (actionEffective.getValue() == null || !actionEffective.getValue()) {
+			throw new IgnoredPhaseException("La raison sociale n'est pas affectée par cette transformation.");
+		}
+
+		final TiersCriteria criteria = new TiersCriteria();
+		criteria.setNomRaison(consigne);
+		criteria.setTypesTiersImperatifs(EnumSet.of(TiersCriteria.TypeTiers.AUTRE_COMMUNAUTE, TiersCriteria.TypeTiers.ENTREPRISE));
+		return criteria;
+	}
+
+	/**
+	 * En fait, on les remplace par des séparations de mots
+	 * @param source chaîne de caractères en entrée
+	 * @param actionEffective si non <code>null</code>, contiendra en sortie un flag qui indique si oui ou non des caractères ont été enlevés
+	 * @return chaîne de caractères dans laquelle les caractères spéciaux ont été enlevés
+	 */
+	private String enleverCaracteresSpeciaux(String source, @Nullable Mutable<Boolean> actionEffective) {
+		if (StringUtils.isBlank(source) || caracteresSpeciauxIdentificationEntreprise.isEmpty()) {
+			if (actionEffective != null) {
+				actionEffective.setValue(false);
+			}
+			return source;
+		}
+
+		String currentState = source;
+		for (String cs : caracteresSpeciauxIdentificationEntreprise) {
+			if (currentState.contains(cs)) {
+				currentState = currentState.replace(cs, " ");
+			}
+		}
+		if (actionEffective != null) {
+			//noinspection StringEquality
+			actionEffective.setValue(currentState != source);
+		}
+		return currentState;
+	}
+
+	private static final Pattern UMLAEUTE_PATTEN = Pattern.compile("[äüöÄÜÖ]", Pattern.CASE_INSENSITIVE);
+
+	private static String franciser(String source, @Nullable Mutable<Boolean> actionEffective) {
+		final String res;
+		if (StringUtils.isBlank(source)) {
+			res = source;
+		}
+		else {
+			final Matcher matcher = UMLAEUTE_PATTEN.matcher(source);
+			if (matcher.find()) {
+				res = source.replaceAll("[äÄ]", "ae").replaceAll("[üÜ]", "ue").replaceAll("[öÖ]", "oe");
+			}
+			else {
+				res = source;
+			}
+		}
+
+		if (actionEffective != null) {
+			//noinspection StringEquality
+			actionEffective.setValue(res != source);
+		}
+		return res;
+	}
+
+	private String enleverMotsReserves(String source, @Nullable Mutable<Boolean> actionEffective) {
+		if (StringUtils.isBlank(source) || motsReservesIdentificationEntreprise.isEmpty()) {
+			if (actionEffective != null) {
+				actionEffective.setValue(false);
+			}
+			return source;
+		}
+
+		String currentState = source;
+		for (Pattern mr : motsReservesIdentificationEntreprise) {
+			final Matcher matcher = mr.matcher(currentState);
+			if (matcher.find()) {
+				currentState = matcher.replaceAll(StringUtils.EMPTY);
+			}
+		}
+		if (actionEffective != null) {
+			//noinspection StringEquality
+			actionEffective.setValue(currentState != source);
+		}
+		return currentState;
+	}
+
+	/**
 	 * Phase de recherche sur tous les critères (parce que la phase sur les critères NAVS a échoué)
 	 * @param criteres les critères de l'identification tels que fournis dans la demande
 	 * @param avsUpi si non-null, le numéro AVS renvoyé par l'UPI en remplacement de celui présent dans la demande
@@ -484,20 +769,41 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	}
 
 	/**
-	 * Controle final sur le NAVS13
+	 * Contrôle final sur le NAVS13
 	 */
-	boolean isNavs13NonConforme(List<TiersIndexedData> tiersIndexedData, String navs13){
-		if (tiersIndexedData == null || tiersIndexedData.isEmpty() || StringUtils.isEmpty(navs13)){
+	private static boolean isNavs13NonConforme(List<TiersIndexedData> tiersIndexedData, String navs13) {
+		if (tiersIndexedData == null || tiersIndexedData.isEmpty() || StringUtils.isBlank(navs13)) {
 			return false;
 		}
 
 		final String navs13Candidat = tiersIndexedData.get(0).getNavs13_1();
-		final boolean resultatUnique = tiersIndexedData.size()==1;
+		final boolean resultatUnique = tiersIndexedData.size() == 1;
 		final boolean navs13CandidatRenseigne = StringUtils.isNotEmpty(navs13Candidat);
 		final boolean navs13Differents = !navs13.equals(navs13Candidat);
-		//L
 		return resultatUnique && navs13CandidatRenseigne && navs13Differents;
+	}
 
+	/**
+	 * Contrôle final sur le numéro IDE
+	 * @return <code>false</code> s'il n'y a pas exactement un résultat dans la liste, ou si ce résultat n'a pas d'IDE connu, ou si le critère donné sur l'IDE est vide&nbsp;; <code>true</code> sinon.
+	 */
+	private static boolean isIdeNonConforme(List<TiersIndexedData> tiersIndexData, String ide) {
+		if (tiersIndexData == null || tiersIndexData.isEmpty() || tiersIndexData.size() > 1 || StringUtils.isBlank(ide)) {
+			return false;
+		}
+
+		final TiersIndexedData found = tiersIndexData.get(0);
+		final List<String> knownIdes = found.getNumerosIDE();
+		if (knownIdes == null || knownIdes.isEmpty()) {
+			return false;
+		}
+
+		for (String known : knownIdes) {
+			if (ide.equalsIgnoreCase(known)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**
@@ -867,7 +1173,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 			IdentificationResultKind resultKind;
 			List<Long> found;
 			try {
-				found = identifie(criteresPersonne, avsUpi);
+				found = identifiePersonnePhysique(criteresPersonne, avsUpi);
 				switch (found.size()) {
 				case 0:
 					resultKind = IdentificationResultKind.FOUND_NONE;
@@ -1156,7 +1462,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 			List<Long> found;
 			IdentificationResultKind resultKind;
 			try {
-				found = identifie(criteresPersonne, avsUpi);
+				found = identifiePersonnePhysique(criteresPersonne, avsUpi);
 				switch (found.size()) {
 				case 0:
 					resultKind = IdentificationResultKind.FOUND_NONE;

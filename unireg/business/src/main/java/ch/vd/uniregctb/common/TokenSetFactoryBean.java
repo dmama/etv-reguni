@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.common;
 
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -16,7 +16,7 @@ public abstract class TokenSetFactoryBean<T> implements FactoryBean<Set<T>>, Ini
 
 	private final Class<T> elementClass;
 
-	private String separatorRegExp = "[\\s,;]";
+	private String separatorRegExp = "[\\s,;]+";
 	private String elementString;
 	private Set<T> elements;
 
@@ -52,7 +52,7 @@ public abstract class TokenSetFactoryBean<T> implements FactoryBean<Set<T>>, Ini
 		}
 
 		final String[] tokens = toParse.split(separatorRegExp);
-		final Set<T> set = new HashSet<>(tokens.length);
+		final Set<T> set = new LinkedHashSet<>(tokens.length);      // on conserve l'ordre au cas où il est important (au pire, il ne l'est pas et cela ne fait pas de différence)
 		for (String token : tokens) {
 			if (StringUtils.isNotBlank(token)) {
 				set.add(buildToken(clazz, token));

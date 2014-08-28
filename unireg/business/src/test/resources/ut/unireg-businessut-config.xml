@@ -14,4 +14,15 @@
 
 	<bean id="sourcesMonoQuittancementDi" class="ch.vd.uniregctb.common.TokenSetFactoryBean$StringSet"/>
 
+	<!-- Identification des PM -->
+
+	<bean id="motsReservesIdentificationPM" class="ch.vd.uniregctb.common.TokenSetFactoryBean$StringSet">
+		<property name="elements" value="de la l le du sa sàrl gmbh ag"/>
+	</bean>
+
+	<bean id="caracteresSpeciauxIdentificationPM" class="ch.vd.uniregctb.common.TokenSetFactoryBean$StringSet">
+		<property name="separatorRegExp" value="\s"/>
+		<property name="elements" value=", . ' - ;"/>
+	</bean>
+
 </beans>

@@ -12,5 +12,7 @@
 
 	<!-- empty in the NEXUS environment -->
 	<bean id="sourcesMonoQuittancementDi" class="ch.vd.uniregctb.common.TokenSetFactoryBean$StringSet"/>
+	<bean id="motsReservesIdentificationPM" class="ch.vd.uniregctb.common.TokenSetFactoryBean$StringSet"/>
+	<bean id="caracteresSpeciauxIdentificationPM" class="ch.vd.uniregctb.common.TokenSetFactoryBean$StringSet"/>
 
 </beans>

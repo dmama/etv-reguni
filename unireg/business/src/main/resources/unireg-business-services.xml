@@ -169,6 +169,8 @@
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 		<property name="flowSearchThreadPoolSize" value="10"/>
 		<property name="serviceUpi" ref="serviceUpiRaw"/>
+		<property name="caracteresSpeciauxIdentificationEntreprise" ref="caracteresSpeciauxIdentificationPM"/>
+		<property name="motsReservesIdentificationEntreprise" ref="motsReservesIdentificationPM"/>
 	</bean>
 
 	<!-- Helpers de toutes sortes et de tous lieux (Dieu y retrouvera les siens) -->

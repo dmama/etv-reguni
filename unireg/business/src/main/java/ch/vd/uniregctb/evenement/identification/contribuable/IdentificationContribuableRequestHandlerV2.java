@@ -67,7 +67,7 @@ public class IdentificationContribuableRequestHandlerV2 implements Identificatio
 		IdentificationResult status;
 		List<Long> found;
 		try {
-			found = identCtbService.identifie(criteresPersonne, null);
+			found = identCtbService.identifiePersonnePhysique(criteresPersonne, null);
 			switch (found.size()) {
 			case 0:
 				status = IdentificationResult.FOUND_NONE;

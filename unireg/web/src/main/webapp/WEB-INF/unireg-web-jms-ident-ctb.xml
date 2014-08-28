@@ -25,6 +25,7 @@
 			<util:map>
 				<entry key="ch.vd.unireg.xml.event.identification.request.v2.IdentificationContribuableRequest" value-ref="identificationContribuableRequestHandlerV2"/>
 				<entry key="ch.vd.unireg.xml.event.identification.request.v3.IdentificationContribuableRequest" value-ref="identificationContribuableRequestHandlerV3"/>
+				<entry key="ch.vd.unireg.xml.event.identification.request.v4.IdentificationContribuableRequest" value-ref="identificationContribuableRequestHandlerV4"/>
 			</util:map>
 		</property>
 	</bean>
@@ -35,6 +36,11 @@
 	</bean>
 
 	<bean id="identificationContribuableRequestHandlerV3" class="ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableRequestHandlerV3">
+		<property name="identCtbService" ref="identCtbService" />
+		<property name="tiersService" ref="tiersService" />
+	</bean>
+
+	<bean id="identificationContribuableRequestHandlerV4" class="ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableRequestHandlerV4">
 		<property name="identCtbService" ref="identCtbService" />
 		<property name="tiersService" ref="tiersService" />
 	</bean>
