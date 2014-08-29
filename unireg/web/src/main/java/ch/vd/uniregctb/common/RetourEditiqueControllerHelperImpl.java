@@ -9,6 +9,7 @@ import org.springframework.context.MessageSourceAware;
 
 import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.editique.EditiqueResultatDocument;
+import ch.vd.uniregctb.editique.EditiqueResultatErreur;
 import ch.vd.uniregctb.editique.EditiqueResultatReroutageInbox;
 import ch.vd.uniregctb.editique.EditiqueResultatTimeout;
 import ch.vd.uniregctb.utils.WebContextUtils;
@@ -33,9 +34,9 @@ public class RetourEditiqueControllerHelperImpl implements MessageSourceAware, R
 	public String traiteRetourEditique(@Nullable EditiqueResultat resultat,
 	                                   HttpServletResponse response,
 	                                   String filenameRadical,
-	                                   @Nullable TraitementRetourEditique onReroutageInbox,
-	                                   @Nullable TraitementRetourEditique onTimeout,
-	                                   @Nullable TraitementRetourEditique onError) throws IOException {
+	                                   @Nullable TraitementRetourEditique<? super EditiqueResultatReroutageInbox> onReroutageInbox,
+	                                   @Nullable TraitementRetourEditique<? super EditiqueResultatTimeout> onTimeout,
+	                                   @Nullable TraitementRetourEditique<? super EditiqueResultatErreur> onError) throws IOException {
 		if (resultat instanceof EditiqueResultatDocument) {
 			downloadService.download((EditiqueResultatDocument) resultat, filenameRadical, response);
 			return null;
@@ -44,16 +45,16 @@ public class RetourEditiqueControllerHelperImpl implements MessageSourceAware, R
 			final String msg = messageSource.getMessage(MESSAGE_REROUTAGE_INBOX, null, WebContextUtils.getDefaultLocale());
 			Flash.warning(msg);
 			if (onReroutageInbox != null) {
-				return onReroutageInbox.doJob(resultat);
+				return onReroutageInbox.doJob((EditiqueResultatReroutageInbox) resultat);
 			}
 		}
-		else if (resultat instanceof EditiqueResultatTimeout) {
-			if (onTimeout != null) {
-				return onTimeout.doJob(resultat);
-			}
+		else if (resultat instanceof EditiqueResultatTimeout && onTimeout != null) {
+			return onTimeout.doJob((EditiqueResultatTimeout) resultat);
 		}
-		else if (onError != null) {
-			return onError.doJob(resultat);
+		else if (resultat instanceof EditiqueResultatErreur) {
+			if (onError != null) {
+				return onError.doJob((EditiqueResultatErreur) resultat);
+			}
 		}
 
 		throw new RuntimeException("Que faire avec résultat ? : " + resultat);

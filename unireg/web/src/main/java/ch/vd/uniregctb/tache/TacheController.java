@@ -34,6 +34,7 @@ import ch.vd.uniregctb.common.RetourEditiqueControllerHelper;
 import ch.vd.uniregctb.common.WebParamPagination;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
+import ch.vd.uniregctb.editique.EditiqueResultatErreur;
 import ch.vd.uniregctb.tache.manager.TacheListManager;
 import ch.vd.uniregctb.tache.validator.TachesValidator;
 import ch.vd.uniregctb.tache.view.ImpressionNouveauxDossiersView;
@@ -232,9 +233,9 @@ public class TacheController {
 
 	@RequestMapping(value = "/imprimer-nouveaux-dossiers.do", method = RequestMethod.POST)
 	public String printNouveauxDossiers(HttpServletResponse response, @ModelAttribute ImpressionNouveauxDossiersView view) throws Exception {
-		final RetourEditiqueControllerHelper.TraitementRetourEditique erreur = new RetourEditiqueControllerHelper.TraitementRetourEditique() {
+		final RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatErreur> erreur = new RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatErreur>() {
 			@Override
-			public String doJob(EditiqueResultat resultat) {
+			public String doJob(EditiqueResultatErreur resultat) {
 				final String message = String.format("%s Veuillez recommencer l'opération ultérieurement.", EditiqueErrorHelper.getMessageErreurEditique(resultat));
 				throw new EditiqueCommunicationException(message);
 			}
@@ -242,7 +243,7 @@ public class TacheController {
 
 		try {
 			final EditiqueResultat res = tacheListManager.envoieImpressionLocalDossier(view);
-			return editiqueControllerHelper.traiteRetourEditique(res, response, "dossier", null, erreur, erreur);
+			return editiqueControllerHelper.traiteRetourEditique(res, response, "dossier", null, null, erreur);
 		}
 		catch (EditiqueException e) {
 			LOGGER.error(e.getMessage(), e);

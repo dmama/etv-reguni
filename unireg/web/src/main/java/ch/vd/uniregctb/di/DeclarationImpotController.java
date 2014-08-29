@@ -55,6 +55,8 @@ import ch.vd.uniregctb.di.view.EditerDeclarationImpotView;
 import ch.vd.uniregctb.di.view.ImprimerDuplicataDeclarationImpotView;
 import ch.vd.uniregctb.di.view.ImprimerNouvelleDeclarationImpotView;
 import ch.vd.uniregctb.editique.EditiqueResultat;
+import ch.vd.uniregctb.editique.EditiqueResultatErreur;
+import ch.vd.uniregctb.editique.EditiqueResultatReroutageInbox;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
@@ -435,22 +437,22 @@ public class DeclarationImpotController {
 		final EditiqueResultat resultat = manager.envoieImpressionLocalDI(tiersId, null, view.getDateDebutPeriodeImposition(), view.getDateFinPeriodeImposition(), view.getTypeDocument(),
 				view.getTypeAdresseRetour(), view.getDelaiAccorde(), view.getDateRetour());
 
-		final RetourEditiqueControllerHelper.TraitementRetourEditique inbox = new RetourEditiqueControllerHelper.TraitementRetourEditique() {
+		final RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatReroutageInbox> inbox = new RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatReroutageInbox>() {
 			@Override
-			public String doJob(EditiqueResultat resultat) {
+			public String doJob(EditiqueResultatReroutageInbox resultat) {
 				return "redirect:/di/list.do?tiersId=" + tiersId;
 			}
 		};
 
-		final RetourEditiqueControllerHelper.TraitementRetourEditique erreur = new RetourEditiqueControllerHelper.TraitementRetourEditique() {
+		final RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatErreur> erreur = new RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatErreur>() {
 			@Override
-			public String doJob(EditiqueResultat resultat) {
+			public String doJob(EditiqueResultatErreur resultat) {
 				Flash.error(String.format("%s Veuillez imprimer un duplicata de la déclaration d'impôt.", EditiqueErrorHelper.getMessageErreurEditique(resultat)));
 				return "redirect:/di/list.do?tiersId=" + tiersId;
 			}
 		};
 
-		return retourEditiqueControllerHelper.traiteRetourEditique(resultat, response, "di", inbox, erreur, erreur);
+		return retourEditiqueControllerHelper.traiteRetourEditique(resultat, response, "di", inbox, null, erreur);
 	}
 
 	private TypeDocument determineTypeDocumentParDefaut(long tiersId) {
@@ -658,7 +660,7 @@ public class DeclarationImpotController {
 
 		final RedirectEditDI inbox = new RedirectEditDI(id);
 		final RedirectEditDIApresErreur erreur = new RedirectEditDIApresErreur(id, messageSource);
-		return retourEditiqueControllerHelper.traiteRetourEditique(resultat, response, "sommationDi", inbox, erreur, erreur);
+		return retourEditiqueControllerHelper.traiteRetourEditique(resultat, response, "sommationDi", inbox, null, erreur);
 	}
 
 	/**
@@ -738,7 +740,7 @@ public class DeclarationImpotController {
 
 		final RedirectEditDI inbox = new RedirectEditDI(id);
 		final RedirectEditDIApresErreur erreur = new RedirectEditDIApresErreur(id, messageSource);
-		return retourEditiqueControllerHelper.traiteRetourEditique(resultat, response, "di", inbox, erreur, erreur);
+		return retourEditiqueControllerHelper.traiteRetourEditique(resultat, response, "di", inbox, null, erreur);
 	}
 
 	/**
@@ -811,7 +813,7 @@ public class DeclarationImpotController {
 
 			final RedirectEditDI inbox = new RedirectEditDI(id);
 			final RedirectEditDIApresErreur erreur = new RedirectEditDIApresErreur(id, messageSource);
-			return retourEditiqueControllerHelper.traiteRetourEditique(resultat, response, "delai", inbox, erreur, erreur);
+			return retourEditiqueControllerHelper.traiteRetourEditique(resultat, response, "delai", inbox, null, erreur);
 		}
 		else {
 			// Pas de duplicata -> on retourne à l'édition de la DI
@@ -835,7 +837,7 @@ public class DeclarationImpotController {
 		});
 	}
 
-	private static class RedirectEditDI implements RetourEditiqueControllerHelper.TraitementRetourEditique {
+	private static class RedirectEditDI implements RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatReroutageInbox> {
 		private final long id;
 
 		public RedirectEditDI(long id) {
@@ -843,12 +845,12 @@ public class DeclarationImpotController {
 		}
 
 		@Override
-		public String doJob(EditiqueResultat resultat) {
+		public String doJob(EditiqueResultatReroutageInbox resultat) {
 			return "redirect:/di/editer.do?id=" + id;
 		}
 	}
 
-	private static class RedirectEditDIApresErreur implements RetourEditiqueControllerHelper.TraitementRetourEditique {
+	private static class RedirectEditDIApresErreur implements RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatErreur> {
 		private final long id;
 		private final MessageSource messageSource;
 
@@ -858,7 +860,7 @@ public class DeclarationImpotController {
 		}
 
 		@Override
-		public String doJob(EditiqueResultat resultat) {
+		public String doJob(EditiqueResultatErreur resultat) {
 			final String message = messageSource.getMessage("global.error.communication.editique", null, WebContextUtils.getDefaultLocale());
 			Flash.error(message);
 			return "redirect:/di/editer.do?id=" + id;

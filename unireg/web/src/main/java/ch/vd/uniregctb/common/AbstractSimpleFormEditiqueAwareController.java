@@ -8,6 +8,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.editique.EditiqueResultatDocument;
+import ch.vd.uniregctb.editique.EditiqueResultatErreur;
 import ch.vd.uniregctb.editique.EditiqueResultatReroutageInbox;
 import ch.vd.uniregctb.editique.EditiqueResultatTimeout;
 
@@ -28,14 +29,14 @@ public abstract class AbstractSimpleFormEditiqueAwareController extends Abstract
 	/**
 	 * Permet de spécifier des comportements
 	 */
-	protected static interface TraitementRetourEditique {
+	protected static interface TraitementRetourEditique<T extends EditiqueResultat> {
 
 		/**
 		 * Méthode appelée pour implémentation du comportement spécifique
 		 * @param resultat résultat renvoyé par éditique
 		 * @return en général une action de redirection (dans les cas d'erreur / timeout)
 		 */
-		ModelAndView doJob(EditiqueResultat resultat);
+		ModelAndView doJob(T resultat);
 	}
 
 	/**
@@ -52,9 +53,9 @@ public abstract class AbstractSimpleFormEditiqueAwareController extends Abstract
 	protected ModelAndView traiteRetourEditique(@Nullable EditiqueResultat resultat,
 	                                            HttpServletResponse response,
 	                                            String filenameRadical,
-												@Nullable TraitementRetourEditique onReroutageInbox,
-												@Nullable TraitementRetourEditique onTimeout,
-												@Nullable TraitementRetourEditique onError) throws IOException {
+												@Nullable TraitementRetourEditique<? super EditiqueResultatReroutageInbox> onReroutageInbox,
+												@Nullable TraitementRetourEditique<? super EditiqueResultatTimeout> onTimeout,
+												@Nullable TraitementRetourEditique<? super EditiqueResultatErreur> onError) throws IOException {
 		if (resultat instanceof EditiqueResultatDocument) {
 			editiqueDownloadService.download((EditiqueResultatDocument) resultat, filenameRadical, response);
 		}
@@ -62,16 +63,16 @@ public abstract class AbstractSimpleFormEditiqueAwareController extends Abstract
 			final String msg = getMessageSourceAccessor().getMessage(MESSAGE_REROUTAGE_INBOX);
 			flashWarning(msg);
 			if (onReroutageInbox != null) {
-				return onReroutageInbox.doJob(resultat);
+				return onReroutageInbox.doJob((EditiqueResultatReroutageInbox) resultat);
 			}
 		}
-		else if (resultat instanceof EditiqueResultatTimeout) {
-			if (onTimeout != null) {
-				return onTimeout.doJob(resultat);
-			}
+		else if (resultat instanceof EditiqueResultatTimeout && onTimeout != null) {
+			return onTimeout.doJob((EditiqueResultatTimeout) resultat);
 		}
-		else if (onError != null) {
-			return onError.doJob(resultat);
+		else if (resultat instanceof EditiqueResultatErreur) {
+			if (onError != null) {
+				return onError.doJob((EditiqueResultatErreur) resultat);
+			}
 		}
 		return null;
 	}

@@ -1,8 +1,8 @@
 package ch.vd.uniregctb.common;
 
-import ch.vd.uniregctb.editique.EditiqueResultat;
+import org.apache.commons.lang3.StringUtils;
+
 import ch.vd.uniregctb.editique.EditiqueResultatErreur;
-import ch.vd.uniregctb.editique.EditiqueResultatTimeout;
 
 /**
  * classe qui permet de factoriser quelques petites méthodes utilitaires
@@ -10,28 +10,16 @@ import ch.vd.uniregctb.editique.EditiqueResultatTimeout;
  */
 public abstract class EditiqueErrorHelper {
 
-	private static String getComplementErreur(EditiqueResultat resultat) {
-		if (resultat instanceof EditiqueResultatTimeout) {
-			return "Time-out";
-		}
-		else if (resultat instanceof EditiqueResultatErreur) {
-			return ((EditiqueResultatErreur) resultat).getErrorMessage();
-		}
-		else {
-			return null;
-		}
-	}
-
 	/**
 	 * @param resultat
 	 * @return Renvoie un message d'erreur "La communication avec l'éditique a échoué... avec éventuellement un message plus précis
 	 */
-	public static String getMessageErreurEditique(EditiqueResultat resultat) {
+	public static String getMessageErreurEditique(EditiqueResultatErreur resultat) {
 		final StringBuilder builder = new StringBuilder();
 		builder.append("La communication avec l'éditique a échoué");
 
-		final String complement = getComplementErreur(resultat);
-		if (complement != null) {
+		final String complement = resultat.getErrorMessage();
+		if (StringUtils.isNotBlank(complement)) {
 			builder.append(" (").append(complement).append(')');
 		}
 		builder.append('.');

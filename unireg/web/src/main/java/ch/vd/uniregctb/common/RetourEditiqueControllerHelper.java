@@ -6,6 +6,9 @@ import java.io.IOException;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.uniregctb.editique.EditiqueResultat;
+import ch.vd.uniregctb.editique.EditiqueResultatErreur;
+import ch.vd.uniregctb.editique.EditiqueResultatReroutageInbox;
+import ch.vd.uniregctb.editique.EditiqueResultatTimeout;
 
 public interface RetourEditiqueControllerHelper {
 
@@ -25,19 +28,19 @@ public interface RetourEditiqueControllerHelper {
 	String traiteRetourEditique(@Nullable EditiqueResultat resultat,
 	                            HttpServletResponse response,
 	                            String filenameRadical,
-	                            @Nullable TraitementRetourEditique onReroutageInbox,
-	                            @Nullable TraitementRetourEditique onTimeout,
-	                            @Nullable TraitementRetourEditique onError) throws IOException;
+	                            @Nullable TraitementRetourEditique<? super EditiqueResultatReroutageInbox> onReroutageInbox,
+	                            @Nullable TraitementRetourEditique<? super EditiqueResultatTimeout> onTimeout,
+	                            @Nullable TraitementRetourEditique<? super EditiqueResultatErreur> onError) throws IOException;
 
 	/**
 	 * Permet de spécifier des comportements
 	 */
-	public static interface TraitementRetourEditique {
+	public static interface TraitementRetourEditique<T extends EditiqueResultat> {
 		/**
 		 * Méthode appelée pour implémentation du comportement spécifique
 		 * @param resultat résultat renvoyé par éditique
 		 * @return en général une action de redirection (dans les cas d'erreur / timeout)
 		 */
-		String doJob(EditiqueResultat resultat);
+		String doJob(T resultat);
 	}
 }

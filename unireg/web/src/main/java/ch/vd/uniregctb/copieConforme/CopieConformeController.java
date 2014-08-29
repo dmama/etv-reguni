@@ -15,6 +15,7 @@ import ch.vd.uniregctb.common.HttpHelper;
 import ch.vd.uniregctb.common.RetourEditiqueControllerHelper;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
+import ch.vd.uniregctb.editique.EditiqueResultatErreur;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
 
 @Controller
@@ -67,15 +68,15 @@ public class CopieConformeController {
 	 */
 	private String getDocumentCopieConforme(final HttpServletRequest request, HttpServletResponse response, String filename, final String errorMessageIfNoSuchDocument, CopieConformeGetter getter) throws EditiqueException, IOException {
 		final EditiqueResultat reponseEditique = getter.getCopieConforme();
-		final RetourEditiqueControllerHelper.TraitementRetourEditique redirect = new RetourEditiqueControllerHelper.TraitementRetourEditique() {
+		final RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultat> redirect = new RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultat>() {
 			@Override
 			public String doJob(EditiqueResultat resultat) {
 				return HttpHelper.getRedirectPagePrecedente(request);
 			}
 		};
-		final RetourEditiqueControllerHelper.TraitementRetourEditique erreur = new RetourEditiqueControllerHelper.TraitementRetourEditique() {
+		final RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatErreur> erreur = new RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatErreur>() {
 			@Override
-			public String doJob(EditiqueResultat resultat) {
+			public String doJob(EditiqueResultatErreur resultat) {
 				if (StringUtils.isNotBlank(errorMessageIfNoSuchDocument)) {
 					Flash.error(errorMessageIfNoSuchDocument, errorFadingTimeout);
 				}
@@ -83,7 +84,7 @@ public class CopieConformeController {
 			}
 		};
 
-		return helper.traiteRetourEditique(reponseEditique, response, filename, redirect, erreur, erreur);
+		return helper.traiteRetourEditique(reponseEditique, response, filename, redirect, null, erreur);
 	}
 
 	@RequestMapping(value = "/declaration/copie-conforme-delai.do", method = RequestMethod.GET)

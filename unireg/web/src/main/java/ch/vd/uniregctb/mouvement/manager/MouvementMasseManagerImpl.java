@@ -30,6 +30,7 @@ import ch.vd.uniregctb.common.ParamSorting;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.editique.EditiqueResultatDocument;
+import ch.vd.uniregctb.editique.EditiqueResultatErreur;
 import ch.vd.uniregctb.extraction.BaseExtractorImpl;
 import ch.vd.uniregctb.extraction.BatchableExtractor;
 import ch.vd.uniregctb.extraction.ExtractionJob;
@@ -192,9 +193,18 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 		final EditiqueResultat resultat = mouvementService.envoyerImpressionBordereau(mvts);
 		if (!(resultat instanceof EditiqueResultatDocument)) {
 			// je veux faire sauter la transaction pour que le bordereau ne soit pas généré
-			throw new EditiqueException(EditiqueErrorHelper.getMessageErreurEditique(resultat));
+			throw new EditiqueException(getMessageErreurEditique(resultat));
 		}
 		return resultat;
+	}
+
+	private static String getMessageErreurEditique(EditiqueResultat editiqueResultat) {
+		if (editiqueResultat instanceof EditiqueResultatErreur) {
+			return EditiqueErrorHelper.getMessageErreurEditique((EditiqueResultatErreur) editiqueResultat);
+		}
+		else {
+			return "Erreur inattendue.";
+		}
 	}
 
 	@Override

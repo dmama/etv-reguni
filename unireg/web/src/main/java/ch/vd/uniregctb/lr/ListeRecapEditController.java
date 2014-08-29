@@ -14,6 +14,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.EditiqueCommunicationException;
 import ch.vd.uniregctb.common.EditiqueErrorHelper;
 import ch.vd.uniregctb.editique.EditiqueResultat;
+import ch.vd.uniregctb.editique.EditiqueResultatErreur;
 import ch.vd.uniregctb.lr.manager.ListeRecapEditManager;
 import ch.vd.uniregctb.lr.view.ListeRecapDetailView;
 import ch.vd.uniregctb.security.AccessDeniedException;
@@ -106,23 +107,23 @@ public class ListeRecapEditController extends AbstractListeRecapController {
 
 		if (getTarget() != null) {
 			if (BUTTON_IMPRIMER_LR.equals(getTarget())) {
-				final TraitementRetourEditique erreur = new TraitementRetourEditique() {
+				final TraitementRetourEditique<EditiqueResultatErreur> erreur = new TraitementRetourEditique<EditiqueResultatErreur>() {
 					@Override
-					public ModelAndView doJob(EditiqueResultat resultat) {
+					public ModelAndView doJob(EditiqueResultatErreur resultat) {
 						final String message = String.format("%s Veuillez imprimer un duplicata de la liste récapitulative.", EditiqueErrorHelper.getMessageErreurEditique(resultat));
 						throw new EditiqueCommunicationException(message);
 					}
 				};
 
 				final EditiqueResultat resultat = lrEditManager.envoieImpressionLocalLR(bean);
-				traiteRetourEditique(resultat, response, "lr", null, erreur, erreur);
+				traiteRetourEditique(resultat, response, "lr", null, null, erreur);
 			}
 		}
 		else {
 
-			final TraitementRetourEditique erreur = new TraitementRetourEditique() {
+			final TraitementRetourEditique<EditiqueResultatErreur> erreur = new TraitementRetourEditique<EditiqueResultatErreur>() {
 				@Override
-				public ModelAndView doJob(EditiqueResultat resultat) {
+				public ModelAndView doJob(EditiqueResultatErreur resultat) {
 					final String message = String.format("%s Veuillez ré-essayer plus tard.", EditiqueErrorHelper.getMessageErreurEditique(resultat));
 					throw new EditiqueCommunicationException(message);
 				}
@@ -130,7 +131,7 @@ public class ListeRecapEditController extends AbstractListeRecapController {
 
 			if (request.getParameter(BUTTON_DUPLICATA_LR) != null) {
 				final EditiqueResultat resultat = lrEditManager.envoieImpressionLocalDuplicataLR(bean);
-				traiteRetourEditique(resultat, response, "lr", null, erreur, erreur);
+				traiteRetourEditique(resultat, response, "lr", null, null, erreur);
 			}
 			else if (request.getParameter(BUTTON_ANNULER_LR) != null) {
 				lrEditManager.annulerLR(bean);
@@ -138,7 +139,7 @@ public class ListeRecapEditController extends AbstractListeRecapController {
 			}
 			else if (request.getParameter(BUTTON_SOMMER_LR) != null) {
 				final EditiqueResultat resultat = lrEditManager.envoieImpressionLocalSommationLR(bean);
-				traiteRetourEditique(resultat, response, "sommationLr", null, erreur, erreur);
+				traiteRetourEditique(resultat, response, "sommationLr", null, null, erreur);
 			}
 			else if (request.getParameter(BUTTON_SAUVER) != null) {
 				lrEditManager.save(bean);

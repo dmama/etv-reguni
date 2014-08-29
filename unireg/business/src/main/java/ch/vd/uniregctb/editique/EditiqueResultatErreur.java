@@ -23,6 +23,7 @@ public interface EditiqueResultatErreur extends EditiqueResultatRecu {
 	 *     <li>404&nbsp;: document non trouvé</li>
 	 *     <li>412&nbsp;: paramètre invalide</li>
 	 *     <li>500&nbsp;: erreur interne au service</li>
+	 *     <li>504&nbsp;: timeout (<b>extension unireg</b>)</li>
 	 * </ul>
 	 * @return le code de l'erreur
 	 */
