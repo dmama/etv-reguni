@@ -142,7 +142,7 @@ public class EvenementEditiqueEsbHandlerTest extends EvenementTest {
 		m.setContext("test");
 		m.setServiceDestination(queueName);
 		m.setBody(texte);
-		m.addHeader(ConstantesEditique.DOCUMENT_ID, idDocument);
+		m.addHeader(ConstantesEditique.UNIREG_DOCUMENT_ID, idDocument);
 
 		// pas de validation car pas de namespace dans la XSD
 		// esbValidator.validate(m);

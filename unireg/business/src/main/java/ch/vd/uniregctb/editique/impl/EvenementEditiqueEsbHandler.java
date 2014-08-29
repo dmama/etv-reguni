@@ -44,7 +44,7 @@ public class EvenementEditiqueEsbHandler implements EsbMessageHandler {
 	@Override
 	public void onEsbMessage(EsbMessage message) throws Exception {
 
-		final String idDocument = message.getHeader(ConstantesEditique.DOCUMENT_ID);
+		final String idDocument = message.getHeader(ConstantesEditique.UNIREG_DOCUMENT_ID);
 		LOGGER.info(String.format("Arrivée d'un retour éditique pour le document '%s'", idDocument));
 
 		try {
@@ -71,7 +71,7 @@ public class EvenementEditiqueEsbHandler implements EsbMessageHandler {
 	private EditiqueResultatRecu createResultfromMessage(EsbMessage message) throws IOException {
 
 		final EditiqueResultatRecu resultat;
-		final String idDocument = message.getHeader(ConstantesEditique.DOCUMENT_ID);
+		final String idDocument = message.getHeader(ConstantesEditique.UNIREG_DOCUMENT_ID);
 		final String error = message.getHeader(ConstantesEditique.ERROR_MESSAGE);
 		if (StringUtils.isNotBlank(error)) {
 			final ErrorType errorType = ErrorType.valueOf(message.getHeader(EsbMessage.ERROR_TYPE));
@@ -96,8 +96,8 @@ public class EvenementEditiqueEsbHandler implements EsbMessageHandler {
 				buffer = message.getAttachmentAsByteArray(attachmentName);
 			}
 
-			final String documentType = message.getHeader(ConstantesEditique.DOCUMENT_TYPE);
-			final String returnFormat = message.getHeader(ConstantesEditique.RETURN_FORMAT);
+			final String documentType = message.getHeader(ConstantesEditique.UNIREG_TYPE_DOCUMENT);
+			final String returnFormat = message.getHeader(ConstantesEditique.UNIREG_FORMAT_DOCUMENT);
 			final String mimeType = mimeTypes.get(returnFormat);
 
 			resultat = new EditiqueResultatDocumentImpl(idDocument, mimeType, documentType, buffer);
