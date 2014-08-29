@@ -18,7 +18,7 @@ public interface EditiqueRetourImpressionStorageService {
 	void onArriveeRetourImpression(EditiqueResultatRecu resultat);
 
 	/**
-	 * Récupère le document identifié par son nom (champ {@link EditiqueHelper#DI_ID} dans l'entête)
+	 * Récupère le document identifié par son nom (champ {@link ConstantesEditique#DOCUMENT_ID} dans l'entête)
 	 * @param nomDocument identifiant du document à récupérer
 	 * @param timeout temps maximal d'attente de l'arrivée de l'impression, en millisecondes
 	 * @return la représentation du document imprimé renvoyé par l'éditique, <code>null</code> si rien n'est revenu dans le temps imparti

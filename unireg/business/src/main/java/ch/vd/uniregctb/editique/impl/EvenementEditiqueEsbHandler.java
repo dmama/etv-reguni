@@ -8,10 +8,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.vd.editique.service.enumeration.TypeMessagePropertiesNames;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.uniregctb.common.MimeTypeHelper;
-import ch.vd.uniregctb.editique.EditiqueHelper;
+import ch.vd.uniregctb.editique.ConstantesEditique;
 import ch.vd.uniregctb.editique.EditiqueResultatRecu;
 import ch.vd.uniregctb.editique.EditiqueRetourImpressionStorageService;
 import ch.vd.uniregctb.jms.EsbMessageHandler;
@@ -43,7 +42,7 @@ public class EvenementEditiqueEsbHandler implements EsbMessageHandler {
 	@Override
 	public void onEsbMessage(EsbMessage message) throws Exception {
 
-		final String idDocument = message.getHeader(EditiqueHelper.DI_ID);
+		final String idDocument = message.getHeader(ConstantesEditique.DOCUMENT_ID);
 		LOGGER.info(String.format("Arrivée d'un retour d'impression pour le document '%s'", idDocument));
 
 		try {
@@ -70,15 +69,15 @@ public class EvenementEditiqueEsbHandler implements EsbMessageHandler {
 	private EditiqueResultatRecu createResultfromMessage(EsbMessage message) throws IOException {
 
 		final EditiqueResultatRecu resultat;
-		final String idDocument = message.getHeader(EditiqueHelper.DI_ID);
-		final String error = message.getHeader(TypeMessagePropertiesNames.ERROR_MESSAGE_PROPERTY_NAME.toString());
+		final String idDocument = message.getHeader(ConstantesEditique.DOCUMENT_ID);
+		final String error = message.getHeader(ConstantesEditique.ERROR_MESSAGE);
 		if (StringUtils.isNotBlank(error)) {
 			resultat = new EditiqueResultatErreurImpl(idDocument, error);
 		}
 		else {
 			final byte[] buffer = message.getAttachmentAsByteArray(DEFAULT_ATTACHEMENT_NAME);
-			final String documentType = message.getHeader(TypeMessagePropertiesNames.DOCUMENT_TYPE_MESSAGE_PROPERTY_NAME.toString());
-			final String returnFormat = message.getHeader(TypeMessagePropertiesNames.RETURN_FORMAT_MESSAGE_PROPERTY_NAME.toString());
+			final String documentType = message.getHeader(ConstantesEditique.DOCUMENT_TYPE);
+			final String returnFormat = message.getHeader(ConstantesEditique.RETURN_FORMAT);
 			final String mimeType = mimeTypes.get(returnFormat);
 
 			resultat = new EditiqueResultatDocumentImpl(idDocument, mimeType, documentType, buffer);

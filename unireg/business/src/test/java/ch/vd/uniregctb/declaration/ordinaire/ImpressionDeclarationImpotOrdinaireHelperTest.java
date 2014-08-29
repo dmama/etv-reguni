@@ -46,6 +46,7 @@ import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.editique.EditiqueHelper;
+import ch.vd.uniregctb.editique.ZoneAffranchissementEditique;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.situationfamille.SituationFamilleService;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
@@ -904,7 +905,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 		final TypFichierImpression.Document document = impressionDIHelper.remplitEditiqueSpecifiqueDI(new InformationsDocumentAdapter(declaration2010, null), TypFichierImpression.Factory.newInstance(),
 				null, false);
 		assertNotNull(document);
-		assertEquals(EditiqueHelper.ZONE_AFFRANCHISSEMENT_NA,document.getInfoDocument().getAffranchissement().getZone());
+		assertEquals(ZoneAffranchissementEditique.INCONNU.getCode(), document.getInfoDocument().getAffranchissement().getZone());
 	}
 
 
@@ -1536,7 +1537,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 			final TypFichierImpression.Document document= impressionDIHelper.remplitEditiqueSpecifiqueDI(new InformationsDocumentAdapter(declaration2012, null),TypFichierImpression.Factory.newInstance(),
 					null, false);
 			assertNotNull(document);
-			assertEquals(EditiqueHelper.ZONE_AFFRANCHISSEMENT_NA,document.getInfoDocument().getAffranchissement().getZone());
+			assertEquals(ZoneAffranchissementEditique.INCONNU.getCode(), document.getInfoDocument().getAffranchissement().getZone());
 			assertEquals("10",document.getInfoDocument().getIdEnvoi());
 
 
@@ -1573,7 +1574,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 			final TypFichierImpression.Document document= impressionDIHelper.remplitEditiqueSpecifiqueDI(new InformationsDocumentAdapter(declaration2012, null),TypFichierImpression.Factory.newInstance(),
 					null, false);
 			assertNotNull(document);
-			assertEquals(EditiqueHelper.ZONE_AFFRANCHISSEMENT_NA,document.getInfoDocument().getAffranchissement().getZone());
+			assertEquals(ZoneAffranchissementEditique.INCONNU.getCode(), document.getInfoDocument().getAffranchissement().getZone());
 			assertEquals("10",document.getInfoDocument().getIdEnvoi());
 
 

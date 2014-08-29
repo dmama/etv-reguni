@@ -93,11 +93,6 @@
 			<version>1.2.0</version>
 		</dependency>
 		<dependency>
-			<groupId>ch.vd.editique</groupId>
-			<artifactId>editique-client</artifactId>
-			<version>4.1</version>
-		</dependency>
-		<dependency>
 			<groupId>ch.vd.technical.esb</groupId>
 			<artifactId>esb-client</artifactId>
 			<version>4.0</version>

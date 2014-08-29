@@ -29,6 +29,7 @@ import ch.vd.uniregctb.editique.EditiqueAbstractHelper;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueHelper;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
+import ch.vd.uniregctb.editique.ZoneAffranchissementEditique;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.ForGestion;
@@ -347,11 +348,11 @@ public class EditiqueHelperImpl extends EditiqueAbstractHelper implements Editiq
 	@Override
 	public void remplitAffranchissement(InfoDocument infoDocument, AdresseEnvoiDetaillee adresseEnvoiDetaillee) throws EditiqueException {
 
-		final Affranchissement affranchissement = infoDocument.addNewAffranchissement();
+		final ZoneAffranchissementEditique zone;
 
 		//SIFISC-6270
 		if (adresseEnvoiDetaillee.isIncomplete()) {
-			affranchissement.setZone(ZONE_AFFRANCHISSEMENT_NA);
+			zone = ZoneAffranchissementEditique.INCONNU;
 		}
 		else {
 
@@ -360,23 +361,25 @@ public class EditiqueHelperImpl extends EditiqueAbstractHelper implements Editiq
 			if (typeAffranchissementAdresse != null) {
 				switch (typeAffranchissementAdresse) {
 				case SUISSE:
-					affranchissement.setZone(ZONE_AFFRANCHISSEMENT_SUISSE);
+					zone = ZoneAffranchissementEditique.SUISSE;
 					break;
 				case EUROPE:
-					affranchissement.setZone(ZONE_AFFRANCHISSEMENT_EUROPE);
+					zone = ZoneAffranchissementEditique.EUROPE;
 					break;
 				case MONDE:
-					affranchissement.setZone(ZONE_AFFRANCHISSEMENT_RESTE_MONDE);
+					zone = ZoneAffranchissementEditique.RESTE_MONDE;
 					break;
-
 				default:
-					affranchissement.setZone("");
+					zone = null;
 				}
 			}
 			else {
-				affranchissement.setZone("");
+				zone = null;
 			}
 		}
+
+		final Affranchissement affranchissement = infoDocument.addNewAffranchissement();
+		affranchissement.setZone(zone != null ? zone.getCode() : StringUtils.EMPTY);
 	}
 
 	@Override

@@ -4,8 +4,6 @@ import java.io.InputStream;
 
 import org.apache.xmlbeans.XmlObject;
 
-import ch.vd.editique.service.enumeration.TypeFormat;
-
 /**
  * Service Editique. Ce service est dédié à la communication avec le service Editique permettant l'impression des divers documents.
  */
@@ -24,7 +22,7 @@ public interface EditiqueService {
 	 * @return le document imprimé ou une indication de timeout si l'éditique n'a pas répondu dans les temps
 	 * @throws EditiqueException si un problème survient durant la génération du XML ou durant la transmission du message au serveur JMS.
 	 */
-	EditiqueResultat creerDocumentImmediatementSynchroneOuRien(String nomDocument, TypeDocumentEditique typeDocument, TypeFormat typeFormat, XmlObject document, boolean archive) throws EditiqueException;
+	EditiqueResultat creerDocumentImmediatementSynchroneOuRien(String nomDocument, TypeDocumentEditique typeDocument, FormatDocumentEditique typeFormat, XmlObject document, boolean archive) throws EditiqueException;
 
 	/**
 	 * Sérialise au format XML et transmet l'object en paramètre au service Editique JMS d'impression directe ; si l'impression est un peu lente,
@@ -40,7 +38,7 @@ public interface EditiqueService {
 	 * @return le document imprimé ou une indication de prise en charge par le système asynchrone si l'éditique n'a pas répondu dans les temps
 	 * @throws EditiqueException si un problème survient durant la génération du XML ou durant la transmission du message au serveur JMS.
 	 */
-	EditiqueResultat creerDocumentImmediatementSynchroneOuInbox(String nomDocument, TypeDocumentEditique typeDocument, TypeFormat typeFormat, XmlObject document, boolean archive, String description) throws EditiqueException;
+	EditiqueResultat creerDocumentImmediatementSynchroneOuInbox(String nomDocument, TypeDocumentEditique typeDocument, FormatDocumentEditique typeFormat, XmlObject document, boolean archive, String description) throws EditiqueException;
 
 	/**
 	 * Sérialise au format XML et transmet l'object en paramètre au service Editique JMS d'impression de masse.

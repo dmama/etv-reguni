@@ -110,19 +110,19 @@ public class EditiqueHelperTest extends BusinessTest {
 
 				InfoDocumentDocument1.InfoDocument infoDocumentJerome = InfoDocumentDocument1.Factory.newInstance().addNewInfoDocument();
 				editiqueHelper.remplitAffranchissement(infoDocumentJerome, jerome);
-				assertEquals(EditiqueHelper.ZONE_AFFRANCHISSEMENT_SUISSE, infoDocumentJerome.getAffranchissement().getZone());
+				assertEquals(ZoneAffranchissementEditique.SUISSE.getCode(), infoDocumentJerome.getAffranchissement().getZone());
 
 				InfoDocumentDocument1.InfoDocument infoDocumentJacques = InfoDocumentDocument1.Factory.newInstance().addNewInfoDocument();
 				editiqueHelper.remplitAffranchissement(infoDocumentJacques, jacques);
-				assertEquals(EditiqueHelper.ZONE_AFFRANCHISSEMENT_EUROPE, infoDocumentJacques.getAffranchissement().getZone());
+				assertEquals(ZoneAffranchissementEditique.EUROPE.getCode(), infoDocumentJacques.getAffranchissement().getZone());
 
 				InfoDocumentDocument1.InfoDocument infoDocumentGeorges = InfoDocumentDocument1.Factory.newInstance().addNewInfoDocument();
 				editiqueHelper.remplitAffranchissement(infoDocumentGeorges, georges);
-				assertEquals(EditiqueHelper.ZONE_AFFRANCHISSEMENT_RESTE_MONDE, infoDocumentGeorges.getAffranchissement().getZone());
+				assertEquals(ZoneAffranchissementEditique.RESTE_MONDE.getCode(), infoDocumentGeorges.getAffranchissement().getZone());
 
 				InfoDocumentDocument1.InfoDocument infoDocumentTheotime = InfoDocumentDocument1.Factory.newInstance().addNewInfoDocument();
 				editiqueHelper.remplitAffranchissement(infoDocumentTheotime, theotime);
-				assertEquals(EditiqueHelper.ZONE_AFFRANCHISSEMENT_NA, infoDocumentTheotime.getAffranchissement().getZone());
+				assertEquals(ZoneAffranchissementEditique.INCONNU.getCode(), infoDocumentTheotime.getAffranchissement().getZone());
 
 				return null;
 			}

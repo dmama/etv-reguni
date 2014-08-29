@@ -21,13 +21,6 @@ import ch.vd.uniregctb.tiers.Tiers;
 
 public interface EditiqueHelper {
 
-	public static final String DI_ID = "DI_ID";
-
-	public static final String ZONE_AFFRANCHISSEMENT_SUISSE="CH";
-	public static final String ZONE_AFFRANCHISSEMENT_EUROPE="EU";
-	public static final String ZONE_AFFRANCHISSEMENT_RESTE_MONDE="RM";
-	public static final String ZONE_AFFRANCHISSEMENT_NA="NA";
-
 	/**
 	 * Alimente la partie PorteAdresse du document
 	 *

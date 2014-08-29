@@ -13,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
-import ch.vd.editique.service.enumeration.TypeFormat;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.securite.model.Operateur;
@@ -36,6 +35,7 @@ import ch.vd.uniregctb.editique.EditiqueCompositionService;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.editique.EditiqueService;
+import ch.vd.uniregctb.editique.FormatDocumentEditique;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
 import ch.vd.uniregctb.efacture.ImpressionDocumentEfactureHelperImpl;
 import ch.vd.uniregctb.efacture.ImpressionDocumentEfactureParams;
@@ -176,9 +176,11 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		final TypeDocumentEditique typeDocumentMessage = impressionDIHelper.getTypeDocumentEditique(typeDocument);
 		final String nomDocument = impressionDIHelper.construitIdDocument(declaration);
 
-		final String description = String.format("Document '%s %d' du contribuable %s", typeDocument.getDescription(), declaration.getPeriode().getAnnee(),
-				FormatNumeroHelper.numeroCTBToDisplay(declaration.getTiers().getNumero()));
-		return editiqueService.creerDocumentImmediatementSynchroneOuInbox(nomDocument, typeDocumentMessage, TypeFormat.PCL, mainDocument, false, description);
+		final String description = String.format("Document '%s %d' du contribuable %s",
+		                                         typeDocument.getDescription(),
+		                                         declaration.getPeriode().getAnnee(),
+		                                         FormatNumeroHelper.numeroCTBToDisplay(declaration.getTiers().getNumero()));
+		return editiqueService.creerDocumentImmediatementSynchroneOuInbox(nomDocument, typeDocumentMessage, FormatDocumentEditique.PCL, mainDocument, false, description);
 	}
 
 	@Override
@@ -235,7 +237,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		final TypeDocumentEditique prefixe = impressionNouveauxDossiersHelper.getTypeDocumentEditique();
 		final FichierImpressionDocument document = impressionNouveauxDossiersHelper.remplitNouveauDossier(contribuables);
 		final String nomDocument = impressionNouveauxDossiersHelper.construitIdDocument(contribuables.get(0));
-		return editiqueService.creerDocumentImmediatementSynchroneOuRien(nomDocument, prefixe, TypeFormat.PDF, document, false);
+		return editiqueService.creerDocumentImmediatementSynchroneOuRien(nomDocument, prefixe, FormatDocumentEditique.PDF, document, false);
 	}
 
 	@Override
@@ -266,7 +268,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 
 		final String description = String.format("Sommation de la déclaration d'impôt %d du contribuable %s", declaration.getPeriode().getAnnee(),
 				FormatNumeroHelper.numeroCTBToDisplay(declaration.getTiers().getNumero()));
-		return editiqueService.creerDocumentImmediatementSynchroneOuInbox(nomDocument, typeDocument, TypeFormat.PDF, document, true, description);
+		return editiqueService.creerDocumentImmediatementSynchroneOuInbox(nomDocument, typeDocument, FormatDocumentEditique.PDF, document, true, description);
 	}
 
 	/**
@@ -314,7 +316,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		final TypeDocumentEditique typeDocument = impressionSommationLRHelper.getTypeDocumentEditique();
 		final FichierImpressionDocument document = impressionSommationLRHelper.remplitSommationLR(lr, dateEvenement);
 		final String nomDocument = impressionSommationLRHelper.construitIdDocument(lr);
-		return editiqueService.creerDocumentImmediatementSynchroneOuRien(nomDocument, typeDocument, TypeFormat.PCL, document, true);
+		return editiqueService.creerDocumentImmediatementSynchroneOuRien(nomDocument, typeDocument, FormatDocumentEditique.PCL, document, true);
 	}
 
 	@Override
@@ -331,7 +333,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 				RegDateHelper.dateToDisplayString(delai.getDelaiAccordeAu()), di.getPeriode().getAnnee(), FormatNumeroHelper.numeroCTBToDisplay(di.getTiers().getNumero()));
 
 
-		return editiqueService.creerDocumentImmediatementSynchroneOuInbox(nomDocument, typeDocument, TypeFormat.PDF, document, true, description);
+		return editiqueService.creerDocumentImmediatementSynchroneOuInbox(nomDocument, typeDocument, FormatDocumentEditique.PDF, document, true, description);
 	}
 
 	@Override
@@ -340,7 +342,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		FichierImpressionDocument document = impressionLRHelper.remplitListeRecap(lr, traitePar[0]);
 		final TypeDocumentEditique typeDocumentMessage = impressionLRHelper.getTypeDocumentEditique();
 		final String nomDocument = impressionLRHelper.construitIdDocument(lr);
-		return editiqueService.creerDocumentImmediatementSynchroneOuRien(nomDocument, typeDocumentMessage, TypeFormat.PCL, document, false);
+		return editiqueService.creerDocumentImmediatementSynchroneOuRien(nomDocument, typeDocumentMessage, FormatDocumentEditique.PCL, document, false);
 	}
 
 	@Override
@@ -350,7 +352,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		final ImpressionBordereauMouvementDossierHelperParams params = new ImpressionBordereauMouvementDossierHelperParams(bordereau, infoOperateur[0], infoOperateur[1], getNumeroTelephoneOperateur());
 		final FichierImpressionDocument document = impressionBordereauMouvementDossierHelper.remplitBordereau(params);
 		final String nomDocument = impressionBordereauMouvementDossierHelper.construitIdDocument(bordereau);
-		return editiqueService.creerDocumentImmediatementSynchroneOuRien(nomDocument, prefixe, TypeFormat.PCL, document, false);
+		return editiqueService.creerDocumentImmediatementSynchroneOuRien(nomDocument, prefixe, FormatDocumentEditique.PCL, document, false);
 	}
 
 	@Override

@@ -32,8 +32,8 @@ import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.editique.EditiqueAbstractHelper;
 import ch.vd.uniregctb.editique.EditiqueException;
-import ch.vd.uniregctb.editique.EditiqueHelper;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
+import ch.vd.uniregctb.editique.ZoneAffranchissementEditique;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.situationfamille.SituationFamilleService;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -161,12 +161,6 @@ public class ImpressionNouveauxDossiersHelperImpl extends EditiqueAbstractHelper
 		return ficheOuvertureDossier;
 	}
 
-	/**
-	 * Calcul le prefixe
-	 *
-	 * @param contribuable
-	 * @return
-	 */
 	@Override
 	public TypeDocumentEditique getTypeDocumentEditique() {
 		return TypeDocumentEditique.FICHE_OUVERTURE_DOSSIER;
@@ -188,7 +182,7 @@ public class ImpressionNouveauxDossiersHelperImpl extends EditiqueAbstractHelper
 		infoDocument.setPopulations(POPULATION_PP);
 		// Pour les nouveaux dossiers,la valeur que l'on met dans l'affranchissement n'a aucune importance.
 		final InfoDocumentDocument1.InfoDocument.Affranchissement affranchissement = infoDocument.addNewAffranchissement();
-		affranchissement.setZone(EditiqueHelper.ZONE_AFFRANCHISSEMENT_SUISSE);
+		affranchissement.setZone(ZoneAffranchissementEditique.SUISSE.getCode());
 		infoDocument.setAffranchissement(affranchissement);
 		return infoDocument;
 	}
@@ -256,9 +250,8 @@ public class ImpressionNouveauxDossiersHelperImpl extends EditiqueAbstractHelper
 
 	/**
 	 * Construit le champ idDocument
-	 *
-	 * @param declaration
-	 * @return
+	 * @param contribuable le contribuable pour lequel on envoie la déclaration
+	 * @return l'ID du document
 	 */
 	@Override
 	public String construitIdDocument(Contribuable contribuable) {

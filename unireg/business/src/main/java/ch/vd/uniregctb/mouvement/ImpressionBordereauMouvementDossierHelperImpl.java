@@ -22,8 +22,8 @@ import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.editique.EditiqueAbstractHelper;
 import ch.vd.uniregctb.editique.EditiqueException;
-import ch.vd.uniregctb.editique.EditiqueHelper;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
+import ch.vd.uniregctb.editique.ZoneAffranchissementEditique;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -184,7 +184,7 @@ public class ImpressionBordereauMouvementDossierHelperImpl extends EditiqueAbstr
 		// la valeur que l'on met dans l'affranchissement n'a aucune importance.
 		// Ils sont toujours envoyés aux OID, qui sont effectivement en Suisse
 		final InfoDocumentDocument1.InfoDocument.Affranchissement affranchissement = infoDocument.addNewAffranchissement();
-		affranchissement.setZone(EditiqueHelper.ZONE_AFFRANCHISSEMENT_SUISSE);
+		affranchissement.setZone(ZoneAffranchissementEditique.SUISSE.getCode());
 		infoDocument.setAffranchissement(affranchissement);
 		return infoDocument;
 	}
