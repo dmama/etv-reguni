@@ -6,7 +6,7 @@
 
 	<bean id="evenementEditiqueSender" class="ch.vd.uniregctb.editique.impl.EvenementEditiqueSenderImpl">
 		<property name="serviceDestinationImpression" value="${extprop.jms.queue.editique.output}" />
-		<property name="serviceDestinationCopieConforme" value="${extprop.esb.copie.conforme.destination}" />
+		<property name="serviceDestinationCopieConforme" value="${extprop.jms.queue.editique.copie.conforme.output}" />
 		<property name="serviceReplyTo" value="${extprop.jms.queue.editique.input}" />
 		<property name="esbTemplate" ref="esbJmsTemplate" />
 		<property name="noTxEsbTemplate" ref="noTxEsbJmsTemplate" />
