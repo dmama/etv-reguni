@@ -3,11 +3,13 @@ package ch.vd.uniregctb.editique.impl;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ch.vd.technical.esb.ErrorType;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.uniregctb.common.MimeTypeHelper;
 import ch.vd.uniregctb.editique.ConstantesEditique;
@@ -43,7 +45,7 @@ public class EvenementEditiqueEsbHandler implements EsbMessageHandler {
 	public void onEsbMessage(EsbMessage message) throws Exception {
 
 		final String idDocument = message.getHeader(ConstantesEditique.DOCUMENT_ID);
-		LOGGER.info(String.format("Arrivée d'un retour d'impression pour le document '%s'", idDocument));
+		LOGGER.info(String.format("Arrivée d'un retour éditique pour le document '%s'", idDocument));
 
 		try {
 			final EditiqueResultatRecu document = createResultfromMessage(message);
@@ -72,10 +74,28 @@ public class EvenementEditiqueEsbHandler implements EsbMessageHandler {
 		final String idDocument = message.getHeader(ConstantesEditique.DOCUMENT_ID);
 		final String error = message.getHeader(ConstantesEditique.ERROR_MESSAGE);
 		if (StringUtils.isNotBlank(error)) {
-			resultat = new EditiqueResultatErreurImpl(idDocument, error);
+			final ErrorType errorType = ErrorType.valueOf(message.getHeader(EsbMessage.ERROR_TYPE));
+			final String errorCode = message.getHeader(EsbMessage.ERROR_CODE);
+			resultat = new EditiqueResultatErreurImpl(idDocument, error, errorType, errorCode);
 		}
 		else {
-			final byte[] buffer = message.getAttachmentAsByteArray(DEFAULT_ATTACHEMENT_NAME);
+			final byte[] buffer;
+			final Set<String> attachmentNames = message.getAttachmentsNames();
+			if (attachmentNames == null || attachmentNames.isEmpty()) {
+				buffer = null;
+			}
+			else {
+				final String attachmentName;
+				if (attachmentNames.size() > 1) {
+					// je ne sais pas lequel prendre... essayons avec le nom par défaut
+					attachmentName = DEFAULT_ATTACHEMENT_NAME;
+				}
+				else {
+					attachmentName = attachmentNames.iterator().next();
+				}
+				buffer = message.getAttachmentAsByteArray(attachmentName);
+			}
+
 			final String documentType = message.getHeader(ConstantesEditique.DOCUMENT_TYPE);
 			final String returnFormat = message.getHeader(ConstantesEditique.RETURN_FORMAT);
 			final String mimeType = mimeTypes.get(returnFormat);

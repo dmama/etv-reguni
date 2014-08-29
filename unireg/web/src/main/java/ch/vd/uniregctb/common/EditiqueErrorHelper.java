@@ -15,7 +15,7 @@ public abstract class EditiqueErrorHelper {
 			return "Time-out";
 		}
 		else if (resultat instanceof EditiqueResultatErreur) {
-			return ((EditiqueResultatErreur) resultat).getError();
+			return ((EditiqueResultatErreur) resultat).getErrorMessage();
 		}
 		else {
 			return null;

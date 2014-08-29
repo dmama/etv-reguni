@@ -1,14 +1,30 @@
 package ch.vd.uniregctb.editique;
 
+import ch.vd.technical.esb.ErrorType;
+
 /**
  * Interface implémentée par un résultat d'impression en erreur
  */
 public interface EditiqueResultatErreur extends EditiqueResultatRecu {
 
 	/**
-	 * Obtient le message de l'erreur survenue lors de la création du document.
-	 *
 	 * @return le message en cas d'erreur, sinon <codeb>null</code>.
 	 */
-	String getError();
+	String getErrorMessage();
+
+	/**
+	 * @return le type de l'erreur
+	 */
+	ErrorType getErrorType();
+
+	/**
+	 * D'après la documentation éditique, ce code peut être
+	 * <ul>
+	 *     <li>404&nbsp;: document non trouvé</li>
+	 *     <li>412&nbsp;: paramètre invalide</li>
+	 *     <li>500&nbsp;: erreur interne au service</li>
+	 * </ul>
+	 * @return le code de l'erreur
+	 */
+	String getErrorCode();
 }

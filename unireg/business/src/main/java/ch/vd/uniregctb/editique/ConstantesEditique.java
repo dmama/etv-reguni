@@ -13,4 +13,18 @@ public abstract class ConstantesEditique {
 	public static final String ARCHIVE_FLAG = "archive";
 
 	public static final String ERROR_MESSAGE = "errorMessage";
+
+	//
+	// Données d'archivage
+	//
+
+	public static final String APPLICATION_ARCHIVAGE = "FOLDERS";
+	public static final String TYPE_DOSSIER_ARCHIVAGE = "003";
+
+	public static final String TYPE_DOSSIER = "typDossier";
+	public static final String NOM_DOSSIER = "nomDossier";
+	public static final String TYPE_DOCUMENT = "typDocument";
+	public static final String CLE_ARCHIVAGE = "idDocument";
+	public static final String TYPE_FORMAT = "typFormat";
+
 }

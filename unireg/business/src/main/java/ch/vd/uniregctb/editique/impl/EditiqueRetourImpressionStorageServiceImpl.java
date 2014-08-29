@@ -99,7 +99,7 @@ public class EditiqueRetourImpressionStorageServiceImpl implements EditiqueRetou
 			impressionsRecues.add(idDocument, resultat);
 
 			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug(String.format("Réception du document imprimé '%s'", idDocument));
+				LOGGER.debug(String.format("Réception de la réponse éditique pour le document '%s'", idDocument));
 			}
 		}
 		finally {
@@ -131,7 +131,7 @@ public class EditiqueRetourImpressionStorageServiceImpl implements EditiqueRetou
 				return new EditiqueResultatTimeoutImpl(nomDocument);
 			}
 			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug(String.format("Document '%s' trouvé", nomDocument));
+				LOGGER.debug(String.format("Réponse trouvée pour le document '%s'", nomDocument));
 			}
 			return ((AsyncStorage.RetrievalData<String, EditiqueResultatRecu>) res).data;
 		}

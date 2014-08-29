@@ -25,6 +25,7 @@ import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
+import ch.vd.uniregctb.editique.ConstantesEditique;
 import ch.vd.uniregctb.editique.EditiqueAbstractHelper;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueHelper;
@@ -44,10 +45,6 @@ public class EditiqueHelperImpl extends EditiqueAbstractHelper implements Editiq
 	public static final Logger LOGGER = LoggerFactory.getLogger(EditiqueHelperImpl.class);
 
 	private static final String IMPOT_A_LA_SOURCE_MIN = "Impôt à la source";
-
-	private static final String APPLICATION_ARCHIVAGE = "FOLDERS";
-	private static final String TYPE_DOSSIER_ARCHIVAGE = "003";
-
 
 	private ServiceInfrastructureService infraService;
 
@@ -328,21 +325,13 @@ public class EditiqueHelperImpl extends EditiqueAbstractHelper implements Editiq
 			throw new IllegalArgumentException("Archivage non-supporté pour le document de type " + typeDocument);
 		}
 		infoArchivage.setPrefixe(buildPrefixeInfoArchivage(typeDocument));
-		infoArchivage.setNomApplication(APPLICATION_ARCHIVAGE);
-		infoArchivage.setTypDossier(getTypeDossierArchivage());
+		infoArchivage.setNomApplication(ConstantesEditique.APPLICATION_ARCHIVAGE);
+		infoArchivage.setTypDossier(ConstantesEditique.TYPE_DOSSIER_ARCHIVAGE);
 		infoArchivage.setNomDossier(FormatNumeroHelper.numeroCTBToDisplay(noTiers));
 		infoArchivage.setTypDocument(typeDocument.getCodeDocumentArchivage());
 		infoArchivage.setIdDocument(cleArchivage);
 		infoArchivage.setDatTravail(String.valueOf(dateTraitement.index()));
 		return infoArchivage;
-	}
-
-	/**
-	 * @return le code du type de dossier à donner au service d'archivage
-	 */
-	@Override
-	public String getTypeDossierArchivage() {
-		return TYPE_DOSSIER_ARCHIVAGE;
 	}
 
 	@Override

@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.declaration.source;
 
-import java.io.InputStream;
 import java.util.List;
 
 import ch.vd.registre.base.date.DateRange;
@@ -8,19 +7,19 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.editique.EditiqueException;
+import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 
 public interface ListeRecapService {
 
 	/**
-	 * Recupere à l'éditique un document pour afficher
-	 * une copie conforme (duplicata)
+	 * Recupere à l'éditique un document pour afficher une copie conforme (= document archivé)
 	 *
 	 * @param lr
-	 * @return le document pdf
+	 * @return la réponse éditique
 	 */
-	InputStream getCopieConformeSommationLR(DeclarationImpotSource lr) throws EditiqueException;
+	EditiqueResultat getCopieConformeSommationLR(DeclarationImpotSource lr) throws EditiqueException;
 
 	/**
 	 * Impression d'une sommation LR

@@ -5,7 +5,8 @@
 							http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
 	<bean id="evenementEditiqueSender" class="ch.vd.uniregctb.editique.impl.EvenementEditiqueSenderImpl">
-		<property name="serviceDestination" value="${extprop.jms.queue.editique.output}" />
+		<property name="serviceDestinationImpression" value="${extprop.jms.queue.editique.output}" />
+		<property name="serviceDestinationCopieConforme" value="${extprop.esb.copie.conforme.destination}" />
 		<property name="serviceReplyTo" value="${extprop.jms.queue.editique.input}" />
 		<property name="esbTemplate" ref="esbJmsTemplate" />
 		<property name="noTxEsbTemplate" ref="noTxEsbJmsTemplate" />
@@ -22,14 +23,7 @@
 		<property name="syncReceiveTimeout" value="${editique.locale.sync.attente.timeout}" />
 		<property name="asyncReceiveDelay" value="${editique.locale.async.attente.delai}" />
 		<property name="hoursRetourImpressionExpiration" value="${extprop.async.print.expiration.hours}" />
-		<property name="copieConformeService" ref="copieConformeService" />
 		<property name="inboxService" ref="inboxService" />
-	</bean>
-
-	<bean id="copieConformeService" class="ch.vd.uniregctb.editique.impl.EditiqueCopieConformeServiceImpl">
-		<property name="esbHttpTemplate" ref="esbHttpTemplate" />
-		<property name="editiqueHelper" ref="editiqueHelper" />
-		<property name="serviceDestination" value="${extprop.esb.copie.conforme.destination}" />
 	</bean>
 
 	<bean id="editiqueCompositionService" class="ch.vd.uniregctb.editique.impl.EditiqueCompositionServiceImpl" lazy-init="true">

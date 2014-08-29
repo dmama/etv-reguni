@@ -139,7 +139,7 @@
                 if (etat.documentArchiveKey) {
                     html += '<td>';
                     var idIcon = 'print-doc-' + idDemande + '-' + e;
-                    var url = '<c:url value="/copie-conforme.do"/>?noCtb=' + noCtb + '&typeDoc=' + StringUtils.escapeHTML(etat.documentArchiveKey.typeDocument) + '&key=' + StringUtils.escapeHTML(etat.documentArchiveKey.key);
+                    var url = '<c:url value="/copie-conforme.do"/>?noCtb=' + noCtb + '&typeDoc=' + StringUtils.escapeHTML(etat.documentArchiveKey.typeDocument) + '&key=' + StringUtils.escapeHTML(etat.documentArchiveKey.key) + '&url_memorize=false';
                     html += '<a class="pdf" id="' + idIcon + '" href="' + url + '" onclick=\'Link.tempSwap(this, "#disabled-' + idIcon + '");\'>&nbsp;</a>\n';
                     html += '<span class="pdf-grayed" id="disabled-' + idIcon + '" style="display: none;" >&nbsp;</span>\n';
                     html += '</td>';

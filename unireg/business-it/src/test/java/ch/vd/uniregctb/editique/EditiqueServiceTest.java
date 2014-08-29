@@ -73,7 +73,7 @@ public class EditiqueServiceTest extends BusinessItTest {
 		final EvenementEditiqueSenderImpl sender = new EvenementEditiqueSenderImpl();
 		sender.setEsbTemplate(esbTemplate);
 		sender.setNoTxEsbTemplate(noTxEsbTemplate);
-		sender.setServiceDestination(OUTPUT_QUEUE);
+		sender.setServiceDestinationImpression(OUTPUT_QUEUE);
 		sender.setServiceReplyTo(INPUT_QUEUE);
 
 		storageService = new EditiqueRetourImpressionStorageServiceImpl();

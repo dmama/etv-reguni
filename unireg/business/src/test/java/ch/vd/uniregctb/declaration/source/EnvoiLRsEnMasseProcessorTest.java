@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.declaration.source;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +18,7 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.editique.EditiqueException;
+import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.MotifFor;
@@ -42,7 +42,7 @@ public class EnvoiLRsEnMasseProcessorTest extends BusinessTest {
 		}
 
 		@Override
-		public InputStream getCopieConformeSommationLR(DeclarationImpotSource lr) throws EditiqueException {
+		public EditiqueResultat getCopieConformeSommationLR(DeclarationImpotSource lr) throws EditiqueException {
 			return target.getCopieConformeSommationLR(lr);
 		}
 

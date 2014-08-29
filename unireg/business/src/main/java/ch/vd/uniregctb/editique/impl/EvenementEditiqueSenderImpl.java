@@ -3,6 +3,7 @@ package ch.vd.uniregctb.editique.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.xmlbeans.XmlError;
 import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.XmlOptions;
@@ -14,6 +15,7 @@ import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.editique.ConstantesEditique;
 import ch.vd.uniregctb.editique.EditiqueException;
@@ -31,67 +33,50 @@ public class EvenementEditiqueSenderImpl implements EvenementEditiqueSender {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementEditiqueSenderImpl.class);
 
-	private EsbJmsTemplate esbTemplate; // ESB template standard
-	private EsbJmsTemplate noTxEsbTemplate; // ESB template non-rattaché au transaction manager
-	private String serviceDestination;
+	private EsbJmsTemplate esbTemplate;         // ESB template standard
+	private EsbJmsTemplate noTxEsbTemplate;     // ESB template non-rattaché au transaction manager
+	private String serviceDestinationImpression;
+	private String serviceDestinationCopieConforme;
 	private String serviceReplyTo;
+
+	private static interface HeaderCustomFiller {
+		void addHeaders(EsbMessage msg) throws Exception;
+	}
 
 	@Override
 	public String envoyerDocumentImmediatement(String nomDocument, TypeDocumentEditique typeDocument, XmlObject document, FormatDocumentEditique typeFormat, boolean archive) throws EditiqueException {
-		return envoyer(nomDocument, typeDocument, document, TypeImpressionEditique.DIRECT, typeFormat, archive, noTxEsbTemplate);
+		return envoyerImpression(nomDocument, typeDocument, document, TypeImpressionEditique.DIRECT, typeFormat, archive, noTxEsbTemplate);
 	}
 
 	@Override
 	public String envoyerDocument(String nomDocument, TypeDocumentEditique typeDocument, XmlObject document, FormatDocumentEditique typeFormat, boolean archive) throws EditiqueException {
-		return envoyer(nomDocument, typeDocument, document, TypeImpressionEditique.BATCH, typeFormat, archive, esbTemplate);
+		return envoyerImpression(nomDocument, typeDocument, document, TypeImpressionEditique.BATCH, typeFormat, archive, esbTemplate);
 	}
 
-	private String envoyer(String nomDocument, TypeDocumentEditique typeDocument, XmlObject document, TypeImpressionEditique typeImpression, FormatDocumentEditique typeFormat, boolean archive, EsbJmsTemplate esbTemplate) throws EditiqueException {
-
-		final String principal = AuthenticationHelper.getCurrentPrincipal();
-		Assert.notNull(principal);
+	private String envoyerImpression(final String nomDocument, final TypeDocumentEditique typeDocument, XmlObject document, final TypeImpressionEditique typeImpression, final FormatDocumentEditique typeFormat, final boolean archive, EsbJmsTemplate esbTemplate) throws EditiqueException {
 
 		// tant que les documents éditiques n'ont pas de namespace, ils ne peuvent pas être validés par le framework
 		// de la message factory de l'ESB. D'après les guidelines de l'ESB, il faut donc les valider à la main...
 		validate(document);
 
 		try {
-			final EsbMessage m = EsbMessageFactory.createMessage();
-			
-			// meta-info requis par l'ESB
-			m.setBusinessId(nomDocument);
-			m.setBusinessUser(principal);
-			m.setServiceDestination(serviceDestination);
 
-			// pas de retour si on est en batch...
-			if (typeImpression == TypeImpressionEditique.DIRECT) {
-				m.setServiceReplyTo(serviceReplyTo);
-			}
+			final String body = XmlUtils.xmlbeans2string(document);
+			final boolean reponseAttendue = typeImpression == TypeImpressionEditique.DIRECT;
+			final EsbMessage msg = buildEsbMessage(nomDocument, typeDocument, body, serviceDestinationImpression, reponseAttendue, new HeaderCustomFiller() {
+				@Override
+				public void addHeaders(EsbMessage msg) throws Exception {
+					msg.addHeader(ConstantesEditique.PRINT_MODE, typeImpression.getCode());
+					msg.addHeader(ConstantesEditique.ARCHIVE_FLAG, Boolean.toString(archive));
+					msg.addHeader(ConstantesEditique.DOCUMENT_TYPE, typeDocument.getCodeDocumentEditique());
+					if (reponseAttendue) {
+						msg.addHeader(ConstantesEditique.RETURN_FORMAT, typeFormat.getCode());
+						msg.addHeader(ConstantesEditique.DOCUMENT_ID, nomDocument);
+					}
+				}
+			});
 
-			m.setContext(typeDocument.getContexteImpression());
-
-			// meta-info requis par éditique
-			m.addHeader(ConstantesEditique.PRINT_MODE, typeImpression.getCode());
-			m.addHeader(ConstantesEditique.ARCHIVE_FLAG, Boolean.toString(archive));
-			m.addHeader(ConstantesEditique.DOCUMENT_TYPE, typeDocument.getCodeDocumentEditique());
-			if (typeImpression == TypeImpressionEditique.DIRECT) {
-				m.addHeader(ConstantesEditique.RETURN_FORMAT, typeFormat.getCode());
-				m.addHeader(ConstantesEditique.DOCUMENT_ID, nomDocument);
-			}
-
-			// le document à imprimer lui-même
-			m.setBody(XmlUtils.xmlbeans2string(document));
-
-			// on envoie l'événement sous forme de message JMS à travers l'ESB
-			esbTemplate.send(m);
-
-			final String messageId = m.getMessageId();
-			if (LOGGER.isTraceEnabled()) {
-				LOGGER.trace("Message ID JMS :" + messageId + "--");
-				LOGGER.trace("ID :" + nomDocument + "--");
-			}
-
-			return messageId;
+			return send(esbTemplate, msg);
 		}
 		catch (Exception e) {
 			final String message = "Exception lors du processus d'envoi d'un document au service Editique JMS";
@@ -99,6 +84,72 @@ public class EvenementEditiqueSenderImpl implements EvenementEditiqueSender {
 
 			throw new EditiqueException(message, e);
 		}
+	}
+
+	private static String send(EsbJmsTemplate esbTemplate, EsbMessage msg) throws Exception {
+		// on envoie l'événement sous forme de message JMS à travers l'ESB
+		esbTemplate.send(msg);
+
+		final String messageId = msg.getMessageId();
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("Message ID JMS :" + messageId + "--");
+			LOGGER.trace("ID :" + msg.getBusinessId() + "--");
+		}
+
+		return messageId;
+	}
+
+	@Override
+	public Pair<String, String> envoyerDemandeCopieConforme(final String cleArchivage, final TypeDocumentEditique typeDocument, final long noTiers) throws EditiqueException {
+		if (typeDocument.getCodeDocumentArchivage() == null) {
+			throw new IllegalArgumentException("Archivage non-supporté pour document de type " + typeDocument);
+		}
+
+		try {
+			final String body = "<empty/>";
+			final String businessId = String.format("copieconforme-%d-%d", noTiers, System.currentTimeMillis());
+			final EsbMessage msg = buildEsbMessage(businessId, typeDocument, body, serviceDestinationCopieConforme, true, new HeaderCustomFiller() {
+				@Override
+				public void addHeaders(EsbMessage msg) throws Exception {
+					msg.addHeader(ConstantesEditique.TYPE_DOSSIER, ConstantesEditique.TYPE_DOSSIER_ARCHIVAGE);
+					msg.addHeader(ConstantesEditique.NOM_DOSSIER, FormatNumeroHelper.numeroCTBToDisplay(noTiers));
+					msg.addHeader(ConstantesEditique.TYPE_DOCUMENT, typeDocument.getCodeDocumentArchivage());
+					msg.addHeader(ConstantesEditique.CLE_ARCHIVAGE, cleArchivage);
+					msg.addHeader(ConstantesEditique.TYPE_FORMAT, FormatDocumentEditique.PDF.getCode());
+
+					msg.addHeader(ConstantesEditique.DOCUMENT_ID, businessId);
+				}
+			});
+
+			return Pair.of(send(noTxEsbTemplate, msg), businessId);
+		}
+		catch (Exception e) {
+			final String message = "Exception lors du processus d'envoi d'une demande de copie conforme au service Editique JMS";
+			LOGGER.error(message, e);
+
+			throw new EditiqueException(message, e);
+		}
+	}
+
+	private EsbMessage buildEsbMessage(String businessId, TypeDocumentEditique typeDocument, String body, String serviceDestination, boolean reponseAttendue, HeaderCustomFiller headerFiller) throws Exception {
+		final String principal = AuthenticationHelper.getCurrentPrincipal();
+		Assert.notNull(principal);
+
+		final EsbMessage m = EsbMessageFactory.createMessage();
+
+		// méta-information de base
+		m.setBusinessId(businessId);
+		m.setBusinessUser(principal);
+		m.setContext(typeDocument.getContexteImpression());
+
+		m.setServiceDestination(serviceDestination);
+		if (reponseAttendue) {
+			m.setServiceReplyTo(serviceReplyTo);
+		}
+
+		headerFiller.addHeaders(m);
+		m.setBody(body);
+		return m;
 	}
 
 	private static void validate(XmlObject document) {
@@ -138,8 +189,12 @@ public class EvenementEditiqueSenderImpl implements EvenementEditiqueSender {
 		this.noTxEsbTemplate = noTxEsbTemplate;
 	}
 
-	public void setServiceDestination(String serviceDestination) {
-		this.serviceDestination = serviceDestination;
+	public void setServiceDestinationImpression(String serviceDestinationImpression) {
+		this.serviceDestinationImpression = serviceDestinationImpression;
+	}
+
+	public void setServiceDestinationCopieConforme(String serviceDestinationCopieConforme) {
+		this.serviceDestinationCopieConforme = serviceDestinationCopieConforme;
 	}
 
 	public void setServiceReplyTo(String serviceReplyTo) {

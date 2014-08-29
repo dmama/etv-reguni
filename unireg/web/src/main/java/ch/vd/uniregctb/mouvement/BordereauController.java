@@ -176,7 +176,7 @@ public class BordereauController {
 				public String doJob(EditiqueResultat resultat) {
 					final String msg;
 					if (resultat instanceof EditiqueResultatErreur) {
-						msg = ((EditiqueResultatErreur) resultat).getError();
+						msg = ((EditiqueResultatErreur) resultat).getErrorMessage();
 					}
 					else {
 						msg = "Erreur inconnue";

@@ -1,7 +1,5 @@
 package ch.vd.uniregctb.editique;
 
-import java.io.InputStream;
-
 import org.apache.xmlbeans.XmlObject;
 
 /**
@@ -54,13 +52,12 @@ public interface EditiqueService {
 	/**
 	 * Obitent un document pdf, sous forme binaire, identifié par les différents paramètres.
 	 *
-	 *
 	 * @param noContribuable l'identifiant du contribuable.
 	 * @param typeDocument   le type de document.
-	 * @param nomDocument    le nom du document.
+	 * @param cleArchivage   la clé d'archivage du document.
 	 * @return un document pdf, sous forme binaire.
 	 * @throws EditiqueException si un problème survient durant la génération du XML ou durant la transmission du message au serveur JMS.
 	 */
-	InputStream getPDFDeDocumentDepuisArchive(Long noContribuable, TypeDocumentEditique typeDocument, String nomDocument) throws EditiqueException;
+	EditiqueResultat getPDFDeDocumentDepuisArchive(long noContribuable, TypeDocumentEditique typeDocument, String cleArchivage) throws EditiqueException;
 
 }

@@ -145,13 +145,6 @@ public interface EditiqueHelper {
 	 */
 	InfoArchivage fillInfoArchivage(InfoArchivage infoArchivage, TypeDocumentEditique typeDocument, long noTiers, String cleArchivage, RegDate dateTraitement);
 
-
-	/**
-	 * @return le code du type de dossier à donner au service d'archivage (pour tous les documents gérés par Unireg)
-	 */
-	public String getTypeDossierArchivage();
-
-
 	/**
 	 * Determine le code affranchissement à ajouter à l'infoDocument à partir du tiers passé en paramètre
 	 *@param infoDocument les informations du doccument a envoyer à éditique

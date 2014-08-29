@@ -3,7 +3,6 @@ package ch.vd.uniregctb.copieConforme;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.InputStream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
@@ -13,9 +12,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import ch.vd.uniregctb.common.Flash;
 import ch.vd.uniregctb.common.HttpHelper;
+import ch.vd.uniregctb.common.RetourEditiqueControllerHelper;
 import ch.vd.uniregctb.editique.EditiqueException;
+import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
-import ch.vd.uniregctb.servlet.ServletService;
 
 @Controller
 public class CopieConformeController {
@@ -32,13 +32,13 @@ public class CopieConformeController {
 	 */
 	private static final long errorFadingTimeout = 5000L;
 
-	private ServletService servletService;
-
 	private CopieConformeManager copieConformeManager;
 
+	private RetourEditiqueControllerHelper helper;
+
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setServletService(ServletService servletService) {
-		this.servletService = servletService;
+	public void setHelper(RetourEditiqueControllerHelper helper) {
+		this.helper = helper;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -51,7 +51,7 @@ public class CopieConformeController {
 		 * @return un flux duquel on peut extraire le contenu du document, où <code>null</code> si aucun document n'a pu être trouvé
 		 * @throws EditiqueException en cas d'erreur lors de la récupération du contenu du document
 		 */
-		InputStream getCopieConforme() throws EditiqueException;
+		EditiqueResultat getCopieConforme() throws EditiqueException;
 	}
 
 	/**
@@ -65,26 +65,32 @@ public class CopieConformeController {
 	 * @throws EditiqueException en cas d'erreur lors de la récupération du document depuis les archives
 	 * @throws IOException en cas d'erreurs lors du streaming du document
 	 */
-	private String getDocumentCopieConforme(HttpServletRequest request, HttpServletResponse response, String filename, String errorMessageIfNoSuchDocument, CopieConformeGetter getter) throws EditiqueException, IOException {
-		try (final InputStream is = getter.getCopieConforme()) {
-			if (is != null) {
-				downloadFile(is, filename, response);
-				return null;
+	private String getDocumentCopieConforme(final HttpServletRequest request, HttpServletResponse response, String filename, final String errorMessageIfNoSuchDocument, CopieConformeGetter getter) throws EditiqueException, IOException {
+		final EditiqueResultat reponseEditique = getter.getCopieConforme();
+		final RetourEditiqueControllerHelper.TraitementRetourEditique redirect = new RetourEditiqueControllerHelper.TraitementRetourEditique() {
+			@Override
+			public String doJob(EditiqueResultat resultat) {
+				return HttpHelper.getRedirectPagePrecedente(request);
 			}
-			else {
+		};
+		final RetourEditiqueControllerHelper.TraitementRetourEditique erreur = new RetourEditiqueControllerHelper.TraitementRetourEditique() {
+			@Override
+			public String doJob(EditiqueResultat resultat) {
 				if (StringUtils.isNotBlank(errorMessageIfNoSuchDocument)) {
 					Flash.error(errorMessageIfNoSuchDocument, errorFadingTimeout);
 				}
 				return HttpHelper.getRedirectPagePrecedente(request);
 			}
-		}
+		};
+
+		return helper.traiteRetourEditique(reponseEditique, response, filename, redirect, erreur, erreur);
 	}
 
 	@RequestMapping(value = "/declaration/copie-conforme-delai.do", method = RequestMethod.GET)
 	public String getDocumentDelai(HttpServletRequest request, HttpServletResponse response, @RequestParam(value = ID_DELAI, required = true) final Long idDelai) throws Exception {
 		return getDocumentCopieConforme(request, response, "copieDelai.pdf", "Aucun archivage trouvé pour la confirmation de délai demandée !", new CopieConformeGetter() {
 			@Override
-			public InputStream getCopieConforme() throws EditiqueException {
+			public EditiqueResultat getCopieConforme() throws EditiqueException {
 				return copieConformeManager.getPdfCopieConformeDelai(idDelai);
 			}
 		});
@@ -94,7 +100,7 @@ public class CopieConformeController {
 	public String getDocumentSommation(HttpServletRequest request, HttpServletResponse response, @RequestParam(value = ID_ETAT, required = true) final Long idEtat) throws Exception {
 		return getDocumentCopieConforme(request, response, "copieSommation.pdf", "Aucun archivage trouvé pour la sommation de déclaration demandée !", new CopieConformeGetter() {
 			@Override
-			public InputStream getCopieConforme() throws EditiqueException {
+			public EditiqueResultat getCopieConforme() throws EditiqueException {
 				return copieConformeManager.getPdfCopieConformeSommation(idEtat);
 			}
 		});
@@ -107,13 +113,9 @@ public class CopieConformeController {
 	                          @RequestParam(value = KEY, required = true) final String key) throws Exception {
 		return getDocumentCopieConforme(request, response, "document.pdf", "Aucun archivage trouvé pour le document demandé !", new CopieConformeGetter() {
 			@Override
-			public InputStream getCopieConforme() throws EditiqueException {
+			public EditiqueResultat getCopieConforme() throws EditiqueException {
 				return copieConformeManager.getPdfCopieConforme(noCtb, typeDoc, key);
 			}
 		});
-	}
-
-	private void downloadFile(InputStream stream, String filename, HttpServletResponse response) throws IOException {
-		servletService.downloadAsFile(filename, stream, null, response);
 	}
 }

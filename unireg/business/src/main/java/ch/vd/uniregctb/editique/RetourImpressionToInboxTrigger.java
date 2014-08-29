@@ -35,7 +35,7 @@ public class RetourImpressionToInboxTrigger implements RetourImpressionTrigger {
 		}
 		else if (resultat instanceof EditiqueResultatErreur) {
 			attachment = null;
-			descriptionEffective = String.format("%s, Erreur '%s'", description, ((EditiqueResultatErreur) resultat).getError());
+			descriptionEffective = String.format("%s, Erreur '%s'", description, ((EditiqueResultatErreur) resultat).getErrorMessage());
 		}
 		else {
 			attachment = null;

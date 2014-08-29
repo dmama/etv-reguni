@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.declaration.ordinaire;
 
-import java.io.InputStream;
 import java.util.List;
 import java.util.Set;
 
@@ -195,7 +194,7 @@ public interface DeclarationImpotService {
 	 * @return
 	 * @throws EditiqueException
 	 */
-	InputStream getCopieConformeSommationDI(DeclarationImpotOrdinaire di) throws EditiqueException;
+	EditiqueResultat getCopieConformeSommationDI(DeclarationImpotOrdinaire di) throws EditiqueException;
 
 	/**
 	 * Récupère la copie conforme de la confirmation de delai
@@ -204,7 +203,7 @@ public interface DeclarationImpotService {
 	 * @return
 	 * @throws EditiqueException
 	 */
-	InputStream getCopieConformeConfirmationDelai(DelaiDeclaration delai) throws EditiqueException;
+	EditiqueResultat getCopieConformeConfirmationDelai(DelaiDeclaration delai) throws EditiqueException;
 
 	/**
 	 * Ajoute un délai aux déclarations des contribuables spécifiés.

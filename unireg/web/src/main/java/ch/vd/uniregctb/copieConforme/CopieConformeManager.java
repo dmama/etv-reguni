@@ -1,8 +1,7 @@
 package ch.vd.uniregctb.copieConforme;
 
-import java.io.InputStream;
-
 import ch.vd.uniregctb.editique.EditiqueException;
+import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
 
 /**
@@ -15,14 +14,14 @@ public interface CopieConformeManager {
 	 * @param idEtatSomme identifiant de l'état "sommé" de la sommation (DI ou LR)
 	 * @return document PDF
 	 */
-	InputStream getPdfCopieConformeSommation(Long idEtatSomme) throws EditiqueException;
+	EditiqueResultat getPdfCopieConformeSommation(Long idEtatSomme) throws EditiqueException;
 
 	/**
 	 * Renvoie un document PDF de la copie conforme de la confirmation de délai pour une déclaration
 	 * @param idDelai identifiant du délai accordé pour le renvoi de la déclaration
 	 * @return document PDF
 	 */
-	InputStream getPdfCopieConformeDelai(Long idDelai) throws EditiqueException;
+	EditiqueResultat getPdfCopieConformeDelai(Long idDelai) throws EditiqueException;
 
 	/**
 	 * Renvoie un document PDF identifié par sa clé d'archivage dans Folders
@@ -31,5 +30,5 @@ public interface CopieConformeManager {
 	 * @param key la clé d'archivage
 	 * @return document PDF
 	 */
-	InputStream getPdfCopieConforme(long noCtb, TypeDocumentEditique typeDoc, String key) throws EditiqueException;
+	EditiqueResultat getPdfCopieConforme(long noCtb, TypeDocumentEditique typeDoc, String key) throws EditiqueException;
 }

@@ -20,7 +20,7 @@
 			<c:if test="${delai.confirmationEcrite}">checked </c:if> disabled="disabled" />
 				<c:if test="${page == 'visu' }">
 					<c:if test="${delai.confirmationEcrite}">
-						<a href="../declaration/copie-conforme-delai.do?idDelai=${delai.id}" class="pdf" id="print-delai-${delai.id}" onclick="Link.tempSwap(this, '#disabled-print-delai-${delai.id}');">&nbsp;</a>
+						<a href="../declaration/copie-conforme-delai.do?idDelai=${delai.id}&url_memorize=false" class="pdf" id="print-delai-${delai.id}" onclick="Link.tempSwap(this, '#disabled-print-delai-${delai.id}');">&nbsp;</a>
 						<span class="pdf-grayed" id="disabled-print-delai-${delai.id}" style="display: none;">&nbsp;</span>
 					</c:if>
 				</c:if>

@@ -73,17 +73,6 @@
 		<property name="destinationQueue" value="${extprop.jms.error.queue}"/>
 	</bean>
 
-	<bean id="esbHttpTemplate" class="ch.vd.technical.esb.http.EsbHttpTemplate">
-		<property name="username" value="${extprop.esb.http.username}" />
-		<property name="password" value="${extprop.esb.http.password}" />
-		<property name="esbStore" ref="raftEsbStore"/>
-		<property name="timeout" value="15000"/>
-		<property name="host" value="${extprop.esb.http.host}"/>
-		<property name="port" value="${extprop.esb.http.port}"/>
-		<property name="application" value="unireg" />
-		<property name="domain" value="fiscalite"/>
-	</bean>
-
 	<bean id="esbMessageValidator" class="ch.vd.technical.esb.validation.EsbXmlValidation" lazy-init="true">
 		<property name="resourceResolver"><bean class="ch.vd.unireg.xml.tools.ClasspathCatalogResolver"/></property>
 		<property name="sources">
@@ -99,6 +88,7 @@
 				<value>classpath:eVD-0025-1-2.xsd</value>
 				<value>classpath:event/taxation/DossierElectronique-1-0.xsd</value>
 				<value>classpath:event/taxation/DossierElectronique-2-0.xsd</value>
+				<value>classpath:event/taxation/DossierElectronique-3-0.xsd</value>
 			</list>
 		</property>
 	</bean>

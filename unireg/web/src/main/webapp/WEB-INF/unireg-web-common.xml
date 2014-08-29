@@ -167,7 +167,7 @@
 	</bean>
 
 	<bean id="copieConformeController" class="ch.vd.uniregctb.copieConforme.CopieConformeController">
-		<property name="servletService" ref="servletService" />
+		<property name="helper" ref="retourEditiqueControllerHelper" />
 		<property name="copieConformeManager" ref="copieConformeManager" />
 	</bean>
 

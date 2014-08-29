@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.declaration.source;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +27,7 @@ import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.editique.EditiqueCompositionService;
 import ch.vd.uniregctb.editique.EditiqueException;
+import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.editique.EditiqueService;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
@@ -72,7 +72,7 @@ public class ListeRecapServiceImpl implements ListeRecapService {
 	private AdresseService adresseService;
 
 	@Override
-	public InputStream getCopieConformeSommationLR(DeclarationImpotSource lr) throws EditiqueException {
+	public EditiqueResultat getCopieConformeSommationLR(DeclarationImpotSource lr) throws EditiqueException {
 		final String nomDocument = helperSommationLR.construitIdArchivageDocument(lr);
 		return editiqueService.getPDFDeDocumentDepuisArchive(lr.getTiers().getNumero(), TypeDocumentEditique.SOMMATION_LR, nomDocument);
 	}
@@ -169,8 +169,6 @@ public class ListeRecapServiceImpl implements ListeRecapService {
 
 	/**
 	 * Impression d'une sommation LR - Alimentation de l'objet EditiqueListeRecap - Envoi des informations nécessaires à l'éditique
-	 *
-	 * @param dpi
 	 * @throws Exception
 	 */
 	@Override
@@ -306,11 +304,6 @@ public class ListeRecapServiceImpl implements ListeRecapService {
 		return processor.run(periodeFiscale, dateTraitement, status);
 	}
 
-	/**
-	 * @param periodicite
-	 * @param lrManquantes
-	 * @return
-	 */
 	protected static List<DateRange> extrairePeriodesAvecPeriodicites(DebiteurPrestationImposable debiteur, List<DateRange> lrManquantes) {
 		final List<DateRange> lr = new ArrayList<>();
 		for (DateRange manquante : lrManquantes) {

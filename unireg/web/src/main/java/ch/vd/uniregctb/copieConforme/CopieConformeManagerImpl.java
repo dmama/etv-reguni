@@ -1,7 +1,5 @@
 package ch.vd.uniregctb.copieConforme;
 
-import java.io.InputStream;
-
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.utils.Assert;
@@ -13,6 +11,7 @@ import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.declaration.source.ListeRecapService;
 import ch.vd.uniregctb.editique.EditiqueException;
+import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.editique.EditiqueService;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
@@ -46,7 +45,7 @@ public class CopieConformeManagerImpl implements CopieConformeManager {
 
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
-	public InputStream getPdfCopieConformeSommation(Long idEtatSomme) throws EditiqueException {
+	public EditiqueResultat getPdfCopieConformeSommation(Long idEtatSomme) throws EditiqueException {
 
 		final EtatDeclaration etat = hibernateTemplate.get(EtatDeclaration.class, idEtatSomme);
 		Assert.notNull(etat);
@@ -66,7 +65,7 @@ public class CopieConformeManagerImpl implements CopieConformeManager {
 
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
-	public InputStream getPdfCopieConformeDelai(Long idDelai) throws EditiqueException {
+	public EditiqueResultat getPdfCopieConformeDelai(Long idDelai) throws EditiqueException {
 		final DelaiDeclaration delai = hibernateTemplate.get(DelaiDeclaration.class, idDelai);
 		Assert.notNull(delai);
 		return diService.getCopieConformeConfirmationDelai(delai);
@@ -74,7 +73,7 @@ public class CopieConformeManagerImpl implements CopieConformeManager {
 
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
-	public InputStream getPdfCopieConforme(long noCtb, TypeDocumentEditique typeDoc, String key) throws EditiqueException {
+	public EditiqueResultat getPdfCopieConforme(long noCtb, TypeDocumentEditique typeDoc, String key) throws EditiqueException {
 		return editiqueService.getPDFDeDocumentDepuisArchive(noCtb, typeDoc, key);
 	}
 }

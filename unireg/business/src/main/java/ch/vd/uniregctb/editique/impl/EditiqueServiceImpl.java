@@ -1,14 +1,13 @@
 package ch.vd.uniregctb.editique.impl;
 
-import java.io.InputStream;
-
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.xmlbeans.XmlObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.editique.EditiqueCopieConformeService;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.editique.EditiqueResultatDocument;
@@ -34,8 +33,6 @@ public final class EditiqueServiceImpl implements EditiqueService, InitializingB
 
 	private EditiqueRetourImpressionStorageService retourImpressionStorage;
 
-	private EditiqueCopieConformeService copieConformeService;
-
 	private InboxService inboxService;
 
 	/**
@@ -58,21 +55,31 @@ public final class EditiqueServiceImpl implements EditiqueService, InitializingB
 		EditiqueResultat onTimeout(EditiqueResultatTimeout src);
 	}
 
+	private final class InboxRoutingTimeoutManager implements TimeoutManager  {
+		private final String nomDocument;
+		private final String descriptionDocument;
+
+		private InboxRoutingTimeoutManager(String nomDocument, String descriptionDocument) {
+			this.nomDocument = nomDocument;
+			this.descriptionDocument = descriptionDocument;
+		}
+
+		@Override
+		public EditiqueResultat onTimeout(EditiqueResultatTimeout src) {
+			final String visa = AuthenticationHelper.getCurrentPrincipal();
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug(String.format("Retour éditique un peu lent pour le document '%s', routage demandé vers l'inbox de l'utilisateur %s", nomDocument, visa));
+			}
+
+			final RetourImpressionTrigger trigger = new RetourImpressionToInboxTrigger(inboxService, visa, descriptionDocument, hoursRetourImpressionExpiration);
+			retourImpressionStorage.registerTrigger(nomDocument, trigger);
+			return new EditiqueResultatReroutageInboxImpl(src.getIdDocument());
+		}
+	}
+
 	@Override
 	public EditiqueResultat creerDocumentImmediatementSynchroneOuInbox(final String nomDocument, final TypeDocumentEditique typeDocument, FormatDocumentEditique typeFormat, XmlObject document, boolean archive, final String description) throws EditiqueException {
-		return creerDocumentImmediatement(nomDocument, typeDocument, typeFormat, document, archive, asyncReceiveDelay, new TimeoutManager() {
-			@Override
-			public EditiqueResultat onTimeout(EditiqueResultatTimeout src) {
-				final String visa = AuthenticationHelper.getCurrentPrincipal();
-				if (LOGGER.isDebugEnabled()) {
-					LOGGER.debug(String.format("Retour d'impression un peu lent pour le document '%s', routage demandé vers l'inbox de l'utilisateur %s", nomDocument, visa));
-				}
-
-				final RetourImpressionTrigger trigger = new RetourImpressionToInboxTrigger(inboxService, visa, description, hoursRetourImpressionExpiration);
-				retourImpressionStorage.registerTrigger(nomDocument, trigger);
-				return new EditiqueResultatReroutageInboxImpl(src.getIdDocument());
-			}
-		});
+		return creerDocumentImmediatement(nomDocument, typeDocument, typeFormat, document, archive, asyncReceiveDelay, new InboxRoutingTimeoutManager(nomDocument, description));
 	}
 
 	@Override
@@ -117,6 +124,10 @@ public final class EditiqueServiceImpl implements EditiqueService, InitializingB
 			LOGGER.debug(msg);
 		}
 
+		return getRetourEditique(nomDocument, typeDocument, secTimeout, timeoutManager);
+	}
+
+	private EditiqueResultat getRetourEditique(String nomDocument, TypeDocumentEditique typeDocument, int secTimeout, TimeoutManager timeoutManager) throws EditiqueException {
 		EditiqueResultat resultat;
 		try {
 			resultat = retourImpressionStorage.getDocument(nomDocument, secTimeout * 1000L);
@@ -136,12 +147,13 @@ public final class EditiqueServiceImpl implements EditiqueService, InitializingB
 				statut = "OK";
 			}
 			else if (resultat instanceof EditiqueResultatErreur) {
-				statut = String.format("Erreur (%s), ", ((EditiqueResultatErreur) resultat).getError());
+				final EditiqueResultatErreur erreur = (EditiqueResultatErreur) resultat;
+				statut = String.format("Erreur (%s/%s/%s), ", erreur.getErrorType(), erreur.getErrorCode(), erreur.getErrorMessage());
 			}
 			else {
 				statut = String.format("Erreur inconnue '%s'", resultat);
 			}
-			final String msg = String.format("Retour d'impression locale reçu pour document %s (%s) : %s", nomDocument, typeDocument, statut);
+			final String msg = String.format("Réponse éditique reçue pour document %s (%s) : %s", nomDocument, typeDocument, statut);
 			LOGGER.debug(msg);
 		}
 		return resultat;
@@ -153,13 +165,22 @@ public final class EditiqueServiceImpl implements EditiqueService, InitializingB
 	}
 
 	@Override
-	public InputStream getPDFDeDocumentDepuisArchive(Long noContribuable, TypeDocumentEditique typeDocument, String nomDocument) throws EditiqueException {
-		return copieConformeService.getPdfCopieConforme(noContribuable, typeDocument, nomDocument);
-	}
+	public EditiqueResultat getPDFDeDocumentDepuisArchive(long noContribuable, TypeDocumentEditique typeDocument, String cleArchivage) throws EditiqueException {
 
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setCopieConformeService(EditiqueCopieConformeService copieConformeService) {
-		this.copieConformeService = copieConformeService;
+		// envoi de la demande
+		if (LOGGER.isDebugEnabled()) {
+			final String msg = String.format("Demande de récupération de l'archive '%s' (%s) pour le contribuable %s", cleArchivage, typeDocument, FormatNumeroHelper.numeroCTBToDisplay(noContribuable));
+			LOGGER.debug(msg);
+		}
+		final Pair<String, String> ids = sender.envoyerDemandeCopieConforme(cleArchivage, typeDocument, noContribuable);
+
+		// demande envoyée, attente de la réponse
+		if (LOGGER.isDebugEnabled()) {
+			final String msg = String.format("Demande de récupération de l'archive '%s' (%s) envoyée : %s", cleArchivage, typeDocument, ids.getLeft());
+			LOGGER.debug(msg);
+		}
+
+		return getRetourEditique(ids.getRight(), typeDocument, asyncReceiveDelay, new InboxRoutingTimeoutManager(cleArchivage, String.format("Copie conforme de document pour le tiers %s", FormatNumeroHelper.numeroCTBToDisplay(noContribuable))));
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})

@@ -1,15 +1,14 @@
 package ch.vd.uniregctb.editique.mock;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-
 import org.apache.xmlbeans.XmlObject;
 
+import ch.vd.technical.esb.ErrorType;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.editique.EditiqueService;
 import ch.vd.uniregctb.editique.FormatDocumentEditique;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
+import ch.vd.uniregctb.editique.impl.EditiqueResultatErreurImpl;
 
 public class MockEditiqueService implements EditiqueService {
 
@@ -28,7 +27,7 @@ public class MockEditiqueService implements EditiqueService {
 	}
 
 	@Override
-	public InputStream getPDFDeDocumentDepuisArchive(Long noContribuable, TypeDocumentEditique typeDocument, String nomDocument) throws EditiqueException {
-		return new ByteArrayInputStream(new byte[0]);
+	public EditiqueResultat getPDFDeDocumentDepuisArchive(long noContribuable, TypeDocumentEditique typeDocument, String nomDocument) throws EditiqueException {
+		return new EditiqueResultatErreurImpl(nomDocument, "Pas implémenté", ErrorType.TECHNICAL, "500");
 	}
 }

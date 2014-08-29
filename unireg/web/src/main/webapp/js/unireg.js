@@ -2513,7 +2513,7 @@ var Decl = {
 				html += '<td>';
 				if (d.confirmationEcrite) {
 					html += '<input type="checkbox" checked="checked" disabled="disabled">';
-					html += '<a href="' + App.curl('/declaration/copie-conforme-delai.do?idDelai=') + d.id + '" class="pdf" id="print-delai-' + d.id +
+					html += '<a href="' + App.curl('/declaration/copie-conforme-delai.do?idDelai=') + d.id + '&url_memorize=false" class="pdf" id="print-delai-' + d.id +
 						'" onclick="Link.tempSwap(this, \'#disabled-print-delai-' + d.id + '\');">&nbsp;</a>';
 					html += '<span class="pdf-grayed" id="disabled-print-delai-' + d.id + '" style="display:none;">&nbsp;</span>';
 				}
@@ -2552,7 +2552,7 @@ var Decl = {
 				}
 				html += '</td><td>' + StringUtils.escapeHTML(e.etatMessage);
 				if (!e.annule && e.etat == 'SOMMEE') {
-					html += '&nbsp;' + '<a href="' + App.curl('/declaration/copie-conforme-sommation.do?idEtat=') + e.id + '" class="pdf" id="copie-sommation-' + e.id +
+					html += '&nbsp;' + '<a href="' + App.curl('/declaration/copie-conforme-sommation.do?idEtat=') + e.id + '&url_memorize=false" class="pdf" id="copie-sommation-' + e.id +
 						'" onclick="Link.tempSwap(this, \'#disabled-copie-sommation-' + e.id + '\');">&nbsp;</a>';
 					html += '<span class="pdf-grayed" id="disabled-copie-sommation-' + e.id + '" style="display:none;">&nbsp;</span>';
 				}

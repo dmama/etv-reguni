@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.declaration.ordinaire;
 
 import javax.jms.JMSException;
-import java.io.InputStream;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -462,10 +461,9 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	}
 
 	@Override
-	public InputStream getCopieConformeSommationDI(DeclarationImpotOrdinaire di) throws EditiqueException {
+	public EditiqueResultat getCopieConformeSommationDI(DeclarationImpotOrdinaire di) throws EditiqueException {
 		String nomDocument = construitIdArchivageSommationDI(di);
-		InputStream pdf =
-				editiqueService.getPDFDeDocumentDepuisArchive(di.getTiers().getNumero(), TypeDocumentEditique.SOMMATION_DI, nomDocument);
+		EditiqueResultat pdf = editiqueService.getPDFDeDocumentDepuisArchive(di.getTiers().getNumero(), TypeDocumentEditique.SOMMATION_DI, nomDocument);
 		if (pdf == null) {
 			nomDocument = construitAncienIdArchivageSommationDI(di);
 			pdf = editiqueService.getPDFDeDocumentDepuisArchive(di.getTiers().getNumero(), TypeDocumentEditique.SOMMATION_DI, nomDocument);
@@ -621,8 +619,8 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	}
 
 	@Override
-	public InputStream getCopieConformeConfirmationDelai(DelaiDeclaration delai) throws EditiqueException {
-		String nomDocument = construitIdArchivageConfirmationDelai(delai);
+	public EditiqueResultat getCopieConformeConfirmationDelai(DelaiDeclaration delai) throws EditiqueException {
+		final String nomDocument = construitIdArchivageConfirmationDelai(delai);
 		return editiqueService.getPDFDeDocumentDepuisArchive(delai.getDeclaration().getTiers().getNumero(), TypeDocumentEditique.CONFIRMATION_DELAI, nomDocument);
 	}
 
