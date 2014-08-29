@@ -27,5 +27,5 @@ public interface EditiqueResultatErreur extends EditiqueResultatRecu {
 	 * </ul>
 	 * @return le code de l'erreur
 	 */
-	String getErrorCode();
+	Integer getErrorCode();
 }

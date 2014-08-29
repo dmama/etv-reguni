@@ -77,9 +77,18 @@ public class CopieConformeController {
 		final RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatErreur> erreur = new RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatErreur>() {
 			@Override
 			public String doJob(EditiqueResultatErreur resultat) {
-				if (StringUtils.isNotBlank(errorMessageIfNoSuchDocument)) {
-					Flash.error(errorMessageIfNoSuchDocument, errorFadingTimeout);
+				final Integer errorCode = resultat.getErrorCode();
+				final String errorMessage;
+				if (errorCode != null && errorCode == 404 && StringUtils.isNotBlank(errorMessageIfNoSuchDocument)) {
+					errorMessage = errorMessageIfNoSuchDocument;
 				}
+				else if (StringUtils.isNotBlank(resultat.getErrorMessage())) {
+					errorMessage = resultat.getErrorMessage();
+				}
+				else {
+					errorMessage = "Erreur inattendue.";
+				}
+				Flash.error(errorMessage, errorFadingTimeout);
 				return HttpHelper.getRedirectPagePrecedente(request);
 			}
 		};
