@@ -162,7 +162,6 @@ public class DroitAccesController {
 		if (criteria == null) {
 			criteria = new TiersCriteriaView();
 			criteria.setTypeRechercheDuNom(TiersCriteria.TypeRecherche.EST_EXACTEMENT);
-			criteria.setTypeTiersImperatif(TiersCriteria.TypeTiers.PERSONNE_PHYSIQUE);
 		}
 		else if (!error) {
 			// lancement de la recherche selon les critères donnés
@@ -171,6 +170,8 @@ public class DroitAccesController {
 			if (StringUtils.isNotBlank(criteria.getNumeroAVS())){
 				criteria.setNumeroAVS(FormatNumeroHelper.removeSpaceAndDash(criteria.getNumeroAVS()));
 			}
+
+			criteria.setTypeTiersImperatif(TiersCriteria.TypeTiers.PERSONNE_PHYSIQUE);
 			try {
 				final List<TiersIndexedDataView> results = searchTiers(criteria);
 				model.addAttribute(LIST, results);
@@ -385,7 +386,6 @@ public class DroitAccesController {
 		if (bean == null) {
 			bean = new UtilisateurListPersonneView();
 			bean.setTypeRechercheDuNom(TiersCriteria.TypeRecherche.EST_EXACTEMENT);
-			bean.setTypeTiersImperatif(TiersCriteria.TypeTiers.PERSONNE_PHYSIQUE);
 		}
 		else if (!error) {
 			// recherche selon les critères donnés
@@ -393,6 +393,8 @@ public class DroitAccesController {
 			if (StringUtils.isNotBlank(bean.getNumeroAVS())){
 				bean.setNumeroAVS(FormatNumeroHelper.removeSpaceAndDash(bean.getNumeroAVS()));
 			}
+
+			bean.setTypeTiersImperatif(TiersCriteria.TypeTiers.PERSONNE_PHYSIQUE);
 			try {
 				final List<TiersIndexedDataView> results = searchTiers(bean);
 				model.addAttribute(LIST, results);
