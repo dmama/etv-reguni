@@ -12,8 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.Predicate;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
@@ -36,6 +36,7 @@ import ch.vd.uniregctb.indexer.tiers.NonHabitantIndexable;
 import ch.vd.uniregctb.tiers.AppartenanceMenage;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.FormulePolitesse;
 import ch.vd.uniregctb.xml.address.AddressBuilder;
@@ -723,15 +724,13 @@ public abstract class DataHelper {
 		return results;
 	}
 
-	@SuppressWarnings("unchecked")
 	public static List<ForFiscalPrincipal> getForsFiscauxVirtuels(ch.vd.uniregctb.tiers.Tiers tiers, HibernateTemplate hibernateTemplate) {
 
 		// Récupère les appartenances ménages du tiers
-		final Set<ch.vd.uniregctb.tiers.RapportEntreTiers> rapports = tiers.getRapportsSujet();
-		final Collection<AppartenanceMenage> rapportsMenage = CollectionUtils.select(rapports, new Predicate() {
+		final Set<RapportEntreTiers> rapports = tiers.getRapportsSujet();
+		final Collection<RapportEntreTiers> rapportsMenage = CollectionUtils.select(rapports, new Predicate<RapportEntreTiers>() {
 			@Override
-			public boolean evaluate(Object object) {
-				final ch.vd.uniregctb.tiers.RapportEntreTiers rapport = (ch.vd.uniregctb.tiers.RapportEntreTiers) object;
+			public boolean evaluate(RapportEntreTiers rapport) {
 				return !rapport.isAnnule() && rapport instanceof AppartenanceMenage;
 			}
 		});
@@ -743,7 +742,7 @@ public abstract class DataHelper {
 		final List<ForFiscalPrincipal> forsVirtuels = new ArrayList<>();
 
 		// Extrait les fors principaux du ménage, en les adaptant à la période de validité des appartenances ménages
-		for (AppartenanceMenage a : rapportsMenage) {
+		for (RapportEntreTiers a : rapportsMenage) {
 			final Map<String, Long> params = new HashMap<>(1);
 			params.put("menageId", a.getObjetId());
 

@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.Predicate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -56,10 +56,9 @@ public class InfoIFOSecController {
 
 	@SuppressWarnings({"unchecked"})
 	private List<IfoSecProcedure> getProceduresUnireg(IfoSecProfil profile) {
-		return (List<IfoSecProcedure>) CollectionUtils.select(profile.getProcedures(), new Predicate() {
+		return (List<IfoSecProcedure>) CollectionUtils.select(profile.getProcedures(), new Predicate<IfoSecProcedure>() {
 			@Override
-			public boolean evaluate(Object object) {
-				IfoSecProcedure p = (IfoSecProcedure) object;
+			public boolean evaluate(IfoSecProcedure p) {
 				return p.getCode().startsWith("UR");
 			}
 		});
@@ -73,10 +72,9 @@ public class InfoIFOSecController {
 
 	@SuppressWarnings({"unchecked"})
 	private List<IfoSecProcedure> getProceduresAutres(IfoSecProfil profile) {
-		return (List<IfoSecProcedure>) CollectionUtils.select(profile.getProcedures(), new Predicate() {
+		return (List<IfoSecProcedure>) CollectionUtils.select(profile.getProcedures(), new Predicate<IfoSecProcedure>() {
 			@Override
-			public boolean evaluate(Object object) {
-				IfoSecProcedure p = (IfoSecProcedure) object;
+			public boolean evaluate(IfoSecProcedure p) {
 				return !p.getCode().startsWith("UR");
 			}
 		});

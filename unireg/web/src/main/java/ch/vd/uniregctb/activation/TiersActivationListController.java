@@ -6,6 +6,8 @@ import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.Predicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.validation.BindException;
@@ -36,6 +38,16 @@ public class TiersActivationListController extends AbstractTiersListController {
 
 	public static final String ACTIVATION_CRITERIA_NAME = "ActivationCriteria";
 	public static final String ACTIVATION_LIST_ATTRIBUTE_NAME = "list";
+
+	private static boolean isAnnulation(HttpServletRequest request) {
+		final String activation = request.getParameter(ACTIVATION_PARAMETER_NAME);
+		return ACTIVATION_ANNULATION_VALUE.equals(activation);
+	}
+
+	private static boolean isReactivation(HttpServletRequest request) {
+		final String activation = request.getParameter(ACTIVATION_PARAMETER_NAME);
+		return ACTIVATION_REACTIVATION_VALUE.equals(activation);
+	}
 
 	private static String getCriteriaSessionAttributeName(HttpServletRequest request) {
 		final String activation = request.getParameter(ACTIVATION_PARAMETER_NAME);
@@ -76,7 +88,15 @@ public class TiersActivationListController extends AbstractTiersListController {
 		if (errors.getErrorCount() == 0) {
 			if (bean != null && !bean.isEmpty()) {
 				try {
+					final boolean isAnnulation = isAnnulation(request);
+					final boolean isReactivation = isReactivation(request);
 					final List<TiersIndexedDataView> results = searchTiers(bean);
+					if (isAnnulation) {
+						filterOutAnnules(results);
+					}
+					else if (isReactivation) {
+						filterOutNonAnnules(results);
+					}
 					mav.addObject(ACTIVATION_LIST_ATTRIBUTE_NAME, results);
 				}
 				catch (TooManyResultsIndexerException ee) {
@@ -94,6 +114,24 @@ public class TiersActivationListController extends AbstractTiersListController {
 		}
 
 		return mav;
+	}
+
+	private static void filterOutAnnules(List<TiersIndexedDataView> views) {
+		CollectionUtils.filter(views, new Predicate<TiersIndexedDataView>() {
+			@Override
+			public boolean evaluate(TiersIndexedDataView view) {
+				return !view.isAnnule();
+			}
+		});
+	}
+
+	private static void filterOutNonAnnules(final List<TiersIndexedDataView> views) {
+		CollectionUtils.filter(views, new Predicate<TiersIndexedDataView>() {
+			@Override
+			public boolean evaluate(TiersIndexedDataView view) {
+				return view.isAnnule();
+			}
+		});
 	}
 
 	/**

@@ -14,8 +14,8 @@ import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.Predicate;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableBoolean;
@@ -1309,10 +1309,9 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		final String nomCritere = criteres.getNom();
 		final String prenomCritere = criteres.getPrenoms();
 		if (nomCritere != null) {
-			CollectionUtils.filter(list, new Predicate() {
+			CollectionUtils.filter(list, new Predicate<PersonnePhysique>() {
 				@Override
-				public boolean evaluate(Object object) {
-					final PersonnePhysique pp = (PersonnePhysique) object;
+				public boolean evaluate(PersonnePhysique pp) {
 					final String nomPrenom = tiersService.getNomPrenom(pp);
 					return (nomPrenom.contains(nomCritere));
 				}
@@ -1320,10 +1319,9 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		}
 
 		if (prenomCritere != null) {
-			CollectionUtils.filter(list, new Predicate() {
+			CollectionUtils.filter(list, new Predicate<PersonnePhysique>() {
 				@Override
-				public boolean evaluate(Object object) {
-					final PersonnePhysique pp = (PersonnePhysique) object;
+				public boolean evaluate(PersonnePhysique pp) {
 					final String nomPrenom = tiersService.getNomPrenom(pp);
 					return (nomPrenom.contains(prenomCritere));
 				}
@@ -1342,10 +1340,9 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	private void filterSexe(List<PersonnePhysique> list, CriteresPersonne criteres) {
 		final Sexe sexeCritere = criteres.getSexe();
 		if (sexeCritere != null) {
-			CollectionUtils.filter(list, new Predicate() {
+			CollectionUtils.filter(list, new Predicate<PersonnePhysique>() {
 				@Override
-				public boolean evaluate(Object object) {
-					final PersonnePhysique pp = (PersonnePhysique) object;
+				public boolean evaluate(PersonnePhysique pp) {
 					final Sexe sexe = tiersService.getSexe(pp);
 					return (sexe!=null && sexe == sexeCritere);
 				}
@@ -1362,10 +1359,10 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	private void filterDateNaissance(List<PersonnePhysique> list, CriteresPersonne criteres) {
 		final RegDate critereDateNaissance = criteres.getDateNaissance();
 		if (critereDateNaissance != null) {
-			CollectionUtils.filter(list, new Predicate() {
+			CollectionUtils.filter(list, new Predicate<PersonnePhysique>() {
 				@Override
-				public boolean evaluate(Object object) {
-					return matchDateNaissance((PersonnePhysique) object, critereDateNaissance);
+				public boolean evaluate(PersonnePhysique pp) {
+					return matchDateNaissance(pp, critereDateNaissance);
 				}
 
 			});

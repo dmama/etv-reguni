@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.Predicate;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -136,10 +136,9 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		// [UNIREG-1742][UNIREG-2051] dans certain cas, les déclarations sont remplacées par une note à l'administration fiscale de l'autre canton
 		// [UNIREG-1742] les diplomates suisses ne reçoivent pas de déclaration
 		// [SIFISC-8094] si la déclaration a été jugée optionnelle, il faut pouvoir l'émettre manuellement
-		CollectionUtils.filter(ranges, new Predicate() {
+		CollectionUtils.filter(ranges, new Predicate<PeriodeImposition>() {
 			@Override
-			public boolean evaluate(Object object) {
-				final PeriodeImposition periode = (PeriodeImposition) object;
+			public boolean evaluate(PeriodeImposition periode) {
 				return (!periode.isRemplaceeParNote() && !periode.isDiplomateSuisseSansImmeuble()) || periode.isOptionnelle();
 			}
 		});

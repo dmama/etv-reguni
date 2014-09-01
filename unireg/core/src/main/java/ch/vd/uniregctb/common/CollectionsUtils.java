@@ -7,12 +7,11 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.RandomAccess;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.registre.base.utils.Assert;
 
-public class CollectionsUtils extends CollectionUtils {
+public abstract class CollectionsUtils {
 
 	public static interface SplitCallback<T, O> {
 		public List<O> process(List<T> list);
