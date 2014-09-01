@@ -1,7 +1,8 @@
 package ch.vd.uniregctb.editique.impl;
 
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.Collections;
+import java.util.EnumMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -15,6 +16,8 @@ import ch.vd.uniregctb.common.MimeTypeHelper;
 import ch.vd.uniregctb.editique.ConstantesEditique;
 import ch.vd.uniregctb.editique.EditiqueResultatRecu;
 import ch.vd.uniregctb.editique.EditiqueRetourImpressionStorageService;
+import ch.vd.uniregctb.editique.FormatDocumentEditique;
+import ch.vd.uniregctb.editique.TypeDocumentEditique;
 import ch.vd.uniregctb.jms.EsbMessageHandler;
 
 /**
@@ -26,13 +29,15 @@ public class EvenementEditiqueEsbHandler implements EsbMessageHandler {
 
 	private static final String DEFAULT_ATTACHEMENT_NAME = "data";
 
-	private static final Map<String, String> mimeTypes;
-	static {
-		mimeTypes = new HashMap<>();
-		mimeTypes.put("pcl", MimeTypeHelper.MIME_XPCL);
-		mimeTypes.put("pdf", MimeTypeHelper.MIME_PDF);
-		mimeTypes.put("tiff", MimeTypeHelper.MIME_TIFF);
-		mimeTypes.put("afp", MimeTypeHelper.MIME_AFP);
+	private static final Map<FormatDocumentEditique, String> mimeTypes = buildMimeTypesMap();
+
+	private static Map<FormatDocumentEditique, String> buildMimeTypesMap() {
+		final Map<FormatDocumentEditique, String> map = new EnumMap<>(FormatDocumentEditique.class);
+		map.put(FormatDocumentEditique.PCL, MimeTypeHelper.MIME_XPCL);
+		map.put(FormatDocumentEditique.PDF, MimeTypeHelper.MIME_PDF);
+		map.put(FormatDocumentEditique.TIF, MimeTypeHelper.MIME_TIFF);
+		map.put(FormatDocumentEditique.AFP, MimeTypeHelper.MIME_AFP);
+		return Collections.unmodifiableMap(map);
 	}
 
 	private EditiqueRetourImpressionStorageService storageService;
@@ -96,8 +101,8 @@ public class EvenementEditiqueEsbHandler implements EsbMessageHandler {
 				buffer = message.getAttachmentAsByteArray(attachmentName);
 			}
 
-			final String documentType = message.getHeader(ConstantesEditique.UNIREG_TYPE_DOCUMENT);
-			final String returnFormat = message.getHeader(ConstantesEditique.UNIREG_FORMAT_DOCUMENT);
+			final TypeDocumentEditique documentType = TypeDocumentEditique.valueOf(message.getHeader(ConstantesEditique.UNIREG_TYPE_DOCUMENT));
+			final FormatDocumentEditique returnFormat = FormatDocumentEditique.valueOf(message.getHeader(ConstantesEditique.UNIREG_FORMAT_DOCUMENT));
 			final String mimeType = mimeTypes.get(returnFormat);
 
 			resultat = new EditiqueResultatDocumentImpl(idDocument, mimeType, documentType, buffer);

@@ -1,14 +1,15 @@
 package ch.vd.uniregctb.editique.impl;
 
 import ch.vd.uniregctb.editique.EditiqueResultatDocument;
+import ch.vd.uniregctb.editique.TypeDocumentEditique;
 
 public final class EditiqueResultatDocumentImpl extends BaseEditiqueResultatImpl implements EditiqueResultatDocument {
 
 	private final String contentType;
-	private final String documentType;
+	private final TypeDocumentEditique documentType;
 	private final byte[] content;
 
-	public EditiqueResultatDocumentImpl(String idDocument, String contentType, String documentType, byte[] content) {
+	public EditiqueResultatDocumentImpl(String idDocument, String contentType, TypeDocumentEditique documentType, byte[] content) {
 		super(idDocument);
 		this.contentType = contentType;
 		this.documentType = documentType;
@@ -21,7 +22,7 @@ public final class EditiqueResultatDocumentImpl extends BaseEditiqueResultatImpl
 	}
 
 	@Override
-	public String getDocumentType() {
+	public TypeDocumentEditique getDocumentType() {
 		return documentType;
 	}
 

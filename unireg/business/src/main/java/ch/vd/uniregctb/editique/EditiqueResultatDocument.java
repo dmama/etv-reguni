@@ -18,7 +18,7 @@ public interface EditiqueResultatDocument extends EditiqueResultatRecu {
 	 *
 	 * @return le type de document.
 	 */
-	String getDocumentType();
+	TypeDocumentEditique getDocumentType();
 
 	/**
 	 * Obtient le contenu du document.

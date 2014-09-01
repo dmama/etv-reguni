@@ -73,8 +73,8 @@ public class EvenementEditiqueSenderImpl implements EvenementEditiqueSender {
 						msg.addHeader(ConstantesEditique.RETURN_FORMAT, typeFormat.getCode());
 
 						msg.addHeader(ConstantesEditique.UNIREG_DOCUMENT_ID, nomDocument);
-						msg.addHeader(ConstantesEditique.UNIREG_TYPE_DOCUMENT, typeDocument.getCodeDocumentEditique());
-						msg.addHeader(ConstantesEditique.UNIREG_FORMAT_DOCUMENT, typeFormat.getCode());
+						msg.addHeader(ConstantesEditique.UNIREG_TYPE_DOCUMENT, typeDocument.name());
+						msg.addHeader(ConstantesEditique.UNIREG_FORMAT_DOCUMENT, typeFormat.name());
 					}
 				}
 			});
@@ -114,17 +114,17 @@ public class EvenementEditiqueSenderImpl implements EvenementEditiqueSender {
 			final EsbMessage msg = buildEsbMessage(businessId, typeDocument, body, serviceDestinationCopieConforme, true, new HeaderCustomFiller() {
 				@Override
 				public void addHeaders(EsbMessage msg) throws Exception {
-					final String pdf = FormatDocumentEditique.PDF.getCode();
+					final FormatDocumentEditique pdf = FormatDocumentEditique.PDF;
 
 					msg.addHeader(ConstantesEditique.TYPE_DOSSIER, ConstantesEditique.TYPE_DOSSIER_ARCHIVAGE);
 					msg.addHeader(ConstantesEditique.NOM_DOSSIER, FormatNumeroHelper.numeroCTBToDisplay(noTiers));
 					msg.addHeader(ConstantesEditique.TYPE_DOCUMENT, typeDocument.getCodeDocumentArchivage());
 					msg.addHeader(ConstantesEditique.CLE_ARCHIVAGE, cleArchivage);
-					msg.addHeader(ConstantesEditique.TYPE_FORMAT, pdf);
+					msg.addHeader(ConstantesEditique.TYPE_FORMAT, pdf.getCode());
 
 					msg.addHeader(ConstantesEditique.UNIREG_DOCUMENT_ID, businessId);
-					msg.addHeader(ConstantesEditique.UNIREG_TYPE_DOCUMENT, typeDocument.getCodeDocumentEditique());
-					msg.addHeader(ConstantesEditique.UNIREG_FORMAT_DOCUMENT, pdf);
+					msg.addHeader(ConstantesEditique.UNIREG_TYPE_DOCUMENT, typeDocument.name());
+					msg.addHeader(ConstantesEditique.UNIREG_FORMAT_DOCUMENT, pdf.name());
 				}
 			});
 

@@ -9,17 +9,17 @@ public abstract class ConstantesEditique {
 	/**
 	 * L'attribut des métadonnées utilisé par Unireg (et renvoyé tel quel en cas de réponse) pour y loger son identifiant de document
 	 */
-	public static final String UNIREG_DOCUMENT_ID = "DOC_ID";
+	public static final String UNIREG_DOCUMENT_ID = "uniregIdDocument";
 
 	/**
 	 * Attribut des métadonnées utilisé par Unireg (et renvoyé tel quel en cas de réponse) pour stocker le type de document (au sens "composition")
 	 */
-	public static final String UNIREG_TYPE_DOCUMENT = "TYPE_DOCUMENT";
+	public static final String UNIREG_TYPE_DOCUMENT = "uniregTypeDocument";
 
 	/**
 	 * Attribut des métadonnées utilisé par Unireg (et renvoyé tel quel en cas de réponse) pour stocker le format de fichier attendu en retour (PDF, PCL...)
 	 */
-	public static final String UNIREG_FORMAT_DOCUMENT = "FORMAT_DOCUMENT";
+	public static final String UNIREG_FORMAT_DOCUMENT = "uniregFormatDocument";
 
 	//
 	// Données spécifiques à la composition de document
