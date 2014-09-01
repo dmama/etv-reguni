@@ -244,12 +244,12 @@ public class PartyWebServicePoursuiteTest extends AbstractPartyWebServiceTest {
 
 		final List<Address> debtProsecutionAddresses = tiers.getDebtProsecutionAddresses();
 		assertFormattedAddress(debtProsecutionAddresses.get(debtProsecutionAddresses.size() - 1).getFormattedAddress(), "KPMG AG", "(KPMG SA)", "(KPMG Ltd)", "Badenerstrasse 172",
-				"8004 Zürich");
+				"Case Postale 1872", "8026 Zürich");
 
 		final List<AddressOtherParty> debtProsecutionAddressesOfOtherParty = tiers.getDebtProsecutionAddressesOfOtherParty();
 		final AddressOtherParty debtProsecutionAddressOfOtherParty = debtProsecutionAddressesOfOtherParty.get(debtProsecutionAddressesOfOtherParty.size() - 1);
 		assertEquals(OtherPartyAddressType.REPRESENTATIVE, debtProsecutionAddressOfOtherParty.getOtherPartyType());
-		assertFormattedAddress(debtProsecutionAddressOfOtherParty.getBase().getFormattedAddress(), "KPMG AG", "(KPMG SA)", "(KPMG Ltd)", "Badenerstrasse 172", "8004 Zürich");
+		assertFormattedAddress(debtProsecutionAddressOfOtherParty.getBase().getFormattedAddress(), "KPMG AG", "(KPMG SA)", "(KPMG Ltd)", "Badenerstrasse 172", "Case Postale 1872", "8026 Zürich");
 	}
 
 	@Test
