@@ -6,7 +6,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.uniregctb.norentes.annotation.Check;
 import ch.vd.uniregctb.norentes.annotation.Etape;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
@@ -73,9 +72,6 @@ public class Ec_6000_08_Separation_JIRA1057_Scenario extends EvenementCivilScena
 
 	@Etape(id=1, descr="Chargement des habitants et du ménage commun")
 	public void step1() {
-
-		addColAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
-		addColAdm(MockOfficeImpot.ACISUCCESSIONS);
 
 		// Maurice
 		final PersonnePhysique momo = addHabitant(noIndMomo);

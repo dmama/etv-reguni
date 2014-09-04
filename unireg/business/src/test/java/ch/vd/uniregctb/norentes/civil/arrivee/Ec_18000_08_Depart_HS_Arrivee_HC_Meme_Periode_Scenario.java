@@ -7,7 +7,6 @@ import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.declaration.Declaration;
@@ -80,11 +79,6 @@ public class Ec_18000_08_Depart_HS_Arrivee_HC_Meme_Periode_Scenario extends Even
 
 	@Etape(id=1, descr="Création de l'individu parti HS")
 	public void etape1() throws Exception {
-
-		addColAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
-		addColAdm(MockOfficeImpot.ACISUCCESSIONS);
-		addColAdm(MockOfficeImpot.OID_AIGLE);
-
 		final PersonnePhysique alain = addHabitant(noIndAlain);
 		addForFiscalPrincipal(alain, MockCommune.Lausanne, dateMajorite, dateDepartHS.getOneDayBefore(), MotifFor.MAJORITE, MotifFor.DEPART_HS);
 		tiersService.openForFiscalPrincipal(alain, dateDepartHS, MotifRattachement.DOMICILE, MockPays.PaysInconnu.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, ModeImposition.ORDINAIRE, MotifFor.DEPART_HS);

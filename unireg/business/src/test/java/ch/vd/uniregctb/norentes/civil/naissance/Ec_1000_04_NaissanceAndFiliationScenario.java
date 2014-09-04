@@ -2,6 +2,9 @@ package ch.vd.uniregctb.norentes.civil.naissance;
 
 import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.Predicate;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
@@ -59,9 +62,15 @@ public class Ec_1000_04_NaissanceAndFiliationScenario extends EvenementCivilScen
 	public void etape1() {
 	}
 
-	@Check(id=1, descr="Vérifie qu'il n'y a pas de Tiers dans la base de données")
+	@Check(id=1, descr="Vérifie qu'il n'y a pas de personne physique dans la base de données")
 	public void check1() {
-		List<Tiers> list = tiersDAO.getAll();
+		final List<Tiers> list = tiersDAO.getAll();
+		CollectionUtils.filter(list, new Predicate<Tiers>() {
+			@Override
+			public boolean evaluate(Tiers object) {
+				return object instanceof PersonnePhysique;
+			}
+		});
 		assertEquals(0, list.size(), "");
 	}
 
@@ -84,7 +93,7 @@ public class Ec_1000_04_NaissanceAndFiliationScenario extends EvenementCivilScen
 	
 	@Etape(id=3, descr="Envoi de l'événement de naissance")
 	public void etape3() throws Exception {
-		long id = addEvenementCivil(TypeEvenementCivil.NAISSANCE, 123L, dateNaissance, 5586);
+		final long id = addEvenementCivil(TypeEvenementCivil.NAISSANCE, 123L, dateNaissance, 5586);
 		commitAndStartTransaction();
 
 		// On traite les evenements
@@ -96,7 +105,13 @@ public class Ec_1000_04_NaissanceAndFiliationScenario extends EvenementCivilScen
 
 		checkEtatEvtCivils(2, EtatEvenementCivil.TRAITE);
 
-		List<Tiers> list = tiersDAO.getAll();
+		final List<Tiers> list = tiersDAO.getAll();
+		CollectionUtils.filter(list, new Predicate<Tiers>() {
+			@Override
+			public boolean evaluate(Tiers object) {
+				return object instanceof PersonnePhysique;
+			}
+		});
 		assertEquals(1, list.size(), "");
 
 		PersonnePhysique pierre = (PersonnePhysique)list.get(0);

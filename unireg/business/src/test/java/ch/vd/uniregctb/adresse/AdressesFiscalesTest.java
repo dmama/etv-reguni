@@ -14,7 +14,7 @@ import static org.junit.Assert.assertEquals;
 
 public class AdressesFiscalesTest {
 
-	final ServiceInfrastructureService serviceInfra = new ServiceInfrastructureImpl(new DefaultMockServiceInfrastructureService());
+	final ServiceInfrastructureService serviceInfra = new ServiceInfrastructureImpl(new DefaultMockServiceInfrastructureService(), null);
 
 	@Test
 	public void testOfType() throws Exception {

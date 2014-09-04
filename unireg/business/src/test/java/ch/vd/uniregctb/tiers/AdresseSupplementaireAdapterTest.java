@@ -24,7 +24,7 @@ import static org.junit.Assert.assertNull;
 
 public class AdresseSupplementaireAdapterTest extends WithoutSpringTest {
 
-	final ServiceInfrastructureService serviceInfra = new ServiceInfrastructureImpl(new DefaultMockServiceInfrastructureService());
+	final ServiceInfrastructureService serviceInfra = new ServiceInfrastructureImpl(new DefaultMockServiceInfrastructureService(), new MockTiersDAO());
 
 	/**
 	 * [SIFISC-143] test la surcharge du npa de la localité par le npa de la case postale pour les adresses suisses

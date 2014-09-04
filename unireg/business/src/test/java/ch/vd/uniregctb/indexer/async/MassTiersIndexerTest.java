@@ -39,6 +39,7 @@ public class MassTiersIndexerTest extends BusinessTest {
 
 	public MassTiersIndexerTest() {
 		setWantIndexation(true);
+		setWantCollectivitesAdministratives(true);
 	}
 
 	private static final String DBUNIT_FILENAME = "MassTiersIndexerTest.xml";

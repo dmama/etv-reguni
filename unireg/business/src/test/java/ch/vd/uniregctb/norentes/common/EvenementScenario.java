@@ -10,13 +10,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionException;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
+import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.uniregctb.common.RequiresNewTransactionDefinition;
 import ch.vd.uniregctb.database.DatabaseService;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
@@ -84,6 +85,7 @@ public abstract class EvenementScenario extends NorentesScenario {
 		globalIndexer.indexAllDatabase();
 
 		createAllPfs();
+		createAllCollectivitesAdministratives();
 	}
 
 	@Override
@@ -131,16 +133,34 @@ public abstract class EvenementScenario extends NorentesScenario {
 		final int lastPf = RegDate.get().year();
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
-		template.execute(new TransactionCallback<Object>() {
+		template.execute(new TransactionCallbackWithoutResult() {
 			@Override
-			public Object doInTransaction(TransactionStatus status) {
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
 				for (int pf = firstPf ; pf <= lastPf ; ++ pf) {
 					final PeriodeFiscale periode = new PeriodeFiscale();
 					periode.setAnnee(pf);
 					periode.setAllPeriodeFiscaleParametres(RegDate.get(pf + 1, 1, 31), RegDate.get(pf + 1, 3, 31), RegDate.get(pf + 1, 6, 30));
 					periodeFiscaleDAO.save(periode);
 				}
-				return null;
+			}
+		});
+	}
+
+	private void createAllCollectivitesAdministratives() {
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.execute(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final Session currentSession = sessionFactory.getCurrentSession();
+				for (MockCollectiviteAdministrative collAdm : MockCollectiviteAdministrative.getAll()) {
+					final CollectiviteAdministrative ca = new CollectiviteAdministrative();
+					if (collAdm instanceof MockOfficeImpot) {
+						ca.setIdentifiantDistrictFiscal(((MockOfficeImpot) collAdm).getIdentifiantDistrict());
+						ca.setIdentifiantRegionFiscale(((MockOfficeImpot) collAdm).getIdentifiantRegion());
+					}
+					ca.setNumeroCollectiviteAdministrative(collAdm.getNoColAdm());
+					currentSession.merge(ca);
+				}
 			}
 		});
 	}

@@ -44,6 +44,7 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureImpl;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.MockTiersDAO;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.ModeImposition;
@@ -121,7 +122,7 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 				rues.add(MockRue.CossonayVille.CheminDeRiondmorcel);
 				rues.add(MockRue.Lausanne.AvenueDeBeaulieu);
 			}
-		});
+		}, new MockTiersDAO());
 
 		// Crée les données du mock service civil
 		ServiceCivilService serviceCivil = new ServiceCivilImpl(infrastructureService, new MockServiceCivil() {

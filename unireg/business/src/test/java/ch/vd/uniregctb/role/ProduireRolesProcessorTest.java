@@ -63,6 +63,10 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 
 	private ProduireRolesProcessor processor;
 
+	public ProduireRolesProcessorTest() {
+		setWantCollectivitesAdministratives(true);
+	}
+
 	@Override
 	public void onSetUp() throws Exception {
 

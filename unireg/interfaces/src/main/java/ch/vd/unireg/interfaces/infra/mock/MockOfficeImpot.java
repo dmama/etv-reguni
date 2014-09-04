@@ -11,7 +11,7 @@ public class MockOfficeImpot extends MockCollectiviteAdministrative implements O
 	public static final MockOfficeImpot OID_ROLLE = new MockOfficeImpot(2, null, "Administration cantonale des impôts", "Office d'impôt de Rolle et d'Aubonne", null, "OID AUBONNE/ROLLE", null, null);
 	public static final MockOfficeImpot OID_AVENCHE = new MockOfficeImpot(3, null, "Office d'impôt du district", "de la Broye - Vully", "Bureau d'Avenches", "OID AVENCHES", null, null);
 	public static final MockOfficeImpot OID_COSSONAY = new MockOfficeImpot(4, null, "Office d'impôt du district", "de Morges", "Bureau de Cossonay", "OID COSSONAY", null, null);
-	public static final MockOfficeImpot OID_ECHALLENS = new MockOfficeImpot(5, null, "Office d'impôt du district", "du Gros-de-Vaud", null, "OID ECHALLENS", 2, null);
+	public static final MockOfficeImpot OID_ECHALLENS = new MockOfficeImpot(5, new MockAdresse("Place Emile Gardaz", "5", "1040", "Echallens"), "Office d'impôt du district", "du Gros-de-Vaud", null, "OID ECHALLENS", 2, null);
 	public static final MockOfficeImpot OID_GRANDSON = new MockOfficeImpot(6, null, "Office d'impôt du district", "Jura - Nord vaudois", "Bureau de Grandson", "OID GRANDSON", 3, null);
 	public static final MockOfficeImpot OID_LAUSANNE_OUEST = new MockOfficeImpot(7, new MockAdresse("rue de la Paix", "1", "1000", "Lausanne"), "Office d'impôt des districts de", "Lausanne et Ouest lausannois", null, "OID LAUSANNE", 4, 1);
 	public static final MockOfficeImpot OID_LA_VALLEE = new MockOfficeImpot(8, null, "Office d'impôt du district", "du Jura - Nord vaudois", "Bureau de La Vallée", "OID LA VALLEE", 5, null);

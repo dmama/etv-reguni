@@ -11,7 +11,7 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper.Range;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationException;
-import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.uniregctb.common.WebTest;
@@ -66,6 +66,10 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 	protected DeclarationImpotOrdinaireDAO diDAO;
 	protected DeclarationImpotEditManagerImpl manager;
 
+	public DeclarationImpotEditManagerTest() {
+		setWantCollectivitesAdministratives(true);
+	}
+
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
@@ -118,8 +122,6 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testCheckRangeDiContribuableAssujettiEnContinu() {
 
-		addCollAdm(MockCollectiviteAdministrative.CEDI);
-
 		final PeriodeFiscale periode2000 = addPeriodeFiscale(2000);
 		final PeriodeFiscale periode2040 = addPeriodeFiscale(2040);
 		final ModeleDocument modele2000 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2000);
@@ -143,8 +145,6 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testCheckRangeDiContribuableAvecFinAssujettissement() {
-
-		addCollAdm(MockCollectiviteAdministrative.CEDI);
 
 		final PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
 		final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
@@ -177,8 +177,6 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testCheckRangeDiContribuableAvecDebutAssujettissement() {
 
-		addCollAdm(MockCollectiviteAdministrative.CEDI);
-
 		final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
 		final PeriodeFiscale periode2009 = addPeriodeFiscale(2009);
 		final ModeleDocument modele2008 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
@@ -205,8 +203,6 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testCheckRangeDiContribuableAvecDepartHSEtRetourDansLAnnee() {
-
-		addCollAdm(MockCollectiviteAdministrative.CEDI);
 
 		final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
 		final ModeleDocument modele2008 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
@@ -270,8 +266,6 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testCalculateRangeProchaineDIContribuableAssujettiEnContinu() {
-
-		addCollAdm(MockCollectiviteAdministrative.CEDI);
 
 		final PeriodeFiscale periode2003 = addPeriodeFiscale(2003);
 		final ModeleDocument modele2003 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2003);
@@ -392,8 +386,6 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testCalculateRangeProchaineDIContribuableDeclarationAnnulee() {
 
-		addCollAdm(MockCollectiviteAdministrative.CEDI);
-
 		final PeriodeFiscale periode2003 = addPeriodeFiscale(2003);
 		final PeriodeFiscale periode2004 = addPeriodeFiscale(2004);
 		final ModeleDocument modele2003 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2003);
@@ -424,8 +416,6 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testCalculateRangeProchaineDIContribuableDansLeFutur() {
 
-		addCollAdm(MockCollectiviteAdministrative.CEDI);
-
 		final int anneeCourante = RegDate.get().year();
 
 		final PeriodeFiscale periode = addPeriodeFiscale(anneeCourante);
@@ -447,8 +437,6 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testCalculateRangeProchaineDIContribuableAvecFinAssujettissement() {
-
-		addCollAdm(MockCollectiviteAdministrative.CEDI);
 
 		final PeriodeFiscale periode2003 = addPeriodeFiscale(2003);
 		final PeriodeFiscale periode2004 = addPeriodeFiscale(2004);
@@ -481,8 +469,6 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testCalculateRangeProchaineDIContribuableAvecDebutAssujettissement() {
 
-		addCollAdm(MockCollectiviteAdministrative.CEDI);
-
 		final PeriodeFiscale periode2003 = addPeriodeFiscale(2003);
 		final PeriodeFiscale periode2004 = addPeriodeFiscale(2004);
 		final ModeleDocument modele2003 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2003);
@@ -511,8 +497,6 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testCalculateRangeProchaineDIContribuableAvecDepartHSEtRetourDansLAnnee() {
 
-		addCollAdm(MockCollectiviteAdministrative.CEDI);
-		
 		final PeriodeFiscale periode2003 = addPeriodeFiscale(2003);
 		final PeriodeFiscale periode2004 = addPeriodeFiscale(2004);
 		final PeriodeFiscale periode2005 = addPeriodeFiscale(2005);
@@ -566,7 +550,7 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final CollectiviteAdministrative cedi = addCollAdm(MockCollectiviteAdministrative.CEDI);
+				final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
 				final PersonnePhysique pp = addNonHabitant("Arnold", "Stäpäld", date(1978, 9, 23), Sexe.MASCULIN);
 				final PeriodeFiscale periode = addPeriodeFiscale(2010);
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
@@ -624,7 +608,7 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 				final PersonnePhysique pp = addNonHabitant("Arnold", "Duchemin", date(1970, 4, 12), Sexe.MASCULIN);
 				addForPrincipal(pp, debutAnneeDerniere, MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
 
-				final CollectiviteAdministrative cedi = addCollAdm(MockCollectiviteAdministrative.CEDI);
+				final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
 				final PeriodeFiscale pfAnneeDerniere = addPeriodeFiscale(anneeDerniere);
 				final PeriodeFiscale pfAnneeCourante = addPeriodeFiscale(anneeCourante);
 				final ModeleDocument modeleAnneeDerniere = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pfAnneeDerniere);
@@ -690,7 +674,7 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 				addForSecondaire(pp, date(2006, 12, 20), MotifFor.ACHAT_IMMOBILIER, date(2009, 12, 1), MotifFor.VENTE_IMMOBILIER, MockCommune.Cully.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 				ids.ppId = pp.getNumero();
 
-				final CollectiviteAdministrative cedi = addCollAdm(MockCollectiviteAdministrative.CEDI);
+				final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
 				ids.oidCedi = cedi.getId();
 
 				return null;

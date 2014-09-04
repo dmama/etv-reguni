@@ -217,9 +217,10 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 	 * Renvoie la collectivité administrative rattachée au numero de district donné.
 	 *
 	 * @param numeroDistrict le numéro du district
+	 * @param doNotAutoFlush <code>true</code> s'il faut empêcher Hibernate de flusher la session en cours
 	 * @return le tiers représentant la collectivité administrative correspondante
 	 */
-	CollectiviteAdministrative getCollectiviteAdministrativeForDistrict(int numeroDistrict);
+	CollectiviteAdministrative getCollectiviteAdministrativeForDistrict(int numeroDistrict, boolean doNotAutoFlush);
 
 	/**
 	 * Renvoie la collectivité administrative rattachée au numero de région donné.

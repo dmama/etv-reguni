@@ -62,15 +62,6 @@
 			<value>1</value>
 			<null />
 		</row>
-		<row>
-			<value>2008-01-01</value>
-			<value>7</value>
-			<value>CollectiviteAdministrative</value>
-			<null />
-			<value>0</value>
-			<null />
-			<value>7</value>
-		</row>
 	</table>
 	<table name="RAPPORT_ENTRE_TIERS">
 		<column>LOG_MDATE</column>

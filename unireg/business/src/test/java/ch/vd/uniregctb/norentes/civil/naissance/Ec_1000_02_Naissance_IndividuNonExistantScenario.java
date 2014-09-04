@@ -2,10 +2,14 @@ package ch.vd.uniregctb.norentes.civil.naissance;
 
 import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.Predicate;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.norentes.annotation.Check;
 import ch.vd.uniregctb.norentes.annotation.Etape;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
@@ -39,10 +43,16 @@ public class Ec_1000_02_Naissance_IndividuNonExistantScenario extends EvenementC
 	public void etape1() {
 	}
 
-	@Check(id=1, descr="Contrôle qu'il n'y a pas de tiers dans la base de données")
+	@Check(id=1, descr="Contrôle qu'il n'y a pas de personne physique dans la base de données")
 	public void check1() throws Exception {
 
-		List<Tiers> list = tiersDAO.getAll();
+		final List<Tiers> list = tiersDAO.getAll();
+		CollectionUtils.filter(list, new Predicate<Tiers>() {
+			@Override
+			public boolean evaluate(Tiers object) {
+				return object instanceof PersonnePhysique;
+			}
+		});
 		assertEquals(0, list.size(), "");
 	}
 
@@ -55,9 +65,15 @@ public class Ec_1000_02_Naissance_IndividuNonExistantScenario extends EvenementC
 		traiteEvenements(id);
 	}
 
-	@Check(id=2, descr="Contrôle qu'il n'y a pas de Tiers dans la base de données et que l'événement est en erreur")
+	@Check(id=2, descr="Contrôle qu'il n'y a pas de personne physique dans la base de données et que l'événement est en erreur")
 	public void check2() throws Exception {
-		List<Tiers> list = tiersDAO.getAll();
+		final List<Tiers> list = tiersDAO.getAll();
+		CollectionUtils.filter(list, new Predicate<Tiers>() {
+			@Override
+			public boolean evaluate(Tiers object) {
+				return object instanceof PersonnePhysique;
+			}
+		});
 		assertEquals(0, list.size(), "");
 
 		checkEtatEvtCivils(1, EtatEvenementCivil.EN_ERREUR);

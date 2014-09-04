@@ -18,6 +18,7 @@
 	<bean id="serviceInfrastructureRaw" class="ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService"/>
 	<bean id="serviceInfrastructureService" class="ch.vd.uniregctb.interfaces.service.ServiceInfrastructureImpl">
 		<property name="rawService" ref="serviceInfrastructureRaw" />
+		<property name="tiersDAO" ref="tiersDAO"/>
 	</bean>
 
 	<!-- Bean client ServiceCivil MOCK -->

@@ -8,6 +8,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.Declaration;
@@ -17,7 +18,6 @@ import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.jms.BamMessageSender;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -55,7 +55,7 @@ public class EvenementDeclarationServiceTest extends BusinessTest {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
 
-				addCollAdm(ServiceInfrastructureService.noCEDI);
+				addCollAdm(MockCollectiviteAdministrative.CEDI);
 
 				final PeriodeFiscale periode2011 = addPeriodeFiscale(2011);
 				final ModeleDocument declarationComplete2011 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2011);

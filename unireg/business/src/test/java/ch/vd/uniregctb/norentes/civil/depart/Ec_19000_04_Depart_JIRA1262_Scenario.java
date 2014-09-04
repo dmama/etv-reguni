@@ -7,7 +7,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.adresse.AdressesCiviles;
@@ -18,7 +17,6 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationHelper;
-import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.norentes.annotation.Check;
 import ch.vd.uniregctb.norentes.annotation.Etape;
@@ -97,9 +95,6 @@ public class Ec_19000_04_Depart_JIRA1262_Scenario extends DepartScenario {
 
 	@Etape(id=1, descr="Chargement de l'habitant")
 	public void etape1() throws Exception {
-
-		addColAdm(MockOfficeImpot.OID_AIGLE);
-		addColAdm(MockOfficeImpot.ACISUCCESSIONS);
 
 		final PersonnePhysique sebastien = addHabitant(noIndSebastien);
 		noHabSebastien = sebastien.getNumero();

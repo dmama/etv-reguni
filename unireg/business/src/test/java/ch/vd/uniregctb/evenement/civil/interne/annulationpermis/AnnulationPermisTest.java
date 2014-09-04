@@ -39,6 +39,8 @@ public class AnnulationPermisTest extends WithoutSpringTest {
 	private MockPermis permisRoberto;
 	private MockPermis permisRosa;
 
+	final MockTiersDAO tiersDAO = new MockTiersDAO();
+
 	// Prend le mock infrastructure par défaut
 	ServiceInfrastructureService infrastructureService = new ServiceInfrastructureImpl(new MockServiceInfrastructureService() {
 		@Override
@@ -61,7 +63,7 @@ public class AnnulationPermisTest extends WithoutSpringTest {
 			rues.add(MockRue.CossonayVille.CheminDeRiondmorcel);
 			rues.add(MockRue.Lausanne.AvenueDeBeaulieu);
 		}
-	});
+	}, tiersDAO);
 
 	// Crée les données du mock service civil
 	ServiceCivilService serviceCivil = new ServiceCivilImpl(infrastructureService, new DefaultMockServiceCivil() {
@@ -87,7 +89,6 @@ public class AnnulationPermisTest extends WithoutSpringTest {
 		}
 	});
 
-	final MockTiersDAO tiersDAO = new MockTiersDAO();
 	final EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService, tiersDAO);
 	final EvenementCivilOptions options = new EvenementCivilOptions(false);
 

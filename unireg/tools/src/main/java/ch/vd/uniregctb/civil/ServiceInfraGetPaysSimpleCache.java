@@ -397,11 +397,6 @@ public class ServiceInfraGetPaysSimpleCache implements ServiceInfrastructureRaw 
 	}
 
 	@Override
-	public OfficeImpot getOfficeImpotDeCommune(int noCommune) throws ServiceInfrastructureException {
-		return target.getOfficeImpotDeCommune(noCommune);
-	}
-
-	@Override
 	public List<OfficeImpot> getOfficesImpot() throws ServiceInfrastructureException {
 		return target.getOfficesImpot();
 	}

@@ -524,7 +524,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl extends EditiqueAbstr
 		CollectiviteAdministrative collAdm = (collId == null ? null : (CollectiviteAdministrative) tiersService.getTiers(collId));
 		if (collAdm == null) {
 			// valeur par défaut
-			collAdm = tiersService.getOrCreateCollectiviteAdministrative(ServiceInfrastructureService.noCEDI);
+			collAdm = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noCEDI);
 			Assert.notNull(collAdm);
 		}
 

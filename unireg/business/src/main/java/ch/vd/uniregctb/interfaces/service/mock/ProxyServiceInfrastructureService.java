@@ -2,9 +2,9 @@ package ch.vd.uniregctb.interfaces.service.mock;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 import org.jetbrains.annotations.Nullable;
+import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.registre.base.date.RegDate;
@@ -28,6 +28,7 @@ import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureServic
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureImpl;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.tiers.TiersDAO;
 
 /**
  * Proxy du service host-infrastructure à enregistrer dans l'application context et permettant à chaque test unitaire de spécifier
@@ -35,11 +36,17 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
  * <p>
  * Ce proxy est initialisé par défaut sur une instance de DefaultMockServiceInfrastructureService.
  */
-public class ProxyServiceInfrastructureService implements ServiceInfrastructureService {
+public class ProxyServiceInfrastructureService implements ServiceInfrastructureService, InitializingBean {
 
 	private ServiceInfrastructureService target = null;
+	private TiersDAO tiersDAO;
 
-	public ProxyServiceInfrastructureService() {
+	public void setTiersDAO(TiersDAO tiersDAO) {
+		this.tiersDAO = tiersDAO;
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
 		setUpDefault();
 	}
 
@@ -48,7 +55,7 @@ public class ProxyServiceInfrastructureService implements ServiceInfrastructureS
 	}
 
 	public void setUp(ServiceInfrastructureRaw target) {
-		this.target = new ServiceInfrastructureImpl(target);
+		this.target = new ServiceInfrastructureImpl(target, tiersDAO);
 	}
 
 	public void setUp(ServiceInfrastructureService target) {

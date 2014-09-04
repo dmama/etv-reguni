@@ -53,6 +53,10 @@ public class ImpressionSommationDIHelperTest extends BusinessTest {
 	private PeriodeFiscale periodeFiscale;
 	private ModeleDocument modeleDocument;
 
+	public ImpressionSommationDIHelperTest() {
+		setWantCollectivitesAdministratives(true);
+	}
+
 	@Override
 	protected void runOnSetUp() throws Exception {
 		super.runOnSetUp();
@@ -67,7 +71,6 @@ public class ImpressionSommationDIHelperTest extends BusinessTest {
 		final Object[] res = doInTransaction(new TransactionCallback<Object[]>() {
 			@Override
 			public Object[] doInTransaction(TransactionStatus status) {
-				addCedi();
 				final PeriodeFiscale pf = addPeriodeFiscale(2009);
 				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf);
 				return new Object[]{pf, md};

@@ -47,6 +47,10 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 	private MockOuvertureForsContribuablesMajeursProcessor mockProcessor;
 	private AdresseService adresseService;
 
+	public OuvertureForsContribuablesMajeursProcessorTest() {
+		setWantCollectivitesAdministratives(true);
+	}
+
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();

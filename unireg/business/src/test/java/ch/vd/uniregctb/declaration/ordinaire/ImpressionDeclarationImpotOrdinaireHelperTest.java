@@ -24,21 +24,24 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService;
 import ch.vd.unireg.interfaces.infra.mock.MockBatiment;
-import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
 import ch.vd.uniregctb.declaration.InformationsDocumentAdapter;
@@ -47,12 +50,15 @@ import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.editique.EditiqueHelper;
 import ch.vd.uniregctb.editique.ZoneAffranchissementEditique;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.situationfamille.SituationFamilleService;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
+import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.type.EtatCivil;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Sexe;
@@ -80,6 +86,10 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 	private SituationFamilleService situationFamilleService;
 	private EditiqueHelper editiqueHelper;
 
+	public ImpressionDeclarationImpotOrdinaireHelperTest() {
+		setWantCollectivitesAdministratives(true);
+	}
+
 	@Override
 	protected void runOnSetUp() throws Exception {
 		super.runOnSetUp();
@@ -94,25 +104,28 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testRemplitExpediteur() throws Exception {
 		LOGGER.debug("EditiqueHelperTest - testRemplitExpediteur");
 		loadDatabase(DB_UNIT_DATA_FILE);
 
-		DeclarationImpotOrdinaire declaration = diDAO.get(Long.valueOf(2));
-		InfoEnteteDocument infoEnteteDocument = impressionDIHelper.remplitEnteteDocument(new InformationsDocumentAdapter(declaration, null));
-		Expediteur expediteur = infoEnteteDocument.getExpediteur();
-		Adresse adresseExpediteur = expediteur.getAdresse();
-		assertEquals("Office d'impôt du district", adresseExpediteur.getAdresseCourrierLigne1());
-		assertEquals("de Morges", adresseExpediteur.getAdresseCourrierLigne2());
-		assertEquals("rue de la Paix 1", adresseExpediteur.getAdresseCourrierLigne3());
-		assertEquals("1110 Morges", adresseExpediteur.getAdresseCourrierLigne4());
-		assertNull(adresseExpediteur.getAdresseCourrierLigne6());
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				DeclarationImpotOrdinaire declaration = diDAO.get(2L);
+				InfoEnteteDocument infoEnteteDocument = impressionDIHelper.remplitEnteteDocument(new InformationsDocumentAdapter(declaration, null));
+				Expediteur expediteur = infoEnteteDocument.getExpediteur();
+				Adresse adresseExpediteur = expediteur.getAdresse();
+				assertEquals("Office d'impôt du district", adresseExpediteur.getAdresseCourrierLigne1());
+				assertEquals("de Morges", adresseExpediteur.getAdresseCourrierLigne2());
+				assertEquals("rue de la Paix 1", adresseExpediteur.getAdresseCourrierLigne3());
+				assertEquals("1110 Morges", adresseExpediteur.getAdresseCourrierLigne4());
+				assertNull(adresseExpediteur.getAdresseCourrierLigne6());
 
-		Date date = DateHelper.getCurrentDate();
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
-		assertEquals(dateFormat.format(date), expediteur.getDateExpedition());
-
+				Date date = DateHelper.getCurrentDate();
+				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+				assertEquals(dateFormat.format(date), expediteur.getDateExpedition());
+			}
+		});
 	}
 	//UNIREG-2541 Adresse de retour pour les DI hors canton 
 
@@ -121,11 +134,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 	public void testAdresseRetourDIHorsCanton() throws Exception {
 		LOGGER.debug("EditiqueHelperTest - testRemplitExpediteur UNIREG-2541");
 
-
-		final CollectiviteAdministrative cedi = tiersService.getOrCreateCollectiviteAdministrative(ServiceInfrastructureService.noCEDI);
-		final CollectiviteAdministrative morges = tiersService.getOrCreateCollectiviteAdministrative(MockOfficeImpot.OID_MORGES.getNoColAdm());
-		final CollectiviteAdministrative aci = tiersService.getOrCreateCollectiviteAdministrative(ServiceInfrastructureService.noACI);
-
+		final CollectiviteAdministrative aci = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noACI);
 
 		// Crée une personne physique (ctb ordinaire vaudois) qui a déménagé mi 2010 de Morges à Paris
 		final PersonnePhysique pp = addNonHabitant("Céline", "André", date(1980, 6, 23), Sexe.MASCULIN);
@@ -162,21 +171,20 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 	public void testAdresseRetourDISur3Periodes() throws Exception {
 		LOGGER.debug("EditiqueHelperTest - testRemplitExpediteur UNIREG-3059");
 
-
-		final CollectiviteAdministrative cedi = tiersService.getOrCreateCollectiviteAdministrative(ServiceInfrastructureService.noCEDI);
-		final CollectiviteAdministrative aigle = tiersService.getOrCreateCollectiviteAdministrative(MockOfficeImpot.OID_AIGLE.getNoColAdm());
-		final CollectiviteAdministrative nyon = tiersService.getOrCreateCollectiviteAdministrative(MockOfficeImpot.OID_NYON.getNoColAdm());
-		final CollectiviteAdministrative morges = tiersService.getOrCreateCollectiviteAdministrative(MockOfficeImpot.OID_MORGES.getNoColAdm());
-		final CollectiviteAdministrative aci = tiersService.getOrCreateCollectiviteAdministrative(ServiceInfrastructureService.noACI);
+		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+		final CollectiviteAdministrative nyon = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_NYON.getNoColAdm());
+		final CollectiviteAdministrative echallens = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_ECHALLENS.getNoColAdm());
+		final CollectiviteAdministrative yverdon = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_YVERDON.getNoColAdm());
 
 		final String oidNyon = String.format("%02d", nyon.getNumeroCollectiviteAdministrative());
-		final String oidMorges = String.format("%02d", morges.getNumeroCollectiviteAdministrative());
+		final String oidEchallens = String.format("%02d", echallens.getNumeroCollectiviteAdministrative());
+		final String oidYverdon = String.format("%02d", yverdon.getNumeroCollectiviteAdministrative());
 		final int anneeCourante = RegDate.get().year();
-		// Crée une personne physique (ctb ordinaire vaudois) qui a déménagé mi 2010 de Morges à Paris
+
 		final PersonnePhysique pp = addNonHabitant("Céline", "André", date(1980, 6, 23), Sexe.MASCULIN);
 		addForPrincipal(pp, date(2008, 1, 1), MotifFor.ARRIVEE_HS, date(2008, 12, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Aigle);
 		addForPrincipal(pp, date(2009, 1, 1), MotifFor.DEMENAGEMENT_VD, date(anneeCourante - 1, 12, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Nyon);
-		addForPrincipal(pp, date(anneeCourante, 1, 1), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Morges);
+		addForPrincipal(pp, date(anneeCourante, 1, 1), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Echallens);
 
 		final String numCtb = String.format("%09d", pp.getNumero());
 		final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
@@ -195,7 +203,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 		declaration2008.setRetourCollectiviteAdministrativeId(cedi.getId());
 		declaration2009.setNumeroOfsForGestion(MockCommune.Nyon.getNoOFS());
 		declaration2009.setRetourCollectiviteAdministrativeId(cedi.getId());
-		declarationCourante.setNumeroOfsForGestion(MockCommune.Morges.getNoOFS());
+		declarationCourante.setNumeroOfsForGestion(MockCommune.Echallens.getNoOFS());
 		declarationCourante.setRetourCollectiviteAdministrativeId(cedi.getId());
 		{
 
@@ -232,11 +240,10 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 			Expediteur expediteurCourant = infoEnteteDocumentCourant.getExpediteur();
 			Adresse adresseExpediteurCourant = expediteurCourant.getAdresse();
 			assertEquals("Office d'impôt du district", adresseExpediteurCourant.getAdresseCourrierLigne1());
-			assertEquals("de Morges", adresseExpediteurCourant.getAdresseCourrierLigne2());
-			assertEquals("rue de la Paix 1", adresseExpediteurCourant.getAdresseCourrierLigne3());
-			assertEquals("1110 Morges", adresseExpediteurCourant.getAdresseCourrierLigne4());
+			assertEquals("du Gros-de-Vaud", adresseExpediteurCourant.getAdresseCourrierLigne2());
+			assertEquals("Place Emile Gardaz 5", adresseExpediteurCourant.getAdresseCourrierLigne3());
+			assertEquals("1040 Echallens", adresseExpediteurCourant.getAdresseCourrierLigne4());
 			assertNull(adresseExpediteurCourant.getAdresseCourrierLigne6());
-
 
 			// ... adresse retour pour 2008 2009
 			final DI.AdresseRetour retour2008 = di2008.getAdresseRetour();
@@ -267,18 +274,17 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 			assertNotNull(retourCourante);
 			assertEquals("Centre d'enregistrement", retourCourante.getADRES1RETOUR());
 			assertEquals("des déclarations d'impôt", retourCourante.getADRES2RETOUR());
-			assertEquals("CEDI " + morges.getNumeroCollectiviteAdministrative(), retourCourante.getADRES3RETOUR());
+			assertEquals("CEDI " + yverdon.getNumeroCollectiviteAdministrative(), retourCourante.getADRES3RETOUR());
 			assertEquals("1014 Lausanne Adm cant", retourCourante.getADRES4RETOUR());
 
 			final DI.InfoDI infoDICourante = diCourante.getInfoDI();
 
 			// à partir de 2011, le défaut pour le suffixe du code routage est 0, et plus 1 comme avant
-			assertEquals(oidMorges + "-0", infoDICourante.getNOOID());
-			assertEquals(numCtb + anneeCourante + "01" + oidMorges, infoDICourante.getCODBARR());
+			// (et c'est la région qui apparait dans le gros xx-0, pas le district)
+			assertEquals(oidYverdon + "-0", infoDICourante.getNOOID());
+			assertEquals(numCtb + anneeCourante + "01" + oidEchallens, infoDICourante.getCODBARR());
 
 		}
-
-
 	}
 
 	@Test
@@ -286,12 +292,9 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 	public void testInfoCommune() throws Exception {
 		LOGGER.debug("EditiqueHelperTest - testInfoCommune SIFISC-1389");
 
-
-		final CollectiviteAdministrative cedi = tiersService.getOrCreateCollectiviteAdministrative(ServiceInfrastructureService.noCEDI);
-		final CollectiviteAdministrative aigle = tiersService.getOrCreateCollectiviteAdministrative(MockOfficeImpot.OID_AIGLE.getNoColAdm());
-		final CollectiviteAdministrative nyon = tiersService.getOrCreateCollectiviteAdministrative(MockOfficeImpot.OID_NYON.getNoColAdm());
-		final CollectiviteAdministrative morges = tiersService.getOrCreateCollectiviteAdministrative(MockOfficeImpot.OID_MORGES.getNoColAdm());
-		final CollectiviteAdministrative aci = tiersService.getOrCreateCollectiviteAdministrative(ServiceInfrastructureService.noACI);
+		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+		final CollectiviteAdministrative nyon = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_NYON.getNoColAdm());
+		final CollectiviteAdministrative morges = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_MORGES.getNoColAdm());
 
 		final String oidNyon = String.format("%02d", nyon.getNumeroCollectiviteAdministrative());
 		final String oidMorges = String.format("%02d", morges.getNumeroCollectiviteAdministrative());
@@ -352,12 +355,8 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 	public void testAdresseRetourDI2008() throws Exception {
 		LOGGER.debug("EditiqueHelperTest - testRemplitExpediteur UNIREG-3059");
 
-
-		final CollectiviteAdministrative cedi = tiersService.getOrCreateCollectiviteAdministrative(ServiceInfrastructureService.noCEDI);
-		final CollectiviteAdministrative aigle = tiersService.getOrCreateCollectiviteAdministrative(MockOfficeImpot.OID_AIGLE.getNoColAdm());
-		final CollectiviteAdministrative nyon = tiersService.getOrCreateCollectiviteAdministrative(MockOfficeImpot.OID_NYON.getNoColAdm());
-		final CollectiviteAdministrative morges = tiersService.getOrCreateCollectiviteAdministrative(MockOfficeImpot.OID_MORGES.getNoColAdm());
-		final CollectiviteAdministrative aci = tiersService.getOrCreateCollectiviteAdministrative(ServiceInfrastructureService.noACI);
+		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+		final CollectiviteAdministrative nyon = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_NYON.getNoColAdm());
 
 		final int anneeCourante = RegDate.get().year();
 		// Crée une personne physique (ctb ordinaire vaudois) qui a déménagé mi 2010 de Morges à Paris
@@ -435,9 +434,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 	public void testFormuleAppel() throws Exception {
 		LOGGER.debug("EditiqueHelperTest - testFormuleAppel SIFISC-1989");
 
-
-		final CollectiviteAdministrative cedi = tiersService.getOrCreateCollectiviteAdministrative(ServiceInfrastructureService.noCEDI);
-		final CollectiviteAdministrative nyon = tiersService.getOrCreateCollectiviteAdministrative(MockOfficeImpot.OID_NYON.getNoColAdm());
+		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
 
 		final int anneeCourante = RegDate.get().year();
 		// Crée une personne physique (ctb ordinaire vaudois) qui a déménagé mi 2010 de Morges à Paris
@@ -474,9 +471,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 	public void testImpressionLocaleTypeDI() throws Exception {
 		LOGGER.debug("EditiqueHelperTest - testImpressionTypeDI SIFISC-8417");
 
-
-		final CollectiviteAdministrative cedi = tiersService.getOrCreateCollectiviteAdministrative(ServiceInfrastructureService.noCEDI);
-		final CollectiviteAdministrative nyon = tiersService.getOrCreateCollectiviteAdministrative(MockOfficeImpot.OID_NYON.getNoColAdm());
+		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
 
 		final int anneeCourante = RegDate.get().year();
 		// Crée une personne physique (ctb ordinaire vaudois) qui a déménagé mi 2010 de Morges à Paris
@@ -514,9 +509,9 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 	@Transactional(rollbackFor = Throwable.class)
 	public void testRemplitAncienneCommune() throws Exception {
 
-		final CollectiviteAdministrative cedi = tiersService.getOrCreateCollectiviteAdministrative(ServiceInfrastructureService.noCEDI);
-		final CollectiviteAdministrative orbe = tiersService.getOrCreateCollectiviteAdministrative(MockOfficeImpot.OID_ORBE.getNoColAdm());
-		final CollectiviteAdministrative aigle = tiersService.getOrCreateCollectiviteAdministrative(MockOfficeImpot.OID_AIGLE.getNoColAdm());
+		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+		final CollectiviteAdministrative orbe = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_ORBE.getNoColAdm());
+		final CollectiviteAdministrative aigle = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_AIGLE.getNoColAdm());
 
 		// Crée une personne physique (ctb ordinaire vaudois) qui a déménagé début 2008 de Vallorbe à Bex
 		final PersonnePhysique pp = addNonHabitant("Julien", "Glayre", date(1975, 1, 1), Sexe.MASCULIN);
@@ -616,8 +611,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 	@Transactional(rollbackFor = Throwable.class)
 	public void testAdresseRetourDIDepense() throws Exception {
 
-		addCollAdm(MockCollectiviteAdministrative.CEDI);
-		final CollectiviteAdministrative vevey = addCollAdm(MockOfficeImpot.OID_VEVEY);
+		final CollectiviteAdministrative vevey = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_VEVEY.getNoColAdm());
 
 		// Crée une personne physique (ctb ordinaire vaudois) à la dépense
 		final PersonnePhysique pp = addNonHabitant("Julien", "Glayre", date(1975, 1, 1), Sexe.MASCULIN);
@@ -649,8 +643,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 	@Transactional(rollbackFor = Throwable.class)
 	public void testAdresseRetourDIDecede() throws Exception {
 
-		addCollAdm(MockCollectiviteAdministrative.CEDI);
-		final CollectiviteAdministrative aci = addCollAdm(MockCollectiviteAdministrative.ACI);
+		final CollectiviteAdministrative aci = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noACI);
 
 		// Crée une personne physique décédé
 		final PersonnePhysique pp = addNonHabitant("Julien", "Glayre", date(1975, 1, 1), Sexe.MASCULIN);
@@ -717,92 +710,170 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 	 * @throws Exception
 	 */
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testRempliQuelquesMachins() throws Exception {
-		loadDatabase("ImpressionDeclarationImpotOrdinaireHelperTest2.xml");
-		DeclarationImpotOrdinaire declaration = diDAO.get(Long.valueOf(2));
-		DI di = impressionDIHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration, null), buildDefaultAnnexes(declaration), false);
-		DIRetour.AdresseRetour cediImpression = di.getAdresseRetour();
-		assertEquals("Centre d'enregistrement", cediImpression.getADRES1RETOUR());
-		assertEquals("des déclarations d'impôt", cediImpression.getADRES2RETOUR());
-		assertEquals("CEDI 10", cediImpression.getADRES3RETOUR());
-		assertEquals("1014 Lausanne Adm cant", cediImpression.getADRES4RETOUR());
 
-		assertEquals("12.02.1977", di.getContrib1().getINDDATENAISS1());
-		assertEquals("Marié(e)", di.getContrib1().getINDETATCIVIL1());
-		assertEquals("Monsieur Alain Dupont", di.getContrib1().getINDNOMPRENOM1());
-		//assertEquals("154.89.652.357", di.getContrib1().getNAVS13());
+		final int annee = 2005;
 
-		assertEquals("18.12.1953", di.getContrib2().getINDDATENAISS2());
-		assertEquals("Marié(e)", di.getContrib2().getINDETATCIVIL2());
-		assertEquals("Madame Maria Dupont", di.getContrib2().getINDNOMPRENOM2());
-		//assertEquals("514.89.652.375", di.getContrib2().getNAVS13());
+		// mise en place fiscale
+		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique lui = addNonHabitant("Alain", "Dupont", date(1977, 2, 12), Sexe.MASCULIN);
+				final PersonnePhysique elle = addNonHabitant("Maria", "Dupont", date(1953, 12, 18), Sexe.FEMININ);
+				final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, date(1990, 7, 3), null);
+				final MenageCommun mc = couple.getMenage();
+				addForPrincipal(mc, date(1990, 7, 3), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.VillarsSousYens);
+				addSituation(mc, date(1990, 7, 3), null, 0, null, EtatCivil.MARIE);
 
-		assertEquals("2005", di.getInfoDI().getANNEEFISCALE());
-		assertEquals("01260000420050110", di.getInfoDI().getCODBARR());
-		assertEquals("31.07.2006", di.getInfoDI().getDELAIRETOUR());
-		assertEquals("Villars-sous-Yens", di.getInfoDI().getDESCOM());
-		assertEquals("126.000.04", di.getInfoDI().getNOCANT());
-		assertEquals("10-1", di.getInfoDI().getNOOID());
+				final PeriodeFiscale pf = addPeriodeFiscale(annee);
+				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf);
+				addModeleFeuilleDocument("Intitulé 210", "210", md);
+				addModeleFeuilleDocument("Intitulé 220", "220", md);
+				addModeleFeuilleDocument("Intitulé 230", "230", md);
+				addModeleFeuilleDocument("Intitulé 240", "240", md);
 
-		assertEquals(1, di.getAnnexes().getAnnexe210());
-		assertEquals(1, di.getAnnexes().getAnnexe220());
-		assertEquals(1, di.getAnnexes().getAnnexe230());
-		assertEquals(1, di.getAnnexes().getAnnexe240());
-		assertFalse(di.getAnnexes().isSetAnnexe310());
+				final DeclarationImpotOrdinaire di = addDeclarationImpot(mc, pf, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, md);
+				di.setNumeroOfsForGestion(MockCommune.VillarsSousYens.getNoOFS());
+				di.setDelaiRetourImprime(date(annee + 1, 7, 31));
+				return di.getId();
+			}
+		});
+
+		// test de composition
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final DeclarationImpotOrdinaire declaration = diDAO.get(diId);
+
+				final DI di = impressionDIHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration, null), buildDefaultAnnexes(declaration), false);
+
+				final DIRetour.AdresseRetour cediImpression = di.getAdresseRetour();
+				assertEquals("Centre d'enregistrement", cediImpression.getADRES1RETOUR());
+				assertEquals("des déclarations d'impôt", cediImpression.getADRES2RETOUR());
+				assertEquals("CEDI 10", cediImpression.getADRES3RETOUR());
+				assertEquals("1014 Lausanne Adm cant", cediImpression.getADRES4RETOUR());
+
+				assertEquals("12.02.1977", di.getContrib1().getINDDATENAISS1());
+				assertEquals("Marié(e)", di.getContrib1().getINDETATCIVIL1());
+				assertEquals("Monsieur Alain Dupont", di.getContrib1().getINDNOMPRENOM1());
+				//assertEquals("154.89.652.357", di.getContrib1().getNAVS13());
+
+				assertEquals("18.12.1953", di.getContrib2().getINDDATENAISS2());
+				assertEquals("Marié(e)", di.getContrib2().getINDETATCIVIL2());
+				assertEquals("Madame Maria Dupont", di.getContrib2().getINDNOMPRENOM2());
+				//assertEquals("514.89.652.375", di.getContrib2().getNAVS13());
+
+				assertEquals(Integer.toString(annee), di.getInfoDI().getANNEEFISCALE());
+				final Long noTiers = declaration.getTiers().getNumero();
+				final int noColAdm = MockOfficeImpot.OID_MORGES.getNoColAdm();
+				assertEquals(String.format("%09d%4d%02d%02d", noTiers, annee, 1, noColAdm), di.getInfoDI().getCODBARR());
+				assertEquals("31.07.2006", di.getInfoDI().getDELAIRETOUR());
+				assertEquals("Villars-sous-Yens", di.getInfoDI().getDESCOM());
+				assertEquals(FormatNumeroHelper.numeroCTBToDisplay(noTiers), di.getInfoDI().getNOCANT());
+				assertEquals(String.format("%02d-1", noColAdm), di.getInfoDI().getNOOID());
+
+				assertEquals(1, di.getAnnexes().getAnnexe210());
+				assertEquals(1, di.getAnnexes().getAnnexe220());
+				assertEquals(1, di.getAnnexes().getAnnexe230());
+				assertEquals(1, di.getAnnexes().getAnnexe240());
+				assertFalse(di.getAnnexes().isSetAnnexe310());
+			}
+		});
 	}
 
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testRemplitAnnexe320_Annexe_330() throws Exception {
-		loadDatabase("ImpressionDeclarationAnnexe_320_330.xml");
-		DeclarationImpotOrdinaire declaration = diDAO.get(Long.valueOf(2));
-		DI di = impressionDIHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration, null), buildDefaultAnnexes(declaration), false);
-		assertEquals(1, di.getAnnexes().getAnnexe320().getNombre());
-		assertEquals("N", di.getAnnexes().getAnnexe320().getAvecCourrierExplicatif());
-		assertEquals(1, di.getAnnexes().getAnnexe330());
-		final InformationsDocumentAdapter informationsDocument = new InformationsDocumentAdapter(declaration, null);
-		di = impressionDIHelper.remplitSpecifiqueDI(informationsDocument, buildDefaultAnnexes(declaration), true);
-		assertEquals(1, di.getAnnexes().getAnnexe320().getNombre());
-		assertEquals("O", di.getAnnexes().getAnnexe320().getAvecCourrierExplicatif());
-		assertEquals(1, di.getAnnexes().getAnnexe330());
+
+		final int annee = 2005;
+
+		// mise en place fiscale
+		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique lui = addNonHabitant("Alain", "Dupont", date(1977, 2, 12), Sexe.MASCULIN);
+				final PersonnePhysique elle = addNonHabitant("Maria", "Dupont", date(1953, 12, 18), Sexe.FEMININ);
+				final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, date(1990, 7, 3), null);
+				final MenageCommun mc = couple.getMenage();
+				addForPrincipal(mc, date(1990, 7, 3), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.VillarsSousYens);
+				addSituation(mc, date(1990, 7, 3), null, 0, null, EtatCivil.MARIE);
+
+				final PeriodeFiscale pf = addPeriodeFiscale(annee);
+				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf);
+				addModeleFeuilleDocument("Intitulé 210", "210", md);
+				addModeleFeuilleDocument("Intitulé 220", "220", md);
+				addModeleFeuilleDocument("Intitulé 230", "230", md);
+				addModeleFeuilleDocument("Intitulé 240", "240", md);
+				addModeleFeuilleDocument("Intitulé 320", "320", md);
+				addModeleFeuilleDocument("Intitulé 330", "330", md);
+
+				final DeclarationImpotOrdinaire di = addDeclarationImpot(mc, pf, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, md);
+				di.setNumeroOfsForGestion(MockCommune.VillarsSousYens.getNoOFS());
+				di.setDelaiRetourImprime(date(annee + 1, 7, 31));
+				return di.getId();
+			}
+		});
+
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final DeclarationImpotOrdinaire declaration = diDAO.get(diId);
+				{
+					final DI di = impressionDIHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration, null), buildDefaultAnnexes(declaration), false);
+					assertEquals(1, di.getAnnexes().getAnnexe320().getNombre());
+					assertEquals("N", di.getAnnexes().getAnnexe320().getAvecCourrierExplicatif());
+					assertEquals(1, di.getAnnexes().getAnnexe330());
+				}
+				{
+					final DI di = impressionDIHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration, null), buildDefaultAnnexes(declaration), true);
+					assertEquals(1, di.getAnnexes().getAnnexe320().getNombre());
+					assertEquals("O", di.getAnnexes().getAnnexe320().getAvecCourrierExplicatif());
+					assertEquals(1, di.getAnnexes().getAnnexe330());
+				}
+			}
+		});
 	}
 
-	/**[SIFISC-2367] Contribuables sans enfants
-	 *
-	 * @throws Exception
+	/**
+	 * [SIFISC-2367] Contribuables sans enfants
 	 */
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testCtbSansEnfant() throws Exception {
 
-		addCollAdm(MockCollectiviteAdministrative.CEDI);
-		final CollectiviteAdministrative aci = addCollAdm(MockCollectiviteAdministrative.ACI);
+		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final CollectiviteAdministrative aci = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noACI);
 
-		// Crée une personne physique décédé
-		final PersonnePhysique pp = addNonHabitant("Julien", "Glayre", date(1975, 1, 1), Sexe.MASCULIN);
-		addForPrincipal(pp, date(2008, 1, 1), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Vevey);
+				// Crée une personne physique décédé
+				final PersonnePhysique pp = addNonHabitant("Julien", "Glayre", date(1975, 1, 1), Sexe.MASCULIN);
+				addForPrincipal(pp, date(2008, 1, 1), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Vevey);
 
-		final PeriodeFiscale periode2011 = addPeriodeFiscale(2011);
-		final ModeleDocument modele2011 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_DEPENSE, periode2011);
-		final DeclarationImpotOrdinaire declaration2011 = addDeclarationImpot(pp, periode2011, date(2011, 1, 1), date(2011, 4, 23), TypeContribuable.VAUDOIS_ORDINAIRE, modele2011);
-		declaration2011.setNumeroOfsForGestion(MockCommune.Vevey.getNoOFS());
-		declaration2011.setRetourCollectiviteAdministrativeId(aci.getId());
+				final PeriodeFiscale periode2011 = addPeriodeFiscale(2011);
+				final ModeleDocument modele2011 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_DEPENSE, periode2011);
+				final DeclarationImpotOrdinaire declaration2011 = addDeclarationImpot(pp, periode2011, date(2011, 1, 1), date(2011, 4, 23), TypeContribuable.VAUDOIS_ORDINAIRE, modele2011);
+				declaration2011.setNumeroOfsForGestion(MockCommune.Vevey.getNoOFS());
+				declaration2011.setRetourCollectiviteAdministrativeId(aci.getId());
+				return declaration2011.getId();
+			}
+		});
 
-		final DI di = impressionDIHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration2011, null), null, false);
-		assertNotNull(di);
-		//Aucune structure enfants ne devrait apparaitre pour les ctb sans enfants
-		assertNull(di.getEnfants());
-
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final DeclarationImpotOrdinaire declaration2011 = hibernateTemplate.get(DeclarationImpotOrdinaire.class, diId);
+				final DI di = impressionDIHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration2011, null), null, false);
+				assertNotNull(di);
+				//Aucune structure enfants ne devrait apparaitre pour les ctb sans enfants
+				assertNull(di.getEnfants());
+			}
+		});
 	}
 
-	/**[SIFISC-2367] Contribuables sans enfants
-	 *
-	 * @throws Exception
+	/**
+	 * [SIFISC-2367] Contribuables avec enfants
 	 */
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testCtbAvecEnfant() throws Exception {
 		final long indPere = 2;
 		final long indFils = 3;
@@ -847,10 +918,9 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 				addParente(fils, pere, dateNaissanceFils, null);
 				addParente(fille, pere, dateNaissanceFille, null);
 
-				addCollAdm(MockCollectiviteAdministrative.CEDI);
-				final CollectiviteAdministrative aci = addCollAdm(MockCollectiviteAdministrative.ACI);
+				final CollectiviteAdministrative aci = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noACI);
 
-				// Crée une for
+				// Crée un for
 				addForPrincipal(pere, date(2008, 1, 1), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Vevey);
 
 				final PeriodeFiscale periode2011 = addPeriodeFiscale(2011);
@@ -863,105 +933,123 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 			}
 		});
 
-		final DeclarationImpotOrdinaire di2011 = diDAO.get(idDi2011);
-		final DI di = impressionDIHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(di2011, null), null, false);
-		assertNotNull(di);
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final DeclarationImpotOrdinaire di2011 = diDAO.get(idDi2011);
+				final DI di = impressionDIHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(di2011, null), null, false);
+				assertNotNull(di);
 
-		assertNotNull(di.getEnfants());
-		assertEquals(2, di.getEnfants().getEnfantArray().length);
+				assertNotNull(di.getEnfants());
+				assertEquals(2, di.getEnfants().getEnfantArray().length);
+			}
+		});
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
-	public void testImpressionAnnexe230() throws Exception {
-		loadDatabase("ImpressionDeclarationAnnexe_230.xml");
-		DeclarationImpotOrdinaire declaration = diDAO.get(Long.valueOf(2));
-		DI di = impressionDIHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration, null), buildDefaultAnnexes(declaration), false);
-		validate(di);
-		assertEquals(1, di.getAnnexes().getAnnexe230());
-
-
-	}
-
-
-	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testZoneAffranchissement() throws Exception {
 
-		addCollAdm(MockCollectiviteAdministrative.CEDI);
-		addCollAdm(MockOfficeImpot.OID_VEVEY);
-		final CollectiviteAdministrative aci = addCollAdm(MockCollectiviteAdministrative.ACI);
+		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final CollectiviteAdministrative aci = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noACI);
 
-		// Crée une personne physique
-		final PersonnePhysique pp = addNonHabitant("Julien", "Glayre", date(1975, 1, 1), Sexe.MASCULIN);
-		addForPrincipal(pp, date(2008, 1, 1), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Vevey);
+				// Crée une personne physique
+				final PersonnePhysique pp = addNonHabitant("Julien", "Glayre", date(1975, 1, 1), Sexe.MASCULIN);
+				addForPrincipal(pp, date(2008, 1, 1), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Vevey);
 
-		final PeriodeFiscale periode2010 = addPeriodeFiscale(2010);
-		final ModeleDocument modele2010 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_DEPENSE, periode2010);
-		final DeclarationImpotOrdinaire declaration2010 = addDeclarationImpot(pp, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2010);
-		declaration2010.setNumeroOfsForGestion(MockCommune.Vevey.getNoOFS());
-		declaration2010.setRetourCollectiviteAdministrativeId(aci.getId());
+				final PeriodeFiscale periode2010 = addPeriodeFiscale(2010);
+				final ModeleDocument modele2010 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_DEPENSE, periode2010);
+				final DeclarationImpotOrdinaire declaration2010 = addDeclarationImpot(pp, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2010);
+				declaration2010.setNumeroOfsForGestion(MockCommune.Vevey.getNoOFS());
+				declaration2010.setRetourCollectiviteAdministrativeId(aci.getId());
+				return declaration2010.getId();
+			}
+		});
 
-		final TypFichierImpression.Document document = impressionDIHelper.remplitEditiqueSpecifiqueDI(new InformationsDocumentAdapter(declaration2010, null), TypFichierImpression.Factory.newInstance(),
-				null, false);
-		assertNotNull(document);
-		assertEquals(ZoneAffranchissementEditique.INCONNU.getCode(), document.getInfoDocument().getAffranchissement().getZone());
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final DeclarationImpotOrdinaire declaration2010 = hibernateTemplate.get(DeclarationImpotOrdinaire.class, diId);
+				final TypFichierImpression.Document document =
+						impressionDIHelper.remplitEditiqueSpecifiqueDI(new InformationsDocumentAdapter(declaration2010, null), TypFichierImpression.Factory.newInstance(),
+						                                               null, false);
+				assertNotNull(document);
+				assertEquals(ZoneAffranchissementEditique.INCONNU.getCode(), document.getInfoDocument().getAffranchissement().getZone());
+			}
+		});
 	}
 
-
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testInfosSurDI2011() throws Exception {
 
-		addCollAdm(MockCollectiviteAdministrative.CEDI);
-		final CollectiviteAdministrative aci = addCollAdm(MockCollectiviteAdministrative.ACI);
+		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final CollectiviteAdministrative aci = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noACI);
 
-		// Crée une personne physique décédé
-		final PersonnePhysique pp = addNonHabitant("Julien", "Glayre", date(1975, 1, 1), Sexe.MASCULIN);
-		addForPrincipal(pp, date(2008, 1, 1), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Vevey);
+				// Crée une personne physique décédé
+				final PersonnePhysique pp = addNonHabitant("Julien", "Glayre", date(1975, 1, 1), Sexe.MASCULIN);
+				addForPrincipal(pp, date(2008, 1, 1), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Vevey);
 
-		final PeriodeFiscale periode2011 = addPeriodeFiscale(2011);
-		final ModeleDocument modele2011 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_DEPENSE, periode2011);
-		final DeclarationImpotOrdinaire declaration2011 = addDeclarationImpot(pp, periode2011, date(2011, 1, 1), date(2011, 4, 23), TypeContribuable.VAUDOIS_ORDINAIRE, modele2011);
-		declaration2011.setNumeroOfsForGestion(MockCommune.Vevey.getNoOFS());
-		declaration2011.setRetourCollectiviteAdministrativeId(aci.getId());
+				final PeriodeFiscale periode2011 = addPeriodeFiscale(2011);
+				final ModeleDocument modele2011 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_DEPENSE, periode2011);
+				final DeclarationImpotOrdinaire declaration2011 = addDeclarationImpot(pp, periode2011, date(2011, 1, 1), date(2011, 4, 23), TypeContribuable.VAUDOIS_ORDINAIRE, modele2011);
+				declaration2011.setNumeroOfsForGestion(MockCommune.Vevey.getNoOFS());
+				declaration2011.setRetourCollectiviteAdministrativeId(aci.getId());
+				return declaration2011.getId();
+			}
+		});
 
-		final DI di = impressionDIHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration2011, null), null, false);
-		assertNotNull(di);
-		//le NIP doit être présent
-		assertNotNull(di.getInfoDI().getNIP());
-		assertEquals("D", di.getInfoDI().getCODETRAME());
-
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final DeclarationImpotOrdinaire declaration2011 = hibernateTemplate.get(DeclarationImpotOrdinaire.class, diId);
+				final DI di = impressionDIHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration2011, null), null, false);
+				assertNotNull(di);
+				//le NIP doit être présent
+				assertNotNull(di.getInfoDI().getNIP());
+				assertEquals("D", di.getInfoDI().getCODETRAME());
+			}
+		});
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testInfosSurDI2010() throws Exception {
 
-		addCollAdm(MockCollectiviteAdministrative.CEDI);
-		final CollectiviteAdministrative aci = addCollAdm(MockCollectiviteAdministrative.ACI);
+		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final CollectiviteAdministrative aci = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noACI);
 
-		// Crée une personne physique
-		final PersonnePhysique pp = addNonHabitant("Julien", "Glayre", date(1975, 1, 1), Sexe.MASCULIN);
-		addForPrincipal(pp, date(2008, 1, 1), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Vevey);
+				// Crée une personne physique
+				final PersonnePhysique pp = addNonHabitant("Julien", "Glayre", date(1975, 1, 1), Sexe.MASCULIN);
+				addForPrincipal(pp, date(2008, 1, 1), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Vevey);
 
-		final PeriodeFiscale periode2010 = addPeriodeFiscale(2010);
-		final ModeleDocument modele2010 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_DEPENSE, periode2010);
-		final DeclarationImpotOrdinaire declaration2010 = addDeclarationImpot(pp, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2010);
-		declaration2010.setNumeroOfsForGestion(MockCommune.Vevey.getNoOFS());
-		declaration2010.setRetourCollectiviteAdministrativeId(aci.getId());
+				final PeriodeFiscale periode2010 = addPeriodeFiscale(2010);
+				final ModeleDocument modele2010 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_DEPENSE, periode2010);
+				final DeclarationImpotOrdinaire declaration2010 = addDeclarationImpot(pp, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2010);
+				declaration2010.setNumeroOfsForGestion(MockCommune.Vevey.getNoOFS());
+				declaration2010.setRetourCollectiviteAdministrativeId(aci.getId());
+				return declaration2010.getId();
+			}
+		});
 
-		final DI di = impressionDIHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration2010, null), null, false);
-		assertNotNull(di);
-		//le NIP ne doit pas être présent
-		assertNull(di.getInfoDI().getNIP());
-		//La valeur de  code trame à X
-		assertEquals("X", di.getInfoDI().getCODETRAME());
-
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final DeclarationImpotOrdinaire declaration2010 = hibernateTemplate.get(DeclarationImpotOrdinaire.class, diId);
+				final DI di = impressionDIHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration2010, null), null, false);
+				assertNotNull(di);
+				//le NIP ne doit pas être présent
+				assertNull(di.getInfoDI().getNIP());
+				//La valeur de  code trame à X
+				assertEquals("X", di.getInfoDI().getCODETRAME());
+			}
+		});
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testCtbAvecEnfantAvant2011() throws Exception {
 		final long indPere = 2;
 		final long indFils = 3;
@@ -1006,8 +1094,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 				addParente(fils, pere, dateNaissanceFils, null);
 				addParente(fille, pere, dateNaissanceFille, null);
 
-				addCollAdm(MockCollectiviteAdministrative.CEDI);
-				final CollectiviteAdministrative aci = addCollAdm(MockCollectiviteAdministrative.ACI);
+				final CollectiviteAdministrative aci = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noACI);
 
 				// Crée une for
 				addForPrincipal(pere, date(2008, 1, 1), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Vevey);
@@ -1022,90 +1109,81 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 			}
 		});
 
-		final DeclarationImpotOrdinaire di2011 = diDAO.get(idDi2011);
-		final DI di = impressionDIHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(di2011, null), null, false);
-		assertNotNull(di);
-
-		assertNull(di.getEnfants());
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final DeclarationImpotOrdinaire di2011 = diDAO.get(idDi2011);
+				final DI di = impressionDIHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(di2011, null), null, false);
+				assertNotNull(di);
+				assertNull(di.getEnfants());
+			}
+		});
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testRemplitDiAvecCodeRegion() throws Exception {
 
-		doInNewTransaction(new TxCallback<Long>() {
+		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final CollectiviteAdministrative cedi = tiersService.getOrCreateCollectiviteAdministrative(ServiceInfrastructureService.noCEDI);
-				final Integer idDistrictOrbe = MockCollectiviteAdministrative.districts.get(MockOfficeImpot.OID_ORBE.getNoColAdm());
-				final Integer idDistrictAigle = MockCollectiviteAdministrative.districts.get(MockOfficeImpot.OID_AIGLE.getNoColAdm());
-				final Integer idRegionOrbe = MockCollectiviteAdministrative.regions.get(MockOfficeImpot.OID_ORBE.getNoColAdm());
-				final Integer idRegionAigle = MockCollectiviteAdministrative.regions.get(MockOfficeImpot.OID_AIGLE.getNoColAdm());
+			public Long doInTransaction(TransactionStatus status) {
+				CollectiviteAdministrative cedi = tiersDAO.getCollectiviteAdministrativesByNumeroTechnique(ServiceInfrastructureRaw.noCEDI);
 
-				final Integer idDistrictVevey = MockCollectiviteAdministrative.regions.get(MockOfficeImpot.OID_VEVEY.getNoColAdm());
-				final Integer idRegionVevey = MockCollectiviteAdministrative.regions.get(MockOfficeImpot.OID_VEVEY.getNoColAdm());
+				// Crée une personne physique (ctb ordinaire vaudois) qui a déménagé début 2008 de Vallorbe à Bex
+				final PersonnePhysique pp = addNonHabitant("Julien", "Glayre", date(1975, 1, 1), Sexe.MASCULIN);
+				addForPrincipal(pp, date(2008, 1, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Aigle);
 
-				final CollectiviteAdministrative orbe = addCollAdm(MockOfficeImpot.OID_ORBE, idDistrictOrbe, idRegionOrbe);
-				final CollectiviteAdministrative aigle = addCollAdm(MockOfficeImpot.OID_AIGLE, idDistrictAigle, idRegionAigle);
-				final CollectiviteAdministrative vevey = addCollAdm(MockOfficeImpot.OID_VEVEY, idDistrictVevey, idRegionVevey);
-				return null;
+				final PeriodeFiscale periode2011 = addPeriodeFiscale(2011);
+				final ModeleDocument modele2011 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL, periode2011);
+				final DeclarationImpotOrdinaire declaration2011 = addDeclarationImpot(pp, periode2011, date(2011, 1, 1), date(2011, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2011);
+				declaration2011.setNumeroOfsForGestion(MockCommune.Aigle.getNoOFS());
+				declaration2011.setRetourCollectiviteAdministrativeId(cedi.getId());
+				return declaration2011.getId();
 			}
 		});
-
-		CollectiviteAdministrative cedi = tiersDAO.getCollectiviteAdministrativesByNumeroTechnique(MockCollectiviteAdministrative.CEDI.getNoColAdm());
-		CollectiviteAdministrative orbe = tiersDAO.getCollectiviteAdministrativesByNumeroTechnique(MockOfficeImpot.OID_ORBE.getNoColAdm());
-		CollectiviteAdministrative aigle = tiersDAO.getCollectiviteAdministrativesByNumeroTechnique(MockOfficeImpot.OID_AIGLE.getNoColAdm());
-		// Crée une personne physique (ctb ordinaire vaudois) qui a déménagé début 2008 de Vallorbe à Bex
-		final PersonnePhysique pp = addNonHabitant("Julien", "Glayre", date(1975, 1, 1), Sexe.MASCULIN);
-		addForPrincipal(pp, date(2008, 1, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Aigle);
-		final String numCtb = String.format("%09d", pp.getNumero());
-
-		final PeriodeFiscale periode2011 = addPeriodeFiscale(2011);
-		final ModeleDocument modele2011 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL, periode2011);
-		final DeclarationImpotOrdinaire declaration2011 = addDeclarationImpot(pp, periode2011, date(2011, 1, 1), date(2011, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2011);
-		declaration2011.setNumeroOfsForGestion(MockCommune.Aigle.getNoOFS());
-		declaration2011.setRetourCollectiviteAdministrativeId(cedi.getId());
 
 		// L'expéditeur de la déclaration 2007 doit être Aigle (= OID responsable de Bex)
 		//Selon UNIREG-3059:
 		//L'OID doit être l'OID de gestion valable au 31.12 de l'année N-1 (N étant la période lors de laquel l'édition du document a lieu)
 		//-> SAUF une exception : si la DI concerne la période fiscale courante (il s'agit d'une DI libre),
 		// alors l'OID doit être l'OID de gestion courant du moment de l'édition du docuement.
-		{
-			final String oidOrbe = String.format("%02d", orbe.getNumeroCollectiviteAdministrative());
-			final String oidAigle = String.format("%02d", aigle.getNumeroCollectiviteAdministrative());
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final DeclarationImpotOrdinaire declaration2011 = hibernateTemplate.get(DeclarationImpotOrdinaire.class, diId);
+				final Tiers tiers = declaration2011.getTiers();
 
-			// ... sur l'entête
-			final InfoEnteteDocument entete = impressionDIHelper.remplitEnteteDocument(new InformationsDocumentAdapter(declaration2011, null));
-			assertNotNull(entete);
-			final Expediteur expediteur = entete.getExpediteur();
-			assertNotNull(expediteur);
-			final Adresse adresse = expediteur.getAdresse();
-			assertEquals("Office d'impôt du district", adresse.getAdresseCourrierLigne1());
-			assertEquals("d'Aigle", adresse.getAdresseCourrierLigne2());
-			assertEquals("rue de la Gare 27", adresse.getAdresseCourrierLigne3());
-			assertEquals("1860 Aigle", adresse.getAdresseCourrierLigne4());
-			assertNull(adresse.getAdresseCourrierLigne5());
-			assertNull(adresse.getAdresseCourrierLigne6());
+				// ... sur l'entête
+				final InfoEnteteDocument entete = impressionDIHelper.remplitEnteteDocument(new InformationsDocumentAdapter(declaration2011, null));
+				assertNotNull(entete);
+				final Expediteur expediteur = entete.getExpediteur();
+				assertNotNull(expediteur);
+				final Adresse adresse = expediteur.getAdresse();
+				assertEquals("Office d'impôt du district", adresse.getAdresseCourrierLigne1());
+				assertEquals("d'Aigle", adresse.getAdresseCourrierLigne2());
+				assertEquals("rue de la Gare 27", adresse.getAdresseCourrierLigne3());
+				assertEquals("1860 Aigle", adresse.getAdresseCourrierLigne4());
+				assertNull(adresse.getAdresseCourrierLigne5());
+				assertNull(adresse.getAdresseCourrierLigne6());
 
-			// .. sur le code bar
-			final DI di = impressionDIHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration2011, null), null, false);
-			assertNotNull(di);
-			final DI.InfoDI info = di.getInfoDI();
-			assertNotNull(info);
-			assertEquals(numCtb + "20110101", info.getCODBARR());
-			assertEquals("18-0", info.getNOOID());
+				// .. sur le code bar
+				final DI di = impressionDIHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration2011, null), null, false);
+				assertNotNull(di);
+				final DI.InfoDI info = di.getInfoDI();
+				assertNotNull(info);
 
-			// ... sur l'adresse du CEDI
-			final DIRetour.AdresseRetour retour = di.getAdresseRetour();
-			assertNotNull(retour);
-			assertEquals("Centre d'enregistrement", retour.getADRES1RETOUR());
-			assertEquals("des déclarations d'impôt", retour.getADRES2RETOUR());
-			assertEquals("CEDI 18", retour.getADRES3RETOUR());
-			assertEquals("1014 Lausanne Adm cant", retour.getADRES4RETOUR());
-		}
+				final String numCtb = String.format("%09d", tiers.getNumero());
+				assertEquals(numCtb + "20110101", info.getCODBARR());
+				assertEquals("18-0", info.getNOOID());
 
-
+				// ... sur l'adresse du CEDI
+				final DIRetour.AdresseRetour retour = di.getAdresseRetour();
+				assertNotNull(retour);
+				assertEquals("Centre d'enregistrement", retour.getADRES1RETOUR());
+				assertEquals("des déclarations d'impôt", retour.getADRES2RETOUR());
+				assertEquals("CEDI 18", retour.getADRES3RETOUR());
+				assertEquals("1014 Lausanne Adm cant", retour.getADRES4RETOUR());
+			}
+		});
 	}
 
 	private static void validate(XmlObject document) {
@@ -1140,32 +1218,6 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testcodeOIDSurDI() throws Exception {
-		doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final CollectiviteAdministrative cedi = addCollAdm(MockCollectiviteAdministrative.CEDI);
-				final CollectiviteAdministrative oidAigle = addCollAdm(MockOfficeImpot.OID_AIGLE);
-
-				final Integer idDistrictVevey = MockCollectiviteAdministrative.regions.get(MockOfficeImpot.OID_VEVEY.getNoColAdm());
-				final Integer idRegionVevey = MockCollectiviteAdministrative.regions.get(MockOfficeImpot.OID_VEVEY.getNoColAdm());
-
-				final Integer idDistrictNyon = MockCollectiviteAdministrative.regions.get(MockOfficeImpot.OID_NYON.getNoColAdm());
-				final Integer idRegionNyon = MockCollectiviteAdministrative.regions.get(MockOfficeImpot.OID_NYON.getNoColAdm());
-
-				final Integer idDistrictLausanne = MockCollectiviteAdministrative.regions.get(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
-				final Integer idRegionLausanne = MockCollectiviteAdministrative.regions.get(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
-
-				final Integer idDistrictYverdon = MockCollectiviteAdministrative.regions.get(MockOfficeImpot.OID_YVERDON.getNoColAdm());
-				final Integer idRegionYverdon = MockCollectiviteAdministrative.regions.get(MockOfficeImpot.OID_YVERDON.getNoColAdm());
-
-				final CollectiviteAdministrative oidVevey = addCollAdm(MockOfficeImpot.OID_VEVEY, idDistrictVevey, idRegionVevey);
-				final CollectiviteAdministrative oidLausanne = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST, idDistrictLausanne, idRegionLausanne);
-				final CollectiviteAdministrative oidNyon = addCollAdm(MockOfficeImpot.OID_NYON, idDistrictNyon, idRegionNyon);
-				final CollectiviteAdministrative oidYverdon = addCollAdm(MockOfficeImpot.OID_YVERDON, idDistrictYverdon, idRegionYverdon);
-				return null;
-			}
-
-		});
 
 		final PeriodeFiscale periode2010 = addPeriodeFiscale(2010);
 		final ModeleDocument modele2010 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2010);
@@ -1174,7 +1226,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 		final ModeleDocument modele2011 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2011);
 
 
-		final CollectiviteAdministrative cedi = tiersDAO.getCollectiviteAdministrativesByNumeroTechnique(MockCollectiviteAdministrative.CEDI.getNoColAdm());
+		final CollectiviteAdministrative cedi = tiersDAO.getCollectiviteAdministrativesByNumeroTechnique(ServiceInfrastructureRaw.noCEDI);
 		final long idCedi = cedi.getId();
 		//   SI l'utilisateur choisit "OID" dans l'adresse de retour, il s'agira alors d'imprimer l'OID de gestion
 		{
@@ -1408,7 +1460,6 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 			final PersonnePhysique personnePhysique = addNonHabitant("Julien", "Glayre", date(1975, 1, 1), Sexe.MASCULIN);
 			addForPrincipal(personnePhysique, date(2008, 1, 1), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.GrangesMarnand);
 
-
 			final DeclarationImpotOrdinaire declaration2010 = addDeclarationImpot(personnePhysique, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2010);
 			declaration2010.setNumeroOfsForGestion(MockCommune.GrangesMarnand.getNoOFS());
 			declaration2010.setRetourCollectiviteAdministrativeId(idCedi);
@@ -1510,79 +1561,77 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testIDEnvoiHorsSuisseRueOuLocaliteInconnue() throws Exception {
-		LOGGER.debug("EditiqueHelperTest - testIDEnvoiHorsSuisseRueOuLocaliteInconnue SIFISC-4146");
 
+		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final CollectiviteAdministrative aci = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noACI);
 
-		final CollectiviteAdministrative cedi = tiersService.getOrCreateCollectiviteAdministrative(ServiceInfrastructureService.noCEDI);
-		final CollectiviteAdministrative morges = tiersService.getOrCreateCollectiviteAdministrative(MockOfficeImpot.OID_MORGES.getNoColAdm());
-		final CollectiviteAdministrative aci = tiersService.getOrCreateCollectiviteAdministrative(ServiceInfrastructureService.noACI);
+				// Crée une personne physique (ctb ordinaire vaudois) qui a déménagé mi 2010 de Morges à Paris
+				final PersonnePhysique pp = addNonHabitant("Céline", "André", date(1980, 6, 23), Sexe.MASCULIN);
+				addForPrincipal(pp, date(2006, 1, 1), MotifFor.ARRIVEE_HS, date(2010, 6, 30), MotifFor.DEPART_HS, MockCommune.Morges);
+				addAdresseEtrangere(pp,TypeAdresseTiers.COURRIER,date(2010,7,1),null,null,null, MockPays.Danemark);
 
+				final String numCtb = String.format("%09d", pp.getNumero());
 
-		// Crée une personne physique (ctb ordinaire vaudois) qui a déménagé mi 2010 de Morges à Paris
-		final PersonnePhysique pp = addNonHabitant("Céline", "André", date(1980, 6, 23), Sexe.MASCULIN);
-		addForPrincipal(pp, date(2006, 1, 1), MotifFor.ARRIVEE_HS, date(2010, 6, 30), MotifFor.DEPART_HS, MockCommune.Morges);
-		addAdresseEtrangere(pp,TypeAdresseTiers.COURRIER,date(2010,7,1),null,null,null, MockPays.Danemark);
+				final PeriodeFiscale periode2012 = addPeriodeFiscale(2012);
+				final ModeleDocument modele2012 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL, periode2012);
+				final DeclarationImpotOrdinaire declaration2012 = addDeclarationImpot(pp, periode2012, date(2012, 1, 1), date(2012, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2012);
+				declaration2012.setNumeroOfsForGestion(MockCommune.Morges.getNoOFS());
+				declaration2012.setRetourCollectiviteAdministrativeId(aci.getId());
+				return declaration2012.getId();
+			}
+		});
 
-		final String numCtb = String.format("%09d", pp.getNumero());
-
-		final PeriodeFiscale periode2012 = addPeriodeFiscale(2012);
-		final ModeleDocument modele2012 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL, periode2012);
-		final DeclarationImpotOrdinaire declaration2012 = addDeclarationImpot(pp, periode2012, date(2012, 1, 1), date(2012, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2012);
-		declaration2012.setNumeroOfsForGestion(MockCommune.Morges.getNoOFS());
-		declaration2012.setRetourCollectiviteAdministrativeId(aci.getId());
-		{
-
-			final TypFichierImpression.Document document= impressionDIHelper.remplitEditiqueSpecifiqueDI(new InformationsDocumentAdapter(declaration2012, null),TypFichierImpression.Factory.newInstance(),
-					null, false);
-			assertNotNull(document);
-			assertEquals(ZoneAffranchissementEditique.INCONNU.getCode(), document.getInfoDocument().getAffranchissement().getZone());
-			assertEquals("10",document.getInfoDocument().getIdEnvoi());
-
-
-		}
-
-
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final DeclarationImpotOrdinaire declaration2012 = hibernateTemplate.get(DeclarationImpotOrdinaire.class, diId);
+				final TypFichierImpression.Document document= impressionDIHelper.remplitEditiqueSpecifiqueDI(new InformationsDocumentAdapter(declaration2012, null),TypFichierImpression.Factory.newInstance(),
+				                                                                                             null, false);
+				assertNotNull(document);
+				assertEquals(ZoneAffranchissementEditique.INCONNU.getCode(), document.getInfoDocument().getAffranchissement().getZone());
+				assertEquals("10",document.getInfoDocument().getIdEnvoi());
+			}
+		});
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
-	public void testIDEnvoiHorsSuissePaysInconnue() throws Exception {
+	public void testIDEnvoiHorsSuissePaysInconnu() throws Exception {
 		LOGGER.debug("EditiqueHelperTest - testIDEnvoiHorsSuissePaysInconnue SIFISC-4146");
 
+		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final CollectiviteAdministrative aci = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noACI);
 
-		final CollectiviteAdministrative cedi = tiersService.getOrCreateCollectiviteAdministrative(ServiceInfrastructureService.noCEDI);
-		final CollectiviteAdministrative morges = tiersService.getOrCreateCollectiviteAdministrative(MockOfficeImpot.OID_MORGES.getNoColAdm());
-		final CollectiviteAdministrative aci = tiersService.getOrCreateCollectiviteAdministrative(ServiceInfrastructureService.noACI);
+				// Crée une personne physique (ctb ordinaire vaudois) qui a déménagé mi 2010 de Morges à Paris
+				final PersonnePhysique pp = addNonHabitant("Céline", "André", date(1980, 6, 23), Sexe.MASCULIN);
+				addForPrincipal(pp, date(2006, 1, 1), MotifFor.ARRIVEE_HS, date(2010, 6, 30), MotifFor.DEPART_HS, MockCommune.Morges);
+				addAdresseEtrangere(pp,TypeAdresseTiers.COURRIER,date(2010,7,1),null,null,null,MockPays.PaysInconnu);
 
+				final String numCtb = String.format("%09d", pp.getNumero());
 
-		// Crée une personne physique (ctb ordinaire vaudois) qui a déménagé mi 2010 de Morges à Paris
-		final PersonnePhysique pp = addNonHabitant("Céline", "André", date(1980, 6, 23), Sexe.MASCULIN);
-		addForPrincipal(pp, date(2006, 1, 1), MotifFor.ARRIVEE_HS, date(2010, 6, 30), MotifFor.DEPART_HS, MockCommune.Morges);
-		addAdresseEtrangere(pp,TypeAdresseTiers.COURRIER,date(2010,7,1),null,null,null,MockPays.PaysInconnu);
+				final PeriodeFiscale periode2012 = addPeriodeFiscale(2012);
+				final ModeleDocument modele2012 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL, periode2012);
+				final DeclarationImpotOrdinaire declaration2012 = addDeclarationImpot(pp, periode2012, date(2012, 1, 1), date(2012, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2012);
+				declaration2012.setNumeroOfsForGestion(MockCommune.Morges.getNoOFS());
+				declaration2012.setRetourCollectiviteAdministrativeId(aci.getId());
+				return declaration2012.getId();
+			}
+		});
 
-		final String numCtb = String.format("%09d", pp.getNumero());
-
-		final PeriodeFiscale periode2012 = addPeriodeFiscale(2012);
-		final ModeleDocument modele2012 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL, periode2012);
-		final DeclarationImpotOrdinaire declaration2012 = addDeclarationImpot(pp, periode2012, date(2012, 1, 1), date(2012, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2012);
-		declaration2012.setNumeroOfsForGestion(MockCommune.Morges.getNoOFS());
-		declaration2012.setRetourCollectiviteAdministrativeId(aci.getId());
-		{
-
-			final TypFichierImpression.Document document= impressionDIHelper.remplitEditiqueSpecifiqueDI(new InformationsDocumentAdapter(declaration2012, null),TypFichierImpression.Factory.newInstance(),
-					null, false);
-			assertNotNull(document);
-			assertEquals(ZoneAffranchissementEditique.INCONNU.getCode(), document.getInfoDocument().getAffranchissement().getZone());
-			assertEquals("10",document.getInfoDocument().getIdEnvoi());
-
-
-		}
-
-
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final DeclarationImpotOrdinaire declaration2012 = hibernateTemplate.get(DeclarationImpotOrdinaire.class, diId);
+				final TypFichierImpression.Document document= impressionDIHelper.remplitEditiqueSpecifiqueDI(new InformationsDocumentAdapter(declaration2012, null),TypFichierImpression.Factory.newInstance(),
+				                                                                                             null, false);
+				assertNotNull(document);
+				assertEquals(ZoneAffranchissementEditique.INCONNU.getCode(), document.getInfoDocument().getAffranchissement().getZone());
+				assertEquals("10",document.getInfoDocument().getIdEnvoi());
+			}
+		});
 	}
-
-
-
 }

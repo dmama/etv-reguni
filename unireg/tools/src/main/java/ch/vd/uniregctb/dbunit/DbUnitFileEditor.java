@@ -75,8 +75,6 @@ public class DbUnitFileEditor {
 		traiteFichier("business/src/test/resources/ch/vd/uniregctb/evenement/civil/interne/arrivee/ArriveeTest.xml");
 		traiteFichier("business/src/test/resources/ch/vd/uniregctb/declaration/ordinaire/DetermineDIsJobTest.xml");
 		traiteFichier("business/src/test/resources/ch/vd/uniregctb/declaration/ordinaire/EnvoiDIsJobTest.xml");
-		traiteFichier("business/src/test/resources/ch/vd/uniregctb/declaration/ordinaire/ImpressionDeclarationImpotOrdinaireHelperTest.xml");
-		traiteFichier("business/src/test/resources/ch/vd/uniregctb/declaration/ordinaire/ImpressionDeclarationImpotOrdinaireHelperTest2.xml");
 		traiteFichier("business/src/test/resources/ch/vd/uniregctb/declaration/ordinaire/echoirDiTiersInvalide.xml");
 		traiteFichier("business/src/test/resources/ch/vd/uniregctb/evenement/civil/interne/depart/deparHC26012004.xml");
 		traiteFichier("business/src/test/resources/ch/vd/uniregctb/editique/ListeRecapJobTest.xml");

@@ -69,6 +69,7 @@ public class ProduireListeDIsNonEmisesProcessorTest extends BusinessTest {
 				final ModeleDocument md2 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf2);
 				addCollAdm(MockCollectiviteAdministrative.CEDI);
 				addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
+				addCollAdm(MockOfficeImpot.ACI);
 				addDeclarationImpot(pp, pf1, date(year - 2, 4, 12), date(year - 2, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, md1);
 				addDeclarationImpot(pp, pf2, date(year - 1, 1, 1), date(year - 1, 10, 23), TypeContribuable.VAUDOIS_ORDINAIRE, md2);
 				return null;
@@ -124,6 +125,7 @@ public class ProduireListeDIsNonEmisesProcessorTest extends BusinessTest {
 				addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf2);
 				addCollAdm(MockCollectiviteAdministrative.CEDI);
 				addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
+				addCollAdm(MockOfficeImpot.ACI);
 				return null;
 			}
 		});

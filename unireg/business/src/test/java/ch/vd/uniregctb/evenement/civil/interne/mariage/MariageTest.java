@@ -39,6 +39,7 @@ public class MariageTest extends WithoutSpringTest {
 	private static final long INDIVIDU_PACSE = 56789L;//david
 	private static final Long INDIVIDU_PACSE_CONJOINT = 45678L;//julien
 
+	private MockTiersDAO tiersDAO = new MockTiersDAO();
 
 	// Prend le mock infrastructure par défaut
 	ServiceInfrastructureService infrastructureService = new ServiceInfrastructureImpl(new MockServiceInfrastructureService() {
@@ -62,11 +63,10 @@ public class MariageTest extends WithoutSpringTest {
 			rues.add(MockRue.CossonayVille.CheminDeRiondmorcel);
 			rues.add(MockRue.Lausanne.AvenueDeBeaulieu);
 		}
-	});
+	}, tiersDAO);
 
 	// Crée les données du mock service civil
 	ServiceCivilService serviceCivil = new ServiceCivilImpl(infrastructureService, new DefaultMockServiceCivil());
-	private MockTiersDAO tiersDAO = new MockTiersDAO();
 	private EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService, tiersDAO);
 	private EvenementCivilOptions options = new EvenementCivilOptions(false);
 

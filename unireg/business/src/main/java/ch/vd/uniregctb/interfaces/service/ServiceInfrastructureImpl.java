@@ -33,6 +33,7 @@ import ch.vd.unireg.interfaces.infra.data.TypeEtatPM;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.tiers.TiersDAO;
 
 /**
  * Service d'infrastructure utilisée par le code métier. Ce service expose toutes les méthodes du service d'infrastructure <i>raw</i> en y ajoutant des méthodes utilitaires.
@@ -40,6 +41,7 @@ import ch.vd.uniregctb.common.AuthenticationHelper;
 public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 
 	private ServiceInfrastructureRaw rawService;
+	private TiersDAO tiersDAO;
 
 	/*
 	 * Note: on se permet de cacher l'ACI, la Suisse et le canton de Vaud à ce niveau, car il n'y a aucune chance que ces deux objets changent sans
@@ -57,8 +59,9 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	public ServiceInfrastructureImpl() {
 	}
 
-	public ServiceInfrastructureImpl(ServiceInfrastructureRaw rawService) {
+	public ServiceInfrastructureImpl(ServiceInfrastructureRaw rawService, TiersDAO tiersDAO) {
 		this.rawService = rawService;
+		this.tiersDAO = tiersDAO;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -72,6 +75,10 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 		this.cedi = null;
 		this.cat = null;
 		this.allLocaliteCommune = null;
+	}
+
+	public void setTiersDAO(TiersDAO tiersDAO) {
+		this.tiersDAO = tiersDAO;
 	}
 
 	/**
@@ -418,7 +425,24 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 
 	@Override
 	public OfficeImpot getOfficeImpotDeCommune(int noCommune) throws ServiceInfrastructureException {
-		return rawService.getOfficeImpotDeCommune(noCommune);
+		final Commune commune = getCommuneByNumeroOfs(noCommune, RegDate.get());
+		final Integer codeDistrict = commune.getCodeDistrict();
+		final OfficeImpot oid;
+		if (codeDistrict != null) {
+			final ch.vd.uniregctb.tiers.CollectiviteAdministrative collAdm = tiersDAO.getCollectiviteAdministrativeForDistrict(codeDistrict, true);
+			if (collAdm != null) {
+				oid = getOfficeImpot(collAdm.getNumeroCollectiviteAdministrative());
+			}
+			else {
+				// TODO ne devrait-on pas avoir une exception ici car il manque une collectivité administrative en base ?
+				oid = null;
+			}
+		}
+		else {
+			// vieille commune vaudoise sans district, commune hors-canton...
+			oid = null;
+		}
+		return oid;
 	}
 
 	@Override

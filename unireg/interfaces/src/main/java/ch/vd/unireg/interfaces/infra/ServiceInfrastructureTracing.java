@@ -1,7 +1,6 @@
 package ch.vd.unireg.interfaces.infra;
 
 import java.util.List;
-import java.util.Map;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -343,31 +342,6 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 		}
 		finally {
 			tracing.end(time, t, "getLocalites", items, null);
-		}
-	}
-
-	@Override
-	public OfficeImpot getOfficeImpotDeCommune(final int noCommune) throws ServiceInfrastructureException {
-		Throwable t = null;
-		final long time = tracing.start();
-		try {
-			return target.getOfficeImpotDeCommune(noCommune);
-		}
-		catch (ServiceInfrastructureException e) {
-			t = e;
-			throw e;
-		}
-		catch (RuntimeException e) {
-			t = e;
-			throw e;
-		}
-		finally {
-			tracing.end(time, t, "getOfficeImpotDeCommune", new Object() {
-				@Override
-				public String toString() {
-					return String.format("noCommune=%d", noCommune);
-				}
-			});
 		}
 	}
 

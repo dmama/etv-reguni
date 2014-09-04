@@ -10,7 +10,6 @@ import org.springframework.transaction.support.TransactionCallback;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
-import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.common.BusinessTestingConstants;
@@ -35,6 +34,10 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 	private RecalculTachesProcessor processor;
 	private TacheDAO tacheDAO;
 
+	public RecalculTachesProcessorTest() {
+		setWantCollectivitesAdministratives(true);
+	}
+
 	@Override
 	protected void runOnSetUp() throws Exception {
 		super.runOnSetUp();
@@ -47,9 +50,6 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				for (MockCollectiviteAdministrative ca : MockCollectiviteAdministrative.getAll()) {
-					addCollAdm(ca);
-				}
 				for (int pf = 2003 ; pf <= RegDate.get().year() ; ++ pf) {
 					addPeriodeFiscale(pf);
 				}

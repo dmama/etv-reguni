@@ -4705,7 +4705,7 @@ public class TiersServiceImpl implements TiersService {
 		    return null;
 	    }
 
-        final CollectiviteAdministrative oid = codeDistrict == null ? null : tiersDAO.getCollectiviteAdministrativeForDistrict(codeDistrict);
+        final CollectiviteAdministrative oid = codeDistrict == null ? null : tiersDAO.getCollectiviteAdministrativeForDistrict(codeDistrict, false);
         final CollectiviteAdministrative oir = codeRegion == null ? null : tiersDAO.getCollectiviteAdministrativeForRegion(codeRegion);
 
         return new NumerosOfficesImpot(oid == null ? 0 : oid.getNumero(), oir == null ? 0 : oir.getNumero());

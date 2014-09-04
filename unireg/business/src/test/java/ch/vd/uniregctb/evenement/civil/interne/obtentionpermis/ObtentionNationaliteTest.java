@@ -64,6 +64,8 @@ public class ObtentionNationaliteTest extends WithoutSpringTest {
 		ObtentionNationalite adapter = new ObtentionNationaliteNonSuisse(evenement, context, options);
 	}
 
+	private MockTiersDAO tiersDAO = new MockTiersDAO();
+
 	// Prend le mock infrastructure par défaut
 	ServiceInfrastructureService infrastructureService = new ServiceInfrastructureImpl(new MockServiceInfrastructureService() {
 		@Override
@@ -82,7 +84,7 @@ public class ObtentionNationaliteTest extends WithoutSpringTest {
 			localites.add(MockLocalite.Lausanne);
 			localites.add(MockLocalite.CossonayVille);
 		}
-	});
+	}, tiersDAO);
 
 	// Crée les données du mock service civil
 	ServiceCivilService serviceCivilSimple = new ServiceCivilImpl(infrastructureService, new DefaultMockServiceCivil() {
@@ -101,7 +103,6 @@ public class ObtentionNationaliteTest extends WithoutSpringTest {
 		}
 	});
 
-	private MockTiersDAO tiersDAO = new MockTiersDAO();
 	private EvenementCivilContext context = new EvenementCivilContext(serviceCivilSimple, infrastructureService, tiersDAO);
 	private EvenementCivilOptions options = new EvenementCivilOptions(false);
 }

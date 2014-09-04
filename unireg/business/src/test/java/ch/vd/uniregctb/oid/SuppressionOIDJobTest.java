@@ -12,6 +12,8 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
+import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.uniregctb.adresse.AdresseService;
@@ -83,11 +85,11 @@ public class SuppressionOIDJobTest extends BusinessTest {
 		doInNewTransaction(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
-				addCollAdm(22);
+				addCollAdm(MockCollectiviteAdministrative.ACI);
 			}
 		});
 
-		final SuppressionOIDResults results = job.supprimerOID(22, RegDate.get(), status);
+		final SuppressionOIDResults results = job.supprimerOID(ServiceInfrastructureRaw.noACI, RegDate.get(), status);
 		assertNotNull(results);
 		assertEquals(0, results.total);
 		assertEquals(0, results.traites.size());
@@ -100,12 +102,12 @@ public class SuppressionOIDJobTest extends BusinessTest {
 		doInNewTransaction(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
-				addCollAdm(22);
+				addCollAdm(MockCollectiviteAdministrative.ACI);
 				addNonHabitant("Arnold", "Schönborn", date(1923, 2, 2), Sexe.MASCULIN); // pas de for, pas d'OID
 			}
 		});
 
-		final SuppressionOIDResults results = job.supprimerOID(22, RegDate.get(), status);
+		final SuppressionOIDResults results = job.supprimerOID(ServiceInfrastructureRaw.noACI, RegDate.get(), status);
 		assertNotNull(results);
 		assertEquals(0, results.total);
 		assertEquals(0, results.traites.size());
@@ -118,8 +120,8 @@ public class SuppressionOIDJobTest extends BusinessTest {
 		final long id = doInNewTransactionWithoutOidInterceptor(new TxCallback<Long>() {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
-				addCollAdm(MockOfficeImpot.OID_MORGES.getNoColAdm());
-				addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
+				addCollAdm(MockOfficeImpot.OID_MORGES);
+				addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
 				final PersonnePhysique pp = addNonHabitant("Arnold", "Schönborn", date(1923, 2, 2), Sexe.MASCULIN);
 				// pour simuler la suppression de l'oid Lausanne-Ouest, on force l'office d'impôt Lausanne-Ouest alors
 				// que le ctb habite Morges : l'oid Lausanne-Ouest est toujours valide, mais l'effet sera le même.
@@ -165,8 +167,8 @@ public class SuppressionOIDJobTest extends BusinessTest {
 		doInNewTransaction(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
-				final CollectiviteAdministrative morges = addCollAdm(MockOfficeImpot.OID_MORGES.getNoColAdm());
-				final CollectiviteAdministrative lausanneOuest = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
+				final CollectiviteAdministrative morges = addCollAdm(MockOfficeImpot.OID_MORGES);
+				final CollectiviteAdministrative lausanneOuest = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
 
 				// un contribuable avec un OID théorique à Morges
 				final PersonnePhysique pp = addNonHabitant("Arnold", "Schönborn", date(1923, 2, 2), Sexe.MASCULIN);
@@ -224,9 +226,9 @@ public class SuppressionOIDJobTest extends BusinessTest {
 		doInNewTransaction(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
-				final CollectiviteAdministrative yverdon = addCollAdm(MockOfficeImpot.OID_YVERDON.getNoColAdm());
-				final CollectiviteAdministrative morges = addCollAdm(MockOfficeImpot.OID_MORGES.getNoColAdm());
-				final CollectiviteAdministrative lausanneOuest = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
+				final CollectiviteAdministrative yverdon = addCollAdm(MockOfficeImpot.OID_YVERDON);
+				final CollectiviteAdministrative morges = addCollAdm(MockOfficeImpot.OID_MORGES);
+				final CollectiviteAdministrative lausanneOuest = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
 
 				// un contribuable avec un OID théorique à Morges
 				final PersonnePhysique pp = addNonHabitant("Arnold", "Schönborn", date(1923, 2, 2), Sexe.MASCULIN);
@@ -287,9 +289,9 @@ public class SuppressionOIDJobTest extends BusinessTest {
 		doInNewTransaction(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
-				final CollectiviteAdministrative yverdon = addCollAdm(MockOfficeImpot.OID_YVERDON.getNoColAdm());
-				final CollectiviteAdministrative morges = addCollAdm(MockOfficeImpot.OID_MORGES.getNoColAdm());
-				final CollectiviteAdministrative lausanneOuest = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
+				final CollectiviteAdministrative yverdon = addCollAdm(MockOfficeImpot.OID_YVERDON);
+				final CollectiviteAdministrative morges = addCollAdm(MockOfficeImpot.OID_MORGES);
+				final CollectiviteAdministrative lausanneOuest = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
 
 				// un contribuable avec un OID théorique à Morges
 				final PersonnePhysique pp = addNonHabitant("Arnold", "Schönborn", date(1923, 2, 2), Sexe.MASCULIN);
@@ -352,9 +354,9 @@ public class SuppressionOIDJobTest extends BusinessTest {
 		doInNewTransaction(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
-				final CollectiviteAdministrative yverdon = addCollAdm(MockOfficeImpot.OID_YVERDON.getNoColAdm());
-				final CollectiviteAdministrative morges = addCollAdm(MockOfficeImpot.OID_MORGES.getNoColAdm());
-				final CollectiviteAdministrative lausanneOuest = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
+				final CollectiviteAdministrative yverdon = addCollAdm(MockOfficeImpot.OID_YVERDON);
+				final CollectiviteAdministrative morges = addCollAdm(MockOfficeImpot.OID_MORGES);
+				final CollectiviteAdministrative lausanneOuest = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
 
 				// un contribuable avec un OID théorique à Morges
 				final PersonnePhysique pp = addNonHabitant("Arnold", "Schönborn", date(1923, 2, 2), Sexe.MASCULIN);
@@ -416,9 +418,9 @@ public class SuppressionOIDJobTest extends BusinessTest {
 		doInNewTransaction(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
-				final CollectiviteAdministrative yverdon = addCollAdm(MockOfficeImpot.OID_YVERDON.getNoColAdm());
-				final CollectiviteAdministrative morges = addCollAdm(MockOfficeImpot.OID_MORGES.getNoColAdm());
-				final CollectiviteAdministrative lausanneOuest = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
+				final CollectiviteAdministrative yverdon = addCollAdm(MockOfficeImpot.OID_YVERDON);
+				final CollectiviteAdministrative morges = addCollAdm(MockOfficeImpot.OID_MORGES);
+				final CollectiviteAdministrative lausanneOuest = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
 
 				// un contribuable avec un OID théorique à Morges
 				final PersonnePhysique pp = addNonHabitant("Arnold", "Schönborn", date(1923, 2, 2), Sexe.MASCULIN);
@@ -475,8 +477,8 @@ public class SuppressionOIDJobTest extends BusinessTest {
 		doInNewTransaction(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
-				final CollectiviteAdministrative morges = addCollAdm(MockOfficeImpot.OID_MORGES.getNoColAdm());
-				final CollectiviteAdministrative lausanneOuest = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
+				final CollectiviteAdministrative morges = addCollAdm(MockOfficeImpot.OID_MORGES);
+				final CollectiviteAdministrative lausanneOuest = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
 
 				// un contribuable sans OID théorique
 				final PersonnePhysique pp = addNonHabitant("Arnold", "Schönborn", date(1923, 2, 2), Sexe.MASCULIN);
@@ -531,8 +533,8 @@ public class SuppressionOIDJobTest extends BusinessTest {
 		doInNewTransactionWithoutOidInterceptor(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
-				final CollectiviteAdministrative morges = addCollAdm(MockOfficeImpot.OID_MORGES.getNoColAdm());
-				final CollectiviteAdministrative lausanneOuest = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
+				final CollectiviteAdministrative morges = addCollAdm(MockOfficeImpot.OID_MORGES);
+				final CollectiviteAdministrative lausanneOuest = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
 
 				// un contribuable avec un OID théorique à Morges
 				final PersonnePhysique pp = addNonHabitant("Arnold", "Schönborn", date(1923, 2, 2), Sexe.MASCULIN);

@@ -63,8 +63,7 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 	protected final List<Commune> communes = new ArrayList<>();
 	protected final List<Rue> rues = new ArrayList<>();
 	protected final Map<Integer, CollectiviteAdministrative> collectivitesAdministrative = new HashMap<>();
-	protected final Map<Integer, OfficeImpot> oidByNoOfsCommune = new HashMap<>();
-	protected final Map<Integer, OfficeImpot> oidByNoColAdm = new HashMap<>();
+	protected final List<OfficeImpot> officesImpot = new ArrayList<>();
 	protected Map<Integer, List<MockLienCommuneBatiment>> batimentsParEgid = null;
 	protected final Map<Integer, InstitutionFinanciere> institutionFinancieres = new HashMap<>();
 
@@ -84,12 +83,6 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 		this.rues.addAll(right.rues);
 		for (Map.Entry<Integer, CollectiviteAdministrative> entry : right.collectivitesAdministrative.entrySet()) {
 			add((MockCollectiviteAdministrative) entry.getValue());
-		}
-		for (Map.Entry<Integer, OfficeImpot> entry : right.oidByNoOfsCommune.entrySet()) {
-			this.oidByNoOfsCommune.put(entry.getKey(), entry.getValue());
-		}
-		for (Map.Entry<Integer, OfficeImpot> entry : right.oidByNoColAdm.entrySet()) {
-			this.oidByNoColAdm.put(entry.getKey(), entry.getValue());
 		}
 		for (Map.Entry<Integer, InstitutionFinanciere> entry : right.institutionFinancieres.entrySet()) {
 			this.institutionFinancieres.put(entry.getKey(), entry.getValue());
@@ -120,12 +113,6 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 			communesHorsCanton.add(c);
 		}
 		communes.add(c);
-
-		OfficeImpot office = c.getOfficeImpot();
-		if (office != null) { // les communes hors-canton ne possèdent pas d'oid
-			oidByNoOfsCommune.put(c.getNoOFS(), office);
-			oidByNoColAdm.put(office.getNoColAdm(), office);
-		}
 	}
 
 	private Map<Integer, List<MockLienCommuneBatiment>> getBatimentsParEgid() {
@@ -167,6 +154,9 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 			throw new RuntimeException("La collectivité avec le numéro [" + noColAdm + "] existe déjà.");
 		}
 		collectivitesAdministrative.put(noColAdm, coladm);
+		if (coladm instanceof OfficeImpot) {
+			officesImpot.add((OfficeImpot) coladm);
+		}
 	}
 
 
@@ -406,17 +396,9 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 		return collectivitesAdministrative.get(noColAdm);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public OfficeImpot getOfficeImpotDeCommune(int noCommune) throws ServiceInfrastructureException {
-		return oidByNoOfsCommune.get(noCommune);
-	}
-
 	@Override
 	public List<OfficeImpot> getOfficesImpot() throws ServiceInfrastructureException {
-		return new ArrayList<>(oidByNoOfsCommune.values());
+		return new ArrayList<>(officesImpot);
 	}
 
 	@Override

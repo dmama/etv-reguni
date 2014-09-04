@@ -20,7 +20,7 @@ import static org.junit.Assert.assertFalse;
 
 public class AdresseCivileAdapterTest {
 
-	final ServiceInfrastructureService serviceInfra = new ServiceInfrastructureImpl(new DefaultMockServiceInfrastructureService());
+	final ServiceInfrastructureService serviceInfra = new ServiceInfrastructureImpl(new DefaultMockServiceInfrastructureService(), new MockTiersDAO());
 
 	@Test
 	public void testAdaptation() throws Exception {

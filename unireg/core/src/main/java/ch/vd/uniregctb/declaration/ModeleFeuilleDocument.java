@@ -131,7 +131,7 @@ public class ModeleFeuilleDocument extends HibernateEntity {
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_3RQkgi4CEd2H4bonmeBdag?GETTER"
 	 */
 	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH })
-	@JoinColumn(name = "MODELE_ID", insertable = false, updatable = false)
+	@JoinColumn(name = "MODELE_ID", insertable = true, updatable = false)
 	public ModeleDocument getModeleDocument() {
 		// begin-user-code
 		return modeleDocument;

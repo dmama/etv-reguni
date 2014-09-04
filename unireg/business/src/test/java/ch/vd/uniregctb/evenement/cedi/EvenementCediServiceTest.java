@@ -8,6 +8,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
+import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.common.LengthConstants;
@@ -18,7 +19,6 @@ import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.iban.IbanValidator;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.jms.BamMessageSender;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -63,7 +63,7 @@ public class EvenementCediServiceTest extends BusinessTest {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
 
-				addCollAdm(ServiceInfrastructureService.noCEDI);
+				addCollAdm(MockCollectiviteAdministrative.CEDI);
 
 				final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
 				final ModeleDocument declarationComplete2008 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
@@ -138,7 +138,7 @@ public class EvenementCediServiceTest extends BusinessTest {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
 
-				addCollAdm(ServiceInfrastructureService.noCEDI);
+				addCollAdm(MockCollectiviteAdministrative.CEDI);
 
 				final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
 				final ModeleDocument declarationComplete2008 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
@@ -209,7 +209,7 @@ public class EvenementCediServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
-				addCollAdm(ServiceInfrastructureService.noCEDI);
+				addCollAdm(MockCollectiviteAdministrative.CEDI);
 				final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
 				final ModeleDocument declarationComplete2008 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
 				addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2008);

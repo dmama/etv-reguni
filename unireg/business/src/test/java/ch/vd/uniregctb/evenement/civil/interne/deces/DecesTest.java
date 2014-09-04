@@ -16,19 +16,9 @@ import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.infra.mock.MockCanton;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
-import ch.vd.unireg.interfaces.infra.mock.MockPays;
-import ch.vd.unireg.interfaces.infra.mock.MockServiceInfrastructureService;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilImpl;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureImpl;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
@@ -121,7 +111,7 @@ public class DecesTest extends AbstractEvenementCivilInterneTest {
 		habitant.setNumero(NO_INDIVIDU_DEFUNT_CELIBATAIRE);
 		EvenementCivilRegPP
 				evenement = new EvenementCivilRegPP(1L, TypeEvenementCivil.DECES, EtatEvenementCivil.A_TRAITER, DATE_DECES, NO_INDIVIDU_DEFUNT_CELIBATAIRE , 0L, 1234, null);
-		Deces adapter = new Deces(evenement, contextSimple, options);
+		Deces adapter = new Deces(evenement, context, options);
 		Assert.isNull(adapter.getConjointSurvivant(), "le conjoint survivant d'un celibataire ne doit pas exister");
 	}
 
@@ -138,7 +128,7 @@ public class DecesTest extends AbstractEvenementCivilInterneTest {
 		habitant.setNumero(NO_INDIVIDU_DEFUNT_MARIE_SEUL);
 		EvenementCivilRegPP
 				evenement = new EvenementCivilRegPP(1L, TypeEvenementCivil.DECES, EtatEvenementCivil.A_TRAITER, DATE_DECES, NO_INDIVIDU_DEFUNT_MARIE_SEUL , 0L, 1234, null);
-		Deces adapter = new Deces(evenement, contextSimple, options);
+		Deces adapter = new Deces(evenement, context, options);
 		Assert.isNull( adapter.getConjointSurvivant(), "le conjoint survivant d'un marié seul ne doit pas exister");
 	}
 
@@ -153,7 +143,7 @@ public class DecesTest extends AbstractEvenementCivilInterneTest {
 		PersonnePhysique habitant = new PersonnePhysique(true);
 		habitant.setNumero(NO_INDIVIDU_DEFUNT_MARIE);
 		EvenementCivilRegPP evenement = new EvenementCivilRegPP(1L, TypeEvenementCivil.DECES, EtatEvenementCivil.A_TRAITER, DATE_DECES, NO_INDIVIDU_DEFUNT_MARIE , 0L, 1234, null);
-		Deces adapter = new Deces(evenement, contextSimple, options);
+		Deces adapter = new Deces(evenement, context, options);
 		Assert.notNull( adapter.getConjointSurvivant(), "le conjoint survivant d'un marié doit exister");
 		Assert.isTrue( adapter.getConjointSurvivant().getNoTechnique() == NO_INDIVIDU_VEUF_MARIE, "le conjoint survivant n'est pas celui attendu");
 	}
@@ -169,62 +159,10 @@ public class DecesTest extends AbstractEvenementCivilInterneTest {
 		PersonnePhysique habitant = new PersonnePhysique(true);
 		habitant.setNumero(NO_INDIVIDU_DEFUNT_PACSE);
 		EvenementCivilRegPP evenement = new EvenementCivilRegPP(1L, TypeEvenementCivil.DECES, EtatEvenementCivil.A_TRAITER, DATE_DECES, NO_INDIVIDU_DEFUNT_PACSE , 0L, 1234, null);
-		Deces adapter = new Deces(evenement, contextSimple, options);
+		Deces adapter = new Deces(evenement, context, options);
 		Assert.notNull( adapter.getConjointSurvivant(), "le conjoint survivant d'un pacsé doit pas exister");
 		Assert.isTrue( adapter.getConjointSurvivant().getNoTechnique() == NO_INDIVIDU_VEUF_PACSE, "le conjoint survivant n'est pas celui attendu");
 	}
-
-	// Prend le mock infrastructure par défaut
-	ServiceInfrastructureService infrastructureService = new ServiceInfrastructureImpl(new MockServiceInfrastructureService() {
-		@Override
-		protected void init() {
-			// Pays
-			pays.add(MockPays.Suisse);
-
-			// Cantons
-			cantons.add(MockCanton.Vaud);
-
-			// Communes
-			communesVaud.add(MockCommune.Lausanne);
-			communesVaud.add(MockCommune.Cossonay);
-
-			// Localités
-			localites.add(MockLocalite.Lausanne);
-			localites.add(MockLocalite.CossonayVille);
-		}
-	});
-
-	// Crée les données du mock service civil
-	ServiceCivilService serviceCivilSimple = new ServiceCivilImpl(infrastructureService, new DefaultMockServiceCivil() {
-		@Override
-		protected void init() {
-			MockIndividu momo = addIndividu(54321, RegDate.get(1961, 3, 12), "Durant", "Maurice", true);
-			MockIndividu pierre = addIndividu(12345, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
-			MockIndividu bea = addIndividu(23456, RegDate.get(1963, 8, 20), "Duval", "Béatrice", false);
-			MockIndividu julie = addIndividu(6789, RegDate.get(1977, 4, 19), "Goux", "Julie", false);
-			MockIndividu david = addIndividu(45678, RegDate.get(1964, 1, 23), "Dagobert", "David", true);
-			MockIndividu julien = addIndividu(56789, RegDate.get(1966, 11, 2), "Martin", "Julien", true);
-
-			/* Adresses */
-			addDefaultAdressesTo(momo);
-			addDefaultAdressesTo(pierre);
-			addDefaultAdressesTo(bea);
-			addDefaultAdressesTo(julie);
-			addDefaultAdressesTo(david);
-			addDefaultAdressesTo(julien);
-
-			/* mariages, pacs */
-			marieIndividus(momo, bea, RegDate.get(1986, 4, 8));
-			marieIndividus(david, julien, RegDate.get(1986, 4, 8));
-			marieIndividu(pierre, RegDate.get(1986, 4, 8));
-
-			/* origines */
-			addOrigine(bea, MockCommune.Lausanne);
-			addOrigine(julien, MockCommune.Lausanne);
-		}
-	});
-
-	private EvenementCivilContext contextSimple;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DecesTest.class);
 
@@ -238,6 +176,7 @@ public class DecesTest extends AbstractEvenementCivilInterneTest {
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 
+		serviceInfra.setUpDefault();
 		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
 			@Override
 			protected void init() {
@@ -250,7 +189,6 @@ public class DecesTest extends AbstractEvenementCivilInterneTest {
 				getIndividu(NO_INDIVIDU_DEFUNT_MARIE_AVEC_ETRANGER).setDateDeces(DATE_DECES);
 			}
 		});
-		contextSimple = new EvenementCivilContext(serviceCivilSimple, infrastructureService, tiersDAO);
 		loadDatabase(DB_UNIT_DATA_FILE);
 	}
 

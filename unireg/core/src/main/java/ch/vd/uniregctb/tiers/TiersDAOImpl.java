@@ -968,9 +968,10 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 	}
 
 	@Override
-	public CollectiviteAdministrative getCollectiviteAdministrativeForDistrict(int numeroDistrict) {
+	public CollectiviteAdministrative getCollectiviteAdministrativeForDistrict(int numeroDistrict, boolean doNotAutoFlush) {
 		final String query = "from CollectiviteAdministrative col where col.identifiantDistrictFiscal = :noDistrict";
-		final List<CollectiviteAdministrative> list = find(query, buildNamedParameters(Pair.of("noDistrict", numeroDistrict)), null);
+		final FlushMode flushMode = doNotAutoFlush ? FlushMode.MANUAL : null;
+		final List<CollectiviteAdministrative> list = find(query, buildNamedParameters(Pair.of("noDistrict", numeroDistrict)), flushMode);
 		if (list == null || list.isEmpty()) {
 			return null;
 		}

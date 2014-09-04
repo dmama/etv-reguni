@@ -12,8 +12,9 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
-import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
 import ch.vd.uniregctb.declaration.ParametrePeriodeFiscale;
@@ -51,6 +52,10 @@ public class AddDITest extends BusinessTest {
 		diDAO = getBean(DeclarationImpotOrdinaireDAO.class, "diDAO");
 		pfDAO = getBean(PeriodeFiscaleDAO.class, "periodeFiscaleDAO");
 		periodeImpositionService = getBean(PeriodeImpositionService.class, "periodeImpositionService");
+	}
+
+	public AddDITest() {
+		setWantCollectivitesAdministratives(true);
 	}
 
 	/**
@@ -94,7 +99,6 @@ public class AddDITest extends BusinessTest {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Otto", "Rhino", null, Sexe.MASCULIN);
 				addForPrincipal(pp, date(currentYear, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Bussigny);
-				addCollAdm(MockCommune.Bussigny.getOfficeImpot());
 				final PeriodeFiscale pf = addPeriodeFiscale(currentYear);
 				pf.setAllPeriodeFiscaleParametres(dateEnvoiMasseDI, date(currentYear + 1, 3, 15), date(currentYear + 1, 6, 30));
 				return pp.getNumero();
@@ -125,8 +129,8 @@ public class AddDITest extends BusinessTest {
 				Assert.assertEquals(currentYear + 1, ref.year());       // pour être sûr qu'on n'a pas changé d'année..
 
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				final CollectiviteAdministrative ca = tiersService.getCollectiviteAdministrative(MockCommune.Bussigny.getOfficeImpot().getNoColAdm());
-				final CollectiviteAdministrative caSuccessions = addCollAdm(MockCollectiviteAdministrative.ACISUCCESSIONS);
+				final CollectiviteAdministrative ca = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_MORGES.getNoColAdm());
+				final CollectiviteAdministrative caSuccessions = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noACISuccessions);
 				final List<PeriodeImposition> periodesImposition = periodeImpositionService.determine(pp, currentYear);
 				Assert.assertNotNull(periodesImposition);
 				Assert.assertEquals(1, periodesImposition.size());
@@ -186,7 +190,6 @@ public class AddDITest extends BusinessTest {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Otto", "Rhino", null, Sexe.MASCULIN);
 				addForPrincipal(pp, date(currentYear, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Bussigny);
-				addCollAdm(MockCommune.Bussigny.getOfficeImpot());
 				final PeriodeFiscale pf = addPeriodeFiscale(currentYear);
 				pf.setAllPeriodeFiscaleParametres(dateEnvoiMasseDI, date(currentYear + 1, 3, 15), date(currentYear + 1, 6, 30));
 				return pp.getNumero();
@@ -217,8 +220,8 @@ public class AddDITest extends BusinessTest {
 				Assert.assertEquals(currentYear + 1, ref.year());       // pour être sûr qu'on n'a pas changé d'année..
 
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				final CollectiviteAdministrative ca = tiersService.getCollectiviteAdministrative(MockCommune.Bussigny.getOfficeImpot().getNoColAdm());
-				final CollectiviteAdministrative caSuccessions = addCollAdm(MockCollectiviteAdministrative.ACISUCCESSIONS);
+				final CollectiviteAdministrative ca = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_MORGES.getNoColAdm());
+				final CollectiviteAdministrative caSuccessions = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noACISuccessions);
 				final List<PeriodeImposition> periodesImposition = periodeImpositionService.determine(pp, currentYear);
 				Assert.assertNotNull(periodesImposition);
 				Assert.assertEquals(1, periodesImposition.size());
@@ -272,7 +275,6 @@ public class AddDITest extends BusinessTest {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Otto", "Rhino", null, Sexe.MASCULIN);
 				addForPrincipal(pp, date(currentYear, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Bussigny);
-				addCollAdm(MockCommune.Bussigny.getOfficeImpot());
 				final PeriodeFiscale pf = addPeriodeFiscale(currentYear);
 				pf.setAllPeriodeFiscaleParametres(dateEnvoiMasseDI, date(currentYear + 1, 3, 15), date(currentYear + 1, 6, 30));
 				return pp.getNumero();
@@ -300,8 +302,8 @@ public class AddDITest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				final CollectiviteAdministrative ca = tiersService.getCollectiviteAdministrative(MockCommune.Bussigny.getOfficeImpot().getNoColAdm());
-				final CollectiviteAdministrative caSuccessions = addCollAdm(MockCollectiviteAdministrative.ACISUCCESSIONS);
+				final CollectiviteAdministrative ca = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_MORGES.getNoColAdm());
+				final CollectiviteAdministrative caSuccessions = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noACISuccessions);
 				final List<PeriodeImposition> periodesImposition = periodeImpositionService.determine(pp, currentYear);
 				Assert.assertNotNull(periodesImposition);
 				Assert.assertEquals(1, periodesImposition.size());
@@ -376,7 +378,6 @@ public class AddDITest extends BusinessTest {
 				params.add(new ParametrePeriodeFiscale(TypeContribuable.VAUDOIS_ORDINAIRE, dateLimiteOrdinaire, date(currentYear + 1, 3, 15), date(currentYear + 1, 6, 30), pf));
 				params.add(new ParametrePeriodeFiscale(TypeContribuable.VAUDOIS_DEPENSE, dateLimiteICCD, date(currentYear + 1, 3, 15), date(currentYear + 1, 6, 30), pf));
 				pf.setParametrePeriodeFiscale(params);
-				addCollAdm(MockCommune.Bussigny.getOfficeImpot());
 
 				// contribuable vaudois ordinaire
 				final PersonnePhysique ord = addNonHabitant("Otto", "Rhino", null, Sexe.MASCULIN);
@@ -409,8 +410,8 @@ public class AddDITest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final RegDate ref = date(currentYear + 1, 1, 2);
-				final CollectiviteAdministrative ca = tiersService.getCollectiviteAdministrative(MockCommune.Bussigny.getOfficeImpot().getNoColAdm());
-				final CollectiviteAdministrative caSuccessions = addCollAdm(MockCollectiviteAdministrative.ACISUCCESSIONS);
+				final CollectiviteAdministrative ca = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_MORGES.getNoColAdm());
+				final CollectiviteAdministrative caSuccessions = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noACISuccessions);
 
 				// contribuable ordinaire
 				{
@@ -526,7 +527,6 @@ public class AddDITest extends BusinessTest {
 				params.add(new ParametrePeriodeFiscale(TypeContribuable.VAUDOIS_ORDINAIRE, dateLimiteOrdinaire, date(currentYear + 1, 3, 15), date(currentYear + 1, 6, 30), pf));
 				params.add(new ParametrePeriodeFiscale(TypeContribuable.VAUDOIS_DEPENSE, dateLimiteICCD, date(currentYear + 1, 3, 15), date(currentYear + 1, 6, 30), pf));
 				pf.setParametrePeriodeFiscale(params);
-				addCollAdm(MockCommune.Bussigny.getOfficeImpot());
 
 				// contribuable vaudois ordinaire
 				final PersonnePhysique ord = addNonHabitant("Otto", "Rhino", null, Sexe.MASCULIN);
@@ -558,8 +558,8 @@ public class AddDITest extends BusinessTest {
 
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final CollectiviteAdministrative ca = tiersService.getCollectiviteAdministrative(MockCommune.Bussigny.getOfficeImpot().getNoColAdm());
-				final CollectiviteAdministrative caSuccessions = addCollAdm(MockCollectiviteAdministrative.ACISUCCESSIONS);
+				final CollectiviteAdministrative ca = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_MORGES.getNoColAdm());
+				final CollectiviteAdministrative caSuccessions = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noACISuccessions);
 
 				// contribuable ordinaire
 				{

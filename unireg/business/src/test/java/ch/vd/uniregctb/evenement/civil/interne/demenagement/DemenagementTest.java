@@ -17,6 +17,7 @@ import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.infra.mock.MockBatiment;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.uniregctb.common.BusinessTestingConstants;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
@@ -84,6 +85,10 @@ public class DemenagementTest extends AbstractEvenementCivilInterneTest {
 	private static final String CANTON_GENEVE = "GE";
 
 	private TacheDAO tacheDAO;
+
+	public DemenagementTest() {
+		setWantCollectivitesAdministratives(true);
+	}
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -297,9 +302,7 @@ public class DemenagementTest extends AbstractEvenementCivilInterneTest {
 		int tachesApres = tacheDAO.count(sophie.getNumero());
 		assertEquals("Il aurait dû y avoir une nouvelle tâche de contrôle de dossier", 1, tachesApres - tachesAvant);
         List<Tache> mesTaches = tacheDAO.find(sophie.getNumero());
-        CollectiviteAdministrative oidLausanne;
-        oidLausanne = tiersService.getCollectiviteAdministrative(MockCommune.Lausanne.getOfficeImpot().getNoColAdm());
-
+        final CollectiviteAdministrative oidLausanne = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
 
         assertTrue("une tache de contrôle de dossier doit être rattachée à l'OID précédent", existTacheControlePourAncienOID(mesTaches, oidLausanne));
 

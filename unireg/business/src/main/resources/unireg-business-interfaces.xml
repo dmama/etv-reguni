@@ -9,6 +9,7 @@
 	
 	<bean id="serviceInfrastructureService" class="ch.vd.uniregctb.interfaces.service.ServiceInfrastructureImpl">
 		<property name="rawService" ref="serviceInfrastructureRaw" />
+		<property name="tiersDAO" ref="tiersDAO"/>
 	</bean>
 
 	<!-- Service Civil -->

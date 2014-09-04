@@ -13,6 +13,7 @@ import org.springframework.util.ResourceUtils;
 
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
+import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.uniregctb.common.AuthenticationHelper;
@@ -24,7 +25,6 @@ import ch.vd.uniregctb.evenement.cedi.DossierElectroniqueHandler;
 import ch.vd.uniregctb.evenement.cedi.EvenementCediEsbMessageHandler;
 import ch.vd.uniregctb.evenement.cedi.EvenementCediService;
 import ch.vd.uniregctb.evenement.cedi.V1Handler;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.tache.sync.AddDI;
 import ch.vd.uniregctb.tache.sync.SynchronizeAction;
@@ -88,7 +88,7 @@ public class TacheSynchronizerInterceptorTest extends BusinessTest {
 			public Object doInTransaction(TransactionStatus status) {
 
 				// des trucs d'infrastructure
-				addCollAdm(ServiceInfrastructureService.noCEDI);
+				addCollAdm(MockCollectiviteAdministrative.CEDI);
 				addCollAdm(MockOfficeImpot.OID_ROLLE_AUBONNE);
 				addCollAdm(MockOfficeImpot.ACISUCCESSIONS);
 

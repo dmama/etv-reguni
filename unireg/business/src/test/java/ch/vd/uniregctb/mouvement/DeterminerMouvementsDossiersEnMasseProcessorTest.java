@@ -68,10 +68,10 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				noOidRolleAubonne = tiersService.getOrCreateCollectiviteAdministrative(noCaOidRolleAubonne).getNumero();    // OID Rolle-Aubonne
-				noOidLausanne = tiersService.getOrCreateCollectiviteAdministrative(noCaOidLausanne).getNumero();            // OID Lausanne
-				noOidVevey = tiersService.getOrCreateCollectiviteAdministrative(noCaOidVevey).getNumero();                  // OID Vevey
-				noOidOrbe = tiersService.getOrCreateCollectiviteAdministrative(noCaOidOrbe).getNumero();                    // OID Orbe
+				noOidRolleAubonne = addCollAdm(MockOfficeImpot.OID_ROLLE_AUBONNE).getNumero();    // OID Rolle-Aubonne
+				noOidLausanne = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST).getNumero();            // OID Lausanne
+				noOidVevey = addCollAdm(MockOfficeImpot.OID_VEVEY).getNumero();                  // OID Vevey
+				noOidOrbe = addCollAdm(MockOfficeImpot.OID_ORBE).getNumero();                    // OID Orbe
 				return null;
 			}
 		});

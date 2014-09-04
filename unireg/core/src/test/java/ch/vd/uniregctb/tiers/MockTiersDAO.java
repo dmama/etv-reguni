@@ -1,6 +1,8 @@
 package ch.vd.uniregctb.tiers;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -20,10 +22,44 @@ import ch.vd.uniregctb.rf.Immeuble;
 
 public class MockTiersDAO implements TiersDAO {
 	
-	private Map<Long, Tiers> store = new HashMap<>();
+	private final List<CollectiviteAdministrative> oids = buildOidMap();
+	private final Map<Long, Tiers> store = buildInitialStore(oids);
+
+	private static List<CollectiviteAdministrative> buildOidMap() {
+		final List<CollectiviteAdministrative> list = new ArrayList<>();
+		list.add(new CollectiviteAdministrative((long) Entreprise.PM_GEN_FIRST_ID, 1, 1, null));
+		list.add(new CollectiviteAdministrative((long) Entreprise.PM_GEN_FIRST_ID + 4, 5, 2, null));
+		list.add(new CollectiviteAdministrative((long) Entreprise.PM_GEN_FIRST_ID + 5, 6, 3, null));
+		list.add(new CollectiviteAdministrative((long) Entreprise.PM_GEN_FIRST_ID + 6, 7, 4, 1));
+		list.add(new CollectiviteAdministrative((long) Entreprise.PM_GEN_FIRST_ID + 7, 8, 5, null));
+		list.add(new CollectiviteAdministrative((long) Entreprise.PM_GEN_FIRST_ID + 8, 9, 6, null));
+		list.add(new CollectiviteAdministrative((long) Entreprise.PM_GEN_FIRST_ID + 9, 10, 7, null));
+		list.add(new CollectiviteAdministrative((long) Entreprise.PM_GEN_FIRST_ID + 10, 11, 8, null));
+		list.add(new CollectiviteAdministrative((long) Entreprise.PM_GEN_FIRST_ID + 11, 12, 9, 2));
+		list.add(new CollectiviteAdministrative((long) Entreprise.PM_GEN_FIRST_ID + 12, 13, 10, null));
+		list.add(new CollectiviteAdministrative((long) Entreprise.PM_GEN_FIRST_ID + 14, 15, 11, null));
+		list.add(new CollectiviteAdministrative((long) Entreprise.PM_GEN_FIRST_ID + 15, 16, 12, null));
+		list.add(new CollectiviteAdministrative((long) Entreprise.PM_GEN_FIRST_ID + 16, 17, 13, null));
+		list.add(new CollectiviteAdministrative((long) Entreprise.PM_GEN_FIRST_ID + 17, 18, 14, 3));
+		list.add(new CollectiviteAdministrative((long) Entreprise.PM_GEN_FIRST_ID + 18, 19, 15, 4));
+		return Collections.unmodifiableList(list);
+	}
+
+	private static Map<Long, Tiers> buildInitialStore(List<CollectiviteAdministrative> oids) {
+		final Map<Long, Tiers> map = new HashMap<>();
+		fillStoreWithOids(map, oids);
+		return map;
+	}
+
+	private static void fillStoreWithOids(Map<Long, Tiers> store, List<CollectiviteAdministrative> oids) {
+		for (CollectiviteAdministrative oid : oids) {
+			store.put(oid.getId(), oid);
+		}
+	}
 
 	public void clear() {
 		store.clear();
+		fillStoreWithOids(store, oids);
 	}
 
 	@Override
@@ -144,22 +180,37 @@ public class MockTiersDAO implements TiersDAO {
 
 	@Override
 	public CollectiviteAdministrative getCollectiviteAdministrativesByNumeroTechnique(int numeroTechnique) {
-		throw new NotImplementedException();
+		for (CollectiviteAdministrative ca : oids) {
+			if (ca.getNumeroCollectiviteAdministrative() != null && ca.getNumeroCollectiviteAdministrative() == numeroTechnique) {
+				return ca;
+			}
+		}
+		return null;
 	}
 
 	@Override
-	public CollectiviteAdministrative getCollectiviteAdministrativeForDistrict(int numeroDistrict) {
-		throw new NotImplementedException();
+	public CollectiviteAdministrative getCollectiviteAdministrativeForDistrict(int numeroDistrict, boolean doNotAutoFlush) {
+		for (CollectiviteAdministrative ca : oids) {
+			if (ca.getIdentifiantDistrictFiscal() != null && ca.getIdentifiantDistrictFiscal() == numeroDistrict) {
+				return ca;
+			}
+		}
+		return null;
 	}
 
 	@Override
 	public CollectiviteAdministrative getCollectiviteAdministrativeForRegion(int numeroRegion) {
-		throw new NotImplementedException();
+		for (CollectiviteAdministrative ca : oids) {
+			if (ca.getIdentifiantRegionFiscale() != null && ca.getIdentifiantRegionFiscale() == numeroRegion) {
+				return ca;
+			}
+		}
+		return null;
 	}
 
 	@Override
 	public CollectiviteAdministrative getCollectiviteAdministrativesByNumeroTechnique(int numeroTechnique, boolean doNotAutoFlush) {
-		throw new NotImplementedException();
+		return getCollectiviteAdministrativesByNumeroTechnique(numeroTechnique);
 	}
 
 	@Override

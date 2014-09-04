@@ -108,7 +108,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		warmer.setTiersDAO(tiersDAO);
 
 		tiersService = new TiersServiceImpl();
-		serviceInfra = new ServiceInfrastructureImpl(new DefaultMockServiceInfrastructureService());
+		serviceInfra = new ServiceInfrastructureImpl(new DefaultMockServiceInfrastructureService(), tiersDAO);
 		servicePM = new DefaultMockServicePM();
 		tiersService.setServiceInfra(serviceInfra);
 		tiersService.setServiceCivilService(serviceCivil);
@@ -119,7 +119,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		tiersService.setAssujettissementService(new AssujettissementServiceImpl());
 
 		adresseService = new AdresseServiceImpl();
-		adresseService.setServiceInfra(new ServiceInfrastructureImpl(new DefaultMockServiceInfrastructureService()));
+		adresseService.setServiceInfra(serviceInfra);
 		adresseService.setServiceCivilService(serviceCivil);
 		adresseService.setTiersService(tiersService);
 		adresseService.setServicePM(servicePM);

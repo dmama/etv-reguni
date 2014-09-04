@@ -16,6 +16,7 @@ import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.common.BusinessTestingConstants;
 import ch.vd.uniregctb.declaration.Declaration;
@@ -182,7 +183,7 @@ public class ActivationServiceTest extends BusinessTest {
 				final CollectiviteAdministrative colAdm = addCollAdm(MockCollectiviteAdministrative.ACI);
 				addTacheControleDossier(TypeEtatTache.TRAITE, date(2002, 4, 1), pp, colAdm);
 				addTacheControleDossier(TypeEtatTache.EN_INSTANCE, date(2010, 1, 5), pp, colAdm);
-				addCollAdm(7);
+				addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
 				return pp.getNumero();
 
 

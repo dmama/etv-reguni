@@ -1,7 +1,6 @@
 package ch.vd.unireg.interfaces.infra;
 
 import java.util.List;
-import java.util.Map;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -207,17 +206,6 @@ public class ServiceInfrastructureEndPoint implements ServiceInfrastructureRaw, 
 		loadMeter.start(new MethodCallDescriptor("getCommuneByLocalite", "localite", localite == null ? null : localite.getNomCompletMinuscule()));
 		try {
 			return target.getCommuneByLocalite(localite);
-		}
-		finally {
-			loadMeter.end();
-		}
-	}
-
-	@Override
-	public OfficeImpot getOfficeImpotDeCommune(int noCommune) throws ServiceInfrastructureException {
-		loadMeter.start(new MethodCallDescriptor("getOfficeImpotDeCommune", "noCommune", noCommune));
-		try {
-			return target.getOfficeImpotDeCommune(noCommune);
 		}
 		finally {
 			loadMeter.end();

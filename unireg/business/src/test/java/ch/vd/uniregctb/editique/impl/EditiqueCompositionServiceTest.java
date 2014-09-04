@@ -11,8 +11,8 @@ import org.springframework.transaction.TransactionStatus;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.common.BusinessTest;
@@ -42,6 +42,10 @@ import ch.vd.uniregctb.type.TypeDocument;
 public class EditiqueCompositionServiceTest extends BusinessTest {
 
 	private EditiqueCompositionServiceImpl service;
+
+	public EditiqueCompositionServiceTest() {
+		setWantCollectivitesAdministratives(true);
+	}
 
 	@Override
 	protected void runOnSetUp() throws Exception {
@@ -97,8 +101,7 @@ public class EditiqueCompositionServiceTest extends BusinessTest {
 				addForPrincipal(pp, dateOuvertureFor, MotifFor.MAJORITE, MockCommune.Cossonay);
 				final PeriodeFiscale pf = addPeriodeFiscale(annee);
 				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf);
-				addCollAdm(MockOfficeImpot.OID_COSSONAY);
-				final CollectiviteAdministrative cedi = addCedi();
+				final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
 				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 12, 31), cedi, TypeContribuable.VAUDOIS_ORDINAIRE, md);
 				di.setNumeroOfsForGestion(MockCommune.Cossonay.getNoOFS());
 				service.imprimeDIForBatch(di);          // <-- ça pêtait ici sur un "type de document non supporté: null"

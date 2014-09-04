@@ -524,7 +524,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 		return doInTransaction(true, new TransactionCallback<TaxOffices>() {
 			@Override
 			public TaxOffices doInTransaction(TransactionStatus status) {
-				final CollectiviteAdministrative oid = context.tiersDAO.getCollectiviteAdministrativeForDistrict(codeDistrict);
+				final CollectiviteAdministrative oid = context.tiersDAO.getCollectiviteAdministrativeForDistrict(codeDistrict, false);
 				final CollectiviteAdministrative oir = context.tiersDAO.getCollectiviteAdministrativeForRegion(codeRegion);
 				return new TaxOffices(new TaxOffice(oid.getNumero().intValue(), oid.getNumeroCollectiviteAdministrative()),
 				                      new TaxOffice(oir.getNumero().intValue(), oir.getNumeroCollectiviteAdministrative()),

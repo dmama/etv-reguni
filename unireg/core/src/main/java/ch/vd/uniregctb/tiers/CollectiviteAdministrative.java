@@ -23,11 +23,6 @@ import javax.persistence.Transient;
 public class CollectiviteAdministrative extends Contribuable {
 
 	/**
-	 *
-	 */
-	private static final long serialVersionUID = -3901035764846227011L;
-
-	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 *
@@ -39,6 +34,15 @@ public class CollectiviteAdministrative extends Contribuable {
 
 	private Integer identifiantRegionFiscale;
 
+	public CollectiviteAdministrative() {
+	}
+
+	public CollectiviteAdministrative(Long id, Integer numeroCollectiviteAdministrative, Integer identifiantDistrictFiscal, Integer identifiantRegionFiscale) {
+		super(id);
+		this.numeroCollectiviteAdministrative = numeroCollectiviteAdministrative;
+		this.identifiantDistrictFiscal = identifiantDistrictFiscal;
+		this.identifiantRegionFiscale = identifiantRegionFiscale;
+	}
 
 	/**
 	 * <!-- begin-user-doc -->

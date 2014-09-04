@@ -8,7 +8,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.uniregctb.adresse.AdresseService;
@@ -22,6 +22,10 @@ import ch.vd.uniregctb.type.TypeEtatTache;
 public class ProduireListeTachesEnInstanceParOIDProcessorTest extends BusinessTest {
 
 	private ProduireListeTachesEnInstanceParOIDProcessor processor;
+
+	public ProduireListeTachesEnInstanceParOIDProcessorTest() {
+		setWantCollectivitesAdministratives(true);
+	}
 
 	@Override
 	protected void runOnSetUp() throws Exception {
@@ -66,7 +70,7 @@ public class ProduireListeTachesEnInstanceParOIDProcessorTest extends BusinessTe
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppid);
-				final CollectiviteAdministrative successions = addCollAdm(MockCollectiviteAdministrative.ACISUCCESSIONS);
+				final CollectiviteAdministrative successions = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noACISuccessions);
 				addTacheControle(pp, TypeEtatTache.EN_INSTANCE, successions);
 				return null;
 			}
@@ -91,7 +95,7 @@ public class ProduireListeTachesEnInstanceParOIDProcessorTest extends BusinessTe
 
 		final ListeTachesEnInstanceParOID.LigneTacheInstance ligne = lignes.get(0);
 		Assert.assertNotNull(ligne);
-		Assert.assertEquals(MockCollectiviteAdministrative.ACISUCCESSIONS.getNoColAdm(), ligne.getNumeroOID());
+		Assert.assertEquals(ServiceInfrastructureRaw.noACISuccessions, ligne.getNumeroOID());
 		Assert.assertEquals(TacheControleDossier.class.getSimpleName(), ligne.getTypeTache());
 		Assert.assertEquals(1, ligne.getNombreTache());
 	}

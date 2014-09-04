@@ -1,7 +1,6 @@
 package ch.vd.unireg.interfaces.infra.cache;
 
 import java.util.List;
-import java.util.Map;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -105,11 +104,6 @@ public class NotImplementedServiceInfrastructure implements ServiceInfrastructur
 
 	@Override
 	public Commune getCommuneByLocalite(Localite localite) throws ServiceInfrastructureException {
-		throw new NotImplementedException();
-	}
-
-	@Override
-	public OfficeImpot getOfficeImpotDeCommune(int noCommune) throws ServiceInfrastructureException {
 		throw new NotImplementedException();
 	}
 

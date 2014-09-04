@@ -34,6 +34,8 @@ public class FinPermisTest extends WithoutSpringTest {
 	private static final RegDate DATE_FIN_PERMIS = RegDate.get(2008, 10, 1);
 	private static final RegDate DATE_OBTENTION_NATIONALITE = DATE_FIN_PERMIS;
 
+	final MockTiersDAO tiersDAO = new MockTiersDAO();
+
 	// Prend le mock infrastructure par défaut
 	ServiceInfrastructureService infrastructureService = new ServiceInfrastructureImpl(new MockServiceInfrastructureService() {
 		@Override
@@ -56,7 +58,7 @@ public class FinPermisTest extends WithoutSpringTest {
 			rues.add(MockRue.CossonayVille.CheminDeRiondmorcel);
 			rues.add(MockRue.Lausanne.AvenueDeBeaulieu);
 		}
-	});
+	}, tiersDAO);
 
 	// Crée les données du mock service civil
 	ServiceCivilService serviceCivil = new ServiceCivilImpl(infrastructureService, new DefaultMockServiceCivil() {
@@ -84,7 +86,6 @@ public class FinPermisTest extends WithoutSpringTest {
 		}
 	});
 
-	final MockTiersDAO tiersDAO = new MockTiersDAO();
 	private EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService, tiersDAO);
 	private EvenementCivilOptions options = new EvenementCivilOptions(false);
 

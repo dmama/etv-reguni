@@ -1,7 +1,6 @@
 package ch.vd.unireg.interfaces.infra;
 
 import java.util.List;
-import java.util.Map;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -167,13 +166,6 @@ public interface ServiceInfrastructureRaw {
 	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
 	Commune getCommuneByLocalite(Localite localite) throws ServiceInfrastructureException;
-
-	/**
-	 * @param noCommune le numéro Ofs d'un commune
-	 * @return l'office d'impôt responsable de la commune spécifiée par son numéro OFS.
-	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
-	 */
-	OfficeImpot getOfficeImpotDeCommune(int noCommune) throws ServiceInfrastructureException;
 
 	/**
 	 * @return tous les offices d'impôt de district du canton de Vaud

@@ -9,6 +9,7 @@ import org.junit.Assert;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.Adresse;
@@ -104,6 +105,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
     protected boolean wantIndexation = false;
     protected boolean wantSynchroTache = false;
 	protected boolean wantSynchroParentes = false;
+	protected boolean wantCollectivitesAdministratives = false;
     protected TiersService tiersService;
     protected GlobalTiersIndexer globalTiersIndexer;
     protected GlobalTiersSearcher globalTiersSearcher;
@@ -111,7 +113,27 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
     protected ValidationInterceptor validationInterceptor;
 	protected ParentesSynchronizerInterceptor parentesSynchronizer;
 
-    @Override
+	@Override
+	public void onSetUp() throws Exception {
+		super.onSetUp();
+		if (wantCollectivitesAdministratives) {
+			doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+				@Override
+				protected void doInTransactionWithoutResult(TransactionStatus status) {
+					for (MockCollectiviteAdministrative collAdm : MockCollectiviteAdministrative.getAll()) {
+						if (collAdm instanceof MockOfficeImpot) {
+							addCollAdm((MockOfficeImpot) collAdm);
+						}
+						else {
+							addCollAdm(collAdm);
+						}
+					}
+				}
+			});
+		}
+	}
+
+	@Override
     protected void runOnSetUp() throws Exception {
         tiersService = getBean(TiersService.class, "tiersService");
 	    globalTiersSearcher = getBean(GlobalTiersSearcher.class, "globalTiersSearcher");
@@ -167,7 +189,11 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
         }
     }
 
-    protected void indexData() throws Exception {
+	public void setWantCollectivitesAdministratives(boolean wantCollectivitesAdministratives) {
+		this.wantCollectivitesAdministratives = wantCollectivitesAdministratives;
+	}
+
+	protected void indexData() throws Exception {
         globalTiersIndexer.indexAllDatabase(null, 1, GlobalTiersIndexer.Mode.FULL, false);
     }
 
@@ -539,7 +565,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
     }
 
     protected CollectiviteAdministrative addCedi() {
-        return addCollAdm(ServiceInfrastructureService.noCEDI);
+        return addCollAdm(MockCollectiviteAdministrative.CEDI);
     }
 
     protected CollectiviteAdministrative addCollAdm(MockCollectiviteAdministrative ca) {

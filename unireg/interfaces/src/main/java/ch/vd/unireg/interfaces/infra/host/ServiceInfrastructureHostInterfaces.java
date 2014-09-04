@@ -391,23 +391,6 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 	 * {@inheritDoc}
 	 */
 	@Override
-	public OfficeImpot getOfficeImpotDeCommune(int noCommune) throws ServiceInfrastructureException {
-		try {
-			CollectiviteAdministrativeImpl oid = CollectiviteAdministrativeImpl.get(serviceInfrastructure.getOidDeCommune(noCommune));
-			return (OfficeImpot) oid;
-		}
-		catch (RemoteException e) {
-			throw new ServiceInfrastructureException("Acces a la collectivite administrative", e);
-		}
-		catch (InfrastructureException e) {
-			throw new ServiceInfrastructureException("Acces a la collectivite administrative", e);
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	public List<OfficeImpot> getOfficesImpot() throws ServiceInfrastructureException {
 
 		List<OfficeImpot> offices = new ArrayList<>();

@@ -1,7 +1,6 @@
 package ch.vd.unireg.interfaces.infra;
 
 import java.util.List;
-import java.util.Map;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -104,11 +103,6 @@ public class ServiceInfrastructureMarshaller implements ServiceInfrastructureRaw
 	@Override
 	public CollectiviteAdministrative getCollectivite(int noColAdm) throws ServiceInfrastructureException {
 		return hostService.getCollectivite(noColAdm);
-	}
-
-	@Override
-	public OfficeImpot getOfficeImpotDeCommune(int noCommune) throws ServiceInfrastructureException {
-		return hostService.getOfficeImpotDeCommune(noCommune);
 	}
 
 	@Override

@@ -229,12 +229,12 @@ public class EnvoiDIsEnMasseProcessor {
 	protected Cache initCache(int anneePeriode, CategorieEnvoiDI categorie) throws DeclarationException {
 
 		// Récupère le CEDI
-		final CollectiviteAdministrative cedi = tiersService.getOrCreateCollectiviteAdministrative(ServiceInfrastructureService.noCEDI);
+		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noCEDI);
 		if (cedi == null) {
 			throw new DeclarationException("Impossible de charger le centre d'enregistrement des déclarations d'impôt (CEDI).");
 		}
 
-		final CollectiviteAdministrative aci = tiersService.getOrCreateCollectiviteAdministrative(ServiceInfrastructureService.noACI);
+		final CollectiviteAdministrative aci = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noACI);
 		if (aci == null) {
 			throw new DeclarationException("Impossible de charger la collectivité administrative de l'administration cantonale des impôts (ACI).");
 		}

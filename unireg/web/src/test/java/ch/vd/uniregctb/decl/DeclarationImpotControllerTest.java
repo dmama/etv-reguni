@@ -23,7 +23,6 @@ import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.di.view.AjouterDelaiDeclarationView;
 import ch.vd.uniregctb.di.view.ImprimerNouvelleDeclarationImpotView;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.supergra.FlashMessage;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -44,6 +43,10 @@ import static org.junit.Assert.assertNull;
 public class DeclarationImpotControllerTest extends WebTestSpring3 {
 
 	private TiersDAO tiersDAO;
+
+	public DeclarationImpotControllerTest() {
+		setWantCollectivitesAdministratives(true);
+	}
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -149,7 +152,6 @@ public class DeclarationImpotControllerTest extends WebTestSpring3 {
 		final Long diId = doInNewTransactionAndSession(new TxCallback<Long>() {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
-				addCollAdm(ServiceInfrastructureService.noCEDI);
 				final PersonnePhysique pp = addNonHabitant("Alfred", "Dupontel", date(1960, 5, 12), Sexe.MASCULIN);
 				final EnsembleTiersCouple ensembleTiersCouple = addEnsembleTiersCouple(pp, null, date(2008, 6, 12), date(2010, 7, 13));
 
@@ -192,7 +194,6 @@ public class DeclarationImpotControllerTest extends WebTestSpring3 {
 		final Long diId = doInNewTransactionAndSession(new TxCallback<Long>() {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
-				addCollAdm(ServiceInfrastructureService.noCEDI);
 				final PersonnePhysique pp = addNonHabitant("Alfred", "Dupontel", date(1960, 5, 12), Sexe.MASCULIN);
 				addForPrincipal(pp, date(anneeCourante, 1, 2), MotifFor.ARRIVEE_HC, MockCommune.Vaulion);
 
@@ -240,7 +241,6 @@ public class DeclarationImpotControllerTest extends WebTestSpring3 {
 		final Long diId = doInNewTransactionAndSession(new TxCallback<Long>() {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
-				addCollAdm(ServiceInfrastructureService.noCEDI);
 				final PersonnePhysique pp = addNonHabitant("Alfred", "Dupontel", date(1960, 5, 12), Sexe.MASCULIN);
 				addForPrincipal(pp, date(annee, 6, 12), MotifFor.ARRIVEE_HC, MockCommune.Geneve);
 
@@ -292,7 +292,6 @@ public class DeclarationImpotControllerTest extends WebTestSpring3 {
 		final Long diId = doInNewTransactionAndSession(new TxCallback<Long>() {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
-				addCollAdm(ServiceInfrastructureService.noCEDI);
 				final PersonnePhysique pp = addNonHabitant("Alfred", "Dupontel", date(1960, 5, 12), Sexe.MASCULIN);
 				addForPrincipal(pp, date(annee, 6, 12), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
 

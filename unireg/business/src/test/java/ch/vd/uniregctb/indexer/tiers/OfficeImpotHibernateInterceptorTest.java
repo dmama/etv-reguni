@@ -36,6 +36,10 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 	private TiersDAO tiersDAO;
 	private TiersService tiersService;
 
+	public OfficeImpotHibernateInterceptorTest() {
+		setWantCollectivitesAdministratives(true);
+	}
+
 	@Override
 	public void onSetUp() throws Exception {
 
@@ -309,32 +313,15 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 	@Test
 	public void testOfficeImpotContribuableDemenagement() throws Exception {
 
-		class Ids {
-			long ctb;
-			long lausanne;
-			long aigle;
-		}
-		final Ids ids = new Ids();
-
-		// Crée les OIDs qui vont bien
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				ids.lausanne = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm()).getNumero();
-				ids.aigle = addCollAdm(MockOfficeImpot.OID_AIGLE.getNoColAdm()).getNumero();
-				return null;
-			}
-		});
-
 		// Crée un contribuable à Lausanne avec une tâche
-		doInNewTransactionAndSession(new TxCallback<Object>() {
+		final long ppId = doInNewTransactionAndSession(new TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 
 				PersonnePhysique nh = new PersonnePhysique(false);
 				nh.setNom("Dupres");
 
-				ForFiscalPrincipal f = new ForFiscalPrincipal();
+				final ForFiscalPrincipal f = new ForFiscalPrincipal();
 				f.setDateDebut(date(2000, 1, 1));
 				f.setGenreImpot(GenreImpot.REVENU_FORTUNE);
 				f.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
@@ -345,9 +332,7 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 				nh.addForFiscal(f);
 
 				nh = (PersonnePhysique) tiersDAO.save(nh);
-				ids.ctb = nh.getNumero();
-
-				return null;
+				return nh.getNumero();
 			}
 		});
 
@@ -355,7 +340,7 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				Tiers nh = tiersDAO.get(ids.ctb);
+				Tiers nh = tiersDAO.get(ppId);
 				assertNotNull(nh);
 				assertEquals(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm(), nh.getOfficeImpotId().intValue());
 				return null;
@@ -367,8 +352,7 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-
-				final PersonnePhysique ctb = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, ids.ctb);
+				final PersonnePhysique ctb = hibernateTemplate.get(PersonnePhysique.class, ppId);
 				assertNotNull(ctb);
 
 				final ForFiscalPrincipal ffp0 = ctb.getForFiscalPrincipalAt(null);
@@ -394,7 +378,7 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				Tiers nh = tiersDAO.get(ids.ctb);
+				Tiers nh = tiersDAO.get(ppId);
 				assertNotNull(nh);
 				assertEquals(MockOfficeImpot.OID_AIGLE.getNoColAdm(), nh.getOfficeImpotId().intValue());
 				return null;
@@ -412,17 +396,16 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 			long tache;
 			long aci;
 		}
-		final Ids ids = new Ids();
 
 		// Crée les OIDs qui vont bien
-		doInNewTransactionAndSession(new TxCallback<Object>() {
+		final Ids ids = doInNewTransactionAndSession(new TxCallback<Ids>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				ids.lausanne = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm()).getNumero();
-				ids.aigle = addCollAdm(MockOfficeImpot.OID_AIGLE.getNoColAdm()).getNumero();
-				ids.aci = addCollAdm(ServiceInfrastructureService.noACI).getNumero();
-
-				return null;
+			public Ids execute(TransactionStatus status) throws Exception {
+				final Ids ids = new Ids();
+				ids.lausanne = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm()).getNumero();
+				ids.aigle = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_AIGLE.getNoColAdm()).getNumero();
+				ids.aci = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noACI).getNumero();
+                return ids;
 			}
 		});
 
@@ -447,7 +430,7 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 				nh = (PersonnePhysique) tiersDAO.save(nh);
 				ids.ctb = nh.getNumero();
 
-				final CollectiviteAdministrative lausanne = (CollectiviteAdministrative) hibernateTemplate.get(CollectiviteAdministrative.class, ids.lausanne);
+				final CollectiviteAdministrative lausanne = hibernateTemplate.get(CollectiviteAdministrative.class, ids.lausanne);
 				assertNotNull(lausanne);
 
 				TacheNouveauDossier tache = new TacheNouveauDossier(TypeEtatTache.EN_INSTANCE, date(2010, 1, 1), nh, lausanne);
@@ -469,7 +452,7 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
-				final PersonnePhysique ctb = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, ids.ctb);
+				final PersonnePhysique ctb = hibernateTemplate.get(PersonnePhysique.class, ids.ctb);
 				assertNotNull(ctb);
 
 				final ForFiscalPrincipal ffp0 = ctb.getForFiscalPrincipalAt(null);
@@ -499,7 +482,7 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final TacheNouveauDossier tache = (TacheNouveauDossier) hibernateTemplate.get(TacheNouveauDossier.class, tacheId);
+				final TacheNouveauDossier tache = hibernateTemplate.get(TacheNouveauDossier.class, tacheId);
 				assertNotNull(tache);
 				assertEquals(caId, tache.getCollectiviteAdministrativeAssignee().getNumero());
 				return null;

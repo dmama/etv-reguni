@@ -15,7 +15,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import ch.vd.registre.base.date.DateRangeHelper.Range;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
-import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
@@ -70,6 +70,10 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 	private EnvoiDIsEnMasseProcessor processor;
 	private ParametreAppService parametreAppService;
 	private AdresseService adresseService;
+
+	public EnvoiDIsEnMasseProcessorTest() {
+		setWantCollectivitesAdministratives(true);
+	}
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -233,7 +237,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
-				final CollectiviteAdministrative colAdm = addCollAdm(MockCollectiviteAdministrative.ACI);
+				final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noACI);
 
 				ModeleDocument declarationComplete2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, addPeriodeFiscale(2007));
 				addModeleFeuilleDocument("Déclaration", "210", declarationComplete2007);
@@ -279,7 +283,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
-				final CollectiviteAdministrative cedi = addCollAdm(MockCollectiviteAdministrative.CEDI);
+				final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
 				ids.oidCedi = cedi.getId();
 
 				final PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
@@ -384,7 +388,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
-				final CollectiviteAdministrative colAdm = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
+				final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
 
 				final PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
 				final ModeleDocument declarationComplete = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
@@ -464,7 +468,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
-				final CollectiviteAdministrative colAdm = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
+				final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
 
 				final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
 				final ModeleDocument declarationComplete = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
@@ -553,8 +557,8 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
-				final CollectiviteAdministrative colAdm = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
-				final CollectiviteAdministrative cedi = addCollAdm(MockCollectiviteAdministrative.CEDI);
+				final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
+				final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
 				ids.oidCedi = cedi.getId();
 
 				final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
@@ -669,8 +673,8 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
-				final CollectiviteAdministrative colAdm = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
-				final CollectiviteAdministrative cedi = addCollAdm(MockCollectiviteAdministrative.CEDI);
+				final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
+				final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
 				ids.oidCedi = cedi.getId();
 
 				final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
@@ -756,8 +760,8 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
-				final CollectiviteAdministrative colAdm = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
-				final CollectiviteAdministrative cedi = addCollAdm(MockCollectiviteAdministrative.CEDI);
+				final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
+				final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
 				ids.oidCedi = cedi.getId();
 
 				final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
@@ -814,8 +818,8 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
-				final CollectiviteAdministrative colAdm = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
-				final CollectiviteAdministrative cedi = addCollAdm(MockCollectiviteAdministrative.CEDI);
+				final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
+				final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
 				ids.oidCedi = cedi.getId();
 
 				final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
@@ -861,7 +865,6 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testAjouterDelaisDeRetourInitial() throws Exception {
 
-		addCollAdm(MockCollectiviteAdministrative.CEDI);
 		final PeriodeFiscale periode = addPeriodeFiscale(2008);
 		final ModeleDocument modeleComplete = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
 		final ModeleDocument modeleVaudtax = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode);
@@ -1073,8 +1076,8 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
-				final CollectiviteAdministrative colAdm = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
-				final CollectiviteAdministrative aci = addCollAdm(MockOfficeImpot.ACI);
+				final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
+				final CollectiviteAdministrative aci = tiersService.getCollectiviteAdministrative(MockOfficeImpot.ACI.getNoColAdm());
 				ids.aci = aci.getId();
 
 				final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
@@ -1135,8 +1138,8 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
-				final CollectiviteAdministrative colAdm = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
-				final CollectiviteAdministrative aci = addCollAdm(MockOfficeImpot.ACI);
+				final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
+				final CollectiviteAdministrative aci = tiersService.getCollectiviteAdministrative(MockOfficeImpot.ACI.getNoColAdm());
 				ids.aci = aci.getId();
 
 				final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
@@ -1196,8 +1199,8 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
-				final CollectiviteAdministrative colAdm = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
-				final CollectiviteAdministrative aci = addCollAdm(MockOfficeImpot.ACI);
+				final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
+				final CollectiviteAdministrative aci = tiersService.getCollectiviteAdministrative(MockOfficeImpot.ACI.getNoColAdm());
 				ids.aci = aci.getId();
 
 				final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
@@ -1255,8 +1258,8 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
-				final CollectiviteAdministrative colAdm = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
-				final CollectiviteAdministrative cedi = addCollAdm(MockCollectiviteAdministrative.CEDI);
+				final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
+				final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
 				ids.oidCedi = cedi.getId();
 
 				final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
@@ -1315,7 +1318,6 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testNumeroSequenceApresDiAnnulee() throws Exception {
 
 		final int annee = 2009;
@@ -1326,14 +1328,13 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 				final PersonnePhysique pp = addNonHabitant("Jules", "Tartempion", date(1947, 1, 12), Sexe.MASCULIN);
 				addForPrincipal(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
 				addForSecondaire(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
-				addCollAdm(MockCollectiviteAdministrative.CEDI);
 				final PeriodeFiscale pf = addPeriodeFiscale(annee);
 				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
 				final DeclarationImpotOrdinaire diAnnulee = addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.HORS_CANTON, md);
 				diAnnulee.setAnnule(true);
 				assertEquals(1, (int) diAnnulee.getNumero());
 
-				final CollectiviteAdministrative colAdm = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
+				final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_MORGES.getNoColAdm());
 				final TacheEnvoiDeclarationImpot t = addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(annee + 1, 1, 1), date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.HORS_CANTON,
 						TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pp, Qualification.AUTOMATIQUE, 0, colAdm);
 
@@ -1367,7 +1368,6 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 	 * [SIFISC-1368] Vérifie qu'aucun code de contrôle n'est générée ou assignée lors des différents scénarios d'ajout d'une déclaration d'impôt ordinaire à un tiers pour les périodes fiscales avant 2011.
 	 */
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testGenerationCodeControleAvant2011() throws Exception {
 
 		final int annee = 2010;
@@ -1378,11 +1378,10 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 				final PersonnePhysique pp = addNonHabitant("Jules", "Tartempion", date(1947, 1, 12), Sexe.MASCULIN);
 				addForPrincipal(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
 				addForSecondaire(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
-				addCollAdm(MockCollectiviteAdministrative.CEDI);
 
 				final PeriodeFiscale pf = addPeriodeFiscale(annee);
 				addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
-				final CollectiviteAdministrative colAdm = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
+				final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
 				addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(annee + 1, 1, 1), date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.HORS_CANTON, TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pp, Qualification.AUTOMATIQUE, 0, colAdm);
 
 				return pp.getNumero();
@@ -1414,7 +1413,6 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 	 * [SIFISC-1368] Vérifie que le code de contrôle d'une première déclaration pour une période fiscale (et pour un contribuable) est bien généré et attribué.
 	 */
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testGenerationCodeControleSansDeclarationPreexistante() throws Exception {
 
 		final int annee = 2011;
@@ -1425,11 +1423,10 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 				final PersonnePhysique pp = addNonHabitant("Jules", "Tartempion", date(1947, 1, 12), Sexe.MASCULIN);
 				addForPrincipal(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
 				addForSecondaire(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
-				addCollAdm(MockCollectiviteAdministrative.CEDI);
 
 				final PeriodeFiscale pf = addPeriodeFiscale(annee);
 				addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
-				final CollectiviteAdministrative colAdm = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
+				final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
 				addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(annee + 1, 1, 1), date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.HORS_CANTON, TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pp, Qualification.AUTOMATIQUE, 0, colAdm);
 
 				return pp.getNumero();
@@ -1474,11 +1471,10 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 				addForPrincipal(pp, date(2000, 1, 1), MotifFor.DEMENAGEMENT_VD, date(annee,3,31), MotifFor.DEPART_HS, MockCommune.Lausanne);
 				addForPrincipal(pp, date(annee, 4, 1), MotifFor.DEPART_HS, date(annee,8,31), MotifFor.ARRIVEE_HS, MockPays.Colombie);
 				addForPrincipal(pp, date(annee, 9, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
-				addCollAdm(MockCollectiviteAdministrative.CEDI);
 
 				final PeriodeFiscale pf = addPeriodeFiscale(annee);
 				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf);
-				final CollectiviteAdministrative colAdm = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
+				final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
 				final DeclarationImpotOrdinaire decl = addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 3, 31), TypeContribuable.VAUDOIS_ORDINAIRE, md);
 				decl.setCodeControle(codeControle);
 				addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(annee + 1, 1, 1), date(annee, 9, 1), date(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
@@ -1530,11 +1526,10 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 				addForPrincipal(pp, date(2000, 1, 1), MotifFor.DEMENAGEMENT_VD, date(annee,3,31), MotifFor.DEPART_HS, MockCommune.Lausanne);
 				addForPrincipal(pp, date(annee, 4, 1), MotifFor.DEPART_HS, date(annee,8,31), MotifFor.ARRIVEE_HS, MockPays.Colombie);
 				addForPrincipal(pp, date(annee, 9, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
-				addCollAdm(MockCollectiviteAdministrative.CEDI);
 
 				final PeriodeFiscale pf = addPeriodeFiscale(annee);
 				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf);
-				final CollectiviteAdministrative colAdm = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
+				final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
 				// une déclaration sans code de contrôle
 				addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 3, 31), TypeContribuable.VAUDOIS_ORDINAIRE, md);
 				addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(annee + 1, 1, 1), date(annee, 9, 1), date(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pp, Qualification.AUTOMATIQUE, 0, colAdm);
@@ -1583,9 +1578,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
-				addCollAdm(MockCollectiviteAdministrative.ACI);
-				addCedi();
-				final CollectiviteAdministrative oid = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
+				final CollectiviteAdministrative oid = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
 				final PeriodeFiscale pf = addPeriodeFiscale(annee);
 				addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
 				for (int i = 0 ; i < nbCtbs ; ++ i) {

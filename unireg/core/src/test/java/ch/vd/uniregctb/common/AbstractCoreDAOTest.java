@@ -989,12 +989,10 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	}
 
 	protected CollectiviteAdministrative addCollAdm(int numero) {
-		CollectiviteAdministrative ca = new CollectiviteAdministrative();
+		final CollectiviteAdministrative ca = new CollectiviteAdministrative();
 		ca.setNumeroCollectiviteAdministrative(numero);
-		ca = merge(ca);
-		return ca;
+		return merge(ca);
 	}
-
 
 	protected void addEtatDeclarationEmise(Declaration declaration, RegDate dateObtention) {
 		EtatDeclarationEmise etat = new EtatDeclarationEmise(dateObtention);

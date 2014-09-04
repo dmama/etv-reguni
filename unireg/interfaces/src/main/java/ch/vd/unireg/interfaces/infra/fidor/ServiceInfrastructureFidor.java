@@ -273,11 +273,6 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 	}
 
 	@Override
-	public OfficeImpot getOfficeImpotDeCommune(int noCommune) throws ServiceInfrastructureException {
-		throw new NotImplementedException("Pas encore implémenté dans Fidor");
-	}
-
-	@Override
 	public List<OfficeImpot> getOfficesImpot() throws ServiceInfrastructureException {
 		throw new NotImplementedException("Pas encore implémenté dans Fidor");
 	}

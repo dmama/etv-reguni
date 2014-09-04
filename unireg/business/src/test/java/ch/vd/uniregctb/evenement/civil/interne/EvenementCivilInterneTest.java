@@ -43,7 +43,8 @@ public class EvenementCivilInterneTest extends WithoutSpringTest {
 		final long noIndividuPrincipal = 1;
 		final long noIndividuConjoint = 2;
 
-		final ServiceInfrastructureService infrastructureService = new ServiceInfrastructureImpl(new DefaultMockServiceInfrastructureService());
+		final MockTiersDAO tiersDAO = new MockTiersDAO();
+		final ServiceInfrastructureService infrastructureService = new ServiceInfrastructureImpl(new DefaultMockServiceInfrastructureService(), tiersDAO);
 		final ServiceCivilService serviceCivil = new ServiceCivilImpl(infrastructureService, new MockServiceCivil() {
 			@Override
 			protected void init() {
@@ -72,7 +73,6 @@ public class EvenementCivilInterneTest extends WithoutSpringTest {
 		/*
 		 * Création et initialisation de l'adapter
 		 */
-		final MockTiersDAO tiersDAO = new MockTiersDAO();
 		final EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService, tiersDAO);
 		final EvenementCivilOptions options = new EvenementCivilOptions(false);
 		final EvenementCivilInterne adapter = new ArriveePrincipale(evenementArriveeCouple, context, options);
@@ -96,7 +96,8 @@ public class EvenementCivilInterneTest extends WithoutSpringTest {
 		final long noIndMadame = 2L;
 		final RegDate dateMariage = RegDate.get(1985, 7, 11);
 
-		final ServiceInfrastructureService infrastructureService = new ServiceInfrastructureImpl(new DefaultMockServiceInfrastructureService());
+		final MockTiersDAO tiersDAO = new MockTiersDAO();
+		final ServiceInfrastructureService infrastructureService = new ServiceInfrastructureImpl(new DefaultMockServiceInfrastructureService(), tiersDAO);
 		final ServiceCivilService serviceCivil = new ServiceCivilImpl(infrastructureService, new MockServiceCivil() {
 			@Override
 			protected void init() {
@@ -122,7 +123,7 @@ public class EvenementCivilInterneTest extends WithoutSpringTest {
 				evtMariage = new EvenementCivilRegPP(1L, TypeEvenementCivil.MARIAGE, EtatEvenementCivil.A_TRAITER, dateMariage, noIndMonsieur, null, MockCommune.Lausanne.getNoOFS(), null);
 
 		// passage dans l'init de l'adapter
-		final EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService, dataEventService, null, null, null, new MockTiersDAO(), null, null, null);
+		final EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService, dataEventService, null, null, null, tiersDAO, null, null, null);
 		final EvenementCivilOptions options = new EvenementCivilOptions(true);
 		final EvenementCivilInterne adapter = new Mariage(evtMariage, context, options);
 
