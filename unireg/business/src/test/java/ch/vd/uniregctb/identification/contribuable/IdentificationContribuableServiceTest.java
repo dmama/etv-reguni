@@ -1942,10 +1942,10 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		assertEquals(2, listJerome2.size());
 
 		//Afin de guarantir que l'on prend toujours le bon message, on trie la liste
-		Collections.sort(list,new Comparator<IdentificationContribuable>() {
+		Collections.sort(listJerome2, new Comparator<IdentificationContribuable>() {
 			@Override
-			public int compare(IdentificationContribuable identificationContribuable, IdentificationContribuable identificationContribuable1) {
-				return identificationContribuable.getLogCreationDate().compareTo(identificationContribuable1.getLogCreationDate());
+			public int compare(IdentificationContribuable ic1, IdentificationContribuable ic2) {
+				return Long.compare(ic1.getId(), ic2.getId());
 			}
 		});
 
