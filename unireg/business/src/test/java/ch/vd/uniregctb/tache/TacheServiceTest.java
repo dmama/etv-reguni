@@ -135,10 +135,6 @@ public class TacheServiceTest extends BusinessTest {
 	private PeriodeImpositionService periodeImpositionService;
 	private PeriodeFiscaleDAO pfDAO;
 
-	public TacheServiceTest() {
-		setWantCollectivitesAdministratives(true);
-	}
-
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();

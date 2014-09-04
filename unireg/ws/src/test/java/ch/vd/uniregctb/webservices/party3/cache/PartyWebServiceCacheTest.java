@@ -17,7 +17,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
-import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.webservices.party3.BatchParty;
@@ -123,8 +122,6 @@ public class PartyWebServiceCacheTest extends WebserviceTest {
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-
-				addCollAdm(MockCollectiviteAdministrative.CEDI);
 
 				// Un tiers avec avec toutes les parties renseignées
 				final PersonnePhysique eric = addHabitant(noIndividu);

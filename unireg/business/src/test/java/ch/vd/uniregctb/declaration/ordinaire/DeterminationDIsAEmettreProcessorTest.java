@@ -12,7 +12,6 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper.Range;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
-import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
@@ -82,13 +81,6 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		service = new DeterminationDIsAEmettreProcessor(hibernateTemplate, periodeDAO, tacheDAO, parametres, tiersService, transactionManager, validationService, periodeImpositionService,
 				adresseService);
 
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				addCollAdm(MockCollectiviteAdministrative.CEDI);
-				return null;
-			}
-		});
 	}
 
 	/**
@@ -99,7 +91,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testCreateListeIdsContribuables() {
 
-		final CollectiviteAdministrative colAdm = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
+		final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
 
 		final PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
 		final ModeleDocument model2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
@@ -718,8 +710,6 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		addModeleFeuilleDocument("Annexe 2-3", "230", declarationComplete2007);
 		addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete2007);
 
-		addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
-
 		// Un contribuable normal
 		{
 			Contribuable eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
@@ -760,7 +750,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testTraiterPeriodeImpositionTacheDejaTraite() throws Exception {
 
-		final CollectiviteAdministrative colAdm = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
+		final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
 
 		final PeriodeFiscale periode2009 = addPeriodeFiscale(2009);
 		ModeleDocument declarationComplete2009 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2009);
@@ -795,7 +785,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testTraiterPeriodeImpositionDuplication() throws Exception {
 
-		final CollectiviteAdministrative colAdm = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
+		final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
 
 		final PeriodeFiscale periode = addPeriodeFiscale(2007);
 		ModeleDocument declarationComplete2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
@@ -1040,7 +1030,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testCheckTacheExistence() {
 
-		final CollectiviteAdministrative colAdm = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
+		final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
 
 		// Aucune tâche
 		{
@@ -1131,9 +1121,6 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 				addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete2008);
 				ids.periodeId = periode2008.getId();
 
-				addCollAdm(MockOfficeImpot.OID_VEVEY);
-				addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
-
 				// cas #1: un tiers avec une DI libre "honorée" (cas simple)
 				Contribuable arnold = addNonHabitant("Arnold", "Charbon", date(1965, 4, 13), Sexe.MASCULIN);
 				ids.arnoldId = arnold.getNumero();
@@ -1191,9 +1178,6 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		addModeleFeuilleDocument("Annexe 2-3", "230", model2007);
 		addModeleFeuilleDocument("Annexe 4-5", "240", model2007);
 
-		addCollAdm(MockOfficeImpot.OID_VEVEY);
-		addCollAdm(MockCollectiviteAdministrative.ACI);
-
 		// Un contribuable non-assujetti, mais avec une déclaration d'impôt (invalide) pré-existante
 		Contribuable malko = addNonHabitant("Malko", "Totor", date(1955, 2, 11), Sexe.MASCULIN);
 		addDeclarationImpot(malko, periode2007, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, model2007);
@@ -1224,7 +1208,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testAnnulationDeclarationSansPeriodeMaisAvecTacheAnnulationPreexistante() throws Exception {
 
-		final CollectiviteAdministrative colAdm = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
+		final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
 
 		final PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
 		final ModeleDocument model2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
@@ -1255,7 +1239,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testAnnulationTacheSansPeriodeCorrespondante() throws Exception {
 
-		final CollectiviteAdministrative colAdm = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
+		final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
 
 		final PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
 		final ModeleDocument model2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
@@ -1293,7 +1277,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testAnnulationTacheSansPeriodeCorrespondanteComplexe() throws Exception {
 
-		final CollectiviteAdministrative colAdm = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
+		final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
 
 		final PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
 		final ModeleDocument model2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
@@ -1336,7 +1320,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testAnnulationTacheDejaTraitee() throws Exception {
 
-		final CollectiviteAdministrative colAdm = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
+		final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
 
 		final PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
 		final ModeleDocument model2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
@@ -1374,7 +1358,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testAnnulationTacheCollisionPeriode() throws Exception {
 
-		final CollectiviteAdministrative colAdm = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
+		final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
 
 		final PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
 		final ModeleDocument model2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
@@ -1412,7 +1396,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testIgnoreTacheTraitee() throws Exception {
 
-		final CollectiviteAdministrative colAdm = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
+		final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
 
 		final PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
 		final ModeleDocument model2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
@@ -1457,8 +1441,6 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		addModeleFeuilleDocument("Annexe 2-3", "230", model2007);
 		addModeleFeuilleDocument("Annexe 4-5", "240", model2007);
 
-		addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
-		
 		// Un contribuable vaudois ordinaire, avec une tâche (valide) d'envoi de déclaration d'impôt déjà traitée
 		final Contribuable eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 		addForPrincipal(eric, date(2002, 4,28), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
@@ -1591,9 +1573,6 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 				di.setCodeSegment(2);
 
 				addPeriodeFiscale(2011);
-				addCollAdm(MockOfficeImpot.OID_AIGLE);
-				addCollAdm(MockOfficeImpot.OID_MORGES);
-
 				return new Ids(ppSansDeclaration.getNumero(), ppAvecDeclarationSansCodeAssigne.getNumero(), ppAvecDeclarationEtCodeAssigne.getNumero());
 			}
 		});

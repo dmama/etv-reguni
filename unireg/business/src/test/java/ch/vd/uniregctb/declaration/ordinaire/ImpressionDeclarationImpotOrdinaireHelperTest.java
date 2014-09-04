@@ -86,10 +86,6 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 	private SituationFamilleService situationFamilleService;
 	private EditiqueHelper editiqueHelper;
 
-	public ImpressionDeclarationImpotOrdinaireHelperTest() {
-		setWantCollectivitesAdministratives(true);
-	}
-
 	@Override
 	protected void runOnSetUp() throws Exception {
 		super.runOnSetUp();

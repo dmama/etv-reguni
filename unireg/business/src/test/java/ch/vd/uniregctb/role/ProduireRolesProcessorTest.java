@@ -8,8 +8,8 @@ import java.util.Map;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
@@ -63,10 +63,6 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 
 	private ProduireRolesProcessor processor;
 
-	public ProduireRolesProcessorTest() {
-		setWantCollectivitesAdministratives(true);
-	}
-
 	@Override
 	public void onSetUp() throws Exception {
 
@@ -81,7 +77,6 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testCreateIteratorOnContribuables() throws Exception {
 
 		class Ids {
@@ -136,19 +131,23 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 		// Contribuable invalide mais devant être pris en compte
 		final Long rodolf = newCtbVaudoisOrdinaireEtImmeubleInvalide();
 
-		/*
-		 * Contribuable devant être ignorés
-		 */
-		final List<Long> expected =
-				Arrays.asList(ids.paul, ids.incognito, ids.raoul, ids.arnold, ids.victor, ids.geo, ids.donald, ids.johnny, ids.tyler, ids.marc, ids.louis, ids.albertine, rodolf);
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				/*
+				 * Contribuable devant être ignorés
+				 */
+				final List<Long> expected =
+						Arrays.asList(ids.paul, ids.incognito, ids.raoul, ids.arnold, ids.victor, ids.geo, ids.donald, ids.johnny, ids.tyler, ids.marc, ids.louis, ids.albertine, rodolf);
 
-		final List<Long> list = processor.getIdsOfAllContribuables(2007);
-		assertNotNull(list);
-		assertEquals(expected, list);
+				final List<Long> list = processor.getIdsOfAllContribuables(2007);
+				assertNotNull(list);
+				assertEquals(expected, list);
+			}
+		});
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testRun() throws Exception {
 
 		serviceCivil.setUp(new DefaultMockServiceCivil());
@@ -281,7 +280,6 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testRunAvecContribuableInvalide() throws Exception {
 
 		Long rodolf = newCtbVaudoisOrdinaireEtImmeubleInvalide();
@@ -299,7 +297,6 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testRunHorsSuisseRevenuDansMemeCommuneLaMemeAnnee() throws Exception {
 
 		class Ids {
@@ -335,7 +332,6 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testRunHorsSuisseRevenuDansAutreCommuneLaMemeAnnee() throws Exception {
 
 		final long idCtb = doInNewTransaction(new TxCallback<Long>() {
@@ -376,7 +372,6 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testRunSourcierPartiHorsSuisseEtRevenuDansAutreCommuneLaMemeAnnee() throws Exception {
 
 		final long noIndividu = 183747L;
@@ -426,7 +421,6 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testRunSourcierPartiDansAutreCommuneLaMemeAnneePuisRetourPremiereCommuneDebutAnneeSuivante() throws Exception {
 
 		final long noIndividu = 183747L;
@@ -479,7 +473,6 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testRunSourcierPartiHorsSuisseEtRevenuDansAutreCommuneLaMemeAnneePuisRetourPremiereCommuneAnneeSuivante() throws Exception {
 
 		final long noIndividu = 183747L;
@@ -633,7 +626,6 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 
 	// Cas JIRA [UNIREG-536]
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testRunCtbAvecForPrincipalEtForSecondaireDansMemeCommune() throws Exception {
 
 		class Ids {
@@ -671,7 +663,6 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 	 * Test pour UNIREG-2777
 	 */
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testRunCommunesCtbHorsCantonAvecPlusieursForsSecondaires() throws Exception {
 
 		final long ppId = doInNewTransactionAndSession(new TxCallback<Long>() {
@@ -721,25 +712,29 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
-	public void testGetTypeContribuable() {
-		// données bidon pour pouvoir instancier les assujettissements
-		final Contribuable toto = addNonHabitant("Toto", "LaRapière", date(1973, 3, 21), Sexe.MASCULIN);
-		addForPrincipal(toto, date(2000, 1, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
+	public void testGetTypeContribuable() throws Exception {
 
-		assertEquals(TypeContribuable.ORDINAIRE, ProduireRolesProcessor.getTypeContribuable(new VaudoisOrdinaire(toto, null, null, null, null)));
-		assertEquals(TypeContribuable.ORDINAIRE, ProduireRolesProcessor.getTypeContribuable(new Indigent(toto, null, null, null, null)));
-		assertEquals(TypeContribuable.DEPENSE, ProduireRolesProcessor.getTypeContribuable(new VaudoisDepense(toto, null, null, null, null)));
-		assertEquals(TypeContribuable.MIXTE, ProduireRolesProcessor.getTypeContribuable(new SourcierMixteArt137Al1(toto, null, null, null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD)));
-		assertEquals(TypeContribuable.MIXTE, ProduireRolesProcessor.getTypeContribuable(new SourcierMixteArt137Al2(toto, null, null, null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD)));
-		assertEquals(TypeContribuable.HORS_CANTON, ProduireRolesProcessor.getTypeContribuable(new HorsCanton(toto, null, null, null, null)));
-		assertEquals(TypeContribuable.HORS_SUISSE, ProduireRolesProcessor.getTypeContribuable(new HorsSuisse(toto, null, null, null, null)));
-		assertEquals(TypeContribuable.SOURCE, ProduireRolesProcessor.getTypeContribuable(new SourcierPur(toto, null, null, null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD)));
-		assertNull(ProduireRolesProcessor.getTypeContribuable(new DiplomateSuisse(toto, null, null, null, null)));
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				// données bidon pour pouvoir instancier les assujettissements
+				final Contribuable toto = addNonHabitant("Toto", "LaRapière", date(1973, 3, 21), Sexe.MASCULIN);
+				addForPrincipal(toto, date(2000, 1, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
+
+				assertEquals(TypeContribuable.ORDINAIRE, ProduireRolesProcessor.getTypeContribuable(new VaudoisOrdinaire(toto, null, null, null, null)));
+				assertEquals(TypeContribuable.ORDINAIRE, ProduireRolesProcessor.getTypeContribuable(new Indigent(toto, null, null, null, null)));
+				assertEquals(TypeContribuable.DEPENSE, ProduireRolesProcessor.getTypeContribuable(new VaudoisDepense(toto, null, null, null, null)));
+				assertEquals(TypeContribuable.MIXTE, ProduireRolesProcessor.getTypeContribuable(new SourcierMixteArt137Al1(toto, null, null, null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD)));
+				assertEquals(TypeContribuable.MIXTE, ProduireRolesProcessor.getTypeContribuable(new SourcierMixteArt137Al2(toto, null, null, null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD)));
+				assertEquals(TypeContribuable.HORS_CANTON, ProduireRolesProcessor.getTypeContribuable(new HorsCanton(toto, null, null, null, null)));
+				assertEquals(TypeContribuable.HORS_SUISSE, ProduireRolesProcessor.getTypeContribuable(new HorsSuisse(toto, null, null, null, null)));
+				assertEquals(TypeContribuable.SOURCE, ProduireRolesProcessor.getTypeContribuable(new SourcierPur(toto, null, null, null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD)));
+				assertNull(ProduireRolesProcessor.getTypeContribuable(new DiplomateSuisse(toto, null, null, null, null)));
+			}
+		});
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testPrioriteDesMotifs() throws Exception {
 
 		final RegDate dateDebut = date(1980, 3, 5);
@@ -795,7 +790,6 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testSuccessionDeForsSurLaCommune() throws Exception {
 
 		// Arrivée à Lausanne en 2005, DEPENSE
@@ -845,7 +839,6 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 	 * SIFISC-1717
 	 */
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testDateEtMotifFinSiDemenagementApresFinPeriode() throws Exception {
 
 		// Arrivée en 2006 sur la commune de Lausanne
@@ -885,7 +878,6 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 	 * SIFISC-1717
 	 */
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testDateEtMotifFinSiDemenagementApresFinPeriodeDansMemeOID() throws Exception {
 
 		// Arrivée en 2006 sur la commune de Lausanne
@@ -924,7 +916,6 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testRunOID() throws Exception {
 		
 		serviceCivil.setUp(new DefaultMockServiceCivil());
@@ -1371,7 +1362,6 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testSourcierGrisMarieDepartHS() throws Exception {
 
 		final long mcId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
@@ -1400,7 +1390,6 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testSourcierGrisCelibataireDepartHS() throws Exception {
 
 		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {

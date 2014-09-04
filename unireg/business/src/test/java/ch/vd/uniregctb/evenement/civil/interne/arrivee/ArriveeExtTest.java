@@ -38,7 +38,6 @@ import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
-import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
@@ -794,7 +793,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 
 		// Nombre d'éléments stockés dans la base
 		{
-			assertEquals("Nombre de tiers incorrect", 1, tiersDAO.getCount(Tiers.class));
+			assertEquals("Nombre de tiers incorrect", 1, tiersDAO.getCount(PersonnePhysique.class));
 			assertEquals("Nombre de rapport-entre-tiers incorrect", 0, tiersDAO.getCount(RapportEntreTiers.class));
 			assertEquals("Nombre d'adresses incorrect", 0, tiersDAO.getCount(AdresseTiers.class));
 			assertEquals("Nombre de fors fiscaux", 1, tiersDAO.getCount(ForFiscal.class));
@@ -888,7 +887,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 
 		// Nombre d'éléments stockés dans la base
 		{
-			assertEquals("Nombre de tiers incorrect", 1, tiersDAO.getCount(Tiers.class));
+			assertEquals("Nombre de tiers incorrect", 1, tiersDAO.getCount(PersonnePhysique.class));
 			assertEquals("Nombre de rapport-entre-tiers incorrect", 0, tiersDAO.getCount(RapportEntreTiers.class));
 			assertEquals("Nombre d'adresses incorrect", 0, tiersDAO.getCount(AdresseTiers.class));
 			assertEquals("Nombre de fors fiscaux", 2, tiersDAO.getCount(ForFiscal.class));
@@ -981,7 +980,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 
 		// Nombre d'éléments stockés dans la base
 		{
-			assertEquals("Nombre de tiers incorrect", 1, tiersDAO.getCount(Tiers.class));
+			assertEquals("Nombre de tiers incorrect", 1, tiersDAO.getCount(PersonnePhysique.class));
 			assertEquals("Nombre de rapport-entre-tiers incorrect", 0, tiersDAO.getCount(RapportEntreTiers.class));
 			assertEquals("Nombre d'adresses incorrect", 0, tiersDAO.getCount(AdresseTiers.class));
 			assertEquals("Nombre de fors fiscaux", 1, tiersDAO.getCount(ForFiscal.class));
@@ -1067,7 +1066,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 
 		// Nombre d'éléments stockés dans la base
 		{
-			assertEquals("Nombre de tiers incorrect", 1, tiersDAO.getCount(Tiers.class));
+			assertEquals("Nombre de tiers incorrect", 1, tiersDAO.getCount(PersonnePhysique.class));
 			assertEquals("Nombre de rapport-entre-tiers incorrect", 0, tiersDAO.getCount(RapportEntreTiers.class));
 			assertEquals("Nombre d'adresses incorrect", 0, tiersDAO.getCount(AdresseTiers.class));
 			assertEquals("Nombre de fors fiscaux", 1, tiersDAO.getCount(ForFiscal.class));
@@ -1161,7 +1160,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 
 		// Nombre d'éléments stockés dans la base
 		{
-			assertEquals("Nombre de tiers incorrect", 1, tiersDAO.getCount(Tiers.class));
+			assertEquals("Nombre de tiers incorrect", 1, tiersDAO.getCount(PersonnePhysique.class));
 			assertEquals("Nombre de rapport-entre-tiers incorrect", 0, tiersDAO.getCount(RapportEntreTiers.class));
 			assertEquals("Nombre d'adresses incorrect", 0, tiersDAO.getCount(AdresseTiers.class));
 			assertEquals("Nombre de fors fiscaux", 2, tiersDAO.getCount(ForFiscal.class));
@@ -1280,7 +1279,8 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 
 		// Nombre d'éléments stockés dans la base
 		{
-			assertEquals("Nombre de tiers incorrect", 3, tiersDAO.getCount(Tiers.class));
+			assertEquals("Nombre de tiers incorrect", 2, tiersDAO.getCount(PersonnePhysique.class));
+			assertEquals("Nombre de tiers incorrect", 1, tiersDAO.getCount(MenageCommun.class));
 			assertEquals("Nombre de rapport-entre-tiers incorrect", 2, tiersDAO.getCount(RapportEntreTiers.class));
 			assertEquals("Nombre d'adresses incorrect", 0, tiersDAO.getCount(AdresseTiers.class));
 			assertEquals("Nombre de fors fiscaux", 1, tiersDAO.getCount(ForFiscal.class));
@@ -1430,7 +1430,8 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 
 		// Nombre d'éléments stockés dans la base
 		{
-			assertEquals("Nombre de tiers incorrect", 3, tiersDAO.getCount(Tiers.class));
+			assertEquals("Nombre de tiers incorrect", 2, tiersDAO.getCount(PersonnePhysique.class));
+			assertEquals("Nombre de tiers incorrect", 1, tiersDAO.getCount(MenageCommun.class));
 			assertEquals("Nombre de rapport-entre-tiers incorrect", 2, tiersDAO.getCount(RapportEntreTiers.class));
 			assertEquals("Nombre d'adresses incorrect", 0, tiersDAO.getCount(AdresseTiers.class));
 			assertEquals("Nombre de fors fiscaux", 2, tiersDAO.getCount(ForFiscal.class));
@@ -1578,7 +1579,8 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 
 		// Nombre d'éléments stockés dans la base
 		{
-			assertEquals("Nombre de tiers incorrect", 3, tiersDAO.getCount(Tiers.class));
+			assertEquals("Nombre de tiers incorrect", 2, tiersDAO.getCount(PersonnePhysique.class));
+			assertEquals("Nombre de tiers incorrect", 1, tiersDAO.getCount(MenageCommun.class));
 			assertEquals("Nombre de rapport-entre-tiers incorrect", 2, tiersDAO.getCount(RapportEntreTiers.class));
 			assertEquals("Nombre d'adresses incorrect", 0, tiersDAO.getCount(AdresseTiers.class));
 			assertEquals("Nombre de fors fiscaux", 2, tiersDAO.getCount(ForFiscal.class));
@@ -1702,7 +1704,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 
 		// Nombre d'éléments stockés dans la base
 		{
-			assertEquals("Nombre de tiers incorrect", 1, tiersDAO.getCount(Tiers.class));
+			assertEquals("Nombre de tiers incorrect", 1, tiersDAO.getCount(PersonnePhysique.class));
 			assertEquals("Nombre de rapport-entre-tiers incorrect", 0, tiersDAO.getCount(RapportEntreTiers.class));
 			assertEquals("Nombre d'adresses incorrect", 1, tiersDAO.getCount(AdresseTiers.class));
 			assertEquals("Nombre de fors fiscaux", 2, tiersDAO.getCount(ForFiscal.class));
@@ -1836,7 +1838,8 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 
 		// Nombre d'éléments stockés dans la base
 		{
-			assertEquals("Nombre de tiers incorrect", 3, tiersDAO.getCount(Tiers.class));
+			assertEquals("Nombre de tiers incorrect", 2, tiersDAO.getCount(PersonnePhysique.class));
+			assertEquals("Nombre de tiers incorrect", 1, tiersDAO.getCount(MenageCommun.class));
 			assertEquals("Nombre de rapport-entre-tiers incorrect", 2, tiersDAO.getCount(RapportEntreTiers.class));
 			assertEquals("Nombre d'adresses incorrect", 2, tiersDAO.getCount(AdresseTiers.class));
 			assertEquals("Nombre de fors fiscaux", 2, tiersDAO.getCount(ForFiscal.class));
@@ -1985,7 +1988,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		
 		// Nombre d'éléments stockés dans la base
 		{
-			assertEquals("Nombre de tiers incorrect", 1, tiersDAO.getCount(Tiers.class));
+			assertEquals("Nombre de tiers incorrect", 1, tiersDAO.getCount(PersonnePhysique.class));
 			assertEquals("Nombre de rapport-entre-tiers incorrect", 0, tiersDAO.getCount(RapportEntreTiers.class));
 			assertEquals("Nombre d'adresses incorrect", 0, tiersDAO.getCount(AdresseTiers.class));
 			assertEquals("Nombre de fors fiscaux", 3, tiersDAO.getCount(ForFiscal.class));
@@ -2154,7 +2157,8 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		
 		// Nombre d'éléments stockés dans la base
 		{
-			assertEquals("Nombre de tiers incorrect", 3, tiersDAO.getCount(Tiers.class));
+			assertEquals("Nombre de tiers incorrect", 2, tiersDAO.getCount(PersonnePhysique.class));
+			assertEquals("Nombre de tiers incorrect", 1, tiersDAO.getCount(MenageCommun.class));
 			assertEquals("Nombre de rapport-entre-tiers incorrect", 2, tiersDAO.getCount(RapportEntreTiers.class));
 			assertEquals("Nombre d'adresses incorrect", 0, tiersDAO.getCount(AdresseTiers.class));
 			assertEquals("Nombre de fors fiscaux", 2, tiersDAO.getCount(ForFiscal.class));

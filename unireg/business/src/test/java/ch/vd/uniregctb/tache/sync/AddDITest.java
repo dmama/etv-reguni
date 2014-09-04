@@ -54,10 +54,6 @@ public class AddDITest extends BusinessTest {
 		periodeImpositionService = getBean(PeriodeImpositionService.class, "periodeImpositionService");
 	}
 
-	public AddDITest() {
-		setWantCollectivitesAdministratives(true);
-	}
-
 	/**
 	 * Classe utilisée ici pour les tests à la place de la vraie classe pour simuler la date du jour
 	 */

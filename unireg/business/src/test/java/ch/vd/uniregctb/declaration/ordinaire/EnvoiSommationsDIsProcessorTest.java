@@ -8,7 +8,6 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.uniregctb.adresse.AdresseService;
@@ -65,8 +64,6 @@ public class EnvoiSommationsDIsProcessorTest extends BusinessTest {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 
-				addCollAdm(MockCollectiviteAdministrative.CEDI);
-
 				final PersonnePhysique pp = addNonHabitant("Jacques", "Cartier", RegDate.get(1980, 1, 5), Sexe.MASCULIN);
 				addForPrincipal(pp, RegDate.get(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
 
@@ -108,8 +105,6 @@ public class EnvoiSommationsDIsProcessorTest extends BusinessTest {
 		doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
-
-				addCollAdm(MockCollectiviteAdministrative.CEDI);
 
 				final PersonnePhysique pp = addNonHabitant("Jacques", "Cartier", RegDate.get(1980, 1, 5), Sexe.MASCULIN);
 				addForPrincipal(pp, RegDate.get(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
@@ -155,8 +150,6 @@ public class EnvoiSommationsDIsProcessorTest extends BusinessTest {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 
-				addCollAdm(MockCollectiviteAdministrative.CEDI);
-
 				final PersonnePhysique pp = addNonHabitant("Jacques", "Cartier", RegDate.get(1980, 1, 5), Sexe.MASCULIN);
 				addForPrincipal(pp, RegDate.get(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
 
@@ -197,8 +190,6 @@ public class EnvoiSommationsDIsProcessorTest extends BusinessTest {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 
-				addCollAdm(MockCollectiviteAdministrative.CEDI);
-
 				final PersonnePhysique pp = addNonHabitant("Jacques", "Cartier", RegDate.get(1980, 1, 5), Sexe.MASCULIN);
 				addForPrincipal(pp, RegDate.get(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
 
@@ -238,8 +229,6 @@ public class EnvoiSommationsDIsProcessorTest extends BusinessTest {
 		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
-
-				addCollAdm(MockCollectiviteAdministrative.CEDI);
 
 				final PersonnePhysique pp = addNonHabitant("Jacques", "Cartier", RegDate.get(1980, 1, 5), Sexe.MASCULIN);
 				addForPrincipal(pp, RegDate.get(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
@@ -286,8 +275,6 @@ public class EnvoiSommationsDIsProcessorTest extends BusinessTest {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 
-				addCollAdm(MockCollectiviteAdministrative.CEDI);
-
 				final PersonnePhysique pp = addNonHabitant("Jacques", "Cartier", RegDate.get(1980, 1, 5), Sexe.MASCULIN);
 				final ForFiscalPrincipal ffp = addForPrincipal(pp, RegDate.get(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
 				ffp.setModeImposition(ModeImposition.INDIGENT);
@@ -327,8 +314,6 @@ public class EnvoiSommationsDIsProcessorTest extends BusinessTest {
 		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
-
-				addCollAdm(MockCollectiviteAdministrative.CEDI);
 
 				final PersonnePhysique pp = addNonHabitant("Jacques", "Cartier", RegDate.get(1980, 1, 5), Sexe.MASCULIN);
 				final ForFiscalPrincipal ffp = addForPrincipal(pp, RegDate.get(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
@@ -371,8 +356,6 @@ public class EnvoiSommationsDIsProcessorTest extends BusinessTest {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 
-				addCollAdm(MockCollectiviteAdministrative.CEDI);
-
 				final PersonnePhysique pp = addNonHabitant("Jacques", "Cartier", RegDate.get(1980, 1, 5), Sexe.MASCULIN);
 				addForPrincipal(pp, RegDate.get(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockPays.France);
 				addForSecondaire(pp, RegDate.get(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
@@ -414,8 +397,6 @@ public class EnvoiSommationsDIsProcessorTest extends BusinessTest {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 
-				addCollAdm(MockCollectiviteAdministrative.CEDI);
-				
 				final PersonnePhysique pp = addNonHabitant("Jacques", "Cartier", RegDate.get(1980, 1, 5), Sexe.MASCULIN);
 				addForPrincipal(pp, RegDate.get(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, RegDate.get(anneePf, 5, 31), MotifFor.ARRIVEE_HS, MockPays.France);
 				addForPrincipal(pp, RegDate.get(anneePf, 6, 1), MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
@@ -461,8 +442,6 @@ public class EnvoiSommationsDIsProcessorTest extends BusinessTest {
 		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
-
-				addCollAdm(MockCollectiviteAdministrative.CEDI);
 
 				final PersonnePhysique pp = addNonHabitant("arben Jakupi", "Cartier", RegDate.get(1982, 10, 15), Sexe.MASCULIN);
 
@@ -527,8 +506,6 @@ public class EnvoiSommationsDIsProcessorTest extends BusinessTest {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 
-				addCollAdm(MockCollectiviteAdministrative.CEDI);
-
 				final PersonnePhysique pp = addNonHabitant("Jacques", "Cartier", RegDate.get(1980, 1, 5), Sexe.MASCULIN);
 
 				addForPrincipalSource(pp, RegDate.get(anneePf, 6, 1), MotifFor.ARRIVEE_HS,null,null, MockCommune.Aubonne.getNoOFS());
@@ -575,8 +552,6 @@ public class EnvoiSommationsDIsProcessorTest extends BusinessTest {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 
-				addCollAdm(MockCollectiviteAdministrative.CEDI);
-
 				final PersonnePhysique pp = addNonHabitant("Jacques", "Cartier", RegDate.get(1980, 1, 5), Sexe.MASCULIN);
 				addForPrincipal(pp, RegDate.get(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, RegDate.get(anneePf, 5, 31), MotifFor.ARRIVEE_HS, MockPays.France);
 				addForPrincipal(pp, RegDate.get(anneePf, 6, 1), MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
@@ -619,8 +594,6 @@ public class EnvoiSommationsDIsProcessorTest extends BusinessTest {
 		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
-
-				addCollAdm(MockCollectiviteAdministrative.CEDI);
 
 				final PersonnePhysique pp = addNonHabitant("Jacques", "Cartier", RegDate.get(1980, 1, 5), Sexe.MASCULIN);
 				addForPrincipal(pp, RegDate.get(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, RegDate.get(anneePf, 5, 31), MotifFor.ARRIVEE_HS, MockPays.France);
@@ -672,9 +645,7 @@ public class EnvoiSommationsDIsProcessorTest extends BusinessTest {
 			@Override
 			public Ids doInTransaction(TransactionStatus status) {
 
-				addCollAdm(MockCollectiviteAdministrative.CEDI);
-
-				final MenageCommun mc = (MenageCommun) hibernateTemplate.merge(new MenageCommun());
+				final MenageCommun mc = hibernateTemplate.merge(new MenageCommun());
 				addForPrincipal(mc, RegDate.get(2008, 1, 1), MotifFor.ARRIVEE_HS, RegDate.get(2008, 12, 31), MotifFor.ANNULATION, MockCommune.Aubonne);
 
 				final RegDate dateEmission = RegDate.get(2009, 1, 15);

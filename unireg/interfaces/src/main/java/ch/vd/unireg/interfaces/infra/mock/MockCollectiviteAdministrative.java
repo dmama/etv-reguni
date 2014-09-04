@@ -40,7 +40,7 @@ public class MockCollectiviteAdministrative implements CollectiviteAdministrativ
 					"Administration cantonale des impôts", "IMPOT A LA SOURCE", null, "ACI-IMPOT-SOURCE", "0213162065", "0213162898");
 
 	public static final class JusticePaix {
-		public static MockCollectiviteAdministrative DistrictsJuraNordVaudoisEtGrosDeVaud =
+		public static final MockCollectiviteAdministrative DistrictsJuraNordVaudoisEtGrosDeVaud =
 				new MockCollectiviteAdministrative(970, new MockAdresse("Rue du Pré", "2", new CasePostale(TexteCasePostale.CASE_POSTALE, 693), "1400", "Yverdon-les-Bains"),
 						"Justice de Paix des districts du",
 						"Jura-Nord Vaudois et du Gros-de-Vaud", null, "JUSPX");

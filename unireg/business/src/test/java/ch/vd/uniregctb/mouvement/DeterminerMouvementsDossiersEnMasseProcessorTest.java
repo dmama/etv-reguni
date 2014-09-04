@@ -68,10 +68,10 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				noOidRolleAubonne = addCollAdm(MockOfficeImpot.OID_ROLLE_AUBONNE).getNumero();    // OID Rolle-Aubonne
-				noOidLausanne = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST).getNumero();            // OID Lausanne
-				noOidVevey = addCollAdm(MockOfficeImpot.OID_VEVEY).getNumero();                  // OID Vevey
-				noOidOrbe = addCollAdm(MockOfficeImpot.OID_ORBE).getNumero();                    // OID Orbe
+				noOidRolleAubonne = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_ROLLE_AUBONNE.getNoColAdm()).getNumero();    // OID Rolle-Aubonne
+				noOidLausanne = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm()).getNumero();            // OID Lausanne
+				noOidVevey = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_VEVEY.getNoColAdm()).getNumero();                  // OID Vevey
+				noOidOrbe = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_ORBE.getNoColAdm()).getNumero();                    // OID Orbe
 				return null;
 			}
 		});

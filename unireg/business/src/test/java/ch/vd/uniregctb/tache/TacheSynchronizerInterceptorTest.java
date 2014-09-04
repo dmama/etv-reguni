@@ -13,9 +13,7 @@ import org.springframework.util.ResourceUtils;
 
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
-import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.common.BusinessTestingConstants;
@@ -86,11 +84,6 @@ public class TacheSynchronizerInterceptorTest extends BusinessTest {
 		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
-
-				// des trucs d'infrastructure
-				addCollAdm(MockCollectiviteAdministrative.CEDI);
-				addCollAdm(MockOfficeImpot.OID_ROLLE_AUBONNE);
-				addCollAdm(MockOfficeImpot.ACISUCCESSIONS);
 
 				// les périodes fiscales qui vont bien
 				for (int annee = 2003; annee < 2009; annee++) {

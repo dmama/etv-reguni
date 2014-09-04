@@ -11,6 +11,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService;
+import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer.Mode;
@@ -166,7 +167,7 @@ public class DatabaseIndexerJobTest extends BusinessTest {
 			assertTrue(ids.contains(Long.valueOf(76327)));
 
 			int nb = globalTiersSearcher.getExactDocCount();
-			assertEquals(8, nb);
+			assertEquals(8 + MockCollectiviteAdministrative.getAll().size(), nb);
 		}
 	}
 

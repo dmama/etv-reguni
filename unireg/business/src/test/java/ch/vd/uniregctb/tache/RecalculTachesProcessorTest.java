@@ -34,10 +34,6 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 	private RecalculTachesProcessor processor;
 	private TacheDAO tacheDAO;
 
-	public RecalculTachesProcessorTest() {
-		setWantCollectivitesAdministratives(true);
-	}
-
 	@Override
 	protected void runOnSetUp() throws Exception {
 		super.runOnSetUp();

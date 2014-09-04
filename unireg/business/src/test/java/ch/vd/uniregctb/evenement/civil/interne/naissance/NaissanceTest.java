@@ -75,7 +75,7 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 		LOGGER.debug("Test de traitement d'un événement de naissance.");
 
 		{
-			List<Tiers> tierss = tiersDAO.getAll();
+			List<Tiers> tierss = allTiersOfType(PersonnePhysique.class);
 			assertEquals("le tiers correspondant au nouveau n'a pas été créé", 0, tierss.size());
 		}
 
@@ -88,7 +88,7 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 
 		assertFalse("Une erreur est survenue lors du traitement de la naissance", collector.hasErreurs());
 
-		List<Tiers> tierss = tiersDAO.getAll();
+		List<Tiers> tierss = allTiersOfType(PersonnePhysique.class);
 		assertEquals("le tiers correspondant au nouveau n'a pas été créé", 1, tierss.size());
 		/*
 		 * une événement doit être créé et un événement doit être publié
@@ -104,7 +104,7 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 		LOGGER.debug("Test de traitement d'un événement de naissance en fin d'année.");
 
 		{
-			List<Tiers> tierss = tiersDAO.getAll();
+			final List<Tiers> tierss = allTiersOfType(PersonnePhysique.class);
 			assertEquals("le tiers correspondant au nouveau n'a pas été créé", 0, tierss.size());
 		}
 
@@ -117,7 +117,7 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 
 		assertFalse("Une erreur est survenue lors du traitement de la naissance", collector.hasErreurs());
 
-		List<Tiers> tierss = tiersDAO.getAll();
+		final List<Tiers> tierss = allTiersOfType(PersonnePhysique.class);
 		assertEquals("le tiers correspondant au nouveau n'a pas été créé", 1, tierss.size());
 		/*
 		 * une événement doit être créé et un événement doit être publié

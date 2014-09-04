@@ -23,10 +23,6 @@ public class ProduireListeTachesEnInstanceParOIDProcessorTest extends BusinessTe
 
 	private ProduireListeTachesEnInstanceParOIDProcessor processor;
 
-	public ProduireListeTachesEnInstanceParOIDProcessorTest() {
-		setWantCollectivitesAdministratives(true);
-	}
-
 	@Override
 	protected void runOnSetUp() throws Exception {
 		super.runOnSetUp();

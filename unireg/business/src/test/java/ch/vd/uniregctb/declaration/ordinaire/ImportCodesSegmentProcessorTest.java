@@ -10,7 +10,6 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
-import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
@@ -195,7 +194,6 @@ public class ImportCodesSegmentProcessorTest extends BusinessTest {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Gudule", "Tartempion", null, Sexe.FEMININ);
-				addCollAdm(MockCollectiviteAdministrative.CEDI);
 				final PeriodeFiscale pf = addPeriodeFiscale(2009);
 				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
 				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.HORS_CANTON, md);
@@ -247,7 +245,6 @@ public class ImportCodesSegmentProcessorTest extends BusinessTest {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Gudule", "Tartempion", null, Sexe.FEMININ);
-				addCollAdm(MockCollectiviteAdministrative.CEDI);
 				final PeriodeFiscale pf = addPeriodeFiscale(2009);
 				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
 				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.HORS_CANTON, md);
@@ -299,7 +296,6 @@ public class ImportCodesSegmentProcessorTest extends BusinessTest {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Gudule", "Tartempion", null, Sexe.FEMININ);
-				addCollAdm(MockCollectiviteAdministrative.CEDI);
 				final PeriodeFiscale pf = addPeriodeFiscale(2009);
 				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
 				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.HORS_CANTON, md);
@@ -351,7 +347,6 @@ public class ImportCodesSegmentProcessorTest extends BusinessTest {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Gudule", "Tartempion", null, Sexe.FEMININ);
-				addCollAdm(MockCollectiviteAdministrative.CEDI);
 				final PeriodeFiscale pf = addPeriodeFiscale(2009);
 				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
 				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.HORS_CANTON, md);
@@ -392,7 +387,6 @@ public class ImportCodesSegmentProcessorTest extends BusinessTest {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Gudule", "Tartempion", null, Sexe.FEMININ);
-				addCollAdm(MockCollectiviteAdministrative.CEDI);
 				final PeriodeFiscale pf = addPeriodeFiscale(2009);
 				final ModeleDocument mdHc = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
 				final ModeleDocument mdDepense = addModeleDocument(TypeDocument.DECLARATION_IMPOT_DEPENSE, pf);

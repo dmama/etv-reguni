@@ -20,7 +20,6 @@ import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.registre.base.validation.ValidationMessage;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
-import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
@@ -483,8 +482,7 @@ public class ForsControllerTest extends WebTestSpring3 {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
 
-				final CollectiviteAdministrative colAdm = addCollAdm(MockOfficeImpot.OID_AIGLE);
-				addCollAdm(MockCollectiviteAdministrative.CEDI);
+				final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_AIGLE.getNoColAdm());
 
 				final PeriodeFiscale periode2005 = addPeriodeFiscale(2005);
 				final PeriodeFiscale periode2006 = addPeriodeFiscale(2006);
@@ -594,14 +592,11 @@ public class ForsControllerTest extends WebTestSpring3 {
 			}
 		});
 
-		truncateDatabase();
-
 		final Long numeroChristine = doInTransaction(new TxCallback<Long>() {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
 
-				final CollectiviteAdministrative colAdm = addCollAdm(MockOfficeImpot.OID_AIGLE);
-				addCollAdm(MockCollectiviteAdministrative.CEDI);
+				final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_AIGLE.getNoColAdm());
 
 				final PeriodeFiscale periode2005 = addPeriodeFiscale(2005);
 				final PeriodeFiscale periode2006 = addPeriodeFiscale(2006);

@@ -30,6 +30,7 @@ import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.efacture.data.TypeEtatDestinataire;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
@@ -387,7 +388,6 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			public Data doInTransaction(TransactionStatus status) {
 				final PeriodeFiscale pf = addPeriodeFiscale(annee);
 				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
-				addCedi();
 				final RegDate debut = date(annee, 1, 1);
 				final RegDate fin = date(annee, 12, 31);
 
@@ -480,7 +480,6 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			public Long doInTransaction(TransactionStatus status) {
 				final PeriodeFiscale pf = addPeriodeFiscale(annee);
 				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
-				addCedi();
 				final RegDate debut = date(annee, 1, 1);
 				final RegDate fin = date(annee, 12, 31);
 
@@ -573,8 +572,8 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
 			@Override
 			public Ids doInTransaction(TransactionStatus status) {
-				final CollectiviteAdministrative pays = addCollAdm(MockOfficeImpot.OID_PAYS_D_ENHAUT);
-				final CollectiviteAdministrative vevey = addCollAdm(MockOfficeImpot.OID_VEVEY);
+				final CollectiviteAdministrative pays = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PAYS_D_ENHAUT.getNoColAdm());
+				final CollectiviteAdministrative vevey = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_VEVEY.getNoColAdm());
 
 				final Ids ids = new Ids();
 				ids.idVevey = vevey.getNumero();
@@ -1255,7 +1254,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				final DebiteurPrestationImposable dpi = addDebiteur("Débiteur IS", mc, dateDebutContactIS);
 				dpi.setModeCommunication(ModeCommunication.ELECTRONIQUE);
 				final Entreprise pm = addEntreprise(noEntreprise);
-				final CollectiviteAdministrative ca = addCollAdm(MockCollectiviteAdministrative.CAT);
+				final CollectiviteAdministrative ca = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCAT);
 				final AutreCommunaute ac = addAutreCommunaute("Tata!!");
 				ac.setFormeJuridique(FormeJuridique.ASS);
 				final IdentificationEntreprise ide = new IdentificationEntreprise();
@@ -2468,7 +2467,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				final PersonnePhysique pp = addHabitant(noIndividu);
 				addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
 
-				final CollectiviteAdministrative cedi = addCedi();
+				final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
 				final PeriodeFiscale pf = addPeriodeFiscale(2013);
 				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
 				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(pf.getAnnee(), 1, 1), date(pf.getAnnee(), 12, 31), cedi, TypeContribuable.VAUDOIS_ORDINAIRE, md);
@@ -2856,7 +2855,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				final PersonnePhysique pp = addHabitant(noIndividu);
 				addSituation(pp, dateNaissance, null, 0, EtatCivil.CELIBATAIRE);
 				addForPrincipal(pp, dateNaissance.addYears(18), MotifFor.MAJORITE, dateDepartHS, MotifFor.DEPART_HS, MockCommune.Lausanne);
-				final CollectiviteAdministrative cedi = addCedi();
+				final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
 				final PeriodeFiscale pf = addPeriodeFiscale(anneeDI);
 				final ModeleDocument mdDi = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
 				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(anneeDI, 1, 1), date(anneeDI, 12, 31), cedi, TypeContribuable.VAUDOIS_ORDINAIRE, mdDi);
@@ -3132,7 +3131,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				final PersonnePhysique pp = addHabitant(noIndividu);
 				addSituation(pp, dateNaissance, null, 0, EtatCivil.CELIBATAIRE);
 				addForPrincipal(pp, dateNaissance.addYears(18), MotifFor.MAJORITE, dateDepartHS, MotifFor.DEPART_HS, MockCommune.Lausanne);
-				final CollectiviteAdministrative cedi = addCedi();
+				final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
 				final PeriodeFiscale pf = addPeriodeFiscale(anneeDI);
 				final ModeleDocument mdDi = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
 				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(anneeDI, 1, 1), date(anneeDI, 12, 31), cedi, TypeContribuable.VAUDOIS_ORDINAIRE, mdDi);
@@ -3493,7 +3492,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				final PersonnePhysique pp = addHabitant(noIndividu);
 				addSituation(pp, dateNaissance, null, 0, EtatCivil.CELIBATAIRE);
 				addForPrincipal(pp, dateNaissance.addYears(18), MotifFor.MAJORITE, dateDepartHS, MotifFor.DEPART_HS, MockCommune.Lausanne);
-				final CollectiviteAdministrative cedi = addCedi();
+				final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
 				final PeriodeFiscale pf = addPeriodeFiscale(anneeDI);
 				final ModeleDocument mdDi = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
 				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(anneeDI, 1, 1), date(anneeDI, 12, 31), cedi, TypeContribuable.VAUDOIS_ORDINAIRE, mdDi);

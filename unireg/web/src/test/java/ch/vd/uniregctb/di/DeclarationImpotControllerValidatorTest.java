@@ -9,7 +9,6 @@ import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ObjectError;
 
-import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.uniregctb.common.WebTest;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
@@ -39,14 +38,6 @@ public class DeclarationImpotControllerValidatorTest extends WebTest {
 		validator = new DeclarationImpotControllerValidator();
 		validator.setTiersDAO(tiersDAO);
 		validator.setDiDAO(diDAO);
-
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				addCollAdm(MockCollectiviteAdministrative.CEDI);
-				return null;
-			}
-		});
 	}
 
 	@Test

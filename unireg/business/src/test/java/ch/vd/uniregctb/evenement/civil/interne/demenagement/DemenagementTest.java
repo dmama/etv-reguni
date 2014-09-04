@@ -86,10 +86,6 @@ public class DemenagementTest extends AbstractEvenementCivilInterneTest {
 
 	private TacheDAO tacheDAO;
 
-	public DemenagementTest() {
-		setWantCollectivitesAdministratives(true);
-	}
-
 	@Override
 	public void onSetUp() throws Exception {
 

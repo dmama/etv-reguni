@@ -17,6 +17,10 @@ public abstract class NorentesTest extends AbstractBusinessTest {
 
 	protected NorentesManager norentesManager;
 
+	protected NorentesTest() {
+		setWantCollectivitesAdministratives(false);     // elles sont créées dans les scénarios
+	}
+
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();

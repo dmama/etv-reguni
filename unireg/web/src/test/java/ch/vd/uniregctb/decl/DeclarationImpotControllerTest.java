@@ -44,10 +44,6 @@ public class DeclarationImpotControllerTest extends WebTestSpring3 {
 
 	private TiersDAO tiersDAO;
 
-	public DeclarationImpotControllerTest() {
-		setWantCollectivitesAdministratives(true);
-	}
-
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();

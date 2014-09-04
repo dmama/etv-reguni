@@ -10,7 +10,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.common.BusinessTestingConstants;
@@ -75,10 +74,6 @@ public class AnnulationMariageEchProcessorTest extends AbstractEvenementCivilEch
 		final long mcId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
-
-				addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
-				addCollAdm(MockOfficeImpot.OID_ECHALLENS);
-				addCollAdm(MockOfficeImpot.ACISUCCESSIONS);
 
 				final PersonnePhysique lui = addHabitant(noIndividuLui);
 
@@ -162,10 +157,6 @@ public class AnnulationMariageEchProcessorTest extends AbstractEvenementCivilEch
 		final long mcId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
-
-				addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
-				addCollAdm(MockOfficeImpot.OID_ECHALLENS);
-				addCollAdm(MockOfficeImpot.ACISUCCESSIONS);
 
 				final PersonnePhysique lui = addHabitant(noIndividuLui);
 				addForPrincipal(lui, date(2000, 1, 1), MotifFor.INDETERMINE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);

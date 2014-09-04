@@ -6,7 +6,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
@@ -44,14 +43,6 @@ public class EchoirDIsProcessorTest extends BusinessTest {
 
 		// création du processeur à la main de manière à pouvoir appeler les méthodes protégées
 		processor = new EchoirDIsProcessor(hibernateTemplate, delaisService, diService, transactionManager, tiersService, adresseService);
-
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				addCollAdm(MockCollectiviteAdministrative.CEDI);
-				return null;
-			}
-		});
 	}
 
 	@Test

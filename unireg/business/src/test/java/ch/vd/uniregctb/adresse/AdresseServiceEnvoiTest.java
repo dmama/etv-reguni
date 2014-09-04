@@ -890,7 +890,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdresseEnvoiDebiteurPrestationImposableSurCollectiviteAdministrative() throws Exception {
 
-		final int noTribunalCantonal = 1;
+		final int noTribunalCantonal = 42;      // pas utilisé par les collectivités enregistrées par défaut dans le Mock
 
 		serviceInfra.setUp(new MockServiceInfrastructureService() {
 			@Override

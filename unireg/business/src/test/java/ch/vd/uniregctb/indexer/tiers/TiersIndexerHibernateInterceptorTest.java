@@ -550,6 +550,7 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 	public void testIndexOnRollback() throws Exception {
 
 		// l'indexeur doit être vide
+		globalTiersIndexer.overwriteIndex();
 		assertEmpty(searcher.getAllIds());
 
 		class Ids {
@@ -582,7 +583,11 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 		}
 
 		// le tiers ne doit pas exister dans la base, ni dans l'indexeur
-		assertEmpty(tiersDAO.getAllIds());
+		assertEmpty(getAllPersonnesPhysiques());
 		assertEmpty(searcher.getAllIds());
+	}
+
+	private List<Tiers> getAllPersonnesPhysiques() {
+		return allTiersOfType(PersonnePhysique.class);
 	}
 }

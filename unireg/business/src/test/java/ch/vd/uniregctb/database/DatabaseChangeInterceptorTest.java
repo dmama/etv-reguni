@@ -4,7 +4,6 @@ import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
-import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
@@ -100,7 +99,6 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
-				addCollAdm(MockCollectiviteAdministrative.CEDI);
 				final PersonnePhysique pp = addNonHabitant("Arnold", "Schwarz", date(1954, 3, 23), Sexe.MASCULIN);
 				final PeriodeFiscale periode = addPeriodeFiscale(2005);
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
@@ -117,7 +115,7 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
-				final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) hibernateTemplate.get(DeclarationImpotOrdinaire.class, ids.di);
+				final DeclarationImpotOrdinaire di = hibernateTemplate.get(DeclarationImpotOrdinaire.class, ids.di);
 				di.setDateFin(date(2005, 6, 30));
 				return null;
 			}
@@ -154,7 +152,7 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
-				final ForFiscalPrincipal ff = (ForFiscalPrincipal) hibernateTemplate.get(ForFiscalPrincipal.class, ids.ff);
+				final ForFiscalPrincipal ff = hibernateTemplate.get(ForFiscalPrincipal.class, ids.ff);
 				ff.setAnnule(true);
 				return null;
 			}
@@ -191,7 +189,7 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
-				final AdresseSuisse adresse = (AdresseSuisse) hibernateTemplate.get(AdresseSuisse.class, ids.adresse);
+				final AdresseSuisse adresse = hibernateTemplate.get(AdresseSuisse.class, ids.adresse);
 				adresse.setAnnule(true);
 				return null;
 			}
@@ -231,7 +229,7 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
-				final Tutelle tutelle = (Tutelle) hibernateTemplate.get(Tutelle.class, ids.tutelle);
+				final Tutelle tutelle = hibernateTemplate.get(Tutelle.class, ids.tutelle);
 				tutelle.setDateDebut(date(2005, 7, 1));
 				return null;
 			}
@@ -275,7 +273,7 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
-				final Tutelle tutelle = (Tutelle) hibernateTemplate.get(Tutelle.class, ids.tutelle);
+				final Tutelle tutelle = hibernateTemplate.get(Tutelle.class, ids.tutelle);
 				tutelle.setAnnule(true);
 				return null;
 			}
@@ -313,7 +311,7 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
-				final SituationFamille situation = (SituationFamille) hibernateTemplate.get(SituationFamille.class, ids.situation);
+				final SituationFamille situation = hibernateTemplate.get(SituationFamille.class, ids.situation);
 				situation.setAnnule(true);
 				return null;
 			}
@@ -350,7 +348,7 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
-				final IdentificationPersonne ident = (IdentificationPersonne) hibernateTemplate.get(IdentificationPersonne.class, ids.ident);
+				final IdentificationPersonne ident = hibernateTemplate.get(IdentificationPersonne.class, ids.ident);
 				ident.setAnnule(true);
 				return null;
 			}

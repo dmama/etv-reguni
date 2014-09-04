@@ -33,38 +33,6 @@
     <column>PP_HABITANT</column>
     <row>
       <value>2008-01-01</value>
-      <value>2000010</value>
-      <value>CollectiviteAdministrative</value>
-      <value>0</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>10</value>
-      <null/>
-      <null/>
-    </row>
-    <row>
-      <value>2008-01-01</value>
       <value>12600004</value>
       <value>MenageCommun</value>
       <value>0</value>

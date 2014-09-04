@@ -8,7 +8,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
@@ -17,7 +17,6 @@ import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
-import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.declaration.ModeleDocument;
@@ -77,7 +76,6 @@ public class CorrectionDateNaissanceTest extends AbstractEvenementCivilInterneTe
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testHandle() throws Exception {
 
 		serviceCivil.setUp(new DefaultMockServiceCivil());
@@ -136,7 +134,6 @@ public class CorrectionDateNaissanceTest extends AbstractEvenementCivilInterneTe
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testHandleWithErrors() throws Exception {
 
 		serviceCivil.setUp(new DefaultMockServiceCivil());
@@ -195,7 +192,6 @@ public class CorrectionDateNaissanceTest extends AbstractEvenementCivilInterneTe
 	 * Hibernate entre le moment où la date de naissance est mise-à-jour et le moment où le flag index dirty est resetté).
 	 */
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testHandleSurContribuableDirty() throws Exception {
 
 		final long noIndJean = 1234L;
@@ -256,10 +252,15 @@ public class CorrectionDateNaissanceTest extends AbstractEvenementCivilInterneTe
 
 		// Vérifie que la date de naissance à bien été corrigée (= cachée sur la personne physique) et que la personne physique n'est plus
 		// flaggée comme dirty.
-		final PersonnePhysique jean = (PersonnePhysique) tiersDAO.get(ids.jean);
-		assertNotNull(jean);
-		assertFalse(jean.isDirty());
-		assertEquals(dateNaissance, jean.getDateNaissance());
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final PersonnePhysique jean = (PersonnePhysique) tiersDAO.get(ids.jean);
+				assertNotNull(jean);
+				assertFalse(jean.isDirty());
+				assertEquals(dateNaissance, jean.getDateNaissance());
+			}
+		});
 	}
 
 	/**
@@ -267,7 +268,6 @@ public class CorrectionDateNaissanceTest extends AbstractEvenementCivilInterneTe
 	 * une erreur si le contribuable possède des déclarations.
 	 */
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testHandleErreurAnneeDeMajoriteDifferente() throws Exception {
 
 		final long noIndHuguette = 1234L;
@@ -286,8 +286,6 @@ public class CorrectionDateNaissanceTest extends AbstractEvenementCivilInterneTe
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-
-				addCollAdm(MockCollectiviteAdministrative.CEDI);
 
 				final PersonnePhysique huguette = addHabitant(noIndHuguette);
 				addForPrincipal(huguette, ancienneDateMajorite, MotifFor.MAJORITE, MockCommune.Lausanne);

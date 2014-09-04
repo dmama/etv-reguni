@@ -11,7 +11,6 @@ import ch.vd.unireg.interfaces.civil.data.CasePostale;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockBatiment;
-import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.uniregctb.common.BusinessTest;
@@ -153,7 +152,6 @@ public class EditiqueHelperTest extends BusinessTest {
 				addForPrincipal(pp, dateAchatImmeuble, MotifFor.ACHAT_IMMOBILIER, MockCommune.Bale);
 				addForSecondaire(pp, dateAchatImmeuble, MotifFor.ACHAT_IMMOBILIER, dateVenteImmeuble, MotifFor.VENTE_IMMOBILIER, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 
-				addCollAdm(MockCollectiviteAdministrative.CEDI);
 				final PeriodeFiscale periode = addPeriodeFiscale(pf);
 				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode);
 				addDeclarationImpot(pp, periode, date(pf, 1, 1), date(pf, 12, 31), TypeContribuable.HORS_CANTON, md);

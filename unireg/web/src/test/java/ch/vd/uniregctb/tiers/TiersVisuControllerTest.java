@@ -148,6 +148,6 @@ public class TiersVisuControllerTest extends WebTest {
 
 	@SuppressWarnings({"UnusedAssignment", "unchecked"})
 	private void loadDatabase() {
-		TestData.loadTiersBasic(hibernateTemplate);
+		TestData.loadTiersBasic(hibernateTemplate, false);
 	}
 }

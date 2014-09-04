@@ -434,8 +434,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 				oid = getOfficeImpot(collAdm.getNumeroCollectiviteAdministrative());
 			}
 			else {
-				// TODO ne devrait-on pas avoir une exception ici car il manque une collectivité administrative en base ?
-				oid = null;
+				throw new ServiceInfrastructureException("La collectivité administrative du district " + codeDistrict + " pour la commune "  + noCommune + " manque à l'appel!");
 			}
 		}
 		else {

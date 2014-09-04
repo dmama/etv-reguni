@@ -89,6 +89,10 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 		super.onTearDown();
 	}
 
+	private List<Tiers> getAllPersonnesPhysiquesEtMenages() {
+		return allTiersOfType(PersonnePhysique.class, MenageCommun.class);
+	}
+
 	/**
 	 * Méthode de traitement synchrone d'une unité de traitement indiquée par son identifiant
 	 * @param id identifiant de l'unité de traitement à traiter
@@ -1009,7 +1013,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				Assert.assertNotNull(ut);
 				Assert.assertEquals(EtatTraitement.TRAITE, ut.getEtat());
 
-				final List<Tiers> allTiers = tiersDAO.getAll();
+				final List<Tiers> allTiers = getAllPersonnesPhysiquesEtMenages();
 				Assert.assertNotNull(allTiers);
 				Assert.assertEquals(3, allTiers.size());        // 2 PP + 1 MC
 
@@ -1291,7 +1295,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				Assert.assertNotNull(erreur);
 				Assert.assertEquals("Parties prenantes en couple avec divergence des sources de données, dont l'une est civile.", erreur.getMessage());
 
-				final List<Tiers> allTiers = tiersDAO.getAll();
+				final List<Tiers> allTiers = getAllPersonnesPhysiquesEtMenages();
 				Assert.assertNotNull(allTiers);
 				Assert.assertEquals(0, allTiers.size());
 			}
@@ -1353,7 +1357,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				Assert.assertNotNull(ut);
 				Assert.assertEquals(EtatTraitement.TRAITE, ut.getEtat());
 
-				final List<Tiers> allTiers = tiersDAO.getAll();
+				final List<Tiers> allTiers = getAllPersonnesPhysiquesEtMenages();
 				Assert.assertNotNull(allTiers);
 				Assert.assertEquals(3, allTiers.size());        // 2 PP + 1 MC
 
@@ -1592,7 +1596,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				Assert.assertNotNull(ut);
 				Assert.assertEquals(EtatTraitement.TRAITE, ut.getEtat());
 
-				final List<Tiers> allTiers = tiersDAO.getAll();
+				final List<Tiers> allTiers = getAllPersonnesPhysiquesEtMenages();
 				Assert.assertNotNull(allTiers);
 				Assert.assertEquals(2, allTiers.size());        // 1 PP + 1 MC
 
@@ -2610,7 +2614,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				}
 
 				// il faut de plus vérifier que l'on a bien 3 tiers seulement en base (= ceux vus plus haut) sans création d'un autre avec les données de l'acte
-				final List<Tiers> allTiers = tiersDAO.getAll();
+				final List<Tiers> allTiers = getAllPersonnesPhysiquesEtMenages();
 				Assert.assertEquals(3, allTiers.size());
 			}
 		});
@@ -2888,7 +2892,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				checkNoSituationFamille(pp);
 
 				// pas de nouveau tiers
-				final List<Tiers> allTiers = tiersDAO.getAll();
+				final List<Tiers> allTiers = getAllPersonnesPhysiquesEtMenages();
 				Assert.assertNotNull(allTiers);
 				Assert.assertEquals(1, allTiers.size());
 			}
@@ -2956,7 +2960,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				// - madame Valentine Cordoba
 				// - monsieur Marcel Cordoba (données minimales)
 				// - couple Cordoba fermé à la veille de la date de séparation
-				final List<Tiers> allTiers = tiersDAO.getAll();
+				final List<Tiers> allTiers = getAllPersonnesPhysiquesEtMenages();
 				Assert.assertNotNull(allTiers);
 				Assert.assertEquals(3, allTiers.size());        // 2 PP + 1 MC
 
@@ -3203,7 +3207,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				// - madame Valentine Cordoba (modifiée)
 				// - monsieur Marcel Cordoba (créé avec les données minimales)
 				// - couple Cordoba fermé à la veille de la date de séparation (laissé en l'état)
-				final List<Tiers> allTiers = tiersDAO.getAll();
+				final List<Tiers> allTiers = getAllPersonnesPhysiquesEtMenages();
 				Assert.assertNotNull(allTiers);
 				Assert.assertEquals(3, allTiers.size());        // 2 PP + 1 MC
 
@@ -3466,7 +3470,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				// - madame Valentine Cordoba (modifiée)
 				// - monsieur Marcel Cordoba (modifié)
 				// - couple Cordoba fermé à la veille de la date de séparation (laissé en l'état)
-				final List<Tiers> allTiers = tiersDAO.getAll();
+				final List<Tiers> allTiers = getAllPersonnesPhysiquesEtMenages();
 				Assert.assertNotNull(allTiers);
 				Assert.assertEquals(3, allTiers.size());        // 2 PP + 1 MC
 
@@ -3752,7 +3756,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				// - madame Valentine Cordoba
 				// - monsieur Marcel Cordoba
 				// - couple Cordoba fermé à la veille de la date de séparation
-				final List<Tiers> allTiers = tiersDAO.getAll();
+				final List<Tiers> allTiers = getAllPersonnesPhysiquesEtMenages();
 				Assert.assertNotNull(allTiers);
 				Assert.assertEquals(3, allTiers.size());        // 2 PP + 1 MC
 
@@ -3939,7 +3943,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				// - madame Valentine Cordoba
 				// - monsieur Marcel Cordoba
 				// - couple Cordoba fermé à la veille de la date de séparation
-				final List<Tiers> allTiers = tiersDAO.getAll();
+				final List<Tiers> allTiers = getAllPersonnesPhysiquesEtMenages();
 				Assert.assertNotNull(allTiers);
 				Assert.assertEquals(3, allTiers.size());        // 2 PP + 1 MC
 
@@ -4143,7 +4147,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				// - madame Valentine Cordoba
 				// - monsieur Marcel Cordoba
 				// - couple Cordoba fermé à la veille de la date de séparation
-				final List<Tiers> allTiers = tiersDAO.getAll();
+				final List<Tiers> allTiers = getAllPersonnesPhysiquesEtMenages();
 				Assert.assertNotNull(allTiers);
 				Assert.assertEquals(3, allTiers.size());        // 2 PP + 1 MC
 
@@ -4331,7 +4335,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				// - madame Valentine Cordoba
 				// - monsieur Marcel Cordoba
 				// - couple Cordoba fermé à la veille de la date de séparation
-				final List<Tiers> allTiers = tiersDAO.getAll();
+				final List<Tiers> allTiers = getAllPersonnesPhysiquesEtMenages();
 				Assert.assertNotNull(allTiers);
 				Assert.assertEquals(3, allTiers.size());        // 2 PP + 1 MC
 
@@ -4504,7 +4508,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				Assert.assertEquals(EtatTraitement.TRAITE, ut.getEtat());
 				Assert.assertEquals(0, ut.getErreurs().size());
 
-				final List<Tiers> allTiers = tiersDAO.getAll();
+				final List<Tiers> allTiers = getAllPersonnesPhysiquesEtMenages();
 				Assert.assertNotNull(allTiers);
 				Assert.assertEquals(1, allTiers.size());
 
@@ -4620,7 +4624,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				Assert.assertEquals(EtatTraitement.TRAITE, ut.getEtat());
 				Assert.assertEquals(0, ut.getErreurs().size());
 
-				final List<Tiers> allTiers = tiersDAO.getAll();
+				final List<Tiers> allTiers = getAllPersonnesPhysiquesEtMenages();
 				Assert.assertNotNull(allTiers);
 				Assert.assertEquals(1, allTiers.size());
 
@@ -4757,7 +4761,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				Assert.assertEquals(EtatTraitement.TRAITE, ut.getEtat());
 				Assert.assertEquals(0, ut.getErreurs().size());
 
-				final List<Tiers> allTiers = tiersDAO.getAll();
+				final List<Tiers> allTiers = getAllPersonnesPhysiquesEtMenages();
 				Assert.assertNotNull(allTiers);
 				Assert.assertEquals(1, allTiers.size());
 
@@ -4892,7 +4896,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				Assert.assertEquals(EtatTraitement.TRAITE, ut.getEtat());
 				Assert.assertEquals(0, ut.getErreurs().size());
 
-				final List<Tiers> allTiers = tiersDAO.getAll();
+				final List<Tiers> allTiers = getAllPersonnesPhysiquesEtMenages();
 				Assert.assertNotNull(allTiers);
 				Assert.assertEquals(1, allTiers.size());
 
@@ -5027,7 +5031,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				Assert.assertEquals(EtatTraitement.TRAITE, ut.getEtat());
 				Assert.assertEquals(0, ut.getErreurs().size());
 
-				final List<Tiers> allTiers = tiersDAO.getAll();
+				final List<Tiers> allTiers = getAllPersonnesPhysiquesEtMenages();
 				Assert.assertNotNull(allTiers);
 				Assert.assertEquals(1, allTiers.size());
 
@@ -5148,7 +5152,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				Assert.assertEquals(ErreurTraitement.TypeErreur.WARNING, erreur.getType());
 				Assert.assertEquals("Adresse non modifiée sur un contribuable assujetti, uniquement reprise dans les remarques du tiers.", erreur.getMessage());
 
-				final List<Tiers> allTiers = tiersDAO.getAll();
+				final List<Tiers> allTiers = getAllPersonnesPhysiquesEtMenages();
 				Assert.assertNotNull(allTiers);
 				Assert.assertEquals(2, allTiers.size());
 
@@ -5290,7 +5294,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				Assert.assertEquals(ErreurTraitement.TypeErreur.WARNING, erreur.getType());
 				Assert.assertEquals("Adresse non modifiée sur un contribuable assujetti, uniquement reprise dans les remarques du tiers.", erreur.getMessage());
 
-				final List<Tiers> allTiers = tiersDAO.getAll();
+				final List<Tiers> allTiers = getAllPersonnesPhysiquesEtMenages();
 				Assert.assertNotNull(allTiers);
 				Assert.assertEquals(2, allTiers.size());
 
@@ -5450,7 +5454,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				Assert.assertEquals(EtatTraitement.TRAITE, ut.getEtat());
 				Assert.assertEquals(0, ut.getErreurs().size());
 
-				final List<Tiers> allTiers = tiersDAO.getAll();
+				final List<Tiers> allTiers = getAllPersonnesPhysiquesEtMenages();
 				Assert.assertNotNull(allTiers);
 				Assert.assertEquals(3, allTiers.size());        // 2 PP + 1 MC
 
@@ -5631,7 +5635,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				Assert.assertEquals(EtatTraitement.TRAITE, ut.getEtat());
 				Assert.assertEquals(0, ut.getErreurs().size());
 
-				final List<Tiers> allTiers = tiersDAO.getAll();
+				final List<Tiers> allTiers = getAllPersonnesPhysiquesEtMenages();
 				Assert.assertNotNull(allTiers);
 				Assert.assertEquals(3, allTiers.size());        // 2 PP + 1 MC
 

@@ -21,6 +21,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
@@ -428,12 +429,23 @@ public class ProduireRolesProcessor {
 		status.setMessage(String.format("%sRécupération des correspondances entre communes et OID.", prefixe), progressCalculator.getProgressPercentage(0, 0));
 
 		// récupère les numéros Ofs des communes gérées par l'office d'impôt spécifié
-		final Set<Integer> nosOfsCommunes = new HashSet<>();
+		final Set<Integer> nosOfsCommunes;
 		try {
-			final List<Commune> communes = infraService.getListeCommunesByOID(oid);
-			for (Commune c : communes) {
-				nosOfsCommunes.add(c.getNoOFS());
-			}
+			// [SIFISC-13373] On a maintenant besoin d'une transaction ici car la liaison OID <-> Commune nécessite un accès en base
+			final TransactionTemplate template = new TransactionTemplate(transactionManager);
+			template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+			template.setReadOnly(true);
+			nosOfsCommunes = template.execute(new TransactionCallback<Set<Integer>>() {
+				@Override
+				public Set<Integer> doInTransaction(TransactionStatus status) {
+					final Set<Integer> nosOfsCommunes = new HashSet<>();
+					final List<Commune> communes = infraService.getListeCommunesByOID(oid);
+					for (Commune c : communes) {
+						nosOfsCommunes.add(c.getNoOFS());
+					}
+					return nosOfsCommunes;
+				}
+			});
 		}
 		catch (ServiceInfrastructureException e) {
 			throw new ServiceException(e);

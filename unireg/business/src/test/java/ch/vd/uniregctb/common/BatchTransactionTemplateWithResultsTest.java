@@ -21,6 +21,7 @@ import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
+import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
@@ -129,7 +130,7 @@ public class BatchTransactionTemplateWithResultsTest extends BusinessTest {
 			public Object doInTransaction(TransactionStatus status) {
 
 				// On vérifie que les batchs ont bien été processés et committés
-				final List<Tiers> lines = tiersDAO.getAll();
+				final List<Tiers> lines = allTiersOfType(PersonnePhysique.class);
 				Collections.sort(lines, new Comparator<Tiers>() {
 					@Override
 					public int compare(Tiers o1, Tiers o2) {
@@ -193,7 +194,7 @@ public class BatchTransactionTemplateWithResultsTest extends BusinessTest {
 			public Object doInTransaction(TransactionStatus status) {
 				
 				// On vérifie que les batchs ont bien été processés et committés à l'exception du deuxième batch qui a été rollé-back
-				final List<Tiers> lines = tiersDAO.getAll();
+				final List<Tiers> lines = allTiersOfType(PersonnePhysique.class);
 				Collections.sort(lines, new Comparator<Tiers>() {
 					@Override
 					public int compare(Tiers o1, Tiers o2) {
@@ -250,7 +251,7 @@ public class BatchTransactionTemplateWithResultsTest extends BusinessTest {
 			public Object doInTransaction(TransactionStatus status) {
 
 				// On vérifie que les batchs ont bien été processés et committés
-				final List<Tiers> lines = tiersDAO.getAll();
+				final List<Tiers> lines = allTiersOfType(PersonnePhysique.class);
 				Collections.sort(lines, new Comparator<Tiers>() {
 					@Override
 					public int compare(Tiers o1, Tiers o2) {
@@ -329,7 +330,7 @@ public class BatchTransactionTemplateWithResultsTest extends BusinessTest {
 				 * <li>le troisième batch est committé complétement</li>
 				 * </ul>
 				 */
-				final List<Tiers> lines = tiersDAO.getAll();
+				final List<Tiers> lines = allTiersOfType(PersonnePhysique.class);
 				Collections.sort(lines, new Comparator<Tiers>() {
 					@Override
 					public int compare(Tiers o1, Tiers o2) {
@@ -412,7 +413,9 @@ public class BatchTransactionTemplateWithResultsTest extends BusinessTest {
 				/*
 				 * On vérifie que la base est toujours vide
 				 */
-				assertEquals(0, tiersDAO.getCount(Tiers.class));
+				assertEquals(0, tiersDAO.getCount(DebiteurPrestationImposable.class));
+				assertEquals(0, tiersDAO.getCount(PersonnePhysique.class));
+				assertEquals(0, tiersDAO.getCount(MenageCommun.class));
 				assertEquals(0, tiersDAO.getCount(DeclarationImpotSource.class));
 				assertEquals(0, tiersDAO.getCount(EtatDeclaration.class));
 				assertEquals(0, tiersDAO.getCount(DelaiDeclaration.class));
@@ -426,7 +429,8 @@ public class BatchTransactionTemplateWithResultsTest extends BusinessTest {
 		doInTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
-				assertEquals(count, tiersDAO.getCount(Tiers.class));
+				final List<Tiers> all = allTiersOfType(PersonnePhysique.class, MenageCommun.class, DebiteurPrestationImposable.class);
+				assertEquals(count, all.size());
 				return null;
 			}
 		});

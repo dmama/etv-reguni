@@ -53,7 +53,7 @@ public class SecuriteDossierServiceTest extends SecurityTest {
 			}
 		});
 
-		final Tiers jojo = (Tiers) hibernateTemplate.get(Tiers.class, ids.jojo);
+		final Tiers jojo = hibernateTemplate.get(Tiers.class, ids.jojo);
 		assertNull(service.getAcces(jojo)); // opérateur inconnu -> aucun accès
 	}
 
@@ -81,7 +81,7 @@ public class SecuriteDossierServiceTest extends SecurityTest {
 			}
 		});
 
-		final Tiers jojo = (Tiers) hibernateTemplate.get(Tiers.class, ids.jojo);
+		final Tiers jojo = hibernateTemplate.get(Tiers.class, ids.jojo);
 		assertEquals(Niveau.ECRITURE, service.getAcces(jojo));
 	}
 
@@ -111,7 +111,7 @@ public class SecuriteDossierServiceTest extends SecurityTest {
 			}
 		});
 
-		final Tiers jojo = (Tiers) hibernateTemplate.get(Tiers.class, ids.jojo);
+		final Tiers jojo = hibernateTemplate.get(Tiers.class, ids.jojo);
 		assertEquals(Niveau.LECTURE, service.getAcces(jojo));
 	}
 
@@ -165,7 +165,7 @@ public class SecuriteDossierServiceTest extends SecurityTest {
 			}
 		});
 
-		final Tiers jojo = (Tiers) hibernateTemplate.get(Tiers.class, ids.jojo);
+		final Tiers jojo = hibernateTemplate.get(Tiers.class, ids.jojo);
 		assertEquals(Niveau.ECRITURE, service.getAcces(jojo)); // pas d'interdiction particulière
 
 		resetAuthentication();
@@ -244,7 +244,7 @@ public class SecuriteDossierServiceTest extends SecurityTest {
 			}
 		});
 
-		final Tiers jojo = (Tiers) hibernateTemplate.get(Tiers.class, ids.jojo);
+		final Tiers jojo = hibernateTemplate.get(Tiers.class, ids.jojo);
 		assertEquals(Niveau.LECTURE, service.getAcces(jojo));
 
 		resetAuthentication();
@@ -306,7 +306,7 @@ public class SecuriteDossierServiceTest extends SecurityTest {
 			}
 		});
 
-		final Tiers jojo = (Tiers) hibernateTemplate.get(Tiers.class, ids.jojo);
+		final Tiers jojo = hibernateTemplate.get(Tiers.class, ids.jojo);
 		assertEquals(Niveau.LECTURE, service.getAcces(jojo));
 
 		resetAuthentication();
@@ -370,7 +370,7 @@ public class SecuriteDossierServiceTest extends SecurityTest {
 			}
 		});
 
-		final Tiers jojo = (Tiers) hibernateTemplate.get(Tiers.class, ids.jojo);
+		final Tiers jojo = hibernateTemplate.get(Tiers.class, ids.jojo);
 
 		resetAuthentication();
 		setAuthentication("dirAci1");
@@ -430,7 +430,7 @@ public class SecuriteDossierServiceTest extends SecurityTest {
 			}
 		});
 
-		final Tiers anouchka = (Tiers) hibernateTemplate.get(Tiers.class, ids.anouchka);
+		final Tiers anouchka = hibernateTemplate.get(Tiers.class, ids.anouchka);
 		assertEquals(Niveau.LECTURE, service.getAcces(anouchka));
 
 		resetAuthentication();

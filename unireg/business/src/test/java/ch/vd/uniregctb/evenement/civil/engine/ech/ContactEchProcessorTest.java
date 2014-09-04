@@ -60,9 +60,9 @@ public class ContactEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 
 		globalTiersIndexer.sync();
 
-		// recherche sur lausanne
+		// recherche sur Prilly
 		final TiersCriteria criteria = new TiersCriteria();
-		criteria.setLocaliteOuPays(MockLocalite.Lausanne.getNomCompletMinuscule());
+		criteria.setLocaliteOuPays(MockLocalite.Prilly.getNomCompletMinuscule());
 		final List<TiersIndexedData> res = globalTiersSearcher.search(criteria);
 		Assert.assertEquals(0, res.size());
 
@@ -72,12 +72,12 @@ public class ContactEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			public void modifyIndividu(MockIndividu individu) {
 				final MockAdresse adr = new MockAdresse();
 				adr.setTypeAdresse(TypeAdresseCivil.COURRIER);
-				adr.setCommuneAdresse(MockCommune.Lausanne);
+				adr.setCommuneAdresse(MockCommune.Prilly);
 				adr.setDateDebutValidite(dateEvt);
-				adr.setLocalite(MockLocalite.Lausanne.getNomCompletMinuscule());
+				adr.setLocalite(MockLocalite.Prilly.getNomCompletMinuscule());
 				adr.setNoOfsPays(MockPays.Suisse.getNoOFS());
-				adr.setNpa(Integer.toString(MockLocalite.Lausanne.getNPA()));
-				adr.setNumeroRue(MockRue.Lausanne.AvenueDeBeaulieu.getNoRue());
+				adr.setNpa(Integer.toString(MockLocalite.Prilly.getNPA()));
+				adr.setNumeroRue(MockRue.Prilly.CheminDeLaPossession.getNoRue());
 				individu.getAdresses().add(adr);
 			}
 		});
@@ -114,7 +114,7 @@ public class ContactEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		// attente de fin d'indexation
 		globalTiersIndexer.sync();
 
-		// recherche sur lausanne -> maintenant, il est là!
+		// recherche sur Prilly -> maintenant, il est là!
 		final List<TiersIndexedData> resApres = globalTiersSearcher.search(criteria);
 		Assert.assertEquals(1, resApres.size());
 

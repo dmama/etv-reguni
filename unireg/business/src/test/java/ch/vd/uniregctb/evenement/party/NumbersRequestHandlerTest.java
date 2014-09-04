@@ -122,8 +122,8 @@ public class NumbersRequestHandlerTest extends BusinessTest {
 				DebiteurPrestationImposable debiteur1 = addDebiteur();
 				debiteur1.setAnnule(true);
 
-				CollectiviteAdministrative colladm0 = addCollAdm(0);
-				CollectiviteAdministrative colladm1 = addCollAdm(1);
+				CollectiviteAdministrative colladm0 = addCollAdm(666);
+				CollectiviteAdministrative colladm1 = addCollAdm(42);
 				colladm1.setAnnule(true);
 
 				AutreCommunaute autre0 = addAutreCommunaute("dollar est ton dieu");

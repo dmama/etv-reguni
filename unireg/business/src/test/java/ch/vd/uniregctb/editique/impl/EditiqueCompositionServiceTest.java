@@ -43,10 +43,6 @@ public class EditiqueCompositionServiceTest extends BusinessTest {
 
 	private EditiqueCompositionServiceImpl service;
 
-	public EditiqueCompositionServiceTest() {
-		setWantCollectivitesAdministratives(true);
-	}
-
 	@Override
 	protected void runOnSetUp() throws Exception {
 		super.runOnSetUp();

@@ -53,10 +53,6 @@ public class ImpressionSommationDIHelperTest extends BusinessTest {
 	private PeriodeFiscale periodeFiscale;
 	private ModeleDocument modeleDocument;
 
-	public ImpressionSommationDIHelperTest() {
-		setWantCollectivitesAdministratives(true);
-	}
-
 	@Override
 	protected void runOnSetUp() throws Exception {
 		super.runOnSetUp();

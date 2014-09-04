@@ -8,11 +8,11 @@ import java.util.Set;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.registre.base.validation.ValidationMessage;
 import ch.vd.unireg.interfaces.civil.data.Adresse;
@@ -86,19 +86,14 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testInitIndividuSeul() throws Exception {
 
 		final long numeroIndividu = 12345L;
 		final RegDate dateArrivee = RegDate.get(2002, 3, 15);
 		final RegDate dateVeilleArrivee = dateArrivee.getOneDayBefore();
 
-		PersonnePhysique habitant = new PersonnePhysique(true);
-		habitant.setNumero(numeroIndividu);
-
 		// Crée l'événement
-		EvenementCivilRegPP
-				evenement = new EvenementCivilRegPP(1L, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, EtatEvenementCivil.A_TRAITER, dateArrivee, numeroIndividu, 0L, 1234, null);
+		final EvenementCivilRegPP evenement = new EvenementCivilRegPP(1L, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, EtatEvenementCivil.A_TRAITER, dateArrivee, numeroIndividu, 0L, 1234, null);
 
 		// Prend le mock infrastructure par défaut
 		ServiceInfrastructureService infrastructureService = new ServiceInfrastructureImpl(new MockServiceInfrastructureService() {
@@ -141,14 +136,19 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		final EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService, tiersDAO);
-		final ArriveePrincipale adapter = new ArriveePrincipale(evenement, context, options);
 
-		assertEquals(MockLocalite.Lausanne.getNomAbregeMinuscule(), adapter.getAncienneAdresse().getLocalite());
-		assertEquals(MockCommune.Cossonay.getNomOfficiel(), adapter.getNouvelleCommune().getNomOfficiel());
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final ArriveePrincipale adapter = new ArriveePrincipale(evenement, context, options);
+
+				assertEquals(MockLocalite.Lausanne.getNomAbregeMinuscule(), adapter.getAncienneAdresse().getLocalite());
+				assertEquals(MockCommune.Cossonay.getNomOfficiel(), adapter.getNouvelleCommune().getNomOfficiel());
+			}
+		});
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	/**
 	 * Teste les différents scénarios devant échouer au test de complétude de l'arrivée.
 	 */
@@ -159,21 +159,30 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 		final MessageCollector collector = buildMessageCollector();
 
 		// 1er test : individu seul
-		final Individu individuSeul = serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, date(2000, 12, 31));
-		ArriveePrincipale arrivee = createValidArrivee(individuSeul, DATE_VALIDE);
-		arrivee.checkCompleteness(collector, collector);
-		Assert.isTrue(collector.getErreurs().isEmpty(), "individu célibataire : ca n'aurait pas du causer une erreur");
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final Individu individuSeul = serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, date(2000, 12, 31));
+				final ArriveePrincipale arrivee = createValidArrivee(individuSeul, DATE_VALIDE);
+				arrivee.checkCompleteness(collector, collector);
+				Assert.isTrue(collector.getErreurs().isEmpty(), "individu célibataire : ca n'aurait pas du causer une erreur");
+			}
+		});
 
 		// 2ème test : individu marié seul
-		collector.clear();
-		final Individu individuMarieSeul = serviceCivil.getIndividu(NUMERO_INDIVIDU_MARIE_SEUL, date(2000, 12, 31));
-		arrivee = createValidArrivee(individuMarieSeul, DATE_VALIDE);
-		arrivee.checkCompleteness(collector, collector);
-		Assert.isTrue(collector.getErreurs().isEmpty(), "individu célibataire marié seul : ca n'aurait pas du causer une erreur");
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				collector.clear();
+				final Individu individuMarieSeul = serviceCivil.getIndividu(NUMERO_INDIVIDU_MARIE_SEUL, date(2000, 12, 31));
+				final ArriveePrincipale arrivee = createValidArrivee(individuMarieSeul, DATE_VALIDE);
+				arrivee.checkCompleteness(collector, collector);
+				Assert.isTrue(collector.getErreurs().isEmpty(), "individu célibataire marié seul : ca n'aurait pas du causer une erreur");
+			}
+		});
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	/**
 	 * Teste les différents scénarios devant échouer à la validation.
 	 */
@@ -183,50 +192,54 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 
 		final MessageCollector collector = buildMessageCollector();
 
-		// 1er test : événement avec une date dans le futur
-		Arrivee arrivee = createValidArrivee(serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, date(2000, 12, 31)), DATE_FUTURE);
-		arrivee.validate(collector, collector);
-		Assert.notEmpty(collector.getErreurs(), "Une date future pour l'événement aurait dû renvoyer une erreur");
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				// 1er test : événement avec une date dans le futur
+				Arrivee arrivee = createValidArrivee(serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, date(2000, 12, 31)), DATE_FUTURE);
+				arrivee.validate(collector, collector);
+				Assert.notEmpty(collector.getErreurs(), "Une date future pour l'événement aurait dû renvoyer une erreur");
 
-		// 2ème test : arrivée antérieur à la date de début de validité de
-		// l'ancienne adresse
-		collector.clear();
+				// 2ème test : arrivée antérieur à la date de début de validité de
+				// l'ancienne adresse
+				collector.clear();
 
-		// Ancienne adresse
-		MockAdresse ancienneAdresse = new MockAdresse();
-		ancienneAdresse.setDateDebutValidite(DATE_ANCIENNE_ADRESSE);
-		ancienneAdresse.setPays(MockPays.Suisse);
-		final MockCommune ancienneCommune = MockCommune.Cossonay;
-		ancienneAdresse.setCommuneAdresse(ancienneCommune);
+				// Ancienne adresse
+				MockAdresse ancienneAdresse = new MockAdresse();
+				ancienneAdresse.setDateDebutValidite(DATE_ANCIENNE_ADRESSE);
+				ancienneAdresse.setPays(MockPays.Suisse);
+				final MockCommune ancienneCommune = MockCommune.Cossonay;
+				ancienneAdresse.setCommuneAdresse(ancienneCommune);
 
-		// Nouvelle adresse
-		final MockCommune commune = MockCommune.Lausanne;
-		final MockAdresse nouvelleAdresse = new MockAdresse();
-		nouvelleAdresse.setDateDebutValidite(DATE_ANTERIEURE_ANCIENNE_ADRESSE);
+				// Nouvelle adresse
+				final MockCommune commune = MockCommune.Lausanne;
+				final MockAdresse nouvelleAdresse = new MockAdresse();
+				nouvelleAdresse.setDateDebutValidite(DATE_ANTERIEURE_ANCIENNE_ADRESSE);
 
-		arrivee = new ArriveePrincipale(serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, date(2000, 12, 31)), null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS,
-				DATE_ANTERIEURE_ANCIENNE_ADRESSE, commune.getNoOFS(), ancienneCommune, commune, ancienneAdresse, nouvelleAdresse, context);
-		arrivee.validate(collector, collector);
-		Assert.notEmpty(collector.getErreurs(), "L'arrivée est antérieur à la date de début de validité de l'ancienne adresse, une erreur aurait du être déclenchée");
+				arrivee = new ArriveePrincipale(serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, date(2000, 12, 31)), null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS,
+				                                DATE_ANTERIEURE_ANCIENNE_ADRESSE, commune.getNoOFS(), ancienneCommune, commune, ancienneAdresse, nouvelleAdresse, context);
+				arrivee.validate(collector, collector);
+				Assert.notEmpty(collector.getErreurs(), "L'arrivée est antérieur à la date de début de validité de l'ancienne adresse, une erreur aurait du être déclenchée");
 
-		// 3ème test : arrivée hors canton
-		collector.clear();
-		arrivee = createValidArrivee(serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, date(2000, 12, 31)), MockCommune.Neuchatel, DATE_VALIDE);
-		arrivee.validate(collector, collector);
-		Assert.notEmpty(collector.getErreurs(), "L'arrivée est hors canton, une erreur aurait du être déclenchée");
+				// 3ème test : arrivée hors canton
+				collector.clear();
+				arrivee = createValidArrivee(serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, date(2000, 12, 31)), MockCommune.Neuchatel, DATE_VALIDE);
+				arrivee.validate(collector, collector);
+				Assert.notEmpty(collector.getErreurs(), "L'arrivée est hors canton, une erreur aurait du être déclenchée");
 
-		// 4ème test : commune du Sentier -> traitement manuel dans tous les cas
-		collector.clear();
-		arrivee = createValidArrivee(serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, date(2000, 12, 31)), MockCommune.LeChenit, MockCommune.Fraction.LeSentier);
-		arrivee.validate(collector, collector);
-		Assert.isTrue(collector.getWarnings().size() == 1, "L'arrivée est dans la commune du sentier, un warning aurait du être déclenchée");
+				// 4ème test : commune du Sentier -> traitement manuel dans tous les cas
+				collector.clear();
+				arrivee = createValidArrivee(serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, date(2000, 12, 31)), MockCommune.LeChenit, MockCommune.Fraction.LeSentier);
+				arrivee.validate(collector, collector);
+				Assert.isTrue(collector.getWarnings().size() == 1, "L'arrivée est dans la commune du sentier, un warning aurait du être déclenchée");
+			}
+		});
 	}
 
 	/**
 	 * Teste les différentes exceptions acceptées pour le traitement d'une arrivée
 	 */
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testValidateException() throws Exception {
 
 		loadDatabase(DB_UNIT_DATA_FILE);
@@ -256,57 +269,74 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 		/*
 		 * 1er test : événement avec le tiers correspondant à l'individu manquant
 		 */
-		Arrivee arrivee = new ArriveePrincipale(inconnu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS, DATE_VALIDE, commune.getNoOFS(), null, commune, null, nouvelleAdressePrincipale, context);
-		arrivee.validate(collector, collector);
-		Assert.isTrue(collector.getErreurs().isEmpty(), "Le tiers rattaché à l'individu n'existe pas, mais ceci est un cas valide et aucune erreur n'aurait dû être déclenchée");
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final Arrivee arrivee =
+						new ArriveePrincipale(inconnu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS, DATE_VALIDE, commune.getNoOFS(), null, commune, null, nouvelleAdressePrincipale, context);
+				arrivee.validate(collector, collector);
+				Assert.isTrue(collector.getErreurs().isEmpty(), "Le tiers rattaché à l'individu n'existe pas, mais ceci est un cas valide et aucune erreur n'aurait dû être déclenchée");
+			}
+		});
 
 		/*
 		 * 2ème test : événement avec le tiers correspondant au conjoint manquant
 		 */
-		collector.clear();
-		arrivee = new ArriveePrincipale(inconnu, conjoint, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS, DATE_VALIDE, commune.getNoOFS(), null, commune, null, nouvelleAdressePrincipale, context);
-		arrivee.validate(collector, collector);
-		Assert.isTrue(collector.getErreurs().isEmpty(), "Le tiers rattaché au conjoint n'existe pas, mais ceci est un cas valide et aucune erreur n'aurait dû être déclenchée");
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				collector.clear();
+				final ArriveePrincipale arrivee =
+						new ArriveePrincipale(inconnu, conjoint, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS, DATE_VALIDE, commune.getNoOFS(), null, commune, null, nouvelleAdressePrincipale, context);
+				arrivee.validate(collector, collector);
+				Assert.isTrue(collector.getErreurs().isEmpty(), "Le tiers rattaché au conjoint n'existe pas, mais ceci est un cas valide et aucune erreur n'aurait dû être déclenchée");
+			}
+		});
 
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testHandle() throws Exception {
 
 		loadDatabase(DB_UNIT_DATA_FILE);
 
 		final Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, date(2000, 12, 31));
-		Arrivee arrivee = createValidArrivee(individu, DATE_VALIDE);
 
-		final MessageCollector collector = buildMessageCollector();
-		arrivee.validate(collector, collector);
-		arrivee.handle(collector);
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				Arrivee arrivee = createValidArrivee(individu, DATE_VALIDE);
 
-		Assert.isTrue(collector.getErreurs().isEmpty(), "Une erreur est survenue lors du traitement de l'arrivée");
+				final MessageCollector collector = buildMessageCollector();
+				arrivee.validate(collector, collector);
+				arrivee.handle(collector);
 
-		PersonnePhysique tiers = tiersDAO.getHabitantByNumeroIndividu(arrivee.getNoIndividu());
-		assertTrue(tiers != null);
+				Assert.isTrue(collector.getErreurs().isEmpty(), "Une erreur est survenue lors du traitement de l'arrivée");
 
-		Set<AdresseTiers> adresses = tiers.getAdressesTiers();
-		assertFalse(adresses.isEmpty());
-		for (AdresseTiers adresse : adresses) {
-			assertFalse(adresse instanceof AdresseCivile);
-		}
-		Set<ForFiscal> forsFiscaux = tiers.getForsFiscaux();
-		assertFalse("Le contribuable n'a aucun for fiscal", forsFiscaux.isEmpty());
+				PersonnePhysique tiers = tiersDAO.getHabitantByNumeroIndividu(arrivee.getNoIndividu());
+				assertTrue(tiers != null);
 
-		ForFiscal forFiscalPrincipal = null;
-		for (ForFiscal forFiscal : forsFiscaux) {
-			if (forFiscal instanceof ForFiscalPrincipal) {
-				forFiscalPrincipal = forFiscal;
-				break;
+				Set<AdresseTiers> adresses = tiers.getAdressesTiers();
+				assertFalse(adresses.isEmpty());
+				for (AdresseTiers adresse : adresses) {
+					assertFalse(adresse instanceof AdresseCivile);
+				}
+				Set<ForFiscal> forsFiscaux = tiers.getForsFiscaux();
+				assertFalse("Le contribuable n'a aucun for fiscal", forsFiscaux.isEmpty());
+
+				ForFiscal forFiscalPrincipal = null;
+				for (ForFiscal forFiscal : forsFiscaux) {
+					if (forFiscal instanceof ForFiscalPrincipal) {
+						forFiscalPrincipal = forFiscal;
+						break;
+					}
+				}
+				assertNotNull("Aucun for princpal trouvé", forFiscalPrincipal);
+
+				assertEquals(1, eventSender.count);
+				assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(tiers).size());
 			}
-		}
-		assertNotNull("Aucun for princpal trouvé", forFiscalPrincipal);
-
-		assertEquals(1, eventSender.count);
-		assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(tiers).size());
+		});
 	}
 
 	private ArriveePrincipale createValidArrivee(Individu individu, RegDate dateArrivee) {
@@ -341,7 +371,6 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 	 * [UNIREG-1603] Teste les différents cas de recherche de non-habitants
 	 */
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testFindNonHabitants() throws Exception {
 
 		class Ids {
@@ -457,45 +486,50 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 
 		globalTiersIndexer.sync();
 
-		// Si on recherche un Jean Dupneu né le 1er janvier 1960 et de sexe masculin, on doit trouver tous les Jean Dupneu assujettis nés un 1er janvier 1960 <b>ou</b>
-		// de date de naissance inconnue et de sexe masculin <b>ou</b> de sexe inconnu. On ne doit pas trouver les Jean Dupneu nés un autre jour ou avec un autre sexe.
-		{
-			final List<PersonnePhysique> list = Arrivee.findNonHabitants(context.getTiersService(), civil.jean, null).getValue();
-			assertEquals(8, list.size());
-			assertListContains(list, ids.jeanNomPrenomAssujetti, ids.jeanNomPrenomDateAssujetti, ids.jeanNomPrenomDateSexeAssujetti, ids.jeanNomPrenomSexeAssujetti,
-			                         ids.jeanNomPrenom, ids.jeanNomPrenomDate, ids.jeanNomPrenomDateSexe, ids.jeanNomPrenomSexe);
-		}
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				// Si on recherche un Jean Dupneu né le 1er janvier 1960 et de sexe masculin, on doit trouver tous les Jean Dupneu assujettis nés un 1er janvier 1960 <b>ou</b>
+				// de date de naissance inconnue et de sexe masculin <b>ou</b> de sexe inconnu. On ne doit pas trouver les Jean Dupneu nés un autre jour ou avec un autre sexe.
+				{
+					final List<PersonnePhysique> list = Arrivee.findNonHabitants(context.getTiersService(), civil.jean, null).getValue();
+					assertEquals(8, list.size());
+					assertListContains(list, ids.jeanNomPrenomAssujetti, ids.jeanNomPrenomDateAssujetti, ids.jeanNomPrenomDateSexeAssujetti, ids.jeanNomPrenomSexeAssujetti,
+					                   ids.jeanNomPrenom, ids.jeanNomPrenomDate, ids.jeanNomPrenomDateSexe, ids.jeanNomPrenomSexe);
+				}
 
-		// Si on recherche un Jaques Dupneu né le 1er janvier 1960 et de sexe masculin, on doit le trouver puisqu'il y en a qu'un et qu'il est complet.
-		{
-			final List<PersonnePhysique> list = Arrivee.findNonHabitants(context.getTiersService(), civil.jacques, null).getValue();
-			assertEquals(1, list.size());
-			assertListContains(list, ids.jacquesNomPrenomDateSexeAssujetti);
-		}
+				// Si on recherche un Jaques Dupneu né le 1er janvier 1960 et de sexe masculin, on doit le trouver puisqu'il y en a qu'un et qu'il est complet.
+				{
+					final List<PersonnePhysique> list = Arrivee.findNonHabitants(context.getTiersService(), civil.jacques, null).getValue();
+					assertEquals(1, list.size());
+					assertListContains(list, ids.jacquesNomPrenomDateSexeAssujetti);
+				}
 
-		// [UNIREG-3073] Si on recherche un Roger Dupneu né le 1er janvier 1960 et de sexe masculin, on doit trouver le seul candidat malgré le fait qu'il ne possède pas de date de naissance
-		{
-			final List<PersonnePhysique> list = Arrivee.findNonHabitants(context.getTiersService(), civil.roger, null).getValue();
-			assertEquals(1, list.size());
-			assertListContains(list, ids.rogerNomPrenomSexeAssujetti);
-		}
+				// [UNIREG-3073] Si on recherche un Roger Dupneu né le 1er janvier 1960 et de sexe masculin, on doit trouver le seul candidat malgré le fait qu'il ne possède pas de date de naissance
+				{
+					final List<PersonnePhysique> list = Arrivee.findNonHabitants(context.getTiersService(), civil.roger, null).getValue();
+					assertEquals(1, list.size());
+					assertListContains(list, ids.rogerNomPrenomSexeAssujetti);
+				}
 
-		// Si on recherche un Cédric Dupneu né le 1er janvier 1960 et de sexe masculin, on ne doit pas le trouver parce que
-		// le candidat possède un numéro d'individu (malgré le fait que tous les critères de recherche correspondent bien)
-		{
-			final List<PersonnePhysique> list = Arrivee.findNonHabitants(context.getTiersService(), civil.cedric, null).getValue();
-			assertEmpty(list);
-		}
+				// Si on recherche un Cédric Dupneu né le 1er janvier 1960 et de sexe masculin, on ne doit pas le trouver parce que
+				// le candidat possède un numéro d'individu (malgré le fait que tous les critères de recherche correspondent bien)
+				{
+					final List<PersonnePhysique> list = Arrivee.findNonHabitants(context.getTiersService(), civil.cedric, null).getValue();
+					assertEmpty(list);
+				}
 
-        // [SIFISC-4876] Si on recherche Jean Pierre, il y en a bcp trop pour l'indexeur; qui doit lever une exception catchée et réemballée dans
-        // dans une EvenementCivilException avec un joli message compréhensible pour l'utilisateur
-		try {
-            Arrivee.findNonHabitants(context.getTiersService(), civil.pierreJean, null);
-            fail("Le dernier appel doit lever une exception");
-        }
-		catch (EvenementCivilException e) {
-			assertEquals("Trop de non-habitants (110 au total) correspondent à: Jean Pierre", e.getMessage());
-		}
+				// [SIFISC-4876] Si on recherche Jean Pierre, il y en a bcp trop pour l'indexeur; qui doit lever une exception catchée et réemballée dans
+				// dans une EvenementCivilException avec un joli message compréhensible pour l'utilisateur
+				try {
+					Arrivee.findNonHabitants(context.getTiersService(), civil.pierreJean, null);
+					fail("Le dernier appel doit lever une exception");
+				}
+				catch (EvenementCivilException e) {
+					assertEquals("Trop de non-habitants (110 au total) correspondent à: Jean Pierre", e.getMessage());
+				}
+			}
+		});
     }
 
 	private void assertListContains(List<PersonnePhysique> list, Long... ids) {
@@ -514,7 +548,6 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 	 * fusionnées au civil.
 	 */
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testArriveeDansUneCommunePasEncoreFusionneeAuCivilNiAuFiscal() throws Exception {
 
 		final Long noInd = 1234L;
@@ -531,40 +564,51 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		final PersonnePhysique pp = addHabitant(noInd);
-		addForPrincipal(pp, date(1990, 1, 1), MotifFor.MAJORITE, MockCommune.Echallens);
-		hibernateTemplate.flush();
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noInd);
+				addForPrincipal(pp, date(1990, 1, 1), MotifFor.MAJORITE, MockCommune.Echallens);
+				return pp.getNumero();
+			}
+		});
 
 		// Simule un événement d'arrivée de la part de la commune fusionnée
 		final EvenementCivilRegPP externe = new EvenementCivilRegPP(0L, TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE, EtatEvenementCivil.A_TRAITER, dateDemenagement, noInd, null,
 				MockCommune.BourgEnLavaux.getNoOFS(), null);
 
-		// L'événement fiscal externe d'arrivée doit être traduit en un événement fiscal interne d'arrivée, pas de surprise ici.
-		final EvenementCivilInterne interne = new ArriveeTranslationStrategy().create(externe, context, options);
-		org.junit.Assert.assertNotNull(interne);
-		assertInstanceOf(Arrivee.class, interne);
-
 		// pour des raisons de validation, on va dire que l'on se place à un jour où la commune de Grandvaux est
 		// encore active fiscalement (un mois avant la fin)
 		ForFiscalValidator.setFutureBeginDate(MockCommune.Grandvaux.getDateFinValidite().addMonths(-1));
 		try {
-			final Arrivee arrivee = (Arrivee) interne;
+			doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+				@Override
+				public void execute(TransactionStatus status) throws Exception {
+					// L'événement fiscal externe d'arrivée doit être traduit en un événement fiscal interne d'arrivée, pas de surprise ici.
+					final EvenementCivilInterne interne = new ArriveeTranslationStrategy().create(externe, context, options);
+					org.junit.Assert.assertNotNull(interne);
+					assertInstanceOf(Arrivee.class, interne);
 
-			final MessageCollector collector = buildMessageCollector();
-			arrivee.validate(collector, collector);
-			arrivee.handle(collector);
+					final Arrivee arrivee = (Arrivee) interne;
 
-			if (collector.hasErreurs()) {
-				fail("Une ou plusieurs erreurs sont survenues lors du traitement de l'arrivée : \n" + Arrays.toString(collector.getErreurs().toArray()));
-			}
+					final MessageCollector collector = buildMessageCollector();
+					arrivee.validate(collector, collector);
+					arrivee.handle(collector);
 
-			final List<ForFiscal> fors = pp.getForsFiscauxSorted();
-			assertNotNull(fors);
-			assertEquals(2, fors.size());
-			assertForPrincipal(date(1990, 1, 1), MotifFor.MAJORITE, dateDemenagement.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
-					MockCommune.Echallens.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(0));
-			assertForPrincipal(dateDemenagement, MotifFor.DEMENAGEMENT_VD, null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Grandvaux.getNoOFS(), MotifRattachement.DOMICILE,
-					ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(1));
+					if (collector.hasErreurs()) {
+						fail("Une ou plusieurs erreurs sont survenues lors du traitement de l'arrivée : \n" + Arrays.toString(collector.getErreurs().toArray()));
+					}
+
+					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+					final List<ForFiscal> fors = pp.getForsFiscauxSorted();
+					assertNotNull(fors);
+					assertEquals(2, fors.size());
+					assertForPrincipal(date(1990, 1, 1), MotifFor.MAJORITE, dateDemenagement.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+					                   MockCommune.Echallens.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(0));
+					assertForPrincipal(dateDemenagement, MotifFor.DEMENAGEMENT_VD, null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Grandvaux.getNoOFS(), MotifRattachement.DOMICILE,
+					                   ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(1));
+				}
+			});
 		}
 		finally {
 			ForFiscalValidator.setFutureBeginDate(null);
@@ -576,7 +620,6 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 	 * fusionnées au civil, mais pas encore au fiscal.
 	 */
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testArriveeDansUneCommuneFusionneeAuCivilMaisPasAuFiscal() throws Exception {
 
 		final Long noInd = 1234L;
@@ -594,40 +637,51 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		final PersonnePhysique pp = addHabitant(noInd);
-		addForPrincipal(pp, date(1990, 1, 1), MotifFor.MAJORITE, MockCommune.Echallens);
-		hibernateTemplate.flush();
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noInd);
+				addForPrincipal(pp, date(1990, 1, 1), MotifFor.MAJORITE, MockCommune.Echallens);
+				return pp.getNumero();
+			}
+		});
 
 		// Simule un événement d'arrivée de la part de la commune fusionnée
 		final EvenementCivilRegPP externe = new EvenementCivilRegPP(0L, TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE, EtatEvenementCivil.A_TRAITER, dateDemenagement, noInd, null,
 				MockCommune.BourgEnLavaux.getNoOFS(), null);
 
-		// L'événement fiscal externe d'arrivée doit être traduit en un événement fiscal interne d'arrivée, pas de surprise ici.
-		final EvenementCivilInterne interne = new ArriveeTranslationStrategy().create(externe, context, options);
-		org.junit.Assert.assertNotNull(interne);
-		assertInstanceOf(Arrivee.class, interne);
-
 		// pour des raisons de validation, on va dire que l'on se place à un jour où la commune de Grandvaux est
 		// encore active fiscalement (un mois avant la fin)
 		ForFiscalValidator.setFutureBeginDate(MockCommune.Grandvaux.getDateFinValidite().addMonths(-1));
 		try {
-			final Arrivee arrivee = (Arrivee) interne;
+			doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+				@Override
+				public void execute(TransactionStatus status) throws Exception {
+					// L'événement fiscal externe d'arrivée doit être traduit en un événement fiscal interne d'arrivée, pas de surprise ici.
+					final EvenementCivilInterne interne = new ArriveeTranslationStrategy().create(externe, context, options);
+					org.junit.Assert.assertNotNull(interne);
+					assertInstanceOf(Arrivee.class, interne);
 
-			final MessageCollector collector = buildMessageCollector();
-			arrivee.validate(collector, collector);
-			arrivee.handle(collector);
+					final Arrivee arrivee = (Arrivee) interne;
 
-			if (collector.hasErreurs()) {
-				fail("Une ou plusieurs erreurs sont survenues lors du traitement de l'arrivée : \n" + Arrays.toString(collector.getErreurs().toArray()));
-			}
+					final MessageCollector collector = buildMessageCollector();
+					arrivee.validate(collector, collector);
+					arrivee.handle(collector);
 
-			final List<ForFiscal> fors = pp.getForsFiscauxSorted();
-			assertNotNull(fors);
-			assertEquals(2, fors.size());
-			assertForPrincipal(date(1990, 1, 1), MotifFor.MAJORITE, dateDemenagement.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
-					MockCommune.Echallens.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(0));
-			assertForPrincipal(dateDemenagement, MotifFor.DEMENAGEMENT_VD, null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Grandvaux.getNoOFS(), MotifRattachement.DOMICILE,
-					ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(1));
+					if (collector.hasErreurs()) {
+						fail("Une ou plusieurs erreurs sont survenues lors du traitement de l'arrivée : \n" + Arrays.toString(collector.getErreurs().toArray()));
+					}
+
+					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+					final List<ForFiscal> fors = pp.getForsFiscauxSorted();
+					assertNotNull(fors);
+					assertEquals(2, fors.size());
+					assertForPrincipal(date(1990, 1, 1), MotifFor.MAJORITE, dateDemenagement.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+					                   MockCommune.Echallens.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(0));
+					assertForPrincipal(dateDemenagement, MotifFor.DEMENAGEMENT_VD, null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Grandvaux.getNoOFS(), MotifRattachement.DOMICILE,
+					                   ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(1));
+				}
+			});
 		}
 		finally {
 			ForFiscalValidator.setFutureBeginDate(null);
@@ -639,7 +693,6 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 	 * fusionnées au civil, mais pas encore au fiscal et que l'egid n'est pas mentionné dans l'adresse.
 	 */
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testArriveeDansUneCommuneFusionneeAuCivilMaisPasAuFiscalSansEgid() throws Exception {
 
 		final Long noInd = 1234L;
@@ -657,26 +710,36 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		final PersonnePhysique pp = addHabitant(noInd);
-		addForPrincipal(pp, date(1990, 1, 1), MotifFor.MAJORITE, MockCommune.Echallens);
-		hibernateTemplate.flush();
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noInd);
+				addForPrincipal(pp, date(1990, 1, 1), MotifFor.MAJORITE, MockCommune.Echallens);
+				return pp.getNumero();
+			}
+		});
 
 		// Simule un événement d'arrivée de la part de la commune fusionnée
 		final EvenementCivilRegPP externe = new EvenementCivilRegPP(0L, TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE, EtatEvenementCivil.A_TRAITER, dateDemenagement, noInd, null,
 				MockCommune.BourgEnLavaux.getNoOFS(), null);
 
-		// L'événement fiscal externe d'arrivée doit être traduit en un événement fiscal interne d'arrivée, pas de surprise ici.
-		final EvenementCivilInterne interne = new ArriveeTranslationStrategy().create(externe, context, options);
-		org.junit.Assert.assertNotNull(interne);
-		assertInstanceOf(Arrivee.class, interne);
-
-		final Arrivee arrivee = (Arrivee) interne;
-
-		final MessageCollector collector = buildMessageCollector();
-		arrivee.validate(collector, collector);
 		try {
-			arrivee.handle(collector);
-			fail("Il aurait dû y avoir une erreur de validation sur la date de validité du for créé");
+			doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+				@Override
+				public void execute(TransactionStatus status) throws Exception {
+					// L'événement fiscal externe d'arrivée doit être traduit en un événement fiscal interne d'arrivée, pas de surprise ici.
+					final EvenementCivilInterne interne = new ArriveeTranslationStrategy().create(externe, context, options);
+					org.junit.Assert.assertNotNull(interne);
+					assertInstanceOf(Arrivee.class, interne);
+
+					final Arrivee arrivee = (Arrivee) interne;
+
+					final MessageCollector collector = buildMessageCollector();
+					arrivee.validate(collector, collector);
+					arrivee.handle(collector);
+					fail("Il aurait dû y avoir une erreur de validation sur la date de validité du for créé");
+				}
+			});
 		}
 		catch (ValidationException e) {
 			assertEquals(1, e.getErrors().size());
@@ -686,7 +749,7 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 
 			final ValidationMessage erreur = e.getErrors().get(0);
 			assertEquals("La période de validité du for fiscal ForFiscalPrincipal (01.09.2010 - ?) dépasse " +
-					"la période de validité de la commune Riex (5608) à laquelle il est assigné (? - 31.12.2010)", erreur.getMessage());
+					             "la période de validité de la commune Riex (5608) à laquelle il est assigné (? - 31.12.2010)", erreur.getMessage());
 		}
 	}
 
@@ -694,7 +757,6 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 	 * Vérifie que le for fiscal est bien ouvert sur la commune de Bourg-en-Lavaux lorsqu'un habitant arrive dans Bourg-en-Lavaux après la date de fusion fiscale des communes,
 	 */
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testArriveeDansUneCommuneFusionneeAuCivilEtAuFiscal() throws Exception {
 
 		final Long noInd = 1234L;
@@ -712,36 +774,47 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		final PersonnePhysique pp = addHabitant(noInd);
-		addForPrincipal(pp, date(1990, 1, 1), MotifFor.MAJORITE, MockCommune.Echallens);
-		hibernateTemplate.flush();
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noInd);
+				addForPrincipal(pp, date(1990, 1, 1), MotifFor.MAJORITE, MockCommune.Echallens);
+				return pp.getNumero();
+			}
+		});
 
 		// Simule un événement d'arrivée de la part de la commune fusionnée
 		final EvenementCivilRegPP externe = new EvenementCivilRegPP(0L, TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE, EtatEvenementCivil.A_TRAITER, dateDemenagement, noInd, null,
 				MockCommune.BourgEnLavaux.getNoOFS(), null);
 
-		// L'événement fiscal externe d'arrivée doit être traduit en un événement fiscal interne d'arrivée, pas de surprise ici.
-		final EvenementCivilInterne interne = new ArriveeTranslationStrategy().create(externe, context, options);
-		org.junit.Assert.assertNotNull(interne);
-		assertInstanceOf(Arrivee.class, interne);
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				// L'événement fiscal externe d'arrivée doit être traduit en un événement fiscal interne d'arrivée, pas de surprise ici.
+				final EvenementCivilInterne interne = new ArriveeTranslationStrategy().create(externe, context, options);
+				org.junit.Assert.assertNotNull(interne);
+				assertInstanceOf(Arrivee.class, interne);
 
-		final Arrivee arrivee = (Arrivee) interne;
+				final Arrivee arrivee = (Arrivee) interne;
 
-		final MessageCollector collector = buildMessageCollector();
-		arrivee.validate(collector, collector);
-		arrivee.handle(collector);
+				final MessageCollector collector = buildMessageCollector();
+				arrivee.validate(collector, collector);
+				arrivee.handle(collector);
 
-		if (collector.hasErreurs()) {
-			fail("Une ou plusieurs erreurs sont survenues lors du traitement de l'arrivée : \n" + Arrays.toString(collector.getErreurs().toArray()));
-		}
+				if (collector.hasErreurs()) {
+					fail("Une ou plusieurs erreurs sont survenues lors du traitement de l'arrivée : \n" + Arrays.toString(collector.getErreurs().toArray()));
+				}
 
-		final List<ForFiscal> fors = pp.getForsFiscauxSorted();
-		assertNotNull(fors);
-		assertEquals(2, fors.size());
-		assertForPrincipal(date(1990, 1, 1), MotifFor.MAJORITE, dateDemenagement.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
-				MockCommune.Echallens.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(0));
-		assertForPrincipal(dateDemenagement, MotifFor.DEMENAGEMENT_VD, null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.BourgEnLavaux.getNoOFS(), MotifRattachement.DOMICILE,
-				ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(1));
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				final List<ForFiscal> fors = pp.getForsFiscauxSorted();
+				assertNotNull(fors);
+				assertEquals(2, fors.size());
+				assertForPrincipal(date(1990, 1, 1), MotifFor.MAJORITE, dateDemenagement.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+				                   MockCommune.Echallens.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(0));
+				assertForPrincipal(dateDemenagement, MotifFor.DEMENAGEMENT_VD, null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.BourgEnLavaux.getNoOFS(), MotifRattachement.DOMICILE,
+				                   ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(1));
+			}
+		});
 	}
 
 	/**
@@ -749,7 +822,6 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 	 * communes sont fusionnées au civil, mais pas encore au fiscal.
 	 */
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testArriveeEntreCommunesFusionneesAuCivilMaisPasAuFiscal() throws Exception {
 
 		final Long noInd = 1234L;
@@ -766,43 +838,54 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
+		final long ppId = doInNewTransactionAndSessionWithoutValidation(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noInd);
+				addForPrincipal(pp, date(1990, 1, 1), MotifFor.MAJORITE, MockCommune.Villette);
+				return pp.getNumero();
+			}
+		});
+
 		// pour des raisons de validation, on va dire que l'on se place à un jour où la commune de Grandvaux est
 		// encore active fiscalement (un mois avant la fin)
 		ForFiscalValidator.setFutureBeginDate(MockCommune.Grandvaux.getDateFinValidite().addMonths(-1));
 		try {
-			final PersonnePhysique pp = addHabitant(noInd);
-			addForPrincipal(pp, date(1990, 1, 1), MotifFor.MAJORITE, MockCommune.Villette);
-			hibernateTemplate.flush();
-
 			// Simule un événement de déménagement de la part de la commune fusionnée
 			final EvenementCivilRegPP externe = new EvenementCivilRegPP(0L, TypeEvenementCivil.DEMENAGEMENT_DANS_COMMUNE, EtatEvenementCivil.A_TRAITER, dateDemenagement, noInd, null,
 					MockCommune.BourgEnLavaux.getNoOFS(), null);
 
 			// L'événement fiscal externe de déménagement doit être traduit en un événement fiscal interne d'arrivée,
 			// parce que - du point de vue fiscal - les communes n'ont pas encore fusionné.
-			final EvenementCivilInterne interne = new DemenagementTranslationStrategy().create(externe, context, options);
-			org.junit.Assert.assertNotNull(interne);
-			assertInstanceOf(Arrivee.class, interne);
+			doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+				@Override
+				public void execute(TransactionStatus status) throws Exception {
+					final EvenementCivilInterne interne = new DemenagementTranslationStrategy().create(externe, context, options);
+					org.junit.Assert.assertNotNull(interne);
+					assertInstanceOf(Arrivee.class, interne);
 
-			final Arrivee arrivee = (Arrivee) interne;
+					final Arrivee arrivee = (Arrivee) interne;
 
-			final MessageCollector collector = buildMessageCollector();
-			arrivee.validate(collector, collector);
-			arrivee.handle(collector);
+					final MessageCollector collector = buildMessageCollector();
+					arrivee.validate(collector, collector);
+					arrivee.handle(collector);
 
-			if (collector.hasErreurs()) {
-				fail("Une ou plusieurs erreurs sont survenues lors du traitement de l'arrivée : \n" + Arrays.toString(collector.getErreurs().toArray()));
-			}
+					if (collector.hasErreurs()) {
+						fail("Une ou plusieurs erreurs sont survenues lors du traitement de l'arrivée : \n" + Arrays.toString(collector.getErreurs().toArray()));
+					}
 
-			final List<ForFiscal> fors = pp.getForsFiscauxSorted();
-			assertNotNull(fors);
-			assertEquals(2, fors.size());
-			assertForPrincipal(date(1990, 1, 1), MotifFor.MAJORITE, dateDemenagement.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
-					MockCommune.Villette.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(0));
-			assertForPrincipal(dateDemenagement, MotifFor.DEMENAGEMENT_VD, null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Grandvaux.getNoOFS(), MotifRattachement.DOMICILE,
-					ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(1));
+					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+					final List<ForFiscal> fors = pp.getForsFiscauxSorted();
+					assertNotNull(fors);
+					assertEquals(2, fors.size());
+					assertForPrincipal(date(1990, 1, 1), MotifFor.MAJORITE, dateDemenagement.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+					                   MockCommune.Villette.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(0));
+					assertForPrincipal(dateDemenagement, MotifFor.DEMENAGEMENT_VD, null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Grandvaux.getNoOFS(), MotifRattachement.DOMICILE,
+					                   ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(1));
 
-			assertEquals("Traité comme une arrivée car les communes Villette et Grandvaux ne sont pas encore fusionnées du point-de-vue fiscal.", externe.getCommentaireTraitement());
+					assertEquals("Traité comme une arrivée car les communes Villette et Grandvaux ne sont pas encore fusionnées du point-de-vue fiscal.", externe.getCommentaireTraitement());
+				}
+			});
 		}
 		finally {
 			ForFiscalValidator.setFutureBeginDate(null);

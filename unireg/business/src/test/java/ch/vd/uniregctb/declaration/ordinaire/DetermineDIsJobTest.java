@@ -5,12 +5,10 @@ import java.util.HashMap;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
-import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.common.JobTest;
 import ch.vd.uniregctb.declaration.DeterminerDIsJob;
@@ -59,16 +57,6 @@ public class DetermineDIsJobTest extends JobTest {
 				MockIndividu laurent = addIndividu(333908, date(1953, 11, 2), "Schmidt", "Laurent", true);
 				addAdresse(laurent, TypeAdresseCivil.COURRIER, MockRue.LesClees.ChampDuRaffour, null,
 						date(2001, 6, 4), null);
-			}
-		});
-
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				for (MockCollectiviteAdministrative ca : MockCollectiviteAdministrative.getAll()) {
-					addCollAdm(ca);
-				}
-				return null;
 			}
 		});
 	}

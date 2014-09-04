@@ -8,7 +8,6 @@ import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.Declaration;
@@ -54,8 +53,6 @@ public class DemandeDelaiCollectiveProcessorTest extends BusinessTest {
 		final int annee = 2009;
 		final PeriodeFiscale periode = addPeriodeFiscale(annee);
 		final ModeleDocument modeleDocument = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
-
-		addCollAdm(MockCollectiviteAdministrative.CEDI);
 
 		final List<Long> ids = Collections.emptyList();
 		final Contribuable mrKong = addNonHabitant("King", "Kong", date(1965, 4, 13), Sexe.MASCULIN);

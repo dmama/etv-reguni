@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.common;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.sql.SQLException;
 
 import org.hibernate.HibernateException;
@@ -105,7 +107,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
     protected boolean wantIndexation = false;
     protected boolean wantSynchroTache = false;
 	protected boolean wantSynchroParentes = false;
-	protected boolean wantCollectivitesAdministratives = false;
+	protected boolean wantCollectivitesAdministratives = true;
     protected TiersService tiersService;
     protected GlobalTiersIndexer globalTiersIndexer;
     protected GlobalTiersSearcher globalTiersSearcher;
@@ -113,23 +115,60 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
     protected ValidationInterceptor validationInterceptor;
 	protected ParentesSynchronizerInterceptor parentesSynchronizer;
 
+	static {
+		forceLoadAllCollectivitesAdministratives();
+	}
+
+	private static void forceLoadAllCollectivitesAdministratives() {
+		forceLoadStaticInstances(MockCollectiviteAdministrative.class);
+		forceLoadStaticInstances(MockOfficeImpot.class);
+		forceLoadStaticInstances(MockCollectiviteAdministrative.JusticePaix.class);
+	}
+
+	private static void forceLoadStaticInstances(Class<?> clazz) {
+		for (Field field : clazz.getDeclaredFields()) {
+			final int modifiers = field.getModifiers();
+			if (Modifier.isStatic(modifiers) && Modifier.isFinal(modifiers) && Modifier.isPublic(modifiers) && MockCollectiviteAdministrative.class.isAssignableFrom(field.getType())) {
+				try {
+					field.get(null);
+				}
+				catch (IllegalAccessException e) {
+					// on aura essayé... mais c'est quand-même assez bizarre, puisque on ne fait le GET que sur les membres publics
+				}
+			}
+		}
+	}
+
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 		if (wantCollectivitesAdministratives) {
-			doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-				@Override
-				protected void doInTransactionWithoutResult(TransactionStatus status) {
-					for (MockCollectiviteAdministrative collAdm : MockCollectiviteAdministrative.getAll()) {
-						if (collAdm instanceof MockOfficeImpot) {
-							addCollAdm((MockOfficeImpot) collAdm);
-						}
-						else {
-							addCollAdm(collAdm);
+			/*
+			 * Ici, on désactive temporairement l'intercepteur hibernate qui s'occupe du calcul de l'OID d'un contribuable
+			 * (on est justement en train d'insérer ces OIDs en base) car il arrive apparemment que des contribuables soient
+			 * pris avec dans le commit de cette transaction (je n'ai pas compris comment) si plusieurs tests annotés @Transactional
+			 * sont lancés rapidement les uns à la suite des autres...
+			 */
+			AuthenticationHelper.pushPrincipal(getDefaultOperateurName());      // pour les tests qui veulent gérer l'authentification eux-mêmes, et surchargent setAuthentication()
+			try {
+				final Switchable oidInterceptor = getBean(Switchable.class, "officeImpotHibernateInterceptor");
+				doInNewTransactionAndSessionUnderSwitch(oidInterceptor, false, new TransactionCallbackWithoutResult() {
+					@Override
+					protected void doInTransactionWithoutResult(TransactionStatus status) {
+						for (MockCollectiviteAdministrative collAdm : MockCollectiviteAdministrative.getAll()) {
+							if (collAdm instanceof MockOfficeImpot) {
+								addCollAdm((MockOfficeImpot) collAdm);
+							}
+							else {
+								addCollAdm(collAdm);
+							}
 						}
 					}
-				}
-			});
+				});
+			}
+			finally {
+				AuthenticationHelper.popPrincipal();
+			}
 		}
 	}
 
@@ -564,19 +603,15 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
         return adresse;
     }
 
-    protected CollectiviteAdministrative addCedi() {
-        return addCollAdm(MockCollectiviteAdministrative.CEDI);
-    }
-
-    protected CollectiviteAdministrative addCollAdm(MockCollectiviteAdministrative ca) {
+    private CollectiviteAdministrative addCollAdm(MockCollectiviteAdministrative ca) {
         return addCollAdm(ca, null, null);
     }
 
-    protected CollectiviteAdministrative addCollAdm(MockOfficeImpot oid) {
+    private CollectiviteAdministrative addCollAdm(MockOfficeImpot oid) {
         return addCollAdm(oid, oid.getIdentifiantDistrict(), oid.getIdentifiantRegion());
     }
 
-    protected CollectiviteAdministrative addCollAdm(MockCollectiviteAdministrative oid, @Nullable Integer identifiantDistrict, @Nullable Integer identifiantRegion) {
+    private CollectiviteAdministrative addCollAdm(MockCollectiviteAdministrative oid, @Nullable Integer identifiantDistrict, @Nullable Integer identifiantRegion) {
         CollectiviteAdministrative ca = new CollectiviteAdministrative();
         ca.setNumeroCollectiviteAdministrative(oid.getNoColAdm());
         if (identifiantDistrict != null) {

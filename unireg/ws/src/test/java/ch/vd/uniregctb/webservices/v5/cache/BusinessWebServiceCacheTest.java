@@ -29,7 +29,6 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.efacture.data.TypeEtatDestinataire;
-import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.ws.parties.v1.Entry;
@@ -146,8 +145,6 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-
-				addCollAdm(MockCollectiviteAdministrative.CEDI);
 
 				// Un tiers avec avec toutes les parties renseignées
 				final PersonnePhysique eric = addHabitant(noIndividu);

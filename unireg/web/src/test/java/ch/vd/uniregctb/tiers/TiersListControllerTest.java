@@ -107,7 +107,7 @@ public class TiersListControllerTest extends WebMockMvcTest {
 	public void testSearchThroughGetAndUrlRetour() throws Exception {
 		final MockHttpSession session = new MockHttpSession();      // nécessaire pour que les deux appels soient assimilés à la même session
 
-		loadDatabase();
+		loadDatabase(false);
 
 		// premier appel
 		{
@@ -140,7 +140,7 @@ public class TiersListControllerTest extends WebMockMvcTest {
 	public void testSearchThroughGetSansUrlRetour() throws Exception {
 		final MockHttpSession session = new MockHttpSession();      // nécessaire pour que les deux appels soient assimilés à la même session
 
-		loadDatabase();
+		loadDatabase(false);
 
 		// premier appel
 		{
@@ -164,7 +164,7 @@ public class TiersListControllerTest extends WebMockMvcTest {
 	@Test
 	public void testRechercheForTous() throws Exception {
 
-		loadDatabase();
+		loadDatabase(false);
 
 		// Recherche tous les fors y compris les inactifs
 		{
@@ -178,7 +178,7 @@ public class TiersListControllerTest extends WebMockMvcTest {
 	@Test
 	public void testRechercheForActifs() throws Exception {
 
-		loadDatabase();
+		loadDatabase(false);
 
 		// Recherche seulement les fors actifs
 		HashMap<String, String> params = new HashMap<>();
@@ -193,7 +193,7 @@ public class TiersListControllerTest extends WebMockMvcTest {
 	 */
 	@Test
 	public void testShowForm() throws Exception {
-		loadDatabase();
+		loadDatabase(false);
 		final MvcResult res = get("/tiers/list.do", null, null).andReturn();
 		Assert.assertNotNull(res);
 
@@ -209,7 +209,7 @@ public class TiersListControllerTest extends WebMockMvcTest {
 	@Test
 	public void testOnSubmitWithCriteresWithNumCTB() throws Exception {
 
-		loadDatabase();
+		loadDatabase(false);
 
 		final Map<String, String> params = new HashMap<>();
 		params.put("numeroFormatte", "12300003");
@@ -219,7 +219,7 @@ public class TiersListControllerTest extends WebMockMvcTest {
 
 	@Test
 	public void testRechercheNomContient() throws Exception {
-		loadDatabase();
+		loadDatabase(false);
 		final Map<String, String> params = new HashMap<>();
 		params.put("nomRaison", "Cuendet");
 		params.put("typeRechercheDuNom", "CONTIENT");
@@ -229,7 +229,7 @@ public class TiersListControllerTest extends WebMockMvcTest {
 
 	@Test
 	public void testRechercheNomPhonetique() throws Exception {
-		loadDatabase();
+		loadDatabase(false);
 
 		final Map<String, String> params = new HashMap<>();
 		params.put("nomRaison", "Cuendet");
@@ -241,7 +241,7 @@ public class TiersListControllerTest extends WebMockMvcTest {
 	@Test
 	public void testRechercheDateNaissance() throws Exception {
 
-		loadDatabase();
+		loadDatabase(false);
 
 		final Map<String, String> params = new HashMap<>();
 		params.put("dateNaissance", "23.01.1970");
@@ -252,13 +252,13 @@ public class TiersListControllerTest extends WebMockMvcTest {
 	@Test
 	public void testRechercheLocalite() throws Exception {
 
-		loadDatabase();
+		loadDatabase(true);     // j'aimerais que les Collectivités Administratives pré-existantes soient aussi ré-indexées
 
 		final Map<String, String> params = new HashMap<>();
-		params.put("localiteOuPays", "Lausanne");
+		params.put("localiteOuPays", "Morges");
 		{
 			final List<TiersIndexedDataView> list = doSearch(params);
-			assertEquals(3, list.size());
+			assertEquals(3, list.size());       // Une collectivité administrative (OID) + 2 PP
 		}
 
 		params.put("typeTiers", "CONTRIBUABLE");
@@ -277,7 +277,7 @@ public class TiersListControllerTest extends WebMockMvcTest {
 	@Test
 	public void testRechercheNumAVS() throws Exception {
 
-		loadDatabase();
+		loadDatabase(false);
 
 		final Map<String, String> params = new HashMap<>();
 		params.put("numeroAVS", "7561234567897");
@@ -288,7 +288,7 @@ public class TiersListControllerTest extends WebMockMvcTest {
 	@Test
 	public void testRechercheNumAVSWithDash() throws Exception {
 
-		loadDatabase();
+		loadDatabase(false);
 
 		final Map<String, String> params = new HashMap<>();
 		params.put("numeroAVS", "75612.34.567.897");
@@ -296,15 +296,18 @@ public class TiersListControllerTest extends WebMockMvcTest {
 		assertEquals(3, list.size());
 	}
 
-	private void loadDatabase() throws Exception {
+	private void loadDatabase(boolean fullReindex) throws Exception {
 		globalTiersIndexer.overwriteIndex();
 		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
-				TestData.loadTiersBasic(hibernateTemplate);
+				TestData.loadTiersBasic(hibernateTemplate, false);
 				return null;
 			}
 		});
+		if (fullReindex) {
+			globalTiersIndexer.indexAllDatabase();
+		}
 		globalTiersIndexer.sync();
 	}
 }

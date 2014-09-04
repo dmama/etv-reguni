@@ -3648,7 +3648,7 @@ public class TiersServiceTest extends BusinessTest {
 				dpi.setComplementNom("Titi");
 
 				// on indique le tiers référent
-				final CollectiviteAdministrative ca = addCollAdm(MockCollectiviteAdministrative.JusticePaix.DistrictsJuraNordVaudoisEtGrosDeVaud);
+				final CollectiviteAdministrative ca = tiersService.getCollectiviteAdministrative(MockCollectiviteAdministrative.JusticePaix.DistrictsJuraNordVaudoisEtGrosDeVaud.getNoColAdm());
 				tiersService.addContactImpotSource(dpi, ca, date(2009, 1, 1));
 
 				return dpi.getNumero();

@@ -583,8 +583,7 @@ public class TacheServiceImpl implements TacheService {
 	}
 
 	private void executeActions(Long ctbId, List<SynchronizeAction> actions, TacheSyncResults results) {
-		//TODO (BNM) Appeler la méthode getCollectiviteAdministrative et asserter que la collectivité existe + corriger les tests qui ne passent plus
-		final CollectiviteAdministrative officeSuccessions = tiersService.getOrCreateCollectiviteAdministrative(ServiceInfrastructureService.noACISuccessions, true);
+		final CollectiviteAdministrative officeSuccessions = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noACISuccessions, true);
 		if (officeSuccessions == null) {
 			throw new IllegalArgumentException("Impossible de trouver l'office des successions !");
 		}

@@ -6,11 +6,10 @@ import ch.vd.unireg.interfaces.infra.data.Localite;
 
 public class MockLocalite implements Localite {
 
-	private static final long serialVersionUID = -1808690130516540052L;
-
 	public static final MockLocalite Lausanne = new MockLocalite(104, 1000, null, "Lausanne", MockCommune.Lausanne);
 	public static final MockLocalite CossonayVille = new MockLocalite(528, 1304, null, "Cossonay-Ville", MockCommune.Cossonay);
 	public static final MockLocalite Romainmotier = new MockLocalite(564, 1323, null, "Romainmôtier", MockCommune.RomainmotierEnvy);
+	public static final MockLocalite Morges = new MockLocalite(254, 1110, null, "Morges", MockCommune.Morges);
 	public static final MockLocalite LesClees = new MockLocalite(578, 1356, null, "Clées, Les", MockCommune.LesClees);
 	public static final MockLocalite Bex = new MockLocalite(1124, 1880, null, "Bex", MockCommune.Bex);
 	public static final MockLocalite VillarsSousYens = new MockLocalite(283, 1168, null, "Villars-sous-Yens", MockCommune.VillarsSousYens);

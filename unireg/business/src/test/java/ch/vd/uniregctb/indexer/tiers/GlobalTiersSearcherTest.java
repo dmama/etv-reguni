@@ -20,6 +20,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.civil.data.CasePostale;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
@@ -60,6 +61,10 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		setWantIndexation(true);
 	}
 
+	private static int getDefaultCollectivitesAdministrativesNumber() {
+		return MockCollectiviteAdministrative.getAll().size();
+	}
+
 	/**
 	 * @see ch.vd.uniregctb.common.AbstractBusinessTest#onSetUp()
 	 */
@@ -76,14 +81,14 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 			 */
 			@Override
 			protected void init() {
-				MockIndividu alain = addIndividu(9876, RegDate.get(1976, 2, 27), "Dupont", "Alain", true);
+				MockIndividu alain = addIndividu(9876, RegDate.get(1976, 2, 27), "Despont", "Alain", true);
 				MockIndividu richard = addIndividu(9734, RegDate.get(1942, 12, 7), "Bolomey", "Richard", true);
 				MockIndividu james = addIndividu(1373, RegDate.get(1992, 1, 14), "Dean", "James", true);
 				MockIndividu francois = addIndividu(403399, RegDate.get(1961, 3, 12), "Lestourgie", "Francois", true);
-				MockIndividu claudine = addIndividu(222, RegDate.get(1975, 11, 30), "Duchene", "Claudine", false);
-				MockIndividu alain2 = addIndividu(111, RegDate.get(1965, 5, 21), "Dupont", "Alain", true);
+				MockIndividu claudine = addIndividu(222, RegDate.get(1975, 11, 30), "Desplatanes", "Claudine", false);
+				MockIndividu alain2 = addIndividu(111, RegDate.get(1965, 5, 21), "Despont", "Alain", true);
 				MockIndividu miro = addIndividu(333, RegDate.get(1972, 7, 15), "Boillat dupain", "Miro", true);
-				MockIndividu claudine2 = addIndividu(444, RegDate.get(1922, 2, 12), "Duchene", "Claudine", false);
+				MockIndividu claudine2 = addIndividu(444, RegDate.get(1922, 2, 12), "Desplatanes", "Claudine", false);
 
 				addFieldsIndividu(richard, "1234567891023", "98765432109", null);
 
@@ -113,7 +118,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 
 		loadDatabase(DB_UNIT_DATA_FILE);
 		int c = globalTiersSearcher.getExactDocCount();
-		assertEquals(8, c);
+		assertEquals(8 + getDefaultCollectivitesAdministrativesNumber(), c);
 
 		{
 			TiersCriteria criteria = new TiersCriteria();
@@ -164,7 +169,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 
 		loadDatabase(DB_UNIT_DATA_FILE);
 		int c = globalTiersSearcher.getExactDocCount();
-		assertEquals(8, c);
+		assertEquals(8 + getDefaultCollectivitesAdministrativesNumber(), c);
 
 		// Recherche le couple par numéro
 		{
@@ -217,7 +222,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 			assertEquals("Marcel Bolomido", marcel.getNom1());
 			assertEquals(Long.valueOf(8901L), couple.getNumero());
 			assertEquals("Marcel Bolomido", couple.getNom1());
-			assertEquals("Claudine Duchene", couple.getNom2());
+			assertEquals("Claudine Desplatanes", couple.getNom2());
 		}
 	}
 
@@ -227,7 +232,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 
 		loadDatabase(DB_UNIT_DATA_FILE);
 		int c = globalTiersSearcher.getExactDocCount();
-		assertEquals(8, c);
+		assertEquals(8 + getDefaultCollectivitesAdministrativesNumber(), c);
 
 		// Ancien numero
 		{
@@ -286,13 +291,14 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 
 		loadDatabase(DB_UNIT_DATA_FILE);
 		int c = globalTiersSearcher.getExactDocCount();
-		assertEquals(8, c);
+		assertEquals(8 + getDefaultCollectivitesAdministrativesNumber(), c);
 
-		rechercheParTypeTiers("dupont", TypeTiers.HABITANT, 1); // Dupont Alain
+		rechercheParTypeTiers("despont", TypeTiers.HABITANT, 1); // Despont Alain
 		rechercheParTypeTiers(null, TypeTiers.NON_HABITANT, 2);
-		rechercheParTypeTiers("du", TypeTiers.PERSONNE_PHYSIQUE, 2); // Dupont Alain et Duchene Claudine
-		rechercheParTypeTiers("du", TypeTiers.CONTRIBUABLE, 3); // Dupont Alain, Duchene Claudine + (Bolomido Marcel & Duchene Claudine)
+		rechercheParTypeTiers("desp", TypeTiers.PERSONNE_PHYSIQUE, 2); // Despont Alain et Desplatanes Claudine
+		rechercheParTypeTiers("desp", TypeTiers.CONTRIBUABLE, 3); // Despont Alain, Desplatanes Claudine + (Bolomido Marcel & Desplatanes Claudine)
 		rechercheParTypeTiers(null, TypeTiers.DEBITEUR_PRESTATION_IMPOSABLE, 1);
+		rechercheParTypeTiers(null, TypeTiers.COLLECTIVITE_ADMINISTRATIVE, getDefaultCollectivitesAdministrativesNumber());
 	}
 
 	@Test
@@ -301,7 +307,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 
 		loadDatabase(DB_UNIT_DATA_FILE);
 		int c = globalTiersSearcher.getExactDocCount();
-		assertEquals(8, c);
+		assertEquals(8 + getDefaultCollectivitesAdministrativesNumber(), c);
 
 		// Tiers par Nature Juridique
 		{
@@ -322,10 +328,10 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 
 		loadDatabase(DB_UNIT_DATA_FILE);
 		int c = globalTiersSearcher.getExactDocCount();
-		assertEquals(8, c);
+		assertEquals(8 + getDefaultCollectivitesAdministrativesNumber(), c);
 
 		TiersCriteria criteria = new TiersCriteria();
-		criteria.setLocaliteOuPays("Lausanne");
+		criteria.setLocaliteOuPays("Prilly");
 		List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
 		assertEquals(1, list.size());
 	}
@@ -336,7 +342,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 
 		loadDatabase(DB_UNIT_DATA_FILE);
 		int c = globalTiersSearcher.getExactDocCount();
-		assertEquals(8, c);
+		assertEquals(8 + getDefaultCollectivitesAdministrativesNumber(), c);
 
 		TiersCriteria criteria = new TiersCriteria();
 		criteria.setNpaCourrier(String.valueOf(MockLocalite.Renens.getNPA()));
@@ -373,7 +379,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 
 		loadDatabase(DB_UNIT_DATA_FILE);
 		int c = globalTiersSearcher.getExactDocCount();
-		assertEquals(8, c);
+		assertEquals(8 + getDefaultCollectivitesAdministrativesNumber(), c);
 
 		TiersCriteria criteria = new TiersCriteria();
 
@@ -388,7 +394,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 
 		loadDatabase(DB_UNIT_DATA_FILE);
 		int c = globalTiersSearcher.getExactDocCount();
-		assertEquals(8, c);
+		assertEquals(8 + getDefaultCollectivitesAdministrativesNumber(), c);
 
 		TiersCriteria criteria = new TiersCriteria();
 
@@ -423,7 +429,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 
 		loadDatabase(DB_UNIT_DATA_FILE);
 		int c = globalTiersSearcher.getExactDocCount();
-		assertEquals(8, c);
+		assertEquals(8 + getDefaultCollectivitesAdministrativesNumber(), c);
 
 		// Recherche sur la date de naissance
 		final TiersCriteria criteria = new TiersCriteria();
@@ -445,7 +451,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 
 		loadDatabase(DB_UNIT_DATA_FILE);
 		int c = globalTiersSearcher.getExactDocCount();
-		assertEquals(8, c);
+		assertEquals(8 + getDefaultCollectivitesAdministrativesNumber(), c);
 
 		// Recherche "contient" sur le nom
 		TiersCriteria criteria = new TiersCriteria();
@@ -462,9 +468,9 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 			tiers2 = list.get(0);
 		}
 		assertEquals(Long.valueOf(5434L), tiers1.getNumero());
-		assertEquals("Alain Dupont", tiers1.getNom1());
+		assertEquals("Alain Despont", tiers1.getNom1());
 		assertEquals(Long.valueOf(1234L), tiers2.getNumero());
-		assertEquals("Alain Dupont", tiers2.getNom1()); // [UNIREG-1376] on va chercher les infos sur le contribuable si elles n'existent pas sur le débiteur
+		assertEquals("Alain Despont", tiers2.getNom1()); // [UNIREG-1376] on va chercher les infos sur le contribuable si elles n'existent pas sur le débiteur
 	}
 
 	@Test
@@ -473,7 +479,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 
 		loadDatabase(DB_UNIT_DATA_FILE);
 		int c = globalTiersSearcher.getExactDocCount();
-		assertEquals(8, c);
+		assertEquals(8 + getDefaultCollectivitesAdministrativesNumber(), c);
 
 		// Recherche "contient" sur le nom
 		TiersCriteria criteria = new TiersCriteria();
@@ -492,7 +498,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 			debiteur = (contribuable == premier ? deuxieme : premier);
 		}
 		assertEquals(Long.valueOf(5434), contribuable.getNumero());
-		assertEquals("Alain Dupont", contribuable.getNom1());
+		assertEquals("Alain Despont", contribuable.getNom1());
 		assertEquals(Long.valueOf(1234), debiteur.getNumero());
 	}
 
@@ -505,11 +511,11 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 
 		loadDatabase(DB_UNIT_DATA_FILE);
 		int c = globalTiersSearcher.getExactDocCount();
-		assertEquals(8, c);
+		assertEquals(8 + getDefaultCollectivitesAdministrativesNumber(), c);
 
 		// Recherche "phonetique" sur le nom
 		TiersCriteria criteria = new TiersCriteria();
-		criteria.setNomRaison("dupant");
+		criteria.setNomRaison("despant");
 		criteria.setTypeRechercheDuNom(TiersCriteria.TypeRecherche.PHONETIQUE);
 
 		final List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
@@ -537,7 +543,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 
 		loadDatabase(DB_UNIT_DATA_FILE);
 		int c = globalTiersSearcher.getExactDocCount();
-		assertEquals(8, c);
+		assertEquals(8 + getDefaultCollectivitesAdministrativesNumber(), c);
 
 		String prenom = "Richard";
 
@@ -563,7 +569,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 
 		loadDatabase(DB_UNIT_DATA_FILE);
 		int c = globalTiersSearcher.getExactDocCount();
-		assertEquals(8, c);
+		assertEquals(8 + getDefaultCollectivitesAdministrativesNumber(), c);
 		
 		Long numero = 27769L;
 
@@ -902,7 +908,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		loadDatabase(DB_UNIT_DATA_FILE);
 
 		final TiersCriteria criteria = new TiersCriteria();
-		criteria.setNomRaison("Alain Dupont");
+		criteria.setNomRaison("Alain Despont");
 
 		final Thread fuseBlowingThread = new Thread(new Runnable() {
 			@Override
@@ -992,7 +998,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		listener.start();
 
 		final TiersCriteria criteria = new TiersCriteria();
-		criteria.setNomRaison("Alain Dupont");
+		criteria.setNomRaison("Alain Despont");
 
 		globalTiersSearcher.flowSearch(criteria, queue, fusible);
 		done.blow();

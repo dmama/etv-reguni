@@ -65,7 +65,7 @@ public class TestData {
 	 * très très lent lorsqu'il s'agit de récupérer la méta-information du schéma, ce qui fait DBUnit)
 	 */
 	@SuppressWarnings({"UnusedAssignment", "unchecked"})
-	public static void loadTiersBasic(HibernateTemplate hibernateTemplate) {
+	public static void loadTiersBasic(HibernateTemplate hibernateTemplate, boolean withCollectivitesAdministratives) {
 		PeriodeFiscale pf0 = new PeriodeFiscale();
 		pf0.setId(2L);
 		pf0.setAnnee(2002);
@@ -1245,35 +1245,38 @@ public class TestData {
 		ac0.setRapportsSujet(new HashSet());
 		ac0 = hibernateTemplate.merge(ac0);
 
-		CollectiviteAdministrative ca0 = new CollectiviteAdministrative();
-		ca0.setNumero(2100001L);
-		ca0.setMouvementsDossier(new HashSet());
-		ca0.setSituationsFamille(new HashSet());
-		ca0.setDebiteurInactif(false);
-		ca0.setLogCreationDate(new Timestamp(1199142000000L));
-		ca0.setLogModifDate(new Timestamp(1199142000000L));
-		ca0.setNumeroCollectiviteAdministrative(1013);
-		ca0.setAdressesTiers(new HashSet());
-		ca0.setDeclarations(new HashSet());
-		ca0.setForsFiscaux(new HashSet());
-		ca0.setRapportsObjet(new HashSet());
-		ca0.setRapportsSujet(new HashSet());
-		ca0 = hibernateTemplate.merge(ca0);
+		if (withCollectivitesAdministratives) {
 
-		CollectiviteAdministrative ca1 = new CollectiviteAdministrative();
-		ca1.setNumero(2100002L);
-		ca1.setMouvementsDossier(new HashSet());
-		ca1.setSituationsFamille(new HashSet());
-		ca1.setDebiteurInactif(false);
-		ca1.setLogCreationDate(new Timestamp(1199142000000L));
-		ca1.setLogModifDate(new Timestamp(1199142000000L));
-		ca1.setNumeroCollectiviteAdministrative(10);
-		ca1.setAdressesTiers(new HashSet());
-		ca1.setDeclarations(new HashSet());
-		ca1.setForsFiscaux(new HashSet());
-		ca1.setRapportsObjet(new HashSet());
-		ca1.setRapportsSujet(new HashSet());
-		ca1 = hibernateTemplate.merge(ca1);
+			CollectiviteAdministrative ca0 = new CollectiviteAdministrative();
+			ca0.setNumero(2100001L);
+			ca0.setMouvementsDossier(new HashSet());
+			ca0.setSituationsFamille(new HashSet());
+			ca0.setDebiteurInactif(false);
+			ca0.setLogCreationDate(new Timestamp(1199142000000L));
+			ca0.setLogModifDate(new Timestamp(1199142000000L));
+			ca0.setNumeroCollectiviteAdministrative(1013);
+			ca0.setAdressesTiers(new HashSet());
+			ca0.setDeclarations(new HashSet());
+			ca0.setForsFiscaux(new HashSet());
+			ca0.setRapportsObjet(new HashSet());
+			ca0.setRapportsSujet(new HashSet());
+			ca0 = hibernateTemplate.merge(ca0);
+
+			CollectiviteAdministrative ca1 = new CollectiviteAdministrative();
+			ca1.setNumero(2100002L);
+			ca1.setMouvementsDossier(new HashSet());
+			ca1.setSituationsFamille(new HashSet());
+			ca1.setDebiteurInactif(false);
+			ca1.setLogCreationDate(new Timestamp(1199142000000L));
+			ca1.setLogModifDate(new Timestamp(1199142000000L));
+			ca1.setNumeroCollectiviteAdministrative(10);
+			ca1.setAdressesTiers(new HashSet());
+			ca1.setDeclarations(new HashSet());
+			ca1.setForsFiscaux(new HashSet());
+			ca1.setRapportsObjet(new HashSet());
+			ca1.setRapportsSujet(new HashSet());
+			ca1 = hibernateTemplate.merge(ca1);
+		}
 
 		AdresseSuisse as0 = new AdresseSuisse();
 		as0.setId(1L);
@@ -1281,8 +1284,8 @@ public class TestData {
 		as0.setLogModifDate(new Timestamp(1199142000000L));
 		as0.setNumeroCasePostale(23);
 		as0.setNumeroMaison("19");
-		as0.setNumeroOrdrePoste(104);
-		as0.setNumeroRue(83404);
+		as0.setNumeroOrdrePoste(254);
+		as0.setNumeroRue(31916);
 		as0.setPermanente(false);
 		as0.setTexteCasePostale(TexteCasePostale.CASE_POSTALE);
 		as0.setUsage(TypeAdresseTiers.COURRIER);
@@ -1305,8 +1308,8 @@ public class TestData {
 		as2.setDateDebut(RegDate.get(2008, 4, 15));
 		as2.setLogModifDate(new Timestamp(1199142000000L));
 		as2.setNumeroMaison("12");
-		as2.setNumeroOrdrePoste(104);
-		as2.setNumeroRue(35365);
+		as2.setNumeroOrdrePoste(254);
+		as2.setNumeroRue(31918);
 		as2.setPermanente(false);
 		as2.setUsage(TypeAdresseTiers.COURRIER);
 		pp13.addAdresseTiers(as2);
@@ -1341,8 +1344,8 @@ public class TestData {
 		as5.setDateDebut(RegDate.get(2006, 2, 21));
 		as5.setLogModifDate(new Timestamp(1199142000000L));
 		as5.setNumeroMaison("12");
-		as5.setNumeroOrdrePoste(104);
-		as5.setNumeroRue(35365);
+		as5.setNumeroOrdrePoste(254);
+		as5.setNumeroRue(31916);
 		as5.setPermanente(false);
 		as5.setUsage(TypeAdresseTiers.COURRIER);
 		pp12.addAdresseTiers(as5);

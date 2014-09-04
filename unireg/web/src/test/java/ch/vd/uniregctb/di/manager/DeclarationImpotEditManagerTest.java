@@ -66,10 +66,6 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 	protected DeclarationImpotOrdinaireDAO diDAO;
 	protected DeclarationImpotEditManagerImpl manager;
 
-	public DeclarationImpotEditManagerTest() {
-		setWantCollectivitesAdministratives(true);
-	}
-
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();

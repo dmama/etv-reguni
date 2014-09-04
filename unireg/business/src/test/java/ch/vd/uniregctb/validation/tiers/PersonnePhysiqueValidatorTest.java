@@ -1095,7 +1095,6 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 		addForPrincipal(pp, date(2009, 12, 28), MotifFor.DEPART_HC, MockCommune.Neuchatel);
 		addForSecondaire(pp, date(2006, 1, 26), MotifFor.ACHAT_IMMOBILIER, date(2010, 12, 31), MotifFor.VENTE_IMMOBILIER, MockCommune.Aigle.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 
-		addCedi();
 		final PeriodeFiscale periode2009 = addPeriodeFiscale(2009);
 		final ModeleDocument modeleHC2009 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, periode2009);
 		addDeclarationImpot(pp, periode2009, date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.HORS_CANTON, modeleHC2009);
@@ -1116,7 +1115,6 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 		addForPrincipal(pp, date(2009, 12, 28), MotifFor.DEPART_HC, MockCommune.Neuchatel);
 		addForSecondaire(pp, date(2006, 1, 26), MotifFor.ACHAT_IMMOBILIER, date(2010, 12, 31), MotifFor.VENTE_IMMOBILIER, MockCommune.Aigle.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 
-		addCedi();
 		final PeriodeFiscale periode2009 = addPeriodeFiscale(2009);
 		final ModeleDocument modeleHS2009 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2009);
 		final ModeleDocument modeleHC2009 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, periode2009);
@@ -1143,7 +1141,6 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 		final PersonnePhysique pp = addNonHabitant("Jean", "Rappel", date(1954, 12, 3), Sexe.MASCULIN);
 		addForPrincipal(pp, date(2006, 1, 26), MotifFor.INDETERMINE, MockPays.Danemark);
 
-		addCedi();
 		final PeriodeFiscale periode2009 = addPeriodeFiscale(2009);
 		final ModeleDocument modeleHC2009 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, periode2009);
 		addDeclarationImpot(pp, periode2009, date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.HORS_CANTON, modeleHC2009);

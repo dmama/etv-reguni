@@ -6,7 +6,6 @@ import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.TransactionStatus;
 
-import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.uniregctb.common.BusinessTest;
@@ -50,16 +49,6 @@ public class TacheServiceTest2 extends BusinessTest {
 		tiersService = getBean(TiersService.class, "tiersService");
 		tacheDAO = getBean(TacheDAO.class, "tacheDAO");
 		diDAO = getBean(DeclarationImpotOrdinaireDAO.class, "diDAO");
-
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				for (MockCollectiviteAdministrative ca : MockCollectiviteAdministrative.getAll()) {
-					addCollAdm(ca);
-				}
-				return null;
-			}
-		});
 
 		setWantSynchroTache(true);
 	}

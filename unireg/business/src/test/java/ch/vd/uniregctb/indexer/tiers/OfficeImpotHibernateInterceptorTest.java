@@ -36,10 +36,6 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 	private TiersDAO tiersDAO;
 	private TiersService tiersService;
 
-	public OfficeImpotHibernateInterceptorTest() {
-		setWantCollectivitesAdministratives(true);
-	}
-
 	@Override
 	public void onSetUp() throws Exception {
 

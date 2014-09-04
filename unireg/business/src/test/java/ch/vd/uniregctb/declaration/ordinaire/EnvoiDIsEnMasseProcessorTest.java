@@ -71,10 +71,6 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 	private ParametreAppService parametreAppService;
 	private AdresseService adresseService;
 
-	public EnvoiDIsEnMasseProcessorTest() {
-		setWantCollectivitesAdministratives(true);
-	}
-
 	@Override
 	public void onSetUp() throws Exception {
 

@@ -14,6 +14,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.Predicate;
 import org.dbunit.DatabaseUnitException;
 import org.dbunit.database.DatabaseConfig;
 import org.dbunit.database.DatabaseConnection;
@@ -1178,5 +1180,29 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	 */
 	protected static RegDate date(int year) {
 		return RegDate.get(year);
+	}
+
+	/**
+	 * @param classes les classes dont on veut récupérer tous les représentants
+	 * @return la liste de tous les tiers de la base qui sont des instances des classes données
+	 */
+	@SafeVarargs
+	protected final List<Tiers> allTiersOfType(final Class<? extends Tiers>... classes) {
+		if (classes == null) {
+			return Collections.emptyList();
+		}
+		final List<Tiers> all = tiersDAO.getAll();
+		CollectionUtils.filter(all, new Predicate<Tiers>() {
+			@Override
+			public boolean evaluate(Tiers object) {
+				for (Class<? extends Tiers> clazz : classes) {
+					if (clazz.isAssignableFrom(object.getClass())) {
+						return true;
+					}
+				}
+				return false;
+			}
+		});
+		return all;
 	}
 }

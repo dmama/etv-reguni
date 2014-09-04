@@ -6313,7 +6313,7 @@ public class AdresseServiceTest extends BusinessTest {
 		});
 
 		final PersonnePhysique ctb = addHabitant(noTiers, noIndividu);
-		final CollectiviteAdministrative tuteur = addCollAdm(MockCollectiviteAdministrative.OTG);
+		final CollectiviteAdministrative tuteur = tiersService.getCollectiviteAdministrative(MockCollectiviteAdministrative.OTG.getNoColAdm());
 		addTutelle(ctb, tuteur, null, date(2000, 1, 1), null);
 
 		// les adresses fiscales
@@ -6414,8 +6414,8 @@ public class AdresseServiceTest extends BusinessTest {
 		});
 
 		final PersonnePhysique ctb = addHabitant(noTiers, noIndividu);
-		final CollectiviteAdministrative tuteur = addCollAdm(MockCollectiviteAdministrative.OTG);
-		final CollectiviteAdministrative autoriteTutelaire = addCollAdm(MockCollectiviteAdministrative.JusticePaix.DistrictsJuraNordVaudoisEtGrosDeVaud);
+		final CollectiviteAdministrative tuteur = tiersService.getCollectiviteAdministrative(MockCollectiviteAdministrative.OTG.getNoColAdm());
+		final CollectiviteAdministrative autoriteTutelaire = tiersService.getCollectiviteAdministrative(MockCollectiviteAdministrative.JusticePaix.DistrictsJuraNordVaudoisEtGrosDeVaud.getNoColAdm());
 		addTutelle(ctb, tuteur, autoriteTutelaire, date(2000, 1, 1), null);
 
 		// les adresses fiscales
@@ -6829,8 +6829,8 @@ public class AdresseServiceTest extends BusinessTest {
 		final PersonnePhysique ctb = addHabitant(noTiers, noIndividu);
 		addAdresseSuisse(ctb, TypeAdresseTiers.POURSUITE, date(2000, 1, 1), null, MockRue.Bussigny.RueDeLIndustrie);
 
-		final CollectiviteAdministrative tuteur = addCollAdm(MockCollectiviteAdministrative.OTG);
-		final CollectiviteAdministrative autoriteTutelaire = addCollAdm(MockCollectiviteAdministrative.JusticePaix.DistrictsJuraNordVaudoisEtGrosDeVaud);
+		final CollectiviteAdministrative tuteur = tiersService.getCollectiviteAdministrative(MockCollectiviteAdministrative.OTG.getNoColAdm());
+		final CollectiviteAdministrative autoriteTutelaire = tiersService.getCollectiviteAdministrative(MockCollectiviteAdministrative.JusticePaix.DistrictsJuraNordVaudoisEtGrosDeVaud.getNoColAdm());
 		addTutelle(ctb, tuteur, autoriteTutelaire, date(2000, 1, 1), null);
 
 		// les adresses fiscales
