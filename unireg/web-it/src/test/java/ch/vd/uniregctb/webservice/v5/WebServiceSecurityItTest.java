@@ -23,7 +23,7 @@ public class WebServiceSecurityItTest extends AbstractWebServiceItTest {
 	private static final UserLogin zaiptf = new UserLogin("zaiptf", 22); // Francis Perroset
 	private static final UserLogin zaipmd = new UserLogin("zaipmd", 22); // Philippe Maillard
 	private static final UserLogin zciddo = new UserLogin("zciddo", 0);  // Daniel Di Lallo
-	private static final UserLogin zairfa = new UserLogin("zairfa", 10); // Roselyne Favre
+	private static final UserLogin zaipmx = new UserLogin("zaipmx", 19); // Pascal Mutrux
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -162,33 +162,33 @@ public class WebServiceSecurityItTest extends AbstractWebServiceItTest {
 	}
 
 	/**
-	 * Teste que Roselyne Favre (une employée de l'ACI prise au hazard) ne possède aucun droit sur Pascal Broulis (autorisation exclusive pour Francis Perroset).
+	 * Teste que Pascal Mutrux (un employé de l'ACI pris au hazard) ne possède aucun droit sur Pascal Broulis (autorisation exclusive pour Francis Perroset).
 	 */
 	@Test
 	public void testGetSecurityRoselyneFavre() throws Exception {
 
 		// Christine Schmid
-		doTest(zairfa, 12300001L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_XML);
-		doTest(zairfa, 12300001L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_JSON);
+		doTest(zaipmx, 12300001L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_XML);
+		doTest(zaipmx, 12300001L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_JSON);
 
 		// Laurent Schmid
-		doTest(zairfa, 12300002L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_XML);
-		doTest(zairfa, 12300002L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_JSON);
+		doTest(zaipmx, 12300002L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_XML);
+		doTest(zaipmx, 12300002L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_JSON);
 
 		// Christine & Laurent Schmid
-		doTest(zairfa, 86006202L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_XML);
-		doTest(zairfa, 86006202L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_JSON);
+		doTest(zaipmx, 86006202L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_XML);
+		doTest(zaipmx, 86006202L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_JSON);
 
 		// Jean-Eric Cuendet
-		doTest(zairfa, 10210315L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_XML);
-		doTest(zairfa, 10210315L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_JSON);
+		doTest(zaipmx, 10210315L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_XML);
+		doTest(zaipmx, 10210315L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_JSON);
 
 		// Jean-Philippe Maillefer
-		doTest(zairfa, 61615502L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_XML);
-		doTest(zairfa, 61615502L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_JSON);
+		doTest(zaipmx, 61615502L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_XML);
+		doTest(zaipmx, 61615502L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_JSON);
 
 		// Pascal Broulis
-		doTest(zairfa, 10149508L, AllowedAccess.NONE, MediaType.APPLICATION_XML);
-		doTest(zairfa, 10149508L, AllowedAccess.NONE, MediaType.APPLICATION_JSON);
+		doTest(zaipmx, 10149508L, AllowedAccess.NONE, MediaType.APPLICATION_XML);
+		doTest(zaipmx, 10149508L, AllowedAccess.NONE, MediaType.APPLICATION_JSON);
 	}
 }

@@ -47,7 +47,7 @@ public class SecuriteWebServiceTest extends WebitTest {
 	private UserLogin zaiptf; // Francis Perroset
 	private UserLogin zaipmd; // Philippe Maillard
 	private UserLogin zciddo; // Daniel Di Lallo
-	private UserLogin zairfa; // Roselyne Favre
+	private UserLogin zaipmx; // Pascal Mutrux
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -89,9 +89,9 @@ public class SecuriteWebServiceTest extends WebitTest {
 		zciddo.setUserId("zciddo");
 		zciddo.setOid(0);
 
-		zairfa = new UserLogin();
-		zairfa.setUserId("zairfa");
-		zairfa.setOid(10);
+		zaipmx = new UserLogin();
+		zaipmx.setUserId("zaipmx");
+		zaipmx.setOid(19);
 	}
 
 	@Test
@@ -100,7 +100,7 @@ public class SecuriteWebServiceTest extends WebitTest {
 			GetAutorisationSurDossier params = new GetAutorisationSurDossier();
 			params.setLogin(zaiptf);
 			params.setNumeroTiers(0L); // tiers inconnu
-			assertEquals(NiveauAutorisation.ECRITURE, service.getAutorisationSurDossier(params));
+			service.getAutorisationSurDossier(params);
 			fail();
 		}
 		catch (WebServiceException_Exception expected) {
@@ -194,13 +194,13 @@ public class SecuriteWebServiceTest extends WebitTest {
 	}
 
 	/**
-	 * Teste que Roselyne Favre (une employée de l'ACI prise au hazard) ne possède aucun droit sur Pascal Broulis (autorisation exclusive pour Francis Perroset).
+	 * Teste que Pascal Mutrux (un employé de l'ACI pris au hazard) ne possède aucun droit sur Pascal Broulis (autorisation exclusive pour Francis Perroset).
 	 */
 	@Test
-	public void testAutorisationsRoselyneFavre() throws Exception {
+	public void testAutorisationsPascalMutrux() throws Exception {
 
 		GetAutorisationSurDossier params = new GetAutorisationSurDossier();
-		params.setLogin(zairfa);
+		params.setLogin(zaipmx);
 
 		params.setNumeroTiers(12300001L); // Christine Schmid
 		assertEquals(NiveauAutorisation.ECRITURE, service.getAutorisationSurDossier(params));
