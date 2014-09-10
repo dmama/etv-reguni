@@ -37,7 +37,7 @@
 
 		<!-- les liens des immeubles doivent référencer des parties prenantes existantes -->
 		<xs:keyref name="subjectStakeholderReference" refer="stakeholderId">
-			<xs:selector xpath="subject/stakeholder"/>
+			<xs:selector xpath="transaction/stakeholder"/>
 			<xs:field xpath="@stakeholderId"/>
 		</xs:keyref>
 
@@ -380,7 +380,7 @@
 			</xs:appinfo>
 		</xs:annotation>
 		<xs:choice>
-			<xs:element name="swiss">
+			<xs:element name="swiss" type="swissnessType">
 				<xs:annotation>
 					<xs:appinfo>
 						<jxb:property>
@@ -388,7 +388,6 @@
 						</jxb:property>
 					</xs:appinfo>
 				</xs:annotation>
-				<xs:complexType/>
 			</xs:element>
 			<xs:sequence>
 				<xs:choice>
@@ -425,6 +424,27 @@
 		</xs:choice>
 	</xs:complexType>
 
+	<xs:complexType name="swissnessType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:property>
+					<jxb:javadoc>Indique une personne de nationalité suisse.</jxb:javadoc>
+				</jxb:property>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="origin" type="eCH-0011:placeOfOriginType" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Le lieu d'origine d'une personne de nationalité suisse.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
 	<xs:complexType name="identityType">
 		<xs:sequence>
 			<xs:element name="name" type="fullNameType">
@@ -432,6 +452,15 @@
 					<xs:appinfo>
 						<jxb:property>
 							<jxb:javadoc>Nom de la personne.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="birthName" type="eCH-0044:baseNameType" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Le nom de famille à la naissance.</jxb:javadoc>
 						</jxb:property>
 					</xs:appinfo>
 				</xs:annotation>
