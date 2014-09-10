@@ -125,6 +125,7 @@ public class TiersCreateController {
 
 		final NonHabitantCivilView civilView = view.getCivil();
 		pp.setNom(civilView.getNom());
+		pp.setNomNaissance(civilView.getNomNaissance());
 		pp.setPrenomUsuel(civilView.getPrenomUsuel());
 		pp.setTousPrenoms(civilView.getTousPrenoms());
 		pp.setNumeroAssureSocial(FormatNumeroHelper.removeSpaceAndDash(civilView.getNumeroAssureSocial()));

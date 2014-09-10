@@ -23,29 +23,7 @@
 					<unireg:nextRowClass reset="1"/>
 					<table border="0">
 
-						<c:set var="lengthtousprenoms" value="<%=LengthConstants.TIERS_TOUS_PRENOMS%>" scope="request" />
-						<tr class="<unireg:nextRowClass/>">
-							<td width="40%"><fmt:message key="label.prenoms" />&nbsp;:</td>
-							<td width="60%">
-								<form:input path="tousPrenoms" tabindex="1" id="tiers_prenoms" cssErrorClass="input-with-errors"
-								            size="20" maxlength="${lengthtousprenoms}" />
-								<span class="jTip formInfo" title="<c:url value="/htm/prenom.htm?width=375"/>" id="tousPrenoms">?</span>
-								<form:errors path="tousPrenoms" cssClass="error" />
-							</td>
-						</tr>
-
 						<c:set var="lengthnom" value="<%=LengthConstants.TIERS_NOM%>" scope="request" />
-						<tr class="<unireg:nextRowClass/>">
-							<td width="40%"><fmt:message key="label.prenom.usuel" />&nbsp;:</td>
-							<td width="60%">
-								<form:input path="prenomUsuel" tabindex="1" id="tiers_prenom" cssErrorClass="input-with-errors"
-								            size="20" maxlength="${lengthnom}" />
-								<span class="jTip formInfo" title="<c:url value="/htm/prenom.htm?width=375"/>" id="prenomUsuel">?</span>
-								<div id="empty_tiers_prenom_warning" style="display:none;" class="warn warning_icon"><fmt:message key="warning.prenom.vide"/></div>
-								<form:errors path="prenomUsuel" cssClass="error" />
-							</td>
-						</tr>
-
 						<tr class="<unireg:nextRowClass/>">
 							<td><fmt:message key="label.nom" />&nbsp;:</td>
 							<td>
@@ -58,22 +36,34 @@
 						</tr>
 
 						<tr class="<unireg:nextRowClass/>">
-							<td><fmt:message key="label.nouveau.numero.avs" />&nbsp;:</td>
+							<td><fmt:message key="label.nom.naissance" />&nbsp;:</td>
 							<td>
-								<form:input path="numeroAssureSocial" id="tiers_numeroAssureSocial" tabindex="3"
-								            cssErrorClass="input-with-errors" size="20" maxlength="16" />
-								<span class="jTip formInfo" title="<c:url value="/htm/numeroAVS.htm?width=375"/>" id="numeroAVS">?</span>
-								<form:errors path="numeroAssureSocial" cssClass="error" />
+								<form:input path="nomNaissance" tabindex="2" id="tiers_nomNaissance" cssErrorClass="input-with-errors"
+								            size="20" maxlength="${lengthnom}" />
+								<span class="jTip formInfo" title="<c:url value="/htm/nom.htm?width=375"/>" id="nomNaissance">?</span>
+								<form:errors path="nomNaissance" cssClass="error" />
 							</td>
 						</tr>
 
 						<tr class="<unireg:nextRowClass/>">
-							<td><fmt:message key="label.ancien.numero.avs" />&nbsp;:</td>
-							<td>
-								<form:input path="identificationPersonne.ancienNumAVS" id="tiers_ancienNumAVS" tabindex="4"
-								            cssErrorClass="input-with-errors" size="20" maxlength="14" />
-								<span class="jTip formInfo" title="<c:url value="/htm/ancienNumeroAVS.htm?width=375"/>" id="ancienNumeroAVS">?</span>
-								<form:errors path="identificationPersonne.ancienNumAVS" cssClass="error" />
+							<td width="40%"><fmt:message key="label.prenom.usuel" />&nbsp;:</td>
+							<td width="60%">
+								<form:input path="prenomUsuel" tabindex="1" id="tiers_prenom" cssErrorClass="input-with-errors"
+								            size="20" maxlength="${lengthnom}" />
+								<span class="jTip formInfo" title="<c:url value="/htm/prenom.htm?width=375"/>" id="prenomUsuel">?</span>
+								<div id="empty_tiers_prenom_warning" style="display:none;" class="warn warning_icon"><fmt:message key="warning.prenom.vide"/></div>
+								<form:errors path="prenomUsuel" cssClass="error" />
+							</td>
+						</tr>
+
+						<c:set var="lengthtousprenoms" value="<%=LengthConstants.TIERS_TOUS_PRENOMS%>" scope="request" />
+						<tr class="<unireg:nextRowClass/>">
+							<td width="40%"><fmt:message key="label.prenoms" />&nbsp;:</td>
+							<td width="60%">
+								<form:input path="tousPrenoms" tabindex="1" id="tiers_prenoms" cssErrorClass="input-with-errors"
+								            size="20" maxlength="${lengthtousprenoms}" />
+								<span class="jTip formInfo" title="<c:url value="/htm/prenom.htm?width=375"/>" id="tousPrenoms">?</span>
+								<form:errors path="tousPrenoms" cssClass="error" />
 							</td>
 						</tr>
 
@@ -112,14 +102,53 @@
 								<unireg:regdate regdate="${data.dateDeces}"/>
 							</td>
 						</tr>
+
 						<tr class="<unireg:nextRowClass/>">
-							<td><fmt:message key="label.numero.registre.etranger" />&nbsp;:</td>
+							<td><fmt:message key="label.nouveau.numero.avs" />&nbsp;:</td>
 							<td>
-								<form:input path="identificationPersonne.numRegistreEtranger" tabindex="7" id="tiers_numRegistreEtranger"
-								            cssErrorClass="input-with-errors" size="20" maxlength="13" />
-								<form:errors path="identificationPersonne.numRegistreEtranger" cssClass="error" />
-								<span class="jTip formInfo" title="<c:url value="/htm/numRegistreEtranger.htm?width=375"/>" id="numRegistre">?</span>
+								<form:input path="numeroAssureSocial" id="tiers_numeroAssureSocial" tabindex="3"
+								            cssErrorClass="input-with-errors" size="20" maxlength="16" />
+								<span class="jTip formInfo" title="<c:url value="/htm/numeroAVS.htm?width=375"/>" id="numeroAVS">?</span>
+								<form:errors path="numeroAssureSocial" cssClass="error" />
 							</td>
+						</tr>
+
+						<tr class="<unireg:nextRowClass/>">
+							<td><fmt:message key="label.ancien.numero.avs" />&nbsp;:</td>
+							<td>
+								<form:input path="identificationPersonne.ancienNumAVS" id="tiers_ancienNumAVS" tabindex="4"
+								            cssErrorClass="input-with-errors" size="20" maxlength="14" />
+								<span class="jTip formInfo" title="<c:url value="/htm/ancienNumeroAVS.htm?width=375"/>" id="ancienNumeroAVS">?</span>
+								<form:errors path="identificationPersonne.ancienNumAVS" cssClass="error" />
+							</td>
+						</tr>
+
+						<tr class="<unireg:nextRowClass/>">
+							<td><fmt:message key="label.commune.origine" />&nbsp;:</td>
+							<td>
+									<form:input path="libelleCommuneOrigine" id="tiers_libelleCommuneOrigine" tabindex="11"
+									            cssErrorClass="input-with-errors" size="30" maxlength="250" />
+								<script>
+									$(function() {
+										Autocomplete.infra('commune', '#tiers_libelleCommuneOrigine', true);
+									});
+								</script>
+									<form:errors path="libelleCommuneOrigine" cssClass="error" />
+						</tr>
+
+						<tr class="<unireg:nextRowClass/>">
+							<td><fmt:message key="label.nationalite" />&nbsp;:</td>
+							<td>
+								<form:hidden path="numeroOfsNationalite" id="tiers_numeroOfsNationalite" />
+								<form:input path="libelleOfsPaysOrigine" id="tiers_libelleOfsPaysOrigine" cssErrorClass="input-with-errors" tabindex="10" size="20" />
+								<script>
+									$(function() {
+										Autocomplete.infra('etatOuTerritoire', '#tiers_libelleOfsPaysOrigine', true, function(item) {
+											$('#tiers_numeroOfsNationalite').val(item ? item.id1 : null);
+										});
+									});
+								</script>
+								<form:errors path="numeroOfsNationalite" cssClass="error" /></td>
 						</tr>
 
 						<tr class="<unireg:nextRowClass/>">
@@ -152,31 +181,13 @@
 						</tr>
 
 						<tr class="<unireg:nextRowClass/>">
-							<td><fmt:message key="label.nationalite" />&nbsp;:</td>
+							<td><fmt:message key="label.numero.registre.etranger" />&nbsp;:</td>
 							<td>
-								<form:hidden path="numeroOfsNationalite" id="tiers_numeroOfsNationalite" />
-								<form:input path="libelleOfsPaysOrigine" id="tiers_libelleOfsPaysOrigine" cssErrorClass="input-with-errors" tabindex="10" size="20" />
-								<script>
-									$(function() {
-										Autocomplete.infra('etatOuTerritoire', '#tiers_libelleOfsPaysOrigine', true, function(item) {
-											$('#tiers_numeroOfsNationalite').val(item ? item.id1 : null);
-										});
-									});
-								</script>
-								<form:errors path="numeroOfsNationalite" cssClass="error" /></td>
-						</tr>
-
-						<tr class="<unireg:nextRowClass/>">
-							<td><fmt:message key="label.commune.origine" />&nbsp;:</td>
-							<td>
-									<form:input path="libelleCommuneOrigine" id="tiers_libelleCommuneOrigine" tabindex="11"
-									            cssErrorClass="input-with-errors" size="30" maxlength="250" />
-								<script>
-									$(function() {
-										Autocomplete.infra('commune', '#tiers_libelleCommuneOrigine', true);
-									});
-								</script>
-									<form:errors path="libelleCommuneOrigine" cssClass="error" />
+								<form:input path="identificationPersonne.numRegistreEtranger" tabindex="7" id="tiers_numRegistreEtranger"
+								            cssErrorClass="input-with-errors" size="20" maxlength="13" />
+								<form:errors path="identificationPersonne.numRegistreEtranger" cssClass="error" />
+								<span class="jTip formInfo" title="<c:url value="/htm/numRegistreEtranger.htm?width=375"/>" id="numRegistre">?</span>
+							</td>
 						</tr>
 
 						<c:set var="lengthnomparents" value="<%=LengthConstants.TIERS_NOM_PRENOMS_PARENT%>" scope="request" />

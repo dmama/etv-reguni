@@ -32,9 +32,19 @@
 	</tr>
 
 	<tr class="<unireg:nextRowClass/>" >
-		<td><fmt:message key="label.prenoms" />&nbsp;:</td>
+		<td width="50%"><fmt:message key="label.nom" />&nbsp;:</td>
 		<td>
-			<c:set var="bind" value="command.${param.path}.tousPrenoms" scope="request"/>
+			<c:set var="bind" value="command.${param.path}.nom" scope="request"/>
+			<spring:bind path="${bind}" >
+				<c:out value="${status.value}"/>
+			</spring:bind>
+		</td>
+	</tr>
+
+	<tr class="<unireg:nextRowClass/>" >
+		<td width="50%"><fmt:message key="label.nom.naissance" />&nbsp;:</td>
+		<td>
+			<c:set var="bind" value="command.${param.path}.nomNaissance" scope="request"/>
 			<spring:bind path="${bind}" >
 				<c:out value="${status.value}"/>
 			</spring:bind>
@@ -52,15 +62,47 @@
 	</tr>
 
 	<tr class="<unireg:nextRowClass/>" >
-		<td width="50%"><fmt:message key="label.nom" />&nbsp;:</td>
+		<td><fmt:message key="label.prenoms" />&nbsp;:</td>
 		<td>
-			<c:set var="bind" value="command.${param.path}.nom" scope="request"/>
+			<c:set var="bind" value="command.${param.path}.tousPrenoms" scope="request"/>
 			<spring:bind path="${bind}" >
 				<c:out value="${status.value}"/>
 			</spring:bind>
 		</td>
 	</tr>
-	
+
+	<tr class="<unireg:nextRowClass/>" >
+		<td><fmt:message key="label.sexe" />&nbsp;:</td>
+		<td>
+			<c:set var="bind" value="command.${param.path}.sexe" scope="request"/>
+			<spring:bind path="${bind}" >
+				<c:set var="sexe" value="${status.value}"  scope="request"/>
+			</spring:bind>
+			<c:if test="${sexe != null }">
+				<fmt:message key="option.sexe.${sexe}" />
+			</c:if>
+		</td>
+	</tr>
+
+	<tr class="<unireg:nextRowClass/>" >
+		<td><fmt:message key="label.date.naissance" />&nbsp;:</td>
+		<td>
+			<c:set var="bind" value="command.${param.path}.dateNaissance" scope="request"/>
+			<spring:bind path="${bind}" >
+				<unireg:date date="${status.value}"/>
+			</spring:bind>
+		</td>
+	</tr>
+
+	<tr class="<unireg:nextRowClass/>" >
+		<td width="50%"><fmt:message key="label.date.deces"/>&nbsp;:</td>
+		<td>
+			<c:set var="bind" value="command.${param.path}.dateDeces" scope="request"/>
+			<spring:bind path="${bind}" >
+				<unireg:date date="${status.value}"/>
+			</spring:bind>
+	</tr>
+
 	<tr class="<unireg:nextRowClass/>" >
 		<td><fmt:message key="label.nouveau.numero.avs" />&nbsp;:</td>
 		<td>
@@ -70,6 +112,7 @@
 			</spring:bind>
 		</td>
 	</tr>
+
 	<c:set var="bind" value="command.${param.path}.identificationsPersonnes" scope="request"/>
 		<spring:bind path="${bind}" >
 			<c:set var="identificationsPersonnes" value="${status.value}"  scope="request"/>
@@ -84,79 +127,19 @@
 			</c:forEach>	
 		</td>
 	</tr>
-	
+
 	<tr class="<unireg:nextRowClass/>" >
-		<td><fmt:message key="label.date.naissance" />&nbsp;:</td>
+		<td width="50%"><fmt:message key="label.commune.origine"/>&nbsp;:</td>
 		<td>
-			<c:set var="bind" value="command.${param.path}.dateNaissance" scope="request"/>
+			<c:set var="bind" value="command.${param.path}.libelleCommuneOrigine" scope="request"/>
 			<spring:bind path="${bind}" >
-				<unireg:date date="${status.value}"/>
+				<c:out value="${status.value}"/>
 			</spring:bind>
 		</td>
 	</tr>
-	
-	<tr class="<unireg:nextRowClass/>" >
-		<td><fmt:message key="label.sexe" />&nbsp;:</td>
-		<td>
-			<c:set var="bind" value="command.${param.path}.sexe" scope="request"/>
-			<spring:bind path="${bind}" >
-				<c:set var="sexe" value="${status.value}"  scope="request"/>
-			</spring:bind>
-			<c:if test="${sexe != null }">
-				<fmt:message key="option.sexe.${sexe}" />
-			</c:if>
-		</td>
-	</tr>
-	
-	<tr class="<unireg:nextRowClass/>" >
-		<td width="50%"><fmt:message key="label.date.deces"/>&nbsp;:</td>
-		<td>
-		<c:set var="bind" value="command.${param.path}.dateDeces" scope="request"/>
-		<spring:bind path="${bind}" >
-			<unireg:date date="${status.value}"/>
-		</spring:bind>                                       
-	</tr>
-
-	<c:set var="bind" value="command.${param.path}.identificationsPersonnes" scope="request"/>
-		<spring:bind path="${bind}" >
-			<c:set var="identificationsPersonnes" value="${status.value}"  scope="request"/>
-	</spring:bind> 
-	
-	<tr class="<unireg:nextRowClass/>" >
-		<td>
-			<fmt:message key="label.numero.registre.etranger" />&nbsp;:
-		</td>
-		<td>
-			<c:forEach var="identification" items="${identificationsPersonnes}">
-				<c:if test="${identification.categorieIdentifiant == 'CH_ZAR_RCE'}">						
-					${identification.identifiant}
-				</c:if>
-			</c:forEach>
-		</td>
-	</tr>
-	 <c:set var="bind" value="command.${param.path}.categorieEtranger" scope="request"/>
-	 <spring:bind path="${bind}" >
-		<c:set var="categorieEtranger" value="${status.value}"  scope="request"/>
-	</spring:bind>
-	
-	<c:if test="${categorieEtranger != null}">
-	<tr class="<unireg:nextRowClass/>" >
-		<td><fmt:message key="label.categorie.etranger" />&nbsp;:</td>
-		<td><fmt:message key="option.categorie.etranger.${categorieEtranger}"/></td>
-	</tr>
-	</c:if>
 
 	<tr class="<unireg:nextRowClass/>" >
-		<td width="50%"><fmt:message key="label.date.debut.validite.autorisation"/>&nbsp;:</td>
-		<td>
-		<c:set var="bind" value="command.${param.path}.dateDebutValiditeAutorisation" scope="request"/>
-		<spring:bind path="${bind}" >
-			<unireg:date date="${status.value}"/>
-		</spring:bind>                                       
-	</tr>
-
-	<tr class="<unireg:nextRowClass/>" >
-	<td width="50%"><fmt:message key="label.nationalite"/>&nbsp;:</td>
+		<td width="50%"><fmt:message key="label.nationalite"/>&nbsp;:</td>
 		<td>
 			<!-- (msi/fde) on a pas trouvé mieux... -->
 			<c:choose>
@@ -173,13 +156,42 @@
 		</td>
 	</tr>
 
+	<c:set var="bind" value="command.${param.path}.categorieEtranger" scope="request"/>
+	<spring:bind path="${bind}" >
+		<c:set var="categorieEtranger" value="${status.value}"  scope="request"/>
+	</spring:bind>
 	<tr class="<unireg:nextRowClass/>" >
-		<td width="50%"><fmt:message key="label.commune.origine"/>&nbsp;:</td>
+		<td><fmt:message key="label.categorie.etranger" />&nbsp;:</td>
 		<td>
-			<c:set var="bind" value="command.${param.path}.libelleCommuneOrigine" scope="request"/>
+			<c:if test="${categorieEtranger != null}">
+				<fmt:message key="option.categorie.etranger.${categorieEtranger}"/>
+			</c:if>
+		</td>
+	</tr>
+
+	<tr class="<unireg:nextRowClass/>" >
+		<td width="50%"><fmt:message key="label.date.debut.validite.autorisation"/>&nbsp;:</td>
+		<td>
+			<c:set var="bind" value="command.${param.path}.dateDebutValiditeAutorisation" scope="request"/>
 			<spring:bind path="${bind}" >
-					<c:out value="${status.value}"/>
+				<unireg:date date="${status.value}"/>
 			</spring:bind>
+	</tr>
+
+	<c:set var="bind" value="command.${param.path}.identificationsPersonnes" scope="request"/>
+		<spring:bind path="${bind}" >
+			<c:set var="identificationsPersonnes" value="${status.value}"  scope="request"/>
+	</spring:bind> 
+	<tr class="<unireg:nextRowClass/>" >
+		<td>
+			<fmt:message key="label.numero.registre.etranger" />&nbsp;:
+		</td>
+		<td>
+			<c:forEach var="identification" items="${identificationsPersonnes}">
+				<c:if test="${identification.categorieIdentifiant == 'CH_ZAR_RCE'}">						
+					${identification.identifiant}
+				</c:if>
+			</c:forEach>
 		</td>
 	</tr>
 
