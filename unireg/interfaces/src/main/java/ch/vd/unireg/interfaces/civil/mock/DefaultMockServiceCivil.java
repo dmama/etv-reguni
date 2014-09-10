@@ -67,27 +67,25 @@ public class DefaultMockServiceCivil extends MockServiceCivil {
 		addNationalite(bea, MockPays.Suisse, RegDate.get(1963, 8, 20), null);
 		addPermis(bea, TypePermis.ETABLISSEMENT, RegDate.get(1963, 8, 20), null, false);
 
-		addOrigine(helene, MockPays.France.getNomCourt());
 		addNationalite(helene, MockPays.France, RegDate.get(1963, 8, 20), null);
 		addPermis(helene, TypePermis.COURTE_DUREE, RegDate.get(1963, 8, 20), null, false);
 
-		addOrigine(sophie, MockPays.Suisse.getNomCourt());
+		addOrigine(sophie, MockCommune.Bern);
 		addNationalite(sophie, MockPays.Suisse, RegDate.get(1973, 8, 20), null);
 		addPermis(sophie, TypePermis.ETABLISSEMENT, RegDate.get(1973, 8, 20), null, false);
 
-		addOrigine(pierre, MockPays.Suisse.getNomCourt());
+		addOrigine(pierre, MockCommune.Bale);
 		addNationalite(pierre, MockPays.Suisse, RegDate.get(1953, 11, 2), null);
 
-		addOrigine(momo, MockPays.Suisse.getNomCourt());
+		addOrigine(momo, MockCommune.Bex);
 		addNationalite(momo, MockPays.Suisse, RegDate.get(1961, 3, 12), null);
 
-		addOrigine(julien, MockPays.Suisse.getNomCourt());
+		addOrigine(julien, MockCommune.Bussigny);
 		addNationalite(julien, MockPays.Suisse, RegDate.get(1966, 11, 2), null);
 
-		addOrigine(david, MockPays.Suisse.getNomCourt());
+		addOrigine(david, MockCommune.Echallens);
 		addNationalite(david, MockPays.Suisse, RegDate.get(1964, 1, 23), null);
 
-		addOrigine(victor, MockPays.Espagne.getNomCourt());
 		addNationalite(victor, MockPays.Espagne, RegDate.get(1956, 5, 12), null);
 
 		// Individus du fichier tiers basic

@@ -79,7 +79,6 @@ public class Ec_2000_03_Deces_Membre_Marie_Depense_Surv_Suisse_Scenario extends 
 			@Override
 			protected void init() {
 				indHamlet = addIndividu(noIndHamlet, dateNaissanceHamlet, "du Danemark", "Hamlet", true);
-				addOrigine(indHamlet, MockPays.Danemark.getNomCourt());
 				addNationalite(indHamlet, MockPays.Danemark, dateNaissanceHamlet, null);
 
 				indHeidi = addIndividu(noIndHeidi, dateNaissanceHeidi, "Von der Heide", "Heidi", false);

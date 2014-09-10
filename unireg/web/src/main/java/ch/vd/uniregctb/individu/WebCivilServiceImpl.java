@@ -193,14 +193,14 @@ public class WebCivilServiceImpl implements WebCivilService, MessageSourceAware 
 	 */
 	private void traiteOrigine(Collection<Origine> origines, IndividuView indCible) {
 		if (origines != null && !origines.isEmpty()) {
-			final StringBuilder b = new StringBuilder();
+			final List<OrigineView> views = new ArrayList<>(origines.size());
 			for (Origine origine : origines) {
-				if (b.length() > 0) {
-					b.append(", ");
-				}
-				b.append(origine.getNomLieu());
+				views.add(new OrigineView(origine.getNomLieu(), origine.getSigleCanton()));
 			}
-			indCible.setOrigine(b.toString());
+			indCible.setOrigines(views);
+		}
+		else {
+			indCible.setOrigines(Collections.<OrigineView>emptyList());
 		}
 	}
 

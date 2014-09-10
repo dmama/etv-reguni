@@ -8,4 +8,9 @@ public interface Origine {
 	 * @return le nom du lieu (commune, localité, pays ?...) d'origine.
 	 */
 	String getNomLieu();
+
+	/**
+	 * @return Sigle du canton du lieu d'origine
+	 */
+	String getSigleCanton();
 }

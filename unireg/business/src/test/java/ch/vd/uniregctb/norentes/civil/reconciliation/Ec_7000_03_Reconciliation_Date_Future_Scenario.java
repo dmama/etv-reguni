@@ -75,7 +75,7 @@ public class Ec_7000_03_Reconciliation_Date_Future_Scenario extends EvenementCiv
 				addOrigine(indBea, commune);
 				addNationalite(indBea, MockPays.Suisse, RegDate.get(1963, 8, 20), null);
 
-				addOrigine(indMomo, MockPays.Suisse.getNomCourt());
+				addOrigine(indMomo, commune);
 				addNationalite(indMomo, MockPays.Suisse, RegDate.get(1961, 3, 12), null);
 			}
 		});

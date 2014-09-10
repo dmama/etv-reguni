@@ -12,7 +12,7 @@ import ch.vd.uniregctb.type.Sexe;
  */
 public class IndividuView implements Serializable {
 
-	private static final long serialVersionUID = -1535474897341022151L;
+	private static final long serialVersionUID = 2125635768219037077L;
 
 	private Long numeroIndividu;
 	private String nom;
@@ -26,7 +26,7 @@ public class IndividuView implements Serializable {
 	private String numeroAssureSocial;
 	private String ancienNumeroAVS;
 	private String numeroRCE;
-	private String origine;
+	private List<OrigineView> origines;
 	private List<NationaliteView> nationalites;
 	private String prenomsPere;
 	private String nomPere;
@@ -143,12 +143,12 @@ public class IndividuView implements Serializable {
 	}
 
 	@SuppressWarnings("unused")
-	public String getOrigine() {
-		return origine;
+	public List<OrigineView> getOrigines() {
+		return origines;
 	}
 
-	public void setOrigine(String origine) {
-		this.origine = origine;
+	public void setOrigines(List<OrigineView> origines) {
+		this.origines = origines;
 	}
 
 	@SuppressWarnings("unused")

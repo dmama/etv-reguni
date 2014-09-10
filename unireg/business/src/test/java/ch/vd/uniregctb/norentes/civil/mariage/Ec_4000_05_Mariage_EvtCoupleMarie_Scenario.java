@@ -79,14 +79,13 @@ public class Ec_4000_05_Mariage_EvtCoupleMarie_Scenario extends EvenementCivilSc
 
 				final RegDate dateEtablissement = RegDate.get(2008, 1, 14);
 
-				addOrigine(indJeanBruno, MockPays.France.getNomCourt());
 				addNationalite(indJeanBruno, MockPays.France, dateNaissanceJeanBruno, null);
 				addPermis(indJeanBruno, TypePermis.SEJOUR, RegDate.get(2004, 11, 10), null, false);
 				addPermis(indJeanBruno, TypePermis.ETABLISSEMENT, dateEtablissement, null, false);
 				addAdresse(indJeanBruno, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateEtablissement, null);
 				addAdresse(indJeanBruno, TypeAdresseCivil.COURRIER, MockRue.CossonayVille.AvenueDuFuniculaire, null, dateEtablissement, null);
 
-				addOrigine(indChristelle, MockPays.Suisse.getNomCourt());
+				addOrigine(indChristelle, MockCommune.Lausanne);
 				addNationalite(indChristelle, MockPays.Suisse, dateNaissanceChristelle, null);
 				addAdresse(indChristelle, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateEtablissement, null);
 				addAdresse(indChristelle, TypeAdresseCivil.COURRIER, MockRue.CossonayVille.AvenueDuFuniculaire, null, dateEtablissement, null);

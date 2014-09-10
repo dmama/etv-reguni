@@ -71,7 +71,6 @@ public class Ec_16001_03_AnnulationPermis_MarieADeux_Scenario extends Annulation
 
 				marieIndividus(indMomo, indBea, dateMariage);
 
-				addOrigine(indMomo, MockPays.France.getNomCourt());
 				addNationalite(indMomo, MockPays.France, RegDate.get(1963, 8, 20), null);
 				addPermis(indMomo, TypePermis.ETABLISSEMENT, dateObtentionPermis, null, false);
 

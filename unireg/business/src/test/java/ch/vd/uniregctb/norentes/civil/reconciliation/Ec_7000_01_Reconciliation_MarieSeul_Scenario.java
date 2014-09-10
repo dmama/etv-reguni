@@ -65,7 +65,7 @@ public class Ec_7000_01_Reconciliation_MarieSeul_Scenario extends EvenementCivil
 				separeIndividu(indPierre, dateSeparation);
 				marieIndividu(indPierre, dateReconciliation);
 
-				addOrigine(indPierre, MockPays.Suisse.getNomCourt());
+				addOrigine(indPierre, MockCommune.Cossonay);
 				addNationalite(indPierre, MockPays.Suisse, RegDate.get(1953, 11, 2), null);
 			}
 		});

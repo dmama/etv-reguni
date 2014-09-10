@@ -297,7 +297,6 @@ public class TiersServiceTest extends BusinessTest {
 			protected void init() {
 				MockIndividu pierre = addIndividu(NUMERO_INDIVIDU, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
 				addPermis(pierre, TypePermis.COURTE_DUREE, RegDate.get(1953, 11, 2), null, false);
-				addOrigine(pierre, MockPays.France.getNomCourt());
 			}
 		});
 
@@ -314,7 +313,6 @@ public class TiersServiceTest extends BusinessTest {
 			protected void init() {
 				MockIndividu pierre = addIndividu(NUMERO_INDIVIDU, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
 				addPermis(pierre, TypePermis.ETABLISSEMENT, RegDate.get(1953, 11, 2), null, false);
-				addOrigine(pierre, MockPays.France.getNomCourt());
 			}
 		});
 

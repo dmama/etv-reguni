@@ -90,7 +90,6 @@ public class Ec_6000_04_Separation_SecondEvenementRecu_Scenario extends Evenemen
 				marieIndividus(indMomo, indBea, dateMariage);
 				separeIndividus(indMomo, indBea, dateSeparation);
 
-				addOrigine(indMomo, MockPays.France.getNomCourt());
 				addNationalite(indMomo, MockPays.France, RegDate.get(1963, 8, 20), null);
 				addPermis(indMomo, TypePermis.ETABLISSEMENT, RegDate.get(1963, 8, 20), null, false);
 				addAdresse(indMomo, TypeAdresseCivil.PRINCIPALE, MockRue.VillarsSousYens.CheminDuCollege, null, dateArriveeMomoVillars, dateAvantMariage);

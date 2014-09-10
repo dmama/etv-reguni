@@ -55,7 +55,6 @@ public class Ec_43000_04_CorrectionAdresse_IndividuMajeurSansFor_Scenario extend
 				final RegDate aujourdhui = RegDate.get();
 				final MockIndividu indConceicao = addIndividu(noIndConceicao, naissance, "Conceiçao", "Aparecida Porto", false);
 
-				addOrigine(indConceicao, MockPays.Espagne.getNomCourt());
 				addNationalite(indConceicao, MockPays.Espagne, indConceicao.getDateNaissance(), null);
 
 				addPermis(indConceicao, TypePermis.ETABLISSEMENT, RegDate.get(2008, 5, 21), null, false);

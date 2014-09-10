@@ -77,7 +77,7 @@ public class Ec_10000_04_Veuvage_DecesPuisVeuvageMemeJour_Scenario extends Evene
 
 				marieIndividu(indPierre, dateMariage);
 
-				addOrigine(indPierre, MockPays.Suisse.getNomCourt());
+				addOrigine(indPierre, MockCommune.Croy);
 				addNationalite(indPierre, MockPays.Suisse, dateNaissance, null);
 				addEtatCivil(indPierre, dateVeuvage, TypeEtatCivil.VEUF);
 			}

@@ -84,7 +84,6 @@ public class VeuvageTest extends AbstractEvenementCivilInterneTest {
 				final MockIndividu mikkel = addIndividu(NO_INDIVIDU_VEUF_ETRANGER, dateNaissanceMikkel, "Hirst", "Mikkel", true);
 				addDefaultAdressesTo(mikkel);
 				marieIndividu(mikkel, RegDate.get(1986, 4, 8));
-				addOrigine(mikkel, MockPays.Danemark.getNomCourt());
 				addNationalite(mikkel, MockPays.Danemark, dateNaissanceMikkel, null);
 				addEtatCivil(mikkel, DATE_VEUVAGE, TypeEtatCivil.VEUF);
 				

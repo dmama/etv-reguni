@@ -58,7 +58,6 @@ public class Ec_16000_03_ObtentionPermis_NonResident_Scenario extends EvenementC
 
 				indMomo = addIndividu(noIndMomo, dateNaissanceMomo, "Durant", "Maurice", true);
 
-				addOrigine(indMomo, MockPays.France.getNomCourt());
 				addPermis(indMomo, TypePermis.SEJOUR, dateObtentionPermisB, dateObtentionPermisC.getOneDayBefore(), false);
 				addPermis(indMomo, TypePermis.ETABLISSEMENT, dateObtentionPermisC, null, false);
 				addNationalite(indMomo, MockPays.France, dateNaissanceMomo, null);

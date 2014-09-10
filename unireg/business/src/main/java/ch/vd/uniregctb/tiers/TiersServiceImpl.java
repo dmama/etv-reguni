@@ -4744,6 +4744,12 @@ public class TiersServiceImpl implements TiersService {
 		for ( Iterator<Origine> it = individu.getOrigines().iterator(); it.hasNext(); ) {
 			final Origine origine = it.next();
 			sb.append(origine.getNomLieu());
+
+			final String cantonalPart = String.format(" (%s)", origine.getSigleCanton());
+			if (!origine.getNomLieu().endsWith(cantonalPart)) {
+				sb.append(cantonalPart);
+			}
+
 			if (it.hasNext()) {
 				sb.append(", ");
 			}

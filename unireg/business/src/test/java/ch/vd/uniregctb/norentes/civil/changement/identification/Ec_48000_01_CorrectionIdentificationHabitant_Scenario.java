@@ -59,7 +59,7 @@ public class Ec_48000_01_CorrectionIdentificationHabitant_Scenario extends Evene
 			protected void init() {
 				MockIndividu momo = addIndividu(noIndMomo, dateNaissance, "Durant", "Maurice", true);
 				addDefaultAdressesTo(momo);
-				addOrigine(momo, MockPays.Suisse.getNomCourt());
+				addOrigine(momo, MockCommune.Geneve);
 				addNationalite(momo, MockPays.Suisse, dateNaissance, null);
 				momo.setNouveauNoAVS(avsOriginal);
 			}

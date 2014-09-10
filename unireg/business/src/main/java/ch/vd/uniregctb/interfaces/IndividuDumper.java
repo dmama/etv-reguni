@@ -195,6 +195,7 @@ public abstract class IndividuDumper {
 		StringBuilder s = new StringBuilder();
 		s.append("Origine{\n");
 		s.append(tab(depth + 1)).append("nomLieu=").append(origine.getNomLieu()).append(", \n");
+		s.append(tab(depth + 1)).append("canton=").append(origine.getSigleCanton()).append(", \n");
 		s.append(tab(depth)).append("}");
 
 		return s.toString();

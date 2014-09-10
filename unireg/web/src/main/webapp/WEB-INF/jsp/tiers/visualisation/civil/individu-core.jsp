@@ -126,9 +126,15 @@
 	<tr class="<unireg:nextRowClass/>" >
 		<td><fmt:message key="label.origine" />&nbsp;:</td>
 		<td>
-			<c:set var="bind" value="command.${param.path}.origine" scope="request"/>
-			<spring:bind path="${bind}" >		
-				<c:out value="${status.value}"/>
+			<c:set var="bind" value="command.${param.path}.origines" scope="request"/>
+			<spring:bind path="${bind}" >
+				<c:if test="${not empty status.value}">
+					<c:set var="separator" value=""/>
+					<c:forEach items="${status.value}" var="origin">
+						<c:out value="${separator}${origin.nomCommuneAvecCanton}"/>
+						<c:set var="separator" value="; "/>
+					</c:forEach>
+				</c:if>
 			</spring:bind>
 		</td>
 	</tr>

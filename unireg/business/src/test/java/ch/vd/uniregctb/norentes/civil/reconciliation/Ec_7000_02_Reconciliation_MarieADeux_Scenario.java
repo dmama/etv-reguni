@@ -76,7 +76,7 @@ public class Ec_7000_02_Reconciliation_MarieADeux_Scenario extends EvenementCivi
 				addNationalite(indBea, MockPays.Suisse, RegDate.get(1963, 8, 20), null);
 				addPermis(indBea, TypePermis.ETABLISSEMENT, RegDate.get(1963, 8, 20), null, false);
 
-				addOrigine(indMomo, MockPays.Suisse.getNomCourt());
+				addOrigine(indMomo, commune);
 				addNationalite(indMomo, MockPays.Suisse, RegDate.get(1961, 3, 12), null);
 			}
 		});

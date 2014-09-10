@@ -6,12 +6,14 @@ import ch.ech.ech0011.v5.PlaceOfOrigin;
 
 public class OrigineRCPers implements Origine, Serializable {
 
-	private static final long serialVersionUID = 8693728941213245492L;
+	private static final long serialVersionUID = 9205836493560510209L;
 
 	private String nomLieu;
+	private String sigleCanton;
 
 	public OrigineRCPers(PlaceOfOrigin placeOfOrigin) {
 		this.nomLieu = placeOfOrigin.getOriginName();
+		this.sigleCanton = placeOfOrigin.getCanton().value();
 	}
 
 	public static Origine get(PlaceOfOrigin placeOfOrigin) {
@@ -27,6 +29,11 @@ public class OrigineRCPers implements Origine, Serializable {
 	}
 
 	@Override
+	public String getSigleCanton() {
+		return sigleCanton;
+	}
+
+	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
@@ -34,12 +41,15 @@ public class OrigineRCPers implements Origine, Serializable {
 		final OrigineRCPers that = (OrigineRCPers) o;
 
 		if (nomLieu != null ? !nomLieu.equals(that.nomLieu) : that.nomLieu != null) return false;
+		if (sigleCanton != null ? !sigleCanton.equals(that.sigleCanton) : that.sigleCanton != null) return false;
 
 		return true;
 	}
 
 	@Override
 	public int hashCode() {
-		return nomLieu != null ? nomLieu.hashCode() : 0;
+		int result = nomLieu != null ? nomLieu.hashCode() : 0;
+		result = 31 * result + (sigleCanton != null ? sigleCanton.hashCode() : 0);
+		return result;
 	}
 }

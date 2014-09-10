@@ -68,7 +68,7 @@ public class Ec_10000_01_Veuvage_SuisseMarieSeul_Scenario extends EvenementCivil
 
 				marieIndividu(indPierre, RegDate.get(1986, 4, 8));
 
-				addOrigine(indPierre, MockPays.Suisse.getNomCourt());
+				addOrigine(indPierre, MockCommune.Lausanne);
 				addNationalite(indPierre, MockPays.Suisse, RegDate.get(1953, 11, 2), null);
 				addEtatCivil(indPierre, dateVeuvage, TypeEtatCivil.VEUF);
 				addAdresse(indPierre, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.PlaceSaintFrancois, null, dateMariage, null);

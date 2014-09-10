@@ -4,14 +4,21 @@ import ch.vd.unireg.interfaces.civil.data.Origine;
 
 public class MockOrigine implements Origine {
 
-	private String nomLieu;
+	private final String nomLieu;
+	private final String sigleCanton;
+
+	public MockOrigine(String nomLieu, String sigleCanton) {
+		this.nomLieu = nomLieu;
+		this.sigleCanton = sigleCanton;
+	}
 
 	@Override
 	public String getNomLieu() {
 		return nomLieu;
 	}
 
-	public void setNomLieu(String nomLieu) {
-		this.nomLieu = nomLieu;
+	@Override
+	public String getSigleCanton() {
+		return sigleCanton;
 	}
 }

@@ -55,7 +55,7 @@ public class Ec_4001_06_AnnulationMariage_JIRA1157_Scenario extends EvenementCiv
 		@Override
 		protected void init() {
 			MockIndividu sylvie = addIndividu(noIndSylvie, dateNaissanceSylvie, "Grandchamp", "Sylvie", false);
-			addOrigine(sylvie, MockPays.Suisse.getNomCourt());
+			addOrigine(sylvie, MockCommune.Lausanne);
 			addNationalite(sylvie, MockPays.Suisse, dateNaissanceSylvie, null);
 
 			addAdresse(sylvie, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArriveeSylvie, null);
@@ -64,7 +64,7 @@ public class Ec_4001_06_AnnulationMariage_JIRA1157_Scenario extends EvenementCiv
 
 		public void arriveeMonsieur() {
 			MockIndividu alexandre = addIndividu(noIndAlexandre, dateNaissanceAlexandre, "Getaz", "Alexandre", true);
-			addOrigine(alexandre, MockPays.Suisse.getNomCourt());
+			addOrigine(alexandre, MockCommune.Bex);
 			addNationalite(alexandre, MockPays.Suisse, dateNaissanceAlexandre, null);
 
 			addAdresse(alexandre, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArriveeAlexandre, null);

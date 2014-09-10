@@ -53,11 +53,11 @@ public class Ec_4001_05_AnnulationMariage_Couple_Scenario extends EvenementCivil
 		protected void init() {
 
 			MockIndividu alexandre = addIndividu(noIndAlexandre, dateNaissanceAlexandre, "Getaz", "Alexandre", true);
-			addOrigine(alexandre, MockPays.Suisse.getNomCourt());
+			addOrigine(alexandre, MockCommune.Lausanne);
 			addNationalite(alexandre, MockPays.Suisse, dateNaissanceAlexandre, null);
 
 			MockIndividu sylvie = addIndividu(noIndSylvie, dateNaissanceSylvie, "Grandchamp", "Sylvie", false);
-			addOrigine(sylvie, MockPays.Suisse.getNomCourt());
+			addOrigine(sylvie, MockCommune.Bale);
 			addNationalite(sylvie, MockPays.Suisse, dateNaissanceSylvie, null);
 
 			marieIndividus(alexandre, sylvie , dateMariage);

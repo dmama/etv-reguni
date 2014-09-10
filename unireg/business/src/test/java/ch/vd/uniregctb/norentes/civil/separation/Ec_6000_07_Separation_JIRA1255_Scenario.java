@@ -89,10 +89,10 @@ public class Ec_6000_07_Separation_JIRA1255_Scenario extends EvenementCivilScena
 				marieIndividus(indPatrick, indSylvie, dateMariageCivil);
 				separeIndividus(indPatrick, indSylvie, dateSeparationCivil);
 
-				addOrigine(indPatrick, MockPays.Suisse.getNomCourt());
+				addOrigine(indPatrick, MockCommune.Echallens);
 				addNationalite(indPatrick, MockPays.Suisse, dateNaissancePatrick, null);
 
-				addOrigine(indSylvie, MockPays.Suisse.getNomCourt());
+				addOrigine(indSylvie, MockCommune.Geneve);
 				addNationalite(indSylvie, MockPays.Suisse, dateNaissanceSylvie, null);
 			}
 

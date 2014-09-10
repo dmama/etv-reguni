@@ -38,7 +38,6 @@ public class RemiseBlancDateFinNationaliteTest extends AbstractEvenementCivilInt
 			protected void init() {
 				final MockIndividu marine = addIndividu(34567, RegDate.get(1964, 4, 8), "DELACROIX", "Marine", false);
 				addDefaultAdressesTo(marine);
-				addOrigine(marine, MockPays.France.getNomCourt());
 				addNationalite(marine, MockPays.Suisse, RegDate.get(1973, 8, 20), DATE_FIN_NATIONALITE);
 				addPermis(marine, TypePermis.ETABLISSEMENT, RegDate.get(1973, 8, 20), null, false);
 				

@@ -523,17 +523,17 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 	}
 
 	protected void addOrigine(MockIndividu individu, Commune commune) {
-		addOrigine(individu, commune.getNomOfficiel());
+		addOrigine(individu, commune.getNomOfficiel(), commune.getSigleCanton());
 	}
 
-	protected void addOrigine(MockIndividu individu, String nomLieu) {
-		final MockOrigine origine = new MockOrigine();
-		origine.setNomLieu(nomLieu);
+	protected void addOrigine(MockIndividu individu, String nomLieu, String sigleCanton) {
 		Collection<Origine> origines = individu.getOrigines();
 		if (origines == null) {
 			origines = new ArrayList<>();
 			individu.setOrigines(origines);
 		}
+
+		final MockOrigine origine = new MockOrigine(nomLieu, sigleCanton);
 		origines.add(origine);
 	}
 

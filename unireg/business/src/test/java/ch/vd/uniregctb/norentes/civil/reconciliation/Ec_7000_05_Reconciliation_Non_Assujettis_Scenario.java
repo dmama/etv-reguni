@@ -69,7 +69,7 @@ public class Ec_7000_05_Reconciliation_Non_Assujettis_Scenario extends Evenement
 			protected void init() {
 
 				indMomo = addIndividu(noIndMomo, RegDate.get(1961, 3, 12), "Durant", "Maurice", true);
-				addOrigine(indMomo, MockPays.Suisse.getNomCourt());
+				addOrigine(indMomo, zurich);
 				addNationalite(indMomo, MockPays.Suisse, RegDate.get(1961, 3, 12), null);
 				addAdresse(indMomo, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate
 						.get(1961, 3, 12), dateDepartHC.getOneDayBefore());

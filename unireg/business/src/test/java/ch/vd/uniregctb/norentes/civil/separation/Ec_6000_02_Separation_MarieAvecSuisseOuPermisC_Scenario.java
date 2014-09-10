@@ -80,7 +80,6 @@ public class Ec_6000_02_Separation_MarieAvecSuisseOuPermisC_Scenario extends Eve
 				separeIndividus(indMomo, indBea, dateSeparation);
 				divorceIndividus(indMomo, indBea, dateDivorce);
 
-				addOrigine(indMomo, MockPays.France.getNomCourt());
 				addNationalite(indMomo, MockPays.France, dateNaissanceMomo, null);
 				addPermis(indMomo, TypePermis.ETABLISSEMENT, dateNaissanceMomo, null, false);
 				addAdresse(indMomo, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.BoulevardGrancy, null, dateMariage, dateSeparation.getOneDayBefore());

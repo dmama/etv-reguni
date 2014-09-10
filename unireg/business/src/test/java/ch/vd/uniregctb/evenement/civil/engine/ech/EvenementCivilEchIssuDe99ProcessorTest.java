@@ -13,6 +13,7 @@ import ch.vd.unireg.interfaces.civil.data.Origine;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockOrigine;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.uniregctb.common.AuthenticationHelper;
@@ -276,8 +277,7 @@ public class EvenementCivilEchIssuDe99ProcessorTest extends AbstractEvenementCiv
 		doModificationIndividu(noIndividu, new IndividuModification() {
 			@Override
 			public void modifyIndividu(MockIndividu individu) {
-				MockOrigine nlleOrigine = new MockOrigine();
-				nlleOrigine.setNomLieu("Saint-Petersbourg (anciennement Lenigrad, anciennement Petrograd et encore avant Saint-Petersbourg)");
+				final MockOrigine nlleOrigine = new MockOrigine(MockCommune.Pully.getNomOfficiel(), ServiceInfrastructureRaw.SIGLE_CANTON_VD);
 				individu.setOrigines(Collections.<Origine>singletonList(nlleOrigine));
 			}
 		});
@@ -317,9 +317,9 @@ public class EvenementCivilEchIssuDe99ProcessorTest extends AbstractEvenementCiv
 				Assert.assertEquals("Evénement civil issu d'un eCH-0099 de commune.", evt.getCommentaireTraitement());
 
 				// Verification que l'origine est bien été reprise du civile
-				PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				Assert.assertNotNull(pp);
-				assertContains("Saint-Petersbourg", pp.getLibelleCommuneOrigine());
+				Assert.assertEquals("Pully", pp.getLibelleCommuneOrigine());
 
 				return null;
 			}
