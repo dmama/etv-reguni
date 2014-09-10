@@ -71,7 +71,6 @@ import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.HibernateEntity;
-import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.common.NationaliteHelper;
 import ch.vd.uniregctb.common.NumeroIDEHelper;
 import ch.vd.uniregctb.declaration.Declaration;
@@ -4741,44 +4740,6 @@ public class TiersServiceImpl implements TiersService {
 			return rapportsNonAnnule;
 		}
 		return allRapports;
-	}
-
-	@Override
-	public String buildLibelleOrigine(long noIndividu) {
-		final Individu individu = serviceCivilService.getIndividu(noIndividu, null, AttributeIndividu.ORIGINE);
-		if (individu == null) {
-			throw new IndividuNotFoundException(noIndividu);
-		}
-		return buildLibelleOrigine(individu);
-	}
-
-	private String buildLibelleOrigine(final Individu individu) {
-		if (individu.getOrigines() == null) {
-			return "";
-		}
-		final StringBuilder sb = new StringBuilder(LengthConstants.TIERS_LIB_ORIGINE);
-		for ( Iterator<Origine> it = individu.getOrigines().iterator(); it.hasNext(); ) {
-			final Origine origine = it.next();
-			sb.append(origine.getNomLieu());
-
-			final String cantonalPart = String.format(" (%s)", origine.getSigleCanton());
-			if (!origine.getNomLieu().endsWith(cantonalPart)) {
-				sb.append(cantonalPart);
-			}
-
-			if (it.hasNext()) {
-				sb.append(", ");
-			}
-		}
-		if (sb.length() > LengthConstants.TIERS_LIB_ORIGINE) {
-			// Si la chaîne de caratère est trop longue (très peu probable), on la tronque.
-			// Pas génant car cette donnée est simplement là à titre d'information dans l'IHM.
-			// Aucune décision métier ne doit être prise dessus.
-			return sb.substring(0, LengthConstants.TIERS_LIB_ORIGINE - 3) + "...";
-		}
-		else {
-			return sb.toString();
-		}
 	}
 
 	@Override

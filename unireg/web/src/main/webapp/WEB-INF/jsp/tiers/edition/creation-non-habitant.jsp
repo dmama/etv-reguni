@@ -134,14 +134,18 @@
 							<tr class="<unireg:nextRowClass/>">
 								<td><fmt:message key="label.commune.origine" />&nbsp;:</td>
 								<td>
-										<form:input path="civil.libelleCommuneOrigine" id="tiers_libelleCommuneOrigine" tabindex="11"
-										            cssErrorClass="input-with-errors" size="30" maxlength="250" />
+									<form:hidden path="civil.ofsCommuneOrigine" id="tiers_numeroOfsCommuneOrigine"/>
+									<form:hidden path="civil.oldLibelleCommuneOrigine"/>
+									<form:input path="civil.newLibelleCommuneOrigine" id="tiers_libelleCommuneOrigine" tabindex="11" cssErrorClass="input-with-errors" size="30" maxlength="250" />
 									<script>
 										$(function() {
-											Autocomplete.infra('commune', '#tiers_libelleCommuneOrigine', true);
+											Autocomplete.infra('commune', '#tiers_libelleCommuneOrigine', true, function(item) {
+												$('#tiers_numeroOfsCommuneOrigine').val(item ? item.id1 : null);
+											});
 										});
 									</script>
-										<form:errors path="civil.libelleCommuneOrigine" cssClass="error" />
+									<form:errors path="civil.ofsCommuneOrigine" cssClass="error" />
+								</td>
 							</tr>
 
 							<tr class="<unireg:nextRowClass/>">
@@ -156,7 +160,8 @@
 											});
 										});
 									</script>
-									<form:errors path="civil.numeroOfsNationalite" cssClass="error" /></td>
+									<form:errors path="civil.numeroOfsNationalite" cssClass="error" />
+								</td>
 							</tr>
 
 							<tr class="<unireg:nextRowClass/>">
@@ -174,8 +179,9 @@
 								<td>
 									<script type="text/javascript">
 										function dateDebutValiditeAutorisation_OnChange( element) {
-											if (element)
+											if (element) {
 												$("#dateDebutValiditeAutorisationFormate").val(element.value);
+											}
 										}
 									</script>
 									<form:hidden path="civil.sDateDebutValiditeAutorisation" id="dateDebutValiditeAutorisationFormate" />

@@ -1313,17 +1313,6 @@ public interface TiersService {
     NumerosOfficesImpot getOfficesImpot(int noOfs, @Nullable RegDate date);
 
 	/**
-	 * @param noIndividu l'individu dont on veut le libellé de ses communes d'origines
-	 *
-	 * @return Une chaîne de caratères avec toutes les communes origines de l'individu concaténées avec des ", ".
-	 *          Abrégé par "..." si c'est trop long (cf. {@link ch.vd.uniregctb.common.LengthConstants#TIERS_LIB_ORIGINE})
-	 *
-	 * @throws IndividuNotFoundException
-	 */
-	String buildLibelleOrigine(long noIndividu);
-
-
-	/**
 	 * Permet de récuperer toutes les rapports de préstation imposable couvrant une période donnée.
 	 *
 	 * @param dpi            un débiteur

@@ -17,12 +17,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.common.DelegatingValidator;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.complements.ComplementsEditCommunicationsView;
 import ch.vd.uniregctb.complements.ComplementsEditCoordonneesFinancieresView;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.iban.IbanValidator;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityHelper;
@@ -60,6 +62,7 @@ public class TiersCreateController {
 	private TiersDAO tiersDAO;
 	private TiersService tiersService;
 	private IbanValidator ibanValidator;
+	private ServiceInfrastructureService infraService;
 
 	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
 		this.securityProvider = securityProvider;
@@ -79,6 +82,10 @@ public class TiersCreateController {
 
 	public void setIbanValidator(IbanValidator ibanValidator) {
 		this.ibanValidator = ibanValidator;
+	}
+
+	public void setInfraService(ServiceInfrastructureService infraService) {
+		this.infraService = infraService;
 	}
 
 	@InitBinder
@@ -135,7 +142,13 @@ public class TiersCreateController {
 		pp.setCategorieEtranger(civilView.getCategorieEtranger());
 		pp.setDateDebutValiditeAutorisation(civilView.getDateDebutValiditeAutorisation());
 		pp.setNumeroOfsNationalite(civilView.getNumeroOfsNationalite());
-		pp.setLibelleCommuneOrigine(civilView.getLibelleCommuneOrigine());
+		if (civilView.getOfsCommuneOrigine() != null) {
+			final Commune commune = infraService.getCommuneByNumeroOfs(civilView.getOfsCommuneOrigine(), null);
+			pp.setOrigine(new OriginePersonnePhysique(civilView.getNewLibelleCommuneOrigine(), commune.getSigleCanton()));
+		}
+		else {
+			pp.setOrigine(null);
+		}
 		pp.setPrenomsPere(civilView.getPrenomsPere());
 		pp.setNomPere(civilView.getNomPere());
 		pp.setPrenomsMere(civilView.getPrenomsMere());

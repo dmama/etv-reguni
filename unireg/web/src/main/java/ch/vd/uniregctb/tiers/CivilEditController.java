@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.DelegatingValidator;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
@@ -274,7 +275,13 @@ public class CivilEditController {
 			pp.setCategorieEtranger(view.getCategorieEtranger());
 			pp.setDateDebutValiditeAutorisation(view.getDateDebutValiditeAutorisation());
 			pp.setNumeroOfsNationalite(view.getNumeroOfsNationalite());
-			pp.setLibelleCommuneOrigine(view.getLibelleCommuneOrigine());
+			if (view.getOfsCommuneOrigine() != null) {
+				final Commune commune = infraService.getCommuneByNumeroOfs(view.getOfsCommuneOrigine(), null);
+				pp.setOrigine(new OriginePersonnePhysique(view.getNewLibelleCommuneOrigine(), commune.getSigleCanton()));
+			}
+			else if (view.getNewLibelleCommuneOrigine() == null || !view.getNewLibelleCommuneOrigine().equals(view.getOldLibelleCommuneOrigine())) {
+				pp.setOrigine(null);
+			}
 			pp.setPrenomsPere(view.getPrenomsPere());
 			pp.setNomPere(view.getNomPere());
 			pp.setPrenomsMere(view.getPrenomsMere());

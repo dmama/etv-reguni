@@ -23,9 +23,14 @@ public class NonHabitantCivilView {
 	private CategorieEtranger categorieEtranger;
 	private RegDate dateDebutValiditeAutorisation;
 	private String sDateDebutValiditeAutorisation;
+
 	private Integer numeroOfsNationalite;
 	private String libelleOfsPaysOrigine;
-	private String libelleCommuneOrigine;
+
+	private Integer ofsCommuneOrigine;
+	private String newLibelleCommuneOrigine;
+	private String oldLibelleCommuneOrigine;
+
 	private String prenomsPere;
 	private String nomPere;
 	private String prenomsMere;
@@ -57,7 +62,14 @@ public class NonHabitantCivilView {
 				this.libelleOfsPaysOrigine = pays.getNomCourt();
 			}
 		}
-		this.libelleCommuneOrigine = pp.getLibelleCommuneOrigine();
+		if (pp.getOrigine() != null) {
+			this.oldLibelleCommuneOrigine = pp.getOrigine().getLibelle();
+			this.newLibelleCommuneOrigine = pp.getOrigine().getLibelle();
+		}
+		else {
+			this.oldLibelleCommuneOrigine = null;
+			this.newLibelleCommuneOrigine = null;
+		}
 		this.prenomsPere = pp.getPrenomsPere();
 		this.nomPere = pp.getNomPere();
 		this.prenomsMere = pp.getPrenomsMere();
@@ -180,12 +192,28 @@ public class NonHabitantCivilView {
 		this.libelleOfsPaysOrigine = libelleOfsPaysOrigine;
 	}
 
-	public String getLibelleCommuneOrigine() {
-		return libelleCommuneOrigine;
+	public Integer getOfsCommuneOrigine() {
+		return ofsCommuneOrigine;
 	}
 
-	public void setLibelleCommuneOrigine(String libelleCommuneOrigine) {
-		this.libelleCommuneOrigine = libelleCommuneOrigine;
+	public void setOfsCommuneOrigine(Integer ofsCommuneOrigine) {
+		this.ofsCommuneOrigine = ofsCommuneOrigine;
+	}
+
+	public String getNewLibelleCommuneOrigine() {
+		return newLibelleCommuneOrigine;
+	}
+
+	public void setNewLibelleCommuneOrigine(String newLibelleCommuneOrigine) {
+		this.newLibelleCommuneOrigine = newLibelleCommuneOrigine;
+	}
+
+	public String getOldLibelleCommuneOrigine() {
+		return oldLibelleCommuneOrigine;
+	}
+
+	public void setOldLibelleCommuneOrigine(String oldLibelleCommuneOrigine) {
+		this.oldLibelleCommuneOrigine = oldLibelleCommuneOrigine;
 	}
 
 	public String getPrenomsPere() {

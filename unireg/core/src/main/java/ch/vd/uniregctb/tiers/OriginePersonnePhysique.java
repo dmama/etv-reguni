@@ -2,6 +2,7 @@ package ch.vd.uniregctb.tiers;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import javax.persistence.Transient;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -44,6 +45,17 @@ public class OriginePersonnePhysique {
 
 	public void setSigleCanton(String sigleCanton) {
 		this.sigleCanton = sigleCanton;
+	}
+
+	@Transient
+	public String getLibelleAvecCanton() {
+		final String cantonalPart = String.format("(%s)", sigleCanton);
+		if (libelle.endsWith(cantonalPart)) {
+			return libelle;
+		}
+		else {
+			return String.format("%s %s", libelle, cantonalPart);
+		}
 	}
 
 	@Override

@@ -126,14 +126,17 @@
 						<tr class="<unireg:nextRowClass/>">
 							<td><fmt:message key="label.commune.origine" />&nbsp;:</td>
 							<td>
-									<form:input path="libelleCommuneOrigine" id="tiers_libelleCommuneOrigine" tabindex="11"
-									            cssErrorClass="input-with-errors" size="30" maxlength="250" />
+								<form:hidden path="ofsCommuneOrigine" id="tiers_numeroOfsCommuneOrigine"/>
+								<form:hidden path="oldLibelleCommuneOrigine"/>
+								<form:input path="newLibelleCommuneOrigine" id="tiers_libelleCommuneOrigine" tabindex="11" cssErrorClass="input-with-errors" size="30" maxlength="250" />
 								<script>
 									$(function() {
-										Autocomplete.infra('commune', '#tiers_libelleCommuneOrigine', true);
+										Autocomplete.infra('commune', '#tiers_libelleCommuneOrigine', true, function(item) {
+											$('#tiers_numeroOfsCommuneOrigine').val(item ? item.id1 : null);
+										});
 									});
 								</script>
-									<form:errors path="libelleCommuneOrigine" cssClass="error" />
+								<form:errors path="ofsCommuneOrigine" cssClass="error" />
 						</tr>
 
 						<tr class="<unireg:nextRowClass/>">

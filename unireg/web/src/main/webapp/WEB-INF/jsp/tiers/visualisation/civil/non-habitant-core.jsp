@@ -131,9 +131,11 @@
 	<tr class="<unireg:nextRowClass/>" >
 		<td width="50%"><fmt:message key="label.commune.origine"/>&nbsp;:</td>
 		<td>
-			<c:set var="bind" value="command.${param.path}.libelleCommuneOrigine" scope="request"/>
+			<c:set var="bind" value="command.${param.path}.origine" scope="request"/>
 			<spring:bind path="${bind}" >
-				<c:out value="${status.value}"/>
+				<c:if test="${status.value != null}">
+					<c:out value="${status.value.libelleAvecCanton}"/>
+				</c:if>
 			</spring:bind>
 		</td>
 	</tr>
