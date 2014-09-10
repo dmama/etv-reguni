@@ -14,11 +14,13 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.uniregctb.common.WebTestSpring3;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.tiers.AppartenanceMenage;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.tiers.OriginePersonnePhysique;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.type.CategorieEtranger;
@@ -59,10 +61,12 @@ public class SuperGraManagerTest extends WebTestSpring3 {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = addNonHabitant("Paul", "Trohion", date(1965, 3, 12), Sexe.MASCULIN);
+				pp.setNomNaissance("Troyas");
 				pp.setAncienNumeroSourcier(4444L);
 				pp.setNumeroAssureSocial("WWWW");
 				pp.setNumeroOfsNationalite(333);
 				pp.setLibelleCommuneOrigine("eeee");
+				pp.setOrigine(new OriginePersonnePhysique(MockCommune.Neuchatel.getNomOfficiel(), MockCommune.Neuchatel.getSigleCanton()));
 				pp.setCategorieEtranger(CategorieEtranger._12_FONCT_INTER_SANS_IMMUNITE);
 				pp.setDateDebutValiditeAutorisation(RegDate.get(2000, 1, 1));
 				pp.setDateDeces(RegDate.get());
@@ -109,15 +113,16 @@ public class SuperGraManagerTest extends WebTestSpring3 {
 					public Object doInHibernate(Session session) throws HibernateException, SQLException {
 						final SQLQuery query = session.createSQLQuery("select NUMERO_INDIVIDU, ANCIEN_NUMERO_SOURCIER, NH_NUMERO_ASSURE_SOCIAL, NH_NOM, NH_PRENOM, NH_DATE_NAISSANCE, NH_SEXE, " +
 								                                              "NH_NO_OFS_NATIONALITE, NH_LIBELLE_COMMUNE_ORIGINE, NH_CAT_ETRANGER, " +
-								                                              "NH_DATE_DEBUT_VALID_AUTORIS, DATE_DECES, MAJORITE_TRAITEE from TIERS where NUMERO = ?");
+								                                              "NH_DATE_DEBUT_VALID_AUTORIS, DATE_DECES, MAJORITE_TRAITEE, NH_LIBELLE_ORIGINE, NH_CANTON_ORIGINE, NH_NOM_NAISSANCE from TIERS where NUMERO = ?");
 						query.setParameter(0, id);
 						final List list = query.list();
 						assertNotNull(list);
 						assertEquals(1, list.size());
 
 						final Object line[] = (Object[]) list.get(0);
-						for (Object o : line) {
-							assertNull(o);
+						for (int index = 0 ; index < line.length ; ++ index) {
+							final Object o = line[index];
+							assertNull("Index " + index, o);
 						}
 						return null;
 					}

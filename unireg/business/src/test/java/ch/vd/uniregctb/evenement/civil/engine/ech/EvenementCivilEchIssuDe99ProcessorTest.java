@@ -268,12 +268,14 @@ public class EvenementCivilEchIssuDe99ProcessorTest extends AbstractEvenementCiv
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
-				Assert.assertEquals("l'origine du non-habitant devrait être Orbe", "Orbe", pp.getLibelleCommuneOrigine());
+				Assert.assertNotNull("l'origine du non-habitant devrait être Orbe (VD)", pp.getOrigine());
+				Assert.assertEquals("l'origine du non-habitant devrait être Orbe (VD)", "Orbe", pp.getOrigine().getLibelle());
+				Assert.assertEquals("l'origine du non-habitant devrait être Orbe (VD)", ServiceInfrastructureRaw.SIGLE_CANTON_VD, pp.getOrigine().getSigleCanton());
 				return pp.getNumero();
 			}
 		});
 
-		// maintenant, on change le prénom et l'origine
+		// maintenant, on change l'origine
 		doModificationIndividu(noIndividu, new IndividuModification() {
 			@Override
 			public void modifyIndividu(MockIndividu individu) {
@@ -319,7 +321,9 @@ public class EvenementCivilEchIssuDe99ProcessorTest extends AbstractEvenementCiv
 				// Verification que l'origine est bien été reprise du civile
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				Assert.assertNotNull(pp);
-				Assert.assertEquals("Pully", pp.getLibelleCommuneOrigine());
+				Assert.assertNotNull(pp.getOrigine());
+				Assert.assertEquals("Pully", pp.getOrigine().getLibelle());
+				Assert.assertEquals(ServiceInfrastructureRaw.SIGLE_CANTON_VD, pp.getOrigine().getSigleCanton());
 
 				return null;
 			}

@@ -353,11 +353,13 @@ public class PersonnePhysique extends Contribuable {
 		numeroOfsNationalite = theNumeroOfsNationalite;
 	}
 
+	@Deprecated
 	@Column(name = "NH_LIBELLE_COMMUNE_ORIGINE", length = LengthConstants.TIERS_LIB_ORIGINE)
 	public String getLibelleCommuneOrigine() {
 		return libelleCommuneOrigine;
 	}
 
+	@Deprecated
 	public void setLibelleCommuneOrigine(String libelleCommuneOrigine) {
 		this.libelleCommuneOrigine = libelleCommuneOrigine;
 	}

@@ -55,7 +55,6 @@ import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.evenement.EvenementFiscal;
@@ -6351,9 +6350,9 @@ public class TiersServiceTest extends BusinessTest {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
 				final PersonnePhysique pp2 = tiersService.createNonHabitantFromIndividu(noIndividu2);
-				assertEquals("le libellé de la commune d'origine du non-habitant devrait être Orbe", "Orbe", pp.getLibelleCommuneOrigine());
-				final int maxSize = LengthConstants.TIERS_LIB_ORIGINE;
-				assertEquals("les origines trop longues devraient être abrégées à " + maxSize, maxSize, pp2.getLibelleCommuneOrigine().length());
+				assertNotNull("le libellé de la commune d'origine du non-habitant devrait être Orbe (VD)", pp.getOrigine());
+				assertEquals("le libellé de la commune d'origine du non-habitant devrait être Orbe (VD)", "Orbe", pp.getOrigine().getLibelle());
+				assertEquals("le libellé de la commune d'origine du non-habitant devrait être Orbe (VD)", "VD", pp.getOrigine().getSigleCanton());
 				return pp.getNumero();
 			}
 		});
