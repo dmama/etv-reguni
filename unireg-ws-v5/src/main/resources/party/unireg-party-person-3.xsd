@@ -4,11 +4,12 @@
 		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:eCH-0044="http://www.ech.ch/xmlns/eCH-0044/3"
 		   xmlns:common="http://www.vd.ch/fiscalite/unireg/common/2" xmlns:person="http://www.vd.ch/fiscalite/unireg/party/person/3"
 		   xmlns:party="http://www.vd.ch/fiscalite/unireg/party/party/3" xmlns:taxpayer="http://www.vd.ch/fiscalite/unireg/party/taxpayer/3"
-		   xmlns:taxresidence="http://www.vd.ch/fiscalite/unireg/party/taxresidence/2"
+		   xmlns:taxresidence="http://www.vd.ch/fiscalite/unireg/party/taxresidence/2" xmlns:eCH-0007="http://www.ech.ch/xmlns/eCH-0007/4"
 		   xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0">
 
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/2" schemaLocation="../unireg-common-2.xsd" />
 	<xs:import namespace="http://www.ech.ch/xmlns/eCH-0044/3" schemaLocation="../eCH-0044-3-0.xsd" />
+	<xs:import namespace="http://www.ech.ch/xmlns/eCH-0007/4" schemaLocation="../eCH-0007-4-0.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/party/3" schemaLocation="unireg-party-3.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/taxresidence/2" schemaLocation="unireg-party-taxresidence-2.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/taxpayer/3" schemaLocation="unireg-party-taxpayer-3.xsd" />
@@ -178,10 +179,145 @@
 							</xs:appinfo>
 						</xs:annotation>
 					</xs:element>
+					<xs:element name="birthName" type="eCH-0044:baseNameType" minOccurs="0">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Le nom de naissance de la personne physique.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="nationalities" type="person:nationalityType" minOccurs="0" maxOccurs="unbounded">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>La nationalité de la personne physique.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="origins" type="person:originType" minOccurs="0" maxOccurs="unbounded">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>La (ou les) communes d'origine de la personne physique.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="padding4" type="xs:int">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Padding pour supporter l'élément xs:any ci-dessous. A ignorer.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
 					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="nationalityType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>La nationalité d'une personne physique.</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:sequence>
+				<xs:element name="dateFrom" type="common:dateType" minOccurs="0">
+					<xs:annotation>
+						<xs:appinfo>
+							<jxb:property>
+								<jxb:javadoc>Date d'obtention de la nationalité (absente si la date est inconnue).</jxb:javadoc>
+							</jxb:property>
+						</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="dateTo" type="common:dateType" minOccurs="0">
+					<xs:annotation>
+						<xs:appinfo>
+							<jxb:property>
+								<jxb:javadoc>Date de perte de la nationalité (absente si la nationalité est toujours en vigueur).</jxb:javadoc>
+							</jxb:property>
+						</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
+				<xs:choice>
+					<xs:element name="swiss">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Indique une personne de nationalité suisse.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+						<xs:complexType/>
+					</xs:element>
+					<xs:element name="stateless">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Indique une personne apatride.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+						<xs:complexType/>
+					</xs:element>
+					<xs:element name="foreignCountry" type="xs:int">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Indique une personne de nationalité étrangère (numéro OFS du pays concerné).</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+				</xs:choice>
+				<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+			</xs:sequence>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="originType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:property>
+					<jxb:javadoc>Commune d'origine de la personne physique de nationalité suisse.</jxb:javadoc>
+				</jxb:property>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="originName">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Nom du lieu d'origine.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="50"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="canton" type="eCH-0007:cantonAbbreviationType">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Canton du lieu d'origine.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
 	</xs:complexType>
 
 	<xs:complexType name="parentFullNameType">

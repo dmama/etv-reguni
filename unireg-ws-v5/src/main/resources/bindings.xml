@@ -31,6 +31,15 @@
 
 	<!-- eCH -->
 
+	<jxb:bindings schemaLocation="eCH-0007-4-0.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.ech.ech0007.v4" />
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="eCH-0007-4" />
+		</jxb:bindings>
+	</jxb:bindings>
+
 	<jxb:bindings schemaLocation="eCH-0010-5-0.xsd">
 		<jxb:schemaBindings>
 			<jxb:package name="ch.ech.ech0010.v5" />
@@ -111,6 +120,9 @@
 			<jxb:package name="ch.vd.unireg.xml.party.person.v3" />
 		</jxb:schemaBindings>
 		<jxb:bindings node="//xs:complexType[@name='naturalPersonCategoryType']">
+			<inheritance:implements>ch.vd.unireg.xml.common.v2.DateRange</inheritance:implements>
+		</jxb:bindings>
+		<jxb:bindings node="//xs:complexType[@name='nationalityType']">
 			<inheritance:implements>ch.vd.unireg.xml.common.v2.DateRange</inheritance:implements>
 		</jxb:bindings>
 		<jxb:bindings>
