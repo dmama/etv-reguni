@@ -67,9 +67,11 @@ import ch.vd.unireg.xml.party.immovableproperty.v2.ImmovableProperty;
 import ch.vd.unireg.xml.party.othercomm.v1.LegalForm;
 import ch.vd.unireg.xml.party.othercomm.v1.OtherCommunity;
 import ch.vd.unireg.xml.party.person.v3.CommonHousehold;
+import ch.vd.unireg.xml.party.person.v3.Nationality;
 import ch.vd.unireg.xml.party.person.v3.NaturalPerson;
 import ch.vd.unireg.xml.party.person.v3.NaturalPersonCategory;
 import ch.vd.unireg.xml.party.person.v3.NaturalPersonCategoryType;
+import ch.vd.unireg.xml.party.person.v3.Origin;
 import ch.vd.unireg.xml.party.person.v3.Sex;
 import ch.vd.unireg.xml.party.relation.v2.RelationBetweenParties;
 import ch.vd.unireg.xml.party.relation.v2.RelationBetweenPartiesType;
@@ -2838,6 +2840,8 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Gautier", "Mafalda", Sexe.FEMININ);
 				ind.setTousPrenoms("Mafalda Henriette");
+				ind.setNomNaissance("Dupont");
+				addOrigine(ind, MockCommune.Bern);
 				addNationalite(ind, MockPays.France, dateNaissance, null);
 				addPermis(ind, TypePermis.ETABLISSEMENT, dateNaissance, null, false);
 			}
@@ -2904,7 +2908,31 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			Assert.assertEquals("Mafalda Henriette", np.getFirstNames());
 			Assert.assertEquals("Mafalda", np.getFirstName());
 			Assert.assertEquals("Gautier", np.getOfficialName());
+			Assert.assertEquals("Dupont", np.getBirthName());
 			Assert.assertEquals(Sex.FEMALE, np.getSex());
+
+			final List<Nationality> nationalities = np.getNationalities();
+			Assert.assertNotNull(nationalities);
+			Assert.assertEquals(1, nationalities.size());
+			{
+				final Nationality nat = nationalities.get(0);
+				Assert.assertNotNull(nat);
+				Assert.assertEquals(dateNaissance, ch.vd.uniregctb.xml.DataHelper.xmlToCore(nat.getDateFrom()));
+				Assert.assertNull(nat.getDateTo());
+				Assert.assertNull(nat.getSwiss());
+				Assert.assertNull(nat.getStateless());
+				Assert.assertEquals((Integer) MockPays.France.getNoOFS(), nat.getForeignCountry());
+			}
+
+			final List<Origin> origins = np.getOrigins();
+			Assert.assertNotNull(origins);
+			Assert.assertEquals(1, origins.size());
+			{
+				final Origin orig = origins.get(0);
+				Assert.assertNotNull(orig);
+				Assert.assertEquals("BE", orig.getCanton().value());
+				Assert.assertEquals("Bern", orig.getOriginName());
+			}
 
 			final List<TaxDeclaration> decls = np.getTaxDeclarations();
 			Assert.assertNotNull(decls);

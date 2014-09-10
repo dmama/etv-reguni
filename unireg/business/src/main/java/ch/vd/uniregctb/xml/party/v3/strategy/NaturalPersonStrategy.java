@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import ch.ech.ech0007.v4.CantonAbbreviation;
 import ch.ech.ech0044.v3.NamedPersonId;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
@@ -13,13 +14,18 @@ import org.slf4j.LoggerFactory;
 import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
+import ch.vd.unireg.interfaces.civil.data.Nationalite;
+import ch.vd.unireg.interfaces.civil.data.Origine;
 import ch.vd.unireg.interfaces.civil.data.Permis;
 import ch.vd.unireg.interfaces.civil.data.PermisList;
 import ch.vd.unireg.interfaces.civil.rcpers.EchHelper;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
+import ch.vd.unireg.xml.party.person.v3.Nationality;
 import ch.vd.unireg.xml.party.person.v3.NaturalPerson;
 import ch.vd.unireg.xml.party.person.v3.NaturalPersonCategory;
 import ch.vd.unireg.xml.party.person.v3.NaturalPersonCategoryType;
+import ch.vd.unireg.xml.party.person.v3.Origin;
 import ch.vd.unireg.xml.party.person.v3.ParentFullName;
 import ch.vd.unireg.xml.party.taxresidence.v2.WithholdingTaxationPeriod;
 import ch.vd.unireg.xml.party.v3.PartyPart;
@@ -86,9 +92,24 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 			if (StringUtils.isNotBlank(personne.getPrenomsPere()) || StringUtils.isNotBlank(personne.getNomPere())) {
 				to.setFatherName(new ParentFullName(personne.getPrenomsPere(), personne.getNomPere()));
 			}
+
+			// [SIFISC-13351] la nationalité, le nom de naissance et la commune d'origine
+			// TODO JDE à implémenter
+			to.setBirthName(null);
+			if (personne.getNumeroOfsNationalite() != null) {
+				final int ofs = personne.getNumeroOfsNationalite();
+				final Nationality.Swiss swiss = ofs == ServiceInfrastructureRaw.noOfsSuisse ? new Nationality.Swiss() : null;
+				final Nationality.Stateless stateless = ofs == ServiceInfrastructureRaw.noPaysApatride ? new Nationality.Stateless() : null;
+				final Integer foreignCountry = swiss == null && stateless == null ? ofs : null;
+				to.getNationalities().add(new Nationality(null, null, swiss, stateless, foreignCountry, null));
+			}
+			if (StringUtils.isNotBlank(personne.getLibelleCommuneOrigine())) {
+				// TODO JDE à implémenter...
+				to.getOrigins();
+			}
 		}
 		else {
-			final Individu individu = context.serviceCivilService.getIndividu(personne.getNumeroIndividu(), null, AttributeIndividu.PERMIS);
+			final Individu individu = context.serviceCivilService.getIndividu(personne.getNumeroIndividu(), null, AttributeIndividu.PERMIS, AttributeIndividu.NATIONALITES, AttributeIndividu.ORIGINE);
 
 			if (individu == null) {
 				final String message = String.format("Impossible de trouver l'individu n°%d pour l'habitant n°%d", personne
@@ -132,6 +153,28 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 			final NomPrenom npPere = individu.getNomOfficielPere();
 			if (npPere != null) {
 				to.setFatherName(new ParentFullName(npPere.getPrenom(), npPere.getNom()));
+			}
+
+			// [SIFISC-13351] la nationalité, le nom de naissance et la commune d'origine
+			to.setBirthName(individu.getNomNaissance());
+			if (individu.getNationalites() != null && !individu.getNationalites().isEmpty()) {
+				for (Nationalite nat : individu.getNationalites()) {
+					final int ofs = nat.getPays().getNoOFS();
+					final Nationality.Swiss swiss = ofs == ServiceInfrastructureRaw.noOfsSuisse ? new Nationality.Swiss() : null;
+					final Nationality.Stateless stateless = ofs == ServiceInfrastructureRaw.noPaysApatride ? new Nationality.Stateless() : null;
+					final Integer foreignCountry = swiss == null && stateless == null ? ofs : null;
+					to.getNationalities().add(new Nationality(DataHelper.coreToXMLv2(nat.getDateDebut()),
+					                                          DataHelper.coreToXMLv2(nat.getDateFin()),
+				                                              swiss,
+				                                              stateless,
+				                                              foreignCountry,
+				                                              null));
+				}
+			}
+			if (individu.getOrigines() != null && !individu.getOrigines().isEmpty()) {
+				for (Origine org : individu.getOrigines()) {
+					to.getOrigins().add(new Origin(org.getNomLieu(), CantonAbbreviation.valueOf(org.getSigleCanton())));
+				}
 			}
 		}
 

@@ -95,7 +95,7 @@
 		<dependency>
 			<groupId>ch.vd.uniregctb</groupId>
 			<artifactId>unireg-jaxb2-party</artifactId>
-			<version>3.2</version>
+			<version>3.3-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>${pom.parent.groupId}</groupId>
