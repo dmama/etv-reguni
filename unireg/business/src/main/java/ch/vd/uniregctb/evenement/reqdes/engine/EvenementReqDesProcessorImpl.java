@@ -1113,9 +1113,9 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 					throw new EvenementReqDesException(String.format("Le tiers %s n'est pas une personne physique.", FormatNumeroHelper.numeroCTBToDisplay(ppSrc.getNumeroContribuable())));
 				}
 
-				// [SIFISC-13300] si le contribuable est annulé, i107 ou désactivé à la date de l'acte, on refuse la mise à jour automatique
-				if (tiers.isDesactive(evt.getDateActe()) || tiers.isDebiteurInactif()) {
-					throw new EvenementReqDesException(String.format("Le tiers %s est inactif à la date de l'acte.", FormatNumeroHelper.numeroCTBToDisplay(ppSrc.getNumeroContribuable())));
+				// [SIFISC-13300] si le contribuable est annulé, i107 ou désactivé à la date du jour de traitement, on refuse la mise à jour automatique
+				if (tiers.isDesactive(null) || tiers.isDebiteurInactif()) {
+					throw new EvenementReqDesException(String.format("Le tiers %s est inactif.", FormatNumeroHelper.numeroCTBToDisplay(ppSrc.getNumeroContribuable())));
 				}
 
 				final PersonnePhysique ppDest = (PersonnePhysique) tiers;

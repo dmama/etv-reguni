@@ -5868,7 +5868,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 
 				final ErreurTraitement erreur = ut.getErreurs().iterator().next();
 				Assert.assertNotNull(erreur);
-				Assert.assertEquals(String.format("Le tiers %s est inactif à la date de l'acte.", FormatNumeroHelper.numeroCTBToDisplay(ids.ppId)), erreur.getMessage());
+				Assert.assertEquals(String.format("Le tiers %s est inactif.", FormatNumeroHelper.numeroCTBToDisplay(ids.ppId)), erreur.getMessage());
 
 			    final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.ppId);
 				Assert.assertNotNull(pp);
@@ -5940,7 +5940,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 
 				final ErreurTraitement erreur = ut.getErreurs().iterator().next();
 				Assert.assertNotNull(erreur);
-				Assert.assertEquals(String.format("Le tiers %s est inactif à la date de l'acte.", FormatNumeroHelper.numeroCTBToDisplay(ids.ppId)), erreur.getMessage());
+				Assert.assertEquals(String.format("Le tiers %s est inactif.", FormatNumeroHelper.numeroCTBToDisplay(ids.ppId)), erreur.getMessage());
 
 			    final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.ppId);
 				Assert.assertNotNull(pp);
@@ -6011,7 +6011,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 
 				final ErreurTraitement erreur = ut.getErreurs().iterator().next();
 				Assert.assertNotNull(erreur);
-				Assert.assertEquals(String.format("Le tiers %s est inactif à la date de l'acte.", FormatNumeroHelper.numeroCTBToDisplay(ids.ppId)), erreur.getMessage());
+				Assert.assertEquals(String.format("Le tiers %s est inactif.", FormatNumeroHelper.numeroCTBToDisplay(ids.ppId)), erreur.getMessage());
 
 			    final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.ppId);
 				Assert.assertNotNull(pp);
@@ -6082,7 +6082,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 
 				final ErreurTraitement erreur = ut.getErreurs().iterator().next();
 				Assert.assertNotNull(erreur);
-				Assert.assertEquals(String.format("Le for principal actif du tiers %s à la date de l'acte est déjà fermé. Cas à traiter manuellement.", FormatNumeroHelper.numeroCTBToDisplay(ids.ppId)), erreur.getMessage());
+				Assert.assertEquals(String.format("Le tiers %s est inactif.", FormatNumeroHelper.numeroCTBToDisplay(ids.ppId)), erreur.getMessage());
 
 			    final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.ppId);
 				Assert.assertNotNull(pp);
