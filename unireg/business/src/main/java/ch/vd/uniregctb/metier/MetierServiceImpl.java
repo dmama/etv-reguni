@@ -2193,7 +2193,13 @@ public class MetierServiceImpl implements MetierService {
 			}
 		}
 
+		// mais non, il n'est pas mort...
 		tiers.setDateDeces(null);
+
+		// on reset le flag de traitement de majorité, par mesure de précaution
+		// ([SIFISC-13407] et on fait ça avant toutes les manipulations sur les fors, adresses, situations de famille,
+		// tâches... pour ne pas re-modifier le tiers que l'on tient ici après)
+		tiers.setMajoriteTraitee(Boolean.FALSE);
 
 		/*
 		 * Annulation des fors ouverts sur le tiers
@@ -2242,9 +2248,6 @@ public class MetierServiceImpl implements MetierService {
 
 			reopenSituationFamille(date, menageCommun);
 		}
-
-		// on reset le flag de traitement de majorité, par mesure de précaution
-		tiers.setMajoriteTraitee(Boolean.FALSE);
 	}
 
 	/**
