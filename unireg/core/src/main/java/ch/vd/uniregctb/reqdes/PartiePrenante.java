@@ -1,7 +1,10 @@
 package ch.vd.uniregctb.reqdes;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -23,6 +26,7 @@ import org.hibernate.annotations.Type;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
+import ch.vd.uniregctb.tiers.OriginePersonnePhysique;
 import ch.vd.uniregctb.type.CategorieEtranger;
 import ch.vd.uniregctb.type.EtatCivil;
 import ch.vd.uniregctb.type.Sexe;
@@ -35,6 +39,7 @@ public class PartiePrenante extends HibernateEntity {
 	private UniteTraitement uniteTraitement;
 
 	private String nom;
+	private String nomNaissance;
 	private String prenoms;
 	private RegDate dateNaissance;
 	private Sexe sexe;
@@ -42,6 +47,7 @@ public class PartiePrenante extends HibernateEntity {
 	private boolean sourceCivile;
 	private Long numeroContribuable;
 	private String avs;
+	private OriginePersonnePhysique origine;
 	private String nomMere;
 	private String prenomsMere;
 	private String nomPere;
@@ -95,6 +101,15 @@ public class PartiePrenante extends HibernateEntity {
 
 	public void setNom(String nom) {
 		this.nom = nom;
+	}
+
+	@Column(name = "NOM_NAISSANCE", length = LengthConstants.ADRESSE_NOM)
+	public String getNomNaissance() {
+		return nomNaissance;
+	}
+
+	public void setNomNaissance(String nomNaissance) {
+		this.nomNaissance = nomNaissance;
 	}
 
 	@Column(name = "PRENOMS", length = LengthConstants.TIERS_TOUS_PRENOMS)
@@ -161,6 +176,18 @@ public class PartiePrenante extends HibernateEntity {
 
 	public void setAvs(String avs) {
 		this.avs = avs;
+	}
+
+	@Embedded
+	@AttributeOverrides({
+	        @AttributeOverride(name = "libelle", column = @Column(name = "LIBELLE_ORIGINE", nullable = true, length = LengthConstants.REQDES_LIBELLE_ORIGINE)),
+	        @AttributeOverride(name = "sigleCanton", column = @Column(name = "CANTON_ORIGINE", nullable = true, length = LengthConstants.TIERS_CANTON_ORIGINE))})
+	public OriginePersonnePhysique getOrigine() {
+		return origine;
+	}
+
+	public void setOrigine(OriginePersonnePhysique origine) {
+		this.origine = origine;
 	}
 
 	@Column(name = "NOM_MERE", length = LengthConstants.TIERS_NOM_PRENOMS_PARENT)

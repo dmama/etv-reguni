@@ -105,7 +105,7 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 			}
 			final OriginePersonnePhysique origine = personne.getOrigine();
 			if (origine != null) {
-				to.getOrigins().add(new Origin(origine.getLibelle(), CantonAbbreviation.valueOf(origine.getSigleCanton())));
+				to.getOrigins().add(new Origin(StringUtils.abbreviate(origine.getLibelle(), 50), CantonAbbreviation.valueOf(origine.getSigleCanton())));
 			}
 		}
 		else {

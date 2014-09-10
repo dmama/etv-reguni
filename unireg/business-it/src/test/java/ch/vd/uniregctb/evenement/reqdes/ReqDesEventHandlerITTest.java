@@ -11,7 +11,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import ch.ech.ech0007.v4.CantonAbbreviation;
 import ch.ech.ech0010.v4.SwissAddressInformation;
+import ch.ech.ech0011.v5.PlaceOfOrigin;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
 import org.junit.Test;
@@ -26,6 +28,7 @@ import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.validation.EsbXmlValidation;
+import ch.vd.unireg.interfaces.infra.mock.MockCanton;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
@@ -49,6 +52,7 @@ import ch.vd.unireg.xml.event.reqdes.v1.Stakeholder;
 import ch.vd.unireg.xml.event.reqdes.v1.StakeholderReferenceWithRole;
 import ch.vd.unireg.xml.event.reqdes.v1.StakeholderRole;
 import ch.vd.unireg.xml.event.reqdes.v1.SwissResidence;
+import ch.vd.unireg.xml.event.reqdes.v1.Swissness;
 import ch.vd.unireg.xml.event.reqdes.v1.Transaction;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.uniregctb.common.BusinessItTest;
@@ -144,7 +148,7 @@ public class ReqDesEventHandlerITTest extends BusinessItTest {
 		final String noMinute = "123456789B";
 
 		final RegistryOrigin registryOrigin = new RegistryOrigin(new RegistryOrigin.New(), null, null);
-		final Identity identity = new Identity(new FullName("De la campagnole", "Alfred Henri André"), "1", new PartialDate(1967, 10, 23), null, new FullName("Crettaz", "Gladys Henriette"), null);
+		final Identity identity = new Identity(new FullName("De la campagnole", "Alfred Henri André"), "Della Campagnola", "1", new PartialDate(1967, 10, 23), null, new FullName("Crettaz", "Gladys Henriette"), null);
 		final Residence residence = new Residence(new SwissResidence(MockCommune.Neuchatel.getNoOFS(), new SwissAddressInformation("Château Hautesrives",
 		                                                                                                                           null,
 		                                                                                                                           "Place du château",
@@ -157,7 +161,8 @@ public class ReqDesEventHandlerITTest extends BusinessItTest {
 		                                                                                                                           MockLocalite.Neuchatel1Cases.getNoOrdre(),
 		                                                                                                                           "CH")), null);
 
-		final List<Stakeholder> stakeholders = Arrays.asList(new Stakeholder(registryOrigin, identity, null, new MaritalStatus("2", null, new Date(2000, 1, 1), null, new Partner(new FullName("De la campagnola", "Philippine"), null)), new Nationality(new Nationality.Swiss(), null, null, null), residence, stakeholderId));
+		final PlaceOfOrigin origin = new PlaceOfOrigin(MockCommune.Bale.getNomOfficiel(), CantonAbbreviation.valueOf(MockCommune.Bale.getSigleCanton()));
+		final List<Stakeholder> stakeholders = Arrays.asList(new Stakeholder(registryOrigin, identity, null, new MaritalStatus("2", null, new Date(2000, 1, 1), null, new Partner(new FullName("De la campagnola", "Philippine"), null)), new Nationality(new Swissness(origin), null, null, null), residence, stakeholderId));
 		final List<StakeholderReferenceWithRole> refWithRoles = Arrays.asList(new StakeholderReferenceWithRole(stakeholderId, StakeholderRole.BUYER));
 
 		final List<Transaction> transactions = Arrays.asList(new Transaction("Une transaction", Arrays.asList(MockCommune.Leysin.getNoOFS(), MockCommune.Aigle.getNoOFS()), refWithRoles, InscriptionMode.INSCRIPTION, InscriptionType.PROPERTY));
@@ -238,6 +243,7 @@ public class ReqDesEventHandlerITTest extends BusinessItTest {
 				Assert.assertNotNull(pp);
 				Assert.assertFalse(pp.isAnnule());
 				Assert.assertEquals("De la campagnole", pp.getNom());
+				Assert.assertEquals("Della Campagnola", pp.getNomNaissance());
 				Assert.assertEquals("Alfred Henri André", pp.getPrenoms());
 				Assert.assertEquals(Sexe.MASCULIN, pp.getSexe());
 				Assert.assertEquals(date(1967, 10, 23), pp.getDateNaissance());
@@ -249,6 +255,10 @@ public class ReqDesEventHandlerITTest extends BusinessItTest {
 				Assert.assertNull(pp.getPrenomsPere());
 				Assert.assertEquals("De la campagnola", pp.getNomConjoint());
 				Assert.assertEquals("Philippine", pp.getPrenomConjoint());
+				Assert.assertEquals((Integer) MockPays.Suisse.getNoOFS(), pp.getOfsPaysNationalite());
+				Assert.assertNotNull(pp.getOrigine());
+				Assert.assertEquals(MockCommune.Bale.getNomOfficiel(), pp.getOrigine().getLibelle());
+				Assert.assertEquals(MockCanton.BaleVille.getSigleOFS(), pp.getOrigine().getSigleCanton());
 
 				Assert.assertEquals("Place du château", pp.getRue());
 				Assert.assertEquals("1a", pp.getNumeroMaison());
@@ -297,7 +307,7 @@ public class ReqDesEventHandlerITTest extends BusinessItTest {
 		final String noMinute = "123456789B";
 
 		final RegistryOrigin registryOrigin = new RegistryOrigin(new RegistryOrigin.New(), null, null);
-		final Identity identity = new Identity(new FullName("De la campagnole", "Alfred Henri André"), "1", new PartialDate(1967, 10, 23), null, new FullName("Crettaz", "Gladys Henriette"), null);
+		final Identity identity = new Identity(new FullName("De la campagnole", "Alfred Henri André"), "De la campagnole", "1", new PartialDate(1967, 10, 23), null, new FullName("Crettaz", "Gladys Henriette"), null);
 		final Residence residence = new Residence(new SwissResidence(MockCommune.Neuchatel.getNoOFS(), new SwissAddressInformation("Château Hautesrives",
 		                                                                                                                           null,
 		                                                                                                                           "Place du château",
@@ -310,7 +320,8 @@ public class ReqDesEventHandlerITTest extends BusinessItTest {
 		                                                                                                                           MockLocalite.Neuchatel1Cases.getNoOrdre(),
 		                                                                                                                           MockPays.Suisse.getCodeIso2())), null);
 
-		final List<Stakeholder> stakeholders = Arrays.asList(new Stakeholder(registryOrigin, identity, null, new MaritalStatus("2", null, new Date(2000, 1, 1), null, new Partner(new FullName("De la campagnola", "Philippine"), null)), new Nationality(new Nationality.Swiss(), null, null, null), residence, stakeholderId));
+		final PlaceOfOrigin origin = new PlaceOfOrigin(MockCommune.Zurich.getNomOfficiel(), CantonAbbreviation.valueOf(MockCommune.Zurich.getSigleCanton()));
+		final List<Stakeholder> stakeholders = Arrays.asList(new Stakeholder(registryOrigin, identity, null, new MaritalStatus("2", null, new Date(2000, 1, 1), null, new Partner(new FullName("De la campagnola", "Philippine"), null)), new Nationality(new Swissness(origin), null, null, null), residence, stakeholderId));
 		final List<StakeholderReferenceWithRole> refWithRoles = Arrays.asList(new StakeholderReferenceWithRole(stakeholderId, StakeholderRole.BUYER));
 
 		final List<Transaction> transactions = Arrays.asList(new Transaction("Une transaction", Arrays.asList(MockCommune.Leysin.getNoOFS(), MockCommune.Aigle.getNoOFS()), refWithRoles, InscriptionMode.INSCRIPTION, InscriptionType.PROPERTY));
@@ -404,6 +415,7 @@ public class ReqDesEventHandlerITTest extends BusinessItTest {
 				Assert.assertNotNull(pp);
 				Assert.assertFalse(pp.isAnnule());
 				Assert.assertEquals("De la campagnole", pp.getNom());
+				Assert.assertEquals("De la campagnole", pp.getNomNaissance());
 				Assert.assertEquals("Alfred Henri André", pp.getPrenoms());
 				Assert.assertEquals(Sexe.MASCULIN, pp.getSexe());
 				Assert.assertEquals(date(1967, 10, 23), pp.getDateNaissance());
@@ -415,6 +427,9 @@ public class ReqDesEventHandlerITTest extends BusinessItTest {
 				Assert.assertNull(pp.getPrenomsPere());
 				Assert.assertEquals("De la campagnola", pp.getNomConjoint());
 				Assert.assertEquals("Philippine", pp.getPrenomConjoint());
+				Assert.assertNotNull(pp.getOrigine());
+				Assert.assertEquals(MockCommune.Zurich.getNomOfficiel(), pp.getOrigine().getLibelle());
+				Assert.assertEquals(MockCanton.Zurich.getSigleOFS(), pp.getOrigine().getSigleCanton());
 
 				Assert.assertEquals("Place du château", pp.getRue());
 				Assert.assertEquals("1a", pp.getNumeroMaison());

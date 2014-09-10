@@ -15,6 +15,7 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.unireg.interfaces.infra.mock.MockCanton;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
@@ -42,6 +43,7 @@ import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.tiers.OriginePersonnePhysique;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.Remarque;
@@ -466,6 +468,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				final EvenementReqDes evt = addEvenementReqDes(new InformationsActeur("moinot", "Petiboulot", "Tranquille"), null, dateActe, "3783");
 				final UniteTraitement ut = addUniteTraitement(evt, EtatTraitement.A_TRAITER, null);
 				final PartiePrenante pp = addPartiePrenante(ut, "O'Batayon", "Incaunu Jean Albert");
+				pp.setNomNaissance("O'Batayon");
 				pp.setNomMere("Delaplanche");
 				pp.setPrenomsMere("Martine Sophie Mafalda");
 				pp.setNomPere("O'Batayon");
@@ -503,19 +506,15 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				Assert.assertEquals(EtatTraitement.TRAITE, ut.getEtat());
 				Assert.assertNotNull(ut.getDateTraitement());
 
-				final List<Tiers> allTiers = tiersDAO.getAll();
-				PersonnePhysique found = null;
-				for (Tiers tiers : allTiers) {
-					if (tiers instanceof PersonnePhysique) {
-						found = (PersonnePhysique) tiers;
-						break;
-					}
-				}
-
+				final List<Tiers> allTiers = allTiersOfType(PersonnePhysique.class);
+				Assert.assertNotNull(allTiers);
+				Assert.assertEquals(1, allTiers.size());
+				final PersonnePhysique found = (PersonnePhysique) allTiers.get(0);
 				Assert.assertNotNull(found);
 				Assert.assertEquals("moinot-reqdes", found.getLogCreationUser());
 				Assert.assertEquals("moinot-reqdes", found.getLogModifUser());
 				Assert.assertEquals("O'Batayon", found.getNom());
+				Assert.assertEquals("O'Batayon", found.getNomNaissance());
 				Assert.assertEquals("Incaunu", found.getPrenomUsuel());
 				Assert.assertEquals("Incaunu Jean Albert", found.getTousPrenoms());
 				Assert.assertEquals("Delaplanche", found.getNomMere());
@@ -528,6 +527,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				Assert.assertNull(found.getDateDeces());
 				Assert.assertEquals(CategorieEtranger._06_FRONTALIER_G, found.getCategorieEtranger());
 				Assert.assertNull(found.getDateDebutValiditeAutorisation());
+				Assert.assertNull(found.getOrigine());
 
 				final Set<AdresseTiers> adresses = found.getAdressesTiers();
 				Assert.assertNotNull(adresses);
@@ -576,6 +576,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				final EvenementReqDes evt = addEvenementReqDes(new InformationsActeur("moinot", "Petiboulot", "Tranquille"), null, dateActe, "3783");
 				final UniteTraitement ut = addUniteTraitement(evt, EtatTraitement.A_TRAITER, null);
 				final PartiePrenante pp = addPartiePrenante(ut, "O'Batayon", "Incaunu Jean Albert");
+				pp.setNomNaissance("NomNaissance O'Batayon");
 				pp.setNomMere("Delaplanche");
 				pp.setPrenomsMere("Martine Sophie Mafalda");
 				pp.setNomPere("O'Batayon");
@@ -615,19 +616,15 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				Assert.assertNotNull(ut.getDateTraitement());
 				Assert.assertEquals(0, ut.getErreurs().size());
 
-				final List<Tiers> allTiers = tiersDAO.getAll();
-				PersonnePhysique found = null;
-				for (Tiers tiers : allTiers) {
-					if (tiers instanceof PersonnePhysique) {
-						found = (PersonnePhysique) tiers;
-						break;
-					}
-				}
-
+				final List<Tiers> allTiers = allTiersOfType(PersonnePhysique.class);
+				Assert.assertNotNull(allTiers);
+				Assert.assertEquals(1, allTiers.size());
+				final PersonnePhysique found = (PersonnePhysique) allTiers.get(0);
 				Assert.assertNotNull(found);
 				Assert.assertEquals(getDefaultOperateurName(), found.getLogCreationUser());
 				Assert.assertEquals("moinot-reqdes", found.getLogModifUser());
 				Assert.assertEquals("O'Batayon", found.getNom());
+				Assert.assertEquals("NomNaissance O'Batayon", found.getNomNaissance());
 				Assert.assertEquals("Incaunu", found.getPrenomUsuel());
 				Assert.assertEquals("Incaunu Jean Albert", found.getTousPrenoms());
 				Assert.assertEquals("Delaplanche", found.getNomMere());
@@ -640,6 +637,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				Assert.assertNull(found.getDateDeces());
 				Assert.assertEquals(CategorieEtranger._06_FRONTALIER_G, found.getCategorieEtranger());
 				Assert.assertNull(found.getDateDebutValiditeAutorisation());
+				Assert.assertNull(found.getOrigine());
 
 				final Set<AdresseTiers> adresses = found.getAdressesTiers();
 				Assert.assertNotNull(adresses);
@@ -669,6 +667,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				b.append(" par l'acte notarial du ").append(RegDateHelper.dateToDisplayString(dateActe));
 				b.append(" par le notaire Tranquille Petiboulot (moinot) et enregistré par lui-même.");
 				b.append("\n- Nom : \"Aubataillon\" -> \"O'Batayon\"");
+				b.append("\n- Nom de naissance : vide -> \"NomNaissance O'Batayon\"");
 				b.append("\n- Prénoms : vide -> \"Incaunu Jean Albert\"");
 				b.append("\n- Prénom usuel : \"Inconnu\" -> \"Incaunu\"");
 				b.append("\n- Catégorie d'étranger : vide -> ").append(CategorieEtranger._06_FRONTALIER_G.getDisplayName());
@@ -2916,11 +2915,13 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				final EvenementReqDes evt = addEvenementReqDes(new InformationsActeur("zainotaire", "Duchmol", "Alexandra"), null, dateActe, "4879846498");
 				final UniteTraitement ut = addUniteTraitement(evt, EtatTraitement.A_TRAITER, null);
 				final PartiePrenante pp = addPartiePrenante(ut, "Cordoba",  "Valentine Catherine Julie");
+				pp.setNomNaissance("Dumoulin");
 				pp.setNomMere("Delaplanche");
 				pp.setPrenomsMere("Sophie Mafalda");
 				pp.setNomPere("Dumoulin");
 				pp.setPrenomsPere("François Robert");
 				pp.setOfsPaysNationalite(MockPays.Suisse.getNoOFS());
+				pp.setOrigine(new OriginePersonnePhysique(MockCommune.Neuchatel.getNomOfficiel(), MockCommune.Neuchatel.getSigleCanton()));
 				pp.setSexe(Sexe.FEMININ);
 				pp.setDateNaissance(dateNaissance);
 				pp.setDateEtatCivil(dateMariage);
@@ -2991,6 +2992,8 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 					Assert.assertNull(pp.getDateNaissance());
 					Assert.assertNull(pp.getSexe());
 					Assert.assertNull(pp.getNumeroAssureSocial());
+					Assert.assertNull(pp.getNomNaissance());
+					Assert.assertNull(pp.getOrigine());
 
 					// adresses
 					checkNoAdresse(pp);
@@ -3040,11 +3043,15 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 					Assert.assertEquals("zainotaire-reqdes", pp.getLogCreationUser());
 					Assert.assertEquals("zainotaire-reqdes", pp.getLogModifUser());
 					Assert.assertEquals("Cordoba", pp.getNom());
+					Assert.assertEquals("Dumoulin", pp.getNomNaissance());
 					Assert.assertEquals("Valentine", pp.getPrenomUsuel());
 					Assert.assertEquals("Valentine Catherine Julie", pp.getTousPrenoms());
 					Assert.assertEquals(dateNaissance, pp.getDateNaissance());
 					Assert.assertEquals(Sexe.FEMININ, pp.getSexe());
 					Assert.assertEquals(noAvs, pp.getNumeroAssureSocial());
+					Assert.assertNotNull(pp.getOrigine());
+					Assert.assertEquals(MockCommune.Neuchatel.getNomOfficiel(), pp.getOrigine().getLibelle());
+					Assert.assertEquals(MockCanton.Neuchatel.getSigleOFS(), pp.getOrigine().getSigleCanton());
 
 					// adresses
 					final Set<AdresseTiers> adresses = pp.getAdressesTiers();
@@ -3160,11 +3167,13 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				final UniteTraitement ut = addUniteTraitement(evt, EtatTraitement.A_TRAITER, null);
 				final PartiePrenante pp = addPartiePrenante(ut, "Cordoba",  "Valentine Catherine Julie");
 				pp.setNumeroContribuable(elle.getNumero());
+				pp.setNomNaissance("Dumoulin");
 				pp.setNomMere("Delaplanche");
 				pp.setPrenomsMere("Sophie Mafalda");
 				pp.setNomPere("Dumoulin");
 				pp.setPrenomsPere("François Robert");
 				pp.setOfsPaysNationalite(MockPays.Suisse.getNoOFS());
+				pp.setOrigine(new OriginePersonnePhysique(MockCommune.Zurich.getNomOfficiel(), MockCommune.Zurich.getSigleCanton()));
 				pp.setSexe(Sexe.FEMININ);
 				pp.setDateNaissance(dateNaissance);
 				pp.setDateEtatCivil(dateMariage);
@@ -3238,6 +3247,8 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 					Assert.assertNull(pp.getDateNaissance());
 					Assert.assertNull(pp.getSexe());
 					Assert.assertNull(pp.getNumeroAssureSocial());
+					Assert.assertNull(pp.getNomNaissance());
+					Assert.assertNull(pp.getOrigine());
 
 					// adresses
 					final Set<AdresseTiers> adresses = pp.getAdressesTiers();
@@ -3289,11 +3300,15 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 					Assert.assertEquals(getDefaultOperateurName(), pp.getLogCreationUser());
 					Assert.assertEquals("zainotaire-reqdes", pp.getLogModifUser());
 					Assert.assertEquals("Cordoba", pp.getNom());
+					Assert.assertEquals("Dumoulin", pp.getNomNaissance());
 					Assert.assertEquals("Valentine", pp.getPrenomUsuel());
 					Assert.assertEquals("Valentine Catherine Julie", pp.getTousPrenoms());
 					Assert.assertEquals(dateNaissance, pp.getDateNaissance());
 					Assert.assertEquals(Sexe.FEMININ, pp.getSexe());
 					Assert.assertEquals(noAvs, pp.getNumeroAssureSocial());
+					Assert.assertNotNull(pp.getOrigine());
+					Assert.assertEquals(MockCommune.Zurich.getNomOfficiel(), pp.getOrigine().getLibelle());
+					Assert.assertEquals(MockCanton.Zurich.getSigleOFS(), pp.getOrigine().getSigleCanton());
 
 					// adresses
 					final Set<AdresseTiers> adresses = pp.getAdressesTiers();
@@ -3325,6 +3340,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 					b.append("Contribuable mis à jour le ").append(RegDateHelper.dateToDisplayString(today));
 					b.append(" par l'acte notarial du ").append(RegDateHelper.dateToDisplayString(dateActe));
 					b.append(" par le notaire Alexandra Duchmol (zainotaire) et enregistré par lui-même.");
+					b.append("\n- Nom de naissance : vide -> \"Dumoulin\"");
 					b.append("\n- Prénoms : vide -> \"Valentine Catherine Julie\"");
 					b.append("\n- Nom de la mère : vide -> \"Delaplanche\"");
 					b.append("\n- Prénoms de la mère : vide -> \"Sophie Mafalda\"");
@@ -3332,6 +3348,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 					b.append("\n- Prénoms du père : vide -> \"François Robert\"");
 					b.append("\n- NAVS13 : vide -> ").append(FormatNumeroHelper.formatNumAVS(noAvs));
 					b.append("\n- Nationalité : vide -> ").append(MockPays.Suisse.getNomCourt());
+					b.append("\n- Origine : vide -> ").append(MockCommune.Zurich.getNomOfficielAvecCanton());
 					b.append("\n- Etat civil au ").append(RegDateHelper.dateToDisplayString(dateSeparation)).append(" : vide -> ").append(EtatCivil.SEPARE.format());
 					Assert.assertEquals(b.toString(), remarque.getTexte());
 

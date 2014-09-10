@@ -83,6 +83,7 @@ import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.ForsParTypeAt;
 import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.tiers.OriginePersonnePhysique;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.Remarque;
@@ -1460,6 +1461,7 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 	private List<String> dumpBaseDataToPersonnePhysique(PartiePrenante src, PersonnePhysique dest, boolean withRemarqueOnChange) {
 		final List<String> elementsRemarque = new LinkedList<>();
 		addRemarqueElement(elementsRemarque, updateAttribute(dest, src.getNom(), NOM_ACCESSOR, withRemarqueOnChange, DEFAULT_RENDERER));
+		addRemarqueElement(elementsRemarque, updateAttribute(dest, src.getNomNaissance(), NOM_NAISSANCE_ACCESSOR, withRemarqueOnChange, DEFAULT_RENDERER));
 		addRemarqueElement(elementsRemarque, updateAttribute(dest, src.getPrenoms(), PRENOMS_ACCESSOR, withRemarqueOnChange, DEFAULT_RENDERER));
 		addRemarqueElement(elementsRemarque, updateAttribute(dest, extractPrenomUsuel(src.getPrenoms()), PRENOM_USUEL_ACCESSOR, withRemarqueOnChange, DEFAULT_RENDERER));
 		addRemarqueElement(elementsRemarque, updateAttribute(dest, src.getCategorieEtranger(), CATEGORIE_ETRANGER_ACCESSOR, withRemarqueOnChange, CATEGORIE_ETRANGER_RENDERER));
@@ -1471,6 +1473,7 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 		addRemarqueElement(elementsRemarque, updateAttribute(dest, src.getPrenomsPere(), PRENOMS_PERE_ACCESSOR, withRemarqueOnChange, DEFAULT_RENDERER));
 		addRemarqueElement(elementsRemarque, updateAttribute(dest, src.getAvs(), NO_AVS_ACCESSOR, withRemarqueOnChange, AVS_RENDERER));
 		addRemarqueElement(elementsRemarque, updateAttribute(dest, src.getOfsPaysNationalite(), NATIONALITE_ACCESSOR, withRemarqueOnChange, PAYS_RENDERER));
+		addRemarqueElement(elementsRemarque, updateAttribute(dest, src.getOrigine(), ORIGINE_ACCESSOR, withRemarqueOnChange, ORIGINE_RENDERER));
 		addRemarqueElement(elementsRemarque, updateAttribute(dest, src.getSexe(), SEXE_ACCESSOR, withRemarqueOnChange, SEXE_RENDERER));
 		return elementsRemarque;
 	}
@@ -1611,6 +1614,13 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 		}
 	};
 
+	private static final StringRenderer<OriginePersonnePhysique> ORIGINE_RENDERER = new StringRenderer<OriginePersonnePhysique>() {
+		@Override
+		public String toString(OriginePersonnePhysique origine) {
+			return origine == null ? VIDE : origine.getLibelleAvecCanton();
+		}
+	};
+
 	private static final AttributeAccessor<String> NOM_ACCESSOR = new AttributeAccessor<String>() {
 		@Override
 		public String get(PersonnePhysique pp) {
@@ -1625,6 +1635,23 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 		@Override
 		public String getAttributeDisplayName() {
 			return "Nom";
+		}
+	};
+
+	private static final AttributeAccessor<String> NOM_NAISSANCE_ACCESSOR = new AttributeAccessor<String>() {
+		@Override
+		public String get(PersonnePhysique pp) {
+			return pp.getNomNaissance();
+		}
+
+		@Override
+		public void set(PersonnePhysique pp, String value) {
+			pp.setNomNaissance(value);
+		}
+
+		@Override
+		public String getAttributeDisplayName() {
+			return "Nom de naissance";
 		}
 	};
 
@@ -1676,6 +1703,23 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 		@Override
 		public String getAttributeDisplayName() {
 			return "Catégorie d'étranger";
+		}
+	};
+
+	private static final AttributeAccessor<OriginePersonnePhysique> ORIGINE_ACCESSOR = new AttributeAccessor<OriginePersonnePhysique>() {
+		@Override
+		public OriginePersonnePhysique get(PersonnePhysique pp) {
+			return pp.getOrigine();
+		}
+
+		@Override
+		public void set(PersonnePhysique pp, OriginePersonnePhysique value) {
+			pp.setOrigine(value);
+		}
+
+		@Override
+		public String getAttributeDisplayName() {
+			return "Origine";
 		}
 	};
 

@@ -85,6 +85,10 @@
 								    <td width="50%"><c:out value="${partiePrenante.nomPrenom.nom}"/></td>
 							    </tr>
 							    <tr class="<unireg:nextRowClass/>">
+								    <td width="50%"><fmt:message key="label.nom.naissance"/>&nbsp;:</td>
+								    <td width="50%"><c:out value="${partiePrenante.nomNaissance}"/></td>
+							    </tr>
+							    <tr class="<unireg:nextRowClass/>">
 								    <td width="50%"><fmt:message key="label.prenoms"/>&nbsp;:</td>
 								    <td width="50%"><c:out value="${partiePrenante.nomPrenom.prenom}"/></td>
 							    </tr>
@@ -129,6 +133,10 @@
 							    <tr class="<unireg:nextRowClass/>">
 								    <td width="50%"><fmt:message key="label.nationalite"/>&nbsp;:</td>
 								    <td width="50%"><c:if test="${partiePrenante.ofsPaysNationalite != null}"><unireg:pays ofs="${partiePrenante.ofsPaysNationalite}" displayProperty="nomCourt"/></c:if></td>
+							    </tr>
+							    <tr class="<unireg:nextRowClass/>">
+								    <td width="50%"><fmt:message key="label.origine"/>&nbsp;:</td>
+								    <td width="50%"><c:if test="${partiePrenante.origine != null}"><c:out value="${partiePrenante.origine.nomCommuneAvecCanton}"/></c:if></td>
 							    </tr>
 							    <tr class="<unireg:nextRowClass/>">
 								    <td width="50%"><fmt:message key="label.categorie.etranger"/>&nbsp;:</td>

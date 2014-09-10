@@ -113,6 +113,8 @@ public class UniteTraitementPdfDocumentGenerator extends ReqDesPdfDocumentGenera
 
 				tableGauche.addCell(new Phrase(new Chunk("Nom :", TABLE_HEADER_FONT)));
 				tableGauche.addCell(new Phrase(new Chunk(StringUtils.trimToEmpty(pp.getNom()), NORMAL_FONT)));
+				tableGauche.addCell(new Phrase(new Chunk("Nom de naissance :", TABLE_HEADER_FONT)));
+				tableGauche.addCell(new Phrase(new Chunk(StringUtils.trimToEmpty(pp.getNomNaissance()), NORMAL_FONT)));
 				tableGauche.addCell(new Phrase(new Chunk("Prénoms :", TABLE_HEADER_FONT)));
 				tableGauche.addCell(new Phrase(new Chunk(StringUtils.trimToEmpty(pp.getPrenoms()), NORMAL_FONT)));
 				tableGauche.addCell(new Phrase(new Chunk("Date de naissance :", TABLE_HEADER_FONT)));
@@ -142,6 +144,8 @@ public class UniteTraitementPdfDocumentGenerator extends ReqDesPdfDocumentGenera
 				}
 				tableGauche.addCell(new Phrase(new Chunk("Nationalité :", TABLE_HEADER_FONT)));
 				tableGauche.addCell(new Phrase(new Chunk(getNomPays(pp.getOfsPaysNationalite(), dateActe, infraService), NORMAL_FONT)));
+				tableGauche.addCell(new Phrase(new Chunk("Origine :", TABLE_HEADER_FONT)));
+				tableGauche.addCell(new Phrase(new Chunk(pp.getOrigine() != null ? pp.getOrigine().getLibelleAvecCanton() : StringUtils.EMPTY, NORMAL_FONT)));
 				tableGauche.addCell(new Phrase(new Chunk("Catégorie d'étranger :", TABLE_HEADER_FONT)));
 				tableGauche.addCell(new Phrase(new Chunk(pp.getCategorieEtranger() != null ? pp.getCategorieEtranger().getDisplayName() : StringUtils.EMPTY, NORMAL_FONT)));
 				tableGauche.addCell(new Phrase(new Chunk("Conjoint :", TABLE_HEADER_FONT)));

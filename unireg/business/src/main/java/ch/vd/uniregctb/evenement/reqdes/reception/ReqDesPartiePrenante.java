@@ -4,6 +4,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.interfaces.civil.data.Adresse;
 import ch.vd.unireg.interfaces.civil.data.Nationalite;
+import ch.vd.unireg.interfaces.civil.data.Origine;
 import ch.vd.unireg.interfaces.civil.data.Permis;
 import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
 import ch.vd.uniregctb.type.Sexe;
@@ -12,6 +13,7 @@ public final class ReqDesPartiePrenante {
 
 	private final int id;
 	private NomPrenom nomPrenom;
+	private String nomNaissance;
 	private Sexe sexe;
 	private RegDate dateNaissance;
 	private boolean sourceCivile;
@@ -27,6 +29,7 @@ public final class ReqDesPartiePrenante {
 	private Adresse adresseResidence;
 	private Nationalite nationalite;
 	private Permis permis;
+	private Origine origine;
 
 	public ReqDesPartiePrenante(int id) {
 		this.id = id;
@@ -42,6 +45,14 @@ public final class ReqDesPartiePrenante {
 
 	public void setNomPrenom(NomPrenom nomPrenom) {
 		this.nomPrenom = nomPrenom;
+	}
+
+	public String getNomNaissance() {
+		return nomNaissance;
+	}
+
+	public void setNomNaissance(String nomNaissance) {
+		this.nomNaissance = nomNaissance;
 	}
 
 	public Sexe getSexe() {
@@ -162,5 +173,13 @@ public final class ReqDesPartiePrenante {
 
 	public void setPermis(Permis permis) {
 		this.permis = permis;
+	}
+
+	public Origine getOrigine() {
+		return origine;
+	}
+
+	public void setOrigine(Origine origine) {
+		this.origine = origine;
 	}
 }

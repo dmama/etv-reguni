@@ -110,6 +110,7 @@ public abstract class LengthConstants {
 	public static final int REQDES_TRANSACTION_DESCRIPTION = 100;
 	public static final int REQDES_MODE_INSCRIPTION = 12;
 	public static final int REQDES_TYPE_INSCRIPTION = 15;
+	public static final int REQDES_LIBELLE_ORIGINE = 50;
 
 	public final static int MAXLEN = 2000;
 

@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import ch.ech.ech0011.v5.PlaceOfOrigin;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
@@ -33,6 +34,7 @@ import ch.vd.technical.esb.EsbMessage;
 import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.interfaces.civil.data.Adresse;
 import ch.vd.unireg.interfaces.civil.data.Nationalite;
+import ch.vd.unireg.interfaces.civil.data.Origine;
 import ch.vd.unireg.interfaces.civil.data.Permis;
 import ch.vd.unireg.interfaces.civil.rcpers.EchHelper;
 import ch.vd.unireg.interfaces.infra.data.Pays;
@@ -69,6 +71,7 @@ import ch.vd.uniregctb.reqdes.PartiePrenante;
 import ch.vd.uniregctb.reqdes.RolePartiePrenante;
 import ch.vd.uniregctb.reqdes.TransactionImmobiliere;
 import ch.vd.uniregctb.reqdes.UniteTraitement;
+import ch.vd.uniregctb.tiers.OriginePersonnePhysique;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.type.CategorieEtranger;
 import ch.vd.uniregctb.type.TypePermis;
@@ -301,6 +304,7 @@ public class ReqDesEventHandler implements EsbMessageHandler {
 	private PartiePrenante buildPartiePrenanteNue(UniteTraitement ut, ReqDesPartiePrenante src) {
 		final PartiePrenante pp = new PartiePrenante();
 		pp.setNom(src.getNomPrenom().getNom());
+		pp.setNomNaissance(src.getNomNaissance());
 		pp.setPrenoms(src.getNomPrenom().getPrenom());
 		pp.setDateNaissance(src.getDateNaissance());
 		pp.setSexe(src.getSexe());
@@ -324,6 +328,9 @@ public class ReqDesEventHandler implements EsbMessageHandler {
 		}
 		if (src.getPermis() != null) {
 			pp.setCategorieEtranger(CategorieEtranger.valueOf(src.getPermis().getTypePermis()));
+		}
+		if (src.getOrigine() != null) {
+			pp.setOrigine(new OriginePersonnePhysique(src.getOrigine().getNomLieu(), src.getOrigine().getSigleCanton()));
 		}
 		if (src.getPartner() != null) {
 			final NomPrenom nomPrenom = src.getPartner().getNomPrenom();
@@ -429,6 +436,7 @@ public class ReqDesEventHandler implements EsbMessageHandler {
 		final Identity identity = sh.getIdentity();
 		final FullName name = identity.getName();
 		pp.setNomPrenom(new NomPrenom(name.getOfficialName(), name.getFirstNames()));
+		pp.setNomNaissance(identity.getBirthName());
 		pp.setSexe(EchHelper.sexeFromEch44(identity.getSex()));
 		pp.setDateNaissance(DataHelper.xmlToCore(identity.getDateOfBirth()));
 		if (identity.getVn() != null) {
@@ -464,6 +472,7 @@ public class ReqDesEventHandler implements EsbMessageHandler {
 		pp.setAdresseResidence(adrResidence);
 
 		pp.setNationalite(buildNationalite(sh.getNationality(), infraService));
+		pp.setOrigine(buildOrigine(sh.getNationality()));
 		pp.setPermis(buildPermis(sh.getNationality()));
 		return pp;
 	}
@@ -477,6 +486,28 @@ public class ReqDesEventHandler implements EsbMessageHandler {
 			adrResidence = new ReqDesAdresseResidence(residence.getForeignCountryResidence(), infraService);
 		}
 		return adrResidence;
+	}
+
+	private static Origine buildOrigine(Nationality nat) throws EsbBusinessException {
+		final Origine origine;
+		if (nat.getSwiss() != null && nat.getSwiss().getOrigin() != null) {
+			final PlaceOfOrigin placeOfOrigin = nat.getSwiss().getOrigin();
+			origine = new Origine() {
+				@Override
+				public String getNomLieu() {
+					return placeOfOrigin.getOriginName();
+				}
+
+				@Override
+				public String getSigleCanton() {
+					return placeOfOrigin.getCanton().value();
+				}
+			};
+		}
+		else {
+			origine = null;
+		}
+		return origine;
 	}
 
 	private static Nationalite buildNationalite(Nationality nat, ServiceInfrastructureService infraService) throws EsbBusinessException {

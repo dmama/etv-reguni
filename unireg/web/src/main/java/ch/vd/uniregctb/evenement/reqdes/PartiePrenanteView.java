@@ -12,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.NomPrenom;
+import ch.vd.uniregctb.individu.OrigineView;
 import ch.vd.uniregctb.reqdes.PartiePrenante;
 import ch.vd.uniregctb.reqdes.RolePartiePrenante;
 import ch.vd.uniregctb.type.CategorieEtranger;
@@ -23,10 +24,11 @@ import ch.vd.uniregctb.type.Sexe;
  */
 public class PartiePrenanteView implements Serializable {
 
-	private static final long serialVersionUID = 284040428604402146L;
+	private static final long serialVersionUID = -4946067259786737061L;
 
 	private final long id;
 	private final NomPrenom nomPrenom;
+	private final String nomNaissance;
 	private final RegDate dateNaissance;
 	private final Sexe sexe;
 	private final RegDate dateDeces;
@@ -40,6 +42,7 @@ public class PartiePrenanteView implements Serializable {
 	private final RegDate dateSeparation;
 	private final Integer ofsPaysNationalite;
 	private final CategorieEtranger categorieEtranger;
+	private final OrigineView origine;
 
 	private final boolean conjointAutrePartiePrenante;
 	private final NomPrenom nomPrenomConjoint;
@@ -62,6 +65,7 @@ public class PartiePrenanteView implements Serializable {
 	public PartiePrenanteView(PartiePrenante source) {
 		this.id = source.getId();
 		this.nomPrenom = new NomPrenom(source.getNom(), source.getPrenoms());
+		this.nomNaissance = source.getNomNaissance();
 		this.dateNaissance = source.getDateNaissance();
 		this.sexe = source.getSexe();
 		this.dateDeces = source.getDateDeces();
@@ -75,6 +79,8 @@ public class PartiePrenanteView implements Serializable {
 		this.dateSeparation = source.getDateSeparation();
 		this.ofsPaysNationalite = source.getOfsPaysNationalite();
 		this.categorieEtranger = source.getCategorieEtranger();
+		this.origine = source.getOrigine() != null ? new OrigineView(source.getOrigine()) : null;
+
 		this.conjointAutrePartiePrenante = source.getConjointPartiePrenante() != null;
 		this.nomPrenomConjoint = this.conjointAutrePartiePrenante ? new NomPrenom(source.getConjointPartiePrenante().getNom(), source.getConjointPartiePrenante().getPrenoms()) : new NomPrenom(source.getNomConjoint(), source.getPrenomConjoint());
 		this.texteCasePostale = source.getTexteCasePostale();
@@ -137,6 +143,10 @@ public class PartiePrenanteView implements Serializable {
 		return nomPrenom;
 	}
 
+	public String getNomNaissance() {
+		return nomNaissance;
+	}
+
 	public RegDate getDateNaissance() {
 		return dateNaissance;
 	}
@@ -187,6 +197,10 @@ public class PartiePrenanteView implements Serializable {
 
 	public CategorieEtranger getCategorieEtranger() {
 		return categorieEtranger;
+	}
+
+	public OrigineView getOrigine() {
+		return origine;
 	}
 
 	public boolean isConjointAutrePartiePrenante() {
