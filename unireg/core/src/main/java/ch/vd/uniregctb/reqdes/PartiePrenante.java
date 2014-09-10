@@ -77,6 +77,8 @@ public class PartiePrenante extends HibernateEntity {
 
 	private Set<RolePartiePrenante> roles;
 
+	private Long numeroContribuableCree;
+
 	@Transient
 	@Override
 	public Object getKey() {
@@ -432,5 +434,15 @@ public class PartiePrenante extends HibernateEntity {
 
 	public void setUniteTraitement(UniteTraitement uniteTraitement) {
 		this.uniteTraitement = uniteTraitement;
+	}
+
+	@Column(name = "NO_CTB_CREE", nullable = true)
+	@ForeignKey(name = "FK_REQDES_PP_CTB_CREE")
+	public Long getNumeroContribuableCree() {
+		return numeroContribuableCree;
+	}
+
+	public void setNumeroContribuableCree(Long numeroContribuableCree) {
+		this.numeroContribuableCree = numeroContribuableCree;
 	}
 }

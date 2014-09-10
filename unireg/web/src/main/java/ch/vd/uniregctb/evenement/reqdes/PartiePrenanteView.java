@@ -24,7 +24,7 @@ import ch.vd.uniregctb.type.Sexe;
  */
 public class PartiePrenanteView implements Serializable {
 
-	private static final long serialVersionUID = -4946067259786737061L;
+	private static final long serialVersionUID = 5292644065558986725L;
 
 	private final long id;
 	private final NomPrenom nomPrenom;
@@ -34,6 +34,7 @@ public class PartiePrenanteView implements Serializable {
 	private final RegDate dateDeces;
 	private final boolean sourceCivile;
 	private final Long numeroContribuable;
+	private final Long numeroContribuableCree;
 	private final String avs;
 	private final NomPrenom nomPrenomsMere;
 	private final NomPrenom nomPrenomsPere;
@@ -71,6 +72,7 @@ public class PartiePrenanteView implements Serializable {
 		this.dateDeces = source.getDateDeces();
 		this.sourceCivile = source.isSourceCivile();
 		this.numeroContribuable = source.getNumeroContribuable();
+		this.numeroContribuableCree = source.getNumeroContribuableCree();
 		this.avs = source.getAvs();
 		this.nomPrenomsMere = new NomPrenom(source.getNomMere(), source.getPrenomsMere());
 		this.nomPrenomsPere = new NomPrenom(source.getNomPere(), source.getPrenomsPere());
@@ -165,6 +167,10 @@ public class PartiePrenanteView implements Serializable {
 
 	public Long getNumeroContribuable() {
 		return numeroContribuable;
+	}
+
+	public Long getNumeroContribuableCree() {
+		return numeroContribuableCree;
 	}
 
 	public String getAvs() {

@@ -165,6 +165,10 @@
 										    </c:when>
 										    <c:otherwise>
 											    <fmt:message key="label.reqdes.creation"/>
+											    <c:if test="${partiePrenante.numeroContribuableCree != null}">
+												    <img src="<c:url value='/images/right-arrow.png'/>" style="height:1em;"/>
+												    <unireg:numCTB numero="${partiePrenante.numeroContribuableCree}" link="true"/>
+											    </c:if>
 										    </c:otherwise>
 									    </c:choose>
 								    </td>

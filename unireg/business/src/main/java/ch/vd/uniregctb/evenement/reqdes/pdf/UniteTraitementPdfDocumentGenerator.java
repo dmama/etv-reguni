@@ -334,6 +334,9 @@ public class UniteTraitementPdfDocumentGenerator extends ReqDesPdfDocumentGenera
 		else if (pp.getNumeroContribuable() != null) {
 			return String.format("Contribuable %s", FormatNumeroHelper.numeroCTBToDisplay(pp.getNumeroContribuable()));
 		}
+		else if (pp.getNumeroContribuableCree() != null) {
+			return String.format("Création (%s)", FormatNumeroHelper.numeroCTBToDisplay(pp.getNumeroContribuableCree()));
+		}
 		else {
 			return "Création";
 		}

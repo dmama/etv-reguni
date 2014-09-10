@@ -505,12 +505,19 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				Assert.assertNotNull(ut);
 				Assert.assertEquals(EtatTraitement.TRAITE, ut.getEtat());
 				Assert.assertNotNull(ut.getDateTraitement());
+				Assert.assertNotNull(ut.getPartiesPrenantes());
+				Assert.assertEquals(1, ut.getPartiesPrenantes().size());
+
+				final PartiePrenante partiePrenante = ut.getPartiesPrenantes().iterator().next();
+				Assert.assertNotNull(partiePrenante);
+				Assert.assertNotNull(partiePrenante.getNumeroContribuableCree());
 
 				final List<Tiers> allTiers = allTiersOfType(PersonnePhysique.class);
 				Assert.assertNotNull(allTiers);
 				Assert.assertEquals(1, allTiers.size());
 				final PersonnePhysique found = (PersonnePhysique) allTiers.get(0);
 				Assert.assertNotNull(found);
+				Assert.assertEquals(partiePrenante.getNumeroContribuableCree(), found.getNumero());
 				Assert.assertEquals("moinot-reqdes", found.getLogCreationUser());
 				Assert.assertEquals("moinot-reqdes", found.getLogModifUser());
 				Assert.assertEquals("O'Batayon", found.getNom());
@@ -606,7 +613,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 		// traiter l'unité
 		traiteUniteTraitement(id);
 
-		// vérification de l'existence de ce nouveau contribuable
+		// vérification des données modifiées
 		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
 			@Override
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
@@ -615,6 +622,13 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				Assert.assertEquals(EtatTraitement.TRAITE, ut.getEtat());
 				Assert.assertNotNull(ut.getDateTraitement());
 				Assert.assertEquals(0, ut.getErreurs().size());
+
+				Assert.assertNotNull(ut.getPartiesPrenantes());
+				Assert.assertEquals(1, ut.getPartiesPrenantes().size());
+
+				final PartiePrenante partiePrenante = ut.getPartiesPrenantes().iterator().next();
+				Assert.assertNotNull(partiePrenante);
+				Assert.assertNull(partiePrenante.getNumeroContribuableCree());
 
 				final List<Tiers> allTiers = allTiersOfType(PersonnePhysique.class);
 				Assert.assertNotNull(allTiers);
@@ -741,15 +755,17 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				Assert.assertEquals(EtatTraitement.TRAITE, ut.getEtat());
 				Assert.assertNotNull(ut.getDateTraitement());
 				Assert.assertEquals(0, ut.getErreurs().size());
+				Assert.assertNotNull(ut.getPartiesPrenantes());
+				Assert.assertEquals(1, ut.getPartiesPrenantes().size());
 
-				final List<Tiers> allTiers = tiersDAO.getAll();
-				PersonnePhysique found = null;
-				for (Tiers tiers : allTiers) {
-					if (tiers instanceof PersonnePhysique) {
-						found = (PersonnePhysique) tiers;
-						break;
-					}
-				}
+				final PartiePrenante partiePrenante = ut.getPartiesPrenantes().iterator().next();
+				Assert.assertNotNull(partiePrenante);
+				Assert.assertNull(partiePrenante.getNumeroContribuableCree());
+
+				final List<Tiers> allTiers = allTiersOfType(PersonnePhysique.class);
+				Assert.assertNotNull(allTiers);
+				Assert.assertEquals(1, allTiers.size());
+				final PersonnePhysique found = (PersonnePhysique) allTiers.get(0);
 
 				Assert.assertNotNull(found);
 				Assert.assertEquals(getDefaultOperateurName(), found.getLogCreationUser());
@@ -871,21 +887,22 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				Assert.assertEquals(EtatTraitement.TRAITE, ut.getEtat());
 				Assert.assertNotNull(ut.getDateTraitement());
 				Assert.assertEquals(1, ut.getErreurs().size());
+				Assert.assertNotNull(ut.getPartiesPrenantes());
+				Assert.assertEquals(1, ut.getPartiesPrenantes().size());
+
+				final PartiePrenante partiePrenante = ut.getPartiesPrenantes().iterator().next();
+				Assert.assertNotNull(partiePrenante);
+				Assert.assertNull(partiePrenante.getNumeroContribuableCree());
 
 				final ErreurTraitement erreur = ut.getErreurs().iterator().next();
 				Assert.assertNotNull(erreur);
 				Assert.assertEquals(ErreurTraitement.TypeErreur.WARNING, erreur.getType());
 				Assert.assertEquals("Adresse non modifiée sur un contribuable assujetti, uniquement reprise dans les remarques du tiers.", erreur.getMessage());
 
-				final List<Tiers> allTiers = tiersDAO.getAll();
-				PersonnePhysique found = null;
-				for (Tiers tiers : allTiers) {
-					if (tiers instanceof PersonnePhysique) {
-						found = (PersonnePhysique) tiers;
-						break;
-					}
-				}
-
+				final List<Tiers> allTiers = allTiersOfType(PersonnePhysique.class);
+				Assert.assertNotNull(allTiers);
+				Assert.assertEquals(1, allTiers.size());
+				final PersonnePhysique found = (PersonnePhysique) allTiers.get(0);
 				Assert.assertNotNull(found);
 				Assert.assertEquals(getDefaultOperateurName(), found.getLogCreationUser());
 				Assert.assertEquals("moinot-reqdes", found.getLogModifUser());
@@ -1011,6 +1028,20 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				final UniteTraitement ut = uniteTraitementDAO.get(id);
 				Assert.assertNotNull(ut);
 				Assert.assertEquals(EtatTraitement.TRAITE, ut.getEtat());
+				Assert.assertNotNull(ut.getPartiesPrenantes());
+				Assert.assertEquals(2, ut.getPartiesPrenantes().size());
+
+				final List<PartiePrenante> partiesPrenantes = new ArrayList<>(ut.getPartiesPrenantes());
+				Collections.sort(partiesPrenantes, new Comparator<PartiePrenante>() {
+					@Override
+					public int compare(PartiePrenante o1, PartiePrenante o2) {
+						return o1.getNom().compareTo(o2.getNom());
+					}
+				});
+				final Long arthur = partiesPrenantes.get(0).getNumeroContribuableCree();
+				final Long marie = partiesPrenantes.get(1).getNumeroContribuableCree();
+				Assert.assertNotNull(arthur);
+				Assert.assertNotNull(marie);
 
 				final List<Tiers> allTiers = getAllPersonnesPhysiquesEtMenages();
 				Assert.assertNotNull(allTiers);
@@ -1038,6 +1069,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				{
 					final PersonnePhysique pp = (PersonnePhysique) allSortedTiers.get(0);
 					Assert.assertNotNull(pp);
+					Assert.assertEquals(arthur, pp.getNumero());
 					Assert.assertEquals("Bataillard", pp.getNom());
 					Assert.assertEquals("Arthur", pp.getTousPrenoms());
 					Assert.assertEquals("Arthur", pp.getPrenomUsuel());
@@ -1109,6 +1141,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				{
 					final PersonnePhysique pp = (PersonnePhysique) allSortedTiers.get(1);
 					Assert.assertNotNull(pp);
+					Assert.assertEquals(marie, pp.getNumero());
 					Assert.assertEquals("O'Batayon", pp.getNom());
 					Assert.assertEquals("Marie Constantine", pp.getTousPrenoms());
 					Assert.assertEquals("Marie", pp.getPrenomUsuel());
@@ -1290,6 +1323,13 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				Assert.assertEquals(EtatTraitement.EN_ERREUR, ut.getEtat());
 				Assert.assertEquals(1, ut.getErreurs().size());
 
+				Assert.assertNotNull(ut.getPartiesPrenantes());
+				Assert.assertEquals(2, ut.getPartiesPrenantes().size());
+				for (PartiePrenante partiePrenante : ut.getPartiesPrenantes()) {
+					Assert.assertNotNull(partiePrenante);
+					Assert.assertNull(partiePrenante.getNumeroContribuableCree());
+				}
+
 				final ErreurTraitement erreur = ut.getErreurs().iterator().next();
 				Assert.assertNotNull(erreur);
 				Assert.assertEquals("Parties prenantes en couple avec divergence des sources de données, dont l'une est civile.", erreur.getMessage());
@@ -1355,6 +1395,11 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				final UniteTraitement ut = uniteTraitementDAO.get(id);
 				Assert.assertNotNull(ut);
 				Assert.assertEquals(EtatTraitement.TRAITE, ut.getEtat());
+				Assert.assertNotNull(ut.getPartiesPrenantes());
+				Assert.assertEquals(1, ut.getPartiesPrenantes().size());
+
+				final Long marie = ut.getPartiesPrenantes().iterator().next().getNumeroContribuableCree();
+				Assert.assertNotNull(marie);
 
 				final List<Tiers> allTiers = getAllPersonnesPhysiquesEtMenages();
 				Assert.assertNotNull(allTiers);
@@ -1439,6 +1484,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				{
 					final PersonnePhysique pp = (PersonnePhysique) allSortedTiers.get(1);
 					Assert.assertNotNull(pp);
+					Assert.assertEquals(marie, pp.getNumero());
 					Assert.assertEquals("O'Batayon", pp.getNom());
 					Assert.assertEquals("Marie Constantine", pp.getTousPrenoms());
 					Assert.assertEquals("Marie", pp.getPrenomUsuel());
@@ -1594,6 +1640,12 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				final UniteTraitement ut = uniteTraitementDAO.get(id);
 				Assert.assertNotNull(ut);
 				Assert.assertEquals(EtatTraitement.TRAITE, ut.getEtat());
+				Assert.assertNotNull(ut.getPartiesPrenantes());
+				Assert.assertEquals(1, ut.getPartiesPrenantes().size());
+
+				final PartiePrenante partiePrenante = ut.getPartiesPrenantes().iterator().next();
+				Assert.assertNotNull(partiePrenante);
+				Assert.assertNotNull(partiePrenante.getNumeroContribuableCree());
 
 				final List<Tiers> allTiers = getAllPersonnesPhysiquesEtMenages();
 				Assert.assertNotNull(allTiers);
@@ -1613,6 +1665,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				{
 					final PersonnePhysique pp = (PersonnePhysique) allSortedTiers.get(0);
 					Assert.assertNotNull(pp);
+					Assert.assertEquals(partiePrenante.getNumeroContribuableCree(), pp.getNumero());
 					Assert.assertEquals("O'Batayon", pp.getNom());
 					Assert.assertEquals("Marie Constantine", pp.getTousPrenoms());
 					Assert.assertEquals("Marie", pp.getPrenomUsuel());
@@ -2956,6 +3009,12 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				Assert.assertEquals(EtatTraitement.TRAITE, ut.getEtat());
 				Assert.assertNotNull(ut.getDateTraitement());
 				Assert.assertEquals(0, ut.getErreurs().size());
+				Assert.assertNotNull(ut.getPartiesPrenantes());
+				Assert.assertEquals(1, ut.getPartiesPrenantes().size());
+
+				final PartiePrenante partiePrenante = ut.getPartiesPrenantes().iterator().next();
+				Assert.assertNotNull(partiePrenante);
+				Assert.assertNotNull(partiePrenante.getNumeroContribuableCree());
 
 				// 3 contribuables créés
 				// - madame Valentine Cordoba
@@ -3040,6 +3099,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				{
 					final PersonnePhysique pp = (PersonnePhysique) allSortedTiers.get(1);
 					Assert.assertNotNull(pp);
+					Assert.assertEquals(partiePrenante.getNumeroContribuableCree(), pp.getNumero());
 					Assert.assertEquals("zainotaire-reqdes", pp.getLogCreationUser());
 					Assert.assertEquals("zainotaire-reqdes", pp.getLogModifUser());
 					Assert.assertEquals("Cordoba", pp.getNom());

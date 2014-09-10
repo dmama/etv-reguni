@@ -62,8 +62,6 @@ drop table SITUATION_FAMILLE cascade constraints;
 
 drop table TACHE cascade constraints;
 
-drop table TIERS cascade constraints;
-
 drop table REQDES_ROLE_PARTIE_PRENANTE cascade constraints;
 
 drop table REQDES_TRANSACTION_IMMOBILIERE cascade constraints;
@@ -75,6 +73,8 @@ drop table REQDES_ERREUR cascade constraints;
 drop table REQDES_UNITE_TRAITEMENT cascade constraints;
 
 drop table EVENEMENT_REQDES cascade constraints;
+
+drop table TIERS cascade constraints;
 
 drop sequence S_PM;
 

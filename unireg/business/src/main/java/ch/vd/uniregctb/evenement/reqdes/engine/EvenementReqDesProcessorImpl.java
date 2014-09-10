@@ -1134,6 +1134,9 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 				final PersonnePhysique ppDest = createPersonnePhysique(ppSrc);
 				addAdresseCourrier(ppSrc, ppDest, dateActe);
 
+				// [SIFISC-13397] on conserve dans la partie prenante le lien vers la personne physique créée
+				ppSrc.setNumeroContribuableCree(ppDest.getNumero());
+
 				data = new ProcessingDataPartiePrenante(true, ppDest);
 			}
 
