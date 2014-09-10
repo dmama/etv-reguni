@@ -15,9 +15,11 @@ public class ApplicationChecker {
 
 	public String getStatus() {
 		final Status status;
-		if (serviceCivilChecker.getStatus() == Status.OK && serviceInfraChecker.getStatus() == Status.OK &&
-				serviceSecuriteChecker.getStatus() == Status.OK && serviceBVRChecker.getStatus() == Status.OK &&
-				serviceEFactureChecker.getStatus() == Status.OK) {
+		if (serviceCivilChecker.getStatus() == Status.OK
+				&& serviceInfraChecker.getStatus() == Status.OK
+				&& serviceSecuriteChecker.getStatus() == Status.OK
+				&& serviceBVRChecker.getStatus() == Status.OK
+				&& serviceEFactureChecker.getStatus() == Status.OK) {
 			status = Status.OK;
 		}
 		else {

@@ -11,11 +11,15 @@ public class ApplicationChecker {
 	private ServiceInfraChecker serviceInfraChecker;
 	private ServiceSecuriteChecker serviceSecuriteChecker;
 	private TiersSearcherChecker tiersSearcherChecker;
+	private ServiceEFactureChecker serviceEFactureChecker;
 
 	public String getStatus() {
 		final Status status;
-		if (serviceCivilChecker.getStatus() == Status.OK && serviceInfraChecker.getStatus() == Status.OK &&
-				serviceSecuriteChecker.getStatus() == Status.OK && tiersSearcherChecker.getStatus() == Status.OK) {
+		if (serviceCivilChecker.getStatus() == Status.OK
+				&& serviceInfraChecker.getStatus() == Status.OK
+				&& serviceSecuriteChecker.getStatus() == Status.OK
+				&& serviceEFactureChecker.getStatus() == Status.OK
+				&& tiersSearcherChecker.getStatus() == Status.OK) {
 			status = Status.OK;
 		}
 		else {
@@ -28,6 +32,7 @@ public class ApplicationChecker {
 		return "{'serviceCivil' : '" + serviceCivilChecker.getStatus().name() + "', " +
 				"'serviceInfra' : '" + serviceInfraChecker.getStatus().name() + "', " +
 				"'serviceSecurite' : '" + serviceSecuriteChecker.getStatus().name() + "', " +
+				"'serviceEFacture' : '" + serviceEFactureChecker.getStatus().name() + "', " +
 				"'globalTiersSearcher' : '" + tiersSearcherChecker.getStatus().name() + "'}";
 	}
 
@@ -66,5 +71,10 @@ public class ApplicationChecker {
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setTiersSearcherChecker(TiersSearcherChecker tiersSearcherChecker) {
 		this.tiersSearcherChecker = tiersSearcherChecker;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setServiceEFactureChecker(ServiceEFactureChecker serviceEFactureChecker) {
+		this.serviceEFactureChecker = serviceEFactureChecker;
 	}
 }
