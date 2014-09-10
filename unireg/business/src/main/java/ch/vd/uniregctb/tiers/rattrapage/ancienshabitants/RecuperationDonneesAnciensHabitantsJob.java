@@ -19,6 +19,7 @@ public class RecuperationDonneesAnciensHabitantsJob extends JobDefinition {
 	private static final String FORCE = "FORCE";
 	private static final String NOMS_PARENTS = "NOMS_PARENTS";
 	private static final String TOUS_PRENOMS = "TOUS_PRENOMS";
+	private static final String NOM_NAISSANCE = "NOM_NAISSANCE";
 
 	private TiersService tiersService;
 	private RapportService rapportService;
@@ -60,6 +61,14 @@ public class RecuperationDonneesAnciensHabitantsJob extends JobDefinition {
 		}
 		{
 			final JobParam param = new JobParam();
+			param.setDescription("Nom de naissance du contribuable");
+			param.setName(NOM_NAISSANCE);
+			param.setMandatory(true);
+			param.setType(new JobParamBoolean());
+			addParameterDefinition(param, Boolean.TRUE);
+		}
+		{
+			final JobParam param = new JobParam();
 			param.setDescription("Nombre de threads");
 			param.setName(NB_THREADS);
 			param.setMandatory(true);
@@ -74,11 +83,12 @@ public class RecuperationDonneesAnciensHabitantsJob extends JobDefinition {
 		final boolean force = getBooleanValue(params, FORCE);
 		final boolean parents = getBooleanValue(params, NOMS_PARENTS);
 		final boolean prenoms = getBooleanValue(params, TOUS_PRENOMS);
-		if (!parents && !prenoms) {
-			throw new IllegalArgumentException("Les paramètres " + NOMS_PARENTS + " et " + TOUS_PRENOMS + " ne devraient pas être tous deux à false.");
+		final boolean nomNaissance = getBooleanValue(params, NOM_NAISSANCE);
+		if (!parents && !prenoms && !nomNaissance) {
+			throw new IllegalArgumentException("Les paramètres " + NOMS_PARENTS + ", " + NOM_NAISSANCE + " et " + TOUS_PRENOMS + " ne devraient pas être tous à 'false'.");
 		}
 
-		final RecuperationDonneesAnciensHabitantsResults results = tiersService.recupereDonneesSurAnciensHabitants(nbThreads, force, parents, prenoms, getStatusManager());
+		final RecuperationDonneesAnciensHabitantsResults results = tiersService.recupereDonneesSurAnciensHabitants(nbThreads, force, parents, prenoms, nomNaissance, getStatusManager());
 		final RecuperationDonneesAnciensHabitantsRapport rapport = rapportService.generateRapport(results, getStatusManager());
 		setLastRunReport(rapport);
 	}

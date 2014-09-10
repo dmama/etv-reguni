@@ -34,6 +34,7 @@ import ch.vd.uniregctb.metier.piis.PeriodeImpositionImpotSource;
 import ch.vd.uniregctb.metier.piis.PeriodeImpositionImpotSourceServiceException;
 import ch.vd.uniregctb.tiers.IdentificationEntreprise;
 import ch.vd.uniregctb.tiers.IdentificationPersonne;
+import ch.vd.uniregctb.tiers.OriginePersonnePhysique;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.xml.Context;
@@ -94,8 +95,7 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 			}
 
 			// [SIFISC-13351] la nationalité, le nom de naissance et la commune d'origine
-			// TODO JDE à implémenter
-			to.setBirthName(null);
+			to.setBirthName(personne.getNomNaissance());
 			if (personne.getNumeroOfsNationalite() != null) {
 				final int ofs = personne.getNumeroOfsNationalite();
 				final Nationality.Swiss swiss = ofs == ServiceInfrastructureRaw.noOfsSuisse ? new Nationality.Swiss() : null;
@@ -103,9 +103,9 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 				final Integer foreignCountry = swiss == null && stateless == null ? ofs : null;
 				to.getNationalities().add(new Nationality(null, null, swiss, stateless, foreignCountry, null));
 			}
-			if (StringUtils.isNotBlank(personne.getLibelleCommuneOrigine())) {
-				// TODO JDE à implémenter...
-				to.getOrigins();
+			final OriginePersonnePhysique origine = personne.getOrigine();
+			if (origine != null) {
+				to.getOrigins().add(new Origin(origine.getLibelle(), CantonAbbreviation.valueOf(origine.getSigleCanton())));
 			}
 		}
 		else {

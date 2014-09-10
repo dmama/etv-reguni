@@ -15,17 +15,19 @@ public class RecuperationDonneesAnciensHabitantsResults extends AbstractJobResul
 	public final boolean forceEcrasement;
 	public final boolean parents;
 	public final boolean prenoms;
+	public final boolean nomNaissance;
 
 	private boolean interrupted = false;
 	private final List<InfoIgnore> ignores = new LinkedList<>();
 	private final List<InfoErreur> erreurs = new LinkedList<>();
 	private final List<InfoTraite> traites = new LinkedList<>();
 
-	public RecuperationDonneesAnciensHabitantsResults(int nbThreads, boolean forceEcrasement, boolean parents, boolean prenoms) {
+	public RecuperationDonneesAnciensHabitantsResults(int nbThreads, boolean forceEcrasement, boolean parents, boolean prenoms, boolean nomNaissance) {
 		this.nbThreads = nbThreads;
 		this.forceEcrasement = forceEcrasement;
 		this.parents = parents;
 		this.prenoms = prenoms;
+		this.nomNaissance = nomNaissance;
 	}
 
 	public boolean isInterrupted() {
@@ -99,8 +101,10 @@ public class RecuperationDonneesAnciensHabitantsResults extends AbstractJobResul
 		public final String nomPere;
 		public final boolean majPrenoms;
 		public final String tousPrenoms;
+		public final boolean majNomNaissance;
+		public final String nomNaissance;
 
-		private InfoTraite(long noCtb, boolean majMere, String prenomsMere, String nomMere, boolean majPere, String prenomsPere, String nomPere, boolean majPrenoms, String tousPrenoms) {
+		private InfoTraite(long noCtb, boolean majMere, String prenomsMere, String nomMere, boolean majPere, String prenomsPere, String nomPere, boolean majPrenoms, String tousPrenoms, boolean majNomNaissance, String nomNaissance) {
 			super(noCtb);
 			this.prenomsMere = prenomsMere;
 			this.nomMere = nomMere;
@@ -110,11 +114,13 @@ public class RecuperationDonneesAnciensHabitantsResults extends AbstractJobResul
 			this.majPere = majPere;
 			this.majPrenoms = majPrenoms;
 			this.tousPrenoms = tousPrenoms;
+			this.majNomNaissance = majNomNaissance;
+			this.nomNaissance = nomNaissance;
 		}
 	}
 
-	public void addCasTraite(PersonnePhysique pp, boolean majMere, boolean majPere, boolean majPrenoms) {
-		this.traites.add(new InfoTraite(pp.getNumero(), majMere, pp.getPrenomsMere(), pp.getNomMere(), majPere, pp.getPrenomsPere(), pp.getNomPere(), majPrenoms, pp.getTousPrenoms()));
+	public void addCasTraite(PersonnePhysique pp, boolean majMere, boolean majPere, boolean majPrenoms, boolean majNomNaissance) {
+		this.traites.add(new InfoTraite(pp.getNumero(), majMere, pp.getPrenomsMere(), pp.getNomMere(), majPere, pp.getPrenomsPere(), pp.getNomPere(), majPrenoms, pp.getTousPrenoms(), majNomNaissance, pp.getNomNaissance()));
 	}
 
 	public void addIgnore(long id, RaisonIgnorement raison) {

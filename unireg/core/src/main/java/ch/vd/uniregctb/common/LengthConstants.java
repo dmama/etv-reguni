@@ -20,6 +20,8 @@ public abstract class LengthConstants {
 	public final static int TIERS_NUMTEL = 35;
 	public final static int TIERS_EMAIL = 255;
 	public static final int TIERS_LIB_ORIGINE = 250;
+	public static final int TIERS_LIBELLE_ORIGINE = 100;
+	public static final int TIERS_CANTON_ORIGINE = 2;
 	public static final int TIERS_NOM_PRENOMS_PARENT = 100;
 	public static final int TIERS_TOUS_PRENOMS = 100;
 

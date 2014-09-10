@@ -1,7 +1,11 @@
 package ch.vd.uniregctb.evenement.civil.interne.changement.origine;
 
+import java.util.Collection;
+
 import org.jetbrains.annotations.NotNull;
 
+import ch.vd.unireg.interfaces.civil.data.Individu;
+import ch.vd.unireg.interfaces.civil.data.Origine;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
@@ -12,6 +16,7 @@ import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
 import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.interne.changement.ChangementBase;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.uniregctb.tiers.OriginePersonnePhysique;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 
 public class CorrectionOrigine extends ChangementBase {
@@ -33,8 +38,19 @@ public class CorrectionOrigine extends ChangementBase {
 
 		final PersonnePhysique pp = getPrincipalPP();
 		if (pp != null && !pp.isHabitantVD()) {
-			final String origine = context.getTiersService().buildLibelleOrigine(noIndividu);
-			pp.setLibelleCommuneOrigine(origine);
+			final Individu individu = getIndividu();
+			if (individu != null) {
+				final OriginePersonnePhysique origine;
+				final Collection<Origine> origines = individu.getOrigines();
+				if (origines != null && !origines.isEmpty()) {
+					final Origine first = origines.iterator().next();
+					origine = new OriginePersonnePhysique(first.getNomLieu(), first.getSigleCanton());
+				}
+				else {
+					origine = null;
+				}
+				pp.setOrigine(origine);
+			}
 		}
 		return super.handle(warnings);
 	}

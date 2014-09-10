@@ -528,6 +528,13 @@
 		<property name="rapportService" ref="rapportService"/>
 	</bean>
 
+	<bean id="recupOriginesNonHabitantsJob" parent="schedulerJob" class="ch.vd.uniregctb.tiers.rattrapage.origine.RecuperationOriginesNonHabitantsJob">
+		<constructor-arg value="713"/>
+		<constructor-arg value="Migration des données d'origine des non-habitants 14R3 -> 14R4"/>
+		<property name="tiersService" ref="tiersService"/>
+		<property name="rapportService" ref="rapportService"/>
+	</bean>
+
     <bean id="cacheResetJob" parent="schedulerJob" class="ch.vd.uniregctb.cache.CacheResetJob">
         <constructor-arg value="801"/>
         <constructor-arg value="Réinitialiser les différents caches d'Unireg"/>

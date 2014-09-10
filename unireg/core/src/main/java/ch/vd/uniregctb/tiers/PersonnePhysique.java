@@ -1,8 +1,11 @@
 package ch.vd.uniregctb.tiers;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -81,7 +84,21 @@ public class PersonnePhysique extends Contribuable {
 	private String tousPrenoms;
 	private RegDate dateNaissance;
 	private Sexe sexe;
+
+	/**
+	 * @deprecated remplacé dès 14R4 par le champ {@link #origine}
+	 */
 	private String libelleCommuneOrigine;
+
+	/**
+	 * Origine du non-habitant
+	 */
+	private OriginePersonnePhysique origine;
+
+	/**
+	 * Nom de naissance du non-habitant
+	 */
+	private String nomNaissance;
 
 	/**
 	 * Code ISO-2 du pays selon la norme ISO-3166
@@ -285,6 +302,15 @@ public class PersonnePhysique extends Contribuable {
 		this.tousPrenoms = tousPrenoms;
 	}
 
+	@Column(name = "NH_NOM_NAISSANCE", length = LengthConstants.TIERS_NOM)
+	public String getNomNaissance() {
+		return nomNaissance;
+	}
+
+	public void setNomNaissance(String nomNaissance) {
+		this.nomNaissance = nomNaissance;
+	}
+
 	/**
 	 * Contient la date de naissance de la personne physique. Cette date peut être nulle.
 	 * <p>
@@ -334,6 +360,18 @@ public class PersonnePhysique extends Contribuable {
 
 	public void setLibelleCommuneOrigine(String libelleCommuneOrigine) {
 		this.libelleCommuneOrigine = libelleCommuneOrigine;
+	}
+
+	@Embedded
+	@AttributeOverrides({
+			@AttributeOverride(name = "libelle", column = @Column(name = "NH_LIBELLE_ORIGINE", nullable = true, length = LengthConstants.TIERS_LIBELLE_ORIGINE)),
+			@AttributeOverride(name = "sigleCanton", column = @Column(name = "NH_CANTON_ORIGINE", nullable = true, length = LengthConstants.TIERS_CANTON_ORIGINE))})
+	public OriginePersonnePhysique getOrigine() {
+		return origine;
+	}
+
+	public void setOrigine(OriginePersonnePhysique origine) {
+		this.origine = origine;
 	}
 
 	@Column(name = "NH_CAT_ETRANGER", length = LengthConstants.TIERS_CATETRANGER)

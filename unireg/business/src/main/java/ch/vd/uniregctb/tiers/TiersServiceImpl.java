@@ -105,6 +105,8 @@ import ch.vd.uniregctb.tiers.rattrapage.ancienshabitants.RecuperationDonneesAnci
 import ch.vd.uniregctb.tiers.rattrapage.ancienshabitants.RecuperationDonneesAnciensHabitantsResults;
 import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantProcessor;
 import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantResults;
+import ch.vd.uniregctb.tiers.rattrapage.origine.RecuperationOriginesNonHabitantsProcessor;
+import ch.vd.uniregctb.tiers.rattrapage.origine.RecuperationOriginesNonHabitantsResults;
 import ch.vd.uniregctb.type.CategorieEtranger;
 import ch.vd.uniregctb.type.CategorieIdentifiant;
 import ch.vd.uniregctb.type.CategorieImpotSource;
@@ -263,6 +265,7 @@ public class TiersServiceImpl implements TiersService {
         nonHabitant.setPrenomUsuel(null);
         nonHabitant.setTousPrenoms(null);
         nonHabitant.setDateNaissance(null);
+		nonHabitant.setNomNaissance(null);
         nonHabitant.setSexe(null);
         nonHabitant.setNumeroOfsNationalite(null);
         nonHabitant.setCategorieEtranger(null);
@@ -272,6 +275,8 @@ public class TiersServiceImpl implements TiersService {
 		nonHabitant.setPrenomsPere(null);
 		nonHabitant.setNomMere(null);
 		nonHabitant.setPrenomsMere(null);
+		nonHabitant.setLibelleCommuneOrigine(null);
+		nonHabitant.setOrigine(null);
 
 		// si on a donné une date de référence, on s'attaque aux situations de famille et aux adresses surchargées non-permanentes
 	    if (date != null) {
@@ -328,7 +333,8 @@ public class TiersServiceImpl implements TiersService {
         habitant.setPrenomUsuel(ind.getPrenomUsuel());
         habitant.setTousPrenoms(ind.getTousPrenoms());
         habitant.setDateNaissance(ind.getDateNaissance());
-        habitant.setDateDeces(ind.getDateDeces());
+	    habitant.setNomNaissance(ind.getNomNaissance());
+	    habitant.setDateDeces(ind.getDateDeces());
 	    habitant.setSexe(ind.getSexe());
 
 	    final Individu individu = serviceCivilService.getIndividu(habitant.getNumeroIndividu(), null, AttributeIndividu.NATIONALITES, AttributeIndividu.PERMIS, AttributeIndividu.ORIGINE);
@@ -379,7 +385,11 @@ public class TiersServiceImpl implements TiersService {
 
 	    // Commune d'origine
 	    if (individu.getOrigines() != null && !individu.getOrigines().isEmpty()) {
-		    habitant.setLibelleCommuneOrigine(buildLibelleOrigine(individu));
+		    final Origine first = individu.getOrigines().iterator().next();
+		    habitant.setOrigine(new OriginePersonnePhysique(first.getNomLieu(), first.getSigleCanton()));
+	    }
+	    else {
+		    habitant.setOrigine(null);
 	    }
 
         // indentification navs11 et numRCE
@@ -4084,9 +4094,15 @@ public class TiersServiceImpl implements TiersService {
     }
 
 	@Override
-	public RecuperationDonneesAnciensHabitantsResults recupereDonneesSurAnciensHabitants(int nbThreads, boolean forceEcrasement, boolean parents, boolean prenoms, StatusManager statusManager) {
+	public RecuperationDonneesAnciensHabitantsResults recupereDonneesSurAnciensHabitants(int nbThreads, boolean forceEcrasement, boolean parents, boolean prenoms, boolean nomNaissance, StatusManager statusManager) {
 		final RecuperationDonneesAnciensHabitantsProcessor processor = new RecuperationDonneesAnciensHabitantsProcessor(hibernateTemplate, transactionManager, tiersDAO, serviceCivilService);
-		return processor.run(nbThreads, forceEcrasement, parents, prenoms, statusManager);
+		return processor.run(nbThreads, forceEcrasement, parents, prenoms, nomNaissance, statusManager);
+	}
+
+	@Override
+	public RecuperationOriginesNonHabitantsResults recupereOriginesNonHabitants(int nbThreads, boolean dryRun, StatusManager statusManager) {
+		final RecuperationOriginesNonHabitantsProcessor processor = new RecuperationOriginesNonHabitantsProcessor(hibernateTemplate, transactionManager, serviceCivilService, serviceInfra);
+		return processor.run(nbThreads, dryRun, statusManager);
 	}
 
 	@Override

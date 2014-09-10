@@ -442,14 +442,39 @@ public abstract class JobDefinition implements InitializingBean, Comparable<JobD
 	 */
 	protected final boolean getBooleanValue(Map<String, Object> params, String key) {
 		final JobParam parameterDefinition = getParameterDefinition(key, true);
-		Boolean value = null;
-		if (params != null) {
-			value = (Boolean) params.get(key);
-		}
+		final Boolean value = getOptionnalBooleanValue(params, parameterDefinition, null);
 		if (value == null && parameterDefinition.isMandatory()) {
 			throw new IllegalArgumentException(String.format("Paramètre obligatoire non renseigné : %s", key));
 		}
 		return value != null ? value : false;
+	}
+
+	/**
+	 * Extrait la valeur d'un paramètre de type boolean, et retourne la.
+	 *
+	 * @param params les paramètres
+	 * @param key la clé du paramètre
+	 * @param defaultValue la valeur à renvoyer si aucune valeur n'a été trouvée
+	 * @return la valeur booléenne du paramètre
+	 */
+	@Nullable
+	protected final Boolean getOptionnalBooleanValue(Map<String, Object> params, String key, Boolean defaultValue) {
+		final JobParam parameterDefinition = getParameterDefinition(key, true);
+		if (parameterDefinition.isMandatory()) {
+			throw new IllegalArgumentException(String.format("Le paramètre %s n'est pas optionnel", key));
+		}
+		return getOptionnalBooleanValue(params, parameterDefinition, defaultValue);
+	}
+
+	@Nullable
+	private static Boolean getOptionnalBooleanValue(Map<String, Object> params, JobParam paramDefinition, @Nullable Boolean defaultValue) {
+		Assert.notNull(paramDefinition);
+		Boolean value = null;
+		if (params != null) {
+			final Boolean b = (Boolean) params.get(paramDefinition.getName());
+			value = (b == null ? defaultValue : b);
+		}
+		return value;
 	}
 
 	/**

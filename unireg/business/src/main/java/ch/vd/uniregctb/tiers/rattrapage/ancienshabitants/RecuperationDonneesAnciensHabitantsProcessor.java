@@ -47,10 +47,10 @@ public class RecuperationDonneesAnciensHabitantsProcessor {
 		this.serviceCivil = serviceCivil;
 	}
 
-	public RecuperationDonneesAnciensHabitantsResults run(final int nbThreads, final boolean forceEcrasement, final boolean parents, final boolean prenoms, StatusManager s) {
+	public RecuperationDonneesAnciensHabitantsResults run(final int nbThreads, final boolean forceEcrasement, final boolean parents, final boolean prenoms, final boolean nomNaissance, StatusManager s) {
 
 		final StatusManager statusManager = (s == null ? new LoggingStatusManager(LOGGER) : s);
-		final RecuperationDonneesAnciensHabitantsResults rapportFinal = new RecuperationDonneesAnciensHabitantsResults(nbThreads, forceEcrasement, parents, prenoms);
+		final RecuperationDonneesAnciensHabitantsResults rapportFinal = new RecuperationDonneesAnciensHabitantsResults(nbThreads, forceEcrasement, parents, prenoms, nomNaissance);
 
 		// annonce de démarrage
 		statusManager.setMessage("Recherche des anciens habitants concernés");
@@ -68,13 +68,13 @@ public class RecuperationDonneesAnciensHabitantsProcessor {
 				@Override
 				public boolean doInTransaction(List<Long> batch, RecuperationDonneesAnciensHabitantsResults rapport) throws Exception {
 					statusManager.setMessage(String.format("Traitement des %d anciens habitants trouvés", ids.size()), progressMonitor.getProgressInPercent());
-					traiterBatch(batch, forceEcrasement, parents, prenoms, rapport);
+					traiterBatch(batch, forceEcrasement, parents, prenoms, nomNaissance, rapport);
 					return true;
 				}
 
 				@Override
 				public RecuperationDonneesAnciensHabitantsResults createSubRapport() {
-					return new RecuperationDonneesAnciensHabitantsResults(nbThreads, forceEcrasement, parents, prenoms);
+					return new RecuperationDonneesAnciensHabitantsResults(nbThreads, forceEcrasement, parents, prenoms, nomNaissance);
 				}
 
 			}, progressMonitor);
@@ -91,7 +91,7 @@ public class RecuperationDonneesAnciensHabitantsProcessor {
 		return rapportFinal;
 	}
 
-	private void traiterBatch(List<Long> batch, boolean forceEcrasement, boolean parents, boolean prenoms, RecuperationDonneesAnciensHabitantsResults rapport) {
+	private void traiterBatch(List<Long> batch, boolean forceEcrasement, boolean parents, boolean prenoms, boolean nomNaissance, RecuperationDonneesAnciensHabitantsResults rapport) {
 		for (Long id : batch) {
 			final Tiers tiers = tiersDAO.get(id);
 			if (tiers instanceof PersonnePhysique) {
@@ -107,7 +107,8 @@ public class RecuperationDonneesAnciensHabitantsProcessor {
 					final boolean dataMereDejaPresente = hasDataNomMere(pp);
 					final boolean dataPereDejaPresent = hasDataNomPere(pp);
 					final boolean dataPrenomsDejaPresents = hasDataPrenoms(pp);
-					if ((!parents || (dataPereDejaPresent && dataMereDejaPresente)) && (!prenoms || dataPrenomsDejaPresents) && !forceEcrasement) {
+					final boolean dataNomNaissanceDejaPresent = hasDataNomNaissance(pp);
+					if ((!parents || (dataPereDejaPresent && dataMereDejaPresente)) && (!prenoms || dataPrenomsDejaPresents) && (!nomNaissance || dataNomNaissanceDejaPresent) && !forceEcrasement) {
 						// pas besoin de faire quoi que ce soit -> tout est déjà là et on ne veut pas écraser
 						rapport.addIgnore(id, RecuperationDonneesAnciensHabitantsResults.RaisonIgnorement.VALEUR_DEJA_PRESENTE);
 					}
@@ -116,18 +117,21 @@ public class RecuperationDonneesAnciensHabitantsProcessor {
 						final NomPrenom nomOfficielMere = individu.getNomOfficielMere();
 						final NomPrenom nomOfficielPere = individu.getNomOfficielPere();
 						final String tousPrenoms = StringUtils.trimToNull(individu.getTousPrenoms());
-						if (nomOfficielMere == null && nomOfficielPere == null && tousPrenoms == null) {
+						final String nomDeNaissance = individu.getNomNaissance();
+
+						if (nomOfficielMere == null && nomOfficielPere == null && tousPrenoms == null && nomDeNaissance == null) {
 							// pas de données dans le civil -> rien ne peut être récupéré de toute façon
 							rapport.addIgnore(id, RecuperationDonneesAnciensHabitantsResults.RaisonIgnorement.RIEN_DANS_CIVIL);
 						}
-						else if (!forceEcrasement && (!parents || (nomOfficielMere == null && dataPereDejaPresent) || (nomOfficielPere == null && dataMereDejaPresente)) && (!prenoms || dataPrenomsDejaPresents)) {
-							// on a déjà la seule donnée présente, et on ne veut pas écraser...
+						else if (!forceEcrasement && (!parents || (nomOfficielMere == null && dataPereDejaPresent) || (nomOfficielPere == null && dataMereDejaPresente)) && (!prenoms || dataPrenomsDejaPresents) && (!nomNaissance || dataNomNaissanceDejaPresent)) {
+							// on a déjà les données présentes, et on ne veut pas écraser...
 							rapport.addIgnore(id, RecuperationDonneesAnciensHabitantsResults.RaisonIgnorement.VALEUR_DEJA_PRESENTE);
 						}
 						else {
 							final boolean majMere = parents && nomOfficielMere != null && (forceEcrasement || !dataMereDejaPresente);
 							final boolean majPere = parents && nomOfficielPere != null && (forceEcrasement || !dataPereDejaPresent);
 							final boolean majPrenoms = prenoms && tousPrenoms != null && (forceEcrasement || !dataPrenomsDejaPresents);
+							final boolean majNomNaissance = nomNaissance && nomDeNaissance != null && (forceEcrasement || !dataNomNaissanceDejaPresent);
 
 							// mise à jour des valeurs fiscales
 							if (majMere) {
@@ -141,13 +145,16 @@ public class RecuperationDonneesAnciensHabitantsProcessor {
 							if (majPrenoms) {
 								pp.setTousPrenoms(tousPrenoms);
 							}
+							if (majNomNaissance) {
+								pp.setNomNaissance(nomDeNaissance);
+							}
 
-							if (!majPere && !majMere && !majPrenoms) {
+							if (!majPere && !majMere && !majPrenoms && !majNomNaissance) {
 								// on ne mets rien à jour...
 								rapport.addIgnore(id, RecuperationDonneesAnciensHabitantsResults.RaisonIgnorement.VALEUR_DEJA_PRESENTE);
 							}
 							else {
-								rapport.addCasTraite(pp, majMere, majPere, majPrenoms);
+								rapport.addCasTraite(pp, majMere, majPere, majPrenoms, majNomNaissance);
 							}
 						}
 					}
@@ -169,6 +176,10 @@ public class RecuperationDonneesAnciensHabitantsProcessor {
 
 	private static boolean hasDataPrenoms(PersonnePhysique pp) {
 		return StringUtils.isNotBlank(pp.getTousPrenoms());
+	}
+
+	private static boolean hasDataNomNaissance(PersonnePhysique pp) {
+		return StringUtils.isNotBlank(pp.getNomNaissance());
 	}
 
 	private List<Long> getIdsAnciensHabitants() {

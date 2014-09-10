@@ -9,14 +9,14 @@ import com.itextpdf.text.pdf.PdfWriter;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.CsvHelper;
-import ch.vd.uniregctb.tiers.rattrapage.ancienshabitants.RecuperationDonneesAnciensHabitantsResults;
+import ch.vd.uniregctb.tiers.rattrapage.origine.RecuperationOriginesNonHabitantsResults;
 
-public class PdfRecuperationDonneesAnciensHabitantsRapport extends PdfRapport {
+public class PdfRecuperationOriginesNonHabitantsRapport extends PdfRapport {
 
 	/**
 	 * Génère un rapport au format PDF à partir des résultats du job.
 	 */
-	public void write(final RecuperationDonneesAnciensHabitantsResults results, String nom, String description, final Date dateGeneration, OutputStream os, StatusManager status) throws DocumentException {
+	public void write(final RecuperationOriginesNonHabitantsResults results, String nom, String description, final Date dateGeneration, OutputStream os, StatusManager status) throws DocumentException {
 
 		Assert.notNull(status);
 
@@ -36,11 +36,8 @@ public class PdfRecuperationDonneesAnciensHabitantsRapport extends PdfRapport {
 			document.addTableSimple(2, new TableSimpleCallback() {
 				@Override
 				public void fillTable(PdfTableSimple table) throws DocumentException {
-					table.addLigne("Nombre de threads :", String.valueOf(results.nbThreads));
-					table.addLigne("Ecrasement autorisé :", String.valueOf(results.forceEcrasement));
-					table.addLigne("Noms/prénoms des parents :", String.valueOf(results.parents));
-					table.addLigne("Prénoms complets :", String.valueOf(results.prenoms));
-					table.addLigne("Nom de naissance :", String.valueOf(results.nomNaissance));
+					table.addLigne("Nombre de threads :", String.valueOf(results.getNbThreads()));
+					table.addLigne("Mode simulation :", String.valueOf(results.isDryRun()));
 				}
 			});
 		}
@@ -62,7 +59,7 @@ public class PdfRecuperationDonneesAnciensHabitantsRapport extends PdfRapport {
 					table.addLigne("Nombre total de personnes physiques analysées :", String.valueOf(sizeErreurs + sizeIgnores + sizeTraites));
 					table.addLigne("Nombre de cas ignorés :", String.valueOf(sizeIgnores));
 					table.addLigne("Nombre d'erreurs :", String.valueOf(sizeErreurs));
-					table.addLigne("Nombre d'anciens habitants modifiés :", String.valueOf(sizeTraites));
+					table.addLigne("Nombre de non-habitants modifiés :", String.valueOf(sizeTraites));
 					table.addLigne("Durée d'exécution du job :", formatDureeExecution(results));
 					table.addLigne("Date de génération du rapport :", formatTimestamp(dateGeneration));
 				}
@@ -72,14 +69,14 @@ public class PdfRecuperationDonneesAnciensHabitantsRapport extends PdfRapport {
 		// Personnes physiques ignorées
 		{
 			final String filename = "ignores.csv";
-			final String contenu = CsvHelper.asCsvFile(results.getIgnores(), filename, status, new CsvHelper.FileFiller<RecuperationDonneesAnciensHabitantsResults.InfoIgnore>() {
+			final String contenu = CsvHelper.asCsvFile(results.getIgnores(), filename, status, new CsvHelper.FileFiller<RecuperationOriginesNonHabitantsResults.InfoIgnore>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
 					b.append("NO_CTB").append(COMMA).append("RAISON");
 				}
 
 				@Override
-				public boolean fillLine(CsvHelper.LineFiller b, RecuperationDonneesAnciensHabitantsResults.InfoIgnore elt) {
+				public boolean fillLine(CsvHelper.LineFiller b, RecuperationOriginesNonHabitantsResults.InfoIgnore elt) {
 					b.append(elt.noCtb).append(COMMA).append(CsvHelper.escapeChars(elt.getMessage()));
 					return true;
 				}
@@ -92,14 +89,14 @@ public class PdfRecuperationDonneesAnciensHabitantsRapport extends PdfRapport {
 		// Erreurs
 		{
 			final String filename = "erreurs.csv";
-			final String contenu = CsvHelper.asCsvFile(results.getErreurs(), filename, status, new CsvHelper.FileFiller<RecuperationDonneesAnciensHabitantsResults.InfoErreur>() {
+			final String contenu = CsvHelper.asCsvFile(results.getErreurs(), filename, status, new CsvHelper.FileFiller<RecuperationOriginesNonHabitantsResults.InfoErreur>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
 					b.append("NO_CTB").append(COMMA).append("ERREUR");
 				}
 
 				@Override
-				public boolean fillLine(CsvHelper.LineFiller b, RecuperationDonneesAnciensHabitantsResults.InfoErreur elt) {
+				public boolean fillLine(CsvHelper.LineFiller b, RecuperationOriginesNonHabitantsResults.InfoErreur elt) {
 					b.append(elt.noCtb).append(COMMA).append(CsvHelper.escapeChars(elt.getMessage()));
 					return true;
 				}
@@ -112,35 +109,19 @@ public class PdfRecuperationDonneesAnciensHabitantsRapport extends PdfRapport {
 		// non-habitants modifiés
 		{
 			final String filename = "modifications.csv";
-			final String contenu = CsvHelper.asCsvFile(results.getTraites(), filename, status, new CsvHelper.FileFiller<RecuperationDonneesAnciensHabitantsResults.InfoTraite>() {
+			final String contenu = CsvHelper.asCsvFile(results.getTraites(), filename, status, new CsvHelper.FileFiller<RecuperationOriginesNonHabitantsResults.InfoTraitement>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
 					b.append("NO_CTB").append(COMMA);
-					b.append("MAJ_MERE").append(COMMA);
-					b.append("MAJ_PERE").append(COMMA);
-					b.append("MAJ_PRENOMS").append(COMMA);
-					b.append("MAJ_NOM_NAISSANCE").append(COMMA);
-					b.append("PRENOMS_MERE").append(COMMA);
-					b.append("NOM_MERE").append(COMMA);
-					b.append("PRENOMS_PERE").append(COMMA);
-					b.append("NOM_PERE").append(COMMA);
-					b.append("PRENOMS_CTB").append(COMMA);
-					b.append("NOM_NAISSANCE");
+					b.append("LIEU_ORIGINE").append(COMMA);
+					b.append("CANTON_ORIGINE");
 				}
 
 				@Override
-				public boolean fillLine(CsvHelper.LineFiller b, RecuperationDonneesAnciensHabitantsResults.InfoTraite elt) {
+				public boolean fillLine(CsvHelper.LineFiller b, RecuperationOriginesNonHabitantsResults.InfoTraitement elt) {
 					b.append(elt.noCtb).append(COMMA);
-					b.append(elt.majMere).append(COMMA);
-					b.append(elt.majPere).append(COMMA);
-					b.append(elt.majPrenoms).append(COMMA);
-					b.append(elt.majNomNaissance).append(COMMA);
-					b.append(CsvHelper.escapeChars(elt.prenomsMere)).append(COMMA);
-					b.append(CsvHelper.escapeChars(elt.nomMere)).append(COMMA);
-					b.append(CsvHelper.escapeChars(elt.prenomsPere)).append(COMMA);
-					b.append(CsvHelper.escapeChars(elt.nomPere)).append(COMMA);
-					b.append(CsvHelper.escapeChars(elt.tousPrenoms)).append(COMMA);
-					b.append(CsvHelper.escapeChars(elt.nomNaissance));
+					b.append(CsvHelper.escapeChars(elt.getLibelle())).append(COMMA);
+					b.append(CsvHelper.escapeChars(elt.getSigleCanton()));
 					return true;
 				}
 			});
@@ -153,6 +134,4 @@ public class PdfRecuperationDonneesAnciensHabitantsRapport extends PdfRapport {
 
 		status.setMessage("Génération du rapport terminée.");
 	}
-
-
 }

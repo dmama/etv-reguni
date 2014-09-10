@@ -101,7 +101,7 @@ public class RecuperationDonneesAnciensHabitantsProcessorTest extends BusinessTe
 		});
 
 		// lancement du processus
-		final RecuperationDonneesAnciensHabitantsResults res = processor.run(1, false, true, false, null);
+		final RecuperationDonneesAnciensHabitantsResults res = processor.run(1, false, true, false, false, null);
 		Assert.assertNotNull(res);
 		Assert.assertEquals(0, res.getErreurs().size());
 		Assert.assertEquals(4, res.getIgnores().size());        // les habitant, jamais habitant et ménage commun ne sont même pas pris en compte
@@ -290,7 +290,7 @@ public class RecuperationDonneesAnciensHabitantsProcessorTest extends BusinessTe
 		});
 
 		// lancement du processus
-		final RecuperationDonneesAnciensHabitantsResults res = processor.run(1, false, true, false, null);
+		final RecuperationDonneesAnciensHabitantsResults res = processor.run(1, false, true, false, false, null);
 		Assert.assertNotNull(res);
 		Assert.assertEquals(0, res.getErreurs().size());
 		Assert.assertEquals(0, res.getIgnores().size());
@@ -478,7 +478,7 @@ public class RecuperationDonneesAnciensHabitantsProcessorTest extends BusinessTe
 		});
 
 		// lancement du processus
-		final RecuperationDonneesAnciensHabitantsResults res = processor.run(1, true, true, false, null);
+		final RecuperationDonneesAnciensHabitantsResults res = processor.run(1, true, true, false, false, null);
 		Assert.assertNotNull(res);
 		Assert.assertEquals(0, res.getErreurs().size());
 		Assert.assertEquals(0, res.getIgnores().size());
@@ -612,7 +612,7 @@ public class RecuperationDonneesAnciensHabitantsProcessorTest extends BusinessTe
 		});
 
 		// lancement du rattrapage
-		final RecuperationDonneesAnciensHabitantsResults res = processor.run(1, false, false, true, null);
+		final RecuperationDonneesAnciensHabitantsResults res = processor.run(1, false, false, true, false, null);
 		Assert.assertNotNull(res);
 		Assert.assertEquals(0, res.getErreurs().size());
 		Assert.assertEquals(1, res.getIgnores().size());
@@ -661,7 +661,7 @@ public class RecuperationDonneesAnciensHabitantsProcessorTest extends BusinessTe
 		});
 
 		// lancement du rattrapage
-		final RecuperationDonneesAnciensHabitantsResults res = processor.run(1, false, false, true, null);
+		final RecuperationDonneesAnciensHabitantsResults res = processor.run(1, false, false, true, false, null);
 		Assert.assertNotNull(res);
 		Assert.assertEquals(0, res.getErreurs().size());
 		Assert.assertEquals(1, res.getIgnores().size());
@@ -713,7 +713,7 @@ public class RecuperationDonneesAnciensHabitantsProcessorTest extends BusinessTe
 		});
 
 		// lancement du rattrapage
-		final RecuperationDonneesAnciensHabitantsResults res = processor.run(1, false, false, true, null);
+		final RecuperationDonneesAnciensHabitantsResults res = processor.run(1, false, false, true, false, null);
 		Assert.assertNotNull(res);
 		Assert.assertEquals(0, res.getErreurs().size());
 		Assert.assertEquals(0, res.getIgnores().size());
@@ -776,7 +776,7 @@ public class RecuperationDonneesAnciensHabitantsProcessorTest extends BusinessTe
 		});
 
 		// lancement du rattrapage
-		final RecuperationDonneesAnciensHabitantsResults res = processor.run(1, true, false, true, null);
+		final RecuperationDonneesAnciensHabitantsResults res = processor.run(1, true, false, true, false, null);
 		Assert.assertNotNull(res);
 		Assert.assertEquals(0, res.getErreurs().size());
 		Assert.assertEquals(0, res.getIgnores().size());
@@ -795,6 +795,8 @@ public class RecuperationDonneesAnciensHabitantsProcessorTest extends BusinessTe
 			Assert.assertNull(info.nomPere);
 			Assert.assertTrue(info.majPrenoms);
 			Assert.assertEquals("Mercédes Anne Marie", info.tousPrenoms);
+			Assert.assertFalse(info.majNomNaissance);
+			Assert.assertNull(info.nomNaissance);
 		}
 
 		// vérification en base
@@ -803,6 +805,71 @@ public class RecuperationDonneesAnciensHabitantsProcessorTest extends BusinessTe
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				Assert.assertEquals("Mercédes Anne Marie", pp.getTousPrenoms());
+				Assert.assertNull(pp.getPrenomsMere());
+				Assert.assertNull(pp.getNomMere());
+				Assert.assertNull(pp.getPrenomsPere());
+				Assert.assertNull(pp.getNomPere());
+			}
+		});
+	}
+
+	@Test
+	public void testNomNaissance() throws Exception {
+
+		final long noIndividu = 2367342L;
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu individu = addIndividu(noIndividu, null, "De Saint André", "Mercédes", Sexe.FEMININ);
+				individu.setNomNaissance("De la roue qui tourne");
+			}
+		});
+
+		// mise en place fisccale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
+				pp.setTousPrenoms("Mercédes");
+				resetDataNomsParents(pp, true, true);
+				pp.setNomNaissance(null);
+				return pp.getNumero();
+			}
+		});
+
+		// lancement du rattrapage
+		final RecuperationDonneesAnciensHabitantsResults res = processor.run(1, true, false, false, true, null);
+		Assert.assertNotNull(res);
+		Assert.assertEquals(0, res.getErreurs().size());
+		Assert.assertEquals(0, res.getIgnores().size());
+		Assert.assertEquals(1, res.getTraites().size());
+
+		// vérification des résultats dans le rapport
+		{
+			final RecuperationDonneesAnciensHabitantsResults.InfoTraite info = res.getTraites().get(0);
+			Assert.assertNotNull(info);
+			Assert.assertEquals(ppId, info.noCtb);
+			Assert.assertFalse(info.majMere);
+			Assert.assertNull(info.prenomsMere);
+			Assert.assertNull(info.nomMere);
+			Assert.assertFalse(info.majPere);
+			Assert.assertNull(info.prenomsPere);
+			Assert.assertNull(info.nomPere);
+			Assert.assertFalse(info.majPrenoms);
+			Assert.assertEquals("Mercédes", info.tousPrenoms);
+			Assert.assertTrue(info.majNomNaissance);
+			Assert.assertEquals("De la roue qui tourne", info.nomNaissance);
+		}
+
+		// vérification en base
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertEquals("Mercédes", pp.getTousPrenoms());
+				Assert.assertEquals("De la roue qui tourne", pp.getNomNaissance());
 				Assert.assertNull(pp.getPrenomsMere());
 				Assert.assertNull(pp.getNomMere());
 				Assert.assertNull(pp.getPrenomsPere());

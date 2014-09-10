@@ -65,6 +65,7 @@ import ch.vd.uniregctb.document.PassageNouveauxRentiersSourciersEnMixteRapport;
 import ch.vd.uniregctb.document.RapprocherCtbRapport;
 import ch.vd.uniregctb.document.RecalculTachesRapport;
 import ch.vd.uniregctb.document.RecuperationDonneesAnciensHabitantsRapport;
+import ch.vd.uniregctb.document.RecuperationOriginesNonHabitantsRapport;
 import ch.vd.uniregctb.document.ReinitialiserBaremeDoubleGainRapport;
 import ch.vd.uniregctb.document.ResolutionAdresseRapport;
 import ch.vd.uniregctb.document.RolesCommunesRapport;
@@ -107,6 +108,7 @@ import ch.vd.uniregctb.tiers.ExclureContribuablesEnvoiResults;
 import ch.vd.uniregctb.tiers.rattrapage.ancienshabitants.RecuperationDonneesAnciensHabitantsResults;
 import ch.vd.uniregctb.tiers.rattrapage.etatdeclaration.CorrectionEtatDeclarationResults;
 import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantResults;
+import ch.vd.uniregctb.tiers.rattrapage.origine.RecuperationOriginesNonHabitantsResults;
 import ch.vd.uniregctb.tiers.rattrapage.pm.MigrationCoquillesPM;
 import ch.vd.uniregctb.validation.ValidationJobResults;
 
@@ -1187,6 +1189,28 @@ public class RapportServiceImpl implements RapportService {
 				@Override
 				public void writeDoc(RecuperationDonneesAnciensHabitantsRapport doc, OutputStream os) throws Exception {
 					final PdfRecuperationDonneesAnciensHabitantsRapport document = new PdfRecuperationDonneesAnciensHabitantsRapport();
+					document.write(results, nom, description, dateGeneration, os, status);
+				}
+			});
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public RecuperationOriginesNonHabitantsRapport generateRapport(final RecuperationOriginesNonHabitantsResults results, StatusManager s) {
+		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
+
+		final String nom = "RapportRecuperationOriginesNonHabitants";
+		final String description = "Rapport d'exécution du job de récupération des origines des non-habitants";
+		final Date dateGeneration = DateHelper.getCurrentDate();
+
+		try {
+			return docService.newDoc(RecuperationOriginesNonHabitantsRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<RecuperationOriginesNonHabitantsRapport>() {
+				@Override
+				public void writeDoc(RecuperationOriginesNonHabitantsRapport doc, OutputStream os) throws Exception {
+					final PdfRecuperationOriginesNonHabitantsRapport document = new PdfRecuperationOriginesNonHabitantsRapport();
 					document.write(results, nom, description, dateGeneration, os, status);
 				}
 			});
