@@ -71,7 +71,7 @@ public class UniregWsTomcatRunner {
 		System.setProperty("oracle.hibernate.dialect", "ch.vd.uniregctb.hibernate.dialect.Oracle10gDialectWithNVarChar");
 		System.setProperty("oracle.hibernate.query.substitutions", "true 1, false 0");
 
-		System.setProperty("extprop.hibernate.hbm2ddl.mode", "update");
+		System.setProperty("extprop.hibernate.hbm2ddl.mode", "validate");
 
 		final String userDbPath;
 		final File userDb = new File("src/test/resources/ch/vd/uniregctb/embedded/tomcat-users.xml");
