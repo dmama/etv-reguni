@@ -105,7 +105,7 @@ public class ChangementNomTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		indexer.sync();
+		globalTiersIndexer.sync();
 
 		{
 			// on cherche de nouveau
@@ -191,7 +191,7 @@ public class ChangementNomTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		indexer.sync();
+		globalTiersIndexer.sync();
 
 		{
 			// on cherche de nouveau

@@ -83,7 +83,7 @@ public class CorrectionDateNaissanceTest extends AbstractEvenementCivilInterneTe
 
 		LOGGER.debug("Test de traitement d'un événement de changement de date de naissance.");
 
-		indexer.sync();
+		globalTiersIndexer.sync();
 
 		// Rech du tiers avant modif
 		TiersCriteria criteria = new TiersCriteria();
@@ -117,7 +117,7 @@ public class CorrectionDateNaissanceTest extends AbstractEvenementCivilInterneTe
 			}
 		});
 
-		indexer.sync();
+		globalTiersIndexer.sync();
 
 		{
 			// on cherche de nouveau
@@ -141,7 +141,7 @@ public class CorrectionDateNaissanceTest extends AbstractEvenementCivilInterneTe
 
 		LOGGER.debug("Test de traitement d'un événement de changement de date de naissance (avec erreurs).");
 
-		indexer.sync();
+		globalTiersIndexer.sync();
 
 		// Rech du tiers avant modif
 		TiersCriteria criteria = new TiersCriteria();
@@ -248,7 +248,7 @@ public class CorrectionDateNaissanceTest extends AbstractEvenementCivilInterneTe
 			}
 		});
 
-		indexer.sync();
+		globalTiersIndexer.sync();
 
 		// Vérifie que la date de naissance à bien été corrigée (= cachée sur la personne physique) et que la personne physique n'est plus
 		// flaggée comme dirty.

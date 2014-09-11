@@ -15,7 +15,6 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.evenement.fiscal.MockEvenementFiscalSender;
-import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.metier.MetierService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 
@@ -23,7 +22,6 @@ public abstract class AbstractEvenementCivilInterneTest extends BusinessTest {
 
 	//private static final Logger LOGGER = LoggerFactory.getLogger(AbstractEvenementCivilInterneTest.class);
 
-	protected GlobalTiersIndexer indexer;
 	protected MockEvenementFiscalSender eventSender;
 	protected MetierService metierService;
 
@@ -37,7 +35,6 @@ public abstract class AbstractEvenementCivilInterneTest extends BusinessTest {
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 
-		indexer = getBean(GlobalTiersIndexer.class, "globalTiersIndexer");
 		eventSender = getBean(MockEvenementFiscalSender.class, "evenementFiscalSender");
 		metierService = getBean(MetierService.class, "metierService");
 		dataEventService = getBean(DataEventService.class, "dataEventService");
@@ -46,7 +43,7 @@ public abstract class AbstractEvenementCivilInterneTest extends BusinessTest {
 		eventSender.count = 0;
 
 		final AdresseService adresseService = getBean(AdresseService.class, "adresseService");
-		context = new EvenementCivilContext(serviceCivil, serviceInfra, dataEventService, tiersService, indexer, metierService, tiersDAO, adresseService, evenementFiscalService, parametreAppService);
+		context = new EvenementCivilContext(serviceCivil, serviceInfra, dataEventService, tiersService, globalTiersIndexer, metierService, tiersDAO, adresseService, evenementFiscalService, parametreAppService);
 		options = buildOptions();
 	}
 
