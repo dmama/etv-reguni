@@ -291,28 +291,21 @@ public interface MetierService {
 	/**
 	 * Traite un veuvage.
 	 *
-	 * @param veuf
-	 *            le veuf
-	 * @param dateVeuvage
-	 *            la date de veuvage
-	 * @param remarque
-	 *            sera ajoutée à la fin de la remarque de tous les contribuables mis à jour
-	 * @param numeroEvenement
-	 *            (optionnel) le numéro d'événement civil déclenchant le veuvage
+	 * @param veuf le veuf
+	 * @param dateVeuvage la date de veuvage
+	 * @param remarque sera ajoutée à la fin de la remarque de tous les contribuables mis à jour
+	 * @param numeroEvenement (optionnel) le numéro d'événement civil déclenchant le veuvage
 	 */
-	public void veuvage(PersonnePhysique veuf, RegDate dateVeuvage, @Nullable String remarque, Long numeroEvenement) throws MetierServiceException;
+	void veuvage(PersonnePhysique veuf, RegDate dateVeuvage, @Nullable String remarque, Long numeroEvenement) throws MetierServiceException;
 
 	/**
 	 * Annule un veuvage.
 	 *
-	 * @param tiers
-	 *            l'ancient veuf
-	 * @param date
-	 *            la date de veuvage annulé
-	 * @param numeroEvenement
-	 *            (optionnel) le numéro d'événement civil déclenchant l'annulation
+	 * @param tiers l'ancient veuf
+	 * @param date la date de veuvage annulé (= ancienne date de décès du conjoint)
+	 * @param numeroEvenement (optionnel) le numéro d'événement civil déclenchant l'annulation
 	 */
-	public void annuleVeuvage(PersonnePhysique tiers, RegDate date, Long numeroEvenement) throws MetierServiceException;
+	void annuleVeuvage(PersonnePhysique tiers, RegDate date, Long numeroEvenement) throws MetierServiceException;
 
 	/**Permet de sortir la liste des contribuables ayant un for sur une commune differente de celle de leur adresse.
 	 *

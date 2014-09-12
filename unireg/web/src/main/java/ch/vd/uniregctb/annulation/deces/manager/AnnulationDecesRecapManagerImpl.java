@@ -61,12 +61,16 @@ public class AnnulationDecesRecapManagerImpl implements AnnulationDecesRecapMana
 			}
 		}
 		else if (annulationDecesRecapView.isMarieSeulAndVeuf()) {
-			annulationDecesRecapView.setDateVeuvage(tiersService.getDateDebutVeuvage(pp, RegDate.get()));
-			if (annulationDecesRecapView.getDateVeuvage() == null) {
+			final RegDate dateDebutVeuvage = tiersService.getDateDebutVeuvage(pp, RegDate.get());
+			if (dateDebutVeuvage == null) {
 				throw new ObjectNotFoundException("Impossible de déterminer la date de début de veuvage du contribuable");
 			}
-		}
 
+			// [SIFISC-13197] le métier-service s'attend à recevoir la date de décès du conjoint, alors que la date
+			// que nous appelons ici la date de début de veuvage est au lendemain (= parce que le for du survivant est ouvert
+			// au lendemain du décès)
+			annulationDecesRecapView.setDateVeuvage(dateDebutVeuvage.getOneDayBefore());
+		}
 
 		return annulationDecesRecapView;
 	}
@@ -77,22 +81,23 @@ public class AnnulationDecesRecapManagerImpl implements AnnulationDecesRecapMana
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void save(AnnulationDecesRecapView annulationDecesRecapView) throws MetierServiceException {
-		PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(annulationDecesRecapView.getPersonne().getNumero());
+		final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(annulationDecesRecapView.getPersonne().getNumero());
 		if (isVeuvageMarieSeul(pp)) {
 			final RegDate dateVeuvage = annulationDecesRecapView.getDateVeuvage();
-			metierService.annuleVeuvage(pp, dateVeuvage, 0L);
+			metierService.annuleVeuvage(pp, dateVeuvage, null);
 		}
 		else {
 			if (annulationDecesRecapView.isWarningDateDecesModifie()) {
 				metierService.annuleDeces(pp, annulationDecesRecapView.getDateDecesDepuisDernierForPrincipal());
-			} else {
+			}
+			else {
 				metierService.annuleDeces(pp, annulationDecesRecapView.getDateDeces());
 			}
 		}
 	}
 
 	private boolean isVeuvageMarieSeul(PersonnePhysique pp) {
-		return tiersService.isVeuvageMarieSeul(pp);
+		return tiersService.isVeuvageMarieSeul(pp) && tiersService.getDateDeces(pp) == null;
 	}
 
 	@Override

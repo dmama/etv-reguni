@@ -1,9 +1,11 @@
 package ch.vd.uniregctb.annulation.deces.manager;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
@@ -13,9 +15,15 @@ import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.uniregctb.annulation.deces.view.AnnulationDecesRecapView;
 import ch.vd.uniregctb.common.BusinessTestingConstants;
 import ch.vd.uniregctb.common.WebTest;
+import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.type.EtatCivil;
+import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 @ContextConfiguration(locations = BusinessTestingConstants.UNIREG_BUSINESS_UT_TACHES)       // je veux le véritable tache-service !
 public class AnnulationDecesRecapManagerTest extends WebTest {
@@ -63,6 +71,26 @@ public class AnnulationDecesRecapManagerTest extends WebTest {
 		// annulation de décès comme fait dans le contrôleur ad'hoc
 		final AnnulationDecesRecapView annulationDecesView = manager.get(ppId);
 		manager.save(annulationDecesView);
+
+		// vérification des résultats
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertNotNull(pp);
+				Assert.assertNull(pp.getDateDeces());
+
+				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+				Assert.assertNotNull(ffp);
+				Assert.assertEquals(date(1992, 2, 1), ffp.getDateDebut());
+				Assert.assertEquals(MotifFor.DEMENAGEMENT_VD, ffp.getMotifOuverture());
+				Assert.assertNull(ffp.getDateFin());
+				Assert.assertNull(ffp.getMotifFermeture());
+				Assert.assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) MockCommune.Bussigny.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
+			}
+		});
 	}
 
 	/**
@@ -100,6 +128,26 @@ public class AnnulationDecesRecapManagerTest extends WebTest {
 		// annulation de décès comme fait dans le contrôleur ad'hoc
 		final AnnulationDecesRecapView annulationDecesView = manager.get(ppId);
 		manager.save(annulationDecesView);
+
+		// vérification des résultats
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertNotNull(pp);
+				Assert.assertNull(pp.getDateDeces());
+
+				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+				Assert.assertNotNull(ffp);
+				Assert.assertEquals(date(1992, 2, 1), ffp.getDateDebut());
+				Assert.assertEquals(MotifFor.DEMENAGEMENT_VD, ffp.getMotifOuverture());
+				Assert.assertNull(ffp.getDateFin());
+				Assert.assertNull(ffp.getMotifFermeture());
+				Assert.assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) MockCommune.Bussigny.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
+			}
+		});
 	}
 
 	/**
@@ -137,5 +185,132 @@ public class AnnulationDecesRecapManagerTest extends WebTest {
 		// annulation de décès comme fait dans le contrôleur ad'hoc
 		final AnnulationDecesRecapView annulationDecesView = manager.get(ppId);
 		manager.save(annulationDecesView);
+
+		// vérification des résultats
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertNotNull(pp);
+				Assert.assertNull(pp.getDateDeces());
+
+				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+				Assert.assertNotNull(ffp);
+				Assert.assertEquals(date(1992, 2, 1), ffp.getDateDebut());
+				Assert.assertEquals(MotifFor.DEMENAGEMENT_VD, ffp.getMotifOuverture());
+				Assert.assertNull(ffp.getDateFin());
+				Assert.assertNull(ffp.getMotifFermeture());
+				Assert.assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) MockCommune.Bussigny.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-13197] crash à la tentative d'annulation du décès d'un marié seul veuf (décès le lendemain du veuvage)
+	 */
+	@Test
+	public void testAnnulationDecesSurMarieSeulVeufDecedePeuApres() throws Exception {
+
+		final RegDate dateDebut = date(1990, 8, 31);
+		final RegDate dateMariage = date(2000, 2, 5);
+		final RegDate dateDeces = RegDate.get();
+		final RegDate dateVeuvage = dateDeces.getOneDayBefore();
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				// personne
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Alfred", "Tartempion", date(1935, 3, 4), Sexe.MASCULIN);
+				final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, dateMariage, dateVeuvage.getOneDayBefore());
+				pp.setDateDeces(dateDeces);
+
+				final MenageCommun mc = couple.getMenage();
+				addForPrincipal(pp, dateDebut, MotifFor.INDETERMINE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Aigle, ModeImposition.SOURCE);
+				addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateVeuvage.getOneDayBefore(), MotifFor.VEUVAGE_DECES, MockCommune.Aigle, ModeImposition.SOURCE);
+				addForPrincipal(pp, dateVeuvage, MotifFor.VEUVAGE_DECES, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Aigle, ModeImposition.SOURCE);
+
+				addSituation(pp, dateMariage, dateVeuvage.getOneDayBefore(), 0, EtatCivil.MARIE);
+				addSituation(pp, dateVeuvage, dateDeces, 0, EtatCivil.VEUF);
+
+				return pp.getNumero();
+			}
+		});
+
+		// annulation de décès comme fait dans le contrôleur
+		final AnnulationDecesRecapView annulationDecesView = manager.get(ppId);
+		manager.save(annulationDecesView);
+
+		// vérification du résultat
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertNotNull(pp);
+				Assert.assertNull(pp.getDateDeces());
+
+				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+				Assert.assertNotNull(ffp);
+				Assert.assertEquals(dateVeuvage, ffp.getDateDebut());
+				Assert.assertEquals(MotifFor.VEUVAGE_DECES, ffp.getMotifOuverture());
+				Assert.assertNull(ffp.getDateFin());
+				Assert.assertNull(ffp.getMotifFermeture());
+				Assert.assertEquals(ModeImposition.SOURCE, ffp.getModeImposition());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
+			}
+		});
+
+		// et si maintenant on refait la même chose, ce sera une annulation de veuvage
+		final AnnulationDecesRecapView annulationVeuvageView = manager.get(ppId);
+		manager.save(annulationVeuvageView);
+
+		// vérification du résultat
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertNotNull(pp);
+				Assert.assertNull(pp.getDateDeces());
+
+				{
+					final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+					Assert.assertNotNull(ffp);
+					Assert.assertEquals(dateDebut, ffp.getDateDebut());
+					Assert.assertEquals(MotifFor.INDETERMINE, ffp.getMotifOuverture());
+					Assert.assertEquals(dateMariage.getOneDayBefore(), ffp.getDateFin());
+					Assert.assertEquals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, ffp.getMotifFermeture());
+					Assert.assertEquals(ModeImposition.SOURCE, ffp.getModeImposition());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+					Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
+				}
+
+				final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(pp, dateMariage);
+				Assert.assertNotNull(couple);
+
+				final MenageCommun mc = couple.getMenage();
+				Assert.assertNotNull(mc);
+				{
+					final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
+					Assert.assertNotNull(ffp);
+					Assert.assertEquals(dateMariage, ffp.getDateDebut());
+					Assert.assertEquals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, ffp.getMotifOuverture());
+					Assert.assertNull(ffp.getDateFin());
+					Assert.assertNull(ffp.getMotifFermeture());
+					Assert.assertEquals(ModeImposition.SOURCE, ffp.getModeImposition());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+					Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
+				}
+			}
+		});
 	}
 }
