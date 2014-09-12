@@ -23,14 +23,19 @@ import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.security.DroitAccesDAO;
 import ch.vd.uniregctb.tiers.DroitAcces;
+import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.SituationFamille;
+import ch.vd.uniregctb.tiers.SituationFamilleDAO;
+import ch.vd.uniregctb.tiers.SituationFamilleMenageCommun;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.EtatCivil;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Niveau;
 import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.TarifImpotSource;
 import ch.vd.uniregctb.type.TypeDroitAcces;
 import ch.vd.uniregctb.validation.EntityValidator;
 import ch.vd.uniregctb.validation.ValidationService;
@@ -39,6 +44,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.fail;
 
 @ContextConfiguration(locations = {
@@ -48,6 +54,7 @@ public class CoupleManagerImplTest extends BusinessTest {
 
 	private CoupleManager mngr;
 	private DroitAccesDAO droitAccesDAO;
+	private SituationFamilleDAO situationFamilleDAO;
 	private ValidationService validationService;
 
 	@Override
@@ -55,6 +62,7 @@ public class CoupleManagerImplTest extends BusinessTest {
 		super.onSetUp();
 		tiersService = getBean(TiersService.class, "tiersService");
 		droitAccesDAO = getBean(DroitAccesDAO.class, "droitAccesDAO");
+		situationFamilleDAO = getBean(SituationFamilleDAO.class, "situationFamilleDAO");
 		mngr = getBean(CoupleManager.class, "coupleManager");
 		validationService = getBean(ValidationService.class, "validationService");
 	}
@@ -70,9 +78,9 @@ public class CoupleManagerImplTest extends BusinessTest {
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
-				MockIndividu arnold = addIndividu(noIndArnold, date(1970, 1, 1), "Arnold", "Simon", true);
+				final MockIndividu arnold = addIndividu(noIndArnold, date(1970, 1, 1), "Arnold", "Simon", true);
 				addNationalite(arnold, MockPays.Suisse, date(1970, 1, 1), null);
-				MockIndividu janine = addIndividu(noIndJanine, date(1970, 1, 1), "Janine", "Simon", false);
+				final MockIndividu janine = addIndividu(noIndJanine, date(1970, 1, 1), "Janine", "Simon", false);
 				addNationalite(janine, MockPays.Suisse, date(1970, 1, 1), null);
 			}
 		});
@@ -82,19 +90,27 @@ public class CoupleManagerImplTest extends BusinessTest {
 			long janine;
 			long menage;
 		}
-		final Ids ids = new Ids();
 
-		doInNewTransactionAndSession(new TxCallback<Object>() {
+		final Ids ids = doInNewTransactionAndSession(new TxCallback<Ids>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				PersonnePhysique arnold = addHabitant(noIndArnold);
+			public Ids execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique arnold = addHabitant(noIndArnold);
+				final PersonnePhysique janine = addHabitant(noIndJanine);
+				final PersonnePhysique futurMenage = addNonHabitant("Arnold", "Simon", date(1970, 1, 1), Sexe.MASCULIN);
+				addForPrincipal(futurMenage, RegDate.get(), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
+
+				// autre ménage qui possède une situation de famille (même annulée) dont le contribuable principal est notre futur ménage
+				final PersonnePhysique inconnu = addNonHabitant("Illustre", "Uncaunu", null, null);
+				final EnsembleTiersCouple coupleInconnu = addEnsembleTiersCouple(inconnu, null, date(2000, 1, 1), null);
+				final SituationFamilleMenageCommun situation = addSituation(coupleInconnu.getMenage(), date(2000, 1, 1), null, 0, TarifImpotSource.NORMAL, EtatCivil.MARIE);
+				situation.setAnnule(true);
+				situation.setContribuablePrincipalId(futurMenage.getNumero());
+
+				final Ids ids = new Ids();
 				ids.arnold = arnold.getNumero();
-				PersonnePhysique janine = addHabitant(noIndJanine);
 				ids.janine = janine.getNumero();
-				PersonnePhysique menage = addNonHabitant("Arnold", "Simon", date(1970, 1, 1), Sexe.MASCULIN);
-				addForPrincipal(menage, RegDate.get(), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
-				ids.menage = menage.getNumero();
-				return null;
+				ids.menage = futurMenage.getNumero();
+				return ids;
 			}
 		});
 
@@ -125,6 +141,18 @@ public class CoupleManagerImplTest extends BusinessTest {
 				assertNotNull(janine);
 				assertEquals(PersonnePhysique.class, janine.getClass());
 				assertEquals(1, janine.getRapportsSujet().size()); // fait partie du ménage commun
+
+				// il ne devrait plus y avoir qu'une seule situation de famille (= neuve) car l'ancienne a été détruite
+				final List<SituationFamille> all = situationFamilleDAO.getAll();
+				assertNotNull(all);
+				assertEquals(1, all.size());
+
+				final SituationFamille sf = all.get(0);
+				assertNotNull(sf);
+				assertInstanceOf(SituationFamilleMenageCommun.class, sf);
+				assertSame(mc, sf.getContribuable());
+				assertFalse(sf.isAnnule());
+
 				return null;
 			}
 		});

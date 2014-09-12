@@ -64,6 +64,7 @@ import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
+import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.common.EntityKey;
@@ -547,10 +548,11 @@ public class TiersServiceImpl implements TiersService {
     @Override
     public void changeNHenMenage(final long numeroTiers) {
 
-        final DiscriminatorColumn typeAnnotation = AnnotationUtils.findAnnotation(MenageCommun.class, DiscriminatorColumn.class);
-        final DiscriminatorValue discrimatorAnnotation = AnnotationUtils.findAnnotation(MenageCommun.class, DiscriminatorValue.class);
+        final DiscriminatorColumn typeAnnotation = AnnotationUtils.findAnnotation(Tiers.class, DiscriminatorColumn.class);
+        final DiscriminatorValue discrimatorAnnotationMenage = AnnotationUtils.findAnnotation(MenageCommun.class, DiscriminatorValue.class);
+	    final DiscriminatorValue discrimatorAnnotationPersonnePhysique = AnnotationUtils.findAnnotation(PersonnePhysique.class, DiscriminatorValue.class);
 
-        if (typeAnnotation == null || discrimatorAnnotation == null) {
+        if (typeAnnotation == null || discrimatorAnnotationMenage == null || discrimatorAnnotationPersonnePhysique == null) {
             throw new RuntimeException("Impossible de changer le type du tiers n° " + numeroTiers + " à ménageCommun");
         }
 
@@ -558,6 +560,7 @@ public class TiersServiceImpl implements TiersService {
 
         // effacement des liens d'identification (qui ne concernent qu'une personne physique, pas un ménage commun)
         // [UNIREG-2893] effacement des droits d'accès (qui ne concernent que les personnes physiques)
+	    // [SIFISC-13187] effacement des situations de famille dont la future ex-personne physique est le contribuable principal
         hibernateTemplate.execute(new HibernateCallback<Object>() {
             @Override
             public Object doInHibernate(Session session) throws HibernateException, SQLException {
@@ -573,32 +576,45 @@ public class TiersServiceImpl implements TiersService {
                     query.setLong("tiersId", numeroTiers);
                     query.executeUpdate();
                 }
+                {
+                    final String deleteQuery = "DELETE FROM SITUATION_FAMILLE WHERE TIERS_PRINCIPAL_ID=:tiersId";
+                    final SQLQuery query = session.createSQLQuery(deleteQuery);
+                    query.setLong("tiersId", numeroTiers);
+                    query.executeUpdate();
+                }
                 return null;
             }
         });
 
         // changement du type de tiers
         hibernateTemplate.execute(new HibernateCallback<Object>() {
-
             @Override
             public Object doInHibernate(Session session) throws HibernateException, SQLException {
 
-                final String updateQuery = "update TIERS set "
-                        + typeAnnotation.name() + "=?, "
-                        + "PP_HABITANT=null, "
-                        + "ANCIEN_NUMERO_SOURCIER=null, "
-                        + "NH_NUMERO_ASSURE_SOCIAL=null, "
-                        + "NH_NOM=null, NH_PRENOM=null, "
-                        + "NH_DATE_NAISSANCE=null, NH_SEXE=null, "
-                        + "NH_NO_OFS_NATIONALITE=null, "
-                        + "NH_CAT_ETRANGER=null, "
-                        + "NH_DATE_DEBUT_VALID_AUTORIS=null, "
-                        + "DATE_DECES=null, COMPLEMENT_NOM=null "
-                        + "where NUMERO=?";
+	            final SQLQuery query = session.createSQLQuery("UPDATE TIERS SET " + typeAnnotation.name() + "=:newType, LOG_MDATE=CURRENT_DATE, LOG_MUSER=:muser, " +
+			                                   "PP_HABITANT=NULL, " +
+			                                   "NUMERO_INDIVIDU=NULL, " +
+			                                   "ANCIEN_NUMERO_SOURCIER = null," +
+			                                   "NH_NUMERO_ASSURE_SOCIAL = null," +
+			                                   "NH_NOM_NAISSANCE = null," +
+			                                   "NH_NOM = null," +
+			                                   "NH_PRENOM = null," +
+			                                   "NH_DATE_NAISSANCE = null," +
+			                                   "NH_SEXE = null," +
+			                                   "NH_NO_OFS_NATIONALITE = null," +
+			                                   "NH_LIBELLE_COMMUNE_ORIGINE = null," +
+			                                   "NH_LIBELLE_ORIGINE = null," +
+			                                   "NH_CANTON_ORIGINE = null," +
+			                                   "NH_CAT_ETRANGER = null," +
+			                                   "NH_DATE_DEBUT_VALID_AUTORIS = null," +
+			                                   "DATE_DECES = null," +
+			                                   "MAJORITE_TRAITEE = null " +
+			                                   "WHERE NUMERO=:id AND TIERS_TYPE=:oldType");
 
-                final SQLQuery query = session.createSQLQuery(updateQuery);
-                query.setString(0, discrimatorAnnotation.value());
-                query.setLong(1, numeroTiers);
+	            query.setParameter("newType", discrimatorAnnotationMenage.value());
+	            query.setParameter("muser", AuthenticationHelper.getCurrentPrincipal());
+	            query.setParameter("id", numeroTiers);
+	            query.setParameter("oldType", discrimatorAnnotationPersonnePhysique.value());
                 query.executeUpdate();
                 return null;
             }
@@ -622,11 +638,12 @@ public class TiersServiceImpl implements TiersService {
                 @Override
                 public Object doInHibernate(Session session) throws HibernateException, SQLException {
 
-                    final String updateSFQuery = String.format("update SITUATION_FAMILLE set %1$s=? where ID=?", columnTypeSituationFamille.name());
+                    final String updateSFQuery = String.format("update SITUATION_FAMILLE set LOG_MDATE=CURRENT_DATE, LOG_MUSER=:user, %1$s=:newClass where ID=:id", columnTypeSituationFamille.name());
 
                     final SQLQuery query = session.createSQLQuery(updateSFQuery);
-                    query.setString(0, valueTypeSituationFamille.value());
-                    query.setLong(1, idSF);
+	                query.setParameter("user", AuthenticationHelper.getCurrentPrincipal());
+	                query.setParameter("newClass", valueTypeSituationFamille.value());
+	                query.setParameter("id", idSF);
                     query.executeUpdate();
                     return null;
                 }
