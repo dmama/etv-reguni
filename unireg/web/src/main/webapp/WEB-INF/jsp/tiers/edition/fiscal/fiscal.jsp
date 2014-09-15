@@ -10,12 +10,16 @@
 		</c:when>
 		<c:when test="${command.natureTiers != 'DebiteurPrestationImposable'}">
 			<unireg:setAuth var="autorisations" tiersId="${command.tiersGeneral.numero}"/>
+            <c:if test="${autorisations.decisionsAci}">
+                <jsp:include page="decision-aci.jsp"/>
+            </c:if>
 			<c:if test="${autorisations.forsPrincipaux ||
 						  autorisations.forsSecondaires ||
 						  autorisations.forsAutresImpots ||
 						  autorisations.forsAutresElementsImposables}">
 				<jsp:include page="for.jsp"/>
 			</c:if>
+
 			<c:if test="${autorisations.situationsFamille}">
 				<jsp:include page="situation-famille.jsp"/>
 			</c:if>

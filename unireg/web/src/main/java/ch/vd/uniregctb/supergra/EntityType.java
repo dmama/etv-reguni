@@ -19,7 +19,8 @@ public enum EntityType {
 	ModeleDocument(ch.vd.uniregctb.declaration.ModeleDocument.class, "modèle de document", "le modèle de document", "du modèle de document"),
 	PeriodeFiscale(ch.vd.uniregctb.declaration.PeriodeFiscale.class, "période fiscale", "la période fiscale", "de la période fiscale"),
 	Immeuble(ch.vd.uniregctb.rf.Immeuble.class, "immeuble", "l'immeuble", "de l'immeuble"),
-	Remarque(ch.vd.uniregctb.tiers.Remarque.class, "remarque", "la remarque", "de la remarque");
+	Remarque(ch.vd.uniregctb.tiers.Remarque.class, "remarque", "la remarque", "de la remarque"),
+	DecisionAci(ch.vd.uniregctb.tiers.DecisionAci.class,"decision ACI", "La décision ACI","d'une décision ACI");
 
 	private final Class<?> hibernateClass;
 	private final String displayName;   // "chat"

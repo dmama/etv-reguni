@@ -18,6 +18,7 @@ public class Autorisations {
 	private final boolean forsAutresImpots;
 	private final boolean declarationImpots;
 	private final boolean identificationEntreprise;
+	private final boolean decisionsAci;
 
 	/**
 	 * Si <b>vrai</b>, l'édition des adresses est autorisée selon les détails des booléens qui suivent. Si <b>faux</b>, l'édition des adresses est interdite.
@@ -56,6 +57,7 @@ public class Autorisations {
 		this.forsAutresImpots = false;
 		this.declarationImpots = false;
 		this.identificationEntreprise = false;
+		this.decisionsAci = false;
 
 		this.adresses = false;
 		this.adressesDomicile = false;
@@ -86,6 +88,7 @@ public class Autorisations {
 		this.forsAutresImpots = isAllowed(map, AutorisationManagerImpl.FISCAL_FOR_AUTRE);
 		this.declarationImpots = isAllowed(map, AutorisationManagerImpl.MODIF_DI);
 		this.identificationEntreprise = isAllowed(map, AutorisationManagerImpl.MODIF_IDE);
+		this.decisionsAci = isAllowed(map,AutorisationManagerImpl.FISCAL_DECISION_ACI);
 
 		this.adresses = isAllowed(map, AutorisationManagerImpl.MODIF_ADRESSE);
 		this.adressesDomicile = isAllowed(map, AutorisationManagerImpl.ADR_D);
@@ -117,7 +120,7 @@ public class Autorisations {
 	 * @return vrai si au moins une donnée est éditable; faux si ce n'est pas le cas
 	 */
 	public boolean isEditable() {
-		return (donneesFiscales && (forsPrincipaux || forsSecondaires || forsAutresElementsImposables || forsAutresImpots || declarationImpots || identificationEntreprise))
+		return (donneesFiscales && (forsPrincipaux || forsSecondaires || forsAutresElementsImposables || decisionsAci || forsAutresImpots || declarationImpots || identificationEntreprise))
 				|| (adresses && (adressesDomicile || adressesCourrier || adressesRepresentation || adressesPoursuite))
 				|| (complements && (complementsCommunications || complementsCoordonneesFinancieres))
 				|| (rapports && (rapportsDePrestations || rapportsDeTravail || autresRapports))
@@ -216,12 +219,17 @@ public class Autorisations {
 		return identificationEntreprise;
 	}
 
+	public boolean isDecisionsAci() {
+		return decisionsAci;
+	}
+
 	@Override
 	public String toString() {
 		return "Autorisations{" +
 				"donneesFiscales=" + donneesFiscales +
 				", identificationEntreprise=" + identificationEntreprise +
 				", forsPrincipaux=" + forsPrincipaux +
+				", decisionsAci=" + decisionsAci +
 				", forsSecondaires=" + forsSecondaires +
 				", forsAutresElementsImposables=" + forsAutresElementsImposables +
 				", forsAutresImpots=" + forsAutresImpots +

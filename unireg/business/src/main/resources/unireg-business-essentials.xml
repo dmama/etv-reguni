@@ -255,6 +255,10 @@
 	<bean id="declarationImpotOrdinaireValidator" class="ch.vd.uniregctb.validation.declaration.DeclarationImpotOrdinaireValidator" parent="declarationValidator" />
 	<bean id="declarationImpotSourceValidator" class="ch.vd.uniregctb.validation.declaration.DeclarationImpotSourceValidator" parent="declarationValidator" />
 
+	<bean id="decisionValidator" class="ch.vd.uniregctb.validation.decision.DecisionValidator" parent="entityValidator">
+		<property name="serviceInfra" ref="serviceInfrastructureService" />
+	</bean>
+
 	<bean id="rapportEntreTiersValidator" class="ch.vd.uniregctb.validation.rapport.RapportEntreTiersValidator" abstract="true" parent="entityValidator">
 		<property name="tiersDAO" ref="tiersDAO" />
 	</bean>

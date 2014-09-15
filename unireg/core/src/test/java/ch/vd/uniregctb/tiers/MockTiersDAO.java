@@ -260,6 +260,11 @@ public class MockTiersDAO implements TiersDAO {
 	}
 
 	@Override
+	public DecisionAci addAndSave(Contribuable tiers, DecisionAci decisionAci) {
+		throw new NotImplementedException();
+	}
+
+	@Override
 	public Declaration addAndSave(Tiers tiers, Declaration declaration) {
 		throw new NotImplementedException();
 	}

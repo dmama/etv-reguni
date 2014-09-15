@@ -37,6 +37,7 @@ public abstract class Contribuable extends Tiers {
 	private Set<IdentificationEntreprise> identificationsEntreprise;
 
 	private RegDate dateLimiteExclusionEnvoiDeclarationImpot;
+	private Set<DecisionAci> decisionsAci;
 
 	public Contribuable() {
 	}
@@ -340,6 +341,19 @@ public abstract class Contribuable extends Tiers {
 		}
 	}
 
+
+
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JoinColumn(name = "TIERS_ID", nullable = false)
+	@ForeignKey(name = "FK_DECISION_ACI_TRS_ID")
+	public Set<DecisionAci> getDecisionsAci() {
+		return decisionsAci;
+	}
+
+	public void setDecisionsAci(Set<DecisionAci> decisionsAci) {
+		this.decisionsAci = decisionsAci;
+	}
+
 	/**
 	 * Version simple du setter pour la méthode getBatch() du TiersDAO.
 	 * @param set un ensemble
@@ -354,5 +368,30 @@ public abstract class Contribuable extends Tiers {
 		}
 		ident.setCtb(this);
 		this.identificationsEntreprise.add(ident);
+	}
+
+
+	public void addDecisionAci(DecisionAci d){
+		if (this.decisionsAci == null) {
+			this.decisionsAci = new HashSet<>();
+		}
+		d.setTiers(this);
+		this.decisionsAci.add(d);
+	}
+
+	@Transient
+	public DecisionAci getDecisionAciValideAt(@Nullable RegDate date) {
+
+		if (decisionsAci == null) {
+			return null;
+		}
+
+		for (DecisionAci d : decisionsAci) {
+			if (d.isValidAt(date)) {
+				return d;
+			}
+		}
+
+		return null;
 	}
 }

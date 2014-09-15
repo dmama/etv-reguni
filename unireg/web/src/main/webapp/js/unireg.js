@@ -1142,8 +1142,8 @@ var Histo = {
 
 		//Affichage et masquage des liens
 
-		var showall = $('#linkAll');
-		var showReduce = $('#linkReduce');
+		var showall = $('#linkAll-'+tableId);
+		var showReduce = $('#linkReduce-'+tableId);
 
 		if (isAll){
 			showall.hide();

@@ -47,6 +47,7 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 	private static final Logger LOGGER = LoggerFactory.getLogger(TiersDAOImpl.class);
 	private static final int MAX_IN_SIZE = 500;
 	private static final ImmeubleAccessor IMMEUBLE_ACCESSOR = new ImmeubleAccessor();
+	private static final DecisionAciAccessor DECISION_ACI_ACCESSOR = new DecisionAciAccessor();
 
 	private Dialect dialect;
 
@@ -1136,6 +1137,11 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		return addAndSave(ctb, immeuble, IMMEUBLE_ACCESSOR);
 	}
 
+	@Override
+	public DecisionAci addAndSave(Contribuable tiers, DecisionAci decisionAci) {
+		return addAndSave(tiers,decisionAci,DECISION_ACI_ACCESSOR);
+	}
+
 	private static final EntityAccessor<Tiers, Declaration> DECLARATION_ACCESSOR = new EntityAccessor<Tiers, Declaration>() {
 		@Override
 		public Collection<Declaration> getEntities(Tiers tiers) {
@@ -1451,6 +1457,28 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		@Override
 		public void assertSame(Immeuble entity1, Immeuble entity2) {
 			Assert.isEqual(entity1.getNumero(), entity2.getNumero());
+		}
+	}
+
+
+	private static class DecisionAciAccessor implements EntityAccessor<Contribuable, DecisionAci> {
+		@Override
+		public Collection<DecisionAci> getEntities(Contribuable ctb) {
+			return ctb.getDecisionsAci();
+		}
+
+		@Override
+		public void addEntity(Contribuable ctb, DecisionAci decisionAci) {
+			ctb.addDecisionAci(decisionAci);
+		}
+
+		@Override
+		public void assertSame(DecisionAci entity1, DecisionAci entity2) {
+			Assert.isSame(entity1.getNumeroOfsAutoriteFiscale(), entity2.getNumeroOfsAutoriteFiscale());
+			Assert.isSame(entity1.getTypeAutoriteFiscale(), entity2.getTypeAutoriteFiscale());
+			Assert.isSame(entity1.getTiers().getNumero(), entity2.getTiers().getNumero());
+			Assert.isSame(entity1.getDateDebut(), entity2.getDateDebut());
+			Assert.isSame(entity1.getDateFin(), entity2.getDateFin());
 		}
 	}
 }

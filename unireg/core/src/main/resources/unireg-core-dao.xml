@@ -80,6 +80,7 @@
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="dialect" ref="hibernateDialect" />
 	</bean>
+	<bean id="decisionAciDAO" class="ch.vd.uniregctb.tiers.dao.DecisionAciDAOImpl" parent="hibernateDao"/>
 
 	<!-- Gestionnaire de transaction base sur les annotations @Transactional -->
 	<tx:annotation-driven transaction-manager="transactionManager" />

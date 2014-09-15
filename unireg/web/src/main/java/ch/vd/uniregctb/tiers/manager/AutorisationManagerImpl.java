@@ -64,6 +64,7 @@ public class AutorisationManagerImpl implements AutorisationManager {
 	static final String COMPLEMENT_COOR_FIN = "CPLT_COOR_FIN";
 	static final String DOSSIER_TRAVAIL = "DOS_TRA";
 	static final String DOSSIER_NO_TRAVAIL = "DOS_NO_TRA";
+	static final String FISCAL_DECISION_ACI = "DEC_ACI";
 	
 	private TiersService tiersService;
 	private ServiceCivilService serviceCivil;
@@ -370,6 +371,8 @@ public class AutorisationManagerImpl implements AutorisationManager {
 			map.put(DOSSIER_TRAVAIL, Boolean.FALSE);
 			map.put(DOSSIER_NO_TRAVAIL, Boolean.FALSE);
 			map.put(MODIF_DI, Boolean.FALSE);
+			map.put(FISCAL_DECISION_ACI, Boolean.FALSE);
+
 			return map;
 		}
 
@@ -444,6 +447,9 @@ public class AutorisationManagerImpl implements AutorisationManager {
 				if (SecurityHelper.isAnyGranted(securityProvider, visa, oid,  Role.DI_EMIS_PP, Role.DI_DELAI_PM, Role.DI_DUPLIC_PP, Role.DI_QUIT_PP, Role.DI_SOM_PP)) {
 					map.put(MODIF_DI, Boolean.TRUE);
 					map.put(MODIF_FISCAL, Boolean.TRUE);
+				}
+				if (SecurityHelper.isGranted(securityProvider,Role.GEST_DECISION_ACI,visa,oid)) {
+					map.put(FISCAL_DECISION_ACI, Boolean.TRUE);
 				}
 			}
 		}

@@ -68,6 +68,8 @@ import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.ContactImpotSource;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
+import ch.vd.uniregctb.tiers.DecisionAci;
+import ch.vd.uniregctb.tiers.DecisionAciView;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.ForFiscal;
@@ -207,6 +209,16 @@ public class TiersManager implements MessageSourceAware {
 
 		return debiteursView;
 
+	}
+	protected void setDecisionAciView(TiersView tiersView,Contribuable contribuable){
+		final List<DecisionAciView> decisionsView = new ArrayList<>();
+		final Set<DecisionAci> decisions = contribuable.getDecisionsAci();
+		for (DecisionAci decision : decisions) {
+			final DecisionAciView dView = new DecisionAciView(decision);
+			decisionsView.add(dView);
+		}
+		Collections.sort(decisionsView);
+		tiersView.setDecisionsAci(decisionsView);
 	}
 
 	/**

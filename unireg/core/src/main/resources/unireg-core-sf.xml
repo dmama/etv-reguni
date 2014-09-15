@@ -154,6 +154,7 @@
 		<value>ch.vd.uniregctb.reqdes.RolePartiePrenante</value>
 		<value>ch.vd.uniregctb.reqdes.TransactionImmobiliere</value>
 		<value>ch.vd.uniregctb.reqdes.UniteTraitement</value>
+		<value>ch.vd.uniregctb.tiers.DecisionAci</value>
 	</util:list>
 
 	<!-- La session factory -->

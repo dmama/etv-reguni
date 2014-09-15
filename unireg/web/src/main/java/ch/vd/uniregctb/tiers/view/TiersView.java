@@ -14,6 +14,7 @@ import ch.vd.uniregctb.mouvement.view.MouvementDetailView;
 import ch.vd.uniregctb.rapport.view.RapportView;
 import ch.vd.uniregctb.rt.view.RapportPrestationView;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.DecisionAciView;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.NatureTiers;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -93,6 +94,8 @@ public class TiersView {
 	private boolean addContactISAllowed;
 
 	private LogicielView logiciel;
+
+	private List<DecisionAciView> decisionsAci;
 
 	public ComplementView getComplement() {
 		return complement;
@@ -432,5 +435,13 @@ public class TiersView {
 
 	public void setLogiciel(LogicielView logiciel) {
 		this.logiciel = logiciel;
+	}
+
+	public List<DecisionAciView> getDecisionsAci() {
+		return decisionsAci;
+	}
+
+	public void setDecisionsAci(List<DecisionAciView> decisionsAci) {
+		this.decisionsAci = decisionsAci;
 	}
 }

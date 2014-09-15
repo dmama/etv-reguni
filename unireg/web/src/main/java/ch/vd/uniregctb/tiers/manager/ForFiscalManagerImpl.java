@@ -49,6 +49,7 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 					LOGGER.warn(String.format("Exception lors de la récupération des situations de familles du contribuable %d", numero), e);
 					tiersEditView.setSituationsFamilleEnErreurMessage(e.getMessage());
 				}
+				setDecisionAciView(tiersEditView,contribuable);
 			}
 			if (tiers instanceof DebiteurPrestationImposable) {
 				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiers;

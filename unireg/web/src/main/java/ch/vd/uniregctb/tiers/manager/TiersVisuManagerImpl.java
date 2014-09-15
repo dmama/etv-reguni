@@ -39,6 +39,8 @@ import ch.vd.uniregctb.tiers.AutreCommunaute;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
+import ch.vd.uniregctb.tiers.DecisionAci;
+import ch.vd.uniregctb.tiers.DecisionAciView;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.NatureTiers;
@@ -48,6 +50,7 @@ import ch.vd.uniregctb.tiers.RapportPrestationImposable;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.view.AdresseView;
 import ch.vd.uniregctb.tiers.view.RapportsPrestationView;
+import ch.vd.uniregctb.tiers.view.TiersView;
 import ch.vd.uniregctb.tiers.view.TiersVisuView;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
@@ -135,6 +138,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 				tiersVisuView.setDis(DeclarationListView.initDeclarations(contribuable.getDeclarations(), messageSource));
 				tiersVisuView.setMouvements(getMouvements(contribuable));
 				setForsFiscaux(tiersVisuView, contribuable);
+				setDecisionAciView(tiersVisuView,contribuable);
 
 				try {
 					setSituationsFamille(tiersVisuView, contribuable);
@@ -186,6 +190,17 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 		}
 
 		return tiersVisuView;
+	}
+
+	protected void setDecisionAciView(TiersView tiersView,Contribuable contribuable){
+		final List<DecisionAciView> decisionsView = new ArrayList<>();
+		final Set<DecisionAci> decisions = contribuable.getDecisionsAci();
+		for (DecisionAci decision : decisions) {
+			final DecisionAciView dView = new DecisionAciView(decision);
+			decisionsView.add(dView);
+		}
+		Collections.sort(decisionsView);
+		tiersView.setDecisionsAci(decisionsView);
 	}
 
 	/**

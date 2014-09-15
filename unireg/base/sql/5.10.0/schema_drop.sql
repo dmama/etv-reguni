@@ -76,6 +76,8 @@ drop table EVENEMENT_REQDES cascade constraints;
 
 drop table TIERS cascade constraints;
 
+drop table DECISION_ACI cascade constraints;
+
 drop sequence S_PM;
 
 drop sequence S_DPI;

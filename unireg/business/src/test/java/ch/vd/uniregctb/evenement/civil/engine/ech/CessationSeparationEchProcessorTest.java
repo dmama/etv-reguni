@@ -2,6 +2,7 @@ package ch.vd.uniregctb.evenement.civil.engine.ech;
 
 import java.util.Set;
 
+import junit.framework.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -12,8 +13,10 @@ import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchErreur;
+import ch.vd.uniregctb.tiers.DecisionAci;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -22,6 +25,7 @@ import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 import ch.vd.uniregctb.type.EtatCivil;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 
 import static org.junit.Assert.assertEquals;
@@ -304,6 +308,139 @@ public class CessationSeparationEchProcessorTest extends AnnulationOuCessationSe
 				EtatCivil.DIVORCE,
 				ActionEvenementCivilEch.PREMIERE_LIVRAISON,
 				TypeEvenementCivilEch.CESSATION_SEPARATION);
+	}
+
+	@Test
+	public void testCessationSeparationAvecDecisionAci() throws Exception {
+
+		final long noMadame = 46215611L;
+		final long noMonsieur = 78215611L;
+		final RegDate dateMariage = RegDate.get().addYears(-1);
+		final RegDate dateSeparation = dateMariage.addMonths(8);
+		final RegDate dateReconciliation = dateSeparation.addMonths(2);
+
+		serviceCivil.setUp(new DefaultMockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu monsieur = addIndividu(noMonsieur, date(1923, 2, 12), "Crispus", "Santacorpus", true);
+				MockIndividu madame = addIndividu(noMadame, date(1974, 8, 1), "Lisette", "Bouton", false);
+				marieIndividus(monsieur, madame, dateMariage);
+				separeIndividus(monsieur, madame, dateSeparation);
+				reconcilieIndividus(monsieur, madame, dateReconciliation);
+			}
+		});
+
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final RegDate veilleMariage = dateMariage.getOneDayBefore();
+				final RegDate veilleSeparation = dateSeparation.getOneDayBefore();
+
+				final PersonnePhysique monsieur = addHabitant(noMonsieur);
+				addForPrincipal(monsieur, date(1943, 2, 12), MotifFor.MAJORITE, veilleMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens);
+				final PersonnePhysique madame = addHabitant(noMadame);
+				addForPrincipal(madame, date(1992, 8, 1), MotifFor.MAJORITE, veilleMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Chamblon);
+
+				final EnsembleTiersCouple couple = addEnsembleTiersCouple(monsieur, madame, dateMariage, veilleSeparation);
+				final MenageCommun mc = couple.getMenage();
+				addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, veilleSeparation, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Echallens);
+
+				addDecisionAci(monsieur,dateMariage,null,MockCommune.Chamblon.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,null);
+				return null;
+			}
+		});
+
+		// événement civil (avec individu déjà renseigné pour ne pas devoir appeler RCPers...)
+		final long evtIdMonsieur = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(1235563456L);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(dateReconciliation);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noMonsieur);
+				evt.setType(TypeEvenementCivilEch.CESSATION_SEPARATION);
+
+				return hibernateTemplate.merge(evt).getId();
+			}
+		});
+
+		// traitement synchrone de l'événement
+		traiterEvenements(noMonsieur);
+
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = evtCivilDAO.get(evtIdMonsieur);
+				assertNotNull(evt);
+				assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
+
+				final PersonnePhysique monsieur = tiersService.getPersonnePhysiqueByNumeroIndividu(noMonsieur);
+				assertNotNull(monsieur);
+
+				final PersonnePhysique madame = tiersService.getPersonnePhysiqueByNumeroIndividu(noMadame);
+				assertNotNull(madame);
+
+				final DecisionAci decisionAci = monsieur.getDecisionAciValideAt(dateReconciliation);
+				Assert.assertNotNull(decisionAci);
+				Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
+				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
+				Assert.assertNotNull(erreurs);
+				Assert.assertEquals(1, erreurs.size());
+				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
+				String message = String.format("Le contribuable trouvé (%s) fait l'objet d'une décision ACI (%s)",
+						FormatNumeroHelper.numeroCTBToDisplay(monsieur.getNumero()),decisionAci);
+				Assert.assertEquals(message, erreur.getMessage());
+				return null;
+			}
+		});
+
+		// événement civil pour Madame (avec individu déjà renseigné pour ne pas devoir appeler RCPers...)
+		final long evtIdMadame = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(12355634532L);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(dateReconciliation);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noMadame);
+				evt.setType(TypeEvenementCivilEch.CESSATION_SEPARATION);
+
+				return hibernateTemplate.merge(evt).getId();
+			}
+		});
+
+		// traitement synchrone de l'événement
+		traiterEvenements(noMadame);
+
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = evtCivilDAO.get(evtIdMadame);
+				assertNotNull(evt);
+				assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
+
+				final PersonnePhysique monsieur = tiersService.getPersonnePhysiqueByNumeroIndividu(noMonsieur);
+				assertNotNull(monsieur);
+
+				final PersonnePhysique madame = tiersService.getPersonnePhysiqueByNumeroIndividu(noMadame);
+				assertNotNull(madame);
+
+				final DecisionAci decisionAci = monsieur.getDecisionAciValideAt(dateReconciliation);
+				Assert.assertNotNull(decisionAci);
+				Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
+				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
+				Assert.assertNotNull(erreurs);
+				Assert.assertEquals(1, erreurs.size());
+				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
+				String message = String.format("Le contribuable trouvé (%s) a un ancien conjoint (%s) qui fait l'objet d'une décision ACI (%s)",
+						FormatNumeroHelper.numeroCTBToDisplay(madame.getNumero()),FormatNumeroHelper.numeroCTBToDisplay(monsieur.getNumero()),decisionAci);
+				Assert.assertEquals(message, erreur.getMessage());
+				return null;
+			}
+		});
 	}
 
 }

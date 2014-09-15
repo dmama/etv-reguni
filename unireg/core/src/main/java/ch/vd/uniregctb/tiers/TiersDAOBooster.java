@@ -292,6 +292,11 @@ public class TiersDAOBooster implements TiersDAO, InitializingBean {
 	}
 
 	@Override
+	public DecisionAci addAndSave(Contribuable tiers, DecisionAci decisionAci) {
+		return target.addAndSave(tiers,decisionAci);
+	}
+
+	@Override
 	public Declaration addAndSave(Tiers tiers, Declaration declaration) {
 		return target.addAndSave(tiers, declaration);
 	}

@@ -162,6 +162,7 @@
 		<property name="immeubleDAO" ref="immeubleDAO" />
 		<property name="uniteTraitementDAO" ref="reqdesUniteTraitementDAO"/>
 		<property name="remarqueDAO" ref="remarqueDAO"/>
+		<property name="decisionAciDAO" ref="decisionAciDAO"/>
 	</bean>
 
 	<bean id="mouvementVisuController" class="ch.vd.uniregctb.tiers.MouvementVisuController">
@@ -221,6 +222,11 @@
 		<property name="autorisationManager" ref="autorisationManager"/>
 	</bean>
 
+	<bean id="decisionAciValidator" class="ch.vd.uniregctb.decision.aci.DecisionValidator">
+		<property name="infraService" ref="serviceInfrastructureService"/>
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
+	</bean>
+
 	<bean id="forsController" class="ch.vd.uniregctb.fors.ForsController">
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="tiersService" ref="tiersService" />
@@ -232,6 +238,20 @@
 		<property name="paramService" ref="parametreAppService"/>
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 		<property name="autorisationManager" ref="autorisationManager"/>
+	</bean>
+
+	<bean id="decisionAciController" class="ch.vd.uniregctb.decision.aci.DecisionAciController">
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="decisionAciDAO" ref="decisionAciDAO"/>
+		<property name="tiersService" ref="tiersService" />
+		<property name="controllerUtils" ref="controllerUtils"/>
+		<property name="tiersMapHelper" ref="tiersMapHelper"/>
+		<property name="messageSource" ref="messageSource" />
+		<property name="securityProvider" ref="securityProviderInterface" />
+		<property name="paramService" ref="parametreAppService"/>
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
+		<property name="autorisationManager" ref="autorisationManager"/>
+		<property name="decisionAciValidator" ref="decisionAciValidator"/>
 	</bean>
 
 	<bean id="searchTiersController" class="ch.vd.uniregctb.search.SearchTiersController">

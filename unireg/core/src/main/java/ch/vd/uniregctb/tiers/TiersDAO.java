@@ -288,6 +288,15 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 	 */
 	Immeuble addAndSave(Contribuable tiers, Immeuble immeuble);
 
+
+	/**
+	 * Ajoute une nouvelle decision Aci sur un tiers
+	 * @param tiers
+	 * @param decisionAci
+	 * @return la nouvelle décision avec un numéro
+	 */
+	DecisionAci addAndSave(Contribuable tiers,DecisionAci decisionAci);
+
 	/**
 	 * Ajoute une nouvelle déclaration à un tiers
 	 *

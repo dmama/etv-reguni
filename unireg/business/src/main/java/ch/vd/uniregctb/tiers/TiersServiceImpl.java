@@ -72,6 +72,7 @@ import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.HibernateEntity;
+import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.common.NationaliteHelper;
 import ch.vd.uniregctb.common.NumeroIDEHelper;
 import ch.vd.uniregctb.declaration.Declaration;
@@ -2643,6 +2644,18 @@ public class TiersServiceImpl implements TiersService {
         return forFiscalPrincipal;
     }
 
+	protected DecisionAci closeDecisionAci(DecisionAci decision, RegDate dateFin) {
+		Assert.notNull(decision);
+		if (decision.getDateDebut().isAfter(dateFin)) {
+			throw new ValidationException(decision, "La date de fermeture (" + RegDateHelper.dateToDisplayString(dateFin) + ") est avant la date de début (" +
+					RegDateHelper.dateToDisplayString(decision.getDateDebut())
+					+ ") de la décision");
+		}
+
+		decision.setDateFin(dateFin);
+		return decision;
+	}
+
     private void afterForFiscalPrincipalClosed(Contribuable contribuable, ForFiscalPrincipal forFiscalPrincipal, RegDate dateFermeture, MotifFor motifFermeture) {
 
         if (forFiscalPrincipal.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
@@ -2781,6 +2794,24 @@ public class TiersServiceImpl implements TiersService {
 		}
 
 		return forCorrige;
+	}
+
+	private DecisionAci corrigerDecisionAci(@NotNull DecisionAci decisionAci, String remarque, int noOfsAutoriteFiscale) {
+		if (decisionAci.getRemarque().equals(remarque) && decisionAci.getNumeroOfsAutoriteFiscale() == noOfsAutoriteFiscale) {
+			// rien à faire
+			return null;
+		}
+		final Contribuable ctb = (Contribuable) decisionAci.getTiers();
+		Assert.notNull(ctb);
+
+		// [SIFISC-12624] toutes les corrections doivent s'effectuer par une annulation de la décision suivi de la création d'une nouvelle décision avec la valeur corrigée.
+		DecisionAci decisionCorrigee = decisionAci.duplicate();
+		decisionAci.setAnnule(true);
+		decisionCorrigee.setRemarque(remarque);
+		decisionCorrigee.setNumeroOfsAutoriteFiscale(noOfsAutoriteFiscale);
+		decisionCorrigee = tiersDAO.addAndSave(ctb, decisionCorrigee);
+
+		return decisionCorrigee;
 	}
 
 	private ForFiscalAutreElementImposable corrigerForAutreElementImposable(@NotNull ForFiscalAutreElementImposable forFiscal, RegDate dateFermeture, MotifFor motifFermeture, int noOfsAutoriteFiscale) {
@@ -4757,6 +4788,59 @@ public class TiersServiceImpl implements TiersService {
 			return rapportsNonAnnule;
 		}
 		return allRapports;
+	}
+
+	@Override
+	public DecisionAci addDecisionAci(Contribuable ctb, TypeAutoriteFiscale typeAutoriteFiscale, int numeroAutoritéFiscale, RegDate dateDebut, RegDate dateFin, String Remarque) {
+		DecisionAci d = new DecisionAci(ctb,dateDebut,dateFin,numeroAutoritéFiscale,typeAutoriteFiscale,Remarque);
+		d = tiersDAO.addAndSave(ctb,d);
+		Assert.notNull(d);
+		return d;
+	}
+
+	@Override
+	public DecisionAci updateDecisionAci(DecisionAci decisionAci, RegDate dateFin, String remarque, Integer numeroAutoriteFiscale) {
+
+		DecisionAci updated = decisionAci;
+
+		if (decisionAci.getDateFin() == null && dateFin != null) {
+			updated = closeDecisionAci(decisionAci,dateFin);
+		}
+
+		if (decisionAci.getRemarque() == null && remarque != null) {
+			updated.setRemarque(remarque);
+		}
+
+		if (!updated.getRemarque().equals(remarque) || !updated.getNumeroOfsAutoriteFiscale().equals(numeroAutoriteFiscale)) {
+			// quelque chose d'autre a changé
+			updated = corrigerDecisionAci(updated, remarque, numeroAutoriteFiscale);
+		}
+
+		return updated == decisionAci ? null : updated;
+	}
+
+
+	private String buildLibelleOrigine(final Individu individu) {
+		if (individu.getOrigines() == null) {
+			return "";
+		}
+		final StringBuilder sb = new StringBuilder(LengthConstants.TIERS_LIB_ORIGINE);
+		for ( Iterator<Origine> it = individu.getOrigines().iterator(); it.hasNext(); ) {
+			final Origine origine = it.next();
+			sb.append(origine.getNomLieu());
+			if (it.hasNext()) {
+				sb.append(", ");
+			}
+		}
+		if (sb.length() > LengthConstants.TIERS_LIB_ORIGINE) {
+			// Si la chaîne de caratère est trop longue (très peu probable), on la tronque.
+			// Pas génant car cette donnée est simplement là à titre d'information dans l'IHM.
+			// Aucune décision métier ne doit être prise dessus.
+			return sb.substring(0, LengthConstants.TIERS_LIB_ORIGINE - 3) + "...";
+		}
+		else {
+			return sb.toString();
+		}
 	}
 
 	@Override

@@ -25,6 +25,7 @@ import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchErreur;
 import ch.vd.uniregctb.metier.MetierService;
+import ch.vd.uniregctb.tiers.DecisionAci;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -2599,4 +2600,249 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			}
 		});
 	}
+
+	@Test(timeout = 10000L)
+	public void testArriveeCelibataireAvecDecisionAci() throws Exception {
+
+		final long noIndividu = 1057790L;
+		final RegDate dateArrivee = date(2011, 10, 1);
+
+		class Ids {
+			Long virginie;
+		}
+		final Ids ids = new Ids();
+
+		// la personne civil
+		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+			@Override
+			protected void init() {
+				final RegDate dateNaissance = date(1987, 2, 4);
+				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Jolias", "Virginie", false);
+
+				final MockAdresse adresse = addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.BoulevardGrancy, null, dateArrivee, null);
+				adresse.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_CANTON, MockCommune.Zurich.getNoOFS(), null));
+
+				addNationalite(ind, MockPays.Suisse, dateNaissance, null);
+			}
+		});
+
+		// Cette personne est déjà enregistrée dans la base
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				addDecisionAci(pp, date(2008, 10, 1), null, MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null);
+				ids.virginie = pp.getNumero();
+				return null;
+			}
+		});
+
+		// événement d'arrivée
+		final long evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(14532L);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(dateArrivee);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noIndividu);
+				evt.setType(TypeEvenementCivilEch.ARRIVEE);
+				return hibernateTemplate.merge(evt).getId();
+			}
+		});
+
+		// traitement de l'événement
+		traiterEvenements(noIndividu);
+
+		// on s'assure que l'événement est détecté comme redondant
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				PersonnePhysique virginie = (PersonnePhysique)tiersDAO.get(ids.virginie);
+				assertNotNull(virginie);
+				final EvenementCivilEch evt = evtCivilDAO.get(evtId);
+				final DecisionAci decisionAci = virginie.getDecisionAciValideAt(dateArrivee);
+				assertNotNull(evt);
+				assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
+				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
+				assertNotNull(erreurs);
+				assertEquals(1, erreurs.size());
+				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
+				String message = String.format("Le contribuable trouvé (%s) fait l'objet d'une décision ACI (%s)",
+						FormatNumeroHelper.numeroCTBToDisplay(virginie.getNumero()),decisionAci);
+				assertEquals(message, erreur.getMessage());
+				return null;
+			}
+		});
+	}
+
+
+	@Test
+	public void testArriveeCoupleDecisionAciSurPrincipal() throws Exception {
+		final long noIndividuLui = 138946274L;
+		final long noIndividuElle = 138946275L;
+		final RegDate dateNaissance = RegDate.get().addYears(-50);
+		final RegDate dateArrivee = RegDate.get().addDays(-20);
+		class Ids {
+			Long monsieur;
+			Long madame;
+		}
+		final Ids ids = new Ids();
+
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu lui = addIndividu(noIndividuLui, dateNaissance, "Boyington", "Gregory", Sexe.MASCULIN);
+				addPermis(lui, TypePermis.SEJOUR, dateArrivee, null, false);
+				addNationalite(lui, MockPays.EtatsUnis, dateNaissance, null);
+				final MockAdresse adresse = addAdresse(lui, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDesBergieres, null, dateArrivee, null);
+				adresse.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_SUISSE, MockPays.EtatsUnis.getNoOFS(), null));
+
+				final MockIndividu elle = addIndividu(noIndividuElle, dateNaissance, "Boyington", "Pamela", Sexe.FEMININ);
+				addPermis(elle, TypePermis.SEJOUR, dateArrivee, null, false);
+				addNationalite(elle, MockPays.EtatsUnis, dateNaissance, null);
+
+				marieIndividus(lui, elle, dateArrivee.addYears(-20));
+			}
+		});
+
+		// Cette personne est déjà enregistrée dans la base
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique ppLui = addHabitant(noIndividuLui);
+				final PersonnePhysique ppElle = addHabitant(noIndividuElle);
+				addDecisionAci(ppLui, date(2008, 10, 1), null, MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null);
+				ids.monsieur = ppLui.getNumero();
+				return null;
+			}
+		});
+
+		// événement civil d'arrivée
+		final long evtArrivee = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(3273426L);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(dateArrivee);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noIndividuLui);
+				evt.setType(TypeEvenementCivilEch.ARRIVEE);
+				return hibernateTemplate.merge(evt).getId();
+			}
+		});
+
+		// traitement de l'événement civil
+		traiterEvenements(noIndividuLui);
+
+		// vérification des résultats
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = evtCivilDAO.get(evtArrivee);
+				final PersonnePhysique ppLui = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividuLui);
+				assertNotNull(ppLui);
+				final DecisionAci decisionAci = ppLui.getDecisionAciValideAt(dateArrivee);
+				assertNotNull(evt);
+				assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
+				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
+				assertNotNull(erreurs);
+				assertEquals(1, erreurs.size());
+				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
+				String message = String.format("Le contribuable trouvé (%s) fait l'objet d'une décision ACI (%s)",
+						FormatNumeroHelper.numeroCTBToDisplay(ppLui.getNumero()),decisionAci);
+				assertEquals(message, erreur.getMessage());
+				return null;
+			}
+		});
+	}
+
+	@Test
+	public void testArriveeCoupleDecisionAciSurConjoint() throws Exception {
+		final long noIndividuLui = 138946274L;
+		final long noIndividuElle = 138946275L;
+		final RegDate dateNaissance = RegDate.get().addYears(-50);
+		final RegDate dateArrivee = RegDate.get().addDays(-20);
+		class Ids {
+			Long monsieur;
+			Long madame;
+		}
+		final Ids ids = new Ids();
+
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu lui = addIndividu(noIndividuLui, dateNaissance, "Boyington", "Gregory", Sexe.MASCULIN);
+				addPermis(lui, TypePermis.SEJOUR, dateArrivee, null, false);
+				addNationalite(lui, MockPays.EtatsUnis, dateNaissance, null);
+				final MockAdresse adresse = addAdresse(lui, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDesBergieres, null, dateArrivee, null);
+				adresse.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_SUISSE, MockPays.EtatsUnis.getNoOFS(), null));
+
+				final MockIndividu elle = addIndividu(noIndividuElle, dateNaissance, "Boyington", "Pamela", Sexe.FEMININ);
+				addPermis(elle, TypePermis.SEJOUR, dateArrivee, null, false);
+				addNationalite(elle, MockPays.EtatsUnis, dateNaissance, null);
+
+				marieIndividus(lui, elle, dateArrivee.addYears(-20));
+			}
+		});
+
+		// Cette personne est déjà enregistrée dans la base
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique ppLui = addHabitant(noIndividuLui);
+				final PersonnePhysique ppElle = addHabitant(noIndividuElle);
+				addDecisionAci(ppElle, date(2008, 10, 1), null, MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null);
+				ids.monsieur = ppLui.getNumero();
+				ids.madame = ppElle.getNumero();
+				return null;
+			}
+		});
+
+		// événement civil d'arrivée
+		final long evtArrivee = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(3273426L);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(dateArrivee);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noIndividuLui);
+				evt.setType(TypeEvenementCivilEch.ARRIVEE);
+				return hibernateTemplate.merge(evt).getId();
+			}
+		});
+
+		// traitement de l'événement civil
+		traiterEvenements(noIndividuLui);
+
+		// vérification des résultats
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = evtCivilDAO.get(evtArrivee);
+				final PersonnePhysique ppLui = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividuLui);
+				final PersonnePhysique ppElle = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividuElle);
+				assertNotNull(ppLui);
+				assertNotNull(ppElle);
+				final DecisionAci decisionAci = ppElle.getDecisionAciValideAt(dateArrivee);
+				assertNotNull(evt);
+				assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
+				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
+				assertNotNull(erreurs);
+				assertEquals(1, erreurs.size());
+				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
+				String message = String.format("Le contribuable trouvé (%s) a un conjoint (%s) qui fait l'objet d'une décision ACI (%s)",
+						FormatNumeroHelper.numeroCTBToDisplay(ppLui.getNumero()),FormatNumeroHelper.numeroCTBToDisplay(ppElle.getNumero()),decisionAci);
+				assertEquals(message, erreur.getMessage());
+				return null;
+			}
+		});
+	}
+
 }

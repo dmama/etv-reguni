@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.validation.tiers;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import ch.vd.registre.base.date.DateRange;
@@ -7,6 +8,7 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.DecisionAci;
 import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.ForFiscalAutreElementImposable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
@@ -27,6 +29,7 @@ public abstract class ContribuableValidator<T extends Contribuable> extends Tier
 		final ValidationResults vr = super.validate(ctb);
 		if (!ctb.isAnnule()) {
 			vr.merge(validateSituationsFamille(ctb));
+			vr.merge(validateDecisions(ctb));
 		}
 		return vr;
 	}
@@ -112,6 +115,24 @@ public abstract class ContribuableValidator<T extends Contribuable> extends Tier
 				}
 				lastSituation = situation;
 			}
+		}
+
+		return results;
+	}
+
+
+	private ValidationResults validateDecisions(Contribuable ctb) {
+
+		final ValidationResults results = new ValidationResults();
+		if (ctb.getDecisionsAci() == null) {
+			return results;
+		}
+
+		final List<DecisionAci> decisionAcis = new ArrayList<>(ctb.getDecisionsAci());
+		// On valide toutes les décisions
+		final ValidationService validationService = getValidationService();
+		for (DecisionAci d : decisionAcis) {
+			results.merge(validationService.validate(d));
 		}
 
 		return results;

@@ -26,6 +26,7 @@ import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.metier.MetierServiceException;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.DecisionAci;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
@@ -105,6 +106,13 @@ public class Deces extends EvenementCivilInterne {
 		 */
 		PersonnePhysique defunt = getPrincipalPP();
 
+		//presence d'une décision ACI
+		final DecisionAci decisionAci = defunt.getDecisionAciValideAt(getDate());
+		if (decisionAci != null) {
+			erreurs.addErreur(String.format("Le contribuable trouvé (%s) fait l'objet d'une décision ACI (%s)",
+					FormatNumeroHelper.numeroCTBToDisplay(defunt.getNumero()),decisionAci));
+		}
+
 		/*
 		 * Deux cas de figure :
 		 * - il y a un conjoint survivant (conjoint fiscalement parlant)
@@ -116,6 +124,12 @@ public class Deces extends EvenementCivilInterne {
 			 * Obtention du tiers correspondant au veuf.
 			 */
 			PersonnePhysique veuf = context.getTiersService().getPersonnePhysiqueByNumeroIndividu(getConjointSurvivant().getNoTechnique() );
+
+			final DecisionAci decisionAciConjoint = veuf.getDecisionAciValideAt(getDate());
+			if (decisionAciConjoint != null) {
+				erreurs.addErreur(String.format("Le contribuable trouvé (%s) a un conjoint (%s) qui fait l'objet d'une décision ACI (%s)",
+						FormatNumeroHelper.numeroCTBToDisplay(defunt.getNumero()),FormatNumeroHelper.numeroCTBToDisplay(veuf.getNumero()),decisionAciConjoint));
+			}
 
 			/*
 			 * Récupération de l'ensemble decede-veuf-menageCommun
@@ -133,6 +147,7 @@ public class Deces extends EvenementCivilInterne {
 						"Les tiers composant le tiers ménage trouvé ne correspondent pas avec les individus unis dans le civil");
 			}
 
+
 			/*
 			 * On récupère le tiers MenageCommun
 			 */
@@ -143,6 +158,12 @@ public class Deces extends EvenementCivilInterne {
 			 */
 			if (menage == null) {
 				throw new EvenementCivilException("Le tiers ménage commun n'a pu être trouvé");
+			}
+
+			final DecisionAci decisionSurCouple = menage.getDecisionAciValideAt(getDate());
+			if (decisionSurCouple != null) {
+				erreurs.addErreur(String.format("Le contribuable trouvé (%s) appartient à un ménage  (%s) qui fait l'objet d'une décision ACI (%s)",
+						FormatNumeroHelper.numeroCTBToDisplay(defunt.getNumero()),FormatNumeroHelper.numeroCTBToDisplay(menage.getNumero()),decisionSurCouple));
 			}
 
 			/*

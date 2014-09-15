@@ -1322,5 +1322,29 @@ public interface TiersService {
 	 * @return la listes des rapports de prestations
 	 */
 	List<RapportPrestationImposable> getAllRapportPrestationImposable(DebiteurPrestationImposable dpi, PersonnePhysique sourcier, boolean nonAnnuleOnly, boolean doNotAutoFlush);
+
+
+	/**
+	 * Créer une décision aci lié au contribuable passé en paramètre
+ 	 * @param ctb
+	 * @param typeAutoriteFiscale
+	 * @param numeroAutoritéFiscale
+	 * @param dateDebut
+	 * @param dateFin
+	 * @param Remarque
+	 * @return la décision créée
+	 */
+DecisionAci addDecisionAci(Contribuable ctb, TypeAutoriteFiscale typeAutoriteFiscale,
+                           int numeroAutoritéFiscale,RegDate dateDebut,RegDate dateFin, String Remarque);
+
+	/**
+	 * Permet de mettre à jour un edécision ACI ou de l'annuler et la recréer en fonction des données modifiéss
+	 * @param decisionAci
+	 * @param dateFin
+	 * @param remarque
+	 * @param numeroAutoriteFiscale
+	 * @return la décision modifiée ou une nouvelle décision avec les modifications,
+	 */
+	DecisionAci updateDecisionAci(DecisionAci decisionAci, RegDate dateFin, String remarque, Integer numeroAutoriteFiscale);
 }
 

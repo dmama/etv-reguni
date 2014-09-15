@@ -79,6 +79,7 @@ import ch.vd.uniregctb.tiers.ContactImpotSource;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.Curatelle;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
+import ch.vd.uniregctb.tiers.DecisionAci;
 import ch.vd.uniregctb.tiers.DroitAcces;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.Entreprise;
@@ -1159,6 +1160,21 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		i.setDerniereMutation(derniereMutation);
 		i = tiersDAO.addAndSave(tiers, i);
 		return i;
+	}
+
+	/**
+	 * Ajoute une décision sur le contribuable spécifié.
+	 */
+	protected DecisionAci addDecisionAci(Contribuable contribuable, RegDate debut, @Nullable RegDate fin,
+	                                             Integer noOFS, TypeAutoriteFiscale type, String  remarque) {
+		DecisionAci decision = new DecisionAci();
+		decision.setDateDebut(debut);
+		decision.setDateFin(fin);
+		decision.setTypeAutoriteFiscale(type);
+		decision.setNumeroOfsAutoriteFiscale(noOFS);
+		decision.setRemarque(remarque);
+		decision = tiersDAO.addAndSave(contribuable, decision);
+		return decision;
 	}
 
 	/**
