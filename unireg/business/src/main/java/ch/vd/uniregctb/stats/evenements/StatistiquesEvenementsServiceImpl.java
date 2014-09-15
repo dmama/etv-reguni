@@ -357,8 +357,8 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 		b.append(" JOIN REQDES_UNITE_TRAITEMENT UT ON E.UNITE_TRAITEMENT_ID=UT.ID");
 		b.append(" JOIN EVENEMENT_REQDES EVT ON UT.EVENEMENT_ID=EVT.ID");
 		b.append(" JOIN REQDES_PARTIE_PRENANTE PP1 ON PP1.UNITE_TRAITEMENT_ID=UT.ID");
-		b.append(" LEFT OUTER JOIN REQDES_PARTIE_PRENANTE PP2 ON PP2.UNITE_TRAITEMENT_ID=UT.ID");
-		b.append(" WHERE (PP2.ID IS NULL OR PP2.ID > PP1.ID)");
+		b.append(" LEFT OUTER JOIN REQDES_PARTIE_PRENANTE PP2 ON PP2.UNITE_TRAITEMENT_ID=UT.ID AND PP2.ID>PP1.ID");
+		b.append(" WHERE NOT EXISTS (SELECT 1 FROM REQDES_PARTIE_PRENANTE PP WHERE PP.UNITE_TRAITEMENT_ID=UT.ID AND PP.ID<PP1.ID)");
 		b.append(" AND UT.ETAT='").append(EtatTraitement.EN_ERREUR).append("'");
 		final String sql = b.toString();
 		return executeSelect(sql, new SelectCallback<StatsEvenementsNotairesResults.UniteTraitementEnErreurInfo>() {
@@ -385,8 +385,8 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 		b.append(" FROM REQDES_UNITE_TRAITEMENT UT");
 		b.append(" JOIN EVENEMENT_REQDES EVT ON UT.EVENEMENT_ID=EVT.ID");
 		b.append(" JOIN REQDES_PARTIE_PRENANTE PP1 ON PP1.UNITE_TRAITEMENT_ID=UT.ID");
-		b.append(" LEFT OUTER JOIN REQDES_PARTIE_PRENANTE PP2 ON PP2.UNITE_TRAITEMENT_ID=UT.ID");
-		b.append(" WHERE (PP2.ID IS NULL OR PP2.ID > PP1.ID)");
+		b.append(" LEFT OUTER JOIN REQDES_PARTIE_PRENANTE PP2 ON PP2.UNITE_TRAITEMENT_ID=UT.ID AND PP2.ID>PP1.ID");
+		b.append(" WHERE NOT EXISTS (SELECT 1 FROM REQDES_PARTIE_PRENANTE PP WHERE PP.UNITE_TRAITEMENT_ID=UT.ID AND PP.ID<PP1.ID)");
 		b.append(" AND UT.ETAT='").append(EtatTraitement.FORCE).append("'");
 		final String sql = b.toString();
 		return executeSelect(sql, new SelectCallback<StatsEvenementsNotairesResults.UniteTraitementForceesInfo>() {
