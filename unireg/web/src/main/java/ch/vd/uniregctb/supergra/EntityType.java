@@ -20,7 +20,7 @@ public enum EntityType {
 	PeriodeFiscale(ch.vd.uniregctb.declaration.PeriodeFiscale.class, "période fiscale", "la période fiscale", "de la période fiscale"),
 	Immeuble(ch.vd.uniregctb.rf.Immeuble.class, "immeuble", "l'immeuble", "de l'immeuble"),
 	Remarque(ch.vd.uniregctb.tiers.Remarque.class, "remarque", "la remarque", "de la remarque"),
-	DecisionAci(ch.vd.uniregctb.tiers.DecisionAci.class,"decision ACI", "La décision ACI","d'une décision ACI");
+	DecisionAci(ch.vd.uniregctb.tiers.DecisionAci.class,"décision ACI", "la décision ACI","de la décision ACI");
 
 	private final Class<?> hibernateClass;
 	private final String displayName;   // "chat"

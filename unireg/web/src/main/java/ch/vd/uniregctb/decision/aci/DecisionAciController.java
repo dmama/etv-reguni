@@ -2,8 +2,6 @@ package ch.vd.uniregctb.decision.aci;
 
 import javax.validation.Valid;
 
-import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.context.MessageSource;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.stereotype.Controller;
@@ -160,7 +158,7 @@ public class DecisionAciController {
 
 		final DecisionAci decisionAci = tiersService.addDecisionAci(ctb,view.getTypeAutoriteFiscale(),view.getNumeroAutoriteFiscale(),
 										view.getDateDebut(),view.getDateFin(),view.getRemarque());
-		return "redirect:/fiscal/edit.do?id=" + ctbId + buildHighlightForParam(decisionAci);
+		return "redirect:/fiscal/edit.do?id=" + ctbId;
 	}
 
 	@RequestMapping(value = "/edit.do", method = RequestMethod.GET)
@@ -215,16 +213,8 @@ public class DecisionAciController {
 		final DecisionAci decisionUpdated = tiersService.updateDecisionAci(decisionAci, view.getDateFin(), view.getRemarque(), view.getNumeroAutoriteFiscale());
 
 
-		return "redirect:/fiscal/edit.do?id=" + numero + buildHighlightForParam(decisionUpdated);
+		return "redirect:/fiscal/edit.do?id=" + numero;
 	}
-
-	private static String buildHighlightForParam(@Nullable DecisionAci d) {
-		if (d == null) {
-			return StringUtils.EMPTY;
-		}
-		return "&highlightFor=" + d.getId();
-	}
-
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/cancel.do", method = RequestMethod.POST)
 	public String cancel(long decisionId) throws Exception {
@@ -246,7 +236,7 @@ public class DecisionAciController {
 		decisionAci.setAnnule(true);
 		decisionAciDAO.save(decisionAci);
 
-		return "redirect:/fiscal/edit.do?id=" + tiers.getId() + "&highlightFor=" + decisionId;
+		return "redirect:/fiscal/edit.do?id=" + tiers.getId();
 	}
 
 

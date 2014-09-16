@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 
-<%--@elvariable id="command" type="ch.vd.uniregctb.fors.EditForPrincipalView"--%>
+<%--@elvariable id="command" type="ch.vd.uniregctb.decision.aci.EditDecisionAciView"--%>
 
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
   	<tiles:put name="title">
@@ -86,11 +86,11 @@
                             </td>
                         </tr>
                         <tr class="<unireg:nextRowClass/>" >
-                            <td><fmt:message key="label.decision.aci.debut" />&nbsp;:</td>
+                            <td><fmt:message key="label.date.debut" />&nbsp;:</td>
                             <td><unireg:regdate regdate="${command.dateDebut}"/></td>
                         </tr>
                         <tr class="<unireg:nextRowClass/>" >
-                            <td><fmt:message key="label.decision.aci.fin" />&nbsp;:</td>
+                            <td><fmt:message key="label.date.fin" />&nbsp;:</td>
                             <td>
                                 <c:if test="${command.dateFinEditable}">
                                     <jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">

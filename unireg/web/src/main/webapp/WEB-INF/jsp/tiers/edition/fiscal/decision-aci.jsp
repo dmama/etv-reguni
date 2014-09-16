@@ -8,7 +8,7 @@
 			<td>
 				<unireg:setAuth var="autorisations" tiersId="${command.tiers.numero}"/>
                 <c:if test="${autorisations.decisionsAci}">
-					<unireg:linkTo name="Ajouter" title="Ajouter une décision ACI" action="/decision-aci/add.do" params="{tiersId:${command.tiers.numero}}" link_class="add margin_right_10"/>
+                    <unireg:raccourciAjouter link="../decision-aci/add.do?tiersId=${command.tiers.numero}" tooltip="Ajouter une décision ACI" display="label.bouton.ajouter"/>
 				</c:if>
 			</td>
 		</tr>

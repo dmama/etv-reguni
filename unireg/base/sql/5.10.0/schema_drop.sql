@@ -74,9 +74,10 @@ drop table REQDES_UNITE_TRAITEMENT cascade constraints;
 
 drop table EVENEMENT_REQDES cascade constraints;
 
+drop table DECISION_ACI cascade constraints;
+
 drop table TIERS cascade constraints;
 
-drop table DECISION_ACI cascade constraints;
 
 drop sequence S_PM;
 

@@ -98,7 +98,7 @@ public class Reconciliation extends EvenementCivilInterne {
 
 			final DecisionAci decisionAciConjoint = habitantConjoint.getDecisionAciValideAt(getDate());
 			if (decisionAciConjoint != null) {
-				erreurs.addErreur(String.format("Le contribuable trouvé (%s) a un ancien conjoint (%s) qui fait l'objet d'une décision ACI (%s)",
+				erreurs.addErreur(String.format("Le contribuable trouvé (%s) a un conjoint (%s) qui fait l'objet d'une décision ACI (%s)",
 						FormatNumeroHelper.numeroCTBToDisplay(habitant.getNumero()),FormatNumeroHelper.numeroCTBToDisplay(habitantConjoint.getNumero()),decisionAciConjoint));
 			}
 

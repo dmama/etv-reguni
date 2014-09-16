@@ -72,7 +72,6 @@ import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.HibernateEntity;
-import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.common.NationaliteHelper;
 import ch.vd.uniregctb.common.NumeroIDEHelper;
 import ch.vd.uniregctb.declaration.Declaration;
@@ -2797,10 +2796,14 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	private DecisionAci corrigerDecisionAci(@NotNull DecisionAci decisionAci, String remarque, int noOfsAutoriteFiscale) {
-		if (decisionAci.getRemarque().equals(remarque) && decisionAci.getNumeroOfsAutoriteFiscale() == noOfsAutoriteFiscale) {
-			// rien à faire
-			return null;
-		}
+
+		final boolean remarquesIdentiques = decisionAci.getRemarque()!=null && remarque !=null && decisionAci.getRemarque().equals(remarque);
+		final boolean remarquesNulles = decisionAci.getRemarque()==null && remarque ==null;
+		if (remarquesIdentiques || remarquesNulles)
+			if ((decisionAci.getNumeroOfsAutoriteFiscale() == noOfsAutoriteFiscale)) {
+				// rien à faire
+				return null;
+			}
 		final Contribuable ctb = (Contribuable) decisionAci.getTiers();
 		Assert.notNull(ctb);
 
@@ -4811,7 +4814,11 @@ public class TiersServiceImpl implements TiersService {
 			updated.setRemarque(remarque);
 		}
 
-		if (!updated.getRemarque().equals(remarque) || !updated.getNumeroOfsAutoriteFiscale().equals(numeroAutoriteFiscale)) {
+		if (updated.getRemarque()!=null && !updated.getRemarque().equals(remarque)) {
+			// quelque chose d'autre a changé
+			updated = corrigerDecisionAci(updated, remarque, numeroAutoriteFiscale);
+		}
+		else if (!updated.getNumeroOfsAutoriteFiscale().equals(numeroAutoriteFiscale)) {
 			// quelque chose d'autre a changé
 			updated = corrigerDecisionAci(updated, remarque, numeroAutoriteFiscale);
 		}
@@ -4819,29 +4826,6 @@ public class TiersServiceImpl implements TiersService {
 		return updated == decisionAci ? null : updated;
 	}
 
-
-	private String buildLibelleOrigine(final Individu individu) {
-		if (individu.getOrigines() == null) {
-			return "";
-		}
-		final StringBuilder sb = new StringBuilder(LengthConstants.TIERS_LIB_ORIGINE);
-		for ( Iterator<Origine> it = individu.getOrigines().iterator(); it.hasNext(); ) {
-			final Origine origine = it.next();
-			sb.append(origine.getNomLieu());
-			if (it.hasNext()) {
-				sb.append(", ");
-			}
-		}
-		if (sb.length() > LengthConstants.TIERS_LIB_ORIGINE) {
-			// Si la chaîne de caratère est trop longue (très peu probable), on la tronque.
-			// Pas génant car cette donnée est simplement là à titre d'information dans l'IHM.
-			// Aucune décision métier ne doit être prise dessus.
-			return sb.substring(0, LengthConstants.TIERS_LIB_ORIGINE - 3) + "...";
-		}
-		else {
-			return sb.toString();
-		}
-	}
 
 	@Override
 	public StatutMenageCommun getStatutMenageCommun(MenageCommun menageCommun) {

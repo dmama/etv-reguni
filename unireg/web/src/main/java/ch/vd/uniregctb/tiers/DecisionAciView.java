@@ -10,7 +10,6 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 public class DecisionAciView implements Comparable<DecisionAciView>, Annulable{
 	private Long id;
 	private Long tiersId;
-	private  String user;
 	private RegDate dateDebut;
 	private RegDate dateFin;
 	private TypeAutoriteFiscale typeAutoriteFiscale;
@@ -87,7 +86,6 @@ public class DecisionAciView implements Comparable<DecisionAciView>, Annulable{
 	public DecisionAciView(DecisionAci d) {
 		this.id = d.getId();
 		this.tiersId = d.getTiers().getNumero();
-		this.user = d.getLogCreationUser();
 		this.dateDebut = d.getDateDebut();
 		this.dateFin =d.getDateFin();
 		this.remarque = d.getRemarque();

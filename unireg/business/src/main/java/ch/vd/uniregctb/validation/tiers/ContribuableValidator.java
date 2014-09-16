@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.validation.tiers;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
@@ -128,7 +128,7 @@ public abstract class ContribuableValidator<T extends Contribuable> extends Tier
 			return results;
 		}
 
-		final List<DecisionAci> decisionAcis = new ArrayList<>(ctb.getDecisionsAci());
+		final Set<DecisionAci> decisionAcis = ctb.getDecisionsAci();
 		// On valide toutes les décisions
 		final ValidationService validationService = getValidationService();
 		for (DecisionAci d : decisionAcis) {

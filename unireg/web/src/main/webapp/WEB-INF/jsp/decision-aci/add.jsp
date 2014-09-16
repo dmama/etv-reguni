@@ -90,7 +90,7 @@
                         </td>
 					</tr>
                     <tr class="<unireg:nextRowClass/>" >
-                        <td><fmt:message key="label.decision.aci.debut" />&nbsp;:</td>
+                        <td><fmt:message key="label.date.debut" />&nbsp;:</td>
                         <td>
                             <jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
                                 <jsp:param name="path" value="dateDebut" />
@@ -99,7 +99,7 @@
                         </td>
                     </tr>
                     <tr class="<unireg:nextRowClass/>" >
-                        <td><fmt:message key="label.decision.aci.fin" />&nbsp;:</td>
+                        <td><fmt:message key="label.date.fin" />&nbsp;:</td>
                         <td>
                             <jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
                                 <jsp:param name="path" value="dateFin" />

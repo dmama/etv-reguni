@@ -20,18 +20,17 @@
 					<unireg:commune ofs="${decisionAci.numeroForFiscalCommune}" displayProperty="nomOfficiel" titleProperty="noOFS" date="${decisionAci.dateDebut}"/>
 				</c:when>
 				<c:when test="${decisionAci.typeAutoriteFiscale == 'COMMUNE_HC' }">
-					<unireg:commune ofs="${decisionAci.numeroForFiscalCommuneHorsCanton}" displayProperty="nomOfficiel" titleProperty="noOFS" date="${decisionAci.dateDebut}"/>
-					(<unireg:commune ofs="${decisionAci.numeroForFiscalCommuneHorsCanton}" displayProperty="sigleCanton" date="${decisionAci.dateDebut}"/>)
+					<unireg:commune ofs="${decisionAci.numeroForFiscalCommuneHorsCanton}" displayProperty="nomOfficielAvecCanton" titleProperty="noOFS" date="${decisionAci.dateDebut}"/>
 				</c:when>
 				<c:when test="${decisionAci.typeAutoriteFiscale == 'PAYS_HS' }">
 					<unireg:pays ofs="${decisionAci.numeroForFiscalPays}" displayProperty="nomCourt" titleProperty="noOFS" date="${decisionAci.dateDebut}"/>
 				</c:when>
 			</c:choose>
 	</display:column>
-	<display:column sortable ="true" titleKey="label.decision.aci.debut" sortProperty="dateDebut">
+	<display:column sortable ="true" titleKey="label.date.debut" sortProperty="dateDebut">
 			<fmt:formatDate value="${decisionAci.debutInFormatDate}" pattern="dd.MM.yyyy"/>
 	</display:column>
-	<display:column sortable ="true" titleKey="label.decision.aci.fin" sortProperty="dateFin">
+	<display:column sortable ="true" titleKey="label.date.fin" sortProperty="dateFin">
 			<fmt:formatDate value="${decisionAci.finInFormatDate}" pattern="dd.MM.yyyy"/>
 	</display:column>
 	<display:column sortable ="true" titleKey="label.decision.aci.remarque">
@@ -45,9 +44,8 @@
 		<c:if test="${page == 'edit' }">
 			<c:if test="${!decisionAci.annule}">
                 <c:if test="${autorisations.decisionsAci}">
-                    <unireg:linkTo name="" action="/decision-aci/edit.do" method="GET" params="{decisionId:${decisionAci.id}}" link_class="edit" title="Edition de décision ACI" />
-                    <unireg:linkTo name="" action="/decision-aci/cancel.do" method="POST" params="{decisionId:${decisionAci.id}}" link_class="delete"
-                                       title="Annulation de décision" confirm="Voulez-vous vraiment annuler cette décision ?"/>
+                    <unireg:raccourciModifier link="../decision-aci/edit.do?decisionId=${decisionAci.id}" tooltip="Edition de décision ACI"/>
+                    <unireg:raccourciAnnuler onClick="javascript:annulerDecisionAci(${decisionAci.id})" tooltip="Annulation de décision"/>
                 </c:if>
 			</c:if>
 		</c:if>
@@ -56,13 +54,18 @@
 	<display:setProperty name="paging.banner.one_item_found" value=""/>
 	
 </display:table>
-<script type="text/javascript">
-
-	// mise-en-évidence d'un for qui vient d'être ajouté ou édité
-	var params = App.get_url_params();
-	if (params && params.highlightFor) {
-		$('#ffid-' + params.highlightFor).closest('tr').effect('highlight', 4000);
-	}
-
-</script>
+    <c:if test="${page == 'edit' }">
+        <script type="text/javascript">
+            function annulerDecisionAci(idDecision) {
+                if (confirm('Voulez-vous vraiment annuler cette décision ?')) {
+                    var formAnnulation =
+                            "<form id='formAnnulationDecision' action='"+App.curl('/decision-aci/cancel.do')+"' method='post'>" +
+                            "<input type='hidden' name='decisionId' value='" + idDecision + "'/>" +
+                            "</form>";
+                    $('body').append(formAnnulation);
+                    $('#formAnnulationDecision').submit();
+                }
+            }
+        </script>
+    </c:if>
 </c:if>
