@@ -28,6 +28,7 @@ import ch.vd.uniregctb.common.StringComparator;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.tiers.IndividuNotFoundException;
 import ch.vd.uniregctb.tiers.OriginePersonnePhysique;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -123,6 +124,9 @@ public class RecuperationOriginesNonHabitantsProcessor {
 				else if (pp.isConnuAuCivil()) {
 					// c'est un ancien habitant -> on va demander au registre civil les données
 					final Individu individu = serviceCivil.getIndividu(pp.getNumeroIndividu(), null, AttributeIndividu.ORIGINE);
+					if (individu == null) {
+						throw new IndividuNotFoundException(pp.getNumeroIndividu());
+					}
 					final Collection<Origine> origines = individu.getOrigines();
 					if (origines == null || origines.isEmpty()) {
 						// le civil ne connait aucune origine pour cet individu (étranger ?)
