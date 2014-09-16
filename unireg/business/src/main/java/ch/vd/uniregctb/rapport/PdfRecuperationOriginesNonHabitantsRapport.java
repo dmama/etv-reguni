@@ -28,7 +28,7 @@ public class PdfRecuperationOriginesNonHabitantsRapport extends PdfRapport {
 		document.addEnteteUnireg();
 
 		// Titre
-		document.addTitrePrincipal("Rapport d'exécution du job de récupération des données des anciens habitants d'après les données civiles connues");
+		document.addTitrePrincipal("Rapport d'exécution du job de récupération des données d'origine des non-habitants");
 
 		// Paramètres
 		document.addEntete1("Paramètres");
