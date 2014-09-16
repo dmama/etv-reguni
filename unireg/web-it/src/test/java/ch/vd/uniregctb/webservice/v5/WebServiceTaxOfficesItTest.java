@@ -14,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.ws.taxoffices.v1.TaxOffices;
-import ch.vd.unireg.xml.common.v1.UserLogin;
 
 public class WebServiceTaxOfficesItTest extends AbstractWebServiceItTest {
 
@@ -148,25 +147,25 @@ public class WebServiceTaxOfficesItTest extends AbstractWebServiceItTest {
 		// commune ???
 
 		{
-			final Pair<String, Map<String, ?>> params = buildUriAndParams(99999, null);
+			final Pair<String, Map<String, ?>> params = buildUriAndParams(9999, null);
 			final ResponseEntity<TaxOffices> resp = get(TaxOffices.class, MediaType.APPLICATION_JSON, params.getLeft(), params.getRight());
 			Assert.assertNotNull(resp);
 			Assert.assertEquals(HttpStatus.NOT_FOUND, resp.getStatusCode());
 		}
 		{
-			final Pair<String, Map<String, ?>> params = buildUriAndParams(99999, null);
+			final Pair<String, Map<String, ?>> params = buildUriAndParams(9999, null);
 			final ResponseEntity<TaxOffices> resp = get(TaxOffices.class, MediaType.APPLICATION_XML, params.getLeft(), params.getRight());
 			Assert.assertNotNull(resp);
 			Assert.assertEquals(HttpStatus.NOT_FOUND, resp.getStatusCode());
 		}
 		{
-			final Pair<String, Map<String, ?>> params = buildUriAndParams(99999, RegDate.get());
+			final Pair<String, Map<String, ?>> params = buildUriAndParams(9999, RegDate.get());
 			final ResponseEntity<TaxOffices> resp = get(TaxOffices.class, MediaType.APPLICATION_JSON, params.getLeft(), params.getRight());
 			Assert.assertNotNull(resp);
 			Assert.assertEquals(HttpStatus.NOT_FOUND, resp.getStatusCode());
 		}
 		{
-			final Pair<String, Map<String, ?>> params = buildUriAndParams(99999, RegDate.get());
+			final Pair<String, Map<String, ?>> params = buildUriAndParams(9999, RegDate.get());
 			final ResponseEntity<TaxOffices> resp = get(TaxOffices.class, MediaType.APPLICATION_XML, params.getLeft(), params.getRight());
 			Assert.assertNotNull(resp);
 			Assert.assertEquals(HttpStatus.NOT_FOUND, resp.getStatusCode());
