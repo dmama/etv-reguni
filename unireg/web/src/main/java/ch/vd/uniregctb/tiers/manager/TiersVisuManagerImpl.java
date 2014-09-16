@@ -195,11 +195,13 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 	protected void setDecisionAciView(TiersView tiersView,Contribuable contribuable){
 		final List<DecisionAciView> decisionsView = new ArrayList<>();
 		final Set<DecisionAci> decisions = contribuable.getDecisionsAci();
-		for (DecisionAci decision : decisions) {
-			final DecisionAciView dView = new DecisionAciView(decision);
-			decisionsView.add(dView);
+		if (decisions != null) {
+			for (DecisionAci decision : decisions) {
+				final DecisionAciView dView = new DecisionAciView(decision);
+				decisionsView.add(dView);
+			}
+			Collections.sort(decisionsView);
 		}
-		Collections.sort(decisionsView);
 		tiersView.setDecisionsAci(decisionsView);
 	}
 
