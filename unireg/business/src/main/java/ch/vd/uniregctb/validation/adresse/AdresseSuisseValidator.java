@@ -21,7 +21,7 @@ public class AdresseSuisseValidator extends AdresseSupplementaireValidator<Adres
 			}
 
 			if (adr.getNpaCasePostale() != null && adr.getNumeroCasePostale() == null ) {
-				vr.addError("Le npa de la case postale ne peut pas être renseigner sans numéro de case postale");
+				vr.addError("Le npa de la case postale ne peut pas être renseigné sans numéro de case postale");
 			}
 		}
 		return vr;
