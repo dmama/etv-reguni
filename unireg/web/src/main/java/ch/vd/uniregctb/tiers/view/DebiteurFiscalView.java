@@ -7,9 +7,9 @@ import ch.vd.uniregctb.type.PeriodiciteDecompte;
 
 public class DebiteurFiscalView {
 
-	private CategorieImpotSource categorieImpotSource = CategorieImpotSource.REGULIERS;
-	private ModeCommunication modeCommunication = ModeCommunication.SITE_WEB;
-	private PeriodiciteDecompte periodiciteDecompte = PeriodiciteDecompte.MENSUEL;
+	private CategorieImpotSource categorieImpotSource;
+	private ModeCommunication modeCommunication;
+	private PeriodiciteDecompte periodiciteDecompte;
 	private PeriodeDecompte periodeDecompte;
 
 	public CategorieImpotSource getCategorieImpotSource() {

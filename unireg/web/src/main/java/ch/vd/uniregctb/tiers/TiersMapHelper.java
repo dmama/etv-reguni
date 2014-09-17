@@ -280,35 +280,14 @@ public class TiersMapHelper extends CommonMapHelper {
 	/**
 	 * Renvoie une map non-modifiable des périodicités de décomptes assignables au tout venant sur un débiteur
 	 * @param current la périodicité actuelle du débiteur (qui doit toujours faire partie des choix sélectionnables)
-	 * @param cis catégorie d'impôt source du débiteur concerné
 	 * @return une map des valeurs sélectionables
 	 */
-	public Map<PeriodiciteDecompte, String> getMapLimiteePeriodiciteDecompte(PeriodiciteDecompte current, CategorieImpotSource cis) {
-		final Set<PeriodiciteDecompte> allowedValues;
+	public Map<PeriodiciteDecompte, String> getMapLimiteePeriodiciteDecompte(PeriodiciteDecompte current) {
+		final Set<PeriodiciteDecompte> allowedValues = EnumSet.of(PeriodiciteDecompte.MENSUEL, PeriodiciteDecompte.UNIQUE);
 		if (current != null) {
 			// on doit toujours pouvoir "descendre" en périodicité
-			allowedValues = EnumSet.of(PeriodiciteDecompte.MENSUEL);
-			allowedValues.addAll(current.getShorterPeriodicities());
-
-			// [SIFISC-12889] sur les débiteurs réguliers, les périodicités semestrielles, trimestrielles et uniques ne doivent plus être utilisables en mode "limité"
-			if (cis == CategorieImpotSource.REGULIERS) {
-				allowedValues.remove(PeriodiciteDecompte.TRIMESTRIEL);
-				allowedValues.remove(PeriodiciteDecompte.SEMESTRIEL);
-			}
-			else {
-				allowedValues.add(PeriodiciteDecompte.UNIQUE);
-			}
-
-			// la périodicité courante doit toujours pouvoir être conservée
 			allowedValues.add(current);
-		}
-		else if (cis == CategorieImpotSource.REGULIERS) {
-			// mode création de réguliers
-			allowedValues = EnumSet.of(PeriodiciteDecompte.ANNUEL, PeriodiciteDecompte.MENSUEL);
-		}
-		else {
-			// mode création de non-réguliers
-			allowedValues = EnumSet.allOf(PeriodiciteDecompte.class);
+			allowedValues.addAll(current.getShorterPeriodicities());
 		}
 		return getSpecificMapEnum(ApplicationConfig.masterKeyPeriodiciteDecompte, allowedValues);
 	}
