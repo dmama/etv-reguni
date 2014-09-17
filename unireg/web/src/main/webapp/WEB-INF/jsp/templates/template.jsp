@@ -5,6 +5,9 @@
 
 <html>
 	<head>
+		<!-- demandons à IE d'utiliser le dernier moteur -->
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 		<tiles:getAsString name='refresh' ignore='true'/>
 		<link rel="SHORTCUT ICON" href="<c:url value="/images/favicon.ico"/>">
@@ -350,7 +353,11 @@
 
 			<div id="footer">
 				<strong>Version <fmt:message key="version" /></strong>&nbsp;&nbsp;&nbsp;(Build: <fmt:message key="buildtime"/>)
-				&nbsp;&nbsp;&nbsp;<strong><unireg:environnement/></strong>&nbsp;&nbsp;&nbsp;<small><a href="<c:url value="/about.do"/>">A propos</a></small>
+				&nbsp;&nbsp;&nbsp;<strong><unireg:environnement/></strong>
+				&nbsp;&nbsp;&nbsp;<small><a href="<c:url value="/about.do"/>">A propos</a></small>
+				<br/>
+				<strong>Navigateur&nbsp;:</strong> <c:out value="${header['User-Agent']}"/>
+				<br/>&nbsp;<br/>
 			</div>
 			
 			<%@ include file="/WEB-INF/jsp/include/tabs-workaround.jsp" %>

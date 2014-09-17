@@ -3,8 +3,11 @@
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 <html>
 	<head>
-		<title><tiles:getAsString name='title' ignore='true'/></title>
+		<!-- demandons à IE d'utiliser le dernier moteur -->
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<title><tiles:getAsString name='title' ignore='true'/></title>
 
 		<%@ include file="cssInclude.jsp" %>
 		<%@ include file="jsInclude.jsp" %>

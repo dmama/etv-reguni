@@ -5,9 +5,10 @@
 
 <html>
 	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-		<meta http-equiv="X-UA-Compatible" content="IE=8" /> <!-- désactive le mode de compatibilité IE7 pour les pages SuperGra. A étendre à toute l'application dès que possible -->
+		<!-- demandons à IE d'utiliser le dernier moteur -->
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 		<tiles:getAsString name='refresh' ignore='true'/>
 		<link rel="SHORTCUT ICON" href="<c:url value="/images/favicon.ico"/>">
 
@@ -69,7 +70,7 @@
 					<tiles:getAsString name='tools' ignore='true'/>
 					<ul>
 						<li>
-						<unireg:user></unireg:user>
+						<unireg:user/>
 						</li>
 						<tiles:getAsString name='vue' ignore='true'/>
 						<li>
@@ -134,8 +135,11 @@
 			</div>
 
 			<div id="footer">
-				<b>Version <fmt:message key="version" /></b>&nbsp;&nbsp;&nbsp;(Build: <fmt:message key="buildtime"/>)
-				&nbsp;&nbsp;&nbsp;<b><unireg:environnement/></b>
+				<strong>Version <fmt:message key="version" /></strong>&nbsp;&nbsp;&nbsp;(Build: <fmt:message key="buildtime"/>)
+				&nbsp;&nbsp;&nbsp;<strong><unireg:environnement/></strong>
+				<br/>
+				<strong>Navigateur&nbsp;:</strong> <c:out value="${header['User-Agent']}"/>
+				<br/>&nbsp;<br/>
 			</div>
 
 			<%@ include file="/WEB-INF/jsp/include/tabs-workaround.jsp" %>
