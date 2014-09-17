@@ -435,7 +435,7 @@ public class CessationSeparationEchProcessorTest extends AnnulationOuCessationSe
 				Assert.assertNotNull(erreurs);
 				Assert.assertEquals(1, erreurs.size());
 				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
-				String message = String.format("Le contribuable trouvé (%s) a un ancien conjoint (%s) qui fait l'objet d'une décision ACI (%s)",
+				String message = String.format("Le contribuable trouvé (%s) a un conjoint (%s) qui fait l'objet d'une décision ACI (%s)",
 						FormatNumeroHelper.numeroCTBToDisplay(madame.getNumero()),FormatNumeroHelper.numeroCTBToDisplay(monsieur.getNumero()),decisionAci);
 				Assert.assertEquals(message, erreur.getMessage());
 				return null;
